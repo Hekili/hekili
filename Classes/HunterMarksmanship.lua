@@ -258,6 +258,15 @@ if UnitClassBase( "player" ) == "HUNTER" then
             id = 257622,
             duration = 6,
             max_stack = 1,
+        },
+
+        
+        -- Legendaries
+        nessingwarys_trapping_apparatus = {
+            id = 336744,
+            duration = 5,
+            max_stack = 1,
+            copy = { "nesingwarys_trapping_apparatus", "nesingwarys_apparatus", "nessingwarys_apparatus" }
         }
     } )
 
@@ -285,6 +294,12 @@ if UnitClassBase( "player" ) == "HUNTER" then
         return steady_focus_applied
     end )
 
+    
+    local ExpireNesingwarysTrappingApparatus = setfenv( function()
+        focus.regen = focus.regen * 0.5
+        forecastResources( "focus" )
+    end, state )
+
 
     spec:RegisterHook( "reset_precast", function ()
         if now - action.serpent_sting.lastCast < gcd.execute * 2 and target.unit == action.serpent_sting.lastUnit then
@@ -293,6 +308,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
         if debuff.tar_trap.up then
             debuff.tar_trap.expires = debuff.tar_trap.applied + 30
+        end
+
+        if buff.nesingwarys_apparatus.up then
+            state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireCelestialAlignment, buff.nesingwarys_apparatus.expires )
         end
 
         if now - action.volley.lastCast < 6 then applyBuff( "volley", 6 - ( now - action.volley.lastCast ) ) end
@@ -672,6 +691,12 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 30,
             gcd = "spell",
 
+            spend = function ()
+                if legendary.nessingwarys_trapping_apparatus.enabled then
+                    return -45, "focus"
+                end
+            end,
+
             startsCombat = true,
             texture = 135834,
 
@@ -874,6 +899,12 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 0,
             cooldown = function () return level > 55 and 25 or 30 end,
             gcd = "spell",
+
+            spend = function ()
+                if legendary.nessingwarys_trapping_apparatus.enabled then
+                    return -45, "focus"
+                end
+            end,
 
             startsCombat = true,
             texture = 576309,

@@ -326,6 +326,13 @@ if UnitClassBase( "player" ) == "HUNTER" then
             max_stack = 10
         },
 
+        nessingwarys_trapping_apparatus = {
+            id = 336744,
+            duration = 5,
+            max_stack = 1,
+            copy = { "nesingwarys_trapping_apparatus", "nesingwarys_apparatus", "nessingwarys_apparatus" }
+        },
+
         -- Conduits
         strength_of_the_pack = {
             id = 341223,
@@ -367,6 +374,12 @@ if UnitClassBase( "player" ) == "HUNTER" then
     end )
 
 
+    local ExpireNesingwarysTrappingApparatus = setfenv( function()
+        focus.regen = focus.regen * 0.5
+        forecastResources( "focus" )
+    end, state )
+
+
     spec:RegisterHook( "reset_precast", function()
         if talent.wildfire_infusion.enabled then
             if IsActiveSpell( 270335 ) then current_wildfire_bomb = "shrapnel_bomb"
@@ -387,6 +400,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
         if debuff.tar_trap.up then
             debuff.tar_trap.expires = debuff.tar_trap.applied + 30
+        end
+
+        if buff.nesingwarys_apparatus.up then
+            state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireCelestialAlignment, buff.nesingwarys_apparatus.expires )
         end
 
         if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
@@ -762,7 +779,13 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-
+            
+            spend = function ()
+                if legendary.nessingwarys_trapping_apparatus.enabled then
+                    return -45, "focus"
+                end
+            end,
+            
             startsCombat = false,
             texture = 135834,
 
@@ -1144,6 +1167,12 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 30,
             gcd = "spell",
 
+            spend = function ()
+                if legendary.nessingwarys_trapping_apparatus.enabled then
+                    return -45, "focus"
+                end
+            end,
+
             startsCombat = false,
             texture = 1467588,
 
@@ -1180,6 +1209,12 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 0,
             cooldown = function () return level > 55 and 25 or 30 end,
             gcd = "spell",
+            
+            spend = function ()
+                if legendary.nessingwarys_trapping_apparatus.enabled then
+                    return -45, "focus"
+                end
+            end,
 
             startsCombat = false,
             texture = 576309,
