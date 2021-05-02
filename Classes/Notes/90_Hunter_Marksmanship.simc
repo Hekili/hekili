@@ -1,5 +1,5 @@
 ## Marksmanship Hunter
-## April 2, 2021
+## May 2, 2021
 
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers
@@ -9,7 +9,8 @@ actions.precombat+=/steady_shot,if=active_enemies>2|(covenant.kyrian|talent.voll
 
 actions+=/counter_shot
 actions+=/counter_shot,line_cd=30,if=runeforge.sephuzs_proclamation|soulbind.niyas_tools_poison|(conduit.reversal_of_fortune&!runeforge.sephuzs_proclamation)
-actions+=/tranquilizing_shot
+# Go ahead and Tranquilize NPC enemies; we don't do this for players because it'd be too spammy and we can't readily Tranq specific buffs.
+actions+=/tranquilizing_shot,if=!target.is_player
 # Use this on cooldown if it's the only on-use. If you have another on-use with a longer cooldown, stack that with Trueshot when their cooldowns conflict, so wait until it's on cooldown to use this, otherwise continue to use on cooldown.
 actions+=/use_item,name=dreadfire_vessel
 # If the trinket has a on-use buff, sync it with Trueshot. If two are competing for a Trueshot sync, use the stronger on-use effect. If an on-use buff is ready but another stronger on-use buff will also be ready by the time Trueshot comes back off cooldown, use it if the shared trinket cooldown won't interfere with the upcoming Trueshot sync. If an on-use buff could be used and still come back for a future Trueshot, use it. If a non-buff on-use is ready, use it if it won't interfere with potential on-use buffs trying to Trueshot sync or if the other trinket isn't an on-use, is a non-buff on-use with a longer cooldown, or isn't ready. If the fight is going to end before your next Trueshot, just start using trinkets to make sure they get used.

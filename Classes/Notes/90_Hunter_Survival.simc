@@ -1,5 +1,5 @@
 # Survival Hunter
-# January 17, 2021
+# May 2, 2021
 
 actions.precombat+=/summon_pet
 actions.precombat+=/bottled_flayedwing_toxin
@@ -7,7 +7,8 @@ actions.precombat+=/tar_trap,if=runeforge.soulforge_embers.equipped
 actions.precombat+=/steel_trap
 
 actions+=/muzzle
-actions+=/tranquilizing_shot
+# Go ahead and Tranquilize NPC enemies; we don't do this for players because it'd be too spammy and we can't readily Tranq specific buffs.
+actions+=/tranquilizing_shot,if=!target.is_player
 actions+=/use_items
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=bop,if=active_enemies<3&!talent.alpha_predator.enabled&!talent.wildfire_infusion.enabled
