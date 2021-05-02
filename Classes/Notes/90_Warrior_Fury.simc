@@ -1,5 +1,5 @@
 ## Fury Warrior
-## March 20, 2021
+## April 20, 2021
 
 ## Changes:
 ## - Added Pummel.
@@ -39,7 +39,7 @@ actions+=/potion
 actions+=/rampage,if=cooldown.recklessness.remains<3&talent.reckless_abandon.enabled
 actions+=/conquerors_banner,if=buff.recklessness.down&debuff.siegebreaker.down|fight_remains<50
 actions+=/recklessness,if=!runeforge.signet_of_tormented_kings.equipped&gcd.remains=0&((buff.bloodlust.up|talent.anger_management.enabled|raid_event.adds.in>10)|target.time_to_die>100|variable.execute_phase|target.time_to_die<15&raid_event.adds.in>10)&(spell_targets.whirlwind=1|buff.meat_cleaver.up)
-actions+=/recklessness,use_off_gcd=1,if=runeforge.signet_of_tormented_kings.equipped&gcd.remains&prev_gcd.1.rampage&((buff.bloodlust.up|talent.anger_management.enabled|raid_event.adds.in>10)|target.time_to_die>100|variable.execute_phase|target.time_to_die<15&raid_event.adds.in>10)&(spell_targets.whirlwind=1|buff.meat_cleaver.up)
+actions+=/recklessness,use_off_gcd=1,if=runeforge.signet_of_tormented_kings.equipped&prev_gcd.1.rampage&((buff.bloodlust.up|talent.anger_management.enabled|raid_event.adds.in>10)|target.time_to_die>100|variable.execute_phase|target.time_to_die<15&raid_event.adds.in>10)&(spell_targets.whirlwind=1|buff.meat_cleaver.up)
 actions+=/whirlwind,if=level>36&(spell_targets.whirlwind>1&!buff.meat_cleaver.up|raid_event.adds.in<gcd&!buff.meat_cleaver.up)
 actions+=/use_items
 actions+=/blood_fury
