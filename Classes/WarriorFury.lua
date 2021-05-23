@@ -301,7 +301,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 213858,
             duration = 18,
             max_stack = 1
-        }
+        },
     } )
 
 
@@ -368,30 +368,49 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local whirlwind_stacks = 0
 
     local rageSpent = 0
-    local rageSinceBanner = 0 
+    local rageSinceBanner = 0
+
+    local fresh_meat_actual = {}
+    local fresh_meat_virtual = {}
 
 
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
         local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
-        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
-            local ability = class.abilities[ spellID ]
+        if sourceGUID == state.GUID then
+            if subtype == "SPELL_CAST_SUCCESS" then
+                local ability = class.abilities[ spellID ]
 
-            if not ability then return end
+                if not ability then return end
 
-            if ability.key == "whirlwind" then
-                whirlwind_gained = GetTime()
-                whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
+                if ability.key == "whirlwind" then
+                    whirlwind_gained = GetTime()
+                    whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
+                
+                elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
+                    whirlwind_stacks = whirlwind_stacks - 1
+
+                end
+
+                if ability.key == "conquerors_banner" then
+                    rageSinceBanner = 0
+                end
             
-            elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
-                whirlwind_stacks = whirlwind_stacks - 1
-
-            end
-
-            if ability.key == "conquerors_banner" then
-                rageSinceBanner = 0
+            elseif state.talent.fresh_meat.enabled and spellID == 23881 and subtype == "SPELL_DAMAGE" and not fresh_meat_actual[ destGUID ] then
+                fresh_meat_actual[ destGUID ] = true
             end
         end
+    end )
+
+
+    local wipe = table.wipe
+
+    spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
+        wipe( fresh_meat_actual )
+    end )
+
+    spec:RegisterHook( "UNIT_ELIMINATED", function( id )
+        fresh_meat_actual[ id ] = nil
     end )
 
 
@@ -453,8 +472,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         end
         return wait
     end )
-    
-    
+
+
     spec:RegisterHook( "reset_precast", function ()
         rage_spent = nil
         rage_since_banner = nil
@@ -472,6 +491,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
         if legendary.will_of_the_berserker.enabled and buff.recklessness.up then
             state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
+        end
+
+        wipe( fresh_meat_virtual )
+        active_dot.hit_by_fresh_meat = 0
+
+        for k, v in pairs( fresh_meat_actual ) do
+            fresh_meat_virtual[ k ] = v
+            if k == target.unit then
+                applyDebuff( "target", "hit_by_fresh_meat" )
+            else
+                active_dot.hit_by_fresh_meat = active_dot.hit_by_fresh_meat + 1
+            end
         end
     end )    
 
@@ -549,6 +580,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             spend = function () return ( talent.seethe.enabled and ( stat.crit >= 100 and -4 or -2 ) or 0 ) - 8 end,
             spendType = "rage",
 
+            cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
+
             startsCombat = true,
             texture = function () return talent.reckless_abandon.enabled and buff.recklessness.up and 236304 or 136012 end,
 
@@ -566,6 +599,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 if legendary.cadence_of_fujieda.enabled then
                     if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
                     addStack( "cadence_of_fujieda", nil, 1 )
+                end
+
+                if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
+                    applyBuff( "enrage" )
+                    applyDebuff( "target", "hit_by_fresh_meat" )
                 end
             end,
 
