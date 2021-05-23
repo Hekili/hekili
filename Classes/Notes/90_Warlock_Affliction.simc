@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## April 4, 2021
+## May 23, 2021
 
 ## Changes:
 ## - Added Spell Lock.
@@ -57,6 +57,7 @@ actions+=/seed_of_corruption,if=active_enemies>2&talent.sow_the_seeds&!dot.seed_
 actions+=/seed_of_corruption,if=active_enemies>2&talent.siphon_life&!dot.seed_of_corruption.ticking&!in_flight&dot.corruption.remains<4
 actions+=/vile_taint,if=(soul_shard>1|active_enemies>2)&cooldown.summon_darkglare.remains>12
 actions+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&dot.unstable_affliction.remains<4
+actions+=/siphon_life,cycle_targets=1,if=dot.siphon_life.remains<4
 actions+=/call_action_list,name=covenant,strict=1,if=!covenant.necrolord
 # Apply Corruption manually on 1-2 targets, or on 3 with Absolute Corruption
 actions+=/corruption,cycle_targets=1,if=active_enemies<4-(talent.sow_the_seeds|talent.siphon_life)&dot.corruption.remains<2
