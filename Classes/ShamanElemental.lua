@@ -607,7 +607,10 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         chain_heal = {
             id = 1064,
-            cast = function () return 2.5 * haste end,
+            cast = function ()
+                if buff.chains_of_devastation_ch.up then return 0 end
+                return 2.5 * haste
+            end,
             cooldown = 0,
             gcd = "spell",
 
@@ -618,13 +621,18 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 136042,
 
             handler = function ()
+                removeBuff( "chains_of_devastation_ch" )
                 removeBuff( "echoing_shock" )
+
+                if legendary.chains_of_devastation.enabled then
+                    applyBuff( "chains_of_devastation_cl" )
+                end
             end,
         },
 
         chain_lightning = {
             id = 188443,
-            cast = function () return buff.stormkeeper.up and 0 or ( 2 * haste ) end,
+            cast = function () return ( buff.stormkeeper.up or buff.chains_of_devastation_cl.up ) and 0 or ( 2 * haste ) end,
             cooldown = 0,
             gcd = "spell",
 
@@ -640,6 +648,11 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 removeBuff( "master_of_the_elements" )
                 removeBuff( "echoing_shock" )
+                removeBuff( "chains_of_devastation_cl" )
+
+                if legendary.chains_of_devastation.enabled then
+                    applyBuff( "chains_of_devastation_ch" )
+                end
 
                 -- 4 MS per target, direct.
                 -- 3 MS per target, overload.
