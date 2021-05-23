@@ -654,7 +654,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         chain_heal = {
             id = 1064,
             cast = function ()
-                if buff.chains_of_devastation_cl.up then return 0 end
+                if buff.chains_of_devastation_ch.up then return 0 end
                 return maelstrom_mod( 2.5 ) * haste
             end,
             cooldown = 0,
