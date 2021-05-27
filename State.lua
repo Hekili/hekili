@@ -297,7 +297,12 @@ local no_trinket = setmetatable( {
     slot = "none",
     cooldown = setmetatable( {}, mt_no_trinket_cooldown ),
     stacking_stat = setmetatable( {}, mt_no_trinket_stacking_stat ),
-    stat = setmetatable( {}, mt_no_trinket_stat )
+    stat = setmetatable( {}, mt_no_trinket_stat ),
+    is = setmetatable( {}, {
+        __index = function( t, k )
+            return false
+        end
+    } )
 }, mt_no_trinket )
 
 
@@ -340,16 +345,14 @@ setmetatable( state.trinket.stat, mt_trinket_any_stat )
 
 local mt_trinket = {
     __index = function( t, k )
-        local isEnabled = ( rawget( t, "__ability" ) and not state:IsDisabled( t.__ability ) or false )
-
-        if k:match( "^__" ) then return k end
+        local isEnabled = ( not rawget( t, "__usable" ) ) or ( rawget( t, "__ability" ) and not state:IsDisabled( t.__ability ) or false )
 
         if k == "id" then
             return isEnabled and t.__id or 0
         elseif k == "ability" then
-            return isEnabled and t.__ability or "null_cooldown"
+            return rawget( t, "__ability" ) or "null_cooldown"
         elseif k == "usable" then
-            return isEnabled and t.__usable or false
+            return rawget( t, "__usable" ) or false
         elseif k == "has_use_buff" then
             return isEnabled and t.__has_use_buff or false
         elseif k == "proc" then
@@ -370,12 +373,13 @@ local mt_trinket = {
             end
             return false
         elseif k == "cooldown" then
-            if isEnabled and t.usable and t.ability then
+            if t.usable and t.ability then
                 return state.cooldown[ t.ability ]            
             end
             return state.cooldown.null_cooldown
         end
-        return false
+
+        return k
     end
 }
 
@@ -434,8 +438,7 @@ local mt_trinket_has_stacking_stat = {
 
         if trinket == 0 then return false end
 
-        if k == "any" then return class.trinkets[ trinket ].stacking_stat ~= nil end
-
+        if k == "any" or k == "any_dps" then return class.trinkets[ trinket ].stacking_stat ~= nil end
         if k == "ms" then k = "multistrike" end
 
         return class.trinkets[ trinket ].stacking_stat == k
@@ -452,8 +455,7 @@ local mt_trinket_has_stat = {
 
         if trinket == 0 then return false end
 
-        if k == "any" then return class.trinkets[ trinket ].stat ~= nil end
-
+        if k == "any" or k == "any_dps" then return class.trinkets[ trinket ].stat ~= nil end
         if k == "ms" then k = "multistrike" end
 
         return class.trinkets[ trinket ].stat == k

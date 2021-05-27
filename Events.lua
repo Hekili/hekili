@@ -996,15 +996,16 @@ do
         if T1 then
             state.trinket.t1.__id = T1
 
+            local isUsable = IsUsableItem( T1 )
             local name, spellID = GetItemSpell( T1 )
             local tSpell = class.itemMap[ T1 ]
 
             if tSpell then
-                state.trinket.t1.__usable = true
+                state.trinket.t1.__usable = isUsable
                 state.trinket.t1.__ability = tSpell
                 
                 if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t1.__has_use_buff = true
+                    state.trinket.t1.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
                 end
             end
 
@@ -1038,15 +1039,16 @@ do
         if T2 then
             state.trinket.t2.__id = T2
 
+            local isUsable = IsUsableItem( T2 )
             local name, spellID = GetItemSpell( T2 )
             local tSpell = class.itemMap[ T2 ]
 
             if tSpell then
-                state.trinket.t2.__usable = true
+                state.trinket.t2.__usable = isUsable
                 state.trinket.t2.__ability = tSpell
 
                 if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t2.__has_use_buff = true
+                    state.trinket.t2.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
                 end
             end
 

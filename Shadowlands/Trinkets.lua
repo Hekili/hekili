@@ -221,6 +221,7 @@ do
                     id = 345545,
                     duration = 3600,
                     max_stack = 1,
+                    ignore_buff = true -- Don't count as a DPS self-buff.
                 }
             }
         },
