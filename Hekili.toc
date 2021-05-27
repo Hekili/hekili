@@ -7,6 +7,7 @@
 ## OptionalDeps: AddOnSkins, BrewmasterTools, ConsolePort, ElvUI, LibDualSpec-1.0, Masque, SpellFlash, SpellFlashCore, WeakAuras
 ## X-Curse-Project-ID: 69254
 ## X-WoWI-ID: 24608
+## X-Wago-ID: WYK9WXNL
 
 embeds.xml
 
