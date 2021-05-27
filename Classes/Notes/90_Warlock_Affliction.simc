@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## May 23, 2021
+## May 27, 2021
 
 ## Changes:
 ## - Added Spell Lock.
@@ -97,7 +97,7 @@ actions.aoe+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&re
 actions.aoe+=/unstable_affliction,cycle_targets=1,if=!ticking&pvptalent.rampant_afflictions.enabled&active_dot.unstable_affliction<3
 actions.aoe+=/vile_taint,if=soul_shard>1
 actions.aoe+=/call_action_list,name=covenant,strict=1,if=!covenant.necrolord
-actions.aoe+=/call_action_list,name=darkglare_prep,if=(covenant.venthyr&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.ready&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))&((covenant.necrolord|covenant.kyrian|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))(covenant.night_fae&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))
+actions.aoe+=/call_action_list,name=darkglare_prep,if=(covenant.venthyr&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.ready&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))&((covenant.necrolord|covenant.kyrian|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))|(covenant.night_fae&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))
 actions.aoe+=/dark_soul,if=boss&cooldown.summon_darkglare.remains>fight_remains&(!talent.phantom_singularity|cooldown.phantom_singularity.remains>fight_remains)
 actions.aoe+=/dark_soul,if=boss&cooldown.summon_darkglare.remains+cooldown.summon_darkglare.duration<fight_remains
 actions.aoe+=/call_action_list,name=item
