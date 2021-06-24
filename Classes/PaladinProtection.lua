@@ -40,7 +40,21 @@ local PTR = ns.PTR
 if UnitClassBase( "player" ) == "PALADIN" then
     local spec = Hekili:NewSpecialization( 66 )
 
-    spec:RegisterResource( Enum.PowerType.HolyPower )
+    spec:RegisterResource( Enum.PowerType.HolyPower, {
+        divine_resonance = {
+            aura = "divine_resonance",
+
+            last = function ()
+                local app = state.buff.divine_resonance.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 5,
+            value = 1,
+        },        
+    } )
     spec:RegisterResource( Enum.PowerType.Mana )
 
     -- Talents
@@ -75,13 +89,12 @@ if UnitClassBase( "player" ) == "PALADIN" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
-        cleansing_light = 3472, -- 236186
+    spec:RegisterPvpTalents( { 
         guarded_by_the_light = 97, -- 216855
         guardian_of_the_forgotten_queen = 94, -- 228049
         hallowed_ground = 90, -- 216868
         inquisition = 844, -- 207028
-        judgments_of_the_pure = 93, -- 216860
+        judgments_of_the_pure = 93, -- 355858
         luminescence = 3474, -- 199428
         sacred_duty = 92, -- 216853
         shield_of_virtue = 861, -- 215652
@@ -1177,6 +1190,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 end
 
                 if conduit.shielding_words.enabled then applyBuff( "shielding_words" ) end
+
+                removeStack( "vanquishers_hammer" )
             end,
 
             auras = {
@@ -1220,7 +1235,17 @@ if UnitClassBase( "player" ) == "PALADIN" then
                         class.abilities.holy_shock.handler()
                     end
                 end
-            end
+
+                if legendary.divine_resonance.enabled then applyBuff( "divine_resonance" ) end
+            end,
+
+            auras = {
+                divine_resonance = {
+                    id = 355455,
+                    duration = 30,
+                    max_stack = 1,
+                },
+            }
         },
 
         -- Paladin - Necrolord - 328204 - vanquishers_hammer   (Vanquisher's Hammer)
@@ -1244,14 +1269,14 @@ if UnitClassBase( "player" ) == "PALADIN" then
             handler = function ()
                 removeBuff( "divine_purpose" )
                 removeBuff( "the_magistrates_judgment" )
-                applyBuff( "vanquishers_hammer" )
+                applyBuff( "vanquishers_hammer", nil, legendary.dutybound_gavel.enabled and 2 or nil )
             end,
 
             auras = {
                 vanquishers_hammer = {
                     id = 328204,
                     duration = 15,
-                    max_stack = 1
+                    max_stack = function () return legendary.dutybound_gavel.enabled and 2 or 1 end,
                 }
             }
         },
@@ -1305,6 +1330,13 @@ if UnitClassBase( "player" ) == "PALADIN" then
                         t.expires = 0
                         t.caster = "nobody"
                     end,
+                },
+
+                -- Leaving reactive for now, will see if we need to do anything differently.
+                equinox = {
+                    id = 355567,
+                    duration = 10,
+                    max_stack = 1,
                 },
             }
         },
@@ -1482,7 +1514,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             auras = {
                 hammer_of_wrath_hallow = {
-                    duration = 30,
+                    duration = function () return legendary.radiant_embers.enabled and 45 or 30 end,
                     max_stack = 1,
                     generate = function( t )
                         if IsUsableSpell( 24275 ) and not ( target.health_pct < 20 or ( level > 57 and ( buff.avenging_wrath.up or buff.crusade.up ) ) and not buff.final_verdict.up ) then

@@ -21,7 +21,21 @@ local PTR = ns.PTR
 if UnitClassBase( "player" ) == "PALADIN" then
     local spec = Hekili:NewSpecialization( 70 )
 
-    spec:RegisterResource( Enum.PowerType.HolyPower )
+    spec:RegisterResource( Enum.PowerType.HolyPower, {
+        divine_resonance = {
+            aura = "divine_resonance",
+
+            last = function ()
+                local app = state.buff.divine_resonance.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 5,
+            value = 1,
+        },        
+    } )
     spec:RegisterResource( Enum.PowerType.Mana )
 
     -- Talents
@@ -56,16 +70,16 @@ if UnitClassBase( "player" ) == "PALADIN" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
+    spec:RegisterPvpTalents( { 
+        aura_of_reckoning = 756, -- 247675
         blessing_of_sanctuary = 752, -- 210256
-        cleansing_light = 3055, -- 236186
         divine_punisher = 755, -- 204914
-        hammer_of_reckoning = 756, -- 247675
+        judgments_of_the_pure = 5422, -- 355858
         jurisdiction = 757, -- 204979
         law_and_order = 858, -- 204934
         lawbringer = 754, -- 246806
         luminescence = 81, -- 199428
-        ultimate_retribution = 753, -- 287947
+        ultimate_retribution = 753, -- 355614
         unbound_freedom = 641, -- 305394
         vengeance_aura = 751, -- 210323
     } )
@@ -1270,6 +1284,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 if buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
                 if talent.righteous_verdict.enabled then applyBuff( "righteous_verdict" ) end
                 if talent.divine_judgment.enabled then addStack( "divine_judgment", 15, 1 ) end
+
+                removeStack( "vanquishers_hammer" )
             end,
 
             copy = { "final_verdict", 336872 }
@@ -1289,8 +1305,16 @@ if UnitClassBase( "player" ) == "PALADIN" then
             texture = 3578228,
 
 			handler = function ()
-				if debuff.judgment.up then removeDebuff( "target", "judgment" ) end
-            end
+				applyBuff( "vanquishers_hammer" )
+            end,
+
+            auras = {
+                vanquishers_hammer = {
+                    id = 328204,
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
         },
 
 
