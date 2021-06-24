@@ -105,18 +105,19 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
+    spec:RegisterPvpTalents( { 
         alpha_challenge = 842, -- 207017
         charging_bash = 194, -- 228431
         demoralizing_roar = 52, -- 201664
         den_mother = 51, -- 236180
+        emerald_slumber = 197, -- 329042
         entangling_claws = 195, -- 202226
         freedom_of_the_herd = 3750, -- 213200
+        grove_protection = 5410, -- 354654
         malornes_swiftness = 1237, -- 236147
         master_shapeshifter = 49, -- 236144
         overrun = 196, -- 202246
         raging_frenzy = 192, -- 236153
-        roar_of_the_protector = 197, -- 329042
         sharpened_claws = 193, -- 202110
         toughness = 50, -- 201259
     } )
@@ -413,6 +414,18 @@ if UnitClassBase( "player" ) == "DRUID" then
         focused_assault = {
             id = 206891,
             duration = 6,
+            max_stack = 1,
+        },
+
+        grove_protection_defense = {
+            id = 354704,
+            duration = 12,
+            max_stack = 1,
+        },
+
+        grove_protection_offense = {
+            id = 354789,
+            duration = 12,
             max_stack = 1,
         },
 
@@ -784,10 +797,28 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
 
 
+        emerald_slumber = {
+            id = 329042,
+            cast = 8,
+            cooldown = 120,
+            channeled = true,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+            pvptalent = "emerald_slumber",
+
+            startsCombat = false,
+            texture = 1394953,
+            
+            handler = function ()
+            end,
+        },
+
+
         entangling_roots = {
             id = 339,
-            cast = 1.7,
-            cooldown = 0,
+            cast = function () return pvptalent.entangling_claws.enabled and 0 or 1.7 end,
+            cooldown = function () return pvptalent.entangling_claws.enabled and 6 or 0 end,
             gcd = "spell",
 
             spend = 0.06,
@@ -864,6 +895,22 @@ if UnitClassBase( "player" ) == "DRUID" then
                     max_stack = 1
                 }
             }
+        },
+
+        grove_protection = {
+            id = 354654,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            toggle = "defensives",
+
+            startsCombat = false,
+            texture = 4067364,
+            
+            handler = function ()
+                -- Don't apply auras; position dependent.
+            end,
         },
 
 
@@ -1496,7 +1543,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         stampeding_roar = {
             id = 106898,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return pvptalent.freedom_of_the_herd.enabled and 0 or 60 end,
             gcd = "spell",
 
             startsCombat = false,

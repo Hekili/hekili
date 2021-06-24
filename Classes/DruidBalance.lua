@@ -106,16 +106,18 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
+    spec:RegisterPvpTalents( { 
         celestial_guardian = 180, -- 233754
         crescent_burn = 182, -- 200567
         deep_roots = 834, -- 233755
         dying_stars = 822, -- 232546
         faerie_swarm = 836, -- 209749
+        high_winds = 5383, -- 200931
         moon_and_stars = 184, -- 233750
         moonkin_aura = 185, -- 209740
-        prickling_thorns = 3058, -- 200549
+        owlkin_adept = 5407, -- 354541
         protector_of_the_grove = 3728, -- 209730
+        star_burst = 3058, -- 356517
         thorns = 3731, -- 305497
     } )
 
@@ -282,6 +284,11 @@ if UnitClassBase( "player" ) == "DRUID" then
             duration = 3600,
             max_stack = 1,
         },
+        owlkin_frenzy = {
+            id = 157228,
+            duration = 10,
+            max_stack = function () return pvptalent.owlkin_adept.enabled and 2 or 1 end,
+        },
         prowl = {
             id = 5215,
             duration = 3600,
@@ -334,7 +341,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
         starfall = {
             id = 191034,
-            duration = function () return talent.stellar_drift.enabled and 10 or 8 end,
+            duration = 8,
             max_stack = 1,
         },
         starlord = {
@@ -438,6 +445,12 @@ if UnitClassBase( "player" ) == "DRUID" then
             max_stack = 1,
         },
 
+        high_winds = {
+            id = 200931,
+            duration = 4,
+            max_stack = 1,
+        },
+
         moon_and_stars = {
             id = 234084,
             duration = 10,
@@ -482,14 +495,14 @@ if UnitClassBase( "player" ) == "DRUID" then
         -- Legendaries
         balance_of_all_things_arcane = {
             id = 339946,
-            duration = 5,
-            max_stack = 5
+            duration = 8,
+            max_stack = 8
         },
 
         balance_of_all_things_nature = {
             id = 339943,
-            duration = 5,
-            max_stack = 5,
+            duration = 8,
+            max_stack = 8,
         },
 
         oath_of_the_elder_druid = {
@@ -736,8 +749,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             eclipse.reset_stacks()
 
             if legendary.balance_of_all_things.enabled then
-                applyBuff( "balance_of_all_things_arcane", nil, 5, 8 )
-                applyBuff( "balance_of_all_things_nature", nil, 5, 8 )
+                applyBuff( "balance_of_all_things_arcane", nil, 8, 8 )
+                applyBuff( "balance_of_all_things_nature", nil, 8, 8 )
             end
 
             if talent.solstice.enabled then applyBuff( "solstice" ) end
@@ -1047,7 +1060,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         cyclone = {
             id = 33786,
-            cast = 1.7,
+            cast = function () return pvptalent.owlkin_adept.enabled and buff.owlkin_frenzy.up and 0.85 or 1.7 end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1085,7 +1098,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         entangling_roots = {
             id = 339,
-            cast = 1.7,
+            cast = function () return pvptalent.owlkin_adept.enabled and buff.owlkin_frenzy.up and 0.85 or 1.7 end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1209,8 +1222,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             known = 274281,
             cast = 3,
             charges = 3,
-            cooldown = 25,
-            recharge = 25,
+            cooldown = 20,
+            recharge = 20,
             gcd = "spell",
 
             spend = -40,
@@ -1275,8 +1288,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             known = 274281,
             cast = 2,
             charges = 3,
-            cooldown = 25,
-            recharge = 25,
+            cooldown = 20,
+            recharge = 20,
             gcd = "spell",
 
             spend = -20,
@@ -1545,8 +1558,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = 274281,
             cast = 1,
             charges = 3,
-            cooldown = 25,
-            recharge = 25,
+            cooldown = 20,
+            recharge = 20,
             gcd = "spell",
 
             spend = -10,
@@ -1824,7 +1837,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         starfall = {
             id = 191034,
             cast = 0,
-            cooldown = 0,
+            cooldown = function () return talent.stellar_drift.enabled and 12 or 0 end,
             gcd = "spell",
 
             spend = function () return ( buff.oneths_perception.up and 0 or 50 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) end,
@@ -1860,7 +1873,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = function () return state.spec.balance and 194153 or 197628 end,
             known = function () return state.spec.balance and IsPlayerSpell( 194153 ) or IsPlayerSpell( 197628 ) end,
             cast = function ()
-                if buff.warrior_of_elune.up or buff.elunes_wrath.up then return 0 end
+                if buff.warrior_of_elune.up or buff.elunes_wrath.up or buff.owlkin_frenzy.up then return 0 end
                 return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25
             end,
             cooldown = 0,
@@ -1896,6 +1909,8 @@ if UnitClassBase( "player" ) == "DRUID" then
                     if buff.warrior_of_elune.down then
                         setCooldown( "warrior_of_elune", 45 )
                     end
+                elseif buff.owlkin_frenzy.up then
+                    removeStack( "owlkin_frenzy" )
                 end
 
                 if azerite.dawning_sun.enabled then applyBuff( "dawning_sun" ) end

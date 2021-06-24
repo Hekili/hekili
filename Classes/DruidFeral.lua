@@ -63,24 +63,18 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
-        adaptation = 3432, -- 214027
-        relentless = 3433, -- 196029
-        gladiators_medallion = 3431, -- 208683
-
-        earthen_grasp = 202, -- 236023
-        enraged_maim = 604, -- 236026
+    spec:RegisterPvpTalents( { 
         ferocious_wound = 611, -- 236020
         freedom_of_the_herd = 203, -- 213200
         fresh_wound = 612, -- 203224
-        strength_of_the_wild = 3053, -- 236019
+        high_winds = 5384, -- 200931
         king_of_the_jungle = 602, -- 203052
         leader_of_the_pack = 3751, -- 202626
         malornes_swiftness = 601, -- 236012
-        protector_of_the_grove = 847, -- 209730
-        rip_and_tear = 620, -- 203242
         savage_momentum = 820, -- 205673
-        thorns = 201, -- 236696
+        strength_of_the_wild = 3053, -- 236019
+        thorns = 201, -- 305497
+        wicked_claws = 620, -- 203242
     } )
 
 
@@ -295,7 +289,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = 48484,
             duration = 12,
             type = "Disease",
-            max_stack = 1,
+            max_stack = function () return pvptalent.wicked_claws.enabled and 2 or 1 end,
         },
         ironfur = {
             id = 192081,
@@ -534,6 +528,12 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = 236021,
             duration = 30,
             max_stack = 2,
+        },
+
+        high_winds = {
+            id = 200931,
+            duration = 4,
+            max_stack = 1,
         },
 
         king_of_the_jungle = {
@@ -1925,29 +1925,6 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
 
 
-        rip_and_tear = {
-            id = 203242,
-            cast = 0,
-            cooldown = 60,
-            gcd = "spell",
-
-            spend = function ()
-                return 60 * ( buff.incarnation.up and 0.8 or 1 ), "energy"
-            end,
-            spendType = "energy",
-
-            talent = "rip_and_tear",
-
-            startsCombat = true,
-            texture = 1029738,
-
-            handler = function ()
-                applyDebuff( "target", "rip" )
-                applyDebuff( "target", "rake" )
-            end,
-        },
-
-
         savage_roar = {
             id = 52610,
             cast = 0,
@@ -2075,7 +2052,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         stampeding_roar = {
             id = 106898,
             cast = 0,
-            cooldown = 120,
+            cooldown = function () return pvptalent.freedom_of_the_herd.enabled and 60 or 120 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -2575,6 +2552,12 @@ if UnitClassBase( "player" ) == "DRUID" then
                     aliasMode = "first",
                     aliasType = "buff",
                     duration = 10,
+                },
+
+                kindred_affinity = {
+                    id = 357564,
+                    duration = 3600,
+                    max_stack = 1,
                 }
             }
         },
@@ -2646,9 +2629,9 @@ if UnitClassBase( "player" ) == "DRUID" then
         -- Druid - Night Fae - 323764 - convoke_the_spirits  (Convoke the Spirits)
         convoke_the_spirits = {
             id = 323764,
-            cast = 4,
+            cast = function () return legendary.celestial_spirits.enabled and 2 or 4 end,
             channeled = true,
-            cooldown = 120,
+            cooldown = function () return legendary.celestial_spirits.enabled and 60 or 120 end,
             gcd = "spell",
 
             toggle = "essences",
