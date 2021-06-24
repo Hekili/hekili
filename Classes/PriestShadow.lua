@@ -162,22 +162,18 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
-        gladiators_medallion = 3476, -- 208683
-        adaptation = 3477, -- 214027
-        relentless = 3478, -- 196029
-
-        void_shift = 128, -- 108968
-        hallucinations = 3736, -- 280752
-        psychic_link = 119, -- 199484
-        void_origins = 739, -- 228630
-        mind_trauma = 113, -- 199445
-        edge_of_insanity = 110, -- 199408
+    spec:RegisterPvpTalents( { 
         driven_to_madness = 106, -- 199259
-        pure_shadow = 103, -- 199131
-        void_shield = 102, -- 280749
+        greater_fade = 3753, -- 213602
+        improved_mass_dispel = 5380, -- 341167
+        megalomania = 5446, -- 357701
+        mind_trauma = 113, -- 199445
         psyfiend = 763, -- 211522
-        shadow_mania = 764, -- 280750
+        thoughtsteal = 5381, -- 316262
+        void_origins = 739, -- 228630
+        void_shield = 102, -- 280749
+        void_shift = 128, -- 108968
+        void_volley = 5447, -- 357711
     } )
 
 
@@ -255,6 +251,10 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
         if buff.voidform.up then
             state:QueueAuraExpiration( "voidform", ExpireVoidform, buff.voidform.expires )
+        end
+
+        if IsActiveSpell( 356532 ) then
+            applyBuff( "direct_mask", class.abilities.fae_guardians.lastCast + 20 - now )
         end
 
         -- If we are channeling Mind Sear, see if it started with Thought Harvester.
@@ -856,8 +856,8 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
         mass_dispel = {
             id = 32375,
-            cast = 1.5,
-            cooldown = 45,
+            cast = function () return pvptalent.improved_mass_dispel.enabled and 0.5 or 1.5 end,
+            cooldown = function () return pvptalent.improved_mass_dispel.enabled and 30 or 45 end,
             gcd = "spell",
 
             spend = function () return 0.08 * ( 1 + ( conduit.clear_mind.mod * 0.01 ) ) end,
@@ -1610,6 +1610,8 @@ if UnitClassBase( "player" ) == "PRIEST" then
             handler = function ()
                 applyDebuff( "target", "unholy_transfusion" )
                 active_dot.unholy_transfusion = active_enemies
+
+                if legendary.pallid_command.enabled then applyBuff( "pallid_command" ) end
             end,
 
             range = 15,
@@ -1619,6 +1621,11 @@ if UnitClassBase( "player" ) == "PRIEST" then
                     id = 324724,
                     duration = function () return conduit.festering_transfusion.enabled and 17 or 15 end,
                     max_stack = 1,
+                },
+                pallid_command = {
+                    id = 356418,
+                    duration = 20,
+                    max_stack = 1
                 }
             }
         },
@@ -1634,6 +1641,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             spendType = "mana",
 
             toggle = "essences",
+            nobuff = "direct_mask",
 
             handler = function ()
                 applyBuff( "fae_guardians" )
@@ -1643,8 +1651,15 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 applyBuff( "guardian_faerie" )
                 summonPet( "benevolent_faerie" )
                 applyBuff( "benevolent_faerie" )
+
+                if legendary.bwonsamdis_pact.enabled then
+                    applyBuff( "direct_mask" )
+                    applyDebuff( "target", "haunted_mask" )
+                end
                 -- TODO: Check totem/guardian API re: faeries.
             end,
+
+            bind = "direct_mask",
 
             auras = {
                 fae_guardians = {
@@ -1682,7 +1697,30 @@ if UnitClassBase( "player" ) == "PRIEST" then
                     duration = function () return conduit.fae_fermata.enabled and ( conduit.fae_fermata.mod * 0.001 ) or 3 end,
                     max_stack = 1
                 },
+                haunted_mask = {
+                    id = 356968,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                direct_mask = {
+                    duration = 20,
+                    max_stack = 1,
+                }
             }
+        },
+
+        direct_mask = {
+            id = 356532,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+
+            buff = "direct_mask",
+            bind = "fae_guardians",
+
+            handler = function ()
+                applyDebuff( "target", "haunted_mask" )
+            end,
         },
 
         -- Priest - Venthyr   - 323673 - mindgames            (Mindgames)
@@ -1704,7 +1742,12 @@ if UnitClassBase( "player" ) == "PRIEST" then
             auras = {
                 mindgames = {
                     id = 323673,
-                    duration = function () return conduit.shattered_perceptions.enabled and 7 or 5 end,
+                    duration = function () return ( conduit.shattered_perceptions.enabled and 7 or 5 ) + ( legendary.shadow_word_manipulation.enabled and 3 or 0 ) end,
+                    max_stack = 1,
+                },
+                shadow_word_manipulation = {
+                    id = 357028,
+                    duration = 10,
                     max_stack = 1,
                 },
             },
