@@ -261,17 +261,19 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     } )
 
 
-    spec:RegisterPvpTalents( {
-        cadaverous_pallor = 3515, -- 201995
+    -- PvP Talents
+    spec:RegisterPvpTalents( { 
+        bitter_chill = 5435, -- 356470
         chill_streak = 706, -- 305392
         dark_simulacrum = 3512, -- 77606
         dead_of_winter = 3743, -- 287250
         deathchill = 701, -- 204080
+        deaths_echo = 5427, -- 356367
         delirium = 702, -- 233396
         dome_of_ancient_shadow = 5369, -- 328718
-        heartstop_aura = 3439, -- 199719
-        necrotic_aura = 43, -- 199642
-        transfusion = 3749, -- 288977
+        shroud_of_winter = 3439, -- 199719
+        spellwarden = 5424, -- 356332
+        strangulate = 5429, -- 47476
     } )
 
 
@@ -284,7 +286,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         },
         antimagic_zone = {
             id = 145629,
-            duration = 3600,
+            duration = 8,
             max_stack = 1,
         },
         asphyxiate = {
@@ -499,7 +501,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             max_stack = 1,
         },
 
-        heartstop_aura = {
+        shroud_of_winter = {
             id = 199719,
             duration = 3600,
             max_stack = 1,
@@ -508,12 +510,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         lichborne = {
             id = 287081,
             duration = 10,
-            max_stack = 1,
-        },
-
-        transfusion = {
-            id = 288977,
-            duration = 7,
             max_stack = 1,
         },
 
@@ -613,7 +609,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         antimagic_zone = {
             id = 51052,
             cast = 0,
-            cooldown = 120,
+            cooldown = 180,
             gcd = "spell",
 
             toggle = "defensives",
@@ -882,7 +878,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             spend = function ()
                 if buff.dark_succor.up then return 0 end
-                return 35 * ( buff.transfusion.up and 0.5 or 1 ) * ( buff.hypothermic_presence.up and 0.65 or 1 )
+                return 35 * ( buff.hypothermic_presence.up and 0.65 or 1 )
             end,
             spendType = "runic_power",
 
@@ -958,7 +954,9 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 if talent.obliteration.enabled and buff.pillar_of_frost.up then applyBuff( "killing_machine" ) end
                 removeBuff( "eradicating_blow" )
                 if conduit.unleashed_frenzy.enabled then addStack( "eradicating_frenzy", nil, 1 ) end
-                -- if pvptalent.delirium.enabled then applyDebuff( "target", "delirium" ) end
+                if pvptalent.bitter_chill.enabled and debuff.chains_of_ice.up then
+                    applyDebuff( "target", "chains_of_ice" )
+                end
             end,
 
             auras = {
@@ -1076,7 +1074,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 active_dot.frost_fever = max( active_dot.frost_fever, active_enemies )
 
                 if talent.obliteration.enabled and buff.pillar_of_frost.up then applyBuff( "killing_machine" ) end
-                -- if pvptalent.delirium.enabled then applyDebuff( "target", "delirium" ) end
+                if pvptalent.delirium.enabled then applyDebuff( "target", "delirium" ) end
 
                 if legendary.rage_of_the_frozen_champion.enabled and buff.rime.up then
                     gain( 8, "runic_power" )
@@ -1319,26 +1317,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             handler = function ()
                 dismissPet( "ghoul" )
                 gain( 0.25 * health.max, "health" )
-            end,
-        },
-
-
-        transfusion = {
-            id = 288977,
-            cast = 0,
-            cooldown = 45,
-            gcd = "spell",
-
-            spend = -20,
-            spendType = "runic_power",
-
-            startsCombat = false,
-            texture = 237515,
-
-            pvptalent = "transfusion",
-
-            handler = function ()
-                applyBuff( "transfusion" )
             end,
         },
 

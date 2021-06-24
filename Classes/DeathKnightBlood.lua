@@ -102,6 +102,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 table.sort( t.expiry )
             end
 
+            -- TODO:  Rampant Transference
             state.gain( amount * 10 * ( state.buff.rune_of_hysteria.up and 1.2 or 1 ), "runic_power" )
 
             if state.talent.rune_strike.enabled then state.gainChargeTime( "rune_strike", amount ) end
@@ -241,16 +242,17 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        blood_for_blood = 607, -- 233411
+        blood_for_blood = 607, -- 356456
         dark_simulacrum = 3511, -- 77606
         death_chain = 609, -- 203173
+        deaths_echo = 5426, -- 356367
         decomposing_aura = 3441, -- 199720
         dome_of_ancient_shadow = 5368, -- 328718
         last_dance = 608, -- 233412
         murderous_intent = 841, -- 207018
-        necrotic_aura = 3436, -- 199642
+        rot_and_wither = 204, -- 202727
+        spellwarden = 5425, -- 356332
         strangulate = 206, -- 47476
-        unholy_command = 204, -- 202727
         walking_dead = 205, -- 202731
     } )
 
@@ -259,7 +261,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     spec:RegisterAuras( {
         abomination_limb = {
             id = 315443,
-            duration = 12,
+            duration = function () return legendary.abominations_frenzy.enabled and 16 or 12 end,
             max_stack = 1,
         },
         antimagic_shell = {
@@ -269,7 +271,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         },
         antimagic_zone = {
             id = 145629,
-            duration = 10,
+            duration = 8,
             max_stack = 1,
         },
         asphyxiate = {
@@ -320,7 +322,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         },
         dancing_rune_weapon = {
             id = 81256,
-            duration = function () return pvptalent.last_dance.enabled and 4 or 8 end,
+            duration = function () return pvptalent.last_dance.enabled and 6 or 8 end,
             max_stack = 1,
         },
         death_and_decay = {
@@ -336,34 +338,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             id = 48265,
             duration = 8,
             max_stack = 1,
-        },
-        deaths_due_buff = {
-            id = 324165,
-            duration = 10,
-            max_stack = 15,
-            copy = "deaths_due"
-        },
-        deaths_due_debuff = {
-            id = 324164,
-            duration = 15,
-            max_stack = 15,
-            generate = function( t, auraType )
-                local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = FindUnitDebuffByID( "target", 324164, "PLAYER" )
-
-                if name and expirationTime > query_time then
-                    t.name = name
-                    t.count = count > 0 and count or 1
-                    t.expires = expirationTime
-                    t.applied = expirationTime - duration
-                    t.caster = "player"
-                    return
-                end
-
-                t.count = 0
-                t.expires = 0
-                t.applied = 0
-                t.caster = "nobody"
-            end
         },
         gnaw = {
             id = 91800,
@@ -526,12 +500,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
 
         -- PvP Talents
-        antimagic_zone = {
-            id = 145629,
-            duration = 10,
-            max_stack = 1,
-        },
-
         blood_for_blood = {
             id = 233411,
             duration = 12,
@@ -568,19 +536,25 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             max_stack = 1,
         },
 
-        necrotic_aura = {
-            id = 214968,
-            duration = 3600,
+
+        -- Legendaries
+        abominations_frenzy = {
+            id = 353546,
+            duration = 12,
             max_stack = 1,
         },
 
-
-        -- Legendaries
         -- TODO:  Model +/- rune regen when applied/removed.
         crimson_rune_weapon = {
             id = 334526,
             duration = 10,
             max_stack = 1
+        },
+
+        final_sentence = {
+            id = 353823,
+            duration = 10,
+            max_stack = 5,
         },
 
         grip_of_the_everlasting = {
@@ -702,7 +676,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         antimagic_zone = {
             id = 51052,
             cast = 0,
-            cooldown = 120,
+            cooldown = 180,
             gcd = "spell",
 
             toggle = "defensives",
@@ -799,26 +773,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             handler = function ()
                 gain( 1, "runes" )
             end
-        },
-
-
-        blood_for_blood = {
-            id = 233411,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = 0.15,
-            spendType = "health",
-
-            startsCombat = false,
-            texture = 1035037,
-
-            pvptalent = "blood_for_blood",
-
-            handler = function ()
-                applyBuff( "blood_for_blood" )
-            end,
         },
 
 
@@ -983,6 +937,14 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             id = 43265,
             cast = 0,
             cooldown = 15,
+            recharge = function ()
+                if pvptalent.deaths_echo.enabled then return end
+                return 15
+            end,
+            charges = function ()
+                if pvptalent.deaths_echo.enabled then return end
+                return 2
+            end,            
             gcd = "spell",
 
             spend = function () return buff.crimson_scourge.up and 0 or 1 end,
@@ -1026,9 +988,15 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         death_grip = {
             id = 49576,
             cast = 0,
-            charges = function () return pvptalent.unholy_command.enabled and 2 or nil end,
+            charges = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 2
+            end,
             cooldown = 15,
-            recharge = function () return pvptalent.unholy_command.enabled and 15 or nil end,
+            recharge = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 15
+            end,
             gcd = "spell",
 
             startsCombat = true,
@@ -1086,6 +1054,14 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             id = 48265,
             cast = 0,
             cooldown = function () return azerite.march_of_the_damned.enabled and 40 or 45 end,
+            recharge = function ()
+                if pvptalent.deaths_echo.enabled then return end
+                return azerite.march_of_the_damned.enabled and 40 or 45
+            end,
+            charges = function ()
+                if pvptalent.deaths_echo.enabled then return end
+                return 2
+            end,
             gcd = "spell",
 
             startsCombat = false,
@@ -1153,11 +1129,13 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             startsCombat = true,
             texture = 135675,
 
-            handler = function ()                
+            handler = function ()
                 applyDebuff( "target", "heart_strike" )
                 local targets = min( active_enemies, buff.death_and_decay.up and 5 or 2 )
 
-                removeBuff( "blood_for_blood" )
+                if pvptalent.blood_for_blood.enabled then
+                    spend( 0.03 * health.max, "health" )
+                end
 
                 if azerite.deep_cuts.enabled then applyDebuff( "target", "deep_cuts" ) end
 
@@ -1508,6 +1486,14 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             handler = function ()
                 applyDebuff( "target", "shackle_the_unworthy" )
             end,
+
+            auras = {
+                final_sentence = {
+                    id = 353823,
+                    duration = 10,
+                    max_stack = 5,
+                },
+            }
         },
 
         -- Death Knight - Necrolord - 315443 - abomination_limb     (Abomination Limb)
@@ -1525,13 +1511,29 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             handler = function ()
                 applyBuff( "abomination_limb" )
             end,
+
+            auras = {
+                abominations_frenzy = {
+                    id = 353546,
+                    duration = 12,
+                    max_stack = 1,
+                }
+            }
         },
 
         -- Death Knight - Night Fae - 324128 - deaths_due           (Death's Due)
         deaths_due = {
             id = 324128,
             cast = 0,
+            charges = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 2
+            end,
             cooldown = 15,
+            recharge = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 15
+            end,
             gcd = "spell",
 
             spend = function () return buff.crimson_scourge.up and 0 or 1 end,
@@ -1553,11 +1555,43 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 setCooldown( "death_and_decay", 15 )
 
                 applyBuff( "deaths_due_buff" )
+                -- TODO:  Model increase RP income within Death's Due.
                 applyDebuff( "target", "deaths_due_debuff" )
                 -- Note:  Debuff is actually a buff on the target...
             end,
 
             bind = { "defile", "any_dnd" },
+
+            auras = {
+                deaths_due_buff = {
+                    id = 324165,
+                    duration = function () return legendary.rampant_transference.enabled and 12 or 10 end,
+                    max_stack = 15,
+                    copy = "deaths_due"
+                },
+                deaths_due_debuff = {
+                    id = 324164,
+                    duration = 15,
+                    max_stack = 15,
+                    generate = function( t, auraType )
+                        local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = FindUnitDebuffByID( "target", 324164, "PLAYER" )
+        
+                        if name and expirationTime > query_time then
+                            t.name = name
+                            t.count = count > 0 and count or 1
+                            t.expires = expirationTime
+                            t.applied = expirationTime - duration
+                            t.caster = "player"
+                            return
+                        end
+        
+                        t.count = 0
+                        t.expires = 0
+                        t.applied = 0
+                        t.caster = "nobody"
+                    end
+                },                
+            }
         },
 
         -- Death Knight - Venthyr   - 311648 - swarming_mist        (Swarming Mist)
@@ -1578,6 +1612,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             handler = function ()
                 applyBuff( "swarming_mist" )
                 if conduit.impenetrable_gloom.enabled then applyBuff( "impenetrable_gloom" ) end
+                if legendary.insatiable_hunger.enabled then applyBuff( "insatiable_hunger" ) end
             end,
 
             auras = {
@@ -1586,7 +1621,12 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                     id = 338629,
                     duration = 4,
                     max_stack = 1
-                }
+                },
+                insatiable_hunger = {
+                    id = 353729,
+                    duration = 8,
+                    max_stack = 1,
+                },
             }
         },
         
