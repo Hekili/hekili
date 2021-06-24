@@ -504,5 +504,11 @@ all:RegisterAuras( {
         id = 325381,
         duration = 5,
         max_stack = 1
-    }
+    },
+
+    cloaked_in_shadows = {
+        id = 341530,
+        duration = 4,
+        max_stack = 1,
+    },
 } )
