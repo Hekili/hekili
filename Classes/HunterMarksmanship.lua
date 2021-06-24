@@ -84,19 +84,20 @@ if UnitClassBase( "player" ) == "HUNTER" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {         
-        dragonscale_armor = 649, -- 202589
-        survival_tactics = 651, -- 202746 
-        viper_sting = 652, -- 202797
-        scorpid_sting = 653, -- 202900
-        spider_sting = 654, -- 202914
-        scatter_shot = 656, -- 213691
-        hiexplosive_trap = 657, -- 236776
-        trueshot_mastery = 658, -- 203129
-        roar_of_sacrifice = 3614, -- 53480
-        hunting_pack = 3729, -- 203235
-        rangers_finesse = 659, -- 248443
-        sniper_shot = 660, -- 203155
+    spec:RegisterPvpTalents( { 
+        dire_beast_basilisk = 825, -- 205691
+        dire_beast_hawk = 824, -- 208652
+        dragonscale_armor = 3600, -- 202589
+        hiexplosive_trap = 3605, -- 236776
+        hunting_pack = 3730, -- 203235
+        interlope = 1214, -- 248518
+        roar_of_sacrifice = 3612, -- 53480
+        scorpid_sting = 3604, -- 202900
+        spider_sting = 3603, -- 202914
+        survival_tactics = 3599, -- 202746
+        the_beast_within = 693, -- 212668
+        viper_sting = 3602, -- 202797
+        wild_protector = 821, -- 204190
     } )
 
     -- Auras

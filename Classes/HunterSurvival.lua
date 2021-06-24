@@ -87,18 +87,18 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
+        chimaeral_sting = 3609, -- 356719
         diamond_ice = 686, -- 203340
         dragonscale_armor = 3610, -- 202589
         hiexplosive_trap = 3606, -- 236776
         hunting_pack = 661, -- 203235
         mending_bandage = 662, -- 212640
         roar_of_sacrifice = 663, -- 53480
-        scorpid_sting = 3609, -- 202900
-        spider_sting = 3608, -- 202914
         sticky_tar = 664, -- 203264
         survival_tactics = 3607, -- 202746
         trackers_net = 665, -- 212638
-        viper_sting = 3615, -- 202797
+        tranquilizing_darts = 5420, -- 356015
+        wild_kingdom = 5443, -- 356707
     } )
 
     -- Auras
@@ -895,7 +895,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
             
             usable = function () return buff.flayers_mark.up or target.health_pct < 20, "requires target health below 20 percent" end,
             handler = function ()
-                removeBuff( "flayers_mark" )
+                if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
+                    applyDebuff( "target", "pouch_of_razor_fragments" )
+                    removeBuff( "flayers_mark" )
+                end
             end,
         },
 

@@ -233,8 +233,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
         bloodshed = 22295, -- 321530
     } )
 
+
     -- PvP Talents
-    spec:RegisterPvpTalents( {
+    spec:RegisterPvpTalents( { 
         dire_beast_basilisk = 825, -- 205691
         dire_beast_hawk = 824, -- 208652
         dragonscale_armor = 3600, -- 202589
@@ -244,7 +245,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         roar_of_sacrifice = 3612, -- 53480
         scorpid_sting = 3604, -- 202900
         spider_sting = 3603, -- 202914
-        survival_tactics = 3599, --  202746
+        survival_tactics = 3599, -- 202746
         the_beast_within = 693, -- 212668
         viper_sting = 3602, -- 202797
         wild_protector = 821, -- 204190
@@ -1339,7 +1340,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             usable = function () return buff.flayers_mark.up or target.health_pct < 20 end,
             handler = function ()
-                removeBuff( "flayers_mark" )
+                if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
+                    applyDebuff( "target", "pouch_of_razor_fragments" )
+                    removeBuff( "flayers_mark" )
+                end
             end,
         },
 
@@ -1813,6 +1817,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 applyDebuff( "target", "resonating_arrow" )
                 active_dot.resonating_arrow = active_enemies
                 applyBuff( "resonating_arrow" )
+                if legendary.pact_of_the_soulstalkers.enabled then applyBuff( "pact_of_the_soulstalkers" ) end
             end,
 
             toggle = "essences",
@@ -1820,6 +1825,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             auras = {
                 resonating_arrow = {
                     id = 308498,
+                    duration = 10,
+                    max_stack = 1,
+                },
+                pact_of_the_soulstalkers = {
+                    id = 356263,
                     duration = 10,
                     max_stack = 1,
                 }
@@ -1940,11 +1950,43 @@ if UnitClassBase( "player" ) == "HUNTER" then
                     id = 324156,
                     duration = 12,
                     max_stack = 1
+                },
+                pouch_of_razor_fragments = {
+                    id = 356620,
+                    duration = 6,
+                    max_stack = 1,
                 }
             }
-        }
+        },
 
 
+        -- Wailing Arrow (Sylvanas Legendary)
+        wailing_arrow = {
+            id = 355589,
+            cast = 1.9,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 15,
+            spendType = "focus",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            
+            handler = function ()
+                interrupt()
+                applyDebuff( "target", "wailing_arrow" )
+            end,
+
+            auras = {
+                wailing_arrow = {
+                    id = 355589,
+                    duration = 5,
+                    max_stack = 1,
+                }
+            }
+        },
     } )
 
 
