@@ -27,6 +27,20 @@ if UnitClassBase( "player" ) == "ROGUE" then
             value = 8,
             stop = function () return state.time_to_sht[5] == 0 or state.time_to_sht[5] == 3600 end,
         },
+
+        vendetta_regen = {
+            aura = "vendetta_regen",
+
+            last = function ()
+                local app = state.buff.vendetta_regen.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 1,
+            value = 20,
+        },
     } )
 
     spec:RegisterResource( Enum.PowerType.ComboPoints, {
@@ -86,15 +100,16 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        cold_blood = 140, -- 213981
         dagger_in_the_dark = 846, -- 198675
         death_from_above = 3462, -- 269513
-        honor_among_thieves = 3452, -- 198032
+        dismantle = 5406, -- 207777
+        distracting_mirage = 5411, -- 354661
         maneuverability = 3447, -- 197000
         shadowy_duel = 153, -- 207736
         silhouette = 856, -- 197899
-        smoke_bomb = 1209, -- 212182
-        thiefs_bargain = 146, -- 212081
+        smoke_bomb = 1209, -- 359053
+        thick_as_thieves = 5409, -- 221622
+        thiefs_bargain = 146, -- 354825
         veil_of_midnight = 136, -- 198952
     } )
 
@@ -503,6 +518,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
             end
 
             reduceCooldown( "shadow_dance", amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) )
+
+            if legendary.obedience.enabled and buff.flagellation_buff.up then
+                reduceCooldown( "flagellation", amt )
+            end
         end
     end
 
@@ -715,8 +734,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
             nodebuff = "cheap_shot",
 
             handler = function ()
-                removeBuff( "cold_blood" )
-
                 applyDebuff( "target", "find_weakness" )
 
                 if talent.prey_on_the_weak.enabled then
@@ -1207,8 +1224,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             usable = function () return stealthed.all or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
             handler = function ()
-                removeBuff( "cold_blood" )
-
                 gain( ( buff.shadow_blades.up and 3 or 2 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
                 removeBuff( "the_rotten" )
                 removeBuff( "symbols_of_death_crit" )
@@ -1519,34 +1534,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 applyBuff( "wound_poison" )
             end,
         },
-
-
-        -- PvP Ability (by request)
-        cold_blood = {
-            id = 213981,
-            cast = 0,
-            cooldown = 60,
-            gcd = "off",
-            
-            pvptalent = "cold_blood",            
-
-            startsCombat = false,
-            texture = 135988,
-            
-            handler = function ()
-                applyBuff( "cold_blood" )
-            end,
-
-            auras = {
-                cold_blood = {
-                    id = 213981,
-                    duration = 3600,
-                    max_stack = 1,
-                },        
-            }
-        },
-
-
     } )
 
 

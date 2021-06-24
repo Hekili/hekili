@@ -35,7 +35,21 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             interval = 1,
             value = 5,
-        }, 
+        },
+
+        vendetta_regen = {
+            aura = "vendetta_regen",
+
+            last = function ()
+                local app = state.buff.vendetta_regen.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 1,
+            value = 20,
+        },
     } )
 
     -- Talents
@@ -69,18 +83,17 @@ if UnitClassBase( "player" ) == "ROGUE" then
         killing_spree = 23175, -- 51690
     } )
 
+
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         boarding_party = 853, -- 209752
-        cheap_tricks = 142, -- 212035
-        control_is_king = 138, -- 212217
+        control_is_king = 138, -- 354406
         death_from_above = 3619, -- 269513
         dismantle = 145, -- 207777
-        drink_up_me_hearties = 139, -- 212210
-        honor_among_thieves = 3451, -- 198032
+        drink_up_me_hearties = 139, -- 354425
+        enduring_brawler = 5412, -- 354843
+        float_like_a_butterfly = 5413, -- 354897
         maneuverability = 129, -- 197000
-        plunder_armor = 150, -- 198529
-        shiv = 3449, -- 248744
         smoke_bomb = 3483, -- 212182
         take_your_cut = 135, -- 198265
         thick_as_thieves = 1208, -- 221622
@@ -405,6 +418,14 @@ if UnitClassBase( "player" ) == "ROGUE" then
             max_stack = 1,
             copy = "guile_charm_insight_3"
         },
+
+
+        -- PvP Talents
+        take_your_cut = {
+            id = 198368,
+            duration = 8,
+            max_stack = 1,
+        }
     } )
 
 
@@ -516,6 +537,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
             reduceCooldown( "killing_spree", cdr )
             reduceCooldown( "vanish", cdr )
             reduceCooldown( "marked_for_death", cdr )
+
+            if legendary.obedience.enabled and buff.flagellation_buff.up then
+                reduceCooldown( "flagellation", amt )
+            end
         end
     end )
 
@@ -585,7 +610,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if debuff.dreadblades.up then
                     gain( combo_points.max, "combo_points" )
                 else
-                    gain( buff.broadside.up and 3 or 2, "combo_points" )
+                    gain( ( buff.shadow_blades.up and 1 or 0 ) + buff.broadside.up and 3 or 2, "combo_points" )
                 end
 
                 if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
@@ -712,7 +737,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     applyDebuff( "target", "prey_on_the_weak", 6 )
                 end
 
-                gain( 1, "combo_points" )
+                if pvptalent.control_is_king.enabled then
+                    applyBuff( "slice_and_dice", 15 )
+                end
+
+                gain( ( buff.shadow_blades.up and 1 or 0 ) + 1, "combo_points" )
             end,
         },
 
@@ -829,7 +858,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             
             handler = function ()
                 applyDebuff( "player", "dreadblades" )
-                gain( buff.broadside.up and 2 or 1, "combo_points" )
+                gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ), "combo_points" )
             end,
         },
 
@@ -885,7 +914,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             handler = function ()
                 applyDebuff( "target", "ghostly_strike", 10 )
-                gain( buff.broadside.up and 2 or 1, "combo_points" )
+                gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ), "combo_points" )
             end,
         },
 
@@ -905,7 +934,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             usable = function () return talent.dirty_tricks.enabled and settings.dirty_gouge, "requires dirty_tricks and dirty_gouge checked" end,
 
             handler = function ()
-                gain( buff.broadside.up and 2 or 1, "combo_points" )
+                gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ), "combo_points" )
                 applyDebuff( "target", "gouge", 4 )
             end,
         },
@@ -983,6 +1012,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
             
             handler = function ()
                 applyDebuff( "kidney_shot", 1 + combo_points.current )
+                if pvptalent.control_is_king.enabled then
+                    gain( 15 * combo_points.current, "energy" )
+                end
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( combo_points.current, "combo_points" )
             end,
@@ -1093,7 +1125,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if debuff.dreadblades.up then
                     gain( combo_points.max, "combo_points" )
                 else
-                    gain( 1 + ( buff.broadside.up and 1 or 0 ) + ( buff.opportunity.up and 1 or 0 ) + ( buff.concealed_blunderbuss.up and 2 or 0 ), "combo_points" )
+                    gain( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) + ( buff.opportunity.up and 1 or 0 ) + ( buff.concealed_blunderbuss.up and 2 or 0 ), "combo_points" )
                 end
 
                 removeBuff( "deadshot" )
@@ -1146,6 +1178,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     applyBuff( "rtb_buff_2"  )
                     removeBuff( "loaded_dice" )
                 end
+
+                if pvptalent.take_your_cut.enabled then
+                    applyBuff( "take_your_cut" )
+                end
             end,
         },
 
@@ -1181,7 +1217,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             texture = 135428,
             
             handler = function ()
-                gain( buff.broadside.up and 2 or 1, "combo_point" )
+                gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ), "combo_point" )
             end,
         },
 
@@ -1218,7 +1254,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if debuff.dreadblades.up then
                     gain( combo_points.max, "combo_points" )
                 else
-                    gain( buff.broadside.up and 2 or 1, "combo_points" )
+                    gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ), "combo_points" )
                 end
 
                 if buff.shallow_insight.up then buff.shallow_insight.expires = query_time + 10 end

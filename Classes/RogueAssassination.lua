@@ -209,21 +209,16 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        adaptation = 3453, -- 214027
-        gladiators_medallion = 3456, -- 208683
-        relentless = 3461, -- 196029
-
-        mindnumbing_poison = 137, -- 197050
-        honor_among_thieves = 132, -- 198032
-        maneuverability = 3448, -- 197000
-        shiv = 131, -- 248744
-        intent_to_kill = 130, -- 197007
-        creeping_venom = 141, -- 198092
-        flying_daggers = 144, -- 198128
-        system_shock = 147, -- 198145
+        creeping_venom = 141, -- 354895
         death_from_above = 3479, -- 269513
+        dismantle = 5405, -- 207777
+        flying_daggers = 144, -- 198128
+        hemotoxin = 830, -- 354124
+        intent_to_kill = 130, -- 197007
+        maneuverability = 3448, -- 197000
         smoke_bomb = 3480, -- 212182
-        neurotoxin = 830, -- 206328
+        system_shock = 147, -- 198145
+        thick_as_thieves = 5408, -- 221622
     } )
 
 
@@ -231,6 +226,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return combo_points.max
     end )
 
+    -- Commented out in SimC, but my implementation should hold up vs. theirs.
+    -- APLs will use effective_combo_points.
     spec:RegisterStateExpr( "animacharged_cp", function ()
         local n = buff.echoing_reprimand.stack
         if n > 0 then return n end
@@ -448,6 +445,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             if reduction > 0 then
                 reduceCooldown( "vendetta", reduction )
             end
+        end
+        
+        if resource == "combo_points" and legendary.obedience.enabled and buff.flagellation_buff.up then
+            reduceCooldown( "flagellation", amt )
         end
     end )
 
@@ -677,7 +678,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         feint = {
             id = 1966,
-            duration = 5,
+            duration = 6,
             max_stack = 1,
         },
         fleet_footed = {
@@ -884,7 +885,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         -- PvP Talents
         creeping_venom = {
             id = 198097,
-            duration = 4,            
+            duration = 4,
+            max_stack = 18,
         },
 
         system_shock = {
@@ -1029,7 +1031,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 debuff.crimson_tempest.pmultiplier = persistent_multiplier
                 debuff.crimson_tempest.exsanguinated = false
 
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
+                if combo_points.current == animacharged_cp then
+                    removeBuff( "echoing_reprimand_" .. combo_points.current )
+                end
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1143,7 +1147,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 applyBuff( "envenom", 1 + combo_points.current )
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
+                if combo_points.current == animacharged_cp then
+                    removeBuff( "echoing_reprimand_" .. combo_points.current )
+                end
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1331,7 +1337,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
+                if combo_points.current == animacharged_cp then
+                    removeBuff( "echoing_reprimand_" .. combo_points.current )
+                end
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1472,7 +1480,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyBuff( "scent_of_blood", dot.rupture.remains )
                 end
 
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
+                if combo_points.current == animacharged_cp then
+                    removeBuff( "echoing_reprimand_" .. combo_points.current )
+                end
                 spend( combo_points.current, "combo_points" )
             end,
         },
@@ -1503,8 +1513,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cast = 0,
             charges = 1,
             cooldown = function ()
-                if pvptalent.intent_to_kill.enabled and debuff.vendetta.up then return 10 end
-                return 30 * ( 1 - conduit.quick_decisions.mod * 0.01 )
+                return 30 * ( 1 - conduit.quick_decisions.mod * 0.01 ) * ( pvptalent.intent_to_kill.enabled and debuff.vendetta.up and 0.1 or 1 )
             end,
             recharge = function ()
                 if pvptalent.intent_to_kill.enabled and debuff.vendetta.up then return 10 end
@@ -1758,7 +1767,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             toggle = "essences",
 
             handler = function ()
-                -- Can't predict the Animacharge.
+                -- Can't predict the Animacharge, unless you have the legendary.
+                if legendary.resounding_clarity.enabled then
+                    applyBuff( "echoing_reprimand_2", nil, 2 )
+                    applyBuff( "echoing_reprimand_3", nil, 3 )
+                    applyBuff( "echoing_reprimand_4", nil, 4 )
+                    applyBuff( "echoing_reprimand_5", nil, 5 )
+                end
                 gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2, "combo_points" )
             end,
 
@@ -1782,15 +1797,24 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     duration = 45,
                     max_stack = 6,
                 },
+                echoing_reprimand_5 = {
+                    id = 354838,
+                    duration = 45,
+                    max_stack = 6,
+                },
                 echoing_reprimand = {
-                    alias = { "echoing_reprimand_2", "echoing_reprimand_3", "echoing_reprimand_4" },
+                    alias = { "echoing_reprimand_2", "echoing_reprimand_3", "echoing_reprimand_4", "echoing_reprimand_5" },
                     aliasMode = "first",
                     aliasType = "buff",
                     meta = {
                         stack = function ()
+                            if combo_points.current > 1 and buff[ "echoing_reprimand_" .. combo_points.current ].up then return combo_points.current end
+
                             if buff.echoing_reprimand_2.up then return 2 end
                             if buff.echoing_reprimand_3.up then return 3 end
                             if buff.echoing_reprimand_4.up then return 4 end
+                            if buff.echoing_reprimand_5.up then return 5 end
+
                             return 0
                         end
                     }
@@ -1802,7 +1826,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         serrated_bone_spike = {
             id = 328547,
             cast = 0,
-            charges = 3,
+            charges = function () return legendary.deathspike.equipped and 5 or 3 end,
             cooldown = 30,
             recharge = 30,
             gcd = "spell",
