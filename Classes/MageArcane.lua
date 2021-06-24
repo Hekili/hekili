@@ -103,7 +103,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         arcane_empowerment = 61, -- 276741
-        dampened_magic = 3523, -- 236788
+        arcanosphere = 5397, -- 353128
         kleptomania = 3529, -- 198100
         mass_invisibility = 637, -- 198158
         master_of_escape = 635, -- 210476
@@ -427,7 +427,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             end )
 
             x:RegisterStateFunction( "update_disciplinary_command", function( elem )
-                if not legendary.disciplinary_command.enabled then return end
+                if not legendary.disciplinary_command.enabled or cooldown.buff_disciplinary_command.remains > 0 then return end
 
                 if elem == "arcane" then applyBuff( "disciplinary_command_arcane" ) end
                 if elem == "fire"   then applyBuff( "disciplinary_command_fire" ) end
@@ -907,7 +907,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             usable = function () return not state.spec.arcane or target.distance < 10, "target out of range" end,
             handler = function ()
                 if buff.expanded_potential.up then removeBuff( "expanded_potential" )
-                else removeStack( "clearcasting" ) end
+                else
+                    removeStack( "clearcasting" )
+                    if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
+                end
                 gain( 1, "arcane_charges" )
             end,
         },
@@ -983,6 +986,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             start = function ()
                 if buff.clearcasting.up then
                     removeStack( "clearcasting" )
+                    if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
                     applyBuff( "clearcasting_channel" )
                 elseif buff.rule_of_threes.up then removeBuff( "rule_of_threes" ) end
 
@@ -1275,6 +1279,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 135807,
             
             handler = function ()
+                if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
             end,
         },
         
@@ -1765,6 +1770,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     tick_time = function () return haste end,
                     max_stack = 1,
                 },
+                heart_of_the_fae = {
+                    id = 356881,
+                    duration = 10,
+                    max_stack = 1,
+                }
             }
         },
 

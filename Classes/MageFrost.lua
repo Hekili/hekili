@@ -62,11 +62,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         burst_of_cold = 633, -- 206431
         chilled_to_the_bone = 66, -- 198126
         concentrated_coolness = 632, -- 198148
-        dampened_magic = 57, -- 236788
         deep_shatter = 68, -- 198123
         frostbite = 67, -- 198120
         ice_form = 634, -- 198144
-        kleptomania = 58, -- 198100
+        ice_wall = 5390, -- 352278
         netherwind_armor = 3443, -- 198062
         prismatic_cloak = 3532, -- 198064
     } )
@@ -830,7 +829,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             handler = function ()
                 if buff.brain_freeze.up then
                     if buff.expanded_potential.up then removeBuff( "expanded_potential" )
-                    else removeBuff( "brain_freeze" ) end
+                    else
+                        if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
+                        removeBuff( "brain_freeze" )
+                    end
                     frost_info.virtual_brain_freeze = true
                 else
                     frost_info.virtual_brain_freeze = false

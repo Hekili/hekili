@@ -57,13 +57,12 @@ if UnitClassBase( "player" ) == "MAGE" then
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         controlled_burn = 645, -- 280450
-        dampened_magic = 3524, -- 236788
-        firestarter = 646, -- 203283
         flamecannon = 647, -- 203284
         greater_pyroblast = 648, -- 203286
-        kleptomania = 3530, -- 198100
         netherwind_armor = 53, -- 198062
         prismatic_cloak = 828, -- 198064
+        pyrokinesis = 646, -- 203283
+        ring_of_fire = 5389, -- 353082
         tinder = 643, -- 203275
         world_in_flames = 644, -- 203280
     } )
@@ -610,8 +609,8 @@ if UnitClassBase( "player" ) == "MAGE" then
 
         -- # Delay Combustion for Gladiators Badge, unless it would be delayed longer than 20 seconds.
         -- actions.combustion_timing+=/variable,name=combustion_time,op=max,value=cooldown.gladiators_badge_345228.remains,if=equipped.gladiators_badge&cooldown.gladiators_badge_345228.remains-20<variable.combustion_time
-        if equipped.gladiators_badge and cooldown.gladiators_badge_345228.remains - 20 < value then
-            value = max( value, cooldown.gladiators_badge_345228.remains)
+        if equipped.gladiators_badge and cooldown.gladiators_badge.remains - 20 < value then
+            value = max( value, cooldown.gladiators_badge.remains)
         end
 
         -- # Delay Combustion until RoP expires if it's up.
@@ -628,7 +627,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
         -- # Delay Combustion if Disciplinary Command would not be ready for it yet.
         -- actions.combustion_timing+=/variable,name=combustion_time,op=max,value=cooldown.buff_disciplinary_command.remains,if=runeforge.disciplinary_command&buff.disciplinary_command.down
-        if runeforge.disciplinary_command and buff.disciplinary_command.down then
+        if runeforge.disciplinary_command.enabled and buff.disciplinary_command.down then
             value = max( value, cooldown.buff_disciplinary_command.remains )
         end
 
@@ -888,6 +887,7 @@ if UnitClassBase( "player" ) == "MAGE" then
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
                 if conduit.infernal_cascade.enabled and buff.combustion.up then addStack( "infernal_cascade" ) end
+                if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
             end,
 
             auras = {
