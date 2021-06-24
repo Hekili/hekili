@@ -69,8 +69,11 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         bulk_extraction = 21902, -- 320341
     } )
 
+    
     -- PvP Talents
     spec:RegisterPvpTalents( { 
+        blood_moon = 5434, -- 355995
+        chaotic_imprint = 5439, -- 356510
         cleansed_by_flame = 814, -- 205625
         demonic_trample = 3423, -- 205629
         detainment = 3430, -- 205596
@@ -94,6 +97,11 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         charred_flesh = {
             id = 336640,
             duration = 9,
+            max_stack = 1,
+        },
+        demon_soul = {
+            id = 163073,
+            duration = 15,
             max_stack = 1,
         },
         demon_spikes = {
@@ -151,9 +159,6 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             id = 326863,
             duration = 10,
             max_stack = 1,
-        },
-        shattered_souls = {
-            id = 204254,
         },
         sigil_of_chains = {
             id = 204843,
@@ -512,6 +517,11 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
             start = function ()
                 applyBuff( "fel_devastation" )
+
+                -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
+                if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
+                    debuff.sinful.brand.expires = debuff.sinful_brand.expires + 0.5
+                end                
             end,
 
             finish = function ()

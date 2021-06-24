@@ -119,20 +119,23 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         fel_barrage = 22547, -- 258925
     } )
 
+
     -- PvP Talents
     spec:RegisterPvpTalents( { 
+        blood_moon = 5433, -- 355995
+        chaotic_imprint = 809, -- 356510
         cleansed_by_flame = 805, -- 205625
-        cover_of_darkness = 1206, -- 227635
+        cover_of_darkness = 1206, -- 357419
         demonic_origins = 810, -- 235893
         detainment = 812, -- 205596
-        eye_of_leotheras = 807, -- 206649
-        mana_break = 813, -- 203704
-        mana_rift = 809, -- 235903
-        mortal_rush = 1204, -- 328725
+        glimpse = 813, -- 354489
+        isolated_prey = 5445, -- 357300
+        mortal_dance = 1204, -- 328725
         rain_from_above = 811, -- 206803
         reverse_magic = 806, -- 205604
         unending_hatred = 1218, -- 213480
     } )
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -153,7 +156,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         },
         chaos_nova = {
             id = 179057,
-            duration = 2,
+            duration = function () return pvptalent.isolated_prey.enabled and active_enemies == 1 and 3 or 2 end,
             type = "Magic",
             max_stack = 1,
         },
@@ -165,7 +168,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         },
         darkness = {
             id = 196718,
-            duration = 8,
+            duration = function () return pvptalent.cover_of_darkness.enabled and 10 or 8 end,
             max_stack = 1,
         },
         death_sweep = {
@@ -265,16 +268,13 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         },
         netherwalk = {
             id = 196555,
-            duration = 5,
+            duration = 6,
             max_stack = 1,
         },
         prepared = {
             id = 203650,
             duration = 10,
             max_stack = 1,
-        },
-        shattered_souls = {
-            id = 178940,
         },
         spectral_sight = {
             id = 188501,
@@ -305,21 +305,15 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             max_stack = 1,
         },
 
+        demon_soul = {
+
+            id = 208195,
+            duration = 20,
+            max_stack = 1,
+        },
+
 
         -- PvP Talents
-        eye_of_leotheras = {
-            id = 206649,
-            duration = 6,
-            type = "Magic",
-            max_stack = 1,
-        },
-
-        mana_break = {
-            id = 203704,
-            duration = 10,
-            max_stack = 1,
-        },
-
         rain_from_above_launch = {
             id = 206803,
             duration = 1,
@@ -353,7 +347,50 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             id = 339229,
             duration = 10,
             max_stack = 1,
-        }
+        },
+
+        
+        -- PvP Talents
+        chaotic_imprint_shadow = {
+            id = 356656,
+            duration = 20,
+            max_stack = 1,
+        },
+        chaotic_imprint_nature = {
+            id = 356660,
+            duration = 20,
+            max_stack = 1,
+        },
+        chaotic_imprint_arcane = {
+            id = 356658,
+            duration = 20,
+            max_stack = 1,
+        },
+        chaotic_imprint_fire = {
+            id = 356661,
+            duration = 20,
+            max_stack = 1,
+        },
+        chaotic_imprint_frost = {
+            id = 356659,
+            duration = 20,
+            max_stack = 1,
+        },
+        glimpse = {
+            id = 354610,
+            duration = 8,
+            max_stack = 1,
+        },
+        isolated_prey = {
+            id = 357305,
+            duration = 6,
+            max_stack = 1,
+        },
+        mortal_dance = {
+            id = 328725,
+            duration = 5,
+            max_stack = 1,
+        },
 
     } )
 
@@ -517,6 +554,10 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             handler = function ()
                 applyBuff( "blade_dance" )
                 setCooldown( "death_sweep", 9 * haste )
+
+                if pvptalent.mortal_dance.enabled then
+                    applyDebuff( "target", "mortal_dance" )
+                end
             end,
         },
         
@@ -647,6 +688,10 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             handler = function ()
                 applyBuff( "death_sweep" )
                 setCooldown( "blade_dance", 9 * haste )
+
+                if pvptalent.mortal_dance.enabled then
+                    applyDebuff( "target", "mortal_dance" )
+                end
             end,
         },
         
@@ -737,6 +782,15 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                         stat.haste = stat.haste + 25
                     end
                 end
+
+                if pvptalent.isolated_prey.enabled and active_enemies == 1 then
+                    applyDebuff( "target", "isolated_prey" )
+                end
+
+                -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
+                if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
+                    debuff.sinful.brand.expires = debuff.sinful_brand.expires + 0.5
+                end
             end,
             
             finish = function ()
@@ -745,23 +799,6 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         },
         
 
-        eye_of_leotheras = {
-            id = 206649,
-            cast = 0,
-            cooldown = 45,
-            gcd = "spell",
-
-            pvptalent = "eye_of_leotheras",
-
-            startsCombat = true,
-            texture = 1380366,
-
-            handler = function ()
-                applyDebuff( "target", "eye_of_leotheras" )
-            end,
-        },
-        
-        
         fel_barrage = {
             id = 258925,
             cast = 2,
@@ -824,6 +861,9 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                 setDistance( 5 )
                 setCooldown( "global_cooldown", 0.25 )
                 if conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
+                if pvptalent.isolated_prey.enabled and active_enemies == 1 then
+                    gain( 35, "fury" )
+                end
             end,
 
             auras = {
@@ -930,49 +970,10 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         },
         
 
-        mana_break = {
-            id = 203704,
-            cast = 0,
-            cooldown = 60,
-            gcd = "spell",
-
-            spend = 50,
-            spendType = "fury",
-
-            pvptalent = "mana_break",
-
-            startsCombat = true,
-            texture = 1380369,
-
-            handler = function ()
-                applyDebuff( "target", "mana_break" )
-            end,
-        },
-
-        
-        mana_rift = {
-            id = 235903,
-            cast = 0,
-            cooldown = 10,
-            gcd = "spell",
-
-            spend = 50,
-            spendType = "fury",
-
-            pvptalent = "mana_rift",
-
-            startsCombat = true,
-            texture = 1033912,
-
-            handler = function ()
-            end,
-        },
-        
-
         metamorphosis = {
             id = 191427,
             cast = 0,
-            cooldown = function () return ( level > 47 and 240 or 120 ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( pvptalent.demonic_origins.up and 0.5 or 1 ) end,
+            cooldown = function () return ( level > 47 and 240 or 300 ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) - ( pvptalent.demonic_origins.up and 120 or 0 ) end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -1046,7 +1047,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
             handler = function ()
                 applyBuff( "netherwalk" )
-                setCooldown( "global_cooldown", 5 )
+                setCooldown( "global_cooldown", 6 )
             end,
         },
 
@@ -1153,7 +1154,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                     if talent.momentum.enabled then applyBuff( "prepared" ) end
                 end
 
-                if pvptalent.glimpse.enabled then applyBuff( "blur", 3 ) end
+                if pvptalent.glimpse.enabled then applyBuff( "glimpse" ) end
             end,
         },
 
@@ -1170,12 +1171,22 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
             handler = function ()
                 create_sigil( "elysian_decree" )
+
+                if legendary.blind_faith.enabled then applyBuff( "blind_faith" ) end
             end,
+
+            auras = {
+                blind_faith = {
+                    id = 355894,
+                    duration = 20,
+                    max_stack = 1,
+                },
+            }
         },
 
         
         -- Demon Hunter - Necrolord - 329554 - fodder_to_the_flame  (Fodder to the Flame)
-        fodder_to_the_flame = {
+        --[[ fodder_to_the_flame = {
             id = 329554,
             cast = 0,
             cooldown = 120,
@@ -1213,7 +1224,8 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                     max_stack = 1,
                 },                
             }
-        },
+        }, ]]
+
 
         -- Demon Hunter - Night Fae - 323639 - the_hunt             (The Hunt)
         the_hunt = {
@@ -1232,6 +1244,11 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                 applyDebuff( "target", "the_hunt_dot" )
                 applyDebuff( "target", "the_hunt_root" )
                 setDistance( 5 )
+
+                if legendary.blazing_slaughter.enabled then
+                    applyBuff( "immolation_aura" )
+                    applyBuff( "blazing_slaughter" )
+                end
             end,
 
             auras = {
@@ -1250,6 +1267,11 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                     duration = 30,
                     max_stack = 1,
                 },
+                blazing_slaughter = {
+                    id = 355892,
+                    duration = 12,
+                    max_stack = 20,
+                }
             }
         },
 
