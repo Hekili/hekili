@@ -20,6 +20,16 @@ State.lua
 Events.lua
 
 Classes.lua
+
+BfA\AzeritePowers.lua
+BfA\Essences.lua
+
+Shadowlands\AnimaPowers.lua
+Shadowlands\Covenants.lua
+Shadowlands\SoulbindConduits.lua
+Shadowlands\Trinkets.lua
+Shadowlands\Legendaries.lua
+
 Classes\DeathKnightBlood.lua
 Classes\DeathKnightFrost.lua
 Classes\DeathKnightUnholy.lua
@@ -53,14 +63,6 @@ Classes\WarlockDestruction.lua
 Classes\WarriorArms.lua
 Classes\WarriorFury.lua
 Classes\WarriorProtection.lua
-
-BfA\AzeritePowers.lua
-BfA\Essences.lua
-
-Shadowlands\AnimaPowers.lua
-Shadowlands\Covenants.lua
-Shadowlands\SoulbindConduits.lua
-Shadowlands\Trinkets.lua
 
 Targets.lua
 Options.lua

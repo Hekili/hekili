@@ -241,18 +241,19 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
-        cadaverous_pallor = 163, -- 201995
+    spec:RegisterPvpTalents( { 
         dark_simulacrum = 41, -- 77606
-        decomposing_aura = 3440, -- 199720
+        deaths_echo = 5428, -- 356367
         dome_of_ancient_shadow = 5367, -- 328718
+        doomburst = 5436, -- 356512
         life_and_death = 40, -- 288855
         necromancers_bargain = 3746, -- 288848
         necrotic_aura = 3437, -- 199642
-        necrotic_strike = 149, -- 223829
+        necrotic_wounds = 149, -- 356520
         raise_abomination = 3747, -- 288853
         reanimation = 152, -- 210128
-        transfusion = 3748, -- 288977
+        spellwarden = 5423, -- 356332
+        strangulate = 5430, -- 47476
     } )
 
 
@@ -265,7 +266,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         },
         antimagic_zone = {
             id = 145629,
-            duration = 3600,
+            duration = 8,
             max_stack = 1,
         },
         army_of_the_dead = {
@@ -456,6 +457,12 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             id = 288849,
             duration = 4,
             max_stack = 1,
+        },
+
+        doomburst = {
+            id = 356518,
+            duration = 3,
+            max_stack = 2,
         },
 
         necrotic_wound = {
@@ -737,6 +744,46 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     } ) )
 
 
+    local runeforges = {
+        [6243] = "hysteria",
+        [3370] = "razorice",
+        [6241] = "sanguination",
+        [6242] = "spellwarding",
+        [6245] = "apocalypse",
+        [3368] = "fallen_crusader",
+        [3847] = "stoneskin_gargoyle",
+        [6244] = "unending_thirst"
+    }    
+    
+    local function ResetRuneforges()
+        table.wipe( state.death_knight.runeforge )
+    end    
+    
+    local function UpdateRuneforge( slot, item )
+        if ( slot == 16 or slot == 17 ) then
+            local link = GetInventoryItemLink( "player", slot )
+            local enchant = link:match( "item:%d+:(%d+)" )                    
+
+            if enchant then
+                enchant = tonumber( enchant )
+                local name = runeforges[ enchant ]
+
+                if name then
+                    state.death_knight.runeforge[ name ] = true
+
+                    if name == "razorice" and slot == 16 then
+                        state.death_knight.runeforge.razorice_mh = true
+                    elseif name == "razorice" and slot == 17 then
+                        state.death_knight.runeforge.razorice_oh = true
+                    end
+                end
+            end
+        end
+    end
+
+    Hekili:RegisterGearHook( ResetRuneforges, UpdateRuneforge )
+
+
     -- Abilities
     spec:RegisterAbilities( {
         antimagic_shell = {
@@ -759,7 +806,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         antimagic_zone = {
             id = 51052,
             cast = 0,
-            cooldown = 120,
+            cooldown = 180,
             gcd = "spell",
 
             toggle = "defensives",
@@ -786,6 +833,10 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             handler = function ()
                 summonPet( "apoc_ghoul", 15 )
+
+                if pvptalent.necrotic_wounds.enabled and debuff.festering_wound.up and debuff.necrotic_wound.down then
+                    applyDebuff( "target", "necrotic_wound" )
+                end
 
                 if debuff.festering_wound.stack > 4 then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.remains - 4 )
@@ -826,7 +877,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         army_of_the_dead = {
             id = function () return pvptalent.raise_abomination.enabled and 288853 or 42650 end,
             cast = 0,
-            cooldown = 480,
+            cooldown = function () return pvptalent.raise_abomination.enabled and 120 or 480 end,
             gcd = "spell",
 
             spend = function () return pvptalent.raise_abomination.enabled and 0 or 3 end,
@@ -1058,6 +1109,16 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             texture = 136145,
 
             handler = function ()
+                if pvptalent.doomburst.enabled and buff.sudden_doom.up and debuff.festering_wound.up then
+                    if debuff.festering_wound.stack > 2 then
+                        applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 2 )
+                        applyDebuff( "target", "doomburst", debuff.doomburst.up and debuff.doomburst.remains or nil, 2 )
+                    else
+                        removeDebuff( "target", "festering_wound" )
+                        applyDebuff( "target", "doomburst", debuff.doomburst.up and debuff.doomburst.remains or nil, debuff.doomburst.stack + 1 )
+                    end
+                end
+
                 removeStack( "sudden_doom" )
                 if cooldown.dark_transformation.remains > 0 then setCooldown( "dark_transformation", max( 0, cooldown.dark_transformation.remains - 1 ) ) end
                 if legendary.deadliest_coil.enabled and buff.dark_transformation.up then buff.dark_transformation.expires = buff.dark_transformation.expires + 2 end
@@ -1148,7 +1209,15 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         defile = {
             id = 152280,
             cast = 0,
+            charges = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 2
+            end,
             cooldown = 20,
+            recharge = function ()
+                if not pvptalent.unholy_command.enabled then return end
+                return 20
+            end,
             gcd = "spell",
 
             spend = 1,
@@ -1272,39 +1341,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             handler = function ()
                 if conduit.spirit_drain.enabled then gain( conduit.spirit_drain.mod * 0.1, "runic_power" ) end
                 interrupt()
-            end,
-        },
-
-
-        necrotic_strike = {
-            id = 223829,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = 1,
-            spendType = "runes",
-
-            startsCombat = true,
-            texture = 132481,
-
-            pvptalent = function ()
-                if essence.conflict_and_strife.major then return end
-                return "necrotic_strike"
-            end,
-            debuff = "festering_wound",
-
-            handler = function ()
-                if debuff.festering_wound.up then
-                    if debuff.festering_wound.stack == 1 then removeDebuff( "target", "festering_wound" )
-                    else applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 ) end
-
-                    if conduit.convocation_of_the_dead.enabled and cooldown.apocalypse.remains > 0 then
-                        reduceCooldown( "apocalypse", conduit.convocation_of_the_dead.mod * 0.1 )
-                    end
-
-                    applyDebuff( "target", "necrotic_wound" )
-                end
             end,
         },
 
