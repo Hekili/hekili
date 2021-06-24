@@ -3242,6 +3242,8 @@ local mt_alias_buff = {
         local aura = class.auras[ t.key ]
         local type = aura.aliasType or "buff"
 
+        if aura.meta and aura.meta[ k ] then return aura.meta[ k ]() end
+
         if k == "count" or k == "stack" or k == "stacks" then
             local n = 0
 
@@ -4106,6 +4108,8 @@ local mt_alias_debuff = {
     __index = function( t, k )
         local aura = class.auras[ t.key ]
         local type = aura.aliasType or "debuff"
+
+        if aura.meta and aura.meta[ k ] then return aura.meta[ k ]() end
 
         if k == "count" or k == "stack" or k == "stacks" then
             local n = 0
