@@ -888,7 +888,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             gcd = "spell",
 
             castableWhileCasting = function ()
-                if buff.dark_thought.up and ( buff.casting.v1 == class.abilities.mind_flay.id or buff.casting.v1 == class.abilities.mind_sear.id ) then return true end
+                if buff.dark_thought.up and ( buff.casting.v1 == class.abilities.mind_flay.id or buff.casting.v1 == class.abilities.mind_sear.id or buff.casting.v1 == class.abilities.void_torrent.id ) then return true end
                 return nil
             end,
 
