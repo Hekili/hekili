@@ -4138,6 +4138,8 @@ do
         { "corrupted_gladiators_medallion", 184055 },
         { "sinful_aspirants_medallion", 184052 },
         { "sinful_gladiators_medallion", 181333 },
+        { "unchained_aspirants_medallion", 185309 },
+        { "unchained_gladiators_medallion", 185304 },
     }
 
     local pvp_medallions_copy = {}
@@ -4193,6 +4195,8 @@ do
         { "corrupted_gladiators_badge", 172669 },
         { "sinful_aspirants_badge_of_ferocity", 175884 },
         { "sinful_gladiators_badge_of_ferocity", 175921 },
+        { "unchained_aspirants_badge_of_ferocity", 185161 },
+        { "unchained_gladiators_badge_of_ferocity", 185197 },
     }
 
     local pvp_badges_copy = {}
@@ -4239,7 +4243,8 @@ end
 all:RegisterAura( "gladiators_insignia", {
     id = 277181,
     duration = 20,
-    max_stack = 1
+    max_stack = 1,
+    copy = 345230
 } )    
 
 
@@ -4265,6 +4270,9 @@ do
         corrupted_aspirants_emblem = 172847,
         sinful_aspirants_emblem = 178334,
         sinful_gladiators_emblem = 178447,
+        unchained_aspirants_emblem = 185242,
+        unchained_gladiators_emblem = 185282,
+
     }
 
     local pvp_emblems_copy = {}
