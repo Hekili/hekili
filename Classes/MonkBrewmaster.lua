@@ -80,7 +80,6 @@ if UnitClassBase( "player" ) == "MONK" then
     spec:RegisterPvpTalents( { 
         admonishment = 843, -- 207025
         avert_harm = 669, -- 202162
-        craft_nimble_brew = 670, -- 213658
         double_barrel = 672, -- 202335
         eerie_fermentation = 765, -- 205147
         guided_meditation = 668, -- 202200
@@ -88,7 +87,9 @@ if UnitClassBase( "player" ) == "MONK" then
         incendiary_breath = 671, -- 202272
         microbrew = 666, -- 202107
         mighty_ox_kick = 673, -- 202370
+        nimble_brew = 670, -- 354540
         niuzaos_essence = 1958, -- 232876
+        rodeo = 5417, -- 355917
     } )
 
     -- Auras
@@ -1408,8 +1409,12 @@ if UnitClassBase( "player" ) == "MONK" then
 
                 if state.spec.mistweaver then
                     setCooldown( "essence_font", 0 )
+                    if legendary.call_to_arms.enabled then summonPet( "yulon", 12 ) end
                 elseif state.spec.brewmaster then
                     setCooldown( "keg_smash", 0 )
+                    if legendary.call_to_arms.enabled then summonPet( "niuzao", 12 ) end
+                else
+                    if legendary.call_to_arms.enabled then summonPet( "xuen", 12 ) end
                 end
             end,
 
@@ -1477,6 +1482,8 @@ if UnitClassBase( "player" ) == "MONK" then
                     applyDebuff( "target", "breath_of_fire" )
                     active_dot.breath_of_fire = active_enemies
                 end
+
+                if legendary.fae_exposure.enabled then applyDebuff( "target", "fae_exposure" ) end
             end,
 
             auras = {
@@ -1484,7 +1491,12 @@ if UnitClassBase( "player" ) == "MONK" then
                     id = 327104,
                     duration = 30,
                     max_stack = 1,
-                },        
+                },       
+                fae_exposure = {
+                    id = 356773,
+                    duration = 10,
+                    max_stack = 1,
+                } 
             }
         },
 
@@ -1511,9 +1523,7 @@ if UnitClassBase( "player" ) == "MONK" then
                     max_stack = 1
                 }
             }
-        }
-
-        
+        },      
     } )
 
 

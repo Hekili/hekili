@@ -94,14 +94,15 @@ if UnitClassBase( 'player' ) == 'MONK' then
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         alpha_tiger = 3734, -- 287503
-        wind_waker = 3737, -- 287506
-        reverse_harm = 852, -- 287771
-        pressure_points = 3744, -- 287599
-        turbo_fists = 3745, -- 287681
         disabling_reach = 3050, -- 201769
-        ride_the_wind = 77, -- 201372
         grapple_weapon = 3052, -- 233759
+        perpetual_paralysis = 5448, -- 357495
+        pressure_points = 3744, -- 345829
+        reverse_harm = 852, -- 342928
+        ride_the_wind = 77, -- 201372
         tigereye_brew = 675, -- 247483
+        turbo_fists = 3745, -- 287681
+        wind_waker = 3737, -- 357633
     } )
 
     -- Auras
