@@ -137,18 +137,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {         
+    spec:RegisterPvpTalents( { 
         barbarian = 166, -- 280745
         battle_trance = 170, -- 213857
         bloodrage = 172, -- 329038
         death_sentence = 25, -- 198500
         death_wish = 179, -- 199261
         demolition = 5373, -- 329033
-        disarm = 3533, -- 236077       
+        disarm = 3533, -- 236077
         enduring_rage = 177, -- 198877
         master_and_commander = 3528, -- 235941
-        overwatch = 5375, -- 329035
-        slaughterhouse = 3735, -- 280747        
+        slaughterhouse = 3735, -- 352998
+        warbringer = 5431, -- 356353
     } )
 
 
@@ -368,7 +368,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local whirlwind_stacks = 0
 
     local rageSpent = 0
-    local rageSinceBanner = 0
+    local gloryRage = 0
 
     local fresh_meat_actual = {}
     local fresh_meat_virtual = {}
@@ -423,7 +423,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             if current < lastRage then
                 rageSpent = ( rageSpent + lastRage - current ) % 20 -- Recklessness.             
-                rageSinceBanner = ( rageSinceBanner + lastRage - current ) % 30 -- Glory.
+                
+                if legendary.glory.enabled and FindUnitBuffByID( "player", 324143 ) then
+                    gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
+                end
             end
 
             lastRage = current
@@ -434,8 +437,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         return rageSpent
     end )
 
-    spec:RegisterStateExpr( "rage_since_banner", function ()
-        return rageSinceBanner
+    spec:RegisterStateExpr( "glory_rage", function ()
+        return gloryRage
     end )
 
 
@@ -447,12 +450,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 rage_spent = rage_spent % 20
             end
 
-            if buff.conquerors_frenzy.up then
-                rage_since_banner = rage_since_banner + amt
-                local stacks = floor( rage_since_banner / 30 )
-                rage_since_banner = rage_since_banner % 30
+            if legendary.glory.enabled and buff.conquerors_banner.up then
+                glory_rage = glory_rage + amt
+                local reduction = floor( glory_rage / 20 ) * 0.5
+                glory_rage = glory_rage % 20
 
-                if stacks > 0 then addStack( "glory", nil, stacks ) end
+                buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction
             end
         end
     end )

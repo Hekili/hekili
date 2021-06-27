@@ -7,6 +7,7 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local FindUnitBuffByID = ns.FindUnitBuffByID
 
 -- Conduits
 -- [x] unnerving_focus
@@ -93,11 +94,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         dragon_charge = 831, -- 206572
         morale_killer = 171, -- 199023
         oppressor = 845, -- 205800
-        overwatch = 5378, -- 329035
         rebound = 833, -- 213915
         shield_bash = 173, -- 198912
         sword_and_board = 167, -- 199127
         thunderstruck = 175, -- 199045
+        warbringer = 5432, -- 356353
         warpath = 178, -- 199086
     } )
 
@@ -255,6 +256,31 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     } )
 
 
+    local gloryRage = 0
+
+spec:RegisterStateExpr( "glory_rage", function ()
+        return gloryRage
+    end )
+
+    local RAGE = Enum.PowerType.Rage
+    local lastRage = -1
+
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+        if powerType == "RAGE" and state.legendary.glory.enabled and FindUnitBuffByID( "player", 324143 ) then
+            local current = UnitPower( "player", RAGE )
+
+            if current < lastRage then
+                gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
+            end
+
+            lastRage = current
+        end
+    end )
+
+    spec:RegisterStateExpr( "glory_rage", function ()
+        return gloryRage
+    end )
+
     -- model rage expenditure reducing CDs...
     spec:RegisterHook( "spend", function( amt, resource )
         if resource == "rage" and amt > 0 then
@@ -267,6 +293,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 reduceCooldown( "shield_wall", secs )
                 -- cooldown.last_stand.expires = cooldown.last_stand.expires - secs
                 -- cooldown.demoralizing_shout.expires = cooldown.demoralizing_shout.expires - secs
+            end
+
+            if legendary.glory.enabled and buff.conquerors_banner.up then
+                glory_rage = glory_rage + amt
+                local reduction = floor( glory_rage / 10 ) * 0.5
+                glory_rage = glory_rage % 10
+    
+                buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction
             end
         end
     end )

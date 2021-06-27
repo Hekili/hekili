@@ -113,11 +113,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         disarm = 3534, -- 236077
         duel = 34, -- 236273
         master_and_commander = 28, -- 235941
-        overwatch = 5376, -- 329035
         shadow_of_the_colossus = 29, -- 198807
         sharpen_blade = 33, -- 198817
         storm_of_destruction = 31, -- 236308
         war_banner = 32, -- 236320
+        warbringer = 5376, -- 356353
     } )
 
     -- Auras
@@ -313,9 +313,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
     local rageSpent = 0
+    local gloryRage = 0
 
     spec:RegisterStateExpr( "rage_spent", function ()
         return rageSpent
+    end )
+
+    spec:RegisterStateExpr( "glory_rage", function ()
+        return gloryRage
     end )
 
     spec:RegisterHook( "spend", function( amt, resource )
@@ -330,6 +335,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     cooldown.bladestorm.expires = cooldown.bladestorm.expires - reduction
                     cooldown.warbreaker.expires = cooldown.warbreaker.expires - reduction
                 end
+            end
+
+            if legendary.glory.enabled and buff.conquerors_banner.up then
+                glory_rage = glory_rage + amt
+                local reduction = floor( glory_rage / 20 ) * 0.5
+                glory_rage = glory_rage % 20
+
+                buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction
             end
         end
     end )
@@ -355,7 +368,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             local current = UnitPower( "player", RAGE )
 
             if current < lastRage then
-                rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.                
+                rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.
+                
+                if state.legendary.glory.enabled and  FindUnitBuffByID( "player", 324143 ) then
+                    gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
+                end
             end
 
             lastRage = current
@@ -1276,14 +1293,20 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "spear_of_bastion" )
+                if legendary.elysian_might.enabled then applyBuff( "elysian_might" ) end
             end,
 
             auras = {
                 spear_of_bastion = {
                     id = 307871,
-                    duration = 4,
+                    duration = function () return legendary.elysian_might.enabled and 8 or 4 end,
                     max_stack = 1
-                }
+                },
+                elysian_might = {
+                    id = 311193,
+                    duration = 8,
+                    max_stack = 1,
+                },
             }
         },
         
@@ -1383,6 +1406,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
                     if extra > 0 then spend( extra, "rage" ) end
                     gain( 4 + floor( 0.2 * extra ), "rage" )
+                end
+
+                if legendary.sinful_surge.enabled then
+                    if state.spec.protection and buff.last_stand.up then buff.last_stand.expires = buff.last_stand.expires + 3
+                    elseif state.spec.arms and debuff.colossus_smash.up then debuff.colossus_smash.expires = debuff.colossus_smash.expires + 1.5
+                    elseif state.spec.fury and buff.recklessness.up then buff.recklessness.expires = buff.recklessness.expires + 2 end
                 end
 
                 if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
