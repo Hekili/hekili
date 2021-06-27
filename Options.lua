@@ -5205,7 +5205,8 @@ do
                 packDesc = {
                     type = "description",
                     name = "Priorities (or action packs) are bundles of action lists used to make recommendations for each specialization.  " ..
-                        "They can be customized and shared.",
+                        "They can be customized and shared.  |cFFFF0000Imported SimulationCraft priorities often require some translation before " ..
+                        "they will work with this addon.  No support is offered for customized or imported priorities.|r",
                     order = 1,
                     fontSize = "medium",
                 },
