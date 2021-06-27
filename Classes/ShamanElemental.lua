@@ -72,17 +72,18 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
+    spec:RegisterPvpTalents( { 
         control_of_lava = 728, -- 204393
         counterstrike_totem = 3490, -- 204331
-        elemental_attunement = 727, -- 204385
         grounding_totem = 3620, -- 204336
         lightning_lasso = 731, -- 305483
-        purifying_waters = 3491, -- 204247
+        seasoned_winds = 5415, -- 355630
         skyfury_totem = 3488, -- 204330
         spectral_recovery = 3062, -- 204261
+        static_field_totem = 727, -- 355580
         swelling_waves = 3621, -- 204264
         traveling_storms = 730, -- 204403
+        unleash_shield = 3491, -- 356736
     } )
 
     -- Auras
@@ -1092,6 +1093,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                     removeBuff( "surge_of_power" )
                 end
 
+                if buff.primordial_wave.up and state.spec.elemental and legendary.splintered_elements.enabled then
+                    applyBuff( "splintered_elements", nil, active_dot.flame_shock )
+                end
                 removeBuff( "primordial_wave" )
             end,
 
@@ -1420,7 +1424,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             id = 324386,
             cast = 0,
             cooldown = 60,
-            gcd = "spell",
+            gcd = "totem",
 
             spend = 0.1,
             spendType = "mana",
@@ -1464,7 +1468,12 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                     id = 327164,
                     duration = 15,
                     max_stack = 1
-                }
+                },
+                splintered_elements = {
+                    id = 354648,
+                    duration = 10,
+                    max_stack = 10,
+                },
             }
         },
 
@@ -1489,8 +1498,17 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 applyBuff( "fae_transfusion" )
             end,
 
+            tick = function ()
+                if legendary.seeds_of_rampant_growth.enabled then
+                    if state.spec.enhancement then reduceCooldown( "feral_spirit", 7 )
+                    elseif state.spec.elemental then reduceCooldown( talent.storm_elemental.enabled and "storm_elemental" or "fire_elemental", 6 )
+                    else reduceCooldown( "healing_tide_totem", 5 ) end
+                    addStack( "seeds_of_rampant_growth" )
+                end
+            end,
+
             finish = function ()
-                if state.spec.enhancement then addStack( "maelstrom_weapon", nil, 1 ) end
+                if state.spec.enhancement then addStack( "maelstrom_weapon", nil, 3 ) end
             end,
 
             auras = {
@@ -1498,6 +1516,11 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                     id = 328933,
                     duration = 20,
                     max_stack = 1
+                },
+                seeds_of_rampant_growth = {
+                    id = 358945,
+                    duration = 15,
+                    max_stack = 5
                 }
             },
         },
@@ -1533,6 +1556,13 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 3565725,
 
             toggle = "essences",
+
+            handler = function ()
+                if legendary.elemental_conduit.enabled then                    
+                    applyDebuff( "target", "flame_shock" )
+                    active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + min( 5, active_enemies ) )
+                end
+            end,
         }
 
 

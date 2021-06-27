@@ -57,17 +57,19 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
+    spec:RegisterPvpTalents( { 
         counterstrike_totem = 3489, -- 204331
         ethereal_form = 1944, -- 210918
         grounding_totem = 3622, -- 204336
-        purifying_waters = 3492, -- 204247
         ride_the_lightning = 721, -- 289874
+        seasoned_winds = 5414, -- 355630
         shamanism = 722, -- 193876
         skyfury_totem = 3487, -- 204330
         spectral_recovery = 3519, -- 204261
+        static_field_totem = 5438, -- 355580
         swelling_waves = 3623, -- 204264
         thundercharge = 725, -- 204366
+        unleash_shield = 3492, -- 356736
     } )
 
     -- Auras
@@ -456,7 +458,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         flametongue_weapon = {
             duration = 1800,
             max_stack = 1,
-        }
+        },
     } )
 
 
@@ -1076,6 +1078,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 consume_maelstrom( 5 )
 
+                if buff.primordial_wave.up and state.spec.enhancement and legendary.splintered_elements.enabled then
+                    applyBuff( "splintered_elements", nil, active_dot.flame_shock )
+                end
                 removeBuff( "primordial_wave" )
 
                 if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
