@@ -715,6 +715,7 @@ do
         state.trinket.t1.__ability = "null_cooldown"
         state.trinket.t1.__usable = false
         state.trinket.t1.__has_use_buff = false
+        state.trinket.t1.__use_buff_duration = nil
 
         if T1 then
             state.trinket.t1.__id = T1
@@ -729,6 +730,7 @@ do
                 
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t1.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
+                    state.trinket.t1.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
                 end
             end
 
@@ -758,6 +760,7 @@ do
         state.trinket.t2.__ability = "null_cooldown"
         state.trinket.t2.__usable = false
         state.trinket.t2.__has_use_buff = false
+        state.trinket.t2.__use_buff_duration = nil
 
         if T2 then
             state.trinket.t2.__id = T2
@@ -772,6 +775,7 @@ do
 
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t2.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
+                    state.trinket.t2.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
                 end
             end
 

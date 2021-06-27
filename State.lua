@@ -353,9 +353,11 @@ local mt_trinket = {
             return rawget( t, "__ability" ) or "null_cooldown"
         elseif k == "usable" then
             return rawget( t, "__usable" ) or false
-        elseif k == "has_use_buff" then
+        elseif k == "has_use_buff" or k == "use_buff" then
             return isEnabled and t.__has_use_buff or false
-        elseif k == "proc" then
+        elseif k == "use_buff_duration" or k == "buff_duration" then
+            return isEnabled and t.__has_use_buff and t.__use_buff.duration or 0
+        elseif k == "has_proc" or k == "proc" then
             return isEnabled and t.__proc or false
         end
 
