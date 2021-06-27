@@ -1,12 +1,12 @@
 ## Demon Hunter Havoc
-## May 2, 2021
+## June 27, 2021
 
 ## Changes:
 ## - Metamorphosis and Potion usage "before fight ends" logic adjusted to apply only to boss fights.
 
 actions.precombat=bottled_flayedwing_toxin
-actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)
-actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
+actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_use_buff&(!trinket.2.has_use_buff|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)
+actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_use_buff&(!trinket.1.has_use_buff|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
 # Use Eye Beam at low Fury with Blind Fury combined with either Darkglare or Demon Blades
 actions.precombat+=/variable,name=use_eye_beam_fury_condition,value=talent.blind_fury.enabled&(runeforge.darkglare_medallion|talent.demon_blades.enabled)
 
@@ -49,7 +49,7 @@ actions.demonic+=/glaive_tempest,if=active_enemies>desired_targets|raid_event.ad
 actions.demonic+=/throw_glaive,if=conduit.serrated_glaive.enabled&cooldown.eye_beam.remains<6&!buff.metamorphosis.up&!debuff.exposed_wound.up
 actions.demonic+=/eye_beam,if=active_enemies>desired_targets|raid_event.adds.in>25&(!variable.use_eye_beam_fury_condition|spell_targets>1|fury<70)
 actions.demonic+=/blade_dance,if=variable.blade_dance&!cooldown.metamorphosis.ready&(cooldown.eye_beam.remains>5|(raid_event.adds.in>cooldown&raid_event.adds.in<25))
-actions.demonic+=/immolation_aura
+actions.demonic+=/immolation_aura,if=!buff.immolation_aura.up
 actions.demonic+=/annihilation,if=!variable.pooling_for_blade_dance
 actions.demonic+=/felblade,if=fury.deficit>=40
 actions.demonic+=/essence_break
@@ -66,7 +66,7 @@ actions.normal=vengeful_retreat,if=talent.momentum.enabled&buff.prepared.down&ti
 actions.normal+=/fel_rush,if=(buff.unbound_chaos.up|variable.waiting_for_momentum&(!talent.unbound_chaos.enabled|!cooldown.immolation_aura.ready))&(charges=2|(raid_event.movement.in>10&raid_event.adds.in>10))
 actions.normal+=/fel_barrage,if=active_enemies>desired_targets|raid_event.adds.in>30
 actions.normal+=/death_sweep,if=variable.blade_dance
-actions.normal+=/immolation_aura
+actions.normal+=/immolation_aura,if=!buff.immolation_aura.up
 actions.normal+=/glaive_tempest,if=!variable.waiting_for_momentum&(active_enemies>desired_targets|raid_event.adds.in>10)
 actions.normal+=/throw_glaive,if=conduit.serrated_glaive.enabled&cooldown.eye_beam.remains<6&!buff.metamorphosis.up&!debuff.exposed_wound.up
 actions.normal+=/eye_beam,if=!variable.waiting_for_momentum&(active_enemies>desired_targets|raid_event.adds.in>15&(!variable.use_eye_beam_fury_condition|spell_targets>1|fury<70))
