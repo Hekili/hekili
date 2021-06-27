@@ -1,9 +1,8 @@
 ## Brewmaster Monk
-## April 2, 2021
+## June 27, 2021
 
 ## Changes:
-## - Add Exploding Keg.
-## - Todo:  Review Purifying during Niuzao.
+## - 9.1 includes Purifying Brew entries related to Invoke Niuzao that do not using spec settings.  Provide feedback on GitHub.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
@@ -19,7 +18,9 @@ actions+=/celestial_brew,if=buff.purified_chi.up
 actions+=/dampen_harm,if=health.pct<75&incoming_damage_3s>health.max*(0.2+(0.2*group))&buff.fortifying_brew.down
 actions+=/fortifying_brew,if=health.pct<50&incoming_damage_3s>health.max*(0.2+(0.2*group))&(buff.dampen_harm.down)
 
+actions+=/spear_hand_strike,if=target.debuff.casting.react
 actions+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.health.pct<31|time_to_die<20
+actions+=/use_item,name=dreadfire_vessel
 actions+=/use_items
 actions+=/potion
 actions+=/blood_fury
@@ -44,10 +45,19 @@ actions+=/purifying_brew,if=settings.purify_stagger_maxhp>0&group&stagger.pct>=s
 # Use configured purify_stagger_maxhp from Brewmaster options.
 actions+=/purifying_brew,if=settings.purify_stagger_maxhp>0&solo&stagger.pct>=settings.purify_stagger_maxhp*0.5
 
+# Cast PB during the Niuzao window, but only if recently hit.
+actions+=/purifying_brew,if=stagger.amounttototalpct>=0.7&(cooldown.invoke_niuzao_the_black_ox.remains<5|buff.invoke_niuzao_the_black_ox.up)
+
 # Stagger % of 20 will kill you in 2.5 seconds without healing or purifying.  Used when purify_stagger_currhp and maxhp are disabled.
 actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&group&stagger.pct>20
 # Stagger % of 10 will kill you in 5 seconds without healing or purifying.  Used when purify_stagger_currhp and maxhp are disabled.
 actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&solo&stagger.pct>10
+
+# Dump PB charges towards the end of Niuzao: anything is better than nothing.
+actions+=/purifying_brew,if=buff.invoke_niuzao_the_black_ox.up&buff.invoke_niuzao_the_black_ox.remains<8
+
+# Avoid capping charges, but pool charges shortly before Niuzao comes up and allow dumping to avoid capping during Niuzao.
+actions+=/purifying_brew,if=cooldown.purifying_brew.charges_fractional>=1.8&(cooldown.invoke_niuzao_the_black_ox.remains>10|buff.invoke_niuzao_the_black_ox.up)
 
 # Black Ox Brew is currently used to either replenish brews based on less than half a brew charge available, or low energy to enable Keg Smash
 actions+=/black_ox_brew,if=cooldown.purifying_brew.charges_fractional<0.5
@@ -56,6 +66,8 @@ actions+=/black_ox_brew,if=(energy+(energy.regen*cooldown.keg_smash.remains))<40
 # Healing Elixir
 actions+=/expel_harm,if=health.pct<5*healing_sphere.count|(healing_sphere.count>=3&health.pct<50)
 actions+=/healing_elixir,if=health.pct<33
+
+actions+=/fleshcraft,if=cooldown.bonedust_brew.remains<4&soulbind.lead_by_example.enabled
 
 # Offensively, the APL prioritizes KS on cleave, BoS else, with energy spenders and cds sorted below
 actions+=/keg_smash,if=spell_targets>=2
@@ -75,6 +87,7 @@ actions+=/tiger_palm,if=talent.rushing_jade_wind.enabled&buff.blackout_combo.up&
 actions+=/breath_of_fire,if=buff.charred_passions.down&runeforge.charred_passions.equipped
 actions+=/blackout_kick
 actions+=/keg_smash
+actions+=/chi_burst,if=cooldown.faeline_stomp.remains>2&spell_targets>=2
 actions+=/faeline_stomp
 actions+=/expel_harm,if=buff.gift_of_the_ox.stack>=3
 actions+=/touch_of_death
