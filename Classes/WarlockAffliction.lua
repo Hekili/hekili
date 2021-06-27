@@ -83,7 +83,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         mortal_coil = 19291, -- 6789
         howl_of_terror = 23465, -- 5484
 
-        dark_caller = 23139, -- 334183
+        shadow_embrace = 23139, -- 32388
         haunt = 23159, -- 48181
         grimoire_of_sacrifice = 19295, -- 108503
 
@@ -91,6 +91,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         creeping_death = 19281, -- 264000
         dark_soul_misery = 19293, -- 113860
     } )
+
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
@@ -104,8 +105,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         gateway_mastery = 15, -- 248855
         nether_ward = 18, -- 212295
         rampant_afflictions = 5379, -- 335052
+        rapid_contagion = 5386, -- 344566
         rot_and_decay = 16, -- 212371
-        soulshatter = 13, -- 212356
+        shadow_rift = 5392, -- 353294
     } )
 
     -- Auras
@@ -265,7 +267,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         shadow_embrace = {
             id = 32390,
-            duration = 10,
+            duration = 16,
             type = "Magic",
             max_stack = 3,
         },
@@ -398,7 +400,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         essence_drain = {
             id = 221715,
-            duration = 6,
+            duration = 10,
             type = "Magic",
             max_stack = 5,
         },
@@ -1077,7 +1079,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 removeStack( "decimating_bolt" )
                 removeBuff( "malefic_wrath" )
 
-                if level > 51 then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
+                if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
             end,
 
             tick = function ()
@@ -1364,7 +1366,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             handler = function ()
                 removeBuff( "malefic_wrath" )
-                if level > 51 then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
+                if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
             end,
         },
 
@@ -1403,39 +1405,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             handler = function ()
                 applyDebuff( "target", "siphon_life" )
-            end,
-        },
-
-
-        soulshatter = {
-            id = 212356,
-            cast = 0,
-            cooldown = 60,
-            gcd = "spell",
-
-            toggle = "cooldowns",
-            pvptalent = "soulshatter",
-
-            startsCombat = true,
-            texture = 135728,
-
-            usable = function () return buff.active_uas.stack > 0 or active_dot.agony > 0 or active_dot.corruption > 0 or active_dot.siphon_life > 0 end,
-            handler = function ()
-                local targets = min( 5, max( buff.active_uas.stack, active_dot.agony, active_dot.corruption, active_dot.siphon_life ) )
-
-                applyBuff( "soulshatter", nil, targets )
-                stat.haste = stat.haste + ( 0.1 * targets )
-
-                gain( targets, "soul_shards" )
-
-                active_dot.agony = max( 0, active_dot.agony - targets )
-                if active_dot.agony == 0 then removeDebuff( "target", "agony" ) end
-
-                active_dot.corruption = max( 0, active_dot.corruption - targets )
-                if active_dot.corruption == 0 then removeDebuff( "target", "corruption" ) end
-
-                active_dot.siphon_life = max( 0, active_dot.siphon_life - targets )
-                if active_dot.siphon_life == 0 then removeDebuff( "target", "siphon_life" ) end
             end,
         },
 
@@ -1481,7 +1450,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         summon_darkglare = {
             id = 205180,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.dark_caller.enabled and 120 or 180 ) end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( level > 57 and 120 or 180 ) end,
             gcd = "spell",
 
             spend = 0.02,
@@ -1697,7 +1666,13 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     id = 340238,
                     duration = 10,
                     max_stack = 1
-                }
+                },
+                -- Legendary
+                languishing_soul_detritus = {
+                    id = 356255,
+                    duration = 8,
+                    max_stack = 1,
+                },
             },
         },
 
@@ -1718,6 +1693,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             handler = function ()
                 applyBuff( "decimating_bolt", nil, 3 )
+                if legendary.shard_of_annihilation.enabled then
+                    applyBuff( "shard_of_annihilation" )
+                end
             end,
 
             auras = {
@@ -1725,6 +1703,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     id = 325299,
                     duration = 3600,
                     max_stack = 3,
+                },
+                shard_of_annihilation = {
+                    id = 356342,
+                    duration = 44,
+                    max_stack = 1,
                 }
             }
         },
@@ -1747,6 +1730,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 applyDebuff( "target", "soul_rot" )
                 active_dot.soul_rot = min( 4, active_enemies )
+                if legendary.decaying_soul_satchel.enabled then
+                    applyBuff( "decaying_soul_satchel", nil, active_dot.soul_rot )
+                end
             end,
 
             auras = {
@@ -1754,6 +1740,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     id = 325640,
                     duration = 8,
                     max_stack = 1
+                },
+                decaying_soul_satchel = {
+                    id = 356369,
+                    duration = 8,
+                    max_stack = 4,
                 }
             }
         },

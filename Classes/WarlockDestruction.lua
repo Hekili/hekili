@@ -136,14 +136,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         amplify_curse = 3504, -- 328774
         bane_of_fragility = 3502, -- 199954
         bane_of_havoc = 164, -- 200546
+        bonds_of_fel = 5401, -- 353753
         casting_circle = 3510, -- 221703
         cremation = 159, -- 212282
         demon_armor = 3741, -- 285933
         essence_drain = 3509, -- 221711
         fel_fissure = 157, -- 200586
-        focused_chaos = 155, -- 233577
         gateway_mastery = 5382, -- 248855
         nether_ward = 3508, -- 212295
+        shadow_rift = 5393, -- 353294
     } )
 
 

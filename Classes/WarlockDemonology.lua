@@ -56,7 +56,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( {
+    spec:RegisterPvpTalents( { 
         amplify_curse = 3507, -- 328774
         bane_of_fragility = 3505, -- 199954
         call_fel_lord = 162, -- 212459
@@ -64,11 +64,12 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         call_observer = 165, -- 201996
         casting_circle = 3626, -- 221703
         essence_drain = 3625, -- 221711
+        fel_obelisk = 5400, -- 353601
         gateway_mastery = 3506, -- 248855
         master_summoner = 1213, -- 212628
         nether_ward = 3624, -- 212295
         pleasure_through_pain = 158, -- 212618
-        singe_magic = 154, -- 212623
+        shadow_rift = 5394, -- 353294
     } )
 
 
