@@ -1,5 +1,5 @@
 ## Balance Druid
-## May 2, 2021
+## June 27, 2021
 
 ## Changes:
 ## - Added Solar Beam.
@@ -8,6 +8,8 @@
 ## - Avoid precasting Wrath if it's the wrong Eclipse.
 ## - Make Convoke the Spirits a little more flexible (if you hadn't hit it simultaneously with BOAT + Celestial Alignment, it'd skip).
 ## - Make most 'fight_remains' scenarios apply to boss fights only.
+
+## Annotated Balance APL can be found at https://balance-simc.github.io/Balance-SimC/md.html?file=balance.txt
 
 actions.precombat=kindred_spirits
 # The variable is set to 0 with no stat on use trinkets, 1 when the first one is on use, 2 if the second is and 3 if both are
@@ -114,12 +116,10 @@ actions.boat+=/adaptive_swarm,cycle_targets=1,if=buff.balance_of_all_things_natu
 # Use Convoke with CA/Inc when possible and otherwise with a BoAT buff when desyncing
 actions.boat+=/convoke_the_spirits,if=(variable.convoke_desync&!cooldown.ca_inc.ready|buff.ca_inc.up)&(buff.balance_of_all_things_nature.stack=5|buff.balance_of_all_things_arcane.stack=5)|boss&fight_remains<10
 # FoE as the first gcd in the a BoAT window or with the Kyrian buff or with a 8+sec Adaptive Swarm and wait for CA/Inc if it wont be up again before the cd is finished
-actions.boat+=/fury_of_elune,if=((buff.balance_of_all_things_nature.stack>4|buff.balance_of_all_things_arcane.stack>4)&(druid.no_cds|cooldown.ca_inc.remains>50|(covenant.night_fae&cooldown.convoke_the_spirits.remains>50)))|(dot.adaptive_swarm_damage.remains>8&cooldown.ca_inc.remains>10&covenant.necrolord)|interpolated_fight_remains<8&!cooldown.ca_inc.ready|(covenant.kyrian&buff.kindred_empowerment.up)
+actions.boat+=/fury_of_elune,if=((buff.balance_of_all_things_nature.stack>4|buff.balance_of_all_things_arcane.stack>4)&(!covenant.venthyr|!buff.ca_inc.up)&(druid.no_cds|cooldown.ca_inc.remains>50|(covenant.night_fae&cooldown.convoke_the_spirits.remains>50)))|(dot.adaptive_swarm_damage.remains>8&cooldown.ca_inc.remains>10&covenant.necrolord)|interpolated_fight_remains<8&!cooldown.ca_inc.ready|(covenant.kyrian&buff.kindred_empowerment.up)
 # Cancel Starlord with a new BoAT buff and CA/Inc isn't about to be used
 actions.boat+=/cancel_buff,name=starlord,if=(buff.balance_of_all_things_nature.remains>4.5|buff.balance_of_all_things_arcane.remains>4.5)&(cooldown.ca_inc.remains>7|(cooldown.empower_bond.remains>7&!buff.kindred_empowerment_energize.up&covenant.kyrian))&astral_power>=30
 # Dump Starsurges with a BoAT buff but not when pooling for CA/Inc or Kindred Spirits
-actions.boat+=/starfall,if=talent.stellar_drift.enabled&settings.solo_drift&buff.starfall.down
-# Dump Starsurges with the boat buff but not when pooling for ca or empower bond
 actions.boat+=/starsurge,if=!variable.critnotup&(covenant.night_fae|cooldown.ca_inc.remains>7|!variable.cd_condition&!covenant.kyrian|(cooldown.empower_bond.remains>7&!buff.kindred_empowerment_energize.up&covenant.kyrian))&(!dot.fury_of_elune.ticking|!cooldown.ca_inc.ready|!cooldown.convoke_the_spirits.ready)
 # Dump Starsurges before Convoke
 actions.boat+=/starsurge,if=(cooldown.convoke_the_spirits.remains<5&!druid.no_cds&(variable.convoke_desync|cooldown.ca_inc.remains<5)&variable.cd_condition)&!dot.fury_of_elune.ticking&covenant.night_fae&!druid.no_cds&eclipse.in_any
@@ -133,7 +133,7 @@ actions.boat+=/force_of_nature,if=ap_check
 # Empower Bond when about to enter a new BoAT window and save for CA/Inc
 actions.boat+=/empower_bond,if=(eclipse.lunar_next|eclipse.solar_next|eclipse.any_next|buff.balance_of_all_things_nature.remains>4.5|buff.balance_of_all_things_arcane.remains>4.5|astral_power>90&cooldown.ca_inc.ready&!druid.no_cds)&(cooldown.ca_inc.remains>30|cooldown.ca_inc.ready)|boss&interpolated_fight_remains<10
 # FoE right before using CA
-actions.boat+=/fury_of_elune,if=cooldown.ca_inc.ready&variable.cd_condition&(astral_power>90&!covenant.night_fae|covenant.night_fae&astral_power<40)&(!covenant.night_fae|cooldown.convoke_the_spirits.ready)&!druid.no_cds
+actions.boat+=/fury_of_elune,if=cooldown.ca_inc.ready&variable.cd_condition&(astral_power>90&!covenant.night_fae|covenant.night_fae&astral_power<40)&(!covenant.night_fae|cooldown.convoke_the_spirits.ready)&!druid.no_cds&!covenant.venthyr|covenant.venthyr&buff.ravenous_frenzy.remains<9&buff.ravenous_frenzy.up
 # CA/Inc when at 90+ AsP (orlower than 40 AsP with Convoke) without losing time in Bloodlust and line up with Convoke if it was desynced
 actions.boat+=/celestial_alignment,if=!druid.no_cds&variable.cd_condition&((astral_power>90&(buff.kindred_empowerment_energize.up|!covenant.kyrian)|buff.bloodlust.up&buff.bloodlust.remains<20+(conduit.precise_alignment.time_value))|boss&interpolated_fight_remains<20+(conduit.precise_alignment.time_value)|covenant.night_fae)&(!covenant.night_fae|(astral_power<40|dot.fury_of_elune.ticking)&(variable.convoke_desync|cooldown.convoke_the_spirits.ready))
 actions.boat+=/incarnation,if=!druid.no_cds&variable.cd_condition&((astral_power>90&(buff.kindred_empowerment_energize.up|!covenant.kyrian)|buff.bloodlust.up&buff.bloodlust.remains<30+(conduit.precise_alignment.time_value))|boss&interpolated_fight_remains<30+(conduit.precise_alignment.time_value)|covenant.night_fae)&(!covenant.night_fae|(astral_power<40|dot.fury_of_elune.ticking)&(variable.convoke_desync|cooldown.convoke_the_spirits.ready))
@@ -181,13 +181,11 @@ actions.st+=/incarnation,if=!druid.no_cds&variable.cd_condition&(astral_power>90
 # Variable used on abilities that want to be saved for CA/Inc so that they arent wasted just before them
 actions.st+=/variable,name=save_for_ca_inc,value=!cooldown.ca_inc.ready|!variable.convoke_desync&covenant.night_fae|druid.no_cds
 # Uses FoE if in an Eclipse and tries to line it up with Pulsar, CA/Inc and Adaptive Swarm
-actions.st+=/fury_of_elune,if=eclipse.in_any&ap_check&buff.primordial_arcanic_pulsar.value<240&(dot.adaptive_swarm_damage.ticking|!covenant.necrolord)&variable.save_for_ca_inc
+actions.st+=/fury_of_elune,if=eclipse.in_any&ap_check&buff.primordial_arcanic_pulsar.value<240&(dot.adaptive_swarm_damage.ticking|!covenant.necrolord)&variable.save_for_ca_inc&!buff.ravenous_frenzy.up|buff.ravenous_frenzy.remains<9&buff.ravenous_frenzy.up
 # Use Oneth Starfall procs if Starfall isn't up
 actions.st+=/starfall,if=buff.oneths_perception.up&buff.starfall.refreshable
 actions.st+=/cancel_buff,name=starlord,if=buff.starlord.remains<5&(buff.eclipse_solar.remains>5|buff.eclipse_lunar.remains>5)&astral_power>90
 # Dumps AsP before Convoke using the Convoke condition to check if Convoke is actually about to be cast
-actions.st+=/starfall,if=talent.stellar_drift.enabled&settings.solo_drift&buff.starfall.down
-# Dumps asp before Convoke using the Convoke condition to check if Convoke is actually about to be cast
 actions.st+=/starsurge,if=covenant.night_fae&variable.convoke_desync&cooldown.convoke_the_spirits.remains<5&!druid.no_cds
 # Use Starfall with Stellar Drift and no Starlord, when no Starfall is up, you are in Lunar Eclipse or to proc Pulsar when above 90 AsP or adpative swarm has 8+secs remaining or is in flight
 actions.st+=/starfall,if=talent.stellar_drift.enabled&!talent.starlord.enabled&buff.starfall.refreshable&(buff.eclipse_lunar.remains>6&eclipse.in_lunar&buff.primordial_arcanic_pulsar.value<250|buff.primordial_arcanic_pulsar.value>=250&astral_power>90|dot.adaptive_swarm_damage.remains>8|action.adaptive_swarm_damage.in_flight)&!cooldown.ca_inc.ready
