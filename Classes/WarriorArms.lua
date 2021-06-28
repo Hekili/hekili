@@ -1431,9 +1431,16 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             copy = { 317485, 330325, 317349, 330334 }
         }
-
-
     } )
+
+
+    --[[ spec:RegisterSetting( "heroic_charge", false, {
+        name = "Use Heroic Charge Combo",
+        desc = "If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use Heroic Leap + Charge together.\n\n" ..
+            "This is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay.",
+        type = "toggle",
+        width = "full",
+    } ) ]]
 
 
     spec:RegisterOptions( {

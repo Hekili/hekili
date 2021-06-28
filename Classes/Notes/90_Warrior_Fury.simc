@@ -1,5 +1,5 @@
 ## Fury Warrior
-## April 20, 2021
+## June 27, 2021
 
 ## Changes:
 ## - Added Pummel.
@@ -32,9 +32,9 @@ actions+=/bloodthirst,line_cd=10,if=time<8&active_enemies=1&runeforge.signet_of_
 actions+=/recklessness,line_cd=10,if=time<8&active_enemies=1&covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped&prev.bloodthirst
 ## actions+=/sequence,if=active_enemies=1&!covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped,name=BT&Charge:bloodthirst:heroic_charge
 # Emulates initial Heroic Leap > Charge sequence for single-target + non-Venthyr + Signet.
-actions+=/heroic_leap,line_cd=10,if=time<5&active_enemies=1&!covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped&prev.bloodthirst&cooldown.charge.remains<0.5
+actions+=/heroic_leap,line_cd=10,if=settings.heroic_charge&time<5&active_enemies=1&!covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped&prev.bloodthirst&cooldown.charge.remains<0.5
 # Emulates initial Heroic Leap > Charge sequence for single-target + non-Venthyr + Signet.
-actions+=/charge,line_cd=10,if=time<5&active_enemies=1&!covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped&prev.heroic_leap
+actions+=/charge,line_cd=10,if=settings.heroic_charge&time<5&active_enemies=1&!covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped&prev.heroic_leap
 actions+=/potion
 actions+=/rampage,if=cooldown.recklessness.remains<3&talent.reckless_abandon.enabled
 actions+=/conquerors_banner,if=buff.recklessness.down&debuff.siegebreaker.down|fight_remains<50
@@ -49,8 +49,6 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks,if=buff.recklessness.down&debuff.siegebreaker.down&buff.enrage.up
 actions+=/run_action_list,name=single_target
-
-actions.movement=heroic_leap
 
 actions.single_target+=/raging_blow,if=runeforge.will_of_the_berserker.equipped&buff.will_of_the_berserker.remains<gcd
 actions.single_target+=/crushing_blow,if=runeforge.will_of_the_berserker.equipped&buff.will_of_the_berserker.remains<gcd
