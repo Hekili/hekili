@@ -13,6 +13,7 @@ local format = string.format
 local upper  = string.upper
 
 
+Hekili.IsClassic = function() return ( WOW_PROJECT_ID == WOW_PROJECT_CLASSIC ) or ( WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC ) end
 ns.PTR = select( 4, GetBuildInfo() ) > 90100
 
 
