@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## May 27, 2021
+## June 27, 2021
 
 ## Changes:
 ## - Added Spell Lock.
@@ -71,11 +71,13 @@ actions+=/dark_soul,if=boss&!talent.phantom_singularity&cooldown.summon_darkglar
 # Catch-all item usage for anything not specified elsewhere
 actions+=/call_action_list,name=item
 ## Refresh Shadow Embrace before spending shards on Malefic Rapture
-actions+=/call_action_list,name=se,if=level>57&(debuff.shadow_embrace.stack<(2-action.shadow_bolt.in_flight)|debuff.shadow_embrace.remains<3)
-# Use Malefic Rapture when major dots are up, or if there will be significant time until the next Phantom Singularity
-actions+=/malefic_rapture,if=dot.vile_taint.ticking|dot.impending_catastrophe_dot.ticking|dot.soul_rot.ticking
-actions+=/malefic_rapture,if=talent.phantom_singularity&(dot.phantom_singularity.ticking|cooldown.phantom_singularity.true_remains>25|boss&fight_remains<cooldown.phantom_singularity.remains)
-actions+=/malefic_rapture,if=talent.sow_the_seeds
+actions+=/call_action_list,name=se,if=talent.shadow_embrace.enabled&(debuff.shadow_embrace.stack<(2-action.shadow_bolt.in_flight)|debuff.shadow_embrace.remains<3)
+# Use Malefic Rapture when major dots are up, or if there will be significant time until the next Phantom Singularity. If utilizing Malefic Wrath, hold a shard to refresh the buff
+actions+=/malefic_rapture,if=(dot.vile_taint.ticking|dot.impending_catastrophe_dot.ticking|dot.soul_rot.ticking)&(!runeforge.malefic_wrath|buff.malefic_wrath.stack<3|soul_shard>1)
+# Use Malefic Rapture to maintain the malefic wrath buff until shards need to be generated for the next burst window (20 seconds is more than sufficient to generate 3 shards)
+actions+=/malefic_rapture,if=runeforge.malefic_wrath&cooldown.soul_rot.remains>20&buff.malefic_wrath.remains<4
+# Use Malefic Rapture on Phantom Singularity casts, making sure to save a shard to stack Malefic Wrath if using it
+actions+=/malefic_rapture,if=talent.phantom_singularity&(dot.phantom_singularity.ticking|cooldown.phantom_singularity.remains>25|boss&time_to_die<cooldown.phantom_singularity.remains)&(!runeforge.malefic_wrath|buff.malefic_wrath.stack<3|soul_shard>1)
 # Drain Life is only a DPS gain with Inevitable Demise near max stacks. If fight is about to end do not miss spending the stacks
 actions+=/drain_life,if=buff.inevitable_demise.stack>40|buff.inevitable_demise.up&boss&fight_remains<4
 actions+=/call_action_list,name=covenant
@@ -164,7 +166,7 @@ actions.stat_trinkets+=/fireblood
 actions.stat_trinkets+=/berserking
 
 actions.trinket_split_check=variable,name=special_equipped,value=(((equipped.empyreal_ordnance^equipped.inscrutable_quantum_device)^equipped.soulletting_ruby)^equipped.sunblood_amethyst)
-actions.trinket_split_check+=/variable,name=trinket_one,value=(trinket.1.has_proc.any&trinket.1.has_cooldown)
-actions.trinket_split_check+=/variable,name=trinket_two,value=(trinket.2.has_proc.any&trinket.2.has_cooldown)
-actions.trinket_split_check+=/variable,name=damage_trinket,value=(!(trinket.1.has_proc.any&trinket.1.has_cooldown))|(!(trinket.2.has_proc.any&trinket.2.has_cooldown))|equipped.glyph_of_assimilation
+actions.trinket_split_check+=/variable,name=trinket_one,value=(trinket.1.has_proc&trinket.1.has_cooldown)
+actions.trinket_split_check+=/variable,name=trinket_two,value=(trinket.2.has_proc&trinket.2.has_cooldown)
+actions.trinket_split_check+=/variable,name=damage_trinket,value=(!(trinket.1.has_proc&trinket.1.has_cooldown))|(!(trinket.2.has_proc&trinket.2.has_cooldown))|equipped.glyph_of_assimilation
 actions.trinket_split_check+=/variable,name=trinket_split,value=(variable.trinket_one&variable.damage_trinket)|(variable.trinket_two&variable.damage_trinket)|(variable.trinket_one^variable.special_equipped)|(variable.trinket_two^variable.special_equipped)
