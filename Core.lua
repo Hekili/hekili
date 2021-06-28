@@ -459,7 +459,7 @@ function Hekili:CheckChannel( ability, prio )
     channel = a.key
     local aura = class.auras[ a.aura or channel ]
 
-    if a.break_any then
+    if a.break_any and channel ~= ability then
         if self.ActiveDebug then self:Debug( "CC: %s.break_any is true; break it.", channel ) end
         return true
     end
