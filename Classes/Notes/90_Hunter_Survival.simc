@@ -1,5 +1,5 @@
 # Survival Hunter
-# June 27, 2021
+# June 28, 2021
 
 actions.precombat+=/variable,name=mb_rs_cost,op=setif,value=action.mongoose_bite.cost,value_else=action.raptor_strike.cost,condition=talent.mongoose_bite
 actions.precombat+=/summon_pet
@@ -11,6 +11,8 @@ actions+=/muzzle
 # Go ahead and Tranquilize NPC enemies; we don't do this for players because it'd be too spammy and we can't readily Tranq specific buffs.
 actions+=/tranquilizing_shot,if=!target.is_player
 actions+=/use_items
+## Delay facing your doubt until you have put Resonating Arrow down, or if the cooldown is too long to delay facing your Doubt. If none of these conditions are able to met within the 10 seconds leeway, the sim faces your Doubt automatically.
+## actions+=/newfound_resolve,if=soulbind.newfound_resolve&(buff.resonating_arrow.up|cooldown.resonating_arrow.remains>10|target.time_to_die<16)
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=bop,if=active_enemies<3&talent.birds_of_prey.enabled
 actions+=/call_action_list,name=st,if=active_enemies<3&!talent.birds_of_prey.enabled
