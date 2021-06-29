@@ -1107,6 +1107,12 @@ all:RegisterAuras( {
         end,
     },
 
+    power_infusion = {
+        id = 10060,
+        duration = 20,
+        max_stack = 1
+    },
+
     old_war = {
         id = 188028,
         duration = 25,
