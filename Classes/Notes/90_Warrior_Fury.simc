@@ -1,5 +1,5 @@
 ## Fury Warrior
-## June 28, 2021
+## June 29, 2021
 
 ## Changes:
 ## - Added Pummel.
@@ -22,6 +22,7 @@ actions.precombat+=/recklessness,if=!runeforge.signet_of_tormented_kings.equippe
 actions=charge,if=time>8|talent.double_time.enabled|active_enemies>1|covenant.venthyr|!runeforge.signet_of_tormented_kings.equipped|cooldown.recklessness.remains>gcd
 actions+=/pummel
 actions+=/variable,name=execute_phase,value=talent.massacre&target.health.pct<35|target.health.pct<20|target.health.pct>80&covenant.venthyr
+actions+=/variable,name=unique_legendaries,value=runeforge.signet_of_tormented_kings|runeforge.sinful_surge|runeforge.elysian_might
 ## This is mostly to prevent cooldowns from being accidentally used during movement.
 ## actions+=/run_action_list,name=movement,if=movement.distance>5
 ## actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
@@ -38,7 +39,9 @@ actions+=/charge,line_cd=10,if=settings.heroic_charge&time<5&active_enemies=1&!c
 actions+=/potion
 actions+=/rampage,if=cooldown.recklessness.remains<3&talent.reckless_abandon.enabled
 actions+=/conquerors_banner,if=buff.recklessness.down&debuff.siegebreaker.down|fight_remains<50
-actions+=/recklessness,if=!runeforge.signet_of_tormented_kings.equipped&((buff.bloodlust.up|talent.anger_management.enabled|raid_event.adds.in>10)|target.time_to_die>100|variable.execute_phase|target.time_to_die<15&raid_event.adds.in>10)&(spell_targets.whirlwind=1|buff.meat_cleaver.up)
+actions+=/recklessness,if=runeforge.sinful_surge&gcd.remains=0&(variable.execute_phase|(target.time_to_pct_35>40&talent.anger_management|target.time_to_pct_35>70&!talent.anger_management))&(spell_targets.whirlwind=1|buff.meat_cleaver.up)
+actions+=/recklessness,if=runeforge.elysian_might&gcd.remains=0&(cooldown.spear_of_bastion.remains<5|cooldown.spear_of_bastion.remains>20)&((buff.bloodlust.up|talent.anger_management.enabled|raid_event.adds.in>10)|target.time_to_die>100|variable.execute_phase|target.time_to_die<15&raid_event.adds.in>10)&(spell_targets.whirlwind=1|buff.meat_cleaver.up)
+actions+=/recklessness,if=!variable.unique_legendaries&gcd.remains=0&((buff.bloodlust.up|talent.anger_management.enabled|raid_event.adds.in>10)|target.time_to_die>100|variable.execute_phase|target.time_to_die<15&raid_event.adds.in>10)&(spell_targets.whirlwind=1|buff.meat_cleaver.up)
 actions+=/recklessness,use_off_gcd=1,if=runeforge.signet_of_tormented_kings.equipped&prev_gcd.1.rampage&((buff.bloodlust.up|talent.anger_management.enabled|raid_event.adds.in>10)|target.time_to_die>100|variable.execute_phase|target.time_to_die<15&raid_event.adds.in>10)&(spell_targets.whirlwind=1|buff.meat_cleaver.up)
 actions+=/whirlwind,if=level>36&(spell_targets.whirlwind>1&!buff.meat_cleaver.up|raid_event.adds.in<gcd&!buff.meat_cleaver.up)
 actions+=/use_items
@@ -53,7 +56,7 @@ actions+=/run_action_list,name=single_target
 actions.single_target+=/raging_blow,if=runeforge.will_of_the_berserker.equipped&buff.will_of_the_berserker.remains<gcd
 actions.single_target+=/crushing_blow,if=runeforge.will_of_the_berserker.equipped&buff.will_of_the_berserker.remains<gcd
 actions.single_target+=/cancel_buff,name=bladestorm,if=spell_targets.whirlwind=1&gcd.remains=0&(talent.massacre.enabled|covenant.venthyr.enabled)&variable.execute_phase&(rage>90|!cooldown.condemn.remains)
-actions.single_target+=/bladestorm,if=buff.enrage.remains>gcd*2.5&spell_targets.whirlwind>1
+actions.single_target+=/condemn,if=(buff.enrage.up|buff.recklessness.up&runeforge.sinful_surge)&variable.execute_phase
 actions.single_target+=/condemn,if=buff.enrage.up&variable.execute_phase
 actions.single_target+=/siegebreaker,if=debuff.siegebreaker.down&(spell_targets.whirlwind>1|raid_event.adds.in>15)
 actions.single_target+=/rampage,if=(buff.recklessness.up|buff.memory_of_lucid_dreams.up)|(buff.enrage.remains<gcd|rage>90)|buff.frenzy.remains<1.5
@@ -61,16 +64,14 @@ actions.single_target+=/condemn
 actions.single_target+=/ancient_aftershock,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>75)
 actions.single_target+=/spear_of_bastion,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>45)
 actions.single_target+=/execute
-actions.single_target+=/bladestorm,if=buff.enrage.up&(!buff.recklessness.remains|rage<50)&spell_targets.whirlwind=1&raid_event.adds.in>45
-actions.single_target+=/bladestorm,if=buff.enrage.up&spell_targets.whirlwind=1&raid_event.adds.in>45,interrupt_global=1,interrupt_if=spell_targets.whirlwind=1&gcd.remains=0&(rage>90|variable.execute_phase&!cooldown.condemn.remains)
-actions.single_target+=/dragon_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
-actions.single_target+=/bloodthirst,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35&!talent.cruelty.enabled
+actions.single_target+=/bladestorm,if=buff.enrage.up&(!buff.recklessness.remains|rage<50)&(spell_targets.whirlwind=1&raid_event.adds.in>45|spell_targets.whirlwind=2)
+actions.single_target+=/bloodthirst,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35
 actions.single_target+=/bloodbath,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35&!talent.cruelty.enabled
 actions.single_target+=/dragon_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
-actions.single_target+=/whirlwind,if=buff.merciless_bonegrinder.up&spell_targets.whirlwind>3
 actions.single_target+=/onslaught
+actions.single_target+=/whirlwind,if=buff.merciless_bonegrinder.up&spell_targets.whirlwind>3
 actions.single_target+=/raging_blow,if=charges=2|buff.recklessness.up&variable.execute_phase&talent.massacre.enabled
-actions.single_target+=/crushing_blow,if=charges=2
+actions.single_target+=/crushing_blow,if=charges=2|buff.recklessness.up&variable.execute_phase&talent.massacre.enabled
 actions.single_target+=/bloodthirst
 actions.single_target+=/bloodbath
 actions.single_target+=/raging_blow
