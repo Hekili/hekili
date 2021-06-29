@@ -1,12 +1,14 @@
 # Blood Death Knight
-# December 6, 2020
+# June 28, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=use_item,name=azsharas_font_of_power
 actions.precombat+=/use_item,effect_name=cyclotronic_blast
+actions.precombat+=/fleshcraft
 
 # Executed every time the actor is available.
 actions=mind_freeze
+actions+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
 actions+=/call_action_list,name=mitigation,if=tanking|incoming_damage_5s>0
 actions+=/blood_fury,if=cooldown.dancing_rune_weapon.ready&(!cooldown.blooddrinker.ready|!talent.blooddrinker.enabled)
 actions+=/berserking
@@ -50,7 +52,6 @@ actions.mitigation=vampiric_blood,if=health.pct<50|(!group&health.pct<66)
 actions.mitigation+=/death_strike,if=incoming_damage_3s>=health.current
 # Don't let an existing Blood Shield drop.
 actions.mitigation+=/death_strike,if=save_blood_shield&incoming_damage_5s>0&buff.blood_shield.up&buff.blood_shield.remains<1.5*gcd
-actions.mitigation+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
 actions.mitigation+=/rune_tap,if=tanking&buff.rune_tap.down&incoming_damage_3s>health.max*0.1
 actions.mitigation+=/icebound_fortitude,if=health.pct<50-(20*buff.blood_shield.up)
 actions.mitigation+=/sacrificial_pact,if=health.pct<75&pet.ghoul.remains<5
@@ -83,5 +84,5 @@ actions.standard+=/blood_tap,if=rune.time_to_3>gcd
 actions.standard+=/death_and_decay,if=buff.crimson_scourge.up|talent.rapid_decomposition.enabled|spell_targets.death_and_decay>=2
 actions.standard+=/consumption,if=buff.bone_shield.remains>3*gcd
 actions.standard+=/blood_boil,if=charges_fractional>=1.1&buff.bone_shield.remains>3*gcd
-actions.standard+=/heart_strike,if=rune.time_to_3<gcd|buff.bone_shield.stack>7&buff.bone_shield.remains>rune.time_to_3+gcd
+actions.standard+=/heart_strike,if=rune>1&(rune.time_to_3<gcd|buff.bone_shield.stack>7&buff.bone_shield.remains>rune.time_to_3+gcd)
 actions.standard+=/arcane_torrent,if=runic_power.deficit>20

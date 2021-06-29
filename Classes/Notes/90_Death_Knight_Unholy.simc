@@ -1,5 +1,5 @@
 ## Death Knight Unholy
-## June 27, 2021
+## June 28, 2021
 
 ## Changes:
 ## - Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
@@ -8,7 +8,7 @@
 ## - Using Festering Strike in AOE if you have nothing else to do and won't overcap wounds is DPS neutral.
 ## - Changed many 'fight_remains' conditionals to apply in boss fights only (less CD waste on trash).
 ## - Added another Outbreak entry to set up stronger Epidemics.
-## - TODO:  New trinket criteria.
+## - TODO:  Factor Strength procs into trinket logic.
 
 actions.precombat+=/potion
 actions.precombat+=/raise_dead
@@ -142,8 +142,9 @@ actions.racials+=/bag_of_tricks,if=active_enemies=1&(buff.unholy_strength.up|bos
 
 ## Trinkets
 actions.trinkets=use_item,name=inscrutable_quantum_device,if=(cooldown.unholy_blight.remains>20|cooldown.dark_transformation.remains_expected>20)&(active_enemies>=2|pet.army_ghoul.active|pet.apoc_ghoul.active&(talent.unholy_assault|death_knight.disable_aotd)|pet.gargoyle.active)|boss&fight_remains<21|target.time_to_pct_20<5
-actions.trinkets+=/use_item,name=macabre_sheet_music,if=cooldown.apocalypse.remains<5&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|boss&fight_remains<21
-actions.trinkets+=/use_item,name=dreadfire_vessel,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|boss&fight_remains<3
-actions.trinkets+=/use_item,name=darkmoon_deck_voracity,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|boss&fight_remains<21
-actions.trinkets+=/trinket1,if=!variable.specified_trinket&((trinket.1.buff_duration<=15&cooldown.apocalypse.remains>20|trinket.1.buff_duration>15&(cooldown.unholy_blight.remains>20|cooldown.dark_transformation.remains_expected>20)|active_enemies>=2&buff.dark_transformation.up)&(!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1))|trinket.1.buff_duration>=fight_remains
-actions.trinkets+=/trinket2,if=!variable.specified_trinket&((trinket.2.buff_duration<=15&cooldown.apocalypse.remains>20|trinket.2.buff_duration>15&(cooldown.unholy_blight.remains>20|cooldown.dark_transformation.remains_expected>20)|active_enemies>=2&buff.dark_transformation.up)&(!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2))|trinket.2.buff_duration>=fight_remains
+## The trinket with the highest estimated value, will be used first and paired with Apocalypse (if buff is 15 seconds or less) or Blight/DT (if greater than 15 seconds)
+## actions.trinkets+=/use_item,slot=trinket1,if=!variable.specified_trinket&((trinket.1.proc.any_dps.duration<=15&cooldown.apocalypse.remains>20|trinket.1.proc.any_dps.duration>15&(cooldown.unholy_blight.remains>20|cooldown.dark_transformation.remains_expected>20)|active_enemies>=2&buff.dark_transformation.up)&(!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1))|trinket.1.proc.any_dps.duration>=fight_remains
+## actions.trinkets+=/use_item,slot=trinket2,if=!variable.specified_trinket&((trinket.2.proc.any_dps.duration<=15&cooldown.apocalypse.remains>20|trinket.2.proc.any_dps.duration>15&(cooldown.unholy_blight.remains>20|cooldown.dark_transformation.remains_expected>20)|active_enemies>=2&buff.dark_transformation.up)&(!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2))|trinket.2.proc.any_dps.duration>=fight_remains
+# If only one on use trinket provides a buff, use the other on cooldown. Or if neither trinket provides a buff, use both on cooldown.
+actions.trinkets+=/use_item,slot=trinket1,if=!trinket.1.has_use_buff&(trinket.2.cooldown.remains|!trinket.2.has_use_buff)
+actions.trinkets+=/use_item,slot=trinket2,if=!trinket.2.has_use_buff&(trinket.1.cooldown.remains|!trinket.1.has_use_buff)
