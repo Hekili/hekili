@@ -1458,7 +1458,8 @@ if UnitClassBase( "player" ) == "MONK" then
                 bonedust_brew = {
                     id = 325216,
                     duration = 10,
-                    max_stack = 1
+                    max_stack = 1,
+                    copy = "bonedust_brew_debuff"
                 }
             }
         },
