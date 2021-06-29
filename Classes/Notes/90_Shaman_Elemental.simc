@@ -1,5 +1,5 @@
 ## Elemental Shaman
-## June 27, 2021
+## June 29, 2021
 
 ## Changes:
 ## - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
@@ -11,7 +11,8 @@ actions.precombat=earth_elemental,if=!talent.primal_elementalist.enabled
 actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled&(raid_event.adds.count<3|raid_event.adds.in>50)
 actions.precombat+=/fire_elemental
 actions.precombat+=/elemental_blast,if=talent.elemental_blast.enabled&spell_targets.chain_lightning<3
-actions.precombat+=/lava_burst,if=!talent.elemental_blast.enabled&spell_targets.chain_lightning<3|buff.stormkeeper.up
+# Because LvB has a travel time, the addon places *this entry* on CD for 3 seconds to avoid double-LvB on pull.
+actions.precombat+=/lava_burst,line_cd=3,if=!talent.elemental_blast.enabled&spell_targets.chain_lightning<3|buff.stormkeeper.up
 actions.precombat+=/chain_lightning,if=!talent.elemental_blast.enabled&spell_targets.chain_lightning>=3&!buff.stormkeeper.up
 actions.precombat+=/potion
 

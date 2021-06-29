@@ -127,7 +127,7 @@ local legendaries = {
     [6834] = { "temporal_warp", 1, 62 }, -- 327351
     [6936] = { "triune_ward", 1, 62 }, -- 333373
     [6927] = { "arcane_bombardment", 1, 62 }, -- 332892
-    [6926] = { "arcane_infinity", 1, 62 }, -- 332769 -- SimC uses original runeforge name.
+    [6926] = { "arcane_harmony", 1, 62 }, -- 332769 -- SimC uses original runeforge name.
     [6928] = { "siphon_storm", 1, 62 }, -- 332928
 
     -- Mage/Fire

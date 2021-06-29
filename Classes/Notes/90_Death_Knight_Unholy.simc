@@ -97,7 +97,6 @@ actions.cooldowns+=/raise_dead,if=!pet.ghoul.active
 ## Disabled, just not really normal behavior that's worth pursuing in-game.
 ## actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&cooldown.dark_transformation.remains>5|boss&fight_remains<gcd
 
-
 ## Covenant Abilities
 actions.covenants=swarming_mist,if=variable.st_planning&runic_power.deficit>16&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)|boss&fight_remains<11
 # Set to use after apoc is on CD as to prevent overcapping RP while setting up CD's
