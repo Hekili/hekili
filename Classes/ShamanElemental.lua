@@ -1457,6 +1457,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             toggle = "essences",
 
             cycle = "flame_shock",
+            velocity = 45,
 
             handler = function ()
                 applyDebuff( "target", "flame_shock" )
