@@ -375,7 +375,7 @@ local mt_trinket = {
             end
             return false
         elseif k == "cooldown" then
-            if t.usable and t.ability then
+            if t.usable and t.ability and state.cooldown[ t.ability ] then
                 return state.cooldown[ t.ability ]            
             end
             return state.cooldown.null_cooldown
