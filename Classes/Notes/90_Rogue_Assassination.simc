@@ -1,5 +1,5 @@
 ## Assassination Rogue
-## June 28, 2021
+## June 29, 2021
 
 ## Changes:
 ## - Apply 'strict' flag to some APL forks to save processing time.
@@ -10,7 +10,7 @@
 actions.precombat=apply_poison
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>15
-actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption
+actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/variable,name=vendetta_cdr,value=1-(runeforge.duskwalkers_patch*0.45)
 # The average CDR is 0.22 but due to the RNG nature of CP gen, 2x this value is optimal for syncing logic
 actions.precombat+=/variable,name=flagellation_cdr,value=1-(runeforge.obedience*0.44)
@@ -28,7 +28,7 @@ actions+=/variable,name=single_target,value=spell_targets.fan_of_knives<2
 # Combined Energy Regen needed to saturate
 actions+=/variable,name=regen_saturated,value=energy.regen_combined>35
 actions+=/call_action_list,name=stealthed,strict=1,if=stealthed.rogue
-actions+=/call_action_list,name=cds,strict=1,,if=(!talent.master_assassin.enabled|dot.garrote.ticking)
+actions+=/call_action_list,name=cds,strict=1,if=(!talent.master_assassin.enabled|dot.garrote.ticking)
 # Put SnD up initially for Cut to the Chase, refresh with Envenom if at low duration
 actions+=/slice_and_dice,if=!buff.slice_and_dice.up&combo_points>=1
 actions+=/envenom,if=buff.slice_and_dice.up&buff.slice_and_dice.remains<5&combo_points>=4
@@ -45,7 +45,7 @@ actions.cds+=/marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up
 # If no adds will die within the next 30s, use MfD on boss without any CP.
 actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration&combo_points.deficit>=cp_max_spend
 # Fleshcraft for Pustule Eruption if not stealthed or in a cooldown cycle
-actions.cds+=/fleshcraft,if=soulbind.pustule_eruption&!stealthed.all&!debuff.vendetta.up&master_assassin_remains=0&(energy.time_to_max_combined>2|!debuff.shiv.up)
+actions.cds+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent)&!stealthed.all&!debuff.vendetta.up&master_assassin_remains=0&(energy.time_to_max_combined>2|!debuff.shiv.up)
 # Sync Flagellation with Vendetta as long as we won't lose a cast over the fight duration (or if Vendetta will come back again/is toggled off).
 actions.cds+=/flagellation,if=!stealthed.rogue&((cooldown.vendetta.remains>90|cooldown.vendetta.remains<3)&effective_combo_points>=4&target.time_to_die>10|debuff.vendetta.up|boss&fight_remains<24)
 actions.cds+=/flagellation,if=!stealthed.rogue&effective_combo_points>=4&(floor((fight_remains-24)%(cooldown*variable.flagellation_cdr))>floor((fight_remains-24-cooldown.vendetta.remains*variable.vendetta_cdr)%(cooldown*variable.flagellation_cdr)))

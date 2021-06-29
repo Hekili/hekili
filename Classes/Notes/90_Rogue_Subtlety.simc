@@ -1,5 +1,5 @@
 ## Subtlety Rogue
-## June 28, 2021
+## June 29, 2021
 
 ## Move variable.use_priority_rotation up so it is set before we use it.
 ## Combine multiple call_action_list entries to reduce potential rework.
@@ -7,7 +7,7 @@
 ## Pre-Combat
 actions.precombat+=/apply_poison
 actions.precombat+=/bottled_flayedwing_toxin
-actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption
+actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/stealth
 actions.precombat+=/marked_for_death,precombat_seconds=15
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
@@ -71,6 +71,7 @@ actions.cds+=/echoing_reprimand,if=variable.snd_condition&combo_points.deficit>=
 # With SF, if not already done, use Tornado with SoD up.
 actions.cds+=/shuriken_tornado,if=talent.shadow_focus.enabled&variable.snd_condition&buff.symbols_of_death.up&combo_points<=2
 actions.cds+=/shadow_dance,if=!buff.shadow_dance.up&fight_remains<=8+talent.subterfuge.enabled
+actions.cds+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent)&energy.deficit>=30&!stealthed.all&buff.symbols_of_death.down
 actions.cds+=/potion,if=buff.bloodlust.react|fight_remains<30|buff.symbols_of_death.up&(buff.shadow_blades.up|cooldown.shadow_blades.remains<=10)
 actions.cds+=/blood_fury,if=buff.symbols_of_death.up
 actions.cds+=/berserking,if=buff.symbols_of_death.up
