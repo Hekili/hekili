@@ -1,12 +1,13 @@
 ## Enhancement Shaman
-## April 2, 2021
+## June 28, 2021
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/lightning_shield,if=buff.lightning_shield.remains<300
-actions.precombat+=/windfury_totem,if=!runeforge.doom_winds.equipped&buff.windfury_totem.down
 actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled
+actions.precombat+=/windfury_totem,if=!runeforge.doom_winds.equipped&buff.windfury_totem.down
+actions.precombat+=/potion,if=boss
 
 ## Executed every time the actor is available.
 actions=bloodlust
@@ -14,6 +15,7 @@ actions=bloodlust
 actions+=/potion,if=boss&fight_remains<60
 # Interrupt
 actions+=/wind_shear
+actions+=/heart_essence
 actions+=/use_items
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
@@ -23,7 +25,7 @@ actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 actions+=/feral_spirit
 actions+=/fae_transfusion,if=(talent.ascendance.enabled|runeforge.doom_winds.equipped)&(soulbind.grove_invigoration|soulbind.field_of_blossoms|active_enemies=1)
 actions+=/ascendance,if=raid_event.adds.in>=90|active_enemies>1
-actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down&(raid_event.adds.in>=60|active_enemies>1)|buff.windfury_totem.down
+actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down&(raid_event.adds.in>=60|active_enemies>1)|buff.windfury_totem.down&(!runeforge.doom_winds.equipped|buff.doom_winds_debuff.up)
 # If only one enemy, priority follows the 'single' action list.
 actions+=/call_action_list,name=single,if=active_enemies=1
 # On multiple enemies, the priority follows the 'aoe' action list.
