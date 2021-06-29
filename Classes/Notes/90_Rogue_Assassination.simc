@@ -1,5 +1,5 @@
 ## Assassination Rogue
-## June 27, 2021
+## June 28, 2021
 
 ## Changes:
 ## - Apply 'strict' flag to some APL forks to save processing time.
@@ -10,6 +10,10 @@
 actions.precombat=apply_poison
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>15
+actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption
+actions.precombat+=/variable,name=vendetta_cdr,value=1-(runeforge.duskwalkers_patch*0.45)
+# The average CDR is 0.22 but due to the RNG nature of CP gen, 2x this value is optimal for syncing logic
+actions.precombat+=/variable,name=flagellation_cdr,value=1-(runeforge.obedience*0.44)
 # Determine which (if any) stat buff trinket we want to attempt to sync with Vendetta.
 actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_use_buff&(!trinket.2.has_use_buff|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)|trinket.1.is.inscrutable_quantum_device
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_use_buff&(!trinket.1.has_use_buff|trinket.2.cooldown.duration>trinket.1.cooldown.duration)|trinket.2.is.inscrutable_quantum_device
@@ -40,9 +44,11 @@ actions+=/bag_of_tricks
 actions.cds+=/marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit*1.5|combo_points.deficit>=cp_max_spend)
 # If no adds will die within the next 30s, use MfD on boss without any CP.
 actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration&combo_points.deficit>=cp_max_spend
+# Fleshcraft for Pustule Eruption if not stealthed or in a cooldown cycle
+actions.cds+=/fleshcraft,if=soulbind.pustule_eruption&!stealthed.all&!debuff.vendetta.up&master_assassin_remains=0&(energy.time_to_max_combined>2|!debuff.shiv.up)
 # Sync Flagellation with Vendetta as long as we won't lose a cast over the fight duration (or if Vendetta will come back again/is toggled off).
 actions.cds+=/flagellation,if=!stealthed.rogue&((cooldown.vendetta.remains>90|cooldown.vendetta.remains<3)&effective_combo_points>=4&target.time_to_die>10|debuff.vendetta.up|boss&fight_remains<24)
-actions.cds+=/flagellation,if=!stealthed.rogue&effective_combo_points>=4&(floor((fight_remains-24)%cooldown)>floor((fight_remains-24-cooldown.vendetta.remains*variable.vendetta_cdr)%cooldown))
+actions.cds+=/flagellation,if=!stealthed.rogue&effective_combo_points>=4&(floor((fight_remains-24)%(cooldown*variable.flagellation_cdr))>floor((fight_remains-24-cooldown.vendetta.remains*variable.vendetta_cdr)%(cooldown*variable.flagellation_cdr)))
 # Sync Sepsis with Vendetta as long as we won't lose a cast over the fight duration, but prefer targets that will live at least 10s
 actions.cds+=/sepsis,if=!stealthed.rogue&(cooldown.vendetta.remains<1&target.time_to_die>10|debuff.vendetta.up|fight_remains<10)
 actions.cds+=/sepsis,if=!stealthed.rogue&(floor((fight_remains-10)%cooldown)>floor((fight_remains-10-cooldown.vendetta.remains*variable.vendetta_cdr)%cooldown))
@@ -62,7 +68,7 @@ actions.cds+=/blood_fury,if=debuff.vendetta.up
 actions.cds+=/berserking,if=debuff.vendetta.up
 actions.cds+=/fireblood,if=debuff.vendetta.up
 actions.cds+=/ancestral_call,if=debuff.vendetta.up
-actions.cds+=/call_action_list,name=vanish,if=!stealthed.all&master_assassin_remains=0&(!talent.master_assassin.enabled|buff.slice_and_dice.remains>3)
+actions.cds+=/call_action_list,name=vanish,if=!stealthed.all&master_assassin_remains=0
 # Sync the priority stat buff trinket with Vendetta, otherwise use on cooldown
 actions.cds+=/trinket1,if=variable.trinket_sync_slot=1&(debuff.vendetta.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&!trinket.2.cooldown.ready)|!variable.trinket_sync_slot
 actions.cds+=/trinket2,if=variable.trinket_sync_slot=2&(debuff.vendetta.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&!trinket.1.cooldown.ready)|!variable.trinket_sync_slot
@@ -79,7 +85,7 @@ actions.direct+=/serrated_bone_spike,if=variable.use_filler&master_assassin_rema
 # Fan of Knives at 19+ stacks of Hidden Blades or against 4+ targets.
 actions.direct+=/fan_of_knives,if=variable.use_filler&(buff.hidden_blades.stack>=19|(!priority_rotation&spell_targets.fan_of_knives>=4+stealthed.rogue))
 # Fan of Knives to apply poisons if inactive on any target (or any bleeding targets with priority rotation) at 3T
-actions.direct+=/fan_of_knives,cycle_targets=1,if=variable.use_filler&spell_targets.fan_of_knives>=3
+actions.direct+=/fan_of_knives,cycle_targets=1,if=(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking)&variable.use_filler&spell_targets.fan_of_knives>=3
 actions.direct+=/echoing_reprimand,if=variable.use_filler&cooldown.vendetta.remains>10
 actions.direct+=/ambush,if=variable.use_filler&(master_assassin_remains=0&!runeforge.doomblade|buff.blindside.up)
 # Tab-Mutilate to apply Deadly Poison at 2 targets

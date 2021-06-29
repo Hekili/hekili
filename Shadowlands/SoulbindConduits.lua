@@ -511,4 +511,16 @@ all:RegisterAuras( {
         duration = 4,
         max_stack = 1,
     },
+
+    marrowed_gemstone_enhancement = {
+        id = 327069,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    marrowed_gemstone_charging = {
+        id = 327066,
+        duration = 3600,
+        max_stack = 10,
+    }
 } )
