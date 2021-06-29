@@ -175,9 +175,9 @@ actions.st+=/convoke_the_spirits,if=!druid.no_cds&((variable.convoke_desync&!coo
 actions.st+=/variable,name=dot_requirements,value=(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)&!buff.ravenous_frenzy_sinful_hysteria.up&(buff.kindred_empowerment_energize.remains<gcd.max)&(buff.eclipse_solar.remains>gcd.max|buff.eclipse_lunar.remains>gcd.max|(!buff.eclipse_lunar.up|!buff.eclipse_solar.up)&!talent.solstice.enabled)
 # Condition that checks if you are outside eclipse to only dot there or ignore this with Solstice
 actions.st+=/variable,name=dot_outside_eclipse,value=(!buff.eclipse_solar.up&!buff.eclipse_lunar.up)|talent.solstice.enabled
-actions.st+=/moonfire,cycle_targets=1,if=(buff.eclipse_solar.remains>remains|buff.eclipse_lunar.remains>remains|variable.dot_outside_eclipse)&refreshable&target.time_to_die>12,if=ap_check&variable.dot_requirements
-actions.st+=/sunfire,cycle_targets=1,if=(buff.eclipse_solar.remains>remains|buff.eclipse_lunar.remains>remains|variable.dot_outside_eclipse)&refreshable&target.time_to_die>12,if=ap_check&variable.dot_requirements
-actions.st+=/stellar_flare,cycle_targets=1,if=(buff.eclipse_solar.remains>remains|buff.eclipse_lunar.remains>remains|variable.dot_outside_eclipse)&refreshable&target.time_to_die>16,if=ap_check&variable.dot_requirements
+actions.st+=/moonfire,cycle_targets=1,if=refreshable&(buff.eclipse_solar.remains>remains|buff.eclipse_lunar.remains>remains|variable.dot_outside_eclipse)&refreshable&target.time_to_die>12&ap_check&variable.dot_requirements
+actions.st+=/sunfire,cycle_targets=1,if=refreshable&(buff.eclipse_solar.remains>remains|buff.eclipse_lunar.remains>remains|variable.dot_outside_eclipse)&refreshable&target.time_to_die>12&ap_check&variable.dot_requirements
+actions.st+=/stellar_flare,cycle_targets=1,if=refreshable&(buff.eclipse_solar.remains>remains|buff.eclipse_lunar.remains>remains|variable.dot_outside_eclipse)&refreshable&target.time_to_die>16&ap_check&variable.dot_requirements
 # Use FoN on cd without capping
 actions.st+=/force_of_nature,if=ap_check
 # Use Kindred Spirits with any long enough lasting Eclipse and try to line it up with Pulsar and CA/Inc
