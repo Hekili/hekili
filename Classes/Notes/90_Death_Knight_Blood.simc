@@ -1,5 +1,5 @@
 # Blood Death Knight
-# June 28, 2020
+# June 29, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=use_item,name=azsharas_font_of_power
@@ -46,6 +46,7 @@ actions.covenants+=/marrowrend,if=covenant.necrolord&buff.bone_shield.stack<=0
 actions.covenants+=/abomination_limb,if=!buff.dancing_rune_weapon.up
 # We just don't cast this during DRW
 actions.covenants+=/shackle_the_unworthy,if=cooldown.dancing_rune_weapon.remains<3|!buff.dancing_rune_weapon.up
+actions.covenants+=/fleshcraft,if=soulbind.pustule_eruption
 
 actions.mitigation=vampiric_blood,if=health.pct<50|(!group&health.pct<66)
 # Incoming damage requirement is 25% of max health solo, 50% of max health in a group.

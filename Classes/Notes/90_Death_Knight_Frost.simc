@@ -1,5 +1,5 @@
 ## Death Knight Frost
-## June 28, 2021
+## June 29, 2021
 
 ## Changes
 ## - Removed last-second usage of Chains of Ice as it doesn't play well in practice.
@@ -9,7 +9,7 @@ actions.precombat+=/variable,name=trinket_1_sync,op=setif,value=1,value_else=0.5
 actions.precombat+=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5,condition=trinket.2.has_use_buff&(!talent.breath_of_sindragosa&(trinket.2.cooldown.duration%%cooldown.pillar_of_frost.duration=0)|talent.breath_of_sindragosa&(cooldown.breath_of_sindragosa.duration%%trinket.2.cooldown.duration=0)|talent.icecap)
 # Estimates a trinkets value by comparing the cooldown of the trinket, divided by the duration of the buff it provides. Has a strength modifier to give a higher priority to strength trinkets, as well as a modifier for if a trinket will or will not sync with cooldowns.
 actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!trinket.1.has_use_buff&trinket.2.has_use_buff|trinket.2.has_use_buff&((trinket.2.cooldown.duration%trinket.2.buff_duration)*(1.5+trinket.2.has_buff.strength)*(variable.trinket_2_sync))>((trinket.1.cooldown.duration%trinket.1.buff_duration)*(1.5+trinket.1.has_buff.strength)*(variable.trinket_1_sync))
-
+actions.precombat+=/fleshcraft
 
 ## Executed every time the actor is available.
 actions=mind_freeze
@@ -112,6 +112,7 @@ actions.covenants+=/abomination_limb,if=cooldown.pillar_of_frost.remains<3&varia
 actions.covenants+=/abomination_limb,if=variable.adds_remain
 actions.covenants+=/shackle_the_unworthy,if=cooldown.pillar_of_frost.remains<3&variable.st_planning
 actions.covenants+=/shackle_the_unworthy,if=variable.adds_remain
+actions.covenants+=/fleshcraft,if=soulbind.pustule_eruption&!buff.pillar_of_frost.up
 
 # Obliteration rotation
 actions.obliteration=remorseless_winter,if=active_enemies>=3&(talent.gathering_storm|conduit.everfrost|runeforge.biting_cold)
@@ -119,7 +120,7 @@ actions.obliteration+=/howling_blast,cycle_targets=1,if=!dot.frost_fever.ticking
 actions.obliteration+=/frostscythe,if=buff.killing_machine.react&spell_targets.frostscythe>=2&(buff.deaths_due.stack=4|!death_and_decay.ticking|!covenant.night_fae)
 actions.obliteration+=/obliterate,cycle_targets=1,if=buff.killing_machine.react|!buff.rime.up&spell_targets.howling_blast>=3
 actions.obliteration+=/glacial_advance,if=spell_targets.glacial_advance>=2&(runic_power.deficit<10|rune.time_to_2>gcd)|(debuff.razorice.stack<5|debuff.razorice.remains<15)
-actions.obliteration+=/frost_strike,if=conduit.eradicating_blow&buff.eradicating_blow.stack=2&active_enemies=1
+actions.obliteration+=/frost_strike,if=active_enemies=1&(conduit.eradicating_blow&buff.eradicating_blow.stack=2|conduit.unleashed_frenzy&buff.unleashed_frenzy.remains<gcd)
 actions.obliteration+=/howling_blast,if=buff.rime.up&spell_targets.howling_blast>=2
 actions.obliteration+=/glacial_advance,if=spell_targets.glacial_advance>=2
 actions.obliteration+=/frost_strike,cycle_targets=1,if=!talent.avalanche&!buff.killing_machine.up|talent.avalanche&!buff.rime.up|buff.rime.up&rune.time_to_2>=gcd
@@ -148,7 +149,7 @@ actions.racials+=/bag_of_tricks,if=buff.pillar_of_frost.up&active_enemies=1&(buf
 actions.standard=remorseless_winter,if=talent.gathering_storm|conduit.everfrost|runeforge.biting_cold
 actions.standard+=/glacial_advance,if=!death_knight.runeforge.razorice&(debuff.razorice.stack<5|debuff.razorice.remains<7)
 actions.standard+=/frost_strike,if=cooldown.remorseless_winter.remains<=2*gcd&talent.gathering_storm
-actions.standard+=/frost_strike,if=conduit.eradicating_blow&buff.eradicating_blow.stack=2|conduit.unleashed_frenzy&buff.unleashed_frenzy.remains<3&buff.unleashed_frenzy.up
+actions.standard+=/frost_strike,if=conduit.eradicating_blow&buff.eradicating_blow.stack=2|conduit.unleashed_frenzy&buff.unleashed_frenzy.remains<3
 actions.standard+=/howling_blast,if=buff.rime.up
 actions.standard+=/obliterate,if=!buff.frozen_pulse.up&talent.frozen_pulse|buff.killing_machine.react|death_and_decay.ticking&covenant.night_fae&buff.deaths_due.stack<4|rune.time_to_4<=gcd
 actions.standard+=/frost_strike,if=runic_power.deficit<(15+talent.runic_attenuation*3)
