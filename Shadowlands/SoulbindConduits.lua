@@ -310,6 +310,9 @@ do
         [320687] = "swift_patrol",                       -- Niya
         [322721] = "grove_invigoration",                 -- Niya
         [342270] = "run_without_tiring",                 -- Niya
+        [352501] = "called_shot",                        -- Niya
+        [352502] = "survivors_rally",                    -- Niya
+        [352503] = "bonded_hearts",                      -- Niya
         [319191] = "field_of_blossoms",                  -- Dreamweaver
         [319210] = "social_butterfly",                   -- Dreamweaver
         [319211] = "soothing_voice",                     -- Dreamweaver
@@ -317,6 +320,9 @@ do
         [319214] = "faerie_dust",                        -- Dreamweaver
         [319216] = "somnambulist",                       -- Dreamweaver
         [319217] = "podtender",                          -- Dreamweaver
+        [352779] = "waking_dreams",                      -- Dreamweaver
+        [352782] = "cunning_dreams",                     -- Dreamweaver
+        [352786] = "dream_delver",                       -- Dreamweaver
         [319973] = "built_for_war",                      -- General Draven
         [319978] = "enduring_gloom",                     -- General Draven
         [319982] = "move_as_one",                        -- General Draven
@@ -325,6 +331,9 @@ do
         [332755] = "unbreakable_body",                   -- General Draven
         [332756] = "expedition_leader",                  -- General Draven
         [340159] = "service_in_stone",                   -- General Draven
+        [352365] = "regenerative_stone_skin",            -- General Draven
+        [352415] = "intimidation_tactics",               -- General Draven
+        [352417] = "battlefield_presence",               -- General Draven
         [323074] = "volatile_solvent",                   -- Plague Deviser Marileth
         [323079] = "kevins_keyring",                     -- Plague Deviser Marileth
         [323081] = "plagueborn_cleansing_slime",         -- Plague Deviser Marileth
@@ -332,6 +341,9 @@ do
         [323090] = "plagueys_preemptive_strike",         -- Plague Deviser Marileth
         [323091] = "oozs_frictionless_coating",          -- Plague Deviser Marileth
         [323095] = "ultimate_form",                      -- Plague Deviser Marileth
+        [352108] = "viscous_trail",                      -- Plague Deviser Marileth
+        [352109] = "undulating_maneuvers",               -- Plague Deviser Marileth
+        [352110] = "kevins_oozeling",                    -- Plague Deviser Marileth
         [323916] = "sulfuric_emission",                  -- Emeni
         [323918] = "gristled_toes",                      -- Emeni
         [323919] = "gnashing_chompers",                  -- Emeni
@@ -340,6 +352,9 @@ do
         [324441] = "hearth_kidneystone",                 -- Emeni
         [341650] = "emenis_ambulatory_flesh",            -- Emeni
         [342156] = "lead_by_example",                    -- Emeni
+        [351089] = "sole_slough",                        -- Emeni
+        [351093] = "resilient_stitching",                -- Emeni
+        [351094] = "pustule_eruption",                   -- Emeni
         [325065] = "wild_hunts_charge",                  -- Korayn
         [325066] = "wild_hunt_tactics",                  -- Korayn
         [325067] = "horn_of_the_wild_hunt",              -- Korayn
@@ -348,6 +363,9 @@ do
         [325072] = "vorkai_sharpening_techniques",       -- Korayn
         [325073] = "get_in_formation",                   -- Korayn
         [325601] = "hold_the_line",                      -- Korayn
+        [352800] = "vorkai_ambush",                      -- Korayn
+        [352805] = "wild_hunt_strategem",                -- Korayn
+        [352806] = "hunts_exhilaration",                 -- Korayn
         [328257] = "let_go_of_the_past",                 -- Pelagos
         [328261] = "focusing_mantra",                    -- Pelagos
         [328263] = "cleansed_vestments",                 -- Pelagos
@@ -355,13 +373,19 @@ do
         [328266] = "combat_meditation",                  -- Pelagos
         [329777] = "phial_of_patience",                  -- Pelagos
         [329786] = "road_of_trials",                     -- Pelagos
-        [331576] = "agent_of_chaos",                     -- Nadija the Mistblade
-        [331577] = "fancy_footwork",                     -- Nadija the Mistblade
-        [331579] = "friends_in_low_places",              -- Nadija the Mistblade
-        [331580] = "exacting_preparation",               -- Nadija the Mistblade
-        [331582] = "familiar_predicaments",              -- Nadija the Mistblade
-        [331584] = "dauntless_duelist",                  -- Nadija the Mistblade
-        [331586] = "thrill_seeker",                      -- Nadija the Mistblade
+        [351146] = "better_together",                    -- Pelagos
+        [351147] = "path_of_the_devoted",                -- Pelagos
+        [351149] = "newfound_resolve",                   -- Pelagos
+        [331576] = "agent_of_chaos",                     -- Nadjia the Mistblade
+        [331577] = "fancy_footwork",                     -- Nadjia the Mistblade
+        [331579] = "friends_in_low_places",              -- Nadjia the Mistblade
+        [331580] = "exacting_preparation",               -- Nadjia the Mistblade
+        [331582] = "familiar_predicaments",              -- Nadjia the Mistblade
+        [331584] = "dauntless_duelist",                  -- Nadjia the Mistblade
+        [331586] = "thrill_seeker",                      -- Nadjia the Mistblade
+        [352366] = "nimble_steps",                       -- Nadjia the Mistblade
+        [352373] = "fatal_flaw",                         -- Nadjia the Mistblade
+        [352405] = "sinful_preservation",                -- Nadjia the Mistblade
         [319983] = "wasteland_propriety",                -- Theotar the Mad Duke
         [336140] = "watch_the_shoes!",                   -- Theotar the Mad Duke
         [336147] = "leisurely_gait",                     -- Theotar the Mad Duke
@@ -370,6 +394,9 @@ do
         [336243] = "refined_palate",                     -- Theotar the Mad Duke
         [336245] = "token_of_appreciation",              -- Theotar the Mad Duke
         [336247] = "life_of_the_party",                  -- Theotar the Mad Duke
+        [351747] = "its_always_tea_time",                -- Theotar the Mad Duke
+        [351748] = "life_is_but_an_appetizer",           -- Theotar the Mad Duke
+        [351750] = "party_favors",                       -- Theotar the Mad Duke
         [326504] = "serrated_spaulders",                 -- Bonesmith Heirmir
         [326507] = "resourceful_fleshcrafting",          -- Bonesmith Heirmir
         [326509] = "heirmirs_arsenal_ravenous_pendant",  -- Bonesmith Heirmir
@@ -378,6 +405,9 @@ do
         [326513] = "bonesmiths_satchel",                 -- Bonesmith Heirmir
         [326514] = "forgeborne_reveries",                -- Bonesmith Heirmir
         [326572] = "heirmirs_arsenal_marrowed_gemstone", -- Bonesmith Heirmir
+        [350899] = "carvers_eye",                        -- Bonesmith Heirmir
+        [350935] = "waking_bone_breastplate",            -- Bonesmith Heirmir
+        [350936] = "mnemonic_equipment",                 -- Bonesmith Heirmir
         [328258] = "ever_forward",                       -- Kleia
         [329776] = "ascendant_phial",                    -- Kleia
         [329778] = "pointed_courage",                    -- Kleia
@@ -386,6 +416,9 @@ do
         [329784] = "cleansing_rites",                    -- Kleia
         [329791] = "valiant_strikes",                    -- Kleia
         [334066] = "mentorship",                         -- Kleia
+        [351488] = "spear_of_the_archon",                -- Kleia
+        [351489] = "hope_springs_eternal",               -- Kleia
+        [351491] = "light_the_path",                     -- Kleia
         [331609] = "forgelite_filter",                   -- Forgelite Prime Mikanikos
         [331610] = "charged_additive",                   -- Forgelite Prime Mikanikos
         [331611] = "soulsteel_clamps",                   -- Forgelite Prime Mikanikos
@@ -394,6 +427,9 @@ do
         [331726] = "regenerating_materials",             -- Forgelite Prime Mikanikos
         [333935] = "hammer_of_genesis",                  -- Forgelite Prime Mikanikos
         [333950] = "brons_call_to_action",               -- Forgelite Prime Mikanikos
+        [352186] = "soulglow_spectrometer",              -- Forgelite Prime Mikanikos
+        [352187] = "reactive_retrofitting",              -- Forgelite Prime Mikanikos
+        [352188] = "effusive_anima_accelerator",         -- Forgelite Prime Mikanikos    
     }
 
     local soulbindEvents = {
