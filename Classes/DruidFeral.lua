@@ -399,6 +399,11 @@ if UnitClassBase( "player" ) == "DRUID" then
             duration = 20,
             max_stack = 20,
         },
+        ravenous_frenzy_sinful_hysteria = {
+            id = 355315,
+            duration = 5,
+            max_stack = 20,
+        },
         ravenous_frenzy_stun = {
             id = 323557,
             duration = 1,
@@ -817,6 +822,10 @@ if UnitClassBase( "player" ) == "DRUID" then
         else state:RunHandle( "wild_growth" ) end
     end, state )
 
+    local SinfulHysteriaHandler = setfenv( function ()
+        applyBuff( "ravenous_frenzy_sinful_hysteria" )
+    end, state )
+
 
     spec:RegisterHook( "reset_precast", function ()
         if buff.cat_form.down then
@@ -850,6 +859,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         if buff.lycaras_fleeting_glimpse.up then
             state:QueueAuraExpiration( "lycaras_fleeting_glimpse", LycarasHandler, buff.lycaras_fleeting_glimpse.expires )
+        end
+
+        if legendary.sinful_hysteria.enabled and buff.ravenous_frenzy.up then
+            state:QueueAuraExpiration( "ravenous_frenzy", SinfulHysteriaHandler, buff.ravenous_frenzy.expires )
         end
     end )
 
@@ -2670,6 +2683,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             handler = function ()
                 applyBuff( "ravenous_frenzy" )
+
+                if legendary.sinful_hysteria.enabled then
+                    state:QueueAuraExpiration( "ravenous_frenzy", SinfulHysteriaHandler, buff.ravenous_frenzy.expires )
+                end        
             end,
         }
     } )

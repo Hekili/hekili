@@ -572,6 +572,10 @@ if UnitClassBase( "player" ) == "DRUID" then
         else state:RunHandle( "wild_growth" ) end
     end, state )
 
+    local SinfulHysteriaHandler = setfenv( function ()
+        applyBuff( "ravenous_frenzy_sinful_hysteria" )
+    end, state )
+    
     spec:RegisterHook( "reset_precast", function ()
         if azerite.masterful_instincts.enabled and buff.survival_instincts.up and buff.masterful_instincts.down then
             applyBuff( "masterful_instincts", buff.survival_instincts.remains + 30 )
@@ -579,6 +583,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         if buff.lycaras_fleeting_glimpse.up then
             state:QueueAuraExpiration( "lycaras_fleeting_glimpse", LycarasHandler, buff.lycaras_fleeting_glimpse.expires )
+        end
+
+        if legendary.sinful_hysteria.enabled and buff.ravenous_frenzy.up then
+            state:QueueAuraExpiration( "ravenous_frenzy", SinfulHysteriaHandler, buff.ravenous_frenzy.expires )
         end
 
         eclipse.reset() -- from Balance.

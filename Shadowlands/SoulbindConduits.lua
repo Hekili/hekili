@@ -522,5 +522,17 @@ all:RegisterAuras( {
         id = 327066,
         duration = 3600,
         max_stack = 10,
+    },
+
+    thrill_seeker = {
+        id = 331939,
+        duration = 3600,
+        max_stack = 40,
+    },
+    
+    euphoria = {
+        id = 331937,
+        duration = 10,
+        max_stack = 1,
     }
 } )
