@@ -600,14 +600,14 @@ if UnitClassBase( "player" ) == "MAGE" then
 
         -- # Delay Combustion for Mirrors of Torment
         -- actions.combustion_timing+=/variable,name=combustion_time,op=max,value=cooldown.mirrors_of_torment.remains,if=covenant.venthyr&cooldown.mirrors_of_torment.remains-25<variable.combustion_time
-        if covenant.venthyr and cooldown.mirrors_of_torment.remains - 25 < variable.combustion_time then
+        if covenant.venthyr and cooldown.mirrors_of_torment.remains - 25 < value then
             value = max( value, cooldown.mirrors_of_torment.remains )
         end
 
         -- # Delay Combustion for Deathborne.
         -- actions.combustion_timing+=/variable,name=combustion_time,op=max,value=cooldown.deathborne.remains+(buff.deathborne.duration-buff.combustion.duration)*runeforge.deaths_fathom,if=covenant.necrolord&cooldown.deathborne.remains-10<variable.combustion_time
-        if covenant.necrolord and cooldown.deathborne.remains - 10 < variable.combustion_time then
-            value = max( value, cooldown.deathborne.remains + ( buff.deathborne.duration - buff.combustion.duration ) * runeforge.deaths_fathom.enabled )
+        if covenant.necrolord and cooldown.deathborne.remains - 10 < value then
+            value = max( value, cooldown.deathborne.remains + ( buff.deathborne.duration - buff.combustion.duration ) * ( runeforge.deaths_fathom.enabled and 1 or 0 ) )
         end
 
         -- # Delay Combustion for Death's Fathom stacks if there are at least two targets.
