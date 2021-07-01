@@ -1,10 +1,11 @@
 ## Shadow Priest
-## June 29, 2021
+## July 1, 2021
 
 ## Tweak Void Torrent when target counts are forced.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/power_word_fortitude,if=remains<300
+actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/shadowform,if=!buff.shadowform.up
 actions.precombat+=/arcane_torrent,if=insanity.deficit>15
 actions.precombat+=/variable,name=mind_sear_cutoff,op=set,value=2
@@ -48,7 +49,7 @@ actions.cds+=/unholy_nova,if=((!raid_event.adds.up&raid_event.adds.in>20)|raid_e
 actions.cds+=/boon_of_the_ascended,if=!buff.voidform.up&!cooldown.void_eruption.up&spell_targets.mind_sear>1&!talent.searing_nightmare.enabled|(buff.voidform.up&spell_targets.mind_sear<2&!talent.searing_nightmare.enabled&(prev_gcd.1.void_bolt&(!equipped.empyreal_ordnance|!talent.hungering_void.enabled)|equipped.empyreal_ordnance&trinket.empyreal_ordnance.cooldown.remains<=162&debuff.hungering_void.up))|(buff.voidform.up&talent.searing_nightmare.enabled)
 actions.cds+=/call_action_list,name=trinkets
 # Use Fleshcraft outside of main cooldowns to maintain Volatile Solvent buff.
-actions.cds+=/fleshcraft,if=soulbind.volatile_solvent&buff.volatile_solvent_humanoid.remains<10&!buff.voidform.up&!buff.power_infusion.up
+actions.cds+=/fleshcraft,if=soulbind.volatile_solvent&!buff.voidform.up&!buff.power_infusion.up
 
 ## Cast While Casting actions. Set at higher priority to short circuit interrupt conditions on Mind Sear/Flay
 # Use Searing Nightmare if you will hit enough targets and Power Infusion and Voidform are not ready, or to refresh SW:P on two or more targets.
