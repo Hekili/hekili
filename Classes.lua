@@ -26,6 +26,8 @@ local mt_resource = ns.metatables.mt_resource
 local GetSpellDescription, GetSpellTexture = _G.GetSpellDescription, _G.GetSpellTexture
 local GetSpecialization, GetSpecializationInfo = _G.GetSpecialization, _G.GetSpecializationInfo
 
+local Casting = _G.SPELL_CASTING or "Casting"
+
 
 local specTemplate = {
     enabled = false,
@@ -1218,7 +1220,7 @@ all:RegisterAuras( {
     },
 
     casting = {
-        name = SPELL_CASTING,
+        name = Casting,
         generate = function( t, auraType )
             local unit = auraType == "debuff" and "target" or "player"
 
@@ -1262,7 +1264,7 @@ all:RegisterAuras( {
                 end
             end
 
-            t.name = SPELL_CASTING
+            t.name = Casting
             t.count = 0
             t.expires = 0
             t.applied = 0
