@@ -1,5 +1,5 @@
 ## Death Knight Unholy
-## June 29, 2021
+## July 1, 2021
 
 ## Changes:
 ## - Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
@@ -8,6 +8,7 @@
 ## - Using Festering Strike in AOE if you have nothing else to do and won't overcap wounds is DPS neutral.
 ## - Changed many 'fight_remains' conditionals to apply in boss fights only (less CD waste on trash).
 ## - Added another Outbreak entry to set up stronger Epidemics.
+## - Relax ST vs. AOE logic since it relies on confabulated raid_events.
 ## - TODO:  Factor Strength procs into trinket logic.
 
 actions.precombat+=/potion
@@ -54,8 +55,8 @@ actions+=/call_action_list,name=racials
 actions+=/call_action_list,name=cooldowns
 actions+=/run_action_list,name=aoe_setup,if=variable.adds_remain&(cooldown.death_and_decay.remains<10&!talent.defile|cooldown.defile.remains<10&talent.defile|covenant.night_fae&cooldown.deaths_due.remains<10)&!death_and_decay.ticking
 actions+=/run_action_list,name=aoe_burst,strict=1,if=active_enemies>=2&death_and_decay.ticking
-actions+=/run_action_list,name=generic_aoe,if=active_enemies>=2&(!death_and_decay.ticking&(cooldown.death_and_decay.remains>10&!talent.defile|cooldown.defile.remains>10&talent.defile|covenant.night_fae&cooldown.deaths_due.remains>10))
-actions+=/call_action_list,name=generic,strict=1,if=active_enemies=1
+actions+=/run_action_list,name=generic_aoe,if=active_enemies>=2&(!death_and_decay.ticking&(cooldown.death_and_decay.remains>10&!talent.defile|cooldown.defile.remains>10&talent.defile|covenant.night_fae&cooldown.deaths_due.remains>10)|!variable.adds_remain)
+actions+=/call_action_list,name=generic,strict=1,if=active_enemies=1|!variable.adds_remain
 
 ## AoE Burst
 actions.aoe_burst=clawing_shadows,if=active_enemies<=5
