@@ -1,5 +1,5 @@
 ## Outlaw Rogue
-## June 29, 2021
+## July 1, 2021
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
@@ -38,7 +38,11 @@ actions.build=sepsis
 actions.build+=/ghostly_strike
 actions.build+=/shiv,if=runeforge.tiny_toxic_blade
 actions.build+=/echoing_reprimand
-actions.build+=/serrated_bone_spike,cycle_targets=1,if=buff.slice_and_dice.up&!dot.serrated_bone_spike_dot.ticking|boss&fight_remains<=5|cooldown.serrated_bone_spike.max_charges-charges_fractional<=0.25
+# Apply SBS to all targets without a debuff as priority, preferring targets dying sooner after the primary target
+actions.build+=/serrated_bone_spike,if=!dot.serrated_bone_spike_dot.ticking
+actions.build+=/serrated_bone_spike,cycle_targets=1,if=!dot.serrated_bone_spike_dot.ticking
+# Attempt to use when it will cap combo points and SnD is down, otherwise keep from capping charges
+actions.build+=/serrated_bone_spike,if=fight_remains<=5|cooldown.serrated_bone_spike.max_charges-charges_fractional<=0.25|combo_points.deficit=cp_gain&!buff.skull_and_crossbones.up&energy.time_to_max>1
 # Use Pistol Shot with Opportunity if Combat Potency won't overcap energy, when it will exactly cap CP, or when using Quick Draw
 actions.build+=/pistol_shot,if=buff.opportunity.up&(energy.deficit>(energy.regen+10)|combo_points.deficit<=1+buff.broadside.up|talent.quick_draw.enabled)
 actions.build+=/pistol_shot,if=buff.opportunity.up&(buff.greenskins_wickers.up|buff.concealed_blunderbuss.up)
@@ -76,8 +80,8 @@ actions.cds+=/berserking
 actions.cds+=/fireblood
 actions.cds+=/ancestral_call
 # Default conditions for usable items.
-actions.cds+=/trinket1,if=debuff.between_the_eyes.up|trinket.1.has_use_buff|fight_remains<=20
-actions.cds+=/trinket2,if=debuff.between_the_eyes.up|trinket.2.has_use_buff|fight_remains<=20
+actions.cds+=/trinket1,if=debuff.between_the_eyes.up|trinket.1.has_use_buff|boss&fight_remains<=20
+actions.cds+=/trinket2,if=debuff.between_the_eyes.up|trinket.2.has_use_buff|boss&fight_remains<=20
 
 ## Finishers
 # BtE on cooldown to keep the Crit debuff up, unless the target is about to die

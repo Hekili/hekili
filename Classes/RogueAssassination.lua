@@ -1766,6 +1766,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             toggle = "essences",
 
+            cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2 end,
+
             handler = function ()
                 -- Can't predict the Animacharge, unless you have the legendary.
                 if legendary.resounding_clarity.enabled then
@@ -1837,6 +1839,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             toggle = "essences",
 
             cycle = "serrated_bone_spike",
+
+            cp_gain = function () return ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike end,
 
             handler = function ()
                 applyDebuff( "target", "serrated_bone_spike" )
