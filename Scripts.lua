@@ -453,6 +453,11 @@ do
         { "^!?variable%.([a-z0-9_]+)<=?(.-)$",
                                                     "safenum(variable.%1)-%2" },
 
+        { "^raid_events%.([a-z0-9_]+)%.remains$",   "raid_events.%1.remains" },
+        { "^raid_events%.([a-z0-9_]+)%.remains$<=?(.-)$",
+                                                    "raid_events.%1.remains-%2" },
+        { "^!?raid_events%.([a-z0-9_]+)%.up$",      "raid_events.%1.up" },
+
         { "^!?(pet%.[a-z0-9_]+)%.up$",              "%1.remains" },
         { "^!?(pet%.[a-z0-9_]+)%.active$",          "%1.remains" },
     }
