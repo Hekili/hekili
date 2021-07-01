@@ -1,5 +1,5 @@
 ## Balance Druid
-## June 29, 2021
+## June 30, 2021
 
 ## Changes:
 ## - Added Solar Beam.
@@ -170,7 +170,7 @@ actions.st=starsurge,if=runeforge.timeworn_dreambinder&(eclipse.in_any&!((buff.t
 # Use Adaptive Swarm when there is no active swarm, as late as possible on swarm with 2 or fewer stacks or on a 3+ swarm so that the new swarm arrives just after that swarm expires
 actions.st+=/adaptive_swarm,cycle_targets=1,if=!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>5)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<3&dot.adaptive_swarm_damage.ticking
 # Uses Convoke if CA/Inc is up or you are desyncing CA/Inc with Convoke and you are below 40 AsP
-actions.st+=/convoke_the_spirits,if=!druid.no_cds&((variable.convoke_desync&!cooldown.ca_inc.ready&!runeforge.primordial_arcanic_pulsar|buff.ca_inc.up)&astral_power<40&(buff.eclipse_lunar.remains>10|buff.eclipse_solar.remains>10)|boss&fight_remains<10&!cooldown.ca_inc.ready)
+actions.st+=/convoke_the_spirits,if=!druid.no_cds&((variable.convoke_desync&!cooldown.ca_inc.ready&!runeforge.primordial_arcanic_pulsar|buff.ca_inc.up)&astral_power<=40&(buff.eclipse_lunar.remains>10|buff.eclipse_solar.remains>10)|boss&fight_remains<10&!cooldown.ca_inc.ready)
 # Condition for all dots that makes sure they aren't refreshed when Ravenous Frenzy has less than 5 secs remaining or the kyrian buff is about to fall off or any Eclipse is about to expire
 actions.st+=/variable,name=dot_requirements,value=(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)&!buff.ravenous_frenzy_sinful_hysteria.up&(buff.kindred_empowerment_energize.remains<gcd.max)&(buff.eclipse_solar.remains>gcd.max|buff.eclipse_lunar.remains>gcd.max|(!buff.eclipse_lunar.up|!buff.eclipse_solar.up)&!talent.solstice.enabled)
 # Condition that checks if you are outside eclipse to only dot there or ignore this with Solstice
@@ -196,7 +196,7 @@ actions.st+=/fury_of_elune,if=eclipse.in_any&ap_check&buff.primordial_arcanic_pu
 actions.st+=/starfall,if=buff.oneths_perception.up&buff.starfall.refreshable
 actions.st+=/cancel_buff,name=starlord,if=buff.starlord.remains<5&(buff.eclipse_solar.remains>5|buff.eclipse_lunar.remains>5)&astral_power>90
 # Dumps AsP before Convoke using the Convoke condition to check if Convoke is actually about to be cast
-actions.st+=/starsurge,if=covenant.night_fae&variable.convoke_desync&cooldown.convoke_the_spirits.remains<5&!druid.no_cds
+actions.st+=/starsurge,if=covenant.night_fae&variable.convoke_desync&cooldown.convoke_the_spirits.remains<5&!druid.no_cds&eclipse.in_any&astral_power>40
 # Use Starfall with Stellar Drift and no Starlord, when no Starfall is up, you are in Lunar Eclipse for 8+secs or to proc Pulsar when above 90 AsP or adpative swarm has 8+secs remaining or is in flight. Note that under the same conditions it's dps neutral to Starfall during Ravenous Frenzy, when you'd still end up with 90+asp for the last globals.
 actions.st+=/starfall,if=talent.stellar_drift.enabled&!talent.starlord.enabled&buff.starfall.refreshable&(buff.eclipse_lunar.remains>8&eclipse.in_lunar&buff.primordial_arcanic_pulsar.value<250|buff.primordial_arcanic_pulsar.value>=250&astral_power>90|dot.adaptive_swarm_damage.remains>8|action.adaptive_swarm_damage.in_flight)&cooldown.ca_inc.remains>10
 # Use Starsurge Oneth procs and dump AsP when CA/Inc or the Venthyr buff is about to fall off or you'd cap AsP
