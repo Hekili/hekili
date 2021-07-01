@@ -1218,8 +1218,7 @@ all:RegisterAuras( {
     },
 
     casting = {
-        name = "Casting",
-        strictTiming = true,
+        name = SPELL_CASTING,
         generate = function( t, auraType )
             local unit = auraType == "debuff" and "target" or "player"
 
@@ -1263,7 +1262,7 @@ all:RegisterAuras( {
                 end
             end
 
-            t.name = "Casting"
+            t.name = SPELL_CASTING
             t.count = 0
             t.expires = 0
             t.applied = 0
@@ -1310,7 +1309,6 @@ all:RegisterAuras( {
             aura.v1 = 0
             aura.caster = 'target'
         end,
-        strictTiming = true,
     }, ]]
 
     movement = {

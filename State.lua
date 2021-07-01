@@ -3367,9 +3367,6 @@ local mt_default_buff = {
             return t.remains == 0
 
         elseif k == "remains" then
-            if aura and aura.strictTiming then
-                return max( 0, t.expires - state.query_time )
-            end
             return max( 0, t.expires - state.query_time )
 
         elseif k == "refreshable" then
@@ -4255,9 +4252,6 @@ local mt_default_debuff = {
             return not t.up
 
         elseif k == "remains" then
-            if aura and aura.strictTiming then
-                return max( 0, t.expires - state.query_time )
-            end
             return max( 0, t.expires - state.query_time )
 
         elseif k == "refreshable" then
