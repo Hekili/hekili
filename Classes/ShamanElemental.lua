@@ -884,6 +884,11 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = false,
             texture = 135790,
 
+
+            timeToReady = function ()
+                return max( pet.earth_elemental.remains, pet.primal_earth_elemental.remains, pet.storm_elemental.remains, pet.primal_storm_elemental.remains )
+            end,            
+
             handler = function ()
                 summonPet( talent.primal_elementalist.enabled and "primal_fire_elemental" or "greater_fire_elemental", 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) )
             end,
@@ -1280,6 +1285,10 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             startsCombat = true,
             texture = 2065626,
+
+            timeToReady = function ()
+                return max( pet.earth_elemental.remains, pet.primal_earth_elemental.remains, pet.fire_elemental.remains, pet.primal_fire_elemental.remains )
+            end,            
 
             handler = function ()
                 summonPet( talent.primal_elementalist.enabled and "primal_storm_elemental" or "greater_storm_elemental", 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) )
