@@ -1776,7 +1776,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyBuff( "echoing_reprimand_4", nil, 4 )
                     applyBuff( "echoing_reprimand_5", nil, 5 )
                 end
-                gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2, "combo_points" )
+                gain( action.echoing_reprimand.cp_gain, "combo_points" )
             end,
 
             disabled = function ()

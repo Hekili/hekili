@@ -501,6 +501,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
     end )
 
     spec:RegisterStateExpr( "cp_gain", function ()
+        return ( this_action and class.abilities[ this_action ].cp_gain or 0 )
     end )
 
 
@@ -615,7 +616,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             end,
 
             handler = function ()
-                gain( cp_gain, "combo_points" )
+                gain( action.ambush.cp_gain, "combo_points" )
                 if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
             end,
         },
@@ -746,7 +747,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     applyBuff( "slice_and_dice", 15 )
                 end
 
-                gain( cp_gain, "combo_points" )
+                gain( action.cheap_shot.cp_gain, "combo_points" )
             end,
         },
 
@@ -865,7 +866,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             
             handler = function ()
                 applyDebuff( "player", "dreadblades" )
-                gain( cp_gain, "combo_points" )
+                gain( action.dreadblades.cp_gain, "combo_points" )
             end,
         },
 
@@ -923,7 +924,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             handler = function ()
                 applyDebuff( "target", "ghostly_strike", 10 )
-                gain( cp_gain, "combo_points" )
+                gain( action.ghostly_strike.cp_gain, "combo_points" )
             end,
         },
 
@@ -945,7 +946,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) end,
 
             handler = function ()
-                gain( cp_gain, "combo_points" )
+                gain( action.gouge.cp_gain, "combo_points" )
                 applyDebuff( "target", "gouge", 4 )
             end,
         },
@@ -1070,7 +1071,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cp_gain = function () return 5 end,
 
             handler = function ()
-                gain( cp_gain, "combo_points" )
+                gain( action.marked_for_death.cp_gain, "combo_points" )
             end,
         },
 
@@ -1137,7 +1138,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) + ( buff.opportunity.up and 1 or 0 ) + ( buff.concealed_blunderbuss.up and 2 or 0 ) ) end,
 
             handler = function ()
-                gain( cp_gain, "combo_points" )
+                gain( action.pistol_shot.cp_gain, "combo_points" )
 
                 removeBuff( "deadshot" )
                 removeBuff( "opportunity" )
@@ -1230,7 +1231,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) end,
             
             handler = function ()
-                gain( cp_gain, "combo_point" )
+                gain( action.shiv.cp_gain, "combo_point" )
             end,
         },
 
@@ -1266,7 +1267,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             handler = function ()
                 removeStack( "snake_eyes" )
-                gain( cp_gain, "combo_points" )
+                gain( action.sinister_strike.cp_gain, "combo_points" )
 
                 if buff.shallow_insight.up then buff.shallow_insight.expires = query_time + 10 end
                 if buff.moderate_insight.up then buff.moderate_insight.expires = query_time + 10 end
