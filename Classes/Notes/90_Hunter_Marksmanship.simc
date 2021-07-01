@@ -1,8 +1,8 @@
 ## Marksmanship Hunter
-## June 29, 2021
+## July 1, 2021
 
 actions.precombat+=/bottled_flayedwing_toxin
-actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption
+actions.precombat+=/fleshcraft
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers
 actions.precombat+=/double_tap,precast_time=10,if=active_enemies>1|!covenant.kyrian&!talent.volley
 # Change to 1 to simulate ETF/SSF gearswap Trueshot precast.
