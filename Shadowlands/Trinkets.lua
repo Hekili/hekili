@@ -1198,7 +1198,7 @@ do
             },
         },
 
-        ebonsoul_vise = {
+        ebonsoul_vice = {
             cast = 0,
             cooldown = 90,
             gcd = "off",
@@ -1210,11 +1210,14 @@ do
                 applyDebuff( "target", "ebonsoul_vise" )
             end,
 
+            copy = "ebonsoul_vise",
+
             auras = {
-                ebonsoul_vise = {
+                ebonsoul_vice = {
                     id = 355327,
                     duration = 12,
                     max_stack = 1,
+                    copy = "ebonsoul_vise"
                 },
                 -- Shredded Soul implemented above.
             }
@@ -1236,6 +1239,27 @@ do
                 iron_spikes = {
                     id = 351872,
                     duration = 120,
+                    max_stack = 1,
+                },
+            },
+        },
+
+        unchained_gladiators_shackles = {
+            cast = 1,
+            cooldown = 0,
+            gcd = "spell",
+
+            item = 186980,
+            toggle = "interrupts",
+
+            handler = function ()
+                applyDebuff( "target", "shackles_of_malediction" )
+            end,
+
+            auras = {
+                shackles_of_malediction = {
+                    id = 356567,
+                    duration = 4,
                     max_stack = 1,
                 },
             },
