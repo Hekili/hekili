@@ -1,16 +1,20 @@
 # Demonology Warlock
 # https://github.com/simulationcraft/simc/
-# June 28, 2021
+# July 1, 2021
 
 # Changes:
 # - Spell Lock.
 # - Only recommend Demonbolt pre-combat if it is instant (or hardcast for bosses).
 # - Power Siphon allowed pre-combat to proc instant Demonbolt.
 # - PvP talent interrupt.
+# - Avoid SB->HoG spam when you're not about to summon a Tyrant.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fel_domination,if=time>0&!pet.alive
 actions.precombat+=/summon_pet
+actions.precombat+=/use_item,name=tome_of_monstrous_constructions
+actions.precombat+=/use_item,name=soleahs_secret_technique
+actions.precombat+=/fleshcraft
 actions.precombat+=/power_siphon,if=buff.wild_imps.stack>1&buff.demonic_core.stack<=2
 actions.precombat+=/demonbolt,if=(boss|action.demonbolt.cast=0)&soul_shards<4
 actions.precombat+=/shadow_bolt,if=!(boss|action.demonbolt.cast=0)|soul_shards>3
@@ -35,14 +39,14 @@ actions+=/implosion,if=active_enemies>1+(1*talent.sacrificed_souls.enabled)&buff
 actions+=/implosion,if=active_enemies>2&buff.wild_imps.stack>=6&buff.tyrant.down&cooldown.summon_demonic_tyrant.remains_expected>5&!runeforge.implosive_potential&(!talent.from_the_shadows.enabled|buff.from_the_shadows.up)
 actions+=/implosion,if=active_enemies>2&buff.wild_imps.stack>=6&buff.implosive_potential.remains<2&runeforge.implosive_potential&(!talent.demonic_consumption.enabled|(buff.tyrant.down&cooldown.summon_demonic_tyrant.remains_expected>5))
 actions+=/implosion,if=buff.wild_imps.stack>=12&talent.soul_conduit.enabled&talent.from_the_shadows.enabled&runeforge.implosive_potential&buff.tyrant.down&cooldown.summon_demonic_tyrant.remains_expected>5
-actions+=/grimoire_felguard,if=time_to_die<30
-actions+=/summon_vilefiend,if=time_to_die<28
-actions+=/summon_demonic_tyrant,if=time_to_die<15
+actions+=/grimoire_felguard,if=boss&time_to_die<30
+actions+=/summon_vilefiend,if=boss&time_to_die<28
+actions+=/summon_demonic_tyrant,if=boss&time_to_die<15
 actions+=/hand_of_guldan,if=soul_shard=5
 # If Dreadstalkers are already active, no need to save shards
 actions+=/hand_of_guldan,if=soul_shard>=3&(pet.dreadstalker.active|pet.demonic_tyrant.active)
 actions+=/hand_of_guldan,if=soul_shard>=1&buff.nether_portal.up&cooldown.call_dreadstalkers.remains>2*gcd.max
-actions+=/hand_of_guldan,if=soul_shard>=1&cooldown.summon_demonic_tyrant.remains_expected<gcd.max&time>variable.first_tyrant_time-gcd.max
+actions+=/hand_of_guldan,if=soul_shard>=1&cooldown.summon_demonic_tyrant.remains_expected<gcd.max&time>12-gcd.max&(buff.dreadstalkers.up&buff.dreadstalkers.remains>action.hand_of_guldan.execute_time+action.summon_demonic_tyrant.execute_time)&(!talent.summon_vilefiend.enabled|buff.vilefiend.up)
 actions+=/call_action_list,name=covenant_ability,strict=1,if=!covenant.venthyr
 # Without Sacrificed Souls, Soul Strike is stronger than Demonbolt, so it has a higher priority
 actions+=/soul_strike,if=!talent.sacrificed_souls.enabled
@@ -85,14 +89,17 @@ actions.pure_damage_trinks=use_item,name=dreadfire_vessel
 actions.pure_damage_trinks+=/use_item,name=soul_igniter
 actions.pure_damage_trinks+=/use_item,name=glyph_of_assimilation,if=active_enemies=1
 actions.pure_damage_trinks+=/use_item,name=darkmoon_deck_putrescence
+actions.pure_damage_trinks+=/use_item,name=ebonsoul_vise
+actions.pure_damage_trinks+=/use_item,name=unchained_gladiators_shackles
 
-actions.trinkets=call_action_list,name=hp_trinks,if=talent.demonic_consumption.enabled&cooldown.summon_demonic_tyrant.remains_expected<20
+actions.trinkets=use_item,name=shadowed_orb_of_torment,if=cooldown.summon_demonic_tyrant.remains_expected<15
+actions.trinkets+=/call_action_list,name=hp_trinks,if=talent.demonic_consumption.enabled&cooldown.summon_demonic_tyrant.remains_expected<20
 # Effects that travel slowly to target require additional, separate handling
 actions.trinkets+=/call_action_list,name=slow_trinkets
 actions.trinkets+=/use_item,name=overflowing_anima_cage,if=pet.demonic_tyrant.active
 actions.trinkets+=/trinket1,if=trinket.1.has_use_buff&pet.demonic_tyrant.active
 actions.trinkets+=/trinket2,if=trinket.2.has_use_buff&pet.demonic_tyrant.active
-actions.trinkets+=/call_action_list,name=pure_damage_trinks,if=time>variable.first_tyrant_time
+actions.trinkets+=/call_action_list,name=pure_damage_trinks,if=time>variable.first_tyrant_time&cooldown.summon_demonic_tyrant.remains_expected>20
 
 actions.tyrant_setup=nether_portal,if=cooldown.summon_demonic_tyrant.remains_expected<15
 actions.tyrant_setup+=/grimoire_felguard,if=cooldown.summon_demonic_tyrant.remains_expected<17-(action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time)&(cooldown.call_dreadstalkers.remains<17-(action.summon_demonic_tyrant.execute_time+action.summon_vilefiend.execute_time+action.shadow_bolt.execute_time)|pet.dreadstalker.remains>cooldown.summon_demonic_tyrant.remains_expected+action.summon_demonic_tyrant.execute_time)
