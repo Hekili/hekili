@@ -63,8 +63,6 @@ actions.aoe+=/siegebreaker
 actions.aoe+=/rampage
 actions.aoe+=/spear_of_bastion,if=buff.enrage.up&cooldown.recklessness.remains>5
 actions.aoe+=/bladestorm,if=buff.enrage.remains>gcd*2.5
-actions.aoe+=/victory_rush
-actions.aoe+=/impending_victory
 
 actions.single_target+=/raging_blow,if=runeforge.will_of_the_berserker.equipped&buff.will_of_the_berserker.remains<gcd
 actions.single_target+=/crushing_blow,if=runeforge.will_of_the_berserker.equipped&buff.will_of_the_berserker.remains<gcd
