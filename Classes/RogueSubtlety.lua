@@ -579,6 +579,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
         if debuff.sepsis.up then
             state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
         end
+    end )
+
+    spec:RegisterCycle( function ()
+        if active_enemies == 1 then return end
+        if this_action == "marked_for_death" and target.time_to_die > 3 + Hekili:GetLowestTTD() then return "cycle" end
     end )    
 
 
