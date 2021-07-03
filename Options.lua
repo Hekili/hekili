@@ -9178,7 +9178,7 @@ do
                             return
                         end
                     else
-                        to = not prefs[ setting.name ]
+                        to = not setting.info.get( info )
                     end
                     
                     Hekili:Print( format( "%s set to %s.", setting.info.name, ( to and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r" ) ) )
