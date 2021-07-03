@@ -3906,6 +3906,8 @@ do
             end
 
             if not db[ var ] then
+                if debug then Hekili:Debug( "No such variable '%s'.", var ) end
+                Hekili:Error( "Variable '%s' referenced in %s but is undefined.", var, state.scriptID )
                 return 0
             end
 
