@@ -1497,7 +1497,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
         state.delay = 0
         state.delayMin = 0
-        state.delayMax = 0
+        state.delayMax = 60
 
         local hadProj = false
 
@@ -1674,7 +1674,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                             state.delay = 0
                             state.delayMin = 0
-                            state.delayMax = 0
+                            state.delayMax = 60
 
                             action, wait = nil, 15                            
 
@@ -1688,6 +1688,11 @@ function Hekili:ProcessHooks( dispName, packName )
                             slot.action = nil
                             slot.actionName = nil
                             slot.actionID = nil
+
+                            state.delay = 0
+                            state.delayMin = 0
+                            state.delayMax = 60
+        
                             action, wait = nil, 15        
                             break
                         end
@@ -1759,8 +1764,8 @@ function Hekili:ProcessHooks( dispName, packName )
 
                     state.delay = 0
                     state.delayMin = 0
-                    state.delayMax = 0
-                                        
+                    state.delayMax = 60
+
                     action, wait = nil, 15
 
                     action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
@@ -1774,6 +1779,11 @@ function Hekili:ProcessHooks( dispName, packName )
                     slot.action = nil
                     slot.actionName = nil
                     slot.actionID = nil
+
+                    state.delay = 0
+                    state.delayMin = 0
+                    state.delayMax = 60
+
                     action, wait = nil, 15
 
                     break
