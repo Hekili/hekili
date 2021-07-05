@@ -1,12 +1,11 @@
 ## Fury Warrior
-## July 3, 2021
+## July 5, 2021
 
 ## Changes:
 ## - Added Pummel.
 ## - Disabled movement / Heroic Leap call (not needed for in-game context).
 ## - Moved Bladestorm and Dragon Roar above Bloodthirst to improve frequency of recommendations (sims roughly equal).
 ## - Added Battle Shout to precombat APL.
-## - Added Victory Rush above single-target Whirlwind.
 ## - Added Use Items.
 ## - Tweak for Whirlwind before level 37.
 ## - Removed Essences.
@@ -76,13 +75,14 @@ actions.single_target+=/ancient_aftershock,if=buff.enrage.up&(spell_targets.whir
 actions.single_target+=/spear_of_bastion,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>45)
 actions.single_target+=/execute
 actions.single_target+=/bladestorm,if=buff.enrage.up&(!buff.recklessness.remains|rage<50)&(spell_targets.whirlwind=1&raid_event.adds.in>45|spell_targets.whirlwind=2)
-actions.single_target+=/bloodthirst,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35
+actions.single_target+=/bloodthirst,cycle_targets=1,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35
 actions.single_target+=/bloodbath,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35&!talent.cruelty.enabled
 actions.single_target+=/dragon_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
 actions.single_target+=/onslaught
 actions.single_target+=/whirlwind,if=buff.merciless_bonegrinder.up&spell_targets.whirlwind>3
 actions.single_target+=/raging_blow,if=charges=2|buff.recklessness.up&variable.execute_phase&talent.massacre.enabled
 actions.single_target+=/crushing_blow,if=charges=2|buff.recklessness.up&variable.execute_phase&talent.massacre.enabled
+actions.single_target+=/bloodthirst,cycle_targets=1,if=buff.enrage.down
 actions.single_target+=/bloodthirst
 actions.single_target+=/bloodbath
 actions.single_target+=/raging_blow
