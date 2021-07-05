@@ -1,5 +1,5 @@
 # Blood Death Knight
-# June 29, 2020
+# July 5, 2021
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=use_item,name=azsharas_font_of_power
@@ -8,7 +8,7 @@ actions.precombat+=/fleshcraft
 
 # Executed every time the actor is available.
 actions=mind_freeze
-actions+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
+actions+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<5)&runic_power.deficit>=20
 actions+=/call_action_list,name=mitigation,if=tanking|incoming_damage_5s>0
 actions+=/blood_fury,if=cooldown.dancing_rune_weapon.ready&(!cooldown.blooddrinker.ready|!talent.blooddrinker.enabled)
 actions+=/berserking
@@ -46,7 +46,7 @@ actions.covenants+=/marrowrend,if=covenant.necrolord&buff.bone_shield.stack<=0
 actions.covenants+=/abomination_limb,if=!buff.dancing_rune_weapon.up
 # We just don't cast this during DRW
 actions.covenants+=/shackle_the_unworthy,if=cooldown.dancing_rune_weapon.remains<3|!buff.dancing_rune_weapon.up
-actions.covenants+=/fleshcraft,if=soulbind.pustule_eruption
+actions.covenants+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 
 actions.mitigation=vampiric_blood,if=health.pct<50|(!group&health.pct<66)
 # Incoming damage requirement is 25% of max health solo, 50% of max health in a group.
@@ -60,16 +60,16 @@ actions.mitigation+=/sacrificial_pact,if=health.pct<75&pet.ghoul.remains<5
 actions.standard=death_strike,if=runic_power.deficit<=10&(!talent.bonestorm.enabled|!cooldown.bonestorm.ready|buff.dancing_rune_weapon.up)
 actions.standard+=/sacrificial_pact,if=pet.ghoul.remains<gcd*2
 
-# actions.standard+=/blooddrinker,if=!buff.dancing_rune_weapon.up
-# Duplicated here because the mitigation list relies on tanking/taking damage.
-# actions.standard+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
+## actions.standard+=/blooddrinker,if=!buff.dancing_rune_weapon.up
+## Duplicated here because the mitigation list relies on tanking/taking damage.
+## actions.standard+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
 
 # Use blood tap to prevent overcapping charges if we have space for a rune and a GCD to spare to burn it
 actions.standard=blood_tap,if=rune<=2&rune.time_to_4>gcd&charges_fractional>=1.8
 actions.standard+=/dancing_rune_weapon,if=!talent.blooddrinker.enabled|!cooldown.blooddrinker.ready
 actions.standard+=/tombstone,if=buff.bone_shield.stack>=7&rune>=2
-actions.standard+=/marrowrend,if=(!covenant.necrolord|buff.abomination_limb.up)&(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
-# actions.standard+=/death_strike,if=runic_power.deficit<=70
+## actions.standard+=/marrowrend,if=(!covenant.necrolord|buff.abomination_limb.up)&(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<5)&runic_power.deficit>=20
+## actions.standard+=/death_strike,if=runic_power.deficit<=70
 actions.standard+=/marrowrend,if=buff.bone_shield.stack<6&runic_power.deficit>=15&(!covenant.night_fae|buff.deaths_due.remains>5)
 actions.standard+=/heart_strike,if=!talent.blooddrinker.enabled&death_and_decay.remains<5&runic_power.deficit<=(15+buff.dancing_rune_weapon.up*5+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
 actions.standard+=/blood_boil,if=charges_fractional>=1.8&(buff.hemostasis.stack<=(5-spell_targets.blood_boil)|spell_targets.blood_boil>2)
