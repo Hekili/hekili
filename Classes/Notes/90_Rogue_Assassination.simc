@@ -1,10 +1,11 @@
 ## Assassination Rogue
-## June 29, 2021
+## July 5, 2021
 
 ## Changes:
 ## - Apply 'strict' flag to some APL forks to save processing time.
 ## - Don't Vanish unless Slice and Dice will last longer than Master Assassin.
 ## - Relax Flagellation / Vendetta sync (if Vendetta is toggled off or on a long CD).
+## - Make Fleshcraft interrupt in combat if we just did it for volatile_solvent.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
@@ -45,7 +46,7 @@ actions.cds+=/marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up
 # If no adds will die within the next 30s, use MfD on boss without any CP.
 actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration&combo_points.deficit>=cp_max_spend
 # Fleshcraft for Pustule Eruption if not stealthed or in a cooldown cycle
-actions.cds+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent)&!stealthed.all&!debuff.vendetta.up&master_assassin_remains=0&(energy.time_to_max_combined>2|!debuff.shiv.up)
+actions.cds+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent)&!stealthed.all&!debuff.vendetta.up&master_assassin_remains=0&(energy.time_to_max_combined>2|!debuff.shiv.up),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 # Sync Flagellation with Vendetta as long as we won't lose a cast over the fight duration (or if Vendetta will come back again/is toggled off).
 actions.cds+=/flagellation,if=!stealthed.rogue&((cooldown.vendetta.remains>90|cooldown.vendetta.remains<3)&effective_combo_points>=4&target.time_to_die>10|debuff.vendetta.up|boss&fight_remains<24)
 actions.cds+=/flagellation,if=!stealthed.rogue&effective_combo_points>=4&(floor((fight_remains-24)%(cooldown*variable.flagellation_cdr))>floor((fight_remains-24-cooldown.vendetta.remains*variable.vendetta_cdr)%(cooldown*variable.flagellation_cdr)))
