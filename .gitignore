@@ -102,3 +102,6 @@ Libs/AceGUI-3.0_SFX-Widgets/AceGUI-3.0_SFX-Widgets.toc
 Libs/AceGUI-3.0_SFX-Widgets/AceGUI-3.0_SFX-Widgets.xml
 Libs/AceGUI-3.0_SFX-Widgets/LibStub/LibStub.lua
 Libs/AceGUI-3.0_SFX-Widgets/Widgets/SFX-Info-URL.lua
+Libs/LibTranslit-1.0/LibTranslit-1.0.lua
+Libs/LibTranslit-1.0/LibTranslit-1.0.toc
+Libs/LibTranslit-1.0/LibTranslit-1.0.xml

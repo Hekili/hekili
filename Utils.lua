@@ -59,8 +59,11 @@ function ns.SpaceOut( str )
 end
 
 
+local LT = LibStub( "LibTranslit-1.0" )
+
 -- Converts `s' to a SimC-like key: strip non alphanumeric characters, replace spaces with _, convert to lower case.
 function ns.formatKey( s )
+    s = LT:Transliterate( s )
     return ( lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
 end
 
