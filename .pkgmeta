@@ -57,4 +57,4 @@ externals:
     Libs/LibChatAnims:
         url: https://repos.wowace.com/wow/libchatanims/trunk/LibChatAnims
     Libs/LibTranslit-1.0:
-        url: git://github.com/Vardex/LibTranslit-1.0.git
+        url: git://github.com/Vardex/LibTranslit.git
