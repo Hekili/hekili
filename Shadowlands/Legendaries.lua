@@ -95,7 +95,7 @@ local legendaries = {
     [7003] = { "call_of_the_wild", 1, 253 }, -- 336742
     [7006] = { "craven_strategem", 1, 253 }, -- 336747
     [7716] = { "fragments_of_the_elder_antlers", 1, 253 }, -- 356375
-    [7004] = { "nessingwarys_trapping_apparatus", 1, 253 }, -- 336743
+    [7004] = { "nessingwarys_trapping_apparatus", "nesingwarys_trapping_apparatus", 1, 253 }, -- 336743
     [7714] = { "pact_of_the_soulstalkers", 1, 253 }, -- 356262
     [7717] = { "pouch_of_razor_fragments", 1, 253 }, -- 356618
     [7005] = { "soulforge_embers", 1, 253 }, -- 336745
@@ -354,10 +354,20 @@ local function UpdateLegendary( slot, item )
             bonusID = tonumber( bonusID )
 
             if legendaries[ bonusID ] then
-                local name, rank = legendaries[ bonusID ][ 1 ], legendaries[ bonusID ][ 2 ]
+                local entries = #legendaries[ bonusID ]
+                local name, rank = legendaries[ bonusID ][ 1 ], legendaries[ bonusID ][ entries - 1 ]
 
                 state.legendary[ name ] = rawget( state.legendary, name ) or { rank = 0 }
-                state.legendary[ name ].rank = state.legendary[ name ].rank + rank
+                state.legendary[ name ].rank = rank
+
+                -- Multiple names, likely to accommodate a SimC typo.
+                if entries > 3 then
+                    for j = 2, entries - 2 do
+                        local n = legendaries[ bonusID ][ j ]
+                        state.legendary[ n ] = rawget( state.legendary, n ) or { rank = 0 }
+                        state.legendary[ n ].rank = rank
+                    end
+                end
             end
         end
     end
