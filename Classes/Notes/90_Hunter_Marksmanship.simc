@@ -1,5 +1,5 @@
 ## Marksmanship Hunter
-## July 1, 2021
+## July 6, 2021
 
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/fleshcraft
@@ -7,7 +7,7 @@ actions.precombat+=/tar_trap,if=runeforge.soulforge_embers
 actions.precombat+=/double_tap,precast_time=10,if=active_enemies>1|!covenant.kyrian&!talent.volley
 # Change to 1 to simulate ETF/SSF gearswap Trueshot precast.
 actions.precombat+=/variable,name=etf_precast,value=legendary.eagletalons_true_focus.enabled&settings.eagletalon_swap.enabled
-actions.precombat+=/trueshot,precast_etf_equip=1,precast_ssf_rank=7,precast_time=2,if=variable.etf_precast
+actions.precombat+=/trueshot,if=variable.etf_precast
 actions.precombat+=/aimed_shot,if=active_enemies<3&(!covenant.kyrian&!talent.volley|active_enemies<2)&!variable.etf_precast
 actions.precombat+=/steady_shot,if=active_enemies>2|(covenant.kyrian|talent.volley)&active_enemies=2|variable.etf_precast
 
@@ -22,12 +22,12 @@ actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=st,if=active_enemies<3
 actions+=/call_action_list,name=trickshots,if=active_enemies>2
 
-actions.cds=berserking,if=buff.trueshot.up|fight_remains<13
+actions.cds=berserking,if=(buff.trueshot.up&buff.resonating_arrow.up&covenant.kyrian)|(buff.trueshot.up&buff.wild_spirits.up&covenant.night_fae)|(covenant.venthyr|covenant.necrolord)&buff.trueshot.up|boss&fight_remains<13|(covenant.kyrian&buff.resonating_arrow.up&target.time_to_die<73)
 actions.cds+=/blood_fury,if=buff.trueshot.up|cooldown.trueshot.remains>30|boss&fight_remains<16
 actions.cds+=/ancestral_call,if=buff.trueshot.up|cooldown.trueshot.remains>30|boss&fight_remains<16
 actions.cds+=/fireblood,if=buff.trueshot.up|cooldown.trueshot.remains>30|boss&fight_remains<9
 actions.cds+=/lights_judgment,if=buff.trueshot.down
-actions.cds+=/potion,if=buff.trueshot.up&(buff.bloodlust.up|target.health.pct<20)|boss&fight_remains<26
+actions.cds+=/potion,if=buff.trueshot.up&(buff.bloodlust.up|target.health.pct<20)|boss&fight_remains<26|(covenant.kyrian&buff.resonating_arrow.up&fight_remains<72)
 
 actions.st=steady_shot,if=talent.steady_focus&(prev_gcd.1.steady_shot&buff.steady_focus.remains<5|buff.steady_focus.down)&(buff.resonating_arrow.down|!covenant.kyrian)
 actions.st+=/kill_shot
