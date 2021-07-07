@@ -10144,6 +10144,11 @@ do
                 result.op = 'set'
             end
 
+            if result.cancel_if and not result.interupt_if then
+                result.interrupt_if = result.cancel_if
+                result.cancel_if = nil
+            end
+
             table.insert( output, result )
         end
 
