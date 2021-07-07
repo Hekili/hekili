@@ -2887,8 +2887,7 @@ local mt_cooldowns = {
                 class.abilities[ k ] = class.abilities[ shortkey ]
                 entry = class.abilities[ k ]
             else
-                Error( "UNK: cooldown." .. k )
-                return
+                return t.null_cooldown
             end
         end
 
