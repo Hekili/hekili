@@ -373,7 +373,7 @@ local mt_trinket = {
             if isEnabled and t.usable and t.ability then
                 return t.cooldown.ready
             end
-            return false
+            return true
         elseif k == "cooldown" then
             if t.usable and t.ability and state.cooldown[ t.ability ] then
                 return state.cooldown[ t.ability ]            
