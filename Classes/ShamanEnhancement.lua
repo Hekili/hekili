@@ -1358,6 +1358,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = false,
             texture = 136114,
 
+            nobuff = "doom_winds", -- Don't cast Windfury Totem while Doom Winds is already up, there's some weirdness with Windfury Totem's buff right now.
+
             handler = function ()
                 applyBuff( "windfury_totem" )
                 summonTotem( "windfury_totem", nil, 120 )
@@ -1365,7 +1367,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 if legendary.doom_winds.enabled and debuff.doom_winds_cd.down then
                     applyBuff( "doom_winds" )
                     applyDebuff( "player", "doom_winds_cd" )
+                    applyDebuff( "player", "doom_winds_debuff" )
                     applyBuff( "doom_winds_cd" ) -- SimC weirdness.
+                    applyBuff( "doom_winds_debuff" ) -- SimC weirdness.
                 end
             end,
         },
