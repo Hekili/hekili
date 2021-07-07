@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## July 1, 2021
+## July 7, 2021
 
 ## Changes:
 ## - Added Spell Lock.
@@ -12,12 +12,14 @@
 ## - Set some call_action_list entries to strict to avoid checking lists that won't be reached (again!).
 ## - Only Seed once pre-pull.
 ## - Adjust "burn CDs before end of fight" logic to apply only to boss fights (not trash packs).
+## - Fleshcraft/Volatile Solvent cancel_if changed to interrupt_if.
 
 actions.precombat=fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet
 actions.precombat+=/use_item,name=tome_of_monstrous_constructions
 actions.precombat+=/use_item,name=soleahs_secret_technique
 actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
+actions.precombat+=/fleshcraft
 actions.precombat+=/variable,name=dots_ready,value=active_dot.corruption>0&active_dot.agony>0&active_dot.unstable_affliction>0&(!talent.siphon_life.enabled|active_dot.siphon_life>0)&(dot.phantom_singularity.ticking|!talent.phantom_singularity.enabled)
 actions.precombat+=/use_item,name=azsharas_font_of_power
 actions.precombat+=/seed_of_corruption,line_cd=10,if=spell_targets.seed_of_corruption_aoe>=3
@@ -90,6 +92,7 @@ actions+=/agony,cycle_targets=1,if=refreshable
 actions+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&refreshable
 actions+=/siphon_life,cycle_targets=1,if=refreshable
 actions+=/corruption,cycle_targets=1,if=refreshable&active_enemies<4-(talent.sow_the_seeds|talent.siphon_life)
+actions+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up
 actions+=/drain_soul,interrupt=1
 actions+=/shadow_bolt
 
@@ -118,6 +121,7 @@ actions.aoe+=/malefic_rapture,if=soul_shard>4
 actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<=3&refreshable&!dot.siphon_life.ticking
 actions.aoe+=/call_action_list,name=covenant,strict=1,if=covenant.necrolord
 actions.aoe+=/drain_life,if=buff.inevitable_demise.stack>=50|boss&buff.inevitable_demise.up&fight_remains<5|buff.inevitable_demise.stack>=35&dot.soul_rot.ticking
+actions.aoe+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up
 actions.aoe+=/drain_soul,interrupt=1
 actions.aoe+=/shadow_bolt
 

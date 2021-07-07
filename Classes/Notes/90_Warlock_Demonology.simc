@@ -1,13 +1,14 @@
-# Demonology Warlock
-# https://github.com/simulationcraft/simc/
-# July 6, 2021
+## Demonology Warlock
+## https://github.com/simulationcraft/simc/
+## July 7, 2021
 
-# Changes:
-# - Spell Lock.
-# - Only recommend Demonbolt pre-combat if it is instant (or hardcast for bosses).
-# - Power Siphon allowed pre-combat to proc instant Demonbolt.
-# - PvP talent interrupt.
-# - Avoid SB->HoG spam when you're not about to summon a Tyrant.
+## Changes:
+## - Spell Lock.
+## - Only recommend Demonbolt pre-combat if it is instant (or hardcast for bosses).
+## - Power Siphon allowed pre-combat to proc instant Demonbolt.
+## - PvP talent interrupt.
+## - Avoid SB->HoG spam when you're not about to summon a Tyrant.
+## - Fleshcraft/Volatile Solvent cancel_if changed to interrupt_if.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fel_domination,if=time>0&!pet.alive
@@ -73,6 +74,7 @@ actions.covenant_ability+=/soul_rot,if=soulbind.field_of_blossoms&pet.demonic_ty
 actions.covenant_ability+=/soul_rot,if=soulbind.wild_hunt_tactics
 actions.covenant_ability+=/decimating_bolt,if=soulbind.lead_by_example&(pet.demonic_tyrant.active&soul_shard<2|cooldown.summon_demonic_tyrant.remains_expected>40)
 actions.covenant_ability+=/decimating_bolt,if=!soulbind.lead_by_example&!pet.demonic_tyrant.active
+actions.covenant_ability+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up
 actions.covenant_ability+=/scouring_tithe,if=soulbind.combat_meditation&pet.demonic_tyrant.active
 actions.covenant_ability+=/scouring_tithe,if=!soulbind.combat_meditation
 actions.covenant_ability+=/impending_catastrophe,if=pet.demonic_tyrant.active&soul_shard=0
