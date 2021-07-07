@@ -2876,12 +2876,20 @@ ns.metatables.mt_default_cooldown = mt_default_cooldown
 -- Needs review.
 local mt_cooldowns = {
     -- The action doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
-    __index = function(t, k)
+    __index = function( t, k )
         local entry = class.abilities[ k ]
 
         if not entry then
-            Error( "UNK: cooldown." .. k )
-            return
+            -- Check if this is one of SimC's lovely itemname_spellid type tokens.
+            local shortkey = k:match( "^([a-z0-9_])_%d+$" )
+
+            if shortkey and class.abilities[ shortkey ] then
+                class.abilities[ k ] = class.abilities[ shortkey ]
+                entry = class.abilities[ k ]
+            else
+                Error( "UNK: cooldown." .. k )
+                return
+            end
         end
 
         if k ~= entry.key then
@@ -2889,11 +2897,8 @@ local mt_cooldowns = {
             return t[ k ]
         end
 
-        local ability = entry.id
-
         t[ k ] = { key = k }
         return t[ k ]
-
     end,
     __newindex = function(t, k, v)
         rawset( t, k, setmetatable( v, mt_default_cooldown ) )
