@@ -10140,6 +10140,10 @@ do
                 end
             end
 
+            if result.action == 'use_items' and ( result.slot or result.slots ) then
+                result.action = result.slot or result.slots
+            end
+
             if result.action == 'variable' and not result.op then
                 result.op = 'set'
             end
