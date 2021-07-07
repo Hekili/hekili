@@ -500,12 +500,13 @@ local HekiliSpecMixin = {
                     if a.item and a.item ~= 158075 then
                         a.itemSpellName, a.itemSpellID = GetItemSpell( a.item )
 
-                        if a.itemSpellName == a.name then
+                        if a.itemSpellID then
                             a.itemSpellKey = a.key .. "_" .. a.itemSpellID
                             self.abilities[ a.itemSpellKey ] = a
                             class.abilities[ a.itemSpellKey ] = a
+                        end
 
-                        elseif a.itemSpellName then
+                        if a.itemSpellName then
                             local itemAura = self.auras[ a.itemSpellName ]
 
                             if itemAura then
