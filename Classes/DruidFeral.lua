@@ -2642,7 +2642,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         -- Druid - Night Fae - 323764 - convoke_the_spirits  (Convoke the Spirits)
         convoke_the_spirits = {
             id = 323764,
-            cast = function () return legendary.celestial_spirits.enabled and 2 or 4 end,
+            cast = function () return legendary.celestial_spirits.enabled and 3 or 4 end,
             channeled = true,
             cooldown = function () return legendary.celestial_spirits.enabled and 60 or 120 end,
             gcd = "spell",
