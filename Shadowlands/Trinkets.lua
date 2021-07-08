@@ -1143,6 +1143,8 @@ do
 
             item = 186422,
 
+            nobuff = "studious_comprehension",
+
             handler = function ()
                 applyBuff( "studious_comprehension" )
             end,
