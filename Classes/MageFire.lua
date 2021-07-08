@@ -906,7 +906,7 @@ if UnitClassBase( "player" ) == "MAGE" then
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
                 if conduit.infernal_cascade.enabled and buff.combustion.up then addStack( "infernal_cascade" ) end
-                if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
+                if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
             end,
 
             auras = {

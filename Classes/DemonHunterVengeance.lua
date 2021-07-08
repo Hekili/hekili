@@ -520,7 +520,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
                 -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
                 if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
-                    debuff.sinful.brand.expires = debuff.sinful_brand.expires + 0.5
+                    debuff.sinful.brand.expires = debuff.sinful_brand.expires + 0.75
                 end                
             end,
 

@@ -1510,7 +1510,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             tick = function ()
                 if legendary.seeds_of_rampant_growth.enabled then
-                    if state.spec.enhancement then reduceCooldown( "feral_spirit", 7 )
+                    if state.spec.enhancement then reduceCooldown( "feral_spirit", 9 )
                     elseif state.spec.elemental then reduceCooldown( talent.storm_elemental.enabled and "storm_elemental" or "fire_elemental", 6 )
                     else reduceCooldown( "healing_tide_totem", 5 ) end
                     addStack( "seeds_of_rampant_growth" )

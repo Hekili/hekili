@@ -553,7 +553,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
         final_sentence = {
             id = 353823,
-            duration = 10,
+            duration = 18,
             max_stack = 5,
         },
 

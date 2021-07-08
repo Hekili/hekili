@@ -830,7 +830,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if buff.brain_freeze.up then
                     if buff.expanded_potential.up then removeBuff( "expanded_potential" )
                     else
-                        if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
+                        if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
                         removeBuff( "brain_freeze" )
                     end
                     frost_info.virtual_brain_freeze = true

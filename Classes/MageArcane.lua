@@ -913,7 +913,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if buff.expanded_potential.up then removeBuff( "expanded_potential" )
                 else
                     removeStack( "clearcasting" )
-                    if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
+                    if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
                 end
                 gain( 1, "arcane_charges" )
             end,
@@ -990,7 +990,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             start = function ()
                 if buff.clearcasting.up then
                     removeStack( "clearcasting" )
-                    if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
+                    if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
                     applyBuff( "clearcasting_channel" )
                 elseif buff.rule_of_threes.up then removeBuff( "rule_of_threes" ) end
 
@@ -1283,7 +1283,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 135807,
             
             handler = function ()
-                if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 3 ) end
+                if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
             end,
         },
         
@@ -1776,7 +1776,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 },
                 heart_of_the_fae = {
                     id = 356881,
-                    duration = 10,
+                    duration = 15,
                     max_stack = 1,
                 }
             }
