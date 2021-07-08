@@ -233,6 +233,11 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             duration = 2,
             max_stack = 1,
         },
+        furious_gaze = {
+            id = 343312,
+            duration = 12,
+            max_stack = 1,
+        },
         glide = {
             id = 131347,
         },
