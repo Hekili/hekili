@@ -1,0 +1,78 @@
+name: Priority/Recommendation Issue
+description: The addon appears fully functional, but its recommendations don't match my expectations.
+title: "[REC] REPLACE THIS TEXT WITH YOUR CLASS/SPEC AND BRIEF ISSUE DETAILS"
+labels: [recommendation, triage]
+assignees:
+  - Hekili
+body:
+  - type: checkboxes
+    id: precheck
+    attributes:
+      label: Before You Begin
+      description: Please confirm that you've taken these preliminary steps before submitting your issue report.
+      options:
+        - label: I confirm that I have downloaded the latest version of the addon.
+          required: true
+        - label: I checked for an existing, open ticket for this issue and was not able to find one.
+          required: true
+        - label: I edited the title of this bug report (above) so that it describes the issue I am reporting.
+          required: true
+        - label: I am reporting an issue with the default priority included with the specialization (imported priorities are not supported).
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Issue
+      description: Please describe the issue in question.  Be specific and describe what you see.  You can CTRL+V to paste a screenshot (image) or supply links to screenshot images.
+      placeholder: "Example: For my Retribution Paladin, I expect the addon to recommend a Holy Power spender when I have 5 Holy Power.  However, the addon recommended Crusader Strike instead."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How to Reproduce
+      description: Tell me what I need to do to see the issue you are reporting.
+      placeholder: |
+        1. Enter game as a Retribution Paladin.
+        2. Take the Seraphim, Final Reckoning, and Execution Sentence talents.
+        3. Use Final Reckoning.
+        4. Build to 5 Holy Power.
+        5. See recommendations.
+    validations:
+      required: true
+  - type: input
+    id: player-info
+    attributes:
+      label: Snapshot (Link)
+      description: |
+        Please supply a Snapshot of the addon's decision-making when you are seeing this issue in-game.  **This is not a screenshot.**  To generate a Snapshot, please complete the following steps.
+        * Log into your WoW character.
+        * Recreate the issue you are reporting (i.e., generate 5 Holy Power).
+        * When you see the recommendation you disagree with, press `ALT-SHIFT-P` to Pause and Snapshot (or use `ALT-SHIFT-[`) to Snapshot without pausing.
+          * You can change these keybindings in `/hekili` > Toggles if needed.
+        * Type `/hekili` and press Enter.
+        * Open the Snapshots section on the left side.
+        * Select the display which is showing the recommendation (usually Primary).
+        * Select the snapshot number (usually 1, if you took only 1 snapshot).
+        * Copy all of the text in the lower box.
+        * Paste the text to Pastebin (https://pastebin.com).
+        * Provide the Pastebin link here.
+        
+        This step is essential, as most issues are related to specific classes, specializations, gear, talent choices, or other game systems.
+        If you do not provide this information, I cannot triage your problem.
+      placeholder: http://pastebin.com/AbCdEfGh
+    validations:
+      required: true      
+  - type: textarea
+    id: addl-info
+    attributes:
+      label: Additional Information
+      description: Please provide any additional information regarding this issue that was not included above.
+      placeholder: Leave blank, if all necessary details are included above.
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Information
+      description: |
+        I will contact you via this GitHub ticket with questions and updates.
+        If you do not regularly check your GitHub email, please provide an alternate contact method (i.e., Discord ID) so that I can reach you if needed.
+      placeholder: Hekili#0001
