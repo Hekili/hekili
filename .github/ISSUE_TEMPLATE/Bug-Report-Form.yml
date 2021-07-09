@@ -51,6 +51,7 @@ body:
         
         This step is essential, as most issues are related to specific classes, specializations, gear, talent choices, or other game systems.
         If you do not provide this information, I cannot triage your problem.
+      placeholder: http://pastebin.com/AbCdEfGh
   - type: input
     id: error-messages
     attributes:
