@@ -1,0 +1,43 @@
+name: Feature Request
+description: I would like the addon to have a new enhancement, and I'll explain why.
+title: "[FEATURE] REPLACE THIS TEXT WITH A BRIEF DESCRIPTION OF YOUR NEW FEATURE"
+labels: [enhancement, triage]
+assignees:
+  - Hekili
+body:
+  - type: checkboxes
+    id: precheck
+    attributes:
+      label: Before You Begin
+      description: Please confirm that you've taken these preliminary steps before submitting your feature request.
+      options:
+        - label: I confirm that I have downloaded the latest version of the addon.
+          required: true
+        - label: I checked for an existing, open ticket for this request and was not able to find one.
+          required: true
+        - label: I edited the title of this feature request (above) so that it describes the issue I am reporting.
+          required: true
+  - type: textarea
+    id: request
+    attributes:
+      label: Feature Request
+      description: |
+        Please describe the new feature.  Why would it be helpful?  Explain the benefits.
+        You can CTRL+V to paste a screenshot (image) or supply links to screenshot images.
+      placeholder: "Example: I'd like Hekili to flip all the recommendations upside down.  This would help me because I hang like a bat while playing WoW."
+    validations:
+      required: true    
+  - type: textarea
+    id: addl-info
+    attributes:
+      label: Additional Information
+      description: Please provide any additional information regarding this issue that was not included above.
+      placeholder: If there's nothing else to provide, you may leave this blank.
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Information
+      description: |
+        I will contact you via this GitHub ticket with questions and updates.
+        If you do not regularly check your GitHub email, please provide an alternate contact method (i.e., Discord ID) so that I can reach you if needed.
+      placeholder: Hekili#0001
