@@ -13,7 +13,7 @@ body:
       options:
         - label: I confirm that I have downloaded the latest version of the addon.
           required: true
-        - label: I checked for an existing, open ticket for this issue and was not able to find one.
+        - label: I checked for an [existing, open ticket](https://github.com/Hekili/hekili/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc) for this issue and was not able to find one.
           required: true
         - label: I edited the title of this bug report (above) so that it describes the issue I am reporting.
           required: true
@@ -51,7 +51,10 @@ body:
         
         This step is essential, as most issues are related to specific classes, specializations, gear, talent choices, or other game systems.
         If you do not provide this information, I cannot triage your problem.
+        **Note:** Some errors may prevent you from opening `/hekili`.  If that's true for you, please note that in this box instead of providing the link.
       placeholder: http://pastebin.com/AbCdEfGh
+    validations:
+      required: true
   - type: input
     id: error-messages
     attributes:
@@ -66,6 +69,8 @@ body:
         * Paste the message to Pastebin (it's free!).
         * Provide the Pastebin link here.
       placeholder: http://pastebin.com/aBcDeFgH
+    validations:
+      required: true      
   - type: textarea
     id: addl-info
     attributes:
