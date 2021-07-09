@@ -40,9 +40,7 @@ body:
     id: player-info
     attributes:
       label: Player Information (Link)
-      description: |
-        <details>
-        <summary>Click here for details about obtaining your Player Information</summary>
+      description: |        
         Please supply your character information by completing the following steps.
         * Log into your WoW character.
         * Type `/hekili` and press Enter.
