@@ -48,7 +48,7 @@ body:
         * Copy all of the text from the text box.
         * Paste the text to Pastebin.
         * Provide the Pastebin link here.
-        </details>
+        
         This step is essential, as most issues are related to specific classes, specializations, gear, talent choices, or other game systems.
         If you do not provide this information, I cannot triage your problem.
         **Note:** Some errors may prevent you from opening `/hekili`.  If that's true for you, please note that in this box instead of providing the link.
