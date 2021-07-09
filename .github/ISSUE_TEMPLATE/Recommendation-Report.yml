@@ -18,6 +18,7 @@ body:
         - label: I edited the title of this bug report (above) so that it describes the issue I am reporting.
           required: true
         - label: I am reporting an issue with the default priority included with the specialization (imported priorities are not supported).
+          required: true
   - type: textarea
     id: description
     attributes:
