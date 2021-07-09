@@ -5,7 +5,6 @@ labels: [bug, triage]
 assignees:
   - Hekili
 body:
-  - type: 
   - type: checkboxes
     id: precheck
     attributes:
