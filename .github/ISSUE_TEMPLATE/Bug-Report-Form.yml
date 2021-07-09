@@ -1,10 +1,11 @@
 name: Report a Bug
-description: Use this template to submit a bug report.  Incomplete reports may be rejected or closed.
-title: "[Bug] "
+description: Report a bug if/when the addon is not behaving the way it is expected to behave.
+title: "[Bug] REPLACE THIS TEXT WITH A SHORT DESCRIPTION OF THE BUG YOU ARE REPORTING"
 labels: [bug, triage]
 assignees:
-  - octocat
+  - Hekili
 body:
+  - type: 
   - type: checkboxes
     id: precheck
     attributes:
@@ -15,43 +16,28 @@ body:
           required: true
         - label: I checked for an existing, open ticket for this issue and was not able to find one.
           required: true
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
-    validations:
-      required: false
+        - label: I edited the title of this bug report (above) so that it describes the issue I am reporting.
+          required: true
   - type: textarea
-    id: what-happened
+    id: description
     attributes:
-      label: What happened?
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
+      label: Describe the Issue
+      description: Please describe the issue in question.  Be specific and describe what you see.  You can CTRL+V to paste a screenshot (image) or supply links to screenshot images.
+      placeholder: Example: The addon is not loading for my Beast Mastery Demon Hunter.  The following error message appears in my BugSack.
     validations:
       required: true
-  - type: dropdown
-    id: version
+  - type: textarea
+    id: reproduction
     attributes:
-      label: Version
-      description: What version of our software are you running?
-      options:
-        - 1.0.2 (Default)
-        - 1.0.3 (Edge)
+      label: How to Reproduce
+      description: """Steps to reproduce the behavior:
+        - Go to '...'
+        - Click on '....'
+        - Scroll down to '....'
+        - See error"""
+      placeholder: Example: Enter game as a Havoc Demon Hunter.  Change specialization to Beast Mastery.  Realize Beast Mastery Demon Hunters don't exist.
     validations:
       required: true
-  - type: dropdown
-    id: browsers
-    attributes:
-      label: What browsers are you seeing the problem on?
-      multiple: true
-      options:
-        - Firefox
-        - Chrome
-        - Safari
-        - Microsoft Edge
   - type: textarea
     id: logs
     attributes:
