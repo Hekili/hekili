@@ -1022,7 +1022,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
             gcd = "spell",
 
             startsCombat = true,
-            texture = 2065635,
 
             bind = "wildfire_bomb",
             talent = "wildfire_infusion",
@@ -1138,7 +1137,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
             gcd = "spell",
 
             startsCombat = true,
-            texture = 2065637,
 
             bind = "wildfire_bomb",
 
@@ -1259,7 +1257,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
             gcd = "spell",
 
             startsCombat = true,
-            texture = 2065636,
 
             bind = "wildfire_bomb",
 

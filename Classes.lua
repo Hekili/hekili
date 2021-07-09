@@ -432,7 +432,7 @@ local HekiliSpecMixin = {
                 if k == "lastCast" then return state.history.casts[ t.key ] or t.realCast end
                 if k == "lastUnit" then return state.history.units[ t.key ] or t.realUnit end
                 return
-            end
+            end,
         } )
 
         a.key = ability
@@ -481,9 +481,9 @@ local HekiliSpecMixin = {
                 local name, link, _, _, _, _, _, _, slot, texture = GetItemInfo( item )
 
                 if name then
-                    a.name = name
-                    a.link = link
-                    a.texture = texture
+                    a.name = a.name or name
+                    a.link = a.link or link
+                    a.texture = a.texture or texture
 
                     if a.suffix then
                         a.actualName = name
