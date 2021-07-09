@@ -7,8 +7,10 @@ assignees:
 body:
   - type: markdown
     attributes:
-      value: Before You Begin |
-        1. Please update to the latest version of the addon, even if it is an alpha or beta version, before submitting a report.  This helps you to avoid reporting an issue that is already resolved. |
+      value: Before You Begin
+        |
+        1. Please update to the latest version of the addon, even if it is an alpha or beta version, before submitting a report.  This helps you to avoid reporting an issue that is already resolved.
+        |
         2. Check for an existing, open ticket that matches your issue.  If there is an open ticket, simply add your snapshot and other report information to the open ticket instead.
   - type: checkboxes
     id: precheck
