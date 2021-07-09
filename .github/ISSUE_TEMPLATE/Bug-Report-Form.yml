@@ -37,6 +37,20 @@ body:
     validations:
       required: true
   - type: input
+    id: player-info
+    attributes:
+      label: Player Information (Link)
+      description: |
+        Please supply your character information by completing the following steps.
+        * Log into your WoW character.
+        * Type `/hekili` and press Enter.
+        * Open the Issue Reporting section (left panel).
+        * Copy all of the text from the text box.
+        * Paste the text to Pastebin.
+        * Provide the Pastebin link here.
+        This step is essential, as most issues are related to specific classes, specializations, gear, talent choices, or other game systems.
+        If you do not provide this information, I cannot triage your problem.
+  - type: input
     id: error-messages
     attributes:
       label: Error Messages (Link)
