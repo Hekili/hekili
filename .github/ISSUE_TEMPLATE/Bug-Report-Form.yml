@@ -37,5 +37,7 @@ body:
     id: messages
     attributes:
       label: Snapshot
-      description: If you are reporting an issue with the addon's recommendations, there is a "Snapshot" feature that you will need to use.  By default, pressing `ALT-SHIFT-P` to Pause (or `ALT-SHIFT-[` to Snapshot without pausing) will generate a Snapshot, which is found in /hekili > Snapshots.  This should be done when you are seeing the recommendation you disagree with.  Copy the Snapshot to Pastebin and provide the link here.|If your issue is not related to the addon's recommendations, you can instead copy the information from /hekili > Issue Reporting to Pastebin and link that here instead.
+      description: If you are reporting an issue with the addon's recommendations, there is a "Snapshot" feature that you will need to use.  By default, pressing `ALT-SHIFT-P` to Pause (or `ALT-SHIFT-[` to Snapshot without pausing) will generate a Snapshot, which is found in /hekili > Snapshots.  This should be done when you are seeing the recommendation you disagree with.  Copy the Snapshot to Pastebin and provide the link here.
+      |
+      If your issue is not related to the addon's recommendations, you can instead copy the information from /hekili > Issue Reporting to Pastebin and link that here instead.
       placeholder: "Paste the link to your Pastebin item here."
