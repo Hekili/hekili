@@ -47,7 +47,7 @@ body:
         Please supply a Snapshot of the addon's decision-making when you are seeing this issue in-game.  **This is not a screenshot.**  To generate a Snapshot, please complete the following steps.
         * Log into your WoW character.
         * Recreate the issue you are reporting (i.e., generate 5 Holy Power).
-        * When you see the recommendation you disagree with, press `ALT-SHIFT-P` to Pause and Snapshot (or use `ALT-SHIFT-[`) to Snapshot without pausing.
+        * When you see the recommendation you disagree with, press `ALT-SHIFT-P` to Pause and Snapshot (or use `ALT-SHIFT-[` to Snapshot without pausing).
           * You can change these keybindings in `/hekili` > Toggles if needed.
         * Type `/hekili` and press Enter.
         * Open the Snapshots section on the left side.
