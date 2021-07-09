@@ -1,14 +1,25 @@
-name: Bug Report
-description: File a bug report
-title: "[Bug]: "
+name: Report a Bug
+description: Use this template to submit a bug report.  Incomplete reports may be rejected or closed.
+title: "[Bug] "
 labels: [bug, triage]
 assignees:
   - octocat
 body:
   - type: markdown
     attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
+      value: **Before You Begin** |
+        1. Please update to the latest version of the addon, even if it is an alpha or beta version, before submitting a report.  This helps you to avoid reporting an issue that is already resolved. |
+        2. Check for an existing, open ticket that matches your issue.  If there is an open ticket, simply add your snapshot and other report information to the open ticket instead.
+  - type: checkboxes
+    id: precheck
+    attributes:
+      label: **Before You Begin**
+      description: Please confirm that you've taken these preliminary steps before submitting your issue report.
+      options:
+        - label: I confirm that I have downloaded the latest version of the addon.
+          required: true
+        - label: I checked for an existing, open ticket for this issue and was not able to find one.
+          required: true
   - type: input
     id: contact
     attributes:
