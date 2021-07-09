@@ -34,7 +34,7 @@ body:
         Click on '....'
         Scroll down to '....'
         See error"""
-      placeholder: Example: Enter game as a Havoc Demon Hunter.  Change specialization to Beast Mastery.  Realize Beast Mastery Demon Hunters don't exist.
+      placeholder: "Example: Enter game as a Havoc Demon Hunter.  Change specialization to Beast Mastery.  Realize Beast Mastery Demon Hunters don't exist."
     validations:
       required: true
   - type: textarea
