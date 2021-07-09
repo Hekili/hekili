@@ -23,7 +23,7 @@ body:
     attributes:
       label: Describe the Issue
       description: Please describe the issue in question.  Be specific and describe what you see.  You can CTRL+V to paste a screenshot (image) or supply links to screenshot images.
-      placeholder: Example: The addon is not loading for my Beast Mastery Demon Hunter.  The following error message appears in my BugSack.
+      placeholder: "Example: The addon is not loading for my Beast Mastery Demon Hunter.  The following error message appears in my BugSack."
     validations:
       required: true
   - type: textarea
