@@ -13,7 +13,7 @@ body:
   - type: checkboxes
     id: precheck
     attributes:
-      label: **Before You Begin**
+      label: Before You Begin
       description: Please confirm that you've taken these preliminary steps before submitting your issue report.
       options:
         - label: I confirm that I have downloaded the latest version of the addon.
