@@ -1,6 +1,6 @@
-name: Report a Bug
-description: Report a bug if/when the addon is not behaving the way it is expected to behave.
-title: "[Bug] REPLACE THIS TEXT WITH A SHORT DESCRIPTION OF THE BUG YOU ARE REPORTING"
+name: In-Game Error
+description: The addon does not load or there are error messages in-game.  I'll use BugSack and BugGrabber to supply the messages.
+title: "[BUG] REPLACE THIS TEXT WITH A SHORT DESCRIPTION OF THE BUG YOU ARE REPORTING"
 labels: [bug, triage]
 assignees:
   - Hekili
@@ -30,14 +30,34 @@ body:
     attributes:
       label: How to Reproduce
       description: "Steps to reproduce the behavior"
-      placeholder: "Example: Enter game as a Havoc Demon Hunter.  Change specialization to Beast Mastery.  Realize Beast Mastery Demon Hunters don't exist."
+      placeholder: |
+        1. Enter game as a Havoc Demon Hunter.
+        2. Change specialization to Beast Mastery.
+        3. Realize Beast Mastery Demon Hunters don't exist.
     validations:
       required: true
   - type: input
-    id: messages
+    id: error-messages
     attributes:
-      label: Snapshot
+      label: Error Messages (Link)
       description: |
-        If you are reporting an issue with the addon's recommendations, there is a "Snapshot" feature that you will need to use.  By default, pressing `ALT-SHIFT-P` to Pause (or `ALT-SHIFT-[` to Snapshot without pausing) will generate a Snapshot, which is found in /hekili > Snapshots.  This should be done when you are seeing the recommendation you disagree with.  Copy the Snapshot to Pastebin and provide the link here.
-        If your issue is not related to the addon's recommendations, you can instead copy the information from /hekili > Issue Reporting to Pastebin and link that here instead.
-      placeholder: "Paste the link to your Pastebin item here."
+        If there are error messages in-game, please install BugSack/BugGrabber (both!) in order to collect the error message.
+        * When you enter WoW, open BugSack and clear the sack.
+        * Reload WoW (/rl).
+        * When WoW finishes reloading, open BugSack and copy the **first** error message.
+          * If you need to do something to trigger the error message, do that and then open BugSack and copy the error message.
+        * Paste the message to Pastebin (it's free!).
+        * Provide the Pastebin link here.
+      placeholder: http://pastebin.com/aBcDeFgH
+  - type: textarea
+    id: addl-info
+    attributes:
+      label: Additional Information
+      description: Please provide any additional information regarding this issue that was not included above.
+      placeholder: Leave blank, if all necessary details are included above.
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Information
+      description: I will contact you via this GitHub ticket with questions and updates.  If you do not regularly check your GitHub email, please provide an alternate contact method (i.e., Discord ID) so that I can reach you if needed.
+      placeholder: Hekili#0001
