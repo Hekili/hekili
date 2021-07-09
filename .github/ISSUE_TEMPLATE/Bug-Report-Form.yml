@@ -57,8 +57,9 @@ body:
     attributes:
       label: Error Messages (Link)
       description: |
-        If there are error messages in-game, please install BugSack/BugGrabber (both!) in order to collect the error message.
-        * When you enter WoW, open BugSack and clear the sack.
+        If there are error messages in-game, please install [BugSack](https://www.curseforge.com/wow/addons/bugsack) and [BugGrabber](https://www.curseforge.com/wow/addons/bug-grabber) -- both! -- in order to collect the error message.
+        * Install BugSack and BugGrabber if you don't already have them.
+        * Log into WoW, open BugSack and clear the sack.
         * Reload WoW (/rl).
         * When WoW finishes reloading, open BugSack and copy the **first** error message.
           * If you need to do something to trigger the error message, do that and then open BugSack and copy the error message.
