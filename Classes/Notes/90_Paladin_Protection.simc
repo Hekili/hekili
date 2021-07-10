@@ -1,5 +1,5 @@
 # Protection Paladin
-# December 25, 2020
+# July 10, 2021
 
 # Changes
 # - Added Rebuke.
@@ -10,6 +10,7 @@ actions.precombat+=/devotion_aura
 actions.precombat+=/fleshcraft
 actions.precombat+=/consecration
 actions.precombat+=/lights_judgment
+actions.precombat+=/ashen_hallow
 
 # Executed every time the actor is available.
 actions=rebuke
