@@ -1,5 +1,5 @@
 ## Balance Druid
-## July 8, 2021
+## July 9, 2021
 
 ## Changes:
 ## - Added Solar Beam.
@@ -15,8 +15,8 @@
 actions.precombat=kindred_spirits
 # The variable is set to 0 with no stat on use trinkets, 1 when the first one is on use, 2 if the second is and 3 if both are
 actions.precombat+=/variable,name=on_use_trinket,value=0
-actions.precombat+=/variable,name=on_use_trinket,op=add,value=1,if=trinket.1.usable&trinket.1.cooldown.duration&!trinket.1.is.tome_of_monstrous_constructions
-actions.precombat+=/variable,name=on_use_trinket,op=add,value=2,if=trinket.2.usable&trinket.2.cooldown.duration&!trinket.2.is.tome_of_monstrous_constructions
+actions.precombat+=/variable,name=on_use_trinket,op=add,value=1,if=trinket.1.has_use_buff&trinket.1.cooldown.duration&!trinket.1.is.tome_of_monstrous_constructions
+actions.precombat+=/variable,name=on_use_trinket,op=add,value=2,if=trinket.2.has_use_buff&trinket.2.cooldown.duration&!trinket.2.is.tome_of_monstrous_constructions
 # These trinkets are not autmatically detected as on use stat trinkets. Always adding 1 means they will always be preferred independent of slot
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=1,if=equipped.inscrutable_quantum_device|equipped.empyreal_ordnance|equipped.soulletting_ruby
 actions.precombat+=/moonkin_form
@@ -35,7 +35,7 @@ actions+=/variable,name=is_cleave,value=spell_targets.starfire>1
 # Use Berserking with CA/Inc or after Convoke in CA/Inc
 actions+=/berserking,if=(!covenant.night_fae|!cooldown.convoke_the_spirits.up)&buff.ca_inc.remains>15&buff.ravenous_frenzy.remains<4&!covenant.venthyr|covenant.venthyr&buff.ca_inc.up&buff.ravenous_frenzy.up&(buff.ravenous_frenzy.remains<11-5*runeforge.sinful_hysteria|buff.ca_inc.remains<11|1%spell_haste<1.55)
 # Pot with a CA/Inc that isn't a Pulsar proc or when the fight is about to end
-actions+=/potion,if=buff.ca_inc.remains>15&(!runeforge.sinful_hysteria|buff.ravenous_frenzy.remains<17&buff.ravenous_frenzy.up)|boss&fight_remains<25
+actions+=/potion,if=buff.ca_inc.remains>15&(!runeforge.sinful_hysteria|buff.ravenous_frenzy.remains<17-2*buff.bloodlust.up&buff.ravenous_frenzy.up)|boss&fight_remains<25
 # Calculates whether using Convoke now will allow you to still cast the same amount of Convoke+CA/Inc casts
 actions+=/variable,name=convoke_desync,value=ceil((fight_remains-15-cooldown.ca_inc.remains)%180)=ceil((fight_remains-15-120-cooldown.convoke_the_spirits.remains)%180)&!raid_event.adds.exists|cooldown.ca_inc.remains>interpolated_fight_remains|cooldown.convoke_the_spirits.remains>interpolated_fight_remains-10|!covenant.night_fae|action.convoke_the_spirits.disabled
 # Used to delay the usage of CA/Inc when using double on use and prevent usage when an add event is about to die
