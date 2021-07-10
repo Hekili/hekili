@@ -551,9 +551,11 @@ do
     local reasonCache = {}
 
     function Hekili:IsSpellKnown( spell )
-        if knownCache[ spell ] ~= nil then return knownCache[ spell ], reasonCache[ spell ] end
-        knownCache[ spell ], reasonCache[ spell ] = state:IsKnown( spell )
-        return knownCache[ spell ], reasonCache[ spell ]
+        local id = class.abilities[ spell ] and class.abilities[ spell ].id or spell
+
+        if knownCache[ id ] ~= nil then return knownCache[ id ], reasonCache[ id ] end
+        knownCache[ id ], reasonCache[ id ] = state:IsKnown( spell )
+        return knownCache[ id ], reasonCache[ id ]
     end
 
 
