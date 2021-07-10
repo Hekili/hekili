@@ -1131,7 +1131,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
 end )
 
 
-RegisterEvent( "UNIT_SPELLCAST_SENT", function ( self, unit, target_name, castID, spellID )
+RegisterEvent( "UNIT_SPELLCAST_SENT", function ( event, unit, target_name, castID, spellID )
     if not UnitIsUnit( "player", unit ) then return end
 
     if target_name and UnitGUID( target_name ) then
@@ -1151,6 +1151,13 @@ RegisterEvent( "UNIT_SPELLCAST_SENT", function ( self, unit, target_name, castID
     end
 
     state.cast_target = nil
+end )
+
+
+RegisterEvent( "CURRENT_SPELL_CAST_CHANGED", function( event, cancelled )
+    if cancelled then
+        Hekili:ForceUpdate( event, true )
+    end
 end )
 
 
@@ -1912,7 +1919,7 @@ do
             done = true
 
         -- Use ElvUI's actionbars only if they are actually enabled.
-        elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+        elseif _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
             table.wipe( slotsUsed )
             
             for i = 1, 10 do
