@@ -481,7 +481,7 @@ local HekiliSpecMixin = {
                 local name, link, _, _, _, _, _, _, slot, texture = GetItemInfo( item )
 
                 if name then
-                    a.name = a.name or name
+                    a.name = ( a.name ~= a.key and a.name ) or name
                     a.link = a.link or link
                     a.texture = a.texture or texture
 
