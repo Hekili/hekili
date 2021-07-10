@@ -8182,16 +8182,18 @@ function Hekili:GenerateProfile()
     end
 
     local settings
-    for k, v in orderedPairs( state.settings.spec ) do        
-        if type( v ) ~= "table" then
-            if settings then settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
-            else settings = format( "%s = %s", k, tostring( v ) ) end
+    if state.settings.spec then
+        for k, v in orderedPairs( state.settings.spec ) do        
+            if type( v ) ~= "table" then
+                if settings then settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
+                else settings = format( "%s = %s", k, tostring( v ) ) end
+            end
         end
-    end
-    for k, v in orderedPairs( state.settings.spec.settings ) do
-        if type( v ) ~= "table" then
-            if settings then settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
-            else settings = format( "%s = %s", k, tostring( v ) ) end
+        for k, v in orderedPairs( state.settings.spec.settings ) do
+            if type( v ) ~= "table" then
+                if settings then settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
+                else settings = format( "%s = %s", k, tostring( v ) ) end
+            end
         end
     end
 
