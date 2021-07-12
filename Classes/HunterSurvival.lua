@@ -1295,7 +1295,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
             aura = "wildfire_bomb",
             bind = function () return current_wildfire_bomb end,
 
-            usable = function () return current_wildfire_bomb ~= "pheromone_bomb" or debuff.serpent_sting.up end,
             handler = function ()
                 if current_wildfire_bomb ~= "wildfire_bomb" then
                     runHandler( current_wildfire_bomb )
