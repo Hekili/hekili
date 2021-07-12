@@ -1,5 +1,5 @@
 ## Shadow Priest
-## July 1, 2021
+## July 12, 2021
 
 ## Tweak Void Torrent when target counts are forced.
 
@@ -8,6 +8,7 @@ actions.precombat+=/power_word_fortitude,if=remains<300
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/shadowform,if=!buff.shadowform.up
 actions.precombat+=/arcane_torrent,if=insanity.deficit>15
+actions.precombat+=/use_item,name=shadowed_orb_of_torment
 actions.precombat+=/variable,name=mind_sear_cutoff,op=set,value=2
 actions.precombat+=/vampiric_touch
 
@@ -121,10 +122,12 @@ actions.trinkets=use_item,name=empyreal_ordnance,if=cooldown.void_eruption.remai
 actions.trinkets+=/use_item,name=inscrutable_quantum_device,if=buff.voidform.up&buff.power_infusion.up|boss&fight_remains<=20|buff.power_infusion.up&cooldown.void_eruption.remains+15>fight_remains|buff.voidform.up&cooldown.power_infusion.remains+15>fight_remains|(cooldown.power_infusion.remains>=10&cooldown.void_eruption.remains>=10)&fight_remains>=190
 # Sync Sheet Music with Voidform
 actions.trinkets+=/use_item,name=macabre_sheet_music,if=cooldown.void_eruption.remains>10
-# Sync Ruby with Power Infusion usage, make sure to snipe the lowest HP target
-actions.trinkets+=/use_item,name=soulletting_ruby,if=buff.power_infusion.up|!priest.self_power_infusion,cycle_targets=1
+# Sync Ruby with Power Infusion usage, make sure to snipe the lowest HP target. When used with Shadowed Orb of Torment, just use on CD as much as possible.
+actions.trinkets+=/use_item,name=soulletting_ruby,cycle_targets=1,if=buff.power_infusion.up|!priest.self_power_infusion|equipped.shadowed_orb_of_torment
 # Use Badge inside of VF for the first use or on CD after the first use. Short circuit if void eruption cooldown is 10s or more away.
 actions.trinkets+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=cooldown.void_eruption.remains>=10
+# Use Shadowed Orb of Torment when not in Voidform, or in between Void Bolt casts in Voidform.
+actions.trinkets+=/use_item,name=shadowed_orb_of_torment,if=!buff.voidform.up|(prev_gcd.1.void_bolt)
 # Use list of on-use damage trinkets only if Hungering Void Debuff is active, or you are not talented into it.
 actions.trinkets+=/call_action_list,name=dmg_trinkets,if=(!talent.hungering_void.enabled|debuff.hungering_void.up)&(buff.voidform.up|cooldown.void_eruption.remains>10)
 # Default fallback for usable items: Use on cooldown in order by trinket slot.
