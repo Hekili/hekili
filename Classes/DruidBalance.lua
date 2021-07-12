@@ -683,6 +683,7 @@ if UnitClassBase( "player" ) == "DRUID" then
     local ExpireEclipseLunar = setfenv( function()
         eclipse.state = "SOLAR_NEXT"
         eclipse.reset_stacks()
+        eclipse.wrath_counter = 0
         removeBuff( "starsurge_empowerment_lunar" )
         if Hekili.ActiveDebug then Hekili:Debug( "Expire Lunar: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
     end, state )
@@ -690,6 +691,7 @@ if UnitClassBase( "player" ) == "DRUID" then
     local ExpireEclipseSolar = setfenv( function()
         eclipse.state = "LUNAR_NEXT"
         eclipse.reset_stacks()
+        eclipse.starfire_counter = 0
         removeBuff( "starsurge_empowerment_solar" )
         if Hekili.ActiveDebug then Hekili:Debug( "Expire Solar: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
     end, state )
@@ -706,13 +708,13 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             if buff.eclipse_solar.up and buff.eclipse_lunar.up then
                 eclipse.state = "IN_BOTH"
-                eclipse.reset_stacks()
+                -- eclipse.reset_stacks()
             elseif buff.eclipse_solar.up then
                 eclipse.state = "IN_SOLAR"
-                eclipse.reset_stacks()
+                -- eclipse.reset_stacks()
             elseif buff.eclipse_lunar.up then
                 eclipse.state = "IN_LUNAR"
-                eclipse.reset_stacks()
+                -- eclipse.reset_stacks()
             elseif eclipse.starfire_counter > 0 and eclipse.wrath_counter > 0 then
                 eclipse.state = "ANY_NEXT"
             elseif eclipse.starfire_counter == 0 and eclipse.wrath_counter > 0 then
@@ -770,33 +772,33 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         advance = setfenv( function()
             if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Pre): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
-            
-            if eclipse.starfire_counter == 0 and ( eclipse.state == "SOLAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
-                applyBuff( "eclipse_solar", class.auras.eclipse_solar.duration + buff.eclipse_solar.remains )                
-                state:RemoveAuraExpiration( "eclipse_solar" )
-                state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
-                if talent.solstice.enabled then applyBuff( "solstice" ) end
-                if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
-                eclipse.state = "IN_SOLAR"
-                eclipse.reset_stacks()
-                if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
-                return
-            end
 
-            if eclipse.wrath_counter == 0 and ( eclipse.state == "LUNAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
-                applyBuff( "eclipse_lunar", class.auras.eclipse_lunar.duration + buff.eclipse_lunar.remains )                
-                state:RemoveAuraExpiration( "eclipse_lunar" )
-                state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
-                if talent.solstice.enabled then applyBuff( "solstice" ) end
-                if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
-                eclipse.state = "IN_LUNAR"
-                eclipse.reset_stacks()
-                if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
-                return
-            end
+            if not ( eclipse.state == "IN_SOLAR" or eclipse.state == "IN_LUNAR" or eclipse.state == "IN_BOTH" ) then           
+                if eclipse.starfire_counter == 0 and ( eclipse.state == "SOLAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
+                    applyBuff( "eclipse_solar", class.auras.eclipse_solar.duration + buff.eclipse_solar.remains )                
+                    state:RemoveAuraExpiration( "eclipse_solar" )
+                    state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
+                    if talent.solstice.enabled then applyBuff( "solstice" ) end
+                    if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
+                    eclipse.state = "IN_SOLAR"
+                    eclipse.starfire_counter = 0
+                    eclipse.wrath_counter = 2
+                    if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+                    return
+                end
 
-            if eclipse.state == "IN_SOLAR" or eclipse.state == "IN_LUNAR" or eclipse.state == "IN_BOTH" then
-                -- Do nothing.
+                if eclipse.wrath_counter == 0 and ( eclipse.state == "LUNAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
+                    applyBuff( "eclipse_lunar", class.auras.eclipse_lunar.duration + buff.eclipse_lunar.remains )                
+                    state:RemoveAuraExpiration( "eclipse_lunar" )
+                    state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
+                    if talent.solstice.enabled then applyBuff( "solstice" ) end
+                    if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
+                    eclipse.state = "IN_LUNAR"
+                    eclipse.wrath_counter = 0
+                    eclipse.starfire_counter = 2
+                    if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+                    return
+                end
             end
 
             if eclipse.state == "IN_SOLAR" then eclipse.state = "LUNAR_NEXT" end
@@ -2350,12 +2352,17 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             velocity = 20,
 
-            impact = function () end,
+            impact = function ()
+                if not state.spec.balance and ( eclipse.state == "ANY_NEXT" or eclipse.state == "LUNAR_NEXT" ) then
+                    eclipse.wrath_counter = eclipse.wrath_counter - 1
+                    eclipse.advance()
+                end
+            end,
 
             handler = function ()
                 if not buff.moonkin_form.up then unshift() end
 
-                if eclipse.state == "ANY_NEXT" or eclipse.state == "LUNAR_NEXT" then
+                if state.spec.balance and ( eclipse.state == "ANY_NEXT" or eclipse.state == "LUNAR_NEXT" ) then
                     eclipse.wrath_counter = eclipse.wrath_counter - 1
                     eclipse.advance()
                 end
