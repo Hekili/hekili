@@ -2380,6 +2380,8 @@ if UnitClassBase( "player" ) == "DRUID" then
         damageDots = true,
         damageExpiration = 6,
 
+        enhancedRecheck = true,
+
         potion = "spectral_intellect",
 
         package = "Balance",

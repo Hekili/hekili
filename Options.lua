@@ -258,6 +258,10 @@ local oneTimeFixes = {
             spec.gcdSync = nil
         end
     end,
+
+    forceEnableEnhancedRecheckBoomkin_20210712 = function( p )
+        p.specs[ 102 ].enhancedRecheck = true
+    end,
 }
 
 
