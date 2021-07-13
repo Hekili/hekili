@@ -9,6 +9,8 @@ local state = Hekili.State
 
 local IsActiveSpell = ns.IsActiveSpell
 
+local FindUnitBuffByID = ns.FindUnitBuffByID
+
 
 -- Conduits
 -- [x] depths_of_insanity
