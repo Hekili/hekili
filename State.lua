@@ -2535,7 +2535,7 @@ local mt_target = {
         elseif k == "distance" then
             -- Need to identify a couple of spells to roughly get the distance to an enemy.
             -- We'd probably use IsSpellInRange() on an individual action instead, so maybe not.
-            t.distance = UnitCanAttack( "player", "target"  ) and ( ( t.minR + t.maxR ) / 2 ) or 7.5
+            t.distance = UnitCanAttack( "player", "target" ) and ( ( t.minR + t.maxR ) / 2 ) or 7.5
             return t.distance
 
         elseif k == "moving" then
@@ -2583,7 +2583,7 @@ local mt_target = {
             return UnitExists( "target" ) and UnitIsFriend( "target", "player" )
 
         elseif k:sub(1, 6) == "within" then
-            local maxR = k:match( "^within(%d+)$" )
+            local maxR = k:match( "^within([0-9.]+)$" )
 
             if not maxR then
                 -- Error("UNK: " .. k)
@@ -2593,7 +2593,7 @@ local mt_target = {
             return ( t.maxR <= tonumber( maxR ) )
 
         elseif k:sub(1, 7) == "outside" then
-            local minR = k:match( "^outside(%d+)$" )
+            local minR = k:match( "^outside([0-9.]+)$" )
 
             if not minR then
                 -- Error("UNK: " .. k)
@@ -2603,7 +2603,7 @@ local mt_target = {
             return ( t.minR > tonumber( minR ) )
 
         elseif k:sub(1, 5) == "range" then
-            local minR, maxR = k:match( "^range(%d+)to(%d+)$" )
+            local minR, maxR = k:match( "^range([0-9.]+)to([0-9.]+)$" )
 
             if not minR or not maxR then
                 return false
