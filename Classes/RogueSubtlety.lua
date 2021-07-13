@@ -583,9 +583,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
     spec:RegisterCycle( function ()
         if active_enemies == 1 then return end
-        if this_action == "marked_for_death" and target.time_to_die > 3 + Hekili:GetLowestTTD() then return "cycle" end
-    end )    
-
+        if this_action == "marked_for_death" then
+            if debuff.marked_for_death.up then return "cycle" end -- If current target already has MfD, cycle.
+            if target.time_to_die > 3 + Hekili:GetLowestTTD() and active_dot.marked_for_death == 0 then return "cycle" end -- If our target isn't lowest TTD, and we don't have to worry that the lowest TTD target is already MfD'd, cycle.
+        end
+    end )
 
     spec:RegisterGear( "insignia_of_ravenholdt", 137049 )
     spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
