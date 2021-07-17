@@ -8,6 +8,7 @@ local class = Hekili.Class
 local state = Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
+local FindUnitDebuffByID = ns.FindUnitDebuffByID
 
 local targetCount = 0
 local targets = {}
@@ -143,6 +144,10 @@ do
 end
 
 
+-- Excluding enemy by NPC ID (as string).  This keeps the enemy from being counted if they are not your target.
+-- = true           Always Exclude
+-- = number < 0     Exclude if debuff ID abs( number ) is active on unit.
+-- = number > 0     Exclude if buff ID number is active on unit.
 local enemyExclusions = {
     ["23775"]  = true,      -- Head of the Horseman
     ["120651"] = true,      -- Explosives
@@ -150,8 +155,10 @@ local enemyExclusions = {
     ["160966"] = true,      -- Thing from Beyond?
     ["161895"] = true,      -- Thing from Beyond?
     ["157452"] = true,      -- Nightmare Antigen in Carapace
-    ["158041"] = 310126,    -- N'Zoth with Psychic Shell,
+    ["158041"] = 310126,    -- N'Zoth with Psychic Shell
     ["164698"] = true,      -- Tor'ghast Junk
+    ["177117"] = 355790,    -- Ner'zhul: Orb of Torment (Protected by Eternal Torment)
+    ["176581"] = true,      -- Painsmith:  Spiked Ball
 }
 
 local f = CreateFrame("Frame")
@@ -278,9 +285,14 @@ do
                         local npcid = guid:match( "(%d+)-%x-$" )
                         local excluded = enemyExclusions[ npcid ]
 
+                        -- If our table has a number, unit is ruled out only if the buff is present.
                         if excluded and type( excluded ) == "number" then
-                            -- If our table has a number, unit is ruled out only if the buff is present.
-                            excluded = FindUnitBuffByID( unit, excluded )
+                            if excluded < 0 then
+                                -- We used a negative number to indicate that it's a debuff.
+                                excluded = FindUnitDebuffByID( unit, -1 * excluded )
+                            else
+                                excluded = FindUnitBuffByID( unit, excluded )
+                            end
                         end
 
                         if not excluded and checkPets then
