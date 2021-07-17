@@ -1081,6 +1081,10 @@ do
 
             nobuff = "soleahs_secret_technique",
 
+            disabled = function ()
+                return not group, "only usable in a party/raid"
+            end,
+
             handler = function ()
                 applyBuff( "soleahs_secret_technique" )
             end,
