@@ -10143,6 +10143,8 @@ do
                     result.action = class.abilities[ result.effect_name ].key
                 elseif result.name and class.abilities[ result.name ] then
                     result.action = result.name
+                elseif ( result.slot or result.slots ) and class.abilities[ result.slot or result.slots ] then
+                    result.action = result.slot or result.slots
                 end
             end
 
