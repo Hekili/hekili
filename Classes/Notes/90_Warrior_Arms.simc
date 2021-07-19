@@ -1,5 +1,5 @@
 ## Arms Warrior
-## July 1, 2021
+## July 19, 2021
 
 ## Changes:
 ## - Added Pummel.
@@ -26,7 +26,8 @@ actions+=/bag_of_tricks,if=debuff.colossus_smash.down&cooldown.mortal_strike.rem
 actions+=/use_items
 actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>15|talent.ravager.enabled)
 actions+=/call_action_list,name=execute,strict=1,if=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20|(target.health.pct>80&covenant.venthyr)
-actions+=/call_action_list,name=hac,strict=1,if=spell_targets.whirlwind>1
+## Hectic Add Cleave doesn't translate in-game, because how do you differentiate adds vs. sustained multi-target?
+## actions+=/call_action_list,name=hac,strict=1,if=spell_targets.whirlwind>1
 actions+=/call_action_list,name=single_target
 actions+=/victory_rush
 actions+=/impending_victory
