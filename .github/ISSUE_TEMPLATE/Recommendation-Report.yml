@@ -62,7 +62,18 @@ body:
         If you do not provide this information, I cannot triage your problem.
       placeholder: http://pastebin.com/AbCdEfGh
     validations:
-      required: true      
+      required: true
+  - type: input
+    id: sim-result
+    attributes:
+      label: Raidbots Sim Report (Link)
+      description: |
+        The addon's recommendations are based on the SimulationCraft profiles generated for each specialization.  It is very helpful, for testing purposes, to compare the addon's recommendations to your sim's actions.  [Raidbots](https://www.raidbots.com/) is the fastest, easiest way to simulate your character.
+        * If the issue happens in single-target, link to your Patchwerk sim with 1 boss target.
+        * If the issue happens in sustained multi-target, link to your Patchwerk sim with the appropriate number of boss targets.
+        * If the issue happens in more chaotic scenarios, link to your Hectic Add Cleave sim with 1 boss target.
+        * You're welcome to link multiple sims using the **Additional Information** box, below.
+      placeholder: https://www.raidbots.com/simbot/report/abcdEFghIjKlMNOPqrst
   - type: textarea
     id: addl-info
     attributes:
