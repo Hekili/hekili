@@ -1,5 +1,5 @@
 ## Retribution Paladin
-## July 9, 2021
+## July 19, 2021
 
 ## Changes:
 ## - Last-second usage of trinkets/CDs now for boss fights only (don't waste CDs on trash).
@@ -53,8 +53,8 @@ actions.finishers+=/seraphim,if=(cooldown.avenging_wrath.remains>15|cooldown.cru
 actions.finishers+=/execution_sentence,if=(buff.crusade.down&cooldown.crusade.remains>10|buff.crusade.stack>=3|cooldown.avenging_wrath.remains>10)&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains>10)&target.time_to_die>8
 actions.finishers+=/divine_storm,if=variable.ds_castable&!buff.vanquishers_hammer.up&((!talent.crusade.enabled|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains>gcd*6|cooldown.execution_sentence.remains>gcd*5&holy_power>=4|target.time_to_die<8|!talent.seraphim.enabled&cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains>gcd*6|cooldown.final_reckoning.remains>gcd*5&holy_power>=4|!talent.seraphim.enabled&cooldown.final_reckoning.remains>gcd*2)&(!talent.seraphim.enabled|cooldown.seraphim.remains%gcd+holy_power>3|talent.final_reckoning.enabled|talent.execution_sentence.enabled|covenant.kyrian)|(talent.holy_avenger.enabled&cooldown.holy_avenger.remains<gcd*3|buff.holy_avenger.up|buff.crusade.up&buff.crusade.stack<10))
 actions.finishers+=/templars_verdict,if=(!talent.crusade.enabled|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains>gcd*6|cooldown.execution_sentence.remains>gcd*5&holy_power>=4|target.time_to_die<8|!talent.seraphim.enabled&cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains>gcd*6|cooldown.final_reckoning.remains>gcd*5&holy_power>=4|!talent.seraphim.enabled&cooldown.final_reckoning.remains>gcd*2)&(!talent.seraphim.enabled|cooldown.seraphim.remains%gcd+holy_power>3|talent.final_reckoning.enabled|talent.execution_sentence.enabled|covenant.kyrian)|talent.holy_avenger.enabled&cooldown.holy_avenger.remains<gcd*3|buff.holy_avenger.up|buff.crusade.up&buff.crusade.stack<10
-actions.finishers+=/divine_storm,if=variable.ds_castable&talent.seraphim.enabled&cooldown.seraphim.ready&holy_power=holy_power.max&talent.final_reckoning.enabled&cooldown.final_reckoning.remains>4*gcd
-actions.finishers+=/templars_verdict,if=talent.seraphim.enabled&cooldown.seraphim.ready&holy_power=holy_power.max&talent.final_reckoning.enabled&cooldown.final_reckoning.remains>4*gcd
+actions.finishers+=/divine_storm,if=variable.ds_castable&talent.seraphim.enabled&talent.final_reckoning.enabled&(cooldown.seraphim.ready&cooldown.final_reckoning.remains>4*gcd|cooldown.seraphim.remains>3*gcd&cooldown.final_reckoning.remains<4*gcd)&holy_power=holy_power.max
+actions.finishers+=/templars_verdict,if=talent.seraphim.enabled&talent.final_reckoning.enabled&(cooldown.seraphim.ready&cooldown.final_reckoning.remains>4*gcd|cooldown.seraphim.remains>3*gcd&cooldown.final_reckoning.remains<4*gcd)&holy_power=holy_power.max
  
 actions.generators=call_action_list,name=finishers,if=holy_power=5|buff.holy_avenger.up|debuff.final_reckoning.up|debuff.execution_sentence.up
 actions.generators+=/vanquishers_hammer
