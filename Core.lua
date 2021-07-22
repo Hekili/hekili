@@ -495,12 +495,12 @@ function Hekili:CheckChannel( ability, prio )
             return false
         end
         if modifiers.early_chain_if then
-            local eci = state.cooldown.global_cooldown.up and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) and modifiers.early_chain_if()
+            local eci = state.cooldown.global_cooldown.ready and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) and modifiers.early_chain_if()
             if self.ActiveDebug then self:Debug( "CC: early_chain_if returns %s...", tostring( eci ) ) end
             return eci
         end
         if modifiers.chain then
-            local chain = state.cooldown.global_cooldown.up and ( remains < tick_time ) and modifiers.chain()
+            local chain = state.cooldown.global_cooldown.ready and ( remains < tick_time ) and modifiers.chain()
             if self.ActiveDebug then self:Debug( "CC: chain returns %s...", tostring( chain ) ) end
             return chain
         end
@@ -523,7 +523,7 @@ function Hekili:CheckChannel( ability, prio )
         -- We are concerned with chain and early_chain_if.
         if modifiers.interrupt_if and modifiers.interrupt_if() then
             local imm = modifiers.interrupt_immediate and modifiers.interrupt_immediate() or nil
-            local val = state.cooldown.global_cooldown.up and ( imm or remains < tick_time or ( state.query_time - state.buff.casting.applied ) % tick_time < 0.25 )
+            local val = state.cooldown.global_cooldown.ready and ( imm or remains < tick_time or ( state.query_time - state.buff.casting.applied ) % tick_time < 0.25 )
             if self.ActiveDebug then
                 self:Debug( "CC:  Interrupt_If is %s.", tostring( val ) )
             end
@@ -532,7 +532,7 @@ function Hekili:CheckChannel( ability, prio )
         end
 
         if modifiers.interrupt and modifiers.interrupt() then
-            local val = state.cooldown.global_cooldown.up and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 )
+            local val = state.cooldown.global_cooldown.ready and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 )
             if self.ActiveDebug then self:Debug( "CC:  Interrupt is %s.", tostring( val ) ) end
             state.this_action = act
             return val
