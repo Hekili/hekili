@@ -6516,8 +6516,12 @@ function state:TimeToReady( action, pool )
         wait = max( wait, ability.lastCast + self.args.line_cd - self.query_time )
     end
 
-    local synced = state.args.sync and class.abilities[ state.args.sync ]
-    if synced then wait = max( wait, state.cooldown[ state.args.sync ].remains ) end
+    local sync = state.args.sync
+    local synced = sync and class.abilities[ sync ]
+
+    if synced and sync ~= action and state:IsKnown( sync ) then
+        wait = max( wait, state:TimeToReady( sync ) )
+    end
 
     wait = ns.callHook( "TimeToReady", wait, action )
 
