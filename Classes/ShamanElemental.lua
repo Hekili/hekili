@@ -760,8 +760,21 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                     applyBuff( "echoes_of_great_sundering" )
                 end
 
+                if runeforge.windspeakers_lava_resurgence.enabled then
+                    applyBuff( "lava_surge" )
+                    applyBuff( "windspeakers_lava_resurgence" )
+                end
+
                 removeBuff( "echoing_shock" )
             end,
+
+            auras = {
+                windspeakers_lava_resurgence = {
+                    id = 336065,
+                    duration = 15,
+                    max_stack = 1,
+                },
+            }
         },
 
         earthbind_totem = {
@@ -1086,6 +1099,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             velocity = 30,
 
             handler = function ()
+                removeBuff( "windspeakers_lava_resurgence" )
                 removeBuff( "lava_surge" )
                 removeBuff( "echoing_shock" )
 
@@ -1468,7 +1482,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cycle = "flame_shock",
             velocity = 45,
 
-            handler = function ()
+            impact = function ()
                 applyDebuff( "target", "flame_shock" )
                 applyBuff( "primordial_wave" )
             end,
