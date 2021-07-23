@@ -1,5 +1,5 @@
 ## Windwalker Monk
-## July 5, 2021
+## July 23, 2021
 
 ## Tweak Fists of Fury interrupt logic.
 ## Tweak Spinning Crane Kick logic.
@@ -8,6 +8,7 @@
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/variable,name=xuen_on_use_trinket,op=set,value=equipped.inscrutable_quantum_device|equipped.gladiators_badge|equipped.wrathstone|equipped.overcharged_anima_battery|equipped.shadowgrasp_totem
+actions.precombat+=/fleshcraft
 actions.precombat+=/chi_burst,if=!talent.serenity.enabled|!talent.fist_of_the_white_tiger.enabled
 actions.precombat+=/chi_wave,if=!talent.energizing_elixer.enabled
 
