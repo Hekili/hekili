@@ -2047,6 +2047,25 @@ all:RegisterAbilities( {
         gcd = "spell",
 
         toggle = "cooldowns",
+    },
+
+    haymaker = {
+        id = 287712,
+        cast = 1,
+        cooldown = 150,
+        gcd = "spell",
+
+        handler = function ()
+            if not target.is_boss then applyDebuff( "target", "haymaker" ) end
+        end,
+
+        auras = {
+            haymaker = {
+                id = 287712,
+                duration = 3,
+                max_stack = 1,
+            },
+        }
     }
 } )
 
