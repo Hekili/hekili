@@ -1148,6 +1148,7 @@ do
             item = 186422,
 
             nobuff = "studious_comprehension",
+            usable = function () return buff.studious_comprehension.down, "not usable if studious_comprehension already buffed" end,
 
             handler = function ()
                 applyBuff( "studious_comprehension" )
