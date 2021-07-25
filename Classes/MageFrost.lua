@@ -903,6 +903,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 135848,
 
+            usable = function () return not state.spec.frost or target.distance < 12, "target out of range" end,
             handler = function ()
                 applyDebuff( "target", "frost_nova" )
                 if legendary.grisly_icicle.enabled then applyDebuff( "target", "grisly_icicle" ) end
