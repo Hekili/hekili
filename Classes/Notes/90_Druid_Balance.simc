@@ -1,5 +1,5 @@
 ## Balance Druid
-## July 24, 2021
+## July 25, 2021
 
 ## Changes:
 ## - Added Solar Beam.
@@ -9,6 +9,7 @@
 ## - Make Convoke the Spirits a little more flexible (if you hadn't hit it simultaneously with BOAT + Celestial Alignment, it'd skip).
 ## - Make most 'fight_remains' scenarios apply to boss fights only.
 ## - Treat Tome of Blah Blah Blah as a special trinket.
+## - Opener (i.e., Wrath, Wrath, Starfire) made more resilient to earlier combat-start.
 
 ## Annotated Balance APL can be found at https://balance-simc.github.io/Balance-SimC/md.html?file=balance.txt
 
@@ -20,14 +21,16 @@ actions.precombat+=/variable,name=on_use_trinket,op=add,value=2,if=trinket.2.has
 # These trinkets are not automatically detected as on use stat trinkets.  Set variable to 4 as they also need special handling.
 actions.precombat+=/variable,name=on_use_trinket,op=set,value=4,if=equipped.inscrutable_quantum_device|equipped.empyreal_ordnance|equipped.soulletting_ruby
 actions.precombat+=/moonkin_form
-# Precast 2 Wrath and a Starsurge on ST with Night Fae and BoAT or Starfire otherwise
 actions.precombat+=/wrath,line_cd=10,if=(eclipse.lunar_next|eclipse.in_solar|eclipse.in_both|eclipse.any_next)
-actions.precombat+=/wrath,if=(eclipse.lunar_next|eclipse.in_solar|eclipse.in_both|eclipse.any_next)&prev.1.wrath&!prev.2.wrath
-actions.precombat+=/starfire,if=!runeforge.balance_of_all_things|!covenant.night_fae|!spell_targets.starfall=1|!talent.natures_balance.enabled|(eclipse.solar_next|eclipse.in_lunar|eclipse.in_both|eclipse.any_next)
-actions.precombat+=/starsurge,if=runeforge.balance_of_all_things&covenant.night_fae&spell_targets.starfall=1
+
+# Precast 2 Wrath and a Starsurge on ST with Night Fae and BoAT or Starfire otherwise
+actions.opener+=/wrath,if=(eclipse.lunar_next|eclipse.in_solar|eclipse.in_both|eclipse.any_next)&prev.1.wrath&!prev.2.wrath
+actions.opener+=/starfire,line_cd=5,if=!runeforge.balance_of_all_things|!covenant.night_fae|!spell_targets.starfall=1|!talent.natures_balance.enabled|(eclipse.solar_next|eclipse.in_lunar|eclipse.in_both|eclipse.any_next)
+actions.opener+=/starsurge,line_cd=5,if=runeforge.balance_of_all_things&covenant.night_fae&spell_targets.starfall=1
 
 ## Executed every time the actor is available.
 actions=solar_beam
+actions+=/call_action_list,name=opener,if=time<(2*action.wrath.cast_time+action.starfire.cast_time)
 # Sets AoE on 3+ without drift and with Starlord and 2+ otherwise
 actions+=/variable,name=is_aoe,value=spell_targets.starfall>1&(!talent.starlord.enabled|talent.stellar_drift.enabled)|spell_targets.starfall>2
 # Sets cleave when Starfire can hit 2+ targets which is relevant for the Eclipse to be preferred and which filler to cast
