@@ -3434,15 +3434,21 @@ do
         end
 
         local use_items_found = false
+        local trinket1_found = false
+        local trinket2_found = false
 
         for _, list in pairs( output ) do
             for i, entry in ipairs( list ) do
                 if entry.action == "use_items" then use_items_found = true end
+                if entry.action == "trinket1" then trinket1_found = true end
+                if entry.action == "trinket2" then trinket2_found = true end
             end
         end
 
-        if not use_items_found then
-            AddWarning( "The 'use_items' action was not found in this import." )
+        if not use_items_found and not ( trinket1_found and trinket2_found ) then
+            AddWarning( "This profile is missing support for generic trinkets.  It is recommended that every priority includes either:\n" ..
+                " - [Use Items], which includes any trinkets not explicitly included in the priority; or\n" ..
+                " - [Trinket 1] and [Trinket 2], which will recommend the trinket for the numbered slot." )
         end
 
         if not output.default then output.default = {} end
