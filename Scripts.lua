@@ -1490,7 +1490,7 @@ function scripts:LoadScripts()
                             end
                         end
 
-                        if ability.item and data.enabled then
+                        if ( ability.item or data.action == "trinket1" or data.action == "trinket2" ) and data.enabled then
                             self.PackInfo[ pack ].items[ data.action ] = true
                         end
 
@@ -1532,7 +1532,7 @@ function Hekili:IsItemScripted( token )
     if not pack then return false end
     if not self.Scripts.PackInfo[ pack ] then return false end
 
-    return self.Scripts.PackInfo[ pack ].items[ token ] or false
+    return self.Scripts.PackInfo[ pack ].items[ token ] or ( state.trinket.t1.is[ token ] and self.Scripts.PackInfo[ pack ].items.trinket1 ) or ( state.trinket.t2.is[ token ] and self.Scripts.PackInfo[ pack ].items.trinket2 ) or false
 end
 
 
