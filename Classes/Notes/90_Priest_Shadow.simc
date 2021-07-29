@@ -1,7 +1,9 @@
 ## Shadow Priest
-## July 12, 2021
+## July 29, 2021
 
-## Tweak Void Torrent when target counts are forced.
+## Changes:
+## - Tweak Void Torrent when target counts are forced.
+## - Pretend dots are up when targets are close to dying, so that nukes are still recommended.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/power_word_fortitude,if=remains<300
@@ -15,8 +17,8 @@ actions.precombat+=/vampiric_touch
 ## Potions
 actions=silence
 actions=potion,if=buff.voidform.up|buff.power_infusion.up
-actions+=/variable,name=dots_up,op=set,value=dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking
-actions+=/variable,name=all_dots_up,op=set,value=dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking&dot.devouring_plague.ticking
+actions+=/variable,name=dots_up,op=set,value=(dot.shadow_word_pain.ticking|target.time_to_die<=4)&(dot.vampiric_touch.ticking|target.time_to_die<=6)
+actions+=/variable,name=all_dots_up,op=set,value=variable.dots_up&dot.devouring_plague.ticking
 # Start using Searing Nightmare at 3+ targets or 4+ if you are in Voidform
 actions+=/variable,name=searing_nightmare_cutoff,op=set,value=spell_targets.mind_sear>2+buff.voidform.up
 # Cooldown Pool Variable, Used to pool before activating voidform. Currently used to control when to activate voidform with incoming adds.
