@@ -1,8 +1,9 @@
 ## Death Knight Frost
-## July 21, 2021
+## July 29, 2021
 
 ## Changes
 ## - Removed last-second usage of Chains of Ice as it doesn't play well in practice.
+## - Don't channel Fleshcraft during Breath of Sindragosa.
 
 # Evaluates a trinkets cooldown, divided by pillar of frost or breath of sindragosa's cooldown. If it's value has no remainder return 1, else return 0.5.
 actions.precombat+=/variable,name=trinket_1_sync,op=setif,value=1,value_else=0.5,condition=trinket.1.has_use_buff&(!talent.breath_of_sindragosa&(trinket.1.cooldown.duration%%cooldown.pillar_of_frost.duration=0)|talent.breath_of_sindragosa&(cooldown.breath_of_sindragosa.duration%%trinket.1.cooldown.duration=0)|talent.icecap)
@@ -117,7 +118,7 @@ actions.covenants+=/abomination_limb,if=cooldown.pillar_of_frost.remains<3&varia
 actions.covenants+=/abomination_limb,if=variable.adds_remain
 actions.covenants+=/shackle_the_unworthy,if=variable.st_planning&(cooldown.pillar_of_frost.remains<3|talent.icecap)
 actions.covenants+=/shackle_the_unworthy,if=variable.adds_remain
-actions.covenants+=/fleshcraft,if=!buff.pillar_of_frost.up&(soulbind.pustule_eruption|soulbind.volatile_solvent),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
+actions.covenants+=/fleshcraft,if=!buff.pillar_of_frost.up&!buff.breath_of_sindragosa.up&(soulbind.pustule_eruption|soulbind.volatile_solvent),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 
 # Obliteration rotation
 actions.obliteration=remorseless_winter,if=active_enemies>=3&variable.rw_buffs
