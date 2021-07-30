@@ -932,7 +932,10 @@ do
         local time, validUnit = 0, false
 
         for k, v in pairs( db ) do
-            if v.n > 3 then
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
+            if not excluded and v.n > 3 then
                 time = max( time, ceil( v.lastHealth / v.rate ) )
                 validUnit = true
             end
@@ -951,7 +954,10 @@ do
         end        
 
         for k, v in pairs(db) do
-            if v.n > 3 and v.lastHealth > percent then
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
+            if not excluded and v.n > 3 and v.lastHealth > percent then
                 time = max( time, ( v.lastHealth - percent ) / v.rate )
                 validUnit = true
             end
@@ -966,7 +972,10 @@ do
         local time, validUnit = 3600, false
 
         for k, v in pairs(db) do
-            if v.n > 3 then
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
+            if not excluded and v.n > 3 then
                 time = min(time, ceil(v.lastHealth / v.rate))
                 validUnit = true
             end
@@ -983,7 +992,10 @@ do
         local count = 0
 
         for k, v in pairs(db) do
-            if v.n > 3 and ceil( v.lastHealth / v.rate ) <= x then
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
+            if not excluded and v.n > 3 and ceil( v.lastHealth / v.rate ) <= x then
                 count = count + 1
             end
         end
@@ -996,7 +1008,10 @@ do
         local count = 0
 
         for k, v in pairs(db) do
-            if v.n > 3 and ceil( v.lastHealth / v.rate ) > x then
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
+            if not excluded and v.n > 3 and ceil( v.lastHealth / v.rate ) > x then
                 count = count + 1
             end
         end
@@ -1024,7 +1039,10 @@ do
         local time = 0
 
         for k, v in pairs(db) do
-            if not bosses[k] and v.n > 0 then
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
+            if not excluded and not bosses[k] and v.n > 0 then
                 time = max(time, ceil(v.lastHealth / v.rate))
             end
         end
@@ -1040,10 +1058,13 @@ do
 
         for k, v in pairs( db ) do
             local unit = ( v.unit or "unknown" ) .. ":"
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
             if v.n > 3 then
-                output = output .. format( "\n    %-13s %4ds [%d] %s", unit, ceil(v.lastHealth / v.rate), v.n, UnitName( v.unit ) or "Unknown" )
+                output = output .. format( "\n    %-13s %4ds [%d] #%6s%s %s", unit, ceil(v.lastHealth / v.rate), v.n, npcid, excluded and "*" or "", UnitName( v.unit ) or "Unknown" )
             else
-                output = output .. format( "\n    %-13s TBD  [%d] %s", unit, v.n, UnitName(v.unit) or "Unknown" )
+                output = output .. format( "\n    %-13s TBD  [%d] #%6s%s %s", unit, v.n, npcid, excluded and "*" or "", UnitName(v.unit) or "Unknown" )
             end
             found = true
         end
