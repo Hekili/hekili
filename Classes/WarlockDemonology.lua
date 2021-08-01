@@ -9,6 +9,8 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
+
 
 -- Conduits
 -- [-] borne_of_blood
@@ -391,6 +393,13 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
         if buff.demonic_power.up then
             summonPet( "demonic_tyrant", buff.demonic_power.remains )
+        end
+
+        local subjugated, icon, count, debuffType, duration, expirationTime = FindUnitDebuffByID( "pet", 1098 )
+        if subjugated then
+            summonPet( "subjugated_demon", expirationTime - now )
+        else
+            dismissPet( "subjugated_demon" )
         end
 
         if Hekili.ActiveDebug then
@@ -827,6 +836,11 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             duration = 900,
             max_stack = 1,
         },
+        subjugate_demon = {
+            id = 1098,
+            duration = 300,
+            max_stack = 1,
+        },
         unending_breath = {
             id = 5697,
             duration = 600,
@@ -983,6 +997,11 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         function() return Glyphed( 112870 ) and 58965 or 17252 end,
         "summon_felguard",
         3600 )
+
+    spec:RegisterPet( "doomguard",
+        11859,
+        "ritual_of_doom",
+        300 )
     
     
     --[[ Demonic Tyrant
@@ -1240,7 +1259,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             spend = 0.02,
             spendType = "mana",
 
-            startsCombat = true,
+            startsCombat = false,
             nobuff = "demonic_circle",
 
             handler = function ()
@@ -1258,7 +1277,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             spend = 0.03,
             spendType = "mana",
 
-            startsCombat = true,
+            startsCombat = false,
 
             talent = "demonic_circle",
             buff = "demonic_circle",
@@ -1683,7 +1702,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
         subjugate_demon = {
             id = 1098,
-            cast = 2.828,
+            cast = 3,
             cooldown = 0,
             gcd = "spell",
 
@@ -1695,7 +1714,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             usable = function () return target.is_demon and target.level < level + 2, "requires demon enemy" end,
             handler = function ()
-                summonPet( "controlled_demon" )
+                summonPet( "subjugate_demon" )
             end,
         },
 
@@ -1758,7 +1777,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             bind = "summon_pet",
             nomounted = true,
 
-            usable = function () return not pet.exists end,
+            usable = function () return not pet.exists, "cannot have an existing pet" end,
             handler = function ()
                 removeBuff( "fel_domination" )
                 summonPet( "felguard", 3600 )
