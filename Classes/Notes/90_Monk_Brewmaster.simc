@@ -1,5 +1,5 @@
 ## Brewmaster Monk
-## July 23, 2021
+## July 31, 2021
 
 ## Changes:
 ## - 9.1 includes Purifying Brew entries related to Invoke Niuzao that do not using spec settings.  Provide feedback on GitHub.
@@ -70,7 +70,7 @@ actions+=/black_ox_brew,if=(energy+(energy.regen*cooldown.keg_smash.remains))<40
 actions+=/expel_harm,if=health.pct<5*healing_sphere.count|(healing_sphere.count>=3&health.pct<50)
 actions+=/healing_elixir,if=health.pct<33
 
-actions+=/fleshcraft,if=cooldown.bonedust_brew.remains<4&soulbind.lead_by_example.enabled
+actions+=/fleshcraft,if=cooldown.bonedust_brew.remains<4&soulbind.pustule_eruption.enabled
 
 # Offensively, the APL prioritizes KS on cleave, BoS else, with energy spenders and cds sorted below
 actions+=/keg_smash,if=spell_targets>=2
@@ -105,7 +105,8 @@ actions+=/exploding_keg
 # Expel Harm has higher DPET than TP when you have at least 2 orbs.
 actions+=/expel_harm,if=buff.gift_of_the_ox.stack>=2
 # Cast SCK if enough enemies are around, or if WWWTO is enabled. This is a slight defensive loss over using TP but generally reduces sim variance more than anything else.
-actions+=/spinning_crane_kick,if=(active_enemies>=3|settings.ox_walker&conduit.walk_with_the_ox.enabled)&cooldown.keg_smash.remains>gcd&(energy+(energy.regen*(cooldown.keg_smash.remains+execute_time)))>=65&(!talent.spitfire.enabled|!runeforge.charred_passions.equipped)
+actions+=/spinning_crane_kick,if=!runeforge.shaohaos_might.equipped&(active_enemies>=3|settings.ox_walker&conduit.walk_with_the_ox.enabled)&cooldown.keg_smash.remains>gcd&(energy+(energy.regen*(cooldown.keg_smash.remains+execute_time)))>=65&(!talent.spitfire.enabled|!runeforge.charred_passions.equipped)
 actions+=/tiger_palm,if=!talent.blackout_combo&cooldown.keg_smash.remains>gcd&(energy+(energy.regen*(cooldown.keg_smash.remains+gcd)))>=65
 actions+=/arcane_torrent,if=energy<31
+actions+=/fleshcraft,if=soulbind.volatile_solvent.enabled
 actions+=/rushing_jade_wind
