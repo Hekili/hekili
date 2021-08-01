@@ -1133,7 +1133,15 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         death_grip = {
             id = 49576,
             cast = 0,
+            charges = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 2
+            end,
             cooldown = 25,
+            recharge = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 25
+            end,
             gcd = "spell",
 
             startsCombat = true,
@@ -1193,7 +1201,15 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         deaths_advance = {
             id = 48265,
             cast = 0,
+            charges = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 2
+            end,
             cooldown = 45,
+            recharge = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 45
+            end,
             gcd = "spell",
 
             startsCombat = false,
@@ -1215,7 +1231,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             end,
             cooldown = 20,
             recharge = function ()
-                if not pvptalent.unholy_command.enabled then return end
+                if not pvptalent.deaths_echo.enabled then return end
                 return 20
             end,
             gcd = "spell",
