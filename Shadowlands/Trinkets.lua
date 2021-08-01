@@ -1318,11 +1318,19 @@ do
             max_stack = 1,
         },
 
+        -- Unholy Domination Shard Set
+        soul_fragment = {
+            id = 356042,
+            duration = 30,
+            max_stack = 15,
+        },
+
         chaos_bane = {
             id = 356043,
             duration = 15,
-            max_stack = 15,
+            max_stack = 1,
         },
+        -- End Unholy Domination Shard Set
 
         undying_rage = {
             id = 356490,
