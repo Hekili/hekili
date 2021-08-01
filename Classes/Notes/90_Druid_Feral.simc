@@ -1,5 +1,5 @@
 ## Feral Druid
-## July 20, 2021
+## August 1, 2021
 
 ## Feral APL can also be found at https://gist.github.com/Xanzara/6896c8996f5afce5ce115daa3a08daff
 
@@ -7,6 +7,7 @@
 ## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
 ## - Convert BT pool_resource to wait expression.
 ## - Add interruptible Fleshcraft if you have nothing else to do.
+## - Don't hold Convoke for Rip unless you'll really Rip.
 
 actions.precombat+=/variable,name=fourcp_bite,value=0
 # Shred = 0, Non-snapshot Rake = 1, Snapshot Rake = 2, LI = 3, Swipe = 4
@@ -79,7 +80,7 @@ actions.cooldown+=/berserking,if=buff.tigers_fury.up|buff.bs_inc.up
 actions.cooldown+=/potion,if=buff.bs_inc.up|boss&fight_remains<cooldown.bs_inc.remains|boss&fight_remains<25
 actions.cooldown+=/ravenous_frenzy,if=buff.bs_inc.up|fight_remains<21
 # TODO: Check moonkin hotw and stuff like this, and maybe better combat remain resync
-actions.cooldown+=/convoke_the_spirits,if=(dot.rip.remains>4&combo_points<5&(dot.rake.ticking|spell_targets.thrash_cat>1)&energy.deficit>=20)|boss&fight_remains<5
+actions.cooldown+=/convoke_the_spirits,if=((dot.rip.remains>4|fight_remains<variable.rip_ticks&dot.rip.tick_time)&combo_points<5&(dot.rake.ticking|spell_targets.thrash_cat>1)&energy.deficit>=20)|boss&fight_remains<5
 # Maybe there should be more conditions on the conduit
 actions.cooldown+=/empower_bond,if=buff.tigers_fury.up|(conduit.deep_allegiance.enabled)
 # Give priority to on-use weapon
@@ -100,7 +101,6 @@ actions.finisher+=/rip,cycle_targets=1,if=refreshable&druid.rip.ticks_gained_on_
 actions.finisher+=/savage_roar,if=buff.savage_roar.remains<(combo_points+1)*6*0.3
 actions.finisher+=/ferocious_bite,max_energy=1,cycle_targets=1
 actions.finisher+=/ferocious_bite,cycle_targets=1,if=buff.bs_inc.up&talent.soul_of_the_forest.enabled|cooldown.convoke_the_spirits.remains<1&covenant.night_fae
-
 
 actions.owlweave=starsurge,if=buff.heart_of_the_wild.up
 actions.owlweave+=/sunfire,line_cd=4*gcd
