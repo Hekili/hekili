@@ -1130,8 +1130,9 @@ function state.stopChanneling( reset, action )
 
         if spell then
             if Hekili.ActiveDebug then Hekili:Debug( "Breaking channel of %s.", spell ) end
-            if ability and ability.breakchannel then ability.breakchannel() end            
+            if ability and ability.breakchannel then ability.breakchannel() end
             state:RemoveSpellEvents( spell )
+            state.removeBuff( "casting" )
         end
     end
 
