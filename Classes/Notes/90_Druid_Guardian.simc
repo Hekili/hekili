@@ -1,5 +1,5 @@
 ## Guardian Druid
-## July 15, 2021
+## August 4, 2021
 
 ## Changes:
 ## - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -7,8 +7,8 @@
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/kindred_spirits
-actions.precombat+=/prowl,if=buff.cat_form.up&druid.catweave_bear
 actions.precombat+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&(druid.catweave_bear&buff.cat_form.up|druid.owlweave_bear&buff.moonkin_form.up|buff.moonkin_form.up&talent.balance_affinity.enabled)
+actions.precombat+=/prowl,if=buff.cat_form.up&druid.catweave_bear
 actions.precombat+=/bear_form,if=!buff.any_form.up&((!druid.owlweave_bear&!druid.catweave_bear)&(!covenant.night_fae))|((!druid.owlweave_bear&!druid.catweave_bear)&(covenant.night_fae&talent.restoration_affinity.enabled)|covenant.venthyr)
 actions.precombat+=/wrath,if=buff.moonkin_form.up&druid.owlweave_bear&!covenant.night_fae
 actions.precombat+=/starfire,if=buff.moonkin_form.up&druid.owlweave_bear&covenant.night_fae
