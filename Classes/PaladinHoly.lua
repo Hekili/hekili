@@ -506,7 +506,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
 
                 if talent.crusaders_might.enabled then
-                    setCooldown( "holy_shock", max( 0, cooldown.holy_shock.remains - 1.5 ) )
+                    setCooldown( "holy_shock", max( 0, cooldown.holy_shock.remains - 1.0 ) )
                 end
             end,
         },
