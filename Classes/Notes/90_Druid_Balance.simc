@@ -1,5 +1,5 @@
 ## Balance Druid
-## August 3, 2021
+## August 6, 2021
 
 ## Changes:
 ## - Added Solar Beam.
@@ -36,7 +36,7 @@ actions+=/variable,name=is_aoe,value=spell_targets.starfall>1&(!talent.starlord.
 # Sets cleave when Starfire can hit 2+ targets which is relevant for the Eclipse to be preferred and which filler to cast
 actions+=/variable,name=is_cleave,value=spell_targets.starfire>1
 # Variable that checks if you are in a gcd to avoid the situation where a trinket etc is used in between casts
-actions+=/variable,name=in_gcd,value=prev.moonfire|prev.sunfire|prev.starsurge|prev.starfall|prev.fury_of_elune|buff.ca_inc.remains=buff.ca_inc.duration
+actions+=/variable,name=in_gcd,value=prev.moonfire|prev.sunfire|prev.starsurge|prev.starfall|prev.fury_of_elune|buff.ca_inc.remains=buff.ca_inc.duration|prev.ravenous_frenzy
 # Use Berserking with CA/Inc or after Convoke in CA/Inc
 actions+=/berserking,if=((!covenant.night_fae|!cooldown.convoke_the_spirits.up)&buff.ca_inc.remains>15&buff.ravenous_frenzy.remains<4&!covenant.venthyr|covenant.venthyr&buff.ca_inc.up&buff.ravenous_frenzy.up&(buff.ravenous_frenzy.remains<11-5*runeforge.sinful_hysteria|buff.ca_inc.remains<11|1%spell_haste<1.55))&variable.in_gcd
 # Pot with a CA/Inc that isn't a Pulsar proc or when the fight is about to end
@@ -52,7 +52,7 @@ actions+=/use_item,name=empyreal_ordnance,if=cooldown.ca_inc.remains<20&cooldown
 # Use Soulleting Ruby 6secs before a CA/Inc use.
 actions+=/use_item,name=soulletting_ruby,if=(cooldown.ca_inc.remains<6&!covenant.venthyr&!covenant.night_fae|covenant.night_fae&cooldown.convoke_the_spirits.remains<6&(variable.convoke_desync|cooldown.ca_inc.remains<6)|covenant.venthyr&(!runeforge.sinful_hysteria&cooldown.ca_inc.remains<6|buff.ravenous_frenzy.remains<14+(5*equipped.instructors_divine_bell)&buff.ravenous_frenzy.up)|fight_remains<25|equipped.empyreal_ordnance&cooldown.empyreal_ordnance.remains>20)&variable.in_gcd&!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains>20|boss&fight_remains<20
 # Always use IQD with CA/Inc
-actions+=/variable,name=iqd_condition,value=buff.ca_inc.remains>15&(!runeforge.sinful_hysteria|buff.ravenous_frenzy.remains<=12+(3*buff.bloodlust.up)+((8-5*buff.bloodlust.up)*equipped.instructors_divine_bell)&buff.ravenous_frenzy.up)|boss&fight_remains<25|equipped.empyreal_ordnance&cooldown.empyreal_ordnance.remains
+actions+=/variable,name=iqd_condition,value=buff.ca_inc.remains>15&(!runeforge.sinful_hysteria|buff.ravenous_frenzy.remains<=12.2+(3*buff.bloodlust.up)+(8-5*buff.bloodlust.up)*equipped.instructors_divine_bell)&buff.ravenous_frenzy.up|boss&fight_remains<25|equipped.empyreal_ordnance&cooldown.empyreal_ordnance.remains
 actions+=/use_item,name=inscrutable_quantum_device,if=variable.iqd_condition&variable.in_gcd
 # Use right before cds
 actions+=/use_item,name=shadowed_orb_of_torment,if=(cooldown.ca_inc.ready&!covenant.night_fae&variable.thrill_seeker_wait|covenant.night_fae&cooldown.convoke_the_spirits.ready&(variable.convoke_desync|cooldown.ca_inc.ready))&dot.sunfire.ticking&(dot.stellar_flare.ticking|!talent.stellar_flare.enabled|spell_targets.starfire>3)&(dot.moonfire.ticking)&(variable.is_aoe|runeforge.balance_of_all_things|astral_power>=90|buff.bloodlust.up)&(cooldown.berserking.ready|!race.troll)&!equipped.inscrutable_quantum_device|equipped.inscrutable_quantum_device&(cooldown.inscrutable_quantum_device.remains>30|cooldown.berserking.remains>30)&!buff.ca_inc.up|boss&fight_remains<40
@@ -195,7 +195,7 @@ actions.st+=/force_of_nature,if=ap_check
 # Use Kindred Spirits with any long enough lasting Eclipse and try to line it up with Pulsar and CA/Inc
 actions.st+=/empower_bond,if=((buff.eclipse_solar.remains>10|buff.eclipse_lunar.remains>10)&cooldown.ca_inc.remains>30&(buff.primordial_arcanic_pulsar.value<240|!runeforge.primordial_arcanic_pulsar.equipped))|buff.primordial_arcanic_pulsar.value>=270|cooldown.ca_inc.ready&astral_power>90
 # Use CA/Inc with Convoke/Kindred Spirits and don't overwrite Pulsar or when Bloodlust would expire before CA/Inc expires
-actions.st+=/variable,name=cd_condition_st,value=!druid.no_cds&variable.cd_condition&((cooldown.empyreal_ordnance.remains<167+(11*runeforge.sinful_hysteria)&equipped.empyreal_ordnance)|astral_power>=90&(!talent.fury_of_elune.enabled|buff.ca_inc.duration>cooldown.fury_of_elune.remains+8)&variable.thrill_seeker_wait&(buff.kindred_empowerment_energize.up|!covenant.kyrian)&target.time_to_die>buff.ca_inc.duration*0.7|boss&fight_remains<buff.ca_inc.duration|covenant.night_fae|buff.bloodlust.up&buff.bloodlust.remains<buff.ca_inc.duration+(9*runeforge.primordial_arcanic_pulsar.equipped))&!buff.ca_inc.up&(!covenant.night_fae|cooldown.convoke_the_spirits.up|boss&fight_remains<cooldown.convoke_the_spirits.remains+6|fight_remains%%180<buff.ca_inc.duration)
+actions.st+=/variable,name=cd_condition_st,value=!druid.no_cds&variable.cd_condition&((cooldown.empyreal_ordnance.remains<167+(11*runeforge.sinful_hysteria)&equipped.empyreal_ordnance)|astral_power>=90&(!talent.fury_of_elune.enabled|buff.ca_inc.duration>cooldown.fury_of_elune.remains+8)&dot.sunfire.remains>12&dot.moonfire.remains>8&(dot.stellar_flare.remains>8|!talent.stellar_flare.enabled)&variable.thrill_seeker_wait&(buff.kindred_empowerment_energize.up|!covenant.kyrian)&target.time_to_die>buff.ca_inc.duration*0.7|boss&fight_remains<buff.ca_inc.duration|covenant.night_fae|buff.bloodlust.up&buff.bloodlust.remains<buff.ca_inc.duration+(9*runeforge.primordial_arcanic_pulsar.equipped))&!buff.ca_inc.up&(!covenant.night_fae|cooldown.convoke_the_spirits.up|boss&fight_remains<cooldown.convoke_the_spirits.remains+6|fight_remains%%180<buff.ca_inc.duration)
 # Use the Venthyr with a CA/Inc that isn't from Pulsar
 actions.st+=/ravenous_frenzy,if=buff.ca_inc.remains>15|buff.ca_inc.duration<30&variable.cd_condition_st
 actions.st+=/celestial_alignment,if=variable.cd_condition_st&(!buff.ca_inc.duration>30|!covenant.venthyr)|buff.ravenous_frenzy.up&buff.ravenous_frenzy.remains<9+conduit.precise_alignment.time_value+(!buff.bloodlust.up&!talent.starlord.enabled)
