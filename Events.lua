@@ -866,9 +866,7 @@ do
             end
         end
 
-        if not sameItems or class.active_essence ~= lastEssence then
-            Hekili:UpdateUseItems()
-        end
+        Hekili:UpdateUseItems()
 
         state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
 
