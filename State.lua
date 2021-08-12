@@ -824,8 +824,8 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
     end
 
     if state.cycle then
-        if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
-        else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        if duration == 0 then state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
+        else state.active_dot[ aura ] = max( state.active_enemies, state.active_dot[ aura ] + 1 ) end
         return
     end
 
@@ -844,8 +844,8 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         b.last_application = b.applied or 0
 
         b.v1 = value or 0
-        b.v2 = nil
-        b.v3 = nil
+        b.v2 = false
+        b.v3 = false
         b.applied = 0
         b.caster = "unknown"
 
@@ -1442,7 +1442,7 @@ do
                 if x > 0 and x >= state.delayMin and x <= state.delayMax then
                     t[ x ] = true
                 elseif x < 60 then
-                    Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 )
+                    if Hekili.ActiveDebug then Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 ) end
                 end
             end
         end
@@ -5450,9 +5450,9 @@ function state:RunHandler( key, noStart )
         return
     end
 
-    if self.channeling and not ability.castableWhileCasting then
+    --[[ if self.channeling and not ability.castableWhileCasting then
         self.stopChanneling( false, ability.key )
-    end
+    end ]]
     
     if ability.channeled then
         if ability.start then ability.start() end
