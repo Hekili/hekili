@@ -419,6 +419,8 @@ do
             item = 179350,
             toggle = "cooldowns",
 
+            self_buff = "inscrutable_quantum_device",
+
             auras = {
                 inscrutable_quantum_device_crit = {
                     id = 330366,
@@ -444,7 +446,7 @@ do
                     alias = { "inscrutable_quantum_device_crit", "inscrutable_quantum_device_vers", "inscrutable_quantum_device_haste", "inscrutable_quantum_device_mastery" },
                     aliasMode = "first",
                     aliasType = "buff",
-                    duration = 30                    
+                    duration = 30
                 }
             }
         },
