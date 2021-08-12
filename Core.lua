@@ -720,23 +720,27 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         state.this_action = action
                         entryReplaced = true
                     elseif action == "trinket1" then
-                        if state.trinket.t1.usable and state.trinket.t1.ability then
+                        if state.trinket.t1.usable and state.trinket.t1.ability and not Hekili:IsItemScripted( state.trinket.t1.ability ) then
                             action = state.trinket.t1.ability
                             ability = class.abilities[ action ]
                             state.this_action = action
                             entryReplaced = true
                         else
-                            if debug then self:Debug( "Bypassing 'trinket1' action as a usable trinket is not in slot #1." ) end
+                            if debug then
+                                self:Debug( "Bypassing 'trinket1' action because %s.", state.trinket.t1.usable and state.trinket.t1.ability and "the item is used elsewhere in this priority" or "the equipped trinket #1 is not usable" )
+                            end
                             ability = nil
                         end
                     elseif action == "trinket2" then
-                        if state.trinket.t2.usable and state.trinket.t2.ability then
+                        if state.trinket.t2.usable and state.trinket.t2.ability and not Hekili:IsItemScripted( state.trinket.t2.ability ) then
                             action = state.trinket.t2.ability
                             ability = class.abilities[ action ]
                             state.this_action = action
                             entryReplaced = true
                         else
-                            if debug then Hekili:Debug( "Bypassing 'trinket2' action as a usable trinket is not in slot #2." ) end
+                            if debug then
+                                self:Debug( "Bypassing 'trinket2' action because %s.", state.trinket.t2.usable and state.trinket.t2.ability and "the item is used elsewhere in this priority" or "the equipped trinket #2 is not usable" )
+                            end
                             ability = nil
                         end
                     end
@@ -752,7 +756,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     if debug then
                         local d = ""
-                        if entryReplaced then d = format( "Substituting %s for %s action; it is otherwise not included in the priority.\n", action, class.abilities[ entry.action ].name ) end
+                        if entryReplaced then d = format( "\nSubstituting %s for %s action; it is otherwise not included in the priority.", action, class.abilities[ entry.action ].name ) end
                         
                         d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )                        
 
