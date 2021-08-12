@@ -1527,12 +1527,15 @@ function Hekili:IsEssenceScripted( token )
 end
 
 
-function Hekili:IsItemScripted( token )
+function Hekili:IsItemScripted( token, specific )
     local pack = Hekili:GetActivePack()
     if not pack then return false end
     if not self.Scripts.PackInfo[ pack ] then return false end
 
-    return self.Scripts.PackInfo[ pack ].items[ token ] or ( state.trinket.t1.is[ token ] and self.Scripts.PackInfo[ pack ].items.trinket1 ) or ( state.trinket.t2.is[ token ] and self.Scripts.PackInfo[ pack ].items.trinket2 ) or false
+    if self.Scripts.PackInfo[ pack ].items[ token ] then return true end
+    if not specific and ( ( state.trinket.t1.is[ token ] and self.Scripts.PackInfo[ pack ].items.trinket1 ) or ( state.trinket.t2.is[ token ] and self.Scripts.PackInfo[ pack ].items.trinket2 ) ) then return true end
+    
+    return false
 end
 
 
