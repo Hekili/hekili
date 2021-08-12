@@ -731,6 +731,9 @@ do
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t1.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
                     state.trinket.t1.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
+                elseif class.abilities[ tSpell ].self_buff then
+                    state.trinket.t1.__has_use_buff = true
+                    state.trinket.t1.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration
                 end
             end
 
@@ -776,6 +779,9 @@ do
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t2.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
                     state.trinket.t2.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
+                elseif tSpell and class.abilities[ tSpell ].self_buff then
+                    state.trinket.t2.__has_use_buff = true
+                    state.trinket.t2.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration
                 end
             end
 
@@ -929,6 +935,12 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
     end
 
     Hekili.HasSnapped = false -- some would disagree.
+    
+    if Hekili.Config and not LibStub( "AceConfigDialog-3.0" ).OpenFrames[ "Hekili" ] then
+        ns.StopConfiguration()
+        Hekili:UpdateDisplayVisibility()
+    end
+    
     Hekili:ForceUpdate( event, true ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
 end )
 

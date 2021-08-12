@@ -779,6 +779,31 @@ do
 
     local LRC = LibStub("LibRangeCheck-2.0")
     local LSF = SpellFlashCore
+
+    if LSF then
+        hooksecurefunc( LSF, "FlashFrame", function( frame )
+            local flash = frame and frame.SpellFlashCoreAddonFlashFrame
+
+            if flash and not flash.HekiliHooked then
+                flash.FlashTexture:SetTexture( Hekili.DB.profile.flashTexture or "Interface\\Cooldown\\star4" )
+
+                flash:HookScript( "OnUpdate", function( self )
+                    flash.FlashTexture:SetTexture( Hekili.DB.profile.flashTexture or "Interface\\Cooldown\\star4" )
+                    if Hekili.DB.profile.fixedSize then
+                        flash.FlashTexture:SetHeight( flash:GetHeight() * flash.FlashSize )
+                        flash.FlashTexture:SetWidth( flash:GetWidth() * flash.FlashSize )
+                    end
+
+                    if Hekili.DB.profile.fixedBrightness then
+                        flash.FlashTexture:SetAlpha( flash.FlashBrightness )
+                    end
+                end )
+
+                flash.HekiliHooked = true
+            end
+        end )
+    end
+
     local LSR = LibStub("SpellRange-1.0")
     local Glower = LibStub("LibCustomGlow-1.0")
 
@@ -1093,7 +1118,7 @@ do
                     if self.lastFlash ~= a or now - self.lastFlashTime > 0.5 then
                         if ability.item then
                             local iname = LSF.ItemName( ability.item )
-                            LSF.FlashItem( iname, self.flashColor )
+                            LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
                         else
                             if ability.flash then
                                 LSF.FlashAction( ability.flash, self.flashColor )
@@ -1105,7 +1130,7 @@ do
                                 end
 
                                 local sname = LSF.SpellName( id )
-                                LSF.FlashAction( sname, self.flashColor )
+                                LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
                             end
                         end
                         self.lastFlash = a
