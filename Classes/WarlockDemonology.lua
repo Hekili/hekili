@@ -351,9 +351,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         for n, t in ipairs( other_demon ) do other_demon_v[ n ] = t end
 
 
-        if #dreadstalkers_v > 0 then wipe( dreadstalkers_v ) end
-        if #vilefiend_v > 0     then wipe( vilefiend_v )     end
-        if #grim_felguard_v > 0 then wipe( grim_felguard_v ) end
+        if #dreadstalkers_v > 0  then wipe( dreadstalkers_v ) end
+        if #vilefiend_v > 0      then wipe( vilefiend_v )     end
+        if #grim_felguard_v > 0  then wipe( grim_felguard_v ) end
+        if #demonic_tyrant_v > 0 then wipe( demonic_tyrant_v ) end
 
         -- Pull major demons from Totem API.
         for i = 1, 5 do
@@ -365,7 +366,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 -- Grimoire Felguard
                 if texture == 136216 then demon = grim_felguard_v
                 elseif texture == 1616211 then demon = vilefiend_v
-                elseif texture == 1378282 then demon = dreadstalkers_v end
+                elseif texture == 1378282 then demon = dreadstalkers_v
+                elseif texture == 135002 then demon = demonic_tyrant_v end
 
                 if demon then
                     insert( demon, summoned + duration )
@@ -375,6 +377,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             if #grim_felguard_v > 1 then table.sort( grim_felguard_v ) end
             if #vilefiend_v > 1 then table.sort( vilefiend_v ) end
             if #dreadstalkers_v > 1 then table.sort( dreadstalkers_v ) end
+            if #demonic_tyrant_v > 1 then table.sort( demonic_tyrant_v ) end
         end
 
         last_summon.name = nil
@@ -385,14 +388,14 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             summonPet( "demonic_tyrant", demonic_tyrant_v[ 1 ] - query_time )
         end
 
+        if buff.demonic_power.up and buff.demonic_power.remains > pet.demonic_tyrant.remains then
+            summonPet( "demonic_tyrant", buff.demonic_power.remains )
+        end
+
         tyrant_ready = nil
 
         if cooldown.summon_demonic_tyrant.remains > 5 then
             tyrant_ready = false
-        end
-
-        if buff.demonic_power.up then
-            summonPet( "demonic_tyrant", buff.demonic_power.remains )
         end
 
         local subjugated, icon, count, debuffType, duration, expirationTime = FindUnitDebuffByID( "pet", 1098 )
@@ -1010,8 +1013,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         "summon_demonic_tyrant",
         15 ) ]]
     
-    spec:RegisterTotem( "demonic_tyrant", 135002 )
-    
+    spec:RegisterTotem( "demonic_tyrant", 135002 )    
     spec:RegisterTotem( "vilefiend", 1616211 )
     spec:RegisterTotem( "grimoire_felguard", 136216 )
     spec:RegisterTotem( "dreadstalker", 1378282 )
