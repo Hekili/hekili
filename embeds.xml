@@ -25,4 +25,7 @@
 	<Include file="Libs\TaintLess\TaintLess.xml"/>
 	<Include file="Libs\LibChatAnims\LibChatAnims.xml"/>
 	<Include file="Libs\LibTranslit-1.0\LibTranslit-1.0.xml"/>
+	<Script file="Libs\SpellFlashCore\libs\BigLibTimer\BigLibTimer.lua"/>
+	<Script file="Libs\SpellFlashCore\Localization.lua"/>
+	<Script file="Libs\SpellFlashCore\SpellFlashCore.lua"/>
 </Ui>

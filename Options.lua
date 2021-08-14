@@ -928,7 +928,7 @@ do
 
     local ACD = LibStub( "AceConfigDialog-3.0" )
     local LSM = LibStub( "LibSharedMedia-3.0" )
-    local SF = SpellFlash or SpellFlashCore
+    local SF = SpellFlashCore
 
     local fontStyles = {
         ["MONOCHROME"] = "Monochrome",
