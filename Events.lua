@@ -1931,12 +1931,12 @@ do
         -- Use ElvUI's actionbars only if they are actually enabled.
         elseif _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
             table.wipe( slotsUsed )
-            
+
             for i = 1, 10 do
                 for b = 1, 12 do
                     local btn = _G["ElvUI_Bar" .. i .. "Button" .. b]
 
-                    local binding = btn.keyBoundTarget or ( "CLICK " .. btn:GetName() .. ":LeftButton" )
+                    local binding = btn.bindstring or btn.keyBoundTarget or ( "CLICK " .. btn:GetName() .. ":LeftButton" )
 
                     if i > 6 then
                         -- Checking whether bar is active.
@@ -1954,7 +1954,7 @@ do
                         
                         binding = GetBindingKey( binding )
                         action, aType = GetActionInfo( action )
-                        StoreKeybindInfo( i, binding, action, aType )
+                        if binding then StoreKeybindInfo( i, binding, action, aType ) end
                     end
                 end
             end
@@ -2059,7 +2059,7 @@ ns.ReadKeybindings = ReadKeybindings
 
 local function ReadOneKeybinding( event, slot )
     if not Hekili:IsValidSpec() then return end
-    if slot == 0 then return end
+    if not slot or slot == 0 then return end
 
     local actionBarNumber = ceil( slot / 12 )
     local keyNumber = slot - ( 12 * ( actionBarNumber - 1 ) )
@@ -2086,7 +2086,7 @@ local function ReadOneKeybinding( event, slot )
         local btn = _G[ "ElvUI_Bar" .. actionBarNumber .. "Button" .. keyNumber ]
 
         if btn then
-            local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
+            local binding = btn.bindstring or btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
 
             if actionBarNumber > 6 then
                 -- Checking whether bar is active.
@@ -2102,8 +2102,7 @@ local function ReadOneKeybinding( event, slot )
             if action and type( action ) == "number" then
                 binding = GetBindingKey( binding )
                 action, aType = GetActionInfo( action )
-                ability = StoreKeybindInfo( actionBarNumber, binding, action, aType )
-                completed = true
+                if binding then StoreKeybindInfo( actionBarNumber, binding, action, aType ) end
             end
         end
 
@@ -2173,15 +2172,24 @@ local function ReadOneKeybinding( event, slot )
 end
 
 
-RegisterEvent( "UPDATE_BINDINGS", ReadKeybindings )
-RegisterEvent( "PLAYER_ENTERING_WORLD", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_SHOWGRID", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_HIDEGRID", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_PAGE_CHANGED", ReadKeybindings )
+local function DelayedUpdateKeybindings( event )
+    C_Timer.After( 0.05, function() ReadKeybindings( event ) end )
+end
+
+local function DelayedUpdateOneKeybinding( event, slot )
+    C_Timer.After( 0.05, function() ReadOneKeybinding( event, slot ) end )
+end
+
+
+RegisterEvent( "UPDATE_BINDINGS", DelayedUpdateKeybindings )
+RegisterEvent( "PLAYER_ENTERING_WORLD", DelayedUpdateKeybindings )
+RegisterEvent( "ACTIONBAR_SHOWGRID", DelayedUpdateKeybindings )
+RegisterEvent( "ACTIONBAR_HIDEGRID", DelayedUpdateKeybindings )
+RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
 -- RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
 -- RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
 -- RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_SLOT_CHANGED", ReadOneKeybinding )
+RegisterEvent( "ACTIONBAR_SLOT_CHANGED", DelayedUpdateOneKeybinding )
 
 RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function( event, unit )
     if UnitIsUnit( "player", unit ) then
