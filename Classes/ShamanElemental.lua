@@ -371,10 +371,10 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
 
     -- Pets
-    spec:RegisterPet( "primal_storm_elemental", 77942, "storm_elemental", 30 )
+    spec:RegisterPet( "primal_storm_elemental", 77942, "storm_elemental", function() return 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) end )
     spec:RegisterTotem( "greater_storm_elemental", 1020304 ) -- Texture ID
 
-    spec:RegisterPet( "primal_fire_elemental", 61029, "fire_elemental", 30 )
+    spec:RegisterPet( "primal_fire_elemental", 61029, "fire_elemental", function() return 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) end )
     spec:RegisterTotem( "greater_fire_elemental", 135790 ) -- Texture ID
 
     spec:RegisterPet( "primal_earth_elemental", 61056, "earth_elemental", 60 )
@@ -903,7 +903,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             end,            
 
             handler = function ()
-                summonPet( talent.primal_elementalist.enabled and "primal_fire_elemental" or "greater_fire_elemental", 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) )
+                summonPet( talent.primal_elementalist.enabled and "primal_fire_elemental" or "greater_fire_elemental" )
             end,
         },
 
@@ -1305,7 +1305,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             end,            
 
             handler = function ()
-                summonPet( talent.primal_elementalist.enabled and "primal_storm_elemental" or "greater_storm_elemental", 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) )
+                summonPet( talent.primal_elementalist.enabled and "primal_storm_elemental" or "greater_storm_elemental" )
             end,
         },
 
