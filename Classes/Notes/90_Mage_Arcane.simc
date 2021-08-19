@@ -1,9 +1,10 @@
 ## Mage Arcane
-## August 12, 2021
+## August 19, 2021
 
 ## Changes:
 ## - Use typical SimC handling of channel interruption instead of 'cancel_action'.
 ## - Change arcane_infinity to arcane_harmony (it never went live as arcane_harmony).
+## - Don't Evocate in AOE just because you're out of range and not using Arcane Explosion.
 
 actions.precombat+=/arcane_intellect
 actions.precombat+=/arcane_familiar
@@ -110,7 +111,7 @@ actions.aoe+=/arcane_missiles,if=buff.clearcasting.react&talent.arcane_echo&debu
 actions.aoe+=/arcane_missiles,if=buff.clearcasting.react&talent.amplification&active_enemies<4
 actions.aoe+=/arcane_explosion,if=buff.arcane_charge.stack<buff.arcane_charge.max_stack
 actions.aoe+=/arcane_explosion,if=buff.arcane_charge.stack=buff.arcane_charge.max_stack&prev_gcd.1.arcane_barrage
-actions.aoe+=/evocation,interrupt_if=mana.pct>=85,interrupt_immediate=1
+## actions.aoe+=/evocation,interrupt_if=mana.pct>=85,interrupt_immediate=1
 
 actions.calculations=variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&prev_gcd.1.evocation&!(runeforge.siphon_storm|runeforge.temporal_warp)
 actions.calculations+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&buff.arcane_power.down&cooldown.arcane_power.remains&(runeforge.siphon_storm|runeforge.temporal_warp)
