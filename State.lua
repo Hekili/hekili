@@ -6591,7 +6591,6 @@ function state:TimeToReady( action, pool )
         wait = max( wait, ability.timeToReady )
     end
 
-    wait = max( wait, self.delayMin )
     return max( wait, self.delayMin )
 end
 

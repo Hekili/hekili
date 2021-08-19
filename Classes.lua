@@ -1002,6 +1002,13 @@ all:RegisterAuras( {
         max_stack = 1,
     },
 
+    drums_of_deathly_ferocity = {
+        id = 309658,
+        shared = "player", -- use anyone's buff on the player, not just player's.
+        duration = 40,
+        max_stack = 1,
+    },
+
     bloodlust = {
         id = 2825,
         duration = 40,
@@ -1012,6 +1019,7 @@ all:RegisterAuras( {
                 [80353] = 'time_warp',
                 [160452] = 'netherwinds',
                 [264667] = 'primal_rage',
+                [309658] = 'drums_of_deathly_ferocity',
             }
 
             for id, key in pairs( bloodlusts ) do
