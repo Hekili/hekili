@@ -1151,6 +1151,7 @@ do
 
             nobuff = "studious_comprehension",
             usable = function () return buff.studious_comprehension.down, "not usable if studious_comprehension already buffed" end,
+            essential = true,
 
             handler = function ()
                 applyBuff( "studious_comprehension" )
@@ -1161,6 +1162,7 @@ do
                     id = 357163,
                     duration = 3600,
                     max_stack = 1,
+                    shared = "player"
                 },
             }
         },
