@@ -898,7 +898,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             spendType = "rage",
 
             startsCombat = true,
-            texture = 132352,
 
             handler = function ()
                 if talent.frenzy.enabled then addStack( "frenzy", nil, 1 ) end
@@ -1068,7 +1067,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             gcd = "spell",
 
             startsCombat = true,
-            texture = 132369,
 
             usable = function ()
                 if settings.check_ww_range and target.outside7 then return false, "target is outside of whirlwind range" end
