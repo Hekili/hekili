@@ -48,7 +48,7 @@ local legendaries = {
     [7699] = { "blind_faith", 1, 577 }, -- 355893
     [7041] = { "collective_anguish", 1, 577 }, -- 337504
     [7044] = { "darkest_hour", 1, 577 }, -- 337539
-    [7043] = { "darkglare_boon", 1, 577 }, -- 337534
+    [7043] = { "darkglare_boon", "darkglare_medallion", 1, 577 }, -- 337534
     [7700] = { "demonic_oath", 1, 577 }, -- 355996
     [7052] = { "fel_bombardment", 1, 577 }, -- 337775
 
