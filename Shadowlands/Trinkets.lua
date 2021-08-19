@@ -1154,8 +1154,12 @@ do
             essential = true,
 
             handler = function ()
+                print( "applying studious comprehension" )
                 applyBuff( "studious_comprehension" )
+                Hekili:Debug( "Applied studious_comprehension, %.2f.", buff.studious_comprehension.remains )
             end,
+
+            copy = 353692,
 
             auras = {
                 studious_comprehension = {
