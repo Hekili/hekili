@@ -1,5 +1,5 @@
 ## Shadow Priest
-## August 3, 2021
+## August 18, 2021
 
 ## Changes:
 ## - Tweak Void Torrent when target counts are forced.
@@ -18,7 +18,7 @@ actions.precombat+=/vampiric_touch
 actions=silence
 actions=potion,if=buff.voidform.up|buff.power_infusion.up
 actions+=/variable,name=dots_up,op=set,value=(dot.shadow_word_pain.ticking|target.time_to_die<=4)&(dot.vampiric_touch.ticking|target.time_to_die<=6)
-actions+=/variable,name=all_dots_up,op=set,value=variable.dots_up&dot.devouring_plague.ticking
+actions+=/variable,name=all_dots_up,op=set,value=variable.dots_up&(dot.devouring_plague.ticking|target.time_to_die<=4)
 # Start using Searing Nightmare at 3+ targets or 4+ if you are in Voidform
 actions+=/variable,name=searing_nightmare_cutoff,op=set,value=spell_targets.mind_sear>2+buff.voidform.up
 # Cooldown Pool Variable, Used to pool before activating voidform. Currently used to control when to activate voidform with incoming adds.
@@ -35,7 +35,8 @@ actions+=/run_action_list,name=main
 
 ## APL to use when Boon of the Ascended is active
 actions.boon=ascended_blast,if=spell_targets.mind_sear<=3
-actions.boon+=/ascended_nova,if=spell_targets.ascended_nova>1&spell_targets.mind_sear>1+talent.searing_nightmare.enabled
+# Only use Ascended Nova when not talented into Searing Nightmare on 2+ targets.
+actions.boon+=/ascended_nova,if=spell_targets.ascended_nova>1&spell_targets.mind_sear>1&!talent.searing_nightmare.enabled
 
 ## CDs
 # Use Power Infusion with Voidform. Hold for Voidform comes off cooldown in the next 10 seconds otherwise use on cd unless the player is part of the kyrian covenant, or if there will not be another Void Eruption this fight. Attempt to sync the last power infusion of the fight to void eruption for non Kyrians.
@@ -49,7 +50,7 @@ actions.cds+=/fae_guardians,if=!buff.voidform.up&(!cooldown.void_torrent.up|!tal
 # Use Mindgames when all 3 DoTs are up, or you are in Voidform. Ensure Hungering Void will still be up when the cast time finishes. Stop using at 5+ targets with Searing Nightmare.
 actions.cds+=/mindgames,cycle_targets=1,if=insanity<90&((variable.all_dots_up&(!cooldown.void_eruption.up|!talent.hungering_void.enabled))|buff.voidform.up)&(!talent.hungering_void.enabled|debuff.hungering_void.remains>cast_time|!buff.voidform.up)&(!talent.searing_nightmare.enabled|spell_targets.mind_sear<5)
 # Use Unholy Nova on CD, holding briefly to wait for power infusion or add spawns.
-actions.cds+=/unholy_nova,if=((!raid_event.adds.up&raid_event.adds.in>20)|raid_event.adds.remains>=15|raid_event.adds.duration<15)&(buff.power_infusion.up|cooldown.power_infusion.remains>=10|!priest.self_power_infusion)&(!talent.hungering_void.enabled|debuff.hungering_void.up|!buff.voidform.up)
+actions.cds+=/unholy_nova,if=((!raid_event.adds.up&raid_event.adds.in>20)|raid_event.adds.remains>=15|raid_event.adds.duration<15)&(!talent.hungering_void.enabled|debuff.hungering_void.up|(cooldown.void_eruption.remains>10|!variable.pool_for_cds)&!buff.voidform.up)
 # Use on CD but prioritise using Void Eruption first, if used inside of VF on ST use after a voidbolt for cooldown efficiency and for hungering void uptime if talented.
 actions.cds+=/boon_of_the_ascended,if=!buff.voidform.up&!cooldown.void_eruption.up&spell_targets.mind_sear>1&!talent.searing_nightmare.enabled|(buff.voidform.up&spell_targets.mind_sear<2&!talent.searing_nightmare.enabled&(prev_gcd.1.void_bolt&(!equipped.empyreal_ordnance|!talent.hungering_void.enabled)|equipped.empyreal_ordnance&trinket.empyreal_ordnance.cooldown.remains<=162&debuff.hungering_void.up))|(buff.voidform.up&talent.searing_nightmare.enabled)
 actions.cds+=/call_action_list,name=trinkets
