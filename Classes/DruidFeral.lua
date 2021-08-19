@@ -1229,7 +1229,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             form = "cat_form",
             indicator = function ()
-                if settings.cycle and target.time_to_die < longest_ttd then return "cycle" end
+                if active_enemies > 1 and settings.cycle and target.time_to_die < longest_ttd then return "cycle" end
             end,            
 
             handler = function ()
@@ -1262,7 +1262,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             form = "cat_form",
             indicator = function ()
-                if settings.cycle and talent.sabertooth.enabled and dot.rip.down and active_dot.rip > 0 then return "cycle" end
+                if active_enemies > 1 and settings.cycle and talent.sabertooth.enabled and dot.rip.down and active_dot.rip > 0 then return "cycle" end
             end,
 
             -- Use maximum damage.
@@ -2629,7 +2629,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             -- For Feral, we want to put Adaptive Swarm on the highest health enemy.
             indicator = function ()
-                if state.spec.feral and target.time_to_die < longest_ttd then return "cycle" end
+                if state.spec.feral and active_enemies > 1 and target.time_to_die < longest_ttd then return "cycle" end
             end,
 
             handler = function ()

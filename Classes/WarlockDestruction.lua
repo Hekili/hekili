@@ -1007,7 +1007,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
             texture = 460695,
 
-            indicator = function () return ( lastTarget == "lastTarget" or target.unit == lastTarget ) and "cycle" or nil end,
+            indicator = function () return active_enemies > 1 and ( lastTarget == "lastTarget" or target.unit == lastTarget ) and "cycle" or nil end,
             cycle = "havoc",
 
             bind = "bane_of_havoc",
