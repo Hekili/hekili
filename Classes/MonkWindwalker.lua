@@ -108,6 +108,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     -- Auras
     spec:RegisterAuras( {
         bok_proc = {
+            id = 116768,
             type = "Magic",
             max_stack = 1,
         },
