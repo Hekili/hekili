@@ -4580,6 +4580,9 @@ local mt_default_action = {
 
         elseif k == "last_used" then
             return state.combat > 0 and max( 0, ability.lastCast - state.combat ) or 0
+
+        elseif k == "time_since" then
+            return max( 0, state.query_time - ability.lastCast )
         
         elseif k == "in_range" then
             if UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and LSR.IsSpellInRange( ability.rangeSpell or ability.id, "target" ) == 0 then
