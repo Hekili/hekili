@@ -967,6 +967,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 removeBuff( "divine_purpose" )
                 removeBuff( "the_magistrates_judgment" )
                 applyBuff( "vanquishers_hammer" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

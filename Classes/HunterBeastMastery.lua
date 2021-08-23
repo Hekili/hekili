@@ -1850,6 +1850,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             handler = function ()
                 applyBuff( "death_chakram" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

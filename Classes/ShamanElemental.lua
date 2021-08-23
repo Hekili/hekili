@@ -1485,6 +1485,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             impact = function ()
                 applyDebuff( "target", "flame_shock" )
                 applyBuff( "primordial_wave" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

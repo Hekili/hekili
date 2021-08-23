@@ -1328,6 +1328,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     applyBuff( "veterans_repute" )
                     addStack( "glory", nil, 5 )
                 end
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

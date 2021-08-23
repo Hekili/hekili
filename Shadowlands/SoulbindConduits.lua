@@ -572,6 +572,12 @@ all:RegisterAuras( {
         max_stack = 1,
     },
 
+    kevins_oozeling = {
+        id = 352500,
+        duration = 20,
+        max_stack = 1,
+    },
+
     kevins_wrath = {
         id = 352528,
         duration = 30,

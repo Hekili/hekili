@@ -1452,6 +1452,7 @@ if UnitClassBase( "player" ) == "MONK" then
 
             handler = function ()
                 applyDebuff( "target", "bonedust_brew" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

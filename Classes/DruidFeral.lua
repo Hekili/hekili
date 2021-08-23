@@ -2633,7 +2633,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             end,
 
             handler = function ()
-                applyDebuff( "target", "adaptive_swarm_dot", nil, 325733 )
+                applyDebuff( "target", "adaptive_swarm_dot", nil, 3 )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             copy = "adaptive_swarm_damage"

@@ -1270,6 +1270,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 removeBuff( "divine_purpose" )
                 removeBuff( "the_magistrates_judgment" )
                 applyBuff( "vanquishers_hammer", nil, legendary.dutybound_gavel.enabled and 2 or nil )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

@@ -1510,6 +1510,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             handler = function ()
                 applyBuff( "abomination_limb" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

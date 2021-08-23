@@ -1699,6 +1699,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 if legendary.shard_of_annihilation.enabled then
                     applyBuff( "shard_of_annihilation" )
                 end
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

@@ -1719,6 +1719,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyBuff( "deathborne" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {

@@ -1612,6 +1612,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 active_dot.unholy_transfusion = active_enemies
 
                 if legendary.pallid_command.enabled then applyBuff( "pallid_command" ) end
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             range = 15,
