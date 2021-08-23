@@ -431,17 +431,17 @@ if UnitClassBase( "player" ) == "MAGE" then
     end )
 
     -- # APL Variable Option: This variable specifies the number of targets at which Hot Streak Flamestrikes outside of Combustion should be used.
-    -- actions.precombat+=/variable,name=hot_streak_flamestrike,op=set,if=talent.flame_patch,value=2,value_else=3
+    -- actions.precombat+=/variable,name=hot_streak_flamestrike,op=set,if=talent.flame_patch,value=2,value_else=4
     spec:RegisterVariable( "hot_streak_flamestrike", function ()
         if talent.flame_patch.enabled then return 2 end
-        return 3
+        return 4
     end )
 
     -- # APL Variable Option: This variable specifies the number of targets at which Hard Cast Flamestrikes outside of Combustion should be used as filler.
-    -- actions.precombat+=/variable,name=hard_cast_flamestrike,op=set,if=talent.flame_patch,value=2,value_else=3
+    -- actions.precombat+=/variable,name=hard_cast_flamestrike,op=set,if=talent.flame_patch,value=3,value_else=6
     spec:RegisterVariable( "hard_cast_flamestrike", function ()
-        if talent.flame_patch.enabled then return 2 end
-        return 3
+        if talent.flame_patch.enabled then return 3 end
+        return 6
     end )
 
     -- # APL Variable Option: This variable specifies the number of targets at which Hot Streak Flamestrikes are used during Combustion.
@@ -464,10 +464,11 @@ if UnitClassBase( "player" ) == "MAGE" then
         return 40
     end )
 
-    -- # APL Variable Option: The number of targets Shifting Power should be used on during Combustion.
-    -- actions.precombat+=/variable,name=combustion_shifting_power,default=2,op=reset    
+    -- # APL Variable Option: The number of targets at which Shifting Power can used during Combustion.
+    -- actions.precombat+=/variable,name=combustion_shifting_power,if=variable.combustion_shifting_power=0,value=1*talent.pyroclasm*runeforge.sun_kings_blessing+3*(!runeforge.sun_kings_blessing|!talent.pyroclasm)
     spec:RegisterVariable( "combustion_shifting_power", function ()
-        return 2
+        if talent.pyroclasm.enabled and runeforge.sun_kings_blessing.enabled then return 1 end
+        return 3
     end )
 
     -- # APL Variable Option: The time remaining on a cast when Combustion can be used in seconds.
@@ -521,9 +522,9 @@ if UnitClassBase( "player" ) == "MAGE" then
     end )
 
     -- # Variable that estimates whether Shifting Power will be used before Combustion is ready.
-    -- actions+=/variable,name=shifting_power_before_combustion,op=set,value=(active_enemies<variable.combustion_shifting_power|active_enemies<variable.combustion_flamestrike|variable.time_to_combustion-action.shifting_power.full_reduction>cooldown.shifting_power.duration)&variable.time_to_combustion-cooldown.shifting_power.remains>action.shifting_power.full_reduction&(cooldown.rune_of_power.remains-cooldown.shifting_power.remains>5|!talent.rune_of_power)
+    -- actions+=/variable,name=shifting_power_before_combustion,value=variable.time_to_combustion-cooldown.shifting_power.remains>action.shifting_power.full_reduction&(cooldown.rune_of_power.remains-cooldown.shifting_power.remains>5|!talent.rune_of_power)
     spec:RegisterVariable( "shifting_power_before_combustion", function ()
-        return ( active_enemies < variable.combustion_shifting_power or active_enemies < variable.combustion_flamestrike or variable.time_to_combustion - action.shifting_power.full_reduction > cooldown.shifting_power.duration ) and variable.time_to_combustion - cooldown.shifting_power.remains > action.shifting_power.full_reduction and ( cooldown.rune_of_power.remains - cooldown.shifting_power.remains > 5 or not talent.rune_of_power.enabled )
+        return ( variable.time_to_combustion - cooldown.shifting_power.remains ) > action.shifting_power.full_reduction and ( cooldown.rune_of_power.remains - cooldown.shifting_power.remains > 5 or not talent.rune_of_power )
     end )
 
     -- fire_blast_pooling relies on the flow of the APL for differing values before/after rop_phase.

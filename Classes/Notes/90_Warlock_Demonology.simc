@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## August 12, 2021
+## August 23, 2021
 
 ## Changes:
 ## - Spell Lock.
@@ -94,7 +94,7 @@ actions.pure_damage_trinks+=/use_item,name=darkmoon_deck_putrescence
 actions.pure_damage_trinks+=/use_item,name=ebonsoul_vise
 actions.pure_damage_trinks+=/use_item,name=unchained_gladiators_shackles
 
-actions.trinkets=use_item,name=shadowed_orb_of_torment,if=cooldown.summon_demonic_tyrant.remains_expected<15
+actions.trinkets=use_item,name=shadowed_orb_of_torment,if=cooldown.summon_demonic_tyrant.remains_expected<22
 actions.trinkets+=/call_action_list,name=hp_trinks,if=talent.demonic_consumption.enabled&cooldown.summon_demonic_tyrant.remains_expected<20
 # Effects that travel slowly to target require additional, separate handling
 actions.trinkets+=/call_action_list,name=slow_trinkets
