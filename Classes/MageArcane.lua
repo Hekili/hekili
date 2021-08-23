@@ -856,6 +856,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     applyBuff( "chrono_shift_buff" )
                     applyDebuff( "target", "chrono_shift" )
                 end
+
+                if debuff.radiant_spark.up then
+                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
+                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
+                end                
             end,
         },
 
@@ -887,6 +892,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 removeBuff( "rule_of_threes" )
                 removeStack( "nether_precision" )
                 gain( 1, "arcane_charges" )
+
+                if debuff.radiant_spark.up then
+                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
+                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
+                end
             end,
         },
 
@@ -1001,7 +1011,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 end
             end,
 
-            tick = function () if legendary.arcane_harmony.enabled then addStack( "arcane_harmony", nil, 1 ) end end,
+            tick = function ()
+                if legendary.arcane_harmony.enabled then addStack( "arcane_harmony", nil, 1 ) end
+                if debuff.radiant_spark.up then
+                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
+                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
+                end
+            end,
 
             auras = {
                 arcane_harmony = {
@@ -1284,6 +1300,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             handler = function ()
                 if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
+                if debuff.radiant_spark.up then
+                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
+                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
+                end
             end,
         },
         
@@ -1325,6 +1345,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             handler = function ()
                 applyDebuff( "target", "chilled" )
+                if debuff.radiant_spark.up then
+                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
+                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
+                end
             end,
         },
 
@@ -1661,7 +1685,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 1033909,
             
             handler = function ()
-                applyDebuff( "target", "touch_of_the_magi")
+                applyDebuff( "target", "touch_of_the_magi" )
                 if level > 45 then gain( 4, "arcane_charges" ) end
             end,
         },
@@ -1685,7 +1709,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyDebuff( "target", "radiant_spark" )
-                applyDebuff( "target", "radiant_spark_vulnerability" )
+                -- applyDebuff( "target", "radiant_spark_vulnerability" )
+                -- RSV doesn't apply until the next hit.
             end,
 
             auras = {
