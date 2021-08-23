@@ -1,5 +1,5 @@
 ## Windwalker Monk
-## July 23, 2021
+## August 23, 2021
 
 ## Tweak Fists of Fury interrupt logic.
 ## Tweak Spinning Crane Kick logic.
@@ -45,7 +45,7 @@ actions.aoe+=/flying_serpent_kick,if=buff.bok_proc.down,interrupt=1
 actions.aoe+=/blackout_kick,cycle_targets=1,if=combo_strike&(buff.bok_proc.up|talent.hit_combo&prev_gcd.1.tiger_palm&chi=2&cooldown.fists_of_fury.remains<3|chi.max-chi<=1&prev_gcd.1.spinning_crane_kick&energy.time_to_max<3)
 
 actions.cd_sef=invoke_xuen_the_white_tiger,if=!variable.hold_xuen&(cooldown.rising_sun_kick.remains<2|!covenant.kyrian)&(!covenant.necrolord|cooldown.bonedust_brew.remains<2)|fight_remains<25
-actions.cd_sef+=/touch_of_death,if=fight_remains>(180-runeforge.fatal_touch*120)|buff.storm_earth_and_fire.down&pet.xuen_the_white_tiger.active|boss&fight_remains<10
+actions.cd_sef+=/touch_of_death,if=fight_remains>(180-runeforge.fatal_touch*120)|buff.storm_earth_and_fire.down&pet.xuen_the_white_tiger.active&(!covenant.necrolord|buff.bonedust_brew.up)|(cooldown.invoke_xuen_the_white_tiger.remains>fight_remains)&buff.bonedust_brew.up|boss&fight_remains<10
 actions.cd_sef+=/weapons_of_order,if=(raid_event.adds.in>45|raid_event.adds.up)&cooldown.rising_sun_kick.remains<execute_time&cooldown.invoke_xuen_the_white_tiger.remains>(20+20*runeforge.invokers_delight)|boss&fight_remains<35
 actions.cd_sef+=/faeline_stomp,if=combo_strike&(raid_event.adds.in>10|raid_event.adds.up)
 actions.cd_sef+=/fallen_order,if=raid_event.adds.in>30|raid_event.adds.up
@@ -77,8 +77,7 @@ actions.cd_serenity+=/lights_judgment
 actions.cd_serenity+=/fireblood,if=variable.serenity_burst
 actions.cd_serenity+=/ancestral_call,if=variable.serenity_burst
 actions.cd_serenity+=/bag_of_tricks,if=variable.serenity_burst
-actions.cd_serenity+=/touch_of_death,if=fight_remains>(180-runeforge.fatal_touch*120)|pet.xuen_the_white_tiger.active|boss&fight_remains<10
-actions.cd_serenity+=/touch_of_karma,if=fight_remains>90|pet.xuen_the_white_tiger.active|boss&fight_remains<10
+actions.cd_serenity+=/touch_of_death,if=fight_remains>(180-runeforge.fatal_touch*120)|pet.xuen_the_white_tiger.active&(!covenant.necrolord|buff.bonedust_brew.up)|(cooldown.invoke_xuen_the_white_tiger.remains>fight_remains)&buff.bonedust_brew.up|boss&fight_remains<10
 actions.cd_serenity+=/weapons_of_order,if=cooldown.rising_sun_kick.remains<execute_time
 actions.cd_serenity+=/inscrutable_quantum_device,if=variable.serenity_burst
 actions.cd_serenity+=/wrathstone,if=variable.serenity_burst
