@@ -81,8 +81,11 @@ do
 
         WARLOCK = {
             [6360]  = true, -- Whiplash (Succubus)
+            [54049] = true, -- Shadow Bite (Felhunter)
+            [7814]  = true, -- Lash of Pain (Succubus)
+            [30213] = true, -- Legion Strike (Felguard)
 
-            count   = 1
+            count   = 4
         }
     }
 
