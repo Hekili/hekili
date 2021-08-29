@@ -1,9 +1,10 @@
 ## Windwalker Monk
-## August 23, 2021
+## August 29, 2021
 
-## Tweak Fists of Fury interrupt logic.
-## Tweak Spinning Crane Kick logic.
-## Add bossfight checks to many CD entries.
+## Charges:
+## - Tweak Fists of Fury interrupt logic.
+## - Tweak Spinning Crane Kick logic.
+## - Add bossfight checks to many CD entries.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/bottled_flayedwing_toxin
@@ -143,7 +144,7 @@ actions.weapons_of_order+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chi
 actions.weapons_of_order+=/expel_harm,if=chi=0&buff.weapons_of_order_ww.remains<4
 actions.weapons_of_order+=/fist_of_the_white_tiger,cycle_targets=1,if=chi=0&buff.weapons_of_order_ww.remains<4
 actions.weapons_of_order+=/whirling_dragon_punch
-actions.weapons_of_order+=/tiger_palm,target_if=min:debuff.mark_of_the_crane.remains+(debuff.skyreach_exhaustion.up*20),if=chi=0&buff.weapons_of_order_ww.remains<4
+actions.weapons_of_order+=/tiger_palm,cycle_targets=1,if=chi=0&buff.weapons_of_order_ww.remains<4
 actions.weapons_of_order+=/fists_of_fury,interrupt_if=buff.weapons_of_order_ww.up,if=buff.storm_earth_and_fire.up&raid_event.adds.in>cooldown.fists_of_fury.duration*0.6
 actions.weapons_of_order+=/spinning_crane_kick,if=buff.chi_energy.stack>30-5*active_enemies
 actions.weapons_of_order+=/fist_of_the_white_tiger,cycle_targets=1,if=chi<3

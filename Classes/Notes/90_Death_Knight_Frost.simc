@@ -1,5 +1,5 @@
 ## Death Knight Frost
-## August 1, 2021
+## August 29, 2021
 
 ## Changes
 ## - Removed last-second usage of Chains of Ice as it doesn't play well in practice.
@@ -122,7 +122,7 @@ actions.covenants+=/fleshcraft,if=!buff.pillar_of_frost.up&!buff.breath_of_sindr
 
 # Obliteration rotation
 actions.obliteration=remorseless_winter,if=active_enemies>=3&variable.rw_buffs
-actions.obliteration+=/howling_blast,target_if=!dot.frost_fever.ticking&!buff.killing_machine.up&rune>=3
+actions.obliteration+=/howling_blast,cycle_targets=1,if=!dot.frost_fever.ticking&!buff.killing_machine.up&rune>=3
 actions.obliteration+=/frostscythe,if=buff.killing_machine.react&spell_targets.frostscythe>=2&!variable.deaths_due_active
 actions.obliteration+=/obliterate,cycle_targets=1,if=buff.killing_machine.react
 actions.obliteration+=/glacial_advance,if=spell_targets.glacial_advance>=2&(runic_power.deficit<10|rune.time_to_2>gcd)|(debuff.razorice.stack<5|debuff.razorice.remains<15)

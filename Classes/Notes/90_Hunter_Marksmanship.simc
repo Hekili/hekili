@@ -1,5 +1,5 @@
 ## Marksmanship Hunter
-## August 23, 2021
+## August 28, 2021
 
 ## Changes:
 ## - Newfound Resolve is not a mechanic the addon can/will manage.
@@ -9,9 +9,9 @@
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/fleshcraft
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers
-actions.precombat+=/double_tap,precast_time=10,if=active_enemies>1|!covenant.kyrian&!talent.volley
 # Change to 1 to simulate ETF/SSF gearswap Trueshot precast.
 actions.precombat+=/variable,name=etf_precast,value=legendary.eagletalons_true_focus.enabled&settings.eagletalon_swap.enabled
+actions.precombat+=/double_tap,precast_time=10,if=active_enemies>1|!covenant.kyrian&!talent.volley|variable.etf_precast
 actions.precombat+=/trueshot,if=variable.etf_precast
 actions.precombat+=/aimed_shot,if=active_enemies<3&(!covenant.kyrian&!talent.volley|active_enemies<2)&!variable.etf_precast
 actions.precombat+=/steady_shot,if=active_enemies>2|(covenant.kyrian|talent.volley)&active_enemies=2|variable.etf_precast
