@@ -3390,10 +3390,14 @@ local mt_default_buff = {
             return t.caster == "player"
 
         elseif k == "value" then
-            return t.v1
+            local value = t.v1
+            if value == nil then return 0 end
+            return value
 
         elseif k == "stack_value" then
-            return t.v1 * t.stack
+            local value = t.v1
+            if value == nil then return 0 end
+            return value * t.stack
 
         elseif k == "stack" or k == "stacks" then
             if t.up then return ( t.count ) else return 0 end
