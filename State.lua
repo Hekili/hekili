@@ -5836,7 +5836,7 @@ function state.reset( dispName )
     -- 2.  We cannot cast anything while casting (typical), so we want to advance the clock, complete the cast, and then generate recommendations.
 
     if casting and cast_time > 0 then
-        local channeled, destGUID = state.buff.casting.v3
+        local channeled, destGUID = state.buff.casting.v3 == 1
 
         if ability then
             channeled = channeled or ability.channeled

@@ -1339,7 +1339,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     if self.ActiveDebug then
         self:Debug( "Checking if I'm casting ( %s ) and if it is a channel ( %s ).", state.buff.casting.up and "Yes" or "No", state.buff.casting.v3 == 1 and "Yes" or "No" )
         if state.buff.casting.up then
-            if state.buff.casting.v3 then self:Debug( " - Is criteria met to break channel?  %s.", state.canBreakChannel and "Yes" or "No" ) end
+            if state.buff.casting.v3 == 1 then self:Debug( " - Is criteria met to break channel?  %s.", state.canBreakChannel and "Yes" or "No" ) end
             self:Debug( " - Can I cast while casting/channeling?  %s.", state.spec.canCastWhileCasting and "Yes" or "No" )
         end
     end
