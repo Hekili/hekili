@@ -1246,8 +1246,8 @@ all:RegisterAuras( {
                     t.applied = startCast
                     t.duration = endCast - startCast
                     t.v1 = spellID
-                    t.v2 = notInterruptible
-                    t.v3 = false
+                    t.v2 = notInterruptible and 1 or 0
+                    t.v3 = 0
                     t.caster = unit
 
                     return
@@ -1265,8 +1265,8 @@ all:RegisterAuras( {
                     t.applied = startCast
                     t.duration = endCast - startCast
                     t.v1 = spellID
-                    t.v2 = notInterruptible
-                    t.v3 = true -- channeled.
+                    t.v2 = notInterruptible and 1 or 0
+                    t.v3 = 1 -- channeled.
                     t.caster = unit
 
                     return
@@ -1278,8 +1278,8 @@ all:RegisterAuras( {
             t.expires = 0
             t.applied = 0
             t.v1 = 0
-            t.v2 = false
-            t.v3 = false
+            t.v2 = 0
+            t.v3 = 0
             t.caster = unit
         end,
     },

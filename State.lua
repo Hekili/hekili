@@ -844,8 +844,8 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         b.last_application = b.applied or 0
 
         b.v1 = value or 0
-        b.v2 = false
-        b.v3 = false
+        b.v2 = 0
+        b.v3 = 0
         b.applied = 0
         b.caster = "unknown"
 
@@ -867,8 +867,10 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
 
         b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         b.v1 = value or 0
-        b.v2 = v2
-        b.v3 = v3
+        if v2 == nil then b.v2 = 0
+        else b.v2 = v2 end
+        if v3 == nil then b.v3 = 0
+        else b.v3 = v3 end
         b.caster = "player"
     end
 
@@ -1042,9 +1044,10 @@ state.interrupt = interrupt
 
 -- Use this for readyTime in an interrupt action; will interrupt casts at end of cast and channels ASAP.
 local function timeToInterrupt()
-    if debuff.casting.down or debuff.casting.v2 then return 3600 end
-    if debuff.casting.v3 then return 0 end
-    return debuff.casting.remains - 0.25
+    -- Why v2?
+    if debuff.casting.down or debuff.casting.v2 == 1 then return 3600 end
+    if debuff.casting.v3 == 1 then return 0 end
+    return max( 0, debuff.casting.remains - 0.25 )
 end
 state.timeToInterrupt = timeToInterrupt
 
@@ -1259,7 +1262,7 @@ local function forecastResources( resource )
                 ( not v.set_bonus or state.set_bonus[ v.set_bonus ] > 0 ) and
                 ( not v.setting   or state.settings[ v.setting ] ) and
                 ( not v.swing     or state.swings[ v.swing .. "_speed" ] and state.swings[ v.swing .. "_speed" ] > 0 ) and
-                ( not v.channel   or state.buff.casting.up and state.buff.casting.v3 and state.buff.casting.v1 == class.abilities[ v.channel ].id ) then
+                ( not v.channel   or state.buff.casting.up and state.buff.casting.v3 == 1 and state.buff.casting.v1 == class.abilities[ v.channel ].id ) then
 
                 local r = state[ v.resource ]
 
@@ -1751,17 +1754,17 @@ local mt_state = {
             return false -- will set to true if/when a spell is hardcast.
 
         elseif k == "channeling" then
-            return t.buff.casting.up and t.buff.casting.v3
+            return t.buff.casting.up and t.buff.casting.v3 == 1
 
         elseif k == "channel" then
-            if t.buff.casting.down or not t.buff.casting.v3 then return nil end
+            if t.buff.casting.down or t.buff.casting.v3 ~= 1 then return nil end
             local chan = class.abilities[ t.buff.casting.v1 ]
 
             if chan then return chan.key end
             return tostring( t.buff.casting.v1 )
 
         elseif k == "channel_remains" then
-            return t.buff.casting.up and t.buff.casting.v3 and t.buff.casting.remains or 0
+            return t.buff.casting.up and t.buff.casting.v3 == 1 and t.buff.casting.remains or 0
 
         elseif k == "ranged" then
             return false
@@ -3388,16 +3391,21 @@ local mt_default_buff = {
 
         elseif k == "mine" then
             return t.caster == "player"
+        
+        elseif k == "v1" then
+            return 0
+        
+        elseif k == "v2" then
+            return 0
+
+        elseif k == "v3" then
+            return 0
 
         elseif k == "value" then
-            local value = t.v1
-            if value == nil then return 0 end
-            return value
+            return t.v1
 
         elseif k == "stack_value" then
-            local value = t.v1
-            if value == nil then return 0 end
-            return value * t.stack
+            return t.v1 * t.stack
 
         elseif k == "stack" or k == "stacks" then
             if t.up then return ( t.count ) else return 0 end
@@ -5429,7 +5437,7 @@ do
 
                 casting.duration = casting.expires - casting.applied
 
-                casting.v3 = entry.type == "CHANNEL_FINISH"
+                casting.v3 = entry.type == "CHANNEL_FINISH" and 1 or 0
 
                 if entry.action then
                     local spell = class.abilities[ entry.action ]
@@ -5809,7 +5817,7 @@ function state.reset( dispName )
 
         if castID == class.abilities.cyclotronic_blast.id then
             -- Set up Pocket-Sized Computation Device.
-            if state.buff.casting.v3 then
+            if state.buff.casting.v3 == 1 then
                 -- We are in the channeled part of the cast.
                 setCooldown( "pocketsized_computation_device", state.buff.casting.applied + 120 - state.now )
                 setCooldown( "global_cooldown", cast_time )
@@ -5876,7 +5884,7 @@ function state.reset( dispName )
             delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
         end
 
-        if not state.spec.canCastWhileCasting and state.buff.casting.up and not state.buff.casting.v3 then -- v3 means it's channeled.
+        if not state.spec.canCastWhileCasting and state.buff.casting.up and state.buff.casting.v3 ~= 1 then -- v3=1 means it's channeled.
             delay = max( delay, state.buff.casting.remains )
         end
 
@@ -6390,7 +6398,7 @@ do
             return false, "ability.disabled returned true"
         end
 
-        if self.args.only_cwc and ( not self.buff.casting.up or not self.buff.casting.v3 or not ability.castableWhileCasting ) then
+        if self.args.only_cwc and ( not self.buff.casting.up or self.buff.casting.v3 ~= 1 or not ability.castableWhileCasting ) then
             return false, "only castable while channeling"
         end
 
@@ -6417,7 +6425,7 @@ do
         if ability.channeling then
             local c = class.abilities[ ability.channeling ] and class.abilities[ ability.channeling ].id
             
-            if not c or state.buff.casting.remains < 0.1 or not state.buff.casting.v3 or state.buff.casting.v1 ~= c then
+            if not c or state.buff.casting.remains < 0.1 or state.buff.casting.v3 ~= 1 or state.buff.casting.v1 ~= c then
                 return false, "required channel (" .. c .. " / " .. ability.channeling .. ") not active or too short [ " .. state.buff.casting.remains .. " / " .. state.buff.casting.applied .. " / " .. state.buff.casting.expires .. " / " .. state.query_time .. " / " .. tostring( state.buff.casting.v3 ) .. " / " .. state.buff.casting.v1 .. " ]"
             end
         end

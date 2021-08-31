@@ -442,7 +442,7 @@ function Hekili:CheckChannel( ability, prio )
         return false
     end
 
-    local channel = state.buff.casting.up and state.buff.casting.v3 and state.buff.casting.v1 or nil
+    local channel = state.buff.casting.up and ( state.buff.casting.v3 == 1 ) and state.buff.casting.v1 or nil
 
     if not channel then
         if self.ActiveDebug then self:Debug( "CC: We are not channeling per buff.casting.v3; CheckChannel is false." ) end
@@ -1337,7 +1337,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     state.selected_action = nil
 
     if self.ActiveDebug then
-        self:Debug( "Checking if I'm casting ( %s ) and if it is a channel ( %s ).", state.buff.casting.up and "Yes" or "No", state.buff.casting.v3 and "Yes" or "No" )
+        self:Debug( "Checking if I'm casting ( %s ) and if it is a channel ( %s ).", state.buff.casting.up and "Yes" or "No", state.buff.casting.v3 == 1 and "Yes" or "No" )
         if state.buff.casting.up then
             if state.buff.casting.v3 then self:Debug( " - Is criteria met to break channel?  %s.", state.canBreakChannel and "Yes" or "No" ) end
             self:Debug( " - Can I cast while casting/channeling?  %s.", state.spec.canCastWhileCasting and "Yes" or "No" )
@@ -1497,7 +1497,7 @@ function Hekili:ProcessHooks( dispName, packName )
         local attempts = 0
         local iterated = false
 
-        if debug then self:Debug( 0, "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f, %s: %.2f ).\n", i, state.offset, state.cooldown.global_cooldown.remains, ( state.buff.casting.v3 and "Channeling" or "Casting" ), state.buff.casting.remains ) end
+        if debug then self:Debug( 0, "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f, %s: %.2f ).\n", i, state.offset, state.cooldown.global_cooldown.remains, ( state.buff.casting.v3 == 1 and "Channeling" or "Casting" ), state.buff.casting.remains ) end
 
         local action, wait, depth
 
