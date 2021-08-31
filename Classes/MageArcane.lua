@@ -202,7 +202,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             id = function () return pvptalent.arcane_empowerment.enabled and 276743 or 263725 end,
             duration = 15,
             type = "Magic",
-            max_stack = function () return pvptalent.arcane_empowerment.enabled and 5 or 1 end,
+            max_stack = function ()
+                return 1 + ( level > 31 and 2 or 0 ) + ( pvptalent.arcane_empowerment.enabled and 2 or 0 )
+            end,
             copy = { 263725, 276743 }
         },
         enlightened = {
