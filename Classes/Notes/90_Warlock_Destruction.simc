@@ -1,5 +1,5 @@
 ## Destruction Warlock
-## August 23, 2021
+## August 31, 2021
 
 ## Changes:
 ## - Fleshcraft/Volatile Solvent cancel_if changed to interrupt_if.
@@ -13,6 +13,7 @@ actions.precombat+=/fleshcraft
 actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
 actions.precombat+=/soul_fire
 actions.precombat+=/incinerate,if=!talent.soul_fire.enabled
+actions.precombat+=/use_item,name=shadowed_orb_of_torment
 
 # Executed every time the actor is available.
 actions=spell_lock
