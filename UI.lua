@@ -1330,10 +1330,10 @@ do
                     end
                 end
 
-                if ability.gcd ~= "off" and start + duration < gExpires then
+                --[[ if ability.gcd ~= "off" and start + duration < gExpires then
                     start = gStart
                     duration = gDuration
-                end
+                end ]]
 
                 if i == 1 and conf.delays.extend and rec.time > 0 and rec.exact_time > max( now, start + duration ) then
                     if rec.interrupt and rec.startCast then
