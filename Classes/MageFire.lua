@@ -323,13 +323,13 @@ if UnitClassBase( "player" ) == "MAGE" then
         sun_kings_blessing = {
             id = 333314,
             duration = 30,
-            max_stack =8
+            max_stack = 8
         },
 
         sun_kings_blessing_ready = {
             id = 333315,
             duration = 15,
-            max_stack = 5
+            max_stack = 1
         },
 
     } )
@@ -980,13 +980,14 @@ if UnitClassBase( "player" ) == "MAGE" then
             handler = function ()
                 if not hardcast then
                     if buff.expanded_potential.up then removeBuff( "expanded_potential" )
-                    else removeBuff( "hot_streak" ) end
-
-                    if legendary.sun_kings_blessing.enabled then
-                        addStack( "sun_kings_blessing", nil, 1 )
-                        if buff.sun_kings_blessing.stack == 8 then
-                            removeBuff( "sun_kings_blessing" )
-                            applyBuff( "sun_kings_blessing_ready" )
+                    else
+                        removeBuff( "hot_streak" )
+                        if legendary.sun_kings_blessing.enabled then
+                            addStack( "sun_kings_blessing", nil, 1 )
+                            if buff.sun_kings_blessing.stack == 8 then
+                                removeBuff( "sun_kings_blessing" )
+                                applyBuff( "sun_kings_blessing_ready" )
+                            end
                         end
                     end
                 end
@@ -1226,12 +1227,14 @@ if UnitClassBase( "player" ) == "MAGE" then
                 else
                     if buff.hot_streak.up then
                         if buff.expanded_potential.up then removeBuff( "expanded_potential" )
-                        else removeBuff( "hot_streak" ) end
-                        if legendary.sun_kings_blessing.enabled then
-                            addStack( "sun_kings_blessing", nil, 1 )
-                            if buff.sun_kings_blessing.stack == 12 then
-                                removeBuff( "sun_kings_blessing" )
-                                applyBuff( "sun_kings_blessing_ready" )
+                        else
+                            removeBuff( "hot_streak" )
+                            if legendary.sun_kings_blessing.enabled then
+                                addStack( "sun_kings_blessing", nil, 1 )
+                                if buff.sun_kings_blessing.stack == 12 then
+                                    removeBuff( "sun_kings_blessing" )
+                                    applyBuff( "sun_kings_blessing_ready" )
+                                end
                             end
                         end
                     end
@@ -1247,7 +1250,6 @@ if UnitClassBase( "player" ) == "MAGE" then
                     if talent.kindling.enabled then
                         setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) )
                     end
-
                 end
 
                 if legendary.molten_skyfall.enabled and buff.molten_skyfall_ready.down then
