@@ -1,5 +1,5 @@
 ## Guardian Druid
-## August 29, 2021
+## September 16, 2021
 
 ## Changes:
 ## - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -41,9 +41,8 @@ actions+=/run_action_list,name=bear
 
 actions.bear=bear_form,if=!buff.bear_form.up
 actions.bear+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&(talent.balance_affinity.enabled)&covenant.venthyr
-actions.bear+=/moonfire,if=((buff.galactic_guardian.up)&active_enemies<2)|((buff.galactic_guardian.up)&!dot.moonfire.ticking&active_enemies>1&target.time_to_die>12)
-actions.bear+=/moonfire,if=(dot.moonfire.remains<=3&(buff.galactic_guardian.up)&active_enemies>5&target.time_to_die>12)
-actions.bear+=/moonfire,if=(refreshable&active_enemies<2&target.time_to_die>12)|(!dot.moonfire.ticking&active_enemies>1&target.time_to_die>12)
+actions.bear+=/moonfire,cycle_targets=1,if=((!ticking&time_to_die>12&buff.galactic_guardian.up)|(refreshable&time_to_die>12&buff.galactic_guardian.up))
+actions.bear+=/moonfire,cycle_targets=1,if=((!ticking&time_to_die>12)|(refreshable&time_to_die>12))
 actions.bear+=/ravenous_frenzy
 actions.bear+=/use_item,name=jotungeirr_destinys_call,if=covenant.venthyr
 actions.bear+=/use_item,slot=trinket1,if=!buff.prowl.up&covenant.venthyr
@@ -54,7 +53,8 @@ actions.bear+=/berserk_bear,if=(buff.ravenous_frenzy.up|!covenant.venthyr)
 actions.bear+=/incarnation,if=(buff.ravenous_frenzy.up|!covenant.venthyr)
 actions.bear+=/berserking,if=(buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)
 actions.bear+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
-actions.bear+=/thrash_bear,cycle_targets=1,if=refreshable|dot.thrash_bear.stack<3|(dot.thrash_bear.stack<4&runeforge.luffainfused_embrace.equipped)|active_enemies>=4
+actions.bear+=/moonfire,if=buff.galactic_guardian.up&active_enemies<3
+actions.bear+=/thrash_bear,cycle_targets=1,if=refreshable|dot.thrash_bear.stack<3|(dot.thrash_bear.stack<4&runeforge.luffainfused_embrace.equipped)|active_enemies>=4|buff.berserk_bear.up&buff.berserk_bear.remains<=gcd+0.5
 actions.bear+=/mangle,if=rage.deficit>10&settings.mangle_more
 actions.bear+=/fleshcraft,if=soulbind.pustule_eruption.enabled&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0)&(dot.moonfire.remains>=3)&(buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&buff.galactic_guardian.down))|soulbind.volatile_solvent.enabled,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent&(cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0)
 actions.bear+=/swipe,if=buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&active_enemies>=4
@@ -95,15 +95,15 @@ actions.catweave+=/cat_form,if=!buff.cat_form.up
 actions.catweave+=/rake,if=buff.prowl.up
 actions.catweave+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
 actions.catweave+=/empower_bond,if=druid.catweave_bear
-actions.catweave+=/rake,if=dot.rake.refreshable&combo_points<4
+actions.catweave+=/rake,if=dot.rake.refreshable|energy<45
 actions.catweave+=/rip,if=dot.rip.refreshable&combo_points>=4
 actions.catweave+=/convoke_the_spirits,if=druid.catweave_bear
 actions.catweave+=/ferocious_bite,max_energy=1,if=combo_points>=4
 actions.catweave+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
 actions.catweave+=/fleshcraft,if=soulbind.pustule_eruption.enabled&energy<35|soulbind.volatile_solvent.enabled,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent&energy<35
-actions.catweave+=/swipe,if=!runeforge.draught_of_deep_focus&!covenant.venthyr|(!runeforge.draught_of_deep_focus&!buff.heart_of_the_wild.up)
+actions.catweave+=/swipe,if=active_enemies>1
 actions.catweave+=/rake,if=refreshable&combo_points<5
-actions.catweave+=/shred,if=combo_points.current<5
+actions.catweave+=/shred,if=combo_points<5
 
 actions.cconvoke=cat_form
 actions.cconvoke+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up

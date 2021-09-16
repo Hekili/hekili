@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## August 31, 2021
+## September 8, 2021
 
 ## Changes:
 ## - Spell Lock.
@@ -13,6 +13,8 @@
 ## - Try to make opener priority only work if we can actually open with a Tyrant.
 
 # Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat+=/variable,name=first_tyrant_time,op=set,if=buff.bloodlust.up,value=10,value_else=12
+actions.precombat+=/use_item,name=shadowed_orb_of_torment
 actions.precombat+=/fel_domination,if=time>0&!pet.alive
 actions.precombat+=/summon_pet
 actions.precombat+=/use_item,name=tome_of_monstrous_constructions
@@ -21,8 +23,6 @@ actions.precombat+=/fleshcraft
 actions.precombat+=/power_siphon,if=buff.wild_imps.stack>1&buff.demonic_core.stack<=2
 actions.precombat+=/demonbolt,if=(boss|action.demonbolt.cast=0)&soul_shards<4
 actions.precombat+=/shadow_bolt,if=!(boss|action.demonbolt.cast=0)|soul_shards>3
-actions.precombat+=/variable,name=first_tyrant_time,op=set,if=buff.bloodlust.up,value=10,value_else=12
-actions.precombat+=/use_item,name=shadowed_orb_of_torment
 
 # Executed every time the actor is available.
 actions=spell_lock
@@ -77,7 +77,7 @@ actions.slow_trinkets+=/use_item,name=empyreal_ordnance,if=cooldown.summon_demon
 
 actions.covenant_ability=soul_rot,if=soulbind.grove_invigoration&(cooldown.summon_demonic_tyrant.remains_expected<20|cooldown.summon_demonic_tyrant.remains_expected>30)
 actions.covenant_ability+=/soul_rot,if=soulbind.field_of_blossoms&pet.demonic_tyrant.active
-actions.covenant_ability+=/soul_rot,if=soulbind.wild_hunt_tactics
+actions.covenant_ability+=/soul_rot,if=soulbind.wild_hunt_tactics&!pet.demonic_tyrant.active&cooldown.summon_demonic_tyrant.remains_expected>18
 actions.covenant_ability+=/decimating_bolt,if=(soulbind.lead_by_example|soulbind.kevins_oozeling)&(pet.demonic_tyrant.active&soul_shard<2|!pet.demonic_tyrant.active&cooldown.summon_demonic_tyrant.remains_expected>40)
 actions.covenant_ability+=/decimating_bolt,if=(soulbind.forgeborne_reveries|(soulbind.volatile_solvent&!soulbind.kevins_oozeling))&!pet.demonic_tyrant.active
 actions.covenant_ability+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up

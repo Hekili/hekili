@@ -1,5 +1,5 @@
 ## Mage Frost
-## July 7, 2021
+## September 16, 2021
 
 ## Changes:
 ## - Don't include Blink in Movement APL (positioning is a player decision)
@@ -32,7 +32,7 @@ actions.aoe+=/frost_nova,if=runeforge.grisly_icicle&target.level<=level&debuff.f
 actions.aoe+=/fire_blast,if=runeforge.disciplinary_command&cooldown.buff_disciplinary_command.ready&buff.disciplinary_command_fire.down
 actions.aoe+=/arcane_explosion,if=mana.pct>30&active_enemies>=6&!runeforge.glacial_fragments
 actions.aoe+=/ebonbolt
-actions.aoe+=/ice_lance,if=runeforge.glacial_fragments&talent.splitting_ice&travel_time<ground_aoe.blizzard.remains
+actions.aoe+=/ice_lance,if=runeforge.glacial_fragments&(talent.splitting_ice|active_enemies>=5)&travel_time<ground_aoe.blizzard.remains
 ## actions.aoe+=/wait,sec=0.1,if=runeforge.glacial_fragments&talent.splitting_ice
 actions.aoe+=/frostbolt
 

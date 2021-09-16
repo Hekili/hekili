@@ -1286,7 +1286,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             id = 46585,
             cast = 0,
             cooldown = 120,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = false,
 
@@ -1305,7 +1305,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             charges = function () return level > 43 and 2 or nil end,
             cooldown = 25,
             recharge = function () return level > 43 and 25 or nil end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "defensives",
 

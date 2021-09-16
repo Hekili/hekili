@@ -1,5 +1,5 @@
 ## Retribution Paladin
-## July 19, 2021
+## September 6, 2021
 
 ## Changes:
 ## - Last-second usage of trinkets/CDs now for boss fights only (don't waste CDs on trash).
@@ -58,7 +58,7 @@ actions.finishers+=/templars_verdict,if=talent.seraphim.enabled&talent.final_rec
  
 actions.generators=call_action_list,name=finishers,if=holy_power=5|buff.holy_avenger.up|debuff.final_reckoning.up|debuff.execution_sentence.up
 actions.generators+=/vanquishers_hammer
-actions.generators+=/divine_toll,if=!debuff.judgment.up&(!talent.seraphim.enabled|buff.seraphim.up)&(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)&(holy_power<=2|holy_power<=4&(cooldown.blade_of_justice.remains>gcd*2|debuff.execution_sentence.up|debuff.final_reckoning.up))&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains>gcd*10)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains>gcd*10|target.time_to_die<8)&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)
+actions.generators+=/divine_toll,if=!debuff.judgment.up&(!talent.seraphim.enabled|buff.seraphim.up)&(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)&holy_power<=2&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains>gcd*10)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains>gcd*10|target.time_to_die<8)&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)
 actions.generators+=/hammer_of_wrath,if=runeforge.the_mad_paragon|runeforge.vanguards_momentum&talent.execution_sentence.enabled|covenant.venthyr&cooldown.ashen_hallow.remains>210
 actions.generators+=/judgment,if=!debuff.judgment.up&buff.holy_avenger.up
 actions.generators+=/wake_of_ashes,if=(holy_power<=2&talent.execution_sentence.enabled&debuff.execution_sentence.remains>0&debuff.execution_sentence.remains<gcd*2)

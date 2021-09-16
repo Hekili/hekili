@@ -1,5 +1,5 @@
 ## Destruction Warlock
-## August 31, 2021
+## September 16, 2021
 
 ## Changes:
 ## - Fleshcraft/Volatile Solvent cancel_if changed to interrupt_if.
@@ -11,9 +11,9 @@ actions.precombat+=/use_item,name=tome_of_monstrous_constructions
 actions.precombat+=/use_item,name=soleahs_secret_technique
 actions.precombat+=/fleshcraft
 actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
-actions.precombat+=/soul_fire
-actions.precombat+=/incinerate,if=!talent.soul_fire.enabled
 actions.precombat+=/use_item,name=shadowed_orb_of_torment
+actions.precombat+=/soul_fire
+actions.precombat+=/incinerate
 
 # Executed every time the actor is available.
 actions=spell_lock
@@ -62,13 +62,13 @@ actions.aoe+=/scouring_tithe,if=!(talent.fire_and_brimstone.enabled|talent.infer
 actions.aoe+=/impending_catastrophe,if=!(talent.fire_and_brimstone.enabled|talent.inferno.enabled)
 actions.aoe+=/incinerate
 
-actions.cds=summon_infernal
+actions.cds=use_item,name=shadowed_orb_of_torment,if=cooldown.summon_infernal.remains<3|target.time_to_die<42
+actions.cds+=/summon_infernal
 actions.cds+=/dark_soul_instability
 actions.cds+=/potion,if=pet.infernal.active
 actions.cds+=/berserking,if=pet.infernal.active
 actions.cds+=/blood_fury,if=pet.infernal.active
 actions.cds+=/fireblood,if=pet.infernal.active
-actions.cds+=/use_item,name=shadowed_orb_of_torment,if=cooldown.summon_infernal.remains<3|boss&fight_remains<42
 actions.cds+=/use_items,if=pet.infernal.active|target.time_to_die<20
 
 actions.havoc=conflagrate,if=buff.backdraft.down&soul_shard>=1&soul_shard<=4

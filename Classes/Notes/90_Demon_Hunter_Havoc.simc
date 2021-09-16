@@ -1,5 +1,5 @@
 ## Demon Hunter Havoc
-## July 29, 2021
+## September 3, 2021
 
 ## Changes:
 ## - Metamorphosis and Potion usage "before fight ends" logic adjusted to apply only to boss fights.
@@ -30,6 +30,8 @@ actions+=/variable,name=pooling_for_blade_dance,value=variable.blade_dance&(fury
 actions+=/variable,name=pooling_for_eye_beam,value=talent.demonic.enabled&!talent.blind_fury.enabled&cooldown.eye_beam.remains<(gcd.max*2)&fury.deficit>20
 actions+=/variable,name=waiting_for_momentum,value=talent.momentum.enabled&!buff.momentum.up
 actions+=/call_action_list,name=cooldown
+## actions+=/pick_up_fragment,type=demon,if=demon_soul_fragments>0
+## actions+=/pick_up_fragment,mode=nearest,if=(talent.demonic_appetite.enabled&fury.deficit>=35|runeforge.blind_faith&buff.blind_faith.up)&(!cooldown.eye_beam.ready|fury<30)
 actions+=/throw_glaive,if=buff.fel_bombardment.stack=5&(buff.immolation_aura.up|!buff.metamorphosis.up)
 actions+=/run_action_list,name=demonic,strict=1,if=talent.demonic.enabled
 actions+=/run_action_list,name=normal
