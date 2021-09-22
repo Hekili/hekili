@@ -5097,6 +5097,8 @@ do
         end
     end
 
+    Hekili:ProfileCPU( "QueueEvent", state.QueueEvent )
+
     function state:QueueAuraExpiration( action, func, time )
         local queue = virtualQueue
         local e = NewEvent()
@@ -5145,6 +5147,8 @@ do
             end
         end
     end
+
+    Hekili:ProfileCPU( "RemoveEvent", state.RemoveEvent )
 
     function state:GetEventInfo( action, start, time, type, target, real )
         local queue = real and realQueue or virtualQueue
@@ -5347,6 +5351,8 @@ do
         state.this_action = curr_action
         state:RemoveEvent( e )
     end
+
+    Hekili:ProfileCPU( "HandleEvent", state.HandleEvent )
 
 
     function state:IsQueued( action, real )

@@ -2204,10 +2204,10 @@ end )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
-    local prowlOrder = { 8, 7, 2, 3, 4, 5, 6, 9, 10, 1 }
-    local catOrder = { 7, 8, 2, 3, 4, 5, 6, 9, 10, 1 }
-    local bearOrder = { 9, 3, 4, 5, 6, 2, 7, 8, 10, 1 }
-    local owlOrder = { 10, 2, 3, 4, 5, 6, 7, 8, 9, 1 }
+    local prowlOrder = { 8, 7, 1, 2, 3, 4, 5, 6, 9, 10 }
+    local catOrder = { 7, 8, 1, 2, 3, 4, 5, 6, 9, 10 }
+    local bearOrder = { 9, 1, 2, 3, 4, 5, 6, 7, 8, 10 }
+    local owlOrder = { 10, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
 
     function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end

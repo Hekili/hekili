@@ -1741,7 +1741,7 @@ do
     local troubleshootingSnapshotTimes = false
 
     function scripts:GetConditionsAndValues( scriptID, listName, actID, recheck )
-        if troubleshootingSnapshotTimes then return "[no data]" end
+        if troubleshootingSnapshotTimes or not Hekili.ActiveDebug then return "[no data]" end
 
         if listName and actID then
             scriptID = scriptID .. ":" .. listName .. ":" .. actID

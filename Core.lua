@@ -590,7 +590,10 @@ local Timer = {
 
         twipe( self.n )
         twipe( self.v )
+
         self.start = debugprofilestop()
+        self.n[1] = "Start"
+        self.v[1] = self.start
     end,
 
     Track = function( self, key )
@@ -605,7 +608,7 @@ local Timer = {
         local o = ""
 
         for i = 2, #self.n do
-            o = string.format( "%s:%s:%.2f", o, self.n[i], ( self.v[i] - self.v[i-1] ) )
+            o = string.format( "%s:%s(%.2f)", o, self.n[i], ( self.v[i] - self.v[i-1] ) )
         end
 
         return o
@@ -1304,6 +1307,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     return rAction, rWait, rDepth
 end
 
+Hekili:ProfileCPU( "GetPredictionFromAPL", Hekili.GetPredictionFromAPL )
+
 
 function Hekili:GetNextPrediction( dispName, packName, slot )
 
@@ -1380,6 +1385,8 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     return action, wait, depth
 end
+
+Hekili:ProfileCPU( "GetNextPrediction", Hekili.GetNextPrediction )
 
 
 local pvpZones = {

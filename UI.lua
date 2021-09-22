@@ -939,7 +939,7 @@ do
 
         if Hekili.freshFrame and not Hekili.Pause then
             local spec = Hekili.DB.profile.specs[ state.spec.id ]
-            local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or 0.25
+            local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or 1
 
             if self.refreshTimer < 0 or ( self.superUpdate and ( self.id == "Primary" or self.id == "AOE" ) ) or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
                 Hekili:ProcessHooks( self.id )
