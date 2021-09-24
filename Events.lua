@@ -1165,9 +1165,7 @@ end )
 
 
 RegisterEvent( "CURRENT_SPELL_CAST_CHANGED", function( event, cancelled )
-    if cancelled then
-        Hekili:ForceUpdate( event, true )
-    end
+    Hekili:ForceUpdate( event, true )
 end )
 
 
