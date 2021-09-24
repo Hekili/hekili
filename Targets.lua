@@ -334,7 +334,12 @@ do
 
                             if excluded and type( excluded ) == "number" then
                                 -- If our table has a number, unit is ruled out only if the buff is present.
-                                excluded = FindUnitBuffByID( unit, excluded )
+                                if excluded < 0 then
+                                    -- We used a negative number to indicate that it's a debuff.
+                                    excluded = FindUnitDebuffByID( unit, -1 * excluded )
+                                else
+                                    excluded = FindUnitBuffByID( unit, excluded )
+                                end
                             end
 
                             if not excluded and checkPets then
@@ -373,7 +378,27 @@ do
                 local npcid = guid:match("(%d+)-%x-$")
 
                 if counted[ guid ] == nil then
-                    if not enemyExclusions[npcid] and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then
+                    local excluded = enemyExclusions[ npcid ]
+
+                    -- If our table has a number, unit is ruled out only if the buff is present.
+                    if excluded and type( excluded ) == "number" then
+                        local unit = Hekili:GetUnitByGUID( guid )
+
+                        if unit then
+                            if UnitIsUnit( unit, "target" ) then
+                                excluded = false
+                            elseif excluded < 0 then
+                                -- We used a negative number to indicate that it's a debuff.
+                                excluded = FindUnitDebuffByID( unit, -1 * excluded )
+                            else
+                                excluded = FindUnitBuffByID( unit, excluded )
+                            end
+                        else
+                            excluded = false
+                        end
+                    end
+                    
+                    if not excluded and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then
                         Hekili.TargetDebug = format("%s    %-12s - %2d - %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid)
                         count = count + 1                    
                         counted[ guid ] = true
