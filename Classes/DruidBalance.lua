@@ -410,12 +410,13 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
         -- Alias for Celestial Alignment vs. Incarnation
-        ca_inc = {
-            alias = { "celestial_alignment", "incarnation" },
+        ca_inc = {},
+        --[[
+            alias = { "incarnation", "celestial_alignment" },
             aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
             aliasType = "buff",
-            duration = function () return talent.incarnation.enabled and 30 or 20 end,
-        },
+            -- duration = function () return talent.incarnation.enabled and 30 or 20 end,
+        }, ]]
 
         any_form = {
             alias = { "bear_form", "cat_form", "moonkin_form" },
@@ -886,8 +887,10 @@ if UnitClassBase( "player" ) == "DRUID" then
         -- UGLY
         if talent.incarnation.enabled then
             rawset( cooldown, "ca_inc", cooldown.incarnation )
+            rawset( buff, "ca_inc", buff.incarnation )
         else
             rawset( cooldown, "ca_inc", cooldown.celestial_alignment )
+            rawset( buff, "ca_inc", buff.celestial_alignment )
         end
 
         if buff.warrior_of_elune.up then
