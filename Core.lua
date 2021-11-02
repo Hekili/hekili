@@ -678,7 +678,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 if debug then self:Debug( "The current minimum delay (%.2f) is greater than the current maximum delay (%.2f). Exiting list (%s).", state.delayMin, state.delayMax, listName ) end
                 break
             
-            elseif rWait <= state.cooldown.global_cooldown.remains and state.settings.gcdSync then
+            elseif rWait <= state.cooldown.global_cooldown.remains then -- and state.settings.gcdSync then
                 if debug then self:Debug( "The recommended action (%s) is ready within the active GCD; exiting list (%s).", rAction, listName ) end
                 break
 

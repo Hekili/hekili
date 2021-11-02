@@ -5886,9 +5886,9 @@ function state.reset( dispName )
     if dispName == "Primary" or dispName == "AOE" then
         local delay = 0
 
-        if state.settings.spec and state.settings.spec.gcdSync then
+        --[[ if state.settings.spec and state.settings.spec.gcdSync then
             delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
-        end
+        end ]]
 
         if not state.spec.canCastWhileCasting and state.buff.casting.up and state.buff.casting.v3 ~= 1 then -- v3=1 means it's channeled.
             delay = max( delay, state.buff.casting.remains )

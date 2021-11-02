@@ -5007,14 +5007,14 @@ do
                                     hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
                                 },
 
-                                gcdSync = {
+                                --[[ gcdSync = {
                                     type = "toggle",
                                     name = "Start after Global Cooldown",
                                     desc = "If checked, the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.  This can reduce flickering if trinkets or off-GCD abilities are appearing briefly during the global cooldown, " ..
                                         "but will cause abilities intended to be used while the GCD is active (i.e., Recklessness) to bounce backward in the queue.",
                                     width = "full",
                                     order = 4,
-                                },
+                                }, ]]
 
                                 enhancedRecheck = {
                                     type = "toggle",
@@ -10032,6 +10032,26 @@ local function Sanitize( segment, i, line, warnings )
     i, times = i:gsub( "^runeforge%.([%w_]+)$", "runeforge.%1.enabled" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "rune_word%.([%w_]+)([%+%-%*%%/%&%|= ()<>])", "buff.rune_word_%1.up%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'rune_word.X' to 'buff.rune_word_X.up' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "rune_word%.([%w_]+)$", "buff.rune_word_%1.up" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'rune_word.X' to 'buff.rune_word_X.up' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "rune_word%.([%w_]+)%.enabled([%+%-%*%%/%&%|= ()<>])", "buff.rune_word_%1.up%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'rune_word.X.enabled' to 'buff.rune_word_X.up' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "rune_word%.([%w_]+)%.enabled$", "buff.rune_word_%1.up" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'rune_word.X.enabled' to 'buff.rune_word_X.up' at EOL (" .. times .. "x)." )
     end
 
     i, times = i:gsub( "([^a-z0-9_])conduit%.([%w_]+)([%+%-%*%%/&|= ()<>)])", "%1conduit.%2.enabled%3" )
