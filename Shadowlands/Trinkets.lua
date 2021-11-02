@@ -748,6 +748,19 @@ do
 
             item = 179356,
             toggle = "cooldowns",
+
+            self_buff = "shadowgrasp_totem",
+
+            handler = function ()
+                applyBuff( "shadowgrasp_totem" )
+            end,
+
+            auras = {
+                shadowgrasp_totem = {
+                    duration = 15,
+                    max_stack = 1,
+                }
+            }
         },
 
         siphoning_phylactery_shard = {
