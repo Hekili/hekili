@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## September 8, 2021
+## October 26, 2021
 
 ## Changes:
 ## - Spell Lock.
@@ -33,8 +33,8 @@ actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=opener,strict=1,if=toggle.cooldowns&time<variable.first_tyrant_time&cooldown.summon_demonic_tyrant.remains<variable.first_tyrant_time-time
 actions+=/doom,if=refreshable
 actions+=/call_action_list,name=covenant_ability,strict=1,if=soulbind.grove_invigoration|soulbind.field_of_blossoms|soulbind.combat_meditation|covenant.necrolord
+actions+=/potion,if=(cooldown.summon_demonic_tyrant.remains_expected=0&time>variable.first_tyrant_time|soulbind.refined_palate&cooldown.summon_demonic_tyrant.remains_expected<38)
 actions+=/call_action_list,name=tyrant_setup
-actions+=/potion,if=(cooldown.summon_demonic_tyrant.remains_expected<10&time>variable.first_tyrant_time-10|soulbind.refined_palate&cooldown.summon_demonic_tyrant.remains_expected<38)
 actions+=/call_action_list,name=ogcd,strict=1,if=pet.demonic_tyrant.active
 actions+=/demonic_strength,if=(!runeforge.wilfreds_sigil_of_superior_summoning&cooldown.summon_demonic_tyrant.remains_expected>9)|(pet.demonic_tyrant.active&pet.demonic_tyrant.remains<6*gcd.max)
 actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains_expected>20-5*!runeforge.wilfreds_sigil_of_superior_summoning
