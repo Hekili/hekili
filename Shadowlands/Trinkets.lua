@@ -1324,6 +1324,27 @@ do
             max_stack = 1,
         },
 
+        -- Active Rune Word:  Blood
+        rune_word_blood = {
+            id = 359420,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        -- Active Rune Word:  Frost
+        rune_word_frost = {
+            id = 355724,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        -- Active Rune Word:  Unholy
+        rune_word_unholy = {
+            id = 359435,
+            duration = 3600,
+            max_stack = 1,
+        },
+
         -- Unholy Domination Shard Set
         soul_fragment = {
             id = 356042,
