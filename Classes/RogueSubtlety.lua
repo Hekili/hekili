@@ -5,7 +5,9 @@ local addon, ns = ...
 local Hekili = _G[ addon ] 
 
 local class = Hekili.Class
-local state =  Hekili.State
+local state = Hekili.State
+
+local insert = table.insert
 
 local PTR = ns.PTR
 
@@ -458,17 +460,15 @@ if UnitClassBase( "player" ) == "ROGUE" then
             table.wipe( sht )
 
             if mh_speed and mh_speed > 0 then
-                sht[1] = mh_next + ( 1 * mh_speed )
-                sht[2] = mh_next + ( 2 * mh_speed )
-                sht[3] = mh_next + ( 3 * mh_speed )
-                sht[4] = mh_next + ( 4 * mh_speed )
+                for i = 1, 4 do
+                    insert( sht, mh_next + ( i * mh_speed ) )
+                end
             end
 
             if oh_speed and oh_speed > 0 then
-                sht[5] = oh_next + ( 1 * oh_speed )
-                sht[6] = oh_next + ( 2 * oh_speed )
-                sht[7] = oh_next + ( 3 * oh_speed )
-                sht[8] = oh_next + ( 4 * oh_speed )
+                for i = 1, 4 do
+                    insert( sht, oh_next + ( i * oh_speed ) )
+                end
             end
 
             local i = 1
