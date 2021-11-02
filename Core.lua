@@ -1934,7 +1934,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
     if debug then
         self:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
-    elseif InCombatLockdown() and not hasSnapshotted then
+    elseif not hasSnapshotted then
         -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
         -- We don't track out of combat because who cares?
         UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime, checkstr ~= UI.RecommendationsStr )

@@ -1543,6 +1543,11 @@ do
     end
 
     local function Display_UpdatePerformance( self, now, used, newRecs )
+        if not InCombatLockdown() then
+            self.combatUpdates.last = 0
+            return
+        end
+
         if used == nil then return end        
         used = used / 1000 -- ms to sec.
 
@@ -1560,7 +1565,7 @@ do
             self.combatTime.samples = self.combatTime.samples + 1
         end
 
-        if self.combatUpdates.samples == 0 then
+        if self.combatUpdates.samples == 0 or self.combatUpdates.last == 0 then
             if self.combatUpdates.last == 0 then
                 self.combatUpdates.last = now
             else
@@ -1601,7 +1606,7 @@ do
 
             self.combatUpdates.average = ( ( self.combatUpdates.average * self.combatUpdates.samples ) + interval ) / ( self.combatUpdates.samples + 1 )
             self.combatUpdates.samples = self.combatUpdates.samples + 1
-        end
+        end        
 
         self.successEvents = self.successEvents or {}
         self.failEvents = self.failEvents or {}
