@@ -461,6 +461,9 @@ local HekiliSpecMixin = {
 
             class.itemMap[ item ] = ability
 
+            -- Register the item if it doesn't already exist.
+            all:RegisterGear( ability, item )
+
             Hekili:ContinueOnItemLoad( item, function( success )
                 if not success then
                     -- Assume the item is not presently in-game.
