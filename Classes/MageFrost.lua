@@ -1136,19 +1136,24 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
 
         icy_veins = {
-            id = 12472,
+            id = function ()
+                return pvptalent.ice_form.enabled and 198144 or 12472
+            end,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
             gcd = "off",
 
             toggle = "cooldowns",
 
-            startsCombat = true,
-            texture = 135838,
+            startsCombat = false,
 
             handler = function ()
-                applyBuff( "icy_veins" )
-                stat.haste = stat.haste + 0.30
+                if pvptalent.ice_form.enabled then
+                    applyBuff( "ice_form" )
+                else
+                    applyBuff( "icy_veins" )
+                    stat.haste = stat.haste + 0.30
+                end
 
                 if azerite.frigid_grasp.enabled then
                     applyBuff( "frigid_grasp", 10 )
@@ -1159,7 +1164,48 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     applyBuff( "rune_of_power" )
                 end
             end,
+
+            copy = { 12472, 198144, "ice_form" },
+
+            auras = {
+                ice_form = {
+                    id = 198144,
+                    duration = 22,
+                    max_stack = 1,
+                }
+            }
         },
+
+
+        ice_form = {
+            id = 198144,
+            known = 12472,
+            cast = 0,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
+            gcd = "off",
+
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 135838,
+
+            pvptalent = "ice_form",
+
+            handler = function ()
+                applyBuff( "ice_form" )
+
+                if azerite.frigid_grasp.enabled then
+                    applyBuff( "frigid_grasp", 10 )
+                    addStack( "fingers_of_frost", nil, 1 )
+                end
+
+                if talent.rune_of_power.enabled then
+                    applyBuff( "rune_of_power" )
+                end
+            end,
+
+            bind = "icy_veins"
+        },        
 
 
         invisibility = {
