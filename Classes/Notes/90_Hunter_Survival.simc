@@ -1,5 +1,5 @@
 # Survival Hunter
-# August 7, 2021
+# November 1, 2021
 
 actions.precombat+=/variable,name=mb_rs_cost,op=setif,value=action.mongoose_bite.cost,value_else=action.raptor_strike.cost,condition=talent.mongoose_bite
 actions.precombat+=/summon_pet
@@ -70,6 +70,7 @@ actions.cleave+=/wild_spirits
 actions.cleave+=/resonating_arrow
 actions.cleave+=/coordinated_assault
 actions.cleave+=/wildfire_bomb,if=full_recharge_time<gcd
+actions.cleave+=/call_action_list,name=nta,strict=1,if=runeforge.nessingwarys_trapping_apparatus.equipped&focus<variable.mb_rs_cost
 actions.cleave+=/chakrams
 actions.cleave+=/butchery,if=dot.shrapnel_bomb.ticking&(dot.internal_bleeding.stack<2|dot.shrapnel_bomb.remains<gcd)
 actions.cleave+=/carve,if=dot.shrapnel_bomb.ticking
@@ -85,6 +86,7 @@ actions.cleave+=/kill_shot
 actions.cleave+=/flayed_shot
 actions.cleave+=/a_murder_of_crows
 actions.cleave+=/steel_trap
+actions.cleave+=/steel_trap,if=focus+cast_regen<focus.max
 actions.cleave+=/serpent_sting,cycle_targets=1,if=refreshable&talent.hydras_bite.enabled&target.time_to_die>8
 actions.cleave+=/carve
 actions.cleave+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&(runeforge.nessingwarys_trapping_apparatus.equipped&cooldown.freezing_trap.remains&cooldown.tar_trap.remains|!runeforge.nessingwarys_trapping_apparatus.equipped)
