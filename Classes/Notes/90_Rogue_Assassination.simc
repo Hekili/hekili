@@ -1,5 +1,5 @@
 ## Assassination Rogue
-## August 23, 2021
+## November 1, 2021
 
 ## Changes:
 ## - Apply 'strict' flag to some APL forks to save processing time.
@@ -7,11 +7,12 @@
 ## - Relax Flagellation / Vendetta sync (if Vendetta is toggled off or on a long CD).
 ## - Make Fleshcraft interrupt in combat if we just did it for volatile_solvent.
 ## - Use SBS more to summon Kevin's Oozeling if you have the soulbind.
+## - Convert rune_word.frost to buff.rune_word_frost.up.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
 actions.precombat+=/bottled_flayedwing_toxin
-actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>15
+actions.precombat+=/marked_for_death,precombat_seconds=10,if=!covenant.venthyr&raid_event.adds.in>15
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/variable,name=vendetta_cdr,value=1-(runeforge.duskwalkers_patch*0.45)
 # The average CDR is 0.22 but due to the RNG nature of CP gen, 2x this value is optimal for syncing logic
@@ -43,9 +44,9 @@ actions+=/bag_of_tricks
 
 ## Cooldowns
 # If adds are up, snipe the one with lowest TTD. Use when dying faster than CP deficit or without any CP.
-actions.cds+=/marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit*1.5|combo_points.deficit>=cp_max_spend)
-# If no adds will die within the next 30s, use MfD on boss without any CP.
-actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration&combo_points.deficit>=cp_max_spend
+actions.cds=marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up&(!variable.single_target|target.time_to_die<30)&(target.time_to_die<combo_points.deficit*1.5|combo_points.deficit>=cp_max_spend)
+# If no adds will die within the next 30s, use MfD for max CP. Attempt to sync with Flagellation if possible.
+actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration&combo_points.deficit>=cp_max_spend&!cooldown.shiv.ready&(!covenant.venthyr|debuff.flagellation.up|cooldown.flagellation.remains>15)
 # Sync Vendetta window with Nightstalker+Exsanguinate if applicable
 actions.cds+=/variable,name=vendetta_nightstalker_condition,value=!talent.nightstalker.enabled|!talent.exsanguinate.enabled|cooldown.exsanguinate.remains<5-2*talent.deeper_stratagem.enabled
 # Wait on Vendetta for Garrote with MA, unless we are at max CP for Flagellation
@@ -79,7 +80,7 @@ actions.cds+=/trinket2,if=variable.trinket_sync_slot=2&(debuff.vendetta.up|boss&
 
 ## Direct damage abilities
 # Envenom at 4+ (5+ with DS) CP. Immediately on 2+ targets, with Vendetta, or with TB; otherwise wait for some energy. Also wait if Exsg combo is coming up.
-actions.direct=envenom,if=effective_combo_points>=4+talent.deeper_stratagem.enabled&(debuff.vendetta.up|debuff.shiv.up|debuff.flagellation.up|energy.deficit<=25+energy.regen_combined|!variable.single_target)&(!talent.exsanguinate.enabled|cooldown.exsanguinate.remains>2)
+actions.direct=envenom,if=effective_combo_points>=4+talent.deeper_stratagem.enabled&(debuff.vendetta.up|debuff.shiv.up|debuff.flagellation.up|energy.deficit<=25+energy.regen_combined|!variable.single_target|effective_combo_points>cp_max_spend)&(!talent.exsanguinate.enabled|cooldown.exsanguinate.remains>2)
 actions.direct+=/variable,name=use_filler,value=combo_points.deficit>1|energy.deficit<=25+energy.regen_combined|!variable.single_target
 # Apply SBS to all targets without a debuff as priority, preferring targets dying sooner after the primary target
 actions.direct+=/serrated_bone_spike,if=variable.use_filler&!dot.serrated_bone_spike_dot.ticking
@@ -121,7 +122,7 @@ actions.dot+=/rupture,cycle_targets=1,if=!variable.skip_cycle_rupture&!variable.
 # Fallback AoE Crimson Tempest with the same logic as above, but ignoring the energy conditions if we aren't using Rupture
 actions.dot+=/crimson_tempest,if=spell_targets>=2&effective_combo_points>=4&remains<2+3*(spell_targets>=4)
 # Crimson Tempest on ST if in pandemic and nearly max energy and if Envenom won't do more damage due to TB/MA
-actions.dot+=/crimson_tempest,if=spell_targets=1&!runeforge.dashing_scoundrel&master_assassin_remains=0&effective_combo_points>=(cp_max_spend-1)&refreshable&!exsanguinated&(!debuff.shiv.up&(energy.deficit<=25+energy.regen_combined))&target.time_to_die-remains>4
+actions.dot+=/crimson_tempest,if=spell_targets=1&(!runeforge.dashing_scoundrel|buff.rune_word_frost.up)&master_assassin_remains=0&effective_combo_points>=(cp_max_spend-1)&refreshable&!exsanguinated&!debuff.shiv.up&target.time_to_die-remains>4
 
 ## Stealthed Actions
 # Nighstalker on 3T: Crimson Tempest
