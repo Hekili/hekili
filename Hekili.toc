@@ -1,4 +1,4 @@
-## Interface: 90100
+## Interface: 90105
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
