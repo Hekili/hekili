@@ -1530,8 +1530,9 @@ function Hekili:ProcessHooks( dispName, packName )
             if debugprofilestop() - actualStartTime > 100 then
                 if not Hekili.HasSnapped then
                     Hekili.HasSnapped = true
-                    Hekili:MakeSnapshot( dispName, true )
                     hasSnapshotted = true
+
+                    Hekili:MakeSnapshot( dispName, true )
                 end
                 
                 if debug then self:Debug( "Escaping events loop due to high CPU usage." ) end
@@ -1819,6 +1820,8 @@ function Hekili:ProcessHooks( dispName, packName )
 
         if not debug and not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and InCombatLockdown() and state.level >= 50 then
             Hekili.HasSnapped = true
+            hasSnapshotted = true
+
             Hekili:MakeSnapshot( dispName, true )
             return
         end
