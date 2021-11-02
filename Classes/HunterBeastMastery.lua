@@ -1304,7 +1304,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             startsCombat = true,
             texture = 132176,
 
-            usable = function () return pet.alive, "requires a living pet" end,
+            usable = function ()
+                if not pet.alive then return false, "requires a living pet" end
+                if settings.check_pet_range and Hekili:PetBasedTargetDetectionIsReady( true ) and not Hekili:TargetIsNearPet( "target" ) then return false, "not in-range of pet" end
+                return true
+            end,
 
             handler = function ()
                 removeBuff( "flamewakers_cobra_sting" )
@@ -2025,6 +2029,16 @@ if UnitClassBase( "player" ) == "HUNTER" then
     spec:RegisterSetting( "avoid_bw_overlap", false, {
         name = "Avoid |T132127:0|t Bestial Wrath Overlap",
         desc = "If checked, the addon will not recommend |T132127:0|t Bestial Wrath if the buff is already applied.",
+        type = "toggle",
+        width = "full"
+    } )
+
+    spec:RegisterSetting( "check_pet_range", true, {
+        name = "Check Pet Range for |T132176:0|t Kill Command",
+        desc = function ()
+            return "If checked, the addon will not recommend |T132176:0|t Kill Command if your pet is not in range of your target.\n\n" ..
+                "Requires |c" .. ( state.settings.petbased and "FF00FF00" or "FFFF0000" ) .. "Pet-Based Target Detection"
+        end,
         type = "toggle",
         width = "full"
     } )
