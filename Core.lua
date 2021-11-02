@@ -1481,6 +1481,8 @@ function Hekili:ProcessHooks( dispName, packName )
         maxTime = state.settings.maxTime or 50
     end
 
+    local hasSnapshotted = Hekili.HasSnapped or false
+
     for i = 1, numRecs do
         if i > 1 and actualStartTime then
             local usedTime = debugprofilestop() - actualStartTime
@@ -1529,6 +1531,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 if not Hekili.HasSnapped then
                     Hekili.HasSnapped = true
                     Hekili:MakeSnapshot( dispName, true )
+                    hasSnapshotted = true
                 end
                 
                 if debug then self:Debug( "Escaping events loop due to high CPU usage." ) end
@@ -1928,7 +1931,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
     if debug then
         self:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
-    elseif InCombatLockdown() then
+    elseif InCombatLockdown() and not hasSnapshotted then
         -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
         -- We don't track out of combat because who cares?
         UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime, checkstr ~= UI.RecommendationsStr )
