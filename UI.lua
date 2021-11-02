@@ -1325,24 +1325,17 @@ do
                 if ability.item then
                     start, duration = GetItemCooldown( ability.item )
                 else
-                    if ability.cooldown > 0 or ability.spendType ~= "runes" then
-                        start, duration = GetSpellCooldown( ability.id )
-                    end
+                    start, duration = GetSpellCooldown( ability.id )
                 end
 
-                --[[ if ability.gcd ~= "off" and start + duration < gExpires then
+                if ability.gcd ~= "off" and start + duration < gExpires then
                     start = gStart
                     duration = gDuration
-                end ]]
+                end
 
-                if i == 1 and conf.delays.extend and rec.time > 0 and rec.exact_time > max( now, start + duration ) then
-                    if rec.interrupt and rec.startCast then
-                        start = rec.startCast
-                        duration = rec.exact_time - start
-                    else
-                        start = start > 0 and start or state.gcd.lastStart
-                        duration = rec.exact_time - start
-                    end
+                if i == 1 and conf.delays.extend and rec.delay and rec.delay > 0 and rec.exact_time > max( now, start + duration ) then
+                    start = start > 0 and start or state.gcd.lastStart
+                    duration = rec.exact_time - start
                 end
 
                 if cd.lastStart ~= start or cd.lastDuration ~= duration then
