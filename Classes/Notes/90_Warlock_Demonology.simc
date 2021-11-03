@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## October 26, 2021
+## November 2, 2021
 
 ## Changes:
 ## - Spell Lock.
@@ -94,6 +94,7 @@ actions.ogcd+=/fireblood
 actions.ogcd+=/use_items
 
 actions.opener=soul_rot,if=soulbind.grove_invigoration
+actions.opener+=/nether_portal
 actions.opener+=/grimoire_felguard
 actions.opener+=/summon_vilefiend
 actions.opener+=/demonbolt,if=buff.demonic_core.react&soul_shard<4&cooldown.call_dreadstalkers.up
