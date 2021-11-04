@@ -717,7 +717,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( talent.dirty_tricks.enabled and 0 or 40 ) * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
+            spend = function () return ( talent.dirty_tricks.enabled and 0 or 40 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = true,
@@ -838,7 +838,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return 30 * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
+            spend = function () return 30 * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -1018,7 +1018,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 20,
             gcd = "spell",
             
-            spend = function () return 25 * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
+            spend = function () return 25 * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -1206,7 +1206,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
+            spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = false,
