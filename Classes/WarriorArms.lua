@@ -7,6 +7,7 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local FindUnitBuffByID = ns.FindUnitBuffByID
 
 local PTR = ns.PTR
 
@@ -370,7 +371,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             if current < lastRage then
                 rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.
                 
-                if state.legendary.glory.enabled and  FindUnitBuffByID( "player", 324143 ) then
+                if state.legendary.glory.enabled and FindUnitBuffByID( "player", 324143 ) then
                     gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
                 end
             end
