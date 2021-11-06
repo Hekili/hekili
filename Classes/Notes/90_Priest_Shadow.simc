@@ -1,5 +1,5 @@
 ## Shadow Priest
-## October 26, 2021
+## November 5, 2021
 
 ## Changes:
 ## - Tweak Void Torrent when target counts are forced.
@@ -71,7 +71,7 @@ actions.dmg_trinkets+=/use_item,name=dreadfire_vessel
 actions.main=call_action_list,name=boon,if=buff.boon_of_the_ascended.up
 actions.main+=/dispel_magic,if=!target.is_player
 # Use Void Eruption on cooldown pooling at least 40 insanity but not if you will overcap insanity in VF. Make sure shadowfiend/mindbender and Mind Blast is on cooldown before VE if Talbadars or Shadowflame is equipped. Ignore pooling restrictions if using Shadowflame Prism and Bender is out.
-actions.main+=/void_eruption,if=variable.pool_for_cds&(insanity>=40|pet.fiend.active&runeforge.shadowflame_prism.equipped&!cooldown.mind_blast.up&!cooldown.shadow_word_death.up)&(insanity<=85|talent.searing_nightmare.enabled&variable.searing_nightmare_cutoff)&!cooldown.fiend.up&(!cooldown.mind_blast.up|spell_targets.mind_sear>2|!runeforge.shadowflame_prism.equipped&!runeforge.talbadars_stratagem.equipped)&(!soulbind.volatile_solvent|buff.volatile_solvent_humanoid.up)
+actions.main+=/void_eruption,if=variable.pool_for_cds&(insanity>=40|pet.fiend.active&runeforge.shadowflame_prism.equipped&!cooldown.mind_blast.up&!cooldown.shadow_word_death.up)&(insanity<=85|talent.searing_nightmare.enabled&variable.searing_nightmare_cutoff)&!cooldown.fiend.up&(!cooldown.mind_blast.up|spell_targets.mind_sear>2|!runeforge.shadowflame_prism.equipped&!runeforge.talbadars_stratagem.equipped)&(!soulbind.volatile_solvent|buff.volatile_solvent.up|settings.ignore_solvent)
 # Make sure you put up SW:P ASAP on the target if Wrathful Faerie isn't active when fighting 1-3 targets.
 actions.main+=/shadow_word_pain,if=buff.fae_guardians.up&!debuff.wrathful_faerie.up&spell_targets.mind_sear<4
 actions.main+=/call_action_list,name=cds
