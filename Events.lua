@@ -1400,7 +1400,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     if death_events[ subtype ] then
         if ns.isTarget( destGUID ) then
             ns.eliminateUnit( destGUID, true )
-            Hekili:ForceUpdate( subtype )
+            -- Hekili:ForceUpdate( subtype )
 
         elseif ns.isMinion( destGUID ) then
             local npcid = destGUID:match("(%d+)-%x-$")
@@ -1601,7 +1601,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
             end            
 
-            if subtype ~= "SPELL_DAMAGE" then Hekili:ForceUpdate( subtype, true ) end
+            -- if subtype ~= "SPELL_DAMAGE" then Hekili:ForceUpdate( subtype, true ) end
         end
     end
 
