@@ -2409,6 +2409,17 @@ do
 end
 
 
+-- x.x - Heirloom Trinket(s)
+all:RegisterAbility( "touch_of_the_void", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 128318,
+    toggle = "cooldowns",
+} )
+
+
 -- 8.3 - WORLD
 -- Corruption Curse that impacts resource costs.
 
