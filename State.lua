@@ -376,7 +376,7 @@ local mt_trinket = {
             return true
         elseif k == "cooldown" then
             if t.usable and t.ability and state.cooldown[ t.ability ] then
-                return state.cooldown[ t.ability ]            
+                return state.cooldown[ t.ability ]
             end
             return state.cooldown.null_cooldown
         end
@@ -394,7 +394,7 @@ local mt_trinket_is = {
         local item = state.trinket[ t.slot ]
 
         if item.usable and item.ability == k then return true end
-    
+
         return false
     end,
 }
@@ -505,8 +505,12 @@ state.print = print
 state.Enum = Enum
 state.FindUnitBuffByID = ns.FindUnitBuffByID
 state.FindUnitDebuffByID = ns.FindUnitDebuffByID
+state.FindRaidBuffByID = ns.FindRaidBuffByID
+state.FindRaidBuffLowestRemainsByID = ns.FindRaidBuffLowestRemainsByID
+state.FindLowHpPlayerWithoutBuffByID = ns.FindLowHpPlayerWithoutBuffByID
 state.GetActiveLossOfControlData = C_LossOfControl.GetActiveLossOfControlData
 state.GetActiveLossOfControlDataCount = C_LossOfControl.GetActiveLossOfControlDataCount
+state.GetNumGroupMembers = GetNumGroupMembers
 state.GetItemCooldown = GetItemCooldown
 state.GetItemCount = GetItemCount
 state.GetItemGem = GetItemGem
@@ -1812,7 +1816,7 @@ local mt_state = {
 
         elseif k == "level" then
             return UnitEffectiveLevel("player") or MAX_PLAYER_LEVEL
-        
+
         elseif k == "active" then
             return false
 
@@ -2501,7 +2505,7 @@ local mt_target = {
             if state.args.cycle_target == 1 then return UnitGUID( "target" ) .. "c" or "cycle"
             elseif state.args.target then return UnitGUID( "target" ) .. '+' .. state.args.target or "unknown" end
             return UnitGUID( "target" ) or "unknown"
-        
+
         elseif k == "class" then
             if not UnitExists( "target" ) then return "virtual"
             elseif not UnitIsPlayer( "target" ) then return "npc" end
@@ -2582,7 +2586,7 @@ local mt_target = {
 
         elseif k == "is_add" then
             return not t.is_boss
-        
+
         elseif k == "is_friendly" then
             return UnitExists( "target" ) and UnitIsFriend( "target", "player" )
 
@@ -2926,7 +2930,7 @@ ns.metatables.mt_dot = mt_dot
 
 local mt_gcd = {
     __index = function( t, k )
-        if k == "execute" then            
+        if k == "execute" then
             local ability = state.this_action and class.abilities[ state.this_action ]
 
             -- We can specify this for any ability, if we want.
@@ -3179,7 +3183,7 @@ local mt_resource = {
 
         elseif k == "time_to_max_combined" then
             if not state.spec.assassination then return t.time_to_max end
-            
+
             -- Assassination, April 2021
             -- Using the same as time_to_max because our time_to_max uses modeled regen events...
             return state:TimeToResource( t, t.max )
@@ -3194,7 +3198,7 @@ local mt_resource = {
 
         elseif k == "regen" then
             return ( state.time > 0 and t.active_regen or t.inactive_regen ) or 0
-        
+
         elseif k == "regen_combined" then
             -- Assassination, April 2021
             return max( t.regen, state:TimeToResource( t, t.max ) / t.deficit )
@@ -3391,10 +3395,10 @@ local mt_default_buff = {
 
         elseif k == "mine" then
             return t.caster == "player"
-        
+
         elseif k == "v1" then
             return 0
-        
+
         elseif k == "v2" then
             return 0
 
@@ -4595,7 +4599,7 @@ local mt_default_action = {
 
         elseif k == "time_since" then
             return max( 0, state.query_time - ability.lastCast )
-        
+
         elseif k == "in_range" then
             if UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and LSR.IsSpellInRange( ability.rangeSpell or ability.id, "target" ) == 0 then
                 return false
@@ -5434,7 +5438,7 @@ do
                 local casting = self.buff.casting
 
                 casting.applied = entry.start
-                
+
                 if entry.time > entry.start then
                     casting.expires = entry.time
                 else
@@ -5474,7 +5478,7 @@ function state:RunHandler( key, noStart )
     --[[ if self.channeling and not ability.castableWhileCasting then
         self.stopChanneling( false, ability.key )
     end ]]
-    
+
     if ability.channeled then
         if ability.start then ability.start() end
         self.channelSpell( key, self.query_time, ability.cast, ability.id )
@@ -6430,7 +6434,7 @@ do
 
         if ability.channeling then
             local c = class.abilities[ ability.channeling ] and class.abilities[ ability.channeling ].id
-            
+
             if not c or state.buff.casting.remains < 0.1 or state.buff.casting.v3 ~= 1 or state.buff.casting.v1 ~= c then
                 return false, "required channel (" .. c .. " / " .. ability.channeling .. ") not active or too short [ " .. state.buff.casting.remains .. " / " .. state.buff.casting.applied .. " / " .. state.buff.casting.expires .. " / " .. state.query_time .. " / " .. tostring( state.buff.casting.v3 ) .. " / " .. state.buff.casting.v1 .. " ]"
             end
