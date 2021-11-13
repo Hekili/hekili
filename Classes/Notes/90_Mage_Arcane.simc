@@ -1,42 +1,44 @@
 ## Mage Arcane
-## August 31, 2021
+## November 13, 2021
 
 ## Changes:
 ## - Use typical SimC handling of channel interruption instead of 'cancel_action'.
 ## - Change arcane_infinity to arcane_harmony (it never went live as arcane_harmony).
 ## - Don't Evocate in AOE just because you're out of range and not using Arcane Explosion.
 ## - Adjust priority to use Arcane Power's effective cooldown based on CDR effects.
+## - Use strict processing to reduce CPU time due to unnecessary APL forks.
+## - Moved variables/calculations to Lua module to reduce CPU time.
 
 actions.precombat+=/arcane_intellect
 actions.precombat+=/arcane_familiar
 actions.precombat+=/conjure_mana_gem
-actions.precombat+=/variable,name=aoe_target_count,op=reset,default=3
-actions.precombat+=/variable,name=evo_pct,op=reset,default=15
-actions.precombat+=/variable,name=prepull_evo,op=set,if=(runeforge.siphon_storm&(covenant.venthyr|covenant.necrolord|conduit.arcane_prodigy)),value=1,value_else=0
-actions.precombat+=/variable,name=have_opened,op=set,if=active_enemies>=variable.aoe_target_count,value=1,value_else=0
-actions.precombat+=/variable,name=final_burn,op=set,value=0
-actions.precombat+=/variable,name=harmony_stack_time,op=reset,default=9
-actions.precombat+=/variable,name=always_sync_cooldowns,op=reset,default=0
-actions.precombat+=/variable,name=rs_max_delay_for_totm,op=reset,default=5
-actions.precombat+=/variable,name=rs_max_delay_for_rop,op=reset,default=5
-actions.precombat+=/variable,name=rs_max_delay_for_ap,op=reset,default=20
-actions.precombat+=/variable,name=mot_preceed_totm_by,op=reset,default=8
-actions.precombat+=/variable,name=mot_max_delay_for_totm,op=reset,default=10
-actions.precombat+=/variable,name=mot_max_delay_for_ap,op=reset,default=15
-actions.precombat+=/variable,name=ap_max_delay_for_totm,op=reset,if=conduit.arcane_prodigy,value=30,value_else=10
-actions.precombat+=/variable,name=ap_max_delay_for_totm,op=reset,default=20
-actions.precombat+=/variable,name=ap_max_delay_for_mot,op=reset,default=20
-actions.precombat+=/variable,name=rop_max_delay_for_totm,op=set,value=20-(5*conduit.arcane_prodigy)
-actions.precombat+=/variable,name=totm_max_delay_for_ap,op=set,value=5+20*(covenant.night_fae|(conduit.arcane_prodigy&active_enemies<variable.aoe_target_count))+15*(covenant.kyrian&runeforge.arcane_harmony&active_enemies>=variable.aoe_target_count)
-actions.precombat+=/variable,name=totm_max_delay_for_rop,op=set,value=20-(8*conduit.arcane_prodigy)
-actions.precombat+=/variable,name=barrage_mana_pct,op=set,if=covenant.night_fae,value=60-(mastery_value*100)
-actions.precombat+=/variable,name=barrage_mana_pct,op=set,if=covenant.kyrian,value=95-(mastery_value*100)
-actions.precombat+=/variable,name=barrage_mana_pct,op=set,if=variable.barrage_mana_pct=0,value=80-(mastery_value*100)
-actions.precombat+=/variable,name=ap_minimum_mana_pct,op=reset,default=15
-actions.precombat+=/variable,name=totm_max_charges,op=reset,default=2
-actions.precombat+=/variable,name=aoe_totm_max_charges,op=reset,default=2
-actions.precombat+=/variable,name=fishing_opener,op=set,value=1*(equipped.empyreal_ordnance|(talent.rune_of_power&(talent.arcane_echo|!covenant.kyrian)&(!covenant.necrolord|active_enemies=1|runeforge.siphon_storm)&!covenant.venthyr))
-actions.precombat+=/variable,name=ap_on_use,op=set,value=equipped.macabre_sheet_music|equipped.gladiators_badge|equipped.gladiators_medallion|equipped.darkmoon_deck_putrescence|equipped.inscrutable_quantum_device|equipped.soulletting_ruby|equipped.sunblood_amethyst|equipped.wakeners_frond|equipped.flame_of_battle
+## actions.precombat+=/variable,name=aoe_target_count,op=reset,default=3
+## actions.precombat+=/variable,name=evo_pct,op=reset,default=15
+## actions.precombat+=/variable,name=prepull_evo,op=set,if=(runeforge.siphon_storm&(covenant.venthyr|covenant.necrolord|conduit.arcane_prodigy)),value=1,value_else=0
+## actions.precombat+=/variable,name=have_opened,op=set,if=active_enemies>=variable.aoe_target_count,value=1,value_else=0
+## actions.precombat+=/variable,name=final_burn,op=set,value=0
+## actions.precombat+=/variable,name=harmony_stack_time,op=reset,default=9
+## actions.precombat+=/variable,name=always_sync_cooldowns,op=reset,default=0
+## actions.precombat+=/variable,name=rs_max_delay_for_totm,op=reset,default=5
+## actions.precombat+=/variable,name=rs_max_delay_for_rop,op=reset,default=5
+## actions.precombat+=/variable,name=rs_max_delay_for_ap,op=reset,default=20
+## actions.precombat+=/variable,name=mot_preceed_totm_by,op=reset,default=8
+## actions.precombat+=/variable,name=mot_max_delay_for_totm,op=reset,default=10
+## actions.precombat+=/variable,name=mot_max_delay_for_ap,op=reset,default=15
+## actions.precombat+=/variable,name=ap_max_delay_for_totm,op=reset,if=conduit.arcane_prodigy,value=30,value_else=10
+## actions.precombat+=/variable,name=ap_max_delay_for_totm,op=reset,default=20
+## actions.precombat+=/variable,name=ap_max_delay_for_mot,op=reset,default=20
+## actions.precombat+=/variable,name=rop_max_delay_for_totm,op=set,value=20-(5*conduit.arcane_prodigy)
+## actions.precombat+=/variable,name=totm_max_delay_for_ap,op=set,value=5+20*(covenant.night_fae|(conduit.arcane_prodigy&active_enemies<variable.aoe_target_count))+15*(covenant.kyrian&runeforge.arcane_harmony&active_enemies>=variable.aoe_target_count)
+## actions.precombat+=/variable,name=totm_max_delay_for_rop,op=set,value=20-(8*conduit.arcane_prodigy)
+## actions.precombat+=/variable,name=barrage_mana_pct,op=set,if=covenant.night_fae,value=60-(mastery_value*100)
+## actions.precombat+=/variable,name=barrage_mana_pct,op=set,if=covenant.kyrian,value=95-(mastery_value*100)
+## actions.precombat+=/variable,name=barrage_mana_pct,op=set,if=variable.barrage_mana_pct=0,value=80-(mastery_value*100)
+## actions.precombat+=/variable,name=ap_minimum_mana_pct,op=reset,default=15
+## actions.precombat+=/variable,name=totm_max_charges,op=reset,default=2
+## actions.precombat+=/variable,name=aoe_totm_max_charges,op=reset,default=2
+## actions.precombat+=/variable,name=fishing_opener,op=set,value=1*(equipped.empyreal_ordnance|(talent.rune_of_power&(talent.arcane_echo|!covenant.kyrian)&(!covenant.necrolord|active_enemies=1|runeforge.siphon_storm)&!covenant.venthyr))
+## actions.precombat+=/variable,name=ap_on_use,op=set,value=equipped.macabre_sheet_music|equipped.gladiators_badge|equipped.gladiators_medallion|equipped.darkmoon_deck_putrescence|equipped.inscrutable_quantum_device|equipped.soulletting_ruby|equipped.sunblood_amethyst|equipped.wakeners_frond|equipped.flame_of_battle
 actions.precombat+=/mirror_image
 actions.precombat+=/fleshcraft,if=soulbind.volatile_solvent|soulbind.pustule_eruption
 actions.precombat+=/rune_of_power,if=covenant.kyrian&runeforge.arcane_harmony&conduit.arcane_prodigy&variable.always_sync_cooldowns&active_enemies<variable.aoe_target_count
@@ -67,14 +69,14 @@ actions+=/use_item,name=shadowed_orb_of_torment,if=time=0|(variable.outside_of_c
 # 5.6 is the speed of the Soulletting Ruby projectile
 actions+=/use_item,name=soulletting_ruby,if=(variable.time_until_ap+(action.radiant_spark.execute_time*covenant.kyrian)+(action.deathborne.execute_time*covenant.necrolord)+action.touch_of_the_magi.execute_time<target.distance%5.6)&(variable.have_opened|(covenant.kyrian&runeforge.arcane_infinity))&target.distance>25
 ## actions+=/newfound_resolve,use_while_casting=1,if=buff.arcane_power.up|debuff.touch_of_the_magi.up|dot.radiant_spark.ticking
-actions+=/call_action_list,name=calculations
+## actions+=/call_action_list,name=calculations
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=variable.aoe_target_count
-actions+=/call_action_list,name=harmony,if=covenant.kyrian&runeforge.arcane_harmony
-actions+=/call_action_list,name=fishing_opener,if=variable.have_opened=0&variable.fishing_opener&!(covenant.kyrian&runeforge.arcane_harmony)
-actions+=/call_action_list,name=opener,if=variable.have_opened=0&!(covenant.kyrian&runeforge.arcane_harmony)
-actions+=/call_action_list,name=cooldowns,if=!(covenant.kyrian&runeforge.arcane_harmony)
-actions+=/call_action_list,name=rotation,if=variable.final_burn=0&!(covenant.kyrian&runeforge.arcane_harmony)
-actions+=/call_action_list,name=final_burn,if=variable.final_burn=1&!(covenant.kyrian&runeforge.arcane_harmony)
+actions+=/call_action_list,name=harmony,strict=1,if=covenant.kyrian&runeforge.arcane_harmony
+actions+=/call_action_list,name=fishing_opener,strict=1,if=variable.have_opened=0&variable.fishing_opener&!(covenant.kyrian&runeforge.arcane_harmony)
+actions+=/call_action_list,name=opener,strict=1,if=variable.have_opened=0&!(covenant.kyrian&runeforge.arcane_harmony)
+actions+=/call_action_list,name=cooldowns,strict=1,if=!(covenant.kyrian&runeforge.arcane_harmony)
+actions+=/call_action_list,name=rotation,strict=1,if=variable.final_burn=0&!(covenant.kyrian&runeforge.arcane_harmony)
+actions+=/call_action_list,name=final_burn,strict=1,if=variable.final_burn=1&!(covenant.kyrian&runeforge.arcane_harmony)
 
 actions.aoe=frostbolt,if=runeforge.disciplinary_command&cooldown.buff_disciplinary_command.ready&buff.disciplinary_command_frost.down&(buff.arcane_power.down&buff.rune_of_power.down&debuff.touch_of_the_magi.down)&cooldown.touch_of_the_magi.remains=0&(buff.arcane_charge.stack<=variable.aoe_totm_max_charges&((talent.rune_of_power&cooldown.rune_of_power.remains<=gcd&cooldown.arcane_power.remains>variable.totm_max_delay_for_ap)|(!talent.rune_of_power&cooldown.arcane_power.remains>variable.totm_max_delay_for_ap)|cooldown.arcane_power.remains<=gcd))
 actions.aoe+=/fire_blast,if=(runeforge.disciplinary_command&cooldown.buff_disciplinary_command.ready&buff.disciplinary_command_fire.down&prev_gcd.1.frostbolt)|(runeforge.disciplinary_command&time=0)
@@ -122,28 +124,29 @@ actions.aoe+=/arcane_explosion,if=buff.arcane_charge.stack<buff.arcane_charge.ma
 actions.aoe+=/arcane_explosion,if=buff.arcane_charge.stack=buff.arcane_charge.max_stack&prev_gcd.1.arcane_barrage
 ## actions.aoe+=/evocation,interrupt_if=mana.pct>=85,interrupt_immediate=1
 
-actions.calculations=variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&prev_gcd.1.evocation&!(runeforge.siphon_storm|runeforge.temporal_warp)
-actions.calculations+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&buff.arcane_power.down&cooldown.arcane_power.remains&(runeforge.siphon_storm|runeforge.temporal_warp)
-actions.calculations+=/variable,name=final_burn,op=set,value=1,if=buff.arcane_charge.stack=buff.arcane_charge.max_stack&!buff.rule_of_threes.up&fight_remains<=((mana%action.arcane_blast.cost)*action.arcane_blast.execute_time)
-# Either a fully stacked harmony or in execute range with Bombardment
-actions.calculations+=/variable,name=empowered_barrage,op=set,value=buff.arcane_harmony.stack>=15|(runeforge.arcane_bombardment&target.health.pct<35)
+## These calculations were moved into the addon to (hopefully) increase efficiency.
+## actions.calculations=variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&prev_gcd.1.evocation&!(runeforge.siphon_storm|runeforge.temporal_warp)
+## actions.calculations+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&buff.arcane_power.down&cooldown.arcane_power.remains&(runeforge.siphon_storm|runeforge.temporal_warp)
+## actions.calculations+=/variable,name=final_burn,op=set,value=1,if=buff.arcane_charge.stack=buff.arcane_charge.max_stack&!buff.rule_of_threes.up&fight_remains<=((mana%action.arcane_blast.cost)*action.arcane_blast.execute_time)
+## Either a fully stacked harmony or in execute range with Bombardment
+## actions.calculations+=/variable,name=empowered_barrage,op=set,value=buff.arcane_harmony.stack>=15|(runeforge.arcane_bombardment&target.health.pct<35)
 ## actions.calculations+=/variable,name=last_ap_use,default=0,op=set,if=buff.arcane_power.up&(variable.last_ap_use=0|time>=variable.last_ap_use+15),value=time
 ## Arcane Prodigy gives a variable amount of cdr, but we'll use a flat estimation here. The simc provided remains_expected expression does not work well for prodigy due to the bursty nature of the cdr.
 ## actions.calculations+=/variable,name=estimated_ap_cooldown,op=set,value=(cooldown.arcane_power.duration*(1-(0.03*conduit.arcane_prodigy.rank)))-(time-variable.last_ap_use)
-actions.calculations+=/variable,name=time_until_ap,op=set,if=conduit.arcane_prodigy,value=cooldown.arcane_power.remains_expected
-actions.calculations+=/variable,name=time_until_ap,op=set,if=!conduit.arcane_prodigy,value=cooldown.arcane_power.remains
-# We'll delay AP up to 20sec for TotM
-actions.calculations+=/variable,name=time_until_ap,op=max,value=cooldown.touch_of_the_magi.remains,if=(cooldown.touch_of_the_magi.remains-variable.time_until_ap)<20
-# Since Ruby is such a powerful trinket for Kyrian, we'll stick to the two minute cycle until we get a high enough rank of prodigy
-actions.calculations+=/variable,name=time_until_ap,op=max,value=trinket.soulletting_ruby.cooldown.remains,if=conduit.arcane_prodigy&conduit.arcane_prodigy.rank<5&equipped.soulletting_ruby&covenant.kyrian&runeforge.arcane_harmony
-# We'll delay TotM up to 20sec for AP
-actions.calculations+=/variable,name=holding_totm,op=set,value=cooldown.touch_of_the_magi.ready&variable.time_until_ap<20
-# Radiant Spark does not immediately put up the vulnerability debuff so it can be difficult to discern that we're at the zeroth vulnerability stack
-actions.calculations+=/variable,name=just_used_spark,op=set,value=(prev_gcd.1.radiant_spark|prev_gcd.2.radiant_spark|prev_gcd.3.radiant_spark)&action.radiant_spark.time_since<gcd.max*4
+## actions.calculations+=/variable,name=time_until_ap,op=set,if=conduit.arcane_prodigy,value=cooldown.arcane_power.remains_expected
+## actions.calculations+=/variable,name=time_until_ap,op=set,if=!conduit.arcane_prodigy,value=cooldown.arcane_power.remains
+## We'll delay AP up to 20sec for TotM
+## actions.calculations+=/variable,name=time_until_ap,op=max,value=cooldown.touch_of_the_magi.remains,if=(cooldown.touch_of_the_magi.remains-variable.time_until_ap)<20
+## Since Ruby is such a powerful trinket for Kyrian, we'll stick to the two minute cycle until we get a high enough rank of prodigy
+## actions.calculations+=/variable,name=time_until_ap,op=max,value=trinket.soulletting_ruby.cooldown.remains,if=conduit.arcane_prodigy&conduit.arcane_prodigy.rank<5&equipped.soulletting_ruby&covenant.kyrian&runeforge.arcane_harmony
+## We'll delay TotM up to 20sec for AP
+## actions.calculations+=/variable,name=holding_totm,op=set,value=cooldown.touch_of_the_magi.ready&variable.time_until_ap<20
+## Radiant Spark does not immediately put up the vulnerability debuff so it can be difficult to discern that we're at the zeroth vulnerability stack
+## actions.calculations+=/variable,name=just_used_spark,op=set,value=(prev_gcd.1.radiant_spark|prev_gcd.2.radiant_spark|prev_gcd.3.radiant_spark)&action.radiant_spark.time_since<gcd.max*4
 ## Original SimC checked debuff.radiant_spark_vulnerability.down, but that doesn't work when the addon applies RSV instantly.
 ## actions.calculations+=/variable,name=just_used_spark,op=set,value=(prev_gcd.1.radiant_spark|prev_gcd.2.radiant_spark|prev_gcd.3.radiant_spark)&debuff.radiant_spark_vulnerability.down
-actions.calculations+=/variable,name=outside_of_cooldowns,op=set,value=buff.arcane_power.down&buff.rune_of_power.down&debuff.touch_of_the_magi.down&!variable.just_used_spark&debuff.radiant_spark_vulnerability.down
-actions.calculations+=/variable,name=stack_harmony,op=set,value=runeforge.arcane_harmony&((covenant.kyrian&cooldown.radiant_spark.remains<variable.harmony_stack_time))
+## actions.calculations+=/variable,name=outside_of_cooldowns,op=set,value=buff.arcane_power.down&buff.rune_of_power.down&debuff.touch_of_the_magi.down&!variable.just_used_spark&debuff.radiant_spark_vulnerability.down
+## actions.calculations+=/variable,name=stack_harmony,op=set,value=runeforge.arcane_harmony&((covenant.kyrian&cooldown.radiant_spark.remains<variable.harmony_stack_time))
 
 # Prioritize using grisly icicle with ap. Use it with totm otherwise.
 actions.cooldowns=frost_nova,if=runeforge.grisly_icicle&cooldown.arcane_power.remains>30&cooldown.touch_of_the_magi.ready&(buff.arcane_charge.stack<=variable.totm_max_charges&((talent.rune_of_power&cooldown.rune_of_power.remains<=gcd&cooldown.arcane_power.remains>variable.totm_max_delay_for_ap)|(!talent.rune_of_power&cooldown.arcane_power.remains>variable.totm_max_delay_for_ap)|cooldown.arcane_power.remains<=gcd))
