@@ -41,6 +41,7 @@ state.ptr = PTR and 1 or 0
 
 state.now = 0
 state.offset = 0
+state.hasAdvanced = false
 
 state.encounterID = 0
 state.encounterName = "None"
@@ -5575,309 +5576,313 @@ function state.reset( dispName )
         state.rangefilter = display.range.enabled and display.range.type == "xclude"
     end
 
-    for i = #state.purge, 1, -1 do
-        state[ state.purge[ i ] ] = nil
-        table.remove( state.purge, i )
-    end
+    -- Only reset all this stuff if 
+    if state.hasAdvanced or state.player.updated or state.target.updated then
+        state.hasAdvanced = false
 
-    for k in pairs( state.active_dot ) do
-        state.active_dot[ k ] = nil
-    end
-
-    for k in pairs( state.stat ) do
-        state.stat[ k ] = nil
-    end
-
-    state.haste = nil
-
-    ns.callHook( "reset_preauras" )
-
-    if state.target.updated then
-        ScrapeUnitAuras( "target" )
-        state.target.updated = false
-    end
-
-    if state.player.updated then
-        ScrapeUnitAuras( "player" )
-        state.player.updated = false
-    end
-
-
-    for k, v in pairs( state.buff ) do
-        for attr in pairs( default_buff_values ) do
-            v[ attr ] = nil
+        for i = #state.purge, 1, -1 do
+            state[ state.purge[ i ] ] = nil
+            table.remove( state.purge, i )
         end
-        v.lastCount = nil
-        v.lastApplied = nil
-    end
 
-    for k, v in pairs( state.cooldown ) do
-        v.duration = nil
-        v.expires = nil
-        v.charge = nil
-        v.next_charge = nil
-        v.recharge_began = nil
-        v.recharge_duration = nil
-        v.true_expires = nil
-        v.true_remains = nil
-    end
-
-    --[[ state.trinket.t1.cooldown.duration = nil
-    state.trinket.t1.cooldown.expires = nil
-    state.trinket.t2.cooldown.duration = nil
-    state.trinket.t2.cooldown.expires = nil ]]
-
-    for k, v in pairs( state.debuff ) do
-        for attr in pairs( default_debuff_values ) do
-            v[ attr ] = nil
+        for k in pairs( state.active_dot ) do
+            state.active_dot[ k ] = nil
         end
-        v.lastCount = nil
-        v.lastApplied = nil
-    end
 
-    state.pet.exists = nil
-    for k, v in pairs( state.pet ) do
-        if type(v) == "table" and k ~= "fake_pet" then
+        for k in pairs( state.stat ) do
+            state.stat[ k ] = nil
+        end
+
+        state.haste = nil
+
+        ns.callHook( "reset_preauras" )
+
+        if state.target.updated then
+            ScrapeUnitAuras( "target" )
+            state.target.updated = false
+        end
+
+        if state.player.updated then
+            ScrapeUnitAuras( "player" )
+            state.player.updated = false
+        end
+
+        for k, v in pairs( state.buff ) do
+            for attr in pairs( default_buff_values ) do
+                v[ attr ] = nil
+            end
+            v.lastCount = nil
+            v.lastApplied = nil
+        end
+
+        for k, v in pairs( state.cooldown ) do
+            v.duration = nil
             v.expires = nil
+            v.charge = nil
+            v.next_charge = nil
+            v.recharge_began = nil
+            v.recharge_duration = nil
+            v.true_expires = nil
+            v.true_remains = nil
         end
-    end
-    -- rawset( state.pet, "exists", UnitExists( "pet" ) )
 
-    for k in pairs( state.stance ) do
-        state.stance[ k ] = nil
-    end
+        --[[ state.trinket.t1.cooldown.duration = nil
+        state.trinket.t1.cooldown.expires = nil
+        state.trinket.t2.cooldown.duration = nil
+        state.trinket.t2.cooldown.expires = nil ]]
 
-    for k in pairs( class.stateTables ) do
-        if rawget( state[ k ], "onReset" ) then state[ k ].onReset( state[ k ] ) end
-    end
+        for k, v in pairs( state.debuff ) do
+            for attr in pairs( default_debuff_values ) do
+                v[ attr ] = nil
+            end
+            v.lastCount = nil
+            v.lastApplied = nil
+        end
 
-    for k in pairs( state.totem ) do
-        state.totem[ k ].expires = nil
-    end
-
-    for k, v in pairs( state.pet ) do
-        if type(v) == "table" then
-            v.expires = 0
-
-            if not rawget( v, "key" ) then
-                v.key = k
+        state.pet.exists = nil
+        for k, v in pairs( state.pet ) do
+            if type(v) == "table" and k ~= "fake_pet" then
+                v.expires = nil
             end
         end
-    end
+        -- rawset( state.pet, "exists", UnitExists( "pet" ) )
 
-    local petID = UnitGUID( "pet" )
-    if petID then
-        petID = tonumber( petID:match( "%-(%d+)%-[0-9A-F]+$" ) )
+        for k in pairs( state.stance ) do
+            state.stance[ k ] = nil
+        end
 
-        for k, v in pairs( class.pets ) do
-            local id = v.id and ( type( v.id ) == "function" and v.id() ) or v.id
+        for k in pairs( class.stateTables ) do
+            if rawget( state[ k ], "onReset" ) then state[ k ].onReset( state[ k ] ) end
+        end
 
-            if id == petID then
-                local lastCast = v.spell and class.abilities[ v.spell ] and class.abilities[ v.spell ].lastCast or 0
-                local duration = v.duration and ( ( type( v.duration ) == "function" and v.duration() ) or v.duration ) or 3600
+        for k in pairs( state.totem ) do
+            state.totem[ k ].expires = nil
+        end
 
-                if lastCast > 0 and duration < 3600 then
-                    summonPet( k, lastCast + duration - state.now )
-                else
-                    summonPet( k )
+        for k, v in pairs( state.pet ) do
+            if type(v) == "table" then
+                v.expires = 0
+
+                if not rawget( v, "key" ) then
+                    v.key = k
                 end
             end
         end
-    end
 
-    for i = 1, 5 do
-        local _, _, start, duration, icon = GetTotemInfo(i)
+        local petID = UnitGUID( "pet" )
+        if petID then
+            petID = tonumber( petID:match( "%-(%d+)%-[0-9A-F]+$" ) )
 
-        if icon and class.totems[ icon ] then
-            summonPet( class.totems[ icon ], start + duration - state.now )
-        end
-    end
+            for k, v in pairs( class.pets ) do
+                local id = v.id and ( type( v.id ) == "function" and v.id() ) or v.id
 
-    for k, v in pairs( state.pet ) do
-        if type(v) == "table" and k ~= "fake_pet" and v.summonTime and v.summonTime > 0 and v.duration then
-            local remains = ( v.summonTime + v.duration ) - state.now
-            if remains > 0 then
-                summonPet( k, remains )
-            else
-                v.summonTime = 0
+                if id == petID then
+                    local lastCast = v.spell and class.abilities[ v.spell ] and class.abilities[ v.spell ].lastCast or 0
+                    local duration = v.duration and ( ( type( v.duration ) == "function" and v.duration() ) or v.duration ) or 3600
+
+                    if lastCast > 0 and duration < 3600 then
+                        summonPet( k, lastCast + duration - state.now )
+                    else
+                        summonPet( k )
+                    end
+                end
             end
         end
-    end
 
-    state.target.health.actual = nil
-    state.target.health.current = nil
-    state.target.health.max = nil
+        for i = 1, 5 do
+            local _, _, start, duration, icon = GetTotemInfo(i)
 
-    state.aggro = ( UnitThreatSituation( "player" ) or 0 ) > 1
-    state.tanking = state.role.tank and state.aggro
-
-    -- range checks
-    state.target.minR = nil
-    state.target.maxR = nil
-    state.target.distance = nil
-
-    state.prev.last = state.player.lastcast
-    state.prev.override = nil
-
-    state.prev_gcd.last = state.player.lastgcd
-    state.prev_gcd.override = nil
-
-    state.prev_off_gcd.last = state.player.lastoffgcd
-    state.prev_off_gcd.override = nil
-
-    for i = 1, 5 do
-        state.predictions[i] = nil
-        state.predictionsOn[i] = nil
-        state.predictionsOff[i] = nil
-    end
-
-    wipe( state.history.casts )
-    wipe( state.history.units )
-
-    local last_act = state.player.lastcast and class.abilities[ state.player.lastcast ]
-    if last_act and last_act.startsCombat and state.combat == 0 and state.now - last_act.lastCast < 1 then
-        state.false_start = last_act.lastCast - 0.01
-    end
-
-    -- interrupts
-    state.target.casting = nil
-
-    local foundResource = false
-
-    for k, power in pairs( class.resources ) do
-        local res = rawget( state, k )
-
-        if res then
-            res.actual = UnitPower( "player", power.type )
-            res.max = UnitPowerMax( "player", power.type )
-
-            if res.max > 0 then foundResource = true end
-
-            if k == "mana" and state.spec.arcane then
-                res.modmax = res.max / ( 1 + state.mastery_value )
+            if icon and class.totems[ icon ] then
+                summonPet( class.totems[ icon ], start + duration - state.now )
             end
+        end
 
-            res.last_tick = rawget( res, "last_tick" ) or 0
-            res.tick_rate = rawget( res, "tick_rate" ) or 0.1
+        for k, v in pairs( state.pet ) do
+            if type(v) == "table" and k ~= "fake_pet" and v.summonTime and v.summonTime > 0 and v.duration then
+                local remains = ( v.summonTime + v.duration ) - state.now
+                if remains > 0 then
+                    summonPet( k, remains )
+                else
+                    v.summonTime = 0
+                end
+            end
+        end
 
-            if power.type == Enum.PowerType.Mana then
-                local inactive, active = GetManaRegen()
+        state.target.health.actual = nil
+        state.target.health.current = nil
+        state.target.health.max = nil
 
-                res.active_regen = active or 0
-                res.inactive_regen = inactive or 0
-                res.regen = nil
-            else
-                if ResourceRegenerates( k ) then
-                    local inactive, active = GetPowerRegenForPowerType( power.type )
+        state.aggro = ( UnitThreatSituation( "player" ) or 0 ) > 1
+        state.tanking = state.role.tank and state.aggro
+
+        -- range checks
+        state.target.minR = nil
+        state.target.maxR = nil
+        state.target.distance = nil
+
+        state.prev.last = state.player.lastcast
+        state.prev.override = nil
+
+        state.prev_gcd.last = state.player.lastgcd
+        state.prev_gcd.override = nil
+
+        state.prev_off_gcd.last = state.player.lastoffgcd
+        state.prev_off_gcd.override = nil
+
+        for i = 1, 5 do
+            state.predictions[i] = nil
+            state.predictionsOn[i] = nil
+            state.predictionsOff[i] = nil
+        end
+
+        wipe( state.history.casts )
+        wipe( state.history.units )
+
+        local last_act = state.player.lastcast and class.abilities[ state.player.lastcast ]
+        if last_act and last_act.startsCombat and state.combat == 0 and state.now - last_act.lastCast < 1 then
+            state.false_start = last_act.lastCast - 0.01
+        end
+
+        -- interrupts
+        state.target.casting = nil
+
+        local foundResource = false
+
+        for k, power in pairs( class.resources ) do
+            local res = rawget( state, k )
+
+            if res then
+                res.actual = UnitPower( "player", power.type )
+                res.max = UnitPowerMax( "player", power.type )
+
+                if res.max > 0 then foundResource = true end
+
+                if k == "mana" and state.spec.arcane then
+                    res.modmax = res.max / ( 1 + state.mastery_value )
+                end
+
+                res.last_tick = rawget( res, "last_tick" ) or 0
+                res.tick_rate = rawget( res, "tick_rate" ) or 0.1
+
+                if power.type == Enum.PowerType.Mana then
+                    local inactive, active = GetManaRegen()
+
                     res.active_regen = active or 0
                     res.inactive_regen = inactive or 0
                     res.regen = nil
                 else
-                    res.regen = 0
-                end
-            end
-
-            if res.reset then res.reset() end
-            forecastResources( k )
-        end
-    end
-
-    if not foundResource then
-        state.resetting = false
-        return false, "no available resources"
-    end
-
-    state.health = rawget( state, "health" ) or setmetatable( { resource = "health" }, mt_resource )
-    state.health.current = nil
-    state.health.actual = UnitHealth( "player" ) or 10000
-    state.health.max = max( 1, UnitHealthMax( "player" ) or 10000 )
-    state.health.regen = 0
-
-    state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
-    state.swings.mh_speed = state.swings.mh_speed or 0
-    state.swings.oh_speed = state.swings.oh_speed or 0
-
-    state.mainhand_speed = state.swings.mh_speed
-    state.offhand_speed = state.swings.oh_speed
-
-    state.nextMH = ( state.combat > 0 and state.swings.mh_actual > state.combat and state.swings.mh_actual + state.mainhand_speed ) or 0
-    state.nextOH = ( state.combat > 0 and state.swings.oh_actual > state.combat and state.swings.oh_actual + state.offhand_speed ) or 0
-
-    state.swings.mh_pseudo = nil
-    state.swings.oh_pseudo = nil
-
-    -- Special case spells that suck.
-    if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
-        setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
-    end
-
-    local cast_time, casting, ability = 0, nil, nil
-
-    if state.buff.casting.up then
-        cast_time = state.buff.casting.remains
-
-        local castID = state.buff.casting.v1
-        ability = class.abilities[ castID ]
-
-        casting = ability and ability.key or formatKey( state.buff.casting.name )
-
-        if castID == class.abilities.cyclotronic_blast.id then
-            -- Set up Pocket-Sized Computation Device.
-            if state.buff.casting.v3 == 1 then
-                -- We are in the channeled part of the cast.
-                setCooldown( "pocketsized_computation_device", state.buff.casting.applied + 120 - state.now )
-                setCooldown( "global_cooldown", cast_time )
-            else
-                -- This is the casting portion.
-                casting = class.abilities.pocketsized_computation_device.key
-                state.buff.casting.v1 = class.abilities.pocketsized_computation_device.id
-            end
-        end
-    end
-
-    ns.callHook( "reset_precast" )
-
-    -- Okay, two paths here.
-    -- 1.  We can cast while casting (i.e., Fire Blast for Fire Mage), so we want to hand off the current cast to the event system, and then let the recommendation engine sort it out.
-    -- 2.  We cannot cast anything while casting (typical), so we want to advance the clock, complete the cast, and then generate recommendations.
-
-    if casting and cast_time > 0 then
-        local channeled, destGUID = state.buff.casting.v3 == 1
-
-        if ability then
-            channeled = channeled or ability.channeled
-            destGUID  = Hekili:GetMacroCastTarget( ability.key, state.buff.casting.applied, "RESET" ) or state.target.unit
-        end
-
-        if not state:IsCasting() and not channeled then
-            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CAST_FINISH", destGUID )
-
-            -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
-            if ability and ability.isProjectile then
-                state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
-                -- state:QueueEvent( action, "projectile", true )
-            end
-
-        elseif not state:IsChanneling() and channeled then
-            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CHANNEL_FINISH", destGUID )
-
-            if channeled and ability then
-                local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
-
-                if tick_time and tick_time > 0 then
-                    local eoc = state.buff.casting.expires - tick_time
-
-                    while ( eoc > state.now ) do
-                        state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", destGUID )
-                        eoc = eoc - tick_time
+                    if ResourceRegenerates( k ) then
+                        local inactive, active = GetPowerRegenForPowerType( power.type )
+                        res.active_regen = active or 0
+                        res.inactive_regen = inactive or 0
+                        res.regen = nil
+                    else
+                        res.regen = 0
                     end
                 end
+
+                if res.reset then res.reset() end
+                forecastResources( k )
+            end
+        end
+
+        if not foundResource then
+            state.resetting = false
+            return false, "no available resources"
+        end
+
+        state.health = rawget( state, "health" ) or setmetatable( { resource = "health" }, mt_resource )
+        state.health.current = nil
+        state.health.actual = UnitHealth( "player" ) or 10000
+        state.health.max = max( 1, UnitHealthMax( "player" ) or 10000 )
+        state.health.regen = 0
+
+        state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
+        state.swings.mh_speed = state.swings.mh_speed or 0
+        state.swings.oh_speed = state.swings.oh_speed or 0
+
+        state.mainhand_speed = state.swings.mh_speed or 0
+        state.offhand_speed = state.swings.oh_speed or 0
+
+        state.nextMH = ( state.combat > 0 and state.swings.mh_actual > state.combat and state.swings.mh_actual + state.mainhand_speed ) or 0
+        state.nextOH = ( state.combat > 0 and state.swings.oh_actual > state.combat and state.swings.oh_actual + state.offhand_speed ) or 0
+
+        state.swings.mh_pseudo = nil
+        state.swings.oh_pseudo = nil
+
+        -- Special case spells that suck.
+        if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
+            setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
+        end
+
+        local cast_time, casting, ability = 0, nil, nil
+
+        if state.buff.casting.up then
+            cast_time = state.buff.casting.remains
+
+            local castID = state.buff.casting.v1
+            ability = class.abilities[ castID ]
+
+            casting = ability and ability.key or formatKey( state.buff.casting.name )
+
+            if castID == class.abilities.cyclotronic_blast.id then
+                -- Set up Pocket-Sized Computation Device.
+                if state.buff.casting.v3 == 1 then
+                    -- We are in the channeled part of the cast.
+                    setCooldown( "pocketsized_computation_device", state.buff.casting.applied + 120 - state.now )
+                    setCooldown( "global_cooldown", cast_time )
+                else
+                    -- This is the casting portion.
+                    casting = class.abilities.pocketsized_computation_device.key
+                    state.buff.casting.v1 = class.abilities.pocketsized_computation_device.id
+                end
+            end
+        end
+
+        ns.callHook( "reset_precast" )
+
+        -- Okay, two paths here.
+        -- 1.  We can cast while casting (i.e., Fire Blast for Fire Mage), so we want to hand off the current cast to the event system, and then let the recommendation engine sort it out.
+        -- 2.  We cannot cast anything while casting (typical), so we want to advance the clock, complete the cast, and then generate recommendations.
+
+        if casting and cast_time > 0 then
+            local channeled, destGUID = state.buff.casting.v3 == 1
+
+            if ability then
+                channeled = channeled or ability.channeled
+                destGUID  = Hekili:GetMacroCastTarget( ability.key, state.buff.casting.applied, "RESET" ) or state.target.unit
             end
 
-            -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
-            if ability and ability.isProjectile then
-                state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
-                -- state:QueueEvent( action, "projectile", true )
+            if not state:IsCasting() and not channeled then
+                state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CAST_FINISH", destGUID )
+
+                -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+                if ability and ability.isProjectile then
+                    state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
+                    -- state:QueueEvent( action, "projectile", true )
+                end
+
+            elseif not state:IsChanneling() and channeled then
+                state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CHANNEL_FINISH", destGUID )
+
+                if channeled and ability then
+                    local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
+
+                    if tick_time and tick_time > 0 then
+                        local eoc = state.buff.casting.expires - tick_time
+
+                        while ( eoc > state.now ) do
+                            state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", destGUID )
+                            eoc = eoc - tick_time
+                        end
+                    end
+                end
+
+                -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+                if ability and ability.isProjectile then
+                    state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
+                    -- state:QueueEvent( action, "projectile", true )
+                end
             end
         end
     end
@@ -5924,14 +5929,17 @@ end
 function state:StartCombat()
     self.false_start = self.query_time - 0.01
     if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = self.false_start end
-    if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = self.false_start + ( self.offhand_speed / 2 ) end
+    if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = self.false_start + ( self.swings.offhand_speed / 2 ) end
 end
 
 
 function state.advance( time )
-
     if time <= 0 then
         return
+    end
+
+    if not state.resetting and not state.hasAdvanced then
+        state.hasAdvanced = true
     end
 
     time = ns.callHook( "advance", time ) or time

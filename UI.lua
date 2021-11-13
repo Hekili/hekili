@@ -941,7 +941,7 @@ do
             local spec = Hekili.DB.profile.specs[ state.spec.id ]
             local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or 1
 
-            if self.refreshTimer < 0 or ( self.superUpdate and ( self.id == "Primary" or self.id == "AOE" ) ) or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
+            if self.refreshTimer < 0 or self.superUpdate or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
                 Hekili:ProcessHooks( self.id )
                 self.lastUpdate = now
                 self.criticalUpdate = false
