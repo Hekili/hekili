@@ -1,5 +1,5 @@
 ## Subtlety Rogue
-## September 16, 2021
+## November 13, 2021
 
 ## Changes:
 ## - Move variable.use_priority_rotation up so it is set before we use it.
@@ -19,6 +19,9 @@ actions.precombat+=/shadow_blades,if=runeforge.mark_of_the_master_assassin
 actions=kick
 # Used to determine whether cooldowns wait for SnD based on targets.
 actions+=/variable,name=snd_condition,value=buff.slice_and_dice.up|spell_targets.shuriken_storm>=6
+# Account for ShT reaction time by ignoring low-CP animacharged matches in the 0.5s preceeding a potential ShT proc
+actions+=/variable,name=effective_combo_points,value=effective_combo_points
+actions+=/variable,name=effective_combo_points,if=covenant.kyrian&effective_combo_points>combo_points&combo_points.deficit>2&time_to_sht.4<0.5&!(combo_points=2&buff.echoing_reprimand_3.up|combo_points=3&buff.echoing_reprimand_4.up|combo_points=4&buff.echoing_reprimand_5.up),value=combo_points
 # Only change rotation if we have priority_rotation set and multiple targets up.
 actions+=/variable,name=use_priority_rotation,value=priority_rotation&spell_targets.shuriken_storm>=2
 # Used to define when to use stealth CDs or builders
@@ -30,10 +33,10 @@ actions+=/run_action_list,name=stealthed,if=stealthed.all
 # Apply Slice and Dice at 2+ CP during the first 10 seconds, after that 4+ CP if it expires within the next GCD or is not up
 actions+=/slice_and_dice,if=spell_targets.shuriken_storm<6&fight_remains>6&buff.slice_and_dice.remains<gcd.max&combo_points>=4-(time<10)*2
 # Priority Rotation? Let's give a crap about energy for the stealth CDs (builder still respect it). Yup, it can be that simple.
-actions+=/call_action_list,name=stealth_cds,if=variable.use_priority_rotation
+actions+=/call_action_list,name=stealth_cds,strict=1,if=variable.use_priority_rotation
 # Consider using a Stealth CD when reaching the energy threshold
 actions+=/call_action_list,name=stealth_cds,if=energy.deficit<=variable.stealth_threshold
-actions+=/call_action_list,name=finish,if=(effective_combo_points>=cp_max_spend)|(combo_points.deficit<=1|fight_remains<=1&effective_combo_points>=3|buff.symbols_of_death_autocrit.up&effective_combo_points>=4)|(spell_targets.shuriken_storm>=4&effective_combo_points>=4)
+actions+=/call_action_list,name=finish,if=(variable.effective_combo_points>=cp_max_spend)|(combo_points.deficit<=1|fight_remains<=1&variable.effective_combo_points>=3|buff.symbols_of_death_autocrit.up&variable.effective_combo_points>=4)|(spell_targets.shuriken_storm>=4&variable.effective_combo_points>=4)
 # Use a builder when reaching the energy threshold
 actions+=/call_action_list,name=build,if=energy.deficit<=variable.stealth_threshold
 # Lowest priority in all of the APL because it causes a GCD
@@ -122,7 +125,7 @@ actions.stealthed=shadowstrike,if=(buff.stealth.up|buff.vanish.up)&(spell_target
 # Finish at 3+ CP without DS / 4+ with DS with Shuriken Tornado buff up to avoid some CP waste situations.
 # Also safe to finish at 4+ CP with exactly 4 targets. (Same as outside stealth.)
 # Finish at 4+ CP without DS, 5+ with DS, and 6 with DS after Vanish
-actions.stealthed+=/call_action_list,name=finish,if=effective_combo_points>=cp_max_spend|buff.shuriken_tornado.up&combo_points.deficit<=2|spell_targets.shuriken_storm>=4&effective_combo_points>=4|combo_points.deficit<=1-(talent.deeper_stratagem.enabled&buff.vanish.up)
+actions.stealthed+=/call_action_list,name=finish,if=variable.effective_combo_points>=cp_max_spend|buff.shuriken_tornado.up&combo_points.deficit<=2|spell_targets.shuriken_storm>=4&variable.effective_combo_points>=4|combo_points.deficit<=1-(talent.deeper_stratagem.enabled&buff.vanish.up)
 actions.stealthed+=/shadowstrike,if=stealthed.sepsis&spell_targets.shuriken_storm<4
 actions.stealthed+=/shiv,if=talent.nightstalker.enabled&runeforge.tiny_toxic_blade&spell_targets.shuriken_storm<5
 # Up to 3 targets (no prio) keep up Find Weakness by cycling Shadowstrike.
