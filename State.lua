@@ -41,7 +41,7 @@ state.ptr = PTR and 1 or 0
 
 state.now = 0
 state.offset = 0
-state.hasAdvanced = false
+state.modified = false
 
 state.encounterID = 0
 state.encounterName = "None"
@@ -5475,6 +5475,9 @@ function state:RunHandler( key, noStart )
     --[[ if self.channeling and not ability.castableWhileCasting then
         self.stopChanneling( false, ability.key )
     end ]]
+
+    -- Any ability handler is likely to modify the game state enough to force a reset later.
+    if not state.resetting then state.modified = true end
     
     if ability.channeled then
         if ability.start then ability.start() end
@@ -5577,8 +5580,8 @@ function state.reset( dispName )
     end
 
     -- Only reset all this stuff if 
-    if state.hasAdvanced or state.player.updated or state.target.updated then
-        state.hasAdvanced = false
+    if state.modified or state.player.updated or state.target.updated then
+        state.modified = false
 
         for i = #state.purge, 1, -1 do
             state[ state.purge[ i ] ] = nil
@@ -5938,8 +5941,8 @@ function state.advance( time )
         return
     end
 
-    if not state.resetting and not state.hasAdvanced then
-        state.hasAdvanced = true
+    if not state.resetting and not state.modified then
+        state.modified = true
     end
 
     time = ns.callHook( "advance", time ) or time
