@@ -8,7 +8,9 @@ local class = Hekili.Class
 local state = Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
+local FindRaidBuffByID = ns.FindRaidBuffByID
 
+local GroupMembers = ns.GroupMembers
 
 local PTR = ns.PTR
 
@@ -47,12 +49,12 @@ if UnitClassBase( "player" ) == "PRIEST" then
         halo = 19763, -- 120517
 
         lenience = 21183, -- 238063
-        luminous_barrier = 21184, -- 271466
+        spirit_shell = 21184, -- 109964
         evangelism = 22976, -- 246287
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         relentless = 3554, -- 196029
         gladiators_medallion = 3555, -- 208683
         adaptation = 3556, -- 214027
@@ -78,9 +80,14 @@ if UnitClassBase( "player" ) == "PRIEST" then
         },
         atonement = {
             id = 194384,
-            duration = 21,
+            duration = 15,
             max_stack = 1,
             friendly = true, -- To track count.
+        },
+        spirit_shell = {
+            id = 109964,
+            duration = 10,
+            max_stack = 1,
         },
         body_and_soul = {
             id = 65081,
@@ -112,12 +119,6 @@ if UnitClassBase( "player" ) == "PRIEST" then
         levitate = {
             id = 111759,
             duration = 600,
-            type = "Magic",
-            max_stack = 1,
-        },
-        luminous_barrier = {
-            id = 271466,
-            duration = 10,
             type = "Magic",
             max_stack = 1,
         },
@@ -226,334 +227,333 @@ if UnitClassBase( "player" ) == "PRIEST" then
             cooldown = 20,
             recharge = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 642580,
 
             talent = "angelic_feather",
         },
-        
+
 
         desperate_prayer = {
             id = 19236,
             cast = 0,
             cooldown = 90,
             gcd = "off",
-            
+
             toggle = "defensives",
 
             startsCombat = true,
             texture = 237550,
-            
+
             handler = function ()
                 local gain = 1.25 * health.max
                 health.max = health.max + gain
                 health.current = health.current + gain
             end,
         },
-        
+
 
         dispel_magic = {
             id = 528,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136066,
 
             debuff = "dispellable_magic",
-            
+
             handler = function ()
                 removeDebuff( "target", "dispellable_magic" )
             end,
         },
-        
+
 
         divine_star = {
             id = 110744,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 537026,
 
             talent = "divine_star",
         },
-        
+
 
         evangelism = {
             id = 246287,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 135895,
-            
+
             handler = function ()
                 if buff.atonement.up then buff.atonement.expires = buff.atonement.expires + 6 end
             end,
         },
-        
+
+
+        spirit_shell = {
+            id = 109964,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 538565,
+
+            handler = function ()
+                --if buff.atonement.up then buff.atonement.expires = buff.atonement.expires + 6 end
+                applyBuff( "spirit_shell" )
+            end,
+        },
+
 
         fade = {
             id = 586,
             cast = 0,
             cooldown = 30,
             gcd = "off",
-            
+
             startsCombat = false,
             texture = 135994,
 
             toggle = "defensives",
-            
+
             handler = function ()
                 applyBuff( "fade" )
             end,
         },
-        
+
 
         halo = {
             id = 120517,
             cast = 1.5,
             cooldown = 40,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 632352,
 
             talent = "halo",
         },
-        
+
 
         holy_nova = {
             id = 132157,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135922,
         },
-        
+
 
         leap_of_faith = {
             id = 73325,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 463835,
         },
-        
+
 
         levitate = {
             id = 1706,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135928,
-            
+
             handler = function ()
                 applyBuff( "levitate" )
             end,
         },
-        
 
-        luminous_barrier = {
-            id = 271466,
-            cast = 0,
-            cooldown = function () return pvptalent.dome_of_light.enabled and 90 or 180 end,
-            gcd = "spell",
-            
-            spend = 0.04,
-            spendType = "mana",
-            
-            startsCombat = false,
-            texture = 537078,
-            
-            handler = function ()
-                applyBuff( "luminous_barrier" )
-                active_dot.luminous_barrier = group_members
-            end,
-        },
-        
 
         mass_dispel = {
             id = 32375,
             cast = 1.5,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0.08,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135739,
         },
-        
+
 
         mass_resurrection = {
             id = 212036,
             cast = 10,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 413586,
         },
-        
+
 
         mind_control = {
             id = 605,
             cast = 1.8,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136206,
         },
-        
+
 
         mind_vision = {
             id = 2096,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135934,
         },
-        
+
 
         mindbender = {
             id = 123040,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 136214,
 
             talent = "mindbender",
-            
+
             handler = function ()
                 summonPet( "mindbender" )
             end,
         },
-        
+
 
         pain_suppression = {
             id = 33206,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 135936,
-            
+
             handler = function ()
                 applyBuff( "pain_suppression" )
             end,
         },
-        
+
 
         penance = {
             id = 47540,
             cast = 0,
             cooldown = 9,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 237545,
-            
-            handler = function ()                
+
+            handler = function ()
             end,
         },
-        
+
 
         power_word_barrier = {
             id = 62618,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             toggle = "defensives",
             notalent = "luminous_barrier",
 
             startsCombat = false,
             texture = 253400,
-            
+
             handler = function ()
                 applyBuff( "power_word_barrier" )
             end,
         },
-        
+
 
         power_word_fortitude = {
             id = 21562,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135987,
-            
+
             handler = function ()
                 applyBuff( "power_word_fortitude" )
             end,
         },
-        
+
 
         power_word_radiance = {
             id = 194509,
@@ -562,29 +562,29 @@ if UnitClassBase( "player" ) == "PRIEST" then
             cooldown = 20,
             recharge = 20,
             gcd = "spell",
-            
+
             spend = 0.06,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 1386546,
-            
+
             handler = function ()
                 applyBuff( "atonement" )
                 active_dot.atonement = max( active_dot.atonement, min( group_members, 5 ) )
             end,
         },
-        
+
 
         power_word_shield = {
             id = 17,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135940,
 
@@ -593,7 +593,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 elseif debuff.weakened_soul.down then return true, "weakened_soul is down" end
                 return false, "weakened_soul is up w/o rapture"
             end,
-            
+
             handler = function ()
                 applyBuff( "power_word_shield" )
                 applyDebuff( "player", "weakened_soul" )
@@ -605,63 +605,63 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 if talent.body_and_soul.enabled then applyBuff( "body_and_soul" ) end
             end,
         },
-        
+
 
         power_word_solace = {
             id = 129250,
             cast = 0,
             cooldown = 12,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 612968,
 
             talent = "power_word_solace",
-            
+
             handler = function ()
                 gain( 0.01 * mana.max, "mana" )
             end,
         },
-        
+
 
         psychic_scream = {
             id = 8122,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136184,
-            
+
             handler = function ()
                 applyDebuff( "target", "psychic_scream" )
                 active_dot.psychic_scream = active_enemies
             end,
         },
-        
+
 
         purge_the_wicked = {
             id = 204197,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 236216,
 
             talent = "purge_the_wicked",
-            
+
             handler = function ()
                 applyDebuff( "target", "purge_the_wicked" )
             end,
         },
-        
+
 
         --[[ purify = {
             id = 527,
@@ -670,194 +670,256 @@ if UnitClassBase( "player" ) == "PRIEST" then
             cooldown = 8,
             recharge = 8,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135894,
         }, -- doesn't really work, dispellable_magic is a hostile buff. ]]
-        
+
 
         rapture = {
             id = 47536,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 90 end,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237548,
-            
+
             handler = function ()
                 applyBuff( "rapture" )
             end,
         },
-        
+
 
         resurrection = {
             id = 2006,
             cast = 10,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135955,
         },
-        
+
 
         schism = {
             id = 214621,
             cast = 1.5,
             cooldown = 24,
             gcd = "spell",
-            
+
             spend = 298,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 463285,
 
             talent = "schism",
-            
+
             handler = function ()
                 applyDebuff( "target", "schism" )
             end,
         },
-        
+
 
         shackle_undead = {
             id = 9484,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 136091,
         },
-        
+
 
         shadow_covenant = {
             id = 204065,
             cast = 0,
             cooldown = 12,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 136221,
 
             talent = "shadow_covenant",
-            
+
             handler = function ()
                 applyDebuff( "player", "shadow_covenant" )
                 active_dot.shadow_covenant = min( 5, group_members )
             end,
         },
-        
+
 
         shadow_mend = {
             id = 186263,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136202,
-            
+
             handler = function ()
                 applyDebuff( "player", "atonement" )
                 if talent.masochism.enabled then applyBuff( "masochism" )
                 elseif time > 0 then applyDebuff( "player", "shadow_mend" ) end
             end,
         },
-        
+
 
         shadow_word_pain = {
             id = 589,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136207,
 
             notalent = "purge_the_wicked",
-            
+
             handler = function ()
                 applyDebuff( "target", "shadow_word_pain" )
             end,
         },
-        
+
 
         shadowfiend = {
             id = 34433,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.rank > 1 and 0.87 or 1 ) * 180 end,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 136199,
 
             notalent = "mindbender",
-            
+
             handler = function ()
                 summonPet( "mindbender" )
             end,
         },
-        
+
 
         shining_force = {
             id = 204263,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 571554,
 
             talent = "shining_force",
-            
+
             handler = function ()
                 applyDebuff( "target", "shining_force" )
                 active_dot.shining_force = active_enemies
             end,
         },
-        
+
 
         smite = {
             id = 585,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.05,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135924,
-            
+
+            nobuff = "boon_of_the_ascended",
+            bind = "ascended_blast",
+        },
+
+
+        -- Priest - Kyrian    - 325013 - boon_of_the_ascended (Boon of the Ascended)
+        boon_of_the_ascended = {
+            id = 325013,
+            cast = 1.5,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3565449,
+
+            toggle = "essences",
+
             handler = function ()
-                applyDebuff( "target", "smite" )
+                applyBuff( "boon_of_the_ascended" )
             end,
-        },        
+
+            auras = {
+                boon_of_the_ascended = {
+                    id = 325013,
+                    duration = 10,
+                    max_stack = 20 -- ???
+                }
+            }
+        },
+
+        ascended_nova = {
+            id = 325020,
+            known = 325013,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell", -- actually 1s and not 1.5s...
+
+            startsCombat = true,
+            texture = 3528287,
+
+            buff = "boon_of_the_ascended",
+            bind = "boon_of_the_ascended",
+
+            handler = function ()
+                addStack( "boon_of_the_ascended", nil, active_enemies )
+            end
+        },
+
+        ascended_blast = {
+            id = 325283,
+            known = 585,
+            cast = 0,
+            cooldown = 3,
+            hasteCD = true,
+            gcd = "totem", -- actually 1s and not 1.5s...
+
+            startsCombat = true,
+            texture = 3528286,
+
+            buff = "boon_of_the_ascended",
+            bind = "smite",
+
+            handler = function ()
+                addStack( "boon_of_the_ascended", nil, 5 )
+            end,
+        },
     } )
 end
