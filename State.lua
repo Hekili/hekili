@@ -4651,16 +4651,16 @@ ns.metatables.mt_actions = mt_actions
 local mt_swings = {
     __index = function( t, k )
         if k == "mainhand" then
-            return t.mh_pseudo and t.mh_pseudo or t.mh_actual
+            return t.mh_pseudo or t.mh_actual
 
         elseif k == "offhand" then
-            return t.oh_pseudo and t.oh_pseudo or t.oh_actual
+            return t.oh_pseudo or t.oh_actual
 
         elseif k == "mainhand_speed" then
-            return t.mh_pseudo_speed and t.mh_pseudo_speed or t.mh_speed
+            return t.mh_pseudo_speed or t.mh_speed or 0
 
         elseif k == "offhand_speed" then
-            return t.oh_pseudo_speed and t.oh_pseudo_speed or t.oh_speed
+            return t.oh_pseudo_speed or t.oh_speed or 0
 
         end
     end
@@ -5502,7 +5502,7 @@ function state:RunHandler( key, noStart )
         -- Assume MH swing at combat start and OH swing half a swing later?
         if self.target.distance < 8 then
             if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = 0.01 + self.query_time - self.swings.mainhand_speed end
-            if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = 0.01 + self.query_time - ( self.offhand_speed / 2 ) end
+            if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = 0.01 + self.query_time - ( self.swings.offhand_speed / 2 ) end
         end
     end
 
