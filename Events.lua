@@ -621,6 +621,7 @@ end
 
 do
     local gearInitialized = false
+    local lastUpdate = 0
 
     local function itemSorter( a, b )
         local action1, action2 = class.abilities[ a.action ].cooldown, class.abilities[ b.action ].cooldown
@@ -673,9 +674,19 @@ do
     end
 
     local wasWearing = {}
+    local updateIsQueued = false
 
     function ns.updateGear()
-        if not Hekili.PLAYER_ENTERING_WORLD then return end
+        if not Hekili.PLAYER_ENTERING_WORLD or GetTime() - lastUpdate < 1 then
+            if not updateIsQueued then
+                C_Timer.After( 1, ns.updateGear )
+                updateIsQueued = true
+            end
+            return
+        end
+
+        lastUpdate = GetTime()
+        updateIsQueued = false
 
         for thing in pairs( state.set_bonus ) do
             state.set_bonus[ thing ] = 0
@@ -871,7 +882,10 @@ do
         state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
 
         if not gearInitialized then
-            C_Timer.After( 3, ns.updateGear )
+            if not updateIsQueued then
+                C_Timer.After( 1, ns.updateGear )
+                updateIsQueued = true
+            end
         else
             ns.ReadKeybindings()
         end
