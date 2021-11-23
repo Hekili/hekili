@@ -201,16 +201,6 @@ if UnitClassBase( "player" ) == "PRIEST" then
                     Hekili:ForceUpdate( subtype, true )
                 end
             end
-
-            --[[ if spellName == "Shadow Word: Pain" and ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) then
-                local name, id, _, aType, duration, expiration = FindUnitDebuffByID( "target", class.auras.shadow_word_pain.id )
-                -- print( name, id, _, aType, duration, applied )
-                if expiration then print( "SWP", subtype, duration, ( GetTime() - ( expiration - duration ) ) / class.auras.shadow_word_pain.tick_time, ( expiration - GetTime() ) / class.auras.shadow_word_pain.tick_time ) end
-            end
-
-            if spellName == "Shadow Word: Pain" and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) then
-                swp_applied = GetTime()
-            end ]]
         end
     end )
 

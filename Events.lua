@@ -45,6 +45,7 @@ end
 
 local handlerCount = {}
 Hekili.ECount = handlerCount
+Hekili.IC = itemCallbacks
 
 
 local function GenericOnEvent( self, event, ... )
@@ -219,7 +220,7 @@ do
                 callbacks[ i ] = nil
             end
 
-            if state.set_bonus[ itemID ] > 0 then
+            if state.set_bonus[ itemID ] > 0 and not updatedEquippedItem then
                 updatedEquippedItem = true
                 C_Timer.After( 0.5, CheckForEquipmentUpdates )
             end
@@ -232,10 +233,10 @@ do
 end
 
 function Hekili:ContinueOnItemLoad( itemID, func )
-    --[[ if C_Item.IsItemDataCachedByID( itemID ) then
+    if C_Item.IsItemDataCachedByID( itemID ) and Hekili.PLAYER_ENTERING_WORLD then
         func( true )
         return
-    end ]]
+    end
 
     local callbacks = itemCallbacks[ itemID ] or {}
     insert( callbacks, func )

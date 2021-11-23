@@ -543,7 +543,10 @@ state.UnitHealth = UnitHealth
 state.UnitHealthMax = UnitHealthMax
 state.UnitName = UnitName
 state.UnitIsFriend = UnitIsFriend
-state.UnitIsUnit = UnitIsUnit
+state.UnitIsUnit = function( a, b )
+    if a == b then return true end
+    return UnitIsUnit( a, b )
+end
 state.UnitIsPlayer = UnitIsPlayer
 state.UnitLevel = UnitLevel
 state.UnitPower = UnitPower
@@ -1512,7 +1515,7 @@ do
 
         -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
 
-        if stack and #stack > 0 then
+        --[[ if stack and #stack > 0 then
             for i, caller in ipairs( stack ) do
                 local callScript = caller.script
                 callScript = callScript and scripts:GetScript( callScript )
@@ -1532,7 +1535,7 @@ do
                     recheckHelper( workTable, callScript.Recheck() )
                 end
             end
-        end
+        end ]]
 
         -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
 
@@ -1560,7 +1563,7 @@ do
             workTable[ remains ] = true
         end ]]
 
-        --[[ if Hekili.ActiveDebug and #steps > 0 then
+        --[[ if #steps > 0 then
             -- table.insert( steps, debugprofilestop() )
             local str = string.format( "RECHECK: %.2f", steps[#steps] - steps[1] )
 
@@ -1568,7 +1571,7 @@ do
                 str = string.format( "%s, %.2f ", str, steps[i] - steps[i-1] )
             end
 
-            Hekili:Debug( str )
+            print( str )
         end ]]
 
         wipe( times )
@@ -1579,18 +1582,6 @@ do
         end
 
         sort( times )
-
-        if Hekili.ActiveDebug then
-            if #times > 0 then
-                local o
-                for i, time in ipairs( times ) do
-                    o = string.format( "%s - %.2f", o or "", time )
-                end
-                -- Hekili:Debug( "Recheck times for this entry are: %s\n%s [ %.2f - %.2f ]", scripts:GetConditionsAndValues( script.ID, nil, nil, true ), o, state.delayMin, state.delayMax )
-            -- else
-                -- Hekili:Debug( "Recheck times for this entry are: %s", scripts:GetConditionsAndValues( script.ID, nil, nil, true ) )
-            end
-        end
     end
 end
 
@@ -2720,7 +2711,9 @@ local mt_default_cooldown = {
             if id > 0 then start, duration = GetCooldown( id ) end
 
             if t.key ~= "global_cooldown" then
-                local gcdStart, gcdDuration = GetSpellCooldown( 61304 )
+                local gcd = state.cooldown.global_cooldown
+                gcdStart, gcdDuration = gcd.expires - gcd.duration, gcd.duration
+                -- gcdStart, gcdDuration = state.cooldown.global_cooldown.startexpiGetSpellCooldown( 61304 )
                 if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
             end
 
@@ -5583,7 +5576,7 @@ function state.reset( dispName )
         state.rangefilter = display.range.enabled and display.range.type == "xclude"
     end
 
-    -- Only reset all this stuff if
+    -- Only reset all this stuff if key data was updated.
     if state.modified or state.player.updated or state.target.updated then
         state.modified = false
 
@@ -5618,8 +5611,13 @@ function state.reset( dispName )
             for attr in pairs( default_buff_values ) do
                 v[ attr ] = nil
             end
+
             v.lastCount = nil
             v.lastApplied = nil
+
+            if v.remains then
+                -- Force update.
+            end
         end
 
         for k, v in pairs( state.cooldown ) do
@@ -5631,6 +5629,10 @@ function state.reset( dispName )
             v.recharge_duration = nil
             v.true_expires = nil
             v.true_remains = nil
+
+            if v.remains then
+                -- Checking v.remains will actually reset it.
+            end
         end
 
         --[[ state.trinket.t1.cooldown.duration = nil
@@ -5642,8 +5644,13 @@ function state.reset( dispName )
             for attr in pairs( default_debuff_values ) do
                 v[ attr ] = nil
             end
+
             v.lastCount = nil
             v.lastApplied = nil
+
+            if v.remains then
+                -- Force update.
+            end
         end
 
         state.pet.exists = nil
@@ -6232,13 +6239,13 @@ function state:IsKnown( sID, notoggle )
     if sID < 0 then
         if ability.known ~= nil then
             if type( ability.known ) == "number" then
-                return IsUsableItem( ability.known ), "IsUsableItem"
+                return IsUsableItem( ability.known ), "IsUsableItem known"
             end
             return ability.known
         end
 
         if ability.item then
-            return IsUsableItem( ability.item ), "IsUsableItem"
+            return IsUsableItem( ability.item ), "IsUsableItem item"
         end
 
         return true
@@ -6329,11 +6336,11 @@ do
             local toggle = option.toggle
             if not toggle or toggle == "default" then toggle = ability.toggle end
 
+            if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, "toggle" end
+
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
                 if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
                 elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false
-                elseif toggle and toggle ~= "none" then
-                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true, "toggle" end
                 end
             end
         end
@@ -6382,6 +6389,21 @@ do
 
         local ability = class.abilities[ spell ]
         if not ability then return true end
+
+        local hook, reason = ns.callHook( "IsUsable", spell )
+        if hook == false then return false, reason end
+
+        if ability.funcs.usable then
+            local usable, reason = ability.funcs.usable( self, ability )
+            if not usable then return false, reason end
+        else
+            local usable = ability.usable
+            if type( usable ) == "number" and not IsUsableSpell( usable ) then
+                return false, "IsSpellUsable(" .. usable .. ") was false"
+            elseif type( usable ) == "boolean" and not usable then
+                return false, "ability.usable was false"
+            end
+        end
 
         local profile = Hekili.DB.profile
 
@@ -6463,23 +6485,6 @@ do
         --[[ if ability.nobuff and state.buff[ ability.nobuff ].up then
             return false
         end ]]
-
-        local hook, reason = ns.callHook( "IsUsable", spell )
-        if hook == false then return false, reason end
-
-        if ability.usable ~= nil then
-            if type( ability.usable ) == "number" then
-                if IsUsableSpell( ability.usable ) then
-                    return true
-                end
-                return false, "IsSpellUsable(" .. ability.usable .. ") was false"
-            elseif type( rawget( ability, "usable" ) ) == "boolean" then
-                return ability.usable
-            end
-            local usable, reason = ability.funcs.usable()
-            if usable then return true end
-            return false, reason or "ability 'usable' function returned false without explanation"
-        end
 
         return true
     end

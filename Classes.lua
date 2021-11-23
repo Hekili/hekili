@@ -391,13 +391,16 @@ local HekiliSpecMixin = {
             end
         end
 
-        Hekili:ContinueOnItemLoad( data.item, function ()
-            local name, link = GetItemInfo( data.item )
+        Hekili:ContinueOnItemLoad( data.item, function( success )
+            if success then
+                local name, link = GetItemInfo( data.item )
 
-            data.name = name
-            data.link = link
+                data.name = name
+                data.link = link
 
-            class.potionList[ potion ] = link
+                class.potionList[ potion ] = link
+                return true
+            end
         end )
     end,
 
@@ -452,6 +455,48 @@ local HekiliSpecMixin = {
             setfenv( item, state )
             item = item()
         end
+
+        if data.meta then
+            for k, v in pairs( data.meta ) do
+                if type( v ) == 'function' then data.meta[ k ] = setfenv( v, state ) end
+            end
+        end
+
+        -- default values.
+        if not data.cooldown then data.cooldown = 0 end
+        if not data.recharge then data.recharge = data.cooldown end
+        if not data.charges  then data.charges = 1 end
+
+        if data.hasteCD then
+            if type( data.cooldown ) == "number" and data.cooldown > 0 then data.cooldown = loadstring( "return " .. data.cooldown .. " * haste" ) end
+            if type( data.recharge ) == "number" and data.recharge > 0 then data.recharge = loadstring( "return " .. data.recharge .. " * haste" ) end
+        end
+
+        if not data.fixedCast and type( data.cast ) == "number" then
+            data.cast = loadstring( "return " .. data.cast .. " * haste" )
+        end
+
+        if data.toggle == "interrupts" and data.gcd == "off" and data.readyTime == state.timeToInterrupt and data.interrupt == nil then
+            data.interrupt = true
+        end
+
+        for key, value in pairs( data ) do
+            if type( value ) == 'function' then
+                setfenv( value, state )
+
+                if not protectedFunctions[ key ] then a.funcs[ key ] = value
+                else a[ key ] = value end
+                data[ key ] = nil
+            else
+                a[ key ] = value
+            end
+        end
+
+        if ( a.velocity or a.flightTime ) and a.impact then
+            a.isProjectile = true
+        end
+
+        a.realCast = 0
 
         if item then
             local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( item )
@@ -553,10 +598,10 @@ local HekiliSpecMixin = {
                         end
                     end
 
-                    class.abilities[ ability ] = a
-                    class.abilities[ a.name ] = a
-                    class.abilities[ a.link ] = a
-                    class.abilities[ a.id ] = a
+                    if ability then class.abilities[ ability ] = a end
+                    if a.name  then class.abilities[ a.name ]  = a end
+                    if a.link  then class.abilities[ a.link ]  = a end
+                    if a.id    then class.abilities[ a.id ]    = a end
 
                     if not a.key then Hekili:Error( "Wanted to EmbedItemOption but no key for " .. ( a.id or "UNKNOWN" ) .. "." )
                     else Hekili:EmbedItemOption( nil, a.key ) end
@@ -567,48 +612,6 @@ local HekiliSpecMixin = {
                 return false
             end )
         end
-
-        if data.meta then
-            for k, v in pairs( data.meta ) do
-                if type( v ) == 'function' then data.meta[ k ] = setfenv( v, state ) end
-            end
-        end
-
-        -- default values.
-        if not data.cooldown then data.cooldown = 0 end
-        if not data.recharge then data.recharge = data.cooldown end
-        if not data.charges  then data.charges = 1 end
-
-        if data.hasteCD then
-            if type( data.cooldown ) == "number" and data.cooldown > 0 then data.cooldown = loadstring( "return " .. data.cooldown .. " * haste" ) end
-            if type( data.recharge ) == "number" and data.recharge > 0 then data.recharge = loadstring( "return " .. data.recharge .. " * haste" ) end
-        end
-
-        if not data.fixedCast and type( data.cast ) == "number" then
-            data.cast = loadstring( "return " .. data.cast .. " * haste" )
-        end
-
-        if data.toggle == "interrupts" and data.gcd == "off" and data.readyTime == state.timeToInterrupt and data.interrupt == nil then
-            data.interrupt = true
-        end
-
-        for key, value in pairs( data ) do
-            if type( value ) == 'function' then
-                setfenv( value, state )
-
-                if not protectedFunctions[ key ] then a.funcs[ key ] = value
-                else a[ key ] = value end
-                data[ key ] = nil
-            else
-                a[ key ] = value
-            end
-        end
-
-        if ( a.velocity or a.flightTime ) and a.impact then
-            a.isProjectile = true
-        end
-
-        a.realCast = 0
 
         if a.id and a.id > 0 then
             Hekili:ContinueOnSpellLoad( a.id, function( success )
@@ -4256,22 +4259,17 @@ do
     end
 
     all:RegisterAbility( "gladiators_badge", {
+        name = "|cff00ccff[Gladiator's Badge]|r",
         cast = 0,
         cooldown = 120,
         gcd = "off",
 
-        item = function ()
-            local b
-            for _, badge in ipairs( pvp_badges ) do
-                b = badge[ 2 ]
-                if equipped[ b ] then return b end
-            end
-            return b
-        end,
         items = { 162966, 161902, 165223, 165058, 167528, 167528, 167380, 172849, 172669, 175884, 175921, 185161, 185197 },
+        texture = 135884,
             
         toggle = "cooldowns",
 
+        usable = function () return set_bonus.gladiators_badge > 0, "requires Gladiator's Badge" end,
         handler = function ()
             applyBuff( "gladiators_badge" )
         end,

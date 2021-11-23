@@ -375,9 +375,8 @@ do
             local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
 
             for guid, seen in pairs(db) do
-                local npcid = guid:match("(%d+)-%x-$")
-
                 if counted[ guid ] == nil then
+                    local npcid = guid:match("(%d+)-%x-$")
                     local excluded = enemyExclusions[ npcid ]
 
                     -- If our table has a number, unit is ruled out only if the buff is present.

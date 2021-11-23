@@ -551,11 +551,12 @@ do
     local reasonCache = {}
 
     function Hekili:IsSpellKnown( spell )
-        local id = class.abilities[ spell ] and class.abilities[ spell ].id or spell
+        return state:IsKnown( spell )
+        --[[ local id = class.abilities[ spell ] and class.abilities[ spell ].id or spell
 
         if knownCache[ id ] ~= nil then return knownCache[ id ], reasonCache[ id ] end
         knownCache[ id ], reasonCache[ id ] = state:IsKnown( spell )
-        return knownCache[ id ], reasonCache[ id ]
+        return knownCache[ id ], reasonCache[ id ] ]]
     end
 
 
@@ -563,10 +564,11 @@ do
     local disabledReasonCache = {}
 
     function Hekili:IsSpellEnabled( spell )
-        if disabledCache[ spell ] ~= nil then return disabledCache[ spell ], disabledReasonCache[ spell ] end
+        return state:IsDisabled( spell )
+        --[[ if disabledCache[ spell ] ~= nil then return disabledCache[ spell ], disabledReasonCache[ spell ] end
         disabledCache[ spell ], disabledReasonCache[ spell ] = state:IsDisabled( spell )
         disabledCache[ spell ] = not disabledCache[ spell ]
-        return disabledCache[ spell ], disabledReasonCache[ spell ]
+        return disabledCache[ spell ], disabledReasonCache[ spell ] ]]
     end
 
 
@@ -757,6 +759,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     local known, reason = self:IsSpellKnown( action )
                     local enabled, enReason = self:IsSpellEnabled( action )
 
+                    enabled = not enabled
+
                     if debug then
                         local d = ""
                         if entryReplaced then d = format( "\nSubstituting %s for %s action; it is otherwise not included in the priority.", action, class.abilities[ entry.action ].name ) end
@@ -777,7 +781,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                         local script = scripts:GetScript( scriptID )
 
-                        wait_time = state:TimeToReady()
+                        if state:IsReady( action ) then wait_time = 0
+                        else wait_time = state:TimeToReady() end
                         clash = state.ClashOffset()
 
                         state.delay = wait_time
@@ -893,6 +898,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     Timer:Track("Post Cycle")
                                     
                                     local usable, why = state:IsUsable()
+
+                                    Timer:Track("Post Usable")
+
                                     if debug then
                                         if usable then
                                             if state.action[ action ].cost and state.action[ action ].cost > 0 then
@@ -905,7 +913,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         end
                                     end
 
-                                    Timer:Track("Post Usable")
 
                                     if usable then
                                         local waitValue = max( 0, rWait - state:ClashOffset( rAction ) )
@@ -1334,11 +1341,11 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     if not pack then return end
 
-    local action, wait, depth = nil, 60, 0
+    local action, wait, depth = nil, 10, 0
 
     state.this_action = nil
 
-    state.selection_time = 60
+    state.selection_time = 10
     state.selected_action = nil
 
     if self.ActiveDebug then
@@ -1419,9 +1426,16 @@ function Hekili:ProcessHooks( dispName, packName )
         -- self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
     end
 
+    local resetRequired = state.modified or state.player.updated or state.target.updated
+    
     if not state.reset( dispName ) then
         if debug then self:Debug( "Stopping update; was not able to reset the virtual gamestate." ) end
-        return
+        return true
+    end
+
+    if resetRequired then
+        -- We did a heavy-duty reset, let's wait til next frame.
+        return false
     end
 
     local UI = ns.UI.Displays[ dispName ]
@@ -1438,7 +1452,7 @@ function Hekili:ProcessHooks( dispName, packName )
     end
 
     local spec = rawget( self.DB.profile.specs, specID )
-    if not spec or not class.specs[ specID ] then return end
+    if not spec or not class.specs[ specID ] then return true end
 
     if dispName == "AOE" and self:GetToggleState( "mode" ) == "reactive" and ns.getNumberTargets() < ( spec and spec.aoe or 3 ) then
         if UI.RecommendationsStr then
@@ -1451,14 +1465,14 @@ function Hekili:ProcessHooks( dispName, packName )
     local checkstr = nil
 
     local packName = packName or spec.package
-    if not packName then return end
+    if not packName then return true end
 
     local pack = rawget( self.DB.profile.packs, packName )
 
     if not ( spec and class.specs[ specID ] and pack ) and UI.RecommendationsStr then
         UI.RecommendationsStr = nil
         UI.NewRecommendations = true 
-        return 
+        return true
     end
 
     state.system.specID   = specID
@@ -1487,8 +1501,8 @@ function Hekili:ProcessHooks( dispName, packName )
         if i > 1 and actualStartTime then
             local usedTime = debugprofilestop() - actualStartTime
 
-            if maxTime and usedTime > maxTime then
-                if debug then self:Debug( -100, "Addon used %.2fms CPU time (of %.2fms softcap) before recommendation #%d; stopping early.", usedTime, maxTime, i-1 ) end
+            if usedTime * i / ( i - 1 ) > maxTime * 1.1 then
+                if debug then self:Debug( -100, "Addon used %.2fms CPU time (of %.2fms softcap) before recommendation #%d; next recommendation projected to overcap.  Stopping early.", usedTime, maxTime, i ) end
                 break
             end
             
@@ -1693,7 +1707,7 @@ function Hekili:ProcessHooks( dispName, packName )
                             state.delayMin = 0
                             state.delayMax = 60
 
-                            action, wait = nil, 15                            
+                            action, wait = nil, 10
 
                             action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
                         end
@@ -1710,13 +1724,13 @@ function Hekili:ProcessHooks( dispName, packName )
                             state.delayMin = 0
                             state.delayMax = 60
         
-                            action, wait = nil, 15        
+                            action, wait = nil, 10        
                             break
                         end
                     until action ~= "wait"
 
                     if action == "wait" then
-                        action, wait = nil, 15
+                        action, wait = nil, 10
                     end
 
                     if not action then
@@ -1783,7 +1797,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     state.delayMin = 0
                     state.delayMax = 60
 
-                    action, wait = nil, 15
+                    action, wait = nil, 10
 
                     action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
                 end
@@ -1801,14 +1815,14 @@ function Hekili:ProcessHooks( dispName, packName )
                     state.delayMin = 0
                     state.delayMax = 60
 
-                    action, wait = nil, 15
+                    action, wait = nil, 10
 
                     break
                 end
             until action ~= "wait"
 
             if action == "wait" then
-                action, wait = nil, 15
+                action, wait = nil, 10
             end
         end
 
@@ -1823,7 +1837,7 @@ function Hekili:ProcessHooks( dispName, packName )
             hasSnapshotted = true
 
             Hekili:MakeSnapshot( dispName, true )
-            return
+            return true
         end
 
         if action then
@@ -1946,6 +1960,7 @@ function Hekili:ProcessHooks( dispName, packName )
     if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, UI.eventsTriggered ) end
 
     Hekili.freshFrame     = false
+    return true
 end
 
 Hekili:ProfileCPU( "ProcessHooks", Hekili.ProcessHooks )
@@ -1972,25 +1987,118 @@ function Hekili_GetRecommendedAbility( display, entry )
 end
 
 
-function Hekili:DumpProfileInfo()
-    local output = ""
+local usedCPU = {}
 
-    for k, v in orderedPairs( ns.cpuProfile ) do
-        local usage, calls = GetFunctionCPUUsage( v, true )
+function Hekili:DumpProfileInfo( deep )
+    table.wipe( usedCPU )
 
-        calls = self.ECount[ k ] or calls
+    deep = deep or false
 
-        if usage then
-            -- usage = usage / 1000
-            output = format(    "%s\n" ..
-                                "%d %s %.3f %.3f", output, calls, k, usage, usage / ( calls == 0 and 1 or calls ) )
-        else
-            output = output(    "%s\nNo information for function `%s'.", output, k )
+    for k, v in pairs( Hekili ) do
+        if type( v ) == "function" then
+            local usage, calls = GetFunctionCPUUsage( v, deep )
+
+            calls = self.ECount[ k ] or calls
+
+            if usage and calls > 0 then
+                local db = {}
+
+                db.func  = "Hekili." .. k
+                db.calls = calls
+                db.usage = usage
+                db.average = usage / ( calls == 0 and 1 or calls )
+
+                table.insert( usedCPU, db )
+            end
         end
     end
 
-    print( output )
+    for k, v in pairs( ns ) do
+        if type( v ) == "function" then
+            local usage, calls = GetFunctionCPUUsage( v, deep )
+
+            calls = self.ECount[ k ] or calls
+
+            if usage and calls > 0 then
+                local db = {}
+
+                db.func  = "ns." .. k
+                db.calls = calls
+                db.usage = usage
+                db.average = usage / ( calls == 0 and 1 or calls )
+
+                table.insert( usedCPU, db )
+            end
+        end
+    end
+
+    for k, v in pairs( state ) do
+        if type( v ) == "function" then
+            local usage, calls = GetFunctionCPUUsage( v, deep )
+
+            calls = self.ECount[ k ] or calls
+
+            if usage and calls > 0 then
+                local db = {}
+
+                db.func  = "state." .. k
+                db.calls = calls
+                db.usage = usage
+                db.average = usage / ( calls == 0 and 1 or calls )
+
+                table.insert( usedCPU, db )
+            end
+        end
+    end
+
+    for k, v in pairs( Hekili.Scripts ) do
+        if type( v ) == "function" then
+            local usage, calls = GetFunctionCPUUsage( v, deep )
+
+            calls = self.ECount[ k ] or calls
+
+            if usage and calls > 0 then
+                local db = {}
+
+                db.func  = "Scripts." .. k
+                db.calls = calls
+                db.usage = usage
+                db.average = usage / ( calls == 0 and 1 or calls )
+
+                table.insert( usedCPU, db )
+            end
+        end
+    end
+
+    for name, disp in pairs( Hekili.DisplayPool ) do
+        for key, func in pairs( disp ) do
+            if type( func ) == "function" then
+                local usage, calls = GetFunctionCPUUsage( func, deep )
+
+                calls = self.ECount[ k ] or calls
+
+                if usage and calls > 0 then
+                    local db = {}
+
+                    db.func  = name .. "." .. key
+                    db.calls = calls
+                    db.usage = usage
+                    db.average = usage / ( calls == 0 and 1 or calls )
+
+                    table.insert( usedCPU, db )
+                end
+            end
+        end
+    end
+
+    table.sort( usedCPU, function( a, b ) return a.usage < b.usage end )
+
+    print( "CPU Usage Data" )
+    for i, v in ipairs( usedCPU ) do
+        print( format( "%-40s %6.2fms (%6d calls, %6.2fms average)", v.func, v.usage, v.calls, v.average ) )
+    end
 end
+
 
 
 function Hekili:DumpFrameInfo()
@@ -2007,7 +2115,7 @@ function Hekili:DumpFrameInfo()
 
         if usage then
             -- usage = usage / 1000
-            output = format(    "%s\n" ..
+            output = format(    "%s\n" .. 
                                 "%d %s %.3f %.3f", output, calls, k, usage, usage / ( calls == 0 and 1 or calls ) )
         else
             output = output(    "%s\nNo information for frame `%s'.", output, k )

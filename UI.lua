@@ -942,20 +942,23 @@ do
             local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or 1
 
             if self.refreshTimer < 0 or self.superUpdate or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
-                Hekili:ProcessHooks( self.id )
-                self.lastUpdate = now
-                self.criticalUpdate = false
-                self.superUpdate = false
+                local success = Hekili:ProcessHooks( self.id )
+                
+                if success then
+                    self.lastUpdate = now
+                    self.criticalUpdate = false
+                    self.superUpdate = false
 
-                local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
+                    local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
 
-                if UnitChannelInfo( "player" ) then
-                    refreshRate = refreshRate * 2
+                    if UnitChannelInfo( "player" ) then
+                        refreshRate = refreshRate * 2
+                    end
+        
+                    self.refreshTimer = refreshRate
+
+                    table.wipe( self.eventsTriggered )
                 end
-    
-                self.refreshTimer = refreshRate
-
-                table.wipe( self.eventsTriggered )
                 
                 Hekili.freshFrame = false
             end
@@ -1549,7 +1552,7 @@ do
         end
 
         if used == nil then return end        
-        used = used / 1000 -- ms to sec.
+        -- used = used / 1000 -- ms to sec.
 
         if self.combatTime.samples == 0 then
             self.combatTime.fastest = used
@@ -1559,7 +1562,9 @@ do
             self.combatTime.samples = 1
         else
             if used < self.combatTime.fastest then self.combatTime.fastest = used end
-            if used > self.combatTime.slowest then self.combatTime.slowest = used end
+            if used > self.combatTime.slowest then
+                self.combatTime.slowest = used
+            end
 
             self.combatTime.average = ( ( self.combatTime.average * self.combatTime.samples ) + used ) / ( self.combatTime.samples + 1 )
             self.combatTime.samples = self.combatTime.samples + 1
@@ -1617,7 +1622,6 @@ do
             if events[ k ] then events[ k ] = events[ k ] + 1
             else events[ k ] = 1 end
         end
-
     end
 
 
@@ -2496,7 +2500,7 @@ function Hekili:ShowDiagnosticTooltip( q )
     -- end
 
     tt:SetOwner(UIParent, "ANCHOR_CURSOR")
-    tt:SetText(class.abilities[q.actionName].name)
+    tt:SetText( class.abilities[q.actionName].name )
     tt:AddDoubleLine(q.listName .. " #" .. q.action, "+" .. ns.formatValue(round(q.time or 0, 2)), 1, 1, 1, 1, 1, 1)
 
     if q.resources and q.resources[q.resource_type] then

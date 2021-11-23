@@ -8751,8 +8751,6 @@ end
 function Hekili:RefreshOptions()
     if not self.Options then return end
 
-    -- db.args.abilities = ns.AbilitySettings()
-
     self:EmbedDisplayOptions()
     self:EmbedPackOptions()
     self:EmbedSpecOptions()
