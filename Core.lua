@@ -781,8 +781,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                         local script = scripts:GetScript( scriptID )
 
-                        if state:IsReady( action ) then wait_time = 0
-                        else wait_time = state:TimeToReady() end
+                        wait_time = state:TimeToReady()
                         clash = state.ClashOffset()
 
                         state.delay = wait_time
