@@ -176,6 +176,8 @@ function Hekili:SetupDebug( display )
 	
 	local pack = self.State.system.packName
 
+    if not pack then return end
+    
 	self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using %s( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), self.DB.profile.packs[ pack ].builtIn and "built-in " or "", pack )
 end
 

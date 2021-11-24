@@ -1432,7 +1432,7 @@ function Hekili:ProcessHooks( dispName, packName )
         return true
     end
 
-    if resetRequired then
+    if resetRequired and not debug then
         -- We did a heavy-duty reset, let's wait til next frame.
         return false
     end
@@ -1758,9 +1758,9 @@ function Hekili:ProcessHooks( dispName, packName )
 
         if not action then
             if class.file == "DEATHKNIGHT" then
-                state:SetConstraint( 0, max( 0.01 + state.rune.cooldown * 2, 15 ) )
+                state:SetConstraint( 0, max( 0.01 + state.rune.cooldown * 2, 10 ) )
             else
-                state:SetConstraint( 0, 15 )
+                state:SetConstraint( 0, 10 )
             end
 
             if hadProj and debug then self:Debug( "[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end

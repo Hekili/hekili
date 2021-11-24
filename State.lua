@@ -524,6 +524,7 @@ state.GetSpellTexture = GetSpellTexture
 state.GetStablePetInfo = GetStablePetInfo
 state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
+state.InCombatLockdown = InCombatLockdown
 state.IsActiveSpell = ns.IsActiveSpell
 state.IsPlayerSpell = IsPlayerSpell
 state.IsSpellKnown = IsSpellKnown
@@ -5309,8 +5310,6 @@ do
                 expires, minTTD, maxTTD, aura = self.GetCycleInfo()
             end
 
-            if Hekili.ActiveDebug then Hekili:Debug( "%s %s %s %s", tostring( self.cycle ), tostring( e.target ) or "notarget", tostring( self.target.unit ) or "notarget", tostring( e.target == self.target.unit ) ) end
-
             if e.target and self.target.unit ~= "unknown" and e.target ~= self.target.unit then
                 if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
                 self.SetupCycle( ability )
@@ -5577,7 +5576,7 @@ function state.reset( dispName )
     end
 
     -- Only reset all this stuff if key data was updated.
-    if state.modified or state.player.updated or state.target.updated then
+    if state.modified or state.player.updated or state.target.updated or Hekili.ActiveDebug then
         state.modified = false
 
         for i = #state.purge, 1, -1 do
