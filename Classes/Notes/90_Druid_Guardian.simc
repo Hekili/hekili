@@ -1,5 +1,5 @@
 ## Guardian Druid
-## September 16, 2021
+## November 13, 2021
 
 ## Changes:
 ## - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -35,7 +35,7 @@ actions+=/run_action_list,name=lycarac,if=((runeforge.lycaras_fleeting_glimpse.e
 # If we're a nightfae and we don't want to catweave/owlweave, and we have balance/feral affinity talented, Whenever convoke cd is up we switch into affinity form to cast it, here moonkin form.
 actions+=/run_action_list,name=oconvoke,if=settings.shift_for_convoke&((talent.balance_affinity.enabled)&(!druid.catweave_bear)&(!druid.owlweave_bear)&(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1))
 # If we're a nightfae and we don't want to catweave/owlweave, and we have balance/feral affinity talented, Whenever convoke cd is up we switch into affinity form to cast it, here catform form.
-actions+=/run_action_list,name=cconvoke,if=settings.shift_for_convoke&((talent.feral_affinity.enabled)&(!druid.catweave_bear)&(!druid.owlweave_bear)&(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1))
+actions+=/run_action_list,name=cconvoke,strict=1,if=settings.shift_for_convoke&((talent.feral_affinity.enabled)&(!druid.catweave_bear)&(!druid.owlweave_bear)&(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1))
 actions+=/call_action_list,name=mitigation
 actions+=/run_action_list,name=bear
 

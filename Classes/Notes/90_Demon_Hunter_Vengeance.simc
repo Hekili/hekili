@@ -1,5 +1,5 @@
 ## Demon Hunter Vengeance
-## April 2, 2021
+## November 13, 2021
 
 ## Allow Fracture at low Fury (prevents Fury issues with Spirit Bomb).
 
@@ -11,7 +11,7 @@ actions+=/disrupt
 actions+=/consume_magic
 actions+=/reverse_magic
 actions+=/throw_glaive,if=buff.fel_bombardment.stack=5&(buff.immolation_aura.up|!buff.metamorphosis.up)
-actions+=/call_action_list,name=brand,if=variable.brand_build
+actions+=/call_action_list,name=brand,strict=1,if=variable.brand_build
 actions+=/call_action_list,name=defensives
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=normal

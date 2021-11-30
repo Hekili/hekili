@@ -1,5 +1,5 @@
 ## Shadow Priest
-## November 5, 2021
+## November 13, 2021
 
 ## Changes:
 ## - Tweak Void Torrent when target counts are forced.
@@ -68,7 +68,7 @@ actions.dmg_trinkets+=/use_item,name=glyph_of_assimilation
 actions.dmg_trinkets+=/use_item,name=dreadfire_vessel
 
 ## Main APL, should cover all ranges of targets and scenarios
-actions.main=call_action_list,name=boon,if=buff.boon_of_the_ascended.up
+actions.main=call_action_list,name=boon,strict=1,if=buff.boon_of_the_ascended.up
 actions.main+=/dispel_magic,if=!target.is_player
 # Use Void Eruption on cooldown pooling at least 40 insanity but not if you will overcap insanity in VF. Make sure shadowfiend/mindbender and Mind Blast is on cooldown before VE if Talbadars or Shadowflame is equipped. Ignore pooling restrictions if using Shadowflame Prism and Bender is out.
 actions.main+=/void_eruption,if=variable.pool_for_cds&(insanity>=40|pet.fiend.active&runeforge.shadowflame_prism.equipped&!cooldown.mind_blast.up&!cooldown.shadow_word_death.up)&(insanity<=85|talent.searing_nightmare.enabled&variable.searing_nightmare_cutoff)&!cooldown.fiend.up&(!cooldown.mind_blast.up|spell_targets.mind_sear>2|!runeforge.shadowflame_prism.equipped&!runeforge.talbadars_stratagem.equipped)&(!soulbind.volatile_solvent|buff.volatile_solvent.up|settings.ignore_solvent)
@@ -134,6 +134,6 @@ actions.trinkets+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=cooldown
 actions.trinkets+=/use_item,name=shadowed_orb_of_torment,if=cooldown.power_infusion.remains<=10&cooldown.void_eruption.remains<=10&(covenant.necrolord|covenant.kyrian)|(covenant.venthyr|covenant.night_fae)&(!buff.voidform.up|prev_gcd.1.void_bolt)|boss&fight_remains<=40
 
 # Use list of on-use damage trinkets only if Hungering Void Debuff is active, or you are not talented into it.
-actions.trinkets+=/call_action_list,name=dmg_trinkets,if=(!talent.hungering_void.enabled|debuff.hungering_void.up)&(buff.voidform.up|cooldown.void_eruption.remains>10)
+actions.trinkets+=/call_action_list,name=dmg_trinkets,strict=1,if=(!talent.hungering_void.enabled|debuff.hungering_void.up)&(buff.voidform.up|cooldown.void_eruption.remains>10)
 # Default fallback for usable items: Use on cooldown in order by trinket slot.
 actions.trinkets+=/use_items,if=buff.voidform.up|buff.power_infusion.up|cooldown.void_eruption.remains>10

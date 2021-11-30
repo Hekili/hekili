@@ -408,19 +408,21 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         end
     end )
 
+
+    local opener_completed = false
+
+    spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
+        opener_completed = false
+        Hekili:Print( "Opener reset (out of combat).")
+    end )
+
+
     -- actions.precombat+=/variable,name=have_opened,op=set,if=active_enemies>=variable.aoe_target_count,value=1,value_else=0
     -- actions.calculations=variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&prev_gcd.1.evocation&!(runeforge.siphon_storm|runeforge.temporal_warp)
     -- actions.calculations+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&buff.arcane_power.down&cooldown.arcane_power.remains&(runeforge.siphon_storm|runeforge.temporal_warp)
+    -- TODO:  This needs to be updated so that have_opened stays at 1 once it has been set to 1.
     spec:RegisterVariable( "have_opened", function ()
-        if active_enemies >= variable.aoe_target_count then
-            return 1
-        elseif prev_gcd[1].evocation and not ( runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
-            return 1
-        elseif buff.arcane_power.down and cooldown.arcane_power.remains > 0 and ( runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
-            return 1
-        end
-
-        return 0
+        return opener_completed
     end )
 
     -- actions.precombat+=/variable,name=final_burn,op=set,value=0   
@@ -959,12 +961,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     local clearcasting_consumed = 0
 
+ 
     spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == GUID then
             if subtype == "SPELL_CAST_SUCCESS" then
                 if spellID == 12042 then
                     burn_info.__start = GetTime()
-                    Hekili:Print( "Burn phase started." )
+                    -- Hekili:Print( "Burn phase started." )
                 elseif spellID == 12051 and burn_info.__start > 0 then
                     burn_info.__average = burn_info.__average * burn_info.__n
                     burn_info.__average = burn_info.__average + ( query_time - burn_info.__start )
@@ -972,7 +975,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
                     burn_info.__average = burn_info.__average / burn_info.__n
                     burn_info.__start = 0
-                    Hekili:Print( "Burn phase ended." )
+                    -- Hekili:Print( "Burn phase ended." )
+
+                    -- Setup for opener_done variable.
+                    if not ( state.runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
+                        opener_completed = true
+                        Hekili:Print( "Opener completed (evocation)." )
+                    end
                 end
             
             elseif subtype == "SPELL_AURA_REMOVED" and ( spellID == 276743 or spellID == 263725 ) then
@@ -980,27 +989,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 clearcasting_consumed = GetTime()
             end
         end
-    end )
-
-
-    spec:RegisterVariable( "have_opened", function ()
-        local val = 0
-        
-        if active_enemies > 2 then
-            val = 1
-        end
-
-        -- actions.calculations=variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&prev_gcd.1.evocation&!(runeforge.siphon_storm|runeforge.temporal_warp)
-        if val == 0 and prev_gcd[1].evocation and not ( runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
-            val = 1
-        end
-        
-        -- actions.calculations+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&buff.arcane_power.down&cooldown.arcane_power.remains&(runeforge.siphon_storm|runeforge.temporal_warp)
-        if val == 0 and buff.arcane_power.down and cooldown.arcane_power.remains > 0 and ( runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
-            val = 1
-        end
-
-        return val
     end )
 
 
@@ -1034,9 +1022,20 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
         if arcane_charges.current > 0 then applyBuff( "arcane_charge", nil, arcane_charges.current ) end
 
-        fake_mana_gem = nil
+        fake_mana_gem = GetItemCount( 36799 ) > 0
 
         incanters_flow.reset()
+
+        -- This will set the opener to be completed, which persists while in combat.  For opener_done.
+        if not opener_completed and InCombatLockdown() then
+            if true_active_enemies > variable.aoe_target_count then
+                opener_completed = true
+                Hekili:Print( "Opener completed (aoe)." )
+            elseif buff.arcane_power.down and cooldown.arcane_power.true_remains > 0 and ( runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
+                opener_completed = true
+                Hekili:Print( "Opener completed (Arcane Power)." )
+            end
+        end
     end )
 
 
@@ -1344,6 +1343,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             id = 759,
             cast = 3,
             cooldown = 0,
+            icd = 10, -- Probably don't want to recast within 10 seconds.
             gcd = "spell",
             
             spend = 0.18,
@@ -1353,11 +1353,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 134132,
             
             usable = function ()
-                if GetItemCount( 36799 ) ~= 0 or fake_mana_gem then return false, "already has a mana_gem" end
+                if fake_mana_gem then return false, "already has a mana_gem" end
                 return true
             end,
 
             handler = function ()
+                if resetting then print( "CMG Handled" ) end
                 fake_mana_gem = true
             end,
         },
@@ -1366,7 +1367,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         mana_gem = {
             -- name = "|cff00ccff[Mana Gem]|r",
             known = function ()
-                return IsUsableItem( 36799 ) or state.fake_mana_gem
+                return state.fake_mana_gem
             end,
             cast = 0,
             cooldown = 120,
@@ -1379,7 +1380,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             bagItem = true,
     
             usable = function ()
-                if GetItemCount( 36799 ) == 0 and not fake_mana_gem then return false, "requires mana_gem in bags" end
+                if fake_mana_gem then return false, "requires mana_gem in bags" end
                 return true
             end,
     

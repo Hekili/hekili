@@ -1,5 +1,5 @@
 # Survival Hunter
-# November 1, 2021
+# November 13, 2021
 
 actions.precombat+=/variable,name=mb_rs_cost,op=setif,value=action.mongoose_bite.cost,value_else=action.raptor_strike.cost,condition=talent.mongoose_bite
 actions.precombat+=/summon_pet
@@ -16,9 +16,9 @@ actions+=/use_items
 ## Delay facing your doubt until you have put Resonating Arrow down, or if the cooldown is too long to delay facing your Doubt. If none of these conditions are able to met within the 10 seconds leeway, the sim faces your Doubt automatically.
 ## actions+=/newfound_resolve,if=soulbind.newfound_resolve&(buff.resonating_arrow.up|cooldown.resonating_arrow.remains>10|target.time_to_die<16)
 actions+=/call_action_list,name=cds
-actions+=/call_action_list,name=bop,if=active_enemies<3&talent.birds_of_prey.enabled
-actions+=/call_action_list,name=st,if=active_enemies<3&!talent.birds_of_prey.enabled
-actions+=/call_action_list,name=cleave,if=active_enemies>2
+actions+=/call_action_list,name=bop,strict=1,if=active_enemies<3&talent.birds_of_prey.enabled
+actions+=/call_action_list,name=st,strict=1,if=active_enemies<3&!talent.birds_of_prey.enabled
+actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>2
 actions+=/arcane_torrent
 
 actions.bop=serpent_sting,cycle_targets=1,if=buff.vipers_venom.remains&(buff.vipers_venom.remains<gcd|refreshable)
@@ -27,7 +27,7 @@ actions.bop+=/kill_shot
 actions.bop+=/wildfire_bomb,if=focus+cast_regen<focus.max&!ticking&full_recharge_time<gcd
 actions.bop+=/flanking_strike,if=focus+cast_regen<focus.max
 actions.bop+=/flayed_shot
-actions.bop+=/call_action_list,name=nta,if=runeforge.nessingwarys_trapping_apparatus.equipped&focus<variable.mb_rs_cost
+actions.bop+=/call_action_list,name=nta,strict=1,if=runeforge.nessingwarys_trapping_apparatus.equipped&focus<variable.mb_rs_cost
 actions.bop+=/death_chakram,if=focus+cast_regen<focus.max
 actions.bop+=/raptor_strike,cycle_targets=1,if=buff.coordinated_assault.up&buff.coordinated_assault.remains<1.5*gcd
 actions.bop+=/mongoose_bite,cycle_targets=1,if=buff.coordinated_assault.up&buff.coordinated_assault.remains<1.5*gcd

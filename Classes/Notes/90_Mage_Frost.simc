@@ -1,5 +1,5 @@
 ## Mage Frost
-## September 16, 2021
+## November 13, 2021
 
 ## Changes:
 ## - Don't include Blink in Movement APL (positioning is a player decision)
@@ -15,8 +15,8 @@ actions.precombat+=/frostbolt,if=active_enemies=1
 actions=counterspell,if=!runeforge.disciplinary_command&debuff.casting.up&debuff.casting.remains<1|cooldown.buff_disciplinary_command.ready&buff.disciplinary_command_arcane.down
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=essences
-actions+=/call_action_list,name=aoe,if=active_enemies>=3
-actions+=/call_action_list,name=st,if=active_enemies<3
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=3
+actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
 actions+=/call_action_list,name=movement
 
 actions.aoe=frozen_orb

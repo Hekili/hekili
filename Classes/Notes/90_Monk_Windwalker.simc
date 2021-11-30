@@ -1,5 +1,5 @@
 ## Windwalker Monk
-## August 29, 2021
+## November 13, 2021
 
 ## Charges:
 ## - Tweak Fists of Fury interrupt logic.
@@ -17,16 +17,16 @@ actions.precombat+=/chi_wave,if=!talent.energizing_elixer.enabled
 actions=spear_hand_strike
 actions+=/variable,name=hold_xuen,op=set,value=cooldown.invoke_xuen_the_white_tiger.remains>fight_remains|fight_remains-cooldown.invoke_xuen_the_white_tiger.remains<120&((talent.serenity&fight_remains>cooldown.serenity.remains&cooldown.serenity.remains>10)|(cooldown.storm_earth_and_fire.full_recharge_time<fight_remains&cooldown.storm_earth_and_fire.full_recharge_time>15)|(cooldown.storm_earth_and_fire.charges=0&cooldown.storm_earth_and_fire.remains<fight_remains))
 actions+=/potion,if=(buff.serenity.up|buff.storm_earth_and_fire.up)&pet.xuen_the_white_tiger.active|boss&fight_remains<=60
-actions+=/call_action_list,name=serenity,if=buff.serenity.up
-actions+=/call_action_list,name=weapons_of_order,if=buff.weapons_of_order.up
-actions+=/call_action_list,name=opener,if=time<4&chi<5&!pet.xuen_the_white_tiger.active
+actions+=/call_action_list,name=serenity,strict=1,if=buff.serenity.up
+actions+=/call_action_list,name=weapons_of_order,strict=1,if=buff.weapons_of_order.up
+actions+=/call_action_list,name=opener,strict=1,if=time<4&chi<5&!pet.xuen_the_white_tiger.active
 actions+=/fist_of_the_white_tiger,cycle_targets=1,if=chi.max-chi>=3&(energy.time_to_max<1|energy.time_to_max<4&cooldown.fists_of_fury.remains<1.5|cooldown.weapons_of_order.remains<2)&!debuff.bonedust_brew_debuff.up
 actions+=/expel_harm,if=chi.max-chi>=1&(energy.time_to_max<1|cooldown.serenity.remains<2|energy.time_to_max<4&cooldown.fists_of_fury.remains<1.5|cooldown.weapons_of_order.remains<2)&!buff.bonedust_brew.up
 actions+=/tiger_palm,cycle_targets=1,if=combo_strike&chi.max-chi>=2&(energy.time_to_max<1|cooldown.serenity.remains<2|energy.time_to_max<4&cooldown.fists_of_fury.remains<1.5|cooldown.weapons_of_order.remains<2)&!debuff.bonedust_brew_debuff.up
-actions+=/call_action_list,name=cd_sef,if=!talent.serenity
-actions+=/call_action_list,name=cd_serenity,if=talent.serenity
-actions+=/call_action_list,name=st,if=active_enemies<3
-actions+=/call_action_list,name=aoe,if=active_enemies>=3
+actions+=/call_action_list,name=cd_sef,strict=1,if=!talent.serenity
+actions+=/call_action_list,name=cd_serenity,strict=1,if=talent.serenity
+actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=3
 
 actions.aoe=whirling_dragon_punch
 actions.aoe+=/energizing_elixir,if=chi.max-chi>=2&energy.time_to_max>2|chi.max-chi>=4
@@ -132,8 +132,8 @@ actions.st+=/blackout_kick,cycle_targets=1,if=combo_strike&cooldown.fists_of_fur
 actions.st+=/blackout_kick,cycle_targets=1,if=combo_strike&energy.time_to_max<2&(chi.max-chi<=1|prev_gcd.1.tiger_palm)
 
 actions.weapons_of_order=variable,name=blackout_kick_needed,op=set,value=buff.weapons_of_order_ww.remains&(cooldown.rising_sun_kick.remains>buff.weapons_of_order_ww.remains&buff.weapons_of_order_ww.remains<2.1|cooldown.rising_sun_kick.remains-buff.weapons_of_order_ww.remains>1.9&buff.weapons_of_order_ww.remains<4.1|buff.bloodlust.up&buff.invokers_delight.up&buff.invokers_delight.remains<buff.weapons_of_order_ww.remains)
-actions.weapons_of_order+=/call_action_list,name=cd_sef,if=!talent.serenity
-actions.weapons_of_order+=/call_action_list,name=cd_serenity,if=talent.serenity
+actions.weapons_of_order+=/call_action_list,name=cd_sef,strict=1,if=!talent.serenity
+actions.weapons_of_order+=/call_action_list,name=cd_serenity,strict=1,if=talent.serenity
 actions.weapons_of_order+=/energizing_elixir,if=chi.max-chi>=2&energy.time_to_max>3
 actions.weapons_of_order+=/rising_sun_kick,cycle_targets=1
 actions.weapons_of_order+=/fists_of_fury,if=active_enemies>=2&buff.weapons_of_order_ww.remains<1

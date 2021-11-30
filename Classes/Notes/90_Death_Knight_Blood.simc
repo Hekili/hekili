@@ -1,5 +1,5 @@
 # Blood Death Knight
-# July 5, 2021
+# November 13, 2021
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=use_item,name=azsharas_font_of_power
@@ -9,7 +9,7 @@ actions.precombat+=/fleshcraft
 # Executed every time the actor is available.
 actions=mind_freeze
 actions+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<5)&runic_power.deficit>=20
-actions+=/call_action_list,name=mitigation,if=tanking|incoming_damage_5s>0
+actions+=/call_action_list,name=mitigation,strict=1,if=tanking|incoming_damage_5s>0
 actions+=/blood_fury,if=cooldown.dancing_rune_weapon.ready&(!cooldown.blooddrinker.ready|!talent.blooddrinker.enabled)
 actions+=/berserking
 actions+=/arcane_pulse,if=active_enemies>=2|rune<1&runic_power.deficit>60

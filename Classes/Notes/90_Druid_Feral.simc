@@ -1,5 +1,5 @@
 ## Feral Druid
-## August 23, 2021
+## November 13, 2021
 
 ## Feral APL can also be found at https://gist.github.com/Xanzara/6896c8996f5afce5ce115daa3a08daff
 
@@ -20,27 +20,27 @@ actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption.enabled|soulbind.vol
 actions.precombat+=/prowl,if=buff.moonkin_form.down
 actions.precombat+=/cat_form,if=buff.moonkin_form.down
 
-actions=run_action_list,name=balance,if=buff.moonkin_form.up&!druid.owlweave_cat
-actions+=/call_action_list,name=owlweave,if=druid.owlweave_cat
+actions=run_action_list,name=balance,strict=1,if=buff.moonkin_form.up&!druid.owlweave_cat
+actions+=/call_action_list,name=owlweave,strict=1,if=druid.owlweave_cat
 # Prowl whenever possible
 actions+=/prowl
 actions+=/tigers_fury,if=buff.cat_form.down
 actions+=/cat_form,if=buff.cat_form.down
 # One shot stealth
-actions+=/run_action_list,name=stealth,if=buff.shadowmeld.up|buff.prowl.up
+actions+=/run_action_list,name=stealth,strict=1,if=buff.shadowmeld.up|buff.prowl.up
 actions+=/skull_bash
-actions+=/call_action_list,name=setup,if=active_dot.rip=0
+actions+=/call_action_list,name=setup,strict=1,if=active_dot.rip=0
 actions+=/call_action_list,name=cooldown
 # Necrolord: Cast 3 or 4 combo point rips on single target outside of berserk or during berserk if feral frenzy is up OR apply a 5cp Rip when TF is up and will soon fall off.
 actions+=/rip,if=covenant.necrolord&(!talent.bloodtalons.enabled|buff.bloodtalons.up)&spell_targets.thrash_cat=1&(combo_points>2&refreshable&druid.rip.ticks_gained_on_refresh>variable.rip_ticks&(!buff.bs_inc.up|cooldown.bs_inc.up|(buff.bs_inc.up&cooldown.feral_frenzy.up))|combo_points=5&buff.tigers_fury.up&buff.tigers_fury.remains<4&druid.rip.ticks_gained_on_refresh>5)
-actions+=/run_action_list,name=finisher,if=combo_points>=(5-variable.fourcp_bite)
+actions+=/run_action_list,name=finisher,strict=1,if=combo_points>=(5-variable.fourcp_bite)
 actions+=/primal_wrath,if=druid.primal_wrath.ticks_gained_on_refresh>=20&combo_points>=2,line_cd=5
 # Multi-gcd stealth
-actions+=/call_action_list,name=stealth,if=buff.bs_inc.up
+actions+=/call_action_list,name=stealth,strict=1,if=buff.bs_inc.up
 # The most expensive BT cycle (Thresh Shred Swipe cost 115 energy, make sure we can make that in 4 globals)
 actions+=/wait,sec=((115-23*buff.incarnation_king_of_the_jungle.up)-(energy.current+3.5*energy.regen+(40*buff.clearcasting.up)))/energy.regen,if=talent.bloodtalons.enabled&buff.bloodtalons.down&active_bt_triggers=0
 # actions+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
-actions+=/run_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down
+actions+=/run_action_list,name=bloodtalons,strict=1,if=talent.bloodtalons.enabled&buff.bloodtalons.down
 actions+=/ferocious_bite,cycle_targets=1,if=buff.apex_predators_craving.up
 actions+=/pool_resource,for_next=1
 actions+=/rake,cycle_targets=1,if=(refreshable|persistent_multiplier>dot.rake.pmultiplier)&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
@@ -112,9 +112,9 @@ actions.setup=lunar_inspiration,if=covenant.necrolord&spell_targets.thrash_cat<4
 actions.setup+=/pool_resource,for_next=1
 actions.setup+=/savage_roar,if=talent.feral_frenzy.enabled&cooldown.feral_frenzy.up&!buff.savage_roar.up&combo_points>1&dot.rake.ticking&(dot.lunar_inspiration.ticking|!talent.lunar_inspiration.enabled)
 actions.setup+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
-actions.setup+=/call_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(combo_points<5|spell_targets.thrash_cat=1)
+actions.setup+=/call_action_list,name=bloodtalons,strict=1,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(combo_points<5|spell_targets.thrash_cat=1)
 actions.setup+=/call_action_list,name=cooldown
-actions.setup+=/call_action_list,name=finisher,if=combo_points>3&(buff.bloodtalons.up|!talent.bloodtalons.enabled)
+actions.setup+=/call_action_list,name=finisher,strict=1,if=combo_points>3&(buff.bloodtalons.up|!talent.bloodtalons.enabled)
 
 actions.stealth=pool_resource,for_next=1
 # Rake needs roughly 50% of its length at a minimum to surpass shreds dpe

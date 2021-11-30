@@ -1,5 +1,5 @@
 ## Death Knight Frost
-## October 26, 2021
+## November 13, 2021
 
 ## Changes
 ## - Removed last-second usage of Chains of Ice as it doesn't play well in practice.
@@ -32,12 +32,12 @@ actions+=/call_action_list,name=covenants
 actions+=/call_action_list,name=racials
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=cooldowns
-actions+=/call_action_list,name=cold_heart,if=talent.cold_heart&(!buff.killing_machine.up|talent.breath_of_sindragosa)&(debuff.razorice.stack=5|!death_knight.runeforge.razorice)
-actions+=/run_action_list,name=bos_ticking,if=buff.breath_of_sindragosa.up
+actions+=/call_action_list,name=cold_heart,strict=1,if=talent.cold_heart&(!buff.killing_machine.up|talent.breath_of_sindragosa)&(debuff.razorice.stack=5|!death_knight.runeforge.razorice)
+actions+=/run_action_list,name=bos_ticking,strict=1,if=buff.breath_of_sindragosa.up
 actions+=/run_action_list,name=bos_pooling,if=talent.breath_of_sindragosa&(cooldown.breath_of_sindragosa.remains<10)&(raid_event.adds.in>25|!raid_event.adds.exists|cooldown.pillar_of_frost.remains<10&raid_event.adds.exists&raid_event.adds.in<10)
-actions+=/run_action_list,name=obliteration,if=buff.pillar_of_frost.up&talent.obliteration
+actions+=/run_action_list,name=obliteration,strict=1,if=buff.pillar_of_frost.up&talent.obliteration
 actions+=/run_action_list,name=obliteration_pooling,if=talent.obliteration&cooldown.pillar_of_frost.remains<10&(variable.st_planning|raid_event.adds.exists&raid_event.adds.in<10|!raid_event.adds.exists)
-actions+=/run_action_list,name=aoe,if=active_enemies>=2
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>=2
 actions+=/call_action_list,name=standard
 
 # AoE Rotation
