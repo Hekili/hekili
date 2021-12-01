@@ -1085,6 +1085,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", nil, function( event, u
     if ability and state.holds[ ability.key ] then
         Hekili:RemoveHold( ability.key, true )
     end
+
+    state.player.updated = true
 end )
 
 
@@ -1095,6 +1097,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", nil, function( event, unit,
         Hekili:RemoveHold( ability.key, true )
     end
 
+    state.player.updated = true
     Hekili:ForceUpdate( event, true )
 end )
 
@@ -1106,6 +1109,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( even
         Hekili:RemoveHold( ability.key, true )
     end
 
+    state.player.updated = true
     Hekili:ForceUpdate( event, true )
 end )
 
@@ -1121,6 +1125,23 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", nil, function( event
         state:RemoveSpellEvents( ability.key, true )
     end
 
+    state.player.updated = true
+    Hekili:ForceUpdate( event, true )
+end )
+
+
+RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", nil, function( event, unit, cast, spellID )
+    local ability = class.abilities[ spellID ]
+    
+    if ability then
+        if state.holds[ ability.key ] then
+            Hekili:RemoveHold( ability.key, true )
+        end
+
+        state:RemoveSpellEvents( ability.key, true )
+    end
+
+    state.player.updated = true
     Hekili:ForceUpdate( event, true )
 end )
 
@@ -1162,6 +1183,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
             end
         end
 
+        state.player.updated = true
         Hekili:ForceUpdate( event )
     end
 end )
@@ -1199,6 +1221,7 @@ end ) ]]
 
 -- Update due to player totems.
 RegisterEvent( "PLAYER_TOTEM_UPDATE", function( event, totem )
+    state.player.updated = true
     Hekili:ForceUpdate( event )
 end )
 
@@ -1249,7 +1272,8 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 
     end
 
-    Hekili:ForceUpdate( event )
+    state.player.updated = true
+    Hekili:ForceUpdate( event, true )
 end
 Hekili:ProfileCPU( "UNIT_POWER_UPDATE", UNIT_POWER_FREQUENT )
 

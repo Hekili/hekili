@@ -290,7 +290,6 @@ function Hekili:SaveDebugSnapshot( dispName )
     end
 
     return snapped
-
 end
 
 Hekili.Snapshots = ns.snapshots
