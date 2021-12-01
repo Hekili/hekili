@@ -801,7 +801,13 @@ if UnitClassBase( "player" ) == "DRUID" then
         bt_thrash = {
             duration = 4,
             max_stack = 1
-        }
+        },
+        bt_triggers = {
+            alias = { "bt_brutal_slash", "bt_moonfire", "bt_rake", "bt_shred", "bt_swipe", "bt_thrash" },
+            aliasMode = "longest",
+            aliasType = "buff",
+            duration = 4,
+        },        
     } )
 
 
@@ -911,23 +917,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
     spec:RegisterStateExpr( "active_bt_triggers", function ()
         if not talent.bloodtalons.enabled then return 0 end
-
-        local btCount = 0
-
-        for k, v in pairs( combo_generators ) do
-            if k ~= this_action then
-                local lastCast = action[ k ].lastCast
-
-                if lastCast > last_bloodtalons and query_time - lastCast < 4 then
-                    btCount = btCount + 1
-                end
-            end
-        end
-
-        return btCount
+        return buff.bt_triggers.stack
     end )
 
-    spec:RegisterStateExpr( "will_proc_bloodtalons", function ()
+    --[[ spec:RegisterStateExpr( "will_proc_bloodtalons", function ()
         if not talent.bloodtalons.enabled then return false end
 
         local count = 0
@@ -947,6 +940,13 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         applyBuff( "bloodtalons", nil, 2 )
         last_bloodtalons = query_time
+    end ) ]]
+
+    spec:RegisterStateFunction( "check_bloodtalons", function ()
+        if buff.bt_triggers.stack > 2 then
+            removeBuff( "bt_triggers" )
+            applyBuff( "bloodtalons", nil, 2 )
+        end
     end )
 
 
@@ -1108,9 +1108,8 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             handler = function ()
                 gain( 1, "combo_points" )
-
-                if will_proc_bloodtalons then proc_bloodtalons()
-                else applyBuff( "bt_brutal_slash" ) end
+                applyBuff( "bt_brutal_slash" )
+                check_bloodtalons()
             end,
         },
 
@@ -1243,8 +1242,6 @@ if UnitClassBase( "player" ) == "DRUID" then
             handler = function ()
                 gain( 5, "combo_points" )
                 applyDebuff( "target", "feral_frenzy" )
-
-                if will_proc_bloodtalons then proc_bloodtalons() end
             end,
 
             copy = "ashamanes_frenzy"
@@ -1609,7 +1606,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
                 gain( 1, "combo_points" )
                 applyBuff( "bt_moonfire" )
-                if will_proc_bloodtalons then proc_bloodtalons() end
+                check_bloodtalons()
             end,
 
             copy = { 8921, 155625, "moonfire_cat" }
@@ -1749,7 +1746,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 gain( 1, "combo_points" )
 
                 applyBuff( "bt_rake" )
-                if will_proc_bloodtalons then proc_bloodtalons() end
+                check_bloodtalons()
 
                 removeBuff( "sudden_ambush" )
             end,
@@ -2014,7 +2011,8 @@ if UnitClassBase( "player" ) == "DRUID" then
                 removeStack( "clearcasting" )
 
                 applyBuff( "bt_shred" )
-                if will_proc_bloodtalons then proc_bloodtalons() end
+                check_bloodtalons()
+
                 removeBuff( "sudden_ambush" )
             end,
         },
@@ -2226,7 +2224,8 @@ if UnitClassBase( "player" ) == "DRUID" then
                 gain( 1, "combo_points" )
 
                 applyBuff( "bt_swipe" )
-                if will_proc_bloodtalons then proc_bloodtalons() end
+                check_bloodtalons()
+
                 removeStack( "clearcasting" )
             end,
 
@@ -2325,7 +2324,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 end
 
                 applyBuff( "bt_thrash" )
-                if will_proc_bloodtalons then proc_bloodtalons() end
+                check_bloodtalons()
             end,
 
             copy = { "thrash", 106832 },
