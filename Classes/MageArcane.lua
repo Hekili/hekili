@@ -413,7 +413,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
         opener_completed = false
-        Hekili:Print( "Opener reset (out of combat).")
+        -- Hekili:Print( "Opener reset (out of combat).")
     end )
 
 
@@ -980,7 +980,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     -- Setup for opener_done variable.
                     if not ( state.runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
                         opener_completed = true
-                        Hekili:Print( "Opener completed (evocation)." )
+                        -- Hekili:Print( "Opener completed (evocation)." )
                     end
                 end
             
@@ -1030,10 +1030,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         if not opener_completed and InCombatLockdown() then
             if true_active_enemies > variable.aoe_target_count then
                 opener_completed = true
-                Hekili:Print( "Opener completed (aoe)." )
+                -- Hekili:Print( "Opener completed (aoe)." )
             elseif buff.arcane_power.down and cooldown.arcane_power.true_remains > 0 and ( runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
                 opener_completed = true
-                Hekili:Print( "Opener completed (Arcane Power)." )
+                -- Hekili:Print( "Opener completed (Arcane Power)." )
             end
         end
     end )
