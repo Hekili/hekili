@@ -899,13 +899,13 @@ state.applyBuff = applyBuff
 
 
 local function removeBuff( aura )
-    applyBuff( aura, 0 )
-
     local auraInfo = class.auras[ aura ]
     if auraInfo and auraInfo.alias then
         for _, child in ipairs( auraInfo.alias ) do
             applyBuff( child, 0 )
         end
+    else
+        applyBuff( aura, 0 )
     end
 end
 state.removeBuff = removeBuff
