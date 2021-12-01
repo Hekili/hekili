@@ -284,6 +284,11 @@ function Hekili:SaveDebugSnapshot( dispName )
 
     end
 
+    if snapped and Hekili.DB.profile.screenshot then
+        Screenshot()
+        -- Don't need to print anything; WoW shows a "Screen Captured" message.
+    end
+
     return snapped
 
 end

@@ -1088,6 +1088,17 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", nil, function( event, u
 end )
 
 
+RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", nil, function( event, unit, cast, spellID )
+    local ability = class.abilities[ spellID ]
+    
+    if ability and state.holds[ ability.key ] then
+        Hekili:RemoveHold( ability.key, true )
+    end
+
+    Hekili:ForceUpdate( event, true )
+end )
+
+
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( event, unit, cast, spellID )
     local ability = class.abilities[ spellID ]
     
@@ -1156,6 +1167,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
 end )
 
 
+-- TODO:  This should be changed to stash this information and then commit it on next UNIT_SPELLCAST_START or UNIT_SPELLCAST_SUCCEEDED.
 RegisterEvent( "UNIT_SPELLCAST_SENT", function ( event, unit, target_name, castID, spellID )
     if not UnitIsUnit( "player", unit ) then return end
 
@@ -1179,9 +1191,10 @@ RegisterEvent( "UNIT_SPELLCAST_SENT", function ( event, unit, target_name, castI
 end )
 
 
+--[[ This event is too spammy.
 RegisterEvent( "CURRENT_SPELL_CAST_CHANGED", function( event, cancelled )
     Hekili:ForceUpdate( event, true )
-end )
+end ) ]]
 
 
 -- Update due to player totems.

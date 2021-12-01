@@ -555,6 +555,7 @@ function Hekili:GetDefaults()
             enabled = true,
             minimapIcon = false,
             autoSnapshot = true,
+            screenshot = true,
 
             toggles = {
                 pause = {
@@ -8590,17 +8591,26 @@ function Hekili:GetOptions()
                 args = {
                     autoSnapshot = {
                         type = "toggle",
-                        name = "Automatically Snapshot When Unable to Make a Recommendation",
+                        name = "Auto Snapshot",
                         desc = "If checked, the addon will automatically create a snapshot whenever it failed to generate a recommendation.\n\n" ..
                             "This automatic snapshot can only occur once per episode of combat.",
                         order = 1,
-                        width = "full"
+                        width = "full",
+                    },
+
+                    screenshot = {
+                        type = "toggle",
+                        name = "Take Screenshot",
+                        desc = "If checked, the addon will take a screenshot when you manually create a snapshot.\n\n" ..
+                            "Submitting both with your issue tickets will provide useful information for investigation purposes.",
+                        order = 2,
+                        width = "full",
                     },
 
                     prefHeader = {
                         type = "header",
                         name = "Snapshots / Troubleshooting",
-                        order = 2,
+                        order = 2.5,
                         width = "full"
                     },
 
@@ -10519,7 +10529,9 @@ end
 
 -- Key Bindings
 function Hekili:MakeSnapshot( dispName, isAuto )
-    if isAuto and not Hekili.DB.profile.autoSnapshot then return end
+    if isAuto and not Hekili.DB.profile.autoSnapshot then
+        return
+    end
 
     self.ActiveDebug = true
     local success = false
