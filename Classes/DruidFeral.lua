@@ -930,7 +930,7 @@ if UnitClassBase( "player" ) == "DRUID" then
     spec:RegisterStateExpr( "will_proc_bloodtalons", function ()
         if not talent.bloodtalons.enabled then return false end
         if query_time - action[ this_action ].lastCast < 4 then return false end
-        return active_bt_triggers == 2
+        return active_bt_triggers > 1
     end )
 
     spec:RegisterStateFunction( "proc_bloodtalons", function()
@@ -1102,8 +1102,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             handler = function ()
                 gain( 1, "combo_points" )
 
-                applyBuff( "bt_brutal_slash" )
-                if will_proc_bloodtalons then proc_bloodtalons() end
+                if will_proc_bloodtalons then proc_bloodtalons()
+                else applyBuff( "bt_brutal_slash" ) end
             end,
         },
 
