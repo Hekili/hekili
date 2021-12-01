@@ -219,7 +219,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             multiplier = function() return talent.moment_of_clarity.enabled and 1.15 or 1 end,
         },
         cyclone = {
-            id = 209753,
+            id = 33786,
             duration = 6,
             max_stack = 1,
         },
@@ -820,7 +820,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         elseif buff.moonkin_form.up then state:RunHandler( "starfall" )
         elseif buff.bear_form.up then state:RunHandler( "barkskin" )
         elseif buff.cat_form.up then state:RunHandler( "primal_wrath" )
-        else state:RunHandle( "wild_growth" ) end
+        else state:RunHandler( "wild_growth" ) end
     end, state )
 
     local SinfulHysteriaHandler = setfenv( function ()
@@ -929,8 +929,15 @@ if UnitClassBase( "player" ) == "DRUID" then
 
     spec:RegisterStateExpr( "will_proc_bloodtalons", function ()
         if not talent.bloodtalons.enabled then return false end
-        if query_time - action[ this_action ].lastCast < 4 then return false end
-        return active_bt_triggers > 1
+
+        local count = 0
+        for bt_buff, bt_ability in pairs( bt_auras ) do
+            if buff[ bt_buff ].up then
+                count = count + 1
+            end
+        end
+
+        if count > 2 then return true end
     end )
 
     spec:RegisterStateFunction( "proc_bloodtalons", function()
