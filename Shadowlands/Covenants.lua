@@ -219,18 +219,8 @@ do
 
     all:RegisterAuras( {
         echo_of_eonar = {
-            id = 338481,
-            duration = 3600,
-            max_stack = 1,
-        },
-        echo_of_eonar_debuff = {
-            id = 338494,
-            duration = 15,
-            max_stack = 1,
-        },
-        echo_of_eonar_buff = {
             id = 338489,
-            duration = 15,
+            duration = 10,
             max_stack = 1,
         },
 
@@ -259,13 +249,13 @@ do
 
         vitality_sacrifice_buff = {
             id = 338746,
-            duration = 60,
+            duration = 20,
             max_stack = 1,
         },
-        vitality_sacrifice_debuff = {
+        --[[ vitality_sacrifice_debuff = {
             id = 339131,
             duration = 60,
             max_stack = 1
-        }
+        } ]]
     } )
 end
