@@ -1074,7 +1074,7 @@ end
 local lowLevelWarned = false
 
 -- Need to make caching system.
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", nil, function( event, unit, _, spellID )
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( event, unit, _, spellID )
     if lowLevelWarned == false and UnitLevel( "player" ) < 50 then
         Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
         lowLevelWarned = true
@@ -1086,62 +1086,70 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", nil, function( event, u
         Hekili:RemoveHold( ability.key, true )
     end
 
-    state.player.updated = true
+    state[ unit ].updated = true
 end )
 
 
-RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", nil, function( event, unit, cast, spellID )
-    local ability = class.abilities[ spellID ]
-    
-    if ability and state.holds[ ability.key ] then
-        Hekili:RemoveHold( ability.key, true )
-    end
+RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, unit, cast, spellID )
+    if unit == "player" then
+        local ability = class.abilities[ spellID ]
+        
+        if ability and state.holds[ ability.key ] then
+            Hekili:RemoveHold( ability.key, true )
+        end
 
-    state.player.updated = true
+        state.player.updated = true
+    else
+        state.target.updated = true
+    end
     Hekili:ForceUpdate( event, true )
 end )
 
 
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( event, unit, cast, spellID )
-    local ability = class.abilities[ spellID ]
-    
-    if ability and state.holds[ ability.key ] then
-        Hekili:RemoveHold( ability.key, true )
-    end
+    if unit == "player" then
+        local ability = class.abilities[ spellID ]
+        
+        if ability and state.holds[ ability.key ] then
+            Hekili:RemoveHold( ability.key, true )
+        end
 
-    state.player.updated = true
+        state.player.updated = true
+    else
+        state.target.updated = true
+    end
     Hekili:ForceUpdate( event, true )
 end )
 
 
-RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", nil, function( event, unit, cast, spellID )
-    local ability = class.abilities[ spellID ]
-    
-    if ability then
-        if state.holds[ ability.key ] then
+RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", "target", function( event, unit, cast, spellID )
+    if unit == "player" then
+        local ability = class.abilities[ spellID ]
+        
+        if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
 
-        state:RemoveSpellEvents( ability.key, true )
+        state.player.updated = true
+    else
+        state.target.updated = true
     end
-
-    state.player.updated = true
     Hekili:ForceUpdate( event, true )
 end )
 
 
-RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", nil, function( event, unit, cast, spellID )
-    local ability = class.abilities[ spellID ]
-    
-    if ability then
-        if state.holds[ ability.key ] then
+RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", "target", function( event, unit, cast, spellID )
+    if unit == "player" then
+        local ability = class.abilities[ spellID ]
+        
+        if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
 
-        state:RemoveSpellEvents( ability.key, true )
+        state.player.updated = true
+    else
+        state.target.updated = true
     end
-
-    state.player.updated = true
     Hekili:ForceUpdate( event, true )
 end )
 

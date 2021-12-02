@@ -1425,17 +1425,19 @@ function Hekili:ProcessHooks( dispName, packName )
         -- self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
     end
 
-    local resetRequired = state.modified or state.player.updated or state.target.updated
-    
+    -- Get a completely fresh picture of the game state.
+    if state.modified or state.player.updated or state.target.updated then state.resetType = "heavy" end
+
     if not state.reset( dispName ) then
         if debug then self:Debug( "Stopping update; was not able to reset the virtual gamestate." ) end
         return true
     end
 
-    if resetRequired and not debug then
-        -- We did a heavy-duty reset, let's wait til next frame.
+    if state.resetType ~= "none" then
         return false
     end
+
+    state.resetType = "light"
 
     local UI = ns.UI.Displays[ dispName ]
     local Queue = UI.Recommendations

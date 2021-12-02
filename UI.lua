@@ -1912,6 +1912,11 @@ do
     function Hekili:ForceUpdate( event, super )
         Hekili.freshFrame = false
 
+        if super then
+            state.player.updated = true
+            state.target.updated = true
+        end
+
         for i, d in pairs( ns.UI.Displays ) do        
             d.criticalUpdate = true
             if super then d.superUpdate = true end

@@ -42,6 +42,7 @@ state.ptr = PTR and 1 or 0
 state.now = 0
 state.offset = 0
 state.modified = false
+state.resetType = "heavy"
 
 state.encounterID = 0
 state.encounterName = "None"
@@ -5525,58 +5526,35 @@ function state.reset( dispName )
 
     state.resetting = true
 
-    state.cycle = nil
-    state.ClearCycle()
-    state:ResetVariables()
+    if state.resetType == "heavy" then
+        state.cycle = nil
+        state.ClearCycle()
+        state:ResetVariables()
 
-    state.selection_time = 60
-    state.selected_action = nil
+        state.selection_time = 60
+        state.selected_action = nil
 
-    local _, zone = GetInstanceInfo()
+        local _, zone = GetInstanceInfo()
 
-    state.bg = zone == "pvp"
-    state.arena = zone == "arena"
+        state.bg = zone == "pvp"
+        state.arena = zone == "arena"
 
-    state.torghast = IsInJailersTower()
+        state.torghast = IsInJailersTower()
 
-    state.min_targets = 0
-    state.max_targets = 0
+        state.min_targets = 0
+        state.max_targets = 0
 
-    state.active_enemies = nil
-    state.my_enemies = nil
-    state.true_active_enemies = nil
-    state.true_my_enemies = nil
+        state.active_enemies = nil
+        state.my_enemies = nil
+        state.true_active_enemies = nil
+        state.true_my_enemies = nil
 
-    state.latency = select( 4, GetNetStats() ) / 1000
+        state.latency = select( 4, GetNetStats() ) / 1000
 
-    -- Projectiles
-    state:ResetQueues()
+        -- Projectiles
+        state:ResetQueues()
 
-    local p = Hekili.DB.profile
-
-    local display = dispName and p.displays[ dispName ]
-    local spec = state.spec.id and p.specs[ state.spec.id ]
-    local mode = p.toggles.mode.value
-
-    state.display = dispName
-    state.filter = "none"
-    state.rangefilter = false
-
-    if display then
-        if dispName == 'Primary' then
-            if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
-            elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
-        elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
-        elseif dispName == 'Cooldowns' then state.filter = "cooldowns"
-        elseif dispName == 'Interrupts' then state.filter = "interrupts"
-        elseif dispName == 'Defensives' then state.filter = "defensives"
-        end
-
-        state.rangefilter = display.range.enabled and display.range.type == "xclude"
-    end
-
-    -- Only reset all this stuff if key data was updated.
-    if state.modified or state.player.updated or state.target.updated or Hekili.ActiveDebug then
+        -- Only reset all this stuff if key data was updated.
         state.modified = false
 
         for i = #state.purge, 1, -1 do
@@ -5823,12 +5801,40 @@ function state.reset( dispName )
         state.swings.mh_pseudo = nil
         state.swings.oh_pseudo = nil
 
+        --print( GetTime(), "*** Heavy Reset", dispName, state.buff.casting.name, state.buff.casting.remains )
+        state.resetType = "light"
+    elseif state.resetType == "light" then
+        local p = Hekili.DB.profile
+
+        local display = dispName and p.displays[ dispName ]
+        local spec = state.spec.id and p.specs[ state.spec.id ]
+        local mode = p.toggles.mode.value
+
+        state.display = dispName
+        state.filter = "none"
+        state.rangefilter = false
+
+        if display then
+            if dispName == 'Primary' then
+                if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
+                elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
+            elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
+            elseif dispName == 'Cooldowns' then state.filter = "cooldowns"
+            elseif dispName == 'Interrupts' then state.filter = "interrupts"
+            elseif dispName == 'Defensives' then state.filter = "defensives"
+            end
+
+            state.rangefilter = display.range.enabled and display.range.type == "xclude"
+        end
+                
         -- Special case spells that suck.
         if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
             setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
         end
 
         local cast_time, casting, ability = 0, nil, nil
+
+        state.buff.casting.generate( state.buff.casting, "buff" )
 
         if state.buff.casting.up then
             cast_time = state.buff.casting.remains
@@ -5897,27 +5903,26 @@ function state.reset( dispName )
                     -- state:QueueEvent( action, "projectile", true )
                 end
             end
+        end    
+
+        -- Delay to end of GCD.
+        if dispName == "Primary" or dispName == "AOE" then
+            local delay = 0
+
+            if not state.spec.canCastWhileCasting and state.buff.casting.up and state.buff.casting.v3 ~= 1 then -- v3=1 means it's channeled.
+                delay = max( delay, state.buff.casting.remains )
+            end
+
+            delay = ns.callHook( "reset_postcast", delay )
+
+            if delay > 0 then
+                if Hekili.ActiveDebug then Hekili:Debug( "Advancing by %.2f per GCD or cast or channel or reset_postcast value.", delay ) end
+                state.advance( delay )
+            end
         end
-    end
 
-    -- Delay to end of GCD.
-    if dispName == "Primary" or dispName == "AOE" then
-        local delay = 0
-
-        --[[ if state.settings.spec and state.settings.spec.gcdSync then
-            delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
-        end ]]
-
-        if not state.spec.canCastWhileCasting and state.buff.casting.up and state.buff.casting.v3 ~= 1 then -- v3=1 means it's channeled.
-            delay = max( delay, state.buff.casting.remains )
-        end
-
-        delay = ns.callHook( "reset_postcast", delay )
-
-        if delay > 0 then
-            if Hekili.ActiveDebug then Hekili:Debug( "Advancing by %.2f per GCD or cast or channel or reset_postcast value.", delay ) end
-            state.advance( delay )
-        end
+        -- print( GetTime(), "*** Light Reset", dispName, state.buff.casting.name, state.buff.casting.remains )
+        state.resetType = "none"
     end
 
     state.resetting = false
@@ -5952,6 +5957,7 @@ function state.advance( time )
     end
 
     if not state.resetting and not state.modified then
+        -- print( "Modified state." )
         state.modified = true
     end
 
