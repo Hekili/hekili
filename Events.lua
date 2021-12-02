@@ -1375,6 +1375,7 @@ local cast_events = {
     SPELL_CAST_FAILED       = true,
     SPELL_CAST_SUCCESS      = true,
     SPELL_DAMAGE            = true,
+    SPELL_AURA_REMOVED      = true
 }
 
 
@@ -1589,7 +1590,12 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                 elseif subtype == "SPELL_CAST_FAILED" then
                     state:RemoveSpellEvent( ability.key, true, "CAST_FINISH" ) -- remove next cast finish.
-                    state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT", true ) -- remove last impact.
+                    if ability.isProjectile then state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT", true ) end -- remove last impact.
+                    Hekili:ForceUpdate( "SPELL_CAST_FAILED", true )
+
+                elseif subtype == "SPELL_AURA_REMOVED" and ability.channeled then
+                    state:RemoveSpellEvents( ability.key, true ) -- remove ticks, finish, impacts.
+                    Hekili:ForceUpdate( "SPELL_AURA_REMOVED_CHANNEL", true )
 
                 elseif subtype == "SPELL_CAST_SUCCESS" then
                     state:RemoveSpellEvent( ability.key, true, "CAST_FINISH" ) -- remove next cast finish.
