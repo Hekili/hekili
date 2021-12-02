@@ -1235,7 +1235,7 @@ all:RegisterAuras( {
     },
 
     casting = {
-        name = Casting,
+        name = "Casting",
         generate = function( t, auraType )
             local unit = auraType == "debuff" and "target" or "player"
 
@@ -1279,7 +1279,7 @@ all:RegisterAuras( {
                 end
             end
 
-            t.name = Casting
+            t.name = "Casting"
             t.count = 0
             t.expires = 0
             t.applied = 0
