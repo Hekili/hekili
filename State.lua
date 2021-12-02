@@ -6396,11 +6396,15 @@ do
         if not ability then return true end
 
         local hook, reason = ns.callHook( "IsUsable", spell )
-        if hook == false then return false, reason end
+        if hook == false then
+            return false, reason
+        end
 
         if ability.funcs.usable then
             local usable, reason = ability.funcs.usable( self, ability )
-            if not usable then return false, reason end
+            if usable == false then -- Have allowed nil return values for usable to be treated as usable before.
+                return false, reason
+            end
         else
             local usable = ability.usable
             if type( usable ) == "number" and not IsUsableSpell( usable ) then
