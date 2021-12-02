@@ -889,6 +889,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
             usable = function ()
                 if time == 0 then return false, "no fire_blast out of combat" end
+                return true
             end,
 
             handler = function ()
