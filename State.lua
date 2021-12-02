@@ -6552,7 +6552,7 @@ function state:TimeToReady( action, pool )
 
     if ability.id < -99 or ability.id > 0 then
         -- if not ability.castableWhileCasting and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) or not ability.interrupt ) then
-        if ( ability.gcd ~= "off" or ability.castableWhileCasting ) or ( ability.item and not ability.essence ) then
+        if ability.gcd ~= "off" or ( ability.item and not ability.essence ) then
             wait = max( wait, self.cooldown.global_cooldown.remains )
         end
 
