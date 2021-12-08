@@ -1932,7 +1932,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 end
 
                 if ability.item and not ( ability.essence or ability.no_icd ) then
-                    state.putTrinketsOnCD( ability.cooldown / 6 )
+                    state.putTrinketsOnCD( state.cooldown[ action ].remains / 6 )
                 end
             end
 
