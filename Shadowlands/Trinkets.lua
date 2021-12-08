@@ -203,7 +203,7 @@ do
 
         bottled_flayedwing_toxin = {
             cast = 0,
-            cooldown = 1,
+            cooldown = 20,
             gcd = "off",
 
             item = 178742,
