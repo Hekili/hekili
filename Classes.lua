@@ -598,6 +598,23 @@ local HekiliSpecMixin = {
                         end
                     end
 
+                    if data.items then
+                        for _, id in ipairs( data.items ) do
+                            Hekili:ContinueOnItemLoad( id, function( success )
+                                if not success then return end
+
+                                local name, link, _, _, _, _, _, _, slot, texture = GetItemInfo( id )
+
+                                if name then
+                                    class.abilities[ name ] = a
+                                    self.abilities[ name ]  = a
+                                    
+                                    class.itemList[ id ]    = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
+                                end
+                            end )
+                        end
+                    end
+
                     if ability then class.abilities[ ability ] = a end
                     if a.name  then class.abilities[ a.name ]  = a end
                     if a.link  then class.abilities[ a.link ]  = a end
@@ -4268,6 +4285,17 @@ do
         texture = 135884,
             
         toggle = "cooldowns",
+        item = function ()
+            local b
+
+            for i = #pvp_badges, 1, -1 do
+                b = pvp_badges[ i ][ 2 ]
+                if equipped[ b ] then
+                    break
+                end
+            end
+            return b
+        end,
 
         usable = function () return set_bonus.gladiators_badge > 0, "requires Gladiator's Badge" end,
         handler = function ()
@@ -4305,7 +4333,7 @@ all:RegisterAura( "gladiators_safeguard", {
 -- Emblems
 do
     local pvp_emblems = {
-        dread_combatants_emblem = 161812,
+        -- dread_combatants_emblem = 161812,
         dread_aspirants_emblem = 162898,
         dread_gladiators_emblem = 161675,
         sinister_aspirants_emblem = 165221,

@@ -1858,7 +1858,6 @@ local function StoreKeybindInfo( page, key, aType, id, console )
                 end
             end
         end
-
     end
 
     if action then
