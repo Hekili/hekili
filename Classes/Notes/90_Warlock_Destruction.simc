@@ -1,5 +1,5 @@
 ## Destruction Warlock
-## September 16, 2021
+## November 13, 2021
 
 ## Changes:
 ## - Fleshcraft/Volatile Solvent cancel_if changed to interrupt_if.
@@ -17,11 +17,11 @@ actions.precombat+=/incinerate
 
 # Executed every time the actor is available.
 actions=spell_lock
-actions=call_action_list,name=havoc,if=havoc_active&active_enemies>1&active_enemies<5-talent.inferno.enabled+(talent.inferno.enabled&talent.internal_combustion.enabled)
+actions=call_action_list,name=havoc,strict=1,if=havoc_active&active_enemies>1&active_enemies<5-talent.inferno.enabled+(talent.inferno.enabled&talent.internal_combustion.enabled)
 actions+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up
 actions+=/conflagrate,if=talent.roaring_blaze.enabled&debuff.roaring_blaze.remains<1.5
 actions+=/cataclysm,if=!(pet.infernal.active&dot.immolate.remains+1>pet.infernal.remains)|spell_targets.cataclysm>1
-actions+=/call_action_list,name=aoe,if=active_enemies>2
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>2
 actions+=/soul_fire,cycle_targets=1,if=refreshable&soul_shard<=4&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>remains)
 actions+=/immolate,cycle_targets=1,if=refreshable&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>remains)
 actions+=/immolate,if=talent.internal_combustion.enabled&action.chaos_bolt.in_flight&remains<duration*0.5

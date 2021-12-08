@@ -1,5 +1,5 @@
 ## Elemental Shaman
-## July 7, 2021
+## November 13, 2021
 
 ## Changes:
 ## - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
@@ -35,7 +35,7 @@ actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 actions+=/vesper_totem
 actions+=/fae_transfusion,if=covenant.night_fae&!runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up)&spell_targets.chain_lightning<3
 actions+=/fae_transfusion,if=covenant.night_fae&runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up|spell_targets.chain_lightning>=3)&(cooldown.fire_elemental.remains>20|cooldown.storm_elemental.remains>20)
-actions+=/run_action_list,name=aoe,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
 actions+=/run_action_list,name=single_target,strict=1,if=!talent.storm_elemental.enabled&active_enemies<=2
 actions+=/run_action_list,name=se_single_target,strict=1,if=talent.storm_elemental.enabled&active_enemies<=2
 

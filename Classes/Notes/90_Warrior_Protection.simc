@@ -1,5 +1,5 @@
 ## Protection Warrior
-## June 27, 2021
+## November 13, 2021
 
 ## Changes
 ## - Add Mitigation logic to new SimC APL.
@@ -27,14 +27,14 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
 actions+=/potion,if=buff.avatar.up|fight_remains<25
-actions+=/call_action_list,name=mitigation,if=incoming_damage_5s>0
+actions+=/call_action_list,name=mitigation,strict=1,if=incoming_damage_5s>0
 actions+=/conquerors_banner,if=runeforge.glory
 actions+=/avatar
 actions+=/ancient_aftershock
 actions+=/spear_of_bastion
 actions+=/conquerors_banner
 actions+=/shield_block,if=buff.shield_block.down
-actions+=/call_action_list,name=aoe,if=spell_targets.thunder_clap>=3
+actions+=/call_action_list,name=aoe,strict=1,if=spell_targets.thunder_clap>=3
 actions+=/call_action_list,name=generic
 
 actions.mitigation=ignore_pain,if=rage>50&buff.ignore_pain.down

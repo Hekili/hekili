@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## July 7, 2021
+## November 13, 2021
 
 ## Changes:
 ## - Added Spell Lock.
@@ -30,7 +30,7 @@ actions.precombat+=/unstable_affliction
 actions=spell_lock
 actions+=/devour_magic
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>3
-# Action lists for trinket behavior. Stats are saved for before Soul Rot/Impending Catastrophe/Phantom Singularity, otherwise on cooldown
+# Action lists for trinket behavior. Stats are saved for before Soul Rot/Impending Catastrophe/Phantom Singularity, otherwise on cooldown.
 actions+=/call_action_list,name=trinket_split_check
 actions+=/call_action_list,name=delayed_trinkets
 actions+=/call_action_list,name=stat_trinkets,strict=1,if=(dot.soul_rot.ticking|dot.impending_catastrophe_dot.ticking|dot.phantom_singularity.ticking)&soul_shard>3|dot.vile_taint.ticking|talent.sow_the_seeds
@@ -53,7 +53,7 @@ actions+=/phantom_singularity,if=covenant.necrolord&runeforge.malefic_wrath&time
 actions+=/phantom_singularity,if=(covenant.kyrian|covenant.none|(covenant.necrolord&!runeforge.malefic_wrath))&(trinket.empyreal_ordnance.cooldown.remains<162|!equipped.empyreal_ordnance)
 actions+=/phantom_singularity,if=boss&fight_remains<16
 # If Phantom Singularity is ticking, it's time to use other major dots
-actions+=/call_action_list,name=covenant,if=dot.phantom_singularity.ticking&(covenant.night_fae|covenant.venthyr)
+actions+=/call_action_list,name=covenant,strict=1,if=dot.phantom_singularity.ticking&(covenant.night_fae|covenant.venthyr)
 actions+=/agony,cycle_targets=1,if=dot.agony.remains<4
 actions+=/haunt
 # Sow the Seeds on 3 targets if it isn't currently in flight or on the target. With Siphon Life it's also better to use Seed over manually applying 3 Corruptions.
@@ -113,7 +113,7 @@ actions.aoe+=/dark_soul,if=boss&cooldown.summon_darkglare.remains+cooldown.summo
 actions.aoe+=/call_action_list,name=item
 actions.aoe+=/call_action_list,name=delayed_trinkets
 actions.aoe+=/call_action_list,name=damage_trinkets
-actions.aoe+=/call_action_list,name=stat_trinkets,if=dot.phantom_singularity.ticking|!talent.phantom_singularity
+actions.aoe+=/call_action_list,name=stat_trinkets,strict=1,if=dot.phantom_singularity.ticking|!talent.phantom_singularity
 actions.aoe+=/malefic_rapture,if=dot.vile_taint.ticking
 actions.aoe+=/malefic_rapture,if=dot.soul_rot.ticking&!talent.sow_the_seeds
 actions.aoe+=/malefic_rapture,if=!talent.vile_taint
@@ -144,7 +144,7 @@ actions.darkglare_prep+=/potion
 actions.darkglare_prep+=/fireblood
 actions.darkglare_prep+=/blood_fury
 actions.darkglare_prep+=/berserking
-actions.darkglare_prep+=/call_action_list,name=covenant,if=!covenant.necrolord
+actions.darkglare_prep+=/call_action_list,name=covenant,strict=1,if=!covenant.necrolord
 actions.darkglare_prep+=/summon_darkglare
 
 actions.delayed_trinkets=use_item,name=empyreal_ordnance,if=(covenant.night_fae&cooldown.soul_rot.remains<20)|(covenant.venthyr&cooldown.impending_catastrophe.remains<20)|(covenant.necrolord|covenant.kyrian|covenant.none)
