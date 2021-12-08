@@ -5526,7 +5526,7 @@ function state.reset( dispName )
 
     state.resetting = true
 
-    if state.resetType == "heavy" then
+    -- if state.resetType == "heavy" then
         state.cycle = nil
         state.ClearCycle()
         state:ResetVariables()
@@ -5802,8 +5802,8 @@ function state.reset( dispName )
         state.swings.oh_pseudo = nil
 
         --print( GetTime(), "*** Heavy Reset", dispName, state.buff.casting.name, state.buff.casting.remains )
-        state.resetType = "light"
-    elseif state.resetType == "light" then
+        -- state.resetType = "light"
+    -- elseif state.resetType == "light" then
         local p = Hekili.DB.profile
 
         local display = dispName and p.displays[ dispName ]
@@ -5903,7 +5903,7 @@ function state.reset( dispName )
                     -- state:QueueEvent( action, "projectile", true )
                 end
             end
-        end    
+        -- end    
 
         -- Delay to end of GCD.
         if dispName == "Primary" or dispName == "AOE" then
@@ -6241,6 +6241,9 @@ function state:IsKnown( sID, notoggle )
         return false
     end
 
+    -- Mage Tower Disabled.
+    if ability.disabled then return false, "not usable in Mage Tower" end
+
     if sID < 0 then
         if ability.known ~= nil then
             if type( ability.known ) == "number" then
@@ -6408,7 +6411,7 @@ do
         else
             local usable = ability.usable
             if type( usable ) == "number" and not IsUsableSpell( usable ) then
-                return false, "IsSpellUsable(" .. usable .. ") was false"
+                return false, "IsUsableSpell(" .. usable .. ") was false"
             elseif type( usable ) == "boolean" and not usable then
                 return false, "ability.usable was false"
             end

@@ -199,6 +199,7 @@ ns.FeignEvent = function( event, ... )
         handler( event, ... )
     end
 end
+Hekili.FeignEvent = ns.FeignEvent
 
 
 do

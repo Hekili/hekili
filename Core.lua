@@ -1425,19 +1425,19 @@ function Hekili:ProcessHooks( dispName, packName )
         -- self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
     end
 
-    -- Get a completely fresh picture of the game state.
-    if state.modified or state.player.updated or state.target.updated then state.resetType = "heavy" end
+    --[[ Get a completely fresh picture of the game state.
+    if state.modified or state.player.updated or state.target.updated then state.resetType = "heavy" end ]]
 
     if not state.reset( dispName ) then
         if debug then self:Debug( "Stopping update; was not able to reset the virtual gamestate." ) end
         return true
     end
 
-    if state.resetType ~= "none" then
+    --[[ if state.resetType ~= "none" then
         return false
     end
 
-    state.resetType = "light"
+    state.resetType = "light" ]]
 
     local UI = ns.UI.Displays[ dispName ]
     local Queue = UI.Recommendations

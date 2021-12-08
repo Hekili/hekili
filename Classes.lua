@@ -5363,6 +5363,7 @@ end
 
 
 local optionsInitialized = false
+local seen = {}
 function Hekili:SpecializationChanged()
     local currentSpec = GetSpecialization()
     local currentID = GetSpecializationInfo( currentSpec )
@@ -5634,6 +5635,39 @@ function Hekili:SpecializationChanged()
     if not self:ScriptsLoaded() then self:LoadScripts() end
 
     Hekili:UpdateDamageDetectionForCLEU()
+
+    -- Use tooltip to detect Mage Tower.
+    local tooltip = ns.Tooltip
+    tooltip:SetOwner( UIParent, "ANCHOR_NONE" )
+
+    wipe( seen )
+
+    for k, v in pairs( class.abilities ) do
+        if not seen[ v ] then
+            if v.id > 0 then
+                local disable = false
+                tooltip:SetSpellByID( v.id )
+
+                for i = tooltip:NumLines(), 5, -1 do
+                    local label = tooltip:GetName() .. "TextLeft" .. i
+                    local line = _G[ label ]
+                    if line then
+                        local text = line:GetText()
+                        if text == _G.TOOLTIP_NOT_IN_MAGE_TOWER then
+                            disable = true
+                            break
+                        end
+                    end
+                end
+
+                v.disabled = disable
+            end
+
+            seen[ v ] = true
+        end
+    end
+
+    tooltip:Hide()    
 end
 
 
@@ -5646,15 +5680,16 @@ ns.specializationChanged = function()
     Hekili:SpecializationChanged()
 end
 
+do
+    RegisterEvent( "PLAYER_ENTERING_WORLD", function( event )
+        local currentSpec = GetSpecialization()
+        local currentID = GetSpecializationInfo( currentSpec )
 
-RegisterEvent( "PLAYER_ENTERING_WORLD", function( event )
-    local currentSpec = GetSpecialization()
-    local currentID = GetSpecializationInfo( currentSpec )
-
-    if currentID ~= state.spec.id then
-        Hekili:SpecializationChanged()
-    end
-end )
+        if currentID ~= state.spec.id then
+            Hekili:SpecializationChanged()
+        end
+    end )
+end
 
 
 function Hekili:IsValidSpec()
