@@ -943,7 +943,7 @@ do
 
             if self.refreshTimer < 0 or self.superUpdate or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
                 local success = Hekili:ProcessHooks( self.id )
-                
+
                 if success then
                     self.lastUpdate = now
                     self.criticalUpdate = false

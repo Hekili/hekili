@@ -112,14 +112,14 @@ function Hekili:OnInitialize()
             if p.toggles.essences.override then
                 -- Don't show Essences here if it's overridden by CDs anyway?
                 self.text = format( "|c%s%s|r %sCD|r %sInt|r %sDef|r", color,
-                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "rAOE" or "Auto" ) ) ),
+                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
                     p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
                     p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
                     p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
             else
                 self.text = format( "|c%s%s|r %sCD|r %sCoV|r %sInt|r",
                     color,
-                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "rAOE" or "Auto" ) ) ),
+                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
                     p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
                     p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
                     p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000" )
@@ -1422,7 +1422,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
     if debug then
         self:SetupDebug( dispName )
-        -- self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
+        self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
     end
 
     --[[ Get a completely fresh picture of the game state.
@@ -1460,7 +1460,7 @@ function Hekili:ProcessHooks( dispName, packName )
             UI.RecommendationsStr = nil
             UI.NewRecommendations = true
         end
-        return
+        return true
     end
 
     local checkstr = nil
@@ -1960,7 +1960,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
     if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, UI.eventsTriggered ) end
 
-    Hekili.freshFrame     = false
+    Hekili.freshFrame = false
     return true
 end
 
