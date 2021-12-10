@@ -1517,7 +1517,7 @@ do
 
         -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
 
-        --[[ if stack and #stack > 0 then
+        if stack and #stack > 0 then
             for i, caller in ipairs( stack ) do
                 local callScript = caller.script
                 callScript = callScript and scripts:GetScript( callScript )
@@ -1537,7 +1537,7 @@ do
                     recheckHelper( workTable, callScript.Recheck() )
                 end
             end
-        end ]]
+        end
 
         -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
 
