@@ -599,7 +599,9 @@ local HekiliSpecMixin = {
                     end
 
                     if data.items then
-                        for _, id in ipairs( data.items ) do
+                        local addedToItemList = false
+
+                        for _, id in ipairs( data.items ) do                            
                             Hekili:ContinueOnItemLoad( id, function( success )
                                 if not success then return end
 
@@ -609,9 +611,16 @@ local HekiliSpecMixin = {
                                     class.abilities[ name ] = a
                                     self.abilities[ name ]  = a
                                     
-                                    class.itemList[ id ]    = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
+                                    if not class.itemList[ id ] then
+                                        class.itemList[ id ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
+                                        addedToItemList = true
+                                    end
                                 end
                             end )
+                        end
+
+                        if addedToItemList then
+                            ns.ReadKeybindings()
                         end
                     end
 
