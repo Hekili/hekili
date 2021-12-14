@@ -1039,6 +1039,20 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
 
+    spec:RegisterStateFunction( "handle_radiant_spark", function()
+        if debuff.radiant_spark_vulnerability.down then applyDebuff( "target", "radiant_spark_vulnerability" )
+        else
+            debuff.radiant_spark_vulnerability.count = debuff.radiant_spark_vulnerability.count + 1                        
+
+            -- Implemented with max of 5 stacks (application of 5th stack makes the debuff expire in 0.1 seconds, to give us time to Arcane Barrage).
+            if debuff.radiant_spark_vulnerability.stack == debuff.radiant_spark_vulnerability.max_stack then
+                debuff.radiant_spark_vulnerability.expires = query_time + 0.1
+                applyBuff( "radiant_spark_consumed", debuff.radiant_spark.remains )
+            end
+        end
+    end )
+
+
     -- Abilities
     spec:RegisterAbilities( {
         alter_time = {
@@ -1091,10 +1105,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     applyDebuff( "target", "chrono_shift" )
                 end
 
-                if debuff.radiant_spark.up then
-                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
-                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
-                end                
+                if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
             end,
         },
 
@@ -1127,10 +1138,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 removeStack( "nether_precision" )
                 gain( 1, "arcane_charges" )
 
-                if debuff.radiant_spark.up then
-                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
-                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
-                end
+                if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
             end,
         },
 
@@ -1247,10 +1255,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             tick = function ()
                 if legendary.arcane_harmony.enabled then addStack( "arcane_harmony", nil, 1 ) end
-                if debuff.radiant_spark.up then
-                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
-                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
-                end
+                if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
             end,
 
             auras = {
@@ -1535,10 +1540,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             handler = function ()
                 if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
-                if debuff.radiant_spark.up then
-                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
-                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
-                end
+                if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
             end,
         },
         
@@ -1580,10 +1582,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             handler = function ()
                 applyDebuff( "target", "chilled" )
-                if debuff.radiant_spark.up then
-                    if debuff.radiant_spark_vulnerability.stack > 3 then removeDebuff( "target", "radiant_spark_vulnerability" )
-                    else addStack( "radiant_spark_vulnerability", nil, 1 ) end
-                end
+                if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
             end,
         },
 
@@ -1943,6 +1942,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             toggle = "essences",
 
             handler = function ()
+                applyBuff( "radiant_spark" )
                 applyDebuff( "target", "radiant_spark" )
                 -- applyDebuff( "target", "radiant_spark_vulnerability" )
                 -- RSV doesn't apply until the next hit.
@@ -1957,8 +1957,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 radiant_spark_vulnerability = {
                     id = 307454,
                     duration = 8,
-                    max_stack = 4
-                }
+                    max_stack = 5
+                },
+                radiant_spark_consumed = {
+                    id = 307747,
+                    duration = 10,
+                    max_stack = 1
+                },
             }
         },
 
