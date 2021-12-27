@@ -5682,7 +5682,7 @@ function Hekili:SpecializationChanged()
     for k, v in pairs( class.abilities ) do
         if not seen[ v ] then
             if v.id > 0 then
-                local disable = false
+                local disable
                 tooltip:SetSpellByID( v.id )
 
                 for i = tooltip:NumLines(), 5, -1 do
