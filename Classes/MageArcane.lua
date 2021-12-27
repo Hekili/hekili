@@ -1379,9 +1379,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     
             startsCombat = false,
             texture = 134132,
-
-            item = 36799,
-            bagItem = true,
     
             usable = function ()
                 if fake_mana_gem then return false, "requires mana_gem in bags" end
