@@ -441,9 +441,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         return 9
     end )
 
-    -- actions.precombat+=/variable,name=always_sync_cooldowns,op=reset,default=0
+    -- + actions.precombat+=/variable,name=always_sync_cooldowns,default=-1,op=set,if=variable.always_sync_cooldowns=-1,value=1*set_bonus.tier28_2pc
     spec:RegisterVariable( "always_sync_cooldowns", function ()
-        return 0
+        return set_bonus.tier28_2pc > 0 and 1 or 0
     end )
 
     -- actions.precombat+=/variable,name=rs_max_delay_for_totm,op=reset,default=5
