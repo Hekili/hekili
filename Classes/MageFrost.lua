@@ -682,7 +682,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         cold_snap = {
             id = 235219,
             cast = 0,
-            cooldown = function () return leel > 53 and 270 or 300 end,
+            cooldown = function () return level > 53 and 270 or 300 end,
             gcd = "spell",
 
             toggle = "cooldowns",
