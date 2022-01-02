@@ -5502,6 +5502,8 @@ function state:RunHandler( key, noStart )
     if self.time == 0 and ability.startsCombat and not ability.isProjectile and not noStart then
         self.false_start = self.query_time - 0.01
 
+        ns.callHook( "runHandler_startCombat", key )
+
         -- Assume MH swing at combat start and OH swing half a swing later?
         if self.target.distance < 8 then
             if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = 0.01 + self.query_time - self.swings.mainhand_speed end
@@ -5948,6 +5950,7 @@ end
 
 function state:StartCombat()
     self.false_start = self.query_time - 0.01
+    ns.callHook( "start_combat" )
     if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = self.false_start end
     if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = self.false_start + ( self.swings.offhand_speed / 2 ) end
 end
