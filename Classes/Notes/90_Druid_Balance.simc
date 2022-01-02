@@ -1,5 +1,5 @@
 ## Balance Druid
-## November 23, 2021
+## January 2, 2022
 
 ## Changes:
 ## - Added Solar Beam.
@@ -10,6 +10,7 @@
 ## - Make most 'fight_remains' scenarios apply to boss fights only.
 ## - Treat Tome of Blah Blah Blah as a special trinket.
 ## - Opener (i.e., Wrath, Wrath, Starfire) made more resilient to earlier combat-start.
+## - Fix Kindred Empowerment check for CD usage.
 
 ## Annotated Balance APL can be found at https://balance-simc.github.io/Balance-SimC/md.html?file=balance.txt
 
@@ -46,7 +47,7 @@ actions+=/variable,name=convoke_desync,value=ceil((fight_remains-15-cooldown.ca_
 # Used to delay the usage of CA/Inc when using double on use and prevent usage when an add event is about to die
 actions+=/variable,name=cd_condition,value=(fight_remains>15|raid_event.adds.in>50)&(((equipped.empyreal_ordnance&(cooldown.empyreal_ordnance.remains<160|covenant.venthyr&cooldown.empyreal_ordnance.remains<167+(11*runeforge.sinful_hysteria))&!cooldown.empyreal_ordnance.ready)|equipped.soulletting_ruby&(!covenant.night_fae|cooldown.soulletting_ruby_345801.remains<114)|(cooldown.berserking.ready|!race.troll)&((equipped.inscrutable_quantum_device&(cooldown.inscrutable_quantum_device.ready|action.inscrutable_quantum_device.disabled))|(equipped.shadowed_orb_of_torment&cooldown.tormented_insight_355321.remains)|((variable.on_use_trinket=1|variable.on_use_trinket=3)&(trinket.1.ready_cooldown|trinket.1.cooldown.remains>interpolated_fight_remains-10)|variable.on_use_trinket=2&(trinket.2.ready_cooldown|trinket.2.cooldown.remains>interpolated_fight_remains-10)|variable.on_use_trinket=0)))|covenant.kyrian)|boss&fight_remains<buff.ca_inc.duration
 # Variable used to delay any trinkets and cds when waiting for an Euphoria proc
-actions+=/variable,name=thrill_seeker_wait,value=!soulbind.thrill_seeker.enabled|fight_remains>200|boss&fight_remains<25+(40-buff.thrill_seeker.stack*2)|buff.thrill_seeker.stack>38-(runeforge.sinful_hysteria*5)
+actions+=/variable,name=thrill_seeker_wait,value=!soulbind.thrill_seeker.enabled|fight_remains>200|fight_remains<25+(40-buff.thrill_seeker.stack*2)|buff.thrill_seeker.stack>38-(runeforge.sinful_hysteria*5)
 # Use Empyreal Ordnance 20secs before a CA/Inc use.
 actions+=/use_item,name=empyreal_ordnance,if=cooldown.ca_inc.remains<20&cooldown.convoke_the_spirits.remains<20&(variable.thrill_seeker_wait|buff.thrill_seeker.stack>30+(runeforge.sinful_hysteria*6))&variable.in_gcd|boss&fight_remains<37
 # Use Soulleting Ruby 6secs before a CA/Inc use.
@@ -195,8 +196,7 @@ actions.st+=/force_of_nature,if=ap_check
 # Use Kindred Spirits with any long enough lasting Eclipse and try to line it up with Pulsar and CA/Inc
 actions.st+=/empower_bond,if=((buff.eclipse_solar.remains>10|buff.eclipse_lunar.remains>10)&cooldown.ca_inc.remains>30&(buff.primordial_arcanic_pulsar.value<240|!runeforge.primordial_arcanic_pulsar.equipped))|buff.primordial_arcanic_pulsar.value>=270|buff.ca_inc.remains>10
 # Use CA/Inc with Convoke/Kindred Spirits and don't overwrite Pulsar or when Bloodlust would expire before CA/Inc expires
-actions.st+=/variable,name=cd_condition_st,value=!druid.no_cds&variable.cd_condition&((cooldown.empyreal_ordnance.remains<167+(11*runeforge.sinful_hysteria)&equipped.empyreal_ordnance)|astral_power>=90&(!talent.fury_of_elune.enabled|buff.ca_inc.duration>cooldown.fury_of_elune.remains+8)&dot.sunfire.remains>12&dot.moonfire.remains>8&(dot.stellar_flare.remains>8|!talent.stellar_flare.enabled)&variable.thrill_seeker_wait&(cooldown.empower_bond.up|!covenant.kyrian)&target.time_to_die>buff.ca_inc.duration*0.7|boss&fight_remains<buff.ca_inc.duration|covenant.night_fae|buff.bloodlust.up&buff.bloodlust.remains<buff.ca_inc.duration+(9*runeforge.primordial_arcanic_pulsar.equipped))&!buff.ca_inc.up&(!covenant.night_fae|cooldown.convoke_the_spirits.up|boss&fight_remains<cooldown.convoke_the_spirits.remains+6|fight_remains%%180<buff.ca_inc.duration)
-actions.st+=/variable,name=cd_condition_st,value=!druid.no_cds&variable.cd_condition&((cooldown.empyreal_ordnance.remains<167+(11*runeforge.sinful_hysteria)&equipped.empyreal_ordnance)|astral_power>=90&(!talent.fury_of_elune.enabled|buff.ca_inc.duration>cooldown.fury_of_elune.remains+8)&dot.sunfire.remains>8&dot.moonfire.remains>9&(dot.stellar_flare.remains>10|!talent.stellar_flare.enabled)&variable.thrill_seeker_wait&(buff.kindred_empowerment_energize.up|!covenant.kyrian)&target.time_to_die>buff.ca_inc.duration*0.7|boss&fight_remains<buff.ca_inc.duration|covenant.night_fae|buff.bloodlust.up&buff.bloodlust.remains<buff.ca_inc.duration+(9*runeforge.primordial_arcanic_pulsar.equipped))&!buff.ca_inc.up&(!covenant.night_fae|cooldown.convoke_the_spirits.up|boss&fight_remains<cooldown.convoke_the_spirits.remains+6|boss&fight_remains%%180<buff.ca_inc.duration)
+actions.st+=/variable,name=cd_condition_st,value=!druid.no_cds&variable.cd_condition&((cooldown.empyreal_ordnance.remains<167+(11*runeforge.sinful_hysteria)&equipped.empyreal_ordnance)|astral_power>=90&(!talent.fury_of_elune.enabled|buff.ca_inc.duration>cooldown.fury_of_elune.remains+8)&dot.sunfire.remains>8&dot.moonfire.remains>9&(dot.stellar_flare.remains>10|!talent.stellar_flare.enabled)&variable.thrill_seeker_wait&(cooldown.empower_bond.up|!covenant.kyrian)&target.time_to_die>buff.ca_inc.duration*0.7|boss&fight_remains<buff.ca_inc.duration|covenant.night_fae|buff.bloodlust.up&buff.bloodlust.remains<buff.ca_inc.duration+(9*runeforge.primordial_arcanic_pulsar.equipped))&!buff.ca_inc.up&(!covenant.night_fae|cooldown.convoke_the_spirits.up|boss&fight_remains<cooldown.convoke_the_spirits.remains+6|boss&fight_remains%%180<buff.ca_inc.duration)
 # Use the Venthyr with a CA/Inc that isn't from Pulsar
 actions.st+=/ravenous_frenzy,if=buff.ca_inc.remains>15|buff.ca_inc.duration<32&variable.cd_condition_st
 actions.st+=/celestial_alignment,if=variable.cd_condition_st&(buff.ca_inc.duration>=32|!covenant.venthyr)|buff.ravenous_frenzy.up&buff.ravenous_frenzy.remains<9+conduit.precise_alignment.time_value+(!buff.bloodlust.up&!talent.starlord.enabled)
