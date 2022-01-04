@@ -13,6 +13,8 @@ body:
       options:
         - label: I confirm that I have downloaded the latest version of the addon.
           required: true
+        - label: I am not playing on a private server.
+          required: true
         - label: I checked for an [existing, open ticket](https://github.com/Hekili/hekili/labels/enhancement) for this request and was not able to find one.
           required: true
         - label: I edited the title of this feature request (above) so that it describes the issue I am reporting.

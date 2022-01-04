@@ -13,9 +13,11 @@ body:
       options:
         - label: I confirm that I have downloaded the latest version of the addon.
           required: true
+        - label: I am not playing on a private server.
+          required: true
         - label: I checked for an [existing, open ticket](https://github.com/Hekili/hekili/labels/recommendation) for this issue and was not able to find one.
           required: true
-        - label: I edited the title of this bug report (above) so that it describes the issue I am reporting.
+        - label: I edited the title of this issue (above) so that it describes the issue I am reporting.
           required: true
         - label: I am reporting an issue with the default priority included with the specialization (imported or edited priorities are not supported).
           required: true
