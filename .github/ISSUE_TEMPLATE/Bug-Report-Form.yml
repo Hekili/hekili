@@ -1,5 +1,7 @@
 name: In-Game Error
-description: The addon does not load or there are error messages in-game.  I'll use BugSack and BugGrabber to supply the messages.
+description: |
+  The addon does not load or there are error messages in-game.
+  I'll use BugSack and BugGrabber to supply the messages.
 title: "[BUG] REPLACE THIS TEXT WITH A SHORT DESCRIPTION OF THE BUG YOU ARE REPORTING"
 labels: [bug, triage]
 assignees:
@@ -12,6 +14,8 @@ body:
       description: Please confirm that you've taken these preliminary steps before submitting your issue report.
       options:
         - label: I confirm that I have downloaded the latest version of the addon.
+          required: true
+        - label: I am not playing on a private server.
           required: true
         - label: I checked for an [existing, open ticket](https://github.com/Hekili/hekili/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc) for this issue and was not able to find one.
           required: true
