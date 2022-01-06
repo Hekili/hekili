@@ -4264,7 +4264,7 @@ do
     end
 
     all:RegisterAbility( "gladiators_medallion", {
-        name = function () return ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) end,
+        name = function () return "\"" .. ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) .. "\"" end,
         link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) .. "]|r" end,
         cast = 0,
         cooldown = 120,
@@ -4278,7 +4278,7 @@ do
             end            
             return m
         end,
-        items = { 162897, 161674, 165220, 165055, 167525, 167525, 167377, 172666, 184058, 184055, 184052, 181333, 185309, 185304 },
+        items = { 161674, 162897, 165055, 165220, 167377, 167525, 181333, 184052, 184055, 172666, 184058, 185309, 185304 },
         toggle = "defensives",
 
         usable = function () return debuff.loss_of_control.up, "requires loss of control effect" end,
@@ -4323,7 +4323,7 @@ do
     end
 
     all:RegisterAbility( "gladiators_badge", {
-        name = function () return ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) end,
+        name = function () return "\"" .. ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) .. "\"" end,
         link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) .. "]|r" end,
         cast = 0,
         cooldown = 120,
@@ -4407,7 +4407,7 @@ do
 
     
     all:RegisterAbility( "gladiators_emblem", {
-        name = function () return ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) end,
+        name = function () return "\"" .. ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) .. "\"" end,
         link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) .. "]|r" end,
         cast = 0,
         cooldown = 90,

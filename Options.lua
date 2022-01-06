@@ -4154,13 +4154,33 @@ do
                 set = "SetItemOption",
                 get = "GetItemOption",
                 args = {
+                    multiItem = {
+                        type = "description",
+                        name = function ()
+                            local output = "These settings will apply to |cFF00FF00ALL|r of the following similar PvP trinkets:\n\n"
+
+                            if ability.items then
+                                for i, itemID in ipairs( ability.items ) do
+                                    output = output .. "     " .. class.itemList[ itemID ] .. "\n"
+                                end
+                                output = output .. "\n"
+                            end
+                            
+                            return output
+                        end,
+                        fontSize = "medium",
+                        width = "full",
+                        order = 1,
+                        hidden = function () return ability.key ~= "gladiators_badge" and ability.key ~= "gladiators_emblem" and ability.key ~= "gladiators_medallion" end,
+                    },
+
                     disabled = {
                         type = "toggle",
                         name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
                         desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
                             "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
                         width = 1.5,
-                        order = 1,
+                        order = 1.05,
                     },
 
                     boss = {
