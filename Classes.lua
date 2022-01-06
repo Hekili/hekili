@@ -391,16 +391,16 @@ local HekiliSpecMixin = {
             end
         end
 
-        Hekili:ContinueOnItemLoad( data.item, function( success )
-            if success then
-                local name, link = GetItemInfo( data.item )
+        local potionItem = Item:CreateFromItemID( data.item )
+        potionItem:ContinueOnItemLoad( function()
+            local name = potionItem:GetItemName() or data.name
+            local link = potionItem:GetItemLink() or data.link
 
-                data.name = name
-                data.link = link
+            data.name = name
+            data.link = link
 
-                class.potionList[ potion ] = link
-                return true
-            end
+            class.potionList[ potion ] = link
+            return true
         end )
     end,
 
@@ -509,8 +509,11 @@ local HekiliSpecMixin = {
             -- Register the item if it doesn't already exist.
             class.specs[0]:RegisterGear( ability, item )
 
-            Hekili:ContinueOnItemLoad( item, function( success )
-                if not success then
+            local actionItem = Item:CreateFromItemID( item )
+            actionItem:ContinueOnItemLoad( function( success )
+                --[[ if not success then
+                    Hekili:Error( "Unable to load " .. item .. " (" .. ability .. ")." )
+
                     -- Assume the item is not presently in-game.
                     for key, entry in pairs( class.abilities ) do
                         if a == entry then
@@ -524,13 +527,15 @@ local HekiliSpecMixin = {
                     end
 
                     return
-                end
+                end ]]
 
-                local name, link, _, _, _, _, _, _, slot, texture = GetItemInfo( item )
+                local name = actionItem:GetItemName() or a.name
+                local link = actionItem:GetItemLink() or a.link
+                local texture = actionItem:GetItemIcon() or a.texture
 
                 if name then
                     a.name = ( a.name ~= a.key and a.name ) or name
-                    a.link = a.link or link
+                    a.link = ( a.link ~= a.key and a.link ) or link
                     a.texture = a.texture or texture
 
                     if a.suffix then
@@ -601,11 +606,13 @@ local HekiliSpecMixin = {
                     if data.items then
                         local addedToItemList = false
 
-                        for _, id in ipairs( data.items ) do                            
-                            Hekili:ContinueOnItemLoad( id, function( success )
-                                if not success then return end
+                        for _, id in ipairs( data.items ) do
+                            local copyItem = Item:CreateFromItemID( id )
 
-                                local name, link, _, _, _, _, _, _, slot, texture = GetItemInfo( id )
+                            copyItem:ContinueOnItemLoad( function()
+                                local name = copyItem:GetItemName()
+                                local link = copyItem:GetItemLink()
+                                local texture = copyItem:GetItemIcon()
 
                                 if name then
                                     class.abilities[ name ] = a
@@ -629,8 +636,7 @@ local HekiliSpecMixin = {
                     if a.link  then class.abilities[ a.link ]  = a end
                     if a.id    then class.abilities[ a.id ]    = a end
 
-                    if not a.key then Hekili:Error( "Wanted to EmbedItemOption but no key for " .. ( a.id or "UNKNOWN" ) .. "." )
-                    else Hekili:EmbedItemOption( nil, a.key ) end
+                    Hekili.OptionsReady = false
 
                     return true
                 end
@@ -670,7 +676,7 @@ local HekiliSpecMixin = {
                     class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
                 end
 
-                Hekili:EmbedAbilityOption( nil, a.key )
+                Hekili.OptionsReady = false
             end )
         end
 
@@ -830,7 +836,7 @@ function Hekili:RestoreDefaults()
 
     if #changed > 0 then
         self:LoadScripts()
-        self:RefreshOptions()
+        -- self:RefreshOptions()
 
         if #changed == 1 then
             self:Print( "The |cFFFFD100" .. changed[1] .. "|r priority was updated." )
@@ -3149,7 +3155,9 @@ all:RegisterAbility( "living_oil_canister", {
     gcd = "off",
 
     item = 158216,
-})
+
+    copy = "living_oil_cannister"
+} )
 
 
 -- Remote Guidance Device, 169769
@@ -4290,7 +4298,7 @@ do
         cooldown = 120,
         gcd = "off",
 
-        items = { 162966, 161902, 165223, 165058, 167528, 167528, 167380, 172849, 172669, 175884, 175921, 185161, 185197 },
+        items = { 162966, 161902, 165223, 165058, 167528, 167380, 172849, 172669, 175884, 175921, 185161, 185197 },
         texture = 135884,
             
         toggle = "cooldowns",
@@ -4580,16 +4588,6 @@ all:RegisterAura( "bolstered_spirits", {
     id = 273942,
     duration = 10,
     max_stack = 10,
-} )
-
-
-all:RegisterAbility( "living_oil_cannister", {
-    cast = 0,
-    cooldown = 60,
-    gcd = "off",
-
-    item = 158216,
-    toggle = "cooldowns",
 } )
 
 
@@ -5663,12 +5661,6 @@ function Hekili:SpecializationChanged()
 
     self:UpdateDisplayVisibility()
 
-    if not optionsInitialized then
-        Hekili:EmbedAbilityOptions()
-        Hekili:EmbedSpecOptions()
-        optionsInitialized = true
-    end
-
     if not self:ScriptsLoaded() then self:LoadScripts() end
 
     Hekili:UpdateDamageDetectionForCLEU()
@@ -5708,11 +5700,6 @@ function Hekili:SpecializationChanged()
 end
 
 
-function Hekili:GetSpec()
-    return state.spec.id and class.specs[ state.spec.id ]
-end
-
-
 ns.specializationChanged = function()
     Hekili:SpecializationChanged()
 end
@@ -5726,11 +5713,6 @@ do
             Hekili:SpecializationChanged()
         end
     end )
-end
-
-
-function Hekili:IsValidSpec()
-    return state.spec.id and class.specs[ state.spec.id ] ~= nil
 end
 
 

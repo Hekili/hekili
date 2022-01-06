@@ -92,7 +92,6 @@ function ns.StartEventHandler()
         end
     end )
 
-    Hekili:RunItemCallbacks()
     Hekili:RunSpellCallbacks()
 end
 
@@ -213,49 +212,13 @@ do
     end
 
     RegisterEvent( "GET_ITEM_INFO_RECEIVED", function( event, itemID, success )
-        local callbacks = itemCallbacks[ itemID ]
-
-        if callbacks then
-            for i, func in ipairs( callbacks ) do
-                func( success )
-                callbacks[ i ] = nil
-            end
-
+        if success then
             if state.set_bonus[ itemID ] > 0 and not updatedEquippedItem then
                 updatedEquippedItem = true
                 C_Timer.After( 0.5, CheckForEquipmentUpdates )
             end
-
-            if not success then Hekili:Error( "GET_ITEM_INFO_RECEIVED failed for item '%d'.", itemID or 0 ) end
-
-            itemCallbacks[ itemID ] = nil
         end
     end )
-end
-
-function Hekili:ContinueOnItemLoad( itemID, func )
-    if C_Item.IsItemDataCachedByID( itemID ) and Hekili.PLAYER_ENTERING_WORLD then
-        func( true )
-        return
-    end
-
-    local callbacks = itemCallbacks[ itemID ] or {}
-    insert( callbacks, func )
-    itemCallbacks[ itemID ] = callbacks
-
-    C_Item.RequestLoadItemDataByID( itemID )
-end
-
-function Hekili:RunItemCallbacks()
-    for item, callbacks in pairs( itemCallbacks ) do
-        for i = #callbacks, 1, -1 do
-            if callbacks[ i ]( true ) then remove( callbacks, i ) end
-        end
-
-        if #callbacks == 0 then
-            itemCallbacks[ item ] = nil
-        end
-    end
 end
 
 

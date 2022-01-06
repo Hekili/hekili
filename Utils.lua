@@ -8,6 +8,9 @@ local format = string.format
 local gsub = string.gsub
 local lower = string.lower
 
+local class = Hekili.Class
+local state = Hekili.State
+
 
 local errors = {}
 local eIndex = {}
@@ -610,4 +613,14 @@ do
     end
 
     ns.AddTexString, ns.GetTexString, ns.AtlasToString, ns.GetAtlasFile, ns.GetAtlasCoords = AddTexString, GetTexString, AtlasToString, GetAtlasFile, GetAtlasCoords
+end
+
+
+function Hekili:GetSpec()
+    return state.spec.id and class.specs[ state.spec.id ]
+end
+
+
+function Hekili:IsValidSpec()
+    return state.spec.id and class.specs[ state.spec.id ] ~= nil
 end

@@ -146,10 +146,7 @@ function Hekili:OnInitialize()
     self:RunOneTimeFixes()
     checkImports()
 
-    -- self:RefreshOptions()
-
     ns.updateTalents()
-
     ns.primeTooltipColors()
 
     self:UpdateDisplayVisibility()

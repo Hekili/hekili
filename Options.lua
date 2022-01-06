@@ -8703,7 +8703,7 @@ function Hekili:GetOptions()
 
     self:EmbedToggleOptions( Options )
 
-    self:EmbedDisplayOptions( Options )
+    --[[ self:EmbedDisplayOptions( Options )
 
     self:EmbedPackOptions( Options )
 
@@ -8711,11 +8711,13 @@ function Hekili:GetOptions()
 
     self:EmbedItemOptions( Options )
 
-    self:EmbedSpecOptions( Options )
+    self:EmbedSpecOptions( Options ) ]]
 
     self:EmbedSkeletonOptions( Options )
 
     self:EmbedErrorOptions( Options )
+
+    Hekili.OptionsReady = false
 
     return Options
 end
@@ -8741,7 +8743,7 @@ function Hekili:TotalRefresh( noOptions )
     ns.checkImports()
 
     -- self:LoadScripts()
-    if not noOptions then self:RefreshOptions() end
+    if not noOptions then Hekili.OptionsReady = false end
     self:UpdateDisplayVisibility()
     self:BuildUI()
 
@@ -8766,6 +8768,8 @@ function Hekili:RefreshOptions()
     self:EmbedSpecOptions()
     self:EmbedAbilityOptions()
     self:EmbedItemOptions()
+
+    Hekili.OptionsReady = true
 
     -- Until I feel like making this better at managing memory.
     collectgarbage()

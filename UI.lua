@@ -282,9 +282,9 @@ function ns.StartConfiguration( external )
         end
     end
 
-    -- HekiliNotification:EnableMouse(true)
-    -- HekiliNotification:SetMovable(true)
     if not external then
+        if not Hekili.OptionsReady then Hekili:RefreshOptions() end
+
         local ACD = LibStub( "AceConfigDialog-3.0" )
         ACD:SetDefaultSize( "Hekili", 800, 608 )
         ACD:Open( "Hekili" )
