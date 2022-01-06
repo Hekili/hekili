@@ -540,7 +540,6 @@ local packTemplate = {
     }
 }
 
-
 local specTemplate = ns.specTemplate
 
 
@@ -618,35 +617,7 @@ function Hekili:GetDefaults()
             },
 
             specs = {                              
-                ['**'] = {
-                    abilities = {
-                        ['**'] = {
-                            disabled = false,
-                            toggle = "default",
-                            clash = 0,
-                            targetMin = 0,
-                            targetMax = 0,
-                            boss = false
-                        }
-                    },
-                    items = {
-                        ['**'] = {
-                            disabled = false,
-                            toggle = "default",
-                            clash = 0,
-                            targetMin = 0,
-                            targetMax = 0,
-                            boss = false,
-                            criteria = nil
-                        }
-                    },                    
-                    settings = {},
-                    cooldowns = {},
-                    utility = {},
-                    defensives = {},
-                    custom1 = {},
-                    custom2 = {},
-                },
+                ['**'] = specTemplate
             },
 
             packs = {
@@ -4195,7 +4166,7 @@ do
                     boss = {
                         type = "toggle",
                         name = "Boss Encounter Only",
-                        desc = "If checked, the addon will not recommend " .. k .. " via [Use Items] unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
+                        desc = "If checked, the addon will not recommend " .. ( ability.item and ability.link or k ) .. " via [Use Items] unless you are in a boss fight (or encounter).  If left unchecked, " .. ( ability.item and ability.link or k ) .. " can be recommended in any type of fight.",
                         width = 1.5,
                         order = 1.1,
                     },
@@ -4253,7 +4224,7 @@ do
                     targetMin = {
                         type = "range",
                         name = "Minimum Targets",
-                        desc = "If set above zero, the addon will only allow " .. k .. " to be recommended via [Use Items] if there are at least this many detected enemies.\nSet to zero to ignore.",
+                        desc = "If set above zero, the addon will only allow " .. ( ability.item and ability.link or k ) .. " to be recommended via [Use Items] if there are at least this many detected enemies.\nSet to zero to ignore.",
                         width = 1.5,
                         min = 0,
                         max = 15,
@@ -4264,7 +4235,7 @@ do
                     targetMax = {
                         type = "range",
                         name = "Maximum Targets",
-                        desc = "If set above zero, the addon will only allow " .. k .. " to be recommended via [Use Items] if there are this many detected enemies (or fewer).\nSet to zero to ignore.",
+                        desc = "If set above zero, the addon will only allow " .. ( ability.item and ability.link or k ) .. " to be recommended via [Use Items] if there are this many detected enemies (or fewer).\nSet to zero to ignore.",
                         width = 1.5,
                         min = 0,
                         max = 15,

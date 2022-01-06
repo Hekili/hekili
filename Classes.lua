@@ -63,6 +63,34 @@ local specTemplate = {
     -- Toggles
     custom1Name = "Custom 1",
     custom2Name = "Custom 2",
+
+    abilities = {
+        ['**'] = {
+            disabled = false,
+            toggle = "default",
+            clash = 0,
+            targetMin = 0,
+            targetMax = 0,
+            boss = false
+        }
+    },
+    items = {
+        ['**'] = {
+            disabled = false,
+            toggle = "default",
+            clash = 0,
+            targetMin = 0,
+            targetMax = 0,
+            boss = false,
+            criteria = nil
+        }
+    },                    
+    settings = {},
+    cooldowns = {},
+    utility = {},
+    defensives = {},
+    custom1 = {},
+    custom2 = {},
 }
 ns.specTemplate = specTemplate -- for options.
 
@@ -499,10 +527,10 @@ local HekiliSpecMixin = {
         a.realCast = 0
 
         if item then
-            local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( item )
+            --[[ local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( item )
 
             a.name = name or ability
-            a.link = link or ability
+            a.link = link or ability ]]
 
             class.itemMap[ item ] = ability
 
@@ -529,13 +557,13 @@ local HekiliSpecMixin = {
                     return
                 end ]]
 
-                local name = actionItem:GetItemName() or a.name
-                local link = actionItem:GetItemLink() or a.link
-                local texture = actionItem:GetItemIcon() or a.texture
+                local name = actionItem:GetItemName()
+                local link = actionItem:GetItemLink()
+                local texture = actionItem:GetItemIcon()
 
                 if name then
-                    a.name = ( a.name ~= a.key and a.name ) or name
-                    a.link = ( a.link ~= a.key and a.link ) or link
+                    if not a.name or a.name == a.key then a.name = name end
+                    if not a.link or a.link == a.key then a.link = link end
                     a.texture = a.texture or texture
 
                     if a.suffix then
@@ -4236,6 +4264,8 @@ do
     end
 
     all:RegisterAbility( "gladiators_medallion", {
+        name = function () return ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) end,
+        link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) .. "]|r" end,
         cast = 0,
         cooldown = 120,
         gcd = "off",
@@ -4293,7 +4323,8 @@ do
     end
 
     all:RegisterAbility( "gladiators_badge", {
-        name = "|cff00ccff[Gladiator's Badge]|r",
+        name = function () return ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) end,
+        link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) .. "]|r" end,
         cast = 0,
         cooldown = 120,
         gcd = "off",
@@ -4376,6 +4407,8 @@ do
 
     
     all:RegisterAbility( "gladiators_emblem", {
+        name = function () return ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) end,
+        link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) .. "]|r" end,
         cast = 0,
         cooldown = 90,
         gcd = "off",
