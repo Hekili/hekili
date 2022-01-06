@@ -581,6 +581,22 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         if debuff.sepsis.up then
             state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
         end
+
+        class.abilities.apply_poison = class.abilities.apply_poison_actual
+        if buff.lethal_poison.down or level < 33 then
+            class.abilities.apply_poison = state.spec.assassination and level > 12 and class.abilities.deadly_poison or class.abilities.instant_poison
+        else
+            if level > 32 and buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
+        end
+    end )
+
+    spec:RegisterHook( "runHandler", function ()
+        class.abilities.apply_poison = class.abilities.apply_poison_actual
+        if buff.lethal_poison.down or level < 33 then
+            class.abilities.apply_poison = state.spec.assassination and level > 12 and class.abilities.deadly_poison or class.abilities.instant_poison
+        else
+            if level > 32 and buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
+        end
     end )
 
 
@@ -1747,6 +1763,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if level > 32 and buff.nonlethal_poison.down then return class.abilities.crippling_poison.texture end
             end,
 
+            bind = function ()
+                if buff.lethal_poison.down or level < 33 then
+                    return state.spec.assassination and level > 12 and "deadly_poison" or "instant_poison"
+                end
+                if level > 32 and "nonlethal_poison" then return "crippling_poison" end
+            end,
+
             usable = function ()
                 return buff.lethal_poison.down or level > 32 and buff.nonlethal_poison.down, "requires missing poison"
             end,
@@ -1756,6 +1779,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyBuff( state.spec.assassination and level > 12 and "deadly_poison" or "instant_poison" )
                 elseif level > 32 then applyBuff( "crippling_poison" ) end
             end,
+
+            copy = "apply_poison_actual"
         },
 
 

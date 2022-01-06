@@ -579,6 +579,22 @@ if UnitClassBase( "player" ) == "ROGUE" then
         if debuff.sepsis.up then
             state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
         end
+
+        class.abilities.apply_poison = class.abilities.apply_poison_actual
+        if buff.lethal_poison.down or level < 33 then
+            class.abilities.apply_poison = state.spec.assassination and level > 12 and class.abilities.deadly_poison or class.abilities.instant_poison
+        else
+            if level > 32 and buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
+        end
+    end )
+
+    spec:RegisterHook( "runHandler", function ()
+        class.abilities.apply_poison = class.abilities.apply_poison_actual
+        if buff.lethal_poison.down or level < 33 then
+            class.abilities.apply_poison = state.spec.assassination and level > 12 and class.abilities.deadly_poison or class.abilities.instant_poison
+        else
+            if level > 32 and buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
+        end
     end )
 
     spec:RegisterCycle( function ()
@@ -955,6 +971,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
             
             readyTime = function () return buff.lethal_poison.remains - 120 end,
 
+            bind = function ()
+                if ( buff.lethal_poison.down or level < 33 ) and not ( state.spec.assassination and level > 12 ) then return "apply_poison" end
+            end,
+            
             handler = function ()
                 applyBuff( "instant_poison" )
             end,
