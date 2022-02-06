@@ -9,6 +9,8 @@ local class = Hekili.Class
 
 local all = Hekili.Class.specs[ 0 ]
 
+local GetItemCooldown = _G.GetItemCooldown
+
 -- Covenants
 do
     local CovenantSignatures = {

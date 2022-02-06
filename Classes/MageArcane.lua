@@ -9,6 +9,8 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
+local GetItemCooldown = _G.GetItemCooldown
+
 
 -- Conduits
 -- [x] arcane_prodigy
