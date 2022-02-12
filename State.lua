@@ -545,10 +545,13 @@ state.UnitHealth = UnitHealth
 state.UnitHealthMax = UnitHealthMax
 state.UnitName = UnitName
 state.UnitIsFriend = UnitIsFriend
+
+local UnitIsUnit = _G.UnitIsUnit
+
 state.UnitIsUnit = function( a, b )
-    if a == b then return true end
-    return UnitIsUnit( a, b )
+    return a == b or UnitIsUnit( a, b )
 end
+
 state.UnitIsPlayer = UnitIsPlayer
 state.UnitLevel = UnitLevel
 state.UnitPower = UnitPower
