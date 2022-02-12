@@ -561,11 +561,8 @@ do
     local disabledReasonCache = {}
 
     function Hekili:IsSpellEnabled( spell )
-        return state:IsDisabled( spell )
-        --[[ if disabledCache[ spell ] ~= nil then return disabledCache[ spell ], disabledReasonCache[ spell ] end
-        disabledCache[ spell ], disabledReasonCache[ spell ] = state:IsDisabled( spell )
-        disabledCache[ spell ] = not disabledCache[ spell ]
-        return disabledCache[ spell ], disabledReasonCache[ spell ] ]]
+        local disabled, reason = state:IsDisabled( spell )
+        return not disabled, reason
     end
 
 
@@ -755,8 +752,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     local known, reason = self:IsSpellKnown( action )
                     local enabled, enReason = self:IsSpellEnabled( action )
-
-                    enabled = not enabled
 
                     if debug then
                         local d = ""
