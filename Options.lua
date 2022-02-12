@@ -8303,6 +8303,30 @@ function Hekili:GenerateProfile()
         end
     end
 
+    local keybinds = ""
+    local bindLength = 1
+
+    for name in pairs( Hekili.KeybindInfo ) do
+        if name:len() > bindLength then
+            bindLength = name:len()
+        end
+    end
+
+    for name, data in orderedPairs( Hekili.KeybindInfo ) do
+        local action = format( "%-" .. bindLength .. "s:", name )
+        local count = 0
+        for i = 1, 12 do
+            local bar = data.upper[ i ]            
+            if bar then
+                if count > 0 then action = action .. "," end
+                action = format( "%s %-4s[%02d]", action, bar, i )
+                count = count + 1
+            end
+        end
+        keybinds = keybinds .. "\n    " .. action
+    end
+
+
     return format( "build: %s\n" ..
         "level: %d (%d)\n" ..
         "class: %s\n" ..
@@ -8317,7 +8341,8 @@ function Hekili:GenerateProfile()
         "legendaries: %s\n\n" ..
         "itemIDs: %s\n\n" ..
         "settings: %s\n\n" ..
-        "toggles: %s\n",
+        "toggles: %s\n\n" ..
+        "keybinds: %s\n\n",
         Hekili.Version or "no info",
         UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
         class.file or "NONE",
@@ -8332,7 +8357,8 @@ function Hekili:GenerateProfile()
         legendaries or "none",
         items or "none",
         settings or "none",
-        toggles or "none" )
+        toggles or "none",
+        keybinds or "none" )
 end
 
 
