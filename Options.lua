@@ -7401,7 +7401,7 @@ do
                             type = "toggle",
                             name = "AOE (Multi-Target)",
                             desc = function ()
-                                return format( "If checked, the Display Mode toggle can select AOE mode.\n\nThe Primary display shows recommendations as though you have multiple (%d) targets (even if fewer are detected).\n\n" ..
+                                return format( "If checked, the Display Mode toggle can select AOE mode.\n\nThe Primary display shows recommendations as though you have at least |cFFFFD100%d|r targets (even if fewer are detected).\n\n" ..
                                                 "The number of targets is set in your specialization's options.", self.DB.profile.specs[ state.spec.id ].aoe or 3 )
                             end,
                             width = 1.5,
@@ -7412,7 +7412,7 @@ do
                             type = "toggle",
                             name = "Fixed Dual Display",
                             desc = function ()
-                                return format( "If checked, the Display Mode toggle can select Dual Display mode.\n\nThe Primary display shows single-target recommendations and the AOE display shows recommendations for multiple (%d) targets (even if fewer are detected).\n\n" ..
+                                return format( "If checked, the Display Mode toggle can select Dual Display mode.\n\nThe Primary display shows single-target recommendations and the AOE display shows recommendations for |cFFFFD100%d|r or more targets (even if fewer are detected).\n\n" ..
                                                 "The number of AOE targets is set in your specialization's options.", self.DB.profile.specs[ state.spec.id ].aoe or 3 )
                             end,
                             width = 1.5,
@@ -7422,7 +7422,9 @@ do
                         reactive = {
                             type = "toggle",
                             name = "Reactive Dual Display",
-                            desc = "If checked, the Display Mode toggle can select Reactive mode.\n\nThe Primary display shows single-target recommendations, while the AOE display remains hidden until/unless additional targets are detected.",
+                            desc = function ()
+                                return format( "If checked, the Display Mode toggle can select Reactive mode.\n\nThe Primary display shows single-target recommendations, while the AOE display remains hidden until/unless |cFFFFD100%d|r or more targets are detected.", self.DB.profile.specs[ state.spec.id ].aoe or 3 )
+                            end,
                             width = 1.5,
                             order = 1.5,
                         },
@@ -10504,6 +10506,13 @@ function Hekili:TogglePause( ... )
         self.ActiveDebug = false
     else
         self.Pause = false
+
+        -- Discard the active update thread so we'll definitely start fresh at next update.
+        local primary = ns.UI.Displays[ "Primary" ]
+
+        if primary and primary.activeThread then
+            primary.activeThread = nil
+        end
     end
 
     local MouseInteract = self.Pause or self.Config
