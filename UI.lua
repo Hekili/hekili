@@ -949,7 +949,7 @@ do
             if self.refreshTimer < 0 or self.superUpdate or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
                 local success = Hekili:ProcessHooks( self.id )
 
-                if success then
+                -- if success then
                     self.lastUpdate = now
                     self.criticalUpdate = false
                     self.superUpdate = false
@@ -963,7 +963,7 @@ do
                     self.refreshTimer = refreshRate
 
                     table.wipe( self.eventsTriggered )
-                end
+               -- end
                 
                 Hekili.freshFrame = false
             end
