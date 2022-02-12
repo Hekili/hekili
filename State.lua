@@ -5950,7 +5950,8 @@ end
 
 function state:StartCombat()
     self.false_start = self.query_time - 0.01
-    ns.callHook( "start_combat" )
+    -- The only hook that should be called here doesn't presently work as expected, so we'll save a CPU cycle.
+    -- ns.callHook( "start_combat" )
     if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = self.false_start end
     if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = self.false_start + ( self.swings.offhand_speed / 2 ) end
 end

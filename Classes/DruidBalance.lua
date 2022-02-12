@@ -615,11 +615,12 @@ if UnitClassBase( "player" ) == "DRUID" then
         end
     end )
 
-    spec:RegisterHook( "start_combat", function( action )
+    --[[ This is intended to cause an AP reset on entering an encounter, but it's not working. 
+        spec:RegisterHook( "start_combat", function( action )
         if boss and astral_power.current > 50 then
             spend( astral_power.current - 50, "astral_power" )
         end
-    end )
+    end ) ]]
 
     spec:RegisterHook( "pregain", function( amt, resource, overcap, clean )
         if buff.memory_of_lucid_dreams.up then
