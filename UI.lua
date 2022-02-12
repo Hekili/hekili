@@ -779,6 +779,7 @@ do
 
     local LRC = LibStub("LibRangeCheck-2.0")
     local LSF = SpellFlashCore
+    local catchFlash, lastFramesFlashed = nil, {}
 
     if LSF then
         hooksecurefunc( LSF, "FlashFrame", function( frame )
@@ -800,6 +801,11 @@ do
                 end )
 
                 flash.HekiliHooked = true
+            end
+
+            -- We need to know what flashed so we can force it to stop flashing when the recommendation changes.
+            if catchFlash and flash then
+                lastFramesFlashed[ flash ] = 1
             end
         end )
     end
@@ -924,7 +930,6 @@ do
             -- Force glow, range, SpellFlash updates.
             self.glowTimer = -1
             self.rangeTimer = -1
-            self.flashTimer = -1
             self.delayTimer = -1
 
             self.recTimer = 0.1
@@ -1109,40 +1114,65 @@ do
         if conf.flash.enabled and LSF then
             self.flashTimer = self.flashTimer - elapsed
 
-            if self.flashTimer < 0 then
-                local a = self.Recommendations and self.Recommendations[ 1 ] and self.Recommendations[ 1 ].actionName
+            local a = self.Recommendations and self.Recommendations[ 1 ] and self.Recommendations[ 1 ].actionName
+            local changed = self.lastFlash ~= a
 
-                if a then
-                    local ability = class.abilities[ a ]
+            if a and ( self.flashTimer < 0 or changed ) then
+                self.flashTimer = pulseFlash
 
-                    self.flashColor = self.flashColor or {}
-                    self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
+                local ability = class.abilities[ a ]
 
-                    if self.lastFlash ~= a or now - self.lastFlashTime > 0.5 then
-                        if ability.item then
-                            local iname = LSF.ItemName( ability.item )
-                            LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
-                        else
-                            if ability.flash then
-                                LSF.FlashAction( ability.flash, self.flashColor )
-                            else
-                                local id = ability.known
-                                
-                                if id == nil or type( id ) ~= "number" then
-                                    id = ability.id
-                                end
+                self.flashColor = self.flashColor or {}
+                self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
+                self.lastFlashFrames = self.lastFlashFrames or {}
 
-                                local sname = LSF.SpellName( id )
-                                LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
-                            end
+                catchFlash = GetTime()
+                table.wipe( lastFramesFlashed )
+
+                if ability.item then
+                    local iname = LSF.ItemName( ability.item )
+                    LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                else
+                    if ability.flash then
+                        LSF.FlashAction( ability.flash, self.flashColor )
+                    else
+                        local id = ability.known
+                        
+                        if id == nil or type( id ) ~= "number" then
+                            id = ability.id
                         end
-                        self.lastFlash = a
-                        self.lastFlashTime = now
+
+                        local sname = LSF.SpellName( id )
+                        LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
                     end
                 end
-            end
 
-            self.flashTimer = pulseFlash
+                catchFlash = nil
+
+                if changed then
+                    for i = #self.lastFlashFrames, 1, -1 do
+                        local frame = self.lastFlashFrames[ i ]
+
+                        if not lastFramesFlashed[ frame ] then
+                            frame:Hide()
+                            frame.flashDuration = 0
+                            
+                            table.remove( self.lastFlashFrames, i )
+                        else
+                            -- Mark with a zero so we don't add it again.
+                            lastFramesFlashed[ frame ] = 0
+                        end
+                    end
+
+                    for frame, status in pairs( lastFramesFlashed ) do
+                        if status ~= 0 then
+                            table.insert( self.lastFlashFrames, frame )
+                        end
+                    end
+                end
+
+                self.lastFlash = a
+            end
         end
 
 
@@ -1447,7 +1477,6 @@ do
             self.auraTimer = 0
             self.delayTimer = 0
             self.flashTimer = 0
-            self.lastFlashTime = 0
             self.glowTimer = 0
             self.rangeTimer = 0
             self.recTimer = 0
