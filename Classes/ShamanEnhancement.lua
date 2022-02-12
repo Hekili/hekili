@@ -212,6 +212,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         flame_shock = {
             id = 188389,
             duration = 18,
+            tick_time = function () return 2 * haste end,
             type = "Magic",
             max_stack = 1,
         },
