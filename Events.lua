@@ -1805,8 +1805,8 @@ local function StoreKeybindInfo( page, key, aType, id, console )
         action = ability and ability.key
 
     elseif aType == "item" then
-        local item = GetItemInfo( id )
-        ability = item and class.abilities[ item ]
+        local item, link = GetItemInfo( id )
+        ability = item and ( class.abilities[ item ] or class.abilities[ link ] )
         action = ability and ability.key
 
         if not action then
@@ -1920,7 +1920,7 @@ do
             if queuedRefresh then return end
 
             queuedRefresh = true
-            C_Timer.After( 0.25 - ( now - lastRefresh ), ReadKeybindings )
+            C_Timer.After( 0.3 - ( now - lastRefresh ), ReadKeybindings )
             
             return
         end
