@@ -788,6 +788,8 @@ ns.Audit = function()
         C_Timer.After(1, ns.Audit)
     end
 end
+Hekili:ProfileCPU( "Audit", ns.Audit )
+
 
 do
     -- New TTD, hopefully more aggressive and accurate than old TTD.
