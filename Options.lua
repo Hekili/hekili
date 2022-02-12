@@ -8313,7 +8313,7 @@ function Hekili:GenerateProfile()
     end
 
     for name, data in orderedPairs( Hekili.KeybindInfo ) do
-        local action = format( "%-" .. bindLength .. "s:", name )
+        local action = format( "%-" .. bindLength .. "s =", name )
         local count = 0
         for i = 1, 12 do
             local bar = data.upper[ i ]            
