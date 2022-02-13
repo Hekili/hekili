@@ -365,6 +365,16 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
     -- Gear Sets
 	spec:RegisterGear( "tier28", 188933, 188932, 188931, 188929, 188928 )
+    -- 2-Set - Glorious Purpose - Casting Shield of the Righteous increases your Block chance by 4% for 15 sec, stacking up to 3 times.
+    -- 4-Set - Glorious Purpose - When you take damage, you have a chance equal to 100% of your Block chance to cast Judgment at your attacker.
+    spec:RegisterAuras( {
+        glorious_purpose = {
+            id = 364305,
+            duration = 15,
+            max_stack = 3
+        }
+    } )
+
 
     spec:RegisterGear( "tier19", 138350, 138353, 138356, 138359, 138362, 138369 )
     spec:RegisterGear( "tier20", 147160, 147162, 147158, 147157, 147159, 147161 )
@@ -1136,6 +1146,10 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
                 applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
                 last_shield = query_time
+
+                if set_bonus.tier28_2pc > 0 then
+                    addStack( "glorious_purpose", nil, 1 )
+                end
 
                 if conduit.resolute_defender.enabled and buff.ardent_defender.up then
                     buff.ardent_defender.expires = buff.ardent_defender.expires + ( buff.ardent_defender.duration * ( conduit.resolute_defender.mod * 0.01 ) )
