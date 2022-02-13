@@ -3479,6 +3479,8 @@ local unknown_buff = setmetatable( {
 -- This will currently accept any key and make an honest effort to find the buff on the player.
 -- Unfortunately, that means a buff.dog_farts.up check will actually get a return value.
 
+local buffs_warned = {}
+
 -- Fullscan definitely needs revamping, but it works for now.
 local mt_buffs = {
     -- The aura doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
@@ -3490,6 +3492,10 @@ local mt_buffs = {
         local aura = class.auras[ k ]
 
         if not aura then
+            if Hekili.PLAYER_ENTERED_WORLD and not buffs_warned[ k ] then
+                Hekili:Error( "Unknown buff: " .. k )
+                buffs_warned[ k ] = true
+            end            
             return unknown_buff
         end
 
@@ -4352,9 +4358,12 @@ local unknown_debuff = setmetatable( {
 
 
 -- Table of debuffs applied to the target by the player.
--- Needs review.
+local debuffs_warned = {}
+
 local mt_debuffs = {
-    -- The debuff/ doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
+    -- The debuff/ doesn't exist in our table so check the real game state,
+    -- and copy it so we don't have to use the API next time.
+
     __index = function( t, k )
         local aura = class.auras[ k ]
 
@@ -4381,12 +4390,16 @@ local mt_debuffs = {
             end
 
         else
+            if Hekili.PLAYER_ENTERED_WORLD and not debuffs_warned[ k ] then
+                Hekili:Error( "Unknown debuff: " .. k )
+                debuffs_warned[ k ] = true
+            end
+
             t[ k ] = {
                 key = k,
                 name = k,
                 id = k
             }
-
         end
 
         local real = auras.player.debuff[ k ] or auras.target.debuff[ k ]
@@ -4668,6 +4681,31 @@ local mt_swings = {
         end
     end
 }
+
+
+state.swing = {}
+
+local mt_swing_timer = {
+    __index = function( t, k )
+        local speed = state.swings[ t.type .. "_speed" ]
+        if speed == 0 then return 999 end
+        
+        local swing = state.combat == 0 and state.now or state.swings.mainhand
+        if swing == 0 then return speed end
+
+        -- Technically, we didn't even check if this were "remains" but there are no other symbols.
+        local t = state.query_time
+        return swing + ( ceil( ( t - swing ) / speed ) * speed ) - t
+    end,
+}
+
+state.swing.mh = setmetatable( { type = "mainhand" }, mt_swing_timer )
+state.swing.mainhand = state.swing.mh
+state.swing.main_hand = state.swing.mh
+
+state.swing.oh = setmetatable( { type = "offhand" }, mt_swing_timer )
+state.swing.offhand = state.swing.oh
+state.swing.off_hand = state.swing.oh
 
 
 local mt_aura = {
