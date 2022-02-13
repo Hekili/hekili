@@ -4851,7 +4851,7 @@ all:RegisterAura( "fel_crazed_rage", {
 all:RegisterAbility( "faulty_countermeasure", {
     cast = 0,
     cooldown = 120,
-    gcd = 'off',
+    gcd = "off",
 
     item = 137539,
 
@@ -5161,6 +5161,187 @@ all:RegisterAura( 'norgannons_command', {
     id = 256836,
     duration = 15,
     max_stack = 6
+} )
+
+
+-- Legion TW
+all:RegisterAbilities( {
+    windscar_whetstone = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+    
+        item = 137486,
+    
+        toggle = "cooldowns",
+    
+        handler = function ()
+            applyBuff( "slicing_maelstrom" )
+        end,
+
+        auras = {
+            slicing_maelstrom = {
+                id = 214980,
+                duration = 6,
+                max_stack = 1
+            }
+        }
+    },
+
+    giant_ornamental_pearl = {
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+    
+        item = 137369,
+    
+        toggle = "cooldowns",
+    
+        handler = function ()
+            applyBuff( "gaseous_bubble" )
+        end,
+
+        auras = {
+            gaseous_bubble = {
+                id = 214971,
+                duration = 8,
+                max_stack = 1
+            }
+        }
+    },
+    
+    bottled_hurricane = {
+        cast = 0,
+        gcd = "off",
+    
+        item = 137369,
+    
+        toggle = "cooldowns",
+    
+        buff = "gathering_clouds",
+
+        handler = function ()
+            removeBuff( "gathering_clouds" )
+        end,
+
+        auras = {
+            gathering_clouds = {
+                id = 215294,
+                duration = 60,
+                max_stack = 10
+            }
+        }
+    },
+    
+    shard_of_rokmora = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+    
+        item = 137338,
+    
+        toggle = "defensives",
+
+        handler = function ()
+            applyBuff( "crystalline_body" )
+        end,
+
+        auras = {
+            crystalline_body = {
+                id = 214366,
+                duration = 30,
+                max_stack = 1
+            }
+        }
+    },  
+        
+    talisman_of_the_cragshaper = {
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+    
+        item = 137344,
+    
+        toggle = "defensives",
+    
+        handler = function ()
+            applyBuff( "stance_of_the_mountain" )
+        end,
+
+        auras = {
+            stance_of_the_mountain = {
+                id = 214423,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+            
+    tirathons_betrayal = {
+        cast = 0,
+        cooldown = 75,
+        gcd = "off",
+    
+        item = 137537,
+    
+        toggle = "cooldowns",
+    
+        handler = function ()
+            applyBuff( "darkstrikes" )
+        end,
+
+        auras = {
+            darkstrikes = {
+                id = 215658,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+            
+    orb_of_torment = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+    
+        item = 137538,
+    
+        toggle = "defensives",
+    
+        handler = function ()
+            applyDebuff( "target", "soul_sap" )
+        end,
+
+        auras = {
+            soul_sap = {
+                id = 215936,
+                duration = 20,
+                max_stack = 1
+            }
+        }
+    },
+            
+    moonlit_prism = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+    
+        item = 137541,
+    
+        toggle = "cooldowns",
+    
+        handler = function ()
+            applyBuff( "elunes_light" )
+        end,
+
+        auras = {
+            elunes_light = {
+                id = 215648,
+                duration = 20,
+                max_stack = 20
+            }
+        }
+    },
 } )
 
 
