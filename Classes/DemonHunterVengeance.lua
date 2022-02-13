@@ -382,6 +382,12 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
 
     -- Gear Sets
+    
+    -- Tier 28:
+    -- 2-Set - Burning Hunger - Damage dealt by Immolation Aura has a 10% chance to generate a Lesser Soul Fragment.
+    -- 4-Set - Rapacious Hunger - Consuming a Lesser Soul Fragment reduces the remaining cooldown of your Immolation Aura or Fel Devastation by 1 sec.
+    -- Nothing to model (2/13/22).
+
     spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
     spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
     spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )

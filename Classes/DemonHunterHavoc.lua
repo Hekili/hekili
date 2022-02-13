@@ -258,7 +258,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         },
         metamorphosis = {
             id = 162264,
-            duration = function () return pvptalent.demonic_origins.enabled and 15 or 30 end,
+            duration = function () return 30 + ( pvptalent.demonic_origins.enabled and -15 or 0 ) + ( set_bonus.tier28_4pc > 0 and 6 or 0 ) end,
             max_stack = 1,
             meta = {
                 extended_by_demonic = function ()
@@ -425,6 +425,39 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         return 1
     end )
 
+
+    local furySpent = 0
+
+    local FURY = Enum.PowerType.Fury
+    local lastFury = -1
+
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+        if powerType == "FURY" then
+            local current = UnitPower( "player", FURY )
+
+            if current < lastFury then
+                furySpent = ( furySpent + lastFury - current ) % 60
+            end
+
+            lastFury = current
+        end
+    end )
+
+    spec:RegisterStateExpr( "fury_spent", function ()
+        return furySpent
+    end )
+
+    spec:RegisterHook( "spend", function( amt, resource )
+        if set_bonus.tier28_4pc > 0 and resource == "fury" then
+            fury_spent = fury_spent + amt
+            if fury_spent > 60 then
+                cooldown.metamorphosis.expires = cooldown.metamorphosis.expires - floor( fury_spent / 60 )
+                fury_spent = fury_spent % 60
+            end
+        end
+    end )
+
+
     spec:RegisterHook( "reset_precast", function ()
         last_darkness = 0
         last_metamorphosis = 0
@@ -450,15 +483,10 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         end
 
         meta_cd_multiplier = 1 / ( 1 + rps )
+
+        fury_spent = nil
     end )
 
-
-    spec:RegisterHook( "spend", function( amt, resource )
-        --[[ if level < 116 and equipped.delusions_of_grandeur and resource == "fury" then
-            -- revisit this if really needed... 
-            cooldown.metamorphosis.expires = cooldown.metamorphosis.expires - ( amt / 30 )
-        end ]]
-    end )
 
     spec:RegisterCycle( function ()
         if active_enemies == 1 then return end
@@ -467,7 +495,11 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         if this_action == "nemesis" and Hekili:GetNumTTDsWithin( target.time_to_die ) > 1 then return "cycle" end
     end )
 
+    
     spec:RegisterGear( "tier28", 188898, 188896, 188894, 188893, 188892 )
+    -- 2-Set - Deadly Dance - Increases Death Sweep and Annihilation / Blade Dance and Chaos Strike damage by 20%.
+    -- 4-Set - Deadly Dance - Metamorphosis duration is increased by 6 sec. Every 60 Fury you consume reduces the cooldown of Metamorphosis by 1 sec.
+
 
     -- Gear Sets
     spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
