@@ -297,7 +297,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
 
         lethal_poison = {
-            alias = { "instant_poison", "wound_poison", "slaughter_poison" },
+            alias = { "instant_poison", "wound_poison" },
             aliasMode = "first",
             aliasType = "buff",
             duration = 3600
