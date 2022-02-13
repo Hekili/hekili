@@ -354,7 +354,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
         touch_of_the_magi = {
             id = 210824,
-            duration = 8,
+            duration = function () return set_bonus.tier28_4pc > 0 and 12 or 8 end,
             max_stack = 1,
         },
 
@@ -1005,6 +1005,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     local abs = math.abs
 
+    local ExpireArcaneLucidity = setfenv( function()
+        mana.regen = mana.regen / 1.25
+    end, state )    
+
     spec:RegisterHook( "reset_precast", function ()
         if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
         else removeBuff( "rune_of_power" ) end
@@ -1038,6 +1042,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 -- Hekili:Print( "Opener completed (Arcane Power)." )
             end
         end
+
+        -- Tier 28
+        if buff.arcane_lucidity.up then
+            state:QueueAuraExpiration( "arcane_lucidity", ExpireArcaneLucidity, buff.arcane_lucidity.expires )
+        end
     end )
 
 
@@ -1056,6 +1065,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
 
 	spec:RegisterGear( "tier28", 188845, 188844, 188843, 188842, 188839 )
+    -- 2-Set - Arcane Lucidity - Increases your Arcane damage dealt to enemies affected by Touch of the Magi by %10%.
+    -- 4-Set - Arcane Lucidity - Touch of the Magi's duration is increased by 4 sec and grants 25% mana regeneration for 12 sec.
+    spec:RegisterAura( "arcane_lucidity", {
+        id = 363685,
+        duration = 12,
+        max_stack = 1,
+    } )
 
 
     -- Abilities
@@ -1924,6 +1940,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyDebuff( "target", "touch_of_the_magi" )
+                if set_bonus.tier28_4pc > 0 then
+                    applyBuff( "arcane_lucidity" )
+                    mana.regen = mana.regen * 1.25
+                    state:QueueAuraExpiration( "arcane_lucidity", ExpireArcaneLucidity, buff.arcane_lucidity.expires )
+                end
                 if level > 45 then gain( 4, "arcane_charges" ) end
             end,
         },

@@ -112,7 +112,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         },
         combustion = {
             id = 190319,
-            duration = function () return level > 55 and 12 or 10 end,
+            duration = function () return ( level > 55 and 12 or 10) + ( set_bonus.tier28_2pc > 0 and 2 or 0 ) end,
             type = "Magic",
             max_stack = 1,
         },
@@ -356,6 +356,11 @@ if UnitClassBase( "player" ) == "MAGE" then
     } ) )
 
     spec:RegisterTotem( "rune_of_power", 609815 )
+
+
+    -- Tier 28
+    -- 2-Set - Fiery Rush - Increases the duration of Combustion by 2 sec.
+    -- 4-Set - Fiery Rush - While Combustion is active your Fire Blast and Phoenix Flames recharge 50% faster.
 
 
     spec:RegisterHook( "reset_precast", function ()
@@ -875,8 +880,8 @@ if UnitClassBase( "player" ) == "MAGE" then
             id = 108853,
             cast = 0,
             charges = function () return ( talent.flame_on.enabled and 3 or 2 ) end,
-            cooldown = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * haste end,
-            recharge = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * haste end,
+            cooldown = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * ( set_bonus.tier28_4pc > 0 and buff.combustion.up and 0.5 or 1 ) * haste end,
+            recharge = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * ( set_bonus.tier28_4pc > 0 and buff.combustion.up and 0.5 or 1 ) * haste end,
             icd = 0.5,
             gcd = "off",
             castableWhileCasting = true,
@@ -1149,8 +1154,8 @@ if UnitClassBase( "player" ) == "MAGE" then
             id = 257541,
             cast = 0,
             charges = 3,
-            cooldown = 25,
-            recharge = 25,
+            cooldown = function () return 25 * ( set_bonus.tier28_4pc > 0 and buff.combustion.up and 0.5 or 1 ) * haste end,
+            recharge = function () return 25 * ( set_bonus.tier28_4pc > 0 and buff.combustion.up and 0.5 or 1 ) * haste end,
             gcd = "spell",
 
             startsCombat = true,
