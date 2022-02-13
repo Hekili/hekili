@@ -327,6 +327,8 @@ if UnitClassBase( "player" ) == "MONK" then
     end )
 
 
+    spec:RegisterGear( "tier28", 188916, 188914, 188912, 188911, 188910 )
+
     spec:RegisterGear( "tier19", 138325, 138328, 138331, 138334, 138337, 138367 )
     spec:RegisterGear( "tier20", 147154, 147156, 147152, 147151, 147153, 147155 )
     spec:RegisterGear( "tier21", 152145, 152147, 152143, 152142, 152144, 152146 )

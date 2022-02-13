@@ -364,6 +364,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
 
     -- Gear Sets
+	spec:RegisterGear( "tier28", 188933, 188932, 188931, 188929, 188928 )
+
     spec:RegisterGear( "tier19", 138350, 138353, 138356, 138359, 138362, 138369 )
     spec:RegisterGear( "tier20", 147160, 147162, 147158, 147157, 147159, 147161 )
         spec:RegisterAura( "sacred_judgment", {

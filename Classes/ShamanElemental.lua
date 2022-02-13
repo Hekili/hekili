@@ -470,6 +470,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     end )
 
 
+	spec:RegisterGear( "tier28", 188925, 188924, 188923, 188922, 188920 )
+
+
     -- Abilities
     spec:RegisterAbilities( {
         ancestral_guidance = {

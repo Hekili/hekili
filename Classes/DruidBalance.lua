@@ -940,6 +940,8 @@ if UnitClassBase( "player" ) == "DRUID" then
     end )
 
 
+    spec:RegisterGear( "tier28", 188853, 188851, 188849, 188848, 188847 )
+
     -- Legion Sets (for now).
     spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
         spec:RegisterAura( "solar_solstice", {

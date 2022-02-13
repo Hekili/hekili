@@ -467,6 +467,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         if this_action == "nemesis" and Hekili:GetNumTTDsWithin( target.time_to_die ) > 1 then return "cycle" end
     end )
 
+    spec:RegisterGear( "tier28", 188898, 188896, 188894, 188893, 188892 )
 
     -- Gear Sets
     spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )

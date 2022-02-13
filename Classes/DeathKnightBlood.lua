@@ -564,6 +564,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         }
     } )
 
+    spec:RegisterGear( "tier28", 188868, 188867, 188866, 188864, 188863 )
 
     spec:RegisterGear( "tier19", 138355, 138361, 138364, 138349, 138352, 138358 )
     spec:RegisterGear( "tier20", 147124, 147126, 147122, 147121, 147123, 147125 )

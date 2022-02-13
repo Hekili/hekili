@@ -413,6 +413,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     end )
 
 
+    spec:RegisterGear( 'tier28', 188942, 188941, 188940, 188938, 188937 )
     spec:RegisterGear( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
         spec:RegisterAura( "raging_thirst", {
             id = 242300, 

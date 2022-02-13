@@ -628,6 +628,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
     end ) ]]
 
 
+    spec:RegisterGear( "tier28", 188881, 188880, 188879, 188878, 188875 )
     spec:RegisterGear( "tier21", 152154, 152155, 152156, 152157, 152158, 152159 )
     spec:RegisterGear( "tier20", 147163, 147164, 147165, 147166, 147167, 147168 )
         spec:RegisterAura( "empty_mind", {

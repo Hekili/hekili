@@ -480,6 +480,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     end )
 
 
+    spec:RegisterGear( 'tier28', 188884, 188887, 188888, 188889, 188890 )
     spec:RegisterGear( 'tier21', 152174, 152177, 152172, 152176, 152173, 152175 )
     spec:RegisterGear( 'tier20', 147183, 147186, 147181, 147185, 147182, 147184 )
     spec:RegisterGear( 'tier19', 138314, 138323, 138373, 138320, 138311, 138317 )

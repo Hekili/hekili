@@ -647,6 +647,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
         } )
 
     -- Tier Sets
+    spec:RegisterGear( "tier28", 188901, 188902, 188903, 188905, 188907 
+)
     spec:RegisterGear( "tier21", 152163, 152165, 152161, 152160, 152162, 152164 )
     spec:RegisterGear( "tier20", 147172, 147174, 147170, 147169, 147171, 147173 )
     spec:RegisterGear( "tier19", 138332, 138338, 138371, 138326, 138329, 138335 )

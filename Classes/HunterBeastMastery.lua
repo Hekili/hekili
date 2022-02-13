@@ -728,6 +728,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
     end )
 
 
+    spec:RegisterGear( "tier28", 188861, 188860, 188859, 188858, 188856 )
+
+
     -- Abilities
     spec:RegisterAbilities( {
         a_murder_of_crows = {

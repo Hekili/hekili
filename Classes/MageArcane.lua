@@ -1055,6 +1055,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
 
+	spec:RegisterGear( "tier28", 188845, 188844, 188843, 188842, 188839 )
+
+
     -- Abilities
     spec:RegisterAbilities( {
         alter_time = {
