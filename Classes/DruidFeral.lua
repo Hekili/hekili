@@ -165,18 +165,18 @@ if UnitClassBase( "player" ) == "DRUID" then
         adaptive_swarm_dot = {
             id = 325733,
             duration = function () return mod_circle_dot( 12 ) end,
-            max_stack = 1,
+            max_stack = 3,
             meta = {
-                stacks = function( t ) return t.up and t.count or max( 0, dot.adaptive_swarm_hot.stack - 1 ) end,
+                stack = function( t ) return t.down and dot.adaptive_swarm_hot.up and max( 0, dot.adaptive_swarm_hot.count - 1 ) or t.count end,
             },
             copy = "adaptive_swarm_damage"
         },
         adaptive_swarm_hot = {
             id = 325748,
             duration = function () return mod_circle_hot( 12 ) end,
-            max_stack = 1,
+            max_stack = 3,
             meta = {
-                stacks = function( t ) return t.up and t.count or max( 0, dot.adaptive_swarm_dot.stack - 1 ) end,
+                stack = function( t ) return t.down and dot.adaptive_swarm_dot.up and max( 0, dot.adaptive_swarm_dot.count - 1 ) or t.count end,
             },
             dot = "buff",
             copy = "adaptive_swarm_heal"
