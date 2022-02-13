@@ -1040,6 +1040,20 @@ all:RegisterAuras( {
         duration = 3600,
     },
 
+    -- Can be used in GCD calculation.
+    shadowform = {
+        id = 232698,
+        duration = 3600,
+        max_stack = 1,
+    },
+
+    adrenaline_rush = {
+        id = 13750,
+        duration = 20,
+        max_stack = 1,
+    },
+    
+    -- Bloodlusts
     ancient_hysteria = {
         id = 90355,
         shared = "player", -- use anyone's buff on the player, not just player's.
