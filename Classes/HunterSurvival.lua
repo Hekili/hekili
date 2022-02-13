@@ -380,6 +380,16 @@ if UnitClassBase( "player" ) == "HUNTER" then
     end, state )
 
 
+    -- Tier 28:
+    -- 2-Set - Mad Bombardier - When Kill Command resets, it has a 40% chance to make your next Wildfire Bomb incur no cooldown.
+    -- 4-Set - Mad Bombardier - Your Wildfire Bombs deal 30% additional damage. This bonus is increased to 80% for bombs empowered by Mad Bombardier.
+    spec:RegisterAura( "mad_bombardier", {
+        id = 363805,
+        duration = 20,
+        max_stack = 1,
+    } )
+
+
     spec:RegisterHook( "reset_precast", function()
         if talent.wildfire_infusion.enabled then
             if IsActiveSpell( 270335 ) then current_wildfire_bomb = "shrapnel_bomb"
@@ -1017,8 +1027,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = 18,
-            recharge = 18,
+            cooldown = function () return buff.mad_bombardier.up and 0 or 18 end,
+            recharge = function () return buff.mad_bombardier.up and 0 or 18 end,
             gcd = "spell",
 
             startsCombat = true,
@@ -1030,6 +1040,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             handler = function ()
                 applyDebuff( "target", "pheromone_bomb" )
                 current_wildfire_bomb = "wildfire_bomb"
+                removeBuff( "mad_bombardier" )
             end,
         },
 
@@ -1131,8 +1142,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = 18,
-            recharge = 18,
+            cooldown = function () return buff.mad_bombardier.up and 0 or 18 end,
+            recharge = function () return buff.mad_bombardier.up and 0 or 18 end,
             hasteCD = true,
             gcd = "spell",
 
@@ -1144,6 +1155,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             handler = function ()
                 applyDebuff( "target", "shrapnel_bomb" )
                 current_wildfire_bomb = "wildfire_bomb"
+                removeBuff( "mad_bombardier" )
             end,
         },
 
@@ -1251,8 +1263,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = 18,
-            recharge = 18,
+            cooldown = function () return buff.mad_bombardier.up and 0 or 18 end,
+            recharge = function () return buff.mad_bombardier.up and 0 or 18 end,
             hasteCD = true,
             gcd = "spell",
 
@@ -1264,6 +1276,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             handler = function ()
                 if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
                 current_wildfire_bomb = "wildfire_bomb"
+                removeBuff( "mad_bombardier" )
             end,
         },
 
@@ -1280,8 +1293,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = 18,
-            recharge = 18,
+            cooldown = function () return buff.mad_bombardier.up and 0 or 18 end,
+            recharge = function () return buff.mad_bombardier.up and 0 or 18 end,
             hasteCD = true,
             gcd = "spell",
 
@@ -1303,6 +1316,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 end
                 applyDebuff( "target", "wildfire_bomb_dot" )
                 removeBuff( "flame_infusion" )
+                removeBuff( "mad_bombardier" )
             end,
 
             copy = { 271045, 270335, 270323, 259495 }

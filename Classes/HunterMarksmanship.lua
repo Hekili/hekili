@@ -248,7 +248,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         trick_shots = {
             id = 257622,
             duration = 20,
-            max_stack = 1,
+            max_stack = 2,
         },
         trueshot = {
             id = 288613,
@@ -302,6 +302,48 @@ if UnitClassBase( "player" ) == "HUNTER" then
     end, state )
 
 
+    spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
+        __index = function( t, k )
+            return debuff.tar_trap[ k ]
+        end
+    }, state ) )
+
+
+    -- Tier 28
+    -- 2-Set - Focused Trickery - Trick Shots now also increases the damage of the affected shot by 30%.
+    -- 4-Set - Focused Trickery - Spending 40 Focus grants you 1 charge of Trick Shots.
+
+    local focusSpent = 0
+
+    local FOCUS = Enum.PowerType.Focus
+    local lastFocus = -1
+
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+        if powerType == "FOCUS" then
+            local current = UnitPower( "player", FOCUS )
+
+            if current < lastFocus then
+                focusSpent = ( focusSpent + lastFocus - current ) % 40
+            end
+
+            lastFocus = current
+        end
+    end )
+
+    spec:RegisterStateExpr( "focused_trickery_count", function ()
+        return focusSpent
+    end )
+
+    spec:RegisterHook( "spend", function( amt, resource )
+        if set_bonus.tier28_4pc > 0 and resource == "focus" then
+            focused_trickery_count = focused_trickery_count + amt
+            if focused_trickery_count >= 40 then
+                applyBuff( "trick_shots" )
+                focused_trickery_count = focused_trickery_count % 40
+            end
+        end
+    end )
+
     spec:RegisterHook( "reset_precast", function ()
         if now - action.serpent_sting.lastCast < gcd.execute * 2 and target.unit == action.serpent_sting.lastUnit then
             applyDebuff( "target", "serpent_sting" )
@@ -320,14 +362,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
         if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
 
         last_steady_focus = nil
+        focused_trickery_count = nil
     end )
-
-
-    spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
-        __index = function( t, k )
-            return debuff.tar_trap[ k ]
-        end
-    }, state ) )
 
 
     -- Abilities
