@@ -328,6 +328,15 @@ if UnitClassBase( "player" ) == "MONK" then
 
 
     spec:RegisterGear( "tier28", 188916, 188914, 188912, 188911, 188910 )
+    -- 2-Set - Breath of the Cosmos - Targets ignited by Breath of Fire deal an additional 4% less damage to you.
+    -- 4-Set - Keg of the Heavens - Keg Smash deals an additional 50% damage, heals you for 66% of damage dealt, and grants 66% of damage dealt as maximum health for 10 sec.
+    spec:RegisterAuras( {
+        keg_of_the_heavens = {
+            id = 366794,
+            duration = 10,
+            max_stack = 1,
+        },
+    } )
 
     spec:RegisterGear( "tier19", 138325, 138328, 138331, 138334, 138337, 138367 )
     spec:RegisterGear( "tier20", 147154, 147156, 147152, 147151, 147153, 147155 )
@@ -1007,6 +1016,10 @@ if UnitClassBase( "player" ) == "MONK" then
 
                 if buff.weapons_of_order.up then
                     applyDebuff( "target", "weapons_of_order_debuff", nil, min( 5, debuff.weapons_of_order_debuff.stack + 1 ) )
+                end
+
+                if set_bonus.tier28_4pc > 0 then
+                    applyBuff( "keg_of_the_heavens" )
                 end
 
                 removeBuff( "blackout_combo" )

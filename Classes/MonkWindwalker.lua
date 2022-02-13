@@ -438,6 +438,22 @@ if UnitClassBase( 'player' ) == 'MONK' then
     } )
 
 
+    -- Tier 28
+    -- 2-Set - Fists of Primordium - Increases Fists of Fury damage by 40%.
+    -- 4-Set - Primordial Potential - After 10 offensive abilities, your next 3 offensive abilities deal an additional 22% damage.
+    spec:RegisterAuras( {
+        primordial_potential = {
+            id = 363911,
+            duration = 10,
+            max_stack = 10
+        },
+        primordial_power = {
+            id = 363924,
+            duration = 10,
+            max_stack = 3
+        }
+    } )
+
     spec:RegisterGear( 'tier19', 138325, 138328, 138331, 138334, 138337, 138367 )
     spec:RegisterGear( 'tier20', 147154, 147156, 147152, 147151, 147153, 147155 )
     spec:RegisterGear( 'tier21', 152145, 152147, 152143, 152142, 152144, 152146 )
@@ -529,6 +545,24 @@ if UnitClassBase( 'player' ) == 'MONK' then
     end )
 
 
+    local tier28_offensive_abilities = {
+        blackout_kick = 1,
+        breath_of_fire = 1,
+        chi_burst = 1,
+        chi_wave = 1,
+        crackling_jade_lightning = 1,
+        faeline_stomp = 1,
+        fist_of_the_white_tiger = 1,
+        fists_of_fury = 1,
+        flying_serpent_kick = 1,
+        keg_smash = 1,
+        rising_sun_kick = 1,
+        rushing_jade_wind = 1,
+        spinning_crane_kick = 1,
+        tiger_palm = 1,
+        whirling_dragon_punch = 1,
+    }
+
     spec:RegisterHook( "runHandler", function( key, noStart )
         if combos[ key ] then
             if last_combo == key then removeBuff( "hit_combo" )
@@ -538,6 +572,18 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 if conduit.xuens_bond.enabled and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.1 ) end
             end
             virtual_combo = key
+        end
+
+        if set_bonus.tier28_4pc > 0 and tier28_offensive_abilities[ key ] then
+            if buff.primordial_power.up then
+                removeStack( "primordial_power" )
+            else
+                addStack( "primordial_potential", nil, 1 )
+                if buff.primordial_potential.stack > 9 then
+                    removeBuff( "primordial_potential" )
+                    applyBuff( "primordial_power", nil, 3 )
+                end
+            end
         end
     end )
 
