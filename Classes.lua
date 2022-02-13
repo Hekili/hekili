@@ -1047,6 +1047,12 @@ all:RegisterAuras( {
         max_stack = 1,
     },
 
+    voidform = {
+        id = 194249,
+        duration = 15,
+        max_stack = 1,
+    },    
+
     adrenaline_rush = {
         id = 13750,
         duration = 20,
