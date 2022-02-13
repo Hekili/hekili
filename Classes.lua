@@ -266,11 +266,17 @@ local HekiliSpecMixin = {
                         for k, v in pairs( class.auraList ) do
                             if v == a then class.auraList[ k ] = nil end
                         end
-                        for k, v in pairs( self.auras ) do 
+
+                        --[[ for k, v in pairs( self.auras ) do 
                             if v == a then self.auras[ k ] = nil end
-                        end
+                        end ]]
+
                         Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
-                        insert( Hekili.InvalidSpellIDs, a.id )
+                        Hekili.InvalidSpellIDs[ a.id ] = a.name or a.key
+
+                        a.id = a.key
+                        a.name = a.name or a.key
+
                         return
                     end
 
