@@ -785,7 +785,7 @@ ns.Audit = function()
     Hekili:ExpireTTDs()
 
     if Hekili.DB.profile.enabled then
-        C_Timer.After(1, ns.Audit)
+        C_Timer.After( 1, ns.Audit )
     end
 end
 Hekili:ProfileCPU( "Audit", ns.Audit )
@@ -1041,6 +1041,44 @@ do
             local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
 
             if not excluded and v.n > 3 and ceil( v.lastHealth / v.rate ) > x then
+                count = count + 1
+            end
+        end
+
+        return count
+    end
+
+    function Hekili:GetNumTargetsAboveHealthPct( amount, inclusive, minTTD )
+        local count = 0
+
+        amount = amount > 1 and ( amount / 100 ) or amount
+        inclusive = inclusive or false
+        minTTD = minTTD or 3
+
+        for k, v in pairs(db) do
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
+            if not excluded and ( v.lastHealth > amount or inclusive and v.lastHealth >= amount ) and ceil( v.lastHealth / v.rate ) >= minTTD then
+                count = count + 1
+            end
+        end
+
+        return count
+    end
+
+    function Hekili:GetNumTargetsBelowHealthPct( amount, inclusive, minTTD )
+        local count = 0
+
+        amount = amount > 1 and ( amount / 100 ) or amount
+        inclusive = inclusive or false
+        minTTD = minTTD or 3
+
+        for k, v in pairs(db) do
+            local npcid = k:match( "(%d+)-%x-$" )
+            local excluded = enemyExclusions[ npcid ] and k ~= UnitGUID( "target" )
+
+            if not excluded and ( v.lastHealth < amount or inclusive and v.lastHealth <= amount ) and ceil( v.lastHealth / v.rate ) >= minTTD then
                 count = count + 1
             end
         end

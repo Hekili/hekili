@@ -4619,6 +4619,9 @@ local mt_default_action = {
 
             return true
 
+        elseif k == "cycle" then
+            return ability.cycle == "cycle"
+        
         else
             local val = ability[ k ]
 
