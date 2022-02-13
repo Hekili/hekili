@@ -557,6 +557,45 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     end )   
 
 
+    -- Tier 28
+    -- Unholy DK 2-Piece — Every 5 Scourge Strikes casts Soul Reaper on your target. Soul Reaper grants your pet 20% Attack Speed for 10 seconds.
+    -- Unholy DK 4-Piece — Your minions deal 5% increased damage. When Soul Reaper's secondary effect triggers, this bonus is increased to 25% for 8 seconds.
+    spec:RegisterAuras( {
+        harvest_time_stack = {
+            id = 363885,
+            duration = 3600,
+            max_stack = 5
+        },
+        harvest_time = {
+            id = 363887,
+            duration = 3600,
+            max_stack = 1
+        },
+        harvest_time_pet = {
+            id = 367954,
+            duration = 8,
+            max_stack = 1,
+            generate = function( t )
+                local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 367954 )
+
+                if name then
+                    t.name = name
+                    t.count = count
+                    t.expires = expires
+                    t.applied = expires - duration
+                    t.caster = caster
+                    return
+                end
+
+                t.count = 0
+                t.expires = 0
+                t.applied = 0
+                t.caster = "nobody"
+            end,
+        }
+    } )
+ 
+
     spec:RegisterGear( "tier19", 138355, 138361, 138364, 138349, 138352, 138358 )
     spec:RegisterGear( "tier20", 147124, 147126, 147122, 147121, 147123, 147125 )
         spec:RegisterAura( "master_of_ghouls", {
@@ -960,6 +999,20 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 if debuff.festering_wound.up then
                     if debuff.festering_wound.stack > 1 then
                         applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
+                    
+                        if set_bonus.tier28_2pc > 0 then
+                            if buff.harvest_time.up then
+                                applyDebuff( "target", "soul_reaper" )
+                                removeBuff( "harvest_time" )
+                                summonPet( "army_ghoul", 15 )
+                            else
+                                addStack( "harvest_time_stack", nil, 1 )
+                                if buff.harvest_time_stack.stack == 5 then
+                                    removeBuff( "harvest_time_stack" )
+                                    applyBuff( "harvest_time" )
+                                end
+                            end
+                        end                        
                     else removeDebuff( "target", "festering_wound" ) end
 
                     if conduit.convocation_of_the_dead.enabled and cooldown.apocalypse.remains > 0 then
@@ -1480,6 +1533,20 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 gain( 3, "runic_power" )
                 if debuff.festering_wound.stack > 1 then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
+                    
+                    if set_bonus.tier28_2pc > 0 then
+                        if buff.harvest_time.up then
+                            applyDebuff( "target", "soul_reaper" )
+                            removeBuff( "harvest_time" )
+                            summonPet( "army_ghoul", 15 )
+                        else
+                            addStack( "harvest_time_stack", nil, 1 )
+                            if buff.harvest_time_stack.stack == 5 then
+                                removeBuff( "harvest_time_stack" )
+                                applyBuff( "harvest_time" )
+                            end
+                        end
+                    end
                 else removeDebuff( "target", "festering_wound" ) end
                 apply_festermight( 1 )
 

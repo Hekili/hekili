@@ -547,6 +547,13 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     spec:RegisterGear( "soul_of_the_deathlord", 151640 )
     spec:RegisterGear( "toravons_whiteout_bindings", 132458 )
 
+    -- Tier 28
+    spec:RegisterAura( "arctic_assault", {
+        id = 364384,
+        duration = 8,
+        max_stack = 1,
+    } )
+
 
     spec:RegisterTotem( "ghoul", 1100170 )
 
@@ -986,7 +993,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             range = 7,
 
             handler = function ()
-                removeBuff( "killing_machine" )
                 removeStack( "inexorable_assault" )
             end,
         },
@@ -1174,6 +1180,11 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             handler = function ()
                 removeStack( "inexorable_assault" )
+                
+                removeBuff( "killing_machine" )
+                -- Tier 28:  Decide if modeling the Glacial Advance on multiple targets is worthwhile.
+                if set_bonus.tier28_4pc > 0 then applyDebuff( "target", "razorice", nil, debuff.razorice.stack + 1 ) end
+
                 -- Koltira's Favor is not predictable.
                 if conduit.eradicating_blow.enabled then addStack( "eradicating_blow", nil, 1 ) end
             end,
@@ -1278,6 +1289,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             handler = function ()
                 applyBuff( "remorseless_winter" )
+                if set_bonus.tier28_2pc > 0 then applyBuff( "arctic_assault" ) end
 
                 if active_enemies > 2 and legendary.biting_cold.enabled then
                     applyBuff( "rime" )

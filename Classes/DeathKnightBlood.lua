@@ -565,6 +565,13 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     } )
 
     spec:RegisterGear( "tier28", 188868, 188867, 188866, 188864, 188863 )
+        spec:RegisterAuras( {
+            endless_rune_waltz = {
+                id = 366008,
+                duration = 30,
+                max_stack = 1
+            }
+        } )
 
     spec:RegisterGear( "tier19", 138355, 138361, 138364, 138349, 138352, 138358 )
     spec:RegisterGear( "tier20", 147124, 147126, 147122, 147121, 147123, 147125 )
@@ -646,6 +653,11 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             if data.cooldown == 0 and data.spendType == "runes" then
                 setCooldown( action, 0 )
             end
+        end
+
+        if set_bonus.tier28_2pc > 0 and buff.dancing_rune_weapon.up then
+            if buff.endless_rune_waltz.up then buff.endless_rune_waltz.expires = buff.dancing_rune_weapon.expires + 10
+            else applyBuff( "endless_rune_waltz", buff.dancing_rune_weapon.remains + 10 ) end
         end
     end )
     
@@ -1142,6 +1154,12 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
                 if legendary.gorefiends_domination.enabled and cooldown.vampiric_blood.remains > 0 then
                     cooldown.vampiric_blood.expires = cooldown.vampiric_blood.expires - 2
+                end
+
+                if buff.dancing_rune_weapon.up and set_bonus.tier28_2pc > 1 then
+                    buff.dancing_rune_weapon.expires = buff.dancing_rune_weapon.expires + 0.5
+                    addStack( "endless_rune_waltz", nil, 1 )
+                    buff.endless_rune_waltz.expires = buff.dancing_rune_weapon.expires + 10
                 end
             end,
         },
