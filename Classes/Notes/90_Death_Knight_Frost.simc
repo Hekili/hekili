@@ -1,5 +1,5 @@
 ## Death Knight Frost
-## November 13, 2021
+## February 12, 2022
 
 ## Changes
 ## - Removed last-second usage of Chains of Ice as it doesn't play well in practice.
@@ -24,7 +24,7 @@ actions+=/variable,name=frost_strike_conduits,value=conduit.eradicating_blow&buf
 actions+=/variable,name=deaths_due_active,value=death_and_decay.ticking&covenant.night_fae
 # Apply Frost Fever, maintain Icy Talons and keep Remorseless Winter rolling
 actions+=/remorseless_winter,if=conduit.everfrost&talent.gathering_storm&!talent.obliteration&cooldown.pillar_of_frost.remains
-actions+=/howling_blast,cycle_targets=1,if=dot.frost_fever.refreshable&(talent.icecap|!buff.breath_of_sindragosa.up&talent.breath_of_sindragosa|talent.obliteration&cooldown.pillar_of_frost.remains&!buff.killing_machine.up)
+actions+=/howling_blast,cycle_targets=1,=!dot.frost_fever.remains&(talent.icecap|!buff.breath_of_sindragosa.up&talent.breath_of_sindragosa|talent.obliteration&cooldown.pillar_of_frost.remains&!buff.killing_machine.up)
 actions+=/glacial_advance,if=buff.icy_talons.remains<=gcd&talent.icy_talons&spell_targets.glacial_advance>=2&(talent.icecap|talent.breath_of_sindragosa&cooldown.breath_of_sindragosa.remains>15|talent.obliteration&!buff.pillar_of_frost.up)
 actions+=/frost_strike,if=buff.icy_talons.remains<=gcd&talent.icy_talons&(talent.icecap|talent.breath_of_sindragosa&!buff.breath_of_sindragosa.up&cooldown.breath_of_sindragosa.remains>10|talent.obliteration&!buff.pillar_of_frost.up)
 # Choose Action list to run
