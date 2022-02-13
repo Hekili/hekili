@@ -769,6 +769,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             removeBuff( "starsurge_empowerment_solar" )
 
             applyBuff( "eclipse_lunar", ( duration or class.auras.eclipse_lunar.duration ) + buff.eclipse_lunar.remains )
+            if set_bonus.tier28_2pc > 0 then applyDebuff( "target", "fury_of_elune_ap" ) end
             applyBuff( "eclipse_solar", ( duration or class.auras.eclipse_solar.duration ) + buff.eclipse_solar.remains )
 
             state:QueueAuraExpiration( "ca_inc", ExpireCelestialAlignment, buff.ca_inc.expires )
@@ -796,7 +797,8 @@ if UnitClassBase( "player" ) == "DRUID" then
                 end
 
                 if eclipse.wrath_counter == 0 and ( eclipse.state == "LUNAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
-                    applyBuff( "eclipse_lunar", class.auras.eclipse_lunar.duration + buff.eclipse_lunar.remains )                
+                    applyBuff( "eclipse_lunar", class.auras.eclipse_lunar.duration + buff.eclipse_lunar.remains )
+                    if tier28_2pc > 0 then applyDebuff( "target", "fury_of_elune_ap" ) end
                     state:RemoveAuraExpiration( "eclipse_lunar" )
                     state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
                     if talent.solstice.enabled then applyBuff( "solstice" ) end
@@ -941,6 +943,8 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
     spec:RegisterGear( "tier28", 188853, 188851, 188849, 188848, 188847 )
+    -- 2-Set - Celestial Pillar - Entering Lunar Eclipse creates a Fury of Elune at 25% effectiveness that follows your current target for 8 sec.
+    -- 4-Set - Umbral Infusion - While in an Eclipse, the cost of Starsurge and Starfall is reduced by 20%.
 
     -- Legion Sets (for now).
     spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
@@ -1862,7 +1866,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = function () return talent.stellar_drift.enabled and 12 or 0 end,
             gcd = "spell",
 
-            spend = function () return ( buff.oneths_perception.up and 0 or 50 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) end,
+            spend = function () return ( buff.oneths_perception.up and 0 or 50 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and 0.8 or 1 ) end,
             spendType = "astral_power",
 
             startsCombat = true,
@@ -1948,7 +1952,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( buff.oneths_clear_vision.up and 0 or 30 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) end,
+            spend = function () return ( buff.oneths_clear_vision.up and 0 or 30 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and 0.8 or 1 ) end,
             spendType = "astral_power",
 
             startsCombat = true,

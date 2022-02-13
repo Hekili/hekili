@@ -530,6 +530,22 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
     -- Gear.
+    -- Tier 28
+    -- 2-Set - Architect's Design - Casting Barkskin causes you to Berserk for 4 sec.
+    -- 4-Set - Architect's Aligner - While Berserked, you radiate (45%26.6% of Attack power) Cosmic damage to nearby enemies and heal yourself for (61%39.7% of Attack power) every 1 sec.
+    spec:RegisterAuras( {
+        architects_aligner = {
+            id = 363793,
+            duration = function () return talent.incarnation.enabled and 30 or 15 end,
+            max_stack = 1,
+        },
+        architects_aligner_heal = {
+            id = 363789,
+            duration = function () return talent.incarnation.enabled and 30 or 15 end,
+            max_stack = 1,
+        }
+    } )
+
     spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
     spec:RegisterGear( "tier19", 138330, 138336, 138366, 138324, 138327, 138333 )
     spec:RegisterGear( "tier20", 147136, 147138, 147134, 147133, 147135, 147137 ) -- Bonuses NYI
@@ -671,6 +687,14 @@ if UnitClassBase( "player" ) == "DRUID" then
                     applyBuff( "ironfur" )
                     applyBuff( "frenzied_regeneration" )
                 end
+
+                if set_bonus.tier28_2pc > 0 then
+                    applyBuff( "berserk", max( buff.berserk.remains, 4 ) )
+                    if set_bonus.tier28_4pc > 0 then
+                        applyBuff( "architects_aligner", buff.berserk.remains )
+                        applyBuff( "architects_aligner_heal", buff.berserk.remains )
+                    end
+                end
             end,
         },
 
@@ -712,6 +736,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             handler = function ()
                 applyBuff( "berserk" )
+                if set_bonus.tier28_4pc > 0 then
+                    applyBuff( "architects_aligner", buff.berserk.remains )
+                    applyBuff( "architects_aligner_heal", buff.berserk.remains )
+                end
             end,
 
             copy = "berserk_bear"
@@ -1018,6 +1046,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             handler = function ()
                 applyBuff( "incarnation" )
+                if set_bonus.tier28_4pc > 0 then
+                    applyBuff( "architects_aligner", buff.incarnation.remains )
+                    applyBuff( "architects_aligner_heal", buff.incarnation.remains )
+                end
             end,
 
             copy = { "incarnation_guardian_of_ursoc", "Incarnation" }

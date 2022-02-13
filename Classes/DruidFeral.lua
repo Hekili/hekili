@@ -901,6 +901,10 @@ if UnitClassBase( "player" ) == "DRUID" then
                 gainChargeTime( talent.incarnation.enabled and "incarnation" or "berserk", 0.3 )
             end
 
+            if set_bonus.tier28_2pc > 0 then
+                gainChargeTime( talent.incarnation.enabled and "incarnation" or "berserk", a * 0.5 )
+            end
+
             if a >= 5 then
                 applyBuff( "predatory_swiftness" )
             end
@@ -972,7 +976,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
     spec:RegisterStateExpr( "bleeding", function ()
-        return debuff.rake.up or debuff.rip.up or debuff.thrash_cat.up or debuff.feral_frenzy.up
+        return debuff.rake.up or debuff.rip.up or debuff.thrash_bear.up or debuff.thrash_cat.up or debuff.feral_frenzy.up or debuff.sickle_of_the_lion.up
     end )
 
     spec:RegisterStateExpr( "effective_stealth", function () -- TODO: Test sudden_ambush soulbind conduit
@@ -1000,6 +1004,17 @@ if UnitClassBase( "player" ) == "DRUID" then
     spec:RegisterGear( "tier20", 147136, 147138, 147134, 147133, 147135, 147137 )
     spec:RegisterGear( "tier19", 138330, 138336, 138366, 138324, 138327, 138333 )
     spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
+
+
+    -- Tier 28
+    -- 2-Set - Heart of the Lion - Each combo point spent reduces the cooldown of Incarnation: King of the Jungle / Berserk by 0.5 sec.
+    -- 4-Set - Sickle of the Lion - Entering Berserk causes you to strike all nearby enemies, dealing (700%320.2% of Attack power) Bleed damage over 10 sec. Deals reduced damage beyond 8 targets.
+    spec:RegisterAura( "sickle_of_the_lion", {
+        id = 363830,
+        duration = 10,
+        max_stack = 1
+    } )
+
 
     local function calculate_damage( coefficient, masteryFlag, armorFlag, critChanceMult )
         local feralAura = 1.29
@@ -1069,6 +1084,10 @@ if UnitClassBase( "player" ) == "DRUID" then
             handler = function ()
                 if buff.cat_form.down then shift( "cat_form" ) end
                 applyBuff( "berserk" )
+                if set_bonus.tier28_4pc > 0 then
+                    applyDebuff( "target", "sickle_of_the_lion" )
+                    active_dot.sickle_of_the_lion = max( 1, active_enemies )
+                end
             end,
 
             copy = { "berserk_cat", "bs_inc" }
