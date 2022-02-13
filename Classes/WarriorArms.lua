@@ -413,6 +413,32 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     end )
 
 
+    spec:RegisterStateExpr( "swap_for_execute", function ()
+        if not settings.cycle then return false end
+        
+        local actual = rawget( args, "cycle_targets")
+        args.cycle_targets = 1
+        
+        local result = action.execute.cycle
+        args.cycle_targets = actual
+        
+        return result
+    end )
+
+
+    spec:RegisterStateExpr( "swap_for_condemn", function ()
+        if not settings.cycle or not covenant.venthyr then return false end
+
+        local actual = rawget( args, "cycle_targets")
+        args.cycle_targets = 1
+        
+        local result = action.condemn.cycle
+        args.cycle_targets = actual
+
+        return result
+    end )
+
+
     spec:RegisterGear( 'tier28', 188942, 188941, 188940, 188938, 188937 )
     spec:RegisterGear( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
         spec:RegisterAura( "raging_thirst", {
@@ -710,7 +736,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             cycle = function ()
-                if args.cycle_targets ~= 1 or buff.sudden_death.up or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) then return end
+                if not settings.cycle or args.cycle_targets ~= 1 or buff.sudden_death.up or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) then return end
                 if Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0 then return "cycle" end
             end,         
                
@@ -1413,7 +1439,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             cycle = function ()
-                if args.cycle_targets ~= 1 or buff.sudden_death.up or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80 then return end
+                if not settings.cycle or args.cycle_targets ~= 1 or buff.sudden_death.up or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80 then return end
                 if ( Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0 or Hekili:GetNumTargetsAboveHealthPct( 80, false, 5 ) > 0 ) then return "cycle" end
             end,
 
