@@ -744,7 +744,7 @@ do
             return
         end
 
-        local cDebuff = state.debuff[ aura ]
+        local cDebuff = class.auras[ aura ] and state.debuff[ aura ]
 
         if not cDebuff then
             debug( " - the debuff '%s' was not found in our database.", aura )
@@ -2080,7 +2080,7 @@ local mt_state = {
             local aura_name = ability and ability.aura or t.this_action
             local aura = class.auras[ aura_name ]
 
-            local app = aura and ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or nil
+            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) ) or nil
 
             -- This uses the default aura duration (if available) to keep pandemic windows accurate.
             local duration = aura and aura.duration or 15
@@ -3492,7 +3492,7 @@ local mt_buffs = {
         local aura = class.auras[ k ]
 
         if not aura then
-            if Hekili.PLAYER_ENTERED_WORLD and not buffs_warned[ k ] then
+            if Hekili.PLAYER_ENTERING_WORLD and not buffs_warned[ k ] then
                 Hekili:Error( "Unknown buff: " .. k )
                 buffs_warned[ k ] = true
             end            
@@ -4390,7 +4390,7 @@ local mt_debuffs = {
             end
 
         else
-            if Hekili.PLAYER_ENTERED_WORLD and not debuffs_warned[ k ] then
+            if Hekili.PLAYER_ENTERING_WORLD and not debuffs_warned[ k ] then
                 Hekili:Error( "Unknown debuff: " .. k )
                 debuffs_warned[ k ] = true
             end
