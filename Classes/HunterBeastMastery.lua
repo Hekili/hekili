@@ -1319,8 +1319,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                if settings.check_pet_range and Hekili:PetBasedTargetDetectionIsReady( true ) and not Hekili:TargetIsNearPet( "target" ) then return false, "not in-range of pet" end
                 return true
+            end,
+
+            disabled = function()
+                if settings.check_pet_range and Hekili:PetBasedTargetDetectionIsReady( true ) and not Hekili:TargetIsNearPet( "target" ) then return true, "not in-range of pet" end
             end,
 
             handler = function ()
