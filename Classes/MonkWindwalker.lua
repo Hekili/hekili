@@ -26,7 +26,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             debuff = true,
 
             last = function ()
-                local app = state.buff.crackling_jade_lightning.applied
+                local app = state.debuff.crackling_jade_lightning.applied
                 local t = state.query_time
 
                 return app + floor( t - app )

@@ -176,7 +176,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             aura = "swarming_mist",
 
             last = function ()
-                local app = state.debuff.swarming_mist.applied
+                local app = state.buff.swarming_mist.applied
                 local t = state.query_time
 
                 return app + floor( ( t - app ) / class.auras.swarming_mist.tick_time ) * class.auras.swarming_mist.tick_time

@@ -39,9 +39,10 @@ if UnitClassBase( "player" ) == "DRUID" then
     spec:RegisterResource( Enum.PowerType.LunarPower, {
         fury_of_elune = {
             aura = "fury_of_elune_ap",
+            debuff = true,
 
             last = function ()
-                local app = state.buff.fury_of_elune_ap.applied
+                local app = state.debuff.fury_of_elune_ap.applied
                 local t = state.query_time
 
                 return app + floor( ( t - app ) / 0.5 ) * 0.5
