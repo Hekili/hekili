@@ -258,28 +258,50 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     local gloryRage = 0
 
-spec:RegisterStateExpr( "glory_rage", function ()
-        return gloryRage
+    spec:RegisterStateExpr( "glory_rage", function ()
+            return gloryRage
     end )
 
+
+    local rageSpent = 0
+
+    spec:RegisterStateExpr( "rage_spent", function ()
+        return rageSpent
+    end )
+
+
+    local outburstRage = 0
+
+    spec:RegisterStateExpr( "outburst_rage", function ()
+        return outburstRage
+    end )
+    
+    
     local RAGE = Enum.PowerType.Rage
     local lastRage = -1
 
     spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
-        if powerType == "RAGE" and state.legendary.glory.enabled and FindUnitBuffByID( "player", 324143 ) then
+        if powerType == "RAGE" then
             local current = UnitPower( "player", RAGE )
 
             if current < lastRage then
-                gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
+                if state.legendary.glory.enabled and FindUnitBuffByID( "player", 324143 ) then
+                    gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
+                end
+
+                if state.talent.anger_management.enabled then
+                    rageSpent = ( rageSpent + lastRage - current ) % 10 -- Anger Management
+                end
+
+                if state.set_bonus.tier28_2pc > 0 then
+                    outburstRage = ( outburstRage + lastRage - current ) % 30 -- Outburst.
+                end
             end
 
             lastRage = current
         end
     end )
-
-    spec:RegisterStateExpr( "glory_rage", function ()
-        return gloryRage
-    end )
+    
 
     -- model rage expenditure reducing CDs...
     spec:RegisterHook( "spend", function( amt, resource )
@@ -302,8 +324,41 @@ spec:RegisterStateExpr( "glory_rage", function ()
     
                 buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction
             end
+
+            if set_bonus.tier28_2pc > 0 then
+                outburst_rage = outburst_rage + amt
+                local stacks = floor( outburst_rage / 30 )
+                outburst_rage = outburst_rage % 30
+
+                if stacks > 0 then
+                    addStack( "seeing_red", nil, stacks )
+                end
+            end
         end
     end )
+
+
+    -- Tier 28
+    -- 2-Set - Outburst - Consuming 30 rage grants a stack of Seeing Red, which transforms at 8 stacks into Outburst, causing your next Shield Slam or Thunder Clap to be 200% more effective and grant Ignore Pain.
+    -- 4-Set - Outburst - Avatar increases your damage dealt by an additional 10% and decreases damage taken by 10%.
+    spec:RegisterAuras( {
+        seeing_red = {
+            id = 364006,
+            duration = 30,
+            max_stack = 8,
+        },
+        outburst = {
+            id = 364010,
+            duration = 30,
+            max_stack = 1
+        },
+        outburst_buff = {
+            id = 364641,
+            duration = function () return class.auras.avatar.duration end,
+            max_stack = 1,
+        }
+    })
+
 
 
     spec:RegisterGear( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
@@ -360,6 +415,10 @@ spec:RegisterStateExpr( "glory_rage", function ()
                 if azerite.bastion_of_might.enabled then
                     applyBuff( "bastion_of_might" )
                     applyBuff( "ignore_pain" )
+                end
+                if set_bonus.tier28_4pc > 0 then
+                    applyBuff( "outburst" )
+                    applyBuff( "outburst_buff" )
                 end
             end,
         },
@@ -838,6 +897,11 @@ spec:RegisterStateExpr( "glory_rage", function ()
                 end
 
                 if talent.punish.enabled then applyDebuff( "target", "punish" ) end
+
+                if buff.outburst.up then
+                    applyBuff( "ignore_pain" )
+                    removeBuff( "outburst" )
+                end
             end,
         },
 
@@ -953,6 +1017,11 @@ spec:RegisterStateExpr( "glory_rage", function ()
 
                 if legendary.thunderlord.enabled and cooldown.demoralizing_shout.remains > 0 then
                     reduceCooldown( "demoralizing_shout", min( 3, active_enemies ) * 1.5 )
+                end
+
+                if buff.outburst.up then
+                    applyBuff( "ignore_pain" )
+                    removeBuff( "outburst" )
                 end
             end,
         },

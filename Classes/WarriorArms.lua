@@ -167,7 +167,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         colossus_smash = {
             id = 208086,
-            duration = 10,
+            duration = function () return set_bonus.tier28_2pc > 0 and 13 or 10 end,
             max_stack = 1,
         },
         deadly_calm = {
@@ -440,6 +440,25 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
     spec:RegisterGear( 'tier28', 188942, 188941, 188940, 188938, 188937 )
+
+    -- Tier 28
+    -- 2-Set - Pile On - Colossus Smash / Warbreaker lasts 3 sec longer and increases your damage dealt to affected enemies by an additional 5%.
+    -- 4-Set - Pile On - Tactician has a 50% increased chance to proc against enemies with Colossus Smash and causes your next Overpower to grant 2% Strength, up to 20% for 15 sec.
+    spec:RegisterAuras( {
+        pile_on_ready = {
+            id = 363917,
+            duration = 15,
+            max_stack = 1,
+        },
+        pile_on_str = {
+            id = 366769,
+            duration = 15,
+            max_stack = 4,
+            copy = "pile_on"
+        }
+    })
+
+
     spec:RegisterGear( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
         spec:RegisterAura( "raging_thirst", {
             id = 242300, 
@@ -970,6 +989,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 if buff.striking_the_anvil.up then
                     removeBuff( "striking_the_anvil" )
                     gainChargeTime( "mortal_strike", 1.5 )
+                end
+
+                if buff.pile_on_ready.up then
+                    addStack( "pile_on_str", nil, 1 )
+                    removeBuff( "pile_on_ready" )
                 end
             end,
         },
