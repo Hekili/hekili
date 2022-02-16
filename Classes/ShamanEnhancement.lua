@@ -480,6 +480,11 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     } ) )
 
 
+    local TriggerFeralMaelstrom = setfenv( function()
+        addStack( "maelstrom_weapon", nil, 1 )
+    end, state )
+
+
     spec:RegisterHook( "reset_precast", function ()
         local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
 
@@ -497,6 +502,15 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         if settings.pad_windstrike and cooldown.windstrike.remains > 0 then
             reduceCooldown( "windstrike", latency * 2 )
+        end
+
+        if buff.feral_spirit.up then
+            local next_mw = query_time + 3 - ( ( query_time - buff.feral_spirit.applied ) % 3 )
+
+            while ( next_mw <= buff.feral_spirit.expires ) do
+                state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, next_mw, "AURA_PERIODIC" )
+                next_mw = next_mw + 3
+            end
         end
     end )
 
@@ -528,6 +542,11 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     spec:RegisterGear( "tier19", 138341, 138343, 138345, 138346, 138348, 138372 )
     spec:RegisterGear( "class", 139698, 139699, 139700, 139701, 139702, 139703, 139704, 139705 )
 
+
+    -- Tier 28
+    -- 2-Set - Stormspirit - Spending Maelstrom Weapon has a 3% chance per stack to summon a Feral Spirit for 9 sec.
+    -- 4-Set - Stormspirit - Your Feral Spirits' attacks have a 20% chance to trigger Stormbringer, resetting the cooldown of your Stormstrike.
+    -- 2/15/22:  No mechanics require actual modeling; nothing can be predicted.
 
 
     spec:RegisterGear( "akainus_absolute_justice", 137084 )
@@ -876,6 +895,13 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 -- instant MW stack?
                 applyBuff( "feral_spirit" )
+
+                addStack( "maelstrom_weapon", nil, 1 )
+                state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, query_time + 3, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, query_time + 6, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, query_time + 9, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, query_time + 12, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, query_time + 15, "AURA_PERIODIC" )
             end
         },
 

@@ -459,6 +459,21 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     } ) )
 
 
+	spec:RegisterGear( "tier28", 188925, 188924, 188923, 188922, 188920 )
+    -- 2-Set - Fireheart - While your Storm Elemental / Fire Elemental is active, your Lava Burst deals 20% additional damage and you gain Lava Surge every 8 sec.
+    -- 4-Set - Fireheart - Casting Lava Burst extends the duration of your Storm Elemental / Fire Elemental by 1.5 sec. If your Storm Elemental / Fire Elemental is not active. Lava Burst has a 20% chance to reduce its remaining cooldown by 10 sec instead.
+    spec:RegisterAura( "fireheart", {
+        id = 364523,
+        duration = 30,
+        max_stack = 1
+    } )
+
+
+    local TriggerFireheart = setfenv( function()
+        applyBuff( "lava_surge" )        
+    end, state )
+    
+    
     spec:RegisterHook( "reset_precast", function ()
         if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
             applyBuff( "master_of_the_elements" )
@@ -467,10 +482,19 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         rawset( state.pet, "earth_elemental", talent.primal_elementalist.enabled and state.pet.primal_earth_elemental or state.pet.greater_earth_elemental )
         rawset( state.pet, "fire_elemental",  talent.primal_elementalist.enabled and state.pet.primal_fire_elemental  or state.pet.greater_fire_elemental  )
         rawset( state.pet, "storm_elemental", talent.primal_elementalist.enabled and state.pet.primal_storm_elemental or state.pet.greater_storm_elemental )
+
+        if buff.fireheart.up then
+            if pet.fire_elemental.up then buff.fireheart.expires = pet.fire_elemental.expires
+            elseif pet.storm_elemental.up then buff.fireheart.expires = pet.storm_elemental.expires end
+
+            -- Proc the next Lava Surge from Fireheart.
+            local next_ls = 8 - ( ( query_time - buff.fireheart.applied ) % 8 )
+
+            if next_ls < buff.fireheart.remains then
+                state:QueueAuraEvent( "fireheart", TriggerFireheart, query_time + next_ls, "AURA_PERIODIC" )
+            end
+        end
     end )
-
-
-	spec:RegisterGear( "tier28", 188925, 188924, 188923, 188922, 188920 )
 
 
     -- Abilities
@@ -900,13 +924,17 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = false,
             texture = 135790,
 
-
             timeToReady = function ()
                 return max( pet.earth_elemental.remains, pet.primal_earth_elemental.remains, pet.storm_elemental.remains, pet.primal_storm_elemental.remains )
             end,            
 
             handler = function ()
                 summonPet( talent.primal_elementalist.enabled and "primal_fire_elemental" or "greater_fire_elemental" )
+                
+                if set_bonus.tier28_2pc > 0 then
+                    applyBuff( "fireheart", pet.fire_elemental.remains )
+                    state:QueueAuraEvent( "fireheart", TriggerFireheart, query_time + 8, "AURA_PERIODIC" )
+                end
             end,
         },
 
@@ -1119,6 +1147,16 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                     applyBuff( "splintered_elements", nil, active_dot.flame_shock )
                 end
                 removeBuff( "primordial_wave" )
+
+                if set_bonus.tier28_4pc > 0 then
+                    if pet.fire_elemental.up then
+                        pet.fire_elemental.expires = pet.fire_elemental.expires + 1.5
+                        buff.fireheart.expires = pet.fire_elemental.expires
+                    elseif pet.storm_elemental.up then
+                        pet.storm_elemental.expires = pet.storm_elemental.expires + 1.5
+                        buff.fireheart.expires = pet.storm_elemental.expires
+                    end
+                end
             end,
 
             impact = function () end,  -- This + velocity makes action.lava_burst.in_flight work in APL logic.
@@ -1309,6 +1347,11 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             handler = function ()
                 summonPet( talent.primal_elementalist.enabled and "primal_storm_elemental" or "greater_storm_elemental" )
+                
+                if set_bonus.tier28_2pc > 0 then
+                    applyBuff( "fireheart", pet.storm_elemental.remains )
+                    state:QueueAuraEvent( "fireheart", TriggerFireheart, query_time + 8, "AURA_PERIODIC" )
+                end                
             end,
         },
 
