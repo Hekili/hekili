@@ -31,7 +31,7 @@ local state = Hekili.State
 -- [-] shade_of_terror
 
 
-if UnitClassBase( 'player' ) == 'WARLOCK' then
+if UnitClassBase( "player" ) == 'WARLOCK' then
     local spec = Hekili:NewSpecialization( 265, true )
 
     spec:RegisterResource( Enum.PowerType.SoulShards, {
@@ -49,9 +49,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         regenerates = false,
     }, {
         __index = function( t, k )
-            if k == 'count' or k == 'current' then return t.actual
+            if k == "count" or k == "current" then return t.actual
 
-            elseif k == 'actual' then
+            elseif k == "actual" then
                 t.actual = UnitPower( "player", Enum.PowerType.SoulShards )
                 return t.actual
 
@@ -357,8 +357,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         active_uas = {
             alias = { "unstable_affliction_1", "unstable_affliction_2", "unstable_affliction_3", "unstable_affliction_4", "unstable_affliction_5" },
-            aliasMode = 'longest',
-            aliasType = 'debuff',
+            aliasMode = "longest",
+            aliasType = "debuff",
             duration = 8
         }, ]]
         vile_taint = {
@@ -480,22 +480,32 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     end )
 
 
-    spec:RegisterGear( 'tier28', 188884, 188887, 188888, 188889, 188890 )
-    spec:RegisterGear( 'tier21', 152174, 152177, 152172, 152176, 152173, 152175 )
-    spec:RegisterGear( 'tier20', 147183, 147186, 147181, 147185, 147182, 147184 )
-    spec:RegisterGear( 'tier19', 138314, 138323, 138373, 138320, 138311, 138317 )
-    spec:RegisterGear( 'class', 139765, 139768, 139767, 139770, 139764, 139769, 139766, 139763 )
+    spec:RegisterGear( "tier28", 188884, 188887, 188888, 188889, 188890 )
+    
+    -- Tier 28
+    -- 2-Set - Deliberate Malice - Malefic Rapture's damage is increased by 15% and each cast extends the duration of Corruption, Agony, and Unstable Affliction by 2 sec.
+    -- 4-Set - Calamitous Crescendo - While Agony, Corruption, and Unstable Affliction are active, your Drain Soul has a 10% chance / Shadow Bolt has a 20% chance to make your next Malefic Rapture cost no Soul Shards and cast instantly.
+    spec:RegisterAura( "calamitous_crescendo", {
+        id = 364322,
+        duration = 10,
+        max_stack = 1,
+    } )
 
-    spec:RegisterGear( 'amanthuls_vision', 154172 )
-    spec:RegisterGear( 'hood_of_eternal_disdain', 132394 )
-    spec:RegisterGear( 'norgannons_foresight', 132455 )
-    spec:RegisterGear( 'pillars_of_the_dark_portal', 132357 )
-    spec:RegisterGear( 'power_cord_of_lethtendris', 132457 )
-    spec:RegisterGear( 'reap_and_sow', 144364 )
-    spec:RegisterGear( 'sacrolashs_dark_strike', 132378 )
-    spec:RegisterGear( 'soul_of_the_netherlord', 151649 )
-    spec:RegisterGear( 'stretens_sleepless_shackles', 132381 )
-    spec:RegisterGear( 'the_master_harvester', 151821 )
+    spec:RegisterGear( "tier21", 152174, 152177, 152172, 152176, 152173, 152175 )
+    spec:RegisterGear( "tier20", 147183, 147186, 147181, 147185, 147182, 147184 )
+    spec:RegisterGear( "tier19", 138314, 138323, 138373, 138320, 138311, 138317 )
+    spec:RegisterGear( "class", 139765, 139768, 139767, 139770, 139764, 139769, 139766, 139763 )
+
+    spec:RegisterGear( "amanthuls_vision", 154172 )
+    spec:RegisterGear( "hood_of_eternal_disdain", 132394 )
+    spec:RegisterGear( "norgannons_foresight", 132455 )
+    spec:RegisterGear( "pillars_of_the_dark_portal", 132357 )
+    spec:RegisterGear( "power_cord_of_lethtendris", 132457 )
+    spec:RegisterGear( "reap_and_sow", 144364 )
+    spec:RegisterGear( "sacrolashs_dark_strike", 132378 )
+    spec:RegisterGear( "soul_of_the_netherlord", 151649 )
+    spec:RegisterGear( "stretens_sleepless_shackles", 132381 )
+    spec:RegisterGear( "the_master_harvester", 151821 )
 
 
     --[[ spec:RegisterStateFunction( "applyUnstableAffliction", function( duration )
@@ -503,7 +513,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             local aura = "unstable_affliction_" .. i
 
             if debuff[ aura ].down then
-                applyDebuff( 'target', aura, duration or 8 )
+                applyDebuff( "target", aura, duration or 8 )
                 break
             end
         end
@@ -1230,11 +1240,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         
         malefic_rapture = {
             id = 324536,
-            cast = 1.5,
+            cast = function () return buff.calamitous_crescendo.up and 0 or 1.5 end,
             cooldown = 0,
             gcd = "spell",
             
-            spend = 1,
+            spend = function () return buff.calamitous_crescendo.up and 0 or 1 end,
             spendType = "soul_shards",
             
             startsCombat = true,
@@ -1242,6 +1252,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             handler = function ()
                 if legendary.malefic_wrath.enabled then addStack( "malefic_wrath", nil, 1 ) end
+
+                if set_bonus.tier28_2pc > 0 then
+                    if debuff.corruption.up then debuff.corruption.expires = debuff.corruption.expires + 2 end
+                    if debuff.agony.up then debuff.agony.expires = debuff.agony.expires + 2 end
+                    if debuff.unstable_affliction.up then debuff.unstable_affliction.expires = debuff.unstable_affliction.expires + 2 end
+                end
+
+                if buff.calamitous_crescendo.up then removeBuff( "calamitous_crescendo" ) end
             end,
         },
 

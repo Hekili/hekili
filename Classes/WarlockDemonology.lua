@@ -85,6 +85,9 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     local wild_imps = {}
     local wild_imps_v = {}
 
+    local malicious_imps = {}
+    local malicious_imps_v = {}
+
     local demonic_tyrant = {}
     local demonic_tyrant_v = {}
 
@@ -159,22 +162,16 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
         if source == state.GUID then
             if subtype == "SPELL_SUMMON" then
-                -- Dreadstalkers: 104316, 12 seconds uptime.
-                -- if spellID == 193332 or spellID == 193331 then table.insert( dreadstalkers, now + 12 )
-
-                -- Vilefiend: 264119, 15 seconds uptime.
-                -- elseif spellID == 264119 then table.insert( vilefiend, now + 15 )
-
-                -- Wild Imp: 104317 and 279910, 20 seconds uptime.
-                -- else
+                -- Wild Imp: 104317 (40) and 279910 (20).
                 if spellID == 104317 or spellID == 279910 then
-                    table.insert( wild_imps, now + 20 )
+                    local dur = ( spellID == 279910 and 20 or 40 )
+                    table.insert( wild_imps, now + dur )
 
                     imps[ destGUID ] = {
                         t = now,
                         casts = 0,
-                        expires = math.ceil( now + 20 ),
-                        max = math.ceil( now + 20 )
+                        expires = math.ceil( now + dur ),
+                        max = math.ceil( now + dur )
                     }
 
                     if guldan[ 1 ] then
@@ -207,6 +204,18 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                         imp.expires = imp.expires + 15
                         imp.max = imp.max + 15
                     end
+
+
+                elseif spellID == 364198 then
+                    -- Tier 28: Malicious Imp
+                    imps[ destGUID ] = {
+                        t = now,
+                        casts = 0,
+                        expires = math.ceil( now + 40 ),
+                        max = math.ceil( now + 40 ),
+                        malicious = true
+                    }
+                    table.insert( malicious_imps, now + 40 )
 
 
                 -- Other Demons, 15 seconds uptime.
@@ -252,7 +261,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
                 -- Hand of Guldan (queue imps).
                 elseif spellID == 105174 then
-                    hog_time = GetTime()
+                    hog_time = now
 
                     if shards_for_guldan >= 1 then table.insert( guldan, now + 0.6 ) end
                     if shards_for_guldan >= 2 then table.insert( guldan, now + 0.8 ) end
@@ -324,8 +333,15 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         end
 
         wipe( wild_imps_v )
-        for n, t in pairs( imps ) do table.insert( wild_imps_v, t.expires ) end
+        wipe( malicious_imps_v )
+
+        for n, t in pairs( imps ) do
+            if t.malicious then table.insert( malicious_imps_v, t.expires )
+            else table.insert( wild_imps_v, t.expires ) end
+        end
+
         table.sort( wild_imps_v )
+        table.sort( malicious_imps_v )
 
         local difference = #wild_imps_v - GetSpellCount( 196277 )
 
@@ -411,12 +427,14 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                             " - Vilefiend    : %d, %.2f\n" ..
                             " - Grim Felguard: %d, %.2f\n" ..
                             " - Wild Imps    : %d, %.2f\n" ..
+                            " - Malicious Imp: %d, %.2f\n" ..
                             "Next Demon Exp. : %.2f",
                             tyrant_ready and "Yes" or "No",
                             buff.dreadstalkers.stack, buff.dreadstalkers.remains,
                             buff.vilefiend.stack, buff.vilefiend.remains,
                             buff.grimoire_felguard.stack, buff.grimoire_felguard.remains,
                             buff.wild_imps.stack, buff.wild_imps.remains,
+                            buff.malicious_imps.stack, buff.malicious_imps.remains,
                             major_demon_expires )
         end
     end )
@@ -427,8 +445,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             local imp = guldan_v[i]
 
             if imp <= query_time then
-                if ( imp + 20 ) > query_time then
-                    insert( wild_imps_v, imp + 20 )
+                if ( imp + 40 ) > query_time then
+                    insert( wild_imps_v, imp + 40 )
                 end
                 remove( guldan_v, i )
             end
@@ -464,6 +482,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         if name == "dreadstalkers" then db = dreadstalkers_v
         elseif name == "vilefiend" then db = vilefiend_v
         elseif name == "wild_imps" then db = wild_imps_v
+        elseif name == "malicious_imps" then db = malicious_imps_v
         elseif name == "grimoire_felguard" then db = grim_felguard_v
         elseif name == "demonic_tyrant" then db = demonic_tyrant_v end
 
@@ -483,11 +502,12 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     spec:RegisterStateFunction( "extend_demons", function( duration )
         duration = duration or 15
 
-        for k, v in pairs( dreadstalkers_v ) do dreadstalkers_v[ k ] = v + duration end
-        for k, v in pairs( vilefiend_v     ) do vilefiend_v    [ k ] = v + duration end
-        for k, v in pairs( wild_imps_v     ) do wild_imps_v    [ k ] = v + duration end
-        for k, v in pairs( grim_felguard_v ) do grim_felguard_v[ k ] = v + duration end
-        for k, v in pairs( other_demon_v   ) do other_demon_v  [ k ] = v + duration end
+        for k, v in pairs( dreadstalkers_v ) do dreadstalkers_v [ k ] = v + duration end
+        for k, v in pairs( vilefiend_v     ) do vilefiend_v     [ k ] = v + duration end
+        for k, v in pairs( wild_imps_v     ) do wild_imps_v     [ k ] = v + duration end
+        for k, v in pairs( malicious_imps_v) do malicious_imps_v[ k ] = v + duration end
+        for k, v in pairs( grim_felguard_v ) do grim_felguard_v [ k ] = v + duration end
+        for k, v in pairs( other_demon_v   ) do other_demon_v   [ k ] = v + duration end
     end )
 
 
@@ -497,6 +517,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         if name == "dreadstalkers" then db = dreadstalkers_v
         elseif name == "vilefiend" then db = vilefiend_v
         elseif name == "wild_imps" then db = wild_imps_v
+        elseif name == "malicious_imps" then db = malicious_imps_v
         elseif name == "grimoire_felguard" then db = grim_felguard_v
         elseif name == "demonic_tyrant" then db = demonic_tyrant_v end
 
@@ -869,7 +890,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 count = function ()
                     local c = 0
                     for i, exp in ipairs( dreadstalkers_v ) do
-                        if exp >= query_time then c = c + 2 end
+                        if exp >= query_time then c = c + ( set_bonus.tier28_2pc > 0 and 3 or 2 ) end
                     end
                     return c
                 end,
@@ -913,22 +934,36 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         },
 
         wild_imps = {
-            duration = 25,
+            duration = 40,
 
             meta = {
                 up = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp >= query_time or false end,
                 down = function ( t ) return not t.up end,
-                applied = function () local exp = wild_imps_v[ 1 ]; return exp and ( exp - 20 ) or 0 end,
+                applied = function () local exp = wild_imps_v[ 1 ]; return exp and ( exp - 40 ) or 0 end,
                 remains = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and max( 0, exp - query_time ) or 0 end,
                 count = function ()
                     local c = 0
                     for i, exp in ipairs( wild_imps_v ) do
                         if exp > query_time then c = c + 1 end
                     end
+                    return c
+                end,
+            }
+        },
 
-                    -- Count queued HoG imps.
-                    for i, spawn in ipairs( guldan_v ) do
-                        if spawn <= query_time and ( spawn + 20 ) >= query_time then c = c + 1 end
+
+        malicious_imps = {
+            duration = 40,
+
+            meta = {
+                up = function () local exp = malicious_imps_v[ #malicious_imps_v ]; return exp and exp >= query_time or false end,
+                down = function ( t ) return not t.up end,
+                applied = function () local exp = malicious_imps_v[ 1 ]; return exp and ( exp - 40 ) or 0 end,
+                remains = function () local exp = malicious_imps_v[ #malicious_imps_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                count = function ()
+                    local c = 0
+                    for i, exp in ipairs( malicious_imps_v ) do
+                        if exp > query_time then c = c + 1 end
                     end
                     return c
                 end,
@@ -1021,6 +1056,27 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
     spec:RegisterStateExpr( "extra_shards", function () return 0 end )
 
+    spec:RegisterStateExpr( "last_cast_imps", function ()
+        local count = 0
+
+        for i, imp in ipairs( wild_imps_v ) do
+            if imp - query_time <= 2 * haste then count = count + 1 end
+        end
+
+        return count
+    end )
+
+    spec:RegisterStateExpr( "last_cast_imps", function ()
+        local count = 0
+
+        for i, imp in ipairs( wild_imps_v ) do
+            if imp - query_time <= 4 * haste then count = count + 1 end
+        end
+
+        return count
+    end )
+
+
     --[[ spec:RegisterVariable( "tyrant_ready", function ()
         if cooldown.summon_demonic_tyrant.remains > 5 then return false end
         if talent.demonic_strength.enabled and not talent.demonic_consumption.enabled and cooldown.demonic_strength.ready then return false end
@@ -1032,6 +1088,11 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         if soul_shard < ( buff.nether_portal.up and 1 or 5 ) then return false end
         return true
     end ) ]]
+
+    -- Tier 28
+    -- 2-Set - Ripped From the Portal - Call Dreadstalkers has a 100% chance to summon an additional Dreadstalker.
+    -- 4-Set - Malicious Imp-Pact - Your Hand of Gul'dan has a 15% chance per Soul Shard to summon a Malicious Imp. When slain, Malicious Imp will either deal (85% of Spell power) Fire damage to all nearby enemies of your Implosion or deal it to your current target.
+    
 
 
     -- Abilities
@@ -1154,7 +1215,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             startsCombat = true,
 
             handler = function ()
-                summon_demon( "dreadstalkers", 12, 2 )
+                summon_demon( "dreadstalkers", 12, set_bonus.tier28_2pc > 0 and 3 or 2 )
                 summonPet( "dreadstalker", 12 )
                 removeStack( "demonic_calling" )
 
@@ -1519,6 +1580,9 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                     applyBuff( "implosive_potential" )
                 end
                 consume_demons( "wild_imps", "all" )
+                if buff.malicious_imps.up then
+                    consume_demons( "malicious_imps", "all" )
+                end
             end,
 
             auras = {

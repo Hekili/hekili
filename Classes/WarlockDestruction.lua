@@ -49,6 +49,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         immolate = {
             aura = "immolate",
+            debuff = true,
 
             last = function ()
                 local app = state.debuff.immolate.applied
@@ -58,6 +59,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             end,
 
             interval = function () return state.debuff.immolate.tick_time end,
+            value = 0.1
+        },
+
+        blasphemy = {
+            aura = "blasphemy",
+
+            last = function ()
+                local app = state.buff.blasphemy.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 0.5,
             value = 0.1
         }
     }, setmetatable( {
@@ -94,6 +109,18 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         if resource == "soul_shards" and amt > 0 then
             if legendary.wilfreds_sigil_of_superior_summoning.enabled then
                 reduceCooldown( "summon_infernal", amt * 1.5 )
+            end
+
+            if set_bonus.tier28_2pc > 0 then
+                addStack( "impending_ruin", nil, amt )
+
+                if buff.impending_ruin.stack > 10 then
+                    buff.impending_ruin.count = buff.impending_ruin.count - 10
+                    applyBuff( "ritual_of_ruin" )
+                elseif buff.impending_ruin.stack == 10 then
+                    applyBuff( "ritual_of_ruin" )
+                    removeBuff( "impending_ruin" )
+                end
             end
         end
     end )
@@ -401,9 +428,30 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             duration = 2,
             max_stack = 1
         },
-
-
     } )
+
+
+    -- Tier 28
+    -- 2-Set - Ritual of Ruin - Every 10 Soul Shards spent grants Ritual of Ruin, making your next Chaos Bolt or Rain of Fire consume no Soul Shards and have no cast time.
+    -- 4-Set - Avatar of Destruction - When Chaos Bolt or Rain of Fire consumes a charge of Ritual of Ruin, you summon a Blasphemy for 8 sec.
+
+    spec:RegisterAuras( {
+        impending_ruin = {
+            id = 364348,
+            duration = 3600,
+            max_stack = 10
+        },
+        ritual_of_ruin = {
+            id = 364349,
+            duration = 3600,
+            max_stack = 1,
+        },
+        blasphemy = {
+            id = 367680,
+            duration = 8,
+            max_stack = 1,
+        },
+    })
 
 
     spec:RegisterStateExpr( "last_havoc", function ()
@@ -589,11 +637,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         chaos_bolt = {
             id = 116858,
-            cast = function () return ( buff.backdraft.up and 0.7 or 1 ) * ( buff.madness_of_the_azjaqir.up and 0.8 or 1 ) * 3 * haste end,
+            cast = function () return buff.ritual_of_ruin.up and 0 or ( buff.backdraft.up and 0.7 or 1 ) * ( buff.madness_of_the_azjaqir.up and 0.8 or 1 ) * 3 * haste end,
             cooldown = 0,
             gcd = "spell",
 
-            spend = 2,
+            spend = function () return buff.ritual_of_ruin.up and 0 or 2 end,
             spendType = "soul_shards",
 
             startsCombat = true,
@@ -614,7 +662,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 if legendary.madness_of_the_azjaqir.enabled then
                     applyBuff( "madness_of_the_azjaqir" )
                 end
-                removeStack( "backdraft" )
+                if buff.ritual_of_ruin.up then
+                    removeBuff( "ritual_of_ruin" )
+                    if set_bonus.tier28_4pc > 0 then applyBuff( "blasphemy" ) end
+                else
+                    removeStack( "backdraft" )
+                end
                 removeStack( "crashing_chaos" )
             end,
 
@@ -1169,14 +1222,16 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 3,
+            spend = function () return buff.ritual_of_ruin.up and 0 or 3 end,
             spendType = "soul_shards",
 
             startsCombat = true,
 
             handler = function ()
-                -- establish that RoF is ticking?
-                -- need a CLEU handler?
+                if buff.ritual_of_ruin.up then
+                    removeBuff( "ritual_of_ruin" )
+                    if set_bonus.tier28_4pc > 0 then applyBuff( "blasphemy" ) end
+                end
             end,
         },
 
