@@ -5145,7 +5145,7 @@ do
 
     Hekili:ProfileCPU( "QueueEvent", state.QueueEvent )
 
-    function state:QueueAuraExpiration( action, func, time )
+    function state:QueueAuraEvent( action, func, time, eType )
         local queue = virtualQueue
         local e = NewEvent()
 
@@ -5155,7 +5155,7 @@ do
         e.func   = func
         e.start  = self.query_time
         e.time   = time
-        e.type   = "AURA_EXPIRATION"
+        e.type   = eType
         e.target = "nobody"
 
         insert( queue, e )
@@ -5164,20 +5164,29 @@ do
         if Hekili.ActiveDebug then Hekili:Debug( "Queued %s AURA_EXPIRATION at +%.2f.", action, time - state.query_time ) end
     end
 
-    function state:RemoveAuraExpiration( action )
+    function state:RemoveAuraEvent( action, eType )
         local queue = virtualQueue
+        eType = eType or "AURA_EXPIRATION"
 
-        Hekili:Debug( "Trying to remove %s AURA_EXPIRATION from queue.", action )
+        Hekili:Debug( "Trying to remove %s %s from queue.", action, eType )
 
         for i = 1, #queue do
             local e = queue[ i ]
 
-            if e.action == action and e.type == "AURA_EXPIRATION" then
+            if e.action == action and e.type == eType then
                 RecycleEvent( queue, i )
                 Hekili:Debug( "Removed #%d from queue.", i )
                 break
             end
         end
+    end
+
+    function state:QueueAuraExpiration( action, func, time )
+        self:QueueAuraEvent( action, func, time, "AURA_EXPIRATION" )
+    end
+
+    function state:RemoveAuraExpiration( action )
+        self:RemoveAuraEvent( action, "AURA_EXPIRATION" )
     end
 
     function state:RemoveEvent( e, real )
