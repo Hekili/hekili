@@ -564,6 +564,37 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     local ExpireSepsis = setfenv( function ()
         applyBuff( "sepsis_buff" )
     end, state )
+
+
+    -- Tier 28
+    -- 2-Set - Grudge Match - Shiv causes enemies within 15 yards to take 40% increased damage from your Poisons and Bleeds for 9 seconds.
+    -- 4-Set - Grudge Match - Vendetta causes Poisons and Bleeds on your target to expire 100% faster.
+    spec:RegisterAuras( {
+        grudge_match = {
+            id = 264668,
+            duration = 9,
+            max_stack = 1,
+        },
+    } )
+
+    local tier28_vendetta_spells = {
+        crimson_tempest = 1,
+        deadly_poison_dot = 1,
+        garrote = 1,
+        internal_bleeding = 1,
+        rupture = 1,
+        sepsis = 1,
+        serrated_bone_spike = 1,
+    }
+
+    local ExpireVendetta = setfenv( function()
+        for k in pairs( tier28_vendetta_spells ) do
+            if debuff[ k ].up then
+                debuff[ k ].expires = query_time + debuff[ k ].remains * 2
+            end
+        end
+    end, state )
+
     
     spec:RegisterHook( "reset_precast", function ()
         debuff.crimson_tempest.pmultiplier   = nil
@@ -587,6 +618,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             class.abilities.apply_poison = state.spec.assassination and level > 12 and class.abilities.deadly_poison or class.abilities.instant_poison
         else
             if level > 32 and buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
+        end
+
+        if set_bonus.tier28_4pc > 0 and debuff.vendetta.up then
+            state:QueueAuraExpiration( "vendetta", ExpireVendetta, debuff.vendetta.expires )
         end
     end )
 
@@ -657,7 +692,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             meta = {
                 exsanguinated = function ( t ) return t.up and crimson_tempests[ target.unit ] end,                
                 last_tick = function ( t ) return ltCT[ target.unit ] or t.applied end,
-                tick_time = function( t ) return t.exsanguinated and haste or ( 2 * haste ) end,
+                tick_time = function( t ) return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * ( t.exsanguinated and haste or ( 2 * haste ) ) end,
             },                    
         },
         crimson_vial = {
@@ -719,7 +754,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 ss_buffed = function ( t ) return t.up and ssG[ target.unit ] end,
                 tick_time = function ( t )
                     --if not talent.exsanguinate.enabled then return 2 * haste end
-                    return t.exsanguinated and haste or ( 2 * haste ) end,
+                    return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * ( t.exsanguinated and haste or ( 2 * haste ) ) end,
             },                    
         },
         garrote_silence = {
@@ -741,7 +776,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 last_tick = function ( t ) return ltIB[ target.unit ] or t.applied end,
                 tick_time = function ( t )
                     --if not talent.exsanguinate.enabled then return haste end
-                    return t.exsanguinated and ( 0.5 * haste ) or haste end,
+                    return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * ( t.exsanguinated and ( 0.5 * haste ) or haste ) end,
             },
         },
         iron_wire = {
@@ -772,7 +807,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         rupture = {
             id = 1943,
             duration = function () return talent.deeper_stratagem.enabled and 28 or 24 end,
-            tick_time = function () return debuff.rupture.exsanguinated and haste or ( 2 * haste ) end,
+            tick_time = function () return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * ( debuff.rupture.exsanguinated and haste or ( 2 * haste ) ) end,
             max_stack = 1,
             meta = {
                 exsanguinated = function ( t ) return t.up and ruptures[ target.unit ] end,
@@ -940,7 +975,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         }
     } )
 
-
+    
     -- Abilities
     spec:RegisterAbilities( {
         ambush = {
@@ -1720,9 +1755,19 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyDebuff( "target", "vendetta" )
                 applyBuff( "vendetta_regen" )
+
                 if azerite.nothing_personal.enabled then
                     applyDebuff( "target", "nothing_personal" )
                     applyBuff( "nothing_personal_regen" )
+                end
+
+                if set_bonus.tier28_4pc > 0 then
+                    for k, v in pairs( tier28_vendetta_spells ) do
+                        if debuff[ k ].up then
+                            debuff[ k ].expires = query_time + debuff[ k ].remains / 2
+                        end
+                    end
+                    state:QueueAuraExpiration( "vendetta", ExpireVendetta, debuff.vendetta.expires )
                 end
             end,
         },
