@@ -635,7 +635,10 @@ if UnitClassBase( "player" ) == "PRIEST" then
         id = 363574,
         duration = 8,
         max_stack = 1,
+        copy = "your_shadow"
     } )
+
+    rawset( state.pet, "your_shadow", state.buff.living_shadow )
 
 
     spec:RegisterGear( "tier21", 152154, 152155, 152156, 152157, 152158, 152159 )
