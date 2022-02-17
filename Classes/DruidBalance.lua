@@ -799,7 +799,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
                 if eclipse.wrath_counter == 0 and ( eclipse.state == "LUNAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
                     applyBuff( "eclipse_lunar", class.auras.eclipse_lunar.duration + buff.eclipse_lunar.remains )
-                    if tier28_2pc > 0 then applyDebuff( "target", "fury_of_elune_ap" ) end
+                    if set_bonus.tier28_2pc > 0 then applyDebuff( "target", "fury_of_elune_ap" ) end
                     state:RemoveAuraExpiration( "eclipse_lunar" )
                     state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
                     if talent.solstice.enabled then applyBuff( "solstice" ) end
