@@ -308,7 +308,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         unlimited_power = {
             id = 272737,
             duration = 10,
-            max_stack = 20, -- good luck reaching this...
+            max_stack = 99,
         },
 
         water_walking = {
@@ -379,6 +379,62 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
     spec:RegisterPet( "primal_earth_elemental", 61056, "earth_elemental", 60 )
     spec:RegisterTotem( "greater_earth_elemental", 136024 ) -- Texture ID
+
+    local elementals = {
+        [77942] = { "primal_storm_elemental", function() return 30 * ( 1 + ( 0.01 * state.conduit.call_of_flame.mod ) ) end, true },
+        [61029] = { "primal_fire_elemental", function() return 30 * ( 1 + ( 0.01 * state.conduit.call_of_flame.mod ) ) end, true },
+        [61056] = { "primal_earth_elemental", function () return 60 end, false }
+    }
+
+    local death_events = {
+        UNIT_DIED               = true,
+        UNIT_DESTROYED          = true,
+        UNIT_DISSIPATES         = true,
+        PARTY_KILL              = true,
+        SPELL_INSTAKILL         = true,
+    }
+
+    local summon = {}
+    local wipe = table.wipe
+    
+    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
+        if not state.talent.primal_elementalist.enabled then return end
+
+        local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+        -- Deaths/despawns.
+        if summon.guid == destGUID then
+
+            if death_events[ subtype ] then
+                wipe( summon )
+            end
+            return
+        end
+
+        if sourceGUID == state.GUID then
+            -- Summons.
+            if subtype == "SPELL_SUMMON" then
+                local npcid = destGUID:match("(%d+)-%x-$")
+                npcid = npcid and tonumber( npcid ) or -1
+                local elem = elementals[ npcid ]
+
+                if elem then
+                    summon.guid = destGUID
+                    summon.type = elem[1]
+                    summon.duration = elem[2]()
+                    summon.expires = GetTime() + summon.duration
+                    summon.extends = elem[3]
+                end
+
+            -- Tier 28
+            elseif summon.extends and state.set_bonus.tier28_4pc > 0 and subtype == "SPELL_ENERGIZE" and ( spellID == 51505 or spellID == 285466 ) then
+                summon.expires = summon.expires + 1.5
+                summon.duration = summon.duration + 1.5
+
+            end
+        end
+    end )    
+
 
     spec:RegisterTotem( "liquid_magma_totem", 971079 )
     spec:RegisterTotem( "tremor_totem", 136108 )
@@ -473,7 +529,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         applyBuff( "lava_surge" )        
     end, state )
     
-    
+
     spec:RegisterHook( "reset_precast", function ()
         if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
             applyBuff( "master_of_the_elements" )
@@ -482,6 +538,20 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         rawset( state.pet, "earth_elemental", talent.primal_elementalist.enabled and state.pet.primal_earth_elemental or state.pet.greater_earth_elemental )
         rawset( state.pet, "fire_elemental",  talent.primal_elementalist.enabled and state.pet.primal_fire_elemental  or state.pet.greater_fire_elemental  )
         rawset( state.pet, "storm_elemental", talent.primal_elementalist.enabled and state.pet.primal_storm_elemental or state.pet.greater_storm_elemental )
+
+        if talent.primal_elementalist.enabled then
+            dismissPet( "primal_fire_elemental" )
+            dismissPet( "primal_storm_elemental" )
+            dismissPet( "primal_earth_elemental" )
+        
+            if summon.expires then
+                if summon.expires <= now then
+                    wipe( summon )
+                else
+                    summonPet( summon.type, summon.expires - now )
+                end
+            end
+        end
 
         if buff.fireheart.up then
             if pet.fire_elemental.up then buff.fireheart.expires = pet.fire_elemental.expires
