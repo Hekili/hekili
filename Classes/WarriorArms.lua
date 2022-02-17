@@ -419,7 +419,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         local actual = rawget( args, "cycle_targets")
         args.cycle_targets = 1
         
-        local result = action.execute.cycle
+        local result = action.execute.cycle == "cycle"
         args.cycle_targets = actual
         
         return result
@@ -432,7 +432,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         local actual = rawget( args, "cycle_targets")
         args.cycle_targets = 1
         
-        local result = action.condemn.cycle
+        local result = action.condemn.cycle == "cycle"
         args.cycle_targets = actual
 
         return result
