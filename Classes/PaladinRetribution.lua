@@ -401,7 +401,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
     } )
 
     -- Tier 28
-    -- 2-Set - Ashes to Ashes - When you benefit from Art of War, you gain Seraphim for 2 sec.    
+    spec:RegisterSetBonuses( "tier28_2pc", 363677, "tier28_4pc", 364370 )
+    -- 2-Set - Ashes to Ashes - When you benefit from Art of War, you gain Seraphim for 3 sec.
     -- 4-Set - Ashes to Ashes - Art of War has a 50% chance to reset the cooldown of Wake of Ashes instead of Blade of Justice.
     -- 2/13/22:  No mechanics that can be proactively modeled.
 

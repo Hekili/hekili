@@ -496,7 +496,9 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
     end )
 
     
+    -- Tier 28
     spec:RegisterGear( "tier28", 188898, 188896, 188894, 188893, 188892 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364438, "tier28_4pc", 363736 )    
     -- 2-Set - Deadly Dance - Increases Death Sweep and Annihilation / Blade Dance and Chaos Strike damage by 20%.
     -- 4-Set - Deadly Dance - Metamorphosis duration is increased by 6 sec. Every 60 Fury you consume reduces the cooldown of Metamorphosis by 1 sec.
 

@@ -439,6 +439,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364418, "tier28_4pc", 363734 )
     -- 2-Set - Fists of Primordium - Increases Fists of Fury damage by 40%.
     -- 4-Set - Primordial Potential - After 10 offensive abilities, your next 3 offensive abilities deal an additional 22% damage.
     spec:RegisterAuras( {

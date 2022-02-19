@@ -531,6 +531,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
     -- Gear.
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364362, "tier28_4pc", 363496 )
     -- 2-Set - Architect's Design - Casting Barkskin causes you to Berserk for 4 sec.
     -- 4-Set - Architect's Aligner - While Berserked, you radiate (45%26.6% of Attack power) Cosmic damage to nearby enemies and heal yourself for (61%39.7% of Attack power) every 1 sec.
     spec:RegisterAuras( {

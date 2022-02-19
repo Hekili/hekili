@@ -411,6 +411,21 @@ local HekiliSpecMixin = {
         self.gear[ key ] = gear
     end,
 
+    -- Check for the set bonus based on hidden aura instead of counting the number of equipped items.
+    -- This may be useful for tier set items that are crafted so their item ID doesn't match.
+    -- The alternative is *probably* to treat sets based on bonusIDs.
+    RegisterSetBonus = function( self, key, spellID )
+        self.setBonuses[ key ] = spellID
+    end,
+
+    RegisterSetBonuses = function( self, ... )
+        local n = select( "#", ... )
+
+        for i = 1, n, 2 do
+            self:RegisterSetBonus( select( i, ... ) )
+        end
+    end,
+
     RegisterPotion = function( self, potion, data )
         self.potions[ potion ] = data
 
@@ -984,10 +999,10 @@ function Hekili:NewSpecialization( specID, isRanged )
         stateTables = {}, -- tables are... tables.
 
         gear = {},
-        hooks = {},
+        setBonuses = {},
 
+        hooks = {},
         funcHooks = {},
-        gearSets = {},
         interrupts = {},
 
         castableWhileCasting = {},
@@ -5669,6 +5684,7 @@ function Hekili:SpecializationChanged()
     wipe( class.pvptalents )    
     wipe( class.powers )
     wipe( class.gear )
+    wipe( class.setBonuses )
     wipe( class.packs )
     wipe( class.resources )
     wipe( class.resourceAuras )
@@ -5808,6 +5824,10 @@ function Hekili:SpecializationChanged()
 
             for k, v in pairs( spec.gear ) do
                 if not class.gear[ k ] then class.gear[ k ] = v end
+            end
+
+            for k, v in pairs( spec.setBonuses ) do
+                if not class.setBonuses[ k ] then class.setBonuses[ k ] = v end
             end
 
             for k, v in pairs( spec.pets ) do

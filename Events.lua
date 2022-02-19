@@ -653,9 +653,7 @@ do
         lastUpdate = GetTime()
         updateIsQueued = false
 
-        for thing in pairs( state.set_bonus ) do
-            state.set_bonus[ thing ] = 0
-        end
+        wipe( state.set_bonus )
 
         for _, hook in ipairs( GearHooks ) do
             if hook.reset then hook.reset() end
@@ -664,7 +662,7 @@ do
         wipe( wasWearing )
 
         for i, item in ipairs( state.items ) do
-            wasWearing[i] = item
+            wasWearing[ i ] = item
         end
 
         wipe( state.items )
@@ -675,6 +673,12 @@ do
                 if IsEquippedItem( GetItemInfo( item ) ) then
                     state.set_bonus[ set ] = state.set_bonus[ set ] + 1
                 end
+            end
+        end
+
+        for bonus, aura in pairs( class.setBonuses ) do
+            if GetPlayerAuraBySpellID( aura ) then
+                state.set_bonus[ bonus ] = 1
             end
         end
 

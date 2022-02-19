@@ -601,6 +601,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 363535, "tier28_4pc", 364544 )
     -- 2-Set - Frost Storm - Your spells have a 25% chance to call down a Comet Storm on your target enemy. This effect cannot occur more than once every 20 sec.
     -- 4-Set - Frost Storm - Enemies hit by Comet Storm take 2% increased damage from your Frost Spells, up to 10% for 8 sec.
     spec:RegisterAura( "frost_storm", {

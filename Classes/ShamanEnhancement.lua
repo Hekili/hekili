@@ -544,6 +544,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364473, "tier28_4pc", 363668 )
     -- 2-Set - Stormspirit - Spending Maelstrom Weapon has a 3% chance per stack to summon a Feral Spirit for 9 sec.
     -- 4-Set - Stormspirit - Your Feral Spirits' attacks have a 20% chance to trigger Stormbringer, resetting the cooldown of your Stormstrike.
     -- 2/15/22:  No mechanics require actual modeling; nothing can be predicted.

@@ -558,8 +558,10 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
 
     -- Tier 28
-    -- Unholy DK 2-Piece — Every 5 Scourge Strikes casts Soul Reaper on your target. Soul Reaper grants your pet 20% Attack Speed for 10 seconds.
-    -- Unholy DK 4-Piece — Your minions deal 5% increased damage. When Soul Reaper's secondary effect triggers, this bonus is increased to 25% for 8 seconds.
+    spec:RegisterSetBonuses( "tier28_2pc", 364392, "tier28_4pc", 363560 )    
+    -- 2-Set - Every 5 Scourge Strikes casts Soul Reaper on your target. Soul Reaper grants your pet 20% Attack Speed for 10 seconds.
+    -- 4-Set - Your minions deal 5% increased damage. When Soul Reaper's secondary effect triggers, this bonus is increased to 25% for 8 seconds.
+
     spec:RegisterAuras( {
         harvest_time_stack = {
             id = 363885,

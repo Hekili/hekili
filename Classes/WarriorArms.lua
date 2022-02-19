@@ -439,9 +439,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     end )
 
 
-    spec:RegisterGear( 'tier28', 188942, 188941, 188940, 188938, 188937 )
-
     -- Tier 28
+    spec:RegisterGear( 'tier28', 188942, 188941, 188940, 188938, 188937 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364553, "tier28_4pc", 363913 )
     -- 2-Set - Pile On - Colossus Smash / Warbreaker lasts 3 sec longer and increases your damage dealt to affected enemies by an additional 5%.
     -- 4-Set - Pile On - Tactician has a 50% increased chance to proc against enemies with Colossus Smash and causes your next Overpower to grant 2% Strength, up to 20% for 15 sec.
     spec:RegisterAuras( {

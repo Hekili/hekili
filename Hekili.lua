@@ -71,6 +71,7 @@ Hekili.Class = {
 	auraList = {},
     powers = {},
 	gear = {},
+    setBonuses = {},
 	
 	knownAuraAttributes = {},
 

@@ -548,6 +548,10 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     spec:RegisterGear( "toravons_whiteout_bindings", 132458 )
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364383, "tier28_4pc", 363411 )
+    -- 2-Set - Arctic Assault - Remorseless Winter grants 8% Critical Strike while active.
+    -- 4-Set - Arctic Assault - Consuming Killing Machine fires a Glacial Advance through your target.
+
     spec:RegisterAura( "arctic_assault", {
         id = 364384,
         duration = 8,

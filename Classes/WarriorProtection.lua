@@ -339,6 +339,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364002, "tier28_4pc", 364639 )
     -- 2-Set - Outburst - Consuming 30 rage grants a stack of Seeing Red, which transforms at 8 stacks into Outburst, causing your next Shield Slam or Thunder Clap to be 200% more effective and grant Ignore Pain.
     -- 4-Set - Outburst - Avatar increases your damage dealt by an additional 10% and decreases damage taken by 10%.
     spec:RegisterAuras( {

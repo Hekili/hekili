@@ -364,7 +364,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
 
     -- Gear Sets
+    -- Tier 28
 	spec:RegisterGear( "tier28", 188933, 188932, 188931, 188929, 188928 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364304, "tier28_4pc", 363675 )
     -- 2-Set - Glorious Purpose - Casting Shield of the Righteous increases your Block chance by 4% for 15 sec, stacking up to 3 times.
     -- 4-Set - Glorious Purpose - When you take damage, you have a chance equal to 100% of your Block chance to cast Judgment at your attacker.
     spec:RegisterAuras( {

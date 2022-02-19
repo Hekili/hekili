@@ -648,6 +648,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
     -- Tier Sets
     spec:RegisterGear( "tier28", 188901, 188902, 188903, 188905, 188907 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364557, "tier28_4pc", 363949 )
     -- 2-Set - Immortal Technique - Shadowstrike has a 15% chance to grant Shadow Blades for 5 sec.
     -- 4-Set - Immortal Technique - Your finishing moves have a 3% chance per combo point to cast Shadowstrike at up to 5 enemies within 15 yards.
     -- 2/15/22:  No mechanics to model.

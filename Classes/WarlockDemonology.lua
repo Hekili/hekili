@@ -1090,6 +1090,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end ) ]]
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364436, "tier28_4pc", 3643951 )
     -- 2-Set - Ripped From the Portal - Call Dreadstalkers has a 100% chance to summon an additional Dreadstalker.
     -- 4-Set - Malicious Imp-Pact - Your Hand of Gul'dan has a 15% chance per Soul Shard to summon a Malicious Imp. When slain, Malicious Imp will either deal (85% of Spell power) Fire damage to all nearby enemies of your Implosion or deal it to your current target.
     

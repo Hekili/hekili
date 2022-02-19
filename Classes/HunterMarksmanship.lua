@@ -310,6 +310,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364491, "tier28_4pc", 363666 )
     -- 2-Set - Focused Trickery - Trick Shots now also increases the damage of the affected shot by 30%.
     -- 4-Set - Focused Trickery - Spending 40 Focus grants you 1 charge of Trick Shots.
 

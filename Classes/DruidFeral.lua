@@ -887,6 +887,12 @@ if UnitClassBase( "player" ) == "DRUID" then
     end )
 
 
+    -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364416, "tier28_4pc", 363498 )
+    -- 2-Set - Heart of the Lion - Each combo point spent reduces the cooldown of Incarnation: King of the Jungle / Berserk by 0.5 sec.
+    -- 4-Set - Sickle of the Lion - Entering Berserk causes you to strike all nearby enemies, dealing (320.2% of Attack power) Bleed damage over 10 sec. Deals reduced damage beyond 8 targets.
+
+
     local function comboSpender( a, r )
         if r == "combo_points" and a > 0 then
             if talent.soul_of_the_forest.enabled then

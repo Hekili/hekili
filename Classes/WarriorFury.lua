@@ -308,6 +308,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364554, "tier28_4pc", 363738 )
     -- 2-Set - Frenzied Destruction - Raging Blow deals 15% increased damage and gains an additional charge.
     -- 4-Set - Frenzied Destruction - Raging Blow has a 20% chance to grant Recklessness for 4 sec.
     -- Now appropriately grants Crushing Blow and Bloodbath when Reckless Abandon is talented, and no longer grants 50 Rage when Recklessness triggers while Reckless Abandon is talented.

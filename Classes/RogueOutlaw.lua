@@ -488,6 +488,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
     } ) )
 
 
+    -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364555, "tier28_4pc", 363592 )
+    
+
     -- Legendary from Legion, shows up in APL still.
     spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
     spec:RegisterAura( "master_assassins_initiative", {

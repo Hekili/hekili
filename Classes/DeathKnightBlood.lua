@@ -564,7 +564,12 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         }
     } )
 
+    -- Tier 28
     spec:RegisterGear( "tier28", 188868, 188867, 188866, 188864, 188863 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364399, "tier28_4pc", 363590 )
+    -- 2-Set - Endless Rune Waltz  Heart Strike increases your Strength by 1% andWhile your Dancing Rune Weapon is active Heart Strike extends the duration of Dancing Rune Weapon by 0.5 seconds and increases your Strength by 1%, persisting for 10 seconds after Dancing Rune Weapon ends.
+    -- 4-Set - Endless Rune Waltz - Parrying an attack causes your weaponWhen you take damage, you have a chance equal to 100% of your Parry chance to lash out, Heart Striking your attacker. Dancing Rune Weapon now summons 2 Rune Weapons.
+
         spec:RegisterAuras( {
             endless_rune_waltz = {
                 id = 366008,
@@ -1153,10 +1158,10 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 if azerite.deep_cuts.enabled then applyDebuff( "target", "deep_cuts" ) end
 
                 if legendary.gorefiends_domination.enabled and cooldown.vampiric_blood.remains > 0 then
-                    cooldown.vampiric_blood.expires = cooldown.vampiric_blood.expires - 2
+                    gainChargeTime( "vampiric_blood", 2 )
                 end
 
-                if buff.dancing_rune_weapon.up and set_bonus.tier28_2pc > 1 then
+                if buff.dancing_rune_weapon.up and set_bonus.tier28_2pc > 0 then
                     buff.dancing_rune_weapon.expires = buff.dancing_rune_weapon.expires + 0.5
                     addStack( "endless_rune_waltz", nil, 1 )
                     buff.endless_rune_waltz.expires = buff.dancing_rune_weapon.expires + 10

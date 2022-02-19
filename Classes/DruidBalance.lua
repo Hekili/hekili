@@ -943,7 +943,9 @@ if UnitClassBase( "player" ) == "DRUID" then
     end )
 
 
+    -- Tier 28
     spec:RegisterGear( "tier28", 188853, 188851, 188849, 188848, 188847 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364423, "tier28_4pc", 363497 )
     -- 2-Set - Celestial Pillar - Entering Lunar Eclipse creates a Fury of Elune at 25% effectiveness that follows your current target for 8 sec.
     -- 4-Set - Umbral Infusion - While in an Eclipse, the cost of Starsurge and Starfall is reduced by 20%.
 

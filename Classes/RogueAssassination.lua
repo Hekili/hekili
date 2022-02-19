@@ -567,8 +567,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364667, "tier28_4pc", 363591 )
     -- 2-Set - Grudge Match - Shiv causes enemies within 15 yards to take 40% increased damage from your Poisons and Bleeds for 9 seconds.
     -- 4-Set - Grudge Match - Vendetta causes Poisons and Bleeds on your target to expire 100% faster.
+    
+    
     spec:RegisterAuras( {
         grudge_match = {
             id = 264668,

@@ -380,7 +380,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
     end, state )
 
 
-    -- Tier 28:
+    -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364490, "tier28_4pc", 363667 )
     -- 2-Set - Mad Bombardier - When Kill Command resets, it has a 40% chance to make your next Wildfire Bomb incur no cooldown.
     -- 4-Set - Mad Bombardier - Your Wildfire Bombs deal 30% additional damage. This bonus is increased to 80% for bombs empowered by Mad Bombardier.
     spec:RegisterAura( "mad_bombardier", {

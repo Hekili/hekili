@@ -1064,7 +1064,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
 
+    -- Tier 28
 	spec:RegisterGear( "tier28", 188845, 188844, 188843, 188842, 188839 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364539, "tier28_4pc", 363682 )
     -- 2-Set - Arcane Lucidity - Increases your Arcane damage dealt to enemies affected by Touch of the Magi by %10%.
     -- 4-Set - Arcane Lucidity - Touch of the Magi's duration is increased by 4 sec and grants 25% mana regeneration for 12 sec.
     spec:RegisterAura( "arcane_lucidity", {

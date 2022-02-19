@@ -327,7 +327,9 @@ if UnitClassBase( "player" ) == "MONK" then
     end )
 
 
+    -- Tier 28
     spec:RegisterGear( "tier28", 188916, 188914, 188912, 188911, 188910 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364415, "tier28_4pc", 366792 )
     -- 2-Set - Breath of the Cosmos - Targets ignited by Breath of Fire deal an additional 4% less damage to you.
     -- 4-Set - Keg of the Heavens - Keg Smash deals an additional 50% damage, heals you for 66% of damage dealt, and grants 66% of damage dealt as maximum health for 10 sec.
     spec:RegisterAuras( {

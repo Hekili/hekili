@@ -359,6 +359,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364476, "tier28_4pc", 363500 )
     -- 2-Set - Fiery Rush - Increases the duration of Combustion by 2 sec.
     -- 4-Set - Fiery Rush - While Combustion is active your Fire Blast and Phoenix Flames recharge 50% faster.
 

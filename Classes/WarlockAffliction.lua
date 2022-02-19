@@ -483,6 +483,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
     spec:RegisterGear( "tier28", 188884, 188887, 188888, 188889, 188890 )
     
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364437, "tier28_4pc", 363953 )
     -- 2-Set - Deliberate Malice - Malefic Rapture's damage is increased by 15% and each cast extends the duration of Corruption, Agony, and Unstable Affliction by 2 sec.
     -- 4-Set - Calamitous Crescendo - While Agony, Corruption, and Unstable Affliction are active, your Drain Soul has a 10% chance / Shadow Bolt has a 20% chance to make your next Malefic Rapture cost no Soul Shards and cast instantly.
     spec:RegisterAura( "calamitous_crescendo", {

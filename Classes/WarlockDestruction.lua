@@ -432,6 +432,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
 
     -- Tier 28
+    spec:RegisterSetBonuses( "tier28_2pc", 364433, "tier28_4pc", 363950 )
     -- 2-Set - Ritual of Ruin - Every 10 Soul Shards spent grants Ritual of Ruin, making your next Chaos Bolt or Rain of Fire consume no Soul Shards and have no cast time.
     -- 4-Set - Avatar of Destruction - When Chaos Bolt or Rain of Fire consumes a charge of Ritual of Ruin, you summon a Blasphemy for 8 sec.
 

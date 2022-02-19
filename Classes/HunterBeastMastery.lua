@@ -728,7 +728,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
     end )
 
 
+    -- Tier 28
     spec:RegisterGear( "tier28", 188861, 188860, 188859, 188858, 188856 )
+    spec:RegisterSetBonuses( "tier28_2pc", 364492, "tier28_4pc", 363665 )
     -- 2-Set - Killing Frenzy - Your Kill Command critical strike chance is increased by 15% for each stack of Frenzy your pet has.
     -- 4-Set - Killing Frenzy - Kill Command critical hits increase the damage and cooldown reduction of your next Cobra Shot by 40%.
     spec:RegisterAura( "killing_frenzy", {
