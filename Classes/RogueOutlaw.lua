@@ -568,6 +568,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
     local ExpireSepsis = setfenv( function ()
         applyBuff( "sepsis_buff" )
+
+        if legendary.toxic_onslaught.enabled then
+            applyBuff( "shadow_blades", 10 )
+            applyDebuff( "target", "vendetta", 10 )
+        end        
     end, state )
 
     spec:RegisterHook( "reset_precast", function( amt, resource )
