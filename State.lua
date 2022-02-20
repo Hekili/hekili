@@ -6296,7 +6296,7 @@ function state:IsKnown( sID, notoggle )
         end
 
         if ability.item then
-            return IsUsableItem( ability.item ), "IsUsableItem item"
+            return IsUsableItem( ability.item ), "IsUsableItem item " .. ability.item .. " and " .. ( tostring( ability.known ) or "nil" )
         end
 
         return true
