@@ -467,7 +467,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
 
         thorns = {
-            id = 236696,
+            id = 305497,
             duration = 12,
             type = "Magic",
             max_stack = 1,
@@ -871,8 +871,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             elseif k == "primal_wrath" then return debuff.rip
             elseif k == "lunar_inspiration" then return debuff.moonfire_cat
             elseif k == "no_cds" then return not toggle.cooldowns
-            elseif debuff[ k ] ~= nil then return debuff[ k ]
-            end
+            elseif rawget( debuff, k ) ~= nil then return debuff[ k ] end
+            return false
         end
     } ) )
 
@@ -2195,7 +2195,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
         thorns = {
-            id = 236696,
+            id = 305497,
             cast = 0,
             cooldown = 45,
             gcd = "spell",

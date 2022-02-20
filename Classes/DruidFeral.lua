@@ -561,7 +561,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
 
         thorns = {
-            id = 236696,
+            id = 305497,
             duration = 12,
             type = "Magic",
             max_stack = 1,
