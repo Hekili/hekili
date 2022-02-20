@@ -502,6 +502,7 @@ local powers = {
     [331370] = { "soulsteel_pinion", 4 },
     [331369] = { "acrobats_razor", 4 },
     [331367] = { "sigil_of_skoldus", 4 },
+    [331368] = { "sigil_of_skoldus_aura", 1 },
     [331365] = { "deadeye_satchel", 4 },
     [342540] = { "neural_pet_enhancer", 3 },
     [331187] = { "cadaverous_cleats", 3 },
