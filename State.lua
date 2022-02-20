@@ -1019,14 +1019,15 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         end
 
         -- state.debuff[ aura ] = state.debuff[ aura ] or {}
-        d.expires = state.query_time + ( noPandemic and 0 or min( d.remains, 0.3 * ( class.auras[ aura ].duration or 15 ) ) ) + duration
+        d.duration = ( noPandemic and 0 or min( d.remains, 0.3 * ( class.auras[ aura ].duration or 15 ) ) ) + duration
+        d.expires = state.query_time + d.duration
 
         d.lastCount = d.count or 0
         d.lastApplied = d.applied or 0
 
         d.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         d.value = value or 0
-        d.applied = state.now
+        d.applied = state.query_time
         d.unit = unit or "target"
     end
 
@@ -5648,10 +5649,6 @@ function state.reset( dispName )
 
             v.lastCount = nil
             v.lastApplied = nil
-
-            if v.remains then
-                -- Force update.
-            end
         end
 
         for k, v in pairs( state.cooldown ) do
@@ -5663,10 +5660,6 @@ function state.reset( dispName )
             v.recharge_duration = nil
             v.true_expires = nil
             v.true_remains = nil
-
-            if v.remains then
-                -- Checking v.remains will actually reset it.
-            end
         end
 
         --[[ state.trinket.t1.cooldown.duration = nil
@@ -5681,10 +5674,6 @@ function state.reset( dispName )
 
             v.lastCount = nil
             v.lastApplied = nil
-
-            if v.remains then
-                -- Force update.
-            end
         end
 
         state.pet.exists = nil
