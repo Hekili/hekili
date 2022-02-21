@@ -3063,7 +3063,7 @@ all:RegisterPowers( {
 local function ResetAzerite()
     local heart = C_AzeriteItem.FindActiveAzeriteItem()
 
-    if heart:IsValid() then
+    if heart and heart:IsValid() then
         rawset( state.azerite, "heart", heart )
     else
         rawset( state.azerite, "heart", nil )
