@@ -1014,16 +1014,9 @@ do
     
             if self.id == "Primary" then
                 self.refreshTimer = self.refreshTimer + elapsed
+                local thread = self.activeThread
                 
-                if not Hekili.Pause then
-                    local thread = self.activeThread
-    
-                    -- If the thread is dead, clear it.
-                    if thread and coroutine.status( thread ) == "dead" then
-                        self.activeThread = nil
-                        thread = nil
-                    end
-
+                if thread or not Hekili.Pause then
                     if not self.refreshRate then
                         if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
                             self.refreshRate = 1 / Hekili:GetActiveSpecOption( "maxRefresh" )
@@ -1079,6 +1072,7 @@ do
                         self.activeThreadTime = self.activeThreadTime + ( now - start )
     
                         if coroutine.status( thread ) == "dead" then
+                            self.activeThread = nil
                             self.refreshTimer = 0
 
                             if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
