@@ -2871,7 +2871,7 @@ all:RegisterAura( "shiver_venom", {
 
 
 do
-    local coralGUID, coralApplied, coralStacks = "none", 0, 0
+    -- local coralGUID, coralApplied, coralStacks = "none", 0, 0
 
     -- Ashvane's Razor Coral, 169311
     all:RegisterAbility( "ashvanes_razor_coral", {
@@ -2882,12 +2882,12 @@ do
         item = 169311,
         toggle = "cooldowns",
 
-        usable = function ()
+        --[[ usable = function ()
             if active_dot.razor_coral > 0 and target.unit ~= coralGUID then
                 return false, "current target does not have razor_coral applied"
             end
             return true
-        end,
+        end, ]]
 
         handler = function ()
             if active_dot.razor_coral > 0 then
@@ -2903,7 +2903,7 @@ do
     } )    
 
 
-    local f = CreateFrame("Frame")
+    --[[ local f = CreateFrame("Frame")
     f:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
     f:RegisterEvent( "PLAYER_REGEN_ENABLED" )
 
@@ -2937,7 +2937,7 @@ do
     all:RegisterStateExpr( "coral_time_to_30", function() 
         if coralGUID == 0 then return 3600 end
         return Hekili:GetTimeToPctByGUID( coralGUID, 30 ) - ( offset + delay )
-    end )
+    end ) ]]
 
     all:RegisterAuras( {
         razor_coral = {
@@ -2955,21 +2955,16 @@ do
                     t.expires = expirationTime
                     t.applied = expirationTime - duration
                     t.caster = "player"
-
-                    coralGUID = state.target.unit
-                    coralApplied = expirationTime - duration
-                    coralStacks = count > 0 and count or 1
-
                     return
 
-                elseif coralGUID ~= "none" then
+                --[[ elseif coralGUID ~= "none" then
                     t.name = class.auras.razor_coral.name
                     t.count = coralStacks > 0 and coralStacks or 1
                     t.applied = coralApplied > 0 and coralApplied or state.query_time
                     t.expires = coralApplied > 0 and ( coralApplied + 120 ) or ( state.query_time + Hekili:GetDeathClockByGUID( coralGUID ) )
                     t.caster = "player"
 
-                    return
+                    return ]]
                 end
 
                 t.name = class.auras.razor_coral.name
@@ -5653,8 +5648,8 @@ function Hekili:GetActivePack()
 end
 
 
-local optionsInitialized = false
 local seen = {}
+
 function Hekili:SpecializationChanged()
     local currentSpec = GetSpecialization()
     local currentID = GetSpecializationInfo( currentSpec )
@@ -5922,7 +5917,7 @@ function Hekili:SpecializationChanged()
 
     self:UpdateDisplayVisibility()
 
-    if not self:ScriptsLoaded() then self:LoadScripts() end
+    -- if not self:ScriptsLoaded() then self:LoadScripts() end
 
     Hekili:UpdateDamageDetectionForCLEU()
 
