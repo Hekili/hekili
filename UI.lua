@@ -1256,7 +1256,7 @@ do
                 if conf.flash.enabled and LSF then
                     self.flashTimer = self.flashTimer - elapsed
         
-                    local a = b.Action
+                    local a = self.Buttons[ 1 ].Action
                     local changed = self.lastFlash ~= a
         
                     if a and ( self.flashTimer < 0 or changed ) then
