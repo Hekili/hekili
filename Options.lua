@@ -10511,9 +10511,8 @@ function Hekili:TogglePause( ... )
 
     if not self.Pause then
         self.ActiveDebug = true
-
         Hekili.Update()
-
+        self.ActiveDebug = false
         self.Pause = true
         
         --[[ if self:SaveDebugSnapshot() then
@@ -10525,9 +10524,9 @@ function Hekili:TogglePause( ... )
             end
         end ]]
         
-        self.ActiveDebug = false
     else
         self.Pause = false
+        self.ActiveDebug = false
 
         -- Discard the active update thread so we'll definitely start fresh at next update.
         if HekiliDisplayPrimary and HekiliDisplayPrimary.activeThread then

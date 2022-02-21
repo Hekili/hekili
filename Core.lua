@@ -2054,11 +2054,11 @@ function Hekili.Update()
     if not pack then return end
 
     local debug = Hekili.ActiveDebug
-    local snapped = false
 
     if not Hekili:ScriptsLoaded() then Hekili:LoadScripts() end
-
     Hekili:ResetThreadClock()
+
+    local snaps = nil
 
     for i, info in ipairs( displayRules ) do
         local dispName, rule = unpack( info )
@@ -2106,8 +2106,6 @@ function Hekili.Update()
                 numRecs = 1
             end
         
-            local hasSnapshotted = Hekili.HasSnapped or false
-
             for i = 1, numRecs do
                 local chosen_action
                 local chosen_depth = 0
@@ -2423,13 +2421,13 @@ function Hekili.Update()
         
                 if debug then
                     Hekili:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay )
-                    if not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and InCombatLockdown() and state.level >= 50 then
-                        Hekili.HasSnapped = true
+                    --[[ if not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and InCombatLockdown() and state.level >= 50 then
+                        Hekili.ActiveDebug = true
                         hasSnapshotted = true
             
                         Hekili:MakeSnapshot( dispName, true )
                         return true
-                    end
+                    end ]]
                 end
         
                 Hekili:Yield( "Pre-Action" )
@@ -2548,7 +2546,6 @@ function Hekili.Update()
                         checkstr = checkstr and ( checkstr .. ':' .. action ) or action
                         slot[n] = nil
                     end
-                    return
                 end
         
             end
@@ -2565,7 +2562,11 @@ function Hekili.Update()
             if debug then
                 Hekili:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
                 if Hekili:SaveDebugSnapshot( dispName ) then
-                    snapped = true
+                    if snaps then
+                        snaps = snaps .. ", " .. dispName
+                    else
+                        snaps = dispName
+                    end
                 end
             else
                 -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
@@ -2581,8 +2582,8 @@ function Hekili.Update()
         end
     end
 
-    if snapped then
-        Hekili:Print( "Saved snapshot(s) for your visible displays.  Snapshots are saved until you reload your UI." )
+    if snaps then
+        Hekili:Print( "Snapshots saved:  " .. snaps .. "." )
     end
 end
 Hekili:ProfileCPU( "ThreadedUpdate", Hekili.Update )

@@ -1044,7 +1044,7 @@ do
                         self.activeThreadStart = debugprofilestop()
 
                         if not self.firstThreadCompleted then
-                            Hekili.maxFrameTime = 0.5
+                            Hekili.maxFrameTime = 1
                         else
                             if Hekili:GetActiveSpecOption( "throttleTime" ) then
                                 Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
@@ -1071,7 +1071,7 @@ do
 
                         local ok, err = coroutine.resume( thread )
                         if not ok then
-                            Hekili:Error( "Error in Update thread: " .. err )
+                            Hekili:Error( "Update: " .. err )
                             error( err )
                         end
                         local now = debugprofilestop()
@@ -1084,7 +1084,7 @@ do
                             if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
                                 self.refreshRate = 1 / Hekili:GetActiveSpecOption( "maxRefresh" )
                             else
-                                self.refreshRate = 0.5
+                                self.refreshRate = 0.1
                             end
     
                             if self.firstThreadCompleted then

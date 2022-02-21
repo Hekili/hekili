@@ -285,7 +285,6 @@ function Hekili:SaveDebugSnapshot( dispName )
     end
 
     if snapped and Hekili.DB.profile.screenshot then
-        Hekili:Print( "Screen captured." )
         Screenshot()
     end
 
