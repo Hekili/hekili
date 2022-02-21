@@ -5650,11 +5650,6 @@ function state.reset( dispName )
         v.lastApplied = nil
     end
 
-    for k, v in pairs( state.buff ) do
-        if v.remains then
-        end
-    end
-
     Hekili:Yield( "Reset Post-Buffs" )
 
     for k, v in pairs( state.cooldown ) do
@@ -5687,11 +5682,6 @@ function state.reset( dispName )
 
         v.lastCount = nil
         v.lastApplied = nil
-    end
-
-    for k, v in pairs( state.debuff ) do
-        if v.remains then
-        end
     end
 
     Hekili:Yield( "Reset Post-Debuffs" )
