@@ -799,7 +799,7 @@ do
 
                 -- Fire any/all GearHooks (may be expansion-driven).
                 for _, hook in ipairs( GearHooks ) do
-                    hook.update( i, item )
+                    if hook.update then hook.update( i, item ) end
                 end
 
                 local usable = class.itemMap[ item ]
@@ -1070,6 +1070,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, 
     else
         state.target.updated = true
     end
+
     Hekili:ForceUpdate( event, true )
 end )
 

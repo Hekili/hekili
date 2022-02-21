@@ -530,12 +530,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             { 1, 0 }
         },
 
-        f = CreateFrame("Frame"),
+        f = CreateFrame( "Frame" ),
         fRegistered = false,
 
         reset = setfenv( function ()
             if talent.incanters_flow.enabled then
                 if not incanters_flow.fRegistered then
+                    Hekili:ProfileFrame( "Incanters_Flow_Frost", incanters_flow.f )
                     -- One-time setup.
                     incanters_flow.f:RegisterUnitEvent( "UNIT_AURA", "player" )
                     incanters_flow.f:SetScript( "OnEvent", function ()

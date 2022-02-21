@@ -806,12 +806,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             { 1, 0 }
         },
 
-        f = CreateFrame("Frame"),
+        f = CreateFrame( "Frame" ),
         fRegistered = false,
 
         reset = setfenv( function ()
             if talent.incanters_flow.enabled then
                 if not incanters_flow.fRegistered then
+                    Hekili:ProfileFrame( "Incanters_Flow_Arcane", incanters_flow.f )
                     -- One-time setup.
                     incanters_flow.f:RegisterUnitEvent( "UNIT_AURA", "player" )
                     incanters_flow.f:SetScript( "OnEvent", function ()
@@ -1144,8 +1145,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             spend = function ()
                 if buff.rule_of_threes.up then return 0 end
                 local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 )
-                if azerite.equipoise.enabled and mana.pct < 70 then return ( mana.modmax * mult ) - 190 end
-                return mana.modmax * mult
+                -- if azerite.equipoise.enabled and mana.pct < 70 then return ( mana.modmax * mult ) - 190 end
+                return mana.modmax * mult, "mana"
             end,
             spendType = "mana",
 

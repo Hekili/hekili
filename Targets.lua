@@ -169,7 +169,7 @@ f:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 f:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
 f:RegisterEvent("UNIT_FLAGS")
 
-f:SetScript( "OnEvent", function(self, event, unit)
+f:SetScript( "OnEvent", function( self, event, unit )
     if event == "NAME_PLATE_UNIT_ADDED" then
         local id = UnitGUID( unit )
         npGUIDs[unit] = id
@@ -219,6 +219,8 @@ do
         chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
         C_Timer.After( 2, UpdateChromieTime )
     end )
+
+    Hekili:ProfileFrame( "ChromieFrame", ct )
 end
 
 
@@ -234,6 +236,8 @@ do
     wm:SetScript( "OnEvent", function( self, event, val )
         warmode = C_PvP.IsWarModeDesired()
     end )
+
+    Hekili:ProfileFrame( "WarModeFrame", wm )
 end
 
 
@@ -1155,11 +1159,25 @@ do
     local seen = {}
 
     local UpdateTTDs
+    local inCombat = false
 
     UpdateTTDs = function()
+        if not InCombatLockdown() then
+            if inCombat then
+                Hekili:ExpireTTDs( true )
+                inCombat = false
+            end
+            C_Timer.After( 0.25, UpdateTTDs )
+            return
+        end
+
+        inCombat = true
+
         wipe(seen)
 
         local now = GetTime()
+
+        local updates, deletions = 0, 0
 
         for i, unit in ipairs(trackedUnits) do
             local guid = UnitGUID(unit)
@@ -1167,12 +1185,14 @@ do
             if guid and not seen[guid] then
                 if db[ guid ] and ( not UnitExists(unit) or UnitIsDead(unit) or not UnitCanAttack("player", unit) or ( UnitHealth(unit) <= 1 and UnitHealthMax(unit) > 1 ) ) then
                     EliminateEnemy(guid)
+                    deletions = deletions + 1
                 else
                     local health, healthMax = UnitHealth(unit), UnitHealthMax(unit)
                     health = health + UnitGetTotalAbsorbs(unit)
                     healthMax = max( 1, healthMax )
 
                     UpdateEnemy(guid, health / healthMax, unit, now)
+                    updates = updates + 1
                 end
                 seen[guid] = true
             end
@@ -1181,15 +1201,19 @@ do
         for unit, guid in pairs(npGUIDs) do
             if db[guid] and (not UnitExists(unit) or UnitIsDead(unit) or not UnitCanAttack("player", unit)) then
                 EliminateEnemy(guid)
+                deletions = deletions + 1
             elseif not seen[guid] then
                 local health, healthMax = UnitHealth(unit), UnitHealthMax(unit)
                 UpdateEnemy(guid, health / healthMax, unit, now)
+                updates = updates + 1
             end
             seen[guid] = true
         end
-
+        
         C_Timer.After( 0.25, UpdateTTDs )
     end
+    Hekili:ProfileCPU( "UpdateTTDs", UpdateTTDs )
+
 
     C_Timer.After( 0.25, UpdateTTDs )
 end

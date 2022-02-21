@@ -210,12 +210,10 @@ end
 local snapshots = ns.snapshots
 
 function Hekili:SaveDebugSnapshot( dispName )
-
     local snapped = false
 
 	for k, v in pairs( debug ) do
-		
-		if dispName == nil or dispName == k then
+		if not dispName or dispName == k then
 			if not snapshots[ k ] then
 				snapshots[ k ] = {}
 			end
@@ -284,12 +282,11 @@ function Hekili:SaveDebugSnapshot( dispName )
             
             snapped = true
 		end
-
     end
 
     if snapped and Hekili.DB.profile.screenshot then
+        Hekili:Print( "Screen captured." )
         Screenshot()
-        -- Don't need to print anything; WoW shows a "Screen Captured" message.
     end
 
     return snapped
@@ -300,3 +297,4 @@ Hekili.Snapshots = ns.snapshots
 
 
 ns.Tooltip = CreateFrame( "GameTooltip", "HekiliTooltip", UIParent, "GameTooltipTemplate" )
+Hekili:ProfileFrame( "HekiliTooltip", ns.Tooltip )

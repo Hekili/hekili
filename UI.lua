@@ -300,7 +300,6 @@ function ns.StartConfiguration( external )
             collectgarbage()
             Hekili:UpdateDisplayVisibility()
         end )
-
         Hekili:ProfileFrame( "CloseOptionsFrame", ns.OnHideFrame )
     end
 
@@ -359,6 +358,8 @@ end
 do
     ns.UI.Menu = ns.UI.Menu or CreateFrame( "Frame", "HekiliMenu", UIParent, "UIDropDownMenuTemplate" )
     local menu = ns.UI.Menu
+
+    Hekili:ProfileFrame( "HekiliMenu", menu )
 
     menu.info = {}
 
@@ -687,79 +688,13 @@ do
         UPDATE_ALL_UI_WIDGETS = 1,
     }
 
-    
-    local function CalculateAlpha( id )
-        if IsInPetBattle() or Hekili.Barber or UnitHasVehicleUI("player") or HasVehicleActionBar() or HasOverrideActionBar() or UnitOnTaxi("player") or not Hekili:IsDisplayActive( id ) then
-            return 0
-        end
-
-        local prof = Hekili.DB.profile
-        local conf, mode = prof.displays[ id ], prof.toggles.mode.value
-
-        local _, zoneType = IsInInstance()
-    
-        -- Switch Type:
-        --   0 = Auto - AOE
-        --   1 = ST - AOE
-
-        if ( not conf.enabled ) or ( not conf.visibility.mode[ mode ] ) then
-            return 0
-
-        elseif zoneType == "pvp" or zoneType == "arena" then
-            if not conf.visibility.advanced then return conf.visibility.pvp.alpha end
-
-            if conf.visibility.pvp.hideMounted and IsMounted() then return 0 end
-
-            if conf.visibility.pvp.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.combatTarget
-            elseif conf.visibility.pvp.combat > 0 and state.combat > 0 then return conf.visibility.pvp.combat
-            elseif conf.visibility.pvp.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.target
-            elseif conf.visibility.pvp.always > 0 then return conf.visibility.pvp.always end
-
-            return 0            
-        end
-
-        if not conf.visibility.advanced then return conf.visibility.pve.alpha end
-        
-        if conf.visibility.pve.hideMounted and IsMounted() then return 0 end
-
-        if conf.visibility.pve.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.combatTarget
-        elseif conf.visibility.pve.combat > 0 and state.combat > 0 then return conf.visibility.pve.combat
-        elseif conf.visibility.pve.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.target
-        elseif conf.visibility.pve.always > 0 then return conf.visibility.pve.always end
-
-        return 0
-    end
-
     local kbEvents = {
         ACTIONBAR_SLOT_CHANGED = 1,
         ACTIONBAR_PAGE_CHANGED = 1,
         ACTIONBAR_UPDATE_STATE = 1,
         SPELLS_CHANGED = 1,
         UPDATE_SHAPESHIFT_FORM = 1
-    }
-
-    local function Display_UpdateKeybindings( self )
-        local conf = Hekili.DB.profile.displays[ self.id ]
-
-        if conf.keybindings and conf.keybindings.enabled then
-            for i, b in ipairs( self.Buttons ) do
-                local r = self.Recommendations[i]
-                if r then
-                    local a = r.actionName
-
-                    if a then                        
-                        r.keybind, r.keybindFrom = Hekili:GetBindingForAction( r.actionName, conf, i )
-                    end
-
-                    if i == 1 or conf.keybindings.queued then
-                        b.Keybinding:SetText( r.keybind )
-                    else
-                        b.Keybinding:SetText( nil )
-                    end
-                end
-            end
-        end
-    end
+    }    
 
     local pulseAuras = 0.1
     local pulseDelay = 0.05
@@ -812,847 +747,48 @@ do
 
     local LSR = LibStub("SpellRange-1.0")
     local Glower = LibStub("LibCustomGlow-1.0")
-
-    local function Display_OnUpdate( self, elapsed )
-        if not self.Recommendations or not Hekili.PLAYER_ENTERING_WORLD then
-            return
+    
+    local function CalculateAlpha( id )
+        if IsInPetBattle() or Hekili.Barber or UnitHasVehicleUI("player") or HasVehicleActionBar() or HasOverrideActionBar() or UnitOnTaxi("player") or not Hekili:IsDisplayActive( id ) then
+            return 0
         end
 
-        local profile = Hekili.DB.profile
-        local conf = profile.displays[ self.id ]
+        local prof = Hekili.DB.profile
+        local conf, mode = prof.displays[ id ], prof.toggles.mode.value
 
-        self.alphaCheck = self.alphaCheck - elapsed
+        local _, zoneType = IsInInstance()
+    
+        -- Switch Type:
+        --   0 = Auto - AOE
+        --   1 = ST - AOE
 
-        if self.alpha == 0 then
-            if self.alphaCheck <= 0 then
-                self.alphaCheck = 0.5
-                self:UpdateAlpha()
-            end
-            return
+        if ( not conf.enabled ) or ( not conf.visibility.mode[ mode ] ) then
+            return 0
+
+        elseif zoneType == "pvp" or zoneType == "arena" then
+            if not conf.visibility.advanced then return conf.visibility.pvp.alpha end
+
+            if conf.visibility.pvp.hideMounted and IsMounted() then return 0 end
+
+            if conf.visibility.pvp.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.combatTarget
+            elseif conf.visibility.pvp.combat > 0 and state.combat > 0 then return conf.visibility.pvp.combat
+            elseif conf.visibility.pvp.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.target
+            elseif conf.visibility.pvp.always > 0 then return conf.visibility.pvp.always end
+
+            return 0            
         end
 
-        if Hekili.Pause then
-            if not self.paused then
-                self.Buttons[ 1 ].Overlay:Show()
-                self.paused = true
-            end
-        elseif self.paused then            
-            self.Buttons[ 1 ].Overlay:Hide()
-            self.paused = false
-        end
-
-        local now = GetTime()
-
-
-        self.recTimer = self.recTimer - elapsed
-
-        if self.NewRecommendations or self.recTimer < 0 then
-            local alpha = self.alpha
-
-            for i, b in ipairs( self.Buttons ) do
-                local rec = self.Recommendations[ i ]
-
-                local action = rec.actionName
-                local caption = rec.caption
-                local indicator = rec.indicator
-                local keybind = rec.keybind
-
-                local ability = class.abilities[ action ]
-
-                if ability then
-                    if ( conf.flash.enabled and conf.flash.suppress ) then b:Hide()
-                    else b:Show() end
-
-                    if action ~= b.lastAction or self.NewRecommendations then
-                        b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
-                        b.Texture:SetTexCoord( unpack( b.texCoords ) )
-                        b.lastAction = action
-                    end
-
-                    b.Texture:Show()
-
-                    if conf.indicators.enabled and indicator then
-                        if indicator == "cycle" then
-                            b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cycle")
-                        end
-                        if indicator == "cancel" then
-                            b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cancel")
-                        end
-                        b.Icon:Show()
-                    else
-                        b.Icon:Hide()
-                    end
-
-                    if ( conf.captions.enabled or ability.caption ) and ( i == 1 or conf.captions.queued ) then
-                        b.Caption:SetText( caption )
-                    else
-                        b.Caption:SetText(nil)
-                    end
-
-                    if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
-                        b.Keybinding:SetText( keybind )
-                    else
-                        b.Keybinding:SetText(nil)
-                    end
-
-                    if conf.glow.enabled and ( i == 1 or conf.glow.queued ) and IsSpellOverlayed( ability.id ) then
-                        b.glowColor = b.glowColor or {}
-
-                        if conf.glow.coloring == "class" then
-                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
-                        elseif conf.glow.coloring == "custom" then
-                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
-                        else
-                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
-                        end
-
-                        if conf.glow.mode == "default" then
-                            Glower.ButtonGlow_Start( b, b.glowColor )
-                            b.glowStop = Glower.ButtonGlow_Stop
-                        elseif conf.glow.mode == "autocast" then
-                            Glower.AutoCastGlow_Start( b, b.glowColor )
-                            b.glowStop = Glower.AutoCastGlow_Stop
-                        elseif conf.glow.mode == "pixel" then
-                            Glower.PixelGlow_Start( b, b.glowColor )
-                            b.glowStop = Glower.PixelGlow_Stop
-                        end
-                        
-                        b.glowing = true
-                    elseif b.glowing then
-                        if b.glowStop then b:glowStop() end
-                        b.glowing = false
-                    end
-                else
-                    b:Hide()
-                end
-            end
-
-            -- Force glow, range, SpellFlash updates.
-            self.glowTimer = -1
-            self.rangeTimer = -1
-            self.delayTimer = -1
-
-            self.recTimer = 0.1
-            self.alphaCheck = 0.5
-
-            self:RefreshCooldowns()
-            self.NewRecommendations = false
-        end
-
-
-        self.refreshTimer = self.refreshTimer - elapsed
-
-        if Hekili.freshFrame and not Hekili.Pause then
-            local spec = Hekili.DB.profile.specs[ state.spec.id ]
-            local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or 1
-
-            if self.refreshTimer < 0 or self.superUpdate or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
-                local success = Hekili:ProcessHooks( self.id )
-
-                -- if success then
-                    self.lastUpdate = now
-                    self.criticalUpdate = false
-                    self.superUpdate = false
-
-                    local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
-
-                    if UnitChannelInfo( "player" ) then
-                        refreshRate = refreshRate * 2
-                    end
+        if not conf.visibility.advanced then return conf.visibility.pve.alpha end
         
-                    self.refreshTimer = refreshRate
+        if conf.visibility.pve.hideMounted and IsMounted() then return 0 end
 
-                    table.wipe( self.eventsTriggered )
-               -- end
-                
-                Hekili.freshFrame = false
-            end
-        end
+        if conf.visibility.pve.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.combatTarget
+        elseif conf.visibility.pve.combat > 0 and state.combat > 0 then return conf.visibility.pve.combat
+        elseif conf.visibility.pve.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.target
+        elseif conf.visibility.pve.always > 0 then return conf.visibility.pve.always end
 
-
-        self.glowTimer = self.glowTimer - elapsed
-
-        if self.glowTimer < 0 then
-            if conf.glow.enabled then
-                for i, b in ipairs( self.Buttons ) do
-                    local r = self.Recommendations[ i ]
-
-                    if not r.actionName then
-                        break
-                    end
-
-                    local a = class.abilities[ r.actionName ]
-
-                    if i == 1 or conf.glow.queued then
-                        local glowing = not a.item and IsSpellOverlayed( a.id )
-
-                        if glowing and not b.glowing then
-                            b.glowColor = b.glowColor or {}
-
-                            if conf.glow.coloring == "class" then
-                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
-                            elseif conf.glow.coloring == "custom" then
-                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
-                            else
-                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
-                            end
-    
-                            if conf.glow.mode == "default" then
-                                Glower.ButtonGlow_Start( b, b.glowColor )
-                                b.glowStop = Glower.ButtonGlow_Stop
-                            elseif conf.glow.mode == "autocast" then
-                                Glower.AutoCastGlow_Start( b, b.glowColor )
-                                b.glowStop = Glower.AutoCastGlow_Stop
-                            elseif conf.glow.mode == "pixel" then
-                                Glower.PixelGlow_Start( b, b.glowColor )
-                                b.glowStop = Glower.PixelGlow_Stop
-                            end
-                            
-                            b.glowing = true
-                        elseif not glowing and b.glowing then
-                            b:glowStop()
-                            b.glowing = false
-                        end
-                    else
-                        if b.glowing then
-                            b:glowStop()
-                            b.glowing = false
-                        end
-                    end
-                end
-            end
-        end
-
-
-        self.rangeTimer = self.rangeTimer - elapsed
-
-        if self.rangeTimer < 0 then
-            for i, b in ipairs( self.Buttons ) do
-                local r = self.Recommendations[ i ]
-                local a = class.abilities[ r.actionName ]
-
-                if a and a.id then
-                    local outOfRange = false
-
-                    if conf.range.enabled then
-                        if conf.range.type == "melee" and UnitExists( "target" ) then
-                            outOfRange = ( LRC:GetRange( "target" ) or 50 ) > 7
-                        elseif conf.range.type == "ability" and UnitExists( "target" ) and UnitCanAttack( "player", "target" ) then
-                            if a.item then
-                                outOfRange = IsItemInRange( a.itemCd or a.item, "target" ) == false
-                            else
-                                local name = a.rangeSpell or a.actualName or a.name
-
-                                if name then
-                                    outOfRange = LSR.IsSpellInRange( a.rangeSpell or a.actualName or a.name, "target" ) == 0
-                                end
-                            end
-                        end
-                    end
-
-                    if outOfRange and not b.outOfRange then
-                        b.Texture:SetDesaturated(true)
-                        b.Texture:SetVertexColor(1.0, 0.0, 0.0, 1.0)
-                        b.outOfRange = true
-                    elseif b.outOfRange and not outOfRange then
-                        b.Texture:SetDesaturated(false)
-                        b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
-                        b.outOfRange = false
-                    end
-
-                    if not b.outOfRange then
-                        local _, unusable
-
-                        if a.itemCd or a.item then
-                            unusable = not IsUsableItem( a.itemCd or a.item )
-                        else
-                            _, unusable = IsUsableSpell( a.actualName or a.name )
-                        end
-
-                        if i == 1 and conf.delays.fade then
-                            local delay = r.exact_time - now            
-                            local moment = 0
-
-                            local start, duration = 0, 0
-                
-                            if a.gcd ~= "off" then
-                                start, duration = GetSpellCooldown( 61304 )
-                                if start > 0 then moment = start + duration - now end
-                            end
-    
-                            local rStart, rDuration
-                            if a.item then
-                                rStart, rDuration = GetItemCooldown( a.item )
-                            else
-                                rStart, rDuration = GetSpellCooldown( a.id )
-                            end
-                            if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
-                
-                            _, _, _, start, duration = UnitCastingInfo( "player" )
-                            if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
-    
-                            if delay > moment + 0.05 then
-                                unusable = true
-                            end
-                        end    
-
-                        if unusable and not b.unusable then
-                            b.Texture:SetVertexColor(0.4, 0.4, 0.4, 1.0)
-                            b.unusable = true
-                        elseif b.unusable and not unusable then
-                            b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
-                            b.unusable = false
-                        end
-                    end
-                end
-            end
-            
-            self.rangeTimer = pulseRange
-        end
-
-        
-        if conf.flash.enabled and LSF then
-            self.flashTimer = self.flashTimer - elapsed
-
-            local a = self.Recommendations and self.Recommendations[ 1 ] and self.Recommendations[ 1 ].actionName
-            local changed = self.lastFlash ~= a
-
-            if a and ( self.flashTimer < 0 or changed ) then
-                self.flashTimer = pulseFlash
-
-                local ability = class.abilities[ a ]
-
-                self.flashColor = self.flashColor or {}
-                self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
-                self.lastFlashFrames = self.lastFlashFrames or {}
-
-                catchFlash = GetTime()
-                table.wipe( lastFramesFlashed )
-
-                if ability.item then
-                    local iname = LSF.ItemName( ability.item )
-                    LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
-                else
-                    if ability.flash then
-                        LSF.FlashAction( ability.flash, self.flashColor )
-                    else
-                        local id = ability.known
-                        
-                        if id == nil or type( id ) ~= "number" then
-                            id = ability.id
-                        end
-
-                        local sname = LSF.SpellName( id )
-                        LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
-                    end
-                end
-
-                catchFlash = nil
-
-                if changed then
-                    for i = #self.lastFlashFrames, 1, -1 do
-                        local frame = self.lastFlashFrames[ i ]
-
-                        if not lastFramesFlashed[ frame ] then
-                            frame:Hide()
-                            frame.flashDuration = 0
-                            
-                            table.remove( self.lastFlashFrames, i )
-                        else
-                            -- Mark with a zero so we don't add it again.
-                            lastFramesFlashed[ frame ] = 0
-                        end
-                    end
-
-                    for frame, status in pairs( lastFramesFlashed ) do
-                        if status ~= 0 then
-                            table.insert( self.lastFlashFrames, frame )
-                        end
-                    end
-                end
-
-                self.lastFlash = a
-            end
-        end
-
-
-        self.targetTimer = self.targetTimer - elapsed
-
-        if self.targetTimer < 0 then
-            local b = self.Buttons[ 1] 
-
-            if conf.targets.enabled then
-                local tMin, tMax = 0, 0
-                local mode = profile.toggles.mode.value
-                local spec = state.spec.id and profile.specs[ state.spec.id ]
-
-                if self.id == 'Primary' then
-                    if ( mode == 'dual' or mode == 'single' or mode == 'reactive' ) then tMax = 1
-                    elseif mode == 'aoe' then tMin = spec and spec.aoe or 3 end
-                elseif self.id == 'AOE' then tMin = spec and spec.aoe or 3 end
-
-                local detected = ns.getNumberTargets()
-                local shown = detected
-
-                if tMin > 0 then
-                    shown = max(tMin, shown)
-                end
-                if tMax > 0 then
-                    shown = min(tMax, shown)
-                end
-
-                if tMax == 1 or shown > 1 then
-                    local color = detected < shown and "|cFFFF0000" or ( shown < detected and "|cFF00C0FF" or "" )
-                    b.Targets:SetText( color .. shown .. "|r")
-                    b.targetShown = true
-                else
-                    b.Targets:SetText(nil)
-                    b.targetShown = false
-                end
-            elseif b.targetShown then
-                b.Targets:SetText(nil)
-            end
-
-            self.targetTimer = pulseTargets
-        end
-
-
-        local rec = self.Recommendations[ 1 ]
-
-        self.delayTimer = self.delayTimer - elapsed
-
-        if rec.exact_time and self.delayTimer < 0 then
-            local b = self.Buttons[ 1 ]
-            local a = class.abilities[ rec.actionName ]
-
-            local delay = rec.exact_time - now
-            local moment = 0
-
-            if delay > 0 then
-                local start, duration = 0, 0
-
-                if a.gcd ~= "off" then
-                    start, duration = GetSpellCooldown( 61304 )
-                    if start > 0 then moment = start + duration - now end
-                end
-
-                _, _, _, start, duration = UnitCastingInfo( "player" )
-                if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
-
-                local rStart, rDuration = 0, 0
-                if a.item then
-                    rStart, rDuration = GetItemCooldown( a.item )
-                else
-                    if a.cooldown > 0 or a.spendType ~= "runes" then
-                        rStart, rDuration = GetSpellCooldown( a.id )
-                    end
-                end
-                if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
-            end
-
-            if conf.delays.type == "TEXT" then
-                if self.delayIconShown then
-                    b.DelayIcon:Hide()
-                    self.delayIconShown = false
-                end
-
-                if delay > moment + 0.05 then
-                    b.DelayText:SetText( format( "%.1f", delay ) )
-                    self.delayTextShown = true
-                else
-                    b.DelayText:SetText( nil )
-                    self.delayTextShown = false
-                end
-
-            elseif conf.delays.type == "ICON" then
-                if self.delayTextShown then
-                    b.DelayText:SetText(nil)
-                    self.delayTextShown = false
-                end
-
-                if delay > moment + 0.05 then
-                    b.DelayIcon:Show()
-                    b.DelayIcon:SetAlpha( self.alpha )
-
-                    self.delayIconShown = true
-
-                    if delay < 0.5 then
-                        b.DelayIcon:SetVertexColor( 0.0, 1.0, 0.0, 1.0 )
-                    elseif delay < 1.5 then
-                        b.DelayIcon:SetVertexColor( 1.0, 1.0, 0.0, 1.0 )
-                    else
-                        b.DelayIcon:SetVertexColor( 1.0, 0.0, 0.0, 1.0)
-                    end                       
-                else
-                    b.DelayIcon:Hide()
-                    b.delayIconShown = false
-
-                end
-            else
-                if self.delayTextShown then
-                    b.DelayText:SetText( nil )
-                    self.delayTextShown = false
-                end
-                if self.delayIconShown then
-                    b.DelayIcon:Hide()
-                    self.delayIconShown = false
-                end
-            end
-
-            self.delayTimer = pulseDelay
-        end        
+        return 0
     end
-    ns.cpuProfile.Display_OnUpdate = Display_OnUpdate
-
-    local function Display_UpdateAlpha( self )
-        if self.Backdrop then
-            --[[ if not Hekili:IsDisplayActive( self.id, true ) then self.Backdrop:SetBackdropBorderColor( 0.5, 0.5, 0.5, 0.5 )
-            else
-                self.Backdrop:SetBackdropBorderColor( RAID_CLASS_COLORS[ class.file ]:GetRGBA() )
-            end ]]
-        end
-
-        if not self.Active then
-            self:SetAlpha(0)
-            self:Hide()
-            self.alpha = 0
-            return
-        end
-
-        local preAlpha = self.alpha or 0
-        local newAlpha = CalculateAlpha( self.id )
-
-        if preAlpha > 0 and newAlpha == 0 then
-            -- self:Deactivate()
-            self:SetAlpha( 0 )
-            self.alphaCheck = 0.5
-        else
-            if preAlpha == 0 and newAlpha > 0 then                
-                Hekili:ForceUpdate( "DISPLAY_ALPHA_CHANGED" )
-            end
-            self:SetAlpha( newAlpha )
-            self:Show()
-        end
-
-        self.alpha = newAlpha
-    end
-
-    local function Display_RefreshCooldowns( self )
-        local gStart, gDuration = GetSpellCooldown( 61304 )
-        local gExpires = gStart + gDuration
-
-        local now = GetTime()
-        local conf = Hekili.DB.profile.displays[ self.id ]
-
-        for i, rec in ipairs( self.Recommendations ) do
-            if not rec.actionName then
-                break
-            end
-
-            local ability = class.abilities[ rec.actionName ]
-            local cd = self.Buttons[ i ].Cooldown
-
-            if ability then
-                local start, duration = 0, 0
-
-                if ability.item then
-                    start, duration = GetItemCooldown( ability.item )
-                else
-                    start, duration = GetSpellCooldown( ability.id )
-                end
-
-                if ability.gcd ~= "off" and start + duration < gExpires then
-                    start = gStart
-                    duration = gDuration
-                end
-
-                if i == 1 and conf.delays.extend and rec.delay and rec.delay > 0 and rec.exact_time > max( now, start + duration ) then
-                    start = start > 0 and start or state.gcd.lastStart
-                    duration = rec.exact_time - start
-                end
-
-                if cd.lastStart ~= start or cd.lastDuration ~= duration then
-                    cd:SetCooldown( start, duration )
-                    cd.lastStart = start
-                    cd.lastDuration = duration
-                end
-            end
-        end
-    end
-
-    local function Display_OnEvent(self, event, ...)
-        if not self.Recommendations then
-            return
-        end
-        local conf = Hekili.DB.profile.displays[ self.id ]
-
-        -- Update the CDs.
-        if event == "SPELL_UPDATE_USABLE" or event == "SPELL_UPDATE_COOLDOWN" or event == "ACTIONBAR_UPDATE_USABLE" or event == "ACTIONBAR_UPDATE_COOLDOWN" then
-            self:RefreshCooldowns()
-
-        elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
-            if conf.glow.enabled then
-                for i, r in ipairs( self.Recommendations ) do
-                    if i > 1 and not conf.glow.queued then
-                        break
-                    end
-                    if not r.actionName then
-                        break
-                    end
-
-                    local b = self.Buttons[ i ]
-                    local a = class.abilities[ r.actionName ]
-
-                    if not b.glowing and a and not a.item and IsSpellOverlayed( a.id ) then
-                        b.glowColor = b.glowColor or {}
-
-                        if conf.glow.coloring == "class" then
-                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
-                        elseif conf.glow.coloring == "custom" then
-                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
-                        else
-                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
-                        end
-
-                        if conf.glow.mode == "default" then
-                            Glower.ButtonGlow_Start( b, b.glowColor )
-                            b.glowStop = Glower.ButtonGlow_Stop
-                        elseif conf.glow.mode == "autocast" then
-                            Glower.AutoCastGlow_Start( b, b.glowColor )
-                            b.glowStop = Glower.AutoCastGlow_Stop
-                        elseif conf.glow.mode == "pixel" then
-                            Glower.PixelGlow_Start( b, b.glowColor )
-                            b.glowStop = Glower.PixelGlow_Stop
-                        end
-                        
-                        b.glowing = true
-                    end
-                end
-            end
-        elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
-            if conf.glow.enabled then
-                for i, r in ipairs(self.Recommendations) do
-                    if i > 1 and not conf.glow.queued then
-                        break
-                    end
-
-                    if not r.actionName then
-                        break
-                    end
-
-                    local b = self.Buttons[ i ]
-                    local a = class.abilities[ r.actionName ]
-
-                    if b.glowing and ( not a or a.item or not IsSpellOverlayed( a.id ) ) then
-                        b:glowStop()
-                        b.glowing = false
-                    end
-                end
-            end
-        elseif kbEvents[ event ] then
-            self:UpdateKeybindings()
-
-        elseif alphaUpdateEvents[ event ] then
-            self:UpdateAlpha()
-
-        elseif event == "SPELLS_CHANGED" then
-            for i, rec in ipairs( self.Recommendations ) do                
-                rec.texture = nil
-            end
-            self.NewRecommendations = true
-
-        end
-    end
-    ns.cpuProfile.Display_OnEvent = Display_OnEvent
-
-
-    local function Display_Activate( self )
-        if not self.Active then
-            self.Active = true
-
-            self.Recommendations = self.Recommendations or ( ns.queue and ns.queue[ self.id ] )
-            self.NewRecommendations = true
-
-            self.alphaCheck = 0
-            self.auraTimer = 0
-            self.delayTimer = 0
-            self.flashTimer = 0
-            self.glowTimer = 0
-            self.rangeTimer = 0
-            self.recTimer = 0
-            self.refreshTimer = 0
-            self.targetTimer = 0
-
-            self.lastUpdate = 0
-
-            self:SetScript( "OnUpdate", Display_OnUpdate )
-            self:SetScript( "OnEvent", Display_OnEvent )
-
-            if not self.Initialized then
-                -- Update Cooldown Wheels.
-                self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
-                self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )
-                self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
-                self:RegisterEvent( "SPELL_UPDATE_USABLE" )
-
-                -- Show/Hide Overlay Glows.
-                self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" )
-                self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" )
-
-                -- Recalculate Alpha/Visibility.
-                for e in pairs( alphaUpdateEvents ) do
-                    self:RegisterEvent( e )
-                end
-
-                -- Recheck spell displays if spells have changed.
-                self:RegisterEvent( "SPELLS_CHANGED" )
-
-                -- Update keybindings.
-                for k in pairs( kbEvents ) do
-                    self:RegisterEvent( k )
-                end
-
-                self.Initialized = true
-            end
-
-            Hekili:ProcessHooks( self.id )
-        end
-    end
-
-    local function Display_Deactivate( self )
-        self.Active = false
-
-        self:SetScript( "OnUpdate", nil )
-        self:SetScript( "OnEvent", nil )
-
-        for i, b in ipairs( self.Buttons ) do
-            b:Hide()
-        end
-    end
-
-
-    local function Display_GetPerimeterButtons( self )
-        local left, right, top, bottom
-        local lPos, rPos, tPos, bPos
-
-        for i = 1, self.numIcons do
-            local button = self.Buttons[ i ]
-
-            if i == 1 then
-                lPos = button:GetLeft()
-                rPos = button:GetRight()
-                tPos = button:GetTop()
-                bPos = button:GetBottom()
-
-                left = button
-                right = button
-                top = button
-                bottom = button
-            else
-                if button:GetLeft() < lPos then
-                    lPos = button:GetLeft()
-                    left = button
-                end
-
-                if button:GetRight() > rPos then
-                    rPos = button:GetRight()
-                    right = button
-                end
-
-                if button:GetTop() > tPos then
-                    tPos = button:GetTop()
-                    top = button
-                end
-
-                if button:GetBottom() < bPos then
-                    bPos = button:GetBottom()
-                    bottom = button
-                end
-            end
-        end
-
-        return left, right, top, bottom
-    end
-
-    local function Display_UpdatePerformance( self, now, used, newRecs )
-        if not InCombatLockdown() then
-            self.combatUpdates.last = 0
-            return
-        end
-
-        if used == nil then return end        
-        -- used = used / 1000 -- ms to sec.
-
-        if self.combatTime.samples == 0 then
-            self.combatTime.fastest = used
-            self.combatTime.slowest = used
-            self.combatTime.average = used
-
-            self.combatTime.samples = 1
-        else
-            if used < self.combatTime.fastest then self.combatTime.fastest = used end
-            if used > self.combatTime.slowest then
-                self.combatTime.slowest = used
-            end
-
-            self.combatTime.average = ( ( self.combatTime.average * self.combatTime.samples ) + used ) / ( self.combatTime.samples + 1 )
-            self.combatTime.samples = self.combatTime.samples + 1
-        end
-
-        if self.combatUpdates.samples == 0 or self.combatUpdates.last == 0 then
-            if self.combatUpdates.last == 0 then
-                self.combatUpdates.last = now
-            else
-                local interval = now - self.combatUpdates.last
-                self.combatUpdates.last = now
-
-                self.combatUpdates.shortest = interval
-                self.combatUpdates.longest = interval
-                self.combatUpdates.average = interval
-
-                self.combatUpdates.samples = 1
-            end
-        else
-            local interval = now - self.combatUpdates.last
-            self.combatUpdates.last = now
-            
-            if interval < self.combatUpdates.shortest then
-                self.combatUpdates.shortest = interval
-                self.combatUpdates.shortEvents = nil
-                
-                local e = 0
-                for k in pairs( self.eventsTriggered ) do
-                    if e == 0 then self.combatUpdates.shortEvents = k; e = 1
-                    else self.combatUpdates.shortEvents = self.combatUpdates.shortEvents .. "|" .. k end
-                end
-            end
-
-            if interval > self.combatUpdates.longest  then
-                self.combatUpdates.longest = interval
-                self.combatUpdates.longEvents = nil
-                
-                local e = 0
-                for k in pairs( self.eventsTriggered ) do
-                    if e == 0 then self.combatUpdates.longEvents = k; e = 1
-                    else self.combatUpdates.longEvents = self.combatUpdates.longEvents .. "|" .. k end
-                end
-            end
-
-            self.combatUpdates.average = ( ( self.combatUpdates.average * self.combatUpdates.samples ) + interval ) / ( self.combatUpdates.samples + 1 )
-            self.combatUpdates.samples = self.combatUpdates.samples + 1
-        end        
-
-        self.successEvents = self.successEvents or {}
-        self.failEvents = self.failEvents or {}
-
-        local events = newRecs and self.successEvents or self.failEvents
-
-        for k in pairs( self.eventsTriggered ) do
-            if events[ k ] then events[ k ] = events[ k ] + 1
-            else events[ k ] = 1 end
-        end
-    end
-
 
     local numDisplays = 0
 
@@ -1704,15 +840,1023 @@ do
             d:SetMovable( true )
         end
 
-        d.Activate = Display_Activate
-        d.Deactivate = Display_Deactivate
-        d.GetPerimeterButtons = Display_GetPerimeterButtons
+        function d:UpdateKeybindings()
+            local conf = Hekili.DB.profile.displays[ self.id ]
+    
+            if conf.keybindings and conf.keybindings.enabled then
+                for i, b in ipairs( self.Buttons ) do
+                    local a = b.Action
+
+                    if a then                        
+                        b.Keybind, b.KeybindFrom = Hekili:GetBindingForAction( a, conf, i )
+
+                        if i == 1 or conf.keybindings.queued then
+                            b.Keybinding:SetText( b.Keybind )
+                        else
+                            b.Keybinding:SetText( nil )
+                        end
+                    else
+                        b.Keybinding:SetText( nil )
+                    end
+                end
+            end
+        end
         
-        d.UpdatePerformance = Display_UpdatePerformance
+        function d:OnUpdate( elapsed )
+            if not self.Recommendations or not Hekili.PLAYER_ENTERING_WORLD then
+                return
+            end
+    
+            local init = debugprofilestop()
+    
+            local profile = Hekili.DB.profile
+            local conf = profile.displays[ self.id ]
+    
+            self.alphaCheck = self.alphaCheck - elapsed
+    
+            if self.alpha == 0 then
+                if self.alphaCheck <= 0 then
+                    self.alphaCheck = 0.5
+                    self:UpdateAlpha()
+                end
+                return
+            end
+
+            if not self.id == "Primary" and not ( self.Buttons[ 1 ] and self.Buttons[ 1 ].Action ) and not ( self.HasRecommendations or not self.NewRecommendations ) then
+                return
+            end
+    
+            local postAlpha = debugprofilestop()
+
+            if Hekili.Pause and not self.paused then
+                self.Buttons[ 1 ].Overlay:Show()
+                self.paused = true
+            elseif not Hekili.Pause and self.paused then
+                self.Buttons[ 1 ].Overlay:Hide()
+                self.paused = false
+            end
+    
+            local now = GetTime()
+   
+    
+            self.recTimer = self.recTimer - elapsed
+    
+            if self.NewRecommendations or ( self.recTimer < 0 and not HekiliDisplayPrimary.activeThread ) then
+                local alpha = self.alpha
+    
+                for i, b in ipairs( self.Buttons ) do
+                    local rec = self.Recommendations[ i ]
+    
+                    local action = rec.actionName
+                    local caption = rec.caption
+                    local indicator = rec.indicator
+                    local keybind = rec.keybind
+    
+                    local ability = class.abilities[ action ]
+    
+                    if ability then
+                        if ( conf.flash.enabled and conf.flash.suppress ) then b:Hide()
+                        else b:Show() end
+
+                        if i == 1 then
+                            self.HasRecommendations = true
+                        end
+    
+                        if action ~= b.lastAction or self.NewRecommendations then
+                            b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
+                            b.Texture:SetTexCoord( unpack( b.texCoords ) )
+                            b.lastAction = action
+                        end
+    
+                        b.Texture:Show()
+    
+                        if conf.indicators.enabled and indicator then
+                            if indicator == "cycle" then
+                                b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cycle")
+                            end
+                            if indicator == "cancel" then
+                                b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cancel")
+                            end
+                            b.Icon:Show()
+                        else
+                            b.Icon:Hide()
+                        end
+    
+                        if ( conf.captions.enabled or ability.caption ) and ( i == 1 or conf.captions.queued ) then
+                            b.Caption:SetText( caption )
+                        else
+                            b.Caption:SetText(nil)
+                        end
+    
+                        if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
+                            b.Keybinding:SetText( keybind )
+                        else
+                            b.Keybinding:SetText(nil)
+                        end
+    
+                        if conf.glow.enabled and ( i == 1 or conf.glow.queued ) and IsSpellOverlayed( ability.id ) then
+                            b.glowColor = b.glowColor or {}
+    
+                            if conf.glow.coloring == "class" then
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
+                            elseif conf.glow.coloring == "custom" then
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
+                            else
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
+                            end
+    
+                            if conf.glow.mode == "default" then
+                                Glower.ButtonGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.ButtonGlow_Stop
+                            elseif conf.glow.mode == "autocast" then
+                                Glower.AutoCastGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.AutoCastGlow_Stop
+                            elseif conf.glow.mode == "pixel" then
+                                Glower.PixelGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.PixelGlow_Stop
+                            end
+                            
+                            b.glowing = true
+                        elseif b.glowing then
+                            if b.glowStop then b:glowStop() end
+                            b.glowing = false
+                        end
+                    else
+                        if i == 1 then
+                            self.HasRecommendations = nil
+                        end
+
+                        b:Hide()
+                    end
+
+                    b.Action = action
+                    b.Image = rec.texture
+                    b.Text = caption
+                    b.Indicator = indicator
+                    b.Keybind = keybind                    
+                    b.Ability = ability
+                    b.ExactTime = rec.exact_time
+                end
+    
+                -- Force glow, range, SpellFlash updates.
+                self.glowTimer = -1
+                self.rangeTimer = -1
+                self.delayTimer = -1
+    
+                self.recTimer = 0.1
+                self.alphaCheck = 0.5
+    
+                self:RefreshCooldowns()
+                self.NewRecommendations = false
+            end
+    
+            local postRecs = debugprofilestop()
+    
+            if self.id == "Primary" then
+                self.refreshTimer = self.refreshTimer + elapsed
+                
+                if not Hekili.Pause then
+                    local thread = self.activeThread
+    
+                    -- If the thread is dead, clear it.
+                    if thread and coroutine.status( thread ) == "dead" then
+                        self.activeThread = nil
+                        thread = nil
+                    end
+
+                    if not self.refreshRate then
+                        if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
+                            self.refreshRate = 1 / Hekili:GetActiveSpecOption( "maxRefresh" )
+                        else
+                            self.refreshRate = 0.1
+                        end
+                    end
+
+                    local refreshMod = 1
+                    if not self.criticalUpdate then refreshMod = 2.5 end
+                    if not self.superUpdate then refreshMod = 5 end
+
+                    -- If there's no thread, then see if we have a reason to update.
+                    if not thread and Hekili.freshFrame and self.refreshTimer > min( 1, self.refreshRate * refreshMod ) then
+                        self.activeThread = coroutine.create( Hekili.Update )
+                        self.activeThreadTime = 0
+                        self.activeThreadFrames = 0
+                        self.activeThreadStart = debugprofilestop()
+
+                        if not self.firstThreadCompleted then
+                            Hekili.maxFrameTime = 0.5
+                        else
+                            if Hekili:GetActiveSpecOption( "throttleTime" ) then
+                                Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
+                            else
+                                Hekili.maxFrameTime = 10 -- ms.
+                            end
+                        end
+    
+                        -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
+                        Hekili.maxFrameTime = min( Hekili.maxFrameTime, 500 / GetFramerate() )
+    
+                        thread = self.activeThread
+
+                        self.superUpdate = false
+                        self.criticalUpdate = false
+                    end
+    
+                    -- If there's a thread, process for up to user preferred limits.
+                    if thread and coroutine.status( thread ) == "suspended" then
+                        self.activeThreadFrames = self.activeThreadFrames + 1
+                        local start = debugprofilestop()
+    
+                        Hekili.frameStartTime = start
+
+                        local ok, err = coroutine.resume( thread )
+                        if not ok then
+                            Hekili:Error( "Error in Update thread: " .. err )
+                            error( err )
+                        end
+                        local now = debugprofilestop()
+                        
+                        self.activeThreadTime = self.activeThreadTime + ( now - start )
+    
+                        if coroutine.status( thread ) == "dead" then
+                            self.refreshTimer = 0
+
+                            if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
+                                self.refreshRate = 1 / Hekili:GetActiveSpecOption( "maxRefresh" )
+                            else
+                                self.refreshRate = 0.5
+                            end
+    
+                            if self.firstThreadCompleted then
+                                local timeSince = now - self.activeThreadStart
+                                self.lastUpdate = now
+
+                                -- Hekili:Print( format( "Update thread finished in %.2fms, used %.2fms (%.2f%%) in %d frames.", timeSince, self.activeThreadTime, ( 100 * self.activeThreadTime / timeSince ), self.activeThreadFrames ) )
+
+                                if self.threadUpdates then
+                                    local updates = self.threadUpdates.updates
+                                    local total = updates + 1
+                                    
+                                    self.threadUpdates.clockTime = ( self.threadUpdates.clockTime * updates + timeSince ) / total
+                                    self.threadUpdates.workTime = ( self.threadUpdates.workTime * updates + self.activeThreadTime ) / total
+                                    self.threadUpdates.frames = ( self.threadUpdates.frames * updates + self.activeThreadFrames ) / total
+
+                                    if timeSince > self.threadUpdates.peakClock then self.threadUpdates.peakClock  = timeSince end
+                                    if self.activeThreadTime > self.threadUpdates.peakWork then self.threadUpdates.peakWork = self.activeThreadTime end
+                                    if self.activeThreadFrames > self.threadUpdates.peakFrames then self.threadUpdates.peakFrames = self.activeThreadFrames end
+
+                                    self.threadUpdates.updates = total
+                                else
+                                    self.threadUpdates = {
+                                        clockTime = timeSince,
+                                        workTime = self.activeThreadTime,
+                                        frames = self.activeThreadFrames or 1,
+                                        updates = 1,
+
+                                        peakClock = timeSince,
+                                        peakWork = self.activeThreadTime,
+                                        peakFrames = self.activeThreadFrames
+                                    }
+                                end
+                            else
+                                self.firstThreadCompleted = true
+                            end
+                        end
+                    end
+                end
+            end
+    
+            local postPrimary = debugprofilestop()
+    
+            if self.HasRecommendations then
+                self.glowTimer = self.glowTimer - elapsed
         
-        d.RefreshCooldowns = Display_RefreshCooldowns
-        d.UpdateAlpha = Display_UpdateAlpha
-        d.UpdateKeybindings = Display_UpdateKeybindings
+                if self.glowTimer < 0 and not HekiliDisplayPrimary.activeThread then
+                    if conf.glow.enabled then
+                        for i, b in ipairs( self.Buttons ) do
+                            if not b.Action then break end
+        
+                            local a = b.Ability
+        
+                            if i == 1 or conf.glow.queued then
+                                local glowing = a.id > 0 and IsSpellOverlayed( a.id )
+        
+                                if glowing and not b.glowing then
+                                    b.glowColor = b.glowColor or {}
+        
+                                    if conf.glow.coloring == "class" then
+                                        b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
+                                    elseif conf.glow.coloring == "custom" then
+                                        b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
+                                    else
+                                        b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
+                                    end
+            
+                                    if conf.glow.mode == "default" then
+                                        Glower.ButtonGlow_Start( b, b.glowColor )
+                                        b.glowStop = Glower.ButtonGlow_Stop
+                                    elseif conf.glow.mode == "autocast" then
+                                        Glower.AutoCastGlow_Start( b, b.glowColor )
+                                        b.glowStop = Glower.AutoCastGlow_Stop
+                                    elseif conf.glow.mode == "pixel" then
+                                        Glower.PixelGlow_Start( b, b.glowColor )
+                                        b.glowStop = Glower.PixelGlow_Stop
+                                    end
+                                    
+                                    b.glowing = true
+                                elseif not glowing and b.glowing then
+                                    b:glowStop()
+                                    b.glowing = false
+                                end
+                            else
+                                if b.glowing then
+                                    b:glowStop()
+                                    b.glowing = false
+                                end
+                            end
+                        end
+                    end
+                end
+        
+                local postGlow = debugprofilestop()
+        
+                self.rangeTimer = self.rangeTimer - elapsed
+        
+                if self.rangeTimer < 0 then
+                    for i, b in ipairs( self.Buttons ) do
+                        local a = b.Ability
+        
+                        if a and a.id then
+                            local outOfRange = false
+        
+                            if conf.range.enabled then
+                                if conf.range.type == "melee" and UnitExists( "target" ) then
+                                    outOfRange = ( LRC:GetRange( "target" ) or 50 ) > 7
+                                elseif conf.range.type == "ability" and UnitExists( "target" ) and UnitCanAttack( "player", "target" ) then
+                                    if a.item then
+                                        outOfRange = IsItemInRange( a.itemCd or a.item, "target" ) == false
+                                    else
+                                        local name = a.rangeSpell or a.actualName or a.name
+        
+                                        if name then
+                                            outOfRange = LSR.IsSpellInRange( a.rangeSpell or a.actualName or a.name, "target" ) == 0
+                                        end
+                                    end
+                                end
+                            end
+        
+                            if outOfRange and not b.outOfRange then
+                                b.Texture:SetDesaturated(true)
+                                b.Texture:SetVertexColor(1.0, 0.0, 0.0, 1.0)
+                                b.outOfRange = true
+                            elseif b.outOfRange and not outOfRange then
+                                b.Texture:SetDesaturated(false)
+                                b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
+                                b.outOfRange = false
+                            end
+        
+                            if not b.outOfRange then
+                                local _, unusable
+        
+                                if a.itemCd or a.item then
+                                    unusable = not IsUsableItem( a.itemCd or a.item )
+                                else
+                                    _, unusable = IsUsableSpell( a.actualName or a.name )
+                                end
+        
+                                if i == 1 and conf.delays.fade then
+                                    local delay = b.ExactTime - now            
+                                    local moment = 0
+        
+                                    local init, duration = 0, 0
+                        
+                                    if a.gcd ~= "off" then
+                                        start, duration = GetSpellCooldown( 61304 )
+                                        if start > 0 then moment = start + duration - now end
+                                    end
+            
+                                    local rStart, rDuration
+                                    if a.item then
+                                        rStart, rDuration = GetItemCooldown( a.item )
+                                    else
+                                        rStart, rDuration = GetSpellCooldown( a.id )
+                                    end
+                                    if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
+                        
+                                    _, _, _, start, duration = UnitCastingInfo( "player" )
+                                    if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
+            
+                                    if delay > moment + 0.05 then
+                                        unusable = true
+                                    end
+                                end    
+        
+                                if unusable and not b.unusable then
+                                    b.Texture:SetVertexColor(0.4, 0.4, 0.4, 1.0)
+                                    b.unusable = true
+                                elseif b.unusable and not unusable then
+                                    b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
+                                    b.unusable = false
+                                end
+                            end
+                        end
+                    end
+                    
+                    self.rangeTimer = pulseRange
+                end
+        
+                local postRange = debugprofilestop()
+                
+                if conf.flash.enabled and LSF then
+                    self.flashTimer = self.flashTimer - elapsed
+        
+                    local a = b.Action
+                    local changed = self.lastFlash ~= a
+        
+                    if a and ( self.flashTimer < 0 or changed ) then
+                        self.flashTimer = pulseFlash
+        
+                        local ability = class.abilities[ a ]
+        
+                        self.flashColor = self.flashColor or {}
+                        self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
+                        self.lastFlashFrames = self.lastFlashFrames or {}
+        
+                        catchFlash = GetTime()
+                        table.wipe( lastFramesFlashed )
+        
+                        if ability.item then
+                            local iname = LSF.ItemName( ability.item )
+                            LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                        else
+                            if ability.flash then
+                                LSF.FlashAction( ability.flash, self.flashColor )
+                            else
+                                local id = ability.known
+                                
+                                if id == nil or type( id ) ~= "number" then
+                                    id = ability.id
+                                end
+        
+                                local sname = LSF.SpellName( id )
+                                LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                            end
+                        end
+        
+                        catchFlash = nil
+        
+                        if changed then
+                            for i = #self.lastFlashFrames, 1, -1 do
+                                local frame = self.lastFlashFrames[ i ]
+        
+                                if not lastFramesFlashed[ frame ] then
+                                    frame:Hide()
+                                    frame.flashDuration = 0
+                                    
+                                    table.remove( self.lastFlashFrames, i )
+                                else
+                                    -- Mark with a zero so we don't add it again.
+                                    lastFramesFlashed[ frame ] = 0
+                                end
+                            end
+        
+                            for frame, status in pairs( lastFramesFlashed ) do
+                                if status ~= 0 then
+                                    table.insert( self.lastFlashFrames, frame )
+                                end
+                            end
+                        end
+        
+                        self.lastFlash = a
+                    end
+                end
+        
+                local postFlash = debugprofilestop()
+        
+                self.targetTimer = self.targetTimer - elapsed
+        
+                if self.targetTimer < 0 then
+                    local b = self.Buttons[ 1 ] 
+        
+                    if conf.targets.enabled then
+                        local tMin, tMax = 0, 0
+                        local mode = profile.toggles.mode.value
+                        local spec = state.spec.id and profile.specs[ state.spec.id ]
+        
+                        if self.id == 'Primary' then
+                            if ( mode == 'dual' or mode == 'single' or mode == 'reactive' ) then tMax = 1
+                            elseif mode == 'aoe' then tMin = spec and spec.aoe or 3 end
+                        elseif self.id == 'AOE' then tMin = spec and spec.aoe or 3 end
+        
+                        local detected = ns.getNumberTargets()
+                        local shown = detected
+        
+                        if tMin > 0 then
+                            shown = max(tMin, shown)
+                        end
+                        if tMax > 0 then
+                            shown = min(tMax, shown)
+                        end
+        
+                        if tMax == 1 or shown > 1 then
+                            local color = detected < shown and "|cFFFF0000" or ( shown < detected and "|cFF00C0FF" or "" )
+                            b.Targets:SetText( color .. shown .. "|r")
+                            b.targetShown = true
+                        else
+                            b.Targets:SetText(nil)
+                            b.targetShown = false
+                        end
+                    elseif b.targetShown then
+                        b.Targets:SetText(nil)
+                    end
+        
+                    self.targetTimer = pulseTargets
+                end
+        
+                local postTargets = debugprofilestop()
+        
+                local rec = self.Recommendations[ 1 ]
+        
+                self.delayTimer = self.delayTimer - elapsed
+        
+                if rec.exact_time and self.delayTimer < 0 then
+                    local b = self.Buttons[ 1 ]
+                    local a = class.abilities[ rec.actionName ]
+        
+                    local delay = rec.exact_time - now
+                    local moment = 0
+        
+                    if delay > 0 then
+                        local start, duration = 0, 0
+        
+                        if a.gcd ~= "off" then
+                            start, duration = GetSpellCooldown( 61304 )
+                            if start > 0 then moment = start + duration - now end
+                        end
+        
+                        _, _, _, start, duration = UnitCastingInfo( "player" )
+                        if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
+        
+                        local rStart, rDuration = 0, 0
+                        if a.item then
+                            rStart, rDuration = GetItemCooldown( a.item )
+                        else
+                            if a.cooldown > 0 or a.spendType ~= "runes" then
+                                rStart, rDuration = GetSpellCooldown( a.id )
+                            end
+                        end
+                        if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
+                    end
+        
+                    if conf.delays.type == "TEXT" then
+                        if self.delayIconShown then
+                            b.DelayIcon:Hide()
+                            self.delayIconShown = false
+                        end
+        
+                        if delay > moment + 0.05 then
+                            b.DelayText:SetText( format( "%.1f", delay ) )
+                            self.delayTextShown = true
+                        else
+                            b.DelayText:SetText( nil )
+                            self.delayTextShown = false
+                        end
+        
+                    elseif conf.delays.type == "ICON" then
+                        if self.delayTextShown then
+                            b.DelayText:SetText(nil)
+                            self.delayTextShown = false
+                        end
+        
+                        if delay > moment + 0.05 then
+                            b.DelayIcon:Show()
+                            b.DelayIcon:SetAlpha( self.alpha )
+        
+                            self.delayIconShown = true
+        
+                            if delay < 0.5 then
+                                b.DelayIcon:SetVertexColor( 0.0, 1.0, 0.0, 1.0 )
+                            elseif delay < 1.5 then
+                                b.DelayIcon:SetVertexColor( 1.0, 1.0, 0.0, 1.0 )
+                            else
+                                b.DelayIcon:SetVertexColor( 1.0, 0.0, 0.0, 1.0)
+                            end
+                        else
+                            b.DelayIcon:Hide()
+                            b.delayIconShown = false
+        
+                        end
+                    else
+                        if self.delayTextShown then
+                            b.DelayText:SetText( nil )
+                            self.delayTextShown = false
+                        end
+                        if self.delayIconShown then
+                            b.DelayIcon:Hide()
+                            self.delayIconShown = false
+                        end
+                    end
+        
+                    self.delayTimer = pulseDelay
+                end
+    
+                local finish = debugprofilestop()
+        
+                if self.updateTime then
+                    local newTime = self.updateTime * self.updateCount + ( finish - init )
+                    self.updateCount = self.updateCount + 1
+                    self.updateTime = newTime / self.updateCount
+                    
+                    self.updateMax = max( self.updateMax, finish - init )
+                    self.postAlpha = max( self.postAlpha, postAlpha - init )
+                    self.postRecs = max( self.postRecs, postRecs - postAlpha )
+                    self.postPrimary = max( self.postPrimary, postPrimary - postRecs )
+                    self.postGlow = max( self.postGlow, postGlow - postPrimary )
+                    self.postRange = max( self.postRange, postRange - postGlow )
+                    self.postFlash = max( self.postFlash, postFlash - postRange )
+                    self.postTargets = max( self.postTargets, postTargets - postFlash )
+                    self.postDelay = max( self.postDelay, finish - postTargets )
+                else
+                    self.updateCount = 1
+                    self.updateTime = finish - init
+                    self.updateMax = finish - init
+        
+                    self.postAlpha = postAlpha - init
+                    self.postRecs = postRecs - postAlpha
+                    self.postPrimary = postPrimary - postRecs
+                    self.postGlow = postGlow - postPrimary
+                    self.postRange = postRange - postGlow
+                    self.postFlash = postFlash - postRange
+                    self.postTargets = postTargets - postFlash
+                    self.postDelay = finish - postTargets
+                end
+            end
+        end
+    
+        function d:UpdateAlpha()
+            if not self.Active then
+                self:SetAlpha( 0 )
+                self:Hide()
+                self.alpha = 0
+                return
+            end
+    
+            local preAlpha = self.alpha or 0
+            local newAlpha = CalculateAlpha( self.id )
+    
+            if preAlpha > 0 and newAlpha == 0 then
+                -- self:Deactivate()
+                self:SetAlpha( 0 )
+                self.alphaCheck = 0.5
+            else
+                if preAlpha == 0 and newAlpha > 0 then
+                    Hekili:ForceUpdate( "DISPLAY_ALPHA_CHANGED:" .. d.id .. ":" .. preAlpha .. ":" .. newAlpha .. ":" .. GetTime() )
+                end
+                self:SetAlpha( newAlpha )
+                self:Show()
+            end
+    
+            self.alpha = newAlpha
+        end
+    
+        function d:RefreshCooldowns()
+            local gStart, gDuration = GetSpellCooldown( 61304 )
+            local gExpires = gStart + gDuration
+    
+            local now = GetTime()
+            local conf = Hekili.DB.profile.displays[ self.id ]
+    
+            for i, rec in ipairs( self.Recommendations ) do
+                if not rec.actionName then
+                    break
+                end
+    
+                local ability = class.abilities[ rec.actionName ]
+                local cd = self.Buttons[ i ].Cooldown
+    
+                if ability then
+                    local start, duration = 0, 0
+    
+                    if ability.item then
+                        start, duration = GetItemCooldown( ability.item )
+                    else
+                        start, duration = GetSpellCooldown( ability.id )
+                    end
+    
+                    if ability.gcd ~= "off" and start + duration < gExpires then
+                        start = gStart
+                        duration = gDuration
+                    end
+    
+                    if i == 1 and conf.delays.extend and rec.delay and rec.delay > 0 and rec.exact_time > max( now, start + duration ) then
+                        start = start > 0 and start or state.gcd.lastStart
+                        duration = rec.exact_time - start
+                    end
+    
+                    if cd.lastStart ~= start or cd.lastDuration ~= duration then
+                        cd:SetCooldown( start, duration )
+                        cd.lastStart = start
+                        cd.lastDuration = duration
+                    end
+                end
+            end
+        end
+    
+        function d:OnEvent( event, ... )
+            if not self.Recommendations then
+                return
+            end
+            local conf = Hekili.DB.profile.displays[ self.id ]
+    
+            local init = debugprofilestop()
+    
+            -- Update the CDs.
+            if event == "SPELL_UPDATE_USABLE" or event == "SPELL_UPDATE_COOLDOWN" or event == "ACTIONBAR_UPDATE_USABLE" or event == "ACTIONBAR_UPDATE_COOLDOWN" then
+                self:RefreshCooldowns()
+    
+            elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
+                if conf.glow.enabled then
+                    for i, b in ipairs( self.Buttons ) do
+                        if i > 1 and not conf.glow.queued then
+                            break
+                        end
+
+                        if not b.Action then
+                            break
+                        end
+    
+                        local a = b.Ability
+    
+                        if not b.glowing and a and not a.item and IsSpellOverlayed( a.id ) then
+                            b.glowColor = b.glowColor or {}
+    
+                            if conf.glow.coloring == "class" then
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
+                            elseif conf.glow.coloring == "custom" then
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
+                            else
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
+                            end
+    
+                            if conf.glow.mode == "default" then
+                                Glower.ButtonGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.ButtonGlow_Stop
+                            elseif conf.glow.mode == "autocast" then
+                                Glower.AutoCastGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.AutoCastGlow_Stop
+                            elseif conf.glow.mode == "pixel" then
+                                Glower.PixelGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.PixelGlow_Stop
+                            end
+                            
+                            b.glowing = true
+                        end
+                    end
+                end
+            elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
+                if conf.glow.enabled then
+                    for i, b in ipairs(self.Buttons) do
+                        if i > 1 and not conf.glow.queued then
+                            break
+                        end
+    
+                        if not b.Action then
+                            break
+                        end
+    
+                        local a = b.Ability
+    
+                        if b.glowing and ( not a or a.item or not IsSpellOverlayed( a.id ) ) then
+                            b:glowStop()
+                            b.glowing = false
+                        end
+                    end
+                end
+            elseif kbEvents[ event ] then
+                self:UpdateKeybindings()
+    
+            elseif alphaUpdateEvents[ event ] then
+                self:UpdateAlpha()
+    
+            elseif event == "SPELLS_CHANGED" then
+                for i, b in ipairs( self.Buttons ) do                
+                    b.Image = nil
+                end
+                self.NewRecommendations = true
+    
+            end
+    
+            local finish = debugprofilestop()
+    
+            if self.eventTime then
+                local newTime = self.eventTime * self.eventCount + finish - init
+                self.eventCount = self.eventCount + 1
+                self.eventTime = newTime / self.eventCount
+                
+                if finish - init > self.eventMax then
+                    self.eventMax = finish - init
+                    self.eventMaxType = event
+                end
+            else
+                self.eventCount = 1
+                self.eventTime = finish - init
+                self.eventMax = finish - init
+                self.eventMaxType = event
+            end
+        end
+    
+        function d:Activate()
+            if not self.Active then
+                self.Active = true
+    
+                self.Recommendations = self.Recommendations or ( ns.queue and ns.queue[ self.id ] )
+                self.NewRecommendations = true
+    
+                self.alphaCheck = 0
+                self.auraTimer = 0
+                self.delayTimer = 0
+                self.flashTimer = 0
+                self.glowTimer = 0
+                self.rangeTimer = 0
+                self.recTimer = 0
+                self.refreshTimer = 0
+                self.targetTimer = 0
+    
+                self.lastUpdate = 0
+    
+                self:SetScript( "OnUpdate", self.OnUpdate )
+                self:SetScript( "OnEvent", self.OnEvent )
+    
+                if not self.Initialized then
+                    -- Update Cooldown Wheels.
+                    self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
+                    self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )
+                    self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
+                    self:RegisterEvent( "SPELL_UPDATE_USABLE" )
+    
+                    -- Show/Hide Overlay Glows.
+                    self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" )
+                    self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" )
+    
+                    -- Recalculate Alpha/Visibility.
+                    for e in pairs( alphaUpdateEvents ) do
+                        self:RegisterEvent( e )
+                    end
+    
+                    -- Recheck spell displays if spells have changed.
+                    self:RegisterEvent( "SPELLS_CHANGED" )
+    
+                    -- Update keybindings.
+                    for k in pairs( kbEvents ) do
+                        self:RegisterEvent( k )
+                    end
+    
+                    self.Initialized = true
+                end
+    
+                -- Hekili:ProcessHooks( self.id )
+            end
+        end
+    
+        function d:Deactivate()
+            self.Active = false
+    
+            self:SetScript( "OnUpdate", nil )
+            self:SetScript( "OnEvent", nil )
+    
+            for i, b in ipairs( self.Buttons ) do
+                b:Hide()
+            end
+        end
+    
+    
+        function d:GetPerimeterButtons()
+            local left, right, top, bottom
+            local lPos, rPos, tPos, bPos
+    
+            for i = 1, self.numIcons do
+                local button = self.Buttons[ i ]
+    
+                if i == 1 then
+                    lPos = button:GetLeft()
+                    rPos = button:GetRight()
+                    tPos = button:GetTop()
+                    bPos = button:GetBottom()
+    
+                    left = button
+                    right = button
+                    top = button
+                    bottom = button
+                else
+                    if button:GetLeft() < lPos then
+                        lPos = button:GetLeft()
+                        left = button
+                    end
+    
+                    if button:GetRight() > rPos then
+                        rPos = button:GetRight()
+                        right = button
+                    end
+    
+                    if button:GetTop() > tPos then
+                        tPos = button:GetTop()
+                        top = button
+                    end
+    
+                    if button:GetBottom() < bPos then
+                        bPos = button:GetBottom()
+                        bottom = button
+                    end
+                end
+            end
+    
+            return left, right, top, bottom
+        end
+    
+        function d:UpdatePerformance( now, used, newRecs )
+            if not InCombatLockdown() then
+                self.combatUpdates.last = 0
+                return
+            elseif self.combatUpdates.last == 0 then
+                self.combatUpdates.last = now - used
+            end
+    
+            if used == nil then return end
+            -- used = used / 1000 -- ms to sec.
+    
+            if self.combatTime.samples == 0 then
+                self.combatTime.fastest = used
+                self.combatTime.slowest = used
+                self.combatTime.average = used
+    
+                self.combatTime.samples = 1
+            else
+                if used < self.combatTime.fastest then self.combatTime.fastest = used end
+                if used > self.combatTime.slowest then
+                    self.combatTime.slowest = used
+                end
+    
+                self.combatTime.average = ( ( self.combatTime.average * self.combatTime.samples ) + used ) / ( self.combatTime.samples + 1 )
+                self.combatTime.samples = self.combatTime.samples + 1
+            end
+    
+            if self.combatUpdates.samples == 0 or self.combatUpdates.last == 0 then
+                if self.combatUpdates.last == 0 then
+                    self.combatUpdates.last = now
+                else
+                    local interval = now - self.combatUpdates.last
+                    self.combatUpdates.last = now
+    
+                    self.combatUpdates.shortest = interval
+                    self.combatUpdates.longest = interval
+                    self.combatUpdates.average = interval
+    
+                    self.combatUpdates.samples = 1
+                end
+            else
+                local interval = now - self.combatUpdates.last
+                self.combatUpdates.last = now
+            
+                if interval < self.combatUpdates.shortest then
+                    self.combatUpdates.shortest = interval
+                    self.combatUpdates.shortEvents = nil
+                
+                    local e = 0
+                    for k in pairs( self.eventsTriggered ) do
+                        if e == 0 then self.combatUpdates.shortEvents = k; e = 1
+                        else self.combatUpdates.shortEvents = self.combatUpdates.shortEvents .. "|" .. k end
+                    end
+                end
+    
+                if interval > self.combatUpdates.longest  then
+                    self.combatUpdates.longest = interval
+                    self.combatUpdates.longEvents = nil
+            
+                    local e = 0
+                    for k in pairs( self.eventsTriggered ) do
+                        if e == 0 then self.combatUpdates.longEvents = k; e = 1
+                        else self.combatUpdates.longEvents = self.combatUpdates.longEvents .. "|" .. k end
+                    end
+                end
+    
+                self.combatUpdates.average = ( ( self.combatUpdates.average * self.combatUpdates.samples ) + interval ) / ( self.combatUpdates.samples + 1 )
+                self.combatUpdates.samples = self.combatUpdates.samples + 1
+            end
+    
+            if self.id == "Primary" then
+                self.successEvents = self.successEvents or {}
+                self.failEvents = self.failEvents or {}
+    
+                local events = newRecs and self.successEvents or self.failEvents
+    
+                for k in pairs( self.eventsTriggered ) do
+                    if events[ k ] then events[ k ] = events[ k ] + 1
+                    else events[ k ] = 1 end
+                end
+
+                table.wipe( self.eventsTriggered )
+            end
+        end
 
         ns.queue[id] = ns.queue[id] or {}
         d.Recommendations = ns.queue[id]
@@ -1772,6 +1916,7 @@ do
 
         dPool[ id ] = dPool[ id ] or CreateFrame( "Frame", "HekiliDisplay" .. id, UIParent )
         local d = dPool[ id ]
+        self:ProfileFrame( "HekiliDisplay" .. id, d)
 
         d.id = id
 
@@ -1785,11 +1930,11 @@ do
         d:EnableMouse( false )
         d:SetMovable( true )
 
-        d.Activate = Display_Activate
-        d.Deactivate = Display_Deactivate
-        d.RefreshCooldowns = Display_RefreshCooldowns
-        d.UpdateAlpha = Display_UpdateAlpha
-        d.UpdateKeybindings = Display_UpdateKeybindings
+        d.Activate = HekiliDisplayPrimary.Activate
+        d.Deactivate = HekiliDisplayPrimary.Deactivate
+        d.RefreshCooldowns = HekiliDisplayPrimary.RefreshCooldowns
+        d.UpdateAlpha = HekiliDisplayPrimary.UpdateAlpha
+        d.UpdateKeybindings = HekiliDisplayPrimary.UpdateKeybindings
 
         ns.queue[id] = ns.queue[id] or {}
         d.Recommendations = ns.queue[id]
@@ -1936,21 +2081,22 @@ do
     end
 
 
-    local firstForceRequest = 0
-
     function Hekili:ForceUpdate( event, super )
-        Hekili.freshFrame = false
+        self.freshFrame = false
 
         if super then
             state.player.updated = true
             state.target.updated = true
         end
 
-        for i, d in pairs( ns.UI.Displays ) do        
-            d.criticalUpdate = true
-            if super then d.superUpdate = true end
-            if d.firstForce == 0 then d.firstForce = GetTime() end
-            if event then d.eventsTriggered[ event ] = true end
+        HekiliDisplayPrimary.criticalUpdate = true
+        if super then HekiliDisplayPrimary.superUpdate = true end
+        if HekiliDisplayPrimary.firstForce == 0 then HekiliDisplayPrimary.firstForce = GetTime() end
+
+        if event then
+            for _, d in ipairs( ns.UI.Displays ) do
+                d.eventsTriggered[ event ] = true
+            end
         end
     end    
 
@@ -1972,6 +2118,8 @@ do
 
         local bName = "Hekili_" .. dispID .. "_B" .. id
         local b = d.Buttons[ id ] or CreateFrame( "Button", bName, d )
+
+        Hekili:ProfileFrame( bName, b )
         
         b.display = dispID
         b.index = id
@@ -2336,7 +2484,6 @@ function Hekili:BuildUI()
     ns.UI.Keyhandler:SetScript( "OnClick", function( self, button, down )
         Hekili:FireToggle( button )
     end )
-
     Hekili:ProfileFrame( "KeyhandlerFrame", ns.UI.Keyhandler )
 
     local scaleFactor = self:GetScale()
@@ -2346,6 +2493,7 @@ function Hekili:BuildUI()
     local notif = self.DB.profile.notifications
 
     local f = ns.UI.Notification or CreateFrame( "Frame", "HekiliNotification", UIParent )
+    Hekili:ProfileFrame( "HekiliNotification", f )
 
     f:SetSize( notif.width * scaleFactor, notif.height * scaleFactor )
     f:SetClampedToScreen( true )
@@ -2367,6 +2515,7 @@ function Hekili:BuildUI()
 
     -- Dropdown Menu.
     ns.UI.Menu = ns.UI.Menu or CreateFrame("Frame", "HekiliMenu", UIParent, "UIDropDownMenuTemplate")
+    Hekili:ProfileFrame( "HekiliMenu", ns.UI.Menu )
 
     -- Displays
     for disp in pairs( self.DB.profile.displays ) do

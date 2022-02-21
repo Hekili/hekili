@@ -1422,6 +1422,8 @@ function scripts:LoadScripts()
 
             for list, lData in pairs( pData.lists ) do
                 for action, data in ipairs( lData ) do
+                    Hekili:Yield( "Loading " .. pack .. " - " .. list .. " - " .. action )
+
                     local scriptID = pack .. ":" .. list .. ":" .. action
 
                     local script = ConvertScript( data, true, scriptID )
@@ -1512,10 +1514,10 @@ function scripts:LoadScripts()
 end
 
 
-function Hekili:LoadScripts()
+function Hekili:LoadScripts()    
     self.Scripts:LoadScripts()
     self:UpdateUseItems()
-    self:UpdateDisplayVisibility()
+    -- self:UpdateDisplayVisibility()
 end
 
 
