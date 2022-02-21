@@ -1032,14 +1032,10 @@ do
                         self.activeThreadFrames = 0
                         self.activeThreadStart = debugprofilestop()
 
-                        if not self.firstThreadCompleted then
-                            Hekili.maxFrameTime = 1
+                        if Hekili:GetActiveSpecOption( "throttleTime" ) then
+                            Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
                         else
-                            if Hekili:GetActiveSpecOption( "throttleTime" ) then
-                                Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
-                            else
-                                Hekili.maxFrameTime = 10 -- ms.
-                            end
+                            Hekili.maxFrameTime = 10 -- ms.
                         end
     
                         -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
