@@ -1313,7 +1313,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             velocity = 30,
 
             indicator = function()
-                return dot.flame_shock.down and active_dot.flame_shock > 0 and "cycle" or nil
+                return active_enemies > 1 and settings.cycle and dot.flame_shock.down and active_dot.flame_shock > 0 and "cycle" or nil
             end,
 
             handler = function ()
