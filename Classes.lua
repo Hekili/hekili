@@ -888,21 +888,26 @@ function Hekili:RestoreDefaults()
         self:LoadScripts()
         -- self:RefreshOptions()
 
+        local msg
+
         if #changed == 1 then
-            self:Print( "The |cFFFFD100" .. changed[1] .. "|r priority was updated." )
+            msg = "The |cFFFFD100" .. changed[1] .. "|r priority was updated."
         elseif #changed == 2 then
-            self:Print( "The |cFFFFD100" .. changed[1] .. "|r and |cFFFFD100" .. changed[2] .. "|r priorities were updated." )
+            msg = "The |cFFFFD100" .. changed[1] .. "|r and |cFFFFD100" .. changed[2] .. "|r priorities were updated."
         else
-            local report = "|cFFFFD100" .. changed[1] .. "|r"
+            msg = "|cFFFFD100" .. changed[1] .. "|r"
 
             for i = 2, #changed - 1 do
-                report = report .. ", |cFFFFD100" .. changed[i] .. "|r"
+                msg = msg .. ", |cFFFFD100" .. changed[i] .. "|r"
             end
 
-            report = "The " .. report .. ", and |cFFFFD100" .. changed[ #changed ] .. "|r priorities were updated."
-
-            Hekili:Notify( report )
+            msg = "The " .. msg .. ", and |cFFFFD100" .. changed[ #changed ] .. "|r priorities were updated."
         end
+
+        if msg then C_Timer.After( 5, function() 
+            if Hekili.DB.profile.notifications.enabled then Hekili:Print( msg ) end
+            Hekili:Notify( msg, 6 )
+        end ) end
     end
 end
 

@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## November 2, 2021
+## February 21, 2022
 
 ## Changes:
 ## - Spell Lock.
@@ -80,7 +80,7 @@ actions.covenant_ability+=/soul_rot,if=soulbind.field_of_blossoms&pet.demonic_ty
 actions.covenant_ability+=/soul_rot,if=soulbind.wild_hunt_tactics&!pet.demonic_tyrant.active&cooldown.summon_demonic_tyrant.remains_expected>18
 actions.covenant_ability+=/decimating_bolt,if=(soulbind.lead_by_example|soulbind.kevins_oozeling)&(pet.demonic_tyrant.active&soul_shard<2|!pet.demonic_tyrant.active&cooldown.summon_demonic_tyrant.remains_expected>40)
 actions.covenant_ability+=/decimating_bolt,if=(soulbind.forgeborne_reveries|(soulbind.volatile_solvent&!soulbind.kevins_oozeling))&!pet.demonic_tyrant.active
-actions.covenant_ability+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up
+actions.covenant_ability+=/fleshcraft,if=soulbind.volatile_solvent&buff.volatile_solvent.down,interrupt_if=buff.volatile_solvent.up
 actions.covenant_ability+=/scouring_tithe,if=soulbind.combat_meditation&pet.demonic_tyrant.active
 actions.covenant_ability+=/scouring_tithe,if=!soulbind.combat_meditation
 actions.covenant_ability+=/impending_catastrophe,if=pet.demonic_tyrant.active&soul_shard=0
