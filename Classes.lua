@@ -901,7 +901,7 @@ function Hekili:RestoreDefaults()
 
             report = "The " .. report .. ", and |cFFFFD100" .. changed[ #changed ] .. "|r priorities were updated."
 
-            Hekili:Print( report )
+            Hekili:Notify( report )
         end
     end
 end

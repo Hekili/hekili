@@ -3823,7 +3823,7 @@ local mt_totem = {
             return t[k]
         end
 
-        if pet[ k ] ~= nil then return pet[ k ] end
+        if state.pet[ k ] ~= nil then return state.pet[ k ] end
 
         Error( "UNK: totem." .. k )
     end,
