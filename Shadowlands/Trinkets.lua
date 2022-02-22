@@ -1456,3 +1456,366 @@ do
         },
     } )
 end
+
+-- 9.2 Trinkets
+do
+    all:RegisterAbilities( {
+        scars_of_fraternal_strife = {
+            cast = 0,
+            cooldown = 30,
+            gcd = "off",
+
+            item = 188253,
+
+            handler = function ()
+                if buff.the_first_rune.up then applyBuff( "the_second_rune" )
+                elseif buff.the_second_rune.up then applyBuff( "the_third_rune" )
+                elseif buff.the_third_rune.up then applyBuff( "the_fourth_rune" )
+                elseif buff.the_fourth_rune.up then applyBuff( "the_final_rune" )
+                else applyBuff( "the_first_rune" ) end
+            end,
+
+            auras = {
+                the_first_rune = {
+                    id = 368635,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+                the_second_rune = {
+                    id = 368636,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+                the_third_rune = {
+                    id = 368637,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+                the_fourth_rune = {
+                    id = 368638,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+                the_fourth_rune_snare = {
+                    id = 368639,
+                    duration = 15,
+                    max_stack = 10,
+                },
+                the_final_rune = {
+                    id = 368641,
+                    duration = 30,
+                    max_stack = 1,
+                },
+            }
+        },
+        chains_of_domination = {
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 188252,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "chains_of_domination" )
+            end,
+
+            auras = {
+                chains_of_domination = {
+                    id = 367931,
+                    duration = 20,
+                    max_stack = 1,
+                },
+            }
+        },
+        grim_eclipse = {
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+
+            item = 188254,
+
+            toggle = "cooldowns",
+
+            handler = function()
+            end,
+
+            auras = {
+                grim_eclipse = {
+                    id = 368645,
+                    duration = 10,
+                    max_stack = 1,
+                    copy = 369294
+                }
+            }
+        },
+        heart_of_the_swarm = {
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 188255,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "heart_of_the_swarm" )
+                setCooldown( "global_cooldown", 3 )
+            end,
+
+            auras = {
+                heart_of_the_swarm = {
+                    -- id = ???,
+                    -- May need to use GetPlayerAuraBySpellID.
+                    duration = 3,
+                    max_stack = 1,
+                },
+            }
+        },
+        intrusive_thoughtcage = {
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 188261,
+
+            toggle = "defensives",
+
+            handler = function()
+            end,
+
+            auras = {
+                intrusive_thoughtcage = {
+                    id = 367885,
+                    duration = 6,
+                    max_stack = 1,
+                }
+            }
+        },
+        the_first_sigil = {
+            cast = 0,
+            cooldown = 300,
+            gcd = "off",
+
+            item = 188271,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "the_first_sigil" )
+            end,
+
+            auras = {
+                the_first_sigil = {
+                    id = 367241,
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
+        },
+        cache_of_acquired_treasures = {
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 188265,
+
+            toggle = "cooldowns",
+
+            handler = function()
+            end,
+        },
+        the_lions_roar = {
+            cast = 3,
+            channeled = true,
+            cooldown = 600,
+            gcd = "off",
+
+            item = 188262,
+
+            toggle = "interrupts",
+
+            start = function()
+                applyBuff( "the_lions_roar" )
+            end,
+
+            auras = {
+                the_lions_roar = {
+                    id = 363557,
+                    duration = 3,
+                    max_stack = 1,
+                }
+            }
+        },
+        pulsating_riftshard = {
+            cast = 0,
+            cooldown = 60,
+            gcd = "off",
+
+            item = 188266,
+
+            handler = function()
+            end,
+        },
+        resonant_reservoir = {
+            cast = 0,
+            cooldown = 90,
+            gcd = "off",
+
+            item = 188272,
+
+            toggle = "cooldowns",
+
+            handler = function()
+            end,
+        },
+        architects_ingenuity_core = {
+            cast = 0,
+            cooldown = 90,
+            gcd = "off",
+
+            item = 188268,
+
+            toggle = "cooldowns",
+
+            handler = function()
+            end,
+
+            auras = {
+                architects_ingenuity = {
+                    id = 368937,
+                    duration = 10,
+                    max_stack = 1,
+                }
+            }
+        },
+        earthbreakers_impact = {
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 188264,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "earthbreakers_impact" )
+            end,
+
+            auras = {
+                earthbreakers_impact = {
+                    id = 367808,
+                    duration = 12,
+                    max_stack = 1,
+                }
+            }
+        },
+        reclaimers_intensity_core = {
+            cast = 0,
+            cooldown = 150,
+            gcd = "off",
+
+            item = 188263,
+
+            toggle = "interrupts",
+
+            handler = function()
+            end,
+        },
+
+        cosmic_gladiators_resonator = {
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+
+            item = 188766,
+
+            toggle = "cooldowns",
+
+            handler = function()
+            end,
+        },
+        cosmic_gladiators_fastidious_resolve = {
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 188524,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "the_first_sigil" )
+            end,
+
+            auras = {
+                gladiators_fastidious_resolve = {
+                    id = 363117,
+                    duration = 15,
+                    max_stack = 1,
+                }
+            }
+        },
+        cosmic_gladiators_eternal_aegis = {
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+
+            item = 188775,
+
+            toggle = "defensives",
+
+            handler = function()
+                applyBuff( "gladiators_eternal_aegis" )
+            end,
+
+            auras = {
+                gladiators_eternal_aegis = {
+                    id = 363522,
+                    duration = 15,
+                    max_stack = 1,
+                }
+            }
+        },
+        cosmic_gladiators_devouring_malediction = {
+            cast = 3,
+            channeled = true,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 188778,
+
+            toggle = "cooldowns",
+        },
+        the_first_sigil = {
+            cast = 0,
+            cooldown = 300,
+            gcd = "off",
+
+            item = 188254,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "the_first_sigil" )
+            end,
+
+            auras = {
+                the_first_sigil = {
+                    id = 367241,
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
+        },        
+    } )
+
+    spec:RegisterAuras( {
+        elegy_of_the_eternals = {
+            id = 369439,
+            duration = 10,
+            max_stack = 1,
+        },
+    } )
+end
