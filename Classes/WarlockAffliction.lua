@@ -1714,6 +1714,10 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
 
             toggle = "essences",
 
+            indicator = function()
+                if active_enemies > 1 and settings.cycle and target.time_to_die > shortest_ttd then return "cycle" end
+            end,
+
             handler = function ()
                 applyBuff( "decimating_bolt", nil, 3 )
                 if legendary.shard_of_annihilation.enabled then
