@@ -288,6 +288,8 @@ local function SimToLua( str, modifier )
     -- Address equipped.number => equipped[number]
     str = str:gsub("%.(%d+)%.", "[%1].")
     str = str:gsub("equipped%.(%d+)", "equipped[%1]")
+    str = str:gsub("main_hand%.(%d[a-z0-9_]+)", "main_hand['%1']")
+    str = str:gsub("off_hand%.(%d[a-z0-9_]+)", "off_hand['%1']")
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
     str = str:gsub("%.in$", "['in']" )
@@ -939,6 +941,9 @@ local function SimCToSnapshot( str, modifier )
     str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")") ]]
 
     -- Address equipped.number => equipped[number]
+    str = str:gsub("equipped%.(%d+)", "equipped[%1]")
+    str = str:gsub("main_hand%.(%d[a-zA-Z0-9_]+)", "main_hand['%1']")
+    str = str:gsub("off_hand%.(%d[a-zA-Z0-9_]+)", "off_hand['%1']")
     str = str:gsub("equipped%.(%d+)", "equipped[%1]")
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )

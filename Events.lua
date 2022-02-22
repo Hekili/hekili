@@ -785,16 +785,33 @@ do
             ns.Tooltip:Hide()
         end
 
+        state.main_hand.size = 0
+        state.off_hand.size = 0
+    
         for i = 1, 19 do
             local item = GetInventoryItemID( 'player', i )
 
             if item then
                 state.set_bonus[ item ] = 1
-                local key = GetItemInfo( item )
+                local key, _, _, _, _, _, _, _, equipLoc = GetItemInfo( item )
                 if key then
                     key = formatKey( key )
                     state.set_bonus[ key ] = 1
                     gearInitialized = true
+                end
+
+                if i == 16 then
+                    if equipLoc == "INVTYPE_2HWEAPON" then
+                        state.main_hand.size = 2
+                    elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND" then
+                        state.main_hand.size = 1
+                    end
+                elseif i == 17 then
+                    if equipLoc == "INVTYPE_2HWEAPON" then
+                        state.off_hand.size = 2
+                    elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONOFFHAND" then
+                        state.off_hand.size = 1
+                    end
                 end
 
                 -- Fire any/all GearHooks (may be expansion-driven).

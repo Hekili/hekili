@@ -92,6 +92,13 @@ state.runeforge = state.legendary -- Different APLs use runeforge.X.equipped vs.
 state.debuff = {}
 state.dot = {}
 state.equipped = {}
+state.main_hand = {
+    size = 0
+}
+state.off_hand = {
+    size = 0
+}
+
 state.gcd = {}
 
 state.history = {
@@ -4711,6 +4718,21 @@ state.swing.offhand = state.swing.oh
 state.swing.off_hand = state.swing.oh
 
 
+local mt_weapon_type = {
+    __index = function( t, k )
+        local size = t.size
+
+        if k == "two_handed" or k == "2h" or k == "two_hand" then
+            return size == 2
+        elseif k == "one_handed" or k == "1h" or k == "one_hand" then
+            return size == 1
+        end
+
+        return false
+    end,
+}
+
+
 local mt_aura = {
     __index = function( t, k )
         return rawget( state.buff, k ) or rawget( state.debuff, k )
@@ -4727,6 +4749,8 @@ setmetatable( state.cooldown, mt_cooldowns )
 setmetatable( state.debuff, mt_debuffs )
 setmetatable( state.dot, mt_dot )
 setmetatable( state.equipped, mt_equipped )
+setmetatable( state.main_hand, mt_weapon_type )
+setmetatable( state.off_hand, mt_weapon_type )
 -- setmetatable( state.health, mt_resource )
 setmetatable( state.pet, mt_pets )
 setmetatable( state.pet.fake_pet, mt_default_pet )
