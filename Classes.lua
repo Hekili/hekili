@@ -442,16 +442,19 @@ local HekiliSpecMixin = {
         end
 
         local potionItem = Item:CreateFromItemID( data.item )
-        potionItem:ContinueOnItemLoad( function()
-            local name = potionItem:GetItemName() or data.name
-            local link = potionItem:GetItemLink() or data.link
 
-            data.name = name
-            data.link = link
+        if not potionItem:IsItemEmpty() then
+            potionItem:ContinueOnItemLoad( function()
+                local name = potionItem:GetItemName() or data.name
+                local link = potionItem:GetItemLink() or data.link
 
-            class.potionList[ potion ] = link
-            return true
-        end )
+                data.name = name
+                data.link = link
+
+                class.potionList[ potion ] = link
+                return true
+            end )
+        end
     end,
 
     RegisterPotions = function( self, potions )
@@ -560,139 +563,143 @@ local HekiliSpecMixin = {
             class.specs[0]:RegisterGear( ability, item )
 
             local actionItem = Item:CreateFromItemID( item )
-            actionItem:ContinueOnItemLoad( function( success )
-                --[[ if not success then
-                    Hekili:Error( "Unable to load " .. item .. " (" .. ability .. ")." )
+            if not actionItem:IsItemEmpty() then
+                actionItem:ContinueOnItemLoad( function( success )
+                    --[[ if not success then
+                        Hekili:Error( "Unable to load " .. item .. " (" .. ability .. ")." )
 
-                    -- Assume the item is not presently in-game.
-                    for key, entry in pairs( class.abilities ) do
-                        if a == entry then
-                            class.abilities[ key ] = nil
-                            class.abilityList[ key ] = nil
-                            class.abilityByName[ key ] = nil
-                            class.itemList[ key ] = nil
+                        -- Assume the item is not presently in-game.
+                        for key, entry in pairs( class.abilities ) do
+                            if a == entry then
+                                class.abilities[ key ] = nil
+                                class.abilityList[ key ] = nil
+                                class.abilityByName[ key ] = nil
+                                class.itemList[ key ] = nil
 
-                            self.abilities[ key ] = nil
-                        end
-                    end
-
-                    return
-                end ]]
-
-                local name = actionItem:GetItemName()
-                local link = actionItem:GetItemLink()
-                local texture = actionItem:GetItemIcon()
-
-                if name then
-                    if not a.name or a.name == a.key then a.name = name end
-                    if not a.link or a.link == a.key then a.link = link end
-                    a.texture = a.texture or texture
-
-                    if a.suffix then
-                        a.actualName = name
-                        a.name = a.name .. " " .. a.suffix
-                    end
-
-                    self.abilities[ ability ] = self.abilities[ ability ] or a
-                    self.abilities[ a.name ] = self.abilities[ a.name ] or a
-                    self.abilities[ a.link ] = self.abilities[ a.link ] or a
-                    self.abilities[ data.id ] = self.abilities[ a.link ] or a
-
-                    a.itemLoaded = GetTime()
-
-                    if a.item and a.item ~= 158075 then
-                        a.itemSpellName, a.itemSpellID = GetItemSpell( a.item )
-
-                        if a.itemSpellID then
-                            a.itemSpellKey = a.key .. "_" .. a.itemSpellID
-                            self.abilities[ a.itemSpellKey ] = a
-                            class.abilities[ a.itemSpellKey ] = a
+                                self.abilities[ key ] = nil
+                            end
                         end
 
-                        if a.itemSpellName then
-                            local itemAura = self.auras[ a.itemSpellName ]
+                        return
+                    end ]]
 
-                            if itemAura then
-                                a.itemSpellKey = itemAura.key .. "_" .. a.itemSpellID
+                    local name = actionItem:GetItemName()
+                    local link = actionItem:GetItemLink()
+                    local texture = actionItem:GetItemIcon()
+
+                    if name then
+                        if not a.name or a.name == a.key then a.name = name end
+                        if not a.link or a.link == a.key then a.link = link end
+                        a.texture = a.texture or texture
+
+                        if a.suffix then
+                            a.actualName = name
+                            a.name = a.name .. " " .. a.suffix
+                        end
+
+                        self.abilities[ ability ] = self.abilities[ ability ] or a
+                        self.abilities[ a.name ] = self.abilities[ a.name ] or a
+                        self.abilities[ a.link ] = self.abilities[ a.link ] or a
+                        self.abilities[ data.id ] = self.abilities[ a.link ] or a
+
+                        a.itemLoaded = GetTime()
+
+                        if a.item and a.item ~= 158075 then
+                            a.itemSpellName, a.itemSpellID = GetItemSpell( a.item )
+
+                            if a.itemSpellID then
+                                a.itemSpellKey = a.key .. "_" .. a.itemSpellID
                                 self.abilities[ a.itemSpellKey ] = a
                                 class.abilities[ a.itemSpellKey ] = a
-                                
-                            else
-                                if self.pendingItemSpells[ a.itemSpellName ] then
-                                    if type( self.pendingItemSpells[ a.itemSpellName ] ) == 'table' then
-                                        table.insert( self.pendingItemSpells[ a.itemSpellName ], ability )
-                                    else
-                                        local first = self.pendingItemSpells[ a.itemSpellName ]
-                                        self.pendingItemSpells[ a.itemSpellName ] = {
-                                            first,
-                                            ability
-                                        }
-                                    end
-                                else
-                                    self.pendingItemSpells[ a.itemSpellName ] = ability
-                                    a.itemPended = GetTime()
-                                end
                             end
-                        end
-                    end
 
-                    if not a.unlisted then
-                        class.abilityList[ ability ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
-                        class.itemList[ item ] = "|T" .. a.texture .. ":0|t " .. link
+                            if a.itemSpellName then
+                                local itemAura = self.auras[ a.itemSpellName ]
 
-                        class.abilityByName[ a.name ] = a
-                    end
-
-                    if data.copy then
-                        if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
-                            self.abilities[ data.copy ] = a
-                        elseif type( data.copy ) == 'table' then
-                            for _, key in ipairs( data.copy ) do
-                                self.abilities[ key ] = a
-                            end
-                        end
-                    end
-
-                    if data.items then
-                        local addedToItemList = false
-
-                        for _, id in ipairs( data.items ) do
-                            local copyItem = Item:CreateFromItemID( id )
-
-                            copyItem:ContinueOnItemLoad( function()
-                                local name = copyItem:GetItemName()
-                                local link = copyItem:GetItemLink()
-                                local texture = copyItem:GetItemIcon()
-
-                                if name then
-                                    class.abilities[ name ] = a
-                                    self.abilities[ name ]  = a
+                                if itemAura then
+                                    a.itemSpellKey = itemAura.key .. "_" .. a.itemSpellID
+                                    self.abilities[ a.itemSpellKey ] = a
+                                    class.abilities[ a.itemSpellKey ] = a
                                     
-                                    if not class.itemList[ id ] then
-                                        class.itemList[ id ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
-                                        addedToItemList = true
+                                else
+                                    if self.pendingItemSpells[ a.itemSpellName ] then
+                                        if type( self.pendingItemSpells[ a.itemSpellName ] ) == 'table' then
+                                            table.insert( self.pendingItemSpells[ a.itemSpellName ], ability )
+                                        else
+                                            local first = self.pendingItemSpells[ a.itemSpellName ]
+                                            self.pendingItemSpells[ a.itemSpellName ] = {
+                                                first,
+                                                ability
+                                            }
+                                        end
+                                    else
+                                        self.pendingItemSpells[ a.itemSpellName ] = ability
+                                        a.itemPended = GetTime()
                                     end
                                 end
-                            end )
+                            end
                         end
 
-                        if addedToItemList then
-                            ns.ReadKeybindings()
+                        if not a.unlisted then
+                            class.abilityList[ ability ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
+                            class.itemList[ item ] = "|T" .. a.texture .. ":0|t " .. link
+
+                            class.abilityByName[ a.name ] = a
                         end
+
+                        if data.copy then
+                            if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
+                                self.abilities[ data.copy ] = a
+                            elseif type( data.copy ) == 'table' then
+                                for _, key in ipairs( data.copy ) do
+                                    self.abilities[ key ] = a
+                                end
+                            end
+                        end
+
+                        if data.items then
+                            local addedToItemList = false
+
+                            for _, id in ipairs( data.items ) do
+                                local copyItem = Item:CreateFromItemID( id )
+
+                                if not copyItem:IsItemEmpty() then
+                                    copyItem:ContinueOnItemLoad( function()
+                                        local name = copyItem:GetItemName()
+                                        local link = copyItem:GetItemLink()
+                                        local texture = copyItem:GetItemIcon()
+
+                                        if name then
+                                            class.abilities[ name ] = a
+                                            self.abilities[ name ]  = a
+                                            
+                                            if not class.itemList[ id ] then
+                                                class.itemList[ id ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
+                                                addedToItemList = true
+                                            end
+                                        end
+                                    end )
+                                end
+                            end
+
+                            if addedToItemList then
+                                ns.ReadKeybindings()
+                            end
+                        end
+
+                        if ability then class.abilities[ ability ] = a end
+                        if a.name  then class.abilities[ a.name ]  = a end
+                        if a.link  then class.abilities[ a.link ]  = a end
+                        if a.id    then class.abilities[ a.id ]    = a end
+
+                        Hekili.OptionsReady = false
+
+                        return true
                     end
 
-                    if ability then class.abilities[ ability ] = a end
-                    if a.name  then class.abilities[ a.name ]  = a end
-                    if a.link  then class.abilities[ a.link ]  = a end
-                    if a.id    then class.abilities[ a.id ]    = a end
-
-                    Hekili.OptionsReady = false
-
-                    return true
-                end
-
-                return false
-            end )
+                    return false
+                end )
+            end
         end
 
         if a.id and a.id > 0 then
