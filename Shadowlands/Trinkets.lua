@@ -1811,7 +1811,7 @@ do
         },        
     } )
 
-    spec:RegisterAuras( {
+    all:RegisterAuras( {
         elegy_of_the_eternals = {
             id = 369439,
             duration = 10,
