@@ -1,5 +1,5 @@
 ## Mage Arcane
-## November 13, 2021
+## February 21, 2022
 
 ## Changes:
 ## - Use typical SimC handling of channel interruption instead of 'cancel_action'.
@@ -58,6 +58,8 @@ actions+=/blood_fury,if=buff.arcane_power.up
 actions+=/fireblood,if=buff.arcane_power.up
 actions+=/ancestral_call,if=buff.arcane_power.up
 actions+=/use_items,if=buff.arcane_power.up
+actions+=/use_item,name=moonlit_prism,if=covenant.kyrian&cooldown.arcane_power.remains<=10&cooldown.touch_of_the_magi.remains<=10
+actions+=/use_item,name=moonlit_prism,if=!covenant.kyrian&cooldown.arcane_power.remains<=6&cooldown.touch_of_the_magi.remains<=6
 actions+=/use_item,effect_name=gladiators_badge,if=buff.arcane_power.up|cooldown.arcane_power.remains>=55&debuff.touch_of_the_magi.up
 actions+=/use_item,name=empyreal_ordnance,if=cooldown.arcane_power.remains<=15&cooldown.touch_of_the_magi.remains<=15
 actions+=/use_item,name=dreadfire_vessel,if=cooldown.arcane_power.remains>=20|!variable.ap_on_use=1|(time=0&variable.fishing_opener=1&runeforge.siphon_storm)
@@ -101,11 +103,12 @@ actions.aoe+=/touch_of_the_magi,if=covenant.venthyr&runeforge.arcane_infinity&co
 actions.aoe+=/touch_of_the_magi,if=covenant.venthyr&runeforge.arcane_infinity&buff.mirrors_of_torment.remains<=20&cooldown.arcane_power.remains<=gcd
 actions.aoe+=/touch_of_the_magi,if=(buff.arcane_charge.stack<=variable.aoe_totm_max_charges|prev_gcd.1.radiant_spark)&((talent.rune_of_power&cooldown.rune_of_power.remains<=gcd&cooldown.arcane_power.remains>variable.totm_max_delay_for_ap)|(!talent.rune_of_power&cooldown.arcane_power.remains>variable.totm_max_delay_for_ap)|cooldown.arcane_power.remains<=gcd)
 actions.aoe+=/arcane_power,if=((cooldown.touch_of_the_magi.remains>variable.ap_max_delay_for_totm&buff.arcane_charge.stack=buff.arcane_charge.max_stack)|(cooldown.touch_of_the_magi.remains=0&buff.arcane_charge.stack<=variable.aoe_totm_max_charges))&buff.rune_of_power.down
-actions.aoe+=/rune_of_power,if=buff.rune_of_power.down&((cooldown.touch_of_the_magi.remains>20&buff.arcane_charge.stack=buff.arcane_charge.max_stack)|(cooldown.touch_of_the_magi.remains=0&buff.arcane_charge.stack<=variable.aoe_totm_max_charges))&(cooldown.arcane_power.remains>12|debuff.touch_of_the_magi.up)
+actions.aoe+=/rune_of_power,if=buff.rune_of_power.down&((cooldown.touch_of_the_magi.remains>20&buff.arcane_charge.stack=buff.arcane_charge.max_stack)|(cooldown.tdouch_of_the_magi.remains=0&buff.arcane_charge.stack<=variable.aoe_totm_max_charges))&(cooldown.arcane_power.remains>12|debuff.touch_of_the_magi.up)
 actions.aoe+=/shifting_power,if=cooldown.arcane_orb.remains>5|!talent.arcane_orb
-actions.aoe+=/arcane_blast,if=covenant.kyrian&runeforge.arcane_harmony&buff.arcane_power.up&debuff.radiant_spark_vulnerability.stack=4&prev_gcd.1.arcane_orb&active_enemies<7
-actions.aoe+=/arcane_barrage,if=covenant.kyrian&runeforge.arcane_harmony&buff.arcane_power.up&debuff.radiant_spark_vulnerability.stack=4
-actions.aoe+=/arcane_blast,if=covenant.kyrian&runeforge.arcane_harmony&buff.arcane_power.up&(dot.radiant_spark.remains>6|debuff.radiant_spark_vulnerability.up)&debuff.radiant_spark_vulnerability.stack<4&active_enemies=3
+## actions.aoe+=/wait,sec=0.04,if=debuff.radiant_spark_vulnerability.stack=(debuff.radiant_spark_vulnerability.max_stack-1)&runeforge.harmonic_echo&active_enemies<5,line_cd=25
+actions.aoe+=/arcane_blast,if=covenant.kyrian&runeforge.arcane_infinity&buff.arcane_power.up&debuff.radiant_spark_vulnerability.stack=4&prev_gcd.1.arcane_orb&active_enemies<7&!runeforge.harmonic_echo
+actions.aoe+=/arcane_barrage,if=covenant.kyrian&runeforge.arcane_infinity&buff.arcane_power.up&debuff.radiant_spark_vulnerability.stack=4
+actions.aoe+=/arcane_blast,if=covenant.kyrian&runeforge.arcane_infinity&buff.arcane_power.up&(dot.radiant_spark.remains>6|debuff.radiant_spark_vulnerability.up)&debuff.radiant_spark_vulnerability.stack<4&active_enemies<5
 actions.aoe+=/arcane_orb,if=covenant.kyrian&runeforge.arcane_harmony&buff.arcane_power.up&debuff.radiant_spark_vulnerability.stack=3
 actions.aoe+=/arcane_barrage,if=covenant.kyrian&runeforge.arcane_harmony&buff.arcane_power.up&debuff.radiant_spark_vulnerability.stack=2
 actions.aoe+=/arcane_explosion,if=covenant.kyrian&runeforge.arcane_harmony&buff.arcane_power.up&prev_gcd.2.radiant_spark&active_enemies>3
