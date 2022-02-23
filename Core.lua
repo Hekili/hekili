@@ -2091,6 +2091,12 @@ function Hekili.Update()
             state.reset( dispName )            
             Hekili:Yield( "Post-Reset for " .. dispName )
 
+            -- Clear the stack in case we interrupted ourselves.
+            wipe( InUse )
+
+            for i = #Stack, 1, -1 do tinsert( StackPool, tremove( Stack, i ) ) end
+            for i = #Block, 1, -1 do tinsert( StackPool, tremove( Block, i ) ) end
+
             state.system.specID   = specID
             state.system.specInfo = spec
             state.system.packName = packName
