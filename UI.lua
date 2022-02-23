@@ -1018,13 +1018,10 @@ do
                 
                 if thread or not Hekili.Pause then
                     self.refreshRate = self.refreshRate or 0.1
-
-                    local refreshMod = 1
-                    if not self.criticalUpdate then refreshMod = 2.5 end
-                    if not self.superUpdate then refreshMod = 5 end
+                    self.combatRate = self.combatRate or 0.5
 
                     -- If there's no thread, then see if we have a reason to update.
-                    if  ( not thread or self.superUpdate ) and Hekili.freshFrame and self.refreshTimer > min( 1, self.refreshRate * refreshMod ) then
+                    if  ( not thread or self.superUpdate ) and Hekili.freshFrame and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
                         self.superUpdate = false
 
                         self.activeThread = coroutine.create( Hekili.Update )
@@ -1068,9 +1065,11 @@ do
                             self.refreshTimer = 0
 
                             if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
-                                self.refreshRate = 1 / Hekili:GetActiveSpecOption( "maxRefresh" )
+                                self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
+                                self.combatRate = Hekili:GetActiveSpecOption( "combatRefresh" )
                             else
-                                self.refreshRate = 0.1
+                                self.refreshRate = 0.5
+                                self.combatRate = 0.1
                             end
     
                             if self.firstThreadCompleted then

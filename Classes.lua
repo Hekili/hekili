@@ -56,7 +56,8 @@ local specTemplate = {
     damagePets = false,
 
     throttleRefresh = false,
-    maxRefresh = 10,
+    regularRefresh = 0.5,
+    combatRefresh = 0.1,
 
     throttleTime = false,
     maxTime = 33,

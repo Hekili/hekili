@@ -262,6 +262,16 @@ local oneTimeFixes = {
     forceEnableEnhancedRecheckBoomkin_20210712 = function( p )
         p.specs[ 102 ].enhancedRecheck = true
     end,
+
+    updateMaxRefreshToNewSpecOptions_20220222 = function( p )
+        for id, spec in pairs( p.specs ) do
+            if spec.settings.maxRefresh then
+                spec.settings.combatRefresh = 1 / spec.settings.maxRefresh
+                spec.settings.regularRefresh = min( 1, 5 * spec.settings.combatRefresh )
+                spec.settings.maxRefresh = nil
+            end
+        end
+    end,
 }
 
 
@@ -4938,24 +4948,43 @@ do
                                 throttleRefresh = {
                                     type = "toggle",
                                     name = NewFeature .. " Throttle Updates",
-                                    desc = "By default, the addon will update its recommendations within 0.1s (10 updates per second) of critical combat events.  For less critical events, the addon will update within 0.25s (4 updates per second).  If no combat events are occurring, " ..
-                                        "the addon defaults to updating every 0.5s (2 updates per second).  If |cffffd100Throttle Updates|r is checked, you can specify the |cffffd100Maximum Update Frequency|r yourself.",
+                                    desc = "By default, the addon will update its recommendations immediately following |cffff0000critical|r combat events, within |cffffd1000.1|rs of routine combat events, or every |cffffd1000.5|rs.\n" ..
+                                        "If |cffffd100Throttle Updates|r is checked, you can specify the |cffffd100RCombat Refresh Interval|r and |cff00ff00Regular Refresh Interval|r for this specialization.",
                                     order = 1,
-                                    width = 1
+                                    width = "full",
                                 },
 
-                                maxRefresh = {
+                                perfSpace01 = {
+                                    type = "description",
+                                    name = " ",
+                                    order = 1.05,
+                                    width = "full"
+                                },
+
+                                regularRefresh = {
                                     type = "range",
-                                    name = NewFeature .. " Maximum Update Frequency",
-                                    desc = "Specify the maximum number of times per second that the addon should update its recommendations.\n\n" ..
-                                        "If set to |cffffd10010|r, the addon will update within 0.1s of critical combat events, 0.25s of less critical events, or 0.5s if no relevant events have occurred.\n" ..
-                                        "If set to |cffffd10020|r, the addon will update with 0.05s of a critical event, 0.125s of other events, or 0.25s when no events have occurred.\n" .. 
-                                        "If set below |cffffd1005|r, the addon will still update at least once per second.\n\n" ..
-                                        "Higher values will result in more frequent updates, but will also use more CPU time.",
+                                    name = NewFeature .. " Regular Refresh Interval",
+                                    desc = "In the absence of combat events, this addon will allow itself to update according to the specified interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though " ..
+                                        "combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1001.0|rs, the addon will not provide new updates until 1 second after its last update (unless forced by a combat event).\n\n" ..
+                                        "Default value:  |cffffd1000.1|rs.",
                                     order = 1.1,
-                                    width = 2,
-                                    min = 4,
-                                    max = 20,
+                                    width = 1.5,
+                                    min = 0.05,
+                                    max = 0.5,
+                                    step = 1,
+                                    hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
+                                },
+
+                                combatRefresh = {
+                                    type = "range",
+                                    name = NewFeature .. " Combat Refresh Interval",
+                                    desc = "When routine combat events occur, the addon will update more frequently than its Regular Refresh Interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though " ..
+                                        "critical combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1000.2|rs, the addon will not provide new updates until 0.2 seconds after its last update (unless forced by a critical combat event).\n\n" ..
+                                        "Default value:  |cffffd1000.5|rs.",
+                                    order = 1.2,
+                                    width = 1.5,
+                                    min = 0.05,
+                                    max = 0.5,
                                     step = 1,
                                     hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
                                 },
