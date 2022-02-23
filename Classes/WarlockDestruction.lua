@@ -103,8 +103,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 amount = amount and tonumber( amount )
 
                 if amount then return state:TimeToResource( t, amount ) end
-                return 3600
-            
             end
         end
     } ) )
