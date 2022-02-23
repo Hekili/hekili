@@ -6764,7 +6764,8 @@ function state:TimeToReady( action, pool )
     end
 
     -- Okay, so we don't have enough of the resource.
-    z = resource and self[ resource ] and z[ "time_to_" .. spend ]
+    z = resource and self[ resource ]
+    z = z and z[ "time_to_" .. spend ]
     if spend and z then
         wait = max( wait, ceil( z * 100 ) / 100 )
     end
