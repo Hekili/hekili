@@ -6764,8 +6764,9 @@ function state:TimeToReady( action, pool )
     end
 
     -- Okay, so we don't have enough of the resource.
-    if spend and resource and spend > self[ resource ].current then
-        wait = max( wait, ceil( self[ resource ][ "time_to_" .. spend ] * 100 ) / 100 )
+    z = resource and self[ resource ] and z[ "time_to_" .. spend ]
+    if spend and z then
+        wait = max( wait, ceil( z * 100 ) / 100 )
     end
 
     z = ability.nobuff

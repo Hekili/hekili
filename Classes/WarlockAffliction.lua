@@ -55,6 +55,12 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
                 t.actual = UnitPower( "player", Enum.PowerType.SoulShards )
                 return t.actual
 
+            else
+                local amount = k:match( "time_to_(%d+)" )
+                amount = amount and tonumber( amount )
+
+                if amount then return state:TimeToResource( t, amount ) end
+                return 3600
             end
         end
     } ) )

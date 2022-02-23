@@ -98,6 +98,13 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 t.max = UnitPowerMax( "player", Enum.PowerType.SoulShards, true ) / 10
                 return t.max
 
+            else
+                local amount = k:match( "time_to_(%d+)" )
+                amount = amount and tonumber( amount )
+
+                if amount then return state:TimeToResource( t, amount ) end
+                return 3600
+            
             end
         end
     } ) )
