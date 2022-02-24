@@ -256,7 +256,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             max_stack = 1,
         },
         volley = {
-            id = 257622,
+            id = 260243,
             duration = 6,
             max_stack = 1,
         },
@@ -432,7 +432,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 applyBuff( "precise_shots" )
                 removeBuff( "lock_and_load" )
                 removeBuff( "double_tap" )
-                if buff.volley.down then removeBuff( "trick_shots" ) end
+                if buff.volley.down and buff.trick_shots.up then removeBuff( "trick_shots" ) end
             end,
         },
 
