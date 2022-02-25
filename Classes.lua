@@ -5656,7 +5656,7 @@ ns.setRole = setRole
 
 
 function Hekili:GetActiveSpecOption( opt )
-    if not self.currentSpecOpts then return end
+    if not self.currentSpecOpts then return ns.specTemplate[ opt ] end
     return self.currentSpecOpts[ opt ]
 end
 
@@ -5897,7 +5897,7 @@ function Hekili:SpecializationChanged()
             local s = Hekili.DB.profile.specs[ spec.id ]
 
             for k, v in pairs( spec.options ) do
-                if s[ k ] == nil then s[ k ] = v end
+                if rawget( s, k ) == nil then s[ k ] = v end
             end
 
             for k, v in pairs( spec.settings ) do

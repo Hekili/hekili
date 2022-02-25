@@ -272,6 +272,12 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    forceEnableAllClassesDueToBug_20220225 = function( p )
+        for id, spec in pairs( p.specs ) do
+            spec.enabled = true
+        end
+    end,
 }
 
 
@@ -284,7 +290,11 @@ function Hekili:RunOneTimeFixes()
     for k, v in pairs( oneTimeFixes ) do
         if not profile.runOnce[ k ] then
             profile.runOnce[k] = true
-            v( profile )
+            local ok, err = pcall( v, profile )
+            if err then
+                Hekili:Error( "One-Time update failed: " .. k .. ": " .. err )
+                profile.runOnce[ k ] = nil
+            end
         end
     end
 
@@ -4366,7 +4376,6 @@ do
             if db[ section .. "Description" ] then db[ section .. "Description" ].hidden = true end
         end
 
-        local settings = Hekili.DB.profile.specs[ specID ]
         local count, offset = 0, 0
 
         for ability, isMember in orderedPairs( tAbilities ) do

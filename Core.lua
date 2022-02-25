@@ -2039,12 +2039,14 @@ local displayRules = {
 
 
 function Hekili.Update()
+    if not Hekili:ScriptsLoaded() then Hekili:LoadScripts() end
+
     local profile = Hekili.DB.profile
 
     local specID = state.spec.id
     if not specID then return end
     
-    local spec = profile.specs[ specID ]
+    local spec = rawget( profile.specs, specID )
     if not spec then return end
 
     local packName = spec.package
@@ -2055,7 +2057,6 @@ function Hekili.Update()
 
     local debug = Hekili.ActiveDebug
 
-    if not Hekili:ScriptsLoaded() then Hekili:LoadScripts() end
     Hekili:ResetThreadClock()
 
     local snaps = nil

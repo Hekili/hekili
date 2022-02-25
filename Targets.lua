@@ -280,7 +280,7 @@ do
         Hekili.TargetDebug = ""
 
         local spec = state.spec.id
-        spec = spec and rawget( Hekili.DB.profile.specs, spec ) or nil
+        spec = spec and rawget( Hekili.DB.profile.specs, spec ) or ns.specTemplate
 
         if spec then
             local checkPets = showNPs and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
