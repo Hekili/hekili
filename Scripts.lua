@@ -249,6 +249,9 @@ local function SimToLua( str, modifier )
     str = str:gsub( "!=", "~=" )
     if str:find("!") then str = forgetMeNots( str ) end
 
+    -- Replace '^' (simc XOR) with '~=' (functionally identical for booleans).
+    if str:find("%^") then str = str:gsub("%^", "~=") end
+
     -- Replace '>?' and '<?' with max/min.
     if str:find(">%?") then str = HandleDeprecatedOperators( str, ">%?", "max" ) end
     if str:find("<%?") then str = HandleDeprecatedOperators( str, "<%?", "min" ) end
@@ -382,6 +385,8 @@ do
         { "^!ticking",                              "remains" },
         { "^!?remains$",                            "remains" },
         { "^refreshable",                           "time_to_refresh" },
+        { "^gcd.remains$",                          "gcd.remains" },
+        { "^gcd.remains<?=(.+)$",                   "gcd.remains-%1" },
 
         { "^swing.([a-z_]+).remains$",              "swing.%1.remains" },
 
