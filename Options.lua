@@ -273,10 +273,14 @@ local oneTimeFixes = {
         end
     end,
 
-    forceEnableAllClassesDueToBug_20220225 = function( p )
+    forceEnableAllClassesOnceDueToBug_20220225 = function( p )
         for id, spec in pairs( p.specs ) do
-            spec.enabled = true
+            if not p.runOnce[ "forceEnableAllClassesOnceDueToBug_20220225-" .. id ] then
+                spec.enabled = true
+                p.runOnce[ "forceEnableAllClassesOnceDueToBug_20220225-" .. id ] = true
+            end
         end
+        p.runOnce.forceEnableAllClassesOnceDueToBug_20220225 = nil
     end,
 }
 
@@ -10448,7 +10452,7 @@ do
                 if a == 1 then
                     local ability = str:trim()
 
-                    if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then
+                    if ability and ( ability == "use_item" or class.abilities[ ability ] ) then
                         if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast" end
                         if ability == "any_dnd" or ability == "wound_spender" then
                             result.action = ability
@@ -10464,6 +10468,7 @@ do
                     local key, value = str:match( "^(.-)=(.-)$" )
 
                     if key and value then
+                        -- TODO:  Automerge multiple criteria.
                         if key == 'if' or key == 'condition' then key = 'criteria' end
 
                         if key == 'criteria' or key == 'target_if' or key == 'value' or key == 'value_else' or key == 'sec' or key == 'wait' then
@@ -10501,13 +10506,31 @@ do
                 result.target_if = nil
             end
 
-            if result.action == 'use_item' then
+            if result.action == "use_item" then
                 if result.effect_name and class.abilities[ result.effect_name ] then
                     result.action = class.abilities[ result.effect_name ].key
                 elseif result.name and class.abilities[ result.name ] then
                     result.action = result.name
                 elseif ( result.slot or result.slots ) and class.abilities[ result.slot or result.slots ] then
                     result.action = result.slot or result.slots
+                end
+
+                if result.action == "use_item" then
+                    table.insert( warnings, "Line " .. line .. ": Unsupported use_item action [ " .. ( result.effect_name or result.name or "unknown" ) .. "]; entry disabled." )
+                    result.action = nil
+                    result.enabled = false
+                end
+            end
+
+            if result.action == "wait_for_cooldown" then
+                if result.name then
+                    result.action = "wait"
+                    result.sec = "cooldown." .. result.name .. ".remains"
+                    result.name = nil
+                else
+                    table.insert( warnings, "Line " .. line .. ": Unable to convert wait_for_cooldown,name=X to wait,sec=cooldown.X.remains; entry disabled." )
+                    result.action = wait
+                    result.enabled = false
                 end
             end
 
@@ -10519,7 +10542,7 @@ do
                 result.op = 'set'
             end
 
-            if result.cancel_if and not result.interupt_if then
+            if result.cancel_if and not result.interrupt_if then
                 result.interrupt_if = result.cancel_if
                 result.cancel_if = nil
             end
