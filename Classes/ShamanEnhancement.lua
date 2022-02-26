@@ -1202,7 +1202,13 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = true,
             texture = 236289,
 
-            cycle = function () return talent.lashing_flames.enabled and "lashing_flames" or nil  end,
+            cycle = function()
+                return talent.lashing_flames.enabled and "lashing_flames" or nil
+            end,
+
+            indicator = function()
+                return debuff.flame_shock.down and active_dot.flame_shock > 0 and "cycle" or nil
+            end,
 
             handler = function ()
                 removeDebuff( "target", "primal_primer" )
