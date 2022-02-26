@@ -7,6 +7,9 @@ local Hekili = _G[ addon ]
 local all = Hekili.Class.specs[ 0 ]
 local state = Hekili.State
 
+-- Globals.
+local C_AzeriteItem, FindActiveAzeriteItem = _G.C_AzeriteItem, _G.C_AzeriteItem.FindActiveAzeriteItem
+
 
 -- Register Azerite Powers before going with generics...
 all:RegisterAuras( {
@@ -3061,7 +3064,7 @@ all:RegisterPowers( {
 
 
 local function ResetAzerite()
-    local heart = C_AzeriteItem.FindActiveAzeriteItem()
+    local heart = FindActiveAzeriteItem()
 
     if heart and heart:IsValid() then
         rawset( state.azerite, "heart", heart )
