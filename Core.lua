@@ -1594,8 +1594,6 @@ function Hekili:ProcessHooks( dispName, packName )
             if debugprofilestop() - actualStartTime > 100 then
                 if not Hekili.HasSnapped then
                     Hekili.HasSnapped = true
-                    hasSnapshotted = true
-
                     Hekili:MakeSnapshot( dispName, true )
                 end
                 
@@ -2147,18 +2145,6 @@ function Hekili.Update()
                 while( event ) do
                     Hekili:Yield( "Pre-Processing event #" .. n )
                     local eStart
-        
-                    --[[ if debugprofilestop() - actualStartTime > 100 then
-                        if not Hekili.HasSnapped then
-                            Hekili.HasSnapped = true
-                            hasSnapshotted = true
-        
-                            Hekili:MakeSnapshot( dispName, true )
-                        end
-                        
-                        if debug then Hekili:Debug( "Escaping events loop due to high CPU usage." ) end
-                        break
-                    end ]]
                     
                     if debug then
                         eStart = debugprofilestop()
@@ -2428,13 +2414,14 @@ function Hekili.Update()
         
                 if debug then
                     Hekili:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay )
-                    --[[ if not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and InCombatLockdown() and state.level >= 50 then
+                    if not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and InCombatLockdown() and state.level >= 50 then
                         Hekili.ActiveDebug = true
-                        hasSnapshotted = true
-            
                         Hekili:MakeSnapshot( dispName, true )
+                        Hekili.HasSnapped = true
+
+                        HekiliDisplayPrimary.activeThread = nil
                         return true
-                    end ]]
+                    end
                 end
         
                 Hekili:Yield( "Pre-Action" )
