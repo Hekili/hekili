@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## February 21, 2022
+## February 25, 2022
 
 ## Changes:
 ## - Spell Lock.
@@ -15,15 +15,16 @@
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fel_domination,if=time>0&!pet.alive
 actions.precombat+=/summon_pet
-actions.precombat+=/variable,name=first_tyrant_time,op=set,value=10
-actions.precombat+=/variable,name=use_bolt_timings,op=set,value=runeforge.balespiders_burning_core&runeforge.shard_of_annihilation
-actions.precombat+=/use_item,name=shadowed_orb_of_torment
 actions.precombat+=/use_item,name=tome_of_monstrous_constructions
 actions.precombat+=/use_item,name=soleahs_secret_technique
 actions.precombat+=/fleshcraft
 actions.precombat+=/power_siphon,if=buff.wild_imps.stack>1&buff.demonic_core.stack<=2
+actions.precombat+=/use_item,name=shadowed_orb_of_torment
 actions.precombat+=/demonbolt,if=(boss|action.demonbolt.cast=0)&soul_shards<4
 actions.precombat+=/shadow_bolt,if=!(boss|action.demonbolt.cast=0)|soul_shards>3
+## actions.precombat+=/variable,name=first_tyrant_time,op=set,value=10
+actions.precombat+=/variable,name=use_bolt_timings,op=set,value=runeforge.balespiders_burning_core&runeforge.shard_of_annihilation
+
 
 # Executed every time the actor is available.
 actions=spell_lock
@@ -32,16 +33,16 @@ actions+=/axe_toss
 actions+=/devour_magic
 actions=variable,name=next_tyrant_cd,op=set,value=cooldown.summon_demonic_tyrant.remains_expected,if=!soulbind.field_of_blossoms|cooldown.summon_demonic_tyrant.remains_expected>cooldown.soul_rot.remains_expected
 actions+=/variable,name=next_tyrant_cd,op=set,value=cooldown.soul_rot.remains_expected,if=soulbind.field_of_blossoms&cooldown.summon_demonic_tyrant.remains_expected<cooldown.soul_rot.remains_expected
-actions+=/variable,name=next_tyrant_cd,op=set,value=variable.first_tyrant_time-time,if=time<variable.first_tyrant_time
+actions+=/variable,name=next_tyrant_cd,op=set,value=first_tyrant_time-time,if=time<first_tyrant_time
 actions+=/variable,name=buff_sync_cd,op=set,value=variable.next_tyrant_cd,if=!variable.use_bolt_timings
 actions+=/variable,name=buff_sync_cd,op=set,value=cooldown.decimating_bolt.remains_expected,if=variable.use_bolt_timings
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=ogcd,if=(!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up&(!talent.power_siphon.enabled|buff.power_siphon.up))
-actions+=/call_action_list,name=opener,strict=1,if=toggle.cooldowns&time<variable.first_tyrant_time
+actions+=/call_action_list,name=opener,strict=1,if=toggle.cooldowns&time<first_tyrant_time
 actions+=/doom,if=refreshable
 actions+=/call_action_list,name=covenant_ability,strict=1,if=soulbind.grove_invigoration|soulbind.field_of_blossoms|soulbind.combat_meditation|covenant.necrolord
 actions+=/power_siphon,if=variable.use_bolt_timings&buff.shard_of_annihilation.up
-actions+=/potion,if=(!variable.use_bolt_timings&variable.next_tyrant_cd=0&time>variable.first_tyrant_time|soulbind.refined_palate&variable.next_tyrant_cd<38)|(variable.use_bolt_timings&buff.shard_of_annihilation.up)
+actions+=/potion,if=(!variable.use_bolt_timings&variable.next_tyrant_cd<gcd.max&time>first_tyrant_time|soulbind.refined_palate&variable.next_tyrant_cd<38)|(variable.use_bolt_timings&buff.shard_of_annihilation.up)
 actions+=/call_action_list,name=tyrant_setup
 actions+=/demonic_strength,if=(!runeforge.wilfreds_sigil_of_superior_summoning&variable.next_tyrant_cd>9)|(pet.demonic_tyrant.active&pet.demonic_tyrant.remains<6*gcd.max)
 actions+=/call_dreadstalkers,if=variable.use_bolt_timings&cooldown.summon_demonic_tyrant.remains_expected>22
@@ -60,7 +61,7 @@ actions+=/shadow_bolt,if=soul_shard<5&runeforge.balespiders_burning_core&buff.ba
 # If Dreadstalkers are already active, no need to save shards
 actions+=/hand_of_guldan,if=soul_shard>=3&(pet.dreadstalker.active|pet.demonic_tyrant.active)
 actions+=/hand_of_guldan,if=soul_shard>=1&buff.nether_portal.up&cooldown.call_dreadstalkers.remains>2*gcd.max
-actions+=/hand_of_guldan,if=soul_shard>=1&variable.next_tyrant_cd<gcd.max&time>variable.first_tyrant_time-gcd.max
+actions+=/hand_of_guldan,if=soul_shard>=1&variable.next_tyrant_cd<gcd.max&time>first_tyrant_time-gcd.max
 actions+=/call_action_list,name=covenant_ability,strict=1,if=!covenant.venthyr
 # Without Sacrificed Souls, Soul Strike is stronger than Demonbolt, so it has a higher priority
 actions+=/soul_strike,if=!talent.sacrificed_souls.enabled
@@ -75,7 +76,7 @@ actions+=/soul_strike
 actions+=/call_action_list,name=covenant_ability
 # If you can get back to 5 Soul Shards before Dreadstalkers cooldown is ready, it's okay to spend them now
 actions+=/hand_of_guldan,if=soul_shard>=3&variable.next_tyrant_cd>25&(talent.demonic_calling.enabled|cooldown.call_dreadstalkers.remains>((5-soul_shard)*action.shadow_bolt.execute_time)+action.hand_of_guldan.execute_time)
-actions+=/doom,cycle_targets=1,if=refreshable&time>variable.first_tyrant_time
+actions+=/doom,cycle_targets=1,if=refreshable&time>first_tyrant_time
 # Use Demonbolt if you're going to lose Demonic Core stacks, even if it'd waste a soul shard.
 actions+=/demonbolt,if=buff.demonic_core.react&buff.demonic_core.remains<1+gcd.max*buff.demonic_core.stack
 actions+=/shadow_bolt
@@ -87,7 +88,8 @@ actions+=/shadow_bolt
 actions.covenant_ability=soul_rot,if=soulbind.grove_invigoration&(variable.next_tyrant_cd<20|variable.next_tyrant_cd>30)
 actions.covenant_ability+=/soul_rot,if=soulbind.field_of_blossoms&pet.demonic_tyrant.active
 actions.covenant_ability+=/soul_rot,if=soulbind.wild_hunt_tactics&!pet.demonic_tyrant.active&variable.next_tyrant_cd>18
-actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=!variable.use_bolt_timings&(soulbind.lead_by_example|soulbind.kevins_oozeling)&(pet.demonic_tyrant.active&soul_shard<2|!pet.demonic_tyrant.active&variable.next_tyrant_cd>40)
+actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=min:target.health.pct,if=!variable.use_bolt_timings&soulbind.lead_by_example&(pet.demonic_tyrant.active&soul_shard<2|!pet.demonic_tyrant.active&variable.next_tyrant_cd>40)
+actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=min:target.health.pct,if=!variable.use_bolt_timings&soulbind.kevins_oozeling&(pet.demonic_tyrant.active|!pet.demonic_tyrant.active&variable.next_tyrant_cd>40)
 actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=!variable.use_bolt_timings&(soulbind.forgeborne_reveries|(soulbind.volatile_solvent&!soulbind.kevins_oozeling))&!pet.demonic_tyrant.active
 actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=variable.use_bolt_timings&(!talent.power_siphon|cooldown.power_siphon.remains<action.decimating_bolt.execute_time)&!cooldown.summon_demonic_tyrant.up&(pet.demonic_tyrant.remains<8|cooldown.summon_demonic_tyrant.remains_expected<30)
 actions.covenant_ability+=/fleshcraft,if=soulbind.volatile_solvent&buff.volatile_solvent.down,interrupt_if=buff.volatile_solvent.up
@@ -112,6 +114,7 @@ actions.opener+=/shadow_bolt,if=variable.use_bolt_timings&soul_shard<5&buff.bale
 actions.opener+=/call_dreadstalkers
 
 actions.pure_damage_trinks=use_item,name=dreadfire_vessel
+actions.pure_damage_trinks+=/use_item,name=grim_eclipse
 actions.pure_damage_trinks+=/use_item,name=resonant_reservoir
 actions.pure_damage_trinks+=/use_item,name=architects_ingenuity_core
 actions.pure_damage_trinks+=/use_item,name=cosmic_gladiators_resonator
@@ -123,16 +126,17 @@ actions.pure_damage_trinks+=/use_item,name=ebonsoul_vise
 actions.pure_damage_trinks+=/use_item,name=unchained_gladiators_shackles
 
 actions.trinkets=use_item,name=shadowed_orb_of_torment,if=variable.buff_sync_cd<22
+actions.trinkets+=/use_item,name=scars_of_fraternal_strife
 actions.trinkets+=/call_action_list,name=hp_trinks,if=talent.demonic_consumption.enabled&variable.next_tyrant_cd<20
 # Effects that travel slowly to target require additional, separate handling
 actions.trinkets+=/call_action_list,name=slow_trinkets
 actions.trinkets+=/use_item,name=overflowing_anima_cage,if=(!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up)
 actions.trinkets+=/use_item,slot=trinket1,if=trinket.1.has_use_buff&((!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up))
 actions.trinkets+=/use_item,slot=trinket2,if=trinket.2.has_use_buff&((!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up))
-actions.trinkets+=/call_action_list,name=pure_damage_trinks,if=time>variable.first_tyrant_time&variable.buff_sync_cd>20
+actions.trinkets+=/call_action_list,name=pure_damage_trinks,if=time>first_tyrant_time&variable.buff_sync_cd>20
 
 actions.tyrant_setup=nether_portal,if=variable.next_tyrant_cd<15
 actions.tyrant_setup+=/grimoire_felguard,if=variable.next_tyrant_cd<17-(action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time)&(cooldown.call_dreadstalkers.remains<17-(action.summon_demonic_tyrant.execute_time+action.summon_vilefiend.execute_time+action.shadow_bolt.execute_time)|pet.dreadstalker.remains>variable.next_tyrant_cd+action.summon_demonic_tyrant.execute_time)
 actions.tyrant_setup+=/summon_vilefiend,if=(variable.next_tyrant_cd<15-(action.summon_demonic_tyrant.execute_time)&(cooldown.call_dreadstalkers.remains<15-(action.summon_demonic_tyrant.execute_time+action.summon_vilefiend.execute_time)|pet.dreadstalker.remains>variable.next_tyrant_cd+action.summon_demonic_tyrant.execute_time))|(!runeforge.wilfreds_sigil_of_superior_summoning&variable.next_tyrant_cd>40)
 actions.tyrant_setup+=/call_dreadstalkers,if=variable.next_tyrant_cd<12-(action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time)
-actions.tyrant_setup+=/summon_demonic_tyrant,if=time>variable.first_tyrant_time&(pet.dreadstalker.active&pet.dreadstalker.remains>action.summon_demonic_tyrant.execute_time)&(!talent.summon_vilefiend.enabled|pet.vilefiend.active)&(soul_shard=0|(pet.dreadstalker.active&pet.dreadstalker.remains<action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time)|(pet.vilefiend.active&pet.vilefiend.remains<action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time)|(buff.grimoire_felguard.up&buff.grimoire_felguard.remains<action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time))
+actions.tyrant_setup+=/summon_demonic_tyrant,if=time>first_tyrant_time&(pet.dreadstalker.active&pet.dreadstalker.remains>action.summon_demonic_tyrant.execute_time)&(!talent.summon_vilefiend.enabled|pet.vilefiend.active)&(soul_shard=0|(pet.dreadstalker.active&pet.dreadstalker.remains<action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time)|(pet.vilefiend.active&pet.vilefiend.remains<action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time)|(buff.grimoire_felguard.up&buff.grimoire_felguard.remains<action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time))
