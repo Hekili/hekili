@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## February 21, 2022
+## February 25, 2022
 
 ## Changes:
 ## - Added Spell Lock.
@@ -22,7 +22,6 @@ actions.precombat+=/use_item,name=soleahs_secret_technique
 actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
 actions.precombat+=/fleshcraft
 actions.precombat+=/variable,name=dots_ready,value=active_dot.corruption>0&active_dot.agony>0&active_dot.unstable_affliction>0&(!talent.siphon_life.enabled|active_dot.siphon_life>0)&(dot.phantom_singularity.ticking|!talent.phantom_singularity.enabled)
-actions.precombat+=/use_item,name=azsharas_font_of_power
 actions.precombat+=/seed_of_corruption,line_cd=10,if=spell_targets.seed_of_corruption_aoe>=3
 actions.precombat+=/haunt
 actions.precombat+=/unstable_affliction
