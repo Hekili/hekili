@@ -253,7 +253,7 @@ function ns.StartConfiguration( external )
                     GameTooltip:SetText( "Hekili: " .. i )
                     GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
                     GameTooltip:AddLine( "Right-click to open " .. i .. " display settings.", 1, 1, 1 )
-                    if not H:IsDisplayActive( i, true, "OnEnter" ) then GameTooltip:AddLine( "This display is not currently active.", 0.5, 0.5, 0.5 ) end
+                    if not H:IsDisplayActive( i, true ) then GameTooltip:AddLine( "This display is not currently active.", 0.5, 0.5, 0.5 ) end
                     GameTooltip:Show()
                 end
             end )
@@ -897,7 +897,6 @@ do
             end
     
             local now = GetTime()
-   
     
             self.recTimer = self.recTimer - elapsed
     
@@ -1007,7 +1006,6 @@ do
                 self.alphaCheck = 0.5
     
                 self:RefreshCooldowns()
-                self.NewRecommendations = false
             end
     
             local postRecs = debugprofilestop()
@@ -1120,7 +1118,7 @@ do
             if self.HasRecommendations then
                 self.glowTimer = self.glowTimer - elapsed
         
-                if self.glowTimer < 0 and not HekiliDisplayPrimary.activeThread then
+                if self.glowTimer < 0 or self.NewRecommendations then
                     if conf.glow.enabled then
                         for i, b in ipairs( self.Buttons ) do
                             if not b.Action then break end
@@ -1171,7 +1169,7 @@ do
         
                 self.rangeTimer = self.rangeTimer - elapsed
         
-                if self.rangeTimer < 0 then
+                if self.rangeTimer < 0 or self.NewRecommendations then
                     for i, b in ipairs( self.Buttons ) do
                         local a = b.Ability
         
@@ -1324,7 +1322,7 @@ do
         
                 self.targetTimer = self.targetTimer - elapsed
         
-                if self.targetTimer < 0 then
+                if self.targetTimer < 0 or self.NewRecommendations then
                     local b = self.Buttons[ 1 ] 
         
                     if conf.targets.enabled then
@@ -1364,15 +1362,14 @@ do
         
                 local postTargets = debugprofilestop()
         
-                local rec = self.Recommendations[ 1 ]
+                local b = self.Buttons[ 1 ]
         
                 self.delayTimer = self.delayTimer - elapsed
         
-                if rec.exact_time and self.delayTimer < 0 then
-                    local b = self.Buttons[ 1 ]
-                    local a = class.abilities[ rec.actionName ]
+                if b.ExactTime and ( self.delayTimer < 0 or self.NewRecommendations ) then
+                    local a = b.Ability
         
-                    local delay = rec.exact_time - now
+                    local delay = b.ExactTime - now
                     local moment = 0
         
                     if delay > 0 then
@@ -1428,7 +1425,7 @@ do
                             elseif delay < 1.5 then
                                 b.DelayIcon:SetVertexColor( 1.0, 1.0, 0.0, 1.0 )
                             else
-                                b.DelayIcon:SetVertexColor( 1.0, 0.0, 0.0, 1.0)
+                                b.DelayIcon:SetVertexColor( 1.0, 0.0, 0.0, 1.0 )
                             end
                         else
                             b.DelayIcon:Hide()
@@ -1449,6 +1446,7 @@ do
                     self.delayTimer = pulseDelay
                 end
     
+                self.NewRecommendations = false
                 local finish = debugprofilestop()
         
                 if self.updateTime then
