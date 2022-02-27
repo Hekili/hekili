@@ -2564,6 +2564,7 @@ function Hekili.Update()
                             Screenshot()
                         
                             HekiliDisplayPrimary.activeThread = nil
+                            return
                         end
                     end
                     break
