@@ -1,9 +1,9 @@
 ## Feral Druid
-## February 25, 2022
+## February 27, 2022
 
 ## Changes:
 ## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
-## - Convert BT pool_resource to wait expression.
+## - Convert BT pool_resource to wait expression (x2).
 ## - Add interruptible Fleshcraft if you have nothing else to do.
 ## - Don't hold Convoke for Rip unless you'll really Rip.
 
@@ -109,7 +109,8 @@ actions.owlweave+=/moonkin_form,if=energy<30&dot.rip.remains>4.5&(cooldown.tiger
 actions.setup=lunar_inspiration,if=covenant.necrolord&spell_targets.thrash_cat<4&combo_points<5&!ticking&!buff.bs_inc.up
 actions.setup+=/pool_resource,for_next=1
 actions.setup+=/savage_roar,if=talent.feral_frenzy.enabled&cooldown.feral_frenzy.up&!buff.savage_roar.up&combo_points>1&dot.rake.ticking&(dot.lunar_inspiration.ticking|!talent.lunar_inspiration.enabled)
-actions.setup+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
+## actions.setup+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
+actions.setup+=/wait,sec=((115-23*buff.incarnation_king_of_the_jungle.up)-(energy.current+3.5*energy.regen+(40*buff.clearcasting.up)))/energy.regen,if=talent.bloodtalons.enabled&buff.bloodtalons.down&active_bt_triggers=0
 actions.setup+=/call_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(combo_points<5|spell_targets.thrash_cat=1)
 actions.setup+=/call_action_list,name=cooldown
 actions.setup+=/call_action_list,name=finisher,strict=1,if=combo_points>3&(buff.bloodtalons.up|!talent.bloodtalons.enabled)

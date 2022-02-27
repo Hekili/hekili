@@ -498,6 +498,10 @@ do
         { "^!?contagion<=?(.-)",                    "contagion-%1" }, -- Affliction Warlock
 
         { "^time_to_imps%.(.+)$",                   "time_to_imps[%1]" }, -- Demo Warlock
+
+        { "^active_bt_triggers$",                   "time_to_bt_triggers(0)" }, -- Feral Druid w/ Bloodtalons.
+        { "^active_bt_triggers<?=0$",               "time_to_bt_triggers(0)" }, -- Feral Druid w/ Bloodtalons.
+        { "^active_bt_triggers<(%d+)$",             "time_to_bt_triggers(%1-1)" }, -- Feral Druid w/ Bloodtalons.
         
         { "^!?action%.([a-z0-9_]+)%.in_flight$",    "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
 
