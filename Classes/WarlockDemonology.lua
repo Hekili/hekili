@@ -10,6 +10,7 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
+local GetPlayerAuraBySpellID = _G.GetPlayerAuraBySpellID
 
 
 -- Conduits
@@ -253,7 +254,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             end
         
         elseif imps[ source ] and subtype == "SPELL_CAST_START" then
-            local demonic_power = GetPlayerAuraBySpellID( "player", 265273 )
+            local demonic_power = GetPlayerAuraBySpellID( 265273 )
             local now = GetTime()
 
             if not demonic_power then
