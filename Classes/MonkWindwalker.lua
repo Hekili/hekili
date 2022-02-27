@@ -224,11 +224,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             duration = 60,
             max_stack = 1,
         },
-        pressure_point = {
-            id = 337481,
-            duration = 5,
-            max_stack = 1,
-        },
         provoke = {
             id = 115546,
             duration = 8,
@@ -346,12 +341,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 247483,
             duration = 20,
             max_stack = 1
-        },
-
-        whirling_dragon_punch = {
-            id = 196742,
-            duration = function () return cooldown.rising_sun_kick.remains end,
-            max_stack = 1,
         },
 
         wind_waker = {
