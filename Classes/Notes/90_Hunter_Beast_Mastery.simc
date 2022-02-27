@@ -1,5 +1,5 @@
 ## Beast Mastery Hunter
-## February 24, 2022
+## February 25, 2022
 
 ## Changes:
 ## - Re-enable Barbed Shot Grace Period.
@@ -26,7 +26,7 @@ actions.cds+=/fireblood,if=cooldown.bestial_wrath.remains>30
 actions.cds+=/berserking,if=(buff.wild_spirits.up|!covenant.night_fae&buff.aspect_of_the_wild.up&buff.bestial_wrath.up)&(fight_remains>cooldown.berserking.duration+duration|(target.health.pct<35|!talent.killer_instinct))|boss&fight_remains<13
 actions.cds+=/blood_fury,if=(buff.wild_spirits.up|!covenant.night_fae&buff.aspect_of_the_wild.up&buff.bestial_wrath.up)&(fight_remains>cooldown.blood_fury.duration+duration|(target.health.pct<35|!talent.killer_instinct))|boss&fight_remains<16
 actions.cds+=/lights_judgment
-actions.cds+=/potion,if=buff.aspect_of_the_wild.up|fight_remains<26
+actions.cds+=/potion,if=buff.aspect_of_the_wild.up|boss&fight_remains<26
 
 actions.cleave=aspect_of_the_wild,if=!raid_event.adds.exists|raid_event.adds.remains>=10|active_enemies>=raid_event.adds.count*2
 actions.cleave+=/barbed_shot,cycle_targets=1,if=pet.main.buff.frenzy.up&pet.main.buff.frenzy.remains<=gcd+barbed_shot_grace_period|buff.wild_spirits.up&charges_fractional>1.4&runeforge.fragments_of_the_elder_antlers

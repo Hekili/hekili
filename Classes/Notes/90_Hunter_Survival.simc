@@ -1,5 +1,5 @@
 # Survival Hunter
-# February 21, 2022
+# February 25, 2022
 
 actions.precombat+=/variable,name=mb_rs_cost,op=setif,value=action.mongoose_bite.cost,value_else=action.raptor_strike.cost,condition=talent.mongoose_bite
 actions.precombat+=/summon_pet
@@ -40,7 +40,7 @@ actions.bop+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&(!runef
 # With Nessingwary's Trapping Apparatus only Kill Command if your traps are on cooldown, otherwise stop using Kill Command if your current focus amount is enough to sustain the amount of time left for any of your traps to come off cooldown
 actions.bop+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&runeforge.nessingwarys_trapping_apparatus&cooldown.freezing_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd)&cooldown.tar_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd)&(!talent.steel_trap|talent.steel_trap&cooldown.steel_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd))
 actions.bop+=/steel_trap,if=focus+cast_regen<focus.max
-actions.bop+=/serpent_sting,cycle_targets=1,if=dot.serpent_sting.refreshable&!buff.coordinated_assault.up
+actions.bop+=/serpent_sting,cycle_targets=1,if=dot.serpent_sting.refreshable&!buff.coordinated_assault.up|talent.alpha_predator&refreshable&!buff.mongoose_fury.up
 actions.bop+=/resonating_arrow
 actions.bop+=/wild_spirits
 actions.bop+=/coordinated_assault,if=!buff.coordinated_assault.up
@@ -67,16 +67,15 @@ actions.cds+=/raptor_strike,if=active_enemies=1&target.time_to_die<focus%(variab
 actions.cds+=/aspect_of_the_eagle,if=target.distance>=6
 
 actions.cleave=serpent_sting,cycle_targets=1,if=talent.hydras_bite.enabled&buff.vipers_venom.remains&buff.vipers_venom.remains<gcd
-actions.cleave+=/wild_spirits
-actions.cleave+=/resonating_arrow
-actions.cleave+=/coordinated_assault
+actions.cleave+=/wild_spirits,if=!raid_event.adds.exists|raid_event.adds.remains>=10|active_enemies>=raid_event.adds.count*2
+actions.cleave+=/resonating_arrow,if=!raid_event.adds.exists|raid_event.adds.remains>=8|active_enemies>=raid_event.adds.count*2
+actions.cleave+=/coordinated_assault,if=!raid_event.adds.exists|raid_event.adds.remains>=10|active_enemies>=raid_event.adds.count*2
 actions.cleave+=/wildfire_bomb,if=full_recharge_time<gcd
-actions.cleave+=/death_chakram,if=focus+cast_regen<focus.max&!runeforge.bag_of_munitions.equipped
+actions.cleave+=/death_chakram,if=(!raid_event.adds.exists|raid_event.adds.remains>5|active_enemies>=raid_event.adds.count*2)|focus+cast_regen<focus.max&!runeforge.bag_of_munitions.equipped
 actions.cleave+=/call_action_list,name=nta,strict=1,if=runeforge.nessingwarys_trapping_apparatus.equipped&focus<variable.mb_rs_cost
 actions.cleave+=/chakrams
 actions.cleave+=/butchery,if=dot.shrapnel_bomb.ticking&(dot.internal_bleeding.stack<2|dot.shrapnel_bomb.remains<gcd)
 actions.cleave+=/carve,if=dot.shrapnel_bomb.ticking&!set_bonus.tier28_2pc
-actions.cleave+=/death_chakram,if=focus+cast_regen<focus.max
 actions.cleave+=/butchery,if=charges_fractional>2.5&cooldown.wildfire_bomb.full_recharge_time>spell_targets%2
 actions.cleave+=/flanking_strike,if=focus+cast_regen<focus.max
 actions.cleave+=/carve,if=cooldown.wildfire_bomb.full_recharge_time>spell_targets%2
@@ -101,12 +100,12 @@ actions.nta=steel_trap
 actions.nta+=/freezing_trap,if=!buff.wild_spirits.remains|buff.wild_spirits.remains&cooldown.kill_command.remains
 actions.nta+=/tar_trap,if=!buff.wild_spirits.remains|buff.wild_spirits.remains&cooldown.kill_command.remains
 
-actions.st=death_chakram,if=focus+cast_regen<focus.max
+actions.st=death_chakram,if=focus+cast_regen<focus.max&(!raid_event.adds.exists|!raid_event.adds.up&raid_event.adds.duration+raid_event.adds.in<5)|raid_event.adds.up&raid_event.adds.remains>40
 actions.st+=/serpent_sting,cycle_targets=1,if=!dot.serpent_sting.ticking&target.time_to_die>7|buff.vipers_venom.up&buff.vipers_venom.remains<gcd
 actions.st+=/flayed_shot
-actions.st+=/resonating_arrow
-actions.st+=/wild_spirits
-actions.st+=/coordinated_assault,if=covenant.night_fae&cooldown.wild_spirits.remains|!covenant.night_fae|boss&time_to_die<30
+actions.st+=/resonating_arrow,if=!raid_event.adds.exists|!raid_event.adds.up&(raid_event.adds.duration+raid_event.adds.in<20|raid_event.adds.count=1)|raid_event.adds.up&raid_event.adds.remains>40|boss&time_to_die<10
+actions.st+=/wild_spirits,if=!raid_event.adds.exists|!raid_event.adds.up&raid_event.adds.duration+raid_event.adds.in<20|raid_event.adds.up&raid_event.adds.remains>20|boss&time_to_die<20
+actions.st+=/coordinated_assault,if=!raid_event.adds.exists|covenant.night_fae&cooldown.wild_spirits.remains|!covenant.night_fae&(!raid_event.adds.up&raid_event.adds.duration+raid_event.adds.in<30|raid_event.adds.up&raid_event.adds.remains>20|!raid_event.adds.up)|boss&time_to_die<30
 actions.st+=/kill_shot
 actions.st+=/flanking_strike,if=focus+cast_regen<focus.max
 actions.st+=/a_murder_of_crows
@@ -126,4 +125,4 @@ actions.st+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max
 actions.st+=/wildfire_bomb,if=runeforge.rylakstalkers_confounding_strikes.equipped
 actions.st+=/mongoose_bite,cycle_targets=1,if=buff.mongoose_fury.up|focus+action.kill_command.cast_regen>focus.max-15|dot.shrapnel_bomb.ticking|buff.wild_spirits.remains
 actions.st+=/raptor_strike,cycle_targets=1
-actions.st+=/wildfire_bomb,if=next_wi_bomb.volatile&dot.serpent_sting.ticking|next_wi_bomb.pheromone|next_wi_bomb.shrapnel&focus>50
+actions.st+=/wildfire_bomb,if=(next_wi_bomb.volatile&dot.serpent_sting.ticking|next_wi_bomb.pheromone|next_wi_bomb.shrapnel&focus>50)&!set_bonus.tier28_2pc
