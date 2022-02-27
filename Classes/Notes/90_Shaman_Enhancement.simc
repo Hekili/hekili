@@ -1,5 +1,5 @@
 ## Enhancement Shaman
-## February 21, 2022
+## February 25, 2022
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -16,7 +16,6 @@ actions=bloodlust
 actions+=/potion,if=boss&fight_remains<60
 # Interrupt
 actions+=/wind_shear
-actions+=/heart_essence
 actions+=/use_items
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
@@ -26,7 +25,7 @@ actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 actions+=/feral_spirit
 actions+=/fae_transfusion,if=(talent.ascendance.enabled|runeforge.doom_winds.equipped)&(soulbind.grove_invigoration|soulbind.field_of_blossoms|active_enemies=1)
 actions+=/ascendance,if=raid_event.adds.in>=90|active_enemies>1
-actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down&(raid_event.adds.in>=60|active_enemies>1)|buff.windfury_totem.down&(!runeforge.doom_winds.equipped|buff.doom_winds_debuff.up)
+actions+=/windfury_totem,line_cd=15,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down&(raid_event.adds.in>=60|active_enemies>1)|buff.windfury_totem.down&(!runeforge.doom_winds.equipped|buff.doom_winds_debuff.up)
 # If only one enemy, priority follows the 'single' action list.
 actions+=/call_action_list,name=single,strict=1,if=active_enemies=1
 # On multiple enemies, the priority follows the 'aoe' action list.
@@ -41,14 +40,14 @@ actions.aoe+=/crash_lightning,if=runeforge.doom_winds.equipped&buff.doom_winds.u
 actions.aoe+=/sundering,if=runeforge.doom_winds.equipped&buff.doom_winds.up
 actions.aoe+=/healing_stream_totem,if=runeforge.raging_vesper_vortex.equipped&talent.earth_shield.enabled&vesper_totem_heal_charges>0
 actions.aoe+=/earth_shield,if=runeforge.raging_vesper_vortex.equipped&talent.earth_shield.enabled&vesper_totem_heal_charges>0
-actions.aoe+=/fire_nova,if=active_dot.flame_shock>=6|(active_dot.flame_shock>=4&active_dot.flame_shock=active_enemies)
+actions.aoe+=/fire_nova,if=active_dot.flame_shock>=6|(active_dot.flame_shock>=4&active_dot.flame_shock>=cycle_enemies)
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/windstrike,if=runeforge.deeply_rooted_elements.equipped&buff.crash_lightning.up
 actions.aoe+=/stormstrike,if=runeforge.deeply_rooted_elements.equipped&buff.crash_lightning.up
-actions.aoe+=/lava_lash,cycle_targets=1,if=dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies&active_dot.flame_shock<6)
+actions.aoe+=/lava_lash,cycle_targets=1,if=dot.flame_shock.ticking&(active_dot.flame_shock<cycle_enemies&active_dot.flame_shock<6)
 actions.aoe+=/flame_shock,if=!ticking
-actions.aoe+=/flame_shock,cycle_targets=1,if=!talent.hailstorm.enabled&active_dot.flame_shock<active_enemies&active_dot.flame_shock<6
-actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock>=active_enemies|active_dot.flame_shock>=4)&buff.primordial_wave.up&buff.maelstrom_weapon.stack>=5
+actions.aoe+=/flame_shock,cycle_targets=1,if=!talent.hailstorm.enabled&active_dot.flame_shock<cycle_enemies&active_dot.flame_shock<6
+actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock>=cycle_enemies|active_dot.flame_shock>=4)&buff.primordial_wave.up&buff.maelstrom_weapon.stack>=5
 actions.aoe+=/frost_shock,if=buff.hailstorm.up
 actions.aoe+=/fae_transfusion,if=soulbind.grove_invigoration|soulbind.field_of_blossoms|runeforge.seeds_of_rampant_growth.equipped
 actions.aoe+=/crash_lightning,if=buff.crash_lightning.down&buff.primordial_wave.up&buff.maelstrom_weapon.stack<5
@@ -115,5 +114,5 @@ actions.single+=/ice_strike
 actions.single+=/fire_nova,if=active_dot.flame_shock
 actions.single+=/fleshcraft,if=soulbind.pustule_eruption
 actions.single+=/earth_elemental
-actions.single+=/flame_shock
+actions.single+=/flame_shock,if=settings.filler_shock
 actions.single+=/windfury_totem,if=buff.windfury_totem.remains<30
