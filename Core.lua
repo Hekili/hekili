@@ -1880,14 +1880,6 @@ function Hekili:ProcessHooks( dispName, packName )
         -- if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs (%.2fs).\n", action or "NO ACTION", wait or 60, state.offset + state.delay ) end
         if debug then self:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay ) end
 
-        if not debug and not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and InCombatLockdown() and state.level >= 50 then
-            Hekili.HasSnapped = true
-            hasSnapshotted = true
-
-            Hekili:MakeSnapshot( dispName, true )
-            return true
-        end
-
         if action then
             -- if debug then scripts:ImplantDebugData( slot ) end
 
@@ -1905,7 +1897,7 @@ function Hekili:ProcessHooks( dispName, packName )
             slot.resource_type = state.GetResourceType( action )
 
             for k,v in pairs( class.resources ) do
-                slot.resources[ k ] = state[ k ].current 
+                slot.resources[ k ] = state[ k ].current
             end                            
 
             if i < display.numIcons then
@@ -2414,27 +2406,19 @@ function Hekili.Update()
         
                 if debug then
                     Hekili:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay )
-                    if not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and InCombatLockdown() and state.level >= 50 then
-                        Hekili.ActiveDebug = true
-                        Hekili:MakeSnapshot( dispName, true )
-                        Hekili.HasSnapped = true
-
-                        HekiliDisplayPrimary.activeThread = nil
-                        return true
-                    end
                 end
         
                 Hekili:Yield( "Pre-Action" )
 
                 if action then
-                    -- if debug then scripts:ImplantDebugData( slot ) end                    
-        
                     slot.time = state.offset + wait
                     slot.exact_time = state.now + state.offset + wait
                     slot.delay = i > 1 and wait or ( state.offset + wait )
                     slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
                     slot.resources = slot.resources or {}
                     slot.depth = chosen_depth
+
+                    state.scriptID = slot.script
         
                     checkstr = checkstr and ( checkstr .. ':' .. action ) or action
         
@@ -2540,8 +2524,47 @@ function Hekili.Update()
                         checkstr = checkstr and ( checkstr .. ':' .. action ) or action
                         slot[n] = nil
                     end
+
+                    state.delay = 0
+
+                    if debug then
+                        local resInfo
+
+                        for k in orderedPairs( class.resources ) do
+                            local res = rawget( state, k )
+
+                            if res then
+                                local forecast = res.forecast and res.fcount and res.forecast[ res.fcount ]
+                                local final = "N/A"
+                                
+                                if forecast then
+                                    final = string.format( "%.2f @ [%d - %s] %.2f", forecast.v, res.fcount, forecast.e or "none", forecast.t - state.now - state.offset )
+                                end
+
+                                resInfo = ( resInfo and ( resInfo .. ", " ) or "" ) .. string.format( "%s[ %.2f / %.2f || %s ]", k, res.current, res.max, final )
+                            end
+
+                            if resInfo then resInfo = "Resources: " .. resInfo end
+                        end
+
+                        if resInfo then
+                            Hekili:Debug( resInfo )
+                        end
+                    else
+                        if not Hekili.HasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 50 then
+                            Hekili.HasSnapped = true
+
+                            Hekili:Print( "Triggering auto-snapshot..." )
+                            Hekili.ActiveDebug = true
+                            Hekili.Update()
+                            Hekili.ActiveDebug = false
+                            Screenshot()
+                        
+                            HekiliDisplayPrimary.activeThread = nil
+                        end
+                    end
+                    break
                 end
-        
             end
 
             UI.NewRecommendations = checkstr ~= UI.RecommendationsStr
@@ -2555,6 +2578,7 @@ function Hekili.Update()
 
             if debug then
                 Hekili:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
+
                 if Hekili:SaveDebugSnapshot( dispName ) then
                     if snaps then
                         snaps = snaps .. ", " .. dispName

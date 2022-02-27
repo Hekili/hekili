@@ -490,14 +490,12 @@ local displayTemplate = {
 
 
 local actionTemplate = {
-    enabled = true,
-    action = "wait",
+    enabled = false,
     criteria = "",
     caption = "",
     description = "",
 
     -- Shared Modifiers
-    chain = 0,  -- NYI
     early_chain_if = "",  -- NYI
 
     cycle_targets = 0,
@@ -510,8 +508,8 @@ local actionTemplate = {
 
     travel_speed = nil,
 
-    line_cd = 0,
-    moving = 0,
+    enable_moving = false,
+    moving = nil,
     sync = "",
 
     use_while_casting = 0,
@@ -520,12 +518,12 @@ local actionTemplate = {
     wait_on_ready = 0, -- NYI
 
     -- Call/Run Action List
-    list_name = "default",
+    list_name = nil,
     strict = nil,
 
     -- Pool Resource
     wait = "0.5",
-    for_next = 1,
+    for_next = 0,
     extra_amount = "0",
 
     -- Potion
@@ -540,7 +538,7 @@ local actionTemplate = {
     var_name = "unnamed",
 
     -- Wait
-    sec = 1,
+    sec = "1",
 }
 
 
@@ -551,15 +549,17 @@ local packTemplate = {
     author = UnitName("player"),
     desc = "This is a package of action lists for Hekili.",
     source = "",
-    date = date("%Y-%m-%d %H:%M"),
+    date = tonumber( date("%Y%M%D.%H%M") ),
     warnings = "",
 
     hidden = false,
 
     lists = {
         precombat = {
+            ['**'] = actionTemplate,
         },
         default = {
+            ['**'] = actionTemplate,
         },
     }
 }
@@ -6649,7 +6649,7 @@ do
                                                     multiline = 6,
                                                     dialogControl = "HekiliCustomEditor",
                                                     arg = function( info )
-                                                        local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )        
+                                                        local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
                                                         local results = {}
 
                                                         state.reset()

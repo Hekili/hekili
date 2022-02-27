@@ -163,6 +163,8 @@ local HekiliSpecMixin = {
             inactive_regen = 0,
             last_tick = 0,
 
+            swingGen = false,
+
             add = function( amt, overcap )
                 -- Bypasses forecast, useful in hooks.
                 if overcap then r.state.amount = r.state.amount + amt
@@ -192,6 +194,10 @@ local HekiliSpecMixin = {
 
                 if v.channel then
                     self.resourceAuras[ v.resource ].casting = true
+                end
+
+                if v.swing then
+                    r.state.swingGen = true
                 end
             end
         end
@@ -2469,6 +2475,14 @@ all:RegisterAbilities( {
         usable = function () return args.buff_name ~= nil, "no buff name detected" end,
         timeToReady = function () return gcd.remains end,
         handler = function ()
+            local cancel = args.buff_name and buff[ args.buff_name ]
+            cancel = cancel and rawget( cancel, "onCancel" )
+
+            if cancel then
+                cancel()
+                return
+            end
+
             removeBuff( args.buff_name )
         end,
     },

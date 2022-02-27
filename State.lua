@@ -1245,6 +1245,7 @@ end
 local FORECAST_DURATION = 10.01
 
 local function forecastResources( resource )
+
     if not resource then return end
 
     wipe( events )
@@ -1253,9 +1254,12 @@ local function forecastResources( resource )
     local now = state.now + state.offset -- roundDown( state.now + state.offset, 2 )
 
     local timeout = FORECAST_DURATION * state.haste -- roundDown( FORECAST_DURATION * state.haste, 2 )
+    
     if state.class.file == "DEATHKNIGHT" and state.runes then
         timeout = max( timeout, 0.01 + 2 * state.runes.cooldown )
     end
+
+    timeout = timeout + state.gcd.remains
 
     local r = state[ resource ]
 
@@ -1321,7 +1325,11 @@ local function forecastResources( resource )
 
             local bonus = r.regen * ( now - prev )
 
-            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < now ) or ( e.channel and state.buff.casting.expires < now ) then
+            local stop = e.stop and e.stop( r.forecast[ r.fcount ].v )
+            local aura = e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < now
+            local channel = ( e.channel and state.buff.casting.expires < now ) 
+
+            if stop or aura or channel then
                 table.remove( events, 1 )
 
                 local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
@@ -1394,6 +1402,15 @@ ns.forecastResources = forecastResources
 state.forecastResources = forecastResources
 
 Hekili:ProfileCPU( "forecastResources", forecastResources )
+
+
+function state:ForecastSwingbasedResources()
+    for k, v in pairs( class.resources ) do
+        if v and v.state and v.state.swingGen then
+            forecastResources( k )
+        end
+    end
+end
 
 
 local resourceChange = function( amount, resource, overcap )
@@ -2508,7 +2525,7 @@ local mt_target = {
 
         elseif k == "unit" then
             if state.args.cycle_target == 1 then return UnitGUID( "target" ) .. "c" or "cycle"
-            elseif state.args.target then return UnitGUID( "target" ) .. '+' .. state.args.target or "unknown" end
+            elseif state.args.target then return ( UnitGUID( "target" ) .. '+' .. state.args.target ) or "unknown" end
             return UnitGUID( "target" ) or "unknown"
 
         elseif k == "class" then
@@ -2956,6 +2973,9 @@ local mt_gcd = {
 
         elseif k == "remains" then
             return state.cooldown.global_cooldown.remains
+        
+        elseif k == "expires" then
+            return state.cooldown.global_cooldown.expires
 
         elseif k == "max" or k == "duration" then
             if UnitPowerType( "player" ) == Enum.PowerType.Energy then
@@ -5576,16 +5596,10 @@ function state:RunHandler( key, noStart )
     self.prev_gcd.override = nil
     self.prev_off_gcd.override = nil
 
-    if self.time == 0 and ability.startsCombat and not ability.isProjectile and not noStart then
-        self.false_start = self.query_time - 0.01
-
-        ns.callHook( "runHandler_startCombat", key )
-
+    if self.combat == 0 and ability.startsCombat and not ability.isProjectile and not noStart then
         -- Assume MH swing at combat start and OH swing half a swing later?
-        if self.target.distance < 8 then
-            if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = 0.01 + self.query_time - self.swings.mainhand_speed end
-            if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = 0.01 + self.query_time - ( self.swings.offhand_speed / 2 ) end
-        end
+        self:StartCombat()
+        ns.callHook( "runHandler_startCombat", key )
     end
 
     -- state.cast_start = 0
@@ -6036,11 +6050,23 @@ end
 
 
 function state:StartCombat()
-    self.false_start = self.query_time - 0.01
-    -- The only hook that should be called here doesn't presently work as expected, so we'll save a CPU cycle.
-    -- ns.callHook( "start_combat" )
-    if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = self.false_start end
-    if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = self.false_start + ( self.swings.offhand_speed / 2 ) end
+    if self.combat == 0 then
+        self.false_start = self.query_time - 0.01
+    end
+
+    local swing = false
+
+    if self.swings.mainhand == 0 and self.swings.mainhand_speed > 0 then
+        self.swings.mh_pseudo = self.false_start or self.query_time
+        swing = true
+    end
+
+    if self.swings.offhand == 0 and self.swings.offhand_speed > 0 then
+        self.swings.oh_pseudo = ( self.false_start or self.query_time ) + ( self.swings.offhand_speed / 2 )
+        swing = true
+    end
+
+    if swing then self:ForecastSwingbasedResources() end
 end
 
 
