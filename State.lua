@@ -509,6 +509,8 @@ setmetatable( state.trinket.has_stacking_stat, mt_trinkets_has_stacking_stat )
 
 state.max = safeMax
 state.min = safeMin
+state.abs = safeAbs
+
 state.print = print
 
 state.Enum = Enum

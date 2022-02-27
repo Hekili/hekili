@@ -249,6 +249,13 @@ function ns.safeMax( ... )
 end
 
 
+function ns.safeAbs( val )
+    val = tonumber( val )
+    if val < 0 then return -val end
+    return val
+end
+
+
 -- Rivers' iterator for group members.
 function ns.GroupMembers( reversed, forceParty )
     local unit = ( not forceParty and IsInRaid() ) and 'raid' or 'party'
