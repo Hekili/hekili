@@ -1,5 +1,5 @@
 ## Retribution Paladin
-## February 12, 2022
+## February 25, 2022
 
 ## Changes:
 ## - Integrate new priority split from SimC.
@@ -11,15 +11,15 @@ actions.precombat+=/blessing_of_winter
 actions.precombat+=/blessing_of_spring
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/arcane_torrent,if=talent.final_reckoning.enabled&talent.seraphim.enabled
+actions.precombat+=/shield_of_vengeance
 
- 
 ## Executed every time the actor is available.
 actions=rebuke
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=es_fr_pooling,if=(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in<9|raid_event.adds.in>30)&(talent.execution_sentence&cooldown.execution_sentence.remains<9&spell_targets.divine_storm<5|talent.final_reckoning&cooldown.final_reckoning.remains<9)&target.time_to_die>8
 actions+=/call_action_list,name=es_fr_active,strict=1,if=debuff.execution_sentence.up|debuff.final_reckoning.up
 actions+=/call_action_list,name=generators
- 
+
 actions.cooldowns=potion,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10|boss&fight_remains<25
 actions.cooldowns+=/lights_judgment,if=spell_targets.lights_judgment>=2|!raid_event.adds.exists|raid_event.adds.in>75|raid_event.adds.up
 actions.cooldowns+=/fireblood,if=(buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10)&!talent.execution_sentence
@@ -42,20 +42,20 @@ actions.cooldowns+=/use_item,name=spare_meat_hook
 actions.cooldowns+=/use_item,name=salvaged_fusion_amplifier
 actions.cooldowns+=/use_item,name=giant_ornamental_pearl
 actions.cooldowns+=/use_item,name=windscar_whetstone
-actions.cooldowns+=/use_item,name=unchained_gladiators_badge_of_ferocity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
-actions.cooldowns+=/use_item,name=unchained_aspirants_badge_of_ferocity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
-actions.cooldowns+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
-actions.cooldowns+=/use_item,name=sinful_aspirants_badge_of_ferocity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
+actions.cooldowns+=/use_item,name=scars_of_fraternal_strife
+actions.cooldowns+=/use_item,name=chains_of_domination
+actions.cooldowns+=/use_item,name=earthbreakers_impact
+actions.cooldowns+=/use_item,name=heart_of_the_swarm,if=!buff.avenging_wrath.up&buff.crusade.up
+actions.cooldowns+=/use_item,name=gladiators_badge,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
 actions.cooldowns+=/use_items,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10
 actions.cooldowns+=/avenging_wrath,if=(holy_power>=4&time<5|holy_power>=3&(time>5|runeforge.the_magistrates_judgment)|holy_power>=2&runeforge.vanguards_momentum&talent.final_reckoning|talent.holy_avenger&cooldown.holy_avenger.remains=0)&(!talent.seraphim|!talent.final_reckoning|cooldown.seraphim.remains>0)
 actions.cooldowns+=/crusade,if=holy_power>=4&time<5|holy_power>=3&time>5
 actions.cooldowns+=/ashen_hallow
 actions.cooldowns+=/holy_avenger,if=time_to_hpg=0&holy_power<=2&(buff.avenging_wrath.up|talent.crusade&(cooldown.crusade.remains=0|buff.crusade.up)|boss&fight_remains<20)
 actions.cooldowns+=/final_reckoning,if=(holy_power>=4&time<8|holy_power>=3&(time>=8|spell_targets.divine_storm>=2&covenant.kyrian))&cooldown.avenging_wrath.remains>gcd&time_to_hpg=0&(!talent.seraphim|buff.seraphim.up)&(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in>40)&(!buff.avenging_wrath.up|holy_power=5|cooldown.hammer_of_wrath.remains|spell_targets.divine_storm>=2&covenant.kyrian)
-actions.cooldowns=seraphim,if=holy_power=5&(!talent.final_reckoning|cooldown.final_reckoning.remains<=gcd*3|cooldown.final_reckoning.remains>cooldown)&(!talent.execution_sentence|cooldown.execution_sentence.remains<=gcd*3|cooldown.execution_sentence.remains>cooldown|talent.final_reckoning)&(!covenant.kyrian|cooldown.divine_toll.remains<9|cooldown.divine_toll.remains>cooldown)
 
 actions.es_fr_active=fireblood
-actions.es_fr_active+=/call_action_list,name=finishers,if=debuff.judgment.up|debuff.final_reckoning.up&(debuff.final_reckoning.remains<gcd.max|spell_targets.divine_storm>=2&!talent.execution_sentence)|debuff.execution_sentence.up&debuff.execution_sentence.remains<gcd.max
+actions.es_fr_active+=/call_action_list,name=finishers,if=holy_power=5|debuff.judgment.up|debuff.final_reckoning.up&(debuff.final_reckoning.remains<gcd.max|spell_targets.divine_storm>=2&!talent.execution_sentence)|debuff.execution_sentence.up&debuff.execution_sentence.remains<gcd.max
 actions.es_fr_active+=/divine_toll
 actions.es_fr_active+=/vanquishers_hammer
 actions.es_fr_active+=/wake_of_ashes,if=holy_power<=2&(debuff.final_reckoning.up&debuff.final_reckoning.remains<gcd*2&!runeforge.divine_resonance|debuff.execution_sentence.up&debuff.execution_sentence.remains<gcd|spell_targets.divine_storm>=5&runeforge.divine_resonance&talent.execution_sentence)
@@ -70,9 +70,11 @@ actions.es_fr_active+=/crusader_strike
 actions.es_fr_active+=/arcane_torrent
 actions.es_fr_active+=/consecration
 
+actions.es_fr_pooling=seraphim,if=holy_power=5&(!talent.final_reckoning|cooldown.final_reckoning.remains<=gcd*3|cooldown.final_reckoning.remains>cooldown)&(!talent.execution_sentence|cooldown.execution_sentence.remains<=gcd*3|cooldown.execution_sentence.remains>cooldown|talent.final_reckoning)&(!covenant.kyrian|cooldown.divine_toll.remains<9|cooldown.divine_toll.remains>cooldown)
 actions.es_fr_pooling+=/call_action_list,name=finishers,if=holy_power=5|debuff.final_reckoning.up|buff.crusade.up&buff.crusade.stack<10
 actions.es_fr_pooling+=/vanquishers_hammer,if=buff.seraphim.up
 actions.es_fr_pooling+=/hammer_of_wrath,if=runeforge.vanguards_momentum
+actions.es_fr_pooling+=/wake_of_ashes,if=holy_power<=2&set_bonus.tier28_4pc
 actions.es_fr_pooling+=/blade_of_justice,if=holy_power<=3
 actions.es_fr_pooling+=/judgment,if=!debuff.judgment.up
 actions.es_fr_pooling+=/hammer_of_wrath
@@ -93,7 +95,8 @@ actions.finishers+=/templars_verdict,if=(!talent.crusade|cooldown.crusade.remain
 actions.generators=call_action_list,name=finishers,if=holy_power=5|(debuff.judgment.up|holy_power=4)&buff.divine_resonance.up|buff.holy_avenger.up
 actions.generators+=/vanquishers_hammer,if=!runeforge.dutybound_gavel|!talent.final_reckoning&!talent.execution_sentence|fight_remains<8
 actions.generators+=/hammer_of_wrath,if=runeforge.the_mad_paragon|covenant.venthyr&cooldown.ashen_hallow.remains>210
-actions.generators+=/divine_toll,if=!debuff.judgment.up&(!talent.seraphim|buff.seraphim.up)&(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)&!talent.final_reckoning&(!talent.execution_sentence|fight_remains<8|spell_targets.divine_storm>=5)&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)
+actions.generators+=/wake_of_ashes,if=holy_power<=2&set_bonus.tier28_4pc&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)
+actions.generators+=/divine_toll,if=holy_power<=1&!debuff.judgment.up&(!talent.seraphim|buff.seraphim.up)&(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)&!talent.final_reckoning&(!talent.execution_sentence|fight_remains<8|spell_targets.divine_storm>=5)&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)
 actions.generators+=/judgment,if=!debuff.judgment.up&(holy_power>=1&runeforge.the_magistrates_judgment|holy_power>=2)
 actions.generators+=/wake_of_ashes,if=(holy_power=0|holy_power<=2&cooldown.blade_of_justice.remains>gcd*2)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)&(!talent.seraphim|cooldown.seraphim.remains>5|covenant.kyrian)&(!talent.execution_sentence|cooldown.execution_sentence.remains>15|target.time_to_die<8|spell_targets.divine_storm>=5)&(!talent.final_reckoning|cooldown.final_reckoning.remains>15|fight_remains<8)&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)
 actions.generators+=/call_action_list,name=finishers,if=holy_power>=3&buff.crusade.up&buff.crusade.stack<10
