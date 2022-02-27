@@ -2427,7 +2427,7 @@ do
                 self:SetMovable( true )
 
             else ]]
-            if ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
+            if ( H.Pause and ( not HekiliDisplayPrimary.activeThread or state.display ~= dispID ) and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
                 H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
             end
         end )
@@ -2655,15 +2655,12 @@ local key_cache = setmetatable( {}, {
 
 
 function Hekili:ShowDiagnosticTooltip( q )
-    -- These recommendation slots aren't safe mid-thread.
-    if HekiliDisplayPrimary.activeThread then return end
-
     local tt = GameTooltip
     local fmt = ns.lib.Format
 
-    tt:SetOwner(UIParent, "ANCHOR_CURSOR")
+    tt:SetOwner( UIParent, "ANCHOR_CURSOR" )
     tt:SetText( class.abilities[ q.actionName ].name )
-    tt:AddDoubleLine(q.listName .. " #" .. q.action, "+" .. ns.formatValue(round(q.time or 0, 2)), 1, 1, 1, 1, 1, 1)
+    tt:AddDoubleLine( q.listName .. " #" .. q.action, "+" .. ns.formatValue(round(q.time or 0, 2)), 1, 1, 1, 1, 1, 1 )
 
     if q.resources and q.resources[q.resource_type] then
         tt:AddDoubleLine(q.resource_type, ns.formatValue(q.resources[q.resource_type]), 1, 1, 1, 1, 1, 1)
