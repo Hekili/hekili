@@ -56,8 +56,8 @@ actions+=/call_action_list,name=racials
 actions+=/call_action_list,name=cooldowns
 actions+=/run_action_list,name=aoe_setup,if=variable.adds_remain&(cooldown.death_and_decay.remains<10&!talent.defile|cooldown.defile.remains<10&talent.defile|covenant.night_fae&cooldown.deaths_due.remains<10)&!death_and_decay.ticking
 actions+=/run_action_list,name=aoe_burst,strict=1,if=active_enemies>=2&death_and_decay.ticking
-actions+=/run_action_list,name=generic_aoe,if=active_enemies>=2&(!death_and_decay.ticking&(cooldown.death_and_decay.remains>10&!talent.defile|cooldown.defile.remains>10&talent.defile|covenant.night_fae&cooldown.deaths_due.remains>10))
-actions+=/call_action_list,name=generic,strict=1,if=active_enemies=1
+actions+=/run_action_list,name=generic_aoe,if=active_enemies>=2&!death_and_decay.ticking&(!variable.adds_remain|cooldown.death_and_decay.remains>10&!talent.defile|cooldown.defile.remains>10&talent.defile|covenant.night_fae&cooldown.deaths_due.remains>10)
+actions+=/call_action_list,name=generic,if=active_enemies=1
 
 ## AoE Burst
 actions.aoe_burst=clawing_shadows,if=active_enemies<=5
