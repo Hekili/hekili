@@ -2554,7 +2554,7 @@ function Hekili.Update()
                             Hekili:Debug( resInfo )
                         end
                     else
-                        if not Hekili.HasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 50 then
+                        if not Hekili.HasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 50 and ( dispName == "Primary" or dispName == "AOE" ) then
                             Hekili.HasSnapped = true
 
                             Hekili:Print( "Triggering auto-snapshot..." )
