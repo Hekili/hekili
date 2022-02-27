@@ -5200,7 +5200,8 @@ do
         elseif option == 'newListName' then return packControl.newListName end
 
         if not data then return end
-        data = data[ actionID ]
+        data = data[ actionID ] or data[ 1 ]
+        packControl.actionID = "0001"
 
         if option == "inputName" or option == "selectName" then
             option = nameMap[ data.action ]
