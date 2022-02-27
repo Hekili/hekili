@@ -640,7 +640,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         copy = "your_shadow",
         meta = {
             summonTime = function( t ) return t.applied end,
-        }
+        },
     } )
 
     rawset( state.pet, "your_shadow", state.buff.living_shadow )
