@@ -60,7 +60,7 @@ local specTemplate = {
     combatRefresh = 0.1,
 
     throttleTime = false,
-    maxTime = 33,
+    maxTime = 10,
 
     -- Toggles
     custom1Name = "Custom 1",

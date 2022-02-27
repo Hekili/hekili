@@ -4979,12 +4979,12 @@ do
                                     name = NewFeature .. " Regular Refresh Interval",
                                     desc = "In the absence of combat events, this addon will allow itself to update according to the specified interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though " ..
                                         "combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1001.0|rs, the addon will not provide new updates until 1 second after its last update (unless forced by a combat event).\n\n" ..
-                                        "Default value:  |cffffd1000.1|rs.",
+                                        "Default value:  |cffffd1000.5|rs.",
                                     order = 1.1,
                                     width = 1.5,
                                     min = 0.05,
-                                    max = 0.5,
-                                    step = 1,
+                                    max = 1,
+                                    step = 0.05,
                                     hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
                                 },
 
@@ -4993,12 +4993,12 @@ do
                                     name = NewFeature .. " Combat Refresh Interval",
                                     desc = "When routine combat events occur, the addon will update more frequently than its Regular Refresh Interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though " ..
                                         "critical combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1000.2|rs, the addon will not provide new updates until 0.2 seconds after its last update (unless forced by a critical combat event).\n\n" ..
-                                        "Default value:  |cffffd1000.5|rs.",
+                                        "Default value:  |cffffd1000.1|rs.",
                                     order = 1.2,
                                     width = 1.5,
                                     min = 0.05,
                                     max = 0.5,
-                                    step = 1,
+                                    step = 0.05,
                                     hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
                                 },
 
