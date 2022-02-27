@@ -282,7 +282,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 119996,
         },
         whirling_dragon_punch = {
-            id = 152175,
+            id = 196742,
             duration = function () return action.rising_sun_kick.cooldown end,
             max_stack = 1,
         },
