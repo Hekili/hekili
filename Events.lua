@@ -932,8 +932,6 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
         state.combat = GetTime() - 0.01
     end
 
-    Hekili.HasSnapped = false -- some would disagree.
-    
     if Hekili.Config and not LibStub( "AceConfigDialog-3.0" ).OpenFrames[ "Hekili" ] then
         ns.StopConfiguration()
         Hekili:UpdateDisplayVisibility()
@@ -952,7 +950,6 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
 
-    Hekili.HasSnapped = false -- allows the addon to autosnapshot again if preference is set.
     Hekili:ReleaseHolds( true )
 end )
 

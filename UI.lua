@@ -1054,13 +1054,13 @@ do
                         local ok, err = coroutine.resume( thread )
                         if not ok then
                             Hekili:Error( "Update: " .. err )
-                            error( err )
+                            pcall( error, err )
                         end
                         local now = debugprofilestop()
                         
                         self.activeThreadTime = self.activeThreadTime + ( now - start )
     
-                        if coroutine.status( thread ) == "dead" then
+                        if coroutine.status( thread ) == "dead" or err then
                             self.activeThread = nil
                             self.refreshTimer = 0
 
@@ -1106,6 +1106,10 @@ do
                             else
                                 self.firstThreadCompleted = true
                             end
+                        end
+
+                        if ok and err == "AutoSnapshot" then
+                            Hekili:MakeSnapshot( true )
                         end
                     end
                 end

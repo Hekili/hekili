@@ -8414,7 +8414,7 @@ end
 
 function Hekili:GetOptions()
     local Options = {
-        name = "Hekili",
+        name = "Hekili " .. Hekili.Version,
         type = "group",
         handler = Hekili,
         get = 'GetOption',
@@ -10576,9 +10576,7 @@ function Hekili:TogglePause( ... )
     Hekili.btns = ns.UI.Buttons
 
     if not self.Pause then
-        self.ActiveDebug = true
-        Hekili.Update()
-        self.ActiveDebug = false
+        self:MakeSnapshot()
         self.Pause = true
 
         --[[ if self:SaveDebugSnapshot() then
@@ -10595,9 +10593,7 @@ function Hekili:TogglePause( ... )
         self.ActiveDebug = false
 
         -- Discard the active update thread so we'll definitely start fresh at next update.
-        if HekiliDisplayPrimary and HekiliDisplayPrimary.activeThread then
-            HekiliDisplayPrimary.activeThread = nil
-        end
+        Hekili:ForceUpdate( "TOGGLE_PAUSE", true )
     end
 
     local MouseInteract = self.Pause or self.Config
@@ -10617,7 +10613,7 @@ end
 
 
 -- Key Bindings
-function Hekili:MakeSnapshot( dispName, isAuto )
+function Hekili:MakeSnapshot( isAuto )
     if isAuto and not Hekili.DB.profile.autoSnapshot then
         return
     end

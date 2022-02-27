@@ -3,18 +3,19 @@
 
 local addon, ns = ...
 Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
-Hekili.Version = GetAddOnMetadata("Hekili", "Version")
-
-if Hekili.Version == ( "@" .. "project-version" .. "@" ) then Hekili.Version = "Development-" .. date("%Y%m%d" ) end
-
-Hekili.AllowSimCImports = true
+Hekili.Version = GetAddOnMetadata( "Hekili", "Version" )
 
 local format = string.format
 local upper  = string.upper
 
+if Hekili.Version == ( "@" .. "project-version" .. "@" ) then
+    Hekili.Version = format( "Dev-%s (%s)", GetBuildInfo(), date( "%Y%m%d" ) )
+end
+
+Hekili.AllowSimCImports = true
 
 Hekili.IsClassic = function() return ( WOW_PROJECT_ID == WOW_PROJECT_CLASSIC ) or ( WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC ) end
-ns.PTR = select( 4, GetBuildInfo() ) > 90100
+ns.PTR = select( 4, GetBuildInfo() ) > 90200
 
 
 ns.Patrons = "Abom, Abra, Abuna, Aern, Aggronaught, akh270, Alasha, alcaras, Amera, ApexPlatypus, aphoenix, Archxlock, Aristocles, aro725, Artoo, Ash, av8ordoc, Battle Hermit VIA, Belatar, Borelia, Brangeddon, Bsirk/Kris, Cele, Chimmi, Coan, Cortland, Daz, DB, Der Baron, Dez, Drako, Enemy, Eryx, fuon, Garumako, Graemec, Grayscale, guhbjs, Hambrick, Hexel, Himea, Hollaputt, Hungrypilot, Ifor, Ingrathis, intheyear, Jacii, jawj, Jenkz, Katurn, Kingreboot, Kittykiller, Lagertha, Leorus, Loraniden, Lord Corn, Lovien, Manni, Mirando, mr. jing0, Mr_Hunter, MrBean73, mrminus, Muffin, Mumrikk, Nelix, neurolawl, Nighteyez, nomiss, nqrse, Orcodamus, Parameshvar, Rage, Ramen, Ramirez (Jon), Rebdull, Ridikulus0510, rockschtar, Roodie, Rusah, Samuraiwillz501, sarrge, Sarthol, Scerick, Sebstar, Seniroth, seriallos, Shakeykev, Shuck, Skeletor, Slem, Spaten, Spy, Srata, Stevi, Strozzy, Tekfire, Tevka, Theda99, Thordros, Tic[Ã ]sentence, Tobi, todd, Torsti, tsukari, Tyazrael, Ulti.DTY, Val (Valdrath), Vaxum, Vsmit, Wargus (Shagus), Weedwalker, WhoaIsJustin, Wonder, zab, Zarggg, and zarrin-zuljin"
