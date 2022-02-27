@@ -112,29 +112,17 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         shards_for_guldan = UnitPower( "player", Enum.PowerType.SoulShards )
     end
 
-    local first_tyrant_actual = 0
 
-    -- This defaults to 10 seconds in the sim profile, but we could be starting combat with SDT on cooldown in-game.
-    spec:RegisterStateExpr( "first_tyrant_time", function ()
-        if action.summon_demonic_tyrant.realCast > 0 then
+    spec:RegisterStateExpr( "first_tyrant_time", function()
+        local last = action.summon_demonic_tyrant.lastCast
+        if last > combat then return last - combat end
+        return max( 10, time + cooldown.summon_demonic_tyrant.remains_expected )
+    end )
 
-        end
-
-        local cast = first_tyrant_actual
-        local sdt = cooldown.summon_demonic_tyrant
-
-        -- Not in combat.
-        if combat == 0 then
-            -- SDT is on cooldown, so it was cast precombat.
-            if sdt.true_remains > 0 then
-                return max( 10, time + sdt.remains_expected )
-            end
-            -- Use default value.
-            return 10
-        end
-
-        -- In combat.
-        return max( 10, time + sdt.remains_expected )
+    spec:RegisterStateExpr( "in_opener", function()
+        if action.summon_demonic_tyrant.lastCast > state.combat then return false end
+        if cooldown.summon_demonic_tyrant.remains_expected <= 10 then return true end
+        return false
     end )
 
 
@@ -252,8 +240,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                     if shards_for_guldan >= 2 then table.insert( guldan, now + 0.8 ) end
                     if shards_for_guldan >= 3 then table.insert( guldan, now + 1 ) end
 
-                -- Summon Demonic Tyrant.
-                elseif spellID == 265187 and first_tyrant_cast == 0 then first_tyrant_cast = now end
+                end
             end
         
         elseif imps[ source ] and subtype == "SPELL_CAST_START" then
@@ -1774,7 +1761,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 applyBuff( "demonic_power", 15 )
 
                 extend_demons()
-                if time > first_tyrant_time then first_tyrant_time = query_time end
 
                 if level > 57 or azerite.baleful_invocation.enabled then gain( 5, "soul_shards" ) end
             end,
