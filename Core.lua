@@ -289,6 +289,7 @@ end
 
 function Hekili:PopStack()
     local x = tremove( Stack, #Stack )
+    if not x then return end
 
     if self.ActiveDebug then
         if x.run then
