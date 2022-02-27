@@ -1,5 +1,5 @@
 ## Feral Druid
-## February 22, 2022
+## February 25, 2022
 
 ## Changes:
 ## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
@@ -23,6 +23,8 @@ actions+=/call_action_list,name=owlweave,strict=1,if=druid.owlweave_cat
 actions+=/prowl
 actions+=/tigers_fury,if=buff.cat_form.down
 actions+=/cat_form,if=buff.cat_form.down
+## actions+=/variable,name=shortest_ttd,value=target.time_to_die
+## actions+=/cycling_variable,name=shortest_ttd,op=min,value=target.time_to_die
 # One shot stealth
 actions+=/run_action_list,name=stealth,strict=1,if=buff.shadowmeld.up|buff.prowl.up
 actions+=/skull_bash
@@ -36,8 +38,8 @@ actions+=/primal_wrath,if=druid.primal_wrath.ticks_gained_on_refresh>=20&combo_p
 actions+=/call_action_list,name=stealth,strict=1,if=buff.bs_inc.up
 # The most expensive BT cycle (Thresh Shred Swipe cost 115 energy, make sure we can make that in 4 globals)
 actions+=/wait,sec=((115-23*buff.incarnation_king_of_the_jungle.up)-(energy.current+3.5*energy.regen+(40*buff.clearcasting.up)))/energy.regen,if=talent.bloodtalons.enabled&buff.bloodtalons.down&active_bt_triggers=0
-# actions+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
-actions+=/run_action_list,name=bloodtalons,strict=1,if=talent.bloodtalons.enabled&buff.bloodtalons.down
+## actions+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
+actions+=/run_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down
 actions+=/ferocious_bite,cycle_targets=1,if=buff.apex_predators_craving.up
 actions+=/pool_resource,for_next=1
 actions+=/rake,cycle_targets=1,if=(refreshable|persistent_multiplier>dot.rake.pmultiplier)&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
@@ -49,7 +51,6 @@ actions+=/brutal_slash,if=(raid_event.adds.in>(1+max_charges-charges_fractional)
 actions+=/swipe_cat,if=spell_targets.swipe_cat>1+buff.bs_inc.up*2
 actions+=/thrash_cat,if=spell_targets.thrash_cat>3
 actions+=/shred,if=buff.clearcasting.up&(buff.sudden_ambush.down&buff.shadowmeld.down|buff.bs_inc.up)
-actions+=/rake,cycle_targets=1,if=buff.bs_inc.up&druid.rake.ticks_gained_on_refresh>2
 actions+=/call_action_list,name=filler
 
 actions.bloodtalons=rake,cycle_targets=1,if=(!ticking|(1.2*persistent_multiplier>=dot.rake.pmultiplier)|(active_bt_triggers=2&refreshable))&buff.bt_rake.down
@@ -65,7 +66,7 @@ actions.cooldown=adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.
 ## actions.cooldown+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 # Cast Tiger's Fury before (or immediatly after) casting Feral Frenzy if Berserk is NOT on cooldown.
 actions.cooldown+=/tigers_fury,sync=feral_frenzy,if=cooldown.bs_inc.up
-actions.cooldown+=/feral_frenzy,cycle_targets=1,if=combo_points<3&target.time_to_die>7&(buff.savage_roar.up|!talent.savage_roar.enabled)&(!cooldown.tigers_fury.up|cooldown.bs_inc.up)|fight_remains<8&fight_remains>2
+actions.cooldown+=/feral_frenzy,cycle_targets=1,if=combo_points<3&target.time_to_die>7&(buff.savage_roar.up|!talent.savage_roar.enabled)&(!cooldown.tigers_fury.up|cooldown.bs_inc.up)|boss&fight_remains<8&fight_remains>2
 # TODO: Need to sync with with ravenous frenzy when we run frenzyband, or atleast check if its worth it
 actions.cooldown+=/berserk,if=combo_points>=3
 actions.cooldown+=/incarnation,if=combo_points>=3
@@ -77,7 +78,7 @@ actions.cooldown+=/berserking,if=buff.tigers_fury.up|buff.bs_inc.up
 actions.cooldown+=/potion,if=buff.bs_inc.up|boss&fight_remains<cooldown.bs_inc.remains|boss&fight_remains<25
 actions.cooldown+=/ravenous_frenzy,if=buff.bs_inc.up|fight_remains<21
 # TODO: Check moonkin hotw and stuff like this, and maybe better combat remain resync
-actions.cooldown+=/convoke_the_spirits,if=((dot.rip.remains>4|fight_remains<variable.rip_ticks&dot.rip.tick_time)&combo_points<5&(dot.rake.ticking|spell_targets.thrash_cat>1)&energy.deficit>=20)|boss&fight_remains<5
+actions.cooldown+=/convoke_the_spirits,if=(dot.rip.remains>4&combo_points<5&(dot.rake.ticking|spell_targets.thrash_cat>1)&energy.deficit>=20)|boss&fight_remains<5
 # Maybe there should be more conditions on the conduit
 actions.cooldown+=/empower_bond,if=buff.tigers_fury.up|(conduit.deep_allegiance.enabled)
 # Give priority to on-use weapon
@@ -89,7 +90,7 @@ actions.filler+=/rake,if=variable.filler=2
 actions.filler+=/lunar_inspiration,if=variable.filler=3
 actions.filler+=/swipe,if=variable.filler=4
 actions.filler+=/shred,if=buff.sudden_ambush.down
-actions.filler+=/fleshcraft,if=soulbind.pustule_eruption.enabled|soulbind.volatile_solvent.enabled,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
+## actions.filler+=/fleshcraft,if=soulbind.pustule_eruption.enabled|soulbind.volatile_solvent.enabled,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 
 actions.finisher=pool_resource,for_next=1
 actions.finisher+=/savage_roar,if=buff.savage_roar.remains<3
@@ -109,7 +110,7 @@ actions.setup=lunar_inspiration,if=covenant.necrolord&spell_targets.thrash_cat<4
 actions.setup+=/pool_resource,for_next=1
 actions.setup+=/savage_roar,if=talent.feral_frenzy.enabled&cooldown.feral_frenzy.up&!buff.savage_roar.up&combo_points>1&dot.rake.ticking&(dot.lunar_inspiration.ticking|!talent.lunar_inspiration.enabled)
 actions.setup+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
-actions.setup+=/call_action_list,name=bloodtalons,strict=1,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(combo_points<5|spell_targets.thrash_cat=1)
+actions.setup+=/call_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(combo_points<5|spell_targets.thrash_cat=1)
 actions.setup+=/call_action_list,name=cooldown
 actions.setup+=/call_action_list,name=finisher,strict=1,if=combo_points>3&(buff.bloodtalons.up|!talent.bloodtalons.enabled)
 
