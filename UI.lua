@@ -2655,20 +2655,14 @@ local key_cache = setmetatable( {}, {
 
 
 function Hekili:ShowDiagnosticTooltip( q )
+    -- These recommendation slots aren't safe mid-thread.
+    if HekiliDisplayPrimary.activeThread then return end
+
     local tt = GameTooltip
     local fmt = ns.lib.Format
 
-    -- Grab the default backdrop and copy it with a solid background.
-    -- local backdrop = GameTooltip:GetBackdrop()
-
-    -- if backdrop then
-    --    backdrop.bgFile = [[Interface\Buttons\WHITE8X8]]
-        -- tt:SetBackdrop(backdrop)
-        -- tt:SetBackdropColor(0, 0, 0, 1)
-    -- end
-
     tt:SetOwner(UIParent, "ANCHOR_CURSOR")
-    tt:SetText( class.abilities[q.actionName].name )
+    tt:SetText( class.abilities[ q.actionName ].name )
     tt:AddDoubleLine(q.listName .. " #" .. q.action, "+" .. ns.formatValue(round(q.time or 0, 2)), 1, 1, 1, 1, 1, 1)
 
     if q.resources and q.resources[q.resource_type] then

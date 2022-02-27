@@ -5787,7 +5787,7 @@ function state.reset( dispName )
     end
 
     for k, v in pairs( state.pet ) do
-        if type(v) == "table" and k ~= "fake_pet" and v.summonTime and v.summonTime > 0 and v.duration then
+        if type(v) == "table" and k ~= "fake_pet" and rawget( v, "summonTime" ) and v.summonTime > 0 and v.duration then
             local remains = ( v.summonTime + v.duration ) - state.now
             if remains > 0 then
                 summonPet( k, remains )

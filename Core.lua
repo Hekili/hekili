@@ -2078,15 +2078,17 @@ function Hekili.Update()
         local maxTime = spec.throttleTime and spec.maxTime or 10
 
         if UI.Active and UI.alpha > 0 and rule( profile ) then
+            for i = #Stack, 1, -1 do tinsert( StackPool, tremove( Stack, i ) ) end
+            for i = #Block, 1, -1 do tinsert( StackPool, tremove( Block, i ) ) end
+
             Hekili:Yield( "Pre-Reset for " .. dispName .. " (from " .. state.display .. ")" )
+            
             state.reset( dispName )            
+
             Hekili:Yield( "Post-Reset for " .. dispName )
 
             -- Clear the stack in case we interrupted ourselves.
             wipe( InUse )
-
-            for i = #Stack, 1, -1 do tinsert( StackPool, tremove( Stack, i ) ) end
-            for i = #Block, 1, -1 do tinsert( StackPool, tremove( Block, i ) ) end
 
             state.system.specID   = specID
             state.system.specInfo = spec
