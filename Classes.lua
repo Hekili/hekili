@@ -230,7 +230,6 @@ local HekiliSpecMixin = {
         }, {
             __index = function( t, k )
                 if t.funcs[ k ] then return t.funcs[ k ]() end
-                return
             end
         } )
 
@@ -2464,11 +2463,15 @@ all:RegisterAbilities( {
 
         indicator = "cancel",
         texture = function ()
-            local a = class.auras[ args.buff_name ]            
-            if a.texture then return a.texture end
+            if not args.buff_name then return 134400 end
 
+            local a = class.auras[ args.buff_name ]
+            -- if not a then return 134400 end
+            if a.texture then return a.texture end
+            
             a = a and a.id
             a = a and GetSpellTexture( a )
+            
             return a or 134400
         end,
 

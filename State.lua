@@ -21,6 +21,8 @@ local tcopy = ns.tableCopy
 
 -- Clean up table_x later.
 local insert, remove, sort, unpack, wipe = table.insert, table.remove, table.sort, table.unpack, table.wipe
+local format = string.format
+
 local RC = LibStub( "LibRangeCheck-2.0" )
 local LSR = LibStub( "SpellRange-1.0" )
 
@@ -731,7 +733,6 @@ end
 do
     local cycle = {}
     local debug = function( ... ) if Hekili.ActiveDebug then Hekili:Debug( ... ) end end
-    local format = string.format
 
     function state.SetupCycle( ability, quiet )
         wipe( cycle )
@@ -1256,7 +1257,7 @@ local function forecastResources( resource )
     local now = state.now + state.offset -- roundDown( state.now + state.offset, 2 )
 
     local timeout = FORECAST_DURATION * state.haste -- roundDown( FORECAST_DURATION * state.haste, 2 )
-    
+
     if state.class.file == "DEATHKNIGHT" and state.runes then
         timeout = max( timeout, 0.01 + 2 * state.runes.cooldown )
     end
@@ -1329,7 +1330,7 @@ local function forecastResources( resource )
 
             local stop = e.stop and e.stop( r.forecast[ r.fcount ].v )
             local aura = e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < now
-            local channel = ( e.channel and state.buff.casting.expires < now ) 
+            local channel = ( e.channel and state.buff.casting.expires < now )
 
             if stop or aura or channel then
                 table.remove( events, 1 )
@@ -1347,7 +1348,7 @@ local function forecastResources( resource )
                 r.forecast[ idx ] = r.forecast[ idx ] or {}
                 r.forecast[ idx ].t = now
                 r.forecast[ idx ].v = v
-                r.forecast[ idx ].e = e.name or "none"
+                r.forecast[ idx ].e = ( e.name or "none" ) .. ( stop and "-stop" or aura and "-aura" or channel and "-channel" or "-unknown" )
                 r.fcount = idx
             else
                 prev = now
@@ -1436,10 +1437,10 @@ end
 -- pregain - the hook is expected to return modified values for the resource (i.e., special cost reduction or refunds).
 -- gain    - the hook can do whatever it wants, but if it changes the same resource again it will cause another forecast.
 
-local gain = function( amount, resource, overcap )
+local gain = function( amount, resource, overcap, noforecast )
     amount, resource, overcap = ns.callHook( "pregain", amount, resource, overcap )
     resourceChange( amount, resource, overcap )
-    if resource ~= "health" then forecastResources( resource ) end
+    if not noforecast and resource ~= "health" then forecastResources( resource ) end
     ns.callHook( "gain", amount, resource, overcap )
 end
 
@@ -1449,10 +1450,10 @@ local rawGain = function( amount, resource, overcap )
 end
 
 
-local spend = function( amount, resource, clean )
+local spend = function( amount, resource, noforecast )
     amount, resource = ns.callHook( "prespend", amount, resource )
     resourceChange( -amount, resource, overcap )
-    if resource ~= "health" then forecastResources( resource ) end
+    if not noforecast and resource ~= "health" then forecastResources( resource ) end
     ns.callHook( "spend", amount, resource, overcap, true )
 end
 
@@ -6059,12 +6060,12 @@ function state:StartCombat()
     local swing = false
 
     if self.swings.mainhand == 0 and self.swings.mainhand_speed > 0 then
-        self.swings.mh_pseudo = self.false_start or self.query_time
+        self.swings.mh_pseudo = self.query_time
         swing = true
     end
 
     if self.swings.offhand == 0 and self.swings.offhand_speed > 0 then
-        self.swings.oh_pseudo = ( self.false_start or self.query_time ) + ( self.swings.offhand_speed / 2 )
+        self.swings.oh_pseudo = self.query_time + ( self.swings.offhand_speed / 2 )
         swing = true
     end
 
@@ -6094,7 +6095,6 @@ function state.advance( time )
 
         if lands > state.query_time and lands <= state.query_time + time then
             state.offset = lands - state.query_time
-            if Hekili.ActiveDebug then Hekili:Debug( "Using queued ability '" .. state.player.queued_ability .. "' at " .. state.query_time .. "." ) end
             state:RunHandler( state.player.queued_ability, true )
 
             state.offset = realOffset

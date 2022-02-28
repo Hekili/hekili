@@ -49,14 +49,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local swing = state.swings.mainhand
                 local t = state.query_time
 
-                return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
+                return swing + ( floor( ( t - swing ) / state.mainhand_speed ) * state.mainhand_speed )
             end,
 
             interval = "mainhand_speed",
 
             stop = function () return state.swings.mainhand == 0 end,
             value = function ()
-                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.swings.mainhand_speed / state.haste
+                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.mainhand_speed / state.haste
             end,
         },
 
@@ -740,12 +740,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function ()
-                if buff.sudden_death.up then return 0 end
-                if buff.stone_heart.up then return 0 end
-                if buff.deadly_calm.up then return 0 end
-                return 20
-            end,
+            spend = 0,
             spendType = "rage",
 
             startsCombat = true,
@@ -760,13 +755,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cycle = function ()
                 if not settings.cycle or args.cycle_targets ~= 1 or buff.sudden_death.up or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) then return end
                 if Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0 then return "cycle" end
-            end,         
-               
+            end,
+
+            timeToReady = function()
+                -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
+                if rage.current >= 20 then return 0 end
+                return rage.time_to_20
+            end,
+
             handler = function ()
                 if not buff.sudden_death.up and not buff.stone_heart.up then
-                    local overflow = min( rage.current, 20 )
-                    spend( overflow, "rage" )
-                    gain( 0.2 * ( 20 + overflow ), "rage" )
+                    local cost = min( rage.current, 40 )
+                    spend( cost, "rage", nil, true )
+                    gain( 0.2 * cost, "rage" )
                 end
                 if buff.deadly_calm.up then removeStack( "deadly_calm" )
                 elseif buff.stone_heart.up then removeBuff( "stone_heart" )

@@ -2429,7 +2429,7 @@ do
                 self:SetMovable( true )
 
             else ]]
-            if ( H.Pause and ( not HekiliDisplayPrimary.activeThread or state.display ~= dispID ) and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
+            if ( H.Pause and ( d.HasRecommendations and HekiliDisplayPrimary.activeThread == nil ) and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
                 H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
             end
         end )
