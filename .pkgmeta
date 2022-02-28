@@ -60,4 +60,4 @@ externals:
         url: git://github.com/Vardex/LibTranslit.git
     Libs/SpellFlashCore:
         url: git://github.com/Hekili/SpellFlashCore.git
-        tag: async
+        branch: async
