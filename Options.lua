@@ -490,7 +490,8 @@ local displayTemplate = {
 
 
 local actionTemplate = {
-    enabled = false,
+    action = "heart_essence",
+    enabled = true,
     criteria = "",
     caption = "",
     description = "",
