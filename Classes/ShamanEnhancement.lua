@@ -1220,7 +1220,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                 if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_fire" ) end
                 if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
-                
+
+                -- This is dumb, but technically you don't know if FS will go to a new target or refresh an old one.  Even your current target.
+                if debuff.flame_shock.up and active_dot.flame_shock < 3 then active_dot.flame_shock = 3 end
                 if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
             end,
         },
