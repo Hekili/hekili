@@ -149,9 +149,7 @@ function ns.StartConfiguration( external )
     } )
 
     ns.UI.Notification.Mover:SetBackdropColor( 0, 0, 0, .8 )
-    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )    
-    ns.UI.Notification:EnableMouse( true )
-    ns.UI.Notification:SetMovable( true )
+    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
     ns.UI.Notification.Mover:Show()
 
     local f = ns.UI.Notification.Mover
@@ -166,12 +164,21 @@ function ns.StartConfiguration( external )
     f.Header:SetJustifyH( "CENTER" )
     f.Header:Show()
 
+    if HekiliNotificationMover:GetFrameLevel() > HekiliNotification:GetFrameLevel() then
+        local orig = HekiliNotificationMover:GetFrameLevel()
+        HekiliNotification:SetFrameLevel(orig)
+        HekiliNotificationMover:SetFrameLevel(orig-1)
+    end
+
+    ns.UI.Notification:EnableMouse( true )
+    ns.UI.Notification:SetMovable( true )
+
     HekiliNotification:SetScript( "OnMouseDown", Mover_OnMouseDown )
     HekiliNotification:SetScript( "OnMouseUp", Mover_OnMouseUp )
     HekiliNotification:SetScript( "OnEnter", function( self )
         local H = Hekili
 
-        if not H.Pause and H.Config then
+        if H.Config then
             GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
         
             GameTooltip:SetText( "Hekili: Notifications" )
@@ -204,6 +211,10 @@ function ns.StartConfiguration( external )
             if not v:IsAnchoringRestricted() then
                 v:EnableMouse( true )
                 v:SetMovable( true )
+
+                for id, btn in ipairs( ns.UI.Buttons[ i ] ) do
+                    btn:EnableMouse( false )
+                end
             
                 local left, right, top, bottom = v:GetPerimeterButtons()
                 if left and right and top and bottom then
@@ -247,7 +258,7 @@ function ns.StartConfiguration( external )
             v.Backdrop:SetScript( "OnEnter", function( self )
                 local H = Hekili
         
-                if not H.Pause and H.Config then
+                if H.Config then
                     GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
         
                     GameTooltip:SetText( "Hekili: " .. i )
@@ -316,8 +327,19 @@ function ns.StopConfiguration()
     local scaleFactor = Hekili:GetScale()
     local mouseInteract = Hekili.Pause
 
-    for i, v in ipairs( ns.UI.Buttons ) do
-        for j, btn in ipairs( v ) do
+    for id, display in pairs( Hekili.DisplayPool ) do
+        display:EnableMouse( false )
+        if not display:IsAnchoringRestricted() then display:SetMovable( true ) end
+
+        -- v:SetBackdrop( nil )
+        if display.Header then
+            display.Header:Hide()
+        end
+        if display.Backdrop then
+            display.Backdrop:Hide()
+        end
+
+        for i, btn in ipairs( display.Buttons ) do
             btn:EnableMouse( mouseInteract )
             btn:SetMovable( false )
         end
@@ -328,18 +350,8 @@ function ns.StopConfiguration()
     HekiliNotification.Mover:Hide()
     -- HekiliNotification.Mover.Header:Hide()
 
-    for i, v in pairs( ns.UI.Displays ) do
-        v:EnableMouse( false )
-        if not v:IsAnchoringRestricted() then v:SetMovable( true ) end
-        -- v:SetBackdrop( nil )
-        if v.Header then
-            v.Header:Hide()
-        end
-        if v.Backdrop then
-            v.Backdrop:Hide()
-        end
-    end
-
+    Hekili:UpdateDisplayVisibility()
+    
     Hekili.MakeDefaults = false
 end
 
@@ -904,12 +916,12 @@ do
                 local alpha = self.alpha
     
                 for i, b in ipairs( self.Buttons ) do
-                    local rec = self.Recommendations[ i ]
+                    b.Recommendation = self.Recommendations[ i ]
     
-                    local action = rec.actionName
-                    local caption = rec.caption
-                    local indicator = rec.indicator
-                    local keybind = rec.keybind
+                    local action = b.Recommendation.actionName
+                    local caption = b.Recommendation.caption
+                    local indicator = b.Recommendation.indicator
+                    local keybind = b.Recommendation.keybind
     
                     local ability = class.abilities[ action ]
     
@@ -922,7 +934,7 @@ do
                         end
     
                         if action ~= b.lastAction or self.NewRecommendations then
-                            b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
+                            b.Texture:SetTexture( b.Recommendation.texture or ability.texture or GetSpellTexture( ability.id ) )
                             b.Texture:SetTexCoord( unpack( b.texCoords ) )
                             b.lastAction = action
                         end
@@ -989,12 +1001,12 @@ do
                     end
 
                     b.Action = action
-                    b.Image = rec.texture
+                    b.Image = b.Recommendation.texture
                     b.Text = caption
                     b.Indicator = indicator
                     b.Keybind = keybind                    
                     b.Ability = ability
-                    b.ExactTime = rec.exact_time
+                    b.ExactTime = b.Recommendation.exact_time
                 end
     
                 -- Force glow, range, SpellFlash updates.
@@ -2429,8 +2441,8 @@ do
                 self:SetMovable( true )
 
             else ]]
-            if ( H.Pause and ( d.HasRecommendations and HekiliDisplayPrimary.activeThread == nil ) and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
-                H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
+            if ( H.Pause and ( d.HasRecommendations and HekiliDisplayPrimary.activeThread == nil ) and b.Recommendation ) then
+                H:ShowDiagnosticTooltip( b.Recommendation )
             end
         end )
 
@@ -2657,6 +2669,8 @@ local key_cache = setmetatable( {}, {
 
 
 function Hekili:ShowDiagnosticTooltip( q )
+    if not q.actionName or not class.abilities[ q.actionName ].name then return end
+
     local tt = GameTooltip
     local fmt = ns.lib.Format
 
