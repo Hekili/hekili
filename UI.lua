@@ -934,7 +934,12 @@ do
                         end
     
                         if action ~= b.lastAction or self.NewRecommendations then
-                            b.Texture:SetTexture( b.Recommendation.texture or ability.texture or GetSpellTexture( ability.id ) )
+                            if ability.item then
+                                b.Image = b.Recommendation.texture or ability.texture or select( 10, GetItemInfo( ability.item ) )
+                            else
+                                b.Image = b.Recommendation.texture or ability.texture or GetSpellTexture( ability.id )
+                            end
+                            b.Texture:SetTexture( b.Image )
                             b.Texture:SetTexCoord( unpack( b.texCoords ) )
                             b.lastAction = action
                         end
@@ -1001,7 +1006,6 @@ do
                     end
 
                     b.Action = action
-                    b.Image = b.Recommendation.texture
                     b.Text = caption
                     b.Indicator = indicator
                     b.Keybind = keybind                    
@@ -1638,8 +1642,11 @@ do
                 self:UpdateAlpha()
     
             elseif event == "SPELLS_CHANGED" then
-                for i, b in ipairs( self.Buttons ) do                
-                    b.Image = nil
+                for i, b in ipairs( self.Buttons ) do
+                    if not b.Ability.item then
+                        b.Image = b.Ability.texture or GetSpellTexture( b.Action )
+                        b.Texture:SetTexture( b.Image )
+                    end
                 end
                 self.NewRecommendations = true
     

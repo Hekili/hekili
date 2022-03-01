@@ -1273,7 +1273,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.list = listName
                                                         slot.listName = listName
                                                         slot.action = actID
-                                                        slot.actionName = state.this_action
+                                                        slot.actionName = ability.key
                                                         slot.actionID = ability.id
 
                                                         slot.caption = ability.caption or entry.caption
