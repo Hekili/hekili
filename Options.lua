@@ -10235,6 +10235,11 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Converted 'exsanguinated.X' to 'debuff.X.exsanguinated' (" .. times .. "x).")
     end
 
+    i, times = i:gsub( "time_to_sht%.(%d+)%.plus", "time_to_sht_plus.%1" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'time_to_sht.X.plus' to 'time_to_sht_plus.X' (" .. times .. "x).")
+    end
+
     if segment == 'c' then
         for token in i:gmatch( "target" ) do
             local times = 0

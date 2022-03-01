@@ -355,6 +355,7 @@ local function SimToLua( str, modifier )
     str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
     str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
     str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
+    str = str:gsub("time_to_sht_plus%.(%d+)", "time_to_sht_plus[%1]")
     -- str = str:gsub("([a-z0-9_]+)%.(%d+)", "%1[%2]")
 
     --str = SpaceOut( str )
@@ -1011,6 +1012,7 @@ local function SimCToSnapshot( str, modifier )
     str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
     str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
     str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
+    str = str:gsub("time_to_sht_plus%.(%d+)", "time_to_sht_plus[%1]")
 
     return str
 

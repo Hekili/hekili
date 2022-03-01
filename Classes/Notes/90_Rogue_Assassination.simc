@@ -1,5 +1,5 @@
 ## Assassination Rogue
-## February 19, 2022
+## February 28, 2022
 
 ## Changes:
 ## - Apply 'strict' flag to some APL forks to save processing time.
@@ -67,7 +67,7 @@ actions.cds+=/sepsis,if=!stealthed.rogue&dot.garrote.ticking&(cooldown.vendetta.
 actions.cds+=/sepsis,if=!stealthed.rogue&(floor((fight_remains-10)%cooldown)>floor((fight_remains-10-cooldown.vendetta.remains*variable.vendetta_cdr)%cooldown))
 actions.cds+=/vendetta,if=!stealthed.rogue&dot.rupture.ticking&!debuff.vendetta.up&variable.vendetta_nightstalker_condition&variable.vendetta_ma_condition&variable.vendetta_covenant_condition
 # Exsanguinate when not stealthed and both Rupture and Garrote are up for long enough.
-actions.cds+=/exsanguinate,if=!stealthed.rogue&(!dot.garrote.refreshable&dot.rupture.remains>4+4*cp_max_spend*(1%dot.rupture.exsanguinated_rate)|dot.rupture.remains*0.5>target.time_to_die)&target.time_to_die>4
+actions.cds+=/exsanguinate,if=!stealthed.rogue&(!dot.garrote.refreshable&dot.rupture.remains>4+4*cp_max_spend|dot.rupture.remains*0.5>target.time_to_die)&target.time_to_die>4
 # Shiv if DoTs are up; if Night Fae attempt to sync with Sepsis or Vendetta if we won't waste more than half Shiv's cooldown
 actions.cds+=/shiv,if=!debuff.shiv.up&(dot.garrote.ticking&dot.rupture.ticking)&(!covenant.night_fae|((cooldown.sepsis.ready|cooldown.sepsis.remains>12)+(cooldown.vendetta.ready|cooldown.vendetta.remains*variable.vendetta_cdr>12)=2))
 actions.cds+=/potion,if=buff.bloodlust.react|boss&fight_remains<30|debuff.vendetta.up
@@ -98,7 +98,7 @@ actions.direct+=/serrated_bone_spike,line_cd=15,if=soulbind.kevins_oozeling&buff
 # Fan of Knives at 19+ stacks of Hidden Blades or against 4+ targets.
 actions.direct+=/fan_of_knives,if=variable.use_filler&(buff.hidden_blades.stack>=19|(!priority_rotation&spell_targets.fan_of_knives>=4+stealthed.rogue))
 # Fan of Knives to apply poisons if inactive on any target (or any bleeding targets with priority rotation) at 3T
-actions.direct+=/fan_of_knives,cycle_targets=1,if=(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking)&variable.use_filler&spell_targets.fan_of_knives>=3
+actions.direct+=/fan_of_knives,if=active_dot.deadly_poison_dot<active_enemies&(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking)&variable.use_filler&spell_targets.fan_of_knives>=3
 actions.direct+=/echoing_reprimand,if=variable.use_filler&cooldown.vendetta.remains>10
 actions.direct+=/ambush,if=variable.use_filler&(master_assassin_remains=0&!runeforge.doomblade|buff.blindside.up)
 # Tab-Mutilate to apply Deadly Poison at 2 targets

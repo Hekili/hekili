@@ -1,5 +1,5 @@
 ## Outlaw Rogue
-## February 21, 2022
+## February 28, 2022
 
 ## Changes:
 ## - Make Fleshcraft interrupt in combat if we just did it for volatile_solvent.
@@ -48,7 +48,7 @@ actions.build+=/serrated_bone_spike,cycle_targets=1,if=!dot.serrated_bone_spike_
 actions.build+=/serrated_bone_spike,if=fight_remains<=5|cooldown.serrated_bone_spike.max_charges-charges_fractional<=0.25|combo_points.deficit=cp_gain&!buff.skull_and_crossbones.up&energy.time_to_max>1
 # Use Pistol Shot with Opportunity if Combat Potency won't overcap energy, when it will exactly cap CP, or when using Quick Draw
 actions.build+=/pistol_shot,if=buff.opportunity.up&(energy.deficit>(energy.regen+10)|combo_points.deficit<=1+buff.broadside.up|talent.quick_draw.enabled)
-actions.build+=/pistol_shot,if=buff.opportunity.up&(buff.greenskins_wickers.up|buff.concealed_blunderbuss.up)
+actions.build+=/pistol_shot,if=buff.opportunity.up&(buff.greenskins_wickers.up|buff.concealed_blunderbuss.up|buff.tornado_trigger.up)
 actions.build+=/sinister_strike
 actions.build+=/gouge,if=talent.dirty_tricks.enabled&combo_points.deficit>=1+buff.broadside.up
 
@@ -85,6 +85,7 @@ actions.cds+=/blood_fury
 actions.cds+=/berserking
 actions.cds+=/fireblood
 actions.cds+=/ancestral_call
+actions.cds+=/use_item,name=windscar_whetstone,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|fight_remains<7
 # Default conditions for usable items.
 actions.cds+=/trinket1,if=debuff.between_the_eyes.up|trinket.1.has_use_buff|boss&fight_remains<=20
 actions.cds+=/trinket2,if=debuff.between_the_eyes.up|trinket.2.has_use_buff|boss&fight_remains<=20
