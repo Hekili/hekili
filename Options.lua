@@ -275,12 +275,17 @@ local oneTimeFixes = {
 
     forceEnableAllClassesOnceDueToBug_20220225 = function( p )
         for id, spec in pairs( p.specs ) do
-            if not p.runOnce[ "forceEnableAllClassesOnceDueToBug_20220225-" .. id ] then
-                spec.enabled = true
-                p.runOnce[ "forceEnableAllClassesOnceDueToBug_20220225-" .. id ] = true
+            spec.enabled = true
+        end
+    end,
+
+    forceReloadAllDefaultPriorities_20220228 = function( p )        
+        for name, pack in pairs( p.packs ) do
+            if pack.builtIn then
+                Hekili.DB.profile.packs[ name ] = nil
+                Hekili:RestoreDefault( name )
             end
         end
-        p.runOnce.forceEnableAllClassesOnceDueToBug_20220225 = nil
     end,
 }
 
@@ -301,7 +306,6 @@ function Hekili:RunOneTimeFixes()
             end
         end
     end
-
 end
 
 
@@ -557,10 +561,16 @@ local packTemplate = {
 
     lists = {
         precombat = {
-            ['**'] = actionTemplate,
+            {
+                enabled = false,
+                action = "heart_essence",
+            },
         },
         default = {
-            ['**'] = actionTemplate,
+            {
+                enabled = false,
+                action = "heart_essence",
+            },
         },
     }
 }
