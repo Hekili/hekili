@@ -3625,8 +3625,6 @@ function Hekili:NewGetOption( info )
     if not option then return end
 
     if config[ option ] then return config[ option ] end
-
-    return
 end
 
 
@@ -3642,8 +3640,6 @@ function Hekili:NewSetOption( info, value )
 
     if option == 'qsShowTypeGroup' then config[option] = value
     else config[option] = nValue end
-
-    return
 end
 
 
@@ -7093,7 +7089,7 @@ do
                                     get = function( info )
                                         return self:SerializeActionPack( pack )
                                     end,
-                                    set = function () return end,
+                                    set = function () end,
                                     order = 1,
                                     width = "full"
                                 }
@@ -8491,7 +8487,6 @@ function Hekili:GetOptions()
                         get = function () return "https://github.com/Hekili/hekili/" end,
                         set = function () end,
                         width = "full",
-                        width = "full",
                         dialogControl = "SFX-Info-URL",
                     },
 
@@ -8655,7 +8650,7 @@ function Hekili:GetOptions()
                         order = 30,
                         width = "full",
                         get = function() return "http://github.com/Hekili/hekili/issues" end,
-                        set = function() return end,
+                        set = function() end,
                         dialogControl = "SFX-Info-URL"
                     },
                 }
