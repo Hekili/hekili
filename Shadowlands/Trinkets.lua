@@ -1480,21 +1480,25 @@ do
                     id = 368635,
                     duration = 3600,
                     max_stack = 1,
+                    copy = { "scars_of_fraternal_strife", "scars_of_fraternal_strife_1" }
                 },
                 the_second_rune = {
                     id = 368636,
                     duration = 3600,
                     max_stack = 1,
+                    copy = "scars_of_fraternal_strife_2"
                 },
                 the_third_rune = {
                     id = 368637,
                     duration = 3600,
                     max_stack = 1,
+                    copy = "scars_of_fraternal_strife_3"
                 },
                 the_fourth_rune = {
                     id = 368638,
                     duration = 3600,
                     max_stack = 1,
+                    copy = "scars_of_fraternal_strife_4"
                 },
                 the_fourth_rune_snare = {
                     id = 368639,
@@ -1505,6 +1509,7 @@ do
                     id = 368641,
                     duration = 30,
                     max_stack = 1,
+                    copy = "scars_of_fraternal_strife_5"
                 },
             }
         },
