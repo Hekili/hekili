@@ -749,7 +749,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             usable = function ()
                 if buff.sudden_death.up or buff.stone_heart.up then return true end
                 if action.execute.cycle then return true end
-                return target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80, "requires > 80% or < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
+                return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
             end,
 
             cycle = function ()
