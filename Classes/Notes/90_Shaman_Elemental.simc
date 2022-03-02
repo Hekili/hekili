@@ -1,5 +1,5 @@
 ## Elemental Shaman
-## February 27, 2022
+## March 1, 2022
 
 ## Changes:
 ## - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
@@ -23,7 +23,7 @@ actions+=/spiritwalkers_grace,moving=1
 actions+=/potion
 actions+=/use_items
 actions+=/flame_shock,if=(!talent.elemental_blast.enabled)&!ticking&!pet.storm_elemental.active&(spell_targets.chain_lightning<3|talent.master_of_the_elements.enabled|runeforge.skybreakers_fiery_demise.equipped)
-+ actions+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up&(!pet.storm_elemental.active|spell_targets.chain_lightning<3&buff.wind_gust.stack<20|soulbind.lead_by_example.enabled|runeforge.splintered_elements.equipped)&(spell_targets.chain_lightning<5|talent.master_of_the_elements.enabled|runeforge.skybreakers_fiery_demise.equipped|soulbind.lead_by_example.enabled|runeforge.splintered_elements.equipped)&!buff.splintered_elements.up
+actions+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up&(!pet.storm_elemental.active|spell_targets.chain_lightning<3&buff.wind_gust.stack<20|soulbind.lead_by_example.enabled|runeforge.splintered_elements.equipped)&(spell_targets.chain_lightning<5|talent.master_of_the_elements.enabled|runeforge.skybreakers_fiery_demise.equipped|soulbind.lead_by_example.enabled|runeforge.splintered_elements.equipped)&!buff.splintered_elements.up
 actions+=/flame_shock,if=!ticking&(!pet.storm_elemental.active|spell_targets.chain_lightning<3&buff.wind_gust.stack<20)&(spell_targets.chain_lightning<3|talent.master_of_the_elements.enabled|runeforge.skybreakers_fiery_demise.equipped)
 actions+=/fire_elemental
 actions+=/meteor
