@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## February 26, 2022
+## March 2, 2022
 
 ## Changes:
 ## - Spell Lock.
@@ -86,9 +86,9 @@ actions+=/doom,cycle_targets=1,if=refreshable&time>first_tyrant_time
 actions+=/demonbolt,if=buff.demonic_core.react&buff.demonic_core.remains<1+gcd.max*buff.demonic_core.stack
 actions+=/shadow_bolt
 
-+ actions.slow_trinkets=use_item,name=soulletting_ruby,cycle_targets=1,if=variable.buff_sync_cd<target.distance%5-(2*gcd.max*variable.use_bolt_timings)
-+ actions.slow_trinkets+=/use_item,name=sunblood_amethyst,if=variable.buff_sync_cd<target.distance%5+(2*variable.use_bolt_timings)
-+ actions.slow_trinkets+=/use_item,name=empyreal_ordnance,if=variable.buff_sync_cd<(target.distance%5)+12+(2*variable.use_bolt_timings)
+actions.slow_trinkets=use_item,name=soulletting_ruby,cycle_targets=1,if=variable.buff_sync_cd<target.distance%5-(2*gcd.max*variable.use_bolt_timings)
+actions.slow_trinkets+=/use_item,name=sunblood_amethyst,if=variable.buff_sync_cd<target.distance%5+(2*variable.use_bolt_timings)
+actions.slow_trinkets+=/use_item,name=empyreal_ordnance,if=variable.buff_sync_cd<(target.distance%5)+12+(2*variable.use_bolt_timings)
 
 actions.covenant_ability=soul_rot,if=soulbind.grove_invigoration&(variable.next_tyrant_cd<20|variable.next_tyrant_cd>30)
 actions.covenant_ability+=/soul_rot,if=soulbind.field_of_blossoms&pet.demonic_tyrant.active
