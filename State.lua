@@ -2127,8 +2127,7 @@ local mt_state = {
 
             elseif k == "time_to_refresh" then
                 -- if t.isCyclingTargets( action, aura_name ) then return 0 end
-                if app then return max( 0, 0.01 + app.remains - ( 0.3 * app.duration ) ) end
-                return 0
+                return app and app.up and max( 0, 0.01 + app.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
 
             elseif k == "ticking" or k == "up" then
                 if app then return app.up end
