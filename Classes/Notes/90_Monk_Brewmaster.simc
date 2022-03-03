@@ -1,5 +1,5 @@
 ## Brewmaster Monk
-## July 31, 2021
+## March 2, 2022
 
 ## Changes:
 ## - 9.1 includes Purifying Brew entries related to Invoke Niuzao that do not using spec settings.  Provide feedback on GitHub.
@@ -36,7 +36,7 @@ actions+=/invoke_niuzao_the_black_ox,if=target.time_to_die>6&cooldown.purifying_
 actions+=/touch_of_death,if=target.health.pct<=15|target.health.current<health.max
 actions+=/weapons_of_order
 actions+=/fallen_order
-actions+=/bonedust_brew
+actions+=/bonedust_brew,if=!debuff.bonedust_brew_debuff.up
 
 # Use configured purify_stagger_currhp from Brewmaster options.
 actions+=/purifying_brew,if=settings.purify_stagger_currhp>0&group&stagger.pct>=settings.purify_stagger_currhp
