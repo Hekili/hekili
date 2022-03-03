@@ -1793,27 +1793,6 @@ do
 
             toggle = "cooldowns",
         },
-        the_first_sigil = {
-            cast = 0,
-            cooldown = 300,
-            gcd = "off",
-
-            item = 188254,
-
-            toggle = "cooldowns",
-
-            handler = function()
-                applyBuff( "the_first_sigil" )
-            end,
-
-            auras = {
-                the_first_sigil = {
-                    id = 367241,
-                    duration = 20,
-                    max_stack = 1,
-                }
-            }
-        },        
     } )
 
     all:RegisterAuras( {
