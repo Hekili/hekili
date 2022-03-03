@@ -4022,6 +4022,12 @@ do
 
                         local passed = scripts:CheckScript( scriptID )
 
+                        local conditions = "(none)"
+
+                        if debug then
+                            conditions = format( "%s: %s\n", passed and "PASS" or "FAIL", scripts:GetConditionsAndValues( scriptID ) )
+                        end
+
                         --[[    add = "Add Value",
                                 ceil
                                 x default = "Set Default Value",
@@ -4099,6 +4105,7 @@ do
                         end
 
                         -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
+                        if debug then Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. " - value = " .. tostring( value or "nil" .. "." ) ) end
                         state.variable[ var ] = value
                         cache[ var ][ pathKey ] = value
                     end
@@ -4108,9 +4115,9 @@ do
             -- Clear cache and clear the flag that we are checking this variable already.
             state.variable[ var ] = nil
 
-            --[[ if debug then
-                Hekili:Debug( "Spent %.2fms calculating value of %s -- %s [%s].", debugprofilestop() - varStart, var, tostring( value ), parent )
-            end ]]
+            if debug then
+                Hekili:Debug( "%s Result = %s.", var, tostring( value ) )
+            end
 
             state.scriptID = parent
 
