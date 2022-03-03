@@ -1,5 +1,5 @@
 ## Assassination Rogue
-## February 28, 2022
+## March 2, 2022
 
 ## Changes:
 ## - Apply 'strict' flag to some APL forks to save processing time.
@@ -23,7 +23,7 @@ actions.precombat+=/variable,name=flagellation_cdr,value=1-(runeforge.obedience*
 actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)|trinket.1.is.inscrutable_quantum_device|(trinket.1.is.shadowgrasp_totem&covenant.venthyr)
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)|trinket.2.is.inscrutable_quantum_device|(trinket.2.is.shadowgrasp_totem&covenant.venthyr)
 actions.precombat+=/stealth
-actions.precombat+=/slice_and_dice,precombat_seconds=1,if=!talent.nightstalker.enabled
+actions.precombat+=/slice_and_dice,precombat_seconds=1,if=!talent.nightstalker.enabled&refreshable
 
 ## Executed every time the actor is available.
 actions=kick
