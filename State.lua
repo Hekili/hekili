@@ -2328,7 +2328,7 @@ local mt_stat = {
         end
 
         -- Hekili:Error( "Unknown state.stat key: '" .. k .. "'." )
-        return
+
     end
 }
 ns.metatables.mt_stat = mt_stat
@@ -4213,6 +4213,7 @@ local default_debuff_values = {
     unit = "target"
 }
 
+
 local cycle_debuff = {
     name = "cycle",
     count = 0,
@@ -4317,8 +4318,7 @@ local mt_default_debuff = {
             return t.remains < 0.3 * ( aura and aura.duration or t.duration or 30 )
 
         elseif k == "time_to_refresh" then
-            -- if state.isCyclingTargets( nil, t.key ) then return 0 end
-            return t.up and ( max( 0, 0.01 + state.query_time - ( 0.3 * ( aura and aura.duration or t.duration or 30 ) ) ) ) or 0
+            return t.up and max( 0, 0.01 + t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
 
         elseif k == "stack" then
             -- if state.isCyclingTargets( nil, t.key ) then return 0 end
