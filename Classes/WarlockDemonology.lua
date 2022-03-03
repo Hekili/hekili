@@ -130,7 +130,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end )
 
     spec:RegisterStateExpr( "in_opener", function()
-        print( time, first_tyrant_time )
         return time < first_tyrant_time
     end )
 
