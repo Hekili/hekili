@@ -4726,7 +4726,7 @@ local mt_swing_timer = {
         local speed = state.swings[ t.type .. "_speed" ]
         if speed == 0 then return 999 end
         
-        local swing = state.combat == 0 and state.now or state.swings.mainhand
+        local swing = state.time == 0 and state.now or state.swings.mainhand
         if swing == 0 then return speed end
 
         -- Technically, we didn't even check if this were "remains" but there are no other symbols.
@@ -5602,7 +5602,7 @@ function state:RunHandler( key, noStart )
     self.prev_gcd.override = nil
     self.prev_off_gcd.override = nil
 
-    if self.combat == 0 and ability.startsCombat and not ability.isProjectile and not noStart then
+    if self.time == 0 and ability.startsCombat and not noStart then -- and not ability.isProjectile
         -- Assume MH swing at combat start and OH swing half a swing later?
         self:StartCombat()
         ns.callHook( "runHandler_startCombat", key )
@@ -5834,8 +5834,8 @@ function state.reset( dispName )
     wipe( state.history.units )
 
     local last_act = state.player.lastcast and class.abilities[ state.player.lastcast ]
-    if last_act and last_act.startsCombat and state.combat == 0 and state.now - last_act.lastCast < 1 then
-        state.false_start = last_act.lastCast - 0.01
+    if last_act and last_act.startsCombat and state.time == 0 and state.now - last_act.lastCast < 1 then
+        state.false_start = last_act.lastCast
     end
 
     -- interrupts
@@ -6056,8 +6056,9 @@ end
 
 
 function state:StartCombat()
-    if self.combat == 0 then
+    if self.time == 0 then
         self.false_start = self.query_time - 0.01
+        if Hekili.ActiveDebug then Hekili:Debug( format( "Starting combat at %.2f -- time is %.2f.", self.false_start, self.time ) ) end
     end
 
     local swing = false
