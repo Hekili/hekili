@@ -5835,7 +5835,8 @@ function state.reset( dispName )
 
     local last_act = state.player.lastcast and class.abilities[ state.player.lastcast ]
     if last_act and last_act.startsCombat and state.time == 0 and state.now - last_act.lastCast < 1 then
-        state.false_start = last_act.lastCast
+        state.false_start = last_act.lastCast - 0.01
+        if Hekili.ActiveDebug then Hekili:Debug( format( "Starting combat based on %s cast; time is now: %.2f.", state.player.lastcast, state.time ) ) end
     end
 
     -- interrupts

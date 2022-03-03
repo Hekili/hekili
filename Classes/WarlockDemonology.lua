@@ -118,11 +118,11 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
     spec:RegisterStateExpr( "first_tyrant_time", function()
         if first_combat_tyrant and combat > 0 then
-            return first_combat_tyrant - state.combat
+            return first_combat_tyrant - combat
         end
 
-        -- We don't have a first_combat_tyrant yet or we aren't actually in combat.
-        if cooldown.summon_demonic_tyrant.true_remains > 20 then
+        -- Tyrant is on CD, we're not starting fresh, skip opener.
+        if cooldown.summon_demonic_tyrant.true_remains > gcd.max then
             return 0
         end
 
@@ -273,22 +273,18 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         -- Rethinking this.
         -- We'll try to make the opener work if Tyrant will be off CD anywhere from 10-20 seconds into the fight.
         -- If it's later, we'll assume we're starting from the middle.
-        local start, duration = GetSpellCooldown( 265187 )
+        local tyrant, duration = GetSpellCooldown( 265187 )
+        local gcd, gcd_duration = GetSpellCooldown( 61304 )
 
-        if start == 0 then
-            first_combat_tyrant = GetTime() + 10
+        tyrant = tyrant + duration
+        gcd = gcd + gcd_duration
+
+        if tyrant > gcd then
+            first_combat_tyrant = GetTime()
             return
         end
 
-        local tyrant_cd = start + duration
-        local now = GetTime()
-
-        if tyrant_cd - now > 20 then
-            first_combat_tyrant = now
-            return
-        end
-
-        first_combat_tyrant = tyrant_cd
+        first_combat_tyrant = GetTime() + 10
     end )
 
     spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
