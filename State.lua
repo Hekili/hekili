@@ -513,7 +513,11 @@ state.max = safeMax
 state.min = safeMin
 state.abs = safeAbs
 
-state.print = print
+if Hekili.Version:match( "^Dev" ) then
+    state.print = print
+else
+    state.print = function() end
+end
 
 state.Enum = Enum
 state.FindUnitBuffByID = ns.FindUnitBuffByID
