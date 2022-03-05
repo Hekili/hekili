@@ -504,26 +504,37 @@ do
                 -- Add specialization toggles where applicable.
                 for i, spec in pairs( Hekili.Class.specs ) do
                     if i > 0 then
-                        local titled = false
+                        insert( menuData, {
+                            isSeparator = 1,
+                            hidden = function () return Hekili.State.spec.id ~= i end,
+                        } )
+                        insert( menuData, {
+                            isTitle = 1,
+                            text = spec.name,
+                            notCheckable = 1,
+                            hidden = function () return Hekili.State.spec.id ~= i end,
+                        } )
+                        insert( menuData, {
+                            text = "Recommend Target Swaps",
+                            func = function ()
+                                Hekili.DB.profile.specs[ i ].cycle = not Hekili.DB.profile.specs[ i ].cycle
+                                if Hekili.DB.profile.notifications.enabled then
+                                    Hekili:Notify( "Recommend Target Swaps: " .. ( Hekili.DB.profile.specs[ i ].cycle and "ON" or "OFF" ) )
+                                else
+                                    self:Print( "Recommend Target Swaps: " .. ( Hekili.DB.profile.specs[ i ].cycle and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                end
+                            end,
+                            checked = function ()
+                                return Hekili.DB.profile.specs[ i ].cycle
+                            end,
+                            hidden = function () return Hekili.State.spec.id ~= i end,
+                        } )
+
     
                         -- Check for Toggles.
                         for n, setting in pairs( spec.settings ) do
                             if not setting.info.arg or setting.info.arg() then
                                 if setting.info.type == "toggle" then
-                                    if not titled then
-                                        insert( menuData, {
-                                            isSeparator = 1,
-                                            hidden = function () return Hekili.State.spec.id ~= i end,
-                                        } )
-                                        insert( menuData, {
-                                            isTitle = 1,
-                                            text = spec.name,
-                                            notCheckable = 1,
-                                            hidden = function () return Hekili.State.spec.id ~= i end,
-                                        } )
-                                        titled = true
-                                    end
-
                                     insert( menuData, {
                                         text = setting.info.name,
                                         func = function ()
@@ -544,20 +555,6 @@ do
                                     } )
 
                                 elseif setting.info.type == "select" then
-                                    if not titled then
-                                        insert( menuData, {
-                                            isSeparator = 1,
-                                            hidden = function () return Hekili.State.spec.id ~= i end,
-                                        } )
-                                        insert( menuData, {
-                                            isTitle = 1,
-                                            text = spec.name,
-                                            notCheckable = 1,
-                                            hidden = function () return Hekili.State.spec.id ~= i end,
-                                        } )
-                                        titled = true
-                                    end
-
                                     local submenu = {
                                         text = setting.info.name,
                                         hasArrow = true,
@@ -593,20 +590,6 @@ do
                                     insert( menuData, submenu )
 
                                 elseif setting.info.type == "range" and setting.info.step == 1 and ( ( setting.info.max or 999 ) - ( setting.info.min or -999 ) ) < 30 then
-                                    if not titled then
-                                        insert( menuData, { 
-                                            isSeparator = 1,
-                                            hidden = function () return Hekili.State.spec.id ~= i end,
-                                        } )
-                                        insert( menuData, {
-                                            isTitle = 1,
-                                            text = spec.name,
-                                            notCheckable = 1,
-                                            hidden = function () return Hekili.State.spec.id ~= i end,
-                                        } )
-                                        titled = true
-                                    end
-
                                     local submenu = {
                                         text = setting.info.name,
                                         hasArrow = true,
