@@ -508,128 +508,130 @@ do
     
                         -- Check for Toggles.
                         for n, setting in pairs( spec.settings ) do
-                            if setting.info.type == "toggle" then
-                                if not titled then
-                                    insert( menuData, { 
-                                        isSeparator = 1,
-                                        hidden = function () return Hekili.State.spec.id ~= i end,
-                                    } )
-                                    insert( menuData, {
-                                        isTitle = 1,
-                                        text = spec.name,
-                                        notCheckable = 1,
-                                        hidden = function () return Hekili.State.spec.id ~= i end,
-                                    } )
-                                    titled = true
-                                end
-
-                                insert( menuData, {
-                                    text = setting.info.name,
-                                    func = function ()
-                                        menu.args[1] = setting.name
-                                        setting.info.set( menu.args, not setting.info.get( menu.args ) )
-
-                                        if Hekili.DB.profile.notifications.enabled then
-                                            Hekili:Notify( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
-                                        else
-                                            self:Print( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
-                                        end
-                                    end,
-                                    checked = function ()
-                                        menu.args[1] = setting.name
-                                        return setting.info.get( menu.args )
-                                    end,
-                                    hidden = function () return Hekili.State.spec.id ~= i end,
-                                } )
-
-                            elseif setting.info.type == "select" then
-                                if not titled then
-                                    insert( menuData, { 
-                                        isSeparator = 1,
-                                        hidden = function () return Hekili.State.spec.id ~= i end,
-                                    } )
-                                    insert( menuData, {
-                                        isTitle = 1,
-                                        text = spec.name,
-                                        notCheckable = 1,
-                                        hidden = function () return Hekili.State.spec.id ~= i end,
-                                    } )
-                                    titled = true
-                                end
-
-                                local submenu = {
-                                    text = setting.info.name,
-                                    hasArrow = true,
-                                    menuList = {},
-                                    notCheckable = true,
-                                    hidden = function () return Hekili.State.spec.id ~= i end,
-                                }
-
-                                local values = setting.info.values
-                                if type( values ) == "function" then values = values() end
-
-                                if values then
-                                    for k, v in orderedPairs( values ) do
-                                        insert( submenu.menuList, {
-                                            text = v,
-                                            func = function ()
-                                                menu.args[1] = setting.name
-                                                setting.info.set( menu.args, k )
-                                                
-                                                for k, v in pairs( Hekili.DisplayPool ) do
-                                                    v:OnEvent( "HEKILI_MENU" )
-                                                end
-                                            end,
-                                            checked = function ()
-                                                menu.args[1] = setting.name
-                                                return setting.info.get( menu.args ) == k
-                                            end,
+                            if not setting.info.arg or setting.info.arg() then
+                                if setting.info.type == "toggle" then
+                                    if not titled then
+                                        insert( menuData, {
+                                            isSeparator = 1,
                                             hidden = function () return Hekili.State.spec.id ~= i end,
                                         } )
+                                        insert( menuData, {
+                                            isTitle = 1,
+                                            text = spec.name,
+                                            notCheckable = 1,
+                                            hidden = function () return Hekili.State.spec.id ~= i end,
+                                        } )
+                                        titled = true
                                     end
-                                end
 
-                                insert( menuData, submenu )
-
-                            elseif setting.info.type == "range" and setting.info.step == 1 and ( ( setting.info.max or 999 ) - ( setting.info.min or -999 ) ) < 30 then
-                                if not titled then
-                                    insert( menuData, { 
-                                        isSeparator = 1,
-                                        hidden = function () return Hekili.State.spec.id ~= i end,
-                                    } )
                                     insert( menuData, {
-                                        isTitle = 1,
-                                        text = spec.name,
-                                        notCheckable = 1,
-                                        hidden = function () return Hekili.State.spec.id ~= i end,
-                                    } )
-                                    titled = true
-                                end
-
-                                local submenu = {
-                                    text = setting.info.name,
-                                    hasArrow = true,
-                                    menuList = {},
-                                    notCheckable = true,
-                                    hidden = function () return Hekili.State.spec.id ~= i end,
-                                }
-
-                                --[[ for j = setting.info.min, setting.info.max do
-                                    insert( submenu.menuList, {
-                                        text = tostring( j ),
+                                        text = setting.info.name,
                                         func = function ()
                                             menu.args[1] = setting.name
-                                            setting.info.set( menu.args, j )
+                                            setting.info.set( menu.args, not setting.info.get( menu.args ) )
+
+                                            if Hekili.DB.profile.notifications.enabled then
+                                                Hekili:Notify( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
+                                            else
+                                                self:Print( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                            end
                                         end,
                                         checked = function ()
                                             menu.args[1] = setting.name
-                                            return setting.info.get( menu.args ) == j
+                                            return setting.info.get( menu.args )
                                         end,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
-                                    } )                                        
-                                end ]]
+                                    } )
 
-                                insert( menuData, submenu )
+                                elseif setting.info.type == "select" then
+                                    if not titled then
+                                        insert( menuData, {
+                                            isSeparator = 1,
+                                            hidden = function () return Hekili.State.spec.id ~= i end,
+                                        } )
+                                        insert( menuData, {
+                                            isTitle = 1,
+                                            text = spec.name,
+                                            notCheckable = 1,
+                                            hidden = function () return Hekili.State.spec.id ~= i end,
+                                        } )
+                                        titled = true
+                                    end
+
+                                    local submenu = {
+                                        text = setting.info.name,
+                                        hasArrow = true,
+                                        menuList = {},
+                                        notCheckable = true,
+                                        hidden = function () return Hekili.State.spec.id ~= i end,
+                                    }
+
+                                    local values = setting.info.values
+                                    if type( values ) == "function" then values = values() end
+
+                                    if values then
+                                        for k, v in orderedPairs( values ) do
+                                            insert( submenu.menuList, {
+                                                text = v,
+                                                func = function ()
+                                                    menu.args[1] = setting.name
+                                                    setting.info.set( menu.args, k )
+                                                    
+                                                    for k, v in pairs( Hekili.DisplayPool ) do
+                                                        v:OnEvent( "HEKILI_MENU" )
+                                                    end
+                                                end,
+                                                checked = function ()
+                                                    menu.args[1] = setting.name
+                                                    return setting.info.get( menu.args ) == k
+                                                end,
+                                                hidden = function () return Hekili.State.spec.id ~= i end,
+                                            } )
+                                        end
+                                    end
+
+                                    insert( menuData, submenu )
+
+                                elseif setting.info.type == "range" and setting.info.step == 1 and ( ( setting.info.max or 999 ) - ( setting.info.min or -999 ) ) < 30 then
+                                    if not titled then
+                                        insert( menuData, { 
+                                            isSeparator = 1,
+                                            hidden = function () return Hekili.State.spec.id ~= i end,
+                                        } )
+                                        insert( menuData, {
+                                            isTitle = 1,
+                                            text = spec.name,
+                                            notCheckable = 1,
+                                            hidden = function () return Hekili.State.spec.id ~= i end,
+                                        } )
+                                        titled = true
+                                    end
+
+                                    local submenu = {
+                                        text = setting.info.name,
+                                        hasArrow = true,
+                                        menuList = {},
+                                        notCheckable = true,
+                                        hidden = function () return Hekili.State.spec.id ~= i end,
+                                    }
+
+                                    --[[ for j = setting.info.min, setting.info.max do
+                                        insert( submenu.menuList, {
+                                            text = tostring( j ),
+                                            func = function ()
+                                                menu.args[1] = setting.name
+                                                setting.info.set( menu.args, j )
+                                            end,
+                                            checked = function ()
+                                                menu.args[1] = setting.name
+                                                return setting.info.get( menu.args ) == j
+                                            end,
+                                            hidden = function () return Hekili.State.spec.id ~= i end,
+                                        } )                                        
+                                    end ]]
+
+                                    insert( menuData, submenu )
+                                end
                             end
                         end
                     end
