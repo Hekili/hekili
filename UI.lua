@@ -1228,7 +1228,7 @@ do
                                 end
         
                                 if i == 1 and conf.delays.fade then
-                                    local delay = b.ExactTime - now            
+                                    local delay = b.ExactTime and ( b.ExactTime - now ) or 0
                                     local moment = 0
         
                                     local init, duration = 0, 0
@@ -1252,7 +1252,7 @@ do
                                     if delay > moment + 0.05 then
                                         unusable = true
                                     end
-                                end    
+                                end
         
                                 if unusable and not b.unusable then
                                     b.Texture:SetVertexColor(0.4, 0.4, 0.4, 1.0)
@@ -1272,6 +1272,7 @@ do
                 
                 if conf.flash.enabled and LSF then
                     self.flashTimer = self.flashTimer - elapsed
+                    self.flashWarnings = self.flashWarnings or {}
         
                     local a = self.Buttons[ 1 ].Action
                     local changed = self.lastFlash ~= a
@@ -1290,10 +1291,21 @@ do
         
                         if ability.item then
                             local iname = LSF.ItemName( ability.item )
-                            LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                            if LSF.Flashable( iname ) then
+                                LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                            elseif conf.flash.suppress and not self.flashWarnings[ iname ] then
+                                self.flashWarnings[ iname ] = true
+                                Hekili:Print( "|cff000000WARNING|r - Could not flash recommended item '" .. iname .. "' (" .. self.id .. ")." )
+                            end
                         else
-                            if ability.flash then
-                                LSF.FlashAction( ability.flash, self.flashColor )
+                            local aFlash = ability.flash
+                            if aFlash then
+                                if LSF.Flashable( aFlash ) then
+                                    LSF.FlashAction( aFlash, self.flashColor )
+                                elseif conf.flash.suppress and not self.flashWarnings[ aFlash ] then
+                                    self.flashWarnings[ aFlash ] = true
+                                    Hekili:Print( "|cff000000WARNING|r - Could not flash recommended action '" .. aFlash .. "' (" .. self.id .. ")." )
+                                end
                             else
                                 local id = ability.known
                                 
@@ -1302,7 +1314,12 @@ do
                                 end
         
                                 local sname = LSF.SpellName( id )
-                                LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                                if LSF.Flashable( sname ) then
+                                    LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                                elseif conf.flash.suppress and not self.flashWarnings[ sname ] then
+                                    self.flashWarnings[ sname ] = true
+                                    Hekili:Print( "|cff000000WARNING|r - Could not flash recommended ability '" .. sname .. "' (" .. self.id .. ")." )
+                                end
                             end
                         end
         
