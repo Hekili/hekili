@@ -9358,7 +9358,7 @@ do
                 local index
 
                 if args[2] then
-                    if ( "target_swap" ):match( "^" .. args[2] ) then
+                    if ( "target_swap" ):match( "^" .. args[2] ) or ( "cycle" ):match( "^" .. args[2] ) then
                         index = -1
                     elseif ( "mode" ):match( "^" .. args[2] ) then
                         index = -2
@@ -9382,17 +9382,19 @@ do
                     local exToggle, exNumber
 
                     for i, setting in ipairs( settings ) do
-                        if setting.info.type == "toggle" then
-                            output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ] and "ON" or "OFF", setting.info.name )
-                            exToggle = setting.name
-                        elseif setting.info.type == "range" then
-                            output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
-                            hasNumber = true
-                            exNumber = setting.name
+                        if not setting.info.arg or setting.info.arg() then
+                            if setting.info.type == "toggle" then
+                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ] and "ON" or "OFF", setting.info.name )
+                                exToggle = setting.name
+                            elseif setting.info.type == "range" then
+                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
+                                hasNumber = true
+                                exNumber = setting.name
+                            end
                         end
                     end
 
-                    output = format( "%s\n - |cFFFFD100target_swap|r = |cFF00FF00%s|r (%s)", output, spec.cycle and "ON" or "OFF", "Recommend Target Swaps" )
+                    output = format( "%s\n - |cFFFFD100cycle|r or |cFFFFD100target_swap|r = |cFF00FF00%s|r (%s)", output, spec.cycle and "ON" or "OFF", "Recommend Target Swaps" )
 
                     output = format( "%s\n\nTo control your display mode (currently |cFF00FF00%s|r):\n - Toggle Mode:  |cFFFFD100/hek set mode|r\n - Set Mode - |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)", output, self.DB.profile.toggles.mode.value or "unknown" )
 
