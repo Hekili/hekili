@@ -894,9 +894,8 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                 if prev_gcd[1].fel_rush then
                     return 3600
                 end
-                if settings.recommend_movement == true then return 0 end
+                if settings.recommend_movement then return 0 end
                 if buff.unbound_chaos.up and settings.unbound_movement then return 0 end
-                if talent.momentum.enabled and settings.momentum_movement then return buff.momentum.remains end
                 return 3600
             end,
             handler = function ()
@@ -1190,7 +1189,6 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
             readyTime = function ()
                 if settings.recommend_movement then return 0 end
-                if talent.momentum.enabled and settings.momentum_movement then return buff.momentum.remains end
                 return 3600
             end,
 
@@ -1374,17 +1372,9 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         width = "full"
     } )
 
-    spec:RegisterSetting( "momentum_movement", false, {
-        name = "Recommend Movement for Momentum",
-        desc = "When Recommend Movement is disabled, you can enable this option to override it and allow |T1247261:0|t Fel Rush / |T1348401:0|t Vengeful Retreat only when it will trigger Momentum-related effects.",
-        type = "toggle",
-        width = "full",
-        disabled = function() return state.settings.recommend_movement end,
-    } )
-
     spec:RegisterSetting( "unbound_movement", false, {
         name = "Recommend Movement for Unbound Chaos",
-        desc = "When Recommend Movement is disabled, you can enable this option to override it and allow |T1247261:0|t Fel Rush to be used when Unbound Chaos is active.",
+        desc = "When Recommend Movement is disabled, you can enable this option to override it and allow |T1247261:0|t Fel Rush to be recommended when Unbound Chaos is active.",
         type = "toggle",
         width = "full",
         disabled = function() return state.settings.recommend_movement end,
@@ -1394,7 +1384,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
     spec:RegisterSetting( "demon_blades_head", nil, {
         name = "Demon Blades",
-        type = "header",        
+        type = "header",
     } )
 
     spec:RegisterSetting( "demon_blades_text", nil, {
