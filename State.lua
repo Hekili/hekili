@@ -3400,10 +3400,10 @@ local mt_default_buff = {
             return rawget( t, k )
 
         elseif k == "up" or k == "ticking" then
-            return t.remains > 0
+            return t.applied >= state.query_time and t.expires > state.query_time
 
         elseif k == "react" then
-            if t.expires > state.query_time then
+            if t.applied >= state.query_time and t.expires > state.query_time then
                 return t.count
             end
             return 0
@@ -3412,7 +3412,7 @@ local mt_default_buff = {
             return t.remains == 0
 
         elseif k == "remains" then
-            return max( 0, t.expires - state.query_time )
+            return t.applied >= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
         elseif k == "refreshable" then
             return t.remains < 0.3 * ( aura.duration or 30 )
@@ -3445,13 +3445,13 @@ local mt_default_buff = {
             return t.v1 * t.stack
 
         elseif k == "stack" or k == "stacks" then
-            if t.up then return ( t.count ) else return 0 end
+            if t.applied >= state.query_time and state.query_time < t.expires then return ( t.count ) else return 0 end
 
         elseif k == "stack_pct" then
-            if t.up then return ( 100 * t.stack / t.max_stack ) else return 0 end
+            if t.applied >= state.query_time and state.query_time < t.expires then return ( 100 * t.stack / t.max_stack ) else return 0 end
 
         elseif k == "ticks" then
-            if t.up then return t.duration / t.tick_time - t.ticks_remain end
+            if t.applied >= state.query_time and state.query_time < t.expires then return t.duration / t.tick_time - t.ticks_remain end
             -- if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
             return 0
 
@@ -3459,7 +3459,7 @@ local mt_default_buff = {
             return aura and aura.tick_time or ( 3 * state.haste ) -- Default tick time will be 3 because why not?
 
         elseif k == "ticks_remain" then
-            if t.up then return t.remains / t.tick_time end
+            if t.applied >= state.query_time and state.query_time < t.expires then return t.remains / t.tick_time end
             return 0
 
         elseif k == "last_trigger" then
@@ -5945,6 +5945,33 @@ function state.reset( dispName )
     -- Special case spells that suck.
     if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
         setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
+    end
+
+    -- Trinkets that need special handling.
+    if state.set_bonus.cache_of_acquired_treasures > 0 then
+        -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).
+        if buff.acquired_sword.up then
+            applyBuff( "acquired_axe" )
+            buff.acquired_axe.expires = buff.acquired_sword.expires + 12
+            buff.acquired_axe.applied = buff.acquired_sword.expires
+            applyBuff( "acquired_wand" )
+            buff.acquired_wand.expires = buff.acquired_axe.expires + 12
+            buff.acquired_wand.applied = buff.acquired_axe.expires
+        elseif buff.acquired_axe.up then
+            applyBuff( "acquired_wand" )
+            buff.acquired_wand.expires = buff.acquired_axe.expires + 12
+            buff.acquired_wand.applied = buff.acquired_axe.expires
+            applyBuff( "acquired_sword" )
+            buff.acquired_sword.expires = buff.acquired_wand.expires + 12
+            buff.acquired_sword.applied = buff.acquired_wand.expires
+        elseif buff.acquired_wand.up then
+            applyBuff( "acquired_sword" )
+            buff.acquired_sword.expires = buff.acquired_wand.expires + 12
+            buff.acquired_sword.applied = buff.acquired_wand.expires
+            applyBuff( "acquired_axe" )
+            buff.acquired_axe.expires = buff.acquired_sword.expires + 12
+            buff.acquired_axe.applied = buff.acquired_sword.expires
+        end
     end
 
     Hekili:Yield( "Reset Pre-Casting" )

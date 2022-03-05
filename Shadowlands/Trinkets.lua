@@ -1628,8 +1628,56 @@ do
 
             toggle = "cooldowns",
 
-            handler = function()
+            usable = function()
+                return buff.acquired_sword.up or buff.acquired_axe.up or buff.acquired_wand.up
             end,
+
+            handler = function()
+                if buff.acquired_sword.up then
+                    applyBuff( "acquired_sword_haste" )
+                elseif buff.acquired_axe.up then
+                    applyBuff( "acquired_axe_driver" )
+                end
+                removeBuff( "acquired_sword" )
+                removeBuff( "acquired_axe" )
+                removeBuff( "acquired_wand" )
+            end,
+
+            auras = {
+                acquired_sword = {
+                    id = 368657,
+                    duration = 12,
+                    max_stack = 1,
+                },
+                acquired_sword_haste = {
+                    id = 368649,
+                    duration = 25,
+                    max_stack = 10,
+                    copy = "acquired_sword_driver"
+                },
+                acquired_axe = {
+                    id = 368656,
+                    duration = 12,
+                    max_stack = 1,
+                },
+                acquired_axe_driver = {
+                    id = 368650,
+                    duration = 25,
+                    max_stack = 1,
+                    copy = "acquired_axe_buff"
+                },
+                vicious_wound = {
+                    id = 368651,
+                    duration = 3,
+                    max_stack = 1,
+                    copy = "acquired_axe_bleed"
+                },
+                acquired_wand = {
+                    id = 368654,
+                    duration = 12,
+                    max_stack = 1,
+                },
+            }
         },
         the_lions_roar = {
             cast = 3,
