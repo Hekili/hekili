@@ -890,9 +890,14 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             startsCombat = true,
             texture = 1247261,
 
-            usable = function ()
-                if settings.recommend_movement ~= true then return false, "fel_rush movement is disabled" end
-                return not prev_gcd[1].fel_rush
+            readyTime = function ()
+                if prev_gcd[1].fel_rush then
+                    return 3600
+                end
+                if settings.recommend_movement == true then return 0 end
+                if buff.unbound_chaos.up and settings.unbound_movement then return 0 end
+                if talent.momentum.enabled and settings.momentum_movement then return buff.momentum.remains end
+                return 3600
             end,
             handler = function ()
                 removeBuff( "unbound_chaos" )
@@ -1183,9 +1188,10 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             startsCombat = true,
             texture = 1348401,
 
-            usable = function ()
-                if settings.recommend_movement ~= true then return false, "vengeful_retreat movement is disabled" end
-                return true
+            readyTime = function ()
+                if settings.recommend_movement then return 0 end
+                if talent.momentum.enabled and settings.momentum_movement then return buff.momentum.remains end
+                return 3600
             end,
 
             handler = function ()
@@ -1368,6 +1374,24 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         width = "full"
     } )
 
+    spec:RegisterSetting( "momentum_movement", false, {
+        name = "Recommend Movement for Momentum",
+        desc = "When Recommend Movement is disabled, you can enable this option to override it and allow |T1247261:0|t Fel Rush / |T1348401:0|t Vengeful Retreat only when it will trigger Momentum-related effects.",
+        type = "toggle",
+        width = "full",
+        disabled = function() return state.settings.recommend_movement end,
+    } )
+
+    spec:RegisterSetting( "unbound_movement", false, {
+        name = "Recommend Movement for Unbound Chaos",
+        desc = "When Recommend Movement is disabled, you can enable this option to override it and allow |T1247261:0|t Fel Rush to be used when Unbound Chaos is active.",
+        type = "toggle",
+        width = "full",
+        disabled = function() return state.settings.recommend_movement end,
+    } )
+
+
+
     spec:RegisterSetting( "demon_blades_head", nil, {
         name = "Demon Blades",
         type = "header",        
@@ -1384,7 +1408,8 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         name = "I understand that Demon Blades is unpredictable; don't warn me.",
         desc = "If checked, the addon will not provide a warning about Demon Blades when entering combat.",
         type = "toggle",
-        width = "full"
+        width = "full",
+        arg = function() return false end,
     } )
 
 
