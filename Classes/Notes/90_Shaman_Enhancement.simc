@@ -1,5 +1,5 @@
 ## Enhancement Shaman
-## March 2, 2022
+## March 5, 2022
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -61,12 +61,12 @@ actions.aoe+=/fire_nova,if=active_dot.flame_shock>=3
 actions.aoe+=/vesper_totem
 actions.aoe+=/chain_lightning,if=buff.stormkeeper.up
 actions.aoe+=/lava_lash,if=buff.crash_lightning.up
-actions.aoe+=/stormstrike,if=buff.crash_lightning.up
-actions.aoe+=/fire_nova,if=active_dot.flame_shock>=2
 actions.aoe+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/stormkeeper,if=buff.maelstrom_weapon.stack>=5
-actions.aoe+=/crash_lightning
 actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack=10
+actions.aoe+=/stormstrike,if=buff.crash_lightning.up
+actions.aoe+=/fire_nova,if=active_dot.flame_shock>=2
+actions.aoe+=/crash_lightning
 actions.aoe+=/windstrike
 actions.aoe+=/stormstrike
 actions.aoe+=/fleshcraft,interrupt=1,if=soulbind.volatile_solvent
