@@ -1114,7 +1114,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             rWait = state.delay
 
                                                             if debug then
-                                                                scripts:ImplantDebugData( slot )
+                                                                -- scripts:ImplantDebugData( slot )
                                                                 self:Debug( "Action chosen:  %s at %.2f!", rAction, rWait )
                                                             end
 
@@ -1300,7 +1300,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         state.selected_action = rAction
 
                                                         if debug then
-                                                            scripts:ImplantDebugData( slot )
+                                                            -- scripts:ImplantDebugData( slot )
                                                             self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
                                                         end
 
@@ -1863,6 +1863,7 @@ function Hekili.Update()
                     slot.depth = chosen_depth
 
                     state.scriptID = slot.script
+                    if debug then scripts:ImplantDebugData( slot ) end
         
                     checkstr = checkstr and ( checkstr .. ':' .. action ) or action
         
