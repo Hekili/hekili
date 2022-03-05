@@ -1,5 +1,5 @@
 ## Balance Druid
-## March 2, 2022
+## March 4, 2022
 
 ## Changes:
 ## - Added Solar Beam.
@@ -30,7 +30,6 @@ actions.precombat+=/wrath,line_cd=10,if=(eclipse.lunar_next|eclipse.in_solar|ecl
 
 # Precast 2 Wrath and a Starsurge on ST with Night Fae and BoAT or Starfire otherwise
 actions.opener+=/wrath,if=(eclipse.lunar_next|eclipse.in_solar|eclipse.in_both|eclipse.any_next)&prev.1.wrath&!prev.2.wrath
-actions.opener+=/starfire,line_cd=5,if=!runeforge.balance_of_all_things|!covenant.night_fae|!spell_targets.starfall=1|!talent.natures_balance.enabled|(eclipse.solar_next|eclipse.in_lunar|eclipse.in_both|eclipse.any_next)
 actions.opener+=/starfire,line_cd=5,if=(!runeforge.balance_of_all_things|!covenant.night_fae|!spell_targets.starfall=1|!talent.natures_balance.enabled)&!set_bonus.tier28_2pc|(eclipse.solar_next|eclipse.in_lunar|eclipse.in_both|eclipse.any_next)
 actions.opener+=/starsurge,line_cd=5,if=(runeforge.balance_of_all_things&covenant.night_fae&spell_targets.starfall=1)&!set_bonus.tier28_2pc
 
