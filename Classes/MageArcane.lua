@@ -430,7 +430,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     -- actions.precombat+=/variable,name=final_burn,op=set,value=0
     -- actions.calculations+=/variable,name=final_burn,op=set,value=1,if=buff.arcane_charge.stack=buff.arcane_charge.max_stack&!buff.rule_of_threes.up&fight_remains<=((mana%action.arcane_blast.cost)*action.arcane_blast.execute_time)
     spec:RegisterVariable( "final_burn", function ()
-        if buff.arcane_charge.stack == buff.arcane_charge.max_stack and not buff.rule_of_threes.up and fight_remains <= ( ( mana.percent * action.arcane_blast.execute_time ) ) then
+        if buff.arcane_charge.stack == buff.arcane_charge.max_stack and not buff.rule_of_threes.up and fight_remains <= ( mana.current / action.arcane_blast.cost ) * action.arcane_blast.execute_time then
             return 1
         end
 
