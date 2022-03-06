@@ -1,5 +1,5 @@
 ## Elemental Shaman
-## March 1, 2022
+## March 6, 2022
 
 ## Changes:
 ## - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
@@ -39,7 +39,7 @@ actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2&(spell_targets.c
 actions+=/run_action_list,name=single_target,strict=1,if=!talent.storm_elemental.enabled&active_enemies<=2
 actions+=/run_action_list,name=se_single_target,strict=1,if=talent.storm_elemental.enabled&active_enemies<=2
 
-actions.aoe=storm_elemental
+actions.aoe=storm_elemental,if=!pet.storm_elemental.active
 actions.aoe+=/eye_of_the_storm,if=buff.call_lightning.remains>=10
 actions.aoe+=/earthquake,if=buff.echoing_shock.up
 actions.aoe+=/chain_harvest
@@ -70,7 +70,7 @@ actions.aoe+=/lava_burst,moving=1,if=buff.lava_surge.up&cooldown_react
 actions.aoe+=/flame_shock,moving=1,cycle_targets=1,if=refreshable
 actions.aoe+=/frost_shock,moving=1
 
-actions.se_single_target=storm_elemental
+actions.se_single_target=storm_elemental,if=!pet.storm_elemental.active
 actions.se_single_target+=/lightning_bolt,if=buff.surge_of_power.up
 actions.se_single_target+=/primordial_wave,cycle_targets=1,if=covenant.necrolord&!buff.primordial_wave.up&!buff.splintered_elements.up
 actions.se_single_target+=/eye_of_the_storm,if=buff.call_lightning.remains>=10
