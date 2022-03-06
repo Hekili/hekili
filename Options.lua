@@ -295,9 +295,11 @@ local oneTimeFixes = {
             if spec > 0 and not p.runOnce[ 'forceReloadClassDefaultOptions_20220306_' .. spec ] then
                 local cfg = p.specs[ spec ]
                 for k, v in pairs( data.options ) do
-                    if cfg[ k ] == ns.specTemplate[ k ] then cfg[ k ] = v end
+                    if cfg[ k ] == ns.specTemplate[ k ] and cfg[ k ] ~= v then
+                        cfg[ k ] = v
+                        sendMsg = true
+                    end
                 end
-                sendMsg = true
                 p.runOnce[ 'forceReloadClassDefaultOptions_20220306_' .. spec ] = true
             end
         end
@@ -846,6 +848,15 @@ do
                 },
             },
         }
+
+        for id, spec in pairs( class.specs ) do
+            if id > 0 then
+                defaults.profile.specs[ id ] = defaults.profile.specs[ id ] or tableCopy( specTemplate )
+                for k, v in pairs( spec.options ) do
+                    defaults.profile.specs[ id ][ k ] = v
+                end
+            end
+        end
 
         return defaults
     end

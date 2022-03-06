@@ -5915,16 +5915,6 @@ function Hekili:SpecializationChanged()
 
             if spec.id > 0 then
                 local s = Hekili.DB.profile.specs[ spec.id ]
-                local d = Hekili:GetDefaults().profile.specs
-                
-                local specDefaults = rawget( d, spec.id ) or {}
-                
-                for k, v in pairs( spec.options ) do
-                    if rawget( s, k ) == nil then s[ k ] = v end
-                    specDefaults[ k ] = v
-                end
-
-                d[ spec.id ] = specDefaults
 
                 for k, v in pairs( spec.settings ) do
                     if s.settings[ v.name ] == nil then s.settings[ v.name ] = v.default end
