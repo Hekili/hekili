@@ -170,7 +170,7 @@ function Hekili:ReInitialize()
 
     callHook( "onInitialize" )
 
-    if self.DB.profile.enabled == false and self.DB.profile.AutoDisabled then 
+    if self.DB.profile.enabled == false and self.DB.profile.AutoDisabled then
         self.DB.profile.AutoDisabled = nil
         self.DB.profile.enabled = true
         self:Enable()
@@ -178,7 +178,7 @@ function Hekili:ReInitialize()
 end 
 
 
-function Hekili:OnEnable()  
+function Hekili:OnEnable()
     ns.StartEventHandler()
     self:TotalRefresh( true )
 

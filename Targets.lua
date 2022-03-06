@@ -285,7 +285,7 @@ do
         if spec then
             local checkPets = showNPs and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
             local checkPlates = showNPs and spec.nameplates
-            
+
             if checkPets or checkPlates then
                 for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then

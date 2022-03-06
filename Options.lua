@@ -77,7 +77,7 @@ end
 
 -- One Time Fixes
 local oneTimeFixes = {
-    refreshForBfA_II = function( p )
+    --[[ refreshForBfA_II = function( p )
         for k, v in pairs( p.displays ) do
             if type( k ) == 'number' then
                 p.displays[ k ] = nil
@@ -86,7 +86,7 @@ local oneTimeFixes = {
 
         p.runOnce.refreshForBfA_II = nil
         p.actionLists = nil
-    end,
+    end, ]]
 
     --[[ reviseDisplayModes_20180709 = function( p )
         if p.toggles.mode.type ~= "AutoDual" and p.toggles.mode.type ~= "AutoSingle" and p.toggles.mode.type ~= "SingleAOE" then
@@ -98,7 +98,7 @@ local oneTimeFixes = {
         end
     end, ]]
 
-    reviseDisplayQueueAnchors_20180718 = function( p )
+    --[[ reviseDisplayQueueAnchors_20180718 = function( p )
         for name, display in pairs( p.displays ) do
             if display.queue.offset then
                 if display.queue.anchor:sub( 1, 3 ) == "TOP" or display.queue.anchor:sub( 1, 6 ) == "BOTTOM" then
@@ -197,7 +197,7 @@ local oneTimeFixes = {
         for _, v in pairs( p.specs ) do
             v.potion = nil
         end
-    end,
+    end, ]]
 
     resetAberrantPackageDates_20190728_1 = function( p )
         for _, v in pairs( p.packs ) do
@@ -208,7 +208,7 @@ local oneTimeFixes = {
         end
     end,
 
-    autoconvertDelaySweepToExtend_20190729 = function( p )
+    --[[ autoconvertDelaySweepToExtend_20190729 = function( p )
         for k, v in pairs( p.displays ) do
             if v.delays.type == "CDSW" then
                 v.delays.type = "__NA"
@@ -257,10 +257,11 @@ local oneTimeFixes = {
         for id, spec in pairs( p.specs ) do
             spec.gcdSync = nil
         end
-    end,
+    end, ]]
 
     forceEnableEnhancedRecheckBoomkin_20210712 = function( p )
-        p.specs[ 102 ].enhancedRecheck = true
+        local s = rawget( p.specs, 102 )
+        if s then s.enhancedRecheck = true end
     end,
 
     updateMaxRefreshToNewSpecOptions_20220222 = function( p )
@@ -279,13 +280,34 @@ local oneTimeFixes = {
         end
     end,
 
-    forceReloadAllDefaultPriorities_20220228 = function( p )        
+    forceReloadAllDefaultPriorities_20220228 = function( p )
         for name, pack in pairs( p.packs ) do
             if pack.builtIn then
                 Hekili.DB.profile.packs[ name ] = nil
                 Hekili:RestoreDefault( name )
             end
         end
+    end,
+
+    forceReloadClassDefaultOptions_20220306 = function( p )
+        local sendMsg = false
+        for spec, data in pairs( class.specs ) do
+            if spec > 0 and not p.runOnce[ 'forceReloadClassDefaultOptions_20220306_' .. spec ] then
+                local cfg = p.specs[ spec ]
+                for k, v in pairs( data.options ) do
+                    if cfg[ k ] == ns.specTemplate[ k ] then cfg[ k ] = v end
+                end
+                sendMsg = true
+                p.runOnce[ 'forceReloadClassDefaultOptions_20220306_' .. spec ] = true
+            end
+        end
+        if sendMsg then
+            C_Timer.After( 5, function() 
+                if Hekili.DB.profile.notifications.enabled then Hekili:Notify( "Some specialization options were reset.", 6 ) end
+                Hekili:Print( "Some specialization options were reset to default; this can occur once per profile/specialization." )
+            end )
+        end
+        p.runOnce.forceReloadClassDefaultOptions_20220306 = nil
     end,
 }
 
@@ -578,251 +600,255 @@ local packTemplate = {
 local specTemplate = ns.specTemplate
 
 
--- Default Table
-function Hekili:GetDefaults()
-    local defaults = {
-        global = {
-            styles = {},
-        },
+do
+    local defaults
 
-        profile = {
-            enabled = true,
-            minimapIcon = false,
-            autoSnapshot = true,
-            screenshot = true,
+    -- Default Table
+    function Hekili:GetDefaults()
+        defaults = defaults or {
+            global = {
+                styles = {},
+            },
 
-            toggles = {
-                pause = {
-                    key = "ALT-SHIFT-P",
+            profile = {
+                enabled = true,
+                minimapIcon = false,
+                autoSnapshot = true,
+                screenshot = true,
+
+                toggles = {
+                    pause = {
+                        key = "ALT-SHIFT-P",
+                    },
+
+                    snapshot = {
+                        key = "ALT-SHIFT-[",
+                    },
+
+                    mode = {
+                        key = "ALT-SHIFT-N",
+                        -- type = "AutoSingle",
+                        automatic = true,
+                        single = true,
+                        value = "automatic",
+                    },
+
+                    cooldowns = {
+                        key = "ALT-SHIFT-R",
+                        value = false,
+                        override = false,
+                        separate = false,
+                    },
+
+                    defensives = {
+                        key = "ALT-SHIFT-T",
+                        value = false,
+                        separate = false,
+                    },
+
+                    potions = {
+                        key = "",
+                        value = false,
+                    },
+
+                    interrupts = {
+                        key = "ALT-SHIFT-I",
+                        value = false,
+                        separate = false,
+                    },
+
+                    essences = {
+                        key = "ALT-SHIFT-G",
+                        value = true,
+                        override = true,
+                    },
+
+                    custom1 = {
+                        key = "",
+                        value = false,
+                        name = "Custom #1"
+                    },
+
+                    custom2 = {
+                        key = "",
+                        value = false,
+                        name = "Custom #2"
+                    }
                 },
 
-                snapshot = {
-                    key = "ALT-SHIFT-[",
+                specs = {
+                    ['**'] = specTemplate
                 },
 
-                mode = {
-                    key = "ALT-SHIFT-N",
-                    -- type = "AutoSingle",
-                    automatic = true,
-                    single = true,
-                    value = "automatic",
+                packs = {
+                    ['**'] = packTemplate
                 },
 
-                cooldowns = {
-                    key = "ALT-SHIFT-R",
-                    value = false,
-                    override = false,
-                    separate = false,
+                notifications = {
+                    enabled = true,
+
+                    x = 0,
+                    y = 0,
+
+                    font = ElvUI and "Expressway" or "Arial Narrow",
+                    fontSize = 20,
+                    fontStyle = "OUTLINE",
+
+                    width = 600,
+                    height = 40,
                 },
 
-                defensives = {
-                    key = "ALT-SHIFT-T",
-                    value = false,
-                    separate = false,
+                displays = {
+                    Primary = {
+                        enabled = true,
+                        builtIn = true,
+
+                        name = "Primary",
+
+                        relativeTo = "SCREEN",
+                        displayPoint = "TOP",
+                        anchorPoint = "BOTTOM",
+
+                        x = 0,
+                        y = -225,
+
+                        numIcons = 3,
+                        order = 1,
+
+                        flash = {
+                            color = { 1, 0, 0, 1 },
+                        },
+
+                        glow = {
+                            enabled = true,
+                            mode = "autocast"
+                        },
+                    },
+
+                    AOE = {
+                        enabled = true,
+                        builtIn = true,
+
+                        name = "AOE",
+
+                        x = 0,
+                        y = -170,
+
+                        numIcons = 3,
+                        order = 2,
+
+                        flash = {
+                            color = { 0, 1, 0, 1 },
+                        },
+
+                        glow = {
+                            enabled = true,
+                            mode = "autocast",
+                        },
+                    },
+
+                    Cooldowns = {
+                        enabled = true,
+                        builtIn = true,
+
+                        name = "Cooldowns",
+                        filter = 'cooldowns',
+
+                        x = 0,
+                        y = -280,
+
+                        numIcons = 1,
+                        order = 3,
+
+                        flash = {
+                            color = { 0, 0, 1, 1 },
+                        },
+
+                        glow = {
+                            enabled = true,
+                            mode = "autocast",
+                        },
+                    },
+
+                    Defensives = {
+                        enabled = true,
+                        builtIn = true,
+
+                        name = "Defensives",
+                        filter = 'defensives',
+
+                        x = -110,
+                        y = -225,
+
+                        numIcons = 1,
+                        order = 4,
+
+                        flash = {
+                            color = { 0, 0, 1, 1 },
+                        },
+
+                        glow = {
+                            enabled = true,
+                            mode = "autocast",
+                        },
+                    },
+
+                    Interrupts = {
+                        enabled = true,
+                        builtIn = true,
+
+                        name = "Interrupts",
+                        filter = 'interrupts',
+
+                        x = -55,
+                        y = -225,
+
+                        numIcons = 1,
+                        order = 5,
+
+                        flash = {
+                            color = { 1, 1, 1, 1 },
+                        },
+
+                        glow = {
+                            enabled = true,
+                            mode = "autocast",
+                        },
+                    },
+
+                    ['**'] = displayTemplate
                 },
 
-                potions = {
-                    key = "",
-                    value = false,
+                -- STILL NEED TO REVISE.
+                Clash = 0,
+                -- (above)
+
+                runOnce = {
+                },
+
+                clashes = {
+                },
+                trinkets = {
+                    ['**'] = {
+                        disabled = false,
+                        minimum = 0,
+                        maximum = 0,
+                    }
                 },
 
                 interrupts = {
-                    key = "ALT-SHIFT-I",
-                    value = false,
-                    separate = false,
+                    pvp = {},
+                    encounters = {},
                 },
 
-                essences = {
-                    key = "ALT-SHIFT-G",
-                    value = true,
-                    override = true,
+                iconStore = {
+                    hide = false,
                 },
-
-                custom1 = {
-                    key = "",
-                    value = false,
-                    name = "Custom #1"
-                },
-
-                custom2 = {
-                    key = "",
-                    value = false,
-                    name = "Custom #2"
-                }
             },
+        }
 
-            specs = {
-                ['**'] = specTemplate
-            },
-
-            packs = {
-                ['**'] = packTemplate
-            },
-
-            notifications = {
-                enabled = true,
-
-                x = 0,
-                y = 0,
-
-                font = ElvUI and "Expressway" or "Arial Narrow",
-                fontSize = 20,
-                fontStyle = "OUTLINE",
-
-                width = 600,
-                height = 40,
-            },
-
-            displays = {
-                Primary = {
-                    enabled = true,
-                    builtIn = true,
-
-                    name = "Primary",
-
-                    relativeTo = "SCREEN",
-                    displayPoint = "TOP",
-                    anchorPoint = "BOTTOM",
-
-                    x = 0,
-                    y = -225,
-
-                    numIcons = 3,
-                    order = 1,
-
-                    flash = {
-                        color = { 1, 0, 0, 1 },
-                    },
-
-                    glow = {
-                        enabled = true,
-                        mode = "autocast"
-                    },
-                },
-
-                AOE = {
-                    enabled = true,
-                    builtIn = true,
-
-                    name = "AOE",
-
-                    x = 0,
-                    y = -170,
-
-                    numIcons = 3,
-                    order = 2,
-
-                    flash = {
-                        color = { 0, 1, 0, 1 },
-                    },
-
-                    glow = {
-                        enabled = true,
-                        mode = "autocast",
-                    },
-                },
-
-                Cooldowns = {
-                    enabled = true,
-                    builtIn = true,
-
-                    name = "Cooldowns",
-                    filter = 'cooldowns',
-
-                    x = 0,
-                    y = -280,
-
-                    numIcons = 1,
-                    order = 3,
-
-                    flash = {
-                        color = { 0, 0, 1, 1 },
-                    },
-
-                    glow = {
-                        enabled = true,
-                        mode = "autocast",
-                    },
-                },
-
-                Defensives = {
-                    enabled = true,
-                    builtIn = true,
-
-                    name = "Defensives",
-                    filter = 'defensives',
-
-                    x = -110,
-                    y = -225,
-
-                    numIcons = 1,
-                    order = 4,
-
-                    flash = {
-                        color = { 0, 0, 1, 1 },
-                    },
-
-                    glow = {
-                        enabled = true,
-                        mode = "autocast",
-                    },
-                },
-
-                Interrupts = {
-                    enabled = true,
-                    builtIn = true,
-
-                    name = "Interrupts",
-                    filter = 'interrupts',
-
-                    x = -55,
-                    y = -225,
-
-                    numIcons = 1,
-                    order = 5,
-
-                    flash = {
-                        color = { 1, 1, 1, 1 },
-                    },
-
-                    glow = {
-                        enabled = true,
-                        mode = "autocast",
-                    },
-                },
-
-                ['**'] = displayTemplate
-            },
-
-            -- STILL NEED TO REVISE.
-            Clash = 0,
-            -- (above)
-
-            runOnce = {
-            },
-
-            clashes = {
-            },
-            trinkets = {
-                ['**'] = {
-                    disabled = false,
-                    minimum = 0,
-                    maximum = 0,
-                }
-            },
-
-            interrupts = {
-                pvp = {},
-                encounters = {},
-            },
-
-            iconStore = {
-                hide = false,
-            },
-        },
-    }
-
-    return defaults
+        return defaults
+    end
 end
 
 
@@ -8796,7 +8822,6 @@ end
 
 
 function Hekili:TotalRefresh( noOptions )
-
     if Hekili.PLAYER_ENTERING_WORLD then
         self:SpecializationChanged()
         self:RestoreDefaults()
@@ -8810,6 +8835,16 @@ function Hekili:TotalRefresh( noOptions )
     end
 
     callHook( "onInitialize" )
+
+    for specID, spec in pairs( class.specs ) do
+        if specID > 0 then
+            local options = self.DB.profile.specs[ specID ]
+
+            for k, v in pairs( spec.options ) do
+                if rawget( options, k ) == nil then options[ k ] = v end
+            end
+        end
+    end
 
     self:RunOneTimeFixes()
     ns.checkImports()
@@ -8828,7 +8863,6 @@ function Hekili:TotalRefresh( noOptions )
             WeakAuras.ScanEvents( "HEKILI_TOGGLE" )
         end
     end
-
 end
 
 
