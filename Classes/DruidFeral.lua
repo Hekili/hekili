@@ -934,7 +934,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             end
 
             if set_bonus.tier28_2pc > 0 then
-                gainChargeTime( talent.incarnation.enabled and "incarnation" or "berserk", a * 0.5 )
+                gainChargeTime( talent.incarnation.enabled and "incarnation" or "berserk", a * 0.7 )
             end
 
             if a >= 5 then
@@ -1883,7 +1883,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 end
 
                 removeBuff( "predatory_swiftness" )
-                applyBuff( "regrowth", 12 )
+                applyBuff( "regrowth" )
             end,
         },
 
@@ -2790,6 +2790,14 @@ if UnitClassBase( "player" ) == "DRUID" then
         end,
         type = "toggle",
         width = "full"
+    } )
+
+
+    spec:RegisterSetting( "filler_regrowth", false, {
+        name = "|T136085:0|t Use Regrowth as Filler",
+        desc = "If checked, the default priority will recommend |T136085:0|t Regrowth when you use the Bloodtalons talent and would otherwise be pooling Energy to retrigger Bloodtalons.",
+        type = "toggle",
+        width = "full",
     } )
 
 
