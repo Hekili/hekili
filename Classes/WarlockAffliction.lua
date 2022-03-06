@@ -1846,7 +1846,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
         multiline = true,
         get = function () return "#showtooltip\n/use [@mouseover,harm,nodead][] " .. class.abilities.siphon_life.name end,
         set = function () end,
-    } )  
+    } )
 
     spec:RegisterOptions( {
         enabled = true,

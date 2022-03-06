@@ -29,7 +29,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 local app = state.debuff.crackling_jade_lightning.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / state.haste ) * state.haste
             end,
 
             stop = function( x )
@@ -47,7 +47,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 local app = state.buff.energizing_elixir.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 1.5 ) * 1.5
             end,
 
             interval = 1.5,

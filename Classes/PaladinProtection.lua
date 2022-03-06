@@ -48,12 +48,12 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 local app = state.buff.divine_resonance.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 5 ) * 5
             end,
 
             interval = 5,
             value = 1,
-        },        
+        },
     } )
     spec:RegisterResource( Enum.PowerType.Mana )
 
@@ -1260,7 +1260,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             auras = {
                 divine_resonance = {
                     id = 355455,
-                    duration = 30,
+                    duration = 15,
                     max_stack = 1,
                 },
             }

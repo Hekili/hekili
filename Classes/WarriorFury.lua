@@ -32,7 +32,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local swing = state.swings.mainhand
                 local t = state.query_time
 
-                return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
+                return swing + floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed
             end,
 
             interval = "mainhand_speed",
@@ -50,7 +50,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local swing = state.swings.offhand
                 local t = state.query_time
 
-                return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
+                return swing + floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed
             end,
 
             interval = "offhand_speed",
@@ -68,10 +68,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local app = state.buff.bladestorm.applied
                 local t = state.query_time
 
-                return app + ( floor( ( t - app ) / ( 1 * state.haste ) ) * ( 1 * state.haste ) )
+                return app + floor( ( t - app ) / state.haste ) * state.haste
             end,
 
-            interval = function () return 1 * state.haste end,
+            interval = function () return state.haste end,
 
             value = 5,
         },
@@ -83,7 +83,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local app = state.buff.battle_trance.applied
                 local t = state.query_time
 
-                return app + ( floor( ( t - app ) / state.haste ) * state.haste )
+                return app + floor( ( t - app ) / 3 ) * 3
             end,
 
             interval = 3,
@@ -98,7 +98,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local app = state.buff.conquerors_banner.applied
                 local t = state.query_time
 
-                return app + ( floor( ( t - app ) / ( 1 * state.haste ) ) * ( 1 * state.haste ) )
+                return app + floor( t - app )
             end,
 
             interval = 1,

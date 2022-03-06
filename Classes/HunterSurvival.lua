@@ -46,7 +46,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             aura = "death_chakram",
 
             last = function ()
-                return state.buff.death_chakram.applied + floor( state.query_time - state.buff.death_chakram.applied )
+                return state.buff.death_chakram.applied + floor( ( state.query_time - state.buff.death_chakram.applied ) / class.auras.death_chakram.tick_time ) * class.auras.death_chakram.tick_time
             end,
 
             interval = function () return class.auras.death_chakram.tick_time end,

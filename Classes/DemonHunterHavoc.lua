@@ -79,10 +79,10 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                 local app = state.buff.eye_beam.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / state.haste ) * state.haste
             end,
 
-            interval = function () return 1 * state.haste end,
+            interval = function () return state.haste end,
             value = 40,
         },
     } )

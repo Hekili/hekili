@@ -49,7 +49,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local swing = state.swings.mainhand
                 local t = state.query_time
 
-                return swing + ( floor( ( t - swing ) / state.mainhand_speed ) * state.mainhand_speed )
+                return swing + floor( ( t - swing ) / state.mainhand_speed ) * state.mainhand_speed
             end,
 
             interval = "mainhand_speed",
@@ -67,11 +67,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local app = state.buff.conquerors_banner.applied
                 local t = state.query_time
 
-                return app + ( floor( ( t - app ) / ( 1 * state.haste ) ) * ( 1 * state.haste ) )
+                return app + floor( t - app )
             end,
 
             interval = 1,
-
             value = 4,
         },        
     } )

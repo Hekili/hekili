@@ -29,7 +29,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 local app = state.buff.divine_resonance.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 5 ) * 5
             end,
 
             interval = 5,

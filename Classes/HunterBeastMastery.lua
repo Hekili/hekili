@@ -77,7 +77,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 local app = state.buff.barbed_shot.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,
@@ -92,7 +92,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 local app = state.buff.barbed_shot_2.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,
@@ -107,7 +107,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 local app = state.buff.barbed_shot_3.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,
@@ -122,7 +122,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 local app = state.buff.barbed_shot_4.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,
@@ -137,7 +137,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 local app = state.buff.barbed_shot_5.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,
@@ -152,7 +152,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 local app = state.buff.barbed_shot_6.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,
@@ -167,7 +167,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 local app = state.buff.barbed_shot_7.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,
@@ -182,7 +182,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 local app = state.buff.barbed_shot_8.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,
@@ -194,7 +194,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             aura = "death_chakram",
 
             last = function ()
-                return state.buff.death_chakram.applied + floor( state.query_time - state.buff.death_chakram.applied )
+                return state.buff.death_chakram.applied + floor( ( state.query_time - state.buff.death_chakram.applied ) / class.auras.death_chakram.tick_time ) * class.auras.death_chakram.tick_time
             end,
 
             interval = function () return class.auras.death_chakram.tick_time end,

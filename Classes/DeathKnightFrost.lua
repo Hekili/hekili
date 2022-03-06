@@ -44,7 +44,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             aura = "empower_rune_weapon",
 
             last = function ()
-                return state.buff.empower_rune_weapon.applied + floor( state.query_time - state.buff.empower_rune_weapon.applied )
+                return state.buff.empower_rune_weapon.applied + floor( ( state.query_time - state.buff.empower_rune_weapon.applied ) / 5 ) * 5
             end,
 
             stop = function ( x )
@@ -194,7 +194,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             aura = "empower_rune_weapon",
 
             last = function ()
-                return state.buff.empower_rune_weapon.applied + floor( state.query_time - state.buff.empower_rune_weapon.applied )
+                return state.buff.empower_rune_weapon.applied + floor( ( state.query_time - state.buff.empower_rune_weapon.applied ) / 5 ) * 5
             end,
 
             interval = 5,

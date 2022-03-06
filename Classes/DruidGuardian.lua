@@ -58,7 +58,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             debuff = true,
 
             last = function ()
-                return state.debuff.thrash_bear.applied + floor( state.query_time - state.debuff.thrash_bear.applied )
+                return state.debuff.thrash_bear.applied + floor( ( state.query_time - state.debuff.thrash_bear.applied ) / class.auras.thrash_bear.tick_time ) * class.auras.thrash_bear.tick_time
             end,
 
             interval = function () return class.auras.thrash_bear.tick_time end,

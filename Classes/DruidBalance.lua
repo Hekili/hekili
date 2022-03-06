@@ -45,7 +45,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 local app = state.debuff.fury_of_elune_ap.applied
                 local t = state.query_time
 
-                return app + floor( ( t - app ) / 0.5 ) * 0.5
+                return app + floor( ( t - app ) * 2 ) * 0.5
             end,
 
             interval = 0.5,
@@ -59,7 +59,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 local app = state.combat
                 local t = state.query_time
 
-                return app + floor( ( t - app ) / 1.5 ) * 1.5
+                return app + floor( ( t - app ) / 2 ) * 2
             end,
 
             interval = 2,

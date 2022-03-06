@@ -59,7 +59,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 local app = state.buff.shuriken_tornado.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / 0.95 ) * 0.95
             end,
 
             stop = function( x ) return state.buff.shuriken_tornado.remains == 0 end,

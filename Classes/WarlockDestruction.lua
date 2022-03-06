@@ -26,7 +26,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 local app = state.buff.infernal.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) * 2 ) * 0.5
             end,
 
             interval = 0.5,
@@ -40,7 +40,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 local app = state.buff.chaos_shards.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) * 2 ) * 0.5
             end,
 
             interval = 0.5,
@@ -54,8 +54,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             last = function ()
                 local app = state.debuff.immolate.applied
                 local t = state.query_time
+                local tick = state.debuff.immolate.tick_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / tick ) * tick
             end,
 
             interval = function () return state.debuff.immolate.tick_time end,
@@ -69,7 +70,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 local app = state.buff.blasphemy.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) * 2 ) * 0.5
             end,
 
             interval = 0.5,

@@ -76,7 +76,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 local app = state.buff.casting.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / class.abilities.void_torrent.tick_time ) * class.abilities.void_torrent.tick_time
             end,
 
             interval = function () return class.abilities.void_torrent.tick_time end,
