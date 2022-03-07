@@ -101,13 +101,74 @@ local function forgetMeNots( str )
 end
 
 
-local mathBreak = {
+local function atToAbs( str )
+    -- First, handle already bracketed "!(X)" -> "not (X)".
+    local found = 1
+ 
+    while found > 0 do
+       str, found = str:gsub( "%s*@%s*(%b())%s*", " abs(safenum%1) " )
+    end
+ 
+    -- The remaining conditions are not bracketed, but may include brackets.
+    -- Such as !5>2+(1*3).
+    -- So we'll start from the !, then go through the string until it's time to stop.
+ 
+    local i = 1
+    local substring
+ 
+    while( str:find("@") ) do   
+       local start = str:find("@")
+ 
+       --while str:sub( start, start ):match("%s") do
+       --   start = start + 1
+       --      end
+ 
+       local parens = 0
+       local finish = -1
+ 
+       for j = start, str:len() do
+          local char = str:sub( j, j )
+ 
+          if char == "(" then         
+             parens = parens + 1
+ 
+          elseif char == ")" then         
+             if parens > 0 then parens = parens - 1
+             else finish = j - 1; break end
+ 
+          elseif parens == 0 then
+             -- We are not within a bracketed part of the string.  We can end here.
+             if exprBreak[ char ] then
+                finish = j - 1
+                break
+             end
+          end
+       end
+ 
+       if finish == -1 then finish = str:len() end
+ 
+       substring = str:sub( start + 1, finish )
+       substring = substring:trim()
+ 
+       str = format( "%s abs( %s ) %s", str:sub( 1, start - 1 ) or "", substring, str:sub( finish + 1, str:len() ) or "" )
+ 
+       i = i + 1
+       if i >= 100 then Hekili:Error( "Was unable to convert '@' to 'abs' in string [%s].", str ); break end
+    end
+ 
+    str = str:gsub( "%s%s", " " )
+ 
+    return str
+ end
+ 
+ 
+ local mathBreak = {
     ["<"] = true,
     [">"] = true,
     ["="] = true,
     ["&"] = true,
     ["|"] = true,
-    [","] = true
+    [","] = true,
 }
 
 local function HandleDeprecatedOperators( str, opStr, prefix  )
@@ -187,51 +248,6 @@ end
 scripts.HandleDeprecatedOperators = HandleDeprecatedOperators
 
 
-local function HandleUnaryOperators( str, opStr, prefix  )
-    --str = str:gsub("%s", "")
-    for op, right in str:gmatch("(" .. opStr .. ")(.+)") do
-        local rightLen = right:len()
-        local val2, len2, b2
-
-        if right:sub(1, 1) == "(" then
-            val2 = right:match("^(%b())")
-            len2 = val2:len()
-            val2 = val2:sub( 2, -2 )
-        else
-            local parens = 0
-            local eos = -1
-
-            for i = 1, right:len() do
-                local char = right:sub(i, i)
-
-                if char == "(" then
-                    i = i + right:sub( i ):match("^(%b())" ):len()
-                elseif mathBreak[char] or char == ")" then
-                    eos = i - 1
-                    break
-                end
-            end
-
-            if eos == -1 then
-                val2 = right
-                len2 = rightLen
-            else
-                val2 = right:sub(1, eos)
-                len2 = eos
-            end
-        end
-
-        val2 = val2:trim()
-
-        str = prefix .. "(safenum(" .. val2 .. ")) " .. right:sub( 1 + len2 )
-    end
-
-    if str:find( opStr ) then return scripts.HandleUnaryOperators( str, opStr, prefix ) end
-    return str
-end
-scripts.HandleUnaryOperators = HandleUnaryOperators
-
-
 local invalid = "([^a-zA-Z0-9_.[])"
 
 
@@ -294,6 +310,7 @@ local function SimToLua( str, modifier )
     -- Replace '!' with ' not '.
     str = str:gsub( "!=", "~=" )
     if str:find("!") then str = forgetMeNots( str ) end
+    if str:find("@") then str = atToAbs( str ) end
 
     -- Replace '^' (simc XOR) with '~=' (functionally identical for booleans).
     if str:find("%^") then str = str:gsub("%^", "~=") end
@@ -301,7 +318,6 @@ local function SimToLua( str, modifier )
     -- Replace '>?' and '<?' with max/min.
     if str:find(">%?") then str = HandleDeprecatedOperators( str, ">%?", "max" ) end
     if str:find("<%?") then str = HandleDeprecatedOperators( str, "<%?", "min" ) end
-    if str:find("@")   then str = HandleUnaryOperators     ( str, "@",   "abs" ) end
 
     str = SimcWithResources( str )
 
@@ -699,7 +715,8 @@ do
         ["~"] = true,
         ["!"] = true,
         ["!="] = true,
-        ["~="] = true
+        ["~="] = true,
+        ["@"] = true
      }
 
      local math_ops = {
@@ -769,13 +786,15 @@ do
         local ands = p:find( " and " )
         local ors = p:find( " or " )
         local nots = p:find( " not " )
+        local abss = p:find( " abs " )
 
         if ands then p = p:gsub( " and ", "&" ) end
         if ors then p = p:gsub( " or ", "|" ) end
         if nots then p = p:gsub( " not ", "!" ) end
+        if abss then p = p:gsub( " abs ", "@" ) end
 
-        p = p:gsub( "([!%|&%-%+%*=%%/<>%?%~]+) +", "%1" )
-        p = p:gsub( " +([!%|&%-%+%*=%%/<>%?%~]+)", "%1" )
+        p = p:gsub( "([!%|&%-%+%*=%%/<>%?%~@]+) +", "%1" )
+        p = p:gsub( " +([!%|&%-%+%*=%%/<>%?%~@]+)", "%1" )
 
         local orig = p
 
@@ -814,7 +833,7 @@ do
                  if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
               end
 
-              c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~][&%|%-%+*/><%?=%~]?)" )
+              c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~@][&%|%-%+*/><%?=%~]?)" )
 
               table.insert( results, {
                     s = c,
@@ -840,7 +859,7 @@ do
                  l = true
            } )
 
-           if p:find( "[!&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
+           if p:find( "[!&%|%-%+/%%%*@]" ) ~= nil then results[#results].r = true end
         end
 
         local output = ""
@@ -861,7 +880,7 @@ do
             elseif piece.t == "expr" and piece.s:match( "^%s*[a-z0-9_]+%s*%(" ) then
                 trimmed_prefix = piece.s:match( "^%s*([a-z0-9_]+)%s*%(" )
                 piece.s = piece.s:gsub( "^%s*" .. trimmed_prefix .. "%s*", "" )
-            end                
+            end
 
             if piece and piece.t == "expr" then
                 if piece.r then
@@ -870,6 +889,7 @@ do
                         if ands then orig = orig:gsub( "&", " and " ) end
                         if ors then orig = orig:gsub( "|", " or " ) end
                         if nots then orig = orig:gsub( "!", " not " ) end
+                        if abss then orig = orig:gsub( "@", " abs " ) end
 
                         esDepth = esDepth - 1
                         return orig 
@@ -941,11 +961,13 @@ do
         if ands then output = output:gsub( "&", " and " ) end
         if ors then output = output:gsub( "|", " or " ) end
         if nots then output = output:gsub( "!", " not " ) end
+        if abss then output = output:gsub( "@", " abs" ) end
 
         -- output = output:gsub( "  ", " " )
         -- output = output:gsub( "not (safenum(", "safenum(not (" )
         -- output = output:gsub( "not safebool(", "safebool(not " )        
         output = output:gsub( "!safenum(%b())", "safenum(!%1)" )
+        output = output:gsub( "@safebool", "@safenum" )
         output = output:gsub( "!%((%b())%)", "!%1" )
 
         esDepth = esDepth - 1
@@ -1026,9 +1048,9 @@ local function stripScript( str, thorough )
   -- Remove the 'return ' that was added during conversion.
   str = str:gsub("^return ", "")
 
-  -- Remove min/max/safenum/safebool.
+  -- Remove min/max/safenum/safebool/abs.
   -- str = str:gsub("([^%a%w_%.])min([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])max([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safebool([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safenum([^%a%w_)]+)%s?%(?", "%1%2 ")
-  str = str:gsub( "min(%b())", "%1" ):gsub( "max(%b())", "%1" ):gsub( "safebool(%b())", "%1" ):gsub( "safenum(%b())", "%1" )
+  str = str:gsub( "abs(%b())", "%1" ):gsub( "min(%b())", "%1" ):gsub( "max(%b())", "%1" ):gsub( "safebool(%b())", "%1" ):gsub( "safenum(%b())", "%1" )
 
   -- Remove comments.
   str = str:gsub("%-%-.-\n", "")
@@ -1183,6 +1205,7 @@ local function ConvertScript( node, hasModifiers, header )
     local clean = SimToLua( t )
 
     t = scripts:EmulateSyntax( t )
+    local tPreSim = t
     t = SimToLua( t )
 
     local sf, e
@@ -1229,7 +1252,7 @@ local function ConvertScript( node, hasModifiers, header )
             if type( rc ) ~= "function" then
                 Hekili:Error( "Recheck function for " .. clean .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
                 rc = nil
-            end    
+            end
         end
     end
 
@@ -1251,6 +1274,7 @@ local function ConvertScript( node, hasModifiers, header )
 
         Lua = clean and clean:trim() or nil,
         Emulated = t and t:trim() or nil,
+        EmuPreSim = tPreSim and tPreSim:trim() or nil,
         SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil,
 
         ID = header
