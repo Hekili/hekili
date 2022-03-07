@@ -6794,7 +6794,7 @@ do
                                                             for i, entry in ipairs( alist ) do
                                                                 if name ~= list or i ~= action then
                                                                     if entry.action == "variable" and entry.var_name then
-                                                                        state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i )
+                                                                        state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i, name )
                                                                     end
                                                                 end
                                                             end
