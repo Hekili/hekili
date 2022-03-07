@@ -274,10 +274,6 @@ local HekiliSpecMixin = {
                             if v == a then class.auraList[ k ] = nil end
                         end
 
-                        --[[ for k, v in pairs( self.auras ) do 
-                            if v == a then self.auras[ k ] = nil end
-                        end ]]
-
                         Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
                         Hekili.InvalidSpellIDs[ a.id ] = a.name or a.key
 
@@ -291,7 +287,9 @@ local HekiliSpecMixin = {
 
                     local texture = a.texture or GetSpellTexture( a.id )
 
-                    class.auraList[ a.key ] = "|T" .. texture .. ":0|t " .. a.name
+                    if self.id > 0 then
+                        class.auraList[ a.key ] = "|T" .. texture .. ":0|t " .. a.name
+                    end
 
                     self.auras[ a.name ] = a
                     if GetSpecializationInfo( GetSpecialization() or 0 ) == self.id then
@@ -373,7 +371,6 @@ local HekiliSpecMixin = {
             end
         end
     end,
-
 
     RegisterStateExpr = function( self, key, func )
         setfenv( func, state )
