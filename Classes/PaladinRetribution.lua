@@ -492,10 +492,11 @@ if UnitClassBase( "player" ) == "PALADIN" then
     end )
 
     spec:RegisterHook( "reset_precast", function ()
-        --[[ Moved to hammer_of_wrath_hallow generator.
-        if IsUsableSpell( 24275 ) and not ( target.health_pct < 20 or buff.avenging_wrath.up or buff.crusade.up or buff.final_verdict.up ) then
-            applyBuff( "hammer_of_wrath_hallow", action.ashen_hallow.lastCast + 30 - now )
-        end ]]
+        if buff.divine_resonance.up then
+            state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
+            if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
+            if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
+        end
     end )
 
 

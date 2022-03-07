@@ -411,6 +411,12 @@ if UnitClassBase( "player" ) == "PALADIN" then
         last_consecration = nil
         last_blessed_hammer = nil
         last_shield = nil
+
+        if buff.divine_resonance.up then
+            state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
+            if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
+            if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
+        end
     end )
 
 
@@ -1254,7 +1260,12 @@ if UnitClassBase( "player" ) == "PALADIN" then
                     end
                 end
 
-                if legendary.divine_resonance.enabled then applyBuff( "divine_resonance" ) end
+                if legendary.divine_resonance.enabled then
+                    applyBuff( "divine_resonance" )
+                    state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
+                    state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" )
+                    state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" )
+                end
             end,
 
             auras = {
