@@ -598,7 +598,7 @@ do
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }
 
-                                    --[[ for j = setting.info.min, setting.info.max do
+                                    for j = setting.info.min, setting.info.max do
                                         insert( submenu.menuList, {
                                             text = tostring( j ),
                                             func = function ()
@@ -610,8 +610,8 @@ do
                                                 return setting.info.get( menu.args ) == j
                                             end,
                                             hidden = function () return Hekili.State.spec.id ~= i end,
-                                        } )                                        
-                                    end ]]
+                                        } )
+                                    end
 
                                     insert( menuData, submenu )
                                 end
@@ -993,7 +993,7 @@ do
                     b.Action = action
                     b.Text = caption
                     b.Indicator = indicator
-                    b.Keybind = keybind                    
+                    b.Keybind = keybind
                     b.Ability = ability
                     b.ExactTime = b.Recommendation.exact_time
                 end
@@ -1016,11 +1016,11 @@ do
                 local thread = self.activeThread
                 
                 if thread or not Hekili.Pause then
-                    self.refreshRate = self.refreshRate or 0.1
-                    self.combatRate = self.combatRate or 0.5
+                    self.refreshRate = self.refreshRate or 0.5
+                    self.combatRate = self.combatRate or 0.1
 
                     -- If there's no thread, then see if we have a reason to update.
-                    if  ( not thread or self.superUpdate ) and Hekili.freshFrame and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
+                    if not thread and Hekili.freshFrame and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
                         self.superUpdate = false
 
                         self.activeThread = coroutine.create( Hekili.Update )
