@@ -5950,27 +5950,27 @@ function state.reset( dispName )
     -- Trinkets that need special handling.
     if state.set_bonus.cache_of_acquired_treasures > 0 then
         -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).
-        if buff.acquired_sword.up then
-            applyBuff( "acquired_axe" )
-            buff.acquired_axe.expires = buff.acquired_sword.expires + 12
-            buff.acquired_axe.applied = buff.acquired_sword.expires
-            applyBuff( "acquired_wand" )
-            buff.acquired_wand.expires = buff.acquired_axe.expires + 12
-            buff.acquired_wand.applied = buff.acquired_axe.expires
-        elseif buff.acquired_axe.up then
-            applyBuff( "acquired_wand" )
-            buff.acquired_wand.expires = buff.acquired_axe.expires + 12
-            buff.acquired_wand.applied = buff.acquired_axe.expires
-            applyBuff( "acquired_sword" )
-            buff.acquired_sword.expires = buff.acquired_wand.expires + 12
-            buff.acquired_sword.applied = buff.acquired_wand.expires
-        elseif buff.acquired_wand.up then
-            applyBuff( "acquired_sword" )
-            buff.acquired_sword.expires = buff.acquired_wand.expires + 12
-            buff.acquired_sword.applied = buff.acquired_wand.expires
-            applyBuff( "acquired_axe" )
-            buff.acquired_axe.expires = buff.acquired_sword.expires + 12
-            buff.acquired_axe.applied = buff.acquired_sword.expires
+        if state.buff.acquired_sword.up then
+            state.applyBuff( "acquired_axe" )
+            state.buff.acquired_axe.expires = state.buff.acquired_sword.expires + 12
+            state.buff.acquired_axe.applied = state.buff.acquired_sword.expires
+            state.applyBuff( "acquired_wand" )
+            state.buff.acquired_wand.expires = state.buff.acquired_axe.expires + 12
+            state.buff.acquired_wand.applied = state.buff.acquired_axe.expires
+        elseif state.buff.acquired_axe.up then
+            state.applyBuff( "acquired_wand" )
+            state.buff.acquired_wand.expires = state.buff.acquired_axe.expires + 12
+            state.buff.acquired_wand.applied = state.buff.acquired_axe.expires
+            state.applyBuff( "acquired_sword" )
+            state.buff.acquired_sword.expires = state.buff.acquired_wand.expires + 12
+            state.buff.acquired_sword.applied = state.buff.acquired_wand.expires
+        elseif state.buff.acquired_wand.up then
+            state.applyBuff( "acquired_sword" )
+            state.buff.acquired_sword.expires = state.buff.acquired_wand.expires + 12
+            state.buff.acquired_sword.applied = state.buff.acquired_wand.expires
+            state.applyBuff( "acquired_axe" )
+            state.buff.acquired_axe.expires = state.buff.acquired_sword.expires + 12
+            state.buff.acquired_axe.applied = state.buff.acquired_sword.expires
         end
     end
 
