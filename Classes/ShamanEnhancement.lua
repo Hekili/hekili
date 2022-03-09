@@ -1147,7 +1147,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 consume_maelstrom( 5 )
 
-                if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end                
+                if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
             end
         },
 

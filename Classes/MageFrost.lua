@@ -348,6 +348,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 applied = function( t )
                     return t.spell.applied
                 end,
+                expires = function( t )
+                    return t.spell.expires
+                end,
                 remains = function( t )
                     return t.spell.remains
                 end,

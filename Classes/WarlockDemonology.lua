@@ -12,7 +12,6 @@ local PTR = ns.PTR
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local GetPlayerAuraBySpellID = _G.GetPlayerAuraBySpellID
 
-
 -- Conduits
 -- [-] borne_of_blood
 -- [-] carnivorous_stalkers
@@ -134,8 +133,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end )
 
 
-    local hog_time = 0
-
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         local _, subtype, _, source, _, _, _, destGUID, _, _, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
@@ -254,7 +251,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 end
             end
         
-        elseif imps[ source ] and subtype == "SPELL_CAST_START" then
+        elseif imps[ source ] and subtype == "SPELL_CAST_SUCCESS" then
             local demonic_power = GetPlayerAuraBySpellID( 265273 )
             local now = GetTime()
 
@@ -296,7 +293,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
     spec:RegisterHook( "reset_precast", function()
         local i = 1
-
         for id, imp in pairs( imps ) do
             if imp.expires < now then
                 imps[ id ] = nil
@@ -408,7 +404,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                             buff.grimoire_felguard.stack, buff.grimoire_felguard.remains,
                             buff.wild_imps.stack, buff.wild_imps.remains,
                             buff.malicious_imps.stack, buff.malicious_imps.remains,
-                            major_demon_expires )
+                            major_demon_remains )
         end
     end )
 
@@ -558,7 +554,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
 
     -- When the next major demon (anything but Wild Imps) expires.
-    spec:RegisterStateExpr( "major_demon_expires", function ()
+    spec:RegisterStateExpr( "major_demon_remains", function ()
         local expire = 3600
 
         if buff.grimoire_felguard.up then expire = min( expire, buff.grimoire_felguard.remains ) end
@@ -858,8 +854,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                     return exp and exp >= query_time or false
                 end,
                 down = function ( t ) return not t.up end,
-                applied = function () local exp = dreadstalkers_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
-                remains = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                applied = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and ( exp - 12 ) or 0 end,
+                expires = function () return dreadstalkers_v[ #dreadstalkers_v ] or 0 end,
                 count = function ()
                     local c = 0
                     for i, exp in ipairs( dreadstalkers_v ) do
@@ -876,8 +872,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             meta = {
                 up = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and exp >= query_time or false end,
                 down = function ( t ) return not t.up end,
-                applied = function () local exp = grim_felguard_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
-                remains = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                applied = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and ( exp - 12 ) or 0 end,
+                expires = function () return grim_felguard_v[ #grim_felguard_v ] or 0 end,
                 count = function ()
                     local c = 0
                     for i, exp in ipairs( grim_felguard_v ) do
@@ -894,8 +890,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             meta = {
                 up = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp >= query_time or false end,
                 down = function ( t ) return not t.up end,
-                applied = function () local exp = vilefiend_v[ 1 ]; return exp and ( exp - 15 ) or 0 end,
-                remains = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                applied = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and ( exp - 15 ) or 0 end,
+                expires = function () return vilefiend_v[ #vilefiend_v ] or 0 end,
                 count = function ()
                     local c = 0
                     for i, exp in ipairs( vilefiend_v ) do
@@ -912,8 +908,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             meta = {
                 up = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp >= query_time or false end,
                 down = function ( t ) return not t.up end,
-                applied = function () local exp = wild_imps_v[ 1 ]; return exp and ( exp - 40 ) or 0 end,
-                remains = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                applied = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and ( exp - 40 ) or 0 end,
+                expires = function () return wild_imps_v[ #wild_imps_v ] or 0 end,
                 count = function ()
                     local c = 0
                     for i, exp in ipairs( wild_imps_v ) do
@@ -931,8 +927,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             meta = {
                 up = function () local exp = malicious_imps_v[ #malicious_imps_v ]; return exp and exp >= query_time or false end,
                 down = function ( t ) return not t.up end,
-                applied = function () local exp = malicious_imps_v[ 1 ]; return exp and ( exp - 40 ) or 0 end,
-                remains = function () local exp = malicious_imps_v[ #malicious_imps_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                applied = function () local exp = malicious_imps_v[ #malicious_imps_v ]; return exp and ( exp - 40 ) or 0 end,
+                expires = function () return malicious_imps_v[ #malicious_imps_v ] or 0 end,
                 count = function ()
                     local c = 0
                     for i, exp in ipairs( malicious_imps_v ) do
@@ -947,10 +943,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             duration = 20,
 
             meta = {
-                up = function () local exp = other_demon_v[ 1 ]; return exp and exp >= query_time or false end,
+                up = function () local exp = other_demon_v[ #other_demon_v ]; return exp and exp >= query_time or false end,
                 down = function ( t ) return not t.up end,
-                applied = function () local exp = other_demon_v[ 1 ]; return exp and ( exp - 15 ) or 0 end,
-                remains = function () local exp = other_demon_v[ 1 ]; return exp and max( 0, exp - query_time ) or 0 end,
+                applied = function () local exp = other_demon_v[ #other_demon_v ]; return exp and ( exp - 15 ) or 0 end,
+                expires = function () return other_demon_v[ #other_demon_v ] or 0 end,
                 count = function ()
                     local c = 0
                     for i, exp in ipairs( other_demon_v ) do

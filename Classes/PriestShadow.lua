@@ -487,67 +487,6 @@ if UnitClassBase( "player" ) == "PRIEST" then
             id = 194249,
             duration = 15, -- function () return talent.legacy_of_the_void.enabled and 3600 or 15 end,
             max_stack = 1,
-            --[[ generate = function( t )
-                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = FindUnitBuffByID( "player", 194249 )
-
-                if name then
-                    t.name = name
-                    t.count = max( 1, count )
-                    t.applied = max( action.void_eruption.lastCast, now )
-                    t.expires = t.applied + 3600
-                    t.duration = 3600
-                    t.caster = "player"
-                    t.timeMod = 1
-                    t.v1 = v1
-                    t.v2 = v2
-                    t.v3 = v3
-                    t.unit = "player"
-                    return
-                end
-
-                t.name = nil
-                t.count = 0
-                t.expires = 0
-                t.applied = 0
-                t.duration = 3600
-                t.caster = "nobody"
-                t.timeMod = 1
-                t.v1 = 0
-                t.v2 = 0
-                t.v3 = 0
-                t.unit = "player"
-            end,
-            meta = {
-                up = function ()
-                    return buff.voidform.applied > 0 and buff.voidform.drop_time > query_time
-                end,
-
-                drop_time = function ()
-                    if buff.voidform.applied == 0 then return 0 end
-
-                    local app = buff.voidform.applied
-                    app = app + floor( query_time - app )
-
-                    local drain = 6 + ( 0.8 * buff.voidform.stacks )
-                    local amt = insanity.current
-
-                    while ( amt > 0 ) do
-                        amt = amt - drain
-                        drain = drain + 0.8
-                        app = app + 1
-                    end
-
-                    return app
-                end,
-
-                stacks = function ()
-                    return buff.voidform.applied > 0 and ( buff.voidform.count + floor( offset + delay ) ) or 0
-                end,
-
-                remains = function ()
-                    return max( 0, buff.voidform.drop_time - query_time )
-                end,
-            }, ]]
         },
         weakened_soul = {
             id = 6788,
