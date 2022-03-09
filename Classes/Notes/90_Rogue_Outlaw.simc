@@ -1,5 +1,5 @@
 ## Outlaw Rogue
-## February 28, 2022
+## March 8, 2022
 
 ## Changes:
 ## - Make Fleshcraft interrupt in combat if we just did it for volatile_solvent.
@@ -86,6 +86,7 @@ actions.cds+=/berserking
 actions.cds+=/fireblood
 actions.cds+=/ancestral_call
 actions.cds+=/use_item,name=windscar_whetstone,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|fight_remains<7
+actions.cds+=/use_item,name=cache_of_acquired_treasures,if=buff.acquired_axe.up|boss&fight_remains<25
 # Default conditions for usable items.
 actions.cds+=/trinket1,if=debuff.between_the_eyes.up|trinket.1.has_use_buff|boss&fight_remains<=20
 actions.cds+=/trinket2,if=debuff.between_the_eyes.up|trinket.2.has_use_buff|boss&fight_remains<=20
