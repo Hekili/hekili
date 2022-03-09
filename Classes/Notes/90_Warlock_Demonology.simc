@@ -1,10 +1,10 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## March 2, 2022
+## March 8, 2022
 
 ## Changes:
 ## - Spell Lock.
-## - Only recommend Demonbolt pre-combat if it is instant (or hardcast for bosses).
+## - Only recommend Demonbolt pre-combat if it is instant (or hardcast for bosses); don't overcap shards if you're at 5 in the opener.
 ## - Power Siphon allowed pre-combat to proc instant Demonbolt.
 ## - PvP talent interrupt.
 ## - Avoid SB->HoG spam when you're not about to summon a Tyrant.
@@ -20,8 +20,8 @@ actions.precombat+=/use_item,name=soleahs_secret_technique
 actions.precombat+=/fleshcraft
 actions.precombat+=/power_siphon,if=buff.wild_imps.stack>1&buff.demonic_core.stack<=2
 actions.precombat+=/use_item,name=shadowed_orb_of_torment
-actions.precombat+=/demonbolt,if=(boss|action.demonbolt.cast=0)&soul_shards<4
-actions.precombat+=/shadow_bolt,if=!(boss|action.demonbolt.cast=0)|soul_shards>3
+actions.precombat+=/demonbolt,if=soul_shards<5&(boss|action.demonbolt.cast=0)
+actions.precombat+=/shadow_bolt,if=soul_shards<5&!(boss|action.demonbolt.cast=0)
 ## actions.precombat+=/variable,name=first_tyrant_time,op=set,value=10
 ## actions.precombat+=/variable,name=in_opener,op=set,value=1
 actions.precombat+=/variable,name=use_bolt_timings,op=set,value=runeforge.balespiders_burning_core&runeforge.shard_of_annihilation
