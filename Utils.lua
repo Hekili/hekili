@@ -630,3 +630,15 @@ end
 function Hekili:IsValidSpec()
     return state.spec.id and class.specs[ state.spec.id ] ~= nil
 end
+
+
+do
+    local cache = {}
+
+    function Hekili:Loadstring( str )
+        if cache[ str ] then return cache[ str ][ 1 ], cache[ str ][ 2 ] end
+        local func, warn = loadstring( str )
+        cache[ str ] = { func, warn }
+        return func, warn
+    end
+end

@@ -524,12 +524,12 @@ local HekiliSpecMixin = {
         if not data.charges  then data.charges = 1 end
 
         if data.hasteCD then
-            if type( data.cooldown ) == "number" and data.cooldown > 0 then data.cooldown = loadstring( "return " .. data.cooldown .. " * haste" ) end
-            if type( data.recharge ) == "number" and data.recharge > 0 then data.recharge = loadstring( "return " .. data.recharge .. " * haste" ) end
+            if type( data.cooldown ) == "number" and data.cooldown > 0 then data.cooldown = Hekili:Loadstring( "return " .. data.cooldown .. " * haste" ) end
+            if type( data.recharge ) == "number" and data.recharge > 0 then data.recharge = Hekili:Loadstring( "return " .. data.recharge .. " * haste" ) end
         end
 
         if not data.fixedCast and type( data.cast ) == "number" then
-            data.cast = loadstring( "return " .. data.cast .. " * haste" )
+            data.cast = Hekili:Loadstring( "return " .. data.cast .. " * haste" )
         end
 
         if data.toggle == "interrupts" and data.gcd == "off" and data.readyTime == state.timeToInterrupt and data.interrupt == nil then

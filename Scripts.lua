@@ -905,7 +905,7 @@ do
                         if piece.s:sub(1, 1) == "(" then piece.s = "safenum" .. piece.s
                         else piece.s = "safenum(" .. piece.s .. ")" end
                     else
-                        local func, warn = loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
+                        local func, warn = Hekili:Loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
                         if func then
                             setfenv( func, state )
                             -- maximum warningness
@@ -929,7 +929,7 @@ do
                         if piece.s:sub(1, 1) == "(" then piece.s = "safebool" .. piece.s
                         else piece.s = "safebool(" .. piece.s .. ")" end
                     else    
-                        local func, warn = loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
+                        local func, warn = Hekili:Loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
                         if func  then
                             setfenv( func, state )
                             local pass, val = pcall( func )
@@ -1118,7 +1118,7 @@ local function GetScriptElements( script )
     for s in c:gmatch( "[^ ,]+" ) do
         while s:match("^(%b())$" ) do s = s:sub( 2, -2 ) end
         if not e[ s ] and not tonumber( s ) then
-            local ef = loadstring( "return ".. s )
+            local ef = Hekili:Loadstring( "return ".. s )
             if ef then
                 setfenv( ef, state )
                 local success, v = pcall( ef )
@@ -1210,7 +1210,7 @@ local function ConvertScript( node, hasModifiers, header )
 
     local sf, e
 
-    if t then sf, e = loadstring( "-- " .. header .. "\nreturn safebool( " .. t .. " )" ) end
+    if t then sf, e = Hekili:Loadstring( "-- " .. header .. "\nreturn safebool( " .. t .. " )" ) end
     if sf then setfenv( sf, state ) end
 
     --[[ if sf and not e then
@@ -1243,7 +1243,7 @@ local function ConvertScript( node, hasModifiers, header )
         rs = scripts:BuildRecheck( node.criteria )
         if rs then
             local orig = rs
-            rc, erc = loadstring( "-- " .. header .. " recheck\nreturn " .. rs )
+            rc, erc = Hekili:Loadstring( "-- " .. header .. " recheck\nreturn " .. rs )
             if rc then setfenv( rc, state ) end
 
             rEle = GetScriptElements( orig )
@@ -1327,7 +1327,7 @@ local function ConvertScript( node, hasModifiers, header )
                     
                     if rs then
                         local orig = rs
-                        rc, erc = loadstring( "-- var " .. header .. " recheck\nreturn " .. rs )
+                        rc, erc = Hekili:Loadstring( "-- var " .. header .. " recheck\nreturn " .. rs )
                         if rc then setfenv( rc, state ) end
             
                         --[[rEle = GetScriptElements( orig )
@@ -1344,7 +1344,7 @@ local function ConvertScript( node, hasModifiers, header )
                     end                    
                 end
 
-                sf, e = loadstring( "return " .. emulated )
+                sf, e = Hekili:Loadstring( "return " .. emulated )
 
                 if sf then
                     setfenv( sf, state )

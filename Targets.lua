@@ -692,8 +692,8 @@ ns.eliminateUnit = function(id, force)
     guidRanges[id] = nil
 
     if force then
-        for k, v in pairs(debuffs) do
-            ns.trackDebuff(k, id)
+        for k, v in pairs( debuffs ) do
+            if v[ id ] then ns.trackDebuff( k, id ) end
         end
     end
 
@@ -742,7 +742,12 @@ end
 Hekili.lastAudit = GetTime()
 Hekili.auditInterval = 0
 
-ns.Audit = function()
+ns.Audit = function( special )
+    if not special and not Hekili.DB.profile.enabled then
+        C_Timer.After( 1, ns.Audit )
+        return
+    end
+
     local now = GetTime()
     local spec = state.spec.id and Hekili.DB.profile.specs[ state.spec.id ]
     local nodmg = spec and ( spec.damage == false ) or false
@@ -751,49 +756,62 @@ ns.Audit = function()
     Hekili.auditInterval = now - Hekili.lastAudit
     Hekili.lastAudit = now
 
-    for aura, targets in pairs(debuffs) do
-        local a = class.auras[aura]
+    for aura, targets in pairs( debuffs ) do
+        local a = class.auras[ aura ]
         local window = a and a.duration or grace
         local expires = a and a.no_ticks or false
+        local friendly = a and a.friendly or false
 
-        for unit, entry in pairs(targets) do
+        for unit, entry in pairs( targets ) do
             -- NYI: Check for dot vs. debuff, since debuffs won't 'tick'
             if expires and now - entry.last_seen > window then
-                ns.trackDebuff(aura, unit)
+                ns.trackDebuff( aura, unit )
+            elseif special == "combatExit" and not friendly then
+                Hekili:Error( format( "Auditor removed an aura %d from %s after exiting combat.", aura, unit ) )
+                ns.trackDebuff( aura, unit )
             end
         end
     end
 
-    for whom, when in pairs(targets) do
+    for whom, when in pairs( targets ) do
         if nodmg or now - when > grace then
-            ns.eliminateUnit(whom)
+            ns.eliminateUnit( whom )
         end
     end
 
+    local cutoff = now - 15
     for i = #incomingDamage, 1, -1 do
-        local instance = incomingDamage[i]
+        local instance = incomingDamage[ i ]
 
-        if instance.t < (now - 15) then
-            table.remove(incomingDamage, i)
+        if instance.t < cutoff then
+            table.remove( incomingDamage, i )
         end
     end
 
     for i = #incomingHealing, 1, -1 do
-        local instance = incomingHealing[i]
+        local instance = incomingHealing[ i ]
 
-        if instance.t < (now - 15) then
-            table.remove(incomingHealing, i)
+        if instance.t < cutoff then
+            table.remove( incomingHealing, i )
         end
     end
 
     Hekili:ExpireTTDs()
-
-    if Hekili.DB.profile.enabled then
-        C_Timer.After( 1, ns.Audit )
-    end
+    C_Timer.After( 1, ns.Audit )
 end
 Hekili:ProfileCPU( "Audit", ns.Audit )
 
+
+function Hekili:DumpDotInfo( aura )
+    if not IsAddOnLoaded( "Blizzard_DebugTools" ) then
+        LoadAddOn( "Blizzard_DebugTools" )
+    end
+
+    aura = aura and class.auras[ aura ] and class.auras[ aura ].id or aura
+
+    Hekili:Print( "Current DoT Information at " .. GetTime() .. ( aura and ( " for " .. aura ) or "" ) .. ":" )
+    DevTools_Dump( aura and debuffs[ aura ] or debuffs )
+end
 
 do
     -- New TTD, hopefully more aggressive and accurate than old TTD.
@@ -812,8 +830,8 @@ do
         wipe(enemy)
         insert(recycle, enemy)
 
-        for k, _ in pairs(debuffs) do
-            ns.trackDebuff(k, guid)
+        for k, v in pairs( debuffs ) do
+            if v[ guid ] then ns.trackDebuff( k, guid ) end
         end
     end
 

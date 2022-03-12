@@ -351,8 +351,6 @@ function ns.StopConfiguration()
     -- HekiliNotification.Mover.Header:Hide()
 
     Hekili:UpdateDisplayVisibility()
-    
-    Hekili.MakeDefaults = false
 end
 
 local function MasqueUpdate( Addon, Group, SkinID, Gloss, Backdrop, Colors, Disabled )

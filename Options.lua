@@ -29,6 +29,7 @@ local GetItemInfo = ns.CachedGetItemInfo
 local AddTexString, GetTexString, AtlasToString, GetAtlasFile, GetAtlasCoords = ns.AddTexString, ns.GetTexString, ns.AtlasToString, ns.GetAtlasFile, ns.GetAtlasCoords
 
 
+local ACD = LibStub( "AceConfigDialog-3.0" )
 local LDB = LibStub( "LibDataBroker-1.1", true )
 local LDBIcon = LibStub( "LibDBIcon-1.0", true )
 
@@ -970,7 +971,6 @@ do
         Hekili:BuildUI()
     end
 
-    local ACD = LibStub( "AceConfigDialog-3.0" )
     local LSM = LibStub( "LibSharedMedia-3.0" )
     local SF = SpellFlashCore
 
@@ -8861,7 +8861,12 @@ function Hekili:TotalRefresh( noOptions )
     ns.checkImports()
 
     -- self:LoadScripts()
-    if not noOptions then Hekili.OptionsReady = false end
+    if Hekili.OptionsReady then
+        if Hekili.Config then
+            self:RefreshOptions()
+            ACD:SelectGroup( "Hekili", "profiles" )
+        else Hekili.OptionsReady = false end
+    end
     self:UpdateDisplayVisibility()
     self:BuildUI()
 
@@ -8870,10 +8875,12 @@ function Hekili:TotalRefresh( noOptions )
     -- LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
 
     if WeakAuras and WeakAuras.ScanEvents then
-        for name in pairs( Hekili.DB.profile.toggles ) do
-            WeakAuras.ScanEvents( "HEKILI_TOGGLE" )
+        for name, toggle in pairs( Hekili.DB.profile.toggles ) do
+            WeakAuras.ScanEvents( "HEKILI_TOGGLE", name, toggle.value )
         end
     end
+
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
 end
 
 
@@ -9324,11 +9331,16 @@ do
         import = true,
         skeleton = true,
         recover = true,
+        center = true,
 
         profile = true,
         set = true,
         enable = true,
-        disable = true
+        disable = true,
+        move = true,
+        unlock = true,
+        lock = true,
+        dotinfo = true,
     }
 
     local info = {}
@@ -9351,14 +9363,8 @@ do
     end
 
     function Hekili:CmdLine( input )
-        if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == "import" or input:trim() == "skeleton" then
-            if input:trim() == 'makedefaults' then
-                Hekili.MakeDefaults = true
-
-            elseif input:trim() == 'import' then
-                Hekili.AllowSimCImports = true
-
-            elseif input:trim() == 'skeleton' then
+        if not input or input:trim() == "" or input:trim() == "skeleton" then
+            if input:trim() == 'skeleton' then
                 self:StartListeningForSkeleton()
                 self:Print( "Addon will now gather specialization information.  Select all talents and use all abilities for best results." )
                 self:Print( "See the Skeleton tab for more information. ")
@@ -9368,21 +9374,45 @@ do
             ns.StartConfiguration()
             return
 
-        elseif input:trim() == "center" then
-            for i, v in ipairs( Hekili.DB.profile.displays ) do
-                ns.UI.Buttons[i][1]:ClearAllPoints()
-                ns.UI.Buttons[i][1]:SetPoint("CENTER", 0, (i-1) * 50 )
-            end
-            self:SaveCoordinates()
-            return
-
         elseif input:trim() == "recover" then
-            self.DB.profile.displays = {}
-            self.DB.profile.actionLists = {}
+            local defaults = self:GetDefaults()
+
+            for k, v in pairs( self.DB.profile.displays ) do
+                local default = defaults.profile.displays[ k ]
+                if defaults.profile.displays[ k ] then
+                    for key, value in pairs( default ) do
+                        if type( value ) == "table" then v[ key ] = tableCopy( value )
+                        else v[ key ] = value end
+
+                        if type( value ) == "table" then
+                            for innerKey, innerValue in pairs( value ) do
+                                if v[ key ][ innerKey ] == nil then
+                                    if type( innerValue ) == "table" then v[ key ][ innerKey ] = tableCopy( innerValue )
+                                    else v[ key ][ innerKey ] = innerValue end
+                                end
+                            end
+                        end
+                    end
+
+                    for key, value in pairs( self.DB.profile.displays["**"] ) do
+                        if type( value ) == "table" then v[ key ] = tableCopy( value )
+                        else v[ key ] = value end
+
+                        if type( value ) == "table" then
+                            for innerKey, innerValue in pairs( value ) do
+                                if v[ key ][ innerKey ] == nil then
+                                    if type( innerValue ) == "table" then v[ key ][ innerKey ] = tableCopy( innerValue )
+                                    else v[ key ][ innerKey ] = innerValue end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
             self:RestoreDefaults()
-            -- ns.convertDisplays()
+            self:RefreshOptions()
             self:BuildUI()
-            self:Print("Default displays and action lists restored.")
+            self:Print( "Default displays and action lists restored." )
             return
 
         end
@@ -9686,6 +9716,9 @@ do
                 else
                     Hekili:Print( "Displays are not unlocked.  Use |cFFFFD100/hek move|r or |cFFFFD100/hek unlock|r to allow click-and-drag." )
                 end
+            elseif ( "dotinfo" ):match( "^" .. args[1] ) then
+                local aura = args[2] and args[2]:trim()
+                Hekili:DumpDotInfo( aura )
             end
         else
             LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
