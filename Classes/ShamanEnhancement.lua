@@ -460,6 +460,13 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             duration = 1800,
             max_stack = 1,
         },
+
+        -- Conduit
+        swirling_currents = {
+            id = 338340,
+            duration = 15,
+            max_stack = 1
+        }
     } )
 
 
@@ -1129,7 +1136,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 135127,
 
             handler = function ()
-                if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end                
+                if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
+                if conduit.swirling_currents.enabled then applyBuff( "swirling_currents" ) end
             end,
         },
 
@@ -1148,6 +1156,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 consume_maelstrom( 5 )
 
                 if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
+                if buff.swirling_currents.up then removeStack( "swirling_currents" ) end
             end
         },
 
