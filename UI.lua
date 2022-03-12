@@ -688,8 +688,22 @@ do
         ACTIONBAR_PAGE_CHANGED = 1,
         ACTIONBAR_UPDATE_STATE = 1,
         SPELLS_CHANGED = 1,
-        UPDATE_SHAPESHIFT_FORM = 1
-    }    
+        UPDATE_SHAPESHIFT_FORM = 1,
+    }
+
+    local flashEvents = {
+        -- This unregisters flash frames in SpellFlash.
+        ACTIONBAR_SHOWGRID = 1,
+
+        -- These re-register flash frames in SpellFlash (after 0.5 - 1.0s).
+        ACTIONBAR_HIDEGRID = 1,
+        LEARNED_SPELL_IN_TAB = 1,
+        CHARACTER_POINTS_CHANGED = 1,
+        ACTIVE_TALENT_GROUP_CHANGED = 1,
+        PLAYER_SPECIALIZATION_CHANGED = 1,
+        UPDATE_MACROS = 1,
+        VEHICLE_UPDATE = 1,
+    }
 
     local pulseAuras = 0.1
     local pulseDelay = 0.05
@@ -1260,7 +1274,7 @@ do
                     local a = self.Buttons[ 1 ].Action
                     local changed = self.lastFlash ~= a
         
-                    if a and ( self.flashTimer < 0 or changed ) then
+                    if a and ( self.flashTimer < 0 or changed ) and self.flashReady then
                         self.flashTimer = pulseFlash
         
                         local ability = class.abilities[ a ]
@@ -1278,7 +1292,7 @@ do
                                 LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
                             elseif conf.flash.suppress and not self.flashWarnings[ iname ] then
                                 self.flashWarnings[ iname ] = true
-                                Hekili:Print( "|cff000000WARNING|r - Could not flash recommended item '" .. iname .. "' (" .. self.id .. ")." )
+                                Hekili:Print( "|cffff0000WARNING|r - Could not flash recommended item '" .. iname .. "' (" .. self.id .. ")." )
                             end
                         else
                             local aFlash = ability.flash
@@ -1287,7 +1301,7 @@ do
                                     LSF.FlashAction( aFlash, self.flashColor )
                                 elseif conf.flash.suppress and not self.flashWarnings[ aFlash ] then
                                     self.flashWarnings[ aFlash ] = true
-                                    Hekili:Print( "|cff000000WARNING|r - Could not flash recommended action '" .. aFlash .. "' (" .. self.id .. ")." )
+                                    Hekili:Print( "|cffff0000WARNING|r - Could not flash recommended action '" .. aFlash .. "' (" .. self.id .. ")." )
                                 end
                             else
                                 local id = ability.known
@@ -1299,9 +1313,9 @@ do
                                 local sname = LSF.SpellName( id )
                                 if LSF.Flashable( sname ) then
                                     LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
-                                elseif conf.flash.suppress and not self.flashWarnings[ sname ] then
+                                elseif not self.flashWarnings[ sname ] then
                                     self.flashWarnings[ sname ] = true
-                                    Hekili:Print( "|cff000000WARNING|r - Could not flash recommended ability '" .. sname .. "' (" .. self.id .. ")." )
+                                    Hekili:Print( "|cffff0000WARNING|r - Could not flash recommended ability '" .. sname .. "' (" .. self.id .. ")." )
                                 end
                             end
                         end
@@ -1651,6 +1665,14 @@ do
                 self.NewRecommendations = true
     
             end
+
+            if flashEvents[ event ] then
+                if event == "ACTIONBAR_SHOWGRID" then
+                    self.flashReady = false
+                else
+                    C_Timer.After( 1.5, function() self.flashReady = true end )
+                end
+            end
     
             local finish = debugprofilestop()
     
@@ -1714,6 +1736,10 @@ do
     
                     -- Update keybindings.
                     for k in pairs( kbEvents ) do
+                        self:RegisterEvent( k )
+                    end
+
+                    for k in pairs( flashEvents ) do
                         self:RegisterEvent( k )
                     end
     
@@ -1889,6 +1915,12 @@ do
             local E = _G.ElvUI and ElvUI[1]
             E:UpdateCooldownOverride( 'global' )
             d.forceElvUpdate = nil
+        end
+
+        if d.flashReady == nil then
+            C_Timer.After( 3, function()
+                d.flashReady = true
+            end )
         end
 
         -- Performance Information
