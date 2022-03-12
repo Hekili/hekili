@@ -4340,17 +4340,20 @@ do
     end
 
 
-    local nToggles = 0
+    local ToggleCount = {}
     local tAbilities = {}
     local tItems = {}
 
 
-    local function BuildToggleList( options, specID, section, useName, description )
+    local function BuildToggleList( options, specID, section, useName, description, extraOptions )
         local db = options.args.toggles.plugins[ section ]
         local e
 
         local function tlEntry( key )
-            if db[ key ] then return db[ key ] end
+            if db[ key ] then
+                v.hidden = nil
+                return db[ key ]
+            end
             db[ key ] = {}
             return db[ key ]
         end
@@ -4363,6 +4366,7 @@ do
             db = {}
         end
 
+        local nToggles = ToggleCount[ specID ] or 0
         nToggles = nToggles + 1
 
         local hider = function()
@@ -4597,6 +4601,26 @@ do
         e.hidden = hider
 
 
+        if extraOptions then
+            for k, v in pairs( extraOptions ) do
+                e = tlEntry( section .. k )
+                e.type = v.type or "description"
+                e.name = v.name or ""
+                e.desc = v.desc or ""
+                e.order = v.order or ( nToggles + 1 )
+                e.width = v.width or 1.35
+                e.hidden = v.hidden or hider
+                e.get = v.get
+                e.set = v.set
+                for opt, val in pairs( v ) do
+                    if e[ opt ] == nil then
+                        e[ opt ] = val
+                    end
+                end
+            end
+        end
+
+        ToggleCount[ specID ] = nToggles
         options.args.toggles.plugins[ section ] = db
     end
 
@@ -4984,8 +5008,8 @@ do
                                         "Removing an ability from its toggle leaves it |cFF00FF00ENABLED|r regardless of whether the toggle is active.",
                                     fontSize = "medium",
                                     order = 1,
-                                    width = 3,
-                                }
+                                    width = "full",
+                                },
                             },
                             plugins = {
                                 cooldowns = {},
@@ -5145,7 +5169,28 @@ do
                 end
 
                 -- Toggles
-                BuildToggleList( options, id, "cooldowns",  "Cooldowns" )
+                BuildToggleList( options, id, "cooldowns",  "Cooldowns", nil, {
+                        -- Test Option for Separate Cooldowns
+                        noFeignedCooldown = {
+                            type = "toggle",
+                            name = NewFeature .. " Cooldown: Show Separately - Use Actual Cooldowns",
+                            desc = "If checked, when using the Cooldown: Show Separately feature and Cooldowns are enabled, the addon will |cFFFF0000NOT|r pretend your " ..
+                                "cooldown abilities are fully on cooldown.  This may help resolve scenarios where abilities become desynchronized due to behavior differences " ..
+                                "between the Cooldowns display and your other displays.\n\n" ..
+                                "See |cFFFFD100Toggles|r > |cFFFFD100Cooldowns|r for the Cooldown: Show Separately feature.",
+                            order = 1.051,
+                            width = "full",
+                            disabled = function ()
+                                return not self.DB.profile.toggles.cooldowns.separate
+                            end,
+                            set = function()
+                                self.DB.profile.specs[ id ].noFeignedCooldown = not self.DB.profile.specs[ id ].noFeignedCooldown
+                            end,
+                            get = function()
+                                return self.DB.profile.specs[ id ].noFeignedCooldown
+                            end,
+                        }
+                 } )
                 BuildToggleList( options, id, "essences",   "Covenants" )
                 BuildToggleList( options, id, "interrupts", "Utility / Interrupts" )
                 BuildToggleList( options, id, "defensives", "Defensives",   "The defensive toggle is generally intended for tanking specializations, " ..

@@ -2731,7 +2731,7 @@ local mt_default_cooldown = {
             end
         end
 
-        local raw = state.display ~= "Primary" and state.display ~= "AOE"
+        local raw = ( state.display ~= "Primary" and state.display ~= "AOE" ) or ( profile.toggles.cooldowns.value and profile.toggles.cooldowns.separate and profile.specs[ state.spec.id ].noFeignedCooldown )
 
         if k:sub(1, 5) == "true_" then
             k = k:sub(6)
@@ -4105,7 +4105,7 @@ do
                         end
 
                         -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
-                        if debug then Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. " - value = " .. tostring( value or "nil" .. "." ) ) end
+                        if debug then Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. " - value = " .. tostring( value or "nil" ) .. "." ) end
                         state.variable[ var ] = value
                         cache[ var ][ pathKey ] = value
                     end
@@ -5951,6 +5951,7 @@ function state.reset( dispName )
     if state.set_bonus.cache_of_acquired_treasures > 0 then
         -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).
         if state.buff.acquired_sword.up then
+            state.buff.acquired_sword.expires = state.buff.acquired_sword.applied + 12
             state.applyBuff( "acquired_axe" )
             state.buff.acquired_axe.expires = state.buff.acquired_sword.expires + 12
             state.buff.acquired_axe.applied = state.buff.acquired_sword.expires
@@ -5958,6 +5959,7 @@ function state.reset( dispName )
             state.buff.acquired_wand.expires = state.buff.acquired_axe.expires + 12
             state.buff.acquired_wand.applied = state.buff.acquired_axe.expires
         elseif state.buff.acquired_axe.up then
+            state.buff.acquired_axe.expires = state.buff.acquired_axe.applied + 12
             state.applyBuff( "acquired_wand" )
             state.buff.acquired_wand.expires = state.buff.acquired_axe.expires + 12
             state.buff.acquired_wand.applied = state.buff.acquired_axe.expires
@@ -5965,6 +5967,7 @@ function state.reset( dispName )
             state.buff.acquired_sword.expires = state.buff.acquired_wand.expires + 12
             state.buff.acquired_sword.applied = state.buff.acquired_wand.expires
         elseif state.buff.acquired_wand.up then
+            state.buff.acquired_wand.expires = state.buff.acquired_wand.applied + 12
             state.applyBuff( "acquired_sword" )
             state.buff.acquired_sword.expires = state.buff.acquired_wand.expires + 12
             state.buff.acquired_sword.applied = state.buff.acquired_wand.expires
@@ -6520,7 +6523,6 @@ do
     -- TODO:  Finish this, need to support toggles that knock spells to their own display vs. toggles that disable an ability entirely.
     function state:IsFiltered( spell )
         if state.filter == "none" then return false end
-
         spell = spell or self.this_action
 
         local ability = class.abilities[ spell ]
@@ -6530,9 +6532,7 @@ do
 
         local profile = Hekili.DB.profile
         local spec = profile.specs[ state.spec.id ]
-
         local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
-
         local toggle = option.toggle
         if not toggle or toggle == "default" then toggle = ability.toggle end
 
@@ -6540,7 +6540,7 @@ do
             if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
             elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false, "not equipped"
             elseif toggle and toggle ~= "none" then
-                if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true, "toggle" end
+                if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle and not spec.noFeignedCooldown ) then return true, "toggle" end
             end
         end
 

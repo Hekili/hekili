@@ -66,6 +66,7 @@ local specTemplate = {
     -- Toggles
     custom1Name = "Custom 1",
     custom2Name = "Custom 2",
+    noFeignedCooldown = false,
 
     abilities = {
         ['**'] = {
