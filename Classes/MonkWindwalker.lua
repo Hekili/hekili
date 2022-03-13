@@ -608,6 +608,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         if buff.rushing_jade_wind.up then setCooldown( "rushing_jade_wind", 0 ) end
 
+        if buff.casting.up and buff.casting.v1 == action.spinning_crane_kick.id then
+            removeBuff( "casting" )
+            -- Spinning Crane Kick buff should be up.
+        end
+
         spinning_crane_kick.count = nil
 
         virtual_combo = actual_combo or "no_action"
@@ -1340,8 +1345,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         spinning_crane_kick = {
             id = 101546,
-            cast = 1.5,
-            channeled = true,
+            cast = 0,
             cooldown = 0,
             gcd = "spell",
 
@@ -1351,10 +1355,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 606543,
 
-            start = function ()
+            handler = function ()
                 removeBuff( "dance_of_chiji" )
                 removeBuff( "dance_of_chiji_azerite" )
                 removeBuff( "chi_energy" )
+
+                applyBuff( "spinning_crane_kick" )
 
                 if debuff.bonedust_brew.up or active_dot.bonedust_brew > 0 and active_enemies > 1 then
                     gain( 1, "chi" )

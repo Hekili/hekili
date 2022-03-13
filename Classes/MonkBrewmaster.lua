@@ -1220,8 +1220,7 @@ if UnitClassBase( "player" ) == "MONK" then
 
         spinning_crane_kick = {
             id = 322729,
-            cast = 1.5,
-            channeled = true,
+            cast = 0,
             cooldown = 0,
             gcd = "spell",
             
@@ -1231,13 +1230,15 @@ if UnitClassBase( "player" ) == "MONK" then
             startsCombat = true,
             texture = 606543,
             
-            start = function ()
+            handler = function ()
                 applyBuff( "shuffle" )
                 
                 if talent.celestial_flames.enabled then
                     applyDebuff( "target", "breath_of_fire_dot" )
                     active_dot.breath_of_fire_dot = active_enemies
                 end
+
+                applyBuff( "spinning_crane_kick" )
 
                 if buff.charred_passions.up and debuff.breath_of_fire_dot.up then
                     applyDebuff( "target", "breath_of_fire_dot" )
