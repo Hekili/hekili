@@ -589,23 +589,23 @@ do
         local realHeight = height / pctHeight
         local tPoint = top * realHeight
 
-        db[ name ] = format( "|T%s:%%d:%%d:%%d:%%d:%d:%d:%d:%d:%d:%d|t", file, realWidth, realHeight, lPoint, lPoint + width, tPoint, tPoint + height )
+        db[ name ] = format( "|T%s:%%d:%%d:%%d:%%d:%d:%d:%d:%d:%d:%d:%%s|t", file, realWidth, realHeight, lPoint, lPoint + width, tPoint, tPoint + height )
     end
 
-    local function GetTexString( name, width, height, x, y )
-        return db[ name ] and format( db[ name ], width or 0, height or 0, x or 0, y or 0 ) or ""
+    local function GetTexString( name, width, height, x, y, r, g, b )
+        return db[ name ] and format( db[ name ], width or 0, height or 0, x or 0, y or 0, ( r and g and b and ( r .. ":" .. g .. ":" .. b ) or "" ) ) or ""
     end
 
-    local function AtlasToString( atlas, width, height, x, y )
+    local function AtlasToString( atlas, width, height, x, y, r, g, b )
         if db[ atlas ] then
-            return GetTexString( atlas, width, height, x, y )
+            return GetTexString( atlas, width, height, x, y, r, g, b )
         end
 
         local a = C_Texture.GetAtlasInfo( atlas )
         if not a then return atlas end
 
         AddTexString( atlas, a.file, a.width, a.height, a.leftTexCoord, a.rightTexCoord, a.topTexCoord, a.bottomTexCoord )
-        return GetTexString( atlas, width, height, x, y )
+        return GetTexString( atlas, width, height, x, y, r, g, b )
     end
 
     local function GetAtlasFile( atlas )

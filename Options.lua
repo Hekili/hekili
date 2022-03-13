@@ -429,6 +429,9 @@ local displayTemplate = {
     flash = {
         enabled = false,
         color = { 255/255, 215/255, 0, 1 }, -- gold.
+        brightness = 100,
+        size = 240,
+        blink = false,
         suppress = false,
     },
 
@@ -619,6 +622,11 @@ do
                 autoSnapshot = true,
                 screenshot = true,
 
+                -- SpellFlash shared.
+                flashTexture = "Interface\\Cooldown\\star4",
+                fixedSize = false,
+                fixedBrightness = false,
+
                 toggles = {
                     pause = {
                         key = "ALT-SHIFT-P",
@@ -764,7 +772,7 @@ do
                         order = 3,
 
                         flash = {
-                            color = { 0, 0, 1, 1 },
+                            color = { 1, 0.82, 0, 1 },
                         },
 
                         glow = {
@@ -787,7 +795,7 @@ do
                         order = 4,
 
                         flash = {
-                            color = { 0, 0, 1, 1 },
+                            color = { 0.522, 0.302, 1, 1 },
                         },
 
                         glow = {
@@ -898,6 +906,13 @@ do
 
 
 
+    local multiDisplays = {
+        Primary = true,
+        AOE = true,
+        Cooldowns = true,
+        Defensives = true,
+        Interrupts = true,
+    }
     local frameStratas = ns.FrameStratas
 
     -- Display Config.
@@ -905,11 +920,19 @@ do
         local n = #info
         local display, category, option = info[ 2 ], info[ 3 ], info[ n ]
 
+        if display == "Multi" then
+            local multiDisplay = option:match( "^MultiMod(.+)$" )
+            if multiDisplay then return multiDisplays[ multiDisplay ] end
+
+            display = "Primary"
+        end
+
         if category == "shareDisplays" then
             return self:GetDisplayShareOption( info )
         end
 
         local conf = self.DB.profile.displays[ display ]
+
         if category ~= option and category ~= 'main' then
             conf = conf[ category ]
         end
@@ -927,25 +950,52 @@ do
         local display, category, option = info[ 2 ], info[ 3 ], info[ n ]
         local set = false
 
+        local all = false
+
         if category == "shareDisplays" then
             self:SetDisplayShareOption( info, val, v2, v3, v4 )
             return
         end
 
-        local conf = self.DB.profile.displays[ display ]
-        if category ~= option and category ~= 'main' then conf = conf[ category ] end
+        if display == "Multi" then
+            local multiDisplay = option:match( "^MultiMod(.+)$" )
+            if multiDisplay then multiDisplays[ option ] = val; return end
 
-        if option == 'color' or option == 'queuedColor' then
-            conf[ option ] = { val, v2, v3, v4 }
-            set = true
-        elseif option == 'frameStrata' then
-            conf.frameStrata = frameStratas[ val ] or "LOW"
-            set = true
-        end
+            for display, config in pairs( self.DB.profile.displays ) do
+                if multiDisplays[ display ] then
+                    local conf = config
+                    if category ~= option and category ~= 'main' then conf = conf[ category ] end
 
-        if not set then
-            val = type( val ) == 'string' and val:trim() or val
-            conf[ option ] = val
+                    if option == 'color' or option == 'queuedColor' then
+                        conf[ option ] = { val, v2, v3, v4 }
+                        set = true
+                    elseif option == 'frameStrata' then
+                        conf.frameStrata = frameStratas[ val ] or "LOW"
+                        set = true
+                    end
+
+                    if not set then
+                        val = type( val ) == 'string' and val:trim() or val
+                        conf[ option ] = val
+                    end
+                end
+            end
+        else
+            local conf = self.DB.profile.displays[ display ]
+            if category ~= option and category ~= 'main' then conf = conf[ category ] end
+
+            if option == 'color' or option == 'queuedColor' then
+                conf[ option ] = { val, v2, v3, v4 }
+                set = true
+            elseif option == 'frameStrata' then
+                conf.frameStrata = frameStratas[ val ] or "LOW"
+                set = true
+            end
+
+            if not set then
+                val = type( val ) == 'string' and val:trim() or val
+                conf[ option ] = val
+            end
         end
 
         self:BuildUI()
@@ -1131,17 +1181,136 @@ do
     end
 
 
+    local dispCycle = { "Primary", "AOE", "Cooldowns", "Defensives", "Interrupts" }
+
+    local MakeMultiDisplayOption
+    local modified = {}
+
+    MakeMultiDisplayOption = function( t, inf )
+        local info = {}
+
+        if not inf or #inf == 0 then
+            info[1] = "displays"
+            info[2] = "Primary"
+        else
+            for i, v in ipairs( inf ) do
+                info[ i ] = v
+            end
+        end
+
+        for k, v in pairs( t ) do
+            if k:match( "^MultiMod" ) then
+                -- do nothing.
+            elseif v.type == "group" then
+                info[ #info + 1 ] = k
+                MakeMultiDisplayOption( v.args, info )
+                info[ #info ] = nil
+            elseif v.type ~= "description" then                
+                if not v.desc or not modified[ v.desc ] then
+                    local desc = v.desc
+
+                    v.desc = function()
+                        info[2] = "Primary"
+                        info[ #info + 1 ] = k
+                        local text
+                        
+                        if type( desc ) == "function" then text = desc( info )
+                        else text = desc end
+
+                        text = text or ""
+                        if text:len() > 0 then text = text .. "\n" end
+
+                        for _, disp in ipairs( dispCycle ) do
+                            info[2] = disp
+
+                            local value, v2, v3, v4
+                            if v.get then
+                                value, v2, v3, v4 = v.get( info )
+                            else
+                                value, v2, v3, v4 = Hekili:GetDisplayOption( info )
+                            end
+
+                            if type( value ) == "boolean" then
+                                value = value and "|cFF00FF00Checked|r" or "|cFFFF0000Unchecked|r"
+                            elseif v.type == "color" then
+                                -- Color.
+                                value = string.format( "|A:Artifacts-PerkRing-WhiteGlow:0:0:0:0:%d:%d:%d|a #%02x%02x%02x", value * 255, v2 * 255, v3 * 255, value * 255, v2 * 255, v3 * 255 )
+                                --[[ if max( v2, v3, v4 ) > 0.1 then
+                                    value = string.format( "|c%02x%02x%02x%02xColor|r #%02x%02x%02x", v4 * 255, value * 255, v2 * 255, v3 * 255, value * 255, v2 * 255, v3 * 255 )
+                                else
+                                    value = string.format( "Color #%02x%02x%02x", value * 255, v2 * 255, v3 * 255 )
+                                end ]]
+                            elseif v.type == "select" and v.values and not v.dialogControl then
+                                if type( v.values ) == "function" then
+                                    value = v.values( info )[ value ] or value
+                                else
+                                    value = v.values[ value ] or value
+                                end
+
+                            elseif type( value ) == "number" then
+                                if value % 1 == 0 then
+                                    value = format( "|cFFFFD100%d|r", value )
+                                else
+                                    value = format( "|cFFFFD100%.2f|r", value )
+                                end
+                            else
+                                if not value then
+                                    value = "???"
+                                end
+
+                                value = "|cFFFFFFFF" .. value .. "|r"
+                            end
+
+                            text = format( "%s\n%s%s:|r %s", text, BlizzBlue, disp, value )
+                        end
+
+                        info[2] = "Primary"
+                        info[ #info ] = nil
+
+                        return text
+                    end
+
+                    modified[ v.desc ] = true
+                end
+
+                if v.set and not modified[ v.set ] then
+                    if type( v.set ) == "function" then
+                        local set = v.set
+
+                        v.set = function( info, value, v2, v3, v4 )
+                            info[ #info + 1 ] = k
+
+                            for _, disp in ipairs( dispCycle ) do
+                                if multiDisplays[ disp ] then
+                                    info[2] = disp
+                                    set( info, value, v2, v3, v4 )
+                                end
+                            end
+
+                            info[2] = "Primary"
+                            info[ #info ] = nil
+                        end
+                    end
+
+                    modified[ v.set ] = true
+                end
+            end
+        end
+    end
+
+
     local function newDisplayOption( db, name, data, pos )
         name = tostring( name )
 
         local fancyName
 
-        if name == "Defensives" then fancyName = AtlasToString( "nameplates-InterruptShield" ) .. " " .. name
-        elseif name == "Interrupts" then fancyName = AtlasToString( "communities-icon-redx" ) .. " " .. name
-        elseif name == "Cooldowns" then fancyName = NewFeature .. " " .. name
+        if name == "Multi" then fancyName = AtlasToString( "auctionhouse-icon-favorite" ) .. " Multiple"
+        elseif name == "Defensives" then fancyName = AtlasToString( "nameplates-InterruptShield" ) .. " Defensives"
+        elseif name == "Interrupts" then fancyName = AtlasToString( "voicechat-icon-speaker-mute" ) .. " Interrupts"
+        elseif name == "Cooldowns" then fancyName = AtlasToString( "chromietime-32x32" ) .. " Cooldowns"
         else fancyName = name end
 
-        return {
+        local option = {
             ['btn'..name] = {
                 type = 'execute',
                 name = fancyName,
@@ -1153,13 +1322,61 @@ do
             [name] = {
                 type = 'group',
                 name = function ()
-                    if data.builtIn then return '|cFF00B4FF' .. fancyName .. '|r' end
+                    if name == "Multi" then return "|cFF00FF00" .. fancyName .. "|r"
+                    elseif data.builtIn then return '|cFF00B4FF' .. fancyName .. '|r' end
                     return fancyName
                 end,
+                desc = function ()
+                    if name == "Multi" then
+                        return "Edits made to |cFF00FF00Multiple|r displays will apply to all selected displays.  Certain options are disabled when editing multiple displays."
+                    end
+                    return data.desc
+                end,
+                get = "GetDisplayOption",
                 childGroups = "tab",
-                desc = data.desc,
                 order = 100 + pos,
+
                 args = {
+                    MultiModPrimary = {
+                        type = "toggle",
+                        name = "Primary",
+                        desc = "If checked, your changes will be applied to the Primary display.",
+                        order = 0.01,
+                        width = 0.65,
+                        hidden = function () return name ~= "Multi" end,
+                    },
+                    MultiModAOE = {
+                        type = "toggle",
+                        name = "AOE",
+                        desc = "If checked, your changes will be applied to the AOE display.",
+                        order = 0.02,
+                        width = 0.65,
+                        hidden = function () return name ~= "Multi" end,
+                    },
+                    MultiModCooldowns = {
+                        type = "toggle",
+                        name = AtlasToString( "chromietime-32x32" ) .. " Cooldowns",
+                        desc = "If checked, your changes will be applied to the Cooldowns display.",
+                        order = 0.03,
+                        width = 0.65,
+                        hidden = function () return name ~= "Multi" end,
+                    },
+                    MultiModDefensives = {
+                        type = "toggle",
+                        name = AtlasToString( "nameplates-InterruptShield" ) .. " Defensives",
+                        desc = "If checked, your changes will be applied to the Defensives display.",
+                        order = 0.04,
+                        width = 0.65,
+                        hidden = function () return name ~= "Multi" end,
+                    },
+                    MultiModInterrupts = {
+                        type = "toggle",
+                        name = AtlasToString( "voicechat-icon-speaker-mute" ) .. " Interrupts",
+                        desc = "If checked, your changes will be applied to the Interrupts display.",
+                        order = 0.05,
+                        width = 0.65,
+                        hidden = function () return name ~= "Multi" end,
+                    },
                     main = {
                         type = 'group',
                         name = "Main",
@@ -1172,12 +1389,12 @@ do
                                 name = "Enabled",
                                 desc = "If disabled, this display will not appear under any circumstances.",
                                 order = 0.5,
-                                hidden = function () return name == "Primary" or name == "AOE" or name == "Cooldowns"  or name == "Defensives" or name == "Interrupts" end
+                                hidden = function () return data.name == "Primary" or data.name == "AOE" or data.name == "Cooldowns"  or data.name == "Defensives" or data.name == "Interrupts" end
                             },
 
                             elvuiCooldown = {
                                 type = "toggle",
-                                name = NewFeature .. " Apply ElvUI Cooldown Style",
+                                name = "Apply ElvUI Cooldown Style",
                                 desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
                                 width = "full",
                                 order = 0.51,
@@ -1193,6 +1410,9 @@ do
                                 step = 1,
                                 width = "full",
                                 order = 1,
+                                disabled = function()
+                                    return name == "Multi"
+                                end,
                                 hidden = function( info, val )
                                     local n = #info
                                     local display = info[2]
@@ -1262,6 +1482,10 @@ do
 
                                         order = 98,
                                         width = 1.49,
+
+                                        disabled = function()
+                                            return name == "Multi"
+                                        end,
                                     },
 
                                     y = {
@@ -1275,6 +1499,10 @@ do
 
                                         order = 99,
                                         width = 1.49,
+
+                                        disabled = function()
+                                            return name == "Multi"
+                                        end,
                                     },
                                 },
                             },
@@ -1288,7 +1516,7 @@ do
                                     primaryWidth = {
                                         type = "range",
                                         name = "Width",
-                                        desc = "Specify the width of the primary icon for your " .. name .. " Display.",
+                                        desc = "Specify the width of the primary icon for " .. ( name == "Multi" and "each display." or ( "your " .. name .. " Display." ) ),
                                         min = 10,
                                         max = 500,
                                         step = 1,
@@ -1300,7 +1528,7 @@ do
                                     primaryHeight = {
                                         type = "range",
                                         name = "Height",
-                                        desc = "Specify the height of the primary icon for your " .. name .. " Display.",
+                                        desc = "Specify the height of the primary icon for " .. ( name == "Multi" and "each display." or ( "your " .. name .. " Display." ) ),
                                         min = 10,
                                         max = 500,
                                         step = 1,
@@ -1388,7 +1616,7 @@ do
                         args = {
                             elvuiCooldown = {
                                 type = "toggle",
-                                name = NewFeature .. " Apply ElvUI Cooldown Style",
+                                name = "Apply ElvUI Cooldown Style",
                                 desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
                                 width = "full",
                                 order = 0.5,
@@ -2065,7 +2293,8 @@ do
                                 desc = "Specify the brightness of the SpellFlash glow.  The default brightness is |cFFFFD100100|r.",
                                 order = 4,
                                 min = 0,
-                                max = 100,
+                                softMax = 100,
+                                max = 200,
                                 step = 1,
                                 width = "full",
                                 hidden = function () return SF == nil end,
@@ -2438,6 +2667,8 @@ do
                 },
             },
         }
+
+        return option
     end
 
 
@@ -2457,7 +2688,7 @@ do
             args = {
                 header = {
                     type = "description",
-                    name = "Hekili has up to four built-in displays (identified in blue) that can display " ..
+                    name = "Hekili has up to five built-in displays (identified in blue) that can display " ..
                         "different kinds of recommendations.  The addons recommendations are based upon the " ..
                         "Priorities that are generally (but not exclusively) based on SimulationCraft profiles " ..
                         "so that you can compare your performance to the results of your simulations.",
@@ -3123,6 +3354,9 @@ do
             section.plugins[ name ] = newDisplayOption( db, name, data, pos )
             if not data.builtIn then i = i + 1 end
         end
+
+        section.plugins[ "Multi" ] = newDisplayOption( db, "Multi", self.DB.profile.displays[ "Primary" ], 0 )
+        MakeMultiDisplayOption( section.plugins.Multi.Multi.args )
 
         db.args.displays = section
 

@@ -80,7 +80,7 @@ local function Mover_OnMouseUp(self, btn)
             LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", "nPanel" )
             return
         elseif obj and obj.id then
-            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", obj.id, obj.id )
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", obj.id )
             return
         end
     end
@@ -156,8 +156,8 @@ function ns.StartConfiguration( external )
 
     if not f.Header then
         f.Header = f:CreateFontString( "HekiliNotificationHeader", "OVERLAY", "GameFontNormal" )
-        local path, size = f.Header:GetFont()
-        f.Header:SetFont( path, size, "OUTLINE" )
+        local path = f.Header:GetFont()
+        f.Header:SetFont( path, 18, "OUTLINE" )
     end
     f.Header:SetAllPoints( HekiliNotificationMover )
     f.Header:SetText( "Notifications" )
@@ -275,15 +275,15 @@ function ns.StartConfiguration( external )
 
             if not v.Header then
                 v.Header = v.Backdrop:CreateFontString( "HekiliDisplay" .. i .. "Header", "OVERLAY", "GameFontNormal" )            
-                local path, size = v.Header:GetFont()
-                v.Header:SetFont( path, size, "OUTLINE" )
+                local path = v.Header:GetFont()
+                v.Header:SetFont( path, 18, "OUTLINE" )
             end
             v.Header:ClearAllPoints()
             v.Header:SetAllPoints( v.Backdrop )
 
-            if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield", 20, 20 ) )
-            elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "communities-icon-redx", 20, 20 ) )
-            elseif i == "Cooldowns" then v.Header:SetText( "CD" )
+            if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield" ) )
+            elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "voicechat-icon-speaker-mute" ) )
+            elseif i == "Cooldowns" then v.Header:SetText( AtlasToString( "chromietime-32x32" ) )
             else v.Header:SetText( i ) end
             
             v.Header:SetJustifyH("CENTER")
@@ -311,6 +311,14 @@ function ns.StartConfiguration( external )
             collectgarbage()
             Hekili:UpdateDisplayVisibility()
         end )
+
+        if not ns.OnHideFrame.firstTime then
+            ACD:SelectGroup( "Hekili", "displays" )
+            ACD:SelectGroup( "Hekili", "packs" )
+            ACD:SelectGroup( "Hekili", "general" )
+            ns.OnHideFrame.firstTime = true
+        end
+        
         Hekili:ProfileFrame( "CloseOptionsFrame", ns.OnHideFrame )
     end
 
@@ -2421,8 +2429,9 @@ do
             -- Overlay (for Pause)
             b.Overlay = b.Overlay or b:CreateTexture( nil, "OVERLAY" )
             b.Overlay:SetAllPoints( b )
-            b.Overlay:SetTexture( "Interface\\Addons\\Hekili\\Textures\\Pause.blp" )
-            b.Overlay:SetTexCoord( unpack( b.texCoords ) )
+            b.Overlay:SetAtlas( "creditsscreen-assets-buttons-pause" )
+            b.Overlay:SetVertexColor( 1, 1, 1, 1 )
+            -- b.Overlay:SetTexCoord( unpack( b.texCoords ) )
             b.Overlay:Hide()
 
         elseif id == 2 then
