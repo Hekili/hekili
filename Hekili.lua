@@ -212,6 +212,7 @@ local snapshots = ns.snapshots
 
 function Hekili:SaveDebugSnapshot( dispName )
     local snapped = false
+    local formatKey = ns.formatKey
 
 	for k, v in pairs( debug ) do
 		if not dispName or dispName == k then
@@ -234,7 +235,7 @@ function Hekili:SaveDebugSnapshot( dispName )
 
                 if not name then break end
 
-                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
             end
 
             auraString = auraString .. "\n\nplayer_debuffs:"
@@ -244,7 +245,7 @@ function Hekili:SaveDebugSnapshot( dispName )
 
                 if not name then break end
 
-                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
             end
 
 
@@ -258,7 +259,7 @@ function Hekili:SaveDebugSnapshot( dispName )
     
                     if not name then break end
     
-                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
                 end
     
                 auraString = auraString .. "\n\ntarget_debuffs:"
@@ -268,7 +269,7 @@ function Hekili:SaveDebugSnapshot( dispName )
     
                     if not name then break end
     
-                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
                 end
             end
 
