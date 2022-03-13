@@ -909,9 +909,9 @@ do
     local multiDisplays = {
         Primary = true,
         AOE = true,
-        Cooldowns = true,
-        Defensives = true,
-        Interrupts = true,
+        Cooldowns = false,
+        Defensives = false,
+        Interrupts = false,
     }
     local frameStratas = ns.FrameStratas
 
@@ -959,7 +959,7 @@ do
 
         if display == "Multi" then
             local multiDisplay = option:match( "^MultiMod(.+)$" )
-            if multiDisplay then multiDisplays[ option ] = val; return end
+            if multiDisplay then multiDisplays[ multiDisplay ] = val; return end
 
             for display, config in pairs( self.DB.profile.displays ) do
                 if multiDisplays[ display ] then
@@ -1186,7 +1186,7 @@ do
     local MakeMultiDisplayOption
     local modified = {}
 
-    MakeMultiDisplayOption = function( t, inf )
+    MakeMultiDisplayOption = function( db, t, inf )
         local info = {}
 
         if not inf or #inf == 0 then
@@ -1203,9 +1203,9 @@ do
                 -- do nothing.
             elseif v.type == "group" then
                 info[ #info + 1 ] = k
-                MakeMultiDisplayOption( v.args, info )
+                MakeMultiDisplayOption( db, v.args, info )
                 info[ #info ] = nil
-            elseif v.type ~= "description" then                
+            elseif inf and v.type ~= "description" then                
                 if not v.desc or not modified[ v.desc ] then
                     local desc = v.desc
 
@@ -1224,8 +1224,22 @@ do
                             info[2] = disp
 
                             local value, v2, v3, v4
-                            if v.get then
-                                value, v2, v3, v4 = v.get( info )
+
+                            local actual = db[ disp ][ disp ]
+                            local getter
+
+                            for i = 3, #info do
+                                local section = info[i]
+                                actual = actual and actual.args[ section ] or db.args[ section ]
+                                if actual.get then getter = actual.get end
+                            end
+
+                            if getter then
+                                if type( getter ) == "function" then                                    
+                                    value, v2, v3, v4 = getter( info )
+                                else
+                                    value, v2, v3, v4 = Hekili[ getter ]( info )
+                                end
                             else
                                 value, v2, v3, v4 = Hekili:GetDisplayOption( info )
                             end
@@ -1234,7 +1248,7 @@ do
                                 value = value and "|cFF00FF00Checked|r" or "|cFFFF0000Unchecked|r"
                             elseif v.type == "color" then
                                 -- Color.
-                                value = string.format( "|A:Artifacts-PerkRing-WhiteGlow:0:0:0:0:%d:%d:%d|a #%02x%02x%02x", value * 255, v2 * 255, v3 * 255, value * 255, v2 * 255, v3 * 255 )
+                                value = string.format( "|A:WhiteCircle-RaidBlips:16:16:0:0:%d:%d:%d|a #%02x%02x%02x", value * 255, v2 * 255, v3 * 255, value * 255, v2 * 255, v3 * 255 )
                                 --[[ if max( v2, v3, v4 ) > 0.1 then
                                     value = string.format( "|c%02x%02x%02x%02xColor|r #%02x%02x%02x", v4 * 255, value * 255, v2 * 255, v3 * 255, value * 255, v2 * 255, v3 * 255 )
                                 else
@@ -1246,6 +1260,7 @@ do
                                 else
                                     value = v.values[ value ] or value
                                 end
+                                value = format( "|cFFFFD100%s|r", tostring( value ) )
 
                             elseif type( value ) == "number" then
                                 if value % 1 == 0 then
@@ -1254,11 +1269,12 @@ do
                                     value = format( "|cFFFFD100%.2f|r", value )
                                 end
                             else
-                                if not value then
+                                if value == nil then
+                                    Hekili:Error( "Value not found for %s, defaulting to '???'.", table.concat( info, ":" ))
                                     value = "???"
                                 end
 
-                                value = "|cFFFFFFFF" .. value .. "|r"
+                                value = "|cFFFFD100" .. value .. "|r"
                             end
 
                             text = format( "%s\n%s%s:|r %s", text, BlizzBlue, disp, value )
@@ -1294,6 +1310,26 @@ do
 
                     modified[ v.set ] = true
                 end
+
+                --[[ if v.get and not modified[ v.get ] then
+                    if type( v.get ) == "function" then
+                        local get = v.get
+
+                        v.get = function( info )
+                            info[ #info + 1 ] = k
+
+                            for _, disp in ipairs( dispCycle ) do
+                                info[2] = disp
+                                get( info )
+                            end
+
+                            info[2] = "Primary"
+                            info[ #info ] = nil
+                        end
+                    end
+
+                    modified[ v.get ] = true
+                end ]]
             end
         end
     end
@@ -1328,7 +1364,7 @@ do
                 end,
                 desc = function ()
                     if name == "Multi" then
-                        return "Edits made to |cFF00FF00Multiple|r displays will apply to all selected displays.  Certain options are disabled when editing multiple displays."
+                        return "Allows editing of multiple displays at once.  Settings displayed are from the Primary display (other display settings are shown in the tooltip).\n\nCertain options are disabled when editing multiple displays."
                     end
                     return data.desc
                 end,
@@ -1339,40 +1375,55 @@ do
                 args = {
                     MultiModPrimary = {
                         type = "toggle",
-                        name = "Primary",
-                        desc = "If checked, your changes will be applied to the Primary display.",
+                        name = function() return multiDisplays.Primary and "|cFF00FF00Primary|r" or "|cFFFF0000Primary|r" end,
+                        desc = function()
+                            if multiDisplays.Primary then return "Changes |cFF00FF00will|r be applied to the Primary display." end
+                            return "Changes |cFFFF0000will not|r be applied to the Primary display."
+                        end,
                         order = 0.01,
                         width = 0.65,
                         hidden = function () return name ~= "Multi" end,
                     },
                     MultiModAOE = {
                         type = "toggle",
-                        name = "AOE",
-                        desc = "If checked, your changes will be applied to the AOE display.",
+                        name = function() return multiDisplays.AOE and "|cFF00FF00AOE|r" or "|cFFFF0000AOE|r" end,
+                        desc = function()
+                            if multiDisplays.AOE then return "Changes |cFF00FF00will|r be applied to the AOE display." end
+                            return "Changes |cFFFF0000will not|r be applied to the AOE display."
+                        end,
                         order = 0.02,
                         width = 0.65,
                         hidden = function () return name ~= "Multi" end,
                     },
                     MultiModCooldowns = {
                         type = "toggle",
-                        name = AtlasToString( "chromietime-32x32" ) .. " Cooldowns",
-                        desc = "If checked, your changes will be applied to the Cooldowns display.",
+                        name = function () return AtlasToString( "chromietime-32x32" ) .. ( multiDisplays.Cooldowns and " |cFF00FF00Cooldowns|r" or " |cFFFF0000Cooldowns|r" ) end,
+                        desc = function()
+                            if multiDisplays.Cooldowns then return "Changes |cFF00FF00will|r be applied to the Cooldowns display." end
+                            return "Changes |cFFFF0000will not|r be applied to the Cooldowns display."
+                        end,
                         order = 0.03,
                         width = 0.65,
                         hidden = function () return name ~= "Multi" end,
                     },
                     MultiModDefensives = {
                         type = "toggle",
-                        name = AtlasToString( "nameplates-InterruptShield" ) .. " Defensives",
-                        desc = "If checked, your changes will be applied to the Defensives display.",
+                        name = function () return AtlasToString( "nameplates-InterruptShield" ) .. ( multiDisplays.Defensives and " |cFF00FF00Defensives|r" or " |cFFFF0000Defensives|r" ) end,
+                        desc = function()
+                            if multiDisplays.Defensives then return "Changes |cFF00FF00will|r be applied to the Defensives display." end
+                            return "Changes |cFFFF0000will not|r be applied to the Defensives display."
+                        end,
                         order = 0.04,
                         width = 0.65,
                         hidden = function () return name ~= "Multi" end,
                     },
                     MultiModInterrupts = {
                         type = "toggle",
-                        name = AtlasToString( "voicechat-icon-speaker-mute" ) .. " Interrupts",
-                        desc = "If checked, your changes will be applied to the Interrupts display.",
+                        name = function () return AtlasToString( "voicechat-icon-speaker-mute" ) .. ( multiDisplays.Interrupts and " |cFF00FF00Interrupts|r" or " |cFFFF0000Interrupts|r" ) end,
+                        desc = function()
+                            if multiDisplays.Interrupts then return "Changes |cFF00FF00will|r be applied to the Interrupts display." end
+                            return "Changes |cFFFF0000will not|r be applied to the Interrupts display."
+                        end,
                         order = 0.05,
                         width = 0.65,
                         hidden = function () return name ~= "Multi" end,
@@ -3356,7 +3407,7 @@ do
         end
 
         section.plugins[ "Multi" ] = newDisplayOption( db, "Multi", self.DB.profile.displays[ "Primary" ], 0 )
-        MakeMultiDisplayOption( section.plugins.Multi.Multi.args )
+        MakeMultiDisplayOption( section.plugins, section.plugins.Multi.Multi.args )
 
         db.args.displays = section
 
