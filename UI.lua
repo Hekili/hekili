@@ -313,8 +313,9 @@ function ns.StartConfiguration( external )
         end )
 
         if not ns.OnHideFrame.firstTime then
-            ACD:SelectGroup( "Hekili", "displays" )
             ACD:SelectGroup( "Hekili", "packs" )
+            ACD:SelectGroup( "Hekili", "displays" )
+            ACD:SelectGroup( "Hekili", "displays", "Multi" )
             ACD:SelectGroup( "Hekili", "general" )
             ns.OnHideFrame.firstTime = true
         end
@@ -708,7 +709,6 @@ do
         LEARNED_SPELL_IN_TAB = 1,
         CHARACTER_POINTS_CHANGED = 1,
         ACTIVE_TALENT_GROUP_CHANGED = 1,
-        PLAYER_SPECIALIZATION_CHANGED = 1,
         UPDATE_MACROS = 1,
         VEHICLE_UPDATE = 1,
     }
@@ -719,6 +719,14 @@ do
     local pulseTargets = 0.1
     local pulseRange = TOOLTIP_UPDATE_TIME
     local pulseFlash = 0.5
+
+    local flashOffset = {
+        Primary = 0,
+        AOE = 0.25,
+        Interrupts = 0.125,
+        Defensives = 0.333,
+        Cooldowns = 0.416
+    }
 
     local oocRefresh = 1
     local icRefresh = {
@@ -1282,8 +1290,12 @@ do
                     local a = self.Buttons[ 1 ].Action
                     local changed = self.lastFlash ~= a
         
-                    if a and ( self.flashTimer < 0 or changed ) and self.flashReady then
-                        self.flashTimer = pulseFlash
+                    if a and ( now > self.flashTimer ) and self.flashReady then
+                        if now % 1 < 0.5 then
+                            self.flashTimer = floor( now ) + 0.5 + flashOffset[ self.id ]
+                        else
+                            self.flashTimer = ceil( now ) + flashOffset[ self.id ]
+                        end
         
                         local ability = class.abilities[ a ]
         

@@ -37,8 +37,8 @@ local LDBIcon = LibStub( "LibDBIcon-1.0", true )
 local NewFeature = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
 local GreenPlus = "Interface\\AddOns\\Hekili\\Textures\\GreenPlus"
 local RedX = "Interface\\AddOns\\Hekili\\Textures\\RedX"
-
 local BlizzBlue = "|cFF00B4FF"
+local ClassColor = C_ClassColor.GetClassColor(class.file)
 
 
 -- Interrupts
@@ -913,6 +913,7 @@ do
         Defensives = false,
         Interrupts = false,
     }
+
     local frameStratas = ns.FrameStratas
 
     -- Display Config.
@@ -920,30 +921,35 @@ do
         local n = #info
         local display, category, option = info[ 2 ], info[ 3 ], info[ n ]
 
-        if display == "Multi" then
-            local multiDisplay = option:match( "^MultiMod(.+)$" )
-            if multiDisplay then return multiDisplays[ multiDisplay ] end
-
-            display = "Primary"
-        end
-
         if category == "shareDisplays" then
             return self:GetDisplayShareOption( info )
         end
 
         local conf = self.DB.profile.displays[ display ]
 
-        if category ~= option and category ~= 'main' then
+        if category ~= option and category ~= "main" then
             conf = conf[ category ]
         end
 
-        if option == 'color' then return unpack( conf.color ) end
-        if option == 'frameStrata' then return frameStratas[ conf.frameStrata ] or 3 end
-        if option == 'name' then return display end
+        if option == "color" or option == "queuedColor" then return unpack( conf.color ) end
+        if option == "frameStrata" then return frameStratas[ conf.frameStrata ] or 3 end
+        if option == "name" then return display end
 
         return conf[ option ]
     end
 
+    local multiSet = false
+    local rebuild = false
+
+    local function QueueRebuildUI()
+        rebuild = true
+        C_Timer.After( 0.5, function ()
+            if rebuild then
+                Hekili:BuildUI()
+                rebuild = false
+            end
+        end )
+    end
 
     function Hekili:SetDisplayOption( info, val, v2, v3, v4 )
         local n = #info
@@ -957,48 +963,44 @@ do
             return
         end
 
-        if display == "Multi" then
-            local multiDisplay = option:match( "^MultiMod(.+)$" )
-            if multiDisplay then multiDisplays[ multiDisplay ] = val; return end
+        local conf = self.DB.profile.displays[ display ]
+        if category ~= option and category ~= 'main' then conf = conf[ category ] end
 
-            for display, config in pairs( self.DB.profile.displays ) do
-                if multiDisplays[ display ] then
-                    local conf = config
-                    if category ~= option and category ~= 'main' then conf = conf[ category ] end
-
-                    if option == 'color' or option == 'queuedColor' then
-                        conf[ option ] = { val, v2, v3, v4 }
-                        set = true
-                    elseif option == 'frameStrata' then
-                        conf.frameStrata = frameStratas[ val ] or "LOW"
-                        set = true
-                    end
-
-                    if not set then
-                        val = type( val ) == 'string' and val:trim() or val
-                        conf[ option ] = val
-                    end
-                end
-            end
-        else
-            local conf = self.DB.profile.displays[ display ]
-            if category ~= option and category ~= 'main' then conf = conf[ category ] end
-
-            if option == 'color' or option == 'queuedColor' then
-                conf[ option ] = { val, v2, v3, v4 }
-                set = true
-            elseif option == 'frameStrata' then
-                conf.frameStrata = frameStratas[ val ] or "LOW"
-                set = true
-            end
-
-            if not set then
-                val = type( val ) == 'string' and val:trim() or val
-                conf[ option ] = val
-            end
+        if option == 'color' or option == 'queuedColor' then
+            conf[ option ] = { val, v2, v3, v4 }
+            set = true
+        elseif option == 'frameStrata' then
+            conf.frameStrata = frameStratas[ val ] or "LOW"
+            set = true
         end
 
-        self:BuildUI()
+        if not set then
+            val = type( val ) == 'string' and val:trim() or val
+            conf[ option ] = val
+        end
+
+        if not multiSet then QueueRebuildUI() end
+    end
+
+
+    function Hekili:GetMultiDisplayOption( info )
+        info[ 2 ] = "Primary"
+        local val, v2, v3, v4 = self:GetDisplayOption( info )
+        info[ 2 ] = "Multi"
+        return val, v2, v3, v4
+    end
+
+    function Hekili:SetMultiDisplayOption( info, val, v2, v3, v4 )
+        multiSet = true
+        for display, active in pairs( multiDisplays ) do
+            if active then
+                info[ 2 ] = display
+                self:SetDisplayOption( info, val, v2, v3, v4 )
+            end
+        end
+        QueueRebuildUI()
+        info[ 2 ] = "Multi"
+        multiSet = false
     end
 
 
@@ -1018,7 +1020,7 @@ do
         local conf = Hekili.DB.profile.notifications
 
         conf[ option ] = val
-        Hekili:BuildUI()
+        QueueRebuildUI()
     end
 
     local LSM = LibStub( "LibSharedMedia-3.0" )
@@ -1038,34 +1040,41 @@ do
             type = "select",
             name = "Font",
             order = 1,
-            width = 1.5,
+            width = 1.49,
             dialogControl = 'LSM30_Font',
             values = LSM:HashTable("font"),
-        },
-
-        fontSize = {
-            type = "range",
-            name = "Size",
-            order = 2,
-            min = 8,
-            max = 64,
-            step = 1,
-            width = 1.5
         },
 
         fontStyle = {
             type = "select",
             name = "Style",
-            order = 3,
+            order = 2,
             values = fontStyles,
-            width = 1.5
+            width = 1.49
+        },
+
+        break01 = {
+            type = "description",
+            name = " ",
+            order = 2.1,
+            width = "full"
+        },
+
+        fontSize = {
+            type = "range",
+            name = "Size",
+            order = 3,
+            min = 8,
+            max = 64,
+            step = 1,
+            width = 1.49
         },
 
         color = {
             type = "color",
             name = "Color",
             order = 4,
-            width = 1.5
+            width = 1.49
         }
     }
 
@@ -1119,20 +1128,20 @@ do
         local tab = getOptionTable( info, notif )
 
         local monitor = ( tonumber( GetCVar( 'gxMonitor' ) ) or 0 ) + 1
-        local resolutions = { GetScreenResolutions() }
-        local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" )
+        -- local resolutions = { GetScreenResolutions() }
+        local resolution = select( GetCurrentResolution(), GetScreenResolutions() ) or GetCVar( "gxWindowedResolution" )
         local width, height = resolution:match( "(%d+)x(%d+)" )
 
         width = tonumber( width )
         height = tonumber( height )
 
-        for i, str in ipairs( resolutions ) do
+        --[[ for i, str in ipairs( resolutions ) do
             local w, h = str:match( "(%d+)x(%d+)" )
             w, h = tonumber( w ), tonumber( h )
 
             if w > width then width = w end
             if h > height then height = h end
-        end
+        end ]]
 
         tab.args.x.min = -1 * width
         tab.args.x.max = width
@@ -1186,12 +1195,166 @@ do
     local MakeMultiDisplayOption
     local modified = {}
 
+    local function GetOptionData( db, info )
+        local display = info[ 2 ]
+        local option = db[ display ][ display ]
+        local desc, set, get = nil, option.set, option.get
+
+        for i = 3, #info do
+            local category = info[ i ]
+
+            if not option then
+                break
+
+            elseif option.args then
+                if not option.args[ category ] then
+                    break
+                end
+                option = option.args[ category ]
+
+            else
+                break
+            end
+
+            get = option and option.get or get
+            set = option and option.set or set
+            desc = option and option.desc or desc
+        end
+
+        return option, get, set, desc
+    end
+
+    local function WrapSetter( db, data )
+        local _, _, setfunc = GetOptionData( db, data )
+        if setfunc and modified[ setfunc ] then return setfunc end
+
+        local newFunc = function( info, val, v2, v3, v4 )
+            multiSet = true
+
+            for display, active in pairs( multiDisplays ) do
+                if active then
+                    info[ 2 ] = display
+
+                    _, _, setfunc = GetOptionData( db, info )
+
+                    if type( setfunc ) == "string" then Hekili[ setfunc ]( Hekili, info, val, v2, v3, v4 )
+                    elseif type( setfunc ) == "function" then setfunc( info, val, v2, v3, v4 ) end
+                end
+            end
+
+            multiSet = false
+
+            info[ 2 ] = "Multi"
+            QueueRebuildUI()
+        end
+
+        modified[ newFunc ] = true
+        return newFunc
+    end
+
+    local function WrapDesc( db, data )
+        local option, _, _, descfunc = GetOptionData( db, data )
+        if descfunc and modified[ descfunc ] then
+            return descfunc
+        end
+
+        local newFunc = function( info )
+            local output
+
+            for _, display in ipairs( dispCycle ) do
+                info[ 2 ] = display
+                option, getfunc, _, descfunc = GetOptionData( db, info )
+
+                if not output then
+                    output = option and type( option.desc ) == "function" and option.desc( info ) or option.desc or ""
+                    if output:len() > 0 then output = output .. "\n" end
+                end
+
+                local val, v2, v3, v4
+
+                if not getfunc then
+                    val, v2, v3, v4 = Hekili:GetDisplayOption( info )
+                elseif type( getfunc ) == "function" then
+                    val, v2, v3, v4 = getfunc( info )
+                elseif type( getfunc ) == "string" then
+                    val, v2, v3, v4 = Hekili[ getfunc ]( Hekili, info )
+                end
+
+                if val == nil then
+                    Hekili:Error( "Unable to get a value for %s in WrapDesc.", table.concat( info, ":" ) )
+                    info[ 2 ] = "Multi"
+                    return output
+                end
+
+                -- Sanitize/format values.
+                if type( val ) == "boolean" then
+                    val = val and "|cFF00FF00Checked|r" or "|cFFFF0000Unchecked|r"
+
+                elseif option.type == "color" then
+                    val = string.format( "|A:WhiteCircle-RaidBlips:16:16:0:0:%d:%d:%d|a |cFFFFD100#%02x%02x%02x|r", val * 255, v2 * 255, v3 * 255, val * 255, v2 * 255, v3 * 255 )
+
+                elseif option.type == "select" and option.values and not option.dialogControl then
+                    if type( option.values ) == "function" then
+                        val = option.values( data )[ val ] or val
+                    else
+                        val = option.values[ val ] or val
+                    end
+                    
+                    if type( val ) == "number" then
+                        if val % 1 == 0 then
+                            val = format( "|cFFFFD100%d|r", val )
+                        else
+                            val = format( "|cFFFFD100%.2f|r", val )
+                        end
+                    else
+                        val = format( "|cFFFFD100%s|r", tostring( val ) )
+                    end
+
+                elseif type( val ) == "number" then
+                    if val % 1 == 0 then
+                        val = format( "|cFFFFD100%d|r", val )
+                    else
+                        val = format( "|cFFFFD100%.2f|r", val )
+                    end
+
+                else
+                    if val == nil then
+                        Hekili:Error( "Value not found for %s, defaulting to '???'.", table.concat( data, ":" ))
+                        val = "|cFFFF0000???|r"
+                    else
+                        val = "|cFFFFD100" .. val .. "|r"
+                    end
+                end
+
+                output = format( "%s%s%s%s:|r %s", output, output:len() > 0 and "\n" or "", BlizzBlue, display, val )
+            end
+
+            info[ 2 ] = "Multi"
+            return output
+        end
+
+        modified[ newFunc ] = true
+        return newFunc
+    end
+
     MakeMultiDisplayOption = function( db, t, inf )
         local info = {}
 
         if not inf or #inf == 0 then
             info[1] = "displays"
-            info[2] = "Primary"
+            info[2] = "Multi"
+
+            for k, v in pairs( t ) do
+                -- Only load groups in the first level (bypasses selection for which display to edit).
+                if v.type == "group" then
+                    info[3] = k
+                    MakeMultiDisplayOption( db, v.args, info )
+                    info[3] = nil
+                end
+            end
+
+            return
+
         else
             for i, v in ipairs( inf ) do
                 info[ i ] = v
@@ -1204,132 +1367,11 @@ do
             elseif v.type == "group" then
                 info[ #info + 1 ] = k
                 MakeMultiDisplayOption( db, v.args, info )
+            elseif inf and v.type ~= "description" then
+                info[ #info + 1 ] = k
+                v.desc = WrapDesc( db, info )
+                v.set = WrapSetter( db, info )
                 info[ #info ] = nil
-            elseif inf and v.type ~= "description" then                
-                if not v.desc or not modified[ v.desc ] then
-                    local desc = v.desc
-
-                    v.desc = function()
-                        info[2] = "Primary"
-                        info[ #info + 1 ] = k
-                        local text
-                        
-                        if type( desc ) == "function" then text = desc( info )
-                        else text = desc end
-
-                        text = text or ""
-                        if text:len() > 0 then text = text .. "\n" end
-
-                        for _, disp in ipairs( dispCycle ) do
-                            info[2] = disp
-
-                            local value, v2, v3, v4
-
-                            local actual = db[ disp ][ disp ]
-                            local getter
-
-                            for i = 3, #info do
-                                local section = info[i]
-                                actual = actual and actual.args[ section ] or db.args[ section ]
-                                if actual.get then getter = actual.get end
-                            end
-
-                            if getter then
-                                if type( getter ) == "function" then                                    
-                                    value, v2, v3, v4 = getter( info )
-                                else
-                                    value, v2, v3, v4 = Hekili[ getter ]( info )
-                                end
-                            else
-                                value, v2, v3, v4 = Hekili:GetDisplayOption( info )
-                            end
-
-                            if type( value ) == "boolean" then
-                                value = value and "|cFF00FF00Checked|r" or "|cFFFF0000Unchecked|r"
-                            elseif v.type == "color" then
-                                -- Color.
-                                value = string.format( "|A:WhiteCircle-RaidBlips:16:16:0:0:%d:%d:%d|a #%02x%02x%02x", value * 255, v2 * 255, v3 * 255, value * 255, v2 * 255, v3 * 255 )
-                                --[[ if max( v2, v3, v4 ) > 0.1 then
-                                    value = string.format( "|c%02x%02x%02x%02xColor|r #%02x%02x%02x", v4 * 255, value * 255, v2 * 255, v3 * 255, value * 255, v2 * 255, v3 * 255 )
-                                else
-                                    value = string.format( "Color #%02x%02x%02x", value * 255, v2 * 255, v3 * 255 )
-                                end ]]
-                            elseif v.type == "select" and v.values and not v.dialogControl then
-                                if type( v.values ) == "function" then
-                                    value = v.values( info )[ value ] or value
-                                else
-                                    value = v.values[ value ] or value
-                                end
-                                value = format( "|cFFFFD100%s|r", tostring( value ) )
-
-                            elseif type( value ) == "number" then
-                                if value % 1 == 0 then
-                                    value = format( "|cFFFFD100%d|r", value )
-                                else
-                                    value = format( "|cFFFFD100%.2f|r", value )
-                                end
-                            else
-                                if value == nil then
-                                    Hekili:Error( "Value not found for %s, defaulting to '???'.", table.concat( info, ":" ))
-                                    value = "???"
-                                end
-
-                                value = "|cFFFFD100" .. value .. "|r"
-                            end
-
-                            text = format( "%s\n%s%s:|r %s", text, BlizzBlue, disp, value )
-                        end
-
-                        info[2] = "Primary"
-                        info[ #info ] = nil
-
-                        return text
-                    end
-
-                    modified[ v.desc ] = true
-                end
-
-                if v.set and not modified[ v.set ] then
-                    if type( v.set ) == "function" then
-                        local set = v.set
-
-                        v.set = function( info, value, v2, v3, v4 )
-                            info[ #info + 1 ] = k
-
-                            for _, disp in ipairs( dispCycle ) do
-                                if multiDisplays[ disp ] then
-                                    info[2] = disp
-                                    set( info, value, v2, v3, v4 )
-                                end
-                            end
-
-                            info[2] = "Primary"
-                            info[ #info ] = nil
-                        end
-                    end
-
-                    modified[ v.set ] = true
-                end
-
-                --[[ if v.get and not modified[ v.get ] then
-                    if type( v.get ) == "function" then
-                        local get = v.get
-
-                        v.get = function( info )
-                            info[ #info + 1 ] = k
-
-                            for _, disp in ipairs( dispCycle ) do
-                                info[2] = disp
-                                get( info )
-                            end
-
-                            info[2] = "Primary"
-                            info[ #info ] = nil
-                        end
-                    end
-
-                    modified[ v.get ] = true
-                end ]]
             end
         end
     end
@@ -1368,7 +1410,8 @@ do
                     end
                     return data.desc
                 end,
-                get = "GetDisplayOption",
+                set = name == "Multi" and "SetMultiDisplayOption" or "SetDisplayOption",
+                get = name == "Multi" and "GetMultiDisplayOption" or "GetDisplayOption",
                 childGroups = "tab",
                 order = 100 + pos,
 
@@ -1382,6 +1425,8 @@ do
                         end,
                         order = 0.01,
                         width = 0.65,
+                        get = function() return multiDisplays.Primary end,
+                        set = function() multiDisplays.Primary = not multiDisplays.Primary end,
                         hidden = function () return name ~= "Multi" end,
                     },
                     MultiModAOE = {
@@ -1393,6 +1438,8 @@ do
                         end,
                         order = 0.02,
                         width = 0.65,
+                        get = function() return multiDisplays.AOE end,
+                        set = function() multiDisplays.AOE = not multiDisplays.AOE end,
                         hidden = function () return name ~= "Multi" end,
                     },
                     MultiModCooldowns = {
@@ -1404,6 +1451,8 @@ do
                         end,
                         order = 0.03,
                         width = 0.65,
+                        get = function() return multiDisplays.Cooldowns end,
+                        set = function() multiDisplays.Cooldowns = not multiDisplays.Cooldowns end,
                         hidden = function () return name ~= "Multi" end,
                     },
                     MultiModDefensives = {
@@ -1415,6 +1464,8 @@ do
                         end,
                         order = 0.04,
                         width = 0.65,
+                        get = function() return multiDisplays.Defensives end,
+                        set = function() multiDisplays.Defensives = not multiDisplays.Defensives end,
                         hidden = function () return name ~= "Multi" end,
                     },
                     MultiModInterrupts = {
@@ -1426,6 +1477,8 @@ do
                         end,
                         order = 0.05,
                         width = 0.65,
+                        get = function() return multiDisplays.Interrupts end,
+                        set = function() multiDisplays.Interrupts = not multiDisplays.Interrupts end,
                         hidden = function () return name ~= "Multi" end,
                     },
                     main = {
@@ -1587,6 +1640,38 @@ do
                                         width = 1.49,
                                         order = 2,
                                     },
+
+                                    spacer01 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 3
+                                    },
+
+                                    zoom = {
+                                        type = "range",
+                                        name = "Icon Zoom",
+                                        desc = "Select the zoom percentage for the icon textures in this display. (Roughly 30% will trim off the default Blizzard borders.)",
+                                        min = 0,
+                                        softMax = 100,
+                                        max = 200,
+                                        step = 1,
+        
+                                        width = 1.49,
+                                        order = 4,
+                                    },
+        
+                                    keepAspectRatio = {
+                                        type = "toggle",
+                                        name = "Keep Aspect Ratio",
+                                        desc = "If your primary or queued icons are not square, checking this option will prevent the icon textures from being " ..
+                                            "stretched and distorted, trimming some of the texture instead.",
+                                        disabled = function( info, val )
+                                            return not ( data.primaryHeight ~= data.primaryWidth or ( data.numIcons > 1 and data.queue.height ~= data.queue.width ) )
+                                        end,
+                                        width = 1.49,
+                                        order = 5,
+                                    },                                    
                                 },
                             },
 
@@ -1599,8 +1684,8 @@ do
                                     frameStrata = {
                                         type = "select",
                                         name = "Strata",
-                                        desc =  "Frame Strata determines which graphical layer that this display is drawn on.\n" ..
-                                                "The default layer is MEDIUM.",
+                                        desc =  "Frame Strata determines which graphical layer that this display is drawn on.\n\n" ..
+                                                "The default layer is |cFFFFD100MEDIUM|r.",
                                         values = {
                                             "BACKGROUND",
                                             "LOW",
@@ -1628,30 +1713,6 @@ do
                                     }
                                 }
                             },
-
-                            zoom = {
-                                type = "range",
-                                name = "Icon Zoom",
-                                desc = "Select the zoom percentage for the icon textures in this display. (Roughly 30% will trim off the default Blizzard borders.)",
-                                min = 0,
-                                max = 100,
-                                step = 1,
-
-                                width = 1.49,
-                                order = 20,
-                            },
-
-                            keepAspectRatio = {
-                                type = "toggle",
-                                name = "Keep Aspect Ratio",
-                                desc = "If your primary or queued icons are not square, checking this option will prevent the icon textures from being " ..
-                                    "stretched and distorted, trimming some of the texture instead.",
-                                disabled = function( info, val )
-                                    return not ( data.primaryHeight ~= data.primaryWidth or ( data.numIcons > 1 and data.queue.height ~= data.queue.width ) )
-                                end,
-                                width = 1.49,
-                                order = 25,
-                            },
                         },
                     },
 
@@ -1670,90 +1731,120 @@ do
                                 name = "Apply ElvUI Cooldown Style",
                                 desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
                                 width = "full",
-                                order = 0.5,
+                                order = 1,
                                 hidden = function () return _G["ElvUI"] == nil end,
                             },
 
-                            anchor = {
-                                type = 'select',
-                                name = 'Anchor To',
-                                desc = "Select the point on the primary icon to which the queued icons will attach.",
-                                values = anchorPositions,
-                                width = "full",
-                                order = 1,
-                            },
-
-                            offsetX = {
-                                type = 'range',
-                                name = 'Queue Horizontal Offset',
-                                desc = 'Specify the offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.',
-                                min = -100,
-                                max = 500,
-                                step = 1,
-                                width = "full",
+                            iconSizeGroup = {
+                                type = "group",
+                                inline = true,
+                                name = "Icon Size",
                                 order = 2,
+                                args = {
+                                    width = {
+                                        type = 'range',
+                                        name = 'Width',
+                                        desc = "Select the width of the queued icons.",
+                                        min = 10,
+                                        max = 500,
+                                        step = 1,
+                                        bigStep = 1,
+                                        order = 10,
+                                        width = 1.49
+                                    },
+        
+                                    height = {
+                                        type = 'range',
+                                        name = 'Height',
+                                        desc = "Select the height of the queued icons.",
+                                        min = 10,
+                                        max = 500,
+                                        step = 1,
+                                        bigStep = 1,
+                                        order = 11,
+                                        width = 1.49
+                                    },
+                                }
                             },
 
-                            offsetY = {
-                                type = 'range',
-                                name = 'Queue Vertical Offset',
-                                desc = 'Specify the offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.',
-                                min = -100,
-                                max = 500,
-                                step = 1,
-                                width = "full",
-                                order = 2,
-                            },
+                            anchorGroup = {
+                                type = "group",
+                                inline = true,
+                                name = "Positioning",
+                                order = 3,
+                                args = {
+                                    anchor = {
+                                        type = 'select',
+                                        name = 'Anchor To',
+                                        desc = "Select the point on the primary icon to which the queued icons will attach.",
+                                        values = anchorPositions,
+                                        width = 1.49,
+                                        order = 1,
+                                    },
+        
+                                    direction = {
+                                        type = 'select',
+                                        name = 'Grow Direction',
+                                        desc = "Select the direction for the icon queue.",
+                                        values = {
+                                            TOP = 'Up',
+                                            BOTTOM = 'Down',
+                                            LEFT = 'Left',
+                                            RIGHT = 'Right'
+                                        },
+                                        width = 1.49,
+                                        order = 1.1,
+                                    },
 
+                                    spacer01 = {
+                                        type = "description",
+                                        name = " ",
+                                        order = 1.2,
+                                        width = "full",
+                                    },
 
-                            direction = {
-                                type = 'select',
-                                name = 'Direction',
-                                desc = "Select the direction for the icon queue.",
-                                values = {
-                                    TOP = 'Up',
-                                    BOTTOM = 'Down',
-                                    LEFT = 'Left',
-                                    RIGHT = 'Right'
-                                },
-                                width = "full",
-                                order = 5,
-                            },
+                                    offsetX = {
+                                        type = 'range',
+                                        name = 'X Offset',
+                                        desc = 'Specify the horizontal offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.  Positive numbers move the queue to the right, negative numbers move it to the left.',
+                                        min = -100,
+                                        max = 500,
+                                        step = 1,
+                                        width = 1.49,
+                                        order = 2,
+                                    },
+        
+                                    offsetY = {
+                                        type = 'range',
+                                        name = 'Y Offset',
+                                        desc = 'Specify the vertical offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.  Positive numbers move the queue up, negative numbers move it down.',
+                                        min = -100,
+                                        max = 500,
+                                        step = 1,
+                                        width = 1.49,
+                                        order = 2.1,
+                                    },
 
-
-                            width = {
-                                type = 'range',
-                                name = 'Width',
-                                desc = "Select the width of the queued icons.",
-                                min = 10,
-                                max = 500,
-                                step = 1,
-                                bigStep = 1,
-                                order = 10,
-                                width = "full"
-                            },
-
-                            height = {
-                                type = 'range',
-                                name = 'Height',
-                                desc = "Select the height of the queued icons.",
-                                min = 10,
-                                max = 500,
-                                step = 1,
-                                bigStep = 1,
-                                order = 11,
-                                width = "full"
-                            },
-
-                            spacing = {
-                                type = 'range',
-                                name = 'Spacing',
-                                desc = "Select the number of pixels between icons in the queue.",
-                                min = ( data.queue.direction == "LEFT" or data.queue.direction == "RIGHT" ) and -data.queue.width or -data.queue.height,
-                                max = 500,
-                                step = 1,
-                                order = 16,
-                                width = 'full'
+                                    spacer02 = {
+                                        type = "description",
+                                        name = " ",
+                                        order = 2.2,
+                                        width = "full",
+                                    },
+        
+                                    spacing = {
+                                        type = 'range',
+                                        name = 'Icon Spacing',
+                                        desc = "Select the number of pixels between icons in the queue.",
+                                        softMin = ( data.queue.direction == "LEFT" or data.queue.direction == "RIGHT" ) and -data.queue.width or -data.queue.height,
+                                        softMax = ( data.queue.direction == "LEFT" or data.queue.direction == "RIGHT" ) and data.queue.width or data.queue.height,
+                                        min = -500,
+                                        max = 500,
+                                        step = 1,
+                                        order = 3,
+                                        width = 2.98
+                                    },
+                                }
                             },
                         },
                     },
@@ -1791,7 +1882,7 @@ do
                                     if option == 'pveAlpha' then data.visibility.pve.alpha = val
                                     elseif option == 'pvpAlpha' then data.visibility.pvp.alpha = val end
 
-                                    Hekili:BuildUI()
+                                    QueueRebuildUI()
                                 end,
                                 order = 2,
                                 args = {
@@ -1803,7 +1894,7 @@ do
                                         max = 1,
                                         step = 0.01,
                                         order = 1,
-                                        width = "full",
+                                        width = 1.49,
                                     },
                                     pvpAlpha = {
                                         type = "range",
@@ -1813,7 +1904,7 @@ do
                                         max = 1,
                                         step = 0.01,
                                         order = 1,
-                                        width = "full",
+                                        width = 1.49,
                                     },
                                 }
                             },
@@ -1831,7 +1922,7 @@ do
                                     local option = info[ #info ]
 
                                     data.visibility.pve[ option ] = val
-                                    Hekili:BuildUI()
+                                    QueueRebuildUI()
                                 end,
                                 hidden = function() return not data.visibility.advanced end,
                                 order = 2,
@@ -1843,7 +1934,7 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full",
+                                        width = 1.49,
                                         order = 1,
                                     },
 
@@ -1854,8 +1945,15 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full",
+                                        width = 1.49,
                                         order = 2,
+                                    },
+
+                                    break01 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 2.1
                                     },
 
                                     target = {
@@ -1865,7 +1963,7 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full",
+                                        width = 1.49,
                                         order = 3,
                                     },
 
@@ -1876,7 +1974,7 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full",
+                                        width = 1.49,
                                         order = 4,
                                     },
 
@@ -1885,7 +1983,7 @@ do
                                         name = "Hide When Mounted",
                                         desc = "If checked, the display will not be visible when you are mounted (unless you are in combat).",
                                         width = "full",
-                                        order = 1.1,
+                                        order = 0.5,
                                     }
                                 },
                             },
@@ -1903,7 +2001,7 @@ do
                                     local option = info[ #info ]
 
                                     data.visibility.pvp[ option ] = val
-                                    Hekili:BuildUI()
+                                    QueueRebuildUI()
                                     Hekili:UpdateDisplayVisibility()
                                 end,
                                 hidden = function() return not data.visibility.advanced end,
@@ -1916,7 +2014,7 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full",
+                                        width = 1.49,
                                         order = 1,
                                     },
 
@@ -1927,8 +2025,15 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full",
+                                        width = 1.49,
                                         order = 2,
+                                    },
+
+                                    break01 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 2.1
                                     },
 
                                     target = {
@@ -1938,7 +2043,7 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full",
+                                        width = 1.49,
                                         order = 3,
                                     },
 
@@ -1949,7 +2054,7 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full",
+                                        width = 1.49,
                                         order = 4,
                                     },
 
@@ -1958,7 +2063,7 @@ do
                                         name = "Hide When Mounted",
                                         desc = "If checked, the display will not be visible when you are mounted (unless you are in combat).",
                                         width = "full",
-                                        order = 1.1,
+                                        order = 0.5,
                                     }
                                 },
                             },
@@ -1976,14 +2081,14 @@ do
                                 type = "toggle",
                                 name = "Enabled",
                                 order = 1,
-                                width = 'full',
+                                width = 1.49,
                             },
 
                             queued = {
                                 type = "toggle",
                                 name = "Enabled for Queued Icons",
                                 order = 2,
-                                width = "full",
+                                width = 1.49,
                                 disabled = function () return data.keybindings.enabled == false end,
                             },
 
@@ -1997,7 +2102,7 @@ do
                                         type = "select",
                                         name = 'Anchor Point',
                                         order = 2,
-                                        width = 'full',
+                                        width = 1,
                                         values = realAnchorPositions
                                     },
 
@@ -2005,7 +2110,7 @@ do
                                         type = "range",
                                         name = "X Offset",
                                         order = 3,
-                                        width = "full",
+                                        width = 0.99,
                                         min = -max( data.primaryWidth, data.queue.width ),
                                         max = max( data.primaryWidth, data.queue.width ),
                                         disabled = function( info )
@@ -2018,7 +2123,7 @@ do
                                         type = "range",
                                         name = "Y Offset",
                                         order = 4,
-                                        width = "full",
+                                        width = 0.99,
                                         min = -max( data.primaryHeight, data.queue.height ),
                                         max = max( data.primaryHeight, data.queue.height ),
                                         step = 1,
@@ -2029,9 +2134,9 @@ do
                             textStyle = {
                                 type = "group",
                                 inline = true,
-                                name = "Text Style",
+                                name = "Font and Style",
                                 order = 5,
-                                args = fontElements,
+                                args = tableCopy( fontElements ),
                             },
 
                             lowercase = {
@@ -2051,7 +2156,7 @@ do
                             queuedTextStyle = {
                                 type = "group",
                                 inline = true,
-                                name = "Queued Text Style",
+                                name = "Queued Font and Style",
                                 order = 7,
                                 hidden = function () return not data.keybindings.separateQueueStyle end,
                                 args = {
@@ -2059,34 +2164,41 @@ do
                                         type = "select",
                                         name = "Font",
                                         order = 1,
-                                        width = 1.5,
+                                        width = 1.49,
                                         dialogControl = 'LSM30_Font',
                                         values = LSM:HashTable("font"),
-                                    },
-
-                                    queuedFontSize = {
-                                        type = "range",
-                                        name = "Size",
-                                        order = 2,
-                                        min = 8,
-                                        max = 64,
-                                        step = 1,
-                                        width = 1.5
                                     },
 
                                     queuedFontStyle = {
                                         type = "select",
                                         name = "Style",
-                                        order = 3,
+                                        order = 2,
                                         values = fontStyles,
-                                        width = 1.5
+                                        width = 1.49
+                                    },
+
+                                    break01 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 2.1
+                                    },
+
+                                    queuedFontSize = {
+                                        type = "range",
+                                        name = "Size",
+                                        order = 3,
+                                        min = 8,
+                                        max = 64,
+                                        step = 1,
+                                        width = 1.49
                                     },
 
                                     queuedColor = {
                                         type = "color",
                                         name = "Color",
                                         order = 4,
-                                        width = 1.5
+                                        width = 1.49
                                     }
                                 },
                             },
@@ -2095,21 +2207,21 @@ do
                                 type = "toggle",
                                 name = "Use Lowercase in Queue",
                                 order = 7.1,
-                                width = "full",
+                                width = 1.49,
                                 hidden = function () return not data.keybindings.separateQueueStyle end,
                             },
 
                             cPort = {
-                                name = NewFeature.."ConsolePort",
+                                name = "ConsolePort",
                                 type = "group",
                                 inline = true,
-                                order = 10,
+                                order = 4,
                                 args = {
                                     cPortOverride = {
                                         type = "toggle",
                                         name = "Use ConsolePort Buttons",
                                         order = 6,
-                                        width = "full",
+                                        width = 1.49,
                                     },
 
                                     cPortZoom = {
@@ -2121,10 +2233,10 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full"
+                                        width = 1.49,
                                     },
                                 },
-                                hidden = function() return ConsolePort == nil end,
+                                disabled = function() return ConsolePort == nil end,
                             },
 
                         }
@@ -2146,33 +2258,40 @@ do
                                 width = "full",
                             },
 
-                            fit = {
-                                type = "toggle",
-                                name = "Border Inside",
-                                desc = "If enabled, when borders are enabled, the button's border will fit inside the button (instead of around it).",
-                                order = 2,
-                                width = "full",
-                            },
-
                             thickness = {
                                 type = "range",
-                                name = NewFeature .. " Border Thickness",
+                                name = "Border Thickness",
                                 desc = "Determines the thickness (width) of the border.  Default is 1.",
                                 softMin = 1,
                                 softMax = 20,
                                 step = 1,
+                                order = 2,
+                                width = 1.49,
+                            },
+
+                            fit = {
+                                type = "toggle",
+                                name = "Border Inside",
+                                desc = "If enabled, when borders are enabled, the button's border will fit inside the button (instead of around it).",
                                 order = 2.5,
+                                width = 1.49
+                            },
+
+                            break01 = {
+                                type = "description",
+                                name = " ",
                                 width = "full",
+                                order = 2.6
                             },
 
                             coloring = {
                                 type = "select",
                                 name = "Coloring Mode",
-                                desc = "Specify whether to use class-colored borders or to specify a color.",
-                                width = "full",
+                                desc = "Specify whether to use Class or Custom color borders.\n\nClass-colored borders will automatically change to match the class you are playing.",
+                                width = 1.49,
                                 order = 3,
                                 values = {
-                                    class = "Use Class Color",
+                                    class = format( "Class |A:WhiteCircle-RaidBlips:16:16:0:0:%d:%d:%d|a #%s", ClassColor.r * 255, ClassColor.g * 255, ClassColor.b * 255, ClassColor:GenerateHexColor():sub( 3, 8 ) ),
                                     custom = "Specify a Custom Color"
                                 },
                                 disabled = function() return data.border.enabled == false end,
@@ -2180,12 +2299,11 @@ do
 
                             color = {
                                 type = "color",
-                                name = "Border Color",
-                                desc = "When borders are enabled, the border will use this color.",
+                                name = "Custom Color",
+                                desc = "When borders are enabled and the Coloring Mode is set to |cFFFFD100Custom Color|r, the border will use this color.",
                                 order = 4,
-                                width = "full",
-                                disabled = function () return data.border.enabled == false end,
-                                hidden = function () return data.border.coloring ~= 'custom' end,
+                                width = 1.49,
+                                disabled = function () return data.border.enabled == false or data.border.coloring ~= "custom" end,
                             }
                         }
                     },
@@ -2200,7 +2318,7 @@ do
                                 type = "toggle",
                                 name = "Enabled",
                                 desc = "If enabled, the addon will provide a red warning highlight when you are not in range of your enemy.",
-                                width = "full",
+                                width = 1.49,
                                 order = 1,
                             },
 
@@ -2216,7 +2334,7 @@ do
                                     melee = "Melee Range",
                                     xclude = "Exclude Out-of-Range"
                                 },
-                                width = "full",
+                                width = 1.49,
                                 order = 2,
                                 disabled = function () return data.range.enabled == false end,
                             }
@@ -2226,14 +2344,14 @@ do
                     glow = {
                         type = "group",
                         name = "Glows",
-                        desc = "Preferences for glows or overlays.",
+                        desc = "Preferences for Blizzard action button glows (not SpellFlash).",
                         order = 6,
                         args = {
                             enabled = {
                                 type = "toggle",
                                 name = "Enabled",
                                 desc = "If enabled, when the ability for the first icon has an active glow (or overlay), it will also glow in this display.",
-                                width = "full",
+                                width = 1.49,
                                 order = 1,
                             },
 
@@ -2242,16 +2360,23 @@ do
                                 name = "Enabled for Queued Icons",
                                 desc = "If enabled, abilities that have active glows (or overlays) will also glow in your queue.\n\n" ..
                                     "This may not be ideal, the glow may no longer be correct by that point in the future.",
-                                width = "full",
+                                width = 1.49,
                                 order = 2,
                                 disabled = function() return data.glow.enabled == false end,
+                            },
+
+                            break01 = {
+                                type = "description",
+                                name = " ",
+                                order = 2.1,
+                                width = "full"
                             },
 
                             mode = {
                                 type = "select",
                                 name = "Glow Style",
                                 desc = "Select the glow style for your display.",
-                                width = "full",
+                                width = 1,
                                 order = 3,
                                 values = {
                                     default = "Default Button Glow",
@@ -2264,12 +2389,12 @@ do
                             coloring = {
                                 type = "select",
                                 name = "Coloring Mode",
-                                desc = "Select the coloring mode for this glow effect.",
-                                width = "full",
+                                desc = "Select the coloring mode for this glow effect.\n\nClass-colored borders will automatically change to match the class you are playing.",
+                                width = 0.99,
                                 order = 4,
                                 values = {
                                     default = "Use Default Color",
-                                    class = "Use Class Color",
+                                    class = format( "Class |A:WhiteCircle-RaidBlips:16:16:0:0:%d:%d:%d|a #%s", ClassColor.r * 255, ClassColor.g * 255, ClassColor.b * 255, ClassColor:GenerateHexColor():sub( 3, 8 ) ),
                                     custom = "Specify a Custom Color"
                                 },
                                 disabled = function() return data.glow.enabled == false end,
@@ -2279,9 +2404,9 @@ do
                                 type = "color",
                                 name = "Glow Color",
                                 desc = "Select the custom glow color for your display.",
-                                width = "full",
+                                width = 0.99,
                                 order = 5,
-                                hidden = function() return data.glow.coloring ~= "custom" end,
+                                disabled = function() return data.glow.coloring ~= "custom" end,
                             },
                         },
                     },
@@ -2334,7 +2459,7 @@ do
                                 min = 0,
                                 max = 240 * 8,
                                 step = 1,
-                                width = "full",
+                                width = 1.49,
                                 hidden = function () return SF == nil end,
                             },
 
@@ -2347,6 +2472,14 @@ do
                                 softMax = 100,
                                 max = 200,
                                 step = 1,
+                                width = 1.49,
+                                hidden = function () return SF == nil end,
+                            },
+
+                            break01 = {
+                                type = "description",
+                                name = " ",
+                                order = 4.1,
                                 width = "full",
                                 hidden = function () return SF == nil end,
                             },
@@ -2356,7 +2489,7 @@ do
                                 name = "Blink",
                                 desc = "If enabled, the whole action button will fade in and out.  The default is |cFFFF0000disabled|r.",
                                 order = 5,
-                                width = "full",
+                                width = 1.49,
                                 hidden = function () return SF == nil end,
                             },
 
@@ -2365,7 +2498,7 @@ do
                                 name = "Hide Display",
                                 desc = "If checked, the addon will not show this display and will make recommendations via SpellFlash only.",
                                 order = 10,
-                                width = "full",
+                                width = 1.49,
                                 hidden = function () return SF == nil end,
                             },
 
@@ -2383,7 +2516,7 @@ do
                                 name = "Texture",
                                 desc = "Your selection will override the SpellFlash texture on any frame flashed by the addon.  This setting is universal to all displays.",
                                 order = 21,
-                                width = "full",
+                                width = 1,
                                 get = function()
                                     return Hekili.DB.profile.flashTexture
                                 end,
@@ -2404,8 +2537,8 @@ do
                                 type = "toggle",
                                 name = "Fixed Size",
                                 desc = "If checked, the SpellFlash pulse (grow and shrink) animation will be suppressed for all displays.",
-                                order = 21,
-                                width = "full",
+                                order = 22,
+                                width = 0.99,
                                 get = function()
                                     return Hekili.DB.profile.fixedSize
                                 end,
@@ -2419,8 +2552,8 @@ do
                                 type = "toggle",
                                 name = "Fixed Brightness",
                                 desc = "If checked, the SpellFlash glow will not dim and brighten for all displays.",
-                                order = 22,
-                                width = "full",
+                                order = 23,
+                                width = 0.99,
                                 get = function()
                                     return Hekili.DB.profile.fixedBrightness
                                 end,
@@ -2443,7 +2576,7 @@ do
                                 name = "Enabled",
                                 desc = "If enabled, when the first ability shown has a descriptive caption, the caption will be shown.",
                                 order = 1,
-                                width = "full",
+                                width = 1.49,
                             },
 
                             queued = {
@@ -2451,7 +2584,7 @@ do
                                 name = "Enabled for Queued Icons",
                                 desc = "If enabled, descriptive captions will be shown for queued abilities, if appropriate.",
                                 order = 2,
-                                width = "full",
+                                width = 1.49,
                                 disabled = function () return data.captions.enabled == false end,
                             },
 
@@ -2461,23 +2594,11 @@ do
                                 name = function( info ) rangeIcon( info ); return "Position" end,
                                 order = 3,
                                 args = {
-                                    align = {
-                                        type = "select",
-                                        name = "Alignment",
-                                        order = 1,
-                                        width = "full",
-                                        values = {
-                                            LEFT = "Left",
-                                            RIGHT = "Right",
-                                            CENTER = "Center"
-                                        },
-                                    },
-
                                     anchor = {
                                         type = "select",
                                         name = 'Anchor Point',
-                                        order = 2,
-                                        width = 'full',
+                                        order = 1,
+                                        width = 1,
                                         values = {
                                             TOP = 'Top',
                                             BOTTOM = 'Bottom',
@@ -2487,18 +2608,37 @@ do
                                     x = {
                                         type = "range",
                                         name = "X Offset",
-                                        order = 3,
-                                        width = "full",
+                                        order = 2,
+                                        width = 0.99,
                                         step = 1,
                                     },
 
                                     y = {
                                         type = "range",
                                         name = "Y Offset",
-                                        order = 4,
-                                        width = "full",
+                                        order = 3,
+                                        width = 0.99,
                                         step = 1,
-                                    }
+                                    },
+
+                                    break01 = {
+                                        type = "description",
+                                        name = " ",
+                                        order = 3.1,
+                                        width = "full",
+                                    },
+
+                                    align = {
+                                        type = "select",
+                                        name = "Alignment",
+                                        order = 4,
+                                        width = 1.49,
+                                        values = {
+                                            LEFT = "Left",
+                                            RIGHT = "Right",
+                                            CENTER = "Center"
+                                        },
+                                    },
                                 }
                             },
 
@@ -2507,7 +2647,7 @@ do
                                 inline = true,
                                 name = "Text",
                                 order = 4,
-                                args = fontElements,
+                                args = tableCopy( fontElements ),
                             },
                         }
                     },
@@ -2537,7 +2677,7 @@ do
                                         name = "Anchor To",
                                         values = realAnchorPositions,
                                         order = 1,
-                                        width = "full",
+                                        width = 1,
                                     },
 
                                     x = {
@@ -2547,7 +2687,7 @@ do
                                         max = max( data.primaryWidth, data.queue.width ),
                                         step = 1,
                                         order = 2,
-                                        width = "full",
+                                        width = 0.99,
                                     },
 
                                     y = {
@@ -2557,7 +2697,7 @@ do
                                         max = max( data.primaryHeight, data.queue.height ),
                                         step = 1,
                                         order = 2,
-                                        width = "full",
+                                        width = 0.99,
                                     }
                                 }
                             },
@@ -2567,7 +2707,7 @@ do
                                 inline = true,
                                 name = "Text",
                                 order = 3,
-                                args = fontElements,
+                                args = tableCopy( fontElements ),
                             },
                         }
                     },
@@ -2579,6 +2719,29 @@ do
                             "communicate that there is a delay.",
                         order = 11,
                         args = {
+                            extend = {
+                                type = "toggle",
+                                name = "Extend Spiral",
+                                desc = "If checked, the primary icon's cooldown spiral will continue until the ability should be used.",
+                                width = 1.49,
+                                order = 1,
+                            },
+
+                            fade = {
+                                type = "toggle",
+                                name = "Fade as Unusable",
+                                desc = "Fade the primary icon when you should wait before using the ability, similar to when an ability is lacking required resources.",
+                                width = 1.49,
+                                order = 1.1
+                            },
+
+                            break01 = {
+                                type = "description",
+                                name = " ",
+                                order = 1.2,
+                                width = "full",
+                            },
+                            
                             type = {
                                 type = "select",
                                 name = "Indicator",
@@ -2588,37 +2751,21 @@ do
                                     ICON = "Show Icon (Color)",
                                     TEXT = "Show Text (Countdown)",
                                 },
-                                width = "full",
-                                order = 1,
-                            },
-
-                            extend = {
-                                type = "toggle",
-                                name = "Extend Cooldown Sweep",
-                                desc = "If checked, the primary icon's cooldown sweep will continue until the ability should be used.",
-                                width = "full",
-                                order = 1.4,
-                            },
-
-                            fade = {
-                                type = "toggle",
-                                name = "Fade as Unusable",
-                                desc = "Fade the primary icon when you should wait before using the ability, similar to when an ability is lacking required resources.",
-                                width = "full",
-                                order = 1.5
+                                width = 1.49,
+                                order = 2,
                             },
 
                             pos = {
                                 type = "group",
                                 inline = true,
                                 name = function( info ) rangeIcon( info ); return "Position" end,
-                                order = 2,
+                                order = 3,
                                 args = {
                                     anchor = {
                                         type = "select",
                                         name = 'Anchor Point',
                                         order = 2,
-                                        width = 'full',
+                                        width = 1,
                                         values = realAnchorPositions
                                     },
 
@@ -2626,7 +2773,7 @@ do
                                         type = "range",
                                         name = "X Offset",
                                         order = 3,
-                                        width = "full",
+                                        width = 0.99,
                                         min = -max( data.primaryWidth, data.queue.width ),
                                         max = max( data.primaryWidth, data.queue.width ),
                                         step = 1,
@@ -2636,21 +2783,22 @@ do
                                         type = "range",
                                         name = "Y Offset",
                                         order = 4,
-                                        width = "full",
+                                        width = 0.99,
                                         min = -max( data.primaryHeight, data.queue.height ),
                                         max = max( data.primaryHeight, data.queue.height ),
                                         step = 1,
                                     }
-                                }
+                                },
+                                disabled = function () return data.delays.type == "__NA" end,
                             },
 
                             textStyle = {
                                 type = "group",
                                 inline = true,
                                 name = "Text",
-                                order = 3,
-                                args = fontElements,
-                                hidden = function () return data.delays.type ~= "TEXT" end,
+                                order = 4,
+                                args = tableCopy( fontElements ),
+                                disabled = function () return data.delays.type ~= "TEXT" end,
                             },
                         }
                     },
@@ -2666,7 +2814,7 @@ do
                                 name = "Enabled",
                                 desc = "If enabled, small indicators for target-swapping, aura-cancellation, etc. may appear on your primary icon.",
                                 order = 1,
-                                width = "full",
+                                width = 1.49,
                             },
 
                             queued = {
@@ -2674,7 +2822,7 @@ do
                                 name = "Enabled for Queued Icons",
                                 desc = "If enabled, these indicators will appear on queued icons as well as the primary icon, when appropriate.",
                                 order = 2,
-                                width = "full",
+                                width = 1.49,
                                 disabled = function () return data.indicators.enabled == false end,
                             },
 
@@ -2689,7 +2837,7 @@ do
                                         name = "Anchor To",
                                         values = realAnchorPositions,
                                         order = 1,
-                                        width = "full",
+                                        width = 1,
                                     },
 
                                     x = {
@@ -2699,7 +2847,7 @@ do
                                         max = max( data.primaryWidth, data.queue.width ),
                                         step = 1,
                                         order = 2,
-                                        width = "full",
+                                        width = 0.99,
                                     },
 
                                     y = {
@@ -2709,7 +2857,7 @@ do
                                         max = max( data.primaryHeight, data.queue.height ),
                                         step = 1,
                                         order = 2,
-                                        width = "full",
+                                        width = 0.99,
                                     }
                                 }
                             },
@@ -2804,7 +2952,7 @@ do
                                     max = 512,
                                     step = 1,
 
-                                    width = "full",
+                                    width = 1.49,
                                     order = 1,
                                 },
 
@@ -2818,7 +2966,7 @@ do
                                     max = 384,
                                     step = 1,
 
-                                    width = "full",
+                                    width = 1.49,
                                     order = 2,
                                 },
                             }
@@ -2860,7 +3008,7 @@ do
                             name = "Text",
 
                             order = 5,
-                            args = fontElements,
+                            args = tableCopy( fontElements ),
                         },
                     }
                 },
@@ -2897,7 +3045,7 @@ do
                             display.keybindings.font = val
                             display.targets.font = val
                         end
-                        Hekili:BuildUI()
+                        QueueRebuildUI()
                     end,
                 },
 
@@ -2920,7 +3068,7 @@ do
                             display.keybindings.fontSize = val
                             display.targets.fontSize = val
                         end
-                        Hekili:BuildUI()
+                        QueueRebuildUI()
                     end,
                     width = 1.5,
                 },
@@ -2949,7 +3097,7 @@ do
                             display.keybindings.fontStyle = val
                             display.targets.fontStyle = val
                         end
-                        Hekili:BuildUI()
+                        QueueRebuildUI()
                     end,
                     width = 1.5,
                 },
@@ -2968,7 +3116,7 @@ do
                             display.keybindings.color = { ... }
                             display.targets.color = { ... }
                         end
-                        Hekili:BuildUI()
+                        QueueRebuildUI()
                     end,
                     width = 1.5
                 },
@@ -3161,7 +3309,7 @@ do
                                                 shareDB.importStage = 2
 
                                                 self:EmbedDisplayOptions()
-                                                self:BuildUI()
+                                                QueueRebuildUI()
                                             end,
                                         },
 
@@ -3395,7 +3543,7 @@ do
             },
             plugins = {},
         }
-
+        db.args.displays = section
         wipe( section.plugins )
 
         local i = 1
@@ -3408,8 +3556,6 @@ do
 
         section.plugins[ "Multi" ] = newDisplayOption( db, "Multi", self.DB.profile.displays[ "Primary" ], 0 )
         MakeMultiDisplayOption( section.plugins, section.plugins.Multi.Multi.args )
-
-        db.args.displays = section
 
     end
 end
@@ -5462,7 +5608,7 @@ do
                             desc = "If checked, when using the Cooldown: Show Separately feature and Cooldowns are enabled, the addon will |cFFFF0000NOT|r pretend your " ..
                                 "cooldown abilities are fully on cooldown.  This may help resolve scenarios where abilities become desynchronized due to behavior differences " ..
                                 "between the Cooldowns display and your other displays.\n\n" ..
-                                "See |cFFFFD100Toggles|r > |cFFFFD100Cooldowns|r for the Cooldown: Show Separately feature.",
+                                "See |cFFFFD100Toggles|r > |cFFFFD100Cooldowns|r for the |cFFFFD100Cooldown: Show Separately|r feature.",
                             order = 1.051,
                             width = "full",
                             disabled = function ()
@@ -8616,7 +8762,7 @@ do
                     dialogControl = "HekiliCustomEditor",
                 }
             },
-            hidden = function() return #self.ErrorKeys == 0 end,
+            disabled = function() return #self.ErrorKeys == 0 end,
         }
     end
 end
@@ -8784,9 +8930,7 @@ end
 
 
 
-
-
-function Hekili:GetOptions()
+do
     local Options = {
         name = "Hekili " .. Hekili.Version,
         type = "group",
@@ -9140,25 +9284,27 @@ function Hekili:GetOptions()
         }
     }
 
-    self:EmbedToggleOptions( Options )
+    function Hekili:GetOptions()
+        self:EmbedToggleOptions( Options )
 
-    --[[ self:EmbedDisplayOptions( Options )
+        --[[ self:EmbedDisplayOptions( Options )
 
-    self:EmbedPackOptions( Options )
+        self:EmbedPackOptions( Options )
 
-    self:EmbedAbilityOptions( Options )
+        self:EmbedAbilityOptions( Options )
 
-    self:EmbedItemOptions( Options )
+        self:EmbedItemOptions( Options )
 
-    self:EmbedSpecOptions( Options ) ]]
+        self:EmbedSpecOptions( Options ) ]]
 
-    self:EmbedSkeletonOptions( Options )
+        self:EmbedSkeletonOptions( Options )
 
-    self:EmbedErrorOptions( Options )
+        self:EmbedErrorOptions( Options )
 
-    Hekili.OptionsReady = false
+        Hekili.OptionsReady = false
 
-    return Options
+        return Options
+    end
 end
 
 
@@ -9637,12 +9783,12 @@ function Hekili:SetOption( info, input, ... )
     if Rebuild then
         ns.refreshOptions()
         ns.loadScripts()
-        Hekili:BuildUI()
+        QueueRebuildUI()
     else
         if RebuildOptions then ns.refreshOptions() end
         if RebuildScripts then ns.loadScripts() end
         if RebuildCache and not RebuildUI then Hekili:UpdateDisplayVisibility() end
-        if RebuildUI then Hekili:BuildUI() end
+        if RebuildUI then QueueRebuildUI() end
     end
 
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
