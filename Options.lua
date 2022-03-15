@@ -1128,20 +1128,20 @@ do
         local tab = getOptionTable( info, notif )
 
         local monitor = ( tonumber( GetCVar( 'gxMonitor' ) ) or 0 ) + 1
-        -- local resolutions = { GetScreenResolutions() }
-        local resolution = select( GetCurrentResolution(), GetScreenResolutions() ) or GetCVar( "gxWindowedResolution" )
+        local resolutions = { GetScreenResolutions() }
+        local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" )
         local width, height = resolution:match( "(%d+)x(%d+)" )
 
         width = tonumber( width )
         height = tonumber( height )
 
-        --[[ for i, str in ipairs( resolutions ) do
+        for i, str in ipairs( resolutions ) do
             local w, h = str:match( "(%d+)x(%d+)" )
             w, h = tonumber( w ), tonumber( h )
 
             if w > width then width = w end
             if h > height then height = h end
-        end ]]
+        end
 
         tab.args.x.min = -1 * width
         tab.args.x.max = width
