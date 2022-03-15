@@ -1312,7 +1312,7 @@ do
                                 LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
                             elseif conf.flash.suppress and not self.flashWarnings[ iname ] then
                                 self.flashWarnings[ iname ] = true
-                                Hekili:Print( "|cffff0000WARNING|r - Could not flash recommended item '" .. iname .. "' (" .. self.id .. ")." )
+                                Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended item '" .. iname .. "' (" .. self.id .. ")." )
                             end
                         else
                             local aFlash = ability.flash
@@ -1321,7 +1321,7 @@ do
                                     LSF.FlashAction( aFlash, self.flashColor )
                                 elseif conf.flash.suppress and not self.flashWarnings[ aFlash ] then
                                     self.flashWarnings[ aFlash ] = true
-                                    Hekili:Print( "|cffff0000WARNING|r - Could not flash recommended action '" .. aFlash .. "' (" .. self.id .. ")." )
+                                    Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended action '" .. aFlash .. "' (" .. self.id .. ")." )
                                 end
                             else
                                 local id = ability.known
@@ -1335,7 +1335,7 @@ do
                                     LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
                                 elseif not self.flashWarnings[ sname ] then
                                     self.flashWarnings[ sname ] = true
-                                    Hekili:Print( "|cffff0000WARNING|r - Could not flash recommended ability '" .. sname .. "' (" .. self.id .. ")." )
+                                    Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended ability '" .. sname .. "' (" .. self.id .. ")." )
                                 end
                             end
                         end
@@ -1687,11 +1687,10 @@ do
             end
 
             if flashEvents[ event ] then
-                if event == "ACTIONBAR_SHOWGRID" then
-                    self.flashReady = false
-                else
-                    C_Timer.After( 1.5, function() self.flashReady = true end )
-                end
+                self.flashReady = false
+                C_Timer.After( 3, function()
+                    self.flashReady = true
+                end )
             end
     
             local finish = debugprofilestop()
