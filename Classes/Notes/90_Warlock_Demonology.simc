@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## March 8, 2022
+## March 15, 2022
 
 ## Changes:
 ## - Spell Lock.
@@ -119,7 +119,6 @@ actions.opener+=/shadow_bolt,if=variable.use_bolt_timings&soul_shard<5&buff.bale
 actions.opener+=/call_dreadstalkers
 
 actions.pure_damage_trinks=use_item,name=dreadfire_vessel
-actions.pure_damage_trinks+=/use_item,name=grim_eclipse
 actions.pure_damage_trinks+=/use_item,name=resonant_reservoir
 actions.pure_damage_trinks+=/use_item,name=architects_ingenuity_core
 actions.pure_damage_trinks+=/use_item,name=cosmic_gladiators_resonator
@@ -130,14 +129,18 @@ actions.pure_damage_trinks+=/use_item,name=darkmoon_deck_putrescence
 actions.pure_damage_trinks+=/use_item,name=ebonsoul_vise
 actions.pure_damage_trinks+=/use_item,name=unchained_gladiators_shackles
 
-actions.trinkets=use_item,name=shadowed_orb_of_torment,if=variable.buff_sync_cd<22
-actions.trinkets+=/use_item,name=scars_of_fraternal_strife
+actions.trinkets=variable,name=use_buff_trinkets,value=(!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up)
+actions.trinkets+=/use_item,name=scars_of_fraternal_strife,if=!buff.scars_of_fraternal_strife_4.up
+actions.trinkets+=/use_item,name=scars_of_fraternal_strife,if=buff.scars_of_fraternal_strife_4.up&pet.demonic_tyrant.active
+actions.trinkets+=/use_item,name=shadowed_orb_of_torment,if=variable.buff_sync_cd<22
+actions.trinkets+=/use_item,name=grim_eclipse,if=variable.buff_sync_cd<7
+actions.trinkets+=/use_item,name=grim_eclipse,if=variable.buff_sync_cd<7
 actions.trinkets+=/call_action_list,name=hp_trinks,if=talent.demonic_consumption.enabled&variable.next_tyrant_cd<20
-# Effects that travel slowly to target require additional, separate handling
+# Effects that travel slowly from the target require additional, separate handling
 actions.trinkets+=/call_action_list,name=slow_trinkets
-actions.trinkets+=/use_item,name=overflowing_anima_cage,if=(!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up)
-actions.trinkets+=/use_item,slot=trinket1,if=trinket.1.has_use_buff&((!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up))
-actions.trinkets+=/use_item,slot=trinket2,if=trinket.2.has_use_buff&((!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up))
+actions.trinkets+=/use_item,name=overflowing_anima_cage,if=variable.use_buff_trinkets
+actions.trinkets+=/use_item,slot=trinket1,if=trinket.1.has_use_buff&variable.use_buff_trinkets
+actions.trinkets+=/use_item,slot=trinket2,if=trinket.2.has_use_buff&variable.use_buff_trinkets
 actions.trinkets+=/call_action_list,name=pure_damage_trinks,if=time>first_tyrant_time&variable.buff_sync_cd>20
 
 actions.tyrant_setup=nether_portal,if=variable.next_tyrant_cd<15

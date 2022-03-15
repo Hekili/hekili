@@ -1,5 +1,5 @@
 ## Enhancement Shaman
-## March 5, 2022
+## March 13, 2022
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -8,15 +8,20 @@ actions.precombat+=/lightning_shield,if=buff.lightning_shield.remains<300
 actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled
 actions.precombat+=/windfury_totem,if=!runeforge.doom_winds.equipped&buff.windfury_totem.down
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
-actions.precombat+=/potion,if=boss
+actions.precombat+=/variable,name=trinket1_is_weird,value=trinket.1.is.the_first_sigil|trinket.1.is.scars_of_fraternal_strife|trinket.1.is.cache_of_acquired_treasures
+actions.precombat+=/variable,name=trinket2_is_weird,value=trinket.2.is.the_first_sigil|trinket.2.is.scars_of_fraternal_strife|trinket.2.is.cache_of_acquired_treasures
 
 ## Executed every time the actor is available.
 actions=bloodlust
 # In-combat potion is before combat ends.
-actions+=/potion,if=boss&fight_remains<60
+actions+=/potion,if=(talent.ascendance.enabled&raid_event.adds.in>=90&cooldown.ascendance.remains<10)|(talent.hot_hand.enabled&buff.molten_weapon.up)|buff.icy_edge.up|(talent.stormflurry.enabled&buff.crackling_surge.up)|debuff.earthen_spike.up|active_enemies>1|boss&fight_remains<30
 # Interrupt
 actions+=/wind_shear
-actions+=/use_items
+actions+=/use_item,name=the_first_sigil,if=(talent.ascendance.enabled&raid_event.adds.in>=90&cooldown.ascendance.remains<10)|(talent.hot_hand.enabled&buff.molten_weapon.up)|buff.icy_edge.up|(talent.stormflurry.enabled&buff.crackling_surge.up)|debuff.earthen_spike.up|active_enemies>1|fight_remains<30
+actions+=/use_item,name=cache_of_acquired_treasures,if=buff.acquired_sword.up|fight_remains<25
+actions+=/use_item,name=scars_of_fraternal_strife,if=!buff.scars_of_fraternal_strife_4.up|fight_remains<30
+actions+=/use_items,slots=trinket1,if=!variable.trinket1_is_weird
+actions+=/use_items,slots=trinket2,if=!variable.trinket2_is_weird
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
 actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50

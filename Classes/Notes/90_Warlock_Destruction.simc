@@ -1,5 +1,5 @@
 ## Destruction Warlock
-## February 26, 2022
+## March 15, 2022
 
 ## Changes:
 ## - Fleshcraft/Volatile Solvent cancel_if changed to interrupt_if.
@@ -63,14 +63,14 @@ actions.aoe+=/scouring_tithe,if=!(talent.fire_and_brimstone.enabled|talent.infer
 actions.aoe+=/impending_catastrophe,if=!(talent.fire_and_brimstone.enabled|talent.inferno.enabled)
 actions.aoe+=/incinerate
 
-actions.cds=use_item,name=shadowed_orb_of_torment,if=cooldown.summon_infernal.remains<3|boss&fight_remains<42
+actions.cds=use_item,name=shadowed_orb_of_torment,if=cooldown.summon_infernal.remains<3|boss&time_to_die<42
 actions.cds+=/summon_infernal
-actions.cds+=/dark_soul_instability
+actions.cds+=/dark_soul_instability,if=pet.infernal.active|boss&cooldown.summon_infernal.remains_expected>time_to_die
 actions.cds+=/potion,if=pet.infernal.active
 actions.cds+=/berserking,if=pet.infernal.active
 actions.cds+=/blood_fury,if=pet.infernal.active
 actions.cds+=/fireblood,if=pet.infernal.active
-actions.cds+=/use_items,if=pet.infernal.active|boss&fight_remains<21
+actions.cds+=/use_items,if=pet.infernal.active|boss&time_to_die<21
 
 actions.havoc=conflagrate,if=buff.backdraft.down&soul_shard>=1&soul_shard<=4
 actions.havoc+=/soul_fire,if=cast_time<havoc_remains
