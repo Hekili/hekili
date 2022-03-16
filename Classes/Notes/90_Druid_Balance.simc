@@ -1,5 +1,5 @@
 ## Balance Druid
-## March 15, 2022
+## March 16, 2022
 
 ## Changes:
 ## - Added Solar Beam.
@@ -94,7 +94,7 @@ actions.aoe+=/starsurge,if=variable.dream_will_fall_off&variable.starfall_wont_f
 # Use swarm so that you get max uptime by using it as late as possible on less than 3 stacks or just when 3+ stacks expire
 actions.aoe+=/adaptive_swarm,cycle_targets=1,if=!ticking&!action.adaptive_swarm_damage.in_flight|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<3
 # Refresh Moonfire if CA/Inc is ready, there are less than 5 targets in Lunar Eclipse with SotF, less than 10 otherwise in any Eclipse or up to 5 targets before a Lunar Eclipse. Don't refresh during Kindred Empowerment unless in Solar Eclipse
-actions.aoe+=/moonfire,target_if=refreshable&target.time_to_die>((14+(spell_targets.starfire*2*buff.eclipse_lunar.up))+remains)%(1+talent.twin_moons.enabled),if=astral_power>variable.sf_cost-buff.starfall.remains*6&(ap_check|variable.ignore_starsurge|!eclipse.in_any)&(cooldown.ca_inc.ready&eclipse.in_any&!druid.no_cds&(variable.convoke_desync|cooldown.convoke_the_spirits.ready|!covenant.night_fae)|spell_targets.starfire<((8-(buff.eclipse_lunar.up*3))*(1+talent.twin_moons.enabled))&!eclipse.solar_next&(!cooldown.ca_inc.ready|druid.no_cds)|(eclipse.in_solar|buff.eclipse_lunar.up&!talent.soul_of_the_forest.enabled)&(spell_targets.starfire<10*(1+talent.twin_moons.enabled)))&(!covenant.kyrian|!buff.kindred_empowerment_energize.up|eclipse.in_solar)&!buff.ravenous_frenzy_sinful_hysteria.up
+actions.aoe+=/moonfire,cycle_targets=1,if=refreshable&target.time_to_die>((14+(spell_targets.starfire*2*buff.eclipse_lunar.up))+remains)%(1+talent.twin_moons.enabled)&astral_power>variable.sf_cost-buff.starfall.remains*6&(ap_check|variable.ignore_starsurge|!eclipse.in_any)&(cooldown.ca_inc.ready&eclipse.in_any&!druid.no_cds&(variable.convoke_desync|cooldown.convoke_the_spirits.ready|!covenant.night_fae)|spell_targets.starfire<((8-(buff.eclipse_lunar.up*3))*(1+talent.twin_moons.enabled))&!eclipse.solar_next&(!cooldown.ca_inc.ready|druid.no_cds)|(eclipse.in_solar|buff.eclipse_lunar.up&!talent.soul_of_the_forest.enabled)&(spell_targets.starfire<10*(1+talent.twin_moons.enabled)))&(!covenant.kyrian|!buff.kindred_empowerment_energize.up|eclipse.in_solar)&!buff.ravenous_frenzy_sinful_hysteria.up
 # Use FoN on cd without capping
 actions.aoe+=/force_of_nature,if=ap_check|variable.ignore_starsurge
 actions.aoe+=/variable,name=cd_condition_aoe,value=!druid.no_cds&(variable.cd_condition&(buff.starfall.up|talent.stellar_drift.enabled|covenant.night_fae)&dot.moonfire.ticking&(!buff.solstice.up&!buff.ca_inc.up&(!talent.fury_of_elune.enabled|buff.ca_inc.duration>cooldown.fury_of_elune.remains+8)&(!set_bonus.tier28_2pc|eclipse.in_lunar|eclipse.solar_next)&variable.thrill_seeker_wait&(!covenant.night_fae|variable.convoke_desync|cooldown.convoke_the_spirits.remains<15)&target.time_to_die>buff.ca_inc.duration*0.7)|boss&fight_remains<buff.ca_inc.duration+12*runeforge.primordial_arcanic_pulsar)
