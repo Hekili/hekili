@@ -43,20 +43,20 @@ externals:
         url: https://github.com/SFX-WoW/AceGUI-3.0_SFX-Widgets.git
         tag: latest
     Libs/LibSpellRange-1.0:
-        url: git://github.com/ascott18/LibSpellRange-1.0.git
+        url: https://github.com/ascott18/LibSpellRange-1.0.git
     Libs/LibRangeCheck-2.0:
         url: https://repos.wowace.com/wow/librangecheck-2-0/trunk/LibRangeCheck-2.0
     Libs/LibCompress:
         url: https://repos.wowace.com/wow/libcompress/trunk
     Libs/LibDualSpec-1.0:
-        url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
+        url: https://git.wowace.com/wow/libdualspec-1-0/mainline.git
     Libs/LibItemBuffs-1.0:
-        url: git://github.com/AdiAddons/LibItemBuffs-1.0.git
+        url: https://github.com/AdiAddons/LibItemBuffs-1.0.git
     Libs/LibCustomGlow-1.0:
-        url: git://github.com/Stanzilla/LibCustomGlow.git
+        url: https://github.com/Stanzilla/LibCustomGlow.git
     Libs/LibChatAnims:
         url: https://repos.wowace.com/wow/libchatanims/trunk/LibChatAnims
     Libs/LibTranslit-1.0:
-        url: git://github.com/Vardex/LibTranslit.git
+        url: https://github.com/Vardex/LibTranslit.git
     Libs/SpellFlashCore:
-        url: git://github.com/Tga123/SpellFlashCore.git
+        url: https://github.com/Tga123/SpellFlashCore.git
