@@ -1914,7 +1914,7 @@ do
                 copy = "acquired_axe_bleed"
             },
             acquired_wand = {
-                id = 369439,
+                id = 368654,
                 duration = 12,
                 max_stack = 1,
                 generate = generate_treasure,
