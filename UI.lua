@@ -834,6 +834,7 @@ do
         d.alpha = 0
         d.numIcons = conf.numIcons
         d.firstForce = 0
+        d.threadLocked = false
 
         local scale = self:GetScale()
         local border = 2
@@ -886,6 +887,14 @@ do
                 end
             end
         end
+
+        function d:IsThreadLocked()
+            return self.threadLocked
+        end
+
+        function d:SetThreadLocked( locked )
+            self.threadLocked = locked
+        end
         
         function d:OnUpdate( elapsed )
             if not self.Recommendations or not Hekili.PLAYER_ENTERING_WORLD then
@@ -925,7 +934,7 @@ do
     
             self.recTimer = self.recTimer - elapsed
     
-            if self.NewRecommendations or ( self.recTimer < 0 and not HekiliDisplayPrimary.activeThread ) then
+            if not self:IsThreadLocked() and ( self.NewRecommendations or self.recTimer < 0 ) then
                 local alpha = self.alpha
     
                 for i, b in ipairs( self.Buttons ) do
@@ -1056,6 +1065,10 @@ do
                         self.activeThreadFrames = 0
                         self.activeThreadStart = debugprofilestop()
 
+                        for _, d in pairs( dPool ) do
+                            d:SetThreadLocked( false )
+                        end
+
                         if Hekili:GetActiveSpecOption( "throttleTime" ) then
                             Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
                         else
@@ -1088,8 +1101,15 @@ do
                         self.activeThreadTime = self.activeThreadTime + ( now - start )
     
                         if coroutine.status( thread ) == "dead" or err then
+                            for _, d in pairs( ns.UI.Displays ) do d:SetThreadLocked( false ) end
+                            
                             self.activeThread = nil
                             self.refreshTimer = 0
+
+                            
+                            for _, d in pairs( dPool ) do
+                                d:SetThreadLocked( false )
+                            end
 
                             if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
                                 self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
@@ -2500,7 +2520,7 @@ do
                 self:SetMovable( true )
 
             else ]]
-            if ( H.Pause and ( d.HasRecommendations and HekiliDisplayPrimary.activeThread == nil ) and b.Recommendation ) then
+            if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
                 H:ShowDiagnosticTooltip( b.Recommendation )
             end
         end )

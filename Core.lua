@@ -1504,6 +1504,8 @@ function Hekili.Update()
     
         local UI = ns.UI.Displays[ dispName ]
         local Queue = UI.Recommendations
+
+        UI:SetThreadLocked( true )
        
         if Queue then
             for k, v in pairs( Queue ) do
@@ -1525,7 +1527,7 @@ function Hekili.Update()
 
             Hekili:Yield( "Pre-Reset for " .. dispName .. " (from " .. state.display .. ")" )
             
-            state.reset( dispName )            
+            state.reset( dispName )
 
             Hekili:Yield( "Post-Reset for " .. dispName )
 
@@ -1999,6 +2001,7 @@ function Hekili.Update()
                         if not hasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 50 and ( dispName == "Primary" or dispName == "AOE" ) then
                             Hekili:Print( "Unable to make recommendation for " .. dispName .. " #" .. i .. "; triggering auto-snapshot..." )
                             hasSnapped = dispName
+                            UI:SetThreadLocked( false )
                             return "AutoSnapshot"
                         end
                     end
@@ -2008,6 +2011,8 @@ function Hekili.Update()
 
             UI.NewRecommendations = checkstr ~= UI.RecommendationsStr
             UI.RecommendationsStr = checkstr
+
+            UI:SetThreadLocked( false )
         
             if WeakAuras and WeakAuras.ScanEvents then
                 Hekili:Yield( "Post-ScanEvents for " .. dispName )
