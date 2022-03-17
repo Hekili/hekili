@@ -1827,22 +1827,26 @@ do
 
     
     local function generate_treasure( t )
-        local id, key = t.id, t.key
-        local name, _, count, _, duration, expires, caster = GetPlayerAuraBySpellID( id )
+        local key = t.key
+        local id = class.auras[ key ] and class.auras[ key ].id
 
-        if name then
-            local applied = treasure_applied[ key ]
+        if id then
+            local name, _, count, _, duration, expires, caster = GetPlayerAuraBySpellID( id )
 
-            if applied > 0 then
-                duration = 12
-                expires = applied + 12
+            if name then
+                local applied = treasure_applied[ key ]
+
+                if applied > 0 then
+                    duration = 12
+                    expires = applied + 12
+                end
+
+                t.count = max( 1, count )
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
             end
-
-            t.count = max( 1, count )
-            t.expires = expires
-            t.applied = expires - duration
-            t.caster = caster
-            return
         end
 
         t.count = 0

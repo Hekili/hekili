@@ -1106,7 +1106,6 @@ do
                             self.activeThread = nil
                             self.refreshTimer = 0
 
-                            
                             for _, d in pairs( dPool ) do
                                 d:SetThreadLocked( false )
                             end
