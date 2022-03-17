@@ -1835,16 +1835,19 @@ do
 
             if name then
                 local applied = treasure_applied[ key ]
+                local now = GetTime()
 
-                if applied > 0 then
-                    duration = 12
-                    expires = applied + 12
+                duration = 12
+
+                if applied + duration < now then
+                    expires = now + duration
                 end
 
                 t.count = max( 1, count )
                 t.expires = expires
                 t.applied = expires - duration
                 t.caster = caster
+
                 return
             end
         end
@@ -1911,7 +1914,7 @@ do
                 copy = "acquired_axe_bleed"
             },
             acquired_wand = {
-                id = 368654,
+                id = 369439,
                 duration = 12,
                 max_stack = 1,
                 generate = generate_treasure,
