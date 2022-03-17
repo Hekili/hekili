@@ -1853,7 +1853,7 @@ do
 
 
     -- Cache of Acquired Treasures, special detection.
-    all:RegisterAura( "cache_of_acquired_treasures", {
+    all:RegisterAbility( "cache_of_acquired_treasures", {
         cast = 0,
         cooldown = 180,
         gcd = "off",
