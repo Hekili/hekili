@@ -4,6 +4,7 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
+local state = Hekili.State
 local all = Hekili.Class.specs[ 0 ]
 
 
@@ -1619,66 +1620,6 @@ do
                 }
             }
         },
-        cache_of_acquired_treasures = {
-            cast = 0,
-            cooldown = 180,
-            gcd = "off",
-
-            item = 188265,
-
-            toggle = "cooldowns",
-
-            usable = function()
-                return buff.acquired_sword.up or buff.acquired_axe.up or buff.acquired_wand.up
-            end,
-
-            handler = function()
-                if buff.acquired_sword.up then
-                    applyBuff( "acquired_sword_haste" )
-                elseif buff.acquired_axe.up then
-                    applyBuff( "acquired_axe_driver" )
-                end
-                removeBuff( "acquired_sword" )
-                removeBuff( "acquired_axe" )
-                removeBuff( "acquired_wand" )
-            end,
-
-            auras = {
-                acquired_sword = {
-                    id = 368657,
-                    duration = 12,
-                    max_stack = 1,
-                },
-                acquired_sword_haste = {
-                    id = 368649,
-                    duration = 25,
-                    max_stack = 10,
-                    copy = "acquired_sword_driver"
-                },
-                acquired_axe = {
-                    id = 368656,
-                    duration = 12,
-                    max_stack = 1,
-                },
-                acquired_axe_driver = {
-                    id = 368650,
-                    duration = 25,
-                    max_stack = 1,
-                    copy = "acquired_axe_buff"
-                },
-                vicious_wound = {
-                    id = 368651,
-                    duration = 3,
-                    max_stack = 1,
-                    copy = "acquired_axe_bleed"
-                },
-                acquired_wand = {
-                    id = 368654,
-                    duration = 12,
-                    max_stack = 1,
-                },
-            }
-        },
         the_lions_roar = {
             cast = 3,
             channeled = true,
@@ -1851,3 +1792,133 @@ do
         },
     } )
 end
+
+
+do
+    local treasure_auras = {
+        [368657] = "acquired_sword",
+        [368656] = "acquired_axe",
+        [368654] = "acquired_wand"
+    }
+
+    local treasure_applied = {
+        acquired_sword = 0,
+        acquired_axe = 0,
+        acquired_wand = 0,
+    }
+
+    local f = CreateFrame("Frame")
+    f:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
+
+    f:SetScript( "OnEvent", function( event )
+        if not state.equipped.cache_of_acquired_treasures then return end
+
+        if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+            local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+            if destGUID == state.GUID and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
+                local treasure = treasure_auras[ spellID ]
+                if treasure then treasure_applied[ treasure ] = GetTime() end
+            end
+        end
+    end )
+
+    Hekili:ProfileFrame( "TreasureFrame", f )
+
+    
+    local function generate_treasure( t )
+        local id, key = t.id, t.key
+        local name, _, count, _, duration, expires, caster = GetPlayerAuraBySpellID( id )
+
+        if name then
+            local applied = treasure_applied[ key ]
+
+            if applied > 0 then
+                duration = 12
+                expires = applied + 12
+            end
+
+            t.count = max( 1, count )
+            t.expires = expires
+            t.applied = expires - duration
+            t.caster = caster
+            return
+        end
+
+        t.count = 0
+        t.expires = 0
+        t.applied = 0
+        t.caster = "nobody"
+    end
+
+
+    -- Cache of Acquired Treasures, special detection.
+    all:RegisterAura( "cache_of_acquired_treasures", {
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        item = 188265,
+
+        toggle = "cooldowns",
+
+        buff = "acquired_treasure",
+
+        handler = function()
+            if buff.acquired_sword.up then
+                applyBuff( "acquired_sword_haste" )
+            elseif buff.acquired_axe.up then
+                applyBuff( "acquired_axe_driver" )
+            end
+            removeBuff( "acquired_sword" )
+            removeBuff( "acquired_axe" )
+            removeBuff( "acquired_wand" )
+        end,
+
+        auras = {
+            acquired_sword = {
+                id = 368657,
+                duration = 12,
+                max_stack = 1,
+                generate = generate_treasure,
+            },
+            acquired_sword_haste = {
+                id = 368649,
+                duration = 25,
+                max_stack = 10,
+                copy = "acquired_sword_driver"
+            },
+            acquired_axe = {
+                id = 368656,
+                duration = 12,
+                max_stack = 1,
+                generate = generate_treasure,
+            },
+            acquired_axe_driver = {
+                id = 368650,
+                duration = 25,
+                max_stack = 1,
+                copy = "acquired_axe_buff"
+            },
+            vicious_wound = {
+                id = 368651,
+                duration = 3,
+                max_stack = 1,
+                copy = "acquired_axe_bleed"
+            },
+            acquired_wand = {
+                id = 368654,
+                duration = 12,
+                max_stack = 1,
+                generate = generate_treasure,
+            },
+            acquired_treasure = {
+                alias = { "acquired_sword", "acquired_axe", "acquired_wand" },
+                aliasMode = "first",
+                aliasType = "buff",
+                duration = 12,
+            }
+        }
+    } )
+end
+

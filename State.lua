@@ -5950,8 +5950,8 @@ function state.reset( dispName )
     -- Trinkets that need special handling.
     if state.set_bonus.cache_of_acquired_treasures > 0 then
         -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).
+        -- If this remains problematic, use QueueAuraExpiration instead.
         if state.buff.acquired_sword.up then
-            state.buff.acquired_sword.expires = state.buff.acquired_sword.applied + 12
             state.applyBuff( "acquired_axe" )
             state.buff.acquired_axe.expires = state.buff.acquired_sword.expires + 12
             state.buff.acquired_axe.applied = state.buff.acquired_sword.expires
@@ -5959,7 +5959,6 @@ function state.reset( dispName )
             state.buff.acquired_wand.expires = state.buff.acquired_axe.expires + 12
             state.buff.acquired_wand.applied = state.buff.acquired_axe.expires
         elseif state.buff.acquired_axe.up then
-            state.buff.acquired_axe.expires = state.buff.acquired_axe.applied + 12
             state.applyBuff( "acquired_wand" )
             state.buff.acquired_wand.expires = state.buff.acquired_axe.expires + 12
             state.buff.acquired_wand.applied = state.buff.acquired_axe.expires
@@ -5967,7 +5966,6 @@ function state.reset( dispName )
             state.buff.acquired_sword.expires = state.buff.acquired_wand.expires + 12
             state.buff.acquired_sword.applied = state.buff.acquired_wand.expires
         elseif state.buff.acquired_wand.up then
-            state.buff.acquired_wand.expires = state.buff.acquired_wand.applied + 12
             state.applyBuff( "acquired_sword" )
             state.buff.acquired_sword.expires = state.buff.acquired_wand.expires + 12
             state.buff.acquired_sword.applied = state.buff.acquired_wand.expires
