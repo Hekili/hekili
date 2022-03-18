@@ -5311,10 +5311,12 @@ do
 
         local success = false
 
+        local impactSpells = class.abilities[ action ] and class.abilities[ action ].impactSpells
+
         for i = #queue, 1, -1 do
             local e = queue[ i ]
 
-            if e.action == action and ( eType == nil or e.type == eType ) then
+            if ( e.action == action or impactSpells and impactSpells[ action ] ) and ( eType == nil or e.type == eType ) then
                 RecycleEvent( queue, i )
                 success = true
             end

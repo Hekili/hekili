@@ -1171,7 +1171,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
 
                 if not travel then travel = state.target.distance / ability.velocity end
 
-                state:QueueEvent( ability.key, finish / 1000, 0.05 + travel, "PROJECTILE_IMPACT", target, true )
+                state:QueueEvent( ability.impactSpell or ability.key, finish / 1000, 0.05 + travel, "PROJECTILE_IMPACT", target, true )
             end
         end
 
@@ -1568,7 +1568,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                             if not travel then travel = state.target.distance / ability.velocity end
 
-                            state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", destGUID, true )
+                            state:QueueEvent( ability.impactSpell or ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", destGUID, true )
                         end
                     end
 
@@ -1628,7 +1628,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                         if not travel then travel = state.target.distance / ability.velocity end
 
-                        state:QueueEvent( ability.key, time, travel, "PROJECTILE_IMPACT", destGUID, true )
+                        state:QueueEvent( ability.impactSpell or ability.key, time, travel, "PROJECTILE_IMPACT", destGUID, true )
                     end
 
                     state:AddToHistory( ability.key, destGUID )

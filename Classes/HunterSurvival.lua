@@ -1034,14 +1034,13 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             startsCombat = true,
 
+            texture = 2065635,
             bind = "wildfire_bomb",
             talent = "wildfire_infusion",
 
             usable = function () return current_wildfire_bomb == "pheromone_bomb" end,
-            handler = function ()
+            impact = function ()
                 applyDebuff( "target", "pheromone_bomb" )
-                current_wildfire_bomb = "wildfire_bomb"
-                removeBuff( "mad_bombardier" )
             end,
         },
 
@@ -1123,8 +1122,13 @@ if UnitClassBase( "player" ) == "HUNTER" then
             startsCombat = true,
             texture = 1033905,
 
-            handler = function ()
+            velocity = 60,
+
+            start = function ()
                 removeBuff( "vipers_venom" )
+            end,
+
+            impact = function ()
                 applyDebuff( "target", "serpent_sting" )
 
                 if azerite.latent_poison.enabled then
@@ -1150,13 +1154,13 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             startsCombat = true,
 
+            texture = 2065637,
             bind = "wildfire_bomb",
+            velocity = 35,
 
             usable = function () return current_wildfire_bomb == "shrapnel_bomb" end,
-            handler = function ()
+            impact = function ()
                 applyDebuff( "target", "shrapnel_bomb" )
-                current_wildfire_bomb = "wildfire_bomb"
-                removeBuff( "mad_bombardier" )
             end,
         },
 
@@ -1271,13 +1275,18 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             startsCombat = true,
 
+            texture = 2065636,
             bind = "wildfire_bomb",
+            velocity = 35,
 
             usable = function () return current_wildfire_bomb == "volatile_bomb" end,
-            handler = function ()
-                if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
-                current_wildfire_bomb = "wildfire_bomb"
+
+            start = function ()
                 removeBuff( "mad_bombardier" )
+            end,
+
+            impact = function ()
+                if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
             end,
         },
 
@@ -1300,25 +1309,44 @@ if UnitClassBase( "player" ) == "HUNTER" then
             gcd = "spell",
 
             startsCombat = true,
-            --[[ texture = function ()
+            texture = function ()
                 local a = current_wildfire_bomb and current_wildfire_bomb or "wildfire_bomb"
-                if a == "wildfire_bomb" or not action[ a ] then return 2065634 end                
+                if a == "wildfire_bomb" or not class.abilities[ a ] then return 2065634 end                
                 return action[ a ].texture
-            end, ]]
+            end,
 
-            aura = "wildfire_bomb",
             bind = function () return current_wildfire_bomb end,
+            velocity = 35,
 
-            handler = function ()
-                if current_wildfire_bomb ~= "wildfire_bomb" then
-                    runHandler( current_wildfire_bomb )
-                    current_wildfire_bomb = "wildfire_bomb"
-                    return
-                end
-                applyDebuff( "target", "wildfire_bomb_dot" )
+            start = function ()
                 removeBuff( "flame_infusion" )
                 removeBuff( "mad_bombardier" )
+                if current_wildfire_bomb ~= "wildfire_bomb" then
+                    runHandler( current_wildfire_bomb )
+                end
             end,
+
+            impact = function ()
+                if current_wildfire_bomb == "wildfire_bomb" then applyDebuff( "target", "wildfire_bomb_dot" )
+                else class.abilities[ current_wildfire_bomb ].impact() end
+
+                current_wildfire_bomb = "wildfire_bomb"
+            end,
+
+            impactSpell = function ()
+                if not talent.wildfire_infusion.enabled then return "wildfire_bomb" end
+                if IsActiveSpell( 270335 ) then return "shrapnel_bomb" end
+                if IsActiveSpell( 270323 ) then return "pheromone_bomb" end
+                if IsActiveSpell( 271045 ) then return "volatile_bomb" end
+                return "wildfire_bomb"
+            end,
+
+            impactSpells = {
+                wildfire_bomb = true,
+                shrapnel_bomb = true,
+                pheromone_bomb = true,
+                volatile_bomb = true
+            },
 
             copy = { 271045, 270335, 270323, 259495 }
         },
