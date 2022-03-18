@@ -409,6 +409,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             setDistance( 5 )
         end
 
+        -- Overfix.
+        if buff.mad_bombardier.up and now - action.wildfire_bomb.lastCast < 0.5 * gcd.max then
+            removeBuff( "mad_bombardier" )
+        end
+
         if debuff.tar_trap.up then
             debuff.tar_trap.expires = debuff.tar_trap.applied + 30
         end
@@ -1039,7 +1044,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             talent = "wildfire_infusion",
 
             usable = function () return current_wildfire_bomb == "pheromone_bomb" end,
+            
+            start = function() end,
+
             impact = function ()
+                removeBuff( "mad_bombardier" )
                 applyDebuff( "target", "pheromone_bomb" )
             end,
         },
@@ -1159,7 +1168,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             velocity = 35,
 
             usable = function () return current_wildfire_bomb == "shrapnel_bomb" end,
+
+            start = function () end,
+
             impact = function ()
+                removeBuff( "mad_bombardier" )
                 applyDebuff( "target", "shrapnel_bomb" )
             end,
         },
@@ -1282,10 +1295,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
             usable = function () return current_wildfire_bomb == "volatile_bomb" end,
 
             start = function ()
-                removeBuff( "mad_bombardier" )
             end,
 
             impact = function ()
+                removeBuff( "mad_bombardier" )
                 if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
             end,
         },
@@ -1320,16 +1333,15 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             start = function ()
                 removeBuff( "flame_infusion" )
-                removeBuff( "mad_bombardier" )
                 if current_wildfire_bomb ~= "wildfire_bomb" then
                     runHandler( current_wildfire_bomb )
                 end
             end,
 
             impact = function ()
+                removeBuff( "mad_bombardier" )
                 if current_wildfire_bomb == "wildfire_bomb" then applyDebuff( "target", "wildfire_bomb_dot" )
                 else class.abilities[ current_wildfire_bomb ].impact() end
-
                 current_wildfire_bomb = "wildfire_bomb"
             end,
 
