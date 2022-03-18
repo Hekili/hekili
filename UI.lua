@@ -1043,7 +1043,7 @@ do
                 self.recTimer = 0.1
                 self.alphaCheck = 0.5
     
-                self:RefreshCooldowns()
+                if not self:IsThreadLocked() then self:RefreshCooldowns() end
             end
     
             local postRecs = debugprofilestop()
