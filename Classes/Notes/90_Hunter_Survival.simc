@@ -1,5 +1,7 @@
 # Survival Hunter
-# March 16, 2022
+# March 18, 2022
+
+# Convert focus overcap checks to respect new class settings / use new check_focus_overcap expression.
 
 actions.precombat+=/variable,name=mb_rs_cost,op=setif,value=action.mongoose_bite.cost,value_else=action.raptor_strike.cost,condition=talent.mongoose_bite
 actions.precombat+=/summon_pet
@@ -8,6 +10,7 @@ actions.precombat+=/fleshcraft
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers.equipped
 actions.precombat+=/steel_trap
 
+actions=harpoon,if=target.outside8&settings.use_harpoon&buff.aspect_of_the_eagle.down
 actions+=/muzzle
 # Go ahead and Tranquilize NPC enemies; we don't do this for players because it'd be too spammy and we can't readily Tranq specific buffs.
 actions+=/tranquilizing_shot,if=!target.is_player
@@ -22,24 +25,24 @@ actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>2
 actions+=/arcane_torrent
 
 actions.bop=serpent_sting,cycle_targets=1,if=buff.vipers_venom.remains&(buff.vipers_venom.remains<gcd|refreshable)
-actions.bop+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&buff.nesingwarys_trapping_apparatus.up|focus+cast_regen<focus.max+10&buff.nesingwarys_trapping_apparatus.up&buff.nesingwarys_trapping_apparatus.remains<gcd
+actions.bop+=/kill_command,cycle_targets=1,if=check_focus_overcap&buff.nesingwarys_trapping_apparatus.up|(settings.allow_focus_overcap|focus+cast_regen<focus.max+10)&buff.nesingwarys_trapping_apparatus.up&buff.nesingwarys_trapping_apparatus.remains<gcd
 actions.bop+=/kill_shot
-actions.bop+=/wildfire_bomb,if=focus+cast_regen<focus.max&full_recharge_time<gcd|buff.mad_bombardier.up
-actions.bop+=/flanking_strike,if=focus+cast_regen<focus.max
+actions.bop+=/wildfire_bomb,if=check_focus_overcap&full_recharge_time<gcd|buff.mad_bombardier.up
+actions.bop+=/flanking_strike,if=check_focus_overcap
 actions.bop+=/flayed_shot
 actions.bop+=/call_action_list,name=nta,strict=1,if=runeforge.nessingwarys_trapping_apparatus.equipped&focus<variable.mb_rs_cost
-actions.bop+=/death_chakram,if=focus+cast_regen<focus.max
+actions.bop+=/death_chakram,if=check_focus_overcap
 actions.bop+=/raptor_strike,cycle_targets=1,if=buff.coordinated_assault.up&buff.coordinated_assault.remains<1.5*gcd
 actions.bop+=/mongoose_bite,cycle_targets=1,if=buff.coordinated_assault.up&buff.coordinated_assault.remains<1.5*gcd
 actions.bop+=/a_murder_of_crows
 actions.bop+=/raptor_strike,cycle_targets=1,if=buff.tip_of_the_spear.stack=3
 actions.bop+=/mongoose_bite,cycle_targets=1,if=talent.alpha_predator.enabled&(buff.mongoose_fury.up&buff.mongoose_fury.remains<focus%(variable.mb_rs_cost-cast_regen)*gcd)
-actions.bop+=/wildfire_bomb,if=focus+cast_regen<focus.max&!ticking&(full_recharge_time<gcd|!dot.wildfire_bomb.ticking&buff.mongoose_fury.remains>full_recharge_time-1*gcd|!dot.wildfire_bomb.ticking&!buff.mongoose_fury.remains)|time_to_die<18&!dot.wildfire_bomb.ticking
+actions.bop+=/wildfire_bomb,if=check_focus_overcap&!ticking&(full_recharge_time<gcd|!dot.wildfire_bomb.ticking&buff.mongoose_fury.remains>full_recharge_time-1*gcd|!dot.wildfire_bomb.ticking&!buff.mongoose_fury.remains)|time_to_die<18&!dot.wildfire_bomb.ticking
 # If you don't have Nessingwary's Trapping Apparatus, simply cast Kill Command if you won't overcap on Focus from doing so. If you do have Nessingwary's Trapping Apparatus you should cast Kill Command if your focus is below the cost of Mongoose Bite or Raptor Strike
-actions.bop+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&(!runeforge.nessingwarys_trapping_apparatus|focus<variable.mb_rs_cost)
+actions.bop+=/kill_command,cycle_targets=1,if=check_focus_overcap&(!runeforge.nessingwarys_trapping_apparatus|focus<variable.mb_rs_cost)
 # With Nessingwary's Trapping Apparatus only Kill Command if your traps are on cooldown, otherwise stop using Kill Command if your current focus amount is enough to sustain the amount of time left for any of your traps to come off cooldown
-actions.bop+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&runeforge.nessingwarys_trapping_apparatus&cooldown.freezing_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd)&cooldown.tar_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd)&(!talent.steel_trap|talent.steel_trap&cooldown.steel_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd))
-actions.bop+=/steel_trap,if=focus+cast_regen<focus.max
+actions.bop+=/kill_command,cycle_targets=1,if=check_focus_overcap&runeforge.nessingwarys_trapping_apparatus&cooldown.freezing_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd)&cooldown.tar_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd)&(!talent.steel_trap|talent.steel_trap&cooldown.steel_trap.remains>(focus%(variable.mb_rs_cost-cast_regen)*gcd))
+actions.bop+=/steel_trap,if=check_focus_overcap
 actions.bop+=/serpent_sting,cycle_targets=1,if=dot.serpent_sting.refreshable&!buff.coordinated_assault.up|talent.alpha_predator&refreshable&!buff.mongoose_fury.up
 actions.bop+=/resonating_arrow
 actions.bop+=/wild_spirits
@@ -59,8 +62,8 @@ actions.cds+=/berserking,if=buff.coordinated_assault.up|time_to_die<13
 actions.cds+=/muzzle
 actions.cds+=/potion,if=boss&fight_remains<25|buff.coordinated_assault.up
 actions.cds+=/fleshcraft,interrupt_if=channeling&!soulbind.pustule_eruption,if=(focus<70|cooldown.coordinated_assault.remains<gcd)&(soulbind.pustule_eruption|soulbind.volatile_solvent&buff.volatile_solvent.down)
-actions.cds+=/tar_trap,if=focus+cast_regen<focus.max&runeforge.soulforge_embers.equipped&tar_trap.remains<gcd&cooldown.flare.remains<gcd&(active_enemies>1|active_enemies=1&time_to_die>5*gcd)
-actions.cds+=/flare,line_cd=25,if=focus+cast_regen<focus.max&tar_trap.up&runeforge.soulforge_embers.equipped&time_to_die>4*gcd
+actions.cds+=/tar_trap,if=check_focus_overcap&runeforge.soulforge_embers.equipped&tar_trap.remains<gcd&cooldown.flare.remains<gcd&(active_enemies>1|active_enemies=1&time_to_die>5*gcd)
+actions.cds+=/flare,line_cd=25,if=check_focus_overcap&tar_trap.up&runeforge.soulforge_embers.equipped&time_to_die>4*gcd
 actions.cds+=/kill_shot,if=active_enemies=1&target.time_to_die<focus%(variable.mb_rs_cost-cast_regen)*gcd
 actions.cds+=/mongoose_bite,if=active_enemies=1&target.time_to_die<focus%(variable.mb_rs_cost-cast_regen)*gcd
 actions.cds+=/raptor_strike,if=active_enemies=1&target.time_to_die<focus%(variable.mb_rs_cost-cast_regen)*gcd
@@ -71,27 +74,27 @@ actions.cleave+=/wild_spirits,if=!raid_event.adds.exists|raid_event.adds.remains
 actions.cleave+=/resonating_arrow,if=!raid_event.adds.exists|raid_event.adds.remains>=8|active_enemies>=raid_event.adds.count*2
 actions.cleave+=/coordinated_assault,if=!raid_event.adds.exists|raid_event.adds.remains>=10|active_enemies>=raid_event.adds.count*2
 actions.cleave+=/wildfire_bomb,if=full_recharge_time<gcd
-actions.cleave+=/death_chakram,if=(!raid_event.adds.exists|raid_event.adds.remains>5|active_enemies>=raid_event.adds.count*2)|focus+cast_regen<focus.max&!runeforge.bag_of_munitions.equipped
+actions.cleave+=/death_chakram,if=(!raid_event.adds.exists|raid_event.adds.remains>5|active_enemies>=raid_event.adds.count*2)|check_focus_overcap&!runeforge.bag_of_munitions.equipped
 actions.cleave+=/call_action_list,name=nta,strict=1,if=runeforge.nessingwarys_trapping_apparatus.equipped&focus<variable.mb_rs_cost
 actions.cleave+=/chakrams
 actions.cleave+=/butchery,if=dot.shrapnel_bomb.ticking&(dot.internal_bleeding.stack<2|dot.shrapnel_bomb.remains<gcd)
 actions.cleave+=/carve,if=dot.shrapnel_bomb.ticking&!set_bonus.tier28_2pc
 actions.cleave+=/butchery,if=charges_fractional>2.5&cooldown.wildfire_bomb.full_recharge_time>spell_targets%2
-actions.cleave+=/flanking_strike,if=focus+cast_regen<focus.max
+actions.cleave+=/flanking_strike,if=check_focus_overcap
 actions.cleave+=/carve,if=cooldown.wildfire_bomb.full_recharge_time>spell_targets%2
 actions.cleave+=/wildfire_bomb,if=buff.mad_bombardier.up
 actions.cleave+=/kill_command,cycle_targets=1,if=dot.pheromone_bomb.ticking&set_bonus.tier28_2pc
 actions.cleave+=/kill_shot,if=buff.flayers_mark.up
 actions.cleave+=/flayed_shot,cycle_targets=1
 actions.cleave+=/serpent_sting,cycle_targets=1,if=refreshable&!ticking&next_wi_bomb.volatile&target.time_to_die>15&focus+cast_regen>35&active_enemies<=4
-actions.cleave+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&full_recharge_time<gcd&(runeforge.nessingwarys_trapping_apparatus.equipped&cooldown.freezing_trap.remains&cooldown.tar_trap.remains|!runeforge.nessingwarys_trapping_apparatus.equipped)
+actions.cleave+=/kill_command,cycle_targets=1,if=check_focus_overcap&full_recharge_time<gcd&(runeforge.nessingwarys_trapping_apparatus.equipped&cooldown.freezing_trap.remains&cooldown.tar_trap.remains|!runeforge.nessingwarys_trapping_apparatus.equipped)
 actions.cleave+=/wildfire_bomb,if=!dot.wildfire_bomb.ticking&!set_bonus.tier28_2pc|charges_fractional>1.3
 actions.cleave+=/butchery,if=(!next_wi_bomb.shrapnel|!talent.wildfire_infusion.enabled)&cooldown.wildfire_bomb.full_recharge_time>spell_targets%2
 actions.cleave+=/a_murder_of_crows
-actions.cleave+=/steel_trap,if=focus+cast_regen<focus.max
+actions.cleave+=/steel_trap,if=check_focus_overcap
 actions.cleave+=/serpent_sting,cycle_targets=1,if=refreshable&talent.hydras_bite.enabled&target.time_to_die>8
 actions.cleave+=/carve
-actions.cleave+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&(runeforge.nessingwarys_trapping_apparatus.equipped&cooldown.freezing_trap.remains&cooldown.tar_trap.remains|!runeforge.nessingwarys_trapping_apparatus.equipped)
+actions.cleave+=/kill_command,cycle_targets=1,if=check_focus_overcap&(runeforge.nessingwarys_trapping_apparatus.equipped&cooldown.freezing_trap.remains&cooldown.tar_trap.remains|!runeforge.nessingwarys_trapping_apparatus.equipped)
 actions.cleave+=/kill_shot
 actions.cleave+=/serpent_sting,cycle_targets=1,if=refreshable
 actions.cleave+=/mongoose_bite,cycle_targets=1
@@ -101,28 +104,28 @@ actions.nta=steel_trap
 actions.nta+=/freezing_trap,if=!buff.wild_spirits.remains|buff.wild_spirits.remains&cooldown.kill_command.remains
 actions.nta+=/tar_trap,if=!buff.wild_spirits.remains|buff.wild_spirits.remains&cooldown.kill_command.remains
 
-actions.st=death_chakram,if=focus+cast_regen<focus.max&(!raid_event.adds.exists|!raid_event.adds.up&raid_event.adds.duration+raid_event.adds.in<5)|raid_event.adds.up&raid_event.adds.remains>40
+actions.st=death_chakram,if=check_focus_overcap&(!raid_event.adds.exists|!raid_event.adds.up&raid_event.adds.duration+raid_event.adds.in<5)|raid_event.adds.up&raid_event.adds.remains>40
 actions.st+=/serpent_sting,cycle_targets=1,if=!dot.serpent_sting.ticking&target.time_to_die>7|buff.vipers_venom.up&buff.vipers_venom.remains<gcd
 actions.st+=/flayed_shot
 actions.st+=/resonating_arrow,if=!raid_event.adds.exists|!raid_event.adds.up&(raid_event.adds.duration+raid_event.adds.in<20|raid_event.adds.count=1)|raid_event.adds.up&raid_event.adds.remains>40|boss&time_to_die<10
 actions.st+=/wild_spirits,if=!raid_event.adds.exists|!raid_event.adds.up&raid_event.adds.duration+raid_event.adds.in<20|raid_event.adds.up&raid_event.adds.remains>20|boss&time_to_die<20
 actions.st+=/coordinated_assault,if=!raid_event.adds.exists|covenant.night_fae&cooldown.wild_spirits.remains|!covenant.night_fae&(!raid_event.adds.up&raid_event.adds.duration+raid_event.adds.in<30|raid_event.adds.up&raid_event.adds.remains>20|!raid_event.adds.up)|boss&time_to_die<30
 actions.st+=/kill_shot
-actions.st+=/flanking_strike,if=focus+cast_regen<focus.max
+actions.st+=/flanking_strike,if=check_focus_overcap
 actions.st+=/a_murder_of_crows
-actions.st+=/wildfire_bomb,if=full_recharge_time<2*gcd&set_bonus.tier28_2pc|buff.mad_bombardier.up|!set_bonus.tier28_2pc&(full_recharge_time<gcd|focus+cast_regen<focus.max&(next_wi_bomb.volatile&dot.serpent_sting.ticking&dot.serpent_sting.refreshable|next_wi_bomb.pheromone&!buff.mongoose_fury.up&focus+cast_regen<focus.max-action.kill_command.cast_regen*3)|boss&time_to_die<10)
+actions.st+=/wildfire_bomb,if=full_recharge_time<2*gcd&set_bonus.tier28_2pc|buff.mad_bombardier.up|!set_bonus.tier28_2pc&(full_recharge_time<gcd|check_focus_overcap&(next_wi_bomb.volatile&dot.serpent_sting.ticking&dot.serpent_sting.refreshable|next_wi_bomb.pheromone&!buff.mongoose_fury.up&(settings.allow_focus_overcap|focus+cast_regen<focus.max-action.kill_command.cast_regen*3))|boss&time_to_die<10)
 actions.st+=/kill_command,cycle_targets=1,if=set_bonus.tier28_2pc&dot.pheromone_bomb.ticking&!buff.mad_bombardier.up
 actions.st+=/carve,if=active_enemies>1&!runeforge.rylakstalkers_confounding_strikes.equipped
 actions.st+=/butchery,if=active_enemies>1&!runeforge.rylakstalkers_confounding_strikes.equipped&cooldown.wildfire_bomb.full_recharge_time>spell_targets&(charges_fractional>2.5|dot.shrapnel_bomb.ticking)
-actions.st+=/steel_trap,if=focus+cast_regen<focus.max
+actions.st+=/steel_trap,if=check_focus_overcap
 actions.st+=/mongoose_bite,cycle_targets=1,if=talent.alpha_predator.enabled&(buff.mongoose_fury.up&buff.mongoose_fury.remains<focus%(variable.mb_rs_cost-cast_regen)*gcd&!buff.wild_spirits.remains|buff.mongoose_fury.remains&next_wi_bomb.pheromone)
-actions.st+=/kill_command,cycle_targets=1,if=full_recharge_time<gcd&focus+cast_regen<focus.max
+actions.st+=/kill_command,cycle_targets=1,if=full_recharge_time<gcd&check_focus_overcap
 actions.st+=/raptor_strike,cycle_targets=1,if=buff.tip_of_the_spear.stack=3|dot.shrapnel_bomb.ticking
 actions.st+=/mongoose_bite,if=dot.shrapnel_bomb.ticking
 actions.st+=/serpent_sting,cycle_targets=1,if=refreshable&target.time_to_die>7|buff.vipers_venom.up
 actions.st+=/wildfire_bomb,if=next_wi_bomb.shrapnel&focus>variable.mb_rs_cost*2&dot.serpent_sting.remains>5*gcd
 actions.st+=/chakrams
-actions.st+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max
+actions.st+=/kill_command,cycle_targets=1,if=check_focus_overcap
 actions.st+=/wildfire_bomb,if=runeforge.rylakstalkers_confounding_strikes.equipped
 actions.st+=/mongoose_bite,cycle_targets=1,if=buff.mongoose_fury.up|focus+action.kill_command.cast_regen>focus.max-15|dot.shrapnel_bomb.ticking|buff.wild_spirits.remains
 actions.st+=/raptor_strike,cycle_targets=1
