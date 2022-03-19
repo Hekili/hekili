@@ -327,7 +327,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
     local lastFocus = -1
 
     spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
-        if powerType == "FOCUS" then
+        if powerType == "FOCUS" and state.set_bonus.tier28_4pc > 0 then
             local current = UnitPower( "player", FOCUS )
 
             if current < lastFocus then
