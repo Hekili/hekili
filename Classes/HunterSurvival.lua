@@ -86,7 +86,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         chimaeral_sting = 3609, -- 356719
         diamond_ice = 686, -- 203340
         dragonscale_armor = 3610, -- 202589
@@ -362,7 +362,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         if not slot then return false end
 
         local _, _, spellID = GetSpellBookItemName( slot, "spell" )
-        return id == spellID 
+        return id == spellID
     end
 
     state.IsActiveSpell = IsActiveSpell
@@ -402,7 +402,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             if IsActiveSpell( 270335 ) then current_wildfire_bomb = "shrapnel_bomb"
             elseif IsActiveSpell( 270323 ) then current_wildfire_bomb = "pheromone_bomb"
             elseif IsActiveSpell( 271045 ) then current_wildfire_bomb = "volatile_bomb"
-            else current_wildfire_bomb = "wildfire_bomb" end                
+            else current_wildfire_bomb = "wildfire_bomb" end
         else
             current_wildfire_bomb = "wildfire_bomb"
         end
@@ -582,7 +582,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 if debuff.shrapnel_bomb.up then applyDebuff( "target", "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
 
                 removeBuff( "butchers_bone_fragments" )
-                
+
                 if conduit.flame_infusion.enabled then
                     addStack( "flame_infusion", nil, 1 )
                 end
@@ -801,13 +801,13 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = function ()
                 if legendary.nessingwarys_trapping_apparatus.enabled then
                     return -45, "focus"
                 end
             end,
-            
+
             startsCombat = false,
             texture = 135834,
 
@@ -835,17 +835,17 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 setDistance( 5 )
             end,
         },
-        
+
 
         hunters_mark = {
             id = 257284,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 236188,
-            
+
             handler = function ()
                 applyDebuff( "target", "hunters_mark" )
             end,
@@ -893,7 +893,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 end
                 if talent.tip_of_the_spear.enabled then addStack( "tip_of_the_spear", 20, 1 ) end
 
-                if debuff.pheromone_bomb.up then 
+                if debuff.pheromone_bomb.up then
                     if talent.alpha_predator.enabled then gainCharges( "kill_command", 1 )
                     else setCooldown( "kill_command", 0 ) end
                 end
@@ -908,13 +908,13 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             spend = function () return buff.flayers_mark.up and 0 or 10 end,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 236174,
-            
+
             usable = function () return buff.flayers_mark.up or target.health_pct < 20, "requires target health below 20 percent" end,
             handler = function ()
                 if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
@@ -1035,12 +1035,14 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
 
         pheromone_bomb = {
-            -- id = 270323,            
+            id = 270323,
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = function () return buff.mad_bombardier.up and 0 or 18 end,
-            recharge = function () return buff.mad_bombardier.up and 0 or 18 end,
+
+            cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+            recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+
             gcd = "spell",
 
             startsCombat = true,
@@ -1050,7 +1052,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             talent = "wildfire_infusion",
 
             usable = function () return current_wildfire_bomb == "pheromone_bomb" end,
-            
+
             start = function() end,
 
             impact = function ()
@@ -1158,13 +1160,14 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
 
         shrapnel_bomb = {
-            -- id = 270335,
+            id = 270335,
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = function () return buff.mad_bombardier.up and 0 or 18 end,
-            recharge = function () return buff.mad_bombardier.up and 0 or 18 end,
-            hasteCD = true,
+
+            cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+            recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+
             gcd = "spell",
 
             startsCombat = true,
@@ -1189,10 +1192,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 1.75,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 132213,
-            
+
             handler = function ()
             end,
         },
@@ -1246,7 +1249,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 0,
             cooldown = function () return level > 55 and 25 or 30 end,
             gcd = "spell",
-            
+
             spend = function ()
                 if legendary.nessingwarys_trapping_apparatus.enabled then
                     return -45, "focus"
@@ -1267,12 +1270,12 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 136020,
 
             toggle = "interrupts",
-            
+
             usable = function () return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires dispellable_enrage or dispellable_magic" end,
             handler = function ()
                 removeBuff( "dispellable_enrage" )
@@ -1283,12 +1286,14 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
 
         volatile_bomb = {
-            -- id = 271045,
+            id = 271045,
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = function () return buff.mad_bombardier.up and 0 or 18 end,
-            recharge = function () return buff.mad_bombardier.up and 0 or 18 end,
+
+            cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+            recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+
             hasteCD = true,
             gcd = "spell",
 
@@ -1315,24 +1320,21 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 if current_wildfire_bomb == "wildfire_bomb" then return 259495
                 elseif current_wildfire_bomb == "pheromone_bomb" then return 270323
                 elseif current_wildfire_bomb == "shrapnel_bomb" then return 270335
-                elseif current_wildfire_bomb == "volatile_bomb" then return 271045 end 
+                elseif current_wildfire_bomb == "volatile_bomb" then return 271045 end
                 return 259495
             end,
             flash = { 270335, 270323, 271045, 259495 },
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = function () return buff.mad_bombardier.up and 0 or 18 end,
-            recharge = function () return buff.mad_bombardier.up and 0 or 18 end,
+
+            cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+            recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+
             hasteCD = true,
             gcd = "spell",
 
             startsCombat = true,
-            texture = function ()
-                local a = current_wildfire_bomb and current_wildfire_bomb or "wildfire_bomb"
-                if a == "wildfire_bomb" or not class.abilities[ a ] then return 2065634 end                
-                return action[ a ].texture
-            end,
 
             bind = function () return current_wildfire_bomb end,
             velocity = 35,
@@ -1405,14 +1407,14 @@ if UnitClassBase( "player" ) == "HUNTER" then
         package = "Survival"
     } )
 
-    
+
     spec:RegisterSetting( "use_harpoon", true, {
         name = "|T1376040:0|t Use Harpoon",
         desc = "If checked, the addon will recommend |T1376040:0|t Harpoon when you are out of range and Harpoon is available.",
         type = "toggle",
         width = 1.49
     } )
-    
+
     --[[ spec:RegisterSetting( "ca_vop_overlap", false, {
         name = "|T2065565:0|t Coordinated Assault Overlap (Vision of Perfection)",
         desc = "If checked, the addon will recommend |T2065565:0|t Coordinated Assault even if the buff is already applied due to a Vision of Perfection proc.\n" ..
