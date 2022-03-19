@@ -4929,7 +4929,7 @@ do
             local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
             if not name then break end
 
-            if caster and UnitIsUnit( "pet", caster ) or UnitIsUnit( "player", caster ) then
+            if caster and ( UnitIsUnit( "pet", caster ) or UnitIsUnit( "player", caster ) ) then
                 local key = class.auras[ spellID ] and class.auras[ spellID ].key
                 -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
                 if not key then key = autoAuraKey[ spellID ] end
@@ -4971,7 +4971,7 @@ do
             local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
             if not name then break end
 
-            if caster and UnitIsUnit( "pet", caster ) or UnitIsUnit( "player", caster ) then
+            if caster and ( UnitIsUnit( "pet", caster ) or UnitIsUnit( "player", caster ) ) then
                 local key = class.auras[ spellID ] and class.auras[ spellID ].key
                 -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
                 if not key then key = autoAuraKey[ spellID ] end
@@ -6426,7 +6426,7 @@ function state:IsKnown( sID, notoggle )
             return ability.known
         end
 
-        if ability.item then
+        if ability.item and ability.key ~= "potion" then
             return IsUsableItem( ability.item ), "IsUsableItem item " .. ability.item .. " and " .. ( tostring( ability.known ) or "nil" )
         end
 

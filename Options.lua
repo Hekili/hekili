@@ -1386,7 +1386,7 @@ do
                 MakeMultiDisplayOption( db, v.args, info )
             elseif inf and v.type ~= "description" then
                 info[ #info + 1 ] = k
-                if rawget( v, "desc" ) then v.desc = WrapDesc( db, info ) end
+                v.desc = WrapDesc( db, info )
                 if rawget( v, "set" ) then v.set = WrapSetter( db, info ) end
                 info[ #info ] = nil
             end
@@ -4655,7 +4655,7 @@ do
         local toggles = {}
 
         for k, v in pairs( class.abilities ) do
-            if v.item and not abilities[ v.itemKey or v.key ] then
+            if k == "potion" or v.item and not abilities[ v.itemKey or v.key ] then
                 local name = class.itemList[ v.item ] or v.name
                 if name then abilities[ name ] = v.itemKey or v.key end
             end
@@ -5452,7 +5452,7 @@ do
                             args = {
                                 toggleDesc = {
                                     type = "description",
-                                    name = "This section shows which Abilities are enabled/disabled when you toggle each category when in this specialization.  Gear and Trinkets can be adjusted via their own section (left).\n\n" ..
+                                    name = "This section shows which Abilities are enabled/disabled when you toggle each category when in this specialization.  Gear and Items can be adjusted via their own section (left).\n\n" ..
                                         "Removing an ability from its toggle leaves it |cFF00FF00ENABLED|r regardless of whether the toggle is active.",
                                     fontSize = "medium",
                                     order = 1,
@@ -8879,11 +8879,10 @@ function Hekili:GenerateProfile()
         end
     end
 
-    local toggles
+    local toggles = ""
     for k, v in orderedPairs( self.DB.profile.toggles ) do
         if type( v ) == "table" and rawget( v, "value" ) ~= nil then
-            if toggles then toggles = format( "%s\n    %s = %s %s", toggles, k, tostring( v.value ), ( v.separate and "[separate]" or ( k ~= "cooldowns" and v.override and self.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
-            else toggles = format( "%s = %s", k, tostring( v.value ) ) end
+            toggles = format( "%s%s    %s = %s %s", toggles, toggles:len() > 0 and "\n" or "", k, tostring( v.value ), ( v.separate and "[separate]" or ( k ~= "cooldowns" and v.override and self.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
         end
     end
 
@@ -9129,7 +9128,7 @@ do
 
             items = {
                 type = "group",
-                name = "Gear and Trinkets",
+                name = "Gear and Items",
                 order = 81,
                 childGroups = "select",
                 args = {

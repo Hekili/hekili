@@ -1342,7 +1342,7 @@ do
                                     self.flashWarnings[ aFlash ] = true
                                     Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended action '" .. aFlash .. "' (" .. self.id .. ")." )
                                 end
-                            else
+                            elseif a ~= "potion" then
                                 local id = ability.known
 
                                 if id == nil or type( id ) ~= "number" then
