@@ -1,5 +1,5 @@
 ## Retribution Paladin
-## March 12, 2022
+## March 19, 2022
 
 ## Changes:
 ## - Integrate new priority split from SimC.
@@ -18,6 +18,8 @@ actions.precombat+=/shield_of_vengeance
 
 ## Executed every time the actor is available.
 actions=rebuke
+actions+=/variable,name=fr_ready,value=(holy_power>=4&time<8|holy_power>=3&(time>=8|spell_targets.divine_storm>=2&covenant.kyrian))&cooldown.avenging_wrath.remains>gcd&time_to_hpg=0&(!talent.seraphim|buff.seraphim.up)&(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in>40)&(!buff.avenging_wrath.up|holy_power=5|cooldown.hammer_of_wrath.remains|spell_targets.divine_storm>=2&covenant.kyrian)
+actions+=/variable,name=es_ready,value=(buff.crusade.down&cooldown.crusade.remains>10|buff.crusade.stack>=3|cooldown.avenging_wrath.remains>10)&(!talent.final_reckoning|cooldown.final_reckoning.remains>10|holy_power.deficit=0&action.final_reckoning.disabled)&fight_remains>8&spell_targets.divine_storm<5
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=es_fr_pooling,if=(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in<9|raid_event.adds.in>30)&(talent.execution_sentence&cooldown.execution_sentence.remains<9&spell_targets.divine_storm<5|talent.final_reckoning&cooldown.final_reckoning.remains<9)&fight_remains>8
 actions+=/call_action_list,name=es_fr_active,strict=1,if=debuff.execution_sentence.up|debuff.final_reckoning.up
@@ -91,10 +93,10 @@ actions.es_fr_pooling+=/consecration
 
 actions.finishers=variable,name=ds_castable,value=spell_targets.divine_storm=2&!(runeforge.final_verdict|talent.righteous_verdict)|spell_targets.divine_storm>2|buff.empyrean_power.up&!debuff.judgment.up&!buff.divine_purpose.up
 actions.finishers+=/seraphim,if=(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15)&(!talent.final_reckoning|cooldown.final_reckoning.remains>cooldown)&(!talent.execution_sentence|cooldown.execution_sentence.remains>cooldown|spell_targets.divine_storm>=5)&(!raid_event.adds.exists|raid_event.adds.in>40|raid_event.adds.in<gcd|raid_event.adds.up)&(!covenant.kyrian|(cooldown.divine_toll.remains<9|cooldown.divine_toll.remains>cooldown))|fight_remains<15&fight_remains>5|buff.crusade.up&buff.crusade.stack<10
-actions.finishers+=/execution_sentence,if=(buff.crusade.down&cooldown.crusade.remains>10|buff.crusade.stack>=3|cooldown.avenging_wrath.remains>10)&(!talent.final_reckoning|cooldown.final_reckoning.remains>10)&fight_remains>8&spell_targets.divine_storm<5
-actions.finishers+=/divine_storm,if=variable.ds_castable&!buff.vanquishers_hammer.up&((!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|cooldown.execution_sentence.remains>gcd*6|cooldown.execution_sentence.remains>gcd*4&holy_power>=5|spell_targets.divine_storm>=5|!talent.seraphim&cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|cooldown.final_reckoning.remains>gcd*6|cooldown.final_reckoning.remains>gcd*4&holy_power>=5|!talent.seraphim&cooldown.final_reckoning.remains>gcd*2)|talent.holy_avenger&cooldown.holy_avenger.remains<gcd*3|buff.holy_avenger.up|buff.crusade.up&buff.crusade.stack<10|fight_remains<8)
-actions.finishers+=/templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|cooldown.execution_sentence.remains>gcd*8|cooldown.execution_sentence.remains>gcd*6&holy_power>=4|!talent.seraphim&cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|cooldown.final_reckoning.remains>gcd*8|cooldown.final_reckoning.remains>gcd*6&holy_power>=4|!talent.seraphim&cooldown.final_reckoning.remains>gcd*2)|talent.holy_avenger&cooldown.holy_avenger.remains<gcd*3|buff.holy_avenger.up|buff.crusade.up&buff.crusade.stack<10|fight_remains<8
- 
+actions.finishers+=/execution_sentence,if=(buff.crusade.down&cooldown.crusade.remains>10|buff.crusade.stack>=3|cooldown.avenging_wrath.remains>10)&(!talent.final_reckoning|cooldown.final_reckoning.remains>10|holy_power.deficit=0&(!variable.fr_ready|action.final_reckoning.disabled))&fight_remains>8&spell_targets.divine_storm<5
+actions.finishers+=/divine_storm,if=variable.ds_castable&!buff.vanquishers_hammer.up&((!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|cooldown.execution_sentence.remains>gcd*6|cooldown.execution_sentence.remains>gcd*4&holy_power>=5|spell_targets.divine_storm>=5|!talent.seraphim&cooldown.execution_sentence.remains>gcd*2|holy_power.deficit=0&(!variable.es_ready|action.execution_sentence.disabled))&(!talent.final_reckoning|cooldown.final_reckoning.remains>gcd*6|cooldown.final_reckoning.remains>gcd*4&holy_power>=5|!talent.seraphim&cooldown.final_reckoning.remains>gcd*2|holy_power.deficit=0&(!variable.fr_ready|action.final_reckoning.disabled))|talent.holy_avenger&cooldown.holy_avenger.remains<gcd*3|buff.holy_avenger.up|buff.crusade.up&buff.crusade.stack<10|fight_remains<8)
+actions.finishers+=/templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|cooldown.execution_sentence.remains>gcd*8|cooldown.execution_sentence.remains>gcd*6&holy_power>=4|!talent.seraphim&cooldown.execution_sentence.remains>gcd*2|holy_power.deficit=0&(!variable.es_ready|action.execution_sentence.disabled))&(!talent.final_reckoning|cooldown.final_reckoning.remains>gcd*8|cooldown.final_reckoning.remains>gcd*6&holy_power>=4|!talent.seraphim&cooldown.final_reckoning.remains>gcd*2|holy_power.deficit=0&(!variable.fr_ready|action.final_reckoning.disabled))|talent.holy_avenger&cooldown.holy_avenger.remains<gcd*3|buff.holy_avenger.up|buff.crusade.up&buff.crusade.stack<10|fight_remains<8
+
 actions.generators=call_action_list,name=finishers,if=holy_power=5|(debuff.judgment.up|holy_power=4)&buff.divine_resonance.up|buff.holy_avenger.up
 actions.generators+=/vanquishers_hammer,if=!runeforge.dutybound_gavel|!talent.final_reckoning&!talent.execution_sentence|boss&fight_remains<8
 actions.generators+=/hammer_of_wrath,if=runeforge.the_mad_paragon|covenant.venthyr&cooldown.ashen_hallow.remains>210
