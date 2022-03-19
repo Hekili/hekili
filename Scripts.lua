@@ -478,7 +478,7 @@ do
         { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$",
                                                     "(1+%2-%1.charges_fractional)*%1.recharge" },
         
-        { "^full_recharge_time[<>]=?(.-)$",         "full_recharge_time-%1" },
+        { "^full_recharge_time[<>]=?(.-)$",         "0.01+full_recharge_time-%1" },
         
         { "^!(action%.[a-z0-9]+)%.executing$",      "%1.execute_remains" },
         { "^!(action%.[a-z0-9]+)%.channeling$",     "%1.channel_remains" },
