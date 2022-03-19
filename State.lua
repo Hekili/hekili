@@ -2031,7 +2031,9 @@ local mt_state = {
 
         -- The next block are values that reference an ability.
         local action = t.this_action
+        local model = t.action[ action ]
         local ability = class.abilities[ action ]
+        local cooldown = t.cooldown[ action ]
 
         if k == "time" then
             -- Calculate time in combat.
@@ -2057,24 +2059,24 @@ local mt_state = {
             return ability and ability.cooldown or 0
 
         elseif k == "charges" then
-            return t.cooldown[ action ].charges
+            return cooldown.charges
 
         elseif k == "charges_fractional" then
-            return t.cooldown[ action ].charges_fractional
+            return cooldown.charges_fractional
 
         elseif k == "time_to_max_charges" or k == "full_recharge_time" then
-                return ( ( ability.charges or 1 ) - t.charges_fractional ) * ( ability.recharge or ability.cooldown )
+            return cooldown.full_recharge_time
 
         elseif k == "max_charges" or k == "charges_max" then
             return ability and ability.charges or 1
 
         elseif k == "recharge" then
             -- TODO: Recheck what value SimC would use for recharge if an ability doesn't have charges.
-            return t.cooldown[ action ].recharge
+            return cooldown.recharge
 
         elseif k == "recharge_time" then
             -- TODO: Recheck what value SimC would use for recharge if an ability doesn't have charges.
-            return t.cooldown[ action ].recharge_time
+            return cooldown.recharge_time
 
         elseif k == "cost" then
             if ability then
@@ -2102,7 +2104,7 @@ local mt_state = {
             return ability and ability.critical or t.stat.crit
 
         elseif k == "in_range" then
-            return t.action[ action ].in_range
+            return model.in_range
 
         end
 
@@ -2793,8 +2795,14 @@ local mt_default_cooldown = {
                     duration = 0
                 end ]]
 
+                if not duration then duration = max( ability.recharge or 0, ability.cooldown or 0 ) end
+
+                t.true_duration = duration
+                duration = max( duration, ability.recharge )
+
                 t.charge = charges or 1
-                t.recharge = duration or ability.recharge
+                t.duration = duration
+                t.recharge = duration
 
                 if charges and charges < maxCharges then
                     t.next_charge = start + duration
@@ -2825,8 +2833,8 @@ local mt_default_cooldown = {
             return ability.recharge or ability.cooldown or 0
 
         elseif k == "time_to_max_charges" or k == "full_recharge_time" then
-            if raw then return ( ( ability.charges or 1 ) - t.true_charges_fractional ) * ( ability.recharge or ability.cooldown ) end
-            return ( ( ability.charges or 1 ) - t.charges_fractional ) * ( ability.recharge or ability.cooldown )
+            if raw then return ( ( ability.charges or 1 ) - t.true_charges_fractional ) * t.duration end
+            return ( ( ability.charges or 1 ) - t.charges_fractional ) * t.duration
 
         elseif k == "remains" then
             if t.key == "global_cooldown" then
@@ -2979,7 +2987,7 @@ local mt_gcd = {
 
         elseif k == "remains" then
             return state.cooldown.global_cooldown.remains
-        
+
         elseif k == "expires" then
             return state.cooldown.global_cooldown.expires
 
@@ -3529,7 +3537,7 @@ local mt_buffs = {
             if Hekili.PLAYER_ENTERING_WORLD and not buffs_warned[ k ] then
                 Hekili:Error( "Unknown buff: " .. k )
                 buffs_warned[ k ] = true
-            end            
+            end
             return unknown_buff
         end
 
@@ -4661,7 +4669,7 @@ local mt_default_action = {
 
         elseif k == "cycle" then
             return ability.cycle == "cycle"
-        
+
         else
             local val = ability[ k ]
 
@@ -4732,7 +4740,7 @@ local mt_swing_timer = {
     __index = function( t, k )
         local speed = state.swings[ t.type .. "_speed" ]
         if speed == 0 then return 999 end
-        
+
         local swing = state.time == 0 and state.now or state.swings.mainhand
         if swing == 0 then return speed end
 
@@ -4918,39 +4926,43 @@ do
 
         local i = 1
         while ( true ) do
-            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i, "PLAYER" )
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
             if not name then break end
 
-            local key = class.auras[ spellID ] and class.auras[ spellID ].key
-            -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
-            if not key then key = autoAuraKey[ spellID ] end
+            if caster and UnitIsUnit( "pet", caster ) or UnitIsUnit( "player", caster ) then
+                local key = class.auras[ spellID ] and class.auras[ spellID ].key
+                -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
+                if not key then key = autoAuraKey[ spellID ] end
 
-            if key then
-                db.buff[ key ] = db.buff[ key ] or {}
-                local buff = db.buff[ key ]
+                if key then
+                    db.buff[ key ] = db.buff[ key ] or {}
+                    local buff = db.buff[ key ]
 
-                if expires == 0 then
-                    expires = GetTime() + 3600
-                    duration = 7200
+                    if expires == 0 then
+                        expires = GetTime() + 3600
+                        duration = 7200
+                    end
+
+                    buff.key = key
+                    buff.id = spellID
+                    buff.name = name
+                    buff.count = count > 0 and count or 1
+                    buff.expires = expires
+                    buff.duration = duration
+                    buff.applied = expires - duration
+                    buff.caster = caster
+                    buff.timeMod = timeMod
+                    buff.v1 = v1
+                    buff.v2 = v2
+                    buff.v3 = v3
+
+                    buff.last_application = buff.last_application or 0
+                    buff.last_expiry      = buff.last_expiry or 0
+
+                    buff.unit = unit
                 end
-
-                buff.key = key
-                buff.id = spellID
-                buff.name = name
-                buff.count = count > 0 and count or 1
-                buff.expires = expires
-                buff.duration = duration
-                buff.applied = expires - duration
-                buff.caster = caster
-                buff.timeMod = timeMod
-                buff.v1 = v1
-                buff.v2 = v2
-                buff.v3 = v3
-
-                buff.last_application = buff.last_application or 0
-                buff.last_expiry      = buff.last_expiry or 0
-
-                buff.unit = unit
+            else
+                print( "No caster on " .. name )
             end
 
             i = i + 1
@@ -4958,37 +4970,40 @@ do
 
         i = 1
         while ( true ) do
-            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, unit ~= "player" and "PLAYER" or nil )
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
             if not name then break end
 
+            if caster and UnitIsUnit( "pet", caster ) or UnitIsUnit( "player", caster ) then
+                local key = class.auras[ spellID ] and class.auras[ spellID ].key
+                -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
+                if not key then key = autoAuraKey[ spellID ] end
 
-            local key = class.auras[ spellID ] and class.auras[ spellID ].key
-            -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
-            if not key then key = autoAuraKey[ spellID ] end
+                if key then
+                    db.debuff[ key ] = db.debuff[ key ] or {}
+                    local debuff = db.debuff[ key ]
 
-            if key then
-                db.debuff[ key ] = db.debuff[ key ] or {}
-                local debuff = db.debuff[ key ]
+                    if expires == 0 then
+                        expires = GetTime() + 3600
+                        duration = 7200
+                    end
 
-                if expires == 0 then
-                    expires = GetTime() + 3600
-                    duration = 7200
+                    debuff.key = key
+                    debuff.id = spellID
+                    debuff.name = name
+                    debuff.count = count > 0 and count or 1
+                    debuff.expires = expires
+                    debuff.duration = duration
+                    debuff.applied = expires - duration
+                    debuff.caster = caster
+                    debuff.timeMod = timeMod
+                    debuff.v1 = v1
+                    debuff.v2 = v2
+                    debuff.v3 = v3
+
+                    debuff.unit = unit
                 end
-
-                debuff.key = key
-                debuff.id = spellID
-                debuff.name = name
-                debuff.count = count > 0 and count or 1
-                debuff.expires = expires
-                debuff.duration = duration
-                debuff.applied = expires - duration
-                debuff.caster = caster
-                debuff.timeMod = timeMod
-                debuff.v1 = v1
-                debuff.v2 = v2
-                debuff.v3 = v3
-
-                debuff.unit = unit
+            else
+                print( "No caster on " .. name )
             end
 
             i = i + 1
@@ -5943,7 +5958,7 @@ function state.reset( dispName )
 
         state.rangefilter = display.range.enabled and display.range.type == "xclude"
     end
-            
+
     -- Special case spells that suck.
     if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
         setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
@@ -6780,7 +6795,7 @@ function state:TimeToReady( action, pool )
         end
     end
 
-    local line_cd = state.args.line_cd    
+    local line_cd = state.args.line_cd
     if ( line_cd and type( line_cd ) == "number" ) then
         if lastCast > self.combat then
             if Hekili.Debug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. lastCast .. ", remaining CD: " .. max( 0, lastCast + line_cd - now ) ) end
