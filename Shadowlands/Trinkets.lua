@@ -10,7 +10,7 @@ local all = Hekili.Class.specs[ 0 ]
 
 -- 9.0 Trinkets
 do
-    -- Trinket auras (not on-use effects)    
+    -- Trinket auras (not on-use effects)
     all:RegisterAuras( {
         anima_field = {
             id = 345535,
@@ -596,7 +596,7 @@ do
             gcd = "spell",
 
             item = 178715,
-            
+
             nobuff = "mistcaller_ocarina",
 
             handler = function ()
@@ -770,7 +770,7 @@ do
             gcd = "off",
 
             item = 178783,
-            
+
             handler = function ()
                 applyBuff( "charged_phylactery" )
             end,
@@ -942,7 +942,7 @@ do
                 if equipped[ 175732 ] then return 175732 end
                 return 181357
             end,
-            items = { 175732, 181357 },            
+            items = { 175732, 181357 },
             toggle = "cooldowns",
 
             handler = function ()
@@ -1050,7 +1050,7 @@ do
             gcd = "off",
 
             item = 186425,
-            
+
             handler = function ()
                 if spec.mistweaver then gainChargeTime( "renewing_mist", 7 )
                 elseif class.druid and spec.restoration then gainChargeTime( "swiftmend", 7.9 )
@@ -1119,7 +1119,7 @@ do
             channeled = true,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
             item = 186428,
 
@@ -1254,7 +1254,7 @@ do
             cast = 0,
             cooldown = 150,
             gcd = "off",
-            
+
             item = 185902,
             toggle = "cooldowns",
 
@@ -1825,7 +1825,7 @@ do
 
     Hekili:ProfileFrame( "TreasureFrame", f )
 
-    
+
     local function generate_treasure( t )
         local key = t.key
         local id = class.auras[ key ] and class.auras[ key ].id
@@ -1929,3 +1929,75 @@ do
     } )
 end
 
+
+do
+    all:RegisterAbility( "gavel_of_the_first_arbiter", {
+        cast = 0,
+        cooldown = 240,
+        gcd = "off",
+
+        item = 189862,
+
+        -- toggle = "cooldowns",
+
+        handler = function()
+            -- Spawns an enemy, kill to receive buff.
+        end,
+
+        auras = {
+            boon_of_looming_winter_active = {
+                id = 368693,
+                duration = 60,
+                max_stack = 1,
+            },
+
+            boon_of_looming_winter_absorb = {
+                id = 368698,
+                duration = 15,
+                max_stack = 1,
+            },
+
+            boon_of_harvested_hope_active = {
+                id = 368695,
+                duration = 60,
+                max_stack = 1,
+            },
+
+            boon_of_harvested_hope_damage = {
+                id = 368701,
+                duration = 3,
+                max_stack = 1,
+            },
+
+            boon_of_divine_command_active = {
+                id = 368694,
+                duration = 60,
+                max_stack = 1,
+            },
+
+            boon_of_divine_command_damage = {
+                id = 368699,
+                duration = 15,
+                max_stack = 1,
+            },
+
+            boon_of_assured_victory_active = {
+                id = 368696,
+                duration = 60,
+                max_stack = 1,
+            },
+
+            rotting_decay = {
+                id = 368700,
+                duration = 8,
+                max_stack = 1,
+            },
+
+            boon_of_the_end_active = {
+                id = 368697,
+                duration = 60,
+                max_stack = 1,
+            },
+        }
+    } )
+end
