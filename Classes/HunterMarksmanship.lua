@@ -84,7 +84,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         dire_beast_basilisk = 825, -- 205691
         dire_beast_hawk = 824, -- 208652
         dragonscale_armor = 3600, -- 202589
@@ -261,7 +261,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             max_stack = 1,
         },
 
-        
+
         -- Legendaries
         nessingwarys_trapping_apparatus = {
             id = 336744,
@@ -302,7 +302,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         return steady_focus_applied
     end )
 
-    
+
     local ExpireNesingwarysTrappingApparatus = setfenv( function()
         focus.regen = focus.regen * 0.5
         forecastResources( "focus" )
@@ -573,8 +573,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 applyDebuff( "target", "concussive_shot" )
             end,
         },
-       
-       
+
+
         chimaera_shot = {
             id = 342049,
             cast = 0,
@@ -700,7 +700,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             texture = 236178,
 
             talent = "explosive_shot",
-            
+
             handler = function ()
                 applyDebuff( "target", "explosive_shot" )
             end,
@@ -839,13 +839,13 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             start = function ()
                 applyBuff( "rapid_fire" )
-                if buff.volley.down then removeBuff( "trick_shots" ) end
                 if talent.streamline.enabled then applyBuff( "streamline" ) end
                 removeBuff( "brutal_projectiles" )
             end,
 
             finish = function ()
-                removeBuff( "double_tap" )                
+                if buff.volley.down then removeBuff( "trick_shots" ) end
+                removeBuff( "double_tap" )
             end,
 
             auras = {
@@ -943,7 +943,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             end,
 
             copy = { 264735, 281195, 155228 }
-        },        
+        },
 
 
         tar_trap = {
@@ -1043,7 +1043,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         package = "Marksmanship",
     } )
 
-    
+
     spec:RegisterSetting( "prevent_hardcasts", false, {
         name = "Prevent Hardcasts of |T135130:0|t Aimed Shot During Movement",
         desc = "If checked, the addon will not recommend |T135130:0|t Aimed Shot if it has a cast time and you are moving.",
@@ -1056,7 +1056,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         desc = "If checked, the default priority includes usage of |T132329:0|t Trueshot pre-pull, assuming you will successfully swap " ..
             "your legendary on your own.  The addon will not tell you to swap your gear.",
         type = "toggle",
-        width = "full",        
+        width = "full",
     } )
 
 
