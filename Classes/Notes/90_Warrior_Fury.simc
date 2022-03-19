@@ -1,5 +1,5 @@
 ## Fury Warrior
-## March 8, 2022
+## March 18, 2022
 
 ## Changes:
 ## - Added Pummel.
@@ -11,6 +11,7 @@
 ## - Removed Essences.
 ## - Don't use Siegebreaker if it's already up (Deathmaker).
 ## - Setup fake sequences for Signet opener.
+## - Test simmed changes for Merciless Bonegrinder.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
@@ -87,11 +88,11 @@ actions.single_target+=/execute
 actions.single_target+=/spear_of_bastion,if=runeforge.elysian_might&buff.enrage.up&cooldown.recklessness.remains>5&(buff.recklessness.up|boss&fight_remains<20|debuff.siegebreaker.up|!talent.siegebreaker&boss&fight_remains>68)&raid_event.adds.in>55
 actions.single_target+=/bladestorm,if=buff.enrage.up&(!buff.recklessness.remains|rage<50)&(spell_targets.whirlwind=1&raid_event.adds.in>45|spell_targets.whirlwind=2)
 actions.single_target+=/spear_of_bastion,if=buff.enrage.up&cooldown.recklessness.remains>5&(buff.recklessness.up|boss&fight_remains<20|debuff.siegebreaker.up|!talent.siegebreaker&boss&fight_remains>68)&raid_event.adds.in>55
+actions.single_target+=/bloodthirst,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35
+actions.single_target+=/bloodbath,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35&!talent.cruelty.enabled
+actions.single_target+=/whirlwind,if=buff.merciless_bonegrinder.up&spell_targets.whirlwind>1
 actions.single_target+=/raging_blow,if=set_bonus.tier28_2pc|charges=2|(buff.recklessness.up&variable.execute_phase&talent.massacre.enabled)
-actions.single_target+=/bloodthirst,cycle_targets=1,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35
-actions.single_target+=/bloodbath,if=buff.enrage.down|conduit.vicious_contempt.rank>5&target.health.pct<35
 actions.single_target+=/dragon_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
-actions.single_target+=/whirlwind,if=buff.merciless_bonegrinder.up&spell_targets.whirlwind>3
 actions.single_target+=/onslaught,if=buff.enrage.up
 actions.single_target+=/bloodthirst
 actions.single_target+=/bloodbath

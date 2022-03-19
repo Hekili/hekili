@@ -4961,8 +4961,6 @@ do
 
                     buff.unit = unit
                 end
-            else
-                print( "No caster on " .. name )
             end
 
             i = i + 1
@@ -5002,8 +5000,6 @@ do
 
                     debuff.unit = unit
                 end
-            else
-                print( "No caster on " .. name )
             end
 
             i = i + 1

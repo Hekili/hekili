@@ -1,12 +1,12 @@
 # Blood Death Knight
-# March 15, 2022
+# March 17, 2022
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
 
 # Executed every time the actor is available.
 actions=mind_freeze
-+ actions+=/variable,name=death_strike_dump_amount,value=70,op=setif,condition=covenant.night_fae&buff.deaths_due.remains>6,value_else=55
+actions+=/variable,name=death_strike_dump_amount,value=70,op=setif,condition=covenant.night_fae&buff.deaths_due.remains>6,value_else=55
 actions+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<5)&runic_power.deficit>=20
 actions+=/call_action_list,name=mitigation,strict=1,if=tanking|incoming_damage_5s>0
 # Since the potion cooldown has changed, we'll sync with DRW

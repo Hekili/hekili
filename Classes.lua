@@ -1036,6 +1036,12 @@ function Hekili:NewSpecialization( specID, isRanged )
 end
 
 
+function Hekili:GetSpecialization( specID )
+    if not specID then return class.specs[ 0 ] end
+    return class.specs[ specID ]
+end
+
+
 class.file = UnitClassBase( "player" )
 local all = Hekili:NewSpecialization( 0, "All", "Interface\\Addons\\Hekili\\Textures\\LOGO-WHITE.blp" )
 
