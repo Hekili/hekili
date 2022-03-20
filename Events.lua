@@ -143,12 +143,12 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
     if not unitHandlers[ unit1 ] then
         unitHandlers[ unit1 ] = CreateFrame( "Frame" )
         Hekili:ProfileFrame( "UnitEvents:" .. unit1, unitHandlers[ unit1 ] )
-        
+
         unitHandlers[ unit1 ].events = {}
     end
 
     local unitFrame = unitHandlers[ unit1 ]
-    
+
     unitFrame.events[ event ] = unitFrame.events[ event ] or {}
     insert( unitFrame.events[ event ], handler )
 
@@ -160,7 +160,7 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
         if not unitHandlers[ unit2 ] then
             unitHandlers[ unit2 ] = CreateFrame( "Frame" )
             Hekili:ProfileFrame( "UnitEvents:" .. unit2, unitHandlers[ unit2 ] )
-            
+
             unitHandlers[ unit2 ].events = {}
         end
 
@@ -168,7 +168,7 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
 
         unitFrame.events[ event ] = unitFrame.events[ event ] or {}
         insert( unitFrame.events[ event ], handler )
-    
+
         unitFrame:RegisterUnitEvent( event, unit2 )
         Hekili:ProfileCPU( event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ], handler )
     end
@@ -268,7 +268,7 @@ end
 RegisterEvent( "DISPLAY_SIZE_CHANGED", function () Hekili:BuildUI() end )
 
 
-do    
+do
     local itemAuditComplete = false
 
     local auditItemNames = function ()
@@ -566,11 +566,11 @@ do
 
                     if info then
                         local key = essenceKeys[ info.ID ]
-                        
+
                         e[ key ].__rank = info.rank
                         e[ key ].__minor = true
-                        
-                        if i == 1 then                            
+
+                        if i == 1 then
                             e[ key ].__major = true
                             class.active_essence = essenceMajors[ key ]
                         end
@@ -610,9 +610,9 @@ do
                 end
             end
         end
-        
+
         table.sort( itemList, itemSorter )
-                
+
         class.essence_unscripted = ( class.active_essence and not Hekili:IsEssenceScripted( class.active_essence ) ) or false
 
         Hekili:LoadItemScripts()
@@ -687,7 +687,7 @@ do
         -- 1. Which trinket?
         -- 2. Does it have a spell?  (GetItemSpell)
         -- 3. Does it have an on-use?  (IsItemUsable)
-        -- 4. ???        
+        -- 4. ???
 
         local T1 = GetInventoryItemID( "player", 13 )
 
@@ -707,7 +707,7 @@ do
             if tSpell then
                 state.trinket.t1.__usable = isUsable
                 state.trinket.t1.__ability = tSpell
-                
+
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t1.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
                     state.trinket.t1.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
@@ -719,7 +719,7 @@ do
 
             ns.Tooltip:SetOwner( UIParent )
             ns.Tooltip:SetInventoryItem( "player", 13 )
-            
+
             local i = 0
             while( true ) do
                 i = i + 1
@@ -767,7 +767,7 @@ do
 
             ns.Tooltip:SetOwner( UIParent )
             ns.Tooltip:SetInventoryItem( "player", 14 )
-            
+
             local i = 0
             while( true ) do
                 i = i + 1
@@ -787,7 +787,7 @@ do
 
         state.main_hand.size = 0
         state.off_hand.size = 0
-    
+
         for i = 1, 19 do
             local item = GetInventoryItemID( 'player', i )
 
@@ -828,8 +828,8 @@ do
         if state.equipped.pocketsized_computation_device then
             local tName = GetItemInfo( 167555 )
             local redName, redLink = GetItemGem( tName, 1 )
-            
-            if redName and redLink then                
+
+            if redName and redLink then
                 local redID = tonumber( redLink:match("item:(%d+)") )
                 local action = class.itemMap[ redID ]
 
@@ -936,7 +936,7 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
         ns.StopConfiguration()
         Hekili:UpdateDisplayVisibility()
     end
-    
+
     Hekili:ForceUpdate( event, true ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
 end )
 
@@ -1076,7 +1076,7 @@ end )
 RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, unit, cast, spellID )
     if unit == "player" then
         local ability = class.abilities[ spellID ]
-        
+
         if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
@@ -1093,7 +1093,7 @@ end )
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( event, unit, cast, spellID )
     if unit == "player" then
         local ability = class.abilities[ spellID ]
-        
+
         if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
@@ -1109,7 +1109,7 @@ end )
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", "target", function( event, unit, cast, spellID )
     if unit == "player" then
         local ability = class.abilities[ spellID ]
-        
+
         if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
@@ -1125,7 +1125,7 @@ end )
 RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", "target", function( event, unit, cast, spellID )
     if unit == "player" then
         local ability = class.abilities[ spellID ]
-        
+
         if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
@@ -1140,12 +1140,12 @@ end )
 
 RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, unit, _, spellID )
     local ability = class.abilities[ spellID ]
-    
+
     if ability then
         local action = ability.key
         local _, _, _, start, finish = UnitCastingInfo( "player" )
-        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) ) 
-        
+        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) )
+
         state:RemoveSpellEvent( action, true, "CAST_FINISH" )
         state:RemoveSpellEvent( action, true, "PROJECTILE_IMPACT", true )
 
@@ -1195,7 +1195,7 @@ RegisterEvent( "UNIT_SPELLCAST_SENT", function ( event, unit, target_name, castI
         state.cast_target = UnitGUID( gubn )
         return
     end
-    
+
     if UnitName( "target" ) == target_name then
         state.cast_target = UnitGUID( "target" )
         return
@@ -1283,7 +1283,7 @@ local autoAuraKey = setmetatable( {}, {
         if class.auras[ key ] then
             local i = 1
 
-            while ( true ) do 
+            while ( true ) do
                 local new = key .. '_' .. i
 
                 if not class.auras[ new ] then
@@ -1312,7 +1312,7 @@ RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit )
 
     elseif UnitIsUnit( unit, "target" ) then
         state.target.updated = true
-    
+
     end
 end )
 
@@ -1335,7 +1335,7 @@ do
 
     RegisterEvent( "PLAYER_STARTED_MOVING", function( event )
         local now = GetTime()
-        
+
         if now - lastStart > MOVEMENT_ICD then
             lastStart = now
             Hekili:ForceUpdate( event )
@@ -1450,7 +1450,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         elseif ns.isMinion( destGUID ) then
             local npcid = destGUID:match("(%d+)-%x-$")
             npcid = npcid and tonumber( npcid )
-    
+
             if npcid == state.pet.guardian_of_azeroth.id then
                 state.pet.guardian_of_azeroth.summonTime = 0
             end
@@ -1474,7 +1474,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         if npcid == state.pet.guardian_of_azeroth.id then
             state.pet.guardian_of_azeroth.summonTime = time
         end
-            
+
         ns.updateMinion( destGUID, time )
         return
     end
@@ -1489,12 +1489,12 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
             if subtype:sub(-7) == "_DAMAGE" then
                 damage = spellName
-            
+
             elseif spellName == "ABSORB" then
                 damage = amount
-            
+
             end
-        
+
         elseif subtype:sub( 1, 5 ) == "SWING" then
             damageType = 1
 
@@ -1505,7 +1505,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 if spellID == "ABSORB" then
                     damage = interrupt
                 end
-            
+
             end
 
         else -- SPELL_x
@@ -1549,13 +1549,13 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                     if start then
                         state:QueueEvent( ability.key, start / 1000, finish / 1000, "CAST_FINISH", destGUID, true )
-                        
+
                         if ability.isProjectile then
                             local travel
 
                             if ability.flightTime then
                                 travel = ability.flightTime
-                            
+
                             elseif destGUID then
                                 local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
 
@@ -1585,7 +1585,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                     state:RemoveSpellEvent( ability.key, true, "CAST_FINISH" ) -- remove next cast finish.
 
                     if ability.channeled then
-                        local _, _, _, start, finish = UnitChannelInfo( "player" ) 
+                        local _, _, _, start, finish = UnitChannelInfo( "player" )
 
                         if destGUID:len() == 0 then
                             destGUID = Hekili:GetMacroCastTarget( ability.key, GetTime(), "START" ) or UnitGUID( "target" )
@@ -1598,7 +1598,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                             state:QueueEvent( ability.key, start, finish, "CHANNEL_FINISH", destGUID, true )
 
                             local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
-            
+
                             if tick_time and tick_time > 0 then
                                 local tick = tick_time
 
@@ -1615,7 +1615,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                         if ability.flightTime then
                             travel = ability.flightTime
-                        
+
                         elseif destGUID then
                             local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
 
@@ -1636,20 +1636,20 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 elseif subtype == "SPELL_DAMAGE" then
                     -- Could be an impact.
                     local ability = class.abilities[ spellID ]
-        
+
                     if ability then
                         if state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT" ) then
                             Hekili:ForceUpdate( "PROJECTILE_IMPACT" )
                         end
                     end
-                
+
                 end
             end
 
             local gcdStart = GetSpellCooldown( 61304 )
             if state.gcd.lastStart ~= gcdStart then
                 state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
-            end            
+            end
 
             -- if subtype ~= "SPELL_DAMAGE" then Hekili:ForceUpdate( subtype, true ) end
         end
@@ -1679,7 +1679,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     elseif amSource or ( countPets and minion ) or ( sourceGUID == destGUID and sourceGUID == UnitGUID( 'target' ) ) then
 
         if aura_events[ subtype ] then
-            if subtype == "SPELL_CAST_SUCCESS" or state.GUID == destGUID then 
+            if subtype == "SPELL_CAST_SUCCESS" or state.GUID == destGUID then
                 state.player.updated = true
                 if class.abilities[ spellID ] or class.auras[ spellID ] then
                     Hekili:ForceUpdate( subtype, true )
@@ -1694,14 +1694,14 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
         local aura = class.auras and class.auras[ spellID ]
 
-        if aura then            
+        if aura then
             if hostile and sourceGUID ~= destGUID and not aura.friendly then
                 -- Aura Tracking
                 if subtype == 'SPELL_AURA_APPLIED' or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, true )
                     if ( not minion or countPets ) and countDots then ns.updateTarget( destGUID, time, amSource ) end
 
-                    if spellID == 48108 or spellID == 48107 then 
+                    if spellID == 48108 or spellID == 48107 then
                         Hekili:ForceUpdate( "SPELL_AURA_SUPER", true )
                     end
 
@@ -1873,7 +1873,7 @@ local function StoreKeybindInfo( page, key, aType, id, console )
                     keys[ b ].lower[ page ] = keys[ action ].lower[ page ]
                     keys[ b ].upper[ page ] = keys[ action ].upper[ page ]
                     keys[ b ].console[ page ] = keys[ action ].console[ page ]
-        
+
                     updatedKeys[ b ] = true
                 end
             else
@@ -1891,7 +1891,7 @@ local function StoreKeybindInfo( page, key, aType, id, console )
             end
         end
     end
-end        
+end
 
 
 
@@ -1941,7 +1941,7 @@ do
 
             queuedRefresh = true
             C_Timer.After( 0.3 - ( now - lastRefresh ), ReadKeybindings )
-            
+
             return
         end
 
@@ -1998,7 +1998,7 @@ do
 
                     if action and type( action ) == "number" then
                         slotsUsed[ action ] = true
-                        
+
                         binding = GetBindingKey( binding )
                         action, aType = GetActionInfo( action )
                         if binding then StoreKeybindInfo( i, binding, action, aType ) end
@@ -2063,8 +2063,8 @@ do
                         StoreKeybindInfo( math.ceil( i / 12 ), ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
                     end
                 end
-            end                
-        end 
+            end
+        end
 
         for k, v in pairs( keys ) do
             local ability = class.abilities[ k ]
@@ -2125,7 +2125,7 @@ local function ReadOneKeybinding( event, slot )
         end
 
         ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( slot ) )
-        
+
         if ability then completed = true end
 
         -- Use ElvUI's actionbars only if they are actually enabled.
@@ -2158,10 +2158,10 @@ local function ReadOneKeybinding( event, slot )
     if not completed then
         if actionBarNumber == 1 or actionBarNumber == 2 or actionBarNumber > 6 then
             ability = StoreKeybindInfo( keyNumber, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( slot ) )
-        
+
         elseif actionBarNumber > 2 and actionBarNumber < 5 then
             ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR" .. actionBarNumber .. "BUTTON" .. keyNumber ), GetActionInfo( slot ) )
-        
+
         elseif actionBarNumber == 5 then
             ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. keyNumber ), GetActionInfo( slot ) )
 
@@ -2251,10 +2251,10 @@ end )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
-    local prowlOrder = { 8, 7, 1, 2, 3, 4, 5, 6, 9, 10 }
-    local catOrder = { 7, 8, 1, 2, 3, 4, 5, 6, 9, 10 }
-    local bearOrder = { 9, 1, 2, 3, 4, 5, 6, 7, 8, 10 }
-    local owlOrder = { 10, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+    local prowlOrder = { 8, 7, 2, 3, 4, 5, 6, 9, 10, 1 }
+    local catOrder = { 7, 8, 2, 3, 4, 5, 6, 9, 10, 1 }
+    local bearOrder = { 9, 2, 3, 4, 5, 6, 7, 8, 10, 1 }
+    local owlOrder = { 10, 2, 3, 4, 5, 6, 7, 8, 9, 1 }
 
     function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
@@ -2299,7 +2299,7 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
                     break
                 end
             end
-        
+
         else
             for i = 1, 10 do
                 output = db[ i ]
@@ -2318,7 +2318,7 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
         if output ~= "" and console then
             local size = output:match( "Icons(%d%d)" )
             size = tonumber(size)
-    
+
             if size then
                 local margin = floor( size * display.keybindings.cPortZoom * 0.5 )
                 output = output:gsub( ":0|t", ":0:" .. size .. ":" .. size .. ":" .. margin .. ":" .. ( size - margin ) .. ":" .. margin .. ":" .. ( size - margin ) .. "|t" )
@@ -2390,7 +2390,7 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
         if output ~= "" and console then
             local size = output:match( "Icons(%d%d)" )
             size = tonumber(size)
-    
+
             if size then
                 local margin = floor( size * display.keybindings.cPortZoom * 0.5 )
                 output = output:gsub( ":0|t", ":0:" .. size .. ":" .. size .. ":" .. margin .. ":" .. ( size - margin ) .. ":" .. margin .. ":" .. ( size - margin ) .. "|t" )
@@ -2425,14 +2425,14 @@ else
             caps = not ( queued and display.keybindings.queuedLowercase or display.keybindings.lowercase )
             console = ConsolePort ~= nil and display.keybindings.cPortOverride
         end
-        
+
         local db = console and keys[ key ].console or ( caps and keys[ key ].upper or keys[ key ].lower )
-        
+
         local output, source
 
         for i = 1, 10 do
             output = db[ i ]
-            
+
             if output then
                 source = i
                 break
@@ -2445,7 +2445,7 @@ else
         if output ~= "" and console then
             local size = output:match( "Icons(%d%d)" )
             size = tonumber(size)
-    
+
             if size then
                 local margin = floor( size * display.keybindings.cPortZoom * 0.5 )
                 output = output:gsub( ":0:0:0:0|t", ":0:0:0:0:" .. size .. ":" .. size .. ":" .. margin .. ":" .. ( size - margin ) .. ":" .. margin .. ":" .. ( size - margin ) .. "|t" )
