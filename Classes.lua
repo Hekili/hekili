@@ -2418,6 +2418,19 @@ all:RegisterAbilities( {
         end,
         bagItem = true,
 
+        timeToReady = function ()
+            local potion = args.potion or args.name
+            if not potion or potion == "default" then potion = class.potion end
+            potion = class.potions[ potion ]
+
+            if potion then
+                local start, dur = GetItemCooldown( potion.item )
+                return max( 0, start + dur - query_time )
+            end
+
+            return 3600
+        end,
+
         handler = function ()
             local potion = args.potion or args.name
             if not potion or potion == "default" then potion = class.potion end
