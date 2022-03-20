@@ -72,7 +72,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         control_of_lava = 728, -- 204393
         counterstrike_totem = 3490, -- 204331
         grounding_totem = 3620, -- 204336
@@ -411,7 +411,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     local vesper_expires = 0
     local vesper_guid
     local vesper_last_proc = 0
-    
+
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
@@ -457,7 +457,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             -- Vesper Totem heal
             elseif spellID == 324522 then
                 local now = GetTime()
-               
+
                 if vesper_last_proc + 0.75 < now then
                     vesper_last_proc = now
                     vesper_used = vesper_used + 1
@@ -467,7 +467,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             -- Vesper Totem damage; only fires on SPELL_DAMAGE...
             elseif spellID == 324520 then
                 local now = GetTime()
-               
+
                 if vesper_last_proc + 0.75 < now then
                     vesper_last_proc = now
                     vesper_used = vesper_used + 1
@@ -479,7 +479,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             if subtype == "SPELL_CAST_SUCCESS" then
                 -- Reset in case we need to deal with an instant after a hardcast.
                 vesper_last_proc = 0
-            end            
+            end
         end
     end )
 
@@ -603,9 +603,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
 
     local TriggerFireheart = setfenv( function()
-        applyBuff( "lava_surge" )        
+        applyBuff( "lava_surge" )
     end, state )
-    
+
 
     spec:RegisterHook( "reset_precast", function ()
         if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
@@ -635,7 +635,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             dismissPet( "primal_fire_elemental" )
             dismissPet( "primal_storm_elemental" )
             dismissPet( "primal_earth_elemental" )
-        
+
             if summon.expires then
                 if summon.expires <= now then
                     wipe( summon )
@@ -960,6 +960,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
                 if runeforge.windspeakers_lava_resurgence.enabled then
                     applyBuff( "lava_surge" )
+                    gainCharges( "lava_burst", 1 )
                     applyBuff( "windspeakers_lava_resurgence" )
                 end
 
@@ -1009,7 +1010,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 removeBuff( "echoes_of_great_sundering" )
                 removeBuff( "master_of_the_elements" )
                 removeBuff( "echoing_shock" )
-                
+
                 if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
             end,
 
@@ -1068,7 +1069,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
                 removeBuff( "master_of_the_elements" )
                 removeBuff( "echoing_shock" )
-                
+
                 if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
             end,
         },
@@ -1105,11 +1106,11 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             timeToReady = function ()
                 return max( pet.earth_elemental.remains, pet.primal_earth_elemental.remains, pet.storm_elemental.remains, pet.primal_storm_elemental.remains )
-            end,            
+            end,
 
             handler = function ()
                 summonPet( talent.primal_elementalist.enabled and "primal_fire_elemental" or "greater_fire_elemental" )
-                
+
                 if set_bonus.tier28_2pc > 0 then
                     applyBuff( "fireheart", pet.fire_elemental.remains )
                     state:QueueAuraEvent( "fireheart", TriggerFireheart, query_time + 8, "AURA_PERIODIC" )
@@ -1387,7 +1388,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 if pet.storm_elemental.up then
                     addStack( "wind_gust", nil, 1 )
                 end
-                
+
                 if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
             end,
         },
@@ -1550,15 +1551,15 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             timeToReady = function ()
                 return max( pet.earth_elemental.remains, pet.primal_earth_elemental.remains, pet.fire_elemental.remains, pet.primal_fire_elemental.remains )
-            end,            
+            end,
 
             handler = function ()
                 summonPet( talent.primal_elementalist.enabled and "primal_storm_elemental" or "greater_storm_elemental" )
-                
+
                 if set_bonus.tier28_2pc > 0 then
                     applyBuff( "fireheart", pet.storm_elemental.remains )
                     state:QueueAuraEvent( "fireheart", TriggerFireheart, query_time + 8, "AURA_PERIODIC" )
-                end                
+                end
             end,
         },
 
@@ -1715,7 +1716,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 summonPet( "vesper_totem", 30 )
                 applyBuff( "vesper_totem" )
-                
+
                 vesper_totem_heal_charges = 3
                 vesper_totem_dmg_charges = 3
                 vesper_totem_used_charges = 0
@@ -1850,7 +1851,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             toggle = "essences",
 
             handler = function ()
-                if legendary.elemental_conduit.enabled then                    
+                if legendary.elemental_conduit.enabled then
                     applyDebuff( "target", "flame_shock" )
                     active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + min( 5, active_enemies ) )
                 end
