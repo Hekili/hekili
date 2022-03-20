@@ -1,5 +1,5 @@
 # Blood Death Knight
-# March 17, 2022
+# March 19, 2022
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
@@ -12,6 +12,7 @@ actions+=/call_action_list,name=mitigation,strict=1,if=tanking|incoming_damage_5
 # Since the potion cooldown has changed, we'll sync with DRW
 actions+=/potion,if=buff.dancing_rune_weapon.up
 actions+=/use_items
+actions+=/use_item,name=gavel_of_the_first_arbiter
 actions+=/raise_dead
 actions+=/blooddrinker,if=!buff.dancing_rune_weapon.up&(!covenant.night_fae|buff.deaths_due.remains>7)
 # Marrowrend on pull if Necrolord in order to guarantee ossuary during the first DRW with AL
