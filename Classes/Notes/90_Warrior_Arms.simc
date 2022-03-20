@@ -1,5 +1,5 @@
 ## Arms Warrior
-## February 25, 2022
+## March 19, 2022
 
 ## Changes:
 ## - Update for 9.2; add target swapping for Execute/Condemn.
@@ -19,6 +19,7 @@ actions+=/fireblood,if=debuff.colossus_smash.up
 actions+=/ancestral_call,if=debuff.colossus_smash.up
 actions+=/bag_of_tricks,if=debuff.colossus_smash.down&cooldown.mortal_strike.remains
 actions+=/use_item,name=scars_of_fraternal_strife
+actions+=/use_item,name=gavel_of_the_first_arbiter
 actions+=/use_items
 actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>15|talent.ravager.enabled)
 actions+=/call_action_list,name=execute,strict=1,if=talent.massacre.enabled&target.health.pct<35|target.health.pct<20|covenant.venthyr&target.health.pct>80|cycle_for_execute|cycle_for_condemn

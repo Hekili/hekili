@@ -1,5 +1,5 @@
 ## Fury Warrior
-## March 18, 2022
+## March 19, 2022
 
 ## Changes:
 ## - Added Pummel.
@@ -11,7 +11,6 @@
 ## - Removed Essences.
 ## - Don't use Siegebreaker if it's already up (Deathmaker).
 ## - Setup fake sequences for Signet opener.
-## - Test simmed changes for Merciless Bonegrinder.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
@@ -55,6 +54,7 @@ actions+=/use_item,name=instructors_divine_bell,if=cooldown.recklessness.remains
 actions+=/use_item,name=flame_of_battle,if=cooldown.recklessness.remains>10&(buff.recklessness.up|boss&fight_remains<11|boss&fight_remains>100)
 actions+=/use_item,name=gladiators_badge,if=cooldown.recklessness.remains>10&(buff.recklessness.up|boss&fight_remains<11|boss&fight_remains>65)
 actions+=/use_item,name=scars_of_fraternal_strife
+actions+=/use_item,name=gavel_of_the_first_arbiter
 actions+=/use_items
 actions+=/blood_fury
 actions+=/berserking,if=buff.recklessness.up
