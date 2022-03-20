@@ -75,7 +75,7 @@ do
             [16827]  = true,
             [17253]  = true,
             [49966]  = true,
-            
+
             count    = 4
         },
 
@@ -109,7 +109,7 @@ do
         if petSlot == 0 then return false, "Pet action not found in player action bars." end
         if not UnitExists( "pet" ) then return false, "No active pet." end
         if UnitIsDead( "pet" ) then return false, "Pet is dead." end
-    
+
         -- If we have a target and the target is out of our pet's range, don't use pet detection.
         if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot, "target" ) then return false, "Player has target and player's target not in range of pet." end
         return true
@@ -174,12 +174,12 @@ f:SetScript( "OnEvent", function( self, event, unit )
         local id = UnitGUID( unit )
         npGUIDs[unit] = id
         npUnits[id]   = unit
-    
+
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
         local id = npGUIDs[ unit ]
         npGUIDs[unit] = nil
         npUnits[id]   = nil
-    
+
     elseif event == "UNIT_FLAGS" and not UnitIsUnit( "player", unit ) and UnitIsFriend( "player", unit ) then
         local id = UnitGUID( unit )
         ns.eliminateUnit( id, true )
@@ -205,7 +205,7 @@ local guidRanges = {}
 local chromieTime = false
 
 do
-    local ct = CreateFrame( "Frame" )    
+    local ct = CreateFrame( "Frame" )
 
     ct:RegisterEvent( "CHROMIE_TIME_OPEN" )
     ct:RegisterEvent( "CHROMIE_TIME_CLOSE" )
@@ -326,11 +326,11 @@ do
                     end
 
                     counted[ guid ] = counted[ guid ] or false
-                end                
+                end
 
                 for _, unit in ipairs( unitIDs ) do
                     local guid = UnitGUID( unit )
-        
+
                     if guid and counted[ guid ] == nil then
                         if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                             local npcid = guid:match( "(%d+)-%x-$" )
@@ -357,7 +357,7 @@ do
 
                                 excluded = range and range > spec.nameplateRange or false
                             end
-        
+
                             -- Always count your target.
                             if UnitIsUnit( unit, "target" ) then excluded = false end
 
@@ -367,7 +367,7 @@ do
                                 count = count + 1
                                 counted[ guid ] = true
                             end
-        
+
                             counted[ guid ] = counted[ guid ] or false
                         end
                     end
@@ -400,10 +400,10 @@ do
                             excluded = false
                         end
                     end
-                    
+
                     if not excluded and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then
                         Hekili.TargetDebug = format("%s    %-12s - %2d - %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid)
-                        count = count + 1                    
+                        count = count + 1
                         counted[ guid ] = true
                     else
                         counted[ guid ] = false
@@ -609,7 +609,7 @@ end
 ns.compositeDebuffCount = function( ... )
     local n = 0
 
-    for i = 1, select("#", ...) do  
+    for i = 1, select("#", ...) do
         local debuff = select( i, ... )
         debuff = class.auras[ debuff ] and class.auras[ debuff ].id
         debuff = debuff and debuffs[ debuff ]
@@ -654,10 +654,10 @@ do
 
     -- Useful for "count number of enemies with at least one of these debuffs applied".
     -- i.e., poisoned_enemies for Assassination Rogue.
-    
+
     ns.countUnitsWithDebuffs = function( ... )
         wipe( counted )
-        
+
         local n = 0
 
         for i = 1, select("#", ...) do
@@ -1002,7 +1002,7 @@ do
 
         if percent >= 1 then
             percent = percent / 100
-        end        
+        end
 
         for k, v in pairs(db) do
             local npcid = k:match( "(%d+)-%x-$" )
@@ -1177,20 +1177,8 @@ do
     local seen = {}
 
     local UpdateTTDs
-    local inCombat = false
 
     UpdateTTDs = function()
-        if not InCombatLockdown() then
-            if inCombat then
-                Hekili:ExpireTTDs( true )
-                inCombat = false
-            end
-            C_Timer.After( 0.25, UpdateTTDs )
-            return
-        end
-
-        inCombat = true
-
         wipe(seen)
 
         local now = GetTime()
@@ -1227,7 +1215,7 @@ do
             end
             seen[guid] = true
         end
-        
+
         C_Timer.After( 0.25, UpdateTTDs )
     end
     Hekili:ProfileCPU( "UpdateTTDs", UpdateTTDs )

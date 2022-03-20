@@ -937,6 +937,7 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
         Hekili:UpdateDisplayVisibility()
     end
 
+    Hekili:ExpireTTDs( true )
     Hekili:ForceUpdate( event, true ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
 end )
 
@@ -952,6 +953,7 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
 
     C_Timer.After( 10, function () ns.Audit( "combatExit" ) end )
     Hekili:ReleaseHolds( true )
+    Hekili:ExpireTTDs( true )
 end )
 
 
