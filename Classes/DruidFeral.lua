@@ -9,7 +9,7 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
-local FindUnitBuffByID = ns.FindUnitBuffByID
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 
 
 -- Conduits
@@ -63,7 +63,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         ferocious_wound = 611, -- 236020
         freedom_of_the_herd = 203, -- 213200
         fresh_wound = 612, -- 203224
@@ -76,7 +76,6 @@ if UnitClassBase( "player" ) == "DRUID" then
         thorns = 201, -- 305497
         wicked_claws = 620, -- 203242
     } )
-
 
     local mod_circle_hot = setfenv( function( x )
         return legendary.circle_of_life_and_death.enabled and ( 0.85 * x ) or x
@@ -109,7 +108,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         if action == "primal_wrath" and active_enemies > 1 then
             -- Current target's ticks are based on actual values.
             local total = potential_ticks - remaining_ticks
-            
+
             -- Other enemies could have a different remains for other reasons.
             -- Especially SbT.
             local pw_remains = max( state.action.primal_wrath.lastCast + class.abilities.primal_wrath.max_apply_duration - query_time, 0 )
@@ -142,7 +141,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                         pw_duration = class.abilities.primal_wrath.apply_duration
                     end
 
-                    potential_ticks = ( pmult and persistent_multiplier or 1 ) * min( pw_duration, ttd ) / tick_time    
+                    potential_ticks = ( pmult and persistent_multiplier or 1 ) * min( pw_duration, ttd ) / tick_time
 
                     total = total + potential_ticks - remaining_ticks
                 end
@@ -160,27 +159,10 @@ if UnitClassBase( "player" ) == "DRUID" then
     end, state )
 
 
+    Hekili:EmbedAdaptiveSwarm( spec )
+
     -- Auras
     spec:RegisterAuras( {
-        adaptive_swarm_dot = {
-            id = 325733,
-            duration = function () return mod_circle_dot( 12 ) end,
-            max_stack = 3,
-            meta = {
-                stack = function( t ) return t.down and dot.adaptive_swarm_hot.up and max( 0, dot.adaptive_swarm_hot.count - 1 ) or t.count end,
-            },
-            copy = "adaptive_swarm_damage"
-        },
-        adaptive_swarm_hot = {
-            id = 325748,
-            duration = function () return mod_circle_hot( 12 ) end,
-            max_stack = 3,
-            meta = {
-                stack = function( t ) return t.down and dot.adaptive_swarm_dot.up and max( 0, dot.adaptive_swarm_dot.count - 1 ) or t.count end,
-            },
-            dot = "buff",
-            copy = "adaptive_swarm_heal"
-        },
         aquatic_form = {
             id = 276012,
         },
@@ -803,7 +785,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             t.caster = "player"
             return
         end
- 
+
         t.count = 0
         t.expires = 0
         t.applied = 0
@@ -848,7 +830,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             aliasMode = "longest",
             aliasType = "buff",
             duration = 4,
-        },        
+        },
     } )
 
 
@@ -875,6 +857,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         debuff.thrash_cat.pmultiplier = nil
 
         eclipse.reset()
+        spec.SwarmOnReset()
 
         -- Bloodtalons
         if talent.bloodtalons.enabled then
@@ -1312,7 +1295,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             form = "cat_form",
             indicator = function ()
                 if active_enemies > 1 and settings.cycle and target.time_to_die < longest_ttd then return "cycle" end
-            end,            
+            end,
 
             handler = function ()
                 gain( 5, "combo_points" )
@@ -2696,32 +2679,6 @@ if UnitClassBase( "player" ) == "DRUID" then
             copy = { "lone_empowerment", "lone_meditation", "lone_protection", 326462, 326446, 338142, 338018 }
         },
 
-        -- Druid - Necrolord - 325727 - adaptive_swarm       (Adaptive Swarm)
-        adaptive_swarm = {
-            id = 325727,
-            cast = 0,
-            cooldown = 25,
-            gcd = "spell",
-
-            spend = 0.05,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 3578197,
-
-            -- For Feral, we want to put Adaptive Swarm on the highest health enemy.
-            indicator = function ()
-                if state.spec.feral and active_enemies > 1 and target.time_to_die < longest_ttd then return "cycle" end
-            end,
-
-            handler = function ()
-                applyDebuff( "target", "adaptive_swarm_dot", nil, 3 )
-                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
-            end,
-
-            copy = { "adaptive_swarm_damage", "adaptive_swarm_heal", 325733, 325748 },
-        },
-
         -- Druid - Night Fae - 323764 - convoke_the_spirits  (Convoke the Spirits)
         convoke_the_spirits = {
             id = 323764,
@@ -2769,7 +2726,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
                 if legendary.sinful_hysteria.enabled then
                     state:QueueAuraExpiration( "ravenous_frenzy", SinfulHysteriaHandler, buff.ravenous_frenzy.expires )
-                end        
+                end
             end,
         }
     } )

@@ -539,6 +539,368 @@ if UnitClassBase( "player" ) == "DRUID" then
     } )
 
 
+    -- Adaptive Swarm Stuff
+    do
+        local applications = {
+            SPELL_AURA_APPLIED = true,
+            SPELL_AURA_REFRESH = true,
+            SPELL_AURA_APPLIED_DOSE = true
+        }
+
+        local casts = { SPELL_CAST_SUCCESS = true }
+
+        local removals = {
+            SPELL_AURA_REMOVED = true,
+            SPELL_AURA_BROKEN = true,
+            SPELL_AURA_BROKEN_SPELL = true,
+            SPELL_AURA_REMOVED_DOSE = true,
+            SPELL_DISPEL = true
+        }
+
+        local deaths = {
+            UNIT_DIED       = true,
+            UNIT_DESTROYED  = true,
+            UNIT_DISSIPATES = true,
+            PARTY_KILL      = true,
+            SPELL_INSTAKILL = true,
+        }
+
+        local spellIDs = {
+            [325733] = true,
+            [325748] = true,
+            [325727] = true
+        }
+
+        local flights = {}
+        local pending = {}
+        local swarms = {}
+
+        -- Flow:  Cast -> In Flight -> Application -> Ticks -> Removal -> In Flight -> Application -> Ticks -> Removal -> ...
+        -- If the swarm target dies, it will jump again.
+        local insert, remove = table.insert, table.remove
+
+        function Hekili:EmbedAdaptiveSwarm( s )
+            s:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
+                if not state.covenant.necrolord then return end
+
+                local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+                if sourceGUID == state.GUID and spellIDs[ spellID ] then
+                    -- On cast, we need to show we have a cast-in-flight.
+                    if casts[ subtype ] then
+                        local dot
+
+                        if bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 then
+                            dot = "adaptive_swarm_damage"
+                        else
+                            dot = "adaptive_swarm_heal"
+                        end
+
+                        insert( flights, { destGUID, 3, GetTime() + 5, dot } )
+
+                    -- On application, we need to store the GUID of the unit so we can get the stacks and expiration time.
+                    elseif applications[ subtype ] and #flights > 0 then
+                        local n, flight
+
+                        for i, v in ipairs( flights ) do
+                            if v[1] == destGUID then
+                                n = i
+                                flight = v
+                                break
+                            end
+                            if not flight and v[1] == "unknown" then
+                                n = i
+                                flight = v
+                            end
+                        end
+
+                        if flight then
+                            local swarm = swarms[ destGUID ]
+                            local now = GetTime()
+
+                            if swarm and swarm.expiration > now then
+                                swarm.stacks = swarm.stacks + flight[2]
+                                swarm.dot = bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 and "adaptive_swarm_damage" or "adaptive_swarm_heal"
+                                swarm.expiration = now + class.auras[ swarm.dot ].duration
+                            else
+                                swarms[ destGUID ] = {}
+                                swarms[ destGUID ].stacks = flight[2]
+                                swarms[ destGUID ].dot = bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 and "adaptive_swarm_damage" or "adaptive_swarm_heal"
+                                swarms[ destGUID ].expiration = now + class.auras[ swarms[ destGUID ].dot ].duration
+                            end
+                            remove( flights, n )
+                        else
+                            swarms[ destGUID ] = {}
+                            swarms[ destGUID ].stacks = 3 -- We'll assume it's fresh.
+                            swarms[ destGUID ].dot = bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 and "adaptive_swarm_damage" or "adaptive_swarm_heal"
+                            swarms[ destGUID ].expiration = GetTime() + class.auras[ swarms[ destGUID ].dot ].duration
+                        end
+
+                    elseif removals[ subtype ] then
+                        -- If we have a swarm for this, remove it.
+                        local swarm = swarms[ destGUID ]
+
+                        if swarm then
+                            swarms[ destGUID ] = nil
+
+                            if swarm.stacks > 1 then
+                                local dot
+
+                                if bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 then
+                                    dot = "adaptive_swarm_heal"
+                                else
+                                    dot = "adaptive_swarm_damage"
+                                end
+
+                                insert( flights, { "unknown", swarm.stacks - 1, GetTime() + 5, dot } )
+
+                            end
+                        end
+                    end
+
+                elseif swarms[ destGUID ] and deaths[ subtype ] then
+                    -- If we have a swarm for this, remove it.
+                    local swarm = swarms[ destGUID ]
+
+                    if swarm then
+                        swarms[ destGUID ] = nil
+
+                        if swarm.stacks > 1 then
+                            if bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 then
+                                dot = "adaptive_swarm_heal"
+                            else
+                                dot = "adaptive_swarm_damage"
+                            end
+
+                            insert( flights, { "unknown", swarm.stacks - 1, GetTime() + 5, dot } )
+
+                        end
+                    end
+                end
+            end )
+
+            --[[ s:RegisterEvent( "UNIT_AURA", function( _, unit )
+                if not state.covenant.necrolord then return end
+
+                local guid = UnitGUID( unit )
+
+                if pending[ guid ] then
+                    if UnitIsFriend( unit, "player" ) then
+                        local name, _, count, _, _, expirationTime = FindUnitBuffByID( unit, 325748, "PLAYER" )
+
+                        print( "Buff", name, count, guid, pending[ guid ] )
+
+                        if name then
+                            swarms[ guid ] = {
+                                stacks = count,
+                                expiration = expirationTime,
+                            }
+                            pending[ guid ] = nil
+                            return
+                        end
+                    else
+                        local name, _, count, _, _, expirationTime = FindUnitDebuffByID( unit, 325733, "PLAYER" )
+
+                        print( "Debuff", name, count, guid, pending[ guid ] )
+
+                        if name then
+                            swarms[ guid ] = {
+                                stacks = count,
+                                expiration = expirationTime,
+                            }
+                            pending[ guid ] = nil
+                            return
+                        end
+                    end
+
+                    pending[ guid ] = pending[ guid ] + 1
+
+                    if pending[ guid ] > 2 then
+                        pending[ guid ] = nil
+                    end
+                end
+            end ) ]]
+
+            function s.GetActiveSwarms()
+                return swarms
+            end
+
+            function s.GetPendingSwarms()
+                return pending
+            end
+
+            function s.GetInFlightSwarms()
+                return flights
+            end
+
+            local flySwarm, landSwarm
+
+            landSwarm = setfenv( function( aura )
+                if aura.key == "adaptive_swarm_heal_in_flight" then
+                    applyBuff( "adaptive_swarm_heal", 12, min( 5, buff.adaptive_swarm_heal.stack + aura.count ) )
+                    buff.adaptive_swarm_heal.expires = query_time + 12
+                    state:QueueAuraEvent( "adaptive_swarm", flySwarm, buff.adaptive_swarm_heal.expires, "AURA_EXPIRATION", buff.adaptive_swarm_heal )
+                else
+                    applyDebuff( "target", "adaptive_swarm_damage", 12, min( 5, debuff.adaptive_swarm_damage.stack + aura.count ) )
+                    debuff.adaptive_swarm_damage.expires = query_time + 12
+                    state:QueueAuraEvent( "adaptive_swarm", flySwarm, debuff.adaptive_swarm_damage.expires, "AURA_EXPIRATION", debuff.adaptive_swarm_damage )
+                end
+            end, state )
+
+            flySwarm = setfenv( function( aura )
+                if aura.key == "adaptive_swarm_heal" then
+                    applyBuff( "adaptive_swarm_heal_in_flight", 5, aura.count - 1 )
+                    state:QueueAuraEvent( "adaptive_swarm", landSwarm, query_time + 5, "AURA_EXPIRATION", buff.adaptive_swarm_heal_in_flight )
+                else
+                    applyBuff( "adaptive_swarm_damage_in_flight", 5, aura.count - 1 )
+                    state:QueueAuraEvent( "adaptive_swarm", landSwarm, query_time + 5, "AURA_EXPIRATION", buff.adaptive_swarm_damage_in_flight )
+                end
+            end, state )
+
+            s.SwarmOnReset = setfenv( function()
+                for k, v in pairs( swarms ) do
+                    if v.expiration + 0.1 <= now then swarms[ k ] = nil end
+                end
+
+                for i = #flights, 1, -1 do
+                    if flights[i][3] + 0.1 <= now then remove( flights, i ) end
+                end
+
+                local target = UnitGUID( "target" )
+                local tSwarm = swarms[ target ]
+
+                if not UnitIsFriend( "target", "player" ) and tSwarm and tSwarm.expiration > now then
+                    applyDebuff( "target", "adaptive_swarm_damage", tSwarm.expiration - now, tSwarm.stacks )
+                    debuff.adaptive_swarm_damage.expires = tSwarm.expiration
+
+                    if tSwarm.stacks > 1 then
+                        state:QueueAuraEvent( "adaptive_swarm", flySwarm, tSwarm.expiration, "AURA_EXPIRATION", debuff.adaptive_swarm_damage )
+                    end
+                end
+
+                if buff.adaptive_swarm_heal.up and buff.adaptive_swarm_heal.stack > 1 then
+                    state:QueueAuraEvent( "adaptive_swarm", flySwarm, buff.adaptive_swarm_heal.expires, "AURA_EXPIRATION", buff.adaptive_swarm_heal )
+                else
+                    for k, v in pairs( swarms ) do
+                        if k ~= target and v.dot == "adaptive_swarm_heal" then
+                            applyBuff( "adaptive_swarm_heal", v.expiration - now, v.stacks )
+                            buff.adaptive_swarm_heal.expires = v.expiration
+
+                            if v.stacks > 1 then
+                                state:QueueAuraEvent( "adaptive_swarm", flySwarm, buff.adaptive_swarm_heal.expires, "AURA_EXPIRATION", buff.adaptive_swarm_heal )
+                            end
+                        end
+                    end
+                end
+
+                local flight
+
+                for i, v in ipairs( flights ) do
+                    if not flight or v[3] > now and v[3] > flight then flight = v end
+                end
+
+                if flight then
+                    local dot = flight[4] .. "_in_flight"
+                    applyBuff( dot, flight[3] - now, flight[2] )
+                    state:QueueAuraEvent( dot, landSwarm, flight[3], "AURA_EXPIRATION", buff[ dot ] )
+                end
+
+                Hekili:Debug( "Swarm Info:\n   Damage - %.2f remains, %d stacks.\n   Dmg In Flight - %.2f remains, %d stacks.\n   Heal - %.2f remains, %d stacks.\n   Heal In Flight - %.2f remains, %d stacks.\n   Count Dmg: %d, Count Heal: %d.", dot.adaptive_swarm_damage.remains, dot.adaptive_swarm_damage.stack, buff.adaptive_swarm_damage_in_flight.remains, buff.adaptive_swarm_damage_in_flight.stack, buff.adaptive_swarm_heal.remains, buff.adaptive_swarm_heal.stack, buff.adaptive_swarm_heal_in_flight.remains, buff.adaptive_swarm_heal_in_flight.stack, active_dot.adaptive_swarm_damage, active_dot.adaptive_swarm_heal )
+            end, state )
+
+            function Hekili:DumpSwarmInfo()
+                local line = "Flights:"
+                for k, v in pairs( flights ) do
+                    line = line .. " " .. k .. ":" .. table.concat( v, ":" )
+                end
+                print( line )
+
+                line = "Pending:"
+                for k, v in pairs( pending ) do
+                    line = line .. " " .. k .. ":" .. v
+                end
+                print( line )
+
+                line = "Swarms:"
+                for k, v in pairs( swarms ) do
+                    line = line .. " " .. k .. ":" .. v.stacks .. ":" .. v.expiration
+                end
+                print( line )
+            end
+
+            -- Druid - Necrolord - 325727 - adaptive_swarm       (Adaptive Swarm)
+            spec:RegisterAbility( "adaptive_swarm", {
+                id = 325727,
+                cast = 0,
+                cooldown = 25,
+                gcd = "spell",
+
+                spend = 0.05,
+                spendType = "mana",
+
+                startsCombat = true,
+                texture = 3578197,
+
+                -- For Feral, we want to put Adaptive Swarm on the highest health enemy.
+                indicator = function ()
+                    if state.spec.feral and active_enemies > 1 and target.time_to_die < longest_ttd then return "cycle" end
+                end,
+
+                handler = function ()
+                    applyDebuff( "target", "adaptive_swarm_dot", nil, 3 )
+                    if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+                end,
+
+                copy = { "adaptive_swarm_damage", "adaptive_swarm_heal", 325733, 325748 },
+
+                auras = {
+                    adaptive_swarm_dot = {
+                        id = 325733,
+                        duration = function () return mod_circle_dot( 12 ) end,
+                        tick_time = function () return mod_circle_dot( 2 ) * haste end,
+                        max_stack = 5,
+                        --[[ meta = {
+                            stack = function( t ) return t.down and dot.adaptive_swarm_hot.up and max( 0, dot.adaptive_swarm_hot.count - 1 ) or t.count end,
+                        }, ]]
+                        copy = "adaptive_swarm_damage"
+                    },
+                    adaptive_swarm_hot = {
+                        id = 325748,
+                        duration = function () return mod_circle_hot( 12 ) end,
+                        tick_time = function () return mod_circle_hot( 2 ) * haste end,
+                        max_stack = 5,
+                        --[[ meta = {
+                            stack = function( t ) return t.down and dot.adaptive_swarm_dot.up and max( 0, dot.adaptive_swarm_dot.count - 1 ) or t.count end,
+                        }, ]]
+                        dot = "buff",
+                        copy = "adaptive_swarm_heal"
+                    },
+                    adaptive_swarm_damage_in_flight = {
+                        duration = 5,
+                        max_stack = 5
+                    },
+                    adaptive_swarm_heal_in_flight = {
+                        duration = 5,
+                        max_stack = 5,
+                    },
+                    adaptive_swarm = {
+                        alias = { "adaptive_swarm_damage", "adaptive_swarm_heal" },
+                        aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
+                        aliasType = "any",
+                    },
+                    adaptive_swarm_in_flight = {
+                        alias = { "adaptive_swarm_damage", "adaptive_swarm_heal" },
+                        aliasMode = "shortest", -- use duration info from the first buff that's up, as they should all be equal.
+                        aliasType = "any",
+                    },
+                }
+            } )
+        end
+    end
+
+
+    Hekili:EmbedAdaptiveSwarm( spec )
+
     spec:RegisterStateFunction( "break_stealth", function ()
         removeBuff( "shadowmeld" )
         if buff.prowl.up then

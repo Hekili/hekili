@@ -3302,8 +3302,15 @@ local mt_alias_buff = {
         if k == "count" or k == "stack" or k == "stacks" then
             local n = 0
 
-            for i, child in ipairs( aura.alias ) do
-                if state[ type ][ child ].up then n = n + max( 1, state[ type ][ child ].stack ) end
+            if type == "any" then
+                for i, child in ipairs( aura.alias ) do
+                    if state.buff[ child ].up then n = n + max( 1, state.buff[ child ].stack ) end
+                    if state.debuff[ child ].up then n = n + max( 1, state.debuff[ child ].stack ) end
+                end
+            else
+                for i, child in ipairs( aura.alias ) do
+                    if state[ type ][ child ].up then n = n + max( 1, state[ type ][ child ].stack ) end
+                end
             end
 
             return n
@@ -3314,7 +3321,14 @@ local mt_alias_buff = {
         local mode = aura.aliasMode or "first"
 
         for i, v in ipairs( aura.alias ) do
-            local child = state[ type ][ v ]
+            local child
+
+            if type == "any" then
+                child = state.debuff[ v ].up and state.debuff[ v ] or state.buff[ v ]
+            else
+                child = state[ type ][ v ]
+            end
+
             if not alias and mode == "first" and child.up then return child[ k ] end
 
             if child.up then
@@ -3322,6 +3336,8 @@ local mt_alias_buff = {
                 elseif mode == "longest" and ( not alias or child.remains > alias.remains ) then alias = child end
             end
         end
+
+        if type == "any" then type = "buff" end
 
         if alias then return alias[ k ]
         else return state[ type ][ aura.alias[1] ][ k ] end
@@ -4189,8 +4205,15 @@ local mt_alias_debuff = {
         if k == "count" or k == "stack" or k == "stacks" then
             local n = 0
 
-            for i, child in ipairs( aura.alias ) do
-                if state[ type ][ child ].up then n = n + max( 1, state[ type ][ child ].stack ) end
+            if type == "any" then
+                for i, child in ipairs( aura.alias ) do
+                    if state.buff[ child ].up then n = n + max( 1, state.buff[ child ].stack ) end
+                    if state.debuff[ child ].up then n = n + max( 1, state.debuff[ child ].stack ) end
+                end
+            else
+                for i, child in ipairs( aura.alias ) do
+                    if state[ type ][ child ].up then n = n + max( 1, state[ type ][ child ].stack ) end
+                end
             end
 
             return n
@@ -4200,7 +4223,14 @@ local mt_alias_debuff = {
         local mode = aura.aliasMode or "first"
 
         for i, v in ipairs( aura.alias ) do
-            local child = state[ type ][ v ]
+            local child
+
+            if type == "any" then
+                child = state.buff[ v ].up and state.buff[ v ] or state.debuff[ v ]
+            else
+                child = state.debuff[ v ]
+            end
+
             if not alias and mode == "first" and child.up then return child[ k ] end
 
             if child.up then
@@ -4208,6 +4238,8 @@ local mt_alias_debuff = {
                 elseif mode == "longest" and ( not alias or child.remains > alias.remains ) then alias = child end
             end
         end
+
+        if type == "any" then type = "debuff" end
 
         if alias then return alias[ k ]
         else return state[ type ][ aura.alias[1] ][ k ] end
@@ -5213,7 +5245,7 @@ do
 
     Hekili:ProfileCPU( "QueueEvent", state.QueueEvent )
 
-    function state:QueueAuraEvent( action, func, time, eType )
+    function state:QueueAuraEvent( action, func, time, eType, data )
         local queue = virtualQueue
         local e = NewEvent()
 
@@ -5225,6 +5257,7 @@ do
         e.time   = time
         e.type   = eType
         e.target = "nobody"
+        e.data   = data
 
         insert( queue, e )
         sort( queue, byTime )
@@ -5249,8 +5282,8 @@ do
         end
     end
 
-    function state:QueueAuraExpiration( action, func, time )
-        self:QueueAuraEvent( action, func, time, "AURA_EXPIRATION" )
+    function state:QueueAuraExpiration( action, func, time, data )
+        self:QueueAuraEvent( action, func, time, "AURA_EXPIRATION", data )
     end
 
     function state:RemoveAuraExpiration( action )
@@ -5467,7 +5500,7 @@ do
             self:StartCombat()
 
         elseif e.type == "AURA_EXPIRATION" then
-            if e.func then e.func() end
+            if e.func then e.func( e.data ) end
 
         end
 

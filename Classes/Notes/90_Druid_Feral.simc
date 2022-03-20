@@ -1,5 +1,5 @@
 ## Feral Druid
-## March 6, 2022
+## March 20 2022
 
 ## Changes:
 ## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
@@ -7,6 +7,7 @@
 ## - Add interruptible Fleshcraft if you have nothing else to do.
 ## - Don't hold Convoke for Rip unless you'll really Rip.
 ## - Support filler Regrowth while pooling for Bloodtalons.
+## - Work on Adaptive Swarm support.
 
 actions.precombat+=/variable,name=fourcp_bite,value=0
 # Shred = 0, Non-snapshot Rake = 1, Snapshot Rake = 2, LI = 3, Swipe = 4
@@ -69,7 +70,7 @@ actions.bloodtalons+=/shred,if=buff.bt_shred.down
 actions.bloodtalons+=/swipe_cat,if=buff.bt_swipe.down
 actions.bloodtalons+=/thrash_cat,if=buff.bt_thrash.down
 
-actions.cooldown=adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.ticking|dot.adaptive_swarm_damage.remains<2)&(dot.adaptive_swarm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1)&!action.adaptive_swarm_heal.in_flight&!action.adaptive_swarm_damage.in_flight&!action.adaptive_swarm.in_flight)&target.time_to_die>5|active_enemies>2&!dot.adaptive_swarm_damage.ticking&energy<35&target.time_to_die>5
+actions.cooldown=adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.ticking|dot.adaptive_swarm_damage.remains<2)&(dot.adaptive_swarm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1)&!buff.adaptive_swarm_heal_in_flight.up&!buff.adaptive_swarm_damage_in_flight.up)&target.time_to_die>5|active_enemies>2&!dot.adaptive_swarm_damage.ticking&energy<35&target.time_to_die>5
 actions.cooldown+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 actions.cooldown+=/use_items,slots=trinket1,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10))|fight_remains<20)|(cooldown.convoke_the_spirits.remains-2>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=2&(cooldown.convoke_the_spirits.remains>22|fight_remains<20|trinket.2.cooldown.remains>20))
 actions.cooldown+=/use_items,slots=trinket2,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10)&(trinket.1.cooldown.remains>=2|variable.on_use_trinket=2))|fight_remains<20)|((cooldown.convoke_the_spirits.remains-2+60*((trinket.1.cooldown.remains<cooldown.convoke_the_spirits.remains-2)&(variable.on_use_trinket=1|variable.on_use_trinket>=3)))>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=1&(cooldown.convoke_the_spirits.remains>22|fight_remains<20|trinket.1.cooldown.remains>20))

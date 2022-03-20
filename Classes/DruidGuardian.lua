@@ -105,7 +105,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         alpha_challenge = 842, -- 207017
         charging_bash = 194, -- 228431
         demoralizing_roar = 52, -- 201664
@@ -163,7 +163,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
             aliasType = "buff",
             duration = function () return talent.incarnation.enabled and 30 or 15 end,
-        },        
+        },
         bristling_fur = {
             id = 155835,
             duration = 8,
@@ -400,7 +400,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             alias = { "bear_form", "cat_form", "moonkin_form" },
             duration = 3600,
             aliasMode = "first",
-            aliasType = "buff",            
+            aliasType = "buff",
         },
 
 
@@ -479,6 +479,8 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
     } )
 
+
+    Hekili:EmbedAdaptiveSwarm( spec )
 
     -- Function to remove any form currently active.
     spec:RegisterStateFunction( "unshift", function()
@@ -598,7 +600,7 @@ if UnitClassBase( "player" ) == "DRUID" then
     local SinfulHysteriaHandler = setfenv( function ()
         applyBuff( "ravenous_frenzy_sinful_hysteria" )
     end, state )
-    
+
     spec:RegisterHook( "reset_precast", function ()
         if azerite.masterful_instincts.enabled and buff.survival_instincts.up and buff.masterful_instincts.down then
             applyBuff( "masterful_instincts", buff.survival_instincts.remains + 30 )
@@ -847,13 +849,13 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 120,
             channeled = true,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
             pvptalent = "emerald_slumber",
 
             startsCombat = false,
             texture = 1394953,
-            
+
             handler = function ()
             end,
         },
@@ -946,12 +948,12 @@ if UnitClassBase( "player" ) == "DRUID" then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 4067364,
-            
+
             handler = function ()
                 -- Don't apply auras; position dependent.
             end,
@@ -1987,7 +1989,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         name = "|T132115:0|t Attempt Catweaving (Experimental)",
         desc = function()
             local affinity
-            
+
             if state.talent.feral_affinity.enabled then
                 affinity = "|cFF00FF00" .. ( GetSpellInfo( 202155 ) ) .. "|r"
             else
@@ -2004,7 +2006,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         name = "|T136036:0|t Attempt Owlweaving (Experimental)",
         desc = function()
             local affinity
-            
+
             if state.talent.balance_affinity.enabled then
                 affinity = "|cFF00FF00" .. ( GetSpellInfo( 197488 ) ) .. "|r"
             else
