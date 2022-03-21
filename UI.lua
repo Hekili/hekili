@@ -1342,7 +1342,7 @@ do
                                     self.flashWarnings[ aFlash ] = true
                                     Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended action '" .. aFlash .. "' (" .. self.id .. ")." )
                                 end
-                            elseif a.id and a.id > 0 then
+                            else
                                 local id = ability.known
 
                                 if id == nil or type( id ) ~= "number" then
@@ -1350,11 +1350,14 @@ do
                                 end
 
                                 local sname = LSF.SpellName( id )
-                                if LSF.Flashable( sname ) then
-                                    LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
-                                elseif not self.flashWarnings[ sname ] then
-                                    self.flashWarnings[ sname ] = true
-                                    Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended ability '" .. sname .. "' (" .. self.id .. ")." )
+
+                                if sname then
+                                    if LSF.Flashable( sname ) then
+                                        LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                                    elseif not self.flashWarnings[ sname ] then
+                                        self.flashWarnings[ sname ] = true
+                                        Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended ability '" .. sname .. "' (" .. self.id .. ")." )
+                                    end
                                 end
                             end
                         end
