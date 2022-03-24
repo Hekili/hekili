@@ -296,7 +296,7 @@ local legendaries = {
     [7038] = { "cinders_of_the_azjaqir", 1, 267 }, -- 337166
     [7040] = { "embers_of_the_diabolic_raiment", 1, 267 }, -- 337272
     [7039] = { "madness_of_the_azjaqir", 1, 267 }, -- 337169
-    [7037] = { "odr,_shawl_of_the_ymirjar", 1, 267 }, -- 337163
+    [7037] = { "odr_shawl_of_the_ymirjar", 1, 267 }, -- 337163
 
     -- Warrior/Arms
     [7730] = { "elysian_might", 1, 71 }, -- 357996
@@ -336,6 +336,46 @@ local legendaries = {
 }
 
 
+
+local unityBonuses = {
+    -- [1] = Kyrian
+    -- [2] = Venthyr
+    -- [3] = Night Fae
+    -- [4] = Necrolord
+    [8119] = { "final_sentence"            , "insatiable_hunger"             , "rampant_transference"           , "abominations_frenzy"   }, -- 364758; DK
+    [8120] = { "blind_faith"               , "agony_gaze"                    , "blazing_slaughter"              , "demonic_oath"          }, -- 364824; DH
+    [8121] = { "kindred_affinity"          , "sinful_hysteria"               , "celestial_spirits"              , "unbridled_swarm"       }, -- 364814; Druid
+    [8122] = { "pact_of_the_soulstalkers"  , "pouch_of_razor_fragments"      , "fragments_of_the_elder_antlers" , "bag_of_munitions"      }, -- 364743; Hunter
+    [8123] = { "harmonic_echo"             , "sinful_delight"                , "heart_of_the_fae"               , "deaths_fathom"         }, -- 364852; Mage
+    [8124] = { "call_to_arms"              , "sinister_teachings"            , "faeline_harmony"                , "bountiful_brew"        }, -- 364857; Monk
+    [8125] = { "divine_resonance"          , "radiant_embers"                , "seasons_of_plenty"              , "dutybound_gavel"       }, -- 364642; Paladin
+    [8126] = { "spheres_harmony"           , "shadow_word_manipulation"      , "bwonsamdis_pact"                , "pallid_command"        }, -- 364911; Priest
+    [8127] = { "resounding_clarity"        , "obedience"                     , "toxic_onslaught"                , "deathspike"            }, -- 364922; Rogue
+    [8128] = { "raging_vesper_totem"       , "elemental_conduit"             , "seeds_of_rampant_growth"        , "splinered_elements"    }, -- 364738; Shaman
+    [8129] = { "languishing_soul_detritus" , "contained_perpetual_explosion" , "decaying_soul_satchel"          , "shard_of_annihilation" }, -- 364939; Warlock
+    [8130] = { "elysian_might"             , "sinful_surge"                  , "natures_fury"                   , "glory"                 }, -- 364929; Warrior
+}
+
+
+local unityBelts = {
+    [190470] = 8120, -- DH
+    [190467] = 8119, -- DK
+    [190465] = 8121, -- Druid
+    [190466] = 8122, -- Hunter
+    [190464] = 8123, -- Mage
+    [190472] = 8124, -- Monk
+    [190474] = 8125, -- Paladin
+    [190468] = 8126, -- Priest
+    [190471] = 8127, -- Rogue
+    [190473] = 8128, -- Shaman
+    [190469] = 8129, -- Warlock
+    [190475] = 8130, -- Warrior
+}
+
+
+local GetActiveCovenantID = C_Covenants.GetActiveCovenantID
+
+
 local function ResetLegendaries()
     for thing in pairs( state.legendary ) do
         state.legendary[ thing ].rank = 0
@@ -346,6 +386,8 @@ end
 local function UpdateLegendary( slot, item )
     local link = GetInventoryItemLink( "player", slot )
     local numBonuses = select( 14, string.split( ":", link ) )
+
+    local covenant = GetActiveCovenantID()
 
     numBonuses = tonumber( numBonuses )
     if numBonuses and numBonuses > 0 then
@@ -368,6 +410,32 @@ local function UpdateLegendary( slot, item )
                         state.legendary[ n ].rank = rank
                     end
                 end
+            end
+
+            local unity = unityBonuses[ bonusID ]
+            if unity then
+                local runeforge = unity[ covenant ]
+
+                if runeforge then
+                    local legendary = rawget( state.legendary, runeforge ) or { rank = 0 }
+                    legendary.rank = 1
+                    state.legendary[ runeforge ] = legendary
+                end
+            end
+        end
+    end
+
+    if slot == 6 then
+        local id = GetInventoryItemID( "player", slot )
+        local bonus = id and unityBelts[ id ]
+        local unity = bonus and unityBonuses[ bonus ]
+        local runeforge = unity and unity[ covenant ]
+
+        if runeforge then
+            if runeforge then
+                local legendary = rawget( state.legendary, runeforge ) or { rank = 0 }
+                legendary.rank = 1
+                state.legendary[ runeforge ] = legendary
             end
         end
     end
