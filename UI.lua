@@ -1697,7 +1697,7 @@ do
 
             end
 
-            if event == "SPELLS_CHANGED" then
+            if event == "SPELLS_CHANGED"and not self:IsThreadLocked() then
                 for i, b in ipairs( self.Buttons ) do
                     if b.Ability then
                         if b.Ability.item then

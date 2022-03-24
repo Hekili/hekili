@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## March 15, 2022
+## March 23, 2022
 
 ## Changes:
 ## - Spell Lock.
@@ -11,6 +11,7 @@
 ## - Fleshcraft/Volatile Solvent cancel_if changed to interrupt_if.
 ## - Try to avoid wasting Demonic Core stacks.
 ## - Try to make opener priority only work if we can actually open with a Tyrant.
+## - Improve compatibility with M+ builds.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fel_domination,if=time>0&!pet.alive
@@ -66,7 +67,7 @@ actions+=/shadow_bolt,if=soul_shard<5&runeforge.balespiders_burning_core&buff.ba
 # If Dreadstalkers are already active, no need to save shards
 actions+=/hand_of_guldan,if=soul_shard>=3&(pet.dreadstalker.active|pet.demonic_tyrant.active)
 actions+=/hand_of_guldan,if=soul_shard>=1&buff.nether_portal.up&cooldown.call_dreadstalkers.remains>2*gcd.max
-actions+=/hand_of_guldan,if=soul_shard>=1&buff.wild_imps.stack>2&variable.next_tyrant_cd<gcd.max&time>first_tyrant_time-gcd.max
+actions+=/hand_of_guldan,if=soul_shard>=1&buff.wild_imps.stack>2&pet.dreadstalker.remains>0.5+cast_time+action.summon_demonic_tyrant.cast_time&pet.dreadstalker.remains<0.5+cast_time+action.summon_demonic_tyrant.cast_time+(0>?(3-soul_shard))*action.shadow_bolt.cast_time&variable.next_tyrant_cd<gcd.max&time>first_tyrant_time-gcd.max
 actions+=/call_action_list,name=covenant_ability,strict=1,if=!covenant.venthyr
 # Without Sacrificed Souls, Soul Strike is stronger than Demonbolt, so it has a higher priority
 actions+=/soul_strike,if=!talent.sacrificed_souls.enabled
