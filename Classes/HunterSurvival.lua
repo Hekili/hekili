@@ -415,11 +415,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
             setDistance( 5 )
         end
 
-        -- Overfix.
-        if buff.mad_bombardier.up and now - action.wildfire_bomb.lastCast < 0.5 * gcd.max then
-            removeBuff( "mad_bombardier" )
-        end
-
         if debuff.tar_trap.up then
             debuff.tar_trap.expires = debuff.tar_trap.applied + 30
         end
@@ -1039,9 +1034,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-
-            cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
-            recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
+            cooldown = 18,
+            recharge = 18,
+            hasteCD = true,
 
             gcd = "spell",
 
@@ -1054,7 +1049,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
             usable = function () return current_wildfire_bomb == "pheromone_bomb" end,
             start = function() end,
             impact = function ()
-                removeBuff( "mad_bombardier" )
+                if buff.mad_bombardier.up then
+                    gainCharges( "wildfire_bomb", 1 )
+                    removeBuff( "mad_bombardier" )
+                end
                 applyDebuff( "target", "pheromone_bomb" )
             end,
 
@@ -1166,9 +1164,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-            cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
-            recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
-
+            cooldown = 18,
+            recharge = 18,
+            hasteCD = true,
             gcd = "spell",
 
             startsCombat = true,
@@ -1180,7 +1178,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
             usable = function () return current_wildfire_bomb == "shrapnel_bomb" end,
             start = function () end,
             impact = function ()
-                removeBuff( "mad_bombardier" )
+                if buff.mad_bombardier.up then
+                    gainCharges( "wildfire_bomb", 1 )
+                    removeBuff( "mad_bombardier" )
+                end
                 applyDebuff( "target", "shrapnel_bomb" )
             end,
 
@@ -1293,10 +1294,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-
-            cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
-            recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
-
+            cooldown = 18,
+            recharge = 18,
             hasteCD = true,
             gcd = "spell",
 
@@ -1312,7 +1311,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
             end,
 
             impact = function ()
-                removeBuff( "mad_bombardier" )
+                if buff.mad_bombardier.up then
+                    gainCharges( "wildfire_bomb", 1 )
+                    removeBuff( "mad_bombardier" )
+                end
                 if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
             end,
 
@@ -1353,7 +1355,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
             end,
 
             impact = function ()
-                removeBuff( "mad_bombardier" )
+                if buff.mad_bombardier.up then
+                    gainCharges( "wildfire_bomb", 1 )
+                    removeBuff( "mad_bombardier" )
+                end
                 if current_wildfire_bomb == "wildfire_bomb" then applyDebuff( "target", "wildfire_bomb_dot" )
                 else class.abilities[ current_wildfire_bomb ].impact() end
                 current_wildfire_bomb = "wildfire_bomb"
