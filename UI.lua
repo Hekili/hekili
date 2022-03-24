@@ -934,7 +934,9 @@ do
 
             self.recTimer = self.recTimer - elapsed
 
-            if not self:IsThreadLocked() and ( self.NewRecommendations or self.recTimer < 0 ) then
+            if self.NewRecommendations then self.TextureUpdateNeeded = true end
+
+            if not self:IsThreadLocked() and ( self.TextureUpdateNeeded or self.recTimer < 0 ) then
                 local alpha = self.alpha
 
                 for i, b in ipairs( self.Buttons ) do
@@ -955,7 +957,7 @@ do
                             self.HasRecommendations = true
                         end
 
-                        if action ~= b.lastAction or self.NewRecommendations or not b.Image then
+                        if action ~= b.lastAction or self.TextureUpdateNeeded or not b.Image then
                             if ability.item then
                                 b.Image = b.Recommendation.texture or ability.texture or select( 10, GetItemInfo( ability.item ) )
                             else
@@ -1043,7 +1045,7 @@ do
                 self.recTimer = 0.1
                 self.alphaCheck = 0.5
 
-                if not self:IsThreadLocked() then self:RefreshCooldowns() end
+                self:RefreshCooldowns()
             end
 
             local postRecs = debugprofilestop()
@@ -1697,7 +1699,7 @@ do
 
             end
 
-            if event == "SPELLS_CHANGED"and not self:IsThreadLocked() then
+            --[[ if event == "SPELLS_CHANGED" and not self:IsThreadLocked() then
                 for i, b in ipairs( self.Buttons ) do
                     if b.Ability then
                         if b.Ability.item then
@@ -1710,7 +1712,7 @@ do
                 end
                 self.NewRecommendations = true
 
-            end
+            end ]]
 
             if flashEvents[ event ] then
                 self.flashReady = false
