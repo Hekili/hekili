@@ -1322,7 +1322,6 @@ end )
 RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
     Hekili.ScrapeUnitAuras( "target", true )
     state.target.updated = false
-
     ns.getNumberTargets( true )
     Hekili:ForceUpdate( event, true )
 end )
@@ -1628,7 +1627,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                             end
                         end
 
-                        if not travel then travel = state.target.distance / ability.velocity end
+                        if not travel then travel = state.target.maxR / ability.velocity end
 
                         state:QueueEvent( ability.impactSpell or ability.key, time, travel, "PROJECTILE_IMPACT", destGUID, true )
                     end

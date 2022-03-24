@@ -894,8 +894,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 if talent.tip_of_the_spear.enabled then addStack( "tip_of_the_spear", 20, 1 ) end
 
                 if debuff.pheromone_bomb.up then
-                    if talent.alpha_predator.enabled then gainCharges( "kill_command", 1 )
-                    else setCooldown( "kill_command", 0 ) end
+                    gainCharges( "kill_command", 1 )
                 end
 
                 if debuff.shrapnel_bomb.up then applyDebuff( "target", "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
@@ -1047,18 +1046,20 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             startsCombat = true,
 
-            texture = 2065635,
             bind = "wildfire_bomb",
             talent = "wildfire_infusion",
+            velocity = 35,
 
             usable = function () return current_wildfire_bomb == "pheromone_bomb" end,
-
             start = function() end,
-
             impact = function ()
                 removeBuff( "mad_bombardier" )
                 applyDebuff( "target", "pheromone_bomb" )
             end,
+
+            copy = 270329,
+
+            unlisted = true,
         },
 
 
@@ -1164,7 +1165,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-
             cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
             recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
 
@@ -1172,18 +1172,20 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             startsCombat = true,
 
-            texture = 2065637,
             bind = "wildfire_bomb",
+            talent = "wildfire_infusion",
             velocity = 35,
 
             usable = function () return current_wildfire_bomb == "shrapnel_bomb" end,
-
             start = function () end,
-
             impact = function ()
                 removeBuff( "mad_bombardier" )
                 applyDebuff( "target", "shrapnel_bomb" )
             end,
+
+            copy = 270338,
+
+            unlisted = true,
         },
 
 
@@ -1299,8 +1301,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             startsCombat = true,
 
-            texture = 2065636,
             bind = "wildfire_bomb",
+            talent = "wildfire_infusion",
             velocity = 35,
 
             usable = function () return current_wildfire_bomb == "volatile_bomb" end,
@@ -1312,6 +1314,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 removeBuff( "mad_bombardier" )
                 if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
             end,
+
+            copy = 271048,
+
+            unlisted = true,
         },
 
 
@@ -1327,10 +1333,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
-
-            cooldown = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
-            recharge = function () return buff.mad_bombardier.up and 0 or ( 18 * haste ) end,
-
+            cooldown = 18,
+            recharge = 18,
             hasteCD = true,
             gcd = "spell",
 
@@ -1341,8 +1345,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             start = function ()
                 removeBuff( "flame_infusion" )
-                if current_wildfire_bomb ~= "wildfire_bomb" then
-                    runHandler( current_wildfire_bomb )
+
+                if buff.mad_bombadier.up then
+                    gainCharges( "wildfire_bomb", 1 )
                 end
             end,
 
@@ -1368,7 +1373,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 volatile_bomb = true
             },
 
-            copy = { 271045, 270335, 270323, 259495 }
+            copy = 259495, -- { 271045, 270335, 270323, 259495 }
         },
 
 

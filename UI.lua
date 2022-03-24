@@ -955,7 +955,7 @@ do
                             self.HasRecommendations = true
                         end
 
-                        if action ~= b.lastAction or self.NewRecommendations then
+                        if action ~= b.lastAction or self.NewRecommendations or not b.Image then
                             if ability.item then
                                 b.Image = b.Recommendation.texture or ability.texture or select( 10, GetItemInfo( ability.item ) )
                             else
@@ -1586,14 +1586,12 @@ do
             local conf = Hekili.DB.profile.displays[ self.id ]
 
             for i, rec in ipairs( self.Recommendations ) do
-                if not rec.actionName then
-                    break
-                end
+                local button = self.Buttons[ i ]
 
-                local ability = class.abilities[ rec.actionName ]
-                local cd = self.Buttons[ i ].Cooldown
+                if button.Action then
+                    local cd = button.Cooldown
+                    local ability = button.Ability
 
-                if ability then
                     local start, duration = 0, 0
 
                     if ability.item then
@@ -1697,10 +1695,16 @@ do
             elseif alphaUpdateEvents[ event ] then
                 self:UpdateAlpha()
 
-            elseif event == "SPELLS_CHANGED" then
+            end
+
+            if event == "SPELLS_CHANGED" then
                 for i, b in ipairs( self.Buttons ) do
-                    if not b.Ability.item then
-                        b.Image = b.Ability.texture or GetSpellTexture( b.Action )
+                    if b.Ability then
+                        if b.Ability.item then
+                            b.Image = b.Ability.texture or GetItemTexture( b.Ability.item )
+                        else
+                            b.Image = b.Ability.texture or GetSpellTexture( b.Action )
+                        end
                         b.Texture:SetTexture( b.Image )
                     end
                 end
