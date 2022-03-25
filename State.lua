@@ -2833,8 +2833,11 @@ local mt_default_cooldown = {
             return ability.recharge or ability.cooldown or 0
 
         elseif k == "time_to_max_charges" or k == "full_recharge_time" then
-            if raw then return ( ( ability.charges or 1 ) - t.true_charges_fractional ) * t.duration end
-            return ( ( ability.charges or 1 ) - t.charges_fractional ) * t.duration
+            if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then
+                return 0
+            end
+
+            return ( ( ability.charges or 1 ) - ( raw and t.true_charges_fractional or t.charges_fractional ) ) * t.duration
 
         elseif k == "remains" then
             if t.key == "global_cooldown" then
