@@ -99,7 +99,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         amplify_curse = 5370, -- 328774
         bane_of_fragility = 11, -- 199954
         bane_of_shadows = 17, -- 234877
@@ -479,7 +479,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
 
 
     spec:RegisterGear( "tier28", 188884, 188887, 188888, 188889, 188890 )
-    
+
     -- Tier 28
     spec:RegisterSetBonuses( "tier28_2pc", 364437, "tier28_4pc", 363953 )
     -- 2-Set - Deliberate Malice - Malefic Rapture's damage is increased by 15% and each cast extends the duration of Corruption, Agony, and Unstable Affliction by 2 sec.
@@ -531,7 +531,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
 
         local icd = 25
 
-        if debuff.drain_soul.up then            
+        if debuff.drain_soul.up then
             local ticks = debuff.drain_soul.ticks_remain
             if pvptalent.rot_and_decay.enabled then
                 if debuff.agony.up then debuff.agony.expires = debuff.agony.expires + 1 end
@@ -574,7 +574,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
         if resource == "soul_shards" and amt > 0 then
             if legendary.wilfreds_sigil_of_superior_summoning.enabled then
                 reduceCooldown( "summon_darkglare", amt * 2 )
-            end                
+            end
         end
     end )
 
@@ -617,7 +617,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
     -- Fel Succubus     120526
     -- Shadow Succubus  120527
     -- Shivarra         58963
-    spec:RegisterPet( "succubus", 
+    spec:RegisterPet( "succubus",
         function()
             if Glyphed( 240263 ) then return 120526
             elseif Glyphed( 240266 ) then return 120527
@@ -631,7 +631,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
         function() return Glyphed( 112870 ) and 58965 or 17252 end,
         "summon_felguard",
         3600 )
-        
+
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -777,17 +777,17 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 136162,
-            
+
             handler = function ()
                 applyDebuff( "target", "curse_of_exhaustion" )
                 removeDebuff( "target", "curse_of_tongues" )
                 removeDebuff( "target", "curse_of_weakness" )
             end,
         },
-        
+
 
         curse_of_fragility = {
             id = 199954,
@@ -798,7 +798,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             spend = 0.01,
             spendType = "mana",
 
-            pvptalent = "curse_of_fragility",            
+            pvptalent = "curse_of_fragility",
 
             startsCombat = true,
             texture = 132097,
@@ -885,7 +885,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             gcd = "off",
 
             toggle = "cooldowns",
-            
+
             spend = 0.01,
             spendType = "mana",
 
@@ -1153,14 +1153,14 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             cast = 0,
             cooldown = function () return 180 + conduit.fel_celerity.mod * 0.001 end,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237564,
 
             essential = true,
             nomounted = true,
             nobuff = "grimoire_of_sacrifice",
-            
+
             handler = function ()
                 applyBuff( "fel_domination" )
             end,
@@ -1225,30 +1225,30 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             cast = 0,
             cooldown = 40,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 607852,
 
             talent = "howl_of_terror",
-            
+
             handler = function ()
                 applyDebuff( "target", "howl_of_terror" )
             end,
         },
 
-        
+
         malefic_rapture = {
             id = 324536,
             cast = function () return buff.calamitous_crescendo.up and 0 or 1.5 end,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.calamitous_crescendo.up and 0 or 1 end,
             spendType = "soul_shards",
-            
+
             startsCombat = true,
             texture = 236296,
-            
+
             handler = function ()
                 if legendary.malefic_wrath.enabled then addStack( "malefic_wrath", nil, 1 ) end
 
@@ -1354,10 +1354,10 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             velocity = 30,
 
             usable = function () return dot.seed_of_corruption.down end,
-            
+
             impact = function ()
                 applyDebuff( "target", "seed_of_corruption" )
-                
+
                 if active_enemies > 1 and talent.sow_the_seeds.enabled then
                     active_dot.seed_of_corruption = min( active_enemies, active_dot.seed_of_corruption + 2 )
                 end
@@ -1397,7 +1397,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             cast = 1.5,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
 
@@ -1415,10 +1415,10 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136188,
 
@@ -1607,7 +1607,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
 
@@ -1795,7 +1795,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             impact = function ()
                 applyDebuff( "target", "impending_catastrophe" )
             end,
-                
+
             auras = {
                 impending_catastrophe = {
                     id = 322170,
