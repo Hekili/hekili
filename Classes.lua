@@ -32,7 +32,7 @@ local Casting = _G.SPELL_CASTING or "Casting"
 
 
 local specTemplate = {
-    enabled = false,
+    enabled = true,
 
     potion = "prolonged_power",
 
