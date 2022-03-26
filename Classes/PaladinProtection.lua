@@ -89,7 +89,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         guarded_by_the_light = 97, -- 216855
         guardian_of_the_forgotten_queen = 94, -- 228049
         hallowed_ground = 90, -- 216868
@@ -203,7 +203,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             id = 32223,
             duration = 3600,
             max_stack = 1,
-        },        
+        },
         devotion_aura = {
             id = 465,
             duration = 3600,
@@ -413,9 +413,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
         last_shield = nil
 
         if buff.divine_resonance.up then
-            state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
-            if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
-            if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
+            state:QueueAuraEvent( "divine_toll", class.abilities.avengers_shield.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
+            if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.avengers_shield.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
+            if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.avengers_shield.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
         end
     end )
 
