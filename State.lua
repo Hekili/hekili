@@ -5502,10 +5502,9 @@ do
             if ability.impact then ability.impact() end
             self:StartCombat()
 
-        elseif e.type == "AURA_EXPIRATION" then
-            if e.func then e.func( e.data ) end
-
         end
+
+        if e.func then e.func( e.data ) end
 
         state.this_action = curr_action
         state:RemoveEvent( e )
