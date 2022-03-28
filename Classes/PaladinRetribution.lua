@@ -21,21 +21,7 @@ local PTR = ns.PTR
 if UnitClassBase( "player" ) == "PALADIN" then
     local spec = Hekili:NewSpecialization( 70 )
 
-    spec:RegisterResource( Enum.PowerType.HolyPower, {
-        divine_resonance = {
-            aura = "divine_resonance",
-
-            last = function ()
-                local app = state.buff.divine_resonance.applied
-                local t = state.query_time
-
-                return app + floor( ( t - app ) / 5 ) * 5
-            end,
-
-            interval = 5,
-            value = 1,
-        },
-    } )
+    spec:RegisterResource( Enum.PowerType.HolyPower )
     spec:RegisterResource( Enum.PowerType.Mana )
 
     -- Talents
@@ -1054,14 +1040,12 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cooldown = function () return 12 * haste end,
             gcd = "spell",
 
-            spend = -1,
-            spendType = "holy_power",
-
             startsCombat = true,
             texture = 135959,
 
             handler = function ()
                 applyDebuff( "target", "judgment" )
+                gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
                 if talent.zeal.enabled then applyBuff( "zeal", 20, 3 ) end
                 if set_bonus.tier20_2pc > 0 then applyBuff( "sacred_judgment" ) end
                 if set_bonus.tier21_4pc > 0 then applyBuff( "hidden_retribution_t21_4p", 15 ) end

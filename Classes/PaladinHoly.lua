@@ -286,6 +286,12 @@ if UnitClassBase( "player" ) == "PALADIN" then
         last_consecration = nil
         last_blessed_hammer = nil
         last_shield = nil
+
+        if buff.divine_resonance.up then
+            state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
+            if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
+            if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
+        end
     end )
 
 

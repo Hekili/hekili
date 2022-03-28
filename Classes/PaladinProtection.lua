@@ -40,21 +40,7 @@ local PTR = ns.PTR
 if UnitClassBase( "player" ) == "PALADIN" then
     local spec = Hekili:NewSpecialization( 66 )
 
-    spec:RegisterResource( Enum.PowerType.HolyPower, {
-        divine_resonance = {
-            aura = "divine_resonance",
-
-            last = function ()
-                local app = state.buff.divine_resonance.applied
-                local t = state.query_time
-
-                return app + floor( ( t - app ) / 5 ) * 5
-            end,
-
-            interval = 5,
-            value = 1,
-        },
-    } )
+    spec:RegisterResource( Enum.PowerType.HolyPower )
     spec:RegisterResource( Enum.PowerType.Mana )
 
     -- Talents
@@ -1242,29 +1228,21 @@ if UnitClassBase( "player" ) == "PALADIN" then
             toggle = "essences",
 
             handler = function ()
-                if state.spec.protection then
-                    -- Cast Avenger's Shield x5.
-                    -- This is lazy and may be wrong/bad.
-                    for i = 1, active_enemies do
-                        class.abilities.avengers_shield.handler()
-                    end
-                elseif state.spec.retribution then
-                    -- Cast Judgment x5.
-                    for i = 1, active_enemies do
-                        class.abilities.judgment.handler()
-                    end
-                elseif state.spec.holy then
-                    -- Cast Holy Shock x5.
-                    for i = 1, active_enemies do
-                        class.abilities.holy_shock.handler()
-                    end
+                local spellToCast
+
+                if state.spec.protection then spellToCast = class.abilities.avengers_shield.handler
+                elseif state.spec.retribution then spellToCast = class.abilities.judgment.handler
+                else spellToCast = class.abilities.holy_shock.handler end
+
+                for i = 1, min( 5, true_active_enemies ) do
+                    spellToCast()
                 end
 
                 if legendary.divine_resonance.enabled then
                     applyBuff( "divine_resonance" )
-                    state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
-                    state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" )
-                    state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" )
+                    state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires, "AURA_PERIODIC" )
+                    state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 5, "AURA_PERIODIC" )
+                    state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 10, "AURA_PERIODIC" )
                 end
             end,
 
