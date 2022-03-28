@@ -1581,7 +1581,7 @@ do
         end
 
         function d:RefreshCooldowns()
-            local gStart, gDuration = GetSpellCooldown( 61304 )
+            local gStart, gDuration, _, gModRate = GetSpellCooldown( 61304 )
             local gExpires = gStart + gDuration
 
             local now = GetTime()
@@ -1594,12 +1594,12 @@ do
                     local cd = button.Cooldown
                     local ability = button.Ability
 
-                    local start, duration = 0, 0
+                    local start, duration, enabled, modRate = 0, 0, 1, 1
 
                     if ability.item then
-                        start, duration = GetItemCooldown( ability.item )
+                        start, duration, enabled, modRate = GetItemCooldown( ability.item )
                     else
-                        start, duration = GetSpellCooldown( ability.id )
+                        start, duration, enabled, modRate = GetSpellCooldown( ability.id )
                     end
 
                     if ability.gcd ~= "off" and start + duration < gExpires then
@@ -1612,8 +1612,10 @@ do
                         duration = rec.exact_time - start
                     end
 
-                    if cd.lastStart ~= start or cd.lastDuration ~= duration then
-                        cd:SetCooldown( start, duration )
+                    if enabled and enabled == 0 then
+                        cd:Clear()
+                    elseif cd.lastStart ~= start or cd.lastDuration ~= duration then
+                        cd:SetCooldown( start, duration, modRate )
                         cd.lastStart = start
                         cd.lastDuration = duration
                     end
@@ -1698,21 +1700,6 @@ do
                 self:UpdateAlpha()
 
             end
-
-            --[[ if event == "SPELLS_CHANGED" and not self:IsThreadLocked() then
-                for i, b in ipairs( self.Buttons ) do
-                    if b.Ability then
-                        if b.Ability.item then
-                            b.Image = b.Ability.texture or GetItemTexture( b.Ability.item )
-                        else
-                            b.Image = b.Ability.texture or GetSpellTexture( b.Action )
-                        end
-                        b.Texture:SetTexture( b.Image )
-                    end
-                end
-                self.NewRecommendations = true
-
-            end ]]
 
             if flashEvents[ event ] then
                 self.flashReady = false
@@ -2168,11 +2155,6 @@ do
 
     function Hekili:ForceUpdate( event, super )
         self.freshFrame = false
-
-        if super then
-            state.player.updated = true
-            state.target.updated = true
-        end
 
         HekiliDisplayPrimary.criticalUpdate = true
         if super then HekiliDisplayPrimary.superUpdate = true end
