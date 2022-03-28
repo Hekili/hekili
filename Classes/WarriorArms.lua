@@ -416,28 +416,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
     spec:RegisterStateExpr( "cycle_for_execute", function ()
-        if not settings.cycle then return false end
-
-        local actual = rawget( args, "cycle_targets")
-        args.cycle_targets = 1
-
-        local result = action.execute.cycle
-        args.cycle_targets = actual
-
-        return result
+        if not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
+        return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0
     end )
 
 
     spec:RegisterStateExpr( "cycle_for_condemn", function ()
-        if not settings.cycle or not covenant.venthyr then return false end
-
-        local actual = rawget( args, "cycle_targets")
-        args.cycle_targets = 1
-
-        local result = action.condemn.cycle
-        args.cycle_targets = actual
-
-        return result
+        if not settings.cycle or not covenant.venthyr or buff.condemn_ineligible.down or buff.sudden_death.up then return false end
+        return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0 or Hekili:GetNumTargetsAboveHealthPct( 80, false, 5 ) > 0
     end )
 
 
@@ -747,14 +733,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             usable = function ()
                 if buff.sudden_death.up or buff.stone_heart.up then return true end
-                if action.execute.cycle then return true end
+                if cycle_for_execute then return true end
                 return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
             end,
 
-            cycle = function ()
-                if not settings.cycle or args.cycle_targets ~= 1 or buff.sudden_death.up or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) then return end
-                if Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0 then return "cycle" end
-            end,
+            cycle = "execute_ineligible",
 
             timeToReady = function()
                 -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
@@ -791,6 +774,25 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     id = 335452,
                     duration = 30,
                     max_stack = 2,
+                },
+                -- Target Swapping
+                execute_ineligible = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t, auraType )
+                        if buff.sudden_death.down and buff.stone_heart.down and target.health_pct > ( talent.massacre.enabled and 35 or 20 ) then
+                            t.count = 1
+                            t.expires = query_time + 3600
+                            t.applied = query_time
+                            t.duration = 3600
+                            t.caster = "player"
+                            return
+                        end
+                        t.count = 0
+                        t.expires = 0
+                        t.applied = 0
+                        t.caster = "nobody"
+                    end
                 }
             }
         },
@@ -1460,14 +1462,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             usable = function ()
                 if buff.sudden_death.up then return true end
-                if action.condemn.cycle then return true end
+                if cycle_for_condemn then return true end
                 return target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80, "requires > 80% or < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
             end,
 
-            cycle = function ()
-                if not settings.cycle or args.cycle_targets ~= 1 or buff.sudden_death.up or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80 then return end
-                if ( Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0 or Hekili:GetNumTargetsAboveHealthPct( 80, false, 5 ) > 0 ) then return "cycle" end
-            end,
+            cycle = "condemn_ineligible",
 
             handler = function ()
                 applyDebuff( "target", "condemned" )
@@ -1497,6 +1496,25 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     id = 317491,
                     duration = 10,
                     max_stack = 1,
+                },
+                -- Target Swapping
+                condemn_ineligible = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t, auraType )
+                        if buff.sudden_death.up or not covenant.venthyr or ( target.health_pct > ( talent.massacre.enabled and 35 or 20 ) and target.health_pct < 80 ) then
+                            t.count = 1
+                            t.expires = query_time + 3600
+                            t.applied = query_time
+                            t.duration = 3600
+                            t.caster = "player"
+                            return
+                        end
+                        t.count = 0
+                        t.expires = 0
+                        t.applied = 0
+                        t.caster = "nobody"
+                    end
                 }
             },
 
