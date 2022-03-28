@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## March 23, 2022
+## March 27, 2022
 
 ## Changes:
 ## - Spell Lock.
@@ -91,9 +91,9 @@ actions.slow_trinkets=use_item,name=soulletting_ruby,cycle_targets=1,if=variable
 actions.slow_trinkets+=/use_item,name=sunblood_amethyst,if=variable.buff_sync_cd<target.distance%5+(2*variable.use_bolt_timings)
 actions.slow_trinkets+=/use_item,name=empyreal_ordnance,if=variable.buff_sync_cd<(target.distance%5)+12+(2*variable.use_bolt_timings)
 
-actions.covenant_ability=soul_rot,if=soulbind.grove_invigoration&(variable.next_tyrant_cd<20|variable.next_tyrant_cd>30)
-actions.covenant_ability+=/soul_rot,if=soulbind.field_of_blossoms&pet.demonic_tyrant.active
-actions.covenant_ability+=/soul_rot,if=soulbind.wild_hunt_tactics&!pet.demonic_tyrant.active&variable.next_tyrant_cd>18
+actions.covenant_ability=soul_rot,if=(soulbind.field_of_blossoms|runeforge.decaying_soul_satchel)&pet.demonic_tyrant.active
+actions.covenant_ability+=/soul_rot,if=soulbind.grove_invigoration&!runeforge.decaying_soul_satchel&(variable.next_tyrant_cd<20|variable.next_tyrant_cd>30)
+actions.covenant_ability+=/soul_rot,if=soulbind.wild_hunt_tactics&!runeforge.decaying_soul_satchel&!pet.demonic_tyrant.active&variable.next_tyrant_cd>18
 actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=min:target.health.pct,if=!variable.use_bolt_timings&soulbind.lead_by_example&(pet.demonic_tyrant.active&soul_shard<2|!pet.demonic_tyrant.active&variable.next_tyrant_cd>40)
 actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=min:target.health.pct,if=!variable.use_bolt_timings&soulbind.kevins_oozeling&(pet.demonic_tyrant.active|!pet.demonic_tyrant.active&variable.next_tyrant_cd>40)
 actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=!variable.use_bolt_timings&(soulbind.forgeborne_reveries|(soulbind.volatile_solvent&!soulbind.kevins_oozeling))&!pet.demonic_tyrant.active
