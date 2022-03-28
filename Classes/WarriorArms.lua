@@ -417,13 +417,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     spec:RegisterStateExpr( "cycle_for_execute", function ()
         if not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
-        return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0
+        return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
     end )
 
 
     spec:RegisterStateExpr( "cycle_for_condemn", function ()
         if not settings.cycle or not covenant.venthyr or buff.condemn_ineligible.down or buff.sudden_death.up then return false end
-        return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, 5 ) > 0 or Hekili:GetNumTargetsAboveHealthPct( 80, false, 5 ) > 0
+        return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0 or Hekili:GetNumTargetsAboveHealthPct( 80, false, max( settings.cycle_min, offset + delay ) ) > 0
     end )
 
 
