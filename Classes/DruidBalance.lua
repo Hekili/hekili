@@ -2231,7 +2231,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = function () return talent.stellar_drift.enabled and 12 or 0 end,
             gcd = "spell",
 
-            spend = function () return ( buff.oneths_perception.up and 0 or 50 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and 0.8 or 1 ) end,
+            spend = function () return ( buff.oneths_perception.up and 0 or 50 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and ( buff.eclipse_solar.up or buff.eclipse_lunar.up ) and 0.85 or 1 ) end,
             spendType = "astral_power",
 
             startsCombat = true,
@@ -2317,7 +2317,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( buff.oneths_clear_vision.up and 0 or 30 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and 0.8 or 1 ) end,
+            spend = function () return ( buff.oneths_clear_vision.up and 0 or 30 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and ( buff.eclipse_solar.up or buff.eclipse_lunar.up ) and 0.85 or 1 ) end,
             spendType = "astral_power",
 
             startsCombat = true,
