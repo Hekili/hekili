@@ -351,7 +351,7 @@ local unityBonuses = {
     [8125] = { "divine_resonance"          , "radiant_embers"                , "seasons_of_plenty"              , "dutybound_gavel"       }, -- 364642; Paladin
     [8126] = { "spheres_harmony"           , "shadow_word_manipulation"      , "bwonsamdis_pact"                , "pallid_command"        }, -- 364911; Priest
     [8127] = { "resounding_clarity"        , "obedience"                     , "toxic_onslaught"                , "deathspike"            }, -- 364922; Rogue
-    [8128] = { "raging_vesper_totem"       , "elemental_conduit"             , "seeds_of_rampant_growth"        , "splinered_elements"    }, -- 364738; Shaman
+    [8128] = { "raging_vesper_totem"       , "elemental_conduit"             , "seeds_of_rampant_growth"        , "splintered_elements"   }, -- 364738; Shaman
     [8129] = { "languishing_soul_detritus" , "contained_perpetual_explosion" , "decaying_soul_satchel"          , "shard_of_annihilation" }, -- 364939; Warlock
     [8130] = { "elysian_might"             , "sinful_surge"                  , "natures_fury"                   , "glory"                 }, -- 364929; Warrior
 }
