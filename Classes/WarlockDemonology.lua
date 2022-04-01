@@ -1352,7 +1352,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             spend = 0.03,
             spendType = "mana",
 
-            startsCombat = true,
+            startsCombat = false,
 
             handler = function ()
             end,
