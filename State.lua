@@ -2866,7 +2866,7 @@ local mt_default_cooldown = {
 
         elseif k == "charges_fractional" then
             if not raw then
-                if state:IsKnown( t.key ) then return ability.charges or 1
+                if not state:IsKnown( t.key ) then return ability.charges or 1
                 elseif state:IsDisabled( t.key ) or ability.disabled then return 0 end
             end
 
