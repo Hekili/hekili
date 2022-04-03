@@ -2099,9 +2099,15 @@ do
                     end
                 end
             end
+        else
+            for _, display in pairs( displays ) do
+                if display.Active then
+                    display:Deactivate()
+                end
+            end
         end
 
-        for i, d in pairs(ns.UI.Displays) do
+        for i, d in pairs( displays ) do
             d:UpdateAlpha()
         end
     end
@@ -2296,7 +2302,9 @@ do
         local kbAnchor = conf.keybindings.anchor or "TOPRIGHT"
         b.Keybinding:ClearAllPoints()
         b.Keybinding:SetPoint( kbAnchor, b, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
-        b.Keybinding:SetSize( 0, 0 )
+        b.Keybinding:SetSize( b:GetWidth(), b:GetHeight() / 2 )
+        b.Keybinding:SetJustifyH( kbAnchor:match("RIGHT") and "RIGHT" or ( kbAnchor:match( "LEFT" ) and "LEFT" or "CENTER" ) )
+        b.Keybinding:SetJustifyV( kbAnchor:match("TOP") and "TOP" or ( kbAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" ) )
         b.Keybinding:SetTextColor( unpack( queued and conf.keybindings.queuedColor or conf.keybindings.color ) )
 
         local kbText = b.Keybinding:GetText()

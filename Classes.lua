@@ -5811,14 +5811,17 @@ function Hekili:SpecializationChanged()
         class.stateExprs[ k ] = nil
     end
 
+    self.currentSpec = nil
+    self.currentSpecOpts = nil
+
     for i, specID in ipairs( specs ) do
         local spec = class.specs[ specID ]
 
         if spec then
             if specID == currentID then
                 self.currentSpec = spec
-                self.currentSpecOpts = self.DB.profile.specs[ specID ]
-                state.settings.spec = self.DB.profile.specs[ specID ]
+                self.currentSpecOpts = rawget( self.DB.profile.specs, specID )
+                state.settings.spec = self.currentSpecOpts
 
                 state.spec.canCastWhileCasting = spec.canCastWhileCasting
                 state.spec.castableWhileCasting = spec.castableWhileCasting
