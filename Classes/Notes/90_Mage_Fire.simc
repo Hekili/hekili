@@ -1,6 +1,6 @@
 ## Fire Mage
 ## https://github.com/simulationcraft/simc/
-## November 23, 2021
+## April 1, 2022
 
 ## Changes:
 ## - Use fight_remains rather than target.time_to_die for last-second ability usages.
@@ -46,6 +46,7 @@ actions.precombat+=/arcane_intellect
 # actions.precombat+=/variable,name=on_use_cutoff,value=20,if=variable.combustion_on_use
 # actions.precombat+=/variable,name=on_use_cutoff,value=25,if=equipped.macabre_sheet_music
 # actions.precombat+=/variable,name=on_use_cutoff,value=20+variable.empyreal_ordnance_delay,if=equipped.empyreal_ordnance
+actions.precombat+=/fleshcraft
 actions.precombat+=/use_item,name=soul_igniter,if=!variable.combustion_on_use&!equipped.dreadfire_vessel&!talent.firestarter
 actions.precombat+=/use_item,name=shadowed_orb_of_torment
 actions.precombat+=/mirror_image

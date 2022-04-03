@@ -1,8 +1,9 @@
 ## Destruction Warlock
-## March 27, 2022
+## April 3, 2022
 
 ## Changes:
 ## - Fleshcraft/Volatile Solvent cancel_if changed to interrupt_if.
+## - Avoid spamming Immolate.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=fel_domination,if=time>0&!pet.alive
@@ -60,7 +61,7 @@ actions.aoe+=/incinerate,if=talent.fire_and_brimstone.enabled&buff.backdraft.up&
 actions.aoe+=/soul_fire
 actions.aoe+=/conflagrate,if=buff.backdraft.down
 actions.aoe+=/shadowburn,if=target.health.pct<20
-actions.aoe+=/immolate
+actions.aoe+=/immolate,cycle_targets=1,if=refreshable
 actions.aoe+=/scouring_tithe
 actions.aoe+=/incinerate
 
