@@ -1070,8 +1070,6 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( eve
     if ability and state.holds[ ability.key ] then
         Hekili:RemoveHold( ability.key, true )
     end
-
-    state[ unit ].updated = true
 end )
 
 
@@ -1082,10 +1080,6 @@ RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, 
         if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
-
-        state.player.updated = true
-    else
-        state.target.updated = true
     end
 
     Hekili:ForceUpdate( event, true )
@@ -1099,11 +1093,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( even
         if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
-
-        state.player.updated = true
-    else
-        state.target.updated = true
     end
+
     Hekili:ForceUpdate( event, true )
 end )
 
@@ -1115,10 +1106,6 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", "target", function( 
         if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
-
-        state.player.updated = true
-    else
-        state.target.updated = true
     end
     Hekili:ForceUpdate( event, true )
 end )
@@ -1131,10 +1118,6 @@ RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", "target", function( event, u
         if ability and state.holds[ ability.key ] then
             Hekili:RemoveHold( ability.key, true )
         end
-
-        state.player.updated = true
-    else
-        state.target.updated = true
     end
     Hekili:ForceUpdate( event, true )
 end )
@@ -1176,8 +1159,6 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
                 state:QueueEvent( ability.impactSpell or ability.key, finish / 1000, 0.05 + travel, "PROJECTILE_IMPACT", target, true )
             end
         end
-
-        state.player.updated = true
         Hekili:ForceUpdate( event )
     end
 end )
@@ -1214,8 +1195,7 @@ end ) ]]
 
 
 -- Update due to player totems.
-RegisterEvent( "PLAYER_TOTEM_UPDATE", function( event, totem )
-    state.player.updated = true
+RegisterEvent( "PLAYER_TOTEM_UPDATE", function( event )
     Hekili:ForceUpdate( event )
 end )
 
@@ -1265,8 +1245,6 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
         end
 
     end
-
-    state.player.updated = true
     Hekili:ForceUpdate( event, true )
 end
 Hekili:ProfileCPU( "UNIT_POWER_UPDATE", UNIT_POWER_FREQUENT )
@@ -1308,23 +1286,48 @@ local autoAuraKey = setmetatable( {}, {
 } )
 
 
-RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit )
-    if UnitIsUnit( unit, "player" ) then
-        state.player.updated = true
+do
+    local ScrapeUnitAuras = Hekili.ScrapeUnitAuras
+    local StoreMatchingAuras = Hekili.StoreMatchingAuras
 
-    elseif UnitIsUnit( unit, "target" ) then
-        state.target.updated = true
+    RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, full, data )
+        if full then
+            ScrapeUnitAuras( unit, false, event )
+            return
+        end
 
-    end
-end )
+        local harmful, helpful
 
+        for _, info in ipairs( data ) do
+            if unit == "player" or info.isFromPlayerOrPlayerPet then
+                local id = info.spellId
+                local aura = class.auras[ id ]
 
-RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
-    Hekili.ScrapeUnitAuras( "target", true )
-    state.target.updated = false
-    ns.getNumberTargets( true )
-    Hekili:ForceUpdate( event, true )
-end )
+                if aura then
+                    if info.isHelpful then
+                        helpful = helpful or { count = 0 }
+                        helpful[ id ] = aura.key
+                        helpful.count = helpful.count + 1
+                    else
+                        harmful = harmful or { count = 0 }
+                        harmful[ id ] = aura.key
+                        harmful.count = harmful.count + 1
+                    end
+                end
+            end
+        end
+
+        if helpful then StoreMatchingAuras( unit, helpful, "HELPFUL", select( 2, UnitAuraSlots( unit, "HELPFUL" ) ) ) end
+        if harmful then StoreMatchingAuras( unit, harmful, "HARMFUL", select( 2, UnitAuraSlots( unit, "HARMFUL" ) ) ) end
+    end )
+
+    RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
+        ScrapeUnitAuras( "target", true )
+
+        ns.getNumberTargets( true )
+        Hekili:ForceUpdate( event, true )
+    end )
+end
 
 
 
@@ -1681,14 +1684,12 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
         if aura_events[ subtype ] then
             if subtype == "SPELL_CAST_SUCCESS" or state.GUID == destGUID then
-                state.player.updated = true
                 if class.abilities[ spellID ] or class.auras[ spellID ] then
                     Hekili:ForceUpdate( subtype, true )
                 end
             end
 
             if UnitGUID( 'target' ) == destGUID then
-                state.target.updated = true
                 if class.auras[ spellID ] then Hekili:ForceUpdate( subtype ) end
             end
         end

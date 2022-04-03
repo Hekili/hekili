@@ -547,6 +547,8 @@ state.IsSpellKnown = IsSpellKnown
 state.IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
 state.IsUsableItem = IsUsableItem
 state.IsUsableSpell = IsUsableSpell
+state.UnitAura = UnitAura
+state.UnitAuraSlots = UnitAuraSlots
 state.UnitBuff = UnitBuff
 state.UnitCanAttack = UnitCanAttack
 state.UnitCastingInfo = UnitCastingInfo
@@ -4920,54 +4922,120 @@ local autoAuraKey = setmetatable( {}, {
 
 
 do
-    local scraped = {}
+    local UnitAuraBySlot = UnitAuraBySlot
 
-    function state.ScrapeUnitAuras( unit, newTarget )
+    function state.StoreMatchingAuras( unit, auras, filter, ... )
+        local n = auras.count
+        auras.count = nil
+
+        local db = ns.auras[ unit ][ filter == "HELPFUL" and "buff" or "debuff" ]
+
+        for k, v in pairs( auras ) do
+            local aura = class.auras[ v ]
+            local key = aura.key
+
+            local a = db[ key ] or {}
+
+            a.key              = key
+            a.name             = nil
+            a.lastCount        = a.count or 0
+            a.lastApplied      = a.applied or 0
+            a.last_application = max( 0, a.applied or 0, a.last_application or 0 )
+            a.last_expiry      = max( 0, a.expires or 0, a.last_expiry or 0 )
+            a.count            = 0
+            a.expires          = 0
+            a.applied          = 0
+            a.duration         = aura.duration or a.duration
+            a.caster           = "nobody"
+            a.timeMod          = 1
+            a.v1               = 0
+            a.v2               = 0
+            a.v3               = 0
+            a.unit             = unit
+
+            db[ key ] = a
+        end
+
+        for i = select( "#", ... ), 1, -1 do
+            local slot = select( i, ... )
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10 = UnitAuraBySlot( unit, slot )
+
+            local key = auras[ spellID ]
+
+            if key and name and ( unit == "player" or caster and ( UnitIsUnit( caster, "player" ) or UnitIsUnit( caster, "pet" ) ) ) then
+                local a = db[ key ]
+
+                if expires == 0 then
+                    expires = GetTime() + 3600
+                    duration = 7200
+                end
+
+                a.name     = name
+                a.count    = count > 0 and count or 1
+                a.duration = duration
+                a.expires  = expires
+                a.applied  = expires - duration
+                a.caster   = caster
+                a.timeMod  = timeMod
+                a.v1       = v1
+                a.v2       = v2
+                a.v3       = v3
+                a.v4       = v4
+                a.v5       = v5
+                a.v6       = v6
+                a.v7       = v7
+                a.v8       = v8
+                a.v9       = v9
+                a.v10      = v10
+
+                n = n - 1
+                if n == 0 then break end
+            end
+        end
+    end
+    Hekili.StoreMatchingAuras = state.StoreMatchingAuras
+
+
+    function state.ScrapeUnitAuras( unit, newTarget, why )
         local db = ns.auras[ unit ]
 
-        if scraped[ unit ] then
-            for k,v in pairs( db.buff ) do
-                v.name = nil
-                v.lastCount = newTarget and 0 or v.count
-                v.lastApplied = newTarget and 0 or v.applied
+        for k,v in pairs( db.buff ) do
+            v.name = nil
+            v.lastCount = newTarget and 0 or v.count
+            v.lastApplied = newTarget and 0 or v.applied
 
-                v.last_application = max( 0, v.applied, v.last_application )
-                v.last_expiry  = max( 0, v.expires, v.last_expiry )
+            v.last_application = max( 0, v.applied, v.last_application )
+            v.last_expiry  = max( 0, v.expires, v.last_expiry )
 
-                v.count = 0
-                v.expires = 0
-                v.applied = 0
-                v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
-                v.caster = "nobody"
-                v.timeMod = 1
-                v.v1 = 0
-                v.v2 = 0
-                v.v3 = 0
-                v.unit = unit
-            end
+            v.count = 0
+            v.expires = 0
+            v.applied = 0
+            v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
+            v.caster = "nobody"
+            v.timeMod = 1
+            v.v1 = 0
+            v.v2 = 0
+            v.v3 = 0
+            v.unit = unit
+        end
 
-            for k,v in pairs( db.debuff ) do
-                v.name = nil
-                v.lastCount = newTarget and 0 or v.count
-                v.lastApplied = newTarget and 0 or v.applied
-                v.count = 0
-                v.expires = 0
-                v.applied = 0
-                v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
-                v.caster = "nobody"
-                v.timeMod = 1
-                v.v1 = 0
-                v.v2 = 0
-                v.v3 = 0
-                v.unit = unit
-            end
-
-            scraped[ unit ] = false
+        for k,v in pairs( db.debuff ) do
+            v.name = nil
+            v.lastCount = newTarget and 0 or v.count
+            v.lastApplied = newTarget and 0 or v.applied
+            v.count = 0
+            v.expires = 0
+            v.applied = 0
+            v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
+            v.caster = "nobody"
+            v.timeMod = 1
+            v.v1 = 0
+            v.v2 = 0
+            v.v3 = 0
+            v.unit = unit
         end
 
         if not UnitExists( unit ) then return end
-
-        scraped[ unit ] = true
 
         local i = 1
         while ( true ) do
@@ -5135,8 +5203,8 @@ do
             end
         end
     end
-
     Hekili.ScrapeUnitAuras = state.ScrapeUnitAuras
+
     Hekili:ProfileCPU( "ScrapeUnitAuras", state.ScrapeUnitAuras )
 
     Hekili.AuraDB = ns.auras

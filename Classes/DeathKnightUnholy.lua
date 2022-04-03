@@ -646,7 +646,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
 
     local ForceVirulentPlagueRefresh = setfenv( function ()
-        target.updated = true
+        StoreMatchingAuras( "target", { count = 1, [191587] = "virulent_plague" }, "HARMFUL", select( 2, UnitAuraSlots( "target", "HARMFUL" ) ) )
         Hekili:ForceUpdate( "VIRULENT_PLAGUE_REFRESH" )
     end, state )
 
