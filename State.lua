@@ -2782,7 +2782,7 @@ local mt_default_cooldown = {
 
             end
 
-            t.duration = max( duration or 0, ability.cooldown or 0, ability.recharge or 0 ) or 0
+            t.duration = max( duration or 0, ability.cooldown or 0, ability.recharge or 0 )
             t.expires = start and ( start + duration ) or 0
             t.true_duration = true_duration
             t.true_expires = start and ( start + true_duration ) or 0
@@ -2847,7 +2847,7 @@ local mt_default_cooldown = {
                 end
             end
 
-            return ( ( ability.charges or 1 ) - ( raw and t.true_charges_fractional or t.charges_fractional ) ) * t.duration
+            return ( ( ability.charges or 1 ) - ( raw and t.true_charges_fractional or t.charges_fractional ) ) * max( ability.cooldown, t.true_duration )
 
         elseif k == "remains" then
             if t.key == "global_cooldown" then
