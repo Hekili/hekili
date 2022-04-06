@@ -2524,7 +2524,7 @@ do
         end )
 
         b:SetScript( "OnLeave", function(self)
-            GameTooltip:Hide()
+            HekiliTooltip:Hide()
         end )
 
         Hekili:ProfileFrame( bName, b )
@@ -2748,7 +2748,7 @@ local key_cache = setmetatable( {}, {
 function Hekili:ShowDiagnosticTooltip( q )
     if not q.actionName or not class.abilities[ q.actionName ].name then return end
 
-    local tt = GameTooltip
+    local tt = HekiliTooltip
     local fmt = ns.lib.Format
 
     tt:SetOwner( UIParent, "ANCHOR_CURSOR" )
@@ -2792,8 +2792,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         tt:AddLine(" ")
         tt:AddLine("Time Script")
 
-        local Text = Format(q.ReadyScript)
-        tt:AddLine(fmt.FormatCode(Text, 0, SyntaxColors), 1, 1, 1, 1)
+        tt:AddLine(fmt.FormatCode(q.ReadyScript, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ReadyElements then
             tt:AddLine("Values")
@@ -2809,8 +2808,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         tt:AddLine(" ")
         tt:AddLine("Action Criteria")
 
-        local Text = Format(q.ActScript)
-        tt:AddLine(fmt.FormatCode(Text, 0, SyntaxColors), 1, 1, 1, 1)
+        tt:AddLine(fmt.FormatCode(q.ActScript, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ActElements then
             tt:AddLine(" ")
@@ -2834,6 +2832,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         end
     end
 
+    tt:SetMinimumWidth( 400 )
     tt:Show()
 end
 
