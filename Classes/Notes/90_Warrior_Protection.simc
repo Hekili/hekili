@@ -1,5 +1,5 @@
 ## Protection Warrior
-## November 13, 2021
+## April 7, 2022
 
 ## Changes
 ## - Add Mitigation logic to new SimC APL.
@@ -8,10 +8,13 @@
 ## - Respect "Free Revenge" setting and remove other restrictions.
 ## - Fall back to single-target priority if the AOE action list has nothing to do.
 
-actions.precombat+=/battle_shout
+# Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat=battle_shout
+actions.precombat+=/fleshcraft
+actions.precombat+=/conquerors_banner
 actions.precombat+=/potion
 
-## Executed every time the actor is available.
+# Executed every time the actor is available.
 actions=charge
 # Default APL's "Heroic Charge" is a Heroic Leap followed by Charge to do some damage and generate Rage.
 actions+=/heroic_leap,if=settings.heroic_charge&runeforge.reprisal&cooldown.charge.remains<gcd
@@ -26,7 +29,8 @@ actions+=/lights_judgment
 actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
-actions+=/potion,if=buff.avatar.up|fight_remains<25
+actions+=/avatar
+actions+=/potion,if=buff.avatar.up|boss&fight_remains<25
 actions+=/call_action_list,name=mitigation,strict=1,if=incoming_damage_5s>0
 actions+=/conquerors_banner,if=runeforge.glory
 actions+=/avatar
@@ -34,14 +38,9 @@ actions+=/ancient_aftershock
 actions+=/spear_of_bastion
 actions+=/conquerors_banner
 actions+=/shield_block,if=buff.shield_block.down
-actions+=/call_action_list,name=aoe,strict=1,if=spell_targets.thunder_clap>=3
+actions+=/shield_slam,if=buff.outburst.up
+actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.thunder_clap>=3
 actions+=/call_action_list,name=generic
-
-actions.mitigation=ignore_pain,if=rage>50&buff.ignore_pain.down
-actions.mitigation+=/shield_block,if=(!talent.bolster.enabled|!buff.last_stand.up)&(charges_fractional>1.8|incoming_damage_5s)
-actions.mitigation+=/demoralizing_shout,line_cd=6,if=(target.within10|active_enemies>1)&((incoming_damage_5s>0.15*health.max|health.pct<30)|(!talent.booming_voice.enabled|rage.max-rage<40))
-actions.mitigation+=/last_stand,if=incoming_damage_3s>health&cooldown.anima_of_death.remains<=2
-actions.mitigation+=/shield_wall,if=incoming_damage_5s>health|health.pct<20
 
 actions.aoe=ravager
 actions.aoe+=/dragon_roar
@@ -51,14 +50,21 @@ actions.aoe+=/shield_slam
 
 actions.generic=ravager
 actions.generic+=/dragon_roar
-actions.generic+=/shield_slam,if=buff.shield_block.up
-actions.generic+=/thunder_clap,if=(spell_targets.thunder_clap>1|cooldown.shield_slam.remains)&talent.unstoppable_force.enabled&buff.avatar.up
-actions.generic+=/shield_slam
+actions.generic+=/shield_slam,if=buff.shield_block.up|buff.outburst.up&rage<=55
 actions.generic+=/condemn
 actions.generic+=/execute
-actions.generic+=/revenge,if=rage>80&target.health.pct>20|buff.revenge.up
-actions.generic+=/thunder_clap
+actions.generic+=/shield_slam
+actions.generic+=/thunder_clap,if=spell_targets.thunder_clap>1|cooldown.shield_slam.remains&buff.outburst.down
+actions.generic+=/revenge,if=rage>=60&target.health.pct>20|buff.revenge.up&target.health.pct<=20&rage<=18&cooldown.shield_slam.remains|buff.revenge.up&target.health.pct>20
+actions.generic+=/thunder_clap,if=buff.outburst.down
 actions.generic+=/revenge
 actions.generic+=/victory_rush
 actions.generic+=/impending_victory
 actions.generic+=/devastate
+
+actions.mitigation=ignore_pain,if=rage>50&buff.ignore_pain.down,use_off_gcd=1
+actions.mitigation+=/ignore_pain,if=target.health.pct>=20&(target.health.pct>=80&!covenant.venthyr)&(rage>=85&cooldown.shield_slam.ready|rage>=60&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled|rage>=70&cooldown.avatar.ready|rage>=40&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled&buff.last_stand.up|rage>=55&cooldown.avatar.ready&buff.last_stand.up|rage>=80|rage>=55&cooldown.shield_slam.ready&buff.outburst.up|rage>=30&cooldown.shield_slam.ready&buff.outburst.up&buff.last_stand.up),use_off_gcd=1
+actions.mitigation+=/shield_block,if=(!talent.bolster.enabled|!buff.last_stand.up)&(charges_fractional>1.8|incoming_damage_5s)
+actions.mitigation+=/demoralizing_shout,line_cd=6,if=(target.within10|active_enemies>1)&((incoming_damage_5s>0.15*health.max|health.pct<30)|(!talent.booming_voice.enabled|rage.max-rage<40))
+actions.mitigation+=/last_stand,if=incoming_damage_3s>health&cooldown.anima_of_death.remains<=2
+actions.mitigation+=/shield_wall,if=incoming_damage_5s>health|health.pct<20
