@@ -673,7 +673,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local spec = rawget( self.DB.profile.specs, specID )
     local module = class.specs[ specID ]
 
-    packName = packName or self.DB.profile.specs[ specID ].package
+    packName = packName or spec and spec.package
+
+    if not packName then return end
 
     local pack
     if ( packName == "UseItems" ) then pack = class.itemPack

@@ -2735,7 +2735,10 @@ local mt_default_cooldown = {
             end
         end
 
-        local raw = ( state.display ~= "Primary" and state.display ~= "AOE" ) or ( profile.toggles.cooldowns.value and profile.toggles.cooldowns.separate and profile.specs[ state.spec.id ].noFeignedCooldown )
+        local noFeignCD = rawget( profile.specs, state.spec.id )
+        noFeignCD = noFeignCD and noFeignCD.noFeignedCooldown
+
+        local raw = ( state.display ~= "Primary" and state.display ~= "AOE" ) or ( profile.toggles.cooldowns.value and profile.toggles.cooldowns.separate and noFeignCD )
 
         if k:sub(1, 5) == "true_" then
             k = k:sub(6)
@@ -6620,7 +6623,8 @@ do
         if self.holds[ spell ] then return true, "on hold" end
 
         local profile = Hekili.DB.profile
-        local spec = profile.specs[ state.spec.id ]
+        local spec = rawget( profile.specs, state.spec.id )
+        if not spec then return true end
 
         local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
 
@@ -6655,7 +6659,9 @@ do
         spell = ability.key
 
         local profile = Hekili.DB.profile
-        local spec = profile.specs[ state.spec.id ]
+        local spec = rawget( profile.specs, state.spec.id )
+        if not spec then return true end
+
         local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
         local toggle = option.toggle
         if not toggle or toggle == "default" then toggle = ability.toggle end
@@ -7052,7 +7058,9 @@ function state:IsReadyNow( action )
 
     action = a.key
     local profile = Hekili.DB.profile
-    local spec = profile.specs[ state.spec.id ]
+    local spec = rawget( profile.specs, state.spec.id )
+    if not spec then return false end
+
     local option = spec.abilities[ action ]
     local clash = option.clash or 0
 
@@ -7098,7 +7106,9 @@ function state:ClashOffset( action )
     action = a.key
 
     local profile = Hekili.DB.profile
-    local spec = profile.specs[ state.spec.id ]
+    local spec = rawget( profile.specs, state.spec.id )
+    if not spec then return true end
+
     local option = spec.abilities[ action ]
 
     return ns.callHook( "clash", option.clash, action )

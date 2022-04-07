@@ -1433,11 +1433,11 @@ local countPets = false
 
 function Hekili:UpdateDamageDetectionForCLEU()
     local profile = self.DB.profile
-    local spec = profile.specs[ state.spec.id ]
+    local spec = rawget( profile.specs, state.spec.id )
 
-    countDamage = spec.damage or false
-    countDots = spec.damageDots or false
-    countPets = spec.damagePets or false
+    countDamage = spec and spec.damage or false
+    countDots = spec and spec.damageDots or false
+    countPets = spec and spec.damagePets or false
 end
 
 
@@ -2267,7 +2267,7 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
         local override = state.spec.id
         local overrideType = ability and ability.item and "items" or "abilities"
 
-        override = override and self.DB.profile.specs[ override ]
+        override = override and rawget( self.DB.profile.specs, override )
         override = override and override[ overrideType ][ key ]
         override = override and override.keybind
 
@@ -2341,7 +2341,7 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
         local override = state.spec.id
         local overrideType = ability and ability.item and "items" or "abilities"
 
-        override = override and self.DB.profile.specs[ override ]
+        override = override and rawget( self.DB.profile.specs, override )
         override = override and override[ overrideType ][ key ]
         override = override and override.keybind
 
@@ -2410,7 +2410,7 @@ else
         local override = state.spec.id
         local overrideType = ability and ability.item and "items" or "abilities"
 
-        override = override and self.DB.profile.specs[ override ]
+        override = override and rawget( self.DB.profile.specs, override )
         override = override and override[ overrideType ][ key ]
         override = override and override.keybind
 

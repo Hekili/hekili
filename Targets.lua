@@ -280,7 +280,7 @@ do
         Hekili.TargetDebug = ""
 
         local spec = state.spec.id
-        spec = spec and rawget( Hekili.DB.profile.specs, spec ) or ns.specTemplate
+        spec = spec and rawget( Hekili.DB.profile.specs, spec )
 
         if spec then
             local checkPets = showNPs and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
@@ -445,7 +445,9 @@ end
 
 
 function ns.updateTarget(id, time, mine)
-    if not Hekili.DB.profile.specs[ state.spec.id ].damage then return end
+    local spec = rawget( profile.specs, state.spec.id )
+    if not spec or not spec.damage then return end
+
     if id == state.GUID then
         return
     end
@@ -749,7 +751,7 @@ ns.Audit = function( special )
     end
 
     local now = GetTime()
-    local spec = state.spec.id and Hekili.DB.profile.specs[ state.spec.id ]
+    local spec = state.spec.id and rawget( Hekili.DB.profile.specs, state.spec.id )
     local nodmg = spec and ( spec.damage == false ) or false
     local grace = spec and spec.damageExpiration or 6
 

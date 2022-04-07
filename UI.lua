@@ -524,15 +524,19 @@ do
                         insert( menuData, {
                             text = "Recommend Target Swaps",
                             func = function ()
-                                Hekili.DB.profile.specs[ i ].cycle = not Hekili.DB.profile.specs[ i ].cycle
-                                if Hekili.DB.profile.notifications.enabled then
-                                    Hekili:Notify( "Recommend Target Swaps: " .. ( Hekili.DB.profile.specs[ i ].cycle and "ON" or "OFF" ) )
-                                else
-                                    self:Print( "Recommend Target Swaps: " .. ( Hekili.DB.profile.specs[ i ].cycle and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                local spec = rawget( Hekili.DB.profile.specs, i )
+
+                                if spec then
+                                    spec.cycle = not spec.cycle
+                                    if Hekili.DB.profile.notifications.enabled then
+                                        Hekili:Notify( "Recommend Target Swaps: " .. ( spec.cycle and "ON" or "OFF" ) )
+                                    else
+                                        self:Print( "Recommend Target Swaps: " .. ( spec.cycle and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                    end
                                 end
                             end,
                             checked = function ()
-                                return Hekili.DB.profile.specs[ i ].cycle
+                                return spec.cycle
                             end,
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         } )
