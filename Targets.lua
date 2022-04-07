@@ -445,7 +445,7 @@ end
 
 
 function ns.updateTarget(id, time, mine)
-    local spec = rawget( profile.specs, state.spec.id )
+    local spec = rawget( Hekili.DB.profile.specs, state.spec.id )
     if not spec or not spec.damage then return end
 
     if id == state.GUID then
