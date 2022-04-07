@@ -269,6 +269,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             max_stack = 1,
             copy = { "nesingwarys_trapping_apparatus", "nesingwarys_apparatus", "nessingwarys_apparatus" }
         },
+        secrets_of_the_unblinking_vigil = {
+            id = 336892,
+            duration = 20,
+            max_stack = 1,
+        },
 
         -- stub.
         eagletalons_true_focus_stub = {
@@ -415,7 +420,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
             recharge = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
             gcd = "spell",
 
-            spend = function () return buff.lock_and_load.up and 0 or ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 35 ) end,
+            spend = function ()
+                if buff.lock_and_load.up or buff.secrets_of_the_unblinking_vigil.up then return 0 end
+                return ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 35 )
+            end,
             spendType = "focus",
 
             startsCombat = true,
@@ -430,9 +438,17 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             handler = function ()
                 applyBuff( "precise_shots" )
-                removeBuff( "lock_and_load" )
                 removeBuff( "double_tap" )
                 if buff.volley.down and buff.trick_shots.up then removeBuff( "trick_shots" ) end
+                if action.aimed_shot.cost == 0 and set_bonus.tier28_4pc > 0 then
+                    focused_trickery_count = focused_trickery_count + ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 35 )
+                    if focused_trickery_count >= 40 then
+                        applyBuff( "trick_shots" )
+                        focused_trickery_count = focused_trickery_count % 40
+                    end
+                end
+                if buff.lock_and_load.up then removeBuff( "lock_and_load" )
+                elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
             end,
         },
 
