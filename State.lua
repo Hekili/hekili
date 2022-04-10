@@ -4378,16 +4378,16 @@ local mt_default_debuff = {
             return rawget( t, k )
 
         elseif k == "up" or k == "ticking" then
-            return t.remains > 0
+            return t.applied <= state.query_time and t.expires > state.query_time
 
         elseif k == "i_up" or k == "rank" then
             return t.up and 1 or 0
 
         elseif k == "down" then
-            return not t.up
+            return t.remains == 0
 
         elseif k == "remains" then
-            return max( 0, t.expires - state.query_time )
+            return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
         elseif k == "refreshable" then
             -- if state.isCyclingTargets( nil, t.key ) then return true end
@@ -4401,7 +4401,7 @@ local mt_default_debuff = {
             if t.up then return ( t.count ) else return 0 end
 
         elseif k == "react" then
-            if t.expires > state.query_time then
+            if t.applied <= state.query_time and t.expires > state.query_time then
                 return t.count
             end
             return 0

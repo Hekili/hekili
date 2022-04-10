@@ -177,23 +177,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
             id = 259277,
             duration = 8,
             max_stack = 1,
-            generate = function( t )
-                local name, _, count, _, duration, expires, caster = FindUnitDebuffByID( "target", 259277, "PLAYER" )
-
-                if name then
-                    t.name = name
-                    t.count = 1
-                    t.expires = expires
-                    t.applied = expires - duration
-                    t.caster = caster
-                    return
-                end
-
-                t.count = 0
-                t.expires = 0
-                t.applied = 0
-                t.caster = "nobody"
-            end,
             copy = "bloodseeker"
         },
         masters_call = {
@@ -1315,6 +1298,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                     gainCharges( "wildfire_bomb", 1 )
                     removeBuff( "mad_bombardier" )
                 end
+                applyDebuff( "target", "volatile_bomb" )
                 if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
             end,
 

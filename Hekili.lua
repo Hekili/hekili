@@ -29,7 +29,7 @@ do
     end
 
 	ns.cpuProfile = cpuProfileDB
-	
+
 
 	local frameProfileDB = {}
 
@@ -73,7 +73,7 @@ Hekili.Class = {
     powers = {},
 	gear = {},
     setBonuses = {},
-	
+
 	knownAuraAttributes = {},
 
     stateExprs = {},
@@ -173,13 +173,13 @@ function Hekili:SetupDebug( display )
     }
     active_debug = debug[ current_display ]
 	active_debug.index = 1
-	
+
 	lastIndent = 0
-	
+
 	local pack = self.State.system.packName
 
     if not pack then return end
-    
+
 	self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using %s( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), self.DB.profile.packs[ pack ].builtIn and "built-in " or "", pack )
 end
 
@@ -187,7 +187,7 @@ end
 function Hekili:Debug( ... )
     if not self.ActiveDebug then return end
 	if not active_debug then return end
-	
+
 	local indent, text = ...
 	local start
 
@@ -213,6 +213,7 @@ local snapshots = ns.snapshots
 function Hekili:SaveDebugSnapshot( dispName )
     local snapped = false
     local formatKey = ns.formatKey
+    local state = Hekili.State
 
 	for k, v in pairs( debug ) do
 		if not dispName or dispName == k then
@@ -235,7 +236,11 @@ function Hekili:SaveDebugSnapshot( dispName )
 
                 if not name then break end
 
-                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                local aura = class.auras[ spellId ]
+                local key = aura and aura.key
+                if key and not state.auras.player.buff[ key ] then key = key .. " [MISSING]" end
+
+                auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
             end
 
             auraString = auraString .. "\n\nplayer_debuffs:"
@@ -245,7 +250,11 @@ function Hekili:SaveDebugSnapshot( dispName )
 
                 if not name then break end
 
-                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                local aura = class.auras[ spellId ]
+                local key = aura and aura.key
+                if key and not state.auras.player.debuff[ key ] then key = key .. " [MISSING]" end
+
+                auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
             end
 
 
@@ -253,23 +262,31 @@ function Hekili:SaveDebugSnapshot( dispName )
                 auraString = auraString .. "\n\ntarget_auras:  target does not exist"
             else
                 auraString = auraString .. "\n\ntarget_buffs:"
-                
+
                 for i = 1, 40 do
                     local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitBuff( "target", i )
-    
+
                     if not name then break end
-    
-                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+
+                    local aura = class.auras[ spellId ]
+                    local key = aura and aura.key
+                    if key and not state.auras.target.buff[ key ] then key = key .. " [MISSING]" end
+
+                    auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
                 end
-    
+
                 auraString = auraString .. "\n\ntarget_debuffs:"
 
                 for i = 1, 40 do
                     local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff( "target", i, "PLAYER" )
-    
+
                     if not name then break end
-    
-                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+
+                    local aura = class.auras[ spellId ]
+                    local key = aura and aura.key
+                    if key and not state.auras.target.debuff[ key ] then key = key .. " [MISSING]" end
+
+                    auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
                 end
             end
 
@@ -281,7 +298,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             end
             table.insert( v.log, 1, self:GenerateProfile() )
             table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
-            
+
             snapped = true
 		end
     end

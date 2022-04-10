@@ -1293,17 +1293,32 @@ do
     RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, full, data )
         if full then
             ScrapeUnitAuras( unit, false, event )
+            Hekili:ForceUpdate( event, true )
             return
         end
 
-        local harmful, helpful
+        -- Already planning to update at next reset.
+        if state[ unit ].updated then return end
+
+        if unit == "player" then
+            state.player.updated = true
+            Hekili:ForceUpdate( event, true )
+            return
+        end
+
+        -- local harmful, helpful
 
         for _, info in ipairs( data ) do
-            if unit == "player" or info.isFromPlayerOrPlayerPet then
+            if info.isFromPlayerOrPlayerPet then
                 local id = info.spellId
                 local aura = class.auras[ id ]
 
                 if aura then
+                    state[ unit ].updated = true
+                    Hekili:ForceUpdate( event, true )
+                    return
+
+                    --[[
                     if info.isHelpful then
                         helpful = helpful or { count = 0 }
                         helpful[ id ] = aura.key
@@ -1312,13 +1327,14 @@ do
                         harmful = harmful or { count = 0 }
                         harmful[ id ] = aura.key
                         harmful.count = harmful.count + 1
-                    end
+                    end ]]
                 end
             end
         end
 
+        --[[
         if helpful then StoreMatchingAuras( unit, helpful, "HELPFUL", select( 2, UnitAuraSlots( unit, "HELPFUL" ) ) ) end
-        if harmful then StoreMatchingAuras( unit, harmful, "HARMFUL", select( 2, UnitAuraSlots( unit, "HARMFUL" ) ) ) end
+        if harmful then StoreMatchingAuras( unit, harmful, "HARMFUL", select( 2, UnitAuraSlots( unit, "HARMFUL" ) ) ) end ]]
     end )
 
     RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
@@ -1466,8 +1482,9 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
     local time = GetTime()
 
-    local amSource = ( sourceGUID == state.GUID )
-    local amTarget = ( destGUID   == state.GUID )
+    local amSource  = ( sourceGUID == state.GUID )
+    local petSource = ( UnitExists( "pet" ) and sourceGUID == UnitGUID( "pet" ) )
+    local amTarget  = ( destGUID   == state.GUID )
 
     if subtype == 'SPELL_SUMMON' and amSource then
         -- Guardian of Azeroth check.
@@ -1535,7 +1552,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
     local minion = ns.isMinion( sourceGUID )
 
-    if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and ( not minion or not countPets ) then
+    if not ( amSource or petSource ) and not ( state.role.tank and destGUID == state.GUID ) and ( not minion or not countPets ) then
         return
     end
 
@@ -1680,7 +1697,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
     -- Player/Minion Event
-    elseif amSource or ( countPets and minion ) or ( sourceGUID == destGUID and sourceGUID == UnitGUID( 'target' ) ) then
+    elseif ( amSource or petSource ) or ( countPets and minion ) or ( sourceGUID == destGUID and sourceGUID == UnitGUID( 'target' ) ) then
 
         if aura_events[ subtype ] then
             if subtype == "SPELL_CAST_SUCCESS" or state.GUID == destGUID then
@@ -1718,7 +1735,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                 end
 
-            elseif amSource and aura.friendly then -- friendly effects
+            elseif ( amSource or petSource ) and aura.friendly then -- friendly effects
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
 
