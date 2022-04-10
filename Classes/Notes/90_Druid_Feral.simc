@@ -1,5 +1,5 @@
 ## Feral Druid
-## March 25, 2022
+## April 8, 2022
 
 ## Changes:
 ## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
@@ -20,8 +20,8 @@ actions.precombat+=/prowl,if=buff.moonkin_form.down
 actions.precombat+=/cat_form,if=buff.moonkin_form.down
 # Cache of acquired treasures does not seem to work yet and has to be seen
 actions.precombat+=/variable,name=on_use_trinket,value=0
-actions.precombat+=/variable,name=on_use_trinket,op=add,value=(trinket.1.has_use_buff&trinket.1.cooldown.duration)|trinket.1.is.inscrutable_quantum_device
-actions.precombat+=/variable,name=on_use_trinket,op=add,value=((trinket.2.has_use_buff&trinket.2.cooldown.duration)|trinket.2.is.inscrutable_quantum_device)*2
+actions.precombat+=/variable,name=on_use_trinket,op=add,if=(trinket.1.has_use_buff&trinket.1.cooldown.duration)|trinket.1.is.inscrutable_quantum_device,value=1
+actions.precombat+=/variable,name=on_use_trinket,op=add,if=(trinket.2.has_use_buff&trinket.2.cooldown.duration)|trinket.2.is.inscrutable_quantum_device,value=2
 actions.precombat+=/variable,name=max_trinket_hold,value=61
 
 actions=run_action_list,name=balance,strict=1,if=buff.moonkin_form.up&!druid.owlweave_cat
@@ -72,8 +72,8 @@ actions.bloodtalons+=/thrash_cat,if=buff.bt_thrash.down
 
 actions.cooldown=adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.ticking|dot.adaptive_swarm_damage.remains<2)&(dot.adaptive_swarm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1)&!buff.adaptive_swarm_heal_in_flight.up&!buff.adaptive_swarm_damage_in_flight.up)&target.time_to_die>5|active_enemies>2&!dot.adaptive_swarm_damage.ticking&energy<35&target.time_to_die>5
 actions.cooldown+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
-actions.cooldown+=/use_items,slots=trinket1,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10))|fight_remains<20)|(cooldown.convoke_the_spirits.remains-2>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=2&(cooldown.convoke_the_spirits.remains>22|fight_remains<20|trinket.2.cooldown.remains>20))
-actions.cooldown+=/use_items,slots=trinket2,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10)&(trinket.1.cooldown.remains>=2|variable.on_use_trinket=2))|fight_remains<20)|((cooldown.convoke_the_spirits.remains-2+60*((trinket.1.cooldown.remains<cooldown.convoke_the_spirits.remains-2)&(variable.on_use_trinket=1|variable.on_use_trinket>=3)))>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=1&(cooldown.convoke_the_spirits.remains>22|fight_remains<20|trinket.1.cooldown.remains>20))
+actions.cooldown+=/use_items,slots=trinket1,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10))|boss&fight_remains<20)|(cooldown.convoke_the_spirits.remains-2>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=2&(cooldown.convoke_the_spirits.remains>22|boss&fight_remains<20|trinket.2.cooldown.remains>20))
+actions.cooldown+=/use_items,slots=trinket2,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10)&(trinket.1.cooldown.remains>=2|variable.on_use_trinket=2))|boss&fight_remains<20)|((cooldown.convoke_the_spirits.remains-2+60*((trinket.1.cooldown.remains<cooldown.convoke_the_spirits.remains-2)&(variable.on_use_trinket=1|variable.on_use_trinket>=3)))>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=1&(cooldown.convoke_the_spirits.remains>22|boss&fight_remains<20|trinket.1.cooldown.remains>20))
 # Cast Tiger's Fury before (or immediatly after) casting Feral Frenzy if Berserk is NOT on cooldown.
 actions.cooldown+=/tigers_fury,sync=feral_frenzy,if=cooldown.bs_inc.up
 actions.cooldown+=/feral_frenzy,cycle_targets=1,if=combo_points<3&target.time_to_die>7&(buff.savage_roar.up|!talent.savage_roar.enabled)&(!cooldown.tigers_fury.up|cooldown.bs_inc.up)|boss&fight_remains<8&fight_remains>2
