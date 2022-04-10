@@ -525,7 +525,6 @@ do
                             text = "Recommend Target Swaps",
                             func = function ()
                                 local spec = rawget( Hekili.DB.profile.specs, i )
-
                                 if spec then
                                     spec.cycle = not spec.cycle
                                     if Hekili.DB.profile.notifications.enabled then
@@ -536,6 +535,7 @@ do
                                 end
                             end,
                             checked = function ()
+                                local spec = rawget( Hekili.DB.profile.specs, i )
                                 return spec.cycle
                             end,
                             hidden = function () return Hekili.State.spec.id ~= i end,
