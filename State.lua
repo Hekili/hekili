@@ -3990,7 +3990,16 @@ do
     end
 
 
-    state.variable = setmetatable( {}, {
+    local defaultValue = 0
+
+    function state:SetDefaultVariable( value )
+        if value == nil then value = 0 end
+        defaultValue = value
+    end
+
+
+    state.variable = setmetatable( {
+    }, {
         __index = function( t, var )
             local debug = Hekili.ActiveDebug
 
@@ -4003,16 +4012,16 @@ do
             local now = state.query_time
 
             if Hekili.LoadingScripts then
-                return 0
+                return defaultValue
             end
 
             if not db[ var ] then
                 if debug then Hekili:Debug( "No such variable '%s'.", var ) end
                 Hekili:Error( "Variable '%s' referenced in %s but is undefined.", var, state.scriptID )
-                return 0
+                return defaultValue
             end
 
-            state.variable[ var ] = 0
+            state.variable[ var ] = defaultValue
 
             local data = db[ var ]
             local parent = state.scriptID
@@ -4020,8 +4029,7 @@ do
             -- If we're checking variable with no script loaded, don't bother.
             if not parent or parent == "NilScriptID" then return 0 end
 
-            local default = 0
-            local value = 0
+            local value = defaultValue
 
             local which_mod = "value"
 

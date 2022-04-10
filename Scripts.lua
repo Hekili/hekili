@@ -55,7 +55,7 @@ local function forgetMeNots( str )
    local i = 1
    local substring
 
-   while( str:find("!") ) do   
+   while( str:find("!") ) do
       local start = str:find("!")
 
       --while str:sub( start, start ):match("%s") do
@@ -68,10 +68,10 @@ local function forgetMeNots( str )
       for j = start, str:len() do
          local char = str:sub( j, j )
 
-         if char == "(" then         
+         if char == "(" then
             parens = parens + 1
 
-         elseif char == ")" then         
+         elseif char == ")" then
             if parens > 0 then parens = parens - 1
             else finish = j - 1; break end
 
@@ -104,38 +104,38 @@ end
 local function atToAbs( str )
     -- First, handle already bracketed "!(X)" -> "not (X)".
     local found = 1
- 
+
     while found > 0 do
        str, found = str:gsub( "%s*@%s*(%b())%s*", " abs(safenum%1) " )
     end
- 
+
     -- The remaining conditions are not bracketed, but may include brackets.
     -- Such as !5>2+(1*3).
     -- So we'll start from the !, then go through the string until it's time to stop.
- 
+
     local i = 1
     local substring
- 
-    while( str:find("@") ) do   
+
+    while( str:find("@") ) do
        local start = str:find("@")
- 
+
        --while str:sub( start, start ):match("%s") do
        --   start = start + 1
        --      end
- 
+
        local parens = 0
        local finish = -1
- 
+
        for j = start, str:len() do
           local char = str:sub( j, j )
- 
-          if char == "(" then         
+
+          if char == "(" then
              parens = parens + 1
- 
-          elseif char == ")" then         
+
+          elseif char == ")" then
              if parens > 0 then parens = parens - 1
              else finish = j - 1; break end
- 
+
           elseif parens == 0 then
              -- We are not within a bracketed part of the string.  We can end here.
              if exprBreak[ char ] then
@@ -144,24 +144,24 @@ local function atToAbs( str )
              end
           end
        end
- 
+
        if finish == -1 then finish = str:len() end
- 
+
        substring = str:sub( start + 1, finish )
        substring = substring:trim()
- 
+
        str = format( "%s abs( %s ) %s", str:sub( 1, start - 1 ) or "", substring, str:sub( finish + 1, str:len() ) or "" )
- 
+
        i = i + 1
        if i >= 100 then Hekili:Error( "Was unable to convert '@' to 'abs' in string [%s].", str ); break end
     end
- 
+
     str = str:gsub( "%s%s", " " )
- 
+
     return str
  end
- 
- 
+
+
  local mathBreak = {
     ["<"] = true,
     [">"] = true,
@@ -455,12 +455,12 @@ do
         { "^swing.([a-z_]+).remains$",              "swing.%1.remains" },
 
         { "^(.-)%.deficit<=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },
-        { "^(.-)%.deficit>=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },        
-        
+        { "^(.-)%.deficit>=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },
+
         { "^cooldown%.([a-z0-9_]+)%.ready$",        "cooldown.%1.remains" },
         { "^cooldown%.([a-z0-9_]+)%.up$",           "cooldown.%1.remains" },
         { "^!?cooldown%.([a-z0-9_]+)%.remains$",    "cooldown.%1.remains" },
-        
+
         { "^charges_fractional=(.-)$",              "(%1-charges_fractional)*recharge" },
         { "^charges_fractional>=?(.-)$",            "0.01+(%1-charges_fractional)*recharge" },
         { "^charges=(.-)$",                         "(%1-charges_fractional)*recharge" },
@@ -477,9 +477,9 @@ do
 
         { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$",
                                                     "(1+%2-%1.charges_fractional)*%1.recharge" },
-        
+
         { "^full_recharge_time[<>]=?(.-)$",         "0.01+full_recharge_time-%1" },
-        
+
         { "^!(action%.[a-z0-9]+)%.executing$",      "%1.execute_remains" },
         { "^!(action%.[a-z0-9]+)%.channeling$",     "%1.channel_remains" },
         { "^(.-time_to_die)<=?(.-)$",               "%1-%2" },
@@ -490,7 +490,7 @@ do
 
         { "^dot%.festering_wound%.stack[>=]=?(.-)$",    -- UH DK helper during Unholy Frenzy.
                                                     "time_to_wounds(%1)" },
-            
+
         { "^master_assassin_remains[<=]+(.-)$",
                                                     "0.01+master_assassin_remains-(%1)" },
 
@@ -519,7 +519,7 @@ do
         { "^active_bt_triggers$",                   "time_to_bt_triggers(0)" }, -- Feral Druid w/ Bloodtalons.
         { "^active_bt_triggers<?=0$",               "time_to_bt_triggers(0)" }, -- Feral Druid w/ Bloodtalons.
         { "^active_bt_triggers<(%d+)$",             "time_to_bt_triggers(%1-1)" }, -- Feral Druid w/ Bloodtalons.
-        
+
         { "^!?action%.([a-z0-9_]+)%.in_flight$",    "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
 
         { "^!?action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$",
@@ -557,7 +557,7 @@ do
     local increases = {
         ["^time$"] = true,
         -- ["charges"] = true,
-        -- ["charges_fractional"] = true,        
+        -- ["charges_fractional"] = true,
     }
 
     local removals = {
@@ -636,7 +636,7 @@ do
                     elseif lessOrEqual[ comp ] then
                         return true, rhs .. ".timeTo( " .. lhs .. " )"
                     end
-                end                
+                end
             end
 
             if lhs == "rune" then
@@ -676,7 +676,7 @@ do
 
     function scripts:BuildRecheck( conditions )
         if type( conditions ) ~= "string" then return end
-        
+
         local recheck
 
         conditions = conditions:gsub( " +", "" )
@@ -684,7 +684,7 @@ do
 
         local exprs = self:SplitExpr( conditions )
 
-        if #exprs > 0 then            
+        if #exprs > 0 then
             for i, expr in ipairs( exprs ) do
                 local converted, calc, why = ConvertTimeComparison( expr )
 
@@ -809,7 +809,7 @@ do
               if depth == 0 then
                  local expr = p:sub( 1, i )
 
-                 table.insert( results, { 
+                 table.insert( results, {
                        s = expr:trim(),
                        t = "expr"
                  } )
@@ -865,7 +865,7 @@ do
         local output = ""
 
         -- So at this point, we've broken our string into all of its components.  Now let's iterate through and fix it up.
-        local i = 1
+        i = 1
 
         while( i <= #results ) do
             local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
@@ -892,7 +892,7 @@ do
                         if abss then orig = orig:gsub( "@", " abs " ) end
 
                         esDepth = esDepth - 1
-                        return orig 
+                        return orig
                     end
                     piece.s = scripts:EmulateSyntax( piece.s, numeric )
                 end
@@ -908,8 +908,10 @@ do
                         local func, warn = Hekili:Loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
                         if func then
                             setfenv( func, state )
-                            -- maximum warningness
+                            state:SetDefaultVariable( 1 )
                             local pass, val = pcall( func )
+                            state:SetDefaultVariable( 0 )
+
                             if not pass and not piece.s:match("variable") then
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
                                 Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
@@ -928,11 +930,15 @@ do
                     if piece.s:find("^variable") then
                         if piece.s:sub(1, 1) == "(" then piece.s = "safebool" .. piece.s
                         else piece.s = "safebool(" .. piece.s .. ")" end
-                    else    
+                    else
                         local func, warn = Hekili:Loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
-                        if func  then
+                        if func then
                             setfenv( func, state )
+
+                            state:SetDefaultVariable( 1 )
                             local pass, val = pcall( func )
+                            state:SetDefaultVariable( 0 )
+
                             if not pass and not piece.s:match("variable") then
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
                                 Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
@@ -943,17 +949,17 @@ do
                             end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-b)." )
-                        end                        
+                        end
                     end
                     piece.r = nil
                 end
             end
 
             if trimmed_prefix then
-                piece.s = trimmed_prefix .. piece.s
+                    piece.s = trimmed_prefix .. piece.s
             end
 
-            output = output .. piece.s        
+            output = output .. piece.s
             i = i + 1
         end
 
@@ -965,7 +971,7 @@ do
 
         -- output = output:gsub( "  ", " " )
         -- output = output:gsub( "not (safenum(", "safenum(not (" )
-        -- output = output:gsub( "not safebool(", "safebool(not " )        
+        -- output = output:gsub( "not safebool(", "safebool(not " )
         output = output:gsub( "!safenum(%b())", "safenum(!%1)" )
         output = output:gsub( "@safebool", "@safenum" )
         output = output:gsub( "!%((%b())%)", "!%1" )
@@ -1011,7 +1017,7 @@ local function SimCToSnapshot( str, modifier )
         str = str:gsub("<=+", "<=")
         str = str:gsub("!=+", "~=")
         str = str:gsub("~=+", "~=")
-    end 
+    end
 
     -- Condense whitespace.
     str = str:gsub("%s%s", " ")
@@ -1054,7 +1060,7 @@ local function stripScript( str, thorough )
 
   -- Remove comments.
   str = str:gsub("%-%-.-\n", "")
- 
+
   -- Remove conjunctions.
   str = str:gsub("[%s-]and[%s-]", " "):gsub("[%s-]or[%s-]", " "):gsub("%(-%s-not[%s-]", " ")
 
@@ -1206,6 +1212,7 @@ local function ConvertScript( node, hasModifiers, header )
 
     t = scripts:EmulateSyntax( t )
     local tPreSim = t
+
     t = SimToLua( t )
 
     local sf, e
@@ -1219,8 +1226,10 @@ local function ConvertScript( node, hasModifiers, header )
     end ]]
 
     if sf and not e then
+        state:SetDefaultVariable( 1 )
         local success, msg = pcall( sf )
         if not success then e = msg end
+        state:SetDefaultVariable( 0 )
     end
     if e then e = e:match( ":(%d+: .*)" ) or e end
 
@@ -1237,7 +1246,7 @@ local function ConvertScript( node, hasModifiers, header )
         end
     end
 
-    -- autorecheck...    
+    -- autorecheck...
     local rs, rc, erc, rEle
     if t and t ~= "" then
         rs = scripts:BuildRecheck( node.criteria )
@@ -1291,7 +1300,7 @@ local function ConvertScript( node, hasModifiers, header )
 
                 if value == 'bool' then
                     emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
-                
+
                 elseif value == 'raw' then
                     emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
 
@@ -1324,15 +1333,15 @@ local function ConvertScript( node, hasModifiers, header )
                     end ]]
                     local rs, rc, erc
                     rs = scripts:BuildRecheck( node[m] )
-                    
+
                     if rs then
                         local orig = rs
                         rc, erc = Hekili:Loadstring( "-- var " .. header .. " recheck\nreturn " .. rs )
                         if rc then setfenv( rc, state ) end
-            
+
                         --[[rEle = GetScriptElements( orig )
                         rEle.zzz = orig ]]
-            
+
                         if type( rc ) ~= "function" then
                             Hekili:Error( "Variable recheck function for " .. clean .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
                             rc = nil
@@ -1341,7 +1350,7 @@ local function ConvertScript( node, hasModifiers, header )
                         output.VarRecheck = rc
                         output.VarRecheckScript = rs
                         output.VarRecheckError = erc
-                    end                    
+                    end
                 end
 
                 sf, e = Hekili:Loadstring( "return " .. emulated )
@@ -1525,11 +1534,11 @@ function scripts:LoadScripts()
 
                         local lua = script.Lua
 
-                        if lua then 
+                        if lua then
                             -- If resources are checked, it's time-sensitive.
                             for k in pairs( GetResourceInfo() ) do
                                 local resource = rawget( state, k )
-                                if lua:find( k ) and resource and ( resource.regenModel or resource.regen ~= 0 ) then script.TimeSensitive = true; break end 
+                                if lua:find( k ) and resource and ( resource.regenModel or resource.regen ~= 0 ) then script.TimeSensitive = true; break end
                                 -- if lua:find( k ) then script.TimeSensitive = true; break end
                             end
 
@@ -1553,7 +1562,7 @@ function scripts:LoadScripts()
                     if ability then
                         if ability.channeled then
                             if not self.Channels[ pack ] then self.Channels[ pack ] = {} end
-                            if not self.Channels[ pack ][ data.action ] then 
+                            if not self.Channels[ pack ][ data.action ] then
                                 self.Channels[ pack ][ data.action ] = {}
                             end
 
@@ -1601,7 +1610,7 @@ function scripts:LoadScripts()
 end
 
 
-function Hekili:LoadScripts()    
+function Hekili:LoadScripts()
     self.Scripts:LoadScripts()
     self:UpdateUseItems()
     -- self:UpdateDisplayVisibility()
@@ -1625,7 +1634,7 @@ function Hekili:IsItemScripted( token, specific )
 
     if self.Scripts.PackInfo[ pack ].items[ token ] then return true end
     if not specific and ( ( state.trinket.t1.is[ token ] and self.Scripts.PackInfo[ pack ].items.trinket1 ) or ( state.trinket.t2.is[ token ] and self.Scripts.PackInfo[ pack ].items.trinket2 ) ) then return true end
-    
+
     return false
 end
 
@@ -1654,7 +1663,7 @@ function Hekili.Scripts:LoadItemScripts()
 
                 local lua = script.Lua
 
-                if lua then 
+                if lua then
                     -- If resources are checked, it's time-sensitive.
                     for k in pairs( GetResourceInfo() ) do
                         if lua:find( k ) then script.TimeSensitive = true; break end
@@ -1680,7 +1689,7 @@ function Hekili.Scripts:LoadItemScripts()
             if ability then
                 if ability.channeled then
                     if not self.Channels[ pack ] then self.Channels[ pack ] = {} end
-                    if not self.Channels[ pack ][ data.action ] then 
+                    if not self.Channels[ pack ][ data.action ] then
                         self.Channels[ pack ][ data.action ] = {}
                     end
 
@@ -1699,7 +1708,7 @@ function Hekili.Scripts:LoadItemScripts()
             self.DB[ scriptID ] = script
         end
     end
-end    
+end
 
 
 function Hekili:LoadItemScripts()
@@ -1715,7 +1724,7 @@ function Hekili:LoadScript( pack, list, id )
 
     if script.Error then
         Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. script.SimC .. "\n    " .. script.Error )
-    end    
+    end
 
     if data.action == "call_action_list" or data.action == "run_action_list" then
         -- Check for Time Sensitive conditions.
@@ -1723,7 +1732,7 @@ function Hekili:LoadScript( pack, list, id )
 
         local lua = script.Lua
 
-        if lua then 
+        if lua then
             -- If resources are checked, it's time-sensitive.
             for k in pairs( GetResourceInfo() ) do
                 if lua:find( k ) then script.TimeSensitive = true; break end
@@ -1759,7 +1768,7 @@ function scripts:ImplantDebugData( data )
         self:StoreValues( data.HookElements, s )
     end
 
-    if data.script then        
+    if data.script then
         local s = self.DB[ data.script ]
         data.ActScript = s.SimC
         data.ActElements = data.ActElements or {}
@@ -1771,7 +1780,7 @@ end
 
 
 local key_cache = setmetatable( {}, {
-    __index = function( t, k )        
+    __index = function( t, k )
         t[k] = k:gsub( "(%S+)%[(%d+)]", "%1.%2" ):gsub( "(%S+)%['([%a%w_]+)']", "%1.%2" )
         return t[k]
     end
@@ -1781,7 +1790,7 @@ local key_cache = setmetatable( {}, {
 local checked = {}
 
 local function embedConditionsAndValues( source, elements )
-    if source and source ~= "" then        
+    if source and source ~= "" then
         local wasDebugging = Hekili.ActiveDebug
         Hekili.ActiveDebug = false
 
@@ -1818,7 +1827,7 @@ local function embedConditionsAndValues( source, elements )
             end
 
         end
-        
+
         if wasDebugging then Hekili.ActiveDebug = true end
         return source
     end
@@ -1839,7 +1848,7 @@ do
         end
 
         local script = self.DB[ scriptID ]
-        
+
         if recheck then
             return embedConditionsAndValues( script.RecheckScript, script.RecheckElements )
         end
