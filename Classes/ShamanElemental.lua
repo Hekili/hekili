@@ -1825,6 +1825,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 0,
             gcd = "spell",
 
+            suffix = "(Heal)",
+
             startsCombat = false,
             texture = 3636849,
 

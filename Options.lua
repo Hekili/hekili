@@ -4417,7 +4417,7 @@ do
 
         for k, v in orderedPairs( abilities ) do
             local ability = class.abilities[ v ]
-            local useName = class.abilityList[ v ] and class.abilityList[v]:match("|t (.+)$") or ability.name
+            local useName = class.abilityList[ v ] and class.abilityList[v]:match("\|t (.+)$") or ability.name
 
             if not useName then
                 Hekili:Error( "No name available for %s (id:%d) in EmbedAbilityOptions.", ability.key or "no_id", ability.id or 0 )
