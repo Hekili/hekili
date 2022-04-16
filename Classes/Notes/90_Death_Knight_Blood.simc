@@ -1,5 +1,5 @@
 ## Blood Death Knight
-## April 15, 2022
+## April 16, 2022
 
 ## Changes:
 ## - Support for Blood Boil in DRW setting.
@@ -35,13 +35,14 @@ actions.covenants+=/shackle_the_unworthy,if=rune<3&runic_power<100
 
 actions.drw_up=tombstone,if=buff.bone_shield.stack>=5&rune>=2&runic_power.deficit>=30&runeforge.crimson_rune_weapon
 actions.drw_up+=/marrowrend,if=(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*4)|(buff.bone_shield.stack<2&(!covenant.necrolord|buff.abomination_limb.up)))&runic_power.deficit>20
-actions.drw_up+=/blood_boil,if=charges>=2&rune<=1+settings.blood_boil_drw
+actions.drw_up+=/blood_boil,if=charges>=2&rune<2
 actions.drw_up+=/variable,name=heart_strike_rp_drw,value=(15+buff.dancing_rune_weapon.up*10+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
-actions.drw_up+=/death_strike,line_cd=4*haste*settings.blood_boil_drw,if=runic_power.deficit<=variable.heart_strike_rp_drw&!(talent.bonestorm.enabled&cooldown.bonestorm.remains<2)
+actions.drw_up+=/death_strike,line_cd=4*haste,if=buff.blood_shield.remains<gcd|runic_power.deficit<=variable.heart_strike_rp_drw&!(talent.bonestorm.enabled&cooldown.bonestorm.remains<2)
 actions.drw_up+=/bonestorm,if=runic_power>=100
 actions.drw_up+=/blood_boil,line_cd=4*haste,if=spell_targets.blood_boil>2
-actions.drw_up+=/heart_strike,if=rune.time_to_2<gcd|!settings.blood_boil_drw&runic_power.deficit>=variable.heart_strike_rp_drw
-actions.drw_up+=/death_and_decay,if=spell_targets.death_and_decay>=3
+actions.drw_up+=/heart_strike,if=rune.time_to_2<gcd
+actions.drw_up+=/death_strike,if=runic_power.deficit<=variable.heart_strike_rp_drw&!(talent.bonestorm.enabled&cooldown.bonestorm.remains<2)
+actions.drw_up+=/death_and_decay,if=spell_targets.death_and_decay>2
 
 actions.mitigation=vampiric_blood,if=health.pct<50|(!group&health.pct<66)
 # Incoming damage requirement is 25% of max health solo, 50% of max health in a group.
