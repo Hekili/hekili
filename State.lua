@@ -1184,15 +1184,14 @@ end
 -- This will also factor in target caps and TTD restrictions.
 state.spell_targets = setmetatable( {}, {
     __index = function( t, k )
-        local ability = class.abilities[ k ]
+        if state.active_enemies == 1 then return 1 end
 
-        if not ability or state.active_enemies == 1 then return state.active_enemies end
+        local ability = class.abilities[ k ]
+        if not ability then return 1 end
 
         local n = state.active_enemies
-
         if ability.max_ttd then n = min( n, Hekili:GetNumTTDsBefore( ability.max_ttd + state.offset + state.delay ) ) end
         if ability.min_ttd then n = min( n, Hekili:GetNumTTDsAfter( ability.min_ttd + state.offset + state.delay ) ) end
-
         if ability.max_targets then n = min( n, ability.max_targets ) end
 
         return n
@@ -7113,9 +7112,8 @@ function state:ClashOffset( action )
     if not a then return 0 end
     action = a.key
 
-    local profile = Hekili.DB.profile
-    local spec = rawget( profile.specs, state.spec.id )
-    if not spec then return true end
+    local spec = rawget( Hekili.DB.profile.specs, state.spec.id )
+    if not spec then return 0 end
 
     local option = spec.abilities[ action ]
 
