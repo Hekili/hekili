@@ -40,7 +40,7 @@ do
                 end
                 return false
             end
-            
+
             -- Strings.
             local myCovenant = GetActiveCovenantID()
 
@@ -89,12 +89,12 @@ do
             cast = 1.5,
             cooldown = function () return equipped.relic_of_the_first_ones and 48 or 60 end,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 3586270,
-            
+
             handler = function ()
             end,
         },
@@ -107,7 +107,7 @@ do
 
             item = 177278,
             bagItem = true,
-        
+
             startsCombat = false,
             texture = 463534,
 
@@ -116,19 +116,19 @@ do
                 if not toggle.essences then return "essences" end
                 return "essences"
             end,
-    
+
             usable = function ()
                 if GetItemCount( 177278 ) == 0 then return false, "requires phial in bags"
                 elseif not IsUsableItem( 177278 ) then return false, "phial on combat cooldown"
                 elseif health.current == health.max then return false, "requires a health deficit" end
                 return true
             end,
-    
+
             readyTime = function ()
-                local start, duration = GetItemCooldown( 177278 )            
+                local start, duration = GetItemCooldown( 177278 )
                 return max( 0, start + duration - query_time )
             end,
-    
+
             handler = function ()
                 gain( 0.15 * health.max, "health" )
                 removeBuff( "dispellable_disease" )
@@ -140,19 +140,17 @@ do
 
         fleshcraft = {
             id = 324631,
-            cast = function () return 3 * haste end,            
+            cast = function () return 3 * haste end,
             channeled = true,
             cooldown = function () return equipped.relic_of_the_first_ones and 96 or 120 end,
             gcd = "spell",
-            
-            toggle = "essences",
 
             startsCombat = false,
             texture = 3586267,
-            
+
             start = function ()
                 applyBuff( "fleshcraft" )
-                
+
                 if conduit.volatile_solvent.enabled then
                     applyBuff( "volatile_solvent" )
                 end
