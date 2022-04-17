@@ -1244,6 +1244,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
         templars_verdict = {
             id = 85256,
+            flash = { 85256, 336872 },
             cast = 0,
             cooldown = 0,
             gcd = "spell",
