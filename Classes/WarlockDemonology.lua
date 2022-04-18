@@ -11,6 +11,7 @@ local PTR = ns.PTR
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local GetPlayerAuraBySpellID = _G.GetPlayerAuraBySpellID
+local ceil = math.ceil
 
 -- Conduits
 -- [-] borne_of_blood
@@ -313,6 +314,11 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end )
 
 
+    local ExpireDreadstalkers = setfenv( function()
+        addStack( "demonic_core", nil, set_bonus.tier28_2pc > 0 and 3 or 2 )
+    end, state )
+
+
     local wipe = table.wipe
 
     spec:RegisterHook( "reset_precast", function()
@@ -412,6 +418,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             summonPet( "subjugated_demon", expirationTime - now )
         else
             dismissPet( "subjugated_demon" )
+        end
+
+        if buff.dreadstalkers.up then
+            state:QueueAuraExpiration( "dreadstalkers", ExpireDreadstalkers, ceil( buff.dreadstalkers.expires ) )
         end
 
         first_tyrant_time = nil
@@ -1198,6 +1208,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             handler = function ()
                 summon_demon( "dreadstalkers", 12, set_bonus.tier28_2pc > 0 and 3 or 2 )
+                applyBuff( "dreadstalkers", 12, set_bonus.tier28_2pc > 0 and 3 or 2 )
                 summonPet( "dreadstalker", 12 )
                 removeStack( "demonic_calling" )
 
@@ -1812,6 +1823,11 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             startsCombat = true,
             texture = 2065628,
+
+            usable = function ()
+                if settings.dcon_imps > 0 and buff.wild_imps.stack < settings.dcon_imps then return false, "requires " .. settings.dcon_imps .. " wild imps" end
+                return true
+            end,
 
             handler = function ()
                 summonPet( "demonic_tyrant", 15 )

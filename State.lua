@@ -1185,9 +1185,10 @@ end
 state.spell_targets = setmetatable( {}, {
     __index = function( t, k )
         if state.active_enemies == 1 then return 1 end
+        if k == "any" then return state.active_enemies end
 
         local ability = class.abilities[ k ]
-        if not ability then return 1 end
+        if not ability then return state.active_enemies end
 
         local n = state.active_enemies
         if ability.max_ttd then n = min( n, Hekili:GetNumTTDsBefore( ability.max_ttd + state.offset + state.delay ) ) end
@@ -5353,7 +5354,7 @@ do
         insert( queue, e )
         sort( queue, byTime )
 
-        if Hekili.ActiveDebug then Hekili:Debug( "Queued %s AURA_EXPIRATION at +%.2f.", action, time - state.query_time ) end
+        if Hekili.ActiveDebug then Hekili:Debug( "Queued %s %s at +%.2f.", action, eType, time - state.query_time ) end
     end
 
     function state:RemoveAuraEvent( action, eType )
