@@ -1755,10 +1755,10 @@ do
 
                 if not self.Initialized then
                     -- Update Cooldown Wheels.
-                    self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
-                    self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )
-                    self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
-                    self:RegisterEvent( "SPELL_UPDATE_USABLE" )
+                    -- self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
+                    -- self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )
+                    -- self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
+                    -- self:RegisterEvent( "SPELL_UPDATE_USABLE" )
 
                     -- Show/Hide Overlay Glows.
                     self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" )
