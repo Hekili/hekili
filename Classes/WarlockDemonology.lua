@@ -43,6 +43,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         from_the_shadows = 22477, -- 267170
         soul_strike = 22042, -- 264057
         summon_vilefiend = 23160, -- 264119
+        vilefiend = 23160, -- 264119
 
         darkfury = 22047, -- 264874
         mortal_coil = 19291, -- 6789
@@ -1069,7 +1070,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         return count
     end )
 
-    spec:RegisterStateExpr( "last_cast_imps", function ()
+    spec:RegisterStateExpr( "two_cast_imps", function ()
         local count = 0
 
         for i, imp in ipairs( wild_imps_v ) do
@@ -1824,9 +1825,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             startsCombat = true,
             texture = 2065628,
 
-            usable = function ()
-                if settings.dcon_imps > 0 and buff.wild_imps.stack < settings.dcon_imps then return false, "requires " .. settings.dcon_imps .. " wild imps" end
-                return true
+            readyTime = function ()
+                if settings.dcon_imps > 0 and buff.wild_imps.stack < settings.dcon_imps then
+                    return time_to_imps[ settings.dcon_imps ]
+                end
             end,
 
             handler = function ()
