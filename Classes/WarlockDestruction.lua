@@ -185,20 +185,18 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             max_stack = 1,
 
             generate = function( ah )
-                if active_enemies > 1 then
-                    if pvptalent.bane_of_havoc.enabled and debuff.bane_of_havoc.up and query_time - last_havoc < ah.duration then
-                        ah.count = 1
-                        ah.applied = last_havoc
-                        ah.expires = last_havoc + ah.duration
-                        ah.caster = "player"
-                        return
-                    elseif not pvptalent.bane_of_havoc.enabled and active_dot.havoc > 0 and query_time - last_havoc < ah.duration then
-                        ah.count = 1
-                        ah.applied = last_havoc
-                        ah.expires = last_havoc + ah.duration
-                        ah.caster = "player"
-                        return
-                    end
+                if pvptalent.bane_of_havoc.enabled and debuff.bane_of_havoc.up and query_time - last_havoc < ah.duration then
+                    ah.count = 1
+                    ah.applied = last_havoc
+                    ah.expires = last_havoc + ah.duration
+                    ah.caster = "player"
+                    return
+                elseif not pvptalent.bane_of_havoc.enabled and active_dot.havoc > 0 and query_time - last_havoc < ah.duration then
+                    ah.count = 1
+                    ah.applied = last_havoc
+                    ah.expires = last_havoc + ah.duration
+                    ah.caster = "player"
+                    return
                 end
 
                 ah.count = 0
@@ -222,11 +220,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 boh.applied = action.bane_of_havoc.lastCast
                 boh.expires = boh.applied > 0 and ( boh.applied + boh.duration ) or 0
             end,
-        },
-        blood_pact = {
-            id = 6307,
-            duration = 3600,
-            max_stack = 1,
         },
         burning_rush = {
             id = 111400,
@@ -1357,6 +1350,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             handler = function ()
                 gain( 0.4, "soul_shards" )
+                applyDebuff( "target", "immolate" )
             end,
         },
 
