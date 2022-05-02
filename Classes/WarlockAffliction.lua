@@ -567,6 +567,13 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
         if buff.casting_circle.up then
             applyBuff( "casting_circle", action.casting_circle.lastCast + 8 - query_time )
         end
+
+        class.abilities.summon_pet = class.abilities.summon_felhunter
+
+        if not SUMMON_DEMON_TEXT then
+            SUMMON_DEMON_TEXT = GetSpellInfo( 180284 )
+            class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. ( SUMMON_DEMON_TEXT or "Summon Demon" ) .. "]|r"
+        end
     end )
 
 
@@ -617,14 +624,18 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
     -- Fel Succubus     120526
     -- Shadow Succubus  120527
     -- Shivarra         58963
-    spec:RegisterPet( "succubus",
+    spec:RegisterPet( "sayaad",
         function()
             if Glyphed( 240263 ) then return 120526
             elseif Glyphed( 240266 ) then return 120527
-            elseif Glyphed( 112868 ) then return 58963 end
+            elseif Glyphed( 112868 ) then return 58963
+            elseif Glyphed( 365349 ) then return 184600
+            end
             return 1863
         end,
-        3600 )
+        "summon_sayaad",
+        3600,
+        "incubus", "succubus" )
 
     -- Wrathguard       58965
     spec:RegisterPet( "felguard",
@@ -1497,7 +1508,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
 
         summon_imp = {
             id = 688,
-            cast = 2.5,
+            cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1511,7 +1522,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
 
         summon_voidwalker = {
             id = 697,
-            cast = 2.5,
+            cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1551,9 +1562,9 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
         },
 
 
-        summon_succubus = {
-            id = 712,
-            cast = 2.5,
+        summon_sayaad = {
+            id = 366222,
+            cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1561,7 +1572,9 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
             spendType = "soul_shards",
 
             usable = function () return not pet.alive end,
-            handler = function () summonPet( "succubus" ) end,
+            handler = function () summonPet( "sayaad" ) end,
+
+            copy = { "summon_incubus", "summon_succubus" }
         },
 
 
