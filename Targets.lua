@@ -165,11 +165,23 @@ local enemyExclusions = {
 }
 
 local f = CreateFrame("Frame")
-f:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-f:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-f:RegisterEvent("UNIT_FLAGS")
+f:RegisterEvent( "NAME_PLATE_UNIT_ADDED" )
+f:RegisterEvent( "NAME_PLATE_UNIT_REMOVED" )
+f:RegisterEvent( "UNIT_FLAGS" )
 
 f:SetScript( "OnEvent", function( self, event, unit )
+    -- print( "Nameplates", event )
+
+    if UnitIsFriend( "player", unit ) then
+        if event ~= "UNIT_FLAGS" then return end
+        local id = UnitGUID( unit )
+        ns.eliminateUnit( id, true )
+
+        npGUIDs[unit] = nil
+        npUnits[id]   = nil
+        return
+    end
+
     if event == "NAME_PLATE_UNIT_ADDED" then
         local id = UnitGUID( unit )
         npGUIDs[unit] = id
@@ -179,10 +191,6 @@ f:SetScript( "OnEvent", function( self, event, unit )
         local id = npGUIDs[ unit ]
         npGUIDs[unit] = nil
         npUnits[id]   = nil
-
-    elseif event == "UNIT_FLAGS" and not UnitIsUnit( "player", unit ) and UnitIsFriend( "player", unit ) then
-        local id = UnitGUID( unit )
-        ns.eliminateUnit( id, true )
 
     end
 end )
@@ -215,9 +223,11 @@ do
         chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
     end
 
-    ct:SetScript( "OnEvent", function( self, event )
-        chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
-        C_Timer.After( 2, UpdateChromieTime )
+    ct:SetScript( "OnEvent", function( self, event, login, reload )
+        if event ~= "PLAYER_ENTERING_WORLD" or login or reload then
+            chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
+            C_Timer.After( 2, UpdateChromieTime )
+        end
     end )
 
     Hekili:ProfileFrame( "ChromieFrame", ct )
@@ -233,8 +243,10 @@ do
     wm:RegisterEvent( "UI_INFO_MESSAGE" )
     wm:RegisterEvent( "PLAYER_ENTERING_WORLD" )
 
-    wm:SetScript( "OnEvent", function( self, event, val )
-        warmode = C_PvP.IsWarModeDesired()
+    wm:SetScript( "OnEvent", function( self, event, login, reload )
+        if event ~= "PLAYER_ENTERING_WORLD" or login or reload then
+            warmode = C_PvP.IsWarModeDesired()
+        end
     end )
 
     Hekili:ProfileFrame( "WarModeFrame", wm )

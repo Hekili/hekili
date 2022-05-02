@@ -232,6 +232,14 @@ local HekiliSpecMixin = {
         }, {
             __index = function( t, k )
                 if t.funcs[ k ] then return t.funcs[ k ]() end
+
+                local setup = rawget( t, "onLoad" )
+                if setup then
+                    t.onLoad = nil
+                    setup( t )
+
+                    return t[ k ]
+                end
             end
         } )
 
@@ -267,10 +275,11 @@ local HekiliSpecMixin = {
 
         if a.id then
             if a.id > 0 then
-                Hekili:ContinueOnSpellLoad( a.id, function( success )
+                -- Hekili:ContinueOnSpellLoad( a.id, function( success )
+                a.onLoad = function( a )
                     a.name = GetSpellInfo( a.id )
 
-                    if not success or not a.name then
+                    if not a.name then
                         for k, v in pairs( class.auraList ) do
                             if v == a then class.auraList[ k ] = nil end
                         end
@@ -320,7 +329,7 @@ local HekiliSpecMixin = {
                         self.pendingItemSpells[ a.name ] = nil
                         self.itemPended = nil
                     end
-                end )
+                end
             end
             self.auras[ a.id ] = a
         end
@@ -501,6 +510,13 @@ local HekiliSpecMixin = {
                 if t.funcs[ k ] then return t.funcs[ k ]() end
                 if k == "lastCast" then return state.history.casts[ t.key ] or t.realCast end
                 if k == "lastUnit" then return state.history.units[ t.key ] or t.realUnit end
+
+                local setup = rawget( t, "onLoad" )
+                if setup then
+                    t.onLoad = nil
+                    setup( t )
+                    return t[ k ]
+                end
             end,
         } )
 
@@ -716,18 +732,21 @@ local HekiliSpecMixin = {
         end
 
         if a.id and a.id > 0 then
-            Hekili:ContinueOnSpellLoad( a.id, function( success )
-                if not success then
+            -- Hekili:ContinueOnSpellLoad( a.id, function( success )
+            a.onLoad = function()
+                a.name = GetSpellInfo( a.id )
+
+                if not a.name then
                     for k, v in pairs( class.abilityList ) do
                         if v == a then class.abilityList[ k ] = nil end
                     end
                     Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
                     table.insert( Hekili.InvalidSpellIDs, a.id )
+                    Hekili:Error( "Name info not available for " .. a.id .. "." )
                     return
                 end
 
-                a.name = GetSpellInfo( a.id )
-                if not a.name then Hekili:Error( "Name info not available for " .. a.id .. "." ); return false end
+                -- if not a.name then Hekili:Error( "Name info not available for " .. a.id .. "." ); return false end
 
                 a.desc = GetSpellDescription( a.id ) -- was returning raw tooltip data.
 
@@ -746,18 +765,18 @@ local HekiliSpecMixin = {
                     class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
                 end
 
-                Hekili.OptionsReady = false
-            end )
-        end
-
-        if a.rangeSpell and type( a.rangeSpell ) == "number" then
-            Hekili:ContinueOnSpellLoad( a.rangeSpell, function( success )
-                if success then
-                    a.rangeSpell = GetSpellInfo( a.rangeSpell )
-                else
-                    a.rangeSpell = nil
+                if a.rangeSpell and type( a.rangeSpell ) == "number" then
+                    Hekili:ContinueOnSpellLoad( a.rangeSpell, function( success )
+                        if success then
+                            a.rangeSpell = GetSpellInfo( a.rangeSpell )
+                        else
+                            a.rangeSpell = nil
+                        end
+                    end )
                 end
-            end )
+
+                Hekili.OptionsReady = false
+            end
         end
 
         self.abilities[ ability ] = a
@@ -820,11 +839,15 @@ local HekiliSpecMixin = {
         end )
     end,
 
+    RegisterCombatLogEvent = function( self, func )
+        self:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", func )
+    end,
+
     RegisterCycle = function( self, func )
         self.cycle = setfenv( func, state )
     end,
 
-    RegisterPet = function( self, token, id, spell, duration )
+    RegisterPet = function( self, token, id, spell, duration, ... )
         CommitKey( token )
 
         self.pets[ token ] = {
@@ -833,6 +856,15 @@ local HekiliSpecMixin = {
             spell = spell,
             duration = type( duration ) == 'function' and setfenv( duration, state ) or duration
         }
+
+        local n = select( "#", ... )
+
+        if n and n > 0 then
+            for i = 1, n do
+                local copy = select( i, ... )
+                self.pets[ copy ] = self.pets[ token ]
+            end
+        end
     end,
 
     RegisterTotem = function( self, token, id )
@@ -5730,6 +5762,8 @@ end
 
 local seen = {}
 
+Hekili.SpecChangeHistory = {}
+
 function Hekili:SpecializationChanged()
     local currentSpec = GetSpecialization()
     local currentID = GetSpecializationInfo( currentSpec )
@@ -5738,6 +5772,12 @@ function Hekili:SpecializationChanged()
         C_Timer.After( 0.5, function () Hekili:SpecializationChanged() end )
         return
     end
+
+    insert( self.SpecChangeHistory, {
+        spec = currentID,
+        time = GetTime(),
+        bt = debugstack()
+    } )
 
     for k, _ in pairs( state.spec ) do
         state.spec[ k ] = nil
@@ -6038,17 +6078,15 @@ function Hekili:SpecializationChanged()
 end
 
 
-ns.specializationChanged = function()
-    Hekili:SpecializationChanged()
-end
-
 do
-    RegisterEvent( "PLAYER_ENTERING_WORLD", function( event )
-        local currentSpec = GetSpecialization()
-        local currentID = GetSpecializationInfo( currentSpec )
+    RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
+        if login or reload then
+            local currentSpec = GetSpecialization()
+            local currentID = GetSpecializationInfo( currentSpec )
 
-        if currentID ~= state.spec.id then
-            Hekili:SpecializationChanged()
+            if currentID ~= state.spec.id then
+                Hekili:SpecializationChanged()
+            end
         end
     end )
 end

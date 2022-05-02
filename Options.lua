@@ -8133,7 +8133,7 @@ do
 
                         name = {
                             type = "input",
-                            name = "Custom #1 Name",
+                            name = "Custom #2 Name",
                             desc = "Specify a descriptive name for this custom toggle.",
                             order = 3
                         }
@@ -11042,7 +11042,8 @@ do
 
                     if ability and ( ability == "use_item" or class.abilities[ ability ] ) then
                         if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast" end
-                        if ability == "any_dnd" or ability == "wound_spender" then
+                        -- Stub abilities that are replaced sometimes.
+                        if ability == "any_dnd" or ability == "wound_spender" or ability == "summon_pet" then
                             result.action = ability
                         else
                             result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability

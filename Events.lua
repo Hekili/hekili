@@ -222,34 +222,50 @@ do
 end
 
 
-RegisterEvent( "SPELL_DATA_LOAD_RESULT", function( event, spellID, success )
+do
+    local isUnregistered = false
+    local next = _G.next
+
+    local requeued = {}
+
+    local HandleSpellData = function( event, spellID, success )
     local callbacks = spellCallbacks[ spellID ]
 
     if callbacks then
         for i = #callbacks, 1, -1 do
-            if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
+                callbacks[i]( event, spellID, success )
+                remove( callbacks, i )
         end
 
         if #callbacks == 0 then
             spellCallbacks[ spellID ] = nil
         end
     end
-end )
 
+        if spellCallbacks == nil or next( spellCallbacks ) == nil then
+            UnregisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
+            -- print( "Unregistered HandleSpellData" )
+            isUnregistered = true
+        end
+    end
 
 function Hekili:ContinueOnSpellLoad( spellID, func )
-    --[[ if C_Spell.IsSpellDataCached( spellID ) then
+        if C_Spell.IsSpellDataCached( spellID ) then
         func( true )
         return
-    end ]]
+        end
 
     local callbacks = spellCallbacks[ spellID ] or {}
     insert( callbacks, func )
     spellCallbacks[ spellID ] = callbacks
 
+        if isUnregistered then
+            RegisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
+            isUnregistered = false
+        end
+
     C_Spell.RequestLoadSpellData( spellID )
 end
-
 
 function Hekili:RunSpellCallbacks()
     for spell, callbacks in pairs( spellCallbacks ) do
@@ -261,6 +277,7 @@ function Hekili:RunSpellCallbacks()
             spellCallbacks[ spell ] = nil
         end
     end
+end
 end
 
 
@@ -304,8 +321,8 @@ do
 end
 
 
-local OnFirstEntrance
-OnFirstEntrance = function ()
+RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
+    if login or reload then
     Hekili.PLAYER_ENTERING_WORLD = true
     Hekili:SpecializationChanged()
     Hekili:RestoreDefaults()
@@ -319,9 +336,8 @@ OnFirstEntrance = function ()
     end
 
     Hekili:BuildUI()
-    UnregisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
 end
-RegisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
+end )
 
 
 -- ACTIVE_TALENT_GROUP_CHANGED fires 2x on talent swap.  Uggh, why?
@@ -409,16 +425,18 @@ end
 
 
 -- TBD:  Consider making `boss' a check to see whether the current unit is a boss# unit instead.
-RegisterEvent( "ENCOUNTER_START", function ( _, id, name, difficulty )
+RegisterEvent( "ENCOUNTER_START", function ( _, id, name, difficulty, groupSize )
     state.encounterID = id
     state.encounterName = name
     state.encounterDifficulty = difficulty
+    state.encounterSize = groupSize
 end )
 
 RegisterEvent( "ENCOUNTER_END", function ()
     state.encounterID = 0
     state.encounterName = "None"
     state.encounterDifficulty = 0
+    state.encounterSize = 0
 end )
 
 
@@ -1009,8 +1027,10 @@ end
 
 local SpellQueueWindow = 0.4
 
-local function UpdateSpellQueueWindow()
-    SpellQueueWindow = ( tonumber( GetCVar( "SpellQueueWindow" ) ) or 400 ) / 1000
+local function UpdateSpellQueueWindow( event, variable, value )
+    if variable == "SpellQueueWindow" then
+        SpellQueueWindow = ( tonumber( value ) or 400 ) / 1000
+    end
 end
 
 RegisterEvent( "CVAR_UPDATE", UpdateSpellQueueWindow )
@@ -1338,7 +1358,7 @@ do
     end )
 
     RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
-        ScrapeUnitAuras( "target", true )
+        state.target.updated = true
 
         ns.getNumberTargets( true )
         Hekili:ForceUpdate( event, true )
@@ -1460,7 +1480,7 @@ end
 -- Use dots/debuffs to count active targets.
 -- Track dot power (until 6.0) for snapshotting.
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
-local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
+local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
     if death_events[ subtype ] then
         if ns.isTarget( destGUID ) then
@@ -1477,6 +1497,9 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
             ns.updateMinion( destGUID )
         end
+
+        -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
+        ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         return
     end
 
@@ -1497,6 +1520,9 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
         ns.updateMinion( destGUID, time )
+
+            -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
+        ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         return
     end
 
@@ -1544,7 +1570,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
         end
 
-
         if damage and damage > 0 then
             ns.storeDamage( time, damage, bit.band( damageType, 0x1 ) == 1 )
         end
@@ -1553,6 +1578,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     local minion = ns.isMinion( sourceGUID )
 
     if not ( amSource or petSource ) and not ( state.role.tank and destGUID == state.GUID ) and ( not minion or not countPets ) then
+        -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
+        ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         return
     end
 
@@ -1698,8 +1725,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
     -- Player/Minion Event
     elseif ( amSource or petSource ) or ( countPets and minion ) or ( sourceGUID == destGUID and sourceGUID == UnitGUID( 'target' ) ) then
-
-        if aura_events[ subtype ] then
+        --[[ if aura_events[ subtype ] then
             if subtype == "SPELL_CAST_SUCCESS" or state.GUID == destGUID then
                 if class.abilities[ spellID ] or class.auras[ spellID ] then
                     Hekili:ForceUpdate( subtype, true )
@@ -1709,7 +1735,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             if UnitGUID( 'target' ) == destGUID then
                 if class.auras[ spellID ] then Hekili:ForceUpdate( subtype ) end
             end
-        end
+        end ]]
 
         local aura = class.auras and class.auras[ spellID ]
 
@@ -1765,9 +1791,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
     end
 
-    -- This is dumb.  Just let modules used the event handler.
-    ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", event, nil, subtype, nil, sourceGUID, sourceName, nil, nil, destGUID, destName, destFlags, nil, spellID, spellName, nil, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
-
+    -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
+    ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 end
 Hekili:ProfileCPU( "CLEU_HANDLER", CLEU_HANDLER )
 RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ( event ) CLEU_HANDLER( event, CombatLogGetCurrentEventInfo() ) end )
@@ -2248,23 +2273,23 @@ end
 
 
 RegisterEvent( "UPDATE_BINDINGS", DelayedUpdateKeybindings )
-RegisterEvent( "PLAYER_ENTERING_WORLD", DelayedUpdateKeybindings )
+RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
+    if login or reload then DelayedUpdateKeybindings() end
+end )
 RegisterEvent( "ACTIONBAR_SHOWGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_HIDEGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
 -- RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
 -- RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
 -- RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_SLOT_CHANGED", DelayedUpdateOneKeybinding )
+-- RegisterEvent( "ACTIONBAR_SLOT_CHANGED", DelayedUpdateOneKeybinding )
 
-RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function( event, unit )
-    if UnitIsUnit( "player", unit ) then
-        ReadKeybindings( event )
-    end
+RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function( event )
+    DelayedUpdateKeybindings( event )
 end )
 
 RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
-    ReadKeybindings()
+    DelayedUpdateKeybindings()
     Hekili:ForceUpdate( event )
 end )
 

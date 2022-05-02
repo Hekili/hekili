@@ -675,7 +675,7 @@ do
         VEHICLE_ANGLE_SHOW = 1,
         VEHICLE_UPDATE = 1,
         UPDATE_VEHICLE_ACTIONBAR = 1,
-        UNIT_FLAGS = 1,
+        -- UNIT_FLAGS = 1,
 
         PLAYER_TARGET_CHANGED = 1,
 
@@ -1652,7 +1652,7 @@ do
 
                         local a = b.Ability
 
-                        if not b.glowing and a and not a.item and IsSpellOverlayed( a.id ) then
+                        if not b.glowing and a and a.id == ... then
                             b.glowColor = b.glowColor or {}
 
                             if conf.glow.coloring == "class" then
@@ -1691,7 +1691,7 @@ do
 
                         local a = b.Ability
 
-                        if b.glowing and ( not a or a.item or not IsSpellOverlayed( a.id ) ) then
+                        if b.glowing and ( not a or a.id == ... ) then
                             b:glowStop()
                             b.glowing = false
                         end
