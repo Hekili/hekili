@@ -23,7 +23,7 @@ if UnitClassBase( "player" ) == "MONK" then
     spec:RegisterResource( Enum.PowerType.Mana )
     spec:RegisterResource( Enum.PowerType.Energy )
     spec:RegisterResource( Enum.PowerType.Chi )
-    
+
     -- Talents
     spec:RegisterTalents( {
         mist_wrap = 19823, -- 197900
@@ -56,7 +56,7 @@ if UnitClassBase( "player" ) == "MONK" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         adaptation = 3575, -- 214027
         relentless = 3576, -- 196029
         gladiators_medallion = 3577, -- 208683
@@ -228,13 +228,13 @@ if UnitClassBase( "player" ) == "MONK" then
     -- 2.  How many HOTs can be extended?
     -- 3.  How many HOTs refreshable HOTs can be gained from casting Essence Font?
 
-    --[[ 
+    --[[
 
     do
-        
+
         local hotPool = {}
 
-        local function NewHOT( guid, expires, refreshes )            
+        local function NewHOT( guid, expires, refreshes )
             local t = table.remove( hotPool, 1 ) or {}
 
             t.guid = guid
@@ -313,7 +313,7 @@ if UnitClassBase( "player" ) == "MONK" then
         } )
 
         spec:RegisterStateTable( "mistweaver", mistweaver )
-    
+
     end
 
 
@@ -323,11 +323,11 @@ if UnitClassBase( "player" ) == "MONK" then
     local ESSENCE_FONT    = 191840
     local RENEWING_MIST   = 119611
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == GUID then
             if subtype == "SPELL_CAST_SUCCESS" and spellID == 107428 and talent.rising_mists.enabled then
                 mistweaver.extend_hots()
-                
+
             elseif subtype == "SPELL_AURA_APPLIED" then
                 if spellID == 119611 then
                     NewHOT( "__renewing_mist", destGUID, GetTime() + 20 )
@@ -341,7 +341,7 @@ if UnitClassBase( "player" ) == "MONK" then
     end )
 
     -- What else would be useful?
-    -- 1.  
+    -- 1.
 
     -- Special healer stuff and options.
     spec:RegisterStateTable( "mistweaver", setmetatable( {}, {
@@ -364,34 +364,34 @@ if UnitClassBase( "player" ) == "MONK" then
             cast = 0,
             cooldown = 3,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "chi",
-            
+
             startsCombat = true,
             texture = 574575,
-            
+
             handler = function ()
                 removeBuff( "teachings_of_the_monastery" )
             end,
         },
-        
+
 
         chi_burst = {
             id = 123986,
             cast = 1,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135734,
 
             talent = "chi_burst",
-            
-            handler = function ()                
+
+            handler = function ()
             end,
         },
-        
+
 
         chi_torpedo = {
             id = 115008,
@@ -400,35 +400,35 @@ if UnitClassBase( "player" ) == "MONK" then
             cooldown = 20,
             recharge = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 607849,
 
             talent = "chi_torpedo",
-            
+
             handler = function ()
                 -- applies chi_torpedo (119085)
                 applyBuff( "chi_torpedo" )
             end,
         },
-        
+
 
         chi_wave = {
             id = 115098,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 606541,
 
             talent = "chi_wave",
-            
+
             handler = function ()
                 applyDebuff( "target", "chi_wave" )
             end,
         },
-        
+
 
         crackling_jade_lightning = {
             id = 117952,
@@ -437,39 +437,39 @@ if UnitClassBase( "player" ) == "MONK" then
             gcd = "spell",
 
             channeled = true,
-            
+
             spend = 0,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 606542,
-            
+
             handler = function ()
                 -- applies crackling_jade_lightning (117952)
                 applyDebuff( "target", "crackling_jade_lightning" )
             end,
         },
-        
+
 
         dampen_harm = {
             id = 122278,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 620827,
 
             talent = "dampen_harm",
-            
+
             handler = function ()
                 -- applies dampen_harm (122278)
                 applyBuff( "dampen_harm" )
             end,
         },
-        
+
 
         detox = {
             id = 115450,
@@ -478,10 +478,10 @@ if UnitClassBase( "player" ) == "MONK" then
             cooldown = 8,
             recharge = 8,
             gcd = "spell",
-            
+
             spend = 0.013,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 460692,
 
@@ -489,38 +489,38 @@ if UnitClassBase( "player" ) == "MONK" then
                 -- NYI.
             end,
         },
-        
+
 
         diffuse_magic = {
             id = 122783,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 775460,
 
             talent = "diffuse_magic",
-            
+
             handler = function ()
                 applyBuff( "diffuse_magic" )
                 removeBuff( "dispellable_magic" )
             end,
         },
-        
+
 
         enveloping_mist = {
             id = 124682,
             cast = 2,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.05,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 775461,
-            
+
             handler = function ()
                 applyBuff( "enveloping_mist" )
 
@@ -535,41 +535,41 @@ if UnitClassBase( "player" ) == "MONK" then
                 end
             end,
         },
-        
+
 
         essence_font = {
             id = 191837,
             cast = 3,
             cooldown = 12,
             gcd = "spell",
-            
+
             spend = 0.07,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 1360978,
-            
+
             handler = function ()
                 applyBuff( "essence_font" )
             end,
         },
-        
+
 
         fortifying_brew = {
             id = 243435,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1616072,
-            
+
             handler = function ()
                 applyBuff( "fortifying_brew" )
                 if conduit.fortifying_ingredients.enabled then applyBuff( "fortifying_ingredients" ) end
             end,
         },
-        
+
 
         healing_elixir = {
             id = 122281,
@@ -578,44 +578,44 @@ if UnitClassBase( "player" ) == "MONK" then
             cooldown = 30,
             recharge = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 608939,
 
             talent = "healing_elixir",
-            
+
             handler = function ()
                 gain( 0.15 * health.max, "health" )
             end,
         },
-        
+
 
         invoke_chiji_the_red_crane = {
             id = 198664,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 877514,
 
             talent = "invoke_chiji_the_red_crane",
-            
+
             handler = function ()
                 summonPet( "chiji" )
             end,
         },
-        
+
 
         leg_sweep = {
             id = 119381,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 642414,
-            
+
             handler = function ()
                 -- applies leg_sweep (119381)
                 applyDebuff( "target", "leg_sweep" )
@@ -623,117 +623,117 @@ if UnitClassBase( "player" ) == "MONK" then
                 if conduit.dizzying_tumble.enabled then applyDebuff( "target", "dizzying_tumble" ) end
             end,
         },
-        
+
 
         life_cocoon = {
             id = 116849,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 627485,
-            
+
             handler = function ()
                 -- 116849
                 applyBuff( "life_cocoon" )
             end,
         },
-        
+
 
         mana_tea = {
             id = 197908,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 608949,
-            
+
             handler = function ()
                 -- 197908
                 applyBuff( "mana_tea" )
             end,
         },
-        
+
 
         paralysis = {
             id = 115078,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 629534,
-            
+
             handler = function ()
                 -- applies paralysis (115078)
                 applyDebuff( "paralysis" )
             end,
         },
-        
+
 
         provoke = {
             id = 115546,
             cast = 0,
             cooldown = 8,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 620830,
-            
+
             handler = function ()
                 -- applies provoke (116189)
-                applyDebuff( "target", "provoke" )  
+                applyDebuff( "target", "provoke" )
             end,
         },
-        
+
 
         reawaken = {
             id = 212051,
             cast = 10,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 1056569,
-            
+
             handler = function ()
                 -- Mass Resurrection.
             end,
         },
-        
+
 
         refreshing_jade_wind = {
             id = 196725,
             cast = 0,
             cooldown = 9,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 606549,
 
             talent = "refreshing_jade_wind",
-            
+
             handler = function ()
                 applyBuff( "refreshing_jade_wind" )
             end,
         },
-        
+
 
         renewing_mist = {
             id = 115151,
@@ -742,13 +742,13 @@ if UnitClassBase( "player" ) == "MONK" then
             cooldown = 9,
             recharge = 9,
             gcd = "spell",
-            
+
             spend = 0.018,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 627487,
-            
+
             handler = function ()
                 -- 119611
                 applyBuff( "renewing_mist", buff.thunder_focus_tea.up and 30 or 20 )
@@ -759,77 +759,77 @@ if UnitClassBase( "player" ) == "MONK" then
                 end
             end,
         },
-        
+
 
         resuscitate = {
             id = 115178,
             cast = 10,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 132132,
-            
+
             handler = function ()
                 -- Resurrection.
             end,
         },
-        
+
 
         revival = {
             id = 115310,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1020466,
-            
+
             handler = function ()
                 removeDebuff( "player", "dispellable_magic" )
                 removeDebuff( "player", "dispellable_poison" )
                 removeDebuff( "player", "dispellable_disease" )
             end,
         },
-        
+
 
         ring_of_peace = {
             id = 116844,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 839107,
 
             talent = "ring_of_peace",
-            
+
             handler = function ()
                 interrupt()
             end,
         },
-        
+
 
         rising_sun_kick = {
             id = 107428,
             cast = 0,
             cooldown = function () return buff.thunder_focus_tea.up and 3 or 12 end,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "chi",
-            
+
             startsCombat = true,
             texture = 642415,
-            
+
             handler = function ()
                 if talent.rising_mist.enabled then
                     if buff.renewing_mist.up and ( buff.renewing_mist.expires - buff.renewing_mist.applied < 2 * buff.renewing_mist.duration ) then buff.renewing_mist.expires = buff.renewing_mist.expires + 4 end
@@ -843,7 +843,7 @@ if UnitClassBase( "player" ) == "MONK" then
                 end
             end,
         },
-        
+
 
         roll = {
             id = 109132,
@@ -852,31 +852,31 @@ if UnitClassBase( "player" ) == "MONK" then
             cooldown = 20,
             recharge = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 574574,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         song_of_chiji = {
             id = 198898,
             cast = 1.8,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 332402,
 
             talent = "song_of_chiji",
-            
+
             handler = function ()
                 applyDebuff( "target", "song_of_chiji" )
             end,
         },
-        
+
 
         soothing_mist = {
             id = 115175,
@@ -885,19 +885,19 @@ if UnitClassBase( "player" ) == "MONK" then
             gcd = "spell",
 
             channeled = true,
-            
+
             spend = 0,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 606550,
-            
+
             handler = function ()
                 applyBuff( "soothing_mist" )
                 -- Think about casting while channeling...
             end,
         },
-        
+
 
         spinning_crane_kick = {
             id = 101546,
@@ -906,34 +906,34 @@ if UnitClassBase( "player" ) == "MONK" then
             gcd = "spell",
 
             channeled = true,
-            
+
             spend = 0,
             spendType = "chi",
-            
+
             startsCombat = true,
             texture = 606543,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         summon_jade_serpent_statue = {
             id = 115313,
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 620831,
 
             talent = "summon_jade_serpent_statue",
-            
+
             handler = function ()
                 summonPet( "jade_serpent_statue" )
             end,
         },
-        
+
 
         thunder_focus_tea = {
             id = 116680,
@@ -942,95 +942,95 @@ if UnitClassBase( "player" ) == "MONK" then
             cooldown = 30,
             recharge = 30,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 611418,
-            
+
             handler = function ()
                 applyBuff( "thunder_focus_tea" )
             end,
         },
-        
+
 
         tiger_palm = {
             id = 100780,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 606551,
-            
+
             handler = function ()
                 -- applies teachings_of_the_monastery (202090)
                 addStack( "teachings_of_the_monastery", nil, 1 )
             end,
         },
-        
+
 
         tigers_lust = {
             id = 116841,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 651727,
 
             talent = "tigers_lust",
-            
+
             handler = function ()
                 -- applies tigers_lust (116841)
                 applyBuff( "tigers_lust" )
             end,
         },
-        
+
 
         transcendence = {
             id = 101643,
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 627608,
-            
+
             handler = function ()
                 -- applies transcendence (101643)
                 applyBuff( "transcendance" )
             end,
         },
-        
+
 
         transcendence_transfer = {
             id = 119996,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237585,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         vivify = {
             id = 116670,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.thunder_focus_tea.up and 0 or 0.038 end,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 1360980,
-            
+
             handler = function ()
                 -- removes lifecycles_vivify (197916)
                 -- applies lifecycles_enveloping_mist (197919)
@@ -1045,7 +1045,7 @@ if UnitClassBase( "player" ) == "MONK" then
                 end
             end,
         },
-        
+
 
         --[[
             wartime_ability = {
@@ -1053,26 +1053,26 @@ if UnitClassBase( "player" ) == "MONK" then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1518639,
-            
+
             handler = function ()
             end,
         },  ]]
-        
+
 
         zen_pilgrimage = {
             id = 126892,
             cast = 10,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 775462,
-            
+
             handler = function ()
             end,
         },
