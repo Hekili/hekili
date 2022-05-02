@@ -1354,6 +1354,24 @@ do
         return newFunc
     end
 
+    local function GetDeepestSetter( db, info )
+        local position = db.Multi.Multi
+        local setter
+
+        for i = 3, #info - 1 do
+            local key = info[ i ]
+            position = position.args[ key ]
+
+            local setfunc = rawget( position, "set" )
+
+            if setfunc and type( setfunc ) == "function" then
+                setter = setfunc
+            end
+        end
+
+        return setter
+    end
+
     MakeMultiDisplayOption = function( db, t, inf )
         local info = {}
 
@@ -1384,10 +1402,18 @@ do
             elseif v.type == "group" then
                 info[ #info + 1 ] = k
                 MakeMultiDisplayOption( db, v.args, info )
+                info[ #info ] = nil
             elseif inf and v.type ~= "description" then
                 info[ #info + 1 ] = k
                 v.desc = WrapDesc( db, info )
-                if rawget( v, "set" ) then v.set = WrapSetter( db, info ) end
+
+                if rawget( v, "set" ) then
+                    v.set = WrapSetter( db, info )
+                else
+                    local setfunc = GetDeepestSetter( db, info )
+                    if setfunc then v.set = WrapSetter( db, info ) end
+                end
+
                 info[ #info ] = nil
             end
         end
