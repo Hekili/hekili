@@ -107,9 +107,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             if state.talent.rune_strike.enabled then state.gainChargeTime( "rune_strike", amount ) end
 
-            if state.azerite.eternal_rune_weapon.enabled and state.buff.dancing_rune_weapon.up then
+            if state.buff.dancing_rune_weapon.up and state.azerite.eternal_rune_weapon.enabled then
                 if state.buff.dancing_rune_weapon.expires - state.buff.dancing_rune_weapon.applied < state.buff.dancing_rune_weapon.duration + 5 then
-                    state.buff.dancing_rune_weapon.expires = min( state.buff.dancing_rune_weapon.applied + state.buff.dancing_rune_weapon.duration + 5, state.buff.dancing_rune_weapon.expires + ( 0.5 * amount ) )
                     state.buff.eternal_rune_weapon.expires = min( state.buff.dancing_rune_weapon.applied + state.buff.dancing_rune_weapon.duration + 5, state.buff.dancing_rune_weapon.expires + ( 0.5 * amount ) )
                 end
             end
@@ -1165,7 +1164,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 end
 
                 if buff.dancing_rune_weapon.up and set_bonus.tier28_2pc > 0 then
-                    buff.dancing_rune_weapon.expires = buff.dancing_rune_weapon.expires + ( set_bonus.tier28_4pc > 0 and 1 or 0.5 )
+                    buff.dancing_rune_weapon.expires = buff.dancing_rune_weapon.expires + ( set_bonus.tier28_4pc > 0 and 0.66 or 0.33 )
                     addStack( "endless_rune_waltz", nil, 1 )
                     buff.endless_rune_waltz.expires = buff.dancing_rune_weapon.expires + 10
                 end
