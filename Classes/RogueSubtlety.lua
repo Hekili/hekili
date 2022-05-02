@@ -413,8 +413,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
     local last_shadow_techniques = 0
     local swings_since_sht = 0
 
-    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
-        local event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike = CombatLogGetCurrentEventInfo()
+    spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike )
 
         if sourceGUID == state.GUID then
             if subtype == "SPELL_ENERGIZE" and spellID == 196911 then

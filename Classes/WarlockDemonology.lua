@@ -159,9 +159,9 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end )
 
 
-    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
-        local _, subtype, _, source, _, _, _, destGUID, _, _, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+    local C_Timer = C_Timer
 
+    spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID, _, _, _, spellID, spellName )
         if source == state.GUID then
             local now = GetTime()
 

@@ -689,7 +689,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 end
             end )
 
-            x:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+            x:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
                 if sourceGUID == GUID then
                     if subtype == "SPELL_CAST_SUCCESS" then
                         local ability = class.abilities[ spellID ]
@@ -965,7 +965,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     local clearcasting_consumed = 0
 
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == GUID then
             if subtype == "SPELL_CAST_SUCCESS" then
                 if spellID == 12042 then
@@ -1008,7 +1008,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     local ExpireArcaneLucidity = setfenv( function()
         mana.regen = mana.regen / 1.25
-    end, state )    
+    end, state )
 
     spec:RegisterHook( "reset_precast", function ()
         if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )

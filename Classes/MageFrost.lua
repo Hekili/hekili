@@ -487,7 +487,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     local lastCometCast = 0
     local lastAutoComet = 0
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == GUID then
             if subtype == "SPELL_CAST_SUCCESS" then
                 if spellID == 116 then

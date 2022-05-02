@@ -652,7 +652,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
     local After = C_Timer.After
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID )
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID )
         if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" and spellID == 77575 then
             After( state.latency, ForceVirulentPlagueRefresh )
             After( state.latency * 2, ForceVirulentPlagueRefresh )

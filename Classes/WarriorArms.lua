@@ -352,9 +352,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     local last_cs_target = nil
 
-    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
-        local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
-
+    spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
             if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
                 last_cs_target = destGUID

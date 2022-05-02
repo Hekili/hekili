@@ -383,8 +383,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local fresh_meat_virtual = {}
 
 
-    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
-        local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+    spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
 
         if sourceGUID == state.GUID then
             if subtype == "SPELL_CAST_SUCCESS" then

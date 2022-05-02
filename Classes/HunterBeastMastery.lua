@@ -235,7 +235,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         dire_beast_basilisk = 825, -- 205691
         dire_beast_hawk = 824, -- 208652
         dragonscale_armor = 3600, -- 202589
@@ -714,11 +714,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
         trapUnits[ #trapUnits + 1 ] = "nameplate" .. i
     end
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if subtype == "SPELL_CAST_SUCCESS" and sourceGUID == GUID and spellID == 187698 and legendary.soulforge_embers.enabled then
             -- Capture all boss/elite targets present at this time as valid trapped targets.
             table.wipe( tar_trap_targets )
-            
+
             for _, unit in ipairs( trapUnits ) do
                 if UnitExists( unit ) and UnitCanAttack( "player", unit ) and not trappableClassifications[ UnitClassification( unit ) ] then
                     tar_trap_targets[ UnitGUID( unit ) ] = true
@@ -1570,7 +1570,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                     return -45, "focus"
                 end
             end,
-            
+
             startsCombat = false,
             texture = 576309,
 
@@ -1940,7 +1940,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                     generate = function( t )
                         local cast = action.wild_spirits.lastCast or 0
                         local up = cast + t.duration > state.query_time
-        
+
                         t.name = t.name or class.abilities.wild_spirits.name
                         t.count = up and 1 or 0
                         t.expires = up and cast + t.duration or 0
@@ -1993,14 +1993,14 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 1.9,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 15,
             spendType = "focus",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
-            
+
             handler = function ()
                 interrupt()
                 applyDebuff( "target", "wailing_arrow" )

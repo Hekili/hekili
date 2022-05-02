@@ -430,8 +430,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     local vendetta_info = {}
 
 
-    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
-        local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+    spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
 
         if sourceGUID == state.GUID then
             if removal_events[ subtype ] then

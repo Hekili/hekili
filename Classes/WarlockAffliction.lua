@@ -467,7 +467,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
     end )
 
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         if sourceGUID == GUID and spellName == class.abilities.seed_of_corruption.name then
             if subtype == "SPELL_CAST_SUCCESS" then
                 action.seed_of_corruption.flying = GetTime()

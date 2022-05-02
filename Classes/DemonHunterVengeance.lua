@@ -69,9 +69,9 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         bulk_extraction = 21902, -- 320341
     } )
 
-    
+
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         blood_moon = 5434, -- 355995
         chaotic_imprint = 5439, -- 356510
         cleansed_by_flame = 814, -- 205625
@@ -260,7 +260,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         return action.infernal_strike.lastCast
     end )
 
-    
+
     local activation_time = function ()
         return talent.quickened_sigils.enabled and 1 or 2
     end
@@ -286,13 +286,13 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
     spec:RegisterStateFunction( "purge_fragments", function()
         fragments.real = 0
-        fragments.realTime = 0            
+        fragments.realTime = 0
     end )
 
 
     local queued_frag_modifier = 0
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == GUID then
             if subtype == "SPELL_CAST_SUCCESS" then
                 -- Fracture:  Generate 2 frags.
@@ -300,7 +300,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                     queue_fragments( 2 ) end
 
                 -- Shear:  Generate 1 frag.
-                if spellID == 203782 then 
+                if spellID == 203782 then
                     queue_fragments( 1 ) end
 
                 --[[ Spirit Bomb:  Up to 5 frags.
@@ -310,7 +310,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                 end
 
                 -- Soul Cleave:  Up to 2 frags.
-                if spellID == 228477 then 
+                if spellID == 228477 then
                     local name, _, count = FindUnitBuffByID( "player", 203981 )
                     if name then queue_fragments( -1 * min( 2, count ) ) end
                 end ]]
@@ -323,17 +323,17 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         end
     end )
 
-    
+
     local sigil_types = { "chains", "flame", "misery", "silence" }
 
     spec:RegisterHook( "reset_precast", function ()
         last_metamorphosis = nil
         last_infernal_strike = nil
-        
+
         for i, sigil in ipairs( sigil_types ) do
             local activation = ( action[ "sigil_of_" .. sigil ].lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
             if activation > now then sigils[ sigil ] = activation
-            else sigils[ sigil ] = 0 end            
+            else sigils[ sigil ] = 0 end
         end
 
         if IsSpellKnownOrOverridesKnown( class.abilities.elysian_decree.id ) then
@@ -349,7 +349,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             local activation = ( action.infernal_strike.lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
             if activation > now and activation > sigils[ sigil ] then sigils.flame = activation end
         end
- 
+
         if fragments.realTime > 0 and fragments.realTime < now then
             fragments.real = 0
             fragments.realTime = 0
@@ -382,7 +382,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
 
     -- Gear Sets
-    
+
     -- Tier 28:
     spec:RegisterSetBonuses( "tier28_2pc", 364454, "tier28_4pc", 363737 )
     -- 2-Set - Burning Hunger - Damage dealt by Immolation Aura has a 10% chance to generate a Lesser Soul Fragment.
@@ -404,19 +404,19 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = true,
             texture = 136194,
 
             talent = "bulk_extraction",
-            
-            handler = function ()                
+
+            handler = function ()
             end,
         },
-        
-        
+
+
         consume_magic = {
             id = 278326,
             cast = 0,
@@ -515,7 +515,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             channeled = true,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 50,
             spendType = "fury",
 
@@ -528,7 +528,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                 -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
                 if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
                     debuff.sinful.brand.expires = debuff.sinful_brand.expires + 0.75
-                end                
+                end
             end,
 
             finish = function ()
@@ -595,7 +595,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             gcd = "spell",
 
             spend = function () return level > 47 and buff.metamorphosis.up and -45 or -25 end,
-            spendType = "fury",            
+            spendType = "fury",
 
             startsCombat = true,
             texture = 1388065,
@@ -825,7 +825,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             sigil_placed = sigil_placed,
 
             handler = function ()
-                create_sigil( "flame" )                
+                create_sigil( "flame" )
             end,
 
             copy = { 204596, 204513 }

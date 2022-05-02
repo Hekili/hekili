@@ -478,16 +478,25 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
     local lastTarget
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" and destGUID ~= nil and destGUID ~= "" then
             lastTarget = destGUID
         end
     end )
 
 
+    local SUMMON_DEMON_TEXT
+
     spec:RegisterHook( "reset_precast", function ()
         last_havoc = nil
         soul_shards.actual = nil
+
+        class.abilities.summon_pet = class.abilities[ settings.default_pet ]
+
+        if not SUMMON_DEMON_TEXT then
+            SUMMON_DEMON_TEXT = GetSpellInfo( 180284 )
+            class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. ( SUMMON_DEMON_TEXT or "Summon Demon" ) .. "]|r"
+        end
 
         for i = 1, 5 do
             local up, _, start, duration, id = GetTotemInfo( i )
@@ -541,14 +550,18 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     -- Fel Succubus     120526
     -- Shadow Succubus  120527
     -- Shivarra         58963
-    spec:RegisterPet( "succubus",
+    spec:RegisterPet( "sayaad",
         function()
             if Glyphed( 240263 ) then return 120526
             elseif Glyphed( 240266 ) then return 120527
-            elseif Glyphed( 112868 ) then return 58963 end
+            elseif Glyphed( 112868 ) then return 58963
+            elseif Glyphed( 365349 ) then return 184600
+            end
             return 1863
         end,
-        3600 )
+        "summon_sayaad",
+        3600,
+        "incubus", "succubus" )
 
     -- Wrathguard       58965
     spec:RegisterPet( "felguard",
@@ -1410,6 +1423,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
 
 
+        summon_pet = {
+            name = "|T136082:0|t |cff00ccff[Summon Demon]|r",
+            bind = function () return settings.default_pet end
+        },
+
+
         summon_felhunter = {
             id = 691,
             cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
@@ -1431,7 +1450,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 removeBuff( "fel_domination" )
             end,
 
-            copy = { 112869 }
+            copy = 112869,
+
+            bind = function ()
+                if settings.default_pet == "summon_felhunter" then return "summon_pet" end
+            end,
         },
 
 
@@ -1445,7 +1468,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
 
             essential = true,
-            bind = "summon_pet",
             nomounted = true,
 
             usable = function ()
@@ -1458,7 +1480,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 removeBuff( "fel_domination" )
             end,
 
-            copy = "summon_pet"
+            bind = function ()
+                if settings.default_pet == "summon_imp" then return "summon_pet" end
+            end,
         },
 
 
@@ -1483,6 +1507,27 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
 
 
+        summon_sayaad = {
+            id = 366222,
+            cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = function () return buff.fel_domination.up and 0 or 1 end,
+            spendType = "soul_shards",
+
+            usable = function () return not pet.alive end,
+            handler = function () summonPet( "sayaad" ) end,
+
+            copy = { 365349, "summon_incubus", "summon_succubus" },
+
+            bind = function()
+                if settings.default_pet == "summon_sayaad" then return { 365349, "summon_incubus", "summon_succubus", "summon_pet" } end
+                return { 365349, "summon_incubus", "summon_succubus" }
+            end,
+        },
+
+
         summon_voidwalker = {
             id = 697,
             cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
@@ -1503,6 +1548,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 summonPet( "voidwalker" )
                 removeBuff( "fel_domination" )
+            end,
+
+            bind = function ()
+                if settings.default_pet == "summon_voidwalker" then return "summon_pet" end
             end,
         },
 
@@ -1561,6 +1610,22 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         potion = "spectral_intellect",
 
         package = "Destruction",
+    } )
+
+
+    spec:RegisterSetting( "default_pet", "summon_sayaad", {
+        name = "Preferred Demon",
+        desc = "Specify which demon should be summoned if you have no active pet.",
+        type = "select",
+        values = function()
+            return {
+                summon_sayaad = class.abilityList.summon_sayaad,
+                summon_imp = class.abilityList.summon_imp,
+                summon_felhunter = class.abilityList.summon_felhunter,
+                summon_voidwalker = class.abilityList.summon_voidwalker,
+
+            }
+        end
     } )
 
 

@@ -77,7 +77,7 @@ if UnitClassBase( "player" ) == "MONK" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         admonishment = 843, -- 207025
         avert_harm = 669, -- 202162
         double_barrel = 672, -- 202335
@@ -382,7 +382,7 @@ if UnitClassBase( "player" ) == "MONK" then
                 t[ k ] = GetSpellCount( action.expel_harm.id )
                 return t[ k ]
             end
-        end 
+        end
     } ) )
 
 
@@ -418,7 +418,7 @@ if UnitClassBase( "player" ) == "MONK" then
                     total_staggered = total_staggered + arg11
 
                     table.insert( staggered_damage, 1, dmg )
-                    
+
                 end
             elseif subtype == "SPELL_PERIODIC_DAMAGE" and sourceGUID == state.GUID and arg1 == 124255 then
                 table.insert( stagger_ticks, 1, arg4 )
@@ -429,8 +429,8 @@ if UnitClassBase( "player" ) == "MONK" then
     end
 
     -- Use register event so we can access local data.
-    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ()
-        trackBrewmasterDamage( "COMBAT_LOG_EVENT_UNFILTERED", CombatLogGetCurrentEventInfo() )
+    spec:RegisterCombatLogEvent( function( ... )
+        trackBrewmasterDamage( "COMBAT_LOG_EVENT_UNFILTERED", ... )
     end )
 
     spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
@@ -502,7 +502,7 @@ if UnitClassBase( "player" ) == "MONK" then
                 -- stagger tick dmg / current effective hp
                 if health.current == 0 then return 100 end
                 return ceil( 100 * t.tick / health.current )
-            
+
             elseif k == "percent_max" or k == "pct_max" then
                 if health.max == 0 then return 100 end
                 return ceil( 100 * t.tick / health.max )
@@ -510,14 +510,14 @@ if UnitClassBase( "player" ) == "MONK" then
             elseif k == "tick" or k == "amount" then
                 if t.ticks_remain == 0 then return 0 end
                 return t.amount_remains / t.ticks_remain
-            
+
             elseif k == "ticks_remain" then
                 return floor( stagger.remains / 0.5 )
 
             elseif k == "amount_remains" then
                 t.amount_remains = UnitStagger( "player" )
                 return t.amount_remains
-            
+
             elseif k == "amount_to_total_percent" or k == "amounttototalpct" then
                 return ceil( 100 * t.tick / t.amount_remains )
 
@@ -587,7 +587,7 @@ if UnitClassBase( "player" ) == "MONK" then
             handler = function ()
                 gain( energy.max, "energy" )
                 setCooldown( "celestial_brew", 0 )
-                gainCharges( "purifying_brew", class.abilities.purifying_brew.charges )                
+                gainCharges( "purifying_brew", class.abilities.purifying_brew.charges )
             end,
         },
 
@@ -648,7 +648,7 @@ if UnitClassBase( "player" ) == "MONK" then
                     applyBuff( "charred_passions" )
                 end
 
-                addStack( "elusive_brawler", 10, active_enemies * ( 1 + set_bonus.tier21_2pc ) )                
+                addStack( "elusive_brawler", 10, active_enemies * ( 1 + set_bonus.tier21_2pc ) )
             end,
         },
 
@@ -658,12 +658,12 @@ if UnitClassBase( "player" ) == "MONK" then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 1360979,
 
             toggle = "defensives",
-            
+
             handler = function ()
                 removeBuff( "purified_chi" )
                 applyBuff( "celestial_brew" )
@@ -720,7 +720,7 @@ if UnitClassBase( "player" ) == "MONK" then
 
             talent = "chi_wave",
 
-            handler = function ()                
+            handler = function ()
             end,
         },
 
@@ -730,10 +730,10 @@ if UnitClassBase( "player" ) == "MONK" then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 628134,
-            
+
             handler = function ()
                 setDistance( 5 )
                 applyDebuff( "target", "clash" )
@@ -836,19 +836,19 @@ if UnitClassBase( "player" ) == "MONK" then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
             talent = "exploding_keg",
 
             startsCombat = true,
             texture = 644378,
-            
+
             handler = function ()
                 applyDebuff( "target", "exploding_keg" )
             end,
         },
 
-        
+
         fortifying_brew = {
             id = 115203,
             cast = 0,
@@ -1039,7 +1039,7 @@ if UnitClassBase( "player" ) == "MONK" then
             -- toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 642414,            
+            texture = 642414,
 
             handler = function ()
                 applyDebuff( "target", "leg_sweep" )
@@ -1156,7 +1156,7 @@ if UnitClassBase( "player" ) == "MONK" then
 
             talent = "ring_of_peace",
 
-            handler = function ()                
+            handler = function ()
             end,
         },
 
@@ -1223,16 +1223,16 @@ if UnitClassBase( "player" ) == "MONK" then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 25,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 606543,
-            
+
             handler = function ()
                 applyBuff( "shuffle" )
-                
+
                 if talent.celestial_flames.enabled then
                     applyDebuff( "target", "breath_of_fire_dot" )
                     active_dot.breath_of_fire_dot = active_enemies
@@ -1245,7 +1245,7 @@ if UnitClassBase( "player" ) == "MONK" then
                 end
             end,
         },
-        
+
         summon_black_ox_statue = {
             id = 115315,
             cast = 0,
@@ -1418,7 +1418,7 @@ if UnitClassBase( "player" ) == "MONK" then
             gcd = "spell",
 
             toggle = "essences",
-            
+
             startsCombat = false,
             texture = 3565447,
 
@@ -1489,12 +1489,12 @@ if UnitClassBase( "player" ) == "MONK" then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 3636842,
 
             toggle = "essences",
-            
+
             handler = function ()
                 applyBuff( "faeline_stomp" )
 
@@ -1511,12 +1511,12 @@ if UnitClassBase( "player" ) == "MONK" then
                     id = 327104,
                     duration = 30,
                     max_stack = 1,
-                },       
+                },
                 fae_exposure = {
                     id = 356773,
                     duration = 10,
                     max_stack = 1,
-                } 
+                }
             }
         },
 
@@ -1543,7 +1543,7 @@ if UnitClassBase( "player" ) == "MONK" then
                     max_stack = 1
                 }
             }
-        },      
+        },
     } )
 
 
@@ -1563,7 +1563,7 @@ if UnitClassBase( "player" ) == "MONK" then
 
         package = "Brewmaster"
     } )
-    
+
 
     spec:RegisterSetting( "ox_walker", true, {
         name = "Use |T606543:0|t Spinning Crane Kick in Single-Target with Walk with the Ox",
@@ -1582,7 +1582,7 @@ if UnitClassBase( "player" ) == "MONK" then
             "Custom priorities may ignore this setting.",
         type = "toggle",
         width = "full",
-    } )    
+    } )
 
 
     spec:RegisterSetting( "purify_stagger_currhp", 12, {
@@ -1609,8 +1609,8 @@ if UnitClassBase( "player" ) == "MONK" then
         step = 0.1,
         width = "full"
     } )
-    
-    
+
+
     spec:RegisterSetting( "bof_percent", 50, {
         name = "|T615339:0|t Breath of Fire: Require |T594274:0|t Keg Smash %",
         desc = "If set above zero, |T615339:0|t Breath of Fire will only be recommended if this percentage of your targets are afflicted with |T594274:0|t Keg Smash.\n\n" ..
