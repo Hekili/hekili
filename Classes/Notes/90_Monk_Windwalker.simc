@@ -1,6 +1,6 @@
 ## Windwalker Monk
-## March 12, 2022
-##
+## May 1, 2022
+
 ## Charges:
 ## - Tweak Fists of Fury interrupt logic.
 ## - Tweak Spinning Crane Kick logic.
@@ -64,6 +64,7 @@ actions.cd_sef+=/gladiators_badge,if=pet.xuen_the_white_tiger.active|boss&fight_
 actions.cd_sef+=/use_item,name=dreadfire_vessel,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20&pet.xuen_the_white_tiger.remains<20|variable.hold_xuen
 actions.cd_sef+=/use_item,name=shadowgrasp_totem,if=pet.xuen_the_white_tiger.active|boss&fight_remains<20|!runeforge.invokers_delight
 actions.cd_sef+=/use_item,name=the_first_sigil,if=pet.xuen_the_white_tiger.remains>15|cooldown.invoke_xuen_the_white_tiger.remains>60&fight_remains>300|boss&fight_remains<20
+actions.cd_sef+=/use_item,name=earthbreakers_impact,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20&pet.xuen_the_white_tiger.remains<20|variable.hold_xuen
 actions.cd_sef+=/use_items,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20|variable.hold_xuen
 actions.cd_sef+=/touch_of_karma,if=fight_remains>90|pet.xuen_the_white_tiger.active|variable.hold_xuen|boss&fight_remains<16
 actions.cd_sef+=/blood_fury,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<20
@@ -90,6 +91,7 @@ actions.cd_serenity+=/use_item,name=the_first_sigil,if=variable.serenity_burst|b
 actions.cd_serenity+=/wrathstone,if=variable.serenity_burst
 actions.cd_serenity+=/gladiators_badge,if=variable.serenity_burst
 actions.cd_serenity+=/use_item,name=shadowgrasp_totem,if=pet.xuen_the_white_tiger.active|boss&fight_remains<20|!runeforge.invokers_delight
+actions.cd_serenity+=/use_item,name=earthbreakers_impact,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20|variable.hold_xuen
 actions.cd_serenity+=/use_items,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20|variable.hold_xuen
 actions.cd_serenity+=/faeline_stomp
 actions.cd_serenity+=/fallen_order
