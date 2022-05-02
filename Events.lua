@@ -1481,6 +1481,8 @@ end
 -- Track dot power (until 6.0) for snapshotting.
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
 local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
+    -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
+    ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
     if death_events[ subtype ] then
         if ns.isTarget( destGUID ) then
@@ -1497,9 +1499,6 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
 
             ns.updateMinion( destGUID )
         end
-
-        -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
-        ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         return
     end
 
@@ -1520,9 +1519,6 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
         end
 
         ns.updateMinion( destGUID, time )
-
-            -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
-        ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         return
     end
 
@@ -1578,8 +1574,6 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
     local minion = ns.isMinion( sourceGUID )
 
     if not ( amSource or petSource ) and not ( state.role.tank and destGUID == state.GUID ) and ( not minion or not countPets ) then
-        -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
-        ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         return
     end
 
@@ -1790,9 +1784,6 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
             end
         end
     end
-
-    -- This is used by both RegisterCombatLogEvent( x ) and RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", x ).
-    ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", timestamp, subtype, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 end
 Hekili:ProfileCPU( "CLEU_HANDLER", CLEU_HANDLER )
 RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ( event ) CLEU_HANDLER( event, CombatLogGetCurrentEventInfo() ) end )

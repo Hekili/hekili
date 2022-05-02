@@ -159,8 +159,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end )
 
 
-    local C_Timer = C_Timer
-
     spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID, _, _, _, spellID, spellName )
         if source == state.GUID then
             local now = GetTime()
@@ -291,6 +289,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             end
         end
     end )
+
 
     spec:RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
         -- Rethinking this.
