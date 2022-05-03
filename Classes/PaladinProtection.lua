@@ -993,7 +993,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 589117,
+            texture = 237537,
 
             talent = "moment_of_glory",
 
