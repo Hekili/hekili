@@ -1164,7 +1164,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 end
 
                 if buff.dancing_rune_weapon.up and set_bonus.tier28_2pc > 0 then
-                    buff.dancing_rune_weapon.expires = buff.dancing_rune_weapon.expires + ( set_bonus.tier28_4pc > 0 and 0.66 or 0.33 )
+                    buff.dancing_rune_weapon.expires = buff.dancing_rune_weapon.expires + ( set_bonus.tier28_4pc > 0 and 0.5 or 1 )
                     addStack( "endless_rune_waltz", nil, 1 )
                     buff.endless_rune_waltz.expires = buff.dancing_rune_weapon.expires + 10
                 end
