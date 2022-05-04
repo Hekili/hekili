@@ -618,8 +618,9 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         local n = 0
 
         for i, time in ipairs( guldan_v ) do
-            if time < query_time then break end
-            n = n + 1
+            if time > query_time then
+                n = n + 1
+            end
         end
 
         return n
@@ -663,10 +664,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             elseif k == "all" then
                 time_to_n = #guldan_v
             else
-                time_to_n = 0
+                return 0
             end
 
-            return query_imp_spawn
+            return query_imp_spawn.remains
         end
     } ) )
 
@@ -1842,9 +1843,21 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             texture = 2065628,
 
             readyTime = function ()
-                if settings.dcon_imps > 0 and buff.wild_imps.stack < settings.dcon_imps then
-                    return time_to_imps[ settings.dcon_imps ]
+                if settings.dcon_imps == 0 or buff.wild_imps.stack > settings.dcon_imps then return 0 end
+
+                local missing = settings.dcon_imps - buff.wild_imps.stack
+                if missing <= 0 then return 0 end
+                if missing > 3 or missing > #guldan_v then return 3600 end
+
+                -- Still a little risky, because imps can despawn, too.
+                for i, time in ipairs( guldan_v ) do
+                    if time > query_time then
+                        missing = missing - 1
+                        if missing <= 0 then return time - query_time end
+                    end
                 end
+
+                return 3600
             end,
 
             handler = function ()
