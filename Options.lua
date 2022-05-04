@@ -4854,7 +4854,7 @@ do
             local a = class.abilities[ k ]
             if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
                 if settings.abilities[ k ].toggle == section or a.toggle == section and settings.abilities[ k ].toggle == 'default' then
-                    tAbilities[ k ] = v
+                    tAbilities[ k ] = class.abilityList[ k ] or v
                 end
             end
         end
@@ -4925,7 +4925,7 @@ do
                     local desc
                     if a then
                         if a.item then desc = a.link or a.name
-                        else desc = a.name end
+                        else desc = class.abilityList[ a.key ] or a.name end
                     end
                     desc = desc or ability
 
@@ -4952,7 +4952,7 @@ do
                     local a = class.abilities[ ability ]
                     if a then
                         if a.item then return a.link or a.name end
-                        return a.name
+                        return class.abilityList[ a.key ] or a.name
                     end
                     return ability
                 end
