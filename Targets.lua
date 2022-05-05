@@ -188,10 +188,11 @@ f:SetScript( "OnEvent", function( self, event, unit )
         npUnits[id]   = unit
 
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
-        local id = npGUIDs[ unit ]
+        local id = npGUIDs[ unit ] or UnitGUID( unit )
         npGUIDs[unit] = nil
-        npUnits[id]   = nil
-
+        if npUnits[id] and npUnits[id] == unit then
+            npUnits[id] = nil
+        end
     end
 end )
 
