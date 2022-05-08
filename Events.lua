@@ -201,7 +201,7 @@ end
 Hekili.FeignEvent = ns.FeignEvent
 
 
-do
+--[[ do
     local updatedEquippedItem = false
 
     local function CheckForEquipmentUpdates()
@@ -219,7 +219,7 @@ do
             end
         end
     end )
-end
+end ]]
 
 
 do
