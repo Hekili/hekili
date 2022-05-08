@@ -495,8 +495,8 @@ local HekiliSpecMixin = {
         self.recheck = func
     end,
 
-    RegisterHook = function( self, hook, func )
-        if hook ~= "COMBAT_LOG_EVENT_UNFILTERED" then func = setfenv( func, state ) end
+    RegisterHook = function( self, hook, func, noState )
+        if noState or hook ~= "COMBAT_LOG_EVENT_UNFILTERED" then func = setfenv( func, state ) end
 
         self.hooks[ hook ] = self.hooks[ hook ] or {}
         insert( self.hooks[ hook ], func )
