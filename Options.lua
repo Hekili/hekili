@@ -11144,7 +11144,7 @@ do
                     result.name = nil
                 else
                     table.insert( warnings, "Line " .. line .. ": Unable to convert wait_for_cooldown,name=X to wait,sec=cooldown.X.remains; entry disabled." )
-                    result.action = wait
+                    result.action = "wait"
                     result.enabled = false
                 end
             end
