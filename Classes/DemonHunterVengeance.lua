@@ -321,7 +321,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
             end
         end
-    end )
+    end, false )
 
 
     local sigil_types = { "chains", "flame", "misery", "silence" }

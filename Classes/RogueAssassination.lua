@@ -501,7 +501,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             vendetta_info[ destGUID ] = nil
         end
-    end )
+    end, false )
 
 
     spec:RegisterHook( "UNIT_ELIMINATED", function( guid )

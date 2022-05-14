@@ -482,7 +482,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" and destGUID ~= nil and destGUID ~= "" then
             lastTarget = destGUID
         end
-    end )
+    end, false )
 
 
     local SUMMON_DEMON_TEXT

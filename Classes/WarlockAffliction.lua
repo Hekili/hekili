@@ -475,7 +475,7 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
                 action.seed_of_corruption.flying = 0
             end
         end
-    end )
+    end, false )
 
 
     spec:RegisterGear( "tier28", 188884, 188887, 188888, 188889, 188890 )

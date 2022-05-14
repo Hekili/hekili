@@ -202,7 +202,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 end
             end
         end
-    end )
+    end, false )
 
 
     local ExpireVoidform = setfenv( function()

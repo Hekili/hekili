@@ -657,7 +657,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             After( state.latency, ForceVirulentPlagueRefresh )
             After( state.latency * 2, ForceVirulentPlagueRefresh )
         end
-    end )
+    end, false )
 
 
     local any_dnd_set, wound_spender_set = false, false

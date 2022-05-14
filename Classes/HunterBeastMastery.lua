@@ -725,7 +725,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 end
             end
         end
-    end )
+    end, false )
 
 
     -- Tier 28

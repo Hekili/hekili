@@ -392,7 +392,7 @@ if UnitClassBase( "player" ) == "MONK" then
 
     local stagger_ticks = {}
 
-    local function trackBrewmasterDamage( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, arg1, arg2, arg3, arg4, arg5, arg6, _, arg8, _, _, arg11 )
+    local function trackBrewmasterDamage( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, arg1, arg2, arg3, arg4, arg5, arg6, _, arg8, _, _, arg11 )
         if destGUID == state.GUID then
             if subtype == "SPELL_ABSORBED" then
                 local now = GetTime()
@@ -430,7 +430,7 @@ if UnitClassBase( "player" ) == "MONK" then
 
     -- Use register event so we can access local data.
     spec:RegisterCombatLogEvent( function( ... )
-        trackBrewmasterDamage( "COMBAT_LOG_EVENT_UNFILTERED", ... )
+        trackBrewmasterDamage( ... )
     end )
 
     spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()

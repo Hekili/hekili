@@ -512,7 +512,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 end
             end
         end
-    end )
+    end, false )
 
     spec:RegisterStateExpr( "brain_freeze_active", function ()
         return frost_info.virtual_brain_freeze

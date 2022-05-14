@@ -707,7 +707,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                         __last_disciplinary_command = GetTime()
                     end
                 end
-            end )
+            end, false )
 
             x:RegisterAbility( "buff_disciplinary_command", {
                 cooldown_special = function ()
@@ -992,7 +992,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 clearcasting_consumed = GetTime()
             end
         end
-    end )
+    end, false )
 
 
     spec:RegisterStateExpr( "tick_reduction", function ()
