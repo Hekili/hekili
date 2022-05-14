@@ -521,6 +521,12 @@ if UnitClassBase( "player" ) == "DRUID" then
             max_stack = 8,
         },
 
+        celestial_infusion = {
+            id = 367907,
+            duration = 8,
+            max_stack = 1
+        },
+
         oath_of_the_elder_druid = {
             id = 338643,
             duration = 60,
