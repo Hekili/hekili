@@ -52,6 +52,20 @@ if UnitClassBase( "player" ) == "DRUID" then
             value = 2.5
         },
 
+        celestial_infusion = {
+            aura = "celestial_infusion",
+
+            last = function ()
+                local app = state.buff.celestial_infusion.applied
+                local t = state.query_time
+
+                return app + floor( ( t - app ) * 2 ) * 0.5
+            end,
+
+            interval = 0.5,
+            value = 2.5
+        },
+
         natures_balance = {
             talent = "natures_balance",
 
@@ -1130,7 +1144,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             removeBuff( "starsurge_empowerment_solar" )
 
             applyBuff( "eclipse_lunar", ( duration or class.auras.eclipse_lunar.duration ) + buff.eclipse_lunar.remains )
-            if set_bonus.tier28_2pc > 0 then applyDebuff( "target", "fury_of_elune_ap" ) end
+            if set_bonus.tier28_2pc > 0 then applyBuff( "celestial_infusion" ) end
             applyBuff( "eclipse_solar", ( duration or class.auras.eclipse_solar.duration ) + buff.eclipse_solar.remains )
 
             state:QueueAuraExpiration( "ca_inc", ExpireCelestialAlignment, buff.ca_inc.expires )
