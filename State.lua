@@ -375,7 +375,7 @@ local mt_trinket = {
         if k == "up" or k == "ticking" or k == "active" then
             return isEnabled and class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].up or false
         elseif k == "react" or k == "stack" or k == "stacks" then
-            return isEnabled and class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ][k] or 0
+            return isEnabled and class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ][ k ] or 0
         elseif k == "remains" then
             return isEnabled and class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].remains or 0
         elseif k == "has_cooldown" then
@@ -612,13 +612,13 @@ state._G = 0
 -- Place an ability on cooldown in the simulated game state.
 local function setCooldown( action, duration )
     local cd = state.cooldown[ action ] or {}
-    cd.duration = duration
+    cd.duration = duration > 0 and duration or cd.duration
     cd.expires = state.query_time + duration
 
     cd.charge = 0
     cd.recharge_began = state.query_time
     cd.next_charge = cd.expires
-    cd.recharge = duration
+    cd.recharge = duration > 0 and duration or cd.recharge
 
     state.cooldown[ action ] = cd
 end
@@ -639,18 +639,14 @@ local function spendCharges( action, charges )
     if cd.next_charge <= state.query_time then
         cd.recharge_began = state.query_time
         cd.next_charge = state.query_time + ( ability.recharge or ability.cooldown )
-        cd.recharge = ability.recharge
+        cd.recharge = ability.recharge > 0 and ability.recharge or cd.recharge
     end
 
     cd.charge = max( 0, cd.charge - charges )
 
-    if cd.charge == 0 then
-        cd.duration = ability.recharge or ability.cooldown
-        cd.expires = cd.next_charge
-    else
-        cd.duration = ability.recharge or ability.cooldown
-        cd.expires = 0
-    end
+    local dur = ability.recharge or ability.cooldown
+    cd.duration = dur > 0 and dur or cd.duration
+    cd.expires = cd.charge == 0 and cd.next_charge or 0
 end
 state.spendCharges = spendCharges
 
@@ -662,13 +658,13 @@ local function gainCharges( action, charges )
 
         -- resolve cooldown state.
         if state.cooldown[ action ].charge > 0 then
-            state.cooldown[ action ].duration = 0
+            -- state.cooldown[ action ].duration = 0
             state.cooldown[ action ].expires = 0
         end
 
         if state.cooldown[ action ].charge == class.abilities[ action ].charges then
             state.cooldown[ action ].next_charge = 0
-            state.cooldown[ action ].recharge = 0
+            -- state.cooldown[ action ].recharge = 0
             state.cooldown[ action ].recharge_began = 0
         end
 
@@ -711,12 +707,12 @@ function state.gainChargeTime( action, time, debug )
 
         if cooldown.charge == ability.charges then
             cooldown.next_charge = 0
-            cooldown.recharge = 0
+            -- cooldown.recharge = 0
             cooldown.recharge_began = 0
         else
             cooldown.recharge_began = cooldown.next_charge
             cooldown.next_charge = cooldown.next_charge + ability.recharge
-            cooldown.recharge = ability.recharge
+            -- cooldown.recharge = ability.recharge
         end
     end
 end
@@ -2889,7 +2885,7 @@ local mt_default_cooldown = {
                     end
                 end
 
-                if t.charge < ability.charges then
+                if t.charge < ability.charges and t.recharge > 0 then
                     return min( ability.charges, t.charge + ( max( 0, state.query_time - t.recharge_began ) / t.recharge ) )
                     -- return t.charges + ( 1 - ( class.abilities[ t.key ].recharge - t.recharge_time ) / class.abilities[ t.key ].recharge )
                 end
