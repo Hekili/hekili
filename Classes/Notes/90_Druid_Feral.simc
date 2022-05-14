@@ -1,5 +1,5 @@
 ## Feral Druid
-## April 28, 2022
+## May 13, 2022
 
 ## Changes:
 ## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
@@ -10,7 +10,7 @@
 ## - Work on Adaptive Swarm support.
 
 actions.precombat+=/variable,name=fourcp_bite,value=0
-# Shred = 0, Non-snapshot Rake = 1, Snapshot Rake = 2, LI = 3, Swipe = 4
+# Defines what ability to use as a filler. Shred = 0, Non-snapshot Rake = 1, Snapshot Rake = 2, LI = 3, Swipe = 4
 actions.precombat+=/variable,name=filler,value=1
 actions.precombat+=/variable,name=rip_ticks,value=7
 actions.precombat+=/kindred_spirits
@@ -99,6 +99,7 @@ actions.filler=rake,cycle_targets=1,if=variable.filler=1&refreshable&dot.rake.pm
 actions.filler+=/rake,if=variable.filler=2
 actions.filler+=/lunar_inspiration,if=variable.filler=3
 actions.filler+=/swipe,if=variable.filler=4
+actions.filler+=/swipe_cat,if=spell_targets.swipe_cat=1&!buff.clearcasting.up
 actions.filler+=/shred,if=buff.sudden_ambush.down
 actions.filler+=/regrowth,if=settings.filler_regrowth&selection_time>1.5*gcd.max
 ## actions.filler+=/fleshcraft,if=soulbind.pustule_eruption.enabled|soulbind.volatile_solvent.enabled,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
