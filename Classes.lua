@@ -510,16 +510,16 @@ local HekiliSpecMixin = {
             funcs = {},
         }, {
             __index = function( t, k )
-                if t.funcs[ k ] then return t.funcs[ k ]() end
-                if k == "lastCast" then return state.history.casts[ t.key ] or t.realCast end
-                if k == "lastUnit" then return state.history.units[ t.key ] or t.realUnit end
-
                 local setup = rawget( t, "onLoad" )
                 if setup then
                     t.onLoad = nil
                     setup( t )
                     return t[ k ]
                 end
+
+                if t.funcs[ k ] then return t.funcs[ k ]() end
+                if k == "lastCast" then return state.history.casts[ t.key ] or t.realCast end
+                if k == "lastUnit" then return state.history.units[ t.key ] or t.realUnit end
             end,
         } )
 
