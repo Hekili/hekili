@@ -1932,7 +1932,7 @@ do
                                     pveAlpha = {
                                         type = "range",
                                         name = "PvE Alpha",
-                                        desc = "Set the transparency of the display when in PvE combat.  If set to 0, the display will not appear in PvE.",
+                                        desc = "Set the transparency of the display when in PvE environments.  If set to 0, the display will not appear in PvE.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -1942,7 +1942,7 @@ do
                                     pvpAlpha = {
                                         type = "range",
                                         name = "PvP Alpha",
-                                        desc = "Set the transparency of the display when in PvP combat.  If set to 0, the display will not appear in PvP.",
+                                        desc = "Set the transparency of the display when in PvP environments.  If set to 0, the display will not appear in PvP.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -1972,8 +1972,8 @@ do
                                 args = {
                                     always = {
                                         type = "range",
-                                        name = "Always",
-                                        desc = "If non-zero, this display is always shown in PvE areas, both in and out of combat.",
+                                        name = "Default",
+                                        desc = "If non-zero, this display is shown with the specified level of opacity by default.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -1984,12 +1984,12 @@ do
                                     combat = {
                                         type = "range",
                                         name = "Combat",
-                                        desc = "If non-zero, this display is always shown in PvE combat.",
+                                        desc = "If non-zero, this display is shown with the specified level of opacity in PvE combat.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
                                         width = 1.49,
-                                        order = 2,
+                                        order = 3,
                                     },
 
                                     break01 = {
@@ -2002,18 +2002,18 @@ do
                                     target = {
                                         type = "range",
                                         name = "Target",
-                                        desc = "If non-zero, this display is always shown when you have an attackable PvE target.",
+                                        desc = "If non-zero, this display is shown with the specified level of opacity when you have an attackable PvE target.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
                                         width = 1.49,
-                                        order = 3,
+                                        order = 2,
                                     },
 
                                     combatTarget = {
                                         type = "range",
                                         name = "Combat w/ Target",
-                                        desc = "If non-zero, this display is always shown when you are in combat and have an attackable PvE target.",
+                                        desc = "If non-zero, this display is shown with the specified level of opacity when you are in combat and have an attackable PvE target.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -2024,7 +2024,7 @@ do
                                     hideMounted = {
                                         type = "toggle",
                                         name = "Hide When Mounted",
-                                        desc = "If checked, the display will not be visible when you are mounted (unless you are in combat).",
+                                        desc = "If checked, the display will not be visible when you are mounted when out of combat.",
                                         width = "full",
                                         order = 0.5,
                                     }
@@ -2052,8 +2052,8 @@ do
                                 args = {
                                     always = {
                                         type = "range",
-                                        name = "Always",
-                                        desc = "If non-zero, this display is always shown in PvP areas, both in and out of combat.",
+                                        name = "Default",
+                                        desc = "If non-zero, this display is shown with the specified level of opacity by default.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -2064,12 +2064,12 @@ do
                                     combat = {
                                         type = "range",
                                         name = "Combat",
-                                        desc = "If non-zero, this display is always shown in PvP combat.",
+                                        desc = "If non-zero, this display is shown with the specified level of opacity in PvP combat.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
                                         width = 1.49,
-                                        order = 2,
+                                        order = 3,
                                     },
 
                                     break01 = {
@@ -2082,18 +2082,18 @@ do
                                     target = {
                                         type = "range",
                                         name = "Target",
-                                        desc = "If non-zero, this display is always shown when you have an attackable PvP target.",
+                                        desc = "If non-zero, this display is shown with the specified level of opacity when you have an attackable PvP target.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
                                         width = 1.49,
-                                        order = 3,
+                                        order = 2,
                                     },
 
                                     combatTarget = {
                                         type = "range",
                                         name = "Combat w/ Target",
-                                        desc = "If non-zero, this is always shown when you are in combat and have an attackable PvP target.",
+                                        desc = "If non-zero, this display is shown with the specified level of opacity when you are in combat and have an attackable PvP target.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -2104,7 +2104,7 @@ do
                                     hideMounted = {
                                         type = "toggle",
                                         name = "Hide When Mounted",
-                                        desc = "If checked, the display will not be visible when you are mounted (unless you are in combat).",
+                                        desc = "If checked, the display will not be visible when you are mounted unless you are in combat.",
                                         width = "full",
                                         order = 0.5,
                                     }
@@ -4355,7 +4355,7 @@ do
                     "This can be helpful if the addon incorrectly detects your keybindings.",
                 validate = function( info, val )
                     val = val:trim()
-                    if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
+                    if val:len() > 20 then return "Keybindings should be no longer than 20 characters in length." end
                     return true
                 end,
                 width = 1.5,
@@ -4427,6 +4427,11 @@ do
         db.args.abilities.plugins.actions[ v ] = option
     end
 
+
+
+    local testFrame = CreateFrame( "Frame" )
+    testFrame.Texture = testFrame:CreateTexture()
+
     function Hekili:EmbedAbilityOptions( db )
         db = db or self.Options
         if not db then return end
@@ -4443,7 +4448,7 @@ do
 
         for k, v in orderedPairs( abilities ) do
             local ability = class.abilities[ v ]
-            local useName = class.abilityList[ v ] and class.abilityList[v]:match("\|t (.+)$") or ability.name
+            local useName = class.abilityList[ v ] and class.abilityList[v]:match("|t (.+)$") or ability.name
 
             if not useName then
                 Hekili:Error( "No name available for %s (id:%d) in EmbedAbilityOptions.", ability.key or "no_id", ability.id or 0 )
@@ -4462,7 +4467,7 @@ do
                         name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
                         desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
                             "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
-                        width = 1.5,
+                        width = 1,
                         order = 1,
                     },
 
@@ -4470,22 +4475,8 @@ do
                         type = "toggle",
                         name = "Boss Encounter Only",
                         desc = "If checked, the addon will not recommend " .. k .. " unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
-                        width = 1.5,
+                        width = 1,
                         order = 1.1,
-                    },
-
-                    keybind = {
-                        type = "input",
-                        name = "Override Keybind Text",
-                        desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
-                            "This can be helpful if the addon incorrectly detects your keybindings.",
-                        validate = function( info, val )
-                            val = val:trim()
-                            if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
-                            return true
-                        end,
-                        width = 1.5,
-                        order = 2,
                     },
 
                     toggle = {
@@ -4493,8 +4484,8 @@ do
                         name = "Require Toggle",
                         desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
                             "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
-                        width = 1.5,
-                        order = 3,
+                        width = 1,
+                        order = 1.2,
                         values = function ()
                             table.wipe( toggles )
 
@@ -4515,26 +4506,33 @@ do
                         end,
                     },
 
+                    lineBreak1 = {
+                        type = "description",
+                        name = " ",
+                        width = "full",
+                        order = 1.9
+                    },
+
                     targetMin = {
                         type = "range",
                         name = "Minimum Targets",
                         desc = "If set above zero, the addon will only allow " .. k .. " to be recommended, if there are at least this many detected enemies.  All other action list conditions must also be met.\nSet to zero to ignore.",
-                        width = 1.5,
+                        width = 1,
                         min = 0,
                         max = 15,
                         step = 1,
-                        order = 3.1,
+                        order = 2,
                     },
 
                     targetMax = {
                         type = "range",
                         name = "Maximum Targets",
                         desc = "If set above zero, the addon will only allow " .. k .. " to be recommended if there are this many detected enemies (or fewer).  All other action list conditions must also be met.\nSet to zero to ignore.",
-                        width = 1.5,
+                        width = 1,
                         min = 0,
                         max = 15,
                         step = 1,
-                        order = 3.2,
+                        order = 2.1,
                     },
 
                     clash = {
@@ -4542,12 +4540,108 @@ do
                         name = "Clash",
                         desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
                             "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
-                        width = 3,
+                        width = 1,
                         min = -1.5,
                         max = 1.5,
                         step = 0.05,
-                        order = 4,
+                        order = 2.2,
                     },
+
+                    lineBreak2 = {
+                        type = "description",
+                        name = "",
+                        width = "full",
+                        order = 2.9,
+                    },
+
+                    keybind = {
+                        type = "input",
+                        name = "Keybind Text",
+                        desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
+                            "This can be helpful if the addon incorrectly detects your keybindings.",
+                        validate = function( info, val )
+                            val = val:trim()
+                            if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
+                            return true
+                        end,
+                        width = 1.5,
+                        order = 3,
+                    },
+
+                    noIcon = {
+                        type = "input",
+                        name = "Icon Replacement",
+                        desc = "If specified, the addon will attempt to load this texture instead of the default icon.  This can be a texture ID or a path to a texture file.\n\n" ..
+                            "Leave blank and press Enter to reset to the default icon.",
+                        icon = function()
+                            local options = Hekili:GetActiveSpecOption( "abilities" )
+                            return options and options[ v ] and options[ v ].icon or nil
+                        end,
+                        validate = function( info, val )
+                            val = val:trim()
+                            testFrame.Texture:SetTexture( "?" )
+                            testFrame.Texture:SetTexture( val )
+                            return testFrame.Texture:GetTexture() ~= "?"
+                        end,
+                        set = function( info, val )
+                            val = val:trim()
+                            if val:len() == 0 then val = nil end
+
+                            local options = Hekili:GetActiveSpecOption( "abilities" )
+                            options[ v ].icon = val
+                        end,
+                        hidden = function()
+                            local options = Hekili:GetActiveSpecOption( "abilities" )
+                            return ( options and rawget( options, v ) and options[ v ].icon )
+                        end,
+                        width = 1.5,
+                        order = 3.1,
+                    },
+
+                    hasIcon = {
+                        type = "input",
+                        name = "Icon Replacement",
+                        desc = "If specified, the addon will attempt to load this texture instead of the default icon.  This can be a texture ID or a path to a texture file.\n\n" ..
+                            "Leave blank and press Enter to reset to the default icon.",
+                        icon = function()
+                            local options = Hekili:GetActiveSpecOption( "abilities" )
+                            return options and options[ v ] and options[ v ].icon or nil
+                        end,
+                        validate = function( info, val )
+                            val = val:trim()
+                            testFrame.Texture:SetTexture( "?" )
+                            testFrame.Texture:SetTexture( val )
+                            return testFrame.Texture:GetTexture() ~= "?"
+                        end,
+                        get = function()
+                            local options = Hekili:GetActiveSpecOption( "abilities" )
+                            return options and rawget( options, v ) and options[ v ].icon
+                        end,
+                        set = function( info, val )
+                            val = val:trim()
+                            if val:len() == 0 then val = nil end
+
+                            local options = Hekili:GetActiveSpecOption( "abilities" )
+                            options[ v ].icon = val
+                        end,
+                        hidden = function()
+                            local options = Hekili:GetActiveSpecOption( "abilities" )
+                            return not ( options and rawget( options, v ) and options[ v ].icon )
+                        end,
+                        width = 1.3,
+                        order = 3.2,
+                    },
+
+                    showIcon = {
+                        type = 'description',
+                        name = "",
+                        image = function()
+                            local options = Hekili:GetActiveSpecOption( "abilities" )
+                            return options and rawget( options, v ) and options[ v ].icon
+                        end,
+                        width = 0.2,
+                        order = 3.3,
+                    }
                 }
             }
 
