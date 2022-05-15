@@ -1,5 +1,5 @@
 ## Mage Arcane
-## May 2, 2022
+## May 13, 2022
 
 ## Changes:
 ## - Use typical SimC handling of channel interruption instead of 'cancel_action'.
@@ -112,7 +112,8 @@ actions.aoe+=/rune_of_power,if=soulbind.effusive_anima_accelerator&runeforge.har
 actions.aoe+=/radiant_spark,if=soulbind.effusive_anima_accelerator&runeforge.harmonic_echo&(buff.arcane_charge.stack>=2|cooldown.touch_of_the_magi.remains<=execute_time)
 actions.aoe+=/touch_of_the_magi,if=soulbind.effusive_anima_accelerator&runeforge.harmonic_echo&prev_gcd.1.radiant_spark
 actions.aoe+=/arcane_power,if=soulbind.effusive_anima_accelerator&runeforge.harmonic_echo&prev_gcd.1.touch_of_the_magi
-## actions.aoe+=/wait,sec=0.04,if=debuff.radiant_spark_vulnerability.stack=(debuff.radiant_spark_vulnerability.max_stack-1)&runeforge.harmonic_echo&active_enemies<5,line_cd=25
+## Hekili:  This is not needed in the addon due to how Radiant Spark is modeled in-game vs. SimC.
+## actions.harmony+=/wait,sec=0.04,if=debuff.radiant_spark_vulnerability.stack=(debuff.radiant_spark_vulnerability.max_stack-1)&runeforge.harmonic_echo&active_enemies>1,line_cd=25
 actions.aoe+=/arcane_blast,if=covenant.kyrian&runeforge.arcane_infinity&buff.arcane_power.up&debuff.radiant_spark_vulnerability.stack=4&prev_gcd.1.arcane_orb&active_enemies<7&!runeforge.harmonic_echo
 actions.aoe+=/arcane_barrage,if=covenant.kyrian&runeforge.arcane_infinity&buff.arcane_power.up&debuff.radiant_spark_vulnerability.stack=4
 actions.aoe+=/arcane_blast,if=covenant.kyrian&runeforge.arcane_infinity&buff.arcane_power.up&(dot.radiant_spark.remains>6|debuff.radiant_spark_vulnerability.up)&debuff.radiant_spark_vulnerability.stack<4&active_enemies<5

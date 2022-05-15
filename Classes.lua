@@ -524,6 +524,7 @@ local HekiliSpecMixin = {
         } )
 
         a.key = ability
+        a.from = self.id
 
         if not data.id then
             if data.item then
@@ -1026,8 +1027,11 @@ function Hekili:NewSpecialization( specID, isRanged )
         return nil
     end
 
+    local token = getSpecializationKey( id )
+
     local spec = class.specs[ id ] or {
         id = id,
+        key = token,
         name = name,
         texture = texture,
         role = role,

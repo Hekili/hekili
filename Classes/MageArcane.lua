@@ -657,8 +657,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             } )
 
             local __last_arcane, __last_fire, __last_frost, __last_disciplinary_command = 0, 0, 0, 0
+            local __last_arcSpell, __last_firSpell, __last_froSpell
 
             x:RegisterHook( "reset_precast", function ()
+                if not legendary.disciplinary_command.enabled then return end
+
                 if now - __last_arcane < 10 then applyBuff( "disciplinary_command_arcane", 10 - ( now - __last_arcane ) ) end
                 if now - __last_fire   < 10 then applyBuff( "disciplinary_command_fire",   10 - ( now - __last_fire ) ) end
                 if now - __last_frost  < 10 then applyBuff( "disciplinary_command_frost",  10 - ( now - __last_frost ) ) end
@@ -666,45 +669,81 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if now - __last_disciplinary_command < 30 then
                     setCooldown( "buff_disciplinary_command", 30 - ( now - __last_disciplinary_command ) )
                 end
+
+                Hekili:Debug( "Disciplinary Command:\n - Arcane: %.2f, %s\n - Fire  : %.2f, %s\n - Frost : %.2f, %s\n - ICD   : %.2f", buff.disciplinary_command_arcane.remains, __last_arcSpell or "None", buff.disciplinary_command_fire.remains, __last_firSpell or "None", buff.disciplinary_command_frost.remains, __last_froSpell or "None", cooldown.buff_disciplinary_command.remains )
             end )
 
-            x:RegisterStateFunction( "update_disciplinary_command", function( elem )
-                if not legendary.disciplinary_command.enabled or cooldown.buff_disciplinary_command.remains > 0 then return end
+            x:RegisterStateFunction( "update_disciplinary_command", function( action )
+                local ability = class.abilities[ action ]
 
-                if elem == "arcane" then applyBuff( "disciplinary_command_arcane" ) end
-                if elem == "fire"   then applyBuff( "disciplinary_command_fire" ) end
-                if elem == "frost"  then applyBuff( "disciplinary_command_frost" ) end
+                if not ability then return end
+                if ability.item or ability.from == 0 then return end
 
-                if cooldown.buff_disciplinary_command.remains == 0 and buff.disciplinary_command_arcane.up and buff.disciplinary_command_fire.up and buff.disciplinary_command_frost.up then
+                if     ability.discipline == "arcane" then applyBuff( "disciplinary_command_arcane" )
+                elseif ability.discipline == "fire"   then applyBuff( "disciplinary_command_fire"   )
+                elseif ability.discipline == "frost"  then applyBuff( "disciplinary_command_frost"  )
+                else
+                    local sAction = x.abilities[ action ]
+                    local sDiscipline = sAction and sAction.discipline
+
+                    if sDiscipline then
+                        if     sDiscipline == "arcane" then applyBuff( "disciplinary_command_arcane" )
+                        elseif sDiscipline == "fire"   then applyBuff( "disciplinary_command_fire"   )
+                        elseif sDiscipline == "frost"  then applyBuff( "disciplinary_command_frost"  ) end
+                    else applyBuff( "disciplinary_command_" .. state.spec.key ) end
+                end
+
+                if buff.disciplinary_command_arcane.up and buff.disciplinary_command_fire.up and buff.disciplinary_command_frost.up then
                     applyBuff( "disciplinary_command" )
                     setCooldown( "buff_disciplinary_command", 30 )
+                    removeBuff( "disciplinary_command_arcane" )
+                    removeBuff( "disciplinary_command_fire" )
+                    removeBuff( "disciplinary_command_frost" )
                 end
             end )
 
             x:RegisterHook( "runHandler", function( action )
-                local a = class.abilities[ action ]
-
-                if a then
-                    update_disciplinary_command( a.discipline or state.spec.key )
-                end
+                if not legendary.disciplinary_command.enabled or cooldown.buff_disciplinary_command.remains > 0 then return end
+                update_disciplinary_command( action )
             end )
 
-            x:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-                if sourceGUID == GUID then
-                    if subtype == "SPELL_CAST_SUCCESS" then
-                        local ability = class.abilities[ spellID ]
+            local triggerEvents = {
+                SPELL_CAST_SUCCESS = true,
+                SPELL_HEAL = true,
+                SPELL_SUMMON= true
+            }
 
-                        if ability then
-                            if ability.discipline == "frost" then
-                                __last_frost  = GetTime()
-                            elseif ability.discipline == "fire" then
-                                __last_fire   = GetTime()
-                            else
-                                __last_arcane = GetTime()
-                            end
-                        end
+            local spellChanges = {
+                [108853] = 319836,
+                [212653] = 1953,
+                [342130] = 116011,
+                [337137] = 1,
+            }
+
+            local spellSchools = {
+                [4] = "fire",
+                [16] = "frost",
+                [64] = "arcane"
+            }
+
+            x:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, _, _, _, _, _, _, _, spellID, spellName, spellSchool )
+                if sourceGUID == GUID then
+                    if triggerEvents[ subtype ] then
+                        spellID = spellChanges[ spellID ] or spellID
+                        if not IsSpellKnown( spellID, false ) then return end
+
+                        local school = spellSchools[ spellSchool ]
+                        if not school then return end
+
+                        if     school == "arcane" then __last_arcane = GetTime(); __last_arcSpell = spellName
+                        elseif school == "fire"   then __last_fire   = GetTime(); __last_firSpell = spellName
+                        elseif school == "frost"  then __last_frost  = GetTime(); __last_froSpell = spellName end
+                        return
                     elseif subtype == "SPELL_AURA_APPLIED" and spellID == class.auras.disciplinary_command.id then
                         __last_disciplinary_command = GetTime()
+                        __last_arcane = 0
+                        __last_fire = 0
+                        __last_frost = 0
                     end
                 end
             end, false )
