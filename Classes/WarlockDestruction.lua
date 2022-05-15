@@ -1522,8 +1522,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             copy = { 365349, "summon_incubus", "summon_succubus" },
 
             bind = function()
-                if settings.default_pet == "summon_sayaad" then return { 365349, "summon_incubus", "summon_succubus", "summon_pet" } end
-                return { 365349, "summon_incubus", "summon_succubus" }
+                if settings.default_pet == "summon_sayaad" then return { "summon_incubus", "summon_succubus", "summon_pet" } end
+                return { "summon_incubus", "summon_succubus" }
             end,
         },
 
