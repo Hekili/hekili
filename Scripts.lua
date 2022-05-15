@@ -502,6 +502,8 @@ do
         { "^ss_buffed$",                            "remains" }, -- Assassination
         { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$",    "%1.remains" }, -- Assassination
         { "^!?(dot%.[a-z0-9_]+)%.ss_buffed$",       "%1.remains" }, -- Assassination
+        { "^dot%.([a-z0-9_]+).haste_pct_next_tick$",
+                                                    "0.01+query_time+(dot.%1.last_tick+dot.%1.tick_time)-query_time" }, -- Assassination
 
         { "^!?stealthed.all$",                      "stealthed.remains" },
         { "^!?stealthed.mantle$",                   "stealthed.mantle_remains" },

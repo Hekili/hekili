@@ -1031,7 +1031,9 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         end
 
         -- state.debuff[ aura ] = state.debuff[ aura ] or {}
-        d.duration = ( noPandemic and 0 or min( d.remains, 0.3 * ( class.auras[ aura ].duration or 15 ) ) ) + duration
+        if not noPandemic then duration = min( 1.3 * duration, d.remains + duration ) end
+
+        d.duration = duration
         d.expires = state.query_time + d.duration
 
         d.lastCount = d.count or 0
@@ -2106,13 +2108,15 @@ local mt_state = {
 
         end
 
+        local aura_name = ability and ability.aura or t.this_action
+        local aura = class.auras[ aura_name ]
+        local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) ) or nil
+        local value = app and app[ k ]
+
+        if value ~= nil then return value end
 
         if class.knownAuraAttributes[ k ] then
             -- Buffs, debuffs...
-            local aura_name = ability and ability.aura or t.this_action
-            local aura = class.auras[ aura_name ]
-
-            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) ) or nil
 
             -- This uses the default aura duration (if available) to keep pandemic windows accurate.
             local duration = aura and aura.duration or 15
@@ -3100,6 +3104,31 @@ function state:AddResourceMetaFunction( name, f )
 end
 
 
+function state:CombinedResourceRegen( t )
+    local regen = t.regen
+
+    local model = t.regenModel
+    if not model then return regen end
+
+    for name, source in pairs( model ) do
+        local value = type( source.value ) == "function" and source.value() or source.value
+        local interval = type( source.interval ) == "function" and source.interval() or source.interval
+
+        local aura = source.aura
+
+        if aura then
+            aura = source.debuff and state.debuff[ aura ] or state.buff[ aura ]
+
+            if aura.up then
+                regen = regen + ( value / interval )
+            end
+        end
+    end
+
+    return regen
+end
+
+
 function state:TimeToResource( t, amount )
     if not amount or amount > t.max then return 3600
     elseif t.current >= amount then return 0 end
@@ -3255,8 +3284,7 @@ local mt_resource = {
             return ( state.time > 0 and t.active_regen or t.inactive_regen ) or 0
 
         elseif k == "regen_combined" then
-            -- Assassination, April 2021
-            return max( t.regen, state:TimeToResource( t, t.max ) / t.deficit )
+            return max( t.regen, state:CombinedResourceRegen( t ) )
 
         elseif k == "modmax" then
             return t.max
