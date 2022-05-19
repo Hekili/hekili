@@ -867,7 +867,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 132110,
 
-            nobuff = "shield_block",
+            -- nobuff = "shield_block",  -- Dirty change to fix reprisal interaction
 
             handler = function ()
                 applyBuff( "shield_block" )
