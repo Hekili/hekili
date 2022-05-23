@@ -1344,7 +1344,23 @@ do
                         else
                             local aFlash = ability.flash
                             if aFlash then
-                                if LSF.Flashable( aFlash ) then
+                                local flashable = false
+
+                                if type( aFlash ) == "table" then
+                                    local lastSpell
+                                    for _, spell in ipairs( aFlash ) do
+                                        lastSpell = spell
+                                        if LSF.Flashable( spell ) then
+                                            flashable = true
+                                            break
+                                        end
+                                    end
+                                    aFlash = lastSpell
+                                else
+                                    flashable = LSF.Flashable( aFlash )
+                                end
+
+                                if flashable then
                                     LSF.FlashAction( aFlash, self.flashColor )
                                 elseif conf.flash.suppress and not self.flashWarnings[ aFlash ] then
                                     self.flashWarnings[ aFlash ] = true
