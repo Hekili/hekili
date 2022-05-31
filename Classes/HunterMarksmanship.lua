@@ -252,7 +252,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         },
         trueshot = {
             id = 288613,
-            duration = function () return ( legendary.eagletalons_true_focus.enabled and 20 or 15 ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
+            duration = function () return ( legendary.eagletalons_true_focus.enabled and 18 or 15 ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
             max_stack = 1,
         },
         volley = {
@@ -356,6 +356,102 @@ if UnitClassBase( "player" ) == "HUNTER" then
         end
     end )
 
+
+    do
+        local initialized = false
+        local setActive = false
+        local wasOutdoors = false
+        local focusedTrickeryCount = 0
+
+        local tricksApplied = 0
+        local tricksRemoved = 0
+
+        local vigilApplied = 0
+        local vigilRemoved = 0
+
+        local doubleApplied = 0
+        local doubleRemoved = 0
+
+
+
+        local gearCheck = {
+            PLAYER_ENTERING_WORLD = 1,
+            PLAYER_EQUIPMENT_CHANGED = 1,
+        }
+
+        local resets = {
+            PLAYER_ENTERING_WORLD = 1,
+            ZONE_CHANGED_NEW_AREA = 1,
+            FOG_OF_WAR_UPDATED = 1
+        }
+
+        local cleuEvents = {
+            SPELL_AURA_APPLIED = 1,
+            SPELL_AURA_APPLIED_DOSE = 1,
+            SPELL_AURA_REMOVED_DOSE = 1,
+            SPELL_CAST_START = 1,
+            SPELL_CAST_SUCCESS = 1,
+        }
+
+        local ft = CreateFrame( "Frame" )
+
+        ft:SetScript( "OnEvent", function( self, event, ... )
+            if gearCheck[ event ] then
+                if not initialized then
+                    gearCheck.PLAYER_ENTERING_WORLD = nil
+                    initialized = true
+                end
+
+                local hasSet = GetPlayerAuraBySpellID( 363666 ) ~= nil
+
+                if hasSet ~= setActive then
+                    setActive = hasSet
+                    focusedTrickeryCount = 0
+                end
+
+                return
+            end
+
+            if not setActive then return end
+
+            if event == "UNIT_DIED" then
+                if UnitIsUnit( ..., "player" ) then
+                    focusedTrickeryCount = 0
+                end
+                return
+            end
+
+            if resets[ event ] then
+                local isOutdoors = IsOutdoors()
+
+                if event == "FOG_OF_WAR_UPDATED" then
+                    if isOutdoors ~= wasOutdoors then
+                        wasOutdoors = isOutdoors
+                        focusedTrickeryCount = 0
+                    end
+
+                    return
+                end
+
+                wasOutdoors = isOutdoors
+                focusedTrickeryCount = 0
+                return
+            end
+
+            if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+                local _, subtype, _, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike = CombatLogGetCurrentEventInfo()
+
+                if subtype == "UNIT_DIED" and destGUID == state.GUID then
+                    focusedTrickeryCount = 0
+                    return
+                end
+
+                local now = GetTime()
+            end
+        end )
+
+    end
+
     spec:RegisterHook( "reset_precast", function ()
         if now - action.serpent_sting.lastCast < gcd.execute * 2 and target.unit == action.serpent_sting.lastUnit then
             applyDebuff( "target", "serpent_sting" )
@@ -393,7 +489,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 60,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -421,7 +517,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             spend = function ()
                 if buff.lock_and_load.up or buff.secrets_of_the_unblinking_vigil.up then return 0 end
-                return ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 35 )
+                return ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 35 )
             end,
             spendType = "focus",
 
@@ -440,7 +536,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 removeBuff( "double_tap" )
                 if buff.volley.down and buff.trick_shots.up then removeBuff( "trick_shots" ) end
                 if action.aimed_shot.cost == 0 and set_bonus.tier28_4pc > 0 then
-                    focused_trickery_count = focused_trickery_count + ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 35 )
+                    focused_trickery_count = focused_trickery_count + ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 35 )
                     if focused_trickery_count >= 40 then
                         applyBuff( "trick_shots" )
                         focused_trickery_count = focused_trickery_count % 40
@@ -458,7 +554,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -513,7 +609,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 20,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 30 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 30 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -547,7 +643,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 10 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 10 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -596,7 +692,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -708,7 +804,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = false,
@@ -825,7 +921,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -880,7 +976,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 10 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.25 or 1 ) * 10 end,
             spendType = "focus",
 
             startsCombat = true,
