@@ -1346,7 +1346,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
                     duration = 10,
                     max_stack = 1,
                 },
-            }
+            },
+
+            bind = { "blessing_of_spring", "blessing_of_autumn", "blessing_of_winter" }
         },
 
         blessing_of_autumn = {
@@ -1397,7 +1399,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
                         t.caster = "nobody"
                     end,
                 }
-            }
+            },
+
+            bind = { "blessing_of_summer", "blessing_of_spring", "blessing_of_winter" }
         },
 
         blessing_of_winter = {
@@ -1453,7 +1457,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
                         t.caster = "nobody"
                     end,
                 }
-            }
+            },
+
+            bind = { "blessing_of_summer", "blessing_of_autumn", "blessing_of_spring" }
         },
 
         blessing_of_spring = {
@@ -1505,7 +1511,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
                         t.caster = "nobody"
                     end,
                 }
-            }
+            },
+
+            bind = { "blessing_of_summer", "blessing_of_autumn", "blessing_of_winter" }
         },
 
         -- Paladin - Venthyr   - 316958 - ashen_hallow         (Ashen Hallow)
