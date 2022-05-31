@@ -1,5 +1,5 @@
 ## Fury Warrior
-## May 30, 2022
+## March 19, 2022
 
 ## Changes:
 ## - Added Pummel.
@@ -14,7 +14,6 @@
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
-actions.precombat+=/fleshcraft
 actions.precombat+=/recklessness,if=!runeforge.signet_of_tormented_kings.equipped
 actions.precombat+=/conquerors_banner
 
@@ -64,8 +63,7 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks,if=buff.recklessness.down&debuff.siegebreaker.down&buff.enrage.up
 actions+=/call_action_list,strict=1,name=aoe,if=spell_targets.whirlwind>1
-actions+=/call_action_list,name=single_target
-actions+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent&!buff.volatile_solvent_humanoid.up,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
+actions+=/run_action_list,name=single_target
 
 actions.aoe=cancel_buff,name=bladestorm,if=gcd.remains=0&soulbind.first_strike&buff.first_strike.remains&buff.enrage.remains<gcd
 actions.aoe+=/ancient_aftershock,if=buff.enrage.up&cooldown.recklessness.remains>5

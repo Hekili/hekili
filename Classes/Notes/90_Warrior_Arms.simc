@@ -1,12 +1,11 @@
 ## Arms Warrior
-## May 30, 2022
+## March 19, 2022
 
 ## Changes:
 ## - Update for 9.2; add target swapping for Execute/Condemn.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
-actions.precombat+=/fleshcraft
 
 ## Executed every time the actor is available.
 actions=charge
@@ -26,7 +25,6 @@ actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.rem
 actions+=/call_action_list,name=execute,strict=1,if=talent.massacre.enabled&target.health.pct<35|target.health.pct<20|covenant.venthyr&target.health.pct>80|cycle_for_execute|cycle_for_condemn
 actions+=/call_action_list,name=hac,strict=1,if=raid_event.adds.up|spell_targets.whirlwind>1
 actions+=/call_action_list,name=single_target
-actions+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent&!buff.volatile_solvent_humanoid.up,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 actions+=/victory_rush
 actions+=/impending_victory
 
