@@ -1134,15 +1134,14 @@ do
     local function rangeXY( info, notif )
         local tab = getOptionTable( info, notif )
 
-        local monitor = ( tonumber( GetCVar( 'gxMonitor' ) ) or 0 ) + 1
         local resolutions = { GetScreenResolutions() }
-        local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" )
+        local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" ) or "1280x720"
         local width, height = resolution:match( "(%d+)x(%d+)" )
 
         width = tonumber( width )
         height = tonumber( height )
 
-        for i, str in ipairs( resolutions ) do
+        for _, str in ipairs( resolutions ) do
             local w, h = str:match( "(%d+)x(%d+)" )
             w, h = tonumber( w ), tonumber( h )
 
@@ -4092,12 +4091,10 @@ end
 
 
 local snapshots = {
-    displays = {},
     snaps = {},
     empty = {},
 
-    display = "none",
-    snap = {},
+    selected = 0
 }
 
 
@@ -5273,10 +5270,8 @@ do
                                     type = 'execute',
                                     name = "",
                                     desc = "Open and view this priority pack and its action lists.",
-                                    order = 1.1,
-                                    width = 0.15,
-                                    image = GetAtlasFile( "shop-games-magnifyingglass" ),
-                                    imageCoords = GetAtlasCoords( "shop-games-magnifyingglass" ),
+                                    image = GetAtlasFile( "communities-icon-searchmagnifyingglass" ),
+                                    imageCoords = GetAtlasCoords( "communities-icon-searchmagnifyingglass" ),
                                     imageHeight = 24,
                                     imageWidth = 24,
                                     disabled = function( info, val )
@@ -5286,6 +5281,8 @@ do
                                     func = function ()
                                         ACD:SelectGroup( "Hekili", "packs", self.DB.profile.specs[ id ].package )
                                     end,
+                                    order = 1.1,
+                                    width = 0.15,
                                 },
 
                                 blankLine1 = {
@@ -6326,7 +6323,7 @@ do
 
                                 exportString = {
                                     type = "input",
-                                    name = "Priority Export String (CTRL+A to Select, CTRL+C to Copy)",
+                                    name = "Priority Export String\n|cFFFFFFFFPress CTRL+A to select, then CTRL+C to copy.|r",
                                     order = 3,
                                     get = function ()
                                         if rawget( Hekili.DB.profile.packs, shareDB.actionPack ) then
@@ -7730,7 +7727,7 @@ do
                             args = {
                                 exportString = {
                                     type = "input",
-                                    name = "Export String (CTRL+A to Select, CTRL+C to Copy)",
+                                    name = "Priority Export String\n|cFFFFFFFFPress CTRL+A to select, then CTRL+C to copy.|r",
                                     get = function( info )
                                         return self:SerializeActionPack( pack )
                                     end,
@@ -8491,7 +8488,7 @@ do
                                 local a = abilities[ token ] or {}
 
                                 -- a.key = token
-                                a.desc = GetSpellDescription()
+                                a.desc = GetSpellDescription( spellID )
                                 if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
                                 a.id = spellID
                                 a.spend = cost
@@ -8577,7 +8574,7 @@ do
                                 local a = abilities[ token ] or {}
 
                                 -- a.key = token
-                                a.desc = GetSpellDescription()
+                                a.desc = GetSpellDescription( spellID )
                                 if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
                                 a.id = spellID
                                 a.spend = cost
@@ -9335,71 +9332,42 @@ do
                             "snapshots by using the |cffffd100Snapshot|r binding ( |cffffd100" .. ( Hekili.DB.profile.toggles.snapshot.key or "NOT BOUND" ) .. "|r ) from the Toggles section.\n\n" ..
                             "You can also freeze the addon's recommendations using the |cffffd100Pause|r binding ( |cffffd100" .. ( Hekili.DB.profile.toggles.pause.key or "NOT BOUND" ) .. "|r ).  Doing so will freeze the addon's recommendations, allowing you to mouseover the display " ..
                             "and see which conditions were met to display those recommendations.  Press Pause again to unfreeze the addon.\n\n" ..
-                            "Finally, using the settings at the bottom of this panel, you can ask the addon to automatically generate a snapshot for you when no recommendations were able to be made.\n"
+                            "Finally, using the settings at the bottom of this panel, you can ask the addon to automatically generate a snapshot for you when no recommendations were able to be made.\n\n"
                         end,
                         fontSize = "medium",
                         order = 10,
                         width = "full",
                     },
 
-                    Display = {
-                        type = "select",
-                        name = "Display",
-                        desc = "Select the display to show (if any snapshots have been taken).",
-                        order = 11,
-                        values = function( info )
-                            local displays = snapshots.displays
-
-                            for k in pairs( ns.snapshots ) do
-                                displays[k] = k
-                            end
-
-                            return displays
-                        end,
-                        set = function( info, val )
-                            snapshots.display = val
-                        end,
-                        get = function( info )
-                            return snapshots.display
-                        end,
-                        width = 2.6
-                    },
-
                     SnapID = {
                         type = "select",
-                        name = "#",
-                        desc = "Select which snapshot to show for the selected display.",
-                        order = 12,
+                        name = "Select Snapshot",
+                        desc = "Select a Snapshot to export.",
                         values = function( info )
-                            for k, v in pairs( ns.snapshots ) do
-                                snapshots.snaps[ k ] = snapshots.snaps[ k ] or {}
-
-                                for idx in pairs( v ) do
-                                    snapshots.snaps[ k ][ idx ] = idx
-                                end
+                            for i, snapshot in ipairs( ns.snapshots ) do
+                                snapshots.snaps[ i ] = "|cFFFFD100" .. i .. ".|r " .. snapshot.header
                             end
 
-                            return snapshots.display and snapshots.snaps[ snapshots.display ] or snapshots.empty
+                            return snapshots.snaps
                         end,
                         set = function( info, val )
-                            snapshots.snap[ snapshots.display ] = val
+                            snapshots.selected = val
                         end,
                         get = function( info )
-                            return snapshots.snap[ snapshots.display ]
+                            return snapshots.selected
                         end,
-                        width = 0.7
+                        order = 12,
+                        width = "full"
                     },
 
                     Snapshot = {
                         type = 'input',
-                        name = "Snapshot",
-                        desc = "Copy this text and paste into a text editor or into Pastebin to review.",
-                        order = 13,
+                        name = "Export Snapshot",
+                        desc = "Click here and press CTRL+A, CTRL+C to copy the snapshot.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket.",
+                        order = 20,
                         get = function( info )
-                            local display = snapshots.display
-                            local snap = display and snapshots.snap[ display ]
-
-                            return snap and ( "Click here and press CTRL+A, CTRL+C to copy the snapshot.\n\n" .. ns.snapshots[ display ][ snap ] )
+                            if snapshots.selected == 0 then return "" end
+                            return ns.snapshots[ snapshots.selected ].log
                         end,
                         set = function() end,
                         width = "full"
@@ -9633,7 +9601,7 @@ end
 
 
 function Hekili:SetOption( info, input, ... )
-    local category, depth, option, subcategory = info[1], #info, info[#info], nil
+    local category, depth, option = info[1], #info, info[#info]
     local Rebuild, RebuildUI, RebuildScripts, RebuildOptions, RebuildCache, Select
     local profile = Hekili.DB.profile
 
@@ -10417,48 +10385,58 @@ local function decodeB64(str)
     return table.concat(bit8, "", 1, decoded_size)
 end
 
-local Compresser = LibStub:GetLibrary("LibCompress");
+
+local Compresser = LibStub:GetLibrary("LibCompress")
 local Encoder = Compresser:GetChatEncodeTable()
-local Serializer = LibStub:GetLibrary("AceSerializer-3.0");
+
+local LibDeflate = LibStub:GetLibrary("LibDeflate")
+local ldConfig = { level = 5 }
+
+local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
+
 
 
 local function TableToString(inTable, forChat)
-    local serialized = Serializer:Serialize(inTable);
-    local compressed = Compresser:CompressHuffman(serialized);
-    if(forChat) then
-        return encodeB64(compressed);
-    else
-        return Encoder:Encode(compressed);
-    end
+    local serialized = Serializer:Serialize( inTable )
+    local compressed = LibDeflate:CompressDeflate( serialized, ldConfig )
+
+    return format( "Hekili:%s", forChat and ( LibDeflate:EncodeForPrint( compressed ) ) or ( LibDeflate:EncodeForWoWAddonChannel( compressed ) ) )
 end
 
 
 local function StringToTable(inString, fromChat)
-    local decoded;
-    if(fromChat) then
-        decoded = decodeB64(inString);
+    local modern = false
+    if inString:sub( 1, 7 ) == "Hekili:" then
+        modern = true
+        inString = inString:sub( 8 )
+    end
+
+    local decoded, decompressed, errorMsg
+
+    if modern then
+        decoded = fromChat and LibDeflate:DecodeForPrint(inString) or LibDeflate:DecodeForWoWAddonChannel(inString)
+        if not decoded then return "Unable to decode." end
+
+        decompressed = LibDeflate:DecompressDeflate(decoded)
+        if not decompressed then return "Unable to decompress decoded string." end
     else
-        decoded = Encoder:Decode(inString);
+        decoded = fromChat and decodeB64(inString) or Encoder:Decode(inString)
+        if not decoded then return "Unable to decode." end
+
+        decompressed, errorMsg = Compresser:Decompress(decoded);
+        if not decompressed then return "Unable to decompress decoded string: " .. errorMsg end
     end
-    local decompressed, errorMsg = Compresser:Decompress(decoded);
-    if not(decompressed) then
-        return "Error decompressing: "..errorMsg;
-    end
+
     local success, deserialized = Serializer:Deserialize(decompressed);
-    if not(success) then
-        return "Error deserializing "..deserialized;
-    end
-    return deserialized;
+    if not success then return "Unable to deserialized decompressed string: " .. deserialized end
+
+    return deserialized
 end
 
 
 function ns.serializeDisplay( display )
     if not rawget( Hekili.DB.profile.displays, display ) then return nil end
     local serial = tableCopy( Hekili.DB.profile.displays[ display ] )
-
-    -- Change actionlist IDs to actionlist names so we can validate later.
-    if serial.precombatAPL ~= 0 then serial.precombatAPL = Hekili.DB.profile.actionLists[ serial.precombatAPL ].Name end
-    if serial.defaultAPL ~= 0 then serial.defaultAPL = Hekili.DB.profile.actionLists[ serial.defaultAPL ].Name end
 
     return TableToString( serial, true )
 end

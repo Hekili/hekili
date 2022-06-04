@@ -6,7 +6,7 @@ Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSeria
 Hekili.Version = GetAddOnMetadata( "Hekili", "Version" )
 
 local format = string.format
-local upper  = string.upper
+local insert, concat = table.insert, table.concat
 
 if Hekili.Version == ( "@" .. "project-version" .. "@" ) then
     Hekili.Version = format( "Dev-%s (%s)", GetBuildInfo(), date( "%Y%m%d" ) )
@@ -217,10 +217,6 @@ function Hekili:SaveDebugSnapshot( dispName )
 
 	for k, v in pairs( debug ) do
 		if not dispName or dispName == k then
-			if not snapshots[ k ] then
-				snapshots[ k ] = {}
-			end
-
 			for i = #v.log, v.index, -1 do
 				v.log[ i ] = nil
 			end
@@ -292,13 +288,42 @@ function Hekili:SaveDebugSnapshot( dispName )
 
             auraString = auraString .. "\n\n"
 
-            table.insert( v.log, 1, auraString )
+            insert( v.log, 1, auraString )
             if Hekili.TargetDebug and Hekili.TargetDebug:len() > 0 then
-                table.insert( v.log, 1, "targets:\n" .. Hekili.TargetDebug )
+                insert( v.log, 1, "targets:\n" .. Hekili.TargetDebug )
             end
-            table.insert( v.log, 1, self:GenerateProfile() )
-            table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
+            insert( v.log, 1, self:GenerateProfile() )
 
+            local custom = ""
+
+            local pack = self.DB.profile.packs[ state.system.packName ]
+            if not pack.builtIn then
+                custom = format( " |cFFFFA700(Custom: %s[%d])|r", state.spec.name, state.spec.id )
+            end
+
+            local overview = format( "%s%s; %s|r", state.system.packName, custom, dispName )
+            local recs = Hekili.DisplayPool[ dispName ].Recommendations
+
+            for i, rec in ipairs( recs ) do
+                if not rec.actionName then
+                    if i == 1 then
+                        overview = format( "%s - |cFF666666N/A|r", overview )
+                    end
+                    break
+                end
+                overview = format( "%s%s%s|cFFFFD100(%0.2f)|r", overview, ( i == 1 and " - " or ", " ), class.abilities[ rec.actionName ].name, rec.time )
+            end
+
+            insert( v.log, 1, overview )
+
+            local snap = {
+                header = "|cFFFFD100[" .. date( "%H:%M:%S" ) .. "]|r " .. overview,
+                log = concat( v.log, "\n" ),
+                data = ns.tableCopy( v.log ),
+                recs = {}
+            }
+
+            insert( snapshots, snap )
             snapped = true
 		end
     end
