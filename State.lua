@@ -1859,6 +1859,16 @@ local mt_state = {
 
             return t[k]
 
+        elseif k == "stationary_enemies" then
+            t[k] = select( 2, ns.getNumberTargets() )
+
+            if t.min_targets > 0 then t[k] = max( t.min_targets, t[k] ) end
+            if t.max_targets > 0 then t[k] = min( t.max_targets, t[k] ) end
+
+            t[k] = max( 1, t[k] )
+
+            return t[k]
+
         elseif k == "my_enemies" then
             -- The above is not needed as the nameplate target system will add missing enemies.
             t[k] = ns.numTargets()
@@ -5813,6 +5823,7 @@ function state.reset( dispName )
     state.max_targets = 0
 
     state.active_enemies = nil
+    state.stationary_enemies = nil
     state.my_enemies = nil
     state.true_active_enemies = nil
     state.true_my_enemies = nil
@@ -6227,7 +6238,6 @@ function state.reset( dispName )
             end
         end
 
-        -- print( GetTime(), "*** Light Reset", dispName, state.buff.casting.name, state.buff.casting.remains )
         state.resetType = "none"
     end
 
@@ -6280,7 +6290,6 @@ function state.advance( time )
     end
 
     if not state.resetting and not state.modified then
-        -- print( "Modified state." )
         state.modified = true
     end
 
