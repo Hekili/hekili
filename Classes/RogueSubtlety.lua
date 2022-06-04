@@ -848,7 +848,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             toggle = "cooldowns",
 
-            spend = function () return ( 20 - conduit.nimble_fingers.mod ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return ( 20 + conduit.nimble_fingers.mod ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -963,7 +963,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 15,
             gcd = "spell",
 
-            spend = function () return ( 35 - conduit.nimble_fingers.mod ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return ( 35 + conduit.nimble_fingers.mod ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
             startsCombat = false,
