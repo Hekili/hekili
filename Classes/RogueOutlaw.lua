@@ -1067,8 +1067,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if pvptalent.control_is_king.enabled then
                     gain( 15 * combo_points.current, "energy" )
                 end
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
-                spend( combo_points.current, "combo_points" )
+                spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
 
