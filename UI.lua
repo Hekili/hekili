@@ -2197,8 +2197,6 @@ do
 
 
     local LSM = LibStub("LibSharedMedia-3.0", true)
-    local LRC = LibStub("LibRangeCheck-2.0")
-    local LSR = LibStub("SpellRange-1.0")
 
     function Hekili:CreateButton( dispID, id )
         local d = dPool[ dispID ]
