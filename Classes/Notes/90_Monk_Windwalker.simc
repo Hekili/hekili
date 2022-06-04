@@ -1,5 +1,5 @@
 ## Windwalker Monk
-## May 23, 2022
+## June 4, 2022
 
 ## Charges:
 ## - Tweak Fists of Fury interrupt logic.
@@ -69,9 +69,9 @@ actions.cd_sef+=/gladiators_badge,if=pet.xuen_the_white_tiger.active|boss&fight_
 actions.cd_sef+=/use_item,name=the_first_sigil,if=pet.xuen_the_white_tiger.remains>15|cooldown.invoke_xuen_the_white_tiger.remains>60&fight_remains>300|boss&fight_remains<20
 actions.cd_sef+=/use_item,name=cache_of_acquired_treasures,if=active_enemies<2&buff.acquired_wand.up|active_enemies>1&buff.acquired_axe.up|boss&fight_remains<20
 actions.cd_sef+=/use_item,name=scars_of_fraternal_strife,if=!buff.scars_of_fraternal_strife_4.up|boss&fight_remains<35
+actions.cd_sef+=/use_item,name=earthbreakers_impact,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20&pet.xuen_the_white_tiger.remains<20|variable.hold_xuen
 actions.cd_sef+=/use_items,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20&pet.xuen_the_white_tiger.remains<20|variable.hold_xuen
-actions.cd_sef+=/touch_of_karma,if=talent.invoke_xuen.enabled&(fight_remains>90|pet.xuen_the_white_tiger.active|variable.hold_xuen|boss&fight_remains<16)
-actions.cd_sef+=/touch_of_karma,if=!talent.invoke_xuen.enabled&(fight_remains>159|variable.hold_xuen)
+actions.cd_sef+=/touch_of_karma,if=fight_remains>90|pet.xuen_the_white_tiger.active|variable.hold_xuen|boss&fight_remains<16
 actions.cd_sef+=/ancestral_call,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<20
 actions.cd_sef+=/blood_fury,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<20
 actions.cd_sef+=/fireblood,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<10
@@ -101,6 +101,7 @@ actions.cd_serenity+=/use_item,name=shadowgrasp_totem,if=pet.xuen_the_white_tige
 actions.cd_serenity+=/gladiators_badge,if=variable.serenity_burst
 actions.cd_serenity+=/use_item,name=the_first_sigil,if=variable.serenity_burst|boss&fight_remains<20
 actions.cd_serenity+=/use_items,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20|variable.hold_xuen
+actions.cd_serenity+=/use_item,name=earthbreakers_impact,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20|variable.hold_xuen
 actions.cd_serenity+=/faeline_stomp
 actions.cd_serenity+=/fallen_order
 actions.cd_serenity+=/bonedust_brew,if=boss&fight_remains<15|(chi>=2&(fight_remains>60&((cooldown.serenity.remains>10|buff.serenity.up|cooldown.serenity.up)&(pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>10|variable.hold_xuen)))|(fight_remains<=60&(pet.xuen_the_White_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>fight_remains)))
@@ -152,11 +153,10 @@ actions.weapons_of_order+=/call_action_list,name=cd_serenity,strict=1,if=talent.
 actions.weapons_of_order+=/rising_sun_kick,cycle_targets=1
 actions.weapons_of_order+=/blackout_kick,cycle_targets=1,if=combo_strike&cooldown.fists_of_fury.remains&cooldown.rising_sun_kick.remains&buff.weapons_of_order_ww.up
 actions.weapons_of_order+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.up
-actions.weapons_of_order+=/fists_of_fury,interrupt=1,interrupt_immediate=1,if=buff.weapons_of_order_ww.up&buff.storm_earth_and_fire.up&!set_bonus.tier28_2pc&active_enemies<2
-actions.weapons_of_order+=/fists_of_fury,if=buff.weapons_of_order_ww.up&buff.storm_earth_and_fire.up&set_bonus.tier28_2pc|active_enemies>=2&buff.weapons_of_order_ww.remains<1
+actions.weapons_of_order+=/fists_of_fury,if=buff.weapons_of_order_ww.up
 actions.weapons_of_order+=/whirling_dragon_punch
 actions.weapons_of_order+=/spinning_crane_kick,if=combo_strike&active_enemies>=3&buff.weapons_of_order_ww.up
-actions.weapons_of_order+=/fist_of_the_white_tiger,cycle_targets=1,if=chi=0&buff.weapons_of_order_ww.remains<4|chi<3
+actions.weapons_of_order+=/fist_of_the_white_tiger,cycle_targets=1,if=chi<3
 actions.weapons_of_order+=/expel_harm,if=chi.max-chi>=1
 actions.weapons_of_order+=/chi_burst,if=chi.max-chi>=(1+active_enemies>1)
 actions.weapons_of_order+=/tiger_palm,cycle_targets=1,if=chi=0&buff.weapons_of_order_ww.remains<4|(!talent.hit_combo|combo_strike)&chi.max-chi>=2
