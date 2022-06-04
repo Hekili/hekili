@@ -813,7 +813,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return 20 - conduit.nimble_fingers.mod end,
+            spend = function () return 20 + conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
