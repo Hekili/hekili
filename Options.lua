@@ -9344,8 +9344,13 @@ do
                         name = "Select Snapshot",
                         desc = "Select a Snapshot to export.",
                         values = function( info )
-                            for i, snapshot in ipairs( ns.snapshots ) do
-                                snapshots.snaps[ i ] = "|cFFFFD100" .. i .. ".|r " .. snapshot.header
+                            if #ns.snapshots == 0 then
+                                snapshots.snaps[ 0 ] = "No snapshots have been generated."
+                            else
+                                snapshots.snaps[ 0 ] = nil
+                                for i, snapshot in ipairs( ns.snapshots ) do
+                                    snapshots.snaps[ i ] = "|cFFFFD100" .. i .. ".|r " .. snapshot.header
+                                end
                             end
 
                             return snapshots.snaps
@@ -9357,7 +9362,8 @@ do
                             return snapshots.selected
                         end,
                         order = 12,
-                        width = "full"
+                        width = "full",
+                        disabled = function() return #ns.snapshots == 0 end,
                     },
 
                     Snapshot = {
@@ -9370,7 +9376,8 @@ do
                             return ns.snapshots[ snapshots.selected ].log
                         end,
                         set = function() end,
-                        width = "full"
+                        width = "full",
+                        disabled = function() return #ns.snapshots == 0 end,
                     },
                 }
             },

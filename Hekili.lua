@@ -328,11 +328,12 @@ function Hekili:SaveDebugSnapshot( dispName )
 		end
     end
 
-    if snapped and Hekili.DB.profile.screenshot then
-        Screenshot()
+    if snapped then
+        if Hekili.DB.profile.screenshot then Screenshot() end
+        return true
     end
 
-    return snapped
+    return false
 end
 
 Hekili.Snapshots = ns.snapshots

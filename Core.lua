@@ -2039,6 +2039,8 @@ function Hekili.Update()
                     else
                         snaps = dispName
                     end
+
+                    if Hekili.Config then LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "snapshots" ) end
                 end
             else
                 -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
