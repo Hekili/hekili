@@ -1074,7 +1074,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 if talent.prey_on_the_weak.enabled then applyDebuff( "target", "prey_on_the_weak" ) end
 
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
