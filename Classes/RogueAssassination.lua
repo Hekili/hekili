@@ -1616,10 +1616,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
-                if combo_points.current == animacharged_cp then
-                    removeBuff( "echoing_reprimand_" .. combo_points.current )
                 end
-                spend( combo_points.current, "combo_points" )
+                spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
             end,
