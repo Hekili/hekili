@@ -9377,7 +9377,7 @@ do
                         end,
                         set = function() end,
                         width = "full",
-                        disabled = function() return #ns.snapshots == 0 end,
+                        hidden = function() return snapshots.selected == 0 or #ns.snapshots == 0 end,
                     },
                 }
             },
