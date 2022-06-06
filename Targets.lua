@@ -23,6 +23,7 @@ local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
 local FeignEvent = ns.FeignEvent
 
+local format = string.format
 local insert, remove, wipe = table.insert, table.remove, table.wipe
 
 local unitIDs = { "target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5", "arena1", "arena2", "arena3", "arena4", "arena5" }
@@ -111,7 +112,7 @@ do
         if UnitIsDead( "pet" ) then return false, "Pet is dead." end
 
         -- If we have a target and the target is out of our pet's range, don't use pet detection.
-        if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot, "target" ) then return false, "Player has target and player's target not in range of pet." end
+        if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot ) then return false, "Player has target and player's target not in range of pet." end
         return true
     end
 
@@ -152,17 +153,19 @@ end
 -- = number < 0     Exclude if debuff ID abs( number ) is active on unit.
 -- = number > 0     Exclude if buff ID number is active on unit.
 local enemyExclusions = {
-    ["23775"]  = true,      -- Head of the Horseman
-    ["120651"] = true,      -- Explosives
-    ["156227"] = true,      -- Neferset Denizen
-    ["160966"] = true,      -- Thing from Beyond?
-    ["161895"] = true,      -- Thing from Beyond?
-    ["157452"] = true,      -- Nightmare Antigen in Carapace
-    ["158041"] = 310126,    -- N'Zoth with Psychic Shell
-    ["164698"] = true,      -- Tor'ghast Junk
-    ["177117"] = 355790,    -- Ner'zhul: Orb of Torment (Protected by Eternal Torment)
-    ["176581"] = true,      -- Painsmith:  Spiked Ball
+    [23775]  = true,      -- Head of the Horseman
+    [120651] = true,      -- Explosives
+    [156227] = true,      -- Neferset Denizen
+    [160966] = true,      -- Thing from Beyond?
+    [161895] = true,      -- Thing from Beyond?
+    [157452] = true,      -- Nightmare Antigen in Carapace
+    [158041] = 310126,    -- N'Zoth with Psychic Shell
+    [164698] = true,      -- Tor'ghast Junk
+    [177117] = 355790,    -- Ner'zhul: Orb of Torment (Protected by Eternal Torment)
+    [176581] = true,      -- Painsmith:  Spiked Ball
+    [186150] = true,      -- Soul Fragment (Gavel of the First Arbiter)
 }
+
 
 local f = CreateFrame("Frame")
 f:RegisterEvent( "NAME_PLATE_UNIT_ADDED" )
@@ -170,8 +173,6 @@ f:RegisterEvent( "NAME_PLATE_UNIT_REMOVED" )
 f:RegisterEvent( "UNIT_FLAGS" )
 
 f:SetScript( "OnEvent", function( self, event, unit )
-    -- print( "Nameplates", event )
-
     if UnitIsFriend( "player", unit ) then
         if event ~= "UNIT_FLAGS" then return end
         local id = UnitGUID( unit )
@@ -205,6 +206,7 @@ Hekili:ProfileFrame( "NamePlateWatcherFrame", f )
 local RC = LibStub("LibRangeCheck-2.0")
 
 local lastCount = 1
+local lastStationary = 1
 local lastCycle = 0
 
 local guidRanges = {}
@@ -271,11 +273,18 @@ do
         return next, counted, nil
     end
 
+    local function FindExclusionAuraByID( unit, spellID )
+        if spellID < 0 then
+            return FindUnitDebuffByID( unit, -spellID ) ~= nil
+        end
+        return FindUnitBuffByID( unit, spellID ) ~= nil
+    end
+
     -- New Nameplate Proximity System
     function ns.getNumberTargets( targetChanged )
         local now = GetTime()
 
-        if now - lastCycle < 0.2 and not targetChanged then return lastCount end
+        if now - lastCycle < 0.2 and not targetChanged then return lastCount, lastStationary end
         lastCycle = now
 
         if now - Hekili.lastAudit > 1 then
@@ -288,7 +297,7 @@ do
 
         wipe( counted )
 
-        local count = 0
+        local count, stationary = 0, 0
 
         Hekili.TargetDebug = ""
 
@@ -303,16 +312,13 @@ do
                 for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local npcid = guid:match( "(%d+)-%x-$" )
+                        npcid = tonumber(npcid)
+
                         local excluded = enemyExclusions[ npcid ]
 
                         -- If our table has a number, unit is ruled out only if the buff is present.
                         if excluded and type( excluded ) == "number" then
-                            if excluded < 0 then
-                                -- We used a negative number to indicate that it's a debuff.
-                                excluded = FindUnitDebuffByID( unit, -1 * excluded )
-                            else
-                                excluded = FindUnitBuffByID( unit, excluded )
-                            end
+                            excluded = FindExclusionAuraByID( unit, excluded )
                         end
 
                         if not excluded and checkPets then
@@ -332,9 +338,16 @@ do
 
                         if not excluded then
                             local rate, n = Hekili:GetTTD( unit )
-                            Hekili.TargetDebug = format( "%s    %-12s - %2d - %s - %.2f - %d - %s\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0, unit and UnitName( unit ) or "Unknown" )
                             count = count + 1
                             counted[ guid ] = true
+
+                            local moving = GetUnitSpeed( unit ) > 0
+
+                            if not moving then
+                                stationary = stationary + 1
+                            end
+
+                            Hekili.TargetDebug = format( "%s    %-12s - %2d - %s - %.2f - %d - %s %s\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0, unit and UnitName( unit ) or "Unknown", ( moving and "(moving)" or "" ) )
                         end
                     end
 
@@ -347,16 +360,12 @@ do
                     if guid and counted[ guid ] == nil then
                         if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                             local npcid = guid:match( "(%d+)-%x-$" )
+                            npcid = tonumber(npcid)
+
                             local excluded = enemyExclusions[ npcid ]
 
                             if excluded and type( excluded ) == "number" then
-                                -- If our table has a number, unit is ruled out only if the buff is present.
-                                if excluded < 0 then
-                                    -- We used a negative number to indicate that it's a debuff.
-                                    excluded = FindUnitDebuffByID( unit, -1 * excluded )
-                                else
-                                    excluded = FindUnitBuffByID( unit, excluded )
-                                end
+                                excluded = FindExclusionAuraByID( unit, excluded )
                             end
 
                             if not excluded and checkPets then
@@ -376,9 +385,16 @@ do
 
                             if not excluded then
                                 local rate, n = Hekili:GetTTD(unit)
-                                Hekili.TargetDebug = format( "%s    %-12s - %2d - %s - %.2f - %d - %s\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0, unit and UnitName( unit ) or "Unknown" )
                                 count = count + 1
                                 counted[ guid ] = true
+
+                                local moving = GetUnitSpeed( unit ) > 0
+
+                                if not moving then
+                                    stationary = stationary + 1
+                                end
+
+                                Hekili.TargetDebug = format( "%s    %-12s - %2d - %s - %.2f - %d - %s %s\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0, unit and UnitName( unit ) or "Unknown", ( moving and "(moving)" or "" ) )
                             end
 
                             counted[ guid ] = counted[ guid ] or false
@@ -394,30 +410,39 @@ do
             for guid, seen in pairs(db) do
                 if counted[ guid ] == nil then
                     local npcid = guid:match("(%d+)-%x-$")
+                    npcid = tonumber(npcid)
+
                     local excluded = enemyExclusions[ npcid ]
+
+                    local unit
 
                     -- If our table has a number, unit is ruled out only if the buff is present.
                     if excluded and type( excluded ) == "number" then
-                        local unit = Hekili:GetUnitByGUID( guid )
+                        unit = Hekili:GetUnitByGUID( guid )
 
                         if unit then
                             if UnitIsUnit( unit, "target" ) then
                                 excluded = false
-                            elseif excluded < 0 then
-                                -- We used a negative number to indicate that it's a debuff.
-                                excluded = FindUnitDebuffByID( unit, -1 * excluded )
                             else
-                                excluded = FindUnitBuffByID( unit, excluded )
+                                if excluded and type( excluded ) == "number" then
+                                    excluded = FindExclusionAuraByID( unit, excluded )
+                                end
                             end
-                        else
                             excluded = false
                         end
                     end
 
                     if not excluded and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then
-                        Hekili.TargetDebug = format("%s    %-12s - %2d - %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid)
                         count = count + 1
                         counted[ guid ] = true
+
+                        local moving = unit and GetUnitSpeed( unit ) > 0
+
+                        if not moving then
+                            stationary = stationary + 1
+                        end
+
+                        Hekili.TargetDebug = format("%s    %-12s - %2d - %s %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid, ( moving and "(moving)" or "" ) )
                     else
                         counted[ guid ] = false
                     end
@@ -428,9 +453,16 @@ do
         local targetGUID = UnitGUID( "target" )
         if targetGUID then
             if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and UnitInPhase("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
-                Hekili.TargetDebug = format("%s    %-12s - %2d - %s\n", Hekili.TargetDebug, "target", 0, targetGUID )
                 count = count + 1
                 counted[ targetGUID ] = true
+
+                local moving = GetUnitSpeed( "target" ) > 0
+
+                if not moving then
+                    stationary = stationary + 1
+                end
+
+                Hekili.TargetDebug = format("%s    %-12s - %2d - %s %s\n", Hekili.TargetDebug, "target", 0, targetGUID, ( moving and "(moving)" or "" ) )
             else
                 counted[ targetGUID ] = false
             end
@@ -438,12 +470,13 @@ do
 
         count = max( 1, count )
 
-        if count ~= lastCount then
+        if count ~= lastCount or stationary ~= lastStationary then
             lastCount = count
+            lastStationary = stationary
             Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" )
         end
 
-        return count
+        return count, stationary
     end
 end
 

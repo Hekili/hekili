@@ -10,19 +10,13 @@ local PTR = ns.PTR
 local TTD = ns.TTD
 
 local formatKey = ns.formatKey
-local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
-local getSpecializationInfo = ns.getSpecializationInfo
-local getSpecializationKey = ns.getSpecializationKey
-local GroupMembers = ns.GroupMembers
 
 local abs = math.abs
-local lower, match, upper = string.lower, string.match, string.upper
-local string_format = string.format
-local insert, remove, sort, unpack, wipe = table.insert, table.remove, table.sort, table.unpack, table.wipe
+local lower = string.lower
+local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
 local GetItemInfo = ns.CachedGetItemInfo
 local RC = LibStub( "LibRangeCheck-2.0" )
-
 
 -- Abandoning AceEvent in favor of darkend's solution from:
 -- http://andydote.co.uk/2014/11/23/good-design-in-warcraft-addons.html
@@ -629,7 +623,7 @@ do
             end
         end
 
-        table.sort( itemList, itemSorter )
+        sort( itemList, itemSorter )
 
         class.essence_unscripted = ( class.active_essence and not Hekili:IsEssenceScripted( class.active_essence ) ) or false
 
@@ -1058,8 +1052,6 @@ do
             end
         end
     end )
-
-    local abs = math.abs
 
     function Hekili:GetMacroCastTarget( spell, castTime, source )
         local ability = class.abilities[ spell ]
