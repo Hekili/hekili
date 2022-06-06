@@ -437,109 +437,86 @@ do
     end
 
     local timely = {
-        { "^(d?e?buff%.[a-z0-9_]+)%.down$",         "%1.remains" },
-        { "^(dot%.[a-z0-9_]+)%.down$",              "%1.remains" },
-        { "^!(d?e?buff%.[a-z0-9_]+)%.up$",          "%1.remains" },
-        { "^!(dot%.[a-z0-9_]+)%.up$",               "%1.remains" },
-        { "^!(d?e?buff%.[a-z0-9_]+)%.react$",       "%1.remains" },
-        { "^!(dot%.[a-z0-9_]+)%.react$",            "%1.remains" },
-        { "^!(d?e?buff%.[a-z0-9_]+)%.ticking$",     "%1.remains" },
-        { "^!(dot%.[a-z0-9_]+)%.ticking$",          "%1.remains" },
-        { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$",    "%1.remains" },
-        { "^!ticking",                              "remains" },
-        { "^!?remains$",                            "remains" },
-        { "^refreshable",                           "time_to_refresh" },
-        { "^gcd.remains$",                          "gcd.remains" },
-        { "^gcd.remains<?=(.+)$",                   "gcd.remains-%1" },
+        { "^(d?e?buff%.[a-z0-9_]+)%.down$"     , "%1.remains"      },
+        { "^(dot%.[a-z0-9_]+)%.down$"          , "%1.remains"      },
+        { "^!(d?e?buff%.[a-z0-9_]+)%.up$"      , "%1.remains"      },
+        { "^!(dot%.[a-z0-9_]+)%.up$"           , "%1.remains"      },
+        { "^!(d?e?buff%.[a-z0-9_]+)%.react$"   , "%1.remains"      },
+        { "^!(dot%.[a-z0-9_]+)%.react$"        , "%1.remains"      },
+        { "^!(d?e?buff%.[a-z0-9_]+)%.ticking$" , "%1.remains"      },
+        { "^!(dot%.[a-z0-9_]+)%.ticking$"      , "%1.remains"      },
+        { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$", "%1.remains"      },
+        { "^!ticking"                          , "remains"         },
+        { "^!?remains$"                        , "remains"         },
+        { "^refreshable"                       , "time_to_refresh" },
 
-        { "^swing.([a-z_]+).remains$",              "swing.%1.remains" },
+        { "^gcd.remains$"            , "gcd.remains"      },
+        { "^gcd.remains<?=(.+)$"     , "gcd.remains-%1"   },
+        { "^swing.([a-z_]+).remains$", "swing.%1.remains" },
 
-        { "^(.-)%.deficit<=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },
-        { "^(.-)%.deficit>=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },
+        { "^(.-)%.deficit<=?(.-)$"         , "0.01+%1.timeTo(%1.max-(%2))" },
+        { "^(.-)%.deficit>=?(.-)$"         , "0.01+%1.timeTo(%1.max-(%2))" },
 
-        { "^cooldown%.([a-z0-9_]+)%.ready$",        "cooldown.%1.remains" },
-        { "^cooldown%.([a-z0-9_]+)%.up$",           "cooldown.%1.remains" },
-        { "^!?cooldown%.([a-z0-9_]+)%.remains$",    "cooldown.%1.remains" },
+        { "^cooldown%.([a-z0-9_]+)%.ready$"                      , "cooldown.%1.remains"                      },
+        { "^cooldown%.([a-z0-9_]+)%.up$"                         , "cooldown.%1.remains"                      },
+        { "^!?cooldown%.([a-z0-9_]+)%.remains$"                  , "cooldown.%1.remains"                      },
+        { "^charges_fractional=(.-)$"                            , "(%1-charges_fractional)*recharge"         },
+        { "^charges_fractional>=?(.-)$"                          , "0.01+(%1-charges_fractional)*recharge"    },
+        { "^charges=(.-)$"                                       , "(%1-charges_fractional)*recharge"         },
+        { "^charges>=?(.-)$"                                     , "0.01+(%1-charges_fractional)*recharge"    },
+        { "^(cooldown%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$", "(%2-%1.charges_fractional)*%1.recharge"   },
+        { "^(cooldown%.[a-z0-9_]+)%.charges>=?(.-)$"             , "(1+%2-%1.charges_fractional)*recharge"    },
+        { "^(action%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$"  , "(%2-%1.charges_fractional)*%1.recharge"   },
+        { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$"               , "(1+%2-%1.charges_fractional)*%1.recharge" },
+        { "^full_recharge_time[<>]=?(.-)$"                       , "0.01+full_recharge_time-%1"               },
+        { "^!(action%.[a-z0-9]+)%.executing$"                    , "%1.execute_remains"                       },
+        { "^!(action%.[a-z0-9]+)%.channeling$"                   , "%1.channel_remains"                       },
+        { "^(.-time_to_die)<=?(.-)$"                             , "%1-%2"                                    },
 
-        { "^charges_fractional=(.-)$",              "(%1-charges_fractional)*recharge" },
-        { "^charges_fractional>=?(.-)$",            "0.01+(%1-charges_fractional)*recharge" },
-        { "^charges=(.-)$",                         "(%1-charges_fractional)*recharge" },
-        { "^charges>=?(.-)$",                       "0.01+(%1-charges_fractional)*recharge" },
+        { "^(.-)%.time_to_(.-)<=?(.-)$", "%1.time_to_%2-%3" },
 
-        { "^(cooldown%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$",
-                                                    "(%2-%1.charges_fractional)*%1.recharge" },
+        { "^debuff%.festering_wound%.stack[>=]=?(.-)$" , "time_to_wounds(%1)" },
+        { "^dot%.festering_wound%.stack[>=]=?(.-)$"    , "time_to_wounds(%1)" },
+        { "^rune<=?(.-)$"                              , "rune.timeTo(%1)"    },
+        { "^rune>=?(.-)$"                              , "rune.timeTo(1+%1)"  },
+        { "^rune.current<=?(.-)$"                      , "rune.timeTo(%1)"    },
+        { "^rune.current>=?(.-)$"                      , "rune.timeTo(1+%1)"  },
 
-        { "^(cooldown%.[a-z0-9_]+)%.charges>=?(.-)$",
-                                                    "(1+%2-%1.charges_fractional)*recharge" },
+        { "^master_assassin_remains[<=]+(.-)$"      , "0.01+master_assassin_remains-(%1)"                              },
+        { "^exsanguinated$"                         , "remains"                                                        }, -- Assassination
+        { "^!?(debuff%.[a-z0-9_]+)%.exsanguinated$" , "%1.remains"                                                     }, -- Assassination
+        { "^!?(dot%.[a-z0-9_]+)%.exsanguinated$"    , "%1.remains"                                                     }, -- Assassination
+        { "^ss_buffed$"                             , "remains"                                                        }, -- Assassination
+        { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$"     , "%1.remains"                                                     }, -- Assassination
+        { "^!?(dot%.[a-z0-9_]+)%.ss_buffed$"        , "%1.remains"                                                     }, -- Assassination
+        { "^dot%.([a-z0-9_]+).haste_pct_next_tick$" , "0.01+query_time+(dot.%1.last_tick+dot.%1.tick_time)-query_time" }, -- Assassination
+        { "^!?stealthed.all$"                       , "stealthed.remains"                                              },
+        { "^!?stealthed.mantle$"                    , "stealthed.mantle_remains"                                       },
+        { "^!?stealthed.sepsis$"                    , "stealthed.sepsis_remains"                                       },
+        { "^!?stealthed.rogue$"                     , "stealthed.rogue_remains"                                        },
 
-        { "^(action%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$",
-                                                    "(%2-%1.charges_fractional)*%1.recharge" },
+        { "^!?time_to_hpg$"           , "time_to_hpg"          }, -- Retribution Paladin
+        { "^!?time_to_hpg[<=]=?(.-)$" , "time_to_hpg-%1"       }, -- Retribution Paladin
+        { "^!?consecration.up"        , "consecration.remains" }, -- Prot        Paladin
 
-        { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$",
-                                                    "(1+%2-%1.charges_fractional)*%1.recharge" },
+        { "^!?contagion<=?(.-)"  , "contagion-%1"           }, -- Affliction Warlock
+        { "^time_to_imps%.(.+)$" , "time_to_imps[%1]"       }, -- Demo       Warlock
 
-        { "^full_recharge_time[<>]=?(.-)$",         "0.01+full_recharge_time-%1" },
+        { "^active_bt_triggers$"       , "time_to_bt_triggers(0)"    }, -- Feral Druid w/ Bloodtalons.
+        { "^active_bt_triggers<?=0$"   , "time_to_bt_triggers(0)"    }, -- Feral Druid w/ Bloodtalons.
+        { "^active_bt_triggers<(%d+)$" , "time_to_bt_triggers(%1-1)" }, -- Feral Druid w/ Bloodtalons.
 
-        { "^!(action%.[a-z0-9]+)%.executing$",      "%1.execute_remains" },
-        { "^!(action%.[a-z0-9]+)%.channeling$",     "%1.channel_remains" },
-        { "^(.-time_to_die)<=?(.-)$",               "%1-%2" },
-        { "^(.-)%.time_to_(.-)<=?(.-)$",            "%1.time_to_%2-%3" },
+        { "^!?action%.([a-z0-9_]+)%.in_flight$"               , "action.%1.in_flight_remains"    }, -- Fire Mage, but others too, potentially.
+        { "^!?action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$", "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
 
-        { "^debuff%.festering_wound%.stack[>=]=?(.-)$", -- UH DK helper during Unholy Frenzy.
-                                                    "time_to_wounds(%1)" },
-
-        { "^dot%.festering_wound%.stack[>=]=?(.-)$",    -- UH DK helper during Unholy Frenzy.
-                                                    "time_to_wounds(%1)" },
-
-        { "^master_assassin_remains[<=]+(.-)$",
-                                                    "0.01+master_assassin_remains-(%1)" },
-
-        { "^exsanguinated$",                        "remains" }, -- Assassination
-        { "^!?(debuff%.[a-z0-9_]+)%.exsanguinated$",
-                                                    "%1.remains" }, -- Assassination
-
-        { "^!?(dot%.[a-z0-9_]+)%.exsanguinated$",   "%1.remains" }, -- Assassination
-        { "^ss_buffed$",                            "remains" }, -- Assassination
-        { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$",    "%1.remains" }, -- Assassination
-        { "^!?(dot%.[a-z0-9_]+)%.ss_buffed$",       "%1.remains" }, -- Assassination
-        { "^dot%.([a-z0-9_]+).haste_pct_next_tick$",
-                                                    "0.01+query_time+(dot.%1.last_tick+dot.%1.tick_time)-query_time" }, -- Assassination
-
-        { "^!?stealthed.all$",                      "stealthed.remains" },
-        { "^!?stealthed.mantle$",                   "stealthed.mantle_remains" },
-        { "^!?stealthed.sepsis$",                   "stealthed.sepsis_remains" },
-        { "^!?stealthed.rogue$",                    "stealthed.rogue_remains" },
-
-        { "^!?time_to_hpg$",                        "time_to_hpg" }, -- Retribution Paladin
-        { "^!?time_to_hpg[<=]=?(.-)$",              "time_to_hpg-%1" }, -- Retribution Paladin
-
-        { "^!?consecration.up",                     "consecration.remains" }, -- Prot Paladin
-        { "^!?contagion<=?(.-)",                    "contagion-%1" }, -- Affliction Warlock
-
-        { "^time_to_imps%.(.+)$",                   "time_to_imps[%1]" }, -- Demo Warlock
-
-        { "^active_bt_triggers$",                   "time_to_bt_triggers(0)" }, -- Feral Druid w/ Bloodtalons.
-        { "^active_bt_triggers<?=0$",               "time_to_bt_triggers(0)" }, -- Feral Druid w/ Bloodtalons.
-        { "^active_bt_triggers<(%d+)$",             "time_to_bt_triggers(%1-1)" }, -- Feral Druid w/ Bloodtalons.
-
-        { "^!?action%.([a-z0-9_]+)%.in_flight$",    "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
-
-        { "^!?action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$",
-                                                    "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
-
-        { "^!?variable%.([a-z0-9_]+)$",             "safenum(variable.%1)" },
-
-        { "^!?variable%.([a-z0-9_]+)<=?(.-)$",
-                                                    "safenum(variable.%1)-%2" },
-
-        { "^raid_events%.([a-z0-9_]+)%.remains$",   "raid_events.%1.remains" },
-        { "^raid_events%.([a-z0-9_]+)%.remains$<=?(.-)$",
-                                                    "raid_events.%1.remains-%2" },
-        { "^!?raid_events%.([a-z0-9_]+)%.up$",      "raid_events.%1.up" },
-
-        { "^!?(pet%.[a-z0-9_]+)%.up$",              "%1.remains" },
-        { "^!?(pet%.[a-z0-9_]+)%.active$",          "%1.remains" },
-    }
+        { "^!?variable%.([a-z0-9_]+)$", "safenum(variable.%1)"                        },
+        { "^!?variable%.([a-z0-9_]+)<=?(.-)$", "safenum(variable.%1)-%2"              },
+        { "^raid_events%.([a-z0-9_]+)%.remains$", "raid_events.%1.remains"            },
+        { "^raid_events%.([a-z0-9_]+)%.remains$<=?(.-)$", "raid_events.%1.remains-%2" },
+        { "^!?raid_events%.([a-z0-9_]+)%.up$", "raid_events.%1.up"                    },
+        { "^!?(pet%.[a-z0-9_]+)%.up$", "%1.remains"                                   },
+        { "^!?(pet%.[a-z0-9_]+)%.active$", "%1.remains"                               },
+                                                                                      }
 
 
     -- Things that tick down.
