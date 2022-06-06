@@ -677,25 +677,22 @@ if UnitClassBase( "player" ) == "ROGUE" then
             usable = function() return combo_points.current > 0 end,
 
             handler = function ()
-                local use_combo = combo_points.current == animacharged_cp and 7 or combo_points.current
-
-                if talent.alacrity.enabled and use_combo > 4 then
+                if talent.alacrity.enabled and effective_combo_points > 4 then
                     addStack( "alacrity", 20, 1 )
                 end
 
-                applyDebuff( "target", "between_the_eyes", 3 * use_combo )
+                applyDebuff( "target", "between_the_eyes", 3 * effective_combo_points )
 
                 if azerite.deadshot.enabled then
                     applyBuff( "deadshot" )
                 end
 
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
-
                 if legendary.greenskins_wickers.enabled and use_combo >= 5 then
                     applyBuff( "greenskins_wickers" )
                 end
 
-                spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
+                removeBuff( "echoing_reprimand_" .. combo_points.current )
+                spend( combo_points.current, "combo_points" )
             end,
         },
 
@@ -813,7 +810,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return 20 - conduit.nimble_fingers.mod end,
+            spend = function () return 20 + conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
@@ -864,8 +861,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 removeBuff( "storm_of_steel" )
 
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
-                spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
+                removeBuff( "echoing_reprimand_" .. combo_points.current )
+                spend( combo_points.current, "combo_points" )
             end,
         },
 
@@ -934,7 +931,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 15,
             gcd = "spell",
 
-            spend = function () return 35 - conduit.nimble_fingers.mod end,
+            spend = function () return 35 + conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
@@ -1067,7 +1064,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if pvptalent.control_is_king.enabled then
                     gain( 15 * combo_points.current, "energy" )
                 end
-                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( combo_points.current, "combo_points" )
             end,
         },

@@ -229,14 +229,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return combo_points.max
     end )
 
-    -- Commented out in SimC, but my implementation should hold up vs. theirs.
-    -- APLs will use effective_combo_points.
-    spec:RegisterStateExpr( "animacharged_cp", function ()
-        local n = buff.echoing_reprimand.stack
-        if n > 0 then return n end
-        return combo_points.max
-    end )
-
     spec:RegisterStateExpr( "effective_combo_points", function ()
         if buff.echoing_reprimand.up and combo_points.current == buff.echoing_reprimand.stack then
             return 7
@@ -1291,7 +1283,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return combo_points.current > 0 end,
 
             handler = function ()
-                applyDebuff( "target", "crimson_tempest", 2 + ( combo_points.current * 2 ) )
+                applyDebuff( "target", "crimson_tempest", 2 + ( effective_combo_points * 2 ) )
                 debuff.crimson_tempest.pmultiplier = persistent_multiplier
                 debuff.crimson_tempest.exsanguinated_rate = 1
                 debuff.crimson_tempest.exsanguinated = false
@@ -1301,9 +1293,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     debuff.crimson_tempest.vendetta_exsg = true
                 end
 
-                if combo_points.current == animacharged_cp then
-                    removeBuff( "echoing_reprimand_" .. combo_points.current )
-                end
+                removeBuff( "echoing_reprimand_" .. combo_points.current )
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1317,7 +1307,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return 20 - conduit.nimble_fingers.mod end,
+            spend = function () return 20 + conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
@@ -1416,10 +1406,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     buff.slice_and_dice.expires = buff.slice_and_dice.expires + combo_points.current * 3
                 end
 
-                applyBuff( "envenom", 1 + combo_points.current )
-                if combo_points.current == animacharged_cp then
-                    removeBuff( "echoing_reprimand_" .. combo_points.current )
-                end
+                applyBuff( "envenom", 1 + effective_combo_points )
+                removeBuff( "echoing_reprimand_" .. combo_points.current )
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1507,7 +1495,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 15,
             gcd = "spell",
 
-            spend = function () return 35 - conduit.nimble_fingers.mod end,
+            spend = function () return 35 + conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
@@ -1616,9 +1604,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
-                if combo_points.current == animacharged_cp then
-                    removeBuff( "echoing_reprimand_" .. combo_points.current )
-                end
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1777,9 +1762,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyBuff( "scent_of_blood", dot.rupture.remains )
                 end
 
-                if combo_points.current == animacharged_cp then
-                    removeBuff( "echoing_reprimand_" .. combo_points.current )
-                end
+                removeBuff( "echoing_reprimand_" .. combo_points.current )
                 spend( combo_points.current, "combo_points" )
             end,
         },
