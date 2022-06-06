@@ -1061,11 +1061,15 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             startsCombat = true,
             texture = 132298,
-
+                
+            usable = function() return combo_points.current > 0 end,
             handler = function ()
                 applyDebuff( "kidney_shot", 1 + combo_points.current )
+                if talent.alacrity.enabled and combo_points.current > 4 then
+                    addStack( "alacrity", 20, 1 )
+                end
                 if pvptalent.control_is_king.enabled then
-                    gain( 15 * combo_points.current, "energy" )
+                    gain( 10 * combo_points.current, "energy" )
                 end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
