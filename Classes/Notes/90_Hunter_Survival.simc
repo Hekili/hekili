@@ -1,5 +1,5 @@
 # Survival Hunter
-# May 13, 2022
+# June 4, 2022
 
 # Convert focus overcap checks to respect new class settings / use new check_focus_overcap expression.
 
@@ -86,7 +86,6 @@ actions.cleave+=/flanking_strike,if=check_focus_overcap
 actions.cleave+=/kill_command,cycle_targets=1,if=dot.pheromone_bomb.ticking&set_bonus.tier28_2pc&!buff.mad_bombardier.up
 actions.cleave+=/kill_shot,if=buff.flayers_mark.up
 actions.cleave+=/flayed_shot,cycle_targets=1
-actions.cleave+=/serpent_sting,cycle_targets=1,if=refreshable&!ticking&next_wi_bomb.volatile&target.time_to_die>15&focus+cast_regen>35&active_enemies<=4
 actions.cleave+=/wildfire_bomb,if=!dot.wildfire_bomb.ticking&!set_bonus.tier28_2pc|raid_event.adds.exists&(charges_fractional>1.2&active_enemies>4|charges_fractional>1.4&active_enemies>3|charges_fractional>1.6)|!raid_event.adds.exists&charges_fractional>1.5
 actions.cleave+=/butchery,if=(!next_wi_bomb.shrapnel|!talent.wildfire_infusion.enabled)&cooldown.wildfire_bomb.full_recharge_time>spell_targets%2
 actions.cleave+=/carve,if=cooldown.wildfire_bomb.full_recharge_time>spell_targets%2
