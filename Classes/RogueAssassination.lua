@@ -234,7 +234,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterStateExpr( "animacharged_cp", function ()
         local n = buff.echoing_reprimand.stack
         if n > 0 then return n end
-        return combo_points.max
+        return 0
     end )
 
     spec:RegisterStateExpr( "effective_combo_points", function ()
