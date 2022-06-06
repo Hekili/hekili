@@ -687,7 +687,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     applyBuff( "deadshot" )
                 end
 
-                if legendary.greenskins_wickers.enabled and use_combo >= 5 then
+                if legendary.greenskins_wickers.enabled and effective_combo_points >= 5 then
                     applyBuff( "greenskins_wickers" )
                 end
 
