@@ -194,7 +194,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         flame_shock = {
             id = 188389,
-            duration = function () return level > 58 and ( fire_elemental.up or storm_elemental.up ) and 36 or 18 end,
+            duration = function () return level > 58 and fire_elemental.up and 36 or 18 end,
             tick_time = function () return 2 * haste end,
             type = "Magic",
             max_stack = 1,
