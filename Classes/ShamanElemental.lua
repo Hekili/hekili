@@ -1055,10 +1055,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                     applyBuff( "surge_of_power" )
                 end
 
-                if runeforge.echoes_of_great_sundering.enabled then
-                    applyBuff( "echoes_of_great_sundering" )
-                end
-
                 removeBuff( "master_of_the_elements" )
                 removeBuff( "echoing_shock" )
 
