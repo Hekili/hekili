@@ -6147,6 +6147,10 @@ function state.reset( dispName )
         end
     end
 
+    Hekili:Yield( "Reset Pre-Cast Hook" )
+
+    ns.callHook( "reset_precast" )
+
     Hekili:Yield( "Reset Pre-Casting" )
 
     local cast_time, casting, ability = 0, nil, nil
@@ -6173,10 +6177,6 @@ function state.reset( dispName )
             end
         end
     end
-
-    Hekili:Yield( "Reset Pre-Cast Hook" )
-
-    ns.callHook( "reset_precast" )
 
     -- Okay, two paths here.
     -- 1.  We can cast while casting (i.e., Fire Blast for Fire Mage), so we want to hand off the current cast to the event system, and then let the recommendation engine sort it out.
