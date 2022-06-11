@@ -528,6 +528,7 @@ do
         ["^time_to_hpg$"] = true,
         ["time_to_max$"] = true,
         ["remains_expected$"] = true,
+        ["expiration_delay_remains$"] = true,
         -- ["time_to_%d+$"] = true,
         -- ["deficit$"] = true,
     }
