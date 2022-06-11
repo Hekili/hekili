@@ -406,7 +406,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
         rip = {
             id = 1079,
-            duration = function () return mod_circle_dot( 24 ) end,
+            duration = function () return mod_circle_dot( 4 + ( combo_points.current * 4 ) ) end,
             tick_time = function() return mod_circle_dot( 2 ) * haste end,
 
             meta = {
