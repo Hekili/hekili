@@ -2164,7 +2164,7 @@ local mt_state = {
                 return 0
 
             elseif k == "tick_time_remains" then
-                if app then return ( app.remains % tick_time ) end
+                if app then return app.tick_time_remains end
                 return 0
 
             elseif k == "remains" then
@@ -2172,7 +2172,7 @@ local mt_state = {
                 return 0
 
             elseif k == "tick_time" then
-                if app then return tick_time end
+                if app then return app.tick_time end
                 return 0
 
             else
@@ -3538,6 +3538,13 @@ local mt_default_buff = {
             if t.applied <= state.query_time and state.query_time < t.expires then return t.remains / t.tick_time end
             return 0
 
+        elseif k == "tick_time_remains" then
+            if t.applied <= state.query_time and state.query_time < t.expires then
+                if not aura.tick_time then return t.remains end
+                return aura.tick_time - ( ( query_time - t.applied ) % aura.tick_time )
+            end
+            return 0
+
         elseif k == "last_trigger" then
             if state.combat > 0 then return max( 0, t.last_application - state.combat ) end
             return 0
@@ -4472,8 +4479,9 @@ local mt_default_debuff = {
             return t.remains / t.tick_time
 
         elseif k == "tick_time_remains" then
+            if not t.up then return 0 end
             if not aura.tick_time then return t.remains end
-            return t.remains % aura.tick_time
+            return aura.tick_time - ( ( query_time - t.applied ) % aura.tick_time )
 
         else
             if aura and aura[ k ] ~= nil then

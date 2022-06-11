@@ -590,6 +590,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     spec:RegisterAura( "fireheart", {
         id = 364523,
         duration = 30,
+        tick_time = 8,
         max_stack = 1
     } )
 
