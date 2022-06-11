@@ -181,7 +181,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         },
         kidney_shot = {
             id = 408,
-            duration = 6,
+            duration = function() return 1 + effective_combo_points end,
             max_stack = 1,
         },
         marked_for_death = {
@@ -209,9 +209,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
         },
         --[[ Share Assassination implementation to avoid errors.
         rupture = {
-            id = 1943,
-            duration = function () return talent.deeper_stratagem.enabled and 28 or 24 end,
-            max_stack = 1,
         }, ]]
         shadow_blades = {
             id = 121471,
@@ -254,7 +251,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         },
         slice_and_dice = {
             id = 315496,
-            duration = 10,
+            duration = function () return 6 * ( 1 + effective_combo_points ) end,
             max_stack = 1,
         },
         sprint = {

@@ -1,5 +1,5 @@
 ## Outlaw Rogue
-## June 4, 2022
+## June 10, 2022
 
 ## Changes:
 ## - Make Fleshcraft interrupt in combat if we just did it for volatile_solvent.
@@ -46,6 +46,7 @@ actions.build+=/serrated_bone_spike,if=!dot.serrated_bone_spike_dot.ticking
 actions.build+=/serrated_bone_spike,cycle_targets=1,if=!dot.serrated_bone_spike_dot.ticking
 # Attempt to use when it will cap combo points and SnD is down, otherwise keep from capping charges
 actions.build+=/serrated_bone_spike,if=fight_remains<=5|cooldown.serrated_bone_spike.max_charges-charges_fractional<=0.25|combo_points.deficit=cp_gain&!buff.skull_and_crossbones.up&energy.time_to_max>1
+actions.build+=/pistol_shot,if=buff.opportunity.up&(buff.greenskins_wickers.up|buff.concealed_blunderbuss.up|buff.tornado_trigger.up)
 # Use Pistol Shot with Opportunity if Combat Potency won't overcap energy, when it will exactly cap CP, or when using Quick Draw
 actions.build+=/pistol_shot,if=buff.opportunity.up&(energy.deficit>energy.regen*1.5|!talent.weaponmaster&combo_points.deficit<=1+buff.broadside.up|talent.quick_draw.enabled)
 # Use Sinister Strike on targets without the Cache DoT if the trinket is up

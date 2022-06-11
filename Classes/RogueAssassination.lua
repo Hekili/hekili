@@ -838,7 +838,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         crimson_tempest = {
             id = 121411,
-            duration = function () return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * ( talent.deeper_stratagem.enabled and 14 or 12 ) end,
+            duration = function () return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * ( 2 * ( 1 + effective_combo_points ) ) end,
             max_stack = 1,
             meta = {
                 exsanguinated = function( t ) return t.up and tracked_bleeds.crimson_tempest.exsanguinate[ target.unit ] or false end,
@@ -901,7 +901,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         envenom = {
             id = 32645,
-            duration = function () return talent.deeper_stratagem.enabled and 7 or 6 end,
+            duration = function () return ( 1 + effective_combo_points ) end,
             type = "Poison",
             max_stack = 1,
         },
@@ -975,7 +975,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         kidney_shot = {
             id = 408,
-            duration = function () return talent.deeper_stratagem.enabled and 7 or 6 end,
+            duration = function () return ( 1 + effective_combo_points ) end,
             max_stack = 1,
         },
         marked_for_death = {
@@ -995,7 +995,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         rupture = {
             id = 1943,
-            duration = function () return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * ( talent.deeper_stratagem.enabled and 28 or 24 ) end,
+            duration = function () return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * 4 * ( 1 + effective_combo_points ) end,
             tick_time = function () return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * ( debuff.rupture.exsanguinated and haste or ( 2 * haste ) ) end,
             max_stack = 1,
             meta = {
@@ -1025,7 +1025,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         slice_and_dice = {
             id = 315496,
-            duration = function () return talent.deeper_stratagem.enabled and 42 or 36 end,
+            duration = function () return 6 * ( 1 + effective_combo_points ) end,
             max_stack = 1
         },
         sprint = {
