@@ -429,7 +429,7 @@ do
         [333950] = "brons_call_to_action",               -- Forgelite Prime Mikanikos
         [352186] = "soulglow_spectrometer",              -- Forgelite Prime Mikanikos
         [352187] = "reactive_retrofitting",              -- Forgelite Prime Mikanikos
-        [352188] = "effusive_anima_accelerator",         -- Forgelite Prime Mikanikos    
+        [352188] = "effusive_anima_accelerator",         -- Forgelite Prime Mikanikos
     }
 
     local soulbindEvents = {
@@ -527,7 +527,7 @@ all:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
-    
+
     -- Night Fae: Niya
     redirected_anima = {
         id = 342814,
@@ -564,7 +564,7 @@ all:RegisterAuras( {
         duration = 3600,
         max_stack = 40,
     },
-    
+
     euphoria = {
         id = 331937,
         duration = 10,
@@ -582,4 +582,14 @@ all:RegisterAuras( {
         duration = 30,
         max_stack = 1,
     },
+
+    carvers_eye = {
+        id = 351414,
+        duration = 5,
+        max_stack = 5,
+    },
+
+    carvers_eye_debuff = {
+        duration = 10,
+    }
 } )
