@@ -567,26 +567,20 @@ end
 
 
 
-local itemCache = {}
+do
+    local itemCache = {}
 
-local function itemCacheHelper( id, ... )
-    local n = select( "#", ... )
-    if n == 0 then return end
+    function ns.CachedGetItemInfo( id )
+        if itemCache[ id ] then
+            return unpack( itemCache[ id ] )
+        end
 
-    local cache = {}
-
-    for i = 1, n do
-        cache[ i ] = select( i, ... )
+        local item = { GetItemInfo( id ) }
+        if item and item[ 1 ] then
+            itemCache[ id ] = item
+            return unpack( item )
+        end
     end
-
-    itemCache[ id ] = cache
-    return ...
-end
-
-
-function ns.CachedGetItemInfo( id )
-    if itemCache[ id ] then return unpack( itemCache[ id ] ) end
-    return itemCacheHelper( id, GetItemInfo( id ) )
 end
 
 

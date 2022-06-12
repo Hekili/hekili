@@ -15,7 +15,7 @@ local abs = math.abs
 local lower = string.lower
 local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
-local GetItemInfo = ns.CachedGetItemInfo
+local CGetItemInfo = ns.CachedGetItemInfo
 local RC = LibStub( "LibRangeCheck-2.0" )
 
 -- Abandoning AceEvent in favor of darkend's solution from:
@@ -287,14 +287,14 @@ do
 
         for key, ability in pairs( class.abilities ) do
             if ability.recheck_name then
-                local name, link = GetItemInfo( ability.item )
+                local name, link = CGetItemInfo( ability.item )
 
                 if name then
                     ability.name = name
                     ability.texture = nil
                     ability.link = link
                     ability.elem.name = name
-                    ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
+                    ability.elem.texture = select( 10, CGetItemInfo( ability.item ) )
 
                     class.abilities[ name ] = ability
                     ability.recheck_name = nil
@@ -652,6 +652,7 @@ do
 
     local wasWearing = {}
     local updateIsQueued = false
+    local maxItemSlot = Enum.ItemSlotFilterTypeMeta.MaxValue
 
     function ns.updateGear()
         if not Hekili.PLAYER_ENTERING_WORLD or GetTime() - lastUpdate < 1 then
@@ -682,7 +683,7 @@ do
         for set, items in pairs( class.gear ) do
             state.set_bonus[ set ] = 0
             for item, _ in pairs( items ) do
-                if IsEquippedItem( GetItemInfo( item ) ) then
+                if item > maxItemSlot and IsEquippedItem( CGetItemInfo( item ) ) then
                     state.set_bonus[ set ] = state.set_bonus[ set ] + 1
                 end
             end
@@ -805,7 +806,7 @@ do
 
             if item then
                 state.set_bonus[ item ] = 1
-                local key, _, _, _, _, _, _, _, equipLoc = GetItemInfo( item )
+                local key, _, _, _, _, _, _, _, equipLoc = CGetItemInfo( item )
                 if key then
                     key = formatKey( key )
                     state.set_bonus[ key ] = 1
@@ -838,7 +839,7 @@ do
 
         -- Improve Pocket-Sized Computronic Device.
         if state.equipped.pocketsized_computation_device then
-            local tName = GetItemInfo( 167555 )
+            local tName = CGetItemInfo( 167555 )
             local redName, redLink = GetItemGem( tName, 1 )
 
             if redName and redLink then
@@ -1852,7 +1853,7 @@ local function StoreKeybindInfo( page, key, aType, id, console )
         action = ability and ability.key
 
     elseif aType == "item" then
-        local item, link = GetItemInfo( id )
+        local item, link = CGetItemInfo( id )
         ability = item and ( class.abilities[ item ] or class.abilities[ link ] )
         action = ability and ability.key
 
