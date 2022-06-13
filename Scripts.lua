@@ -1323,7 +1323,7 @@ local function ConvertScript( node, hasModifiers, header )
                         rEle.zzz = orig ]]
 
                         if type( rc ) ~= "function" then
-                            Hekili:Error( "Variable recheck function for " .. clean .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
+                            Hekili:Error( "Variable recheck function for " .. o .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
                             rc = nil
                         end
 
