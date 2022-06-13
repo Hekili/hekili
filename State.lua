@@ -2310,7 +2310,7 @@ local mt_stat = {
             return GetCombatRating(CR_MASTERY)
 
         elseif k == "mastery_value" then
-            return GetMasteryEffect()
+            return GetMasteryEffect() / 100
 
         elseif k == "versatility_atk_rating" then
             return GetCombatRating(CR_VERSATILITY_DAMAGE_DONE)
@@ -3424,6 +3424,36 @@ local mt_default_buff = {
 
     __index = function( t, k )
         local aura = class.auras[ t.key ]
+
+        if aura and aura.hidden then
+            -- Hidden auras might be detectable with GetPlayerAuraBySpellID.
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = GetPlayerAuraBySpellID( aura.id )
+
+            if name then
+                local buff = auras.player.buff[ t.key ] or {}
+
+                buff.key = t.key
+                buff.id = spellID
+                buff.name = name
+                buff.count = count > 0 and count or 1
+                buff.duration = duration
+                buff.expires = expires
+                buff.caster = caster
+                buff.applied = expires - duration
+                buff.caster = caster
+                buff.timeMod = timeMod
+                buff.v1 = v1
+                buff.v2 = v2
+                buff.v3 = v3
+
+                buff.last_application = buff.last_application or 0
+                buff.last_expiry      = buff.last_expiry or 0
+
+                buff.unit = "player"
+
+                auras.player.buff[ t.key ] = buff
+            end
+        end
 
         if aura and rawget( aura, "meta" ) and aura.meta[ k ] then
             return aura.meta[ k ]( t, "buff" )

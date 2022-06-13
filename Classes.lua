@@ -1305,6 +1305,13 @@ all:RegisterAuras( {
         max_stack = 1
     },
 
+    -- SL Season 3
+    decrypted_urh_cypher = {
+        id = 368239,
+        duration = 10,
+        max_stack = 1,
+    },
+
     old_war = {
         id = 188028,
         duration = 25,
