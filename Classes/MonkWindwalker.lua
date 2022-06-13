@@ -582,31 +582,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
         whirling_dragon_punch = 1,
     }
 
-    spec:RegisterHook( "runHandler", function( key, noStart )
-        if combos[ key ] then
-            if last_combo == key then removeBuff( "hit_combo" )
-            else
-                if talent.hit_combo.enabled then addStack( "hit_combo", 10, 1 ) end
-                if azerite.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end
-                if conduit.xuens_bond.enabled and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.1 ) end
-            end
-            virtual_combo = key
-        end
-
-        if set_bonus.tier28_4pc > 0 and tier28_offensive_abilities[ key ] then
-            if buff.primordial_power.up then
-                removeStack( "primordial_power" )
-            else
-                addStack( "primordial_potential", nil, 1 )
-                if buff.primordial_potential.stack > 9 then
-                    removeBuff( "primordial_potential" )
-                    applyBuff( "primordial_power", nil, 3 )
-                end
-            end
-        end
-    end )
-
-
     local chiSpent = 0
 
     spec:RegisterHook( "spend", function( amt, resource )
@@ -811,26 +786,53 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             -- Purple
             if rSCK_cap.rdps > rdps_nocap then
-                lastBonedustCheckValue = 4
+                lastBonedustZoneValue = 4
                 return 4
             end
 
             -- Red
-            lastBonedustCheckValue = 3
+            lastBonedustZoneValue = 3
             return 3
         end
 
         -- Blue
         if rSCK_unc.idps < TP_SCK.idps then
-            lastBonedustCheckValue = 1
+            lastBonedustZoneValue = 1
             return 1
         end
 
         -- Green
-        lastBonedustCheckValue = 2
+        lastBonedustZoneValue = 2
         return 2
     end, state )
 
+
+
+    spec:RegisterHook( "runHandler", function( key, noStart )
+        if combos[ key ] then
+            if last_combo == key then removeBuff( "hit_combo" )
+            else
+                if talent.hit_combo.enabled then addStack( "hit_combo", 10, 1 ) end
+                if azerite.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end
+                if conduit.xuens_bond.enabled and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.1 ) end
+            end
+            virtual_combo = key
+        end
+
+        if set_bonus.tier28_4pc > 0 and tier28_offensive_abilities[ key ] then
+            if buff.primordial_power.up then
+                removeStack( "primordial_power" )
+            else
+                addStack( "primordial_potential", nil, 1 )
+                if buff.primordial_potential.stack > 9 then
+                    removeBuff( "primordial_potential" )
+                    applyBuff( "primordial_power", nil, 3 )
+                end
+            end
+        end
+
+        lastBonedustZoneTime = 0
+    end )
 
     spec:RegisterStateExpr( "cap_energy", function()
         return GetBonedustZoneInfo() == 4
@@ -877,10 +879,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
         -- BDB Logic.
         if covenant.necrolord then
             ValidateBonedustBrews()
-            lastBonedustCheckTime = 0
-
+            lastBonedustZoneTime = 0
         end
+    end )
 
+    spec:RegisterHook( "advance", function()
+        lastBonedustZoneTime = 0
     end )
 
 
