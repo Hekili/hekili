@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## April 28, 2022
+## June 11, 2022
 
 ## Changes:
 ## - Spell Lock.
@@ -25,8 +25,7 @@ actions.precombat+=/demonbolt,if=soul_shards<5&(boss|action.demonbolt.cast=0)
 actions.precombat+=/shadow_bolt,if=soul_shards<5&!(boss|action.demonbolt.cast=0)
 ## actions.precombat+=/variable,name=first_tyrant_time,op=set,value=10
 ## actions.precombat+=/variable,name=in_opener,op=set,value=1
-actions.precombat+=/variable,name=use_bolt_timings,op=set,value=runeforge.balespiders_burning_core&runeforge.shard_of_annihilation
-
+actions.precombat+=/variable,name=use_bolt_timings,op=set,value=runeforge.shard_of_annihilation&(runeforge.balespiders_burning_core+talent.sacrificed_souls.enabled+talent.power_siphon.enabled>1)
 
 # Executed every time the actor is available.
 actions=spell_lock
@@ -34,7 +33,7 @@ actions+=/call_felhunter
 actions+=/axe_toss
 actions+=/devour_magic
 actions=variable,name=next_tyrant_cd,op=set,value=cooldown.summon_demonic_tyrant.remains_expected,if=!soulbind.field_of_blossoms|cooldown.summon_demonic_tyrant.remains_expected>cooldown.soul_rot.remains_expected
-actions+=/variable,name=next_tyrant_cd,op=set,value=cooldown.soul_rot.remains_expected,if=soulbind.field_of_blossoms&cooldown.summon_demonic_tyrant.remains_expected<cooldown.soul_rot.remains_expected
+actions+=/variable,name=next_tyrant_cd,op=set,value=cooldown.soul_rot.remains_expected,if=(soulbind.field_of_blossoms|runeforge.decaying_soul_satchel)&cooldown.summon_demonic_tyrant.remains_expected<cooldown.soul_rot.remains_expected
 ## actions+=/variable,name=in_opener,op=set,value=0,if=pet.demonic_tyrant.active
 actions+=/variable,name=buff_sync_cd,op=set,value=variable.next_tyrant_cd,if=!variable.use_bolt_timings&!in_opener
 actions+=/variable,name=buff_sync_cd,op=set,value=12,if=!variable.use_bolt_timings&in_opener&!pet.dreadstalker.active
@@ -112,7 +111,7 @@ actions.ogcd+=/blood_fury
 actions.ogcd+=/fireblood
 actions.ogcd+=/use_items
 
-actions.opener=soul_rot,if=soulbind.grove_invigoration
+actions.opener=soul_rot,if=soulbind.grove_invigoration,if=!runeforge.decaying_soul_satchel
 actions.opener+=/nether_portal
 actions.opener+=/grimoire_felguard
 actions.opener+=/summon_vilefiend
