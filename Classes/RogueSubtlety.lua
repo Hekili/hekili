@@ -528,6 +528,13 @@ if UnitClassBase( "player" ) == "ROGUE" then
         return combo_points.max
     end )
 
+    spec:RegisterStateExpr( "effective_combo_points", function ()
+        local c = combo_points.current or 0
+        if c == 0 then return 0 end
+        if buff[ "echoing_reprimand_" .. c ].up then return 7 end
+        return c
+    end )
+
     -- Legendary from Legion, shows up in APL still.
     spec:RegisterGear( "cinidaria_the_symbiote", 133976 )
     spec:RegisterGear( "denial_of_the_halfgiants", 137100 )

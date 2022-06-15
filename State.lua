@@ -1957,6 +1957,10 @@ local mt_state = {
         elseif k == "prowling" then
             return t.buff.prowl.up or ( t.buff.cat_form.up and t.buff.shadowform.up )
 
+        elseif k == "effective_combo_points" then
+            -- If expression has not yet loaded, return 0.
+            return 0
+
         elseif type(k) == "string" and k:sub(1, 16) == "incoming_damage_" then
             local remains = k:sub(17)
             local time = remains:match("^(%d+)[m]?s")

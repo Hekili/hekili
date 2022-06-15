@@ -230,11 +230,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     end )
 
     spec:RegisterStateExpr( "effective_combo_points", function ()
-        if buff.echoing_reprimand.up and combo_points.current == buff.echoing_reprimand.stack then
-            return 7
-        end
-        return combo_points.current
+        local c = combo_points.current or 0
+        if c == 0 then return 0 end
+        if buff[ "echoing_reprimand_" .. c ].up then return 7 end
+        return c
     end )
+
 
     local stealth = {
         rogue   = { "stealth", "vanish", "shadow_dance", "subterfuge" },
