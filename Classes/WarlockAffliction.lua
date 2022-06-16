@@ -526,6 +526,8 @@ if UnitClassBase( "player" ) == 'WARLOCK' then
     end )
 
 
+    local SUMMON_DEMON_TEXT
+
     spec:RegisterHook( "reset_precast", function ()
         soul_shards.actual = nil
 
