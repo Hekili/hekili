@@ -1109,6 +1109,13 @@ do
                         self.activeThreadTime = self.activeThreadTime + ( now - start )
 
                         if coroutine.status( thread ) == "dead" or err then
+
+                            if Hekili.ActiveDebug then
+                                Hekili:Debug( "Recommendation thread for %s terminated due to error: %s", self.id, err )
+                                Hekili:SaveDebugSnapshot( self.id )
+                                Hekili.ActiveDebug = nil
+                            end
+                                                        
                             for _, d in pairs( ns.UI.Displays ) do d:SetThreadLocked( false ) end
 
                             self.activeThread = nil
@@ -1728,6 +1735,26 @@ do
                 C_Timer.After( 3, function()
                     self.flashReady = true
                 end )
+            end
+
+            if event == "CURRENT_SPELL_CAST_CHANGED" then
+                local b = self.Buttons[ 1 ]
+
+                local ability = b.Ability
+                local isItem, id = false, ability and ability.id
+
+                if id and id < 0 then
+                    isItem = true
+                    id = ability.item
+                end
+
+                local spellID = select( 9, UnitCastingInfo( "player" ) ) or select( 9, UnitChannelInfo( "player" ) )
+
+                if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) and b.ExactTime > GetTime() and ( not spellID or id ~= spellID ) then
+                    b.Highlight:Show()
+                else
+                    b.Highlight:Hide()
+                end
             end
 
             local finish = debugprofilestop()

@@ -9,6 +9,8 @@ local state = Hekili.State
 
 local GetNamePlates = C_NamePlate.GetNamePlates
 local LRC = LibStub( "LibRangeCheck-2.0" )
+local pow = math.pow
+
 local PTR = ns.PTR
 
 
@@ -661,7 +663,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     local bdbActions = {}
 
-    local SetAction = function( name, damage, execution_time, net_chi, net_energy, mastery, p, capped )
+    local SetAction = setfenv( function( name, damage, execution_time, net_chi, net_energy, mastery, p, capped )
         local a = bdbActions[ name ] or {}
 
         capped = capped or false
@@ -678,7 +680,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         bdbActions[ name ] = a
 
         return a
-    end
+    end, state )
 
 
     local lastBonedustZoneTime = 0
