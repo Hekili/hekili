@@ -800,11 +800,20 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     local known, reason = self:IsSpellKnown( action )
                     local enabled, enReason = self:IsSpellEnabled( action )
 
+                    local scriptID = packName .. ":" .. listName .. ":" .. actID
+                    state.scriptID = scriptID
+
                     if debug then
                         local d = ""
                         if entryReplaced then d = format( "\nSubstituting %s for %s action; it is otherwise not included in the priority.", action, class.abilities[ entry.action ].name ) end
 
-                        d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )
+                        if action == "call_action_list" or action == "run_action_list" then
+                            d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", ( action .. ":" .. ( state.args.list_name or "unknown" ) ), listName, actID )
+                        elseif action == "cancel_buff" then
+                            d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", ( action .. ":" .. ( state.args.buff_name or "unknown" ) ), listName, actID )
+                        else
+                            d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )
+                        end
 
                         if not known then d = d .. " - " .. ( reason or "ability unknown" )
                         elseif not enabled then d = d .. " - ability disabled ( " .. ( enReason or "unknown" ) .. " )" end
@@ -815,9 +824,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     Timer:Track( "Ability Known, Enabled" )
 
                     if ability and known and enabled then
-                        local scriptID = packName .. ":" .. listName .. ":" .. actID
-                        state.scriptID = scriptID
-
                         local script = scripts:GetScript( scriptID )
 
                         wait_time = state:TimeToReady()
