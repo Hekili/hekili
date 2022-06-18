@@ -1593,6 +1593,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             usable = function () return combo_points.current > 0 end,
             handler = function ()
+               	if talent.alacrity.enabled and combo_points.current > 4 then
+                    addStack( "alacrity", 20, 1 )
+                end
                 if talent.internal_bleeding.enabled then
                     applyDebuff( "target", "internal_bleeding" )
                     debuff.internal_bleeding.pmultiplier = persistent_multiplier
