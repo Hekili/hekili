@@ -1,6 +1,6 @@
 ## Fire Mage
 ## https://github.com/simulationcraft/simc/
-## June 11, 2022
+## June 18, 2022
 
 ## Changes:
 ## - Use fight_remains rather than target.time_to_die for last-second ability usages.
@@ -174,8 +174,8 @@ actions.combustion_phase+=/flamestrike,if=(buff.hot_streak.up&active_enemies>=va
 # Radiant Spark should be used with a Hot Streak ready to use immediately after the cast finishes. This will naturally set up a Hot Streak spent for the final stack of Radiant Spark.
 actions.combustion_phase+=/radiant_spark,if=buff.combustion.up&2*buff.hot_streak.react+buff.heating_up.react+hot_streak_spells_in_flight=2
 actions.combustion_phase+=/pyroblast,if=buff.firestorm.up
-# With Sun King's Blessing, there is a brief delay before the Sun King's Blessing ready buff is removed after consuming it. It is beneficial to wait for this delay before spending Hot Streaks to not waste a stack.
-actions.combustion_phase+=/wait,sec=0.01,if=buff.hot_streak.react&active_enemies<variable.combustion_flamestrike&(buff.sun_kings_blessing_ready.expiration_delay_remains|time-buff.sun_kings_blessing_ready.last_expire<variable.skb_delay-0.03)
+## With Sun King's Blessing, there is a brief delay before the Sun King's Blessing ready buff is removed after consuming it. It is beneficial to wait for this delay before spending Hot Streaks to not waste a stack.
+## actions.combustion_phase+=/wait,sec=buff.sun_kings_blessing_ready_expiration_delay.remains,if=buff.hot_streak.react&active_enemies<variable.combustion_flamestrike&buff.sun_kings_blessing_ready_expiration_delay.up
 actions.combustion_phase+=/pyroblast,if=buff.hot_streak.up&buff.combustion.up
 actions.combustion_phase+=/pyroblast,if=prev_gcd.1.scorch&buff.heating_up.up&active_enemies<variable.combustion_flamestrike&buff.combustion.up
 # Using Shifting Power during Combustion to restore Fire Blast and Phoenix Flame charges can be beneficial, but usually only on AoE.
