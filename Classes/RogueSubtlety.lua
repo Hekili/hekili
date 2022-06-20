@@ -1065,8 +1065,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
             spend = function () return 25 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
-            toggle = "cooldowns",
-
             startsCombat = true,
             texture = 132298,
 
@@ -1076,8 +1074,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     addStack( "alacrity", 20, 1 )
                 end
 
-                local combo = min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current )
-                applyDebuff( "target", "kidney_shot", 2 + 1 * ( combo - 1 ) )
+                applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
 
                 if talent.prey_on_the_weak.enabled then applyDebuff( "target", "prey_on_the_weak" ) end
 
