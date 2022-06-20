@@ -448,7 +448,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 18499,
             cast = 0,
             cooldown = 60,
-            gcd = "spell",
+            gcd = "off",
 
             defensive = true,
 
@@ -465,7 +465,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 1161,
             cast = 0,
             cooldown = 240,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 
@@ -724,7 +724,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 12975,
             cast = 0,
             cooldown = function () return talent.bolster.enabled and 120 or 180 end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "defensives",
             defensive = true,
@@ -918,7 +918,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             charges = function () if legendary.unbreakable_will.enabled then return 2 end end,
             cooldown = function () return 240 - conduit.stalwart_guardian.mod * 0.002 end,
             recharge = function () return 240 - conduit.stalwart_guardian.mod * 0.002 end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "defensives",
             defensive = true,
@@ -993,7 +993,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 355,
             cast = 0,
             cooldown = 8,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = true,
             texture = 136080,

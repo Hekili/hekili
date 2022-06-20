@@ -543,7 +543,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 18499,
             cast = 0,
             cooldown = 60,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 
@@ -754,7 +754,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 184364,
             cast = 0,
             cooldown = function () return 120 - conduit.stalwart_guardian.mod * 0.001 end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "defensives",
 
@@ -817,7 +817,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 190456,
             cast = 0,
             cooldown = 12,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "defensives",
 
@@ -912,7 +912,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 6552,
             cast = 0,
             cooldown = 15,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = true,
             texture = 132938,
@@ -1119,7 +1119,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 355,
             cast = 0,
             cooldown = 8,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = true,
             texture = 136080,
