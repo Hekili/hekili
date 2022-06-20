@@ -164,8 +164,13 @@ local enemyExclusions = {
     [177117] = 355790,    -- Ner'zhul: Orb of Torment (Protected by Eternal Torment)
     [176581] = true,      -- Painsmith:  Spiked Ball
     [186150] = true,      -- Soul Fragment (Gavel of the First Arbiter)
+    [185685] = true,      -- Season 3 Relics
+    [185680] = true,      -- Season 3 Relics
+    [185683] = true,      -- Season 3 Relics
+    [183501] = 367573,    -- Xy'mox: Genesis Bulwark
 }
 
+local FindExclusionAuraByID
 
 local f = CreateFrame("Frame")
 f:RegisterEvent( "NAME_PLATE_UNIT_ADDED" )
@@ -273,7 +278,7 @@ do
         return next, counted, nil
     end
 
-    local function FindExclusionAuraByID( unit, spellID )
+    FindExclusionAuraByID = function( unit, spellID )
         if spellID < 0 then
             return FindUnitDebuffByID( unit, -spellID ) ~= nil
         end
