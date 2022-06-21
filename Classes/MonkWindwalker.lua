@@ -1821,7 +1821,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             cycle = "touch_of_death",
 
-            usable = function () return target.health.pct < 15, "requires low health target" end,
+            -- Non-players can be executed as soon as their current health is below player's max health.
+            -- All targets can be executed under 15%, however only at 35% damage.
+            usable = function ()
+                return target.health.pct < 15 or (target.class == "npc" and target.health_current < health.max), "requires low health target"
+            end,
 
             handler = function ()
                 applyDebuff( "target", "touch_of_death" )
