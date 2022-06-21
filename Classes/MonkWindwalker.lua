@@ -1629,6 +1629,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 606543,
 
+            usable = function ()
+                if settings.check_sck_range and target.outside8 then return false, "target is outside of melee range" end
+                return true
+            end,
+
             handler = function ()
                 removeBuff( "dance_of_chiji" )
                 removeBuff( "dance_of_chiji_azerite" )
@@ -1990,6 +1995,13 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterSetting( "check_wdp_range", false, {
         name = "Check |T988194:0|t Whirling Dragon Punch Range",
         desc = "If checked, when your target is outside of |T988194:0|t Whirling Dragon Punch's range, it will not be recommended.",
+        type = "toggle",
+        width = "full"
+    } )
+
+    spec:RegisterSetting( "check_sck_range", false, {
+        name = "Check |T606543:0|t Spinning Crane Kick Range",
+        desc = "If checked, when your target is outside of |T606543:0|t Spinning Crane Kick's range, it will not be recommended.",
         type = "toggle",
         width = "full"
     } )
