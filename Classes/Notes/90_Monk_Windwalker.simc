@@ -1,5 +1,5 @@
 ## Windwalker Monk
-## June 11, 2022
+## June 21, 2022
 
 ## Charges:
 ## - Tweak Fists of Fury interrupt logic.
@@ -159,7 +159,7 @@ actions.serenity+=/rising_sun_kick,cycle_targets=1,if=combo_strike
 actions.serenity+=/fists_of_fury,if=active_enemies>=3
 actions.serenity+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.up
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike&buff.weapons_of_order.up&cooldown.rising_sun_kick.remains>2
-actions.serenity+=/fists_of_fury,interrupt_if=!cooldown.rising_sun_kick.up
+actions.serenity+=/fists_of_fury,interrupt_if=buff.serenity.up&!cooldown.rising_sun_kick.up
 actions.serenity+=/spinning_crane_kick,if=combo_strike&debuff.bonedust_brew_debuff.up
 actions.serenity+=/fist_of_the_white_tiger,cycle_targets=1,if=chi<3
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike|!talent.hit_combo
