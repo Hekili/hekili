@@ -796,7 +796,7 @@ Hekili.lastAudit = GetTime()
 Hekili.auditInterval = 0
 
 ns.Audit = function( special )
-    if not special and not Hekili.DB.profile.enabled then
+    if not special and not Hekili.DB.profile.enabled or not Hekili:IsValidSpec() then
         C_Timer.After( 1, ns.Audit )
         return
     end

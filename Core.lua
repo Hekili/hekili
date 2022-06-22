@@ -1481,6 +1481,10 @@ function Hekili.Update()
         return
     end
 
+    if not Hekili:IsValidSpec() then
+        return
+    end
+
     local profile = Hekili.DB.profile
 
     local specID = state.spec.id
