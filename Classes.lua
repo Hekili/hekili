@@ -2615,7 +2615,7 @@ do
         name = "|cff00ccff[Use Items]|r",
         cast = 0,
         cooldown = 120,
-        gcd = 'off',
+        gcd = "off",
     } )
 
 
@@ -2623,7 +2623,7 @@ do
         name = "|cff00ccff[Heart Essence]|r",
         cast = 0,
         cooldown = 0,
-        gcd = 'off',
+        gcd = "off",
 
         item = 158075,
         essence = true,
