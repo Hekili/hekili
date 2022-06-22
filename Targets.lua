@@ -280,7 +280,7 @@ do
 
     FindExclusionAuraByID = function( unit, spellID )
         if spellID < 0 then
-            return FindUnitDebuffByID( unit, -spellID ) ~= nil
+            return FindUnitDebuffByID( unit, -1 * spellID ) ~= nil
         end
         return FindUnitBuffByID( unit, spellID ) ~= nil
     end
