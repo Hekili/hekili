@@ -971,7 +971,7 @@ do
         end
 
         if type( enemy.excluded ) == "number" then
-            return FindExclusionAuraByID( enemy.excluded )
+            return FindExclusionAuraByID( enemy.unit, enemy.excluded )
         end
 
         return false
