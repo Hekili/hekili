@@ -718,8 +718,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
             end
 
             -- Decyphered Urh
-            if buff.decyphered_urh_cypher.up then
-                length = length - ( buff.decyphered_urh_cypher.remains * 2 )
+            if buff.decrypted_urh_cypher.up then
+                length = length - ( buff.decrypted_urh_cypher.remains * 2 )
             end
         end
 
