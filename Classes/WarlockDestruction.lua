@@ -1401,6 +1401,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 interrupt()
             end,
+
+            bind = { 119910, 132409, 119898 }
         },
 
 
