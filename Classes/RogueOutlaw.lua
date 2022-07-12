@@ -50,7 +50,22 @@ if UnitClassBase( "player" ) == "ROGUE" then
             interval = 1,
             value = 20,
         },
-    } )
+    },
+    nil, -- No replacement model.
+    {    -- Meta function replacements.
+        base_time_to_max = function( t )
+            if buff.adrenaline_rush.up then
+                if t.current > t.max - 50 then return 0 end
+                return state:TimeToResource( t, t.max - 50 )
+            end
+        end,
+        base_deficit = function( t )
+            if buff.adrenaline_rush.up then
+                return max( 0, ( t.max - 50 ) - t.current )
+            end
+        end,
+    }
+ )
 
     -- Talents
     spec:RegisterTalents( {
@@ -1066,7 +1081,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             startsCombat = true,
             texture = 132298,
-                
+
             usable = function () return combo_points.current > 0 end,
             handler = function ()
                 if talent.alacrity.enabled and combo_points.current > 4 then
