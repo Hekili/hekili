@@ -873,6 +873,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             startsCombat = true,
             texture = 1392565,
 
+            debuff = "festering_wound",
+
             handler = function ()
                 summonPet( "apoc_ghoul", 15 )
 
