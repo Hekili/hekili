@@ -1057,6 +1057,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             aura = function () return debuff.shrapnel_bomb.up and "internal_bleeding" or nil end,
             cycle = function () return debuff.shrapnel_bomb.up and "internal_bleeding" or nil end,
+            indicator = function () return debuff.latent_poison_injection.down and active_dot.latent_poison_injection > 0 and "cycle" or nil end,
 
             notalent = "mongoose_bite",
 
