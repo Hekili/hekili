@@ -435,7 +435,7 @@ end )
 
 
 do
-    local loc = ItemLocation.CreateEmpty()
+    local loc = ItemLocation:CreateEmpty()
 
     local GetAllTierInfoByItemID = C_AzeriteEmpoweredItem.GetAllTierInfoByItemID
     local GetAllTierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo

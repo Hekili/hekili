@@ -78,8 +78,8 @@ state.args = {}
 state.azerite = {}
 state.essence = {}
 state.aura = {}
-state.buff = {}
 state.auras = auras
+state.buff = {}
 state.consumable = {}
 state.cooldown = {}
 state.corruptions = {} -- TODO: REMOVE
@@ -2716,16 +2716,6 @@ local mt_consumable = {
 setmetatable( state.consumable, mt_consumable )
 
 
-
-local cd_meta_functions = {}
-
-function ns.addCooldownMetaFunction( ability, key, func )
-    if not state.cooldown[ ability ] then state.cooldown[ ability ] = { key = ability } end
-    if not rawget( state.cooldown[ ability ], "meta" ) then state.cooldown[ ability ].meta = {} end
-    state.cooldown[ ability ].meta[ key ] = setfenv( func, state )
-end
-
-
 -- Table of default handlers for specific ability cooldowns.
 local mt_default_cooldown = {
     __index = function( t, k )
@@ -3224,10 +3214,11 @@ end
 local mt_resource = {
     __index = function(t, k)
 
-        if resource_meta_functions[ k ] then
-            local result = resource_meta_functions[ k ]( t )
+        local meta = t.meta[ k ]
+        if meta then
+            local result = meta( t )
 
-            if result then
+            if result ~= nil then
                 return result
             end
         end
@@ -3270,13 +3261,13 @@ local mt_resource = {
 
             return t.actual
 
-        elseif k == "deficit" then
+        elseif k == "deficit" or k == "base_deficit" then
             return t.max - t.current
 
         elseif k == "max_nonproc" then
             return t.max -- need to accommodate buffs that increase mana, etc.
 
-        elseif k == "time_to_max" then
+        elseif k == "time_to_max" or k == "base_time_to_max" then
             return state:TimeToResource( t, t.max )
 
         elseif k == "time_to_max_combined" then
@@ -6981,7 +6972,7 @@ function state:TimeToReady( action, pool )
 
     if z < -99 or z > 0 then
         -- if not ability.castableWhileCasting and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) or not ability.interrupt ) then
-        if ability.gcd ~= "off" or ( ability.item and not ability.essence ) then
+        if not self.args.use_off_gcd and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) ) then
             wait = max( wait, self.cooldown.global_cooldown.remains )
         end
 

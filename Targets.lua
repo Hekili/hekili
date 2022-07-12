@@ -926,7 +926,7 @@ do
 
             enemy.npcid = npcid
             enemy.deathPercent = npcid and deathPercent[ npcid ] or 0
-            enemy.deathTime = time + ( ( UnitIsTrivial(unit) and UnitLevel(unit) > -1 ) and TRIVIAL or DEFAULT_TTD )
+            enemy.deathTime = ( UnitIsTrivial(unit) and UnitLevel(unit) > -1 ) and TRIVIAL or DEFAULT_TTD
             enemy.excluded = enemyExclusions[ npcid ]
             return
         end
@@ -948,7 +948,7 @@ do
                 enemy.rate = newRate / enemy.n
             end
 
-            enemy.deathTime = time + ( healthPct - enemy.deathPercent ) / enemy.rate
+            enemy.deathTime = ( healthPct - enemy.deathPercent ) / enemy.rate
         end
 
         enemy.unit = unit
@@ -981,10 +981,9 @@ do
         local time, validUnit = 0, false
 
         local enemy = db[ guid ]
-        local now = GetTime()
 
         if enemy then
-            time = max( time, max( 0, ceil( enemy.deathTime - now ) ) )
+            time = max( time, enemy.deathTime )
             validUnit = true
         end
 
@@ -1077,7 +1076,7 @@ do
 
         for k, v in pairs( db ) do
             if not CheckEnemyExclusion( k ) then
-                time = max( time, max( 0, ceil( v.deathTime - now ) ) )
+                time = max( time, max( 0, v.deathTime ) )
                 validUnit = true
             end
         end
@@ -1096,7 +1095,7 @@ do
 
         for k, v in pairs(db) do
             if not CheckEnemyExclusion( k ) and v.lastHealth > percent then
-                time = max( time, max( 0, ceil( v.deathTime - now ) ) )
+                time = max( time, max( 0, v.deathTime ) )
                 validUnit = true
             end
         end
@@ -1111,7 +1110,7 @@ do
 
         for k, v in pairs(db) do
             if not CheckEnemyExclusion( k ) then
-                time = min( time, max( 0, ceil( v.deathTime - now ) ) )
+                time = min( time, max( 0, v.deathTime ) )
                 validUnit = true
             end
         end
@@ -1127,7 +1126,7 @@ do
         local count, now = 0, GetTime()
 
         for k, v in pairs(db) do
-            if not CheckEnemyExclusion( k ) and max( 0, ceil( v.deathTime - now ) ) <= x then
+            if not CheckEnemyExclusion( k ) and max( 0, v.deathTime ) <= x then
                 count = count + 1
             end
         end
@@ -1141,7 +1140,7 @@ do
         local now = GetTime()
 
         for k, v in pairs(db) do
-            if CheckEnemyExclusion( k ) and max( 0, ceil( v.deathTime - now ) ) > x then
+            if CheckEnemyExclusion( k ) and max( 0, v.deathTime ) > x then
                 count = count + 1
             end
         end
@@ -1159,11 +1158,11 @@ do
         for k, v in pairs(db) do
             if not CheckEnemyExclusion( k ) then
                 if inclusive then
-                    if v.lastHealth >= amount and max( 0, ceil( v.deathTime - now ) ) >= minTTD then
+                    if v.lastHealth >= amount and max( 0, v.deathTime ) >= minTTD then
                         count = count + 1
                     end
                 else
-                    if v.lastHealth > amount and max( 0, ceil( v.deathTime - now ) ) >= minTTD then
+                    if v.lastHealth > amount and max( 0, v.deathTime ) >= minTTD then
                         count = count + 1
                     end
                 end
@@ -1187,11 +1186,11 @@ do
         for k, v in pairs(db) do
             if not CheckEnemyExclusion( k ) then
                 if inclusive then
-                    if v.lastHealth <= amount and max( 0, ceil( v.deathTime - now ) ) >= minTTD then
+                    if v.lastHealth <= amount and max( 0, v.deathTime ) >= minTTD then
                         count = count + 1
                     end
                 else
-                    if v.lastHealth < amount and max( 0, ceil( v.deathTime - now ) ) >= minTTD then
+                    if v.lastHealth < amount and max( 0, v.deathTime ) >= minTTD then
                         count = count + 1
                     end
                 end
@@ -1223,7 +1222,7 @@ do
 
         for k, v in pairs(db) do
             if not CheckEnemyExclusion( k ) and not bosses[ k ] then
-                time = max( time, ceil( v.deathTime - now ) )
+                time = max( time, v.deathTime )
             end
         end
 
@@ -1241,7 +1240,7 @@ do
             local excluded = CheckEnemyExclusions( k )
 
             if v.n > 3 then
-                output = output .. format( "\n    %-11s: %4ds [%d] #%6s%s %s", unit, ceil( v.deathTime - now ), v.n, v.npcid, excluded and "*" or "", UnitName( v.unit ) or "Unknown" )
+                output = output .. format( "\n    %-11s: %4ds [%d] #%6s%s %s", unit, v.deathTime, v.n, v.npcid, excluded and "*" or "", UnitName( v.unit ) or "Unknown" )
             else
                 output = output .. format( "\n    %-11s: TBD  [%d] #%6s%s %s", unit, v.n, v.npcid, excluded and "*" or "", UnitName(v.unit) or "Unknown" )
             end
