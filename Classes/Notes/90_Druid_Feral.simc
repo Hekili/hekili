@@ -1,11 +1,11 @@
 ## Feral Druid
-## May 13, 2022
+## June 19, 2022
 
 ## Changes:
 ## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
 ## - Convert BT pool_resource to wait expression (x2).
 ## - Add interruptible Fleshcraft if you have nothing else to do.
-## - Don't hold Convoke for Rip unless you'll really Rip.
+## - Revise holding Convoke, Berserk, Inc for Rip if you won't rip.
 ## - Support filler Regrowth while pooling for Bloodtalons.
 ## - Work on Adaptive Swarm support.
 
@@ -13,6 +13,8 @@ actions.precombat+=/variable,name=fourcp_bite,value=0
 # Defines what ability to use as a filler. Shred = 0, Non-snapshot Rake = 1, Snapshot Rake = 2, LI = 3, Swipe = 4
 actions.precombat+=/variable,name=filler,value=1
 actions.precombat+=/variable,name=rip_ticks,value=7
+# If I'm not going to use Rip, pretend Rip is up for CDs and such.
+actions.precombat+=/variable,name=ripped,value=active_dot.rip>0|druid.rip.ticks_gained_on_refresh<=variable.rip_ticks
 actions.precombat+=/kindred_spirits
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption.enabled|soulbind.volatile_solvent.enabled
@@ -35,7 +37,7 @@ actions+=/cat_form,if=buff.cat_form.down
 # One shot stealth
 actions+=/run_action_list,name=stealth,strict=1,if=buff.shadowmeld.up|buff.prowl.up
 actions+=/skull_bash
-actions+=/call_action_list,name=setup,strict=1,if=active_dot.rip=0
+actions+=/call_action_list,name=setup,strict=1,if=active_dot.rip=0&fight_remains>=12
 actions+=/call_action_list,name=cooldown
 # Necrolord: Cast 3 or 4 combo point rips on single target outside of berserk or during berserk if feral frenzy is up OR apply a 5cp Rip when TF is up and will soon fall off.
 actions+=/rip,if=covenant.necrolord&(!talent.bloodtalons.enabled|buff.bloodtalons.up)&spell_targets.thrash_cat=1&(combo_points>2&refreshable&druid.rip.ticks_gained_on_refresh>variable.rip_ticks&(!buff.bs_inc.up|cooldown.bs_inc.up|(buff.bs_inc.up&cooldown.feral_frenzy.up))|combo_points=5&buff.tigers_fury.up&buff.tigers_fury.remains<4&druid.rip.ticks_gained_on_refresh>5)
@@ -78,8 +80,8 @@ actions.cooldown+=/use_items,slots=trinket2,if=((cooldown.convoke_the_spirits.re
 actions.cooldown+=/tigers_fury,sync=feral_frenzy,if=cooldown.bs_inc.up
 actions.cooldown+=/feral_frenzy,cycle_targets=1,if=combo_points<3&target.time_to_die>7&(buff.savage_roar.up|!talent.savage_roar.enabled)&(!cooldown.tigers_fury.up|cooldown.bs_inc.up)|boss&fight_remains<8&fight_remains>2
 # TODO: Need to sync with with ravenous frenzy when we run frenzyband, or atleast check if its worth it
-actions.cooldown+=/berserk,if=active_dot.rip>0&(cooldown.convoke_the_spirits.up|cooldown.convoke_the_spirits.remains>32|boss&fight_remains<20)
-actions.cooldown+=/incarnation,if=active_dot.rip>0&(cooldown.convoke_the_spirits.up|boss&fight_remains<30)
+actions.cooldown+=/berserk,if=variable.ripped&(cooldown.convoke_the_spirits.up|cooldown.convoke_the_spirits.remains>32|boss&fight_remains<20)
+actions.cooldown+=/incarnation,if=variable.ripped&(cooldown.convoke_the_spirits.up|boss&fight_remains<30)
 # Try and not waste TF energy, but also just use it for zerk and incarns
 actions.cooldown+=/tigers_fury,if=energy.deficit>40|buff.bs_inc.up|(talent.predator.enabled&shortest_ttd<3)|(active_dot.rip=0&buff.bloodtalons.up)
 # Might be wrong to use Smeld on Rake in very very niche situations, but very rarely

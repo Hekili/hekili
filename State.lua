@@ -3215,7 +3215,7 @@ local mt_resource = {
     __index = function(t, k)
 
         local meta = t.meta[ k ]
-        if meta then
+        if meta ~= nil then
             local result = meta( t )
 
             if result ~= nil then
@@ -6103,7 +6103,7 @@ function state.reset( dispName )
 
     Hekili:Yield( "Reset Post-Powers" )
 
-    state.health = rawget( state, "health" ) or setmetatable( { resource = "health" }, mt_resource )
+    state.health = rawget( state, "health" ) or setmetatable( { resource = "health", meta = {} }, mt_resource )
     state.health.current = nil
     state.health.actual = UnitHealth( "player" ) or 10000
     state.health.max = max( 1, UnitHealthMax( "player" ) or 10000 )
