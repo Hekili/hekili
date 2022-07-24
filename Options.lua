@@ -6586,7 +6586,7 @@ do
                                     order = 1,
                                     width = 3,
                                     values = specs,
-                                    disabled = data.builtIn
+                                    disabled = data.builtIn and not Hekili.Version:sub(1, 3) == "Dev"
                                 },
 
                                 lb03 = {

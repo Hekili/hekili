@@ -48,7 +48,7 @@ end
 local function stopScreenMovement(frame)
     local monitor = (tonumber(GetCVar("gxMonitor")) or 0) + 1
     local resolutions = {GetScreenResolutions()}
-    local resolution = resolutions[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
+    local resolution = resolutions[GetCurrentResolution()] or GetCVar("gxWindowedResolution") or "1024x768"
     local scrW, scrH = resolution:match("(%d+)x(%d+)")
 
     local scale, pScale = Hekili:GetScale(), UIParent:GetScale()
