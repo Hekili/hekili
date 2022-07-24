@@ -414,13 +414,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
     spec:RegisterStateExpr( "cycle_for_execute", function ()
-        if not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
+        if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
         return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
     end )
 
 
     spec:RegisterStateExpr( "cycle_for_condemn", function ()
-        if not settings.cycle or not covenant.venthyr or buff.condemn_ineligible.down or buff.sudden_death.up then return false end
+        if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80 or not settings.cycle or not covenant.venthyr or buff.condemn_ineligible.down or buff.sudden_death.up then return false end
         return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0 or Hekili:GetNumTargetsAboveHealthPct( 80, false, max( settings.cycle_min, offset + delay ) ) > 0
     end )
 
@@ -736,6 +736,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             cycle = "execute_ineligible",
+
+            indicator = function () if cycle_for_execute then return "cycle" end end,
 
             timeToReady = function()
                 -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
@@ -1465,6 +1467,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             cycle = "condemn_ineligible",
+
+            indicator = function () if cycle_for_condemn then return "cycle" end end,
 
             handler = function ()
                 applyDebuff( "target", "condemned" )
