@@ -1210,6 +1210,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 132361,
 
+            toggle = "interrupts",
+
             handler = function ()
                 applyBuff( "spell_reflection" )
             end,
