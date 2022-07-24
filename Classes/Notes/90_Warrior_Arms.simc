@@ -1,8 +1,9 @@
 ## Arms Warrior
-## March 19, 2022
+## July 23, 2022
 
 ## Changes:
 ## - Update for 9.2; add target swapping for Execute/Condemn.
+## - Use MS more during Hectic Add-Cleave.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
@@ -61,12 +62,13 @@ actions.hac+=/ancient_aftershock
 actions.hac+=/spear_of_bastion
 actions.hac+=/bladestorm
 actions.hac+=/ravager
+actions.hac+=/mortal_strike,if=buff.sweeping_strikes.up|dot.deep_wounds.remains<gcd&!talent.cleave.enabled
 actions.hac+=/rend,if=remains<=duration*0.3&buff.sweeping_strikes.up
 actions.hac+=/cleave
-actions.hac+=/mortal_strike,if=buff.sweeping_strikes.up|dot.deep_wounds.remains<gcd&!talent.cleave.enabled
 actions.hac+=/overpower,if=talent.dreadnaught.enabled
-actions.hac+=/condemn,cycle_targets=1,if=buff.sweeping_strikes.up|buff.sudden_death.up
-actions.hac+=/execute,cycle_targets=1,if=buff.sweeping_strikes.up|buff.sudden_death.up
+actions.hac+=/execute,if=buff.sweeping_strikes.up
+actions.hac+=/execute,if=buff.sudden_death.react
+actions.hac+=/mortal_strike
 actions.hac+=/overpower
 actions.hac+=/whirlwind
 
