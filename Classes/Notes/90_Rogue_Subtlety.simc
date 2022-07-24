@@ -1,5 +1,5 @@
 ## Subtlety Rogue
-## July 2, 2022
+## July 24, 2022
 
 ## Changes:
 ## - Move variable.use_priority_rotation up so it is set before we use it.
@@ -88,6 +88,8 @@ actions.cds+=/berserking,if=buff.symbols_of_death.up
 actions.cds+=/fireblood,if=buff.symbols_of_death.up
 actions.cds+=/ancestral_call,if=buff.symbols_of_death.up
 actions.cds+=/use_item,name=cache_of_acquired_treasures,if=(covenant.venthyr&buff.acquired_axe.up|!covenant.venthyr&buff.acquired_wand.up)&(spell_targets.shuriken_storm=1&raid_event.adds.in>60|boss&fight_remains<25|variable.use_priority_rotation)|buff.acquired_axe.up&spell_targets.shuriken_storm>1
+
+actions.cds+=/use_item,name=bloodstained_handkerchief,cycle_targets=1,if=!dot.cruel_garrote.ticking
 actions.cds+=/use_item,name=scars_of_fraternal_strife,if=!buff.scars_of_fraternal_strife_4.up|boss&fight_remains<30
 # Default fallback for usable items: Use with Symbols of Death.
 actions.cds+=/use_items,if=buff.symbols_of_death.up|boss&fight_remains<20

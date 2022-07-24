@@ -1790,6 +1790,28 @@ do
 
             toggle = "cooldowns",
         },
+
+        bloodstained_handkerchief = {
+            cast = 0,
+            cooldown = 60,
+            gcd = "off",
+
+            item = 142159,
+
+            cycle = "cruel_garrote",
+
+            handler = function()
+                applyDebuff( "target", "cruel_garrote" )
+            end,
+
+            auras = {
+                cruel_garrote = {
+                    id = 230011,
+                    duration = 3600,
+                    max_stack = 1,
+                }
+            }
+        }
     } )
 
     all:RegisterAuras( {

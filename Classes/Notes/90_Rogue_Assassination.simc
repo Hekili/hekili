@@ -1,5 +1,5 @@
 ## Assassination Rogue
-## July 12, 2022
+## July 24, 2022
 
 ## Changes:
 ## - Apply 'strict' flag to some APL forks to save processing time.
@@ -90,8 +90,10 @@ actions.cds+=/ancestral_call,if=debuff.vendetta.up
 actions.cds+=/call_action_list,name=vanish,if=!stealthed.all&master_assassin_remains=0
 actions.cds+=/use_item,name=windscar_whetstone,if=spell_targets.fan_of_knives>desired_targets|raid_event.adds.in>60|boss&fight_remains<7
 actions.cds+=/use_item,name=cache_of_acquired_treasures,if=buff.acquired_axe.up&(spell_targets.fan_of_knives=1&raid_event.adds.in>60|spell_targets.fan_of_knives>1)|boss&fight_remains<25
+actions.cds+=/use_item,name=bloodstained_handkerchief,cycle_targets=1,if=!dot.cruel_garrote.ticking
 actions.cds+=/use_item,name=scars_of_fraternal_strife,if=!buff.scars_of_fraternal_strife_4.up|boss&fight_remains<30
-
+# Default conditions for usable items.
+actions.cds+=/use_items,if=debuff.between_the_eyes.up|boss&fight_remains<=20
 
 ## Direct damage abilities
 # Envenom at 4+ (5+ with DS) CP. Immediately on 2+ targets, with Vendetta, or with TB; otherwise wait for some energy. Also wait if Exsg combo is coming up.
