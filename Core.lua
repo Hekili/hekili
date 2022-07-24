@@ -87,7 +87,7 @@ function Hekili:OnInitialize()
     local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
     if LDB then
         ns.UI.Minimap = ns.UI.Minimap or LDB:NewDataObject( "Hekili", {
-            type = "launcher",
+            type = "data source",
             text = "Hekili",
             icon = "Interface\\ICONS\\spell_nature_bloodlust",
             OnClick = function( f, button )
