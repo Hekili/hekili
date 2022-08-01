@@ -1,5 +1,5 @@
 ## Guardian Druid
-## March 29, 2022
+## August 1, 2022
 
 ## Changes:
 ## - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -39,10 +39,15 @@ actions.bear=bear_form,if=!buff.bear_form.up
 actions.bear+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&(talent.balance_affinity.enabled)
 actions.bear+=/moonfire,cycle_targets=1,if=((!ticking&time_to_die>12&buff.galactic_guardian.up)|(refreshable&time_to_die>12&buff.galactic_guardian.up))&active_enemies<6
 actions.bear+=/moonfire,cycle_targets=1,if=((!ticking&time_to_die>12)|(refreshable&time_to_die>12))&active_enemies<6
-actions.bear+=/ravenous_frenzy
+actions.bear+=/ravenous_frenzy,if=(((trinket.1.is.cache_of_acquired_treasures|trinket.2.is.cache_of_acquired_treasures)&buff.acquired_axe.up))|(!trinket.1.is.cache_of_acquired_treasures&!trinket.2.is.cache_of_acquired_treasures)
+actions.bear+=/convoke_the_spirits,if=!druid.catweave_bear&!druid.owlweave_bear&(trinket.1.is.cache_of_acquired_treasures|trinket.2.is.cache_of_acquired_treasures)
+actions.bear+=/incarnation,if=(!covenant.venthyr&((trinket.1.is.cache_of_acquired_treasures|trinket.2.is.cache_of_acquired_treasures)&buff.acquired_axe.up))
+actions.bear+=/use_item,slot=trinket1,if=trinket.1.is.cache_of_acquired_treasures&buff.acquired_axe.up
+actions.bear+=/use_item,slot=trinket2,if=trinket.2.is.cache_of_acquired_treasures&buff.acquired_axe.up
+actions.bear+=/use_item,name=gavel_of_the_first_arbiter
 actions.bear+=/use_item,name=jotungeirr_destinys_call,if=covenant.venthyr
-actions.bear+=/use_item,slot=trinket1,if=!buff.prowl.up&covenant.venthyr
-actions.bear+=/use_item,slot=trinket2,if=!buff.prowl.up&covenant.venthyr
+actions.bear+=/use_item,slot=trinket1,if=!buff.prowl.up&covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)|!buff.prowl.up&!covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
+actions.bear+=/use_item,slot=trinket2,if=!buff.prowl.up&covenant.venthyr&!trinket.2.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)|!buff.prowl.up&!covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
 actions.bear+=/potion,if=covenant.venthyr&buff.incarnation.remains>=24&buff.incarnation.remains<=25
 actions.bear+=/barkskin,if=tanking&buff.bear_form.up&set_bonus.tier28_4pc>0
 actions.bear+=/convoke_the_spirits,if=!druid.catweave_bear&!druid.owlweave_bear
@@ -56,17 +61,15 @@ actions.bear+=/thrash_bear,cycle_targets=1,if=refreshable|dot.thrash_bear.stack<
 actions.bear+=/mangle,if=rage.deficit>10&settings.mangle_more
 actions.bear+=/fleshcraft,if=soulbind.pustule_eruption.enabled&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0)&(dot.moonfire.remains>=3)&(buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&buff.galactic_guardian.down))|soulbind.volatile_solvent.enabled,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent&(cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0)
 actions.bear+=/swipe,if=buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&active_enemies>=4
-actions.bear+=/maul,if=(buff.incarnation.up)&active_enemies<3|(buff.incarnation.up)&active_enemies<3&(buff.tooth_and_claw.stack>=2)|(buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5)|(buff.savage_combatant.stack>=3)|buff.berserk_bear.up&active_enemies<3
-actions.bear+=/maul,if=(buff.savage_combatant.stack>=1)&(buff.tooth_and_claw.up)&buff.incarnation.up&active_enemies=2
+actions.bear+=/maul,if=(buff.incarnation.up)&active_enemies<3&(buff.tooth_and_claw.stack>=2)|(buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5)&active_enemies<3|(buff.berserk_bear.up|buff.incarnation.up)&(buff.savage_combatant.stack>=3)&active_enemies<3|!conduit.savage_combatant.enabled&(buff.berserk_bear.up|buff.incarnation.up)&active_enemies<3&!runeforge.ursocs_fury_remembered.equipped|(buff.savage_combatant.stack>=3)&active_enemies<3|!conduit.savage_combatant.enabled&active_enemies<3&(!buff.berserk_bear.up&!buff.incarnation.up)
+actions.bear+=/thrash_bear,if=(runeforge.ursocs_fury_remembered.equipped&conduit.savage_combatant.enabled&active_enemies>1)|(runeforge.ursocs_fury_remembered.equipped&!conduit.savage_combatant.enabled&active_enemies>=1)
 actions.bear+=/mangle,if=buff.incarnation.up&active_enemies<=3
-actions.bear+=/maul,if=(((buff.tooth_and_claw.stack>=2)|(buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5)|(buff.savage_combatant.stack>=3))&active_enemies<3)
 actions.bear+=/thrash_bear,if=active_enemies>1
-actions.bear+=/mangle,if=((rage<90)&active_enemies<3)|((rage<85)&active_enemies<3&talent.soul_of_the_forest.enabled)
+actions.bear+=/mangle
 actions.bear+=/pulverize,cycle_targets=1,if=dot.thrash_bear.stack>2
 actions.bear+=/thrash_bear
-actions.bear+=/maul,if=active_enemies<3
 actions.bear+=/swipe_bear
-actions.bear+=/ironfur,if=rage.deficit<40&buff.ironfur.remains<0.5
+actions.bear+=/ironfur,if=rage>=60&buff.ironfur.stack<2&conduit.savage_combatant.enabled&active_enemies<3|!conduit.savage_combatant.enabled&rage>=42&buff.ironfur.down&active_enemies<3|active_enemies>=3&rage>80&buff.ironfur.stack<7
 
 actions.mitigation=ironfur,if=incoming_damage_5s>ironfur_damage_threshold&buff.ironfur.remains<3*haste
 actions.mitigation+=/renewal,if=tanking&health.pct<65

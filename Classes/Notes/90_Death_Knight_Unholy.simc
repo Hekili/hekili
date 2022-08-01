@@ -1,5 +1,5 @@
 ## Death Knight Unholy
-## July 23, 2022
+## August 1, 2022
 
 ## Changes:
 ## - Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
@@ -88,6 +88,9 @@ actions.cooldowns+=/army_of_the_dead,if=cooldown.dark_transformation.remains_exp
 actions.cooldowns+=/army_of_the_dead,if=boss&fight_remains<30+gcd
 actions.cooldowns+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&target.time_to_die>(dot.soul_reaper.remains+5)
 actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&active_enemies>=2&target.time_to_die>(dot.soul_reaper.remains+5)&(active_enemies<=3|set_bonus.tier28_4pc&active_enemies<=5&(buff.dark_transformation.up|runeforge.reanimated_shambler)&(!death_and_decay.ticking|covenant.night_fae))
+## TBD, unsure how to handle this.
+## May want to create a special cycle_target function for Soul Reaper with 4pc T28 and Gavel, if the add has been spawned.
+## actions.cooldowns+=/soul_reaper_gavel,if=equipped.gavel_of_the_first_arbiter&target.time_to_pct_35>5
 # Holds Blight for up to 5 seconds to sync with Apocalypse, Otherwise, use with Dark Transformation.
 actions.cooldowns+=/unholy_blight,if=variable.st_planning&(cooldown.apocalypse.remains_expected<7|cooldown.apocalypse.remains_expected>15)&(cooldown.dark_transformation.remains<gcd|buff.dark_transformation.up)
 actions.cooldowns+=/unholy_blight,if=variable.adds_remain|boss&fight_remains<21
