@@ -2029,7 +2029,7 @@ function Hekili.Update()
                 end
             end
 
-            UI.NewRecommendations = checkstr ~= UI.RecommendationsStr
+            UI.NewRecommendations = true -- checkstr ~= UI.RecommendationsStr
             UI.RecommendationsStr = checkstr
 
             UI:SetThreadLocked( false )
