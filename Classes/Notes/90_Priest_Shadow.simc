@@ -1,5 +1,5 @@
 ## Shadow Priest
-## April 29, 2022
+## August 2, 2022
 
 ## Changes:
 ## - Tweak Void Torrent when target counts are forced.
@@ -29,8 +29,8 @@ actions+=/variable,name=max_vts,op=set,value=5+2*(variable.cd_management&cooldow
 actions+=/variable,name=max_vts,op=set,value=0,if=talent.searing_nightmare.enabled&spell_targets.mind_sear>7
 actions+=/variable,name=max_vts,op=set,value=4,if=talent.searing_nightmare.enabled&spell_targets.mind_sear=8&!talent.shadow_crash.enabled
 actions+=/variable,name=max_vts,op=set,value=(spell_targets.mind_sear<=5)*spell_targets.mind_sear,if=buff.voidform.up
-actions+=/variable,name=is_vt_possible,op=set,value=0,default=1
-actions+=/variable,name=is_vt_possible,op=set,value=1,if=active_dot.vampiric_touch<cycle_enemies
+actions+=/variable,name=max_vts,op=set,value=1,if=!settings.cycle
+actions+=/variable,name=is_vt_possible,op=set,value=active_dot.vampiric_touch<cycle_enemies
 actions+=/variable,name=vts_applied,op=set,value=active_dot.vampiric_touch>=variable.max_vts|!variable.is_vt_possible
 # Cooldown Pool Variable, Used to pool before activating Voidform.
 actions+=/variable,name=pool_for_cds,op=set,value=cooldown.void_eruption.up&variable.cd_management
