@@ -1737,12 +1737,14 @@ do
 
             elseif alphaUpdateEvents[ event ] then
                 if event == "CLIENT_SCENE_OPENED" then
-                    Hekili.ClientScene = true
+                    if ... == 1 then -- Minigame.
+                        Hekili.ClientScene = true
+                        self:UpdateAlpha()
+                    end
                 elseif event == "CLIENT_SCENE_CLOSED" then
                     Hekili.ClientScene = nil
+                    self:UpdateAlpha()
                 end
-
-                self:UpdateAlpha()
 
             end
 
