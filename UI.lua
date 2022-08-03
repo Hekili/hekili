@@ -786,7 +786,7 @@ do
         end
 
         local prof = Hekili.DB.profile
-        local conf, mode = prof.displays[ id ], prof.toggles.mode.value
+        local conf = prof.displays[ id ]
 
         local _, zoneType = IsInInstance()
 
@@ -794,7 +794,7 @@ do
         --   0 = Auto - AOE
         --   1 = ST - AOE
 
-        if ( not conf.enabled ) or ( not conf.visibility.mode[ mode ] ) then
+        if not conf.enabled then
             return 0
 
         elseif zoneType == "pvp" or zoneType == "arena" then
@@ -802,10 +802,15 @@ do
 
             if conf.visibility.pvp.hideMounted and IsMounted() then return 0 end
 
-            if conf.visibility.pvp.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.combatTarget
-            elseif conf.visibility.pvp.combat > 0 and state.combat > 0 then return conf.visibility.pvp.combat
-            elseif conf.visibility.pvp.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.target
-            elseif conf.visibility.pvp.always > 0 then return conf.visibility.pvp.always end
+            if conf.visibility.pvp.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then
+                return conf.visibility.pvp.combatTarget
+            elseif conf.visibility.pvp.combat > 0 and state.combat > 0 then
+                return conf.visibility.pvp.combat
+            elseif conf.visibility.pvp.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then
+                return conf.visibility.pvp.target
+            elseif conf.visibility.pvp.always > 0 then
+                return conf.visibility.pvp.always
+            end
 
             return 0
         end
@@ -814,10 +819,15 @@ do
 
         if conf.visibility.pve.hideMounted and IsMounted() then return 0 end
 
-        if conf.visibility.pve.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.combatTarget
-        elseif conf.visibility.pve.combat > 0 and state.combat > 0 then return conf.visibility.pve.combat
-        elseif conf.visibility.pve.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.target
-        elseif conf.visibility.pve.always > 0 then return conf.visibility.pve.always end
+        if conf.visibility.pve.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then
+            return conf.visibility.pve.combatTarget
+        elseif conf.visibility.pve.combat > 0 and state.combat > 0 then
+            return conf.visibility.pve.combat
+        elseif conf.visibility.pve.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then
+            return conf.visibility.pve.target
+        elseif conf.visibility.pve.always > 0 then
+            return conf.visibility.pve.always
+        end
 
         return 0
     end
@@ -1739,12 +1749,12 @@ do
                 if event == "CLIENT_SCENE_OPENED" then
                     if ... == 1 then -- Minigame.
                         Hekili.ClientScene = true
-                        self:UpdateAlpha()
                     end
                 elseif event == "CLIENT_SCENE_CLOSED" then
                     Hekili.ClientScene = nil
-                    self:UpdateAlpha()
                 end
+
+                self:UpdateAlpha()
 
             end
 
