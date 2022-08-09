@@ -1637,7 +1637,7 @@ do
         end
 
         function d:RefreshCooldowns( event )
-            local gStart, _, _, gModRate = GetSpellCooldown( 61304 )
+            local gStart = GetSpellCooldown( 61304 )
             local cStart = ( select( 4, UnitCastingInfo( "player" ) ) or select( 4, UnitCastingInfo( "player" ) ) or 0 ) / 1000
 
             local now = GetTime()
