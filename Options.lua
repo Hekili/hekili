@@ -5112,7 +5112,20 @@ do
         e = tlEntry( section .. "Add" )
         e.type = "select"
         e.name = ""
-        e.values = class.abilityList
+        e.values = function()
+            local list = {}
+
+            for k, v in pairs( class.abilityList ) do
+                local a = class.abilities[ k ]
+                if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
+                    if settings.abilities[ k ].toggle == 'default' then
+                        list[ k ] = class.abilityList[ k ] or v
+                    end
+                end
+            end
+
+            return list
+        end
         e.order = nToggles + 0.997
         e.width = 1.35
         e.get = function () end
@@ -9923,6 +9936,32 @@ do
         dotinfo = true,
     }
 
+    local toggleToIndex = {
+        cooldowns = 51,
+        interrupts = 52,
+        potions = 53,
+        defensives = 54,
+        covenants = 55,
+        custom1 = 56,
+        custom2 = 57,
+    }
+
+    local indexToToggle = {
+        [51] = { "cooldowns", "Cooldowns" },
+        [52] = { "interrupts", "Interrupts" },
+        [53] = { "potions", "Potions" },
+        [54] = { "defensives", "Defensives" },
+        [55] = { "essences", "Covenants" },
+        [56] = { "custom1", "Custom #1" },
+        [57] = { "custom2", "Custom #2" },
+    }
+
+    local toggleInstructions = {
+        "on|r (to enable)",
+        "off|r (to disable)",
+        "|r (to toggle)",
+    }
+
     local info = {}
     local priorities = {}
 
@@ -10006,14 +10045,15 @@ do
             end
 
             if ( "set" ):match( "^" .. args[1] ) then
-                local spec = Hekili.DB.profile.specs[ state.spec.id ]
+                local profile = Hekili.DB.profile
+                local spec = profile.specs[ state.spec.id ]
                 local prefs = spec.settings
                 local settings = class.specs[ state.spec.id ].settings
 
                 local index
 
                 if args[2] then
-                    if ( "target_swap" ):match( "^" .. args[2] ) or ( "cycle" ):match( "^" .. args[2] ) then
+                    if ( "target_swap" ):match( "^" .. args[2] ) or ( "swap" ):match( "^" .. args[2] ) or ( "cycle" ):match( "^" .. args[2] ) then
                         index = -1
                     elseif ( "mode" ):match( "^" .. args[2] ) then
                         index = -2
@@ -10024,6 +10064,16 @@ do
                             if setting.name:match( "^" .. args[2] ) then
                                 index = i
                                 break
+                            end
+                        end
+
+                        if not index then
+                            -- Check toggles instead.
+                            for toggle, num in pairs( toggleToIndex ) do
+                                if toggle:match( "^" .. args[2] ) then
+                                    index = num
+                                    break
+                                end
                             end
                         end
                     end
@@ -10039,7 +10089,8 @@ do
                     for i, setting in ipairs( settings ) do
                         if not setting.info.arg or setting.info.arg() then
                             if setting.info.type == "toggle" then
-                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ] and "ON" or "OFF", setting.info.name )
+                                output = format( "%s\n - |cFFFFD100%s|r = %s|r (%s)", output, setting.name, prefs[ setting.name ] and "|cFF00FF00ON" or "|cFFFF0000OFF", setting.info.name )
+                                hasToggle = true
                                 exToggle = setting.name
                             elseif setting.info.type == "range" then
                                 output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
@@ -10049,16 +10100,20 @@ do
                         end
                     end
 
-                    output = format( "%s\n - |cFFFFD100cycle|r or |cFFFFD100target_swap|r = |cFF00FF00%s|r (%s)", output, spec.cycle and "ON" or "OFF", "Recommend Target Swaps" )
+                    output = format( "%s\n - |cFFFFD100cycle|r, |cFFFFD100swap|r, or |cFFFFD100target_swap|r = %s|r (%s)", output, spec.cycle and "|cFF00FF00ON" or "|cFFFF0000OFF", "Recommend Target Swaps" )
 
-                    output = format( "%s\n\nTo control your display mode (currently |cFF00FF00%s|r):\n - Toggle Mode:  |cFFFFD100/hek set mode|r\n - Set Mode - |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)", output, self.DB.profile.toggles.mode.value or "unknown" )
+                    output = format( "%s\n\nTo control your toggles (|cFFFFD100cooldowns|r, |cFFFFD100covenants|r, |cFFFFD100defensives|r, |cFFFFD100interrupts|r, |cFFFFD100potions|r, |cFFFFD100custom1|r, and |cFFFFD100custom2|r):\n" ..
+                        " - Enable Cooldowns:  |cFFFFD100/hek set cooldowns on|r\n" ..
+                        " - Disable Interrupts:  |cFFFFD100/hek set interupts off|r\n" ..
+                        " - Toggle Defensives:  |cFFFFD100/hek set defensives|r", output )
 
+                    output = format( "%s\n\nTo control your display mode (currently |cFFFFD100%s|r):\n - Toggle Mode:  |cFFFFD100/hek set mode|r\n - Set Mode:  |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)", output, self.DB.profile.toggles.mode.value or "unknown" )
 
                     if hasToggle then
-                        output = format( "%s\n\nTo set a |cFFFFD100toggle|r, use the following commands:\n" ..
-                            " - Switch On/Off:  |cFFFFD100/hek set %s|r\n" ..
-                            " - Set to On:  |cFFFFD100/hek set %s on|r\n" ..
-                            " - Set to Off:  |cFFFFD100/hek set %s off|r\n" ..
+                        output = format( "%s\n\nTo set a |cFFFFD100specialization toggle|r, use the following commands:\n" ..
+                            " - Toggle On/Off:  |cFFFFD100/hek set %s|r\n" ..
+                            " - Enable:  |cFFFFD100/hek set %s on|r\n" ..
+                            " - Disable:  |cFFFFD100/hek set %s off|r\n" ..
                             " - Reset to Default:  |cFFFFD100/hek set %s default|r", output, exToggle, exToggle, exToggle, exToggle )
                     end
 
@@ -10072,8 +10127,32 @@ do
                     return
                 end
 
-                -- Two or more arguments, we're setting (or querying).
+                local toggle = indexToToggle[ index ]
 
+                if toggle then
+                    local tab, text, to = toggle[ 1 ], toggle[ 2 ]
+
+                    if args[3] then
+                        if args[3] == "on" then to = true
+                        elseif args[3] == "off" then to = false
+                        elseif args[3] == "default" then to = false
+                        else
+                            Hekili:Print( format( "'%s' is not a valid option for |cFFFFD100%s|r.", args[3], text ) )
+                            return
+                        end
+                    else
+                        to = not profile.toggles[ tab ].value
+                    end
+
+                    Hekili:Print( format( "|cFFFFD100%s|r toggle set to %s.", text, ( to and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r" ) ) )
+
+                    profile.toggles[ tab ].value = to
+
+                    Hekili:ForceUpdate( "HEKILI_TOGGLE", tab )
+                    return
+                end
+
+                -- Two or more arguments, we're setting (or querying).
                 if index == -1 then
                     local to
 
