@@ -995,9 +995,7 @@ do
                             local id = ability.item or ability.id
                             local isItem = ability.item ~= nil
 
-                            local spellID = select( 9, UnitCastingInfo( "player" ) ) or select( 9, UnitChannelInfo( "player" ) )
-
-                            if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) and b.ExactTime > GetTime() then
+                            if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) and exact_time > GetTime() then
                                 b.Highlight:Show()
                             else
                                 b.Highlight:Hide()
