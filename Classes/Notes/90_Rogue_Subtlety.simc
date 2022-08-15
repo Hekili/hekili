@@ -1,5 +1,5 @@
 ## Subtlety Rogue
-## July 24, 2022
+## August 9, 2022
 
 ## Changes:
 ## - Move variable.use_priority_rotation up so it is set before we use it.
@@ -87,6 +87,8 @@ actions.cds+=/blood_fury,if=buff.symbols_of_death.up
 actions.cds+=/berserking,if=buff.symbols_of_death.up
 actions.cds+=/fireblood,if=buff.symbols_of_death.up
 actions.cds+=/ancestral_call,if=buff.symbols_of_death.up
+actions.cds+=/use_item,name=wraps_of_electrostatic_potential
+actions.cds+=/use_item,name=ring_of_collapsing_futures,if=buff.temptation.down|boss&fight_remains<30
 actions.cds+=/use_item,name=cache_of_acquired_treasures,if=(covenant.venthyr&buff.acquired_axe.up|!covenant.venthyr&buff.acquired_wand.up)&(spell_targets.shuriken_storm=1&raid_event.adds.in>60|boss&fight_remains<25|variable.use_priority_rotation)|buff.acquired_axe.up&spell_targets.shuriken_storm>1
 
 actions.cds+=/use_item,name=bloodstained_handkerchief,cycle_targets=1,if=!dot.cruel_garrote.ticking
