@@ -3333,6 +3333,26 @@ do
         duration = 15,
         max_stack = 1
     } )
+
+    all:RegisterAbility( "wraps_of_electrostatic_potential", {
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = 169069,
+
+        handler = function()
+            applyDebuff( "target", "electrostatic_induction" )
+        end,
+
+        auras = {
+            electrocstatic_induction = {
+                id = 300145,
+                duration = 8,
+                max_stack = 1
+            }
+        }
+    } )
 end
 
 
@@ -4432,7 +4452,9 @@ do
         { "unchained_aspirants_medallion", 185309 },
         { "unchained_gladiators_medallion", 185304 },
         { "cosmic_aspirants_medallion", 186966 },
-        { "cosmic_gladiators_medallion", 186869 }
+        { "cosmic_gladiators_medallion", 186869 },
+        { "eternal_aspirants_medallion", 192412 },
+        { "eternal_gladiators_medallion", 192298 },
     }
 
     local pvp_medallions_copy = {}
@@ -4458,7 +4480,7 @@ do
             end
             return m
         end,
-        items = { 161674, 162897, 165055, 165220, 167377, 167525, 181333, 184052, 184055, 172666, 184058, 185309, 185304, 186966, 186869 },
+        items = { 161674, 162897, 165055, 165220, 167377, 167525, 181333, 184052, 184055, 172666, 184058, 185309, 185304, 186966, 186869, 192412, 192298 },
         toggle = "defensives",
 
         usable = function () return debuff.loss_of_control.up, "requires loss of control effect" end,
@@ -4493,7 +4515,9 @@ do
         { "unchained_aspirants_badge_of_ferocity", 185161 },
         { "unchained_gladiators_badge_of_ferocity", 185197 },
         { "cosmic_aspirants_badge_of_ferocity", 186906 },
-        { "cosmic_gladiators_badge_of_ferocity", 186866 }
+        { "cosmic_gladiators_badge_of_ferocity", 186866 },
+        { "eternal_aspirants_badge_of_ferocity", 192352 },
+        { "eternal_gladiators_badge_of_ferocity", 192295 },
     }
 
     local pvp_badges_copy = {}
@@ -4511,7 +4535,7 @@ do
         cooldown = 120,
         gcd = "off",
 
-        items = { 162966, 161902, 165223, 165058, 167528, 167380, 172849, 172669, 175884, 175921, 185161, 185197, 186906, 186866 },
+        items = { 162966, 161902, 165223, 165058, 167528, 167380, 172849, 172669, 175884, 175921, 185161, 185197, 186906, 186866, 192352, 192295 },
         texture = 135884,
 
         toggle = "cooldowns",
@@ -4578,6 +4602,8 @@ do
         unchained_gladiators_emblem = 185282,
         cosmic_aspirants_emblem = 186946,
         cosmic_gladiators_emblem = 186868,
+        eternal_aspirants_emblem = 192392,
+        eternal_gladiators_emblem = 192297,
     }
 
     local pvp_emblems_copy = {}
@@ -4604,7 +4630,7 @@ do
             end
             return e
         end,
-        items = { 162898, 161675, 165221, 165056, 167378, 167526, 172667, 172847, 178334, 178447, 185242, 185282, 186946, 186868 },
+        items = { 162898, 161675, 165221, 165056, 167378, 167526, 172667, 172847, 178334, 178447, 185242, 185282, 186946, 186868, 192392, 192297 },
         toggle = "cooldowns",
 
         handler = function ()

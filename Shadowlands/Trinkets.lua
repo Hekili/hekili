@@ -1738,6 +1738,18 @@ do
             handler = function()
             end,
         },
+        eternal_gladiators_resonator = {
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+
+            item = 192303,
+
+            toggle = "cooldowns",
+
+            handler = function()
+            end,
+        },
         cosmic_gladiators_fastidious_resolve = {
             cast = 0,
             cooldown = 180,
@@ -1748,7 +1760,7 @@ do
             toggle = "cooldowns",
 
             handler = function()
-                applyBuff( "the_first_sigil" )
+                applyBuff( "gladiators_fastidious_resolve" )
             end,
 
             auras = {
@@ -1758,6 +1770,19 @@ do
                     max_stack = 1,
                 }
             }
+        },
+        eternal_gladiators_fastidious_resolve = {
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 192301,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "gladiators_fastidious_resolve" )
+            end,
         },
         cosmic_gladiators_eternal_aegis = {
             cast = 0,
@@ -1780,6 +1805,19 @@ do
                 }
             }
         },
+        eternal_gladiators_eternal_aegis = {
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+
+            item = 192304,
+
+            toggle = "defensives",
+
+            handler = function()
+                applyBuff( "gladiators_eternal_aegis" )
+            end,
+        },
         cosmic_gladiators_devouring_malediction = {
             cast = 3,
             channeled = true,
@@ -1789,6 +1827,14 @@ do
             item = 188778,
 
             toggle = "cooldowns",
+        },
+        eternal_gladiators_devouring_malediction = {
+            cast = 3,
+            channeled = true,
+            cooldown = 180,
+            gcd = "spell",
+
+            item = 192305,
         },
 
         bloodstained_handkerchief = {
@@ -1811,7 +1857,45 @@ do
                     max_stack = 1,
                 }
             }
-        }
+        },
+        fleshrenders_meathook = {
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+
+            item = 110002,
+
+            handler = function()
+                applyBuff( "haste" )
+            end,
+
+            auras = {
+                haste = {
+                    id = 165531,
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
+        },
+        kihras_adrenaline_injector = {
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+
+            item = 109997,
+
+            handler = function()
+                applyBuff( "mastery" )
+            end,
+
+            auras = {
+                mastery = {
+                    id = 165485,
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
+        },
     } )
 
     all:RegisterAuras( {
