@@ -1865,6 +1865,8 @@ do
 
             item = 110002,
 
+            toggle = "cooldowns",
+
             handler = function()
                 applyBuff( "haste" )
             end,
@@ -1884,6 +1886,8 @@ do
 
             item = 109997,
 
+            toggle = "cooldowns",
+
             handler = function()
                 applyBuff( "mastery" )
             end,
@@ -1896,6 +1900,27 @@ do
                 }
             }
         },
+        enforcers_stun_grenade = {
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+
+            item = 110017,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "versatility" )
+            end,
+
+            auras = {
+                versatility = {
+                    id = 165534,
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
+        }
     } )
 
     all:RegisterAuras( {
