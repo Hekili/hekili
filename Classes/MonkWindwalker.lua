@@ -732,8 +732,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
         -- Locally defined variables that may change.
 
         local eps = 0.2 -- Delay when chaining SCKs
-        local tiger_palm_AP = 0.27 * 1.546776
-        local sck_AP = 0.4 * 2.232
+        local tiger_palm_AP = 0.41804714952
+        local sck_AP = 0.8481600000000001
 
         local coordinated_offensive_bonus = 1
 

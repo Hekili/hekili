@@ -1,5 +1,5 @@
 ## Shadow Priest
-## August 2, 2022
+## August 9, 2022
 
 ## Changes:
 ## - Tweak Void Torrent when target counts are forced.
@@ -40,6 +40,10 @@ actions+=/berserking,if=buff.voidform.up
 # Use Light's Judgment if there are 2 or more targets, or adds aren't spawning for more than 75s.
 actions+=/lights_judgment,if=spell_targets.lights_judgment>=2|(!raid_event.adds.exists|raid_event.adds.in>75)
 actions+=/ancestral_call,if=buff.voidform.up
+# Disable use of the Hyperthread Wristwraps entirely.
+actions+=/use_item,name=hyperthread_wristwraps,if=0
+# Use the ring every 30s as to not increase the cooldown unless the target is about to die.
+actions+=/use_item,name=ring_of_collapsing_futures,if=(buff.temptation.stack<1&target.time_to_die>60)|target.time_to_die<60
 actions+=/call_action_list,name=cwc
 actions+=/run_action_list,name=main
 
