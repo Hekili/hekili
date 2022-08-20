@@ -432,6 +432,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
 
     spec:RegisterStateExpr( "bloodseeker", function () return debuff.bloodseeker end )
+    
+    local gainWildfireBombOnImpact = false
 
 
     -- Abilities
@@ -1028,11 +1030,16 @@ if UnitClassBase( "player" ) == "HUNTER" then
             velocity = 35,
 
             usable = function () return current_wildfire_bomb == "pheromone_bomb" end,
-            start = function () end,
-            impact = function ()
+            start = function () 
                 if buff.mad_bombardier.up then
-                    gainCharges( "wildfire_bomb", 1 )
                     removeBuff( "mad_bombardier" )
+                    gainWildfireBombOnImpact = true
+                end
+            end,
+            impact = function ()
+                if gainWildfireBombOnImpact then
+                    gainCharges( "wildfire_bomb", 1 )
+                    gainWildfireBombOnImpact = false
                 end
                 applyDebuff( "target", "pheromone_bomb" )
             end,
@@ -1158,11 +1165,16 @@ if UnitClassBase( "player" ) == "HUNTER" then
             velocity = 35,
 
             usable = function () return current_wildfire_bomb == "shrapnel_bomb" end,
-            start = function () end,
-            impact = function ()
+            start = function () 
                 if buff.mad_bombardier.up then
-                    gainCharges( "wildfire_bomb", 1 )
                     removeBuff( "mad_bombardier" )
+                    gainWildfireBombOnImpact = true
+                end
+            end,
+            impact = function ()
+                if gainWildfireBombOnImpact then
+                    gainCharges( "wildfire_bomb", 1 )
+                    gainWildfireBombOnImpact = false
                 end
                 applyDebuff( "target", "shrapnel_bomb" )
             end,
@@ -1289,13 +1301,16 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             usable = function () return current_wildfire_bomb == "volatile_bomb" end,
 
-            start = function ()
-            end,
-
-            impact = function ()
+            start = function () 
                 if buff.mad_bombardier.up then
-                    gainCharges( "wildfire_bomb", 1 )
                     removeBuff( "mad_bombardier" )
+                    gainWildfireBombOnImpact = true
+                end
+            end,
+            impact = function ()
+                if gainWildfireBombOnImpact then
+                    gainCharges( "wildfire_bomb", 1 )
+                    gainWildfireBombOnImpact = false
                 end
                 applyDebuff( "target", "volatile_bomb" )
                 if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
@@ -1331,12 +1346,16 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             start = function ()
                 removeBuff( "flame_infusion" )
+                if buff.mad_bombardier.up then
+                    removeBuff( "mad_bombardier" )
+                    gainWildfireBombOnImpact = true
+                end
             end,
 
             impact = function ()
-                if not talent.wildfire_infusion.enabled and buff.mad_bombardier.up then
+                if gainWildfireBombOnImpact then
                     gainCharges( "wildfire_bomb", 1 )
-                    removeBuff( "mad_bombardier" )
+                    gainWildfireBombOnImpact = false
                 end
                 if current_wildfire_bomb == "wildfire_bomb" then applyDebuff( "target", "wildfire_bomb_dot" )
                 else class.abilities[ current_wildfire_bomb ].impact() end
