@@ -1129,7 +1129,7 @@ do
 
                         local ok, err = coroutine.resume( thread )
                         if not ok then
-                            Hekili:Error( "Update: " .. err )
+                            Hekili:Error( "Update: " .. err:gsub( "%%", "%%%%" ) )
                             pcall( error, err )
                         end
                         local now = debugprofilestop()
@@ -1143,8 +1143,6 @@ do
                                 Hekili:SaveDebugSnapshot( self.id )
                                 Hekili.ActiveDebug = nil
                             end
-
-                            for _, d in pairs( ns.UI.Displays ) do d:SetThreadLocked( false ) end
 
                             self.activeThread = nil
                             self.refreshTimer = 0
