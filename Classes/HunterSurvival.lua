@@ -351,12 +351,26 @@ if UnitClassBase( "player" ) == "HUNTER" then
     state.IsActiveSpell = IsActiveSpell
 
 
-    local pheromoneReset = false
+    local pheromoneReset = 0
     local FindUnitDebuffByID = ns.FindUnitDebuffByID
 
+    local madBombardierSpent = 0
+    local bombImpactIds = {
+        [270329] = true, -- Pheromone Bomb
+        [270338] = true, -- Shrapnel Bomb
+        [271048] = true, -- Volatile Bomb
+        [265157] = true, -- Wildfire Bomb
+    }
+
     spec:RegisterCombatLogEvent( function ( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-        if sourceGUID == state.GUID and spellID == 259489 and subtype == "SPELL_CAST_SUCCESS" then
-            pheromoneReset = FindUnitDebuffByID( "target", 270332 ) and true or false
+        -- Reset Kill Command after
+        if sourceGUID == state.GUID then
+            if spellID == 259489 and subtype == "SPELL_CAST_SUCCESS" then
+                pheromoneReset = FindUnitDebuffByID( "target", 270332 ) and GetTime() or 0
+            elseif bombImpactIds[ spellID ] and state.set_bonus.tier28 > 1 and subtype == "SPELL_DAMAGE" then
+                -- Mad Bombardier doesn't get removed until even after it impacts the target, but we want to know it should've been consumed.
+                madBombardierSpent = GetPlayerAuraBySpellID( 363805 ) and GetTime() or 0
+            end
         end
     end )
 
@@ -378,6 +392,12 @@ if UnitClassBase( "player" ) == "HUNTER" then
     } )
 
 
+    -- Create a flag that WfB's CD should reset based on the set bonus, so we can remove the buff to help the addon's priority logic.
+    spec:RegisterStateExpr( "will_reset_wildfire_bomb", function ()
+        return buff.mad_bombardier.up
+    end )
+
+
     spec:RegisterHook( "reset_precast", function()
         if talent.wildfire_infusion.enabled then
             if IsActiveSpell( 270335 ) then current_wildfire_bomb = "shrapnel_bomb"
@@ -388,8 +408,22 @@ if UnitClassBase( "player" ) == "HUNTER" then
             current_wildfire_bomb = "wildfire_bomb"
         end
 
-        if prev_gcd[1].kill_command and pheromoneReset and ( now - action.kill_command.lastCast < 0.25 ) then
+        if now - pheromoneReset < 0.3 then
             setCooldown( "kill_command", 0 )
+        end
+
+        will_reset_wildfire_bomb = nil
+
+        -- If an actual WfB has cast but not landed, remove the buff but flag WfB to reset upon impact.
+        if buff.mad_bombardier.up then
+            -- Remove if we just had a bomb impact but the buff didn't wipe yet.
+            if now - madBombardierSpent < 0.3 then
+                removeBuff( "mad_bombardier" )
+            -- Remove if we have a bomb in flight that will consume it, but flag will_reset_wildfire_bomb so the impact event knows what to do.
+            elseif ( action.wildfire_bomb.in_flight or action.shrapnel_bomb.in_flight or action.pheromone_bomb.in_flight or action.volatile_bomb.in_flight ) then
+                removeBuff( "mad_bombardier" )
+                will_reset_wildfire_bomb = true
+            end
         end
 
         if now - action.harpoon.lastCast < 1.5 then
@@ -1028,10 +1062,17 @@ if UnitClassBase( "player" ) == "HUNTER" then
             velocity = 35,
 
             usable = function () return current_wildfire_bomb == "pheromone_bomb" end,
-            start = function () end,
-            impact = function ()
+            start = function ()
+                removeBuff( "flame_infusion" )
                 if buff.mad_bombardier.up then
+                    will_reset_wildfire_bomb = true
+                    removeBuff( "mad_bombardier" )
+                end
+            end,
+            impact = function ()
+                if will_reset_wildfire_bomb then
                     gainCharges( "wildfire_bomb", 1 )
+                    will_reset_wildfire_bomb = nil
                     removeBuff( "mad_bombardier" )
                 end
                 applyDebuff( "target", "pheromone_bomb" )
@@ -1158,10 +1199,17 @@ if UnitClassBase( "player" ) == "HUNTER" then
             velocity = 35,
 
             usable = function () return current_wildfire_bomb == "shrapnel_bomb" end,
-            start = function () end,
-            impact = function ()
+            start = function ()
+                removeBuff( "flame_infusion" )
                 if buff.mad_bombardier.up then
+                    will_reset_wildfire_bomb = true
+                    removeBuff( "mad_bombardier" )
+                end
+            end,
+            impact = function ()
+                if will_reset_wildfire_bomb then
                     gainCharges( "wildfire_bomb", 1 )
+                    will_reset_wildfire_bomb = nil
                     removeBuff( "mad_bombardier" )
                 end
                 applyDebuff( "target", "shrapnel_bomb" )
@@ -1290,11 +1338,16 @@ if UnitClassBase( "player" ) == "HUNTER" then
             usable = function () return current_wildfire_bomb == "volatile_bomb" end,
 
             start = function ()
-            end,
-
-            impact = function ()
+                removeBuff( "flame_infusion" )
                 if buff.mad_bombardier.up then
+                    will_reset_wildfire_bomb = true
+                    removeBuff( "mad_bombardier" )
+                end
+            end,
+            impact = function ()
+                if will_reset_wildfire_bomb then
                     gainCharges( "wildfire_bomb", 1 )
+                    will_reset_wildfire_bomb = nil
                     removeBuff( "mad_bombardier" )
                 end
                 applyDebuff( "target", "volatile_bomb" )
@@ -1331,14 +1384,19 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             start = function ()
                 removeBuff( "flame_infusion" )
+                if buff.mad_bombardier.up then
+                    will_reset_wildfire_bomb = true
+                    removeBuff( "mad_bombardier" )
+                end
             end,
 
             impact = function ()
-                if not talent.wildfire_infusion.enabled and buff.mad_bombardier.up then
-                    gainCharges( "wildfire_bomb", 1 )
-                    removeBuff( "mad_bombardier" )
-                end
-                if current_wildfire_bomb == "wildfire_bomb" then applyDebuff( "target", "wildfire_bomb_dot" )
+                if current_wildfire_bomb == "wildfire_bomb" then
+                    if will_reset_wildfire_bomb then
+                        gainCharges( "wildfire_bomb", 1 )
+                        will_reset_wildfire_bomb = nil
+                    end
+                    applyDebuff( "target", "wildfire_bomb_dot" )
                 else class.abilities[ current_wildfire_bomb ].impact() end
                 current_wildfire_bomb = "wildfire_bomb"
             end,
@@ -1358,7 +1416,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 volatile_bomb = true
             },
 
-            copy = 259495, -- { 271045, 270335, 270323, 259495 }
+            copy = { 259495, 265157 } -- { 271045, 270335, 270323, 259495 }
         },
 
 

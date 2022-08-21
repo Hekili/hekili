@@ -3346,7 +3346,7 @@ do
         end,
 
         auras = {
-            electrocstatic_induction = {
+            electrostatic_induction = {
                 id = 300145,
                 duration = 8,
                 max_stack = 1

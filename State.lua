@@ -3808,8 +3808,11 @@ do
     -- Azerite and Essences.
     local mt_default_trait = {
         __index = function( t, k )
-            local active = rawget( state.azerite, "heart" )
-            active = active and active:IsEquipmentSlot() and C_AzeriteItem.IsAzeriteItemEnabled( active )
+            local heart, active = rawget( state.azerite, "heart" ), false
+
+            if heart and heart:IsEquipmentSlot() then
+                active = C_AzeriteItem.IsAzeriteItemEnabled( heart )
+            end
 
             if k == "enabled" or k == "minor" or k == "equipped" then
                 return active and t.__rank and t.__rank > 0
