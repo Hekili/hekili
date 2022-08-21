@@ -1,5 +1,5 @@
 ## Brewmaster Monk
-## March 2, 2022
+## August 17, 2022
 
 ## Changes:
 ## - 9.1 includes Purifying Brew entries related to Invoke Niuzao that do not using spec settings.  Provide feedback on GitHub.
@@ -7,11 +7,13 @@
 ## - Make settings.ox_walker support using SCK on fewer than 3 enemies with conduit.walk_with_the_ox.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
-actions.precombat+=/fleshcraft
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/fleshcraft
+# Use Jotungeirr pre-pull.
+actions.precombat+=/use_item,name=jotungeirr_destinys_call
 actions.precombat+=/chi_burst
 actions.precombat+=/chi_wave
+
 
 ## Executed every time the actor is available.
 actions=spear_hand_strike
@@ -22,8 +24,10 @@ actions+=/dampen_harm,if=health.pct<75&incoming_damage_3s>health.max*(0.2+(0.2*g
 actions+=/fortifying_brew,if=health.pct<50&incoming_damage_3s>health.max*(0.2+(0.2*group))&(buff.dampen_harm.down)
 
 actions+=/spear_hand_strike,if=target.debuff.casting.react
-actions+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.health.pct<31|time_to_die<20
-actions+=/use_item,name=dreadfire_vessel
+actions+=/use_item,name=jotungeirr_destinys_call
+actions+=/use_item,name=scars_of_fraternal_strife,if=!buff.scars_of_fraternal_strife_4.up&time>1
+actions+=/use_item,name=cache_of_acquired_treasures,if=buff.acquired_axe.up|boss&fight_remains<25
+actions+=/use_item,name=ring_of_collapsing_futures,if=buff.temptation.down|boss&fight_remains<30
 actions+=/use_items
 actions+=/potion
 actions+=/blood_fury
