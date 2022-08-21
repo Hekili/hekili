@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## June 17, 2022
+## August 21, 2022
 
 ## Changes:
 ## - Added Spell Lock.
@@ -235,10 +235,7 @@ actions.stat_trinkets+=/use_item,name=macabre_sheet_music
 actions.stat_trinkets+=/use_item,name=flame_of_battle
 actions.stat_trinkets+=/use_item,name=wakeners_frond
 actions.stat_trinkets+=/use_item,name=tablet_of_despair
-actions.stat_trinkets+=/use_item,name=sinful_aspirants_badge_of_ferocity
-actions.stat_trinkets+=/use_item,name=cosmic_aspirants_badge_of_ferocity
-actions.stat_trinkets+=/use_item,name=sinful_gladiators_badge_of_ferocity
-actions.stat_trinkets+=/use_item,name=cosmic_gladiators_badge_of_ferocity
+actions.stat_trinkets+=/use_item,name=gladiators_badge
 actions.stat_trinkets+=/use_item,name=obelisk_of_the_void
 actions.stat_trinkets+=/use_item,name=horn_of_valor
 actions.stat_trinkets+=/use_item,name=moonlit_prism

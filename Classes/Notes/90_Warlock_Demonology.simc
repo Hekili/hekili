@@ -1,6 +1,6 @@
 ## Demonology Warlock
 ## https://github.com/simulationcraft/simc/
-## June 11, 2022
+## August 21, 2022
 
 ## Changes:
 ## - Spell Lock.
@@ -23,7 +23,12 @@ actions.precombat+=/power_siphon,if=buff.wild_imps.stack>1&buff.demonic_core.sta
 actions.precombat+=/use_item,name=shadowed_orb_of_torment
 actions.precombat+=/demonbolt,if=soul_shards<5&(boss|action.demonbolt.cast=0)
 actions.precombat+=/shadow_bolt,if=soul_shards<5&!(boss|action.demonbolt.cast=0)
-## actions.precombat+=/variable,name=first_tyrant_time,op=set,value=10
+## actions.precombat+=/variable,name=first_tyrant_time,op=set,value=12
+## actions.precombat+=/variable,name=first_tyrant_time,op=add,value=action.grimoire_felguard.execute_time,if=talent.grimoire_felguard.enabled
+## actions.precombat+=/variable,name=first_tyrant_time,op=add,value=action.summon_vilefiend.execute_time,if=talent.summon_vilefiend.enabled
+## actions.precombat+=/variable,name=first_tyrant_time,op=add,value=gcd.max,if=talent.grimoire_felguard.enabled|talent.summon_vilefiend.enabled
+## actions.precombat+=/variable,name=first_tyrant_time,op=sub,value=action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time
+## actions.precombat+=/variable,name=first_tyrant_time,op=min,value=10
 ## actions.precombat+=/variable,name=in_opener,op=set,value=1
 actions.precombat+=/variable,name=use_bolt_timings,op=set,value=runeforge.shard_of_annihilation&(runeforge.balespiders_burning_core+talent.sacrificed_souls.enabled+talent.power_siphon.enabled>1)
 
@@ -103,8 +108,7 @@ actions.covenant_ability+=/scouring_tithe,if=soulbind.combat_meditation&pet.demo
 actions.covenant_ability+=/scouring_tithe,if=!soulbind.combat_meditation
 actions.covenant_ability+=/impending_catastrophe,if=pet.demonic_tyrant.active&soul_shard=0
 
-actions.hp_trinks=use_item,name=sinful_gladiators_emblem
-actions.hp_trinks+=/use_item,name=sinful_aspirants_emblem
+actions.hp_trinks=use_item,name=gladiators_emblem
 
 actions.ogcd=berserking
 actions.ogcd+=/blood_fury
@@ -129,6 +133,8 @@ actions.pure_damage_trinks+=/use_item,name=glyph_of_assimilation,if=active_enemi
 actions.pure_damage_trinks+=/use_item,name=darkmoon_deck_putrescence
 actions.pure_damage_trinks+=/use_item,name=ebonsoul_vise
 actions.pure_damage_trinks+=/use_item,name=unchained_gladiators_shackles
+actions.pure_damage_trinks+=/trinket1
+actions.pure_damage_trinks+=/trinket2
 
 actions.trinkets=variable,name=use_buff_trinkets,value=(!variable.use_bolt_timings&pet.demonic_tyrant.active)|(variable.use_bolt_timings&buff.shard_of_annihilation.up)
 actions.trinkets+=/use_item,name=scars_of_fraternal_strife,if=!buff.scars_of_fraternal_strife_4.up
@@ -140,9 +146,11 @@ actions.trinkets+=/call_action_list,name=hp_trinks,if=talent.demonic_consumption
 # Effects that travel slowly from the target require additional, separate handling
 actions.trinkets+=/call_action_list,name=slow_trinkets
 actions.trinkets+=/use_item,name=overflowing_anima_cage,if=variable.use_buff_trinkets
-actions.trinkets+=/use_item,slot=trinket1,if=trinket.1.has_use_buff&variable.use_buff_trinkets
-actions.trinkets+=/use_item,slot=trinket2,if=trinket.2.has_use_buff&variable.use_buff_trinkets
+actions.trinkets+=/trinket1,if=trinket.1.has_use_buff&variable.use_buff_trinkets
+actions.trinkets+=/trinket2,if=trinket.2.has_use_buff&variable.use_buff_trinkets
+actions.trinkets+=/use_item,name=neural_synapse_enhancer,if=variable.buff_sync_cd>45|variable.use_buff_trinkets
 actions.trinkets+=/call_action_list,name=pure_damage_trinks,if=time>first_tyrant_time&variable.buff_sync_cd>20
+actions.trinkets+=/use_items,time>first_tyrant_time&variable.buff_sync_cd>20
 
 actions.tyrant_setup=nether_portal,if=variable.next_tyrant_cd<15
 actions.tyrant_setup+=/grimoire_felguard,if=variable.next_tyrant_cd<17-(action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time)&(cooldown.call_dreadstalkers.remains<17-(action.summon_demonic_tyrant.execute_time+action.summon_vilefiend.execute_time+action.shadow_bolt.execute_time)|pet.dreadstalker.remains>variable.next_tyrant_cd+action.summon_demonic_tyrant.execute_time)
