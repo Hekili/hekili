@@ -6707,6 +6707,11 @@ do
 
         if option.disabled then return true, "preference" end
         if option.boss and not state.boss then return true, "boss-only" end
+        if option.targetMin > 0 and self.active_enemies < option.targetMin then
+            return true, "active_enemies[" .. self.active_enemies .. "] is less than ability's minimum targets [" .. option.targetMin .. "]"
+        elseif option.targetMax > 0 and self.active_enemies > option.targetMax then
+            return true, "active_enemies[" .. self.active_enemies .. "] is more than ability's maximum targets [" .. option.targetMax .. "]"
+        end
 
         if not strict then
             local toggle = option.toggle
