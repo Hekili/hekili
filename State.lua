@@ -4494,7 +4494,8 @@ local mt_default_debuff = {
 
         elseif k == "pmultiplier" then
             -- Persistent modifier, used by Druids.
-            return ns.getModifier( aura.id, state.target.unit )
+            t[ k ] = ns.getModifier( aura.id, state.target.unit )
+            return t[ k ]
 
         elseif k == "ticks" then
             if t.up then return t.duration / t.tick_time - t.ticks_remain end
@@ -5823,7 +5824,7 @@ function state:RunHandler( key, noStart )
     end
 
     -- state.cast_start = 0
-    ns.callHook( 'runHandler', key )
+    ns.callHook( "runHandler", key )
 end
 
 function state.runHandler( key, noStart )
@@ -6808,16 +6809,6 @@ do
         if ability.item then
             if not ability.bagItem and not self.equipped[ ability.item ] then
                 return false, "item not equipped"
-            end
-        else
-            local cfg = self.settings.spec and self.settings.spec.abilities[ ability.key ]
-
-            if cfg then
-                if cfg.targetMin > 0 and self.active_enemies < cfg.targetMin then
-                    return false, "active_enemies[" .. self.active_enemies .. "] is less than ability's minimum targets [" .. cfg.targetMin .. "]"
-                elseif cfg.targetMax > 0 and self.active_enemies > cfg.targetMax then
-                    return false, "active_enemies[" .. self.active_enemies .. "] is more than ability's maximum targets [" .. cfg.targetMax .. "]"
-                end
             end
         end
 

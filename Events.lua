@@ -950,7 +950,7 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
         Hekili:UpdateDisplayVisibility()
     end
 
-    Hekili:ExpireTTDs( true )
+    -- Hekili:ExpireTTDs( true )
     Hekili:ForceUpdate( event, true ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
 end )
 
@@ -964,7 +964,7 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
 
-    C_Timer.After( 10, function () ns.Audit( "combatExit" ) end )
+    -- C_Timer.After( 10, function () ns.Audit( "combatExit" ) end )
     Hekili:ReleaseHolds( true )
     Hekili:ExpireTTDs( true )
     Hekili:UpdateDisplayVisibility()
@@ -1746,7 +1746,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
 
             elseif ( amSource or petSource ) and aura.friendly then -- friendly effects
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
-                    ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
+                    ns.trackDebuff( spellID, destGUID, time, true )
 
                 elseif subtype == 'SPELL_PERIODIC_HEAL' or subtype == 'SPELL_PERIODIC_MISSED' then
                     ns.trackDebuff( spellID, destGUID, time )
