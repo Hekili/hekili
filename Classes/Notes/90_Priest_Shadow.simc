@@ -1,5 +1,5 @@
 ## Shadow Priest
-## August 9, 2022
+## August 21, 2022
 
 ## Changes:
 ## - Tweak Void Torrent when target counts are forced.
@@ -151,7 +151,7 @@ actions.trinkets+=/use_item,name=soulletting_ruby,cycle_targets=1,if=buff.power_
 # First Sigil small optimization with Soulletting Ruby
 actions.trinkets+=/use_item,name=the_first_sigil,if=buff.voidform.up|buff.power_infusion.up|!priest.self_power_infusion|cooldown.void_eruption.remains>10|(equipped.soulletting_ruby&!trinket.soulletting_ruby.cooldown.up)|boss&fight_remains<20
 # Use Badge inside of VF for the first use or on CD after the first use. Short circuit if void eruption cooldown is 10s or more away.
-actions.trinkets+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=cooldown.void_eruption.remains>=10
+actions.trinkets+=/use_item,name=gladiators_badge,if=cooldown.void_eruption.remains>=10
 # Use Shadowed Orb of Torment when not in Voidform, or in between Void Bolt casts in Voidform. As Kyrian or Necrolord line it up with stacked cooldowns.
 actions.trinkets+=/use_item,name=shadowed_orb_of_torment,if=cooldown.power_infusion.remains<=10&cooldown.void_eruption.remains<=10&(covenant.necrolord|covenant.kyrian)|(covenant.venthyr|covenant.night_fae)&(!buff.voidform.up|prev_gcd.1.void_bolt)|boss&fight_remains<=40
 # Use this on CD for max CDR
