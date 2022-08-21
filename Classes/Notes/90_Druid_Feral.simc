@@ -1,5 +1,5 @@
 ## Feral Druid
-## June 19, 2022
+## August 21, 2022
 
 ## Changes:
 ## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
@@ -74,8 +74,10 @@ actions.bloodtalons+=/thrash_cat,if=buff.bt_thrash.down
 
 actions.cooldown=adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.ticking|dot.adaptive_swarm_damage.remains<2)&(dot.adaptive_swarm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1)&!buff.adaptive_swarm_heal_in_flight.up&!buff.adaptive_swarm_damage_in_flight.up)&target.time_to_die>5|active_enemies>2&!dot.adaptive_swarm_damage.ticking&energy<35&target.time_to_die>5
 actions.cooldown+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
-actions.cooldown+=/use_items,slots=trinket1,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10))|boss&fight_remains<20)|(cooldown.convoke_the_spirits.remains-2>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=2&(cooldown.convoke_the_spirits.remains>22|boss&fight_remains<20|trinket.2.cooldown.remains>20))
-actions.cooldown+=/use_items,slots=trinket2,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10)&(trinket.1.cooldown.remains>=2|variable.on_use_trinket=2))|boss&fight_remains<20)|((cooldown.convoke_the_spirits.remains-2+60*((trinket.1.cooldown.remains<cooldown.convoke_the_spirits.remains-2)&(variable.on_use_trinket=1|variable.on_use_trinket>=3)))>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=1&(cooldown.convoke_the_spirits.remains>22|boss&fight_remains<20|trinket.1.cooldown.remains>20))
+actions.cooldown+=/trinket1,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10))|boss&fight_remains<20)|(cooldown.convoke_the_spirits.remains-2>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=2&(cooldown.convoke_the_spirits.remains>22|boss&fight_remains<20|trinket.2.cooldown.remains>20))
+actions.cooldown+=/trinket2,if=((cooldown.convoke_the_spirits.remains<2&(buff.bs_inc.up|cooldown.bs_inc.remains>10)&(trinket.1.cooldown.remains>=2|variable.on_use_trinket=2))|boss&fight_remains<20)|((cooldown.convoke_the_spirits.remains-2+60*((trinket.1.cooldown.remains<cooldown.convoke_the_spirits.remains-2)&(variable.on_use_trinket=1|variable.on_use_trinket>=3)))>variable.max_trinket_hold)|variable.on_use_trinket=0|(variable.on_use_trinket=1&(cooldown.convoke_the_spirits.remains>22|boss&fight_remains<20|trinket.1.cooldown.remains>20))
+# This should use any other equippable stuff, since both trinket slots are already accounted for.
+actions.cooldown+=/use_items
 # Cast Tiger's Fury before (or immediatly after) casting Feral Frenzy if Berserk is NOT on cooldown.
 actions.cooldown+=/tigers_fury,sync=feral_frenzy,if=cooldown.bs_inc.up
 actions.cooldown+=/feral_frenzy,cycle_targets=1,if=combo_points<3&target.time_to_die>7&(buff.savage_roar.up|!talent.savage_roar.enabled)&(!cooldown.tigers_fury.up|cooldown.bs_inc.up)|boss&fight_remains<8&fight_remains>2
@@ -94,7 +96,7 @@ actions.cooldown+=/convoke_the_spirits,if=(dot.rip.remains>4&combo_points<5&(dot
 # Maybe there should be more conditions on the conduit
 actions.cooldown+=/empower_bond,if=buff.tigers_fury.up|(conduit.deep_allegiance.enabled)
 # Give priority to on-use weapon
-actions.cooldown+=/use_item,name=jotungeirr_destinys_call,if=equipped.jotungeirr_destinys_call
+actions.cooldown+=/use_item,name=jotungeirr_destinys_call
 actions.cooldown+=/use_items
 
 actions.filler=rake,cycle_targets=1,if=variable.filler=1&refreshable&dot.rake.pmultiplier<=1.2*persistent_multiplier
