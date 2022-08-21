@@ -5118,7 +5118,7 @@ do
             for k, v in pairs( class.abilityList ) do
                 local a = class.abilities[ k ]
                 if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
-                    if settings.abilities[ k ].toggle == 'default' then
+                    if settings.abilities[ k ].toggle == 'default' or settings.abilities[ k ].toggle == 'none' then
                         list[ k ] = class.abilityList[ k ] or v
                     end
                 end
