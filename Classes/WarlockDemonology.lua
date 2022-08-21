@@ -13,6 +13,8 @@ local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDeb
 local GetPlayerAuraBySpellID = _G.GetPlayerAuraBySpellID
 local ceil = math.ceil
 
+local RC = LibStub( "LibRangeCheck-2.0" )
+
 -- Conduits
 -- [-] borne_of_blood
 -- [-] carnivorous_stalkers
@@ -159,6 +161,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end )
 
 
+    local dreadstalkers_travel_time = 1
+
     spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID, _, _, _, spellID, spellName )
         if source == state.GUID then
             local now = GetTime()
@@ -271,6 +275,11 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
                 --[[ elseif spellID == 265187 and InCombatLockdown() and not first_combat_tyrant then
                     first_combat_tyrant = now ]]
+
+                -- Call Dreadstalkers (use travel time to determine buffer delay for Demonic Cores).
+                elseif spellID == 104316 then
+                    -- TODO:  Come up with a good estimate of the time it takes.
+                    dreadstalkers_travel_time = ( select( 2, RC:GetRange( "target" ) ) or 25 ) / 25
 
                 end
             end
@@ -430,7 +439,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         end
 
         if buff.dreadstalkers.up then
-            state:QueueAuraExpiration( "dreadstalkers", ExpireDreadstalkers, 1 + buff.dreadstalkers.expires )
+            state:QueueAuraExpiration( "dreadstalkers", ExpireDreadstalkers, 1 + buff.dreadstalkers.expires + dreadstalkers_travel_time )
         end
 
         class.abilities.summon_pet = class.abilities.summon_felguard
