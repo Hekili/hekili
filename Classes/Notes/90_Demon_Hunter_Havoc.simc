@@ -1,5 +1,5 @@
 ## Demon Hunter Havoc
-## August 9, 2022
+## August 21, 2022
 
 ## Changes:
 ## - Metamorphosis and Potion usage "before fight ends" logic adjusted to apply only to boss fights.
@@ -51,6 +51,8 @@ actions.cooldown+=/use_item,name=cache_of_acquired_treasures,if=buff.acquired_ax
 # Default use item logic
 actions.cooldown+=/trinket1,if=variable.trinket_sync_slot=1&(buff.metamorphosis.up|(!talent.demonic.enabled&boss&cooldown.metamorphosis.remains>(fight_remains<?trinket.1.cooldown.duration%2))|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&!trinket.2.cooldown.ready)|!variable.trinket_sync_slot
 actions.cooldown+=/trinket2,if=variable.trinket_sync_slot=2&(buff.metamorphosis.up|(!talent.demonic.enabled&boss&cooldown.metamorphosis.remains>(fight_remains<?trinket.2.cooldown.duration%2))|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&!trinket.1.cooldown.ready)|!variable.trinket_sync_slot
+# This should use any other equippable stuff, since both trinket slots are already accounted for.
+actions.cooldown+=/use_items
 actions.cooldown+=/sinful_brand,if=!dot.sinful_brand.ticking&(!runeforge.agony_gaze|(cooldown.eye_beam.remains<=gcd&fury>=30))&(!cooldown.metamorphosis.up|active_enemies=1)
 actions.cooldown+=/the_hunt,if=!talent.demonic.enabled&!variable.waiting_for_momentum&!variable.pooling_for_meta|buff.furious_gaze.up
 actions.cooldown+=/elysian_decree,if=(active_enemies>desired_targets|raid_event.adds.in>30)
