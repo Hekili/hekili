@@ -733,11 +733,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
             Timer:Reset()
 
+            local entry = list[ actID ]
+
             if self:IsActionActive( packName, listName, actID ) then
                 -- Check for commands before checking actual actions.
-                local entry = list[ actID ]
                 local scriptID = packName .. ":" .. listName .. ":" .. actID
-
                 local action = entry.action
 
                 state.this_action = action
@@ -1531,13 +1531,11 @@ function Hekili.Update()
 
         local checkstr = nil
 
-        local maxTime = spec.throttleTime and spec.maxTime or 10
-
         if UI.Active and UI.alpha > 0 and rule( profile ) then
             for i = #Stack, 1, -1 do tinsert( StackPool, tremove( Stack, i ) ) end
             for i = #Block, 1, -1 do tinsert( StackPool, tremove( Block, i ) ) end
 
-            Hekili:Yield( "Pre-Reset for " .. dispName .. " (from " .. state.display .. ")" )
+            -- Hekili:Yield( "Pre-Reset for " .. dispName .. " (from " .. state.display .. ")" )
 
             state.reset( dispName )
 
@@ -1593,7 +1591,7 @@ function Hekili.Update()
                 end
 
                 while( event ) do
-                    Hekili:Yield( "Pre-Processing event #" .. n )
+                    -- Hekili:Yield( "Pre-Processing event #" .. n )
                     local eStart
 
                     if debug then
@@ -1719,7 +1717,7 @@ function Hekili.Update()
 
                             repeat
                                 action, wait, depth = Hekili:GetNextPrediction( dispName, packName, slot )
-                                Hekili:Yield( "Events GNP " .. dispName .. " " .. packName )
+                                -- Hekili:Yield( "Events GNP " .. dispName .. " " .. packName )
 
                                 if action == "wait" then
                                     if debug then Hekili:Debug( "EXECUTING WAIT ( %.2f ) EVENT AT ( +%.2f ) AND RECHECKING RECOMMENDATIONS...", slot.waitSec, wait ) end
@@ -1737,7 +1735,7 @@ function Hekili.Update()
 
                                     action, wait, depth = Hekili:GetNextPrediction( dispName, packName, slot )
 
-                                    Hekili:Yield( "Events2 GNP " .. dispName .. " " .. packName )
+                                    -- Hekili:Yield( "Events2 GNP " .. dispName .. " " .. packName )
                                 end
 
                                 waitLoop = waitLoop + 1
@@ -1783,8 +1781,9 @@ function Hekili.Update()
                     end
 
                     Hekili.ThreadStatus = "Processed event #" .. n .. " for " .. dispName .. "."
-                    Hekili:Yield( "After event #" .. n .. " for " .. dispName )
                 end
+
+                Hekili:Yield( "After events for " .. dispName )
 
                 if not action then
                     if class.file == "DEATHKNIGHT" then
@@ -1813,7 +1812,7 @@ function Hekili.Update()
 
                     repeat
                         action, wait, depth = Hekili:GetNextPrediction( dispName, packName, slot )
-                        Hekili:Yield( "Regular GNP " .. dispName .. " " .. packName )
+                        -- Hekili:Yield( "Regular GNP " .. dispName .. " " .. packName )
 
 
                         if action == "wait" then
@@ -1832,7 +1831,7 @@ function Hekili.Update()
 
                             action, wait, depth = Hekili:GetNextPrediction( dispName, packName, slot )
 
-                            Hekili:Yield( "Regular2 GNP " .. dispName .. " " .. packName )
+                            -- Hekili:Yield( "Regular2 GNP " .. dispName .. " " .. packName )
                         end
 
                         waitLoop = waitLoop + 1
@@ -1866,7 +1865,7 @@ function Hekili.Update()
                     Hekili:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay )
                 end
 
-                Hekili:Yield( "Pre-Action" )
+                -- Hekili:Yield( "Pre-Action" )
 
                 if action then
                     slot.time = state.offset + wait
@@ -1889,14 +1888,14 @@ function Hekili.Update()
                         slot.resources[ k ] = state[ k ].current
                     end
 
-                    Hekili:Yield( "Pre-Handle for " .. dispName .. " #" .. i .. ": " .. action )
+                    -- Hekili:Yield( "Pre-Handle for " .. dispName .. " #" .. i .. ": " .. action )
 
                     if i < display.numIcons then
                         -- Advance through the wait time.
                         state.this_action = action
 
                         if state.delay > 0 then state.advance( state.delay ) end
-                        Hekili:Yield( "Post-Advance for " .. dispName .. " #" .. i .. ": " .. action )
+                        -- Hekili:Yield( "Post-Advance for " .. dispName .. " #" .. i .. ": " .. action )
 
                         local ability = class.abilities[ action ]
                         local cast = ability.cast
@@ -1909,7 +1908,7 @@ function Hekili.Update()
                             state.setCooldown( "global_cooldown", state.gcd.execute )
                         end
 
-                        Hekili:Yield( "Post-GCD for " .. dispName .. " #" .. i .. ": " .. action )
+                        -- Hekili:Yield( "Post-GCD for " .. dispName .. " #" .. i .. ": " .. action )
 
                         local cast_target = state.cast_target ~= "nobody" and state.cast_target or state.target.unit
 
@@ -1918,7 +1917,7 @@ function Hekili.Update()
                             state.removeBuff( "casting" )
                         end
 
-                        Hekili:Yield( "Post-Casting for " .. dispName .. " #" .. i .. ": " .. action )
+                        -- Hekili:Yield( "Post-Casting for " .. dispName .. " #" .. i .. ": " .. action )
 
                         if ability.cast > 0 then
                             if not ability.channeled then
@@ -1926,7 +1925,7 @@ function Hekili.Update()
 
                                 state.applyBuff( "casting", ability.cast, nil, ability.id, nil, false )
                                 state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH", cast_target )
-                                Hekili:Yield( "Post-CastingEvent for " .. dispName .. " #" .. i .. ": " .. action )
+                                -- Hekili:Yield( "Post-CastingEvent for " .. dispName .. " #" .. i .. ": " .. action )
                             else
                                 if ability.charges and ability.charges > 1 and ability.recharge > 0 then
                                     state.spendCharges( action, 1 )
@@ -1936,14 +1935,14 @@ function Hekili.Update()
 
                                 end
 
-                                Hekili:Yield( "Post-CD for " .. dispName .. " #" .. i .. ": " .. action )
+                                -- Hekili:Yield( "Post-CD for " .. dispName .. " #" .. i .. ": " .. action )
                                 ns.spendResources( action )
                                 state:RunHandler( action )
-                                Hekili:Yield( "Post-RunHandler for " .. dispName .. " #" .. i .. ": " .. action )
+                                -- Hekili:Yield( "Post-RunHandler for " .. dispName .. " #" .. i .. ": " .. action )
 
                                 if debug then Hekili:Debug( "Queueing %s channel finish at %.2f [%.2f+%.2f].", action, state.query_time + cast, state.offset, cast, cast_target ) end
                                 state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH", cast_target )
-                                Hekili:Yield( "Post-Channel Finish for " .. dispName .. " #" .. i .. ": " .. action )
+                                -- Hekili:Yield( "Post-Channel Finish for " .. dispName .. " #" .. i .. ": " .. action )
 
                                 -- Queue ticks because we may not have an ability.tick function, but may have resources tied to an aura.
                                 if ability.tick_time then
@@ -1970,18 +1969,18 @@ function Hekili.Update()
                             Hekili:Yield( "Post-CD for " .. dispName .. " #" .. i .. ": " .. action )
                             ns.spendResources( action )
                             state:RunHandler( action )
-                            Hekili:Yield( "Post-Instant RunHandler for " .. dispName .. " #" .. i .. ": " .. action )
+                            -- Hekili:Yield( "Post-Instant RunHandler for " .. dispName .. " #" .. i .. ": " .. action )
                         end
 
                         -- Projectile spells have two handlers, effectively.  A handler (run on cast/channel finish), and then an impact handler.
                         if ability.isProjectile then
                             state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", cast_target )
-                            Hekili:Yield( "Post-Projectile Queue for " .. dispName .. " #" .. i .. ": " .. action )
+                            -- Hekili:Yield( "Post-Projectile Queue for " .. dispName .. " #" .. i .. ": " .. action )
                         end
 
                         if ability.item and not ( ability.essence or ability.no_icd ) then
                             state.putTrinketsOnCD( state.cooldown[ action ].remains / 6 )
-                            Hekili:Yield( "Post-TrinketCD for " .. dispName .. " #" .. i .. ": " .. action )
+                            -- Hekili:Yield( "Post-TrinketCD for " .. dispName .. " #" .. i .. ": " .. action )
                         end
                     end
 
@@ -2035,9 +2034,9 @@ function Hekili.Update()
             UI:SetThreadLocked( false )
 
             if WeakAuras and WeakAuras.ScanEvents then
-                Hekili:Yield( "Post-ScanEvents for " .. dispName )
+                -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
                 WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, UI.eventsTriggered )
-                Hekili:Yield( "Post-ScanEvents for " .. dispName )
+                -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
             end
 
             if debug then
@@ -2056,7 +2055,7 @@ function Hekili.Update()
                 -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
                 -- We don't track out of combat because who cares?
                 UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime, checkstr ~= UI.RecommendationsStr )
-                Hekili:Yield( "Post-Perf for " .. dispName .. ": " .. checkstr )
+                -- Hekili:Yield( "Post-Perf for " .. dispName .. ": " .. checkstr )
             end
         else
             if UI.RecommendationsStr then
