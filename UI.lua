@@ -1129,7 +1129,8 @@ do
 
                         local ok, err = coroutine.resume( thread )
                         if not ok then
-                            Hekili:Error( "Update: " .. err:gsub( "%%", "%%%%" ) )
+                            err = err .. "\n\n" .. debugstack( thread )
+                            Hekili:Error( "Update: " .. err )
                             pcall( error, err )
                         end
                         local now = debugprofilestop()

@@ -15,9 +15,10 @@ local state = Hekili.State
 local errors = {}
 local eIndex = {}
 
-ns.Error = function( ... )
-    local output = format( ... )
-    output = output .. "\n\n" .. debugstack(3)
+ns.Error = function( output, ... )
+    if ... then
+        output = format( output, ... )
+    end
 
     if not errors[ output ] then
         errors[ output ] = {
