@@ -721,7 +721,7 @@ local HekiliSpecMixin = {
                             end
 
                             if addedToItemList then
-                                ns.ReadKeybindings()
+                                if ns.ReadKeybindings then ns.ReadKeybindings() end
                             end
                         end
 
@@ -809,9 +809,9 @@ local HekiliSpecMixin = {
             end
         end
 
-        if a.castableWhileCasting or a.funcs.castableWhileCasting then
-            self.canCastWhileCasting = true
-            self.castableWhileCasting[ a.key ] = true
+        if a.dual_cast or a.funcs.dual_cast then
+            self.can_dual_cast = true
+            self.dual_cast[ a.key ] = true
         end
 
         if a.auras then
@@ -1092,7 +1092,7 @@ function Hekili:NewSpecialization( specID, isRanged )
         funcHooks = {},
         interrupts = {},
 
-        castableWhileCasting = {},
+        dual_cast = {},
 
         packs = {},
         options = {},
@@ -5937,8 +5937,8 @@ function Hekili:SpecializationChanged()
                 self.currentSpecOpts = rawget( self.DB.profile.specs, specID )
                 state.settings.spec = self.currentSpecOpts
 
-                state.spec.canCastWhileCasting = spec.canCastWhileCasting
-                state.spec.castableWhileCasting = spec.castableWhileCasting
+                state.spec.can_dual_cast = spec.can_dual_cast
+                state.spec.dual_cast = spec.dual_cast
 
                 for res, model in pairs( spec.resources ) do
                     class.resources[ res ] = model

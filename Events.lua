@@ -329,12 +329,16 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
         Hekili:UpdateDisplayVisibility()
     end
 
+    local _, zone = GetInstanceInfo()
+    state.bg = zone == "pvp"
+    state.arena = zone == "arena"
+    state.torghast = IsInJailersTower()
+
     Hekili:BuildUI()
 end
 end )
 
 
--- ACTIVE_TALENT_GROUP_CHANGED fires 2x on talent swap.  Uggh, why?
 do
     local lastChange = 0
 
@@ -346,6 +350,14 @@ do
         end
     end )
 end
+
+
+RegisterEvent( "ZONE_CHANGED", function()
+    local _, zone = GetInstanceInfo()
+    state.bg = zone == "pvp"
+    state.arena = zone == "arena"
+    state.torghast = IsInJailersTower()
+end )
 
 
 -- Hide when going into the barbershop.

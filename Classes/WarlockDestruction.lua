@@ -1360,6 +1360,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
 
             talent = "soul_fire",
+            aura = "immolate",
 
             handler = function ()
                 gain( 0.4, "soul_shards" )

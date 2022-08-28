@@ -708,7 +708,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
             if rWait < state.delayMax then state.delayMax = rWait end
 
             --[[ Watch this section, may impact usage of off-GCD abilities.
-            if rWait <= state.cooldown.global_cooldown.remains and not state.spec.canCastWhileCasting then
+            if rWait <= state.cooldown.global_cooldown.remains and not state.spec.can_dual_cast then
                 if debug then self:Debug( "The recommended action (%s) would be ready before the next GCD (%.2f < %.2f); exiting list (%s).", rAction, rWait, state.cooldown.global_cooldown.remains, listName ) end
                 break
 
@@ -754,7 +754,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 elseif state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
                     -- if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
 
-                elseif rWait <= state.cooldown.global_cooldown.remains and not state.spec.canCastWhileCasting and ability.gcd ~= "off" then
+                elseif rWait <= state.cooldown.global_cooldown.remains and not state.spec.can_dual_cast and ability.gcd ~= "off" then
                     -- if debug then self:Debug( "Only off-GCD abilities would be usable before the currently selected ability; skipping..." ) end
 
                 else
@@ -1196,7 +1196,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         end
 
                                                     elseif action == "cancel_action" then
-                                                        if state:IsChanneling() then state.canBreakChannel = true end
+                                                        if state:IsChanneling() then state.channel_breakable = true end
 
                                                     elseif action == "pool_resource" then
                                                         if state.args.for_next == 1 then
@@ -1395,14 +1395,14 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     if self.ActiveDebug then
         self:Debug( "Checking if I'm casting ( %s ) and if it is a channel ( %s ).", state.buff.casting.up and "Yes" or "No", state.buff.casting.v3 == 1 and "Yes" or "No" )
         if state.buff.casting.up then
-            if state.buff.casting.v3 == 1 then self:Debug( " - Is criteria met to break channel?  %s.", state.canBreakChannel and "Yes" or "No" ) end
-            self:Debug( " - Can I cast while casting/channeling?  %s.", state.spec.canCastWhileCasting and "Yes" or "No" )
+            if state.buff.casting.v3 == 1 then self:Debug( " - Is criteria met to break channel?  %s.", state.channel_breakable and "Yes" or "No" ) end
+            self:Debug( " - Can I cast while casting/channeling?  %s.", state.spec.can_dual_cast and "Yes" or "No" )
         end
     end
 
-    if not state.canBreakChannel and state.buff.casting.up and state.spec.canCastWhileCasting then
+    if not state.channel_breakable and state.buff.casting.up and state.spec.can_dual_cast then
         self:Debug( "Whitelist of castable-while-casting spells applied [ %d, %.2f ]", state.buff.casting.v1, state.buff.casting.remains )
-        state:SetWhitelist( state.spec.castableWhileCasting )
+        state:SetWhitelist( state.spec.dual_cast )
     else
         self:Debug( "No whitelist." )
         state:SetWhitelist( nil )
@@ -1641,19 +1641,19 @@ function Hekili.Update()
                         if channeling then
                             if debug then Hekili:Debug( "We are channeling, checking if we should break the channel..." ) end
                             shouldBreak = Hekili:CheckChannel( nil, 0 )
-                            state.canBreakChannel = shouldBreak
+                            state.channel_breakable = shouldBreak
                         else
-                            state.canBreakChannel = false
+                            state.channel_breakable = false
                         end
 
                         local casting, shouldCheck = state:IsCasting(), false
 
-                        if ( casting or ( channeling and not shouldBreak ) ) and state.spec.canCastWhileCasting then
+                        if ( casting or ( channeling and not shouldBreak ) ) and state.spec.can_dual_cast then
                             shouldCheck = false
 
-                            for spell in pairs( state.spec.castableWhileCasting ) do
-                                if debug then Hekili:Debug( "CWC: %s | %s | %s | %s | %.2f | %s | %.2f | %.2f", spell, tostring( state:IsKnown( spell ) ), tostring( state:IsUsable( spell ) ), tostring( class.abilities[ spell ].castableWhileCasting ), state:TimeToReady( spell ), tostring( state:TimeToReady( spell ) <= t ), state.offset, state.delay ) end
-                                if class.abilities[ spell ].castableWhileCasting and state:IsKnown( spell ) and state:IsUsable( spell ) and state:TimeToReady( spell ) <= t then
+                            for spell in pairs( state.spec.dual_cast ) do
+                                if debug then Hekili:Debug( "CWC: %s | %s | %s | %s | %.2f | %s | %.2f | %.2f", spell, tostring( state:IsKnown( spell ) ), tostring( state:IsUsable( spell ) ), tostring( class.abilities[ spell ].dual_cast ), state:TimeToReady( spell ), tostring( state:TimeToReady( spell ) <= t ), state.offset, state.delay ) end
+                                if class.abilities[ spell ].dual_cast and state:IsKnown( spell ) and state:IsUsable( spell ) and state:TimeToReady( spell ) <= t then
                                     shouldCheck = true
                                     break
                                 end
@@ -1908,7 +1908,7 @@ function Hekili.Update()
 
                         local cast_target = state.cast_target ~= "nobody" and state.cast_target or state.target.unit
 
-                        if state.buff.casting.up and not ability.castableWhileCasting then
+                        if state.buff.casting.up and not ability.dual_cast then
                             state.stopChanneling( false, action )
                             state.removeBuff( "casting" )
                         end

@@ -812,7 +812,7 @@ if UnitClassBase( "player" ) == "MAGE" then
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
             gcd = "off",
-            castableWhileCasting = true,
+            dual_cast = true,
 
             spend = 0.1,
             spendType = "mana",
@@ -906,7 +906,7 @@ if UnitClassBase( "player" ) == "MAGE" then
             recharge = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * ( set_bonus.tier28_4pc > 0 and buff.combustion.up and 0.5 or 1 ) * haste end,
             icd = 0.5,
             gcd = "off",
-            castableWhileCasting = true,
+            dual_cast = true,
 
             spend = 0.01,
             spendType = "mana",
@@ -1439,7 +1439,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
         aoe = 3,
         gcdSync = false,
-        -- canCastWhileCasting = true,
+        -- can_dual_cast = true,
 
         nameplates = false,
         nameplateRange = 8,
