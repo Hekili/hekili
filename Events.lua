@@ -888,7 +888,6 @@ do
         else
             ns.ReadKeybindings()
         end
-
     end
 end
 
@@ -1104,8 +1103,14 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( even
     if unit == "player" then
         local ability = class.abilities[ spellID ]
 
-        if ability and state.holds[ ability.key ] then
-            Hekili:RemoveHold( ability.key, true )
+        if ability then
+            if ability.special then
+
+            end
+
+            if state.holds[ ability.key ] then
+                Hekili:RemoveHold( ability.key, true )
+            end
         end
     end
 
@@ -1353,8 +1358,6 @@ do
 
     RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
         state.target.updated = true
-
-        ns.getNumberTargets( true )
         Hekili:ForceUpdate( event, true )
     end )
 end
@@ -1677,11 +1680,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
                 end
             end
 
-            local gcdStart = GetSpellCooldown( 61304 )
-            if state.gcd.lastStart ~= gcdStart then
-                state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
-            end
-
+            state.gcd.lastStart = max( gcdStart, ( GetSpellCooldown( 61304 ) ) )
             -- if subtype ~= "SPELL_DAMAGE" then Hekili:ForceUpdate( subtype, true ) end
         end
     end

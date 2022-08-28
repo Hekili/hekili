@@ -764,7 +764,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             texture = 136175,
 
             handler = function ()
-              applyDebuff( "target", "blind", 60 )
+                applyDebuff( "target", "blind", 60 )
             end,
         },
 

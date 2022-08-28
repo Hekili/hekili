@@ -1522,6 +1522,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cast = 0,
             cooldown = 0,
             gcd = "totem",
+            icd = 3,
 
             essential = true,
 

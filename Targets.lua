@@ -21,7 +21,7 @@ local counted = {}
 
 local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
-local FeignEvent = ns.FeignEvent
+local FeignEvent, RegisterEvent = ns.FeignEvent, ns.RegisterEvent
 
 local format = string.format
 local insert, remove, wipe = table.insert, table.remove, table.wipe
@@ -172,47 +172,40 @@ local enemyExclusions = {
 
 local FindExclusionAuraByID
 
-local f = CreateFrame("Frame")
-f:RegisterEvent( "NAME_PLATE_UNIT_ADDED" )
-f:RegisterEvent( "NAME_PLATE_UNIT_REMOVED" )
-f:RegisterEvent( "UNIT_FLAGS" )
+RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( event, unit )
+    if UnitIsFriend( "player", unit ) then return end
 
-f:SetScript( "OnEvent", function( self, event, unit )
+    local id = UnitGUID( unit )
+    npGUIDs[unit] = id
+    npUnits[id]   = unit
+end )
+
+RegisterEvent( "NAME_PLATE_UNIT_REMOVED", function( event, unit )
+    if UnitIsFriend( "player", unit ) then return end
+
+    local id = npGUIDs[ unit ] or UnitGUID( unit )
+    npGUIDs[unit] = nil
+
+    if npUnits[id] and npUnits[id] == unit then
+        npUnits[id] = nil
+    end
+end )
+
+RegisterEvent( "UNIT_FLAGS", function( event, unit )
     if UnitIsFriend( "player", unit ) then
-        if event ~= "UNIT_FLAGS" then return end
         local id = UnitGUID( unit )
         ns.eliminateUnit( id, true )
 
         npGUIDs[unit] = nil
         npUnits[id]   = nil
-        return
-    end
-
-    if event == "NAME_PLATE_UNIT_ADDED" then
-        local id = UnitGUID( unit )
-        npGUIDs[unit] = id
-        npUnits[id]   = unit
-
-    elseif event == "NAME_PLATE_UNIT_REMOVED" then
-        local id = npGUIDs[ unit ] or UnitGUID( unit )
-        npGUIDs[unit] = nil
-        if npUnits[id] and npUnits[id] == unit then
-            npUnits[id] = nil
-        end
     end
 end )
-
-Hekili:ProfileFrame( "NamePlateWatcherFrame", f )
-
-
-
 
 
 local RC = LibStub("LibRangeCheck-2.0")
 
 local lastCount = 1
 local lastStationary = 1
-local lastCycle = 0
 
 local guidRanges = {}
 
@@ -221,24 +214,20 @@ local guidRanges = {}
 local chromieTime = false
 
 do
-    local ct = CreateFrame( "Frame" )
-
-    ct:RegisterEvent( "CHROMIE_TIME_OPEN" )
-    ct:RegisterEvent( "CHROMIE_TIME_CLOSE" )
-    ct:RegisterEvent( "PLAYER_ENTERING_WORLD" )
-
     local function UpdateChromieTime()
         chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
     end
 
-    ct:SetScript( "OnEvent", function( self, event, login, reload )
+    local function ChromieCheck( self, event, login, reload )
         if event ~= "PLAYER_ENTERING_WORLD" or login or reload then
             chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
             C_Timer.After( 2, UpdateChromieTime )
         end
-    end )
+    end
 
-    Hekili:ProfileFrame( "ChromieFrame", ct )
+    RegisterEvent( "CHROMIE_TIME_OPEN", ChromieCheck )
+    RegisterEvent( "CHROMIE_TIME_CLOSE", ChromieCheck )
+    RegisterEvent( "PLAYER_ENTERING_WORLD", ChromieCheck )
 end
 
 
@@ -246,18 +235,14 @@ end
 local warmode = false
 
 do
-    local wm = CreateFrame( "Frame" )
-
-    wm:RegisterEvent( "UI_INFO_MESSAGE" )
-    wm:RegisterEvent( "PLAYER_ENTERING_WORLD" )
-
-    wm:SetScript( "OnEvent", function( self, event, login, reload )
+    local function CheckWarMode( event, login, reload )
         if event ~= "PLAYER_ENTERING_WORLD" or login or reload then
             warmode = C_PvP.IsWarModeDesired()
         end
-    end )
+    end
 
-    Hekili:ProfileFrame( "WarModeFrame", wm )
+    RegisterEvent( "UI_INFO_MESSAGE", CheckWarMode )
+    RegisterEvent( "PLAYER_ENTERING_WORLD", CheckWarMode )
 end
 
 
@@ -286,11 +271,12 @@ do
     end
 
     -- New Nameplate Proximity System
-    function ns.getNumberTargets( targetChanged )
-        local now = GetTime()
+    function ns.getNumberTargets( forceUpdate )
+        if not forceUpdate then
+            return lastCount, lastStationary
+        end
 
-        if now - lastCycle < 0.2 and not targetChanged then return lastCount, lastStationary end
-        lastCycle = now
+        local now = GetTime()
 
         if now - Hekili.lastAudit > 1 then
             -- Kick start the damage-based target detection filter.
@@ -485,8 +471,8 @@ do
     end
 end
 
-function Hekili:GetNumTargets()
-    return ns.getNumberTargets()
+function Hekili:GetNumTargets( forceUpdate )
+    return ns.getNumberTargets( forceUpdate )
 end
 
 
@@ -613,7 +599,7 @@ ns.trackDebuff = function(spell, target, time, application)
         if debuffs[spell][target] then
             -- Remove it.
             debuffs[spell][target] = nil
-            debuffCount[spell] = max(0, debuffCount[spell] - 1)
+            debuffCount[spell] = max( 0, debuffCount[spell] - 1 )
         end
     else
         if not debuffs[spell][target] then
@@ -739,8 +725,6 @@ end
 ns.eliminateUnit = function(id, force)
     ns.updateMinion(id)
     ns.updateTarget(id)
-
-    lastCycle = 0
 
     guidRanges[id] = nil
 
@@ -1218,7 +1202,6 @@ do
         end
 
         local time = 0
-        local now = GetTime()
 
         for k, v in pairs(db) do
             if not CheckEnemyExclusion( k ) and not bosses[ k ] then
@@ -1230,8 +1213,6 @@ do
     end
 
     function Hekili:GetTTDInfo()
-        local now = GetTime()
-
         local output = "targets:"
         local found = false
 

@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local state = Hekili.State
 local all = Hekili.Class.specs[ 0 ]
 
+local RegisterEvent = ns.RegisterEvent
+
 
 -- 9.0 Trinkets
 do
@@ -1946,10 +1948,10 @@ do
         acquired_wand = 0,
     }
 
-    local f = CreateFrame("Frame")
-    f:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
+    -- local f = CreateFrame("Frame")
+    -- f:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
 
-    f:SetScript( "OnEvent", function( event )
+    RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
         if not state.equipped.cache_of_acquired_treasures then return end
 
         if event == "COMBAT_LOG_EVENT_UNFILTERED" then
@@ -1961,8 +1963,6 @@ do
             end
         end
     end )
-
-    Hekili:ProfileFrame( "TreasureFrame", f )
 
 
     local function generate_treasure( t )

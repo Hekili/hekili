@@ -622,14 +622,14 @@ do
     local prevMsg, prevTime
     local resumeTime = 0
 
-    local function DoYield( self, msg, time )
+    local function DoYield( self, msg, time, force )
         if not coroutine.running() then return end
 
         time = time or debugprofilestop()
 
         prevTime = time
 
-        if time - self.frameStartTime > self.maxFrameTime then
+        if force or time - self.frameStartTime > self.maxFrameTime then
             coroutine.yield()
 
             prevMsg = "Resumed thread..."
@@ -721,7 +721,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 if debug then self:Debug( "The current minimum delay (%.2f) is greater than the current maximum delay (%.2f). Exiting list (%s).", state.delayMin, state.delayMax, listName ) end
                 break
 
-            elseif rWait <= state.cooldown.global_cooldown.remains then -- and state.settings.gcdSync then
+            elseif rAction and rWait <= state.cooldown.global_cooldown.remains then -- and state.settings.gcdSync then
                 if debug then self:Debug( "The recommended action (%s) is ready within the active GCD; exiting list (%s).", rAction, listName ) end
                 break
 
@@ -1452,10 +1452,10 @@ end
 
 
 local displayRules = {
+    { "Primary", function() return true end },
     { "Interrupts", function( p ) return p.toggles.interrupts.value and p.toggles.interrupts.separate end },
     { "Defensives", function( p ) return p.toggles.defensives.value and p.toggles.defensives.separate end },
     { "Cooldowns",  function( p ) return p.toggles.cooldowns.value  and p.toggles.cooldowns.separate  end },
-    { "Primary", function() return true end },
     { "AOE", function( p )
         local spec = rawget( p.specs, state.spec.id )
         if not spec or not class.specs[ state.spec.id ] then return false end
@@ -1502,6 +1502,7 @@ function Hekili.Update()
     local debug = Hekili.ActiveDebug
 
     Hekili:ResetThreadClock()
+    Hekili:GetNumTargets( true )
 
     local snaps = nil
 
@@ -1529,7 +1530,7 @@ function Hekili.Update()
             end
         end
 
-        local checkstr = nil
+        local checkstr = ""
 
         if UI.Active and UI.alpha > 0 and rule( profile ) then
             for i = #Stack, 1, -1 do tinsert( StackPool, tremove( Stack, i ) ) end
@@ -1560,7 +1561,6 @@ function Hekili.Update()
             end
 
             for i = 1, numRecs do
-                local chosen_action
                 local chosen_depth = 0
 
                 Queue[ i ] = Queue[ i ] or {}
@@ -1568,9 +1568,6 @@ function Hekili.Update()
                 local slot = Queue[ i ]
                 slot.index = i
                 state.index = i
-
-                local attempts = 0
-                local iterated = false
 
                 if debug then Hekili:Debug( 0, "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f, %s: %.2f ).\n", i, state.offset, state.cooldown.global_cooldown.remains, ( state.buff.casting.v3 == 1 and "Channeling" or "Casting" ), state.buff.casting.remains ) end
 
@@ -1858,7 +1855,6 @@ function Hekili.Update()
                     end
                 end
 
-                local gcd_remains = state.cooldown.global_cooldown.remains
                 state.delay = wait
 
                 if debug then
@@ -2028,7 +2024,7 @@ function Hekili.Update()
                 end
             end
 
-            UI.NewRecommendations = true -- checkstr ~= UI.RecommendationsStr
+            UI.NewRecommendations = true
             UI.RecommendationsStr = checkstr
 
             UI:SetThreadLocked( false )
@@ -2038,6 +2034,8 @@ function Hekili.Update()
                 WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, UI.eventsTriggered )
                 -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
             end
+
+            Hekili:Yield( "Finished display updates.", nil, true )
 
             if debug then
                 Hekili:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
@@ -2051,10 +2049,10 @@ function Hekili.Update()
 
                     if Hekili.Config then LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "snapshots" ) end
                 end
-            else
+            -- else
                 -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
                 -- We don't track out of combat because who cares?
-                UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime, checkstr ~= UI.RecommendationsStr )
+                -- UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime, checkstr ~= UI.RecommendationsStr )
                 -- Hekili:Yield( "Post-Perf for " .. dispName .. ": " .. checkstr )
             end
         else

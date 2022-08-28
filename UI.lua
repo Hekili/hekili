@@ -951,257 +951,136 @@ do
 
             self.recTimer = self.recTimer - elapsed
 
-            if self.NewRecommendations then self.TextureUpdateNeeded = true end
-
-            if not self:IsThreadLocked() and ( self.TextureUpdateNeeded or self.recTimer < 0 ) then
+            if not self:IsThreadLocked() and ( self.NewRecommendations or self.recTimer < 0 ) then
                 local alpha = self.alpha
                 local options = Hekili:GetActiveSpecOption( "abilities" )
 
-                for i, b in ipairs( self.Buttons ) do
-                    b.Recommendation = self.Recommendations[ i ]
+                if self.HasRecommendations and self.RecommendationsStr and self.RecommendationsStr:len() == 0 then
+                    for i, b in ipairs( self.Buttons ) do b:Hide() end
+                    self.HasRecommendations = false
+                else
+                    self.HasRecommendations = true
 
-                    local action = b.Recommendation.actionName
-                    local caption = b.Recommendation.caption
-                    local indicator = b.Recommendation.indicator
-                    local keybind = b.Recommendation.keybind
-                    local exact_time = b.Recommendation.exact_time
+                    for i, b in ipairs( self.Buttons ) do
+                        b.Recommendation = self.Recommendations[ i ]
 
-                    local ability = class.abilities[ action ]
+                        local action = b.Recommendation.actionName
+                        local caption = b.Recommendation.caption
+                        local indicator = b.Recommendation.indicator
+                        local keybind = b.Recommendation.keybind
+                        local exact_time = b.Recommendation.exact_time
 
-                    if ability then
-                        if ( conf.flash.enabled and conf.flash.suppress ) then b:Hide()
-                        else b:Show() end
+                        local ability = class.abilities[ action ]
 
-                        if i == 1 then
-                            self.HasRecommendations = true
-                        end
+                        if ability then
+                            if ( conf.flash.enabled and conf.flash.suppress ) then b:Hide()
+                            else b:Show() end
 
-                        if action ~= b.lastAction or self.TextureUpdateNeeded or not b.Image then
-                            if ability.item then
-                                b.Image = b.Recommendation.texture or ability.texture or select( 10, GetItemInfo( ability.item ) )
+                            if i == 1 then
+                                -- print( "Changing", GetTime() )
+                            end
+
+                            if action ~= b.lastAction or self.NewRecommendations or not b.Image then
+                                if ability.item then
+                                    b.Image = b.Recommendation.texture or ability.texture or select( 10, GetItemInfo( ability.item ) )
+                                else
+                                    local override = options and rawget( options, action )
+                                    b.Image = override and override.icon or b.Recommendation.texture or ability.texture or GetSpellTexture( ability.id )
+                                end
+                                b.Texture:SetTexture( b.Image )
+                                b.Texture:SetTexCoord( unpack( b.texCoords ) )
+                                b.lastAction = action
+                            end
+
+                            b.Texture:Show()
+
+                            if i == 1 then
+                                -- local ability = b.Ability
+                                local id = ability.item or ability.id
+                                local isItem = ability.item ~= nil
+
+                                if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) and exact_time > GetTime() then
+                                    b.Highlight:Show()
+                                else
+                                    b.Highlight:Hide()
+                                end
+                            end
+
+                            if conf.indicators.enabled and indicator then
+                                if indicator == "cycle" then
+                                    b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cycle")
+                                end
+                                if indicator == "cancel" then
+                                    b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cancel")
+                                end
+                                b.Icon:Show()
                             else
-                                local override = options and rawget( options, action )
-                                b.Image = override and override.icon or b.Recommendation.texture or ability.texture or GetSpellTexture( ability.id )
+                                b.Icon:Hide()
                             end
-                            b.Texture:SetTexture( b.Image )
-                            b.Texture:SetTexCoord( unpack( b.texCoords ) )
-                            b.lastAction = action
-                        end
 
-                        b.Texture:Show()
-
-                        if i == 1 then
-                            -- local ability = b.Ability
-                            local id = ability.item or ability.id
-                            local isItem = ability.item ~= nil
-
-                            if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) and exact_time > GetTime() then
-                                b.Highlight:Show()
+                            if ( conf.captions.enabled or ability.caption ) and ( i == 1 or conf.captions.queued ) then
+                                b.Caption:SetText( caption )
                             else
-                                b.Highlight:Hide()
+                                b.Caption:SetText(nil)
                             end
-                        end
 
-                        if conf.indicators.enabled and indicator then
-                            if indicator == "cycle" then
-                                b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cycle")
-                            end
-                            if indicator == "cancel" then
-                                b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cancel")
-                            end
-                            b.Icon:Show()
-                        else
-                            b.Icon:Hide()
-                        end
-
-                        if ( conf.captions.enabled or ability.caption ) and ( i == 1 or conf.captions.queued ) then
-                            b.Caption:SetText( caption )
-                        else
-                            b.Caption:SetText(nil)
-                        end
-
-                        if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
-                            b.Keybinding:SetText( keybind )
-                        else
-                            b.Keybinding:SetText(nil)
-                        end
-
-                        if conf.glow.enabled and ( i == 1 or conf.glow.queued ) and IsSpellOverlayed( ability.id ) then
-                            b.glowColor = b.glowColor or {}
-
-                            if conf.glow.coloring == "class" then
-                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
-                            elseif conf.glow.coloring == "custom" then
-                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
+                            if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
+                                b.Keybinding:SetText( keybind )
                             else
-                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
+                                b.Keybinding:SetText(nil)
                             end
 
-                            if conf.glow.mode == "default" then
-                                Glower.ButtonGlow_Start( b, b.glowColor )
-                                b.glowStop = Glower.ButtonGlow_Stop
-                            elseif conf.glow.mode == "autocast" then
-                                Glower.AutoCastGlow_Start( b, b.glowColor )
-                                b.glowStop = Glower.AutoCastGlow_Stop
-                            elseif conf.glow.mode == "pixel" then
-                                Glower.PixelGlow_Start( b, b.glowColor )
-                                b.glowStop = Glower.PixelGlow_Stop
+                            if conf.glow.enabled and ( i == 1 or conf.glow.queued ) and IsSpellOverlayed( ability.id ) then
+                                b.glowColor = b.glowColor or {}
+
+                                if conf.glow.coloring == "class" then
+                                    b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
+                                elseif conf.glow.coloring == "custom" then
+                                    b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
+                                else
+                                    b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
+                                end
+
+                                if conf.glow.mode == "default" then
+                                    Glower.ButtonGlow_Start( b, b.glowColor )
+                                    b.glowStop = Glower.ButtonGlow_Stop
+                                elseif conf.glow.mode == "autocast" then
+                                    Glower.AutoCastGlow_Start( b, b.glowColor )
+                                    b.glowStop = Glower.AutoCastGlow_Stop
+                                elseif conf.glow.mode == "pixel" then
+                                    Glower.PixelGlow_Start( b, b.glowColor )
+                                    b.glowStop = Glower.PixelGlow_Stop
+                                end
+
+                                b.glowing = true
+                            elseif b.glowing then
+                                if b.glowStop then b:glowStop() end
+                                b.glowing = false
                             end
-
-                            b.glowing = true
-                        elseif b.glowing then
-                            if b.glowStop then b:glowStop() end
-                            b.glowing = false
-                        end
-                    else
-                        if i == 1 then
-                            self.HasRecommendations = nil
+                        else
+                            b:Hide()
                         end
 
-                        b:Hide()
+                        b.Action = action
+                        b.Text = caption
+                        b.Indicator = indicator
+                        b.Keybind = keybind
+                        b.Ability = ability
+                        b.ExactTime = exact_time
                     end
 
-                    b.Action = action
-                    b.Text = caption
-                    b.Indicator = indicator
-                    b.Keybind = keybind
-                    b.Ability = ability
-                    b.ExactTime = exact_time
+                    self.glowTimer = -1
+                    self.rangeTimer = -1
+                    self.delayTimer = -1
+
+                    self.recTimer = 1
+                    self.alphaCheck = 0.5
+
+                    self:RefreshCooldowns( "RECS_UPDATED" )
                 end
-
-                -- Force glow, range, SpellFlash updates.
-                self.glowTimer = -1
-                self.rangeTimer = -1
-                self.delayTimer = -1
-
-                self.recTimer = 0.2
-                self.alphaCheck = 0.5
-
-                self:RefreshCooldowns( "RECS_UPDATED" )
             end
-
-
 
             local postRecs = debugprofilestop()
-
-            if self.id == "Primary" then
-                self.refreshTimer = self.refreshTimer + elapsed
-                local thread = self.activeThread
-
-                if thread or not Hekili.Pause then
-                    self.refreshRate = self.refreshRate or 0.5
-                    self.combatRate = self.combatRate or 0.1
-
-                    -- If there's no thread, then see if we have a reason to update.
-                    if not thread and Hekili.freshFrame and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
-                        self.superUpdate = false
-
-                        self.activeThread = coroutine.create( Hekili.Update )
-                        self.activeThreadTime = 0
-                        self.activeThreadFrames = 0
-                        self.activeThreadStart = debugprofilestop()
-
-                        for _, d in pairs( dPool ) do
-                            d:SetThreadLocked( false )
-                        end
-
-                        if Hekili:GetActiveSpecOption( "throttleTime" ) then
-                            Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
-                        else
-                            Hekili.maxFrameTime = 10 -- ms.
-                        end
-
-                        -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
-                        Hekili.maxFrameTime = min( Hekili.maxFrameTime, 500 / GetFramerate() )
-
-                        thread = self.activeThread
-
-                        self.superUpdate = false
-                        self.criticalUpdate = false
-                    end
-
-                    -- If there's a thread, process for up to user preferred limits.
-                    if thread and coroutine.status( thread ) == "suspended" then
-                        self.activeThreadFrames = self.activeThreadFrames + 1
-                        local start = debugprofilestop()
-
-                        Hekili.frameStartTime = start
-
-                        local ok, err = coroutine.resume( thread )
-                        if not ok then
-                            err = err .. "\n\n" .. debugstack( thread )
-                            Hekili:Error( "Update: " .. err )
-                            pcall( error, err )
-                        end
-                        local now = debugprofilestop()
-
-                        self.activeThreadTime = self.activeThreadTime + ( now - start )
-
-                        if coroutine.status( thread ) == "dead" or err then
-
-                            if Hekili.ActiveDebug then
-                                Hekili:Debug( "Recommendation thread for %s terminated due to error: %s", self.id, err )
-                                Hekili:SaveDebugSnapshot( self.id )
-                                Hekili.ActiveDebug = nil
-                            end
-
-                            self.activeThread = nil
-                            self.refreshTimer = 0
-
-                            for _, d in pairs( dPool ) do
-                                d:SetThreadLocked( false )
-                            end
-
-                            if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
-                                self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
-                                self.combatRate = Hekili:GetActiveSpecOption( "combatRefresh" )
-                            else
-                                self.refreshRate = 0.5
-                                self.combatRate = 0.1
-                            end
-
-                            if self.firstThreadCompleted then
-                                local timeSince = now - self.activeThreadStart
-                                self.lastUpdate = now
-
-                                if self.threadUpdates then
-                                    local updates = self.threadUpdates.updates
-                                    local total = updates + 1
-
-                                    self.threadUpdates.clockTime = ( self.threadUpdates.clockTime * updates + timeSince ) / total
-                                    self.threadUpdates.workTime = ( self.threadUpdates.workTime * updates + self.activeThreadTime ) / total
-                                    self.threadUpdates.frames = ( self.threadUpdates.frames * updates + self.activeThreadFrames ) / total
-
-                                    if timeSince > self.threadUpdates.peakClock then self.threadUpdates.peakClock  = timeSince end
-                                    if self.activeThreadTime > self.threadUpdates.peakWork then self.threadUpdates.peakWork = self.activeThreadTime end
-                                    if self.activeThreadFrames > self.threadUpdates.peakFrames then self.threadUpdates.peakFrames = self.activeThreadFrames end
-
-                                    self.threadUpdates.updates = total
-                                else
-                                    self.threadUpdates = {
-                                        clockTime = timeSince,
-                                        workTime = self.activeThreadTime,
-                                        frames = self.activeThreadFrames or 1,
-                                        updates = 1,
-
-                                        peakClock = timeSince,
-                                        peakWork = self.activeThreadTime,
-                                        peakFrames = self.activeThreadFrames
-                                    }
-                                end
-                            else
-                                self.firstThreadCompleted = true
-                            end
-                        end
-
-                        if ok and err == "AutoSnapshot" then
-                            Hekili:MakeSnapshot( true )
-                        end
-                    end
-                end
-            end
-
-            local postPrimary = debugprofilestop()
 
             if self.HasRecommendations then
                 self.glowTimer = self.glowTimer - elapsed
@@ -1586,8 +1465,7 @@ do
                     self.updateMax = max( self.updateMax, finish - init )
                     self.postAlpha = max( self.postAlpha, postAlpha - init )
                     self.postRecs = max( self.postRecs, postRecs - postAlpha )
-                    self.postPrimary = max( self.postPrimary, postPrimary - postRecs )
-                    self.postGlow = max( self.postGlow, postGlow - postPrimary )
+                    self.postGlow = max( self.postGlow, postGlow - postRecs )
                     self.postRange = max( self.postRange, postRange - postGlow )
                     self.postFlash = max( self.postFlash, postFlash - postRange )
                     self.postTargets = max( self.postTargets, postTargets - postFlash )
@@ -1599,8 +1477,7 @@ do
 
                     self.postAlpha = postAlpha - init
                     self.postRecs = postRecs - postAlpha
-                    self.postPrimary = postPrimary - postRecs
-                    self.postGlow = postGlow - postPrimary
+                    self.postGlow = postGlow - postRecs
                     self.postRange = postRange - postGlow
                     self.postFlash = postFlash - postRange
                     self.postTargets = postTargets - postFlash
@@ -1914,7 +1791,8 @@ do
             return left, right, top, bottom
         end
 
-        function d:UpdatePerformance( now, used, newRecs )
+        -- function d:UpdatePerformance( now, used, newRecs )
+            --[[
             if not InCombatLockdown() then
                 self.combatUpdates.last = 0
                 return
@@ -1996,8 +1874,8 @@ do
                 end
 
                 table.wipe( self.eventsTriggered )
-            end
-        end
+            end ]]
+        -- end
 
         ns.queue[id] = ns.queue[id] or {}
         d.Recommendations = ns.queue[id]
@@ -2052,8 +1930,6 @@ do
 
             samples = 0,
         }
-
-        d.eventsTriggered = {}
     end
 
 
@@ -2234,17 +2110,133 @@ do
     end
 
 
-    function Hekili:ForceUpdate( event, super )
-        self.freshFrame = false
+    -- Separate the recommendations engine from each display.
+    Hekili.Engine = CreateFrame( "Frame", "HekiliEngine" )
 
-        HekiliDisplayPrimary.criticalUpdate = true
-        if super then HekiliDisplayPrimary.superUpdate = true end
-        if HekiliDisplayPrimary.firstForce == 0 then HekiliDisplayPrimary.firstForce = GetTime() end
+    Hekili.Engine.refreshTimer = 1
+    Hekili.Engine.eventsTriggered = {}
+
+    Hekili.Engine:SetScript( "OnUpdate", function( self, elapsed )
+        self.refreshTimer = self.refreshTimer + elapsed
+
+        if not Hekili.Pause then
+            self.refreshRate = self.refreshRate or 5
+            self.combatRate = self.combatRate or 0.25
+
+            local thread = self.activeThread
+
+            -- If there's no thread, then see if we have a reason to update.
+            if not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
+                -- print( "New Thread", GetTime() )
+
+                self.activeThread = coroutine.create( Hekili.Update )
+                self.activeThreadTime = 0
+                self.activeThreadFrames = 0
+                self.activeThreadStart = debugprofilestop()
+
+                if Hekili:GetActiveSpecOption( "throttleTime" ) then
+                    Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
+                else
+                    Hekili.maxFrameTime = 10 -- ms.
+                end
+
+                -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
+                Hekili.maxFrameTime = min( Hekili.maxFrameTime, 500 / GetFramerate() )
+
+                thread = self.activeThread
+
+                self.superUpdate = false
+                self.criticalUpdate = false
+            end
+
+            -- If there's a thread, process for up to user preferred limits.
+            if thread and coroutine.status( thread ) == "suspended" then
+                self.activeThreadFrames = self.activeThreadFrames + 1
+                local start = debugprofilestop()
+
+                Hekili.frameStartTime = start
+
+                local ok, err = coroutine.resume( thread )
+                if not ok then
+                    err = err .. "\n\n" .. debugstack( thread )
+                    Hekili:Error( "Update: " .. err )
+                    pcall( error, err )
+                end
+                local now = debugprofilestop()
+
+                self.activeThreadTime = self.activeThreadTime + ( now - start )
+
+                if coroutine.status( thread ) == "dead" or err then
+
+                    if Hekili.ActiveDebug then
+                        Hekili:Debug( "Recommendation thread for %s terminated due to error: %s", self.id, err )
+                        Hekili:SaveDebugSnapshot( self.id )
+                        Hekili.ActiveDebug = nil
+                    end
+
+                    self.activeThread = nil
+                    self.refreshTimer = 0
+
+                    if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
+                        self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
+                        self.combatRate = Hekili:GetActiveSpecOption( "combatRefresh" )
+                    else
+                        self.refreshRate = 0.5
+                        self.combatRate = 0.1
+                    end
+
+                    if self.firstThreadCompleted then
+                        local timeSince = now - self.activeThreadStart
+                        self.lastUpdate = now
+
+                        if self.threadUpdates then
+                            local updates = self.threadUpdates.updates
+                            local total = updates + 1
+
+                            self.threadUpdates.clockTime = ( self.threadUpdates.clockTime * updates + timeSince ) / total
+                            self.threadUpdates.workTime = ( self.threadUpdates.workTime * updates + self.activeThreadTime ) / total
+                            self.threadUpdates.frames = ( self.threadUpdates.frames * updates + self.activeThreadFrames ) / total
+
+                            if timeSince > self.threadUpdates.peakClock then self.threadUpdates.peakClock = timeSince end
+                            if self.activeThreadTime > self.threadUpdates.peakWork then self.threadUpdates.peakWork = self.activeThreadTime end
+                            if self.activeThreadFrames > self.threadUpdates.peakFrames then self.threadUpdates.peakFrames = self.activeThreadFrames end
+
+                            self.threadUpdates.updates = total
+                        else
+                            self.threadUpdates = {
+                                clockTime = timeSince,
+                                workTime = self.activeThreadTime,
+                                frames = self.activeThreadFrames or 1,
+                                updates = 1,
+
+                                peakClock = timeSince,
+                                peakWork = self.activeThreadTime,
+                                peakFrames = self.activeThreadFrames
+                            }
+                        end
+                    else
+                        self.firstThreadCompleted = true
+                    end
+                end
+
+                if ok and err == "AutoSnapshot" then
+                    Hekili:MakeSnapshot( true )
+                end
+            end
+        end
+    end )
+    Hekili:ProfileFrame( "HekiliEngine", Hekili.Engine )
+
+
+    function Hekili:ForceUpdate( event, super )
+        -- self.freshFrame = false
+
+        self.Engine.criticalUpdate = true
+        if super then self.Engine.superUpdate = true end
+        if self.Engine.firstForce == 0 then self.Engine.firstForce = GetTime() end
 
         if event then
-            for _, d in ipairs( ns.UI.Displays ) do
-                d.eventsTriggered[ event ] = true
-            end
+            self.Engine.eventsTriggered[ event ] = true
         end
     end
 
