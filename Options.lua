@@ -5603,7 +5603,7 @@ do
                                     type = "toggle",
                                     name = NewFeature .. " Throttle Updates",
                                     desc = "By default, the addon will update its recommendations immediately following |cffff0000critical|r combat events, within |cffffd1000.1|rs of routine combat events, or every |cffffd1000.5|rs.\n" ..
-                                        "If |cffffd100Throttle Updates|r is checked, you can specify the |cffffd100RCombat Refresh Interval|r and |cff00ff00Regular Refresh Interval|r for this specialization.",
+                                        "If |cffffd100Throttle Updates|r is checked, you can specify the |cffffd100Combat Refresh Interval|r and |cff00ff00Regular Refresh Interval|r for this specialization.",
                                     order = 1,
                                     width = "full",
                                 },
@@ -9096,6 +9096,16 @@ do
                         name = "Hide Minimap Icon",
                         desc = "If checked, the minimap icon will be hidden.",
                         order = 2,
+                    },
+
+                    monitorPerformance = {
+                        type = "toggle",
+                        name = "Monitor Performance",
+                        desc = "If checked, the addon will track processing time and volume of events.",
+                        order = 3,
+                        hidden = function()
+                            return not Hekili.Version:match("Dev")
+                        end,
                     },
 
                     welcome = {
