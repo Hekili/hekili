@@ -3044,11 +3044,8 @@ do
     } )
 
 
-    --[[ local f = CreateFrame("Frame")
-    f:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
-    f:RegisterEvent( "PLAYER_REGEN_ENABLED" )
-
-    f:SetScript("OnEvent", function( event )
+    --[[
+    local HandleRazorCoral = function( event )
         if not state.equipped.ashvanes_razor_coral then return end
 
         if event == "COMBAT_LOG_EVENT_UNFILTERED" then
@@ -3071,9 +3068,10 @@ do
             coralApplied = 0
             coralStacks = 0
         end
-    end )
+    end
 
-    Hekili:ProfileFrame( "RazorCoralFrame", f )
+    RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", HandleRazorCoral )
+    RegisterEvent( "PLAYER_REGEN_ENABLED", HandleRazorCoral )
 
     all:RegisterStateExpr( "coral_time_to_30", function()
         if coralGUID == 0 then return 3600 end
