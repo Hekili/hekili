@@ -2705,6 +2705,8 @@ do
                 return UnitGUID( "target" ) or "unknown"
 
             end
+
+            return rawget( t, k )
         end,
         __newindex = function( t, k, v )
             if v == nil then return end
