@@ -2126,8 +2126,8 @@ do
             local thread = self.activeThread
 
             -- If there's no thread, then see if we have a reason to update.
-            if not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
-                -- print( "New Thread", GetTime() )
+            if Hekili.freshFrame and not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
+                Hekili.freshFrame = nil
 
                 self.activeThread = coroutine.create( Hekili.Update )
                 self.activeThreadTime = 0
@@ -2229,7 +2229,7 @@ do
 
 
     function Hekili:ForceUpdate( event, super )
-        -- self.freshFrame = false
+        self.freshFrame = false
 
         self.Engine.criticalUpdate = true
         if super then self.Engine.superUpdate = true end

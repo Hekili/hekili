@@ -1452,10 +1452,10 @@ end
 
 
 local displayRules = {
-    { "Primary", function() return true end },
     { "Interrupts", function( p ) return p.toggles.interrupts.value and p.toggles.interrupts.separate end },
     { "Defensives", function( p ) return p.toggles.defensives.value and p.toggles.defensives.separate end },
     { "Cooldowns",  function( p ) return p.toggles.cooldowns.value  and p.toggles.cooldowns.separate  end },
+    { "Primary", function() return true end },
     { "AOE", function( p )
         local spec = rawget( p.specs, state.spec.id )
         if not spec or not class.specs[ state.spec.id ] then return false end
@@ -2035,7 +2035,7 @@ function Hekili.Update()
                 -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
             end
 
-            Hekili:Yield( "Finished display updates.", nil, true )
+            Hekili:Yield( "Finished display updates." )
 
             if debug then
                 Hekili:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )

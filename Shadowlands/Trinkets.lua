@@ -1471,6 +1471,8 @@ do
             item = 188253,
             no_icd = function () return buff.the_fourth_rune.down end,
 
+            toggle = function () return buff.the_fourth_rune.up and "cooldowns" or nil end,
+
             handler = function ()
                 if buff.the_first_rune.up then applyBuff( "the_second_rune" )
                 elseif buff.the_second_rune.up then applyBuff( "the_third_rune" )
