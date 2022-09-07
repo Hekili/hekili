@@ -1972,17 +1972,12 @@ do
         local id = class.auras[ key ] and class.auras[ key ].id
 
         if id then
-            local name, _, count, _, duration, expires, caster = GetPlayerAuraBySpellID( id )
+            local name, _, count, _, _, _, caster = GetPlayerAuraBySpellID( id )
 
             if name then
                 local applied = treasure_applied[ key ]
-                local now = GetTime()
-
-                duration = 12
-
-                if applied + duration < now then
-                    expires = now + duration
-                end
+                local duration = 12
+                local expires = applied + duration
 
                 t.count = max( 1, count )
                 t.expires = expires

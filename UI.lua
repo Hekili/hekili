@@ -301,7 +301,7 @@ function ns.StartConfiguration( external )
         ACD:Open( "Hekili" )
 
         local oFrame = ACD.OpenFrames["Hekili"].frame
-        oFrame:SetMinResize( 800,608 )
+        if not Hekili.IsDragonflight() then oFrame:SetMinResize( 800,608 ) end
 
         ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame" )
         ns.OnHideFrame:SetParent( oFrame )

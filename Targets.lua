@@ -225,8 +225,10 @@ do
         end
     end
 
-    RegisterEvent( "CHROMIE_TIME_OPEN", ChromieCheck )
-    RegisterEvent( "CHROMIE_TIME_CLOSE", ChromieCheck )
+    if not Hekili.IsDragonflight() then
+        RegisterEvent( "CHROMIE_TIME_OPEN", ChromieCheck )
+        RegisterEvent( "CHROMIE_TIME_CLOSE", ChromieCheck )
+    end
     RegisterEvent( "PLAYER_ENTERING_WORLD", ChromieCheck )
 end
 

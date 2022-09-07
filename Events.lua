@@ -340,15 +340,20 @@ end )
 
 
 do
-    local lastChange = 0
-
-    RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function()
-        local now = GetTime()
-        if now - lastChange > 1 then
+    if Hekili.IsWrath() then
+        RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function()
             Hekili:SpecializationChanged()
-            lastChange = now
-        end
-    end )
+        end )
+    else
+        local lastChange = 0
+        RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function()
+            local now = GetTime()
+            if now - lastChange > 1 then
+                Hekili:SpecializationChanged()
+                lastChange = now
+            end
+        end )
+    end
 end
 
 
@@ -573,7 +578,7 @@ do
 
 
     function ns.updateEssences()
-        local e = state.essence
+        local e = state.bfa_essence
 
         for k, v in pairs( e ) do
             v.__rank = 0
@@ -664,7 +669,7 @@ do
 
     local wasWearing = {}
     local updateIsQueued = false
-    local maxItemSlot = Enum.ItemSlotFilterTypeMeta.MaxValue
+    local maxItemSlot = Hekili.IsWrath() and INVSLOT_LAST_EQUIPPED or Enum.ItemSlotFilterTypeMeta.MaxValue
 
     function ns.updateGear()
         if not Hekili.PLAYER_ENTERING_WORLD or GetTime() - lastUpdate < 1 then
@@ -912,10 +917,38 @@ RegisterUnitEvent( "UNIT_INVENTORY_CHANGED", "player", nil, function()
     ns.updateGear()
 end )
 
-RegisterEvent( "PLAYER_TALENT_UPDATE", function( event )
-    ns.updateTalents()
-    Hekili:ForceUpdate( event, true )
-end )
+
+do
+    local timer
+
+    local function Update()
+        ns.updateTalents()
+        Hekili:ForceUpdate( "TALENTS", true )
+    end
+
+    local function QueueUpdate()
+        if timer and not timer:IsCancelled() then timer:Cancel() end
+        timer = C_Timer.NewTimer( 0.5, Update )
+    end
+
+    if Hekili.IsDragonflight() then
+        local talentEvents = {
+            "TRAIT_CONFIG_CREATED",
+            "ACTIVE_COMBAT_CONFIG_CHANGED",
+            "PLAYER_REGEN_ENABLED",
+            "PLAYER_REGEN_DISABLED",
+            "STARTER_BUILD_ACTIVATION_FAILED",
+            "TRAIT_CONFIG_DELETED",
+            "TRAIT_CONFIG_UPDATED",
+        }
+
+        for _, event in pairs( talentEvents ) do
+            RegisterEvent( event, QueueUpdate )
+        end
+    else
+        RegisterEvent( "PLAYER_TALENT_UPDATE", update )
+    end
+end
 
 
 -- Update Azerite Essence Data.
@@ -1776,7 +1809,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
         if hostile and ( countDots and dmg_events[ subtype ] or direct_dmg_events[ subtype ] ) and not dmg_filtered[ spellID ] then
             -- Don't wipe overkill targets in rested areas (it is likely a dummy).
             -- Interrupt is actually overkill.
-            if not IsResting( "player" ) and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
+            if not IsResting() and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
                 ns.eliminateUnit( destGUID, true )
                 Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
             elseif not ( subtype == "SPELL_MISSED" and amount == "IMMUNE" ) then
@@ -2275,9 +2308,15 @@ RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
 -- RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
 -- RegisterEvent( "ACTIONBAR_SLOT_CHANGED", DelayedUpdateOneKeybinding )
 
-RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function( event )
-    DelayedUpdateKeybindings( event )
-end )
+if Hekili.IsWrath() then
+    RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function( event )
+        DelayedUpdateKeybindings( event )
+    end )
+else
+    RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function( event )
+        DelayedUpdateKeybindings( event )
+    end )
+end
 
 RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     DelayedUpdateKeybindings()

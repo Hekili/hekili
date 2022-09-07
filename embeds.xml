@@ -23,7 +23,6 @@
 	<Script file="Libs\LibDualSpec-1.0\LibDualSpec-1.0.lua"/>
 	<Include file="Libs\LibItemBuffs-1.0\LibItemBuffs-1.0.xml"/>
 	<Include file="Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.xml"/>
-	<Include file="Libs\TaintLess\TaintLess.xml"/>
 	<Include file="Libs\LibChatAnims\LibChatAnims.xml"/>
 	<Include file="Libs\LibTranslit-1.0\LibTranslit-1.0.xml"/>
 	<Script file="Libs\SpellFlashCore\libs\BigLibTimer\BigLibTimer.lua"/>

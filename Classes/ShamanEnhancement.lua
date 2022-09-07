@@ -4,6 +4,8 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
+if Hekili.IsDragonflight() then return end
+
 local class = Hekili.Class
 local state = Hekili.State
 

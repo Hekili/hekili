@@ -4,6 +4,8 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
+if Hekili.IsDragonflight() then return end
+
 local class = Hekili.Class
 local state = Hekili.State
 
@@ -1494,7 +1496,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             spend = 0.14,
             spendType = "mana",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 451170,
 
             handler = function ()
