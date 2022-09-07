@@ -4,7 +4,7 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local state = Hekili.State
+local class, state = Hekili.Class, Hekili.State
 local all = Hekili.Class.specs[ 0 ]
 
 local RegisterEvent = ns.RegisterEvent
@@ -1972,21 +1972,17 @@ do
         local id = class.auras[ key ] and class.auras[ key ].id
 
         if id then
-            local name, _, count, _, duration, expires, caster = GetPlayerAuraBySpellID( id )
+            local name, _, count, _, _, _, caster = GetPlayerAuraBySpellID( id )
 
             if name then
                 local applied = treasure_applied[ key ]
-                local now = GetTime()
-
-                duration = 12
-
-                if applied + duration < now then
-                    expires = now + duration
-                end
+                local duration = 12
+                local expires = applied + duration
 
                 t.count = max( 1, count )
+                t.applied = applied
+                t.duration = duration
                 t.expires = expires
-                t.applied = expires - duration
                 t.caster = caster
 
                 return
