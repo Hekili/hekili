@@ -4,7 +4,7 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local state = Hekili.State
+local class, state = Hekili.Class, Hekili.State
 local all = Hekili.Class.specs[ 0 ]
 
 local RegisterEvent = ns.RegisterEvent
@@ -1980,8 +1980,9 @@ do
                 local expires = applied + duration
 
                 t.count = max( 1, count )
+                t.applied = applied
+                t.duration = duration
                 t.expires = expires
-                t.applied = expires - duration
                 t.caster = caster
 
                 return
