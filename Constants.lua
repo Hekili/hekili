@@ -151,10 +151,6 @@ local Specializations = {
     evoker_preservation = 1468,
 }
 
-ns.getSpecializationID = function ( key )
-    return Specializations[ key ] or -1
-end
-
 
 local SpecializationKeys = {
     [250] = "blood",
