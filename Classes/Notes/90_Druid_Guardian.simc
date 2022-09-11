@@ -1,5 +1,5 @@
 ## Guardian Druid
-## August 21, 2022
+## September 11, 2022
 
 ## Changes:
 ## - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -49,7 +49,7 @@ actions.bear+=/use_item,name=wraps_of_electrostatic_potential
 actions.bear+=/use_item,name=ring_of_collapsing_futures
 actions.bear+=/use_item,name=jotungeirr_destinys_call,if=covenant.venthyr
 actions.bear+=/trinket1,if=!buff.prowl.up&covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)|!buff.prowl.up&!covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
-actions.bear+=/trinket2,if=!buff.prowl.up&covenant.venthyr&!trinket.2.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)|!buff.prowl.up&!covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
+actions.bear+=/trinket2,if=!buff.prowl.up&covenant.venthyr&!trinket.2.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)|!buff.prowl.up&!covenant.venthyr&!trinket.2.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
 actions.bear+=/potion,if=covenant.venthyr&buff.incarnation.remains>=24&buff.incarnation.remains<=25
 actions.bear+=/barkskin,if=tanking&buff.bear_form.up&set_bonus.tier28_4pc>0
 actions.bear+=/convoke_the_spirits,if=!druid.catweave_bear&!druid.owlweave_bear

@@ -10983,6 +10983,11 @@ local function Sanitize( segment, i, line, warnings )
         insert( warnings, "Line " .. line .. ": Converted 'trinket.abc.cooldown' to 'cooldown.abc' (" .. times .. "x)." )
     end
 
+    i, times = i:gsub( "%.(proc%.any)%.", ".has_buff." )
+    if times > 0 then
+        insert( warnings, "Line " .. line .. ": Converted 'proc.any' to 'has_buff' (" .. times .. "x)." )
+    end
+
     i, times = i:gsub( "min:[a-z0-9_%.]+(,?$?)", "%1" )
     if times > 0 then
         insert( warnings, "Line " .. line .. ": Removed min:X check (not available in emulation) (" .. times .. "x)." )
