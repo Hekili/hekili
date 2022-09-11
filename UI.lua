@@ -781,20 +781,21 @@ do
     local Glower = LibStub("LibCustomGlow-1.0")
 
     local function CalculateAlpha( id )
-        if IsInPetBattle() or Hekili.Barber or Hekili.ClientScene or UnitHasVehicleUI("player") or HasVehicleActionBar() or HasOverrideActionBar() or UnitOnTaxi("player") or not Hekili:IsDisplayActive( id ) then
+        if IsInPetBattle() or Hekili.Barber or Hekili.ClientScene or UnitHasVehicleUI( "player" ) or HasVehicleActionBar() or HasOverrideActionBar() or UnitOnTaxi( "player" ) or not Hekili:IsDisplayActive( id ) then
             return 0
         end
 
         local prof = Hekili.DB.profile
         local conf = prof.displays[ id ]
+        local spec = state.spec.id and prof.specs[ state.spec.id ]
+        local aoe  = spec and spec.aoe or 3
 
         local _, zoneType = IsInInstance()
 
-        -- Switch Type:
-        --   0 = Auto - AOE
-        --   1 = ST - AOE
-
         if not conf.enabled then
+            return 0
+
+        elseif id == "AOE" and Hekili:GetToggleState( "mode" ) == "reactive" and Hekili:GetNumTargets() < aoe then
             return 0
 
         elseif zoneType == "pvp" or zoneType == "arena" then
@@ -925,12 +926,9 @@ do
 
             self.alphaCheck = self.alphaCheck - elapsed
 
-            if self.alpha == 0 then
-                if self.alphaCheck <= 0 then
-                    self.alphaCheck = 0.5
-                    self:UpdateAlpha()
-                end
-                return
+            if self.alphaCheck <= 0 then
+                self.alphaCheck = 0.5
+                self:UpdateAlpha()
             end
 
             if not self.id == "Primary" and not ( self.Buttons[ 1 ] and self.Buttons[ 1 ].Action ) and not ( self.HasRecommendations or not self.NewRecommendations ) then
