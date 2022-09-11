@@ -7085,7 +7085,7 @@ do
                                                     desc = "Captions are |cFFFF0000very|r short descriptions that can appear on the icon of a recommended ability.\n\n" ..
                                                         "This can be useful for understanding why an ability was recommended at a particular time.\n\n" ..
                                                         "Requires Captions to be Enabled on each display.",
-                                                    order = 3.2,
+                                                    order = 3.201,
                                                     width = 1.5,
                                                     validate = function( info, val )
                                                         val = val:trim()
@@ -7175,6 +7175,28 @@ do
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
                                                         return e.action ~= "ferocious_bite"
+                                                    end,
+                                                },
+
+                                                empower_to = {
+                                                    type = "select",
+                                                    name = "Empower To",
+                                                    order = 3.2,
+                                                    width = 1.2,
+                                                    desc = "For Empowered spells, specify the empowerment level for this usage (default is max).",
+                                                    values = {
+                                                        [1] = "I",
+                                                        [2] = "II",
+                                                        [3] = "III",
+                                                        [4] = "IV",
+                                                        maximum = "Max",
+                                                        minimum = "Min"
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        local action = e.action
+                                                        local ability = action and class.abilities[ action ]
+                                                        return not ( ability and ability.empowered )
                                                     end,
                                                 },
 
