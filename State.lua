@@ -1690,8 +1690,6 @@ end
 -- Gives calculated values for some state options in order to emulate SimC syntax.
 local mt_state
 do
-    state.purgedKeys = {}
-
     local autoReset = setmetatable( {
         -- Internal processing stuff.
         display = 1,
@@ -2004,6 +2002,9 @@ do
             elseif k == "channel_breakable" then t[k] = false
             elseif k == "channel_remains" then return t.buff.casting.up and t.buff.casting.v3 == 1 and t.buff.casting.remains or 0
             elseif k == "channeling" then return t.buff.casting.up and t.buff.casting.v3 == 1
+
+            -- Workaround for Evoker resource (Essence)
+            elseif k == "essence" then return t.bfa_essence
 
             -- Real incoming damage/healing information.
             elseif type(k) == "string" and k:sub(1, 15) == "incoming_damage" then
@@ -2774,19 +2775,19 @@ do
     }
 
     -- Table of default handlers for specific ability cooldowns.
-    local mt_default_cooldown = {
+    mt_default_cooldown = {
         __index = function( t, k )
-            local ability = t.key and class.abilities[ t.key ]
-
-            if rawget( ability, "meta" ) and ability.meta[ k ] then
-                return ability.meta[ k ]( t )
-            end
+            local ability = rawget( t, "key" ) and class.abilities[ t.key ] or class.abilities.null_cooldown
 
             local GetCooldown = _G.GetSpellCooldown
             local profile = Hekili.DB.profile
             local id = ability.id
 
             if ability then
+                if rawget( ability, "meta" ) and ability.meta[ k ] then
+                    return ability.meta[ k ]( t )
+                end
+
                 if ability.item then
                     GetCooldown = _G.GetItemCooldown
                     id = ability.itemCd or ability.item
@@ -3017,6 +3018,7 @@ do
                     class.abilities[ k ] = class.abilities[ shortkey ]
                     entry = class.abilities[ k ]
                 else
+                    if not rawget( t, "null_cooldown" ) then t.null_cooldown = { key = "null_cooldown" } end
                     return t.null_cooldown
                 end
             end
@@ -3523,9 +3525,7 @@ do
         end,
         __newindex = function( t, k, v )
             if v == nil then return end
-
             class.knownAuraAttributes[ k ] = true
-
             if autoReset[ k ] then Mark( t, k ) end
             rawset( t, k, v )
         end
@@ -3972,6 +3972,11 @@ do
 
     setmetatable( state.essence, ns.metatables.mt_artifact_traits )
     state.essence.no_trait = { rank = 0, major = false, minor = false }
+
+    -- DF: essence.X will be used for Evoker resources.
+    -- The state metatable will redirect essence -> bfa_essence for non-Evokers.
+    state.bfa_essence = state.essence
+    rawset( state, "essence", nil )
 end
 
 

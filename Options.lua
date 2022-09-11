@@ -1134,20 +1134,11 @@ do
     local function rangeXY( info, notif )
         local tab = getOptionTable( info, notif )
 
-        local resolutions = { GetScreenResolutions() }
-        local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" ) or "1280x720"
+        local resolution = GetCVar( "gxWindowedResolution" ) or "1280x720"
         local width, height = resolution:match( "(%d+)x(%d+)" )
 
         width = tonumber( width )
         height = tonumber( height )
-
-        for _, str in ipairs( resolutions ) do
-            local w, h = str:match( "(%d+)x(%d+)" )
-            w, h = tonumber( w ), tonumber( h )
-
-            if w > width then width = w end
-            if h > height then height = h end
-        end
 
         tab.args.x.min = -1 * width
         tab.args.x.max = width
@@ -8355,6 +8346,7 @@ do
 
     local resources = {}
     local talents = {}
+    local talentSpells = {}
     local pvptalents = {}
     local auras = {}
     local abilities = {}
@@ -8371,6 +8363,90 @@ do
 
     local lastAbility = nil
     local lastTime = 0
+
+    local run = 0
+
+    local function EmbedSpellData( spellID, token, talent )
+        local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( spellID )
+
+        local haste = UnitSpellHaste( "player" )
+        haste = 1 + ( haste / 100 )
+
+        if name then
+            token = token or key( name )
+
+            if castTime % 10 > 0 then
+                -- We can catch hasted cast times 90% of the time...
+                castTime = castTime * haste
+            end
+            castTime = castTime / 1000
+
+            local cost, min_cost, max_cost, spendPerSec, cost_percent, resource
+
+            local costs = GetSpellPowerCost( spellID )
+
+            if costs then
+                for k, v in pairs( costs ) do
+                    if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
+                        cost = v.costPercent > 0 and v.costPercent / 100 or v.cost
+                        spendPerSec = v.costPerSecond
+                        resource = key( v.name )
+                        break
+                    end
+                end
+            end
+
+            local passive = IsPassiveSpell( spellID )
+            local harmful = IsHarmfulSpell( spellID )
+            local helpful = IsHelpfulSpell( spellID )
+
+            local _, charges, _, recharge = GetSpellCharges( spellID )
+            local cooldown
+            if recharge then cooldown = recharge
+            else
+                cooldown = GetSpellBaseCooldown( spellID )
+                if cooldown then cooldown = cooldown / 1000 end
+            end
+
+            local selfbuff = SpellIsSelfBuff( spellID )
+            local talent = talent or IsTalentSpell( spellID )
+
+            if selfbuff or passive then
+                auras[ token ] = auras[ token ] or {}
+                auras[ token ].id = spellID
+            end
+
+            local empowered = IsPressHoldReleaseSpell( spellID )
+            -- SpellIsTargeting ?
+
+            if not passive then
+                local a = abilities[ token ] or {}
+
+                -- a.key = token
+                a.desc = GetSpellDescription( spellID )
+                if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
+                a.id = spellID
+                a.spend = cost
+                a.spendType = resource
+                a.spendPerSec = spendPerSec
+                a.cast = castTime
+                a.empowered = empowered
+                a.gcd = "spell"
+
+                a.texture = texture
+
+                if talent then a.talent = token end
+
+                a.startsCombat = harmful or not helpful
+
+                a.cooldown = cooldown
+                a.charges = charges
+                a.recharge = recharge
+
+                abilities[ token ] = a
+            end
+        end
+    end
 
     local function CLEU( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceName and UnitIsUnit( sourceName, "player" ) and type( spellName ) == 'string' then
@@ -8430,11 +8506,38 @@ do
             end
 
             wipe( talents )
-            for j = 1, 7 do
-                for k = 1, 3 do
-                    local tID, name, _, _, _, sID = GetTalentInfoBySpecialization( GetSpecialization(), j, k )
-                    name = key( name )
-                    insert( talents, { name = name, talent = tID, spell = sID } )
+            if Hekili.IsDragonflight() then
+                local configID = C_ClassTalents.GetActiveConfigID()
+                local configInfo = C_Traits.GetConfigInfo( configID )
+                for _, treeID in ipairs( configInfo.treeIDs ) do
+                    local nodes = C_Traits.GetTreeNodes( treeID )
+                    for _, nodeID in ipairs( nodes ) do
+                        local node = C_Traits.GetNodeInfo( configID, nodeID )
+                        if node.maxRanks > 0 then
+                            for _, entryID in ipairs( node.entryIDs ) do
+                                local entryInfo = C_Traits.GetEntryInfo( configID, entryID )
+                                local definitionInfo = C_Traits.GetDefinitionInfo( entryInfo.definitionID )
+
+                                local spellID = definitionInfo.spellID
+                                local name = GetSpellInfo( spellID )
+                                local key = key( name )
+
+                                insert( talents, { name = key, talent = entryID, definition = entryInfo.definitionID, spell = spellID } )
+
+                                if not IsPassiveSpell( spellID ) then
+                                    EmbedSpellData( spellID, key, true )
+                                end
+                            end
+                        end
+                    end
+                end
+            else
+                for j = 1, 7 do
+                    for k = 1, 3 do
+                        local tID, name, _, _, _, sID = GetTalentInfoBySpecialization( GetSpecialization(), j, k )
+                        name = key( name )
+                        insert( talents, { name = name, talent = tID, spell = sID } )
+                    end
                 end
             end
 
@@ -8456,75 +8559,7 @@ do
                 if i == 2 or tab == spec then
                     for j = offset, offset + n do
                         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
-
-                        if name and spellID ~= mastery_spell then
-                            local token = key( name )
-
-                            castTime = castTime / 1000
-
-                            local cost, min_cost, max_cost, cost_per_sec, cost_percent, resource
-
-                            local costs = GetSpellPowerCost( spellID )
-
-                            if costs then
-                                for k, v in pairs( costs ) do
-                                    if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
-                                        cost = v.costPercent > 0 and v.costPercent / 100 or v.cost
-                                        cost_per_sec = v.costPerSecond
-                                        resource = key( v.name )
-                                        break
-                                    end
-                                end
-                            end
-
-                            local passive = IsPassiveSpell( spellID )
-                            local harmful = IsHarmfulSpell( spellID )
-                            local helpful = IsHelpfulSpell( spellID )
-
-                            local _, charges, _, recharge = GetSpellCharges( spellID )
-                            local cooldown
-                            if recharge then cooldown = recharge
-                            else
-                                cooldown = GetSpellBaseCooldown( spellID )
-                                if cooldown then cooldown = cooldown / 1000 end
-                            end
-
-                            local selfbuff = SpellIsSelfBuff( spellID )
-                            local talent = IsTalentSpell( spellID )
-
-                            if selfbuff or passive then
-                                auras[ token ] = auras[ token ] or {}
-                                auras[ token ].id = spellID
-                            end
-
-                            if not passive then
-                                local a = abilities[ token ] or {}
-
-                                -- a.key = token
-                                a.desc = GetSpellDescription( spellID )
-                                if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
-                                a.id = spellID
-                                a.spend = cost
-                                a.spendType = resource
-                                a.spendPerSec = cost_per_sec
-                                a.cast = castTime
-                                a.gcd = "spell"
-
-                                a.texture = texture
-
-                                if talent then a.talent = token end
-
-                                a.startsCombat = not helpful
-
-                                a.cooldown = cooldown
-                                if a.charges and a.charges > 1 then
-                                    a.charges = charges
-                                    a.recharge = recharge
-                                end
-
-                                abilities[ token ] = a
-                            end
-                        end
+                        if name then EmbedSpellData( spellID, key( name ) ) end
                     end
                 end
             end
@@ -8535,80 +8570,10 @@ do
             for i = 1, GetNumSpellTabs() do
                 local tab, _, offset, n = GetSpellTabInfo( i )
 
-                if tab == spec then
+                if i == 2 or tab == spec then
                     for j = offset, offset + n do
                         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
-
-                        if name and spellID ~= mastery_spell then
-                            local token = key( name )
-
-                            if castTime % 10 > 0 then
-                                -- We can catch hasted cast times 90% of the time...
-                                castTime = castTime * haste
-                            end
-                            castTime = castTime / 1000
-
-                            local cost, min_cost, max_cost, spendPerSec, cost_percent, resource
-
-                            local costs = GetSpellPowerCost( spellID )
-
-                            if costs then
-                                for k, v in pairs( costs ) do
-                                    if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
-                                        cost = v.costPercent > 0 and v.costPercent / 100 or v.cost
-                                        spendPerSec = v.costPerSecond
-                                        resource = key( v.name )
-                                        break
-                                    end
-                                end
-                            end
-
-                            local passive = IsPassiveSpell( spellID )
-                            local harmful = IsHarmfulSpell( spellID )
-                            local helpful = IsHelpfulSpell( spellID )
-
-                            local _, charges, _, recharge = GetSpellCharges( spellID )
-                            local cooldown
-                            if recharge then cooldown = recharge
-                            else
-                                cooldown = GetSpellBaseCooldown( spellID )
-                                if cooldown then cooldown = cooldown / 1000 end
-                            end
-
-                            local selfbuff = SpellIsSelfBuff( spellID )
-                            local talent = IsTalentSpell( spellID )
-
-                            if selfbuff or passive then
-                                auras[ token ] = auras[ token ] or {}
-                                auras[ token ].id = spellID
-                            end
-
-                            if not passive then
-                                local a = abilities[ token ] or {}
-
-                                -- a.key = token
-                                a.desc = GetSpellDescription( spellID )
-                                if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
-                                a.id = spellID
-                                a.spend = cost
-                                a.spendType = resource
-                                a.spendPerSec = spendPerSec
-                                a.cast = castTime
-                                a.gcd = "spell"
-
-                                a.texture = texture
-
-                                if talent then a.talent = token end
-
-                                a.startsCombat = not helpful
-
-                                a.cooldown = cooldown
-                                a.charges = charges
-                                a.recharge = recharge
-
-                                abilities[ token ] = a
-                            end
-                        end
+                        if name then EmbedSpellData( spellID, key( name ) ) end
                     end
                 end
             end
@@ -8725,119 +8690,156 @@ do
                     name = "Generate Skeleton",
                     order = 2,
                     func = function()
+                        run = run + 1
+
                         indent = ""
                         wipe( output )
 
-                        append( "if UnitClassBase( 'player' ) == '" .. UnitClassBase( "player" ) .. "' then" )
-                        increaseIndent()
-
-                        append( "local spec = Hekili:NewSpecialization( " .. specID .. " )\n" )
-
-                        for k, i in pairs( resources ) do
-                            append( "spec:RegisterResource( Enum.PowerType." .. k .. " )" )
-                        end
-
-                        append( "" )
-                        append( "-- Talents" )
-                        append( "spec:RegisterTalents( {" )
-                        increaseIndent()
-
-                        for i, tal in ipairs( talents ) do
-                            append( tal.name .. " = " .. tal.talent .. ", -- " .. tal.spell .. ( ( i % 3 == 0 and i < #talents ) and "\n" or "" ) )
-                        end
-
-                        decreaseIndent()
-                        append( "} )\n" )
-
-                        append( "-- PvP Talents" )
-                        append( "spec:RegisterPvpTalents( { " )
-                        increaseIndent()
-
-                        for i, tal in ipairs( pvptalents ) do
-                            append( tal.name .. " = " .. tal.talent .. ", -- " .. tal.spell )
-                        end
-                        decreaseIndent()
-                        append( "} )\n" )
-
-                        append( "-- Auras" )
-                        append( "spec:RegisterAuras( {" )
-                        increaseIndent()
-
-                        for k, aura in orderedPairs( auras ) do
-                            append( k .. " = {" )
+                        if not Hekili.IsDragonflight() or run % 2 > 0 then
+                            append( "if UnitClassBase( 'player' ) == '" .. UnitClassBase( "player" ) .. "' then" )
                             increaseIndent()
-                            append( "id = " .. aura.id .. "," )
 
-                            for key, value in pairs( aura ) do
-                                if key ~= "id" then
-                                    if type(value) == 'string' then
-                                        append( key .. ' = "' .. value .. '",' )
-                                    else
-                                        append( key .. " = " .. value .. "," )
-                                    end
+                            append( "local spec = Hekili:NewSpecialization( " .. specID .. " )\n" )
+
+                            for k, i in pairs( resources ) do
+                                append( "spec:RegisterResource( Enum.PowerType." .. k .. " )" )
+                            end
+
+                            append( "" )
+                            append( "-- Talents" )
+                            append( "spec:RegisterTalents( {" )
+                            increaseIndent()
+
+                            if Hekili.IsDragonflight() then
+                                table.sort( talents, function( a, b ) return a.name < b.name end )
+                                for i, tal in ipairs( talents ) do
+                                    append( tal.name .. " = { " .. ( tal.talent or "nil" ) .. ", " .. ( tal.spell or "nil" ) .. " }," )
+                                end
+                            else
+                                for i, tal in ipairs( talents ) do
+                                    append( tal.name .. " = " .. ( tal.talent or "nil" ) .. ", -- " .. ( tal.spell or "nil" ) .. ( i % 3 == 0 and "\n" or "" ) )
                                 end
                             end
 
+
                             decreaseIndent()
-                            append( "}," )
-                        end
+                            append( "} )\n\n" )
 
-                        decreaseIndent()
-                        append( "} )\n" )
-
-
-                        append( "-- Abilities" )
-                        append( "spec:RegisterAbilities( {" )
-                        increaseIndent()
-
-                        local count = 1
-                        for k, a in orderedPairs( abilities ) do
-                            if count > 1 then append( "\n" ) end
-                            count = count + 1
-                            append( k .. " = {" )
+                            append( "-- PvP Talents" )
+                            append( "spec:RegisterPvpTalents( { " )
                             increaseIndent()
-                            appendAttr( a, "id" )
-                            appendAttr( a, "cast" )
-                            appendAttr( a, "charges" )
-                            appendAttr( a, "cooldown" )
-                            appendAttr( a, "recharge" )
-                            appendAttr( a, "gcd" )
-                            append( "" )
-                            appendAttr( a, "spend" )
-                            appendAttr( a, "spendPerSec" )
-                            appendAttr( a, "spendType" )
-                            if a.spend ~= nil or a.spendPerSec ~= nil or a.spendType ~= nil then
-                                append( "" )
-                            end
-                            appendAttr( a, "talent" )
-                            if a.cooldown >= 60 then append( "toggle = \"cooldowns\",\n" ) end
-                            if a.talent ~= nil then append( "" ) end
-                            appendAttr( a, "startsCombat" )
-                            appendAttr( a, "texture" )
-                            append( "" )
-                            append( "handler = function ()" )
 
-                            if a.applies or a.removes then
+                            for i, tal in ipairs( pvptalents ) do
+                                append( tal.name .. " = " .. ( tal.talent or "nil" ) .. ", -- " .. ( tal.spell or "nil" ) )
+                            end
+                            decreaseIndent()
+                            append( "} )\n\n" )
+
+                            append( "-- Auras" )
+                            append( "spec:RegisterAuras( {" )
+                            increaseIndent()
+
+                            for k, aura in orderedPairs( auras ) do
+                                append( k .. " = {" )
                                 increaseIndent()
-                                if a.applies then
-                                    for name, id in pairs( a.applies ) do
-                                        append( "-- applies " .. name .. " (" .. id .. ")" )
-                                    end
-                                end
-                                if a.removes then
-                                    for name, id in pairs( a.removes ) do
-                                        append( "-- removes " .. name .. " (" .. id .. ")" )
-                                    end
-                                end
-                                decreaseIndent()
-                            end
-                            append( "end," )
-                            decreaseIndent()
-                            append( "}," )
-                        end
+                                append( "id = " .. aura.id .. "," )
 
-                        decreaseIndent()
-                        append( "} )\n" )
+                                for key, value in pairs( aura ) do
+                                    if key ~= "id" then
+                                        if type(value) == 'string' then
+                                            append( key .. ' = "' .. value .. '",' )
+                                        else
+                                            append( key .. " = " .. value .. "," )
+                                        end
+                                    end
+                                end
+
+                                decreaseIndent()
+                                append( "}," )
+                            end
+
+                            decreaseIndent()
+                            append( "} )\n\n" )
+
+
+                            append( "-- Abilities" )
+                            append( "spec:RegisterAbilities( {" )
+                            increaseIndent()
+
+                            local count = 1
+                            for k, a in orderedPairs( abilities ) do
+                                if count > 1 then append( "\n" ) end
+                                count = count + 1
+                                append( k .. " = {" )
+                                increaseIndent()
+                                appendAttr( a, "id" )
+                                appendAttr( a, "cast" )
+                                appendAttr( a, "charges" )
+                                appendAttr( a, "cooldown" )
+                                appendAttr( a, "recharge" )
+                                appendAttr( a, "gcd" )
+                                append( "" )
+                                appendAttr( a, "spend" )
+                                appendAttr( a, "spendPerSec" )
+                                appendAttr( a, "spendType" )
+                                if a.spend ~= nil or a.spendPerSec ~= nil or a.spendType ~= nil then
+                                    append( "" )
+                                end
+                                appendAttr( a, "talent" )
+                                appendAttr( a, "startsCombat" )
+                                appendAttr( a, "texture" )
+                                append( "" )
+                                if a.cooldown >= 60 then append( "toggle = \"cooldowns\",\n" ) end
+                                append( "handler = function ()" )
+
+                                if a.applies or a.removes then
+                                    increaseIndent()
+                                    if a.applies then
+                                        for name, id in pairs( a.applies ) do
+                                            append( "-- applies " .. name .. " (" .. id .. ")" )
+                                        end
+                                    end
+                                    if a.removes then
+                                        for name, id in pairs( a.removes ) do
+                                            append( "-- removes " .. name .. " (" .. id .. ")" )
+                                        end
+                                    end
+                                    decreaseIndent()
+                                end
+                                append( "end," )
+                                decreaseIndent()
+                                append( "}," )
+                            end
+
+                            decreaseIndent()
+                            append( "} )" )
+                            decreaseIndent()
+                            append( "end" )
+                        else
+                            local aggregate = {}
+
+                            for k,v in pairs( auras ) do
+                                if not aggregate[k] then aggregate[k] = {} end
+                                aggregate[k].id = v.id
+                                aggregate[k].aura = true
+                            end
+
+                            for k,v in pairs( abilities ) do
+                                if not aggregate[k] then aggregate[k] = {} end
+                                aggregate[k].id = v.id
+                                aggregate[k].ability = true
+                            end
+
+                            for k,v in pairs( talents ) do
+                                if not aggregate[v.name] then aggregate[v.name] = {} end
+                                aggregate[v.name].id = v.spell
+                                aggregate[v.name].talent = true
+                            end
+
+                            for k,v in orderedPairs( aggregate ) do
+                                append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) )
+                            end
+                        end
 
                         Hekili.Skeleton = table.concat( output, "\n" )
                     end,

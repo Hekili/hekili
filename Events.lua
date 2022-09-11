@@ -41,6 +41,8 @@ local handlerCount = {}
 Hekili.ECount = handlerCount
 Hekili.IC = itemCallbacks
 
+local eventData = {}
+Hekili.EData = eventData
 
 local function GenericOnEvent( self, event, ... )
     local eventHandlers = handlers[ event ]
@@ -48,8 +50,16 @@ local function GenericOnEvent( self, event, ... )
     if not eventHandlers then return end
 
     for i, handler in ipairs( eventHandlers ) do
+        local key = event .. "_" .. i
+        local start = debugprofilestop()
         handler( event, ... )
-        handlerCount[ event .. "_" .. i ] = ( handlerCount[ event .. "_" .. i ] or 0 ) + 1
+        local finish = debugprofilestop()
+
+        handlerCount[ key ] = ( handlerCount[ key ] or 0 ) + 1
+
+        eventData[ key ] = eventData[ key ] or {}
+        eventData[ key ].max = max( eventData[ key ].max or 0, finish - start )
+        eventData[ key ].total = ( eventData[ key ].total or 0 ) + ( finish - start )
     end
 end
 
@@ -62,8 +72,16 @@ local function UnitSpecificOnEvent( self, event, unit, ... )
         if not eventHandlers then return end
 
         for i, handler in ipairs( eventHandlers ) do
+            local key = event .. "_" .. unit .. "_" .. i
+            local start = debugprofilestop()
             handler( event, unit, ... )
-            handlerCount[ event .. "_" .. unit .. "_" .. i ] = ( handlerCount[ event .. "_" .. unit .. "_" .. i ] or 0 ) + 1
+            local finish = debugprofilestop()
+
+            handlerCount[ key ] = ( handlerCount[ key ] or 0 ) + 1
+
+            eventData[ key ] = eventData[ key ] or {}
+            eventData[ key ].max = max( eventData[ key ].max or 0, finish - start )
+            eventData[ key ].total = ( eventData[ key ].total or 0 ) + ( finish - start )
         end
     end
 end
@@ -80,8 +98,16 @@ function ns.StartEventHandler()
 
         if handlers.FRAME_UPDATE then
             for i, handler in pairs( handlers.FRAME_UPDATE ) do
+                local key = "FRAME_UPDATE_" .. i
+                local start = debugprofilestop()
                 handler( event, elapsed )
-                handlerCount[ "FRAME_UPDATE_" .. i ] = ( handlerCount[ "FRAME_UPDATE_" .. i ] or 0 ) + 1
+                local finish = debugprofilestop()
+
+                handlerCount[ key ] = ( handlerCount[ key ] or 0 ) + 1
+
+                eventData[ key ] = eventData[ key ] or {}
+                eventData[ key ].max = max( eventData[ key ].max or 0, finish - start )
+                eventData[ key ].total = ( eventData[ key ].total or 0 ) + ( finish - start )
             end
         end
     end )
@@ -101,6 +127,8 @@ function ns.StopEventHandler()
 end
 
 
+Hekili.EventSources = {}
+
 ns.RegisterEvent = function( event, handler )
 
     handlers[ event ] = handlers[ event ] or {}
@@ -108,8 +136,11 @@ ns.RegisterEvent = function( event, handler )
 
     if event ~= "FRAME_UPDATE" then events:RegisterEvent( event ) end
 
-    Hekili:ProfileCPU( event .. "_" .. #handlers[event], handler )
+    local key = event .. "_" .. #handlers[event]
+    Hekili:ProfileCPU( key, handler )
 
+    local file, line = debugstack(2):match([[Hekili\(.-)"%]:(%d+): in main chunk]])
+    Hekili.EventSources[ key ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
 end
 local RegisterEvent = ns.RegisterEvent
 
@@ -146,9 +177,11 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
     unitFrame.events[ event ] = unitFrame.events[ event ] or {}
     insert( unitFrame.events[ event ], handler )
 
+    local file, line = debugstack(2):match([[Hekili\(.-)"%]:(%d+): in main chunk]])
+    Hekili.EventSources[ event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ] ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
+
     unitFrame:RegisterUnitEvent( event, unit1 )
     Hekili:ProfileCPU( event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ], handler )
-
 
     if unit2 then
         if not unitHandlers[ unit2 ] then
@@ -162,6 +195,8 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
 
         unitFrame.events[ event ] = unitFrame.events[ event ] or {}
         insert( unitFrame.events[ event ], handler )
+
+        Hekili.EventSources[ event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ] ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
 
         unitFrame:RegisterUnitEvent( event, unit2 )
         Hekili:ProfileCPU( event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ], handler )
@@ -340,15 +375,20 @@ end )
 
 
 do
-    local lastChange = 0
-
-    RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function()
-        local now = GetTime()
-        if now - lastChange > 1 then
+    if Hekili.IsWrath() then
+        RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function()
             Hekili:SpecializationChanged()
-            lastChange = now
-        end
-    end )
+        end )
+    else
+        local lastChange = 0
+        RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function()
+            local now = GetTime()
+            if now - lastChange > 1 then
+                Hekili:SpecializationChanged()
+                lastChange = now
+            end
+        end )
+    end
 end
 
 
@@ -573,7 +613,7 @@ do
 
 
     function ns.updateEssences()
-        local e = state.essence
+        local e = state.bfa_essence
 
         for k, v in pairs( e ) do
             v.__rank = 0
@@ -664,7 +704,7 @@ do
 
     local wasWearing = {}
     local updateIsQueued = false
-    local maxItemSlot = Enum.ItemSlotFilterTypeMeta.MaxValue
+    local maxItemSlot = Hekili.IsWrath() and INVSLOT_LAST_EQUIPPED or Enum.ItemSlotFilterTypeMeta.MaxValue
 
     function ns.updateGear()
         if not Hekili.PLAYER_ENTERING_WORLD or GetTime() - lastUpdate < 1 then
@@ -912,10 +952,38 @@ RegisterUnitEvent( "UNIT_INVENTORY_CHANGED", "player", nil, function()
     ns.updateGear()
 end )
 
-RegisterEvent( "PLAYER_TALENT_UPDATE", function( event )
-    ns.updateTalents()
-    Hekili:ForceUpdate( event, true )
-end )
+
+do
+    local timer
+
+    local function Update()
+        ns.updateTalents()
+        Hekili:ForceUpdate( "TALENTS", true )
+    end
+
+    local function QueueUpdate()
+        if timer and not timer:IsCancelled() then timer:Cancel() end
+        timer = C_Timer.NewTimer( 0.5, Update )
+    end
+
+    if Hekili.IsDragonflight() then
+        local talentEvents = {
+            "TRAIT_CONFIG_CREATED",
+            "ACTIVE_COMBAT_CONFIG_CHANGED",
+            "PLAYER_REGEN_ENABLED",
+            "PLAYER_REGEN_DISABLED",
+            "STARTER_BUILD_ACTIVATION_FAILED",
+            "TRAIT_CONFIG_DELETED",
+            "TRAIT_CONFIG_UPDATED",
+        }
+
+        for _, event in pairs( talentEvents ) do
+            RegisterEvent( event, QueueUpdate )
+        end
+    else
+        RegisterEvent( "PLAYER_TALENT_UPDATE", update )
+    end
+end
 
 
 -- Update Azerite Essence Data.
@@ -1776,7 +1844,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
         if hostile and ( countDots and dmg_events[ subtype ] or direct_dmg_events[ subtype ] ) and not dmg_filtered[ spellID ] then
             -- Don't wipe overkill targets in rested areas (it is likely a dummy).
             -- Interrupt is actually overkill.
-            if not IsResting( "player" ) and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
+            if not IsResting() and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
                 ns.eliminateUnit( destGUID, true )
                 Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
             elseif not ( subtype == "SPELL_MISSED" and amount == "IMMUNE" ) then
@@ -2275,9 +2343,15 @@ RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
 -- RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
 -- RegisterEvent( "ACTIONBAR_SLOT_CHANGED", DelayedUpdateOneKeybinding )
 
-RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function( event )
-    DelayedUpdateKeybindings( event )
-end )
+if Hekili.IsWrath() then
+    RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function( event )
+        DelayedUpdateKeybindings( event )
+    end )
+else
+    RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function( event )
+        DelayedUpdateKeybindings( event )
+    end )
+end
 
 RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     DelayedUpdateKeybindings()

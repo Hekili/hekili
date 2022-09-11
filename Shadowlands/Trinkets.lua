@@ -1980,9 +1980,8 @@ do
                 local expires = applied + duration
 
                 t.count = max( 1, count )
-                t.applied = applied
-                t.duration = duration
                 t.expires = expires
+                t.applied = expires - duration
                 t.caster = caster
 
                 return
