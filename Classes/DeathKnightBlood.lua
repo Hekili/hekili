@@ -904,6 +904,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             handler = function ()
                 applyBuff( "dancing_rune_weapon" )
                 if azerite.eternal_rune_weapon.enabled then applyBuff( "dancing_rune_weapon" ) end
+                if legendary.crimson_rune_weapon.enabled then addStack( "bone_shield", nil, 5 ) end
             end,
         },
 
