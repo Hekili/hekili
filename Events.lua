@@ -41,6 +41,8 @@ local handlerCount = {}
 Hekili.ECount = handlerCount
 Hekili.IC = itemCallbacks
 
+local eventData = {}
+Hekili.EData = eventData
 
 local function GenericOnEvent( self, event, ... )
     local eventHandlers = handlers[ event ]
@@ -48,8 +50,16 @@ local function GenericOnEvent( self, event, ... )
     if not eventHandlers then return end
 
     for i, handler in ipairs( eventHandlers ) do
+        local key = event .. "_" .. i
+        local start = debugprofilestop()
         handler( event, ... )
-        handlerCount[ event .. "_" .. i ] = ( handlerCount[ event .. "_" .. i ] or 0 ) + 1
+        local finish = debugprofilestop()
+
+        handlerCount[ key ] = ( handlerCount[ key ] or 0 ) + 1
+
+        eventData[ key ] = eventData[ key ] or {}
+        eventData[ key ].max = max( eventData[ key ].max or 0, finish - start )
+        eventData[ key ].total = ( eventData[ key ].total or 0 ) + ( finish - start )
     end
 end
 
@@ -62,8 +72,16 @@ local function UnitSpecificOnEvent( self, event, unit, ... )
         if not eventHandlers then return end
 
         for i, handler in ipairs( eventHandlers ) do
+            local key = event .. "_" .. unit .. "_" .. i
+            local start = debugprofilestop()
             handler( event, unit, ... )
-            handlerCount[ event .. "_" .. unit .. "_" .. i ] = ( handlerCount[ event .. "_" .. unit .. "_" .. i ] or 0 ) + 1
+            local finish = debugprofilestop()
+
+            handlerCount[ key ] = ( handlerCount[ key ] or 0 ) + 1
+
+            eventData[ key ] = eventData[ key ] or {}
+            eventData[ key ].max = max( eventData[ key ].max or 0, finish - start )
+            eventData[ key ].total = ( eventData[ key ].total or 0 ) + ( finish - start )
         end
     end
 end
@@ -80,8 +98,16 @@ function ns.StartEventHandler()
 
         if handlers.FRAME_UPDATE then
             for i, handler in pairs( handlers.FRAME_UPDATE ) do
+                local key = "FRAME_UPDATE_" .. i
+                local start = debugprofilestop()
                 handler( event, elapsed )
-                handlerCount[ "FRAME_UPDATE_" .. i ] = ( handlerCount[ "FRAME_UPDATE_" .. i ] or 0 ) + 1
+                local finish = debugprofilestop()
+
+                handlerCount[ key ] = ( handlerCount[ key ] or 0 ) + 1
+
+                eventData[ key ] = eventData[ key ] or {}
+                eventData[ key ].max = max( eventData[ key ].max or 0, finish - start )
+                eventData[ key ].total = ( eventData[ key ].total or 0 ) + ( finish - start )
             end
         end
     end )
@@ -101,6 +127,8 @@ function ns.StopEventHandler()
 end
 
 
+Hekili.EventSources = {}
+
 ns.RegisterEvent = function( event, handler )
 
     handlers[ event ] = handlers[ event ] or {}
@@ -108,8 +136,11 @@ ns.RegisterEvent = function( event, handler )
 
     if event ~= "FRAME_UPDATE" then events:RegisterEvent( event ) end
 
-    Hekili:ProfileCPU( event .. "_" .. #handlers[event], handler )
+    local key = event .. "_" .. #handlers[event]
+    Hekili:ProfileCPU( key, handler )
 
+    local file, line = debugstack(2):match([[Hekili\(.-)"%]:(%d+): in main chunk]])
+    Hekili.EventSources[ key ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
 end
 local RegisterEvent = ns.RegisterEvent
 
@@ -146,9 +177,11 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
     unitFrame.events[ event ] = unitFrame.events[ event ] or {}
     insert( unitFrame.events[ event ], handler )
 
+    local file, line = debugstack(2):match([[Hekili\(.-)"%]:(%d+): in main chunk]])
+    Hekili.EventSources[ event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ] ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
+
     unitFrame:RegisterUnitEvent( event, unit1 )
     Hekili:ProfileCPU( event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ], handler )
-
 
     if unit2 then
         if not unitHandlers[ unit2 ] then
@@ -162,6 +195,8 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
 
         unitFrame.events[ event ] = unitFrame.events[ event ] or {}
         insert( unitFrame.events[ event ], handler )
+
+        Hekili.EventSources[ event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ] ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
 
         unitFrame:RegisterUnitEvent( event, unit2 )
         Hekili:ProfileCPU( event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ], handler )

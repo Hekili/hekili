@@ -1409,7 +1409,6 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     end
 
     if pack.lists.precombat then
-        local list = pack.lists.precombat
         local listName = "precombat"
 
         if debug then self:Debug( 1, "\nProcessing precombat action list [ %s - %s ].", packName, listName ); self:Debug( 2, "" ) end
