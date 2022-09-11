@@ -2030,7 +2030,7 @@ function Hekili.Update()
 
             if WeakAuras and WeakAuras.ScanEvents then
                 -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
-                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, UI.eventsTriggered )
+                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator )
                 -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
             end
 
