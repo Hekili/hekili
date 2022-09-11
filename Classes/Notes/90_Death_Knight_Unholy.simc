@@ -1,5 +1,5 @@
 ## Death Knight Unholy
-## August 20, 2022
+## September 11, 2022
 
 ## Changes:
 ## - Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
@@ -91,6 +91,8 @@ actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&activ
 ## TBD, unsure how to handle this.
 ## May want to create a special cycle_target function for Soul Reaper with 4pc T28 and Gavel, if the add has been spawned.
 ## actions.cooldowns+=/soul_reaper_gavel,if=equipped.gavel_of_the_first_arbiter&target.time_to_pct_35>5
+## These special target scenarios are implemented oddly in SimC and priorities.
+## actions.cooldowns+=/soul_reaper_shard,if=equipped.whispering_shard_of_power&target.time_to_pct_35>5&(buff.strength_in_fealty_crit_rating.up|buff.strength_in_fealty_mastery_rating.up|buff.strength_in_fealty_haste_rating.up|buff.strength_in_fealty_versatility_rating.up)
 # Holds Blight for up to 5 seconds to sync with Apocalypse, Otherwise, use with Dark Transformation.
 actions.cooldowns+=/unholy_blight,if=variable.st_planning&(cooldown.apocalypse.remains_expected<7|cooldown.apocalypse.remains_expected>15)&(cooldown.dark_transformation.remains<gcd|buff.dark_transformation.up)
 actions.cooldowns+=/unholy_blight,if=variable.adds_remain|boss&fight_remains<21
