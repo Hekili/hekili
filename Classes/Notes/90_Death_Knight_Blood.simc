@@ -1,5 +1,5 @@
 ## Blood Death Knight
-## May 14, 2022
+## September 11, 2022
 
 ## Changes:
 ## - Support for Blood Boil in DRW setting.
@@ -62,11 +62,7 @@ actions.racials+=/fireblood
 actions.racials+=/bag_of_tricks
 actions.racials+=/arcane_torrent,if=runic_power.deficit>20
 
-actions.standard=death_strike,if=runic_power.deficit<=10&(!talent.bonestorm.enabled|!cooldown.bonestorm.ready|buff.dancing_rune_weapon.up)
 actions.standard+=/sacrificial_pact,if=pet.ghoul.remains<gcd*2
-## actions.standard+=/blooddrinker,if=!buff.dancing_rune_weapon.up
-actions.standard+=/marrowrend,if=buff.bone_shield.remains<3*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<5)&runic_power.deficit>=20
-actions.standard+=/heart_strike,if=covenant.night_fae&death_and_decay.ticking&(buff.deaths_due.up&buff.deaths_due.remains<6)
 actions.standard=heart_strike,if=covenant.night_fae&death_and_decay.ticking&(buff.deaths_due.up&buff.deaths_due.remains<6)
 actions.standard+=/tombstone,if=buff.bone_shield.stack>5&rune>=2&runic_power.deficit>=30&!(covenant.venthyr&cooldown.swarming_mist.remains<3)
 actions.standard+=/marrowrend,if=(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*4)|buff.bone_shield.stack<6|((!covenant.night_fae|buff.deaths_due.remains>5)&buff.bone_shield.remains<7))&runic_power.deficit>20&!(runeforge.crimson_rune_weapon&cooldown.dancing_rune_weapon.remains<buff.bone_shield.remains)
