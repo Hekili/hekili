@@ -17,109 +17,109 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    alpha_wolf = { 69736, 198434 },
-    ancestral_defense = { 69728, 382947 },
-    ancestral_guidance = { 69685, 108281 },
-    ancestral_wolf_affinity = { 69731, 382197 },
-    ascendance = { 69751, 114051 },
-    astral_bulwark = { 69723, 377933 },
-    astral_shift = { 69724, 108271 },
-    brimming_with_life = { 69680, 381689 },
-    call_of_the_elements = { 69687, 108285 },
-    capacitor_totem = { 69722, 192058 },
-    chain_heal = { 69707, 1064 },
-    chain_lightning = { 69718, 188443 },
-    cleanse_spirit = { 69712, 51886 },
-    crash_lightning = { 69749, 187874 },
-    crashing_storms = { 69750, 334308 },
-    creation_core = { 69686, 383012 },
-    deeply_rooted_elements = { 69751, 378270 },
-    doom_winds = { 69745, 384352 },
-    earth_elemental = { 69708, 198103 },
-    earth_shield = { 69709, 974 },
-    earthgrab_totem = { 69696, 51485 },
-    elemental_assault = { 69741, 210853 },
-    elemental_blast = { 69744, 117014 },
-    elemental_orbit = { 69703, 383010 },
-    elemental_spirits = { 69736, 262624 },
-    elemental_warding = { 69729, 381650 },
-    elemental_weapons = { 69747, 384355 },
-    enfeeblement = { 69679, 378079 },
-    feral_lunge = { 69754, 196884 },
-    feral_spirit = { 69748, 51533 },
-    fire_and_ice = { 69727, 382886 },
-    fire_nova = { 69765, 333974 },
-    flurry = { 69716, 382888 },
-    focused_insight = { 69715, 381666 },
-    forceful_winds = { 69759, 262647 },
-    frost_shock = { 69719, 196840 },
-    gathering_storms = { 69738, 384363 },
-    go_with_the_flow = { 69688, 381678 },
-    graceful_spirit = { 69705, 192088 },
-    greater_purge = { 69713, 378773 },
-    guardians_cudgel = { 69694, 381819 },
-    gust_of_wind = { 69690, 192063 },
-    hailstorm = { 69765, 334195 },
-    healing_stream_totem = { 69700, 5394 },
-    hex = { 69711, 51514 },
-    hot_hand = { 69730, 201900 },
-    ice_strike = { 69766, 342240 },
-    improved_call_of_the_elements = { 69686, 383011 },
-    improved_lightning_bolt = { 69698, 381674 },
-    improved_maelstrom_weapon = { 69755, 383303 },
-    lashing_flames = { 69677, 334046 },
-    lava_burst = { 69726, 51505 },
-    lava_lash = { 69762, 60103 },
-    legacy_of_the_frost_witch = { 69735, 384450 },
-    lightning_lasso = { 69684, 305483 },
-    maelstrom_weapon = { 69717, 187880 },
-    mana_spring_totem = { 69702, 381930 },
-    molten_assault = { 69763, 334033 },
-    natures_fury = { 69714, 381655 },
-    natures_guardian = { 69697, 30884 },
-    natures_swiftness = { 69699, 378081 },
-    overflowing_maelstrom = { 69676, 384149 },
-    planes_traveler = { 69723, 381647 },
-    poison_cleansing_totem = { 69681, 383013 },
-    primal_lava_actuators = { 69764, 390370 },
-    primal_maelstrom = { 69740, 384405 },
-    primordial_wave = { 69743, 375982 },
-    purge = { 69713, 370 },
-    raging_maelstrom = { 69756, 384143 },
-    refreshing_waters = { 69731, 337974 },
-    spirit_walk = { 69690, 58875 },
-    spirit_wolf = { 69721, 260878 },
-    spiritwalkers_aegis = { 69705, 378077 },
-    spiritwalkers_grace = { 69706, 79206 },
-    splintered_elements = { 69739, 382042 },
-    static_accumulation = { 69734, 384411 },
-    static_charge = { 69694, 265046 },
-    stoneskin_totem = { 69682, 383017 },
-    stormblast = { 69742, 319930 },
-    stormflurry = { 69752, 344357 },
-    storms_wrath = { 69746, 392352 },
-    stormstrike = { 69761, 17364 },
-    sundering = { 69757, 197214 },
-    surging_shields = { 69691, 382033 },
-    swirling_currents = { 69701, 378094 },
-    swirling_maelstrom = { 69732, 384359 },
-    thorims_invocation = { 69733, 384444 },
-    thunderous_paws = { 69721, 378075 },
-    thundershock = { 69684, 378779 },
-    thunderstorm = { 69683, 51490 },
-    totemic_focus = { 69693, 382201 },
-    totemic_projection = { 69692, 108287 },
-    totemic_surge = { 69704, 381867 },
-    tranquil_air_totem = { 69682, 383019 },
-    tremor_totem = { 69695, 8143 },
-    unruly_winds = { 69758, 390288 },
-    voodoo_mastery = { 69679, 204268 },
-    wind_rush_totem = { 69696, 192077 },
-    wind_shear = { 69725, 57994 },
-    windfury_totem = { 69753, 8512 },
-    windfury_weapon = { 69760, 33757 },
-    winds_of_alakir = { 69689, 382215 },
-    witch_doctors_wolf_bones = { 69737, 384447 },
+    alpha_wolf                    = { 69736, 198434 }, -- x
+    ancestral_defense             = { 69728, 382947 }, -- Passive
+    ancestral_guidance            = { 69685, 108281 }, -- x
+    ancestral_wolf_affinity       = { 69731, 382197 }, -- x
+    ascendance                    = { 69751, 114051 }, -- x
+    astral_bulwark                = { 69723, 377933 }, -- Passive
+    astral_shift                  = { 69724, 108271 }, -- x
+    brimming_with_life            = { 69680, 381689 }, -- Passive
+    call_of_the_elements          = { 69687, 108285 }, -- Track most recent totem cast with CD < 3 minutes.
+    capacitor_totem               = { 69722, 192058 }, -- x
+    chain_heal                    = { 69707, 1064   }, -- x
+    chain_lightning               = { 69718, 188443 }, -- x
+    cleanse_spirit                = { 69712, 51886  }, -- x
+    crash_lightning               = { 69749, 187874 }, -- x
+    crashing_storms               = { 69750, 334308 }, -- x
+    creation_core                 = { 69686, 383012 }, -- Make Call of the Elements affect the last 2 totems.
+    deeply_rooted_elements        = { 69751, 378270 }, -- Passive
+    doom_winds                    = { 69745, 384352 }, -- x
+    earth_elemental               = { 69708, 198103 }, -- x
+    earth_shield                  = { 69709, 974    }, -- x
+    earthgrab_totem               = { 69696, 51485  }, -- x
+    elemental_assault             = { 69741, 210853 }, -- x
+    elemental_blast               = { 69744, 117014 }, -- x
+    elemental_orbit               = { 69703, 383010 }, -- x
+    elemental_spirits             = { 69736, 262624 }, -- Passive
+    elemental_warding             = { 69729, 381650 }, -- Passive
+    elemental_weapons             = { 69747, 384355 }, -- Passive
+    enfeeblement                  = { 69679, 378079 }, -- Passive
+    feral_lunge                   = { 69754, 196884 }, -- x
+    feral_spirit                  = { 69748, 51533  }, -- x
+    fire_and_ice                  = { 69727, 382886 }, -- Passive
+    fire_nova                     = { 69765, 333974 }, -- x
+    flurry                        = { 69716, 382888 }, -- Passive
+    focused_insight               = { 69715, 381666 }, -- x
+    forceful_winds                = { 69759, 262647 }, -- x
+    frost_shock                   = { 69719, 196840 }, -- x
+    gathering_storms              = { 69738, 384363 }, -- x
+    go_with_the_flow              = { 69688, 381678 }, -- x
+    graceful_spirit               = { 69705, 192088 }, -- x
+    greater_purge                 = { 69713, 378773 }, -- x
+    guardians_cudgel              = { 69694, 381819 }, -- Passive
+    gust_of_wind                  = { 69690, 192063 }, -- x
+    hailstorm                     = { 69765, 334195 }, -- x
+    healing_stream_totem          = { 69700, 5394   }, -- Check totem registry.
+    hex                           = { 69711, 51514  }, -- x
+    hot_hand                      = { 69730, 201900 }, -- x
+    ice_strike                    = { 69766, 342240 }, -- x
+    improved_call_of_the_elements = { 69686, 383011 }, -- x
+    improved_lightning_bolt       = { 69698, 381674 }, -- Passive
+    improved_maelstrom_weapon     = { 69755, 383303 }, -- Passive
+    lashing_flames                = { 69677, 334046 }, -- x
+    lava_burst                    = { 69726, 51505  }, -- x
+    lava_lash                     = { 69762, 60103  }, -- x
+    legacy_of_the_frost_witch     = { 69735, 384450 }, -- Need to track actual MW stacks that are spent; no tracking aura.
+    lightning_lasso               = { 69684, 305483 },
+    maelstrom_weapon              = { 69717, 187880 },
+    mana_spring_totem             = { 69702, 381930 },
+    molten_assault                = { 69763, 334033 }, -- x
+    natures_fury                  = { 69714, 381655 },
+    natures_guardian              = { 69697, 30884  },
+    natures_swiftness             = { 69699, 378081 },
+    overflowing_maelstrom         = { 69676, 384149 },
+    planes_traveler               = { 69723, 381647 },
+    poison_cleansing_totem        = { 69681, 383013 },
+    primal_lava_actuators         = { 69764, 390370 },
+    primal_maelstrom              = { 69740, 384405 },
+    primordial_wave               = { 69743, 375982 },
+    purge                         = { 69713, 370    },
+    raging_maelstrom              = { 69756, 384143 },
+    refreshing_waters             = { 69731, 337974 },
+    spirit_walk                   = { 69690, 58875  },
+    spirit_wolf                   = { 69721, 260878 },
+    spiritwalkers_aegis           = { 69705, 378077 },
+    spiritwalkers_grace           = { 69706, 79206  },
+    splintered_elements           = { 69739, 382042 },
+    static_accumulation           = { 69734, 384411 },
+    static_charge                 = { 69694, 265046 },
+    stoneskin_totem               = { 69682, 383017 },
+    stormblast                    = { 69742, 319930 },
+    stormflurry                   = { 69752, 344357 },
+    storms_wrath                  = { 69746, 392352 },
+    stormstrike                   = { 69761, 17364  },
+    sundering                     = { 69757, 197214 },
+    surging_shields               = { 69691, 382033 },
+    swirling_currents             = { 69701, 378094 },
+    swirling_maelstrom            = { 69732, 384359 },
+    thorims_invocation            = { 69733, 384444 },
+    thunderous_paws               = { 69721, 378075 },
+    thundershock                  = { 69684, 378779 },
+    thunderstorm                  = { 69683, 51490  },
+    totemic_focus                 = { 69693, 382201 },
+    totemic_projection            = { 69692, 108287 },
+    totemic_surge                 = { 69704, 381867 },
+    tranquil_air_totem            = { 69682, 383019 },
+    tremor_totem                  = { 69695, 8143   },
+    unruly_winds                  = { 69758, 390288 },
+    voodoo_mastery                = { 69679, 204268 },
+    wind_rush_totem               = { 69696, 192077 },
+    wind_shear                    = { 69725, 57994  },
+    windfury_totem                = { 69753, 8512   },
+    windfury_weapon               = { 69760, 33757  },
+    winds_of_alakir               = { 69689, 382215 },
+    witch_doctors_wolf_bones      = { 69737, 384447 },
 } )
 
 
@@ -146,6 +146,8 @@ spec:RegisterPvpTalents( {
 spec:RegisterAuras( {
     alpha_wolf = {
         id = 198434,
+        duration = 8,
+        max_stack = 1,
     },
     ancestral_guidance = {
         id = 108281,
@@ -187,8 +189,13 @@ spec:RegisterAuras( {
         id = 334308,
     },
     doom_winds = {
-        id = 335903,
+        id = 384352,
         duration = 8,
+        max_stack = 1,
+    },
+    doom_winds_wft = {
+        id = 335903,
+        duration = 12,
         max_stack = 1,
         copy = "doom_winds_buff"
     },
@@ -198,6 +205,7 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = "doom_winds_debuff",
         generate = function( t )
+            -- TODO: Update to modern GPABSI.
             local name, _, count, debuffType, duration, expirationTime = GetPlayerAuraBySpellID( 335904 )
 
             if name then
@@ -256,6 +264,11 @@ spec:RegisterAuras( {
     elemental_weapons = {
         id = 384355,
     },
+    enfeeblement = {
+        id = 378080,
+        duration = 4,
+        max_stack = 1,
+    },
     far_sight = {
         id = 6196,
     },
@@ -276,10 +289,14 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     flurry = {
-        id = 382888,
+        id = 382889,
+        duration = 15,
+        max_stack = 3
     },
     focused_insight = {
-        id = 381666,
+        id = 381668,
+        duration = 12,
+        max_stack = 1
     },
     forceful_winds = {
         id = 262652,
@@ -293,7 +310,9 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     gathering_storms = {
-        id = 384363,
+        id = 198300,
+        duration = 12,
+        max_stack = 10,
     },
     --[[ gathering_storms = {
         id = 198300,
@@ -309,7 +328,7 @@ spec:RegisterAuras( {
     hailstorm = {
         id = 334196,
         duration = 20,
-        max_stack = 5,
+        max_stack = 10,
     },
     hot_hand = {
         id = 215785,
@@ -319,6 +338,11 @@ spec:RegisterAuras( {
     ice_strike = {
         id = 342240,
         duration = 6,
+        max_stack = 1,
+    },
+    ice_strike_buff = {
+        id = 384357,
+        duration = 12,
         max_stack = 1,
     },
     icy_edge = {
@@ -331,7 +355,7 @@ spec:RegisterAuras( {
     },
     lashing_flames = {
         id = 334168,
-        duration = 12,
+        duration = 20,
         max_stack = 1,
     },
     legacy_of_the_frost_witch = {
@@ -585,6 +609,8 @@ local vesper_expires = 0
 local vesper_guid
 local vesper_last_proc = 0
 
+local last_totem_actual = 0
+
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     -- Deaths/despawns.
     if death_events[ subtype ] and destGUID == vesper_guid then
@@ -707,6 +733,35 @@ spec:RegisterHook( "reset_precast", function ()
             state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, next_mw, "AURA_PERIODIC" )
             next_mw = next_mw + 3
         end
+
+        if talent.alpha_wolf.enabled then
+            local last_trigger = max( action.chain_lighting.lastCast, action.crash_lightning.lastCast )
+
+            if last_trigger > buff.feral_spirit.applied then
+                applyBuff( "alpha_wolf", last_trigger + 8 - now )
+            end
+        end
+    end
+end )
+
+
+local ancestral_wolf_affinity_spells = {
+    cleanse_spirit = 1,
+    wind_shear = 1,
+    purge = 1,
+    -- TODO: List totems?
+}
+
+spec:RegisterHook( "runHandler", function( action )
+    if buff.ghost_wolf.up then
+        if talent.ancestral_wolf_affinity.enabled then
+            local ability = class.abilities[ action ]
+            if not ancestral_wolf_affinity_spells[ action ] and not ability.gcd == "totem" then
+                removeBuff( "ghost_wolf" )
+            end
+        else
+            removeBuff( "ghost_wolf" )
+        end
     end
 end )
 
@@ -729,7 +784,8 @@ spec:RegisterStateFunction( "consume_maelstrom", function( cap )
 
     removeStack( "maelstrom_weapon", stacks )
 
-    if legendary.legacy_oF_the_frost_witch.enabled and stacks > 4 then
+    -- TODO: Have to actually track consumed MW stacks.
+    if legendary.legacy_oF_the_frost_witch.enabled and stacks > 4 or talent.legacy_of_the_frost_witch.enabled and stacks > 9 then
         setCooldown( "stormstrike", 0 )
         setCooldown( "windstrike", 0 )
         applyBuff( "legacy_of_the_frost_witch" )
@@ -856,7 +912,7 @@ spec:RegisterAbilities( {
     call_of_the_elements = {
         id = 108285,
         cast = 0,
-        cooldown = 180,
+        cooldown = function () return 180 - 60 * talent.improved_call_of_the_elements.rank end,
         gcd = "spell",
 
         talent = "call_of_the_elements",
@@ -914,6 +970,7 @@ spec:RegisterAbilities( {
 
             removeBuff( "chains_of_devastation_ch" )
             removeBuff( "natures_swiftness" ) -- TODO: Determine order of instant cast effect consumption.
+            removeBuff( "focused_insight" )
 
             if legendary.chains_of_devastation.enabled then
                 applyBuff( "chains_of_devastation_cl" )
@@ -966,6 +1023,9 @@ spec:RegisterAbilities( {
                 addStack( "wind_gust", nil, 1 )
             end
 
+            if buff.feral_spirit.up and talent.alpha_wolf.enabled then
+                applyBuff( "alpha_wolf" )
+            end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
@@ -1028,13 +1088,17 @@ spec:RegisterAbilities( {
         texture = 1370984,
 
         handler = function ()
-            if active_enemies >= 2 then
-                applyBuff( "crash_lightning", 10 )
-                applyBuff( "gathering_storms" )
+            if active_enemies > 1 then
+                applyBuff( "crash_lightning" )
+                applyBuff( "gathering_storms", nil, min( 10, active_enemies ) )
             end
 
             removeBuff( "crashing_lightning" )
             removeBuff( "crash_lightning_cl" )
+
+            if buff.feral_spirit.up and talent.alpha_wolf.enabled then
+                applyBuff( "alpha_wolf" )
+            end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
@@ -1105,7 +1169,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "earth_shield" )
-            removeBuff( "lightning_shield" )
+            if talent.elemental_orbit.rank == 0 then removeBuff( "lightning_shield" ) end
 
             if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
         end,
@@ -1199,7 +1263,11 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 1027879,
 
+        min_range = 8,
+        max_range = 25,
+
         handler = function ()
+            setDistance( 5 )
         end,
     },
 
@@ -1245,6 +1313,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
+            if talent.focused_insight.enabled then applyBuff( "focused_insight" ) end
         end,
     },
 
@@ -1302,6 +1371,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "hailstorm" )
+            removeBuff( "ice_strike_buff" )
 
             setCooldown( "flame_shock", 6 * haste )
 
@@ -1351,7 +1421,7 @@ spec:RegisterAbilities( {
     gust_of_wind = {
         id = 192063,
         cast = 0,
-        cooldown = 30,
+        cooldown = function () return 30 - 5 * talent.go_with_the_flow.rank end,
         gcd = "spell",
 
         talent = "gust_of_wind",
@@ -1405,6 +1475,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             consume_maelstrom()
+
+            removeBuff( "focused_insight" )
 
             if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
             if buff.swirling_currents.up then removeStack( "swirling_currents" ) end
@@ -1466,7 +1538,8 @@ spec:RegisterAbilities( {
             setCooldown( "frost_shock", 0 )
             setCooldown( "flame_shock", 0 )
 
-            applyDebuff( "ice_strike" )
+            applyDebuff( "target", "ice_strike" )
+            applyBuff( "ice_strike_buff" )
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
@@ -1476,7 +1549,7 @@ spec:RegisterAbilities( {
     lava_burst = {
         id = 51505,
         cast = function () return buff.lava_surge.up and 0 or ( 2 * haste ) end,
-        charges = function () return talent.echo_of_the_elements.enabled and 2 or nil end,
+        charges = 1,
         cooldown = function () return buff.ascendance.up and 0 or ( 8 * haste ) end,
         recharge = function () return buff.ascendance.up and 0 or ( 8 * haste ) end,
         gcd = "spell",
@@ -1533,7 +1606,7 @@ spec:RegisterAbilities( {
     lava_lash = {
         id = 60103,
         cast = 0,
-        cooldown = function () return ( buff.hot_hand.up and 4.5 or 18 ) * haste end,
+        cooldown = function () return 18 * ( buff.hot_hand.up and ( 1 - 0.375 * talent.hot_hand.rank ) or 1 ) * haste end,
         gcd = "spell",
 
         spend = 0.01,
@@ -1563,7 +1636,9 @@ spec:RegisterAbilities( {
             if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
 
             -- This is dumb, but technically you don't know if FS will go to a new target or refresh an old one.  Even your current target.
-            if debuff.flame_shock.up and active_dot.flame_shock < 3 then active_dot.flame_shock = 3 end
+            if talent.molten_assault.enabled and debuff.flame_shock.up then
+                active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 2 )
+            end
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
@@ -1639,8 +1714,8 @@ spec:RegisterAbilities( {
         timeToReady = function () return buff.lightning_shield.remains - 120 end,
 
         handler = function ()
-            removeBuff( "earth_shield" )
             applyBuff( "lightning_shield" )
+            if talent.elemental_orbit.rank == 0 then removeBuff( "earth_shield" ) end
         end,
     },
 
@@ -1776,7 +1851,7 @@ spec:RegisterAbilities( {
     spirit_walk = {
         id = 58875,
         cast = 0,
-        cooldown = 60,
+        cooldown = function () return 60 - 7.5 * talent.go_with_the_flow.rank end,
         gcd = "spell",
 
         talent = "spirit_walk",
@@ -1794,7 +1869,7 @@ spec:RegisterAbilities( {
     spiritwalkers_grace = {
         id = 79206,
         cast = 0,
-        cooldown = 120,
+        cooldown = function () return 120 - 30 * talent.graceful_spirit.rank end,
         gcd = "spell",
 
         spend = 0.14,
@@ -1826,6 +1901,8 @@ spec:RegisterAbilities( {
         texture = 4667425,
 
         handler = function ()
+            summonTotem( "stoneskin_totem" )
+            applyBuff( "stoneskin" )
         end,
     },
 
@@ -1833,8 +1910,10 @@ spec:RegisterAbilities( {
     stormstrike = {
         id = 17364,
         cast = 0,
-        cooldown = 7.5,
+        cooldown = function() return gcd.execute * 6 end,
         gcd = "spell",
+
+        rangeSpell = 73899,
 
         spend = 0.02,
         spendType = "mana",
@@ -1843,9 +1922,35 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132314,
 
+        bind = "windstrike",
+        cycle = function () return azerite.lightning_conduit.enabled and "lightning_conduit" or nil end,
+        nobuff = "ascendance",
+
         handler = function ()
-            summonTotem( "stoneskin_totem" )
-            applyBuff( "stoneskin" )
+            setCooldown( "windstrike", action.stormstrike.cooldown )
+
+            if buff.stormbringer.up then
+                removeBuff( "stormbringer" )
+            end
+
+            removeBuff( "gathering_storms" )
+
+            if azerite.lightning_conduit.enabled then
+                applyDebuff( "target", "lightning_conduit" )
+            end
+
+            removeBuff( "strength_of_earth" )
+            removeBuff( "legacy_of_the_frost_witch" )
+
+            if talent.elemetnal_assault.rank > 1 then
+                addStack( "maelstrom_weapon", nil, 1 )
+            end
+
+            if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
+            if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
+            if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
+
+            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
@@ -2020,7 +2125,7 @@ spec:RegisterAbilities( {
             summonTotem( "windfury_totem", nil, 120 )
 
             if legendary.doom_winds.enabled and debuff.doom_winds_cd.down then
-                applyBuff( "doom_winds" )
+                applyBuff( "doom_winds_wft" )
                 applyDebuff( "player", "doom_winds_cd" )
                 applyDebuff( "player", "doom_winds_debuff" )
                 applyBuff( "doom_winds_cd" ) -- SimC weirdness.
