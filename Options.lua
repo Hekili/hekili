@@ -8544,7 +8544,7 @@ do
                                 local name = GetSpellInfo( spellID )
                                 local key = key( name )
 
-                                insert( talents, { name = key, talent = nodeID, definition = entryInfo.definitionID, spell = spellID } )
+                                insert( talents, { name = key, talent = nodeID, definition = entryInfo.definitionID, spell = spellID, ranks = node.maxRanks } )
 
                                 if not IsPassiveSpell( spellID ) then
                                     EmbedSpellData( spellID, key, true )
@@ -8740,7 +8740,7 @@ do
                             if Hekili.IsDragonflight() then
                                 table.sort( talents, function( a, b ) return a.name < b.name end )
                                 for i, tal in ipairs( talents ) do
-                                    append( tal.name .. " = { " .. ( tal.talent or "nil" ) .. ", " .. ( tal.spell or "nil" ) .. " }," )
+                                    append( tal.name .. " = { " .. ( tal.talent or "nil" ) .. ", " .. ( tal.spell or "nil" ) .. ", " .. ( tal.ranks or 0 ) .. " }," )
                                 end
                             else
                                 for i, tal in ipairs( talents ) do
