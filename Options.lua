@@ -8544,7 +8544,7 @@ do
                                 local name = GetSpellInfo( spellID )
                                 local key = key( name )
 
-                                insert( talents, { name = key, talent = entryID, definition = entryInfo.definitionID, spell = spellID } )
+                                insert( talents, { name = key, talent = nodeID, definition = entryInfo.definitionID, spell = spellID } )
 
                                 if not IsPassiveSpell( spellID ) then
                                     EmbedSpellData( spellID, key, true )
@@ -8717,9 +8717,14 @@ do
                         indent = ""
                         wipe( output )
 
+                        local playerClass = UnitClass( "player" )
+                        local playerSpec = select( 2, GetSpecializationInfo( GetSpecialization() ) )
+
                         if not Hekili.IsDragonflight() or run % 2 > 0 then
-                            append( "if UnitClassBase( 'player' ) == '" .. UnitClassBase( "player" ) .. "' then" )
-                            increaseIndent()
+                            append( "-- " .. playerClass .. playerSpec .. ".lua\n-- " .. date( "%B %Y" ) .. "\n" )
+                            append( [[if UnitClassBase( "player" ) ~= "]] .. UnitClassBase( "player" ) .. [[" then return end]] )
+
+                            append( "\nlocal addon, ns = ...\nlocal Hekili = _G[ addon ]\nlocal class, state = Hekili.Class, Hekili.State\n" )
 
                             append( "local spec = Hekili:NewSpecialization( " .. specID .. " )\n" )
 
@@ -8835,8 +8840,12 @@ do
 
                             decreaseIndent()
                             append( "} )" )
-                            decreaseIndent()
-                            append( "end" )
+
+                            append( "\nspec:RegisterPriority( \"" .. playerSpec .. "\", " .. date( "%Y%m%d" ) .. ",\n-- Notes\n" ..
+                                "[[\n\n" ..
+                                "]],\n-- Priority\n" ..
+                                "[[\n\n" ..
+                                "]] )" )
                         else
                             local aggregate = {}
 

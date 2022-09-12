@@ -12,7 +12,7 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
-local GetPlayerAuraBySpellID = _G.GetPlayerAuraBySpellID
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local ceil = math.ceil
 
 local RC = LibStub( "LibRangeCheck-2.0" )

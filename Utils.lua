@@ -10,6 +10,7 @@ local insert, remove = table.insert, table.remove
 local class = Hekili.Class
 local state = Hekili.State
 
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 
 local errors = {}
 local eIndex = {}
@@ -512,7 +513,7 @@ end
 
 -- Duplicate spell info lookup.
 function ns.FindUnitBuffByID( unit, id, filter )
-    if unit == "player" then return GetPlayerAuraBySpellID( id ) end
+    -- if unit == "player" then return GetPlayerAuraBySpellID( id ) end
 
     local playerOrPet = false
 
@@ -535,7 +536,7 @@ end
 
 
 function ns.FindUnitDebuffByID( unit, id, filter )
-    if unit == "player" then return GetPlayerAuraBySpellID( id ) end
+    -- if unit == "player" then return GetPlayerAuraBySpellID( id ) end
 
     local playerOrPet = false
 

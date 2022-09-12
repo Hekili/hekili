@@ -369,7 +369,12 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             id = 338340,
             duration = 15,
             max_stack = 1
-        }
+        },
+        vital_accretion = {
+            id = 337984,
+            duration = 60,
+            max_stack = 1
+        },
     } )
 
 
@@ -903,11 +908,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             auras = {
                 -- Conduit
-                vital_accretion = {
-                    id = 337984,
-                    duration = 60,
-                    max_stack = 1
-                }
+
             }
         },
 
@@ -1358,8 +1359,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 0,
             gcd = "spell",
 
-            essential = true,
-
             spend = 0.02,
             spendType = "mana",
 
@@ -1687,171 +1686,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             usable = function () return storm_elemental.up end,
             handler = function () end,
         },
-
-
-        -- Shaman - Kyrian    - 324386 - vesper_totem         (Vesper Totem)
-        vesper_totem = {
-            id = 324386,
-            cast = 0,
-            cooldown = 60,
-            gcd = "totem",
-
-            spend = 0.1,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 3565451,
-
-            toggle = "essences",
-
-            handler = function ()
-                summonPet( "vesper_totem", 30 )
-                applyBuff( "vesper_totem" )
-
-                vesper_totem_heal_charges = 3
-                vesper_totem_dmg_charges = 3
-                vesper_totem_used_charges = 0
-            end,
-
-            auras = {
-                vesper_totem = {
-                    duration = 30,
-                    max_stack = 1,
-                }
-            }
-        },
-
-        -- Shaman - Necrolord - 326059 - primordial_wave      (Primordial Wave)
-        primordial_wave = {
-            id = 326059,
-            cast = 0,
-            cooldown = 45,
-            recharge = 45,
-            charges = 1,
-            gcd = "spell",
-
-            spend = 0.1,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 3578231,
-
-            toggle = "essences",
-
-            cycle = "flame_shock",
-            velocity = 45,
-
-            impact = function ()
-                applyDebuff( "target", "flame_shock" )
-                applyBuff( "primordial_wave" )
-                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
-            end,
-
-            auras = {
-                primordial_wave = {
-                    id = 327164,
-                    duration = 15,
-                    max_stack = 1
-                },
-                splintered_elements = {
-                    id = 354648,
-                    duration = 10,
-                    max_stack = 10,
-                },
-            }
-        },
-
-        -- Shaman - Night Fae - 328923 - fae_transfusion      (Fae Transfusion)
-        fae_transfusion = {
-            id = 328923,
-            cast = function () return haste * 3 * ( 1 + ( conduit.essential_extraction.mod * 0.01 ) ) end,
-            channeled = true,
-            cooldown = 120,
-            gcd = "spell",
-
-            spend = 0.075,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 3636849,
-
-            toggle = "essences",
-            nobuff = "fae_transfusion",
-
-            start = function ()
-                applyBuff( "fae_transfusion" )
-            end,
-
-            tick = function ()
-                if legendary.seeds_of_rampant_growth.enabled then
-                    if state.spec.enhancement then reduceCooldown( "feral_spirit", 9 )
-                    elseif state.spec.elemental then reduceCooldown( talent.storm_elemental.enabled and "storm_elemental" or "fire_elemental", 6 )
-                    else reduceCooldown( "healing_tide_totem", 5 ) end
-                    addStack( "seeds_of_rampant_growth" )
-                end
-            end,
-
-            finish = function ()
-                if state.spec.enhancement then addStack( "maelstrom_weapon", nil, 3 ) end
-            end,
-
-            auras = {
-                fae_transfusion = {
-                    id = 328933,
-                    duration = 20,
-                    max_stack = 1
-                },
-                seeds_of_rampant_growth = {
-                    id = 358945,
-                    duration = 15,
-                    max_stack = 5
-                }
-            },
-        },
-
-        fae_transfusion_heal = {
-            id = 328930,
-            cast = 0,
-            channeled = true,
-            cooldown = 0,
-            gcd = "spell",
-
-            suffix = "(Heal)",
-
-            startsCombat = false,
-            texture = 3636849,
-
-            buff = "fae_transfusion",
-
-            handler = function ()
-                removeBuff( "fae_transfusion" )
-            end,
-        },
-
-        -- Shaman - Venthyr   - 320674 - chain_harvest        (Chain Harvest)
-        chain_harvest = {
-            id = 320674,
-            cast = 2.5,
-            cooldown = 90,
-            gcd = "spell",
-
-            spend = 0.1,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 3565725,
-
-            toggle = "essences",
-
-            handler = function ()
-                if legendary.elemental_conduit.enabled then
-                    applyDebuff( "target", "flame_shock" )
-                    active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + min( 5, active_enemies ) )
-                end
-            end,
-        }
-
-
     } )
 
 

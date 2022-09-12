@@ -15,6 +15,8 @@ local abs = math.abs
 local lower = string.lower
 local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+
 local CGetItemInfo = ns.CachedGetItemInfo
 local RC = LibStub( "LibRangeCheck-2.0" )
 

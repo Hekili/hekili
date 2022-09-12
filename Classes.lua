@@ -25,6 +25,7 @@ local insert, wipe = table.insert, table.wipe
 local mt_resource = ns.metatables.mt_resource
 
 local GetItemCooldown = _G.GetItemCooldown
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local GetSpellDescription, GetSpellTexture = _G.GetSpellDescription, _G.GetSpellTexture
 local GetSpecialization, GetSpecializationInfo = _G.GetSpecialization, _G.GetSpecializationInfo
 
@@ -830,6 +831,9 @@ local HekiliSpecMixin = {
             version = tonumber( version ),
             import = import:gsub("([^|])|([^|])", "%1||%2")
         }
+    end,
+
+    RegisterPriority = function( self, name, version, notes, priority )
     end,
 
     RegisterOptions = function( self, options )

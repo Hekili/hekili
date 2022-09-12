@@ -1,4 +1,4 @@
-## Interface: 90207
+## Interface: 100002
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
@@ -33,6 +33,9 @@ Shadowlands\Legendaries.lua
 Dragonflight\Classes.lua
 Dragonflight\EvokerDevastation.lua
 Dragonflight\EvokerPreservation.lua
+Dragonflight\ShamanElemental.lua
+Dragonflight\ShamanEnhancement.lua
+Dragonflight\ShamanRestoration.lua
 
 Classes\DeathKnightBlood.lua
 Classes\DeathKnightFrost.lua

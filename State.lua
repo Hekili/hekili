@@ -15,6 +15,8 @@ local orderedPairs = ns.orderedPairs
 local round, roundUp, roundDown = ns.round, ns.roundUp, ns.roundDown
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+
 -- Clean up table_x later.
 local insert, remove, sort, tcopy, unpack, wipe = table.insert, table.remove, table.sort, ns.tableCopy, table.unpack, table.wipe
 local format = string.format
@@ -2146,10 +2148,9 @@ do
 
             local aura_name = ability and ability.aura or t.this_action
             local aura = class.auras[ aura_name ]
-            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) ) or t.buff[ aura_name ]
+            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) )
 
-
-            if class.knownAuraAttributes[ k ] then
+            if aura and class.knownAuraAttributes[ k ] then
                 -- Buffs, debuffs...
 
                 value = app and app[ k ]
@@ -6838,6 +6839,10 @@ do
             return false, "not recommended while mounted"
         end
 
+        if ability.nocombat and self.time > 0 then
+            return false, "not usable in combat"
+        end
+
         if ability.form and not state.buff[ ability.form ].up then
             return false, "required form (" .. ability.form .. ") not active"
         end
@@ -7023,7 +7028,6 @@ function state:TimeToReady( action, pool )
             resource = resource or ability.spendType or class.primaryResource
         end
 
-        -- spend = ns.callHook( 'TimeToReady_spend', spend )
         spend = spend or 0
 
         --[[ if state.debuff.hysteria.up and resource and hysteria_resources[ resource ] then
