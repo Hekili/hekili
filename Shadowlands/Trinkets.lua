@@ -890,7 +890,7 @@ do
                 }
             },
 
-            copy = "soul_infusion"
+            copy = { "soul_infusion", "soulletting_ruby_345801" }
         },
 
         spare_meat_hook = {
@@ -1136,6 +1136,8 @@ do
                     max_stack = 1,
                 },
             },
+
+            copy = "tormented_insight_355321"
         },
 
         relic_of_the_frozen_wastes = {
@@ -1630,7 +1632,9 @@ do
                     duration = 20,
                     max_stack = 1,
                 }
-            }
+            },
+
+            copy = "the_first_sigil_367241"
         },
         the_lions_roar = {
             cast = 3,
