@@ -1065,7 +1065,7 @@ scripts.stripScript = stripScript
 
 
 function scripts:StoreValues( tbl, node, mod )
-    wipe( tbl )
+    twipe( tbl )
 
     if type( node ) == 'string' then node = self.DB[ node ] end
     if not node then return end
@@ -1479,9 +1479,9 @@ function scripts:LoadScripts()
     end
 
     local profile = Hekili.DB.profile
-    wipe( self.DB )
-    wipe( self.Channels )
-    wipe( self.PackInfo )
+    twipe( self.DB )
+    twipe( self.Channels )
+    twipe( self.PackInfo )
 
     Hekili.LoadingScripts = true
 
@@ -1767,18 +1767,14 @@ local key_cache = setmetatable( {}, {
 })
 
 
-local checked = {}
+do
+    local function embedConditionsAndValues( source, elements )
+        if source and source ~= "" then
+            local wasDebugging = Hekili.ActiveDebug
+            Hekili.ActiveDebug = false
 
-local function embedConditionsAndValues( source, elements )
-    if source and source ~= "" then
-        local wasDebugging = Hekili.ActiveDebug
-        Hekili.ActiveDebug = false
-
-        if elements then
-            wipe( checked )
-
-            for k, v in pairs( elements ) do
-                if not checked[ k ] then
+            if elements then
+                for k, v in pairs( elements ) do
                     local key = key_cache[ k ]
                     local success, value = pcall( v, true )
 
@@ -1801,23 +1797,17 @@ local function embedConditionsAndValues( source, elements )
                             source = source:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%s]", tostring( value ) ) )
                         end
                     end
-
-                    checked[ k ] = true
                 end
+
             end
 
+            if wasDebugging then Hekili.ActiveDebug = true end
+            return source
         end
 
-        if wasDebugging then Hekili.ActiveDebug = true end
-        return source
+        return "NONE"
     end
 
-    return "NONE"
-end
-
-
-
-do
     local troubleshootingSnapshotTimes = false
 
     function scripts:GetConditionsAndValues( scriptID, listName, actID, recheck )
@@ -1838,25 +1828,22 @@ do
 end
 
 
-function scripts:GetModifierValues( modifier, scriptID, listName, actID )
-    if listName and actID then
-        scriptID = scriptID .. ":" .. listName .. ":" .. actID
-    end
+do
+    function scripts:GetModifierValues( modifier, scriptID, listName, actID )
+        if listName and actID then
+            scriptID = scriptID .. ":" .. listName .. ":" .. actID
+        end
 
-    local script = self.DB[ scriptID ]
+        local script = self.DB[ scriptID ]
+        local output = script and script.ModSimC[ modifier ]
 
-    if script and script.ModSimC[ modifier ] and script.ModSimC[ modifier ].SimC ~= "" then
-        local output = script.ModSimC[ modifier ]
-
-        wipe( checked )
-
-        for k, v in pairs( script.ModElements[ modifier ] ) do
-            if not checked[ k ] then
+        if output and output ~= "" then
+            for k, v in pairs( script.ModElements[ modifier ] ) do
                 local key = key_cache[ k ]
                 local success, value = pcall( v )
 
                 -- if emsg then value = emsg end
-                if type( value ) == 'number' then
+                if type( value ) == "number" then
                     if output == key then
                         output = output .. "[" .. tostring( value ) .. "]"
                     else
@@ -1864,8 +1851,8 @@ function scripts:GetModifierValues( modifier, scriptID, listName, actID )
                         output = output:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%.2f]%%2", value ) )
                         output = output:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%.2f]", value ) )
                     end
-                    -- output = output:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
-                else
+                    -- source = source:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
+                elseif type( value ) == "boolean" then
                     if output == key then
                         output = output .. "[" .. tostring( value ) .. "]"
                     else
@@ -1874,15 +1861,13 @@ function scripts:GetModifierValues( modifier, scriptID, listName, actID )
                         output = output:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%s]", tostring( value ) ) )
                     end
                 end
-
-                checked[ k ] = true
             end
+
+            return output
         end
 
-        return output
+        return "NONE"
     end
-
-    return "NONE"
 end
 
 Hekili.dumpKeyCache = key_cache
