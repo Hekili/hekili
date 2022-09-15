@@ -404,7 +404,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                     initialized = true
                 end
 
-                local hasSet = GetPlayerAuraBySpellID( 363666 ) ~= nil
+                local hasSet = FindPlayerAuraByID( 363666 ) ~= nil
 
                 if hasSet ~= setActive then
                     setActive = hasSet

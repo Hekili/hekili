@@ -9,7 +9,7 @@ if Hekili.IsDragonflight() then return end
 local class = Hekili.Class
 local state = Hekili.State
 
-local FindUnitBuffByID = ns.FindUnitBuffByID
+local FindPlayerAuraByID, FindUnitBuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID
 
 local PTR = ns.PTR
 
@@ -373,7 +373,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             if current < lastRage then
                 rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.
 
-                if state.legendary.glory.enabled and GetPlayerAuraBySpellID( 324143 ) then
+                if state.legendary.glory.enabled and FindPlayerAuraByID( 324143 ) then
                     gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
                 end
             end

@@ -511,9 +511,18 @@ function ns.FindRaidBuffLowestRemainsByID(id)
     return buffRemainsReturn == nil and 0 or buffRemainsReturn
 end
 
+local function FindPlayerAuraByID( id )
+    local aura = GetPlayerAuraBySpellID( id )
+
+    if aura then
+        return aura.name, aura.icon, aura.applications, aura.dispelName, aura.expirationTime, aura.sourceUnit, aura.isStealable, aura.nameplateShowPersonal, aura.spellId, aura.canApplyAura, aura.isBossAura, aura.nameplateShowAll, aura.timeMod, unpack( aura.points )
+    end
+end
+ns.FindPlayerAuraByID = FindPlayerAuraByID
+
 -- Duplicate spell info lookup.
 function ns.FindUnitBuffByID( unit, id, filter )
-    -- if unit == "player" then return GetPlayerAuraBySpellID( id ) end
+    if unit == "player" then return FindPlayerAuraByID( id ) end
 
     local playerOrPet = false
 
@@ -536,7 +545,7 @@ end
 
 
 function ns.FindUnitDebuffByID( unit, id, filter )
-    -- if unit == "player" then return GetPlayerAuraBySpellID( id ) end
+    if unit == "player" then return FindPlayerAuraByID( id ) end
 
     local playerOrPet = false
 

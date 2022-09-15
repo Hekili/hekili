@@ -11,6 +11,8 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
+local FindPlayerAuraByID = ns.FindPlayerAuraByID
+
 -- Globals
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 
@@ -142,7 +144,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             max_stack = 1,
             copy = "doom_winds_debuff",
             generate = function( t )
-                local name, _, count, debuffType, duration, expirationTime = GetPlayerAuraBySpellID( 335904 )
+                local name, _, count, debuffType, duration, expirationTime = FindPlayerAuraByID( 335904 )
 
                 if name then
                     t.count = count > 0 and count or 1

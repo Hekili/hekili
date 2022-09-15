@@ -11,7 +11,7 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
-local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
+local FindPlayerAuraByID, FindUnitBuffByID, FindUnitDebuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local IterateTargets, ActorHasDebuff = ns.iterateTargets, ns.actorHasDebuff
 local orderedPairs = ns.orderedPairs
 
@@ -285,7 +285,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     local stealth_dropped = 0
 
     local function isStealthed()
-        return ( GetPlayerAuraBySpellID( 1784 ) or GetPlayerAuraBySpellID( 115191 ) or GetPlayerAuraBySpellID( 115192 ) or GetPlayerAuraBySpellID( 11327 ) or GetTime() - stealth_dropped < 0.2 )
+        return ( FindPlayerAuraByID( 1784 ) or FindPlayerAuraByID( 115191 ) or FindPlayerAuraByID( 115192 ) or FindPlayerAuraByID( 11327 ) or GetTime() - stealth_dropped < 0.2 )
     end
 
     local calculate_multiplier = setfenv( function( spellID )

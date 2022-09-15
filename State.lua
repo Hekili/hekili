@@ -16,6 +16,7 @@ local round, roundUp, roundDown = ns.round, ns.roundUp, ns.roundDown
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 -- Clean up table_x later.
 local insert, remove, sort, tcopy, unpack, wipe = table.insert, table.remove, table.sort, ns.tableCopy, table.unpack, table.wipe
@@ -519,6 +520,7 @@ else
 end
 
 state.Enum = Enum
+state.FindPlayerAuraByID = ns.FindPlayerAuraByID
 state.FindUnitBuffByID = ns.FindUnitBuffByID
 state.FindUnitDebuffByID = ns.FindUnitDebuffByID
 state.FindRaidBuffByID = ns.FindRaidBuffByID
@@ -3540,8 +3542,8 @@ do
             local aura = class.auras[ t.key ]
 
             if aura and aura.hidden then
-                -- Hidden auras might be detectable with GetPlayerAuraBySpellID.
-                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = GetPlayerAuraBySpellID( aura.id )
+                -- Hidden auras might be detectable with FindPlayerAuraByID.
+                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = FindPlayerAuraByID( aura.id )
 
                 if name then
                     local buff = auras.player.buff[ t.key ] or {}

@@ -371,7 +371,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 pheromoneReset = FindUnitDebuffByID( "target", 270332 ) and GetTime() or 0
             elseif bombImpactIds[ spellID ] and state.set_bonus.tier28 > 1 and subtype == "SPELL_DAMAGE" then
                 -- Mad Bombardier doesn't get removed until even after it impacts the target, but we want to know it should've been consumed.
-                madBombardierSpent = GetPlayerAuraBySpellID( 363805 ) and GetTime() or 0
+                madBombardierSpent = FindPlayerAuraByID( 363805 ) and GetTime() or 0
             end
         end
     end )

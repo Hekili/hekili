@@ -11,8 +11,7 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
-local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
-local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local FindPlayerAuraByID, FindUnitBuffByID, FindUnitDebuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local ceil = math.ceil
 
 local RC = LibStub( "LibRangeCheck-2.0" )
@@ -287,7 +286,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             end
 
         elseif imps[ source ] and subtype == "SPELL_CAST_SUCCESS" then
-            local demonic_power = GetPlayerAuraBySpellID( 265273 )
+            local demonic_power = FindPlayerAuraByID( 265273 )
             local now = GetTime()
 
             if not demonic_power then
@@ -1702,7 +1701,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                     max_stack = 2,
                     generate = function( t )
                         -- Detect via hidden aura.
-                        local name, _, count, _, duration, expires, caster, _, _, spellID = GetPlayerAuraBySpellID( 334581 )
+                        local name, _, count, _, duration, expires, caster, _, _, spellID = FindPlayerAuraByID( 334581 )
 
                         if name then
                             t.count = max( 1, count )

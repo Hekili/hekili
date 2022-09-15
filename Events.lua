@@ -16,6 +16,7 @@ local lower = string.lower
 local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 local CGetItemInfo = ns.CachedGetItemInfo
 local RC = LibStub( "LibRangeCheck-2.0" )
@@ -744,7 +745,7 @@ do
         end
 
         for bonus, aura in pairs( class.setBonuses ) do
-            if GetPlayerAuraBySpellID( aura ) then
+            if FindPlayerAuraByID( aura ) then
                 state.set_bonus[ bonus ] = 1
             end
         end

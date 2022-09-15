@@ -1245,7 +1245,7 @@ all:RegisterAuras( {
                 end
             end
 
-            local name, _, count, _, duration, expires, caster, _, _, spellID = GetPlayerAuraBySpellID( 2825 )
+            local name, _, count, _, duration, expires, caster, _, _, spellID = FindPlayerAuraByID( 2825 )
 
             if name then
                 t.count = max( 1, count )
@@ -1318,7 +1318,7 @@ all:RegisterAuras( {
                 end
             end
 
-            local name, _, count, _, duration, expires, caster, _, _, spellID = GetPlayerAuraBySpellID( 57724 )
+            local name, _, count, _, duration, expires, caster, _, _, spellID = FindPlayerAuraByID( 57724 )
 
             if name then
                 t.count = max( 1, count )
