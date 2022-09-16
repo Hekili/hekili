@@ -27,6 +27,11 @@ function ns.updateTalents()
         talent.rank = IsPlayerSpell( data[2] ) and node.activeRank or 0
         talent.max = node.maxRanks
 
+        -- Perform a sanity check on maxRanks vs. data[3].  If they don't match, the talent model is likely wrong.
+        if data[3] and node.maxRanks > 0 and node.maxRanks ~= data[3] then
+            Hekili:Error( "Talent '%s' model expects %d ranks but actual max ranks was %d.", token, data[3], node.maxRanks )
+        end
+
         state.talent[ token ] = talent
     end
 

@@ -427,4 +427,188 @@ if baseClass == "SHAMAN" then
             end,
         }
     } )
+elseif baseClass == "WARRIOR" then
+    all:RegisterAbilities( {
+        -- Warrior - Kyrian    - 307865 - spear_of_bastion      (Spear of Bastion)
+        spear_of_bastion = {
+            id = 307865,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = function () return -25 * ( 1 + conduit.piercing_verdict.mod * 0.01 ) end,
+            spendType = "rage",
+
+            startsCombat = true,
+            texture = 3565453,
+
+            toggle = "essences",
+
+            velocity = 30,
+
+            handler = function ()
+                applyDebuff( "target", "spear_of_bastion" )
+                if legendary.elysian_might.enabled then applyBuff( "elysian_might" ) end
+            end,
+
+            auras = {
+                spear_of_bastion = {
+                    id = 307871,
+                    duration = function () return legendary.elysian_might.enabled and 8 or 4 end,
+                    max_stack = 1
+                },
+                elysian_might = {
+                    id = 311193,
+                    duration = 8,
+                    max_stack = 1,
+                },
+            }
+        },
+
+        -- Warrior - Necrolord - 324143 - conquerors_banner     (Conqueror's Banner)
+        conquerors_banner = {
+            id = 324143,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3578234,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "conquerors_banner" )
+                if conduit.veterans_repute.enabled then
+                    applyBuff( "veterans_repute" )
+                end
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            auras = {
+                conquerors_banner = {
+                    id = 324143,
+                    duration = 20,
+                    max_stack = 1
+                },
+                -- Conduit
+                veterans_repute = {
+                    id = 339267,
+                    duration = 30,
+                    max_stack = 1
+                }
+            }
+        },
+
+        -- Warrior - Night Fae - 325886 - ancient_aftershock    (Ancient Aftershock)
+        ancient_aftershock = {
+            id = 325886,
+            cast = 0,
+            cooldown = function () return 90 - conduit.destructive_reverberations.mod * 0.001 end,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3636851,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "ancient_aftershock" )
+                -- Rage gain will be reactive, can't tell what is going to get hit.
+            end,
+
+            auras = {
+                ancient_aftershock = {
+                    id = 325886,
+                    duration = 1,
+                    max_stack = 1,
+                },
+            }
+        },
+
+        -- Warrior - Venthyr   - 317320 - condemn               (Condemn)
+        condemn = {
+            id = function () return talent.massacre.enabled and 330325 or 317485 end,
+            known = 317349,
+            cast = 0,
+            cooldown = function () return state.spec.fury and ( 4.5 * haste ) or 0 end,
+            hasteCD = true,
+            gcd = "spell",
+
+            rangeSpell = function () return class.abilities.execute and class.abilities.execute.id end,
+
+            spend = function ()
+                if state.spec.fury then return -20 end
+                return buff.sudden_death.up and 0 or 20
+            end,
+            spendType = "rage",
+
+            startsCombat = true,
+            texture = 3565727,
+
+            -- toggle = "essences", -- no need to toggle.
+
+            usable = function ()
+                if buff.sudden_death.up then return true end
+                if cycle_for_condemn then return true end
+                return target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80, "requires > 80% or < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
+            end,
+
+            cycle = "condemn_ineligible",
+
+            indicator = function () if cycle_for_condemn then return "cycle" end end,
+
+            handler = function ()
+                applyDebuff( "target", "condemned" )
+
+                if not state.spec.fury and buff.sudden_death.down then
+                    local extra = min( 20, rage.current )
+
+                    if extra > 0 then spend( extra, "rage" ) end
+                    gain( 4 + floor( 0.2 * extra ), "rage" )
+                end
+
+                if legendary.sinful_surge.enabled then
+                    if state.spec.protection and buff.last_stand.up then buff.last_stand.expires = buff.last_stand.expires + 3
+                    elseif state.spec.arms and debuff.colossus_smash.up then debuff.colossus_smash.expires = debuff.colossus_smash.expires + 1.5
+                    elseif state.spec.fury and buff.recklessness.up then buff.recklessness.expires = buff.recklessness.expires + 1.5 end
+                end
+
+                if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
+
+                removeBuff( "sudden_death" )
+
+                if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
+            end,
+
+            auras = {
+                condemned = {
+                    id = 317491,
+                    duration = 10,
+                    max_stack = 1,
+                },
+                -- Target Swapping
+                condemn_ineligible = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t, auraType )
+                        if buff.sudden_death.up or not covenant.venthyr or ( target.health_pct > ( talent.massacre.enabled and 35 or 20 ) and target.health_pct < 80 ) then
+                            t.count = 1
+                            t.expires = query_time + 3600
+                            t.applied = query_time
+                            t.duration = 3600
+                            t.caster = "player"
+                            return
+                        end
+                        t.count = 0
+                        t.expires = 0
+                        t.applied = 0
+                        t.caster = "nobody"
+                    end
+                }
+            },
+
+            copy = { 317485, 330325, 317349, 330334 }
+        }
+    } )
 end

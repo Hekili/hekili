@@ -33,9 +33,15 @@ Shadowlands\Legendaries.lua
 Dragonflight\Classes.lua
 Dragonflight\EvokerDevastation.lua
 Dragonflight\EvokerPreservation.lua
+Dragonflight\HunterBeastMastery.lua
+Dragonflight\HunterMarksmanship.lua
+Dragonflight\HunterSurvival.lua
 Dragonflight\ShamanElemental.lua
 Dragonflight\ShamanEnhancement.lua
 Dragonflight\ShamanRestoration.lua
+Dragonflight\WarriorArms.lua
+Dragonflight\WarriorFury.lua
+Dragonflight\WarriorProtection.lua
 
 Classes\DeathKnightBlood.lua
 Classes\DeathKnightFrost.lua
