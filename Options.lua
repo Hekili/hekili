@@ -8388,7 +8388,7 @@ do
 
     local run = 0
 
-    local function EmbedSpellData( spellID, token, talent )
+    local function EmbedSpellData( spellID, token, talent, pvp )
         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( spellID )
 
         local haste = UnitSpellHaste( "player" )
@@ -8419,19 +8419,23 @@ do
             end
 
             local passive = IsPassiveSpell( spellID )
-            local harmful = IsHarmfulSpell( spellID )
-            local helpful = IsHelpfulSpell( spellID )
+            local harmful = IsHarmfulSpell( name )
+            local helpful = IsHelpfulSpell( name )
 
             local _, charges, _, recharge = GetSpellCharges( spellID )
-            local cooldown
+            local cooldown, gcd
             if recharge then cooldown = recharge
             else
-                cooldown = GetSpellBaseCooldown( spellID )
+                cooldown, gcd = GetSpellBaseCooldown( spellID )
                 if cooldown then cooldown = cooldown / 1000 end
+
+                if gcd == 0 then gcd = "off"
+                elseif gcd == 1000 then gcd = "totem"
+                elseif gcd == 1500 then gcd = "spell" end
             end
 
             local selfbuff = SpellIsSelfBuff( spellID )
-            local talent = talent or IsTalentSpell( spellID )
+            talent = talent or IsTalentSpell( spellID )
 
             if selfbuff or passive then
                 auras[ token ] = auras[ token ] or {}
@@ -8453,13 +8457,14 @@ do
                 a.spendPerSec = spendPerSec
                 a.cast = castTime
                 a.empowered = empowered
-                a.gcd = "spell"
+                a.gcd = gcd or "spell"
 
                 a.texture = texture
 
                 if talent then a.talent = token end
+                if pvp then a.pvptalent = token end
 
-                a.startsCombat = harmful or not helpful
+                a.startsCombat = harmful == true or helpful == false
 
                 a.cooldown = cooldown
                 a.charges = charges
@@ -8570,6 +8575,10 @@ do
                 local _, name, _, _, _, sID = GetPvpTalentInfoByID( tID )
                 name = key( name )
                 insert( pvptalents, { name = name, talent = tID, spell = sID } )
+
+                if not IsPassiveSpell( sID ) then
+                    EmbedSpellData( sID, name, nil, true )
+                end
             end
 
             local haste = UnitSpellHaste( "player" )
@@ -8813,6 +8822,7 @@ do
                                     append( "" )
                                 end
                                 appendAttr( a, "talent" )
+                                appendAttr( a, "pvptalent" )
                                 appendAttr( a, "startsCombat" )
                                 appendAttr( a, "texture" )
                                 append( "" )
