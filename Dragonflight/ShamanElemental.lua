@@ -971,6 +971,25 @@ spec:RegisterAbilities( {
     },
 
 
+    counterstrike_totem = {
+        id = 204331,
+        cast = 0,
+        cooldown = 45,
+        gcd = "totem",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        pvptalent = "counterstrike_totem",
+        startsCombat = false,
+        texture = 511726,
+
+        handler = function ()
+            summonTotem( "counterstrike_totem" )
+        end,
+    },
+
+
     earth_elemental = {
         id = 198103,
         cast = 0,
@@ -1348,6 +1367,25 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeDebuff( "target", "dispellable_magic" )
+        end,
+    },
+
+
+    grounding_totem = {
+        id = 204336,
+        cast = 0,
+        cooldown = 30,
+        gcd = "totem",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        pvptalent = "grounding_totem",
+        startsCombat = false,
+        texture = 136039,
+
+        handler = function ()
+            summonTotem( "grounding_totem" )
         end,
     },
 
@@ -1748,6 +1786,25 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "dispellable_magic" )
+        end,
+    },
+
+
+    skyfury_totem = {
+        id = 204330,
+        cast = 0,
+        cooldown = 40,
+        gcd = "totem",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        pvptalent = "skyfury_totem",
+        startsCombat = false,
+        texture = 135829,
+
+        handler = function ()
+            summonTotem( "skyfury_totem" )
         end,
     },
 
