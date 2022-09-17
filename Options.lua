@@ -8568,7 +8568,7 @@ do
 
                                 local token = key( name )
 
-                                insert( talents, { name = key, talent = nodeID, definition = entryInfo.definitionID, spell = spellID, ranks = node.maxRanks } )
+                                insert( talents, { name = token, talent = nodeID, definition = entryInfo.definitionID, spell = spellID, ranks = node.maxRanks } )
 
                                 if not IsPassiveSpell( spellID ) then
                                     EmbedSpellData( spellID, token, true )
