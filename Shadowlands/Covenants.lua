@@ -263,170 +263,939 @@ end
 
 local baseClass = UnitClassBase( "player" )
 
-if baseClass == "SHAMAN" then
+if baseClass == "HUNTER" then
     all:RegisterAbilities( {
-        -- Shaman - Kyrian    - 324386 - vesper_totem         (Vesper Totem)
-        vesper_totem = {
-            id = 324386,
+        resonating_arrow = {
+            id = 308491,
             cast = 0,
             cooldown = 60,
-            gcd = "totem",
-
-            spend = 0.1,
-            spendType = "mana",
+            gcd = "spell",
 
             startsCombat = true,
-            texture = 3565451,
+            texture = 3565445,
+
+            handler = function ()
+                applyDebuff( "target", "resonating_arrow" )
+                active_dot.resonating_arrow = active_enemies
+                applyBuff( "resonating_arrow" )
+                if legendary.pact_of_the_soulstalkers.enabled then applyBuff( "pact_of_the_soulstalkers" ) end
+            end,
 
             toggle = "essences",
 
-            handler = function ()
-                summonPet( "vesper_totem", 30 )
-                applyBuff( "vesper_totem" )
-
-                vesper_totem_heal_charges = 3
-                vesper_totem_dmg_charges = 3
-                vesper_totem_used_charges = 0
-            end,
-
             auras = {
-                vesper_totem = {
-                    duration = 30,
+                resonating_arrow = {
+                    id = 308498,
+                    duration = 10,
+                    max_stack = 1,
+                },
+                pact_of_the_soulstalkers = {
+                    id = 356263,
+                    duration = 10,
                     max_stack = 1,
                 }
             }
         },
-
-        -- Shaman - Necrolord - 326059 - primordial_wave      (Primordial Wave)
-        primordial_wave = {
-            id = 326059,
+        death_chakram = {
+            id = 325028,
             cast = 0,
             cooldown = 45,
-            recharge = 45,
-            charges = 1,
             gcd = "spell",
 
-            spend = 0.1,
-            spendType = "mana",
-
             startsCombat = true,
-            texture = 3578231,
+            texture = 3578207,
 
             toggle = "essences",
 
-            cycle = "flame_shock",
-            velocity = 45,
-
-            impact = function ()
-                applyDebuff( "target", "flame_shock" )
-                applyBuff( "primordial_wave" )
+            handler = function ()
+                applyBuff( "death_chakram" )
                 if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
             auras = {
-                primordial_wave = {
-                    id = 327164,
-                    duration = 15,
+                death_chakram = {
+                    duration = 3.5,
+                    tick_time = 0.5,
                     max_stack = 1,
-                },
-                splintered_elements = {
-                    id = 354648,
-                    duration = 10,
-                    max_stack = 10,
-                },
+                    generate = function( t, auraType )
+                        local cast = action.death_chakram.lastCast or 0
+
+                        if cast + class.auras.death_chakram.duration >= query_time then
+                            t.name = class.abilities.death_chakram.name
+                            t.count = 1
+                            t.applied = cast
+                            t.expires = cast + duration
+                            t.caster = "player"
+                            return
+                        end
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end
+                }
             }
         },
-
-        -- Shaman - Night Fae - 328923 - fae_transfusion      (Fae Transfusion)
-        fae_transfusion = {
-            id = 328923,
-            cast = function () return haste * 3 * ( 1 + ( conduit.essential_extraction.mod * 0.01 ) ) end,
-            channeled = true,
+        wild_spirits = {
+            id = 328231,
+            cast = 0,
             cooldown = 120,
             gcd = "spell",
 
-            spend = 0.075,
-            spendType = "mana",
-
             startsCombat = true,
-            texture = 3636849,
+            texture = 3636840,
+
+            spend = 0,
+            spendType = "focus",
 
             toggle = "essences",
-            nobuff = "fae_transfusion",
 
-            start = function ()
-                applyBuff( "fae_transfusion" )
+            handler = function ()
+                applyDebuff( "target", "wild_mark" )
+                applyBuff( "wild_spirits" )
             end,
 
-            tick = function ()
-                if legendary.seeds_of_rampant_growth.enabled then
-                    if state.spec.enhancement then reduceCooldown( "feral_spirit", 9 )
-                    elseif state.spec.elemental then reduceCooldown( talent.storm_elemental.enabled and "storm_elemental" or "fire_elemental", 6 )
-                    else reduceCooldown( "healing_tide_totem", 5 ) end
-                    addStack( "seeds_of_rampant_growth" )
-                end
-            end,
-
-            finish = function ()
-                if state.spec.enhancement then addStack( "maelstrom_weapon", nil, 3 ) end
+            disabled = function ()
+                return covenant.night_fae and not IsSpellKnownOrOverridesKnown( 328231 ), "you have not finished your night_fae covenant intro"
             end,
 
             auras = {
-                fae_transfusion = {
-                    id = 328933,
-                    duration = 20,
+                wild_mark = {
+                    id = 328275,
+                    duration = function () return conduit.spirit_attunement.enabled and 18 or 15 end,
                     max_stack = 1
                 },
-                seeds_of_rampant_growth = {
-                    id = 358945,
-                    duration = 15,
-                    max_stack = 5
+                wild_spirits = {
+                    duration = function () return conduit.spirit_attunement.enabled and 18 or 15 end,
+                    max_stack = 1,
+                    generate = function( t )
+                        local cast = action.wild_spirits.lastCast or 0
+                        local up = cast + t.duration > state.query_time
+
+                        t.name = t.name or class.abilities.wild_spirits.name
+                        t.count = up and 1 or 0
+                        t.expires = up and cast + t.duration or 0
+                        t.applied = up and cast or 0
+                        t.caster = "player"
+                    end,
                 }
-            },
+            }
         },
-
-        fae_transfusion_heal = {
-            id = 328930,
+        flayed_shot = {
+            id = 324149,
             cast = 0,
-            channeled = true,
-            cooldown = 0,
+            cooldown = 30,
             gcd = "spell",
-
-            suffix = "(Heal)",
-
-            startsCombat = false,
-            texture = 3636849,
-
-            buff = "fae_transfusion",
-
-            handler = function ()
-                removeBuff( "fae_transfusion" )
-            end,
-        },
-
-        -- Shaman - Venthyr   - 320674 - chain_harvest        (Chain Harvest)
-        chain_harvest = {
-            id = 320674,
-            cast = 2.5,
-            cooldown = 90,
-            gcd = "spell",
-
-            spend = 0.1,
-            spendType = "mana",
 
             startsCombat = true,
-            texture = 3565725,
+            texture = 3565719,
 
             toggle = "essences",
 
             handler = function ()
-                if legendary.elemental_conduit.enabled then
-                    applyDebuff( "target", "flame_shock" )
-                    active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + min( 5, active_enemies ) )
+                applyDebuff( "target", "flayed_shot" )
+            end,
+
+            auras = {
+                flayed_shot = {
+                    id = 324149,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                flayers_mark = {
+                    id = 324156,
+                    duration = 12,
+                    max_stack = 1
+                },
+                pouch_of_razor_fragments = {
+                    id = 356620,
+                    duration = 6,
+                    max_stack = 1,
+                }
+            }
+        },
+        -- Not really a Covenant ability but putting it here to keep it bundled into SL stuff.
+        wailing_arrow = {
+            id = 355589,
+            cast = 1.9,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 15,
+            spendType = "focus",
+
+            toggle = "cooldowns",
+
+            startsCombat = true,
+
+            handler = function ()
+                interrupt()
+                applyDebuff( "target", "wailing_arrow" )
+            end,
+
+            auras = {
+                wailing_arrow = {
+                    id = 355589,
+                    duration = 5,
+                    max_stack = 1,
+                }
+            }
+        },
+    } )
+elseif baseClass == "MAGE" then
+    all:RegisterAbilities( {
+        radiant_spark = {
+            id = 307443,
+            cast = 1.5,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565446,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "radiant_spark" )
+                applyDebuff( "target", "radiant_spark" )
+                -- applyDebuff( "target", "radiant_spark_vulnerability" )
+                -- RSV doesn't apply until the next hit.
+            end,
+
+            auras = {
+                radiant_spark = {
+                    id = 307443,
+                    duration = 10,
+                    max_stack = 1
+                },
+                radiant_spark_vulnerability = {
+                    id = 307454,
+                    duration = 8,
+                    max_stack = 5
+                },
+                radiant_spark_consumed = {
+                    id = 307747,
+                    duration = 10,
+                    max_stack = 1
+                },
+            }
+        },
+        deathborne = {
+            id = 324220,
+            cast = 1.5,
+            cooldown = 180,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3578226,
+
+            toggle = "essences", -- maybe should be cooldowns.
+
+            handler = function ()
+                applyBuff( "deathborne" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            auras = {
+                deathborne = {
+                    id = 324220,
+                    duration = function () return 20 + ( conduit.gift_of_the_lich.mod * 0.001 ) end,
+                    max_stack = 1,
+                },
+            }
+        },
+        shifting_power = {
+            id = 314791,
+            cast = function () return 4 * haste end,
+            channeled = true,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3636841,
+
+            toggle = "essences",
+
+            -- -action.shifting_power.execute_time%action.shifting_power.new_tick_time*(dbc.effect.815503.base_value%1000+conduit.discipline_of_the_grove.time_value)
+            cdr = function ()
+                return - action.shifting_power.execute_time / action.shifting_power.tick_time * ( -3 + conduit.discipline_of_the_grove.time_value )
+            end,
+
+            full_reduction = function ()
+                return - action.shifting_power.execute_time / action.shifting_power.tick_time * ( -3 + conduit.discipline_of_the_grove.time_value )
+            end,
+
+            start = function ()
+                applyBuff( "shifting_power" )
+            end,
+
+            tick  = function ()
+                -- TODO: Identify which abilities have their CDs reduced.
+            end,
+
+            finish = function ()
+                removeBuff( "shifting_power" )
+            end,
+
+            auras = {
+                shifting_power = {
+                    id = 314791,
+                    duration = function () return 4 * haste end,
+                    tick_time = function () return haste end,
+                    max_stack = 1,
+                },
+                heart_of_the_fae = {
+                    id = 356881,
+                    duration = 15,
+                    max_stack = 1,
+                }
+            }
+        },
+        mirrors_of_torment = {
+            id = 314793,
+            cast = 1.5,
+            cooldown = 90,
+            gcd = "spell",
+
+            spend = 0.04,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565720,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "mirrors_of_torment", nil, 3 )
+            end,
+
+            auras = {
+                mirrors_of_torment = {
+                    id = 314793,
+                    duration = 20,
+                    max_stack = 3, -- ???
+                },
+                -- Conduit
+                siphoned_malice = {
+                    id = 337090,
+                    duration = 10,
+                    max_stack = 3
+                }
+            },
+        },
+    } )
+elseif baseClass == "PRIEST" then
+    all:RegisterAbilities( {
+        boon_of_the_ascended = {
+            id = 325013,
+            cast = 1.5,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3565449,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "boon_of_the_ascended" )
+            end,
+
+            auras = {
+                boon_of_the_ascended = {
+                    id = 325013,
+                    duration = 10,
+                    max_stack = 20 -- ???
+                }
+            }
+        },
+        ascended_nova = {
+            id = 325020,
+            known = 325013,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell", -- actually 1s and not 1.5s...
+
+            startsCombat = true,
+            texture = 3528287,
+
+            buff = "boon_of_the_ascended",
+            bind = "boon_of_the_ascended",
+
+            handler = function ()
+                addStack( "boon_of_the_ascended", nil, active_enemies )
+            end
+        },
+        ascended_blast = {
+            id = 325283,
+            known = 15407,
+            cast = 0,
+            cooldown = 3,
+            hasteCD = true,
+            gcd = "totem", -- actually 1s and not 1.5s...
+
+            startsCombat = true,
+            texture = 3528286,
+
+            buff = "boon_of_the_ascended",
+            bind = "mind_flay",
+
+            handler = function ()
+                addStack( "boon_of_the_ascended", nil, 5 )
+                if state.spec.shadow then gain( 6, "insanity" ) end
+            end,
+        },
+        unholy_nova = {
+            id = 324724,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3578229,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "unholy_transfusion" )
+                active_dot.unholy_transfusion = active_enemies
+
+                if legendary.pallid_command.enabled then applyBuff( "pallid_command" ) end
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            range = 15,
+
+            auras = {
+                unholy_transfusion = {
+                    id = 324724,
+                    duration = function () return conduit.festering_transfusion.enabled and 17 or 15 end,
+                    max_stack = 1,
+                },
+                pallid_command = {
+                    id = 356418,
+                    duration = 20,
+                    max_stack = 1
+                }
+            }
+        },
+        fae_guardians = {
+            id = 327661,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
+
+            toggle = "essences",
+            nobuff = "direct_mask",
+
+            handler = function ()
+                applyBuff( "fae_guardians" )
+                summonPet( "wrathful_faerie" )
+                applyDebuff( "target", "wrathful_faerie" )
+                summonPet( "guardian_faerie" )
+                applyBuff( "guardian_faerie" )
+                summonPet( "benevolent_faerie" )
+                applyBuff( "benevolent_faerie" )
+
+                if legendary.bwonsamdis_pact.enabled then
+                    applyBuff( "direct_mask" )
+                    applyDebuff( "target", "haunted_mask" )
+                end
+                -- TODO: Check totem/guardian API re: faeries.
+            end,
+
+            bind = "direct_mask",
+
+            auras = {
+                fae_guardians = {
+                    id = 327661,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                wrathful_faerie = {
+                    id = 342132,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                wrathful_faerie_fermata = {
+                    id = 345452,
+                    duration = function () return conduit.fae_fermata.enabled and ( conduit.fae_fermata.mod * 0.001 ) or 3 end,
+                    max_stack = 1
+                },
+                guardian_faerie = {
+                    id = 327694,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                guardian_faerie_fermata = {
+                    id = 345451,
+                    duration = function () return conduit.fae_fermata.enabled and ( conduit.fae_fermata.mod * 0.001 ) or 3 end,
+                    max_stack = 1
+                },
+                benevolent_faerie = {
+                    id = 327710,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                benevolent_faerie_fermata = {
+                    id = 345453,
+                    duration = function () return conduit.fae_fermata.enabled and ( conduit.fae_fermata.mod * 0.001 ) or 3 end,
+                    max_stack = 1
+                },
+                haunted_mask = {
+                    id = 356968,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                direct_mask = {
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
+        },
+        direct_mask = {
+            id = 356532,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+
+            buff = "direct_mask",
+            bind = "fae_guardians",
+
+            handler = function ()
+                applyDebuff( "target", "haunted_mask" )
+            end,
+        },
+        mindgames = {
+            id = 323673,
+            cast = 1.5,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.002,
+            spendType = "mana",
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "mindgames" )
+            end,
+
+            auras = {
+                mindgames = {
+                    id = 323673,
+                    duration = function () return ( conduit.shattered_perceptions.enabled and 7 or 5 ) + ( legendary.shadow_word_manipulation.enabled and 3 or 0 ) end,
+                    max_stack = 1,
+                },
+                shadow_word_manipulation = {
+                    id = 357028,
+                    duration = 10,
+                    max_stack = 1,
+                },
+            },
+        },
+    } )
+elseif baseClass == "ROGUE" then
+    all:RegisterAbilities( {
+        echoing_reprimand = {
+            id = 323547,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = function () return 10 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spendType = "energy",
+
+            startsCombat = true,
+            texture = 3565450,
+
+            toggle = "essences",
+
+            cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2 end,
+
+            handler = function ()
+                -- Can't predict the Animacharge, unless you have the legendary.
+                if legendary.resounding_clarity.enabled then
+                    applyBuff( "echoing_reprimand_2", nil, 2 )
+                    applyBuff( "echoing_reprimand_3", nil, 3 )
+                    applyBuff( "echoing_reprimand_4", nil, 4 )
+                    applyBuff( "echoing_reprimand_5", nil, 5 )
+                end
+                gain( action.echoing_reprimand.cp_gain, "combo_points" )
+            end,
+
+            disabled = function ()
+                return covenant.kyrian and not IsSpellKnownOrOverridesKnown( 323547 ), "you have not finished your kyrian covenant intro"
+            end,
+
+            auras = {
+                echoing_reprimand_2 = {
+                    id = 323558,
+                    duration = 45,
+                    max_stack = 6,
+                },
+                echoing_reprimand_3 = {
+                    id = 323559,
+                    duration = 45,
+                    max_stack = 6,
+                },
+                echoing_reprimand_4 = {
+                    id = 323560,
+                    duration = 45,
+                    max_stack = 6,
+                    copy = 354835,
+                },
+                echoing_reprimand_5 = {
+                    id = 354838,
+                    duration = 45,
+                    max_stack = 6,
+                },
+                echoing_reprimand = {
+                    alias = { "echoing_reprimand_2", "echoing_reprimand_3", "echoing_reprimand_4", "echoing_reprimand_5" },
+                    aliasMode = "first",
+                    aliasType = "buff",
+                    meta = {
+                        stack = function ()
+                            if combo_points.current > 1 and combo_points.current < 6 and buff[ "echoing_reprimand_" .. combo_points.current ].up then return combo_points.current end
+
+                            if buff.echoing_reprimand_2.up then return 2 end
+                            if buff.echoing_reprimand_3.up then return 3 end
+                            if buff.echoing_reprimand_4.up then return 4 end
+                            if buff.echoing_reprimand_5.up then return 5 end
+
+                            return 0
+                        end
+                    }
+                }
+            }
+        },
+        serrated_bone_spike = {
+            id = 328547,
+            cast = 0,
+            charges = function () return legendary.deathspike.equipped and 5 or 3 end,
+            cooldown = 30,
+            recharge = 30,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3578230,
+
+            toggle = "essences",
+
+            cycle = "serrated_bone_spike",
+
+            cp_gain = function () return ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike end,
+
+            handler = function ()
+                applyDebuff( "target", "serrated_bone_spike" )
+                debuff.serrated_bone_spike.exsanguinated_rate = 1
+
+                if set_bonus.tier28_4pc > 0 and debuff.vendetta.up then
+                    debuff.serrated_bone_spike.exsanguinated_rate = 2
+                    debuff.serrated_bone_spike.vendetta_exsg = true
+                end
+
+                gain( ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike, "combo_points" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            auras = {
+                serrated_bone_spike = {
+                    id = 324073,
+                    duration = 3600,
+                    max_stack = 1,
+                    exsanguinated = false,
+                    meta = {
+                        vendetta_exsg = function( t ) return t.up and tracked_bleeds.serrated_bone_spike.vendetta[ target.unit ] or false end,
+                        exsanguinated_rate = function( t ) return t.up and tracked_bleeds.serrated_bone_spike.rate[ target.unit ] or 1 end,
+                        last_tick = function( t ) return t.up and ( tracked_bleeds.serrated_bone_spike.last_tick[ target.unit ] or t.applied ) or 0 end,
+                        tick_time = function( t ) return t.up and ( haste * 2 / t.exsanguinated_rate ) or ( haste * 2 ) end,
+                    },
+                    copy = "serrated_bone_spike_dot",
+                },
+            }
+        },
+        sepsis = {
+            id = 328305,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3636848,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "sepsis" )
+                debuff.sepsis.exsanguinated_rate = 1
+
+                if set_bonus.tier28_4pc > 0 and debuff.vendetta.up then
+                    debuff.sepsis.exsanguinated_rate = 2
+                    debuff.sepsis.vendetta_exsg = true
                 end
             end,
-        }
+
+            auras = {
+                sepsis = {
+                    id = 328305,
+                    duration = function () return ( set_bonus.tier28_4pc > 0 and debuff.vendetta.up and 0.5 or 1 ) * 10 end,
+                    max_stack = 1,
+                    exsanguinated = false,
+                    meta = {
+                        vendetta_exsg = function( t ) return t.up and tracked_bleeds.sepsis.vendetta[ target.unit ] or false end,
+                        exsanguinated_rate = function( t ) return t.up and tracked_bleeds.sepsis.rate[ target.unit ] or 1 end,
+                        last_tick = function( t ) return t.up and ( tracked_bleeds.sepsis.last_tick[ target.unit ] or t.applied ) or 0 end,
+                        tick_time = function( t ) return t.up and ( haste * 2 / t.exsanguinated_rate ) or ( haste * 2 ) end,
+                    },
+                },
+                sepsis_buff = {
+                    id = 347037,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
+        },
+        flagellation = {
+            id = 323654,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+
+            spend = 0,
+            spendType = "energy",
+
+            startsCombat = true,
+            texture = 3565724,
+
+            toggle = "essences",
+
+            indicator = function ()
+                if settings.cycle and args.cycle_targets == 1 and active_enemies > 1 and target.time_to_die < longest_ttd then
+                    return "cycle"
+                end
+            end,
+
+            handler = function ()
+                applyBuff( "flagellation" )
+                applyDebuff( "target", "flagellation", 30 )
+            end,
+
+            auras = {
+                flagellation = {
+                    id = 323654,
+                    duration = 12,
+                    max_stack = 30,
+                    generate = function( t, aType )
+                        local unit, func
+
+                        if aType == "debuff" then
+                            unit = "target"
+                            func = FindUnitDebuffByID
+                        else
+                            unit = "player"
+                            func = FindUnitBuffByID
+                        end
+
+                        local name, _, count, _, duration, expires, caster = func( unit, 323654 )
+
+                        if name then
+                            t.count = 1
+                            t.expires = expires
+                            t.applied = expires - duration
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.expires = 0
+                        t.applied = 0
+                        t.caster = "nobody"
+                    end,
+                    copy = "flagellation_buff"
+                },
+            },
+        },
     } )
+elseif baseClass == "SHAMAN" then
+        all:RegisterAbilities( {
+            -- Shaman - Kyrian    - 324386 - vesper_totem         (Vesper Totem)
+            vesper_totem = {
+                id = 324386,
+                cast = 0,
+                cooldown = 60,
+                gcd = "totem",
+
+                spend = 0.1,
+                spendType = "mana",
+
+                startsCombat = true,
+                texture = 3565451,
+
+                toggle = "essences",
+
+                handler = function ()
+                    summonPet( "vesper_totem", 30 )
+                    applyBuff( "vesper_totem" )
+
+                    vesper_totem_heal_charges = 3
+                    vesper_totem_dmg_charges = 3
+                    vesper_totem_used_charges = 0
+                end,
+
+                auras = {
+                    vesper_totem = {
+                        duration = 30,
+                        max_stack = 1,
+                    }
+                }
+            },
+
+            -- Shaman - Necrolord - 326059 - primordial_wave      (Primordial Wave)
+            primordial_wave = {
+                id = 326059,
+                cast = 0,
+                cooldown = 45,
+                recharge = 45,
+                charges = 1,
+                gcd = "spell",
+
+                spend = 0.1,
+                spendType = "mana",
+
+                startsCombat = true,
+                texture = 3578231,
+
+                toggle = "essences",
+
+                cycle = "flame_shock",
+                velocity = 45,
+
+                impact = function ()
+                    applyDebuff( "target", "flame_shock" )
+                    applyBuff( "primordial_wave" )
+                    if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+                end,
+
+                auras = {
+                    primordial_wave = {
+                        id = 327164,
+                        duration = 15,
+                        max_stack = 1,
+                    },
+                    splintered_elements = {
+                        id = 354648,
+                        duration = 10,
+                        max_stack = 10,
+                    },
+                }
+            },
+
+            -- Shaman - Night Fae - 328923 - fae_transfusion      (Fae Transfusion)
+            fae_transfusion = {
+                id = 328923,
+                cast = function () return haste * 3 * ( 1 + ( conduit.essential_extraction.mod * 0.01 ) ) end,
+                channeled = true,
+                cooldown = 120,
+                gcd = "spell",
+
+                spend = 0.075,
+                spendType = "mana",
+
+                startsCombat = true,
+                texture = 3636849,
+
+                toggle = "essences",
+                nobuff = "fae_transfusion",
+
+                start = function ()
+                    applyBuff( "fae_transfusion" )
+                end,
+
+                tick = function ()
+                    if legendary.seeds_of_rampant_growth.enabled then
+                        if state.spec.enhancement then reduceCooldown( "feral_spirit", 9 )
+                        elseif state.spec.elemental then reduceCooldown( talent.storm_elemental.enabled and "storm_elemental" or "fire_elemental", 6 )
+                        else reduceCooldown( "healing_tide_totem", 5 ) end
+                        addStack( "seeds_of_rampant_growth" )
+                    end
+                end,
+
+                finish = function ()
+                    if state.spec.enhancement then addStack( "maelstrom_weapon", nil, 3 ) end
+                end,
+
+                auras = {
+                    fae_transfusion = {
+                        id = 328933,
+                        duration = 20,
+                        max_stack = 1
+                    },
+                    seeds_of_rampant_growth = {
+                        id = 358945,
+                        duration = 15,
+                        max_stack = 5
+                    }
+                },
+            },
+
+            fae_transfusion_heal = {
+                id = 328930,
+                cast = 0,
+                channeled = true,
+                cooldown = 0,
+                gcd = "spell",
+
+                suffix = "(Heal)",
+
+                startsCombat = false,
+                texture = 3636849,
+
+                buff = "fae_transfusion",
+
+                handler = function ()
+                    removeBuff( "fae_transfusion" )
+                end,
+            },
+
+            -- Shaman - Venthyr   - 320674 - chain_harvest        (Chain Harvest)
+            chain_harvest = {
+                id = 320674,
+                cast = 2.5,
+                cooldown = 90,
+                gcd = "spell",
+
+                spend = 0.1,
+                spendType = "mana",
+
+                startsCombat = true,
+                texture = 3565725,
+
+                toggle = "essences",
+
+                handler = function ()
+                    if legendary.elemental_conduit.enabled then
+                        applyDebuff( "target", "flame_shock" )
+                        active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + min( 5, active_enemies ) )
+                    end
+                end,
+            }
+        } )
 elseif baseClass == "WARRIOR" then
     all:RegisterAbilities( {
         -- Warrior - Kyrian    - 307865 - spear_of_bastion      (Spear of Bastion)
