@@ -139,9 +139,6 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
-    apotheosis = {
-        id = 392941,
-    },
     dark_ascension = {
         id = 391109,
     },
@@ -168,6 +165,11 @@ spec:RegisterAuras( {
     },
     shadowform = {
         id = 232698,
+    },
+    sign_of_the_emissary = {
+        id = 225788,
+        duration = 3600,
+        max_stack = 1,
     },
     vampiric_embrace = {
         id = 15286,
@@ -625,20 +627,6 @@ spec:RegisterAbilities( {
         talent = "mindgames",
         startsCombat = false,
         texture = 3565723,
-
-        handler = function ()
-        end,
-    },
-
-
-    ph_pocopoc_zone_ability_skill = {
-        id = 363942,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        startsCombat = false,
-        texture = 4239318,
 
         handler = function ()
         end,

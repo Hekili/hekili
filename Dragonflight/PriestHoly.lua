@@ -145,7 +145,7 @@ spec:RegisterPvpTalents( {
 -- Auras
 spec:RegisterAuras( {
     apotheosis = {
-        id = 392941,
+        id = 200183,
     },
     desperate_prayer = {
         id = 19236,
@@ -778,20 +778,6 @@ spec:RegisterAbilities( {
         talent = "mindgames",
         startsCombat = false,
         texture = 3565723,
-
-        handler = function ()
-        end,
-    },
-
-
-    ph_pocopoc_zone_ability_skill = {
-        id = 363942,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        startsCombat = false,
-        texture = 4239318,
 
         handler = function ()
         end,

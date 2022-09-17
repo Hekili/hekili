@@ -14,104 +14,98 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    afterlife                  = { 78328, 196707, 1 }, --
+    aegis_of_wrath             = { 78258, 238135, 1 }, --
     angelic_bulwark            = { 78370, 108945, 1 }, --
     angelic_feather            = { 78398, 121536, 1 }, --
     angels_mercy               = { 78373, 238100, 1 }, --
-    answered_prayers           = { 78301, 391387, 2 }, --
     apathy                     = { 78384, 390668, 1 }, --
-    apotheosis                 = { 78303, 200183, 1 }, --
-    benediction                = { 78334, 193157, 1 }, --
+    atonement                  = { 78287, 81749 , 1 }, --
     binding_heals              = { 78373, 368275, 1 }, --
     blessed_recovery           = { 78415, 390767, 1 }, --
     body_and_soul              = { 78401, 64129 , 1 }, --
-    burning_vehemence          = { 78333, 372307, 1 }, --
-    censure                    = { 78312, 200199, 1 }, --
-    circle_of_healing          = { 78317, 204883, 1 }, --
-    cosmic_ripple              = { 78323, 238136, 1 }, --
-    crisis_management          = { 78320, 390954, 2 }, --
+    borrowed_time              = { 78293, 390691, 2 }, --
+    bright_pupil               = { 78284, 390684, 1 }, --
+    castigation                = { 78270, 193134, 1 }, --
+    contrition                 = { 78292, 197419, 2 }, --
     crystalline_reflection     = { 78376, 373457, 2 }, --
+    dark_indulgence            = { 78289, 372972, 1 }, --
     death_and_madness          = { 78406, 321291, 1 }, --
     depth_of_the_shadows       = { 78402, 390615, 1 }, --
-    desperate_times            = { 78302, 391381, 2 }, --
     dispel_magic               = { 78410, 528   , 1 }, --
-    divine_hymn                = { 78314, 64843 , 1 }, --
-    divine_image               = { 78247, 392988, 1 }, --
-    divine_service             = { 78335, 391233, 1 }, --
+    divine_aegis               = { 78295, 47515 , 2 }, --
     divine_star                = { 78377, 110744, 1 }, --
-    divine_word                = { 78247, 372760, 1 }, --
     dominate_mind              = { 78405, 205364, 1 }, --
-    empowered_renew            = { 78305, 391339, 1 }, --
-    empyreal_blaze             = { 78300, 372616, 1 }, --
-    enlightenment              = { 78311, 193155, 1 }, --
-    everlasting_light          = { 78315, 391161, 1 }, --
+    embrace_shadow             = { 78275, 372985, 1 }, --
+    enduring_luminescence      = { 78284, 390685, 1 }, --
+    evangelism                 = { 78260, 246287, 1 }, --
+    exaltation                 = { 78269, 373042, 1 }, --
+    expiation                  = { 78278, 390832, 2 }, --
+    fiending_dark              = { 78263, 390770, 2 }, --
     focused_mending            = { 78414, 372354, 1 }, --
-    gales_of_song              = { 78306, 372370, 2 }, --
-    guardian_angel             = { 78329, 200209, 1 }, --
-    guardian_spirit            = { 78330, 47788 , 1 }, --
-    guardians_of_the_light     = { 78329, 196437, 1 }, --
     halo                       = { 78377, 120517, 1 }, --
-    harmonious_apparatus       = { 78304, 390994, 2 }, --
-    healing_chorus             = { 78318, 390881, 1 }, --
-    holy_mending               = { 78334, 391154, 1 }, --
+    harsh_discipline           = { 78265, 373180, 2 }, --
     holy_nova                  = { 78396, 132157, 1 }, --
-    holy_word_chastise         = { 78332, 88625 , 1 }, --
-    holy_word_salvation        = { 78303, 265202, 1 }, --
-    holy_word_sanctify         = { 78325, 34861 , 1 }, --
-    holy_word_serenity         = { 78331, 2050  , 1 }, --
     improved_fade              = { 78381, 390670, 2 }, --
     improved_mass_dispel       = { 78393, 341167, 1 }, --
     improved_purify            = { 78400, 390632, 1 }, --
+    improved_shadow_word_pain  = { 78271, 390689, 2 }, --
+    indemnity                  = { 78258, 373049, 1 }, --
     inspiration                = { 78391, 390676, 1 }, --
     leap_of_faith              = { 78411, 73325 , 1 }, --
-    light_of_the_naaru         = { 78322, 196985, 2 }, --
+    lenience                   = { 78260, 238063, 1 }, --
     lights_inspiration         = { 78374, 373450, 2 }, --
-    lightweaver                = { 78296, 390992, 1 }, --
-    lightwell                  = { 78296, 372835, 1 }, --
+    lights_promise             = { 78285, 322115, 1 }, --
+    lights_wrath               = { 78268, 373178, 1 }, --
+    make_amends                = { 78294, 391079, 1 }, --
+    malicious_scission         = { 78273, 372969, 1 }, --
     manipulation               = { 78367, 390996, 2 }, --
     masochism                  = { 78402, 193063, 1 }, --
     mass_dispel                = { 78394, 32375 , 1 }, --
     mind_control               = { 78405, 605   , 1 }, --
+    mindbender                 = { 78277, 123040, 1 }, --
     mindgames                  = { 78382, 375901, 1 }, --
-    miracle_worker             = { 78298, 235587, 1 }, --
     move_with_grace            = { 78397, 390620, 1 }, --
-    orison                     = { 78319, 390947, 1 }, --
+    pain_suppression           = { 78280, 33206 , 1 }, --
+    pain_transformation        = { 78281, 372991, 1 }, --
+    painful_punishment         = { 78290, 390686, 1 }, --
     phantasm                   = { 78249, 108942, 1 }, --
-    pontifex                   = { 78321, 390980, 1 }, --
     power_infusion             = { 78389, 10060 , 1 }, --
+    power_of_the_dark_side     = { 78288, 198068, 1 }, --
+    power_word_barrier         = { 78257, 62618 , 1 }, --
     power_word_life            = { 78371, 373481, 1 }, --
-    prayer_circle              = { 78318, 321377, 1 }, --
-    prayer_of_healing          = { 78324, 596   , 1 }, --
+    power_word_radiance        = { 78286, 194509, 1 }, --
+    power_word_solace          = { 78282, 129250, 1 }, --
     prayer_of_mending          = { 78413, 33076 , 1 }, --
-    prayerful_litany           = { 78316, 391209, 1 }, --
-    prayers_of_the_virtuous    = { 78309, 390977, 2 }, --
-    prismatic_echoes           = { 78307, 390967, 2 }, --
+    protector_of_the_frail     = { 78281, 373035, 1 }, --
     psychic_voice              = { 78390, 196704, 1 }, --
-    rapid_recovery             = { 78305, 391368, 1 }, --
+    purge_the_wicked           = { 78283, 204197, 1 }, --
+    rapture                    = { 78291, 47536 , 1 }, --
     renew                      = { 78412, 139   , 1 }, --
-    renewed_faith              = { 78313, 341997, 1 }, --
-    resonant_words             = { 78297, 372309, 2 }, --
-    restitution                = { 78298, 391124, 1 }, --
-    revitalizing_prayers       = { 78326, 391208, 1 }, --
+    resplendent_light          = { 78267, 390765, 2 }, --
+    revel_in_purity            = { 78259, 373003, 1 }, --
     rhapsody                   = { 78395, 390622, 1 }, --
-    sanctified_prayers         = { 78326, 196489, 1 }, --
     sanlayn                    = { 78385, 199855, 1 }, --
-    say_your_prayers           = { 78308, 391186, 1 }, --
-    searing_light              = { 78299, 372611, 2 }, --
+    schism                     = { 78272, 214621, 1 }, --
     shackle_undead             = { 78388, 9484  , 1 }, --
+    shadow_covenant            = { 78274, 314867, 1 }, --
     shadow_mend                = { 78409, 186263, 1 }, --
     shadow_word_death          = { 78407, 32379 , 1 }, --
     shadowfiend                = { 78408, 34433 , 1 }, --
+    shadowflame_prism          = { 78279, 373427, 1 }, --
     shattered_perceptions      = { 78368, 391112, 1 }, --
     sheer_terror               = { 78403, 390919, 1 }, --
+    shield_discipline          = { 78282, 197045, 1 }, --
+    sins_of_the_many           = { 78261, 280391, 2 }, --
     spell_warding              = { 78415, 390667, 1 }, --
+    stolen_psyche              = { 78276, 373054, 2 }, --
     surge_of_light             = { 78372, 109186, 2 }, --
-    symbol_of_hope             = { 78310, 64901 , 1 }, --
     throes_of_pain             = { 78404, 377422, 2 }, --
     tithe_evasion              = { 78383, 373223, 1 }, --
     tools_of_the_cloth         = { 78416, 377438, 1 }, --
-    trail_of_light             = { 78327, 200128, 2 }, --
+    train_of_thought           = { 78294, 390693, 1 }, --
     translucent_image          = { 78380, 373446, 1 }, --
+    twilight_corruption        = { 78275, 373065, 1 }, --
+    twilight_equilibrium       = { 78264, 390705, 1 }, --
     twins_of_the_sun_priestess = { 78378, 373466, 1 }, --
     twist_of_fate              = { 78379, 390972, 2 }, --
     unwavering_will            = { 78392, 373456, 2 }, --
@@ -119,6 +113,8 @@ spec:RegisterTalents( {
     void_shield                = { 78387, 280749, 1 }, --
     void_shift                 = { 78369, 108968, 1 }, --
     void_tendrils              = { 78403, 108920, 1 }, --
+    weal_and_woe               = { 78262, 390786, 1 }, --
+    wrath_unleashed            = { 78266, 390781, 1 }, --
 } )
 
 
@@ -145,9 +141,6 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
-    apotheosis = {
-        id = 392941,
-    },
     archangel = {
         id = 197862,
     },
@@ -156,12 +149,6 @@ spec:RegisterAuras( {
     },
     desperate_prayer = {
         id = 19236,
-    },
-    divine_hymn = {
-        id = 64843,
-    },
-    divine_word = {
-        id = 372760,
     },
     fade = {
         id = 586,
@@ -175,13 +162,13 @@ spec:RegisterAuras( {
     power_infusion = {
         id = 10060,
     },
+    rapture = {
+        id = 47536,
+    },
     sign_of_the_emissary = {
         id = 225788,
         duration = 3600,
         max_stack = 1,
-    },
-    symbol_of_hope = {
-        id = 64901,
     },
     vampiric_embrace = {
         id = 15286,
@@ -208,23 +195,6 @@ spec:RegisterAbilities( {
     },
 
 
-    apotheosis = {
-        id = 200183,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-
-        talent = "apotheosis",
-        startsCombat = false,
-        texture = 1060983,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
     archangel = {
         id = 197862,
         cast = 0,
@@ -236,24 +206,6 @@ spec:RegisterAbilities( {
         texture = 458225,
 
         toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    circle_of_healing = {
-        id = 204883,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        talent = "circle_of_healing",
-        startsCombat = false,
-        texture = 135887,
 
         handler = function ()
         end,
@@ -311,26 +263,6 @@ spec:RegisterAbilities( {
     },
 
 
-    divine_hymn = {
-        id = 64843,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        talent = "divine_hymn",
-        startsCombat = false,
-        texture = 237540,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
     divine_star = {
         id = 110744,
         cast = 0,
@@ -343,23 +275,6 @@ spec:RegisterAbilities( {
         talent = "divine_star",
         startsCombat = false,
         texture = 537026,
-
-        handler = function ()
-        end,
-    },
-
-
-    divine_word = {
-        id = 372760,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        talent = "divine_word",
-        startsCombat = false,
-        texture = 521584,
-
-        toggle = "cooldowns",
 
         handler = function ()
         end,
@@ -386,18 +301,17 @@ spec:RegisterAbilities( {
     },
 
 
-    empyreal_blaze = {
-        id = 372616,
+    evangelism = {
+        id = 246287,
         cast = 0,
-        cooldown = 30,
+        cooldown = 90,
         gcd = "spell",
 
-        spend = 500,
-        spendType = "mana",
-
-        talent = "empyreal_blaze",
+        talent = "evangelism",
         startsCombat = false,
-        texture = 525023,
+        texture = 135895,
+
+        toggle = "cooldowns",
 
         handler = function ()
         end,
@@ -435,26 +349,6 @@ spec:RegisterAbilities( {
     },
 
 
-    guardian_spirit = {
-        id = 47788,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        talent = "guardian_spirit",
-        startsCombat = false,
-        texture = 237542,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
     halo = {
         id = 120517,
         cast = 1.5,
@@ -485,90 +379,6 @@ spec:RegisterAbilities( {
         talent = "holy_nova",
         startsCombat = false,
         texture = 135922,
-
-        handler = function ()
-        end,
-    },
-
-
-    holy_word_chastise = {
-        id = 88625,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "holy_word_chastise",
-        startsCombat = false,
-        texture = 135886,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    holy_word_salvation = {
-        id = 265202,
-        cast = 2.5,
-        cooldown = 720,
-        gcd = "spell",
-
-        spend = 0.06,
-        spendType = "mana",
-
-        talent = "holy_word_salvation",
-        startsCombat = false,
-        texture = 458225,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    holy_word_sanctify = {
-        id = 34861,
-        cast = 0,
-        charges = 1,
-        cooldown = 60,
-        recharge = 60,
-        gcd = "spell",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        talent = "holy_word_sanctify",
-        startsCombat = false,
-        texture = 237541,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    holy_word_serenity = {
-        id = 2050,
-        cast = 0,
-        charges = 1,
-        cooldown = 60,
-        recharge = 60,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "holy_word_serenity",
-        startsCombat = false,
-        texture = 135937,
-
-        toggle = "cooldowns",
 
         handler = function ()
         end,
@@ -612,18 +422,15 @@ spec:RegisterAbilities( {
     },
 
 
-    lightwell = {
-        id = 372835,
-        cast = 0.5,
-        cooldown = 180,
+    lights_wrath = {
+        id = 373178,
+        cast = 2.5,
+        cooldown = 90,
         gcd = "spell",
 
-        spend = 0.04,
-        spendType = "mana",
-
-        talent = "lightwell",
+        talent = "lights_wrath",
         startsCombat = false,
-        texture = 135980,
+        texture = 1271590,
 
         toggle = "cooldowns",
 
@@ -738,6 +545,23 @@ spec:RegisterAbilities( {
     },
 
 
+    mindbender = {
+        id = 123040,
+        cast = 0,
+        cooldown = 60,
+        gcd = "spell",
+
+        talent = "mindbender",
+        startsCombat = false,
+        texture = 136214,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+        end,
+    },
+
+
     mindgames = {
         id = 375901,
         cast = 1.5,
@@ -750,6 +574,26 @@ spec:RegisterAbilities( {
         talent = "mindgames",
         startsCombat = false,
         texture = 3565723,
+
+        handler = function ()
+        end,
+    },
+
+
+    pain_suppression = {
+        id = 33206,
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        spend = 0.02,
+        spendType = "mana",
+
+        talent = "pain_suppression",
+        startsCombat = false,
+        texture = 135936,
+
+        toggle = "cooldowns",
 
         handler = function ()
         end,
@@ -773,20 +617,6 @@ spec:RegisterAbilities( {
     },
 
 
-    ph_pocopoc_zone_ability_skill = {
-        id = 363942,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        startsCombat = false,
-        texture = 4239318,
-
-        handler = function ()
-        end,
-    },
-
-
     power_infusion = {
         id = 10060,
         cast = 0,
@@ -796,6 +626,26 @@ spec:RegisterAbilities( {
         talent = "power_infusion",
         startsCombat = false,
         texture = 135939,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+        end,
+    },
+
+
+    power_word_barrier = {
+        id = 62618,
+        cast = 0,
+        cooldown = 180,
+        gcd = "spell",
+
+        spend = 0.04,
+        spendType = "mana",
+
+        talent = "power_word_barrier",
+        startsCombat = false,
+        texture = 253400,
 
         toggle = "cooldowns",
 
@@ -839,6 +689,26 @@ spec:RegisterAbilities( {
     },
 
 
+    power_word_radiance = {
+        id = 194509,
+        cast = 2,
+        charges = 1,
+        cooldown = 20,
+        recharge = 20,
+        gcd = "spell",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        talent = "power_word_radiance",
+        startsCombat = false,
+        texture = 1386546,
+
+        handler = function ()
+        end,
+    },
+
+
     power_word_shield = {
         id = 17,
         cast = 0,
@@ -856,18 +726,15 @@ spec:RegisterAbilities( {
     },
 
 
-    prayer_of_healing = {
-        id = 596,
-        cast = 2,
-        cooldown = 0,
+    power_word_solace = {
+        id = 129250,
+        cast = 0,
+        cooldown = 15,
         gcd = "spell",
 
-        spend = 0.04,
-        spendType = "mana",
-
-        talent = "prayer_of_healing",
+        talent = "power_word_solace",
         startsCombat = false,
-        texture = 135943,
+        texture = 612968,
 
         handler = function ()
         end,
@@ -909,6 +776,24 @@ spec:RegisterAbilities( {
     },
 
 
+    purge_the_wicked = {
+        id = 204197,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.02,
+        spendType = "mana",
+
+        talent = "purge_the_wicked",
+        startsCombat = false,
+        texture = 236216,
+
+        handler = function ()
+        end,
+    },
+
+
     purify = {
         id = 527,
         cast = 0,
@@ -922,6 +807,26 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 135894,
+
+        handler = function ()
+        end,
+    },
+
+
+    rapture = {
+        id = 47536,
+        cast = 0,
+        cooldown = 90,
+        gcd = "spell",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        talent = "rapture",
+        startsCombat = false,
+        texture = 237548,
+
+        toggle = "cooldowns",
 
         handler = function ()
         end,
@@ -963,6 +868,24 @@ spec:RegisterAbilities( {
     },
 
 
+    schism = {
+        id = 214621,
+        cast = 1.5,
+        cooldown = 24,
+        gcd = "spell",
+
+        spend = 1250,
+        spendType = "mana",
+
+        talent = "schism",
+        startsCombat = false,
+        texture = 463285,
+
+        handler = function ()
+        end,
+    },
+
+
     shackle_undead = {
         id = 9484,
         cast = 1.5,
@@ -975,6 +898,24 @@ spec:RegisterAbilities( {
         talent = "shackle_undead",
         startsCombat = false,
         texture = 136091,
+
+        handler = function ()
+        end,
+    },
+
+
+    shadow_covenant = {
+        id = 314867,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+
+        spend = 0.04,
+        spendType = "mana",
+
+        talent = "shadow_covenant",
+        startsCombat = false,
+        texture = 136221,
 
         handler = function ()
         end,
@@ -1064,23 +1005,6 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 135924,
-
-        handler = function ()
-        end,
-    },
-
-
-    symbol_of_hope = {
-        id = 64901,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-
-        talent = "symbol_of_hope",
-        startsCombat = false,
-        texture = 135982,
-
-        toggle = "cooldowns",
 
         handler = function ()
         end,
