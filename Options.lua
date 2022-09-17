@@ -5200,6 +5200,7 @@ do
             local id, name, description, texture, role = GetSpecializationInfo( i )
 
             if not id then break end
+            if description then description = description:match( "^(.-)\n" ) end
 
             local spec = class.specs[ id ]
 
@@ -8389,7 +8390,7 @@ do
     local run = 0
 
     local function EmbedSpellData( spellID, token, talent, pvp )
-        local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( spellID )
+        local name, _, texture, castTime, minRange, maxRange = GetSpellInfo( spellID )
 
         local haste = UnitSpellHaste( "player" )
         haste = 1 + ( haste / 100 )
@@ -8397,11 +8398,12 @@ do
         if name then
             token = token or key( name )
 
-            if castTime % 10 > 0 then
-                -- We can catch hasted cast times 90% of the time...
-                castTime = castTime * haste
+            if castTime % 10 ~= 0 then
+                castTime = castTime * haste * 0.001
+                castTime = tonumber( format( "%.2f", castTime ) )
+            else
+                castTime = castTime * 0.001
             end
-            castTime = castTime / 1000
 
             local cost, min_cost, max_cost, spendPerSec, cost_percent, resource
 
@@ -8423,15 +8425,24 @@ do
             local helpful = IsHelpfulSpell( name )
 
             local _, charges, _, recharge = GetSpellCharges( spellID )
-            local cooldown, gcd
-            if recharge then cooldown = recharge
-            else
+            local cooldown, gcd, icd
                 cooldown, gcd = GetSpellBaseCooldown( spellID )
                 if cooldown then cooldown = cooldown / 1000 end
 
-                if gcd == 0 then gcd = "off"
-                elseif gcd == 1000 then gcd = "totem"
-                elseif gcd == 1500 then gcd = "spell" end
+            if gcd == 1000 then gcd = "totem"
+            elseif gcd == 1500 then gcd = "spell"
+            elseif gcd == 0 then gcd = "off"
+            else
+                icd = gcd / 1000
+                gcd = "off"
+            end
+
+            if recharge and recharge > cooldown then
+                if ( recharge * 1000 ) % 10 ~= 0 then
+                    recharge = recharge * haste
+                    recharge = tonumber( format( "%.2f", recharge ) )
+                end
+                cooldown = recharge
             end
 
             local selfbuff = SpellIsSelfBuff( spellID )
@@ -8458,6 +8469,7 @@ do
                 a.cast = castTime
                 a.empowered = empowered
                 a.gcd = gcd or "spell"
+                a.icd = icd
 
                 a.texture = texture
 
@@ -8546,13 +8558,20 @@ do
                                 local definitionInfo = C_Traits.GetDefinitionInfo( entryInfo.definitionID )
 
                                 local spellID = definitionInfo.spellID
-                                local name = GetSpellInfo( spellID )
-                                local key = key( name )
+                                local name = definitionInfo.overrideName or GetSpellInfo( spellID )
+                                local subtext = GetSpellSubtext( spellID )
+
+                                if subtext then
+                                    local rank = subtext:match( "^Rank (%d+)$" )
+                                    if rank then name = name .. "_" .. rank end
+                                end
+
+                                local token = key( name )
 
                                 insert( talents, { name = key, talent = nodeID, definition = entryInfo.definitionID, spell = spellID, ranks = node.maxRanks } )
 
                                 if not IsPassiveSpell( spellID ) then
-                                    EmbedSpellData( spellID, key, true )
+                                    EmbedSpellData( spellID, token, true )
                                 end
                             end
                         end
@@ -8581,28 +8600,24 @@ do
                 end
             end
 
-            local haste = UnitSpellHaste( "player" )
-            haste = 1 + ( haste / 100 )
+            sort( pvptalents, function( a, b ) return a.name < b.name end )
 
             for i = 1, GetNumSpellTabs() do
                 local tab, _, offset, n = GetSpellTabInfo( i )
 
                 if i == 2 or tab == spec then
-                    for j = offset, offset + n do
+                    for j = offset + 1, offset + n do
                         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
                         if name then EmbedSpellData( spellID, key( name ) ) end
                     end
                 end
             end
         elseif event == "SPELLS_CHANGED" then
-            local haste = UnitSpellHaste( "player" )
-            haste = 1 + ( haste / 100 )
-
             for i = 1, GetNumSpellTabs() do
                 local tab, _, offset, n = GetSpellTabInfo( i )
 
                 if i == 2 or tab == spec then
-                    for j = offset, offset + n do
+                    for j = offset + 1, offset + n do
                         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
                         if name then EmbedSpellData( spellID, key( name ) ) end
                     end
@@ -8748,8 +8763,19 @@ do
 
                             if Hekili.IsDragonflight() then
                                 table.sort( talents, function( a, b ) return a.name < b.name end )
+
+                                local max_talent_length = 10
+
                                 for i, tal in ipairs( talents ) do
-                                    append( tal.name .. " = { " .. ( tal.talent or "nil" ) .. ", " .. ( tal.spell or "nil" ) .. ", " .. ( tal.ranks or 0 ) .. " }," )
+                                    local chars = tal.name:len()
+                                    if chars > max_talent_length then max_talent_length = chars end
+                                end
+
+                                local formatStr = "%-" .. max_talent_length .. "s = { %5d, %-6d, %d }, -- "
+
+                                for i, tal in ipairs( talents ) do
+                                    local line = format( formatStr, tal.name, tal.talent, tal.spell, tal.ranks or 0 )
+                                    append( line )
                                 end
                             else
                                 for i, tal in ipairs( talents ) do
@@ -8765,8 +8791,16 @@ do
                             append( "spec:RegisterPvpTalents( { " )
                             increaseIndent()
 
+                            local max_pvptalent_length = 10
                             for i, tal in ipairs( pvptalents ) do
-                                append( tal.name .. " = " .. ( tal.talent or "nil" ) .. ", -- " .. ( tal.spell or "nil" ) )
+                                local chars = tal.name:len()
+                                if chars > max_pvptalent_length then max_pvptalent_length = chars end
+                            end
+
+                            local formatPvp = "%-" .. max_pvptalent_length .. "s = %-4d, -- %d"
+
+                            for i, tal in ipairs( pvptalents ) do
+                                append( format( formatPvp, tal.name, tal.talent, tal.spell ) )
                             end
                             decreaseIndent()
                             append( "} )\n\n" )
@@ -8814,6 +8848,7 @@ do
                                 appendAttr( a, "cooldown" )
                                 appendAttr( a, "recharge" )
                                 appendAttr( a, "gcd" )
+                                if a.icd ~= nil then appendAttr( a, "icd" ) end
                                 append( "" )
                                 appendAttr( a, "spend" )
                                 appendAttr( a, "spendPerSec" )
@@ -8877,6 +8912,7 @@ do
                                 aggregate[v.name].talent = true
                             end
 
+                            append( "Key\tID\tIs Aura\tIs Ability\tIs Talent" )
                             for k,v in orderedPairs( aggregate ) do
                                 append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) )
                             end
