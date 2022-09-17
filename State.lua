@@ -2792,8 +2792,12 @@ do
                 end
 
                 if ability.item then
-                    GetCooldown = _G.GetItemCooldown
-                    id = ability.itemCd or ability.item
+                    if not ability.itemSpellID then
+                        GetCooldown = _G.GetItemCooldown
+                        id = ability.itemCd or ability.item
+                    else
+                        id = ability.itemSpellID
+                    end
                 elseif ability.funcs.cooldown_special then
                     GetCooldown = ability.funcs.cooldown_special
                     id = 999999
@@ -2816,12 +2820,18 @@ do
 
                 local start, duration = 0, 0
 
-                if id > 0 then start, duration = GetCooldown( id ) end
+                if id > 0 then
+                    start, duration = GetCooldown( id )
+                    local lossStart, lossDuration = GetSpellLossOfControlCooldown( id )
+                    if lossStart + lossDuration > start + duration then
+                        start = lossStart
+                        duration = lossDuration
+                    end
+                end
 
                 if t.key ~= "global_cooldown" then
                     local gcd = state.cooldown.global_cooldown
                     gcdStart, gcdDuration = gcd.expires - gcd.duration, gcd.duration
-                    -- gcdStart, gcdDuration = state.cooldown.global_cooldown.startexpiGetSpellCooldown( 61304 )
                     if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
                 end
 
