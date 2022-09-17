@@ -14,116 +14,116 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    acid_rain                     = { 69822, 378443, 1 }, --
-    ancestral_awakening           = { 69815, 382309, 2 }, --
-    ancestral_defense             = { 69728, 382947, 1 },
-    ancestral_guidance            = { 69685, 108281, 1 },
-    ancestral_protection_totem    = { 69805, 207399, 1 },
-    ancestral_reach               = { 69821, 382732, 1 },
-    ancestral_vigor               = { 69820, 207401, 2 },
-    ancestral_wolf_affinity       = { 69678, 382197, 1 },
-    ascendance                    = { 69810, 114052, 1 },
-    astral_bulwark                = { 69723, 377933, 1 },
-    astral_shift                  = { 69724, 108271, 1 },
-    brimming_with_life            = { 69680, 381689, 1 },
-    call_of_the_elements          = { 69687, 108285, 1 },
-    call_of_thunder               = { 69817, 378241, 1 },
-    capacitor_totem               = { 69722, 192058, 1 },
-    chain_heal                    = { 69707, 1064  , 1 },
-    chain_lightning               = { 69718, 188443, 1 },
-    cloudburst_totem              = { 69809, 157153, 1 },
-    continuous_waves              = { 69770, 382046, 1 },
-    creation_core                 = { 69686, 383012, 1 },
-    deeply_rooted_elements        = { 69801, 378270, 1 },
-    deluge                        = { 69824, 200076, 2 },
-    downpour                      = { 69811, 207778, 1 },
-    earth_elemental               = { 69708, 198103, 1 },
-    earth_shield                  = { 69709, 974   , 1 },
-    earthen_harmony               = { 69832, 382020, 2 },
-    earthen_wall_totem            = { 69805, 198838, 1 },
-    earthgrab_totem               = { 69696, 51485 , 1 },
-    earthliving_weapon            = { 69803, 382021, 1 },
-    earthwarden                   = { 69800, 382315, 2 },
-    echo_of_the_elements          = { 69831, 333919, 1 },
-    elemental_orbit               = { 69703, 383010, 1 },
-    elemental_warding             = { 69729, 381650, 2 },
-    enfeeblement                  = { 69679, 378079, 1 },
-    everrising_tide               = { 69833, 382029, 1 },
-    fire_and_ice                  = { 69727, 382886, 1 },
-    flash_flood                   = { 69828, 280614, 2 },
-    flow_of_the_tides             = { 69821, 382039, 1 },
-    flurry                        = { 69716, 382888, 1 },
-    focused_insight               = { 69715, 381666, 2 },
-    frost_shock                   = { 69719, 196840, 1 },
-    go_with_the_flow              = { 69688, 381678, 2 },
-    graceful_spirit               = { 69705, 192088, 1 },
-    greater_purge                 = { 69713, 378773, 1 },
-    guardians_cudgel              = { 69694, 381819, 1 },
-    gust_of_wind                  = { 69690, 192063, 1 },
-    healing_rain                  = { 69823, 73920 , 1 },
-    healing_stream_totem          = { 69700, 5394  , 1 },
-    healing_stream_totem          = { 69826, 5394  , 1 },
-    healing_tide_totem            = { 69767, 108280, 1 },
-    healing_wave                  = { 69818, 77472 , 1 },
-    hex                           = { 69711, 51514 , 1 },
-    high_tide                     = { 69771, 157154, 1 },
-    improved_call_of_the_elements = { 69686, 383011, 1 },
-    improved_lightning_bolt       = { 69698, 381674, 2 },
-    improved_primordial_wave      = { 69769, 382191, 2 },
-    improved_purify_spirit        = { 69710, 383016, 1 },
-    lava_burst                    = { 69726, 51505 , 1 },
-    lava_surge                    = { 69830, 77756 , 1 },
-    lightning_lasso               = { 69684, 305483, 1 },
-    living_stream                 = { 69809, 382482, 1 },
-    maelstrom_weapon              = { 69717, 187880, 1 },
-    mana_spring_totem             = { 69702, 381930, 1 },
-    mana_tide_totem               = { 69806, 16191 , 1 },
-    master_of_the_elements        = { 69807, 16166 , 1 },
-    natures_focus                 = { 69768, 382019, 1 },
-    natures_fury                  = { 69714, 381655, 2 },
-    natures_guardian              = { 69697, 30884 , 2 },
-    natures_swiftness             = { 69699, 378081, 1 },
-    overflowing_shores            = { 69822, 383222, 1 },
-    planes_traveler               = { 69723, 381647, 1 },
-    poison_cleansing_totem        = { 69681, 383013, 1 },
-    primal_tide_core              = { 69771, 382045, 1 },
-    primordial_wave               = { 69812, 375982, 1 },
-    purge                         = { 69713, 370   , 1 },
-    refreshing_waters             = { 69807, 378211, 1 },
-    resurgence                    = { 69816, 16196 , 1 },
-    riptide                       = { 69825, 61295 , 1 },
-    spirit_link_totem             = { 69829, 98008 , 1 },
-    spirit_walk                   = { 69690, 58875 , 1 },
-    spirit_wolf                   = { 69721, 260878, 1 },
-    spiritwalkers_aegis           = { 69705, 378077, 1 },
-    spiritwalkers_grace           = { 69706, 79206 , 1 },
-    static_charge                 = { 69694, 265046, 1 },
-    stoneskin_totem               = { 69682, 383017, 1 },
-    stormkeeper                   = { 69678, 383009, 1 },
-    surging_shields               = { 69691, 382033, 2 },
-    swirling_currents             = { 69701, 378094, 2 },
-    thunderous_paws               = { 69721, 378075, 1 },
-    thundershock                  = { 69684, 378779, 1 },
-    thunderstorm                  = { 69683, 51490 , 1 },
-    tidal_waves                   = { 69827, 51564 , 1 },
-    torrent                       = { 69804, 200072, 2 },
-    totemic_focus                 = { 69693, 382201, 2 },
-    totemic_projection            = { 69692, 108287, 1 },
-    totemic_surge                 = { 69704, 381867, 2 },
-    tranquil_air_totem            = { 69682, 383019, 1 },
-    tremor_totem                  = { 69695, 8143  , 1 },
-    tumbling_waves                = { 69770, 382040, 1 },
-    undercurrent                  = { 69802, 382194, 2 },
-    undulation                    = { 69814, 200071, 1 },
-    unleash_life                  = { 69814, 73685 , 1 },
-    voodoo_mastery                = { 69679, 204268, 1 },
-    water_shield                  = { 69819, 52127 , 1 },
-    water_totem_mastery           = { 69808, 382030, 1 },
-    wavespeakers_blessing         = { 69813, 381946, 1 },
-    wellspring                    = { 69801, 197995, 1 },
-    wind_rush_totem               = { 69696, 192077, 1 },
-    wind_shear                    = { 69725, 57994 , 1 },
-    winds_of_alakir               = { 69689, 382215, 2 },
+    acid_rain                     = { 77633, 378443, 1 },
+    ancestral_awakening           = { 77637, 382309, 2 },
+    ancestral_defense             = { 77677, 382947, 1 },
+    ancestral_guidance            = { 77696, 108281, 1 },
+    ancestral_protection_totem    = { 77640, 207399, 1 },
+    ancestral_reach               = { 77625, 382732, 1 },
+    ancestral_vigor               = { 77624, 207401, 2 },
+    ancestral_wolf_affinity       = { 77623, 382197, 1 },
+    ascendance                    = { 77649, 114052, 1 },
+    astral_bulwark                = { 77650, 377933, 1 },
+    astral_shift                  = { 77651, 108271, 1 },
+    brimming_with_life            = { 77679, 381689, 1 },
+    call_of_the_elements          = { 77685, 108285, 1 },
+    call_of_thunder               = { 77617, 378241, 1 },
+    capacitor_totem               = { 77665, 192058, 1 },
+    chain_heal                    = { 77657, 1064  , 1 },
+    chain_lightning               = { 77655, 188443, 1 },
+    cloudburst_totem              = { 77642, 157153, 1 },
+    continuous_waves              = { 77628, 382046, 1 },
+    creation_core                 = { 77684, 383012, 1 },
+    deeply_rooted_elements        = { 77645, 378270, 1 },
+    deluge                        = { 77622, 200076, 2 },
+    downpour                      = { 77570, 207778, 1 },
+    earth_elemental               = { 77658, 198103, 1 },
+    earth_shield                  = { 77700, 974   , 1 },
+    earthen_harmony               = { 77648, 382020, 2 },
+    earthen_wall_totem            = { 77640, 198838, 1 },
+    earthgrab_totem               = { 77676, 51485 , 1 },
+    earthliving_weapon            = { 77643, 382021, 1 },
+    earthwarden                   = { 77644, 382315, 2 },
+    echo_of_the_elements          = { 77638, 333919, 1 },
+    elemental_orbit               = { 77699, 383010, 1 },
+    elemental_warding             = { 77678, 381650, 2 },
+    enfeeblement                  = { 77672, 378079, 1 },
+    everrising_tide               = { 77647, 382029, 1 },
+    fire_and_ice                  = { 77661, 382886, 1 },
+    flash_flood                   = { 77614, 280614, 2 },
+    flow_of_the_tides             = { 77625, 382039, 1 },
+    flurry                        = { 77653, 382888, 1 },
+    focused_insight               = { 77652, 381666, 2 },
+    frost_shock                   = { 77668, 196840, 1 },
+    go_with_the_flow              = { 77683, 381678, 2 },
+    graceful_spirit               = { 77659, 192088, 1 },
+    greater_purge                 = { 77670, 378773, 1 },
+    guardians_cudgel              = { 77664, 381819, 1 },
+    gust_of_wind                  = { 77682, 192063, 1 },
+    healing_rain                  = { 77634, 73920 , 1 },
+    healing_stream_totem          = { 77694, 5394  , 1 },
+    healing_stream_totem_2        = { 77616, 5394  , 1 },
+    healing_tide_totem            = { 77626, 108280, 1 },
+    healing_wave                  = { 77620, 77472 , 1 },
+    hex                           = { 77673, 51514 , 1 },
+    high_tide                     = { 77636, 157154, 1 },
+    improved_call_of_the_elements = { 77684, 383011, 1 },
+    improved_lightning_bolt       = { 77692, 381674, 2 },
+    improved_primordial_wave      = { 77629, 382191, 2 },
+    improved_purify_spirit        = { 77667, 383016, 1 },
+    lava_burst                    = { 77656, 51505 , 1 },
+    lava_surge                    = { 77611, 77756 , 1 },
+    lightning_lasso               = { 77690, 305483, 1 },
+    living_stream                 = { 77642, 382482, 1 },
+    maelstrom_weapon              = { 77654, 187880, 1 },
+    mana_spring_totem             = { 77697, 381930, 1 },
+    mana_tide_totem               = { 77639, 16191 , 1 },
+    master_of_the_elements        = { 77613, 16166 , 1 },
+    natures_focus                 = { 77635, 382019, 1 },
+    natures_fury                  = { 77680, 381655, 2 },
+    natures_guardian              = { 77675, 30884 , 2 },
+    natures_swiftness             = { 77693, 378081, 1 },
+    overflowing_shores            = { 77633, 383222, 1 },
+    planes_traveler               = { 77650, 381647, 1 },
+    poison_cleansing_totem        = { 77687, 383013, 1 },
+    primal_tide_core              = { 77636, 382045, 1 },
+    primordial_wave               = { 77630, 375982, 1 },
+    purge                         = { 77670, 370   , 1 },
+    refreshing_waters             = { 77613, 378211, 1 },
+    resurgence                    = { 77618, 16196 , 1 },
+    riptide                       = { 77621, 61295 , 1 },
+    spirit_link_totem             = { 77627, 98008 , 1 },
+    spirit_walk                   = { 77682, 58875 , 1 },
+    spirit_wolf                   = { 77666, 260878, 1 },
+    spiritwalkers_aegis           = { 77659, 378077, 1 },
+    spiritwalkers_grace           = { 77660, 79206 , 1 },
+    static_charge                 = { 77664, 265046, 1 },
+    stoneskin_totem               = { 77689, 383017, 1 },
+    stormkeeper                   = { 77623, 383009, 1 },
+    surging_shields               = { 77686, 382033, 2 },
+    swirling_currents             = { 77695, 378094, 2 },
+    thunderous_paws               = { 77666, 378075, 1 },
+    thundershock                  = { 77690, 378779, 1 },
+    thunderstorm                  = { 77691, 51490 , 1 },
+    tidal_waves                   = { 77615, 51564 , 1 },
+    torrent                       = { 77641, 200072, 2 },
+    totemic_focus                 = { 77688, 382201, 2 },
+    totemic_projection            = { 77674, 108287, 1 },
+    totemic_surge                 = { 77698, 381867, 2 },
+    tranquil_air_totem            = { 77689, 383019, 1 },
+    tremor_totem                  = { 77663, 8143  , 1 },
+    tumbling_waves                = { 77628, 382040, 1 },
+    undercurrent                  = { 77646, 382194, 2 },
+    undulation                    = { 77631, 200071, 1 },
+    unleash_life                  = { 77631, 73685 , 1 },
+    voodoo_mastery                = { 77672, 204268, 1 },
+    water_shield                  = { 77619, 52127 , 1 },
+    water_totem_mastery           = { 77612, 382030, 1 },
+    wavespeakers_blessing         = { 77632, 381946, 1 },
+    wellspring                    = { 77645, 197995, 1 },
+    wind_rush_totem               = { 77676, 192077, 1 },
+    wind_shear                    = { 77662, 57994 , 1 },
+    winds_of_alakir               = { 77681, 382215, 2 },
 } )
 
 
@@ -265,7 +265,7 @@ spec:RegisterAbilities( {
 
     ancestral_spirit = {
         id = 2008,
-        cast = 9.999683379364,
+        cast = 10,
         cooldown = 0,
         gcd = "spell",
 
@@ -282,7 +282,7 @@ spec:RegisterAbilities( {
 
     ancestral_vision = {
         id = 212048,
-        cast = 9.999683379364,
+        cast = 10,
         cooldown = 0,
         gcd = "spell",
 
@@ -316,7 +316,7 @@ spec:RegisterAbilities( {
 
     astral_recall = {
         id = 556,
-        cast = 9.999683379364,
+        cast = 10,
         cooldown = 600,
         gcd = "spell",
 
@@ -405,7 +405,7 @@ spec:RegisterAbilities( {
 
     chain_heal = {
         id = 1064,
-        cast = 2.500210355072,
+        cast = 2.5,
         cooldown = 0,
         gcd = "spell",
 
@@ -423,7 +423,7 @@ spec:RegisterAbilities( {
 
     chain_lightning = {
         id = 188443,
-        cast = 1.9999366758728,
+        cast = 2,
         cooldown = 0,
         gcd = "spell",
 
@@ -460,10 +460,10 @@ spec:RegisterAbilities( {
     cloudburst_totem = {
         id = 157153,
         cast = 0,
-        charges = 1,
+        charges = function () return talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank end,
         cooldown = 45,
         recharge = 45,
-        gcd = "spell",
+        gcd = "totem",
 
         spend = 0.09,
         spendType = "mana",
@@ -479,7 +479,7 @@ spec:RegisterAbilities( {
 
     downpour = {
         id = 207778,
-        cast = 1.4996629966736,
+        cast = 1.5,
         cooldown = 5,
         gcd = "spell",
 
@@ -640,7 +640,7 @@ spec:RegisterAbilities( {
 
     elemental_blast = {
         id = 117014,
-        cast = 1.9999366758728,
+        cast = 2,
         cooldown = 12,
         gcd = "spell",
 
@@ -673,7 +673,7 @@ spec:RegisterAbilities( {
 
     far_sight = {
         id = 6196,
-        cast = 1.9999366758728,
+        cast = 2,
         cooldown = 0,
         gcd = "spell",
 
@@ -805,7 +805,7 @@ spec:RegisterAbilities( {
 
     healing_rain = {
         id = 73920,
-        cast = 1.9999366758728,
+        cast = 2,
         cooldown = 10,
         gcd = "spell",
 
@@ -824,7 +824,7 @@ spec:RegisterAbilities( {
     healing_stream_totem = {
         id = 5394,
         cast = 0,
-        charges = 1,
+        charges = function () return talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank end,
         cooldown = 30,
         recharge = 30,
         gcd = "spell",
@@ -832,7 +832,12 @@ spec:RegisterAbilities( {
         spend = 0.09,
         spendType = "mana",
 
-        talent = "healing_stream_totem",
+        talent = function ()
+            if talent.healing_stream_totem.enabled then return "healing_stream_totem" end
+            if talent.healing_stream_totem_2.enabled then return "healing_stream_totem_2" end
+            return "healing_stream_totem"
+        end,
+        notalent = "cloudburst_totem",
         startsCombat = true,
         texture = 135127,
 
@@ -843,7 +848,7 @@ spec:RegisterAbilities( {
 
     healing_surge = {
         id = 8004,
-        cast = 1.4996629966736,
+        cast = 1.5,
         cooldown = 0,
         gcd = "spell",
 
@@ -880,7 +885,7 @@ spec:RegisterAbilities( {
 
     healing_wave = {
         id = 77472,
-        cast = 2.500210355072,
+        cast = 2.5,
         cooldown = 0,
         gcd = "spell",
 
@@ -898,7 +903,7 @@ spec:RegisterAbilities( {
 
     hex = {
         id = 51514,
-        cast = 1.7000040765381,
+        cast = 1.7,
         cooldown = 30,
         gcd = "spell",
 
@@ -913,7 +918,7 @@ spec:RegisterAbilities( {
 
     icefury = {
         id = 210714,
-        cast = 1.9999366758728,
+        cast = 2,
         cooldown = 30,
         gcd = "spell",
 
@@ -931,7 +936,7 @@ spec:RegisterAbilities( {
 
     lava_burst = {
         id = 51505,
-        cast = 1.9999366758728,
+        cast = 2,
         charges = 1,
         cooldown = 8,
         recharge = 8,
@@ -951,7 +956,7 @@ spec:RegisterAbilities( {
 
     lightning_bolt = {
         id = 188196,
-        cast = 1.9999366758728,
+        cast = 2,
         cooldown = 0,
         gcd = "spell",
 
@@ -1294,7 +1299,7 @@ spec:RegisterAbilities( {
 
     stormkeeper = {
         id = 383009,
-        cast = 1.4996629966736,
+        cast = 1.5,
         cooldown = 60,
         gcd = "spell",
 
@@ -1430,7 +1435,7 @@ spec:RegisterAbilities( {
 
     wellspring = {
         id = 197995,
-        cast = 1.4996629966736,
+        cast = 1.5,
         cooldown = 20,
         gcd = "spell",
 
