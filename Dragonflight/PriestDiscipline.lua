@@ -182,11 +182,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
-    divine_star = {
-        id = 110744,
-        duration = 15,
-        max_stack = 1
-    },
     dominate_mind = {
         id = 205364,
         duration = 30,
@@ -202,11 +197,6 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    halo = {
-        id = 120517,
-        duration = 2.15,
-        max_stack = 1
-    },
     inspiration = {
         id = 390677,
         duration = 15,
@@ -219,7 +209,7 @@ spec:RegisterAuras( {
     },
     levitate = {
         id = 1706,
-        duration = 0,
+        duration = 600,
         max_stack = 1
     },
     mind_control = {
@@ -237,7 +227,7 @@ spec:RegisterAuras( {
         duration = 60,
         max_stack = 1
     },
-    mindbender = {
+    mindbender = { -- TODO: Check Aura (https://wowhead.com/beta/spell=123040)
         id = 123040,
         duration = 12,
         max_stack = 1
@@ -252,11 +242,6 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    phantasm = {
-        id = 114239,
-        duration = 0,
-        max_stack = 1
-    },
     power_infusion = {
         id = 10060,
         duration = 20,
@@ -267,9 +252,9 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
-    power_word_barrier = {
-        id = 62618,
-        duration = 10,
+    power_word_barrier = { -- TODO: Check for totem to help correct for remaining time.
+        id = 81782,
+        duration = 12,
         max_stack = 1
     },
     power_word_fortitude = {
@@ -281,11 +266,6 @@ spec:RegisterAuras( {
         id = 17,
         duration = 15,
         tick_time = 1,
-        max_stack = 1
-    },
-    protector_of_the_frail = {
-        id = 33206,
-        duration = 8,
         max_stack = 1
     },
     psychic_scream = {
