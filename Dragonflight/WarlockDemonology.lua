@@ -127,47 +127,230 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    abyss_walker = {
+        id = 389614,
+        duration = 10,
+        max_stack = 1
+    },
     amplify_curse = {
         id = 328774,
+        duration = 15,
+        max_stack = 1
+    },
+    balespiders_burning_core = {
+        id = 387437,
+        duration = 20,
+        max_stack = 4
+    },
+    bane_of_fragility = {
+        id = 199954,
+        duration = 10,
+        max_stack = 1
+    },
+    banish = {
+        id = 710,
+        duration = 30,
+        max_stack = 1
+    },
+    bilescourge_bombers = { -- TODO: Virtual aura; model from successful cast.
+        id = 267211,
+        duration = 6,
+        max_stack = 1
+    },
+    bonds_of_fel = {
+        id = 353807,
+        duration = 6,
+        max_stack = 1
     },
     burning_rush = {
         id = 111400,
+        duration = 3600,
+        tick_time = 1,
+        max_stack = 1
+    },
+    butchers_bone_fragments = {
+        id = 336908,
+        duration = 12,
+        max_stack = 6
+    },
+    call_fel_lord = { -- TODO: Is a totem.
+        id = 212459,
+        duration = 15,
+        max_stack = 1
+    },
+    call_observer = { -- TODO: Virtual aura; model from successful cast.
+        id = 201996,
+        duration = 20,
+        max_stack = 1
+    },
+    casting_circle = { -- TODO: Virtual aura; model from successful cast.
+        id = 221705,
+        duration = 12,
+        max_stack = 1
+    },
+    corruption = {
+        id = 146739,
+        duration = 14,
+        tick_time = 2,
+        max_stack = 1
+    },
+    curse_of_exhaustion = {
+        id = 334275,
+        duration = 12,
+        max_stack = 1
     },
     dark_pact = {
         id = 108416,
+        duration = 20,
+        max_stack = 1
+    },
+    demonic_calling = {
+        id = 205146,
+        duration = 20,
+        max_stack = 1
     },
     demonic_circle = {
         id = 48018,
+        duration = 1500,
+        max_stack = 1
     },
-    demonic_circle_teleport = {
-        id = 48020,
+    demonic_inspiration = {
+        id = 386861,
+        duration = 8,
+        max_stack = 1
     },
-    demonic_core = {
-        id = 267102,
+    demonic_strength = {
+        id = 267171,
+        duration = 20,
+        max_stack = 1
+    },
+    doom = {
+        id = 603,
+        duration = 20,
+        tick_time = 20,
+        max_stack = 1
+    },
+    drain_life = {
+        id = 234153,
+        duration = 5,
+        tick_time = 1,
+        max_stack = 1
     },
     eye_of_kilrogg = {
         id = 126,
+        duration = 45,
+        max_stack = 1
     },
     fel_domination = {
         id = 333889,
+        duration = 15,
+        max_stack = 1
     },
-    mastery_master_demonologist = {
-        id = 77219,
+    fel_obelisk = { -- TODO: Is a totem.
+        id = 353601,
+        duration = 15,
+        max_stack = 1
+    },
+    grimoire_felguard = { -- TODO: Is a totem.
+        id = 111898,
+        duration = 17,
+        max_stack = 1
+    },
+    health_funnel = {
+        id = 755,
+        duration = 5,
+        tick_time = 1,
+        max_stack = 1
+    },
+    howl_of_terror = {
+        id = 5484,
+        duration = 20,
+        max_stack = 1
+    },
+    inquisitors_gaze = {
+        id = 388068,
+        duration = 3600,
+        max_stack = 1
+    },
+    lifeblood = {
+        id = 386647,
+        duration = 20,
+        max_stack = 1
+    },
+    mortal_coil = {
+        id = 6789,
+        duration = 3,
+        max_stack = 1
+    },
+    nether_portal = {
+        id = 267218,
+        duration = 15,
+        max_stack = 1
     },
     nether_ward = {
         id = 212295,
+        duration = 3,
+        max_stack = 1
     },
-    ritual_of_summoning = {
-        id = 698,
+    shadow_rift = {
+        id = 353293,
+        duration = 2,
+        max_stack = 1
     },
-    soul_leech = {
-        id = 108370,
+    shadowflame = {
+        id = 384069,
+        duration = 6,
+        max_stack = 1
     },
-    soul_shards = {
-        id = 246985,
+    shadowfury = {
+        id = 30283,
+        duration = 3,
+        max_stack = 1
+    },
+    soulburn = {
+        id = 387626,
+        duration = 3600,
+        max_stack = 1
+    },
+    soulstone = {
+        id = 20707,
+        duration = 900,
+        max_stack = 1
+    },
+    subjugate_demon = {
+        id = 1098,
+        duration = 300,
+        max_stack = 1
+    },
+    summon_demonic_tyrant = { -- TODO: Is a totem?
+        id = 265187,
+        duration = 15,
+        max_stack = 1
+    },
+    summon_vilefiend = { -- TODO: Is a totem.
+        id = 264119,
+        duration = 15,
+        max_stack = 1
+    },
+    tormented_soul = { -- TODO: This isn't a visible aura; instead it sets the count on the Summon Soulkeeper spell.
+        id = 386251,
+        duration = 3600,
+        max_stack = 10
+    },
+    unending_breath = {
+        id = 5697,
+        duration = 600,
+        max_stack = 1
     },
     unending_resolve = {
         id = 104773,
+        duration = 8,
+        max_stack = 1
+    },
+    wrathful_minion = {
+        id = 386865,
+        duration = 8,
+        max_stack = 1
     },
 } )
 

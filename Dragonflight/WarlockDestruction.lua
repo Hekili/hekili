@@ -179,7 +179,7 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
-    casting_circle = { -- TODO: Check for a totem?
+    casting_circle = { -- TODO: Virtual aura; model from successful cast.
         id = 221705,
         duration = 12,
         max_stack = 1
@@ -288,11 +288,6 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    ritual_of_doom = { -- TODO: Check Aura (https://wowhead.com/beta/spell=342601)
-        id = 342601,
-        duration = 180,
-        max_stack = 1
-    },
     shadow_rift = {
         id = 353293,
         duration = 2,
@@ -333,7 +328,7 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
-    tormented_soul_386251 = { -- TODO: This isn't a visible aura; instead it sets the count on the Summon Soulkeeper spell.
+    tormented_soul = { -- TODO: This isn't a visible aura; instead it sets the count on the Summon Soulkeeper spell.
         id = 386251,
         duration = 3600,
         max_stack = 10
