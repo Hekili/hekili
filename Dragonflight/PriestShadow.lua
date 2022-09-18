@@ -391,7 +391,9 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     voidform = {
-        -- id = ?,
+        id = 194249,
+        duration = 20,
+        max_stack = 1
     },
     void_tendrils = {
         id = 108920,
