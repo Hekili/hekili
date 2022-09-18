@@ -196,6 +196,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 5
     },
+    --[[ divine_image = { -- TODO: Generator function for... T'uure totem?  IDK.
+        id = 196705, 392990, 196684?
+        duration = 15,
+        max_stack = 1
+    }, ]]
     divine_word = {
         id = 372760,
         duration = 10,
@@ -257,6 +262,11 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 2
     },
+    --[[ lightwell = { -- TODO: Generator to track lightwell is active/consumed?
+        id = 372835,
+        duration = 180,
+        max_stack = 15
+    }, ]]
     mind_control = {
         id = 605,
         duration = 30,
@@ -335,13 +345,18 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1
     },
-    symbol_of_hope = {
+    shadowfiend = { -- TODO: Mana generation on 343726?
+        id = 34433,
+        duration = 15,
+        max_stack = 1
+    },
+    symbol_of_hope = { -- Channel.
         id = 64901,
         duration = 4,
         tick_time = 1,
         max_stack = 1
     },
-    symbol_of_hope_buff = {
+    symbol_of_hope_buff = { -- Defensive CDR and mana regen aura; reapplied each SoH channel tick.
         id = 265144,
         duration = 1.1,
         max_stack = 1
@@ -357,11 +372,11 @@ spec:RegisterAuras( {
         tick_time = 0.5,
         max_stack = 1
     },
-    void_tendrils = {
-        id = 108920,
+    --[[ void_tendrils = { -- TODO: Buff to track Void Tendril summon vs. snare/stun channel.
+        id = 108920, 245049, 369063?
         duration = 20,
         max_stack = 1
-    },
+    }, ]]
 } )
 
 
