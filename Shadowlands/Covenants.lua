@@ -778,6 +778,136 @@ elseif baseClass == "MAGE" then
             },
         },
     } )
+elseif baseClass == "MONK" then
+    all:RegisterAbilities( {
+        weapons_of_order = {
+            id = 310454,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+
+            toggle = "essences",
+
+            startsCombat = false,
+            texture = 3565447,
+
+            handler = function ()
+                applyBuff( "weapons_of_order" )
+
+                if state.spec.mistweaver then
+                    setCooldown( "essence_font", 0 )
+                    if legendary.call_to_arms.enabled then summonPet( "yulon", 12 ) end
+                elseif state.spec.brewmaster then
+                    setCooldown( "keg_smash", 0 )
+                    if legendary.call_to_arms.enabled then summonPet( "niuzao", 12 ) end
+                else
+                    if legendary.call_to_arms.enabled then summonPet( "xuen", 12 ) end
+                end
+            end,
+
+            auras = {
+                weapons_of_order = {
+                    id = 310454,
+                    duration = function () return conduit.strike_with_clarity.enabled and 35 or 30 end,
+                    max_stack = 1,
+                },
+                weapons_of_order_debuff = {
+                    id = 312106,
+                    duration = 8,
+                    max_stack = 5
+                },
+                weapons_of_order_ww = {
+                    id = 311054,
+                    duration = 5,
+                    max_stack = 1,
+                    copy = "weapons_of_order_buff"
+                }
+            }
+        },
+        bonedust_brew = {
+            id = 325216,
+            cast  = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            toggle = "essences",
+
+            startsCombat = true,
+            texture = 3578227,
+
+            handler = function ()
+                applyDebuff( "target", "bonedust_brew" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            auras = {
+                bonedust_brew = {
+                    id = 325216,
+                    duration = 10,
+                    max_stack = 1,
+                    copy = "bonedust_brew_debuff"
+                }
+            }
+        },
+        faeline_stomp = {
+            id = 327104,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3636842,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "faeline_stomp" )
+
+                if spec.brewmaster then
+                    applyDebuff( "target", "breath_of_fire" )
+                    active_dot.breath_of_fire = active_enemies
+                end
+
+                if legendary.fae_exposure.enabled then applyDebuff( "target", "fae_exposure" ) end
+            end,
+
+            auras = {
+                faeline_stomp = {
+                    id = 327104,
+                    duration = 30,
+                    max_stack = 1,
+                },
+                fae_exposure = {
+                    id = 356773,
+                    duration = 10,
+                    max_stack = 1,
+                }
+            }
+        },
+        fallen_order = {
+            id = 326860,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3565721,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "fallen_order" )
+            end,
+
+            auras = {
+                fallen_order = {
+                    id = 326860,
+                    duration = 24,
+                    max_stack = 1
+                }
+            }
+        },
+    } )
 elseif baseClass == "PALADIN" then
     all:RegisterAbilities( {
         divine_toll = {

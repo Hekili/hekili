@@ -43,6 +43,9 @@ Dragonflight\HunterSurvival.lua
 Dragonflight\MageArcane.lua
 Dragonflight\MageFire.lua
 Dragonflight\MageFrost.lua
+Dragonflight\MonkBrewmaster.lua
+Dragonflight\MonkMistweaver.lua
+Dragonflight\MonkWindwalker.lua
 Dragonflight\PriestDiscipline.lua
 Dragonflight\PriestHoly.lua
 Dragonflight\PriestShadow.lua
