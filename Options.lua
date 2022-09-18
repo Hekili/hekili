@@ -8912,7 +8912,7 @@ do
                                 aggregate[v.name].talent = true
                             end
 
-                            append( "Key\tID\tIs Aura\tIs Ability\tIs Talent" )
+                            append( select( 2, GetSpecializationInfo(GetSpecialization())) .. "\nKey\tID\tIs Aura\tIs Ability\tIs Talent" )
                             for k,v in orderedPairs( aggregate ) do
                                 if v.id then
                                     append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) )
