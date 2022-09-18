@@ -271,6 +271,11 @@ spec:RegisterAuras( {
     defensive_stance = {
         id = 386208,
     },
+    disarm = {
+        id = 236077,
+        duration = 6,
+        max_stack = 1,
+    }, 
     dual_wield = {
         id = 231842,
     },
@@ -342,6 +347,11 @@ spec:RegisterAuras( {
         id = 46968,
         duration = 2,
         max_stack = 1,
+    },
+    slaughterhouse = {
+        id = 354788,
+        duration = 6,
+        max_stack = 5,
     },
     slaughtering_strikes = { 
         id = 85288, -- Labeled as Raging blow in WowHead, but Slaughtering Strikes talent triggers this
@@ -797,6 +807,7 @@ spec:RegisterAbilities( {
         texture = 132343,
 
         handler = function ()
+            applyDebuff( "target", "disarm" )
         end,
     },
 
@@ -853,7 +864,7 @@ spec:RegisterAbilities( {
         texture = 132316,
 
         handler = function ()
-            applyDebuff( "hamstring" )
+            applyDebuff(  "target", "hamstring" )
         end,
     },
 
@@ -1093,6 +1104,7 @@ spec:RegisterAbilities( {
             applyBuff( "enrage" )
             removeStack( "whirlwind" )
             removeBuff( "slaughtering_strikes" )
+            -- if pvptalent.slaughterhouse.enabled then addStack ( "slaughterhouse", nil, 1)
         end,
     },
 
