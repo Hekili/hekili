@@ -203,6 +203,17 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
+    echoing_void = {
+        id = 373281,
+        duration = 20,
+        max_stack = 10,
+        copy = "idol_of_nzoth"
+    },
+    enlisted = {
+        id = 282559,
+        duration = 3600,
+        max_stack = 1
+    },
     fade = {
         id = 586,
         duration = 10,
@@ -212,11 +223,6 @@ spec:RegisterAuras( {
         id = 45242,
         duration = 8,
         max_stack = 1
-    },
-    idol_of_nzoth = {
-        id = 373281,
-        duration = 20,
-        max_stack = 10
     },
     idol_of_yoggsaron = {
         id = 373276,
@@ -235,7 +241,7 @@ spec:RegisterAuras( {
     },
     levitate = {
         id = 1706,
-        duration = 0,
+        duration = 600,
         max_stack = 1
     },
     mind_control = {
@@ -249,9 +255,9 @@ spec:RegisterAuras( {
         tick_time = 0.75,
         max_stack = 1
     },
-    mind_flay_insanity = {
+    mind_flay_insanity = { -- TODO: Needs a generator to impact Mind Flay accurately.
         id = 391399,
-        duration = 0,
+        duration = 5,
         max_stack = 1
     },
     mind_melt = {
@@ -280,14 +286,14 @@ spec:RegisterAuras( {
         duration = 60,
         max_stack = 1
     },
+    --[[ mindbender = { -- TODO: Need generator for Mindbender totem(?)
+        id = 200174,
+        duration = 15,
+        max_stack = 1
+    }, ]]
     mindgames = {
         id = 375901,
         duration = 5,
-        max_stack = 1
-    },
-    phantasm = {
-        id = 114239,
-        duration = 0,
         max_stack = 1
     },
     power_infusion = {
@@ -307,9 +313,9 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     prayer_of_mending = {
-        id = 33076,
-        duration = 0,
-        max_stack = 1
+        id = 41635,
+        duration = 30,
+        max_stack = 5
     },
     psychic_horror = {
         id = 64044,
@@ -320,6 +326,16 @@ spec:RegisterAuras( {
         id = 8122,
         duration = 8,
         max_stack = 1
+    },
+    --[[ psyfiend_199824 = { -- TODO: Generator for Psyfiend totem(?)
+        id = 199824, 211522,
+        duration = 12,
+        max_stack = 1
+    }, ]]
+    psyflay = {
+        id = 199845,
+        duration = 3600,
+        max_stack = 1,
     },
     renew = {
         id = 139,
@@ -338,7 +354,7 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1
     },
-    shadowfiend = {
+    shadowfiend = { -- TODO: Model insanity gain from Improved Shadowfiend (343726)?
         id = 34433,
         duration = 15,
         max_stack = 1
