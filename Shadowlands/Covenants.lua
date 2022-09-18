@@ -593,6 +593,334 @@ elseif baseClass == "MAGE" then
             },
         },
     } )
+elseif baseClass == "PALADIN" then
+    all:RegisterAbilities( {
+        divine_toll = {
+            id = 304971,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3565448,
+
+            toggle = "essences",
+
+            handler = function ()
+                local spellToCast
+
+                if state.spec.protection then spellToCast = class.abilities.avengers_shield.handler
+                elseif state.spec.retribution then spellToCast = class.abilities.judgment.handler
+                else spellToCast = class.abilities.holy_shock.handler end
+
+                for i = 1, min( 5, true_active_enemies ) do
+                    spellToCast()
+                end
+
+                if legendary.divine_resonance.enabled then
+                    applyBuff( "divine_resonance" )
+                    state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires, "AURA_PERIODIC" )
+                    state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 5, "AURA_PERIODIC" )
+                    state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 10, "AURA_PERIODIC" )
+                end
+            end,
+
+            auras = {
+                divine_resonance = {
+                    id = 355455,
+                    duration = 15,
+                    max_stack = 1,
+                },
+            }
+        },
+        vanquishers_hammer = {
+            id = 328204,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = function ()
+                if buff.divine_purpose.up then return 0 end
+                return 1 - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            end,
+            spendType = "holy_power",
+
+            startsCombat = true,
+            texture = 3578228,
+
+            toggle = "essences",
+
+            handler = function ()
+                removeBuff( "divine_purpose" )
+                removeBuff( "the_magistrates_judgment" )
+                applyBuff( "vanquishers_hammer", nil, legendary.dutybound_gavel.enabled and 2 or nil )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            auras = {
+                vanquishers_hammer = {
+                    id = 328204,
+                    duration = 15,
+                    max_stack = function () return legendary.dutybound_gavel.enabled and 2 or 1 end,
+                }
+            }
+        },
+        blessing_of_summer = {
+            id = 328620,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3636845,
+
+            toggle = "essences",
+            buff = "blessing_of_summer_active",
+
+            handler = function ()
+                applyBuff( "blessing_of_summer" ) -- We'll just apply to self because we don't care.
+
+                removeBuff( "blessing_of_summer_active" )
+                applyBuff( "blessing_of_autumn_active" )
+                setCooldown( "blessing_of_autumn", 45 )
+            end,
+
+            auras = {
+                blessing_of_summer = {
+                    id = 328620,
+                    duration = function () return 30 * ( 1 - ( conduit.the_long_summer.mod * 0.01 ) ) end,
+                    max_stack = 1,
+                },
+
+                blessing_of_summer_active = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsActiveSpell( 328620 ) then
+                            t.name = class.auras.blessing_of_summer.name .. " Active"
+                            t.count = 1
+                            t.applied = now
+                            t.expires = now + 3600
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                },
+
+                -- Leaving reactive for now, will see if we need to do anything differently.
+                equinox = {
+                    id = 355567,
+                    duration = 10,
+                    max_stack = 1,
+                },
+            },
+
+            bind = { "blessing_of_spring", "blessing_of_autumn", "blessing_of_winter" }
+        },
+        blessing_of_autumn = {
+            id = 328622,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3636843,
+
+            toggle = "essences",
+            buff = "blessing_of_autumn_active",
+
+            handler = function ()
+                applyBuff( "blessing_of_autumn" )
+
+                removeBuff( "blessing_of_autumn_active" )
+                applyBuff( "blessing_of_winter_active" )
+                setCooldown( "blessing_of_winter", 45 )
+            end,
+
+            auras = {
+                blessing_of_autumn = {
+                    id = 328622,
+                    duration = 30,
+                    max_stack = 1,
+                },
+                blessing_of_autumn_active = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsActiveSpell( 328622 ) then
+                            t.name = class.auras.blessing_of_autumn.name .. " Active"
+                            t.count = 1
+                            t.applied = now
+                            t.expires = now + 3600
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                }
+            },
+
+            bind = { "blessing_of_summer", "blessing_of_spring", "blessing_of_winter" }
+        },
+        blessing_of_winter = {
+            id = 328281,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3636846,
+
+            toggle = "essences",
+            buff = "blessing_of_winter_active",
+
+            handler = function ()
+                applyBuff( "blessing_of_winter" )
+
+                removeBuff( "blessing_of_winter_active" )
+                applyBuff( "blessing_of_spring_active" )
+                setCooldown( "blessing_of_spring", 45 )
+            end,
+
+            auras = {
+                blessing_of_winter = {
+                    id = 328281,
+                    duration = 30,
+                    max_stack = 1,
+                },
+                blessing_of_winter_debuff = {
+                    id = 328506,
+                    duration = 6,
+                    max_stack = 10
+                },
+                blessing_of_winter_active = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsActiveSpell( 328281 ) then
+                            t.name = class.auras.blessing_of_winter.name .. " Active"
+                            t.count = 1
+                            t.applied = now
+                            t.expires = now + 3600
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                }
+            },
+
+            bind = { "blessing_of_summer", "blessing_of_autumn", "blessing_of_spring" }
+        },
+        blessing_of_spring = {
+            id = 328282,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3636844,
+
+            toggle = "essences",
+            buff = "blessing_of_spring_active",
+
+            handler = function ()
+                applyBuff( "blessing_of_spring" )
+
+                removeBuff( "blessing_of_spring_active" )
+                applyBuff( "blessing_of_summer_active" )
+                setCooldown( "blessing_of_summer", 45 )
+            end,
+
+            auras = {
+                blessing_of_spring = {
+                    id = 328281,
+                    duration = 30,
+                    max_stack = 1,
+                    friendly = true,
+                },
+                blessing_of_spring_active = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsActiveSpell( 328282 ) then
+                            t.name = class.auras.blessing_of_winter.name .. " Active"
+                            t.count = 1
+                            t.applied = now
+                            t.expires = now + 3600
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                }
+            },
+
+            bind = { "blessing_of_summer", "blessing_of_autumn", "blessing_of_winter" }
+        },
+        ashen_hallow = {
+            id = 316958,
+            cast = function () return 1.5 * haste end,
+            cooldown = 120,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3565722,
+
+            toggle = "essences",
+
+            auras = {
+                hammer_of_wrath_hallow = {
+                    duration = function () return legendary.radiant_embers.enabled and 45 or 30 end,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsUsableSpell( 24275 ) and not ( target.health_pct < 20 or ( level > 57 and ( buff.avenging_wrath.up or buff.crusade.up ) ) and not buff.final_verdict.up ) then
+                            t.name = class.abilities.hammer_of_wrath.name .. " " .. class.abilities.ashen_hallow.name
+                            t.count = 1
+                            t.applied = action.ashen_hallow.lastCast
+                            t.expires = action.ashen_hallow.lastCast + 30
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                },
+            }
+        },
+    } )
 elseif baseClass == "PRIEST" then
     all:RegisterAbilities( {
         boon_of_the_ascended = {
@@ -1033,169 +1361,305 @@ elseif baseClass == "ROGUE" then
         },
     } )
 elseif baseClass == "SHAMAN" then
-        all:RegisterAbilities( {
-            -- Shaman - Kyrian    - 324386 - vesper_totem         (Vesper Totem)
-            vesper_totem = {
-                id = 324386,
-                cast = 0,
-                cooldown = 60,
-                gcd = "totem",
+    all:RegisterAbilities( {
+        vesper_totem = {
+            id = 324386,
+            cast = 0,
+            cooldown = 60,
+            gcd = "totem",
 
-                spend = 0.1,
-                spendType = "mana",
+            spend = 0.1,
+            spendType = "mana",
 
-                startsCombat = true,
-                texture = 3565451,
+            startsCombat = true,
+            texture = 3565451,
 
-                toggle = "essences",
+            toggle = "essences",
 
-                handler = function ()
-                    summonPet( "vesper_totem", 30 )
-                    applyBuff( "vesper_totem" )
+            handler = function ()
+                summonPet( "vesper_totem", 30 )
+                applyBuff( "vesper_totem" )
 
-                    vesper_totem_heal_charges = 3
-                    vesper_totem_dmg_charges = 3
-                    vesper_totem_used_charges = 0
-                end,
+                vesper_totem_heal_charges = 3
+                vesper_totem_dmg_charges = 3
+                vesper_totem_used_charges = 0
+            end,
 
-                auras = {
-                    vesper_totem = {
-                        duration = 30,
-                        max_stack = 1,
-                    }
+            auras = {
+                vesper_totem = {
+                    duration = 30,
+                    max_stack = 1,
+                }
+            }
+        },
+        primordial_wave = {
+            id = 326059,
+            cast = 0,
+            cooldown = 45,
+            recharge = 45,
+            charges = 1,
+            gcd = "spell",
+
+            spend = 0.1,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3578231,
+
+            toggle = "essences",
+
+            cycle = "flame_shock",
+            velocity = 45,
+
+            impact = function ()
+                applyDebuff( "target", "flame_shock" )
+                applyBuff( "primordial_wave" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            auras = {
+                primordial_wave = {
+                    id = 327164,
+                    duration = 15,
+                    max_stack = 1,
+                },
+                splintered_elements = {
+                    id = 354648,
+                    duration = 10,
+                    max_stack = 10,
+                },
+            }
+        },
+        fae_transfusion = {
+            id = 328923,
+            cast = function () return haste * 3 * ( 1 + ( conduit.essential_extraction.mod * 0.01 ) ) end,
+            channeled = true,
+            cooldown = 120,
+            gcd = "spell",
+
+            spend = 0.075,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3636849,
+
+            toggle = "essences",
+            nobuff = "fae_transfusion",
+
+            start = function ()
+                applyBuff( "fae_transfusion" )
+            end,
+
+            tick = function ()
+                if legendary.seeds_of_rampant_growth.enabled then
+                    if state.spec.enhancement then reduceCooldown( "feral_spirit", 9 )
+                    elseif state.spec.elemental then reduceCooldown( talent.storm_elemental.enabled and "storm_elemental" or "fire_elemental", 6 )
+                    else reduceCooldown( "healing_tide_totem", 5 ) end
+                    addStack( "seeds_of_rampant_growth" )
+                end
+            end,
+
+            finish = function ()
+                if state.spec.enhancement then addStack( "maelstrom_weapon", nil, 3 ) end
+            end,
+
+            auras = {
+                fae_transfusion = {
+                    id = 328933,
+                    duration = 20,
+                    max_stack = 1
+                },
+                seeds_of_rampant_growth = {
+                    id = 358945,
+                    duration = 15,
+                    max_stack = 5
                 }
             },
+        },
+        fae_transfusion_heal = {
+            id = 328930,
+            cast = 0,
+            channeled = true,
+            cooldown = 0,
+            gcd = "spell",
 
-            -- Shaman - Necrolord - 326059 - primordial_wave      (Primordial Wave)
-            primordial_wave = {
-                id = 326059,
-                cast = 0,
-                cooldown = 45,
-                recharge = 45,
-                charges = 1,
-                gcd = "spell",
+            suffix = "(Heal)",
 
-                spend = 0.1,
-                spendType = "mana",
+            startsCombat = false,
+            texture = 3636849,
 
-                startsCombat = true,
-                texture = 3578231,
+            buff = "fae_transfusion",
 
-                toggle = "essences",
+            handler = function ()
+                removeBuff( "fae_transfusion" )
+            end,
+        },
+        chain_harvest = {
+            id = 320674,
+            cast = 2.5,
+            cooldown = 90,
+            gcd = "spell",
 
-                cycle = "flame_shock",
-                velocity = 45,
+            spend = 0.1,
+            spendType = "mana",
 
-                impact = function ()
+            startsCombat = true,
+            texture = 3565725,
+
+            toggle = "essences",
+
+            handler = function ()
+                if legendary.elemental_conduit.enabled then
                     applyDebuff( "target", "flame_shock" )
-                    applyBuff( "primordial_wave" )
-                    if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
-                end,
+                    active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + min( 5, active_enemies ) )
+                end
+            end,
+        }
+    } )
+elseif baseClass == "WARLOCK" then
+    all:RegisterAbilities( {
+        scouring_tithe = {
+            id = 312321,
+            cast = 2,
+            cooldown = 40,
+            gcd = "spell",
 
-                auras = {
-                    primordial_wave = {
-                        id = 327164,
-                        duration = 15,
-                        max_stack = 1,
-                    },
-                    splintered_elements = {
-                        id = 354648,
-                        duration = 10,
-                        max_stack = 10,
-                    },
-                }
-            },
+            spend = 0.02,
+            spendType = "mana",
 
-            -- Shaman - Night Fae - 328923 - fae_transfusion      (Fae Transfusion)
-            fae_transfusion = {
-                id = 328923,
-                cast = function () return haste * 3 * ( 1 + ( conduit.essential_extraction.mod * 0.01 ) ) end,
-                channeled = true,
-                cooldown = 120,
-                gcd = "spell",
+            startsCombat = true,
+            texture = 3565452,
 
-                spend = 0.075,
-                spendType = "mana",
+            toggle = "essences",
 
-                startsCombat = true,
-                texture = 3636849,
+            handler = function ()
+                applyDebuff( "target", "scouring_tithe" )
+            end,
 
-                toggle = "essences",
-                nobuff = "fae_transfusion",
-
-                start = function ()
-                    applyBuff( "fae_transfusion" )
-                end,
-
-                tick = function ()
-                    if legendary.seeds_of_rampant_growth.enabled then
-                        if state.spec.enhancement then reduceCooldown( "feral_spirit", 9 )
-                        elseif state.spec.elemental then reduceCooldown( talent.storm_elemental.enabled and "storm_elemental" or "fire_elemental", 6 )
-                        else reduceCooldown( "healing_tide_totem", 5 ) end
-                        addStack( "seeds_of_rampant_growth" )
-                    end
-                end,
-
-                finish = function ()
-                    if state.spec.enhancement then addStack( "maelstrom_weapon", nil, 3 ) end
-                end,
-
-                auras = {
-                    fae_transfusion = {
-                        id = 328933,
-                        duration = 20,
-                        max_stack = 1
-                    },
-                    seeds_of_rampant_growth = {
-                        id = 358945,
-                        duration = 15,
-                        max_stack = 5
-                    }
+            auras = {
+                scouring_tithe = {
+                    id = 312321,
+                    duration = 18,
+                    max_stack = 1,
+                },
+                -- Conduit
+                soul_tithe = {
+                    id = 340238,
+                    duration = 10,
+                    max_stack = 1
+                },
+                -- Legendary
+                languishing_soul_detritus = {
+                    id = 356255,
+                    duration = 8,
+                    max_stack = 1,
                 },
             },
+        },
+        decimating_bolt = {
+            id = 325289,
+            cast = 2.5,
+            cooldown = 45,
+            gcd = "spell",
 
-            fae_transfusion_heal = {
-                id = 328930,
-                cast = 0,
-                channeled = true,
-                cooldown = 0,
-                gcd = "spell",
+            spend = 0.04,
+            spendType = "mana",
 
-                suffix = "(Heal)",
+            startsCombat = true,
+            texture = 3578232,
 
-                startsCombat = false,
-                texture = 3636849,
+            toggle = "essences",
 
-                buff = "fae_transfusion",
+            indicator = function()
+                if active_enemies > 1 and settings.cycle and target.time_to_die > shortest_ttd then return "cycle" end
+            end,
 
-                handler = function ()
-                    removeBuff( "fae_transfusion" )
-                end,
-            },
+            handler = function ()
+                applyBuff( "decimating_bolt", nil, 3 )
+                if legendary.shard_of_annihilation.enabled then
+                    applyBuff( "shard_of_annihilation" )
+                end
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
 
-            -- Shaman - Venthyr   - 320674 - chain_harvest        (Chain Harvest)
-            chain_harvest = {
-                id = 320674,
-                cast = 2.5,
-                cooldown = 90,
-                gcd = "spell",
-
-                spend = 0.1,
-                spendType = "mana",
-
-                startsCombat = true,
-                texture = 3565725,
-
-                toggle = "essences",
-
-                handler = function ()
-                    if legendary.elemental_conduit.enabled then
-                        applyDebuff( "target", "flame_shock" )
-                        active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + min( 5, active_enemies ) )
-                    end
-                end,
+            auras = {
+                decimating_bolt = {
+                    id = 325299,
+                    duration = 3600,
+                    max_stack = 3,
+                },
+                shard_of_annihilation = {
+                    id = 356342,
+                    duration = 44,
+                    max_stack = 1,
+                }
             }
-        } )
+        },
+        soul_rot = {
+            id = 325640,
+            cast = 1.5,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 0.005,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3636850,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "soul_rot" )
+                active_dot.soul_rot = min( 4, active_enemies )
+                if legendary.decaying_soul_satchel.enabled then
+                    applyBuff( "decaying_soul_satchel", nil, active_dot.soul_rot )
+                end
+            end,
+
+            auras = {
+                soul_rot = {
+                    id = 325640,
+                    duration = 8,
+                    max_stack = 1
+                },
+                decaying_soul_satchel = {
+                    id = 356369,
+                    duration = 8,
+                    max_stack = 4,
+                }
+            }
+        },
+        impending_catastrophe = {
+            id = 321792,
+            cast = 2,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 0.04,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565726,
+
+            toggle = "essences",
+
+            velocity = 30,
+
+            impact = function ()
+                applyDebuff( "target", "impending_catastrophe" )
+            end,
+
+            auras = {
+                impending_catastrophe = {
+                    id = 322170,
+                    duration = function () return 12 * ( 1 + conduit.catastrophic_origin.mod * 0.01 ) end,
+                    max_stack = 1,
+                    copy = "impending_catastrophe_dot"
+                },
+            }
+        },
+    } )
 elseif baseClass == "WARRIOR" then
     all:RegisterAbilities( {
         -- Warrior - Kyrian    - 307865 - spear_of_bastion      (Spear of Bastion)
