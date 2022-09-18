@@ -144,41 +144,223 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    apathy = {
+        id = 390669,
+        duration = 4,
+        max_stack = 1
+    },
     apotheosis = {
         id = 200183,
+        duration = 20,
+        max_stack = 1
+    },
+    body_and_soul = {
+        id = 65081,
+        duration = 3,
+        max_stack = 1
+    },
+    death_and_madness = {
+        id = 322098,
+        duration = 7,
+        max_stack = 1
+    },
+    depth_of_the_shadows = {
+        id = 390617,
+        duration = 15,
+        max_stack = 50
     },
     desperate_prayer = {
         id = 19236,
+        duration = 10,
+        tick_time = 1,
+        max_stack = 1
+    },
+    divine_ascension_immune = {
+        id = 328530,
+        duration = 1,
+        max_stack = 1
     },
     divine_ascension = {
-        id = 328530,
+        id = 329543,
+        duration = 10,
+        max_stack = 1
     },
     divine_hymn = {
         id = 64843,
+        duration = 8,
+        tick_time = 2,
+        max_stack = 1
+    },
+    divine_hymn_buff = {
+        id = 64844,
+        duration = 15,
+        max_stack = 5
     },
     divine_word = {
         id = 372760,
+        duration = 10,
+        max_stack = 1
+    },
+    dominate_mind = {
+        id = 205364,
+        duration = 30,
+        max_stack = 1
+    },
+    empyreal_blaze = {
+        id = 372617,
+        duration = 30,
+        max_stack = 3
     },
     fade = {
         id = 586,
+        duration = 10,
+        max_stack = 1
     },
     focused_will = {
-        id = 45243,
+        id = 45242,
+        duration = 8,
+        max_stack = 1
     },
-    mastery_echo_of_light = {
-        id = 77485,
+    guardian_spirit = {
+        id = 47788,
+        duration = 10,
+        max_stack = 1
+    },
+    healing_chorus = {
+        id = 390885,
+        duration = 20,
+        max_stack = 50
+    },
+    holy_fire = {
+        id = 14914,
+        duration = 7,
+        tick_time = 1,
+        max_stack = 1
+    },
+    holy_ward = {
+        id = 213610,
+        duration = 15,
+        max_stack = 1
+    },
+    inspiration = {
+        id = 390677,
+        duration = 15,
+        max_stack = 1
+    },
+    leap_of_faith = {
+        id = 73325,
+        duration = 1.5,
+        max_stack = 1
+    },
+    lightweaver = {
+        id = 390993,
+        duration = 20,
+        max_stack = 2
+    },
+    mind_control = {
+        id = 605,
+        duration = 30,
+        max_stack = 1
+    },
+    mind_soothe = {
+        id = 453,
+        duration = 20,
+        max_stack = 1
+    },
+    mind_vision = {
+        id = 2096,
+        duration = 60,
+        max_stack = 1
+    },
+    mindgames = {
+        id = 375901,
+        duration = 5,
+        max_stack = 1
+    },
+    pontifex = {
+        id = 390989,
+        duration = 30,
+        max_stack = 2
     },
     power_infusion = {
         id = 10060,
+        duration = 20,
+        max_stack = 1
     },
-    spirit_of_redemption = {
-        id = 20711,
+    power_word_fortitude = {
+        id = 21562,
+        duration = 3600,
+        max_stack = 1
+    },
+    power_word_shield = {
+        id = 17,
+        duration = 15,
+        tick_time = 1,
+        max_stack = 1
+    },
+    prayer_circle = {
+        id = 321379,
+        duration = 8,
+        max_stack = 1
+    },
+    psychic_scream = {
+        id = 8122,
+        duration = 8,
+        max_stack = 1
+    },
+    ray_of_hope = {
+        id = 232707,
+        duration = 6,
+        max_stack = 1
+    },
+    renew = {
+        id = 139,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 1
+    },
+    sanctified_prayers = {
+        id = 196490,
+        duration = 15,
+        max_stack = 1
+    },
+    shackle_undead = {
+        id = 9484,
+        duration = 50,
+        max_stack = 1
+    },
+    shadow_word_pain = {
+        id = 589,
+        duration = 16,
+        tick_time = 2,
+        max_stack = 1
     },
     symbol_of_hope = {
         id = 64901,
+        duration = 4,
+        tick_time = 1,
+        max_stack = 1
+    },
+    symbol_of_hope_buff = {
+        id = 265144,
+        duration = 1.1,
+        max_stack = 1
+    },
+    tools_of_the_cloth = {
+        id = 390933,
+        duration = 12,
+        max_stack = 1
     },
     vampiric_embrace = {
         id = 15286,
+        duration = 15,
+        tick_time = 0.5,
+        max_stack = 1
+    },
+    void_tendrils = {
+        id = 108920,
+        duration = 20,
+        max_stack = 1
     },
 } )
 

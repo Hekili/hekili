@@ -141,37 +141,226 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    apathy = {
+        id = 390669,
+        duration = 4,
+        max_stack = 1
+    },
     archangel = {
         id = 197862,
+        duration = 15,
+        max_stack = 1
+    },
+    body_and_soul = {
+        id = 65081,
+        duration = 3,
+        max_stack = 1
+    },
+    borrowed_time = {
+        id = 390692,
+        duration = 4,
+        max_stack = 1
     },
     dark_archangel = {
         id = 197871,
+        duration = 8,
+        max_stack = 1
+    },
+    death_and_madness = {
+        id = 322098,
+        duration = 7,
+        max_stack = 1
+    },
+    depth_of_the_shadows = {
+        id = 390617,
+        duration = 15,
+        max_stack = 50
     },
     desperate_prayer = {
         id = 19236,
+        duration = 10,
+        tick_time = 1,
+        max_stack = 1
+    },
+    divine_star = {
+        id = 110744,
+        duration = 15,
+        max_stack = 1
+    },
+    dominate_mind = {
+        id = 205364,
+        duration = 30,
+        max_stack = 1
     },
     fade = {
         id = 586,
+        duration = 10,
+        max_stack = 1
     },
     focused_will = {
-        id = 45243,
+        id = 45242,
+        duration = 8,
+        max_stack = 1
     },
-    mastery_grace = {
-        id = 271534,
+    halo = {
+        id = 120517,
+        duration = 2.15,
+        max_stack = 1
+    },
+    inspiration = {
+        id = 390677,
+        duration = 15,
+        max_stack = 1
+    },
+    leap_of_faith = {
+        id = 73325,
+        duration = 1.5,
+        max_stack = 1
+    },
+    levitate = {
+        id = 1706,
+        duration = 0,
+        max_stack = 1
+    },
+    mind_control = {
+        id = 605,
+        duration = 30,
+        max_stack = 1
+    },
+    mind_soothe = {
+        id = 453,
+        duration = 20,
+        max_stack = 1
+    },
+    mind_vision = {
+        id = 2096,
+        duration = 60,
+        max_stack = 1
+    },
+    mindbender = {
+        id = 123040,
+        duration = 12,
+        max_stack = 1
+    },
+    mindgames = {
+        id = 375901,
+        duration = 5,
+        max_stack = 1
+    },
+    pain_suppression = {
+        id = 33206,
+        duration = 8,
+        max_stack = 1
+    },
+    phantasm = {
+        id = 114239,
+        duration = 0,
+        max_stack = 1
     },
     power_infusion = {
         id = 10060,
+        duration = 20,
+        max_stack = 1
+    },
+    power_of_the_dark_side = {
+        id = 198069,
+        duration = 20,
+        max_stack = 1
+    },
+    power_word_barrier = {
+        id = 62618,
+        duration = 10,
+        max_stack = 1
+    },
+    power_word_fortitude = {
+        id = 21562,
+        duration = 3600,
+        max_stack = 1
+    },
+    power_word_shield = {
+        id = 17,
+        duration = 15,
+        tick_time = 1,
+        max_stack = 1
+    },
+    protector_of_the_frail = {
+        id = 33206,
+        duration = 8,
+        max_stack = 1
+    },
+    psychic_scream = {
+        id = 8122,
+        duration = 8,
+        max_stack = 1
+    },
+    purge_the_wicked = {
+        id = 204213,
+        duration = 20,
+        tick_time = 2,
+        max_stack = 1
     },
     rapture = {
         id = 47536,
+        duration = 8,
+        max_stack = 1
     },
-    sign_of_the_emissary = {
-        id = 225788,
-        duration = 3600,
-        max_stack = 1,
+    renew = {
+        id = 139,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 1
+    },
+    schism = {
+        id = 214621,
+        duration = 9,
+        max_stack = 1
+    },
+    shackle_undead = {
+        id = 9484,
+        duration = 50,
+        max_stack = 1
+    },
+    shadow_covenant = {
+        id = 322105,
+        duration = 7,
+        max_stack = 1
+    },
+    shadow_word_pain = {
+        id = 589,
+        duration = 16,
+        tick_time = 2,
+        max_stack = 1
+    },
+    shadowfiend = {
+        id = 34433,
+        duration = 15,
+        max_stack = 1
+    },
+    tools_of_the_cloth = {
+        id = 390933,
+        duration = 12,
+        max_stack = 1
     },
     vampiric_embrace = {
         id = 15286,
+        duration = 15,
+        tick_time = 0.5,
+        max_stack = 1
+    },
+    void_tendrils = {
+        id = 108920,
+        duration = 0.5,
+        max_stack = 1
+    },
+    weal_and_woe = {
+        id = 390787,
+        duration = 20,
+        max_stack = 7
+    },
+    wrath_unleashed = {
+        id = 390782,
+        duration = 15,
+        max_stack = 1
     },
 } )
 

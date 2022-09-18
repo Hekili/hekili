@@ -139,46 +139,276 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    apathy = {
+        id = 390669,
+        duration = 4,
+        max_stack = 1
+    },
+    body_and_soul = {
+        id = 65081,
+        duration = 3,
+        max_stack = 1
+    },
+    coalescing_shadows = {
+        id = 391243,
+        duration = 60,
+        max_stack = 3
+    },
     dark_ascension = {
         id = 391109,
+        duration = 20,
+        tick_time = 1,
+        max_stack = 1
+    },
+    dark_evangelism = {
+        id = 391099,
+        duration = 25,
+        max_stack = 5
+    },
+    death_and_madness = {
+        id = 322098,
+        duration = 7,
+        max_stack = 1
+    },
+    deathspeaker = {
+        id = 392511,
+        duration = 15,
+        max_stack = 1
+    },
+    depth_of_the_shadows = {
+        id = 390617,
+        duration = 15,
+        max_stack = 50
     },
     desperate_prayer = {
         id = 19236,
+        duration = 10,
+        tick_time = 1,
+        max_stack = 1
+    },
+    devouring_plague = {
+        id = 335467,
+        duration = 6,
+        tick_time = 3,
+        max_stack = 1
     },
     dispersion = {
         id = 47585,
+        duration = 6,
+        tick_time = 1,
+        max_stack = 1
+    },
+    dominate_mind = {
+        id = 205364,
+        duration = 30,
+        max_stack = 1
     },
     fade = {
         id = 586,
+        duration = 10,
+        max_stack = 1
     },
     focused_will = {
-        id = 45243,
+        id = 45242,
+        duration = 8,
+        max_stack = 1
     },
-    hallucinations = {
-        id = 280752,
+    idol_of_nzoth = {
+        id = 373281,
+        duration = 20,
+        max_stack = 10
     },
-    mastery_shadow_weaving = {
-        id = 343690,
+    idol_of_yoggsaron = {
+        id = 373276,
+        duration = 3600,
+        max_stack = 50
+    },
+    inspiration = {
+        id = 390677,
+        duration = 15,
+        max_stack = 1
+    },
+    leap_of_faith = {
+        id = 73325,
+        duration = 1.5,
+        max_stack = 1
+    },
+    levitate = {
+        id = 1706,
+        duration = 0,
+        max_stack = 1
+    },
+    mind_control = {
+        id = 605,
+        duration = 30,
+        max_stack = 1
+    },
+    mind_flay = {
+        id = 15407,
+        duration = 4.5,
+        tick_time = 0.75,
+        max_stack = 1
+    },
+    mind_flay_insanity = {
+        id = 391399,
+        duration = 0,
+        max_stack = 1
+    },
+    mind_melt = {
+        id = 391092,
+        duration = 10,
+        max_stack = 2
+    },
+    mind_sear = {
+        id = 48045,
+        duration = 3,
+        tick_time = 1,
+        max_stack = 1
+    },
+    mind_soothe = {
+        id = 453,
+        duration = 20,
+        max_stack = 1
+    },
+    mind_spike = {
+        id = 217673,
+        duration = 10,
+        max_stack = 3
+    },
+    mind_vision = {
+        id = 2096,
+        duration = 60,
+        max_stack = 1
+    },
+    mindgames = {
+        id = 375901,
+        duration = 5,
+        max_stack = 1
+    },
+    phantasm = {
+        id = 114239,
+        duration = 0,
+        max_stack = 1
     },
     power_infusion = {
         id = 10060,
+        duration = 20,
+        max_stack = 1
+    },
+    power_word_fortitude = {
+        id = 21562,
+        duration = 3600,
+        max_stack = 1
+    },
+    power_word_shield = {
+        id = 17,
+        duration = 15,
+        tick_time = 1,
+        max_stack = 1
+    },
+    prayer_of_mending = {
+        id = 33076,
+        duration = 0,
+        max_stack = 1
+    },
+    psychic_horror = {
+        id = 64044,
+        duration = 4,
+        max_stack = 1
+    },
+    psychic_scream = {
+        id = 8122,
+        duration = 8,
+        max_stack = 1
+    },
+    renew = {
+        id = 139,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 1
+    },
+    shackle_undead = {
+        id = 9484,
+        duration = 50,
+        max_stack = 1
+    },
+    shadow_word_pain = {
+        id = 589,
+        duration = 16,
+        tick_time = 2,
+        max_stack = 1
+    },
+    shadowfiend = {
+        id = 34433,
+        duration = 15,
+        max_stack = 1
     },
     shadowform = {
         id = 232698,
+        duration = 3600,
+        max_stack = 1
     },
     sign_of_the_emissary = {
         id = 225788,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
+    },
+    silence = {
+        id = 15487,
+        duration = 4,
+        max_stack = 1
+    },
+    surge_of_darkness = {
+        id = 87160,
+        duration = 10,
+        max_stack = 3
+    },
+    tools_of_the_cloth = {
+        id = 390933,
+        duration = 12,
+        max_stack = 1
+    },
+    unfurling_darkness = {
+        id = 341282,
+        duration = 8,
+        max_stack = 1
+    },
+    unfurling_darkness_icd = {
+        id = 341291,
+        duration = 15,
+        max_stack = 1
     },
     vampiric_embrace = {
         id = 15286,
+        duration = 15,
+        tick_time = 0.5,
+        max_stack = 1
     },
-    void_bolt = {
-        id = 228266,
+    vampiric_touch = {
+        id = 34914,
+        duration = 21,
+        tick_time = 3,
+        max_stack = 1
     },
     voidform = {
-        id = 228264,
+        -- id = ?,
+    },
+    void_tendrils = {
+        id = 108920,
+        duration = 0.5,
+        max_stack = 1
+    },
+    void_torrent = {
+        id = 263165,
+        duration = 3,
+        tick_time = 1,
+        max_stack = 1
+    },
+    void_torrent_insanity = {
+        id = 289577,
+        duration = 3.9,
+        tick_time = 0.975,
+        max_stack = 1
     },
 } )
 
