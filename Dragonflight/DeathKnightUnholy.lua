@@ -7,9 +7,160 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local roundUp = ns.roundUp
+local FindUnitBuffByID = ns.FindUnitBuffByID
+local PTR = ns.PTR
+
 local spec = Hekili:NewSpecialization( 252 )
 
-spec:RegisterResource( Enum.PowerType.Runes )
+spec:RegisterResource( Enum.PowerType.Runes, {
+    rune_regen = {
+        last = function ()
+            return state.query_time
+        end,
+
+        interval = function( time, val )
+            local r = state.runes
+
+            if val == 6 then return -1 end
+            return r.expiry[ val + 1 ] - time
+        end,
+
+        stop = function( x )
+            return x == 6
+        end,
+
+        value = 1,
+    },
+}, setmetatable( {
+    expiry = { 0, 0, 0, 0, 0, 0 },
+    cooldown = 10,
+    regen = 0,
+    max = 6,
+    forecast = {},
+    fcount = 0,
+    times = {},
+    values = {},
+    resource = "runes",
+
+    reset = function()
+        local t = state.runes
+
+        for i = 1, 6 do
+            local start, duration, ready = GetRuneCooldown( i )
+
+            start = start or 0
+            duration = duration or ( 10 * state.haste )
+
+            start = roundUp( start, 2 )
+
+            t.expiry[ i ] = ready and 0 or start + duration
+            t.cooldown = duration
+        end
+
+        table.sort( t.expiry )
+
+        t.actual = nil
+    end,
+
+    gain = function( amount )
+        local t = state.runes
+
+        for i = 1, amount do
+            t.expiry[ 7 - i ] = 0
+        end
+        table.sort( t.expiry )
+
+        t.actual = nil
+    end,
+
+    spend = function( amount )
+        local t = state.runes
+
+        for i = 1, amount do
+            if t.expiry[ 4 ] > state.query_time then
+                t.expiry[ 1 ] = t.expiry[ 4 ] + t.cooldown
+            else
+                t.expiry[ 1 ] = state.query_time + t.cooldown
+            end
+            table.sort( t.expiry )
+        end
+
+        if amount > 0 then
+            state.gain( amount * 10, "runic_power" )
+
+            if state.set_bonus.tier20_4pc == 1 then
+                state.cooldown.army_of_the_dead.expires = max( 0, state.cooldown.army_of_the_dead.expires - 1 )
+            end
+        end
+
+        t.actual = nil
+    end,
+
+    timeTo = function( x )
+        return state:TimeToResource( state.runes, x )
+    end,
+}, {
+    __index = function( t, k, v )
+        if k == "actual" then
+            local amount = 0
+
+            for i = 1, 6 do
+                if t.expiry[ i ] <= state.query_time then
+                    amount = amount + 1
+                end
+            end
+
+            return amount
+
+        elseif k == "current" then
+            -- If this is a modeled resource, use our lookup system.
+            if t.forecast and t.fcount > 0 then
+                local q = state.query_time
+                local index, slice
+
+                if t.values[ q ] then return t.values[ q ] end
+
+                for i = 1, t.fcount do
+                    local v = t.forecast[ i ]
+                    if v.t <= q then
+                        index = i
+                        slice = v
+                    else
+                        break
+                    end
+                end
+
+                -- We have a slice.
+                if index and slice then
+                    t.values[ q ] = max( 0, min( t.max, slice.v ) )
+                    return t.values[ q ]
+                end
+            end
+
+            return t.actual
+
+        elseif k == "deficit" then
+            return t.max - t.current
+
+        elseif k == "time_to_next" then
+            return t[ "time_to_" .. t.current + 1 ]
+
+        elseif k == "time_to_max" then
+            return t.current == 6 and 0 or max( 0, t.expiry[6] - state.query_time )
+
+
+        elseif k == "add" then
+            return t.gain
+
+        else
+            local amount = k:match( "time_to_(%d+)" )
+            amount = amount and tonumber( amount )
+
+            if amount then return state:TimeToResource( t, amount ) end
+        end
+    end
+} ) )
 spec:RegisterResource( Enum.PowerType.RunicPower )
 
 -- Talents
