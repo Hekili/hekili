@@ -4309,7 +4309,7 @@ do
         local option = db.args.abilities.plugins.actions[ v ] or {}
 
         option.type = "group"
-        option.name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. useName .. "|r" end
+        option.name = function () return useName .. ( state:IsDisabled( v, true ) and "|cFFFF0000*|r" or "" ) end
         option.order = 1
         option.set = "SetAbilityOption"
         option.get = "GetAbilityOption"
@@ -4440,7 +4440,7 @@ do
 
             local option = {
                 type = "group",
-                name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. useName .. "|r" end,
+                name = function () return useName .. ( state:IsDisabled( v, true ) and "|cFFFF0000*|r" or "" ) end,
                 order = 1,
                 set = "SetAbilityOption",
                 get = "GetAbilityOption",
@@ -4651,7 +4651,7 @@ do
         local option = db.args.items.plugins.equipment[ v ] or {}
 
         option.type = "group"
-        option.name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. ability.name .. "|r" end
+        option.name = function () return ability.name .. ( state:IsDisabled( v, true ) and "|cFFFF0000*|r" or "" ) end
         option.order = 1
         option.set = "SetItemOption"
         option.get = "GetItemOption"
@@ -4768,7 +4768,7 @@ do
             local ability = class.abilities[ v ]
             local option = {
                 type = "group",
-                name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. ability.name .. "|r" end,
+                name = function () return ability.name .. ( state:IsDisabled( v, true ) and "|cFFFF0000*|r" or "" ) end,
                 order = 1,
                 set = "SetItemOption",
                 get = "GetItemOption",
@@ -4776,16 +4776,7 @@ do
                     multiItem = {
                         type = "description",
                         name = function ()
-                            local output = "These settings will apply to |cFF00FF00ALL|r of the following similar PvP trinkets:\n\n"
-
-                            if ability.items then
-                                for i, itemID in ipairs( ability.items ) do
-                                    output = output .. "     " .. class.itemList[ itemID ] .. "\n"
-                                end
-                                output = output .. "\n"
-                            end
-
-                            return output
+                            return "These settings will apply to |cFF00FF00ALL|r of the " .. ability.name .. " PvP trinkets."
                         end,
                         fontSize = "medium",
                         width = "full",
@@ -5113,6 +5104,23 @@ do
                         list[ k ] = class.abilityList[ k ] or v
                     end
                 end
+            end
+
+            return list
+        end
+        e.sorting = function()
+            local list = {}
+
+            for k, v in pairs( class.abilityList ) do
+                insert( list, {
+                    k, class.abilities[ k ].name or v or k
+                } )
+            end
+
+            sort( list, function( a, b ) return a[2] < b[2] end )
+
+            for i = 1, #list do
+                list[ i ] = list[ i ][ 1 ]
             end
 
             return list
@@ -7076,6 +7084,23 @@ do
                                                     name = "Action",
                                                     desc = "Select the action that will be recommended when this entry's criteria are met.",
                                                     values = class.abilityList,
+                                                    sorting = function()
+                                                        local list = {}
+
+                                                        for k, v in pairs( class.abilityList ) do
+                                                            insert( list, {
+                                                                k, class.abilities[ k ].name or v or k
+                                                            } )
+                                                        end
+
+                                                        sort( list, function( a, b ) return a[2] < b[2] end )
+
+                                                        for i = 1, #list do
+                                                            list[ i ] = list[ i ][ 1 ]
+                                                        end
+
+                                                        return list
+                                                    end,
                                                     order = 3.1,
                                                     width = 1.5,
                                                 },

@@ -604,24 +604,6 @@ local HekiliSpecMixin = {
             local actionItem = Item:CreateFromItemID( item )
             if not actionItem:IsItemEmpty() then
                 actionItem:ContinueOnItemLoad( function( success )
-                    --[[ if not success then
-                        Hekili:Error( "Unable to load " .. item .. " (" .. ability .. ")." )
-
-                        -- Assume the item is not presently in-game.
-                        for key, entry in pairs( class.abilities ) do
-                            if a == entry then
-                                class.abilities[ key ] = nil
-                                class.abilityList[ key ] = nil
-                                class.abilityByName[ key ] = nil
-                                class.itemList[ key ] = nil
-
-                                self.abilities[ key ] = nil
-                            end
-                        end
-
-                        return
-                    end ]]
-
                     local name = actionItem:GetItemName()
                     local link = actionItem:GetItemLink()
                     local texture = actionItem:GetItemIcon()
@@ -680,9 +662,8 @@ local HekiliSpecMixin = {
                         end
 
                         if not a.unlisted then
-                            class.abilityList[ ability ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
-                            class.itemList[ item ] = "|T" .. a.texture .. ":0|t " .. link
-
+                            class.abilityList[ ability ] = a.listName or ( "|T" .. ( a.texture or texture ) .. ":0|t " .. link )
+                            class.itemList[ item ] = a.listName or ( "|T" .. a.texture .. ":0|t " .. link )
                             class.abilityByName[ a.name ] = a
                         end
 
@@ -713,7 +694,7 @@ local HekiliSpecMixin = {
                                             self.abilities[ name ]  = a
 
                                             if not class.itemList[ id ] then
-                                                class.itemList[ id ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
+                                                class.itemList[ id ] = a.listName or ( "|T" .. ( a.texture or texture ) .. ":0|t " .. link )
                                                 addedToItemList = true
                                             end
                                         end
@@ -2453,7 +2434,8 @@ all:RegisterAbilities( {
 
     -- INTERNAL HANDLERS
     call_action_list = {
-        name = '|cff00ccff[Call Action List]|r',
+        name = "Call Action List",
+        listName = '|cff00ccff[Call Action List]|r',
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2461,7 +2443,8 @@ all:RegisterAbilities( {
     },
 
     run_action_list = {
-        name = '|cff00ccff[Run Action List]|r',
+        name = "Run Action List",
+        listName = '|cff00ccff[Run Action List]|r',
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2469,7 +2452,8 @@ all:RegisterAbilities( {
     },
 
     wait = {
-        name = '|cff00ccff[Wait]|r',
+        name = "Wait",
+        listName = '|cff00ccff[Wait]|r',
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2477,21 +2461,24 @@ all:RegisterAbilities( {
     },
 
     pool_resource = {
-        name = '|cff00ccff[Pool Resource]|r',
+        name = "Pool Resource",
+        listName = "|cff00ccff[Pool Resource]|r",
         cast = 0,
         cooldown = 0,
         gcd = 'off',
     },
 
     cancel_action = {
-        name = "|cff00ccff[Cancel Action]|r",
+        name = "Cancel Action",
+        listName = "|cff00ccff[Cancel Action]|r",
         cast = 0,
         cooldown = 0,
         gcd = "off",
     },
 
     variable = {
-        name = '|cff00ccff[Variable]|r',
+        name = "Variable",
+        listName = '|cff00ccff[Variable]|r',
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2499,7 +2486,8 @@ all:RegisterAbilities( {
     },
 
     potion = {
-        name = '|cff00ccff[Potion]|r',
+        name = "Potion",
+        listName = '|cff00ccff[Potion]|r',
         cast = 0,
         cooldown = function () return time > 0 and 3600 or 60 end,
         gcd = 'off',
@@ -2551,7 +2539,8 @@ all:RegisterAbilities( {
     },
 
     healthstone = {
-        name = "|cff00ccff[Healthstone]|r",
+        name = function () return ( GetItemInfo( 5512 ) ) or "Healthstone" end,
+        listName = "|cff00ccff[Healthstone]|r",
         cast = 0,
         cooldown = function () return time > 0 and 3600 or 60 end,
         gcd = "off",
@@ -2580,7 +2569,8 @@ all:RegisterAbilities( {
     },
 
     cancel_buff = {
-        name = '|cff00ccff[Cancel Buff]|r',
+        name = "Cancel Buff",
+        listName = '|cff00ccff[Cancel Buff]|r',
         cast = 0,
         gcd = 'off',
 
@@ -2618,7 +2608,8 @@ all:RegisterAbilities( {
     },
 
     null_cooldown = {
-        name = "|cff00ccff[Null Cooldown]|r",
+        name = "Null Cooldown",
+        listName = "|cff00ccff[Null Cooldown]|r",
         cast = 0,
         gcd = "off",
 
@@ -2628,13 +2619,15 @@ all:RegisterAbilities( {
     },
 
     trinket1 = {
-        name = "|cff00ccff[Trinket #1]",
+        name = "Trinket #1",
+        listName = "|cff00ccff[Trinket #1]",
         cast = 0,
         gcd = "off",
     },
 
     trinket2 = {
-        name = "|cff00ccff[Trinket #2]",
+        name = "Trinket #2",
+        listName = "|cff00ccff[Trinket #2]",
         cast = 0,
         gcd = "off",
     },
@@ -2648,7 +2641,8 @@ do
     -- 2.  Respect item preferences registered in spec options.
 
     all:RegisterAbility( "use_items", {
-        name = "|cff00ccff[Use Items]|r",
+        name = "Use Items",
+        listName = "|cff00ccff[Use Items]|r",
         cast = 0,
         cooldown = 120,
         gcd = 'off',
@@ -2656,7 +2650,8 @@ do
 
 
     all:RegisterAbility( "heart_essence", {
-        name = "|cff00ccff[Heart Essence]|r",
+        name = function () return ( GetItemInfo( 158075 ) ) or "Heart Essence" end,
+        listName = "|cff00ccff[Heart Essence]|r",
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -4480,8 +4475,12 @@ do
     end
 
     all:RegisterAbility( "gladiators_medallion", {
-        name = function () return "\"" .. ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) .. "\"" end,
-        link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) .. "]|r" end,
+        name = function () return ( GetSpellInfo( 277179 ) ) end,
+        listName = function ()
+            local _, _, tex = GetSpellInfo( 277179 )
+            if tex then return "|T" .. tex .. ":0|t " .. ( GetSpellLink( 277179 ) ) end
+        end,
+        link = function () return ( GetSpellLink( 277179 ) ) end,
         cast = 0,
         cooldown = 120,
         gcd = "off",
@@ -4543,8 +4542,12 @@ do
     end
 
     all:RegisterAbility( "gladiators_badge", {
-        name = function () return "\"" .. ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) .. "\"" end,
-        link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) .. "]|r" end,
+        name = function () return ( GetSpellInfo( 277185 ) ) end,
+        listName = function ()
+            local _, _, tex = GetSpellInfo( 277185 )
+            if tex then return "|T" .. tex .. ":0|t " .. ( GetSpellLink( 277185 ) ) end
+        end,
+        link = function () return ( GetSpellLink( 277185 ) ) end,
         cast = 0,
         cooldown = 120,
         gcd = "off",
@@ -4630,8 +4633,12 @@ do
 
 
     all:RegisterAbility( "gladiators_emblem", {
-        name = function () return "\"" .. ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) .. "\"" end,
-        link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) .. "]|r" end,
+        name = function () return ( GetSpellInfo( 277187 ) ) end,
+        listName = function ()
+            local _, _, tex = GetSpellInfo( 277187 )
+            if tex then return "|T" .. tex .. ":0|t " .. ( GetSpellLink( 277187 ) ) end
+        end,
+        link = function () return ( GetSpellLink( 277187 ) ) end,
         cast = 0,
         cooldown = 90,
         gcd = "off",

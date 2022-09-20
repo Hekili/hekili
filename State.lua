@@ -537,6 +537,7 @@ state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo
 state.GetSpellCount = GetSpellCount
 state.GetSpellInfo = GetSpellInfo
+state.GetSpellLink = GetSpellLink
 state.GetSpellTexture = GetSpellTexture
 state.GetStablePetInfo = GetStablePetInfo
 state.GetTime = GetTime
