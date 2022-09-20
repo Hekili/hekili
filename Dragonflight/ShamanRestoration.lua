@@ -129,19 +129,19 @@ spec:RegisterTalents( {
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    skyfury_totem = 707, -- 204330
-    unleash_shield = 5437, -- 356736
-    counterstrike_totem = 708, -- 204331
-    swelling_waves = 712, -- 204264
-    electrocute = 714, -- 206642
-    grounding_totem = 715, -- 204336
-    tidebringer = 1930, -- 236501
-    traveling_storms = 5528, -- 204403
-    cleansing_waters = 3755, -- 290250
-    ancestral_gift = 3756, -- 290254
-    living_tide = 5388, -- 353115
-    precognition = 5458, -- 377360
-    spectral_recovery = 3520, -- 204261
+    ancestral_gift      = 3756, -- 290254
+    cleansing_waters    = 3755, -- 290250
+    counterstrike_totem = 708 , -- 204331
+    electrocute         = 714 , -- 206642
+    grounding_totem     = 715 , -- 204336
+    living_tide         = 5388, -- 353115
+    precognition        = 5458, -- 377360
+    skyfury_totem       = 707 , -- 204330
+    spectral_recovery   = 3520, -- 204261
+    swelling_waves      = 712 , -- 204264
+    tidebringer         = 1930, -- 236501
+    traveling_storms    = 5528, -- 204403
+    unleash_shield      = 5437, -- 356736
 } )
 
 
@@ -149,77 +149,234 @@ spec:RegisterPvpTalents( {
 spec:RegisterAuras( {
     ancestral_guidance = {
         id = 108281,
+        duration = 10,
+        tick_time = 0.5,
+        max_stack = 1
+    },
+    ancestral_protection_totem = { -- TODO: Make duration work from totem placement.
+        id = 255234,
+        duration = 30,
+        max_stack = 1
+    },
+    ancestral_vigor = {
+        id = 207400,
+        duration = 10,
+        max_stack = 1
     },
     ascendance = {
         id = 114052,
+        duration = 15,
+        tick_time = 1,
+        max_stack = 1
     },
     astral_shift = {
         id = 108271,
+        duration = 8,
+        max_stack = 1
     },
-    earth_elemental = {
-        id = 198103,
+    bloodlust = {
+        id = 2825,
+        duration = 40,
+        max_stack = 1
     },
-    earthliving_weapon = {
-        id = 382021,
+    cloudburst_totem = { -- TODO: This matches totem duration.
+        id = 157153,
+        duration = 15,
+        max_stack = 1
     },
-    earthquake = {
-        id = 61882,
+    cloudburst_totem_healing = {
+        id = 157504,
+        duration = 15,
+        max_stack = 1
+    },
+    counterstrike_totem = { -- TODO: This is the debuff applied to enemies.
+        id = 208997,
+        duration = 15,
+        max_stack = 1
+    },
+    earth_shield = {
+        id = 974,
+        duration = 600,
+        max_stack = 1
+    },
+    earthbind = { -- TODO: Check ID.
+        id = 3600, -- 116947?
+        duration = 5,
+        max_stack = 1
+    },
+    earthen_wall = { -- TODO: Protective aura.
+        id = 198839,
+        duration = 15,
+        max_stack = 1
+    },
+    earthgrab = {
+        id = 64695,
+        duration = 8,
+        max_stack = 1
+    },
+    earthliving_weapon = { -- TODO: Confirm buff on player (vs. actual weapon imbue).  Need HoT buff.
+        id = 382022,
+        duration = 3600,
+        max_stack = 1
     },
     everrising_tide = {
         id = 382029,
+        duration = 8,
+        max_stack = 1
     },
     far_sight = {
         id = 6196,
+        duration = 60,
+        max_stack = 1
     },
-    fire_elemental = {
-        id = 198067,
+    flame_shock = {
+        id = 188389,
+        duration = 18,
+        tick_time = 2,
+        max_stack = 1
+    },
+    flurry = {
+        id = 382889,
+        duration = 15,
+        max_stack = 1
+    },
+    focused_insight = {
+        id = 381668,
+        duration = 12,
+        max_stack = 1
+    },
+    frost_shock = {
+        id = 196840,
+        duration = 6,
+        max_stack = 1
     },
     ghost_wolf = {
         id = 2645,
+        duration = 3600,
+        max_stack = 1
+    },
+    grounding_totem = { -- TODO: This is totem direction; check for aura ID.
+        id = 204336,
+        duration = 3,
+        max_stack = 1
     },
     healing_rain = {
         id = 73920,
+        duration = 10,
+        tick_time = 2,
+        max_stack = 1
     },
-    healing_tide_totem = {
-        id = 108280,
-    },
-    icefury = {
-        id = 210714,
+    hex = {
+        id = 51514,
+        duration = 60,
+        max_stack = 1
     },
     lightning_shield = {
         id = 192106,
+        duration = 1800,
+        max_stack = 1
     },
-    mastery_deep_healing = {
-        id = 77226,
+    master_of_the_elements = {
+        id = 260734,
+        duration = 15,
+        max_stack = 1
     },
     natures_swiftness = {
         id = 378081,
-    },
-    reincarnation = {
-        id = 20608,
-    },
-    sign_of_the_twisting_nether = {
-        id = 335148,
         duration = 3600,
+        max_stack = 1
+    },
+    riptide = {
+        id = 61295,
+        duration = 18,
+        tick_time = 3,
+        max_stack = 1
+    },
+    sign_of_the_emissary = {
+        id = 225788,
+        duration = 3600,
+        max_stack = 1
+    },
+    skyfury_totem = {
+        id = 208963,
+        duration = 15,
         max_stack = 1,
     },
     spirit_walk = {
         id = 58875,
+        duration = 8,
+        max_stack = 1,
     },
     spiritwalkers_grace = {
         id = 79206,
+        duration = 15,
+        max_stack = 1
     },
-    storm_elemental = {
-        id = 192249,
+    static_charge = {
+        id = 118905,
+        duration = 3,
+        max_stack = 1
+    },
+    stoneskin = {
+        id = 383018,
+        duration = 15,
+        max_stack = 1,
+        shared = "player",
     },
     stormkeeper = {
         id = 383009,
+        duration = 15,
+        max_stack = 1
+    },
+    swirling_currents = {
+        id = 378102,
+        duration = 15,
+        max_stack = 1
+    },
+    thunderous_paws = {
+        id = 378076,
+        duration = 3,
+        max_stack = 1
+    },
+    thunderstorm = {
+        id = 51490,
+        duration = 5,
+        max_stack = 1
     },
     unleash_life = {
         id = 73685,
+        duration = 10,
+        max_stack = 1
+    },
+    earth_unleashed = {
+        id = 356738,
+        duration = 4,
+        max_stack = 1
+    },
+    storm_unleahed = {
+        id = 123599,
+        duration = 4,
+        max_stack = 1
+    },
+    water_unleashed = {
+        id = 356824,
+        duration = 6,
+        max_stack = 1
     },
     water_shield = {
         id = 52127,
+        duration = 3600,
+        max_stack = 1
+    },
+    water_walking = {
+        id = 546,
+        duration = 600,
+        max_stack = 1
+    },
+    wind_rush = {
+        id = 192082,
+        duration = 5,
+        max_stack = 1
     },
 } )
 

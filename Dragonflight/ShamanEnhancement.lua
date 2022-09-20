@@ -449,7 +449,7 @@ spec:RegisterAuras( {
     },
     skyfury_totem = {
         id = 208963,
-        duration = 3600,
+        duration = 15,
         max_stack = 1,
     },
     spirit_walk = {
