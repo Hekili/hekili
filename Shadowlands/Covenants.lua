@@ -263,7 +263,296 @@ end
 
 local baseClass = UnitClassBase( "player" )
 
-if baseClass == "DRUID" then
+if baseClass == "DEATHKNIGHT" then
+    all:RegisterAbilities( {
+        shackle_the_unworthy = {
+            id = 312202,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3565442,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "shackle_the_unworthy" )
+            end,
+
+            auras = {
+                final_sentence = {
+                    id = 353823,
+                    duration = 10,
+                    max_stack = 5,
+                },
+            }
+        },
+        abomination_limb = {
+            id = 315443,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3578196,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "abomination_limb" )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            auras = {
+                abominations_frenzy = {
+                    id = 353546,
+                    duration = 12,
+                    max_stack = 1,
+                }
+            }
+        },
+        deaths_due = {
+            id = 324128,
+            cast = 0,
+            charges = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 2
+            end,
+            cooldown = 15,
+            recharge = function ()
+                if not pvptalent.deaths_echo.enabled then return end
+                return 15
+            end,
+            gcd = "spell",
+
+            spend = function () return buff.crimson_scourge.up and 0 or 1 end,
+            spendType = "runes",
+
+            startsCombat = true,
+            texture = 3636837,
+
+            notalent = "defile",
+
+            handler = function ()
+                removeBuff( "crimson_scourge" )
+
+                if legendary.phearomones.enabled and buff.death_and_decay.down then
+                    stat.haste = stat.haste + ( state.spec.blood and 0.1 or 0.15 )
+                end
+
+                applyBuff( "death_and_decay" )
+                setCooldown( "death_and_decay", 15 )
+
+                applyBuff( "deaths_due_buff" )
+                -- TODO:  Model increase RP income within Death's Due.
+                applyDebuff( "target", "deaths_due_debuff" )
+                -- Note:  Debuff is actually a buff on the target...
+            end,
+
+            bind = { "defile", "any_dnd" },
+
+            auras = {
+                deaths_due_buff = {
+                    id = 324165,
+                    duration = function () return legendary.rampant_transference.enabled and 12 or 10 end,
+                    max_stack = 15,
+                    copy = "deaths_due"
+                },
+                deaths_due_debuff = {
+                    id = 324164,
+                    duration = 15,
+                    max_stack = 15,
+                    generate = function( t, auraType )
+                        local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = FindUnitDebuffByID( "target", 324164, "PLAYER" )
+
+                        if name and expirationTime > query_time then
+                            t.name = name
+                            t.count = count > 0 and count or 1
+                            t.expires = expirationTime
+                            t.applied = expirationTime - duration
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.expires = 0
+                        t.applied = 0
+                        t.caster = "nobody"
+                    end
+                },
+            }
+        },
+        swarming_mist = {
+            id = 311648,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 1,
+            spendType = "runes",
+
+            toggle = "essences",
+
+            startsCombat = true,
+            texture = 3565716,
+
+            handler = function ()
+                applyBuff( "swarming_mist" )
+                if conduit.impenetrable_gloom.enabled then applyBuff( "impenetrable_gloom" ) end
+                if legendary.insatiable_hunger.enabled then applyBuff( "insatiable_hunger" ) end
+            end,
+
+            auras = {
+                -- Conduit
+                impenetrable_gloom = {
+                    id = 338629,
+                    duration = 4,
+                    max_stack = 1
+                },
+                insatiable_hunger = {
+                    id = 353729,
+                    duration = 8,
+                    max_stack = 1,
+                },
+            }
+        },
+    } )
+elseif baseClass == "DEMONHUNTER" then
+    all:RegisterAbilities( {
+        elysian_decree = {
+            id = 306830,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3565443,
+
+            handler = function ()
+                create_sigil( "elysian_decree" )
+
+                if legendary.blind_faith.enabled then applyBuff( "blind_faith" ) end
+            end,
+
+            auras = {
+                blind_faith = {
+                    id = 355894,
+                    duration = 20,
+                    max_stack = 1,
+                },
+            }
+        },
+        --[[ fodder_to_the_flame = {
+            id = 329554,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+
+            toggle = "essences",
+
+            startsCombat = true,
+            texture = 3591588,
+
+            handler = function ()
+                applyDebuff( "player", "fodder_to_the_flame_chase" )
+                applyDebuff( "player", "fodder_to_the_flame_cooldown" )
+            end,
+
+            auras = {
+                -- The buff from standing in the pool.
+                fodder_to_the_flame = {
+                    id = 330910,
+                    duration = function () return 30 + ( conduit.brooding_pool.mod * 0.001 ) end,
+                    max_stack = 1,
+                },
+
+                -- The demon is linked to you.
+                fodder_to_the_flame_chase = {
+                    id = 328605,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+
+                -- This is essentially the countdown before the demon despawns (you can Imprison it for a long time).
+                fodder_to_the_flame_cooldown = {
+                    id = 342357,
+                    duration = 120,
+                    max_stack = 1,
+                },
+            }
+        }, ]]
+        the_hunt = {
+            id = 323639,
+            cast = 1,
+            cooldown = 180,
+            gcd = "spell",
+
+            toggle = "essences",
+
+            startsCombat = true,
+            texture = 3636838,
+
+            handler = function ()
+                applyDebuff( "target", "the_hunt" )
+                applyDebuff( "target", "the_hunt_dot" )
+                applyDebuff( "target", "the_hunt_root" )
+                setDistance( 5 )
+
+                if legendary.blazing_slaughter.enabled then
+                    applyBuff( "immolation_aura" )
+                    applyBuff( "blazing_slaughter" )
+                end
+            end,
+
+            auras = {
+                the_hunt_root = {
+                    id = 323996,
+                    duration = 1.5,
+                    max_stack = 1,
+                },
+                the_hunt_dot = {
+                    id = 345335,
+                    duration = 6,
+                    max_stack = 1,
+                },
+                the_hunt = {
+                    id = 323802,
+                    duration = 30,
+                    max_stack = 1,
+                },
+                blazing_slaughter = {
+                    id = 355892,
+                    duration = 12,
+                    max_stack = 20,
+                }
+            }
+        },
+        sinful_brand = {
+            id = 317009,
+            cast = 0,
+            cooldown = function () return 60 + ( conduit.sinful_brand.mod * 0.001 ) end,
+            gcd = "spell",
+
+            toggle = "essences",
+
+            startsCombat = true,
+            texture = 3565717,
+
+            handler = function ()
+                applyDebuff( "target", "sinful_brand" )
+            end,
+
+            auras = {
+                sinful_brand = {
+                    id = 317009,
+                    duration = 8,
+                    max_stack = 1,
+                }
+            }
+        }
+    } )
+elseif baseClass == "DRUID" then
     all:RegisterAbilities( {
         kindred_spirits = {
             id = 326434,

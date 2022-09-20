@@ -8741,8 +8741,8 @@ do
                         indent = ""
                         wipe( output )
 
-                        local playerClass = UnitClass( "player" )
-                        local playerSpec = select( 2, GetSpecializationInfo( GetSpecialization() ) )
+                        local playerClass = UnitClass( "player" ):gsub( " ", "" )
+                        local playerSpec = select( 2, GetSpecializationInfo( GetSpecialization() ) ):gsub( " ", "" )
 
                         if not Hekili.IsDragonflight() or run % 2 > 0 then
                             append( "-- " .. playerClass .. playerSpec .. ".lua\n-- " .. date( "%B %Y" ) .. "\n" )

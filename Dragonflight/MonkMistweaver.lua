@@ -53,10 +53,10 @@ spec:RegisterTalents( {
     fatal_touch                  = { 76405, 337296, 2 }, --
     ferocity_of_xuen             = { 76409, 388674, 2 }, --
     fluidity_of_motion           = { 76501, 387230, 1 }, --
-    fortifying_brew              = { 76382, 388813, 1 }, --
-    fortifying_brew              = { 76525, 322960, 1 }, --
     fortifying_brew              = { 76377, 115203, 1 }, --
-    fortifying_brew              = { 76382, 322960, 1 }, --
+    fortifying_brew_cooldown     = { 76382, 388813, 1 }, --
+    fortifying_brew_stagger      = { 76525, 322960, 1 }, --
+    fortifying_brew_armor        = { 76382, 322960, 1 }, --
     fundamental_observation      = { 76494, 387035, 1 }, --
     gai_plins_imperial_brew      = { 76533, 383700, 1 }, --
     generous_pour                = { 76380, 389575, 2 }, --
@@ -95,7 +95,7 @@ spec:RegisterTalents( {
     staggering_strikes           = { 76518, 387625, 2 }, --
     stormstouts_last_keg         = { 76529, 383707, 1 }, --
     strength_of_spirit           = { 76381, 387276, 1 }, --
-    strength_of_spirit           = { 76533, 387276, 1 }, --
+    strength_of_spirit_2         = { 76533, 387276, 1 }, --
     summon_black_ox_statue       = { 76378, 115315, 1 }, --
     summon_jade_serpent_statue   = { 76390, 115313, 1 }, --
     summon_white_tiger_statue    = { 76403, 388686, 1 }, --

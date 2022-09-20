@@ -82,9 +82,9 @@ spec:RegisterTalents( {
     shadow_dance           = { 79623, 185313, 1 }, --
     shadowrunner           = { 79651, 378807, 1 }, --
     shadowstep             = { 79627, 36554 , 1 }, --
-    shadowstep             = { 79608, 36554 , 1 }, --
+    shadowstep_2           = { 79608, 36554 , 1 }, --
     shiv                   = { 79645, 5938  , 1 }, --
-    shiv                   = { 79506, 5938  , 1 }, --
+    shiv_2                 = { 79506, 5938  , 1 }, --
     shrouded_suffocation   = { 79597, 385478, 1 }, --
     so_versatile           = { 79631, 381619, 2 }, --
     subterfuge             = { 79650, 108208, 1 }, --

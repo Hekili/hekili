@@ -107,7 +107,7 @@ spec:RegisterTalents( {
     stoneskin_totem               = { 77689, 383017, 1 },
     storm_elemental               = { 77575, 192249, 1 },
     stormkeeper                   = { 77586, 191634, 1 },
-    stormkeeper                   = { 77583, 191634, 1 },
+    stormkeeper_2                 = { 77583, 191634, 1 },
     surge_of_power                = { 77594, 262303, 1 },
     surging_shields               = { 77686, 382033, 2 },
     swelling_maelstrom            = { 77610, 381707, 1 },

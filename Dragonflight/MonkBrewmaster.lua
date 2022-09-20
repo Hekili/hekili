@@ -95,13 +95,13 @@ spec:RegisterTalents( {
     staggering_strikes           = { 76518, 387625, 2 }, --
     stormstouts_last_keg         = { 76529, 383707, 1 }, --
     strength_of_spirit           = { 76381, 387276, 1 }, --
-    strength_of_spirit           = { 76533, 387276, 1 }, --
+    strength_of_spirit_2         = { 76533, 387276, 1 }, --
     summon_black_ox_statue       = { 76378, 115315, 1 }, --
     summon_jade_serpent_statue   = { 76390, 115313, 1 }, --
     summon_white_tiger_statue    = { 76403, 388686, 1 }, --
     tiger_tail_sweep             = { 76383, 264348, 2 }, --
     tigers_lust                  = { 76373, 116841, 1 }, --
-    touch_of_death_2             = { 76406, 322113, 1 }, --
+    touch_of_death               = { 76406, 322113, 1 }, --
     training_of_niuzao           = { 76507, 383714, 1 }, --
     transcendence                = { 76398, 101643, 1 }, --
     vigorous_expulsion           = { 76401, 392900, 1 }, --

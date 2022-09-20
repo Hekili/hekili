@@ -31,6 +31,11 @@ Shadowlands\Trinkets.lua
 Shadowlands\Legendaries.lua
 
 Dragonflight\Classes.lua
+Dragonflight\DeathKnightBlood.lua
+Dragonflight\DeathKnightFrost.lua
+Dragonflight\DeathKnightUnholy.lua
+Dragonflight\DemonHunterHavoc.lua
+Dragonflight\DemonHunterVengeance.lua
 Dragonflight\DruidBalance.lua
 Dragonflight\DruidFeral.lua
 Dragonflight\DruidGuardian.lua

@@ -36,7 +36,7 @@ spec:RegisterTalents( {
     deadened_nerves        = { 79649, 231719, 1 }, --
     deadly_precision       = { 79638, 381542, 2 }, --
     deeper_stratagem       = { 79615, 193531, 1 }, --
-    deeper_stratagem       = { 79525, 193531, 1 }, --
+    deeper_stratagem_2     = { 79525, 193531, 1 }, --
     dirty_tricks           = { 79517, 108216, 1 }, --
     dispatcher             = { 79521, 381990, 2 }, --
     dreadblades            = { 79529, 343142, 1 }, --
