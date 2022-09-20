@@ -532,6 +532,7 @@ state.GetNumGroupMembers = GetNumGroupMembers
 -- state.GetItemCooldown = GetItemCooldown
 state.GetItemCount = GetItemCount
 state.GetItemGem = GetItemGem
+state.GetItemInfo = GetItemInfo
 state.GetPlayerAuraBySpellID = GetPlayerAuraBySpellID
 state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo

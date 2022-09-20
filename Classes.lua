@@ -2435,7 +2435,7 @@ all:RegisterAbilities( {
     -- INTERNAL HANDLERS
     call_action_list = {
         name = "Call Action List",
-        listName = '|cff00ccff[Call Action List]|r',
+        listName = '|T136243:0|t |cff00ccff[Call Action List]|r',
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2444,7 +2444,7 @@ all:RegisterAbilities( {
 
     run_action_list = {
         name = "Run Action List",
-        listName = '|cff00ccff[Run Action List]|r',
+        listName = '|T136243:0|t |cff00ccff[Run Action List]|r',
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2453,7 +2453,7 @@ all:RegisterAbilities( {
 
     wait = {
         name = "Wait",
-        listName = '|cff00ccff[Wait]|r',
+        listName = '|T136243:0|t |cff00ccff[Wait]|r',
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2462,7 +2462,7 @@ all:RegisterAbilities( {
 
     pool_resource = {
         name = "Pool Resource",
-        listName = "|cff00ccff[Pool Resource]|r",
+        listName = "|T136243:0|t |cff00ccff[Pool Resource]|r",
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2470,7 +2470,7 @@ all:RegisterAbilities( {
 
     cancel_action = {
         name = "Cancel Action",
-        listName = "|cff00ccff[Cancel Action]|r",
+        listName = "|T136243:0|t |cff00ccff[Cancel Action]|r",
         cast = 0,
         cooldown = 0,
         gcd = "off",
@@ -2478,7 +2478,7 @@ all:RegisterAbilities( {
 
     variable = {
         name = "Variable",
-        listName = '|cff00ccff[Variable]|r',
+        listName = '|T136243:0|t |cff00ccff[Variable]|r',
         cast = 0,
         cooldown = 0,
         gcd = 'off',
@@ -2487,7 +2487,7 @@ all:RegisterAbilities( {
 
     potion = {
         name = "Potion",
-        listName = '|cff00ccff[Potion]|r',
+        listName = '|T136243:0|t |cff00ccff[Potion]|r',
         cast = 0,
         cooldown = function () return time > 0 and 3600 or 60 end,
         gcd = 'off',
@@ -2540,7 +2540,11 @@ all:RegisterAbilities( {
 
     healthstone = {
         name = function () return ( GetItemInfo( 5512 ) ) or "Healthstone" end,
-        listName = "|cff00ccff[Healthstone]|r",
+        listName = function ()
+            local _, link, _, _, _, _, _, _, _, tex = GetItemInfo( 5512 )
+            if link and tex then return "|T" .. tex .. ":0|t " .. link end
+            return "|cff00ccff[Healthstone]|r"
+        end,
         cast = 0,
         cooldown = function () return time > 0 and 3600 or 60 end,
         gcd = "off",
@@ -2570,7 +2574,7 @@ all:RegisterAbilities( {
 
     cancel_buff = {
         name = "Cancel Buff",
-        listName = '|cff00ccff[Cancel Buff]|r',
+        listName = '|T136243:0|t |cff00ccff[Cancel Buff]|r',
         cast = 0,
         gcd = 'off',
 
@@ -2609,7 +2613,7 @@ all:RegisterAbilities( {
 
     null_cooldown = {
         name = "Null Cooldown",
-        listName = "|cff00ccff[Null Cooldown]|r",
+        listName = "|T136243:0|t |cff00ccff[Null Cooldown]|r",
         cast = 0,
         gcd = "off",
 
@@ -2620,14 +2624,14 @@ all:RegisterAbilities( {
 
     trinket1 = {
         name = "Trinket #1",
-        listName = "|cff00ccff[Trinket #1]",
+        listName = "|T136243:0|t |cff00ccff[Trinket #1]",
         cast = 0,
         gcd = "off",
     },
 
     trinket2 = {
         name = "Trinket #2",
-        listName = "|cff00ccff[Trinket #2]",
+        listName = "|T136243:0|t |cff00ccff[Trinket #2]",
         cast = 0,
         gcd = "off",
     },
@@ -2642,7 +2646,7 @@ do
 
     all:RegisterAbility( "use_items", {
         name = "Use Items",
-        listName = "|cff00ccff[Use Items]|r",
+        listName = "|T136243:0|t |cff00ccff[Use Items]|r",
         cast = 0,
         cooldown = 120,
         gcd = 'off',
@@ -2651,7 +2655,11 @@ do
 
     all:RegisterAbility( "heart_essence", {
         name = function () return ( GetItemInfo( 158075 ) ) or "Heart Essence" end,
-        listName = "|cff00ccff[Heart Essence]|r",
+        listName = function ()
+            local _, link, _, _, _, _, _, _, _, tex = GetItemInfo( 158075 )
+            if link and tex then return "|T" .. tex .. ":0|t " .. link end
+            return "|cff00ccff[Heart Essence]|r"
+        end,
         cast = 0,
         cooldown = 0,
         gcd = 'off',

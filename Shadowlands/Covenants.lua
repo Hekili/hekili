@@ -100,7 +100,12 @@ do
         },
 
         phial_of_serenity = {
-            name = "|cff00ccff[Phial of Serenity]|r",
+            name = function () return ( GetItemInfo( 177278 ) ) or "Phial of Serenity" end,
+            listName = function ()
+                local _, link, _, _, _, _, _, _, _, tex = GetItemInfo( 177278 )
+                if link and tex then return "|T" .. tex .. ":0|t " .. link end
+                return "|cff00ccff[Phial of Serenity]|r"
+            end,
             cast = 0,
             cooldown = function () return time > 0 and 3600 or 60 end,
             gcd = "off",
