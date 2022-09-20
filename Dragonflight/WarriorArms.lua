@@ -140,47 +140,225 @@ spec:RegisterPvpTalents( {
 spec:RegisterAuras( {
     avatar = {
         id = 107574,
+        duration = 20,
+        max_stack = 1
+    },
+    battle_shout = {
+        id = 6673,
+        duration = 3600,
+        max_stack = 1
+    },
+    battle_stance = {
+        id = 386164,
+        duration = 3600,
+        max_stack = 1
+    },
+    battlelord =  {
+        id = 386631,
+        duration = 10,
+        max_stack = 1
     },
     berserker_rage = {
         id = 18499,
+        duration = 6,
+        max_stack = 1
     },
     berserker_shout = {
         id = 384100,
+        duration = 6,
+        max_stack = 1
+    },
+    berserker_stance = {
+        id = 386196,
+        duration = 3600,
+        max_stack = 1
+    },
+    bladestorm = {
+        id = 227847,
+        duration = 6,
+        tick_time = 1,
+        max_stack = 1
     },
     bloodthirst = {
         id = 23881,
+        duration = 20,
+        max_stack = 1
+    },
+    concussive_blows = {
+        id = 383116,
+        duration = 10,
+        max_stack = 1
+    },
+    dance_of_death = {
+        id = 390714,
+        duration = 180,
+        max_stack = 1
+    },
+    deep_wounds = {
+        id = 262115,
+        duration = 12,
+        tick_time = 3,
+        max_stack = 1
     },
     defensive_stance = {
         id = 386208,
+        duration = 3600,
+        max_stack = 1
+    },
+    die_by_the_sword = {
+        id = 118038,
+        duration = 8,
+        max_stack = 1
+    },
+    disarm = {
+        id = 236077,
+        duration = 6,
+        max_stack = 1
+    },
+    duel = {
+        id = 236273,
+        duration = 8,
+        max_stack = 1
+    },
+    elysian_might = {
+        id = 386286,
+        duration = 3600,
+        max_stack = 1
     },
     enraged_regeneration = {
         id = 184364,
+        duration = 8,
+        max_stack = 1
     },
-    mastery_deep_wounds = {
-        id = 262111,
+    exploiter = {
+        id = 386633,
+        duration = 30,
+        max_stack = 2
+    },
+    fatal_mark = {
+        id = 383704,
+        duration = 60,
+        max_stack = 999
+    },
+    hamstring = {
+        id = 1715,
+        duration = 15,
+        max_stack = 1
+    },
+    hurricane = {
+        id = 390581,
+        duration = 6,
+        max_stack = 6
+    },
+    intimidating_shout = {
+        id = 5246,
+        duration = 8,
+        max_stack = 1
+    },
+    juggernaut = {
+        id = 383290,
+        duration = 12,
+        max_stack = 15
+    },
+    odyns_fury = {
+        id = 385060,
+        duration = 4,
+        tick_time = 1,
+        max_stack = 1
+    },
+    overpower = {
+        id = 7384,
+        duration = 15,
+        max_stack = 1
+    },
+    piercing_howl = {
+        id = 12323,
+        duration = 8,
+        max_stack = 1
+    },
+    quick_thinking = {
+        id = 392778,
+        duration = 10,
+        max_stack = 1
     },
     raging_blow = {
         id = 85288,
+        duration = 12,
+        max_stack = 1
     },
     ravager = {
         id = 228920,
+        duration = 12,
+        tick_time = 2,
+        max_stack = 1
     },
     recklessness = {
         id = 1719,
+        duration = 12,
+        max_stack = 1
     },
-    seasoned_soldier = {
-        id = 279423,
+    rend = {
+        id = 388539,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 1
     },
     sharpen_blade = {
         id = 198817,
-    },
-    sign_of_the_emissary = {
-        id = 225788,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
+    },
+    spear_of_bastion = {
+        id = 376080,
+        duration = 4,
+        tick_time = 1,
+        max_stack = 1
     },
     spell_reflection = {
         id = 23920,
+        duration = 5,
+        max_stack = 1
+    },
+    spell_reflection_defense = {
+        id = 385391,
+        duration = 5,
+        max_stack = 1
+    },
+    sweeping_strikes = {
+        id = 260708,
+        duration = 15,
+        max_stack = 1
+    },
+    taunt = {
+        id = 355,
+        duration = 3,
+        max_stack = 1
+    },
+    test_of_might = {
+        id = 385013,
+        duration = 3600,
+        max_stack = 1
+    },
+    thunder_clap = {
+        id = 6343,
+        duration = 10,
+        max_stack = 1
+    },
+    thunderous_roar = {
+        id = 384318,
+        duration = 8,
+        tick_time = 2,
+        max_stack = 1
+    },
+    vicious_warbanner = {
+        id = 320707,
+        duration = 15,
+        max_stack = 1
+    },
+    war_machine = {
+        id = 262232,
+        duration = 8,
+        max_stack = 1
     },
 } )
 

@@ -138,51 +138,240 @@ spec:RegisterPvpTalents( {
 spec:RegisterAuras( {
     avatar = {
         id = 107574,
+        duration = 20,
+        max_stack = 1
+    },
+    battle_shout = {
+        id = 6673,
+        duration = 3600,
+        max_stack = 1
+    },
+    battle_stance = {
+        id = 386164,
+        duration = 3600,
+        max_stack = 1
+    },
+    battlescarred_veteran = {
+        id = 386397,
+        duration = 8,
+        max_stack = 1
     },
     berserker_rage = {
         id = 18499,
+        duration = 6,
+        max_stack = 1
     },
     berserker_shout = {
         id = 384100,
+        duration = 6,
+        max_stack = 1
+    },
+    bladestorm = {
+        id = 227847,
+        duration = 6,
+        tick_time = 1,
+        max_stack = 1
+    },
+    bodyguard = {
+        id = 213871,
+        duration = 60,
+        tick_time = 1,
+        max_stack = 1
+    },
+    brace_for_impact = {
+        id = 386029,
+        duration = 9,
+        max_stack = 5
+    },
+    challenging_shout = {
+        id = 1161,
+        duration = 6,
+        max_stack = 1
+    },
+    concussive_blows = {
+        id = 383116,
+        duration = 10,
+        max_stack = 1
     },
     deep_wounds = {
-        id = 115768,
+        id = 115767,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 1
     },
     defensive_stance = {
         id = 386208,
+        duration = 3600,
+        max_stack = 1
     },
-    dragon_charge = {
+    demoralizing_shout = {
+        id = 1160,
+        duration = 8,
+        max_stack = 1
+    },
+    die_by_the_sword = {
+        id = 118038,
+        duration = 8,
+        max_stack = 1
+    },
+    disarm = {
+        id = 236077,
+        duration = 6,
+        max_stack = 1
+    },
+    disrupting_shout = {
+        id = 386071,
+        duration = 6,
+        max_stack = 1
+    },
+    dragon_charge = { -- TODO: This is the duration of the sprint.
         id = 206572,
+        duration = 1.2,
+        max_stack = 1
+    },
+    elysian_might = {
+        id = 386286,
+        duration = 8, -- Check vs. Spear of Bastion duration.
+        max_stack = 1
+    },
+    focused_assault = {
+        id = 206891,
+        duration = 6,
+        max_stack = 5
+    },
+    hamstring = {
+        id = 1715,
+        duration = 15,
+        max_stack = 1
     },
     ignore_pain = {
         id = 190456,
+        duration = 12,
+        max_stack = 1
+    },
+    intimidating_shout = {
+        id = 5246,
+        duration = 8,
+        max_stack = 1
+    },
+    juggernaut = {
+        id = 383290,
+        duration = 12,
+        max_stack = 15
     },
     last_stand = {
         id = 12975,
+        duration = 15,
+        max_stack = 1
     },
-    mastery_critical_block = {
-        id = 76857,
+    overpower = {
+        id = 7384,
+        duration = 15,
+        max_stack = 1
     },
-    oppressor = {
-        id = 205800,
+    piercing_howl = {
+        id = 12323,
+        duration = 8,
+        max_stack = 1
+    },
+    punish = {
+        id = 275335,
+        duration = 9,
+        max_stack = 5
+    },
+    quick_thinking = {
+        id = 392778,
+        duration = 10,
+        max_stack = 1
     },
     ravager = {
         id = 228920,
+        duration = 12,
+        tick_time = 2,
+        max_stack = 1
     },
-    riposte = {
-        id = 161798,
+    rend = {
+        id = 388539,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 1
+    },
+    revenge = {
+        id = 5302,
+        duration = 6,
+        max_stack = 1
+    },
+    shield_bash = {
+        id = 198912,
+        duration = 8,
+        max_stack = 1
+    },
+    shield_block = {
+        id = 132404,
+        duration = 6,
+        max_stack = 1
     },
     shield_wall = {
         id = 871,
+        duration = 8,
+        max_stack = 1
     },
-    spell_block = {
-        id = 392966,
+    show_of_force = {
+        id = 385842,
+        duration = 12,
+        max_stack = 1
+    },
+    spear_of_bastion = {
+        id = 376080,
+        duration = 4,
+        tick_time = 1,
+        max_stack = 1
+    },
+    spell_block = { -- TODO: Check spell ID.
+        id = 386014,
+        duration = 14,
+        max_stack = 1
     },
     spell_reflection = {
         id = 23920,
+        duration = 5,
+        max_stack = 1
     },
-    vanguard = {
-        id = 71,
+    spell_reflection_defense = {
+        id = 385391,
+        duration = 5,
+        max_stack = 1
+    },
+    sweeping_strikes = {
+        id = 260708,
+        duration = 15,
+        max_stack = 1
+    },
+    taunt = {
+        id = 355,
+        duration = 3,
+        max_stack = 1
+    },
+    thunder_clap = {
+        id = 6343,
+        duration = 10,
+        max_stack = 1
+    },
+    thunderous_roar = {
+        id = 384318,
+        duration = 8,
+        tick_time = 2,
+        max_stack = 1
+    },
+    unnerving_focus = {
+        id = 384043,
+        duration = 15,
+        max_stack = 1
+    },
+    war_machine = {
+        id = 262232,
+        duration = 8,
+        max_stack = 1
     },
 } )
 

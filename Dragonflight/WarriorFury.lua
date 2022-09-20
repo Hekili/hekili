@@ -139,53 +139,187 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    annihilator = {
+        id = 383915,
+        duration = 12,
+        max_stack = 1
+    },
+    ashen_juggernaut = {
+        id = 392537,
+        duration = 12,
+        max_stack = 5
+    },
     avatar = {
         id = 107574,
+        duration = 20,
+        max_stack = 1
+    },
+    battle_shout = {
+        id = 6673,
+        duration = 3600,
+        max_stack = 1
     },
     berserker_rage = {
         id = 18499,
+        duration = 6,
+        max_stack = 1
     },
     berserker_shout = {
         id = 384100,
+        duration = 6,
+        max_stack = 1
+    },
+    berserker_stance = {
+        id = 386196,
+        duration = 3600,
+        max_stack = 1
     },
     bloodrage = {
         id = 329038,
+        duration = 4,
+        tick_time = 1,
+        max_stack = 1
     },
     bloodthirst = {
         id = 23881,
+        duration = 20,
+        max_stack = 1
+    },
+    concussive_blows = {
+        id = 383116,
+        duration = 10,
+        max_stack = 1
+    },
+    dancing_blades = {
+        id = 391688,
+        duration = 10,
+        max_stack = 1
     },
     death_wish = {
         id = 199261,
+        duration = 15,
+        max_stack = 10
     },
     defensive_stance = {
         id = 386208,
+        duration = 3600,
+        max_stack = 1
     },
-    dual_wield = {
-        id = 231842,
+    disarm = {
+        id = 236077,
+        duration = 6,
+        max_stack = 1
+    },
+    elysian_might = {
+        id = 386286,
+        duration = 8, -- Check vs. Spear of Bastion duration.
+        max_stack = 1
     },
     enrage = {
-        id = 184361,
+        id = 184362,
+        duration = 4,
+        max_stack = 1
     },
     enraged_regeneration = {
         id = 184364,
+        duration = 8,
+        max_stack = 1
     },
-    mastery_unshackled_fury = {
-        id = 76856,
+    gushing_wound = {
+        id = 385042,
+        duration = 6,
+        tick_time = 2,
+        max_stack = 1
+    },
+    hamstring = {
+        id = 1715,
+        duration = 15,
+        max_stack = 1
+    },
+    hurricane = {
+        id = 390581,
+        duration = 6,
+        max_stack = 6
+    },
+    intimidating_shout = {
+        id = 5246,
+        duration = 8,
+        max_stack = 1
+    },
+    odyns_fury = {
+        id = 385060,
+        duration = 4,
+        tick_time = 1,
+        max_stack = 1
+    },
+    piercing_howl = {
+        id = 12323,
+        duration = 8,
+        max_stack = 1
+    },
+    quick_thinking = {
+        id = 392778,
+        duration = 10,
+        max_stack = 1
     },
     raging_blow = {
         id = 85288,
+        duration = 12,
+        max_stack = 1
     },
     ravager = {
         id = 228920,
+        duration = 12,
+        tick_time = 2,
+        max_stack = 1
     },
     recklessness = {
         id = 1719,
+        duration = 12,
+        max_stack = 1
+    },
+    rend = {
+        id = 388539,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 1
+    },
+    spear_of_bastion = {
+        id = 376080,
+        duration = 4,
+        tick_time = 1,
+        max_stack = 1
     },
     spell_reflection = {
         id = 23920,
+        duration = 5,
+        max_stack = 1
     },
-    titans_grip = {
-        id = 46917,
+    spell_reflection_defense = {
+        id = 385391,
+        duration = 5,
+        max_stack = 1
+    },
+    taunt = {
+        id = 355,
+        duration = 3,
+        max_stack = 1
+    },
+    thunder_clap = {
+        id = 6343,
+        duration = 10,
+        max_stack = 1
+    },
+    thunderous_roar = {
+        id = 384318,
+        duration = 8,
+        tick_time = 2,
+        max_stack = 1
+    },
+    war_machine = {
+        id = 262232,
+        duration = 8,
+        max_stack = 1
     },
 } )
 
