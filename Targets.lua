@@ -168,6 +168,11 @@ local enemyExclusions = {
     [185680] = true,      -- Season 3 Relics
     [185683] = true,      -- Season 3 Relics
     [183501] = 367573,    -- Xy'mox: Genesis Bulwark
+    [166969] = true,      -- Frieda
+    [166970] = true,      -- Stavros
+    [166971] = true,      -- Niklaus
+    [168113] = 329606,    -- Grashaal (when shielded)
+    [168112] = 329636,    -- Kaal (when shielded)
 }
 
 local FindExclusionAuraByID
