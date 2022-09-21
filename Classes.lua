@@ -5843,6 +5843,10 @@ function Hekili:SpecializationChanged()
         return
     end
 
+    HekiliEngine.activeThread = nil
+    HekiliEngine.criticalUpdate = true
+    HekiliEngine.pendingSpecChange = nil
+
     insert( self.SpecChangeHistory, {
         spec = currentID,
         time = GetTime(),

@@ -2001,8 +2001,13 @@ do
 
         local specEnabled = GetSpecialization()
         specEnabled = specEnabled and GetSpecializationInfo( specEnabled )
-        specEnabled = specEnabled and rawget( profile.specs, specEnabled )
-        specEnabled = specEnabled and rawget( specEnabled, "enabled" ) or false
+
+        if class.specs[ specEnabled ] then
+            specEnabled = specEnabled and rawget( profile.specs, specEnabled )
+            specEnabled = specEnabled and rawget( specEnabled, "enabled" ) or false
+        else
+            specEnabled = false
+        end
 
         if profile.enabled and specEnabled then
             for i, display in pairs( profile.displays ) do
@@ -2117,7 +2122,14 @@ do
     Hekili.Engine:SetScript( "OnUpdate", function( self, elapsed )
         self.refreshTimer = self.refreshTimer + elapsed
 
-        if not Hekili.Pause then
+        if not Hekili.Pause and not self.pendingSpecChange then
+            if self.activeThread and self.threadSpec and self.threadSpec ~= GetSpecializationInfo( GetSpecialization() ) then
+                Hekili:SpecializationChanged()
+                self.activeThread = nil
+                self.criticalUpdate = true
+                return
+            end
+
             self.refreshRate = self.refreshRate or 5
             self.combatRate = self.combatRate or 0.25
 
@@ -2126,6 +2138,8 @@ do
             -- If there's no thread, then see if we have a reason to update.
             if Hekili.freshFrame and not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
                 Hekili.freshFrame = nil
+
+                self.threadSpec = GetSpecializationInfo( GetSpecialization() )
 
                 self.activeThread = coroutine.create( Hekili.Update )
                 self.activeThreadTime = 0

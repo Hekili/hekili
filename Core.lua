@@ -629,7 +629,7 @@ do
 
         prevTime = time
 
-        if force or time - self.frameStartTime > self.maxFrameTime then
+        if force or time - self.frameStartTime > self.maxFrameTime * 0.9 then
             coroutine.yield()
 
             prevMsg = "Resumed thread..."
@@ -1486,7 +1486,7 @@ function Hekili.Update()
 
     local profile = Hekili.DB.profile
 
-    local specID = state.spec.id
+    local specID = GetSpecializationInfo( GetSpecialization() )
     if not specID then return end
 
     local spec = rawget( profile.specs, specID )
@@ -1500,6 +1500,7 @@ function Hekili.Update()
 
     local debug = Hekili.ActiveDebug
 
+    HekiliEngine.threadSpec = specID
     Hekili:ResetThreadClock()
     Hekili:GetNumTargets( true )
 
