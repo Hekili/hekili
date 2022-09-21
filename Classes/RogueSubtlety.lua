@@ -1291,7 +1291,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
             spend = function () return ( azerite.blade_in_the_shadows.enabled and 38 or 40 ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
-            cycle = function () return talent.find_weakness.enabled and "find_weakness" or nil end,
+            cycle = "find_weakness",
+            aura = "find_weakness",
 
             startsCombat = true,
             texture = 1373912,
