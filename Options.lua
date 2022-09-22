@@ -8571,7 +8571,7 @@ do
 
             wipe( talents )
             if Hekili.IsDragonflight() then
-                local configID = C_ClassTalents.GetActiveConfigID()
+                local configID = C_ClassTalents.GetActiveConfigID() or -1
                 local configInfo = C_Traits.GetConfigInfo( configID )
                 for _, treeID in ipairs( configInfo.treeIDs ) do
                     local nodes = C_Traits.GetTreeNodes( treeID )
