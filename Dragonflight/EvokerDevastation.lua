@@ -5,12 +5,7 @@ if UnitClassBase( "player" ) ~= "EVOKER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
-
-if not Hekili.IsDragonflight() then return end
-
-local class = Hekili.Class
-local state = Hekili.State
-
+local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 1467 )
 
@@ -34,163 +29,317 @@ spec:RegisterResource( Enum.PowerType.Mana, {
 
 -- Talents
 spec:RegisterTalents( {
-    aerial_mastery       = { 68659, 365933, 1 },
-    ancient_flame        = { 68671, 369990, 1 },
-    animosity            = { 68640, 375797, 1 },
-    arcane_intensity     = { 68622, 375618, 2 },
-    arcane_vigor         = { 68619, 386342, 1 },
-    attuned_to_the_dream = { 68672, 376930, 2 },
-    azure_essence_burst  = { 68643, 375721, 1 },
-    blast_furnace        = { 68667, 375510, 2 },
-    bountiful_bloom      = { 68572, 370886, 1 },
-    burnout              = { 68633, 375801, 2 },
-    cascading_power      = { 68575, 375796, 1 },
-    catalyze             = { 68636, 386283, 1 },
-    causality            = { 68617, 375777, 1 },
-    cauterizing_flame    = { 68673, 374251, 1 },
-    charged_blast        = { 68627, 370455, 1 },
-    clobbering_sweep     = { 68570, 375443, 1 },
-    continuum            = { 68617, 369375, 1 },
-    dense_energy         = { 68646, 370962, 1 },
-    draconic_legacy      = { 68685, 376166, 2 },
-    dragonrage           = { 68641, 375087, 1 },
-    engulfing_blaze      = { 68648, 370837, 1 },
-    enkindled            = { 68677, 375554, 2 },
-    essence_attunement   = { 68625, 375722, 1 },
-    eternity_surge       = { 68623, 359073, 1 },
-    eternitys_span       = { 68621, 375757, 1 },
-    everburning_flame    = { 68615, 370819, 1 },
-    expunge              = { 68689, 365585, 1 },
-    extended_flight      = { 68679, 375517, 2 },
-    exuberance           = { 68573, 375542, 1 },
-    feed_the_flames      = { 68615, 369846, 1 },
-    fire_within          = { 68654, 375577, 1 },
-    firestorm            = { 68635, 368847, 1 },
-    fly_with_me          = { 68658, 370665, 1 },
-    focusing_iris        = { 68619, 386336, 1 },
-    font_of_magic        = { 68632, 375783, 1 },
-    forger_of_mountains  = { 68569, 375528, 1 },
-    grovetenders_gift    = { 68680, 387761, 1 },
-    heat_wave            = { 68637, 375725, 2 },
-    heavy_wingbeats      = { 68570, 368838, 1 },
-    honed_aggression     = { 68626, 371038, 2 },
-    imminent_destruction = { 68631, 370781, 2 },
-    imposing_presence    = { 68642, 371016, 1 },
-    innate_magic         = { 68683, 375520, 2 },
-    inner_radiance       = { 68642, 386405, 1 },
-    iridescence          = { 68616, 370867, 1 },
-    landslide            = { 68681, 358385, 1 },
-    lay_waste            = { 68624, 371034, 2 },
-    leaping_flames       = { 68662, 369939, 1 },
-    lush_growth          = { 68652, 375561, 2 },
-    might_of_the_aspects = { 68639, 386272, 2 },
-    natural_convergence  = { 68682, 369913, 1 },
-    obsidian_bulwark     = { 68674, 375406, 1 },
-    obsidian_scales      = { 68675, 363916, 1 },
-    onyx_legacy          = { 68630, 386348, 1 },
-    oppressing_roar      = { 68668, 372048, 1 },
-    overawe              = { 68660, 374346, 1 },
-    permeating_chill     = { 68676, 370897, 1 },
-    power_nexus          = { 68574, 369908, 1 },
-    power_swell          = { 68620, 370839, 2 },
-    protracted_talons    = { 68661, 369909, 1 },
-    pyre                 = { 68644, 357211, 1 },
-    pyrexia              = { 68654, 375574, 1 },
-    quell                = { 68665, 351338, 1 },
-    recall               = { 68684, 371806, 1 },
-    regenerative_magic   = { 68651, 387787, 1 },
-    renewing_blaze       = { 68653, 374348, 1 },
-    rescue               = { 68688, 360995, 1 },
-    roar_of_exhilaration = { 68664, 375507, 1 },
-    ruby_embers          = { 68648, 365937, 1 },
-    ruby_essence_burst   = { 68645, 376872, 1 },
-    ruin                 = { 68638, 376888, 1 },
-    scarlet_adaptation   = { 68687, 372469, 1 },
-    scintillation        = { 68629, 370821, 2 },
-    shattering_star      = { 68618, 370452, 1 },
-    sleep_walk           = { 68571, 360806, 1 },
-    snapfire             = { 68634, 370783, 1 },
-    source_of_magic      = { 68669, 369459, 1 },
-    suffused_with_power  = { 68666, 376164, 2 },
-    tailwind             = { 68678, 375556, 1 },
-    tempered_scales      = { 68670, 375544, 2 },
-    terror_of_the_skies  = { 68649, 371032, 1 },
-    time_spiral          = { 68650, 374968, 1 },
-    tip_the_scales       = { 68686, 370553, 1 },
-    twin_guardian        = { 68656, 370888, 1 },
-    tyranny              = { 68628, 370845, 1 },
-    unravel              = { 68663, 368432, 1 },
-    volatility           = { 68647, 369089, 2 },
-    walloping_blow       = { 68657, 387341, 1 },
-    zephyr               = { 68655, 374227, 1 },
+    aerial_mastery         = { 68659, 365933, 1 }, --
+    ancient_flame          = { 68671, 369990, 1 }, --
+    animosity              = { 68640, 375797, 1 }, --
+    arcane_intensity       = { 68622, 375618, 2 }, --
+    arcane_vigor           = { 68619, 386342, 1 }, --
+    attuned_to_the_dream   = { 68672, 376930, 2 }, --
+    azure_essence_burst    = { 68643, 375721, 1 }, --
+    blast_furnace          = { 68667, 375510, 2 }, --
+    bountiful_bloom        = { 68572, 370886, 1 }, --
+    burnout                = { 68633, 375801, 2 }, --
+    cascading_power        = { 68575, 375796, 1 }, --
+    catalyze               = { 68636, 386283, 1 }, --
+    causality              = { 68617, 375777, 1 }, --
+    cauterizing_flame      = { 68673, 374251, 1 }, --
+    charged_blast          = { 68627, 370455, 1 }, --
+    clobbering_sweep       = { 68570, 375443, 1 }, --
+    dense_energy           = { 68646, 370962, 1 }, --
+    draconic_legacy        = { 68685, 376166, 2 }, --
+    dragonrage             = { 68641, 375087, 1 }, --
+    engulfing_blaze        = { 68648, 370837, 1 }, --
+    enkindled              = { 68677, 375554, 2 }, --
+    essence_attunement     = { 68625, 375722, 1 }, --
+    eternity_surge         = { 68623, 359073, 1 }, --
+    eternitys_span         = { 68621, 375757, 1 }, --
+    everburning_flame      = { 68615, 370819, 1 }, --
+    expunge                = { 68689, 365585, 1 }, --
+    extended_flight        = { 68679, 375517, 2 }, --
+    exuberance             = { 68573, 375542, 1 }, --
+    eye_of_infinity        = { 68617, 369375, 1 }, --
+    feed_the_flames        = { 68615, 369846, 1 }, --
+    fire_within            = { 68654, 375577, 1 }, --
+    firestorm              = { 68635, 368847, 1 }, --
+    foci_of_life           = { 68654, 375574, 1 }, --
+    focusing_iris          = { 68619, 386336, 1 }, --
+    font_of_magic          = { 68632, 375783, 1 }, --
+    forger_of_mountains    = { 68569, 375528, 1 }, --
+    heat_wave              = { 68637, 375725, 2 }, --
+    heavy_wingbeats        = { 68570, 368838, 1 }, --
+    honed_aggression       = { 68626, 371038, 2 }, --
+    imminent_destruction   = { 68631, 370781, 2 }, --
+    imposing_presence      = { 68642, 371016, 1 }, --
+    innate_magic           = { 68683, 375520, 2 }, --
+    inner_radiance         = { 68642, 386405, 1 }, --
+    instinctive_arcana     = { 68666, 376164, 2 }, --
+    iridescence            = { 68616, 370867, 1 }, --
+    landslide              = { 68681, 358385, 1 }, --
+    lay_waste              = { 68624, 371034, 2 }, --
+    leaping_flames         = { 68662, 369939, 1 }, --
+    lush_growth            = { 68652, 375561, 2 }, --
+    natural_convergence    = { 68682, 369913, 1 }, --
+    obsidian_bulwark       = { 68674, 375406, 1 }, --
+    obsidian_scales        = { 68675, 363916, 1 }, --
+    onyx_legacy            = { 68630, 386348, 1 }, --
+    oppressing_roar        = { 68668, 372048, 1 }, --
+    overawe                = { 68660, 374346, 1 }, --
+    panacea                = { 68680, 387761, 1 }, --
+    permeating_chill       = { 68676, 370897, 1 }, --
+    power_nexus            = { 68574, 369908, 1 }, --
+    power_swell            = { 68620, 370839, 2 }, --
+    protracted_talons      = { 68661, 369909, 1 }, --
+    pyre                   = { 68644, 357211, 1 }, --
+    quell                  = { 68665, 351338, 1 }, --
+    recall                 = { 68684, 371806, 1 }, --
+    regenerative_magic     = { 68651, 387787, 1 }, --
+    renewing_blaze         = { 68653, 374348, 1 }, --
+    rescue                 = { 68658, 370665, 1 }, --
+    roar_of_exhilaration   = { 68664, 375507, 1 }, --
+    ruby_embers            = { 68648, 365937, 1 }, --
+    ruby_essence_burst     = { 68645, 376872, 1 }, --
+    scarlet_adaptation     = { 68687, 372469, 1 }, --
+    scintillation          = { 68629, 370821, 2 }, --
+    shattering_star        = { 68618, 370452, 1 }, --
+    sleep_walk             = { 68571, 360806, 1 }, --
+    snapfire               = { 68634, 370783, 1 }, --
+    source_of_magic        = { 68669, 369459, 1 }, --
+    spellweavers_dominance = { 68628, 370845, 1 }, --
+    tailwind               = { 68678, 375556, 1 }, --
+    tempered_scales        = { 68670, 375544, 2 }, --
+    terror_of_the_skies    = { 68649, 371032, 1 }, --
+    time_spiral            = { 68650, 374968, 1 }, --
+    tip_the_scales         = { 68686, 370553, 1 }, --
+    titanic_wrath          = { 68639, 386272, 2 }, --
+    twin_guardian          = { 68656, 370888, 1 }, --
+    tyranny                = { 68638, 376888, 1 }, --
+    unravel                = { 68663, 368432, 1 }, --
+    verdant_embrace        = { 68688, 360995, 1 }, --
+    volatility             = { 68647, 369089, 2 }, --
+    walloping_blow         = { 68657, 387341, 1 }, --
+    zephyr                 = { 68655, 374227, 1 }, --
 } )
+
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    crippling_force = 5471, -- 384660
-    unburdened_flight = 5469, -- 378437
-    nullifying_shroud = 5467, -- 378464
-    youre_coming_with_me = 5466, -- 370388
-    time_stop = 5464, -- 378441
-    scouring_flame = 5462, -- 378438
-    obsidian_mettle = 5460, -- 378444
-    chrono_loop = 5456, -- 383005
-    precognition = 5509, -- 377360
+    chrono_loop        = 5456, -- 383005
+    crippling_force    = 5471, -- 384660
     divide_and_conquer = 5473, -- 384689
+    nullifying_shroud  = 5467, -- 378464
+    obsidian_mettle    = 5460, -- 378444
+    precognition       = 5509, -- 377360
+    scouring_flame     = 5462, -- 378438
+    swoop_up           = 5466, -- 370388
+    time_stop          = 5464, -- 378441
+    unburdened_flight  = 5469, -- 378437
 } )
+
 
 -- Auras
 spec:RegisterAuras( {
+    ancient_flame = {
+        id = 375583,
+        duration = 3600,
+        max_stack = 1
+    },
+    burnout = {
+        id = 375802,
+        duration = 4,
+        max_stack = 1,
+    },
+    charged_blast = {
+        id = 370454,
+        duration = 30,
+        max_stack = 20
+    },
+    chrono_loop = {
+        id = 383005,
+        duration = 5,
+        max_stack = 1
+    },
+    cycle_of_life = {
+        id = 371877,
+        duration = 15,
+        max_stack = 1,
+    },
     deep_breath = {
         id = 357210,
+        duration = 6,
+        max_stack = 1
     },
+    disintegrate = {
+        id = 356995,
+        duration = function () return 3 * ( talent.natural_convergence.enabled and 0.8 or 1 ) end,
+        tick_time = function () return talent.natural_convergence.enabled and 0.8 or 1 end,
+        max_stack = 1,
+    },
+
     dragonrage = {
         id = 375087,
+        duration = 14,
+        max_stack = 1
+    },
+    essence_burst = {
+        id = 359618,
+        duration = 15,
+        max_stack = 1,
+    },
+    eternity_surge_x3 = { -- TODO: This is the channel with 3 ranks.
+        id = 359073,
+        duration = 2.5,
+        max_stack = 1
+    },
+    eternity_surge_x4 = { -- TODO: This is the channel with 4 ranks.
+        id = 382411,
+        duration = 3.25,
+        max_stack = 1
     },
     eternity_surge = {
-        id = 359073,
+        alias = { "eternity_surge_x4", "eternity_surge_x3" },
+        aliasMode = "first",
+        aliasType = "buff",
+        duration = 3.25,
     },
     fire_breath = {
-        id = 357208,
+        id = 357209,
+        duration = function ()
+            -- TODO: Empowerment Level impact on duration.
+            -- return empowerment_level * 4
+            return talent.font_of_magic.enabled and 16 or 12
+        end,
+        -- TODO: damage = function () return 0.322 * stat.spell_power * action.fire_breath.spell_targets * ( talent.heat_wave.enabled and 1.2 or 1 ) * ( debuff.shattering_star.up and 1.2 or 1 ) end,
+        max_stack = 1,
     },
-    honed_aggression = {
-        id = 371038,
+    firestorm = { -- TODO: Check for totem?
+        id = 369372,
+        duration = 12,
+        max_stack = 1
+    },
+    fly_with_me = {
+        id = 370665,
+        duration = 1,
+        max_stack = 1
+    },
+    fury_of_the_aspects = {
+        id = 390386,
+        duration = 40,
+        max_stack = 1
     },
     hover = {
         id = 358267,
+        duration = function () return talent.extended_flight.enabled and 10 or 6 end,
+        tick_time = 1,
+        max_stack = 1,
     },
-    iridescence = {
-        id = 370867,
+    landslide = {
+        id = 355689,
+        duration = 30,
+        max_stack = 1,
     },
-    leaping_flames = {
-        id = 369939,
-    },
-    mastery_giantkiller = {
-        id = 362980,
+    nullifying_shroud = {
+        id = 378464,
+        duration = 30,
+        max_stack = 3
     },
     obsidian_scales = {
         id = 363916,
+        duration = 12,
+        max_stack = 1
+    },
+    oppressing_roar = {
+        id = 372048,
+        duration = 10,
+        max_stack = 1
     },
     permeating_chill = {
-        id = 370897,
-    },
-    power_swell = {
-        id = 370839,
+        id = 370898,
+        duration = 3,
+        max_stack = 1
     },
     recall = {
-        id = 371806,
+        id = 371807,
+        duration = 10,
+        max_stack = function () return talent.essence_attunement.enabled and 2 or 1 end,
     },
     renewing_blaze = {
         id = 374348,
+        duration = 8,
+        max_stack = 1,
+    },
+    renewing_blaze_heal = {
+        id = 374349,
+        duration = 14,
+        max_stack = 1,
+    },
+    shattering_star = {
+        id = 370452,
+        duration = function () return talent.focusing_iris.enabled and 6 or 4 end,
+        max_stack = 1
+    },
+    sleep_walk = {
+        id = 360806,
+        duration = 20,
+        max_stack = 1
+    },
+    snapfire = {
+        id = 370818,
+        duration = 10,
+        max_stack = 1
+    },
+    source_of_magic = {
+        id = 369459,
+        duration = 1800,
+        max_stack = 1,
+        friendly = true,
     },
     terror_of_the_skies = {
-        id = 371032,
+        id = 372245,
+        duration = 3,
+        max_stack = 1
+    },
+    time_stop = {
+        id = 378441,
+        duration = 4,
+        max_stack = 1
     },
     tip_the_scales = {
         id = 370553,
+        duration = 3600,
+        max_stack = 1,
     },
-    tyranny = {
-        id = 370845,
+    unravel_absorb = {
+        duration = 15,
+        max_stack = 1,
+        -- TODO: Check if function works.
+        generate = function( t, auraType )
+            local unit = auraType == "debuff" and "target" or "player"
+            local amount = UnitGetTotalAbsorbs( unit )
+
+            if amount > 0 then
+                t.name = action.unravel.name .. " " .. ABSORB
+                t.count = 1
+                t.expires = now + 10
+                t.applied = now - 5
+                t.caster = unit
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end
+    },
+    youre_coming_with_me = {
+        id = 370388,
+        duration = 1,
+        max_stack = 1
+    },
+    zephyr = {
+        id = 374227,
+        duration = 8,
+        max_stack = 1,
     },
 } )
 
@@ -235,9 +384,6 @@ spec:RegisterAbilities( {
         handler = function ()
             if talent.azure_essence_burst.enabled and buff.dragonrage.up and talent.ruin.enabled then addStack( "essence_burst", nil, 1 ) end -- TODO:  Does this give 2 stacks if hitting 2 targets w/ Essence Attunement?
         end,
-
-        auras = {
-        }
     },
 
 
@@ -321,14 +467,6 @@ spec:RegisterAbilities( {
         end,
 
         copy = { "recall", 371807, 357210 },
-
-        auras = {
-            recall = {
-                id = 371807,
-                duration = 10,
-                max_stack = function () return talent.essence_attunement.enabled and 2 or 1 end,
-            }
-        }
     },
 
 
@@ -364,20 +502,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "disintegrate" )
             if buff.essence_burst.up then removeStack( "essence_burst", 1 ) end
         end,
-
-        auras = {
-            disintegrate = {
-                id = 356995,
-                duration = function () return 3 * ( talent.natural_convergence.enabled and 0.8 or 1 ) end,
-                tick_time = function () return talent.natural_convergence.enabled and 0.8 or 1 end,
-                max_stack = 1,
-            },
-            essence_burst = {
-                id = 359618,
-                duration = 15,
-                max_stack = 1,
-            },
-        }
     },
 
 
@@ -388,7 +512,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "dragonrage",
-        startsCombat = true,
+        startsCombat = false,
         texture = 4622452,
 
         toggle = "cooldowns",
@@ -399,14 +523,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "dragonrage" )
         end,
-
-        auras = {
-            dragonrage = {
-                id = 375087,
-                duration = 14,
-                max_stack = 1,
-            }
-        }
     },
 
 
@@ -419,7 +535,7 @@ spec:RegisterAbilities( {
         spend = 0,
         spendType = "essence",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 4622457,
 
         healing = function () return 2.5 * stat.spell_power end,    -- TODO: Make a fake aura so we know if an Emerald Blossom is pending for a target already?
@@ -438,14 +554,6 @@ spec:RegisterAbilities( {
                 end
             end
         end,
-
-        auras = {
-            cycle_of_life = {
-                id = 371877,
-                duration = 15,
-                max_stack = 1,
-            }
-        }
     },
 
 
@@ -485,7 +593,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "expunge",
-        startsCombat = true,
+        startsCombat = false,
         texture = 4630445,
 
         toggle = "interrupts",
@@ -523,19 +631,6 @@ spec:RegisterAbilities( {
         finish = function ()
             applyDebuff( "target", "fire_breath" )
         end,
-
-        auras = {
-            fire_breath = {
-                id = 357209,
-                duration = function ()
-                    -- TODO: Empowerment Level impact on duration.
-                    -- return empowerment_level * 4
-                    return talent.font_of_magic.enabled and 16 or 12
-                end,
-                -- TODO: damage = function () return 0.322 * stat.spell_power * action.fire_breath.spell_targets * ( talent.heat_wave.enabled and 1.2 or 1 ) * ( debuff.shattering_star.up and 1.2 or 1 ) end,
-                max_stack = 1,
-            }
-        }
     },
 
 
@@ -546,7 +641,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "firestorm",
-        startsCombat = true,
+        startsCombat = false,
         texture = 4622459,
 
         min_range = 0,
@@ -584,7 +679,7 @@ spec:RegisterAbilities( {
         spend = 0.04,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 4622462,
 
         toggle = "cooldowns",
@@ -604,20 +699,12 @@ spec:RegisterAbilities( {
         recharge = 35,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 4622463,
 
         handler = function ()
             applyBuff( "hover" )
         end,
-
-        auras = {
-            hover = {
-                id = 358267,
-                duration = function () return talent.extended_flight.enabled and 10 or 6 end,
-                max_stack = 1,
-            }
-        }
     },
 
 
@@ -627,7 +714,7 @@ spec:RegisterAbilities( {
         cooldown = function () return talent.forger_of_mountains.enabled and 60 or 90 end,
         gcd = "spell",
 
-        spend = 0.028,
+        spend = 0.03,
         spendType = "mana",
 
         talent = "landslide",
@@ -639,14 +726,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "landslide" )
         end,
-
-        auras = {
-            landslide = {
-                id = 355689,
-                duration = 30,
-                max_stack = 1,
-            }
-        }
     },
 
 
@@ -677,19 +756,6 @@ spec:RegisterAbilities( {
             -- Burnout is not consumed.
             if talent.ruby_essence_burst.enabled and buff.dragonrage.up and talent.ruin.enabled then addStack( "essence_burst", nil, 1 ) end
         end,
-
-        auras = {
-            ancient_flame = {
-                id = 375583,
-                duration = 3600,
-                max_stack = 1
-            },
-            burnout = {
-                id = 375802,
-                duration = 4,
-                max_stack = 1,
-            }
-        }
     },
 
 
@@ -697,7 +763,7 @@ spec:RegisterAbilities( {
         id = 363916,
         cast = 0,
         cooldown = function () return talent.obsidian_bulwark.enabled and 90 or 150 end,
-        gcd = "spell",
+        gcd = "off",
 
         talent = "obsidian_scales",
         startsCombat = false,
@@ -708,14 +774,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "obsidian_scales" )
         end,
-
-        auras = {
-            obsidian_scales = {
-                id = 363916,
-                duration = 12,
-                max_stack = 1,
-            }
-        }
     },
 
 
@@ -735,14 +793,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "oppressing_roar" )
             if talent.overawe.enabled and debuff.dispellable_enrage.up then removeDebuff( "target", "dispellable_enrage" ) end
         end,
-
-        auras = {
-            oppressing_roar = {
-                id = 372048,
-                duration = 10,
-                max_stack = 1,
-            },
-        }
     },
 
 
@@ -756,7 +806,7 @@ spec:RegisterAbilities( {
         spendType = "essence",
 
         talent = "pyre",
-        startsCombat = true,
+        startsCombat = false,
         texture = 4622468,
 
         -- TODO: Need to proc Charged Blast on Blue spells.
@@ -790,7 +840,7 @@ spec:RegisterAbilities( {
         id = 374348,
         cast = 0,
         cooldown = function () return talent.fire_within.enabled and 60 or 90 end,
-        gcd = "spell",
+        gcd = "off",
 
         talent = "renewing_blaze",
         startsCombat = false,
@@ -804,34 +854,20 @@ spec:RegisterAbilities( {
             applyBuff( "renewing_blaze" )
             applyBuff( "renewing_blaze_heal" )
         end,
-
-        auras = {
-            renewing_blaze = {
-                id = 374348,
-                duration = 8,
-                max_stack = 1,
-            },
-            renewing_blaze_heal = {
-                id = 374349,
-                duration = 14,
-                max_stack = 1,
-            }
-        }
     },
 
 
     rescue = {
-        id = 360995,
+        id = 370665,
         cast = 0,
-        cooldown = 24,
+        cooldown = 60,
         gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
 
         talent = "rescue",
         startsCombat = false,
-        texture = 4622471,
+        texture = 4622460,
+
+        toggle = "interrupts",
 
         handler = function ()
             -- Not implementing.
@@ -839,7 +875,7 @@ spec:RegisterAbilities( {
     },
 
 
-    ["return"] = {
+    action_return = {
         id = 361227,
         cast = 10,
         cooldown = 0,
@@ -848,13 +884,13 @@ spec:RegisterAbilities( {
         spend = 0.01,
         spendType = "mana",
 
-        startsCombat = false,
+        startsCombat = true,
         texture = 4622472,
 
         handler = function ()
         end,
 
-        copy = "action_return"
+        copy = "return"
     },
 
 
@@ -877,14 +913,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "shattering_star" )
             if talent.arcane_vigor.enabled then gain( 1, "essence" ) end
         end,
-
-        auras = {
-            shattering_star = {
-                id = 370452,
-                duration = function () return talent.focusing_iris.enabled and 6 or 4 end,
-                max_stack = 1
-            }
-        }
     },
 
 
@@ -922,15 +950,23 @@ spec:RegisterAbilities( {
         handler = function ()
             active_dot.source_of_magic = 1
         end,
+    },
 
-        auras = {
-            source_of_magic = {
-                id = 369459,
-                duration = 1800,
-                max_stack = 1,
-                friendly = true,
-            }
-        }
+
+    swoop_up = {
+        id = 370388,
+        cast = 0,
+        cooldown = 90,
+        gcd = "spell",
+
+        pvptalent = "swoop_up",
+        startsCombat = false,
+        texture = 4622446,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+        end,
     },
 
 
@@ -941,23 +977,33 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "time_spiral",
-        startsCombat = true,
+        startsCombat = false,
         texture = 4622479,
+
+        toggle = "cooldowns",
 
         handler = function ()
             applyBuff( "time_spiral" )
             active_dot.time_spiral = group_members
             setCooldown( "hover", 0 )
         end,
+    },
 
-        auras = {
-            hover = {
-                id = 374968,
-                duration = 10,
-                max_stack = 1,
 
-            }
-        }
+    time_stop = {
+        id = 378441,
+        cast = 0,
+        cooldown = 120,
+        gcd = "spell",
+
+        pvptalent = "time_stop",
+        startsCombat = false,
+        texture = 4631367,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+        end,
     },
 
 
@@ -976,14 +1022,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "tip_the_scales" )
         end,
-
-        auras = {
-            tip_the_scales = {
-                id = 370553,
-                duration = 3600,
-                max_stack = 1,
-            }
-        }
     },
 
 
@@ -997,7 +1035,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "unravel",
-        startsCombat = true,
+        startsCombat = false,
         texture = 4630499,
 
         debuff = "unravel_absorb",
@@ -1005,32 +1043,24 @@ spec:RegisterAbilities( {
         handler = function ()
             removeDebuff( "unravel_absorb" )
         end,
+    },
 
-        auras = {
-            unravel_absorb = {
-                duration = 15,
-                max_stack = 1,
-                -- TODO: Check if function works.
-                generate = function( t, auraType )
-                    local unit = auraType == "debuff" and "target" or "player"
-                    local amount = UnitGetTotalAbsorbs( unit )
 
-                    if amount > 0 then
-                        t.name = action.unravel.name .. " " .. ABSORB
-                        t.count = 1
-                        t.expires = now + 10
-                        t.applied = now - 5
-                        t.caster = unit
-                        return
-                    end
+    verdant_embrace = {
+        id = 360995,
+        cast = 0,
+        cooldown = 24,
+        gcd = "spell",
 
-                    t.count = 0
-                    t.expires = 0
-                    t.applied = 0
-                    t.caster = "nobody"
-                end
-            }
-        }
+        spend = 0.03,
+        spendType = "mana",
+
+        talent = "verdant_embrace",
+        startsCombat = false,
+        texture = 4622471,
+
+        handler = function ()
+        end,
     },
 
 
@@ -1041,23 +1071,15 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "zephyr",
-        startsCombat = true,
+        startsCombat = false,
         texture = 4630449,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "zephyr" )
             active_dot.zephyr = group_members
         end,
-
-        auras = {
-            zephyr = {
-                id = 374227,
-                duration = 8,
-                max_stack = 1,
-            }
-        }
     },
 } )
 
