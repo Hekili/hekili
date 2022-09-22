@@ -174,7 +174,6 @@ spec:RegisterTalents( {
     abomination_limb            = { 76049, 383269, 1 }, --
     absolute_zero               = { 76094, 377047, 1 }, --
     acclimation                 = { 76047, 373926, 1 }, --
-    anticipation                = { 76045, 378848, 1 }, --
     antimagic_barrier           = { 76046, 205727, 1 }, --
     antimagic_shell             = { 76070, 48707 , 1 }, --
     antimagic_zone              = { 76065, 51052 , 1 }, --
@@ -192,8 +191,9 @@ spec:RegisterTalents( {
     chill_streak                = { 76098, 305392, 1 }, --
     cleaving_strikes            = { 76073, 316916, 1 }, --
     clenching_grasp             = { 76062, 389679, 1 }, --
-    cold_heart                  = { 76110, 281208, 1 }, --
+    cold_heart                  = { 76035, 281208, 1 }, --
     coldblooded_rage            = { 76123, 377083, 2 }, --
+    coldthirst                  = { 76045, 378848, 1 }, --
     control_undead              = { 76059, 111673, 1 }, --
     death_pact                  = { 76077, 48743 , 1 }, --
     death_strike                = { 76071, 49998 , 1 }, --
@@ -215,7 +215,7 @@ spec:RegisterTalents( {
     glacial_advance             = { 76092, 194913, 1 }, --
     gloom_ward                  = { 76052, 391571, 1 }, --
     grip_of_the_dead            = { 76057, 273952, 1 }, --
-    horn_of_winter              = { 76035, 57330 , 1 }, --
+    horn_of_winter              = { 76110, 57330 , 1 }, --
     howling_blast               = { 76114, 49184 , 1 }, --
     icebound_fortitude          = { 76084, 48792 , 1 }, --
     icebreaker                  = { 76033, 392950, 2 }, --
@@ -223,8 +223,8 @@ spec:RegisterTalents( {
     icy_talons                  = { 76051, 194878, 2 }, --
     improved_death_strike       = { 76067, 374277, 1 }, --
     improved_frost_strike       = { 76103, 316803, 2 }, --
-    improved_obliterate         = { 76119, 317198, 2 }, --
-    improved_rime               = { 76111, 316838, 2 }, --
+    improved_obliterate         = { 76119, 317198, 1 }, --
+    improved_rime               = { 76111, 316838, 1 }, --
     inexorable_assault          = { 76037, 253593, 1 }, --
     insidious_chill             = { 76088, 391566, 1 }, --
     invigorating_freeze         = { 76108, 377092, 2 }, --
@@ -249,7 +249,7 @@ spec:RegisterTalents( {
     runic_attenuation           = { 76087, 207104, 1 }, --
     runic_command               = { 76102, 376251, 2 }, --
     sacrificial_pact            = { 76074, 327574, 1 }, --
-    shattering_strike           = { 76101, 207057, 1 }, --
+    shattering_blade            = { 76101, 207057, 1 }, --
     soul_reaper                 = { 76053, 343294, 1 }, --
     suppression                 = { 76075, 374049, 1 }, --
     unholy_bond                 = { 76055, 374261, 2 }, --
@@ -354,6 +354,7 @@ spec:RegisterAuras( {
     death_and_decay = { -- Buff.
         id = 188290,
         duration = 10,
+        tick_time = 1,
         max_stack = 1
     },
     death_pact = {
@@ -381,11 +382,6 @@ spec:RegisterAuras( {
         id = 376974,
         duration = 8,
         max_stack = 10
-    },
-    focused_assault = {
-        id = 206891,
-        duration = 6,
-        max_stack = 5
     },
     frostwhelps_aid = {
         id = 377253,
@@ -636,8 +632,8 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = -10,
-        spendType = "runic_power",
+        spend = 1,
+        spendType = "runes",
 
         talent = "control_undead",
         startsCombat = false,
@@ -1064,8 +1060,8 @@ spec:RegisterAbilities( {
         cooldown = 20,
         gcd = "spell",
 
-        spend = -10,
-        spendType = "runic_power",
+        spend = 1,
+        spendType = "runes",
 
         talent = "remorseless_winter",
         startsCombat = false,
@@ -1182,7 +1178,7 @@ spec:RegisterAbilities( {
     },
 } )
 
-spec:RegisterPriority( "Frost", 20220918,
+spec:RegisterPriority( "Frost", 20220921,
 -- Notes
 [[
 
