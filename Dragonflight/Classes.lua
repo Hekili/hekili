@@ -24,7 +24,7 @@ function ns.updateTalents()
         local node = C_Traits.GetNodeInfo( configID, data[1] )
         local talent = rawget( state.talent, token ) or {}
 
-        talent.rank = IsPlayerSpell( data[2] ) and node.activeRank or 0
+        talent.rank = data[2] > 0 and IsPlayerSpell( data[2] ) and node.activeRank or 0
         talent.max = node.maxRanks
 
         -- Perform a sanity check on maxRanks vs. data[3].  If they don't match, the talent model is likely wrong.
