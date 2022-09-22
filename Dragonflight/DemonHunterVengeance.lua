@@ -14,99 +14,100 @@ spec:RegisterResource( Enum.PowerType.Pain )
 
 -- Talents
 spec:RegisterTalents( {
-    aldrachi_design          = { 79295, 391409, 1 }, --
-    any_means_necessary      = { 79219, 388114, 1 }, --
-    aura_of_pain             = { 79288, 207347, 1 }, --
-    blind_fury               = { 79227, 203550, 2 }, --
-    blur                     = { 79318, 198589, 1 }, --
-    bouncing_glaives         = { 79307, 320386, 1 }, --
-    burning_hatred           = { 79269, 320374, 1 }, --
-    burning_wound            = { 79208, 391189, 1 }, --
-    chaos_fragments          = { 79280, 320412, 1 }, --
-    chaos_nova               = { 79317, 179057, 1 }, --
-    chaos_theory             = { 79212, 389687, 1 }, --
-    chaotic_transformation   = { 79216, 388112, 1 }, --
-    charred_warblades        = { 79302, 213010, 1 }, --
-    concentrated_sigils      = { 79299, 207666, 1 }, --
-    consume_magic            = { 79308, 278326, 1 }, --
-    consume_magic_2          = { 79309, 320313, 1 }, --
-    critical_chaos           = { 79275, 320413, 2 }, --
-    cycle_of_hatred          = { 79210, 258887, 2 }, --
-    dancing_with_fate        = { 79266, 389978, 2 }, --
-    darkness                 = { 79286, 196718, 1 }, --
-    demon_blades             = { 79226, 203555, 1 }, --
-    demon_muzzle_nyi         = { 79297, 388111, 1 }, --
-    demonic                  = { 79292, 213410, 1 }, --
-    demonic_appetite         = { 79194, 206478, 1 }, --
-    demonic_origins          = { 79292, 235893, 1 }, --
-    desperate_instincts      = { 79278, 205411, 1 }, --
-    disrupting_fury          = { 79290, 183782, 1 }, --
-    elysian_decree           = { 79218, 390163, 1 }, --
-    erratic_felheart         = { 79279, 391397, 2 }, --
-    essence_break            = { 79211, 258860, 1 }, --
-    extended_sigils          = { 79296, 389697, 2 }, --
-    eye_beam                 = { 79272, 198013, 1 }, --
-    fae_empowered_elixir     = { 79284, 389819, 1 }, --
-    fel_barrage              = { 79222, 258925, 1 }, --
-    fel_eruption             = { 79198, 211881, 1 }, --
-    felblade                 = { 79288, 232893, 1 }, --
-    felfire_haste            = { 79281, 389846, 1 }, --
-    felfire_heart            = { 79268, 388109, 1 }, --
-    first_blood              = { 79267, 206416, 1 }, --
-    flames_of_fury           = { 79303, 389694, 1 }, --
-    fodder_to_the_flame      = { 79218, 391429, 1 }, --
-    furious_gaze             = { 79228, 343311, 1 }, --
-    furious_throws           = { 79271, 393029, 1 }, --
-    glaive_tempest           = { 79222, 342817, 1 }, --
-    growing_inferno          = { 79214, 390158, 2 }, --
-    hot_feet                 = { 79306, 320416, 1 }, --
-    illidari_knowledge       = { 79316, 389696, 2 }, --
-    imprison                 = { 79287, 217832, 1 }, --
-    improved_chaos_strike    = { 79200, 343206, 1 }, --
-    improved_disrupt         = { 79289, 320361, 1 }, --
-    improved_fel_rush        = { 79270, 343017, 1 }, --
-    improved_sigil_of_misery = { 79282, 320418, 1 }, --
-    infernal_armor           = { 79310, 320331, 2 }, --
-    initiative               = { 79276, 388108, 1 }, --
-    inner_demon              = { 79217, 389693, 1 }, --
-    insatiable_hunger        = { 79226, 258876, 1 }, --
-    isolated_prey            = { 79277, 388113, 1 }, --
-    know_your_enemy          = { 79213, 388118, 2 }, --
-    long_night               = { 79283, 389781, 1 }, --
-    looks_can_kill           = { 79207, 320415, 1 }, --
-    lost_in_darkness         = { 79301, 389849, 1 }, --
-    master_of_the_glaive     = { 79315, 389763, 1 }, --
-    misery_in_defeat         = { 79282, 388110, 1 }, --
-    moarg_bionics            = { 79223, 391275, 1 }, --
-    momentum                 = { 79209, 206476, 1 }, --
-    mortal_dance             = { 79199, 328725, 1 }, --
-    netherwalk               = { 79201, 196555, 1 }, --
-    pitch_black              = { 79283, 389783, 1 }, --
-    precise_sigils           = { 79299, 389799, 1 }, --
-    pursuit                  = { 79314, 320654, 1 }, --
-    quickened_sigils         = { 79294, 209281, 1 }, --
-    ragefire                 = { 79221, 388107, 1 }, --
-    relentless_onslaught     = { 79224, 389977, 1 }, --
-    restless_hunter          = { 79229, 390142, 1 }, --
-    rush_of_chaos            = { 79311, 320421, 1 }, --
-    serrated_glaive          = { 79215, 390154, 2 }, --
-    shattered_destiny        = { 79206, 388116, 1 }, --
-    shattered_restoration    = { 79304, 389824, 2 }, --
-    sigil_of_flame           = { 79305, 204596, 1 }, --
-    sigil_of_misery          = { 79293, 207684, 1 }, --
-    sigil_of_silence         = { 79298, 202137, 1 }, --
-    soul_rending             = { 79291, 204909, 2 }, --
-    soulrend                 = { 79220, 388106, 2 }, --
-    tactical_retreat         = { 79274, 389688, 1 }, --
-    the_hunt                 = { 79285, 370965, 1 }, --
-    trail_of_ruin            = { 79273, 258881, 1 }, --
-    unbound_chaos            = { 79225, 347461, 2 }, --
-    unleashed_power          = { 79280, 206477, 1 }, --
-    unnatural_malice         = { 79284, 389811, 1 }, --
-    unrestrained_fury        = { 79313, 320770, 2 }, --
-    vengeful_restraint       = { 79197, 320635, 1 }, --
-    vengeful_retreat         = { 79312, 198793, 1 }, --
-    will_of_the_illidari     = { 79300, 389695, 2 }, --
+    aldrachi_design          = { 82964, 391409, 1 }, --
+    any_means_necessary      = { 82920, 388114, 1 }, --
+    aura_of_pain             = { 82951, 207347, 1 }, --
+    blind_fury               = { 82913, 203550, 2 }, --
+    bouncing_glaives         = { 82941, 320386, 1 }, --
+    burning_hatred           = { 82899, 320374, 1 }, --
+    burning_wound            = { 82918, 391189, 1 }, --
+    chaos_fragments          = { 82849, 320412, 1 }, --
+    chaos_nova               = { 82960, 179057, 1 }, --
+    chaos_theory             = { 82934, 389687, 1 }, --
+    chaotic_transformation   = { 82906, 388112, 1 }, --
+    charred_warblades        = { 82855, 213010, 1 }, --
+    collective_anguish       = { 82850, 390152, 1 }, --
+    concentrated_sigils      = { 82967, 207666, 1 }, --
+    consume_magic            = { 82953, 320313, 1 }, --
+    consume_magic            = { 82952, 278326, 1 }, --
+    critical_chaos           = { 82907, 320413, 2 }, --
+    cycle_of_hatred          = { 82937, 258887, 2 }, --
+    dancing_with_fate        = { 82901, 389978, 2 }, --
+    darkness                 = { 82959, 196718, 1 }, --
+    demon_blades             = { 82939, 203555, 1 }, --
+    demon_muzzle_nyi         = { 82848, 388111, 1 }, --
+    demonic                  = { 82957, 213410, 1 }, --
+    demonic_appetite         = { 82893, 206478, 1 }, --
+    demonic_origins          = { 82957, 235893, 1 }, --
+    desperate_instincts      = { 82891, 205411, 1 }, --
+    disrupting_fury          = { 82853, 183782, 1 }, --
+    elysian_decree           = { 82916, 390163, 1 }, --
+    erratic_felheart         = { 82851, 391397, 2 }, --
+    essence_break            = { 82932, 258860, 1 }, --
+    extended_sigils          = { 82963, 389697, 2 }, --
+    eye_beam                 = { 82940, 198013, 1 }, --
+    fae_empowered_elixir     = { 82968, 389819, 1 }, --
+    fel_barrage              = { 82935, 258925, 1 }, --
+    fel_eruption             = { 82902, 211881, 1 }, --
+    felblade                 = { 82951, 232893, 1 }, --
+    felfire_haste            = { 82948, 389846, 1 }, --
+    felfire_heart            = { 82898, 388109, 1 }, --
+    first_blood              = { 82897, 206416, 1 }, --
+    flames_of_fury           = { 82856, 389694, 1 }, --
+    fodder_to_the_flame      = { 82916, 391429, 1 }, --
+    furious_gaze             = { 82914, 343311, 1 }, --
+    furious_throws           = { 82892, 393029, 1 }, --
+    glaive_tempest           = { 82935, 342817, 1 }, --
+    growing_inferno          = { 82919, 390158, 2 }, --
+    hot_feet                 = { 82943, 320416, 1 }, --
+    illidari_knowledge       = { 82961, 389696, 2 }, --
+    imprison                 = { 82942, 217832, 1 }, --
+    improved_chaos_strike    = { 82895, 343206, 1 }, --
+    improved_disrupt         = { 82950, 320361, 1 }, --
+    improved_fel_rush        = { 82894, 343017, 1 }, --
+    improved_sigil_of_misery = { 82971, 320418, 1 }, --
+    infernal_armor           = { 82954, 320331, 2 }, --
+    initiative               = { 82908, 388108, 1 }, --
+    inner_demon              = { 82915, 389693, 1 }, --
+    insatiable_hunger        = { 82939, 258876, 1 }, --
+    internal_struggle        = { 82852, 393822, 1 }, --
+    isolated_prey            = { 82912, 388113, 1 }, --
+    know_your_enemy          = { 82933, 388118, 2 }, --
+    long_night               = { 82958, 389781, 1 }, --
+    looks_can_kill           = { 82905, 320415, 1 }, --
+    lost_in_darkness         = { 82854, 389849, 1 }, --
+    master_of_the_glaive     = { 82947, 389763, 1 }, --
+    misery_in_defeat         = { 82971, 388110, 1 }, --
+    moarg_bionics            = { 82917, 391275, 1 }, --
+    momentum                 = { 82909, 206476, 1 }, --
+    mortal_dance             = { 82896, 328725, 1 }, --
+    netherwalk               = { 82891, 196555, 1 }, --
+    pitch_black              = { 82958, 389783, 1 }, --
+    precise_sigils           = { 82967, 389799, 1 }, --
+    pursuit                  = { 82949, 320654, 1 }, --
+    quickened_sigils         = { 82962, 209281, 1 }, --
+    ragefire                 = { 82890, 388107, 1 }, --
+    relentless_onslaught     = { 82903, 389977, 1 }, --
+    restless_hunter          = { 82936, 390142, 1 }, --
+    rush_of_chaos            = { 82955, 320421, 1 }, --
+    serrated_glaive          = { 82904, 390154, 2 }, --
+    shattered_destiny        = { 82938, 388116, 1 }, --
+    shattered_restoration    = { 82857, 389824, 2 }, --
+    sigil_of_flame           = { 82858, 204596, 1 }, --
+    sigil_of_misery          = { 82970, 207684, 1 }, --
+    sigil_of_silence         = { 82965, 202137, 1 }, --
+    soul_rending             = { 82956, 204909, 2 }, --
+    soulrend                 = { 82921, 388106, 2 }, --
+    tactical_retreat         = { 82910, 389688, 1 }, --
+    the_hunt                 = { 82969, 370965, 1 }, --
+    trail_of_ruin            = { 82900, 258881, 1 }, --
+    unbound_chaos            = { 82911, 347461, 2 }, --
+    unleashed_power          = { 82849, 206477, 1 }, --
+    unnatural_malice         = { 82968, 389811, 1 }, --
+    unrestrained_fury        = { 82946, 320770, 2 }, --
+    vengeful_restraint       = { 82945, 320635, 1 }, --
+    vengeful_retreat         = { 82944, 198793, 1 }, --
+    will_of_the_illidari     = { 82966, 389695, 2 }, --
 } )
 
 
@@ -132,11 +133,6 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
-    blur = {
-        id = 212800,
-        duration = 10,
-        max_stack = 1
-    },
     burning_wound = {
         id = 391191,
         duration = 15,
@@ -243,11 +239,6 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1
     },
-    prepared = {
-        id = 203650,
-        duration = 10,
-        max_stack = 1
-    },
     rain_from_above_immune = {
         id = 206803,
         duration = 1,
@@ -326,23 +317,6 @@ spec:RegisterAuras( {
 
 -- Abilities
 spec:RegisterAbilities( {
-    blur = {
-        id = 198589,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-
-        talent = "blur",
-        startsCombat = false,
-        texture = 1305150,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
     chaos_nova = {
         id = 179057,
         cast = 0,
@@ -889,7 +863,7 @@ spec:RegisterAbilities( {
     },
 } )
 
-spec:RegisterPriority( "Vengeance", 20220918,
+spec:RegisterPriority( "Vengeance", 20220921,
 -- Notes
 [[
 
