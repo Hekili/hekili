@@ -17,96 +17,100 @@ spec:RegisterResource( Enum.PowerType.Energy )
 
 -- Talents
 spec:RegisterTalents( {
-    adaptive_swarm                     = { 71739, 325727, 1 }, --
-    astral_influence                   = { 71631, 197524, 2 }, --
-    balance_of_all_things              = { 71739, 339942, 1 }, --
-    blessing_of_anshe                  = { 71737, 202739, 1 }, --
-    blessing_of_elune                  = { 71737, 202737, 1 }, --
-    celestial_alignment                = { 71755, 194223, 1 }, --
-    circle_of_life_and_death           = { 71746, 338657, 2 }, --
-    convoke_the_spirits                = { 71731, 323764, 1 }, --
-    cyclone                            = { 71604, 33786 , 1 }, --
-    eclipse                            = { 71752, 79577 , 1 }, --
-    feline_swiftness                   = { 71648, 131768, 2 }, --
-    force_of_nature                    = { 71750, 205636, 1 }, --
-    frenzied_regeneration              = { 71645, 22842 , 1 }, --
-    furor                              = { 71609, 378986, 1 }, --
-    fury_of_elune                      = { 71727, 202770, 1 }, --
-    fury_of_the_skies                  = { 71732, 384656, 2 }, --
-    heart_of_the_wild                  = { 71612, 319454, 1 }, --
-    hibernate                          = { 71603, 2637  , 1 }, --
-    improved_barkskin                  = { 71644, 327993, 1 }, --
-    improved_eclipse                   = { 71751, 328021, 2 }, --
-    improved_frenzied_regeneration_nnf = { 71602, 301768, 1 }, --
-    improved_moonfire                  = { 71753, 328023, 2 }, --
-    improved_rejuvenation              = { 71627, 231040, 1 }, --
-    improved_stampeding_roar           = { 71613, 288826, 1 }, --
-    improved_starsurge                 = { 71734, 328022, 1 }, --
-    improved_sunfire                   = { 71608, 231050, 1 }, --
-    incapacitating_roar                = { 71625, 99    , 1 }, --
-    incarnation_chosen_of_elune        = { 71731, 102560, 1 }, --
-    innervate                          = { 71634, 29166 , 1 }, --
-    ironfur                            = { 71621, 192081, 1 }, --
-    killer_instinct                    = { 71619, 108299, 3 }, --
-    light_of_the_sun                   = { 71601, 202918, 1 }, --
-    lycaras_teachings                  = { 71614, 378988, 3 }, --
-    maim                               = { 71606, 22570 , 1 }, --
-    mass_entanglement                  = { 71633, 102359, 1 }, --
-    mighty_bash                        = { 71625, 5211  , 1 }, --
-    modal_cooldown_bonus_nyi           = { 71730, 0     , 1 }, --
-    moonkin_form                       = { 71639, 24858 , 1 }, --
-    natures_balance                    = { 71748, 202430, 2 }, --
-    natures_vigil                      = { 71635, 124974, 1 }, --
-    new_moon                           = { 71727, 274281, 1 }, --
-    new_resto_passive_nnf              = { 71629, 377796, 2 }, --
-    nurturing_instinct                 = { 71640, 33873 , 3 }, --
-    oneths_clear_vision_nnf            = { 71738, 338661, 1 }, --
-    orbit_breaker                      = { 71740, 383197, 1 }, --
-    owlkin_frenzy                      = { 71747, 231042, 1 }, --
-    power_of_goldrinn                  = { 71757, 202996, 2 }, --
-    precise_alignment                  = { 71744, 340706, 1 }, --
-    primal_fury                        = { 71624, 159286, 1 }, --
-    primordial_arcanic_pulsar          = { 71741, 338668, 1 }, --
-    rake                               = { 71607, 1822  , 1 }, --
-    rejuvenation                       = { 71643, 774   , 1 }, --
-    remove_corruption                  = { 71558, 2782  , 1 }, --
-    renewal                            = { 71611, 108238, 1 }, --
-    rip                                = { 71647, 1079  , 1 }, --
-    shooting_stars                     = { 71742, 202342, 1 }, --
-    skull_bash                         = { 71618, 106839, 1 }, --
-    solar_beam                         = { 71756, 78675 , 1 }, --
-    solstice                           = { 71745, 343647, 2 }, --
-    soothe                             = { 71617, 2908  , 1 }, --
-    soul_of_the_forest                 = { 71729, 114107, 1 }, --
-    stampeding_roar                    = { 71615, 106898, 1 }, --
-    starfall                           = { 71749, 191034, 1 }, --
-    starfall_2                         = { 71735, 327541, 2 }, --
-    starfire                           = { 71637, 194153, 1 }, --
-    starlord                           = { 71743, 202345, 2 }, --
-    starsurge                          = { 71638, 78674 , 1 }, --
-    stellar_drift                      = { 71736, 202354, 1 }, --
-    stellar_flare                      = { 71759, 202347, 1 }, --
-    stellar_inspiration                = { 71733, 383194, 2 }, --
-    sunfire                            = { 71632, 93402 , 1 }, --
-    swiftmend                          = { 71642, 18562 , 1 }, --
-    swipe                              = { 71620, 213764, 1 }, --
-    syzygy                             = { 71741, 390378, 1 }, --
-    thick_hide                         = { 71622, 16931 , 2 }, --
-    thrash                             = { 71646, 106832, 1 }, --
-    tiger_dash                         = { 71616, 252216, 1 }, --
-    timeworn_dreambinder_nnf           = { 71738, 339949, 1 }, --
-    tireless_pursuit                   = { 71605, 377801, 1 }, --
-    twin_moons                         = { 71759, 279620, 1 }, --
-    typhoon                            = { 71630, 132469, 1 }, --
-    umbral_infusion_nnf                = { 71728, 383196, 2 }, --
-    umbral_intensity                   = { 71758, 383195, 2 }, --
-    ursine_vigor                       = { 71610, 377842, 2 }, --
-    ursocs_endurance_nnf               = { 71623, 385786, 1 }, --
-    ursols_vortex                      = { 71633, 102793, 1 }, --
-    warrior_of_elune                   = { 71754, 202425, 1 }, --
-    wellhoned_instincts                = { 71626, 377847, 2 }, --
-    wild_charge                        = { 71616, 102401, 1 }, --
-    wild_growth                        = { 71628, 48438 , 1 }, --
+    adaptive_swarm                 = { 82112, 391888, 1 }, --
+    apex_predators_craving         = { 82092, 391881, 1 }, --
+    ashamanes_guidance             = { 82113, 391548, 1 }, --
+    astral_influence               = { 82210, 197524, 2 }, --
+    berserk                        = { 82101, 106951, 1 }, --
+    berserk_frenzy                 = { 82090, 384668, 1 }, --
+    berserk_heart_of_the_lion      = { 82105, 391174, 1 }, --
+    bloodtalons                    = { 82109, 319439, 1 }, --
+    brutal_slash                   = { 82091, 202028, 1 }, --
+    carnivorous_instinct           = { 82110, 390902, 2 }, --
+    cats_curiosity                 = { 82094, 386318, 2 }, --
+    circle_of_life_and_death       = { 82095, 391969, 1 }, --
+    convoke_the_spirits            = { 82114, 391528, 1 }, --
+    cyclone                        = { 82213, 33786 , 1 }, --
+    doubleclawed_rake              = { 82086, 391700, 1 }, --
+    dreadful_bleeding              = { 82117, 391045, 1 }, --
+    feline_swiftness               = { 82239, 131768, 2 }, --
+    feral_frenzy                   = { 82108, 274837, 1 }, --
+    frantic_momentum               = { 82115, 391875, 2 }, --
+    frenzied_regeneration          = { 82220, 22842 , 1 }, --
+    furor                          = { 82245, 378986, 1 }, --
+    heart_of_the_wild              = { 82231, 319454, 1 }, --
+    hibernate                      = { 82211, 2637  , 1 }, --
+    improved_barkskin              = { 82219, 327993, 1 }, --
+    improved_rejuvenation          = { 82240, 231040, 1 }, --
+    improved_stampeding_roar       = { 82230, 288826, 1 }, --
+    improved_sunfire               = { 82207, 231050, 1 }, --
+    incapacitating_roar            = { 82237, 99    , 1 }, --
+    incarnation_avatar_of_ashamane = { 82114, 102543, 1 }, --
+    infected_wounds                = { 82103, 48484 , 1 }, --
+    innervate                      = { 82243, 29166 , 1 }, --
+    ironfur                        = { 82227, 192081, 1 }, --
+    killer_instinct                = { 82225, 108299, 3 }, --
+    lions_strength                 = { 82109, 391972, 1 }, --
+    lunar_inspiration              = { 82087, 155580, 1 }, --
+    lycaras_teachings              = { 82233, 378988, 3 }, --
+    maim                           = { 82221, 22570 , 1 }, --
+    mass_entanglement              = { 82242, 102359, 1 }, --
+    merciless_strikes              = { 82098, 231063, 1 }, --
+    mighty_bash                    = { 82237, 5211  , 1 }, --
+    moment_of_clarity              = { 82100, 236068, 1 }, --
+    moonkin_form                   = { 82212, 24858 , 1 }, --
+    natural_recovery               = { 82206, 377796, 2 }, --
+    natures_vigil                  = { 82244, 124974, 1 }, --
+    nurturing_instinct             = { 82214, 33873 , 3 }, --
+    omen_of_clarity                = { 82123, 16864 , 1 }, --
+    pouncing_strikes               = { 82119, 390772, 1 }, --
+    predator                       = { 82122, 202021, 1 }, --
+    predatory_swiftness            = { 82106, 16974 , 1 }, --
+    primal_claws                   = { 82085, 391037, 2 }, --
+    primal_fury                    = { 82238, 159286, 1 }, --
+    primal_wrath                   = { 82120, 285381, 1 }, --
+    protective_growth              = { 82097, 391947, 1 }, --
+    raging_fury                    = { 82107, 391078, 1 }, --
+    rake                           = { 82199, 1822  , 1 }, --
+    rampant_ferocity               = { 82099, 391709, 1 }, --
+    rejuvenation                   = { 82217, 774   , 1 }, --
+    relentless_predator            = { 82088, 393771, 1 }, --
+    remove_corruption              = { 82204, 2782  , 1 }, --
+    renewal                        = { 82232, 108238, 1 }, --
+    rip                            = { 82222, 1079  , 1 }, --
+    rip_and_tear                   = { 82093, 391347, 1 }, --
+    sabertooth                     = { 82102, 202031, 1 }, --
+    skull_bash                     = { 82224, 106839, 1 }, --
+    soothe                         = { 82229, 2908  , 1 }, --
+    soul_of_the_forest             = { 82096, 158476, 1 }, --
+    stampeding_roar                = { 82234, 106898, 1 }, --
+    starfire                       = { 82201, 194153, 1 }, --
+    starsurge                      = { 82200, 197626, 1 }, --
+    sudden_ambush                  = { 82104, 384667, 2 }, --
+    sunfire                        = { 82208, 93402 , 1 }, --
+    survival_instincts             = { 82116, 61336 , 1 }, --
+    swiftmend                      = { 82216, 18562 , 1 }, --
+    swipe                          = { 82226, 213764, 1 }, --
+    taste_for_blood                = { 82118, 384665, 2 }, --
+    tear_open_wounds               = { 82089, 391785, 1 }, --
+    thick_hide                     = { 82228, 16931 , 2 }, --
+    thrash                         = { 82223, 106832, 1 }, --
+    tiger_dash                     = { 82198, 252216, 1 }, --
+    tigers_fury                    = { 82124, 5217  , 1 }, --
+    tigers_tenacity                = { 82107, 391872, 1 }, --
+    tireless_energy                = { 82121, 383352, 2 }, --
+    tireless_pursuit               = { 82197, 377801, 1 }, --
+    typhoon                        = { 82209, 132469, 1 }, --
+    unbridled_swarm                = { 82111, 391951, 1 }, --
+    ursine_vigor                   = { 82235, 377842, 2 }, --
+    ursocs_endurance_nnf           = { 82236, 385786, 1 }, --
+    ursols_vortex                  = { 82242, 102793, 1 }, --
+    veinripper                     = { 82093, 391978, 1 }, --
+    verdant_heart                  = { 82218, 301768, 1 }, --
+    wellhoned_instincts            = { 82246, 377847, 2 }, --
+    wild_charge                    = { 82198, 102401, 1 }, --
+    wild_growth                    = { 82241, 48438 , 1 }, --
+    wild_slashes                   = { 82091, 390864, 1 }, --
 } )
 
 
@@ -143,6 +147,11 @@ spec:RegisterAuras( {
     bear_form = {
         id = 5487,
         duration = 3600,
+        max_stack = 1
+    },
+    berserk = {
+        id = 106951,
+        duration = 20,
         max_stack = 1
     },
     cat_form = {
@@ -385,7 +394,7 @@ spec:RegisterAuras( {
 -- Abilities
 spec:RegisterAbilities( {
     adaptive_swarm = {
-        id = 325727,
+        id = 391888,
         cast = 0,
         cooldown = 25,
         gcd = "spell",
@@ -432,30 +441,37 @@ spec:RegisterAbilities( {
     },
 
 
-    blessing_of_anshe = {
-        id = 202739,
+    berserk = {
+        id = 106951,
         cast = 0,
-        cooldown = 0,
+        cooldown = 180,
         gcd = "off",
 
-        talent = "blessing_of_anshe",
+        talent = "berserk",
         startsCombat = false,
-        texture = 608954,
+        texture = 236149,
+
+        toggle = "cooldowns",
 
         handler = function ()
         end,
     },
 
 
-    blessing_of_elune = {
-        id = 202737,
+    brutal_slash = {
+        id = 202028,
         cast = 0,
-        cooldown = 0,
-        gcd = "off",
+        charges = 3,
+        cooldown = 8,
+        recharge = 8,
+        gcd = "totem",
 
-        talent = "blessing_of_elune",
+        spend = 25,
+        spendType = "energy",
+
+        talent = "brutal_slash",
         startsCombat = false,
-        texture = 236704,
+        texture = 132141,
 
         handler = function ()
         end,
@@ -476,25 +492,8 @@ spec:RegisterAbilities( {
     },
 
 
-    celestial_alignment = {
-        id = 194223,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
-
-        talent = "celestial_alignment",
-        startsCombat = false,
-        texture = 136060,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
     convoke_the_spirits = {
-        id = 323764,
+        id = 391528,
         cast = 0,
         cooldown = 120,
         gcd = "spell",
@@ -512,7 +511,7 @@ spec:RegisterAbilities( {
 
     cyclone = {
         id = 33786,
-        cast = 1.6,
+        cast = 1.7,
         cooldown = 0,
         gcd = "spell",
 
@@ -546,7 +545,7 @@ spec:RegisterAbilities( {
 
     entangling_roots = {
         id = 339,
-        cast = 1.6,
+        cast = 1.7,
         cooldown = 0,
         gcd = "spell",
 
@@ -555,6 +554,24 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136100,
+
+        handler = function ()
+        end,
+    },
+
+
+    feral_frenzy = {
+        id = 274837,
+        cast = 0,
+        cooldown = 45,
+        gcd = "totem",
+
+        spend = 25,
+        spendType = "energy",
+
+        talent = "feral_frenzy",
+        startsCombat = false,
+        texture = 132140,
 
         handler = function ()
         end,
@@ -578,23 +595,6 @@ spec:RegisterAbilities( {
     },
 
 
-    force_of_nature = {
-        id = 205636,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        talent = "force_of_nature",
-        startsCombat = false,
-        texture = 132129,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
     frenzied_regeneration = {
         id = 22842,
         cast = 0,
@@ -609,23 +609,6 @@ spec:RegisterAbilities( {
         talent = "frenzied_regeneration",
         startsCombat = false,
         texture = 132091,
-
-        handler = function ()
-        end,
-    },
-
-
-    fury_of_elune = {
-        id = 202770,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        talent = "fury_of_elune",
-        startsCombat = false,
-        texture = 132123,
-
-        toggle = "cooldowns",
 
         handler = function ()
         end,
@@ -696,13 +679,13 @@ spec:RegisterAbilities( {
     },
 
 
-    incarnation_chosen_of_elune = {
-        id = 102560,
+    incarnation_avatar_of_ashamane = {
+        id = 102543,
         cast = 0,
         cooldown = 180,
         gcd = "off",
 
-        talent = "incarnation_chosen_of_elune",
+        talent = "incarnation_avatar_of_ashamane",
         startsCombat = false,
         texture = 571586,
 
@@ -710,6 +693,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
         end,
+
+        copy = "incarnation"
     },
 
 
@@ -878,17 +863,18 @@ spec:RegisterAbilities( {
     },
 
 
-    new_moon = {
-        id = 274281,
-        cast = 1,
-        charges = 3,
-        cooldown = 20,
-        recharge = 20,
+    primal_wrath = {
+        id = 285381,
+        cast = 0,
+        cooldown = 0,
         gcd = "totem",
 
-        talent = "new_moon",
+        spend = 20,
+        spendType = "energy",
+
+        talent = "primal_wrath",
         startsCombat = false,
-        texture = 1392545,
+        texture = 1392547,
 
         handler = function ()
         end,
@@ -1083,26 +1069,6 @@ spec:RegisterAbilities( {
     },
 
 
-    solar_beam = {
-        id = 78675,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-
-        spend = 0.17,
-        spendType = "mana",
-
-        talent = "solar_beam",
-        startsCombat = false,
-        texture = 252188,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
     soothe = {
         id = 2908,
         cast = 0,
@@ -1138,24 +1104,6 @@ spec:RegisterAbilities( {
     },
 
 
-    starfall = {
-        id = 191034,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 50,
-        spendType = "lunar_power",
-
-        talent = "starfall",
-        startsCombat = false,
-        texture = 236168,
-
-        handler = function ()
-        end,
-    },
-
-
     starfire = {
         id = 194153,
         cast = 2.25,
@@ -1172,32 +1120,17 @@ spec:RegisterAbilities( {
 
 
     starsurge = {
-        id = 78674,
-        cast = 0,
-        cooldown = 0,
+        id = 197626,
+        cast = 2,
+        cooldown = 10,
         gcd = "spell",
 
-        spend = 30,
-        spendType = "lunar_power",
+        spend = 0.03,
+        spendType = "mana",
 
         talent = "starsurge",
         startsCombat = false,
         texture = 135730,
-
-        handler = function ()
-        end,
-    },
-
-
-    stellar_flare = {
-        id = 202347,
-        cast = 1.5,
-        cooldown = 0,
-        gcd = "spell",
-
-        talent = "stellar_flare",
-        startsCombat = false,
-        texture = 1052602,
 
         handler = function ()
         end,
@@ -1216,6 +1149,25 @@ spec:RegisterAbilities( {
         talent = "sunfire",
         startsCombat = false,
         texture = 236216,
+
+        handler = function ()
+        end,
+    },
+
+
+    survival_instincts = {
+        id = 61336,
+        cast = 0,
+        charges = 1,
+        cooldown = 180,
+        recharge = 180,
+        gcd = "off",
+
+        talent = "survival_instincts",
+        startsCombat = false,
+        texture = 236169,
+
+        toggle = "cooldowns",
 
         handler = function ()
         end,
@@ -1263,7 +1215,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 50,
+        spend = 10,
         spendType = "mana",
 
         startsCombat = false,
@@ -1325,6 +1277,21 @@ spec:RegisterAbilities( {
     },
 
 
+    tigers_fury = {
+        id = 5217,
+        cast = 0,
+        cooldown = 30,
+        gcd = "off",
+
+        talent = "tigers_fury",
+        startsCombat = false,
+        texture = 132242,
+
+        handler = function ()
+        end,
+    },
+
+
     travel_form = {
         id = 783,
         cast = 0,
@@ -1365,21 +1332,6 @@ spec:RegisterAbilities( {
         texture = 571588,
 
         toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    warrior_of_elune = {
-        id = 202425,
-        cast = 0,
-        cooldown = 45,
-        gcd = "off",
-
-        talent = "warrior_of_elune",
-        startsCombat = false,
-        texture = 135900,
 
         handler = function ()
         end,
@@ -1436,7 +1388,7 @@ spec:RegisterAbilities( {
     },
 } )
 
-spec:RegisterPriority( "Feral", 20220918,
+spec:RegisterPriority( "Feral", 20220922,
 -- Notes
 [[
 
