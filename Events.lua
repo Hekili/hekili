@@ -96,6 +96,10 @@ function ns.StartEventHandler()
     events:SetScript( "OnUpdate", function( self, elapsed )
         Hekili.freshFrame = true
 
+        if Hekili.PendingSpecializationChange then
+            Hekili:SpecializationChanged()
+        end
+
         if handlers.FRAME_UPDATE then
             for i, handler in pairs( handlers.FRAME_UPDATE ) do
                 local key = "FRAME_UPDATE_" .. i
@@ -1175,7 +1179,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, 
         end
     end
 
-    Hekili:ForceUpdate( event, true )
+    state.castChanged = true
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1194,7 +1199,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( even
         end
     end
 
-    Hekili:ForceUpdate( event, true )
+    state.castChanged = true
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1206,7 +1212,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", "target", function( 
             Hekili:RemoveHold( ability.key, true )
         end
     end
-    Hekili:ForceUpdate( event, true )
+    state.castChanged = true
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1218,7 +1225,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", "target", function( event, u
             Hekili:RemoveHold( ability.key, true )
         end
     end
-    Hekili:ForceUpdate( event, true )
+    state.castChanged = true
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1258,6 +1266,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
                 state:QueueEvent( ability.impactSpell or ability.key, finish / 1000, 0.05 + travel, "PROJECTILE_IMPACT", target, true )
             end
         end
+        state.castChanged = true
         Hekili:ForceUpdate( event )
     end
 end )

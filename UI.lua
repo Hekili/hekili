@@ -2120,120 +2120,120 @@ do
     Hekili.Engine.eventsTriggered = {}
 
     Hekili.Engine:SetScript( "OnUpdate", function( self, elapsed )
-        self.refreshTimer = self.refreshTimer + elapsed
+        if Hekili.Pause or Hekili.PendingSpecializationChange then return end
 
-        if not Hekili.Pause and not self.pendingSpecChange then
-            if self.activeThread and self.threadSpec and self.threadSpec ~= GetSpecializationInfo( GetSpecialization() ) then
-                Hekili:SpecializationChanged()
+        if not self.activeThread then
+            self.refreshTimer = self.refreshTimer + elapsed
+        end
+
+        if self.activeThread and self.threadSpec and self.threadSpec ~= GetSpecializationInfo( GetSpecialization() ) then
+            Hekili.PendingSpecializationChange = true
+            return
+        end
+
+        self.refreshRate = self.refreshRate or 5
+        self.combatRate = self.combatRate or 0.25
+
+        local thread = self.activeThread
+
+        -- If there's no thread, then see if we have a reason to update.
+        if Hekili.freshFrame and not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
+            Hekili.freshFrame = nil
+
+            self.threadSpec = GetSpecializationInfo( GetSpecialization() )
+
+            self.activeThread = coroutine.create( Hekili.Update )
+            self.activeThreadTime = 0
+            self.activeThreadFrames = 0
+            self.activeThreadStart = debugprofilestop()
+
+            if Hekili:GetActiveSpecOption( "throttleTime" ) then
+                Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
+            else
+                Hekili.maxFrameTime = 10 -- ms.
+            end
+
+            -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
+            Hekili.maxFrameTime = min( Hekili.maxFrameTime, 500 / GetFramerate() )
+
+            thread = self.activeThread
+
+            self.superUpdate = false
+            self.criticalUpdate = false
+        end
+
+        -- If there's a thread, process for up to user preferred limits.
+        if thread and coroutine.status( thread ) == "suspended" then
+            self.activeThreadFrames = self.activeThreadFrames + 1
+            local start = debugprofilestop()
+
+            Hekili.frameStartTime = start
+
+            local ok, err = coroutine.resume( thread )
+            if not ok then
+                err = err .. "\n\n" .. debugstack( thread )
+                Hekili:Error( "Update: " .. err )
+                pcall( error, err )
+            end
+            local now = debugprofilestop()
+
+            self.activeThreadTime = self.activeThreadTime + ( now - start )
+
+            if coroutine.status( thread ) == "dead" or err then
+
+                if Hekili.ActiveDebug then
+                    Hekili:Debug( "Recommendation thread for %s terminated due to error: %s", self.id, err )
+                    Hekili:SaveDebugSnapshot( self.id )
+                    Hekili.ActiveDebug = nil
+                end
+
                 self.activeThread = nil
-                self.criticalUpdate = true
-                return
-            end
+                self.refreshTimer = 0
 
-            self.refreshRate = self.refreshRate or 5
-            self.combatRate = self.combatRate or 0.25
-
-            local thread = self.activeThread
-
-            -- If there's no thread, then see if we have a reason to update.
-            if Hekili.freshFrame and not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
-                Hekili.freshFrame = nil
-
-                self.threadSpec = GetSpecializationInfo( GetSpecialization() )
-
-                self.activeThread = coroutine.create( Hekili.Update )
-                self.activeThreadTime = 0
-                self.activeThreadFrames = 0
-                self.activeThreadStart = debugprofilestop()
-
-                if Hekili:GetActiveSpecOption( "throttleTime" ) then
-                    Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
+                if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
+                    self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
+                    self.combatRate = Hekili:GetActiveSpecOption( "combatRefresh" )
                 else
-                    Hekili.maxFrameTime = 10 -- ms.
+                    self.refreshRate = 0.5
+                    self.combatRate = 0.1
                 end
 
-                -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
-                Hekili.maxFrameTime = min( Hekili.maxFrameTime, 500 / GetFramerate() )
+                if self.firstThreadCompleted then
+                    local timeSince = now - self.activeThreadStart
+                    self.lastUpdate = now
 
-                thread = self.activeThread
+                    if self.threadUpdates then
+                        local updates = self.threadUpdates.updates
+                        local total = updates + 1
 
-                self.superUpdate = false
-                self.criticalUpdate = false
+                        self.threadUpdates.clockTime = ( self.threadUpdates.clockTime * updates + timeSince ) / total
+                        self.threadUpdates.workTime = ( self.threadUpdates.workTime * updates + self.activeThreadTime ) / total
+                        self.threadUpdates.frames = ( self.threadUpdates.frames * updates + self.activeThreadFrames ) / total
+
+                        if timeSince > self.threadUpdates.peakClock then self.threadUpdates.peakClock = timeSince end
+                        if self.activeThreadTime > self.threadUpdates.peakWork then self.threadUpdates.peakWork = self.activeThreadTime end
+                        if self.activeThreadFrames > self.threadUpdates.peakFrames then self.threadUpdates.peakFrames = self.activeThreadFrames end
+
+                        self.threadUpdates.updates = total
+                    else
+                        self.threadUpdates = {
+                            clockTime = timeSince,
+                            workTime = self.activeThreadTime,
+                            frames = self.activeThreadFrames or 1,
+                            updates = 1,
+
+                            peakClock = timeSince,
+                            peakWork = self.activeThreadTime,
+                            peakFrames = self.activeThreadFrames
+                        }
+                    end
+                else
+                    self.firstThreadCompleted = true
+                end
             end
 
-            -- If there's a thread, process for up to user preferred limits.
-            if thread and coroutine.status( thread ) == "suspended" then
-                self.activeThreadFrames = self.activeThreadFrames + 1
-                local start = debugprofilestop()
-
-                Hekili.frameStartTime = start
-
-                local ok, err = coroutine.resume( thread )
-                if not ok then
-                    err = err .. "\n\n" .. debugstack( thread )
-                    Hekili:Error( "Update: " .. err )
-                    pcall( error, err )
-                end
-                local now = debugprofilestop()
-
-                self.activeThreadTime = self.activeThreadTime + ( now - start )
-
-                if coroutine.status( thread ) == "dead" or err then
-
-                    if Hekili.ActiveDebug then
-                        Hekili:Debug( "Recommendation thread for %s terminated due to error: %s", self.id, err )
-                        Hekili:SaveDebugSnapshot( self.id )
-                        Hekili.ActiveDebug = nil
-                    end
-
-                    self.activeThread = nil
-                    self.refreshTimer = 0
-
-                    if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
-                        self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
-                        self.combatRate = Hekili:GetActiveSpecOption( "combatRefresh" )
-                    else
-                        self.refreshRate = 0.5
-                        self.combatRate = 0.1
-                    end
-
-                    if self.firstThreadCompleted then
-                        local timeSince = now - self.activeThreadStart
-                        self.lastUpdate = now
-
-                        if self.threadUpdates then
-                            local updates = self.threadUpdates.updates
-                            local total = updates + 1
-
-                            self.threadUpdates.clockTime = ( self.threadUpdates.clockTime * updates + timeSince ) / total
-                            self.threadUpdates.workTime = ( self.threadUpdates.workTime * updates + self.activeThreadTime ) / total
-                            self.threadUpdates.frames = ( self.threadUpdates.frames * updates + self.activeThreadFrames ) / total
-
-                            if timeSince > self.threadUpdates.peakClock then self.threadUpdates.peakClock = timeSince end
-                            if self.activeThreadTime > self.threadUpdates.peakWork then self.threadUpdates.peakWork = self.activeThreadTime end
-                            if self.activeThreadFrames > self.threadUpdates.peakFrames then self.threadUpdates.peakFrames = self.activeThreadFrames end
-
-                            self.threadUpdates.updates = total
-                        else
-                            self.threadUpdates = {
-                                clockTime = timeSince,
-                                workTime = self.activeThreadTime,
-                                frames = self.activeThreadFrames or 1,
-                                updates = 1,
-
-                                peakClock = timeSince,
-                                peakWork = self.activeThreadTime,
-                                peakFrames = self.activeThreadFrames
-                            }
-                        end
-                    else
-                        self.firstThreadCompleted = true
-                    end
-                end
-
-                if ok and err == "AutoSnapshot" then
-                    Hekili:MakeSnapshot( true )
-                end
+            if ok and err == "AutoSnapshot" then
+                Hekili:MakeSnapshot( true )
             end
         end
     end )

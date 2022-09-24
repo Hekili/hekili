@@ -41,7 +41,6 @@ state.ptr = PTR and 1 or 0
 state.now = 0
 state.offset = 0
 state.modified = false
-state.resetType = "heavy"
 
 state.encounterID = 0
 state.encounterName = "None"
@@ -1861,6 +1860,7 @@ do
             elseif k == "scriptID" then t[k] = "NilScriptID"
             elseif k == "whitelist" then return nil
             elseif k == "cycle" then t[k] = false
+            elseif k == "castChanged" then return false
 
             -- Timings.
             elseif k == "delay" then t[k] = 0
@@ -2146,15 +2146,13 @@ do
 
             local aura_name = ability and ability.aura or t.this_action
             local aura = class.auras[ aura_name ]
-            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) ) or t.buff[ aura_name ]
+            local app = aura and ( ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) ) or t.buff[ aura_name ] )
 
-
-            if class.knownAuraAttributes[ k ] then
+            if app and class.knownAuraAttributes[ k ] then
                 -- Buffs, debuffs...
 
                 value = app and app[ k ]
                 if value ~= nil then return value end
-
 
                 -- This uses the default aura duration (if available) to keep pandemic windows accurate.
                 -- local duration = aura and aura.duration or 15
@@ -3739,6 +3737,8 @@ do
         unit = "player"
     }, mt_default_buff )
 
+    state.buff.unknown_buff = unknown_buff
+
 
 
 
@@ -4696,6 +4696,8 @@ do
         v2 = 0,
         v3 = 0
     }, mt_default_debuff )
+
+    state.debuff.unknown_debuff = unknown_debuff
 
 
     -- Table of debuffs applied to the target by the player.
@@ -6000,7 +6002,10 @@ end
 do
     local firstTime = true
 
-    function state.reset( dispName )
+    function state.reset( dispName, full )
+        -- We want a full reset if flagged, if this is the first time we've reset, or if the clock was ever advanced when making the other recommendation.
+        full = full or firstTime or state.castChanged or state.offset > 0
+
         ClearMarks( firstTime )
         firstTime = nil
 
@@ -6023,6 +6028,33 @@ do
         if state.player.updated then
             ScrapeUnitAuras( "player" )
             state.player.updated = false
+        end
+
+        local p = Hekili.DB.profile
+        local display = dispName and p.displays[ dispName ]
+        local spec = state.spec.id and p.specs[ state.spec.id ]
+        local mode = p.toggles.mode.value
+
+        state.display = dispName
+        state.filter = "none"
+        state.rangefilter = false
+
+        if display then
+            if dispName == 'Primary' then
+                if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
+                elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
+            elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
+            elseif dispName == 'Cooldowns' then state.filter = "cooldowns"
+            elseif dispName == 'Interrupts' then state.filter = "interrupts"
+            elseif dispName == 'Defensives' then state.filter = "defensives"
+            end
+
+            state.rangefilter = display.range.enabled and display.range.type == "xclude"
+        end
+
+        if not full then
+            state.resetting = false
+            return true
         end
 
         --[[ for k, v in pairs( state.cooldown ) do
@@ -6142,30 +6174,7 @@ do
         state.swings.oh_pseudo = nil
 
 
-        local p = Hekili.DB.profile
-
         Hekili:Yield( "Reset Pre-Displays" )
-
-        local display = dispName and p.displays[ dispName ]
-        local spec = state.spec.id and p.specs[ state.spec.id ]
-        local mode = p.toggles.mode.value
-
-        state.display = dispName
-        state.filter = "none"
-        state.rangefilter = false
-
-        if display then
-            if dispName == 'Primary' then
-                if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
-                elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
-            elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
-            elseif dispName == 'Cooldowns' then state.filter = "cooldowns"
-            elseif dispName == 'Interrupts' then state.filter = "interrupts"
-            elseif dispName == 'Defensives' then state.filter = "defensives"
-            end
-
-            state.rangefilter = display.range.enabled and display.range.type == "xclude"
-        end
 
         -- Special case spells that suck.
         if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
@@ -6204,6 +6213,7 @@ do
 
         ns.callHook( "reset_precast" )
 
+        state.castChanged = nil
         Hekili:Yield( "Reset Pre-Casting" )
 
         -- TODO: All of this cast-queuing seems like it should be simpler, but that's for another time.
@@ -6291,8 +6301,6 @@ do
                     state.advance( delay )
                 end
             end
-
-            state.resetType = "none"
         end
 
         Hekili:Yield( "Reset Post-Casting" )
