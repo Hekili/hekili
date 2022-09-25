@@ -23,6 +23,7 @@ Events.lua
 Classes.lua
 
 Wrath\Classes.lua
+Wrath\DeathKnight.lua
 Wrath\Shaman.lua
 
 Targets.lua

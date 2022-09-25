@@ -65,7 +65,10 @@ local ResourceInfo = {
     arcane_charges  = Enum.PowerType.ArcaneCharges,
     fury            = Enum.PowerType.Fury,
     pain            = Enum.PowerType.Pain,
-    essence         = Enum.PowerType.Essence
+    essence         = Enum.PowerType.Essence,
+    blood_runes     = Enum.PowerType.RuneBlood,
+    frost_runes     = Enum.PowerType.RuneFrost,
+    unholy_runes    = Enum.PowerType.RuneUnholy,
 }
 
 local ResourceByID = {}

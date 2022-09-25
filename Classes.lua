@@ -1341,6 +1341,23 @@ all:RegisterAuras( {
         shared = "player"
     },
 
+    abominations_might = {
+        id = 53138,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+        copy = 53137
+    },
+
+    -- Increases melee haste by $s1%.
+    icy_talons = {
+        id = 58578,
+        duration = 20,
+        max_stack = 1,
+        shared = "player",
+        copy = { 58577, 58576, 58575, 50882 },
+    },
+
     power_infusion = {
         id = 10060,
         duration = 20,
@@ -2221,13 +2238,18 @@ all:RegisterAbility( "gift_of_the_naaru", {
 
 all:RegisterAbilities( {
     global_cooldown = {
-        id = function () return settings.spec and settings.spec.gcd or 61304 end,
+        id = function ()
+            if settings.spec and settings.spec.gcd then return settings.spec.gcd end
+            return 61304
+        end,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
         unlisted = true,
         known = function () return true end,
+
+        copy = 61304
     },
 
     ancestral_call = not Hekili.IsWrath() and {

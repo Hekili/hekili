@@ -1796,7 +1796,7 @@ function Hekili.Update()
                 Hekili:Yield( "After events for " .. dispName )
 
                 if not action then
-                    if class.file == "DEATHKNIGHT" then
+                    if class.file == "DEATHKNIGHT" and rawget( state, "rune" ) then
                         state:SetConstraint( 0, max( 0.01 + state.rune.cooldown * 2, 10 ) )
                     else
                         state:SetConstraint( 0, 10 )

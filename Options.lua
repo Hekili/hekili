@@ -8414,19 +8414,47 @@ do
             end
             castTime = castTime / 1000
 
-            local cost, min_cost, max_cost, spendPerSec, cost_percent, resource
+            local costs = {}
+            local gain, gainResource
 
-            local costs = GetSpellPowerCost( spellID )
+            local powerCosts = GetSpellPowerCost( spellID )
 
-            if costs then
-                for k, v in pairs( costs ) do
+            if powerCosts then
+                for k, v in pairs( powerCosts ) do
                     if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
-                        cost = v.costPercent > 0 and v.costPercent / 100 or v.cost
-                        spendPerSec = v.costPerSecond
-                        resource = key( v.name )
-                        break
+                        if v.cost < 0 then
+                            gain = -v.cost
+                            gainResource = v.name
+                            if v.name == "COMBAT_TEXT_RUNE_BLOOD" then gainResource = "blood_runes"
+                            elseif v.name == "COMBAT_TEXT_RUNE_FROST" then gainResource = "frost_runes"
+                            elseif v.name == "COMBAT_TEXT_RUNE_UNHOLY" then gainResource = "unholy_runes"
+                            else gainResource = key( v.name ) end
+                        else
+                            insert( costs, {
+                                cost = v.costPercent and v.costPercent > 0 and v.costPercent / 100 or v.cost,
+                                spendPerSec = v.costPerSecond,
+                                spendType = v.name
+                            } )
+
+                            local c = costs[ #costs ]
+
+                            if c.spendType == "COMBAT_TEXT_RUNE_BLOOD" then c.spendType = "blood_runes"
+                            elseif c.spendType == "COMBAT_TEXT_RUNE_FROST" then c.spendType = "frost_runes"
+                            elseif c.spendType == "COMBAT_TEXT_RUNE_UNHOLY" then c.spendType = "unholy_runes"
+                            else c.spendType = key( c.spendType ) end
+                        end
                     end
                 end
+            end
+
+            if not costs[1] and gain then
+                costs[1] = {
+                    cost = -gain,
+                    spendType = gainResource
+                }
+
+                gain = nil
+                gainResource = nil
             end
 
             local passive = IsPassiveSpell( spellID )
@@ -8465,9 +8493,9 @@ do
                 a.desc = GetSpellDescription( spellID )
                 if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
                 a.id = spellID
-                a.spend = cost
-                a.spendType = resource
-                a.spendPerSec = spendPerSec
+                a.spend = costs
+                a.gain = gain
+                a.gainType = gainResource
                 a.cast = castTime
                 a.empowered = empowered
                 a.gcd = gcd
@@ -8898,10 +8926,21 @@ do
                                 appendAttr( a, "recharge" )
                                 appendAttr( a, "gcd" )
                                 append( "" )
-                                appendAttr( a, "spend" )
-                                appendAttr( a, "spendPerSec" )
-                                appendAttr( a, "spendType" )
-                                if a.spend ~= nil or a.spendPerSec ~= nil or a.spendType ~= nil then
+
+                                for i, spend in ipairs( a.spend ) do
+                                    append( "spend" .. ( i > 1 and i or "" ) .. " = " .. spend.cost .. "," )
+                                    if spend.spendPerSec then
+                                        append( "spend" .. ( i > 1 and i or "" ) .. "PerSec = " .. spend.spendPerSec .. "," )
+                                    end
+                                    append( "spend" .. ( i > 1 and i or "" ) .. "Type = \"" .. spend.spendType .. "\"," )
+                                end
+                                if #a.spend > 0 then
+                                    append( "" )
+                                end
+
+                                if a.gain ~= nil then
+                                    appendAttr( a, "gain" )
+                                    appendAttr( a, "gainType" )
                                     append( "" )
                                 end
                                 appendAttr( a, "talent" )

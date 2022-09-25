@@ -1275,7 +1275,7 @@ do
 
         local timeout = FORECAST_DURATION * state.haste -- roundDown( FORECAST_DURATION * state.haste, 2 )
 
-        if state.class.file == "DEATHKNIGHT" and state.runes then
+        if state.class.file == "DEATHKNIGHT" and rawget( state, "runes" ) then
             timeout = max( timeout, 0.01 + 2 * state.runes.cooldown )
         end
 
@@ -6518,12 +6518,78 @@ ns.spendResources = function( ability )
             cost = ( cost * state[ resource ].modmax )
         end
 
-        if state.debuff.hysteria.up and hysteria_resources[ resource ] then
-            cost = cost + ( .03 * state.debuff.hysteria.stack * cost )
+        if cost ~= 0 then
+            state.spend( cost, resource )
+        end
+    end
+
+    if action.spend2 ~= nil then
+        local cost, resource
+
+        if type( action.spend2 ) == "number" then
+            cost = action.spend2
+            resource = action.spend2Type or class.primaryResource
+        elseif type( action.spend2 ) == "function" then
+            cost, resource = action.spend2()
+            resource = resource or action.spend2Type or class.primaryResource
+        else
+            cost = cost or 0
+            resource = resource or "health"
+        end
+
+        if cost > 0 and cost < 1 then
+            cost = ( cost * state[ resource ].modmax )
         end
 
         if cost ~= 0 then
             state.spend( cost, resource )
+        end
+    end
+
+    if action.spend3 ~= nil then
+        local cost, resource
+
+        if type( action.spend3 ) == "number" then
+            cost = action.spend3
+            resource = action.spend3Type or class.primaryResource
+        elseif type( action.spend3 ) == "function" then
+            cost, resource = action.spend3()
+            resource = resource or action.spend3Type or class.primaryResource
+        else
+            cost = cost or 0
+            resource = resource or "health"
+        end
+
+        if cost > 0 and cost < 1 then
+            cost = ( cost * state[ resource ].modmax )
+        end
+
+        if cost ~= 0 then
+            state.spend( cost, resource )
+        end
+    end
+
+
+    if action.gain ~= nil then
+        local cost, resource
+
+        if type( action.gain ) == "number" then
+            cost = action.gain
+            resource = action.gainType or class.primaryResource
+        elseif type( action.gain ) == "function" then
+            cost, resource = action.gain()
+            resource = resource or action.gainType or class.primaryResource
+        else
+            cost = cost or 0
+            resource = resource or "health"
+        end
+
+        if cost > 0 and cost < 1 then
+            cost = ( cost * state[ resource ].modmax )
+        end
+
+        if cost ~= 0 then
+            state.gain( cost, resource )
         end
     end
 end
