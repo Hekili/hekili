@@ -10,6 +10,8 @@ local state = Hekili.State
 local FindUnitBuffByID = ns.FindUnitBuffByID
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
 
+local UnitGetTotalAbsorbs = _G.UnitGetTotalAbsorbs or function() return 0 end
+
 local targetCount = 0
 local targets = {}
 
@@ -230,11 +232,11 @@ do
         end
     end
 
-    if not Hekili.IsDragonflight() then
+    if not Hekili.IsDragonflight() and not Hekili.IsWrath() then
         RegisterEvent( "CHROMIE_TIME_OPEN", ChromieCheck )
         RegisterEvent( "CHROMIE_TIME_CLOSE", ChromieCheck )
+        RegisterEvent( "PLAYER_ENTERING_WORLD", ChromieCheck )
     end
-    RegisterEvent( "PLAYER_ENTERING_WORLD", ChromieCheck )
 end
 
 
@@ -248,12 +250,14 @@ do
         end
     end
 
-    RegisterEvent( "UI_INFO_MESSAGE", CheckWarMode )
-    RegisterEvent( "PLAYER_ENTERING_WORLD", CheckWarMode )
+    if not Hekili.IsWrath() then
+        RegisterEvent( "UI_INFO_MESSAGE", CheckWarMode )
+        RegisterEvent( "PLAYER_ENTERING_WORLD", CheckWarMode )
+    end
 end
 
 
-local function UnitInPhase( unit )
+local UnitInPhase = _G.UnitInPhase or function( unit )
     local reason = UnitPhaseReason( unit )
     local wm = not IsInInstance() and warmode
 

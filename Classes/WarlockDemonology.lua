@@ -305,7 +305,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         -- We'll try to make the opener work if Tyrant will be off CD anywhere from 10-20 seconds into the fight.
         -- If it's later, we'll assume we're starting from the middle.
         local tyrant, duration = GetSpellCooldown( 265187 )
-        local gcd, gcd_duration = GetSpellCooldown( 61304 )
+        local gcd, gcd_duration = GetSpellCooldown( state.cooldown.global_cooldown.id )
 
         tyrant = tyrant + duration
         gcd = gcd + gcd_duration

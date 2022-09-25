@@ -33,10 +33,22 @@ local NewFeature = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|
 local GreenPlus = "Interface\\AddOns\\Hekili\\Textures\\GreenPlus"
 local RedX = "Interface\\AddOns\\Hekili\\Textures\\RedX"
 local BlizzBlue = "|cFF00B4FF"
-local ClassColor = C_ClassColor.GetClassColor( class.file )
+local ClassColor = Hekili.IsWrath() and RAID_CLASS_COLORS[ class.file ] or C_ClassColor.GetClassColor( class.file )
+
+-- Simple bypass for Wrath-friendliness.
+local GetSpecialization = _G.GetSpecialization or function() return GetActiveTalentGroup() end
+local GetSpecializationInfo = _G.GetSpecializationInfo or function()
+    local name, baseName, id = UnitClass( "player" )
+    return id, baseName, name
+end
+local IsTalentSpell = _G.IsTalentSpell or function() return false end
+local IsPressHoldReleaseSpell = _G.IsPressHoldReleaseSpell or function() return false end
+local UnitEffectiveLevel = _G.UnitEffectiveLevel or UnitLevel
+local UnitSpellHaste = _G.UnitSpellHaste or function() return 0 end
 
 
--- Interrupts
+
+--[[ Interrupts
 do
     local db = {}
 
@@ -68,7 +80,7 @@ do
     function Hekili:GetEncounterList()
         return db
     end
-end
+end ]]
 
 
 -- One Time Fixes
@@ -1413,7 +1425,7 @@ do
         if name == "Multi" then fancyName = AtlasToString( "auctionhouse-icon-favorite" ) .. " Multiple"
         elseif name == "Defensives" then fancyName = AtlasToString( "nameplates-InterruptShield" ) .. " Defensives"
         elseif name == "Interrupts" then fancyName = AtlasToString( "voicechat-icon-speaker-mute" ) .. " Interrupts"
-        elseif name == "Cooldowns" then fancyName = AtlasToString( "chromietime-32x32" ) .. " Cooldowns"
+        elseif name == "Cooldowns" then fancyName = AtlasToString( "VignetteEventElite" ) .. " Cooldowns"
         else fancyName = name end
 
         local option = {
@@ -1472,7 +1484,7 @@ do
                     },
                     MultiModCooldowns = {
                         type = "toggle",
-                        name = function () return AtlasToString( "chromietime-32x32" ) .. ( multiDisplays.Cooldowns and " |cFF00FF00Cooldowns|r" or " |cFFFF0000Cooldowns|r" ) end,
+                        name = function () return AtlasToString( "VignetteEventElite" ) .. ( multiDisplays.Cooldowns and " |cFF00FF00Cooldowns|r" or " |cFFFF0000Cooldowns|r" ) end,
                         desc = function()
                             if multiDisplays.Cooldowns then return "Changes |cFF00FF00will|r be applied to the Cooldowns display." end
                             return "Changes |cFFFF0000will not|r be applied to the Cooldowns display."
@@ -4424,7 +4436,7 @@ do
 
         for k, v in pairs( class.abilityList ) do
             local a = class.abilities[ k ]
-            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
+            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not a.item then
                 abilities[ v ] = k
             end
         end
@@ -4929,7 +4941,7 @@ do
         wipe( tAbilities )
         for k, v in pairs( class.abilityList ) do
             local a = class.abilities[ k ]
-            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
+            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not a.item then
                 if settings.abilities[ k ].toggle == section or a.toggle == section and settings.abilities[ k ].toggle == 'default' then
                     tAbilities[ k ] = class.abilityList[ k ] or v
                 end
@@ -5108,7 +5120,7 @@ do
 
             for k, v in pairs( class.abilityList ) do
                 local a = class.abilities[ k ]
-                if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
+                if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not a.item then
                     if settings.abilities[ k ].toggle == 'default' or settings.abilities[ k ].toggle == 'none' then
                         list[ k ] = class.abilityList[ k ] or v
                     end
@@ -5197,7 +5209,16 @@ do
         local i = 1
 
         while( true ) do
-            local id, name, description, texture, role = GetSpecializationInfo( i )
+            local id, name, description, texture, baseName, coords
+
+            if Hekili.IsWrath() then
+                if i > 1 then break end
+                name, baseName, id = UnitClass( "player" )
+                coords = CLASS_ICON_TCOORDS[ baseName ]
+                texture = "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"
+            else
+                id, name, description, texture = GetSpecializationInfo( i )
+            end
 
             if not id then break end
 
@@ -5215,7 +5236,7 @@ do
                     -- name = specs[ id ],
                     name = name,
                     icon = texture,
-                    -- iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+                    iconCoords = coords,
                     desc = description,
                     order = 50 + i,
                     childGroups = "tab",
@@ -8340,7 +8361,7 @@ do
     end
 
     local spec = ""
-    local specID = 0
+    local specID = select( 3, UnitClass( "player" ) )
 
     local mastery_spell = 0
 
@@ -8351,7 +8372,16 @@ do
     local auras = {}
     local abilities = {}
 
-    listener:RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED" )
+    Hekili.skeleAuras = auras
+    Hekili.skeleTalents = talents
+    Hekili.skeleAbilities = abilities
+
+    if Hekili.IsWrath() then
+        listener:RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED" )
+        listener:RegisterEvent( "PLAYER_TALENT_UPDATE" )
+    else
+        listener:RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED" )
+    end
     listener:RegisterEvent( "PLAYER_ENTERING_WORLD" )
     listener:RegisterEvent( "UNIT_AURA" )
     listener:RegisterEvent( "SPELLS_CHANGED" )
@@ -8366,13 +8396,16 @@ do
 
     local run = 0
 
-    local function EmbedSpellData( spellID, token, talent )
+    local function EmbedSpellData( spellID, token, talent, rank )
         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( spellID )
 
         local haste = UnitSpellHaste( "player" )
         haste = 1 + ( haste / 100 )
 
-        if name then
+        if rank and rank > 1 and abilities[ token ] then
+            abilities[ token ].copy = abilities[ token ].copy or {}
+            insert( abilities[ token ].copy, spellID )
+        elseif name then
             token = token or key( name )
 
             if castTime % 10 > 0 then
@@ -8400,20 +8433,26 @@ do
             local harmful = IsHarmfulSpell( spellID )
             local helpful = IsHelpfulSpell( spellID )
 
+            local cooldown, gcd = GetSpellBaseCooldown( spellID )
             local _, charges, _, recharge = GetSpellCharges( spellID )
-            local cooldown
-            if recharge then cooldown = recharge
-            else
-                cooldown = GetSpellBaseCooldown( spellID )
-                if cooldown then cooldown = cooldown / 1000 end
-            end
+            if recharge then cooldown = recharge end
+            if cooldown then cooldown = cooldown / 1000 end
+
+            if gcd == 0 then gcd = "off"
+            elseif gcd == 1000 then gcd = "totem"
+            elseif gcd == 1500 then gcd = "spell" end
+            if gcd == "off" and cooldown == 0 then passive = true end
 
             local selfbuff = SpellIsSelfBuff( spellID )
             local talent = talent or IsTalentSpell( spellID )
 
-            if selfbuff or passive then
-                auras[ token ] = auras[ token ] or {}
-                auras[ token ].id = spellID
+            if Hekili.IsWrath() then
+                auras[ spellID ] = token
+            else
+                if selfbuff or passive then
+                    auras[ token ] = auras[ token ] or {}
+                    auras[ token ].id = spellID
+                end
             end
 
             local empowered = IsPressHoldReleaseSpell( spellID )
@@ -8431,7 +8470,7 @@ do
                 a.spendPerSec = spendPerSec
                 a.cast = castTime
                 a.empowered = empowered
-                a.gcd = "spell"
+                a.gcd = gcd
 
                 a.texture = texture
 
@@ -8487,18 +8526,7 @@ do
     local function skeletonHandler( self, event, ... )
         local unit = select( 1, ... )
 
-        if ( event == "PLAYER_SPECIALIZATION_CHANGED" and UnitIsUnit( unit, "player" ) ) or event == "PLAYER_ENTERING_WORLD" then
-            local sID, s = GetSpecializationInfo( GetSpecialization() )
-            if specID ~= sID then
-                wipe( resources )
-                wipe( auras )
-                wipe( abilities )
-            end
-            specID = sID
-            spec = s
-
-            mastery_spell = GetSpecializationMasterySpells( GetSpecialization() )
-
+        if not Hekili.IsWrath() and ( event == "PLAYER_SPECIALIZATION_CHANGED" and UnitIsUnit( unit, "player" ) ) or event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
             for k, i in pairs( Enum.PowerType ) do
                 if k ~= "NumPowerTypes" and i >= 0 then
                     if UnitPowerMax( "player", i ) > 0 then resources[ k ] = i end
@@ -8507,6 +8535,17 @@ do
 
             wipe( talents )
             if Hekili.IsDragonflight() then
+                local sID, s = GetSpecializationInfo( GetSpecialization() )
+                if specID ~= sID then
+                    wipe( resources )
+                    wipe( auras )
+                    wipe( abilities )
+                end
+                specID = sID
+                spec = s
+
+                mastery_spell = GetSpecializationMasterySpells( GetSpecialization() )
+
                 local configID = C_ClassTalents.GetActiveConfigID()
                 local configInfo = C_Traits.GetConfigInfo( configID )
                 for _, treeID in ipairs( configInfo.treeIDs ) do
@@ -8531,6 +8570,35 @@ do
                         end
                     end
                 end
+                wipe( pvptalents )
+                local row = C_SpecializationInfo.GetPvpTalentSlotInfo( 1 )
+
+                for i, tID in ipairs( row.availableTalentIDs ) do
+                    local _, name, _, _, _, sID = GetPvpTalentInfoByID( tID )
+                    name = key( name )
+                    insert( pvptalents, { name = name, talent = tID, spell = sID } )
+                end
+
+            elseif Hekili.IsWrath() then
+                wipe( resources )
+                wipe( auras )
+                wipe( abilities )
+
+                for i = 1, GetNumTalentTabs() do
+                    for n = 1, GetNumTalents( i ) do
+                        local talentID = tonumber( GetTalentLink( i, n ):match( "talent:(%d+)" ) )
+                        local name, _, _, _, _, ranks = GetTalentInfo( i, n )
+                        local key = key( name )
+
+                        insert( talents, { name = key, talent = talentID, ranks = ranks } )
+
+                        local tToS = ns.WrathTalentToSpellID[ talentID ]
+
+                        for rank, spell in ipairs( ns.WrathTalentToSpellID[ talentID ] ) do
+                            EmbedSpellData( spell, key, true, rank )
+                        end
+                    end
+                end
             else
                 for j = 1, 7 do
                     for k = 1, 3 do
@@ -8541,26 +8609,12 @@ do
                 end
             end
 
-            wipe( pvptalents )
-            local row = C_SpecializationInfo.GetPvpTalentSlotInfo( 1 )
-
-            for i, tID in ipairs( row.availableTalentIDs ) do
-                local _, name, _, _, _, sID = GetPvpTalentInfoByID( tID )
-                name = key( name )
-                insert( pvptalents, { name = name, talent = tID, spell = sID } )
-            end
-
-            local haste = UnitSpellHaste( "player" )
-            haste = 1 + ( haste / 100 )
-
-            for i = 1, GetNumSpellTabs() do
+            for i = 2, GetNumSpellTabs() do
                 local tab, _, offset, n = GetSpellTabInfo( i )
 
-                if i == 2 or tab == spec then
-                    for j = offset, offset + n do
-                        local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
-                        if name then EmbedSpellData( spellID, key( name ) ) end
-                    end
+                for j = offset, offset + n do
+                    local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
+                    if name then EmbedSpellData( spellID, key( name ) ) end
                 end
             end
         elseif event == "SPELLS_CHANGED" then
@@ -8695,11 +8749,22 @@ do
                         indent = ""
                         wipe( output )
 
-                        if not Hekili.IsDragonflight() or run % 2 > 0 then
-                            append( "if UnitClassBase( 'player' ) == '" .. UnitClassBase( "player" ) .. "' then" )
-                            increaseIndent()
-
+                        if run % 2 > 0 then
+                            append( "if UnitClassBase( 'player' ) ~= '" .. UnitClassBase( "player" ) .. "' then return end" )
+                            append( "" )
+                            append( "local addon, ns = ..." )
+                            append( "local Hekili = _G[ addon ]" )
+                            append( "local class, state = Hekili.Class, Hekili.State" )
+                            append( "" )
                             append( "local spec = Hekili:NewSpecialization( " .. specID .. " )\n" )
+
+                            if Hekili.IsWrath() then
+                                for k, i in pairs( Enum.PowerType ) do
+                                    if k ~= "NumPowerTypes" and i >= 0 then
+                                        if UnitPowerMax( "player", i ) > 0 then resources[ k ] = i end
+                                    end
+                                end
+                            end
 
                             for k, i in pairs( resources ) do
                                 append( "spec:RegisterResource( Enum.PowerType." .. k .. " )" )
@@ -8715,7 +8780,25 @@ do
                                 for i, tal in ipairs( talents ) do
                                     append( tal.name .. " = { " .. ( tal.talent or "nil" ) .. ", " .. ( tal.spell or "nil" ) .. " }," )
                                 end
+                            elseif Hekili.IsWrath() then
+                                local maxlength = 0
+                                skeletonHandler( listener, "PLAYER_TALENT_UPDATE" )
+                                table.sort( talents, function( a, b )
+                                    maxlength = max( maxlength, a.name:len(), b.name:len() )
+                                    return a.name < b.name
+                                end )
+
+                                for i, tal in ipairs( talents ) do
+                                    local fmt = "%-" .. maxlength .. "s = { %5d, %d"
+                                    for i = 1, #ns.WrathTalentToSpellID[ tal.talent ] do
+                                        fmt = fmt .. ", %5d"
+                                    end
+                                    fmt = fmt .. " },"
+
+                                    append( format( fmt, tal.name, tal.talent, tal.ranks, unpack( ns.WrathTalentToSpellID[ tal.talent ] ) ) )
+                                end
                             else
+
                                 for i, tal in ipairs( talents ) do
                                     append( tal.name .. " = " .. ( tal.talent or "nil" ) .. ", -- " .. ( tal.spell or "nil" ) .. ( i % 3 == 0 and "\n" or "" ) )
                                 end
@@ -8725,37 +8808,69 @@ do
                             decreaseIndent()
                             append( "} )\n\n" )
 
-                            append( "-- PvP Talents" )
-                            append( "spec:RegisterPvpTalents( { " )
-                            increaseIndent()
+                            if not Hekili.IsWrath() then
+                                append( "-- PvP Talents" )
+                                append( "spec:RegisterPvpTalents( { " )
+                                increaseIndent()
 
-                            for i, tal in ipairs( pvptalents ) do
-                                append( tal.name .. " = " .. ( tal.talent or "nil" ) .. ", -- " .. ( tal.spell or "nil" ) )
+                                for i, tal in ipairs( pvptalents ) do
+                                    append( tal.name .. " = " .. ( tal.talent or "nil" ) .. ", -- " .. ( tal.spell or "nil" ) )
+                                end
+                                decreaseIndent()
+                                append( "} )\n\n" )
                             end
-                            decreaseIndent()
-                            append( "} )\n\n" )
 
                             append( "-- Auras" )
                             append( "spec:RegisterAuras( {" )
                             increaseIndent()
 
-                            for k, aura in orderedPairs( auras ) do
-                                append( k .. " = {" )
-                                increaseIndent()
-                                append( "id = " .. aura.id .. "," )
 
-                                for key, value in pairs( aura ) do
-                                    if key ~= "id" then
-                                        if type(value) == 'string' then
-                                            append( key .. ' = "' .. value .. '",' )
-                                        else
-                                            append( key .. " = " .. value .. "," )
-                                        end
-                                    end
+
+                            if Hekili.IsWrath() then
+                                local auraTokenToSpellIDs = {}
+
+                                for k, v in pairs( auras ) do
+                                    auraTokenToSpellIDs[ v ] = auraTokenToSpellIDs[ v ] or {}
+                                    insert( auraTokenToSpellIDs[ v ], k )
                                 end
 
-                                decreaseIndent()
-                                append( "}," )
+                                for k, v in pairs( auraTokenToSpellIDs ) do
+                                    sort( v, function( a, b ) return a > b end )
+
+                                    append( k .. " = {" )
+                                    increaseIndent()
+                                    append( "id = " .. v[1] .. "," )
+                                    if #v > 1 then
+                                        local copies = "" .. v[2]
+
+                                        for rank = 3, #v, 1 do
+                                            copies = copies .. ", " .. v[rank]
+                                        end
+
+                                        append( "copy = { " .. copies .. " }," )
+                                    end
+                                    decreaseIndent()
+                                    append( "}," )
+                                end
+                            else
+                                for k, aura in orderedPairs( auras ) do
+                                    append( k .. " = {" )
+                                    increaseIndent()
+                                    append( "id = " .. aura.id .. "," )
+
+                                    for key, value in pairs( aura ) do
+                                        if key ~= "id" then
+                                            if type(value) == 'string' then
+                                                append( key .. ' = "' .. value .. '",' )
+                                            else
+                                                append( key .. " = " .. value .. "," )
+                                            end
+                                        end
+                                    end
+
+                                    decreaseIndent()
+                                    append( "}," )
+                                end
                             end
 
                             decreaseIndent()
@@ -8770,6 +8885,10 @@ do
                             for k, a in orderedPairs( abilities ) do
                                 if count > 1 then append( "\n" ) end
                                 count = count + 1
+                                local desc = GetSpellDescription( a.id )
+                                if desc then
+                                    append( "-- " .. desc:gsub( "\r", " " ):gsub( "\n", " " ) )
+                                end
                                 append( k .. " = {" )
                                 increaseIndent()
                                 appendAttr( a, "id" )
@@ -8807,21 +8926,39 @@ do
                                     decreaseIndent()
                                 end
                                 append( "end," )
+                                if a.copy then
+                                    append( "" )
+                                    local copy = ""
+                                    for rank, spell in ipairs( a.copy ) do
+                                        if rank > 1 then copy = copy .. ", " .. spell
+                                        else copy = copy .. rank end
+                                    end
+                                    append( "copy = { " .. copy .. " }," )
+                                end
                                 decreaseIndent()
                                 append( "}," )
                             end
 
                             decreaseIndent()
                             append( "} )" )
-                            decreaseIndent()
-                            append( "end" )
                         else
                             local aggregate = {}
 
-                            for k,v in pairs( auras ) do
-                                if not aggregate[k] then aggregate[k] = {} end
-                                aggregate[k].id = v.id
-                                aggregate[k].aura = true
+                            if Hekili.IsWrath() then
+                                for k,v in pairs( auras ) do
+                                    aggregate[v .. "_" .. k] = {
+                                        id = k,
+                                        aura = "Yes",
+                                        ability = "No",
+                                        talent = "No"
+                                    }
+                                end
+                            else
+                                for k,v in pairs( auras ) do
+                                    if not aggregate[k] then aggregate[k] = {} end
+                                    aggregate[k].id = v.id
+                                    aggregate[k].aura = true
+                                end
                             end
 
                             for k,v in pairs( abilities ) do
@@ -8837,7 +8974,9 @@ do
                             end
 
                             for k,v in orderedPairs( aggregate ) do
-                                append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) )
+                                if v.id then
+                                    append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) )
+                                end
                             end
                         end
 
@@ -8933,29 +9072,32 @@ function Hekili:GenerateProfile()
 
     local covenants = { "kyrian", "necrolord", "night_fae", "venthyr" }
     local covenant = "none"
-    for i, v in ipairs( covenants ) do
-        if state.covenant[ v ] then covenant = v; break end
-    end
-
     local conduits
-    for k,v in orderedPairs( s.conduit ) do
-        if v.enabled then
-            if conduits then conduits = format( "%s\n   %s = %d", conduits, k, v.rank )
-            else conduits = format( "%s = %d", k, v.rank ) end
-        end
-    end
-
     local soulbinds
 
-    local activeBind = C_Soulbinds.GetActiveSoulbindID()
-    if activeBind then
-        soulbinds = "[" .. formatKey( C_Soulbinds.GetSoulbindData( activeBind ).name ) .. "]"
-    end
+    if not Hekili.IsWrath() then
+        for i, v in ipairs( covenants ) do
+            if state.covenant[ v ] then covenant = v; break end
+        end
 
-    for k,v in orderedPairs( s.soulbind ) do
-        if v.enabled then
-            if soulbinds then soulbinds = format( "%s\n   %s = %d", soulbinds, k, v.rank )
-            else soulbinds = format( "%s = %d", k, v.rank ) end
+        for k,v in orderedPairs( s.conduit ) do
+            if v.enabled then
+                if conduits then conduits = format( "%s\n   %s = %d", conduits, k, v.rank )
+                else conduits = format( "%s = %d", k, v.rank ) end
+            end
+        end
+
+
+        local activeBind = C_Soulbinds.GetActiveSoulbindID()
+        if activeBind then
+            soulbinds = "[" .. formatKey( C_Soulbinds.GetSoulbindData( activeBind ).name ) .. "]"
+        end
+
+        for k,v in orderedPairs( s.soulbind ) do
+            if v.enabled then
+                if soulbinds then soulbinds = format( "%s\n   %s = %d", soulbinds, k, v.rank )
+                else soulbinds = format( "%s = %d", k, v.rank ) end
+            end
         end
     end
 

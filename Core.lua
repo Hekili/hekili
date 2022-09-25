@@ -21,9 +21,14 @@ local GetItemInfo = ns.CachedGetItemInfo
 
 local trim = string.trim
 
-
 local tcopy = ns.tableCopy
 local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
+
+local GetSpecialization = _G.GetSpecialization or function() return GetActiveTalentGroup() end
+local GetSpecializationInfo = _G.GetSpecializationInfo or function()
+    local name, baseName, id = UnitClass( "player" )
+    return id, baseName, name
+end
 
 
 -- checkImports()
@@ -1487,16 +1492,24 @@ function Hekili.Update()
     local profile = Hekili.DB.profile
 
     local specID = GetSpecializationInfo( GetSpecialization() )
-    if not specID then return end
+    if not specID then
+        return
+    end
 
     local spec = rawget( profile.specs, specID )
-    if not spec then return end
+    if not spec then
+        return
+    end
 
     local packName = spec.package
-    if not packName then return end
+    if not packName then
+        return
+    end
 
     local pack = rawget( profile.packs, packName )
-    if not pack then return end
+    if not pack then
+        return
+    end
 
     local debug = Hekili.ActiveDebug
 

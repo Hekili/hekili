@@ -1,0 +1,2355 @@
+if UnitClassBase( 'player' ) ~= 'SHAMAN' then return end
+
+local addon, ns = ...
+local Hekili = _G[ addon ]
+local class, state = Hekili.Class, Hekili.State
+
+local spec = Hekili:NewSpecialization( 7 )
+
+spec:RegisterResource( Enum.PowerType.Mana )
+
+-- Talents
+spec:RegisterTalents( {
+    ancestral_awakening       = {  2061, 3, 51556, 51557, 51558 },
+    ancestral_healing         = {   581, 3, 16176, 16235, 16240 },
+    ancestral_knowledge       = {   614, 5, 17485, 17486, 17487, 17488, 17489 },
+    anticipation              = {   601, 3, 16254, 16271, 16272 },
+    astral_shift              = {  2050, 3, 51474, 51478, 51479 },
+    blessing_of_the_eternals  = {  2060, 2, 51554, 51555 },
+    booming_echoes            = {  2262, 2, 63370, 63372 },
+    call_of_flame             = {   561, 3, 16038, 16160, 16161 },
+    call_of_thunder           = {   562, 1, 16041 },
+    cleanse_spirit            = {  2084, 1, 51886 },
+    concussion                = {   563, 5, 16035, 16105, 16106, 16107, 16108 },
+    convection                = {   564, 5, 16039, 16109, 16110, 16111, 16112 },
+    dual_wield                = {  1690, 1, 30798 },
+    dual_wield_specialization = {  1692, 3, 30816, 30818, 30819 },
+    earth_shield              = {  1698, 1,   974 },
+    earthen_power             = {  2056, 2, 51523, 51524 },
+    earths_grasp              = {  2101, 2, 16043, 16130 },
+    elemental_devastation     = {  1645, 3, 30160, 29179, 29180 },
+    elemental_focus           = {   574, 1, 16164 },
+    elemental_fury            = {   565, 5, 16089, 60184, 60185, 60187, 60188 },
+    elemental_mastery         = {   573, 1, 16166 },
+    elemental_oath            = {  2049, 2, 51466, 51470 },
+    elemental_precision       = {  1685, 3, 30672, 30673, 30674 },
+    elemental_reach           = {  1641, 2, 28999, 29000 },
+    elemental_warding         = {  1640, 3, 28996, 28997, 28998 },
+    elemental_weapons         = {   611, 3, 16266, 29079, 29080 },
+    enhancing_totems          = {   610, 3, 16259, 16295, 52456 },
+    eye_of_the_storm          = {  1642, 3, 29062, 29064, 29065 },
+    feral_spirit              = {  2058, 1, 51533 },
+    flurry                    = {   602, 5, 16256, 16281, 16282, 16283, 16284 },
+    focused_mind              = {  1695, 3, 30864, 30865, 30866 },
+    frozen_power              = {  2263, 2, 63373, 63374 },
+    guardian_totems           = {   609, 2, 16258, 16293 },
+    healing_focus             = {   587, 3, 16181, 16230, 16232 },
+    healing_grace             = {  1646, 3, 29187, 29189, 29191 },
+    healing_way               = {  1648, 3, 29206, 29205, 29202 },
+    improved_chain_heal       = {  1697, 2, 30872, 30873 },
+    improved_earth_shield     = {  2059, 2, 51560, 51561 },
+    improved_fire_nova        = {   567, 2, 16086, 16544 },
+    improved_ghost_wolf       = {   605, 2, 16262, 16287 },
+    improved_healing_wave     = {   586, 5, 16182, 16226, 16227, 16228, 16229 },
+    improved_reincarnation    = {   589, 2, 16184, 16209 },
+    improved_shields          = {   607, 3, 16261, 16290, 51881 },
+    improved_stormstrike      = {  2054, 2, 51521, 51522 },
+    improved_water_shield     = {   583, 3, 16180, 16196, 16198 },
+    improved_windfury_totem   = {  1647, 2, 29192, 29193 },
+    lava_flows                = {  2051, 3, 51480, 51481, 51482 },
+    lava_lash                 = {  2249, 1, 60103 },
+    lightning_mastery         = {   721, 5, 16578, 16579, 16580, 16581, 16582 },
+    lightning_overload        = {  1686, 3, 30675, 30678, 30679 },
+    maelstrom_weapon          = {  2057, 5, 51528, 51529, 51530, 51531, 51532 },
+    mana_tide_totem           = {   590, 1, 16190 },
+    mental_dexterity          = {  2083, 3, 51883, 51884, 51885 },
+    mental_quickness          = {  1691, 3, 30812, 30813, 30814 },
+    natures_blessing          = {  1696, 3, 30867, 30868, 30869 },
+    natures_guardian          = {  1699, 5, 30881, 30883, 30884, 30885, 30886 },
+    natures_swiftness         = {   591, 1, 16188 },
+    purification              = {   592, 5, 16178, 16210, 16211, 16212, 16213 },
+    restorative_totems        = {   588, 3, 16187, 16205, 16206 },
+    reverberation             = {   575, 5, 16040, 16113, 16114, 16115, 16116 },
+    riptide                   = {  2064, 1, 61295 },
+    shamanism                 = {  2252, 5, 62097, 62098, 62099, 62100, 62101 },
+    shamanistic_focus         = {   617, 1, 43338 },
+    shamanistic_rage          = {  1693, 1, 30823 },
+    spirit_weapons            = {   616, 1, 16268 },
+    static_shock              = {  2055, 3, 51525, 51526, 51527 },
+    storm_earth_and_fire      = {  2052, 3, 51483, 51485, 51486 },
+    stormstrike               = {   901, 1, 17364 },
+    thundering_strikes        = {   613, 5, 16255, 16302, 16303, 16304, 16305 },
+    thunderstorm              = {  2053, 1, 51490 },
+    tidal_focus               = {   593, 5, 16179, 16214, 16215, 16216, 16217 },
+    tidal_force               = {   582, 1, 55198 },
+    tidal_mastery             = {   594, 5, 16194, 16218, 16219, 16220, 16221 },
+    tidal_waves               = {  2063, 5, 51562, 51563, 51564, 51565, 51566 },
+    totem_of_wrath            = {  1687, 1, 30706 },
+    totemic_focus             = {   595, 5, 16173, 16222, 16223, 16224, 16225 },
+    toughness                 = {   615, 5, 16252, 16306, 16307, 16308, 16309 },
+    unleashed_rage            = {  1689, 3, 30802, 30808, 30809 },
+    unrelenting_storm         = {  1682, 3, 30664, 30665, 30666 },
+    weapon_mastery            = {  1643, 3, 29082, 29084, 29086 },
+} )
+
+
+-- Auras
+spec:RegisterAuras( {
+    -- Reduces physical damage taken by $s1%.
+    ancestral_fortitude = {
+        id = 16237,
+        duration = 15,
+        max_stack = 1,
+        copy = { 16236, 16177 },
+    },
+    -- Damage reduced.
+    astral_shift = {
+        id = 52179,
+        duration = 3600,
+        tick_time = 1,
+        max_stack = 1,
+    },
+    -- Melee, ranged, and spell casting speed increased by $s1%.
+    bloodlust = {
+        id = 2825,
+        duration = 40,
+        max_stack = 1,
+    },
+    -- Enabled Cleanse Spirit.
+    can_cleanse_spirit = {
+        alias = { "dispellable_poison", "dispellable_disease", "dispellable_curse" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
+    -- Enable Cleanse Toxins.
+    can_cure_toxins = {
+        alias = { "dispellable_poison", "dispellable_disease" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
+    -- Your next $n damage or healing spells have their mana cost reduced by $s1%.
+    clearcasting = {
+        id = 16246,
+        duration = 15,
+        max_stack = 2,
+    },
+    -- Reduces casting or channeling time lost when damaged by $s2% and attacks heal the shielded target for $s1.
+    earth_shield = {
+        id = 974,
+        duration = 600,
+        max_stack = 1,
+    },
+    -- Time between attacks increased by $w1%.
+    earth_shock = {
+        id = 49231,
+        duration = 8,
+        max_stack = 1,
+        copy = { 49230, 25454, 10414, 10413, 10412, 8046, 8045, 8044, 8042 },
+    },
+    -- Increases your chance to get a critical strike with melee attacks by $s1%.
+    elemental_devastation = {
+        id = 30165,
+        duration = 10,
+        max_stack = 1,
+        copy = { 29178, 29177 },
+    },
+    -- Makes LB, CL, LvB instant.
+    elemental_mastery = {
+        id = 16166,
+        duration = 30,
+        max_stack = 1,
+    },
+    -- Casting speed of all spells increased by $s1%.
+    elemental_mastery_haste = {
+        id = 64701,
+        duration = 15,
+        max_stack = 1,
+    },
+    -- Cannot move while using Farsight.
+    far_sight = {
+        id = 6196,
+        duration = 60,
+        max_stack = 1,
+    },
+    feral_spirit = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=51533)
+        id = 51533,
+        duration = 45,
+        max_stack = 1,
+    },
+    -- $s2 Fire damage every $t2 seconds.
+    flame_shock = {
+        id = 49233,
+        duration = 18,
+        max_stack = 1,
+        copy = { 49232, 29228, 25457, 10448, 10447, 8053, 8052, 8050 },
+    },
+    flurry = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16284)
+        id = 16284,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 16283, 16282, 16281, 16280, 16279, 16278, 16277, 16257, 16256 },
+    },
+    focused_mind = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=30866)
+        id = 30866,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 30865, 30864 },
+    },
+    -- Movement slowed to $s1% of normal speed.
+    frost_shock = {
+        id = 49236,
+        duration = 8,
+        max_stack = 1,
+        copy = { 49235, 25464, 10473, 10472, 8058, 8056 },
+    },
+    frost_resistance = {
+        id = 58744,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Increases movement speed by $s2%$?s59289[ and regenerates $59289s1% of your maximum health every 5 sec][].  Effects that reduce movement speed may not bring you below your normal movement speed.
+    ghost_wolf = {
+        id = 2645,
+        duration = 3600,
+        max_stack = 1,
+    },
+    grounding_totem_effect = {
+        id = 8178,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Cannot attack or cast spells.
+    hex = {
+        id = 51514,
+        duration = 30,
+        max_stack = 1,
+    },
+    improved_chain_heal = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=30873)
+        id = 30873,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 30872 },
+    },
+    improved_ghost_wolf = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16262)
+        id = 16262,
+        duration = 3600,
+        max_stack = 1,
+    },
+    improved_healing_wave = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16229)
+        id = 16229,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 16228, 16227, 16226, 16182 },
+    },
+    -- Causes $49279s1 Nature damage to attacker on hit.  $n charges.
+    lightning_shield = {
+        id = 49281,
+        duration = 600,
+        max_stack = 1,
+        copy = { 49280, 25472, 25469, 10432, 10431, 8134, 945, 905, 325, 324 },
+    },
+    -- Reduces the cast time of your next Lightning Bolt, Chain Lightning, Lesser Healing Wave, Healing Wave, Chain Heal, or Hex spell by $s1%.
+    maelstrom_weapon = {
+        id = 53817,
+        duration = 30,
+        max_stack = 5,
+    },
+    -- Your next Nature spell with a casting time less than 10 secs will be an instant cast spell.
+    natures_swiftness = {
+        id = 16188,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Heals $s2 every $t2 seconds.  Increases caster's Chain Heal by $s3%.
+    riptide = {
+        id = 61295,
+        duration = 15,
+        max_stack = 1,
+    },
+    -- All damage taken reduced by $s2% and successful melee attacks have a chance to regenerate mana equal to $s1% of your attack power.
+    shamanistic_rage = {
+        id = 30823,
+        duration = 15,
+        max_stack = 1,
+    },
+    -- Any elemental shield is applied.
+    shield = {
+        alias = { "lightning_shield", "earth_shield", "water_shield" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
+    -- Increases Nature damage taken from the Shaman by $s1%.
+    stormstrike = {
+        id = 17364,
+        duration = 12,
+        max_stack = 4,
+    },
+    -- Increases the critical effect chance of your Healing Wave, Lesser Healing Wave and Chain Heal by $s1%. Each critical heal reduces the chance by 20%. Lasts $55166d.
+    tidal_force = {
+        id = 55198,
+        duration = 2,
+        max_stack = 1,
+    },
+    -- Cast time of next Healing Wave reduced by $s1%.  Critical effect chance of next Lesser Healing Wave increased by $s2%.
+    tidal_waves = {
+        id = 53390,
+        duration = 15,
+        max_stack = 1,
+    },
+    totemic_focus = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16225)
+        id = 16225,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 16224, 16223, 16222, 16173 },
+    },
+    -- Attack power party buff.
+    unleashed_rage = {
+        id = 30809,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Able to breathe underwater.
+    water_breathing = {
+        id = 131,
+        duration = 600,
+        max_stack = 1,
+    },
+    -- $s2 mana per 5 sec.  Attacks and spells used against you restore $57961s1 mana.  $n charges.
+    water_shield = {
+        id = 57960,
+        duration = 600,
+        max_stack = 1,
+        copy = { 52138, 52136, 52134, 52131, 52129, 52127, 33736, 24398 },
+    },
+    -- Allows walking over water.
+    water_walking = {
+        id = 546,
+        duration = 600,
+        max_stack = 1,
+    },
+    wind_shear = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=57994)
+        id = 57994,
+        duration = 2,
+        max_stack = 1,
+    },
+
+    -- Totems.
+    earthbind_totem = {
+        duration = 45,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 2 )
+
+            if up and texture == 136102 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    earth_elemental_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 2 )
+
+            if up and texture == 136024 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    stoneclaw_totem = {
+        duration = 15,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 2 )
+
+            if up and texture == 136097 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    stoneskin_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 2 )
+
+            if up and texture == 136098 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    strength_of_earth_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 2 )
+
+            if up and texture == 136023 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    tremor_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 2 )
+
+            if up and texture == 136108 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    earth_totem = {
+        alias = { "earthbind_totem", "stoneclaw_totem", "stoneskin_totem", "strength_of_earth_totem", "earth_elemental_totem", "tremor_totem" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
+
+    flametongue_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 1 )
+
+            if up and texture == 136040 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    magma_totem = {
+        duration = 20,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 1 )
+
+            if up and texture == 135826 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    searing_totem = {
+        duration = 50,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 1 )
+
+            if up and texture == 135825 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    frost_resistance_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 1 )
+
+            if up and texture == 135866 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    fire_elemental_totem = {
+        duration = 300,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 1 )
+
+            if up and texture == 135790 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    totem_of_wrath = {
+        duration = 300,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 1 )
+
+            if up and texture == 135829 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    fire_totem = {
+        alias = { "flametongue_totem", "magma_totem", "searing_totem", "frost_resistance_totem", "fire_elemental_totem", "totem_of_wrath" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
+
+    fire_resistance_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 3 )
+
+            if up and texture == 135832 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    cleansing_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 3 )
+
+            if up and texture == 136019 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    healing_stream_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 3 )
+
+            if up and texture == 135127 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    mana_spring_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 3 )
+
+            if up and texture == 136053 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    mana_tide_totem = {
+        duration = 120,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 3 )
+
+            if up and texture == 135861 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    water_totem = {
+        alias = { "fire_resistance_totem", "cleansing_totem", "healing_stream_totem", "mana_spring_totem", "mana_tide_totem" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
+
+    grounding_totem = {
+        duration = 45,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 4 )
+
+            if up and texture == 136039 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    nature_resistance_totem = {
+        duration = 300,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 4 )
+
+            if up and texture == 136061 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    sentry_totem = {
+        duration = 300,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 4 )
+
+            if up and texture == 136082 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    windfury_totem = {
+        duration = 300,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 4 )
+
+            if up and texture == 136114 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    wrath_of_air_totem = {
+        duration = 300,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 4 )
+
+            if up and texture == 136092 then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    air_totem = {
+        alias = { "grounding_totem", "nature_resistance_totem", "sentry_totem", "windfury_totem", "wrath_of_air_totem" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
+} )
+
+
+spec:RegisterStateExpr( "windfury_mainhand", function () return false end )
+spec:RegisterStateExpr( "windfury_offhand", function () return false end )
+spec:RegisterStateExpr( "flametongue_mainhand", function () return false end )
+spec:RegisterStateExpr( "flametongue_offhand", function () return false end )
+spec:RegisterStateExpr( "frostbrand_mainhand", function () return false end )
+spec:RegisterStateExpr( "frostbrand_offhand", function () return false end )
+spec:RegisterStateExpr( "rockbiter_mainhand", function () return false end )
+spec:RegisterStateExpr( "rockbiter_offhand", function () return false end )
+spec:RegisterStateExpr( "mainhand_imbued", function () return false end )
+spec:RegisterStateExpr( "offhand_imbued", function () return false end )
+
+local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
+
+local enchant_ids = {
+    [283]  = "windfury",
+    [284]  = "windfury",
+    [525]  = "windfury",
+    [1669] = "windfury",
+    [2636] = "windfury",
+    [5]    = "flametongue",
+    [4]    = "flametongue",
+    [3]    = "flametongue",
+    [523]  = "flametongue",
+    [1665] = "flametongue",
+    [1666] = "flametongue",
+    [2634] = "flametongue",
+    [2]    = "frostbrand",
+    [12]   = "frostbrand",
+    [524]  = "frostbrand",
+    [1667] = "frostbrand",
+    [1668] = "frostbrand",
+    [2635] = "frostbrand",
+    [3023] = "rockbiter",
+    [3026] = "rockbiter",
+    [3028] = "rockbiter",
+    [3031] = "rockbiter",
+    [3034] = "rockbiter",
+    [3037] = "rockbiter",
+    [3040] = "rockbiter", -- ???
+    [3043] = "rockbiter"  -- ???
+}
+
+
+spec:RegisterHook( "reset_precast", function()
+    windfury_mainhand = nil
+    windfury_offhand = nil
+    flametongue_mainhand = nil
+    flametongue_offhand = nil
+    frostbrand_mainhand = nil
+    frostbrand_offhand = nil
+    rockbiter_mainhand = nil
+    rockbiter_offhand = nil
+    mainhand_imbued = nil
+    offhand_imbued = nil
+
+    local mh, mh_expires, _, mh_id, oh, oh_expires, _, oh_id = GetWeaponEnchantInfo()
+
+    if mh then
+        mainhand_imbued = true
+
+        mh = enchant_ids[ mh ]
+
+        if mh == "windfury" then windfury_mainhand = true
+        elseif mh == "flametongue" then flametongue_mainhand = true
+        elseif mh == "frostbrand" then frostbrand_mainhand = true
+        elseif mh == "rockbiter" then rockbiter_mainhand = true end
+    end
+
+    if oh then
+        offhand_imbued = true
+
+        oh = enchant_ids[ oh ]
+
+        if oh == "windfury" then windfury_offhand = true
+        elseif oh == "flametongue" then flametongue_offhand = true
+        elseif oh == "frostbrand" then frostbrand_offhand = true
+        elseif oh == "rockbiter" then rockbiter_offhand = true end
+    end
+end )
+
+
+-- Abilities
+spec:RegisterAbilities( {
+    -- Returns the spirit to the body, restoring a dead target to life with 1800 health and 1365 mana.  Cannot be cast when in combat.
+    ancestral_spirit = {
+        id = 49277,
+        cast = 10,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.72,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136077,
+
+        handler = function ()
+        end,
+    },
+
+
+    -- Yanks the caster through the twisting nether back to Dalaran.  Speak to an Innkeeper in a different place to change your home location.
+    astral_recall = {
+        id = 556,
+        cast = 10,
+        cooldown = 900,
+        gcd = "spell",
+
+        spend = 0.05,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136010,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+        end,
+    },
+
+
+    -- Increases melee, ranged, and spell casting speed by 30% for all party and raid members.  Lasts 40 sec.    After the completion of this effect, those affected will become Sated and unable to benefit from Bloodlust again for 10 min.
+    bloodlust = {
+        id = 2825,
+        cast = 0,
+        cooldown = 300,
+        gcd = "spell",
+
+        spend = 0.26,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136012,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "bloodlust" )
+            applyDebuff( "player", "sated" )
+        end,
+
+        copy = { "heroism", 32182 }
+    },
+
+
+    -- Simultaneously places up to 4 totems specified in the Totem Bar. Can call different totems than Call of the Elements.
+    call_of_the_ancestors = {
+        id = 66843,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 310731,
+
+        handler = function ()
+            for i = 125, 128 do
+                local _, totemSpell = GetActionInfo( i )
+                if totemSpell then class.abilities[ totemSpell ].handler() end
+            end
+        end,
+    },
+
+
+    -- Simultaneously places up to 4 totems specified in the Totem Bar.
+    call_of_the_elements = {
+        id = 66842,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 310730,
+
+        handler = function ()
+            for i = 121, 124 do
+                local _, totemSpell = GetActionInfo( i )
+                if totemSpell then class.abilities[ totemSpell ].handler() end
+            end
+        end,
+    },
+
+
+    -- Simultaneously places up to 4 totems specified in the Totem Bar. Can call different totems than Call of the Elements or Call of the Ancestors.
+    call_of_the_spirits = {
+        id = 66844,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 310732,
+
+        handler = function ()
+            for i = 129, 1 do
+                local _, totemSpell = GetActionInfo( i )
+                if totemSpell then class.abilities[ totemSpell ].handler() end
+            end
+        end,
+    },
+
+
+    -- Heals the friendly target for 1055 to 1205, then jumps to heal additional nearby targets.  If cast on a party member, the heal will only jump to other party members.  Each jump reduces the effectiveness of the heal by 40%.  Heals 3 total targets.
+    chain_heal = {
+        id = 55459,
+        cast = 2.5,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.19,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136042,
+
+        handler = function ()
+            removeBuff( "riptide" )
+        end,
+    },
+
+
+    -- Hurls a lightning bolt at the enemy, dealing 982 to 1123 Nature damage and then jumping to additional nearby enemies.  Each jump reduces the damage by 30%.  Affects 3 total targets.
+    chain_lightning = {
+        id = 49271,
+        cast = function ()
+            if buff.elemental_mastery.up then return 0 end
+            return 2 * haste
+        end,
+        cooldown = 6,
+        gcd = "spell",
+
+        spend = function ()
+            return ( buff.clearcasting.up and 0.6 or 1 ) * 0.26
+        end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136015,
+
+        handler = function ()
+            removeBuff( "elemental_mastery" )
+            removeStack( "clearcasting" )
+        end,
+    },
+
+    -- Cleanse the spirit of a friendly target, removing 1 poison effect, 1 disease effect, and 1 curse effect.
+    cleanse_spirit = {
+        id = 51886,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.07,
+        spendType = "mana",
+
+        talent = "cleanse_spirit",
+        startsCombat = false,
+        texture = 236288,
+
+        buff = "can_cleanse_spirit",
+
+        handler = function ()
+            removeBuff( "can_cleanse_spirit" )
+        end,
+    },
+
+
+    -- Summons a Cleansing Totem with 5 health at the feet of the caster that attempts to remove 1 disease and 1 poison effect from party members within 30 yards every 3 seconds.  Lasts 5 min.
+    cleansing_totem = {
+        id = 8170,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136019,
+
+        totem = "water",
+
+        handler = function ()
+            removeBuff( "water_totem" )
+            summonTotem( "cleaning_totem" )
+            applyBuff( "cleansing_totem" )
+        end,
+    },
+
+    -- Cures 1 poison effect and 1 disease effect on a friendly target.
+    cure_toxins = {
+        id = 526,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.07,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136067,
+
+        buff = "can_cleanse_toxins",
+
+        handler = function ()
+            removeBuff( "can_cleanse_toxins" )
+        end,
+    },
+
+
+    -- Summon an elemental totem that calls forth a greater earth elemental to protect the caster and his allies.  Lasts 2 min.
+    earth_elemental_totem = {
+        id = 2062,
+        cast = 0,
+        cooldown = 600,
+        gcd = "spell",
+
+        spend = 0.24,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136024,
+
+        toggle = "cooldowns",
+
+        totem = "earth",
+
+        handler = function ()
+            removeBuff( "earth_totem" )
+            summonTotem( "earth_elemental_totem" )
+            applyBuff( "earth_elemental_totem" )
+        end,
+    },
+
+
+    -- Protects the target with an earthen shield, reducing casting or channeling time lost when damaged by 30%  and causing attacks to heal the shielded target for 150.  This effect can only occur once every few seconds.  6 charges.  Lasts 10 min.  Earth Shield can only be placed on one target at a time and only one Elemental Shield can be active on a target at a time.
+    earth_shield = {
+        id = 974,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.15,
+        spendType = "mana",
+
+        talent = "earth_shield",
+        startsCombat = false,
+        texture = 136089,
+
+        handler = function ()
+            removeBuff( "shield" )
+            applyBuff( "earth_shield" )
+        end,
+    },
+
+
+    -- Instantly shocks the target with concussive force, causing 862 to 909 Nature damage and reducing melee attack speed by 10% for 8 sec.
+    earth_shock = {
+        id = 49231,
+        cast = 0,
+        cooldown = 6,
+        gcd = "spell",
+
+        spend = function ()
+            return ( buff.clearcasting.up and 0.6 or 1 ) * 0.18
+        end,
+
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136026,
+
+        handler = function ()
+            applyDebuff( "target", "earth_shock" )
+            setCooldown( "flame_shock", 6 )
+            setCooldown( "frost_shock", 6 )
+
+        end,
+    },
+
+
+    -- Summons an Earthbind Totem with 5 health at the feet of the caster for 45 sec that slows the movement speed of enemies within 10 yards.
+    earthbind_totem = {
+        id = 2484,
+        cast = 0,
+        cooldown = 15,
+        gcd = "spell",
+
+        spend = 0.05,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136102,
+
+        totem = "earth",
+
+        handler = function ()
+            removeBuff( "earth_totem" )
+            summonTotem( "earthbind_totem" )
+            applyBuff( "earthbind_totem" )
+        end,
+    },
+
+
+    -- Imbue the Shaman's weapon with earthen life. Increases healing done by 150 and each heal has a 20% chance to proc Earthliving on the target, healing an additional 652 over 12 sec. Lasts 30 minutes.
+    earthliving_weapon = {
+        id = 51994,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 237575,
+
+        usable = function() return ( equipped.mainhand and not mainhand_imbued ) or ( equipped.offhand and not offhand_imbued ), "must have an unimbued weapon" end,
+
+        handler = function ()
+            if equipped.mainhand and not mainhand_imbued then
+                mainhand_imbued = true
+                earthliving_mainhand = true
+            elseif equipped.offhand and not offhand_imbued then
+                offhand_imbued = true
+                earthliving_offhand = true
+            end
+        end,
+    },
+
+
+    -- When activated, your next Lightning Bolt, Chain Lightning or Lava Burst spell becomes an instant cast spell. In addition, you gain 15% spell haste for 15 sec. Elemental Mastery shares a cooldown with Nature's Swiftness.
+    elemental_mastery = {
+        id = 16166,
+        cast = 0,
+        cooldown = 180,
+        gcd = "spell",
+
+        talent = "elemental_mastery",
+        startsCombat = false,
+        texture = 136115,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "elemental_mastery" )
+            applyBuff( "elemental_mastery_haste" )
+            haste = haste + 0.15
+        end,
+    },
+
+
+    -- Changes the caster's viewpoint to the targeted location.  Lasts 1 min.  Only useable outdoors.
+    far_sight = {
+        id = 6196,
+        cast = 2,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136034,
+
+        handler = function ()
+            applyBuff( "far_sight" )
+        end,
+    },
+
+
+    -- Summons two Spirit Wolves under the command of the Shaman, lasting 45 sec.
+    feral_spirit = {
+        id = 51533,
+        cast = 0,
+        cooldown = 180,
+        gcd = "spell",
+
+        spend = 0.12,
+        spendType = "mana",
+
+        talent = "feral_spirit",
+        startsCombat = false,
+        texture = 237577,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            summonPet( "spirit_wolf" )
+        end,
+    },
+
+
+    -- Summons an elemental totem that calls forth a greater fire elemental to rain destruction on the caster's enemies.  Lasts 2 min.
+    fire_elemental_totem = {
+        id = 2894,
+        cast = 0,
+        cooldown = 600,
+        gcd = "totem",
+
+        spend = 0.23,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135790,
+
+        toggle = "cooldowns",
+
+        totem = "fire",
+
+        handler = function ()
+            removeBuff( "fire_totem" )
+            summonTotem( "fire_elemental_totem" )
+            applyBuff( "fire_elemental_totem" )
+        end,
+    },
+
+
+    -- Causes the shaman's active Fire totem to emit a wave of flames, inflicting 893 to 997 Fire damage to enemies within 10 yards of the totem.
+    fire_nova = {
+        id = 61657,
+        cast = 0,
+        cooldown = 10,
+        gcd = "spell",
+
+        spend = 0.22,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135824,
+
+        buff = "fire_totem",
+
+        handler = function ()
+        end,
+    },
+
+
+    -- Summons a Fire Resistance Totem with 5 health at the feet of the caster for 5 min that increases the fire resistance of party and raid members within 30 yards by 130.
+    fire_resistance_totem = {
+        id = 58739,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135832,
+
+        totem = "water",
+
+        handler = function ()
+            removeBuff( "water_totem" )
+            summonTotem( "fire_resistance_totem" )
+            applyBuff( "fire_resistance_totem" )
+        end,
+    },
+
+
+    -- Instantly sears the target with fire, causing 505 Fire damage immediately and 842 Fire damage over 16.45 sec. This periodic damage may critically strike and will occur more rapidly based on the caster's spell haste.
+    flame_shock = {
+        id = 49233,
+        cast = 0,
+        cooldown = 6,
+        gcd = "spell",
+
+        spend = function ()
+            return ( buff.clearcasting.up and 0.6 or 1 ) * 0.17
+        end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135813,
+
+        handler = function ()
+            applyDebuff( "target", "flame_shock" )
+            setCooldown( "frost_shock", 6 )
+            setCooldown( "earth_shock", 6 )
+
+        end,
+    },
+
+
+    -- Summons a Flametongue Totem with 5 health at the feet of the caster.  Party and raid members within 30 yards of the totem have their spell damage and healing increased by up to 144.  Lasts 5 min.
+    flametongue_totem = {
+        id = 58656,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.11,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136040,
+
+        totem = "fire",
+
+        handler = function ()
+            removeBuff( "fire_totem" )
+            summonTotem( "flametongue_totem" )
+            applyBuff( "flametongue_totem" )
+        end,
+    },
+
+
+    -- Imbue the Shaman's weapon with fire, increasing total spell damage by 211. Each hit causes 89.0 to 274 additional Fire damage, based on the speed of the weapon.  Slower weapons cause more fire damage per swing.  Lasts 30 minutes.
+    flametongue_weapon = {
+        id = 58790,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135814,
+
+        usable = function() return ( equipped.mainhand and not mainhand_imbued ) or ( equipped.offhand and not offhand_imbued ), "must have an unimbued weapon" end,
+
+        handler = function ()
+            if equipped.mainhand and not mainhand_imbued then
+                mainhand_imbued = true
+                flametongue_mainhand = true
+            elseif equipped.offhand and not offhand_imbued then
+                offhand_imbued = true
+                flametongue_offhand = true
+            end
+        end,
+    },
+
+
+    -- Summons a Frost Resistance Totem with 5 health at the feet of the caster for 5 min.  The totem increases party and raid members' frost resistance by 130, if within 30 yards.
+    frost_resistance_totem = {
+        id = 58745,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135866,
+
+        totem = "fire",
+
+        handler = function ()
+            removeBuff( "fire_totem" )
+            summonTotem( "frost_resistance_totem" )
+            applyBuff( "frost_resistance_totem" )
+        end,
+    },
+
+
+    -- Instantly shocks the target with frost, causing 820 to 867 Frost damage and slowing movement speed by 50%.  Lasts 8 sec.  Causes a high amount of threat.
+    frost_shock = {
+        id = 49236,
+        cast = 0,
+        cooldown = 6,
+        gcd = "spell",
+
+        spend = function ()
+            return ( buff.clearcasting.up and 0.6 or 1 ) * 0.18
+        end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135849,
+
+        handler = function ()
+            applyDebuff( "target", "frost_shock" )
+            setCooldown( "flame_shock", 6 )
+            setCooldown( "earth_shock", 6 )
+        end,
+    },
+
+
+    -- Imbue the Shaman's weapon with frost.  Each hit has a chance of causing 530 additional Frost damage and slowing the target's movement speed by 50% for 8 sec.  Lasts 30 minutes.
+    frostbrand_weapon = {
+        id = 58796,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135847,
+
+        usable = function() return ( equipped.mainhand and not mainhand_imbued ) or ( equipped.offhand and not offhand_imbued ), "must have an unimbued weapon" end,
+
+        handler = function( rank )
+            if equipped.mainhand and not mainhand_imbued then
+                mainhand_imbued = true
+                frostbrand_mainhand = true
+            elseif equipped.offhand and not offhand_imbued then
+                offhand_imbued = true
+                frostbrand_offhand = true
+            end
+        end,
+    },
+
+
+    -- Turns the Shaman into a Ghost Wolf, increasing speed by 40%. As a Ghost Wolf, the Shaman is less hindered by effects that would reduce movement speed. Only useable outdoors.
+    ghost_wolf = {
+        id = 2645,
+        cast = 2,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136095,
+
+        handler = function ()
+            applyBuff( "ghost_wolf" )
+        end,
+    },
+
+
+    -- Summons a Grounding Totem with 5 health at the feet of the caster that will redirect one harmful spell cast on a nearby party member to itself, destroying the totem.  Will not redirect area of effect spells.  Lasts 45 sec.
+    grounding_totem = {
+        id = 8177,
+        cast = 0,
+        cooldown = 15,
+        gcd = "spell",
+
+        spend = 0.05,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136039,
+
+        totem = "air",
+
+        handler = function ()
+            removeBuff( "air_totem" )
+            summonTotem( "grounding_totem" )
+            applyBuff( "grounding_totem" )
+        end,
+    },
+
+
+    -- Summons a Healing Stream Totem with 5 health at the feet of the caster for 5 min that heals group members within 30 yards for 25 every 2 seconds.
+    healing_stream_totem = {
+        id = 58757,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135127,
+
+        totem = "water",
+
+        handler = function( rank )
+            removeBuff( "water_totem" )
+            summonTotem( "healing_stream_totem" )
+            applyBuff( "healing_stream_totem" )
+        end,
+    },
+
+
+    -- Heals a friendly target for 3034 to 3466.
+    healing_wave = {
+        id = 49273,
+        cast = function()
+            if buff.natures_swiftness.up then return 0 end
+            return 3 * haste
+        end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.25,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136052,
+
+        handler = function ()
+            removeBuff( "natures_swiftness" )
+        end,
+    },
+
+
+    -- Transforms the enemy into a frog. While hexed, the target cannot attack or cast spells. Damage caused may interrupt the effect. Lasts 30 sec. Only one target can be hexed at a time.  Only works on Humanoids and Beasts.
+    hex = {
+        id = 51514,
+        cast = 1.5,
+        cooldown = 45,
+        gcd = "spell",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 237579,
+
+        handler = function ()
+            applyDebuff( "target", "hex" )
+        end,
+    },
+
+
+    -- You hurl molten lava at the target, dealing 1203 to 1534 Fire damage. If your Flame Shock is on the target, Lava Burst will deal a critical strike.
+    lava_burst = {
+        id = 60043,
+        cast = function ()
+            if buff.elemental_mastery.up then return 0 end
+            return 2 * haste
+        end,
+        cooldown = 8,
+        gcd = "spell",
+
+        spend = 0.1,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 237582,
+
+        handler = function ()
+            removeBuff( "elemental_mastery" )
+        end,
+    },
+
+
+    -- You charge your off-hand weapon with lava, instantly dealing 100% off-hand Weapon damage. Damage is increased by 25% if your off-hand weapon is enchanted with Flametongue.
+    lava_lash = {
+        id = 60103,
+        cast = 0,
+        cooldown = 6,
+        gcd = "spell",
+
+        spend = 0.04,
+        spendType = "mana",
+
+        talent = "lava_lash",
+        startsCombat = true,
+        texture = 236289,
+
+        handler = function ()
+        end,
+    },
+
+
+    -- Heals a friendly target for 1624 to 1852.
+    lesser_healing_wave = {
+        id = 49276,
+        cast = function ()
+            if buff.natures_swiftness.up then return 0 end
+            return 1.5 * haste
+        end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.15,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136043,
+
+        handler = function ()
+            removeBuff( "natures_swiftness" )
+        end,
+    },
+
+
+    -- Casts a bolt of lightning at the target for 726 to 828 Nature damage.
+    lightning_bolt = {
+        id = 49238,
+        cast = function ()
+            if buff.elemental_mastery.up or buff.natures_swiftness.up then return 0 end
+            return 2.5 * haste
+        end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function ()
+            return 0.1 * ( buff.clearcasting.up and 0.6 or 1 )
+        end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136048,
+
+        handler = function ()
+            removeStack( "clearcasting" )
+            removeBuff( "natures_swiftness" )
+            removeBuff( "elemental_mastery" )
+        end,
+    },
+
+
+    -- The caster is surrounded by 3 balls of lightning.  When a spell, melee or ranged attack hits the caster, the attacker will be struck for 380 Nature damage.  This expends one lightning ball.  Only one ball will fire every few seconds.  Lasts 10 min.  Only one Elemental Shield can be active on the Shaman at any one time.
+    lightning_shield = {
+        id = 49281,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 136051,
+
+        handler = function ()
+            removeBuff( "shield" )
+            applyBuff( "lightning_shield", nil, 3 )
+        end,
+    },
+
+
+    -- Summons a Magma Totem with 5 health at the feet of the caster for 20 sec that causes 371 Fire damage to creatures within 8 yards every 2 seconds.
+    magma_totem = {
+        id = 58734,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.27,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135826,
+
+        totem = "fire",
+
+        handler = function ()
+            removeBuff( "fire_totem" )
+            summonTotem( "magma_totem" )
+            applyBuff( "magma_totem" )
+        end,
+    },
+
+
+    -- Summons a Mana Spring Totem with 5 health at the feet of the caster for 5 min that restores 91 mana every 5 seconds to all party and raid members within 30 yards.
+    mana_spring_totem = {
+        id = 58774,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.04,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136053,
+
+        totem = "water",
+
+        handler = function ()
+            removeBuff( "water_totem" )
+            summonTotem( "mana_spring_totem" )
+            applyBuff( "mana_spring_totem" )
+        end,
+    },
+
+
+    -- Summons a Mana Tide Totem with 10% of the caster's health at the feet of the caster for 12 sec that restores 6% of total mana every 3 seconds to group members within 30 yards.
+    mana_tide_totem = {
+        id = 16190,
+        cast = 0,
+        cooldown = 300,
+        gcd = "spell",
+
+        talent = "mana_tide_totem",
+        startsCombat = false,
+        texture = 135861,
+
+        toggle = "cooldowns",
+
+        totem = "water",
+
+        handler = function ()
+            removeBuff( "water_totem" )
+            summonTotem( "mana_tide_totem" )
+            applyBuff( "mana_tide_totem" )
+        end,
+    },
+
+
+    -- Summons a Nature Resistance Totem with 5 health at the feet of the caster for 5 min that increases the nature resistance of party and raid members within 30 yards by 130.
+    nature_resistance_totem = {
+        id = 58749,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136061,
+
+        totem = "air",
+
+        handler = function ()
+            removeBuff( "air_totem" )
+            summonTotem( "nature_resistance_totem" )
+            applyBuff( "nature_resistance_totem" )
+        end,
+    },
+
+
+    -- When activated, your next Nature spell with a base casting time less than 10 sec. becomes an instant cast spell. Nature's Swiftness shares a cooldown with Elemental Mastery.
+    natures_swiftness = {
+        id = 16188,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        talent = "natures_swiftness",
+        startsCombat = false,
+        texture = 136076,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "natures_swiftness" )
+            setCooldown( "elemental_mastery", 120 )
+        end,
+    },
+
+
+    -- Purges the enemy target, removing 2 beneficial magic effects.
+    purge = {
+        id = 8012,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136075,
+
+        debuff = "dispellable_magic",
+
+        handler = function ()
+            removeDebuff( "target", "dispellable_magic" )
+        end,
+    },
+
+
+    -- Heals a friendly target for 639 to 691 and another 665 over 15 sec.  Your next Chain Heal cast on that primary target within 15 sec will consume the healing over time effect and increase the amount of the Chain Heal by 25%.
+    riptide = {
+        id = 61295,
+        cast = 0,
+        cooldown = 6,
+        gcd = "spell",
+
+        spend = 0.18,
+        spendType = "mana",
+
+        talent = "riptide",
+        startsCombat = false,
+        texture = 252995,
+
+        handler = function ()
+            applyBuff( "riptide" )
+        end,
+    },
+
+
+    -- Imbue the Shaman's weapon, increasing its damage per second by 9.  Lasts 30 minutes.
+    rockbiter_weapon = {
+        id = 10399,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136086,
+
+        usable = function() return ( equipped.mainhand and not mainhand_imbued ) or ( equipped.offhand and not offhand_imbued ), "must have an unimbued weapon" end,
+
+        handler = function ()
+            if equipped.mainhand and not mainhand_imbued then
+                mainhand_imbued = true
+                rockbiter_mainhand = true
+            elseif equipped.offhand and not offhand_imbued then
+                offhand_imbued = true
+                rockbiter_offhand = true
+            end
+        end,
+
+        copy = { 8017, 8018, 8019, 10399, 16314, 16315, 16316, 25479, 25485 }
+    },
+
+
+    -- Summons a Searing Totem with 5 health at your feet for 1 min that repeatedly attacks an enemy within 201 yards for 90 to 120 Fire damage.
+    searing_totem = {
+        id = 58704,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.07,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135825,
+
+        totem = "fire",
+
+        handler = function ()
+            removeBuff( "fire_totem" )
+            summonTotem( "searing_totem" )
+            applyBuff( "searing_totem" )
+        end,
+    },
+
+
+    -- Summons an immobile Sentry Totem with 100 health at your feet for 5 min that allows vision of nearby area and warns of enemies that attack it.  Right-Click on buff to switch back and forth between totem sight and shaman sight.
+    sentry_totem = {
+        id = 6495,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.02,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136082,
+
+        totem = "air",
+
+        handler = function ()
+            removeBuff( "air_totem" )
+            applyBuff( "sentry_totem" )
+        end,
+    },
+
+
+    -- Reduces all damage taken by 30% and gives your successful melee attacks a chance to regenerate mana equal to 15% of your attack power. This spell is usable while stunned. Lasts 15 sec.
+    shamanistic_rage = {
+        id = 30823,
+        cast = 0,
+        cooldown = 60,
+        gcd = "spell",
+
+        talent = "shamanistic_rage",
+        startsCombat = false,
+        texture = 136088,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "shamanistic_rage" )
+        end,
+    },
+
+
+    -- Summons a Stoneclaw Totem with 1632  health at the feet of the caster for 15 sec that taunts creatures within 8 yards to attack it.  Enemies attacking the Stoneclaw Totem have a 50% chance to be stunned for 3 sec. Stoneclaw totem also protects all your totems, causing them to absorb 1085 damage.
+    stoneclaw_totem = {
+        id = 58582,
+        cast = 0,
+        cooldown = 30,
+        gcd = "totem",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136097,
+
+        totem = "earth",
+
+        handler = function ()
+            removeBuff( "earth_totem" )
+            summonTotem( "stoneclaw_totem" )
+            applyBuff( "stoneclaw_totem" )
+        end,
+    },
+
+
+    -- Summons a Stoneskin Totem with 5 health at the feet of the caster.  The totem protects party and raid members within 30 yards, increasing armor by 1150.  Lasts 5 min.
+    stoneskin_totem = {
+        id = 58753,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.1,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136098,
+
+        totem = "earth",
+
+        handler = function ()
+            removeBuff( "earth_totem" )
+            summonTotem( "stoneskin_totem" )
+            applyBuff( "stoneskin_totem" )
+        end,
+    },
+
+
+    -- Instantly attack with both weapons.  In addition, the next 4 sources of Nature damage dealt to the target from the Shaman are increased by 20%. Lasts 12 sec.
+    stormstrike = {
+        id = 17364,
+        cast = 0,
+        cooldown = 8,
+        gcd = "spell",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        talent = "stormstrike",
+        startsCombat = true,
+        texture = 132314,
+
+        handler = function ()
+            applyDebuff( "target", "stormstrike", nil, 4 )
+        end,
+    },
+
+
+    -- Summons a Strength of Earth Totem with 5 health at the feet of the caster.  The totem increases the strength and agility of all party and raid members within 30 yards by 155.  Lasts 5 min.
+    strength_of_earth_totem = {
+        id = 58643,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.1,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136023,
+
+        totem = "earth",
+
+        handler = function ()
+            removeBuff( "earth_totem" )
+            summonTotem( "strength_of_earth_totem" )
+            applyBuff( "strength_of_earth_totem" )
+        end,
+    },
+
+
+    -- You call down a bolt of lightning, energizing you and damaging nearby enemies within 10 yards. Restores 8% mana to you and deals 571 to 651 Nature damage to all nearby enemies, knocking them back 20 yards. This spell is usable while stunned.
+    thunderstorm = {
+        id = 51490,
+        cast = 0,
+        cooldown = 45,
+        gcd = "spell",
+
+        talent = "thunderstorm",
+        startsCombat = true,
+        texture = 237589,
+
+        handler = function ()
+            gain( 0.08 * mana.max, "mana" )
+        end,
+    },
+
+
+    -- Increases the critical effect chance of your Healing Wave, Lesser Healing Wave and Chain Heal by 60%. Each critical heal reduces the chance by 20%. Lasts 20 sec.
+    tidal_force = {
+        id = 55198,
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        talent = "tidal_force",
+        startsCombat = false,
+        texture = 135845,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "tidal_force" )
+        end,
+    },
+
+
+    -- Summons a Totem of Wrath with 5 health at the feet of the caster.  The totem increases spell power by 100 for all party and raid members, and increases the critical strike chance of all attacks by 3% against all enemies within 40 yards.  Lasts 5 min.
+    totem_of_wrath = {
+        id = 30706,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.05,
+        spendType = "mana",
+
+        talent = "totem_of_wrath",
+        startsCombat = false,
+        texture = 135829,
+
+        totem = "fire",
+
+        handler = function ()
+            removeBuff( "fire_totem" )
+            summonTotem( "totem_of_wrath" )
+            applyBuff( "totem_of_wrath" )
+        end,
+    },
+
+
+    -- Returns your totems to the earth, giving you 25% of the mana required to cast each totem destroyed by Totemic Recall.
+    totemic_recall = {
+        id = 36936,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 310733,
+
+        handler = function ()
+            if buff.earth_totem.up then
+                gain( 0.25 * action[ buff.earth_totem.actual ].cost, "mana" )
+                removeBuff( "earth_totem" )
+            end
+            if buff.fire_totem.up then
+                gain( 0.25 * action[ buff.fire_totem.actual ].cost, "mana" )
+                removeBuff( "fire_totem" )
+            end
+            if buff.water_totem.up then
+                gain( 0.25 * action[ buff.water_totem.actual ].cost, "mana" )
+                removeBuff( "water_totem" )
+            end
+            if buff.air_totem.up then
+                gain( 0.25 * action[ buff.air_totem.actual ].cost, "mana" )
+                removeBuff( "air_totem" )
+            end
+        end,
+    },
+
+
+    -- Summons a Tremor Totem with 5 health at the feet of the caster that shakes the ground around it, removing Fear, Charm and Sleep effects from party members within 30 yards.  Lasts 5 min.
+    tremor_totem = {
+        id = 8143,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.02,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136108,
+
+        totem = "earth",
+
+        handler = function ()
+            removeBuff( "earth_totem" )
+            summonTotem( "tremor_totem" )
+            applyBuff( "tremor_totem" )
+        end,
+    },
+
+
+    -- Allows the target to breathe underwater for 10 min.
+    water_breathing = {
+        id = 131,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.02,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136148,
+
+        handler = function ()
+            applyBuff( "water_breathing" )
+        end,
+    },
+
+
+    -- The caster is surrounded by 3 globes of water, granting 100 mana per 5 sec.  When a spell, melee or ranged attack hits the caster, 428 mana is restored to the caster. This expends one water globe.  Only one globe will activate every few seconds.  Lasts 10 min.  Only one Elemental Shield can be active on the Shaman at any one time.
+    water_shield = {
+        id = 57960,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 132315,
+
+        handler = function ()
+            removeBuff( "shield" )
+            applyBuff( "water_shield" )
+        end,
+    },
+
+
+    -- Allows the friendly target to walk across water for 10 min.  Any damage will cancel the effect.
+    water_walking = {
+        id = 546,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135863,
+
+        handler = function ()
+            applyBuff( "water_walking" )
+        end,
+    },
+
+
+    -- Instantly blasts the target with a gust of wind, causing no damage but interrupting spellcasting and preventing any spell in that school from being cast for 2 sec. Also lowers your threat, making the enemy less likely to attack you.
+    wind_shear = {
+        id = 57994,
+        cast = 0,
+        cooldown = 6,
+        gcd = "off",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136018,
+
+        debuff = "casting",
+        readyTime = timeToInterrupt,
+
+        handler = function ()
+            interrupt()
+        end,
+    },
+
+
+    -- Summons a Windfury Totem with 5 health at the feet of the caster.  The totem provides 16% melee haste to all party and raid members within 30 yards.  Lasts 5 min.
+    windfury_totem = {
+        id = 8512,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.11,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136114,
+
+        totem = "air",
+
+        handler = function ()
+            removeBuff( "air_totem" )
+            summonTotem( "windfury_totem" )
+            applyBuff( "windfury_totem" )
+        end,
+    },
+
+
+    -- Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of dealing additional damage equal to two extra attacks with 1250 extra attack power.  Lasts 30 minutes.
+    windfury_weapon = {
+        id = 58804,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.07,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136018,
+
+        usable = function() return ( equipped.mainhand and not mainhand_imbued ) or ( equipped.offhand and not offhand_imbued ), "must have an unimbued weapon" end,
+
+        handler = function ()
+            if equipped.mainhand and not mainhand_imbued then
+                mainhand_imbued = true
+                windfury_mainhand = true
+            elseif equipped.offhand and not offhand_imbued then
+                offhand_imbued = true
+                windfury_offhand = true
+            end
+        end,
+    },
+
+
+    -- Summons a Wrath of Air Totem with 5 health at the feet of the caster.  The totem provides 5% spell haste to all party and raid members within 30 yards.  Lasts 5 min.
+    wrath_of_air_totem = {
+        id = 3738,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 0.11,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136092,
+
+        totem = "air",
+
+        handler = function ()
+            removeBuff( "air_totem" )
+            summonTotem( "wrath_of_air_totem" )
+            applyBuff( "wrath_of_air_totem" )
+        end,
+    },
+} )
+
+
+spec:RegisterSetting( "st_cl_mana_threshold", 80, {
+    type = "range",
+    name = "|T136015:0|t Single-Target Chain Lightning Mana %",
+    desc = "When below the specified mana percentage, the default priority will not recommend |T136015:0|t Chain Lightning in single-target.\n\n"
+        .. "If |T237589:0|t Thunderstorm is known, the default priority may recommend using it to regenerate mana below this threshold.",
+    width = "full",
+} )
+
+
+spec:RegisterOptions( {
+    enabled = true,
+
+    aoe = 3,
+
+    gcd = 8017,
+
+    nameplates = true,
+    nameplateRange = 8,
+
+    damage = true,
+    damageExpiration = 6,
+
+    package = "Enhancement (IV)",
+
+    package1 = "Elemental / Resto DPS (IV)",
+    package2 = "Enhancement (IV)",
+    package3 = "Elemental / Resto DPS (IV)"
+} )
+
+
+spec:RegisterPack( "Enhancement (IV)", 20220925, [[Hekili:vJvxVTTnu0FlffWDfjrZ2jEnERopS1UTKbKwaf0hLeTeLfxOe1OOIRbc0V9DVI6llr7yNMoG9qIviV8(fVNJoootCUZXoGOOo3oD80PJNpDM1e4ZPx6yR2KsDStj(3twbpKqIHF)XKisIpnMMOk8(HR)YBrl2WfKa0tzICPpyLJ9YCgxDDIZsJUF8eW2uQVZTVZXoIfeq1wsZ8DSVlILv4H)qk8QcFHNie(BFftKu4Xzzky7qHSW7pP3Z4mlh7YfXKGiOWh3wwA0eYsonW5xDS9LmfvYiyUfgAfYKuxLqrJTceRtGJv6Ch7yYQyIEhhfK3LUSAVYdLiEG01ZGrNV)yftO8mLue7UMssfjwzkOSk8wu4nR15(rewIlNTksLWswH(9Ixc)24r3LcUcD7SU1uMsiJbVWUN2RQ(PDg9xv4Py(3d(SWBe8mrUIQSuSySL6gWG7RRGKyENohhgFCZIe(3JU(D701kchMTWkbIG(awvgwgRYcplIr5b9U4ARt92yCUCNXjqOS6Kuwn1ZJpAUGE)w1dLivrT1Z8UDuo5bIlNKf1RFoz8rEDMNwwYzRHed2LHyValjfFeM)VQWBS1KcVtk88jzkxmD3740KNat8YMadM7uicpKKd)rn(S2wiabq3e6Q96zdHFuEj7dHxHrnGeBSNkbZYszqz2ZUl6AxEg1fAeXz9mA2oBx4jFaYLeAmJQ7etA9NmpXv)SlYkP5MC1eOi70EXwhbY2Wv8UbwhHFhYyC5HXym)7hJXtbEou(89GbEzPEMm9)iUNjNFiVIAYfhef1Uh5)oWqyII6ybgFtjGjkQuj1xeVKO2VicyGUoAUS4L5W(BXMfMl3uLJn8y7YrIWqJ(PCgrjswLt74QNqSXbpG2xCrZTcHZDfHUQOgY2mT2mjlvBYN5eFySCdi3dgyrOfQyduObNzZBKWwjcqFiHlPKGnfE5PNw4fisEdS4AckDujGvZadzk9jxtFZd0Y1ckf(ft(BuE3V9HQaynOq1WGwiFlgThxq7gRbPOsJ7qyDx3e5)wnGRdOqxAduv0)jNLw3kwsZGYX(ZfERGSRCQ7p4BsJ0Yx)Dg2z(y97Vk8UddiOXvsplnNZRu0cf)mO(zj6Qhf8s0zj2A65Ktl75jiaGKQBRqpNxNa1U26jEjA1S)duzgAuJADywMiX5gyc464uHuH5W59KIBvCdIBeHmoaUE9RH8R7xtWoIetsWVUGpml8fkamFBXnOzyyoB88ZMoR4MIB0(mZQbbEYIFShu6uw4Ix1d3PD1TumZW6N(1uUaBsrI16vYYtXuhYwXAk0vKKK71xjdry6gEDiQMnritjbnCraFVfopv7OkoiDgyk9h6)tXGVqBR1WTbkSV6IMC2et16OggUisMBNuXyZZq0rFUnDJ5J2NWapyF6fOSl8oEQGF5BMkWCkBI3QjT7twmYerXiJKeJmqquw6)VJeyhtjgie6ahRaHA15Dx1856SFh13DxVrTD3f7jz(uuS8cqRmEbIR3k2(QjA42DF6dF6Nl8(avr9XzPik0dK6xZJInJP6)jcCAwg2Fqgi9fuc9RQAfdDZHEYrAMDmlAEXSUNDBLeh1r7iNER2xRaXsuBLiXrd1hE1I5DpyhbVn5r)3iAmZBr67rj8OHSaT(QJYu0n7qN7JpoSgE)8bJwOi2Ts0AnRpR7S80rM1iEfOp8KgTHpN70d21T4pyY(iVPQoYWot1ghCJO)ey15p0IDhh30qCDk)SgKhKwFJtNv(7fzcTo3gmqES3fh8KZZ7U6aDpOnmxfjKo2)fjQ8FNAPAqN)9p]] )
+
+spec:RegisterPack( "Elemental / Resto DPS (IV)", 20220925, [[Hekili:1EvZUnUnq4NLGfWjbnw(NDZUnTj5q72djhcwuVy7njslrzXAksbskl4Ia(S3zOSLLKLtt32CXwIC4W5NVz(gfol8RHlsOww4tZNoF(0BMFDWS5F465FmCHDBblCrbnEnDf8GKMd)(BcwotAPchzIJ87mJv5iF(llCKlE4BxIIVvOOjOAnQsDmCKmRTW8ttMuvvfWJ3oEdJlnbXQ8jvkRy94yb1y4Xty7v9ytgnNkhNuygxSHnwRSulxjhhRuIevL0mMUKl4woZeUyzjxyFqgUCyh5AWqkyXHp9jWs4jjSAjzM4WfFnJBCKcnxP52TWtGVELJaBYxjzjosQs7iTC5lwwADendmEyPKgrAhhOGkRycXLocQ9LudkwzHs6ipaU)3q3)8oQDH3FDKvL8e2ov(hAQnliCHGBSgmCsvm4VN8zmMKUuWsc)LWfXGPZ0Ckgistds5AwKvzz5byKcowmg6cxKtxLtR3j0cbjVk3TN)qs1gABndc9(2c1KEIYPg4k32t4p0w44mkxgj4RYSsUCvprVUNpS)u2SsiOQHyPoVohP5f1BvlIjaIc)WDtAl4v807GOhnOi2E7ntF(zlvVIzdsGahvgZUD20rReBlYc8)gPsJAF8G92rRizpn4i3ENJmBQJmYr2FvWIoYnWAp)CVfnmRf8ztGXgfJrlje3Z0mtgGEb33IUwkTuyBYN7davCzsKjJr19IyhNUoKoQZPVqMR0WIaxl3mugBqOeEYnWDiz5qnMJCp4(TsUuHiQ(LieEwdsJQBqGW09P4xl05JN0qoZrS841EiuJ7lGlcIsQ414H)0jpCIYg0s4anlhqL1UtmyirwU3I3PxbDdnAzjalq1(JNuT5QnG94bd9VHJSvitAZoyR3CcG)rLlDW(pXWoiydMyndAXbp7BCH914ub)V8DhDeLx(Go2AdW8()zG5tZMEsN(TSKy46F0E6uC0eEIwQGANoqi41cFB5Lu7l3L8m004YmkuPXZxwYs6HSSk5QswufJcTSBQ9gkPHLb(UjnvJMEzUViOySAlWeIjqSgeyfsXeiB75AylPcIqubKxt2ISei9JsEoSyfvARZ6q9lCkB9jRyNVH5xdWeu0z(tKU4x)8Uli4ikHAm4bobFoBiYIdBubOm9G7q5TxVPvZ3bHKFnm(vHmDd1pAVKgWdW0(UgDNO2if6D6Jiv0T1RSbmJu85mQ1hYbGOKwaGo41mKN2sxZaNRatthh46AHbLfhcdjSCLKhhbtmyHn8iqadc3ObnRMzqGw6unIzbKXd5fkTfn33d2zCDnRNEpW9iIFvPCb0p6DVBWHdUagEWr8tpCP7rui8sgp9MXZV29O7X9mKn1bap5XaAKT8SEfaG2CK)9q1F()muDyJEO6k0ShempAiq2ObbXJgaapSf0nX3C39lxWW2)J4VHTLoG)gt5iO5OHGLTGfGMomCr7vhAyI273m8q7f7pbWvi3)Da1pAGDhE4(zTp4rtc0XuoWK6HP7ytBlYboAuItqWFFd5ENR(avSFKrpl(OtWG3l3(Q4D7eG6sO3Eg17FrYW2kP)uU9hS9oyY2ot(28YR(k6YP2Uns9G2T(QHtxg09inFmr)noDUFNa9cA1n5oKeQzgGVschJ3S7ZKQZi42vk96aFERRwFd(wH(g(BuIcyalTzk4BbA(Urpnt4F)d]] )

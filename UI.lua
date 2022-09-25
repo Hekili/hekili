@@ -20,7 +20,14 @@ local round = ns.round
 
 local format, insert = string.format, table.insert
 
-local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi
+local GetSpecialization = _G.GetSpecialization or function() return GetActiveTalentGroup() end
+local GetSpecializationInfo = _G.GetSpecializationInfo or function()
+    local name, baseName, id = UnitClass( "player" )
+    return id, baseName, name
+end
+local HasVehicleActionBar, HasOverrideActionBar, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, UnitHasVehicleUI, UnitOnTaxi
+local IsInPetBattle = Hekili.IsWrath() and function() return false end or C_PetBattles.IsInBattle
+local IsSpellOverlayed = _G.IsSpellOverlayed or function() return false end
 
 local Masque, MasqueGroup
 local _
@@ -283,7 +290,7 @@ function ns.StartConfiguration( external )
 
             if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield" ) )
             elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "voicechat-icon-speaker-mute" ) )
-            elseif i == "Cooldowns" then v.Header:SetText( AtlasToString( "chromietime-32x32" ) )
+            elseif i == "Cooldowns" then v.Header:SetText( AtlasToString( "VignetteEventElite" ) )
             else v.Header:SetText( i ) end
 
             v.Header:SetJustifyH("CENTER")
@@ -2124,6 +2131,7 @@ do
 
         if not Hekili.Pause and not self.pendingSpecChange then
             if self.activeThread and self.threadSpec and self.threadSpec ~= GetSpecializationInfo( GetSpecialization() ) then
+                print( "Cancel Spec Change" )
                 Hekili:SpecializationChanged()
                 self.activeThread = nil
                 self.criticalUpdate = true
@@ -2179,9 +2187,8 @@ do
                 self.activeThreadTime = self.activeThreadTime + ( now - start )
 
                 if coroutine.status( thread ) == "dead" or err then
-
                     if Hekili.ActiveDebug then
-                        Hekili:Debug( "Recommendation thread for %s terminated due to error: %s", self.id, err )
+                        Hekili:Debug( "Recommendation thread terminated due to error: %s", err or "unknown" )
                         Hekili:SaveDebugSnapshot( self.id )
                         Hekili.ActiveDebug = nil
                     end

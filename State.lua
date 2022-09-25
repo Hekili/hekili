@@ -27,6 +27,16 @@ local LSR = LibStub( "SpellRange-1.0" )
 local class = Hekili.Class
 local scripts = Hekili.Scripts
 
+local GetMeleeHaste = _G.GetMeleeHaste or function() return GetCombatRatingBonus( CR_HASTE_MELEE ) end
+local GetRangedHaste = _G.GetRangedHaste or function() return GetCombatRatingBonus( CR_HASTE_RANGED ) end
+local GetSpecialization = _G.GetSpecialization or function() return GetActiveTalentGroup() end
+local GetSpecializationInfo = _G.GetSpecializationInfo or function()
+    local name, baseName, id = UnitClass( "player" )
+    return id, baseName, name
+end
+local IsInJailersTower = _G.IsInJailersTower or function() return false end
+local UnitEffectiveLevel = _G.UnitEffectiveLevel or _G.UnitLevel
+local UnitSpellHaste = _G.UnitSpellHaste or function() return GetCombatRatingBonus( CR_HASTE_SPELL ) end
 
 -- This will be our environment table for local functions.
 local state = Hekili.State
@@ -522,6 +532,7 @@ state.FindUnitDebuffByID = ns.FindUnitDebuffByID
 state.FindRaidBuffByID = ns.FindRaidBuffByID
 state.FindRaidBuffLowestRemainsByID = ns.FindRaidBuffLowestRemainsByID
 state.FindLowHpPlayerWithoutBuffByID = ns.FindLowHpPlayerWithoutBuffByID
+state.GetActionInfo = GetActionInfo
 state.GetActiveLossOfControlData = C_LossOfControl.GetActiveLossOfControlData
 state.GetActiveLossOfControlDataCount = C_LossOfControl.GetActiveLossOfControlDataCount
 state.GetNumGroupMembers = GetNumGroupMembers
@@ -2146,11 +2157,10 @@ do
 
             local aura_name = ability and ability.aura or t.this_action
             local aura = class.auras[ aura_name ]
-            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) ) or t.buff[ aura_name ]
 
-
-            if class.knownAuraAttributes[ k ] then
+            if aura and class.knownAuraAttributes[ k ] then
                 -- Buffs, debuffs...
+                local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) )
 
                 value = app and app[ k ]
                 if value ~= nil then return value end
@@ -2818,7 +2828,7 @@ do
                 if t.key ~= "global_cooldown" then
                     local gcd = state.cooldown.global_cooldown
                     gcdStart, gcdDuration = gcd.expires - gcd.duration, gcd.duration
-                    -- gcdStart, gcdDuration = state.cooldown.global_cooldown.startexpiGetSpellCooldown( 61304 )
+                    -- gcdStart, gcdDuration = state.cooldown.global_cooldown.startexpiGetSpellCooldown( state.cooldown.global_cooldown.id )
                     if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
                 end
 
@@ -3738,6 +3748,8 @@ do
         v3 = 0,
         unit = "player"
     }, mt_default_buff )
+
+    state.buff.unknown_buff = unknown_buff
 
 
 
@@ -4696,6 +4708,8 @@ do
         v2 = 0,
         v3 = 0
     }, mt_default_debuff )
+
+    state.debuff.unknown_debuff = unknown_debuff
 
 
     -- Table of debuffs applied to the target by the player.
@@ -6084,8 +6098,16 @@ do
 
                 if res.max > 0 then foundResource = true end
 
-                if k == "mana" and state.spec.arcane then
-                    res.modmax = res.max / ( 1 + state.mastery_value )
+                if k == "mana" then
+                    if state.spec.arcane then
+                        res.modmax = res.max / ( 1 + state.mastery_value )
+                    end
+
+                    local _, effectiveStat = UnitStat( "player", 4 )
+                    local baseInt = min( 20, effectiveStat )
+                    local bonusInt = effectiveStat - baseInt
+
+                    res.modmax = res.max - ( baseInt + bonusInt * MANA_PER_INTELLECT )
                 end
 
                 res.last_tick = rawget( res, "last_tick" ) or 0

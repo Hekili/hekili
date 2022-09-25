@@ -31,6 +31,8 @@ local itemCallbacks = {}
 local spellCallbacks = {}
 local activeDisplays = {}
 
+local IsInJailersTower = _G.IsInJailersTower or function() return false end
+
 
 function Hekili:GetActiveDisplays()
     return activeDisplays
@@ -367,7 +369,7 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
     local _, zone = GetInstanceInfo()
     state.bg = zone == "pvp"
     state.arena = zone == "arena"
-    state.torghast = IsInJailersTower()
+    state.torghast = not Hekili.IsWrath() and IsInJailersTower() or false
 
     Hekili:BuildUI()
 end
@@ -1760,7 +1762,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
                 end
             end
 
-            state.gcd.lastStart = max( state.gcd.lastStart, ( GetSpellCooldown( 61304 ) ) )
+            state.gcd.lastStart = max( state.gcd.lastStart, ( GetSpellCooldown( state.cooldown.global_cooldown.id ) ) )
             -- if subtype ~= "SPELL_DAMAGE" then Hekili:ForceUpdate( subtype, true ) end
         end
     end

@@ -26,7 +26,12 @@ local mt_resource = ns.metatables.mt_resource
 
 local GetItemCooldown = _G.GetItemCooldown
 local GetSpellDescription, GetSpellTexture = _G.GetSpellDescription, _G.GetSpellTexture
-local GetSpecialization, GetSpecializationInfo = _G.GetSpecialization, _G.GetSpecializationInfo
+
+local GetSpecialization = _G.GetSpecialization or function() return GetActiveTalentGroup() end
+local GetSpecializationInfo = _G.GetSpecializationInfo or function()
+    local name, baseName, id = UnitClass( "player" )
+    return id, baseName, name
+end
 
 local Casting = _G.SPELL_CASTING or "Casting"
 
@@ -751,11 +756,9 @@ local HekiliSpecMixin = {
                     end
                     Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
                     table.insert( Hekili.InvalidSpellIDs, a.id )
-                    Hekili:Error( "Name info not available for " .. a.id .. "." )
+                    Hekili:Error( "Name info not available for " .. a.id .. " / " .. a.key .. "." )
                     return
                 end
-
-                -- if not a.name then Hekili:Error( "Name info not available for " .. a.id .. "." ); return false end
 
                 a.desc = GetSpellDescription( a.id ) -- was returning raw tooltip data.
 
@@ -1329,6 +1332,13 @@ all:RegisterAuras( {
             t.applied = 0
             t.caster = 'nobody'
         end,
+    },
+
+    demonic_pact = {
+        id = 48090,
+        duration = 34,
+        max_stack = 1,
+        shared = "player"
     },
 
     power_infusion = {
@@ -2211,7 +2221,7 @@ all:RegisterAbility( "gift_of_the_naaru", {
 
 all:RegisterAbilities( {
     global_cooldown = {
-        id = 61304,
+        id = function () return settings.spec and settings.spec.gcd or 61304 end,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -2220,7 +2230,7 @@ all:RegisterAbilities( {
         known = function () return true end,
     },
 
-    ancestral_call = {
+    ancestral_call = not Hekili.IsWrath() and {
         id = 274738,
         cast = 0,
         cooldown = 120,
@@ -2232,9 +2242,9 @@ all:RegisterAbilities( {
         handler = function ()
             applyBuff( "ancestral_call" )
         end,
-    },
+    } or nil,
 
-    arcane_pulse = {
+    arcane_pulse = not Hekili.IsWrath() and {
         id = 260364,
         cast = 0,
         cooldown = 180,
@@ -2246,7 +2256,7 @@ all:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "arcane_pulse" )
         end,
-    },
+    } or nil,
 
     berserking = {
         id = 26297,
@@ -2262,7 +2272,7 @@ all:RegisterAbilities( {
         end,
     },
 
-    hyper_organic_light_originator = {
+    hyper_organic_light_originator = not Hekili.IsWrath() and {
         id = 312924,
         cast = 0,
         cooldown = 180,
@@ -2273,18 +2283,18 @@ all:RegisterAbilities( {
         handler = function ()
             applyBuff( "hyper_organic_light_originator" )
         end
-    },
+    } or nil,
 
-    bag_of_tricks = {
+    bag_of_tricks = not Hekili.IsWrath() and {
         id = 312411,
         cast = 0,
         cooldown = 90,
         gcd = "spell",
 
         toggle = "cooldowns",
-    },
+    } or nil,
 
-    haymaker = {
+    haymaker = not Hekili.IsWrath() and {
         id = 287712,
         cast = 1,
         cooldown = 150,
@@ -2301,7 +2311,7 @@ all:RegisterAbilities( {
                 max_stack = 1,
             },
         }
-    }
+    } or nil
 } )
 
 
@@ -2396,7 +2406,7 @@ all:RegisterAbilities( {
     },
 
 
-    lights_judgment = {
+    lights_judgment = not Hekili.IsWrath() and {
         id = 255647,
         cast = 0,
         cooldown = 150,
@@ -2405,7 +2415,7 @@ all:RegisterAbilities( {
         -- usable = function () return race.lightforged_draenei end,
 
         toggle = 'cooldowns',
-    },
+    } or nil,
 
 
     stoneform = {
@@ -2434,7 +2444,7 @@ all:RegisterAbilities( {
     },
 
 
-    fireblood = {
+    fireblood = not Hekili.IsWrath() and {
         id = 265221,
         cast = 0,
         cooldown = 120,
@@ -2444,7 +2454,7 @@ all:RegisterAbilities( {
 
         -- usable = function () return race.dark_iron_dwarf end,
         handler = function () applyBuff( "fireblood" ) end,
-    },
+    } or nil,
 
 
     -- INTERNAL HANDLERS
@@ -3211,94 +3221,96 @@ all:RegisterAura( "chain_of_suffering", {
 
 -- Mechagon
 do
-    all:RegisterGear( "pocketsized_computation_device", 167555 )
-    all:RegisterGear( "cyclotronic_blast", 167672 )
-    all:RegisterGear( "harmonic_dematerializer", 167677 )
+    if not Hekili.IsWrath() then
+        all:RegisterGear( "pocketsized_computation_device", 167555 )
+        all:RegisterGear( "cyclotronic_blast", 167672 )
+        all:RegisterGear( "harmonic_dematerializer", 167677 )
 
-    all:RegisterAura( "cyclotronic_blast", {
-        id = 293491,
-        duration = function () return 2.5 * haste end,
-        max_stack = 1
-    } )
+        all:RegisterAura( "cyclotronic_blast", {
+            id = 293491,
+            duration = function () return 2.5 * haste end,
+            max_stack = 1
+        } )
 
-    --[[ all:RegisterAbility( "pocketsized_computation_device", {
-        -- key = "pocketsized_computation_device",
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
+        --[[ all:RegisterAbility( "pocketsized_computation_device", {
+            -- key = "pocketsized_computation_device",
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
 
-        -- item = 167555,
-        texture = 2115322,
-        bind = { "cyclotronic_blast", "harmonic_dematerializer", "inactive_red_punchcard" },
-        startsCombat = true,
+            -- item = 167555,
+            texture = 2115322,
+            bind = { "cyclotronic_blast", "harmonic_dematerializer", "inactive_red_punchcard" },
+            startsCombat = true,
 
-        unlisted = true,
+            unlisted = true,
 
-        usable = function() return false, "no supported red punchcard installed" end,
-        copy = "inactive_red_punchcard"
-    } ) ]]
+            usable = function() return false, "no supported red punchcard installed" end,
+            copy = "inactive_red_punchcard"
+        } ) ]]
 
-    all:RegisterAbility( "cyclotronic_blast", {
-        id = 293491,
-        known = function () return equipped.cyclotronic_blast end,
-        cast = function () return 1.5 * haste end,
-        channeled = function () return cooldown.cyclotronic_blast.remains > 0 end,
-        cooldown = function () return equipped.cyclotronic_blast and 120 or 0 end,
-        gcd = "spell",
+        all:RegisterAbility( "cyclotronic_blast", {
+            id = 293491,
+            known = function () return equipped.cyclotronic_blast end,
+            cast = function () return 1.5 * haste end,
+            channeled = function () return cooldown.cyclotronic_blast.remains > 0 end,
+            cooldown = function () return equipped.cyclotronic_blast and 120 or 0 end,
+            gcd = "spell",
 
-        item = 167672,
-        itemCd = 167555,
-        itemKey = "cyclotronic_blast",
+            item = 167672,
+            itemCd = 167555,
+            itemKey = "cyclotronic_blast",
 
-        texture = 2115322,
-        bind = { "pocketsized_computation_device", "inactive_red_punchcard", "harmonic_dematerializer" },
-        startsCombat = true,
+            texture = 2115322,
+            bind = { "pocketsized_computation_device", "inactive_red_punchcard", "harmonic_dematerializer" },
+            startsCombat = true,
 
-        toggle = "cooldowns",
+            toggle = "cooldowns",
 
-        usable = function ()
-            return equipped.cyclotronic_blast, "punchcard not equipped"
-        end,
+            usable = function ()
+                return equipped.cyclotronic_blast, "punchcard not equipped"
+            end,
 
-        handler = function()
-            setCooldown( "global_cooldown", 2.5 * haste )
-            applyBuff( "casting", 2.5 * haste )
-        end,
+            handler = function()
+                setCooldown( "global_cooldown", 2.5 * haste )
+                applyBuff( "casting", 2.5 * haste )
+            end,
 
-        copy = "pocketsized_computation_device"
-    } )
+            copy = "pocketsized_computation_device"
+        } )
 
-    all:RegisterAura( "harmonic_dematerializer", {
-        id = 293512,
-        duration = 300,
-        max_stack = 99
-    } )
+        all:RegisterAura( "harmonic_dematerializer", {
+            id = 293512,
+            duration = 300,
+            max_stack = 99
+        } )
 
-    all:RegisterAbility( "harmonic_dematerializer", {
-        id = 293512,
-        known = function () return equipped.harmonic_dematerializer end,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
+        all:RegisterAbility( "harmonic_dematerializer", {
+            id = 293512,
+            known = function () return equipped.harmonic_dematerializer end,
+            cast = 0,
+            cooldown = 15,
+            gcd = "spell",
 
-        item = 167677,
-        itemCd = 167555,
-        itemKey = "harmonic_dematerializer",
+            item = 167677,
+            itemCd = 167555,
+            itemKey = "harmonic_dematerializer",
 
-        texture = 2115322,
+            texture = 2115322,
 
-        bind = { "pocketsized_computation_device", "cyclotronic_blast", "inactive_red_punchcard" },
+            bind = { "pocketsized_computation_device", "cyclotronic_blast", "inactive_red_punchcard" },
 
-        startsCombat = true,
+            startsCombat = true,
 
-        usable = function ()
-            return equipped.harmonic_dematerializer, "punchcard not equipped"
-        end,
+            usable = function ()
+                return equipped.harmonic_dematerializer, "punchcard not equipped"
+            end,
 
-        handler = function ()
-            addStack( "harmonic_dematerializer", nil, 1 )
-        end
-    } )
+            handler = function ()
+                addStack( "harmonic_dematerializer", nil, 1 )
+            end
+        } )
+    end
 
 
     -- Hyperthread Wristwraps
@@ -5835,12 +5847,19 @@ local seen = {}
 Hekili.SpecChangeHistory = {}
 
 function Hekili:SpecializationChanged()
-    local currentSpec = GetSpecialization()
-    local currentID = GetSpecializationInfo( currentSpec )
+    local currentSpec, currentID, _, currentClass
 
-    if currentID == nil then
-        C_Timer.After( 0.5, function () Hekili:SpecializationChanged() end )
-        return
+    if Hekili.IsWrath() then
+        currentSpec = 1
+        _, currentClass, currentID = UnitClass( "player" )
+    else
+        currentSpec = GetSpecialization()
+        currentID = GetSpecializationInfo( currentSpec )
+
+        if currentID == nil then
+            C_Timer.After( 0.5, function () Hekili:SpecializationChanged() end )
+            return
+        end
     end
 
     HekiliEngine.activeThread = nil
@@ -5884,33 +5903,42 @@ function Hekili:SpecializationChanged()
 
     local specs = { 0 }
 
-    for i = 1, 4 do
-        local id, name, _, _, role = GetSpecializationInfo( i )
+    if Hekili.IsWrath() then
+        specs[ 2 ] = currentID
+        state.spec.id = currentID
+        state.spec.name = currentClass
+        state.spec.key = currentClass:lower()
+        state.role.attack = true
+        state.spec[ state.spec.key ] = true
+    else
+        for i = 1, 4 do
+            local id, name, _, _, role = GetSpecializationInfo( i )
 
-        if not id then break end
+            if not id then break end
 
-        if i == currentSpec then
-            table.insert( specs, 1, id )
+            if i == currentSpec then
+                table.insert( specs, 1, id )
 
-            state.spec.id = id
-            state.spec.name = name
-            state.spec.key = getSpecializationKey( id )
+                state.spec.id = id
+                state.spec.name = name
+                state.spec.key = getSpecializationKey( id )
 
-            for k in pairs( state.role ) do
-                state.role[ k ] = false
-            end
+                for k in pairs( state.role ) do
+                    state.role[ k ] = false
+                end
 
-            if role == "DAMAGER" then
-                state.role.attack = true
-            elseif role == "TANK" then
-                state.role.tank = true
+                if role == "DAMAGER" then
+                    state.role.attack = true
+                elseif role == "TANK" then
+                    state.role.tank = true
+                else
+                    state.role.healer = true
+                end
+
+                state.spec[ state.spec.key ] = true
             else
-                state.role.healer = true
+                table.insert( specs, id )
             end
-
-            state.spec[ state.spec.key ] = true
-        else
-            table.insert( specs, id )
         end
     end
 
@@ -6155,11 +6183,15 @@ end
 do
     RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
         if login or reload then
-            local currentSpec = GetSpecialization()
-            local currentID = GetSpecializationInfo( currentSpec )
+            if Hekili.IsWrath() then
+                if state.spec.id ~= select( 3, UnitClass( "player" ) ) then Hekili:SpecializationChanged() end
+            else
+                local currentSpec = GetSpecialization()
+                local currentID = GetSpecializationInfo( currentSpec )
 
-            if currentID ~= state.spec.id then
-                Hekili:SpecializationChanged()
+                if currentID ~= state.spec.id then
+                    Hekili:SpecializationChanged()
+                end
             end
         end
     end )
