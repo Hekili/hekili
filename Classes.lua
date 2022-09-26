@@ -2414,7 +2414,7 @@ all:RegisterAbilities( {
         copy = { 33702, 20572, 33697 },
     },
 
-    arcane_torrent = {
+    --[[ arcane_torrent = {
         id = function ()
             if class.file == "PALADIN"      then return 155145 end
             if class.file == "MONK"         then return 129597 end
@@ -2446,7 +2446,7 @@ all:RegisterAbilities( {
 
             removeBuff( "dispellable_magic" )
         end,
-    },
+    }, ]]
 
     will_to_survive = {
         id = 59752,
