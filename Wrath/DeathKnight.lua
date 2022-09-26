@@ -124,14 +124,14 @@ spec:RegisterAuras( {
         id = 42651,
         duration = 40,
         max_stack = 1,
-        copy = { 42650 },
+        copy = { 42651, 42650, 64859 },
     },
     -- $s1% less damage taken.
     blade_barrier = {
         id = 64859,
         duration = 10,
         max_stack = 1,
-        copy = { 64858, 64856, 64855, 51789 },
+        copy = { 51789, 64855, 64856, 64858, 64859 },
     },
     -- Deals Shadow damage over $d.
     blood_plague = {
@@ -201,6 +201,7 @@ spec:RegisterAuras( {
         duration = 10,
         tick_time = 1,
         max_stack = 1,
+        copy = { 43265, 49936, 49937, 49938 },
     },
     death_gate = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=50977)
         id = 50977,
@@ -224,14 +225,14 @@ spec:RegisterAuras( {
         id = 68766,
         duration = 20,
         max_stack = 1,
-        copy = { 55741 },
+        copy = { 68766, 55741, 66803 },
     },
     -- Damage dealt is increased by $s1%.
     desolation = {
         id = 66803,
         duration = 20,
         max_stack = 1,
-        copy = { 66802, 66801, 66800, 63583 },
+        copy = { 66803, 66802, 66801, 66800, 63583, 59052 },
     },
     -- Crypt Fever, improved by Ebon Plaguebringer.
     ebon_plague = {
@@ -267,13 +268,6 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1,
     },
-    -- Increases your total Strength and Agility by $s1.
-    horn_of_winter = {
-        id = 57623,
-        duration = 120,
-        max_stack = 1,
-        copy = { 57330 },
-    },
     -- Damage taken reduced.  Immune to Stun effects.
     icebound_fortitude = {
         id = 48792,
@@ -285,7 +279,7 @@ spec:RegisterAuras( {
         id = 50436,
         duration = 10,
         max_stack = 1,
-        copy = { 50435, 50434 },
+        copy = { 50436, 50435, 50434, 58578 },
     },
     -- Your next Icy Touch, Howling Blast or Frost Strike will be a critical strike.
     killing_machine = {
@@ -339,7 +333,7 @@ spec:RegisterAuras( {
         id = 61777,
         duration = 30,
         max_stack = 1,
-        copy = { 50514, 49206 },
+        copy = { 61777, 50514, 49206, 51271 },
     },
     -- Armor increased by $s1%.  Strength increased by $s2%.
     unbreakable_armor = {
@@ -399,12 +393,6 @@ local GetRuneType = _G.GetRuneType
 spec:RegisterHook( "reset_precast", function ()
     for i = 1, 6 do
         if GetRuneType( i ) == 4 then
-            applyBuff( "death_rune_" .. i )
-        end
-    end
-
-    if buff.death_rune_mastery.up then
-        for i = 1, 6 do
             applyBuff( "death_rune_" .. i )
         end
     end
@@ -504,6 +492,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
         end,
+
+        copy = { 49939, 49940, 49941 }
     },
 
 
@@ -529,7 +519,7 @@ spec:RegisterAbilities( {
 
     -- Instantly strike the enemy, causing 40% weapon damage plus 306, total damage increased by 12.5% for each of your diseases on the target.
     blood_strike = {
-        id = 49930,
+        id = 45902,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -550,6 +540,8 @@ spec:RegisterAbilities( {
             end
             if talent.desolation.enabled then applyBuff( "desolation" ) end
         end,
+
+        copy = { 49926, 49927, 49928, 49929, 49930 }
     },
 
 
@@ -687,7 +679,7 @@ spec:RegisterAbilities( {
 
     -- Corrupts the ground targeted by the Death Knight, causing 62 Shadow damage every sec that targets remain in the area for 10 sec.  This ability produces a high amount of threat.
     death_and_decay = {
-        id = 49938,
+        id = 43265,
         cast = 0,
         cooldown = function () return 30 - ( 5 * talent.morbidity.rank ) end,
         gcd = "spell",
@@ -708,12 +700,14 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "death_and_decay" )
         end,
+
+        copy = { 49936, 49937, 49938 }
     },
 
 
     -- Fire a blast of unholy energy, causing 443 Shadow damage to an enemy target or healing 665 damage from a friendly Undead target.
     death_coil = {
-        id = 49895,
+        id = 47541,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -727,6 +721,8 @@ spec:RegisterAbilities( {
         handler = function ()
             if talent.unholy_blight.enabled then applyDebuff( "target", "unholy_blight" ) end
         end,
+
+        copy = { 49892, 49893, 49894, 49895 }
     },
 
 
@@ -790,7 +786,7 @@ spec:RegisterAbilities( {
 
     -- A deadly attack that deals 75% weapon damage plus 223 and heals the Death Knight for 5% of her maximum health for each of her diseases on the target.
     death_strike = {
-        id = 49924,
+        id = 49998,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -812,6 +808,7 @@ spec:RegisterAbilities( {
             if dot.blood_plague.ticking then gain( amt, "health" ) end
             if dot.crypt_fever.ticking then gain( amt, "health" ) end
         end,
+        copy = { 49999, 45463, 49923, 49924 }
     },
 
 
@@ -947,7 +944,7 @@ spec:RegisterAbilities( {
 
     -- The Death Knight blows the Horn of Winter, which generates 10 runic power and increases total Strength and Agility of all party or raid members within 30 yards by 155.  Lasts 2 min.
     horn_of_winter = {
-        id = 57623,
+        id = 57730,
         cast = 0,
         cooldown = 20,
         gcd = "spell",
@@ -961,6 +958,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "horn_of_winter" )
         end,
+
+        copy = { 57623 },
     },
 
 
@@ -1043,7 +1042,7 @@ spec:RegisterAbilities( {
 
     -- Chills the target for 227 to 245 Frost damage and  infects them with Frost Fever, a disease that deals periodic damage and reduces melee and ranged attack speed by 14% for 15 sec.  Very high threat when in Frost Presence.
     icy_touch = {
-        id = 49909,
+        id = 45477,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1061,6 +1060,8 @@ spec:RegisterAbilities( {
             removeStack( "killing_machine" )
             applyDebuff( "frost_fever" )
         end,
+
+        copy = { 49896, 49903, 49904, 49909 }
     },
 
 
@@ -1113,7 +1114,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "off",
 
-        spend = function () return 20 - ( 10 * talent.endless_winter.enabled ) end,
+        spend = function () return 20 - ( 10 * talent.endless_winter.rank ) end,
         spendType = "runic_power",
 
         startsCombat = true,
@@ -1130,7 +1131,7 @@ spec:RegisterAbilities( {
 
     -- A brutal instant attack that deals 80% weapon damage plus 467, total damage increased 12.5% per each of your diseases on the target, but consumes the diseases.
     obliterate = {
-        id = 51425,
+        id = 49020,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1154,6 +1155,8 @@ spec:RegisterAbilities( {
                 removeDebuff( "target", "crypt_fever" )
             end
         end,
+
+        copy = { 51423, 51424, 51425 }
     },
 
 
@@ -1206,7 +1209,7 @@ spec:RegisterAbilities( {
 
     -- A vicious strike that deals 50% weapon damage plus 189 and infects the target with Blood Plague, a disease dealing Shadow damage over time.
     plague_strike = {
-        id = 49921,
+        id = 45462,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1214,7 +1217,7 @@ spec:RegisterAbilities( {
         spend = 1,
         spendType = "unholy_runes",
 
-        gain = function() return 10 + ( 2.5 * talent.dirge.enabled ) end,
+        gain = function() return 10 + ( 2.5 * talent.dirge.rank ) end,
         gainType = "runic_power",
 
         startsCombat = true,
@@ -1224,6 +1227,8 @@ spec:RegisterAbilities( {
             applyDebuff( "blood_plague" )
             -- TODO: talent.desecration effect?
         end,
+
+        copy = { 49917, 49918, 49919, 49920, 49921 }
     },
 
 

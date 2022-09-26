@@ -25,6 +25,9 @@ local insert, wipe = table.insert, table.wipe
 local mt_resource = ns.metatables.mt_resource
 
 local GetItemCooldown = _G.GetItemCooldown
+
+local GetPlayerAuraBySpellID = _G.GetPlayerAuraBySpellID or function( id ) return FindUnitBuffByID( "player", id ) end
+
 local GetSpellDescription, GetSpellTexture = _G.GetSpellDescription, _G.GetSpellTexture
 
 local GetSpecialization = _G.GetSpecialization or function() return GetActiveTalentGroup() end
@@ -109,7 +112,7 @@ local function Aura_DetectSharedAura( t, type )
     local finder = type == "debuff" and FindUnitDebuffByID or FindUnitBuffByID
     local aura = class.auras[ t.key ]
 
-    local name, _, count, _, duration, expirationTime, caster = finder( aura.shared, aura.id )
+    local name, _, count, _, duration, expirationTime, caster = finder( aura.shared, aura.multi or aura.id )
 
     if name then
         t.count = count > 0 and count or 1
@@ -354,8 +357,11 @@ local HekiliSpecMixin = {
         if type( data.copy ) == 'string' then
             self.auras[ data.copy ] = a
         elseif type( data.copy ) == 'table' then
+            a.multi = {}
+            a.multi[ a.id ] = 1
             for _, key in ipairs( data.copy ) do
                 self.auras[ key ] = a
+                a.multi[ key ] = 1
             end
         end
     end,
@@ -1355,7 +1361,49 @@ all:RegisterAuras( {
         duration = 20,
         max_stack = 1,
         shared = "player",
-        copy = { 58577, 58576, 58575, 50882 },
+        copy = { 58578, 58577, 58576, 58575, 50882, 51124 },
+    },
+
+    -- Increases your attack power by $s1.
+    battle_shout = {
+        id = 47436,
+        duration = function() return 120 * ( 1 + talent.booming_voice.rank * 0.1 ) end,
+        max_stack = 1,
+        shared = "player",
+        copy = { 2048, 5242, 6192, 6673, 11549, 11550, 11551, 25289, 27578, 47436 },
+    },
+
+    commanding_shout = {
+        id = 469,
+        duration = 120,
+        max_stack = 1,
+        shared = "player",
+        copy = { 469, 45517, 47439, 47440 },
+    },
+
+    -- Armor decreased by $s1%.
+    sunder_armor = {
+        id = 58567,
+        duration = 30,
+        max_stack = 5,
+        shared = "target",
+        copy = { 7405, 8380, 11596, 11597, 25225, 47467, 58567, 65936, 71554 },
+    },
+
+    rampage = {
+        id = 29801,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+    },
+
+    -- Increases your total Strength and Agility by $s1.
+    horn_of_winter = {
+        id = 57623,
+        duration = 120,
+        max_stack = 1,
+        shared = "player",
+        copy = { 57330, 57623 },
     },
 
     power_infusion = {
@@ -2371,7 +2419,7 @@ all:RegisterAbilities( {
             if class.file == "PALADIN"      then return 155145 end
             if class.file == "MONK"         then return 129597 end
             if class.file == "DEATHKNIGHT"  then return  50613 end
-            if class.file == "WARRIOR"      then return  69179 end
+            -- if class.file == "WARRIOR"      then return  69179 end
             if class.file == "ROGUE"        then return  25046 end
             if class.file == "HUNTER"       then return  80483 end
             if class.file == "DEMONHUNTER"  then return 202719 end
@@ -2393,7 +2441,6 @@ all:RegisterAbilities( {
             elseif class.file == "MONK" then gain( 1, "chi" )
             elseif class.file == "PALADIN" then gain( 1, "holy_power" )
             elseif class.file == "ROGUE" then gain( 15, "energy" )
-            elseif class.file == "WARRIOR" then gain( 15, "rage" )
             elseif class.file == "DEMONHUNTER" then gain( 15, "fury" )
             elseif class.file == "PRIEST" and state.spec.shadow then gain( 15, "insanity" ) end
 

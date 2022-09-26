@@ -100,7 +100,7 @@ spec:RegisterAuras( {
         id = 16237,
         duration = 15,
         max_stack = 1,
-        copy = { 16236, 16177 },
+        copy = { 16177, 16236, 16237 },
     },
     -- Damage reduced.
     astral_shift = {
@@ -138,20 +138,21 @@ spec:RegisterAuras( {
         id = 974,
         duration = 600,
         max_stack = 1,
+        copy = { 974, 32593, 32594, 49283, 49284 },
     },
     -- Time between attacks increased by $w1%.
     earth_shock = {
         id = 49231,
         duration = 8,
         max_stack = 1,
-        copy = { 49230, 25454, 10414, 10413, 10412, 8046, 8045, 8044, 8042 },
+        copy = { 8042, 8044, 8045, 8046, 10412, 10413, 10414, 25454, 49230, 49231 },
     },
     -- Increases your chance to get a critical strike with melee attacks by $s1%.
     elemental_devastation = {
         id = 30165,
         duration = 10,
         max_stack = 1,
-        copy = { 29178, 29177 },
+        copy = { 29177, 29178, 30165 },
     },
     -- Makes LB, CL, LvB instant.
     elemental_mastery = {
@@ -181,26 +182,20 @@ spec:RegisterAuras( {
         id = 49233,
         duration = 18,
         max_stack = 1,
-        copy = { 49232, 29228, 25457, 10448, 10447, 8053, 8052, 8050 },
+        copy = { 8050, 8052, 8053, 10447, 10448, 25457, 29228, 49232, 49233 },
     },
     flurry = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16284)
         id = 16284,
         duration = 3600,
         max_stack = 1,
-        copy = { 16283, 16282, 16281, 16280, 16279, 16278, 16277, 16257, 16256 },
-    },
-    focused_mind = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=30866)
-        id = 30866,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 30865, 30864 },
+        copy = { 16284, 16283, 16282, 16281, 16280, 16279, 16278, 16277, 16257, 16256 },
     },
     -- Movement slowed to $s1% of normal speed.
     frost_shock = {
         id = 49236,
         duration = 8,
         max_stack = 1,
-        copy = { 49235, 25464, 10473, 10472, 8058, 8056 },
+        copy = { 8056, 8058, 10472, 10473, 25464, 49235, 49236 },
     },
     frost_resistance = {
         id = 58744,
@@ -246,7 +241,7 @@ spec:RegisterAuras( {
         id = 49281,
         duration = 600,
         max_stack = 1,
-        copy = { 49280, 25472, 25469, 10432, 10431, 8134, 945, 905, 325, 324 },
+        copy = { 324, 325, 905, 945, 8134, 8788, 10431, 10432, 25469, 25472, 49280, 49281 },
     },
     -- Reduces the cast time of your next Lightning Bolt, Chain Lightning, Lesser Healing Wave, Healing Wave, Chain Heal, or Hex spell by $s1%.
     maelstrom_weapon = {
@@ -265,6 +260,7 @@ spec:RegisterAuras( {
         id = 61295,
         duration = 15,
         max_stack = 1,
+        copy = { 61295, 61299, 61300, 61301, 66053 },
     },
     -- All damage taken reduced by $s2% and successful melee attacks have a chance to regenerate mana equal to $s1% of your attack power.
     shamanistic_rage = {
@@ -296,12 +292,6 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
-    totemic_focus = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16225)
-        id = 16225,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 16224, 16223, 16222, 16173 },
-    },
     -- Attack power party buff.
     unleashed_rage = {
         id = 30809,
@@ -319,17 +309,12 @@ spec:RegisterAuras( {
         id = 57960,
         duration = 600,
         max_stack = 1,
-        copy = { 52138, 52136, 52134, 52131, 52129, 52127, 33736, 24398 },
+        copy = { 24398, 33736, 52127, 52129, 52131, 52134, 52136, 52138, 57960 },
     },
     -- Allows walking over water.
     water_walking = {
         id = 546,
         duration = 600,
-        max_stack = 1,
-    },
-    wind_shear = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=57994)
-        id = 57994,
-        duration = 2,
         max_stack = 1,
     },
 
@@ -885,7 +870,7 @@ end )
 spec:RegisterAbilities( {
     -- Returns the spirit to the body, restoring a dead target to life with 1800 health and 1365 mana.  Cannot be cast when in combat.
     ancestral_spirit = {
-        id = 49277,
+        id = 2008,
         cast = 10,
         cooldown = 0,
         gcd = "spell",
@@ -898,6 +883,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
         end,
+
+        copy = { 20609, 20610, 20776, 20777, 25590, 49277 },
     },
 
 
@@ -958,7 +945,8 @@ spec:RegisterAbilities( {
         handler = function ()
             for i = 125, 128 do
                 local _, totemSpell = GetActionInfo( i )
-                if totemSpell then class.abilities[ totemSpell ].handler() end
+                local spellName = totemSpell and GetSpellInfo( totemSpell )
+                if totemSpell then class.abilities[ spellName ].handler() end
             end
         end,
     },
@@ -977,7 +965,8 @@ spec:RegisterAbilities( {
         handler = function ()
             for i = 121, 124 do
                 local _, totemSpell = GetActionInfo( i )
-                if totemSpell then class.abilities[ totemSpell ].handler() end
+                local spellName = totemSpell and GetSpellInfo( totemSpell )
+                if totemSpell then class.abilities[ spellName ].handler() end
             end
         end,
     },
@@ -996,7 +985,8 @@ spec:RegisterAbilities( {
         handler = function ()
             for i = 129, 1 do
                 local _, totemSpell = GetActionInfo( i )
-                if totemSpell then class.abilities[ totemSpell ].handler() end
+                local spellName = totemSpell and GetSpellInfo( totemSpell )
+                if totemSpell then class.abilities[ spellName ].handler() end
             end
         end,
     },
@@ -1004,7 +994,7 @@ spec:RegisterAbilities( {
 
     -- Heals the friendly target for 1055 to 1205, then jumps to heal additional nearby targets.  If cast on a party member, the heal will only jump to other party members.  Each jump reduces the effectiveness of the heal by 40%.  Heals 3 total targets.
     chain_heal = {
-        id = 55459,
+        id = 1064,
         cast = 2.5,
         cooldown = 0,
         gcd = "spell",
@@ -1018,12 +1008,14 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "riptide" )
         end,
+
+        copy = { 10622, 10623, 25422, 25423, 55458, 55459 },
     },
 
 
     -- Hurls a lightning bolt at the enemy, dealing 982 to 1123 Nature damage and then jumping to additional nearby enemies.  Each jump reduces the damage by 30%.  Affects 3 total targets.
     chain_lightning = {
-        id = 49271,
+        id = 421,
         cast = function ()
             if buff.elemental_mastery.up then return 0 end
             return 2 * haste
@@ -1043,6 +1035,8 @@ spec:RegisterAbilities( {
             removeBuff( "elemental_mastery" )
             removeStack( "clearcasting" )
         end,
+
+        copy = { 930, 2860, 10605, 25439, 25442, 49270, 49271 },
     },
 
     -- Cleanse the spirit of a friendly target, removing 1 poison effect, 1 disease effect, and 1 curse effect.
@@ -1158,7 +1152,7 @@ spec:RegisterAbilities( {
 
     -- Instantly shocks the target with concussive force, causing 862 to 909 Nature damage and reducing melee attack speed by 10% for 8 sec.
     earth_shock = {
-        id = 49231,
+        id = 8042,
         cast = 0,
         cooldown = 6,
         gcd = "spell",
@@ -1176,8 +1170,9 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "earth_shock" )
             setCooldown( "flame_shock", 6 )
             setCooldown( "frost_shock", 6 )
-
         end,
+
+        copy = { 8044, 8045, 8046, 10412, 10413, 10414, 25454, 49230, 49231 },
     },
 
 
@@ -1206,7 +1201,7 @@ spec:RegisterAbilities( {
 
     -- Imbue the Shaman's weapon with earthen life. Increases healing done by 150 and each heal has a 20% chance to proc Earthliving on the target, healing an additional 652 over 12 sec. Lasts 30 minutes.
     earthliving_weapon = {
-        id = 51994,
+        id = 51730,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1228,6 +1223,8 @@ spec:RegisterAbilities( {
                 earthliving_offhand = true
             end
         end,
+
+        copy = { 51988, 51991, 51992, 51993, 51994 },
     },
 
 
@@ -1320,7 +1317,7 @@ spec:RegisterAbilities( {
 
     -- Causes the shaman's active Fire totem to emit a wave of flames, inflicting 893 to 997 Fire damage to enemies within 10 yards of the totem.
     fire_nova = {
-        id = 61657,
+        id = 1535,
         cast = 0,
         cooldown = 10,
         gcd = "spell",
@@ -1335,12 +1332,14 @@ spec:RegisterAbilities( {
 
         handler = function ()
         end,
+
+        copy = { 8498, 8499, 11314, 11315, 25546, 25547, 61649, 61657 },
     },
 
 
     -- Summons a Fire Resistance Totem with 5 health at the feet of the caster for 5 min that increases the fire resistance of party and raid members within 30 yards by 130.
     fire_resistance_totem = {
-        id = 58739,
+        id = 8184,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1358,12 +1357,14 @@ spec:RegisterAbilities( {
             summonTotem( "fire_resistance_totem" )
             applyBuff( "fire_resistance_totem" )
         end,
+
+        copy = { 10537, 10538, 25563, 58737, 58739 },
     },
 
 
     -- Instantly sears the target with fire, causing 505 Fire damage immediately and 842 Fire damage over 16.45 sec. This periodic damage may critically strike and will occur more rapidly based on the caster's spell haste.
     flame_shock = {
-        id = 49233,
+        id = 8050,
         cast = 0,
         cooldown = 6,
         gcd = "spell",
@@ -1380,8 +1381,9 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "flame_shock" )
             setCooldown( "frost_shock", 6 )
             setCooldown( "earth_shock", 6 )
-
         end,
+
+        copy = { 8052, 8053, 10447, 10448, 29228, 25457, 49232, 49233 },
     },
 
 
@@ -1405,12 +1407,14 @@ spec:RegisterAbilities( {
             summonTotem( "flametongue_totem" )
             applyBuff( "flametongue_totem" )
         end,
+
+        copy = { 8249, 10526, 16387, 25557, 58649, 58652, 58656 },
     },
 
 
     -- Imbue the Shaman's weapon with fire, increasing total spell damage by 211. Each hit causes 89.0 to 274 additional Fire damage, based on the speed of the weapon.  Slower weapons cause more fire damage per swing.  Lasts 30 minutes.
     flametongue_weapon = {
-        id = 58790,
+        id = 8024,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1432,12 +1436,14 @@ spec:RegisterAbilities( {
                 flametongue_offhand = true
             end
         end,
+
+        copy = { 8027, 8030, 16339, 16341, 16342, 25489, 58785, 58789, 58790 },
     },
 
 
     -- Summons a Frost Resistance Totem with 5 health at the feet of the caster for 5 min.  The totem increases party and raid members' frost resistance by 130, if within 30 yards.
     frost_resistance_totem = {
-        id = 58745,
+        id = 8181,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1455,12 +1461,14 @@ spec:RegisterAbilities( {
             summonTotem( "frost_resistance_totem" )
             applyBuff( "frost_resistance_totem" )
         end,
+
+        copy = { 10478, 10479, 25560, 58741, 58745 },
     },
 
 
     -- Instantly shocks the target with frost, causing 820 to 867 Frost damage and slowing movement speed by 50%.  Lasts 8 sec.  Causes a high amount of threat.
     frost_shock = {
-        id = 49236,
+        id = 8056,
         cast = 0,
         cooldown = 6,
         gcd = "spell",
@@ -1478,12 +1486,14 @@ spec:RegisterAbilities( {
             setCooldown( "flame_shock", 6 )
             setCooldown( "earth_shock", 6 )
         end,
+
+        copy = { 8058, 10472, 10473, 25464, 49235, 49236 },
     },
 
 
     -- Imbue the Shaman's weapon with frost.  Each hit has a chance of causing 530 additional Frost damage and slowing the target's movement speed by 50% for 8 sec.  Lasts 30 minutes.
     frostbrand_weapon = {
-        id = 58796,
+        id = 8033,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1505,6 +1515,8 @@ spec:RegisterAbilities( {
                 frostbrand_offhand = true
             end
         end,
+
+        copy = { 8038, 10456, 16355, 16356, 25500, 58794, 58795, 58796 },
     },
 
 
@@ -1552,7 +1564,7 @@ spec:RegisterAbilities( {
 
     -- Summons a Healing Stream Totem with 5 health at the feet of the caster for 5 min that heals group members within 30 yards for 25 every 2 seconds.
     healing_stream_totem = {
-        id = 58757,
+        id = 5394,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1570,12 +1582,14 @@ spec:RegisterAbilities( {
             summonTotem( "healing_stream_totem" )
             applyBuff( "healing_stream_totem" )
         end,
+
+        copy = { 6375, 6377, 10462, 10463, 25567, 58755, 58756, 58757 },
     },
 
 
     -- Heals a friendly target for 3034 to 3466.
     healing_wave = {
-        id = 49273,
+        id = 331,
         cast = function()
             if buff.natures_swiftness.up then return 0 end
             return 3 * haste
@@ -1592,6 +1606,8 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "natures_swiftness" )
         end,
+
+        copy = { 332, 547, 913, 939, 959, 8005, 10395, 10396, 25357, 25391, 25396, 49272, 49273 },
     },
 
 
@@ -1616,7 +1632,7 @@ spec:RegisterAbilities( {
 
     -- You hurl molten lava at the target, dealing 1203 to 1534 Fire damage. If your Flame Shock is on the target, Lava Burst will deal a critical strike.
     lava_burst = {
-        id = 60043,
+        id = 51505,
         cast = function ()
             if buff.elemental_mastery.up then return 0 end
             return 2 * haste
@@ -1633,6 +1649,8 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "elemental_mastery" )
         end,
+
+        copy = { 60043 },
     },
 
 
@@ -1657,7 +1675,7 @@ spec:RegisterAbilities( {
 
     -- Heals a friendly target for 1624 to 1852.
     lesser_healing_wave = {
-        id = 49276,
+        id = 8004,
         cast = function ()
             if buff.natures_swiftness.up then return 0 end
             return 1.5 * haste
@@ -1674,12 +1692,14 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "natures_swiftness" )
         end,
+
+        { 8008, 8010, 10466, 10467, 10468, 25420, 49275, 49276 },
     },
 
 
     -- Casts a bolt of lightning at the target for 726 to 828 Nature damage.
     lightning_bolt = {
-        id = 49238,
+        id = 403,
         cast = function ()
             if buff.elemental_mastery.up or buff.natures_swiftness.up then return 0 end
             return 2.5 * haste
@@ -1700,12 +1720,14 @@ spec:RegisterAbilities( {
             removeBuff( "natures_swiftness" )
             removeBuff( "elemental_mastery" )
         end,
+
+        copy = { 529, 548, 915, 943, 6041, 10391, 10392, 15207, 15208, 25448, 25449, 49237, 49238 },
     },
 
 
     -- The caster is surrounded by 3 balls of lightning.  When a spell, melee or ranged attack hits the caster, the attacker will be struck for 380 Nature damage.  This expends one lightning ball.  Only one ball will fire every few seconds.  Lasts 10 min.  Only one Elemental Shield can be active on the Shaman at any one time.
     lightning_shield = {
-        id = 49281,
+        id = 324,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1717,12 +1739,14 @@ spec:RegisterAbilities( {
             removeBuff( "shield" )
             applyBuff( "lightning_shield", nil, 3 )
         end,
+
+        copy = { 325, 905, 945, 8134, 10431, 10432, 25469, 25472, 49280, 49281 },
     },
 
 
     -- Summons a Magma Totem with 5 health at the feet of the caster for 20 sec that causes 371 Fire damage to creatures within 8 yards every 2 seconds.
     magma_totem = {
-        id = 58734,
+        id = 8190,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1740,12 +1764,14 @@ spec:RegisterAbilities( {
             summonTotem( "magma_totem" )
             applyBuff( "magma_totem" )
         end,
+
+        copy = { 10585, 10586, 10587, 25552, 58731, 58734 },
     },
 
 
     -- Summons a Mana Spring Totem with 5 health at the feet of the caster for 5 min that restores 91 mana every 5 seconds to all party and raid members within 30 yards.
     mana_spring_totem = {
-        id = 58774,
+        id = 5675,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1763,6 +1789,8 @@ spec:RegisterAbilities( {
             summonTotem( "mana_spring_totem" )
             applyBuff( "mana_spring_totem" )
         end,
+
+        copy = { 10495, 10496, 10497, 25570, 58771, 58773, 58774 },
     },
 
 
@@ -1791,7 +1819,7 @@ spec:RegisterAbilities( {
 
     -- Summons a Nature Resistance Totem with 5 health at the feet of the caster for 5 min that increases the nature resistance of party and raid members within 30 yards by 130.
     nature_resistance_totem = {
-        id = 58749,
+        id = 10595,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1809,6 +1837,8 @@ spec:RegisterAbilities( {
             summonTotem( "nature_resistance_totem" )
             applyBuff( "nature_resistance_totem" )
         end,
+
+        copy = { 10600, 10601, 25574, 58746, 58749 },
     },
 
 
@@ -1834,7 +1864,7 @@ spec:RegisterAbilities( {
 
     -- Purges the enemy target, removing 2 beneficial magic effects.
     purge = {
-        id = 8012,
+        id = 370,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1850,6 +1880,8 @@ spec:RegisterAbilities( {
         handler = function ()
             removeDebuff( "target", "dispellable_magic" )
         end,
+
+        copy = { 8012 },
     },
 
 
@@ -1875,7 +1907,7 @@ spec:RegisterAbilities( {
 
     -- Imbue the Shaman's weapon, increasing its damage per second by 9.  Lasts 30 minutes.
     rockbiter_weapon = {
-        id = 10399,
+        id = 8017,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1898,13 +1930,13 @@ spec:RegisterAbilities( {
             end
         end,
 
-        copy = { 8017, 8018, 8019, 10399, 16314, 16315, 16316, 25479, 25485 }
+        copy = { 8018, 8019, 10399 },
     },
 
 
     -- Summons a Searing Totem with 5 health at your feet for 1 min that repeatedly attacks an enemy within 201 yards for 90 to 120 Fire damage.
     searing_totem = {
-        id = 58704,
+        id = 3599,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1922,6 +1954,8 @@ spec:RegisterAbilities( {
             summonTotem( "searing_totem" )
             applyBuff( "searing_totem" )
         end,
+
+        copy = { 6363, 6364, 6365, 10437, 10438, 25533, 58699, 58703, 58704 },
     },
 
 
@@ -1944,6 +1978,8 @@ spec:RegisterAbilities( {
             removeBuff( "air_totem" )
             applyBuff( "sentry_totem" )
         end,
+
+        copy = { 6363, 6364, 6365, 10437, 10438, 25533 },
     },
 
 
@@ -1968,7 +2004,7 @@ spec:RegisterAbilities( {
 
     -- Summons a Stoneclaw Totem with 1632  health at the feet of the caster for 15 sec that taunts creatures within 8 yards to attack it.  Enemies attacking the Stoneclaw Totem have a 50% chance to be stunned for 3 sec. Stoneclaw totem also protects all your totems, causing them to absorb 1085 damage.
     stoneclaw_totem = {
-        id = 58582,
+        id = 5730,
         cast = 0,
         cooldown = 30,
         gcd = "totem",
@@ -1986,12 +2022,14 @@ spec:RegisterAbilities( {
             summonTotem( "stoneclaw_totem" )
             applyBuff( "stoneclaw_totem" )
         end,
+
+        copy = { 6390, 6391, 6392, 10427, 10428, 25525, 58580, 58581, 58582 },
     },
 
 
     -- Summons a Stoneskin Totem with 5 health at the feet of the caster.  The totem protects party and raid members within 30 yards, increasing armor by 1150.  Lasts 5 min.
     stoneskin_totem = {
-        id = 58753,
+        id = 8071,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -2009,6 +2047,8 @@ spec:RegisterAbilities( {
             summonTotem( "stoneskin_totem" )
             applyBuff( "stoneskin_totem" )
         end,
+
+        copy = { 8154, 8155, 10406, 10407, 10408, 25508, 25509, 58751, 58753 },
     },
 
 
@@ -2034,7 +2074,7 @@ spec:RegisterAbilities( {
 
     -- Summons a Strength of Earth Totem with 5 health at the feet of the caster.  The totem increases the strength and agility of all party and raid members within 30 yards by 155.  Lasts 5 min.
     strength_of_earth_totem = {
-        id = 58643,
+        id = 8075,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -2052,6 +2092,8 @@ spec:RegisterAbilities( {
             summonTotem( "strength_of_earth_totem" )
             applyBuff( "strength_of_earth_totem" )
         end,
+
+        copy = { 8160, 8161, 10442, 25361, 25528, 57622, 58643 },
     },
 
 
@@ -2190,7 +2232,7 @@ spec:RegisterAbilities( {
 
     -- The caster is surrounded by 3 globes of water, granting 100 mana per 5 sec.  When a spell, melee or ranged attack hits the caster, 428 mana is restored to the caster. This expends one water globe.  Only one globe will activate every few seconds.  Lasts 10 min.  Only one Elemental Shield can be active on the Shaman at any one time.
     water_shield = {
-        id = 57960,
+        id = 52127,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -2202,6 +2244,8 @@ spec:RegisterAbilities( {
             removeBuff( "shield" )
             applyBuff( "water_shield" )
         end,
+
+        copy = { 52129, 52131, 52134, 52136, 52138, 24398, 33736 },
     },
 
 
@@ -2271,7 +2315,7 @@ spec:RegisterAbilities( {
 
     -- Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of dealing additional damage equal to two extra attacks with 1250 extra attack power.  Lasts 30 minutes.
     windfury_weapon = {
-        id = 58804,
+        id = 8232,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -2293,6 +2337,8 @@ spec:RegisterAbilities( {
                 windfury_offhand = true
             end
         end,
+
+        copy = { 8235, 10486, 16362, 25505, 58801, 58803, 58804 },
     },
 
 

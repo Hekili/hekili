@@ -8640,9 +8640,19 @@ do
             for i = 2, GetNumSpellTabs() do
                 local tab, _, offset, n = GetSpellTabInfo( i )
 
-                for j = offset, offset + n do
+                for j = offset, offset + n - 1 do
                     local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
-                    if name then EmbedSpellData( spellID, key( name ) ) end
+                    if name then
+                        if spellID == 1 then print( name, j ) end
+                        local token = key( name )
+                        local ability = abilities[ token ]
+                        if ability then
+                            ability.copy = ability.copy or {}
+                            insert( ability.copy, spellID )
+                        else
+                            EmbedSpellData( spellID, key( name ) )
+                        end
+                    end
                 end
             end
         elseif event == "SPELLS_CHANGED" then
@@ -8970,7 +8980,7 @@ do
                                     local copy = ""
                                     for rank, spell in ipairs( a.copy ) do
                                         if rank > 1 then copy = copy .. ", " .. spell
-                                        else copy = copy .. rank end
+                                        else copy = copy .. spell end
                                     end
                                     append( "copy = { " .. copy .. " }," )
                                 end

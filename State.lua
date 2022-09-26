@@ -2293,7 +2293,10 @@ local mt_stat = {
             t[k] = state.mana and state.mana.regen or 0
 
         elseif k == "attack_power" then
-            t[k] = UnitAttackPower("player") + UnitWeaponAttackPower("player")
+            if Hekili.IsWrath() then
+                local a, b = UnitAttackPower( "player" )
+                t[k] = a + b
+            else t[k] = UnitAttackPower("player") + UnitWeaponAttackPower("player") end
 
         elseif k == "crit_rating" then
             t[k] = GetCombatRating(CR_CRIT_MELEE)
@@ -6039,22 +6042,6 @@ do
             state.player.updated = false
         end
 
-        --[[ for k, v in pairs( state.cooldown ) do
-            v.duration = nil
-            v.expires = nil
-            v.charge = nil
-            v.next_charge = nil
-            v.recharge_began = nil
-            v.recharge_duration = nil
-            v.true_expires = nil
-            v.true_remains = nil
-        end
-
-        for k, v in pairs( state.cooldown ) do
-            if v.remains then
-            end
-        end ]]
-
         -- TODO: Determine if we can Mark/Purge these tables instead of having their own resets.
         for k in pairs( class.stateTables ) do
             if rawget( state[ k ], "onReset" ) then state[ k ].onReset( state[ k ] ) end
@@ -6160,8 +6147,8 @@ do
         state.nextMH = ( state.combat > 0 and state.swings.mh_actual > state.combat and state.swings.mh_actual + state.mainhand_speed ) or 0
         state.nextOH = ( state.combat > 0 and state.swings.oh_actual > state.combat and state.swings.oh_actual + state.offhand_speed ) or 0
 
-        state.swings.mh_pseudo = nil
-        state.swings.oh_pseudo = nil
+        state.swings.mh_pseudo = state.now - 0.01
+        state.swings.oh_pseudo = state.now - 0.01
 
 
         local p = Hekili.DB.profile
@@ -6699,7 +6686,28 @@ end
 
 function state:IsKnown( sID, notoggle )
 
-    if type(sID) ~= "number" then sID = class.abilities[ sID ] and class.abilities[ sID ].id or nil end
+    if type( sID ) ~= "number" then
+        if Hekili.IsWrath() then
+            -- Gloss over spell ranks.
+            local ability = class.abilities[ sID ]
+
+            if ability then
+                local newID = select( 7, GetSpellInfo( ability.name ) )
+
+                if newID then
+                    ability.id = newID
+                    class.abilities[ newID ] = class.abilities[ newID ] or ability
+                    sID = newID
+                else
+                    sID = nil
+                end
+            else
+                sID = nil
+            end
+        else
+            sID = class.abilities[ sID ] and class.abilities[ sID ].id or nil
+        end
+    end
 
     if not sID then
         return false, "could not find valid ID" -- no ability
