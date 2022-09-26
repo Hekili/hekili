@@ -528,6 +528,33 @@ do
                             notCheckable = 1,
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         } )
+
+                        local submenu = {
+                            text = "Priority List",
+                            hasArrow = true,
+                            menuList = {},
+                            notCheckable = true,
+                            hidden = function () return Hekili.State.spec.id ~= i end,
+                        }
+
+                        for name, package in pairs( Hekili.DB.profile.packs ) do
+                            if package.spec == Hekili.State.spec.id then
+                                insert( submenu.menuList, {
+                                    text = name,
+                                    func = function ()
+                                        Hekili.DB.profile.specs[ Hekili.State.spec.id ].package = name
+                                        Hekili:ForceUpdate( "PACKAGE_CHANGED" )
+                                    end,
+                                    checked = function ()
+                                        return Hekili.DB.profile.specs[ Hekili.State.spec.id ].package == name
+                                    end,
+                                    hidden = function () return Hekili.State.spec.id ~= i end,
+                                } )
+                            end
+                        end
+
+                        insert( menuData, submenu )
+
                         insert( menuData, {
                             text = "Recommend Target Swaps",
                             func = function ()

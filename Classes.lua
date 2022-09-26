@@ -1053,6 +1053,7 @@ function Hekili:NewSpecialization( specID, isRanged, icon )
     else
         id = specID
         texture = icon
+        name, pClass = UnitClass( "player" )
     end
 
     if not id then
