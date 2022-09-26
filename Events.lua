@@ -987,7 +987,7 @@ do
             RegisterEvent( event, QueueUpdate )
         end
     else
-        RegisterEvent( "PLAYER_TALENT_UPDATE", update )
+        RegisterEvent( "PLAYER_TALENT_UPDATE", Update )
     end
 end
 
