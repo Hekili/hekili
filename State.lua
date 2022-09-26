@@ -3083,7 +3083,7 @@ local mt_gcd = {
                 return state.buff.adrenaline_rush.up and 0.8 or 1
             end
 
-            return max( 1.5 * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
+            return max( ( state.buff.unholy_presence.up and 1 or 1.5 ) * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
 
         elseif k == "remains" then
             return state.cooldown.global_cooldown.remains
@@ -3096,7 +3096,7 @@ local mt_gcd = {
                 return state.buff.adrenaline_rush.up and 0.8 or 1
             end
 
-            return max( 1.5 * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
+            return max( ( state.buff.unholy_presence.up and 1 or 1.5 ) * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
 
         elseif k == "lastStart" then
             return 0

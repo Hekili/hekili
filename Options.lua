@@ -5295,8 +5295,8 @@ do
                                     type = 'execute',
                                     name = "",
                                     desc = "Open and view this priority pack and its action lists.",
-                                    image = GetAtlasFile( "communities-icon-searchmagnifyingglass" ),
-                                    imageCoords = GetAtlasCoords( "communities-icon-searchmagnifyingglass" ),
+                                    image = GetAtlasFile( "poi-door-right" ),
+                                    imageCoords = GetAtlasCoords( "poi-door-right" ),
                                     imageHeight = 24,
                                     imageWidth = 24,
                                     disabled = function( info, val )
