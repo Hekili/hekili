@@ -327,6 +327,7 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 1130, 14323, 14324, 14325, 53338 },
     },
+    -- glyph.immolation_trap.enabled == duration reduced by 6.
     immolation_trap = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13795)
         id = 13795,
         duration = 30,
@@ -434,6 +435,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 54227, 53230 },
     },
+    -- Damage taken reduced by 20%.
+    raptor_strike = {
+        id = 63087,
+        duration = 3,
+        max_stack = 1,
+    },
     revive_pet = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=982)
         id = 982,
         duration = 3,
@@ -461,7 +468,7 @@ spec:RegisterAuras( {
     -- Causes $s1 Nature damage every $t1 seconds.
     serpent_sting = {
         id = 1978,
-        duration = 15,
+        duration = function() return glyph.serpent_sting.enabled and 21 or 15 end,
         tick_time = 3,
         max_stack = 1,
         copy = { 1978, 13549, 13550, 13551, 13552, 13553, 13554, 13555, 25295, 27016, 49000, 49001 },
@@ -565,13 +572,51 @@ spec:RegisterAuras( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [56824] = "aimed_shot",
+    [56841] = "arcane_shot",
+    [56851] = "aspect_of_the_viper",
+    [56830] = "bestial_wrath",
+    [63065] = "chimera_shot",
+    [56850] = "deterrence",
+    [56844] = "disengage",
+    [63066] = "explosive_shot",
+    [63068] = "explosive_trap",
+    [57903] = "feign_death",
+    [56845] = "freezing_trap",
+    [56847] = "frost_trap",
+    [56829] = "hunters_mark",
+    [56846] = "immolation_trap",
+    [63067] = "kill_shot",
+    [57870] = "mend_pet",
+    [56833] = "mending",
+    [56836] = "multishot",
+    [57900] = "possessed_strength",
+    [56828] = "rapid_fire",
+    [63086] = "raptor_strike",
+    [57866] = "revive_pet",
+    [57902] = "scare_beast",
+    [63069] = "scatter_shot",
+    [56832] = "serpent_sting",
+    [56849] = "snake_trap",
+    [56826] = "steady_shot",
+    [56857] = "beast",
+    [56856] = "hawk",
+    [57904] = "pack",
+    [56842] = "trueshot_aura",
+    [56838] = "volley",
+    [56848] = "wyvern_sting",
+} )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- An aimed shot that increases ranged damage by 5 and reduces healing done to that target by 50%.  Lasts 10 sec.
     aimed_shot = {
         id = 19434,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return glyph.aimed_shot.enabled and 8 or 10 end,
         gcd = "spell",
 
         spend = 0.08,
@@ -600,6 +645,9 @@ spec:RegisterAbilities( {
         texture = 132218,
 
         handler = function ()
+            if glyph.arcane_shot.enabled and ( debuff.viper_sting.up or debuff.scorpid_sting.up or debuff.serpent_sting.up ) then
+                gain( 0.01 * mana.max, "mana" )
+            end
         end,
 
         copy = { 14281, 14282, 14283, 14284, 14285, 14286, 14287, 27019, 49044, 49045 },
@@ -754,7 +802,7 @@ spec:RegisterAbilities( {
     bestial_wrath = {
         id = 19574,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return glyph.bestial_wrath.enabled and 100 or 120 end,
         gcd = "off",
 
         spend = 0.1,
@@ -826,7 +874,7 @@ spec:RegisterAbilities( {
     chimera_shot = {
         id = 53209,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return glyph.chimera_shot.enabled and 9 or 10 end,
         gcd = "spell",
 
         spend = 0.12,
@@ -882,7 +930,7 @@ spec:RegisterAbilities( {
     deterrence = {
         id = 19263,
         cast = 0,
-        cooldown = 90,
+        cooldown = function() return glyph.deterrence.enabled and 80 or 90 end,
         gcd = "off",
 
         startsCombat = true,
@@ -900,6 +948,7 @@ spec:RegisterAbilities( {
         id = 781,
         cast = 0,
         cooldown = 25,
+        cooldown = function() return glyph.disengage.enabled and 20 or 25 end,
         gcd = "off",
 
         spend = 0.05,
@@ -1041,6 +1090,7 @@ spec:RegisterAbilities( {
         id = 5384,
         cast = 0,
         cooldown = 30,
+        cooldown = function() return glyph.feign_death.enabled and 25 or 30 end,
         gcd = "off",
 
         spend = 0.03,
@@ -1213,7 +1263,7 @@ spec:RegisterAbilities( {
     kill_shot = {
         id = 53351,
         cast = 0,
-        cooldown = 15,
+        cooldown = function() return glyph.kill_shot.enabled and 9 or 15 end,
         gcd = "spell",
 
         spend = 0.07,
@@ -1312,6 +1362,7 @@ spec:RegisterAbilities( {
         id = 2643,
         cast = 0.5,
         cooldown = 10,
+        cooldown = function() return glyph.multishot.enabled and 9 or 10 end,
         gcd = "spell",
 
         spend = 0.09,
@@ -1361,6 +1412,7 @@ spec:RegisterAbilities( {
         texture = 132223,
 
         handler = function ()
+            if glyph.raptor_strike.enabled then applyBuff( "raptor_strike" ) end
         end,
 
         copy = { 14260, 14261, 14262, 14263, 14264, 14265, 14266, 27014, 48995, 48996 },
@@ -1735,7 +1787,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.17,
+        spend = function() return 0.17 * ( glyph.volley.enabled and 0.8 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1752,7 +1804,7 @@ spec:RegisterAbilities( {
     wyvern_sting = {
         id = 19386,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return glyph.wyvern_sting.enabled and 54 or 60 end,
         gcd = "spell",
 
         spend = 0.08,

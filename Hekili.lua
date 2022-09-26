@@ -84,6 +84,7 @@ Hekili.Class = {
 	auras = {},
 	auraList = {},
     powers = {},
+    glyphs = {},
 	gear = {},
     setBonuses = {},
 

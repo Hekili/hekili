@@ -145,7 +145,7 @@ spec:RegisterAuras( {
     -- $o1 Shadow damage over $d.
     curse_of_agony = {
         id = 980,
-        duration = 24,
+        duration = function() return glyph.curse_of_agony.enabled and 28 or 24 end,
         tick_time = 2,
         max_stack = 1,
         copy = { 980, 1014, 6217, 11711, 11712, 11713, 27218, 47863, 47864 },
@@ -188,7 +188,7 @@ spec:RegisterAuras( {
     -- Horrified.
     death_coil = {
         id = 6789,
-        duration = 3,
+        duration = function() return glyph.death_coil.enabled and 3.5 or 3 end,
         max_stack = 1,
         copy = { 6789, 17925, 17926, 27223, 47859, 47860, 52375, 59134, 65820 },
     },
@@ -437,6 +437,12 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
     },
+    -- Your next Shadow Bolt becomes an instant cast spell.
+    shadow_trance = {
+        id = 17941,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Absorbs Shadow damage.
     shadow_ward = {
         id = 6229,
@@ -511,6 +517,44 @@ spec:RegisterAuras( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [63304] = "chaos_bolt",
+    [56235] = "conflagrate",
+    [56218] = "corruption",
+    [56241] = "curse_of_agony",
+    [58080] = "curse_of_exhausion",
+    [56232] = "death_coil",
+    [63309] = "demonic_circle",
+    [56244] = "fear",
+    [56246] = "felguard",
+    [56249] = "felhunter",
+    [63302] = "haunt",
+    [56238] = "health_funnel",
+    [56224] = "healthstone",
+    [56217] = "howl_of_terror",
+    [56228] = "immolate",
+    [56248] = "imp",
+    [56242] = "incinerate",
+    [58081] = "kilrogg",
+    [63303] = "metamorphosis",
+    [70947] = "quick_decay",
+    [56226] = "searing_pain",
+    [56240] = "shadow_bolt",
+    [56229] = "shadowburn",
+    [63310] = "shadowflame",
+    [56216] = "siphon_life",
+    [63312] = "soul_link",
+    [58094] = "souls",
+    [56231] = "soulstone",
+    [58107] = "subjugate_demon",
+    [56250] = "succubus",
+    [58079] = "unending_breath",
+    [56233] = "unstable_affliction",
+    [56247] = "voidwalker",
+} )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Banishes the enemy target, preventing all action but making it invulnerable for up to 20 sec.  Only one target can be banished at a time.  Casting Banish on a banished target will cancel the spell.  Only works on Demons and Elementals.
@@ -537,7 +581,7 @@ spec:RegisterAbilities( {
     chaos_bolt = {
         id = 50796,
         cast = 2.5,
-        cooldown = 12,
+        cooldown = function() return glyph.chaos_bolt.enabled and 10 or 12 end,
         gcd = "spell",
 
         spend = 0.07,
@@ -567,6 +611,10 @@ spec:RegisterAbilities( {
         texture = 135807,
 
         handler = function ()
+            if not glyph.conflagrate.enabled then
+                if debuff.immolate.up then removeDebuff( "target", "immolate" )
+                elseif debuff.shadowflame.up then removeDebuff( "target", "shadowflame" ) end
+            end
         end,
     },
 
@@ -892,7 +940,7 @@ spec:RegisterAbilities( {
     demonic_circle_teleport = {
         id = 48020,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return glyph.demonic_circle.enabled and 26 or 30 end,
         gcd = "spell",
 
         spend = 100,
@@ -1142,7 +1190,7 @@ spec:RegisterAbilities( {
     howl_of_terror = {
         id = 5484,
         cast = 1.5,
-        cooldown = 40,
+        cooldown = function() return glyph.howl_of_terror.enabled and 32 or 40 end,
         gcd = "spell",
 
         spend = 0.08,
@@ -1245,7 +1293,7 @@ spec:RegisterAbilities( {
         cooldown = 300,
         gcd = "spell",
 
-        spend = 0.8,
+        spend = function() return 0.8 * ( glyph.souls.enabled and 0.3 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1338,17 +1386,18 @@ spec:RegisterAbilities( {
     -- Sends a shadowy bolt at the enemy, causing 13 to 18 Shadow damage.
     shadow_bolt = {
         id = 686,
-        cast = 1.7,
+        cast = function() return buff.shadow_trance.up and 0 or 1.7 end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.1,
+        spend = function() return 0.1 * ( glyph.shadow_bolt.enabled and 0.9 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136197,
 
         handler = function ()
+            removeBuff( "shadow_trance" )
         end,
 
         copy = { 695, 705, 1088, 1106, 7641, 11659, 11660, 11661, 25307, 27209, 47808, 47809 },
@@ -1495,7 +1544,7 @@ spec:RegisterAbilities( {
     -- Subjugates the target demon, up to level 45, forcing it to do your bidding.  While subjugated, the time between the demon's attacks is increased by 30% and its casting speed is slowed by 20%.  Lasts up to 5 min.
     subjugate_demon = {
         id = 1098,
-        cast = 3,
+        cast = function() return glyph.subjugate_demon.enabled and 1.5 or 3 end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1642,7 +1691,7 @@ spec:RegisterAbilities( {
     -- Shadow energy slowly destroys the target, causing 550 damage over 15 sec.  In addition, if the Unstable Affliction is dispelled it will cause 990 damage to the dispeller and silence them for 5 sec. Only one Unstable Affliction or Immolate per Warlock can be active on any one target.
     unstable_affliction = {
         id = 30108,
-        cast = 1.5,
+        cast = function() return glyph.unstable_affliction.enabled and 1.3 or 1.5 end,
         cooldown = 0,
         gcd = "spell",
 

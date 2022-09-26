@@ -935,6 +935,7 @@ local HekiliSpecMixin = {
         self.variables[ key ] = setfenv( func, state )
     end,
 }
+ns.HekiliSpecMixin = HekiliSpecMixin
 
 
 function Hekili:RestoreDefaults()
@@ -1077,6 +1078,7 @@ function Hekili:NewSpecialization( specID, isRanged, icon )
         talents = {},
         pvptalents = {},
         powers = {},
+        glyphs = {},
 
         auras = {},
         pseudoAuras = 0,
@@ -1367,7 +1369,7 @@ all:RegisterAuras( {
     -- Increases your attack power by $s1.
     battle_shout = {
         id = 47436,
-        duration = function() return 120 * ( 1 + talent.booming_voice.rank * 0.1 ) end,
+        duration = function() return ( glyph.battle.enabled and 240 or 120 ) * ( 1 + talent.booming_voice.rank * 0.1 ) end,
         max_stack = 1,
         shared = "player",
         copy = { 2048, 5242, 6192, 6673, 11549, 11550, 11551, 25289, 27578, 47436 },
@@ -1375,7 +1377,7 @@ all:RegisterAuras( {
 
     commanding_shout = {
         id = 469,
-        duration = 120,
+        duration = function() return glyph.command.enabled and 240 or 120 end,
         max_stack = 1,
         shared = "player",
         copy = { 469, 45517, 47439, 47440 },
@@ -1400,7 +1402,7 @@ all:RegisterAuras( {
     -- Increases your total Strength and Agility by $s1.
     horn_of_winter = {
         id = 57623,
-        duration = 120,
+        duration = function () return glyph.horn_of_winter.enabled and 180 or 120 end,
         max_stack = 1,
         shared = "player",
     },
@@ -5959,6 +5961,7 @@ function Hekili:SpecializationChanged()
     wipe( class.talents )
     wipe( class.pvptalents )
     wipe( class.powers )
+    wipe( class.glyphs )
     wipe( class.gear )
     wipe( class.setBonuses )
     wipe( class.packs )
@@ -6104,6 +6107,10 @@ function Hekili:SpecializationChanged()
 
             for k, v in pairs( spec.powers ) do
                 if not class.powers[ k ] then class.powers[ k ] = v end
+            end
+
+            for k, v in pairs( spec.glyphs ) do
+                if not class.glyphs[ k ] then class.glyphs[ k ] = v end
             end
 
             for k, v in pairs( spec.abilities ) do

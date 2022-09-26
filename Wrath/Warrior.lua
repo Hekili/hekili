@@ -354,6 +354,12 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 2,
     },
+    -- Glyph.
+    glyph_of_revenge = {
+        id = 58363,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Movement slowed by $s1%.
     hamstring = {
         id = 1715,
@@ -430,7 +436,7 @@ spec:RegisterAuras( {
     -- Bleeding for $s1 plus a percentage of weapon damage every $t1 seconds.  If used while the victim is above $s2% health, Rend does $s3% more damage.
     rend = {
         id = 772,
-        duration = 21,
+        duration = function() return glyph.rending.enabled and 21 or 27 end,
         max_stack = 1,
         copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208, 46845, 47465 },
     },
@@ -572,6 +578,47 @@ spec:RegisterAuras( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [12297] = "anticipation",
+    [12320] = "cruelty",
+    [58365] = "barbaric_insults",
+    [58095] = "battle",
+    [63324] = "bladestorm",
+    [58375] = "blocking",
+    [58096] = "bloodrage",
+    [58369] = "bloodthirst",
+    [58097] = "charge",
+    [58366] = "cleaving",
+    [68164] = "command",
+    [58388] = "devastate",
+    [58104] = "enduring_victory",
+    [63327] = "enraged_regeneration",
+    [58367] = "execution",
+    [58372] = "hamstring",
+    [58357] = "heroic_strike",
+    [58377] = "intervene",
+    [58376] = "last_stand",
+    [58099] = "mocking_blow",
+    [58368] = "mortal_strike",
+    [58386] = "overpower",
+    [58355] = "rapid_charge",
+    [58385] = "rending",
+    [58356] = "resonating_power",
+    [58364] = "revenge",
+    [63329] = "shield_wall",
+    [63325] = "shockwave",
+    [63328] = "spell_reflection",
+    [58387] = "sunder_armor",
+    [58384] = "sweeping_strikes",
+    [58353] = "taunt",
+    [58098] = "thunder_clap",
+    [58382] = "victory_rush",
+    [63326] = "vigilance",
+    [58370] = "whirlwind",
+} )
+
+
 local enemy_revenge_trigger = 0
 local enemy_dodged = 0
 
@@ -584,7 +631,7 @@ local misses = {
 spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
     local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, missType, _, _, _, _, _, critical = CombatLogGetCurrentEventInfo()
 
-    if sourceGUID == state.GUID and subtype:match( "_MISSED$" ) and missType == "DODGE" then
+    if sourceGUID == state.GUID and subtype:match( "_MISSED$" ) and ( missType == "DODGE" or state.glyph.overpower.enabled and missType == "PARRY" ) then
         enemy_dodged = GetTime()
     elseif destGUID == state.GUID and subtype:match( "_MISSED$" ) and misses[ missType ] then
         enemy_revenge_trigger = GetTime()
@@ -752,7 +799,7 @@ spec:RegisterAbilities( {
     bladestorm = {
         id = 46924,
         cast = 0,
-        cooldown = 90,
+        cooldown = function() return glyph.bladestorm.enabled and 75 or 90 end,
         gcd = "spell",
 
         spend = 25,
@@ -778,7 +825,7 @@ spec:RegisterAbilities( {
         cooldown = function() return 60 * ( 1 - 0.11 * talent.intensify_rage.rank ) end,
         gcd = "off",
 
-        spend = 1299,
+        spend = function() return glyph.bloodrage.enabled and 0 or 1299 end,
         spendType = "health",
 
         startsCombat = false,
@@ -809,6 +856,7 @@ spec:RegisterAbilities( {
 
         handler = function( rank )
             applyBufF( "bloodthirst", nil, 5 )
+            -- TODO: if glyph.bloodthirst.enabled then [double health gain] end
         end,
     },
 
@@ -838,7 +886,7 @@ spec:RegisterAbilities( {
     charge = {
         id = 11578,
         cast = 0,
-        cooldown = 15,
+        cooldown = function() return 15 * ( glyph.rapid_charge.enabled and 0.93 or 1 ) end,
         gcd = "off",
 
         spend = function() return -15 - 5 * talent.improved_charge.rank + ( talent.juggernaut.enabled and 5 or 0 ) end,
@@ -1014,7 +1062,7 @@ spec:RegisterAbilities( {
         texture = 135291,
 
         handler = function( rank )
-            applyDebuff( "target", "sunder_armor", nil, min( 5, debuff.sunder_armor.stack + 1 ) )
+            applyDebuff( "target", "sunder_armor", nil, min( 5, debuff.sunder_armor.stack + ( glyph.devastate.enabled and 2 or 1 ) ) )
         end,
     },
 
@@ -1140,7 +1188,10 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "off",
 
-        spend = function() return 15 - talent.focused_rage.rank - talent.improved_heroic_strike.rank end,
+        spend = function()
+            if buff.glyph_of_revenge.up then return 0 end
+            return 15 - talent.focused_rage.rank - talent.improved_heroic_strike.rank
+        end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1255,7 +1306,7 @@ spec:RegisterAbilities( {
     last_stand = {
         id = 12975,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return glyph.last_stand.enabled and 120 or 180 end,
         gcd = "off",
 
         talent = "last_stand",
@@ -1470,6 +1521,7 @@ spec:RegisterAbilities( {
 
         handler = function( rank )
             removeBuff( "revenge_usable" )
+            if glyph.revenge.enabled then applyBuff( "glyph_of_revenge" ) end
         end,
     },
 
@@ -1575,7 +1627,7 @@ spec:RegisterAbilities( {
     shield_wall = {
         id = 871,
         cast = 0,
-        cooldown = function() return 300 - 30 * talent.improved_disciplines.rank end,
+        cooldown = function() return ( glyph.shield_wall.enabled and 180 or 300 ) - 30 * talent.improved_disciplines.rank end,
         gcd = "off",
 
         spend = 0,
@@ -1598,7 +1650,7 @@ spec:RegisterAbilities( {
     shockwave = {
         id = 46968,
         cast = 0,
-        cooldown = 20,
+        cooldown = function() return glyph.shockwave.enabled and 17 or 20 end,
         gcd = "spell",
 
         spend = 15,
@@ -1650,7 +1702,7 @@ spec:RegisterAbilities( {
     spell_reflection = {
         id = 23920,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return glyph.spell_reflection.enabled and 9 or 10 end,
         gcd = "off",
 
         spend = 15,
@@ -1695,7 +1747,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
 
-        spend = 30,
+        spend = function() return glyph.sweeping_strikes.enabled and 0 or 30 end,
         spendType = "rage",
 
         talent = "sweeping_strikes",
@@ -1735,7 +1787,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = function() return 20 - talent.focused_rage.rank - ( talent.improved_thunder_clap.rank == 3 and 4 or talent.improved_thunder_clap.rank == 2 and 2 or talent.improved_thunder_clap.rank == 1 and 1 or 0 ) end,
+        spend = function() return 20 - ( glyph.resonating_power.enabled and 5 or 0 ) - talent.focused_rage.rank - ( talent.improved_thunder_clap.rank == 3 and 4 or talent.improved_thunder_clap.rank == 2 and 2 or talent.improved_thunder_clap.rank == 1 and 1 or 0 ) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1794,7 +1846,7 @@ spec:RegisterAbilities( {
     whirlwind = {
         id = 1680,
         cast = 0,
-        cooldown = function() return 10 - talent.improved_whirlwind.rank end,
+        cooldown = function() return 10 - talent.improved_whirlwind.rank - ( glyph.of_whirlwind.enabled and 2 or 0 ) end,
         gcd = "spell",
 
         spend = function() return 25 - talent.focused_rage.rank end,

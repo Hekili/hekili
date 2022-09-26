@@ -115,7 +115,7 @@ spec:RegisterAuras( {
     -- Beacon of Light.
     beacon_of_light = {
         id = 53563,
-        duration = 60,
+        duration = function() return glyph.beacon_of_light.enabled and 90 or 60 end,
         tick_time = 1.5,
         max_stack = 1,
     },
@@ -134,7 +134,7 @@ spec:RegisterAuras( {
     -- Increases attack power by $s1.
     blessing_of_might = {
         id = 19740,
-        duration = 600,
+        duration = function() return glyph.blessing_of_might.enabled and 1800 or 600 end,
         max_stack = 1,
         copy = { 19740, 19834, 19835, 19836, 19837, 19838, 25291, 27140, 48931, 48932, 56520 },
     },
@@ -147,7 +147,7 @@ spec:RegisterAuras( {
     -- Restores $s1 mana every 5 seconds.
     blessing_of_wisdom = {
         id = 19742,
-        duration = 600,
+        duration = function() return glyph.blessing_of_wisdom.enabled and 1800 or 600 end,
         max_stack = 1,
         copy = { 19742, 19850, 19852, 19853, 19854, 25290, 27142, 48935, 48936 },
     },
@@ -160,7 +160,7 @@ spec:RegisterAuras( {
     -- $s1 damage every $t1 $lsecond:seconds;.
     consecration = {
         id = 26573,
-        duration = 8,
+        duration = function() return glyph.consecration.enabled and 10 or 8 end,
         tick_time = 1,
         max_stack = 1,
         copy = { 20116, 20922, 20923, 20924, 26573, 27173, 48818, 48819 },
@@ -504,6 +504,46 @@ spec:RegisterAuras( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [54930] = "avengers_shield",
+    [54938] = "avenging_wrath",
+    [63218] = "beacon_of_light",
+    [57937] = "blessing_of_kings",
+    [57958] = "blessing_of_might",
+    [57979] = "blessing_of_wisdom",
+    [54935] = "cleansing",
+    [54928] = "consecration",
+    [54927] = "crusader_strike",
+    [63223] = "divine_plea",
+    [63220] = "divine_storm",
+    [54939] = "divinity",
+    [54934] = "exorcism",
+    [54936] = "flash_of_light",
+    [63231] = "guardian_spirit",
+    [54923] = "hammer_of_justice",
+    [63219] = "hammer_of_the_righteous",
+    [54926] = "hammer_of_wrath",
+    [54937] = "holy_light",
+    [63224] = "holy_shock",
+    [56420] = "holy_wrath",
+    [54922] = "judgement",
+    [57955] = "lay_on_hands",
+    [54929] = "righteous_defense",
+    [63225] = "salvation",
+    [54925] = "seal_of_command",
+    [54943] = "seal_of_light",
+    [56414] = "seal_of_righteousness",
+    [56416] = "seal_of_vengeance",
+    [54940] = "seal_of_wisdom",
+    [57947] = "sense_undead",
+    [63222] = "shield_of_righteousness",
+    [54924] = "spiritual_attunement",
+    [57954] = "wise",
+    [54931] = "turn_evil",
+} )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Causes your Concentration Aura to make all affected targets immune to Silence and Interrupt effects and improve the effect of all other auras by 100%.  Lasts 6 sec.
@@ -589,7 +629,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return glyph.blessing_of_kings.enabled and 0.03 or 0.06 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -667,6 +707,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = 0.06,
+        spend = function() return 0.06 * ( glyph.cleansing.enabled and 0.8 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -696,7 +737,7 @@ spec:RegisterAbilities( {
     consecration = {
         id = 26573,
         cast = 0,
-        cooldown = 8,
+        cooldown = function() return glyph.consecration.enabled and 10 or 8 end,
         gcd = "spell",
 
         spend = 0.22,
@@ -734,7 +775,7 @@ spec:RegisterAbilities( {
         cooldown = 4,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = function() return 0.05 * ( glyph.crusader_strike.enabled and 0.8 or 1 ) end,
         spendType = "mana",
 
         talent = "crusader_strike",
@@ -988,7 +1029,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = function() return glyph.blessing_of_kings.enabled and 0.06 or 0.12 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1084,10 +1125,10 @@ spec:RegisterAbilities( {
     hammer_of_wrath = {
         id = 24275,
         cast = 0,
-        cooldown = 6,
+        cooldown = function() return glyph.avenging_wrath.enabled and buff.avenging_wrath.up and 3 or 6 end,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = function() return glyph.hammer_of_wrath.enabled and 0 or 0.12 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1241,7 +1282,7 @@ spec:RegisterAbilities( {
     holy_shock = {
         id = 20473,
         cast = 0,
-        cooldown = 6,
+        cooldown = function() return glyph.holy_shock.enabled and 5 or 6 end,
         gcd = "spell",
 
         spend = 0.18,
@@ -1260,7 +1301,7 @@ spec:RegisterAbilities( {
     holy_wrath = {
         id = 2812,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return glyph.holy_wrath.enabled and 15 or 30 end,
         gcd = "spell",
 
         spend = 0.2,
@@ -1290,6 +1331,7 @@ spec:RegisterAbilities( {
         texture = 236258,
 
         handler = function ()
+            if glyph.seal_of_command.enabled and buff.seal_of_command.up then gain( 0.08 * mana.modmax, "mana" ) end
         end,
     },
 
@@ -1308,6 +1350,7 @@ spec:RegisterAbilities( {
         texture = 135959,
 
         handler = function ()
+            if glyph.seal_of_command.enabled and buff.seal_of_command.up then gain( 0.08 * mana.modmax, "mana" ) end
         end,
     },
 
@@ -1326,6 +1369,7 @@ spec:RegisterAbilities( {
         texture = 236255,
 
         handler = function ()
+            if glyph.seal_of_command.enabled and buff.seal_of_command.up then gain( 0.08 * mana.modmax, "mana" ) end
         end,
     },
 
@@ -1334,15 +1378,19 @@ spec:RegisterAbilities( {
     lay_on_hands = {
         id = 48788,
         cast = 0,
-        cooldown = 1200,
+        cooldown = function() return glyph.lay_on_hands.enabled and 900 or 1200 end,
         gcd = "spell",
 
         startsCombat = true,
         texture = 135928,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            gain( 1950, "mana" )
+            if glyph.divinity.enabled then
+                gain( 3900, "mana" )
+            end
         end,
     },
 
@@ -1354,7 +1402,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return 0.06 * ( glyph.cleansing.enabled and 0.8 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1549,7 +1597,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.14,
+        spend = function() return 0.14 * ( glyph.wise.enabled and 0.5 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1597,7 +1645,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return 0.06 * ( glyph.shield_of_righteousness.enabled and 0.2 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1613,8 +1661,8 @@ spec:RegisterAbilities( {
     -- The targeted undead or demon enemy will be compelled to flee for up to 20 sec.  Damage caused may interrupt the effect.  Only one target can be turned at a time.
     turn_evil = {
         id = 10326,
-        cast = 1.5,
-        cooldown = 0,
+        cast = function() return glyph.turn_evil.enabled and 0 or 1.5 end,
+        cooldown = function() return glyph.turn_evil.enabled and 8 or 0 end,
         gcd = "spell",
 
         spend = 0.09,

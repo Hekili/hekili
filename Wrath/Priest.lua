@@ -232,7 +232,7 @@ spec:RegisterAuras( {
     -- Maximum mana increased by $s2%.
     hymn_of_hope = {
         id = 64904,
-        duration = 8,
+        duration = function() return glyph.hymn_of_hope.enabled and 10 or 8 end,
         max_stack = 1,
         copy = { 64904, 64901 },
     },
@@ -375,7 +375,7 @@ spec:RegisterAuras( {
     -- Increases Shadow Resistance by $s1.
     prayer_of_shadow_protection = {
         id = 27683,
-        duration = 1200,
+        duration = function() return glyph.shadow_protection.enabled and 1800 or 1200 end,
         max_stack = 1,
         copy = { 27683, 39236, 39374, 48170 },
     },
@@ -396,14 +396,14 @@ spec:RegisterAuras( {
     -- Running in Fear.
     psychic_scream = {
         id = 8122,
-        duration = 8,
+        duration = function() return glyph.psychic_scream.enabled and 10 or 8 end,
         max_stack = 1,
         copy = { 8122, 8124, 10888, 10890, 27610 },
     },
     -- Healing $s1 damage every $t1 seconds.
     renew = {
         id = 139,
-        duration = 15,
+        duration = function() return glyph.renew.enabled and 12 or 15 end,
         tick_time = 3,
         max_stack = 1,
         copy = { 139, 6074, 6075, 6076, 6077, 6078, 10927, 10928, 10929, 25221, 25222, 25315, 27606, 48067, 48068 },
@@ -431,7 +431,7 @@ spec:RegisterAuras( {
     -- Shadow resistance increased by $s1.
     shadow_protection = {
         id = 976,
-        duration = 600,
+        duration = function() return glyph.shadow_protection.enabled and 1200 or 600 end,
         max_stack = 1,
         copy = { 976, 7235, 7241, 7242, 7243, 7244, 10957, 10958, 16874, 25433, 48169 },
     },
@@ -456,6 +456,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    -- Glyph of Shadow
+    shadowy_insight = {
+        id = 61792,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Silenced.
     silence = {
         id = 15487,
@@ -474,6 +480,12 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
         copy = { 15271 },
+    },
+    -- Spirit of Redemption
+    spirit_of_redemption = {
+        id = 27827,
+        duration = function() return glyph.spirit_of_redemption.enabled and 21 or 15 end,
+        max_stack = 1,
     },
     -- Your next Smite or Flash Heal spell is instant cast, costs no mana but is incapable of a critical hit.
     surge_of_light = {
@@ -495,6 +507,43 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 34914, 34916, 34917, 48159, 48160 },
     },
+} )
+
+
+-- Glyphs
+spec:RegisterGlyphs( {
+    [55675] = "circle_of_healing",
+    [55677] = "dispel_magic",
+    [63229] = "dispersion",
+    [55684] = "fade",
+    [57985] = "fading",
+    [55678] = "fear_ward",
+    [55679] = "flash_heal",
+    [58009] = "fortitude",
+    [55683] = "holy_nova",
+    [63246] = "hymn_of_hope",
+    [55686] = "inner_fire",
+    [57987] = "levitate",
+    [55673] = "lightwell",
+    [55691] = "mass_dispel",
+    [55688] = "mind_control",
+    [55687] = "mind_flay",
+    [63237] = "mind_sear",
+    [63248] = "pain_suppression",
+    [63235] = "penance",
+    [55672] = "power_word_shield",
+    [55680] = "prayer_of_healing",
+    [55676] = "psychic_scream",
+    [55674] = "renew",
+    [55690] = "scourge_imprisonment",
+    [57986] = "shackle_undead",
+    [55689] = "shadow",
+    [58015] = "shadow_protection",
+    [55682] = "shadow_word_death",
+    [55681] = "shadow_word_pain",
+    [58228] = "shadowfiend",
+    [55692] = "smite",
+    [55685] = "spirit_of_redemption",
 } )
 
 
@@ -630,6 +679,7 @@ spec:RegisterAbilities( {
         texture = 135894,
 
         handler = function ()
+            if glyph.dispel_magic.enabled then health.current = min( health.max, health.current + 0.03 * health.max ) end
         end,
 
         copy = { 988 },
@@ -640,7 +690,7 @@ spec:RegisterAbilities( {
     dispersion = {
         id = 47585,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return glyph.dispersion.enabled and 75 or 120 end,
         gcd = "spell",
 
         talent = "dispersion",
@@ -698,10 +748,10 @@ spec:RegisterAbilities( {
     fade = {
         id = 586,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return glyph.fade.enabled and 21 or 30 end,
         gcd = "spell",
 
-        spend = 0.15,
+        spend = function() return glyph.fading.enabled and 0.105 or 0.15 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -716,7 +766,7 @@ spec:RegisterAbilities( {
     fear_ward = {
         id = 6346,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return glyph.fear_ward.enabled and 120 or 180 end,
         gcd = "spell",
 
         spend = 0.03,
@@ -740,6 +790,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = 0.18,
+        spend = function() return glyph.flash_heal.enabled and 0.162 or 0.18 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -856,7 +907,8 @@ spec:RegisterAbilities( {
     -- Restores 3% mana to 3 nearby low mana friendly party or raid targets every 2 sec for 8 sec, and increases their total maximum mana by 20% for 8 sec. Maximum of 12 mana restores. The Priest must channel to maintain the spell.
     hymn_of_hope = {
         id = 64901,
-        cast = 0,
+        cast = function() return glyph.hymn_of_hope.enabled and 10 or 8 end,
+        channeled = true,
         cooldown = 360,
         gcd = "spell",
 
@@ -942,6 +994,7 @@ spec:RegisterAbilities( {
         texture = 135928,
 
         handler = function ()
+            -- TODO: glyph.levitate.enabled removes reagent requirement.
         end,
     },
 
@@ -992,7 +1045,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.33,
+        spend = function() return 0.33 * ( glyph.mass_dispel.enabled and 0.65 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1143,7 +1196,7 @@ spec:RegisterAbilities( {
     penance = {
         id = 47540,
         cast = 0,
-        cooldown = 12,
+        cooldown = function() return glyph.penance.enabled and 10 or 12 end,
         gcd = "spell",
 
         spend = 0.16,
@@ -1186,7 +1239,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.27,
+        spend = function() return glyph.fortitude.enabled and 0.135 or 0.27 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1213,6 +1266,7 @@ spec:RegisterAbilities( {
         texture = 135940,
 
         handler = function ()
+            -- if glyph.power_word_shield.enabled then health.current = min( health.max, health.current + some_amount_of_healing ) end
         end,
 
         copy = { 592, 600, 3747, 6065, 6066, 10898, 10899, 10900, 10901, 25217, 25218, 48065, 48066 },
@@ -1227,6 +1281,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = 0.69,
+        spend = function() return glyph.fortitude.enabled and 0.345 or 0.69 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1344,7 +1399,7 @@ spec:RegisterAbilities( {
     psychic_scream = {
         id = 8122,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return glyph.psychic_scream.enabled and 22 or 30 end,
         gcd = "spell",
 
         spend = 0.15,
@@ -1403,7 +1458,7 @@ spec:RegisterAbilities( {
     -- Shackles the target undead enemy for up to 30 sec.  The shackled unit is unable to move, attack or cast spells.  Any damage caused will release the target.  Only one target can be shackled at a time.
     shackle_undead = {
         id = 9484,
-        cast = 1.5,
+        cast = function() return glyph.scourge_imprisonment.enabled and 0.5 or 1.5 end,
         cooldown = 0,
         gcd = "spell",
 

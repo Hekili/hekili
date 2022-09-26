@@ -101,6 +101,54 @@ spec:RegisterTalents( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [57856] = "aquatic_form",
+    [63057] = "barkskin",
+    [62969] = "berserk",
+    [57858] = "challenging_roar",
+    [67598] = "claw",
+    [59219] = "dash",
+    [54760] = "entangling_roots",
+    [62080] = "focus",
+    [54810] = "frenzied_regeneration",
+    [54812] = "growling",
+    [54825] = "healing_touch",
+    [54831] = "hurricane",
+    [54832] = "innervate",
+    [54830] = "insect_swarm",
+    [54826] = "lifebloom",
+    [54813] = "mangle",
+    [54811] = "maul",
+    [63056] = "monsoon",
+    [54829] = "moonfire",
+    [52084] = "natural_force",
+    [62971] = "nourish",
+    [54821] = "rake",
+    [71013] = "rapid_rejuvenation",
+    [54733] = "rebirth",
+    [54743] = "regrowth",
+    [54754] = "rejuvenation",
+    [54818] = "rip",
+    [63055] = "savage_roar",
+    [54815] = "shred",
+    [54828] = "starfall",
+    [54845] = "starfire",
+    [65243] = "survival_instincts",
+    [54824] = "swiftmend",
+    [58136] = "bear_cub",
+    [58133] = "forest_lynx",
+    [52648] = "penguin",
+    [54912] = "red_lynx",
+    [57855] = "wild",
+    [57862] = "thorns",
+    [62135] = "typhoon",
+    [57857] = "unburdened_rebirth",
+    [62970] = "wild_growth",
+    [54756] = "wrath",
+} )
+
+
 -- Auras
 spec:RegisterAuras( {
     -- Attempts to cure $3137s1 poison every $t1 seconds.
@@ -132,7 +180,7 @@ spec:RegisterAuras( {
     -- Immune to Fear effects.
     berserk = {
         id = 50334,
-        duration = 15,
+        duration = function() return glyph.berserk.enabled and 20 or 15 end,
         max_stack = 1,
     },
     -- Immunity to Polymorph effects.  Increases melee attack power by $3025s1 plus Agility.
@@ -321,7 +369,7 @@ spec:RegisterAuras( {
     -- Heals $s1 every second and $s2 when effect finishes or is dispelled.
     lifebloom = {
         id = 33763,
-        duration = 7,
+        duration = function() return glyph.lifebloom.enabled and 8 or 7 end,
         tick_time = 1,
         max_stack = 3,
         copy = { 33763, 48450, 48451 },
@@ -469,7 +517,7 @@ spec:RegisterAuras( {
     -- Bleed damage every $t1 seconds.
     rip = {
         id = 49800,
-        duration = 12,
+        duration = function() return glyph.rip.enabled and 16 or 12 end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
@@ -535,7 +583,7 @@ spec:RegisterAuras( {
     -- Causes $s1 Nature damage to attackers.
     thorns = {
         id = 467,
-        duration = 600,
+        duration = function() return glyph.thorns.enabled and 6000 or 600 end,
         max_stack = 1,
         copy = { 467, 782, 1075, 8914, 9756, 9910, 16877, 26992, 53307, 66068 },
     },
@@ -719,7 +767,7 @@ spec:RegisterAbilities( {
     challenging_roar = {
         id = 5209,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return glyph.challenging_roar.enabled and 150 or 180 end,
         gcd = "spell",
 
         spend = 15,
@@ -742,7 +790,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 45,
+        spend = function() return glyph.claw.enabled and 40 or 45 end,
         spendType = "energy",
 
         startsCombat = true,
@@ -811,7 +859,7 @@ spec:RegisterAbilities( {
     dash = {
         id = 33357,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return 180 * ( glyph.dash.enabled and 0.8 or 1 ) end,
         gcd = "off",
 
         spend = 0,
@@ -1005,7 +1053,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.64,
+        spend = function() return glyph.wild.enabled and 0.32 or 0.64 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1039,7 +1087,7 @@ spec:RegisterAbilities( {
     -- Heals a friendly target for 40 to 55.
     healing_touch = {
         id = 5185,
-        cast = 1.5,
+        cast = function() return glyph.healing_touch.enabled and 1.5 or 3 end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1109,6 +1157,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "innervate" )
         end,
     },
 
@@ -1195,7 +1244,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.24,
+        spend = function() return glyph.wild.enabled and 0.12 or 0.24 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1390,6 +1439,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            -- glyph.unburdened_rebirth.enabled removes reagent requirement; doesn't matter because addon shouldn't recommend rebirth.
         end,
 
         copy = { 20739, 20742, 20747, 20748, 26994, 48477 },
@@ -1524,6 +1574,10 @@ spec:RegisterAbilities( {
         texture = 136231,
 
         handler = function ()
+            if glyph.shred.enabled and debuff.rip.up then
+                debuff.rip.expires = debuff.rip.expires + 2
+                -- TODO: Cap at 3 applications.
+            end
         end,
     },
 
@@ -1552,7 +1606,7 @@ spec:RegisterAbilities( {
     starfall = {
         id = 48505,
         cast = 0,
-        cooldown = 90,
+        cooldown = function() return glyph.starfall.enabled and 60 or 90 end,
         gcd = "spell",
 
         spend = 0.35,
@@ -1583,6 +1637,10 @@ spec:RegisterAbilities( {
         texture = 135753,
 
         handler = function ()
+            if glyph.starfire.enabled and debuff.moonfire.up then
+                debuff.moonfire.expires = debuff.moonfire.expires + 3
+                -- TODO: Cap at 3 applications.
+            end
         end,
 
         copy = { 8949, 8950, 8951, 9875, 9876, 25298, 26986, 48464, 48465 },
@@ -1643,6 +1701,9 @@ spec:RegisterAbilities( {
         texture = 134914,
 
         handler = function ()
+            if glyph.swiftmend.enabled then return end
+            if buff.rejuvenation.up then removeBuff( "rejuvenation" )
+            elseif buff.regrowth.up then removeBuff( "regrowth" ) end
         end,
     },
 
@@ -1783,10 +1844,10 @@ spec:RegisterAbilities( {
     typhoon = {
         id = 50516,
         cast = 0,
-        cooldown = 20,
+        cooldown = function() return glyph.monsoon.enabled and 17 or 20 end,
         gcd = "spell",
 
-        spend = 0.25,
+        spend = function() return 0.25 * ( glyph.typhoon.enabled and 0.92 or 1 ) end,
         spendType = "mana",
 
         talent = "typhoon",

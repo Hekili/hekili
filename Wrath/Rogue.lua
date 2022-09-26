@@ -97,12 +97,52 @@ spec:RegisterTalents( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [56808] = "adrenaline_rush",
+    [56813] = "ambush",
+    [56800] = "backstab",
+    [56818] = "blade_flurry",
+    [58039] = "blurred_speed",
+    [63269] = "cloak_of_shadows",
+    [56820] = "crippling_poison",
+    [56806] = "deadly_throw",
+    [58032] = "distract",
+    [64199] = "envenom",
+    [56799] = "evasion",
+    [56802] = "eviscerate",
+    [56803] = "expose_armor",
+    [63254] = "fan_of_knives",
+    [56804] = "feint",
+    [56812] = "garrote",
+    [56814] = "ghostly_strike",
+    [56809] = "gouge",
+    [56807] = "hemorrhage",
+    [63249] = "hunger_for_blood",
+    [63252] = "killing_spree",
+    [63268] = "mutilate",
+    [58027] = "pick_lock",
+    [58017] = "pick_pocket",
+    [56819] = "preparation",
+    [56801] = "rupture",
+    [58033] = "safe_fall",
+    [56798] = "sap",
+    [63253] = "shadow_dance",
+    [56821] = "sinister_strike",
+    [56810] = "slice_and_dice",
+    [56811] = "sprint",
+    [63256] = "tricks_of_the_trade",
+    [58038] = "vanish",
+    [56805] = "vigor",
+} )
+
+
 -- Auras
 spec:RegisterAuras( {
     -- Energy regeneration increased by $s1%.
     adrenaline_rush = {
         id = 13750,
-        duration = 15,
+        duration = function() return glyph.adrenaline_rush.enabled and 21 or 15 end,
         max_stack = 1,
     },
     -- Attack speed increased by $s1%.  Weapon attacks strike an additional nearby opponent.
@@ -183,9 +223,15 @@ spec:RegisterAuras( {
     -- Dodge chance increased by $s1% and chance ranged attacks hit you reduced by $s2%.
     evasion = {
         id = 26669,
-        duration = 15,
+        duration = function() return 20 or 15 end,
         max_stack = 1,
         copy = { 5277, 26669, 67354, 67378, 67380 },
+    },
+    -- Expose Armor.
+    expose_armor = {
+        id = 8647,
+        duration = function() return 6 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
+        max_stack = 1,
     },
     -- $s2% reduced damage taken from area of effect attacks.
     feint = {
@@ -197,7 +243,7 @@ spec:RegisterAuras( {
     -- $s1 damage every $t1 seconds.
     garrote = {
         id = 48676,
-        duration = 18,
+        duration = function() return glyph.garrote.enabled and 21 or 18 end,
         tick_time = 3,
         max_stack = 1,
         copy = { 703, 8631, 8632, 8633, 8818, 11289, 11290, 26839, 26884, 48675, 48676 },
@@ -211,7 +257,7 @@ spec:RegisterAuras( {
     -- Dodge chance increased by $s2%.
     ghostly_strike = {
         id = 14278,
-        duration = 7,
+        duration = function() return glyph.ghostly_strike.enabled and 11 or 7 end,
         max_stack = 1,
     },
     -- Incapacitated.
@@ -326,7 +372,7 @@ spec:RegisterAuras( {
     -- Causes damage every $t1 seconds.
     rupture = {
         id = 48672,
-        duration = 6,
+        duration = function() return ( glyph_of_rupture.enabled and 10 or 6 ) + ( 2 * combo_points.current ) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671, 48672 },
@@ -340,7 +386,7 @@ spec:RegisterAuras( {
     -- Sapped.
     sap = {
         id = 51724,
-        duration = 60,
+        duration = function() return glyph.sap.enabled and 80 or 60 end,
         max_stack = 1,
         copy = { 2070, 6770, 11297, 51724 },
     },
@@ -354,7 +400,7 @@ spec:RegisterAuras( {
     -- Can use opening abilities without being stealthed.
     shadow_dance = {
         id = 51713,
-        duration = 6,
+        duration = function() return glyph.sap.enabled and 8 or 6 end,
         max_stack = 1,
     },
     shadowstep = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=44373)
@@ -378,7 +424,7 @@ spec:RegisterAuras( {
     -- Melee attack speed increased by $s2%.
     slice_and_dice = {
         id = 6774,
-        duration = 6,
+        duration = function() return ( glyph.slice_and_dice.enabled and 9 or 6 ) + ( 3 * combo_points.current ) end,
         max_stack = 1,
         copy = { 5171, 6434, 6774, 60847 },
     },
@@ -404,6 +450,11 @@ spec:RegisterAuras( {
     tricks_of_the_trade = {
         id = 57934,
         duration = 30,
+        max_stack = 1,
+    },
+    tricks_of_the_trade_buff = {
+        id = 57933,
+        duration = function() return glyph.tricks_of_the_trade.enabled and 10 or 6 end,
         max_stack = 1,
     },
     -- $s1% increased critical strike chance with combo moves.
@@ -483,6 +534,7 @@ spec:RegisterAbilities( {
         texture = 132090,
 
         handler = function ()
+            if glyph.backstab.enabled and debuff.rupture.up then debuff.rupture.expires = debuff.rupture.expires + 2 end
         end,
     },
 
@@ -494,7 +546,7 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "totem",
 
-        spend = 25,
+        spend = function() return glyph.blade_flurry.enabled and 0 or 25 end,
         spendType = "energy",
 
         talent = "blade_flurry",
@@ -651,6 +703,7 @@ spec:RegisterAbilities( {
         texture = 132287,
 
         handler = function ()
+            -- TODO: glyph.envenom.enabled no longer removes Deadly Poison.
         end,
     },
 
@@ -718,13 +771,14 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
 
-        spend = 20,
+        spend = function() return glyph.feint.enabled and 0 or 20 end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132294,
 
         handler = function ()
+
         end,
     },
 
@@ -747,11 +801,11 @@ spec:RegisterAbilities( {
     },
 
 
-    --
+    -- Increases dodge by 15% for 7-11 seconds.
     ghostly_strike = {
         id = 14278,
         cast = 0,
-        cooldown = 20,
+        cooldown = function() return glyph.ghostly_strike.enabled and 30 or 20 end,
         gcd = "totem",
 
         spend = 40,
@@ -762,6 +816,8 @@ spec:RegisterAbilities( {
         texture = 136136,
 
         handler = function ()
+            applyBuff( "ghostly_strike" )
+            gain( 1, "combo_points" )
         end,
     },
 
@@ -773,7 +829,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
 
-        spend = 45,
+        spend = function() return glyph.gouge.enabled and 30 or 45 end,
         spendType = "energy",
 
         startsCombat = true,
@@ -862,7 +918,7 @@ spec:RegisterAbilities( {
     killing_spree = {
         id = 51690,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return glyph.killing_spree.enabled and 75 or 120 end,
         gcd = "totem",
 
         spend = 0,
@@ -886,7 +942,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 60,
+        spend = function() return glyph.mutilate.enabled and 55 or 60 end,
         spendType = "energy",
 
         talent = "mutilate",
@@ -931,6 +987,11 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            if glyph.preparation.enabled then
+                setCooldown( "blade_flurry", 0 )
+                setCooldown( "dismantle", 0 )
+                setCooldown( "kick", 0 )
+            end
         end,
     },
 

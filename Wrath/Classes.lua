@@ -5,6 +5,8 @@ if not Hekili.IsWrath() then return end
 
 local class, state = Hekili.Class, Hekili.State
 
+local RegisterEvent = ns.RegisterEvent
+
 function ns.updateTalents()
     for k, _ in pairs( state.talent ) do
         state.talent[ k ].enabled = false
@@ -26,3 +28,40 @@ function ns.updateTalents()
         state.talent[ k ] = talent
     end
 end
+
+
+local HekiliSpecMixin = ns.HekiliSpecMixin
+
+function HekiliSpecMixin:RegisterGlyphs( glyphs )
+    for id, name in pairs( glyphs ) do
+        self.glyphs[ id ] = name
+    end
+end
+
+
+function ns.updateGlyphs()
+    for k, glyph in pairs( state.glyph ) do
+        glyph.rank = 0
+    end
+
+    for i = 1, 6 do
+        local enabled, rank, spellID = GetGlyphSocketInfo( i )
+
+        if enabled and spellID then
+            local name = class.glyphs[ spellID ]
+
+            if name then
+                local glyph = rawget( state.glyph, name ) or {}
+                glyph.rank = rank
+                state.glyph[ name ] = glyph
+            end
+        end
+    end
+end
+
+RegisterEvent( "GLYPH_ADDED", ns.updateGlyphs )
+RegisterEvent( "GLYPH_REMOVED", ns.updateGlyphs )
+RegisterEvent( "GLYPH_UPDATED", ns.updateGlyphs )
+RegisterEvent( "USE_GLYPH", ns.updateGlyphs )
+RegisterEvent( "PLAYER_LEVEL_UP", ns.updateGlyphs )
+RegisterEvent( "PLAYER_ENTERING_WORLD", ns.updateGlyphs )

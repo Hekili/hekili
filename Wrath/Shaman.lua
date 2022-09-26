@@ -193,7 +193,7 @@ spec:RegisterAuras( {
     -- Movement slowed to $s1% of normal speed.
     frost_shock = {
         id = 49236,
-        duration = 8,
+        duration = function() return glyph.frost_shock.enabled and 10 or 8 end,
         max_stack = 1,
         copy = { 8056, 8058, 10472, 10473, 25464, 49235, 49236 },
     },
@@ -258,7 +258,7 @@ spec:RegisterAuras( {
     -- Heals $s2 every $t2 seconds.  Increases caster's Chain Heal by $s3%.
     riptide = {
         id = 61295,
-        duration = 15,
+        duration = function() return glyph.riptide.enabled and 21 or 15 end,
         max_stack = 1,
         copy = { 61295, 61299, 61300, 61301, 66053 },
     },
@@ -308,7 +308,7 @@ spec:RegisterAuras( {
     water_shield = {
         id = 57960,
         duration = 600,
-        max_stack = 1,
+        max_stack = function() return glyph.water_shield.enabled and 4 or 3 end,
         copy = { 24398, 33736, 52127, 52129, 52131, 52134, 52136, 52138, 57960 },
     },
     -- Allows walking over water.
@@ -785,6 +785,48 @@ spec:RegisterAuras( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [58058] = "astral_recall",
+    [55437] = "chain_heal",
+    [55449] = "chain_lightning",
+    [63279] = "earth_shield",
+    [55439] = "earthliving_weapon",
+    [55452] = "elemental_mastery",
+    [63271] = "feral_spirit",
+    [55455] = "fire_elemental_totem",
+    [55450] = "fire_nova",
+    [55447] = "flame_shock",
+    [55451] = "flametongue_weapon",
+    [55443] = "frost_shock",
+    [59289] = "ghost_wolf",
+    [55456] = "healing_stream_totem",
+    [55440] = "healing_wave",
+    [63291] = "hex",
+    [55454] = "lava",
+    [55444] = "lava_lash",
+    [55438] = "lesser_healing_wave",
+    [55453] = "lightning_bolt",
+    [55448] = "lightning_shield",
+    [55441] = "mana_tide",
+    [58059] = "renewed_life",
+    [63273] = "riptide",
+    [55442] = "shocking",
+    [63298] = "stoneclaw_totem",
+    [55446] = "stormstrike",
+    [58135] = "arctic_wolf",
+    [58134] = "black_wolf",
+    [63270] = "thunder",
+    [62132] = "thunderstorm",
+    [63280] = "totem_of_wrath",
+    [58055] = "water_breathing",
+    [55436] = "water_mastery",
+    [58063] = "water_shield",
+    [58057] = "water_walking",
+    [55445] = "windfury_weapon",
+} )
+
+
 spec:RegisterStateExpr( "windfury_mainhand", function () return false end )
 spec:RegisterStateExpr( "windfury_offhand", function () return false end )
 spec:RegisterStateExpr( "flametongue_mainhand", function () return false end )
@@ -892,7 +934,7 @@ spec:RegisterAbilities( {
     astral_recall = {
         id = 556,
         cast = 10,
-        cooldown = 900,
+        cooldown = function() return glyph.astral_recall.enabled and 450 or 900 end,
         gcd = "spell",
 
         spend = 0.05,
@@ -1155,7 +1197,7 @@ spec:RegisterAbilities( {
         id = 8042,
         cast = 0,
         cooldown = 6,
-        gcd = "spell",
+        gcd = function() return glyph.shocking.enabled and "totem" or "spell" end,
 
         spend = function ()
             return ( buff.clearcasting.up and 0.6 or 1 ) * 0.18
@@ -1232,7 +1274,7 @@ spec:RegisterAbilities( {
     elemental_mastery = {
         id = 16166,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return glyph.elemental_mastery.enabled and 150 or 180 end,
         gcd = "spell",
 
         talent = "elemental_mastery",
@@ -1294,7 +1336,7 @@ spec:RegisterAbilities( {
     fire_elemental_totem = {
         id = 2894,
         cast = 0,
-        cooldown = 600,
+        cooldown = function() return glyph.fire_elemental_totem.enabled and 300 or 600 end,
         gcd = "totem",
 
         spend = 0.23,
@@ -1319,7 +1361,7 @@ spec:RegisterAbilities( {
     fire_nova = {
         id = 1535,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return glyph.fire_nova.enabled and 7 or 10 end,
         gcd = "spell",
 
         spend = 0.22,
@@ -1367,7 +1409,7 @@ spec:RegisterAbilities( {
         id = 8050,
         cast = 0,
         cooldown = 6,
-        gcd = "spell",
+        gcd = function() return glyph.shocking.enabled and "totem" or "spell" end,
 
         spend = function ()
             return ( buff.clearcasting.up and 0.6 or 1 ) * 0.17
@@ -1471,7 +1513,7 @@ spec:RegisterAbilities( {
         id = 8056,
         cast = 0,
         cooldown = 6,
-        gcd = "spell",
+        gcd = function() return glyph.shocking.enabled and "totem" or "spell" end,
 
         spend = function ()
             return ( buff.clearcasting.up and 0.6 or 1 ) * 0.18
@@ -2101,7 +2143,7 @@ spec:RegisterAbilities( {
     thunderstorm = {
         id = 51490,
         cast = 0,
-        cooldown = 45,
+        cooldown = function() return glyph.thunder.enabled and 35 or 45 end,
         gcd = "spell",
 
         talent = "thunderstorm",
@@ -2242,7 +2284,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "shield" )
-            applyBuff( "water_shield" )
+            applyBuff( "water_shield", nil, glyph.water_shield.enabled and 4 or 3 )
         end,
 
         copy = { 52129, 52131, 52134, 52136, 52138, 24398, 33736 },

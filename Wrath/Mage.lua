@@ -51,7 +51,7 @@ spec:RegisterTalents( {
     -- Increased damage and mana cost for your spells.
     arcane_power = {
         id = 12042,
-        duration = 15,
+        duration = function() return glyph.arcane_power.enabled and 18 or 15 end,
         max_stack = 1,
     },
     arctic_winds = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=31678)
@@ -130,6 +130,12 @@ spec:RegisterTalents( {
         max_stack = 1,
         copy = { 11368, 11367, 11115 },
     },
+    -- Glyph.
+    curse_immunity = {
+        id = 60803,
+        duration = 4,
+        max_stack = 1,
+    },
     -- Reduces magic damage taken by up to $s1 and healing by up to $s2.
     dampen_magic = {
         id = 604,
@@ -205,7 +211,7 @@ spec:RegisterTalents( {
     -- Increases Armor by $s1 and may slow attackers.
     frost_armor = {
         id = 168,
-        duration = 1800,
+        duration = function() return glyph.frost_ward.enabled and 3600 or 1800 end,
         max_stack = 1,
         copy = { 168, 7300, 7301 },
     },
@@ -246,7 +252,7 @@ spec:RegisterTalents( {
     -- Increases Armor by $s1, Frost resistance by $s3 and may slow attackers.
     ice_armor = {
         id = 7302,
-        duration = 1800,
+        duration = function() return glyph.frost_ward.enabled and 3600 or 1800 end,
         max_stack = 1,
         copy = { 7302, 7320, 10219, 10220, 27124, 43008 },
     },
@@ -318,8 +324,13 @@ spec:RegisterTalents( {
         duration = 30,
         max_stack = 1,
     },
+    invisibiilty = {
+        id = 32612,
+        duration = function() return glyph.invisibility.enabled and 30 or 20 end,
+        max_stack = 1,
+    },
     -- Fading.
-    invisibility = {
+    invisibility_fading = {
         id = 66,
         duration = 3,
         tick_time = 1,
@@ -452,6 +463,47 @@ spec:RegisterTalents( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [63092] = "arcane_barrage",
+    [62210] = "arcane_blast",
+    [56360] = "arcane_explosion",
+    [57924] = "arcane_intellect",
+    [56363] = "arcane_missiles",
+    [56381] = "arcane_power",
+    [62126] = "blast_wave",
+    [56365] = "blink",
+    [63090] = "deep_freeze",
+    [58070] = "drain_soul",
+    [70937] = "eternal_water",
+    [56380] = "evocation",
+    [56369] = "fire_blast",
+    [57926] = "fire_ward",
+    [56368] = "fireball",
+    [57928] = "frost_armor",
+    [56376] = "frost_nova",
+    [57927] = "frost_ward",
+    [56370] = "frostbolt",
+    [61205] = "frostfire",
+    [56384] = "ice_armor",
+    [63095] = "ice_barrier",
+    [56372] = "ice_block",
+    [56377] = "ice_lance",
+    [56374] = "icy_veins",
+    [56366] = "invisibility",
+    [63091] = "living_bomb",
+    [56383] = "mage_armor",
+    [56367] = "mana_gem",
+    [63093] = "mirror_image",
+    [56382] = "molten_armor",
+    [56375] = "polymorph",
+    [56364] = "remove_curse",
+    [56371] = "scorch",
+    [57925] = "slow_fall",
+    [56373] = "water_elemental",
+} )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Amplifies magic used against the targeted party member, increasing damage taken from spells by up to 15 and healing spells by up to 16.  Lasts 10 min.
@@ -481,7 +533,7 @@ spec:RegisterAbilities( {
         cooldown = 3,
         gcd = "spell",
 
-        spend = 0.18,
+        spend = function() return 0.18 * ( glyph.arcane_barrage.enabled and 0.8 or 1 ) end,
         spendType = "mana",
 
         talent = "arcane_barrage",
@@ -520,7 +572,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.81,
+        spend = function() return 0.81 * ( glyph.arcane_intellect.enabled and 0.5 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -540,7 +592,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.22,
+        spend = function() return 0.22 * ( glyph.arcane_explosion.enabled and 0.9 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -560,7 +612,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.31,
+        spend = function() return 0.31 * ( glyph.arcane_intellect.enabled and 0.5 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -618,7 +670,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
 
-        spend = 0.07,
+        spend = function() return 0.07 * ( glyph.blast_wave.enabled and 0.85 or 1 ) end,
         spendType = "mana",
 
         talent = "blast_wave",
@@ -883,7 +935,8 @@ spec:RegisterAbilities( {
     -- While channeling this spell, you gain 60% of your total mana over 8 sec.
     evocation = {
         id = 12051,
-        cast = 0,
+        cast = 8,
+        channeled = true,
         cooldown = 240,
         gcd = "spell",
 
@@ -893,6 +946,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            -- TODO: glyph.evocation.enabled makes the channel recover 60% of health as well.
         end,
     },
 
@@ -940,7 +994,7 @@ spec:RegisterAbilities( {
     -- Hurls a fiery ball that causes 16 to 25 Fire damage and an additional 2 Fire damage over 4 sec.
     fireball = {
         id = 133,
-        cast = 1.5,
+        cast = function() return glyph.fireball.enabled and 1.35 or 1.5 end,
         cooldown = 0,
         gcd = "spell",
 
@@ -950,7 +1004,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135812,
 
-        handler = function ()
+        impact = function ()
+            if not glyph.fireball.enabled then applyDebuff( "target", "fireball" ) end
         end,
 
         copy = { 143, 145, 3140, 8400, 8401, 8402, 10148, 10149, 10150, 10151, 25306, 27070, 38692, 42832, 42833 },
@@ -1148,9 +1203,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135841,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            if glyph.ice_block.enabled then setCooldown( "frost_nova", 0 ) end
         end,
     },
 
@@ -1466,6 +1522,7 @@ spec:RegisterAbilities( {
         texture = 136082,
 
         handler = function ()
+            if glyph.remove_curse.enabled then applyBuff( "curse_immunity" ) end
         end,
     },
 
@@ -1545,6 +1602,7 @@ spec:RegisterAbilities( {
         texture = 135992,
 
         handler = function ()
+            -- TODO: glyph.slow_fall.enabled removes the requirement for a reagent.
         end,
     },
 
@@ -1571,7 +1629,7 @@ spec:RegisterAbilities( {
     summon_water_elemental = {
         id = 31687,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return glyph.water_elemental.enabled and 150 or 180 end,
         gcd = "spell",
 
         spend = 0.16,
@@ -1584,6 +1642,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            -- TODO: glyph.eternal_winter.enabled makes summoned pet permanent.
         end,
     },
 

@@ -523,12 +523,49 @@ spec:RegisterTalents( {
 } )
 
 
+-- Glyphs
+spec:RegisterGlyphs( {
+    [58623] = "antimagic_shell",
+    [59332] = "blood_strike",
+    [58640] = "blood_tap",
+    [58673] = "bone_shield",
+    [58620] = "chains_of_ice",
+    [59307] = "corpse_explosion",
+    [63330] = "dancing_rune_weapon",
+    [58613] = "dark_command",
+    [63333] = "dark_death",
+    [58629] = "death_and_decay",
+    [62259] = "death_grip",
+    [59336] = "death_strike",
+    [58677] = "deaths_embrace",
+    [63334] = "disease",
+    [58647] = "frost_strike",
+    [58616] = "heart_strike",
+    [58680] = "horn_of_winter",
+    [63335] = "howling_blast",
+    [63331] = "hungering_cold",
+    [58625] = "icebound_fortitude",
+    [58631] = "icy_touch",
+    [58671] = "obliterate",
+    [59309] = "pestilence",
+    [58657] = "plague_strike",
+    [60200] = "raise_dead",
+    [58669] = "rune_strike",
+    [59327] = "rune_tap",
+    [58618] = "strangulate",
+    [58686] = "ghoul",
+    [58635] = "unbreakable_armor",
+    [63332] = "unholy_blight",
+    [58676] = "vampiric_blood",
+} )
+
+
 -- Auras
 spec:RegisterAuras( {
     -- Spell damage reduced by $s1%.  Immune to magic debuffs.
     antimagic_shell = {
         id = 48707,
-        duration = 5,
+        duration = function() return glyph.antimagic_shell.enabled and 7 or 5 end,
         max_stack = 1,
     },
     antimagic_zone = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=51052)
@@ -584,7 +621,7 @@ spec:RegisterAuras( {
     bone_shield = {
         id = 49222,
         duration = 300,
-        max_stack = 3,
+        max_stack = function () return glyph.bone_shield.enabled and 4 or 3 end,
     },
     -- Slowed by frozen chains.
     chains_of_ice = {
@@ -602,7 +639,7 @@ spec:RegisterAuras( {
     -- You have recently summoned a rune weapon.
     dancing_rune_weapon = {
         id = 49028,
-        duration = 12,
+        duration = function() return glyph.dancing_rune_weapon.enabled and 17 or 12 end,
         max_stack = 1,
     },
     -- Taunted.
@@ -682,6 +719,12 @@ spec:RegisterAuras( {
         id = 63560,
         duration = 30,
         tick_time = 3,
+        max_stack = 1,
+    },
+    -- Snare.
+    glyph_of_heart_strike = {
+        id = 58617,
+        duration = 10,
         max_stack = 1,
     },
     -- Damage taken reduced.  Immune to Stun effects.
@@ -780,7 +823,7 @@ spec:RegisterAuras( {
     -- Healing improved by $s1%  Maximum health increased by $s2%
     vampiric_blood = {
         id = 55233,
-        duration = 10,
+        duration = function() return glyph.vampiric_blood.enabled and 15 or 10 end,
         max_stack = 1,
     },
 
@@ -1046,7 +1089,7 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         handler = function ()
-            applyBuff( "bone_shield", nil, 3 )
+            applyBuff( "bone_shield", nil, glyph.bone_shield.enabled and 4 or 3 )
         end,
     },
 
@@ -1350,7 +1393,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 40,
+        spend = function() return glyph.frost_strike.enabled and 32 or 40 end,
         spendType = "runic_power",
 
         talent = "frost_strike",
@@ -1407,6 +1450,7 @@ spec:RegisterAbilities( {
         texture = 135675,
 
         handler = function ()
+            if glyph.heart_strike.enabled then applyDebuff( "target", "glyph_of_heart_strike" ) end
         end,
     },
 
@@ -1459,6 +1503,11 @@ spec:RegisterAbilities( {
             removeBuff( "deathchill" )
             removeBuff( "freezing_fog" )
             removeStack( "killing_machine" )
+
+            if glyph.howling_blast.enabled then
+                applyDebuff( "target", "frost_fever" )
+                active_dot.frost_fever = active_enemies
+            end
         end,
     },
 
@@ -1470,7 +1519,7 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        spend = 40,
+        spend = function() return glyph.hungering_cold.enabled and 0 or 40 end,
         spendType = "runic_power",
 
         talent = "hungering_cold",
@@ -1665,11 +1714,17 @@ spec:RegisterAbilities( {
         texture = 136182,
 
         handler = function ()
-            if dot.frost_fever.ticking then active_dot.frost_fever = active_enemies end
-            if dot.blood_plague.ticking then active_dot.blood_plague = active_enemies end
-            -- TODO: Refresh duration if talented.
+            if dot.frost_fever.ticking then
+                active_dot.frost_fever = active_enemies
+                if glyph.disease.enabled then applyDebuff( "target", "frost_fever" ) end
+            end
+            if dot.blood_plague.ticking then
+                active_dot.blood_plague = active_enemies
+                if glyph.disease.enabled then applyDebuff( "target", "blood_plague" ) end
+            end
+
             if talent.reaping.rank == 3 then
-                if blood_runes.current == 0 then applyBuff( "death_rune_1")
+                if blood_runes.current == 0 then applyBuff( "death_rune_1" )
                 else applyBuff( "death_rune_2" ) end
             end
         end,
@@ -1726,8 +1781,14 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136119,
 
-        item = 37201,
-        bagItem = true,
+        item = function()
+            if glyph.raise_dead.enabled then return end
+            return 37201
+        end,
+        bagItem = function()
+            if glyph.raise_dead.enabled then return end
+            return true
+        end,
 
         toggle = function()
             if talent.master_of_ghouls.enabled then return end
@@ -1815,7 +1876,7 @@ spec:RegisterAbilities( {
     strangulate = {
         id = 47476,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return glyph.strangulate.enabled and 100 or 120 end,
         gcd = "spell",
 
         spend = 1,
@@ -1973,7 +2034,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Blood (IV)", 20220926.1, [[Hekili:DEvxVTTom0FlddOOzP2n2Rl3BhsAbg2lTxGoGBk2J2wrwjriowgwYn3meOF7xs7uB5puA3EPnrK6qsrEosjWl45GfXefl4j)j((tU1FQR3nE367fSqDiJfSiJq3swdFiLSd(73seIyD0Lp8ZrOTdjcsmIHuuKtb7BuQm5xV(69737YPhCEHXtLUuXUR3lujBDOjePKtVEjIJtmJO24SnLVEJYrrs36K9cZjxOikUi1HkejXI9PshYsEcxXzYGfll4jQhsdwoyIdzsgJg80uiv4XXSk)ysAWIN3WL6OSCUiNRoOJWVTKizq5is1rQnmD0duWWpXCwhTUGhZCdwKWLkjwJebd(3tLNzekMHi0qfessJdJzuYHGfSuYYewCW3cuqQHU2SYckezwoNeS4d6OyHYDvUqQcxXEHL7Q40T801nydNFHkrbDdc1NFlOkprdZsiRly9XQA9qPkNVLH4DJv8SKx6OlShOsJxQJWW9clSde6OXTmzIGoAgC2Nd52jhyPSDqJwh9jDKVoAKrnWKkEclLwwaFXAbSHrsuBCZOkD0D6OPtAGOkYlf8eacf2(wrksu9AR74qhDvoJ9l27ULItQniSrKNgkwfUNNc2pFhuX3vDo43DWADop78DlZID282vBfgn98VywIfswiaYozNcCAlNs3isoGNeP)Q7W9FznN62jHMaONG5bvHh01WNxKgw95qKLvX1cRuAq2g49FF25uRZI9mMZGIqUbXrhD8Ov6x9UnTzSzBJJ3(w8ZbJfMivgGJcM0fNeaoF4oY)voqSMgBrpWBYBfWFtbbppRawH07idRC0at7SLtZT0ICy2svRqisDnNADr3kpPGqDAlLrEGM07rNYo3WZo9SNEszimpuQRcGa2tTrrkPWE3ysSW99A0BtR8SlSbBItdZe7HQfuU4uUQs2OhNNwPW9Kxl2CR2tNOANnFPLADC7rxZ1pjB0XWOUACSDL1sPFH7zKmyXsz5SCg8KHLKgH5HNllwTYf8vIKq326VvP2RglHfagMtKOzJhneSypjpfMnaHWhGekxHVi4ZVooQJkV)3v)iGDHcK1b3QFLaMQIvCuw4JFuhD61rFh7b6O)P8Dn4JLQ9FK(r0pm6otU1XFQ(r9Jvbs6wx1JNFD70)k(Q59lwJ9c7W4klZLBFpecu1wB8O5Mg0kYVN533E1ud6rdDy2CGly4z9vkTw08ketdDe)VcL9NdQ(xvDrXCpmyTVk5optaAeGRkRHP8xCURcoE0IkYfN5kaZCOwtgtHpybSJhTOXpdupBvrMIY1io4LCg7YKwxoPmSCD3GzPVEIUo(mQXZAuI7Doz9u3AId6JThRUB6KlgqXz(KotpVEq1VOq5peZbemN5pX2zxf385F89F8vKdd0fGtXQPZ)Bb(fjxvu(RtCRC3YOW93FVzygqPd96YbkZXdiQoEib1rinTr9ayo11F9VhPR5314A3n9hmv(6o7Xq)DgvU4YtS)oBCSXYM7B2a)mIp5pQBs18Ba6n2vEjrW))]] )
+spec:RegisterPack( "Blood (IV)", 20220926.2, [[Hekili:DEvBVPTou4FlttQQmkPe2k3BNGwPP9L2RuN0LQ9XKyCmelcXrXoLlti)B)EoX0eNqmTBFPf854NZ7phtGFWZblIjkwWttgpzY4BNm1Z)MBg7pjyHAFolyroHUHSg(qgzl83VLkeX6OlF4Ndqz7tfKyedPOSGcYtuQC5xV(6D725XP7h9cJNj9OITxVtOs3mIMsKso96LioJIzevYOnz81jQrks2Mr5VWgviuefxKnIkePXIDzYrKL8uUIZKblwwYtvpKfSSFh3h8LCgn4PPGZWJJzgnzsAWINt4sDuEbxuWv71r43wsKmiGez6ivcth9afe8t0R1rRl5XmVGfPCPsIrjrWG)9uvwJqrFeHgIHqswCymJs2hSGLrwMYId(wGcCou1MtwqblZk4KGfFqhfluERkesv4k2lScpfNUHNTUbBidgQeL0eeQp)wqvLtdZtjRlzNIL58qPQGVHH49fN45WV0rx42qvcVuhHM7fwyhi0rdBjYgbD0mi3xa(2rfyzSTqPwh9jD0eD0aRyGjv8uwgTkaUXzaKWiPQeVCQshDNoA64gimwEPGNcqOWY3kszQ6KY6wourxvWy)I9UlPyVAdcjIISqXQWD8mq(5RGk(wtEys3gR1f88ZxTSd2zZBhTgmAQ53yhILswiaYwzNaCAlLYseP7Xmr2V62C)xo9PUvsOiGdMGFqvyIUg(IYSqZNdXPmZSwOHRbN2aT)7Z2N6Sx8eHfmiiKjio6OdhCo(vFBBzwx2v74TV18zV2cDeJaivWKEyNamZhUL8FvneRPXo4d8h)wg83KqW33jGgKEhEOrrlmDpTCSVLwwa9wQAgcrMNDxRhQwvMcm1XRuz5EksVhEk3Zg(UhpbET1P7ZtoIOIK7Duptb8e(gG1QYlSZB1bkmJEcHeazLp8f7zp8EV6GTN88DZ9bxItdZf7GecqUXPCLHz5eAbQHe8j)wd8TQGDSQ7b(lDeRdB3DBF(rMLocg0LgKTTkwQ0lChJKdhwXCNxWG3vSK0WD3FRB5QvEGUsCo1RnfTX1EvyfSaWqRKefB9YIGf7ifzq7dWv(a4qfkS0)5x7y1rvprWt)iGDPcy(b1QFib6QIvCK54JFuhD8juFhRb6O)P6Xp4lQQ1FG(rup06JgF7Ojt1pQF0yiPxDupC(1TD)R4RMFAWADx4gwB1SpU9QkeiZvB0OzzekfPaMn5u5MUguJMjIzZHXblnR3606q7Tm2c6SF4kCZWCyXWvMDjZ9rJ1EBZD(2a0WrBcR(zfU4CBloCWbrZfNzlHTputBJUWhCa2HdowdmdiyBfr2821i27EqRBzpwx1P0pJExJ5OUECCD4ziSN1qwFsEYzw3PJd8JO5V0bn8HdnnC3nD8Gl6HmA(4onwVMdpnErMr0C9WLoBYyxPvZy7Z)47)4R44nmjbJBS6j9)Te)IKRkR(1nEg1D0LC)93BBMEibRsh9eMd7HVDyFCTdWj4gIfyOQo(R)1mDf)U6K7EP)Gg2xV5jdV)oDrxC5rIHoxCO1X23Bwp)iKpnzqxNQ5xq0MOd67Q2Fe8)d]] )
 
 spec:RegisterPack( "Frost DK (IV)", 20220926, [[Hekili:DJ1BVnkot8plRwPETBBOH02SPNs6lE0PtQDL6BYJ2xcyGjbRayKTjr5uK)SFJnjbdbY1UR6QtNQuBXZ4FE(3VXd4569)9MhtKG3RJgoA0Whhn2X9E3jU35nxUTa8MxqIwrwI)tojd)9FYzcPk4p(Mk4YN)(vA5BtzKynocwjpc1jrkle)(T3UzZghA02bRbAUWjILD7gMmD1GOuIqqJUDHgRbXarMmyvoDzc(qHyqXAyaNjjsklFqeJLgZ2KlgqcPPujfeEZdlPPYNZ9c7Y2)6DUOPuarEVogTfACmuPjiIAy)fCkJtLBvbHebeRcy5QGNJWN)U2G)nvWYsAm4G(iNTGMIE2N)Sk4acAZwf8nJDRdgh34vQx06PTPbdFCWOhuVOEHePDhHtbhWarirE9SBdtzSyFCfbKhb3qxmlSCXcNdl4O97U35AcNsctHB0jLzXubGEGWNT6M1K0sCfM0XeD9xaRbUJKgTIMV8c967p1uYYs4GGD7Ke(sqIpNb(sMFmfM6oC3UfAVZNdze0XWvSCf0mYO5X(l4a8xG9YyohXOmkr7sFQpB50t8PzUdVOXjQxXg5kR2xi50vWr07YJ(XGhesmpVpz8EdIxCPgP1GFRnoD)YqoKHLV72zPMnoNOxBdGdySwKOt8vcByfwsVY2PkfGpvczIglMhYbYkTY(eEgJBlScwjPWusAEGxMdifUKZHC50r2AJI8REYpLkKvLKegCJolfjN5QrPPR9KRnaSqKxdCKiFKcC0cCklSvfYkyBaUXC83aKcwEp24mmvBcDTxTmpHLUT9YN6(11yV36G2SMj2Gxbun4g3Dfnnf3OFgjkHMdTC6e2gJ0qSTP84E4yHDlfTX2UNdMm6cgSVxxaTx9)7Xf27yM7B8jyNRyiIS10fjJTwB0nBomP9oFt91ojo(MBz9RjdCDFrCjhnZMH9Vm6KOx1wcz0uTrLaKuzItrK8PXdBR6hgz1Bo6hc8KoEX)dEZ3q45OBJth8mEUCP(c97ubvMKkq3As4OEXBoPuMW4OA4KjM7R9MBeQNGbnC8pVAMkcY1LpXE)pV5rCDdkkrp5rnJbv3aooKHn1YtIMvVa0xvtWfQGElm0cVSYxonHQcMEu0(8Mky3UgQBJAV6FgkwTc9rZubxvhpQRC1bJ76ny8jvqfZZ4HnyFQGNubtQHSfRvJ79Nd3EIZ1aEKmRH6H)jO6kTy5V2CCnEJ)LM)V(856oi2QGVGdOEMC2x71bQP8Mu04H1qu3BqdXK(jrN2bqfGxhnSQm40obws7QJqL4A7OJgpEAAjweTGuMkpsXpSbR5yTn5ZsK7VgZyNNo(jgUqZ0DyN16gj9uCEw(ZzRz(5mItQQ7NW9ruv)V8UApyxaDCg7wLpJBOu7zUBPC)CUojmO)oQn3dNy(8uV2riKbRFBzZK6AsXr8AnvF1DK(vFda9TKO2pE(BjTNHVg36H91qGLBVlF(dVjXRU9F3)pwrUUeRfrBAJB2SFDdJf0FpNEEzHASSFdadw9374nojJ792LWnWVr1Ru)vs2)bkEdJq14BC0owCqyxnGzOXkaz9wo8Pq0)xAj8ZKM6QD50QULDNf1DlXZFpTW6ZWyciv)493)]] )
 

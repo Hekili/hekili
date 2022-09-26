@@ -90,6 +90,7 @@ state.buff = {}
 state.consumable = {}
 state.cooldown = {}
 state.corruptions = {} -- TODO: REMOVE
+state.glyph = {}
 state.legendary = {}
 state.runeforge = state.legendary -- Different APLs use runeforge.X.equipped vs. legendary.X.enabled.
 --[[ state.health = {
@@ -3944,6 +3945,9 @@ do
 
     setmetatable( state.legendary, mt_generic_traits )
     state.legendary.no_trait = { rank = 0 }
+
+    setmetatable( state.glyph, mt_generic_traits )
+    state.glyph.no_trait = { rank = 0 }
 
     -- Azerite and Essences.
     local mt_default_trait = {
