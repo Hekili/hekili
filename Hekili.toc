@@ -1,7 +1,8 @@
-## Interface: 90207
+## Interface: 30400
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
+## X-Flavor: Wrath
 ## Notes: Priority helper for many DPS and tanking specializations, based on SimulationCraft action lists.
 ## SavedVariables: HekiliDB
 ## OptionalDeps: AddOnSkins, ButtonForge, ConsolePort, ElvUI, LibDualSpec-1.0, Masque, WeakAuras
@@ -21,48 +22,16 @@ Events.lua
 
 Classes.lua
 
-BfA\AzeritePowers.lua
-BfA\Essences.lua
-
-Shadowlands\AnimaPowers.lua
-Shadowlands\Covenants.lua
-Shadowlands\SoulbindConduits.lua
-Shadowlands\Trinkets.lua
-Shadowlands\Legendaries.lua
-
-Classes\DeathKnightBlood.lua
-Classes\DeathKnightFrost.lua
-Classes\DeathKnightUnholy.lua
-Classes\DemonHunterHavoc.lua
-Classes\DemonHunterVengeance.lua
-Classes\DruidBalance.lua
-Classes\DruidFeral.lua
-Classes\DruidGuardian.lua
-Classes\HunterBeastMastery.lua
-Classes\HunterMarksmanship.lua
-Classes\HunterSurvival.lua
-Classes\MageArcane.lua
-Classes\MageFire.lua
-Classes\MageFrost.lua
-Classes\MonkBrewmaster.lua
-# Classes\MonkMistweaver.lua
-Classes\MonkWindwalker.lua
-# Classes\PaladinHoly.lua
-Classes\PaladinProtection.lua
-Classes\PaladinRetribution.lua
-# Classes\PriestDiscipline.lua
-Classes\PriestShadow.lua
-Classes\RogueAssassination.lua
-Classes\RogueOutlaw.lua
-Classes\RogueSubtlety.lua
-Classes\ShamanElemental.lua
-Classes\ShamanEnhancement.lua
-Classes\WarlockAffliction.lua
-Classes\WarlockDemonology.lua
-Classes\WarlockDestruction.lua
-Classes\WarriorArms.lua
-Classes\WarriorFury.lua
-Classes\WarriorProtection.lua
+Wrath\Classes.lua
+Wrath\DeathKnight.lua
+Wrath\Druid.lua
+Wrath\Hunter.lua
+Wrath\Mage.lua
+Wrath\Paladin.lua
+Wrath\Rogue.lua
+Wrath\Shaman.lua
+Wrath\Warlock.lua
+Wrath\Warrior.lua
 
 Targets.lua
 Options.lua

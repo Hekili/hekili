@@ -6,9 +6,425 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 6 )
 
-spec:RegisterResource( Enum.PowerType.RuneBlood )
-spec:RegisterResource( Enum.PowerType.RuneFrost )
-spec:RegisterResource( Enum.PowerType.RuneUnholy )
+spec:RegisterResource( Enum.PowerType.RuneBlood, {
+    rune_regen = {
+        last = function ()
+            return state.query_time
+        end,
+
+        interval = function( time, val )
+            local r = state.blood_runes
+
+            if val == 2 then return -1 end
+            return r.expiry[ val + 1 ] - time
+        end,
+
+        stop = function( x )
+            return x == 2
+        end,
+
+        value = 1
+    },
+}, setmetatable( {
+    expiry = { 0, 0 },
+    cooldown = 10,
+    regen = 0,
+    max = 2,
+    forecast = {},
+    fcount = 0,
+    times = {},
+    values = {},
+    resource = "blood_runes",
+
+    reset = function()
+        local t = state.blood_runes
+
+        for i = 1, 2 do
+            local start, duration, ready = GetRuneCooldown( i )
+
+            start = start or 0
+            duration = duration or ( 10 * state.haste )
+
+            t.expiry[ i ] = ready and 0 or start + duration
+            t.cooldown = duration
+        end
+
+        table.sort( t.expiry )
+
+        t.actual = nil
+    end,
+
+    gain = function( amount )
+        local t = state.blood_runes
+
+        for i = 1, amount do
+            t.expiry[ 3 - i ] = 0
+        end
+        table.sort( t.expiry )
+
+        t.actual = nil
+    end,
+
+    spend = function( amount )
+        local t = state.blood_runes
+
+        for i = 1, amount do
+            t.expiry[ 1 ] = ( t.expiry[ 2 ] > 0 and t.expiry[ 2 ] or state.query_time ) + t.cooldown
+            table.sort( t.expiry )
+        end
+
+        t.actual = nil
+    end,
+
+    timeTo = function( x )
+        return state:TimeToResource( state.blood_runes, x )
+    end,
+}, {
+    __index = function( t, k, v )
+        if k == "actual" then
+            local amount = 0
+
+            for i = 1, 2 do
+                if t.expiry[ i ] <= state.query_time then
+                    amount = amount + 1
+                end
+            end
+
+            return amount
+
+        elseif k == "current" then
+            -- If this is a modeled resource, use our lookup system.
+            if t.forecast and t.fcount > 0 then
+                local q = state.query_time
+                local index, slice
+
+                if t.values[ q ] then return t.values[ q ] end
+
+                for i = 1, t.fcount do
+                    local v = t.forecast[ i ]
+                    if v.t <= q then
+                        index = i
+                        slice = v
+                    else
+                        break
+                    end
+                end
+
+                -- We have a slice.
+                if index and slice then
+                    t.values[ q ] = max( 0, min( t.max, slice.v ) )
+                    return t.values[ q ]
+                end
+            end
+
+            return t.actual
+
+        elseif k == "deficit" then
+            return t.max - t.current
+
+        elseif k == "time_to_next" then
+            return t[ "time_to_" .. t.current + 1 ]
+
+        elseif k == "time_to_max" then
+            return t.current == 2 and 0 or max( 0, t.expiry[2] - state.query_time )
+
+        elseif k == "add" then
+            return t.gain
+
+        elseif k == "regen" then
+            return 0
+
+        else
+            local amount = k:match( "time_to_(%d+)" )
+            amount = amount and tonumber( amount )
+
+            if amount then return state:TimeToResource( t, amount ) end
+        end
+    end
+} ) )
+
+spec:RegisterResource( Enum.PowerType.RuneFrost, {
+    rune_regen = {
+        last = function ()
+            return state.query_time
+        end,
+
+        interval = function( time, val )
+            local r = state.frost_runes
+
+            if val == 2 then return -1 end
+            return r.expiry[ val + 1 ] - time
+        end,
+
+        stop = function( x )
+            return x == 2
+        end,
+
+        value = 1
+    },
+}, setmetatable( {
+    expiry = { 0, 0 },
+    cooldown = 10,
+    regen = 0,
+    max = 2,
+    forecast = {},
+    fcount = 0,
+    times = {},
+    values = {},
+    resource = "frost_runes",
+
+    reset = function()
+        local t = state.frost_runes
+
+        for i = 1, 2 do
+            local start, duration, ready = GetRuneCooldown( i + 4 )
+
+            start = start or 0
+            duration = duration or ( 10 * state.haste )
+
+            t.expiry[ i ] = ready and 0 or start + duration
+            t.cooldown = duration
+        end
+
+        table.sort( t.expiry )
+
+        t.actual = nil
+    end,
+
+    gain = function( amount )
+        local t = state.frost_runes
+
+        amount = min( 2, amount )
+
+        for i = 1, amount do
+            t.expiry[ i ] = 0
+        end
+        table.sort( t.expiry )
+
+        t.actual = nil
+    end,
+
+    spend = function( amount )
+        local t = state.frost_runes
+
+        amount = min( 2, amount )
+
+        for i = 1, amount do
+            t.expiry[ 1 ] = ( t.expiry[ 2 ] > 0 and t.expiry[ 2 ] or state.query_time ) + t.cooldown
+            table.sort( t.expiry )
+        end
+
+        t.actual = nil
+    end,
+
+    timeTo = function( x )
+        return state:TimeToResource( state.frost_runes, x )
+    end,
+}, {
+    __index = function( t, k, v )
+        if k == "actual" then
+            local amount = 0
+
+            for i = 1, 2 do
+                if t.expiry[ i ] <= state.query_time then
+                    amount = amount + 1
+                end
+            end
+
+            return amount
+
+        elseif k == "current" then
+            -- If this is a modeled resource, use our lookup system.
+            if t.forecast and t.fcount > 0 then
+                local q = state.query_time
+                local index, slice
+
+                if t.values[ q ] then return t.values[ q ] end
+
+                for i = 1, t.fcount do
+                    local v = t.forecast[ i ]
+                    if v.t <= q then
+                        index = i
+                        slice = v
+                    else
+                        break
+                    end
+                end
+
+                -- We have a slice.
+                if index and slice then
+                    t.values[ q ] = max( 0, min( t.max, slice.v ) )
+                    return t.values[ q ]
+                end
+            end
+
+            return t.actual
+
+        elseif k == "deficit" then
+            return t.max - t.current
+
+        elseif k == "time_to_next" then
+            return t[ "time_to_" .. t.current + 1 ]
+
+        elseif k == "time_to_max" then
+            return t.current == 2 and 0 or max( 0, t.expiry[ 2 ] - state.query_time )
+
+        elseif k == "add" then
+            return t.gain
+
+        elseif k == "regen" then
+            return 0
+
+        else
+            local amount = k:match( "time_to_(%d+)" )
+            amount = amount and tonumber( amount )
+
+            if amount then return state:TimeToResource( t, amount ) end
+        end
+    end
+} ) )
+
+spec:RegisterResource( Enum.PowerType.RuneUnholy, {
+    rune_regen = {
+        last = function ()
+            return state.query_time
+        end,
+
+        interval = function( time, val )
+            local r = state.unholy_runes
+
+            if val == 2 then return -1 end
+            return r.expiry[ val + 1 ] - time
+        end,
+
+        stop = function( x )
+            return x == 2
+        end,
+
+        value = 1
+    },
+}, setmetatable( {
+    expiry = { 0, 0 },
+    cooldown = 10,
+    regen = 0,
+    max = 2,
+    forecast = {},
+    fcount = 0,
+    times = {},
+    values = {},
+    resource = "unholy_runes",
+
+    reset = function()
+        local t = state.unholy_runes
+
+        for i = 5, 6 do
+            local start, duration, ready = GetRuneCooldown( i + 2 )
+
+            start = start or 0
+            duration = duration or ( 10 * state.haste )
+
+            t.expiry[ i - 4 ] = ready and 0 or start + duration
+            t.cooldown = duration
+        end
+
+        table.sort( t.expiry )
+
+        t.actual = nil
+    end,
+
+    gain = function( amount )
+        local t = state.unholy_runes
+
+        amount = min( amount, 2 )
+
+        for i = 1, amount do
+            t.expiry[ i ] = 0
+        end
+        table.sort( t.expiry )
+
+        t.actual = nil
+    end,
+
+    spend = function( amount )
+        local t = state.unholy_runes
+
+        amount = min( 2, amount )
+
+        for i = 1, amount do
+            t.expiry[ 1 ] = ( t.expiry[ 2 ] > 0 and t.expiry[ 2 ] or state.query_time ) + t.cooldown
+            table.sort( t.expiry )
+        end
+
+        t.actual = nil
+    end,
+
+    timeTo = function( x )
+        return state:TimeToResource( state.unholy_runes, x )
+    end,
+}, {
+    __index = function( t, k, v )
+        if k == "actual" then
+            local amount = 0
+
+            for i = 1, 2 do
+                if t.expiry[ i ] <= state.query_time then
+                    amount = amount + 1
+                end
+            end
+
+            return amount
+
+        elseif k == "current" then
+            -- If this is a modeled resource, use our lookup system.
+            if t.forecast and t.fcount > 0 then
+                local q = state.query_time
+                local index, slice
+
+                if t.values[ q ] then return t.values[ q ] end
+
+                for i = 1, t.fcount do
+                    local v = t.forecast[ i ]
+                    if v.t <= q then
+                        index = i
+                        slice = v
+                    else
+                        break
+                    end
+                end
+
+                -- We have a slice.
+                if index and slice then
+                    t.values[ q ] = max( 0, min( t.max, slice.v ) )
+                    return t.values[ q ]
+                end
+            end
+
+            return t.actual
+
+        elseif k == "deficit" then
+            return t.max - t.current
+
+        elseif k == "time_to_next" then
+            return t[ "time_to_" .. t.current + 1 ]
+
+        elseif k == "time_to_max" then
+            return t.current == 2 and 0 or max( 0, t.expiry[2] - state.query_time )
+
+        elseif k == "add" then
+            return t.gain
+
+        elseif k == "regen" then
+            return 0
+
+        else
+            local amount = k:match( "time_to_(%d+)" )
+            amount = amount and tonumber( amount )
+
+            if amount then return state:TimeToResource( t, amount ) end
+        end
+    end
+} ) )
+
 spec:RegisterResource( Enum.PowerType.RunicPower )
 -- butchery talent should generate 1 RP every 5/2.5 seconds depending on rank.
 -- scent_of_blood should generate 10 RP on next attack.
@@ -316,6 +732,14 @@ spec:RegisterAuras( {
         aliasMode = "first",
         aliasType = "buff",
     },
+    rune_strike = {
+        duration = function () return swings.mainhand_speed end,
+        max_stack = 1,
+    },
+    rune_strike_usable = {
+        duration = 5,
+        max_stack = 1,
+    },
     -- Successful attacks generate runic power.
     scent_of_blood = {
         id = 50421,
@@ -387,14 +811,45 @@ spec:RegisterAuras( {
     }
 } )
 
+local dodged_or_parried = 0
 
-local GetRuneType = _G.GetRuneType
+local misses = {
+    DODGE = true,
+    PARRY = true
+}
+
+spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
+    local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, missType, _, _, _, _, _, critical = CombatLogGetCurrentEventInfo()
+
+    if destGUID == state.GUID and subtype:match( "_MISSED$" ) and misses[ missType ] then
+        dodged_or_parried = GetTime()
+    end
+end )
+
+local finish_rune_strike = setfenv( function()
+    spend( 20, "runic_power" )
+end, state )
+
+spec:RegisterStateFunction( "start_rune_strike", function()
+    removeBuff( "player", "rune_strike_usable" )
+    applyBuff( "rune_strike", swings.time_to_next_mainhand )
+    state:QueueAuraExpiration( "rune_strike", finish_rune_strike, buff.rune_strike.expires )
+end )
+
+local GetRuneType, IsCurrentSpell = _G.GetRuneType, _G.IsCurrentSpell
 
 spec:RegisterHook( "reset_precast", function ()
     for i = 1, 6 do
         if GetRuneType( i ) == 4 then
             applyBuff( "death_rune_" .. i )
         end
+    end
+
+    if IsUsableSpell( class.abilities.rune_strike.id ) and dodged_or_parried > 0 and now - dodged_or_parried < 5 then applyBuff( "rune_strike_usable", dodged_or_parried + 5 - now ) end
+
+    if IsCurrentSpell( class.abilities.rune_strike.id ) then
+        start_rune_strike()
+        Hekili:Debug( "Starting Rune Strike, next swing in %.2f...", buff.rune_strike.remains )
     end
 end )
 
@@ -756,6 +1211,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 237532,
 
+        toggle = "interrupts",
+
         handler = function ()
             applyDebuff( "target", "death_grip" )
         end,
@@ -796,7 +1253,7 @@ spec:RegisterAbilities( {
         spend2 = 1,
         spend2Type = "unholy_runes",
 
-        gain = function() return 15 + ( 2.5 * talent.dirge.enabled ) end,
+        gain = function() return 15 + ( 2.5 * talent.dirge.rank ) end,
         gainType = "runic_power",
 
         startsCombat = true,
@@ -944,7 +1401,7 @@ spec:RegisterAbilities( {
 
     -- The Death Knight blows the Horn of Winter, which generates 10 runic power and increases total Strength and Agility of all party or raid members within 30 yards by 155.  Lasts 2 min.
     horn_of_winter = {
-        id = 57730,
+        id = 57623,
         cast = 0,
         cooldown = 20,
         gcd = "spell",
@@ -958,8 +1415,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "horn_of_winter" )
         end,
-
-        copy = { 57623 },
     },
 
 
@@ -1123,6 +1578,8 @@ spec:RegisterAbilities( {
         timeToReady = state.timeToInterrupt,
         debuff = "casting",
 
+        toggle = "interrupts",
+
         handler = function ()
             interrupt()
         end,
@@ -1267,6 +1724,28 @@ spec:RegisterAbilities( {
     },
 
 
+    -- On next attack..
+    rune_strike = {
+        id = 56815,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 20,
+        spendType = "runic_power",
+
+        startsCombat = true,
+        texture = 237518,
+
+        buff = "rune_strike_usable",
+        nobuff = "rune_strike",
+
+        handler = function()
+            start_rune_strike()
+        end
+    },
+
+
     -- Converts 1 Blood Rune into 10% of your maximum health.
     rune_tap = {
         id = 48982,
@@ -1301,7 +1780,7 @@ spec:RegisterAbilities( {
         spend2 = 1,
         spend2Type = "unholy_runes",
 
-        gain = function() return 15 + ( 2.5 * talent.dirge.enabled ) end,
+        gain = function() return 15 + ( 2.5 * talent.dirge.rank ) end,
         gainType = "runic_power",
 
         talent = "scourge_strike",
@@ -1458,7 +1937,7 @@ spec:RegisterOptions( {
 
     aoe = 3,
 
-    gcd = 45524,
+    gcd = 47541,
 
     nameplates = true,
     nameplateRange = 8,
@@ -1474,10 +1953,10 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Blood (IV)", 20220925, [[Hekili:TAvBpTnsq4FlvvIwkyNetHRGiGUQkDcoPuPg0DFZE3ypjEvC86B31eLtO93(nJnXVgtHt9lqYUZ(mV9mpt8N4)G)8iUb8N5n2ZB8LEN7o5Sjtg)f)5MDzG)8mE4A(k8dP8n4F)AIugzzFd4Myl7ptfRInKr7sK8icmTmxfIggBmz6RgnA72TUIWDopcIuTBOCZOTstYANWeUwlchTGa0jIWZzDbCogE6ANShbhL0WnczQtOuMej3MQD4lejcJa0(ZxKlsm3L6V4qzW4Z)mglzqO)SlWGrefbLwc6q)5pel0wwMsivcZolJ(2cUgWmtMAzMyWYUleV4VOO2YwLlIax)5jcTrtzjxc4)Mvu(4HumsqJ5qapnkicc578NdP8fjqK)x9nyWrMwFY8q0ZGsW9N)ollsACxQKAtWs4rq5AeHRfPRQXgRGbgzEymb1z)mOkQPbzj8v5qFSkppqBuI1aH3NheVbIll7OHDuXLF0Yi39ie0bcl7Kwx1ebl7AS2RWy7zdGuyd2QTSpzzEw2XnYbqBejqAyrcC(GjqmWtmXUzHgl7gl7IX1qu65fsrccHHAFl55jMET1ncSJUubW)cV6wQrSPmB86spwPezVCpSziF902XCjgD6C7VmxdbiiB0DcZHRoDlZyfAco1GWhAOQqf0Q80GYphqJaLdcbLkc0OGHMY(LXV)TFguVr(9x(LYVhUBC5RQNwqdl8qPNXAlGcJ5kfKIxJD8EKudVGZmz8GoO0U(q51fQ6ODslwoSjtUfufqeSf4zfh2Kgnzy6EVsLcWbgDmzQL90t9janmyGHAARIcW9fl41ZKho3ZxU0fTvtV0LwtudzPp3FzbSiWB5QuStIdk)9V)Jz3n7pUYYSShivFbwhuyTBPeLQ(qve8bltb)tUqrRi0sA6MNBKBW9o4bHX80vyL3EFbglLjjYTf8iEUIJdwyLfppVybJy)cMYy0YOzjC9tUzVDPYIaipTL1rrKX4MooTP6k79wMdTdRm1WVE)DfXo5JZAJofzynj3elv(ZRxSrLy5sb1dE)7TSdTBhLYRT)y79KD0EwNXx64Do51shPDRQvNmDu7Y(PILt73KA8w8fnuzBECTOjbcjRETx)7lj1Kf1dAxpfNYAyzL6yZd7ORDkPOnff0oTudC6ecZ2QK3mPjav6wKHVBi5KgpOL4u1Jo4E0xinhWrh9AWQssPD96MlgF0beKMoU)BRJJdi7m1RKK8W3)23VIit4uk2CHkE1pYPVOfM8IFBNBP5dusV92BB6)dOs1Q4wjGSVinKQ0tp9cksnz1izOQ(x9t76E9BJf88J(FWe2)YEP5BHlC0hFMq35HN044MV76d8lY(K3XDdQ6FovpEvHOR))9]] )
+spec:RegisterPack( "Blood (IV)", 20220926, [[Hekili:DE12UTnoq0VLIceexhPyPSXDtHDcqrFjzbsbwh0hLenfTnHLffePIxVWGF77mIjsu3CC3xAt4m8mxphQe4f8sWIyIIf8S)eF)j35p117MB)QVxWc1HmwWImcDlzn8dPKDW)(9eHiwhD5J)AeA7qIGeJyiff5uW(gLkt(TRVE)(9UC6bNxz8uPlvS769cvYwhAcrk50RxI44eZiQnoBt5R3OCuK0TozVYCYfkIIlsDOcrsSyFQ0HSKNWvCMmyXYcEI6X0GL9L4t9VfYLmgn45PqYWJJzgpzsAWIx2WL6OSCUiNRoOJWFBjrYGcsKQJuBy6OhPGHFHzToADbpM5gSiHlvsSkjcg8Fpx21iumhrOHAiKKghgZOKdblyPKLjS4GVhOGKdDT(KfuiYSCojyXN0rXcL7QCHufUI9kl3vXPB5PRRXg6GHkrbDdc1nFeuL90WSeY6cwxSmNhkv58TmeV)yq8giV0rxmCGknEPocd3RSWwqOJg3WKnc6OzqVphYT3CGLY2bJAD0x0r(6Orw1atQ4jSuAzbC7GfWggjrTXnJQ0r3RJMoPgctKxk4jaekC8TIuKO6mw3XHj6QCg7FzN9if3vRryJipnuSkCppfSF6jOIVZ0h8BVyToNND6PLDXoBEZQ1Gr9m)w7sSqYcbq2jBvGthmuThqqVfekq4PkS)vbDErAO5NdrYJHcfAKqqse49xp563GRyDmMZGPKCdIJo64Xbzvv322M1LhAl7p)iAxVXcteJbOvWKU4agOYH7i)t5CEnnEaA(DFu8(nP5EtgeqdsNrcAC0ctVZBBuhD3KE77NJIYWBXEdtb7W8ldHDHslYZzPGzGQ0rxqrkjBE3yZtW79E0BYu8gMvcxItdZe7HQf0y4uUPH43HDsnArp71GC2OL3kQdtqVCGADCZTr7Zls3iso02WO2QrSDL1sPFH7zKm4Wsb0SCg88(ssTeA)7AfRw5c(krELBtLstQ9UXsybGH9ejAU6b(Gf7j5PWMbiy9iKo5k8L7BmpSGpGx(oTR(ja5cfi)cUv9AoMOIvCKN)5pRJE77y(bob0r)v5xGGFwtL)J0pH(HX2zYDo(t1pPFYeiPBvnpE(1nt(R4RM3TuTUlCdRNwSpU57fiqMRw7r9lcOvKXoZVRDZod6rnzy2CGjy5zL0V9HTeTVcLRNdQ1xze4N7Hy28jG79SbOw40K99ZRV4us4hpoGuXfNq62ohQ0sXu4tda2XJdOnpdK9Aur2QPvi27Jtw3YM7wUq0VoB7GDIX3Dt6u)d2nhmHaXTMWE)0jx0JCX8jT2kEVb0nzrTleZEu7M5pzOEIHA9Yp)Xp)gsbHTDGsWQyJ)Db(lsUQO8pdW14(aJ4hE4b7W0Jmf61L9uMJ7rrCCFQHJqwwn5hyev1F1N9328zTg2(s)p22E)MDyE)oRkxC5BS6wxCS1X23BwpFT(x8h1oPQ)u7oRDLk8b)3p]] )
 
 spec:RegisterPack( "Frost DK (IV)", 20220925, [[Hekili:DJ1xVTjsq8plvvkxttmX2jon5KDE40PtkPs5fFQpcSaJTxzGfT7IT8jR9Z(ndydlyWxARAv19scm7S)25F)MDmUJC)B35rmn4(64HJhp8XXtCgnzYD3(G7C9UmWDEglCnBj(qklb)7FjfkTX)p)SX)dp)LlP13flyreokrUme1zLwNP(9BUz72To8WDd2a8uLtOi5MTcD86bHXmLIhEZccRbratVAW6u(Yv4lzQbzBGbsHMP5I0bHcrCKyBQAalGhZ1Cq5opiNhRFo1nOBBFeAkzqO7R3J2cpkck1euHnS)mjxi56Dg)aMcIm(IuJ)ZH47FHm4FZ4VmNhboOpkfl4XON9(3B8pIaz2g)pxy3uWOAJxAEH0JSPbdFCW4jMxmVWcj3r5KjbmqeW0xn7MGyHiYdLOG0q4A(Izb5lw4CuGd53DVZnmjNfedxtjLzrCfGEGYtS(6nS4CuIq7ueD9waBaPJMhUMNU8cs(HtnMTmhoUW(9AMCjOX3tapTWlIdthnC)(fK35jHeg6yOelxbnJeEAK3cja)dylgZ5ig5HRix6D9zlNEIpnB0WlACIKeBKlTApLwYxdvO3Lh9TbpO0yE(qY4RniEXhiK2aET240dIHuiblF3V3snBCorV2gGeWyTAfL4lxSHvyT6L2ovUc84Air1qyAGeyRjL9yYeH0EXsy1SmBHY8uVY38I5kDzLhtaxtjJq9SruiRPh80iBaebi9fKiFTQsV6GCYBCwqsMyli9WZe82cSmrAXEkuNeIDtYLsivpdZOfrO2sZtxjI31w8PEzDP0xB6Un54bBWlbQg8c3Dnpog3OxclCfpfA50ReBlwna7oQR2JeRFBPOn22TwWKrxWGT36cOdQ))Vs(dowX1kEmSbveeY2v0SirSHm6M9aEO9oFtTVojo(M7m9ZjdCvFrCTenZMH9po(KOx5wce8yYOwbSy9kNSq9t3pSTQ)WiRUZr)qHNu997UZ3YKPOBJdb8mEUsnDV9Tg)stY4tTMuoMxCNx8envcAL4)ETyshiLQvIC)d35HsQBeNrttutpq1lqchCWMh5QrBOxa6ReX)cJFVvb0IFO0Wpn7z8NwT0HKKXF)(gQBJAV6Fg(uTc9XPm(xwhpQltPGXT9gmENXVKMv4HnOAg)Nm(pudzlkkH7DNd3EIZ1awXCjOM8FbvxPfl)1Mqt4D)p18)vNpx3bl24)rCOZZKZ(uVoqn)UifD)WAiQBeqq8q)KOtP7gF8UNHLLbNs7TwTl6F5Y12rhDzCjAjweTGLhRRO4h3G1SP2M8zjY9xJvyNNosjgUqZC0WoR1lwPNIZZYFoBnZ3NrCsvD)eUFev1)I3vBIDbu1CZTkFUVHsTNJULYFYw5QXDBPu)SQ2opsoPFCBXe3u9Ef0TMoV86pVYFYoDbiQ9JN)cq7zXRXTEODccSs6xl()RJ6)A9VT6xQ6PfhAAJlTS)zdfwq)Tt6zO)ASSNKVaR(Bl8ghsz0D2fCnWVrnNM(Ogh(EcVHPJA8jjAhloUyx9wfOXQaD9wo(LlONIZHVN0uxDcNw2iS7Si1iep)d0cRVAsraHmYC9kIc)C4UbfFkNcXU)7p]] )
 
-spec:RegisterPack( "Unholy (IV)", 20220925, [[Hekili:TAvtVnUnq0FlglGrcAKSLtD2Kc7COOxskqUOD3JsIMAKnHLifePSHlm4V9oKQwwFM0MUxcCiPEZJV5nCMaVGVf4htuqWBlMVyX8NwS01B5YL3)1aF1PCiWpNq3t2I)GtYW)(D(or6jD0nV8JBnBEkvqInGifLfu8a7uQC5VnB2XJhDz0tohagx6sfzZokuP7DOPePKrNvAbYjgiQDo75ST7uoX5sN8dGtHqrumb3HkePXIJCPdzdlLPyGmWFtjlv9cpyZWm)EKl5an4ThqYWIJHQtcsAG)32XK6O8cMOGPWBH5)2qKqSosW1rQDGo6fkUXpmSwhTTKfdUb(PmPsALkiHuMQWF(Mv6iudpd8Zy84WKca(lucaoztkeh87bkKCMJDDfFkgzOGrc8NOJIfk3nPcrCyEkzBj4Qy09m(wD0uKnKITGcxkdcvIWygsUNxRJ8MB3oXizHfqgXs1QDUYOkadLQc2EWqK7)iIKuiKQWe4au8tKhOha)Qs6odh(1r5W7rG3vLUrhzc1biSde6Ov1BbCid9o6OZNBD8MOo45VTHGcsflf4uRAUC0BsxiEg1dltrzotC4cV7kB6OhVglBvrib9uXaLCYeWh(jlDgLOdhw1IdvF2v)ZxB63LuSCFBT9QTL)XrPAfMfLCaFsOSOa4kDeAyM3nSksUbPNAfZYSmbpClAhfNs7gu0Z14SLsiedAMS7P8gLBiRy0WCXrucXYCgLHCBLXnVSBIHkyPw0gV4EtzsI7orbpuKeEKXvguXxYUcv7nTWnEj6LhcD7icU1jpmzxFOAn8Y2DL38cqEXj7nErznGqMvxSzUWJajxWrOjXNSXD0SALr3AnhB3Q2aVVLGsqQMgAK0kHnSQxulRI34vK2CXvnPDAyGRgcNcR3laSR1gY1h7hh8l6Pf725I(jmu2AyuRU)ntiFGPQFSM8VpC9t)D9CICSsdux)Kdem2Bm1BhiPLW)N3BgQtYQQgjd)CKPrcg))jFhZKa2Swgk2BtrijX4lnSSEgGa)JKcogr0Z)cMAluMM7lQEz30J32k3v)kEblvyniES6g(MKUiHzURF5l6OlZ68hMIED0FAhsXm6t9hCR(vZbnb3z(tolwQFv)AvKKU1gOFz9SoP57yjR7NmN((zXHrUDgDeGN8zq(sI)oJ6VUH4FN1iSEeFW0X8aNp3p)VYB(5ZTY74knerKgngTQ5YTMVXCTNmwCN2pSpV2B(0wH1Sst4RhBPg6HUQFgKVohHb6)RI40BgEANvTh7485rMYPZ5UTjZ6m1HHETp9ZEtNunctNR4JnHP5GdFMRyxdrlWBp4r)WIpWBRb63sADRSqN6GMBvp7qFTX043a)aZkSAT3YMFq72711Ldmsq)lrZQ5pQZ)0X763e4g9qRQNBjxFCJ(PdQOthO5oU6qn1Bl)deNAjQtNAZ78b)9p]] )
+spec:RegisterPack( "Unholy (IV)", 20220926, [[Hekili:TAvWUnUnq0VfJfWibns2YPjnPWohk6LKfix829OKOPgztyjsbrkB4cd(T3HuRLPKLCAt3lboKuV5X3Bgotyq43cxMquq47ZMoB20NN9O)0NU)5GGWLQdfq4YccDlzn(dojh)7FX3iYoOJV51VFRzZdzcsIbePOQKIhyJsvi)9jt2VFVpJEWBhW4sFQiFYEHkBRhnJiLm6KklqEjarTXBlNTEJYlPq6vSd8kfkIIj4EuHilrSNl9iRyzmfdKHlxvXYuVYdx1pZrQua0W3Fe5cljbQpiiPHl)2gMuhxuYeLmfEjm)3kIes0XcUowTb0XVsXn(UH0641vSeWpCzgtQKwLcsjvzk8NVBvoc1qZWL5mEsuAja)nQaaNSkdsc)JqfYnZXoVYskgzOKrcxoshNiu(RYeIKOImY6kWxXOBz8164XiBiLRbfUuoePerjmKCVSqhhm1UDQrXIkHCILQ17CMr1agjvLSTGHi3)rejTuivrPWoO8NipWua8RQOBmC4xhKdxJaxvLUrhBc1oiQde645nBbCihtD0Xhp264UO275V1rqbPILbCQvnFyWBsxiEb1dltrzoxS7eV7kB64NohlBrrebZPsak5GjGp(tw6mkrhomVfhQ)SZ5p)MB(UKIv7RBsVANY)0GuTgZYkoGViuvwcCLogtyM2nSksHbPNBfZQ8CbpAnMokoK1nOyoNZzRKqeg0Cz3tfmi3qwXOrfI9OeIL5mkd52Ct28dDngQGLzrB4I7vvPP(BeL8irA0EgxzqfFi7muT30c3vlrTi(dVSeKMer)QcRlF6vs)osKFJ16EOgf(02Df)tWB50WLSnac5wvZ6Rr7bsHGJqtsoyJ7GEEDzGnXDODR7rC9egkbPAwKrEQL9O6gvTsKcgUE1rxnAsBtQNRgcNcFnOeWwARiNBfmm4n2Lb7pYWqzZjnU((7AiFqk3LXA0)(WDP93nJuuG1HG68NSJGXELPAChjRc()8AuF9zMx3MP)hRmTzW4)d)oHjbSvUmsS1ArijX4lnS80acyH8EsjhJiMZ)kATLktR)z1V7BMaW2O3x)MXGfPmZ96lFrhFAON)0u(RJ)QDAfZmqnZkCR(nZbnbYB6ZEZEq)M(TAuL(njl)YIjDS07yPlU04gFDhRFKB7Eda8OpdYNm57mk9chH(oRPVyapF8q(9XJx61ZdME8ylpgxXrerA4mKL7YTM0XCThnuChFzyFzrW0XTcRzfx4BgGPb6(UQFgKpprHb6)RI44B6FUN5Tha54XbM3PZ5U1LzDM)WqV2N(LGXJQhMPZv8jxyChH4ZCf7Mq0c82JGCzyXhZT1ax2(zrlxOtDG7wntrCP2ygbWaFptnmFrWdUFq7g9n1L9mCWLxc3Q5r9pbW1ERWkBJhUZVBaD6JwxN3sg)4M9J7vPh3tdEC1(AS32w6jons3fDRRuOAIpP38CS99)W)5d]] )
 
 

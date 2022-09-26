@@ -1413,26 +1413,34 @@ do
 
         -- local harmful, helpful
 
-        for _, info in ipairs( data ) do
-            if info.isFromPlayerOrPlayerPet then
-                local id = info.spellId
-                local aura = class.auras[ id ]
+        if not data then
+            if unit == "target" then
+                state.target.updated = true
+                Hekili:ForceUpdate( event, true )
+            end
+            return
+        else
+            for _, info in ipairs( data ) do
+                if info.isFromPlayerOrPlayerPet then
+                    local id = info.spellId
+                    local aura = class.auras[ id ]
 
-                if aura then
-                    state[ unit ].updated = true
-                    Hekili:ForceUpdate( event, true )
-                    return
+                    if aura then
+                        state[ unit ].updated = true
+                        Hekili:ForceUpdate( event, true )
+                        return
 
-                    --[[
-                    if info.isHelpful then
-                        helpful = helpful or { count = 0 }
-                        helpful[ id ] = aura.key
-                        helpful.count = helpful.count + 1
-                    else
-                        harmful = harmful or { count = 0 }
-                        harmful[ id ] = aura.key
-                        harmful.count = harmful.count + 1
-                    end ]]
+                        --[[
+                        if info.isHelpful then
+                            helpful = helpful or { count = 0 }
+                            helpful[ id ] = aura.key
+                            helpful.count = helpful.count + 1
+                        else
+                            harmful = harmful or { count = 0 }
+                            harmful[ id ] = aura.key
+                            harmful.count = harmful.count + 1
+                        end ]]
+                    end
                 end
             end
         end

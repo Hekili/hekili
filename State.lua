@@ -1275,8 +1275,8 @@ do
 
         local timeout = FORECAST_DURATION * state.haste -- roundDown( FORECAST_DURATION * state.haste, 2 )
 
-        if state.class.file == "DEATHKNIGHT" and rawget( state, "runes" ) then
-            timeout = max( timeout, 0.01 + 2 * state.runes.cooldown )
+        if state.class.file == "DEATHKNIGHT" then
+            timeout = max( timeout, 0.01 + 2 * ( 1 / state.blood_runes.regen ) )
         end
 
         timeout = timeout + state.gcd.remains
@@ -2160,7 +2160,7 @@ do
 
             if aura and class.knownAuraAttributes[ k ] then
                 -- Buffs, debuffs...
-                local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) )
+                local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) ) or t.buff[ aura_name ]
 
                 value = app and app[ k ]
                 if value ~= nil then return value end
@@ -7146,6 +7146,30 @@ function state:TimeToReady( action, pool )
     -- Okay, so we don't have enough of the resource.
     z = resource and self[ resource ]
     z = z and z[ "time_to_" .. spend ]
+
+    for i = 2, 3 do
+        local addlSpend, addlResource = ability[ "spend" .. i ]
+
+        if addlSpend then
+            if type( addlSpend ) == "number" then
+                addlResource = ability[ "spend" .. 2 .. "Type" ] or class.primaryResource
+            elseif type( addlSpend ) == "function" then
+                addlSpend, addlResource = addlSpend()
+                addlResource = addlResource or ability[ "spend" .. i .. "Type" ] or class.primaryResource
+            end
+
+            addlSpend = addlSpend or 0
+
+            if addlSpend and addlResource and addlSpend > 0 and addlSpend < 1 then
+                addlSpend = addlSpend * self[ resource ].modmax
+            end
+
+            if z and addlSpend and addlResource and self[ addlResource ] then
+                z = max( z, self[ addlResource ][ "time_to_" .. addlSpend ] )
+            end
+        end
+    end
+
     if spend and z then
         wait = max( wait, ceil( z * 100 ) / 100 )
     end

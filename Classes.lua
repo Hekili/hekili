@@ -1403,7 +1403,6 @@ all:RegisterAuras( {
         duration = 120,
         max_stack = 1,
         shared = "player",
-        copy = { 57330, 57623 },
     },
 
     power_infusion = {
