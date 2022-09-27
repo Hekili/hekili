@@ -1408,6 +1408,48 @@ all:RegisterAuras( {
         shared = "player",
     },
 
+    -- All bleed effects cause $s2% additional damage.
+    mangle_bear = {
+        id = 33878,
+        duration = 60,
+        max_stack = 1,
+        shared = "target",
+        copy = { 33878, 33986, 33987, 48563, 48564 },
+    },
+
+    -- All bleed effects cause $s2% additional damage.
+    mangle_cat = {
+        id = 33876,
+        duration = 60,
+        max_stack = 1,
+        shared = "target",
+        copy = { 33876, 33982, 33983, 48565, 48566 },
+    },
+
+    mangle = {
+        alias = { "mangle_bear", "mangle_cat" },
+        aliasType = "debuff",
+        aliasMode = "longest"
+    },
+
+    -- Increases armor by $s1.
+    mark_of_the_wild = {
+        id = 1126,
+        duration = 1800,
+        max_stack = 1,
+        shared = "player",
+        copy = { 1126, 5232, 5234, 6756, 8907, 9884, 9885, 16878, 24752, 26990, 39233, 48469 },
+    },
+
+    -- Increases armor by $s1, all attributes by $s2 and all resistances by $s3.
+    gift_of_the_wild = {
+        id = 21849,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+        copy = { 21849, 21850, 26991, 48470 },
+    },
+
     power_infusion = {
         id = 10060,
         duration = 20,

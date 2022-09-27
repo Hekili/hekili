@@ -6,7 +6,50 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 11 )
 
-spec:RegisterResource( Enum.PowerType.Rage )
+local function rage_amount()
+    local d = UnitDamage( "player" ) * 0.7
+    local c = ( state.level > 70 and 1.4139 or 1 ) * ( 0.0091107836 * ( state.level ^ 2 ) + 3.225598133 * state.level + 4.2652911 )
+    local f = 3.5
+    local s = 2.5
+
+    return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c )
+end
+
+spec:RegisterResource( Enum.PowerType.Rage, {
+    enrage = {
+        aura = "enrage",
+
+        last = function ()
+            local app = state.buff.enrage.applied
+            local t = state.query_time
+
+            return app + floor( t - app )
+        end,
+
+        interval = 1,
+        value = 2
+    },
+
+    mainhand = {
+        swing = "mainhand",
+        aura = "bear_form",
+
+        last = function ()
+            local swing = state.combat == 0 and state.now or state.swings.mainhand
+            local t = state.query_time
+
+            return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
+        end,
+
+        interval = "mainhand_speed",
+
+        stop = function () return state.swings.mainhand == 0 end,
+        value = function( now )
+            return state.buff.maul.expires < now and rage_amount() or 0
+        end,
+    },
+} )
+
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.ComboPoints )
 spec:RegisterResource( Enum.PowerType.Energy )
@@ -172,10 +215,16 @@ spec:RegisterAuras( {
     },
     -- Stunned.
     bash = {
-        id = 8983,
-        duration = 4,
+        id = 5211,
+        duration = function() return 4 + ( 0.5 * talent.brutal_impact.rank ) end,
         max_stack = 1,
         copy = { 5211, 6798, 8983, 58861 },
+    },
+    bear_form = {
+        id = 5487,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 5487, 9634 }
     },
     -- Immune to Fear effects.
     berserk = {
@@ -200,6 +249,7 @@ spec:RegisterAuras( {
         id = 16870,
         duration = 15,
         max_stack = 1,
+        copy = "omen_of_clarity"
     },
     -- Invulnerable, but unable to act.
     cyclone = {
@@ -241,6 +291,20 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 60433, 60432, 60431 },
     },
+    -- Starfire critical hit +40%.
+    eclipse_lunar = {
+        id = 48518,
+        duration = 15,
+        max_stack = 1,
+        copy = "lunar_eclipse",
+    },
+    -- Wrath damage bonus.
+    eclipse_solar = {
+        id = 48517,
+        duration = 15,
+        max_stack = 1,
+        copy = "eclipse_solar",
+    },
     -- Gain $/10;s1 rage per second.  Base armor reduced.
     enrage = {
         id = 5229,
@@ -260,12 +324,14 @@ spec:RegisterAuras( {
         id = 770,
         duration = 300,
         max_stack = 1,
+        copy = { 770, 778, 9749, 9907, 26993 },
     },
     -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
     faerie_fire_feral = {
         id = 16857,
         duration = 300,
         max_stack = 1,
+        copy = { 16857, 17390, 17391, 17392, 27011 },
     },
     feline_grace = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=20719)
         id = 20719,
@@ -285,6 +351,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 45334, 19675 },
     },
+    flight_form = {
+        id = 33943,
+        duration = 3600,
+        max_stack = 1,
+    },
     force_of_nature = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=33831)
         id = 33831,
         duration = 30,
@@ -296,13 +367,7 @@ spec:RegisterAuras( {
         duration = 10,
         tick_time = 1,
         max_stack = 1,
-    },
-    -- Increases armor by $s1, all attributes by $s2 and all resistances by $s3.
-    gift_of_the_wild = {
-        id = 21849,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 21849, 21850, 26991, 48470 },
+        copy = { 22842, 22895, 22896, 26999 },
     },
     -- Taunted.
     growl = {
@@ -380,27 +445,7 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 34153, 34152, 34151 },
     },
-    -- All bleed effects cause $s2% additional damage.
-    mangle_bear = {
-        id = 33878,
-        duration = 60,
-        max_stack = 1,
-        copy = { 33878, 33986, 33987, 48563, 48564 },
-    },
-    -- All bleed effects cause $s2% additional damage.
-    mangle_cat = {
-        id = 33876,
-        duration = 60,
-        max_stack = 1,
-        copy = { 33876, 33982, 33983, 48565, 48566 },
-    },
-    -- Increases armor by $s1.
-    mark_of_the_wild = {
-        id = 1126,
-        duration = 1800,
-        max_stack = 1,
-        copy = { 1126, 5232, 5234, 6756, 8907, 9884, 9885, 16878, 24752, 26990, 39233, 48469 },
-    },
+
     -- $s1 Arcane damage every $t1 seconds.
     moonfire = {
         id = 8921,
@@ -797,6 +842,7 @@ spec:RegisterAbilities( {
         texture = 132140,
 
         handler = function ()
+            gain( 1, "combo_points" )
         end,
     },
 
@@ -1000,7 +1046,11 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132127,
 
+        readyTime = function() return energy.time_to_65 end,
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1232,8 +1282,55 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132134,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            applyDebuff( "target", "maim" )
+            spend( combo_points.current, "combo_points" )
         end,
+    },
+
+
+    -- Mangle (Bear)
+    mangle_bear = {
+        id = 33878,
+        cast = 0,
+        cooldown = 6,
+        gcd = "spell",
+
+        spend = 20,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132135,
+
+        handler = function()
+            applyDebuff( "target", "mangle_bear" )
+        end,
+
+        copy = { 33986, 33987, 48563, 48654 }
+    },
+
+
+    -- Mangle (Cat)
+    mangle_cat = {
+        id = 33876,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 45,
+        spendType = "energy",
+
+        startsCombat = true,
+        texture = 132135,
+
+        handler = function()
+            applyDebuff( "target", "mangle_cat" )
+            gain( 1, "combo_points" )
+        end,
+
+        copy = { 33982, 33983, 48565, 48566 }
     },
 
 
@@ -1365,6 +1462,7 @@ spec:RegisterAbilities( {
         texture = 132142,
 
         handler = function ()
+            gain( 1, "combo_points" )
         end,
     },
 
@@ -1401,6 +1499,8 @@ spec:RegisterAbilities( {
         texture = 132122,
 
         handler = function ()
+            applyDebuff( "target", "rake" )
+            gain( 1, "combo_points" )
         end,
     },
 
@@ -1418,7 +1518,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132141,
 
+        buff = "prowl",
+
         handler = function ()
+            gain( 1, "combo_points" )
         end,
     },
 
@@ -1537,7 +1640,11 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132152,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            applyDebuff( "target", "rip" )
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1552,10 +1659,14 @@ spec:RegisterAbilities( {
         spend = 25,
         spendType = "energy",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 236167,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            applyBuff( "savage_roar" )
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1578,6 +1689,7 @@ spec:RegisterAbilities( {
                 debuff.rip.expires = debuff.rip.expires + 2
                 -- TODO: Cap at 3 applications.
             end
+            gain( 1, "combo_points" )
         end,
     },
 
@@ -1934,3 +2046,8 @@ spec:RegisterOptions( {
     -- package2 = "",
     -- package3 = "",
 } )
+
+
+spec:RegisterPack( "Balance (IV)", 20220926, [[Hekili:vwvtVTnpm4Flffiyd71oF12To0MdfDhsp0EWf9OSKLPteISKHKCmYf9BFuoFzNLG3weGaBrYh9qYhstgtENKKZCa51jJMmz09tUlE8VMo5M7jjUnvajPIXxXwGpOyL4)pXKmfV98nsnlpeVvxBchT05QS)E4WMMMybFt0AqOSXCD5WgTtUkIlzwRGpmBlgr5MArEuELnQAnez0oMtOvrCTwMRBu2iwMqkCcWssYQfs3Cfj7809NilQao51XJrEiYZHTUcwoj59LcRNwzeAJWTXtdVLXSqUNQvEQBj4PZ5OHpce2txG0cIXu0OlesmXU(ApDxI7PphyTN(T5F8D)lbltUZttGkhuMbg8vKy(x8VW4HSXgxzaSeKXC)4XHLATALqLwOnLxWdMzvQUifjvAJqM3bj0AbdmciTqyG)tu8OJjbLlwuImDnKN2XCmOyzsiFWvobhVYfdwy01vPLTS0o72EWQX(x4wvmxTb6AY6yMcMu29muySetKadchUgsbfuITPzJhGUVaCX5cmqSC9W0rDJCzTXi4mfCUy76i2haUl12WmLbFZQlkIbUuuzHuzTIzIdsKdzx3ydf59vOs96wRH(07V98B)2t)JAHqbyHcpN6eQvy5iERhDikQ9nOIclQmohKGH50g7fOsDv37VgpxGQHpN3Tf4DS9moBGsgwmMXzwxQtu2R50GSA5)eOvlpxGKeSyQWSgNMMxwPnUWaWK9zTNkXEwOsqsy1ULAd62HHcssR12TfqbRw6WhFTD7XoHg5jschNVWcld3D8)Rm90bE6vHwW2oy41EAupDMNElYMw(rs6GbXHlacx(bB9vWDzf660UUUxrFIp3CXCPVoTLvJBz7jADp9bpD6OJ30U5Ka63(Lq)iehgycGC3fb5cJhNuIpcB3XRaY)8IiVDa6yK7hUcr9RVcFQRocYHjKak3)vqzNQUTm1rz3R3UJDJh95aU34YLaUDsdr1f(QWUT1hMa6wB2VD)e1vpX6P74777(FK)(d]] )
+
+spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:9AvuVnkoq4FlRQu1DQnKaBtV2tj5HtNwP2hQojwTpc2ygsScGr2MYLx8V9Bmjbm0q290E6uKIa7z((M5BS)er(rFnkmLQHO3cweeS45Gh98FAPFWJrH6dvquyfLTNUfFOKwG))fqsZnK)8VcTBDixqtTqOe1sgU9oTUs97ZN3004XzhM9oWlvEmrX8gHoF)mwovP4S5zwyMLkR5PZsRuZQEhMjfAQMlkNXeI8urtPAgnHNZ1CqffMuZZ1VugLC569bSgQaw0B((yvWttHJHckwu4x3XvgsLKlKC9bdX(wcvbPgIO0q07ad5fgUX3SLRHSfllWdBqPiJNJT1n3yiN7CBnBi)YlF7xnVAxp4rdjeQ0qrciXxXYY8Q5vkZ2lkVkjGTFcvF365fu5(yrwmsyCdpp9YrXO64mHS4Y7I1utUdb4sA(wqQIZQLhUNNTgkb52dESAPek1REyHBSnuU(EfWohLMxaXAr8ZlSPEw59CG0tcfuuw24V8UpKKl0y7Ra5(FaCCZQwbXCu8uUlQOVJN5ILcQ0c3NQRgS7ojKAxpPolZtuaLwrfpAzNUE1v3AflrCLGxQvD6WGflO)TlIyUn)NcOSUm(4BX5CL(E7LN1z8sUAhQhhLOpc56RbPQHxbX4HdB22LFhIX5rbE7yJ)aUP7HwvtZz75LBD3RGwUnVdLP01l2UlV900pfY4mUEvWIljH)452F(UtySvpVAs5z5TAQClO7oaMYHnp9rCqyqdgbJlQvXj4PRRG4WBlBwUikSHklrDdnDEPOsi1wFIhmKJSyi2bQYZ8AuiTwVtiXW68oIcB31AjEUyWNFR1MfkPj5qA0FefYWdwGKtXNUqvziRnKLgYTgYWQZq2GBGv4Xsb5yqxgPXFD8Q(Pi(JcDl5p1ZnoOosiotP156Rt34gzfkPonIJpbc5BbJWbnS6GO38PpDRR2WMBA)N2(a9Gi31jVoqIK)5ROzFxy7RPt2HweFWI4517m8CjbdA5K0(jdPUQhahZrBEpozEt4M1oFV84F1OnqlihET2dwg)T)Vy06Pyj8P)9NINg0rwZhVXgF8RB6V7GS(8KSo0994K3rNoBuBbXFX1gRNCODko07UnTPVjn60qVJEBEJV589KQvJCAozq3UrWIlm89V21JFggonS12p760N70zP03Sd)aQrxHcCJ98NrnkMp7gt7htnmGZ)I(N)]] )
