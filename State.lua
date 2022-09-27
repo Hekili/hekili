@@ -3084,7 +3084,7 @@ local mt_gcd = {
                 return state.buff.adrenaline_rush.up and 0.8 or 1
             end
 
-            return max( ( state.buff.unholy_presence.up and 1 or 1.5 ) * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
+            return max( ( state.spec.deathknight and state.buff.unholy_presence.up and 1 or 1.5 ) * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
 
         elseif k == "remains" then
             return state.cooldown.global_cooldown.remains
@@ -6230,19 +6230,6 @@ do
             ability = class.abilities[ castID ]
 
             casting = ability and ability.key or formatKey( state.buff.casting.name )
-
-            if castID == class.abilities.cyclotronic_blast.id then
-                -- Set up Pocket-Sized Computation Device.
-                if state.buff.casting.v3 == 1 then
-                    -- We are in the channeled part of the cast.
-                    setCooldown( "pocketsized_computation_device", state.buff.casting.applied + 120 - state.now )
-                    setCooldown( "global_cooldown", cast_time )
-                else
-                    -- This is the casting portion.
-                    casting = class.abilities.pocketsized_computation_device.key
-                    state.buff.casting.v1 = class.abilities.pocketsized_computation_device.id
-                end
-            end
         end
 
         -- Okay, two paths here.
