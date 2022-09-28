@@ -325,7 +325,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     outburst = {
-        id = 364010,
+        id = 386478,
         duration = 30,
         max_stack = 1
     },
@@ -367,7 +367,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     seeing_red = {
-        id = 364006,
+        id = 386486,
         duration = 30,
         max_stack = 8
     },
@@ -460,6 +460,28 @@ spec:RegisterAuras( {
     },
 } )
 
+-- Tier 28
+spec:RegisterSetBonuses( "tier28_2pc", 364002, "tier28_4pc", 364639 )
+-- 2-Set - Outburst - Consuming 30 rage grants a stack of Seeing Red, which transforms at 8 stacks into Outburst, causing your next Shield Slam or Thunder Clap to be 200% more effective and grant Ignore Pain.
+-- 4-Set - Outburst - Avatar increases your damage dealt by an additional 10% and decreases damage taken by 10%.
+spec:RegisterAuras( {
+    seeing_red_tier28 = {
+        id = 364006,
+        duration = 30,
+        max_stack = 8,
+    },
+    outburst_tier28 = {
+        id = 364010,
+        duration = 30,
+        max_stack = 1
+    },
+    outburst_buff_tier28 = {
+        id = 364641,
+        duration = function () return class.auras.avatar.duration end,
+        max_stack = 1,
+    }
+})
+
 local gloryRage = 0
 
 spec:RegisterStateExpr( "glory_rage", function ()
@@ -497,7 +519,7 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
                 rageSpent = ( rageSpent + lastRage - current ) % 10 -- Anger Management
             end
 
-            if state.set_bonus.tier28_2pc > 0 then
+            if state.set_bonus.tier28_2pc > 0 or state.talent.outburst.enabled then
                 outburstRage = ( outburstRage + lastRage - current ) % 30 -- Outburst.
             end
         end
@@ -507,9 +529,15 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
 end )
 
 
--- model rage expenditure reducing CDs...
+-- model rage expenditure and special effects
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" and amt > 0 then
+        if talent.indomitable.enabled then
+            rage_spent = rage_spent + amt -- 50 rage , spent 35 on ignore pain
+            local healthpct = floor( rage_spent / 10 ) 
+            rage_spent = rage_spent % 10
+            gain( 0.1 * health.max, "health" )
+        end
         if talent.anger_management.enabled then
             rage_spent = rage_spent + amt
             local secs = floor( rage_spent / 10 )
@@ -517,8 +545,6 @@ spec:RegisterHook( "spend", function( amt, resource )
 
             cooldown.avatar.expires = cooldown.avatar.expires - secs
             reduceCooldown( "shield_wall", secs )
-            -- cooldown.last_stand.expires = cooldown.last_stand.expires - secs
-            -- cooldown.demoralizing_shout.expires = cooldown.demoralizing_shout.expires - secs
         end
 
         if legendary.glory.enabled and buff.conquerors_banner.up then
@@ -529,12 +555,14 @@ spec:RegisterHook( "spend", function( amt, resource )
             buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction
         end
 
-        if set_bonus.tier28_2pc > 0 then
+        if set_bonus.tier28_2pc > 0 or talent.outburst.enabled then
             outburst_rage = outburst_rage + amt
             local stacks = floor( outburst_rage / 30 )
             outburst_rage = outburst_rage % 30
-
             if stacks > 0 then
+                if set_bonus.tier28_2pc > 0 then
+                    addStack( "seeing_red_tier28", nil, stacks )
+                end
                 addStack( "seeing_red", nil, stacks )
             end
         end
@@ -563,6 +591,10 @@ spec:RegisterAbilities( {
             applyBuff( "avatar" )
             if talent.immovable_object.enabled then
                 applyBuff("shield_wall", 4)
+            end
+            if set_bonus.tier28_4pc > 0 then
+                applyBuff( "outburst_tier28" )
+                applyBuff( "outburst_buff" )
             end
         end,
     },
@@ -1256,6 +1288,9 @@ spec:RegisterAbilities( {
             if buff.outburst.up then
                 applyBuff( "ignore_pain" )
                 removeBuff( "outburst" )
+            elseif buff.outburst_tier28.up then
+                applyBuff( "ignore_pain" )
+                removeBuff( "outburst_tier28" )
             end
         end,
     },
@@ -1440,6 +1475,9 @@ spec:RegisterAbilities( {
             if buff.outburst.up then
                 applyBuff( "ignore_pain" )
                 removeBuff( "outburst" )
+            elseif buff.outburst_tier28.up then
+                applyBuff( "ignore_pain" )
+                removeBuff( "outburst_tier28" )
             end
         end,
     },
