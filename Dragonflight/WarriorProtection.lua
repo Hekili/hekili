@@ -1,6 +1,6 @@
 -- WarriorProtection.lua
 -- September 2022
--- Updated for Beta Build 45746
+-- Updated for Beta Build 45779
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
