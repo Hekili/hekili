@@ -1399,8 +1399,8 @@ spec:RegisterAbilities( {
         id = 23920,
         cast = 0,
         charges = 1,
-        cooldown = 20,
-        recharge = 20,
+        cooldown = 25,
+        recharge = 25,
         gcd = "off",
 
         talent = "spell_reflection",
