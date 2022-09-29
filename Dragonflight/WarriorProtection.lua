@@ -53,115 +53,113 @@ spec:RegisterResource( Enum.PowerType.Rage, {
     },
 })    
 
-
 -- Talents
 spec:RegisterTalents( {
-    anger_management                = { 84444, 152278, 1 }, -- 
-    armored_to_the_teeth            = { 84499, 384124, 2 }, -- 
-    avatar                          = { 84498, 107574, 1 }, -- 
-    barbaric_training               = { 84467, 390675, 1 }, -- 
-    battering_ram                   = { 84395, 394312, 1 }, -- 
-    battle_stance                   = { 84394, 386164, 1 }, -- 
-    battlescarred_veteran           = { 84568, 386394, 1 }, -- 
-    berserker_rage                  = { 84505, 18499 , 1 }, -- 
-    berserker_shout                 = { 84481, 384100, 1 }, -- 
-    best_served_cold                = { 84437, 202560, 1 }, -- 
-    bitter_immunity                 = { 84489, 383762, 1 }, -- 
-    blood_and_thunder               = { 84475, 384277, 1 }, -- 
-    bloodborne                      = { 84581, 385704, 2 }, -- 
-    bloodsurge                      = { 84433, 384361, 1 }, -- 
-    bolster                         = { 84397, 280001, 1 }, -- 
-    booming_voice                   = { 84447, 202743, 1 }, -- 
-    bounding_stride                 = { 84488, 202163, 1 }, -- 
-    brace_for_impact                = { 84429, 386030, 1 }, -- 
-    brutal_vitality                 = { 84584, 384036, 1 }, -- 
-    cacophonous_roar                = { 84516, 382954, 1 }, -- 
-    challenging_shout               = { 84442, 1161  , 1 }, -- 
-    champions_bulwark               = { 84449, 386328, 1 }, -- 
-    concussive_blows                = { 84467, 383115, 1 }, -- 
-    crackling_thunder               = { 84475, 203201, 1 }, -- 
-    cruel_strikes                   = { 84514, 392777, 2 }, -- 
-    crushing_force                  = { 84502, 390642, 2 }, -- 
-    dance_of_death                  = { 84393, 393965, 1 }, -- 
-    defensive_stance                = { 84463, 386208, 1 }, -- 
-    demoralizing_shout              = { 84438, 1160  , 1 }, -- 
-    devastator                      = { 84432, 236279, 1 }, -- 
-    disrupting_shout                = { 84440, 386071, 1 }, -- 
-    double_time                     = { 84515, 103827, 1 }, -- 
-    elysian_might                   = { 84456, 386285, 1 }, -- 
-    endurance_training              = { 84472, 382940, 1 }, -- 
-    enduring_alacrity               = { 84566, 384063, 1 }, -- 
-    enduring_defenses               = { 84446, 386027, 1 }, -- 
-    fast_footwork                   = { 84504, 382260, 1 }, -- 
-    focused_vigor                   = { 84451, 384067, 1 }, -- 
-    frothing_berserker              = { 84503, 392790, 1 }, -- 
-    fueled_by_violence              = { 84584, 383103, 1 }, -- 
-    furious_blows                   = { 84469, 390354, 1 }, -- 
-    heavy_repercussions             = { 84452, 203177, 1 }, -- 
-    heroic_leap                     = { 84479, 6544  , 1 }, -- 
-    honed_reflexes                  = { 84494, 391271, 1 }, -- 
-    ignore_pain                     = { 84428, 190456, 1 }, -- 
-    immovable_object                = { 84497, 394307, 1 }, -- 
-    impending_victory               = { 84459, 202168, 1 }, -- 
-    improved_heroic_throw           = { 84439, 386034, 1 }, -- 
-    indomitable                     = { 84567, 202095, 1 }, -- 
-    inspiring_presence              = { 84465, 382310, 1 }, -- 
-    instigate                       = { 84434, 394311, 1 }, -- 
-    intervene                       = { 84462, 3411  , 1 }, -- 
-    intimidating_shout              = { 84517, 5246  , 1 }, -- 
-    into_the_fray                   = { 84452, 202603, 1 }, -- 
-    juggernaut                      = { 84582, 393967, 1 }, -- 
-    last_stand                      = { 84430, 12975 , 1 }, -- 
-    massacre                        = { 84446, 281001, 1 }, -- 
-    menace                          = { 84516, 275338, 1 }, -- 
-    onehanded_weapon_specialization = { 84457, 382895, 1 }, -- 
-    outburst                        = { 84398, 386477, 1 }, -- 
-    overwhelming_rage               = { 84511, 382767, 2 }, -- 
-    pain_and_gain                   = { 84486, 382549, 1 }, -- 
-    piercing_howl                   = { 84481, 12323 , 1 }, -- 
-    piercing_verdict                = { 84512, 382948, 1 }, -- 
-    punish                          = { 84582, 275334, 1 }, -- 
-    quick_thinking                  = { 84493, 382946, 2 }, -- 
-    rallying_cry                    = { 84464, 97462 , 1 }, -- 
-    ravager                         = { 84565, 228920, 1 }, -- 
-    reinforced_plates               = { 84501, 382939, 1 }, -- 
-    rend                            = { 84435, 394062, 1 }, -- 
-    revenge                         = { 84431, 6572  , 1 }, -- 
-    rumbling_earth                  = { 84507, 275339, 1 }, -- 
-    second_wind                     = { 84465, 29838 , 1 }, -- 
-    seismic_reverberation           = { 84473, 382956, 1 }, -- 
-    shattering_throw                = { 84484, 64382 , 1 }, -- 
-    shield_charge                   = { 84450, 385952, 1 }, -- 
-    shield_specialization           = { 84448, 386011, 2 }, -- 
-    shield_wall                     = { 84445, 871   , 1 }, -- 
-    shockwave                       = { 84508, 46968 , 1 }, -- 
-    show_of_force                   = { 84453, 385843, 1 }, -- 
-    sidearm                         = { 84510, 384404, 1 }, -- 
-    siphoning_strikes               = { 84477, 382258, 1 }, -- 
-    sonic_boom                      = { 84454, 390725, 1 }, -- 
-    spear_of_bastion                = { 84513, 376079, 1 }, -- 
-    spell_block                     = { 84583, 392966, 1 }, -- 
-    spell_reflection                = { 84518, 23920 , 1 }, -- 
-    spiked_shield                   = { 84583, 385888, 1 }, -- 
-    storm_bolt                      = { 84470, 107570, 1 }, -- 
-    storm_of_steel                  = { 84564, 382953, 1 }, -- 
-    strategist                      = { 84436, 384041, 1 }, -- 
-    sudden_death                    = { 84453, 29725 , 1 }, -- 
-    the_wall                        = { 84443, 384072, 1 }, -- 
-    thunder_clap                    = { 84476, 6343  , 1 }, -- 
-    thunderlord                     = { 84441, 385840, 1 }, -- 
-    thunderous_roar                 = { 84492, 384318, 1 }, -- 
-    thunderous_words                = { 84491, 384969, 1 }, -- 
-    titanic_throw                   = { 84474, 384090, 1 }, -- 
-    unbreakable_will                = { 84443, 384074, 1 }, -- 
-    unnerving_focus                 = { 84585, 384042, 1 }, -- 
-    unstoppable_force               = { 84497, 275336, 1 }, -- 
-    uproar                          = { 84490, 391572, 1 }, -- 
-    war_machine                     = { 84478, 316733, 1 }, -- 
-    wrecking_throw                  = { 84484, 384110, 1 }, -- 
-    wrenching_impact                = { 84488, 392383, 1 }, -- 
+    anger_management                = { 88875, 152278, 1 }, -- 
+    armored_to_the_teeth            = { 88823, 394855, 2 }, -- 
+    avatar                          = { 88929, 107574, 1 }, -- 
+    barbaric_training               = { 88898, 390675, 1 }, -- 
+    battering_ram                   = { 88826, 394312, 1 }, -- 
+    battle_stance                   = { 88825, 386164, 1 }, -- 
+    battlescarred_veteran           = { 88999, 386394, 1 }, -- 
+    berserker_rage                  = { 88936, 18499 , 1 }, -- 
+    berserker_shout                 = { 88912, 384100, 1 }, -- 
+    best_served_cold                = { 88868, 202560, 1 }, -- 
+    bitter_immunity                 = { 88920, 383762, 1 }, -- 
+    blood_and_thunder               = { 88906, 384277, 1 }, -- 
+    bloodborne                      = { 89012, 385704, 2 }, -- 
+    bloodsurge                      = { 88864, 384361, 1 }, -- 
+    bolster                         = { 88828, 280001, 1 }, -- 
+    booming_voice                   = { 88878, 202743, 1 }, -- 
+    bounding_stride                 = { 88919, 202163, 1 }, -- 
+    brace_for_impact                = { 88860, 386030, 1 }, -- 
+    brutal_vitality                 = { 89015, 384036, 1 }, -- 
+    cacophonous_roar                = { 88947, 382954, 1 }, -- 
+    challenging_shout               = { 88873, 1161  , 1 }, -- 
+    champions_bulwark               = { 88880, 386328, 1 }, -- 
+    concussive_blows                = { 88898, 383115, 1 }, -- 
+    crackling_thunder               = { 88906, 203201, 1 }, -- 
+    cruel_strikes                   = { 88945, 392777, 2 }, -- 
+    crushing_force                  = { 88933, 390642, 2 }, -- 
+    dance_of_death                  = { 88824, 393965, 1 }, -- 
+    defensive_stance                = { 88894, 386208, 1 }, -- 
+    demoralizing_shout              = { 88869, 1160  , 1 }, -- 
+    devastator                      = { 88863, 236279, 1 }, -- 
+    disrupting_shout                = { 88871, 386071, 1 }, -- 
+    double_time                     = { 88946, 103827, 1 }, -- 
+    elysian_might                   = { 88887, 386285, 1 }, -- 
+    endurance_training              = { 88903, 382940, 1 }, -- 
+    enduring_alacrity               = { 88997, 384063, 1 }, -- 
+    enduring_defenses               = { 88877, 386027, 1 }, -- 
+    fast_footwork                   = { 88935, 382260, 1 }, -- 
+    focused_vigor                   = { 88882, 384067, 1 }, -- 
+    frothing_berserker              = { 88934, 392790, 1 }, -- 
+    fueled_by_violence              = { 89015, 383103, 1 }, -- 
+    furious_blows                   = { 88900, 390354, 1 }, -- 
+    heavy_repercussions             = { 88883, 203177, 1 }, -- 
+    heroic_leap                     = { 88910, 6544  , 1 }, -- 
+    honed_reflexes                  = { 88925, 391271, 1 }, -- 
+    ignore_pain                     = { 88859, 190456, 1 }, -- 
+    immovable_object                = { 88928, 394307, 1 }, -- 
+    impending_victory               = { 88890, 202168, 1 }, -- 
+    impenetrable_wall               = { 88874, 384072, 1 }, -- 
+    improved_heroic_throw           = { 88870, 386034, 1 }, -- 
+    indomitable                     = { 88998, 202095, 1 }, -- 
+    inspiring_presence              = { 88896, 382310, 1 }, -- 
+    instigate                       = { 88865, 394311, 1 }, -- 
+    intervene                       = { 88893, 3411  , 1 }, -- 
+    intimidating_shout              = { 88948, 5246  , 1 }, -- 
+    into_the_fray                   = { 88883, 202603, 1 }, -- 
+    juggernaut                      = { 89013, 393967, 1 }, -- 
+    last_stand                      = { 88861, 12975 , 1 }, -- 
+    leeching_strikes                = { 88908, 382258, 1 }, -- 
+    massacre                        = { 88877, 281001, 1 }, -- 
+    menace                          = { 88947, 275338, 1 }, -- 
+    onehanded_weapon_specialization = { 88888, 382895, 1 }, -- 
+    overwhelming_rage               = { 88942, 382767, 2 }, -- 
+    pain_and_gain                   = { 88917, 382549, 1 }, -- 
+    piercing_howl                   = { 88912, 12323 , 1 }, -- 
+    piercing_verdict                = { 88943, 382948, 1 }, -- 
+    punish                          = { 89013, 275334, 1 }, -- 
+    rallying_cry                    = { 88895, 97462 , 1 }, -- 
+    ravager                         = { 88996, 228920, 1 }, -- 
+    reinforced_plates               = { 88932, 382939, 1 }, -- 
+    rend                            = { 88866, 394062, 1 }, -- 
+    revenge                         = { 88862, 6572  , 1 }, -- 
+    rumbling_earth                  = { 88938, 275339, 1 }, -- 
+    second_wind                     = { 88896, 29838 , 1 }, -- 
+    seismic_reverberation           = { 88904, 382956, 1 }, -- 
+    shattering_throw                = { 88915, 64382 , 1 }, -- 
+    shield_charge                   = { 88881, 385952, 1 }, -- 
+    shield_specialization           = { 88879, 386011, 2 }, -- 
+    shield_wall                     = { 88876, 871   , 1 }, -- 
+    shockwave                       = { 88939, 46968 , 1 }, -- 
+    show_of_force                   = { 88884, 385843, 1 }, -- 
+    sidearm                         = { 88941, 384404, 1 }, -- 
+    sonic_boom                      = { 88885, 390725, 1 }, -- 
+    spear_of_bastion                = { 88944, 376079, 1 }, -- 
+    spell_block                     = { 89014, 392966, 1 }, -- 
+    spell_reflection                = { 88949, 23920 , 1 }, -- 
+    storm_bolt                      = { 88901, 107570, 1 }, -- 
+    storm_of_steel                  = { 88995, 382953, 1 }, -- 
+    strategist                      = { 88867, 384041, 1 }, -- 
+    sudden_death                    = { 88884, 29725 , 1 }, -- 
+    thunder_clap                    = { 88907, 6343  , 1 }, -- 
+    thunderlord                     = { 88872, 385840, 1 }, -- 
+    thunderous_roar                 = { 88923, 384318, 1 }, -- 
+    thunderous_words                = { 88922, 384969, 1 }, -- 
+    titanic_throw                   = { 88905, 384090, 1 }, -- 
+    tough_as_nails                  = { 89014, 385888, 1 }, -- 
+    unbreakable_will                = { 88874, 384074, 1 }, -- 
+    unnerving_focus                 = { 89016, 384042, 1 }, -- 
+    unstoppable_force               = { 88928, 275336, 1 }, -- 
+    uproar                          = { 88921, 391572, 1 }, -- 
+    violent_outburst                = { 88829, 386477, 1 }, -- 
+    war_machine                     = { 88909, 316733, 1 }, -- 
+    wild_strikes                    = { 88924, 382946, 2 }, -- 
+    wrecking_throw                  = { 88915, 384110, 1 }, -- 
+    wrenching_impact                = { 88919, 392383, 1 }, -- 
 } )
-
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
@@ -324,7 +322,7 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
-    outburst = {
+    violent_outburst = { -- Renamed from Outburst to violent Outburst in build 45779
         id = 386478,
         duration = 30,
         max_stack = 1
@@ -339,8 +337,8 @@ spec:RegisterAuras( {
         duration = 9,
         max_stack = 5
     },
-    quick_thinking = {
-        id = 392778,
+    wild_strikes = { --Renamed from Quick Thinking to Wild Strikes in build 45779, 
+        id = 382946, --392778 is quick_thinking aura,
         duration = 10,
         max_stack = 1
     },
@@ -578,7 +576,7 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
-        spend = function () return -20 * ( 1 + buff.unnerving_focus.up * 0.2 ) end,
+        spend = function () return -15 * ( 1 + buff.unnerving_focus.up * 0.2 ) end,
         spendType = "rage",
 
         talent = "avatar",
@@ -1030,7 +1028,7 @@ spec:RegisterAbilities( {
             end
         end,
     },
-    
+
 
     oppressor = {
         id = 205800,
@@ -1068,7 +1066,7 @@ spec:RegisterAbilities( {
     pummel = {
         id = 6552,
         cast = 0,
-        cooldown = function () return 15 - (talent.concussive_blows.enabled and 1 or 0) end,
+        cooldown = function () return 15 - (talent.concussive_blows.enabled and 1 or 0) - (talent.honed_reflexes.enabled and 1 or 0) end,
         gcd = "off",
 
         startsCombat = true,
@@ -1262,11 +1260,11 @@ spec:RegisterAbilities( {
     shield_slam = {
         id = 23922,
         cast = 0,
-        cooldown = 9,
+        cooldown = function () return 9 - (talent.honed_reflexes.enabled and 1 or 0) end,
         hasteCD = true,
         gcd = "spell",
 
-        spend = function () return ( 15 + ( talent.the_wall.enabled and -5 or 0 ) + ( talent.heavy_repercussions.enabled and -18 or -15 ) ) * ( talent.unnerving_focus.enabled and 1.5 or 1) end,
+        spend = function () return ( 15 + ( talent.impenetrable_wall.enabled and -5 or 0 ) + ( talent.heavy_repercussions.enabled and -18 or -15 ) ) * ( talent.unnerving_focus.enabled and 1.5 or 1) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1277,7 +1275,7 @@ spec:RegisterAbilities( {
             
             if talent.punish.enabled then applyDebuff ( "target" , "punish" ) end
             
-            if talent.the_wall.enabled and cooldown.shield_wall.remains > 0 then
+            if talent.impenetrable_wall.enabled and cooldown.shield_wall.remains > 0 then
                 reduceCooldown( "shield_wall", 5 )
             end
             
@@ -1364,7 +1362,7 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "spell",
 
-        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 1.5 or 1 ) ) * (talent.unnerving_focus.enabled and 1.5 or 1) end,
+        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * (talent.unnerving_focus.enabled and 1.5 or 1) end,
         spendType = "rage",
 
         talent = "spear_of_bastion",
@@ -1488,6 +1486,9 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 90,
         gcd = "spell",
+
+        spend = -10,
+        spendType = "rage",
 
         talent = "thunderous_roar",
         startsCombat = true,
