@@ -401,7 +401,7 @@ spec:RegisterAuras( {
     },
     spear_of_bastion = {
         id = 376080,
-        duration = function() return talent.elysian_might.enabled and 8 or 6 end,
+        duration = function() return talent.elysian_might.enabled and 6 or 4 end,
         tick_time = 1,
         max_stack = 1
     },
