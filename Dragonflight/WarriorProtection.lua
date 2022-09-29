@@ -1484,7 +1484,7 @@ spec:RegisterAbilities( {
     thunderous_roar = {
         id = 384318,
         cast = 0,
-        cooldown = 90,
+        cooldown = function() return 90 - (talent.uproar.enabled and 30 or 0 ) end,
         gcd = "spell",
 
         spend = -10,
