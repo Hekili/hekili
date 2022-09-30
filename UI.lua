@@ -47,9 +47,9 @@ end
 
 local function stopScreenMovement(frame)
     local monitor = (tonumber(GetCVar("gxMonitor")) or 0) + 1
-    local resolutions = {GetScreenResolutions()}
-    local resolution = resolutions[GetCurrentResolution()] or GetCVar("gxWindowedResolution") or "1024x768"
-    local scrW, scrH = resolution:match("(%d+)x(%d+)")
+    --local resolutions = {GetScreenResolutions()}
+    local resolution = C_VideoOptions.GetCurrentGameWindowSize()
+    local scrW, scrH = resolution.x, resolution.y
 
     local scale, pScale = Hekili:GetScale(), UIParent:GetScale()
 
