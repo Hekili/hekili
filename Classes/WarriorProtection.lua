@@ -635,7 +635,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 1,
             gcd = "off",
 
-            spend = 40,
+            spend = 35,
             spendType = "rage",
 
             startsCombat = false,
