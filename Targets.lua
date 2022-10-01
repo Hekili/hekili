@@ -481,6 +481,8 @@ do
 
         return count, stationary
     end
+
+    Hekili:ProfileCPU( "GetNumberTargets", ns.getNumberTargets )
 end
 
 function Hekili:GetNumTargets( forceUpdate )
@@ -533,6 +535,8 @@ function ns.updateTarget(id, time, mine)
         ns.updatedTargetCount = true
     end
 end
+
+Hekili:ProfileCPU( "UpdateTarget", ns.updateTargets )
 
 ns.reportTargets = function()
     for k, v in pairs(targets) do
@@ -631,6 +635,8 @@ ns.trackDebuff = function(spell, target, time, application)
         end
     end
 end
+
+Hekili:ProfileCPU( "TrackDebuff", ns.trackDebuff )
 
 
 ns.GetDebuffApplicationTime = function( spell, target )
@@ -749,6 +755,8 @@ ns.eliminateUnit = function(id, force)
     ns.callHook( "UNIT_ELIMINATED", id )
 end
 
+Hekili:ProfileCPU( "EliminateUnit", ns.eliminateUnit )
+
 local incomingDamage = {}
 local incomingHealing = {}
 
@@ -757,9 +765,14 @@ ns.storeDamage = function(time, damage, physical)
         table.insert(incomingDamage, {t = time, damage = damage, physical = physical})
     end
 end
+
+Hekili:ProfileCPU( "StoreDamage", ns.storeDamage )
+
 ns.storeHealing = function(time, healing)
     table.insert(incomingHealing, {t = time, healing = healing})
 end
+
+Hekili:ProfileCPU( "StoreHealing", ns.storeHealing )
 
 ns.damageInLast = function(t, physical)
     local dmg = 0
@@ -952,6 +965,8 @@ do
         enemy.lastSeen = time
     end
 
+    Hekili:ProfileCPU( "UpdateEnemy", ns.UpdateEnemy )
+
     local function CheckEnemyExclusion( guid )
         local enemy = db[ guid ]
 
@@ -1016,6 +1031,9 @@ do
 
         return ceil(healthPct / enemy.rate), enemy.n
     end
+
+    Hekili:ProfileCPU( "GetTTD", Hekili.GetTTD )
+
 
     function Hekili:GetTimeToPct( unit, percent )
         local default = 0.7 * ( UnitIsTrivial( unit ) and TRIVIAL or FOREVER )
