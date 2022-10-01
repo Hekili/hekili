@@ -1364,7 +1364,7 @@ all:RegisterAuras( {
         duration = 20,
         max_stack = 1,
         shared = "player",
-        copy = { 58578, 58577, 58576, 58575, 50882, 51124 },
+        copy = { 58578, 58577, 58576, 58575, 50882 },
     },
 
     -- Increases your attack power by $s1.
@@ -1406,6 +1406,7 @@ all:RegisterAuras( {
         duration = function () return glyph.horn_of_winter.enabled and 180 or 120 end,
         max_stack = 1,
         shared = "player",
+        copy = { 57330, 57623 },
     },
 
     -- All bleed effects cause $s2% additional damage.
