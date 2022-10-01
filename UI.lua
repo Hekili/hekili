@@ -2156,9 +2156,8 @@ do
     Hekili.Engine:SetScript( "OnUpdate", function( self, elapsed )
         self.refreshTimer = self.refreshTimer + elapsed
 
-        if not Hekili.Pause and not self.pendingSpecChange then
+        if Hekili.DB.profile.enabled and not Hekili.Pause and not self.pendingSpecChange then
             if self.activeThread and self.threadSpec and self.threadSpec ~= GetSpecializationInfo( GetSpecialization() ) then
-                print( "Cancel Spec Change" )
                 Hekili:SpecializationChanged()
                 self.activeThread = nil
                 self.criticalUpdate = true
