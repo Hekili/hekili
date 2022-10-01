@@ -19,9 +19,21 @@ function ns.updateTalents()
         talent.enabled = false
 
         for i = #v, 3, -1 do
-            if IsPlayerSpell( v[i] ) then
+            local spell = v[i]
+            local ability = class.abilities[ spell ]
+
+            if ability then
+                -- This is a talent, but it could also be an ability with multiple ranks.
+                local spellID = select( 7, GetSpellInfo( ability.name ) ) or spell
+                if IsPlayerSpell( spellID ) then
+                    talent.enabled = true
+                    talent.rank = i - 2
+                    break
+                end
+            elseif IsPlayerSpell( spell ) then
                 talent.enabled = true
                 talent.rank = i - 2
+                break
             end
         end
 
