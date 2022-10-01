@@ -6688,10 +6688,11 @@ function state:IsKnown( sID, notoggle )
                 if ability.id > 0 then
                     local newID = select( 7, GetSpellInfo( ability.name ) )
 
-                    if newID then
+                    if newID ~= nil and newID ~= ability.id then
                         ability.id = newID
                         class.abilities[ newID ] = class.abilities[ newID ] or ability
                         sID = newID
+                        ns.UpdateKeybindings()
                     else
                         sID = ability.id
                     end

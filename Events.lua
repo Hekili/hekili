@@ -2361,6 +2361,8 @@ if Hekili.IsWrath() then
     RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function( event )
         DelayedUpdateKeybindings( event )
     end )
+
+    ns.UpdateKeybindings = DelayedUpdateKeybindings
 else
     RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function( event )
         DelayedUpdateKeybindings( event )
