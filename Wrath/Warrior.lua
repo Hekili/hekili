@@ -232,7 +232,7 @@ spec:RegisterAuras( {
         duration = 6,
         tick_time = 1,
         max_stack = 1,
-        copy = { 16491, 16490, 16488, 30070 },
+        copy = { 16491, 16490, 16488 },
     },
     -- Increases physical damage taken by $s1%.
     blood_frenzy = {
@@ -268,15 +268,17 @@ spec:RegisterAuras( {
         duration = function() return 120 * ( 1 + talent.booming_voice.rank * 0.25 ) end,
         max_stack = 1,
         generate = function( t )
-            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "player", 469, "PLAYER" )
+            for i, id in ipairs( class.auras.commanding_shout.copy ) do
+                local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "player", id, "PLAYER" )
 
-            if name then
-                t.name = name
-                t.count = 1
-                t.expires = expires
-                t.applied = expires - duration
-                t.caster = caster
-                return
+                if name then
+                    t.name = name
+                    t.count = 1
+                    t.expires = expires
+                    t.applied = expires - duration
+                    t.caster = caster
+                    return
+                end
             end
 
             t.count = 0
@@ -303,7 +305,7 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
     },
-    defensive_stance = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=71)
+    defensive_stance = {
         id = 71,
         duration = 3600,
         max_stack = 1,
@@ -395,7 +397,7 @@ spec:RegisterAuras( {
         id = 20511,
         duration = 8,
         max_stack = 1,
-        copy = { 20511, 5246, 65156 },
+        copy = { 20511, 5246 },
     },
     -- Your next Slam or Mortal Strike has an additional $65156s1% chance to critically hit.
     juggernaut = {
@@ -417,8 +419,10 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 12294, 21551, 21552, 21553, 25248, 27580, 30330, 47485, 47486, 65926, 71552 },
     },
-    overpower_usable = {
-        duration = 5,
+    -- Allows the use of Overpower.
+    overpower_ready = {
+        id = 68051,
+        duration = 6,
         max_stack = 1,
     },
     -- Dazed.
@@ -435,7 +439,7 @@ spec:RegisterAuras( {
     },
     -- Bleeding for $s1 plus a percentage of weapon damage every $t1 seconds.  If used while the victim is above $s2% health, Rend does $s3% more damage.
     rend = {
-        id = 772,
+        id = 47465,
         duration = function() return glyph.rending.enabled and 21 or 27 end,
         max_stack = 1,
         copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208, 46845, 47465 },
@@ -515,11 +519,6 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     },
-    stance_mastery = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=12678)
-        id = 12678,
-        duration = 3600,
-        max_stack = 1,
-    },
     -- You may use Execute regardless of target's health.
     sudden_death = {
         id = 52437,
@@ -530,7 +529,7 @@ spec:RegisterAuras( {
     sweeping_strikes = {
         id = 12328,
         duration = 30,
-        max_stack = 1,
+        max_stack = 5,
     },
     -- Shield Slam rage cost reduced by $s1%.
     sword_and_board = {
@@ -556,6 +555,13 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
         copy = { 6343, 8198, 8204, 8205, 11580, 11581, 13532, 25264, 47501, 47502 },
+    },
+    -- Bleed effects cause an additional $s1% damage.
+    trauma = {
+        id = 46857,
+        duration = 60,
+        max_stack = 1,
+        copy = { 46856, 46857 },
     },
     -- Damage taken reduced by $s1% and $s3% of all threat transferred to warrior.
     vigilance = {
@@ -692,7 +698,7 @@ spec:RegisterHook( "reset_precast", function()
         Hekili:Debug( "Starting Cleave, next swing in %.2f...", buff.cleave.remains )
     end
 
-    if IsUsableSpell( class.abilities.overpower.id ) and enemy_dodged > 0 and now - enemy_dodged < 5 then applyBuff( "overpower_usable", enemy_dodged + 5 - now ) end
+    if IsUsableSpell( class.abilities.overpower.id ) and enemy_dodged > 0 and now - enemy_dodged < 6 then applyBuff( "overpower_ready", enemy_dodged + 5 - now ) end
     if IsUsableSpell( class.abilities.revenge.id ) and enemy_revenge_trigger > 0 and now - enemy_revenge_trigger < 5 then applyBuff( "revenge_usable", enemy_revenge_trigger + 5 - now ) end
 end )
 
@@ -1382,11 +1388,11 @@ spec:RegisterAbilities( {
 
         buff = "battle_stance",
 
-        usable = function() return buff.taste_for_blood.up or buff.overpower_usable.up, "only usable after dodging or with taste_for_blood" end,
+        usable = function() return buff.taste_for_blood.up or buff.overpower_ready.up, "only usable after dodging or with taste_for_blood" end,
 
         handler = function( rank )
             removeBuff( "taste_for_blood" )
-            removeBuff( "overpower_usable" )
+            removeBuff( "overpower_ready" )
         end,
     },
 
