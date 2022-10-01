@@ -232,6 +232,11 @@ spec:RegisterAuras( {
     crushing_force = {
         id = 382764
     },
+    dance_of_death = { --TODO: Implement something similar to Druid's AdaptiveSwarm
+        id = 390714,
+        duration = 180,
+        max_stack = 1,
+    },
     deep_wounds = {
         id = 262115,
         duration = function() return 12 + (talent.bloodletting.enabled and 6 or 0) end,
@@ -278,6 +283,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    hurricane = { --TODO: implement during bladestorm
+        id = 390581,
+        duration = 6,
+        max_stack = 6,
+    },
     fatality = {
         id = 383703
     },
@@ -291,6 +301,11 @@ spec:RegisterAuras( {
         id = function () return talent.menace.enabled and 316593 or 5246 end,
         duration = function () return talent.menace.enabled and 15 or 8 end,
         max_stack = 1
+    },
+    merciless_bonegrinder = {
+        id = 383316,
+        duration = 9,
+        max_stack = 1,
     },
     mortal_wounds = {
         id = 115804,
@@ -645,6 +660,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "bladestorm" )
             setCooldown( "global_cooldown", 6 * haste )
+            --if talent.hurricane.enabled then addStack( "hurricane", nil, 1 ) end -- Needs logic to add stacks every 1 * haste seconds during BS
             if talent.blademasters_torment.enabled then applyBuff("avatar", 4) end
         end,
     },
