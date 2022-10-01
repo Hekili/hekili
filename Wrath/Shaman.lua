@@ -109,12 +109,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1,
     },
-    -- Melee, ranged, and spell casting speed increased by $s1%.
-    bloodlust = {
-        id = 2825,
-        duration = 40,
-        max_stack = 1,
-    },
     -- Enabled Cleanse Spirit.
     can_cleanse_spirit = {
         alias = { "dispellable_poison", "dispellable_disease", "dispellable_curse" },
@@ -135,7 +129,7 @@ spec:RegisterAuras( {
     },
     -- Reduces casting or channeling time lost when damaged by $s2% and attacks heal the shielded target for $s1.
     earth_shield = {
-        id = 974,
+        id = 49284,
         duration = 600,
         max_stack = 1,
         copy = { 974, 32593, 32594, 49283, 49284 },
@@ -219,23 +213,6 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
     },
-    improved_chain_heal = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=30873)
-        id = 30873,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 30872 },
-    },
-    improved_ghost_wolf = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16262)
-        id = 16262,
-        duration = 3600,
-        max_stack = 1,
-    },
-    improved_healing_wave = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16229)
-        id = 16229,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 16228, 16227, 16226, 16182 },
-    },
     -- Causes $49279s1 Nature damage to attacker on hit.  $n charges.
     lightning_shield = {
         id = 49281,
@@ -257,7 +234,7 @@ spec:RegisterAuras( {
     },
     -- Heals $s2 every $t2 seconds.  Increases caster's Chain Heal by $s3%.
     riptide = {
-        id = 61295,
+        id = 61301,
         duration = function() return glyph.riptide.enabled and 21 or 15 end,
         max_stack = 1,
         copy = { 61295, 61299, 61300, 61301, 66053 },
@@ -283,7 +260,7 @@ spec:RegisterAuras( {
     -- Increases the critical effect chance of your Healing Wave, Lesser Healing Wave and Chain Heal by $s1%. Each critical heal reduces the chance by 20%. Lasts $55166d.
     tidal_force = {
         id = 55198,
-        duration = 2,
+        duration = 20,
         max_stack = 1,
     },
     -- Cast time of next Healing Wave reduced by $s1%.  Critical effect chance of next Lesser Healing Wave increased by $s2%.
