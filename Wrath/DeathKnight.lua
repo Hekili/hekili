@@ -317,13 +317,13 @@ spec:RegisterResource( Enum.PowerType.RuneUnholy, {
     reset = function()
         local t = state.unholy_runes
 
-        for i = 5, 6 do
-            local start, duration, ready = GetRuneCooldown( i + 2 )
+        for i = 3, 4 do
+            local start, duration, ready = GetRuneCooldown( i )
 
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
-            t.expiry[ i - 4 ] = ready and 0 or start + duration
+            t.expiry[ i - 2 ] = ready and 0 or start + duration
             t.cooldown = duration
         end
 
@@ -577,7 +577,7 @@ spec:RegisterAuras( {
         id = 42651,
         duration = 40,
         max_stack = 1,
-        copy = { 42651, 42650, 64859 },
+        copy = { 42651, 42650 },
     },
     -- $s1% less damage taken.
     blade_barrier = {
@@ -615,7 +615,7 @@ spec:RegisterAuras( {
         id = 50449,
         duration = 30,
         max_stack = 3,
-        copy = { 50448, 50447 },
+        copy = { 50449, 50448, 50447 },
     },
     -- Damage reduced by $s1%.
     bone_shield = {
@@ -678,14 +678,14 @@ spec:RegisterAuras( {
         id = 68766,
         duration = 20,
         max_stack = 1,
-        copy = { 68766, 55741, 66803 },
+        copy = { 68766, 55741 },
     },
     -- Damage dealt is increased by $s1%.
     desolation = {
         id = 66803,
         duration = 20,
         max_stack = 1,
-        copy = { 66803, 66802, 66801, 66800, 63583, 59052 },
+        copy = { 66803, 66802, 66801, 66800, 63583 },
     },
     -- Crypt Fever, improved by Ebon Plaguebringer.
     ebon_plague = {
@@ -721,6 +721,12 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1,
     },
+    -- Stunned.
+    glyph_of_death_grip = {
+        id = 58628,
+        duration = 1,
+        max_stack = 1,
+    },
     -- Snare.
     glyph_of_heart_strike = {
         id = 58617,
@@ -738,7 +744,7 @@ spec:RegisterAuras( {
         id = 50436,
         duration = 10,
         max_stack = 1,
-        copy = { 50436, 50435, 50434, 58578 },
+        copy = { 50436, 50435, 50434 },
     },
     -- Your next Icy Touch, Howling Blast or Frost Strike will be a critical strike.
     killing_machine = {
@@ -800,7 +806,7 @@ spec:RegisterAuras( {
         id = 61777,
         duration = 30,
         max_stack = 1,
-        copy = { 61777, 50514, 49206, 51271 },
+        copy = { 61777, 50514, 49206 },
     },
     -- Armor increased by $s1%.  Strength increased by $s2%.
     unbreakable_armor = {
@@ -1482,12 +1488,12 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            if buff.freezing_fog.enabled then return 0 end
+            if buff.freezing_fog.up then return 0 end
             return 1
         end,
         spendType = "frost_runes",
         spend2 = function()
-            if buff.freezing_fog.enabled then return 0 end
+            if buff.freezing_fog.up then return 0 end
             return 1
         end,
         spend2Type = "unholy_runes",
@@ -1748,7 +1754,7 @@ spec:RegisterAbilities( {
         texture = 237519,
 
         handler = function ()
-            applyDebuff( "blood_plague" )
+            applyDebuff( "target", "blood_plague" )
             -- TODO: talent.desecration effect?
         end,
 
