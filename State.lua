@@ -527,16 +527,16 @@ else
     state.print = function() end
 end
 
-state.Enum = Enum
+-- state.Enum = Enum
 state.FindUnitBuffByID = ns.FindUnitBuffByID
 state.FindUnitDebuffByID = ns.FindUnitDebuffByID
 state.FindRaidBuffByID = ns.FindRaidBuffByID
 state.FindRaidBuffLowestRemainsByID = ns.FindRaidBuffLowestRemainsByID
 state.FindLowHpPlayerWithoutBuffByID = ns.FindLowHpPlayerWithoutBuffByID
-state.GetActionInfo = GetActionInfo
+-- state.GetActionInfo = GetActionInfo
 state.GetActiveLossOfControlData = C_LossOfControl.GetActiveLossOfControlData
 state.GetActiveLossOfControlDataCount = C_LossOfControl.GetActiveLossOfControlDataCount
-state.GetNumGroupMembers = GetNumGroupMembers
+--[[ state.GetNumGroupMembers = GetNumGroupMembers
 -- state.GetItemCooldown = GetItemCooldown
 state.GetItemCount = GetItemCount
 state.GetItemGem = GetItemGem
@@ -549,9 +549,9 @@ state.GetSpellTexture = GetSpellTexture
 state.GetStablePetInfo = GetStablePetInfo
 state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
-state.InCombatLockdown = InCombatLockdown
+state.InCombatLockdown = InCombatLockdown ]]
 state.IsActiveSpell = ns.IsActiveSpell
-state.IsPlayerSpell = IsPlayerSpell
+--[[ state.IsPlayerSpell = IsPlayerSpell
 state.IsSpellKnown = IsSpellKnown
 state.IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
 state.IsUsableItem = IsUsableItem
@@ -570,7 +570,7 @@ state.UnitGUID = UnitGUID
 state.UnitHealth = UnitHealth
 state.UnitHealthMax = UnitHealthMax
 state.UnitName = UnitName
-state.UnitIsFriend = UnitIsFriend
+state.UnitIsFriend = UnitIsFriend ]]
 
 local UnitIsUnit = _G.UnitIsUnit
 
@@ -578,7 +578,7 @@ state.UnitIsUnit = function( a, b )
     return a == b or UnitIsUnit( a, b )
 end
 
-state.UnitIsPlayer = UnitIsPlayer
+--[[ state.UnitIsPlayer = UnitIsPlayer
 state.UnitLevel = UnitLevel
 state.UnitPower = UnitPower
 state.UnitPowerMax = UnitPowerMax
@@ -596,7 +596,7 @@ state.insert = table.insert
 state.remove = table.remove
 state.tonumber = tonumber
 state.tostring = tostring
-state.type = type
+state.type = type ]]
 
 state.safenum = function( val )
     if type( val ) == "number" then return val end
@@ -615,7 +615,8 @@ state.race[ formatKey( UnitRace("player") ) ] = true
 state.class = Hekili.Class
 state.targets = ns.targets
 
-state._G = 0
+state._G = _G
+state.ipairs = _G.ipairs
 
 
 -- Place an ability on cooldown in the simulated game state.
@@ -2205,6 +2206,7 @@ do
             if t:GetVariableIDs( k ) then return t.variable[ k ] end
             if t.settings[ k ] ~= nil then return t.settings[ k ] end
             if t.toggle[ k ]   ~= nil then return t.toggle[ k ] end
+            if _G[ k ] ~= nil then return _G[ k ] end
 
             if k ~= "scriptID" then
                 Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable [" .. t.scriptID .. "].\n\n" .. debugstack() )
@@ -6683,14 +6685,18 @@ function state:IsKnown( sID, notoggle )
             local ability = class.abilities[ sID ]
 
             if ability then
-                local newID = select( 7, GetSpellInfo( ability.name ) )
+                if ability.id > 0 then
+                    local newID = select( 7, GetSpellInfo( ability.name ) )
 
-                if newID then
-                    ability.id = newID
-                    class.abilities[ newID ] = class.abilities[ newID ] or ability
-                    sID = newID
+                    if newID then
+                        ability.id = newID
+                        class.abilities[ newID ] = class.abilities[ newID ] or ability
+                        sID = newID
+                    else
+                        sID = ability.id
+                    end
                 else
-                    sID = nil
+                    sID = ability.id
                 end
             else
                 sID = nil
