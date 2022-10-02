@@ -171,7 +171,7 @@ spec:RegisterAuras( {
         copy = { 31830, 31829, 31828 },
     },
     blessing = {
-        alias = { "blessing_of_kings", "blessing_of_light", "blessing_of_might", "blessing_of_salvation", "blessing_of_sanctuary", "blessing_of_wisdom", "greater_blessing_of_kings", "greater_blessing_of_light", "greater_blessing_of_salvation", "greater_blessing_of_sanctuary", "greater_blessing_of_wisdom" },
+        alias = { "blessing_of_kings", "blessing_of_might", "blessing_of_sanctuary", "blessing_of_wisdom", "greater_blessing_of_kings", "greater_blessing_of_might", "greater_blessing_of_sanctuary", "greater_blessing_of_wisdom" },
         aliasMode = "first",
         aliasType = "buff",
     },
@@ -304,6 +304,12 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
         copy = { 20925, 20927, 20928, 27179, 48951, 48952 },
+    },
+    holy_vengeance = {
+        id = 31803,
+        duration = 15,
+        max_stack = 5,
+        copy = { 53742, 356110, "blood_corruption" }
     },
     -- Stunned.
     holy_wrath = {
@@ -443,6 +449,7 @@ spec:RegisterAuras( {
         id = 31801,
         duration = 1800,
         max_stack = 1,
+        copy = { 348704, "seal_of_corruption" }
     },
     -- Melee attacks have a chance to restore mana.
     seal_of_wisdom = {
@@ -589,6 +596,10 @@ spec:RegisterHook( "reset_precast", function()
     if not aura_assigned then
         class.abilityList.assigned_aura = "|cff00ccff[Assigned Aura]|r"
         class.abilities.assigned_aura = class.abilities[ settings.assigned_aura or "devotion_aura" ]
+
+        if faction == "horde" then
+            class.abilities.seal_of_vengeance = class.abilities.seal_of_corruption
+        end
         aura_assigned = true
     end
 end )
@@ -1791,6 +1802,24 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "seal" )
             applyBuff( "seal_of_vengeance" )
+        end,
+    },
+
+    seal_of_corruption = {
+        id = 348704,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() return mod_benediction( mod_divine_illumination( 0.14 ) ) end,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135969,
+
+        handler = function ()
+            removeBuff( "seal" )
+            applyBuff( "seal_of_corruption" )
         end,
     },
 

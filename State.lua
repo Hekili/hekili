@@ -609,7 +609,7 @@ state.safebool = function( val )
 end
 
 state.combat = 0
-state.faction = UnitFactionGroup( "player" )
+state.faction = UnitFactionGroup( "player" ):lower()
 state.race[ formatKey( UnitRace("player") ) ] = true
 
 state.class = Hekili.Class
