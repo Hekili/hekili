@@ -1489,6 +1489,125 @@ all:RegisterAuras( {
         shared = "player"
     },
 
+    -- Increases stats by $s1%.
+    blessing_of_kings = {
+        id = 20217,
+        duration = 600,
+        max_stack = 1,
+        shared = "player"
+    },
+
+    -- Increases attack power by $s1.
+    blessing_of_might = {
+        id = 48932,
+        duration = function() return glyph.blessing_of_might.enabled and 1800 or 600 end,
+        max_stack = 1,
+        shared = "player",
+        copy = { 19740, 19834, 19835, 19836, 19837, 19838, 25291, 27140, 48931, 48932, 56520 },
+    },
+
+    -- Damage taken reduced by up to $s1%, strength and stamina increased by $s2%, and blocked, parried, and dodged melee attacks cause a gain $57319s1% of maximum displayed mana.
+    blessing_of_sanctuary = {
+        id = 20911,
+        duration = 600,
+        max_stack = 1,
+        shared = "player"
+    },
+
+    -- Restores $s1 mana every 5 seconds.
+    blessing_of_wisdom = {
+        id = 48936,
+        duration = function() return glyph.blessing_of_wisdom.enabled and 1800 or 600 end,
+        max_stack = 1,
+        shared = "player",
+        copy = { 19742, 19850, 19852, 19853, 19854, 25290, 27142, 48935, 48936 },
+    },
+
+    -- Reduces casting or channeling time lost when damaged by $s1%.
+    concentration_aura = {
+        id = 19746,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player"
+    },
+
+    -- Mounted speed increased by $s1%.  This does not stack with other movement speed increasing effects.
+    crusader_aura = {
+        id = 32223,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player"
+    },
+
+    -- Increases Fire resistance by $s1.
+    fire_resistance_aura = {
+        id = 48947,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+        copy = { 19891, 19899, 19900, 27153, 48947 },
+    },
+
+    -- Increases Frost resistance by $s1.
+    frost_resistance_aura = {
+        id = 48945,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+        copy = { 19888, 19897, 19898, 27152, 48945 },
+    },
+
+    -- Increases stats by $s1%.
+    greater_blessing_of_kings = {
+        id = 25898,
+        duration = 1800,
+        max_stack = 1,
+        shared = "player"
+    },
+
+    -- Increases attack power by $s1.
+    greater_blessing_of_might = {
+        id = 48934,
+        duration = 1800,
+        max_stack = 1,
+        shared = "player",
+        copy = { 25782, 25916, 27141, 48933, 48934 },
+    },
+
+    -- Damage taken reduced by up to $s1%, strength and stamina increased by $s2%, and blocked, parried, and dodged melee attacks cause a gain $57319s1% of maximum displayed mana.
+    greater_blessing_of_sanctuary = {
+        id = 25899,
+        duration = 1800,
+        max_stack = 1,
+        shared = "player"
+    },
+
+    -- Restores $s1 mana every 5 seconds.
+    greater_blessing_of_wisdom = {
+        id = 48938,
+        duration = 1800,
+        max_stack = 1,
+        shared = "player",
+        copy = { 25894, 25918, 27143, 48937, 48938 },
+    },
+
+    -- Does $s1 Holy damage to anyone who strikes you.
+    retribution_aura = {
+        id = 54043,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+        copy = { 7294, 8990, 10298, 10299, 10300, 10301, 27150, 54043 },
+    },
+
+    -- Increases Shadow resistance by $s1.
+    shadow_resistance_aura = {
+        id = 48943,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 19876, 19895, 19896, 27151, 48943 },
+    },
+
     -- SL Season 3
     decrypted_urh_cypher = {
         id = 368239,
@@ -2504,13 +2623,21 @@ all:RegisterAbilities( {
         end,
     }, ]]
 
+    -- Removes all movement impairing effects and all effects which cause loss of control of your character.  This effect shares a cooldown with other similar effects.
     will_to_survive = {
         id = 59752,
         cast = 0,
-        cooldown = 180,
+        cooldown = 120,
         gcd = "off",
 
+        startsCombat = false,
+        texture = 136129,
+
         toggle = "defensives",
+
+        -- TODO: Detect loss of control effects.
+        handler = function ()
+        end,
     },
 
     shadowmeld = {
