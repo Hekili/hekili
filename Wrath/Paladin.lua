@@ -93,15 +93,59 @@ spec:RegisterTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    aura = {
+        alias = { "devotion_aura", "retribution_aura", "concentration_aura", "shadow_resistance_aura", "frost_resistance_aura", "fire_resistance_aura", "crusader_aura" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
+    active_consecration = {
+        duration = 8,
+        max_stack = 1,
+        generate = function ( t )
+            local applied = action.consecration.lastCast
+
+            if applied and now - applied < 8 then
+                t.count = 1
+                t.expires = applied + 8
+                t.applied = applied
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    -- Ardent Defender recently prevented your death.
+    ardent_defender = {
+        id = 66233,
+        duration = 120,
+        max_stack = 1,
+    },
+    -- Increases speed by $s2%.
+    argent_charger = {
+        id = 66906,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Increases speed by $s2%.
+    argent_warhorse = {
+        id = 66907,
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Concentration Aura provides immunity to Silence and Interrupt effects.  Effectiveness of all other auras increased by $s1%.
     aura_mastery = {
         id = 31821,
         duration = 6,
         max_stack = 1,
+        shared = "player"
     },
     -- Dazed.
     avengers_shield = {
-        id = 31935,
+        id = 48827,
         duration = 10,
         max_stack = 1,
         copy = { 31935, 32699, 32700, 48826, 48827 },
@@ -118,6 +162,7 @@ spec:RegisterAuras( {
         duration = function() return glyph.beacon_of_light.enabled and 90 or 60 end,
         tick_time = 1.5,
         max_stack = 1,
+        dot = "buff"
     },
     blessed_life = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=31830)
         id = 31830,
@@ -125,41 +170,20 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 31830, 31829, 31828 },
     },
-    -- Increases stats by $s1%.
-    blessing_of_kings = {
-        id = 20217,
-        duration = 600,
-        max_stack = 1,
+    blessing = {
+        alias = { "blessing_of_kings", "blessing_of_light", "blessing_of_might", "blessing_of_salvation", "blessing_of_sanctuary", "blessing_of_wisdom", "greater_blessing_of_kings", "greater_blessing_of_light", "greater_blessing_of_salvation", "greater_blessing_of_sanctuary", "greater_blessing_of_wisdom" },
+        aliasMode = "first",
+        aliasType = "buff",
     },
-    -- Increases attack power by $s1.
-    blessing_of_might = {
-        id = 19740,
-        duration = function() return glyph.blessing_of_might.enabled and 1800 or 600 end,
-        max_stack = 1,
-        copy = { 19740, 19834, 19835, 19836, 19837, 19838, 25291, 27140, 48931, 48932, 56520 },
-    },
-    -- Damage taken reduced by up to $s1%, strength and stamina increased by $s2%, and blocked, parried, and dodged melee attacks cause a gain $57319s1% of maximum displayed mana.
-    blessing_of_sanctuary = {
-        id = 20911,
-        duration = 600,
-        max_stack = 1,
-    },
-    -- Restores $s1 mana every 5 seconds.
-    blessing_of_wisdom = {
-        id = 19742,
-        duration = function() return glyph.blessing_of_wisdom.enabled and 1800 or 600 end,
-        max_stack = 1,
-        copy = { 19742, 19850, 19852, 19853, 19854, 25290, 27142, 48935, 48936 },
-    },
-    -- Reduces casting or channeling time lost when damaged by $s1%.
-    concentration_aura = {
-        id = 19746,
+    -- Increases speed by $s2%.
+    charger = {
+        id = 23214,
         duration = 3600,
         max_stack = 1,
     },
     -- $s1 damage every $t1 $lsecond:seconds;.
     consecration = {
-        id = 26573,
+        id = 48819,
         duration = function() return glyph.consecration.enabled and 10 or 8 end,
         tick_time = 1,
         max_stack = 1,
@@ -170,23 +194,14 @@ spec:RegisterAuras( {
         id = 32223,
         duration = 3600,
         max_stack = 1,
-    },
-    crusader_strike = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=35395)
-        id = 35395,
-        duration = 0.001,
-        max_stack = 1,
-    },
-    deflection = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=20064)
-        id = 20064,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 20064, 20063, 20062, 20061, 20060 },
+        shared = "player"
     },
     -- Increases armor by $s1.
     devotion_aura = {
         id = 48942,
         duration = 3600,
         max_stack = 1,
+        shared = "player",
         copy = { 465, 643, 1032, 10290, 10291, 10292, 10293, 27149, 48941, 48942 },
     },
     -- Critical effect chance of next Flash of Light, Holy Light, or Holy Shock spell increased by $s1%.
@@ -238,57 +253,29 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1,
     },
-    -- Increases Fire resistance by $s1.
-    fire_resistance_aura = {
-        id = 48947,
-        duration = 3600,
+    forbearance = {
+        id = 25771,
+        duration = 120,
         max_stack = 1,
-        copy = { 19891, 19899, 19900, 27153, 48947 },
-    },
-    -- Increases Frost resistance by $s1.
-    frost_resistance_aura = {
-        id = 48945,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 19888, 19897, 19898, 27152, 48945 },
-    },
-    -- Increases stats by $s1%.
-    greater_blessing_of_kings = {
-        id = 25898,
-        duration = 1800,
-        max_stack = 1,
-    },
-    -- Increases attack power by $s1.
-    greater_blessing_of_might = {
-        id = 25782,
-        duration = 1800,
-        max_stack = 1,
-        copy = { 25782, 25916, 27141, 48933, 48934 },
-    },
-    -- Restores $s1 mana every 5 seconds.
-    greater_blessing_of_wisdom = {
-        id = 25894,
-        duration = 1800,
-        max_stack = 1,
-        copy = { 25894, 25918, 27143, 48937, 48938 },
+        shared = "player"
     },
     -- Stunned.
     hammer_of_justice = {
-        id = 853,
-        duration = 3,
+        id = 10308,
+        duration = 6,
         max_stack = 1,
         copy = { 853, 5588, 5589, 10308 },
     },
     -- Immune to movement impairing effects.
     hand_of_freedom = {
         id = 1044,
-        duration = 6,
+        duration = function() return 6 + 2 * talent.guardians_favor.rank end,
         max_stack = 1,
     },
     -- Immune to physical attacks.  Cannot attack or use physical abilities.
     hand_of_protection = {
-        id = 1022,
-        duration = 6,
+        id = 10278,
+        duration = 10,
         max_stack = 1,
         copy = { 1022, 5599, 10278, 66009 },
     },
@@ -311,12 +298,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1,
     },
-    holy_power = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=25829)
-        id = 25829,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 25829, 5926, 5925, 5924, 5923 },
-    },
     -- Block chance increased by $s1%.  $s2 Holy damage dealt to attacker when blocked.  $n charges.
     holy_shield = {
         id = 20925,
@@ -331,18 +312,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 2812, 10318, 27139, 48816, 48817 },
     },
-    improved_blessing_of_wisdom = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=20245)
-        id = 20245,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 20245, 20244 },
-    },
     -- Reduces the cast time of your next Flash of Light by ${$54149m2/-1000}.1 sec or increase the critical chance of your next Holy Light by $s1%.
     infusion_of_light = {
         id = 54149,
         duration = 15,
         max_stack = 1,
-        copy = { 54149 },
     },
     -- Casting and melee speed increased by $s1%.
     judgements_of_the_pure = {
@@ -350,6 +324,26 @@ spec:RegisterAuras( {
         duration = 60,
         max_stack = 1,
         copy = { 53655, 53656, 53657, 54152, 54153 },
+    },
+    judgement = {
+        alias = { "judgement_of_justice", "judgement_of_light", "judgement_of_wisdom" },
+        aliasMode = "first",
+        aliasType = "debuff",
+    },
+    judgement_of_justice = {
+        id = 20184,
+        duration = 20,
+        max_stack = 1,
+    },
+    judgement_of_light = {
+        id = 20185,
+        duration = 20,
+        max_stack = 1,
+    },
+    judgement_of_wisdom = {
+        id = 20186,
+        duration = 20,
+        max_stack = 1,
     },
     -- Physical damage taken reduced by $s1%.
     lay_on_hands = {
@@ -364,23 +358,22 @@ spec:RegisterAuras( {
         duration = 2,
         max_stack = 1,
     },
-    lights_grace = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=31835)
-        id = 31835,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 31835, 31834, 31833 },
+    lights_grace = {
+        id = 31834,
+        duration = 15,
+        max_stack = 1
     },
     -- Each weapon swing generates an additional attack.
     reckoning = {
         id = 20178,
         duration = 8,
-        max_stack = 1,
+        max_stack = 4,
     },
     -- Block chance increased by $s1%.  Lasts maximum of $n  blocks.
     redoubt = {
         id = 20132,
         duration = 10,
-        max_stack = 1,
+        max_stack = 5,
         copy = { 20132, 20131, 20128 },
     },
     -- Incapacitated.
@@ -389,18 +382,16 @@ spec:RegisterAuras( {
         duration = 60,
         max_stack = 1,
     },
-    -- Does $s1 Holy damage to anyone who strikes you.
-    retribution_aura = {
-        id = 54043,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 7294, 8990, 10298, 10299, 10300, 10301, 27150, 54043 },
-    },
     -- Increases the threat generated by your Holy spells by $s1%.
     righteous_fury = {
         id = 25780,
         duration = 3600,
         max_stack = 1,
+    },
+    righteous_vengeance = {
+        id = 61840,
+        duration = 8,
+        max_stack = 1
     },
     -- Resistance to Disease, Magic and Poison increased by $s1%.
     sacred_cleansing = {
@@ -410,10 +401,17 @@ spec:RegisterAuras( {
     },
     -- Absorbs damage and increases the casting paladin's chance to critically hit with Flash of Light by $s2%.
     sacred_shield = {
+        id = 53601,
+        duration = function() return 30 * ( 1 + 0.5 * ( buff.divine_sacrifice.up and talent.divine_guardian.rank or 0 ) ) end,
+        max_stack = 1,
+        no_ticks = true,
+        friendly = true
+    },
+    -- Absorbs damage and increases the casting paladin's chance to critically hit with Flash of Light by 50%.
+    sacred_shield_absorb = {
         id = 58597,
         duration = 6,
         max_stack = 1,
-        copy = { 53601, 58597 },
     },
     -- Melee attacks deal additional Holy damage.
     seal_of_command = {
@@ -438,6 +436,13 @@ spec:RegisterAuras( {
         id = 21084,
         duration = 1800,
         max_stack = 1,
+        copy = { 21084, 20154 },
+    },
+    -- Melee attacks cause Holy damage over $31803d.
+    seal_of_vengeance = {
+        id = 31801,
+        duration = 1800,
+        max_stack = 1,
     },
     -- Melee attacks have a chance to restore mana.
     seal_of_wisdom = {
@@ -445,18 +450,16 @@ spec:RegisterAuras( {
         duration = 1800,
         max_stack = 1,
     },
+    seal = {
+        alias = { "seal_of_command", "seal_of_justice", "seal_of_light", "seal_of_righteousness", "seal_of_vengeance", "seal_of_wisdom" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
     -- Detecting Undead.
     sense_undead = {
         id = 5502,
         duration = 3600,
         max_stack = 1,
-    },
-    -- Increases Shadow resistance by $s1.
-    shadow_resistance_aura = {
-        id = 48943,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 19876, 19895, 19896, 27151, 48943 },
     },
     -- Silenced.
     silenced_shield_of_the_templar = {
@@ -467,7 +470,19 @@ spec:RegisterAuras( {
     -- Stunned.
     stun = {
         id = 20170,
-        duration = 2,
+        duration = function() return 2 + 0.5 * talent.judgements_of_the_just.rank end,
+        max_stack = 1,
+    },
+    -- Increases speed by $s2%.
+    summon_charger = {
+        id = 34767,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Increases speed by $s2%.
+    summon_warhorse = {
+        id = 34769,
+        duration = 3600,
         max_stack = 1,
     },
     -- Your next Flash of Light or Exorcism spell is instant cast.
@@ -475,7 +490,6 @@ spec:RegisterAuras( {
         id = 59578,
         duration = 15,
         max_stack = 1,
-        copy = { 59578 },
     },
     -- Compelled to flee.
     turn_evil = {
@@ -483,11 +497,11 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1,
     },
-    vengeance = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=20057)
-        id = 20057,
+    vengeance = {
+        id = 20053,
         duration = 3600,
-        max_stack = 1,
-        copy = { 20057, 20056, 20053, 20052, 20050, 20049 },
+        max_stack = 3,
+        copy = { 20052, 20050 }
     },
     -- Attack power reduced by $s1.
     vindication = {
@@ -496,9 +510,10 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 67, 26017 },
     },
-    will_to_survive = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=59752)
-        id = 59752,
-        duration = 0.1,
+    -- Increases speed by $s2%.
+    warhorse = {
+        id = 13819,
+        duration = 3600,
         max_stack = 1,
     },
 } )
@@ -543,6 +558,41 @@ spec:RegisterGlyphs( {
     [54931] = "turn_evil",
 } )
 
+local mod_blessed_hands = setfenv( function( base )
+    return base * ( 1 - 0.15 * talent.blessed_hands.rank )
+end, state )
+
+local mod_purifying_power_cd = setfenv( function( base )
+    return base * ( 1 - 0.1667 * talent.purifying_power.rank )
+end, state )
+
+local mod_purifying_power_cost = setfenv( function( base )
+    return base * ( 1 - 0.05 * talent.purifying_power.rank )
+end, state )
+
+local mod_divine_illumination = setfenv( function( base )
+    return base * ( buff.divine_illumination.up and 0.5 or 1 )
+end, state )
+
+local mod_benediction = setfenv( function( base )
+    return base * ( 1 - 0.02 * talent.benediction.rank )
+end, state )
+
+local mod_art_of_war = setfenv( function( base )
+    return base - 0.75 * ( buff.the_art_of_war.up and talent.the_art_of_war.rank or 0 )
+end, state )
+
+
+local aura_assigned
+
+spec:RegisterHook( "reset_precast", function()
+    if not aura_assigned then
+        class.abilityList.assigned_aura = "|cff00ccff[Assigned Aura]|r"
+        class.abilities.assigned_aura = class.abilities[ settings.assigned_aura or "devotion_aura" ]
+        aura_assigned = true
+    end
+end )
+
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -554,12 +604,13 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         talent = "aura_mastery",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135872,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "aura_mastery" )
         end,
     },
 
@@ -571,7 +622,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
 
-        spend = 0.26,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.26 ) ) end,
         spendType = "mana",
 
         talent = "avengers_shield",
@@ -579,6 +630,8 @@ spec:RegisterAbilities( {
         texture = 135874,
 
         handler = function ()
+            applyDebuff( "target", "avengers_shield" )
+            if talent.shield_of_the_templar.rank == 3 then applyDebuff( "target", "silenced_shield_of_the_templar" ); interrupt() end
         end,
     },
 
@@ -587,18 +640,21 @@ spec:RegisterAbilities( {
     avenging_wrath = {
         id = 31884,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return 180 - 30 * talent.sanctified_wrath.rank end,
         gcd = "off",
 
-        spend = 0.08,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.08 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135875,
 
         toggle = "cooldowns",
 
+        nodebuff = "forbearance",
+
         handler = function ()
+            applyBuff( "avenging_wrath" )
         end,
     },
 
@@ -610,14 +666,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.35,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.35 ) ) end,
         spendType = "mana",
 
         talent = "beacon_of_light",
-        startsCombat = true,
+        startsCombat = false,
         texture = 236247,
 
         handler = function ()
+            applyBuff( "beacon_of_light" )
         end,
     },
 
@@ -629,13 +686,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return glyph.blessing_of_kings.enabled and 0.03 or 0.06 end,
+        spend = function() return mod_benediction( mod_divine_illumination( glyph.blessing_of_kings.enabled and 0.03 or 0.06 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135995,
 
         handler = function ()
+            removeBuff( "blessing" )
+            applyBuff( "blessing_of_kings" )
         end,
     },
 
@@ -647,13 +706,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135906,
 
         handler = function ()
+            removeBuff( "blessing" )
+            applyBuff( "blessing_of_kings" )
         end,
 
         copy = { 19834, 19835, 19836, 19837, 19838, 25291, 27140, 48931, 48932 },
@@ -667,14 +728,16 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.07,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.07 ) ) end,
         spendType = "mana",
 
         talent = "blessing_of_sanctuary",
-        startsCombat = true,
+        startsCombat = false,
         texture = 136051,
 
         handler = function ()
+            removeBuff( "blessing" )
+            applyBuff( "blessing_of_sanctuary" )
         end,
     },
 
@@ -686,13 +749,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135970,
 
         handler = function ()
+            removeBuff( "blessing" )
+            applyBuff( "blessing_of_wisdom" )
         end,
 
         copy = { 19850, 19852, 19853, 19854, 25290, 27142, 48935, 48936 },
@@ -706,14 +771,22 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.06,
-        spend = function() return 0.06 * ( glyph.cleansing.enabled and 0.8 or 1 ) end,
+        spend = function() return mod_benediction( mod_divine_illumination( mod_purifying_power_cost( 0.06 ) ) * ( glyph.cleansing.enabled and 0.8 or 1 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135953,
 
+        buff = function()
+            if buff.dispellable_poison.up then return "dispellable_poison" end
+            if buff.dispellable_disease.up then return "dispellable_disease" end
+            return "dispellable_magic"
+        end,
+
         handler = function ()
+            removeBuff( "dispellable_poison" )
+            removeBuff( "dispellable_disease" )
+            removeBuff( "dispellable_magic" )
         end,
     },
 
@@ -725,10 +798,12 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135933,
 
         handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "concentration_aura" )
         end,
     },
 
@@ -740,13 +815,15 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.consecration.enabled and 10 or 8 end,
         gcd = "spell",
 
-        spend = 0.22,
+        spend = function() return mod_benediction( mod_divine_illumination( mod_purifying_power_cost( 0.22 ) ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135926,
 
         handler = function ()
+            applyBuff( "active_consecration" )
+            applyDebuff( "target", "consecration" )
         end,
 
         copy = { 20116, 20922, 20923, 20924, 27173, 48818, 48819 },
@@ -760,10 +837,12 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135890,
 
         handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "crusader_aura" )
         end,
     },
 
@@ -775,7 +854,7 @@ spec:RegisterAbilities( {
         cooldown = 4,
         gcd = "spell",
 
-        spend = function() return 0.05 * ( glyph.crusader_strike.enabled and 0.8 or 1 ) end,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) * ( glyph.crusader_strike.enabled and 0.8 or 1 ) end,
         spendType = "mana",
 
         talent = "crusader_strike",
@@ -794,10 +873,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135893,
 
+        nobuff = "devotion_aura",
+
         handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "devotion_aura" )
         end,
     },
 
@@ -809,16 +892,17 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "off",
 
-        spend = 0.03,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
         spendType = "mana",
 
         talent = "divine_favor",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135915,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "divine_favor" )
         end,
     },
 
@@ -831,12 +915,13 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         talent = "divine_illumination",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135895,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "divine_illumination" )
         end,
     },
 
@@ -848,12 +933,14 @@ spec:RegisterAbilities( {
         cooldown = 600,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136106,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "target", "divine_intervention" )
+            health.current = 0
         end,
     },
 
@@ -865,12 +952,13 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 237537,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "divine_plea" )
         end,
     },
 
@@ -879,18 +967,22 @@ spec:RegisterAbilities( {
     divine_protection = {
         id = 498,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return 180 - 30 * talent.sacred_duty.rank end,
         gcd = "off",
 
-        spend = 0.03,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135954,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
+
+        nodebuff = "forbearance",
 
         handler = function ()
+            applyBuff( "divine_protection" )
+            applyDebuff( "player", "forbearance" )
         end,
     },
 
@@ -903,12 +995,13 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "divine_sacrifice",
-        startsCombat = true,
+        startsCombat = false,
         texture = 253400,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "divine_sacrifice" )
         end,
     },
 
@@ -917,18 +1010,22 @@ spec:RegisterAbilities( {
     divine_shield = {
         id = 642,
         cast = 0,
-        cooldown = 300,
+        cooldown = function() return 300 - 30 * talent.sacred_duty.rank end,
         gcd = "spell",
 
-        spend = 0.03,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135896,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
+
+        nodebuff = "forbearance",
 
         handler = function ()
+            applyBuff( "divine_shield" )
+            applyDebuff( "player", "forbearance" )
         end,
     },
 
@@ -940,7 +1037,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.12 ) ) end,
         spendType = "mana",
 
         talent = "divine_storm",
@@ -955,8 +1052,8 @@ spec:RegisterAbilities( {
     -- Causes 180 to 194 Holy damage to an enemy target.  If the target is Undead or Demon, it will always critically hit.
     exorcism = {
         id = 879,
-        cast = 1.5,
-        cooldown = 15,
+        cast = function() return mod_art_of_war( 1.5 ) end,
+        cooldown = function() return mod_benediction( mod_purifying_power_cd( 15 ) ) end,
         gcd = "spell",
 
         spend = 0.08,
@@ -979,10 +1076,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135824,
 
+        nobuff = "fire_resistance_aura",
+
         handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "fire_resistance_aura" )
         end,
     },
 
@@ -990,17 +1091,19 @@ spec:RegisterAbilities( {
     -- Heals a friendly target for 86 to 98.
     flash_of_light = {
         id = 19750,
-        cast = 1.5,
+        cast = function() return mod_art_of_war( 1.5 ) - 0.75 * ( buff.infusion_of_light.up and talent.infusion_of_light.rank or 0 ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.07,
+        spend = function() return mod_divine_illumination( 0.07 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135907,
 
         handler = function ()
+            removeBuff( "divine_favor" )
+            removeBuff( "infusion_of_light" )
         end,
 
         copy = { 19939, 19940, 19941, 19942, 19943, 27137, 48784, 48785 },
@@ -1014,10 +1117,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135865,
 
+        nobuff = "frost_resistance_aura",
+
         handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "frost_resistance_aura" )
         end,
     },
 
@@ -1029,13 +1136,18 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return glyph.blessing_of_kings.enabled and 0.06 or 0.12 end,
+        spend = function() return mod_benediction( mod_divine_illumination( glyph.blessing_of_kings.enabled and 0.06 or 0.12 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135993,
 
+        item = 21177,
+        bagItem = true,
+
         handler = function ()
+            removeBuff( "my_greater_blessing" )
+            applyBuff( "greater_blessing_of_kings" )
         end,
     },
 
@@ -1047,13 +1159,18 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.1,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.1 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135908,
 
+        item = 21177,
+        bagItem = true,
+
         handler = function ()
+            removeBuff( "my_greater_blessing" )
+            applyBuff( "greater_blessing_of_might" )
         end,
 
         copy = { 25916, 27141, 48933, 48934 },
@@ -1067,13 +1184,18 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.11,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.11 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135912,
 
+        item = 21177,
+        bagItem = true,
+
         handler = function ()
+            removeBuff( "my_greater_blessing" )
+            applyBuff( "greater_blesisng_of_wisdom" )
         end,
 
         copy = { 25918, 27143, 48937, 48938 },
@@ -1084,18 +1206,19 @@ spec:RegisterAbilities( {
     hammer_of_justice = {
         id = 853,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - 10 * talent.improved_hammer_of_justice.rank - 5 * talent.judgements_of_the_just.rank end,
         gcd = "spell",
 
-        spend = 0.03,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135963,
 
-        toggle = "cooldowns",
+        toggle = "interrupts",
 
         handler = function ()
+            applyDebuff( "target", "hammer_of_justice" )
         end,
 
         copy = { 5588, 5589, 10308 },
@@ -1109,7 +1232,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.06 ) ) end,
         spendType = "mana",
 
         talent = "hammer_of_the_righteous",
@@ -1128,11 +1251,13 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.avenging_wrath.enabled and buff.avenging_wrath.up and 3 or 6 end,
         gcd = "spell",
 
-        spend = function() return glyph.hammer_of_wrath.enabled and 0 or 0.12 end,
+        spend = function() return mod_benediction( mod_divine_illumination( glyph.hammer_of_wrath.enabled and 0 or 0.12 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132326,
+
+        usable = function() return target.health.pct < 20 end,
 
         handler = function ()
         end,
@@ -1148,36 +1273,41 @@ spec:RegisterAbilities( {
         cooldown = 25,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return mod_benediction( mod_divine_illumination( mod_blessed_hands( 0.06 ) ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135968,
 
         handler = function ()
+            applyBuff( "hand_of_freedom" )
         end,
     },
 
 
     -- A targeted party or raid member is protected from all physical attacks for 6 sec, but during that time they cannot attack or use physical abilities.  Players may only have one Hand on them per Paladin at any one time.  Once protected, the target cannot be targeted by Divine Shield, Divine Protection, or Hand of Protection again for 2 min.  Cannot be targeted on players who have used Avenging Wrath within the last 30 sec.
     hand_of_protection = {
-        id = 1022,
+        id = 10278,
         cast = 0,
-        cooldown = 300,
+        cooldown = function() return 300 - 60 * talent.guardians_favor.rank end,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.06 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135964,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
+
+        nodebuff = "forbearance",
 
         handler = function ()
+            applyBuff( "hand_of_protection" )
+            applyDebuff( "forbearance" )
         end,
 
-        copy = { 5599, 10278 },
+        copy = { 1022, 5599 },
     },
 
 
@@ -1189,12 +1319,14 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         spend = 0.03,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135984,
 
         handler = function ()
+            applyDebuff( "target", "hand_of_reckoning" )
         end,
     },
 
@@ -1206,15 +1338,16 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return mod_benediction( mod_divine_illumination( mod_blessed_hands( 0.06 ) ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135966,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "hand_of_sacrifice" )
         end,
     },
 
@@ -1226,15 +1359,16 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return mod_benediction( mod_divine_illumination( mod_blessed_hands( 0.06 ) ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135967,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "hand_of_salvation" )
         end,
     },
 
@@ -1242,17 +1376,20 @@ spec:RegisterAbilities( {
     -- Heals a friendly target for 53 to 64.
     holy_light = {
         id = 635,
-        cast = 2.5,
+        cast = function() return 2.5 - ( 0.5 * buff.lights_grace.stack ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.29,
+        spend = function() return mod_divine_illumination( 0.29 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135920,
 
         handler = function ()
+            removeBuff( "divine_favor" )
+            removeBuff( "infusion_of_light" )
+            if talent.lights_grace.rank == 3 then applyBuff( "lights_grace" ) end
         end,
 
         copy = { 639, 647, 1026, 1042, 3472, 10328, 10329, 25292, 27135, 27136, 48781, 48782 },
@@ -1266,14 +1403,15 @@ spec:RegisterAbilities( {
         cooldown = 8,
         gcd = "spell",
 
-        spend = 0.1,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.1 ) ) end,
         spendType = "mana",
 
         talent = "holy_shield",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135880,
 
         handler = function ()
+            applyBuff( "holy_shield" )
         end,
     },
 
@@ -1285,7 +1423,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.holy_shock.enabled and 5 or 6 end,
         gcd = "spell",
 
-        spend = 0.18,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.18 ) ) end,
         spendType = "mana",
 
         talent = "holy_shock",
@@ -1293,6 +1431,7 @@ spec:RegisterAbilities( {
         texture = 135972,
 
         handler = function ()
+            removeBuff( "divine_favor" )
         end,
     },
 
@@ -1301,16 +1440,17 @@ spec:RegisterAbilities( {
     holy_wrath = {
         id = 2812,
         cast = 0,
-        cooldown = function() return glyph.holy_wrath.enabled and 15 or 30 end,
+        cooldown = function() return mod_purifying_power_cd( glyph.holy_wrath.enabled and 15 or 30 ) end,
         gcd = "spell",
 
-        spend = 0.2,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.2 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135902,
 
         handler = function ()
+            if target.is_boss and ( target.is_undead or target.is_demon ) then applyDebuff( "target", "holy_wrath" ) end
         end,
 
         copy = { 10318, 27139, 48816, 48817 },
@@ -1321,17 +1461,24 @@ spec:RegisterAbilities( {
     judgement_of_justice = {
         id = 53407,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return 10 - talent.improved_judgements.rank end,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 236258,
 
         handler = function ()
+            if talent.judgements_of_the_pure.enabled then applyBuff( "judgements_of_the_pure" ) end
+            if talent.judgements_of_the_just.enabled then applyDebuff( "target", "judgements_of_the_just" ) end
+            if talent.judgements_of_the_wise.rank == 3 then gain( 0.25 * mana.modmax, "mana" ) end
             if glyph.seal_of_command.enabled and buff.seal_of_command.up then gain( 0.08 * mana.modmax, "mana" ) end
+            removeDebuff( "target", "judgement" )
+            applyDebuff( "target", "judgement_of_justice" )
+            setCooldown( "judgement_of_light", action.judgement_of_light.cooldown )
+            setCooldown( "judgement_of_wisdom", action.judgement_of_wisdom.cooldown )
         end,
     },
 
@@ -1340,17 +1487,24 @@ spec:RegisterAbilities( {
     judgement_of_light = {
         id = 20271,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return 10 - talent.improved_judgements.rank end,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135959,
 
         handler = function ()
+            if talent.judgements_of_the_pure.enabled then applyBuff( "judgements_of_the_pure" ) end
+            if talent.judgements_of_the_just.enabled then applyDebuff( "target", "judgements_of_the_just" ) end
+            if talent.judgements_of_the_wise.rank == 3 then gain( 0.25 * mana.modmax, "mana" ) end
             if glyph.seal_of_command.enabled and buff.seal_of_command.up then gain( 0.08 * mana.modmax, "mana" ) end
+            removeDebuff( "target", "judgement" )
+            applyDebuff( "target", "judgement_of_light" )
+            setCooldown( "judgement_of_justice", action.judgement_of_justice.cooldown )
+            setCooldown( "judgement_of_wisdom", action.judgement_of_wisdom.cooldown )
         end,
     },
 
@@ -1359,17 +1513,24 @@ spec:RegisterAbilities( {
     judgement_of_wisdom = {
         id = 53408,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return 10 - talent.improved_judgements.rank end,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 236255,
 
         handler = function ()
+            if talent.judgements_of_the_pure.enabled then applyBuff( "judgements_of_the_pure" ) end
+            if talent.judgements_of_the_just.enabled then applyDebuff( "target", "judgements_of_the_just" ) end
+            if talent.judgements_of_the_wise.rank == 3 then gain( 0.25 * mana.modmax, "mana" ) end
             if glyph.seal_of_command.enabled and buff.seal_of_command.up then gain( 0.08 * mana.modmax, "mana" ) end
+            removeDebuff( "target", "judgement" )
+            applyDebuff( "target", "judgement_of_wisdom" )
+            setCooldown( "judgement_of_justice", action.judgement_of_justice.cooldown )
+            setCooldown( "judgement_of_light", action.judgement_of_light.cooldown )
         end,
     },
 
@@ -1378,7 +1539,7 @@ spec:RegisterAbilities( {
     lay_on_hands = {
         id = 48788,
         cast = 0,
-        cooldown = function() return glyph.lay_on_hands.enabled and 900 or 1200 end,
+        cooldown = function() return mod_benediction( ( glyph.lay_on_hands.enabled and 900 or 1200 ) - ( 120 * talent.improved_lay_on_hands.rank ) ) end,
         gcd = "spell",
 
         startsCombat = true,
@@ -1391,6 +1552,8 @@ spec:RegisterAbilities( {
             if glyph.divinity.enabled then
                 gain( 3900, "mana" )
             end
+            if talent.improved_lay_on_hands.enabled then applyBuff( "lay_on_hands" ) end
+            applyDebuff( "player", "forbearance" )
         end,
     },
 
@@ -1402,13 +1565,17 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.06 * ( glyph.cleansing.enabled and 0.8 or 1 ) end,
+        spend = function() return mod_benediction( mod_divine_illumination( mod_purifying_power_cost( 0.06 ) ) ) * ( glyph.cleansing.enabled and 0.8 or 1 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135949,
 
+        buff = function() return buff.dispellable_disease.up and "dispellable_disease" or "dispellable_poison" end,
+
         handler = function ()
+            removeBuff( "dispellable_disease" )
+            removeBuff( "dispellable_poison" )
         end,
     },
 
@@ -1420,10 +1587,10 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.64,
+        spend = function() return mod_divine_illumination( 0.64 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135955,
 
         handler = function ()
@@ -1440,16 +1607,20 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        spend = 0.09,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.09 ) ) end,
         spendType = "mana",
 
         talent = "repentance",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135942,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
+
+        usable = function() return not target.is_boss, "not usable against bosses" end,
 
         handler = function ()
+            applyDebuff( "target", "repentance" )
+            removeDebuff( "target", "righteous_vengeance" )
         end,
     },
 
@@ -1461,10 +1632,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135873,
 
+        nobuff = "retribution_aura",
+
         handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "retribution_aura" )
         end,
     },
 
@@ -1491,10 +1666,11 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135962,
 
         handler = function ()
+            applyBuff( "righteous_fury" )
         end,
     },
 
@@ -1506,13 +1682,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.12 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 236249,
 
         handler = function ()
+            applyBuff( "sacred_shield" )
         end,
     },
 
@@ -1524,14 +1701,16 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.14,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.14 ) ) end,
         spendType = "mana",
 
         talent = "seal_of_command",
-        startsCombat = true,
+        startsCombat = false,
         texture = 132347,
 
         handler = function ()
+            removeBuff( "seal" )
+            applyBuff( "seal_of_command" )
         end,
     },
 
@@ -1543,13 +1722,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.14,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.14 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135971,
 
         handler = function ()
+            removeBuff( "seal" )
+            applyBuff( "seal_of_justice" )
         end,
     },
 
@@ -1561,13 +1742,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.14,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.14 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135917,
 
         handler = function ()
+            removeBuff( "seal" )
+            applyBuff( "seal_of_light" )
         end,
     },
 
@@ -1579,13 +1762,35 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.14,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.14 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132325,
 
         handler = function ()
+            removeBuff( "seal" )
+            applyBuff( "seal_of_righteousness" )
+        end,
+    },
+
+
+    -- Fills the Paladin with holy power, causing attacks to apply Holy Vengeance, which deals [(0.013 * Spell power + 0.025 * Attack power) * 5] additional Holy damage over 15 sec.  Holy Vengeance can stack up to 5 times.  Each of the Paladin's attacks also deals up to 33% weapon damage as additional Holy damage, based on the number of stacks.  Only one Seal can be active on the Paladin at any one time.  Lasts 30 min.  Unleashing this Seal's energy will deal (1 + 0.22 * Spell power + 0.14 * Attack power) Holy damage to an enemy, increased by 10% for each application of Holy Vengeance on the target.
+    seal_of_vengeance = {
+        id = 31801,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() return mod_benediction( mod_divine_illumination( 0.14 ) ) end,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135969,
+
+        handler = function ()
+            removeBuff( "seal" )
+            applyBuff( "seal_of_vengeance" )
         end,
     },
 
@@ -1597,13 +1802,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.14 * ( glyph.wise.enabled and 0.5 or 1 ) end,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.14 ) * ( glyph.wise.enabled and 0.5 or 1 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135960,
 
         handler = function ()
+            removeBuff( "seal" )
+            applyBuff( "seal_of_wisdom" )
         end,
     },
 
@@ -1615,10 +1822,12 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135974,
 
         handler = function ()
+            if buff.sense_undead.up then removeBuff( "sense_undead" )
+            else applyBuff( "sense_undead" ) end
         end,
     },
 
@@ -1630,10 +1839,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136192,
 
+        nobuff = "shadow_resistance_aura",
+
         handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "shadow_resistance_aura" )
         end,
     },
 
@@ -1645,11 +1858,13 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = function() return 0.06 * ( glyph.shield_of_righteousness.enabled and 0.2 or 1 ) end,
+        spend = function() return mod_benediction( mod_divine_illumination( 0.06 ) ) * ( glyph.shield_of_righteousness.enabled and 0.2 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 236265,
+
+        equipped = "shield",
 
         handler = function ()
         end,
@@ -1665,32 +1880,45 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.turn_evil.enabled and 8 or 0 end,
         gcd = "spell",
 
-        spend = 0.09,
+        spend = function() return mod_divine_illumination( 0.09 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135983,
 
-        handler = function ()
-        end,
-    },
-
-
-    -- Removes all movement impairing effects and all effects which cause loss of control of your character.  This effect shares a cooldown with other similar effects.
-    will_to_survive = {
-        id = 59752,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-
-        startsCombat = true,
-        texture = 136129,
-
-        toggle = "cooldowns",
+        usable = function() return target.is_undead or target.is_demon, "target must be undead or demon" end,
 
         handler = function ()
+            applyDebuff( "target", "turn_evil" )
         end,
     },
+} )
+
+
+local auras = {}
+
+spec:RegisterSetting( "assigned_aura", "retribution_aura", {
+    type = "select",
+    name = "Assigned Aura",
+    desc = "Select the Aura that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Aura]|r in your priority.",
+    width = "full",
+    values = function()
+        table.wipe( auras )
+
+        auras.devotion_aura = class.abilityList.devotion_aura
+        auras.retribution_aura = class.abilityList.retribution_aura
+        auras.concentration_aura = class.abilityList.concentration_aura
+        auras.shadow_resistance_aura = class.abilityList.shadow_resistance_aura
+        auras.frost_resistance_aura = class.abilityList.frost_resistance_aura
+        auras.fire_resistance_aura = class.abilityList.fire_resistance_aura
+        auras.crusader_aura = class.abilityList.crusader_aura
+
+        return auras
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.assigned_aura = val
+        class.abilities.assigned_aura = class.abilities[ val ]
+    end,
 } )
 
 
@@ -1707,8 +1935,18 @@ spec:RegisterOptions( {
     damage = false,
     damageExpiration = 6,
 
-    -- package = "",
+    potion = "speed",
+
+    package = "Retribution (wowtbc.gg)",
+
     -- package1 = "",
     -- package2 = "",
     -- package3 = "",
 } )
+
+
+spec:RegisterPack( "Retribution (wowtbc.gg)", 20221002, [[Hekili:Ls1YUTnmqWVLGaKlTr2YopAlIZHEl(qBrvb6nksjUwInsKcKuX1x43ExkfBtjlNwGcdylto7Sp0odjM8dscNzbYxwmFXI45ZxefF3YL3UKKy31aKKgw(ZSc8bjRg)(7GvlYATcL0F3UkfJ75WOA1549LwBJ5tZMTvT1MLhvuGpzREEwEfZyUUOvWbZm9rsUUHvX4c5msswROY(KKKnzffJvKPbYXJXSi4COhjyYjj)OuyC0gTqPf2DoQ)FzmdWDuL0rTLGJEOIC0FQz2shTRAIijvcJ10niGnS2kl(4x6gmGKLvbCYNjj5iXGwW8L5MnrgGvfXvBrYVYrz5wXlqkiHAbGPELJgts8N6NsESPQnPVaYcGjXPK13e)h8)4K8NRQRzsUN9L)JSFkjArrPfuTgjymEQUXt1EumFpiKfPB9tWWuGiVnejx8IqcPnvaBeS7cH1O6)DaI7dr0AGuS4RnJa9HZ2I4qGf1a46O06Op4O3p)iD)QLxa14n(MDRWWv1E2(yykhGPYpqgL745HWlz11GUJVjMkXNFt6TFT(6e0yv6UsmErysZ1TgghtRbLspdJt6YjEx0Z0iG3C2Q7chTwHbweKuL0a5yt6)Np6BF79mu3LY09JAMoQT5ivWVv6CHPVZU7S0yz6cWgjmPCOwfSVwQQ29682IFsA0aU)NXokE3JmWSjL1QhTo2fmwCsSrXvSNQBuAR33yrVSZBF05pe5wJC2AlvAmG9Ej(eR2iQWxaxEPJg4o6OFR3zZT2Fds3xZTQmqJpJ(AU1U198BIou7VB1m0LuuibExPgacV6eFK3l2SAOE(QHRuRINk(x9j(Rr)4KrpWG4uocdzOBr4nbUdHh37geEYb1F4HtOH9fsOU)H7NF2i6u0H3osaprH2jD854TMqJKKNJMbHeiO80FrVIleYEHYHr9jIQbTYbzHh)y1JFzN8Nd]] )
+
+spec:RegisterPack( "Protection Paladin (wowtbc.gg)", 20221002, [[Hekili:LAv3Unkpq0hMkv1QVVsG0nB6UQzVyVR5IUvIvAVdWGNaElyJSnjksr8SVJHgW8tuRuvLACSN5mNz8mhNaVGFh4tjAi45LUlx656U0XBT7dRwf4Rpwcb(LKKxjP4coPa))lsHgs0mbVo6fsoHYWf3CqCqhN4KMERXHJ5cc1aSsujtqNY06s13xSOZmCLo)1fj5eL6U0kgfulk7q(UYwGxe4hxXY1pXdINNL3JXOesWTXGWOuO1sqLe4)7mMQoQuYesM(yDumrb06idX1zqDuhzQJ(JKOZQJAiItGFotPvnfgyhPkxJlFUPqbCsCoqd(zGFcckizedf3TZrbKChQ4ac(11remn2dHahkyasIFuh5f4tAsoKXOTHIDHjIIccNgOn0)tG(MzrFpWtbchl)i(3)bXFkmswAMgevkoOugO(IbQZwrmrHXtdpyQG2HaTCLTLu2EghclZbYiZ(QTzLI2phyXABlQuqis(c1iJE4IP4B1lQq7OijsGgQYyqoTPY5ALY2hAG8BtsvqQoF(WO75(EHFqZqZ94nyJirMcAhMkKcfMoZtNS3SItbcYZB7PrMi)4BvBtyVCBjjnvkg5xFQ5T0o3YiffG0CDJtg9x5JZX7T9jrWvqcsKP3xEd6rAd60EPr(S6IzcoKqCkbujHRRJESoAT1L2FROPqbEIjahykQOObUbDvdmk3WIHrh)APeW5Xys)W(zNLGwYIRmFjKujh3(E5rxnjhdPdRav22JnwDPF4Uk5rNZ(0hObN)bgBXTvkC6B0O75Tnj7R4N9JTFkOkAQBT)5VhNemw0Phh4FGi5nrZ)PIsHuBeBx2Qwz6SBevDQ3Ak1IDSC8zHRUcFdzM3t2AoaD9xjArmiX1yqQ3wVTflLt3L1)Tzb(cclLJLxZDZ8MmSW()SDB(yxnZJ2KYRbWPfX335Mc6LCUZD0Prpy05sNS91d1y(H3CE39GW76)Mz9FW07umSDz4Zc2Ny9mG92TY(270jZpGk2k0gkCjP9nUtOtV0T9r9YPwW1vgV(Mrc0NonwC(2jOzXoJe8GZNxN12eBz1bP(8QO2MmJuOHf2YNpU29IE8MUiPsNjK4485FEuZaFW)(]] )
+
+spec:RegisterPack( "Holy Paladin (wowtbc.gg)", 20221002, [[Hekili:vsvtVTnoq0FmbiibTrw2jDD7I4Cyp14dPfqfyVrjkYXsCdfPajL9gGa(BVdL2vHsvPP9Ia1W38Mp4mpYAY3izCQdipSjDZM1PPBswVn96nxtYCp1cKSwk7rAfEqrBWVFwlFYx8vQKYfkFXfN0NCLSKQQldqFsQP8aLwDNHHWRDUw7FUA1im8Kt(4kMKATxv1j4GDvnY5vTduUIKv2jKU7vKYLZSni7TadnJ0l4CyajyzKSVvlS(IwJqBeompd)vsTa3xOXS1vd(IXuXx83gQR2x0NgjKmPW6S9ne4aTt6WJp03GafTucCYFrYyiXGrqjzuMtCeY5AxsjqzAvU(qUuuv78f78fPdi0kSGMEnXfY9xJ2YUdhsSavMW1NuVqsWuGItclx3e446xLdh1ubUeowpufdR5B9fRt9fN7lAOkAslGpokxV9Trj6)0XRGg8MPb6MqGweZq9eLei6p8R0XSuMb452Abi5Z7xtUmq5FeNa0JGQsOQYpfE9Mf8TXi5IJcfKlKYUgHIoyCc8pUa8wjqNb7tXWA1lq060yiDwmQoOXoh16fI3b6rTzoWnXad7hy3qZECoSF3rGOECFZn8gAcVHGUZQaRTN1BERxqqbnca3TUdjTFS6Tcho)BbMz4nieJ3Ck5hJXfJHryZ5qtyJ(5NJn2P4afhNUCwVBysje2jtsW)QnmHTzAxfNNBnat3usFrb4)DXaoJOSl8toTZqN7k68rWydyhLTizNOgfoXIJd330QnUGE0gFXaP(IEDNe)EmmDU6WWWOgvix0hesuk9SZ8ftvF3hmH88fMtxcg8mgr)E)(bITjJ1X72Tc1BfvkCTkK2rGWRMPp9EXHDVU42U0yxNQkf8CQ(vm2fuxcomB0521PNhlsD720xLKb1240jw5ywDm5UPvXujL4BwqczHRdsgXMhKiITmQiSG39caX2FzFFsTT8g7YTWyhJ39I6j)3c2DRp)N7(lBql68fZ2jF(557JxgZ24oxyxH89d]] )
