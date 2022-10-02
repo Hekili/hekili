@@ -446,17 +446,6 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    -- The threat caused by your next damaging attack and all actions taken for $57933d afterwards will be transferred to the target.  In addition, all damage caused by the target is increased by $57933s1% during this time.
-    tricks_of_the_trade = {
-        id = 57934,
-        duration = 30,
-        max_stack = 1,
-    },
-    tricks_of_the_trade_buff = {
-        id = 57933,
-        duration = function() return glyph.tricks_of_the_trade.enabled and 10 or 6 end,
-        max_stack = 1,
-    },
     -- $s1% increased critical strike chance with combo moves.
     turn_the_tables = {
         id = 52915,

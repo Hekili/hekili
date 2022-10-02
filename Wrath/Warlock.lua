@@ -265,6 +265,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    -- Next spell crit is 100%.
+    empowered_imp = {
+        id = 47283,
+        duration = 8,
+        max_stack = 1,
+    },
     -- Spell casting speed increased by $s1%.
     eradication = {
         id = 64371,
@@ -337,7 +343,7 @@ spec:RegisterAuras( {
     -- $s1 Fire damage every $t1 seconds.
     immolate = {
         id = 47811,
-        duration = 15,
+        duration = function() return 15 + ( 3 * talent.molten_core.rank ) end,
         tick_time = 3,
         max_stack = 1,
         copy = { 348, 707, 1094, 2941, 11665, 11667, 11668, 25309, 27215, 47810, 47811 },
@@ -355,6 +361,12 @@ spec:RegisterAuras( {
         duration = 2,
         max_stack = 1,
     },
+    -- Spell Power increase from Life Tap.
+    life_tap = {
+        id = 63321,
+        duration = 40,
+        max_stack = 1,
+    },
     -- Demon Form.  Armor contribution from items increased by $47241s2%.  Chance to be critically hit by melee reduced by 6%.  Damage increased by $47241s3%.  Stun and snare duration reduced by $54817s1%.
     metamorphosis = {
         id = 47241,
@@ -367,6 +379,43 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
         copy = { 71165, 71162, 47383 },
+    },
+    nether_protection_holy = {
+        id = 54370,
+        duration = 8,
+        max_stack = 1,
+    },
+    nether_protection_fire = {
+        id = 54371,
+        duration = 8,
+        max_stack = 1,
+    },
+    nether_protection_frost = {
+        id = 54372,
+        duration = 8,
+        max_stack = 1,
+    },
+    nether_protection_arcane = {
+        id = 54373,
+        duration = 8,
+        max_stack = 1,
+    },
+    nether_protection_shadow = {
+        id = 54374,
+        duration = 8,
+        max_stack = 1,
+    },
+    nether_protection_nature = {
+        id = 54375,
+        duration = 8,
+        max_stack = 1,
+    },
+    -- Movement speed reduction (after Fear).
+    nightmare = {
+        id = 60947,
+        duration = 5,
+        max_stack = 1,
+        copy = { 60946 }
     },
     -- Fire and Shadow damage increased by $s1%.
     pyroclasm = {
@@ -422,12 +471,6 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 3,
         copy = { 32391, 32390, 32389, 32388, 32386 },
-    },
-    -- Chance to be critically hit with spells increased by $s1%.
-    shadow_mastery = {
-        id = 17800,
-        duration = 30,
-        max_stack = 1,
     },
     -- Your next Shadow Bolt becomes an instant cast spell.
     shadow_trance = {
@@ -511,6 +554,12 @@ spec:RegisterAuras( {
         alias = { "curse_of_the_elements", "curse_of_doom", "curse_of_agony", "curse_of_weakness", "curse_of_tongues", "curse_of_exhaustion" },
         aliasMode = "first",
         aliasType = "debuff",
+    },
+
+    armor = {
+        alias = { "fel_armor", "demon_armor", "demon_skin" },
+        aliasMode = "first",
+        aliasType = "buff"
     }
 } )
 
@@ -535,6 +584,7 @@ spec:RegisterGlyphs( {
     [56248] = "imp",
     [56242] = "incinerate",
     [58081] = "kilrogg",
+    [63320] = "life_tap",
     [63303] = "metamorphosis",
     [70947] = "quick_decay",
     [56226] = "searing_pain",
@@ -572,6 +622,11 @@ local mod_cataclysm = setfenv( function( base )
 end, state )
 
 
+local mod_suppression = setfenv( function( base )
+    return base * ( 1 - 0.02 * talent.suppression.rank )
+end, state )
+
+
 local finish_shadow_cleave = setfenv( function()
     spend( class.abilities.shadow_cleave.spend * mana.modmax, "mana" )
 end, state )
@@ -582,6 +637,44 @@ spec:RegisterStateFunction( "start_shadow_cleave", function()
 end )
 
 
+spec:RegisterStateExpr( "persistent_multiplier", function( action )
+    local mult = 1
+    if action == "corruption" then
+        if talent.deaths_embrace.enabled and target.health.pct < 35 then
+            mult = mult * ( 1 + 0.04 * talent.deaths_embrace.rank )
+        end
+
+        if buff.tricks_of_the_trade_buff.up then
+            mult = mult * 1.15
+        end
+    end
+
+    return 1
+end )
+
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+
+    if sourceGUID == state.GUID then
+        if subtype == "SPELL_AURA_APPLIED" then
+            local aura = class.auras[ spellID ]
+
+            if aura == class.auras.corruption then
+                local mult = 1
+
+                if state.talent.deaths_embrace.enabled and aura == class.auras.corruption and UnitGUID( "target" ) == destGUID and ( UnitHealth( "target" ) / ( UnitHealthMax( "target" ) or 1 ) < 0.35 ) then
+                    mult = mult * 1 + 0.04 * state.talent.deaths_embrace.rank
+                end
+
+                if FindUnitBuffByID( "player", 57933 ) then
+                    mult = mult * 1.15
+                end
+
+                ns.saveDebuffModifier( spellID, mult )
+                ns.trackDebuff( spellID, destGUID, GetTime(), true )
+            end
+        end
+    end
+end )
 
 local aliasesSet = {}
 
@@ -590,8 +683,17 @@ spec:RegisterStateExpr( "soul_shards", function()
 end )
 
 spec:RegisterHook( "reset_precast", function()
-    class.abilities.solo_curse = class.abilities[ settings.solo_curse or "curse_of_agony" ]
-    class.abilities.group_curse = class.abilities[ settings.group_curse or "curse_of_the_elements" ]
+    if settings.solo_curse == "curse_of_doom" and target.time_to_die < 65 then
+        class.abilities.solo_curse = class.abilities.curse_of_agony
+    else
+        class.abilities.solo_curse = class.abilities[ settings.solo_curse or "curse_of_agony" ]
+    end
+
+    if settings.group_curse == "curse_of_doom" and target.time_to_die < 65 then
+        class.abilities.group_curse = class.abilities.curse_of_agony
+    else
+        class.abilities.group_curse = class.abilities[ settings.group_curse or "curse_of_the_elements" ]
+    end
 
     if not aliasesSet.solo_curse then
         class.abilityList.solo_curse = "|cff00ccff[Solo Curse]|r"
@@ -619,6 +721,12 @@ spec:RegisterStateExpr( "curse_grouped", function()
     if settings.group_type == "party" and IsInGroup() then return true end
     if settings.group_type == "raid" and IsInRaid() then return true end
     return false
+end )
+
+spec:RegisterHook( "runHandler", function( action )
+    if buff.empowered_imp.up and class.abilities[ action ].startsCombat then
+        removeBuff( "empowered_imp" )
+    end
 end )
 
 
@@ -700,11 +808,17 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135807,
 
+        debuff = function()
+            return debuff.immolate.up and "immolate" or "shadowflame"
+        end,
+
         handler = function ()
             if not glyph.conflagrate.enabled then
                 if debuff.immolate.up then removeDebuff( "target", "immolate" )
                 elseif debuff.shadowflame.up then removeDebuff( "target", "shadowflame" ) end
             end
+            if talent.aftermath.rank == 2 then applyDebuff( "target", "aftermath" ) end
+            if talent.backdraft.enabled then applyBuff( "backdraft", nil, 3 ) end
         end,
     },
 
@@ -717,6 +831,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = 0.09,
+        spend = function() return mod_suppression( 0.09 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -724,6 +839,7 @@ spec:RegisterAbilities( {
 
         handler = function( rank )
             applyDebuff( "target", "corruption" )
+            debuff.corruption.pmultiplier = persistent_multiplier
         end,
 
         copy = { 6222, 6223, 7648, 11671, 11672, 25311, 27216, 47812, 47813 },
@@ -815,9 +931,9 @@ spec:RegisterAbilities( {
         id = 980,
         cast = 0,
         cooldown = 0,
-        gcd = "spell",
+        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = 0.1,
+        spend = function() return mod_suppression( 0.1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -836,9 +952,9 @@ spec:RegisterAbilities( {
         id = 603,
         cast = 0,
         cooldown = 60,
-        gcd = "spell",
+        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = 0.15,
+        spend = function() return mod_suppression( 0.15 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -859,9 +975,9 @@ spec:RegisterAbilities( {
         id = 18223,
         cast = 0,
         cooldown = 0,
-        gcd = "spell",
+        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = 0.06,
+        spend = function() return mod_suppression( 0.06 ) end,
         spendType = "mana",
 
         talent = "curse_of_exhaustion",
@@ -879,9 +995,9 @@ spec:RegisterAbilities( {
         id = 1490,
         cast = 0,
         cooldown = 0,
-        gcd = "spell",
+        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = 0.1,
+        spend = function() return mod_suppression( 0.1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -900,9 +1016,9 @@ spec:RegisterAbilities( {
         id = 1714,
         cast = 0,
         cooldown = 0,
-        gcd = "spell",
+        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = 0.04,
+        spend = function() return mod_suppression( 0.04 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -921,9 +1037,9 @@ spec:RegisterAbilities( {
         id = 702,
         cast = 0,
         cooldown = 0,
-        gcd = "spell",
+        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = 0.1,
+        spend = function() return mod_suppression( 0.01 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -974,7 +1090,7 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "spell",
 
-        spend = 0.23,
+        spend = function() return mod_suppression( 0.23 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1002,6 +1118,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 136185,
+        essential = true,
 
         handler = function ()
             applyBuff( "demon_armor" )
@@ -1043,6 +1160,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 136185,
+        essential = true,
 
         handler = function ()
             applyDebuff( "target", "demon_skin" )
@@ -1092,7 +1210,7 @@ spec:RegisterAbilities( {
     demonic_empowerment = {
         id = 47193,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 * ( 1 - ( 0.1 * talent.nemesis.rank ) ) end,
         gcd = "off",
 
         spend = 0.06,
@@ -1136,7 +1254,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.17,
+        spend = function() return mod_suppression( 0.17 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1146,6 +1264,8 @@ spec:RegisterAbilities( {
 
         start = function( rank )
             applyDebuff( "target", "drain_life" )
+            if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
+            -- TODO: Decide whether to model health gains; Soul Siphon.
         end,
 
         copy = { 699, 709, 7651, 11699, 11700, 27219, 27220, 47857 },
@@ -1159,7 +1279,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.17,
+        spend = function() return mod_suppression( 0.17 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1180,7 +1300,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.14,
+        spend = function() return mod_suppression( 0.14 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1190,6 +1310,7 @@ spec:RegisterAbilities( {
 
         start = function( rank )
             applyDebuff( "target", "drain_soul" )
+            if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
         end,
 
         copy = { 8288, 8289, 11675, 27217, 47855 },
@@ -1222,7 +1343,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = function() return mod_suppression( 0.12 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1248,6 +1369,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 136156,
+        essential = true,
 
         handler = function ()
             applyBuff( "fel_armor" )
@@ -1261,7 +1383,7 @@ spec:RegisterAbilities( {
     fel_domination = {
         id = 18708,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return 180 * ( 1 - ( 0.1 * talent.nemesis.rank ) ) end,
         gcd = "off",
 
         talent = "fel_domination",
@@ -1292,6 +1414,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "haunt" )
+            if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
+            if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
         end,
     },
 
@@ -1304,7 +1428,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            return ability.health_cost[ ability.id ] or 520
+            return ( ability.health_cost[ ability.id ] or 520 ) * ( 1 + 0.1 * talent.improved_health_funnel.rank )
         end,
         spendType = "health",
 
@@ -1358,11 +1482,11 @@ spec:RegisterAbilities( {
     -- Howl, causing 5 enemies within 10 yds to flee in terror for 6 sec.  Damage caused may interrupt the effect.
     howl_of_terror = {
         id = 17928,
-        cast = 1.5,
+        cast = function() return 1.5 * ( 1 - 0.5 * talent.improved_howl_of_terror.rank ) end,
         cooldown = function() return glyph.howl_of_terror.enabled and 32 or 40 end,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return mod_suppression( 0.08 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1379,7 +1503,7 @@ spec:RegisterAbilities( {
     -- Burns the enemy for 10 Fire damage and then an additional 20 Fire damage over 15 sec.
     immolate = {
         id = 348,
-        cast = function() return 2 - 0.1 * talent.bane.rank end,
+        cast = function() return ( 2 - 0.1 * talent.bane.rank ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) ) end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1389,8 +1513,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135817,
 
-        handler = function( rank )
+        handler = function()
+            removeDebuff( "target", "unstable_affliction" )
             applyDebuff( "target", "immolate" )
+            removeStack( "backdraft" )
         end,
 
         copy = { 707, 1094, 2941, 11665, 11667, 11668, 25309, 27215, 47810, 47811 },
@@ -1423,7 +1549,7 @@ spec:RegisterAbilities( {
         id = 47838,
         cast = function()
             if buff.backlash.up then return 0 end
-            return 2.5 * ( 1 - ( 0.02 * talent.emberstorm.rank ) )
+            return ( 2.5 - 0.05 * talent.emberstorm.rank ) * ( 1 - 0.1 * ( buff.molten_core.up and talent.molten_core.rank or 0 ) ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1436,7 +1562,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "backlash" )
+            removeStack( "molten_core", 1 )
             applyDebuff( "target", "incinerate" )
+            removeStack( "backdraft" )
         end,
 
         copy = { 29722, 32231, 47837 },
@@ -1467,15 +1595,22 @@ spec:RegisterAbilities( {
         texture = 136126,
 
         handler = function ()
-            if ability.id == 57946 then gain( 2000 + stat.spell_power * 0.5 ); return end
-            if ability.id == 27222 then gain( 1164 + stat.spell_power * 0.5 ); return end
-            if ability.id == 11689 then gain(  867 + stat.spell_power * 0.5 ); return end
-            if ability.id == 11688 then gain(  346 + stat.spell_power * 0.5 ); return end
-            if ability.id == 11687 then gain(  249 + stat.spell_power * 0.5 ); return end
-            if ability.id ==  1456 then gain(   86 + stat.spell_power * 0.5 ); return end
-            if ability.id ==  1455 then gain(   41 + stat.spell_power * 0.5 ); return end
-            if ability.id ==  1454 then gain( 2000 + stat.spell_power * 0.5 ); return end
-            gain( 2000 + stat.spell_power * 0.5 )
+            local amt = 2000
+
+            if     ability.id == 57946 then amt = 2000
+            elseif ability.id == 27222 then amt = 1164
+            elseif ability.id == 11689 then amt =  867
+            elseif ability.id == 11688 then amt =  346
+            elseif ability.id == 11687 then amt =  249
+            elseif ability.id ==  1456 then amt =  159
+            elseif ability.id ==  1455 then amt =   86
+            elseif ability.id ==  1454 then amt =   41 end
+
+            amt = amt + stat.spell_power * 0.5
+            amt = amt * ( 1 + 0.1 * talent.improved_life_tap.rank )
+
+            gain( amt, "mana" )
+            if glyph.life_tap.enabled then applyBuff( "life_tap" ) end
         end,
 
         copy = { 1454, 1455, 1456, 11687, 11688, 11689, 27222 },
@@ -1486,7 +1621,7 @@ spec:RegisterAbilities( {
     metamorphosis = {
         id = 47241,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return 180 * ( 1 - ( 0.1 * talent.nemesis.rank ) ) end,
         gcd = "off",
 
         startsCombat = false,
@@ -1564,7 +1699,7 @@ spec:RegisterAbilities( {
     -- Inflict searing pain on the enemy target, causing 38 to 47 Fire damage.  Causes a high amount of threat.
     searing_pain = {
         id = 5676,
-        cast = 1.5,
+        cast = function() return 1.5 * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) ) end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1575,6 +1710,7 @@ spec:RegisterAbilities( {
         texture = 135827,
 
         handler = function ()
+            removeStack( "backdraft" )
         end,
 
         copy = { 17919, 17920, 17921, 17922, 17923, 27210, 30459, 47814, 47815 },
@@ -1588,7 +1724,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.34,
+        spend = function() return mod_suppression( 0.34 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1625,7 +1761,7 @@ spec:RegisterAbilities( {
         cast = function()
             if buff.backlash.up then return 0 end
             if buff.shadow_trance.up then return 0 end
-            return 1.7 - 0.1 * talent.bane.rank
+            return ( 1.7 - 0.1 * talent.bane.rank ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1637,8 +1773,13 @@ spec:RegisterAbilities( {
         texture = 136197,
 
         handler = function ()
-            removeBuff( "backlash" )
-            removeBuff( "shadow_trance" )
+            -- TODO: Confirm order in which Backlash vs. Shadow Trace would be consumed.
+            if buff.backlash.up then removeBuff( "backlash" )
+            elseif buff.shadow_trance.up then removeBuff( "shadow_trance" ) end
+            if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
+            if talent.improved_shadow_bolt.rank == 5 then applyDebuff( "target", "shadow_mastery", nil, debuff.shadow_mastery.stack + 1 ) end
+            if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
+            removeStack( "backdraft" )
         end,
 
         copy = { 686, 695, 705, 1088, 1106, 7641, 11659, 11660, 11661, 25307, 27209, 47808 },
@@ -1760,7 +1901,7 @@ spec:RegisterAbilities( {
     -- Burn the enemy's soul, causing 640 to 801 Fire damage.
     soul_fire = {
         id = 47824,
-        cast = function() return 6 - 0.4 * talent.bane.rank end,
+        cast = function() return ( 6 - 0.4 * talent.bane.rank ) * ( 1 - 0.2 * ( buff.decimation.up and talent.decimation.rank or 0 ) ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) ) end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1770,10 +1911,16 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135808,
 
-        usable = function() return soul_shards > 0, "requires a soul_shard" end,
+        usable = function() return buff.decimation.up or soul_shards > 0, "requires decimation or a soul_shard" end,
 
         handler = function( rank )
-            soul_shards = max( 0, soul_shards - 1 )
+            if buff.decimation.up then
+                removeStack( "decimation", 1 )
+            else
+                soul_shards = max( 0, soul_shards - 1 )
+            end
+            removeStack( "molten_core", 1 )
+            removeStack( "backdraft" )
         end,
 
         copy = { 6353, 17924, 27211, 30545 },
@@ -1793,6 +1940,8 @@ spec:RegisterAbilities( {
         talent = "soul_link",
         startsCombat = false,
         texture = 136160,
+
+        nobuff = "soul_link",
 
         usable = function() return pet.alive, "requires a pet" end,
 
@@ -1860,6 +2009,7 @@ spec:RegisterAbilities( {
         talent = "summon_felguard",
         startsCombat = false,
         texture = 136216,
+        essential = true,
 
         usable = function() return soul_shards > 0, "requires a soul_shard" end,
 
@@ -1886,6 +2036,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 136217,
+        essential = true,
 
         usable = function() return soul_shards > 0, "requires a soul_shard" end,
 
@@ -1909,6 +2060,7 @@ spec:RegisterAbilities( {
 
         spend = function() return 0.64 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
         spendType = "mana",
+        essential = true,
 
         startsCombat = false,
         texture = 136218,
@@ -1935,6 +2087,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 4352492,
+        essential = true,
 
         handler = function()
             dismissPet( "imp" )
@@ -1959,6 +2112,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 136220,
+        essential = true,
 
         handler = function()
             dismissPet( "imp" )
@@ -1983,6 +2137,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 136221,
+        essential = true,
 
         usable = function() return soul_shards > 0, "requires a soul_shard" end,
 
@@ -2031,6 +2186,7 @@ spec:RegisterAbilities( {
         texture = 136228,
 
         handler = function ()
+            removeDebuff( "target", "immolate" )
             applyDebuff( "target", "unstable_affliction" )
         end,
 
@@ -2044,7 +2200,8 @@ local curses = {}
 spec:RegisterSetting( "solo_curse", "curse_of_agony", {
     type = "select",
     name = "Preferred Curse when Solo",
-    desc = "Select the Curse you'd like to use when playing solo.  It is referenced as |cff00ccff[Solo Curse]|r in your priority.",
+    desc = "Select the Curse you'd like to use when playing solo.  It is referenced as |cff00ccff[Solo Curse]|r in your priority.\n\n"
+        .. "If Curse of Doom is selected and your target is expected to die in fewer than 65 seconds, Curse of Agony will be used instead.",
     width = "full",
     values = function()
         table.wipe( curses )
@@ -2067,7 +2224,8 @@ spec:RegisterSetting( "solo_curse", "curse_of_agony", {
 spec:RegisterSetting( "group_curse", "curse_of_the_elements", {
     type = "select",
     name = "Preferred Curse when Grouped",
-    desc = "Select the Curse you'd like to use when playing in a group.  It is referenced as |cff00ccff[Group Curse]|r in your priority.",
+    desc = "Select the Curse you'd like to use when playing in a group.  It is referenced as |cff00ccff[Group Curse]|r in your priority.\n\n"
+        .. "If Curse of Doom is selected and your target is expected to die in fewer than 65 seconds, Curse of Agony will be used instead.",
     width = "full",
     values = function()
         table.wipe( curses )
@@ -2100,6 +2258,14 @@ spec:RegisterSetting( "group_type", "party", {
     }
 } )
 
+spec:RegisterSetting( "shadow_mastery", true, {
+    type = "toggle",
+    name = "Handle Improved Shadow Bolt (Shadow Mastery)",
+    desc = "Ensure this setting is |cFF00FF00enabled|r if Improved Shadow Bolt is talented, you are in a group, and you are responsible for maintaining the Shadow Mastery debuff on your target.\n\n"
+        .. "If someone else is assigned, you can |cFFFF0000disable|r this setting to remove some Shadow Bolt casts from the default priority.",
+    width = "full"
+} )
+
 
 spec:RegisterOptions( {
     enabled = true,
@@ -2114,10 +2280,17 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 6,
 
-    -- package = "",
-    -- package1 = "",
-    -- package2 = "",
-    -- package3 = "",
+    potion = "wild_magic",
+
+    package = "Affliction (wowtbc.gg)",
+
+    package1 = "Affliction (wowtbc.gg)",
+    package2 = "Demonology (wowtbc.gg)",
+    package3 = "Destruction (wowtbc.gg)",
 } )
 
-spec:RegisterPack( "BC Warlock", 20221001.1, [[Hekili:9M1AVTTnx4FlfdWlbl1Z2jojDl2a9Ygwkg6gM7w)WqTeTeLfrKefOOsQbm0V93ZHuxOKPCCs87(qBu4LNZHhEU8WtwoE5NxUWNiPl)0KrtMmE0OjdhnA0LJVC5c5Mu6YfPeV7iRHpsiXW))U3x4(fIiI7Dho3MioXhXiJNl8W5jzu)cxEcSm(x(mUCscmWTEBE9)qzjzfURZz(0SHlxSkNfjVnz5kBQW0PxaOMs9w(P3SCriZ3NQxjnZB5IphYaKW)raj9h)(hoRW9p)93((F53GV)L)QWnvW4cMCtHBeltw4gi4XfUVlxKWswx4(ErEgXNc7kHdZUHc)hXNKkrLpGlaTxqKHGsIBpdpHXujjMlsd5zmCGpPSDepjJNGQvmpXXlKiqBfnHSkI6V8DlLWPYCDS4yEeb)2HKliDw65MlnlK4ZFWXlIsUVdMsuGbK8izTI0m9cp4Gtfma8xbgcQCiI490c3bfUswm8X8c3rnckGg54ZJzjk9QwLTI49e4hWWdjbbrmfakC3vsNujSzGWkC3UfmSS1HshbnMOCeaT4CyMtnoY5XOzeuOW8eqI12eR6ciHA1bClKI8s9bLfOqssenroSb015eH)WsSabF818SCpV8v5zOIFXJBevEn8i(6nhFvP68IQY0EvLqkjc8Zt9KkOUEKsS7kJXtBeWQio33jixSbX(YEXwFoCOj0ygvdZef8Lt4ZHlhk13Hh44XfI8u9138z1lPCVnYwaAeU(aMGIs)QELUpDvEqWW4noE5ImWwZFq7QQ(vN1cEEkSNAK1ddqldb5grJbFh1941pjrybqYAEIYu9Mh3JOjScUiLc4tm(UbtsuKJ(xCWmt68to6CZg7f31OhxAn(FpDPzSxCx9NeYwm6ZrCWo4kr1n7uTJ)o(sDYfkzE3Ps)pORdM25ew(giDRJeZIdx(GYHYR)mqhppCDYzLCh(atgYsUwnuN4ZRmsBhsJIQcdg3FYgmJsmjH4uHX56yCCmnU3u4EHbU(eXDoqzFPc4do1XvtTb7bKojIfGM8uL46pBsVXZLwnmpPJK74Z0f4MmAFHIJ7M4OAPLfOPw8fwet(Mt7rxmzpUynMcqDUCKsSxBPc)kouhVB99ub1JhVIyTcVzLBIayLO5fjyLE9Vn6bYgWsNNb2IFLgv4(wCvdnvwL1SgaDUllL(R9kueCSjSBdacu88cxFEY3dh2qY9TKQIE1zLkZhqyQNa)x5ilaZ2JPFkRQACdTPwZ7pm9jbv3zYqfRDM9MjSvNNNIPIKnlVkbi(vuo8JsIj5jzsCCNMe3nKtWs9veyyaPtmLya168K4uyUQ4IknbfR1cdDJOpy9TxIuM6kppc00K7SoBmjdUsCQlDaP3TUo1cyEqygOsEz2otTl)0nTXHFMuHGRG3fyvr84jbrK1WBbSAynROvYkVwR2ty7rmhdqquXKrR1DY4G0c3tiDR6KVafzNxUuD9rJt5pqfitQop05cZL3(LvTxy)LF0vdm36W80NoVI2cVYvkMFpEWqu0c3PCK31n7n66y5XzkYk7XfWoBZNX1qVLfvUf796Vsf8584JVO3xT5lNAlH9Xn8O2n7LCxUh)VYtFLYoS8edbKA41rKDxvnjOBuufp1mASovJ2jYiR9ECKSue5fA3AxDFrihiX(FAAK)F6sOSS3tfziSvnCca5bIQZqzvTwkvWdyruDpMIzzzQB0S80uUqw2IO1a3DizdaVak4bcEyHBH7Ts9Mu83GWAFSKImKadtbbVXS3uSeVOCFK9pf48tf)uXhlCFDH7)(3ixPBL04SVcmNEiK5fAUAsYMgPw2dl63awaEmzudU(4xOWPnc9NvSUkfZN1qa8X)AzF6AgAIHKFGffzCIkHuwTuL1qnusE8kQafCwe42u8XBJrdgoWL6N8GC9u9udMez5QmZlx8DaNWEiTw8r9(YgwZj(hM9J105oJfmZgbVpcqEePMAxlmip2JEmWojZ9GgYR8jb2aBSvTlHkAqNHf)M1KY4mfROzpoX0TB7NuA9CwjKEikud9P2kupmpBuMUSoRNzpmoRxtpSnpmfUMayhnEhEL1IZcNsiESsyLU2n9JfDfEvtBbhG1sNpYC9D7AkUdlnuAGjkNGWmB02TTEB(8ZhDQfKR6Qjc8j2ANZ2TVA)3uN(8fEfuTovnokpdGB6FjIztBmMF9ObT344PM7ZS3J4o1cTQdoZNmOCa7D9zEN1BISIWKoCbb2gXQbTABzl7eyh2)EnxDxYW7KjqtGE24E8IECSmcITILrtVpaSqI09Httl)nnh7y5pRf7ankVQKsWGUxIMqv1HTx(L9G2T2BGHt3vTILRB(gktZw3boXdQEE3nx0ApvnqRJ38vtn3WE9SB3FSEDb3Ln)8jT0KkAA7yX3HJ2SjTUfQu05x2oZwtdYu1Z1KrnYwA4yoZsvRNQEydx080VR0ZdWNRDY8K3eg9caCWjQekB3ACbCApY4yyfAbOL2e0ZkB9i9(upRjqATZw5rS2)GEWUPA(z6h3nBS5vrluQ5XP)Jb3)Q68NcU)f26peCBxam7Oz8Rz3eo0BjRH66NWVhjHnn4LlbBPuUCQf5(CDWTaL1lZDpOnS0mocgV2FWj6DVDBpVX)Mj4R7ZLHyhZ)n6DSiM65Nl)Fp]] )
+spec:RegisterPack( "Affliction (wowtbc.gg)", 20221002, [[Hekili:1EvuVnkoq4FlvRu0DQzjbs6U3EkPs3922h69aR09gGdycwXGrgtJIue)2VX2jGdXqsv79sBap(Bgp(B(MHa3GFf4NGe4Gx9M755oFUNJ7Y5Ulxe4louId8lrX7qBHFuGYH)(xPPusSGWkAI(T9S9InXoB3(7s7oqzOejEvSAEmyBMquw9NZM1Ag8lbD3SykQQ6RBRjj4QzOwa)6EeNYI3nlWFtnHk(zrWgRbNRh4JsCCWR)aCcjjbRTexfh4)RmsvtujNW4eXHMi5tBqv4KMizmlYWnrTbutKkkCc8PKkrLm4rmm8VxvjgCbAdfNe83b(XaAyobbgab7B4qCboNGbWFUjArt0eaAeFlw4KaiHkIb3SQjYDUEdSciKZqjS9PuzEuahPEEO1mmojKLggZ486s97UdV)aeaK4DKITG5hIP4qD8ujplG7wmG7S7Mo0uG33RWjBPD3SCa3uxazf4LHD33Fk(7Pb8hjpNrLuNHDI8refxiCSeCoNW89focjlmfvtfJZHmVSgldzHM8Xoowsqw4g29XXJqDfMxb8BWlH5WPKusjyUIfMWeoDCjNYULTY1Sqv68QeRmunCu44CePqNYJrvIqbjhQSESjYRdwLP2idgiI3uNM6KFimUMxHDGcXcvwt9y4woRU0m7OFnufc6fHykohoXvsx8T3LlSaiAlR4GePVRuBoTCjt))oKbl(dtlQHTdUkVQNr)yWaAl9qzMdLKkjPLxqOvrA7kxgPNFTeCq(6Did6cIxcoq4Ku)UtoIsd1pekvz1ATH62js1wP5dxQCIttYl5S3aLrTkA4ggvCXrQcleanTY5Kb5aBbZpOw70vZLRCFCld3Pc0Hlhpj)NHrurMtzSqbS3tDyLWb)fcDhPq5xbSnzXqijvt4Tv1Ekex5D8yV6lZvSr8KX6ct(J5b5cge8yjhhZY3GUHQLYniEoJ3JYKIHBy57VPGvjKH0mhJiRgKIkcbqYQLzLBQinciVXij7r0DAugwHzCuaY24YjFcLwF7ML)F))RAIHy3kUWBsfEyT2rUc8H5YkKWe4)Z8sgxirFHUROCKk1OtonVaWwlYasGF78vsQflLqHu8x(stK5WJ)REyVMxKl41e9pXc2gzVePFBEP5fn8voTKZhxpRLOnLKUUhD0(o6tUKB8HUR(r3uhz69Sl4w5Um)mzqASD(0KR5s2HstFgiQ6UILE6oOotgskT7sbW1ICL6yFECbdtppQH56tE42dRyIrN0NjkhpADGKNhEyetmvZniH7Q5nw12p4rpZDOMtqlZQ2NfL3jxmrH5MRyu247106E3PYm(5jamF5hJfjtS9Appv2yEn0xEQUx(Axj0AI85U9p7EX56tJHnz0g1dDP01wDQzx11F6nv1NUED5x590ajdtrmiF2UO6laTKuxmP3xqUYD(viC1hho9IpdX6T1IjxvvEcUXHPTw9s8wTSpm20c(i41kymgi3HaYvos1Il4)(d]] )
+
+spec:RegisterPack( "Demonology (wowtbc.gg)", 20221002, [[Hekili:TEvxVnkou0FlJgPODv7qcjTZ0zvBFy1(Y0Du3hYinVb4ymGvnyKTPrrQIF7712aXqaAAN5LwaF)Y3ZXxFsGFWpc2gJuKGhxVA9A)vRw75VEZM1xfSvDOKeSTeHFcLcpuGYH)(pKCEbNXtpuh9h757v7WEPP)P2UdmokwhpjVsGbBZuQs5FTCzNzWtk2tlXmKu(P0kAmrUmUlGFApsW44NwgSDxfLP(wrWUrlo)Vc5OKGdEeEiJghtSwsK4GT)iJkRJkfuUGQGICpcEDp8SIuuhTdjjX1rC4rvgbwOT0QJ(PaPYGLsAw67um86)slG1m1QxWwgvQK6TiItG)9OP9rkq7yK4G)oylgYdrqrGbyf9zsiPGKtjqfCFD0g7x5fbBZjkuoxuMXLuzGc2FtgOpuhvvE0tAEoNH0phIQeiTVBENfHmdfZ3NW04keMREVHHqId5jHyUquvA(geTRheTwRDSQ)MurXpz61lQJgMWBRJa(i(aMrcvirkbabO3dP5ZtKMM2e53rsuAQvcQIP6G820yiVuCijVKVNiYjfk3YPfyBnVKB)FplMg(guW2IYtrZHcKhgtjgOiMR8A3UEXaNWMJt6eZcXXKDvjjE5hcXvcjeh((ctsnVgMk4vLGphHrZNbuhoQesye9oxogUpFkgjGOuEXHXG23tF5iBBKotFc7xMmDj00mvOGKJOfw2pmkQo6LxGXjCP0uddSrZLwnZX9BCzfvWghYvUCaX4Rtwr2gPBq9QkD7fXWCkub22iUzaFneNPTsNc)v)cZD8Ftt)8HjfkbfRD0bdqmwO9Lq9Wv7i2q7Dn6HSAZNE4OcXaIhq)lf8NHXq2rAH74mLxJdM2sd3Rz5CKe8)GNlCHHVfQPq1rxaa8WPKMqAkMPpUMYouM5XOj65hL9YVj7DR0N53(zt0VYLy0N20NC4p9bTMMsmbtZniwVsPHHKrqmvMxjwz2(BU(yDcanCxPEEoXZLcaxRZctOclOm9XZzdcTatliIMbs(FXD)62Q7TBHxlfempFhsn)1UMCJeqxBqxoHa8m93F1BBlHUJL)6uzv56doqqsRqI4xDS9mX4zonEpI9erm)e55JcW4NFA7VbY4NF1RUMEM5zCWCCILbSFMiK6v6K9fSf0gwad8HJbFdURvO07Ln2lX1I5mcZ8QFacALkdq5TDk70ChEcLbnXp(X6ixbS)0k4S(b9cRRJ(pSIVJiGNH8w)q9d2Wl96yFxC3YoM0L0K7gW3g3JbShTFF4i2oRphzlVfVG2(zzElARnECcZItjlJhkl)yIQQfF155mygoDEW7r0y5U8GedFPvXJPf0iuyXPIeUFuHtUbYO6XQwrhRXeWSON(ixNLahBEFDT(OwKZPQhrwJBW6DVHoE9uNCpCI6Lx0kxw0773E1k3G0Pk5eSOr)qh9FOqKfdeHC)nJGo0gHeMTliEXTxmqtWLA1a3bIbU0kG4oFTtwEDReJ79717pYPotk3IzviCBN6Glw7MNFTZpdrQ(SNtpYC6f6lo5Y8B3C9IrU)Tha0Dd8reCsJDAvUZdbWymE2amzZqhEfSVXkNFx65e0t)9NNJxow37N8zjxDha7hMBVAIDe5nfeZLCb))p]] )
+
+spec:RegisterPack( "Destruction (wowtbc.gg)", 20221002, [[Hekili:TAvqZTPoq4FlD6m(stXgBN0KoX9qNEj(qEhOD6naHqG1eHeJKiz8f9BVRKmyGi38Y8ExSbPvF7UF7QVL040FMMuI0K0hxVA964vRwhfVnE9MRtt0hBjPjTi8tOA4boQb(9heLw2H1ub3U3rMavAXqj6Kyy)dADR6Rlx(I4fDboQUgEsZEAjMHuQpx3rljQLLNb5ZVGKmb(PLPjfDuM(bEArWiADm4Kwco9X7aVqlljEljkCAYppqvM8wjviP6JMC7BfifP0K31k4MC9bIjFiMm5)wI0hm5U4jknHrvALnnqcc83JoAHWrfmsz63ttWaSejfbgar9ZKmcN0qjGx(MjFJjFb4bKSMOJkbKqCm4T7n5XR8hWYvQdOsXlvmllQHCBMhgmJqkZevzyHu216x7FH3)aeau8tuEny(rmJK5JhLnxa3T5cUJ20iywYEKtoJ1a0igHRJ64qUbiKHQQyuhcrNW0z58OdyGTbdhTTUvH6y6)ozxsk6QQIAoMH7KkseqGCNNCVMvlfDTWzgYg)Ya7bL7mcJ0arTkeBhkzdqk9e3a(couaRLoc7mCGzBFx5qGigvl4hTiD9frQMDS9qeJwzzZ2jmVZfd7m1f9lBb)MjzZbKqLviGQW0K5lVl2AuNkC2Bh7HwH))jOF3yl6GShaVrnZi4MZ74gOvAqlHosBZ05adXyz(xYSxW9xZZ86y2l6wZN38fiRg57gXZUCNr5Kmm05DJdKl3E5pGRg1G4OOwS2DV42vHlqXt63OCm4OaTBXZ73SYGs6P49xkq(jXP3yY)ouFbvqUMYm5pmaOxJKrqsoPmAUmLVRWDrTvsWIMc0BCv11bIKnc5S2VkcueSR)M3dBb5tFXDu40b3f5z0M2qQy)VE3y7B25E9ylGbESSkQCwPXXzWmnou2HM6hAAfsTns241hTdJCtBIm7bW60haMjzyYKLVfvugG6h)OjF00wyMLFsPzVDN1M8)bRffej8mmN0S3S3JVkAOK9PDlhO)ROv7MvKcFIZuU9iF4CvjS59uO14WvHfVUcegkpPFHOQNUhLOWYUraELvBaesSDXKHfJpCVoVlp7h5nA)rY9JxwjyI)UlhB9)n(XgfdY0tJTE9Plf9ZytyLbX2jantL8kR(4oqE8kVK6UyRdMk6(T4lekN0f3DJ9mN0(Uax43DrVQ493UAsP5Sq1EOB)9ROnPGDwtB81eihh209Dzbs0nlM9DD3hV6vi8Qpz7QjFZtqgCZIxvZob3qxzaq6pdC438tYwm1J3V1PnL(Np]] )
