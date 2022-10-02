@@ -412,6 +412,10 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    shadow_cleave = {
+        duration = function () return swings.mainhand_speed end,
+        max_stack = 1,
+    },
     -- Periodic shadow damage taken increased by $s1%, and periodic healing received reduced by $60468s1%.
     shadow_embrace = {
         id = 32391,
@@ -567,7 +571,23 @@ local mod_cataclysm = setfenv( function( base )
     return base * cataclysm_reduction[ talent.cataclysm.rank ]
 end, state )
 
+
+local finish_shadow_cleave = setfenv( function()
+    spend( class.abilities.shadow_cleave.spend * mana.modmax, "mana" )
+end, state )
+
+spec:RegisterStateFunction( "start_shadow_cleave", function()
+    applyBuff( "shadow_cleave", swings.time_to_next_mainhand )
+    state:QueueAuraExpiration( "shadow_cleave", finish_shadow_cleave, buff.shadow_cleave.expires )
+end )
+
+
+
 local aliasesSet = {}
+
+spec:RegisterStateExpr( "soul_shards", function()
+    return GetItemCount( 6265 )
+end )
 
 spec:RegisterHook( "reset_precast", function()
     class.abilities.solo_curse = class.abilities[ settings.solo_curse or "curse_of_agony" ]
@@ -584,6 +604,11 @@ spec:RegisterHook( "reset_precast", function()
     end
 
     soul_shards = nil
+
+    if IsCurrentSpell( class.abilities.shadow_cleave.id ) then
+        start_shadow_cleave()
+        Hekili:Debug( "Starting Shadow cleave, next swing in %.2f...", buff.shadow_cleave.remains )
+    end
 end )
 
 spec:RegisterStateExpr( "soul_shards", function()
@@ -618,6 +643,27 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 18647 },
+    },
+
+
+    -- Taunts all enemies within 10 yards for 6 sec.
+    challenging_howl = {
+        id = 59671,
+        cast = 0,
+        cooldown = 15,
+        gcd = "spell",
+
+        spend = 0,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 136088,
+
+        buff = "metamorphosis",
+
+        handler = function ()
+            applyDebuff( "target", "challenging_howl" )
+        end,
     },
 
 
@@ -934,7 +980,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136145,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyDebuff( "target", "death_coil" )
@@ -962,6 +1008,26 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 1086, 11733, 11734, 11735, 27260, 47793, 47889 },
+    },
+
+
+    -- Charge an enemy, stunning it for 3 sec.
+    demon_charge = {
+        id = 54785,
+        cast = 0,
+        cooldown = 45,
+        gcd = "spell",
+
+        startsCombat = true,
+        texture = 132368,
+
+        buff = "metamorphosis",
+
+        usable = function() return target.distance > 8, "target must be out of range" end,
+
+        handler = function ()
+            setDistance( 7.5 )
+        end,
     },
 
 
@@ -1180,7 +1246,7 @@ spec:RegisterAbilities( {
         spend = 0.28,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136156,
 
         handler = function ()
@@ -1331,6 +1397,27 @@ spec:RegisterAbilities( {
     },
 
 
+    -- Ignites the area surrounds you, causing 481 Fire damage to all nearby enemies every 0.9 sec.  Lasts 13.45 sec.
+    immolation_aura = {
+        id = 50589,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+
+        spend = 0.64,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135818,
+
+        buff = "metamorphosis",
+
+        handler = function ()
+            applyBuff( "immolation_aura" )
+        end,
+    },
+
+
     -- Deals 416 to 480 Fire damage to your target and an additional 104 to 120 Fire damage if the target is affected by an Immolate spell.
     incinerate = {
         id = 47838,
@@ -1392,6 +1479,24 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 1454, 1455, 1456, 11687, 11688, 11689, 27222 },
+    },
+
+
+    -- You transform into a Demon for 30 sec.  This form increases your armor contribution from items by 600%, damage by 20%, reduces the chance you'll be critically hit by melee attacks by 6% and reduces the duration of stun and snare effects by 50%.  You gain some unique demon abilities in addition to your normal abilities.
+    metamorphosis = {
+        id = 47241,
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        startsCombat = false,
+        texture = 237558,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "metamorphosis" )
+        end,
     },
 
 
@@ -1537,6 +1642,31 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 686, 695, 705, 1088, 1106, 7641, 11659, 11660, 11661, 25307, 27209, 47808 },
+    },
+
+
+
+    -- Inflicts 110 Shadow damage to an enemy target and nearby allies, affecting up to 3 targets.
+    shadow_cleave = {
+        id = 50581,
+        cast = 0,
+        cooldown = 6,
+        gcd = "off",
+
+        spend = 0.04,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 132332,
+
+        buff = "metamorphosis",
+        nobuff = "shadow_cleave",
+
+        usable = function() return target.distance < 10, "must be in melee range" end,
+
+        handler = function ()
+            start_shadow_cleave()
+        end,
     },
 
 
@@ -1990,4 +2120,4 @@ spec:RegisterOptions( {
     -- package3 = "",
 } )
 
-spec:RegisterPack( "BC Warlock", 20210601, [[dauIHaqijQEerQ0MeIprKsnkjqNsc4veHzHkULefPDPk)IiAyOsDmH0YGKEMeLMMsjUMeuBtcY3ukjJtPK6CsueZJivDpHAFOsoOefwiKQhsKIyIePInsKsgjrkQtsKcResStj0tPyQQQARePi9vjkQ9k1FfmyfDyQwmQ6XQmzLCzKnRWNjQrRQYPf9AIKzJYTL0Ub(nOHRuTCOEoHPt66qSDjY3HugVsPoVQY8vk2pLUJ2)BZYvQlIk3OgL7cXD0x0TSLcfDlTr)2P2S7NuUm1gGxP2uMDmdEs1MD)Jb9v)Vncic(O2GUlOLDcb2zzgwM)JU0e70bl7uACFLPstPeiStzKCrIxB4rsMknanFBwUsDru5g1OCxiUJ(IULTuOOrBJyNUUyzsB(LRfbA(2SiX1M))sHDMc70TZD)KYLj7eoSt)0ecStwkuHDoGy7uAMKkz5RnSuOI(FBw0WryA)VlgT)3gc48mA1O3MdNkHtVnLCC68m65JblpnHa7mIDwUDUt6lR7pNLLi7mIDwq7uZkzNX2j325Mn25iL)Pbmv9eiStUSZYYTDwG24NMqqBei1keeY6ERDru7)THaopJwn6T5WPs40BtbTZsooDEg9wKqXiNMqGDUzJDwUDQoJa6tGuRqqyqmzehVEeW5z0YolGDgXol3o3j9jqUdHhr8CwwISZi2jpYy8wufcYli8dNJ8O3cIgWoJyNf0o1Ss2zSDYTDUzJDos5FAatvpbc7Kl7SSCBNfOn(Pje0gbsTcbbbYDi8iIw7ILT)3gc48mA1O3MdNkHtVnLCC68m6TiHIronHa7mIDUt6tGChcpI45SSe1g)0ecAZIQqqEbHF4CKh1AxCl9)2qaNNrRg92C4ujC6T5h5m93B)u7Kl7CR52oJyNJu(NgWu1tGWo5YoJw424NMqqB4zq4kmqWFT2flC)VneW5z0QrVn(Pje0gbrRaCeoigJSRje0MdNkHtVnLBNAEsLaz7mID6NMLOabOAsc7Kl7e12CFhJcQJLjv0fJ2AxSq9)2qaNNrRg92C4ujC6TXpnlrbcq1Ke2jx2jQ2ze70pnlrHfuFcIwb4iCqmgzxtiWo5k2o9tZsuGaunjHDgXovhlt6dTu)LGT2oJyN)iNP)E7NANCzNBf3TXpnHG28JySrIPw7IBv)VneW5z0QrVnhovcNEB8tZsuGaunjHDYLDIQDgXo9tZsuyb1NGOvaocheJr21ecStUITt)0Sefiavts0g)0ecAd2tqaocJetT2f36(FBiGZZOvJEBoCQeo92SiEKX4v)chcwqVfenGDgXopeSGcYyiYoTAJFAcbTrgdr2dhcwqT2flt6)THaopJwn6T5WPs40BZI4rgJx9lCiyb9wq0aTXpnHG2iGmy4qWcQ1UyuU7)THaopJwn6TXpnHG241Dwo(chcwqTzrIdN7AcbTXpnHaXBrdhHPsel5HGfuaocliSY5(ogfuhltQiokNQVD4(ogfuhltQigvo5iEr8iJXR(foeSGEliAGiYyiYEe1XYK(0SsbfgwjXvHkCKcwU6mcOpVUZYXx4qWc6raNNrRnB4rgJNx3z54lCiyb9q2lqBoCQeo92iJHi72ze7Cr8iJXR(foeSGEyQ6jqyNsVDIk32ze7SG2PMvYoJTtUTZnBSZrk)tdyQ6jqyNCzNLLB7SaT2fJgT)3gc48mA1O3MdNkHtVnLCC68m65JblpnHG2iuCEAxmAB8ttiOnNZyb)0eccSuOTHLcna8k1gFmy5Pje0AxmkQ9)2qaNNrRg92C4ujC6TPKJtNNrVfvHaidk)1gHIZt7IrBJFAcbT5Cgl4NMqqGLcTnSuObGxP2SOkeazq5Vw7IrlB)VneW5z0QrVnhovcNEBk5405z0BrcfJCAcbTrO480Uy024NMqqBoNXc(PjeeyPqBdlfAa4vQnlsOyyRDXOBP)3gc48mA1O3MdNkHtVn7K(QoWd7NANCzNLLB7mIDwDG)2p1oLE7ClC3g)0ecAZYXsf29tBTlgTW9)2qaNNrRg92C4ujC6T5h5m93B)u7Kl7CRkSDgXoRoWF7NANsVDUfUTZi25iL)Pbmv9eiStUSZOfUn(Pje0gwoOG67T2fJwO(FBiGZZOvJEBoCQeo92SiEKX4v)chcwqVfenGDgXovhlt6tZkfuyyLKDYLDIk3TXpnHG2CiybfGJGldbFT2fJUv9)2qaNNrRg924NMqqBYAfYCLAZ9DmkOowMurxmABQ(2H77yuqDSmPI2GABoCQeo92uUDQ5jvcKTZi2z1b(B)u7Kl7SqC3Axm6w3)BJFAcbTr8Zxq0c8qM2gc48mA1O3ARTzhthSY7A)VlgT)3gc48mA1O3g)0ecAZGybhxH42SiXHZDnHG2ugm08pHDIii7uArm7SmWvi(1MdNkHtVn8iJXBqSGJRq8Bbrd0Axe1(FBiGZZOvJEB8ttiOnlQcbbhxH42SiXHZDnHG2ing25heXoxqG0wTZFEjYoLweZoldCfITZps5yNicYoLoufcSZYaxHy7eITtPdvHa70ivcET5WPs40BdpYy8gel44ke)wq0a2ze7KhzmElQcbbhxH43cIgO1Uyz7)THaopJwn6T5WPs40BdpYy8gel44ke)wq0a2ze7KhzmElQcbbhxH43cIgWoJyN8iJXBrviiiKkbVfenqB8ttiOnlQcbbHujO1U4w6)THaopJwn6TbU3gbPTXpnHG2uYXPZZO2uYziuBuNra9HaeQZZOGpgS80ecEeW5z0Yo3SXovNra9jY9FqqGLd6raNNrl7CZg7uDgb0Nx3z54lCiyb9iGZZOvBk54aWRuB8XGLNMqqRDXc3)BdbCEgTA0BdCVncsBJFAcbTPKJtNNrTPKZqO2OoJa6tGuRqqyqmzehVEeW5z0Yo3SXovNra9jGiSalbs9iGZZOLDUzJDQoJa6R6cLWHfvHaidkNc9raNNrl7CZg7uDgb03IQqqEb1pnpXJaopJwTPKJdaVsTzrviaYGYFT2flu)VneW5z0QrVnW92iiTn(Pje0MsooDEg1MsodHAJ6mcOpXpFbrJhbdEeW5z0Yo3SXovNra9DqWG5YyxPhbCEgTAtjhhaELAZIekg50ecAT12SOkeazq5V(FxmA)VneW5z0QrVn(Pje0MSwHmxP2CFhJcQJLjv0fJ2MQVD4(ogfuhltQOnO2MdNkHtVnLBNAEsLaz7mIDwq7ugdr2TZnBSZQd83(P2jx2zH42olqRDru7)THaopJwn6TXpnHG2CqmgzxtiOn33XOG6yzsfDXOTP6BhUVJrb1XYKkAdQT5WPs40Bt52PMNujqU1Uyz7)TPclLa5Uy02qaNNrHkSucKB0BJFAcbTr8Zxq04rWG2qaNNrRg9wBTnlsOyy)VlgT)3gc48mA1O3g)0ecAZHGfuaoc6pkqmQsav0M77yuqDSmPIUy02u9Td33XOG6yzsfTb12C4ujC6Tzr8iJXR(foeSGEliAa7mIDkJHi7T2frT)3gc48mA1O3g)0ecAZHGfuaocy6KIrcbGeI2CFhJcQJLjv0fJ2MQVD4(ogfuhltQOnO2MdNkHtVnlIhzmE1VWHGf0BbrdyNrStzmezV1Uyz7)THaopJwn6TXpnHG2CiybfGJWccRT5(ogfuhltQOlgTnvF7W9DmkOowMurBqTnhovcNEBwepYy8QFHdblO3cIgWoJyNYyiYUDgXovhlt6tZkfuyyLKDYLDwOcBNrSZcANLBNQZiG(86olhFHdblOhbCEgTSZnBStEKX451Dwo(chcwqpKD7SaT2f3s)VneW5z0QrVn(Pje0MSwHmxP2CFhJcQJLjv0fJ2MQVD4(ogfuhltQOnO2MdNkHtVnLBNAEsLa5w7IfU)3MkSucK7IrBdbCEgfQWsjqUrVn(Pje0gXpFbrJhbdAdbCEgTA0BTlwO(FBiGZZOvJEBoCQeo92SiEKX4L1kK5k9q2TZi2zbTZkSucKTZnBSZfXJmgVSwHmxPhMQEce2P0BNOANfOn(Pje0Mdcgmxg7k1ARTXhdwEAcb9)Uy0(FBiGZZOvJEB8ttiOniaH68mk4JblpnHG2CFhJcQJLjv0fJ2MQVD4(ogfuhltQOnO2MdNkHtVnLBNAEsLa52SiXHZDnHG2y(bH6R1UiQ9)2qaNNrRg924NMqqBoigJSRje0M77yuqDSmPIUy02u9Td33XOG6yzsfTb12C4ujC6TPC7uZtQei3AxSS9)2qaNNrRg924NMqqBYAfYCLAZ9DmkOowMurxmABQ(2H77yuqDSmPI2GABoCQeo92uUDQ5jvcKBTlUL(FBiGZZOvJEB8ttiOnIC)heey5GAZ9DmkOowMurxmABQ(2H77yuqDSmPI2GABoCQeo92uUDQ5jvcKBT1wBdAogKazrB()JStPnIGcPsvH02o9ttiWorZf2jaQ25aIaw2zcSt9xkSZSUdX6ZII0OUdXkTSZcBN(PjeyNSuOINfL2SJHJKrTr6ANLbdn)tyNicYoLweZoldCfIFwu8ttiq82X0bR8UkrSKdIfCCfI5KJyEKX4niwWXvi(TGObSOiDTtPXWo)Gi25ccK2QD(Zlr2P0Iy2zzGRqSD(rkh7erq2P0HQqGDwg4keBNqSDkDOkeyNgPsWZIIFAcbI3oMoyL3vjILCrvii44keZjhX8iJXBqSGJRq8BbrdeHhzmElQcbbhxH43cIgWIIFAcbI3oMoyL3vjILCrviiiKkbCYrmpYy8gel44ke)wq0ar4rgJ3IQqqWXvi(TGObIWJmgVfvHGGqQe8wq0awu8ttiq82X0bR8UkrSKLCC68mIdWRuSpgS80ec4uYziuS6mcOpeGqDEgf8XGLNMqWJaopJwB2OoJa6tK7)GGalh0JaopJwB2OoJa6ZR7SC8foeSGEeW5z0YIIFAcbI3oMoyL3vjILSKJtNNrCaELIxufcGmO8hNsodHIvNra9jqQviimiMmIJxpc48mATzJ6mcOpbeHfyjqQhbCEgT2SrDgb0x1fkHdlQcbqguof6JaopJwB2OoJa6BrviiVG6NMN4raNNrllk(PjeiE7y6GvExLiwYsooDEgXb4vkErcfJCAcbCk5mekwDgb0N4NVGOXJGbpc48mATzJ6mcOVdcgmxg7k9iGZZOLfflk(PjeiIfi1keeY6oNCexYXPZZONpgS80ecIu(oPVSU)CwwIIuqnRum3B2ms5FAatvpbcUkl3fWIIFAcbcjILuGuRqqqGChcpIGtoIlyjhNopJElsOyKttiyZMYvNra9jqQviimiMmIJxpc48mAvGiLVt6tGChcpI45SSefHhzmElQcb5fe(HZrE0BbrdePGAwPyU3SzKY)0aMQEceCvwUlGff)0ecesel5IQqqEbHF4CKhXjhXLCC68m6TiHIronHGi7K(ei3HWJiEollrwu8ttiqirSK8miCfgi4po5i(h5m93B)uU2AUJms5FAatvpbcUIwylk(PjeiKiwsbrRaCeoigJSRjeW5(ogfuhltQiokNCexUMNujqoIFAwIceGQjj4cvlk(PjeiKiwYFeJnsmXjhX(PzjkqaQMKGluJ4NMLOWcQpbrRaCeoigJSRjeWvSFAwIceGQjjIOowM0hAP(lbBDKFKZ0FV9t5AR42IIFAcbcjILe7jiahHrIjo5i2pnlrbcq1KeCHAe)0Sefwq9jiAfGJWbXyKDnHaUI9tZsuGaunjHff)0eceselPmgIShoeSG4KJ4fXJmgV6x4qWc6TGObICiybfKXqKDAzrXpnHaHeXskGmy4qWcItoIxepYy8QFHdblO3cIgWII01o9ttiqirSKhcwqb4iSGWkN77yuqDSmPI4OCQ(2H77yuqDSmPIyu5KJ4fXJmgV6x4qWc6TGObIiJHi7ruhlt6tZkfuyyLexfQWrky5QZiG(86olhFHdblOhbCEgT2SHhzmEEDNLJVWHGf0dzVawu8ttiqirSKEDNLJVWHGfeNCelJHi7rwepYy8QFHdblOhMQEcespQChPGAwPyU3SzKY)0aMQEceCvwUlGff)0ecesel55mwWpnHGalfkhGxPyFmy5PjeWrO4804OCYrCjhNopJE(yWYttiWIIFAcbcjIL8Cgl4NMqqGLcLdWRu8IQqaKbL)4iuCEACuo5iUKJtNNrVfvHaidk)zrXpnHaHeXsEoJf8ttiiWsHYb4vkErcfd5iuCEACuo5iUKJtNNrVfjumYPjeyrXpnHaHeXsUCSuHD)uo5iEN0x1bEy)uUkl3rQoWF7Nk9BHBlk(PjeiKiwswoOG67CYr8pYz6V3(PCTvfos1b(B)uPFlChzKY)0aMQEceCfTWwu8ttiqirSKhcwqb4i4YqWhNCeViEKX4v)chcwqVfenqe1XYK(0SsbfgwjXfQCBrXpnHaHeXsM1kK5kX5(ogfuhltQiokNQVD4(ogfuhltQigvo5iUCnpPsGCKQd83(PCviUTO4NMqGqIyjf)8feTapKPwuKU2P5heQplkwu8ttiq88XGLNMqqmcqOopJc(yWYttiGZ9DmkOowMurCuovF7W9DmkOowMurmQCYrC5AEsLazlk(PjeiE(yWYttiqIyjpigJSRjeW5(ogfuhltQiokNQVD4(ogfuhltQigvo5iUCnpPsGSff)0ecepFmy5PjeirSKzTczUsCUVJrb1XYKkIJYP6BhUVJrb1XYKkIrLtoIlxZtQeiBrXpnHaXZhdwEAcbselPi3)bbbwoio33XOG6yzsfXr5u9Td33XOG6yzsfXOYjhXLR5jvcKTOyrXpnHaXBrviaYGYFselzwRqMReN77yuqDSmPI4OCQ(2H77yuqDSmPIyu5KJ4Y18KkbYrkOmgISVzt1b(B)uUke3fWIIFAcbI3IQqaKbL)KiwYdIXi7AcbCUVJrb1XYKkIJYP6BhUVJrb1XYKkIrLtoIlxZtQeiBrXpnHaXBrviaYGYFselP4NVGOXJGbCQWsjqooQfflk(PjeiElsOyOeXsEiybfGJG(JceJQeqfCUVJrb1XYKkIJYP6BhUVJrb1XYKkIrLtoIxepYy8QFHdblO3cIgiImgISBrXpnHaXBrcfdLiwYdblOaCeW0jfJecajeCUVJrb1XYKkIJYP6BhUVJrb1XYKkIrLtoIxepYy8QFHdblO3cIgiImgISBrXpnHaXBrcfdLiwYdblOaCewqyLZ9DmkOowMurCuovF7W9DmkOowMurmQCYr8I4rgJx9lCiyb9wq0arKXqK9iQJLj9PzLckmSsIRcv4ifSC1zeqFEDNLJVWHGf0JaopJwB2WJmgpVUZYXx4qWc6HSxalk(PjeiElsOyOeXsM1kK5kX5(ogfuhltQiokNQVD4(ogfuhltQigvo5iUCnpPsGSff)0eceVfjumuIyjf)8fenEemGtfwkbYXrTO4NMqG4TiHIHsel5bbdMlJDL4KJ4fXJmgVSwHmxPhYEKcwHLsG8MnlIhzmEzTczUspmv9eiKEulqBCe9he3gPzsQKLT2A3]] )
+spec:RegisterPack( "BC Warlock", 20221001.1, [[Hekili:9M1AVTTnx4FlfdWlbl1Z2jojDl2a9Ygwkg6gM7w)WqTeTeLfrKefOOsQbm0V93ZHuxOKPCCs87(qBu4LNZHhEU8WtwoE5NxUWNiPl)0KrtMmE0OjdhnA0LJVC5c5Mu6YfPeV7iRHpsiXW))U3x4(fIiI7Dho3MioXhXiJNl8W5jzu)cxEcSm(x(mUCscmWTEBE9)qzjzfURZz(0SHlxSkNfjVnz5kBQW0PxaOMs9w(P3SCriZ3NQxjnZB5IphYaKW)raj9h)(hoRW9p)93((F53GV)L)QWnvW4cMCtHBeltw4gi4XfUVlxKWswx4(ErEgXNc7kHdZUHc)hXNKkrLpGlaTxqKHGsIBpdpHXujjMlsd5zmCGpPSDepjJNGQvmpXXlKiqBfnHSkI6V8DlLWPYCDS4yEeb)2HKliDw65MlnlK4ZFWXlIsUVdMsuGbK8izTI0m9cp4Gtfma8xbgcQCiI490c3bfUswm8X8c3rnckGg54ZJzjk9QwLTI49e4hWWdjbbrmfakC3vsNujSzGWkC3UfmSS1HshbnMOCeaT4CyMtnoY5XOzeuOW8eqI12eR6ciHA1bClKI8s9bLfOqssenroSb015eH)WsSabF818SCpV8v5zOIFXJBevEn8i(6nhFvP68IQY0EvLqkjc8Zt9KkOUEKsS7kJXtBeWQio33jixSbX(YEXwFoCOj0ygvdZef8Lt4ZHlhk13Hh44XfI8u9138z1lPCVnYwaAeU(aMGIs)QELUpDvEqWW4noE5ImWwZFq7QQ(vN1cEEkSNAK1ddqldb5grJbFh1941pjrybqYAEIYu9Mh3JOjScUiLc4tm(UbtsuKJ(xCWmt68to6CZg7f31OhxAn(FpDPzSxCx9NeYwm6ZrCWo4kr1n7uTJ)o(sDYfkzE3Ps)pORdM25ew(giDRJeZIdx(GYHYR)mqhppCDYzLCh(atgYsUwnuN4ZRmsBhsJIQcdg3FYgmJsmjH4uHX56yCCmnU3u4EHbU(eXDoqzFPc4do1XvtTb7bKojIfGM8uL46pBsVXZLwnmpPJK74Z0f4MmAFHIJ7M4OAPLfOPw8fwet(Mt7rxmzpUynMcqDUCKsSxBPc)kouhVB99ub1JhVIyTcVzLBIayLO5fjyLE9Vn6bYgWsNNb2IFLgv4(wCvdnvwL1SgaDUllL(R9kueCSjSBdacu88cxFEY3dh2qY9TKQIE1zLkZhqyQNa)x5ilaZ2JPFkRQACdTPwZ7pm9jbv3zYqfRDM9MjSvNNNIPIKnlVkbi(vuo8JsIj5jzsCCNMe3nKtWs9veyyaPtmLya168K4uyUQ4IknbfR1cdDJOpy9TxIuM6kppc00K7SoBmjdUsCQlDaP3TUo1cyEqygOsEz2otTl)0nTXHFMuHGRG3fyvr84jbrK1WBbSAynROvYkVwR2ty7rmhdqquXKrR1DY4G0c3tiDR6KVafzNxUuD9rJt5pqfitQop05cZL3(LvTxy)LF0vdm36W80NoVI2cVYvkMFpEWqu0c3PCK31n7n66y5XzkYk7XfWoBZNX1qVLfvUf796Vsf8584JVO3xT5lNAlH9Xn8O2n7LCxUh)VYtFLYoS8edbKA41rKDxvnjOBuufp1mASovJ2jYiR9ECKSue5fA3AxDFrihiX(FAAK)F6sOSS3tfziSvnCca5bIQZqzvTwkvWdyruDpMIzzzQB0S80uUqw2IO1a3DizdaVak4bcEyHBH7Ts9Mu83GWAFSKImKadtbbVXS3uSeVOCFK9pf48tf)uXhlCFDH7)(3ixPBL04SVcmNEiK5fAUAsYMgPw2dl63awaEmzudU(4xOWPnc9NvSUkfZN1qa8X)AzF6AgAIHKFGffzCIkHuwTuL1qnusE8kQafCwe42u8XBJrdgoWL6N8GC9u9udMez5QmZlx8DaNWEiTw8r9(YgwZj(hM9J105oJfmZgbVpcqEePMAxlmip2JEmWojZ9GgYR8jb2aBSvTlHkAqNHf)M1KY4mfROzpoX0TB7NuA9CwjKEikud9P2kupmpBuMUSoRNzpmoRxtpSnpmfUMayhnEhEL1IZcNsiESsyLU2n9JfDfEvtBbhG1sNpYC9D7AkUdlnuAGjkNGWmB02TTEB(8ZhDQfKR6Qjc8j2ANZ2TVA)3uN(8fEfuTovnokpdGB6FjIztBmMF9ObT344PM7ZS3J4o1cTQdoZNmOCa7D9zEN1BISIWKoCbb2gXQbTABzl7eyh2)EnxDxYW7KjqtGE24E8IECSmcITILrtVpaSqI09Httl)nnh7y5pRf7ankVQKsWGUxIMqv1HTx(L9G2T2BGHt3vTILRB(gktZw3boXdQEE3nx0ApvnqRJ38vtn3WE9SB3FSEDb3Ln)8jT0KkAA7yX3HJ2SjTUfQu05x2oZwtdYu1Z1KrnYwA4yoZsvRNQEydx080VR0ZdWNRDY8K3eg9caCWjQekB3ACbCApY4yyfAbOL2e0ZkB9i9(upRjqATZw5rS2)GEWUPA(z6h3nBS5vrluQ5XP)Jb3)Q68NcU)f26peCBxam7Oz8Rz3eo0BjRH66NWVhjHnn4LlbBPuUCQf5(CDWTaL1lZDpOnS0mocgV2FWj6DVDBpVX)Mj4R7ZLHyhZ)n6DSiM65Nl)Fp]] )

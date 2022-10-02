@@ -2385,11 +2385,31 @@ do
         summonTime = 1,
         id = 1,
         spec = 1,
+        alive = 1
     }
 
     -- Table of default handlers for specific pets/totems.
     mt_default_pet = {
         __index = function( t, k )
+            --[[ if rawget( t, "permanent" ) then
+                if k == "up" or k == "exists" then
+                    return UnitExists( "pet" ) and ( not UnitIsDead( "pet" ) )
+
+                elseif k == "alive" then
+                    return not UnitIsDead( "pet" )
+
+                elseif k == "dead" then
+                    return UnitIsDead( "pet" )
+
+                elseif k == "remains" then
+                    return 3600
+
+                elseif k == "down" then
+                    return not UnitExists( "pet" ) or UnitIsDead( "pet" )
+
+                end
+            end ]]
+
             if k == "expires" then
                 local present, name, start, duration
 
@@ -2410,14 +2430,31 @@ do
                 return max( 0, t.expires - ( state.query_time ) )
 
             elseif k == "up" or k == "active" or k == "alive" or k == "exists" then
+                if t.expires == 0 then return false end
+
+                if t.name and class.pets[ t.name ] then
+                    -- This is a real pet.
+                    local petguid = UnitGUID( "pet" )
+                    if not petguid then return false end
+
+                    local petid = tonumber( UnitGUID( "pet" ):match( "(%d+)-%x-$" ) )
+                    if not petid then return false end
+
+                    if petid == class.pets[ t.name ].id then
+                        return UnitHealth( "pet" ) > 0
+                    end
+
+                    return false
+                end
+
                 -- TODO:  Need to make pet.alive work here.
                 return ( t.expires >= ( state.query_time ) )
 
             elseif k == "down" then
-                return ( t.expires < ( state.query_time ) )
+                return not t.up
 
             elseif k == "id" then
-                return t.exists and UnitGUID( "pet" ) and tonumber( UnitGUID( "pet" ):match("(%d+)-%x-$" ) ) or nil
+                return t.exists and UnitGUID( "pet" ) and tonumber( UnitGUID( "pet" ):match( "(%d+)-%x-$" ) ) or nil
 
             elseif k == "spec" then
                 return t.exists and GetSpecialization( false, true )
@@ -2429,8 +2466,9 @@ do
                     end
                     return pet
                 end
-
             end
+
+            return -- Error("UNK: " .. k)
         end,
         __newindex = function( t, k, v )
             if v == nil then return end
@@ -2451,6 +2489,7 @@ do
         end
     } )
 
+    -- Table of pet data.
     mt_pets = {
         __index = function( t, k )
             if not rawget( t, "real_pet" ) then
@@ -2485,7 +2524,7 @@ do
             end
 
             -- Should probably add all totems, but holding off for now.
-            for _, pet in pairs( t ) do
+            for id, pet in pairs( t ) do
                 if type( pet ) == "table" and pet.up and pet[ k ] ~= nil then
                     return pet[ k ]
                 end
@@ -2508,6 +2547,14 @@ do
             elseif k == "health_pct" or k == "health_percent" then
                 if t.alive then return 100 * UnitHealth( "pet" ) / UnitHealthMax( "pet" ) end
                 return 100
+
+            elseif k == "mana_pct" or k == "mana_pct" then
+                if t.alive then return 100 * UnitPower( "pet", 0 ) / UnitPowerMax( "pet", 0 ) end
+                return 0
+
+            elseif k == "mana_current" then
+                if t.alive then return UnitPower( "pet", 0 ) end
+                return 0
 
             end
 
