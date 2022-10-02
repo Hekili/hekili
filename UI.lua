@@ -537,7 +537,7 @@ do
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         }
 
-                        for name, package in pairs( Hekili.DB.profile.packs ) do
+                        for name, package in ns.orderedPairs( Hekili.DB.profile.packs ) do
                             if package.spec == Hekili.State.spec.id then
                                 insert( submenu.menuList, {
                                     text = name,
