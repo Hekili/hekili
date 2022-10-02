@@ -871,14 +871,18 @@ do
                 if i == 16 then
                     if equipLoc == "INVTYPE_2HWEAPON" then
                         state.main_hand.size = 2
+                        state.set_bonus.mainhand_2h = 1
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND" then
                         state.main_hand.size = 1
+                        state.set_bonus.mainhand_weapon = 1
                     end
                 elseif i == 17 then
                     if equipLoc == "INVTYPE_2HWEAPON" then
                         state.off_hand.size = 2
+                        state.set_bonus.titans_grip_offhand = 1
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONOFFHAND" then
                         state.off_hand.size = 1
+                        state.set_bonus.offhand_weapon = 1
                     elseif equipLoc == "INVTYPE_SHIELD" then
                         state.off_hand.shield = true
                         state.set_bonus.shield = 1
@@ -895,29 +899,10 @@ do
             end
         end
 
-        -- Improve Pocket-Sized Computronic Device.
-        if state.equipped.pocketsized_computation_device then
-            local tName = CGetItemInfo( 167555 )
-            local redName, redLink = GetItemGem( tName, 1 )
-
-            if redName and redLink then
-                local redID = tonumber( redLink:match("item:(%d+)") )
-                local action = class.itemMap[ redID ]
-
-                if action then
-                    state.set_bonus[ action ] = 1
-                    state.set_bonus[ redID ] = 1
-                    class.abilities.pocketsized_computation_device = class.abilities[ action ]
-                    class.abilities[ tName ] = class.abilities[ action ]
-                    insert( state.items, action )
-                end
-            else
-                class.abilities.pocketsized_computation_device = class.abilities.inactive_red_punchcard
-                class.abilities[ tName ] = class.abilities.inactive_red_punchcard
-            end
+        if state.set_bonus.mainhand_2h + state.set_bonus.mainhand_weapon + state.set_bonus.titans_grip_offhand + state.set_bonus.offhand_weapon > 1 then
+            state.set_bonus.dual_wield = 1
         end
 
-        ns.updatePowers()
         ns.updateTalents()
 
         local lastEssence = class.active_essence
@@ -1600,15 +1585,6 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
     local amTarget  = ( destGUID   == state.GUID )
 
     if subtype == 'SPELL_SUMMON' and amSource then
-        -- Guardian of Azeroth check.
-        -- ID is 152396.
-        local npcid = destGUID:match("(%d+)-%x-$")
-        npcid = npcid and tonumber( npcid )
-
-        if npcid == state.pet.guardian_of_azeroth.id then
-            state.pet.guardian_of_azeroth.summonTime = time
-        end
-
         ns.updateMinion( destGUID, time )
         return
     end
