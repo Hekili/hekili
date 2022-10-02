@@ -888,7 +888,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
 
     else
-        if not b.up then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        if not b.up or state.active_dot[ aura ] == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
 
         b.lastCount = b.count
         b.lastApplied = b.applied
