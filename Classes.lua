@@ -493,6 +493,10 @@ local HekiliSpecMixin = {
             end )
         end
 
+        if data.buff and data.aura then
+            self:RegisterAura( data.buff, data.aura )
+        end
+
         CommitKey( potion )
     end,
 
@@ -1451,10 +1455,38 @@ all:RegisterAuras( {
         copy = { 21849, 21850, 26991, 48470 },
     },
 
+    -- The threat caused by your next damaging attack and all actions taken for $57933d afterwards will be transferred to the target.  In addition, all damage caused by the target is increased by $57933s1% during this time.
+    tricks_of_the_trade = {
+        id = 57934,
+        duration = 30,
+        max_stack = 1,
+    },
+    tricks_of_the_trade_buff = {
+        id = 57933,
+        duration = function() return glyph.tricks_of_the_trade.enabled and 10 or 6 end,
+        max_stack = 1,
+        shared = "player"
+    },
+
+    -- Chance to be critically hit with spells increased by $s1%.
+    shadow_mastery = {
+        id = 17800,
+        duration = 30,
+        max_stack = 1,
+        shared = "target"
+    },
+
     power_infusion = {
         id = 10060,
         duration = 20,
         max_stack = 1
+    },
+
+    replenishment = {
+        id = 57669,
+        duration = 15,
+        max_stack = 1,
+        shared = "player"
     },
 
     -- SL Season 3
@@ -2024,132 +2056,111 @@ all:RegisterAuras( {
 
 
 all:RegisterPotions( {
-    -- 9.0
-    potion_of_spectral_strength = {
-        item = 171275,
-        buff = "potion_of_spectral_strength",
-        copy = "spectral_strength",
+    speed = {
+        item = 40211,
+        buff = "speed",
+        aura = {
+            id = 53908,
+            duration = 15,
+            max_stack = 1
+        }
     },
-    potion_of_spectral_agility = {
-        item = 171270,
-        buff = "potion_of_spectral_agility",
-        copy = "spectral_agility",
+    runic_mana_injector = {
+        item = 42545
     },
-    potion_of_spiritual_clarity = {
-        item = 171272,
-        buff = "potion_of_spiritual_clarity",
-        copy = "spiritual_clarity"
+    wild_magic = {
+        item = 40212,
+        buff = "wild_magic",
+        aura = {
+            id = 53908,
+            duration = 15,
+            max_stack = 1
+        }
     },
-    potion_of_phantom_fire = {
-        item = 171349,
-        buff = "potion_of_phantom_fire",
-        copy = "phantom_fire",
+    runic_mana_potion = {
+        item = 33448
     },
-    potion_of_spectral_intellect = {
-        item = 171273,
-        buff = "potion_of_spectral_intellect",
-        copy = "spectral_intellect"
+    indestructible_potion = {
+        item = 40093,
+        buff = "indestructible",
+        aura = {
+            id = 53762,
+            duration = 120,
+            max_stack = 1
+        }
     },
-    potion_of_deathly_fixation = {
-        item = 171351,
-        buff = "potion_of_deathly_fixation",
-        copy = "deathly_fixation"
+    endless_mana_potion = {
+        item = 43570
     },
-    strength_of_blood = {
-        item = 182163,
-        buff = "strength_of_blood",
+    runic_healing_potion = {
+        item = 33447
     },
-    potion_of_empowered_exorcisms = {
-        item = 171352,
-        buff = "potion_of_empowered_exorcisms",
-        copy = "empowered_exorcisms"
+    runic_healing_injector = {
+        item = 41166
     },
-    potion_of_unusual_strength = {
-        item = 180771,
-        buff = "potion_of_unusual_strength",
-        copy = "unusual_strength"
+    crazy_alchemists_potion = {
+        item = 40077
     },
-    potion_of_spectral_stamina = {
-        item = 171274,
-        buff = "potion_of_spectral_stamina",
-        copy = "spectral_stamina"
+    nightmares = {
+        item = 40081,
+        buff = "nightmare_slumber",
+        aura = {
+            id = 53753,
+            duration = 6,
+            max_stack = 1
+        },
     },
-
-    -- 8.2
-    potion_of_empowered_proximity = {
-        item = 168529,
-        buff = 'potion_of_empowered_proximity',
-        copy = 'empowered_proximity'
+    endless_healing_potion = {
+        item = 43569
     },
-    potion_of_focused_resolve = {
-        item = 168506,
-        buff = 'potion_of_focused_resolve',
-        copy = 'focused_resolve'
+    powerful_rejuvenation_potion = {
+        item = 40087
     },
-    potion_of_unbridled_fury = {
-        item = 169299,
-        buff = 'potion_of_unbridled_fury',
-        copy = 'unbridled_fury'
+    mighty_fire_protection_potion = {
+        item = 40214,
+        buff = "fire_protection",
+        aura = {
+            id = 53911,
+            duration = 120,
+            max_stack = 1
+        },
     },
-    superior_battle_potion_of_agility = {
-        item = 168489,
-        buff = 'superior_battle_potion_of_agility',
+    mighty_frost_protection_potion = {
+        item = 40215,
+        buff = "frost_protection",
+        aura = {
+            id = 53913,
+            duration = 120,
+            max_stack = 1
+        }
     },
-    superior_battle_potion_of_intellect = {
-        item = 168498,
-        buff = 'superior_battle_potion_of_intellect',
+    mighty_nature_protection_potion = {
+        item = 40216,
+        buff = "nature_protection",
+        aura = {
+            id = 53914,
+            duration = 120,
+            max_stack = 1,
+        },
     },
-    superior_battle_potion_of_stamina = {
-        item = 168499,
-        buff = 'superior_battle_potion_of_stamina',
+    mighty_shadow_protection_potion = {
+        item = 40217,
+        buff = "shadow_protection",
+        aura = {
+            id = 53915,
+            duration = 120,
+            max_stack = 1,
+        }
     },
-    superior_battle_potion_of_strength = {
-        item = 168500,
-        buff = 'superior_battle_potion_of_strength',
+    mighty_arcane_protection_potion = {
+        item = 40213,
+        buff = "arcane_protection",
+        aura = {
+            id = 53910,
+            duration = 120,
+            max_stack = 1,
+        }
     },
-    superior_steelskin_potion = {
-        item = 168501,
-        buff = 'superior_steelskin_potion',
-    },
-
-    -- 8.0
-    battle_potion_of_agility = {
-        item = 163223,
-        buff = 'battle_potion_of_agility',
-    },
-    battle_potion_of_intellect = {
-        item = 163222,
-        buff = 'battle_potion_of_intellect',
-    },
-    battle_potion_of_stamina = {
-        item = 163225,
-        buff = 'battle_potion_of_stamina',
-    },
-    battle_potion_of_strength = {
-        item = 163224,
-        buff = 'battle_potion_of_strength',
-    },
-    bursting_blood = {
-        item = 152560,
-        buff = 'potion_of_bursting_blood',
-        copy = "bursting_blood",
-    },
-    potion_of_rising_death = {
-        item = 152559,
-        buff = 'potion_of_rising_death',
-        copy = "rising_death",
-    },
-    steelskin_potion = {
-        item = 152557,
-        buff = 'steelskin_potion',
-    },
-
-    -- 7.0
-    prolonged_power = {
-        item = 142117,
-        buff = 'prolonged_power',
-        copy = "potion_of_prolonged_power"
-    }
 } )
 
 
