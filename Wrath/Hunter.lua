@@ -257,11 +257,17 @@ spec:RegisterAuras( {
     },
     -- Taking Fire damage every second.
     explosive_shot = {
-        id = 53301,
+        id = 60053,
         duration = 2,
         tick_time = 1,
         max_stack = 1,
         copy = { 53301, 60051, 60052, 60053 },
+    },
+    explosive_trap = {
+        id = 49065,
+        duration = 20,
+        max_stack = 1,
+        copy = { 13812, 14314, 14315, 27026, 49064, 49065, "explosive_trap_effect" }
     },
     -- $s1% of your Agility as bonus attack power.
     expose_weakness = {
@@ -354,9 +360,10 @@ spec:RegisterAuras( {
     },
     -- glyph.immolation_trap.enabled == duration reduced by 6.
     immolation_trap = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13795)
-        id = 13795,
-        duration = 30,
+        id = 49054,
+        duration = function() return glyph.immolation_trap.enabled and 24 or 30 end,
         max_stack = 1,
+        copy = { 13797, 14298, 14299, 14300, 14301, 27024, 49053, 49054 }
     },
     -- Damage done by your Aimed Shot, Arcane Shot or Chimera Shot increased by $s1%, and mana cost reduced by $s2%.
     improved_steady_shot = {
@@ -880,7 +887,7 @@ end, state )
 spec:RegisterAbilities( {
     -- An aimed shot that increases ranged damage by 5 and reduces healing done to that target by 50%.  Lasts 10 sec.
     aimed_shot = {
-        id = 19434,
+        id = 49050,
         cast = 0,
         cooldown = function() return glyph.aimed_shot.enabled and 8 or 10 end,
         gcd = "spell",
@@ -897,6 +904,8 @@ spec:RegisterAbilities( {
             removeBuff( "rapid_killing" )
             removeBuff( "improved_steady_shot" )
         end,
+
+        copy = { 19434, 20900, 20901, 20902, 20903, 20904, 27065, 49049, 49050 }
     },
 
 
@@ -1145,7 +1154,7 @@ spec:RegisterAbilities( {
 
     -- Fires a Black Arrow at the target, increasing all damage done by you to the target by 6% and dealing 818 Shadow damage over 15 sec. Black Arrow shares a cooldown with Trap spells.
     black_arrow = {
-        id = 3674,
+        id = 63672,
         cast = 0,
         cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
@@ -1161,6 +1170,8 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "black_arrow" )
             cool_traps()
         end,
+
+        copy = { 3674, 63668, 63669, 63670, 63671, 63672 }
     },
 
 
@@ -1368,7 +1379,7 @@ spec:RegisterAbilities( {
 
     -- You fire an explosive charge into the enemy target, dealing 191-219 Fire damage. The charge will blast the target every second for an additional 2 sec.
     explosive_shot = {
-        id = 53301,
+        id = 60053,
         cast = 0,
         cooldown = function() return buff.lock_and_load.up and 0 or 6 end,
         gcd = "spell",
@@ -1384,12 +1395,14 @@ spec:RegisterAbilities( {
             removeStack( "lock_and_load" )
             applyDebuff( "target", "explosive_shot" )
         end,
+
+        copy = { 53301, 60051, 60052, 60053 },
     },
 
 
     -- Place a fire trap that explodes when an enemy approaches, causing 138 to 168 Fire damage and burning all enemies for 483 additional Fire damage over 20 sec to all within 10 yards.  Trap will exist for 30 sec.  Only one trap can be active at a time.
     explosive_trap = {
-        id = 13813,
+        id = 49067,
         cast = 0,
         cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
@@ -1404,7 +1417,7 @@ spec:RegisterAbilities( {
             cool_traps()
         end,
 
-        copy = { 14316, 14317, 27025, 49066, 49067 },
+        copy = { 13813, 14316, 14317, 27025, 49066, 49067 },
     },
 
 
@@ -1744,7 +1757,7 @@ spec:RegisterAbilities( {
 
     -- Fires several missiles, hitting 3 targets.
     multishot = {
-        id = 2643,
+        id = 49048,
         cast = 0.5,
         cooldown = 10,
         cooldown = function() return glyph.multishot.enabled and 9 or 10 end,
@@ -1760,7 +1773,7 @@ spec:RegisterAbilities( {
             if talent.concussive_barrage.enabled then applyDebuff( "target", "concussive_barrage" ) end
         end,
 
-        copy = { 14288, 14289, 14290, 25294, 27021, 49047, 49048 },
+        copy = { 2643, 14288, 14289, 14290, 25294, 27021, 49047, 49048 },
     },
 
 
@@ -1913,7 +1926,7 @@ spec:RegisterAbilities( {
 
     -- Stings the target, causing 87 Nature damage over 15 sec.  Only one Sting per Hunter can be active on any one target.
     serpent_sting = {
-        id = 1978,
+        id = 49001,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1929,7 +1942,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "serpent_sting" )
         end,
 
-        copy = { 13549, 13550, 13551, 13552, 13553, 13554, 13555, 25295, 27016, 49000, 49001 },
+        copy = { 1978, 13549, 13550, 13551, 13552, 13553, 13554, 13555, 25295, 27016, 49000, 49001 },
     },
 
 
@@ -1988,7 +2001,7 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
 
-        copy = { 34120, 49051, 49052 },
+        copy = { 34120, 49051, 49052, 56641 },
     },
 
 
@@ -2229,7 +2242,7 @@ spec:RegisterAbilities( {
 
     -- Continuously fires a volley of ammo at the target area, causing 80 Arcane damage to enemy targets within 8 yards every 1.00 second for 6 sec.
     volley = {
-        id = 1510,
+        id = 58434,
         cast = 6,
         channeled = true,
         cooldown = 0,
@@ -2244,7 +2257,7 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
 
-        copy = { 14294, 14295, 27022, 58431, 58434 },
+        copy = { 1510, 14294, 14295, 27022, 58431, 58434 },
     },
 
 
@@ -2348,7 +2361,7 @@ spec:RegisterOptions( {
 
     aoe = 3,
 
-    gcd = 2973,
+    gcd = 1494,
 
     nameplates = false,
     nameplateRange = 8,

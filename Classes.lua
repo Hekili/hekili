@@ -358,10 +358,10 @@ local HekiliSpecMixin = {
             self.auras[ data.copy ] = a
         elseif type( data.copy ) == 'table' then
             a.multi = {}
-            a.multi[ a.id ] = 1
+            if a.id and a.id > 0 then a.multi[ a.id ] = 1 end
             for _, key in ipairs( data.copy ) do
                 self.auras[ key ] = a
-                a.multi[ key ] = 1
+                if type( key ) == "number" then a.multi[ key ] = 1 end
             end
         end
     end,
