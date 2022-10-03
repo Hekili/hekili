@@ -4,6 +4,9 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
+
+
 local spec = Hekili:NewSpecialization( 3 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
@@ -103,6 +106,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 19434, 20900, 20901, 20902, 20903, 20904, 27065, 49049, 49050, 65883 },
     },
+    aspect = {
+        alias = { "aspect_of_the_beast", "aspect_of_the_cheetah", "aspect_of_the_dragonhawk", "aspect_of_the_hawk", "aspect_of_the_monkey", "aspect_of_the_pack", "aspect_of_the_viper", "aspect_of_the_wild" },
+        aliasMode = "first",
+        aliasType = "buff",
+    },
     -- Untrackable and melee attack power for the pet and hunter increased by 10%.
     aspect_of_the_beast = {
         id = 13161,
@@ -117,14 +125,14 @@ spec:RegisterAuras( {
     },
     -- Increases ranged attack power by $s1.  Increases dodge chance by $61848s1%.
     aspect_of_the_dragonhawk = {
-        id = 61846,
+        id = 61847,
         duration = 3600,
         max_stack = 1,
         copy = { 61846, 61847 },
     },
     -- Increases ranged attack power by $s1.
     aspect_of_the_hawk = {
-        id = 13165,
+        id = 27044,
         duration = 3600,
         max_stack = 1,
         copy = { 13165, 14318, 14319, 14320, 14321, 14322, 25296, 27044 },
@@ -150,22 +158,21 @@ spec:RegisterAuras( {
     },
     -- Nature resistance increased by $s1.
     aspect_of_the_wild = {
-        id = 20043,
+        id = 49071,
         duration = 3600,
         max_stack = 1,
         copy = { 20043, 20190, 27045, 49071 },
+    },
+    auto_shot = {
+        id = 75,
+        duration = 3600,
+        max_stack = 1,
     },
     -- Lore revealed.
     beast_lore = {
         id = 1462,
         duration = 30,
         max_stack = 1,
-    },
-    bestial_discipline = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=19592)
-        id = 19592,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 19592, 19590 },
     },
     -- Enraged.
     bestial_wrath = {
@@ -181,15 +188,10 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 3674, 63668, 63669, 63670, 63671, 63672 },
     },
-    call_pet = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=883)
-        id = 883,
-        duration = 3600,
-        max_stack = 1,
-    },
-    -- Choose one of your stabled pets to replace your current pet.
-    call_stabled_pet = {
-        id = 62757,
-        duration = 120,
+    -- Disarmed.
+    chimera_shot_scorpid = {
+        id = 53359,
+        duration = 10,
         max_stack = 1,
     },
     -- Pet critical strike chance with abilities increased 100%.
@@ -207,7 +209,7 @@ spec:RegisterAuras( {
     -- Movement slowed by $s1%.
     concussive_shot = {
         id = 5116,
-        duration = 4,
+        duration = function() return 4 + talent.improved_concussive_shot.rank end,
         max_stack = 1,
     },
     -- Immobile.
@@ -216,6 +218,10 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
         copy = { 19306, 20909, 20910, 27067, 48998, 48999 },
+    },
+    counterattack_usable = {
+        duration = 5,
+        max_stack = 1,
     },
     -- Dazed.
     dazed = {
@@ -245,7 +251,7 @@ spec:RegisterAuras( {
     -- Immobile.
     entrapment = {
         id = 64804,
-        duration = 4,
+        duration = function() return 2 * talent.entrapment.rank end,
         max_stack = 1,
         copy = { 64804, 64803, 19185 },
     },
@@ -256,11 +262,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1,
         copy = { 53301, 60051, 60052, 60053 },
-    },
-    explosive_trap = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13813)
-        id = 13813,
-        duration = 30,
-        max_stack = 1,
     },
     -- $s1% of your Agility as bonus attack power.
     expose_weakness = {
@@ -287,11 +288,12 @@ spec:RegisterAuras( {
         duration = 360,
         max_stack = 1,
     },
-    ferocity = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=19602)
-        id = 19602,
+    ferocious_inspiration = {
+        id = 75447,
         duration = 3600,
         max_stack = 1,
-        copy = { 19602, 19601, 19600, 19599, 19598 },
+        shared = "player",
+        copy = { 75593, 75446, 75447 }
     },
     -- Hidden and invisible units are revealed.
     flare = {
@@ -299,32 +301,55 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1,
     },
-    freezing_arrow = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=60202)
-        id = 60202,
-        duration = 30,
+    freezing_arrow_effect = {
+        id = 60210,
+        duration = 20,
         max_stack = 1,
     },
-    freezing_trap = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=1499)
-        id = 1499,
-        duration = 30,
+    freezing_trap_effect = {
+        id = 14309,
+        duration = function() return 20 * ( 1 + 0.1 * talent.trap_mastery.rank ) * ( talent.clever_traps.enabled and 1.3 or 1 ) end,
         max_stack = 1,
+        copy = { 3355, 14308, 14309 }
     },
-    frenzy = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=19625)
-        id = 19625,
-        duration = 3600,
+    frenzy_effect = {
+        id = 19615,
+        duration = 8,
         max_stack = 1,
-        copy = { 19625, 19624, 19623, 19622, 19621 },
+        generate = function( t )
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 19615 )
+
+            if name then
+                t.count = 1
+                t.applied = expires - duration
+                t.expires = expires
+                t.caster = "pet"
+                return
+            end
+
+            t.count = 0
+            t.applied = 0
+            t.expires = 0
+            t.caster = "nobody"
+        end,
     },
     frost_trap = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13809)
         id = 13809,
         duration = 30,
         max_stack = 1,
     },
+    frost_trap_aura = {
+        id = 13810,
+        duration = function() return 30 * ( 1 + 0.1 * talent.trap_mastery.rank ) end,
+        max_stack = 1,
+        copy = "frost_trap_effect"
+    },
     -- All attackers gain $s2 ranged attack power against this target.
     hunters_mark = {
-        id = 1130,
+        id = 53338,
         duration = 300,
         max_stack = 1,
+        shared = "target",
         copy = { 1130, 14323, 14324, 14325, 53338 },
     },
     -- glyph.immolation_trap.enabled == duration reduced by 6.
@@ -332,12 +357,6 @@ spec:RegisterAuras( {
         id = 13795,
         duration = 30,
         max_stack = 1,
-    },
-    improved_revive_pet = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=24443)
-        id = 24443,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 24443, 19575 },
     },
     -- Damage done by your Aimed Shot, Arcane Shot or Chimera Shot increased by $s1%, and mana cost reduced by $s2%.
     improved_steady_shot = {
@@ -357,29 +376,33 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
     },
-    killer_instinct = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=19373)
-        id = 19373,
-        duration = 3600,
+    -- TODO: Need to detect on pet?
+    kill_command_buff = {
+        id = 58914,
+        duration = 30,
         max_stack = 1,
-        copy = { 19373, 19371, 19370 },
-    },
-    lethal_shots = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=19431)
-        id = 19431,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 19431, 19430, 19429, 19427, 19426 },
-    },
-    lightning_reflexes = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=24297)
-        id = 24297,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 24297, 24296, 19181, 19180, 19168 },
+        generate = function( t )
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 58914 )
+
+            if name then
+                t.count = 1
+                t.applied = expires - duration
+                t.expires = expires
+                t.caster = "pet"
+                return
+            end
+
+            t.count = 0
+            t.applied = 0
+            t.expires = 0
+            t.caster = "nobody"
+        end,
     },
     -- Your next Arcane Shot or Explosive Shot spells trigger no cooldown, cost no mana and consume no ammo.
     lock_and_load = {
         id = 56453,
         duration = 12,
-        max_stack = 1,
+        max_stack = 2,
     },
     -- Critical strike chance with all attacks increased by $s1%.
     master_tactician = {
@@ -388,13 +411,39 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 34833, 34834, 34835, 34836, 34837 },
     },
+    masters_call = {
+        id = 62305,
+        duration = function() return 4 + ( 3 * talent.animal_handler.rank ) end,
+        max_stack = 1,
+        copy = { 54216 }
+    },
     -- Heals $s1 every $t1 sec.
     mend_pet = {
-        id = 136,
+        id = 48990,
         duration = 15,
         tick_time = 3,
         max_stack = 1,
         copy = { 136, 3111, 3661, 3662, 13542, 13543, 13544, 27046, 48989, 48990 },
+        generate = function( t )
+            local name, _, count, _, duration, expires, caster
+
+            for i, spell in ipairs( class.auras.mend_pet.copy ) do
+                name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", spell )
+
+                if name then
+                    fs.count = 1
+                    fs.applied = expires - duration
+                    fs.expires = expires
+                    fs.caster = "pet"
+                    return
+                end
+            end
+
+            fs.count = 0
+            fs.applied = 0
+            fs.expires = 0
+            fs.caster = "nobody"
+        end,
     },
     -- Redirecting threat.
     misdirection = {
@@ -402,10 +451,19 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
     },
+    mongoose_bite_usable = {
+        duration = 5,
+        max_stack = 1,
+    },
     -- Movement speed increased by $s1%.
     monkey_speed = {
         id = 60798,
         duration = 6,
+        max_stack = 1,
+    },
+    piercing_shots = {
+        id = 63468,
+        duration = 8,
         max_stack = 1,
     },
     -- Ranged attack speed increased.
@@ -441,15 +499,14 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    revive_pet = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=982)
-        id = 982,
-        duration = 3,
+    raptor_strike_queued = {
+        duration = function () return swings.mainhand_speed end,
         max_stack = 1,
     },
     -- Feared.
     scare_beast = {
-        id = 1513,
-        duration = 10,
+        id = 14327,
+        duration = 20,
         max_stack = 1,
         copy = { 1513, 14326, 14327 },
     },
@@ -465,9 +522,30 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1,
     },
+    my_scorpid_sting = {
+        duration = 20,
+        max_stack = 1,
+        generate = function( t )
+            local name, _, count, _, duration, expires, caster = FindUnitDebuffByID( "target", 3043, "PLAYER" )
+
+            if name then
+                t.name = name
+                t.count = 1
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
     -- Causes $s1 Nature damage every $t1 seconds.
     serpent_sting = {
-        id = 1978,
+        id = 49001,
         duration = function() return glyph.serpent_sting.enabled and 21 or 15 end,
         tick_time = 3,
         max_stack = 1,
@@ -484,17 +562,38 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
     },
+    sniper_training = {
+        id = 64420,
+        duration = 15,
+        max_stack = 1,
+        copy = { 64418, 64419, 64420 }
+    },
+    spirit_bond = {
+        id = 24529,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 19579 }
+    },
+    sting = {
+        alias = { "scorpid_sting", "serpent_sting", "viper_sting", "wyvern_sting" },
+        aliasMode = "first",
+        aliasType = "debuff",
+    },
     -- Taming pet.
     tame_beast = {
         id = 1515,
         duration = 20,
         max_stack = 1,
     },
-    thick_hide = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=19612)
-        id = 19612,
-        duration = 3600,
+    the_beast_within = {
+        id = 34471,
+        duration = 10,
         max_stack = 1,
-        copy = { 19612, 19610, 19609 },
+    },
+    track = {
+        alias = { "track_beasts", "track_demons", "track_dragonkin", "track_elementals", "track_giants", "track_hidden", "track_humanoids", "track_undead" },
+        aliasMode = "first",
+        aliasType = "buff",
     },
     -- Tracking Beasts.
     track_beasts = {
@@ -544,12 +643,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    -- Increases attack power by $s1%.
-    trueshot_aura = {
-        id = 19506,
-        duration = 3600,
-        max_stack = 1,
-    },
     -- Drains $m1% mana every $t1 seconds, restoring 300% of the amount drained to the Hunter.
     viper_sting = {
         id = 3034,
@@ -557,18 +650,84 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1,
     },
-    volley = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=1510)
+    volley = {
         id = 1510,
         duration = 6,
+        tick_time = 1,
         max_stack = 1,
+
+        generate = function ( t )
+            local applied = action.volley.lastCast
+
+            if applied and now - applied < 6 then
+                t.count = 1
+                t.expires = applied + 6
+                t.applied = applied
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
+    wing_clip = {
+        id = 2974,
+        duration = 10,
+        max_stack = 1,
+        copy = { 2974, 14267, 14268 },
     },
     -- Asleep.
     wyvern_sting = {
-        id = 19386,
+        id = 49012,
         duration = 30,
         max_stack = 1,
-        copy = { 19386, 24131, 24132, 24133, 24134, 24135, 26748, 27068, 27069, 49009, 49010, 49011, 49012, 65878 },
+        copy = { 19386, 24132, 24133, 24135, 26748, 27068, 49011, 49012 },
     },
+    wyvern_sting_damage = {
+        id = 65878,
+        duration = 6,
+        max_stack = 1,
+        copy = { 24131, 24134, 24135, 26748, 27069, 49090, 49010, 65878 }
+    },
+
+    -- Pet auras.
+    acid_spit = {
+        id = 55754,
+        duration = 30,
+        max_stack = 2,
+        shared = "target",
+        copy = { 55749, 55750, 55751, 55752, 55753, 55754 }
+    },
+    call_of_the_wild = {
+        id = 53434,
+        duration = 20,
+        max_stack = 1,
+        shared = "player",
+    },
+    demoralizing_screech = {
+        id = 55487,
+        duration = 10,
+        max_stack = 1,
+        shared = "target",
+        copy = { 24423, 24577, 24578, 24579, 27051, 55487 }
+    },
+    furious_howl = {
+        id = 64495,
+        duration = 20,
+        max_stack = 1,
+        shared = "player",
+        copy = { 24604, 64491, 64492, 64493, 64494, 64495 }
+    },
+    stampede = {
+        id = 57393,
+        duration = 12,
+        max_stack = 1,
+        shared = "player",
+        copy = { 57386, 57389, 57390, 57391, 57392, 57393 }
+    }
 } )
 
 
@@ -610,6 +769,113 @@ spec:RegisterGlyphs( {
 } )
 
 
+local cool_traps = setfenv( function()
+    setCooldown( "black_arrow", action.black_arrow.cooldown )
+    setCooldown( "explosive_trap", action.explosive_trap.cooldown )
+    setCooldown( "freezing_arrow", action.freezing_arrow.cooldown )
+    setCooldown( "freezing_trap", action.freezing_trap.cooldown )
+    setCooldown( "frost_trap", action.frost_trap.cooldown )
+    setCooldown( "immolation_trap", action.immolation_trap.cooldown )
+end, state )
+
+local repeating = 0
+local last_dodge = 0
+local last_parry = 0
+local last_crit = 0
+
+spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
+    local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, missType, _, _, _, _, _, critical = CombatLogGetCurrentEventInfo()
+
+    -- print( subtype, sourceGUID, sourceName, destGUID, destName, destFlags, "A", spellID, "B", spellName, "C", missType )
+    if destGUID == state.GUID and subtype:match( "_MISSED$" ) then
+        if missType == "DODGE" then
+            last_dodge = GetTime()
+        elseif missType == "PARRY" then
+            last_parry = GetTime()
+        end
+    elseif sourceGUID == state.GUID and subtype:match( "_DAMAGE$" ) and critical then
+        last_crit = GetTime()
+    end
+end )
+
+spec:RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, _, spellID )
+    if UnitIsUnit( "player", unit ) and spellID == 75 then
+        repeating = GetTime()
+    end
+end )
+
+spec:RegisterEvent( "START_AUTOREPEAT_SPELL", function()
+    repeating = GetTime()
+end )
+
+spec:RegisterEvent( "STOP_AUTOREPEAT_SPELL", function()
+    repeating = 0
+end )
+
+spec:RegisterStateExpr( "time_to_auto", function()
+    if buff.auto_shot.down then return 3600 end
+
+    local last = action.auto_shot.lastCast
+    local time_since = query_time - last
+
+    local speed = UnitRangedDamage( "player" )
+    return max( speed - ( time_since % speed ), moving and 0.5 or nil )
+end )
+
+spec:RegisterStateExpr( "auto_shot_cast_remains", function()
+    if buff.auto_shot.down then return 0 end
+    if time_to_auto > 0.5 then return 0 end
+    return time_to_auto
+end )
+
+
+local finish_raptor = setfenv( function()
+    spend( class.abilities.raptor_strike.spends[ spells.raptor_strike ], "mana" )
+end, state )
+
+spec:RegisterStateFunction( "start_raptor", function()
+    applyBuff( "raptor_strike", swings.time_to_next_mainhand )
+    state:QueueAuraExpiration( "raptor_strike", finish_raptor, buff.finish_raptor.expires )
+end )
+
+spec:RegisterHook( "reset_precast", function()
+    if repeating > 0 then applyBuff( "auto_shot" ) end
+
+    if IsUsableSpell( class.abilities.mongoose_bite.id ) and last_dodge > 0 and now - last_dodge < 5 then applyBuff( "mongoose_bite_usable", last_dodge + 5 - now ) end
+    if IsUsableSpell( class.abilities.counterattack.id ) and last_parry > 0 and now - last_parry < 5 then applyBuff( "counterattack_usable", last_parry + 5 - now ) end
+
+    if IsCurrentSpell( class.abilities.raptor_strike.id ) then
+        start_raptor()
+        Hekili:Debug( "Starting Raptor Strike, next swing in %.2f...", buff.maul.remains )
+    end
+end )
+
+
+local mod_beast_within = setfenv( function( base )
+    return base * ( buff.the_beast_within.up and 0.5 or 1 )
+end, state )
+
+local mod_efficiency = setfenv( function( base )
+    return base * ( 1 - 0.3 * talent.efficiency.rank )
+end, state )
+
+local mod_master_marksman = setfenv( function( base )
+    return base * ( 1 - 0.05 * talent.master_marksman.rank )
+end, state )
+
+local mod_imp_steady_shot = setfenv( function( base )
+    return base * ( buff.improved_steady_shot.up and 0.8 or 1 )
+end, state )
+
+local mod_resourcefulness_cost = setfenv( function( base )
+    return base * ( 1 - 0.2 * talent.resourcefulness.rank )
+end, state )
+
+local mod_resourcefulness_cd = setfenv( function( base )
+    return base - 2 * talent.resourcefulness.rank
+end, state )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- An aimed shot that increases ranged damage by 5 and reduces healing done to that target by 50%.  Lasts 10 sec.
@@ -619,7 +885,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.aimed_shot.enabled and 8 or 10 end,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return mod_beast_within( mod_imp_steady_shot( mod_master_marksman( mod_efficiency( 0.08 ) ) ) ) end,
         spendType = "mana",
 
         talent = "aimed_shot",
@@ -627,18 +893,21 @@ spec:RegisterAbilities( {
         texture = 135130,
 
         handler = function ()
+            applyDebuff( "target", "aimed_shot" )
+            removeBuff( "rapid_killing" )
+            removeBuff( "improved_steady_shot" )
         end,
     },
 
 
     -- An instant shot that causes 65 Arcane damage.
     arcane_shot = {
-        id = 3044,
+        id = 49045,
         cast = 0,
-        cooldown = 6,
+        cooldown = function() return buff.lock_and_load.up and 0 or 6 end,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = function() return mod_beast_within( mod_imp_steady_shot( mod_efficiency( 0.05 ) ) ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -648,9 +917,12 @@ spec:RegisterAbilities( {
             if glyph.arcane_shot.enabled and ( debuff.viper_sting.up or debuff.scorpid_sting.up or debuff.serpent_sting.up ) then
                 gain( 0.01 * mana.max, "mana" )
             end
+            removeBuff( "rapid_killing" )
+            removeBuff( "improved_steady_shot" )
+            removeStack( "lock_and_load" )
         end,
 
-        copy = { 14281, 14282, 14283, 14284, 14285, 14286, 14287, 27019, 49044, 49045 },
+        copy = { 3044, 14281, 14282, 14283, 14284, 14285, 14286, 14287, 27019, 49044, 49045 },
     },
 
 
@@ -661,10 +933,14 @@ spec:RegisterAbilities( {
         cooldown = 1,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132252,
 
+        nobuff = "aspect_of_the_beast",
+
         handler = function ()
+            removeBuff( "aspect" )
+            applyBuff( "aspect_of_the_beast" )
         end,
     },
 
@@ -676,28 +952,36 @@ spec:RegisterAbilities( {
         cooldown = 1,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132242,
 
+        nobuff = "aspect_of_the_cheetah",
+
         handler = function ()
+            removeBuff( "aspect" )
+            applyBuff( "aspect_of_the_cheetah" )
         end,
     },
 
 
     -- The hunter takes on the aspects of a dragonhawk, increasing ranged attack power by 230 and chance to dodge by 18%.  Only one Aspect can be active at a time.
     aspect_of_the_dragonhawk = {
-        id = 61846,
+        id = 61847,
         cast = 0,
         cooldown = 1,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132188,
 
+        nobuff = "aspect_of_the_dragonhawk",
+
         handler = function ()
+            removeBuff( "aspect" )
+            applyBuff( "aspect_of_the_dragonhawk" )
         end,
 
-        copy = { 61847 },
+        copy = { 61846 },
     },
 
 
@@ -708,10 +992,14 @@ spec:RegisterAbilities( {
         cooldown = 1,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136076,
 
+        nobuff = "aspect_of_the_hawk",
+
         handler = function ()
+            removeBuff( "aspect" )
+            applyBuff( "aspect_of_the_hawk" )
         end,
 
         copy = { 14318, 14319, 14320, 14321, 14322, 25296, 27044 },
@@ -725,10 +1013,14 @@ spec:RegisterAbilities( {
         cooldown = 1,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132159,
 
+        nobuff = "aspect_of_the_monkey",
+
         handler = function ()
+            removeBuff( "aspect" )
+            applyBuff( "aspect_of_the_monkey" )
         end,
     },
 
@@ -740,10 +1032,14 @@ spec:RegisterAbilities( {
         cooldown = 1,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132267,
 
+        nobuff = "aspect_of_the_pack",
+
         handler = function ()
+            removeBuff( "aspect" )
+            applyBuff( "aspect_of_the_pack" )
         end,
     },
 
@@ -755,10 +1051,14 @@ spec:RegisterAbilities( {
         cooldown = 1,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132160,
 
+        nobuff = "aspect_of_the_viper",
+
         handler = function ()
+            removeBuff( "aspect" )
+            applyBuff( "aspect_of_the_viper" )
         end,
     },
 
@@ -770,13 +1070,34 @@ spec:RegisterAbilities( {
         cooldown = 1,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136074,
 
+        nobuff = "aspect_of_the_wild",
+
         handler = function ()
+            removeBuff( "aspect" )
+            applyBuff( "aspect_of_the_wild" )
         end,
 
         copy = { 20190, 27045, 49071 },
+    },
+
+
+    auto_shot = {
+        id = 75,
+        cast = 0,
+        cooldown = function() return UnitRangedDamage( "player" ) end,
+        gcd = "off",
+
+        startsCombat = false, -- it kinda doesn't.
+        -- texture = 132369,
+
+        nobuff = "auto_shot",
+
+        handler = function()
+            applyBuff( "auto_shot" )
+        end
     },
 
 
@@ -787,13 +1108,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return mod_beast_within( 0.02 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132270,
 
         handler = function ()
+            applyDebuff( "target", "beast_lore" )
         end,
     },
 
@@ -802,19 +1124,21 @@ spec:RegisterAbilities( {
     bestial_wrath = {
         id = 19574,
         cast = 0,
-        cooldown = function() return glyph.bestial_wrath.enabled and 100 or 120 end,
+        cooldown = function() return ( glyph.bestial_wrath.enabled and 100 or 120 ) * ( 1 - 0.1 * talent.longevity.rank ) end,
         gcd = "off",
 
-        spend = 0.1,
+        spend = function() return mod_beast_within( 0.1 ) end,
         spendType = "mana",
 
         talent = "bestial_wrath",
-        startsCombat = true,
+        startsCombat = false,
         texture = 132127,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "bestial_wrath" )
+            if talent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
         end,
     },
 
@@ -823,10 +1147,10 @@ spec:RegisterAbilities( {
     black_arrow = {
         id = 3674,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.06 ) ) end,
         spendType = "mana",
 
         talent = "black_arrow",
@@ -834,6 +1158,8 @@ spec:RegisterAbilities( {
         texture = 136181,
 
         handler = function ()
+            applyDebuff( "target", "black_arrow" )
+            cool_traps()
         end,
     },
 
@@ -845,10 +1171,11 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132161,
 
         handler = function ()
+            summonPet( "pet" )
         end,
     },
 
@@ -860,12 +1187,13 @@ spec:RegisterAbilities( {
         cooldown = 300,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132599,
 
-        toggle = "cooldowns",
+        usable = function() return time == 0, "cannot use in combat" end,
 
         handler = function ()
+            summonPet( "pet" )
         end,
     },
 
@@ -877,7 +1205,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.chimera_shot.enabled and 9 or 10 end,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = function() return mod_beast_within( mod_imp_steady_shot( mod_master_marksman( mod_efficiency( 0.12 ) ) ) ) end,
         spendType = "mana",
 
         talent = "chimera_shot",
@@ -885,6 +1213,18 @@ spec:RegisterAbilities( {
         texture = 236176,
 
         handler = function ()
+            if dot.serpent_sting.ticking then dot.serpent_sting.expires = query_time + class.auras.serpent_sting.duration
+            elseif dot.viper_sting.ticking then
+                dot.viper_sting.expires = query_time + class.auras.viper_sting.duration
+            elseif dot.scorpid_sting.ticking then
+                dot.scorpid_sting.expires = query_time + class.auras.scorpid_sting.duration
+                applyDebuff( "target", "chimera_shot_disarmed" )
+            elseif dot.wyvern_sting.ticking then
+                dot.wyvern_sting.expires = query_time + class.auras.wyvern_sting.duration
+            end
+            if talent.concussive_barrage.enabled then applyDebuff( "target", "concussive_barrage" ) end
+            removeBuff( "rapid_killing" )
+            removeBuff( "improved_steady_shot" )
         end,
     },
 
@@ -896,13 +1236,14 @@ spec:RegisterAbilities( {
         cooldown = 12,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return mod_beast_within( 0.06 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135860,
 
         handler = function ()
+            applyDebuff( "target", "concussive_shot" )
         end,
     },
 
@@ -914,14 +1255,20 @@ spec:RegisterAbilities( {
         cooldown = 5,
         gcd = "spell",
 
-        spend = 0.03,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.03 ) ) end,
         spendType = "mana",
 
         talent = "counterattack",
         startsCombat = true,
         texture = 132336,
 
+        buff = "counterattack_usable",
+
+        usable = function() return target.distance < 10, "requires melee range" end,
+
         handler = function ()
+            removeBufF( "counterattack_usable" )
+            applyDebuff( "target", "counterattack" )
         end,
     },
 
@@ -933,12 +1280,13 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.deterrence.enabled and 80 or 90 end,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132369,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "deterrence" )
         end,
     },
 
@@ -948,16 +1296,17 @@ spec:RegisterAbilities( {
         id = 781,
         cast = 0,
         cooldown = 25,
-        cooldown = function() return glyph.disengage.enabled and 20 or 25 end,
+        cooldown = function() return ( glyph.disengage.enabled and 20 or 25 ) - ( 2 * talent.survival_tactics.rank ) end,
         gcd = "off",
 
-        spend = 0.05,
+        spend = function() return mod_beast_within( 0.05 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132294,
 
         handler = function ()
+            setDistance( 20 + target.distance )
         end,
     },
 
@@ -969,10 +1318,11 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136095,
 
         handler = function ()
+            dismissPet()
         end,
     },
 
@@ -984,13 +1334,14 @@ spec:RegisterAbilities( {
         cooldown = 8,
         gcd = "spell",
 
-        spend = 0.07,
+        spend = function() return mod_beast_within( 0.07 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135736,
 
         handler = function ()
+            applyDebuff( "target", "distracting_shot" )
         end,
     },
 
@@ -998,17 +1349,19 @@ spec:RegisterAbilities( {
     -- Zooms in the hunter's vision.  Only usable outdoors.  Lasts 1 min.
     eagle_eye = {
         id = 6197,
-        cast = 0,
+        cast = 60,
+        channeled = true,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.01,
+        spend = function() return mod_beast_within( 0.01 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132172,
 
         handler = function ()
+            applyBuff( "eagle_eye" )
         end,
     },
 
@@ -1017,10 +1370,10 @@ spec:RegisterAbilities( {
     explosive_shot = {
         id = 53301,
         cast = 0,
-        cooldown = 6,
+        cooldown = function() return buff.lock_and_load.up and 0 or 6 end,
         gcd = "spell",
 
-        spend = 0.07,
+        spend = function() return mod_beast_within( 0.07 ) * ( buff.lock_and_load.up and 0 or 1 ) end,
         spendType = "mana",
 
         talent = "explosive_shot",
@@ -1028,6 +1381,8 @@ spec:RegisterAbilities( {
         texture = 236178,
 
         handler = function ()
+            removeStack( "lock_and_load" )
+            applyDebuff( "target", "explosive_shot" )
         end,
     },
 
@@ -1036,16 +1391,17 @@ spec:RegisterAbilities( {
     explosive_trap = {
         id = 13813,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
 
-        spend = 0.19,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.19 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135826,
 
         handler = function ()
+            cool_traps()
         end,
 
         copy = { 14316, 14317, 27025, 49066, 49067 },
@@ -1059,13 +1415,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.01,
+        spend = function() return mod_beast_within( 0.01 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132150,
 
         handler = function ()
+            applyBuff( "eyes_of_the_beast" )
         end,
     },
 
@@ -1077,7 +1434,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132165,
 
         handler = function ()
@@ -1088,18 +1445,20 @@ spec:RegisterAbilities( {
     -- Feign death which may trick enemies into ignoring you.  Lasts up to 6 min.
     feign_death = {
         id = 5384,
-        cast = 0,
+        cast = 360,
+        channeled = true,
         cooldown = 30,
         cooldown = function() return glyph.feign_death.enabled and 25 or 30 end,
         gcd = "off",
 
-        spend = 0.03,
+        spend = function() return mod_beast_within( 0.03 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132293,
 
         handler = function ()
+            applyBuff( "feign_death" )
         end,
     },
 
@@ -1111,10 +1470,10 @@ spec:RegisterAbilities( {
         cooldown = 20,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return mod_beast_within( 0.02 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135815,
 
         handler = function ()
@@ -1126,37 +1485,39 @@ spec:RegisterAbilities( {
     freezing_arrow = {
         id = 60192,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
 
-        spend = 0.03,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.03 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135837,
 
         handler = function ()
+            cool_traps()
         end,
     },
 
 
     -- Place a frost trap that freezes the first enemy that approaches, preventing all action for up to 10 sec.  Any damage caused will break the ice.  Trap will exist for 30 sec.  Only one trap can be active at a time.
     freezing_trap = {
-        id = 1499,
+        id = 14311,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
 
-        spend = 0.03,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.03 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135834,
 
         handler = function ()
+            cool_traps()
         end,
 
-        copy = { 14310, 14311 },
+        copy = { 1499, 14310, 14311 },
     },
 
 
@@ -1164,16 +1525,17 @@ spec:RegisterAbilities( {
     frost_trap = {
         id = 13809,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.02 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135840,
 
         handler = function ()
+            cool_traps()
         end,
     },
 
@@ -1185,13 +1547,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return mod_beast_within( 0.02 ) * ( 1 - ( ( 1 / 3 ) * talent.improved_hunters_mark.rank ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132212,
 
         handler = function ()
+            applyDebuff( "target", "hunters_mark" )
         end,
 
         copy = { 14323, 14324, 14325, 53338 },
@@ -1200,21 +1563,22 @@ spec:RegisterAbilities( {
 
     -- Place a fire trap that will burn the first enemy to approach for 138 Fire damage over 15 sec.  Trap will exist for 30 sec.  Only one trap can be active at a time.
     immolation_trap = {
-        id = 13795,
+        id = 49056,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
 
-        spend = 0.09,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.09 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135813,
 
         handler = function ()
+            cool_traps()
         end,
 
-        copy = { 14302, 14303, 14304, 14305, 27023, 49055, 49056 },
+        copy = { 13795, 14302, 14303, 14304, 14305, 27023, 49055, 49056 },
     },
 
 
@@ -1222,19 +1586,23 @@ spec:RegisterAbilities( {
     intimidation = {
         id = 19577,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 * ( 1 - 0.1 * talent.longevity.rank ) end,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return mod_beast_within( 0.08 ) end,
         spendType = "mana",
 
         talent = "intimidation",
         startsCombat = true,
         texture = 132111,
 
-        toggle = "cooldowns",
+        toggle = "interrupts",
+
+        usable = function() return pet.active, "requires a pet" end,
 
         handler = function ()
+            applyDebuff( "target", "intimidation" )
+            if not target.is_boss then interrupt() end
         end,
     },
 
@@ -1243,39 +1611,42 @@ spec:RegisterAbilities( {
     kill_command = {
         id = 34026,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - ( 10 * talent.catlike_reflexes.rank ) end,
         gcd = "off",
 
-        spend = 0.03,
+        spend = function() return mod_beast_within( 0.03 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132176,
 
-        toggle = "cooldowns",
+        usable = function() return pet.active, "requires a pet" end,
 
         handler = function ()
+            applyBuff( "kill_command_buff", nil, 3 )
         end,
     },
 
 
     -- You attempt to finish the wounded target off, firing a long range attack dealing 200% weapon damage plus 543. Kill Shot can only be used on enemies that have 20% or less health.
     kill_shot = {
-        id = 53351,
+        id = 61006,
         cast = 0,
         cooldown = function() return glyph.kill_shot.enabled and 9 or 15 end,
         gcd = "spell",
 
-        spend = 0.07,
+        spend = function() return mod_beast_within( 0.07 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 236174,
 
+        usable = function() return target.health.pct < 20, "enemy health must be below 20 percent" end,
+
         handler = function ()
         end,
 
-        copy = { 61005, 61006 },
+        copy = { 53351, 61005, 61006 },
     },
 
 
@@ -1286,15 +1657,18 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "off",
 
-        spend = 0.07,
+        spend = function() return mod_beast_within( 0.07 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 236189,
 
-        toggle = "cooldowns",
+        toggle = "interrupts",
+
+        usable = function() return pet.active, "requires an active pet" end,
 
         handler = function ()
+            applyBuff( "masters_call" )
         end,
     },
 
@@ -1306,13 +1680,16 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.09,
+        spend = function() return mod_beast_within( 0.09 ) * ( 1 - ( 0.1 * talent.improved_mend_pet.rank ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132179,
 
+        usable = function() return pet.active, "requires an active pet" end,
+
         handler = function ()
+            applyBuff( "mend_pet" )
         end,
 
         copy = { 3111, 3661, 3662, 13542, 13543, 13544, 27046, 48989, 48990 },
@@ -1326,13 +1703,16 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
 
-        spend = 0.09,
+        spend = function() return mod_beast_within( 0.09 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132180,
 
+        usable = function() return pet.active or group, "requires an active pet or a group" end,
+
         handler = function ()
+            applyBuff( "misdirection" )
         end,
     },
 
@@ -1344,13 +1724,18 @@ spec:RegisterAbilities( {
         cooldown = 5,
         gcd = "spell",
 
-        spend = 0.03,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.03 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132215,
 
+        buff = "mongoose_bite_usable",
+
+        usable = function() return target.distance < 10, "requires melee range" end,
+
         handler = function ()
+            removeBuff( "mongoose_bite_usable" )
         end,
 
         copy = { 14269, 14270, 14271, 36916, 53339 },
@@ -1365,13 +1750,14 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.multishot.enabled and 9 or 10 end,
         gcd = "spell",
 
-        spend = 0.09,
+        spend = function() return mod_beast_within( 0.09 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132330,
 
         handler = function ()
+            if talent.concussive_barrage.enabled then applyDebuff( "target", "concussive_barrage" ) end
         end,
 
         copy = { 14288, 14289, 14290, 25294, 27021, 49047, 49048 },
@@ -1382,18 +1768,19 @@ spec:RegisterAbilities( {
     rapid_fire = {
         id = 3045,
         cast = 0,
-        cooldown = 300,
+        cooldown = function() return 300 - 60 * talent.rapid_killing.rank end,
         gcd = "off",
 
-        spend = 0.03,
+        spend = function() return mod_beast_within( 0.03 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132208,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "rapid_fire" )
         end,
     },
 
@@ -1405,7 +1792,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "off",
 
-        spend = 0.04,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.04 ) ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1427,12 +1814,17 @@ spec:RegisterAbilities( {
         gcd = "totem",
 
         talent = "readiness",
-        startsCombat = true,
+        startsCombat = false,
         texture = 132206,
 
         toggle = "cooldowns",
 
         handler = function ()
+            for k, v in pairs( class.specs[ 3 ].abilities ) do
+                if type( k ) == "string" and k ~= "bestial_wrath" then
+                    setCooldown( k, 0 )
+                end
+            end
         end,
     },
 
@@ -1440,17 +1832,18 @@ spec:RegisterAbilities( {
     -- Revive your pet, returning it to life with 15% of its base health.
     revive_pet = {
         id = 982,
-        cast = 10,
+        cast = function() return 10 - ( 3 * talent.improved_revive_pet.rank ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.8,
+        spend = function() return mod_beast_within( 0.8 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132163,
 
         handler = function ()
+            summonPet( "pet" )
         end,
     },
 
@@ -1462,13 +1855,16 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return mod_beast_within( 0.02 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132118,
 
+        usable = function() return target.is_beast, "requires beast target" end,
+
         handler = function ()
+            applyDebuff( "target", "scare_beast" )
         end,
 
         copy = { 14326, 14327 },
@@ -1482,7 +1878,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return mod_beast_within( 0.08 ) end,
         spendType = "mana",
 
         talent = "scatter_shot",
@@ -1490,6 +1886,7 @@ spec:RegisterAbilities( {
         texture = 132153,
 
         handler = function ()
+            applyDebuff( "target", "scatter_shot" )
         end,
     },
 
@@ -1501,13 +1898,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.11,
+        spend = function() return mod_beast_within( 0.11 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132169,
 
         handler = function ()
+            removeDebuff( "target", "sting" )
+            applyDebuff( "target", "scorpid_sting" )
         end,
     },
 
@@ -1519,13 +1918,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.09,
+        spend = function() return mod_beast_within( 0.09 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132204,
 
         handler = function ()
+            removeDebuff( "target", "sting" )
+            applyDebuff( "target", "serpent_sting" )
         end,
 
         copy = { 13549, 13550, 13551, 13552, 13553, 13554, 13555, 25295, 27016, 49000, 49001 },
@@ -1539,7 +1940,7 @@ spec:RegisterAbilities( {
         cooldown = 20,
         gcd = "off",
 
-        spend = 0.06,
+        spend = function() return mod_beast_within( 0.06 ) end,
         spendType = "mana",
 
         talent = "silencing_shot",
@@ -1547,6 +1948,7 @@ spec:RegisterAbilities( {
         texture = 132323,
 
         handler = function ()
+            interrupt()
         end,
     },
 
@@ -1555,16 +1957,17 @@ spec:RegisterAbilities( {
     snake_trap = {
         id = 34600,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return mod_resourcefulness_cd( 30 ) end,
         gcd = "spell",
 
-        spend = 0.09,
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.09 ) ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132211,
 
         handler = function ()
+            cool_traps()
         end,
     },
 
@@ -1576,7 +1979,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = function() return mod_beast_within( mod_master_marksman( mod_efficiency( 0.05 ) ) ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1592,17 +1995,21 @@ spec:RegisterAbilities( {
     -- Begins taming a beast to be your companion.  Your armor is reduced by 100% while you focus on taming the beast for 20 sec.  If you lose the beast's attention for any reason, the taming process will fail.  Once tamed, the beast will be very unhappy and disloyal.  Try feeding the pet immediately to make it happy.
     tame_beast = {
         id = 1515,
-        cast = 0,
+        cast = 20,
+        channeled = true,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.48,
+        spend = function() return mod_beast_within( 0.48 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132164,
 
+        usable = function() return not pet.active, "cannot have a pet" end,
+
         handler = function ()
+            applyDebuff( "target", "tame_beast" )
         end,
     },
 
@@ -1614,10 +2021,14 @@ spec:RegisterAbilities( {
         cooldown = 1.5,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132328,
 
+        nobuff = "track_beasts",
+
         handler = function ()
+            removeBuff( "track" )
+            applyBuff( "track_beasts" )
         end,
     },
 
@@ -1629,10 +2040,14 @@ spec:RegisterAbilities( {
         cooldown = 1.5,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136217,
 
+        nobuff = "track_demons",
+
         handler = function ()
+            removeBuff( "track" )
+            applyBuff( "track_demons" )
         end,
     },
 
@@ -1644,10 +2059,12 @@ spec:RegisterAbilities( {
         cooldown = 1.5,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 134153,
 
         handler = function ()
+            removeBuff( "track" )
+            applyBuff( "track_dragonkin" )
         end,
     },
 
@@ -1659,10 +2076,14 @@ spec:RegisterAbilities( {
         cooldown = 1.5,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135861,
 
+        nobuff = "track_elementals",
+
         handler = function ()
+            removeBuff( "track" )
+            applyBuff( "track_elementals" )
         end,
     },
 
@@ -1674,10 +2095,14 @@ spec:RegisterAbilities( {
         cooldown = 1.5,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132275,
 
+        nobuff = "track_giants",
+
         handler = function ()
+            removeBuff( "track" )
+            applyBuff( "track_giants" )
         end,
     },
 
@@ -1689,10 +2114,14 @@ spec:RegisterAbilities( {
         cooldown = 1.5,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132320,
 
+        nobuff = "track_hidden",
+
         handler = function ()
+            removeBuff( "track" )
+            applyBuff( "track_hidden" )
         end,
     },
 
@@ -1704,10 +2133,14 @@ spec:RegisterAbilities( {
         cooldown = 1.5,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135942,
 
+        nobuff = "track_humanoids",
+
         handler = function ()
+            removeBuff( "track" )
+            applyBuff( "track_humanoids" )
         end,
     },
 
@@ -1719,10 +2152,14 @@ spec:RegisterAbilities( {
         cooldown = 1.5,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136142,
 
+        nobuff = "track_undead",
+
         handler = function ()
+            removeBuff( "track" )
+            applyBuff( "track_undead" )
         end,
     },
 
@@ -1734,13 +2171,19 @@ spec:RegisterAbilities( {
         cooldown = 8,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return mod_beast_within( 0.08 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136020,
 
+        debuff = function()
+            return debuff.dispellable_enrage.up and "dispellable_enrage" or "dispellable_magic"
+        end,
+
         handler = function ()
+            removeDebuff( "target", "dispellable_enrage" )
+            removeDebuff( "target", "dispellable_magic" )
         end,
     },
 
@@ -1753,10 +2196,13 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "trueshot_aura",
-        startsCombat = true,
+        startsCombat = false,
         texture = 132329,
 
+        nobuff = "trueshot_aura",
+
         handler = function ()
+            applyBuff( "trueshot_aura" )
         end,
     },
 
@@ -1768,13 +2214,15 @@ spec:RegisterAbilities( {
         cooldown = 15,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return mod_beast_within( 0.08 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132157,
 
         handler = function ()
+            removeDebuff( "target", "sting" )
+            applyDebuff( "target", "viper_sting" )
         end,
     },
 
@@ -1787,7 +2235,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.17 * ( glyph.volley.enabled and 0.8 or 1 ) end,
+        spend = function() return mod_beast_within( 0.17 ) * ( glyph.volley.enabled and 0.8 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1800,6 +2248,26 @@ spec:RegisterAbilities( {
     },
 
 
+    wing_clip = {
+        id = 2974,
+        cast = 0,
+        cooldown = 1.5,
+        gcd = "spell",
+
+        spend = function() return mod_beast_within( mod_resourcefulness_cost( 0.06 ) ) * ( 1 - 0.02 * talent.efficiency.rank ) end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 132309,
+
+        usable = function() return target.distance < 10, "requires melee range" end,
+
+        handler = function()
+            applyDebuff( "target", "wing_clip" )
+        end,
+    },
+
+
     -- A stinging shot that puts the target to sleep for 30 sec.  Any damage will cancel the effect.  When the target wakes up, the Sting causes 300 Nature damage over 6 sec.  Only one Sting per Hunter can be active on the target at a time.
     wyvern_sting = {
         id = 19386,
@@ -1807,7 +2275,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.wyvern_sting.enabled and 54 or 60 end,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return mod_beast_within( 0.08 ) end,
         spendType = "mana",
 
         talent = "wyvern_sting",
@@ -1817,8 +2285,61 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeDebuff( "target", "sting" )
+            applyDebuff( "target", "wyvern_sting" )
         end,
     },
+
+
+    -- Pet Abilities
+    acid_spit = {
+        id = 55754,
+        cast = 0,
+        cooldown = function() return 10 * ( 1 - ( 0.1 * talent.longevity.rank ) ) end,
+        gcd = "off",
+
+        startsCombat = true,
+
+        usable = function() return UnitPower( "pet", Enum.PowerType.Focus ) > 20, "requires 20 pet focus" end,
+
+        handler = function()
+            applyDebuff( "target", "acid_spit", nil, debuff.acid_spit.stack + 1 )
+        end,
+
+        copy = { 55749, 55750, 55751, 55752, 55753, 55754 }
+    },
+
+    call_of_the_wild = {
+        id = 53434,
+        cast = 0,
+        cooldown = function() return 300 * ( 1 - ( 0.1 * talent.longevity.rank ) ) end,
+        gcd = "off",
+
+        startsCombat = false,
+
+        handler = function()
+            applyBuff( "call_of_the_wild" )
+        end,
+    },
+
+    demoralizing_screech = {
+        id = 55487,
+        cast = 0,
+        cooldown = function() return 10 * ( 1 - ( 0.1 * talent.longevity.rank ) ) end,
+        gcd = "off",
+
+        startsCombat = true,
+
+        usable = function() return UnitPower( "pet", Enum.PowerType.Focus ) > 20, "requires 20 pet focus" end,
+
+        handler = function()
+            applyDebuff( "target", "demoralizing_screech" )
+        end,
+
+        copy = { 24423, 24577, 24578, 24579, 27051, 55487 }
+    }
+
+
 } )
 
 
@@ -1829,15 +2350,24 @@ spec:RegisterOptions( {
 
     gcd = 2973,
 
-    nameplates = true,
+    nameplates = false,
     nameplateRange = 8,
 
-    damage = false,
+    damage = true,
     damageExpiration = 6,
 
-    package = "Arms (IV)",
+    potion = "speed",
 
-    package1 = "Arms (IV)",
-    package2 = "Fury (IV)",
-    package3 = "Protection Warrior (IV)"
+    package = "Beast Mastery (wowtbc.gg)",
+
+    -- package1 = "Arms (IV)",
+    -- package2 = "Fury (IV)",
+    -- package3 = "Protection Warrior (IV)"
 } )
+
+
+spec:RegisterPack( "Beast Mastery (wowtbc.gg)", 20221002, [[Hekili:fsvxVTjmu0Fm9LnTvsG29Pu7d9TgPL9avAVzWyUawXyJSnHLx8V9DnOsmKenfjWyFUhFUFCcjM8gjTKAbY(KTjjXB3MeLGRItiP2tDajTJYoqRXfsAl(8fGASU8FHpb9jx(hgud2cwuD9h9ypju0spNgvVMH4BS2oZp3SzggUYkoSHjOgZ9198sWSPWt69TtCEFtVeFVHKw0Zf2xLKIRlXy8w6agz)d41WllHjKGHrsFRHBC5DAUsZTOm9FvqnqPlxjD52gWLpljx(F0uBJlFuorKub3ynJvgOI2lS4Y9JvkkZYvs8E5cqY4Y6mtJYssbjTqaLKxiwuLEKN3jLHsa0CQNUI(QQigMOySr9DNzKlT8woMM(VS(C6MKOgKNJBQyzYAP6d(4EmuMAAhVmRIRHvs8lHOyuHitvLHfLSbUOCf2VgITaqPtfzd(c2kGFle4boskt12sLRj87H46utVxG4hHi6nqgM7TMvGI3EX9DLMrC8)RBm1lwwvnGUdK2SXZgP52nvlvxd2ObUTHlrrntc83oHYWpczwSrmYYdHsUfNS4xtYpEZ7YhkYhiHwoGJ0p7Ytot4rLqaNgPyrdMQzujC1QZIMlA)OLNUco8ZonGDZc6LEbQ3eAFFaQutRvYg6WH1uGKCeNu9XmBKjPduTeRXyZ912oL26DOjU8jYD5JoXi3o8A6TnkngW7UwVMuvOrKKE3DU8v)X0o)Eir)MzvfGgxJxPBNB3eZMO5e6tpT5wPqaEe1stF4jHM3pZRE6cFEi4qh7iyCYl88ZM2WDxBsdpBHPm8Gqty4(tMUWDMnzxe(6CDH1iizpBJcrV0d4HVYUecE2qeU50qTpYLd)pNeIkyeFHydMO9)i)7p]] )
+
+spec:RegisterPack( "Marksmanship (wowtbc.gg)", 20221002, [[Hekili:fsvtZTjmuWFm5s70gSnPTjTZKCONA8mn9azMEtGaEy0yHeJKiuFr)27tqniHTRVylKwTVV0UKnKxjjLudqEjEDC8M1RJJIDREGKyo0cKKwAXE6oCHG2G)(tQAVUHk01SwB276L9M8IOD7EVd5bUKw6yul7ufi6AJPv)TvRMGHRm89Rk4uT(2DDSsqVQXJYBR7egqTIKK3X4MNfK8ZNF3JbPfkiVChgfwzjmIe0fKKxRzABwRIjvmZbBM7RCQgkTzsHnZud2SPmYM9Bf1uBZgYMiscNPn6H2cur74gC5ldTjqqZ5qj57KKcKyqXOoq5DvvrfuTHj2f11ssOfgMuqsycdRHHjV7ldwaxMezVy(EJTaDQRV4U3DU7D8qfTLvMwXuGpxiQp5JQGY5PYQuSut7z8Yfy)Sp29meBHSbNalX9fFCTYX)dqCVpIonKILuJEbOhUw3BS3f2f0GQfeM0HZCS81GcSM1akAQUwAweTnRVy4C3(nifeqddWhfpzZIN5Sbh2SbcDSC5rUHQ2bMOEMPMjWOnra8NwUu7IGbhtdSC5z()pxEtY5WHbkcg)uSSlpBvhm)PQcQaolUGzVcOLmbOxoX2em51moikWXWzj8(tEmDkk8ZwfGpYYPZ6PPK1jKnhFUwQO7KIAA)(fbk(ApghcZBOYXDYKDbjPNQeyYJ14ZnTsLX5deBZgPYMnO3JSBrY7m1sfEHJEdUSwwHvpj5MBSzHEF)yqMA36obP7xfgzo(DMlW2T2TJ8RJMk8p84QlvQNh9yr6XfUNVPYhzvpEI)JpyFNKbWOcZ)8zZe)DxAE4FMVzXyPpFwvh642PtRL9C)7CSmM3zYOWFZabVxPnBoeKKEga(7pjIDmeQXEk2hyOy1HEHU2h8OC8Auolod2Dwlg07pk9c6bbkTtA8)ZCYqi)9p]] )
+
+spec:RegisterPack( "Survival (wowtbc.gg)", 20221002, [[Hekili:DwvWsUjoq0pM5ssLDW2mEsYMQM5qoLXhM9atv7nbcOXOYceLuJj(I(2tlyniyTJts5Qmc1p9u3pP(bBd7nwuohb2RHRdd3SEDyqinA7wweEQbyrn8Sd890GAEf9FuR(O4ixAtExNQdtZc2V)9ouNKkEUJnJQvNrilrSX8LvRgHrJq5HvzsUXC)(wroywz(p6UVSTgb9kwuARqIVuZsVAEzAGm2Rpq7GiphgqcMmw0BLcJnPrluAbEYM4ElLBGCBIQ2MGLGnzmBSj)RMJL2K(mjGfjfg00lhqbVvI0Wx7LhOMNkHC2xzrzeXGwWjqQUAwepdfk65q2BIR46dmKYz36ohuZBe5Xfcn4Zf6kbpuzCPmwvetzzCNqMVa7wFShee2mvvfVEjUh9X1OgEodXh9r0AGyQKQmla9PRx4qABrra89gPYiocXMsfgmxoMh0X3NVkFixVhWavlAOZHnRNyjvsx9I5ATQZrXFFlk6eyPO2NHP8aPdbhju0RXIBresOgQeaDZ5zBs4evv0ncX5QzZ1Vx8Zz5OskHt9ue()oq7zF(XWMzxr4Iki)IW2ERJldkQ3V4uYa6gOgJ7J1tZJ)(sCHwzWj5D2Lldc88txiHPxB0aDboLp1MnwLU(B8CRqUMVxvxY7oSOMd)dBnF4MniB)fRbAIJeZoyJMuSOoUUM0tQH6LQgLgDUpH2Kb(Sj9Umb2D0o0ILknTGZosorrviKKnXD3ztMCA)wFjy35MLO6FYqvk9EIBtT7S7g42emQPF4PvxtfVmAFr6Vefp5KWlJCqXUCmpTYlTUf9u8jhs)zx6i6hZ3bCqyMIv0sFbO1exQ6K(RzrQtZm6(5p5CZR(09QwE(RZZUYTOL(AxElCnoEOp3F5dE05XHBU9YZH(ahmxUfQrRg)jNCw8NDMbHNqmzM4JEYj4gfKFlL7h7hp]] )

@@ -1489,6 +1489,22 @@ all:RegisterAuras( {
         shared = "player"
     },
 
+    ferocious_inspiration = {
+        id = 75447,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+        copy = { 75593, 75446, 75447 }
+    },
+
+    -- Increases attack power by $s1%.
+    trueshot_aura = {
+        id = 19506,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player"
+    },
+
     -- Increases stats by $s1%.
     blessing_of_kings = {
         id = 20217,
