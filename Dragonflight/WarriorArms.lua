@@ -524,7 +524,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if buff.bladestorm.up and talent.merciless_bonegrinder.enabled then
-        state:QueueAuraExpiration( "bladestorm_merciless_boneGrinder", ExpireBladestorm, buff.bladestorm.expires )
+        state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
     end
 
     if prev_gcd[1].colossus_smash and time - action.colossus_smash.lastCast < 1 and last_cs_target == target.unit and debuff.colossus_smash.down then
@@ -703,7 +703,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "bladestorm" )
-            setCooldown( "global_cooldown", class.auras["bladestorm"].duration )
+            setCooldown( "global_cooldown", class.auras.bladestorm.duration )
             if talent.blademasters_torment.enabled then applyBuff("avatar", 4) end
         end,
     },
