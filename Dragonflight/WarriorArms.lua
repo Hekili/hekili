@@ -208,7 +208,7 @@ spec:RegisterAuras( {
     },
     bladestorm = {
         id = 227847,
-        duration = function () return 6 * haste end,
+        duration = function () return (6 * haste) + (buff.dance_of_death.up and 3 or 0) end,
         max_stack = 1,
         onCancel = function()
             setCooldown( "global_cooldown", 0 )
@@ -223,6 +223,11 @@ spec:RegisterAuras( {
         id = 105771,
         duration = 1,
         max_stack = 1
+    },
+    collateral_damage = {
+        id = 334783,
+        duration = 30,
+        max_stack = 20
     },
     colossus_smash = {
         id = 208086,
@@ -273,6 +278,11 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 2
     },
+    exploiter = { -- Shadowlands Legendary
+        id = 335452,
+        duration = 30,
+        max_stack = 1
+    },
     fatal_mark = {
         id = 383704,
         duration = 60,
@@ -283,7 +293,7 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
-    hurricane = { --TODO: implement during bladestorm
+    hurricane = {
         id = 390581,
         duration = 6,
         max_stack = 6,
@@ -443,11 +453,22 @@ spec:RegisterHook( "spend", function( amt, resource )
 end )
 
 local last_cs_target = nil
+local collateral_dmg_stacks = 0
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
-        if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
-            last_cs_target = destGUID
+    if sourceGUID == state.GUID then
+        if subtype == "SPELL_CAST_SUCCESS" then
+            if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
+                last_cs_target = destGUID
+            end
+
+            if state.talent.collateral_damage.enabled then
+                if state.buff.sweeping_strikes.down and collateral_dmg_stacks > 0  then
+                    state.addStack( "collateral_damage", nil, collateral_dmg_stacks )
+                    collateral_dmg_stacks = 0
+                end
+                if state.buff.sweeping_strikes.up then collateral_dmg_stacks = collateral_dmg_stacks + 1 end
+            end
         end
     end
 end )
@@ -481,8 +502,15 @@ spec:RegisterHook( "TimeToReady", function( wait, action )
     return wait
 end )
 
-
 local cs_actual
+
+local ExpireBladestorm = setfenv( function()
+    applyBuff( "merciless_bonegrinder" )
+end, state )
+
+local TriggerHurricane = setfenv( function()
+    addStack( "hurricane", nil, 1 )
+end, state )
 
 spec:RegisterHook( "reset_precast", function ()
     rage_spent = nil
@@ -495,15 +523,31 @@ spec:RegisterHook( "reset_precast", function ()
         cooldown.colossus_smash = cs_actual
     end
 
+    if buff.bladestorm.up and talent.merciless_bonegrinder.enabled then
+        state:QueueAuraExpiration( "bladestorm_merciless_boneGrinder", ExpireBladestorm, buff.bladestorm.expires )
+    end
 
     if prev_gcd[1].colossus_smash and time - action.colossus_smash.lastCast < 1 and last_cs_target == target.unit and debuff.colossus_smash.down then
         -- Apply Colossus Smash early because its application is delayed for some reason.
-        applyDebuff( "target", "colossus_smash", 10 + (talent.blunt_instruments.enabled and 3 or 0) )
+        applyDebuff( "target", "colossus_smash" )
     elseif prev_gcd[1].warbreaker and time - action.warbreaker.lastCast < 1 and last_cs_target == target.unit and debuff.colossus_smash.down then
-        applyDebuff( "target", "colossus_smash", 10 + (talent.blunt_instruments.enabled and 3 or 0) )
+        applyDebuff( "target", "colossus_smash" )
+    end
+        
+    if buff.bladestorm.up and talent.hurricane.enabled then
+        local next_hu = query_time + (1 * state.haste) - ( ( query_time - buff.bladestorm.applied ) % (1 * state.haste) )
+
+        while ( next_hu <= buff.bladestorm.expires ) do
+            state:QueueAuraEvent( "bladestorm_hurricane", TriggerHurricane, next_hu, "AURA_PERIODIC" )
+            next_hu = next_hu + (1 * state.haste)
+        end
+
+    end
+        
+    if talent.collateral_damage.enabled and buff.sweeping_strikes.up then
+        state:QueueAuraExpiration( "sweeping_strikes_collateral_dmg", TriggerCollateralDamage, buff.sweeping_strikes.expires )
     end
 end )
-
 
 spec:RegisterStateExpr( "cycle_for_execute", function ()
     if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
@@ -659,8 +703,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "bladestorm" )
-            setCooldown( "global_cooldown", 6 * haste )
-            --if talent.hurricane.enabled then addStack( "hurricane", nil, 1 ) end -- Needs logic to add stacks every 1 * haste seconds during BS
+            setCooldown( "global_cooldown", class.auras["bladestorm"].duration )
             if talent.blademasters_torment.enabled then applyBuff("avatar", 4) end
         end,
     },
@@ -724,7 +767,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "deep_wounds" )
             if talent.in_for_the_kill.enabled then
                 applyBuff( "in_for_the_kill" )
-                stat.haste = state.haste + ( target.health.pct < 35 and 0.25 or 0.1 )
+                stat.haste = stat.haste + ( target.health.pct < 35 and 0.25 or 0.1 )
             end
         end,
     },
@@ -1406,6 +1449,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff ( "collateral_damage" )
+            collateral_dmg_stacks = 0
         end,
     },
 
