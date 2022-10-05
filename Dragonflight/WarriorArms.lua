@@ -208,7 +208,7 @@ spec:RegisterAuras( {
     },
     bladestorm = {
         id = 227847,
-        duration = function () return (6 * haste) + (buff.dance_of_death.up and 3 or 0) end,
+        duration = function () return (6 + (buff.dance_of_death.up and 3 or 0)) * haste end,
         max_stack = 1,
         onCancel = function()
             setCooldown( "global_cooldown", 0 )
