@@ -575,7 +575,7 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
-        spend = function () return -10 * ( 1 + buff.unnerving_focus.up * 0.2 ) end,
+        spend = function () return -10 * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
         spendType = "rage",
 
         talent = "avatar",
@@ -728,7 +728,7 @@ spec:RegisterAbilities( {
         recharge = function () return talent.double_time.enabled and 17 or 20 end,
         gcd = "off",
 
-        spend = function () return -20 * ( 1 + buff.unnerving_focus.up * 0.2 ) end,
+        spend = function () return -20 * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
         spentType = "rage",
 
         startsCombat = true,
@@ -1268,7 +1268,7 @@ spec:RegisterAbilities( {
                  + ( talent.heavy_repercussions.enabled and -2 or 0 )  -- Build 45969
             ) 
             * ( buff.violent_outburst.up and 1.5 or 1) -- Build 45969
-            * ( talent.unnerving_focus.enabled and 1.5 or 1) end,
+            * ( buff.unnerving_focus.up and 1.5 or 1) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1367,7 +1367,7 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "spell",
 
-        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * (talent.unnerving_focus.enabled and 1.5 or 1) end,
+        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * (buff.unnerving_focus.up and 1.5 or 1) end,
         spendType = "rage",
 
         talent = "spear_of_bastion",
@@ -1459,7 +1459,7 @@ spec:RegisterAbilities( {
 
         spend = function () return -5 
             * (buff.violent_outburst.up and 1.5 or 1 ) -- Build xxx
-            * (talent.unnerving_focus.enabled and 1.5 or 1) end,
+            * (buff.unnerving_focus.up and 1.5 or 1) end,
         spendType = "rage",
 
         talent = "thunder_clap",
