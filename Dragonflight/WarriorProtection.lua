@@ -348,7 +348,7 @@ spec:RegisterAuras( {
     },
     ravager = {
         id = 228920,
-        duration = function () return (12 + (buff.dance_of_death.up and 2 or 0)) * haste end,
+        duration = function () return ( buff.dance_of_death.up and 14 or 12 ) * haste end,
         tick_time = 2,
         max_stack = 1
     },
@@ -557,10 +557,8 @@ spec:RegisterHook( "spend", function( amt, resource )
             local stacks = floor( outburst_rage / 30 )
             outburst_rage = outburst_rage % 30
             if stacks > 0 then
-                if set_bonus.tier28_2pc > 0 then
-                    addStack( "seeing_red_tier28", nil, stacks )
-                end
-                addStack( "seeing_red", nil, stacks )
+                if set_bonus.tier28_2pc > 0 then addStack( "seeing_red_tier28", nil, stacks ) end
+                if talent.violent_outburst.enabled then addStack( "seeing_red", nil, stacks ) end
             end
         end
     end
@@ -765,7 +763,7 @@ spec:RegisterAbilities( {
         cooldown = 45,
         gcd = "spell",
 
-        spend = function () return (talent.booming_voice.enabled and -30 or 0) end,
+        spend = function () return (talent.booming_voice.enabled and -30 or 0) * (buff.unnerving_focus.up and 1.5 or 1) end,
         spendType = "rage",
 
         talent = "demoralizing_shout",
@@ -890,7 +888,7 @@ spec:RegisterAbilities( {
     heroic_leap = {
         id = 6544,
         cast = 0,
-        cooldown = function () return 45 + (talent.bounding_stride.enabled and -15 or 0) end,
+        cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
         gcd = "off",
 
         talent = "heroic_leap",
@@ -1145,7 +1143,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.revenge.up then return 0 end
-            return ( talent.barbaric_training.enabled and 30 or 20 ) 
+            return  talent.barbaric_training.enabled and 30 or 20
         end,
         spendType = "rage",
 
@@ -1247,7 +1245,7 @@ spec:RegisterAbilities( {
             if talent.battering_ram.enabled then
                 applyBuff( "battering_ram" )
             end
-            if talent.champions_bulwarkj.enabled then
+            if talent.champions_bulwark.enabled then
                 applyBuff( "shield_block" )
                 applyBuff( "revenge" )
                 gain( 20, "rage" )
@@ -1264,7 +1262,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function () return 
-            ( 15 + ( talent.impenetrable_wall.enabled and -3 or 0 ) -- Build 45969
+            ( -15 + ( talent.impenetrable_wall.enabled and -3 or 0 ) -- Build 45969
                  + ( talent.heavy_repercussions.enabled and -2 or 0 )  -- Build 45969
             ) 
             * ( buff.violent_outburst.up and 1.5 or 1) -- Build 45969
@@ -1290,8 +1288,9 @@ spec:RegisterAbilities( {
             if buff.violent_outburst.up then
                 applyBuff( "ignore_pain" )
                 removeBuff( "violent_outburst" )
+            end
 
-            elseif buff.outburst.up then
+            if buff.outburst.up then
                 applyBuff( "ignore_pain" )
                 removeBuff( "outburst" )
             end
@@ -1481,7 +1480,9 @@ spec:RegisterAbilities( {
             if buff.violent_outburst.up then
                 applyBuff( "ignore_pain" )
                 removeBuff( "violent_outburst" )
-            elseif buff.outburst.up then
+            end
+
+            if buff.outburst.up then
                 applyBuff( "ignore_pain" )
                 removeBuff( "outburst" )
             end
