@@ -987,7 +987,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "chains_of_devastation_cl" )
-            removeBuff( "natures_swiftness" ) -- TODO: Determine order of instant cast effect consumption.
+            removeBuff( "natures_swiftness" )
             removeBuff( "master_of_the_elements" )
 
             if legendary.chains_of_devastation.enabled then
@@ -1116,7 +1116,9 @@ spec:RegisterAbilities( {
 		--TODO: earth shield on a different target does not remove lightning shield
         handler = function ()
             applyBuff( "earth_shield", nil, 9 )
-            removeBuff( "lightning_shield" )
+			if not talent.elemental_orbit then 
+				removeBuff( "lightning_shield" )
+			end
             if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
         end,
     },
