@@ -2126,10 +2126,16 @@ do
                 end
             end
 
-            for i = 13, 24 do
+            if _G["Dominos"] then 
+              for i = 13, 24 do
                 if not slotsUsed[ i ] then
-                    StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
+                    StoreKeybindInfo( 2, GetBindingKey( "CLICK DominosActionButton" .. i - 12 .. ":HOTKEY" ), GetActionInfo( i ) )
                 end
+              end
+            else
+              if not slotsUsed[ i ] then
+                  StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12), GetActionInfo( i ) )
+              end
             end
 
             for i = 25, 36 do
@@ -2156,10 +2162,18 @@ do
                 end
             end
 
-            for i = 72, 119 do
+            if _G["Dominos"] then 
+              for i = 73, 120 do
                 if not slotsUsed[ i ] then
-                    StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. 1 + ( i - 72 ) % 12 ), GetActionInfo( i + 1 ) )
+                    StoreKeybindInfo( 7 + floor( ( i - 73 ) / 12 ), GetBindingKey( "CLICK DominosActionButton" .. 1 + i - 73 + 12 .. ":HOTKEY"), GetActionInfo( i ) )
                 end
+              end
+            else
+              for i = 73, 120 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 7 + floor( ( i - 73 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. 1 + ( i - 73 ) % 12), GetActionInfo( i ) )
+                end
+              end
             end
         end
 
@@ -2269,8 +2283,13 @@ local function ReadOneKeybinding( event, slot )
 
     if not completed then
         if actionBarNumber == 1 or actionBarNumber == 2 or actionBarNumber > 6 then
-            ability = StoreKeybindInfo( keyNumber, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( slot ) )
-
+            if actionBarNumber == 2 and _G["Dominos"] then			
+                ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "CLICK DominosActionButton" .. keyNumber .. ":HOTKEY"), GetActionInfo( slot ) )
+	    elseif actionBarNumber > 6 and _G["Dominos"] then
+                ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "CLICK DominosActionButton" .. keyNumber + 12 * (actionBarNumber-6)  .. ":HOTKEY"), GetActionInfo( slot ) )		
+            else
+                ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( slot ) )
+            end
         elseif actionBarNumber > 2 and actionBarNumber < 5 then
             ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR" .. actionBarNumber .. "BUTTON" .. keyNumber ), GetActionInfo( slot ) )
 
