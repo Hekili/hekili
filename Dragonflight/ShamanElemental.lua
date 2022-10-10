@@ -16,119 +16,135 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    aftershock                    = { 77594, 273221, 1 }, --
-    ancestral_defense             = { 77677, 382947, 1 }, --
-    ancestral_guidance            = { 77696, 108281, 1 },
-    ancestral_wolf_affinity       = { 77576, 382197, 1 },
-    ascendance                    = { 77597, 114050, 1 },
-    astral_bulwark                = { 77650, 377933, 1 },
-    astral_shift                  = { 77651, 108271, 1 },
-    brimming_with_life            = { 77679, 381689, 1 },
-    call_of_fire                  = { 77605, 378255, 1 },
-    call_of_the_elements          = { 77685, 108285, 1 },
-    call_of_thunder               = { 77581, 378241, 1 },
-    capacitor_totem               = { 77665, 192058, 1 },
-    chain_heal                    = { 77657, 1064  , 1 },
-    chain_lightning               = { 77655, 188443, 1 },
-    cleanse_spirit                = { 77669, 51886 , 1 },
-    creation_core                 = { 77684, 383012, 1 },
-    deeply_rooted_elements        = { 77597, 378270, 1 },
-    earth_elemental               = { 77658, 198103, 1 },
-    earth_shield                  = { 77700, 974   , 1 },
-    earth_shock                   = { 77578, 8042  , 1 },
-    earthgrab_totem               = { 77676, 51485 , 1 },
-    earthquake                    = { 77579, 61882 , 1 },
-    echo_chamber                  = { 77607, 382032, 2 },
-    echo_of_the_elements          = { 77593, 333919, 1 },
-    echoes_of_great_sundering     = { 77585, 384087, 2 },
-    electrified_shocks            = { 77590, 382086, 1 },
-    elemental_blast               = { 77588, 117014, 1 },
-    elemental_equilibrium         = { 77587, 378271, 2 },
-    elemental_fury                = { 77577, 60188 , 1 },
-    elemental_orbit               = { 77699, 383010, 1 },
-    elemental_warding             = { 77678, 381650, 2 },
-    enfeeblement                  = { 77672, 378079, 1 },
-    eye_of_the_storm              = { 77589, 381708, 2 },
-    fire_and_ice                  = { 77661, 382886, 1 },
-    fire_elemental                = { 77575, 198067, 1 },
-    flames_of_the_cauldron        = { 77604, 378266, 1 },
-    flash_of_lightning            = { 77584, 381936, 1 },
-    flow_of_power                 = { 77592, 385923, 1 },
-    flurry                        = { 77653, 382888, 1 },
-    flux_melting                  = { 77590, 381776, 1 },
-    focused_insight               = { 77652, 381666, 2 },
-    frost_shock                   = { 77668, 196840, 1 },
-    further_beyond                = { 77595, 381787, 1 },
-    go_with_the_flow              = { 77683, 381678, 2 },
-    graceful_spirit               = { 77659, 192088, 1 },
-    greater_purge                 = { 77670, 378773, 1 },
-    guardians_cudgel              = { 77664, 381819, 1 },
-    gust_of_wind                  = { 77682, 192063, 1 },
-    healing_stream_totem          = { 77694, 5394  , 1 },
-    heat_wave                     = { 77572, 386474, 1 },
-    hex                           = { 77673, 51514 , 1 },
-    icefury                       = { 77591, 210714, 1 },
-    improved_call_of_the_elements = { 77684, 383011, 1 },
-    improved_flametongue_weapon   = { 77603, 382027, 1 },
-    improved_lightning_bolt       = { 77692, 381674, 2 },
-    inundate                      = { 77580, 378776, 1 },
-    lava_burst                    = { 77656, 51505 , 1 },
-    lava_surge                    = { 77573, 77756 , 1 },
-    lightning_lasso               = { 77690, 305483, 1 },
-    lightning_rod                 = { 77586, 210689, 1 },
-    liquid_magma_totem            = { 77602, 192222, 1 },
-    maelstrom_weapon              = { 77654, 187880, 1 },
-    magma_chamber                 = { 77601, 381932, 2 },
-    mana_spring_totem             = { 77697, 381930, 1 },
-    master_of_the_elements        = { 77598, 16166 , 2 },
-    mountains_will_fall           = { 77606, 381726, 1 },
-    natures_fury                  = { 77680, 381655, 2 },
-    natures_guardian              = { 77675, 30884 , 2 },
-    natures_swiftness             = { 77693, 378081, 1 },
-    oath_of_the_far_seer          = { 77596, 381785, 2 },
-    planes_traveler               = { 77650, 381647, 1 },
-    poison_cleansing_totem        = { 77687, 383013, 1 },
-    power_of_the_maelstrom        = { 77609, 191861, 2 },
-    primal_elementalist           = { 77602, 117013, 1 },
-    primordial_bond               = { 77574, 381764, 1 },
-    primordial_fury               = { 77576, 378193, 1 },
-    primordial_wave               = { 77608, 375982, 1 },
-    purge                         = { 77670, 370   , 1 },
-    refreshing_waters             = { 77574, 378211, 1 },
-    rolling_magma                 = { 77571, 386443, 2 },
-    searing_flames                = { 77599, 381782, 2 },
-    skybreakers_fiery_demise      = { 77600, 378310, 1 },
-    spirit_walk                   = { 77682, 58875 , 1 },
-    spirit_wolf                   = { 77666, 260878, 1 },
-    spiritwalkers_aegis           = { 77659, 378077, 1 },
-    spiritwalkers_grace           = { 77660, 79206 , 1 },
-    splintered_elements           = { 77572, 382042, 1 },
-    static_charge                 = { 77664, 265046, 1 },
-    stoneskin_totem               = { 77689, 383017, 1 },
-    storm_elemental               = { 77575, 192249, 1 },
-    stormkeeper                   = { 77586, 191634, 1 },
-    stormkeeper_2                 = { 77583, 191634, 1 },
-    surge_of_power                = { 77594, 262303, 1 },
-    surging_shields               = { 77686, 382033, 2 },
-    swelling_maelstrom            = { 77610, 381707, 1 },
-    swirling_currents             = { 77695, 378094, 2 },
-    thunderous_paws               = { 77666, 378075, 1 },
-    thundershock                  = { 77690, 378779, 1 },
-    thunderstorm                  = { 77691, 51490 , 1 },
-    totemic_focus                 = { 77688, 382201, 2 },
-    totemic_projection            = { 77674, 108287, 1 },
-    totemic_surge                 = { 77698, 381867, 2 },
-    tranquil_air_totem            = { 77689, 383019, 1 },
-    tremor_totem                  = { 77663, 8143  , 1 },
-    tumultuous_fissures           = { 77580, 381743, 1 },
-    unrelenting_calamity          = { 77582, 382685, 1 },
-    voodoo_mastery                = { 77672, 204268, 1 },
-    wind_rush_totem               = { 77676, 192077, 1 },
-    wind_shear                    = { 77662, 57994 , 1 },
-    winds_of_alakir               = { 77681, 382215, 2 },
-    windspeakers_lava_resurgence  = { 77600, 378268, 1 },
+    aftershock                   = { 81000, 273221, 1 }, -- 
+    ancestral_defense            = { 81083, 382947, 1 }, -- 
+    ancestral_guidance           = { 81102, 108281, 1 }, -- 
+    ancestral_wolf_affinity      = { 80982, 382197, 1 }, -- 
+    ascendance                   = { 81003, 114050, 1 }, -- 
+    astral_bulwark               = { 81056, 377933, 1 }, -- 
+    astral_shift                 = { 81057, 108271, 1 }, -- 
+    brimming_with_life           = { 81085, 381689, 1 }, -- 
+    call_of_fire                 = { 81011, 378255, 1 }, -- 
+    call_of_the_elements         = { 81090, 383011, 1 }, -- 
+    call_of_thunder              = { 80987, 378241, 1 }, -- 
+    capacitor_totem              = { 81071, 192058, 1 }, -- 
+    chain_heal                   = { 81063, 1064  , 1 }, -- 
+    chain_lightning              = { 81061, 188443, 1 }, -- 
+    cleanse_spirit               = { 81075, 51886 , 1 }, -- 
+    creation_core                = { 81090, 383012, 1 }, -- 
+    deeply_rooted_elements       = { 81003, 378270, 1 }, -- 
+    earth_elemental              = { 81064, 198103, 1 }, -- 
+    earth_shield                 = { 81106, 974   , 1 }, -- 
+    earth_shock                  = { 80984, 8042  , 1 }, -- 
+    earthgrab_totem              = { 81082, 51485 , 1 }, -- 
+    earthquake                   = { 80985, 61882 , 1 }, -- 
+    echo_chamber                 = { 81013, 382032, 2 }, -- 
+    echo_of_the_elements         = { 80999, 333919, 1 }, -- 
+    echoes_of_great_sundering    = { 80991, 384087, 2 }, -- 
+    electrified_shocks           = { 80996, 382086, 1 }, -- 
+    elemental_blast              = { 80994, 117014, 1 }, -- 
+    elemental_equilibrium        = { 80993, 378271, 2 }, -- 
+    elemental_fury               = { 80983, 60188 , 1 }, -- 
+    elemental_orbit              = { 81105, 383010, 1 }, -- 
+    elemental_warding            = { 81084, 381650, 2 }, -- 
+    enfeeblement                 = { 81078, 378079, 1 }, -- 
+    eye_of_the_storm             = { 80995, 381708, 2 }, -- 
+    fire_and_ice                 = { 81067, 382886, 1 }, -- 
+    fire_elemental               = { 80981, 198067, 1 }, -- 
+    flames_of_the_cauldron       = { 81010, 378266, 1 }, -- 
+    flash_of_lightning           = { 80990, 381936, 1 }, -- 
+    flow_of_power                = { 80998, 385923, 1 }, -- 
+    flurry                       = { 81059, 382888, 1 }, -- 
+    flux_melting                 = { 80996, 381776, 1 }, -- 
+    focused_insight              = { 81058, 381666, 2 }, -- 
+    frost_shock                  = { 81074, 196840, 1 }, -- 
+    further_beyond               = { 81001, 381787, 1 }, -- 
+    go_with_the_flow             = { 81089, 381678, 2 }, -- 
+    graceful_spirit              = { 81065, 192088, 1 }, -- 
+    greater_purge                = { 81076, 378773, 1 }, -- 
+    guardians_cudgel             = { 81070, 381819, 1 }, -- 
+    gust_of_wind                 = { 81088, 192063, 1 }, -- 
+    healing_stream_totem         = { 81100, 5394  , 1 }, -- 
+    heat_wave                    = { 80978, 386474, 1 }, -- 
+    hex                          = { 81079, 51514 , 1 }, -- 
+    icefury                      = { 80997, 210714, 1 }, -- 
+    improved_flametongue_weapon  = { 81009, 382027, 1 }, -- 
+    improved_lightning_bolt      = { 81098, 381674, 2 }, -- 
+    inundate                     = { 80986, 378776, 1 }, -- 
+    lava_burst                   = { 81062, 51505 , 1 }, -- 
+    lava_surge                   = { 80979, 77756 , 1 }, -- 
+    lightning_lasso              = { 81096, 305483, 1 }, -- 
+    lightning_rod                = { 80992, 210689, 1 }, -- 
+    liquid_magma_totem           = { 81008, 192222, 1 }, -- 
+    maelstrom_weapon             = { 81060, 187880, 1 }, -- 
+    magma_chamber                = { 81007, 381932, 2 }, -- 
+    mana_spring_totem            = { 81103, 381930, 1 }, -- 
+    master_of_the_elements       = { 81004, 16166 , 2 }, -- 
+    mountains_will_fall          = { 81012, 381726, 1 }, -- 
+    natures_fury                 = { 81086, 381655, 2 }, -- 
+    natures_guardian             = { 81081, 30884 , 2 }, -- 
+    natures_swiftness            = { 81099, 378081, 1 }, -- 
+    oath_of_the_far_seer         = { 81002, 381785, 2 }, -- 
+    planes_traveler              = { 81056, 381647, 1 }, -- 
+    poison_cleansing_totem       = { 81093, 383013, 1 }, -- 
+    power_of_the_maelstrom       = { 81015, 191861, 2 }, -- 
+    primal_elementalist          = { 81008, 117013, 1 }, -- 
+    primordial_bond              = { 80980, 381764, 1 }, -- 
+    primordial_fury              = { 80982, 378193, 1 }, -- 
+    primordial_wave              = { 81014, 375982, 1 }, -- 
+    purge                        = { 81076, 370   , 1 }, -- 
+    refreshing_waters            = { 80980, 378211, 1 }, -- 
+    rolling_magma                = { 80977, 386443, 2 }, -- 
+    searing_flames               = { 81005, 381782, 2 }, -- 
+    skybreakers_fiery_demise     = { 81006, 378310, 1 }, -- 
+    spirit_walk                  = { 81088, 58875 , 1 }, -- 
+    spirit_wolf                  = { 81072, 260878, 1 }, -- 
+    spiritwalkers_aegis          = { 81065, 378077, 1 }, -- 
+    spiritwalkers_grace          = { 81066, 79206 , 1 }, -- 
+    splintered_elements          = { 80978, 382042, 1 }, -- 
+    static_charge                = { 81070, 265046, 1 }, -- 
+    stoneskin_totem              = { 81095, 383017, 1 }, -- 
+    storm_elemental              = { 80981, 192249, 1 }, -- 
+    stormkeeper                     = { 80992, 191634, 1 }, --
+    stormkeeper_2                = { 80989, 191634, 1 }, -- 
+    surge_of_power               = { 81000, 262303, 1 }, -- 
+    surging_shields              = { 81092, 382033, 2 }, -- 
+    swelling_maelstrom           = { 81016, 381707, 1 }, -- 
+    swirling_currents            = { 81101, 378094, 2 }, -- 
+    thunderous_paws              = { 81072, 378075, 1 }, -- 
+    thundershock                 = { 81096, 378779, 1 }, -- 
+    thunderstorm                 = { 81097, 51490 , 1 }, -- 
+    totemic_focus                = { 81094, 382201, 2 }, -- 
+    totemic_projection           = { 81080, 108287, 1 }, -- 
+    totemic_recall               = { 81091, 108285, 1 }, -- 
+    totemic_surge                = { 81104, 381867, 2 }, -- 
+    tranquil_air_totem           = { 81095, 383019, 1 }, -- 
+    tremor_totem                 = { 81069, 8143  , 1 }, -- 
+    tumultuous_fissures          = { 80986, 381743, 1 }, -- 
+    unrelenting_calamity         = { 80988, 382685, 1 }, -- 
+    voodoo_mastery               = { 81078, 204268, 1 }, -- 
+    wind_rush_totem              = { 81082, 192077, 1 }, -- 
+    wind_shear                   = { 81068, 57994 , 1 }, -- 
+    winds_of_alakir              = { 81087, 382215, 2 }, -- 
+    windspeakers_lava_resurgence = { 81006, 378268, 1 }, -- 
 } )
 
+
+-- PvP Talents
+spec:RegisterPvpTalents( { 
+    control_of_lava     = 728 , -- 204393
+    counterstrike_totem = 3490, -- 204331
+    grounding_totem     = 3620, -- 204336
+    precognition        = 5457, -- 377360
+    seasoned_winds      = 5415, -- 355630
+    skyfury_totem       = 3488, -- 204330
+    spectral_recovery   = 3062, -- 204261
+    static_field_totem  = 727 , -- 355580
+    swelling_waves      = 3621, -- 204264
+    tidebringer         = 5519, -- 236501
+    traveling_storms    = 730 , -- 204403
+    unleash_shield      = 3491, -- 356736
+} )
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
@@ -181,10 +197,11 @@ spec:RegisterAuras( {
         id = 61882,
     }, ]]
     earth_shield = {
-        id = 974,
+        id = function () return talent.elemental_orbit.enabled and 383648 or 974 end,
         duration = 600,
         type = "Magic",
         max_stack = 9,
+        dot = "buff",
     },
     earthbind = {
         id = 3600,
@@ -201,6 +218,12 @@ spec:RegisterAuras( {
     echoing_shock = {
         id = 320125,
         duration = 8,
+        max_stack = 1,
+    },
+    -- buff id is different if not talented.
+    echoes_of_great_sundering = {
+        id = function () return talent.echoes_of_great_sundering.enabled and 384088 or 336217 end,
+        duration = 25,
         max_stack = 1,
     },
     elemental_blast_critical_strike = {
@@ -227,6 +250,9 @@ spec:RegisterAuras( {
         aliasType = "buff",
         duration = 10,
     },
+    --[[elemental_fury = {
+        id = 60188,
+    }, ]]
     far_sight = {
         id = 6196,
         duration = 60,
@@ -238,7 +264,7 @@ spec:RegisterAuras( {
     flame_shock = {
         id = 188389,
         duration = function () return level > 58 and fire_elemental.up and 36 or 18 end,
-        tick_time = function () return 2 * haste end,
+        tick_time = function () return 2 * haste * ( talent.flames_of_the_cauldron.enabled and 0.85 or 1 ) end,
         type = "Magic",
         max_stack = 1,
     },
@@ -248,6 +274,12 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1,
     },
+    heat_wave = { --hidden aura, doesn't track correctly
+        id = 387622,
+        duration = 12,
+        tick_time = 3,
+        max_stack = 1,
+    },
     hex = {
         id = 51514,
         duration = 60,
@@ -255,7 +287,7 @@ spec:RegisterAuras( {
     },
     icefury = {
         id = 210714,
-        duration = 15,
+        duration = 25,
         max_stack = 4,
     },
     lava_surge = {
@@ -288,6 +320,16 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
+    power_of_the_maelstrom = {
+        id = 191877,
+        duration = 20,
+        max_stack = 2,
+    },
+    primordial_wave = {
+        id = 375986,
+        duration = 15,
+        max_stack = 1,
+    },
     reincarnation = {
         id = 20608,
     },
@@ -310,11 +352,6 @@ spec:RegisterAuras( {
         id = 79206,
         duration = 15,
         type = "Magic",
-        max_stack = 1,
-    },
-    static_discharge = {
-        id = 342243,
-        duration = 3,
         max_stack = 1,
     },
     stoneskin = {
@@ -342,11 +379,6 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     },
-    unlimited_power = {
-        id = 272737,
-        duration = 10,
-        max_stack = 99,
-    },
     water_walking = {
         id = 546,
         duration = 600,
@@ -355,6 +387,12 @@ spec:RegisterAuras( {
     wind_rush = {
         id = 192082,
         duration = 5,
+        max_stack = 1,
+    },
+    --buff id is different if not talented.
+    windspeakers_lava_resurgence = {
+        id = function () return talent.windspeakers_lava_resurgence.enabled and 378269 or 336065 end,
+        duration = 15,
         max_stack = 1,
     },
     wind_gust = {
@@ -384,12 +422,6 @@ spec:RegisterAuras( {
             t.caster = "nobody"
         end,
     },
-    -- Legendaries
-    echoes_of_great_sundering = {
-        id = 336217,
-        duration = 25,
-        max_stack = 1
-    },
     -- TODO:  Implement like Bloodtalons, but APL doesn't really require it mechanically.
     elemental_equilibrium = {
         id = 347348,
@@ -400,11 +432,6 @@ spec:RegisterAuras( {
         id = 347349,
         duration = 30,
         max_stack = 1
-    },
-    windspeakers_lava_resurgence = {
-        id = 336065,
-        duration = 15,
-        max_stack = 1,
     },
 
     -- Conduit
@@ -476,6 +503,8 @@ local vesper_used = 0
 local vesper_expires = 0
 local vesper_guid
 local vesper_last_proc = 0
+
+local flash_of_lightning_nature_spells = { "stormkeeper", "ancestral_guidance", "healing_stream_totem", "wind_shear", "gust_of_wind", "earthbind_totem", "tremor_totem", "storm_elemental", "earth_elemental", " astral_shift", "capacitor_totem", "thunderstorm", "totemic_recall", "spiritwalkers_grace", "natures_swiftness", "poison_cleansing_totem", "totemic_projection", "stoneskin_totem", "cleanse_spirit", "hex", "tranquil_air_totem", "lightning_lasso", "reincarnation", "greater_purge", "static_field_totem", "counterstrike_totem", "unleash_shield", "grounding_totem" }
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     -- Deaths/despawns.
@@ -572,7 +601,6 @@ spec:RegisterStateFunction( "trigger_vesper_damage", function ()
     end
 end )
 
-
 spec:RegisterTotem( "liquid_magma_totem", 971079 )
 spec:RegisterTotem( "tremor_totem", 136108 )
 spec:RegisterTotem( "wind_rush_totem", 538576 )
@@ -652,6 +680,10 @@ spec:RegisterStateTable( "earth_elemental", setmetatable( { onReset = function( 
     end
 } ) )
 
+-- Heat wave talent basically acts as a mini Fireheart. The aura for it is hidden, so this is a workaround
+local TriggerHeatWave = setfenv( function()
+    applyBuff( "lava_surge" )
+end, state )
 
 -- Tier 28
 spec:RegisterGear( "tier28", 188925, 188924, 188923, 188922, 188920 )
@@ -669,11 +701,28 @@ local TriggerFireheart = setfenv( function()
     applyBuff( "lava_surge" )
 end, state )
 
+-- Tier 29
+spec:RegisterGear( "tier29", 200396, 200398, 200400, 200401, 200399 )
+spec:RegisterSetBonuses( "tier29_2pc", 393688, "tier29_4pc", 393690 )
+
+spec:RegisterAura( "seismic_accumulation", {
+    id = 394651,
+    duration = 15,
+    max_stack = 10,
+} )
+
+spec:RegisterAura( "elemental_mastery", {
+    id = 394670,
+    duration = 10,
+    max_stack = 1,
+} )
+
 spec:RegisterHook( "reset_precast", function ()
     local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
 
-    if mh and mh_enchant == 5401 then applyBuff( "windfury_weapon" ) end
-    if oh and oh_enchant == 5400 then applyBuff( "flametongue_weapon" ) end
+    if mh and mh_enchant == 5400 then applyBuff( "flametongue_weapon" ) end
+
+    if buff.flametongue_weapon.down and ( now - action.flametongue_weapon.lastCast < 1 ) then applyBuff( "flametongue_weapon" ) end
 
     if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
         applyBuff( "master_of_the_elements" )
@@ -711,7 +760,29 @@ spec:RegisterHook( "reset_precast", function ()
             end
         end
     end
-
+    
+    -- Heat wave has a hidden aura, so we look at the last cast of primordial wave instead
+    if talent.heat_wave.enabled then
+        local applied = action.primordial_wave.lastCast
+        local remains = 12 -(query_time-applied)
+        buff.heat_wave.up = false
+        
+        if remains > 0 and remains <= 12 then
+                
+            buff.heat_wave.applied = applied
+            buff.heat_wave.remains = remains
+            buff.heat_wave.up = true
+            
+            local next_ls = 3 - ( ( query_time - applied ) % 3 )
+            if next_ls < remains then
+                state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + next_ls, "AURA_PERIODIC" )
+                for i = 1, remains / 3 do
+                    state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + next_ls + i*3, "AURA_PERIODIC" )
+                end
+            end
+        end
+    end
+    
     if buff.fireheart.up then
         if pet.fire_elemental.up then buff.fireheart.expires = pet.fire_elemental.expires
         elseif pet.storm_elemental.up then buff.fireheart.expires = pet.storm_elemental.expires end
@@ -766,7 +837,7 @@ spec:RegisterAbilities( {
     ascendance = {
         id = 114050,
         cast = 0,
-        cooldown = 180,
+        cooldown = function () return 180 - 30 * talent.oath_of_the_far_seer.rank end,
         gcd = "spell",
 
         talent = "ascendance",
@@ -788,7 +859,7 @@ spec:RegisterAbilities( {
         cooldown = 600,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136010,
 
         handler = function () end,
@@ -834,13 +905,13 @@ spec:RegisterAbilities( {
     },
 
 
-    call_of_the_elements = {
+    totemic_recall = {
         id = 108285,
         cast = 0,
-        cooldown = 180,
+        cooldown = function () return talent.call_of_the_elements.enabled and 120 or 180 end,
         gcd = "spell",
 
-        talent = "call_of_the_elements",
+        talent = "totemic_recall",
         startsCombat = false,
         texture = 538570,
 
@@ -848,6 +919,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             -- TODO: Reset CD of most recently-used totem with a base CD shorter than 3 minutes.
+            -- iterate over all totems
+            -- find totem with lowest .lastcast and reset_precast
+            -- reset 2 totems if talent.creation_core.enabled
         end,
     },
 
@@ -909,7 +983,7 @@ spec:RegisterAbilities( {
             if buff.chains_of_devastation_cl.up then return 0 end
             if buff.natures_swiftness.up then return 0 end
             if buff.stormkeeper.up then return 0 end
-            return ( talent.unrelenting_calamity.enabled and 1.75 or 2 ) * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
+            return ( talent.unrelenting_calamity.enabled and 1.75 or 2 ) * ( 1 - 0.03 * min( 10, buff.wind_gust.stacks ) ) * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -926,7 +1000,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "chains_of_devastation_cl" )
-            removeBuff( "natures_swiftness" ) -- TODO: Determine order of instant cast effect consumption.
+            removeBuff( "natures_swiftness" )
             removeBuff( "master_of_the_elements" )
 
             if legendary.chains_of_devastation.enabled then
@@ -935,15 +1009,33 @@ spec:RegisterAbilities( {
 
             -- 4 MS per target, direct.
             -- 3 MS per target, overload.
+            -- stormkeeper guarantees overload on every target hit
+            -- power of the maelstrom guarantees 1 extra overload on the initial target
+            -- surge of power adds 1 extra target to total potential enemies hit
 
-            gain( ( buff.stormkeeper.up and 7 or 4 ) * min( 5, active_enemies ), "maelstrom" )
+            gain( ( buff.stormkeeper.up and 4 + ( min( (buff.surge_of_power.up and 6 or 5),active_enemies ) * 3) or 4 ) * min( (buff.surge_of_power.up and 6 or 5), active_enemies ), "maelstrom" )
+            if buff.power_of_the_maelstrom.up then
+                gain( 3 * min( ( buff.surge_of_power.up and 6 or 5 ), active_enemies ), "maelstrom" )
+            end
+            
             removeStack( "stormkeeper" )
+            removeStack( "power_of_the_maelstrom" )
+            removeBuff( "surge_of_power" )
 
             if pet.storm_elemental.up then
                 addStack( "wind_gust", nil, 1 )
             end
-
-
+    
+            if talent.flash_of_lightning.enabled then
+                for i = 1, #flash_of_lightning_nature_spells do
+                    reduceCooldown( flash_of_lightning_nature_spells[i], 1 )
+                end
+            end
+            
+            if set_bonus.tier29_2pc > 0 then
+                addStack( "seismic_accumulation" )
+            end
+            
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
@@ -974,7 +1066,7 @@ spec:RegisterAbilities( {
     counterstrike_totem = {
         id = 204331,
         cast = 0,
-        cooldown = 45,
+        cooldown = function () return 45 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         spend = 0.03,
@@ -1033,9 +1125,12 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136089,
 
+        --This can be fine, as long as the APL doesn't recommend casting both unless elemental orbit is picked.
         handler = function ()
             applyBuff( "earth_shield", nil, 9 )
-            removeBuff( "lightning_shield" )
+            if not talent.elemental_orbit.enabled then 
+                removeBuff( "lightning_shield" )
+            end
             if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
         end,
     },
@@ -1047,9 +1142,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function ()
-            return 60 - 5 * talent.eye_of_the_storm.rank
-        end,
+        spend = function () return 60 - 5 * talent.eye_of_the_storm.rank end,
         spendType = "maelstrom",
 
         talent = "earth_shock",
@@ -1058,20 +1151,39 @@ spec:RegisterAbilities( {
         texture = 136026,
 
         handler = function ()
+            removeBuff( "master_of_the_elements" )
+            removeBuff( "magma_chamber" )
+            
             if talent.surge_of_power.enabled then
                 applyBuff( "surge_of_power" )
             end
 
-            if runeforge.echoes_of_great_sundering.enabled then
+            if talent.echoes_of_great_sundering.enabled or runeforge.echoes_of_great_sundering.enabled then
                 applyBuff( "echoes_of_great_sundering" )
             end
 
-            if runeforge.windspeakers_lava_resurgence.enabled then
+            if talent.windspeakers_lava_resurgence.enabled or runeforge.windspeakers_lava_resurgence.enabled then
                 applyBuff( "lava_surge" )
                 gainCharges( "lava_burst", 1 )
                 applyBuff( "windspeakers_lava_resurgence" )
             end
 
+            if talent.lightning_rod.enabled then
+                applyDebuff( "target", "lightning_rod" )
+            end
+                            
+            if talent.further_beyond.enabled and buff.ascendance.up then
+                --TODO: increase ascendance duration by 2.5 seconds
+            end
+            
+            if set_bonus.tier29_2pc > 0 then
+                removeBuff( "seismic_accumulation" )
+            end
+            
+            if set_bonus.tier29_4pc > 0 then
+                applyBuff( "elemental_mastery" )
+            end
+            
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
@@ -1080,7 +1192,7 @@ spec:RegisterAbilities( {
     earthbind_totem = {
         id = 2484,
         cast = 0,
-        cooldown = 30,
+        cooldown = function () return 30 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         spend = 0.02,
@@ -1100,7 +1212,7 @@ spec:RegisterAbilities( {
     earthgrab_totem = {
         id = 51485,
         cast = 0,
-        cooldown = 60,
+        cooldown = function () return 60 - 2 * talent.totemic_surge.rank end,
         gcd = "spell",
 
         spend = 0.02,
@@ -1136,33 +1248,35 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "echoes_of_great_sundering" )
             removeBuff( "master_of_the_elements" )
+            removeBuff( "magma_chamber" )
+            
+            if talent.surge_of_power.enabled then
+                applyBuff( "surge_of_power" )
+            end
+
+            if talent.lightning_rod.enabled then
+                if debuff.lightning_rod.up then
+                    active_dot.lightning_rod = min( active_enemies, active_dot.lightning_rod + 1 )
+                else
+                    applyDebuff( "target", "lightning_rod" )
+                end
+            end
+            
+            if talent.further_beyond.enabled and buff.ascendance.up then
+                --TODO: increase ascendance duration by 2.5 seconds
+            end
+            
+            if set_bonus.tier29_2pc > 0 then
+                removeBuff( "seismic_accumulation" )
+            end
+            
+            if set_bonus.tier29_4pc > 0 then
+                applyBuff( "elemental_mastery" )
+            end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
-
-
-    echoing_shock = {
-        id = 320125,
-        cast = 0,
-        cooldown = 30,
-        gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 1603013,
-
-        talent = "echoing_shock",
-
-        handler = function ()
-            applyBuff( "echoing_shock" )
-
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
-        end,
-    },
-
 
     elemental_blast = {
         id = 117014,
@@ -1170,12 +1284,9 @@ spec:RegisterAbilities( {
             if buff.natures_swiftness.up then return 0 end
             return 2 * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
         end,
-        cooldown = 12,
         gcd = "spell",
 
-        spend = function ()
-            return 90 - 7.5 * talent.eye_of_the_storm.rank
-        end,
+        spend = function () return 90 - 7.5 * talent.eye_of_the_storm.rank end,
         spendType = "maelstrom",
 
         talent = "elemental_blast",
@@ -1183,21 +1294,39 @@ spec:RegisterAbilities( {
         texture = 651244,
 
         handler = function ()
+            removeBuff( "master_of_the_elements" ) 
+            applyBuff( "elemental_blast" )
+            removeBuff( "magma_chamber" )
+            
             if talent.surge_of_power.enabled then
                 applyBuff( "surge_of_power" )
             end
 
-            if runeforge.echoes_of_great_sundering.enabled then
+            if talent.echoes_of_great_sundering.enabled then
                 applyBuff( "echoes_of_great_sundering" )
             end
 
-            if runeforge.windspeakers_lava_resurgence.enabled then
+            if talent.windspeakers_lava_resurgence.enabled then
                 applyBuff( "lava_surge" )
                 gainCharges( "lava_burst", 1 )
                 applyBuff( "windspeakers_lava_resurgence" )
             end
 
-            applyBuff( "elemental_blast" )
+            if talent.lightning_rod.enabled then
+                applyDebuff( "target","lightning_rod" )
+            end
+            
+            if talent.further_beyond.enabled and buff.ascendance.up then
+                --TODO: increase ascendance duration by 3.5 seconds
+            end
+            
+            if set_bonus.tier29_2pc > 0 then
+                removeBuff( "seismic_accumulation" )
+            end
+            
+            if set_bonus.tier29_4pc > 0 then
+                applyBuff( "elemental_mastery" )
+            end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
@@ -1254,7 +1383,7 @@ spec:RegisterAbilities( {
     flame_shock = {
         id = 188389,
         cast = 0,
-        cooldown = 6,
+        cooldown = function () return talent.flames_of_the_cauldron.enabled and 4.5 or 6 end,
         gcd = "spell",
 
         spend = 0.02,
@@ -1273,7 +1402,16 @@ spec:RegisterAbilities( {
                 active_dot.surge_of_power_debuff = min( active_enemies, active_dot.flame_shock + 1 )
                 removeBuff( "surge_of_power" )
             end
-
+            
+            if talent.magma_chamber.enabled then
+                addStack( "magma_chamber" )
+            end
+            
+            if talent.searing_flames.enabled then
+                gain( talent.searing_flames.rank, "maelstrom" )
+                --TODO: should also gain on every tick of damage
+            end
+            
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
@@ -1285,7 +1423,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135814,
 
         handler = function ()
@@ -1316,7 +1454,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "master_of_the_elements" )
-
+            
             applyDebuff( "target", "frost_shock" )
 
             if buff.icefury.up then
@@ -1327,6 +1465,16 @@ spec:RegisterAbilities( {
             if buff.surge_of_power.up then
                 applyDebuff( "target", "surge_of_power_debuff" )
                 removeBuff( "surge_of_power" )
+            end
+            
+            if talent.flux_melting.enabled then
+                applyBuff( "flux_melting" )
+            end
+            
+            if talent.electrified_shocks.enabled then
+                --TODO: Apply debuff to 3 additional targets if hit
+                applyDebuff( "target", "electrified_shocks" )
+                active_dot.electrified_shocks = min( active_enemies, active_dot.electrified_shocks + 3 )
             end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1367,6 +1515,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeDebuff( "target", "dispellable_magic" )
+            removeDebuff( "target", "dispellable_magic" )
         end,
     },
 
@@ -1374,7 +1523,7 @@ spec:RegisterAbilities( {
     grounding_totem = {
         id = 204336,
         cast = 0,
-        cooldown = 30,
+        cooldown = function () return 30 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         spend = 0.06,
@@ -1393,7 +1542,7 @@ spec:RegisterAbilities( {
     gust_of_wind = {
         id = 192063,
         cast = 0,
-        cooldown = 30,
+        cooldown = function () return 30 - 5 * talent.go_with_the_flow.rank end,
         gcd = "spell",
 
         talent = "gust_of_wind",
@@ -1410,7 +1559,7 @@ spec:RegisterAbilities( {
         id = 5394,
         cast = 0,
         charges = 1,
-        cooldown = 30,
+        cooldown = function () return 30 - 2 * talent.totemic_surge.rank end,
         recharge = 30,
         gcd = "totem",
 
@@ -1425,6 +1574,7 @@ spec:RegisterAbilities( {
             summonTotem( "healing_stream_totem" )
             if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
             if conduit.swirling_currents.enabled then applyBuff( "swirling_currents" ) end
+            if talent.swirling_currents.enabled then applyBuff( "swirling_currents" ) end
         end,
     },
 
@@ -1483,7 +1633,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "master_of_the_elements" )
 
-            applyBuff( "icefury", 15, 4 )
+            applyBuff( "icefury", 25, 4 )
             gain( 25, "maelstrom" )
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1493,7 +1643,7 @@ spec:RegisterAbilities( {
 
     lava_beam = {
         id = 114074,
-        cast = 2,
+        cast = function () return buff.stormkeeper.up and 0 or 1.5 end,            
         cooldown = 0,
         gcd = "spell",
 
@@ -1504,13 +1654,13 @@ spec:RegisterAbilities( {
         texture = 236216,
 
         handler = function ()
-            removeBuff( "echoing_shock" )
-
-            -- 4 MS per target, direct.
+            -- 3 MS per target, direct.
             -- 3 MS per target, overload.
+            
+            gain( ( buff.stormkeeper.up and 4 + ( min( (buff.surge_of_power.up and 6 or 5),active_enemies ) * 3) or 4 ) * min( (buff.surge_of_power.up and 6 or 5), active_enemies ), "maelstrom" )
 
-            gain( ( buff.stormkeeper.up and 7 or 4 ) * min( 5, active_enemies ), "maelstrom" )
             removeStack( "stormkeeper" )
+            removeBuff( "surge_of_power" )
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
@@ -1541,9 +1691,9 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "windspeakers_lava_resurgence" )
             removeBuff( "lava_surge" )
-            removeBuff( "echoing_shock" )
+            removeBuff( "flux_melting" )
 
-            gain( 10, "maelstrom" )
+            gain( 10 + ( talent.flow_of_power.rank * 2 ) , "maelstrom" )
 
             if talent.master_of_the_elements.enabled then applyBuff( "master_of_the_elements" ) end
 
@@ -1552,10 +1702,14 @@ spec:RegisterAbilities( {
                 removeBuff( "surge_of_power" )
             end
 
-            if buff.primordial_wave.up and state.spec.elemental and legendary.splintered_elements.enabled then
+            if buff.primordial_wave.up and state.spec.elemental and talent.splintered_elements.enabled then
                 applyBuff( "splintered_elements", nil, active_dot.flame_shock )
             end
             removeBuff( "primordial_wave" )
+
+            if talent.rolling_magma.enabled then
+                reduceCooldown( "primordial_wave", 0.2 * talent.rolling_magma.rank )
+            end
 
             if set_bonus.tier28_4pc > 0 then
                 if pet.fire_elemental.up then
@@ -1567,6 +1721,10 @@ spec:RegisterAbilities( {
                 end
             end
 
+            if set_bonus.tier29_2pc > 0 then
+                addStack( "seismic_accumulation" )
+            end
+    
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
@@ -1576,7 +1734,11 @@ spec:RegisterAbilities( {
 
     lightning_bolt = {
         id = 188196,
-        cast = function () return buff.stormkeeper.up and 0 or ( 2 * haste ) end,
+        cast = function ()
+            if buff.natures_swiftness.up then return 0 end
+            if buff.stormkeeper.up then return 0 end
+            return ( talent.unrelenting_calamity.enabled and 1.75 or 2 ) * ( 1 - 0.03 * min( 10, buff.wind_gust.stacks ) ) * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
+        end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1587,23 +1749,36 @@ spec:RegisterAbilities( {
         texture = 136048,
 
         handler = function ()
-            removeBuff( "echoing_shock" )
-
-            gain( ( buff.stormkeeper.up and 11 or 8 ) + ( buff.surge_of_power.up and 3 or 0 ), "maelstrom" )
-
+            gain( ( talent.flow_of_power.enabled and ( buff.stormkeeper.up and 14 or 10 ) + ( buff.surge_of_power.up and 8 or 0 ) ) or ( buff.stormkeeper.up and 11 or 8 ) + ( buff.surge_of_power.up and 6 or 0 ), "maelstrom" )
+            
+            if buff.power_of_the_maelstrom.up then
+                gain( talent.flow_of_power.enabled and 4 or 3 , "maelstrom" )
+            end
+            
+            removeStack( "power_of_the_maelstrom" )
+            removeBuff( "natures_swiftness" )
             removeBuff( "master_of_the_elements" )
             removeBuff( "surge_of_power" )
 
             removeStack( "stormkeeper" )
-
+ 
             if pet.storm_elemental.up then
                 addStack( "wind_gust", nil, 1 )
+            end
+
+            if talent.flash_of_lightning.enabled then
+                for i = 1, #flash_of_lightning_nature_spells do
+                    reduceCooldown( flash_of_lightning_nature_spells[i], 1 )
+                end
+            end
+            
+            if set_bonus.tier29_2pc > 0 then
+                addStack( "seismic_accumulation" )
             end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
-
 
     lightning_lasso = {
         id = 305483,
@@ -1621,7 +1796,6 @@ spec:RegisterAbilities( {
         end,
 
         start = function ()
-            removeBuff( "echoing_shock" )
             applyDebuff( "target", "lightning_lasso" )
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1654,7 +1828,7 @@ spec:RegisterAbilities( {
     liquid_magma_totem = {
         id = 192222,
         cast = 0,
-        cooldown = 60,
+        cooldown = function () return 60 - 2 * talent.totemic_surge.rank end,
         gcd = "spell",
 
         spend = 0.04,
@@ -1668,6 +1842,14 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "liquid_magma_totem" )
+            --TODO: Apply FS to 3 targets
+            if active_enemies >= 4 then
+                active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 3 )
+            else
+                applyDebuff( "flame_shock" )
+                active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 2 )
+            end
+            
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
@@ -1676,7 +1858,7 @@ spec:RegisterAbilities( {
     mana_spring_totem = {
         id = 381930,
         cast = 0,
-        cooldown = 45,
+        cooldown = function () return 45 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         spend = 0.02,
@@ -1713,7 +1895,7 @@ spec:RegisterAbilities( {
     poison_cleansing_totem = {
         id = 383013,
         cast = 0,
-        cooldown = 45,
+        cooldown = function () return 45 - 2 * talent.totemic_surge.rank end,
         gcd = "spell",
 
         spend = 0.02,
@@ -1724,7 +1906,7 @@ spec:RegisterAbilities( {
         texture = 136070,
 
         handler = function ()
-            summonTotem( "poison_cleaning_totem" )
+            summonTotem( "poison_cleansing_totem" )
         end,
     },
 
@@ -1764,6 +1946,14 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "flame_shock" )
+            applyBuff( "primordial_wave" )
+            if talent.heat_wave.enabled then 
+                applyBuff( "lava_surge" )
+                state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + 3, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + 6, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + 9, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + 12, "AURA_PERIODIC" )
+            end
         end,
     },
 
@@ -1793,7 +1983,7 @@ spec:RegisterAbilities( {
     skyfury_totem = {
         id = 204330,
         cast = 0,
-        cooldown = 40,
+        cooldown = function () return 40 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         spend = 0.03,
@@ -1812,7 +2002,7 @@ spec:RegisterAbilities( {
     spirit_walk = {
         id = 58875,
         cast = 0,
-        cooldown = 60,
+        cooldown = function () return 60 - 7.5 * talent.go_with_the_flow.rank end,
         gcd = "spell",
 
         talent = "spirit_walk",
@@ -1830,7 +2020,7 @@ spec:RegisterAbilities( {
     spiritwalkers_grace = {
         id = 79206,
         cast = 0,
-        cooldown = 120,
+        cooldown = function () return 120 - 30 * talent.graceful_spirit.rank end,
         gcd = "spell",
 
         spend = 0.14,
@@ -1847,33 +2037,10 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-    static_discharge = {
-        id = 342243,
-        cast = 0,
-        cooldown = 30,
-        gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        startsCombat = off,
-        texture = 135845,
-
-        talent = "static_discharge",
-        buff = "lightning_shield",
-
-        handler = function ()
-            applyBuff( "static_discharge" )
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
-        end,
-    },
-
-
     stoneskin_totem = {
         id = 383017,
         cast = 0,
-        cooldown = 30,
+        cooldown = function () return 30 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         spend = 0.02,
@@ -1922,10 +2089,11 @@ spec:RegisterAbilities( {
     stormkeeper = {
         id = 191634,
         cast = 1.4996629966736,
+        charges = function () return ( talent.stormkeeper.enabled and talent.stormkeeper_2.enabled ) and 2 or nil end,
         cooldown = 60,
         gcd = "spell",
 
-        talent = "stormkeeper",
+        talent = function () return talent.stormkeeper.enabled and "stormkeeper" or talent.stormkeeper_2.enabled and "stormkeeper_2" end,
         startsCombat = true,
         texture = 839977,
 
@@ -1940,7 +2108,7 @@ spec:RegisterAbilities( {
     thunderstorm = {
         id = 51490,
         cast = 0,
-        cooldown = 30,
+        cooldown = function () return 30 - 5 * talent.thundershock.rank end,
         gcd = "spell",
 
         talent = "thunderstorm",
@@ -1971,7 +2139,7 @@ spec:RegisterAbilities( {
     tranquil_air_totem = {
         id = 383019,
         cast = 0,
-        cooldown = 60,
+        cooldown = function () return 60 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         spend = 0.02,
@@ -1992,7 +2160,7 @@ spec:RegisterAbilities( {
     tremor_totem = {
         id = 8143,
         cast = 0,
-        cooldown = function () return 60 + ( conduit.totemic_surge.mod * 0.001 ) end,
+        cooldown = function () return 60 - 2 * talent.totemic_surge.rank + ( conduit.totemic_surge.mod * 0.001 ) end,
         gcd = "totem",
 
         spend = 0.02,
@@ -2028,7 +2196,7 @@ spec:RegisterAbilities( {
     wind_rush_totem = {
         id = 192077,
         cast = 0,
-        cooldown = 120,
+        cooldown = function () return 120 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         talent = "wind_rush_totem",
