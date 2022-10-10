@@ -504,7 +504,7 @@ local vesper_expires = 0
 local vesper_guid
 local vesper_last_proc = 0
 
-local flash_of_lightning_nature_spells = {"stormkeeper","ancestral_guidance","healing_stream_totem","wind_shear","gust_of_wind","earthbind_totem","tremor_totem","storm_elemental","earth_elemental"," astral_shift","capacitor_totem","thunderstorm","totemic_recall","spiritwalkers_grace","natures_swiftness","poison_cleansing_totem","totemic_projection","stoneskin_totem","cleanse_spirit","hex","tranquil_air_totem","lightning_lasso","reincarnation","greater_purge","static_field_totem","counterstrike_totem","unleash_shield","grounding_totem"}
+local flash_of_lightning_nature_spells = { "stormkeeper", "ancestral_guidance", "healing_stream_totem", "wind_shear", "gust_of_wind", "earthbind_totem", "tremor_totem", "storm_elemental", "earth_elemental", " astral_shift", "capacitor_totem", "thunderstorm", "totemic_recall", "spiritwalkers_grace", "natures_swiftness", "poison_cleansing_totem", "totemic_projection", "stoneskin_totem", "cleanse_spirit", "hex", "tranquil_air_totem", "lightning_lasso", "reincarnation", "greater_purge", "static_field_totem", "counterstrike_totem", "unleash_shield", "grounding_totem" }
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     -- Deaths/despawns.
@@ -765,8 +765,14 @@ spec:RegisterHook( "reset_precast", function ()
     if talent.heat_wave.enabled then
         local applied = action.primordial_wave.lastCast
         local remains = 12 -(query_time-applied)
+        buff.heat_wave.up = false
         
         if remains > 0 and remains <= 12 then
+                
+            buff.heat_wave.applied = applied
+            buff.heat_wave.remains = remains
+            buff.heat_wave.up = true
+            
             local next_ls = 3 - ( ( query_time - applied ) % 3 )
             if next_ls < remains then
                 state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + next_ls, "AURA_PERIODIC" )
@@ -1009,7 +1015,7 @@ spec:RegisterAbilities( {
 
             gain( ( buff.stormkeeper.up and 4 + ( min( (buff.surge_of_power.up and 6 or 5),active_enemies ) * 3) or 4 ) * min( (buff.surge_of_power.up and 6 or 5), active_enemies ), "maelstrom" )
             if buff.power_of_the_maelstrom.up then
-                gain( 3 * min( ( buff.surge_of_power.up and 6 or 5 ), active_enemies ), "maelstrom")
+                gain( 3 * min( ( buff.surge_of_power.up and 6 or 5 ), active_enemies ), "maelstrom" )
             end
             
             removeStack( "stormkeeper" )
@@ -1136,9 +1142,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function ()
-            return 60 - 5 * talent.eye_of_the_storm.rank
-        end,
+        spend = function () return 60 - 5 * talent.eye_of_the_storm.rank end,
         spendType = "maelstrom",
 
         talent = "earth_shock",
@@ -1263,11 +1267,11 @@ spec:RegisterAbilities( {
             end
             
             if set_bonus.tier29_2pc > 0 then
-                removeBuff("seismic_accumulation")
+                removeBuff( "seismic_accumulation" )
             end
             
             if set_bonus.tier29_4pc > 0 then
-                applyBuff("elemental_mastery")
+                applyBuff( "elemental_mastery" )
             end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1282,9 +1286,7 @@ spec:RegisterAbilities( {
         end,
         gcd = "spell",
 
-        spend = function ()
-            return 90 - 7.5 * talent.eye_of_the_storm.rank
-        end,
+        spend = function () return 90 - 7.5 * talent.eye_of_the_storm.rank end,
         spendType = "maelstrom",
 
         talent = "elemental_blast",
@@ -1311,7 +1313,7 @@ spec:RegisterAbilities( {
             end
 
             if talent.lightning_rod.enabled then
-                applyDebuff("target","lightning_rod")
+                applyDebuff( "target","lightning_rod" )
             end
             
             if talent.further_beyond.enabled and buff.ascendance.up then
@@ -1319,11 +1321,11 @@ spec:RegisterAbilities( {
             end
             
             if set_bonus.tier29_2pc > 0 then
-                removeBuff("seismic_accumulation")
+                removeBuff( "seismic_accumulation" )
             end
             
             if set_bonus.tier29_4pc > 0 then
-                applyBuff("elemental_mastery")
+                applyBuff( "elemental_mastery" )
             end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1402,11 +1404,11 @@ spec:RegisterAbilities( {
             end
             
             if talent.magma_chamber.enabled then
-                addStack("magma_chamber")
+                addStack( "magma_chamber" )
             end
             
             if talent.searing_flames.enabled then
-                gain(talent.searing_flames.rank, "maelstrom")
+                gain( talent.searing_flames.rank, "maelstrom" )
                 --TODO: should also gain on every tick of damage
             end
             
@@ -1466,12 +1468,13 @@ spec:RegisterAbilities( {
             end
             
             if talent.flux_melting.enabled then
-                applyBuff("flux_melting")
+                applyBuff( "flux_melting" )
             end
             
             if talent.electrified_shocks.enabled then
                 --TODO: Apply debuff to 3 additional targets if hit
-                applyDebuff( "target", "electrified_shocks")
+                applyDebuff( "target", "electrified_shocks" )
+                active_dot.electrified_shocks = min( active_enemies, active_dot.electrified_shocks + 3 )
             end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1719,7 +1722,7 @@ spec:RegisterAbilities( {
             end
 
             if set_bonus.tier29_2pc > 0 then
-                addStack("seismic_accumulation")
+                addStack( "seismic_accumulation" )
             end
     
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1770,7 +1773,7 @@ spec:RegisterAbilities( {
             end
             
             if set_bonus.tier29_2pc > 0 then
-                addStack("seismic_accumulation")
+                addStack( "seismic_accumulation" )
             end
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1945,7 +1948,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "flame_shock" )
             applyBuff( "primordial_wave" )
             if talent.heat_wave.enabled then 
-                applyBuff("lava_surge")
+                applyBuff( "lava_surge" )
                 state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + 3, "AURA_PERIODIC" )
                 state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + 6, "AURA_PERIODIC" )
                 state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + 9, "AURA_PERIODIC" )
