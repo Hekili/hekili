@@ -197,10 +197,11 @@ spec:RegisterAuras( {
         id = 61882,
     }, ]]
     earth_shield = {
-        id = 974,
+        id = function () return talent.elemental_orbit.enabled and 383648 or 974 end,
         duration = 600,
         type = "Magic",
         max_stack = 9,
+		dot = "buff",
     },
     earthbind = {
         id = 3600,
@@ -219,8 +220,9 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
     },
+	-- buff id is different if not talented.
 	echoes_of_great_sundering = {
-        id = 384088,
+        id = function () return talent.echoes_of_great_sundering.enabled and 384088 or 336217 end,
         duration = 25,
         max_stack = 1,
     },
@@ -262,7 +264,7 @@ spec:RegisterAuras( {
     flame_shock = {
         id = 188389,
         duration = function () return level > 58 and fire_elemental.up and 36 or 18 end,
-        tick_time = function () return 2 * haste * (talent.flames_of_the_cauldron.enabled and 0.85 or 1) end,
+        tick_time = function () return 2 * haste * ( talent.flames_of_the_cauldron.enabled and 0.85 or 1 ) end,
         type = "Magic",
         max_stack = 1,
     },
@@ -387,8 +389,9 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     },
+	--buff id is different if not talented.
 	windspeakers_lava_resurgence = {
-        id = 378269,
+        id = function () return talent.windspeakers_lava_resurgence.enabled and 378269 or 336065 end,
         duration = 15,
         max_stack = 1,
     },
@@ -500,6 +503,8 @@ local vesper_used = 0
 local vesper_expires = 0
 local vesper_guid
 local vesper_last_proc = 0
+
+local flash_of_lightning_nature_spells = {"stormkeeper","ancestral_guidance","healing_stream_totem","wind_shear","gust_of_wind","earthbind_totem","tremor_totem","storm_elemental","earth_elemental"," astral_shift","capacitor_totem","thunderstorm","totemic_recall","spiritwalkers_grace","natures_swiftness","poison_cleansing_totem","totemic_projection","stoneskin_totem","cleanse_spirit","hex","tranquil_air_totem","lightning_lasso","reincarnation","greater_purge","static_field_totem","counterstrike_totem","unleash_shield","grounding_totem"}
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     -- Deaths/despawns.
@@ -763,9 +768,11 @@ spec:RegisterHook( "reset_precast", function ()
 		
 		if remains > 0 and remains <= 12 then
 			local next_ls = 3 - ( ( query_time - applied ) % 3 )
-			
 			if next_ls < remains then
 				state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + next_ls, "AURA_PERIODIC" )
+				for i = 1, remains / 3 do
+					state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + next_ls + i*3, "AURA_PERIODIC" )
+				end
 			end
 		end
 	end
@@ -1014,14 +1021,13 @@ spec:RegisterAbilities( {
             end
 	
 			if talent.flash_of_lightning.enabled then
-				--TODO: reduce cd of all nature spells
-				--stormkeeper,ancestral_guidance,healing_stream_totem,wind_shear,gust_of_wind,earthbind_totem,tremor_totem,storm_elemental,earth_elemental
-				--astral_shift,capacitor_totem,thunderstorm,totemic_recall,spiritwalkers_grace,natures_swiftness,poison_cleansing_totem,totemic_projection,stoneskin_totem,
-				--cleanse_spirit,hex,tranquil_air_totem,lightning_lasso,reincarnation,greater_purge,static_field_totem,counterstrike_totem,unleash_shield,grounding_totem
+				for i = 1, #flash_of_lightning_nature_spells do
+					reduceCooldown( flash_of_lightning_nature_spells[i], 1 )
+				end
 			end
 			
 			if set_bonus.tier29_2pc > 0 then
-				addStack("seismic_accumulation")
+				addStack( "seismic_accumulation" )
 			end
 			
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1113,10 +1119,10 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136089,
 
-		--TODO: earth shield on a different target does not remove lightning shield
+		--This can be fine, as long as the APL doesn't recommend casting both unless elemental orbit is picked.
         handler = function ()
             applyBuff( "earth_shield", nil, 9 )
-			if not talent.elemental_orbit then 
+			if not talent.elemental_orbit.enabled then 
 				removeBuff( "lightning_shield" )
 			end
             if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
@@ -1141,25 +1147,25 @@ spec:RegisterAbilities( {
         texture = 136026,
 
         handler = function ()
-			removeBuff("master_of_the_elements")
+			removeBuff( "master_of_the_elements" )
 			removeBuff( "magma_chamber" )
 			
             if talent.surge_of_power.enabled then
                 applyBuff( "surge_of_power" )
             end
 
-            if talent.echoes_of_great_sundering.enabled then
+            if talent.echoes_of_great_sundering.enabled or runeforge.echoes_of_great_sundering.enabled then
                 applyBuff( "echoes_of_great_sundering" )
             end
 
-            if talent.windspeakers_lava_resurgence.enabled then
+            if talent.windspeakers_lava_resurgence.enabled or runeforge.windspeakers_lava_resurgence.enabled then
                 applyBuff( "lava_surge" )
                 gainCharges( "lava_burst", 1 )
                 applyBuff( "windspeakers_lava_resurgence" )
             end
 
 			if talent.lightning_rod.enabled then
-				applyDebuff("target","lightning_rod")
+				applyDebuff( "target", "lightning_rod" )
 			end
 							
 			if talent.further_beyond.enabled and buff.ascendance.up then
@@ -1167,11 +1173,11 @@ spec:RegisterAbilities( {
 			end
 			
 			if set_bonus.tier29_2pc > 0 then
-				removeBuff("seismic_accumulation")
+				removeBuff( "seismic_accumulation" )
 			end
 			
 			if set_bonus.tier29_4pc > 0 then
-				applyBuff("elemental_mastery")
+				applyBuff( "elemental_mastery" )
 			end
 			
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
@@ -1245,7 +1251,11 @@ spec:RegisterAbilities( {
             end
 
 			if talent.lightning_rod.enabled then
-				applyDebuff("target","lightning_rod") --TODO: Apply to any enemy that does not already have Lightning Rod
+				if debuff.lightning_rod.up then
+					active_dot.lightning_rod = min( active_enemies, active_dot.lightning_rod + 1 )
+				else
+					applyDebuff( "target", "lightning_rod" )
+				end
 			end
 			
 			if talent.further_beyond.enabled and buff.ascendance.up then
@@ -1695,8 +1705,7 @@ spec:RegisterAbilities( {
             removeBuff( "primordial_wave" )
 
 			if talent.rolling_magma.enabled then
-				--TODO: Reduce cooldown of primordial wave by .2 * talent.rolling_magma.rank 
-				--TODO: also on overload damage, similar to t28_4pc
+				reduceCooldown( "primordial_wave", 0.2 * talent.rolling_magma.rank )
 			end
 
             if set_bonus.tier28_4pc > 0 then
@@ -1749,16 +1758,15 @@ spec:RegisterAbilities( {
             removeBuff( "surge_of_power" )
 
             removeStack( "stormkeeper" )
-
+ 
             if pet.storm_elemental.up then
                 addStack( "wind_gust", nil, 1 )
             end
 
 			if talent.flash_of_lightning.enabled then
-				--TODO: reduce cd of all nature spells
-				--stormkeeper,ancestral_guidance,healing_stream_totem,wind_shear,gust_of_wind,earthbind_totem,tremor_totem,storm_elemental,earth_elemental
-				--astral_shift,capacitor_totem,thunderstorm,totemic_recall,spiritwalkers_grace,natures_swiftness,poison_cleansing_totem,totemic_projection,stoneskin_totem,
-				--cleanse_spirit,hex,tranquil_air_totem,lightning_lasso,reincarnation,greater_purge,static_field_totem,counterstrike_totem,unleash_shield,grounding_totem
+				for i = 1, #flash_of_lightning_nature_spells do
+					reduceCooldown( flash_of_lightning_nature_spells[i], 1 )
+				end
 			end
 			
 			if set_bonus.tier29_2pc > 0 then
@@ -1832,9 +1840,14 @@ spec:RegisterAbilities( {
         handler = function ()
             summonTotem( "liquid_magma_totem" )
 			--TODO: Apply FS to 3 targets
-			applyDebuff( "flame_shock" )
+			if active_enemies >= 4 then
+				active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 3 )
+			else
+				applyDebuff( "flame_shock" )
+				active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 2 )
+            end
 			
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
+			if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
@@ -1890,7 +1903,7 @@ spec:RegisterAbilities( {
         texture = 136070,
 
         handler = function ()
-            summonTotem( "poison_cleaning_totem" )
+            summonTotem( "poison_cleansing_totem" )
         end,
     },
 
