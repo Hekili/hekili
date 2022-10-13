@@ -9,8 +9,6 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
-local FindPlayerAuraByID = ns.FindPlayerAuraByID
-
 local spec = Hekili:NewSpecialization( 71 )
 
 local base_rage_gen, arms_rage_mult = 1.75, 4.000
@@ -485,7 +483,7 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
         if current < lastRage then
             rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.
 
-            if state.legendary.glory.enabled and FindPlayerAuraByID( 324143 ) then
+            if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
                 gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
             end
         end
