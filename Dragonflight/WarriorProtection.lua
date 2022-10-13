@@ -506,7 +506,7 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
         local current = UnitPower( "player", RAGE )
 
         if current < lastRage then
-            if state.legendary.glory.enabled and buff.conquerors_banner.up then -- FindUnitBuffByID( "player", 324143 )
+            if state.legendary.glory.enabled and state.buff.conquerors_banner.up then -- FindUnitBuffByID( "player", 324143 )
                 gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
             end
 
