@@ -1,6 +1,7 @@
 -- WarriorArms.lua
 -- October 2022
--- Updated for Beta Build 45969
+-- Updated for PTR Build 46047 (RC)
+-- Last Modified 10/13/2020 6:38 UTC
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -1336,7 +1337,8 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "thunder_clap" )
             active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
 
-            if talent.blood_and_thunder.enabled and debuff.rend.up then
+            if talent.blood_and_thunder.enabled and talent.rend.enabled then -- Blood and Thunder now directly applies Rend to 5 nearby targets
+                applyDebuff( "target", "rend" )
                 active_dot.rend = min( active_enemies, 5 )
             end
         end,
