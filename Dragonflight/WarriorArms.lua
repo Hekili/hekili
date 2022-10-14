@@ -638,6 +638,7 @@ spec:RegisterAbilities( {
         talent = "battle_stance",
         startsCombat = false,
         texture = 132349,
+        essential = true,
 
         handler = function ()
             applyBuff( "battle_stance" )
@@ -771,6 +772,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "colossus_smash",
+        notalent = "warbreaker",
         startsCombat = false,
         texture = 464973,
 
@@ -794,6 +796,8 @@ spec:RegisterAbilities( {
         talent = "defensive_stance",
         startsCombat = false,
         texture = 132341,
+
+        essential = true,
 
         handler = function ()
             removeBuff( "battle_stance" )
@@ -864,11 +868,17 @@ spec:RegisterAbilities( {
     execute = {
         id = 163201,
         cast = 0,
-        cooldown = function () return (talent.improved_execute.enabled and 0 or 6) end,
+        cooldown = function () return ( talent.improved_execute.enabled and 0 or 6 ) end,
         gcd = "spell",
+        hasteCD = true,
         noOverride = 317485, -- Condemn
 
-        spend = function () return min(max(rage.current, 20),40) end,
+        spend = function () 
+            if buff.sudden_death.up then
+                return 0
+            else
+                return min(max(rage.current, 20),40) end
+            end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1028,6 +1038,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 6,
         gcd = "spell",
+        hasteCD = true,
 
         spend = function() return 30 - (buff.battlelord.up and 10 or 0) end,
         spendType = "rage",
