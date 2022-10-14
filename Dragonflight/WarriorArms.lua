@@ -241,7 +241,7 @@ spec:RegisterAuras( {
     crushing_force = {
         id = 382764
     },
-    dance_of_death = { --TODO: Implement something similar to Druid's AdaptiveSwarm
+    dance_of_death = {
         id = 390714,
         duration = 180,
         max_stack = 1,

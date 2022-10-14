@@ -1377,7 +1377,7 @@ spec:RegisterAbilities( {
     },
 
 
-    spear_of_bastion = { --TODO: Verify buffs.
+    spear_of_bastion = {
         id = 376079,
         cast = 0,
         cooldown = 90,
