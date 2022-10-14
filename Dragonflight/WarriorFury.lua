@@ -814,7 +814,7 @@ spec:RegisterAbilities( {
                 return 4.5
             end
         end,
-        hasteCD = true, -- TODO: VERIFY
+        hasteCD = true,
         gcd = "spell",
 
         spend = -8,
@@ -1137,7 +1137,7 @@ spec:RegisterAbilities( {
                 applyBuff( "enrage" )
                 applyBuff( "crushing_impact" )
             end
-            if talent.titans_torment.enabled then applyBuff( "avatar", 4 ) end -- TODO: Verify duration
+            if talent.titans_torment.enabled then applyBuff( "avatar", 4 ) end
         end,
     },
 
@@ -1157,8 +1157,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "whirlwind" )
-            applyBuff( "enrage" , talent.tenderize.enabled and 6 or 5 ) -- TODO: Verify mechanics
-            -- Tenderize increases enrage by 1 second?
+            applyBuff( "enrage" , talent.tenderize.enabled and 6 or 5 )
+            -- Tenderize increases enrage by 1 second only when using onslaught, weirdly.
         end,
     },
 
@@ -1197,7 +1197,7 @@ spec:RegisterAbilities( {
     },
 
 
-    raging_blow = { -- TODO: Figure out all the crazy mechanics / interactions
+    raging_blow = {
         id = 85288,
         cast = 0,
         charges = function () return
@@ -1306,7 +1306,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "recklessness" )
-            if talent.berserkers_torment.enabled then applyBuff( "avatar", 4 ) end -- TODO: Verify Buff duration
+            if talent.berserkers_torment.enabled then applyBuff( "avatar", 4 ) end
         end,
 
         auras = {
@@ -1383,7 +1383,7 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "spell",
 
-        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * (buff.unnerving_focus.up and 1.5 or 1) end,
+        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) end,
         spendType = "rage",
 
         talent = "spear_of_bastion",
