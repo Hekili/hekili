@@ -31,7 +31,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         value = function ()
              -- annihilator: auto-attacks deal an additional (10% of Attack power) Physical damage and generate 2 Rage.
              -- swift strikes: annihilator generates 2 additional rage
-            return ( ( ( state.talent.war_machine.enabled and 1.2 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.mainhand_speed ) 
+            return ( ( ( state.talent.war_machine.enabled and 1.2 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.mainhand_speed )
             + ( state.talent.annihilator.enabled and (state.talent.swift_strikes.rank > 0 and 2 + (state.talent.swift_strikes.rank * 1 ) or 2 ) or 0 )
             )
         end
@@ -53,7 +53,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         value = function ()
             -- annihilator: auto-attacks deal an additional (10% of Attack power) Physical damage and generate 2 Rage.
             -- swift strikes: annihilator generates 2 additional rage
-            return ( ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.offhand_speed * offhand_mod ) 
+            return ( ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.offhand_speed * offhand_mod )
             + ( state.talent.annihilator.enabled and (state.talent.swift_strikes.rank > 0 and 2 + (state.talent.swift_strikes.rank * 1 ) or 2 ) or 0 )
         end,
     },
@@ -105,114 +105,114 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
 -- Talents
 spec:RegisterTalents( {
-    anger_management          = { 90415, 152278, 1 }, -- 
-    annihilator               = { 90419, 383916, 1 }, -- 
-    armored_to_the_teeth      = { 90258, 384124, 2 }, -- 
-    ashen_juggernaut          = { 90409, 392536, 1 }, -- 
-    avatar                    = { 90365, 107574, 1 }, -- 
-    barbaric_training         = { 90335, 390674, 1 }, -- 
-    berserker_rage            = { 90372, 18499 , 1 }, -- 
-    berserker_shout           = { 90348, 384100, 1 }, -- 
-    berserker_stance          = { 90325, 386196, 1 }, -- 
-    berserkers_torment        = { 90362, 390123, 1 }, -- 
-    bitter_immunity           = { 90356, 383762, 1 }, -- 
-    blood_and_thunder         = { 90342, 384277, 1 }, -- 
-    bloodborne                = { 90401, 385703, 1 }, -- 
-    bloodcraze                = { 90405, 393950, 1 }, -- 
-    bloodthirst               = { 90392, 23881 , 1 }, -- 
-    bounding_stride           = { 90355, 202163, 1 }, -- 
-    cacophonous_roar          = { 90383, 382954, 1 }, -- 
-    cold_steel_hot_blood      = { 90402, 383959, 1 }, -- 
-    concussive_blows          = { 90335, 383115, 1 }, -- 
-    crackling_thunder         = { 90342, 203201, 1 }, -- 
-    critical_thinking         = { 90425, 383297, 2 }, -- 
-    cruel_strikes             = { 90381, 392777, 2 }, -- 
-    cruelty                   = { 90428, 392931, 1 }, -- 
-    crushing_force            = { 90349, 382764, 2 }, -- 
-    dancing_blades            = { 90417, 391683, 1 }, -- 
-    defensive_stance          = { 90330, 386208, 1 }, -- 
-    deft_experience           = { 90421, 383295, 2 }, -- 
-    depths_of_insanity        = { 90413, 383922, 1 }, -- 
-    double_time               = { 90382, 103827, 1 }, -- 
-    dual_wield_specialization = { 90373, 382900, 1 }, -- 
-    elysian_might             = { 90323, 386285, 1 }, -- 
-    endurance_training        = { 90376, 391997, 1 }, -- 
-    enraged_regeneration      = { 90395, 184364, 1 }, -- 
-    fast_footwork             = { 90371, 382260, 1 }, -- 
-    focus_in_chaos            = { 90403, 383486, 1 }, -- 
-    frenzied_flurry           = { 90422, 383605, 1 }, -- 
-    frenzy                    = { 90406, 335077, 1 }, -- 
-    fresh_meat                = { 90399, 215568, 1 }, -- 
-    frothing_berserker        = { 90350, 215571, 1 }, -- 
-    furious_blows             = { 90336, 390354, 1 }, -- 
-    hack_and_slash            = { 90407, 383877, 1 }, -- 
-    heroic_leap               = { 90346, 6544  , 1 }, -- 
-    honed_reflexes            = { 90367, 391270, 1 }, -- 
-    hurricane                 = { 90389, 390563, 1 }, -- 
-    impending_victory         = { 90326, 202168, 1 }, -- 
-    improved_bloodthirst      = { 90397, 383852, 1 }, -- 
-    improved_enrage           = { 90398, 383848, 1 }, -- 
-    improved_execute          = { 90430, 316402, 1 }, -- 
-    improved_raging_blow      = { 90390, 383854, 1 }, -- 
-    improved_whirlwind        = { 90427, 12950 , 1 }, -- 
-    inspiring_presence        = { 90332, 382310, 1 }, -- 
-    intervene                 = { 90329, 3411  , 1 }, -- 
-    intimidating_shout        = { 90384, 5246  , 1 }, -- 
-    invigorating_fury         = { 90393, 383468, 1 }, -- 
-    leeching_strikes          = { 90344, 382258, 1 }, -- 
-    massacre                  = { 90410, 206315, 1 }, -- 
-    meat_cleaver              = { 90391, 280392, 1 }, -- 
-    menace                    = { 90383, 275338, 1 }, -- 
-    odyns_fury                = { 90418, 385059, 1 }, -- 
-    onslaught                 = { 90424, 315720, 1 }, -- 
-    overwhelming_rage         = { 90378, 382767, 2 }, -- 
-    pain_and_gain             = { 90353, 382549, 1 }, -- 
-    piercing_howl             = { 90348, 12323 , 1 }, -- 
-    piercing_verdict          = { 90379, 382948, 1 }, -- 
-    raging_armaments          = { 90426, 388049, 1 }, -- 
-    raging_blow               = { 90396, 85288 , 1 }, -- 
-    rallying_cry              = { 90331, 97462 , 1 }, -- 
-    rampage                   = { 90408, 184367, 1 }, -- 
-    ravager                   = { 90388, 228920, 1 }, -- 
-    reckless_abandon          = { 90415, 202751, 1 }, -- 
-    recklessness              = { 90412, 1719  , 1 }, -- 
-    reinforced_plates         = { 90368, 382939, 1 }, -- 
-    rumbling_earth            = { 90374, 275339, 1 }, -- 
-    second_wind               = { 90332, 29838 , 1 }, -- 
-    seismic_reverberation     = { 90340, 382956, 1 }, -- 
-    shattering_throw          = { 90351, 64382 , 1 }, -- 
-    shockwave                 = { 90375, 46968 , 1 }, -- 
-    sidearm                   = { 90377, 384404, 1 }, -- 
-    singleminded_fury         = { 90400, 81099 , 1 }, -- 
-    slaughtering_strikes      = { 90411, 388004, 1 }, -- 
-    sonic_boom                = { 90321, 390725, 1 }, -- 
-    spear_of_bastion          = { 90380, 376079, 1 }, -- 
-    spell_reflection          = { 90385, 23920 , 1 }, -- 
-    storm_bolt                = { 90337, 107570, 1 }, -- 
-    storm_of_steel            = { 90389, 382953, 1 }, -- 
-    storm_of_swords           = { 90420, 388903, 1 }, -- 
-    sudden_death              = { 90429, 280721, 1 }, -- 
-    swift_strikes             = { 90416, 383459, 2 }, -- 
-    tenderize                 = { 90423, 388933, 1 }, -- 
-    thunder_clap              = { 90343, 6343  , 1 }, -- 
-    thunderous_roar           = { 90359, 384318, 1 }, -- 
-    thunderous_words          = { 90358, 384969, 1 }, -- 
-    titanic_rage              = { 90417, 394329, 1 }, -- 
-    titanic_throw             = { 90341, 384090, 1 }, -- 
-    titans_torment            = { 90362, 390135, 1 }, -- 
-    unbridled_ferocity        = { 90414, 389603, 1 }, -- 
-    uproar                    = { 90357, 391572, 1 }, -- 
-    vicious_contempt          = { 90404, 383885, 2 }, -- 
-    war_machine               = { 90386, 346002, 1 }, -- 
-    warpaint                  = { 90394, 208154, 1 }, -- 
-    wild_strikes              = { 90360, 382946, 2 }, -- 
-    wrath_and_fury            = { 90387, 392936, 1 }, -- 
-    wrecking_throw            = { 90351, 384110, 1 }, -- 
+    anger_management          = { 90415, 152278, 1 }, --
+    annihilator               = { 90419, 383916, 1 }, --
+    armored_to_the_teeth      = { 90258, 384124, 2 }, --
+    ashen_juggernaut          = { 90409, 392536, 1 }, --
+    avatar                    = { 90365, 107574, 1 }, --
+    barbaric_training         = { 90335, 390674, 1 }, --
+    berserker_rage            = { 90372, 18499 , 1 }, --
+    berserker_shout           = { 90348, 384100, 1 }, --
+    berserker_stance          = { 90325, 386196, 1 }, --
+    berserkers_torment        = { 90362, 390123, 1 }, --
+    bitter_immunity           = { 90356, 383762, 1 }, --
+    blood_and_thunder         = { 90342, 384277, 1 }, --
+    bloodborne                = { 90401, 385703, 1 }, --
+    bloodcraze                = { 90405, 393950, 1 }, --
+    bloodthirst               = { 90392, 23881 , 1 }, --
+    bounding_stride           = { 90355, 202163, 1 }, --
+    cacophonous_roar          = { 90383, 382954, 1 }, --
+    cold_steel_hot_blood      = { 90402, 383959, 1 }, --
+    concussive_blows          = { 90335, 383115, 1 }, --
+    crackling_thunder         = { 90342, 203201, 1 }, --
+    critical_thinking         = { 90425, 383297, 2 }, --
+    cruel_strikes             = { 90381, 392777, 2 }, --
+    cruelty                   = { 90428, 392931, 1 }, --
+    crushing_force            = { 90349, 382764, 2 }, --
+    dancing_blades            = { 90417, 391683, 1 }, --
+    defensive_stance          = { 90330, 386208, 1 }, --
+    deft_experience           = { 90421, 383295, 2 }, --
+    depths_of_insanity        = { 90413, 383922, 1 }, --
+    double_time               = { 90382, 103827, 1 }, --
+    dual_wield_specialization = { 90373, 382900, 1 }, --
+    elysian_might             = { 90323, 386285, 1 }, --
+    endurance_training        = { 90376, 391997, 1 }, --
+    enraged_regeneration      = { 90395, 184364, 1 }, --
+    fast_footwork             = { 90371, 382260, 1 }, --
+    focus_in_chaos            = { 90403, 383486, 1 }, --
+    frenzied_flurry           = { 90422, 383605, 1 }, --
+    frenzy                    = { 90406, 335077, 1 }, --
+    fresh_meat                = { 90399, 215568, 1 }, --
+    frothing_berserker        = { 90350, 215571, 1 }, --
+    furious_blows             = { 90336, 390354, 1 }, --
+    hack_and_slash            = { 90407, 383877, 1 }, --
+    heroic_leap               = { 90346, 6544  , 1 }, --
+    honed_reflexes            = { 90367, 391270, 1 }, --
+    hurricane                 = { 90389, 390563, 1 }, --
+    impending_victory         = { 90326, 202168, 1 }, --
+    improved_bloodthirst      = { 90397, 383852, 1 }, --
+    improved_enrage           = { 90398, 383848, 1 }, --
+    improved_execute          = { 90430, 316402, 1 }, --
+    improved_raging_blow      = { 90390, 383854, 1 }, --
+    improved_whirlwind        = { 90427, 12950 , 1 }, --
+    inspiring_presence        = { 90332, 382310, 1 }, --
+    intervene                 = { 90329, 3411  , 1 }, --
+    intimidating_shout        = { 90384, 5246  , 1 }, --
+    invigorating_fury         = { 90393, 383468, 1 }, --
+    leeching_strikes          = { 90344, 382258, 1 }, --
+    massacre                  = { 90410, 206315, 1 }, --
+    meat_cleaver              = { 90391, 280392, 1 }, --
+    menace                    = { 90383, 275338, 1 }, --
+    odyns_fury                = { 90418, 385059, 1 }, --
+    onslaught                 = { 90424, 315720, 1 }, --
+    overwhelming_rage         = { 90378, 382767, 2 }, --
+    pain_and_gain             = { 90353, 382549, 1 }, --
+    piercing_howl             = { 90348, 12323 , 1 }, --
+    piercing_verdict          = { 90379, 382948, 1 }, --
+    raging_armaments          = { 90426, 388049, 1 }, --
+    raging_blow               = { 90396, 85288 , 1 }, --
+    rallying_cry              = { 90331, 97462 , 1 }, --
+    rampage                   = { 90408, 184367, 1 }, --
+    ravager                   = { 90388, 228920, 1 }, --
+    reckless_abandon          = { 90415, 202751, 1 }, --
+    recklessness              = { 90412, 1719  , 1 }, --
+    reinforced_plates         = { 90368, 382939, 1 }, --
+    rumbling_earth            = { 90374, 275339, 1 }, --
+    second_wind               = { 90332, 29838 , 1 }, --
+    seismic_reverberation     = { 90340, 382956, 1 }, --
+    shattering_throw          = { 90351, 64382 , 1 }, --
+    shockwave                 = { 90375, 46968 , 1 }, --
+    sidearm                   = { 90377, 384404, 1 }, --
+    singleminded_fury         = { 90400, 81099 , 1 }, --
+    slaughtering_strikes      = { 90411, 388004, 1 }, --
+    sonic_boom                = { 90321, 390725, 1 }, --
+    spear_of_bastion          = { 90380, 376079, 1 }, --
+    spell_reflection          = { 90385, 23920 , 1 }, --
+    storm_bolt                = { 90337, 107570, 1 }, --
+    storm_of_steel            = { 90389, 382953, 1 }, --
+    storm_of_swords           = { 90420, 388903, 1 }, --
+    sudden_death              = { 90429, 280721, 1 }, --
+    swift_strikes             = { 90416, 383459, 2 }, --
+    tenderize                 = { 90423, 388933, 1 }, --
+    thunder_clap              = { 90343, 6343  , 1 }, --
+    thunderous_roar           = { 90359, 384318, 1 }, --
+    thunderous_words          = { 90358, 384969, 1 }, --
+    titanic_rage              = { 90417, 394329, 1 }, --
+    titanic_throw             = { 90341, 384090, 1 }, --
+    titans_torment            = { 90362, 390135, 1 }, --
+    unbridled_ferocity        = { 90414, 389603, 1 }, --
+    uproar                    = { 90357, 391572, 1 }, --
+    vicious_contempt          = { 90404, 383885, 2 }, --
+    war_machine               = { 90386, 346002, 1 }, --
+    warpaint                  = { 90394, 208154, 1 }, --
+    wild_strikes              = { 90360, 382946, 2 }, --
+    wrath_and_fury            = { 90387, 392936, 1 }, --
+    wrecking_throw            = { 90351, 384110, 1 }, --
 } )
 
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     barbarian            = 166 , -- 280745
     battle_trance        = 170 , -- 213857
     bloodrage            = 172 , -- 329038
@@ -284,7 +284,6 @@ RemoveFrenzy = setfenv( function()
 end, state )
 
 spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, critical )
-    --Note: Events.lua 
     if sourceGUID == state.GUID then
         if subtype == "SPELL_CAST_SUCCESS" then
             local ability = class.abilities[ spellID ]
@@ -334,11 +333,11 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
         if current < lastRage then
             -- Glory
             if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
-                gloryRage = ( gloryRage + lastRage - current ) % 20 
+                gloryRage = ( gloryRage + lastRage - current ) % 20
             end
             -- Anger Management
-            if state.talent.anger_management.enabled then 
-                rageSpent = ( rageSpent + lastRage - current ) % 10 
+            if state.talent.anger_management.enabled then
+                rageSpent = ( rageSpent + lastRage - current ) % 10
             end
         end
         lastRage = current
@@ -619,7 +618,7 @@ spec:RegisterAuras( {
     whirlwind = {
         id = 85739,
         duration = 20,
-        max_stack = function () 
+        max_stack = function ()
             if talent.meat_cleaver.enabled then return 4
             elseif talent.improved_whirlwind.enabled then return 2
             else return 0
@@ -650,7 +649,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "avatar" )
             if talent.berserkers_torment.enabled then applyBuff ( "recklessness", 4) end
-            if talent.titans_torment.enabled then 
+            if talent.titans_torment.enabled then
                 applyBuff ( "odyns_fury" )
                 active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
                 if talent.titanic_rage.enabled then  applyBuff( "crushing_impact" ) end
@@ -723,6 +722,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132275,
 
+        essential = true,
+
         handler = function ()
             applyBuff( "berserker_stance" )
             removeBuff( "defensive_stance" )
@@ -752,7 +753,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = function ()
             if talent.deft.experience.enabled then
-                return 3 - talent.deft_experience.rank * 0.75 
+                return 3 - talent.deft_experience.rank * 0.75
             else
                 return 3
             end
@@ -771,7 +772,7 @@ spec:RegisterAbilities( {
         texture = 136012,
 
         handler = function ()
-            removeStack( "whirlwind" ) 
+            removeStack( "whirlwind" )
             if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
             if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
@@ -808,7 +809,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = function ()
             if talent.deft_experience.enabled then
-                return 4.5 - talent.deft_experience.rank * 0.75 
+                return 4.5 - talent.deft_experience.rank * 0.75
             else
                 return 4.5
             end
@@ -833,7 +834,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            removeStack( "whirlwind" ) 
+            removeStack( "whirlwind" )
             if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
             if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
@@ -998,11 +999,11 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 135358,
 
-        usable = function () 
+        usable = function ()
             if buff.sudden_death.up then
                 return true
             else
-                return target.health_pct < (talent.massacre.enabled and 35 or 20), "requires target in execute range" 
+                return target.health_pct < (talent.massacre.enabled and 35 or 20), "requires target in execute range"
             end
         end,
 
@@ -1132,7 +1133,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "odyns_fury" )
             active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
             if talent.dancing_blades.enabled then applyBuff( "dancing_blades" ) end
-            if talent.titanic_rage.enabled then 
+            if talent.titanic_rage.enabled then
                 applyBuff( "enrage" )
                 applyBuff( "crushing_impact" )
             end
