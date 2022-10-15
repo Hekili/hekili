@@ -2233,6 +2233,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132157,
 
+        usable = function() return UnitPowerMax( "target", Enum.PowerType.Mana ) > 0, "requires a target that has mana" end,
+
         handler = function ()
             removeDebuff( "target", "sting" )
             applyDebuff( "target", "viper_sting" )
