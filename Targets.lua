@@ -312,7 +312,7 @@ do
 
             if checkPets or checkPlates then
                 for unit, guid in pairs( npGUIDs ) do
-                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 0 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local npcid = guid:match( "(%d+)-%x-$" )
                         npcid = tonumber(npcid)
 
@@ -360,7 +360,7 @@ do
                     local guid = UnitGUID( unit )
 
                     if guid and counted[ guid ] == nil then
-                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 0 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                             local npcid = guid:match( "(%d+)-%x-$" )
                             npcid = tonumber(npcid)
 
