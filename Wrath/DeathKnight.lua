@@ -887,14 +887,14 @@ end )
 
 local GetRuneType, IsCurrentSpell = _G.GetRuneType, _G.IsCurrentSpell
 
+spec:RegisterPet( "ghoul", 26125, "raise_dead", 3600 )
+
 spec:RegisterHook( "reset_precast", function ()
     for i = 1, 6 do
         if GetRuneType( i ) == 4 then
             applyBuff( "death_rune_" .. i )
         end
     end
-
-
 
     if IsCurrentSpell( class.abilities.rune_strike.id ) then
         start_rune_strike()
