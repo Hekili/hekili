@@ -160,9 +160,9 @@ spec:RegisterAuras( {
     beacon_of_light = {
         id = 53563,
         duration = function() return glyph.beacon_of_light.enabled and 90 or 60 end,
-        tick_time = 1.5,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     blessed_life = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=31830)
         id = 31830,
