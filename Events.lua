@@ -1750,7 +1750,10 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
                 end
             end
 
-            state.gcd.lastStart = max( state.gcd.lastStart, ( GetSpellCooldown( state.cooldown.global_cooldown.id ) ) )
+            if state.cooldown.global_cooldown.id then
+                state.gcd.lastStart = max( state.gcd.lastStart, ( GetSpellCooldown( state.cooldown.global_cooldown.id ) ) )
+            end
+
             -- if subtype ~= "SPELL_DAMAGE" then Hekili:ForceUpdate( subtype, true ) end
         end
     end
