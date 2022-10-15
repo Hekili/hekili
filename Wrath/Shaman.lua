@@ -2013,7 +2013,10 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136088,
 
-        toggle = "cooldowns",
+        -- Shamanistic Rage is on Defensives toggle unless mana is below the threshold.
+        toggle = function ()
+            if mana.percent > settings.shaman_rage_threshold then return "defensives" end
+        end,
 
         handler = function ()
             applyBuff( "shamanistic_rage" )
@@ -2390,6 +2393,19 @@ spec:RegisterSetting( "st_cl_mana_threshold", 80, {
     name = "|T136015:0|t Single-Target Chain Lightning Mana %",
     desc = "When below the specified mana percentage, the default priority will not recommend |T136015:0|t Chain Lightning in single-target.\n\n"
         .. "If |T237589:0|t Thunderstorm is known, the default priority may recommend using it to regenerate mana below this threshold.",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
+} )
+
+spec:RegisterSetting( "shaman_rage_threshold", 60, {
+    type = "range",
+    name = "|T136088:0|t Shamanistic Rage Threshold",
+    desc = "When below the specified mana percentage, the addon may recommend using Shamanistic Rage to regenerate mana.",
+    min = 0,
+    max = 100,
+    step = 1,
     width = "full",
 } )
 
@@ -2415,6 +2431,6 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Enhancement (IV)", 20220925, [[Hekili:vJvxVTTnu0FlffWDfjrZ2jEnERopS1UTKbKwaf0hLeTeLfxOe1OOIRbc0V9DVI6llr7yNMoG9qIviV8(fVNJoootCUZXoGOOo3oD80PJNpDM1e4ZPx6yR2KsDStj(3twbpKqIHF)XKisIpnMMOk8(HR)YBrl2WfKa0tzICPpyLJ9YCgxDDIZsJUF8eW2uQVZTVZXoIfeq1wsZ8DSVlILv4H)qk8QcFHNie(BFftKu4Xzzky7qHSW7pP3Z4mlh7YfXKGiOWh3wwA0eYsonW5xDS9LmfvYiyUfgAfYKuxLqrJTceRtGJv6Ch7yYQyIEhhfK3LUSAVYdLiEG01ZGrNV)yftO8mLue7UMssfjwzkOSk8wu4nR15(rewIlNTksLWswH(9Ixc)24r3LcUcD7SU1uMsiJbVWUN2RQ(PDg9xv4Py(3d(SWBe8mrUIQSuSySL6gWG7RRGKyENohhgFCZIe(3JU(D701kchMTWkbIG(awvgwgRYcplIr5b9U4ARt92yCUCNXjqOS6Kuwn1ZJpAUGE)w1dLivrT1Z8UDuo5bIlNKf1RFoz8rEDMNwwYzRHed2LHyValjfFeM)VQWBS1KcVtk88jzkxmD3740KNat8YMadM7uicpKKd)rn(S2wiabq3e6Q96zdHFuEj7dHxHrnGeBSNkbZYszqz2ZUl6AxEg1fAeXz9mA2oBx4jFaYLeAmJQ7etA9NmpXv)SlYkP5MC1eOi70EXwhbY2Wv8UbwhHFhYyC5HXym)7hJXtbEou(89GbEzPEMm9)iUNjNFiVIAYfhef1Uh5)oWqyII6ybgFtjGjkQuj1xeVKO2VicyGUoAUS4L5W(BXMfMl3uLJn8y7YrIWqJ(PCgrjswLt74QNqSXbpG2xCrZTcHZDfHUQOgY2mT2mjlvBYN5eFySCdi3dgyrOfQyduObNzZBKWwjcqFiHlPKGnfE5PNw4fisEdS4AckDujGvZadzk9jxtFZd0Y1ckf(ft(BuE3V9HQaynOq1WGwiFlgThxq7gRbPOsJ7qyDx3e5)wnGRdOqxAduv0)jNLw3kwsZGYX(ZfERGSRCQ7p4BsJ0Yx)Dg2z(y97Vk8UddiOXvsplnNZRu0cf)mO(zj6Qhf8s0zj2A65Ktl75jiaGKQBRqpNxNa1U26jEjA1S)duzgAuJADywMiX5gyc464uHuH5W59KIBvCdIBeHmoaUE9RH8R7xtWoIetsWVUGpml8fkamFBXnOzyyoB88ZMoR4MIB0(mZQbbEYIFShu6uw4Ix1d3PD1TumZW6N(1uUaBsrI16vYYtXuhYwXAk0vKKK71xjdry6gEDiQMnritjbnCraFVfopv7OkoiDgyk9h6)tXGVqBR1WTbkSV6IMC2et16OggUisMBNuXyZZq0rFUnDJ5J2NWapyF6fOSl8oEQGF5BMkWCkBI3QjT7twmYerXiJKeJmqquw6)VJeyhtjgie6ahRaHA15Dx1856SFh13DxVrTD3f7jz(uuS8cqRmEbIR3k2(QjA42DF6dF6Nl8(avr9XzPik0dK6xZJInJP6)jcCAwg2Fqgi9fuc9RQAfdDZHEYrAMDmlAEXSUNDBLeh1r7iNER2xRaXsuBLiXrd1hE1I5DpyhbVn5r)3iAmZBr67rj8OHSaT(QJYu0n7qN7JpoSgE)8bJwOi2Ts0AnRpR7S80rM1iEfOp8KgTHpN70d21T4pyY(iVPQoYWot1ghCJO)ey15p0IDhh30qCDk)SgKhKwFJtNv(7fzcTo3gmqES3fh8KZZ7U6aDpOnmxfjKo2)fjQ8FNAPAqN)9p]] )
+spec:RegisterPack( "Enhancement (IV)", 20221015, [[Hekili:vJv3YTTnt0NLmzgNMjw0Ikwn1Pr(IV60(5CHtMkp5sscrcjIkqcwcqXOz8WN9Ulaf)xks2UTtVWjK4Nf7E2ZE4k4y7CVZ8aII6C3KXtMyp2EQLTT9KjVZzUABc1zEcXFnzf8qmjc(3pghsI9Pr0yvH3pC7xFnUITCbjaTKuKL6dRkuPsKV)IlYZZTy(BhTHYILw(IOlYfk(6r(CIuY8VGwBTrYqsejEuqICuYg6OvzSaWslYyC1TXolgYnTNEjCMjuFN7a)nKfeqnRKk9DMFFitw4H)rk8kdJcpXs4DFftex4Xzsfm9srAH3)NUMXzwq4KkwY4Wr)Yxw41kCNR9qmS93w49vmMEDXNWLHo1i7XJSNw8PIpzmV0kjLcH8cI6nZUiNfhSmlDRBoLKiIpNTC2lIim08bUSOfz0aJPUJcp5PefE0VLWfPGlhkYnJiZssePGNWf5uWNtjXRnr0soKDuI4vz0Ytagh(B3ra4aSQCgLhWIxPrea348eJHmBXY4bd5(9T)54HpZSwR(tBfr(MlUKr2dfRNT7DRqI0THRmi4nWPJ2uSCzl4BOTYzRcvXqm7kdXOh34ISLlTmVAfiYJHWUW7lCIpG1Bbgmc2kAK0aAQq62xHPHybG8eEkLeaP)SKFUWlqe)kyWCcspWmuMewitvc30xTHQhlqJ4rK)azA)YnLhG1WUSpHZDflDHd2LY1CpzLBtjPQqxZ2rF)m9OlzP0EdMd1lP9gLWAoMo0VnGch52Zbk3FMXs2bclOsK0)LcVvWPw49McVFJVnj0W4(vgIjF04FeEH39OrHcTu6OKmoVSScc7PqKZInXnYjHHqpbbLog5CnAdlrMtsmakG28DoWotVhCtdc0D2YeKnkhllcbEaASgJo8(AmpnfgwMWsHeBJXH8QltZtqqCovTd4m6eG2cZVW731Qo3hMsLHcEzPTViwLkGalxhUqqdWsqaIo5me70Hf4q461YyAWeSkbNBfng8jJgwswAIqsLwnDnzThafHROi9rrsxrvw5mWGX2JpdnMvIV6dsQsbfislZU0BaiF7C4gMnnl218MlkDEo(jHzeH2844BaCmMgXOYRTnAj3)5B(87l8UHQO(kD4cXkej(eKBPyruJcnNkLyOIYRgqmM(nfseapRvO5hckhUvL1vfgrekxcGA0obiPcK8NnT5ERfdwi4QtARsLincweBnTf3avMakLWFTwsca81G9pReSXaeiuUbm61ZUQ5gJiRIigUwLF0PkEypVwgdiRaJfDwmnR9blAmzbhKx7lXvBlJesLphiuwncdRYq4Hh6hdF4QE1nXInKwokzdXf(6E4JkNLLCMjJx95Huk(O86Xw2VbjnUAoZJiNE0MUwCby2NyMQCl9rMYjoAGOldSC)hBWUNTpejENl)OiY9CRNi7S0Eplm0D(wpc5PMloAMZJlxDKM3z(gAQeSVPf4XxnzQZ8CskEcsN53gHDgIFt9TD6VfupDMRFc7qh8n4)Ut33Fz6W5)5m3h(2gnLrWgU7ZVHTPTOZ8gfdokWt0MSCUkwFtldl6Th(SgM8w4nd6CO24DYwODV85WUTZsOzN2mMAuX0jQ(X9E6Va)WMMHw4Dg8CpsAH31GtCvdKRMCJM(D710hOOsFwDlSgkontJNZpT3ZzpvCfEp8WWb0hAfpnQFXZ5QMiAv9yh80E8jMoZs0H8W1oaex4b1p6UwBudDa6K93PM451b6X7u4pBDjjdEzx95U1w32AhmRF5xN2yhQsSA9nARTZ6US56QAZTZIM2bUQkz607P5NJNYsmt)VEFYTRNA1tSoFURVynP(W9gFyDaeqQ7iwtiSRHPo9sBKODnxYcksFqDGtqGBaM((R7pb72x48QJt48af6pzLZVxn8X(Dn7j)djbBV)po(8QbBF5X8PA7PhLu9(58)nOuoKu9Pwz8KCGHKQRU3Hd3m1lQVbUYBPQTQEJBeSspFFgQ9TD1PeO1LJDenDD0e0UnzvLvg4sQ6O0F63O25p5BuRxG29(YQRr7(B4QMO79Mvpt77oBOpc2ca(p39Q9DAMOK7tYuHcOvKB93osFj46HD(R]] )
 
 spec:RegisterPack( "Elemental / Resto DPS (IV)", 20220925, [[Hekili:1EvZUnUnq4NLGfWjbnw(NDZUnTj5q72djhcwuVy7njslrzXAksbskl4Ia(S3zOSLLKLtt32CXwIC4W5NVz(gfol8RHlsOww4tZNoF(0BMFDWS5F465FmCHDBblCrbnEnDf8GKMd)(BcwotAPchzIJ87mJv5iF(llCKlE4BxIIVvOOjOAnQsDmCKmRTW8ttMuvvfWJ3oEdJlnbXQ8jvkRy94yb1y4Xty7v9ytgnNkhNuygxSHnwRSulxjhhRuIevL0mMUKl4woZeUyzjxyFqgUCyh5AWqkyXHp9jWs4jjSAjzM4WfFnJBCKcnxP52TWtGVELJaBYxjzjosQs7iTC5lwwADendmEyPKgrAhhOGkRycXLocQ9LudkwzHs6ipaU)3q3)8oQDH3FDKvL8e2ov(hAQnliCHGBSgmCsvm4VN8zmMKUuWsc)LWfXGPZ0Ckgistds5AwKvzz5byKcowmg6cxKtxLtR3j0cbjVk3TN)qs1gABndc9(2c1KEIYPg4k32t4p0w44mkxgj4RYSsUCvprVUNpS)u2SsiOQHyPoVohP5f1BvlIjaIc)WDtAl4v807GOhnOi2E7ntF(zlvVIzdsGahvgZUD20rReBlYc8)gPsJAF8G92rRizpn4i3ENJmBQJmYr2FvWIoYnWAp)CVfnmRf8ztGXgfJrlje3Z0mtgGEb33IUwkTuyBYN7davCzsKjJr19IyhNUoKoQZPVqMR0WIaxl3mugBqOeEYnWDiz5qnMJCp4(TsUuHiQ(LieEwdsJQBqGW09P4xl05JN0qoZrS841EiuJ7lGlcIsQ414H)0jpCIYg0s4anlhqL1UtmyirwU3I3PxbDdnAzjalq1(JNuT5QnG94bd9VHJSvitAZoyR3CcG)rLlDW(pXWoiydMyndAXbp7BCH914ub)V8DhDeLx(Go2AdW8()zG5tZMEsN(TSKy46F0E6uC0eEIwQGANoqi41cFB5Lu7l3L8m004YmkuPXZxwYs6HSSk5QswufJcTSBQ9gkPHLb(UjnvJMEzUViOySAlWeIjqSgeyfsXeiB75AylPcIqubKxt2ISei9JsEoSyfvARZ6q9lCkB9jRyNVH5xdWeu0z(tKU4x)8Uli4ikHAm4bobFoBiYIdBubOm9G7q5TxVPvZ3bHKFnm(vHmDd1pAVKgWdW0(UgDNO2if6D6Jiv0T1RSbmJu85mQ1hYbGOKwaGo41mKN2sxZaNRatthh46AHbLfhcdjSCLKhhbtmyHn8iqadc3ObnRMzqGw6unIzbKXd5fkTfn33d2zCDnRNEpW9iIFvPCb0p6DVBWHdUagEWr8tpCP7rui8sgp9MXZV29O7X9mKn1bap5XaAKT8SEfaG2CK)9q1F()muDyJEO6k0ShempAiq2ObbXJgaapSf0nX3C39lxWW2)J4VHTLoG)gt5iO5OHGLTGfGMomCr7vhAyI273m8q7f7pbWvi3)Da1pAGDhE4(zTp4rtc0XuoWK6HP7ytBlYboAuItqWFFd5ENR(avSFKrpl(OtWG3l3(Q4D7eG6sO3Eg17FrYW2kP)uU9hS9oyY2ot(28YR(k6YP2Uns9G2T(QHtxg09inFmr)noDUFNa9cA1n5oKeQzgGVschJ3S7ZKQZi42vk96aFERRwFd(wH(g(BuIcyalTzk4BbA(Urpnt4F)d]] )
