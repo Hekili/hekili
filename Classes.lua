@@ -1397,6 +1397,16 @@ all:RegisterAuras( {
         copy = { 7405, 8380, 11596, 11597, 25225, 47467, 58567, 65936, 71554 },
     },
 
+    -- Reduces melee attack power by $s1.
+    demoralizing_shout = {
+        id = 47437,
+        duration = function() return 30 * ( 1 + talent.booming_voice.rank * 0.25 ) end,
+        max_stack = 1,
+        no_ticks = true,
+        shared = "target",
+        copy = { 1160, 6190, 11554, 11555, 11556, 25202, 25203, 27579, 47437 },
+    },
+
     rampage = {
         id = 29801,
         duration = 3600,
@@ -2479,7 +2489,7 @@ all:RegisterAbilities( {
     global_cooldown = {
         id = function ()
             if settings.spec and settings.spec.gcd then return settings.spec.gcd end
-            return 61304
+            return 1
         end,
         cast = 0,
         cooldown = 0,
