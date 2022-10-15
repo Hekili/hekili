@@ -6185,7 +6185,11 @@ do
         Hekili:Yield( "Reset Post-Powers" )
 
         -- Setting this here because the metatable would pull from UnitPower.
-        state.health = rawget( state, "health" ) or setmetatable( { resource = "health", meta = {} }, mt_resource )
+        state.health = rawget( state, "health" ) or setmetatable( {
+            resource = "health",
+            timeTo = function( amount ) return amount > state.health.current and 0 or 3600 end,
+            meta = {}
+        }, mt_resource )
         state.health.current = nil
         state.health.actual = UnitHealth( "player" ) or 10000
         state.health.max = max( 1, UnitHealthMax( "player" ) or 10000 )
@@ -6965,7 +6969,9 @@ do
 
         if ability.item then
             if not ability.bagItem and not self.equipped[ ability.item ] then
-                return false, "item not equipped"
+                return false, "item [ " .. ability.item .. " ] not equipped"
+            elseif ability.bagItem and GetItemCount( ability.item ) == 0 then
+                return false, "item [ " .. ability.item .. " ] not in bags"
             end
         end
 
