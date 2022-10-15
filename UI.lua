@@ -1204,7 +1204,7 @@ do
                             if not b.outOfRange then
                                 local _, unusable
 
-                                if a.itemCd or a.item then
+                                if a.itemCd or a.item and not a.bagItem then
                                     unusable = not IsUsableItem( a.itemCd or a.item )
                                 else
                                     _, unusable = IsUsableSpell( a.actualName or a.name )
@@ -2576,7 +2576,7 @@ do
             -- Overlay (for Pause)
             b.Overlay = b.Overlay or b:CreateTexture( nil, "OVERLAY" )
             b.Overlay:SetAllPoints( b )
-            b.Overlay:SetAtlas( "creditsscreen-assets-buttons-pause" )
+            b.Overlay:SetTexture( "Interface/AddOns/Hekili/Textures/Pause.blp" )
             b.Overlay:SetVertexColor( 1, 1, 1, 1 )
             -- b.Overlay:SetTexCoord( unpack( b.texCoords ) )
             b.Overlay:Hide()
