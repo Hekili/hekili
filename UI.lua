@@ -575,7 +575,6 @@ do
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         } )
 
-
                         -- Check for Toggles.
                         for n, setting in pairs( spec.settings ) do
                             if not setting.info.arg or setting.info.arg() then
@@ -634,7 +633,7 @@ do
 
                                     insert( menuData, submenu )
 
-                                elseif setting.info.type == "range" and setting.info.step == 1 and ( ( setting.info.max or 999 ) - ( setting.info.min or -999 ) ) < 30 then
+                                elseif setting.info.type == "range" and setting.info.max and setting.info.min then
                                     local submenu = {
                                         text = setting.info.name,
                                         hasArrow = true,
@@ -643,7 +642,30 @@ do
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }
 
-                                    for j = setting.info.min, setting.info.max do
+                                    local values = {}
+
+                                    local fullRange = setting.info.max - setting.info.min
+                                    local increment = setting.info.step or 1
+                                    local steps = math.ceil( fullRange / increment )
+
+                                    if steps < 21 then
+                                        local step = setting.info.min
+
+                                        while step <= setting.info.max do
+                                            insert( values, step )
+                                            step = step + increment
+                                        end
+                                    else
+                                        local step = setting.info.min
+                                        increment = math.ceil( fullRange / 20 )
+
+                                        while step <= setting.info.max do
+                                            insert( values, step )
+                                            step = step + increment
+                                        end
+                                    end
+
+                                    for _, j in ipairs( values ) do
                                         insert( submenu.menuList, {
                                             text = tostring( j ),
                                             func = function ()
