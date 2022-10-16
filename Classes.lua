@@ -1465,12 +1465,22 @@ all:RegisterAuras( {
         copy = { 21849, 21850, 26991, 48470 },
     },
 
+    -- Expose Armor.
+    expose_armor = {
+        id = 8647,
+        duration = function() return 6 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
+        max_stack = 1,
+        shared = "target",
+    },
+
     -- The threat caused by your next damaging attack and all actions taken for $57933d afterwards will be transferred to the target.  In addition, all damage caused by the target is increased by $57933s1% during this time.
     tricks_of_the_trade = {
         id = 57934,
         duration = 30,
         max_stack = 1,
+        shared = "player",
     },
+
     tricks_of_the_trade_buff = {
         id = 57933,
         duration = function() return glyph.tricks_of_the_trade.enabled and 10 or 6 end,
