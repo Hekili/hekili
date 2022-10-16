@@ -83,7 +83,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         end,
 
         interval = 1,
-        value = 4,
+        value = 6, -- Fury 6, Arms 4, Prot 4
     },
 
     ravager = {
@@ -275,11 +275,19 @@ local TriggerHurricane = setfenv( function()
     addStack( "hurricane", nil, 1 )
 end, state )
 
-TriggerSlaughteringStrikesAnnihilator = setfenv( function()
+local TriggerGlory = setfenv( function(reduction)
+    buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction * 0.5
+end, state )
+
+local TriggerAngerManagement = setfenv( function(reduction)
+    cooldown.recklessness.expires = cooldown.recklessness.expires - reduction
+end, state )
+
+local TriggerSlaughteringStrikesAnnihilator = setfenv( function()
     addStack( "slaughtering_strikes_annihilator", nil, 1 )
 end, state )
 
-RemoveFrenzy = setfenv( function()
+local RemoveFrenzy = setfenv( function()
     removeBuff( "frenzy" )
 end, state )
 
@@ -330,21 +338,35 @@ end )
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
-        if current < lastRage then
+        if current < lastRage then -- Resource Spent
             -- Glory
             if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
-                gloryRage = ( gloryRage + lastRage - current ) % 20
+                gloryRage = ( gloryRage + (lastRage - current) )  -- Fury 25, Prot 10, Arms 20
+                local reduction = floor( gloryRage / 25 )
+                gloryRage =  glory_rage % 25
+                if reduction > 0 then TriggerGlory(reduction) end
             end
             -- Anger Management
             if state.talent.anger_management.enabled then
-                rageSpent = ( rageSpent + lastRage - current ) % 10
+                rageSpent = ( rageSpent + (lastRage - current) ) 
+                local reduction = floor( rageSpent / 20 )
+                rageSpent =  rageSpent % 20
+                if reduction > 0 then 
+                    TriggerAngerManagement(reduction) 
+                    print("Trigger AM" .. reduction .. " seconds off Reck CD")
+                end
             end
         end
         lastRage = current
     end
 end )
 
-spec:RegisterHook( "spend", function( amt, resource )
+-- Spend is misleading, since it fires multiple times per recommendation and falsely inflates whatever is coming in as it's recommendation; for example:
+-- Charge is ready (Gains 20 rage), amt = -20 will come in constantly (3/4 times per second) into this repeatedly until a new recommendation is found, and then
+-- it repeatedly pushes that amount into this as well at 3/4 times per second.
+-- Instead , we are going to use the UNIT_POWER_FREQUENT for rage gains/spenders to trigger a local Function instead if needed.
+--[[
+spec:RegisterHook( "spend", function( amt, resource ) 
     if resource == "rage" then
         if talent.anger_management.enabled then
             rage_spent = rage_spent + amt
@@ -363,6 +385,7 @@ spec:RegisterHook( "spend", function( amt, resource )
         end
     end
 end )
+]]
 
 spec:RegisterHook( "reset_precast", function ()
     rage_spent = nil
