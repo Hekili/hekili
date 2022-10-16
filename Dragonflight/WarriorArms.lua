@@ -464,6 +464,15 @@ local TriggerTestOfMight = setfenv( function()
     addStack( "test_of_might" , nil, test_of_might_stacks)
 end, state )
 
+local TriggerGlory = setfenv( function(reduction)
+    buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction * 0.5
+end, state )
+
+local TriggerAngerManagement = setfenv( function(reduction)
+    cooldown.recklessness.expires = cooldown.recklessness.expires - reduction
+end, state )
+
+--[[
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" then
         if talent.anger_management.enabled then
@@ -502,7 +511,7 @@ spec:RegisterHook( "spend", function( amt, resource )
         end
     end
 end )
-
+]]
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical )
     if sourceGUID == state.GUID then
         if subtype == "SPELL_CAST_SUCCESS" then
@@ -522,15 +531,25 @@ end )
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
-
-        if current < lastRage then
-            rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.
-
+        if current < lastRage then -- Spent Rage
+            -- Anger Management
+            if state.talent.anger_management.enabled then
+                rageSpent = ( rageSpent + (lastRage - current) ) 
+                local reduction = floor( rageSpent / 20 )
+                rageSpent =  rageSpent % 20
+                if reduction > 0 then 
+                    TriggerAngerManagement(reduction) 
+                    print("Trigger AM" .. reduction .. " seconds off Reck CD")
+                end
+            end
+            -- Glory
             if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
-                gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
+                gloryRage = ( gloryRage + (lastRage - current) )  -- Fury 25, Prot 10, Arms 20
+                local reduction = floor( gloryRage / 25 )
+                gloryRage =  glory_rage % 25
+                if reduction > 0 then TriggerGlory(reduction) end
             end
         end
-
         lastRage = current
     end
 end )
