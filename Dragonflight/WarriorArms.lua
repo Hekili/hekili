@@ -235,7 +235,7 @@ spec:RegisterAuras( {
     },
     colossus_smash = {
         id = 208086,
-        duration = function () return 10 + (talent.blunt_instruments.enabled and 3 or 0 ) end,
+        duration = function () return 13 + ( talent.blunt_instruments.enabled and 3 or 0 ) end,
         max_stack = 1,
     },
     crushing_force = {
@@ -421,27 +421,16 @@ spec:RegisterAuras( {
     },
 } )
 
-local rageSpent = 0
-local gloryRage = 0
-local test_of_might_rage = 0
-local test_of_might_stacks = 0
-local last_cs_target = nil
-local collateral_dmg_stacks = 0
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
+local rageSpent = 0
+local gloryRage = 0
+local testofmightRage = 0
+local testofmightStacks = 0
+local testofmightBuilding = false
+local last_cs_target = nil
 local cs_actual
-
-spec:RegisterStateExpr( "rage_spent", function ()
-    return rageSpent
-end )
-
-spec:RegisterStateExpr( "glory_rage", function ()
-    return gloryRage
-end )
-
-spec:RegisterStateExpr( "test_of_might_stacks", function ()
-    return test_of_might_stacks
-end )
+local collateralDmgStacks = 0
 
 local TriggerMeleeCriticalHit = setfenv( function()
     -- Seasoned Soldier: Auto attack crits generate 20% more rage.
@@ -457,11 +446,18 @@ local TriggerHurricane = setfenv( function()
 end, state )
 
 local TriggerCollateralDamage = setfenv( function()
-    addStack( "collateral_damage", nil, collateral_dmg_stacks )
+    addStack( "collateral_damage", nil, collateralDmgStacks )
 end, state )
 
 local TriggerTestOfMight = setfenv( function()
-    addStack( "test_of_might" , nil, test_of_might_stacks)
+    addStack( "test_of_might" , nil, testofmightStacks)
+    testofmightStacks = 0
+    testofmightRage = 0
+    testofmightBuilding = false
+end, state )
+
+local TriggerTestOfMightStart = setfenv( function()
+    testofmightBuilding = true
 end, state )
 
 local TriggerGlory = setfenv( function(reduction)
@@ -497,8 +493,8 @@ spec:RegisterHook( "spend", function( amt, resource )
             test_of_might_rage = test_of_might_rage % 10
 
             if stacks > 0 then
-                test_of_might_stacks  = test_of_might_stacks + 1
-                print("Added Stack to ToM, now: ".. tostring(test_of_might_stacks))
+                testofmightStacks  = testofmightStacks + 1
+                print("Added Stack to ToM, now: ".. tostring(testofmightStacks))
             end
         end
 
@@ -517,12 +513,19 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
         if subtype == "SPELL_CAST_SUCCESS" then
             if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
                 last_cs_target = destGUID
+                if state.talent.test_of_might.enabled then TriggerTestOfMightStart() end
             end
 
-            if state.talent.collateral_damage.enabled and state.buff.sweeping_strikes.up then collateral_dmg_stacks = collateral_dmg_stacks + 1 end
+            if state.talent.collateral_damage.enabled and state.buff.sweeping_strikes.up then
+                collateralDmgStacks = collateralDmgStacks + 1
+            end
         elseif subtype == "SWING_DAMAGE" and UnitGUID( "target" ) == destGUID and critical then
             -- Critical boolean is the 18th parameter in SWING_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
                 TriggerMeleeCriticalHit()
+        elseif subtype == "SPELL_AURA_REMOVED" and state.talent.test_of_might.enabled then
+            if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) and destGUID == last_cs_target then
+                TriggerTestOfMight()
+            end
         end
     end
 end )
@@ -531,23 +534,32 @@ end )
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
-        if current < lastRage then -- Spent Rage
+        if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
             -- Anger Management
             if state.talent.anger_management.enabled then
                 rageSpent = ( rageSpent + (lastRage - current) ) 
                 local reduction = floor( rageSpent / 20 )
                 rageSpent =  rageSpent % 20
                 if reduction > 0 then 
-                    TriggerAngerManagement(reduction) 
-                    print("Trigger AM" .. reduction .. " seconds off Reck CD")
+                    TriggerAngerManagement(reduction)
                 end
             end
             -- Glory
             if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
                 gloryRage = ( gloryRage + (lastRage - current) )  -- Fury 25, Prot 10, Arms 20
-                local reduction = floor( gloryRage / 25 )
-                gloryRage =  glory_rage % 25
+                local reduction = floor( gloryRage / 20 )
+                gloryRage =  gloryRage % 20
                 if reduction > 0 then TriggerGlory(reduction) end
+            end
+            --Test of Might
+            --TODO: Verify stack gainage - Tooltip says 10, but it seems to be more like ~18 rage per 1% strength in testing.
+            if state.talent.test_of_might.enabled and testofmightBuilding then
+                testofmightRage = ( testofmightRage + (lastRage - current) )  -- Test of might grants 1% strengh per 10rage spent
+                local stacks = floor( testofmightRage / 10 )
+                testofmightRage =  testofmightRage % 10
+                if stacks > 0 then 
+                    testofmightStacks = testofmightStacks + stacks 
+                end
             end
         end
         lastRage = current
@@ -565,7 +577,6 @@ end )
 
 
 spec:RegisterHook( "reset_precast", function ()
-    rage_spent = nil
     if not cs_actual then cs_actual = cooldown.colossus_smash end
 
     if talent.warbreaker.enabled and cs_actual then
@@ -595,9 +606,9 @@ spec:RegisterHook( "reset_precast", function ()
 
     end
 
-    if talent.test_of_might.enabled and debuff.colossus_smash.up then
-        state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
-    end
+    --if talent.test_of_might.enabled and debuff.colossus_smash.up then
+    --    state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
+    --end
 
     if talent.collateral_damage.enabled and buff.sweeping_strikes.up then
         state:QueueAuraExpiration( "sweeping_strikes_collateral_dmg", TriggerCollateralDamage, buff.sweeping_strikes.expires )
@@ -1511,7 +1522,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff ( "collateral_damage" )
-            collateral_dmg_stacks = 0
+            collateralDmgStacks = 0
         end,
     },
 
