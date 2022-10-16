@@ -502,29 +502,65 @@ end )
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
 
+
+local TriggerGlory = setfenv( function(reduction)
+    buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction * 0.5
+end, state )
+
+local TriggerAngerManagement = setfenv( function(reduction)
+    cooldown.recklessness.expires = cooldown.recklessness.expires - reduction
+end, state )
+
+local TriggerT28SeeingRed = setfenv( function(stacks)
+    print ('t28')
+    addStack( "seeing_red_tier28", nil, stacks ) 
+end, state )
+
+local TriggerViolentOutburstSeeingRed = setfenv( function(stacks)
+    print ('t28')
+    addStack( "seeing_red_tier28", nil, stacks ) 
+end, state )
+
+
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
-
-        if current < lastRage then
-            if state.legendary.glory.enabled and state.buff.conquerors_banner.up then -- FindUnitBuffByID( "player", 324143 )
-                gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
-            end
-
+        if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
+            print("spent rage: " ..lastRage - current)
+            -- Anger Management
             if state.talent.anger_management.enabled then
-                rageSpent = ( rageSpent + lastRage - current ) % 10 -- Anger Management
+                rageSpent = ( rageSpent + (lastRage - current) ) 
+                local reduction = floor( rageSpent / 20 )
+                rageSpent =  rageSpent % 20
+                if reduction > 0 then TriggerAngerManagement(reduction) end
+            end
+            -- Glory
+            if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
+                gloryRage = ( gloryRage + (lastRage - current) )  -- Fury 25, Prot 10, Arms 20
+                local reduction = floor( gloryRage / 10 )
+                gloryRage =  glory_rage % 10
+                if reduction > 0 then TriggerGlory(reduction) end
             end
 
             if state.set_bonus.tier28_2pc > 0 or state.talent.violent_outburst.enabled then
-                outburstRage = ( outburstRage + lastRage - current ) % 30 -- Outburst
+                outburstRage = ( outburstRage + (lastRage - current) ) -- Outburst
+                local stacks = floor( outburstRage / 30 )
+                outburstRage = outburstRage % 30
+                if stacks > 0 then
+                    if set_bonus.tier28_2pc > 0 then 
+                        print('t26')
+                        TriggerT28SeeingRed(stacks) end
+                    if talent.violent_outburst.enabled then 
+                        print('vob')
+                        TriggerViolentOutburstSeeingRed(stacks) end
+                end
             end
         end
-
         lastRage = current
     end
 end )
 
-
+--[[
 -- model rage expenditure and special effects
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" and amt > 0 then
@@ -556,13 +592,16 @@ spec:RegisterHook( "spend", function( amt, resource )
             local stacks = floor( outburst_rage / 30 )
             outburst_rage = outburst_rage % 30
             if stacks > 0 then
-                if set_bonus.tier28_2pc > 0 then addStack( "seeing_red_tier28", nil, stacks ) end
-                if talent.violent_outburst.enabled then addStack( "seeing_red", nil, stacks ) end
+                if set_bonus.tier28_2pc > 0 then 
+                    addStack( "seeing_red_tier28", nil, stacks ) end
+                if talent.violent_outburst.enabled then 
+                    addStack( "seeing_red", nil, stacks ) 
+                end
             end
         end
     end
 end )
-
+]]
 
 -- Abilities
 spec:RegisterAbilities( {
