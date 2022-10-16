@@ -2872,7 +2872,7 @@ do
                 raw = true
             end
 
-            if k == "duration" or k == "expires" or k == "next_charge" or k == "charge" or k == "recharge_began" then
+            if k == "id" or k == "duration" or k == "expires" or k == "next_charge" or k == "charge" or k == "recharge_began" then
                 -- Refresh the ID in case we changed specs and ability is spec dependent.
                 t.id = ability.id
 
@@ -3054,7 +3054,7 @@ do
 
             end
 
-            Error( "UNK: cooldown." .. t.key .. "." .. k )
+            Error( "UNK: cooldown." .. t.key .. "." .. k .. "\n" .. debugstack() )
             return
 
         end,
