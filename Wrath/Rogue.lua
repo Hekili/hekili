@@ -6,6 +6,10 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 4 )
 
+
+-- TODO:  Check gains from Cold Blood, Seal Fate; i.e., guaranteed crits.
+
+
 spec:RegisterResource( Enum.PowerType.ComboPoints )
 spec:RegisterResource( Enum.PowerType.Energy )
 
@@ -170,6 +174,11 @@ spec:RegisterAuras( {
         duration = 4,
         max_stack = 1,
     },
+    cheating_death = {
+        id = 45182,
+        duration = 3,
+        max_stack = 1,
+    },
     -- Increases chance to resist spells by $s1%.
     cloak_of_shadows = {
         id = 31224,
@@ -195,23 +204,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    dirty_tricks = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=14094)
-        id = 14094,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 14094, 14076 },
-    },
     -- Disarmed.
     dismantle = {
         id = 51722,
         duration = 10,
         max_stack = 1,
-    },
-    dual_wield_specialization = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13852)
-        id = 13852,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 13852, 13851, 13849, 13848, 13715 },
     },
     -- Chance to apply Deadly Poison increased by $s3% and frequency of applying Instant Poison increased by $s2%.
     envenom = {
@@ -223,15 +220,9 @@ spec:RegisterAuras( {
     -- Dodge chance increased by $s1% and chance ranged attacks hit you reduced by $s2%.
     evasion = {
         id = 26669,
-        duration = function() return 20 or 15 end,
+        duration = function() return glyph.evasion.enabled and 20 or 15 end,
         max_stack = 1,
         copy = { 5277, 26669, 67354, 67378, 67380 },
-    },
-    -- Expose Armor.
-    expose_armor = {
-        id = 8647,
-        duration = function() return 6 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
-        max_stack = 1,
     },
     -- $s2% reduced damage taken from area of effect attacks.
     feint = {
@@ -263,14 +254,8 @@ spec:RegisterAuras( {
     -- Incapacitated.
     gouge = {
         id = 1776,
-        duration = 4,
+        duration = function() return 4 + 0.5 * talent.improved_gouge.rank end,
         max_stack = 1,
-    },
-    heightened_senses = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=30895)
-        id = 30895,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 30895, 30894 },
     },
     -- Increases damage taken by $s3.
     hemorrhage = {
@@ -279,44 +264,9 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 16511, 17347, 17348, 26864, 48660 },
     },
-    honor_among_thieves = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=52916)
-        id = 52916,
-        duration = 8,
-        max_stack = 1,
-    },
-    improved_gouge = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13793)
-        id = 13793,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 13793, 13792, 13741 },
-    },
-    improved_kick = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13867)
-        id = 13867,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 13867, 13754 },
-    },
-    improved_kidney_shot = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=14176)
-        id = 14176,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 14176, 14175, 14174 },
-    },
-    improved_sinister_strike = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13863)
-        id = 13863,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 13863, 13732 },
-    },
-    improved_sprint = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=13875)
-        id = 13875,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 13875, 13743 },
-    },
-    kick = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=1766)
-        id = 1766,
-        duration = 5,
+    hunger_for_blood = {
+        id = 58155,
+        duration = 60,
         max_stack = 1,
     },
     -- Stunned.
@@ -333,20 +283,13 @@ spec:RegisterAuras( {
         tick_time = 0.5,
         max_stack = 1,
     },
-    malice = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=14142)
-        id = 14142,
-        duration = 3600,
+    master_of_subtlety = {
+        id = 31665,
+        duration = 6,
         max_stack = 1,
-        copy = { 14142, 14141, 14140, 14139, 14138 },
     },
-    master_of_subtlety = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=31223)
-        id = 31223,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 31223, 31222, 31221 },
-    },
-    premeditation = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=14183)
-        id = 14183,
+    overkill = {
+        id = 58426,
         duration = 20,
         max_stack = 1,
     },
@@ -356,12 +299,6 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1,
         copy = { 14143, 14149 },
-    },
-    remorseless_attacks = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=14148)
-        id = 14148,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 14148, 14144 },
     },
     -- Melee attack speed slowed by $s2%.
     riposte = {
@@ -376,12 +313,6 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1,
         copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671, 48672 },
-    },
-    ruthlessness = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=14161)
-        id = 14161,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 14161, 14160, 14156 },
     },
     -- Sapped.
     sap = {
@@ -403,11 +334,15 @@ spec:RegisterAuras( {
         duration = function() return glyph.sap.enabled and 8 or 6 end,
         max_stack = 1,
     },
-    shadowstep = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=44373)
-        id = 44373,
+    shadowstep = {
+        id = 36563,
         duration = 10,
         max_stack = 1,
-        copy = { 44373, 36563, 36554 },
+    },
+    shadowstep_sprint = {
+        id = 36554,
+        duration = 3,
+        max_stack = 1,
     },
     -- Silenced.
     silenced_improved_kick = {
@@ -415,16 +350,10 @@ spec:RegisterAuras( {
         duration = 2,
         max_stack = 1,
     },
-    sleight_of_hand = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=30893)
-        id = 30893,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 30893, 30892 },
-    },
     -- Melee attack speed increased by $s2%.
     slice_and_dice = {
         id = 6774,
-        duration = function() return ( glyph.slice_and_dice.enabled and 9 or 6 ) + ( 3 * combo_points.current ) end,
+        duration = function() return ( ( glyph.slice_and_dice.enabled and 9 or 6 ) + ( 3 * combo_points.current ) ) * ( 1 + 0.25 * talent.improved_slice_and_dice.rank ) end,
         max_stack = 1,
         copy = { 5171, 6434, 6774, 60847 },
     },
@@ -441,11 +370,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    throwing_specialization = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=51680)
-        id = 51680,
-        duration = 3,
-        max_stack = 1,
-    },
     -- $s1% increased critical strike chance with combo moves.
     turn_the_tables = {
         id = 52915,
@@ -459,34 +383,97 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
     },
-    weapon_expertise = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=30920)
-        id = 30920,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 30920, 30919 },
-    },
 } )
+
+
+spec:RegisterStateExpr( "cp_max_spend", function ()
+    return combo_points.max
+end )
+
+
+local stealth = {
+    rogue   = { "stealth", "vanish", "shadow_dance" },
+    mantle  = { "stealth", "vanish" },
+    all     = { "stealth", "vanish", "shadow_dance", "shadowmeld" }
+}
+
+
+spec:RegisterStateTable( "stealthed", setmetatable( {}, {
+    __index = function( t, k )
+        if k == "rogue" then
+            return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up
+        elseif k == "rogue_remains" then
+            return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains )
+
+        elseif k == "mantle" then
+            return buff.stealth.up or buff.vanish.up
+        elseif k == "mantle_remains" then
+            return max( buff.stealth.remains, buff.vanish.remains )
+
+        elseif k == "all" then
+            return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.shadowmeld.up
+        elseif k == "remains" or k == "all_remains" then
+            return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.shadowmeld.remains )
+        end
+
+        return false
+    end
+} ) )
+
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if resource == "combo_points" and amt * talent.relentless_strikes.rank * 4 >= 100 then
+        gain( 25, "energy" )
+    end
+end )
+
+
+-- We need to break stealth when we start combat from an ability.
+spec:RegisterHook( "runHandler", function( action )
+    local a = class.abilities[ action ]
+
+    if stealthed.all and ( not a or a.startsCombat ) then
+        if buff.stealth.up then
+            setCooldown( "stealth", 10 )
+            if talent.master_of_subtlety.enabled then applyBuff( "master_of_subtlety", 6 ) end
+            if talent.overkill.enabled then applyBuff( "overkill", 20 ) end
+        end
+
+        removeBuff( "stealth" )
+        removeBuff( "shadowmeld" )
+        removeBuff( "vanish" )
+    end
+
+    if ( not a or a.startsCombat ) then
+        if buff.cold_blood.up then removeBuff( "cold_blood" ) end
+        if buff.shadowstep.up then removeBuff( "shadowstep" ) end
+    end
+end )
+
+
+spec:RegisterHook( "reset_precast", function()
+    if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
+end )
 
 
 -- Abilities
 spec:RegisterAbilities( {
-    --
+    -- Increases your Energy regeneration rate by 100% for 15 sec.
     adrenaline_rush = {
         id = 13750,
         cast = 0,
         cooldown = 180,
         gcd = "totem",
 
-        spend = 0,
-        spendType = "energy",
-
         talent = "adrenaline_rush",
-        startsCombat = true,
+        startsCombat = false,
         texture = 136206,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "adrenaline_rush" )
+            energy.regen = energy.regen * 2
         end,
     },
 
@@ -498,13 +485,19 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 60,
+        spend = function() return 60 - 4 * talent.slaughter_from_the_shadows.rank end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132282,
 
+        usable = function() return stealthed.all, "must be in stealth" end,
+
         handler = function ()
+            -- TODO: Use fail positioning from Burning Crusade.
+            gain( talent.initiative.rank == 3 and 3 or 2, "combo_points" )
+            removeBuff( "remorseless" )
+            if talent.waylay.rank == 2 then applyDebuff( "target", "waylay" ) end
         end,
     },
 
@@ -516,19 +509,24 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 60,
+        spend = function() return 60 - 4 * talent.slaughter_from_the_shadows.rank end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132090,
 
+        usable = function() return stealthed.all, "must be in stealth" end,
+
         handler = function ()
             if glyph.backstab.enabled and debuff.rupture.up then debuff.rupture.expires = debuff.rupture.expires + 2 end
+            gain( 1, "combo_points" )
+            removeBuff( "remorseless" )
+            if talent.waylay.rank == 2 then applyDebuff( "target", "waylay" ) end
         end,
     },
 
 
-    --
+    -- Increases your attack speed by 20%.  In addition, attacks strike an additional nearby opponent.  Lasts 15 sec.
     blade_flurry = {
         id = 13877,
         cast = 0,
@@ -539,12 +537,13 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         talent = "blade_flurry",
-        startsCombat = true,
+        startsCombat = false,
         texture = 132350,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "blade_flurry" )
         end,
     },
 
@@ -553,18 +552,19 @@ spec:RegisterAbilities( {
     blind = {
         id = 2094,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return 180 - 30 * talent.elusiveness.rank end,
         gcd = "totem",
 
-        spend = 30,
+        spend = function() return 30 * ( 1 - 0.25 * talent.dirty_tricks.rank ) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 136175,
 
-        toggle = "cooldowns",
+        toggle = "interrupts",
 
         handler = function ()
+            applyDebuff( "target", "blind" )
         end,
     },
 
@@ -576,13 +576,17 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 60,
+        spend = function() return 60 - 10 * talent.dirty_deeds.rank end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132092,
 
+        usable = function() return stealthed.all, "must be in stealth" end,
+
         handler = function ()
+            applyDebuff( "tagret", "cheap_shot" )
+            gain( talent.initiative.rank == 3 and 3 or 2, "combo_points" )
         end,
     },
 
@@ -591,20 +595,24 @@ spec:RegisterAbilities( {
     cloak_of_shadows = {
         id = 31224,
         cast = 0,
-        cooldown = 90,
+        cooldown = function() return 180 - 15 * talent.elusiveness.rank end,
         gcd = "totem",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136177,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
+
+        buff = "dispellable_magic",
 
         handler = function ()
+            removeBuff( "dispellable_magic" )
+            applyBuff( "cloak_of_shadows" )
         end,
     },
 
 
-    --
+    -- When activated, increases the critical strike chance of your next offensive ability by 100%.
     cold_blood = {
         id = 14177,
         cast = 0,
@@ -612,12 +620,13 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         talent = "cold_blood",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135988,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "cold_blood" )
         end,
     },
 
@@ -625,7 +634,7 @@ spec:RegisterAbilities( {
     -- Finishing move that reduces the movement of the target by 50% for 6 sec and causes increased thrown weapon damage:     1 point  : 223 - 245 damage     2 points: 365 - 387 damage     3 points: 507 - 529 damage     4 points: 649 - 671 damage     5 points: 791 - 813 damage
     deadly_throw = {
         id = 48673,
-        cast = -999.5,
+        cast = 0,
         cooldown = 0,
         gcd = "totem",
 
@@ -635,7 +644,12 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135430,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            applyDebuff( "target", "deadly_throw" )
+            spend( combo_points.current, "combo_points" )
+            if talent.throwing_specialization.rank == 2 then interrupt() end
         end,
     },
 
@@ -656,6 +670,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyDebuff( "target", "dismantle" )
         end,
     },
 
@@ -664,13 +679,13 @@ spec:RegisterAbilities( {
     distract = {
         id = 1725,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - 5 * talent.filthy_tricks.rank end,
         gcd = "totem",
 
-        spend = 30,
+        spend = function() return 30 - 5 * talent.filthy_tricks.rank end,
         spendType = "energy",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132289,
 
         handler = function ()
@@ -691,8 +706,18 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132287,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
-            -- TODO: glyph.envenom.enabled no longer removes Deadly Poison.
+            if not ( glyph.envenom.enabled or talent.master_poisoner.rank == 3 ) then
+                removeDebuffStack( "target", "deadly_poison", combo_points.current )
+            end
+
+            if talent.cut_to_the_chase.rank == 5 and buff.slice_and_dice.up then
+                buff.slice_and_dice.expires = query_time + buff.slice_and_dice.duration
+            end
+
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -707,12 +732,13 @@ spec:RegisterAbilities( {
         spend = 0,
         spendType = "energy",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136205,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "evasion" )
         end,
     },
 
@@ -730,7 +756,14 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132292,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            if talent.cut_to_the_chase.rank == 5 and buff.slice_and_dice.up then
+                buff.slice_and_dice.expires = query_time + buff.slice_and_dice.duration
+            end
+
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -742,13 +775,16 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 25,
+        spend = function() return 25 - 5 * talent.improved_expose_armor.rank end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132354,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -763,11 +799,11 @@ spec:RegisterAbilities( {
         spend = function() return glyph.feint.enabled and 0 or 20 end,
         spendType = "energy",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132294,
 
         handler = function ()
-
+            applyBuff( "feint" )
         end,
     },
 
@@ -779,13 +815,18 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 50,
+        spend = function() return 50 - 10 * talent.dirty_deeds.rank end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132297,
 
+        usable = function() return stealthed.all, "must be in stealth" end,
+
         handler = function ()
+            applyDebuff( "target", "garrote" )
+            applyDebuff( "target", "garrote_silence" )
+            gain( talent.initiative.rank == 3 and 2 or 1, "combo_points" )
         end,
     },
 
@@ -807,6 +848,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "ghostly_strike" )
             gain( 1, "combo_points" )
+            removeBuff( "remorseless" )
         end,
     },
 
@@ -825,18 +867,20 @@ spec:RegisterAbilities( {
         texture = 132155,
 
         handler = function ()
+            applyDebuff( "target", "gouge" )
+            gain( 1, "combo_points" )
         end,
     },
 
 
-    --
+    -- An instant strike that deals 110% weapon damage (160% if a dagger is equipped) and causes the target to hemorrhage, increasing any Physical damage dealt to the target by up to 13.  Lasts 10 charges or 15 sec.  Awards 1 combo point.
     hemorrhage = {
-        id = 16511,
+        id = 48660,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
 
-        spend = 35,
+        spend = function() return 35 - talent.slaughter_from_the_shadows.rank end,
         spendType = "energy",
 
         talent = "hemorrhage",
@@ -844,11 +888,16 @@ spec:RegisterAbilities( {
         texture = 136168,
 
         handler = function ()
+            applyDebuff( "target", "hemorrhage", nil, 10 )
+            gain( 1, "combo_points" )
+            removeBuff( "remorseless" )
         end,
+
+        copy = { 16511, 17347, 17348, 26864, 48660 }
     },
 
 
-    --
+    -- Enrages you, increasing all damage caused by 5%.  Requires a bleed effect to be active on the target.  Lasts 1 min.
     hunger_for_blood = {
         id = 51662,
         cast = 0,
@@ -862,7 +911,15 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 236276,
 
+        -- TODO: This can work with anybody's bleed, not just Rogue bleeds.
+        debuff = function()
+            if debuff.garrote.up then return "garrote"
+            elseif debuff.hemorrhage.up then return "hemorrhage" end
+            return "rupture"
+        end,
+
         handler = function ()
+            applyBuff( "hunger_for_blood" )
         end,
     },
 
@@ -880,7 +937,14 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132219,
 
+        toggle = "interrupts",
+
+        debuff = "casting",
+        timeToReady = state.timeToInterrupt,
+
         handler = function ()
+            interrupt()
+            if talent.improved_kick.rank > 1 then applyDebuff( "target", "silenced_improved_kick" ) end
         end,
     },
 
@@ -898,12 +962,16 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132298,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            applyDebuff( "target", "kidney_shot" )
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
 
-    --
+    -- Step through the shadows from enemy to enemy within 10 yards, attacking an enemy every .5 secs with both weapons until 5 assaults are made, and increasing all damage done by 20% for the duration.  Can hit the same target multiple times.  Cannot hit invisible or stealthed targets.
     killing_spree = {
         id = 51690,
         cast = 0,
@@ -920,11 +988,13 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "killing_spree" )
+            setCooldown( "global_cooldown", 2.5 )
         end,
     },
 
 
-    --
+    -- Instantly attacks with both weapons for 100% weapon damage plus an additional 44 with each weapon.  Damage is increased by 20% against Poisoned targets.  Awards 2 combo points.
     mutilate = {
         id = 1329,
         cast = 0,
@@ -939,11 +1009,15 @@ spec:RegisterAbilities( {
         texture = 132304,
 
         handler = function ()
+            gain( 2, "combo_points" )
+            removeBuff( "remorseless" )
         end,
+
+        copy = { 48666, 48663, 34413, 34412, 34411, 1329 }
     },
 
 
-    --
+    -- When used, adds 2 combo points to your target.  You must add to or use those combo points within 20 sec or the combo points are lost.
     premeditation = {
         id = 14183,
         cast = 0,
@@ -954,28 +1028,37 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         talent = "premeditation",
-        startsCombat = true,
+        startsCombat = false,
         texture = 136183,
 
+        usable = function() return stealthed.all, "must be in stealth" end,
+
         handler = function ()
+            gain( 2, "combo_points" )
         end,
     },
 
 
-    --
+    -- When activated, this ability immediately finishes the cooldown on your Evasion, Sprint, Vanish, Cold Blood and Shadowstep abilities.
     preparation = {
         id = 14185,
         cast = 0,
-        cooldown = 480,
+        cooldown = function() return 480 - 90 * talent.filthy_tricks.rank end,
         gcd = "totem",
 
         talent = "preparation",
-        startsCombat = true,
+        startsCombat = false,
         texture = 136121,
 
         toggle = "cooldowns",
 
         handler = function ()
+            setCooldown( "evasion", 0 )
+            setCooldown( "sprint", 0 )
+            setCooldown( "vanish", 0 )
+            setCooldown( "cold_blood", 0 )
+            setCooldown( "shadowstep", 0 )
+
             if glyph.preparation.enabled then
                 setCooldown( "blade_flurry", 0 )
                 setCooldown( "dismantle", 0 )
@@ -985,7 +1068,7 @@ spec:RegisterAbilities( {
     },
 
 
-    --
+    -- A strike that becomes active after parrying an opponent's attack.  This attack deals 150% weapon damage and slows their melee attack speed by 20% for 30 sec.  Awards 1 combo point.
     riposte = {
         id = 14251,
         cast = 0,
@@ -1000,6 +1083,8 @@ spec:RegisterAbilities( {
         texture = 132336,
 
         handler = function ()
+            applyDebuff( "target", "riposte" )
+            gain( 1, "combo_points" )
         end,
     },
 
@@ -1018,6 +1103,8 @@ spec:RegisterAbilities( {
         texture = 132302,
 
         handler = function ()
+            applyDebuff( "target", "rupture" )
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1029,46 +1116,47 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 65,
+        spend = function() return 65 * ( 1 - 0.25 * talent.dirty_tricks.rank ) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132310,
 
+        usable = function() return stealthed.all, "must be in stealth" end,
+
         handler = function ()
+            applyDebuff( "target", "sap" )
         end,
     },
 
 
-    --
+    -- Enter the Shadow Dance for 6 sec, allowing the use of Sap, Garrote, Ambush, Cheap Shot, Premeditation, Pickpocket and Disarm Trap regardless of being stealthed.
     shadow_dance = {
         id = 51713,
         cast = 0,
         cooldown = 60,
         gcd = "off",
 
-        spend = 0,
-        spendType = "energy",
-
         talent = "shadow_dance",
-        startsCombat = true,
+        startsCombat = false,
         texture = 236279,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "shadow_dance" )
         end,
     },
 
 
-    --
+    -- Attempts to step through the shadows and reappear behind your enemy and increases movement speed by 70% for 3 sec.  The damage of your next ability is increased by 20% and the threat caused is reduced by 50%.  Lasts 10 sec.
     shadowstep = {
         id = 36554,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - 5 * talent.filthy_tricks.rank end,
         gcd = "off",
 
-        spend = 10,
+        spend = function() return 10 - 5 * talent.filthy_tricks.rank end,
         spendType = "energy",
 
         talent = "shadowstep",
@@ -1076,6 +1164,9 @@ spec:RegisterAbilities( {
         texture = 132303,
 
         handler = function ()
+            applyBuff( "shadowstep_sprint" )
+            applyBuff( "shadowstep" )
+            setDistance( 7.5 )
         end,
     },
 
@@ -1087,13 +1178,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 40,
+        spend = 40, -- TODO: Cost is based on weapon speed.
         spendType = "energy",
 
         startsCombat = true,
         texture = 135428,
 
         handler = function ()
+            -- TODO: Apply offhand poison.
+            gain( 1, "combo_points" )
         end,
     },
 
@@ -1105,13 +1198,19 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 45,
+        spend = function()
+            if talent.improved_sinister_strike.rank == 2 then return 40 end
+            if talent.improved_sinister_strike.rank == 1 then return 42 end
+            return 45
+        end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 136189,
 
         handler = function ()
+            gain( 1, "combo_points" )
+            removeBuff( "remorseless" )
         end,
     },
 
@@ -1129,7 +1228,11 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132306,
 
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
+            applyBuff( "slice_and_dice" )
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1141,15 +1244,13 @@ spec:RegisterAbilities( {
         cooldown = 180,
         gcd = "off",
 
-        spend = 0,
-        spendType = "energy",
-
-        startsCombat = true,
+        startsCombat = false,
         texture = 132307,
 
-        toggle = "cooldowns",
+        toggle = "interrupts",
 
         handler = function ()
+            applyBuff( "sprint" )
         end,
     },
 
@@ -1158,11 +1259,53 @@ spec:RegisterAbilities( {
     stealth = {
         id = 1784,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return 10 - talent.camouflage.rank end,
         gcd = "off",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132320,
+
+        usable = function() return time == 0, "cannot be in combat" end,
+
+        handler = function ()
+            applyBuff( "stealth" )
+        end,
+    },
+
+
+    -- The current party or raid member becomes the target of your Tricks of the Trade.  The threat caused by your next damaging attack and all actions taken for 6 sec afterwards will be transferred to the target.  In addition, all damage caused by the target is increased by 15% during this time.
+    tricks_of_the_trade = {
+        id = 57934,
+        cast = 0,
+        cooldown = function() return 30 - 5 * talent.filthy_tricks.rank end,
+        gcd = "totem",
+
+        spend = function() return 15 - 5 * talent.filthy_tricks.rank end,
+        spendType = "energy",
+
+        startsCombat = false,
+        texture = 236283,
+
+        handler = function ()
+            applyBuff( "tricks_of_the_trade" )
+        end,
+    },
+
+
+    -- Allows the rogue to vanish from sight, entering an improved stealth mode for 10 sec.  Also breaks movement impairing effects.  More effective than Vanish (Rank 2).
+    vanish = {
+        id = 26889,
+        cast = 0,
+        cooldown = function() return 180 - 30 * talent.elusiveness.rank end,
+        gcd = "off",
+
+        spend = 0,
+        spendType = "energy",
+
+        startsCombat = true,
+        texture = 132331,
+
+        toggle = "cooldowns",
 
         handler = function ()
         end,
@@ -1175,7 +1318,7 @@ spec:RegisterOptions( {
 
     aoe = 3,
 
-    gcd = 1752,
+    gcd = "sinister_strike",
 
     nameplates = true,
     nameplateRange = 8,
