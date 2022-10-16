@@ -2487,10 +2487,7 @@ all:RegisterAbility( "gift_of_the_naaru", {
 
 all:RegisterAbilities( {
     global_cooldown = {
-        id = function ()
-            if settings.spec and settings.spec.gcd then return settings.spec.gcd end
-            return 1
-        end,
+        id = 61304,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
