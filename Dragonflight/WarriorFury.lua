@@ -338,7 +338,7 @@ end )
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
-        if current < lastRage then -- Resource Spent
+        if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
             -- Glory
             if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
                 gloryRage = ( gloryRage + (lastRage - current) )  -- Fury 25, Prot 10, Arms 20
@@ -353,7 +353,6 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
                 rageSpent =  rageSpent % 20
                 if reduction > 0 then 
                     TriggerAngerManagement(reduction) 
-                    print("Trigger AM" .. reduction .. " seconds off Reck CD")
                 end
             end
         end
