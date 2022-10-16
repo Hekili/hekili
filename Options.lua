@@ -8640,8 +8640,9 @@ do
             for i = 2, GetNumSpellTabs() do
                 local tab, _, offset, n = GetSpellTabInfo( i )
 
-                for j = offset, offset + n - 1 do
+                for j = offset + 1, offset + n do
                     local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
+
                     if name then
                         if spellID == 1 then print( name, j ) end
                         local token = key( name )
