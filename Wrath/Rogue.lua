@@ -789,6 +789,24 @@ spec:RegisterAbilities( {
     },
 
 
+    -- Instantly throw both weapons at all targets within 8 yards, causing 105% weapon damage with daggers, and 70% weapon damage with all other weapons.
+    fan_of_knives = {
+        id = 51723,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 50,
+        spendType = "energy",
+
+        startsCombat = true,
+        texture = 236273,
+
+        handler = function ()
+        end,
+    },
+
+
     -- Performs a feint, causing no damage but lowering your threat by a large amount, making the enemy less likely to attack you.
     feint = {
         id = 27448,
@@ -1318,16 +1336,14 @@ spec:RegisterOptions( {
 
     aoe = 3,
 
-    gcd = "sinister_strike",
-
     nameplates = true,
     nameplateRange = 8,
 
     damage = false,
     damageExpiration = 6,
 
-    -- package = "",
-    -- package1 = "",
-    -- package2 = "",
-    -- package3 = ""
+    package = "Assassination (wowtbc.gg)",
 } )
+
+
+spec:RegisterPack( "Assassination (wowtbc.gg)", 20221016, [[Hekili:TAvBVTTnq4FmfiPfRr(L2K1LLeGUVmeJbpGQu0pmujsjrlryksnsQ4AGa(BF3rjBj5kTSLneGaAEhFUN74XNtrlIEikmJAzrRxoF5YfZxCva8Vp8(3hfA3xXIcROPBP5WcjTe()hngQXWLulxjDKDQD2Ku0R9cfndrZOQ1PGNfwBL56zZACjiphwzfBNLkaaUiVMNXmZO9H7cTkVMnlkmPMlS3lJsgJBxUa4MPILgTgwuWZYynEYmarEOGBCKknxP529oc(ReQHL5i1viJTfSd0g4KJ8fn1w4iE(eajIwTHla6)Qx5iNKSFcPNBfAzXvoYVNAvjmTJGSZTYTIMI(zcQ0Suvzc1(d3oZQ5PBnXQnXqGJTAAg7T8n3MRv1vJFIkLpAJAZyzubq3rnMt1AL1dVrju9yeyClqJ()2i4PSyQmlodwGNjPEZMGHBhKP2jhIdntZKubxYI11Mc8GOXhzXmjRKZm3TOV7jciHJ3iQ169pNVBOsSoTvcEyg35(URRRS1Ap1TubtAdkQL5mD8gLoorOuzbatteSSZ8P23zftUZYyEJT1U2eUliNEOJfQrrBqbUGcBvYez9yO6rMElxigYSJ7EkgpsL8MA8l78)JA(a)yYhzsvjAd7MuXvkU0AcYyB4PC7TZBItQsK1MTdpFNHPH4Fr8Uz5zVU9EP1tFM90tqNGoFFGLxczJkUK(TBoXpnRKYLM30pAL1wUG28WySWD38OWDuTKlZnrHF5JFA99R)1RDeh5buRGxwP0whbUQDKZHZqRf2ZDen7pR5AuyXOkb)O1wvjegyJ0ck0DycCR(n4HIJCjG2NLM6kej0HgYbWnON)8aSd)GcMxhQraRKJQqGyvleTKjhRh8uqttZLBzqgHK(EBZH8kdLmzggqBbf2Mbnk7hOoktf1GWjyIdTi6RbcqUWr(JpByisSsZxFlixwWtl67nvUVlQoIuHG)TkbwofD4MHRALCpe0F2raU3gMhAGa0t)kcAw)Tw2lY7GU7EzulK2dU6Rg(TK1LGKS)srOSq98(Yd18LDLDb3GfRvrHWLwHsd3)hgief6n6hl2Cvdlx7ht2C6OquknkS9fy0VezH5tO9UDctHmfUAO4OSXvv7GBOreT3njAdveDK7GkxhsNOnJq9(xiu91TrCU8fIZG(BeORMeONre3rodMKpT0lAEeX8oQ0oVajXp(3FDnAa6a6uZiIF45sRtvU7sNbQ39Aloo)aX)N(Fh)Mzli2lMpj4(jfDNzK5jEawmjaJP36i36iZ7i4GXkDbRvs3hGPFFnDa6qQlaEWM(514GDJx7ay7Rp2H1FSKJ80tG633nAYFWXhp5iVz88C6NRJtT7gKNhg0bqzXVKT9tdpkG9F4kEzFbWMVq9ejW313J2Vt9exMo7WVxT70TVF9PrZFr)1]] )
