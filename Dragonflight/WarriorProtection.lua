@@ -512,12 +512,10 @@ local TriggerAngerManagement = setfenv( function(reduction)
 end, state )
 
 local TriggerT28SeeingRed = setfenv( function(stacks)
-    print ('t28')
     addStack( "seeing_red_tier28", nil, stacks ) 
 end, state )
 
 local TriggerViolentOutburstSeeingRed = setfenv( function(stacks)
-    print ('t28')
     addStack( "seeing_red_tier28", nil, stacks ) 
 end, state )
 
@@ -526,7 +524,6 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
         if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
-            print("spent rage: " ..lastRage - current)
             -- Anger Management
             if state.talent.anger_management.enabled then
                 rageSpent = ( rageSpent + (lastRage - current) ) 
@@ -548,10 +545,8 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
                 outburstRage = outburstRage % 30
                 if stacks > 0 then
                     if set_bonus.tier28_2pc > 0 then 
-                        print('t26')
                         TriggerT28SeeingRed(stacks) end
                     if talent.violent_outburst.enabled then 
-                        print('vob')
                         TriggerViolentOutburstSeeingRed(stacks) end
                 end
             end
