@@ -478,37 +478,19 @@ spec:RegisterAuras( {
     }
 })
 
-local gloryRage = 0
-
-spec:RegisterStateExpr( "glory_rage", function ()
-        return gloryRage
-end )
-
-
 local rageSpent = 0
-
-spec:RegisterStateExpr( "rage_spent", function ()
-    return rageSpent
-end )
-
-
+local gloryRage = 0
 local outburstRage = 0
 
-spec:RegisterStateExpr( "outburst_rage", function ()
-    return outburstRage
-end )
-
+spec:RegisterStateExpr( "glory_rage", function () return gloryRage end )
+spec:RegisterStateExpr( "rage_spent", function () return rageSpent end )
+spec:RegisterStateExpr( "outburst_rage", function () return outburstRage end )
 
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
 
-
 local TriggerGlory = setfenv( function(reduction)
     buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction * 0.5
-end, state )
-
-local TriggerAngerManagement = setfenv( function(reduction)
-    cooldown.recklessness.expires = cooldown.recklessness.expires - reduction
 end, state )
 
 local TriggerT28SeeingRed = setfenv( function(stacks)
@@ -524,54 +506,44 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
         if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
-            -- Anger Management
-            if state.talent.anger_management.enabled then
-                rageSpent = ( rageSpent + (lastRage - current) ) 
-                local reduction = floor( rageSpent / 20 )
-                rageSpent =  rageSpent % 20
-                if reduction > 0 then TriggerAngerManagement(reduction) end
+            if state.talent.anger_management.enabled or state.talent.indomitable.enabled then
+                rageSpent = ( rageSpent + lastRage - current ) % 10 -- Anger Management / Indomitable
             end
-            -- Glory
+
             if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
-                gloryRage = ( gloryRage + (lastRage - current) )  -- Fury 25, Prot 10, Arms 20
-                local reduction = floor( gloryRage / 10 )
-                gloryRage =  glory_rage % 10
-                if reduction > 0 then TriggerGlory(reduction) end
+                gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
             end
 
             if state.set_bonus.tier28_2pc > 0 or state.talent.violent_outburst.enabled then
-                outburstRage = ( outburstRage + (lastRage - current) ) -- Outburst
-                local stacks = floor( outburstRage / 30 )
-                outburstRage = outburstRage % 30
-                if stacks > 0 then
-                    if set_bonus.tier28_2pc > 0 then 
-                        TriggerT28SeeingRed(stacks) end
-                    if talent.violent_outburst.enabled then 
-                        TriggerViolentOutburstSeeingRed(stacks) end
-                end
+                outburstRage = ( outburstRage + lastRage - current ) % 30 -- Outburst T28 or Violent Outburst
             end
         end
         lastRage = current
     end
 end )
 
---[[
+
 -- model rage expenditure and special effects
 spec:RegisterHook( "spend", function( amt, resource )
-    if resource == "rage" and amt > 0 then
-        if talent.indomitable.enabled then
-            rage_spent = rage_spent + amt -- 50 rage , spent 35 on ignore pain
-            local healthpct = floor( rage_spent / 10 )
-            rage_spent = rage_spent % 10
-            gain( 0.1 * health.max, "health" )
-        end
-        if talent.anger_management.enabled then
+    if resource == "rage" and amt < 0 then
+        if talent.indomitable.enabled or talent.anger_management.enabled then
             rage_spent = rage_spent + amt
-            local secs = floor( rage_spent / 10 )
+            local activations = floor( rage_spent / 10 )
             rage_spent = rage_spent % 10
 
-            cooldown.avatar.expires = cooldown.avatar.expires - secs
-            reduceCooldown( "shield_wall", secs )
+            if activations > 0 then
+                if talent.anger_management.enabled then
+                    if talent.shield_wall.enabled then
+                        cooldown.shield_wall.expires = cooldown.shield_wall.expires - secs
+                    end
+                    if talent.avatar.enabled then
+                        cooldown.avatar.expires = cooldown.avatar.expires - secs
+                    end
+                end
+                if talent.indomitable.enabled then
+                    gain( (0.1 * activations) * health.max, "health" )
+                end
+            end
         end
 
         if legendary.glory.enabled and buff.conquerors_banner.up then
@@ -596,7 +568,6 @@ spec:RegisterHook( "spend", function( amt, resource )
         end
     end
 end )
-]]
 
 -- Abilities
 spec:RegisterAbilities( {
