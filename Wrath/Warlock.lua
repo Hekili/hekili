@@ -4,6 +4,8 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local FindUnitBuffByID = ns.FindUnitBuffByID
+
 local spec = Hekili:NewSpecialization( 9 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
