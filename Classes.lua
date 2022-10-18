@@ -5858,9 +5858,11 @@ function Hekili:SpecializationChanged()
     local currentID = GetSpecializationInfo( currentSpec )
 
     if currentID == nil then
-        C_Timer.After( 0.5, function () Hekili:SpecializationChanged() end )
+        Hekili.PendingSpecializationChange = true
         return
     end
+
+    Hekili.PendingSpecializationChange = false
 
     insert( self.SpecChangeHistory, {
         spec = currentID,

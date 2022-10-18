@@ -99,6 +99,11 @@ function ns.StartEventHandler()
     events:SetScript( "OnUpdate", function( self, elapsed )
         Hekili.freshFrame = true
 
+        if Hekili.PendingSpecializationChange then
+            Hekili:SpecializationChanged()
+            Hekili.PendingSpecializationChange = false
+        end
+
         if handlers.FRAME_UPDATE then
             for i, handler in pairs( handlers.FRAME_UPDATE ) do
                 local key = "FRAME_UPDATE_" .. i

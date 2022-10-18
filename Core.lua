@@ -183,6 +183,7 @@ function Hekili:OnEnable()
     self:TotalRefresh( true )
 
     ns.ReadKeybindings()
+    self:UpdateDisplayVisibility()
     self:ForceUpdate( "ADDON_ENABLED" )
     ns.Audit()
 end
@@ -1451,10 +1452,10 @@ end
 
 
 local displayRules = {
-    { "Interrupts", function( p ) return p.toggles.interrupts.value and p.toggles.interrupts.separate end },
-    { "Defensives", function( p ) return p.toggles.defensives.value and p.toggles.defensives.separate end },
-    { "Cooldowns",  function( p ) return p.toggles.cooldowns.value  and p.toggles.cooldowns.separate  end },
-    { "Primary", function() return true end },
+    { "Interrupts", function( p ) return p.toggles.interrupts.value and p.toggles.interrupts.separate end, true },
+    { "Defensives", function( p ) return p.toggles.defensives.value and p.toggles.defensives.separate end, false },
+    { "Cooldowns",  function( p ) return p.toggles.cooldowns.value  and p.toggles.cooldowns.separate  end, false },
+    { "Primary", function() return true end, true },
     { "AOE", function( p )
         local spec = rawget( p.specs, state.spec.id )
         if not spec or not class.specs[ state.spec.id ] then return false end
@@ -1468,7 +1469,7 @@ local displayRules = {
         end
 
         return true
-    end },
+    end, true },
 }
 
 
@@ -1506,7 +1507,7 @@ function Hekili.Update()
     local snaps = nil
 
     for i, info in ipairs( displayRules ) do
-        local dispName, rule = unpack( info )
+        local dispName, rule, fullReset = unpack( info )
         local display = rawget( profile.displays, dispName )
 
         if debug then
@@ -1537,7 +1538,8 @@ function Hekili.Update()
 
             -- Hekili:Yield( "Pre-Reset for " .. dispName .. " (from " .. state.display .. ")" )
 
-            state.reset( dispName )
+            state.reset( dispName, fullReset )
+            print( ( fullReset and "Full Reset for " or "Quick Reset for " ) .. dispName .. " at " .. GetTime() )
 
             Hekili:Yield( "Post-Reset for " .. dispName )
 

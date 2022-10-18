@@ -390,7 +390,7 @@ do
         if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", mode ) end
         if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
         Hekili:UpdateDisplayVisibility()
-        Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
+        Hekili:ForceUpdate( "HEKILI_TOGGLE" )
     end
 
     local function IsDisplayMode( p, mode )
@@ -1178,9 +1178,7 @@ do
 
                                 if i == 1 and conf.delays.fade then
                                     local delay = b.ExactTime and ( b.ExactTime - now ) or 0
-                                    local moment = 0
-
-                                    local init, duration = 0, 0
+                                    --[[ local start, duration = 0, 0
 
                                     if a.gcd ~= "off" then
                                         start, duration = GetSpellCooldown( 61304 )
@@ -1196,9 +1194,9 @@ do
                                     if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
 
                                     _, _, _, start, duration = UnitCastingInfo( "player" )
-                                    if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
+                                    if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end ]]
 
-                                    if delay > moment + 0.05 then
+                                    if delay > 0.05 then
                                         unusable = true
                                     end
                                 end
@@ -2115,7 +2113,9 @@ do
     Hekili.Engine.eventsTriggered = {}
 
     Hekili.Engine:SetScript( "OnUpdate", function( self, elapsed )
-        self.refreshTimer = self.refreshTimer + elapsed
+        if not self.activeThread then
+            self.refreshTimer = self.refreshTimer + elapsed
+        end
 
         if not Hekili.Pause then
             self.refreshRate = self.refreshRate or 5
@@ -2126,6 +2126,8 @@ do
             -- If there's no thread, then see if we have a reason to update.
             if Hekili.freshFrame and not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) then
                 Hekili.freshFrame = nil
+
+                self.criticalUpdate = false
 
                 self.activeThread = coroutine.create( Hekili.Update )
                 self.activeThreadTime = 0
@@ -2140,11 +2142,7 @@ do
 
                 -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
                 Hekili.maxFrameTime = min( Hekili.maxFrameTime, 500 / GetFramerate() )
-
                 thread = self.activeThread
-
-                self.superUpdate = false
-                self.criticalUpdate = false
             end
 
             -- If there's a thread, process for up to user preferred limits.
@@ -2226,11 +2224,10 @@ do
     Hekili:ProfileFrame( "HekiliEngine", Hekili.Engine )
 
 
-    function Hekili:ForceUpdate( event, super )
+    function Hekili:ForceUpdate( event )
         self.freshFrame = false
 
         self.Engine.criticalUpdate = true
-        if super then self.Engine.superUpdate = true end
         if self.Engine.firstForce == 0 then self.Engine.firstForce = GetTime() end
 
         if event then

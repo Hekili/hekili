@@ -5297,6 +5297,7 @@ do
             v.unit = unit
         end
 
+        state[ unit ].updated = false
         if not UnitExists( unit ) then return end
 
         local i = 1
@@ -6015,7 +6016,9 @@ end
 do
     local firstTime = true
 
-    function state.reset( dispName )
+    function state.reset( dispName, full )
+        full = full or state.offset > 0
+
         ClearMarks( firstTime )
         firstTime = nil
 
@@ -6040,21 +6043,34 @@ do
             state.player.updated = false
         end
 
-        --[[ for k, v in pairs( state.cooldown ) do
-            v.duration = nil
-            v.expires = nil
-            v.charge = nil
-            v.next_charge = nil
-            v.recharge_began = nil
-            v.recharge_duration = nil
-            v.true_expires = nil
-            v.true_remains = nil
+        local p = Hekili.DB.profile
+
+        local display = dispName and p.displays[ dispName ]
+        local spec = state.spec.id and p.specs[ state.spec.id ]
+        local mode = p.toggles.mode.value
+
+        state.display = dispName
+        state.filter = "none"
+        state.rangefilter = false
+
+        if display then
+            if dispName == 'Primary' then
+                if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
+                elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
+            elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
+            elseif dispName == 'Cooldowns' then state.filter = "cooldowns"
+            elseif dispName == 'Interrupts' then state.filter = "interrupts"
+            elseif dispName == 'Defensives' then state.filter = "defensives"
+            end
+
+            state.rangefilter = display.range.enabled and display.range.type == "xclude"
         end
 
-        for k, v in pairs( state.cooldown ) do
-            if v.remains then
-            end
-        end ]]
+        -- Trying again to have partial resets for the low-impact (single icon displays).
+        if not full then
+            state.resetting = false
+            return
+        end
 
         -- TODO: Determine if we can Mark/Purge these tables instead of having their own resets.
         for k in pairs( class.stateTables ) do
@@ -6156,38 +6172,13 @@ do
         state.swings.mh_pseudo = nil
         state.swings.oh_pseudo = nil
 
-
-        local p = Hekili.DB.profile
-
-        Hekili:Yield( "Reset Pre-Displays" )
-
-        local display = dispName and p.displays[ dispName ]
-        local spec = state.spec.id and p.specs[ state.spec.id ]
-        local mode = p.toggles.mode.value
-
-        state.display = dispName
-        state.filter = "none"
-        state.rangefilter = false
-
-        if display then
-            if dispName == 'Primary' then
-                if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
-                elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
-            elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
-            elseif dispName == 'Cooldowns' then state.filter = "cooldowns"
-            elseif dispName == 'Interrupts' then state.filter = "interrupts"
-            elseif dispName == 'Defensives' then state.filter = "defensives"
-            end
-
-            state.rangefilter = display.range.enabled and display.range.type == "xclude"
-        end
-
         -- Special case spells that suck.
         if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
             setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
         end
 
         -- Trinkets that need special handling.
+        -- TODO: Move this all to those aura generator functions.
         if state.set_bonus.cache_of_acquired_treasures > 0 then
             -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).
             -- If this remains problematic, use QueueAuraExpiration instead.
