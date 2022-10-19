@@ -1,10 +1,11 @@
 -- WarriorArms.lua
 -- October 2022
--- Updated for BETA Build 46144
--- Last Modified 10/19/2022 00:15 UTC
+-- Updated for BETA Build 46144 & PTR Build 46112
+-- Last Modified 10/19/2022 14:41 UTC
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
+local isPTR = select( 4, GetBuildInfo() ) == 100000 -- PTR is 100000 as of 10/19/2022, BETA is 100002
 local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
@@ -145,7 +146,7 @@ spec:RegisterTalents( {
     sweeping_strikes                = { 90268, 260708, 1 }, --
     tactician                       = { 90282, 184783, 1 }, --
     test_of_might                   = { 90288, 385008, 1 }, --
-    thunder_clap                    = { 92224, 396719, 1 }, --
+    thunder_clap                    = { 92224, function() return isPTR and 6343 or 396719 end, 1   },
     thunderous_roar                 = { 90359, 384318, 1 }, --
     thunderous_words                = { 90358, 384969, 1 }, --
     tide_of_blood                   = { 90280, 386357, 1 }, --
@@ -389,7 +390,7 @@ spec:RegisterAuras( {
         max_stack = 1, -- TODO: Possibly implement fake stacks to track the Strength % increase gained from the buff
     },
     thunder_clap = {
-        id = 396719,
+        id = function() return isPTR and 6343 or 396719 end,
         duration = 10,
         max_stack = 1
     },
@@ -1356,7 +1357,7 @@ spec:RegisterAbilities( {
 
 
     thunder_clap = {
-        id = 396719,
+        id = function() return isPTR and 6343 or 396719 end,
         cast = 0,
         cooldown = 6,
         hasteCD = true,
@@ -1465,7 +1466,10 @@ spec:RegisterAbilities( {
         range = 8,
 
         handler = function ()
-            if talent.in_for_the_kill.enabled then applyBuff( "in_for_the_kill" ) end
+            if talent.in_for_the_kill.enabled then 
+                applyBuff( "in_for_the_kill" ) 
+                stat.haste = stat.haste + ( target.health.pct < 35 and 0.2 or 0.1 )
+            end
             applyDebuff( "target", "colossus_smash" )
             active_dot.colossus_smash = max( active_dot.colossus_smash, active_enemies )
         end,
