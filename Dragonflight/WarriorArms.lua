@@ -342,6 +342,11 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    rallying_cry = {
+        id = 97463,
+        duration = function () return 10 + ( talent.inspiring_presence.enabled and 3 or 0 ) end,
+        max_stack = 1,
+    },
     recklessness = {
         id = 1719,
         duration = 4,
