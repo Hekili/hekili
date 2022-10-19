@@ -478,6 +478,18 @@ spec:RegisterAuras( {
     }
 })
 
+-- Tier 28
+spec:RegisterSetBonuses( "tier29_2pc", 393710, "tier29_4pc", 393711 ) -- Dragonflight Season 1
+-- 2-Set - Revenge grants you Vanguard's Determination, increasing your damage done and reducing damage you take by 4% for 5 sec seconds.
+-- 4-Set - During Vanguard's Determination, gain Ignore Pain equal to 5% of damage you deal.
+spec:RegisterAuras( {
+    vanguards_determination = {
+        id = 394056,
+        duration = 5,
+        max_stack = 1,
+    }
+})
+
 local rageSpent = 0
 local gloryRage = 0
 local outburstRage = 0
@@ -1075,7 +1087,14 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132938,
 
+        toggle = "interrupts",
+        interrupt = true,
+
+        debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
         handler = function ()
+            interrupt()
             if talent.concussive_blows.enabled then
                 applyDebuff( "target", "concussive_blows" )
             end
@@ -1165,6 +1184,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            if state.set_bonus.tier29_2pc > 0 then applyBuff( "vanguards_determination" ) end
             if buff.revenge.up then removeBuff( "revenge" ) end
             if talent.show_of_force.enabled then applyBuff( "show_of_force" ) end
             applyDebuff ( "target", "deep_wounds" )
@@ -1614,7 +1634,7 @@ spec:RegisterSetting( "free_revenge", true, {
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
     name = "Only |T236312:0|t Shockwave as Interrupt",
-    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting.",
+    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting (and talented).",
     type = "toggle",
     width = "full"
 } )
@@ -1627,7 +1647,7 @@ spec:RegisterSetting( "overlap_ignore_pain", false, {
 } )
 
 spec:RegisterSetting( "stack_shield_block", false, {
-    name = "Stack |T132110:0|t Shield Block with Reprisal",
+    name = "Overlap |T132110:0|t Shield Block",
     desc = function()
         return "If checked, the addon can recommend overlapping |T132110:0|t Shield Block usage. \n\n" ..
         "This setting avoids leaving Shield Block at 2 charges, which wastes cooldown recovery time."
