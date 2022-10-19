@@ -478,7 +478,7 @@ spec:RegisterAuras( {
     }
 })
 
--- Tier 28
+-- Dragonflight Season 1
 spec:RegisterSetBonuses( "tier29_2pc", 393710, "tier29_4pc", 393711 ) -- Dragonflight Season 1
 -- 2-Set - Revenge grants you Vanguard's Determination, increasing your damage done and reducing damage you take by 4% for 5 sec seconds.
 -- 4-Set - During Vanguard's Determination, gain Ignore Pain equal to 5% of damage you deal.
@@ -500,19 +500,6 @@ spec:RegisterStateExpr( "outburst_rage", function () return outburstRage end )
 
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
-
-local TriggerGlory = setfenv( function(reduction)
-    buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction * 0.5
-end, state )
-
-local TriggerT28SeeingRed = setfenv( function(stacks)
-    addStack( "seeing_red_tier28", nil, stacks )
-end, state )
-
-local TriggerViolentOutburstSeeingRed = setfenv( function(stacks)
-    addStack( "seeing_red_tier28", nil, stacks )
-end, state )
-
 
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "RAGE" then
