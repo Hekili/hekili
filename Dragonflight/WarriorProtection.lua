@@ -533,10 +533,10 @@ spec:RegisterHook( "spend", function( amt, resource )
             if activations > 0 then
                 if talent.anger_management.enabled then
                     if talent.shield_wall.enabled then
-                        cooldown.shield_wall.expires = cooldown.shield_wall.expires - secs
+                        cooldown.shield_wall.expires = cooldown.shield_wall.expires - activations
                     end
                     if talent.avatar.enabled then
-                        cooldown.avatar.expires = cooldown.avatar.expires - secs
+                        cooldown.avatar.expires = cooldown.avatar.expires - activations
                     end
                 end
                 if talent.indomitable.enabled then
