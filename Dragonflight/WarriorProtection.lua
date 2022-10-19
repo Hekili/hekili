@@ -547,10 +547,10 @@ spec:RegisterHook( "spend", function( amt, resource )
 
         if legendary.glory.enabled and buff.conquerors_banner.up then
             glory_rage = glory_rage + amt
-            local reduction = floor( glory_rage / 10 ) * 0.5
+            local addition = floor( glory_rage / 10 ) * 0.5
             glory_rage = glory_rage % 10
 
-            buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction
+            buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition
         end
 
         if set_bonus.tier28_2pc > 0 or talent.violent_outburst.enabled then
