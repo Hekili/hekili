@@ -1,7 +1,7 @@
 -- WarriorProtection.lua
 -- October 2022
--- Updated for PTR Build 46047 (RC)
--- Last Modified 10/13/2020 6:33 UTC
+-- Updated for BETA Build 46144
+-- Last Modified 10/19/2022 00:15 UTC
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -57,7 +57,7 @@ spec:RegisterTalents( {
     anger_management                = { 90311, 152278, 1 }, --
     armored_to_the_teeth            = { 90259, 394855, 2 }, --
     avatar                          = { 90365, 107574, 1 }, --
-    barbaric_training               = { 90334, 390675, 1 }, --
+    barbaric_training               = { 90377, 390675, 1 }, --
     battering_ram                   = { 90262, 394312, 1 }, --
     battle_stance                   = { 90261, 386164, 1 }, --
     battlescarred_veteran           = { 90435, 386394, 1 }, --
@@ -134,7 +134,7 @@ spec:RegisterTalents( {
     shield_wall                     = { 90312, 871   , 1 }, --
     shockwave                       = { 90375, 46968 , 1 }, --
     show_of_force                   = { 90320, 385843, 1 }, --
-    sidearm                         = { 90377, 384404, 1 }, --
+    sidearm                         = { 90334, 384404, 1 }, --
     sonic_boom                      = { 90321, 390725, 1 }, --
     spear_of_bastion                = { 90380, 376079, 1 }, --
     spell_block                     = { 90450, 392966, 1 }, --
@@ -313,7 +313,7 @@ spec:RegisterAuras( {
     juggernaut = {
         id = 383290,
         duration = 12,
-        max_stack = 10
+        max_stack = 15
     },
     last_stand = {
         id = 12975,
@@ -494,11 +494,11 @@ local TriggerGlory = setfenv( function(reduction)
 end, state )
 
 local TriggerT28SeeingRed = setfenv( function(stacks)
-    addStack( "seeing_red_tier28", nil, stacks ) 
+    addStack( "seeing_red_tier28", nil, stacks )
 end, state )
 
 local TriggerViolentOutburstSeeingRed = setfenv( function(stacks)
-    addStack( "seeing_red_tier28", nil, stacks ) 
+    addStack( "seeing_red_tier28", nil, stacks )
 end, state )
 
 
@@ -559,10 +559,10 @@ spec:RegisterHook( "spend", function( amt, resource )
             local stacks = floor( outburst_rage / 30 )
             outburst_rage = outburst_rage % 30
             if stacks > 0 then
-                if set_bonus.tier28_2pc > 0 then 
+                if set_bonus.tier28_2pc > 0 then
                     addStack( "seeing_red_tier28", nil, stacks ) end
-                if talent.violent_outburst.enabled then 
-                    addStack( "seeing_red", nil, stacks ) 
+                if talent.violent_outburst.enabled then
+                    addStack( "seeing_red", nil, stacks )
                 end
             end
         end
