@@ -990,6 +990,7 @@ spec:RegisterAbilities( {
 
     intimidating_shout = {
         id = 316593,
+        copy = { 316593, 5246 },
         cast = 0,
         cooldown = 90,
         gcd = "spell",

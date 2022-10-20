@@ -1048,6 +1048,7 @@ spec:RegisterAbilities( {
 
     intimidating_shout = {
         id = function () return talent.menace.enabled and 316593 or 5246 end,
+        copy = { 316593, 5246 },
         cast = 0,
         cooldown = 90,
         gcd = "spell",
