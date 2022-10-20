@@ -9,6 +9,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
+local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 local IsActiveSpell = ns.IsActiveSpell
 
@@ -614,7 +615,7 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
             if state.talent.anger_management.enabled then
                 rageSpent = ( rageSpent + (lastRage - current) ) % 20
             end
-            if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
+            if state.legendary.glory.enabled and FindPlayerAuraByID( 324143 ) then
                 gloryRage = ( gloryRage + lastRage - current ) % 25
             end
         end
