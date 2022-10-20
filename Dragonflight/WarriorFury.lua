@@ -468,7 +468,7 @@ spec:RegisterSetBonuses( "tier28_2pc", 364554, "tier28_4pc", 363738 )
 -- 4-Set - Frenzied Destruction - Raging Blow has a 20% chance to grant Recklessness for 4 sec.
 -- Now appropriately grants Crushing Blow and Bloodbath when Reckless Abandon is talented, and no longer grants 50 Rage when Recklessness triggers while Reckless Abandon is talented.
 
-spec:RegisterSetBonuses( "tier29_2pc", 364554, "tier29_4pc", 363738 )
+spec:RegisterSetBonuses( "tier29_2pc", 393708, "tier29_4pc", 393709 )
 -- 2-Set - Execute’s chance to critically strike increased by 10%.
 -- 4-Set - Sudden Death’s chance to reset the cooldown of Execute and make it usable on any target, regardless of health, is greatly increased.
 

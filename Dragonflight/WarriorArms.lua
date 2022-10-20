@@ -474,7 +474,11 @@ local TriggerCollateralDamage = setfenv( function()
     collateralDmgStacks = 0
 end, state )
 
-spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical )
+local TriggerTier29Crit = setfenv( function()
+    applyBuff( "strike_vulnerabilities" )
+end, state )
+
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical_swing, _, _, critical_spell )
     if sourceGUID == state.GUID then
         if subtype == "SPELL_CAST_SUCCESS" then
             if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
@@ -484,9 +488,14 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             if state.talent.collateral_damage.enabled and state.buff.sweeping_strikes.up then
                 collateralDmgStacks = collateralDmgStacks + 1
             end
-        elseif subtype == "SWING_DAMAGE" and UnitGUID( "target" ) == destGUID and critical then
+        elseif subtype == "SWING_DAMAGE" and UnitGUID( "target" ) == destGUID and critical_swing then
             -- Critical boolean is the 18th parameter in SWING_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
             TriggerMeleeCriticalHit()
+        elseif state.set_bonus.tier28_2pc > 0 and subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID and critical_spell then
+            if spellName == class.abilities.cleave.name or spellName == class.abilities.mortal_strike.name or spellName == class.abilities.execute.name then
+                -- Critical boolean is the 21st parameter in SPELL_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
+                TriggerTier29Crit()
+            end
         elseif subtype == "SPELL_AURA_REMOVED" and state.talent.collateral_damage.enabled and spellName == class.abilities.sweeping_strikes.name then
             TriggerCollateralDamage()
         end
@@ -601,6 +610,17 @@ spec:RegisterAuras( {
         copy = "pile_on"
     }
 })
+
+spec:RegisterSetBonuses( "tier29_2pc", 393705, "tier29_4pc", 393706 )
+--(2) Set Bonus: Mortal Strike and Cleave damage and chance to critically strike increased by 10%.
+--(4) Set Bonus: Mortal Strike, Cleave, & Execute critical strikes increase your damage and critical strike chance by 5% for 6 seconds.
+    spec:RegisterAuras( {
+        strike_vulnerabilities = {
+            id = 394173,
+            duration = 6,
+            max_stack = 1
+        }
+    })
 ------------------------------------------------------------
 
 -- Abilities
