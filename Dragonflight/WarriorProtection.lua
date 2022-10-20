@@ -1,7 +1,7 @@
 -- WarriorProtection.lua
 -- October 2022
--- Updated for BETA Build 46144
--- Last Modified 10/19/2022 00:15 UTC
+-- Updated for PTR Build 46181
+-- Last Modified 10/19/2022 18:15 UTC
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -510,7 +510,7 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
             end
 
             if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
-                gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
+                gloryRage = ( gloryRage + lastRage - current ) % 10 -- Glory.
             end
 
             if state.set_bonus.tier28_2pc > 0 or state.talent.violent_outburst.enabled then
