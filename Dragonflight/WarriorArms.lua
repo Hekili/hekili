@@ -602,12 +602,10 @@ spec:RegisterAuras( {
 spec:RegisterSetBonuses( "tier29_2pc", 393705, "tier29_4pc", 393706 )
 --(2) Set Bonus: Mortal Strike and Cleave damage and chance to critically strike increased by 10%.
 --(4) Set Bonus: Mortal Strike, Cleave, & Execute critical strikes increase your damage and critical strike chance by 5% for 6 seconds.
-    spec:RegisterAuras( {
-        strike_vulnerabilities = {
-            id = 394173,
-            duration = 6,
-            max_stack = 1
-        }
+    spec:RegisterAura( "strike_vulnerabilities", {
+        id = 394173,
+        duration = 6,
+        max_stack = 1
     })
 ------------------------------------------------------------
 
