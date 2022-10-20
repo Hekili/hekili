@@ -1374,11 +1374,12 @@ spec:RegisterAbilities( {
         cooldown = 180,
         gcd = "spell",
 
-        toggle = "defensives",
-
         talent = "rallying_cry",
         startsCombat = false,
         texture = 132351,
+        
+        toggle = "cooldowns",
+        shared = "player",
 
         handler = function ()
             applyBuff( "rallying_cry" )

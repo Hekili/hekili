@@ -1168,6 +1168,7 @@ spec:RegisterAbilities( {
         texture = 132351,
 
         toggle = "cooldowns",
+        shared = "player",
 
         handler = function ()
             applyBuff( "rallying_cry" )
