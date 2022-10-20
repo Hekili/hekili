@@ -429,7 +429,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     thunder_clap = {
-        id = function() return isPTR and 6343 or 396719 end,
+        id = 6343,
         duration = 10,
         max_stack = 1
     },
@@ -1595,7 +1595,7 @@ spec:RegisterAbilities( {
 
 
     thunder_clap = {
-        id = function() return isPTR and 6343 or 396719 end,
+        id = 6343,
         cast = 0,
         cooldown = 6,
         gcd = "spell",
