@@ -230,7 +230,7 @@ spec:RegisterAuras( {
     },
     colossus_smash = {
         id = 208086,
-        duration = function () return 13 + ( talent.blunt_instruments.enabled and 3 or 0 ) end,
+        duration = function () return 10 + ( talent.blunt_instruments.enabled and 3 or 0 ) end,
         max_stack = 1,
     },
     crushing_force = {
