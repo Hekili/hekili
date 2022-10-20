@@ -11,7 +11,7 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 71 )
 
-local base_rage_gen, arms_rage_mult, norm_weapon_speed = 1.75, 4.000, 3.6
+local base_rage_gen, arms_rage_mult = 1.75, 4.000
 
 spec:RegisterResource( Enum.PowerType.Rage, {
     mainhand = {
@@ -31,12 +31,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         stop = function () return state.swings.mainhand == 0 end,
         value = function ()
-            -- Rage gained is normalized without regard to haste, and all two-handed weapons are 3.6 weapon speed
-            -- Haste just increases frequency of this rage value being gained. The amount gained never changes
-            -- 2 Handers: 3.6 * 1.75 * 4 = 25.2 rage per normal melee hit
-            -- War Machine would increase this by an additional 10% (25.2 * 1.1 = 27.72 )
-            -- Seasoned Soldier can't be detected here but is modeled in RegisterCombatLogEvent to add the additional rage.
-            return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * norm_weapon_speed -- state.mainhand_speed
+            return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.mainhand_speed / state.haste
         end,
     },
 
