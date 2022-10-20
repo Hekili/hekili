@@ -1,13 +1,16 @@
 -- WarriorFury.lua
 -- October 2022
--- Updated for PTR Build 46047 (RC)
--- Last Modified 10/14/2020 4:09 UTC
+-- Updated for PTR Build 46181
+-- Last Modified 10/20/2022 18:18 UTC
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
-local class, state = Hekili.Class, Hekili.State
+local class = Hekili.Class
+local state = Hekili.State
+
+local IsActiveSpell = ns.IsActiveSpell
 
 local spec = Hekili:NewSpecialization( 72 )
 
@@ -69,6 +72,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         end,
 
         interval = 3,
+
         value = 5,
     },
 
@@ -83,6 +87,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         end,
 
         interval = 1,
+
         value = 6, -- Fury 6, Arms 4, Prot 4
     },
 
@@ -110,7 +115,7 @@ spec:RegisterTalents( {
     armored_to_the_teeth      = { 90258, 384124, 2 }, --
     ashen_juggernaut          = { 90409, 392536, 1 }, --
     avatar                    = { 90365, 107574, 1 }, --
-    barbaric_training         = { 90335, 390674, 1 }, --
+    barbaric_training         = { 92222, 390674, 1 }, --
     berserker_rage            = { 90372, 18499 , 1 }, --
     berserker_shout           = { 90348, 384100, 1 }, --
     berserker_stance          = { 90325, 386196, 1 }, --
@@ -182,7 +187,7 @@ spec:RegisterTalents( {
     seismic_reverberation     = { 90340, 382956, 1 }, --
     shattering_throw          = { 90351, 64382 , 1 }, --
     shockwave                 = { 90375, 46968 , 1 }, --
-    sidearm                   = { 90377, 384404, 1 }, --
+    sidearm                   = { 90335, 384404, 1 }, --
     singleminded_fury         = { 90400, 81099 , 1 }, --
     slaughtering_strikes      = { 90411, 388004, 1 }, --
     sonic_boom                = { 90321, 390725, 1 }, --
@@ -194,7 +199,7 @@ spec:RegisterTalents( {
     sudden_death              = { 90429, 280721, 1 }, --
     swift_strikes             = { 90416, 383459, 2 }, --
     tenderize                 = { 90423, 388933, 1 }, --
-    thunder_clap              = { 90343, 6343  , 1 }, --
+    thunder_clap              = { 92223, 6343,   1 }, -- TODO: is 396719 in BETA Build for Arms/Fury
     thunderous_roar           = { 90359, 384318, 1 }, --
     thunderous_words          = { 90358, 384969, 1 }, --
     titanic_rage              = { 90417, 394329, 1 }, --
@@ -209,7 +214,6 @@ spec:RegisterTalents( {
     wrath_and_fury            = { 90387, 392936, 1 }, --
     wrecking_throw            = { 90351, 384110, 1 }, --
 } )
-
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
@@ -226,203 +230,6 @@ spec:RegisterPvpTalents( {
     slaughterhouse       = 3735, -- 352998
     warbringer           = 5431, -- 356353
 } )
-
--- Tier 28
-spec:RegisterSetBonuses( "tier28_2pc", 364554, "tier28_4pc", 363738 )
--- 2-Set - Frenzied Destruction - Raging Blow deals 15% increased damage and gains an additional charge.
--- 4-Set - Frenzied Destruction - Raging Blow has a 20% chance to grant Recklessness for 4 sec.
--- Now appropriately grants Crushing Blow and Bloodbath when Reckless Abandon is talented, and no longer grants 50 Rage when Recklessness triggers while Reckless Abandon is talented.
-
-local RAGE = Enum.PowerType.Rage
-local lastRage = -1
-local rageSpent = 0
-local gloryRage = 0
-local fresh_meat_actual = {}
-local fresh_meat_virtual = {}
-local whirlwind_stacks = 0
-local last_rampage_target = nil
-local whirlwind_consumers = {
-    crushing_blow = 1,
-    bloodbath = 1,
-    bloodthirst = 1,
-    execute = 1,
-    impending_victory = 1,
-    raging_blow = 1,
-    rampage = 1,
-    victory_rush = 1,
-    onslaught = 1
-}
-local wipe = table.wipe
-
-spec:RegisterStateExpr( "rage_spent", function ()
-    return rageSpent
-end )
-
-spec:RegisterStateExpr( "glory_rage", function ()
-    return gloryRage
-end )
-
-local WillOfTheBerserker = setfenv( function()
-    applyBuff( "will_of_the_berserker" )
-end, state )
-
-local TriggerColdSteelHotBlood = setfenv( function()
-    applyDebuff( "target", "gushing_wound" )
-    gain( 4, "rage" )
-end, state )
-
-local TriggerHurricane = setfenv( function()
-    addStack( "hurricane", nil, 1 )
-end, state )
-
-local TriggerGlory = setfenv( function(reduction)
-    buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction * 0.5
-end, state )
-
-local TriggerAngerManagement = setfenv( function(reduction)
-    cooldown.recklessness.expires = cooldown.recklessness.expires - reduction
-end, state )
-
-local TriggerSlaughteringStrikesAnnihilator = setfenv( function()
-    addStack( "slaughtering_strikes_annihilator", nil, 1 )
-end, state )
-
-local RemoveFrenzy = setfenv( function()
-    removeBuff( "frenzy" )
-end, state )
-
-spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, critical )
-    if sourceGUID == state.GUID then
-        if subtype == "SPELL_CAST_SUCCESS" then
-            local ability = class.abilities[ spellID ]
-            if not ability then return end
-            if state.talent.improved_whirlwind.enabled and ability.key == "whirlwind" then
-                whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
-            elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
-                whirlwind_stacks = whirlwind_stacks - 1
-            elseif ability.key == "conquerors_banner" then
-                rageSinceBanner = 0
-            elseif ability.key == "rampage" and last_rampage_target ~= destGUID then
-                RemoveFrenzy()
-                last_rampage_target = destGUID
-            end
-
-        elseif subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID then
-            local ability = class.abilities[ spellID ]
-            if not ability then return end
-            if ability.key == "bloodthirst" or ability.key == "bloodbath" then
-                if critical and state.talent.cold_steel_hot_blood.enabled then -- Critical boolean is the 21st parameter in SPELL_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
-                    TriggerColdSteelHotBlood() -- Bloodthirst/bath critical strike occured.
-                elseif state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
-                    fresh_meat_actual[ destGUID ] = true
-                end
-            end
-        elseif subtype == "SWING_DAMAGE" and UnitGUID( "target" ) == destGUID then
-            -- amt is the 12th parameter in SWING_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
-            local amt = spellID
-            if amt > 0 and state.talent.annihilator.enabled and state.talent.slaughtering_strikes.enabled then
-                TriggerSlaughteringStrikesAnnihilator()
-            end
-        end
-    end
-end )
-
-spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
-    wipe( fresh_meat_actual )
-end )
-
-spec:RegisterHook( "UNIT_ELIMINATED", function( id )
-    fresh_meat_actual[ id ] = nil
-end )
-
-spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
-    if powerType == "RAGE" then
-        local current = UnitPower( "player", RAGE )
-        if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
-            -- Glory
-            if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
-                gloryRage = ( gloryRage + (lastRage - current) )  -- Fury 25, Prot 10, Arms 20
-                local reduction = floor( gloryRage / 25 )
-                gloryRage =  glory_rage % 25
-                if reduction > 0 then TriggerGlory(reduction) end
-            end
-            -- Anger Management
-            if state.talent.anger_management.enabled then
-                rageSpent = ( rageSpent + (lastRage - current) ) 
-                local reduction = floor( rageSpent / 20 )
-                rageSpent =  rageSpent % 20
-                if reduction > 0 then 
-                    TriggerAngerManagement(reduction) 
-                end
-            end
-        end
-        lastRage = current
-    end
-end )
-
--- Spend is misleading, since it fires multiple times per recommendation and falsely inflates whatever is coming in as it's recommendation; for example:
--- Charge is ready (Gains 20 rage), amt = -20 will come in constantly (3/4 times per second) into this repeatedly until a new recommendation is found, and then
--- it repeatedly pushes that amount into this as well at 3/4 times per second.
--- Instead , we are going to use the UNIT_POWER_FREQUENT for rage gains/spenders to trigger a local Function instead if needed.
---[[
-spec:RegisterHook( "spend", function( amt, resource ) 
-    if resource == "rage" then
-        if talent.anger_management.enabled then
-            rage_spent = rage_spent + amt
-            local reduction = floor( rage_spent / 20 )
-            rage_spent = rage_spent % 20
-
-            if reduction > 0 then cooldown.recklessness.expires = cooldown.recklessness.expires - reduction end
-        end
-
-        if legendary.glory.enabled and buff.conquerors_banner.up then
-            glory_rage = glory_rage + amt
-            local reduction = floor( glory_rage / 20 ) * 0.5
-            glory_rage = glory_rage % 20
-
-            buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction
-        end
-    end
-end )
-]]
-
-spec:RegisterHook( "reset_precast", function ()
-    rage_spent = nil
-    rage_since_banner = nil
-
-    if buff.whirlwind.up then
-        if whirlwind_stacks == 0 then removeBuff( "whirlwind" )
-        elseif whirlwind_stacks < buff.whirlwind.stack then
-            applyBuff( "whirlwind", buff.whirlwind.remains, whirlwind_stacks )
-        end
-    end
-
-    if legendary.will_of_the_berserker.enabled and buff.recklessness.up then
-        state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
-    end
-
-    wipe( fresh_meat_virtual )
-    active_dot.hit_by_fresh_meat = 0
-
-    for k, v in pairs( fresh_meat_actual ) do
-        fresh_meat_virtual[ k ] = v
-
-        if k == target.unit then
-            applyDebuff( "target", "hit_by_fresh_meat" )
-        else
-            active_dot.hit_by_fresh_meat = active_dot.hit_by_fresh_meat + 1
-        end
-    end
-
-    if buff.ravager.up and talent.hurricane.enabled then
-        local next_hu = query_time + (1 * state.haste) - ( ( query_time - buff.ravager.applied ) % (1 * state.haste) )
-
-        while ( next_hu <= buff.ravager.expires ) do
-            state:QueueAuraEvent( "ravager_hurricane", TriggerHurricane, next_hu, "AURA_PERIODIC" )
-            next_hu = next_hu + (1 * state.haste)
-        end
-    end
-end )
 
 
 -- Auras
@@ -519,12 +326,12 @@ spec:RegisterAuras( {
     enrage = {
         id = 184362,
         duration = 4,
-        max_stack = 1
+        max_stack = 1,
     },
     enraged_regeneration = {
         id = 184364,
         duration = function () return state.talent.invigorating_fury.enabled and 11 or 8 end,
-        max_stack = 1
+        max_stack = 1,
     },
     frenzy = {
         id = 335082,
@@ -535,12 +342,12 @@ spec:RegisterAuras( {
         id = 385042,
         duration = 6,
         tick_time = 2,
-        max_stack = 1
+        max_stack = 1,
     },
     hamstring = {
         id = 1715,
         duration = 15,
-        max_stack = 1
+        max_stack = 1,
     },
     hurricane = {
         id = 390581,
@@ -548,9 +355,9 @@ spec:RegisterAuras( {
         max_stack = 6
     },
     intimidating_shout = {
-        id = 5246,
-        duration = 8,
-        max_stack = 1
+        id = function () return talent.menace.enabled and 316593 or 5246 end,
+        duration = function () return talent.menace.enabled and 15 or 8 end,
+        max_stack = 1,
     },
     odyns_fury = {
         id = 385060,
@@ -561,7 +368,7 @@ spec:RegisterAuras( {
     piercing_howl = {
         id = 12323,
         duration = 8,
-        max_stack = 1
+        max_stack = 1,
     },
     quick_thinking = {
         id = 392778,
@@ -573,6 +380,11 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
+    rallying_cry = {
+        id = 97463,
+        duration = function () return 10 + ( talent.inspiring_presence.enabled and 3 or 0 ) end,
+        max_stack = 1,
+    },
     ravager = {
         id = 228920,
         duration = 12,
@@ -582,7 +394,7 @@ spec:RegisterAuras( {
     recklessness = {
         id = 1719,
         duration = function() return state.talent.depths_of_insanity.enabled and 16 or 12 end,
-        max_stack = 1
+        max_stack = 1,
     },
     rend = {
         id = 388539,
@@ -608,21 +420,16 @@ spec:RegisterAuras( {
     },
     spell_reflection = {
         id = 23920,
-        duration = 5,
-        max_stack = 1
-    },
-    spell_reflection_defense = {
-        id = 385391,
-        duration = 5,
-        max_stack = 1
+        duration = function () return legendary.misshapen_mirror.enabled and 8 or 5 end,
+        max_stack = 1,
     },
     taunt = {
         id = 355,
         duration = 3,
-        max_stack = 1
+        max_stack = 1,
     },
     thunder_clap = {
-        id = 6343,
+        id = function() return isPTR and 6343 or 396719 end,
         duration = 10,
         max_stack = 1
     },
@@ -632,6 +439,11 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1
     },
+    victorious = {
+            id = 32216,
+            duration = 20,
+            max_stack = 1,
+        },
     war_machine = {
         id = 262232,
         duration = 8,
@@ -646,9 +458,246 @@ spec:RegisterAuras( {
             else return 0
             end
         end,
-        copy = "meat_cleaver"
     },
 } )
+
+
+-- Tier 28
+spec:RegisterSetBonuses( "tier28_2pc", 364554, "tier28_4pc", 363738 )
+-- 2-Set - Frenzied Destruction - Raging Blow deals 15% increased damage and gains an additional charge.
+-- 4-Set - Frenzied Destruction - Raging Blow has a 20% chance to grant Recklessness for 4 sec.
+-- Now appropriately grants Crushing Blow and Bloodbath when Reckless Abandon is talented, and no longer grants 50 Rage when Recklessness triggers while Reckless Abandon is talented.
+
+spec:RegisterSetBonuses( "tier29_2pc", 364554, "tier29_4pc", 363738 )
+-- 2-Set - Execute’s chance to critically strike increased by 10%.
+-- 4-Set - Sudden Death’s chance to reset the cooldown of Execute and make it usable on any target, regardless of health, is greatly increased.
+
+spec:RegisterGear( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
+    spec:RegisterAura( "raging_thirst", {
+        id = 242300,
+        duration = 8
+        } ) -- fury 2pc.
+    spec:RegisterAura( "bloody_rage", {
+        id = 242952,
+        duration = 10,
+        max_stack = 10
+        } ) -- fury 4pc.
+
+spec:RegisterGear( 'tier21', 152178, 152179, 152180, 152181, 152182, 152183 )
+    spec:RegisterAura( "slaughter", {
+        id = 253384,
+        duration = 4
+    } ) -- fury 2pc dot.
+    spec:RegisterAura( "outrage", {
+        id = 253385,
+        duration = 8
+    } ) -- fury 4pc.
+
+spec:RegisterGear( "ceannar_charger", 137088 )
+spec:RegisterGear( "timeless_stratagem", 143728 )
+spec:RegisterGear( "kazzalax_fujiedas_fury", 137053 )
+    spec:RegisterAura( "fujiedas_fury", {
+        id = 207776,
+        duration = 10,
+        max_stack = 4
+    } )
+spec:RegisterGear( "mannoroths_bloodletting_manacles", 137107 ) -- NYI.
+spec:RegisterGear( "najentuss_vertebrae", 137087 )
+spec:RegisterGear( "valarjar_berserkers", 151824 )
+spec:RegisterGear( "ayalas_stone_heart", 137052 )
+    spec:RegisterAura( "stone_heart", { id = 225947,
+        duration = 10
+    } )
+spec:RegisterGear( "the_great_storms_eye", 151823 )
+    spec:RegisterAura( "tornados_eye", {
+        id = 248142,
+        duration = 6,
+        max_stack = 6
+    } )
+spec:RegisterGear( "archavons_heavy_hand", 137060 )
+spec:RegisterGear( "weight_of_the_earth", 137077 ) -- NYI.
+
+spec:RegisterGear( "soul_of_the_battlelord", 151650 )
+
+state.IsActiveSpell = IsActiveSpell
+
+local whirlwind_consumers = {
+    crushing_blow = 1,
+    bloodbath = 1,
+    bloodthirst = 1,
+    execute = 1,
+    impending_victory = 1,
+    raging_blow = 1,
+    rampage = 1,
+    onslaught = 1,
+    victory_rush = 1
+}
+
+local whirlwind_stacks = 0
+
+local rageSpent = 0
+local gloryRage = 0
+
+local fresh_meat_actual = {}
+local fresh_meat_virtual = {}
+
+local last_rampage_target = nil
+
+local TriggerColdSteelHotBlood = setfenv( function()
+    applyDebuff( "target", "gushing_wound" )
+    gain( 4, "rage" )
+end, state )
+
+local TriggerSlaughteringStrikesAnnihilator = setfenv( function()
+    addStack( "slaughtering_strikes_annihilator", nil, 1 )
+end, state )
+
+local RemoveFrenzy = setfenv( function()
+    removeBuff( "frenzy" )
+end, state )
+
+spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, critical )
+
+    if sourceGUID == state.GUID then
+        if subtype == "SPELL_CAST_SUCCESS" then
+            local ability = class.abilities[ spellID ]
+
+            if not ability then return end
+            if state.talent.improved_whirlwind.enabled and ability.key == "whirlwind" then
+                whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
+            elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
+                whirlwind_stacks = whirlwind_stacks - 1
+            elseif ability.key == "rampage" and last_rampage_target ~= destGUID and state.talent.frenzy.enabled then
+                RemoveFrenzy()
+                last_rampage_target = destGUID
+            end
+
+        elseif subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID then
+            local ability = class.abilities[ spellID ]
+            if not ability then return end
+            if ability.key == "bloodthirst" or ability.key == "bloodbath" then
+                if critical and state.talent.cold_steel_hot_blood.enabled then -- Critical boolean is the 21st parameter in SPELL_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
+                    TriggerColdSteelHotBlood() -- Bloodthirst/bath critical strike occured.
+                elseif state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
+                    fresh_meat_actual[ destGUID ] = true
+                end
+            end
+        elseif subtype == "SWING_DAMAGE" and UnitGUID( "target" ) == destGUID then
+            -- amt is the 12th parameter in SWING_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
+            local amt = spellID
+            if amt > 0 and state.talent.annihilator.enabled and state.talent.slaughtering_strikes.enabled then
+                TriggerSlaughteringStrikesAnnihilator()
+            end
+        end
+    end
+end )
+
+
+local wipe = table.wipe
+
+spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
+    wipe( fresh_meat_actual )
+end )
+
+spec:RegisterHook( "UNIT_ELIMINATED", function( id )
+    fresh_meat_actual[ id ] = nil
+end )
+
+
+local RAGE = Enum.PowerType.Rage
+local lastRage = -1
+
+spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+    if powerType == "RAGE" then
+        local current = UnitPower( "player", RAGE )
+        if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decay triggering
+            if state.talent.anger_management.enabled then
+                rageSpent = ( rageSpent + (lastRage - current) ) % 20
+            end
+            if state.legendary.glory.enabled and state.buff.conquerors_banner.up then
+                gloryRage = ( gloryRage + lastRage - current ) % 25
+            end
+        end
+        lastRage = current
+    end
+end )
+
+spec:RegisterStateExpr( "rage_spent", function ()
+    return rageSpent
+end )
+
+spec:RegisterStateExpr( "glory_rage", function ()
+    return gloryRage
+end )
+
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if resource == "rage" then
+        if talent.anger_management.enabled then
+            rage_spent = rage_spent + amt
+            local reduction = floor( rage_spent / 20 )
+            rage_spent = rage_spent % 20
+            if reduction > 0 then cooldown.recklessness.expires = cooldown.recklessness.expires - reduction end
+        end
+
+        if legendary.glory.enabled and buff.conquerors_banner.up then
+            glory_rage = glory_rage + amt
+            local addition = floor( glory_rage / 10 ) * 0.5
+            glory_rage = glory_rage % 10
+		  if addition > 0 then buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition end
+        end
+    end
+end )
+
+
+local WillOfTheBerserker = setfenv( function()
+    applyBuff( "will_of_the_berserker" )
+end, state )
+
+local TriggerHurricane = setfenv( function()
+    addStack( "hurricane", nil, 1 )
+end, state )
+
+spec:RegisterHook( "reset_precast", function ()
+    rage_spent = nil
+    glory_rage = nil
+
+    if buff.whirlwind.up then
+        if whirlwind_stacks == 0 then removeBuff( "whirlwind" )
+        elseif whirlwind_stacks < buff.whirlwind.stack then
+            applyBuff( "whirlwind", buff.whirlwind.remains, whirlwind_stacks )
+        end
+    end
+
+    if legendary.will_of_the_berserker.enabled and buff.recklessness.up then
+        state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
+    end
+
+    wipe( fresh_meat_virtual )
+    active_dot.hit_by_fresh_meat = 0
+
+    for k, v in pairs( fresh_meat_actual ) do
+        fresh_meat_virtual[ k ] = v
+
+        if k == target.unit then
+            applyDebuff( "target", "hit_by_fresh_meat" )
+        else
+            active_dot.hit_by_fresh_meat = active_dot.hit_by_fresh_meat + 1
+        end
+    end
+
+    if buff.ravager.up and talent.hurricane.enabled then
+        local next_hu = query_time + (1 * state.haste) - ( ( query_time - buff.ravager.applied ) % (1 * state.haste) )
+
+        while ( next_hu <= buff.ravager.expires ) do
+            state:QueueAuraEvent( "ravager_hurricane", TriggerHurricane, next_hu, "AURA_PERIODIC" )
+            next_hu = next_hu + (1 * state.haste)
+        end
+    end
+end )
+
+
+
 
 
 -- Abilities
@@ -689,8 +738,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132333,
 
-        nobuff = "battle_shout",
         essential = true,
+        nobuff = "battle_shout",
 
         handler = function ()
             applyBuff( "battle_shout" )
@@ -704,11 +753,10 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "off",
 
+        toggle = "cooldowns",
         talent = "berserker_rage",
         startsCombat = false,
         texture = 136009,
-
-        toggle = "cooldowns",
 
         handler = function ()
             applyBuff( "berserker_rage" )
@@ -772,6 +820,7 @@ spec:RegisterAbilities( {
 
     bloodbath = {
         id = 335096,
+        known = 23881,
         cast = 0,
         cooldown = function ()
             if talent.deft.experience.enabled then
@@ -788,16 +837,29 @@ spec:RegisterAbilities( {
 
         cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
 
-        talent = "bloodthirst",
-        bind = "bloodthirst",
         startsCombat = true,
         texture = 136012,
 
+        bind = "bloodthirst",
+        talent = "reckless_abandon",
+        buff = "recklessness",
+
         handler = function ()
-            removeStack( "whirlwind" )
-            if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
             if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
+            if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
+            removeStack( "whirlwind" )
+
+            if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
+                applyDebuff( "target", "gushing_wound" )
+                gain( 4, "rage" )
+            end
+
+            if legendary.cadence_of_fujieda.enabled then
+                if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
+                addStack( "cadence_of_fujieda", nil, 1 )
+            end
+
             if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
                 applyBuff( "enrage" )
                 applyDebuff( "target", "hit_by_fresh_meat" )
@@ -812,7 +874,7 @@ spec:RegisterAbilities( {
         cooldown = 20,
         gcd = "off",
 
-        spend = 6777,
+        spend = function() return health.max * (0.05) end,
         spendType = "health",
 
         pvptalent = "bloodrage",
@@ -821,7 +883,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff ( "bloodrage" )
-            gain( -0.05 * health.max, "health" )
         end,
     },
 
@@ -842,12 +903,13 @@ spec:RegisterAbilities( {
         spend = -8,
         spendType = "rage",
 
+        cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
+
         talent = "bloodthirst",
-        bind = "bloodbath",
         startsCombat = true,
         texture = 136012,
 
-        cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
+        bind = "bloodbath",
 
         readyTime = function()
             if buff.crushing_impact.up then return buff.crushing_impact.remains end
@@ -856,20 +918,39 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            removeStack( "whirlwind" )
-            if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
+
+            if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
+            removeStack( "whirlwind" )
+
+            if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
+                applyDebuff( "target", "gushing_wound" )
+                gain( 4, "rage" )
+            end
+
             if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
+
+            if legendary.cadence_of_fujieda.enabled then
+                if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
+                addStack( "cadence_of_fujieda", nil, 1 )
+            end
+
             if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
                 applyBuff( "enrage" )
                 applyDebuff( "target", "hit_by_fresh_meat" )
             end
         end,
+
         auras = {
+            cadence_of_fujieda = {
+                id = 335558,
+                duration = 12,
+                max_stack = 5,
+            },
             hit_by_fresh_meat = {
                 duration = 3600,
                 max_stack = 1,
-            },
+            }
         },
     },
 
@@ -877,7 +958,7 @@ spec:RegisterAbilities( {
     charge = {
         id = 100,
         cast = 0,
-        charges  = function () return talent.double_time.enabled and 2 or 1 end,
+        charges = function () return talent.double_time.enabled and 2 or nil end,
         cooldown = function () return talent.double_time.enabled and 17 or 20 end,
         recharge = function () return talent.double_time.enabled and 17 or 20 end,
         gcd = "off",
@@ -888,10 +969,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132337,
 
-        usable = function () return target.distance > 8 and ( query_time - action.charge.lastCast > gcd.execute ) end,
+        usable = function () return target.distance > 10 and ( query_time - action.charge.lastCast > gcd.execute ) end,
         handler = function ()
-            setDistance( 5 )
             applyDebuff( "target", "charge" )
+            setDistance( 5 )
         end,
     },
 
@@ -996,6 +1077,8 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "off",
 
+	   toggle = "defensives",
+
         talent = "enraged_regeneration",
         startsCombat = false,
         texture = 132345,
@@ -1009,16 +1092,18 @@ spec:RegisterAbilities( {
 
 
     execute = {
-        id = 5308,
+        id = function () return IsActiveSpell( 280735 ) and 280735 or 5308 end,
+	   known = 5308,
+        noOverride = 317485,
         cast = 0,
         cooldown = function () return ( talent.massacre.enabled and 4.5 or 6 ) end,
+	   hasteCD = true,
         gcd = "spell",
-        noOverride = 317485, -- Condemn
 
         spend = function () return ( talent.improved_execute.enabled and -20 or min( max( rage.current, 20 ),40 ) ) end,
         spendType = "rage",
 
-        startsCombat = false,
+        startsCombat = true,
         texture = 135358,
 
         usable = function ()
@@ -1030,7 +1115,10 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            if buff.stone_heart.up then removeBuff( "stone_heart" )
+            elseif buff.sudden_death.up then removeBuff( "sudden_death" ) end
             removeStack( "whirlwind" )
+
             if not talent.improved_execute.enabled and rage.current > 20 and buff.sudden_death.down then
                 spend( min(max(rage.current, 20),40), "rage" ) -- Spend Rage
             end
@@ -1061,15 +1149,21 @@ spec:RegisterAbilities( {
         id = 6544,
         cast = 0,
         cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
+        charges = function () return legendary.leaper.enabled and 3 or nil end,
+        recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
         gcd = "off",
 
         talent = "heroic_leap",
         startsCombat = false,
         texture = 236171,
 
+        usable = function () return ( query_time - action.heroic_leap.lastCast > gcd.execute ) end,
         handler = function ()
+            setDistance( 15 ) -- probably heroic_leap + charge combo.
             if talent.bounding_stride.enabled then applyBuff( "bounding_stride" ) end
         end,
+
+        copy = 52174
     },
 
 
@@ -1096,13 +1190,14 @@ spec:RegisterAbilities( {
         spend = 10,
         spendType = "rage",
 
-        talent = "impending_victory",
-        startsCombat = false,
+        startsCombat = true,
         texture = 589768,
 
+        talent = "impending_victory",
+
         handler = function ()
-            removeStack( "whirlwind" )
             gain( health.max * 0.3, "health" )
+            removeStack( "whirlwind" )
         end,
     },
 
@@ -1123,7 +1218,7 @@ spec:RegisterAbilities( {
 
 
     intimidating_shout = {
-        id = 316593,
+        id = function () return talent.menace.enabled and 316593 or 5246 end,
         cast = 0,
         cooldown = 90,
         gcd = "spell",
@@ -1168,13 +1263,14 @@ spec:RegisterAbilities( {
         id = 315720,
         cast = 0,
         cooldown = 18,
+        hasteCD = true,
         gcd = "spell",
 
         spend = -20,
         spendType = "rage",
 
         talent = "onslaught",
-        startsCombat = false,
+        startsCombat = true,
         texture = 132364,
 
         handler = function ()
@@ -1192,7 +1288,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "piercing_howl",
-        startsCombat = false,
+        startsCombat = true,
         texture = 136147,
 
         handler = function ()
@@ -1211,7 +1307,13 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132938,
 
+        toggle = "interrupts",
+
+        debuff = "casting",
+        readyTime = state.timeToInterrupt,
+
         handler = function ()
+            interrupt()
             if talent.concussive_blows.enabled then
                 applyDebuff( "target", "concussive_blows" )
             end
@@ -1230,6 +1332,7 @@ spec:RegisterAbilities( {
         end,
         cooldown = 8 * state.haste,
         recharge = 8 * state.haste,
+        hasteCD = true,
         gcd = "spell",
 
         spend = function ()
@@ -1243,11 +1346,23 @@ spec:RegisterAbilities( {
 
         talent = "raging_blow",
         notalent = "annihilator",
-        startsCombat = false,
+        startsCombat = true,
         texture = 589119,
+
+        bind = "crushing_blow",
+        readyTime = function ()
+            if talent.reckless_abandon.enabled or talent.titanic_rage.enabled then
+                return max( buff.recklessness.remains, buff.crushing_impact.remains )
+            else
+                return 0
+            end
+        end,
 
         handler = function ()
             removeStack( "whirlwind" )
+            if talent.reckless_abandon.enabled then spendCharges( "crushing_blow", 1 ) end
+
+            if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
             if talent.slaughtering_strikes.enabled then addStack ( "slaughtering_strikes_raging_blow" ,nil , 1 ) end
         end,
     },
@@ -1259,14 +1374,15 @@ spec:RegisterAbilities( {
         cooldown = 180,
         gcd = "spell",
 
+        toggle = "defensives",
+
         talent = "rallying_cry",
         startsCombat = false,
         texture = 132351,
 
-        toggle = "cooldowns",
-
         handler = function ()
             applyBuff( "rallying_cry" )
+
             gain( (talent.inspiring_presence.enabled and 0.25 or 0.15) * health.max, "health" )
         end,
     },
@@ -1281,14 +1397,14 @@ spec:RegisterAbilities( {
         spend = 80,
         spendType = "rage",
 
-        talent = "rampage",
-        startsCombat = false,
+        startsCombat = true,
         texture = 132352,
+        talent = "rampage",
 
         handler = function ()
-            removeStack( "whirlwind" )
             if talent.frenzy.enabled then addStack( "frenzy", nil, 1 ) end
             applyBuff( "enrage" )
+            removeStack( "whirlwind" )
         end,
     },
 
@@ -1309,7 +1425,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "ravager" )
-            -- Hurricane handled in reset_precast
         end,
     },
 
@@ -1320,15 +1435,21 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
+        toggle = "cooldowns",
+
         talent = "recklessness",
         startsCombat = false,
         texture = 458972,
 
-        toggle = "cooldowns",
-
         handler = function ()
             applyBuff( "recklessness" )
+            if talent.reckless_abandon.enabled then
+                gain( 50, "rage" )
+            end
             if talent.berserkers_torment.enabled then applyBuff( "avatar", 4 ) end
+            if legendary.will_of_the_berserker.enabled then
+                state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
+            end
         end,
 
         auras = {
@@ -1340,7 +1461,6 @@ spec:RegisterAbilities( {
         }
     },
 
-
     shattering_throw = {
         id = 64382,
         cast = 1.5,
@@ -1348,13 +1468,11 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "shattering_throw",
-        startsCombat = false,
+        startsCombat = true,
         texture = 311430,
 
+        range = 30,
         toggle = "cooldowns",
-
-        handler = function ()
-        end,
     },
 
 
@@ -1363,6 +1481,9 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = function () return ( ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40 ) end,
         gcd = "spell",
+
+        spend = -10,
+        spendType = "rage",
 
         talent = "shockwave",
         startsCombat = true,
@@ -1395,6 +1516,7 @@ spec:RegisterAbilities( {
         texture = 132340,
 
         handler = function ()
+            removeStack( "whirlwind" )
         end,
     },
 
@@ -1423,15 +1545,17 @@ spec:RegisterAbilities( {
     spell_reflection = {
         id = 23920,
         cast = 0,
-        charges = 1,
         cooldown = 25,
-        recharge = 25,
         gcd = "off",
+
+        toggle = "interrupts",
 
         talent = "spell_reflection",
         startsCombat = false,
         texture = 132361,
-        toggle = "interrupts",
+
+        debuff = "casting",
+        readyTime = state.timeToInterrupt,
 
         handler = function ()
             applyBuff( "spell_reflection" )
@@ -1444,9 +1568,10 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
 
-        talent = "storm_bolt",
         startsCombat = true,
         texture = 613535,
+
+        talent = "storm_bolt",
 
         handler = function ()
             applyDebuff( "target", "storm_bolt" )
@@ -1470,13 +1595,13 @@ spec:RegisterAbilities( {
 
 
     thunder_clap = {
-        id = 6343,
+        id = function() return isPTR and 6343 or 396719 end,
         cast = 0,
         cooldown = 6,
         gcd = "spell",
         hasteCD = true,
 
-        spend = 30,
+        spend = function() return 30 + ( talent.blood_and_thunder.enabled and 10 or 0 ) end,
         spendType = "rage",
 
         talent = "thunder_clap",
@@ -1536,10 +1661,12 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132342,
 
+        notalent = "impending_victory",
         buff = "victorious",
+
         handler = function ()
-            removeStack( "whirlwind" )
             removeBuff( "victorious" )
+            removeStack( "whirlwind" )
             gain( 0.2 * health.max, "health" )
         end,
     },
@@ -1551,14 +1678,23 @@ spec:RegisterAbilities( {
         cooldown = function () return talent.storm_of_swords.enabled and 7 or 0 end,
         gcd = "spell",
 
-        spend = -3, -- TODO: Find a way to calculate the extra 1 rage per extra target hit?
+        startsCombat = true,
+
+        -- TODO: Find a way to calculate the extra 1 rage per extra target hit?
+        spend = function() return talent.improved_whirlwind.enabled and -3 or 0 end,
         spendType = "rage",
 
-        startsCombat = false,
         texture = 132369,
 
+        usable = function ()
+            if settings.check_ww_range and target.outside7 then return false, "target is outside of whirlwind range" end
+            return true
+        end,
+
         handler = function ()
-            applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
+            if talent.improved_whirlwind.enabled then
+                applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
+            end
         end,
     },
 
@@ -1576,6 +1712,14 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
     },
+} )
+
+
+spec:RegisterSetting( "check_ww_range", false, {
+    name = "Check |T132369:0|t Whirlwind Range",
+    desc = "If checked, when your target is outside of |T132369:0|t Whirlwind's range, it will not be recommended.",
+    type = "toggle",
+    width = "full"
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
