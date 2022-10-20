@@ -899,43 +899,48 @@ spec:RegisterAbilities( {
 
 
     execute = {
-        id = 163201,
+        id = function () return talent.massacre.enabled and 281000 or 163201 end,
+        known = 163201,
+        copy = { 163201, 281000 },
+        noOverride = 317485,
         cast = 0,
         cooldown = function () return ( talent.improved_execute.enabled and 0 or 6 ) end,
         gcd = "spell",
         hasteCD = true,
-        noOverride = 317485, -- Condemn
 
-        spend = function ()
-            if buff.sudden_death.up then
-                return 0
-            else
-                return min(max(rage.current, 20),40) end
-            end,
+        spend = 0,
         spendType = "rage",
 
         startsCombat = true,
         texture = 135358,
 
+        usable = function ()
+            if buff.sudden_death.up or buff.stone_heart.up then return true end
+            if cycle_for_execute then return true end
+           return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
+        end,
+
         cycle = "execute_ineligible",
 
-        usable = function ()
-            if buff.sudden_death.up then
-                return true
-            else
-                return target.health_pct < (talent.massacre.enabled and 35 or 20), "requires target in execute range"
-            end
+        indicator = function () if cycle_for_execute then return "cycle" end end,
+
+        timeToReady = function()
+            -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
+            if rage.current >= 20 then return 0 end
+            return rage.time_to_20
         end,
         handler = function ()
-            if buff.sudden_death.down then
-                local amt = min(max(rage.current, 20),40) -- Min 20, Max 40 spent
+            if not buff.sudden_death.up and not buff.stone_heart.up then
+                local cost = min( rage.current, 40 )
+                spend( cost, "rage", nil, true )
                 if talent.improved_execute.enabled then
-                    gain( amt * 0.2, "rage" ) -- Regain 20% for target not dying
+                    gain( cost * 0.2, "rage" ) -- Regain 20% for target not dying
                 end
                 if talent.critical_thinking.enabled then
-                    gain( amt * (talent.critical_thinking.rank * 0.1), "rage") -- Regain up to another 20% for critical thinking
+                    gain( cost * (talent.critical_thinking.rank * 0.1), "rage") -- Regain up to another 20% for critical thinking
                 end
             end
+            removeBuff( "sudden_death" )
             if talent.executioners_precision.enabled then applyBuff ( "executioners_precision" ) end
             if talent.juggernaut.enabled then applyBuff("juggernaut") end
         end,
@@ -946,7 +951,7 @@ spec:RegisterAbilities( {
                 duration = 3600,
                 max_stack = 1,
                 generate = function( t, auraType )
-                    if buff.sudden_death.down and target.health_pct > ( talent.massacre.enabled and 35 or 20 ) then
+                    if buff.sudden_death.down and buff.stone_heart.down and target.health_pct > ( talent.massacre.enabled and 35 or 20 ) then
                         t.count = 1
                         t.expires = query_time + 3600
                         t.applied = query_time
@@ -962,7 +967,6 @@ spec:RegisterAbilities( {
             }
         }
     },
-
 
     hamstring = {
         id = 1715,
@@ -1537,6 +1541,13 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
     },
+} )
+
+spec:RegisterSetting( "shockwave_interrupt", true, {
+    name = "Only |T236312:0|t Shockwave as Interrupt (when Talented)",
+    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting.",
+    type = "toggle",
+    width = "full"
 } )
 
 spec:RegisterPriority( "Arms", 20220929,
