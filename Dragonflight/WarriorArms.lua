@@ -379,6 +379,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    sudden_death = {
+        id = 52437,
+        duration = 10,
+        max_stack = 1
+    },
     taunt = {
         id = 355,
         duration = 3,
@@ -942,7 +947,7 @@ spec:RegisterAbilities( {
             end
             removeBuff( "sudden_death" )
             if talent.executioners_precision.enabled then applyBuff ( "executioners_precision" ) end
-            if talent.juggernaut.enabled then applyBuff("juggernaut") end
+            if talent.juggernaut.enabled then addStack( "juggernaut", nil, 1 ) end
         end,
 
         auras = {

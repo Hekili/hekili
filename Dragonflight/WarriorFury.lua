@@ -424,6 +424,11 @@ spec:RegisterAuras( {
         duration = function () return legendary.misshapen_mirror.enabled and 8 or 5 end,
         max_stack = 1,
     },
+    sudden_death = {
+        id = 280776,
+        duration = 10,
+        max_stack = 1
+    },
     taunt = {
         id = 355,
         duration = 3,
@@ -698,7 +703,10 @@ spec:RegisterHook( "reset_precast", function ()
 end )
 
 
-
+spec:RegisterStateExpr( "cycle_for_execute", function ()
+    if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
+    return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
+end )
 
 
 -- Abilities
@@ -1094,37 +1102,74 @@ spec:RegisterAbilities( {
 
     execute = {
         id = function () return IsActiveSpell( 280735 ) and 280735 or 5308 end,
-	   known = 5308,
+	    known = 5308,
+        copy = { 280735, 5308 },
         noOverride = 317485,
         cast = 0,
         cooldown = function () return ( talent.massacre.enabled and 4.5 or 6 ) end,
-	   hasteCD = true,
+	    hasteCD = true,
         gcd = "spell",
 
-        spend = function () return ( talent.improved_execute.enabled and -20 or min( max( rage.current, 20 ),40 ) ) end,
+        spend = function () return ( talent.improved_execute.enabled and -20 or 0 ) end,
         spendType = "rage",
 
         startsCombat = true,
         texture = 135358,
 
         usable = function ()
-            if buff.sudden_death.up then
-                return true
-            else
-                return target.health_pct < (talent.massacre.enabled and 35 or 20), "requires target in execute range"
+            if buff.sudden_death.up then return true end
+            if cycle_for_execute then return true end
+            return target.health_pct < (talent.massacre.enabled and 35 or 20), "requires target in execute range"
+        end,
+
+        cycle = "execute_ineligible",
+
+        indicator = function () if cycle_for_execute then return "cycle" end end,
+
+        timeToReady = function()
+            -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
+            if talent.improved_execute.enabled then 
+                return 0 -- We gain rage when using excute with this talent
+            elseif rage.current >= 20 then 
+                return 0 
+            else 
+                return rage.time_to_20
             end
         end,
 
         handler = function ()
-            if buff.stone_heart.up then removeBuff( "stone_heart" )
-            elseif buff.sudden_death.up then removeBuff( "sudden_death" ) end
-            removeStack( "whirlwind" )
 
-            if not talent.improved_execute.enabled and rage.current > 20 and buff.sudden_death.down then
-                spend( min(max(rage.current, 20),40), "rage" ) -- Spend Rage
+            if not buff.sudden_death.up and not buff.stone_heart.up and not talent.improved_execute.enabled then -- Execute costs rage
+                local cost = min( rage.current, 40 )
+                spend( cost, "rage", nil, true )
+            else
+                removeBuff( "sudden_death" ) 
             end
-            if talent.ashen_juggernaut.enabled then applyBuff("ashen_juggernaut") end
+            
+            removeStack( "whirlwind" )
+            if talent.ashen_juggernaut.enabled then applyBuff( "ashen_juggernaut" ) end
         end,
+        auras = {
+            -- Target Swapping
+            execute_ineligible = {
+                duration = 3600,
+                max_stack = 1,
+                generate = function( t, auraType )
+                    if buff.sudden_death.down and buff.stone_heart.down and target.health_pct > ( talent.massacre.enabled and 35 or 20 ) then
+                        t.count = 1
+                        t.expires = query_time + 3600
+                        t.applied = query_time
+                        t.duration = 3600
+                        t.caster = "player"
+                        return
+                    end
+                    t.count = 0
+                    t.expires = 0
+                    t.applied = 0
+                    t.caster = "nobody"
+                end
+            }
+        }
     },
 
 

@@ -569,6 +569,11 @@ spec:RegisterHook( "spend", function( amt, resource )
     end
 end )
 
+spec:RegisterStateExpr( "cycle_for_execute", function ()
+    if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
+    return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
+end )
+
 -- Abilities
 spec:RegisterAbilities( {
     avatar = {
@@ -849,27 +854,68 @@ spec:RegisterAbilities( {
 
 
     execute = {
-        id = 281000,
+        id = function () return talent.massacre.enabled and 281000 or 163201 end,
+        known = 163201,
+        copy = { 163201, 281000 },
         noOverride = 317485, -- Condemn
         cast = 0,
         cooldown = 6,
         gcd = "spell",
+        hasteCD = true,
 
-        spend = function () return min(max(rage.current, 20),40) end,
+        spend = 0,
         spendType = "rage",
 
         startsCombat = true,
         texture = 135358,
 
-        usable = function () return target.health_pct < (talent.massacre.enabled and 35 or 20), "requires target in execute range" end,
-        handler = function ()
-            if rage.current > 20 then
-                local amt = min(max(rage.current, 20),40) -- Min 20, Max 40 spent
-                spend( amt, "rage" ) -- Spend Rage
-                gain( amt * 0.2, "rage" ) -- Regain 20% for target not dying
-                return
-            end
+        usable = function ()
+            if buff.sudden_death.up then return true end
+            if cycle_for_execute then return true end
+            return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
         end,
+
+        cycle = "execute_ineligible",
+
+        indicator = function () if cycle_for_execute then return "cycle" end end,
+
+        timeToReady = function()
+            -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
+            if rage.current >= 20 then return 0 end
+            return rage.time_to_20
+        end,
+
+        handler = function ()
+            if not buff.sudden_death.up then
+                local cost = min( rage.current, 40 )
+                spend( cost, "rage", nil, true)
+                gain( cost * 0.2, "rage" ) -- Regain 20% for target not dying (Protection spec)
+            else
+                removeBuff( "sudden_death" )
+            end
+            if talent.juggernaut.enabled then addStack( "juggernaut", nil, 1 ) end
+        end,
+        auras = {
+            -- Target Swapping
+            execute_ineligible = {
+                duration = 3600,
+                max_stack = 1,
+                generate = function( t, auraType )
+                    if buff.sudden_death.down and target.health_pct > ( talent.massacre.enabled and 35 or 20 ) then
+                        t.count = 1
+                        t.expires = query_time + 3600
+                        t.applied = query_time
+                        t.duration = 3600
+                        t.caster = "player"
+                        return
+                    end
+                    t.count = 0
+                    t.expires = 0
+                    t.applied = 0
+                    t.caster = "nobody"
+                end
+            }
+        }
     },
 
 
