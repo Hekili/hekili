@@ -1491,7 +1491,7 @@ spec:RegisterAbilities( {
         range = 8,
 
         handler = function ()
-            if talent.in_for_the_kill.enabled then 
+            if talent.in_for_the_kill.enabled and buff.in_for_the_kill.down then
                 applyBuff( "in_for_the_kill" ) 
                 stat.haste = stat.haste + ( target.health.pct < 35 and 0.2 or 0.1 )
             end
