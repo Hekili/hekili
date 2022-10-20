@@ -1,11 +1,10 @@
 -- WarriorArms.lua
 -- October 2022
--- Updated for BETA Build 46144 & PTR Build 46112
--- Last Modified 10/19/2022 14:41 UTC
+-- Updated for PTR Build 46181
+-- Last Modified 10/20/2022 18:15 UTC
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
-local isPTR = select( 4, GetBuildInfo() ) == 100000 -- PTR is 100000 as of 10/19/2022, BETA is 100002
 local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
@@ -146,7 +145,7 @@ spec:RegisterTalents( {
     sweeping_strikes                = { 90268, 260708, 1 }, --
     tactician                       = { 90282, 184783, 1 }, --
     test_of_might                   = { 90288, 385008, 1 }, --
-    thunder_clap                    = { 92224, function() return isPTR and 6343 or 396719 end, 1   },
+    thunder_clap                    = { 92224, 6343,  1  }, -- TODO: is 396719 in BETA Build for Arms/Fury
     thunderous_roar                 = { 90359, 384318, 1 }, --
     thunderous_words                = { 90358, 384969, 1 }, --
     tide_of_blood                   = { 90280, 386357, 1 }, --
@@ -395,7 +394,7 @@ spec:RegisterAuras( {
         max_stack = 1, -- TODO: Possibly implement fake stacks to track the Strength % increase gained from the buff
     },
     thunder_clap = {
-        id = function() return isPTR and 6343 or 396719 end,
+        id = 6343,
         duration = 10,
         max_stack = 1
     },
@@ -1033,7 +1032,7 @@ spec:RegisterAbilities( {
 
 
     intimidating_shout = {
-        id = 316593,
+        id = function () return talent.menace.enabled and 316593 or 5246 end,
         cast = 0,
         cooldown = 90,
         gcd = "spell",
@@ -1362,7 +1361,7 @@ spec:RegisterAbilities( {
 
 
     thunder_clap = {
-        id = function() return isPTR and 6343 or 396719 end,
+        id = 6343,
         cast = 0,
         cooldown = 6,
         hasteCD = true,
