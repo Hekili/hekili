@@ -432,11 +432,6 @@ spec:RegisterStateExpr( "glory_rage", function ()
     return gloryRage
 end )
 
-local TriggerMeleeCriticalHit = setfenv( function() -- Seasoned Soldier: Auto attack crits generate 20% more rage.
-    gain(( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * norm_weapon_speed * 0.2, "rage")
-end, state )
-
-
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" then
         if talent.anger_management.enabled then
@@ -483,9 +478,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             if state.talent.collateral_damage.enabled and state.buff.sweeping_strikes.up then
                 collateralDmgStacks = collateralDmgStacks + 1
             end
-        elseif subtype == "SWING_DAMAGE" and UnitGUID( "target" ) == destGUID and critical_swing then
-            -- Critical boolean is the 18th parameter in SWING_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
-            TriggerMeleeCriticalHit()
         elseif state.set_bonus.tier28_2pc > 0 and subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID and critical_spell then
             if spellName == class.abilities.cleave.name or spellName == class.abilities.mortal_strike.name or spellName == class.abilities.execute.name then
                 -- Critical boolean is the 21st parameter in SPELL_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
