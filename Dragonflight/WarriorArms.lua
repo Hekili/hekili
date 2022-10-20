@@ -738,6 +738,10 @@ spec:RegisterAbilities( {
             applyBuff( "bladestorm" )
             setCooldown( "global_cooldown", class.auras.bladestorm.duration )
             if talent.blademasters_torment.enabled then applyBuff("avatar", 4) end
+
+            if talent.merciless_bonegrinder.enabled then
+                state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
+            end
         end,
     },
 
@@ -802,6 +806,9 @@ spec:RegisterAbilities( {
             if talent.in_for_the_kill.enabled then
                 applyBuff( "in_for_the_kill" )
                 stat.haste = stat.haste + ( target.health.pct < 35 and 0.2 or 0.1 )
+            end
+            if talent.test_of_might.enabled then 
+                state.QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
         end,
     },
@@ -1341,6 +1348,10 @@ spec:RegisterAbilities( {
         handler = function ()
             setCooldown( "global_cooldown", 0.75 )
             applyBuff( "sweeping_strikes" )
+
+            if talent.collateral_damage.enabled then
+                state:QueueAuraExpiration( "sweeping_strikes_collateral_dmg", TriggerCollateralDamage, buff.sweeping_strikes.expires )
+            end
         end,
     },
 
@@ -1476,6 +1487,10 @@ spec:RegisterAbilities( {
             end
             applyDebuff( "target", "colossus_smash" )
             active_dot.colossus_smash = max( active_dot.colossus_smash, active_enemies )
+
+            if talent.test_of_might.enabled then 
+                state.QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
+            end
         end,
     },
 
