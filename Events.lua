@@ -872,17 +872,19 @@ do
                     if equipLoc == "INVTYPE_2HWEAPON" then
                         state.main_hand.size = 2
                         state.set_bonus.mainhand_2h = 1
+                        state.set_bonus.mainhand = 1
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND" then
                         state.main_hand.size = 1
-                        state.set_bonus.mainhand_weapon = 1
+                        state.set_bonus.mainhand = 1
                     end
                 elseif i == 17 then
                     if equipLoc == "INVTYPE_2HWEAPON" then
                         state.off_hand.size = 2
                         state.set_bonus.titans_grip_offhand = 1
+                        state.set_bonus.offhand = 1
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONOFFHAND" then
                         state.off_hand.size = 1
-                        state.set_bonus.offhand_weapon = 1
+                        state.set_bonus.offhand = 1
                     elseif equipLoc == "INVTYPE_SHIELD" then
                         state.off_hand.shield = true
                         state.set_bonus.shield = 1
@@ -899,7 +901,7 @@ do
             end
         end
 
-        if state.set_bonus.mainhand_2h + state.set_bonus.mainhand_weapon + state.set_bonus.titans_grip_offhand + state.set_bonus.offhand_weapon > 1 then
+        if state.set_bonus.mainhand + state.set_bonus.offhand > 1 then
             state.set_bonus.dual_wield = 1
         end
 
