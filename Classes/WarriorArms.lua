@@ -1276,7 +1276,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132342,
 
             notalent = "impending_victory",
-
             buff = "victorious",
 
             handler = function ()
