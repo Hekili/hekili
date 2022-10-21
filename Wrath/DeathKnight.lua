@@ -1782,6 +1782,8 @@ spec:RegisterAbilities( {
         cooldown = function() return 180 - ( 45 * talent.night_of_the_dead.rank ) - ( 60 * talent.master_of_ghouls.rank ) end,
         gcd = "spell",
 
+        essential = true,
+
         startsCombat = false,
         texture = 136119,
 

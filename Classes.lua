@@ -604,7 +604,7 @@ local HekiliSpecMixin = {
 
         a.realCast = 0
 
-        if item then
+        if item and a.id < 0 then
             --[[ local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( item )
 
             a.name = name or ability
