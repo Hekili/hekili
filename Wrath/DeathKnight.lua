@@ -1799,7 +1799,7 @@ spec:RegisterAbilities( {
             return "cooldowns"
         end,
 
-        usable = function() return not pet.exists, "cannot have a pet" end,
+        usable = function() return not pet.up, "cannot have a pet" end,
 
         handler = function ()
             summonPet( "ghoul" )

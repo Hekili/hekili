@@ -2532,7 +2532,7 @@ do
 
             if k == "up" or k == "exists" or k == "active" then
                 for k, v in pairs( t ) do
-                    if type(v) == "table" then
+                    if type(v) == "table" and v.expires then
                         if v.expires > state.query_time then return true end
                     end
                 end
