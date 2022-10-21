@@ -309,7 +309,7 @@ spec:RegisterAuras( {
     -- Causes damage every $t1 seconds.
     rupture = {
         id = 48672,
-        duration = function() return ( glyph_of_rupture.enabled and 10 or 6 ) + ( 2 * combo_points.current ) end,
+        duration = function() return ( glyph.rupture.enabled and 10 or 6 ) + ( 2 * combo_points.current ) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671, 48672 },
