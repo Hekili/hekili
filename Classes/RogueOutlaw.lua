@@ -598,7 +598,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         end
     end, state )
 
-    spec:RegisterHook( "reset_precast", function( amt, resource )
+    spec:RegisterHook( "reset_precast", function()
         if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
         if debuff.sepsis.up then
             state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )

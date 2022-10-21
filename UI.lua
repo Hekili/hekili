@@ -851,7 +851,6 @@ do
         d.id = id
         d.alpha = 0
         d.numIcons = conf.numIcons
-        d.firstForce = 0
         d.threadLocked = false
 
         local scale = self:GetScale()
@@ -2117,7 +2116,7 @@ do
     Hekili.Engine = CreateFrame( "Frame", "HekiliEngine" )
 
     Hekili.Engine.refreshTimer = 1
-    Hekili.Engine.eventsTriggered = {}
+    -- Hekili.Engine.eventsTriggered = {}
 
     Hekili.Engine:SetScript( "OnUpdate", function( self, elapsed )
         if Hekili.Pause or Hekili.PendingSpecializationChange then return end
@@ -2158,7 +2157,6 @@ do
 
             thread = self.activeThread
 
-            self.superUpdate = false
             self.criticalUpdate = false
         end
 
@@ -2172,7 +2170,7 @@ do
             local ok, err = coroutine.resume( thread )
             if not ok then
                 err = err .. "\n\n" .. debugstack( thread )
-                Hekili:Error( "Update: " .. err )
+                Hekili:Error( "Update: " .. err:gsub( "%%", "%%%%" ) )
                 pcall( error, err )
             end
             local now = debugprofilestop()
@@ -2211,7 +2209,10 @@ do
                         self.threadUpdates.frames = ( self.threadUpdates.frames * updates + self.activeThreadFrames ) / total
 
                         if timeSince > self.threadUpdates.peakClock then self.threadUpdates.peakClock = timeSince end
-                        if self.activeThreadTime > self.threadUpdates.peakWork then self.threadUpdates.peakWork = self.activeThreadTime end
+                        if self.activeThreadTime > self.threadUpdates.peakWork then
+                            -- if self.activeThreadTime > 40 then Hekili:MakeSnapshot( true ) end
+                            self.threadUpdates.peakWork = self.activeThreadTime
+                        end
                         if self.activeThreadFrames > self.threadUpdates.peakFrames then self.threadUpdates.peakFrames = self.activeThreadFrames end
 
                         self.threadUpdates.updates = total
@@ -2240,16 +2241,11 @@ do
     Hekili:ProfileFrame( "HekiliEngine", Hekili.Engine )
 
 
-    function Hekili:ForceUpdate( event, super )
+    function Hekili:ForceUpdate( event )
+        if not self.freshFrame then return end
+
         self.freshFrame = false
-
         self.Engine.criticalUpdate = true
-        if super then self.Engine.superUpdate = true end
-        if self.Engine.firstForce == 0 then self.Engine.firstForce = GetTime() end
-
-        if event then
-            self.Engine.eventsTriggered[ event ] = true
-        end
     end
 
 
