@@ -5583,6 +5583,10 @@ do
             insert( queue, e )
             sort( queue, byTime )
 
+            if real then
+                queue[ action ] = ( queue[ action ] or 0 ) + 1
+            end
+
             if Hekili.ActiveDebug and not real then Hekili:Debug( "Queued %s from %.2f to %.2f (%s).", action, start, time, type ) end
         end
     end
@@ -5643,6 +5647,10 @@ do
             if queue[ i ] == e then
                 Hekili:Debug( "Removing %d from queue.", i )
                 RecycleEvent( queue, i )
+
+                if real then
+                    queue[ action ] = max( 0, ( queue[ action ] or 0 ) - 1 )
+                end
                 break
             end
         end
@@ -5652,6 +5660,8 @@ do
 
     function state:GetEventInfo( action, start, time, type, target, real )
         local queue = real and realQueue or virtualQueue
+
+        if real and ( queue[ action ] or 0 ) == 0 then return end
 
         -- Find the first event that matches the provided criteria and return all the data.
         for i, event in ipairs( queue ) do
@@ -5677,6 +5687,9 @@ do
 
                 if e.action == action and ( eType == nil or e.type == eType ) then
                     RecycleEvent( queue, i )
+                    if real then
+                        queue[ action ] = ( queue[ action ] or 1 ) - 1
+                    end
                     return true
                 end
             end
@@ -5686,6 +5699,9 @@ do
 
                 if e.action == action and ( eType == nil or e.type == eType ) then
                     RecycleEvent( queue, i )
+                    if real then
+                        queue[ action ] = ( queue[ action ] or 0 ) - 1
+                    end
                     return true
                 end
             end
@@ -5698,7 +5714,6 @@ do
         local queue = real and realQueue or virtualQueue
 
         local success = false
-
         local impactSpells = class.abilities[ action ] and class.abilities[ action ].impactSpells
 
         for i = #queue, 1, -1 do
@@ -5706,6 +5721,9 @@ do
 
             if ( e.action == action or impactSpells and impactSpells[ action ] ) and ( eType == nil or e.type == eType ) then
                 RecycleEvent( queue, i )
+                if real then
+                    queue[ action ] = ( queue[ action ] or 1 ) - 1
+                end
                 success = true
             end
         end
@@ -5734,6 +5752,7 @@ do
 
             if e.time + EVENT_EXPIRE_MARGIN < now then
                 RecycleEvent( realQueue, i )
+                realQueue[ action ] = ( realQueue[ action ] or 1 ) - 1
             end
         end
 
@@ -5855,6 +5874,8 @@ do
 
 
     function state:IsQueued( action, real )
+        if real and ( realQueue[ action ] or 0 ) == 0 then return false end
+
         local queue = real and realQueue or virtualQueue
 
         for i, entry in ipairs( queue ) do
@@ -5866,6 +5887,8 @@ do
 
 
     function state:IsInFlight( action, real )
+        if real and ( realQueue[ action ] or 0 ) == 0 then return false end
+
         local queue = real and realQueue or virtualQueue
 
         for i, entry in ipairs( queue ) do
@@ -5877,6 +5900,8 @@ do
 
 
     function state:InFlightRemains( action, real )
+        if real and ( realQueue[ action ] or 0 ) == 0 then return 0 end
+
         local queue = real and realQueue or virtualQueue
 
         for i, entry in ipairs( queue ) do
@@ -5893,6 +5918,7 @@ do
     }
 
     function state:IsCasting( action, real )
+        if real and ( realQueue[ action ] or 0 ) == 0 then return false end
         local queue = real and realQueue or virtualQueue
 
         for i, entry in ipairs( queue ) do
@@ -5904,6 +5930,8 @@ do
 
 
     function state:QueuedCastRemains( action, real )
+        if real and ( realQueue[ action ] or 0 ) == 0 then return 0 end
+
         local queue = real and realQueue or virtualQueue
 
         for i, entry in ipairs( queue ) do

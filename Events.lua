@@ -966,7 +966,6 @@ do
 
     local function Update()
         ns.updateTalents()
-        Hekili:ForceUpdate( "TALENTS", true )
     end
 
     local function QueueUpdate()
@@ -974,22 +973,18 @@ do
         timer = C_Timer.NewTimer( 0.5, Update )
     end
 
-    if Hekili.IsDragonflight() then
-        local talentEvents = {
-            "TRAIT_CONFIG_CREATED",
-            "ACTIVE_COMBAT_CONFIG_CHANGED",
-            "PLAYER_REGEN_ENABLED",
-            "PLAYER_REGEN_DISABLED",
-            "STARTER_BUILD_ACTIVATION_FAILED",
-            "TRAIT_CONFIG_DELETED",
-            "TRAIT_CONFIG_UPDATED",
-        }
+    local talentEvents = {
+        "TRAIT_CONFIG_CREATED",
+        "ACTIVE_COMBAT_CONFIG_CHANGED",
+        "PLAYER_REGEN_ENABLED",
+        "PLAYER_REGEN_DISABLED",
+        "STARTER_BUILD_ACTIVATION_FAILED",
+        "TRAIT_CONFIG_DELETED",
+        "TRAIT_CONFIG_UPDATED",
+    }
 
-        for _, event in pairs( talentEvents ) do
-            RegisterEvent( event, QueueUpdate )
-        end
-    else
-        RegisterEvent( "PLAYER_TALENT_UPDATE", update )
+    for _, event in pairs( talentEvents ) do
+        RegisterEvent( event, QueueUpdate )
     end
 end
 
@@ -1038,7 +1033,7 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
     end
 
     -- Hekili:ExpireTTDs( true )
-    Hekili:ForceUpdate( event, true ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
+    Hekili:ForceUpdate( event ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
 end )
 
 
@@ -1183,7 +1178,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, 
         end
     end
 
-    Hekili:ForceUpdate( event, true )
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1202,7 +1197,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( even
         end
     end
 
-    Hekili:ForceUpdate( event, true )
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1214,7 +1209,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", "target", function( 
             Hekili:RemoveHold( ability.key, true )
         end
     end
-    Hekili:ForceUpdate( event, true )
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1226,7 +1221,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", "target", function( event, u
             Hekili:RemoveHold( ability.key, true )
         end
     end
-    Hekili:ForceUpdate( event, true )
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1301,10 +1296,10 @@ RegisterEvent( "CURRENT_SPELL_CAST_CHANGED", function( event, cancelled )
 end ) ]]
 
 
--- Update due to player totems.
+--[[ Update due to player totems.
 RegisterEvent( "PLAYER_TOTEM_UPDATE", function( event )
     Hekili:ForceUpdate( event )
-end )
+end ) -- TODO:  Re-evaluate whether this is necessary to force a faster update. ]]
 
 
 local power_tick_data = {
@@ -1352,7 +1347,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
         end
 
     end
-    Hekili:ForceUpdate( event, true )
+    -- Hekili:ForceUpdate( event )
 end
 Hekili:ProfileCPU( "UNIT_POWER_UPDATE", UNIT_POWER_FREQUENT )
 
@@ -1400,7 +1395,7 @@ do
     RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, full, data )
         if full then
             ScrapeUnitAuras( unit, false, event )
-            Hekili:ForceUpdate( event, true )
+            -- Hekili:ForceUpdate( event )
             return
         end
 
@@ -1409,7 +1404,7 @@ do
 
         if unit == "player" then
             state.player.updated = true
-            Hekili:ForceUpdate( event, true )
+            Hekili:ForceUpdate( event )
             return
         end
 
@@ -1422,7 +1417,7 @@ do
 
                 if aura then
                     state[ unit ].updated = true
-                    Hekili:ForceUpdate( event, true )
+                    Hekili:ForceUpdate( event )
                     return
 
                     --[[
@@ -1702,11 +1697,11 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
                 elseif subtype == "SPELL_CAST_FAILED" then
                     state:RemoveSpellEvent( ability.key, true, "CAST_FINISH" ) -- remove next cast finish.
                     if ability.isProjectile then state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT", true ) end -- remove last impact.
-                    Hekili:ForceUpdate( "SPELL_CAST_FAILED", true )
+                    Hekili:ForceUpdate( "SPELL_CAST_FAILED" )
 
                 elseif subtype == "SPELL_AURA_REMOVED" and ability.channeled then
                     state:RemoveSpellEvents( ability.key, true ) -- remove ticks, finish, impacts.
-                    Hekili:ForceUpdate( "SPELL_AURA_REMOVED_CHANNEL", true )
+                    Hekili:ForceUpdate( "SPELL_AURA_REMOVED_CHANNEL" )
 
                 elseif subtype == "SPELL_CAST_SUCCESS" then
                     state:RemoveSpellEvent( ability.key, true, "CAST_FINISH" ) -- remove next cast finish.
@@ -1762,9 +1757,9 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
 
                 elseif subtype == "SPELL_DAMAGE" then
                     -- Could be an impact.
-                    if state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT" ) then
+                    --[[ TODO CHECK if state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT" ) then
                         Hekili:ForceUpdate( "PROJECTILE_IMPACT" )
-                    end
+                    end ]]
                 end
             end
 
@@ -1854,7 +1849,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
             -- Interrupt is actually overkill.
             if not IsResting() and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
                 ns.eliminateUnit( destGUID, true )
-                Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
+                -- Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
             elseif not ( subtype == "SPELL_MISSED" and amount == "IMMUNE" ) then
                 ns.updateTarget( destGUID, time, amSource )
             end
@@ -2363,7 +2358,7 @@ end
 
 RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     DelayedUpdateKeybindings()
-    Hekili:ForceUpdate( event )
+    -- Hekili:ForceUpdate( event )
 end )
 
 

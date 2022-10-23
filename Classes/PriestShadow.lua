@@ -193,14 +193,14 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 if spellID == 288343 then
                     thought_harvester_consumed = GetTime()
                 elseif spellID == 341207 then
-                    Hekili:ForceUpdate( subtype, true )
+                    Hekili:ForceUpdate( subtype )
                 end
 
             elseif subtype == "SPELL_AURA_APPLIED" then
                 if spellID == 341273 then
                     unfurling_darkness_triggered = GetTime()
                 elseif spellID == 341207 then
-                    Hekili:ForceUpdate( subtype, true )
+                    Hekili:ForceUpdate( subtype )
                 end
             end
         end

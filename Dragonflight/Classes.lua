@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 if not Hekili.IsDragonflight() then return end
 
 local C_ClassTalents, C_Traits = _G.C_ClassTalents, _G.C_Traits
+local IsPlayerSpell = _G.IsPlayerSpell
+
 local RegisterEvent = ns.RegisterEvent
 
 local state, class = Hekili.State, Hekili.Class
@@ -156,7 +158,6 @@ all:RegisterAuras( {
         max_stack = 1,
         shared = "player"
     },
-
     fury_of_the_aspects = {
         id = 390386,
         duration = 40,
