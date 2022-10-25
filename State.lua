@@ -83,6 +83,9 @@ state.buff = {}
 state.consumable = {}
 state.cooldown = {}
 state.corruptions = {} -- TODO: REMOVE
+state.health = {
+    initialized = false
+}
 state.legendary = {}
 state.runeforge = state.legendary -- Different APLs use runeforge.X.equipped vs. legendary.X.enabled.
 --[[ state.health = {
@@ -6180,7 +6183,12 @@ do
         Hekili:Yield( "Reset Post-Powers" )
 
         -- Setting this here because the metatable would pull from UnitPower.
-        state.health = rawget( state, "health" ) or setmetatable( { resource = "health", meta = {} }, mt_resource )
+        if not state.health.initialized then
+            state.health.resource = "health"
+            state.health.meta = {}
+            setmetatable( state.health, mt_resource )
+            state.health.initialized = true
+        end
         state.health.current = nil
         state.health.actual = UnitHealth( "player" ) or 10000
         state.health.max = max( 1, UnitHealthMax( "player" ) or 10000 )
