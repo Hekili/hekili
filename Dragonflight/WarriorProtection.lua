@@ -1,14 +1,14 @@
 -- WarriorProtection.lua
 -- October 2022
--- Updated for Beta Build 45969
+-- Updated for PTR Build 46181
+-- Last Modified 10/19/2022 18:15 UTC
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
-
-local FindUnitBuffByID = ns.FindUnitBuffByID
+local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 local spec = Hekili:NewSpecialization( 73 )
 
@@ -21,7 +21,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         last = function ()
             local swing = state.swings.mainhand
             local t = state.query_time
-            
+
             return (  swing + floor( ( t - swing ) / state.swings.mainhand_speed )  * state.swings.mainhand_speed )
         end,
 
@@ -51,113 +51,113 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         value = 4,
     },
-})    
+})
 
 -- Talents
 spec:RegisterTalents( {
-    anger_management                = { 90311, 152278, 1 }, -- 
-    armored_to_the_teeth            = { 90259, 394855, 2 }, -- 
-    avatar                          = { 90365, 107574, 1 }, -- 
-    barbaric_training               = { 90334, 390675, 1 }, -- 
-    battering_ram                   = { 90262, 394312, 1 }, -- 
-    battle_stance                   = { 90261, 386164, 1 }, -- 
-    battlescarred_veteran           = { 90435, 386394, 1 }, -- 
-    berserker_rage                  = { 90372, 18499 , 1 }, -- 
-    berserker_shout                 = { 90348, 384100, 1 }, -- 
-    best_served_cold                = { 90304, 202560, 1 }, -- 
-    bitter_immunity                 = { 90356, 383762, 1 }, -- 
-    blood_and_thunder               = { 90342, 384277, 1 }, -- 
-    bloodborne                      = { 90448, 385704, 2 }, -- 
-    bloodsurge                      = { 90300, 384361, 1 }, -- 
-    bolster                         = { 90264, 280001, 1 }, -- 
-    booming_voice                   = { 90314, 202743, 1 }, -- 
-    bounding_stride                 = { 90355, 202163, 1 }, -- 
-    brace_for_impact                = { 90296, 386030, 1 }, -- 
-    brutal_vitality                 = { 90451, 384036, 1 }, -- 
-    cacophonous_roar                = { 90383, 382954, 1 }, -- 
-    challenging_shout               = { 90309, 1161  , 1 }, -- 
-    champions_bulwark               = { 90316, 386328, 1 }, -- 
-    concussive_blows                = { 90334, 383115, 1 }, -- 
-    crackling_thunder               = { 90342, 203201, 1 }, -- 
-    cruel_strikes                   = { 90381, 392777, 2 }, -- 
-    crushing_force                  = { 90369, 390642, 2 }, -- 
-    dance_of_death                  = { 90260, 393965, 1 }, -- 
-    defensive_stance                = { 90330, 386208, 1 }, -- 
-    demoralizing_shout              = { 90305, 1160  , 1 }, -- 
-    devastator                      = { 90299, 236279, 1 }, -- 
-    disrupting_shout                = { 90307, 386071, 1 }, -- 
-    double_time                     = { 90382, 103827, 1 }, -- 
-    elysian_might                   = { 90323, 386285, 1 }, -- 
-    endurance_training              = { 90339, 382940, 1 }, -- 
-    enduring_alacrity               = { 90433, 384063, 1 }, -- 
-    enduring_defenses               = { 90313, 386027, 1 }, -- 
-    fast_footwork                   = { 90371, 382260, 1 }, -- 
-    focused_vigor                   = { 90318, 384067, 1 }, -- 
-    frothing_berserker              = { 90370, 392790, 1 }, -- 
-    fueled_by_violence              = { 90451, 383103, 1 }, -- 
-    furious_blows                   = { 90336, 390354, 1 }, -- 
-    heavy_repercussions             = { 90319, 203177, 1 }, -- 
-    heroic_leap                     = { 90346, 6544  , 1 }, -- 
-    honed_reflexes                  = { 90361, 391271, 1 }, -- 
-    ignore_pain                     = { 90295, 190456, 1 }, -- 
-    immovable_object                = { 90364, 394307, 1 }, -- 
-    impending_victory               = { 90326, 202168, 1 }, -- 
-    impenetrable_wall               = { 90310, 384072, 1 }, -- 
-    improved_heroic_throw           = { 90306, 386034, 1 }, -- 
-    indomitable                     = { 90434, 202095, 1 }, -- 
-    inspiring_presence              = { 90332, 382310, 1 }, -- 
-    instigate                       = { 90301, 394311, 1 }, -- 
-    intervene                       = { 90329, 3411  , 1 }, -- 
-    intimidating_shout              = { 90384, 5246  , 1 }, -- 
-    into_the_fray                   = { 90319, 202603, 1 }, -- 
-    juggernaut                      = { 90449, 393967, 1 }, -- 
-    last_stand                      = { 90297, 12975 , 1 }, -- 
-    leeching_strikes                = { 90344, 382258, 1 }, -- 
-    massacre                        = { 90313, 281001, 1 }, -- 
-    menace                          = { 90383, 275338, 1 }, -- 
-    onehanded_weapon_specialization = { 90324, 382895, 1 }, -- 
-    overwhelming_rage               = { 90378, 382767, 2 }, -- 
-    pain_and_gain                   = { 90353, 382549, 1 }, -- 
-    piercing_howl                   = { 90348, 12323 , 1 }, -- 
-    piercing_verdict                = { 90379, 382948, 1 }, -- 
-    punish                          = { 90449, 275334, 1 }, -- 
-    rallying_cry                    = { 90331, 97462 , 1 }, -- 
-    ravager                         = { 90432, 228920, 1 }, -- 
-    reinforced_plates               = { 90368, 382939, 1 }, -- 
-    rend                            = { 90302, 394062, 1 }, -- 
-    revenge                         = { 90298, 6572  , 1 }, -- 
-    rumbling_earth                  = { 90374, 275339, 1 }, -- 
-    second_wind                     = { 90332, 29838 , 1 }, -- 
-    seismic_reverberation           = { 90340, 382956, 1 }, -- 
-    shattering_throw                = { 90351, 64382 , 1 }, -- 
-    shield_charge                   = { 90317, 385952, 1 }, -- 
-    shield_specialization           = { 90315, 386011, 2 }, -- 
-    shield_wall                     = { 90312, 871   , 1 }, -- 
-    shockwave                       = { 90375, 46968 , 1 }, -- 
-    show_of_force                   = { 90320, 385843, 1 }, -- 
-    sidearm                         = { 90377, 384404, 1 }, -- 
-    sonic_boom                      = { 90321, 390725, 1 }, -- 
-    spear_of_bastion                = { 90380, 376079, 1 }, -- 
-    spell_block                     = { 90450, 392966, 1 }, -- 
-    spell_reflection                = { 90385, 23920 , 1 }, -- 
-    storm_bolt                      = { 90337, 107570, 1 }, -- 
-    storm_of_steel                  = { 90431, 382953, 1 }, -- 
-    strategist                      = { 90303, 384041, 1 }, -- 
-    sudden_death                    = { 90320, 29725 , 1 }, -- 
-    thunder_clap                    = { 90343, 6343  , 1 }, -- 
-    thunderlord                     = { 90308, 385840, 1 }, -- 
-    thunderous_roar                 = { 90359, 384318, 1 }, -- 
-    thunderous_words                = { 90358, 384969, 1 }, -- 
-    titanic_throw                   = { 90341, 384090, 1 }, -- 
-    tough_as_nails                  = { 90450, 385888, 1 }, -- 
-    unbreakable_will                = { 90310, 384074, 1 }, -- 
-    unnerving_focus                 = { 90452, 384042, 1 }, -- 
-    unstoppable_force               = { 90364, 275336, 1 }, -- 
-    uproar                          = { 90357, 391572, 1 }, -- 
-    violent_outburst                = { 90265, 386477, 1 }, -- 
-    war_machine                     = { 90345, 316733, 1 }, -- 
-    wild_strikes                    = { 90360, 382946, 2 }, -- 
-    wrecking_throw                  = { 90351, 384110, 1 }, -- 
+    anger_management                = { 90311, 152278, 1 }, --
+    armored_to_the_teeth            = { 90259, 394855, 2 }, --
+    avatar                          = { 90365, 107574, 1 }, --
+    barbaric_training               = { 90377, 390675, 1 }, --
+    battering_ram                   = { 90262, 394312, 1 }, --
+    battle_stance                   = { 90261, 386164, 1 }, --
+    battlescarred_veteran           = { 90435, 386394, 1 }, --
+    berserker_rage                  = { 90372, 18499 , 1 }, --
+    berserker_shout                 = { 90348, 384100, 1 }, --
+    best_served_cold                = { 90304, 202560, 1 }, --
+    bitter_immunity                 = { 90356, 383762, 1 }, --
+    blood_and_thunder               = { 90342, 384277, 1 }, --
+    bloodborne                      = { 90448, 385704, 2 }, --
+    bloodsurge                      = { 90300, 384361, 1 }, --
+    bolster                         = { 90264, 280001, 1 }, --
+    booming_voice                   = { 90314, 202743, 1 }, --
+    bounding_stride                 = { 90355, 202163, 1 }, --
+    brace_for_impact                = { 90296, 386030, 1 }, --
+    brutal_vitality                 = { 90451, 384036, 1 }, --
+    cacophonous_roar                = { 90383, 382954, 1 }, --
+    challenging_shout               = { 90309, 1161  , 1 }, --
+    champions_bulwark               = { 90316, 386328, 1 }, --
+    concussive_blows                = { 90334, 383115, 1 }, --
+    crackling_thunder               = { 90342, 203201, 1 }, --
+    cruel_strikes                   = { 90381, 392777, 2 }, --
+    crushing_force                  = { 90369, 390642, 2 }, --
+    dance_of_death                  = { 90260, 393965, 1 }, --
+    defensive_stance                = { 90330, 386208, 1 }, --
+    demoralizing_shout              = { 90305, 1160  , 1 }, --
+    devastator                      = { 90299, 236279, 1 }, --
+    disrupting_shout                = { 90307, 386071, 1 }, --
+    double_time                     = { 90382, 103827, 1 }, --
+    elysian_might                   = { 90323, 386285, 1 }, --
+    endurance_training              = { 90339, 382940, 1 }, --
+    enduring_alacrity               = { 90433, 384063, 1 }, --
+    enduring_defenses               = { 90313, 386027, 1 }, --
+    fast_footwork                   = { 90371, 382260, 1 }, --
+    focused_vigor                   = { 90318, 384067, 1 }, --
+    frothing_berserker              = { 90370, 392790, 1 }, --
+    fueled_by_violence              = { 90451, 383103, 1 }, --
+    furious_blows                   = { 90336, 390354, 1 }, --
+    heavy_repercussions             = { 90319, 203177, 1 }, --
+    heroic_leap                     = { 90346, 6544  , 1 }, --
+    honed_reflexes                  = { 90361, 391271, 1 }, --
+    ignore_pain                     = { 90295, 190456, 1 }, --
+    immovable_object                = { 90364, 394307, 1 }, --
+    impending_victory               = { 90326, 202168, 1 }, --
+    impenetrable_wall               = { 90310, 384072, 1 }, --
+    improved_heroic_throw           = { 90306, 386034, 1 }, --
+    indomitable                     = { 90434, 202095, 1 }, --
+    inspiring_presence              = { 90332, 382310, 1 }, --
+    instigate                       = { 90301, 394311, 1 }, --
+    intervene                       = { 90329, 3411  , 1 }, --
+    intimidating_shout              = { 90384, 5246  , 1 }, --
+    into_the_fray                   = { 90319, 202603, 1 }, --
+    juggernaut                      = { 90449, 393967, 1 }, --
+    last_stand                      = { 90297, 12975 , 1 }, --
+    leeching_strikes                = { 90344, 382258, 1 }, --
+    massacre                        = { 90313, 281001, 1 }, --
+    menace                          = { 90383, 275338, 1 }, --
+    onehanded_weapon_specialization = { 90324, 382895, 1 }, --
+    overwhelming_rage               = { 90378, 382767, 2 }, --
+    pain_and_gain                   = { 90353, 382549, 1 }, --
+    piercing_howl                   = { 90348, 12323 , 1 }, --
+    piercing_verdict                = { 90379, 382948, 1 }, --
+    punish                          = { 90449, 275334, 1 }, --
+    rallying_cry                    = { 90331, 97462 , 1 }, --
+    ravager                         = { 90432, 228920, 1 }, --
+    reinforced_plates               = { 90368, 382939, 1 }, --
+    rend                            = { 90302, 394062, 1 }, --
+    revenge                         = { 90298, 6572  , 1 }, --
+    rumbling_earth                  = { 90374, 275339, 1 }, --
+    second_wind                     = { 90332, 29838 , 1 }, --
+    seismic_reverberation           = { 90340, 382956, 1 }, --
+    shattering_throw                = { 90351, 64382 , 1 }, --
+    shield_charge                   = { 90317, 385952, 1 }, --
+    shield_specialization           = { 90315, 386011, 2 }, --
+    shield_wall                     = { 90312, 871   , 1 }, --
+    shockwave                       = { 90375, 46968 , 1 }, --
+    show_of_force                   = { 90320, 385843, 1 }, --
+    sidearm                         = { 90334, 384404, 1 }, --
+    sonic_boom                      = { 90321, 390725, 1 }, --
+    spear_of_bastion                = { 90380, 376079, 1 }, --
+    spell_block                     = { 90450, 392966, 1 }, --
+    spell_reflection                = { 90385, 23920 , 1 }, --
+    storm_bolt                      = { 90337, 107570, 1 }, --
+    storm_of_steel                  = { 90431, 382953, 1 }, --
+    strategist                      = { 90303, 384041, 1 }, --
+    sudden_death                    = { 90320, 29725 , 1 }, --
+    thunder_clap                    = { 90343, 6343  , 1 }, --
+    thunderlord                     = { 90308, 385840, 1 }, --
+    thunderous_roar                 = { 90359, 384318, 1 }, --
+    thunderous_words                = { 90358, 384969, 1 }, --
+    titanic_throw                   = { 90341, 384090, 1 }, --
+    tough_as_nails                  = { 90450, 385888, 1 }, --
+    unbreakable_will                = { 90310, 384074, 1 }, --
+    unnerving_focus                 = { 90452, 384042, 1 }, --
+    unstoppable_force               = { 90364, 275336, 1 }, --
+    uproar                          = { 90357, 391572, 1 }, --
+    violent_outburst                = { 90265, 386477, 1 }, --
+    war_machine                     = { 90345, 316733, 1 }, --
+    wild_strikes                    = { 90360, 382946, 2 }, --
+    wrecking_throw                  = { 90351, 384110, 1 }, --
 } )
 
 -- PvP Talents
@@ -276,7 +276,7 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1
     },
-    dragon_charge = { -- TODO: This is the duration of the sprint.
+    dragon_charge = {
         id = 206572,
         duration = 1.2,
         max_stack = 1
@@ -314,7 +314,7 @@ spec:RegisterAuras( {
     juggernaut = {
         id = 383290,
         duration = 12,
-        max_stack = 10
+        max_stack = 15
     },
     last_stand = {
         id = 12975,
@@ -336,7 +336,7 @@ spec:RegisterAuras( {
         duration = 9,
         max_stack = 5
     },
-    wild_strikes = { --Renamed from Quick Thinking to Wild Strikes in build 45779, 
+    wild_strikes = { --Renamed from Quick Thinking to Wild Strikes in build 45779,
         id = 382946, --392778 is quick_thinking aura,
         duration = 10,
         max_stack = 1
@@ -479,26 +479,25 @@ spec:RegisterAuras( {
     }
 })
 
-local gloryRage = 0
-
-spec:RegisterStateExpr( "glory_rage", function ()
-        return gloryRage
-end )
-
+-- Dragonflight Season 1
+spec:RegisterSetBonuses( "tier29_2pc", 393710, "tier29_4pc", 393711 ) -- Dragonflight Season 1
+-- 2-Set - Revenge grants you Vanguard's Determination, increasing your damage done and reducing damage you take by 4% for 5 sec seconds.
+-- 4-Set - During Vanguard's Determination, gain Ignore Pain equal to 5% of damage you deal.
+spec:RegisterAuras( {
+    vanguards_determination = {
+        id = 394056,
+        duration = 5,
+        max_stack = 1,
+    }
+})
 
 local rageSpent = 0
-
-spec:RegisterStateExpr( "rage_spent", function ()
-    return rageSpent
-end )
-
-
+local gloryRage = 0
 local outburstRage = 0
 
-spec:RegisterStateExpr( "outburst_rage", function ()
-    return outburstRage
-end )
-
+spec:RegisterStateExpr( "glory_rage", function () return gloryRage end )
+spec:RegisterStateExpr( "rage_spent", function () return rageSpent end )
+spec:RegisterStateExpr( "outburst_rage", function () return outburstRage end )
 
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
@@ -506,21 +505,19 @@ local lastRage = -1
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
-
-        if current < lastRage then
-            if state.legendary.glory.enabled and FindUnitBuffByID( "player", 324143 ) then
-                gloryRage = ( gloryRage + lastRage - current ) % 20 -- Glory.
+        if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
+            if state.talent.anger_management.enabled or state.talent.indomitable.enabled then
+                rageSpent = ( rageSpent + lastRage - current ) % 10 -- Anger Management / Indomitable
             end
 
-            if state.talent.anger_management.enabled then
-                rageSpent = ( rageSpent + lastRage - current ) % 10 -- Anger Management
+            if state.legendary.glory.enabled and FindPlayerAuraByID( 324143 ) then
+                gloryRage = ( gloryRage + lastRage - current ) % 10 -- Glory.
             end
 
             if state.set_bonus.tier28_2pc > 0 or state.talent.violent_outburst.enabled then
-                outburstRage = ( outburstRage + lastRage - current ) % 30 -- Outburst
+                outburstRage = ( outburstRage + lastRage - current ) % 30 -- Outburst T28 or Violent Outburst
             end
         end
-
         lastRage = current
     end
 end )
@@ -528,28 +525,33 @@ end )
 
 -- model rage expenditure and special effects
 spec:RegisterHook( "spend", function( amt, resource )
-    if resource == "rage" and amt > 0 then
-        if talent.indomitable.enabled then
-            rage_spent = rage_spent + amt -- 50 rage , spent 35 on ignore pain
-            local healthpct = floor( rage_spent / 10 ) 
-            rage_spent = rage_spent % 10
-            gain( 0.1 * health.max, "health" )
-        end
-        if talent.anger_management.enabled then
+    if resource == "rage" and amt < 0 then
+        if talent.indomitable.enabled or talent.anger_management.enabled then
             rage_spent = rage_spent + amt
-            local secs = floor( rage_spent / 10 )
+            local activations = floor( rage_spent / 10 )
             rage_spent = rage_spent % 10
 
-            cooldown.avatar.expires = cooldown.avatar.expires - secs
-            reduceCooldown( "shield_wall", secs )
+            if activations > 0 then
+                if talent.anger_management.enabled then
+                    if talent.shield_wall.enabled then
+                        cooldown.shield_wall.expires = cooldown.shield_wall.expires - activations
+                    end
+                    if talent.avatar.enabled then
+                        cooldown.avatar.expires = cooldown.avatar.expires - activations
+                    end
+                end
+                if talent.indomitable.enabled then
+                    gain( (0.1 * activations) * health.max, "health" )
+                end
+            end
         end
 
         if legendary.glory.enabled and buff.conquerors_banner.up then
             glory_rage = glory_rage + amt
-            local reduction = floor( glory_rage / 10 ) * 0.5
+            local addition = floor( glory_rage / 10 ) * 0.5
             glory_rage = glory_rage % 10
 
-            buff.conquerors_banner.expires = buff.conquerors_banner.expires + reduction
+            buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition
         end
 
         if set_bonus.tier28_2pc > 0 or talent.violent_outburst.enabled then
@@ -557,13 +559,20 @@ spec:RegisterHook( "spend", function( amt, resource )
             local stacks = floor( outburst_rage / 30 )
             outburst_rage = outburst_rage % 30
             if stacks > 0 then
-                if set_bonus.tier28_2pc > 0 then addStack( "seeing_red_tier28", nil, stacks ) end
-                if talent.violent_outburst.enabled then addStack( "seeing_red", nil, stacks ) end
+                if set_bonus.tier28_2pc > 0 then
+                    addStack( "seeing_red_tier28", nil, stacks ) end
+                if talent.violent_outburst.enabled then
+                    addStack( "seeing_red", nil, stacks )
+                end
             end
         end
     end
 end )
 
+spec:RegisterStateExpr( "cycle_for_execute", function ()
+    if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
+    return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
+end )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -738,7 +747,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "charge" )
         end,
     },
-    
+
 
     defensive_stance = {
         id = 386208,
@@ -749,6 +758,8 @@ spec:RegisterAbilities( {
         talent = "defensive_stance",
         startsCombat = false,
         texture = 132341,
+
+        essential = true,
 
         handler = function ()
             removeBuff( "battle_stance" )
@@ -843,27 +854,68 @@ spec:RegisterAbilities( {
 
 
     execute = {
-        id = 281000,
+        id = function () return talent.massacre.enabled and 281000 or 163201 end,
+        known = 163201,
+        copy = { 163201, 281000 },
         noOverride = 317485, -- Condemn
         cast = 0,
         cooldown = 6,
         gcd = "spell",
+        hasteCD = true,
 
-        spend = function () return min(max(rage.current, 20),40) end,
+        spend = 0,
         spendType = "rage",
 
         startsCombat = true,
         texture = 135358,
 
-        usable = function () return target.health_pct < (talent.massacre.enabled and 35 or 20), "requires target in execute range" end,
-        handler = function ()
-            if rage.current > 20 then
-                local amt = min(max(rage.current, 20),40) -- Min 20, Max 40 spent
-                spend( amt, "rage" ) -- Spend Rage
-                gain( amt * 0.2, "rage" ) -- Regain 20% for target not dying
-                return
-            end
+        usable = function ()
+            if buff.sudden_death.up then return true end
+            if cycle_for_execute then return true end
+            return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
         end,
+
+        cycle = "execute_ineligible",
+
+        indicator = function () if cycle_for_execute then return "cycle" end end,
+
+        timeToReady = function()
+            -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
+            if rage.current >= 20 then return 0 end
+            return rage.time_to_20
+        end,
+
+        handler = function ()
+            if not buff.sudden_death.up then
+                local cost = min( rage.current, 40 )
+                spend( cost, "rage", nil, true)
+                gain( cost * 0.2, "rage" ) -- Regain 20% for target not dying (Protection spec)
+            else
+                removeBuff( "sudden_death" )
+            end
+            if talent.juggernaut.enabled then addStack( "juggernaut", nil, 1 ) end
+        end,
+        auras = {
+            -- Target Swapping
+            execute_ineligible = {
+                duration = 3600,
+                max_stack = 1,
+                generate = function( t, auraType )
+                    if buff.sudden_death.down and target.health_pct > ( talent.massacre.enabled and 35 or 20 ) then
+                        t.count = 1
+                        t.expires = query_time + 3600
+                        t.applied = query_time
+                        t.duration = 3600
+                        t.caster = "player"
+                        return
+                    end
+                    t.count = 0
+                    t.expires = 0
+                    t.applied = 0
+                    t.caster = "nobody"
+                end
+            }
+        }
     },
 
 
@@ -942,7 +994,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            
+
             applyBuff( "ignore_pain" )
         end,
     },
@@ -984,6 +1036,7 @@ spec:RegisterAbilities( {
 
     intimidating_shout = {
         id = 316593,
+        copy = { 316593, 5246 },
         cast = 0,
         cooldown = 90,
         gcd = "spell",
@@ -1069,7 +1122,14 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132938,
 
+        toggle = "interrupts",
+        interrupt = true,
+
+        debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
         handler = function ()
+            interrupt()
             if talent.concussive_blows.enabled then
                 applyDebuff( "target", "concussive_blows" )
             end
@@ -1088,6 +1148,7 @@ spec:RegisterAbilities( {
         texture = 132351,
 
         toggle = "cooldowns",
+        shared = "player",
 
         handler = function ()
             applyBuff( "rallying_cry" )
@@ -1159,6 +1220,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            if state.set_bonus.tier29_2pc > 0 then applyBuff( "vanguards_determination" ) end
             if buff.revenge.up then removeBuff( "revenge" ) end
             if talent.show_of_force.enabled then applyBuff( "show_of_force" ) end
             applyDebuff ( "target", "deep_wounds" )
@@ -1261,10 +1323,10 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        spend = function () return 
+        spend = function () return
             ( -15 + ( talent.impenetrable_wall.enabled and -3 or 0 ) -- Build 45969
                  + ( talent.heavy_repercussions.enabled and -2 or 0 )  -- Build 45969
-            ) 
+            )
             * ( buff.violent_outburst.up and 1.5 or 1) -- Build 45969
             * ( buff.unnerving_focus.up and 1.5 or 1) end,
         spendType = "rage",
@@ -1274,13 +1336,13 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.brace_for_impact.enabled then applyBuff ( "brace_for_impact" ) end
-            
+
             if talent.punish.enabled then applyDebuff ( "target" , "punish" ) end
-            
+
             if talent.impenetrable_wall.enabled and cooldown.shield_wall.remains > 0 then
                 reduceCooldown( "shield_wall", 5 )
             end
-            
+
             if talent.heavy_repercussions.enabled and buff.shield_block.up then
                 buff.shield_block.expires = buff.shield_block.expires + 1
             end
@@ -1456,7 +1518,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         hasteCD = true,
 
-        spend = function () return -5 
+        spend = function () return -5
             * (buff.violent_outburst.up and 1.5 or 1 ) -- Build xxx
             * (buff.unnerving_focus.up and 1.5 or 1) end,
         spendType = "rage",
@@ -1473,7 +1535,8 @@ spec:RegisterAbilities( {
                 reduceCooldown( "demoralizing_shout", min( 3, active_enemies ) )
             end
 
-            if talent.blood_and_thunder.enabled and debuff.rend.up then
+            if talent.blood_and_thunder.enabled and talent.rend.enabled then -- Blood and Thunder now directly applies Rend to 5 nearby targets
+                applyDebuff( "target", "rend" )
                 active_dot.rend = min( active_enemies, 5 )
             end
 
@@ -1523,8 +1586,8 @@ spec:RegisterAbilities( {
         texture = 132453,
 
         handler = function ()
-            if talent.improved_heroic_throw.enabled then 
-                applyDebuff( "target", "deep_wounds" ) 
+            if talent.improved_heroic_throw.enabled then
+                applyDebuff( "target", "deep_wounds" )
                 active_dot.deep_wounds = min( active_enemies, 5 )
             end
         end,
@@ -1607,7 +1670,7 @@ spec:RegisterSetting( "free_revenge", true, {
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
     name = "Only |T236312:0|t Shockwave as Interrupt",
-    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting.",
+    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting (and talented).",
     type = "toggle",
     width = "full"
 } )
@@ -1620,7 +1683,7 @@ spec:RegisterSetting( "overlap_ignore_pain", false, {
 } )
 
 spec:RegisterSetting( "stack_shield_block", false, {
-    name = "Stack |T132110:0|t Shield Block with Reprisal",
+    name = "Overlap |T132110:0|t Shield Block",
     desc = function()
         return "If checked, the addon can recommend overlapping |T132110:0|t Shield Block usage. \n\n" ..
         "This setting avoids leaving Shield Block at 2 charges, which wastes cooldown recovery time."
