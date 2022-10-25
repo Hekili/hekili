@@ -700,34 +700,6 @@ elseif baseClass == "DRUID" then
 
             copy = { "lone_empowerment", "lone_meditation", "lone_protection", 326462, 326446, 338142, 338018 }
         },
-        convoke_the_spirits = {
-            id = 323764,
-            cast = function () return legendary.celestial_spirits.enabled and 3 or 4 end,
-            channeled = true,
-            cooldown = function () return legendary.celestial_spirits.enabled and 60 or 120 end,
-            gcd = "spell",
-
-            toggle = "essences",
-
-            startsCombat = true,
-            texture = 3636839,
-
-            disabled = function ()
-                return covenant.night_fae and not IsSpellKnownOrOverridesKnown( 323764 ), "you have not finished your night_fae covenant intro"
-            end,
-
-            finish = function ()
-                -- Can we safely assume anything is going to happen?
-                if state.spec.feral then
-                    applyBuff( "tigers_fury" )
-                    if target.distance < 8 then
-                        gain( 5, "combo_points" )
-                    end
-                elseif state.spec.guardian then
-                elseif state.spec.balance then
-                end
-            end,
-        },
         ravenous_frenzy = {
             id = 323546,
             cast = 0,
@@ -746,6 +718,24 @@ elseif baseClass == "DRUID" then
                     state:QueueAuraExpiration( "ravenous_frenzy", SinfulHysteriaHandler, buff.ravenous_frenzy.expires )
                 end
             end,
+
+            auras = {
+                ravenous_frenzy = {
+                    id = 323546,
+                    duration = 20,
+                    max_stack = 20,
+                },
+                ravenous_frenzy_sinful_hysteria = {
+                    id = 355315,
+                    duration = 5,
+                    max_stack = 20,
+                },
+                ravenous_frenzy_stun = {
+                    id = 323557,
+                    duration = 1,
+                    max_stack = 1,
+                },
+            }
         }
     } )
 elseif baseClass == "HUNTER" then

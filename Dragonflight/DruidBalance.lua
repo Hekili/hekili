@@ -385,7 +385,814 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
+
+    -- Legendaries
+    balance_of_all_things_arcane = {
+        id = 339946,
+        duration = 8,
+        max_stack = 8
+    },
+    balance_of_all_things_nature = {
+        id = 339943,
+        duration = 8,
+        max_stack = 8,
+    },
+    celestial_infusion = {
+        id = 367907,
+        duration = 8,
+        max_stack = 1
+    },
+    oath_of_the_elder_druid = {
+        id = 338643,
+        duration = 60,
+        max_stack = 1
+    },
+    oneths_perception = {
+        id = 339800,
+        duration = 30,
+        max_stack = 1,
+    },
+    oneths_clear_vision = {
+        id = 339797,
+        duration = 30,
+        max_stack = 1,
+    },
+    primordial_arcanic_pulsar = {
+        id = 338825,
+        duration = 3600,
+        max_stack = 10,
+    },
+    timeworn_dreambinder = {
+        id = 340049,
+        duration = 6,
+        max_stack = 2,
+    },
 } )
+
+
+-- Adaptive Swarm Stuff
+do
+    local applications = {
+        SPELL_AURA_APPLIED = true,
+        SPELL_AURA_REFRESH = true,
+        SPELL_AURA_APPLIED_DOSE = true
+    }
+
+    local casts = { SPELL_CAST_SUCCESS = true }
+
+    local removals = {
+        SPELL_AURA_REMOVED = true,
+        SPELL_AURA_BROKEN = true,
+        SPELL_AURA_BROKEN_SPELL = true,
+        SPELL_AURA_REMOVED_DOSE = true,
+        SPELL_DISPEL = true
+    }
+
+    local deaths = {
+        UNIT_DIED       = true,
+        UNIT_DESTROYED  = true,
+        UNIT_DISSIPATES = true,
+        PARTY_KILL      = true,
+        SPELL_INSTAKILL = true,
+    }
+
+    local spellIDs = {
+        [325733] = true,
+        [325889] = true,
+        [325748] = true,
+        [325891] = true,
+        [325727] = true
+    }
+
+    local flights = {}
+    local pending = {}
+    local swarms = {}
+
+    -- Flow:  Cast -> In Flight -> Application -> Ticks -> Removal -> In Flight -> Application -> Ticks -> Removal -> ...
+    -- If the swarm target dies, it will jump again.
+    local insert, remove = table.insert, table.remove
+
+    function Hekili:EmbedAdaptiveSwarm( s )
+        s:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+            if not state.covenant.necrolord then return end
+
+            if sourceGUID == state.GUID and spellIDs[ spellID ] then
+                -- On cast, we need to show we have a cast-in-flight.
+                if casts[ subtype ] then
+                    local dot
+
+                    if bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 then
+                        dot = "adaptive_swarm_damage"
+                    else
+                        dot = "adaptive_swarm_heal"
+                    end
+
+                    insert( flights, { destGUID, 3, GetTime() + 5, dot } )
+
+                -- On application, we need to store the GUID of the unit so we can get the stacks and expiration time.
+                elseif applications[ subtype ] and #flights > 0 then
+                    local n, flight
+
+                    for i, v in ipairs( flights ) do
+                        if v[1] == destGUID then
+                            n = i
+                            flight = v
+                            break
+                        end
+                        if not flight and v[1] == "unknown" then
+                            n = i
+                            flight = v
+                        end
+                    end
+
+                    if flight then
+                        local swarm = swarms[ destGUID ]
+                        local now = GetTime()
+
+                        if swarm and swarm.expiration > now then
+                            swarm.stacks = swarm.stacks + flight[2]
+                            swarm.dot = bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 and "adaptive_swarm_damage" or "adaptive_swarm_heal"
+                            swarm.expiration = now + class.auras[ swarm.dot ].duration
+                        else
+                            swarms[ destGUID ] = {}
+                            swarms[ destGUID ].stacks = flight[2]
+                            swarms[ destGUID ].dot = bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 and "adaptive_swarm_damage" or "adaptive_swarm_heal"
+                            swarms[ destGUID ].expiration = now + class.auras[ swarms[ destGUID ].dot ].duration
+                        end
+                        remove( flights, n )
+                    else
+                        swarms[ destGUID ] = {}
+                        swarms[ destGUID ].stacks = 3 -- We'll assume it's fresh.
+                        swarms[ destGUID ].dot = bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 and "adaptive_swarm_damage" or "adaptive_swarm_heal"
+                        swarms[ destGUID ].expiration = GetTime() + class.auras[ swarms[ destGUID ].dot ].duration
+                    end
+
+                elseif removals[ subtype ] then
+                    -- If we have a swarm for this, remove it.
+                    local swarm = swarms[ destGUID ]
+
+                    if swarm then
+                        swarms[ destGUID ] = nil
+
+                        if swarm.stacks > 1 then
+                            local dot
+
+                            if bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 then
+                                dot = "adaptive_swarm_heal"
+                            else
+                                dot = "adaptive_swarm_damage"
+                            end
+
+                            insert( flights, { "unknown", swarm.stacks - 1, GetTime() + 5, dot } )
+
+                        end
+                    end
+                end
+
+            elseif swarms[ destGUID ] and deaths[ subtype ] then
+                -- If we have a swarm for this, remove it.
+                local swarm = swarms[ destGUID ]
+
+                if swarm then
+                    swarms[ destGUID ] = nil
+
+                    if swarm.stacks > 1 then
+                        if bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 then
+                            dot = "adaptive_swarm_heal"
+                        else
+                            dot = "adaptive_swarm_damage"
+                        end
+
+                        insert( flights, { "unknown", swarm.stacks - 1, GetTime() + 5, dot } )
+
+                    end
+                end
+            end
+        end )
+
+        function s.GetActiveSwarms()
+            return swarms
+        end
+
+        function s.GetPendingSwarms()
+            return pending
+        end
+
+        function s.GetInFlightSwarms()
+            return flights
+        end
+
+        local flySwarm, landSwarm
+
+        landSwarm = setfenv( function( aura )
+            if aura.key == "adaptive_swarm_heal_in_flight" then
+                applyBuff( "adaptive_swarm_heal", 12, min( 5, buff.adaptive_swarm_heal.stack + aura.count ) )
+                buff.adaptive_swarm_heal.expires = query_time + 12
+                state:QueueAuraEvent( "adaptive_swarm", flySwarm, buff.adaptive_swarm_heal.expires, "AURA_EXPIRATION", buff.adaptive_swarm_heal )
+            else
+                applyDebuff( "target", "adaptive_swarm_damage", 12, min( 5, debuff.adaptive_swarm_damage.stack + aura.count ) )
+                debuff.adaptive_swarm_damage.expires = query_time + 12
+                state:QueueAuraEvent( "adaptive_swarm", flySwarm, debuff.adaptive_swarm_damage.expires, "AURA_EXPIRATION", debuff.adaptive_swarm_damage )
+            end
+        end, state )
+
+        flySwarm = setfenv( function( aura )
+            if aura.key == "adaptive_swarm_heal" then
+                applyBuff( "adaptive_swarm_heal_in_flight", 5, aura.count - 1 )
+                state:QueueAuraEvent( "adaptive_swarm", landSwarm, query_time + 5, "AURA_EXPIRATION", buff.adaptive_swarm_heal_in_flight )
+            else
+                applyBuff( "adaptive_swarm_damage_in_flight", 5, aura.count - 1 )
+                state:QueueAuraEvent( "adaptive_swarm", landSwarm, query_time + 5, "AURA_EXPIRATION", buff.adaptive_swarm_damage_in_flight )
+            end
+        end, state )
+
+        s.SwarmOnReset = setfenv( function()
+            for k, v in pairs( swarms ) do
+                if v.expiration + 0.1 <= now then swarms[ k ] = nil end
+            end
+
+            for i = #flights, 1, -1 do
+                if flights[i][3] + 0.1 <= now then remove( flights, i ) end
+            end
+
+            local target = UnitGUID( "target" )
+            local tSwarm = swarms[ target ]
+
+            if not UnitIsFriend( "target", "player" ) and tSwarm and tSwarm.expiration > now then
+                applyDebuff( "target", "adaptive_swarm_damage", tSwarm.expiration - now, tSwarm.stacks )
+                debuff.adaptive_swarm_damage.expires = tSwarm.expiration
+
+                if tSwarm.stacks > 1 then
+                    state:QueueAuraEvent( "adaptive_swarm", flySwarm, tSwarm.expiration, "AURA_EXPIRATION", debuff.adaptive_swarm_damage )
+                end
+            end
+
+            if buff.adaptive_swarm_heal.up and buff.adaptive_swarm_heal.stack > 1 then
+                state:QueueAuraEvent( "adaptive_swarm", flySwarm, buff.adaptive_swarm_heal.expires, "AURA_EXPIRATION", buff.adaptive_swarm_heal )
+            else
+                for k, v in pairs( swarms ) do
+                    if k ~= target and v.dot == "adaptive_swarm_heal" then
+                        applyBuff( "adaptive_swarm_heal", v.expiration - now, v.stacks )
+                        buff.adaptive_swarm_heal.expires = v.expiration
+
+                        if v.stacks > 1 then
+                            state:QueueAuraEvent( "adaptive_swarm", flySwarm, buff.adaptive_swarm_heal.expires, "AURA_EXPIRATION", buff.adaptive_swarm_heal )
+                        end
+                    end
+                end
+            end
+
+            local flight
+
+            for i, v in ipairs( flights ) do
+                if not flight or v[3] > now and v[3] > flight then flight = v end
+            end
+
+            if flight then
+                local dot = flight[4] .. "_in_flight"
+                applyBuff( dot, flight[3] - now, flight[2] )
+                state:QueueAuraEvent( dot, landSwarm, flight[3], "AURA_EXPIRATION", buff[ dot ] )
+            end
+
+            Hekili:Debug( "Swarm Info:\n   Damage - %.2f remains, %d stacks.\n   Dmg In Flight - %.2f remains, %d stacks.\n   Heal - %.2f remains, %d stacks.\n   Heal In Flight - %.2f remains, %d stacks.\n   Count Dmg: %d, Count Heal: %d.", dot.adaptive_swarm_damage.remains, dot.adaptive_swarm_damage.stack, buff.adaptive_swarm_damage_in_flight.remains, buff.adaptive_swarm_damage_in_flight.stack, buff.adaptive_swarm_heal.remains, buff.adaptive_swarm_heal.stack, buff.adaptive_swarm_heal_in_flight.remains, buff.adaptive_swarm_heal_in_flight.stack, active_dot.adaptive_swarm_damage, active_dot.adaptive_swarm_heal )
+        end, state )
+
+        function Hekili:DumpSwarmInfo()
+            local line = "Flights:"
+            for k, v in pairs( flights ) do
+                line = line .. " " .. k .. ":" .. table.concat( v, ":" )
+            end
+            print( line )
+
+            line = "Pending:"
+            for k, v in pairs( pending ) do
+                line = line .. " " .. k .. ":" .. v
+            end
+            print( line )
+
+            line = "Swarms:"
+            for k, v in pairs( swarms ) do
+                line = line .. " " .. k .. ":" .. v.stacks .. ":" .. v.expiration
+            end
+            print( line )
+        end
+
+        -- Druid - Necrolord - 325727 - adaptive_swarm       (Adaptive Swarm)
+        spec:RegisterAbility( "adaptive_swarm", {
+            id = 325727,
+            cast = 0,
+            cooldown = 25,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3578197,
+
+            -- For Feral, we want to put Adaptive Swarm on the highest health enemy.
+            indicator = function ()
+                if state.spec.feral and active_enemies > 1 and target.time_to_die < longest_ttd then return "cycle" end
+            end,
+
+            handler = function ()
+                applyDebuff( "target", "adaptive_swarm_dot", nil, 3 )
+                if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
+            end,
+
+            copy = { "adaptive_swarm_damage", "adaptive_swarm_heal", 325733, 325748 },
+
+            auras = {
+                -- Suffering $w1 Shadow damage every $t1 sec and damage over time from $@auracaster increased by $w2%.
+                -- https://wowhead.com/beta/spell=325733
+                adaptive_swarm_dot = {
+                    id = 325733,
+                    duration = 12,
+                    tick_time = 2,
+                    type = "Magic",
+                    max_stack = 5,
+                    copy = { 391889, "adaptive_swarm_damage" }
+                },
+                -- Restoring $w1 health every $t1 sec and healing over time from $@auracaster increased by $w2%.
+                -- https://wowhead.com/beta/spell=325748
+                adaptive_swarm_hot = {
+                    id = 325748,
+                    duration = 12,
+                    max_stack = 5,
+                    dot = "buff",
+                    copy = { 325727, "adaptive_swarm_heal" }
+                },
+                adaptive_swarm_damage_in_flight = {
+                    duration = 5,
+                    max_stack = 5
+                },
+                adaptive_swarm_heal_in_flight = {
+                    duration = 5,
+                    max_stack = 5,
+                },
+                adaptive_swarm = {
+                    alias = { "adaptive_swarm_damage", "adaptive_swarm_heal" },
+                    aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
+                    aliasType = "any",
+                },
+                adaptive_swarm_in_flight = {
+                    alias = { "adaptive_swarm_damage", "adaptive_swarm_heal" },
+                    aliasMode = "shortest", -- use duration info from the first buff that's up, as they should all be equal.
+                    aliasType = "any",
+                },
+            }
+        } )
+    end
+end
+
+Hekili:EmbedAdaptiveSwarm( spec )
+
+
+spec:RegisterStateFunction( "break_stealth", function ()
+    removeBuff( "shadowmeld" )
+    if buff.prowl.up then
+        setCooldown( "prowl", 6 )
+        removeBuff( "prowl" )
+    end
+end )
+
+
+
+-- Function to remove any form currently active.
+spec:RegisterStateFunction( "unshift", function()
+    if conduit.tireless_pursuit.enabled and ( buff.cat_form.up or buff.travel_form.up ) then applyBuff( "tireless_pursuit" ) end
+
+    removeBuff( "cat_form" )
+    removeBuff( "bear_form" )
+    removeBuff( "travel_form" )
+    removeBuff( "moonkin_form" )
+    removeBuff( "travel_form" )
+    removeBuff( "aquatic_form" )
+    removeBuff( "stag_form" )
+    removeBuff( "celestial_guardian" )
+
+    if legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent.restoration_affinity.enabled then
+        applyBuff( "heart_of_the_wild" )
+        applyDebuff( "player", "oath_of_the_elder_druid_icd" )
+    end
+end )
+
+
+local affinities = {
+    bear_form = "guardian_affinity",
+    cat_form = "feral_affinity",
+    moonkin_form = "balance_affinity",
+}
+
+-- Function to apply form that is passed into it via string.
+spec:RegisterStateFunction( "shift", function( form )
+    if conduit.tireless_pursuit.enabled and ( buff.cat_form.up or buff.travel_form.up ) then applyBuff( "tireless_pursuit" ) end
+
+    removeBuff( "cat_form" )
+    removeBuff( "bear_form" )
+    removeBuff( "travel_form" )
+    removeBuff( "moonkin_form" )
+    removeBuff( "travel_form" )
+    removeBuff( "aquatic_form" )
+    removeBuff( "stag_form" )
+    applyBuff( form )
+
+    if affinities[ form ] and legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent[ affinities[ form ] ].enabled then
+        applyBuff( "heart_of_the_wild" )
+        applyDebuff( "player", "oath_of_the_elder_druid_icd" )
+    end
+
+    if form == "bear_form" and pvptalent.celestial_guardian.enabled then
+        applyBuff( "celestial_guardian" )
+    end
+end )
+
+
+spec:RegisterStateExpr( "lunar_eclipse", function ()
+    return 0
+end )
+
+spec:RegisterStateExpr( "solar_eclipse", function ()
+    return 0
+end )
+
+
+spec:RegisterHook( "runHandler", function( ability )
+    local a = class.abilities[ ability ]
+
+    if not a or a.startsCombat then
+        break_stealth()
+    end
+end )
+
+--[[ This is intended to cause an AP reset on entering an encounter, but it's not working.
+    spec:RegisterHook( "start_combat", function( action )
+    if boss and astral_power.current > 50 then
+        spend( astral_power.current - 50, "astral_power" )
+    end
+end ) ]]
+
+spec:RegisterHook( "pregain", function( amt, resource, overcap, clean )
+    if buff.memory_of_lucid_dreams.up then
+        if amt > 0 and resource == "astral_power" then
+            return amt * 2, resource, overcap, true
+        end
+    end
+end )
+
+spec:RegisterHook( "prespend", function( amt, resource, clean )
+    if buff.memory_of_lucid_dreams.up then
+        if amt < 0 and resource == "astral_power" then
+            return amt * 2, resource, overcap, true
+        end
+    end
+end )
+
+
+local check_for_ap_overcap = setfenv( function( ability )
+    local a = ability or this_action
+    if not a then return true end
+
+    a = action[ a ]
+    if not a then return true end
+
+    local cost = 0
+    if a.spendType == "astral_power" then cost = a.cost end
+
+    return astral_power.current - cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 2 ) or 0 ) < astral_power.max
+end, state )
+
+spec:RegisterStateExpr( "ap_check", function() return check_for_ap_overcap() end )
+
+-- Simplify lookups for AP abilities consistent with SimC.
+local ap_checks = {
+    "force_of_nature", "full_moon", "half_moon", "incarnation", "moonfire", "new_moon", "starfall", "starfire", "starsurge", "sunfire", "wrath"
+}
+
+for i, lookup in ipairs( ap_checks ) do
+    spec:RegisterStateExpr( lookup, function ()
+        return action[ lookup ]
+    end )
+end
+
+
+spec:RegisterStateExpr( "active_moon", function ()
+    return "new_moon"
+end )
+
+local function IsActiveSpell( id )
+    local slot = FindSpellBookSlotBySpellID( id )
+    if not slot then return false end
+
+    local _, _, spellID = GetSpellBookItemName( slot, "spell" )
+    return id == spellID
+end
+
+state.IsActiveSpell = IsActiveSpell
+
+local ExpireCelestialAlignment = setfenv( function()
+    eclipse.state = "ANY_NEXT"
+    eclipse.reset_stacks()
+    if buff.eclipse_lunar.down then removeBuff( "starsurge_empowerment_lunar" ) end
+    if buff.eclipse_solar.down then removeBuff( "starsurge_empowerment_solar" ) end
+    if Hekili.ActiveDebug then Hekili:Debug( "Expire CA_Inc: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+end, state )
+
+local ExpireEclipseLunar = setfenv( function()
+    eclipse.state = "SOLAR_NEXT"
+    eclipse.reset_stacks()
+    eclipse.wrath_counter = 0
+    removeBuff( "starsurge_empowerment_lunar" )
+    if Hekili.ActiveDebug then Hekili:Debug( "Expire Lunar: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+end, state )
+
+local ExpireEclipseSolar = setfenv( function()
+    eclipse.state = "LUNAR_NEXT"
+    eclipse.reset_stacks()
+    eclipse.starfire_counter = 0
+    removeBuff( "starsurge_empowerment_solar" )
+    if Hekili.ActiveDebug then Hekili:Debug( "Expire Solar: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+end, state )
+
+spec:RegisterStateTable( "eclipse", setmetatable( {
+    -- ANY_NEXT, IN_SOLAR, IN_LUNAR, IN_BOTH, SOLAR_NEXT, LUNAR_NEXT
+    state = "ANY_NEXT",
+    wrath_counter = 2,
+    starfire_counter = 2,
+
+    reset = setfenv( function()
+        eclipse.starfire_counter = GetSpellCount( 197628 ) or 0
+        eclipse.wrath_counter    = GetSpellCount(   5176 ) or 0
+
+        if buff.eclipse_solar.up and buff.eclipse_lunar.up then
+            eclipse.state = "IN_BOTH"
+            -- eclipse.reset_stacks()
+        elseif buff.eclipse_solar.up then
+            eclipse.state = "IN_SOLAR"
+            -- eclipse.reset_stacks()
+        elseif buff.eclipse_lunar.up then
+            eclipse.state = "IN_LUNAR"
+            -- eclipse.reset_stacks()
+        elseif eclipse.starfire_counter > 0 and eclipse.wrath_counter > 0 then
+            eclipse.state = "ANY_NEXT"
+        elseif eclipse.starfire_counter == 0 and eclipse.wrath_counter > 0 then
+            eclipse.state = "LUNAR_NEXT"
+        elseif eclipse.starfire_counter > 0 and eclipse.wrath_counter == 0 then
+            eclipse.state = "SOLAR_NEXT"
+        elseif eclipse.starfire_count == 0 and eclipse.wrath_counter == 0 and buff.eclipse_lunar.down and buff.eclipse_solar.down then
+            eclipse.state = "ANY_NEXT"
+            eclipse.reset_stacks()
+        end
+
+        if buff.ca_inc.up then
+            state:QueueAuraExpiration( "ca_inc", ExpireCelestialAlignment, buff.ca_inc.expires )
+        elseif buff.eclipse_solar.up then
+            state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
+        elseif buff.eclipse_lunar.up then
+            state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
+        end
+
+        buff.eclipse_solar.empowerTime = 0
+        buff.eclipse_lunar.empowerTime = 0
+
+        if buff.eclipse_solar.up and action.starsurge.lastCast > buff.eclipse_solar.applied then buff.eclipse_solar.empowerTime = action.starsurge.lastCast end
+        if buff.eclipse_lunar.up and action.starsurge.lastCast > buff.eclipse_lunar.applied then buff.eclipse_lunar.empowerTime = action.starsurge.lastCast end
+    end, state ),
+
+    reset_stacks = setfenv( function()
+        eclipse.wrath_counter = 2
+        eclipse.starfire_counter = 2
+    end, state ),
+
+    trigger_both = setfenv( function( duration )
+        eclipse.state = "IN_BOTH"
+        eclipse.reset_stacks()
+
+        if legendary.balance_of_all_things.enabled then
+            applyBuff( "balance_of_all_things_arcane", nil, 8, 8 )
+            applyBuff( "balance_of_all_things_nature", nil, 8, 8 )
+        end
+
+        if talent.solstice.enabled then applyBuff( "solstice" ) end
+
+        removeBuff( "starsurge_empowerment_lunar" )
+        removeBuff( "starsurge_empowerment_solar" )
+
+        applyBuff( "eclipse_lunar", ( duration or class.auras.eclipse_lunar.duration ) + buff.eclipse_lunar.remains )
+        if set_bonus.tier28_2pc > 0 then applyBuff( "celestial_infusion" ) end
+        applyBuff( "eclipse_solar", ( duration or class.auras.eclipse_solar.duration ) + buff.eclipse_solar.remains )
+
+        state:QueueAuraExpiration( "ca_inc", ExpireCelestialAlignment, buff.ca_inc.expires )
+        state:RemoveAuraExpiration( "eclipse_solar" )
+        state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
+        state:RemoveAuraExpiration( "eclipse_lunar" )
+        state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
+    end, state ),
+
+    advance = setfenv( function()
+        if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Pre): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+
+        if not ( eclipse.state == "IN_SOLAR" or eclipse.state == "IN_LUNAR" or eclipse.state == "IN_BOTH" ) then
+            if eclipse.starfire_counter == 0 and ( eclipse.state == "SOLAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
+                applyBuff( "eclipse_solar", class.auras.eclipse_solar.duration + buff.eclipse_solar.remains )
+                state:RemoveAuraExpiration( "eclipse_solar" )
+                state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
+                if talent.solstice.enabled then applyBuff( "solstice" ) end
+                if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
+                eclipse.state = "IN_SOLAR"
+                eclipse.starfire_counter = 0
+                eclipse.wrath_counter = 2
+                if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+                return
+            end
+
+            if eclipse.wrath_counter == 0 and ( eclipse.state == "LUNAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
+                applyBuff( "eclipse_lunar", class.auras.eclipse_lunar.duration + buff.eclipse_lunar.remains )
+                if set_bonus.tier28_2pc > 0 then applyDebuff( "target", "fury_of_elune_ap" ) end
+                state:RemoveAuraExpiration( "eclipse_lunar" )
+                state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
+                if talent.solstice.enabled then applyBuff( "solstice" ) end
+                if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
+                eclipse.state = "IN_LUNAR"
+                eclipse.wrath_counter = 0
+                eclipse.starfire_counter = 2
+                if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+                return
+            end
+        end
+
+        if eclipse.state == "IN_SOLAR" then eclipse.state = "LUNAR_NEXT" end
+        if eclipse.state == "IN_LUNAR" then eclipse.state = "SOLAR_NEXT" end
+        if eclipse.state == "IN_BOTH" then eclipse.state = "ANY_NEXT" end
+
+        if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+
+    end, state )
+}, {
+    __index = function( t, k )
+        -- any_next
+        if k == "any_next" then
+            return eclipse.state == "ANY_NEXT"
+        -- in_any
+        elseif k == "in_any" then
+            return eclipse.state == "IN_SOLAR" or eclipse.state == "IN_LUNAR" or eclipse.state == "IN_BOTH"
+        -- in_solar
+        elseif k == "in_solar" then
+            return eclipse.state == "IN_SOLAR"
+        -- in_lunar
+        elseif k == "in_lunar" then
+            return eclipse.state == "IN_LUNAR"
+        -- in_both
+        elseif k == "in_both" then
+            return eclipse.state == "IN_BOTH"
+        -- solar_next
+        elseif k == "solar_next" then
+            return eclipse.state == "SOLAR_NEXT"
+        -- solar_in
+        elseif k == "solar_in" then
+            return eclipse.starfire_counter
+        -- solar_in_2
+        elseif k == "solar_in_2" then
+            return eclipse.starfire_counter == 2
+        -- solar_in_1
+        elseif k == "solar_in_1" then
+            return eclipse.starfire_counter == 1
+        -- lunar_next
+        elseif k == "lunar_next" then
+            return eclipse.state == "LUNAR_NEXT"
+        -- lunar_in
+        elseif k == "lunar_in" then
+            return eclipse.wrath_counter
+        -- lunar_in_2
+        elseif k == "lunar_in_2" then
+            return eclipse.wrath_counter == 2
+        -- lunar_in_1
+        elseif k == "lunar_in_1" then
+            return eclipse.wrath_counter == 1
+        end
+    end
+} ) )
+
+spec:RegisterStateTable( "druid", setmetatable( {},{
+    __index = function( t, k )
+        if k == "catweave_bear" then return false
+        elseif k == "owlweave_bear" then return false
+        elseif k == "primal_wrath" then return debuff.rip
+        elseif k == "lunar_inspiration" then return debuff.moonfire_cat
+        elseif k == "no_cds" then return not toggle.cooldowns
+        elseif k == "delay_berserking" then return settings.delay_berserking
+        elseif rawget( debuff, k ) ~= nil then return debuff[ k ] end
+        return false
+    end
+} ) )
+
+local LycarasHandler = setfenv( function ()
+    if buff.travel_form.up then state:RunHandler( "stampeding_roar" )
+    elseif buff.moonkin_form.up then state:RunHandler( "starfall" )
+    elseif buff.bear_form.up then state:RunHandler( "barkskin" )
+    elseif buff.cat_form.up then state:RunHandler( "primal_wrath" )
+    else state:RunHandler( "wild_growth" ) end
+end, state )
+
+local SinfulHysteriaHandler = setfenv( function ()
+    applyBuff( "ravenous_frenzy_sinful_hysteria" )
+end, state )
+
+spec:RegisterHook( "reset_precast", function ()
+    if IsActiveSpell( class.abilities.new_moon.id ) then active_moon = "new_moon"
+    elseif IsActiveSpell( class.abilities.half_moon.id ) then active_moon = "half_moon"
+    elseif IsActiveSpell( class.abilities.full_moon.id ) then active_moon = "full_moon"
+    else active_moon = nil end
+
+    -- UGLY
+    if talent.incarnation.enabled then
+        rawset( cooldown, "ca_inc", cooldown.incarnation )
+        rawset( buff, "ca_inc", buff.incarnation )
+    else
+        rawset( cooldown, "ca_inc", cooldown.celestial_alignment )
+        rawset( buff, "ca_inc", buff.celestial_alignment )
+    end
+
+    if buff.warrior_of_elune.up then
+        setCooldown( "warrior_of_elune", 3600 )
+    end
+
+    eclipse.reset()
+
+    if buff.lycaras_fleeting_glimpse.up then
+        state:QueueAuraExpiration( "lycaras_fleeting_glimpse", LycarasHandler, buff.lycaras_fleeting_glimpse.expires )
+    end
+
+    if legendary.sinful_hysteria.enabled and buff.ravenous_frenzy.up then
+        state:QueueAuraExpiration( "ravenous_frenzy", SinfulHysteriaHandler, buff.ravenous_frenzy.expires )
+    end
+end )
+
+
+spec:RegisterHook( "step", function()
+    if Hekili.ActiveDebug then Hekili:Debug( "Eclipse State: %s, Wrath: %d, Starfire: %d; Lunar: %.2f, Solar: %.2f\n", eclipse.state or "NOT SET", eclipse.wrath_counter, eclipse.starfire_counter, buff.eclipse_lunar.remains, buff.eclipse_solar.remains ) end
+end )
+
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if legendary.primordial_arcanic_pulsar.enabled and resource == "astral_power" and amt > 0 then
+        local v1 = ( buff.primordial_arcanic_pulsar.v1 or 0 ) + amt
+
+        if v1 >= 300 then
+            applyBuff( talent.incarnation.enabled and "incarnation" or "celestial_alignment", 9 )
+            v1 = v1 - 300
+        end
+
+        if v1 > 0 then
+            applyBuff( "primordial_arcanic_pulsar", nil, max( 1, floor( amt / 30 ) ) )
+            buff.primordial_arcanic_pulsar.v1 = v1
+        else
+            removeBuff( "primordial_arcanic_pulsar" )
+        end
+    end
+end )
+
+
+-- Tier 28
+spec:RegisterGear( "tier28", 188853, 188851, 188849, 188848, 188847 )
+spec:RegisterSetBonuses( "tier28_2pc", 364423, "tier28_4pc", 363497 )
+-- 2-Set - Celestial Pillar - Entering Lunar Eclipse creates a Fury of Elune at 25% effectiveness that follows your current target for 8 sec.
+-- 4-Set - Umbral Infusion - While in an Eclipse, the cost of Starsurge and Starfall is reduced by 20%.
+
+-- Legion Sets (for now).
+spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
+    spec:RegisterAura( "solar_solstice", {
+        id = 252767,
+        duration = 6,
+        max_stack = 1,
+     } )
+
+spec:RegisterGear( "tier20", 147136, 147138, 147134, 147133, 147135, 147137 )
+spec:RegisterGear( "tier19", 138330, 138336, 138366, 138324, 138327, 138333 )
+spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
+
+spec:RegisterGear( "impeccable_fel_essence", 137039 )
+spec:RegisterGear( "oneths_intuition", 137092 )
+    spec:RegisterAuras( {
+        oneths_intuition = {
+            id = 209406,
+            duration = 3600,
+            max_stacks = 1,
+        },
+        oneths_overconfidence = {
+            id = 209407,
+            duration = 3600,
+            max_stacks = 1,
+        },
+    } )
+
+spec:RegisterGear( "radiant_moonlight", 151800 )
+spec:RegisterGear( "the_emerald_dreamcatcher", 137062 )
+    spec:RegisterAura( "the_emerald_dreamcatcher", {
+        id = 224706,
+        duration = 5,
+        max_stack = 2,
+    } )
 
 
 -- Abilities
