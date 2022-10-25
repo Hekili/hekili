@@ -453,6 +453,14 @@ spec:RegisterAuras( {
         duration = 1800,
         max_stack = 1
     },
+    -- Talent: 
+    -- https://www.wowhead.com/beta/spell=381933\
+    magma_chamber = {
+        id = 381933,
+        duration = 20,
+        type = "magic",
+        max_stack = 20
+    },
     -- Talent:
     -- https://wowhead.com/beta/spell=381930
     mana_spring_totem = {
@@ -724,6 +732,7 @@ local ancestral_wolf_affinity_spells = {
     -- TODO: List totems?
 }
 
+
 spec:RegisterStateExpr( "recall_totem_1", function()
     return recallTotem1
 end )
@@ -987,11 +996,6 @@ spec:RegisterStateTable( "earth_elemental", setmetatable( { onReset = function( 
     end
 } ) )
 
--- Heat wave talent basically acts as a mini Fireheart. The aura for it is hidden, so this is a workaround
-local TriggerHeatWave = setfenv( function()
-    applyBuff( "lava_surge" )
-end, state )
-
 -- Tier 28
 spec:RegisterGear( "tier28", 188925, 188924, 188923, 188922, 188920 )
 spec:RegisterSetBonuses( "tier28_2pc", 364472, "tier28_4pc", 363671 )
@@ -1007,6 +1011,26 @@ spec:RegisterAura( "fireheart", {
 local TriggerFireheart = setfenv( function()
     applyBuff( "lava_surge" )
 end, state )
+
+
+-- Tier 29
+spec:RegisterGear( "tier29", 200396, 200398, 200400, 200401, 200399 )
+spec:RegisterSetBonuses( "tier29_2pc", 393688, "tier29_4pc", 393690 )
+-- 2-Set: - https://www.wowhead.com/beta/spell=393688
+-- 4-Set: - https://www.wowhead.com/beta/spell=393690
+
+spec:RegisterAura( "seismic_accumulation", {
+    id = 394651,
+    duration = 15,
+    max_stack = 5,
+} )
+
+spec:RegisterAura( "elemental_mastery", {
+    id = 394670,
+    duration = 5,
+    max_stack = 1,
+} )
+
 
 local TriggerPrimordialSurge = setfenv( function()
     applyBuff( "lava_surge" )
@@ -1059,28 +1083,6 @@ spec:RegisterHook( "reset_precast", function ()
                 wipe( summon )
             else
                 summonPet( summon.type, summon.expires - now )
-            end
-        end
-    end
-
-    -- Heat wave has a hidden aura, so we look at the last cast of primordial wave instead
-    if talent.heat_wave.enabled then
-        local applied = action.primordial_wave.lastCast
-        local remains = 12 -(query_time-applied)
-        buff.heat_wave.up = false
-
-        if remains > 0 and remains <= 12 then
-
-            buff.heat_wave.applied = applied
-            buff.heat_wave.remains = remains
-            buff.heat_wave.up = true
-
-            local next_ls = 3 - ( ( query_time - applied ) % 3 )
-            if next_ls < remains then
-                state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + next_ls, "AURA_PERIODIC" )
-                for i = 1, remains / 3 do
-                    state:QueueAuraEvent( "heatwave", TriggerHeatWave, query_time + next_ls + i*3, "AURA_PERIODIC" )
-                end
             end
         end
     end
@@ -1139,15 +1141,15 @@ spec:RegisterAbilities( {
     -- Talent: Transform into a Flame Ascendant for $d, replacing Chain Lightning with Lava Beam, removing the cooldown on Lava Burst, and increasing the damage of Lava Burst by an amount equal to your critical strike chance.    When you transform into the Flame Ascendant, instantly cast a Lava Burst at all enemies affected by your Flame Shock, and refresh your Flame Shock durations to $188389d.
     ascendance = {
         id = function()
-            if spec.elemental then return 114050 end
-            if spec.enhancement then return 114051 end
+            if state.spec.elemental then return 114050 end
+            if state.spec.enhancement then return 114051 end
             return 114052
         end,
         cast = 0,
         cooldown = function () return 180 - 30 * talent.oath_of_the_far_seer.rank end,
         gcd = "spell",
         school = function()
-            if spec.elemental then return "fire" end
+            if state.spec.elemental then return "fire" end
             return "nature"
         end,
         talent = "ascendance",
@@ -1157,8 +1159,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "ascendance" )
-            if spec.elemental and dot.flame_shock.up then dot.flame_shock.expires = query_time + class.auras.flame_shock.duration end
-            if spec.enhancement and talent.static_accumulation.enabled then
+            if state.spec.elemental and dot.flame_shock.up then dot.flame_shock.expires = query_time + class.auras.flame_shock.duration end
+            if state.spec.enhancement and talent.static_accumulation.enabled then
                 for i = 1, class.auras.ascendance.duration do
                     state:QueueAuraEvent( "ascendance", TriggerStaticAccumulation, query_time + i )
                 end
@@ -1174,6 +1176,7 @@ spec:RegisterAbilities( {
         cast = 10,
         cooldown = 600,
         gcd = "spell",
+        school = "nature",
 
         startsCombat = false,
         texture = 136010,
@@ -1187,7 +1190,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = function () return talent.planes_traveler.enabled and 90 or 120 end,
         gcd = "off",
-        school = "physical",
+        school = "nature",
 
         talent = "astral_shift",
         startsCombat = false,
@@ -1324,8 +1327,10 @@ spec:RegisterAbilities( {
             end
 
             if talent.flash_of_lightning.enabled then
-                for i = 1, #flash_of_lightning_nature_spells do
-                    reduceCooldown( flash_of_lightning_nature_spells[i], 1 )
+                for name,_ in pairs( class.abilityList ) do
+                    if class.abilities[ name ].school == "nature" then
+                        reduceCooldown( name, 1 )
+                    end
                 end
             end
 
@@ -1366,7 +1371,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = function () return 45 - 2 * talent.totemic_surge.rank end,
         gcd = "totem",
-        school = "fire",
+        school = "nature",
 
         spend = 0.03,
         spendType = "mana",
@@ -1602,10 +1607,6 @@ spec:RegisterAbilities( {
 
             if talent.lightning_rod.enabled then
                 applyDebuff( "target","lightning_rod" )
-            end
-
-            if talent.further_beyond.enabled and buff.ascendance.up then
-                --TODO: increase ascendance duration by 3.5 seconds
             end
 
             if set_bonus.tier29_2pc > 0 then
@@ -1855,6 +1856,7 @@ spec:RegisterAbilities( {
         cooldown = function () return 30 - 2 * talent.totemic_surge.rank end,
         recharge = 30,
         gcd = "totem",
+        school = "nature",
 
         spend = 0.09,
         spendType = "mana",
@@ -1991,8 +1993,12 @@ spec:RegisterAbilities( {
 
             if talent.master_of_the_elements.enabled then applyBuff( "master_of_the_elements" ) end
 
-            if talent.rolling_magma.enabled and talent.primordial_wave.eanbled then
-                reduceCooldown( "primordial_wave", 0.5 )
+            if talent.rolling_magma.enabled and talent.primordial_wave.enabled then
+                if talent.rolling_magma.rank == 2 then
+                    reduceCooldown( "primordial_wave", 0.5 )
+                else
+                    reduceCooldown( "primordial_wave", 0.2 )
+                end
             end
 
             if talent.surge_of_power.enabled then
@@ -2004,10 +2010,6 @@ spec:RegisterAbilities( {
                 applyBuff( "splintered_elements", nil, active_dot.flame_shock )
             end
             removeBuff( "primordial_wave" )
-
-            if talent.rolling_magma.enabled then
-                reduceCooldown( "primordial_wave", 0.2 * talent.rolling_magma.rank )
-            end
 
             if set_bonus.tier28_4pc > 0 then
                 if pet.fire_elemental.up then
@@ -2065,8 +2067,11 @@ spec:RegisterAbilities( {
             end
 
             if talent.flash_of_lightning.enabled then
-                for i = 1, #flash_of_lightning_nature_spells do
-                    reduceCooldown( flash_of_lightning_nature_spells[i], 1 )
+                for name,_ in pairs( class.abilityList ) do
+                    if class.abilities[ name ].school == "nature" then
+                        reduceCooldown( name, 1 )
+                        print(name)
+                    end
                 end
             end
 
@@ -2138,7 +2143,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "liquid_magma_totem" )
-            --TODO: Apply FS to 3 targets
+
             if active_enemies >= 4 then
                 active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 3 )
             else
