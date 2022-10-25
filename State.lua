@@ -84,6 +84,7 @@ state.consumable = {}
 state.cooldown = {}
 state.corruptions = {} -- TODO: REMOVE
 state.health = {
+    max = 1,
     initialized = false
 }
 state.legendary = {}
