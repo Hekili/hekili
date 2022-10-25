@@ -1991,7 +1991,7 @@ spec:RegisterAbilities( {
 
             if talent.master_of_the_elements.enabled then applyBuff( "master_of_the_elements" ) end
 
-            if talent.rolling_magma.enabled and talent.primordial_wave.eanbled then
+            if talent.rolling_magma.enabled and talent.primordial_wave.enabled then
                 reduceCooldown( "primordial_wave", 0.5 )
             end
 
