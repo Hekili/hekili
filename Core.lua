@@ -1539,7 +1539,6 @@ function Hekili.Update()
             -- Hekili:Yield( "Pre-Reset for " .. dispName .. " (from " .. state.display .. ")" )
 
             state.reset( dispName, fullReset )
-            print( ( fullReset and "Full Reset for " or "Quick Reset for " ) .. dispName .. " at " .. GetTime() )
 
             Hekili:Yield( "Post-Reset for " .. dispName )
 

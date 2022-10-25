@@ -18,12 +18,15 @@ Hekili.AllowSimCImports = true
 Hekili.IsRetail = function()
     return Hekili.Flavor == "Retail"
 end
+
 Hekili.IsWrath = function()
     return Hekili.Flavor == "Wrath"
 end
+
 Hekili.IsClassic = function()
     return Hekili.IsWrath()
 end
+
 Hekili.IsDragonflight = function()
     return select( 4, GetBuildInfo() ) >= 100000
 end

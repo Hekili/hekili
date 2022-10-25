@@ -162,6 +162,9 @@ local HekiliSpecMixin = {
             times = {},
             values = {},
 
+            actual = 0,
+            max = 1,
+
             active_regen = 0,
             inactive_regen = 0,
             last_tick = 0,
@@ -921,7 +924,7 @@ function Hekili:RestoreDefaults()
         local existing = rawget( p.packs, k )
 
         if not existing or not existing.version or existing.version < v.version then
-            local data = self:DeserializeActionPack( v.import )
+            local data = self.DeserializeActionPack( v.import )
 
             if data and type( data ) == 'table' then
                 p.packs[ k ] = data.payload
@@ -983,7 +986,7 @@ function Hekili:RestoreDefault( name )
     local default = class.packs[ name ]
 
     if default then
-        local data = self:DeserializeActionPack( default.import )
+        local data = self.DeserializeActionPack( default.import )
 
         if data and type( data ) == 'table' then
             p.packs[ name ] = data.payload
@@ -1209,11 +1212,8 @@ all:RegisterAuras( {
                 [160452] = 'netherwinds',
                 [264667] = 'primal_rage',
                 [309658] = 'drums_of_deathly_ferocity',
+                [390386] = "fury_of_the_aspects"
             }
-
-            if Hekili.IsDragonflight() then
-                bloodlusts[390386] = "fury_of_the_aspects"
-            end
 
             for id, key in pairs( bloodlusts ) do
                 local aura = buff[ key ]
@@ -1282,11 +1282,8 @@ all:RegisterAuras( {
                 [95809] = 'insanity',
                 [80354] = 'temporal_displacement',
                 [264689] = 'fatigued',
+                [390435] = "exhaustion"
             }
-
-            if Hekili.IsDragonflight() then
-                sateds[390435] = "exhaustion"
-            end
 
             for id, key in pairs( sateds ) do
                 local aura = debuff[ key ]

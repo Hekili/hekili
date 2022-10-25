@@ -409,6 +409,12 @@ if baseClass == "DEATHKNIGHT" then
             end,
 
             auras = {
+                swarming_mist = { -- Venthyr
+                    id = 311648,
+                    duration = 8,
+                    tick_time = 1,
+                    max_stack = 1,
+                },
                 -- Conduit
                 impenetrable_gloom = {
                     id = 338629,
