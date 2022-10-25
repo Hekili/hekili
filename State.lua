@@ -6652,7 +6652,7 @@ end
 
 
 function state:IsKnown( sID, notoggle )
-
+    local original = sID
     if type(sID) ~= "number" then sID = class.abilities[ sID ] and class.abilities[ sID ].id or nil end
 
     if not sID then
@@ -6663,7 +6663,7 @@ function state:IsKnown( sID, notoggle )
     local ability = class.abilities[ sID ]
 
     if not ability then
-        Error( "IsKnown() - " .. sID .. " not found in abilities table." )
+        Error( "IsKnown() - " .. sID .. " / " .. original .. " not found in abilities table.\n\n" .. debugstack() )
         return false
     end
 

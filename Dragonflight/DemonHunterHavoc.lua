@@ -26,6 +26,21 @@ spec:RegisterResource( Enum.PowerType.Fury, {
         value = 5
     },
 
+    immolation_aura = {
+        talent  = "tactical_retreat",
+        aura    = "tactical_retreat",
+
+        last = function ()
+            local app = state.buff.tactical_retreat.applied
+            local t = state.query_time
+
+            return app + floor( t - app )
+        end,
+
+        interval = 1,
+        value = 8
+    },
+
     eye_beam = {
         talent = "blind_fury",
         aura   = "eye_beam",
@@ -38,7 +53,7 @@ spec:RegisterResource( Enum.PowerType.Fury, {
         end,
 
         interval = function () return state.haste end,
-        value = 40,
+        value = 20,
     },
 } )
 
@@ -115,12 +130,12 @@ spec:RegisterTalents( {
     pursuit                  = { 90940, 320654, 1 }, -- Mastery increases your movement speed.
     quickened_sigils         = { 90997, 209281, 1 }, -- All Sigils activate 1 second faster, and their cooldowns are reduced by 20%.
     ragefire                 = { 90918, 388107, 1 }, -- Each time Immolation Aura deals damage, 35% of the damage dealt by up to 3 critical strikes is gathered as Ragefire. When Immolation Aura expires you explode, dealing all stored Ragefire damage to nearby enemies.
-    relentless_onslaught     = { 91012, 389977, 1 }, -- Chaos Strike has a 10%vengeful_retreat chance to trigger a second Chaos Strike.
+    relentless_onslaught     = { 91012, 389977, 1 }, -- Chaos Strike has a 10% chance to trigger a second Chaos Strike.
     relentless_pursuit       = { 90926, 389819, 1 }, -- The cooldown of The Hunt is reduced by 12 sec whenever an enemy is killed while afflicted by its damage over time effect.
-    restless_hunter          = { 91024, 390142, 1 }, -- Leaving demon form grants a charge of Fel Rush and increases the damage of your next Blade Dance by 50%.
+    restless_hunter          = { 91024, 390142, 1 }, -- TODO: Leaving demon form grants a charge of Fel Rush and increases the damage of your next Blade Dance by 50%.
     rush_of_chaos            = { 90933, 320421, 1 }, -- Reduces the cooldown of Metamorphosis by 60 sec.
     serrated_glaive          = { 91013, 390154, 2 }, -- Enemies hit by Throw Glaive take 10% increased damage from Eye Beam.
-    shattered_destiny        = { 91031, 388116, 1 }, -- The duration of your active demon form is extended by 0.1 sec per 8 Fury spent.
+    shattered_destiny        = { 91031, 388116, 1 }, -- TODO: The duration of your active demon form is extended by 0.1 sec per 8 Fury spent.
     shattered_restoration    = { 90950, 389824, 2 }, -- The healing of Shattered Souls is increased by 5%.
     sigil_of_flame           = { 90943, 204596, 1 }, -- Place a Sigil of Flame at the target location that activates after 2 sec. Deals 67 Fire damage, and an additional 187 Fire damage over 6 sec, to all enemies affected by the sigil. Generates 30 Fury.
     sigil_of_misery          = { 90946, 207684, 1 }, -- Place a Sigil of Misery at the target location that activates after 2 sec. Causes all enemies affected by the sigil to cower in fear, disorienting them for 20 sec.
@@ -203,11 +218,15 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    chaos_theory = {
+        id = 390195,
+        duration = 8,
+        max_stack = 1,
+    },
     chaotic_blades = {
         id = 337567,
         duration = 8,
-        max_stack = 1,
-        copy = "chaos_theory" -- simc.
+        max_stack = 1
     },
     darkness = {
         id = 196718,
@@ -231,14 +250,14 @@ spec:RegisterAuras( {
     },
     essence_break = {
         id = 320338,
-        duration = 8,
+        duration = 4,
         max_stack = 1,
         copy = "dark_slash" -- Just in case.
     },
     -- https://wowhead.com/beta/spell=198013
     eye_beam = {
         id = 198013,
-        duration = function () return ( talent.blind_fury.enabled and 3 or 2 ) * haste end,
+        duration = function () return 2 * ( 1 + 0.25 * talent.blind_fury.rank) * haste end,
         generate = function( t )
             if buff.casting.up and buff.casting.v1 == 198013 then
                 t.applied  = buff.casting.applied
@@ -343,7 +362,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=258920
     immolation_aura = {
         id = 258920,
-        duration = 6,
+        duration = function() return talent.felfire_heart.enabled and 8 or 6 end,
         tick_time = 1,
         max_stack = 1
     },
@@ -356,10 +375,16 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    initiative = {
+        id = 391215,
+        duration = 5,
+        max_stack = 1,
+    },
     inner_demon = {
         id = 337313,
-        duration = 3600,
+        duration = 10,
         max_stack = 1,
+        copy = 390145
     },
     -- Talent: Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=213405
@@ -421,6 +446,11 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1
     },
+    ragefire = {
+        id = 390192,
+        duration = 30,
+        max_stack = 1,
+    },
     rain_from_above_immune = {
         id = 206803,
         duration = 1,
@@ -433,6 +463,11 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    restless_hunter = {
+        id = 390212,
+        duration = 12,
+        max_stack = 1
+    },
     serrated_glaive = {
         id = 390155,
         duration = 10,
@@ -442,7 +477,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=204843
     sigil_of_chains = {
         id = 204843,
-        duration = 6,
+        duration = function() return 6 + talent.extended_sigils.rank + ( talent.precise_sigils.enabled and 2 or 0 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -450,7 +485,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=204598
     sigil_of_flame_dot = {
         id = 204598,
-        duration = 6,
+        duration = function() return talent.felfire_heart.enabled and ( 8 or 6 + talent.extended_sigils.rank ) + ( talent.precise_sigils.enabled and 2 or 0 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -466,7 +501,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=207685
     sigil_of_misery_debuff = {
         id = 207685,
-        duration = 20,
+        duration = function() return 20 + talent.extended_sigils.rank + ( talent.precise_sigils.enabled and 2 or 0 ) end,
         mechanic = "flee",
         type = "Magic",
         max_stack = 1
@@ -480,7 +515,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=204490
     sigil_of_silence_debuff = {
         id = 204490,
-        duration = 6,
+        duration = function() return 6 + talent.extended_sigils.rank + ( talent.precise_sigils.enabled and 2 or 0 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -556,16 +591,9 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
-    -- Talent:
-    -- https://wowhead.com/beta/spell=198793
-    vengeful_retreat = {
-        id = 198793,
-        duration = 1,
-        max_stack = 1
-    },
     -- Talent: Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=198813
-    vengeful_retreat_snare = {
+    vengeful_retreat = {
         id = 198813,
         duration = 3,
         max_stack = 1
@@ -619,11 +647,6 @@ spec:RegisterAuras( {
     glimpse = {
         id = 354610,
         duration = 8,
-        max_stack = 1,
-    },
-    isolated_prey = {
-        id = 357305,
-        duration = 6,
         max_stack = 1,
     },
 } )
@@ -874,6 +897,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "thirsting_blades" )
+            removeBuff( "inner_demon" )
             if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
 
             if buff.chaotic_blades.up then gain( 20, "fury" ) end -- legendary
@@ -884,7 +908,7 @@ spec:RegisterAbilities( {
     blade_dance = {
         id = 188499,
         cast = 0,
-        cooldown = 10,
+        cooldown = 15,
         hasteCD = true,
         gcd = "spell",
         school = "physical",
@@ -898,12 +922,12 @@ spec:RegisterAbilities( {
         nobuff = "metamorphosis",
 
         handler = function ()
+            removeBuff( "restless_hunter" )
             applyBuff( "blade_dance" )
-            setCooldown( "death_sweep", 9 * haste )
-
-            if pvptalent.mortal_dance.enabled then
-                applyDebuff( "target", "mortal_dance" )
-            end
+            setCooldown( "death_sweep", 15 * haste )
+            if talent.chaos_theory.enabled then applyBuff( "chaos_theory" ) end
+            if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then applyDebuff( "target", "mortal_dance" ) end
+            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
         end,
 
         copy = "blade_dance1"
@@ -930,11 +954,11 @@ spec:RegisterAbilities( {
     chaos_nova = {
         id = 179057,
         cast = 0,
-        cooldown = function () return talent.unleashed_power.enabled and 40 or 60 end,
+        cooldown = function () return talent.unleashed_power.enabled and 48 or 60 end,
         gcd = "spell",
         school = "chromatic",
 
-        spend = function () return talent.unleashed_power.enabled and 0 or 30 end,
+        spend = function () return talent.unleashed_power.enabled and 15 or 30 end,
         spendType = "fury",
 
         talent = "chaos_nova",
@@ -967,9 +991,15 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "thirsting_blades" )
+            removeBuff( "inner_demon" )
             if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
             if legendary.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
-            if buff.chaotic_blades.up then gain( 20, "fury" ) end -- legendary
+            if buff.chaos_theory.up then
+                gain( 20, "fury" )
+                removeBuff( "chaos_theory" )
+            end
+            removeBuff( "chaotic_blades" )
+            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
         end,
     },
 
@@ -989,7 +1019,7 @@ spec:RegisterAbilities( {
         usable = function () return buff.dispellable_magic.up end,
         handler = function ()
             removeBuff( "dispellable_magic" )
-            gain( buff.solitude.up and 22 or 20, "fury" )
+            if talent.swallowed_anger.enabled then gain( 20, "fury" ) end
         end,
     },
 
@@ -1031,12 +1061,14 @@ spec:RegisterAbilities( {
         buff = "metamorphosis",
 
         handler = function ()
+            removeBuff( "restless_hunter" )
             applyBuff( "death_sweep" )
             setCooldown( "blade_dance", 9 * haste )
 
             if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then
                 applyDebuff( "target", "mortal_dance" )
             end
+            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
         end,
     },
 
@@ -1056,6 +1088,7 @@ spec:RegisterAbilities( {
         notalent = "demon_blades",
 
         handler = function ()
+            if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
         end,
     },
 
@@ -1076,7 +1109,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             interrupt()
-            gain( buff.solitude.up and 33 or 30, "fury" )
+            if talent.disrupting_fury.enabled then gain( 30, "fury" ) end
         end,
     },
 
@@ -1084,7 +1117,7 @@ spec:RegisterAbilities( {
     elysian_decree = {
         id = function() return covenant.kyrian and 306830 or 390163 end,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 * ( talent.quickened_sigils.enabled and 0.8 or 1 ) end,
         gcd = "spell",
         school = "arcane",
 
@@ -1171,7 +1204,7 @@ spec:RegisterAbilities( {
     -- Talent: Unleash a torrent of Fel energy over $d, inflicting ${(($d/$t1)+1)*$258926s1} Chaos damage to all enemies within $258926A1 yds. Deals reduced damage beyond $258926s2 targets.
     fel_barrage = {
         id = 258925,
-        cast = 2,
+        cast = 3,
         channeled = true,
         cooldown = 60,
         gcd = "spell",
@@ -1210,9 +1243,9 @@ spec:RegisterAbilities( {
     fel_rush = {
         id = 195072,
         cast = 0,
-        charges = 1,
-        cooldown = function () return legendary.erratic_fel_core.enabled and 7 or 10 end,
-        recharge = function () return legendary.erratic_fel_core.enabled and 7 or 10 end,
+        charges = function() return talent.blazing_path.enabled and 2 or nil end,
+        cooldown = function () return ( legendary.erratic_fel_core.enabled and 7 or 10 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) end,
+        recharge = function () return talent.blazing_path.enabled and ( ( legendary.erratic_fel_core.enabled and 7 or 10 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) ) or nil end,
         gcd = "off",
         school = "physical",
 
@@ -1233,9 +1266,7 @@ spec:RegisterAbilities( {
             setDistance( 5 )
             setCooldown( "global_cooldown", 0.25 )
             if conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
-            if pvptalent.isolated_prey.enabled and active_enemies == 1 then
-                gain( 35, "fury" )
-            end
+            if active_enemies == 1 and talent.isolated_prey.enabled then gain( 25, "fury" ) end
         end,
     },
 
@@ -1243,9 +1274,9 @@ spec:RegisterAbilities( {
     fel_rush = {
         id = 344865,
         cast = 0,
-        charges = 1,
-        cooldown = 1,
-        recharge = 10,
+        charges = function() return talent.blazing_path.enabled and 2 or nil end,
+        cooldown = 10,
+        recharge = function() return talent.blazing_path.enabled and 10 or nil end,
         gcd = "off",
         school = "physical",
 
@@ -1305,6 +1336,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
         end,
     },
 
@@ -1324,6 +1356,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "immolation_aura" )
             if talent.unbound_chaos.enabled then applyBuff( "unbound_chaos" ) end
+            if talent.ragefire.enabled then applyBuff( "ragefire" ) end
         end,
     },
 
@@ -1346,7 +1379,7 @@ spec:RegisterAbilities( {
     metamorphosis = {
         id = 191427,
         cast = 0,
-        cooldown = function () return ( level > 47 and 240 or 300 ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) - ( pvptalent.demonic_origins.up and 120 or 0 ) end,
+        cooldown = function () return ( 240 - ( talent.rush_of_chaos.enabled and 60 or 0 ) ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) - ( pvptalent.demonic_origins.up and 120 or 0 ) end,
         gcd = "spell",
         school = "physical",
 
@@ -1367,7 +1400,7 @@ spec:RegisterAbilities( {
 
             if level > 19 then stat.haste = stat.haste + 25 end
 
-            if level > 53 or azerite.chaotic_transformation.enabled then
+            if azerite.chaotic_transformation.enabled or talent.chaotic_transformation.enabled then
                 setCooldown( "eye_beam", 0 )
                 setCooldown( "blade_dance", 0 )
                 setCooldown( "death_sweep", 0 )
@@ -1447,7 +1480,7 @@ spec:RegisterAbilities( {
         id = function () return talent.concentrated_sigils.enabled and 204513 or 204596 end,
         known = 204596,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 * ( talent.quickened_sigils.enabled and 0.8 or 1 ) end,
         gcd = "spell",
         school = "physical",
 
@@ -1474,7 +1507,7 @@ spec:RegisterAbilities( {
     sigil_of_misery = {
         id = function () return talent.concentrated_sigils.enabled and 207684 or 202140 end,
         cast = 0,
-        cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 120 - ( talent.improved_sigil_of_misery.enabled and 30 or 0 ) end,
+        cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * ( talent.improved_sigil_of_misery.enabled and 90 or 120 ) * ( talent.quickened_sigils.enabled and 0.8 or 1 ) end,
         gcd = "spell",
         school = "physical",
 
@@ -1530,6 +1563,8 @@ spec:RegisterAbilities( {
                 applyBuff( "blazing_slaughter" )
             end
         end,
+
+        copy = { 370965, 323639 }
     },
 
     -- Throw a demonic glaive at the target, dealing $337819s1 Physical damage. The glaive can ricochet to $?$s320386[${$337819x1-1} additional enemies][an additional enemy] within 10 yards.
@@ -1542,8 +1577,8 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = 25,
-        spendType = "fury, 393029",
+        spend = function() return talent.furious_throws.enabled and 25 or 0 end,
+        spendType = "fury",
 
         startsCombat = true,
 
@@ -1553,7 +1588,10 @@ spec:RegisterAbilities( {
         readyTime = state.timeToInterrupt,
 
         handler = function ()
+            if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
             if talent.mastery_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
+            if talent.serrated_glaive.enabled then applyDebuff( "target", "serrated_glaive" ) end
+            if talent.soulrend.enabled then applyDebuff( "target", "soulrend" ) end
         end,
     },
 
@@ -1576,7 +1614,7 @@ spec:RegisterAbilities( {
     vengeful_retreat = {
         id = 198793,
         cast = 0,
-        cooldown = function () return talent.momentum.enabled and 20 or 25 end,
+        cooldown = function () return talent.tactical_retreat.enabled and 20 or 25 end,
         gcd = "spell",
 
         startsCombat = true,
@@ -1589,9 +1627,10 @@ spec:RegisterAbilities( {
         handler = function ()
             if target.within8 then
                 applyDebuff( "target", "vengeful_retreat" )
-                if talent.momentum.enabled then applyBuff( "momentum" ) end
+                applyDebuff( "target", "vengeful_retreat_snare" )
             end
-
+            if talent.tactical_retreat.enabled then applyBuff( "tactical_retreat" ) end
+            if talent.momentum.enabled then applyBuff( "momentum" ) end
             if pvptalent.glimpse.enabled then applyBuff( "glimpse" ) end
         end,
     }
@@ -1654,4 +1693,4 @@ spec:RegisterSetting( "demon_blades_acknowledged", false, {
 } )
 
 
-spec:RegisterPack( "Havoc", 20220821, [[Hekili:v31)ZTTTs()w8RZtrk1vvI2YjTJLFttAETntVC38CVj3pjkirilEHIuh)ID8nE0F73UaGGaqaGuY2j5MoJRnbXI974ZUGKz24z)1SRJiL0zFiyuqWOxhmE44xF2pD(RMDD59BPZUElz5Ni3a)skzd8ZFNCB2s8Q3NKrIWzxKvLVeg564nvjKY4S03Mtwvo76fvXjL)r6Sf2xHjWu3sxo7dtEfSyRJJIO87LwalWVs3KLUB(VxLwsZH)pUS7E)VuDtvr5U5bJpf(bqUDVF37F7As6n0IFE37)HDZ)3OLKnz5BxNvexSBojnA38)JmKR2nVQaeKDZ)BlORYYHFzv8nRbIrtJk(B7MNKDt8sygr)3WsqHPvMb)12Tj3VBEwk(t8clYkkeZSyiBf)ZSScks9T7MxCF6Y40BGjSApwP)M4u(aI1nNUHeNcJClqP5L5XPFIcx(T)kmePCnk2LGOTB(gYNhme055zRItan939D7MBx)GJyvhHd0ONW)6lVUsSQFH0xOutwIctXWT50LzBwqkNUiRSmHgfUkHCpn6oyTdlZ(mSq7FVF)0F8wsEmzrc9u03FQyfdrMoSijR80Bjjv0PJpnEv9GdhpCnPiSQGgUOA1QE9pPEGaTbE4HMjSmlljk7U0Hrv5S4NRM2mP9gCWJHvduz1axS6yhSQfU5kpIbWPGf))Sa8EE39WpEdLSb8skr3N72n)FwLd(j3fxUggkjgD(4xIKKHUe8rOXCl7VsY)0nje0vmlx6()MecKUa8LstOOVwvbZB6xUjlfi0Vr(FPDrBHsk9EqAbgmCfWdHlZsJIXPj0BLKeAA5WfiBYUJH0uC(r96NxLIHi3qhgvZIHBOrKKey6GUJpZiKFdxWyx5CpPzUeKJdVbyyh23vGaUEjMyfnHqo3KfaVmCle)vLaSFE12s2ckh62mmBmmwrwYTapyNUK8LKukeeKNZUhEy67(mDzflWMElfTjLXBOy4f8dGkOfGLX4wsCckldLeFAuCbYlYlaRbOnlQ2aQfcM1GTaFeiuuw6lkX)hsyKCLeqvaxP4oivcZqQKw5nv5PSR9XSkWxHrLMLiNYNCiPQmlKuwc7ADkyTOHlJGauXGGMdsQ8Zru0VE4cofdVdj4qr2fu72yw0ULEESLmx9pc(QzvLSmTzG88xRPzOYlt1)9uHxlEP0L0A)8)zCoM0(njzzr8zGbkN99qEWGVV(M(RCqFZZj(VQIHamHkRqvBR7BZyZWiCPqrtXLBjYKHLmEu1v0IBSEuWkKvb5h40AXhC72stscfSZqLvD8vt7F2piMAjkaHzRcZb2VEYdKkpdn3(QQ14ghmVq0cYDcXCoNAxnIQqu71FShviQR5J9UcyJjCDEtoL8j(0phN(zpHwa7gaHgM5xQE9HO0jZIyrZ3ZRIpWVI)Hhorm(Y7xczkGXxtkZPDK6N3zZQBVFuhNMLVHK0e)VeI2kRT2OkbteTa3zaYnqXCZemSIcdSS8ur0sYDK7le2S)cSxRWRMML(dSTkW8ohSb64Ie6ZmIBubZmSAR0gAvx9WdICsuUly4c0deM2a)wGwcSASVrCLqNSRNRSVTrernAqDBymgjwASLGapzggMwdnOB2GSTtZPfu2gDc2xxTuleseh6dd)i6EfNpv0aCM6TO3opk(3z(7NImEwCKebHJ8oOSZ2PctbTfG3gViojUuG3L(5sksEed6VK9UDZVooDvvcQ9WLTtcVMdydQGE2JtfUJ1Kt1q2dxTBH)iRCybJpa1dWgxg4Mr2ckuC7oy1drhyb5D5ej1)6o7IDsV8IEmKsr0vXlJlV6SrDBHv1gEeV(iXV8vt(b3XIVmy0GUTM1O)0dVnL3tCddSXvuqjPwO)nlJgcvK8YGb66JGr29rrFXYs6gadfZRcXWRJGg9XKHu1vQXY3bRdufoCp1yWpTbBmdpbKz0Pc5oca5vOqA88C5rw7By6FnSmE5NaY0Os0gTwTuRvohQ7WHFeM0u4ettPBIPfthBMpSwDF50Z6MGTjBdycRmS01xTXuZtIxFzOwvv8SWEbH8)mmjUOKVknj50HMUf0hHvBdxLtUbj3PyFvMY8TqDlhnjIAxEhfxnQvISjlIonLcBovWsu2x3NneqntlJlPsjsZ3B6ztE4bfyUChAqnTUhhACZfyBcPyJuCWH0Sp8alm8m9aTY15z3fcBDc2oK5y0Cff8bWYoYJqjyybIrF6KE89lJ3SjJ39iacFoHz8pX6oPAReid7Bje6GtlGItxwkQp3AiDRKsan59Sq13sqSLgTPa387ogm(eitpd)catbC4t0cAZPRat1AoyfCoSTqGDTYeDWHT5zYMmCjYGIUAkxRw1pvttWqZ7irvFNPJGSoGjd7NsyDKyWKb7VwG(yVv7ywmWZXw27hEqojLRkNNi5WGUYQBznTs6PzD7ORcaxESJu90P5fJSssSNaq4ZgrgKCY2cCBxAca5mhmsGR6YqyDbnsm6G0kjYXmqafwMLKaeJLpQQScCkK8nlPplgqa7xNtpRlC6sYY1macKL)pvXaeHqaNaPqBDKdr(mfcO61VVrAwOWw(u5zz7bGlJcPytegsIIkggNE1fJmtoFLXSGSg63WLNPy23BFsyVAR2hMnN1WZvKQKsC)oeegiW1TH0Msr0wkwOV0bCVUInDCpxO177k2IXI(r(CvFDr4F4Pjz)9Gb2L7PmfsFpmFqVtS0zowAze5V7z6tJf0Igl4lRgZslhFeASX9oXIPOtASVdBkbMJUynSvDKWnKGG2Y4DOKcbvB3Yl9POe0ra2limhRFyrgIXt2XAKIy2ESAcscVCfyVE(wbrmOCd9gQxyDuvCwSDhCcnRV1opc6o3HNtHCYmmea2HrdgCGO2S7XbjQwdISVDYASj2aXPmSzPlGhcd0rvECwvbt(urXPYh0K7lIjPHr0L5ugEL((ZSbqN2pHOkeivQ7OXTMDNvG408YGcAdjfQmfy(tJrKcyZvdb0s0Oysj7WhKx9MKSfKeTl5BjvpHeHEFQSqix1HEmQMazrAgLV(YXJg0ZPx6EdO6lUhRJQAaHzEvXAfWkvPlWw3gY6PwtgjuvRpeUni8BGqumnaIeueJnaCmgIvqugpY2MHGymWgdfrjLRdlUJs3QLwvbZJTPXbohIWbeO7pcL(4r2iTjYCSzAvXGEg8xa3PiXqDOU2l6zhEEVtQBL1N3MvauK3ED1yVg2r1D7iKrFowQip9CapgDU(QXIkAEf4zAp5ttWGnjYOxowBDHRuNSDc8HNEIUJzTAOEcwCnr4twDnnQ3ILd2rHy2MojnnEDm)(yZ1AI4w8ZH4v2DGeqV80ZT68Q1MpB3aVZ5yzFFI2jUYXgi1k(oMKX(H75OI5NL0mWVveUaGgCkpqq4nZl911Xz57yWU882K9t8j8gXupVYCxYZXK0SQswlYXhdch(1QsOK5IIH69aVLRgpraROducKIBO4Ex5uScSsxuSlCV3dESHa8Mv88Sh(4jp(DQ58NdDJRoXX03BZPBj45sXsZHhg9vJTqxvRxFRBY)Wd(buklIXkWbOgbzuTzEsEvedEYC11eQfey75BOh52KQnoqs2dcBICwh12gYzVpWMwW3FuEQJSPf)Ma4JKBudrFoubt(cG(XMwUdOFS7H3bCankp7WaKJBInPVN0NQv9Bt9Z1h1m0LNnsSbG9t8AYahak8l)MWwEszyxSekbhf3Q676(aX8btTnplRzREwH4yBDAz)LtCTHLJC(ITfWkt8UDU3OJJbsIvU3oH6BJs9CjP2saC4OECMH2JwA213sZlGPx)mfp6NMD9DeMrUy21F8x(xF4p(WV9Z7MZEsI2npEZ2S8sXzK(c(k(c8mz49bF38Im8XBdF2X2qyTGBj)zLD4U3)NXPWqJbI92Suyzzd)IghU)RxWpMw1lvZNVaF0JyplQcQCXJKm7EFlYweVl5hMWD2JKREKubpy639V)NgK78NwYn5PLCVYGCcNvjTQ)7dMqDMV0DSoA)ttUQvpm5dp6H5JfyQWK9HVrNjUuj)A9dueqxtpWY0d2F6M(Mh4Q7A6DC1pAxznQy6bl7RRKinxXLFYrsJd2jPER(dZhXiw464nVL94Vus(8U5)Dod(NvKDZJIVngt)VBE2wkaFhxZ()4G2IrB3O3LP7XORo9x)0kmV(XjmUMEhfMXJoAxynYygi1r)VU62j6GYH51zM6SdPY1fQNevJjYGdMlo(Km1k3)GPlXjpP(rpA3C8rHb1vZUguHRZYzVNxVD21SRJV(xC0uWV9b27swncT3m76L5akAaO)SRT1fkjI359aEGVGnL5UB(vqKHEPU7M)Wd4R6JzHfS7fGuoFaJwU6sL9bLVurxoD38Bwcql5soijI6CMvcOmDkAoWgZwS9BDf7Y83LcKNBwmtCZ4IEMZfTVG2MD3IRH8wFyT6(eGp80PloLoP55m0E)Uy68b10uuIZU5GQmGtH(AgmL6H4kGrSP6YKoIt(gTuDfmO25CNANhPN0zJ0xqrV3W1CIZ10wNoAiJsV2qYCHtYCIWWUF30AiMXyibFLpc2j3HhPoJzQAyr9(8HC4RDYHT0iogd6SzCqylK6KDp1QoZ2YvpOJMZ1W0Q1FIS8p9vxPorjyTlDZJtnTo6XjeFGvS3UoqH9Qr1bTUKeLEXOAxvtjoE0rgmOErKoU32qTtwGGazvoxp2KrkgryjOLSPAdcvPnENEZQ6RZm1zeBX0xRPBy8lXCk8bC37q2TnXMDXrN5Aex1(DYer3PgFMfr)mpk3hU0P2CuM05ojSZUr6Bxg(6ewNIPJHfoIjmZS3SbGSTI2XfP3Hsv22xlmzk(ZbkQ2rueigYlVsnKqJb0diCNAUbJGv4nE2yxIe4LYn592opBBWp2Dc496OOmFPmiZOjM2tBe4ohM)LOV9vP25XPwZbwMa35aDXh(Hog0kGv)2bJ9clrhiwJfL48Low8x3xdNkT0XAV(Vg3Oz24mWsvqlvKorCi73c5Fdk0YtO5U2eqP9suQ61QDxwEd)Aug4hII84TC(4R372lk5jvuPLZYl6KLn(1EN(4BEcoTNX(cmiiK13zq0h1c66hJDXVrXIE()h)AalnwS0d79M8Ynu(mK96KDmOl2r5252Fg5o0188USM2Qs6PX35Wcv)M4voUZrU9Dw7II7IdvoEhoE5HRbK1bJBNsmy6qjA32b5iDUTcGrpe2R87r5Ji4gRVJWgLpU)7jSHVZZXB9STk0FAIjC0nn)X7wJw(g5DKwgXy9jhbLnrn1M9XJHeoWwNg8QPzRLFhA)V4kknGWOAvEJKAmMMvczRfdTZRo1l9vRVFIA0S1SoVe)0qXWJANdnls3eOC7CQhvAJc3rPA(73tFwJAXxqqUCuNMBpdqGtdGwrBMGV7uSPRYc7wyABXGpZVd4QU(EBxU0q4ON56wIZv6xLZ3oi(MiMTgBkRlv22Us(SyZ6q)znD7PRwmvVrR1Xk7CyZB7TllD9TyTtsY6DmE9W5hwIGAQBk4PrnmgY6Bmntxj7mORN9Y6DQDaRyG72E2E)vmcPbvFj(EwJfgkPAU(ltTMkqmFVnmX38fN4KOSuoT(AF8tbAPCDI0(LYt1O3xPdQYXP90Z5jk17l)r74UfT(7SSXXS8SDcrJv6c9(h1H74NVzpQd3hi1JutDyHf9(AFyh2JPCF6AorJ5EdqXXMkIQCBSVILKF)4S2ADTTB9sUHqpGZaHN3UaFmNjz3o(SwB))EhUH7w2EahxKwlm9ECrUtO2bXyp3oRyqBaoyEuhUte69uCmCa1F)Z(QKrFpKonPS)YFWiUtqFslhpMj406eoFn0OxO1fE3hVJ7Sx(pNK9Wf6odXJ84yEmN4JcKFBhdI7Kfh5XGiHVBbWz9S0s4BuP3x0pHqECTnQiV19IcehGT2xCJMDw6e0ZJEH3hxGwowKVKerzen6iRtDGFbXHv0lQuFNQVaeelqG95WUNT1(cLnQ4FmJSbGvupAlFlIAOuR3Pf0QYcWWCQw)CfTNKB8zlYL(fBhgxc8qBlGrL7o6(lB0ESKXx4OAxil15n1cGw35KVyK92xydw8axLwEjRD7AETwb7hms6T6X1r42k6UGhDKfKSY8CIVwsgjRC(jxYkg49)O5i6QtV2oGJ(TDOcsXVTMXEfVrOgkP)XU5kpB0sAu3FSDZ)X6Ui2M6EQMvPVsgj7sFqnymLhUA5638eukAwJBI5hHENyIVDmbw(Mo9mAcgVNjW8t)uhnbMrlb2QYrl(5l6hmQg(t(vIQL6LAR5V9nEyjS18mHnWxImE7Q42swr5yLzINwSbkl0X1X4gXwvoAkYRl483)4jS2NaThVtxv1XFi3K4En((tPcTK)XVQLImF8DM8m9hnx9p2vTuLPZpDuw7FUVVDvZUw9BsLhkRDJ1FLRMDTsRLB(GAPEV8V9v4nYWPlFl1Mz(al56FbqmQB6WpIHXAqEBs2O(VLgkU7kPd1Vd0w6F7kmaYF2uTZ1Z6Ujh0dEft(cSkFMC)(YNPgqt(SY9x1McODX7GE(LupHihNiz)o(uJjeV27oJ)0QdS(yj8v7Fevuv3EAjRT6jSKmX8FZs01DTMZXAMG66gQhs)Fwt0JTR)Vz)F]] )
+spec:RegisterPack( "Havoc", 20221025, [[Hekili:v31)ZTTnw()w82zvKsDvLOSC62XY70KMDBZ0R3nR7n9(jrbjczXluK64xSJVXJ(B)Epaqqaiaqkz7KC)IJdbXdVVJpVhiPNpE(Fm)MisjD(Vhmkiy8OGPdhp5IrJcMFt5d7OZVzhz1hj3c)skzl8ZFHCx2k8QpKKrIWzxKvLVcg5M4TvjKY4S03Ltwxo)MLvXjL)A68LwwHj)TPWkuSJUA(Vp9nVz(nBIJIO87LwalWpt3MLUFXVuLwsZH)fx29F4NQUTQOC)IGXNd)ai3(pS)dVBdj9wAXpU)dF3(f)B0sY2S8DBYkIl2VGKgTFX)rgYv7xuvacY(f)LL01z5WVSo(2naXOPrf)L9lsYUnEfmJO)ByjOW0kZG)3UDjpSFrwk(t8clZkkeZSyiBf)TSScks9D7xu8q6Q40BHjS(awP)24u(aI1nNULeNcJChqPfL5XPFKcx(D)mmePCdk2LGOTFXwYNgme055zRJtan938n7xyx)GJyvhHd0ONW)3NFDLyv)mPVqPMScfMIH7YPRY2UKuoBzwzzcnkCDc5bA09WAhwM9jyHo8E)2zF)DK8yYYe65OV)mXkgImDyrsw553rsQOZgFE866bhoE4gsryvbnCz16196Fw9abAd84Jntyvwwsu29PdJQYzXpxpRzshm4GNcRgOYQbUy1XoyvlCZ1EedGtbl()zb498(hGF8wkzl4LuIUp3VFX)Okh8tUpUCdmusm68XVejjdDj4JqJ5w2FMK)XBtiORywU09)TjeiDb4lLMqrFTQcM30pDBwkqO)j5)L2fTfkP0haPfyWW1apeUklnkgNMqVvssOPLdxISj7ogstX5h1RFEvkgIClDyunlgULgrssGPd6o(mJq(nCjJDLZ9SM5sqoo8wGHDyFxdc4MvyIv0ec5Ctwc8YWDq8xvcW(5v7kzlOCO7YWSXWyfzj3b8GD6sYxrsPqqqEo7E4HPV)t0vvSaB6Du0MugVLIHxWpaQGwawgJ7iXjOSmus8zrXfiViVaSgG2SOAlOwiywd2c8NaHIYsFvj(piHrYvsavbCLI7HujmdPsAL3wLNYU2FMvb(kmQ0Se5u(KdjvLzHKYsyxRZbRfnCveeGkge0CqsLFmII(1dxYPy49ibhkYUGA3gZI2T0ZJTK5Q)NGVAwvjltBgip)XgAgQ8Yu9Fpx41IxkDfT2p)FeNJjTFBswweFgyGYKVfYdg8T130FKd6BEoX)vvmeGjuzfQABDFBgBggHlfkAkUCRqMmSKXJQUIwCJ1JcwJSki)aNwl(GB3oAssOGDgQSQJVEw)jFNyQLOaeMTomhy)6jpqQ8m0ChQQ2GBCW8crli3jeZ5CUD1iQcrTx)XEuHOUMp27lGnMW15T5uYh5t)cC6tEgTa2nacnmZVu96drPtMfXIMVNxfFGFf)JpEMy8vpScYuaJVHuMt7i1VOZMv3E)OoonlFljPj(FfeTvwBTrvcMiAjUZaKBGI5Mjyyffgyv55IOLK7jpuiSz)byVwJxnnl97yBvG5DoAd0Pfj0Nze3QcMzy1oPn0QU6Xhf5KOCxWWLOhimTb(TaTey1yFJ4kHozxVqzFBJiIA0G62WymsS0ylbbEYmmmTgAq3Sbz7MLtlOSn6eSVUAPwiKio0hg(r0dkoFQOb4m17qVDEu8VW83phz8S4ijcch5DqzNTtfMcAhaVnEzCsCPaVl9tLuK8ig0Fk797xCtC66Qeu7HlBNeEnhWgub9ShNkChRjNQHShUA3b)NSYHfm(aupaBCvGBgzhOqXT7GvpeDGfK3LtKu)R7Sl2j9Ql7XqkfrxhVkU86jJ62cRQn8iE9rIF1BM(DUJfFDWObDBnRr)PhEBkVN5ggyJROGssTq)BxfneQi51bd01hbJS7JI(ILL0TagkMxfIHxhbn6JjdPQRuJLVdwhOkC4EQXGFEd2ygEciZOtfY9eaYRqH0455YJS23W0)Ayz8QpcKPrLOnATAPwRCbu3Hd)imPPWjMMs3gtlMn2mFyT6(Qzt6MGTnBlycRmS01xTXuZtIxFzOwvv8SWEbH8)BysCrjFvAsYPdnDhOpcR2fUoNClsUZX(QmJ5BH6woAse1U8okUEuRezBweDwkf2CQGLOSVUpBiGAMwgxsLsKMV3SjtF8rfyUChAqnTPhhACZfyBcPyJuCWH0Sp(ilmCIEGw5M8S7dHTobBhYCmAUMc(ayzh5rOemSaXOpBAp((LXB3MX7EeaHpNWm(NzDNuTvcKHdTecDW5fqXPRkf1NBnKUvsjGM8bwO67ii2sJ2uGB(DpdgFcKPNHFbGPao8jAbT501GPAdhScoh2wiWUwzIo4W28mzBgUezqrxnLRvR6NPPjyO5DKOQVZ0rqwhWKH9tjSosmy6GdxlqFCWQDklg45yl79JpkNKYvLZtKCyqxz1DSMwj90SUD01bGlp2rQE608Yrwjj2tai8zRidsozxbUTlnbGCMdgjWvDviSUGgjgDqALe5ygiGcRYssaIXYhvvwbofs(ML0NfdiG9RZPt6cNUISAddGaz1)tvmarieWjqk0wh5qKprHaQE97BKMfkSLpvEw2Ea4YOqk2eHHKOOIHXPxF5iZKZxBmliRH(nC1efZ(b7tc7vB1(WS5SgEUMuLuI73HGWabUUnK2ukI2sXc9LoGh0vSzJ75cTEFxXwmw0pYNR7Rlc)Dpnj7VgmWUCpJPq67H5d6DMLoZXslJi)DptFASGw0ybFE1ywA54tqJnU3zwmfDsJ9nytjWC0fBGTQJeUHee0wgVdLuiOA3oEPpfLGocWEbH5y9dlZqmEYowJueZ2Jvtqs4LRa71Z3kiIbLBO3q9cRJQIZIT7GtOz9T25rq35o8CgKtMHHaWomAWGJe1MDpoir1gqK9TtwJnXgioLHnlDb8qyGoQYJZQkyYNkkov(GM8qrmjnmIUkNYWR03FMna60HjevHaPsDhnU1S7SceNMxguqBjPqLPaZFEmIuaBUAiGwIgftkzh(G8Q3MKTKKODjFlP6jKi07ZKfc5Qo0tr1eilsZO81xpE0GEo9spyavFXdyDuvdimZRk2OawPkDj262qwp1AYiHQA9HWTbHFdeIIzbqKGIySfGJXqScIY4r22meeJb2yOikPCtyX9u6oT0QkyESnnoW5qeoGaD)jO0hpYgPnrMJntRkg0ZG)c4ofjgQd11Ezp7WZ7DwDRS(0UScGI82RRg71WoQUBNGm6ZXsf5PNd4XOZ1xpwurZBapt7jFAcgSjrg9YXARlCL6KTtGp80t1DmRvd1tWIRjcFYQRPr9wSCWokeZ20jPPXBI53hBUwte3IFoeVYUdKa6LNEHvNxT28z7g4Dohl77J0oXvo2aPwX3XKm2pCphvm)IKMb(TIWLa0GZ5bccVzEPVUoolFhd2vx0MSFMpH3iM6LvM7sEoMKMvvYAro(yq4WVwvcLmxumuVh4TC94PcyfDGsGuClf37kNIvGv6IIDH79EWJneG3SIxM9Whp9PVtnN)COBC1joM(ExoDhbpxkwAo8WOVESf6QA96BDt(hF0pGszrmwboa1iiJQnZtYRIyWZMRUMqTKaBpFl9e3MuTXbsYEuytKZ6K22qo7db20c((tYtDKnT4xfaFKCJAi6lHky6Nb0p20YDa9JDp8oGdOr5zhgGCCtSj99K(uTQFBQFU(OMHUAYiXga2pXRPdCaOWV8BcB5zLHDXsOeCsCRQVR7deZhm128SSMT6ffIJT1PL9xoZ1gwoY5l2waRmX725EJoofijw5E7eQVnk1ZLKAlbWXJ6XzgApAP53ChnVaMo)zkE0pemE(n3tyg5I538N)0)63)1F)F(J7xWEsI2ViE7US8sXzK(k(k(k8mz49bF)IIm8XBdF2X2syTGBf)zLD4(p8BXPWqJbI9USuyzzd)QghU)RxXpMw1lvZNVcF0JyplQcQC5tKmmPzDwssg(ORICCoPap)jSvIqEEGMXPnpNEX4ZijEyw4Jrtz99LMXuf4trNYDhfH3CePKSKuq)raxj(W6wd8cHz2IAnI3G(JtVo5jQqEIubpt83)V)BgK7INxYn95LCVXGCI4ejTQ))hnH6mFP7tFYHgMCvREyYNB1JZhlWuHjpcGgDM4sL8R1pqraDn9altp4WPB6BEKRURP3Xv)KDL1OIPhSSLYsI0Cfx(jNinoANKAughNpIrSWnXBFh7jVPK8P9l(RCg83QiqcY47Ily5vZ2rHkhW1S)3pOTy02n6Dz6Em6Qt)hEEfMF4PjmUMEhfMXJozxynYygi1r)VU62jAEZX51zM6SdPY1fQNfvJjOKJMlo9Km1k3FLPlXjpvh4cQRMFd73W31mo0n43(D2lUwnCW3o)Mv5aKDOQI53yRLxs41l6bRkFjAQPE)IRHyb96Q3V4XhX3RiZQyy3lGFDXagTC1sm7dkFdMUA2(f3UcWXYLvqsefvnVeG06u0CaeNTyh2Nm2L5V4gip3SyMG0XfDIZfTVG2MTsJRH8wmAT6(mGp80wnoLoR5HA0EZ1y68b10uup1(fGQmGtH(AgmLIV4kGrSP6YKoIt(gTuD5sO25cNANNON0Kr6lOOrF4Ao15AARTknKrPXEizU0jzotyypS1DneZymKGVXhb7K7WtuNXmvnSOEtfro8hCYHT01pgd6SZFqylKSKDp1QoZEawpOJob2W0Qf7IS8F7lUsDQsWAxADiNAATpKti(aRzVkFGc7nJQdADjjkn(r1UQMsC8Otmyq9IiDCVTHABZabbYQCHESjJumIWsqlzt1UrQsB8o9Mv1xBGQZi2IPVwt3W4xH5u4d4UrLSBBQn7IJ2a2iUQnxLjIUtn(clI(zEuUpEPtTtSmPZDsyNT(03Um81jSofthdlCetyMzVzdazpmTJlsVDOQSTV(LYu8xauuT9RiqmKxEJAiHgdOhq4o1CdgbRWB8SXUejWRLBY7T3H22GFS7eWh0(sz(szqMrhtTN2iWDom)lrF7RsTZJtTMdSmbUZb6Ip8dDmOvaR(Tdg7fwIoqSwjkX5lDS4VBXgovAPJ1ExJnUrZSXzGLQGwQiDI4q2VfY)GxOLNqZDTjGs7n2u1Rv7US86e2OmWV6f5X748XxUxKyuYtQOslNL3QklB8R9ceY38eCANW6GSGqwFbfrFulORFk2f)gfl65)F87CS0yXspCWRnm3q5Zq2Rt2XGUyhLBNB)bY7yxZl6YAARkPNhFNJlu9RI3V5oh523zTlkUlou54D44nvUgqwhmUDkXGPdLObBhLJ0f2kag9qyVFXNKpIGBS(cjBu(4HVuYg(oVeVI12Qq)5jMWr308hVBnA5RKxiBzeJ1htfu2e1uB2hpgs4aBDAWRMMTw(DO9)wYO0acJQv5nsQXyAwjKTwm0oV6uV0xT((PQrZwZ68A87qfdpQDo0SiDtGYTZPEuPnkChLQ5VFp9znQfFBe5YrDAUdmabonaAfTzc(UtXMUklSBHPTfd(c)cNR667TD5sdHJEMRBjUqPFvoFvK4BIy2ASzSUuzB7k5d(nRd9tA62txTyQEJwRJv25WMxTCxw66BXANKK17y8UOZpSeb1u3uWtJAymK1xpBMUs2zqxpON17u7awXa3T9S9(RyesdQ(s8L6glmus1C93CBnvGy(EByIV5loXjrzPCA9L(4Nc0s56eP9RLNQrVVqhuLJt7PNZtuQ3N)J2XDlA93zzJJz5f7eIgR0f6dpQd3XpF1EuhUpqQNOM64cl69L(WoSht5(01CIgZ9gGIJnvev52yFnlj)HXzT16AB36vCdHEaNbcpVDb(uotYUD8zT2()doCd3TS9ioUiTwy694ICNqTdIXbUDwXG2aCW8OoCNi07P4y4aQ)YU9fjJ(biDAsz)5)GrCNG(SwoEmtWP1jC(sOrVuRl8UpEh3zV8FojhGl0DgIN4XX8uoXhfi)2oge3jloXJbrcF3cGZ6zPLW3OsVpRFVI84ABurER7ffioaBTpVhn7S0jONN8cFiUaTCSiFjjIYiA0rwN6a)cIdROxuP(ovFbiiwGa7BVDpBR9LkBuX)YjzdaROE0w(Wh1qPwVtlOvLfGH5uT(Tr6aj34BKKl9l2omUe4H2waJk3D09NrPdyjJpNs1UqwQZBMfaTUZjF5i7TVWgS4bUkT8kw7218ATc2pyK0B1JRJWTv0Dbp6ilizL55eFAMmsw5877KvmWh(f6r0vNETDah9B7qfKIFBnJ9AEJqnus)99luEAOL0OU)y7x891DrSn19mnRsFLms2L(GAWykpo1Y1V5jOu0Sg3eZpc9oXeF9ycS8bK6f0em(atG53zQoAcmJwcSvLJw8ZN1Vovn8N8tsvl1l1wZF7B8WsyR5zcBGVez82vXTLSIYXkZepTyduwOtRJXnITQC0uKxxW5F4XtyTpbApENUQQJ)qUjX9A8XUsfAj)lTvlfz(07m5e9hnx9VSwTuLPZVtvw7FUVpuwZVr9dGLhkRDJ1FsTMFJsRLB(6DPEV8p0w4nYWPlFV0MB(al56p3ig1nD8hXWyniVnjBu)d3HI7Us6q97aTL(3UcdG8Nnv7C9SUBYr9GxXKVaRYNj3FO8zQb0KpRC)1TPaAx8oQNFj1tiYXjs2VJp1ycXR9UZ4pT6aRpwcFX(l2IQ62tlzTvpHLKjM)bsrx31AohRzcQRBOEi9)gQOhBZsqqQk3KLZ(tK17yxz()3p]] )
