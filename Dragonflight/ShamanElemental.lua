@@ -2047,7 +2047,6 @@ spec:RegisterAbilities( {
                 for name,_ in pairs( class.abilityList ) do
                     if class.abilities[ name ].school == "nature" then
                         reduceCooldown( name, 1 )
-                        print(name)
                     end
                 end
             end
