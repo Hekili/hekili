@@ -1225,7 +1225,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             if buff.cat_form.down then shift( "cat_form" ) end
@@ -2012,9 +2012,7 @@ spec:RegisterAbilities( {
     swiftmend = {
         id = 18562,
         cast = 0,
-        charges = 1,
         cooldown = 15,
-        recharge = 15,
         gcd = "spell",
         school = "nature",
 
