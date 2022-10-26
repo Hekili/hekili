@@ -2798,12 +2798,14 @@ do
                 end
 
                 if ability.item then
-                    if not ability.itemSpellID then
-                        GetCooldown = _G.GetItemCooldown
-                        id = ability.itemCd or ability.item
+                    GetCooldown = _G.GetItemCooldown
+                    id = ability.itemCd or ability.item
+
+                    --[[ if not ability.itemSpellID then
                     else
                         id = ability.itemSpellID
-                    end
+                    end ]]
+
                 elseif ability.funcs.cooldown_special then
                     GetCooldown = ability.funcs.cooldown_special
                     id = 999999
