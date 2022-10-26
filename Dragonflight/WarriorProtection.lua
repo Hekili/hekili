@@ -10,6 +10,23 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
+-- Conduits (Patch 10.0) : In all cases, talents override and disable conduits they share effects with.
+-- Talents override the following:
+    -- Brutal Vitality
+    -- Fueled by Violence
+    -- Piercing Verdict
+    -- Unnerving Focus
+    -- Cacophonous Roar
+    -- Inspiring Presence
+    -- Merciless Bonegrinder
+    -- Show of Force (Protection)
+    -- Ashen Juggernaut
+
+-- Conduits that need modeled.
+    -- [X] Indelible Victory
+    -- [X] Stalwart Guardian
+    -- [X] Disturb the Peace
+
 local spec = Hekili:NewSpecialization( 73 )
 
 local base_rage_gen = 2
@@ -301,6 +318,11 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
+    indelible_victory = {
+        id = 336642,
+        duration = 8,
+        max_stack = 1
+    },
     intimidating_shout = {
         id = function () return talent.menace.enabled and 316593 or 5246 end,
         duration = function () return talent.menace.enabled and 15 or 8 end,
@@ -411,7 +433,7 @@ spec:RegisterAuras( {
     },
     spell_reflection = {
         id = 23920,
-        duration = 5,
+        duration = function () return legendary.misshapen_mirror.enabled and 8 or 5 end,
         max_stack = 1
     },
     spell_reflection_defense = {
@@ -745,6 +767,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "charge" )
+            if legendary.reprisal.enabled then
+                applyBuff( "shield_block", 4 )
+                applyBuff( "revenge" )
+                gain( 20, "rage" )
+            end
         end,
     },
 
@@ -941,6 +968,8 @@ spec:RegisterAbilities( {
         id = 6544,
         cast = 0,
         cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
+        charges = function () return legendary.leaper.enabled and 3 or nil end,
+        recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
         gcd = "off",
 
         talent = "heroic_leap",
@@ -1015,6 +1044,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( health.max * 0.3, "health" )
+            if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
         end,
     },
 
@@ -1030,6 +1060,11 @@ spec:RegisterAbilities( {
         texture = 132365,
 
         handler = function ()
+            if legendary.reprisal.enabled then
+                applyBuff( "shield_block", 4 )
+                applyBuff( "revenge" )
+                gain( 20, "rage" )
+            end
         end,
     },
 
@@ -1323,12 +1358,18 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        spend = function () return
-            ( -15 + ( talent.impenetrable_wall.enabled and -3 or 0 ) -- Build 45969
-                 + ( talent.heavy_repercussions.enabled and -2 or 0 )  -- Build 45969
-            )
+        spend = function ()
+            local reduction = 0
+            -- The Wall Legendary overtakes the new Impenetrable Wall talent, they do not stack in 10.0
+            if legendary.the_wall.enabled then reduction = -5
+            elseif talent.impenetrable_wall.enabled then reduction = -3
+            end
+
+            return
+            ( -15 + reduction + ( talent.heavy_repercussions.enabled and -2 or 0 ) )
             * ( buff.violent_outburst.up and 1.5 or 1) -- Build 45969
-            * ( buff.unnerving_focus.up and 1.5 or 1) end,
+            * ( buff.unnerving_focus.up and 1.5 or 1)
+        end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1339,7 +1380,7 @@ spec:RegisterAbilities( {
 
             if talent.punish.enabled then applyDebuff ( "target" , "punish" ) end
 
-            if talent.impenetrable_wall.enabled and cooldown.shield_wall.remains > 0 then
+            if ( legendary.the_wall.enabled or talent.impenetrable_wall.enabled ) and cooldown.shield_wall.remains > 0 then
                 reduceCooldown( "shield_wall", 5 )
             end
 
@@ -1363,9 +1404,9 @@ spec:RegisterAbilities( {
     shield_wall = {
         id = 871,
         cast = 0,
-        charges = function () return 1 + (talent.shield_wall.enabled and 1 or 0 ) end,
-        cooldown = 210,
-        recharge = 210,
+        charges = function () return 1 + ( talent.shield_wall.enabled and 1 or 0 ) + ( legendary.unbreakable_will.enabled and 1 or 0 ) end,
+        cooldown = function() return 210 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
+        recharge = function() return 210 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
         gcd = "off",
 
         talent = "shield_wall",
@@ -1384,7 +1425,11 @@ spec:RegisterAbilities( {
     shockwave = {
         id = 46968,
         cast = 0,
-        cooldown = function () return ( ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40 ) end,
+        cooldown = function () return 
+            ((
+                ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40)
+                - ( conduit.disturb_the_peace.enabled and 5 or 0 )
+            ) end,
         gcd = "spell",
 
         talent = "shockwave",
@@ -1531,7 +1576,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "thunder_clap" )
             active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
 
-            if talent.thunderlord.enabled and cooldown.demoralizing_shout.remains > 0 then
+            if ( legendary.thunderlord.enabled or talent.thunderlord.enabled ) and cooldown.demoralizing_shout.remains > 0 then
                 reduceCooldown( "demoralizing_shout", min( 3, active_enemies ) )
             end
 
@@ -1607,6 +1652,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "victorious" )
             gain( 0.2 * health.max, "health" )
+            if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
         end,
     },
 
