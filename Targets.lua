@@ -44,6 +44,12 @@ function Hekili:GetGUIDForNameplateUnit( unit )
     return npGUIDs[ unit ]
 end
 
+function Hekili:GetUnitByGUID( id )
+    for _, unit in ipairs( unitIDs ) do
+        if UnitGUID( unit ) == id then return unit end
+    end
+end
+
 function Hekili:GetUnitByName( name )
     for _, unit in ipairs( unitIDs ) do
         if UnitName( unit ) == name then return unit end
