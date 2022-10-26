@@ -44,12 +44,6 @@ function Hekili:GetGUIDForNameplateUnit( unit )
     return npGUIDs[ unit ]
 end
 
-function Hekili:GetUnitByGUID( id )
-    for _, unit in ipairs( unitIDs ) do
-        if UnitGUID( unit ) == id then return unit end
-    end
-end
-
 function Hekili:GetUnitByName( name )
     for _, unit in ipairs( unitIDs ) do
         if UnitName( unit ) == name then return unit end
@@ -423,6 +417,10 @@ do
                             end
                             excluded = false
                         end
+                    end
+
+                    if not excluded and spec.damageOnScreen and showNps and not npUnits[ guid ] then
+                        excluded = true
                     end
 
                     if not excluded and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then

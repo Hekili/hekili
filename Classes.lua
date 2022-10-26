@@ -54,6 +54,7 @@ local specTemplate = {
     damage = true,
     damageExpiration = 8,
     damageDots = false,
+    damageOnScreen = true,
     damageRange = 0,
     damagePets = false,
 

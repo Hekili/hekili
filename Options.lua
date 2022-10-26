@@ -4890,11 +4890,23 @@ do
                                     order = 5.1
                                 },
 
+                                damageOnScreen = {
+                                    type = "toggle",
+                                    name = NewFeature .. "On Screen Enemies Only",
+                                    desc = function()
+                                        return "If checked, the damage-based target system will only count enemies that are on screen.  If unchecked, offscreen targets can be included in target counts.\n\n"
+                                            .. ( GetCVar( "nameplateShowEnemies" ) == "0" and "|cFFFF0000Requires Enemy Nameplates|r" or "|cFF00FF00Requires Enemy Nameplates|r" )
+                                    end,
+                                    width = 1.49,
+                                    hidden = function () return self.DB.profile.specs[ id ].damage == false end,
+                                    order = 5.15,
+                                },
+
                                 damageRange = {
                                     type = "range",
                                     name = "Filter Damaged Enemies by Range",
                                     desc = "If set above 0, the addon will attempt to avoid counting targets that were out of range when last seen.  This is based on cached data and may be inaccurate.",
-                                    width = "full",
+                                    width = 1.49,
                                     hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     min = 0,
                                     max = 100,
