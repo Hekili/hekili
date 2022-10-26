@@ -322,6 +322,11 @@ spec:RegisterAuras( {
     improved_overpower = {
         id = 385571,
     },
+    in_for_the_kill = {
+        id = 248622,
+        duration = 10,
+        max_stack = 1,
+    },
     indelible_victory = {
         id = 336642,
         duration = 8,
@@ -760,7 +765,7 @@ spec:RegisterAbilities( {
         texture = 236303,
         range = 8,
 
-        --[[ generates 20 rage in beta 46144 currently, but not in PTR 
+        --[[ generates 20 rage in beta 46144 currently, but not in PTR
         spend = -20,
         spendType = "rage",
         ]]
@@ -840,7 +845,7 @@ spec:RegisterAbilities( {
                 applyBuff( "in_for_the_kill" )
                 stat.haste = stat.haste + ( target.health.pct < 35 and 0.2 or 0.1 )
             end
-            if talent.test_of_might.enabled then 
+            if talent.test_of_might.enabled then
                 state.QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
         end,
@@ -1533,13 +1538,13 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.in_for_the_kill.enabled and buff.in_for_the_kill.down then
-                applyBuff( "in_for_the_kill" ) 
+                applyBuff( "in_for_the_kill" )
                 stat.haste = stat.haste + ( target.health.pct < 35 and 0.2 or 0.1 )
             end
             applyDebuff( "target", "colossus_smash" )
             active_dot.colossus_smash = max( active_dot.colossus_smash, active_enemies )
 
-            if talent.test_of_might.enabled then 
+            if talent.test_of_might.enabled then
                 state.QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
         end,
@@ -1587,12 +1592,31 @@ spec:RegisterSetting( "shockwave_interrupt", true, {
     width = "full"
 } )
 
-spec:RegisterPriority( "Arms", 20220929,
--- Notes
-[[
+spec:RegisterSetting( "heroic_charge", false, {
+    name = "Use Heroic Charge Combo",
+    desc = "If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use Heroic Leap + Charge together.\n\n" ..
+        "This is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay.",
+    type = "toggle",
+    width = "full",
+} )
 
-]],
--- Priority
-[[
 
-]] )
+spec:RegisterOptions( {
+    enabled = true,
+
+    aoe = 2,
+
+    nameplates = true,
+    nameplateRange = 8,
+
+    damage = true,
+    damageDots = false,
+    damageExpiration = 8,
+
+    potion = "spectral_strength",
+
+    package = "Arms",
+} )
+
+
+spec:RegisterPack( "Arms", 20221026, [[Hekili:fRvBVnoUr4FlbhG3n3TvXYXoj72ydC9AXHeuSfOElUcC4SfTeTTUql5srTzdGH(T3HK6fskskNBx0(HDJJeNHdhoZZmZJZQWvFA1YeedV6Jtgpzs44j3eeE34RhpB1s2lhXRwEef)eAh8Hm0b4))r6Hc(dFHKJs4cxKxsJHxSNXow8HRUAxkBF5MG48dxvKEOKGyP5zXu0wg)3JVA1YnLPe2dzR2yBNdND9QLOs2(C6QLlBvWpXvaSjPjjyPK4IyP1uf9liknnNw94KBQI(hXS8nyAvexRvrVnCBYM7M8(lRES6XhYszPisv0FLI2LNTLKUBpRkk9WXCkly1ssAbRqCOsZ2rWRzi6omdEWhf(jCgAdbNS6VSAzmnLHPPOvlP4dO0mWkUFEv0U4eW6J5wm)nzjRyWXZPSWYdALheFCNWOpJGDNl(1CXB1j88DyQQ(GLmvDjpJOBOy0t9w1m1vfNtYlkklwxCavS3yL340IJ3ZDjsRDsN2Y)mMEm)zSWGV1TVQmdVnhuqa4AkPGtE9gs(Zb1lUk60PQOUfTbXyemjNMOVInLB3g0ULbfmieTkAHUjDaUsrK1fmA6tyUzDNtZsOVIsEO16emIThUua1O6SYsWhY4A59)X1c(l44sMWwch72hb3Vbj4TPXPqO5IQOPZ6urXtLesXrskJj91HEcmbfbrLvrxRewTHGGmhwo9Gq6jQHeDxI6rdHArG6(vJvo9mstQIGRErsDv03dX8bx3pLjCMtfvCeti1zMfbpVpLsEonlr4QcvUYiy0NL(A3rZWbbNXc2IPFoNUoF7AzeNE0MVnC6WlbWGgvhYw8mgFKh0lDEfbj5pNPK42iNWQDNfDrv0GgoSLVfsLeHaGrmBS0qtWcdrp5pO8O8TxOM85id9sLGrcIhfX4GXBrLeRaLCCAA6rPe)nzgaOgmeR9cCospagiBp8FGwbi8OuiebW4sjCneOCFkaEAHtBE8XYdhWeJWWRpFaxHNYUxPDDG)7oPdAlVEXA1q5jkjNhZf)Sbp2Qb46cqndnppz92s6lTy2VcnPA03OOumTatFcUohaEppNWdkd0YY10AyWmHtRfEzMAvlAmkdQBMtHmzM)Ib2pa8DxOF)Ms3wkQHxS(3lt2DOEpDJ0pS7FBkflUc8d2pSIqzXaqlfS8yeHmaO)3iFXg0ooya824NkgO8GxC0gaK2nURUHEWWmzIrnEuD3j2rlma)6Q)4dAg8dfOyQoYM0Od2JreOk7XyMSmxRTy7TtQraJHQCziqZWpy7FH6sH8K(grEbkMSgqfxxxb38XnThSKF0I5NlfCl4YFT8xwZBVu2K5AzZ0QDe4g0IIstwJ52BakjPOfUEGkHVwJzpk2An82AZLzoLvVFzrnHJummdauxQTQqBkgbxSpw2qVkUnRZH0icpROElu6C5vgqpVjG2o6VADYBRJH0kC2u(goqpbMErg8pXLWLQEwiDNSMVUvVUw(DwzX9WaUB)eqnGUp)9YDqwygmfLWmBS)EVuD7a7QgQbQ7NYSSyu2t9AYQRVy3L8()HHPKyPn1J9XNCxp0C4UMaMUwW6M2sdIQf40v957BBE8mvKY7nuYLQyy8oQG6VRtsLbWHt63D9TQUeNJlEN6Q8oUO7YKDTtwKUldZevNGuy4aJtwZ7hPWwpRDZ)iAXAOExhPKWoDSYmI9NgtpPTl81tT5ZzK3VQ6Sj5m4aJpU(58YmaF3i636mnUbyCRTMqy9HS9mjU95SN3mtt9fc(lhj58DxFbTkqzkE1(J6nFU3kG9IjSFl6z(ZM2v9poT7(TBvqtNeAtlbfa3wcNMsPlTlI2ABYgtHFJAMMZPWVvpFSULd91OLZ2acAwKLxO3pLwn28nJ94RChcEoGFHoRUniW00ZgyYZ0tdKLylPt7AYE7iMGR2R34E(enZWKMepejOMy1GY)En3K8uyeU4g0Z12udf7hXsyODLiL7DtwHpea3HK1QkbcisGQ(qZs91NoIS7Wt)NTbPXtfVzG2X8EpP28)aDpDUSkQ1RJxI6(da50rpLbGcymGck4lQLkFr6BgV((QL)Yp(p)4dF8N)qvuv0N4u9i5BhA6Lt4ZB0MD4naIj()ucdHdrrf5C2HGE8YpGeSgbLIZGsXbvp(3tZGxDlOZFkpd2DXRFthE8)guelx)rnrmVH)Tc8Ll)gRLWVw1u94aoQ6B6xNl69FLwv9HBY3g1m7Runvp(P9CgcpsZ3MsWs6cpKwWJHaNr5rf)1oCgKcfdQfAV5jEZxC)6dmPqIPtH(qt42bBpI1Yj5r(3Lukd(uAwmPmH36hoLTht)ayar)PQOF9FvG5AcFO43ExveKyeVxD1OSx621QOSCUYHUK4TVq60Bc)t1SF2SP)5Qi(xKLCB(KufGF734knr9rtu25NtjeLtuTkznlv4nepkR8WgSmUHaq4vp(GiaJ)GzcgyfvBeFlyWlf9Ugdv0c5tZlC4Rw(DFxvKX36g)rd9nVXxJ)V9n(QKwqrql3b)W8R6ylqONQOxnjYT6DUSv(2Fh0UK)yTNiyX9DPBNRmQ(8XJ8Y36I7oDsBe(7HPwuuAhPUCf7CsgvjAzS1TenB(nQcQtblxy)ShUimy2iEhF3pBSQEm4v1TvWv9ObiowrVTeSEUEcDIupxP0Oc9BMXBwqNRyhd4TiC0B9qF6IWzNozN20lv3rtk7EhNnS51LcENKJV5HC7WbJPJ6rU59xl2AZNoz8PtMSJ2x4f3XxMjJOQpQU)OHpeWCiAhG(8CE6KtNRQ6nyMuQDT2kubxQnzHz1sANuMURjpxSZdhPJm8wE2ZIBbNQ4dZgpYgDHxAZcKJ(0dSPhyYyRMV0rZL2fhBJ8YV29WMoYlVAk(zLnUj67)5BCDII1xbf(ebr17a3Ho6Tx4KCTrdmK69tBtp9jCFw5UF6LJ6Zf3IWj2S6oXTFbRAzdecCguTjJuBisbkrD6KlOurfHftHirhdGynCUDqcrzhjVzZTEWLZe6h(0XuM8GhBQud8wG47qEEObKRANbS6dSbRxZNmYoBxZNulGglxdDvPFlyB1AST0iZ9tTUwDulXc5y5xyNDQE16TD)55a4bqqfLfa3NB)qCZyTvPHcouszOPO2sGKVXvYt9BBJ)8fLykvNN28n9qMQFSjQudNoF)4GRh5KicRgR5t7fV7sDqwU7mPrxyLLgZntlZ2nzm9Ve0lrz16CrvVHUmR6CgoUEIm4MO5uD6e6ff2YQVsgGwdiZTvFYXA)bN9f4wGEXFMlWwII5ACLYyUUHG5nxFVivNyV2(B)ZoI8cFByVWop37MY(AIzmL1kGxds)cv0BtjTGHFTNRBlrIED6EcCmIlvbO84GhU8TNqXMfPGL46VKn3tam19RM4azv83tJ7lpcs48VyatQUF)zJD39KwXxTq8lf8LU6)c]] )
