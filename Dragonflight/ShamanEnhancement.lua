@@ -645,7 +645,7 @@ spec:RegisterAuras( {
         id = 327942,
         duration = 120,
         max_stack = 1,
-        shared = "player",
+        shared = "player"
     },
     windfury_weapon = {
         duration = 3600,
