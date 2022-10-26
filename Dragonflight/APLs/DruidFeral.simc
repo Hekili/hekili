@@ -19,7 +19,7 @@ actions+=/adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.ticking
 actions+=/ferocious_bite,if=buff.apex_predators_craving.up
 actions+=/feral_frenzy,if=combo_points<2
 actions+=/call_action_list,name=finisher,if=combo_points=5
-actions+=/call_action_list,name=bloodtalons,if=buff.bloodtalons.down
+actions+=/call_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down
 actions+=/call_action_list,name=berserk_builders,if=combo_points<5&(buff.bs_inc.up|buff.shadowmeld.up|buff.prowl.up)
 actions+=/call_action_list,name=builder_cycle,if=combo_points<5
 actions+=/call_action_list,name=owlweaving,if=buff.bs_inc.down&energy<80
@@ -45,7 +45,7 @@ actions.berserk_builders+=/shred
 # Threshold at which to spam PW
 actions.finisher+=/primal_wrath,if=spell_targets.primal_wrath>variable.pw_v_fb
 # PW for applying Rip
-actions.finisher+=/primal_wrath,cycle_targets=1,if=refreshable,if=spell_targets.primal_wrath>1
+actions.finisher+=/primal_wrath,cycle_targets=1,if=refreshable&spell_targets.primal_wrath>1
 actions.finisher+=/rip,cycle_targets=1,if=refreshable
 actions.finisher+=/pool_resource,for_next=1
 actions.finisher+=/ferocious_bite,max_energy=1,if=!buff.bs_inc.up
