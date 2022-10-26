@@ -1166,6 +1166,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( eve
     if ability and state.holds[ ability.key ] then
         Hekili:RemoveHold( ability.key, true )
     end
+
+    Hekili:ForceUpdate( event, true )
 end )
 
 
