@@ -74,8 +74,7 @@ function Hekili:OnInitialize()
     AceConfig:RegisterOptionsTable( "Hekili", self.Options )
 
     local AceConfigDialog = LibStub( "AceConfigDialog-3.0" )
-    -- self.optionsFrame = AceConfigDialog:AddToBlizOptions( "Hekili", "Hekili" )
-    EmbedBlizOptions()
+    -- EmbedBlizOptions()
 
     self:RegisterChatCommand( "hekili", "CmdLine" )
     self:RegisterChatCommand( "hek", "CmdLine" )
