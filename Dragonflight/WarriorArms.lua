@@ -12,6 +12,21 @@ local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 local spec = Hekili:NewSpecialization( 71 )
 
+-- Conduits (Patch 10.0) : In all cases, talents override and disable conduits they share effects with.
+-- Talents override:
+
+-- Fueled by Violence
+-- Piercing Verdict
+-- Cacophonous Roar
+-- Inspiring Presence
+-- Merciless Bonegrinder
+-- Ashen Juggernaut
+
+-- Conduits that need modeled.
+-- [X] Indelible Victory
+-- [X] Stalwart Guardian
+-- [X] Disturb the Peace
+
 local base_rage_gen, arms_rage_mult = 1.75, 4.000
 
 spec:RegisterResource( Enum.PowerType.Rage, {
@@ -307,6 +322,11 @@ spec:RegisterAuras( {
     improved_overpower = {
         id = 385571,
     },
+    indelible_victory = {
+        id = 336642,
+        duration = 8,
+        max_stack = 1
+    },
     intimidating_shout = {
         id = function () return talent.menace.enabled and 316593 or 5246 end,
         duration = function () return talent.menace.enabled and 15 or 8 end,
@@ -366,7 +386,7 @@ spec:RegisterAuras( {
     },
     spell_reflection = {
         id = 23920,
-        duration = 5,
+        duration = function () return legendary.misshapen_mirror.enabled and 8 or 5 end,
         max_stack = 1
     },
     spell_reflection_defense = {
@@ -850,8 +870,9 @@ spec:RegisterAbilities( {
         cooldown = function ()
             if valor_in_victory.enabled then
                 return 120 - (talent.valor_in_victory.rank * 15)
+                - ( conduit.stalwart_guardian.enabled and 20 or 0 )
             else
-                return 120
+                return 120 - ( conduit.stalwart_guardian.enabled and 20 or 0 )
             end
         end,
         gcd = "off",
@@ -947,10 +968,17 @@ spec:RegisterAbilities( {
             end
             removeBuff( "sudden_death" )
             if talent.executioners_precision.enabled then applyBuff ( "executioners_precision" ) end
+            if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
             if talent.juggernaut.enabled then addStack( "juggernaut", nil, 1 ) end
         end,
 
         auras = {
+            -- Legendary
+            exploiter = {
+                id = 335452,
+                duration = 30,
+                max_stack = 2,
+            },
             -- Target Swapping
             execute_ineligible = {
                 duration = 3600,
@@ -994,7 +1022,9 @@ spec:RegisterAbilities( {
     heroic_leap = {
         id = 6544,
         cast = 0,
-        cooldown = function () return 45 + (talent.bounding_stride.enabled and -15 or 0) + (talent.wrenching_impact.enabled and 45 or 0) end,
+        cooldown = function () return 45 + (talent.bounding_stride.enabled and -15 or 0) end,
+        charges = function () return legendary.leaper.enabled and 3 or nil end,
+            recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
         gcd = "off",
 
         talent = "heroic_leap",
@@ -1036,6 +1066,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( health.max * 0.3, "health" )
+            if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
         end,
     },
 
@@ -1124,7 +1155,7 @@ spec:RegisterAbilities( {
     piercing_howl = {
         id = 12323,
         cast = 0,
-        cooldown = 30,
+        cooldown = function () return 30 - ( conduit.disturb_the_peace.enabled and 5 or 0 ) end,
         gcd = "spell",
 
         talent = "piercing_howl",
@@ -1466,6 +1497,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "victorious" )
             gain( 0.2 * health.max, "health" )
+            if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
         end,
     },
 

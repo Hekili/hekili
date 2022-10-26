@@ -13,6 +13,21 @@ local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 local IsActiveSpell = ns.IsActiveSpell
 
+-- Conduits (Patch 10.0) : In all cases, talents override and disable conduits they share effects with.
+-- Talents override:
+
+-- Piercing Verdict
+-- Cacophonous Roar
+-- Inspiring Presence
+-- Merciless Bonegrinder
+-- Ashen Juggernaut
+-- Depths of Insanity
+
+-- Conduits that need modeled.
+-- [X] Indelible Victory
+-- [X] Stalwart Guardian
+-- [X] Disturb the Peace
+
 local spec = Hekili:NewSpecialization( 72 )
 
 local base_rage_gen, fury_rage_mult = 1.75, 1.00
@@ -355,6 +370,11 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 6
     },
+    indelible_victory = {
+        id = 336642,
+        duration = 8,
+        max_stack = 1
+    },
     intimidating_shout = {
         id = function () return talent.menace.enabled and 316593 or 5246 end,
         duration = function () return talent.menace.enabled and 15 or 8 end,
@@ -464,6 +484,7 @@ spec:RegisterAuras( {
             else return 0
             end
         end,
+        copy = "meat_cleaver"
     },
 } )
 
@@ -1083,16 +1104,14 @@ spec:RegisterAbilities( {
     enraged_regeneration = {
         id = 184364,
         cast = 0,
-        cooldown = 120,
+        cooldown = function () return 120 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
         gcd = "off",
 
-	   toggle = "defensives",
+	    toggle = "defensives",
 
         talent = "enraged_regeneration",
         startsCombat = false,
         texture = 132345,
-
-        toggle = "cooldowns",
 
         handler = function ()
             applyBuff( "enraged_regeneration" )
@@ -1244,6 +1263,7 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( health.max * 0.3, "health" )
             removeStack( "whirlwind" )
+            if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
         end,
     },
 
@@ -1331,7 +1351,7 @@ spec:RegisterAbilities( {
     piercing_howl = {
         id = 12323,
         cast = 0,
-        cooldown = 30,
+        cooldown = function () return 30 - ( conduit.disturb_the_peace.enabled and 5 or 0 ) end,
         gcd = "spell",
 
         talent = "piercing_howl",
@@ -1716,6 +1736,7 @@ spec:RegisterAbilities( {
             removeBuff( "victorious" )
             removeStack( "whirlwind" )
             gain( 0.2 * health.max, "health" )
+            if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
         end,
     },
 
