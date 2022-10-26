@@ -576,16 +576,25 @@ end
 
 do
     -- Check Covenant spells to disable them.
+    -- TODO: Revise this to just keep track of the original spell IDs.
     local CovenantNames = {}
     local CheckedSpells = {}
 
     for k, v in pairs( Enum.CovenantType ) do
         if v ~= 0 then
-            CovenantNames[ k ] = 1
+            CovenantNames[ k:gsub( " ", "" ) ] = 1
         end
     end
     local IsCovenantSpell = function( spell )
-        CheckedSpells[ spell ] = CheckedSpells[ spell ] or CovenantNames[ GetSpellSubtext( spell ) ] or 0
+        if not CheckedSpells[ spell ] then
+            local subtext = GetSpellSubtext( spell )
+            if not subtext or subtext == "" then
+                CheckedSpells[ spell ] = 0
+            else
+                if subtext then subtext = subtext:gsub( " ", "" ) end
+                CheckedSpells[ spell ] = CovenantNames[ subtext ] or 0
+            end
+        end
         return CheckedSpells[ spell ] == 1
     end
     ns.IsCovenantSpell = IsCovenantSpell

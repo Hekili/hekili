@@ -1690,7 +1690,7 @@ spec:RegisterAbilities( {
         school = "nature",
 
         talent = function()
-            if covenant.necrolord then return end
+            if covenant.night_fae then return end
             return "convoke_the_spirits"
         end,
         startsCombat = false,
