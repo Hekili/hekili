@@ -91,6 +91,7 @@ spec:RegisterTalents( {
     improved_survival_instincts   = { 82128, 328767, 1 }, -- Survival Instincts now has 2 charges.
     incapacitating_roar           = { 82237, 99    , 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage will cancel the effect.
     incarnation_guardian_of_ursoc = { 82136, 394786, 1 }, -- An improved Bear Form that grants the benefits of Berserk, causes Mangle to hit up to 3 targets, and increases maximum health by 30%. Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration.
+    incarnation                   = { 82136, 394786, 1 }, -- An improved Bear Form that grants the benefits of Berserk, causes Mangle to hit up to 3 targets, and increases maximum health by 30%. Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration.
     infected_wounds               = { 82162, 345208, 1 }, -- Mangle and Maul cause an Infected Wound in the target, reducing their movement speed by 50% for 12 sec.
     innate_resolve                = { 82160, 377811, 1 }, -- Regrowth and Frenzied Regeneration healing is increased by 20.0% on yourself. Frenzied Regeneration has 1 additional charge.
     innervate                     = { 82243, 29166 , 1 }, -- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 10 sec.
@@ -1098,6 +1099,7 @@ spec:RegisterAbilities( {
         texture = 236149,
 
         notalent = "incarnation",
+        usable = function() return talent.berserk_ravage.rank + talent.berserk_unchecked_aggression.rank + talent.berserk_persistence.rank > 0, "requires a berserk talent" end,
 
         handler = function ()
             applyBuff( "berserk" )
