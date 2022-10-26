@@ -2124,7 +2124,7 @@ do
             local thread = self.activeThread
 
             -- If there's no thread, then see if we have a reason to update.
-            if Hekili.freshFrame and self.superUpdate or ( not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) ) then
+            if Hekili.freshFrame and ( self.superUpdate or ( not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) ) ) then
                 Hekili.freshFrame = nil
 
                 self.criticalUpdate = false
