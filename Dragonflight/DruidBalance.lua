@@ -543,15 +543,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Talent: Healing $w1 every $t1 sec.
-    -- https://wowhead.com/beta/spell=774
-    rejuvenation = {
-        id = 774,
-        duration = 12,
-        tick_time = 3,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Healing $w1 every $t1 sec.
     -- https://wowhead.com/beta/spell=155777
     rejuvenation_germination = {
@@ -616,14 +607,6 @@ spec:RegisterAuras( {
             sf.expires = 0
             sf.caster = "nobody"
         end,
-    },
-    -- Talent: Movement speed increased by $s1%.
-    -- https://wowhead.com/beta/spell=106898
-    stampeding_roar = {
-        id = 106898,
-        duration = 8,
-        type = "Magic",
-        max_stack = 1
     },
     -- Talent: Calling down falling stars on nearby enemies.
     -- https://wowhead.com/beta/spell=191034
@@ -1668,13 +1651,16 @@ spec:RegisterAbilities( {
     -- Talent / Covenant (Night_Fae): Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of $s2 Druid spells and abilities over $d.    You will cast $?a24858|a197625[Starsurge, Starfall,]?a768[Ferocious Bite, Shred, Tiger's Fury,]?a5487[Mangle, Ironfur,][Wild Growth, Swiftmend,] Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
     convoke_the_spirits = {
         id = function() return talent.convoke_the_spirits.enabled and 391528 or 323764 end,
-        cast = function() return legendary.celestial_spirits.enabled and 3 or 4 end,
+        cast = function() return 4 * ( legendary.celestial_spirits.enabled and 0.75 or 1 ) * ( talent.ashamanes_guidance.enabled and 0.75 or 1 ) end,
         channeled = true,
-        cooldown = function () return legendary.celestial_spirits.enabled and 60 or 120 end,
+        cooldown = function() return 120 * ( legendary.celestial_spirits.enabled and 0.5 or 1 ) * ( talent.ashamanes_guidance.enabled and 0.5 or 1 ) end,
         gcd = "spell",
         school = "nature",
 
-        talent = "convoke_the_spirits",
+        talent = function()
+            if covenant.necrolord then return end
+            return "convoke_the_spirits"
+        end,
         startsCombat = false,
 
         toggle = "cooldowns",
@@ -2620,7 +2606,7 @@ spec:RegisterAbilities( {
         handler = function ()
             spend( 0.12 * mana.max, "mana" ) -- I want to see AP in mouseovers.
             applyDebuff( "target", "sunfire" )
-            active_dot.sunfire = active_enemies
+            if talent.improved_sunfire.enabled then active_dot.sunfire = active_enemies end
         end,
     },
 

@@ -635,14 +635,6 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Movement speed increased by $s1%.
-    -- https://wowhead.com/beta/spell=77761
-    stampeding_roar = {
-        id = 77761,
-        duration = 8,
-        type = "Magic",
-        max_stack = 1
-    },
-    -- Talent: Movement speed increased by $s1%.
     -- https://wowhead.com/beta/spell=77764
     stampeding_roar = {
         id = 77761,
@@ -1964,7 +1956,7 @@ spec:RegisterAbilities( {
         school = "nature",
 
         spend = 0.12,
-        spendType = "mana, 137012",
+        spendType = "mana",
 
         talent = "sunfire",
         startsCombat = false,
