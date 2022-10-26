@@ -566,7 +566,6 @@ function ns.FindUnitDebuffByID( unit, id, filter )
     return name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3
 end
 
-
 function ns.IsActiveSpell( id )
     local slot = FindSpellBookSlotBySpellID( id )
     if not slot then return false end
@@ -575,6 +574,22 @@ function ns.IsActiveSpell( id )
     return id == spellID
 end
 
+do
+    -- Check Covenant spells to disable them.
+    local CovenantNames = {}
+    local CheckedSpells = {}
+
+    for k, v in pairs( Enum.CovenantType ) do
+        if v ~= 0 then
+            CovenantNames[ k ] = 1
+        end
+    end
+    local IsCovenantSpell = function( spell )
+        CheckedSpells[ spell ] = CheckedSpells[ spell ] or CovenantNames[ GetSpellSubtext( spell ) ] or 0
+        return CheckedSpells[ spell ] == 1
+    end
+    ns.IsCovenantSpell = IsCovenantSpell
+end
 
 
 do

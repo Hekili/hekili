@@ -20,7 +20,7 @@ state.talent.no_trait = { rank = 0, max = 1 }
 
 -- Replace ns.updateTalents() as DF talents use new Traits and ClassTalents API.
 function ns.updateTalents()
-    local configID = C_ClassTalents.GetActiveConfigID()
+    local configID = C_ClassTalents.GetActiveConfigID() or -1
 
     for token, data in pairs( class.talents ) do
         local node = C_Traits.GetNodeInfo( configID, data[1] )
