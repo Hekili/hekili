@@ -44,7 +44,6 @@ local function EmbedBlizOptions()
     open:SetText( "Open Hekili Options Panel" )
 
     open:SetScript( "OnClick", function ()
-        SettingsPanel.CloseButton:Click()
         ns.StartConfiguration()
     end )
 
