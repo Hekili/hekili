@@ -44,9 +44,7 @@ local function EmbedBlizOptions()
     open:SetText( "Open Hekili Options Panel" )
 
     open:SetScript( "OnClick", function ()
-        InterfaceOptionsFrameOkay:Click()
-        GameMenuButtonContinue:Click()
-
+        SettingsPanel.CloseButton:Click()
         ns.StartConfiguration()
     end )
 
