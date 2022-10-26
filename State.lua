@@ -30,6 +30,8 @@ local LSR = LibStub( "SpellRange-1.0" )
 local class = Hekili.Class
 local scripts = Hekili.Scripts
 
+local unknown_buff, unknown_debuff
+
 
 -- This will be our environment table for local functions.
 local state = Hekili.State
@@ -2155,8 +2157,16 @@ do
             if value ~= nil then return value end ]]
 
             local aura_name = ability and ability.aura or t.this_action
-            local aura = class.auras[ aura_name ]
+            local aura = aura_name and class.auras[ aura_name ]
             local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) )
+
+            if not app then
+                if ability and ability.startsCombat then
+                    app = unknown_debuff
+                else
+                    app = unknown_buff
+                end
+            end
 
             if aura and class.knownAuraAttributes[ k ] then
                 -- Buffs, debuffs...
@@ -3743,7 +3753,7 @@ do
     }
     ns.metatables.mt_default_buff = mt_default_buff
 
-    local unknown_buff = setmetatable( {
+    unknown_buff = setmetatable( {
         key = "unknown_buff",
         name = "No Name",
         count = 0,
@@ -4709,13 +4719,21 @@ do
     ns.metatables.mt_default_debuff = mt_default_debuff
 
 
-    local unknown_debuff = setmetatable( {
+    unknown_debuff = setmetatable( {
+        key = "unknown_debuff",
+        name = "No Name",
         count = 0,
+        lastCount = 0,
+        lastApplied = 0,
+        duration = 30,
         expires = 0,
+        applied = 0,
+        caster = "nobody",
         timeMod = 1,
         v1 = 0,
         v2 = 0,
-        v3 = 0
+        v3 = 0,
+        unit = "player"
     }, mt_default_debuff )
 
 
