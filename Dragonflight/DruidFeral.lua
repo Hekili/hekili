@@ -7,6 +7,8 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local FindUnitBuffByID = ns.FindUnitBuffByID
+
 local spec = Hekili:NewSpecialization( 103 )
 
 spec:RegisterResource( Enum.PowerType.Energy )
@@ -582,6 +584,11 @@ spec:RegisterAuras( {
                 return tick_calculator( t, t.key, true )
             end,
         }
+    },
+    sabertooth = {
+        id = 391722,
+        duration = 4,
+        max_stack = 1,
     },
     shadowmeld = {
         id = 58984,
