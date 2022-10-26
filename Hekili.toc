@@ -39,33 +39,33 @@ Dragonflight\DemonHunterVengeance.lua
 Dragonflight\DruidBalance.lua
 Dragonflight\DruidFeral.lua
 Dragonflight\DruidGuardian.lua
-Dragonflight\DruidRestoration.lua
-Dragonflight\EvokerDevastation.lua
-Dragonflight\EvokerPreservation.lua
-Dragonflight\HunterBeastMastery.lua
-Dragonflight\HunterMarksmanship.lua
-Dragonflight\HunterSurvival.lua
-Dragonflight\MageArcane.lua
-Dragonflight\MageFire.lua
-Dragonflight\MageFrost.lua
-Dragonflight\MonkBrewmaster.lua
-Dragonflight\MonkMistweaver.lua
-Dragonflight\MonkWindwalker.lua
-Dragonflight\PriestDiscipline.lua
-Dragonflight\PriestHoly.lua
-Dragonflight\PriestShadow.lua
-Dragonflight\RogueAssassination.lua
-Dragonflight\RogueOutlaw.lua
-Dragonflight\RogueSubtlety.lua
-Dragonflight\ShamanElemental.lua
+# Dragonflight\DruidRestoration.lua
+# Dragonflight\EvokerDevastation.lua
+# Dragonflight\EvokerPreservation.lua
+# Dragonflight\HunterBeastMastery.lua
+# Dragonflight\HunterMarksmanship.lua
+# Dragonflight\HunterSurvival.lua
+# Dragonflight\MageArcane.lua
+# Dragonflight\MageFire.lua
+# Dragonflight\MageFrost.lua
+# Dragonflight\MonkBrewmaster.lua
+# Dragonflight\MonkMistweaver.lua
+# Dragonflight\MonkWindwalker.lua
+# Dragonflight\PriestDiscipline.lua
+# Dragonflight\PriestHoly.lua
+# Dragonflight\PriestShadow.lua
+# Dragonflight\RogueAssassination.lua
+# Dragonflight\RogueOutlaw.lua
+# Dragonflight\RogueSubtlety.lua
+# Dragonflight\ShamanElemental.lua
 Dragonflight\ShamanEnhancement.lua
 # Dragonflight\ShamanRestoration.lua
-Dragonflight\WarlockAffliction.lua
-Dragonflight\WarlockDemonology.lua
-Dragonflight\WarlockDestruction.lua
-Dragonflight\WarriorArms.lua
-Dragonflight\WarriorFury.lua
-Dragonflight\WarriorProtection.lua
+# Dragonflight\WarlockAffliction.lua
+# Dragonflight\WarlockDemonology.lua
+# Dragonflight\WarlockDestruction.lua
+# Dragonflight\WarriorArms.lua
+# Dragonflight\WarriorFury.lua
+# Dragonflight\WarriorProtection.lua
 
 Targets.lua
 Options.lua

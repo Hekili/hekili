@@ -1039,6 +1039,10 @@ function Hekili:NewSpecialization( specID, isRanged, icon )
         return nil
     end
 
+    if specID ~= 0 then
+        class.initialized = true
+    end
+
     local token = getSpecializationKey( id )
 
     local spec = class.specs[ id ] or {

@@ -79,6 +79,7 @@ Hekili.Class = {
     num = 0,
 
     file = "NONE",
+    initialized = false,
 
 	resources = {},
 	resourceAuras = {},

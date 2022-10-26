@@ -1153,10 +1153,14 @@ end
 
 
 local lowLevelWarned = false
+local noClassWarned = false
 
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( event, unit, _, spellID )
-    if lowLevelWarned == false and UnitLevel( "player" ) < 50 then
+    if not noClassWarned and not class.initialized then
+        Hekili:Notify( UnitClass( "player" ) .. " does not have any Hekili modules loaded (yet).\nWatch for updates.", 5 )
+        noClassWarned = true
+    elseif not lowLevelWarned and UnitLevel( "player" ) < 50 then
         Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
         lowLevelWarned = true
     end
