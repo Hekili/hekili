@@ -165,8 +165,8 @@ local HekiliSpecMixin = {
             actual = 0,
             max = 1,
 
-            active_regen = 0,
-            inactive_regen = 0,
+            active_regen = 0.001,
+            inactive_regen = 0.001,
             last_tick = 0,
 
             swingGen = false,

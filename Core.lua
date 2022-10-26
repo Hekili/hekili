@@ -1210,7 +1210,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                             local next_known  = next_action and state:IsKnown( next_action )
                                                             local next_usable, next_why = next_action and state:IsUsable( next_action )
-                                                            local next_cost   = next_action and state.action[ next_action ].cost or 0
+                                                            local next_cost   = next_action and state.action[ next_action ] and state.action[ next_action ].cost or 0
                                                             local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource
 
                                                             if not next_entry then

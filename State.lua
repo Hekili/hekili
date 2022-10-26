@@ -6163,11 +6163,11 @@ do
                 else
                     if ResourceRegenerates( k ) then
                         local inactive, active = GetPowerRegenForPowerType( power.type )
-                        res.active_regen = active or 0
-                        res.inactive_regen = inactive or 0
+                        res.active_regen = active or 0.001
+                        res.inactive_regen = inactive or 0.001
                         res.regen = nil
                     else
-                        res.regen = 0
+                        res.regen = 0.001
                     end
                 end
 
