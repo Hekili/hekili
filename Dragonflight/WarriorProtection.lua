@@ -1425,7 +1425,7 @@ spec:RegisterAbilities( {
     shockwave = {
         id = 46968,
         cast = 0,
-        cooldown = function () return 
+        cooldown = function () return
             ((
                 ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40)
                 - ( conduit.disturb_the_peace.enabled and 5 or 0 )
@@ -1690,23 +1690,6 @@ spec:RegisterAbilities( {
 } )
 
 
-spec:RegisterOptions( {
-    enabled = true,
-
-    aoe = 2,
-
-    nameplates = true,
-    nameplateRange = 8,
-
-    damage = true,
-    damageExpiration = 8,
-
-    potion = "potion_of_phantom_fire",
-
-    package = "Protection Warrior",
-} )
-
-
 spec:RegisterSetting( "free_revenge", true, {
     name = "Only |T132353:0|t Revenge when Free",
     desc = "If checked, the |T132353:0|t Revenge ability will only be recommended when it costs 0 Rage to use.",
@@ -1739,12 +1722,21 @@ spec:RegisterSetting( "stack_shield_block", false, {
 } )
 
 
-spec:RegisterPriority( "Protection", 20220915,
--- Notes
-[[
+spec:RegisterOptions( {
+    enabled = true,
 
-]],
--- Priority
-[[
+    aoe = 2,
 
-]] )
+    nameplates = true,
+    nameplateRange = 8,
+
+    damage = true,
+    damageExpiration = 8,
+
+    potion = "potion_of_phantom_fire",
+
+    package = "Protection Warrior",
+} )
+
+
+spec:RegisterPack( "Protection Warrior", 20221026, [[Hekili:1M1EVTTTw8plRfWXg3cfzNy7KI4a0BxXwlcslQhW2FjjAjkBDJSOVuuPldg6Z(ohs9GuVCsxhkQJm55878GhEEy5m153CwhqeuN7NzpB2u7zlSME1u7lx4Sw80bQZ6de)hiBHhsi7Hp)cNjO(IiwsU3Vt48ighP5PygjaXkLLX9b62jehsF75NVnsSlBJLpB)5Pr7ZIjiR(CsOa)U)5oR3Kffl(yIZMUvK5aMhO(o3V8ca1OGaQIuAQFNAt(NMTi37Z(c2gkp3dbl3B80WGnxn76j5Fk)tFmjserIZ9(zozlljmoA7orUx0(dmUWcSgolmkgSHx)6CVoLaUXPKcsZWscPIiHo16aNcUOneX)z15HX00DsxKeNCVp8Nu)mbni3J(iL)uUNiApf(Ch8baaOrErPWJpsIIjBIPwv4cO5VJW3sFtu4kKRv267DiB)EAS(kGRoo2LtbDqz0O8)zAijlgu839L7ode0R(vkNf5N79Ej2VQq85ELRFhLCi3lKfhZ(gQ2BEQKwqRz5EbW)tzOneq2tWvjjazBPjuoecK79vyrdRyNez3yay0usPcruY2uRI1vg5iEwcnKbpzXPh4rPK4r(mwCa7BjwksGn2tIssVzRFq3EPNp0Wz2JwtT0unDeJseu(JGfHGUjlmeye(kaaQoJgdre0BUY(4r5dlxosstmjv4Mka3Hv2HjDivDrKLsDJe09POiQmuimqq4vg6kWspEucEXozg65MyglWnmJ)uLI2nDuEkL)a4AgMUWiovI5WKrs8PPcoj21NehpmTqgKKak31pwD6lPKLj2KXtfaTJgpwUukLcQhe9gybUq)hUDr9XF6UiACGBAmzFPR52ztMyOssz3wai)g3Ay4tTv5JhfyOIWcVO5kyUbr0BMnVX1lc3Lf6UboNLxVQ3Ri8Ov4cAFfaVJsIf7So4lUDge5OUSQ2l1s3lD7ftg00ncu3MW4u3dW6YSeTe1Qz2DPbRUYE0p5ZaLKKiSG)i29eFIkWg2CEFkaj4jvSEXYqWI)ds3NIZf21Cgq3ZGyKO)cpxt3bhjfaiiXGaT2Wy7XTEeUbsTanbY(fuc0snGQUuamxU)L)tfuhxzlXE(8UL9aSuMlWK5E8D6r)d5mVW(LdLH21j6tEdM6Hfg6cjxwn1icxJsmCACB(rLPiJKX6LzSgkWDYOUUkORa1AFprZxBxDrTE5BwzIs74bfAdemiZJVWUdNbAaDM3sYcCCBKgilXv9n34OuXBW2UwryQAtdCH3OAgKsTniYYRq5z9K6KTy2ibS8dgjfiCFscMeJZblgLDr9kdxn2otQ7)lly7EGk9(zafg44rGhUXI155AUSU10Cpn)OUqkmO2cQydGtQQ1PU2Ya02BpCrhJAcAC1Y4Q3kG(ieAID4Ug6Ilf2v1QR91tHEC)gHNGTD4S(3F3xV)J3)lVn3l373Ww8uTlI9tbn6DwGQzSZY940)FguSnOSxksMGTNi7teAAb0IuOfQ7IsGTUeq79SeqUYTpRUVI)4mvlz6lvgsFg2s7FoPcL5)qqzX3lkeWh8HpFxfCqN8spdIYLYoHXkQEyapA5oRLpHdLarrWFUxoSJImN1fbnoRleGZ)1rahigKOomBqYf6KOhL0GUl1PtlyZKmHZ6IqKVhnSi8EinSxjRuW6vw7ZHMj5reCKSMX69yXakZpThBHojAxdA4hkISR8dAQwjZQMXvt)XJoOw8fpEKUPQODvUNDlNRA6Ob9TnMw6eo4s20MyOHP0CslZbT(xAolD3r3t)K7ncs30AwKY7MYT7zqRCVBab6hufQ0za33VyBpewROLYiW(d11NmtI6yqUs)fO8qnpVJh1wy5sjnT7vk3BYju5ADRA8qu9w2R61ZuDGESs6wvQM5Ci1cPAaruixnSpOd2Rhne5)6xo)vJmI8p1(fdq1SKs(BMu408BoKPeKzpZKE4PPkqyCH)T50L5E3cfZmJ97AulKSzYqJj9NfD6fpt9YmzSYMLaCIS51dwlJyApPQm0E2CT0FYXCLypVrspJzyBK0B6Z8UwTdUvZ4kxwX1U(75vs2fLx6g6mODbkurBERR6Qz9aXgvk6qnxP0Z(TJvQ8hab)eQIMdlxQ6vzBKKpFiZbMARo5tJPY0ttHiTW2eP(MXvs1qJ20e4LnawFa3M0E5poLONCUMYB(8H0TNfeMj87c0botAMa55CqDH9)m4Byn9k1jQkcfZTJDzHxd6VUW4UasvJSQQtxtWltLmCoXjfN3DFZVv3Rs4LAB)vH656312gz803(MvMcR2pk7fS)6vNmoTQxHf26D(2m0xkMtuwR5jEb0YOYU7YhbT)YCNkFQwUsZFjc18uUQxdeorfkNMLTQA9QXVaHbZLd8GaymLKXphrZ5E6V7rTw10knA8lyirWyoKg)4fTMgP6nY40CUS63pttMGfGHW3HVsS1vVSR3lPe)NZFd]] )
