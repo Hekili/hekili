@@ -5776,7 +5776,7 @@ do
 
             if e.time + EVENT_EXPIRE_MARGIN < now then
                 RecycleEvent( realQueue, i )
-                realQueue[ action ] = ( realQueue[ action ] or 1 ) - 1
+                realQueue[ e.action ] = max( 0, ( realQueue[ e.action ] or 1 ) - 1 )
             end
         end
 
