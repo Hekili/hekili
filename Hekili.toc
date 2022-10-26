@@ -64,7 +64,7 @@ Dragonflight\ShamanEnhancement.lua
 # Dragonflight\WarlockDemonology.lua
 # Dragonflight\WarlockDestruction.lua
 # Dragonflight\WarriorArms.lua
-# Dragonflight\WarriorFury.lua
+Dragonflight\WarriorFury.lua
 # Dragonflight\WarriorProtection.lua
 
 Targets.lua

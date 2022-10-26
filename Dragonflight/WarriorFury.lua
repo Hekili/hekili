@@ -304,6 +304,11 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
+    charge = {
+        id = 105771,
+        duration = 1,
+        max_stack = 1,
+    },
     concussive_blows = {
         id = 383116,
         duration = 10,
@@ -724,9 +729,17 @@ spec:RegisterHook( "reset_precast", function ()
 end )
 
 
+
+
 spec:RegisterStateExpr( "cycle_for_execute", function ()
     if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
     return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
+end )
+
+
+spec:RegisterStateExpr( "cycle_for_condemn", function ()
+    if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80 or not settings.cycle or not covenant.venthyr or buff.condemn_ineligible.down or buff.sudden_death.up then return false end
+    return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0 or Hekili:GetNumTargetsAboveHealthPct( 80, false, max( settings.cycle_min, offset + delay ) ) > 0
 end )
 
 
@@ -1022,13 +1035,7 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        spend = function ()
-            if talent.swift_strikes.rank.enabled then
-                return -12 - talent.swift_strikes.rank * 1
-            else
-                return -12
-            end
-        end,
+        spend = function () return -12 - talent.swift_strikes.rank end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1147,11 +1154,11 @@ spec:RegisterAbilities( {
 
         timeToReady = function()
             -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
-            if talent.improved_execute.enabled then 
+            if talent.improved_execute.enabled then
                 return 0 -- We gain rage when using excute with this talent
-            elseif rage.current >= 20 then 
-                return 0 
-            else 
+            elseif rage.current >= 20 then
+                return 0
+            else
                 return rage.time_to_20
             end
         end,
@@ -1162,9 +1169,9 @@ spec:RegisterAbilities( {
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
             else
-                removeBuff( "sudden_death" ) 
+                removeBuff( "sudden_death" )
             end
-            
+
             removeStack( "whirlwind" )
             if talent.ashen_juggernaut.enabled then applyBuff( "ashen_juggernaut" ) end
         end,
@@ -1444,7 +1451,7 @@ spec:RegisterAbilities( {
         talent = "rallying_cry",
         startsCombat = false,
         texture = 132351,
-        
+
         toggle = "cooldowns",
         shared = "player",
 
@@ -1742,15 +1749,15 @@ spec:RegisterAbilities( {
 
 
     whirlwind = {
-        id = 1680,
+        id = 190411,
         cast = 0,
-        cooldown = function () return talent.storm_of_swords.enabled and 7 or 0 end,
+        cooldown = function () return ( talent.storm_of_swords.enabled and 7 * haste or 0 ) end,
         gcd = "spell",
 
         startsCombat = true,
 
         -- TODO: Find a way to calculate the extra 1 rage per extra target hit?
-        spend = function() return talent.improved_whirlwind.enabled and -3 or 0 end,
+        spend = function() return talent.improved_whirlwind.enabled and ( -3 - min( 5, active_enemies ) ) or 0 end,
         spendType = "rage",
 
         texture = 132369,
@@ -1798,12 +1805,13 @@ spec:RegisterSetting( "shockwave_interrupt", true, {
     width = "full"
 } )
 
-spec:RegisterPriority( "Fury", 20220915,
--- Notes
-[[
+spec:RegisterSetting( "heroic_charge", false, {
+    name = "Use Heroic Charge Combo",
+    desc = "If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use Heroic Leap + Charge together.\n\n" ..
+        "This is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay.",
+    type = "toggle",
+    width = "full",
+} )
 
-]],
--- Priority
-[[
 
-]] )
+spec:RegisterPack( "Fury", 20221026, [[Hekili:TVvBVTnos4FlblGAm2UUs21PjfXg42927UwSOlWMI7UpzjAjABHOx8krLS5qG(TFZqkjtsrk7UXnT7I9dTjrIV8mpZWzgYHAP3YpU8MicJU8dtCNmXZDYfJ9EZmxVRwEd7HD0L3SJeElzd8lzKu4))hvfpGp8HKCse25Y8QIq4fBzSDLV9vVAtmBB1QXH5PVQmoTkHWIZZcliRz4Fh(QL3SQkoH9USLR0N5L3qQyBZlwEZnXP)amKXrrur7OLHI5Uo4)qkkIZlQF)KlQd(5qw(kArDaog1bN7ToA1LtUAu97RF)7YIzXKK6G)EbztE26K4nBz1bXP7YlyJxEtsCjRKlcXzBsO(msXgkdEWh4ScnJSkHgT87xEtyrmJwetwEtrvgDDo0UX3hNK4NV2NTL6diOKwClTym9xRI3TJgvh4uhSQA9AlTRGMsIZkRdUUoytyei5HipbtazdGg)vj53VKbuZxoKewuvUvgltTILZBMbAgaF64QD1bp(yZZkOH3MqllZG)XFdaN9yhO(1vj(Lv4F0m21bJ4T6ocm4Wdgt)nAyfJ6VBlPKkbW8SiAAgcTxBfAMXaIonqRXdI2GVPoyrDWLUCu1jvRlOz)Vhu6K34zYQX0D4QgaBZqSPJzjWcn5cRWVKY8xLNvvoMftlMCP)KDHcyeUfnxHPEoy8RkrMOCZKj)vmscnJnoLuwsclKvddym8gzPQzm1KQl)QxQ0wSD1Wwrngkr53N1awqzwfZgFxCyCEvPp83mA6o24cs2TCZMznqbDSmElLKW2oExiJBVmvYCbqqEeBBCrjdbIN7Zms4V8Sosd020e2dTCMgoxryB5O0UBsvVb77FEwzcPcCdZ7)ezBizkq1oYBAV2XHGwRETCRK1SATtD9OIDTwlVqUL3dql5(4Si1wXWGtRjvjgdCGXTkI3jgHFuyJcMG07OyKmwCkyRcUJRdGzbcPfedw(K7iXjCJ69t(UQ0uAsxaHo0ZxTObBD30574l423R2fn4VLub)W6sLbTyq7oZVDIR1324k1bnzVdMhyAHFW2(qbhx(IKmuD4BW)(HLj5qmBYa)nyGV8IuyYOr(3cQ8Y9Yj3v)bIjP2gAYdLXKm)umNI9Rt2lcvzX)Af1pHUHMfbGJw2flWM9Xh3IQF8FP5LSe0ajVoyxbfziKWYtWv8W7xxKNcEfPGuGMoHXqAsGse7svjc2OQc(7sbsgfzjtjqg8f)UpMaK8Q2UwhbVGKfkc9ntKPuJC12MHdBDog6moYNd9XMh3jcVoMAxCgVfVEMI36T0I84qGsj76Iajn7gDKKeNr9XSAaxQs4tSYdmvVKJbSR3r9Pz004MGpE9suXQvKCIwNZDJQBB36KwOavJKTpfI5njEms3VbplAexXTz0(97LX6GsabuoRUg9HiYM97el(Qd(26GB4yFSPyYDwfsq6jZA9f)FpujA4pwrzEiw5xKeIJGw(3TOtLI0ZcWK5Nngc8jX4sstJfoOfosBjVzdtEgnFof8xJQPXguGmLeyDXeypeh)V4cwDWpb0aFr6p0iIhKUZYZ(oluEV8D0dW9hf6wXg5ldv6jNGWU8Me0vYRX(MkBIyhr5jWfskr6fmsGXZuYiE23s4HC2b5qiNMEBR8jRizr5z9t9uAhvE23U3HII7W9XUhhGDGBRJBBBMOztinCdAybwc(q6m(yAqyCkxzrHKTHw4NsYa0YJMPKcH9r5nUAzHBFGg1UfzawL7OW26fdB54USuBnX72XAkLW8dblti3t(2NgzX7FxoYhGGnMc0WmCNrbaAitjyj1k0elptXWyMw4s7nEHixZoUODRICVEjvLSUn7FqkvSB)UurirrLTPH4TFV)AAVOyAtlAY4Ditit9fp2GEPbzyU)mQQTNe3zsYt)0zhwt)xAclActzjMrdlYtYlI0m8HDXdKErErjy6NLjFyDTw(dOy55hdBhaw5S2hpzpy3Pw8uEub4u01nb8WXDS34gFZ)LY)33YqTWZdCUz2M5fsPZyEUTrSTN2P9(A6iqqyQNNSy)HG1ryrfdFQ)Vwbw3vP(r07IdLo42HAZrNbrJwXzGdiKRjYlfMRRXWu(YXzM4nCtWz4kxjfQQ98i(XXON5QGfUNClKQjSUf2PEMusm6p)zuA9MEyPDQBRyPFqwnB(Neswvq9l3sbhgPvLXH7LnJV8zuaNm7WcOxNaQNdSqabpYf3VLMKIhj4U87bVuHfpucUTKodZbAZZO46DXHfx3oXvpr9UfRSIk8OhlbhH3HBYAf4HrzLQ5g8CkOUhuqVAwRCQVZaHCUob(HidsglrYtuVx8CkxhH7N9kq9mYfc2MesumHjYqiAJKK1)nFDjAx0PY0tavizLHea6GMzDbST5ImcSvowr8Ajr0EtWHv)4bBimiOwxrqxJhlIpPyfsmsuN92Gd8LYBWgZVcEtQEq8jxTuVMf(R5LoxPztpqHE0iEPruu)wWfeFyu20pazkFg1NmLAhGNdlqxaPfsWv0Qn1(g77JlrzOCQdSv1NvKnC6Sio8wEUPt1xM2DEpauupDAPJEMKZ1St1xkCuDwTg)862ajWgMNcR8xoyj)p7t7WGSNrUc9VgEZw(1IqL6zc5CqeD40a)IxqE7hX0GG30X9WKk6qlT02kLZBtLgHUbbQlXMjDbtUNuKHQRL38F(B)YhE3h(NVToOo4Jyj4e3lKMZC7fk2lVayiu)wGCrzoEYIKkwEkHxnVWT4(zkhx)(FccqwhmfgZFipdMD(RFXEY9)(crnDKFulj)c82R8BJgJ3CLdGTMco(0qvZwX6Gu7F3hpI()6NOu9ehfci9)4p)tNQHtzuUuBu62yUCp4d2(3OpgxDcgdp3tXGOZjhJIEYqdWVps1B2tCyo4YaWp5N2saVNmIEhhayNNjQPqoe5JFpYGxZ9TfU8dVzcgBjFDmMq538n1bA3Bn8rh6URHTz47Vg2kbckh3fj7BN)kz37VmE98Z(ucEzEi3hRIdnyH4N6nzOBCNlkEq3FdJEtrBKEsBCMxIHUNReS5L8Y7px7gl407MgC90zp(y)NoX1WtxCPRtVAazfo9pj0gmDe88JpAoqR8ZvowDoB)58EbilNA3maH422s0uQxD8xmtU)sbJXwF(q3aGftM5yUY)lE9Src7)pKlxkSYQDn29472pRTTaNs8P7RY3CVEQ1210ohHYQBrHGi((p6G1x(Tsvu9TYR1ozy(StlOffvub2QvlLVG(eDfdKnhKMXx2u)25EUOiJElU(sNEs(NI85CEpE6XhhCJTxpFty0iBI7t)UdOSus2j8Xj8NeTUtVI()hqlVtEDXT5KsvXy(Ye4W1xZ6RVonKvpfMJLBOX1UJN9fHWeW4RhUssbkdtXnDq5j8mn4l5er8nDRguw0k2Yj2JHDKm15a3AbRUcGH2CgaosvxBURZ5M3Q9JpEUX7pWIx76yP0AD57O1J346CMLUmAKZ5w2L(CVhF0unIgDCsSsUn6I8bR3)1ZK8WBRrlM4cW)8E1Rb5HbR9iKdwVYJTWZDupcmkMcphsK0MoQF7V2tjBhPr)0Y0Nnq961P7)etrY5g0vBDjBhR1vhnESYVsLsFUN(k5d67sI9D6x58)uRoKz0UwZJIyEGwabmmnqMK3RbA0CRLN12tPxKAsS1YpFqx)ab4CUPtrfe98YshL6CC9eptpEH3vUnmLS6EKDaRw14tmi9MAgKtDhargQ17jgwtMzgwEdbl7LM9eJoVlmJo3HqxS5IPEQHMRrOD1SbqMwzqp1iYYYGbjl96x(8GPlgILSwVXbKcRLs0uFk7T9zEndvEAxD)qcXy9CKADxLaLFOAH)ugC560zE8r63rR0sYBwqReCcwGKtpCJuk4I8HBc9g7KO2sdh24CvK14LvJGCmNb(ihl3AmnGiTlbRarg(ThT1CLnUS)9kY9CPVBn1umg(J8vOsg8d8fJuAzwr6v(7G75DM3Ry)8Q(0NyjfPz3gkWrswW8q2qxCjMPfVjQFmWx7nE2bf3pbnHPpwwizwXhk78jT4uNMmthow(w)gzhqn9FiICZxt4v(ChB1TsFWS4(ag4JLDXmJft4ath(9OE6MSUDMR9D4Ahe5TFxT6GqY98qe1riEhL()inRT3m5RykB5Y)p]] )
