@@ -265,9 +265,9 @@ local HekiliSpecMixin = {
         data.max_stack = data.max_stack or 1
 
         -- This is a shared buff that can come from anyone, give it a special generator.
-        if data.shared then
+        --[[ if data.shared then
             a.generate = Aura_DetectSharedAura
-        end
+        end ]]
 
         for element, value in pairs( data ) do
             if type( value ) == 'function' then
