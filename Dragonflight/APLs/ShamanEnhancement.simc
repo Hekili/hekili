@@ -1,7 +1,7 @@
 ## Enhancement Shaman
 ## 25 October 2022 (d82683b)
 
-## Initial Shadowlands import.
+## Initial Dragonflight import.
 
 actions.precombat+=/windfury_weapon
 actions.precombat+=/flametongue_weapon

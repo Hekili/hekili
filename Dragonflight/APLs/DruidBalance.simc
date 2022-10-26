@@ -1,7 +1,8 @@
 ## Balance Druid
-## 25 October 2022 (1be81da)
+## 26 October 2022 (1be81da)
 
-## Initial Shadowlands import.
+## Initial Dragonflight import.
+## - Try to get your double Wrath in for the opener.
 
 actions.precombat+=/variable,name=no_cd_talent,value=!talent.celestial_alignment&!talent.incarnation_chosen_of_elune
 actions.precombat+=/variable,name=fourpc_starfall_st,value=talent.aetherial_kindling.rank=2&!talent.power_of_goldrinn
@@ -9,9 +10,11 @@ actions.precombat+=/variable,name=on_use_trinket,value=0
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=trinket.1.has_use_buff&trinket.1.cooldown.duration
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=(trinket.2.has_use_buff&trinket.2.cooldown.duration)*2
 actions.precombat+=/moonkin_form
-actions.precombat+=/wrath
-actions.precombat+=/wrath
+actions.precombat+=/wrath,if=eclipse.any_next
 
+actions+=/solar_beam
+actions+=/soothe
+actions+=/wrath,if=time<1&eclipse.any_next
 actions+=/variable,name=is_aoe,value=spell_targets.starfall>1
 actions+=/variable,name=is_cleave,value=spell_targets.starfire>1
 actions+=/variable,name=passive_asp,value=6%spell_haste+talent.natures_balance+talent.orbit_breaker*dot.moonfire.ticking*(buff.orbit_breaker.stack>25)*40

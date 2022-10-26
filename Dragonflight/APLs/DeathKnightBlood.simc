@@ -1,7 +1,7 @@
 ## Blood DK
 ## 26 October 2022 (1be81da)
 
-## Initial Shadowlands import.
+## Initial Dragonflight import.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft

@@ -1,7 +1,7 @@
 ## Guardian Druid
 ## 25 October 2022 (1be81da)
 
-## Initial Shadowlands import.
+## Initial Dragonflight import.
 
 actions.precombat+=/cat_form,if=(druid.catweave_bear=1)&time>30
 actions.precombat+=/moonkin_form,if=(!druid.catweave_bear=1)&time>30
