@@ -355,7 +355,7 @@ spec:RegisterAuras( {
     overpower = {
         id = 7384,
         duration = 15,
-        max_stack = function() return 1 + (talent.martial_prowess.enabled and 1 or 0) end,
+        max_stack = function() return 1 + ( talent.martial_prowess.enabled and 1 or 0 ) end,
     },
     piercing_howl = {
         id = 12323,
@@ -374,9 +374,10 @@ spec:RegisterAuras( {
     },
     rend = {
         id = 388539,
-        duration = function() return 15 + (talent.bloodletting.enabled and 6 or 0) end,
+        duration = function() return 15 + ( talent.bloodletting.enabled and 6 or 0 ) end,
         tick_time = 3,
-        max_stack = 1
+        max_stack = 1,
+        copy = 772
     },
     sharpen_blade = {
         id = 198817,
