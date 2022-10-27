@@ -55,7 +55,7 @@ Dragonflight\HunterMarksmanship.lua
 # Dragonflight\PriestHoly.lua
 # Dragonflight\PriestShadow.lua
 # Dragonflight\RogueAssassination.lua
-# Dragonflight\RogueOutlaw.lua
+Dragonflight\RogueOutlaw.lua
 # Dragonflight\RogueSubtlety.lua
 # Dragonflight\ShamanElemental.lua
 Dragonflight\ShamanEnhancement.lua
