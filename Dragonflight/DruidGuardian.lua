@@ -1148,39 +1148,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent / Covenant (Night_Fae): Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of $s2 Druid spells and abilities over $d.    You will cast $?a24858|a197625[Starsurge, Starfall,]?a768[Ferocious Bite, Shred, Tiger's Fury,]?a5487[Mangle, Ironfur,][Wild Growth, Swiftmend,] Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
-    convoke_the_spirits = {
-        id = function() return talent.convoke_the_spirits.enabled and 391528 or 323764 end,
-        cast = function() return legendary.celestial_spirits.enabled and 3 or 4 end,
-        channeled = true,
-        cooldown = function () return legendary.celestial_spirits.enabled and 60 or 120 end,
-        gcd = "spell",
-        school = "nature",
-
-        talent = "convoke_the_spirits",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        disabled = function ()
-            return not talent.convoke_the_spirits.enabled and covenant.night_fae and not IsSpellKnownOrOverridesKnown( 323764 ), "you have not finished your night_fae covenant intro"
-        end,
-
-        finish = function ()
-            -- Can we safely assume anything is going to happen?
-            if state.spec.feral then
-                applyBuff( "tigers_fury" )
-                if target.distance < 8 then
-                    gain( 5, "combo_points" )
-                end
-            elseif state.spec.guardian then
-            elseif state.spec.balance then
-            end
-        end,
-
-        copy = { 391528, 323764 }
-    },
-
     -- Talent: Tosses the enemy target into the air, disorienting them but making them invulnerable for up to $d. Only one target can be affected by your Cyclone at a time.
     cyclone = {
         id = 33786,

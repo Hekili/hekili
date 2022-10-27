@@ -1070,27 +1070,6 @@ Hekili:RegisterGearHook( ResetRuneforges, UpdateRuneforge )
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- Talent: Sprout an additional limb, dealing ${$383313s1*13} Shadow damage over $d to a...
-    abomination_limb = {
-        id = 383269,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-
-        talent = function()
-            if covenant.necrolord then return end
-            return "abomination_limb"
-        end,
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "abomination_limb" )
-            if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
-        end,
-    },
-
     -- Talent: Surrounds you in an Anti-Magic Shell for $d, absorbing up to $<shield> magic ...
     antimagic_shell = {
         id = 48707,
@@ -1443,7 +1422,7 @@ spec:RegisterAbilities( {
             if cooldown.dark_transformation.remains > 0 then setCooldown( "dark_transformation", max( 0, cooldown.dark_transformation.remains - 1 ) ) end
             if legendary.deadliest_coil.enabled and buff.dark_transformation.up then buff.dark_transformation.expires = buff.dark_transformation.expires + 2 end
             if legendary.deaths_certainty.enabled then
-                local spell = covenant.night_fae and "deaths_due" or ( talent.defile.enabled and "defile" or "death_and_decay" )
+                local spell = action.deaths_due.known and "deaths_due" or ( talent.defile.enabled and "defile" or "death_and_decay" )
                 if cooldown[ spell ].remains > 0 then reduceCooldown( spell, 2 ) end
             end
         end,

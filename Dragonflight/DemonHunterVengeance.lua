@@ -791,28 +791,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Covenant (Kyrian): Place a Kyrian Sigil at the target location that activates after $d.    Detonates to deal $307046s1 $@spelldesc395039 damage and shatter up to $s3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond $s1 targets.
-    elysian_decree = {
-        id = function() return talent.elysian_decree.enabled and 390163 or 306830 end,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-        school = "arcane",
-
-        talent = function()
-            if covenant.kyrian then return end
-            return "elysian_decree"
-        end,
-        startsCombat = false,
-
-        handler = function ()
-            create_sigil( "elysian_decree" )
-            if legendary.blind_faith.enabled then applyBuff( "blind_faith" ) end
-        end,
-
-        copy = { 390163, 306830 }
-    },
-
     -- Talent: Unleash the fel within you, damaging enemies directly in front of you for ${$212105s1*(2/$t1)} Fire damage over $d.$?s320639[ Causing damage also heals you for up to ${$212106s1*(2/$t1)} health.][]
     fel_devastation = {
         id = 212084,

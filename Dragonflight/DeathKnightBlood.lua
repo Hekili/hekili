@@ -964,7 +964,7 @@ end )
 spec:RegisterAbilities( {
     -- Talent: Sprout an additional limb, dealing ${$383313s1*13} Shadow damage over $d to a...
     abomination_limb = {
-        id = 383269,
+        id = function() return talent.abomination_limb.enabled and 383269 or 315443 end,
         cast = 0,
         cooldown = 120,
         gcd = "spell",
@@ -981,6 +981,8 @@ spec:RegisterAbilities( {
             applyBuff( "abomination_limb" )
             if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
         end,
+
+        copy = { 383269, 315443 }
     },
 
     -- Talent: Surrounds you in an Anti-Magic Shell for $d, absorbing up to $<shield> magic damage and preventing application of harmful magical effects.$?s207188[][ Damage absorbed generates Runic Power.]

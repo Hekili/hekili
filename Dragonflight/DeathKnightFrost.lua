@@ -852,27 +852,6 @@ end )
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- Talent: Sprout an additional limb, dealing ${$383313s1*13} Shadow damage over $d to all nearby enemies. Deals reduced damage beyond $s5 targets. Every $t1 sec, an enemy is pulled to your location if they are further than $383312s3 yds from you. The same enemy can only be pulled once every $383312d.    Gain $?a137008[$s3 Bone Shield charges][]$?a137006[Rime][]$?a137007[Runic Corruption][] instantly, and again every $?a353447[${$s4-$353447s2}][$s4] sec.
-    abomination_limb = {
-        id = 383269,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-
-        talent = function()
-            if covenant.necrolord then return end
-            return "abomination_limb"
-        end,
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            -- trigger abomination_limb [383312], abomination_limb [383313]
-            applyBuff( "abomination_limb" )
-        end,
-    },
-
     -- Talent: Surrounds you in an Anti-Magic Shell for $d, absorbing up to $<shield> magic damage and preventing application of harmful magical effects.$?s207188[][ Damage absorbed generates Runic Power.]
     antimagic_shell = {
         id = 48707,
