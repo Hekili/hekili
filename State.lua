@@ -3258,9 +3258,9 @@ function state:TimeToResource( t, amount )
         lastTick = t.last_tick
     end
 
+    local index, slice
     if t.forecast and t.fcount > 0 then
         local q = state.query_time
-        local index, slice
 
         if t.times[ amount ] then return t.times[ amount ] - q end
 
@@ -3277,7 +3277,7 @@ function state:TimeToResource( t, amount )
         end
 
         for i = 1, t.fcount do
-            local slice = t.forecast[ i ]
+            slice = t.forecast[ i ]
             local after = t.forecast[ i + 1 ]
 
             if slice.v >= amount then
@@ -3314,8 +3314,8 @@ function state:TimeToResource( t, amount )
         return max( 0, t.times[ amount ] - q )
     end
 
-    -- This wasn't a modeled resource,, just look at regen time.
-    if lastTick then
+    -- This wasn't a modeled resource, just look at regen time.
+    if lastTick and slice then
         pad = ( slice.t - lastTick ) % 0.1
         pad = 0.1 - pad
     end
