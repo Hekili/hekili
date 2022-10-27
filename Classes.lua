@@ -5853,7 +5853,7 @@ function Hekili:SpecializationChanged()
 
     class.potion = nil
 
-    local specs = { 0 }
+    local specs = {}
 
     for i = 1, 4 do
         local id, name, _, _, role = GetSpecializationInfo( i )
@@ -5861,7 +5861,7 @@ function Hekili:SpecializationChanged()
         if not id then break end
 
         if i == currentSpec then
-            table.insert( specs, 1, id )
+            insert( specs, 1, id )
 
             state.spec.id = id
             state.spec.name = name
@@ -5881,9 +5881,11 @@ function Hekili:SpecializationChanged()
 
             state.spec[ state.spec.key ] = true
         else
-            table.insert( specs, id )
+            insert( specs, id )
         end
     end
+
+    insert( specs, 0 )
 
 
     for key in pairs( GetResourceInfo() ) do
