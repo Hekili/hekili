@@ -1068,7 +1068,7 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) end,
+        cp_gain = function () return combo_points.max end,
 
         handler = function ()
             applyDebuff( "player", "dreadblades" )
@@ -1077,7 +1077,7 @@ spec:RegisterAbilities( {
     },
 
     echoing_reprimand = {
-        id = 385616,
+        id = function() return talent.echoing_reprimand.enabled and 385616 or 323547 end,
         cast = 0,
         cooldown = 45,
         gcd = "spell",
@@ -1090,7 +1090,7 @@ spec:RegisterAbilities( {
         texture = 3565450,
         toggle = "cooldowns",
 
-        cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2 end,
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2 ) end,
 
         handler = function ()
             -- Can't predict the Animacharge, unless you have the legendary.
@@ -1103,9 +1103,9 @@ spec:RegisterAbilities( {
             gain( action.echoing_reprimand.cp_gain, "combo_points" )
         end,
 
-        disabled = function ()
-            return covenant.kyrian and not IsSpellKnownOrOverridesKnown( 323547 ), "you have not finished your kyrian covenant intro"
-        end,
+        --disabled = function ()
+            --return covenant.kyrian and not IsSpellKnownOrOverridesKnown( 323547 ), "you have not finished your kyrian covenant intro"
+        --end,
 
         auras = {
             echoing_reprimand_2 = {
@@ -1276,7 +1276,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132094,
 
-        cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) end,
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) ) end,
 
         handler = function ()
             applyDebuff( "target", "ghostly_strike", 10 )
@@ -1728,7 +1728,7 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         talent = "shiv",
-        startsCombat = false,
+        startsCombat = true,
         texture = 135428,
 
         cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) end,
