@@ -1104,7 +1104,11 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         usable = function()
-            return incoming_damage_3s > 0.3 * health.max, "requires 30% health incoming damage in 3s"
+            if settings.last_stand_offensively and talent.unnerving_focus.enabled then
+                return true
+            else
+                return incoming_damage_3s > 0.3 * health.max, "requires 30% health incoming damage in 3s"
+            end
         end,
 
         handler = function ()
@@ -1725,6 +1729,16 @@ spec:RegisterSetting( "stack_shield_block", false, {
     desc = function()
         return "If checked, the addon can recommend overlapping |T132110:0|t Shield Block usage. \n\n" ..
         "This setting avoids leaving Shield Block at 2 charges, which wastes cooldown recovery time."
+    end,
+    type = "toggle",
+    width = "full"
+} )
+
+spec:RegisterSetting( "last_stand_offensively", false, {
+    name = "Use |T135871:0|t Last Stand offensively with |T571316:0|t Unnerving Focus talent",
+    desc = function()
+        return "If checked, the addon will recommend using |T135871:0|t Last Stand with |T571316:0|t Unnerving Focus talented for rage generation. \n\n" ..
+        "If off or |T571316:0|t Unnerving Focus NOT talented, this setting will only recommend using using |T135871:0|t Last Stand defensively after taking a large amount of damage."
     end,
     type = "toggle",
     width = "full"
