@@ -1100,10 +1100,11 @@ spec:RegisterAbilities( {
                 applyBuff( "chains_of_devastation_ch" )
             end
 
-            -- 4 MS per target, direct.
-            -- 3 MS per target, overload.
+            if talent.crash_lightning.enabled then
+                if true_active_enemies > 1 then applyBuff( "cl_crash_lightning", nil, min( 3, true_active_enemies ) ) end
+                reduceCooldown( "crash_lightning", 1 )
+            end
 
-            gain( ( buff.stormkeeper.up and 7 or 4 ) * min( 5, active_enemies ), "maelstrom" )
             removeStack( "stormkeeper" )
 
             if pet.storm_elemental.up then
@@ -1183,7 +1184,7 @@ spec:RegisterAbilities( {
             end
 
             removeBuff( "crashing_lightning" )
-            removeBuff( "crash_lightning_cl" )
+            removeBuff( "cl_crash_lightning" )
 
             if buff.feral_spirit.up and talent.alpha_wolf.enabled then
                 applyBuff( "alpha_wolf" )
