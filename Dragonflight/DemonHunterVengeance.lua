@@ -899,7 +899,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = -25,
+        spend = function () return ( buff.metamorphosis.up and -45 or -25 ) end,
         spendType = "fury",
 
         talent = "fracture",
@@ -1018,7 +1018,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "metamorphosis" )
-            gain( 8, "fury" )
+            --gain( 8, "fury" )
 
             if IsSpellKnownOrOverridesKnown( 317009 ) then
                 applyDebuff( "target", "sinful_brand" )
