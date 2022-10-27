@@ -793,14 +793,14 @@ spec:RegisterAbilities( {
 
     -- Covenant (Kyrian): Place a Kyrian Sigil at the target location that activates after $d.    Detonates to deal $307046s1 $@spelldesc395039 damage and shatter up to $s3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond $s1 targets.
     elysian_decree = {
-        id = function() return covenant.kyrian and 306830 or 390163 end,
+        id = function() return IsUsableSpell(306830) and 306830 or 390163 end,
         cast = 0,
         cooldown = 60,
         gcd = "spell",
         school = "arcane",
 
         talent = function()
-            if covenant.kyrian then return end
+            if IsUsableSpell(306830) then return end
             return "elysian_decree"
         end,
         startsCombat = false,
