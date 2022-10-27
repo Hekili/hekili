@@ -824,6 +824,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135291,
 
+        notalent = "devastator",
+
         handler = function ()
             applyDebuff( "target", "deep_wounds" )
         end,
@@ -1092,7 +1094,7 @@ spec:RegisterAbilities( {
     last_stand = {
         id = 12975,
         cast = 0,
-        cooldown = function() return 180 - (talent.bolster.enabled and 60 or 0 ) end,
+        cooldown = function() return 180 - ( talent.bolster.enabled and 60 or 0 ) end,
         gcd = "off",
 
         talent = "last_stand",
@@ -1100,6 +1102,10 @@ spec:RegisterAbilities( {
         texture = 135871,
 
         toggle = "cooldowns",
+
+        usable = function()
+            return incoming_damage_3s > 0.3 * health.max, "requires 30% health incoming damage in 3s"
+        end,
 
         handler = function ()
             applyBuff( "last_stand" )
@@ -1518,6 +1524,9 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132361,
         toggle = "interrupts",
+
+        debuff = "casting",
+        readyTime = state.timeToInterrupt,
 
         handler = function ()
             applyBuff( "spell_reflection" )
