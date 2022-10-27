@@ -181,7 +181,6 @@ spec:RegisterPvpTalents( {
     thick_as_thieves     = 1208, -- 221622
     turn_the_tables      = 3421, -- 198020
     veil_of_midnight     = 5516, -- 198952
-    maneuverability      = 129 , -- 197000
 } )
 
 
