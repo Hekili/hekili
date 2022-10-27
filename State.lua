@@ -6703,21 +6703,7 @@ function state:IsKnown( sID, notoggle )
         return true
     end
 
-    if IsCovenantSpell( sID ) then
-        slot = FindSpellBookSlotBySpellID( sID )
-
-        if slot then
-            local found = false
-            for i = 1, GetNumSpellTabs() do
-                local _, _, offset, numSlots = GetSpellTabInfo( i )
-                if slot >= offset + 1 and slot <= offset + numSlots then
-                    found = true
-                    break
-                end
-            end
-            if not found then return false, "covenant spell not in spellbook" end
-        end
-    end
+    if IsCovenantSpell( sID ) and not IsUsableSpell( sID ) then return false, "covenant spells require shadowlands" end
 
     local profile = Hekili.DB.profile
 

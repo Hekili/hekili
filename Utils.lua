@@ -576,26 +576,69 @@ end
 
 do
     -- Check Covenant spells to disable them.
-    -- TODO: Revise this to just keep track of the original spell IDs.
-    local CovenantNames = {}
-    local CheckedSpells = {}
 
-    for k, v in pairs( Enum.CovenantType ) do
-        if v ~= 0 then
-            CovenantNames[ k:gsub( " ", "" ) ] = 1
-        end
-    end
-    local IsCovenantSpell = function( spell )
-        if not CheckedSpells[ spell ] then
-            local subtext = GetSpellSubtext( spell )
-            if not subtext or subtext == "" then
-                CheckedSpells[ spell ] = 0
-            else
-                if subtext then subtext = subtext:gsub( " ", "" ) end
-                CheckedSpells[ spell ] = CovenantNames[ subtext ] or 0
-            end
-        end
-        return CheckedSpells[ spell ] == 1
+    local CovenantSpells = {
+        [300728] = 1,
+        [304971] = 1,
+        [306830] = 1,
+        [307443] = 1,
+        [307865] = 1,
+        [308491] = 1,
+        [310454] = 1,
+        [311648] = 1,
+        [312202] = 1,
+        [312321] = 1,
+        [314791] = 1,
+        [314793] = 1,
+        [315443] = 1,
+        [316958] = 1,
+        [317009] = 1,
+        [317485] = 1,
+        [320674] = 1,
+        [321792] = 1,
+        [323546] = 1,
+        [323547] = 1,
+        [323639] = 1,
+        [323654] = 1,
+        [323673] = 1,
+        [324128] = 1,
+        [324143] = 1,
+        [324149] = 1,
+        [324220] = 1,
+        [324386] = 1,
+        [324631] = 1,
+        [324724] = 1,
+        [325013] = 1,
+        [325020] = 1,
+        [325028] = 1,
+        [325216] = 1,
+        [325283] = 1,
+        [325289] = 1,
+        [325640] = 1,
+        [325886] = 1,
+        [326059] = 1,
+        [326434] = 1,
+        [326647] = 1,
+        [326860] = 1,
+        [327104] = 1,
+        [327661] = 1,
+        [328204] = 1,
+        [328231] = 1,
+        [328281] = 1,
+        [328282] = 1,
+        [328305] = 1,
+        [328547] = 1,
+        [328620] = 1,
+        [328622] = 1,
+        [328923] = 1,
+        [328930] = 1,
+        [330325] = 1,
+        [355589] = 1,
+        [356532] = 1,
+    }
+
+    local IsCovenantSpell = function( spellID )
+        return CovenantSpells[ spellID ] == 1
     end
     ns.IsCovenantSpell = IsCovenantSpell
 end
