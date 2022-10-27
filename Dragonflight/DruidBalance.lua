@@ -1313,7 +1313,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         eclipse.state = "IN_BOTH"
         eclipse.reset_stacks()
 
-        if set_bonus.tier28_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
+        if set_bonus.tier29_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
 
         if legendary.balance_of_all_things.enabled then
             applyBuff( "balance_of_all_things_arcane", nil, 8, 8 )
@@ -1326,7 +1326,6 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         removeBuff( "starsurge_empowerment_solar" )
 
         applyBuff( "eclipse_lunar", ( duration or class.auras.eclipse_lunar.duration ) + buff.eclipse_lunar.remains )
-        if set_bonus.tier28_2pc > 0 then applyBuff( "celestial_infusion" ) end
         applyBuff( "eclipse_solar", ( duration or class.auras.eclipse_solar.duration ) + buff.eclipse_solar.remains )
 
         state:QueueAuraExpiration( "ca_inc", ExpireCelestialAlignment, buff.ca_inc.expires )
@@ -1342,7 +1341,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         if not ( eclipse.state == "IN_SOLAR" or eclipse.state == "IN_LUNAR" or eclipse.state == "IN_BOTH" ) then
             if eclipse.starfire_counter == 0 and ( eclipse.state == "SOLAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
                 applyBuff( "eclipse_solar", class.auras.eclipse_solar.duration + buff.eclipse_solar.remains )
-                if set_bonus.tier28_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
+                if set_bonus.tier29_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
                 state:RemoveAuraExpiration( "eclipse_solar" )
                 state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
                 if talent.solstice.enabled then applyBuff( "solstice" ) end
@@ -1356,8 +1355,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
 
             if eclipse.wrath_counter == 0 and ( eclipse.state == "LUNAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
                 applyBuff( "eclipse_lunar", class.auras.eclipse_lunar.duration + buff.eclipse_lunar.remains )
-                if set_bonus.tier28_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
-                if set_bonus.tier28_2pc > 0 then applyDebuff( "target", "fury_of_elune_ap" ) end
+                if set_bonus.tier29_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
                 state:RemoveAuraExpiration( "eclipse_lunar" )
                 state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
                 if talent.solstice.enabled then applyBuff( "solstice" ) end
@@ -1504,7 +1502,7 @@ end )
 
 -- Tier 29
 spec:RegisterGear( "tier29", 200351, 200353, 200354, 200355, 200356 )
-spec:RegisterSetBonuses( "tier29_2pc", 393632, "tier28_4pc", 393633 )
+spec:RegisterSetBonuses( "tier29_2pc", 393632, "tier29_4pc", 393633 )
 spec:RegisterAuras( {
     gathering_starstuff = {
         id = 394412,
@@ -1519,12 +1517,6 @@ spec:RegisterAuras( {
 })
 
 
-
--- Tier 28
-spec:RegisterGear( "tier28", 188853, 188851, 188849, 188848, 188847 )
-spec:RegisterSetBonuses( "tier28_2pc", 364423, "tier28_4pc", 363497 )
--- 2-Set - Celestial Pillar - Entering Lunar Eclipse creates a Fury of Elune at 25% effectiveness that follows your current target for 8 sec.
--- 4-Set - Umbral Infusion - While in an Eclipse, the cost of Starsurge and Starfall is reduced by 20%.
 
 -- Legion Sets (for now).
 spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
@@ -2416,7 +2408,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.oneths_perception.up or buff.starweavers_warp.up or buff.touch_the_cosmos.up then return 0 end
-            return 50 * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and ( buff.eclipse_solar.up or buff.eclipse_lunar.up ) and 0.85 or 1 )
+            return 50 * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) - ( buff.incarnation.up and talent.elunes_guidance.enabled and 8 or 0 )
         end,
         spendType = "astral_power",
 
@@ -2505,7 +2497,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.oneths_clear_vision.up or buff.starweavers_weft.up then return 0 end
-            return 30 * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and ( buff.eclipse_solar.up or buff.eclipse_lunar.up ) and 0.85 or 1 )
+            return 40 * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) - ( buff.incarnation.up and talent.elunes_guidance.enabled and 5 or 0 )
         end,
         spendType = "astral_power",
 
