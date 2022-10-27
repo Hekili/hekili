@@ -181,6 +181,8 @@ function Hekili:OnEnable()
     ns.ReadKeybindings()
     self:UpdateDisplayVisibility()
     self:ForceUpdate( "ADDON_ENABLED" )
+
+    self:Print( "REMINDER: Class and specialization profiles are undergoing frequent changes during prepatch. Please be patient." )
     ns.Audit()
 end
 
