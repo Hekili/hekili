@@ -1207,115 +1207,67 @@ all:RegisterAuras( {
     },
 
     bloodlust = {
+        alias = { "ancient_hysteria", "bloodlust_actual", "drums_of_deathly_ferocity", "fury_of_the_aspects", "heroism", "netherwinds", "primal_rage", "time_warp" },
+        aliasMode = "first",
+        aliasType = "buff",
+        duration = 3600,
+    },
+
+    bloodlust_actual = {
         id = 2825,
         duration = 40,
-        generate = function ( t )
-            local bloodlusts = {
-                [90355] = 'ancient_hysteria',
-                [32182] = 'heroism',
-                [80353] = 'time_warp',
-                [160452] = 'netherwinds',
-                [264667] = 'primal_rage',
-                [309658] = 'drums_of_deathly_ferocity',
-                [390386] = "fury_of_the_aspects"
-            }
-
-            for id, key in pairs( bloodlusts ) do
-                local aura = buff[ key ]
-                if aura.up then
-                    t.count = aura.count
-                    t.expires = aura.expires
-                    t.applied = aura.applied
-                    t.caster = aura.caster
-                    return
-                end
-            end
-
-            local name, _, count, _, duration, expires, caster, _, _, spellID = FindPlayerAuraByID( 2825 )
-
-            if name then
-                t.count = max( 1, count )
-                t.expires = expires
-                t.applied = expires - duration
-                t.caster = caster
-                return
-            end
-
-            t.count = 0
-            t.expires = 0
-            t.applied = 0
-            t.caster = 'nobody'
-        end,
+        shared = "player",
+        max_stack = 1,
     },
 
     exhaustion = {
         id = 57723,
-        shared = "player",
         duration = 600,
+        shared = "player",
         max_stack = 1,
         copy = 390435
     },
 
     insanity = {
         id = 95809,
-        shared = "player",
         duration = 600,
+        shared = "player",
         max_stack = 1
     },
 
     temporal_displacement = {
         id = 80354,
-        shared = "player",
         duration = 600,
+        shared = "player",
         max_stack = 1
+    },
+
+    fury_of_the_aspects = {
+        id = 390386,
+        duration = 40,
+        max_stack = 1,
+        shared = "player",
     },
 
     fatigued = {
         id = 264689,
-        shared = "player",
         duration = 600,
+        shared = "player",
         max_stack = 1
     },
 
     sated = {
+        alias = { "exhaustion", "fatigued", "insanity", "sated_actual", "temporal_displacement" },
+        aliasMode = "first",
+        aliasType = "debuff",
+        duration = 3600,
+    },
+
+    sated_actual = {
         id = 57724,
         duration = 600,
+        shared = "player",
         max_stack = 1,
-        generate = function ( t )
-            local sateds = {
-                [57723] = 'exhaustion',
-                [95809] = 'insanity',
-                [80354] = 'temporal_displacement',
-                [264689] = 'fatigued',
-                [390435] = "exhaustion"
-            }
-
-            for id, key in pairs( sateds ) do
-                local aura = debuff[ key ]
-                if aura.up then
-                    t.count = aura.count
-                    t.expires = aura.expires
-                    t.applied = aura.applied
-                    t.caster = aura.caster
-                    return
-                end
-            end
-
-            local name, _, count, _, duration, expires, caster, _, _, spellID = FindPlayerAuraByID( 57724 )
-
-            if name then
-                t.count = max( 1, count )
-                t.expires = expires
-                t.applied = expires - duration
-                t.caster = caster
-                return
-            end
-
-            t.count = 0
-            t.expires = 0
-            t.applied = 0
-            t.caster = 'nobody'
-        end,
     },
 
     power_infusion = {
