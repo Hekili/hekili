@@ -564,30 +564,34 @@ spec:RegisterAuras( {
     },
     -- Talent: Taking $w2% increased Physical damage from $@auracaster.
     -- https://wowhead.com/beta/spell=325037
-    death_chakram = {
+    death_chakram_vulnerability = {
         id = 325037,
         duration = 10,
         mechanic = "bleed",
         type = "Ranged",
-        max_stack = 1
+        max_stack = 1,
+        copy = { 361756, 375893 }
     },
-    -- Talent: Taking $w1% increased Physical damage from $@auracaster.
-    -- https://wowhead.com/beta/spell=361756
     death_chakram = {
-        id = 361756,
-        duration = 10,
-        mechanic = "bleed",
-        type = "Ranged",
-        max_stack = 1
-    },
-    -- Talent: Taking $w2% increased damage from $@auracaster.
-    -- https://wowhead.com/beta/spell=375893
-    death_chakram = {
-        id = 375893,
-        duration = 10,
-        mechanic = "bleed",
-        type = "Ranged",
-        max_stack = 1
+        duration = 3.5,
+        tick_time = 0.5,
+        max_stack = 1,
+        generate = function( t, auraType )
+            local cast = action.death_chakram.lastCast or 0
+
+            if cast + class.auras.death_chakram.duration >= query_time then
+                t.name = class.abilities.death_chakram.name
+                t.count = 1
+                t.applied = cast
+                t.expires = cast + duration
+                t.caster = "player"
+                return
+            end
+            t.count = 0
+            t.applied = 0
+            t.expires = 0
+            t.caster = "nobody"
+        end,
     },
     -- Talent: Haste increased by $s1%.
     -- https://wowhead.com/beta/spell=281036
