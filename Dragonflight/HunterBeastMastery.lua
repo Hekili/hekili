@@ -894,7 +894,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=388045
     sentinel_owl = {
         id = 388045,
-        duration = 12,
+        duration = function() return buff.sentinel_owl_ready.stack end,
         max_stack = 1
     },
     sentinel_owl_ready = {
@@ -903,7 +903,7 @@ spec:RegisterAuras( {
         generate = function( t, auraType )
             local n = GetSpellCount( 388045 )
 
-            if n > 0 then
+            if n > 4 then
                 t.name = class.abilities.sentinel_owl.name
                 t.count = n
                 t.applied = now
@@ -1291,7 +1291,7 @@ spec:RegisterAbilities( {
     aspect_of_the_cheetah = {
         id = 186257,
         cast = 0,
-        cooldown = function () return ( ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * 180 ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
+        cooldown = function () return 180 * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( 1 - 0.075 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
         gcd = "off",
         school = "physical",
 
@@ -1310,7 +1310,7 @@ spec:RegisterAbilities( {
         id = 186265,
         cast = 8,
         channeled = true,
-        cooldown = function() return ( ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * 180 ) + ( conduit.harmony_of_the_tortollan.mod * 0.001 ) end,
+        cooldown = function () return 180 * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( 1 - 0.075 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
         gcd = "off",
         school = "physical",
 
@@ -1867,7 +1867,7 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function() return talent.alpha_predator.enabled and 2 or nil end,
         cooldown = function () return 7.5 * haste end,
-        recharges = function() return talent.alpha_predator.enabled and ( 7.5 * haste ) or nil end,
+        recharge = function() return talent.alpha_predator.enabled and ( 7.5 * haste ) or nil end,
         icd = 0.5,
         gcd = "spell",
         school = "physical",
@@ -2056,7 +2056,7 @@ spec:RegisterAbilities( {
         talent = "sentinel_owl",
         startsCombat = true,
 
-        buff = "sentinel_owl_ready",
+        usable = function() return buff.sentinel_owl_ready.stack > 4, "requires 5+ stacks of sentinel_owl_ready" end,
 
         handler = function ()
             removeBuff( "sentinel_owl_ready" )
@@ -2072,13 +2072,13 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
 
-        spend = 10,
+        spend = function () return 10 * ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.75 or 1 ) end,
         spendType = "focus",
 
         talent = "serpent_sting",
         startsCombat = false,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "serpent_sting" )
             if talent.hydras_bite.enabled then active_dot.serpent_sting = min( true_active_enemies, active_dot.serpent_sting + 2 ) end
             if talent.poison_injection.enabled then applyDebuff( "target", "latent_poison", nil, debuff.latent_poison.stack + 1 ) end
@@ -2129,7 +2129,7 @@ spec:RegisterAbilities( {
     survival_of_the_fittest = {
         id = 264735,
         cast = 0,
-        cooldown = function() return talent.survival_of_the_fittest.enabled and 150 or 180 end,
+        cooldown = function () return ( talent.lone_survivor.enabled and 150 or 180 ) * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( 1 - 0.075 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
         gcd = "off",
 
         startsCombat = false,
@@ -2226,6 +2226,10 @@ spec:RegisterAbilities( {
         handler = function ()
             interrupt()
             applyDebuff( "target", "wailing_arrow" )
+            if talent.readiness.enabled then
+                setCooldown( "rapid_fire", 0 )
+                gainCharges( 2, "aimed_shot" )
+            end
         end,
 
         copy = { 392060, 355589 }
