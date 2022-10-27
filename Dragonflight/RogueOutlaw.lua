@@ -693,7 +693,7 @@ spec:RegisterAbilities( {
         id = 8676,
         cast = 0,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 50,
         spendType = "energy",
@@ -715,7 +715,7 @@ spec:RegisterAbilities( {
         id = 381664,
         cast = 1.5,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         talent = "amplifying_poison",
         startsCombat = false,
@@ -745,7 +745,7 @@ spec:RegisterAbilities( {
         id = 315341,
         cast = 0,
         cooldown = 45,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 25,
         spendType = "energy",
@@ -780,7 +780,7 @@ spec:RegisterAbilities( {
         id = 13877,
         cast = 0,
         cooldown = 30,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 15,
         spendType = "energy",
@@ -800,7 +800,7 @@ spec:RegisterAbilities( {
         id = 271877,
         cast = 0,
         cooldown = 45,
-        gcd = "totem",
+        gcd = "spell",
 
         talent = "blade_rush",
         startsCombat = true,
@@ -816,7 +816,7 @@ spec:RegisterAbilities( {
         id = 2094,
         cast = 0,
         cooldown = function () return talent.blinding_powder.enabled and 90 or 120 end,
-        gcd = "totem",
+        gcd = "spell",
 
         talent = "blind",
         startsCombat = true,
@@ -834,7 +834,7 @@ spec:RegisterAbilities( {
         id = 1833,
         cast = 0,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return ( talent.dirty_tricks.enabled and 0 or 40 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
         spendType = "energy",
@@ -910,7 +910,7 @@ spec:RegisterAbilities( {
         id = 121411,
         cast = 0,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 35,
         spendType = "energy",
@@ -928,7 +928,7 @@ spec:RegisterAbilities( {
         id = 185311,
         cast = 0,
         cooldown = 30,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return talent.nimble_fingers.enabled and 10 or 20 + conduit.nimble_fingers.mod end,
         spendType = "energy",
@@ -946,7 +946,7 @@ spec:RegisterAbilities( {
         id = 2823,
         cast = 1.5,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         talent = "deadly_poison",
         startsCombat = false,
@@ -997,7 +997,7 @@ spec:RegisterAbilities( {
         id = 207777,
         cast = 0,
         cooldown = 45,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 25,
         spendType = "energy",
@@ -1015,7 +1015,7 @@ spec:RegisterAbilities( {
         id = 2098,
         cast = 0,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 35,
         spendType = "energy",
@@ -1040,7 +1040,7 @@ spec:RegisterAbilities( {
         id = 1725,
         cast = 0,
         cooldown = 30,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return 30 * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
         spendType = "energy",
@@ -1057,7 +1057,7 @@ spec:RegisterAbilities( {
         id = 343142,
         cast = 0,
         cooldown = 90,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 50,
         spendType = "energy",
@@ -1080,7 +1080,7 @@ spec:RegisterAbilities( {
         id = 385616,
         cast = 0,
         cooldown = 45,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 10,
         spendType = "energy",
@@ -1171,7 +1171,7 @@ spec:RegisterAbilities( {
         id = 200806,
         cast = 0,
         cooldown = 45,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 25,
         spendType = "energy",
@@ -1189,7 +1189,7 @@ spec:RegisterAbilities( {
         id = 1966,
         cast = 0,
         cooldown = 15,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return talent.nimble_fingers.enabled and 25 or 35 + conduit.nimble_fingers.mod end,
         spendType = "energy",
@@ -1267,7 +1267,7 @@ spec:RegisterAbilities( {
         id = 196937,
         cast = 0,
         cooldown = 35,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 30,
         spendType = "energy",
@@ -1289,7 +1289,7 @@ spec:RegisterAbilities( {
         id = 1776,
         cast = 0,
         cooldown = 20,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return talent.dirty_tricks.enabled and 0 or 25 end,
         spendType = "energy",
@@ -1394,7 +1394,7 @@ spec:RegisterAbilities( {
         id = 408,
         cast = 0,
         cooldown = 20,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return talent.rushed_setup.enabled and 20 or 25 * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
         spendType = "energy",
@@ -1422,7 +1422,7 @@ spec:RegisterAbilities( {
         id = 51690,
         cast = 0,
         cooldown = 120,
-        gcd = "totem",
+        gcd = "spell",
 
         talent = "killing_spree",
         startsCombat = false,
@@ -1441,7 +1441,7 @@ spec:RegisterAbilities( {
         id = 385627,
         cast = 0,
         cooldown = 60,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 35,
         spendType = "energy",
@@ -1485,7 +1485,7 @@ spec:RegisterAbilities( {
         id = 5761,
         cast = 1.5,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         talent = "numbing_poison",
         startsCombat = false,
@@ -1545,7 +1545,7 @@ spec:RegisterAbilities( {
         id = 185763,
         cast = 0,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return 40 - ( buff.opportunity.up and 20 or 0 ) end,
         spendType = "energy",
@@ -1583,7 +1583,7 @@ spec:RegisterAbilities( {
         id = 315508,
         cast = 0,
         cooldown = 45,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 25,
         spendType = "energy",
@@ -1618,7 +1618,7 @@ spec:RegisterAbilities( {
         id = 6770,
         cast = 0,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
         spendType = "energy",
@@ -1637,7 +1637,7 @@ spec:RegisterAbilities( {
         id = 385408,
         cast = 0,
         cooldown = 90,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 25,
         spendType = "energy",
@@ -1659,7 +1659,7 @@ spec:RegisterAbilities( {
         charges = 3,
         cooldown = 30,
         recharge = 30,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 15,
         spendType = "energy",
@@ -1722,7 +1722,7 @@ spec:RegisterAbilities( {
         id = 5938,
         cast = 0,
         cooldown = 25,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = function () return legendary.tiny_toxic_blade.enabled and 0 or 20 end,
         spendType = "energy",
@@ -1742,7 +1742,7 @@ spec:RegisterAbilities( {
         id = 114018,
         cast = 0,
         cooldown = 360,
-        gcd = "totem",
+        gcd = "spell",
 
         startsCombat = false,
         texture = 635350,
@@ -1758,7 +1758,7 @@ spec:RegisterAbilities( {
         id = 193315,
         cast = 0,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 45,
         spendType = "energy",
@@ -1787,7 +1787,7 @@ spec:RegisterAbilities( {
         id = 315496,
         cast = 0,
         cooldown = 0,
-        gcd = "totem",
+        gcd = "spell",
 
         spend = 25,
         spendType = "energy",
@@ -1812,7 +1812,7 @@ spec:RegisterAbilities( {
         id = 212182,
         cast = 0,
         cooldown = 180,
-        gcd = "totem",
+        gcd = "spell",
 
         pvptalent = "smoke_bomb",
         startsCombat = false,
