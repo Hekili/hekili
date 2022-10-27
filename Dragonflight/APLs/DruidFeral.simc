@@ -1,8 +1,3 @@
-## Feral Druid
-## 25 October 2022 (20800bf)
-
-## Initial Dragonflight import.
-
 actions.precombat+=/variable,name=swipe_v_shred,value=2
 actions.precombat+=/variable,name=pw_v_fb,op=setif,value=0,condition=talent.tear_open_wounds.enabled&talent.rip_and_tear.enabled,value_else=4
 actions.precombat+=/cat_form
@@ -19,51 +14,17 @@ actions+=/adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.ticking
 actions+=/ferocious_bite,if=buff.apex_predators_craving.up
 actions+=/feral_frenzy,if=combo_points<2
 actions+=/call_action_list,name=finisher,if=combo_points=5
-actions+=/call_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down
+actions+=/call_action_list,name=bloodtalons,if=buff.bloodtalons.down
 actions+=/call_action_list,name=berserk_builders,if=combo_points<5&(buff.bs_inc.up|buff.shadowmeld.up|buff.prowl.up)
 actions+=/call_action_list,name=builder_cycle,if=combo_points<5
 actions+=/call_action_list,name=owlweaving,if=buff.bs_inc.down&energy<80
 
-actions.clearcasting+=/thrash_cat,cycle_targets=1,if=refreshable
-actions.clearcasting+=/swipe_cat,if=spell_targets.swipe_cat>variable.swipe_v_shred
-actions.clearcasting+=/shred
-actions.clearcasting+=/brutal_slash
-
-actions.builder_cycle+=/run_action_list,name=clearcasting,if=buff.clearcasting.react
-actions.builder_cycle+=/rake,cycle_targets=1,if=refreshable|buff.sudden_ambush.up
-actions.builder_cycle+=/moonfire_cat,cycle_targets=1,if=refreshable
-actions.builder_cycle+=/pool_resource,for_next=1
-actions.builder_cycle+=/thrash_cat,cycle_targets=1,if=refreshable
-actions.builder_cycle+=/brutal_slash
-actions.builder_cycle+=/swipe_cat,if=spell_targets.swipe_cat>variable.swipe_v_shred
-actions.builder_cycle+=/shred
-
-actions.berserk_builders+=/rake,cycle_targets=1,if=refreshable
+actions.berserk_builders=rake,cycle_targets=1,if=refreshable
 actions.berserk_builders+=/swipe_cat,if=spell_targets.swipe_cat>variable.swipe_v_shred
 actions.berserk_builders+=/shred
 
-# Threshold at which to spam PW
-actions.finisher+=/primal_wrath,if=spell_targets.primal_wrath>variable.pw_v_fb
-# PW for applying Rip
-actions.finisher+=/primal_wrath,cycle_targets=1,if=refreshable&spell_targets.primal_wrath>1
-actions.finisher+=/rip,cycle_targets=1,if=refreshable
-actions.finisher+=/pool_resource,for_next=1
-actions.finisher+=/ferocious_bite,max_energy=1,if=!buff.bs_inc.up
-actions.finisher+=/ferocious_bite,if=(buff.bs_inc.up&talent.soul_of_the_forest.enabled)
-
-actions.cooldown+=/berserk
-actions.cooldown+=/incarnation
-actions.cooldown+=/convoke_the_spirits,if=buff.tigers_fury.up&combo_points<3|fight_remains<5
-actions.cooldown+=/berserking
-actions.cooldown+=/shadowmeld,if=buff.tigers_fury.up&buff.bs_inc.down&combo_points<4&buff.sudden_ambush.down&dot.rake.pmultiplier<1.6&energy>40&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2&target.time_to_die>5
-actions.cooldown+=/potion,if=buff.bs_inc.up|fight_remains<cooldown.bs_inc.remains|fight_remains<25
-actions.cooldown+=/use_items
-
-actions.owlweaving+=/starsurge
-actions.owlweaving+=/sunfire,line_cd=4*gcd
-actions.owlweaving+=/moonfire,line_cd=4*gcd
-
-actions.bloodtalons+=/rake,cycle_targets=1,if=(!ticking|(1.2*persistent_multiplier>=dot.rake.pmultiplier)|(active_bt_triggers=2&refreshable))&buff.bt_rake.down
+# actions.owlweaving+=/moonfire,line_cd=4*gcd
+actions.bloodtalons=rake,cycle_targets=1,if=(!ticking|(1.2*persistent_multiplier>=dot.rake.pmultiplier)|(active_bt_triggers=2&refreshable))&buff.bt_rake.down
 actions.bloodtalons+=/lunar_inspiration,if=refreshable&buff.bt_moonfire.down
 actions.bloodtalons+=/thrash_cat,cycle_targets=1,if=refreshable&buff.bt_thrash.down
 actions.bloodtalons+=/brutal_slash,if=buff.bt_brutal_slash.down
@@ -72,3 +33,37 @@ actions.bloodtalons+=/shred,if=buff.bt_shred.down
 actions.bloodtalons+=/swipe_cat,if=buff.bt_swipe.down
 actions.bloodtalons+=/thrash_cat,if=buff.bt_thrash.down
 actions.bloodtalons+=/rake,if=buff.bt_rake.down&combo_points>4
+
+actions.builder_cycle=run_action_list,name=clearcasting,if=buff.clearcasting.react
+actions.builder_cycle+=/rake,cycle_targets=1,if=refreshable|buff.sudden_ambush.up
+actions.builder_cycle+=/moonfire_cat,cycle_targets=1,if=refreshable
+actions.builder_cycle+=/pool_resource,for_next=1
+actions.builder_cycle+=/thrash_cat,cycle_targets=1,if=refreshable
+actions.builder_cycle+=/brutal_slash
+actions.builder_cycle+=/swipe_cat,if=spell_targets.swipe_cat>variable.swipe_v_shred
+actions.builder_cycle+=/shred
+
+actions.clearcasting=thrash_cat,cycle_targets=1,if=refreshable
+actions.clearcasting+=/swipe_cat,if=spell_targets.swipe_cat>variable.swipe_v_shred
+actions.clearcasting+=/shred
+actions.clearcasting+=/brutal_slash
+
+actions.cooldown=berserk
+actions.cooldown+=/incarnation
+actions.cooldown+=/convoke_the_spirits,if=buff.tigers_fury.up&combo_points<3|fight_remains<5
+actions.cooldown+=/berserking
+actions.cooldown+=/shadowmeld,if=buff.tigers_fury.up&buff.bs_inc.down&combo_points<4&buff.sudden_ambush.down&dot.rake.pmultiplier<1.6&energy>40&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2&target.time_to_die>5
+actions.cooldown+=/potion,if=buff.bs_inc.up|fight_remains<cooldown.bs_inc.remains|fight_remains<25
+actions.cooldown+=/use_items
+
+# Threshold at which to spam PW
+actions.finisher=primal_wrath,if=spell_targets.primal_wrath>variable.pw_v_fb
+# PW for applying Rip
+actions.finisher+=/primal_wrath,cycle_targets=1,if=refreshable&spell_targets.primal_wrath>1
+actions.finisher+=/rip,cycle_targets=1,if=refreshable
+actions.finisher+=/pool_resource,for_next=1
+actions.finisher+=/ferocious_bite,max_energy=1,if=!buff.bs_inc.up
+actions.finisher+=/ferocious_bite,if=(buff.bs_inc.up&talent.soul_of_the_forest.enabled)
+
+actions.owlweaving=starsurge
+actions.owlweaving+=/sunfire,line_cd=4*gcd
