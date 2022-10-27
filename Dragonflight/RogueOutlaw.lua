@@ -148,7 +148,7 @@ spec:RegisterTalents( {
     sepsis                 = { 90677, 385408, 1 }, --
     shadow_dance           = { 90689, 185313, 1 }, --
     shadowrunner           = { 90687, 378807, 1 }, --
-    shadowstep             = { 79627, 36554 , 1 }, --
+    shadowstep             = { 90695, 36554 , 1 }, --
     shiv                   = { 90740, 5938  , 1 }, --
     sleight_of_hand        = { 90651, 381839, 1 }, --
     slicerdicer            = { 90649, 381988, 1 }, --
