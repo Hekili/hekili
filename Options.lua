@@ -8621,8 +8621,8 @@ do
                         name = "",
                         fontSize = "medium",
                         image = "Interface\\Addons\\Hekili\\Textures\\Taco256",
-                        imageWidth = 192,
-                        imageHeight = 192,
+                        imageWidth = 96,
+                        imageHeight = 96,
                         order = 5,
                         width = "full"
                     },
