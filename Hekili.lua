@@ -36,9 +36,9 @@ ns.PTR = false
 
 ns.Patrons = "|cFFFFD100Current Dragonflight Status|r\n\n"
     .. "|cFF00FF00Up to Date|r\n"
-    .. "- Death Knights, Enhancement Shaman\n\n"
+    .. "- Death Knights, Balance and Feral Druids, Enhancement Shaman\n\n"
     .. "|cFFFFAE42Beta|r\n"
-    .. "- Demon Hunters, Druids, Hunters, Warriors\n\n"
+    .. "- Demon Hunters, Guardian Druid, Hunters, Warriors\n\n"
     .. "|cFFBB3F3FNot Yet Implemented|r\n"
     .. "- All Other Classes/Specializations\n\n"
     .. "|cFF00FF00Up to Date|r means it is working and using priorities written for Dragonflight.\n"
