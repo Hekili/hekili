@@ -1085,7 +1085,10 @@ spec:RegisterAbilities( {
         spend = 10,
         spendType = "energy",
 
-        talent = "echoing_reprimand",
+        talent = function()
+            if covenant.kyrian then return end
+            return "echoing_reprimand"
+        end,
         startsCombat = true,
         texture = 3565450,
         toggle = "cooldowns",
@@ -1101,6 +1104,7 @@ spec:RegisterAbilities( {
                 applyBuff( "echoing_reprimand_5", nil, 5 )
             end
             gain( action.echoing_reprimand.cp_gain, "combo_points" )
+        copy = { 385616, 323547 }
         end,
 
         --disabled = function ()
