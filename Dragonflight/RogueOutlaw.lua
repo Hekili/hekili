@@ -183,7 +183,9 @@ spec:RegisterPvpTalents( {
     veil_of_midnight     = 5516, -- 198952
 } )
 
-
+    local rtb_buff_list = {
+        "broadside", "buried_treasure", "grand_melee", "ruthless_precision", "skull_and_crossbones", "true_bearing", "rtb_buff_1", "rtb_buff_2"
+    }
 
 -- Auras
 spec:RegisterAuras( {
