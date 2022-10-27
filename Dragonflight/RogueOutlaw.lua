@@ -1212,67 +1212,6 @@ spec:RegisterAbilities( {
             applyBuff( "feint", 5 )
         end,
     },
-        -- flagellation should be used from the Shadowlands covenant lua file
-        --flagellation = {
-            --id = 323654,
-            --cast = 0,
-            --cooldown = 90,
-            --gcd = "spell",
-
-            --spend = 0,
-            --spendType = "energy",
-
-            --startsCombat = true,
-            --texture = 3565724,
-
-            --toggle = "essences",
-
-            --indicator = function ()
-                --if settings.cycle and args.cycle_targets == 1 and active_enemies > 1 and target.time_to_die < longest_ttd then
-                    --return "cycle"
-                --end
-            --end,
-
-            --handler = function ()
-                --applyBuff( "flagellation" )
-                --applyDebuff( "target", "flagellation", 12 )
-            --end,
-
-            --auras = {
-                --flagellation = {
-                    --id = 323654,
-                    --duration = 12,
-                    --max_stack = 30,
-                    --generate = function( t, aType )
-                        --local unit, func
-
-                        --if aType == "debuff" then
-                            --unit = "target"
-                           -- func = FindUnitDebuffByID
-                       -- else
-                            --unit = "player"
-                            --func = FindUnitBuffByID
-                       -- end
-
-                        --local name, _, count, _, duration, expires, caster = func( unit, 323654 )
-
-                        --if name then
-                           -- t.count = 1
-                            --t.expires = expires
-                            --t.applied = expires - duration
-                            --t.caster = "player"
-                           -- return
-                       -- end
-
-                        --t.count = 0
-                       -- t.expires = 0
-                       -- t.applied = 0
-                        --t.caster = "nobody"
-                    --end,
-                    --copy = "flagellation_buff"
-               -- },
-            --},
-       -- },
             
     ghostly_strike = {
         id = 196937,
