@@ -80,7 +80,7 @@ actions.aoe+=/half_moon,if=astral_power.deficit>variable.passive_asp+20&(charges
 actions.aoe+=/full_moon,if=astral_power.deficit>variable.passive_asp+40
 actions.aoe+=/wild_mushroom,if=astral_power.deficit>variable.passive_asp+20&(!talent.fungal_growth|!prev_gcd.1.wild_mushroom&!prev_gcd.2.wild_mushroom&dot.fungal_growth.remains<2&target.time_to_die>7)
 actions.aoe+=/starfire,if=(buff.gathering_starstuff.stack=3|buff.umbral_embrace.up)&astral_power.deficit>variable.passive_asp+(8*(1+0.4*buff.warrior_of_elune.up))
-actions.aoe+=/stellar_flare,cycle_targets=1,if=refreshable&(target.time_to_die-remains-spell_targets.starfire)>8,if=astral_power.deficit>variable.passive_asp+8
+actions.aoe+=/stellar_flare,cycle_targets=1,if=refreshable&(target.time_to_die-remains-spell_targets.starfire)>8&astral_power.deficit>variable.passive_asp+8
 actions.aoe+=/starfall,if=target.time_to_die>4&(buff.ca_inc.remains<12&buff.ca_inc.up|astral_power.deficit<(variable.passive_asp+8+12*(buff.eclipse_lunar.remains<4|buff.eclipse_solar.remains<4))|buff.starweavers_warp.up|talent.starlord&buff.starlord.stack<3)
 actions.aoe+=/new_moon,if=astral_power.deficit>variable.passive_asp+10
 actions.aoe+=/half_moon,if=astral_power.deficit>variable.passive_asp+20
