@@ -1,8 +1,3 @@
-## Marksmanship Hunter
-## 26 October 2022 (fce372a)
-
-## Initial Dragonflight import.
-
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/fleshcraft
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers
@@ -15,8 +10,6 @@ actions=counter_shot
 actions+=/tranquilizing_shot
 actions+=/counter_shot,line_cd=30,if=runeforge.sephuzs_proclamation|soulbind.niyas_tools_poison|(conduit.reversal_of_fortune&!runeforge.sephuzs_proclamation)
 actions+=/call_action_list,name=trinkets,if=action.resonating_arrow.known&cooldown.trueshot.remains&cooldown.resonating_arrow.remains|!action.resonating_arrow.known&cooldown.trueshot.remains
-# Delay facing your doubt until you have put Resonating Arrow down, or if the cooldown is too long to delay facing your Doubt. If none of these conditions are able to met within the 10 seconds leeway, the sim faces your Doubt automatically.
-actions+=/newfound_resolve,if=soulbind.newfound_resolve&(buff.resonating_arrow.up|cooldown.resonating_arrow.remains>10|fight_remains<16)
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=st,if=active_enemies<3|!talent.trick_shots
 actions+=/call_action_list,name=trickshots,if=active_enemies>2
@@ -42,18 +35,18 @@ actions.st+=/death_chakram
 actions.st+=/wailing_arrow,if=cooldown.resonating_arrow.remains<gcd&(!talent.explosive_shot|buff.bloodlust.up)|!action.resonating_arrow.known|cooldown.resonating_arrow.remains|target.time_to_die<5
 actions.st+=/resonating_arrow,if=(buff.double_tap.up|!talent.double_tap|fight_remains<12)&(!raid_event.adds.exists|!raid_event.adds.up&(raid_event.adds.duration+raid_event.adds.in<10|raid_event.adds.in>40|raid_event.adds.count=1)|raid_event.adds.up&raid_event.adds.remains>9|active_enemies>1)
 actions.st+=/volley,if=buff.resonating_arrow.up|!action.resonating_arrow.known&(buff.precise_shots.down|!talent.chimaera_shot|active_enemies<2)
-actions.st+=/steady_shot,if=action.resonating_arrow.known&focus+cast_regen<focus.max&((cooldown.resonating_arrow.remains<gcd*3&(!soulbind.effusive_anima_accelerator|!talent.double_tap))|talent.double_tap&cooldown.double_tap.remains<3)
+actions.st+=/steady_shot,if=action.resonating_arrow.known&((cooldown.resonating_arrow.remains<gcd*3&(!soulbind.effusive_anima_accelerator|!talent.double_tap))|talent.double_tap&cooldown.double_tap.remains<3)
 actions.st+=/rapid_fire,if=runeforge.surging_shots&talent.streamline&(cooldown.resonating_arrow.remains>10|!action.resonating_arrow.known|!talent.double_tap|soulbind.effusive_anima_accelerator)
 actions.st+=/trueshot,if=((action.flayed_shot.known&(buff.precise_shots.down|talent.calling_the_shots)|action.death_chakram.known|action.resonating_arrow.known&(cooldown.resonating_arrow.remains>30|cooldown.resonating_arrow.remains<10)|action.wild_spirits.known&(cooldown.wild_spirits.remains>30|buff.wild_spirits.up))|buff.volley.up&active_enemies>1)&(!raid_event.adds.exists|!raid_event.adds.up&(raid_event.adds.duration+raid_event.adds.in<25|raid_event.adds.in>60)|raid_event.adds.up&raid_event.adds.remains>10|active_enemies>1)|fight_remains<25
 actions.st+=/multishot,if=buff.bombardment.up&buff.trick_shots.down&active_enemies>1|talent.salvo&buff.salvo.down&!talent.volley
 actions.st+=/aimed_shot,cycle_targets=1,if=buff.precise_shots.down|(buff.trueshot.up|full_recharge_time<gcd+cast_time)&(!talent.chimaera_shot|active_enemies<2)|buff.trick_shots.remains>execute_time&active_enemies>1
 actions.st+=/steady_shot,if=buff.steady_focus.remains<5&talent.steady_focus&buff.resonating_arrow.down
-actions.st+=/rapid_fire,if=(cooldown.resonating_arrow.remains>10|!action.resonating_arrow.known|!talent.double_tap|soulbind.effusive_anima_accelerator)&focus+cast_regen<focus.max&(buff.double_tap.down&buff.eagletalons_true_focus.down|talent.streamline)
+actions.st+=/rapid_fire,if=(cooldown.resonating_arrow.remains>10|!action.resonating_arrow.known|!talent.double_tap|soulbind.effusive_anima_accelerator)&(buff.double_tap.down&buff.eagletalons_true_focus.down|talent.streamline)
 actions.st+=/chimaera_shot,if=buff.precise_shots.up|focus>cost+action.aimed_shot.cost
 actions.st+=/arcane_shot,if=buff.precise_shots.up|focus>cost+action.aimed_shot.cost
 actions.st+=/serpent_sting,cycle_targets=1,if=refreshable&target.time_to_die>duration
 actions.st+=/barrage,if=active_enemies>1
-actions.st+=/rapid_fire,if=(cooldown.resonating_arrow.remains>10&runeforge.surging_shots|!action.resonating_arrow.known|!talent.double_tap|soulbind.effusive_anima_accelerator)&focus+cast_regen<focus.max&(buff.double_tap.down|talent.streamline)
+actions.st+=/rapid_fire,if=(cooldown.resonating_arrow.remains>10&runeforge.surging_shots|!action.resonating_arrow.known|!talent.double_tap|soulbind.effusive_anima_accelerator)&(buff.double_tap.down|talent.streamline)
 actions.st+=/bag_of_tricks,if=buff.trueshot.down
 actions.st+=/fleshcraft,if=soulbind.pustule_eruption&buff.trueshot.down
 actions.st+=/steady_shot
@@ -75,7 +68,7 @@ actions.trickshots+=/barrage
 actions.trickshots+=/trueshot,if=action.resonating_arrow.known&(buff.resonating_arrow.up|cooldown.resonating_arrow.remains>10)|action.wild_spirits.known&buff.wild_spirits.up|action.flayed_shot.known|action.death_chakram.known|target.time_to_die<25
 actions.trickshots+=/rapid_fire,if=runeforge.surging_shots&(cooldown.resonating_arrow.remains>10|!action.resonating_arrow.known|!talent.double_tap)&buff.trick_shots.remains>=execute_time
 actions.trickshots+=/aimed_shot,cycle_targets=1,if=buff.trick_shots.remains>=execute_time&(buff.precise_shots.down|full_recharge_time<cast_time+gcd|buff.trueshot.up)
-actions.trickshots+=/death_chakram,if=focus+cast_regen<focus.max
+actions.trickshots+=/death_chakram
 actions.trickshots+=/rapid_fire,if=(cooldown.resonating_arrow.remains>10&runeforge.surging_shots|!action.resonating_arrow.known|!runeforge.surging_shots|!talent.double_tap)&buff.trick_shots.remains>=execute_time
 actions.trickshots+=/multishot,if=buff.trick_shots.down|buff.precise_shots.up&focus>cost+action.aimed_shot.cost&(!talent.chimaera_shot|active_enemies>3)
 actions.trickshots+=/chimaera_shot,if=buff.precise_shots.up&focus>cost+action.aimed_shot.cost&active_enemies<4
