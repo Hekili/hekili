@@ -1,5 +1,5 @@
 -- RogueOutlaw.lua
--- June 2022
+-- October 2022
 -- Contributed to JoeMama.
 
 local addon, ns = ...
@@ -438,6 +438,15 @@ spec:RegisterAuras( {
     skull_and_crossbones = {
         id = 199603,
         duration = 30,
+    },
+    take_em_by_surprise = {
+        id = 382742,
+        duration = 10,
+    },
+    thistle_tea = {
+        id = 381623,
+        duration = 6,
+        max_stack = 1,
     },
     true_bearing = {
         id = 193359,
@@ -1752,14 +1761,14 @@ spec:RegisterAbilities( {
             if buff.acquired_axe_driver.up and debuff.vicious_wound.up then return "vicious_wound" end
         end,
 
-        handler = function ()
-            removeStack( "snake_eyes" )
-            gain( action.sinister_strike.cp_gain, "combo_points" )
+        --handler = function () -- Some azerite power stuff which is irrelevant but generates errors in Warning tab of the addon
+            --removeStack( "snake_eyes" )
+            --gain( action.sinister_strike.cp_gain, "combo_points" )
 
-            if buff.shallow_insight.up then buff.shallow_insight.expires = query_time + 10 end
-            if buff.moderate_insight.up then buff.moderate_insight.expires = query_time + 10 end
+            --if buff.shallow_insight.up then buff.shallow_insight.expires = query_time + 10 end
+            --if buff.moderate_insight.up then buff.moderate_insight.expires = query_time + 10 end
             -- Deep Insight does not refresh, and I don't see a way to track why/when we'd advance from Shallow > Moderate > Deep.
-        end,
+        --end,
     },
 
     slice_and_dice = {
@@ -1774,9 +1783,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132306,
 
-        usable = function()
-            return combo_points.current > 0, "requires combo_points"
-        end,
+        usable = function() return combo_points.current > 0 end,
 
         handler = function ()
             if talent.alacrity.enabled and combo_points.current > 4 then
