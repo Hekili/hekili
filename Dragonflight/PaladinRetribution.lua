@@ -1555,7 +1555,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Lash out at your enemies, dealing $s1 Radiant damage to all enemies within $a1 yd in front of you and reducing their movement speed by $s2% for $d. Damage reduced on secondary targets.    Demon and Undead enemies are also stunned for $255941d.    |cFFFFFFFFGenerates $s3 Holy Power.
     radiant_decree = {
-        id = 384052,
+        id = 383469,
         known = 255937,
         cast = 0,
         cooldown = 15,
