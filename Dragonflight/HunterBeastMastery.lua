@@ -583,7 +583,7 @@ spec:RegisterAuras( {
                 t.name = class.abilities.death_chakram.name
                 t.count = 1
                 t.applied = cast
-                t.expires = cast + duration
+                t.expires = cast + 3.5
                 t.caster = "player"
                 return
             end
