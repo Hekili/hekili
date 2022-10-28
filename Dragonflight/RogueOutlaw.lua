@@ -787,7 +787,6 @@ spec:RegisterAbilities( {
         spend = 25,
         spendType = "energy",
 
-        talent = "between_the_eyes",
         startsCombat = false,
         texture = 135610,
 
