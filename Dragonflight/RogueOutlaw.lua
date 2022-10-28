@@ -37,19 +37,19 @@ if UnitClassBase( "player" ) == "ROGUE" then
             value = 5,
         },
 
-        vendetta_regen = {
-            aura = "vendetta_regen",
+        --vendetta_regen = {            -- as it causes error in Warning tab, turned it off this way
+            --aura = "vendetta_regen",
 
-            last = function ()
-                local app = state.buff.vendetta_regen.applied
-                local t = state.query_time
+            --last = function ()
+                --local app = state.buff.vendetta_regen.applied
+                --local t = state.query_time
 
-                return app + floor( t - app )
-            end,
+                --return app + floor( t - app )
+            --end,
 
-            interval = 1,
-            value = 20,
-        },
+            --interval = 1,
+            --value = 20,
+        --},
     },
     nil, -- No replacement model.
     {    -- Meta function replacements.
@@ -383,7 +383,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-
+    shadow_blades = {
+        id = 121471,
+        duration = 20,
+        max_stack = 1,
+    },
     sharpened_sabers = {
         id = 252285,
         duration = 15,
@@ -481,6 +485,12 @@ spec:RegisterAuras( {
         max_stack = 1
     },
 
+    deathly_shadows = {
+        id = 341202,
+        duration = 15,
+        max_stack = 1,
+    },
+            
     greenskins_wickers = {
         id = 340573,
         duration = 15,
