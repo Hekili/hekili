@@ -1934,32 +1934,6 @@ elseif baseClass == "ROGUE" then
                     id = 323654,
                     duration = 12,
                     max_stack = 30,
-                    generate = function( t, aType )
-                        local unit, func
-
-                        if aType == "debuff" then
-                            unit = "target"
-                            func = FindUnitDebuffByID
-                        else
-                            unit = "player"
-                            func = FindUnitBuffByID
-                        end
-
-                        local name, _, count, _, duration, expires, caster = func( unit, 323654 )
-
-                        if name then
-                            t.count = 1
-                            t.expires = expires
-                            t.applied = expires - duration
-                            t.caster = "player"
-                            return
-                        end
-
-                        t.count = 0
-                        t.expires = 0
-                        t.applied = 0
-                        t.caster = "nobody"
-                    end,
                     copy = "flagellation_buff"
                 },
             },
