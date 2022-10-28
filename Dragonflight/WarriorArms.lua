@@ -847,7 +847,7 @@ spec:RegisterAbilities( {
                 stat.haste = stat.haste + ( target.health.pct < 35 and 0.2 or 0.1 )
             end
             if talent.test_of_might.enabled then
-                state.QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
+                state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
         end,
     },
@@ -1546,7 +1546,7 @@ spec:RegisterAbilities( {
             active_dot.colossus_smash = max( active_dot.colossus_smash, active_enemies )
 
             if talent.test_of_might.enabled then
-                state.QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
+                state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
         end,
     },
