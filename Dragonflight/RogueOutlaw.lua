@@ -243,13 +243,23 @@ spec:RegisterAuras( {
     combat_potency = {
         id = 61329,
     },
+    cold_blood = {
+        id = 382245,
+    },
     crimson_vial = {
         id = 185311,
         duration = 4,
         max_stack = 1,
-    },    
-    cold_blood = {
-        id = 382245,
+    },
+    crippling_poison = {
+        id = 3408,
+        duration = 3600,
+        max_stack = 1,
+    },
+    crippling_poison_dot = {
+        id = 3409,
+        duration = 12,
+        max_stack = 1,
     },
     deadly_poison = {
         id = 2823,
@@ -303,6 +313,11 @@ spec:RegisterAuras( {
         duration = 2,
         max_stack = 1,
     },
+    loaded_dice = {
+        id = 256171,
+        duration = 45,
+        max_stack = 1,
+    },
     mastery_main_gauche = {
         id = 76806,
     },
@@ -321,6 +336,11 @@ spec:RegisterAuras( {
     },
     safe_fall = {
         id = 1860,
+    },
+    subterfuge = {
+        id = 115192,
+        duration = 3,
+        max_stack = 1,
     },
     opportunity = {
         id = 195627,
