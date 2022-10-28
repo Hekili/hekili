@@ -543,7 +543,8 @@ spec:RegisterAuras( {
     relentless_inquisitor = {
         id = 383389,
         duration = 12,
-        max_stack = 3
+        max_stack = 3,
+        copy = 337315
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=20066
@@ -713,18 +714,6 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1,
         copy = 339376
-    },
-
-    final_verdict = {
-        id = 337228,
-        duration = 15,
-        type = "Magic",
-        max_stack = 1,
-    },
-    relentless_inquisitor = {
-        id = 337315,
-        duration = 12,
-        max_stack = 20
     },
 } )
 
@@ -1713,8 +1702,9 @@ spec:RegisterAbilities( {
 
     -- Unleashes a powerful weapon strike that deals $224266s1 Holy damage to an enemy target.
     templars_verdict = {
-        id = 85256,
-        flash = { 85256, 336872 },
+        id = function() return talent.final_verdict.enabled and 383328 or runeforge.final_verdict.enabled and 336872 or 85256 end,
+        known = 85256,
+        flash = { 85256, 336872, 383328 },
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1726,7 +1716,6 @@ spec:RegisterAbilities( {
         end,
         spendType = "holy_power",
 
-        talent = "templars_verdict",
         startsCombat = true,
 
         handler = function ()
@@ -1750,7 +1739,7 @@ spec:RegisterAbilities( {
             if talent.divine_judgment.enabled then addStack( "divine_judgment", 15, 1 ) end
         end,
 
-        copy = { "final_verdict", 383328 },
+        copy = { "final_verdict", 336872, 383328 },
     },
 
     -- Talent: The power of the Light compels an Undead, Aberration, or Demon target to flee for up to $d. Damage may break the effect. Lesser creatures have a chance to be destroyed. Only one target can be turned at a time.
