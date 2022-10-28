@@ -884,6 +884,8 @@ do
                         state.off_hand.size = 2
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONOFFHAND" then
                         state.off_hand.size = 1
+                    elseif equipLoc == "INVTYPE_SHIELD" then
+                        state.set_bonus.shield = 1
                     end
                 end
 

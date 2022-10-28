@@ -817,7 +817,7 @@ do
 
     function Hekili:EmbedAdaptiveSwarm( s )
         s:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-            if not state.covenant.necrolord then return end
+            if not state.covenant.necrolord and not state.talent.adaptive_swarm.enabled then return end
 
             if sourceGUID == state.GUID and spellIDs[ spellID ] then
                 -- On cast, we need to show we have a cast-in-flight.

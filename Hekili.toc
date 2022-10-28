@@ -51,6 +51,7 @@ Dragonflight\HunterMarksmanship.lua
 # Dragonflight\MonkBrewmaster.lua
 # Dragonflight\MonkMistweaver.lua
 # Dragonflight\MonkWindwalker.lua
+Dragonflight\PaladinRetribution.lua
 # Dragonflight\PriestDiscipline.lua
 # Dragonflight\PriestHoly.lua
 # Dragonflight\PriestShadow.lua

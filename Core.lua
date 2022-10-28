@@ -746,7 +746,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                 if not ability then
                     if not invalidActionWarnings[ scriptID ] then
-                        Hekili:Error( "Priority '%s' uses action '%s' ( %s - %d ) that is not found in the abilities table.", packName, action, listName, actID )
+                        Hekili:Error( "Priority '%s' uses action '%s' ( %s - %d ) that is not found in the abilities table.", packName, action or "unknown", listName, actID )
                         invalidActionWarnings[ scriptID ] = true
                     end
 
