@@ -1,6 +1,6 @@
 -- RogueOutlaw.lua
--- June 2018
--- Contributed by Alkena.
+-- June 2022
+-- Contributed to JoeMama.
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
