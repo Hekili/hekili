@@ -71,7 +71,7 @@ spec:RegisterTalents( {
     ace_up_your_sleeve     = { 90670, 381828, 1 }, --
     acrobatic_strikes      = { 90752, 196924, 1 }, --
     adrenaline_rush        = { 90659, 13750 , 1 }, --
-    alacrity               = { 90751, 193539, 3 }, --
+    alacrity               = { 90751, 193539, 2 }, --
     ambidexterity          = { 90660, 381822, 1 }, --
     atrophic_poison        = { 90763, 381637, 1 }, --
     audacity               = { 90641, 381845, 1 }, --
@@ -157,7 +157,7 @@ spec:RegisterTalents( {
     subterfuge             = { 90688, 108208, 1 }, --
     take_em_by_surprise    = { 90676, 382742, 2 }, --
     thistle_tea            = { 90756, 381623, 1 }, --
-    tight_spender          = { 90694, 381621, 2 }, --
+    tight_spender          = { 90694, 381621, 1 }, --
     tricks_of_the_trade    = { 90686, 57934 , 1 }, --
     triple_threat          = { 90678, 381894, 2 }, --
     vigor                  = { 90759, 14983 , 1 }, --
