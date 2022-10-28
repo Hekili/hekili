@@ -1,8 +1,3 @@
-## Vengeance Demon Hunter
-## 26 October 2022 (5c7542e)
-
-## Initial Dragonflight import.
-
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 
 # Executed every time the actor is available.
@@ -35,7 +30,6 @@ actions.defensives+=/fiery_brand
 actions.normal=infernal_strike
 actions.normal+=/bulk_extraction
 actions.normal+=/spirit_bomb,if=((buff.metamorphosis.up&talent.fracture.enabled&soul_fragments>=3)|soul_fragments>=4)
-actions.normal+=/fel_devastation
 actions.normal+=/soul_cleave,if=((talent.spirit_bomb.enabled&soul_fragments=0)|!talent.spirit_bomb.enabled)&((talent.fracture.enabled&fury>=55)|(!talent.fracture.enabled&fury>=70)|cooldown.fel_devastation.remains>target.time_to_die|(buff.metamorphosis.up&((talent.fracture.enabled&fury>=35)|(!talent.fracture.enabled&fury>=50))))
 actions.normal+=/immolation_aura,if=((variable.brand_build&cooldown.fiery_brand.remains>10)|!variable.brand_build)&fury<=90
 actions.normal+=/felblade,if=fury<=60
