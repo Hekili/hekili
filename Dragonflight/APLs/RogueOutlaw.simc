@@ -14,7 +14,7 @@ actions.precombat+=/stealth
 
 # Executed every time the actor is available.
 # Restealth if possible (no vulnerable enemies in combat)
-actions=+=/stealth
+actions+=/stealth
 # Interrupt on cooldown to allow simming interactions with that
 actions+=/kick
 # Reroll BT + GM or single buffs early other than Broadside, TB with Shadowdust, or SnC with Blunderbuss
