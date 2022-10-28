@@ -30,7 +30,7 @@ actions.cleave+=/tar_trap,if=runeforge.soulforge_embers&tar_trap.remains<gcd&coo
 actions.cleave+=/flare,if=tar_trap.up&runeforge.soulforge_embers
 actions.cleave+=/explosive_shot
 actions.cleave+=/steel_trap
-actions.cleave+=/death_chakram,if=focus+cast_regen<focus.max
+actions.cleave+=/death_chakram
 actions.cleave+=/wild_spirits,if=!raid_event.adds.exists|raid_event.adds.remains>=10|active_enemies>=raid_event.adds.count*2
 actions.cleave+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd&cooldown.bestial_wrath.remains|cooldown.bestial_wrath.remains<12+gcd&talent.scent_of_blood
 actions.cleave+=/bestial_wrath,if=!raid_event.adds.exists|raid_event.adds.remains>=5|active_enemies>=raid_event.adds.count*2
@@ -47,10 +47,10 @@ actions.cleave+=/kill_command,if=focus>cost+action.multishot.cost
 actions.cleave+=/bag_of_tricks,if=buff.bestial_wrath.down|target.time_to_die<5
 actions.cleave+=/dire_beast
 actions.cleave+=/barbed_shot,cycle_targets=1,if=target.time_to_die<9|charges_fractional>1.2&conduit.bloodletting
-actions.cleave+=/cobra_shot,if=focus.time_to_max<gcd*2
 actions.cleave+=/tar_trap,if=runeforge.soulforge_embers|runeforge.nessingwarys_trapping_apparatus
 actions.cleave+=/freezing_trap,if=runeforge.nessingwarys_trapping_apparatus
 actions.cleave+=/arcane_torrent,if=(focus+focus.regen+30)<focus.max
+actions.cleave+=/cobra_shot
 
 actions.st=aspect_of_the_wild,if=(!action.wild_spirits.known|cooldown.wild_spirits.remains>20)&(!raid_event.adds.exists|!raid_event.adds.up&(raid_event.adds.duration+raid_event.adds.in<20|(raid_event.adds.count=1&action.resonating_arrow.known))|raid_event.adds.up&raid_event.adds.remains>19)
 actions.st+=/call_of_the_wild
@@ -65,7 +65,7 @@ actions.st+=/kill_shot
 actions.st+=/explosive_shot
 actions.st+=/wailing_arrow,if=pet.main.buff.frenzy.remains>execute_time&(cooldown.resonating_arrow.remains<gcd&(!talent.explosive_shot|buff.bloodlust.up)|!action.resonating_arrow.known)|target.time_to_die<5
 actions.st+=/barbed_shot,if=cooldown.bestial_wrath.remains<12*charges_fractional+gcd&talent.scent_of_blood|full_recharge_time<gcd&cooldown.bestial_wrath.remains|target.time_to_die<9
-actions.st+=/death_chakram,if=focus+cast_regen<focus.max
+actions.st+=/death_chakram
 actions.st+=/stampede,if=buff.bestial_wrath.up|target.time_to_die<15
 actions.st+=/a_murder_of_crows
 actions.st+=/resonating_arrow,if=(buff.bestial_wrath.up|target.time_to_die<10)&(!raid_event.adds.exists|!raid_event.adds.up&(raid_event.adds.duration+raid_event.adds.in<20|raid_event.adds.count=1)|raid_event.adds.up&raid_event.adds.remains>19)
