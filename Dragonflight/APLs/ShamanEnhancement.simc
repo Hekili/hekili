@@ -20,7 +20,7 @@ actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
 actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/ancestral_call,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/feral_spirit
-actions+=/fae_transfusion,if=runeforge.seeds_of_rampant_growth.equipped|soulbind.grove_invigoration|soulbind.field_of_blossoms|active_enemies=1
+actions+=/fae_transfusion
 actions+=/vesper_totem,if=raid_event.adds.in>40|active_enemies>1
 actions+=/ascendance,if=(ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=90)|(ti_chain_lightning&active_enemies>1)
 actions+=/doom_winds,if=raid_event.adds.in>=90|active_enemies>1
