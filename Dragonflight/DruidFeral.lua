@@ -1821,6 +1821,7 @@ spec:RegisterAbilities( {
     lunar_inspiration = {
         id = 155625,
         known = 8921,
+        flash = { 8921, 155625 },
         suffix = "(Cat)",
         cast = 0,
         cooldown = 0,
@@ -1858,7 +1859,7 @@ spec:RegisterAbilities( {
             if buff.bs_inc.up and talent.berserk_frenzy.enabled then applyDebuff( "target", "frenzied_assault" ) end
         end,
 
-        copy = { 8921, 155625, "moonfire_cat" }
+        copy = { 155625, "moonfire_cat" }
     },
 
     -- A quick beam of lunar light burns the enemy for $164812s1 Arcane damage and then an additional $164812o2 Arcane damage over $164812d$?s238049[, and causes enemies to deal $238049s1% less damage to you.][.]$?a372567[    Hits a second target within $279620s1 yds of the first.][]$?s197911[    |cFFFFFFFFGenerates ${$m3/10} Astral Power.|r][]
