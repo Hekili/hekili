@@ -1069,7 +1069,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
-            if talent.aspiration_of_divinity.enabled then addStack( "aspirations_of_divinity" ) end
+            if talent.aspiration_of_divinity.enabled then addStack( "aspiration_of_divinity" ) end
             if talent.crusaders_might.enabled then reduceCooldown( "holy_shock", 1 ) end
         end,
     },
