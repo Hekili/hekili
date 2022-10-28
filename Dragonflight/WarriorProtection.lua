@@ -1735,10 +1735,11 @@ spec:RegisterSetting( "stack_shield_block", false, {
 } )
 
 spec:RegisterSetting( "last_stand_offensively", false, {
-    name = "Use |T135871:0|t Last Stand offensively with |T571316:0|t Unnerving Focus talent",
+    name = "Use |T135871:0|t Last Stand Offensively",
     desc = function()
-        return "If checked, the addon will recommend using |T135871:0|t Last Stand with |T571316:0|t Unnerving Focus talented for rage generation. \n\n" ..
-        "If off or |T571316:0|t Unnerving Focus NOT talented, this setting will only recommend using |T135871:0|t Last Stand defensively after taking a large amount of damage."
+        return "If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage.\n\n"
+            .. "If unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage.\n\n"
+            .. ( state.talent.unnerving_focus.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires |T571316:0|t Unnerving Focus|r"        
     end,
     type = "toggle",
     width = "full"
