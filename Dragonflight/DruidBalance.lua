@@ -1794,6 +1794,7 @@ spec:RegisterAbilities( {
     full_moon = {
         id = 274283,
         known = 274281,
+        flash = 274281,
         cast = 3,
         charges = 3,
         cooldown = 20,
@@ -1858,6 +1859,7 @@ spec:RegisterAbilities( {
     half_moon = {
         id = 274282,
         known = 274281,
+        flash = 274281,
         cast = 2,
         charges = 3,
         cooldown = 20,
