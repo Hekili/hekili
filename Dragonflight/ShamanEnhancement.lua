@@ -811,6 +811,7 @@ spec:RegisterStateExpr( "ti_chain_lightning", function ()
     return tiSpell == "chain_lightning"
 end)
 
+
 spec:RegisterHook( "reset_precast", function ()
     local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
 
@@ -876,6 +877,12 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     tiSpell = action.chain_lightning.lastCast > action.lightning_bolt.lastCast and "chain_lightning" or "lightning_bolt"
+
+    -- Make buff/debuffs for Doom Winds work in either slot.
+    if buff.doom_winds_debuff ~= debuff.doom_winds_debuff and buff.doom_winds_cd ~= debuff.doom_winds_cd then
+        rawset( buff, "doom_winds_debuff", debuff.doom_winds_debuff )
+        rawset( buff, "doom_winds_cd", debuff.doom_winds_cd )
+    end
 end )
 
 
@@ -2296,10 +2303,7 @@ spec:RegisterAbilities( {
 
             if legendary.doom_winds.enabled and debuff.doom_winds_cd.down then
                 applyBuff( "doom_winds_buff" )
-                applyDebuff( "player", "doom_winds_cd" )
                 applyDebuff( "player", "doom_winds_debuff" )
-                applyBuff( "doom_winds_cd" ) -- SimC weirdness.
-                applyBuff( "doom_winds_debuff" ) -- SimC weirdness.
             end
         end,
     },
