@@ -915,9 +915,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         end
     end
 
-    if aura == "heroism" or aura == "time_warp" or aura == "ancient_hysteria" then
-        applyBuff( "bloodlust", duration, stacks, value )
-    elseif aura ~= "potion" and class.auras.potion and class.auras[ aura ].id == class.auras.potion.id then
+    if aura ~= "potion" and class.auras.potion and class.auras[ aura ].id == class.auras.potion.id then
         applyBuff( "potion", duration, stacks, value )
     end
 end
