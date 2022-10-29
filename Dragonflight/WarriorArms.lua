@@ -400,6 +400,11 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1
     },
+    storm_bolt = {
+        id = 107570,
+        duration = 4,
+        max_stack = 1
+    },
     sweeping_strikes = {
         id = 260708,
         duration = 15,
@@ -873,14 +878,7 @@ spec:RegisterAbilities( {
     die_by_the_sword = {
         id = 118038,
         cast = 0,
-        cooldown = function ()
-            if valor_in_victory.enabled then
-                return 120 - (talent.valor_in_victory.rank * 15)
-                - ( conduit.stalwart_guardian.enabled and 20 or 0 )
-            else
-                return 120 - ( conduit.stalwart_guardian.enabled and 20 or 0 )
-            end
-        end,
+        cooldown = function () return 120 - ( talent.valor_in_victory.rank * 15 ) - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
         gcd = "off",
 
         talent = "die_by_the_sword",

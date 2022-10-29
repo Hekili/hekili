@@ -3788,7 +3788,7 @@ do
 
             if not aura then
                 if Hekili.PLAYER_ENTERING_WORLD and not buffs_warned[ k ] then
-                    Hekili:Error( "Unknown buff: " .. k .. " [" .. state.scriptID .. "]\n\n" .. debugstack() )
+                    Hekili:Error( "Unknown buff in [" .. state.scriptID .. "]: " .. k .. "\n\n" .. debugstack() )
                     buffs_warned[ k ] = true
                 end
                 return unknown_buff
@@ -4769,7 +4769,7 @@ do
 
             else
                 if Hekili.PLAYER_ENTERING_WORLD and not debuffs_warned[ k ] then
-                    Hekili:Error( "Unknown debuff: " .. k )
+                    Hekili:Error( "Unknown debuff in [" .. ( state.scriptID or "unknown" ) .. "]: " .. k .. "\n\n" .. debugstack() )
                     debuffs_warned[ k ] = true
                 end
 

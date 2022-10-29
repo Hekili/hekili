@@ -441,6 +441,11 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1
     },
+    storm_bolt = {
+        id = 107570,
+        duration = 4,
+        max_stack = 1
+    },
     sudden_death = {
         id = 52437,
         duration = 10,
@@ -862,7 +867,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "disrupting_shout" )
-            active_dot.disrupting_shout = active_enemie
+            active_dot.disrupting_shout = active_enemies
         end,
     },
 
