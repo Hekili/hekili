@@ -2410,7 +2410,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.oneths_perception.up or buff.starweavers_warp.up or buff.touch_the_cosmos.up then return 0 end
-            return 50 * ( 1 - 0.05 * buff.rattled_stars.stack ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) )
+            return ( 50 - ( buff.incarnation.up and talent.elunes_guidance.enabled and 8 or 0 ) ) * ( 1 - 0.05 * buff.rattled_stars.stack ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) )
         end,
         spendType = "astral_power",
 
