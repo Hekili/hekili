@@ -9662,6 +9662,96 @@ do
                 elseif ( "move" ):match( "^" .. args[1] ) and Hekili.Config then
                     ns.StopConfiguration()
                 end
+
+            elseif ("stress" ):match( "^" .. args[1] ) then
+                if InCombatLockdown() then
+                    Hekili:Print( "Unable to stress test abilities and auras while in combat." )
+                    return
+                end
+
+                local precount = 0
+                for k, v in pairs( self.ErrorDB ) do
+                    precount = precount + v.n
+                end
+
+                local results, count, specs = "", 0, {}
+                for i in ipairs( class.specs ) do
+                    if i ~= 0 then insert( specs, i ) end
+                end
+                sort( specs )
+
+                for i, specID in ipairs( specs ) do
+                    local spec = class.specs[ specID ]
+                    results = format( "%sSpecialization: %s\n", results, spec.name )
+
+                    for key, aura in ipairs( spec.auras ) do
+                        local keyNamed = false
+                        -- Avoid duplicates.
+                        if aura.key == key then
+                            for k, v in pairs( aura ) do
+                                if type( v ) == "function" then
+                                    local ok, val = pcall( v )
+                                    if not ok then
+                                        if not keyNamed then results = format( "%s - Aura: %s\n", results, k ); keyNamed = true end
+                                        results = format( "%s    - %s = %s\n", results, tostring( val ) )
+                                        count = count + 1
+                                    end
+                                end
+                            end
+                            for k, v in pairs( aura.funcs ) do
+                                if type( v ) == "function" then
+                                    local ok, val = pcall( v )
+                                    if not ok then
+                                        if not keyNamed then results = format( "%s - Aura: %s\n", results, k ); keyNamed = true end
+                                        results = format( "%s    - %s = %s\n", results, tostring( val ) )
+                                        count = count + 1
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    for key, ability in ipairs( spec.abilities ) do
+                        local keyNamed = false
+                        -- Avoid duplicates.
+                        if ability.key == key then
+                            for k, v in pairs( ability ) do
+                                if type( v ) == "function" then
+                                    local ok, val = pcall( v )
+                                    if not ok then
+                                        if not keyNamed then results = format( "%s - Ability: %s\n", results, k ); keyNamed = true end
+                                        results = format( "%s    - %s = %s\n", results, tostring( val ) )
+                                        count = count + 1
+                                    end
+                                end
+                            end
+                            for k, v in pairs( ability.funcs ) do
+                                if type( v ) == "function" then
+                                    local ok, val = pcall( v )
+                                    if not ok then
+                                        if not keyNamed then results = format( "%s - Ability: %s\n", results, k ); keyNamed = true end
+                                        results = format( "%s    - %s = %s\n", results, tostring( val ) )
+                                        count = count + 1
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+
+                local postcount = 0
+                for k, v in pairs( self.ErrorDB ) do
+                    postcount = postcount + v.n
+                end
+
+                if count > 0 then
+                    Hekili:Print( results )
+                    Hekili:Error( results )
+                end
+
+                if postcount > precount then Hekili:Print( "New warnings were loaded in /hekili > Warnings." ) end
+                if count == 0 and postcount == precount then Hekili:Print( "Stress test completed; no issues found." ) end
+
             elseif ( "lock" ):match( "^" .. args[1] ) then
                 if Hekili.Config then
                     ns.StopConfiguration()
