@@ -1543,7 +1543,7 @@ spec:RegisterAbilities( {
         form = "bear_form",
 
         usable = function ()
-            if settings.maul_rage > 0 and rage.current - cost < settings.maul_rage then return false, "not enough additional rage" end
+            if ( settings.maul_rage or 0 ) > 0 and rage.current - cost < ( settings.maul_rage or 0 ) then return false, "not enough additional rage" end
             return true
         end,
 

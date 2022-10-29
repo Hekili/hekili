@@ -2507,7 +2507,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.oneths_clear_vision.up or buff.starweavers_weft.up then return 0 end
-            return 30 * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) * ( set_bonus.tier28_4pc > 0 and ( buff.eclipse_solar.up or buff.eclipse_lunar.up ) and 0.85 or 1 )
+            return 30 * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) )
         end,
         spendType = "astral_power",
 
