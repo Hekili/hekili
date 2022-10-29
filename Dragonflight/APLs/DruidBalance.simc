@@ -35,7 +35,7 @@ actions.aoe+=/convoke_the_spirits,if=buff.ca_inc.remains>4|(!talent.primordial_a
 actions.aoe+=/warrior_of_elune
 actions.aoe+=/force_of_nature,if=astral_power.deficit>variable.passive_asp+20
 actions.aoe+=/astral_communion,if=astral_power.deficit>variable.passive_asp+75
-actions.aoe+=/wrath,if=eclipse.any_next|buff.eclipse_lunar.remains<action.wrath.execute_time
+actions.aoe+=/wrath,if=eclipse.any_next|buff.eclipse_lunar.up&buff.eclipse_lunar.remains<action.wrath.execute_time
 actions.aoe+=/fury_of_elune,if=astral_power.deficit>variable.passive_asp+8
 actions.aoe+=/new_moon,if=astral_power.deficit>variable.passive_asp+10&(charges=2&recharge_time<5|charges=3)
 actions.aoe+=/half_moon,if=astral_power.deficit>variable.passive_asp+20&(charges=2&recharge_time<5|charges=3)
