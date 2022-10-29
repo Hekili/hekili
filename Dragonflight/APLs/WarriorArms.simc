@@ -1,12 +1,6 @@
-## Arms Warrior
-## 26 October 2022 (1fdb829)
-
-## Initial Dragonflight import.
-
 actions.precombat+=/fleshcraft
 
-# Executed every time the actor is available.
-actions=charge
+actions+=/charge,if=time<=0.5|movement.distance>5
 actions+=/pummel
 actions+=/potion,if=gcd.remains=0&debuff.colossus_smash.remains>8|fight_remains<25
 actions+=/blood_fury,if=debuff.colossus_smash.up
@@ -16,37 +10,43 @@ actions+=/lights_judgment,if=debuff.colossus_smash.down&cooldown.mortal_strike.r
 actions+=/fireblood,if=debuff.colossus_smash.up
 actions+=/ancestral_call,if=debuff.colossus_smash.up
 actions+=/bag_of_tricks,if=debuff.colossus_smash.down&cooldown.mortal_strike.remains
-actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>15|talent.ravager.enabled)
-actions+=/call_action_list,name=execute,strict=1,if=talent.massacre.enabled&target.health.pct<35|target.health.pct<20|covenant.venthyr&target.health.pct>80|cycle_for_execute|cycle_for_condemn
+actions+=/use_item,name=gavel_of_the_first_arbiter
+actions+=/use_items
+actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>15)
+actions+=/call_action_list,name=execute,strict=1,if=talent.massacre.enabled&target.health.pct<35|target.health.pct<20|action.condemn.known&target.health.pct>80|cycle_for_execute|cycle_for_condemn
 actions+=/call_action_list,name=hac,strict=1,if=raid_event.adds.up|spell_targets.whirlwind>1
 actions+=/run_action_list,name=single_target
 
-actions.execute+=/cancel_buff,name=bladestorm,if=spell_targets.whirlwind=1&gcd.remains=0&(rage>75|rage>50&buff.recklessness.up)
 actions.execute+=/avatar,if=gcd.remains=0|fight_remains<20
-actions.execute+=/condemn,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd&conduit.ashen_juggernaut.rank>1
-actions.execute+=/execute,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd&conduit.ashen_juggernaut.rank>1
+actions.execute+=/condemn,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd|buff.juggernaut.up&buff.juggernaut.remains<gcd
+actions.execute+=/execute,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd|buff.juggernaut.up&buff.juggernaut.remains<gcd
 actions.execute+=/ravager
-actions.execute+=/rend,if=remains<=gcd&(!talent.warbreaker.enabled&cooldown.colossus_smash.remains<4|talent.warbreaker.enabled&cooldown.warbreaker.remains<4)&target.time_to_die>12
+actions.execute+=/rend,if=remains<=gcd&(!talent.warbreaker&cooldown.colossus_smash.remains<4|talent.warbreaker&cooldown.warbreaker.remains<4)&target.time_to_die>12
+actions.execute+=/thunderous_roar,if=buff.test_of_might.up|!talent.test_of_might&debuff.colossus_smash.up
 actions.execute+=/warbreaker
 actions.execute+=/colossus_smash
-actions.execute+=/condemn,if=runeforge.signet_of_tormented_kings&(rage.deficit<25|debuff.colossus_smash.up&rage>40|buff.sudden_death.react)
-actions.execute+=/overpower,if=charges=2
+actions.execute+=/spear_of_bastion,if=debuff.colossus_smash.up|buff.test_of_might.up
 actions.execute+=/cleave,if=spell_targets.whirlwind>1&dot.deep_wounds.remains<gcd
-actions.execute+=/mortal_strike,if=dot.deep_wounds.remains<=gcd|runeforge.enduring_blow|buff.overpower.stack=2&debuff.exploiter.stack=2|buff.battlelord.up
-actions.execute+=/condemn,if=rage.deficit<25
-actions.execute+=/skullsplitter,if=rage<45
-actions.execute+=/bladestorm,if=rage<20|!runeforge.sinful_surge&rage<50
-actions.execute+=/overpower
+actions.execute+=/mortal_strike,if=dot.deep_wounds.remains<=gcd|buff.martial_prowess.stack=2&debuff.executioners_precision.stack=2
+actions.execute+=/skullsplitter,if=rage<35
+actions.execute+=/bladestorm,if=rage<20|buff.test_of_might.up&talent.hurricane.enabled
+actions.execute+=/rend,if=remains<duration*0.3&debuff.colossus_smash.down
 actions.execute+=/condemn
 actions.execute+=/execute
+actions.execute+=/shockwave
+actions.execute+=/overpower
+
 
 actions.hac=skullsplitter,if=rage<60
 actions.hac+=/avatar,if=cooldown.colossus_smash.remains<1
 actions.hac+=/warbreaker
 actions.hac+=/colossus_smash
+actions.hac+=/spear_of_bastion,if=debuff.colossus_smash.up|buff.test_of_might.up
 actions.hac+=/cleave,if=dot.deep_wounds.remains<=gcd
+actions.hac+=/thunderous_roar,if=debuff.colossus_smash.up|buff.test_of_might.up
 actions.hac+=/bladestorm
 actions.hac+=/ravager
+actions.hac+=/shockwave
 actions.hac+=/rend,if=remains<=duration*0.3&buff.sweeping_strikes.up
 actions.hac+=/cleave
 actions.hac+=/mortal_strike,if=buff.sweeping_strikes.up|dot.deep_wounds.remains<gcd&!talent.cleave.enabled
@@ -58,20 +58,25 @@ actions.hac+=/mortal_strike
 actions.hac+=/overpower
 actions.hac+=/whirlwind
 
-actions.single_target=rend,if=remains<=gcd
+actions.single_target+=/rend,if=remains<=gcd|talent.tide_of_blood.enabled&cooldown.skullsplitter.remains<=gcd&(cooldown.colossus_smash.remains<=gcd|debuff.colossus_smash.up)&dot.rend.remains<duration*0.85
 actions.single_target+=/avatar,if=gcd.remains=0
-actions.single_target+=/ravager
 actions.single_target+=/warbreaker
 actions.single_target+=/colossus_smash
-actions.single_target+=/overpower,if=charges=2
-actions.single_target+=/mortal_strike,if=runeforge.enduring_blow|runeforge.battlelord|buff.overpower.stack>=2
+actions.single_target+=/spear_of_bastion,if=debuff.colossus_smash.up|buff.test_of_might.up
+actions.single_target+=/skullsplitter,if=dot.rend.remains>dot.rend.duration*0.95&(debuff.colossus_smash.up&rage<60|buff.test_of_might.up)
+actions.single_target+=/mortal_strike,if=runeforge.enduring_blow|runeforge.battlelord|dot.deep_wounds.remains<=gcd
 actions.single_target+=/condemn,if=buff.sudden_death.react
 actions.single_target+=/execute,if=buff.sudden_death.react
-actions.single_target+=/skullsplitter,if=rage.deficit>45
-actions.single_target+=/bladestorm,if=rage<30
-actions.single_target+=/overpower
+actions.single_target+=/thunderous_roar,if=debuff.colossus_smash.up|buff.test_of_might.up
+actions.single_target+=/bladestorm,if=debuff.colossus_smash.up&talent.unhinged.enabled|buff.test_of_might.up&talent.hurricane.enabled
+actions.single_target+=/shockwave
 actions.single_target+=/mortal_strike
 actions.single_target+=/rend,if=remains<duration*0.3
-actions.single_target+=/cleave,if=spell_targets.whirlwind>1
+actions.single_target+=/cleave
+actions.single_target+=/overpower,if=rage<70
 actions.single_target+=/whirlwind,if=talent.fervor_of_battle.enabled|spell_targets.whirlwind>4|spell_targets.whirlwind>2&buff.sweeping_strikes.down
-actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled&(rage>50|debuff.colossus_smash.up|!runeforge.enduring_blow)
+actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled
+actions.single_target+=/impending_victory
+actions.single_target+=/wrecking_throw
+
+

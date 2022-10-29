@@ -2156,7 +2156,7 @@ do
 
             local aura_name = ability and ability.aura or t.this_action
             local aura = aura_name and class.auras[ aura_name ]
-            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) )
+            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or t.buff[ aura_name ] )
 
             if not app then
                 if ability and ability.startsCombat then
