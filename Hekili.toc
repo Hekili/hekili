@@ -58,7 +58,7 @@ Dragonflight\PaladinRetribution.lua
 # Dragonflight\RogueAssassination.lua
 # Dragonflight\RogueOutlaw.lua
 # Dragonflight\RogueSubtlety.lua
-# Dragonflight\ShamanElemental.lua
+Dragonflight\ShamanElemental.lua
 Dragonflight\ShamanEnhancement.lua
 # Dragonflight\ShamanRestoration.lua
 # Dragonflight\WarlockAffliction.lua
