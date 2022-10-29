@@ -716,7 +716,6 @@ spec:RegisterAbilities( {
         texture = 136206,
 
         toggle = "cooldowns",
-        nobuff = "stealth",
 
         handler = function ()
             applyBuff( "adrenaline_rush", 20 )
