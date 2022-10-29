@@ -18,6 +18,7 @@ actions+=/dire_bear_form,if=!buff.berserk.up&cooldown.tigers_fury.remains>10&deb
 actions+=/rake,if=!up|debuff.rake.remains<0.8
 actions+=/wait,sec=debuff.rip.remains,if=combo_points.current=5&debuff.rip.remains<4
 actions+=/dire_bear_form,if=debuff.lacerate.up&debuff.lacerate.remains<3&!buff.berserk.up&debuff.rip.remains>4
+actions+=/faerie_fire_feral,if=!up&!debuff.faerie_fire.up
 actions+=/shred
 
 actions.bear+=/lacerate,if=up&remains<3
