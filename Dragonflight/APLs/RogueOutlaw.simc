@@ -7,10 +7,10 @@
 actions.precombat=apply_poison
 actions.precombat+=/marked_for_death,precombat_seconds=10,if=raid_event.adds.in>25
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
-actions.precombat+=/adrenaline_rush,precombat_seconds=3,if=talent.improved_adrenaline_rush.enabled
-actions.precombat+=/roll_the_bones,precombat_seconds=2,if=remains<3
-actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 actions.precombat+=/stealth
+actions.precombat+=/adrenaline_rush,precombat_seconds=3,if=talent.improved_adrenaline_rush.enabled
+actions.precombat+=/slice_and_dice,precombat_seconds=2,if=refreshable
+actions.precombat+=/roll_the_bones,precombat_seconds=1,if=remains<3
 
 # Executed every time the actor is available.
 # Restealth if possible (no vulnerable enemies in combat)
