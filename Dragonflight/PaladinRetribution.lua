@@ -926,7 +926,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "blessing_of_protection" )
             applyDebuff( "player", "forbearance" )
-            setCooldown( "blessing_of_spellwarding", action.blessing_of_spellwarding.cooldown )
+            if talent.blessing_of_spellwarding.enabled then setCooldown( "blessing_of_spellwarding", action.blessing_of_spellwarding.cooldown ) end
         end,
     },
 
