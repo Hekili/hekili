@@ -564,6 +564,10 @@ elseif baseClass == "DEMONHUNTER" then
         }
     } )
 elseif baseClass == "DRUID" then
+    local SinfulHysteriaHandler = setfenv( function ()
+        applyBuff( "ravenous_frenzy_sinful_hysteria" )
+    end, state )
+
     all:RegisterAbilities( {
         kindred_spirits = {
             id = 326434,

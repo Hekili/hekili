@@ -29,7 +29,7 @@ actions.aoe+=/wrath,if=variable.cd_condition_aoe&set_bonus.tier29_4pc&eclipse.an
 actions.aoe+=/starfall,if=variable.cd_condition_aoe&talent.orbital_strike&astral_power.deficit<variable.passive_asp+8*spell_targets|buff.touch_the_cosmos.up
 actions.aoe+=/celestial_alignment,if=variable.cd_condition_aoe
 actions.aoe+=/incarnation,if=variable.cd_condition_aoe
-actions.aoe+=/empower_bond,if=
+actions.aoe+=/empower_bond
 actions.aoe+=/ravenous_frenzy,if=buff.ca_inc.remains>15
 actions.aoe+=/convoke_the_spirits,if=buff.ca_inc.remains>4|(!talent.primordial_arcanic_pulsar&cooldown.ca_inc.remains>30|variable.no_cd_talent)&(buff.eclipse_lunar.remains>4|buff.eclipse_solar.remains>4)
 actions.aoe+=/warrior_of_elune
@@ -55,7 +55,7 @@ actions.fallthru+=/starsurge
 actions.fallthru+=/sunfire,cycle_targets=1,if=dot.moonfire.remains>remains*22%18
 actions.fallthru+=/moonfire
 
-actions.st=starfall,if=talent.rattle_the_stars&variable.fourpc_starfall_st&buff.touch_the_cosmos.up&buff.rattled_stars.up&buff.rattled_stars.remains<gcd.max
+actions.st=starfall,if=talent.rattle_the_stars&(variable.fourpc_starfall_st&buff.touch_the_cosmos.up|buff.primordial_arcanic_pulsar.value>=550)&buff.rattled_stars.up&buff.rattled_stars.remains<gcd.max
 actions.st+=/starsurge,if=talent.rattle_the_stars&buff.rattled_stars.up&buff.rattled_stars.remains<gcd.max
 actions.st+=/sunfire,cycle_targets=1,if=refreshable&astral_power.deficit>variable.passive_asp+3
 actions.st+=/moonfire,cycle_targets=1,if=refreshable&astral_power.deficit>variable.passive_asp+3
@@ -64,10 +64,11 @@ actions.st+=/stellar_flare,cycle_targets=1,if=refreshable&astral_power.deficit>v
 actions.st+=/variable,name=cd_condition_st,value=cooldown.ca_inc.remains<15&!buff.ca_inc.up&(target.1.time_to_die>15|fight_remains<25+10*talent.incarnation_chosen_of_elune)
 actions.st+=/wrath,if=variable.cd_condition_st&set_bonus.tier29_4pc&eclipse.any_next
 actions.st+=/starfall,if=variable.cd_condition_st&buff.touch_the_cosmos.up
+actions.st+=/starfire,if=buff.gathering_starstuff.stack=3&astral_power.deficit>variable.passive_asp+8
 actions.st+=/celestial_alignment,if=variable.cd_condition_st
 actions.st+=/incarnation,if=variable.cd_condition_st
 actions.st+=/ravenous_frenzy,if=buff.ca_inc.remains>15
-actions.st+=/empower_bond,if=
+actions.st+=/empower_bond
 actions.st+=/convoke_the_spirits,if=buff.ca_inc.remains>4|(!talent.primordial_arcanic_pulsar&cooldown.ca_inc.remains>30|variable.no_cd_talent)&(buff.eclipse_lunar.remains>4|buff.eclipse_solar.remains>4)
 actions.st+=/warrior_of_elune
 actions.st+=/force_of_nature,if=astral_power.deficit>variable.passive_asp+20
@@ -80,10 +81,12 @@ actions.st+=/new_moon,if=astral_power.deficit>variable.passive_asp+10&(charges=2
 actions.st+=/half_moon,if=astral_power.deficit>variable.passive_asp+20
 actions.st+=/full_moon,if=astral_power.deficit>variable.passive_asp+40
 actions.st+=/starfall,if=buff.starweavers_warp.up|variable.fourpc_starfall_st&buff.touch_the_cosmos.up
+actions.st+=/starfire,if=buff.gathering_starstuff.stack=3&astral_power.deficit>variable.passive_asp+8
 actions.st+=/wrath,if=buff.gathering_starstuff.stack=3&astral_power.deficit>variable.passive_asp+6+3*talent.soul_of_the_forest
-actions.st+=/starsurge,if=buff.ca_inc.remains<5&buff.ca_inc.up|astral_power.deficit<variable.passive_asp|buff.starweavers_weft.up|(buff.eclipse_lunar.remains<4&buff.eclipse_lunar.up|buff.eclipse_solar.remains<4&buff.eclipse_solar.up)&astral_power>70|talent.starlord&buff.starlord.stack<3|talent.balance_of_all_things&(buff.balance_of_all_things_arcane.stack>5|buff.balance_of_all_things_nature.stack>5)
+actions.st+=/starfall,if=buff.primordial_arcanic_pulsar.value>=550&astral_power.deficit<variable.passive_asp
+actions.st+=/starsurge,if=buff.ca_inc.remains<5&buff.ca_inc.up|buff.starweavers_weft.up|astral_power.deficit<variable.passive_asp|buff.primordial_arcanic_pulsar.value<550&((buff.eclipse_lunar.remains<4&buff.eclipse_lunar.up|buff.eclipse_solar.remains<4&buff.eclipse_solar.up)&astral_power>70|talent.starlord&buff.starlord.stack<3|talent.balance_of_all_things&(buff.balance_of_all_things_arcane.stack>5|buff.balance_of_all_things_nature.stack>5))
 actions.st+=/new_moon,if=astral_power.deficit>variable.passive_asp+10
 actions.st+=/wild_mushroom,if=astral_power.deficit>variable.passive_asp+5&(!talent.fungal_growth|!prev_gcd.1.wild_mushroom&!prev_gcd.2.wild_mushroom&dot.fungal_growth.remains<2)
-actions.st+=/starfire,if=buff.warrior_of_elune.up&buff.eclipse_lunar.up
+actions.st+=/starfire,if=buff.warrior_of_elune.up&(buff.eclipse_lunar.up|buff.umbral_embrace.react)
 actions.st+=/wrath
 actions.st+=/run_action_list,name=fallthru
