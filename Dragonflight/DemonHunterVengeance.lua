@@ -634,13 +634,6 @@ end )
 
 
 -- Gear Sets
-
--- Tier 28:
-spec:RegisterSetBonuses( "tier28_2pc", 364454, "tier28_4pc", 363737 )
--- 2-Set - Burning Hunger - Damage dealt by Immolation Aura has a 10% chance to generate a Lesser Soul Fragment.
--- 4-Set - Rapacious Hunger - Consuming a Lesser Soul Fragment reduces the remaining cooldown of your Immolation Aura or Fel Devastation by 1 sec.
--- Nothing to model (2/13/22).
-
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
 spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
 spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )
@@ -963,8 +956,8 @@ spec:RegisterAbilities( {
         sigil_placed = function() return sigil_placed end,
 
         readyTime = function ()
-            if settings.infernal_charges == 0 then return end
-            return ( ( 1 + settings.infernal_charges ) - cooldown.infernal_strike.charges_fractional ) * cooldown.infernal_strike.recharge
+            if ( settings.infernal_charges or 1 ) == 0 then return end
+            return ( ( 1 + ( settings.infernal_charges or 1 ) ) - cooldown.infernal_strike.charges_fractional ) * cooldown.infernal_strike.recharge
         end,
 
         handler = function ()

@@ -602,7 +602,8 @@ spec:RegisterAuras( {
     vengeful_retreat = {
         id = 198813,
         duration = 3,
-        max_stack = 1
+        max_stack = 1,
+        copy = "vengeful_retreat_snare"
     },
 
     -- Conduit
@@ -781,16 +782,6 @@ spec:RegisterStateExpr( "fury_spent", function ()
     return furySpent
 end )
 
-spec:RegisterHook( "spend", function( amt, resource )
-    if set_bonus.tier28_4pc > 0 and resource == "fury" then
-        fury_spent = fury_spent + amt
-        if fury_spent > 60 then
-            cooldown.metamorphosis.expires = cooldown.metamorphosis.expires - floor( fury_spent / 60 )
-            fury_spent = fury_spent % 60
-        end
-    end
-end )
-
 
 spec:RegisterHook( "reset_precast", function ()
     last_darkness = 0
@@ -828,13 +819,6 @@ spec:RegisterCycle( function ()
     -- For Nemesis, we want to cast it on the lowest health enemy.
     if this_action == "nemesis" and Hekili:GetNumTTDsWithin( target.time_to_die ) > 1 then return "cycle" end
 end )
-
-
--- Tier 28
-spec:RegisterGear( "tier28", 188898, 188896, 188894, 188893, 188892 )
-spec:RegisterSetBonuses( "tier28_2pc", 364438, "tier28_4pc", 363736 )
--- 2-Set - Deadly Dance - Increases Death Sweep and Annihilation / Blade Dance and Chaos Strike damage by 20%.
--- 4-Set - Deadly Dance - Metamorphosis duration is increased by 6 sec. Every 60 Fury you consume reduces the cooldown of Metamorphosis by 1 sec.
 
 
 -- Gear Sets
