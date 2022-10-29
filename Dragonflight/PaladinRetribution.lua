@@ -268,6 +268,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
+    consecrated_blade = {
+        id = 382522,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Damage every $t1 sec.
     -- https://wowhead.com/beta/spell=26573
     consecration = {
@@ -536,7 +541,7 @@ spec:RegisterAuras( {
         id = 343724,
         duration = 15,
         type = "Magic",
-        max_stack = 1
+        max_stack = 1,
     },
     -- Talent: Haste increased by $w1%.
     -- https://wowhead.com/beta/spell=383389
@@ -561,6 +566,11 @@ spec:RegisterAuras( {
         id = 183435,
         duration = 3600,
         max_stack = 1
+    },
+    righteous_verdict = {
+        id = 267611,
+        duration = 6,
+        max_stack = 1,
     },
     sanctified_ground = {
         id = 387480,
@@ -704,7 +714,7 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     },
-    reckoning = {
+    reckoning_pvp = {
         id = 247677,
         max_stack = 30,
         duration = 30
@@ -792,7 +802,7 @@ spec:RegisterHook( "gain", function( amt, resource, overcap )
 end )
 
 spec:RegisterStateExpr( "time_to_hpg", function ()
-    return max( gcd.remains, min( cooldown.judgment.true_remains, cooldown.crusader_strike.true_remains, cooldown.blade_of_justice.true_remains, ( state:IsUsable( "hammer_of_wrath" ) and cooldown.hammer_of_wrath.true_remains or 999 ), cooldown.wake_of_ashes.true_remains, ( race.blood_elf and cooldown.arcane_torrent.true_remains or 999 ), ( covenant.kyrian and cooldown.divine_toll.true_remains or 999 ) ) )
+    return max( gcd.remains, min( cooldown.judgment.true_remains, cooldown.crusader_strike.true_remains, cooldown.blade_of_justice.true_remains, ( state:IsUsable( "hammer_of_wrath" ) and cooldown.hammer_of_wrath.true_remains or 999 ), action.wake_of_ashes.known and cooldown.wake_of_ashes.true_remains or 999, ( race.blood_elf and cooldown.arcane_torrent.true_remains or 999 ), ( action.divine_toll.known and cooldown.divine_toll.true_remains or 999 ) ) )
 end )
 
 
@@ -871,8 +881,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            -- TODO: Is there another Art of War proc?
-            if buff.blade_of_wrath.up and talent.consecrated_blade.enabled then class.abilities.consecration.handler() end
+            if buff.consecrated_blade.up then
+                class.abilities.consecration.handler()
+                removeBuff( "consecrated_blade" )
+            end
             removeBuff( "blade_of_wrath" )
             removeBuff( "sacred_judgment" )
         end,
@@ -1769,7 +1781,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holyfire",
 
-        spend = function() return talent.radiant_decree.enabled and 3 or -3 end,
+        spend = function() return talent.radiant_decree.enabled and 3 or ( -3 + ( buff.holy_avenger.up and -6 or 0 ) ) end,
         spendType = "holy_power",
 
         talent = "wake_of_ashes",
@@ -1786,6 +1798,8 @@ spec:RegisterAbilities( {
             if talent.divine_judgment.enabled then addStack( "divine_judgment", 15, 1 ) end
             if conduit.truths_wake.enabled then applyDebuff( "target", "truths_wake" ) end
         end,
+
+        copy = { 384052, 255937 }
     },
 
     -- Calls down the Light to heal a friendly target for $130551s1$?a378405[ and an additional $378412s1 over $378412d][].$?a379043[ Your block chance is increased by$379043s1% for $379041d.][]$?a315921&!a315924[    |cFFFFFFFFProtection:|r If cast on yourself, healing increased by up to $315921s1% based on your missing health.][]$?a315924[    |cFFFFFFFFProtection:|r Healing increased by up to $315921s1% based on the target's missing health.][]
