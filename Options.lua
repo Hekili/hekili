@@ -8422,6 +8422,17 @@ function Hekili:GenerateProfile()
     local spec = s.spec.key
 
     local talents
+    --[[ if not IsAddOnLoaded( "Blizzard_ClassTalents" ) then
+        LoadAddOn( "Blizzard_ClassTalents" )
+        local isConfig = self.Config
+        ToggleTalentFrame( 2 )
+        ToggleTalentFrame()
+        if isConfig then ns.StartConfiguration() end
+    end
+    if ClassTalentFrame and ClassTalentFrame.TalentsTab and ClassTalentFrame.TalentsTab.GetLoadoutExportString then
+        talents = ClassTalentFrame.TalentsTab:GetLoadoutExportString()
+    end ]]
+
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then
             if talents then talents = format( "%s\n    %s", talents, k )
@@ -8510,10 +8521,11 @@ function Hekili:GenerateProfile()
         end
     end
 
-    local toggles = ""
+    local toggles
     for k, v in orderedPairs( self.DB.profile.toggles ) do
         if type( v ) == "table" and rawget( v, "value" ) ~= nil then
-            toggles = format( "%s%s    %s = %s %s", toggles, toggles:len() > 0 and "\n" or "", k, tostring( v.value ), ( v.separate and "[separate]" or ( k ~= "cooldowns" and v.override and self.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
+            if toggles then toggles = format( "%s\n    %s = %s %s", toggles, k, tostring( v.value ), ( v.separate and "[separate]" or ( k ~= "cooldowns" and v.override and self.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
+            else toggles = format( "%s = %s %s", k, tostring( v.value ), ( v.separate and "[separate]" or ( k ~= "cooldowns" and v.override and self.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) ) end
         end
     end
 
@@ -8541,6 +8553,14 @@ function Hekili:GenerateProfile()
     end
 
 
+    local warnings
+
+    for i, err in ipairs( Hekili.ErrorKeys ) do
+        if warnings then warnings = format( "%s\n[#%d] %s", warnings, i, err:gsub( "\n\n", "\n" ) )
+        else warnings = format( "[#%d] %s", i, err:gsub( "\n\n", "\n" ) ) end
+    end
+
+
     return format( "build: %s\n" ..
         "level: %d (%d)\n" ..
         "class: %s\n" ..
@@ -8556,7 +8576,8 @@ function Hekili:GenerateProfile()
         "itemIDs: %s\n\n" ..
         "settings: %s\n\n" ..
         "toggles: %s\n\n" ..
-        "keybinds: %s\n\n",
+        "keybinds: %s\n\n" ..
+        "warnings: %s\n\n",
         Hekili.Version or "no info",
         UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
         class.file or "NONE",
@@ -8572,9 +8593,9 @@ function Hekili:GenerateProfile()
         items or "none",
         settings or "none",
         toggles or "none",
-        keybinds or "none" )
+        keybinds or "none",
+        warnings or "none" )
 end
-
 
 
 do
