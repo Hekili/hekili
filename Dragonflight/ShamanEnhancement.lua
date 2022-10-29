@@ -879,7 +879,7 @@ spec:RegisterHook( "reset_precast", function ()
     tiSpell = action.chain_lightning.lastCast > action.lightning_bolt.lastCast and "chain_lightning" or "lightning_bolt"
 
     -- Make buff/debuffs for Doom Winds work in either slot.
-    if buff.doom_winds_debuff ~= debuff.doom_winds_debuff and buff.doom_winds_cd ~= debuff.doom_winds_cd then
+    if buff.doom_winds_debuff ~= debuff.doom_winds_debuff or buff.doom_winds_cd ~= debuff.doom_winds_cd then
         rawset( buff, "doom_winds_debuff", debuff.doom_winds_debuff )
         rawset( buff, "doom_winds_cd", debuff.doom_winds_cd )
     end
