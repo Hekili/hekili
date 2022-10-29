@@ -692,6 +692,25 @@ local vesper_last_proc = 0
 
 local last_totem_actual = 0
 
+local recall_totems = {
+    capacitor_totem = 1,
+    earthbind_totem = 1,
+    earthgrab_totem = 1,
+    grounding_totem = 1,
+    healing_stream_totem = 1,
+    liquid_magma_totem = 1,
+    mana_spring_totem = 1,
+    poison_cleansing_totem = 1,
+    skyfury_totem = 1,
+    stoneskin_totem = 1,
+    tranquil_air_totem = 1,
+    tremor_totem = 1,
+    wind_rush_totem = 1,
+}
+
+local recallTotem1
+local recallTotem2
+
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     -- Deaths/despawns.
     if death_events[ subtype ] and destGUID == vesper_guid then
@@ -702,12 +721,12 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
     if sourceGUID == state.GUID then
         -- Summons.
         if subtype == "SPELL_SUMMON" and spellID == 324386 then
-            vesper_guid = destGUID
-            vesper_expires = GetTime() + 30
+                vesper_guid = destGUID
+                vesper_expires = GetTime() + 30
 
-            vesper_heal = 3
-            vesper_damage = 3
-            vesper_used = 0
+                vesper_heal = 3
+                vesper_damage = 3
+                vesper_used = 0
 
         -- Vesper Totem heal
         elseif spellID == 324522 then
@@ -734,6 +753,14 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
         if subtype == "SPELL_CAST_SUCCESS" then
             -- Reset in case we need to deal with an instant after a hardcast.
             vesper_last_proc = 0
+
+            local ability = class.abilities[ spellID ]
+            local key = ability and ability.key
+
+            if key and recall_totems[ key ] then
+                recallTotem2 = recallTotem1
+                recallTotem1 = key
+            end
         end
     end
 end )
@@ -859,6 +886,14 @@ local ancestral_wolf_affinity_spells = {
     -- TODO: List totems?
 }
 
+spec:RegisterStateExpr( "recall_totem_1", function()
+    return recallTotem1
+end )
+
+spec:RegisterStateExpr( "recall_totem_2", function()
+    return recallTotem2
+end )
+
 spec:RegisterHook( "runHandler", function( action )
     if buff.ghost_wolf.up then
         if talent.ancestral_wolf_affinity.enabled then
@@ -872,17 +907,16 @@ spec:RegisterHook( "runHandler", function( action )
             removeBuff( "spirit_wolf" )
         end
     end
+
+    if talent.totemic_recall.enabled and recall_totems[ action ] then
+        recall_totem_2 = recall_totem_1
+        recall_totem_1 = action
+    end
 end )
 
 
 spec:RegisterGear( "waycrest_legacy", 158362, 159631 )
 spec:RegisterGear( "electric_mail", 161031, 161034, 161032, 161033, 161035 )
-
--- Tier 28
-spec:RegisterSetBonuses( "tier28_2pc", 364473, "tier28_4pc", 363668 )
--- 2-Set - Stormspirit - Spending Maelstrom Weapon has a 3% chance per stack to summon a Feral Spirit for 9 sec.
--- 4-Set - Stormspirit - Your Feral Spirits' attacks have a 20% chance to trigger Stormbringer, resetting the cooldown of your Stormstrike.
--- 2/15/22:  No mechanics require actual modeling; nothing can be predicted.
 
 spec:RegisterStateFunction( "consume_maelstrom", function( cap )
     local stacks = min( buff.maelstrom_weapon.stack, cap or ( talent.overflowing_maelstrom.enabled and 10 or 5 ) )

@@ -1015,18 +1015,6 @@ spec:RegisterAuras( {
 } )
 
 
--- Tier 28
-spec:RegisterGear( "tier28", 188925, 188924, 188923, 188922, 188920 )
-spec:RegisterSetBonuses( "tier28_2pc", 364472, "tier28_4pc", 363671 )
--- 2-Set - Fireheart - While your Storm Elemental / Fire Elemental is active, your Lava Burst deals 20% additional damage and you gain Lava Surge every 8 sec.
--- 4-Set - Fireheart - Casting Lava Burst extends the duration of your Storm Elemental / Fire Elemental by 1.5 sec. If your Storm Elemental / Fire Elemental is not active. Lava Burst has a 20% chance to reduce its remaining cooldown by 10 sec instead.
-spec:RegisterAura( "fireheart", {
-    id = 364523,
-    duration = 30,
-    tick_time = 8,
-    max_stack = 1
-} )
-
 local TriggerFireheart = setfenv( function()
     applyBuff( "lava_surge" )
 end, state )
