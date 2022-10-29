@@ -191,6 +191,15 @@ spec:RegisterGlyphs( {
     [54756] = "wrath",
 } )
 
+-- Maul
+spec:RegisterStateFunction( "start_maul", function()
+    applyBuff( "maul", swings.time_to_next_mainhand )
+    state:QueueAuraExpiration( "maul", finish_maul, buff.maul.expires )
+end )
+
+local finish_maul = setfenv( function()
+    spend( 25, "rage" )
+end, state )
 
 -- Auras
 spec:RegisterAuras( {
@@ -445,7 +454,10 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 34153, 34152, 34151 },
     },
-
+    maul = {
+        duration = function () return swings.mainhand_speed end,
+        max_stack = 1,
+    },
     -- $s1 Arcane damage every $t1 seconds.
     moonfire = {
         id = 8921,
@@ -768,6 +780,22 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Shapeshift into dire bear form, increasing melee attack power, armor contribution from cloth and leather items, and Stamina. Also protects the caster from Polymorph effects and allows the use of various bear abilities. The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
+    dire_bear_form = {
+        id = 9634,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.35,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 132276,
+
+        handler = function ()
+        end,
+    },
 
     -- When activated, this ability causes your Mangle (Bear) ability to hit up to 3 targets and have no cooldown, and reduces the energy cost of all your Cat Form abilities by 50%.  Lasts 15 sec.  You cannot use Tiger's Fury while Berserk is active.     Clears the effect of Fear and makes you immune to Fear for the duration.
     berserk = {
@@ -973,9 +1001,10 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            gain(20, "rage" )
+            applyBuff( "enrage" )
         end,
     },
-
 
     -- Roots the target in place and causes 20 Nature damage over 12 sec.  Damage caused may interrupt the effect.
     entangling_roots = {
@@ -1268,6 +1297,27 @@ spec:RegisterAbilities( {
         copy = { 48450, 48451 },
     },
 
+    -- A strong attack that increases melee damage and causes a high amount of threat. Effects which increase Bleed damage also increase Maul damage.
+    maul = {
+        id = 48480,
+        cast = 0,
+        cooldown = 0,
+        gcd = "off",
+
+        spend = 25,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132136,
+
+        nobuff = "maul",
+
+        handler = function( rank )
+            start_maul()
+        end,
+
+        copy = { 6807, 6808, 6809, 8972, 9745, 9880, 9881, 26996, 48479 }
+    },
 
     -- Finishing move that causes damage and stuns the target.  Non-player victim spellcasting is also interrupted for 3 sec.  Causes more damage and lasts longer per combo point:     1 point  : 249-250 damage, 1 sec     2 points: 407-408 damage, 2 sec     3 points: 565-566 damage, 3 sec     4 points: 723-724 damage, 4 sec     5 points: 881-882 damage, 5 sec
     maim = {
@@ -1319,7 +1369,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 45,
+        spend = function () return (buff.berserk.up and 20) or 40 end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1492,11 +1542,13 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 40,
+        spend = function () return (buff.berserk.up and 18) or 35 end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132122,
+
+        readyTime = function() return debuff.rake.remains end,
 
         handler = function ()
             applyDebuff( "target", "rake" )
@@ -1634,17 +1686,19 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 30,
+        spend = function () return buff.berserk.up and 15 or 30 end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132152,
 
         usable = function() return combo_points.current > 0, "requires combo_points" end,
+        readyTime = function() return debuff.rip.remains end,
 
         handler = function ()
             applyDebuff( "target", "rip" )
             spend( combo_points.current, "combo_points" )
+            debuff.rip.xtnd = 0
         end,
     },
 
@@ -1678,7 +1732,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 60,
+        spend = function () return (talent.shredding_attacks.rank == 2 and buff.berserk.up and 21) or (talent.shredding_attacks.rank == 2 and 42) or 60 end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1686,8 +1740,13 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if glyph.shred.enabled and debuff.rip.up then
-                debuff.rip.expires = debuff.rip.expires + 2
-                -- TODO: Cap at 3 applications.
+                if (not debuff.rip.xtnd) then
+                    debuff.rip.xtnd = 0
+                end
+                if (debuff.rip.xtnd <= 3) then
+                    debuff.rip.expires = debuff.rip.expires + 2
+                    debuff.rip.xtnd = debuff.rip.xtnd + 1
+                end
             end
             gain( 1, "combo_points" )
         end,
@@ -1845,7 +1904,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 50,
+        spend = function () return (buff.berserk.up and 23) or 50 end,
         spendType = "energy",
 
         startsCombat = true,
