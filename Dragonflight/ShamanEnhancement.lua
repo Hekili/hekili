@@ -859,7 +859,7 @@ spec:RegisterHook( "reset_precast", function ()
         end
 
         if talent.alpha_wolf.enabled then
-            local last_trigger = max( action.chain_lighting.lastCast, action.crash_lightning.lastCast )
+            local last_trigger = max( action.chain_lightning.lastCast, action.crash_lightning.lastCast )
 
             if last_trigger > buff.feral_spirit.applied then
                 applyBuff( "alpha_wolf", last_trigger + 8 - now )
