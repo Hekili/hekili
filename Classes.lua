@@ -2553,6 +2553,8 @@ all:RegisterAbilities( {
         usable = function () return args.buff_name ~= nil, "no buff name detected" end,
         timeToReady = function () return gcd.remains end,
         handler = function ()
+            if not args.buff_name then return end
+
             local cancel = args.buff_name and buff[ args.buff_name ]
             cancel = cancel and rawget( cancel, "onCancel" )
 

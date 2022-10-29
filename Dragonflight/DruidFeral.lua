@@ -435,6 +435,11 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    maim = {
+        id = 22570,
+        duration = function() return 1 + combo_points.current end,
+        max_stack = 1,
+    },
     -- Versatility increased by $w1%.
     -- https://wowhead.com/beta/spell=1126
     mark_of_the_wild = {

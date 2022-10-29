@@ -1185,7 +1185,7 @@ spec:RegisterHook( "pregain", function( amt, resource, overcap, clean )
     end
 end )
 
-spec:RegisterHook( "prespend", function( amt, resource, clean )
+spec:RegisterHook( "prespend", function( amt, resource, overcap, clean )
     if buff.memory_of_lucid_dreams.up then
         if amt < 0 and resource == "astral_power" then
             return amt * 2, resource, overcap, true

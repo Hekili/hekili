@@ -837,7 +837,7 @@ end
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
     if not aura then
-        Error( "Attempted to apply/remove a nameless aura '%s'.", aura or "nil" )
+        Error( "Attempted to apply/remove a nameless aura '%s'.\n\n%s", aura or "nil", debugstack() )
         return
     end
 
