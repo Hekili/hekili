@@ -3538,6 +3538,28 @@ local snapshots = {
 }
 
 
+local config = {
+    qsDisplay = 99999,
+
+    qsShowTypeGroup = false,
+    qsDisplayType = 99999,
+    qsTargetsAOE = 3,
+
+    displays = {}, -- auto-populated and recycled.
+    displayTypes = {
+        [1] = "Primary",
+        [2] = "AOE",
+        [3] = "Automatic",
+        [99999] = " "
+    },
+
+    expanded = {
+        cooldowns = true
+    },
+    adding = {},
+}
+
+
 local specs = {}
 local activeSpec
 
@@ -10155,6 +10177,11 @@ local function Sanitize( segment, i, line, warnings )
     i, times = i:gsub( "rune_word%.([%w_]+)%.enabled$", "buff.rune_word_%1.up" )
     if times > 0 then
         insert( warnings, "Line " .. line .. ": Converted 'rune_word.X.enabled' to 'buff.rune_word_X.up' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "([^%w_]?)conduit%.([%w_]+)", "%1conduit.%2.enabled" )
+    if times > 0 then
+        insert( warnings, "Line " .. line .. ": Converted 'conduit.X' to 'conduit.X.enabled' (" .. times .. "x)." )
     end
 
     i, times = i:gsub( "([^a-z0-9_])conduit%.([%w_]+)([%+%-%*%%/&|= ()<>)])", "%1conduit.%2.enabled%3" )
