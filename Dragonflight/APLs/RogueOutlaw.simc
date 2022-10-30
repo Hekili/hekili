@@ -81,7 +81,7 @@ actions.cds+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent
 # Pool resource for dreadblades as it costs 50 energy
 actions.cds+=/pool_resource,for_next=1,if=talent.dreadblades.enabled
 # Dreadblades should be used on CD
-actions.cds+=/dreadblades,if=!stealthed.all&combo_points<=2&(!talent.marked_for_death.enabled|!cooldown.marked_for_death.ready)
+actions.cds+=/dreadblades,if=!stealthed.all&combo_points<=2&(!talent.marked_for_death.enabled|!cooldown.marked_for_death.ready)&(!covenant.venthyr|(covenant.venthyr&cooldown.flagellation.remains>10))
 # If adds are up, snipe the one with lowest TTD. Use when dying faster than CP deficit or without any CP.
 actions.cds+=/marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit|!stealthed.rogue&combo_points.deficit>=cp_max_spend-1)
 # If no adds will die within the next 30s, use MfD on boss without any CP.
