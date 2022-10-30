@@ -1207,10 +1207,6 @@ spec:RegisterAbilities( {
         spend = 0.15,
         spendType = "mana",
 
-        talent = function ()
-            if covenant.kyrian then return end
-            return "divine_toll"
-        end,
         startsCombat = false,
 
         handler = function ()
@@ -1742,7 +1738,7 @@ spec:RegisterAbilities( {
             if buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
             if buff.empyrean_legacy.up then
                 class.abilities.divine_storm.handler() -- TODO: Check for resource gain?
-                removeBufF( "empyrean_legacy" )
+                removeBuff( "empyrean_legacy" )
             end
             if talent.executioners_will.enabled and debuff.execution_sentence.up and debuff.execution_sentence.expires - debuff.execution_sentence.applied < 16 then
                 debuff.execution_sentence.expires = debuff.execution_sentence.expires + 1
