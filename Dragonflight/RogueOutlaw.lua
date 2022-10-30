@@ -279,7 +279,7 @@ spec:RegisterAuras( {
     },
     feint = {
         id = 1966,
-        duration = 5,
+        duration = 6,
         max_stack = 1,
     }, 
     find_weakness = {
@@ -1244,6 +1244,7 @@ spec:RegisterAbilities( {
         cooldown = 15,
         gcd = "spell",
 
+        talent = "feint",
         spend = function () return talent.nimble_fingers.enabled and 25 or 35 + conduit.nimble_fingers.mod end,
         spendType = "energy",
 
@@ -1251,7 +1252,7 @@ spec:RegisterAbilities( {
         texture = 132294,
 
         handler = function ()
-            applyBuff( "feint", 5 )
+            applyBuff( "feint", 6 )
         end,
     },
             
