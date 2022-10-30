@@ -22,10 +22,13 @@ body:
         - label: I am reporting an issue with the default priority included with the specialization (imported or edited priorities are not supported).
           required: true
   - type: dropdown
-    id: flavor
-    options:
-      - Retail (Dragonflight)
-      - Classic (Wrath of the Lich King)
+   id: flavor
+   attributes:
+     label: WoW Version
+     description: Reminder: Private servers are not supported based on Blizzard's Terms of Service.
+     options:
+       - Retail (Dragonflight)
+       - Classic (Wrath of the Lich King)
     validations:
       required: true
   - type: textarea
