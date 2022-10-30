@@ -57,6 +57,9 @@ spec:RegisterResource( Enum.PowerType.Energy )
 
 -- Sets
 spec:RegisterGear( "tier7", 39557, 39553, 39555, 39554, 39556, 40472, 40473, 40493, 40471, 40494 )
+spec:RegisterGear( "tier8", 46260, 46262, 46265, 46267, 46269, 46158, 46161, 46160, 46159, 46157 )
+spec:RegisterGear( "tier9", 48799, 48800, 48801, 48802, 48803, 48212, 48211, 48210, 48209, 48208 )
+spec:RegisterGear( "tier10", 51140, 51142, 51143, 51144, 51141, 51299, 51297, 51296, 51295, 51298 )
 
 -- Talents
 spec:RegisterTalents( {
@@ -213,7 +216,7 @@ spec:RegisterAuras( {
     -- All damage taken is reduced by $s2%.  While protected, damaging attacks will not cause spellcasting delays.
     barkskin = {
         id = 22812,
-        duration = 12,
+        duration = function() return 12 + ((set_bonus.tier7_4pc == 1 and 3) or 0) end,
         max_stack = 1,
     },
     -- Stunned.
@@ -558,7 +561,7 @@ spec:RegisterAuras( {
     -- Bleeding for $s2 damage every $t2 seconds.
     rake = {
         id = 48574,
-        duration = 9,
+        duration = function() return 9 + ((set_bonus.tier9_2pc == 1 and 3) or 0) end,
         max_stack = 1,
         copy = { 1822, 1823, 1824, 9904, 27003, 48573, 48574, 59881, 59882, 59883, 59884, 59885, 59886 },
     },
@@ -580,7 +583,7 @@ spec:RegisterAuras( {
     -- Bleed damage every $t1 seconds.
     rip = {
         id = 49800,
-        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc > 0 and 4) or 0) end,
+        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc == 1 and 4) or 0) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
@@ -594,7 +597,7 @@ spec:RegisterAuras( {
     -- Physical damage done increased by $s2%.
     savage_roar = {
         id = 52610,
-        duration = 9,
+        duration = 14,
         max_stack = 1,
         copy = { 52610 },
     },
@@ -785,7 +788,7 @@ spec:RegisterAbilities( {
     barkskin = {
         id = 22812,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - ((set_bonus.tier9_4pc == 1 and 12) or 0) end,
         gcd = "off",
 
         startsCombat = true,
@@ -1181,7 +1184,7 @@ spec:RegisterAbilities( {
     growl = {
         id = 6795,
         cast = 0,
-        cooldown = 8,
+        cooldown = function() return 8 - ((set_bonus.tier9_2pc == 1 and 2) or 0) end,
         gcd = "off",
 
         spend = 0,
@@ -1738,7 +1741,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return 30 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (30 - ((set_bonus.tier10_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1989,7 +1992,7 @@ spec:RegisterAbilities( {
     tigers_fury = {
         id = 50213,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - ((set_bonus.tier7_4pc == 1 and 3) or 0) end,
         gcd = "off",
 
         spend = 0,

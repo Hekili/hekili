@@ -34,4 +34,4 @@ actions.cat_aoe+=/gift_of_the_wild,if=energy.current<45&(encounterDifficulty>=3|
 actions.bear+=/lacerate,if=up&remains<5
 actions.bear+=/cat_form,if=energy.current>=68|(debuff.rip.remains<=4&buff.savage_roar.remains>debuff.rip.remains&combo_points.current<5)|(buff.clearcasting.up&combo_points<5)
 actions.bear+=/lacerate,if=debuff.lacerate.stack<5
-actions.bear+=/maul,if=rage.current>25
+actions.bear+=/maul,if=rage.current>=25
