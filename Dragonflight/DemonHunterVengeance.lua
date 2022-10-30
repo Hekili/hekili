@@ -588,7 +588,7 @@ spec:RegisterHook( "reset_precast", function ()
         else sigils[ sigil ] = 0 end
     end
 
-    if IsSpellKnownOrOverridesKnown( class.abilities.elysian_decree.id ) then
+    if action.elysian_decree.known then
         local activation = ( action.elysian_decree.lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
         if activation > now then sigils.elysian_decree = activation
         else sigils.elysian_decree = 0 end
@@ -988,9 +988,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "metamorphosis" )
-            gain( 8, "fury" )
 
-            if IsSpellKnownOrOverridesKnown( 317009 ) then
+            if action.sinful_brand.known then
                 applyDebuff( "target", "sinful_brand" )
                 active_dot.sinful_brand = active_enemies
             end
