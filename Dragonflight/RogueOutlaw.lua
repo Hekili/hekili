@@ -281,7 +281,12 @@ spec:RegisterAuras( {
         id = 1966,
         duration = 5,
         max_stack = 1,
-    },    
+    }, 
+    find_weakness = {
+        id = 316220,
+        duration = 10,
+        max_stack = 1,
+    },
     indiscriminate_carnage = {
         id = 381802,
     },
