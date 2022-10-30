@@ -1,6 +1,5 @@
 name: Priority/Recommendation Issue
-description: I disagree with the recommendations made by the addon, based upon a guide or comparison with a Raidbots sim.
-title: "[BUG] Add a Short Title for your Report"
+description: I disagree with the recommendations made by the addon, based upon a guide or comparison with a Raidbots sim of my character.
 labels: [recommendation, triage]
 assignees:
   - Hekili
