@@ -49,6 +49,7 @@ body:
         3. Use Final Reckoning.
         4. Build to 5 Holy Power.
         5. See recommendations.
+        
     validations:
       required: true
   - type: textarea
@@ -74,6 +75,8 @@ body:
         Feral; Primary - Rake(0.00), Scars of Fraternal Strife(1.00), Thrash (Cat)(1.00), Tiger's Fury(1.00), Convoke the Spirits(1.00), Primal Wrath(4.00), Shred(5.00), Shred(6.00), Shred(7.00), Shred(8.00)
         build: 10.0.0-99.1
         level: 60 (60)
+        ...
+        
       render: Text
     validations:
       required: true
