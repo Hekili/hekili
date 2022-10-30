@@ -26,8 +26,8 @@ body:
     attributes:
       label: WoW Version
       options:
-        - label: Retail (Dragonflight)
-        - label: Classic (Wrath of the Lich King)
+        - Retail (Dragonflight)
+        - Classic (Wrath of the Lich King)
     validations:
       required: true
   - type: textarea
