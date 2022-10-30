@@ -21,6 +21,13 @@ body:
           required: true
         - label: I am reporting an issue with the default priority included with the specialization (imported or edited priorities are not supported).
           required: true
+  - type: dropdown
+    id: flavor
+    options:
+      - Retail (Dragonflight)
+      - Classic (Wrath of the Lich King)
+    validations:
+      required: true
   - type: textarea
     id: description
     attributes:
