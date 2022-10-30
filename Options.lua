@@ -8435,7 +8435,7 @@ function Hekili:GenerateProfile()
 
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then
-            if talents then talents = format( "%s\n    %s", talents, k )
+            if talents then talents = format( "%s\n    %s = %d/%d", talents, k, v.rank, v.max )
             else talents = k end
         end
     end
@@ -10365,6 +10365,7 @@ do
             end
         end
 
+        -- TODO: Revise to start from beginning of string.
         for i in list:gmatch( "action.-=/?([^\n^$]*)") do
             line = line + 1
 
