@@ -550,14 +550,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Movement speed reduced by $s5%.
-    -- https://wowhead.com/beta/spell=206930
-    heart_strike = {
-        id = 206930,
-        duration = 8,
-        max_stack = 1,
-        copy = 228645
-    },
     -- Talent: Damage taken reduced by $w3%.  Immune to Stun effects.
     -- https://wowhead.com/beta/spell=48792
     icebound_fortitude = {

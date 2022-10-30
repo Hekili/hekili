@@ -459,14 +459,24 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 3
     },
+    death_and_decay = {
+        alias = { "death_and_decay_actual", "deaths_due" },
+        aliasMode = "first",
+        aliasType = "buff",
+        duration = 3600,
+    },
     -- $?s206930[Heart Strike will hit up to ${$m3+2} targets.]?s207311[Clawing Shadows will hit ${$55090s4-1} enemies near the target.]?s55090[Scourge Strike will hit ${$55090s4-1} enemies near the target.][Dealing Shadow damage to enemies inside Death and Decay.]
     -- https://wowhead.com/beta/spell=188290
-    death_and_decay = {
+    death_and_decay_actual = {
         id = 188290,
         duration = 10,
         tick_time = function() return talent.rapid_decomposition.enabled and 0.85 or 1 end,
-        max_stack = 1,
-        copy = { "deaths_due", 324165 }
+        max_stack = 1
+    },
+    deaths_due = {
+        id = 324165,
+        duration = 12,
+        max_stack = 1
     },
     -- Talent: The next $w2 healing received will be absorbed.
     -- https://wowhead.com/beta/spell=48743
@@ -555,11 +565,22 @@ spec:RegisterAuras( {
     },
     -- Talent: Movement speed reduced by $s5%.
     -- https://wowhead.com/beta/spell=206930
-    heart_strike = {
+    heart_strike_206930 = {
         id = 206930,
         duration = 8,
         max_stack = 1,
         copy = 228645
+    },
+    heart_strike_228645 = {
+        id = 228645,
+        duration = 8,
+        max_stack = 1
+    },
+    heart_strike = {
+        alias = { "heart_strike_206930", "heart_strike_228645" },
+        aliasMode = "first",
+        aliasType = "debuff",
+        duration = 8
     },
     -- Talent: Your next Death Strike deals an additional $s2% damage.
     -- https://wowhead.com/beta/spell=377656

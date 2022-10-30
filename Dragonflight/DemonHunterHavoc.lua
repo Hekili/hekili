@@ -203,12 +203,22 @@ spec:RegisterAuras( {
     },
     -- Talent: Taking $w1 Chaos damage every $t1 seconds.  Damage taken from $@auracaster's Immolation Aura increased by $s2%.
     -- https://wowhead.com/beta/spell=391191
-    burning_wound = {
+    burning_wound_391191 = {
         id = 391191,
         duration = 15,
         tick_time = 3,
         max_stack = 1,
-        copy = 346278
+    },
+    burning_wound_346278 = {
+        id = 346278,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 1,
+    },
+    burning_wound = {
+        alias = { "burning_wound_391191", "burning_wound_346278" },
+        aliasMode = "first",
+        aliasType = "buff",
     },
     -- Talent: Stunned.
     -- https://wowhead.com/beta/spell=179057
