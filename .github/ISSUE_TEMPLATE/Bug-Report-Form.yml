@@ -1,7 +1,6 @@
 name: In-Game Error Message
 description: |
-  Use this template when there is an error message or the addon behaves unexpectedly.
-  Do not use this template if you disagree with the recommendations given by the addon.
+  Use this template when there is an error message or the addon behaves unexpectedly EXCEPT recommendations.
   You will need BugSack and BugGrabber to capture and supply these error messages.
 title: "[BUG] Add a Short Title for your Report"
 labels: [bug, triage]
