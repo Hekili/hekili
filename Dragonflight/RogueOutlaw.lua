@@ -6,7 +6,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 
 local class = Hekili.Class
-local state =  Hekili.State
+local state = Hekili.State
 
 local PTR = ns.PTR
 
