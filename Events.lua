@@ -2080,7 +2080,7 @@ do
 
                     -- If bar is disabled assume paging / stance switching on bar 1
                     if actionBarNumber > 1 and bar and not bar.disabled then
-                        bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton"
+                        bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":Keybind"
                     end
 
                     StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
@@ -2235,7 +2235,7 @@ local function ReadOneKeybinding( event, slot )
 
         -- If bar is disabled assume paging / stance switching on bar 1
         if actionBarNumber > 1 and bar and not bar.disabled then
-            bindingKeyName = "CLICK BT4Button" .. slot .. ":LeftButton"
+            bindingKeyName = "CLICK BT4Button" .. slot .. ":Keybind"
         end
 
         ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( slot ) )
