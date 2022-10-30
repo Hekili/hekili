@@ -1,11 +1,8 @@
-## Blood DK
-## 27 October 2022
-
-# Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
 
 # Interrupt
 actions+=/mind_freeze
+actions+=/strangulate
 actions+=/variable,name=death_strike_dump_amount,value=70
 # Since the potion cooldown has changed, we'll sync with DRW
 actions+=/potion,if=buff.dancing_rune_weapon.up
@@ -15,7 +12,7 @@ actions+=/deaths_caress,if=!buff.bone_shield.up
 actions+=/blooddrinker,if=!buff.dancing_rune_weapon.up
 actions+=/call_action_list,name=racials
 # Attempt to sacrifice the ghoul if we predictably will not do much in the near future
-actions+=/sacrificial_pact,if=!buff.dancing_rune_weapon.up&(pet.ghoul.remains<2|target.time_to_die<gcd)
+actions+=/sacrificial_pact,if=!buff.dancing_rune_weapon.up&(pet.ghoul.remains<2|fight_remains<gcd)
 actions+=/call_action_list,name=covenants
 actions+=/blood_tap,if=(rune<=2&rune.time_to_4>gcd&charges_fractional>=1.8)|rune.time_to_3>gcd
 actions+=/marrowrend,if=buff.bone_shield.remains<gcd
@@ -43,7 +40,7 @@ actions.drw_up+=/blood_boil,if=((charges>=2&rune<=1)|dot.blood_plague.remains<=2
 actions.drw_up+=/variable,name=heart_strike_rp_drw,value=(25+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
 actions.drw_up+=/death_strike,if=runic_power.deficit<=variable.heart_strike_rp_drw
 actions.drw_up+=/consumption
-actions.drw_up+=/death_and_decay,if=(spell_targets.death_and_decay=3&buff.crimson_scourge.up)|spell_targets.death_and_decay>=4
+actions.drw_up+=/death_and_decay,if=(spell_targets.death_and_decay>2&buff.crimson_scourge.up)|spell_targets.death_and_decay>=4
 actions.drw_up+=/heart_strike,if=rune.time_to_2<gcd|runic_power.deficit>=variable.heart_strike_rp_drw
 
 actions.racials=blood_fury,if=cooldown.dancing_rune_weapon.ready&(!cooldown.blooddrinker.ready|!talent.blooddrinker.enabled)
