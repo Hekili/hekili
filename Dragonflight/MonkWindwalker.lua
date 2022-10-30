@@ -831,7 +831,7 @@ end )
 
 local noop = function () end
 
-local reverse_harm_target
+-- local reverse_harm_target
 
 
 -- New Bonedust Brew Stuff
@@ -1095,7 +1095,7 @@ spec:RegisterHook( "reset_precast", function ()
     spinning_crane_kick.count = nil
 
     virtual_combo = actual_combo or "no_action"
-    reverse_harm_target = nil
+    -- reverse_harm_target = nil
 
     if not IsUsableSpell( 322109 ) then setCooldown( "touch_of_death", action.touch_of_death.cooldown ) end
 
@@ -1621,7 +1621,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-
+    --[[ Deprecated.
     reverse_harm = {
         id = 287771,
         cast = 0,
@@ -1696,7 +1696,7 @@ spec:RegisterAbilities( {
             health.actual = min( health.max, health.current + 0.08 * health.max )
             gain( 1, "chi" )
         end,
-    },
+    }, ]]
 
     -- Talent: Form a Ring of Peace at the target location for $d. Enemies that enter will be ejected from the Ring.
     ring_of_peace = {
@@ -2277,12 +2277,13 @@ spec:RegisterSetting( "allow_fsk", false, {
     end,
 } )
 
+--[[ Deprecated.
 spec:RegisterSetting( "optimize_reverse_harm", false, {
     name = "Optimize |T627486:0|t Reverse Harm",
     desc = "If checked, |T627486:0|t Reverse Harm's caption will show the recommended target's name.",
     type = "toggle",
     width = "full",
-} )
+} ) ]]
 
 spec:RegisterSetting( "sef_one_charge", false, {
     name = "Reserve One |T136038:0|t Storm, Earth, and Fire Charge as CD",

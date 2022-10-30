@@ -110,6 +110,14 @@ local oneTimeFixes = {
 
         p.runOnce.forceDeleteBrokenMultiDisplay_20220319 = nil
     end,
+
+    forceSpellFlashBrightness_20221030 = function( p )
+        for display, data in pairs( p.displays ) do
+            if data.flash and data.flash.brightness and data.flash.brightness > 100 then
+                data.flash.brightness = 100
+            end
+        end
+    end,
 }
 
 
@@ -2289,8 +2297,7 @@ do
                                 desc = "Specify the brightness of the SpellFlash glow.  The default brightness is |cFFFFD100100|r.",
                                 order = 4,
                                 min = 0,
-                                softMax = 100,
-                                max = 200,
+                                max = 100,
                                 step = 1,
                                 width = 1.49,
                                 hidden = function () return SF == nil end,
