@@ -1,8 +1,9 @@
-name: In-Game Error
+name: In-Game Error Message
 description: |
-  The addon does not load or there are error messages in-game.
-  I'll use BugSack and BugGrabber to supply the messages.
-title: "[BUG]"
+  Use this template when there is an error message or the addon behaves unexpectedly.
+  Do not use this template if you disagree with the recommendations given by the addon.
+  You will need BugSack and BugGrabber to capture and supply these error messages.
+title: "[BUG] Add a Short Title for your Report"
 labels: [bug, triage]
 assignees:
   - Hekili
@@ -59,9 +60,11 @@ body:
         * Type `/hekili` and press Enter.
         * Open the Issue Reporting section (left panel).
         * Copy all of the text from the text box.
+        * Paste into this field.
         
         This step is essential, as most issues are related to specific classes, specializations, gear, talent choices, or other game systems.
         If you do not provide this information, I cannot triage your problem.
+
         **Note:** Some errors may prevent you from opening `/hekili`.  If that's true for you, please note that in this box.
       placeholder: |
         build: 10.0.0-99
@@ -78,7 +81,7 @@ body:
         If there are error messages in-game, please install [BugSack](https://www.curseforge.com/wow/addons/bugsack) and [BugGrabber](https://www.curseforge.com/wow/addons/bug-grabber) -- both! -- in order to collect the error message.
         * Install BugSack and BugGrabber if you don't already have them.
         * Log into WoW, open BugSack and clear the sack.
-        * Reload WoW (/rl).
+        * Reload WoW (/reload or /reloadui).
         * When WoW finishes reloading, open BugSack and copy the **first** error message.
           * If you need to do something to trigger the error message, do so, then open BugSack and copy the error message.
       placeholder: "No error messages."
