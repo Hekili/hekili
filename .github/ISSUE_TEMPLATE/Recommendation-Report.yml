@@ -42,10 +42,10 @@ body:
         5. See recommendations.
     validations:
       required: true
-  - type: input
+  - type: textarea
     id: player-info
     attributes:
-      label: Snapshot (Link)
+      label: Snapshot
       description: |
         Please supply a Snapshot of the addon's decision-making when you are seeing this issue in-game.  **This is not a screenshot.**  To generate a Snapshot, please complete the following steps.
         * Log into your WoW character.
