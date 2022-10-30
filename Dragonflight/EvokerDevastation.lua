@@ -220,11 +220,6 @@ spec:RegisterAuras( {
         duration = 1,
         max_stack = 1
     },
-    fury_of_the_aspects = {
-        id = 390386,
-        duration = 40,
-        max_stack = 1
-    },
     hover = {
         id = 358267,
         duration = function () return talent.extended_flight.enabled and 10 or 6 end,

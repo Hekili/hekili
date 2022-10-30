@@ -885,5 +885,11 @@ all:RegisterAuras( {
 
     carvers_eye_debuff = {
         duration = 10,
+    },
+
+    soulglow_spectrometer = {
+        id = 352939,
+        duration = 15,
+        max_stack = 5
     }
 } )

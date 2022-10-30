@@ -588,7 +588,7 @@ spec:RegisterHook( "reset_precast", function ()
         else sigils[ sigil ] = 0 end
     end
 
-    if IsSpellKnownOrOverridesKnown( class.abilities.elysian_decree.id ) then
+    if action.elysian_decree.known then
         local activation = ( action.elysian_decree.lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
         if activation > now then sigils.elysian_decree = activation
         else sigils.elysian_decree = 0 end
@@ -634,13 +634,6 @@ end )
 
 
 -- Gear Sets
-
--- Tier 28:
-spec:RegisterSetBonuses( "tier28_2pc", 364454, "tier28_4pc", 363737 )
--- 2-Set - Burning Hunger - Damage dealt by Immolation Aura has a 10% chance to generate a Lesser Soul Fragment.
--- 4-Set - Rapacious Hunger - Consuming a Lesser Soul Fragment reduces the remaining cooldown of your Immolation Aura or Fel Devastation by 1 sec.
--- Nothing to model (2/13/22).
-
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
 spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
 spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )
@@ -789,29 +782,6 @@ spec:RegisterAbilities( {
             if talent.disrupting_fury.enabled then gain( 30, "fury" ) end
             interrupt()
         end,
-    },
-
-    -- Covenant (Kyrian): Place a Kyrian Sigil at the target location that activates after $d.    Detonates to deal $307046s1 $@spelldesc395039 damage and shatter up to $s3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond $s1 targets.
-    elysian_decree = {
-        id = function() return covenant.kyrian and 306830 or 390163 end,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-        school = "arcane",
-
-        talent = function()
-            if covenant.kyrian then return end
-            return "elysian_decree"
-        end,
-        startsCombat = false,
-
-        handler = function ()
-            create_sigil( "elysian_decree" )
-
-            if legendary.blind_faith.enabled then applyBuff( "blind_faith" ) end
-        end,
-
-        copy = { 390163, 306830 }
     },
 
     -- Talent: Unleash the fel within you, damaging enemies directly in front of you for ${$212105s1*(2/$t1)} Fire damage over $d.$?s320639[ Causing damage also heals you for up to ${$212106s1*(2/$t1)} health.][]
@@ -986,8 +956,8 @@ spec:RegisterAbilities( {
         sigil_placed = function() return sigil_placed end,
 
         readyTime = function ()
-            if settings.infernal_charges == 0 then return end
-            return ( ( 1 + settings.infernal_charges ) - cooldown.infernal_strike.charges_fractional ) * cooldown.infernal_strike.recharge
+            if ( settings.infernal_charges or 1 ) == 0 then return end
+            return ( ( 1 + ( settings.infernal_charges or 1 ) ) - cooldown.infernal_strike.charges_fractional ) * cooldown.infernal_strike.recharge
         end,
 
         handler = function ()
@@ -1018,9 +988,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "metamorphosis" )
-            gain( 8, "fury" )
 
-            if IsSpellKnownOrOverridesKnown( 317009 ) then
+            if action.sinful_brand.known then
                 applyDebuff( "target", "sinful_brand" )
                 active_dot.sinful_brand = active_enemies
             end
@@ -1436,4 +1405,4 @@ spec:RegisterSetting( "infernal_charges", 1, {
 } )
 
 
-spec:RegisterPack( "Vengeance", 20221026, [[Hekili:LIvBVTnom4FlbdO1b3GBEPUDDOPa3E5UBfdDald3DFY2k2Yjc12kNKC26qG)TFKYj2YoYjDVGHoxrjYhs(ikY5p2)l(ZJjkQ)dtgnzY4rtUYD8KrtVCQ)C1tRP(ZxtIEKSe(iNKb)8VP5lPK8iTKNs5KyudsEHaxALsTw(6lUyjtTQyHBep7cjlRiLOy88ibjrH)E0f(ZxuWsvFi3FHvZp9gqNRPr(p49QXGAzXX0Q9sLrgGOm8D0mEEz4FvKROIY7NCvz4NIu8fWVeIQSm0Xl6AVlNqhwEF59FiNPyKu4CcYsEEskB5kvzilBnxOCbFsWtyPGN8Ixug2VzqPNYu4EoU5WDrIWqJ0DTGcrRfe1Vn7IKuQCLoA9swYmi2MUGLh7UUqQksPburXA8qB3wlAdhdXGmjpDdnxPTFz47)gnQqrJldPBOINkdvSmWzuRGFagMdaNjHp3qyPKfPu3A8aOiMjrdzUue8pfz0GmYswKPGnebdvWlrsYSfcsECaMHJF5gsAbDMIKcOYfJbSVZYxgKKcBu6sZXtfF2o5lke5OuskBdTRWOveHGghOJo7fAcc1kb)RbltjWHXa3IIKe3eAAWcmWkIZqTivaFEM3zoAPSSmEf5mGuiiUfR3UDGwsgvrY4I1R4sMewFyR4ajnnO6xdszsLHBJgEF0W1iqC6JhttO5sa7YtV3iopnM)18NXwZ5ImGbwri(dMMg8gexLHFMR0(Edlud4zj4Uc0F3reyLoHm0FJ5kxJZ4QyrpcPrt6DnGNTMxzYxGxQsifPW9Hea5lG8c8fYjlKy0d4MkAM01IsayuiPbA52flz5jfPb1PKbignxSbK2ooCdjyvrUYUuA6tsgjpiMgjO0DH23Dy6ZTjLczxOasGCn7r7BauBlkNg0wzIN5miIdxYjaBgVRV6jX(Bda5Tp)C42TkIyjv5I1acu8Gyg92XE9GLwuaT)9qfpYcPPIHndmkvKtsdKkb4LDLdkDrr6Jb0VPevsSSdi(iyk9fwma44ypcSRIqcQOcrtLcSEyaS6s8QU8UzthwvJ0CTlhAXUyvIy6gI0UVHidvtukLuvBXXzhgmqCpWy2iafd6F7dpRwzh4qjfINUBMNhObNbhFtxJMzpl1TJd5kOzewU8Ud5aGM7HMDcun95GkVrdH)yjEAPmIJJTcNN14tgLy27pJ1bxBNBOgb3o7Mr2Z3lsjX6uz12UY6225u)Gz8B1epNJKZpRpMDfyQs4w2bgh2TNR7lYkzlzPb8KQ3y11rCQly84tqKkVggIICkuYDj1vq(onL94kjqBWoGqhXQ2xrjclRB(4R)COBdjiVURop)5FLOFBx6p)F(9p)WhE4pFDzyz4xWwrQAhAxX)ZR7e68Yqb9)kycSbgjh7CHuO4zeDhnq7aq3z4ZdFKLdIgd67T8CWYAXNx3B0)c6rXBTYE)hK4m(Bd)v1bbW(7)0hRvw59NWfBk1(J5Jt6GV60QjA04SrY5pFyvLm)XG0n)sqYUoAyL1XDJLom5bT1R9d8WxP7SfRHhI9aHa1FU(lCofD9b4Jh0Z9Str(VPAUcbt3wT)C7Dj5pVsX(Znke5RaoEhDbkcgsGraTAVXOgn1PkiOnfIfDBrNeM)WD33y3D92xJ(9R3QbFtldBCAhSWxdZOrvnhEFvy8lOPFyaYJ31Fz4zaApsN)MBWA3)ABgunyQrPFeTx2BsP)XckdNvg6PTQtzypdiugUDBz4GDY7waVmCytaPvnratE9IjBpGzKv60yFfH20VrTFvhT)SoDtLiufx)ZOI6oJrn8QFgnuv3PI8xx93g9VjG17qXnChmn17aYnmO6l11dDxbKg3Apq2VZQjy6C7OBrGw3uFEd60yH6HBSDVRjiaKW(A3VrxMsRVy0WqRMZPJZ4zUN2t70ENQwmOtvWQzejJkrgZfD8IP9FLR6(kiV7Cr13v7D6VWHv75W(IldVfAiWRbPTSBDIX2BcDdr743Nk80DclJNjApA1bLT7my1jkC3esDAk0znQ2tV9AzTB5Tm8oO25064PnPx2Q4OrxXhql7m9In25r8N(B72kWbKnQg3do(XhUNS5C8Gd2IELt75vRBht1FIJDDdKo1mDWbSZF3zZJEP5z7ht)58dVk)y3FnY(nJtB7TRUPuR)pQHw6ydhQdmJBLBTRNHgG(wa03m6yDODWRKnGTrfxnQfBwpSPT3h)f5U326sNZj5V1j9(jfn(qBQBptJ25mx3t(EpnbJb3CSs8ogvXRgwvBHJpOQXfuZh(mNdgn84rMfz0tY2P0Y4XTFD0CM22f1X(EluR4GgaoYB1R4))]] )
+spec:RegisterPack( "Vengeance", 20221029, [[Hekili:LIvFVTTnt8plgdWvgRqXojkPPioap9Ln0GI8auxST)ss0su2eHs0JKYTPWqF23rszjkzk7002axhEK397EHh)DnCw4xdxKIK4WhoF65NpB6534F(fZME51HlKpTbhUydk5r0k4lfOC4Z)cxScJks0sEIYqPkniyLC1sRLYnI3E2zRiY1Ll9ty5Nji5LuKKWks4OmP63tolCXYscv(PIWLUnFaOZn4KWhcEZmqTK0uSzVyrs4cW2CwgHcweLOuTWFdhdwBjs(7ZplJIfR1w71KS5a2OljfP(BkfYskocZl3Oo0UDnI2YuqeKjy0T4cz19v3)BvXF874KsjoTkgVfZFQkwsYXWNRHpadZ4vXeb81TicfTKI9RUVgpaksjcLHSxkb(NYCCuoAfjXwWweNOuWRvb55l5OI0ivek91Br0s8CjIcOYhTIvq(bPyvugf2OWhxOov64A5ll5fkPikzlUVWK1iohNgPJo7fAdc5Ao7BrROi4WQa3YYSm)mmnAPkWYtZvAriH6H5bJ90sj55mtYncvYr(LB2TBKwsowIYz8nRzcIawFsN4aIsJm)AeLiKwUTYW7Jg(wbItF8uCgUqayxC69MWy0u23kEgBTGXZr06cI)GOldENcxvXFHj1(EJsmaEEMAxr6V3teyLEHmL)MYK(wNXxssEesJkBU)0naE(gMXKaA(aodvsLvXzaYxc5f4BQAYsHk6b1MsCUW3HsayukWrA5UflifzL0OMuYifgTxSfKUooCdjADzH0Tum9jbbveLIt4yCDO9dhM(8BtPq2nhIyInKhDVbqTDk50G2zL4yVrMJ31FESaqhu9oKJoz3ojIVcl9vnbIKSOuc(2zbdaMo1aAh8btHKJQgtj2CWOyEbIgjKCWn7lhu6Ys6Jr4Vl5gjo2beG4eP(gRkc455oeu3sitPOsEBRcvdXiy1vQ76I7MFXetts71UCId7QAtKI3IeU9nfYuQjHIrMMlEE1yWcXdaJ5tbumA4TpzCJYoWHYk5pD38GaqdEJo(MUwzM9LP(9CiFoohrke3DynaO5bQZobQU45GQGPtG)4iE6OpINNRoNJB9jREm79Nz6GRRZnrJGBNFZu357LuuQovA22vo3wTt9tMXVvx45DKC(4HQSnGXKWDSdvCOEpxpuKvqwrOrSmZJS6gjE1Dm625Y0ZymVSad9DxH95OFGPKhxlGnOONOCgNwyngXDSU9lWHlakhcqEd1iGs23q6h4fHl(7)3xE4tp8NVTkUk(Rk(iK8nmUS(fGx1qh6vvXC8)ws4kwmcMI(cQuYYrAAnaNaGoN6nIptkarZa99EwbyzT4x1qq6Fa9izDwzFQaK4n77t(v1bcW(h))FUrzv3Fcx0e1(58VB6HT2uxd4Sw6qpS6(pPXG6WxP5aQA2fRylOmcqhTuUMXdxSGK)(Wf61v8J1xRGV8GMVDTAdFNHplNOPJgUWn7I9CCdxyD)nucLf90fOijgUhdA1nHIwn1R5bOnPclA6eNeM)0SIBTBnN4g0VF9oeJTTmSXl6Hf2gy2aSS9W7BEP(gqwggC54SLRIhdO9imMT3GtwZABgzgiYQJPcTxoyszy60vXZRId0w1RkEaI1vX72vfpQwE)(EvXtAdiDAJaykyqm5QVVvwPhHytbTTFR0(v90(Z60TCLuQ46xIkAyuQ0WBEjAW0bXu830W0v5FBaBWHjBRDuPPbhSSTcQ5sDZWQgG06w7bY(DAy(372r)MaDUP(8gqO1cndf46ExBqakchILCRUSL2CXOTc1mFqpNjWEpDFRT7oLDQGovdR2rlS6eznpXXBMo8voZ91r7FhWX8enxAhC8P4jM9CiVYQ4BHhtdAHCha0KHC94q)yvDH(PIt9NqX69IUJMCq)7EdMCIo4TXwV2oEodVdWnwlRlLXQ47GMOx0epDj9YoDjTyvEq9zp2)UktpI)mmTvNahq20gCp64hFY(QoVJhCuuCnoDqqJU9Sv)jo21Tq6uZebhWD9BTnp6TNNTFCXlZpcm(r9pwz)2XrD9iw)uQZ)lPuw6ydxPdmZ6KBDRNjwG(wa03m9yu1o45YwW2QIRM2PAwpSMRhk)fRDVTZLoVtw)2K0hUOO1h6w6oW0C9oZ1dKV3xMOIb3CSE9EnTZDnSN2AhFGpRlR2VgAptPceZMA3WrpryV2mZM19jt7zd72G383W)l]] )

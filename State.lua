@@ -837,7 +837,7 @@ end
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
     if not aura then
-        Error( "Attempted to apply/remove a nameless aura '%s'.", aura or "nil" )
+        Error( "Attempted to apply/remove a nameless aura '%s'.\n\n%s", aura or "nil", debugstack() )
         return
     end
 
@@ -915,9 +915,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         end
     end
 
-    if aura == "heroism" or aura == "time_warp" or aura == "ancient_hysteria" then
-        applyBuff( "bloodlust", duration, stacks, value )
-    elseif aura ~= "potion" and class.auras.potion and class.auras[ aura ].id == class.auras.potion.id then
+    if aura ~= "potion" and class.auras.potion and class.auras[ aura ].id == class.auras.potion.id then
         applyBuff( "potion", duration, stacks, value )
     end
 end
@@ -2158,7 +2156,7 @@ do
 
             local aura_name = ability and ability.aura or t.this_action
             local aura = aura_name and class.auras[ aura_name ]
-            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) )
+            local app = aura and ( ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or t.buff[ aura_name ] )
 
             if not app then
                 if ability and ability.startsCombat then
@@ -3790,7 +3788,7 @@ do
 
             if not aura then
                 if Hekili.PLAYER_ENTERING_WORLD and not buffs_warned[ k ] then
-                    Hekili:Error( "Unknown buff: " .. k .. " [" .. state.scriptID .. "]\n\n" .. debugstack() )
+                    Hekili:Error( "Unknown buff in [" .. state.scriptID .. "]: " .. k .. "\n\n" .. debugstack() )
                     buffs_warned[ k ] = true
                 end
                 return unknown_buff
@@ -4771,7 +4769,7 @@ do
 
             else
                 if Hekili.PLAYER_ENTERING_WORLD and not debuffs_warned[ k ] then
-                    Hekili:Error( "Unknown debuff: " .. k )
+                    Hekili:Error( "Unknown debuff in [" .. ( state.scriptID or "unknown" ) .. "]: " .. k .. "\n\n" .. debugstack() )
                     debuffs_warned[ k ] = true
                 end
 
@@ -5773,7 +5771,9 @@ do
 
             if e.time + EVENT_EXPIRE_MARGIN < now then
                 RecycleEvent( realQueue, i )
-                realQueue[ e.action ] = max( 0, ( realQueue[ e.action ] or 1 ) - 1 )
+                if e.action then
+                    realQueue[ e.action ] = max( 0, ( realQueue[ e.action ] or 1 ) - 1 )
+                end
             end
         end
 
@@ -6703,21 +6703,7 @@ function state:IsKnown( sID, notoggle )
         return true
     end
 
-    if IsCovenantSpell( sID ) then
-        slot = FindSpellBookSlotBySpellID( sID )
-
-        if slot then
-            local found = false
-            for i = 1, GetNumSpellTabs() do
-                local _, _, offset, numSlots = GetSpellTabInfo( i )
-                if slot >= offset + 1 and slot <= offset + numSlots then
-                    found = true
-                    break
-                end
-            end
-            if not found then return false, "covenant spell not in spellbook" end
-        end
-    end
+    if IsCovenantSpell( sID ) and not IsUsableSpell( sID ) then return false, "covenant spells require shadowlands" end
 
     local profile = Hekili.DB.profile
 

@@ -50,14 +50,15 @@ Dragonflight\HunterMarksmanship.lua
 # Dragonflight\MageFrost.lua
 # Dragonflight\MonkBrewmaster.lua
 # Dragonflight\MonkMistweaver.lua
-# Dragonflight\MonkWindwalker.lua
+Dragonflight\MonkWindwalker.lua
+Dragonflight\PaladinRetribution.lua
 # Dragonflight\PriestDiscipline.lua
 # Dragonflight\PriestHoly.lua
 # Dragonflight\PriestShadow.lua
 # Dragonflight\RogueAssassination.lua
 Dragonflight\RogueOutlaw.lua
 # Dragonflight\RogueSubtlety.lua
-# Dragonflight\ShamanElemental.lua
+Dragonflight\ShamanElemental.lua
 Dragonflight\ShamanEnhancement.lua
 # Dragonflight\ShamanRestoration.lua
 # Dragonflight\WarlockAffliction.lua

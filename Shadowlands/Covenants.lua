@@ -321,12 +321,12 @@ if baseClass == "DEATHKNIGHT" then
             id = 324128,
             cast = 0,
             charges = function ()
-                if not pvptalent.deaths_echo.enabled then return end
+                if not talent.deaths_echo.enabled then return end
                 return 2
             end,
             cooldown = 15,
             recharge = function ()
-                if not pvptalent.deaths_echo.enabled then return end
+                if not talent.deaths_echo.enabled then return end
                 return 15
             end,
             gcd = "spell",
@@ -564,6 +564,10 @@ elseif baseClass == "DEMONHUNTER" then
         }
     } )
 elseif baseClass == "DRUID" then
+    local SinfulHysteriaHandler = setfenv( function ()
+        applyBuff( "ravenous_frenzy_sinful_hysteria" )
+    end, state )
+
     all:RegisterAbilities( {
         kindred_spirits = {
             id = 326434,

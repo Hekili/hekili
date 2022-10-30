@@ -34,8 +34,17 @@ end
 ns.PTR = false
 
 
-ns.Patrons = "|cFFFF0000NOTE|r: The addon is undergoing rapid updates to prepare for Dragonflight.\nIf your class/specialization is not yet supported, please hold tight"
-
+ns.Patrons = "|cFFFFD100Current Dragonflight Status|r\n\n"
+    .. "|cFF00FF00Up to Date|r\n"
+    .. "- Death Knights, Demon Hunters, Balance and Feral Druids, Beast Mastery and Marksmanship Hunters, Windwalker Monk, Retribution Paladin, Elemental and Enhancement Shamans\n\n"
+    .. "|cFFFFAE42Beta|r\n"
+    .. "- Guardian Druid, Warriors\n\n"
+    .. "|cFFBB3F3FNot Yet Implemented|r\n"
+    .. "- All Other Classes/Specializations\n\n"
+    .. "|cFF00FF00Up to Date|r means it is working and using priorities written for Dragonflight.\n"
+    .. "|cFFFFAE42Beta|r means it is playable, but may be using priorities from Shadowlands.\n"
+    .. "|cFFBB3F3FNot Yet Implemented|r means the class is not yet playable in the addon.\n\n"
+    .. "Do not report issues for any classes that are |cBB3F3FNot Yet Implemented|r.  For |cFFFFAE42Beta|r or |cFF00FF00Up to Date|r classes, report issues using the links below.  I am working to update every class as quickly as possible.  Thanks!"
 
 do
     local cpuProfileDB = {}

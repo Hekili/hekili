@@ -355,7 +355,8 @@ spec:RegisterAuras( {
     overpower = {
         id = 7384,
         duration = 15,
-        max_stack = function() return 1 + (talent.martial_prowess.enabled and 1 or 0) end,
+        max_stack = function() return talent.martial_prowess.enabled and 2 or 1 end,
+        copy = "martial_prowess"
     },
     piercing_howl = {
         id = 12323,
@@ -374,9 +375,10 @@ spec:RegisterAuras( {
     },
     rend = {
         id = 388539,
-        duration = function() return 15 + (talent.bloodletting.enabled and 6 or 0) end,
+        duration = function() return 15 + ( talent.bloodletting.enabled and 6 or 0 ) end,
         tick_time = 3,
-        max_stack = 1
+        max_stack = 1,
+        copy = 772
     },
     sharpen_blade = {
         id = 198817,
@@ -397,6 +399,11 @@ spec:RegisterAuras( {
     spell_reflection_defense = {
         id = 385391,
         duration = 5,
+        max_stack = 1
+    },
+    storm_bolt = {
+        id = 107570,
+        duration = 4,
         max_stack = 1
     },
     sweeping_strikes = {
@@ -505,17 +512,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
                 last_cs_target = destGUID
             end
-
-            if state.talent.collateral_damage.enabled and state.buff.sweeping_strikes.up then
-                collateralDmgStacks = collateralDmgStacks + 1
-            end
-        elseif state.set_bonus.tier28_2pc > 0 and subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID and critical_spell then
-            if spellName == class.abilities.cleave.name or spellName == class.abilities.mortal_strike.name or spellName == class.abilities.execute.name then
-                -- Critical boolean is the 21st parameter in SPELL_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
-                TriggerTier29Crit()
-            end
-        elseif subtype == "SPELL_AURA_REMOVED" and state.talent.collateral_damage.enabled and spellName == class.abilities.sweeping_strikes.name then
-            TriggerCollateralDamage()
         end
     end
 end )
@@ -611,8 +607,8 @@ spec:RegisterStateExpr( "cycle_for_execute", function ()
 end )
 
 -- Tier 28
-spec:RegisterGear( 'tier28', 188942, 188941, 188940, 188938, 188937 )
-spec:RegisterSetBonuses( "tier28_2pc", 364553, "tier28_4pc", 363913 )
+-- spec:RegisterGear( 'tier28', 188942, 188941, 188940, 188938, 188937 )
+-- spec:RegisterSetBonuses( "tier28_2pc", 364553, "tier28_4pc", 363913 )
 -- 2-Set - Pile On - Colossus Smash / Warbreaker lasts 3 sec longer and increases your damage dealt to affected enemies by an additional 5%.
 -- 4-Set - Pile On - Tactician has a 50% increased chance to proc against enemies with Colossus Smash and causes your next Overpower to grant 2% Strength, up to 20% for 15 sec.
 spec:RegisterAuras( {
@@ -820,9 +816,9 @@ spec:RegisterAbilities( {
         texture = 132338,
 
         handler = function ()
-            applyDebuff ( "target" , "deep_wounds" )
+            applyDebuff( "target" , "deep_wounds" )
             active_dot.deep_wounds = max( active_dot.deep_wounds, active_enemies )
-            if buff.overpower.up then removeBuff ( "overpower" ) end
+            removeBuff( "overpower" )
         end,
     },
 
@@ -846,7 +842,7 @@ spec:RegisterAbilities( {
                 stat.haste = stat.haste + ( target.health.pct < 35 and 0.2 or 0.1 )
             end
             if talent.test_of_might.enabled then
-                state.QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
+                state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
         end,
     },
@@ -872,14 +868,7 @@ spec:RegisterAbilities( {
     die_by_the_sword = {
         id = 118038,
         cast = 0,
-        cooldown = function ()
-            if valor_in_victory.enabled then
-                return 120 - (talent.valor_in_victory.rank * 15)
-                - ( conduit.stalwart_guardian.enabled and 20 or 0 )
-            else
-                return 120 - ( conduit.stalwart_guardian.enabled and 20 or 0 )
-            end
-        end,
+        cooldown = function () return 120 - ( talent.valor_in_victory.rank * 15 ) - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
         gcd = "off",
 
         talent = "die_by_the_sword",
@@ -1126,9 +1115,9 @@ spec:RegisterAbilities( {
         texture = 132355,
 
         handler = function ()
-            if buff.overpower.up then removeBuff ( "overpower" ) end
-            if buff.executioners_precision.up then removeBuff( "executioners_precision" ) end
-            if buff.battlelord.up then removeBuff ( "battlelord" ) end
+            removeBuff( "overpower" )
+            removeBuff( "executioners_precision" )
+            removeBuff( "battlelord" )
         end,
     },
 
@@ -1146,13 +1135,7 @@ spec:RegisterAbilities( {
         texture = 132223,
 
         handler = function ()
-            if talent.martial_prowess.enabled then applyBuff ( "overpower" ) end
-
-            --Tier28
-            if buff.pile_on_ready.up then
-                addStack( "pile_on_str", nil, 1 )
-                removeBuff( "pile_on_ready" )
-            end
+            if talent.martial_prowess.enabled then applyBuff( "overpower" ) end
         end,
     },
 
@@ -1306,10 +1289,9 @@ spec:RegisterAbilities( {
         texture = 2065621,
 
         handler = function ()
-            gain(30,"rage")
             if talent.tide_of_blood.enabled then
-                removeDebuff("target","rend")
-                removeDebuff("target","deep_wounds")
+                removeDebuff( "target", "rend" )
+                removeDebuff( "target", "deep_wounds" )
             end
         end,
     },
@@ -1545,7 +1527,7 @@ spec:RegisterAbilities( {
             active_dot.colossus_smash = max( active_dot.colossus_smash, active_enemies )
 
             if talent.test_of_might.enabled then
-                state.QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
+                state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
         end,
     },
@@ -1619,4 +1601,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Arms", 20221026, [[Hekili:fRvBVnoUr4FlbhG3n3TvXYXoj72ydC9AXHeuSfOElUcC4SfTeTTUql5srTzdGH(T3HK6fskskNBx0(HDJJeNHdhoZZmZJZQWvFA1YeedV6Jtgpzs44j3eeE34RhpB1s2lhXRwEef)eAh8Hm0b4))r6Hc(dFHKJs4cxKxsJHxSNXow8HRUAxkBF5MG48dxvKEOKGyP5zXu0wg)3JVA1YnLPe2dzR2yBNdND9QLOs2(C6QLlBvWpXvaSjPjjyPK4IyP1uf9liknnNw94KBQI(hXS8nyAvexRvrVnCBYM7M8(lRES6XhYszPisv0FLI2LNTLKUBpRkk9WXCkly1ssAbRqCOsZ2rWRzi6omdEWhf(jCgAdbNS6VSAzmnLHPPOvlP4dO0mWkUFEv0U4eW6J5wm)nzjRyWXZPSWYdALheFCNWOpJGDNl(1CXB1j88DyQQ(GLmvDjpJOBOy0t9w1m1vfNtYlkklwxCavS3yL340IJ3ZDjsRDsN2Y)mMEm)zSWGV1TVQmdVnhuqa4AkPGtE9gs(Zb1lUk60PQOUfTbXyemjNMOVInLB3g0ULbfmieTkAHUjDaUsrK1fmA6tyUzDNtZsOVIsEO16emIThUua1O6SYsWhY4A59)X1c(l44sMWwch72hb3Vbj4TPXPqO5IQOPZ6urXtLesXrskJj91HEcmbfbrLvrxRewTHGGmhwo9Gq6jQHeDxI6rdHArG6(vJvo9mstQIGRErsDv03dX8bx3pLjCMtfvCeti1zMfbpVpLsEonlr4QcvUYiy0NL(A3rZWbbNXc2IPFoNUoF7AzeNE0MVnC6WlbWGgvhYw8mgFKh0lDEfbj5pNPK42iNWQDNfDrv0GgoSLVfsLeHaGrmBS0qtWcdrp5pO8O8TxOM85id9sLGrcIhfX4GXBrLeRaLCCAA6rPe)nzgaOgmeR9cCospagiBp8FGwbi8OuiebW4sjCneOCFkaEAHtBE8XYdhWeJWWRpFaxHNYUxPDDG)7oPdAlVEXA1q5jkjNhZf)Sbp2Qb46cqndnppz92s6lTy2VcnPA03OOumTatFcUohaEppNWdkd0YY10AyWmHtRfEzMAvlAmkdQBMtHmzM)Ib2pa8DxOF)Ms3wkQHxS(3lt2DOEpDJ0pS7FBkflUc8d2pSIqzXaqlfS8yeHmaO)3iFXg0ooya824NkgO8GxC0gaK2nURUHEWWmzIrnEuD3j2rlma)6Q)4dAg8dfOyQoYM0Od2JreOk7XyMSmxRTy7TtQraJHQCziqZWpy7FH6sH8K(grEbkMSgqfxxxb38XnThSKF0I5NlfCl4YFT8xwZBVu2K5AzZ0QDe4g0IIstwJ52BakjPOfUEGkHVwJzpk2An82AZLzoLvVFzrnHJummdauxQTQqBkgbxSpw2qVkUnRZH0icpROElu6C5vgqpVjG2o6VADYBRJH0kC2u(goqpbMErg8pXLWLQEwiDNSMVUvVUw(DwzX9WaUB)eqnGUp)9YDqwygmfLWmBS)EVuD7a7QgQbQ7NYSSyu2t9AYQRVy3L8()HHPKyPn1J9XNCxp0C4UMaMUwW6M2sdIQf40v957BBE8mvKY7nuYLQyy8oQG6VRtsLbWHt63D9TQUeNJlEN6Q8oUO7YKDTtwKUldZevNGuy4aJtwZ7hPWwpRDZ)iAXAOExhPKWoDSYmI9NgtpPTl81tT5ZzK3VQ6Sj5m4aJpU(58YmaF3i636mnUbyCRTMqy9HS9mjU95SN3mtt9fc(lhj58DxFbTkqzkE1(J6nFU3kG9IjSFl6z(ZM2v9poT7(TBvqtNeAtlbfa3wcNMsPlTlI2ABYgtHFJAMMZPWVvpFSULd91OLZ2acAwKLxO3pLwn28nJ94RChcEoGFHoRUniW00ZgyYZ0tdKLylPt7AYE7iMGR2R34E(enZWKMepejOMy1GY)En3K8uyeU4g0Z12udf7hXsyODLiL7DtwHpea3HK1QkbcisGQ(qZs91NoIS7Wt)NTbPXtfVzG2X8EpP28)aDpDUSkQ1RJxI6(da50rpLbGcymGck4lQLkFr6BgV((QL)Yp(p)4dF8N)qvuv0N4u9i5BhA6Lt4ZB0MD4naIj()ucdHdrrf5C2HGE8YpGeSgbLIZGsXbvp(3tZGxDlOZFkpd2DXRFthE8)guelx)rnrmVH)Tc8Ll)gRLWVw1u94aoQ6B6xNl69FLwv9HBY3g1m7Runvp(P9CgcpsZ3MsWs6cpKwWJHaNr5rf)1oCgKcfdQfAV5jEZxC)6dmPqIPtH(qt42bBpI1Yj5r(3Lukd(uAwmPmH36hoLTht)ayar)PQOF9FvG5AcFO43ExveKyeVxD1OSx621QOSCUYHUK4TVq60Bc)t1SF2SP)5Qi(xKLCB(KufGF734knr9rtu25NtjeLtuTkznlv4nepkR8WgSmUHaq4vp(GiaJ)GzcgyfvBeFlyWlf9Ugdv0c5tZlC4Rw(DFxvKX36g)rd9nVXxJ)V9n(QKwqrql3b)W8R6ylqONQOxnjYT6DUSv(2Fh0UK)yTNiyX9DPBNRmQ(8XJ8Y36I7oDsBe(7HPwuuAhPUCf7CsgvjAzS1TenB(nQcQtblxy)ShUimy2iEhF3pBSQEm4v1TvWv9ObiowrVTeSEUEcDIupxP0Oc9BMXBwqNRyhd4TiC0B9qF6IWzNozN20lv3rtk7EhNnS51LcENKJV5HC7WbJPJ6rU59xl2AZNoz8PtMSJ2x4f3XxMjJOQpQU)OHpeWCiAhG(8CE6KtNRQ6nyMuQDT2kubxQnzHz1sANuMURjpxSZdhPJm8wE2ZIBbNQ4dZgpYgDHxAZcKJ(0dSPhyYyRMV0rZL2fhBJ8YV29WMoYlVAk(zLnUj67)5BCDII1xbf(ebr17a3Ho6Tx4KCTrdmK69tBtp9jCFw5UF6LJ6Zf3IWj2S6oXTFbRAzdecCguTjJuBisbkrD6KlOurfHftHirhdGynCUDqcrzhjVzZTEWLZe6h(0XuM8GhBQud8wG47qEEObKRANbS6dSbRxZNmYoBxZNulGglxdDvPFlyB1AST0iZ9tTUwDulXc5y5xyNDQE16TD)55a4bqqfLfa3NB)qCZyTvPHcouszOPO2sGKVXvYt9BBJ)8fLykvNN28n9qMQFSjQudNoF)4GRh5KicRgR5t7fV7sDqwU7mPrxyLLgZntlZ2nzm9Ve0lrz16CrvVHUmR6CgoUEIm4MO5uD6e6ff2YQVsgGwdiZTvFYXA)bN9f4wGEXFMlWwII5ACLYyUUHG5nxFVivNyV2(B)ZoI8cFByVWop37MY(AIzmL1kGxds)cv0BtjTGHFTNRBlrIED6EcCmIlvbO84GhU8TNqXMfPGL46VKn3tam19RM4azv83tJ7lpcs48VyatQUF)zJD39KwXxTq8lf8LU6)c]] )
+spec:RegisterPack( "Arms", 20221029, [[Hekili:DRvwVnoYr4Fl(fn2tgqlsB6JfwcyZ(qWSiyEiAbsEsuTiBjXv8qPztR1ac63EQU5vFtzhhKG8YGrD3v1vxhF1H5s)L)2YfjikE5pcMge4pn4zp)7cEm0F5c6BhWlxCafVhTf(pfOC4F)zsEfBX3YkrjmIRkRjXWg7O0dv)0T3UnLURETxCz(TvP51ziAAzrmbTHY(D8TlxSUonJ(9ILRnEZ3d3mQMURKSCXIEg8lmgaxsAscUHsCv8YflxKLwrR4YrAX2mCefr2IPWc)G)0WfO1z4KL)5LlIjPumjfTCbbNJslQoV6LzNxTno58QtNoVIIYWfupAAcoQCt06SYYeVw6pVAY5vXLLzjLhl8Q2xNLvDilLcm0tNBWzVw44XLzLvv1vrv5OQDgop72tWRR3Sr9S1hoV6godtkPaLfjcKdlwt4ANZR(65vt9EkeuDXSfyVXIKLuq3Avlax9aZarz6aXOxrGEKr(DmY7w(iISMGr7XerwcN6EXtj)euozOvXXUcGPE47rXvuMPjpD7okS1WDwDaJiCRgQIVcCvpy)Q00LZfuWkk1Nd7mO2LqyFceJWTjpm1HedwtbHw0nIjXpA3JTUaVPe8Sbhsq(axDM)5Xb3t2noCO1ikndNvssKpb7nMGXhIowwxKuP5koiB5LeiEiQIss3JzY2twLn(dTQMfygLGruMhoWgrhIIeCo3M88hNl4)ahxt5YI)0)Z4fbaxGKskb6iLn()(2rrC6o0cMuxSdSvyfZGfxJbY2vtiPXOcChDdY46mea9rlj5CXlqmYRAxz8(JOxXkbD(srXYMwLtE)faAQH7CNoSJFOeKqg2GuzpaTpy6rbqPYxXKdLhBcv8ThR0Qd3GjVw2IjWIgKnbaGrwwBYIkVJ7sjzhtls4ib3p(rc4wRgF2JqaflGSrHw5XW8fWm7OJl12JIUQ34BtWfSZzOgR)ZIk508dGYNjjVMgdoiVPOVdMkHLtWX7zhMUJuEu(OuMZ9guD2i5rPP54gSJPEHnkTCWkLZEfjqEzurmMRUeYlfVJPq7Zm1T8H68CCMIeF3LN7QjhPXisrq(NAKYnSyUirp6abr8qzxke7rd2c(fduH6hI2ud2HpqEprH(bbMIjvycZU5odxFThsb7sC13luoXvOybaeg6te4fbb0u35Mm)ay3UCvtgfLHRmJztQI(96KT5T3P9OLXv)BsjyUjWDANXzeZjgKzqYJrzzFO0pVBDXA0ww8pSB8(kJPHAkgFlGQMXp5oCe8IHmkqjAmHzGxooJwcK6kCeSdRcFdjqm(IDHs6Rvk8q2lzFXq5cJuGuhjZulUjOQRqXeSun7ncM3omkdkP4qmL7QFxyxj)M2nOTcUgXXRT8fV9fDMrdKXWwAjl(niDxeuiwuBjlQl3vp0c2ZlM92eGhbFSOMFeXATPPbNOgZTyjq2buiO0Ki8RmvckbkYRR4hNwQ3VWSdfBmlEFLa1fwPvUxnEcNdq(OYCiJxFkN(i5mC1U4M()uYs1PqCMLYqUcl5am2bK9gO4H6q8nuX6VxVDlMua9T2vjN5nfVU(w)4h1chSt7st1xBpo9)vewbFyPUgjGgFRwJLo8YT019qDudDRAUlERTL3xb4fYiH9vyYnIWfSQLGmQrjPnffbqVALnBpJULEgyI5WtwEFrHD88CgA(5rPcgT18)tINYzZ)V)0WxuBBMA(3ro6XZyzVnz1iVM(AmLGwEAdUA6w4nMJi0uOUGdqj54QkpOe649CqRarRytmeibq1GrmGZ0kwIkHtpiIAnY7BhqRVuW7eQgwBkfokgONbbUhcYhPt3pwNPoC(L7tZsJRDPQLlh6bXZ0HOPCgPGhRDMlf8m0HRAIowYw3J0Cy8tomD2n9xcQOVP0J)F7acVS5KnGa8EBq6cfCdWYs(mcrjgaBDND1F6f5JEHds3yON5rKi(a7d8K6eX8eJgP8gd3ZyZ9CO2HHSOn3ToGKou6O9KKardjqbrcPJnfUtDwqV73wZUx24xDmYTXnuIDFy3zFuXrKnsEYoNl5ZxaoP6eU6N8McAkimadyPm7)tp9ah7QaE6qRV)9F(V9JV)J)YpDE15v)2oawnn)aiBqldLKZR(IuZlF58kc(FwNsy1zvvYMhgu(BzoIYwiEhQylOgp)R)10cyRhbE(lLfWTZ3(ldtS)FamIwkVuNhdS11()XnFAC58VoYlS1e9(EBHksvBeqVi19Br5jq4v9WhG(U3Z35IpJSWU22pVI)xge2Md(hda0(SUml3KMH7CsQ86B78pn72Hgnz8S9eW6nJS8BPBMXkH)Lzt9cpDsBqNZdfPPzEMsRWNQiJlcnKoB6eNZ)B(tNoj1O6lbsxZWqgzm2AIgrk6NGODk6U8hejuEKGmIDpnR5(EHtyLL8s4ur(OmNp7sbJ1tgzqMc8TFGFxQMqEWExkvsJM7tt47g823yZhzM9r2zIgjgPIGZKqln8m3FY1ogm3C)WBKIcugguJO2cv8TMPhnZNhLyEECt0gB2l3bbs6Rgm90PMlsE2B6my(tWr1M3M4sTmy8hcuHT0JqFkANozvrkYEL5E1WDPCgcOlTTYHzUJ8sQ1Wh0I)NAI42NjJABd6zIZH88cCPNoPpCNjwgSd78MeKo)H)RliTv8AClOItUjULdmf(KRVsBAptgPPOxUN59ALi9Xc9Y93mrFyqZ9dmjLkf(3RrvBv40PRmn9hl5veaZeURbr1SZLilmDc1URCbM2AC1gkGPlMxiUBimlL2BZTqcjMlMwOF2GFOXPYmlyYfmnMzgnTs9L3a2aPjVl00zhaM7pidF0OoCITHQCjrbDTV9vO1nlop8)ow2rFCGhyul01VPPn7lXNbwoCaaLEMzT3dtLoLeG6yXX(QKAkEOzhBXcn7(Pgh0EH9XaU8uvPYa4X)MYXGFO6oAiTT6cDZB75vHFL88S2SRr9I6QAH32y3PtoaoMCLXjbOEz9(Ocf9yOHFDxi5C1gLolTrRYl10TxGItJKrVejLQvLGwmu)G1fIFLQdYKVah1L64lXCI7VcZ2K5JfX3Cp2cjUzI6xiOi64tH2FpwkIZobMqAupJnmh1Z9PI(OXCvuxvv0CTpGYVY(4jNCTnryslUTfr5g7YIwuULppYtNm9jrAp0xgjv3mOe36iWrL23tqNkTFMy5Q8wU6cRwkQ5VMXpEziAEx6jlCA0VCefXKloSTkztu3xcQN73(ORG6oOpHed2(Q(S3v5923kWsAs5c00uYziUz(Qrej7Cq7tm0Hoq(7lKn11L)R)]] )

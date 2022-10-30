@@ -1,8 +1,3 @@
-## Vengeance Demon Hunter
-## 26 October 2022 (5c7542e)
-
-## Initial Dragonflight import.
-
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 
 # Executed every time the actor is available.
@@ -28,7 +23,7 @@ actions.cooldowns+=/elysian_decree
 
 # Defensives
 actions.defensives=demon_spikes
-actions.defensives+=/metamorphosis,if=!buff.metamorphosis.up&(!covenant.venthyr.enabled|!dot.sinful_brand.ticking)|target.time_to_die<15
+actions.defensives+=/metamorphosis,if=!buff.metamorphosis.up&(!action.sinful_brand.known|!dot.sinful_brand.ticking)|target.time_to_die<15
 actions.defensives+=/fiery_brand
 
 # Normal Rotation
@@ -40,6 +35,6 @@ actions.normal+=/soul_cleave,if=((talent.spirit_bomb.enabled&soul_fragments=0)|!
 actions.normal+=/immolation_aura,if=((variable.brand_build&cooldown.fiery_brand.remains>10)|!variable.brand_build)&fury<=90
 actions.normal+=/felblade,if=fury<=60
 actions.normal+=/fracture,if=((talent.spirit_bomb.enabled&soul_fragments<=3)|(!talent.spirit_bomb.enabled&((buff.metamorphosis.up&fury<=55)|(buff.metamorphosis.down&fury<=70))))
-actions.normal+=/sigil_of_flame,if=!(covenant.kyrian.enabled&runeforge.razelikhs_defilement)
+actions.normal+=/sigil_of_flame,if=!(action.elysian_decree.known&runeforge.razelikhs_defilement)
 actions.normal+=/shear
 actions.normal+=/throw_glaive

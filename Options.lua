@@ -8422,9 +8422,20 @@ function Hekili:GenerateProfile()
     local spec = s.spec.key
 
     local talents
+    --[[ if not IsAddOnLoaded( "Blizzard_ClassTalents" ) then
+        LoadAddOn( "Blizzard_ClassTalents" )
+        local isConfig = self.Config
+        ToggleTalentFrame( 2 )
+        ToggleTalentFrame()
+        if isConfig then ns.StartConfiguration() end
+    end
+    if ClassTalentFrame and ClassTalentFrame.TalentsTab and ClassTalentFrame.TalentsTab.GetLoadoutExportString then
+        talents = ClassTalentFrame.TalentsTab:GetLoadoutExportString()
+    end ]]
+
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then
-            if talents then talents = format( "%s\n    %s", talents, k )
+            if talents then talents = format( "%s\n    %s = %d/%d", talents, k, v.rank, v.max )
             else talents = k end
         end
     end
@@ -8510,10 +8521,11 @@ function Hekili:GenerateProfile()
         end
     end
 
-    local toggles = ""
+    local toggles
     for k, v in orderedPairs( self.DB.profile.toggles ) do
         if type( v ) == "table" and rawget( v, "value" ) ~= nil then
-            toggles = format( "%s%s    %s = %s %s", toggles, toggles:len() > 0 and "\n" or "", k, tostring( v.value ), ( v.separate and "[separate]" or ( k ~= "cooldowns" and v.override and self.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
+            if toggles then toggles = format( "%s\n    %s = %s %s", toggles, k, tostring( v.value ), ( v.separate and "[separate]" or ( k ~= "cooldowns" and v.override and self.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
+            else toggles = format( "%s = %s %s", k, tostring( v.value ), ( v.separate and "[separate]" or ( k ~= "cooldowns" and v.override and self.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) ) end
         end
     end
 
@@ -8541,6 +8553,14 @@ function Hekili:GenerateProfile()
     end
 
 
+    local warnings
+
+    for i, err in ipairs( Hekili.ErrorKeys ) do
+        if warnings then warnings = format( "%s\n[#%d] %s", warnings, i, err:gsub( "\n\n", "\n" ) )
+        else warnings = format( "[#%d] %s", i, err:gsub( "\n\n", "\n" ) ) end
+    end
+
+
     return format( "build: %s\n" ..
         "level: %d (%d)\n" ..
         "class: %s\n" ..
@@ -8556,7 +8576,8 @@ function Hekili:GenerateProfile()
         "itemIDs: %s\n\n" ..
         "settings: %s\n\n" ..
         "toggles: %s\n\n" ..
-        "keybinds: %s\n\n",
+        "keybinds: %s\n\n" ..
+        "warnings: %s\n\n",
         Hekili.Version or "no info",
         UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
         class.file or "NONE",
@@ -8572,9 +8593,9 @@ function Hekili:GenerateProfile()
         items or "none",
         settings or "none",
         toggles or "none",
-        keybinds or "none" )
+        keybinds or "none",
+        warnings or "none" )
 end
-
 
 
 do
@@ -8621,8 +8642,8 @@ do
                         name = "",
                         fontSize = "medium",
                         image = "Interface\\Addons\\Hekili\\Textures\\Taco256",
-                        imageWidth = 192,
-                        imageHeight = 192,
+                        imageWidth = 96,
+                        imageHeight = 96,
                         order = 5,
                         width = "full"
                     },
@@ -9641,6 +9662,96 @@ do
                 elseif ( "move" ):match( "^" .. args[1] ) and Hekili.Config then
                     ns.StopConfiguration()
                 end
+
+            elseif ("stress" ):match( "^" .. args[1] ) then
+                if InCombatLockdown() then
+                    Hekili:Print( "Unable to stress test abilities and auras while in combat." )
+                    return
+                end
+
+                local precount = 0
+                for k, v in pairs( self.ErrorDB ) do
+                    precount = precount + v.n
+                end
+
+                local results, count, specs = "", 0, {}
+                for i in ipairs( class.specs ) do
+                    if i ~= 0 then insert( specs, i ) end
+                end
+                sort( specs )
+
+                for i, specID in ipairs( specs ) do
+                    local spec = class.specs[ specID ]
+                    results = format( "%sSpecialization: %s\n", results, spec.name )
+
+                    for key, aura in ipairs( spec.auras ) do
+                        local keyNamed = false
+                        -- Avoid duplicates.
+                        if aura.key == key then
+                            for k, v in pairs( aura ) do
+                                if type( v ) == "function" then
+                                    local ok, val = pcall( v )
+                                    if not ok then
+                                        if not keyNamed then results = format( "%s - Aura: %s\n", results, k ); keyNamed = true end
+                                        results = format( "%s    - %s = %s\n", results, tostring( val ) )
+                                        count = count + 1
+                                    end
+                                end
+                            end
+                            for k, v in pairs( aura.funcs ) do
+                                if type( v ) == "function" then
+                                    local ok, val = pcall( v )
+                                    if not ok then
+                                        if not keyNamed then results = format( "%s - Aura: %s\n", results, k ); keyNamed = true end
+                                        results = format( "%s    - %s = %s\n", results, tostring( val ) )
+                                        count = count + 1
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    for key, ability in ipairs( spec.abilities ) do
+                        local keyNamed = false
+                        -- Avoid duplicates.
+                        if ability.key == key then
+                            for k, v in pairs( ability ) do
+                                if type( v ) == "function" then
+                                    local ok, val = pcall( v )
+                                    if not ok then
+                                        if not keyNamed then results = format( "%s - Ability: %s\n", results, k ); keyNamed = true end
+                                        results = format( "%s    - %s = %s\n", results, tostring( val ) )
+                                        count = count + 1
+                                    end
+                                end
+                            end
+                            for k, v in pairs( ability.funcs ) do
+                                if type( v ) == "function" then
+                                    local ok, val = pcall( v )
+                                    if not ok then
+                                        if not keyNamed then results = format( "%s - Ability: %s\n", results, k ); keyNamed = true end
+                                        results = format( "%s    - %s = %s\n", results, tostring( val ) )
+                                        count = count + 1
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+
+                local postcount = 0
+                for k, v in pairs( self.ErrorDB ) do
+                    postcount = postcount + v.n
+                end
+
+                if count > 0 then
+                    Hekili:Print( results )
+                    Hekili:Error( results )
+                end
+
+                if postcount > precount then Hekili:Print( "New warnings were loaded in /hekili > Warnings." ) end
+                if count == 0 and postcount == precount then Hekili:Print( "Stress test completed; no issues found." ) end
+
             elseif ( "lock" ):match( "^" .. args[1] ) then
                 if Hekili.Config then
                     ns.StopConfiguration()
@@ -10254,6 +10365,7 @@ do
             end
         end
 
+        -- TODO: Revise to start from beginning of string.
         for i in list:gmatch( "action.-=/?([^\n^$]*)") do
             line = line + 1
 
