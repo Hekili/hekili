@@ -108,7 +108,6 @@ body:
       label: Additional Information
       description: Please provide any additional information regarding this issue that was not included above.
       placeholder: Leave blank, if all necessary details are included above.
-      render: Text
   - type: input
     id: contact
     attributes:
