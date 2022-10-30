@@ -1399,7 +1399,7 @@ spec:RegisterAbilities( {
             return combo_points.current > 0 end,
         handler = function ()
             if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 20, 1 )
+                addStack( "alacrity", 15, 1 )
             end
             applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
             if pvptalent.control_is_king.enabled then
@@ -1791,7 +1791,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 20, 1 )
+                addStack( "alacrity", 15, 1 )
             end
             applyBuff( "slice_and_dice", 6 + 6 * combo_points.current )
             spend( combo_points.current, "combo_points" )
