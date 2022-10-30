@@ -1765,14 +1765,14 @@ spec:RegisterAbilities( {
             if buff.acquired_axe_driver.up and debuff.vicious_wound.up then return "vicious_wound" end
         end,
 
-        --handler = function () -- Some azerite power stuff which is irrelevant but generates errors in Warning tab of the addon
+        handler = function () -- Some azerite power stuff which is irrelevant but generates errors in Warning tab of the addon
             --removeStack( "snake_eyes" )
-            --gain( action.sinister_strike.cp_gain, "combo_points" )
+            gain( action.sinister_strike.cp_gain, "combo_points" )
 
             --if buff.shallow_insight.up then buff.shallow_insight.expires = query_time + 10 end
             --if buff.moderate_insight.up then buff.moderate_insight.expires = query_time + 10 end
             -- Deep Insight does not refresh, and I don't see a way to track why/when we'd advance from Shallow > Moderate > Deep.
-        --end,
+        end,
     },
 
     slice_and_dice = {
