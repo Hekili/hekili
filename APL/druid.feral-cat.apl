@@ -8,11 +8,11 @@ actions+=/berserk,if=cooldown.tigers_fury.remains>15
 actions+=/shred,if=buff.clearcasting.up
 actions+=/mangle_cat,if=!up&!debuff.mangle_bear.up
 actions+=/rip,if=(!up|debuff.rip.remains<4)&combo_points.current=5
-actions+=/savage_roar,if=(debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-debuff.rip.remains<=0&debuff.rip.remains+10<14+((combo_points.current-1)*5))|(debuff.rip.up&remains<4&((combo_points.current<4&debuff.rip.remains>10)|(combo_points.current>=4&debuff.rip.remains>18)))|(!debuff.rip.up&!up&combo_points.current<4)
+actions+=/savage_roar,if=(debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-debuff.rip.remains<=0&debuff.rip.remains+10<14+((combo_points.current-1)*5))|(debuff.rip.up&remains<4&((combo_points.current<4&debuff.rip.remains>9)|(combo_points.current=4&debuff.rip.remains>13)|(combo_points.current=5&debuff.rip.remains>16)))|(!debuff.rip.up&!up&combo_points.current<4)
 actions+=/rake,if=!up&energy.current>90&combo_points.current<5
 actions+=/shred,if=energy.current>90&combo_points.current<5
-actions+=/wait,sec=debuff.rip.remains,if=debuff.rip.remains<3&combo_points.current=5&energy.current<60
-actions+=/wait,sec=debuff.rip.remains,if=debuff.rip.up&buff.savage_roar.up&debuff.rip.remains-buff.savage_roar.remains>=-3&debuff.rip.remains-buff.savage_roar.remains<=0&debuff.rip.remains<4
+actions+=/wait,sec=debuff.rip.remains,if=debuff.rip.remains<2&combo_points.current=5&energy.current<40
+actions+=/wait,sec=energy.time_to_90,if=debuff.rip.up&buff.savage_roar.up&debuff.rip.remains-buff.savage_roar.remains>=-3&debuff.rip.remains-buff.savage_roar.remains<=0&debuff.rip.remains<4
 actions+=/ferocious_bite,if=((debuff.rip.remains>=12&buff.savage_roar.remains>=10)|(buff.berserk.up&debuff.rip.remains>=10&buff.savage_roar.remains>=8))&combo_points.current=5
 actions+=/dire_bear_form,if=!buff.berserk.up&cooldown.tigers_fury.remains>10&debuff.rip.remains>10&buff.savage_roar.remains>8&energy.current<50
 actions+=/rake,if=!up|debuff.rake.remains<0.8
