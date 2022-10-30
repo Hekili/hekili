@@ -2870,10 +2870,6 @@ do
 
                     end
 
-                elseif not state:IsKnown( t.id ) then
-                    start = state.now
-                    duration = 0
-
                 end
 
                 t.duration = max( duration or 0, ability.cooldown or 0, ability.recharge or 0 )
@@ -2917,11 +2913,8 @@ do
 
             elseif k == "charges" then
                 if not raw then
-                    if not state:IsKnown( t.key ) then
-                        return ability.charges or 1
-                    elseif ( state:IsDisabled( t.key ) or ability.disabled ) then
-                        return 0
-                    end
+                    if ( state:IsDisabled( t.key ) or ability.disabled ) then return 0 end
+                    if not state:IsKnown( t.key ) then return ability.charges or 1 end
                 end
 
                 return floor( t.charges_fractional )
@@ -2934,11 +2927,8 @@ do
 
             elseif k == "time_to_max_charges" or k == "full_recharge_time" then
                 if not raw then
-                    if not state:IsKnown( t.key ) then
-                        return 0
-                    elseif ( state:IsDisabled( t.key ) or ability.disabled ) then
-                        return ( ability.charges or 1 ) * t.duration
-                    end
+                    if ( state:IsDisabled( t.key ) or ability.disabled ) then return ( ability.charges or 1 ) * t.duration end
+                    if not state:IsKnown( t.key ) then return 0 end
                 end
 
                 return ( ( ability.charges or 1 ) - ( raw and t.true_charges_fractional or t.charges_fractional ) ) * max( ability.cooldown, t.true_duration )
@@ -2951,8 +2941,8 @@ do
                 -- If the ability is toggled off in the profile, we may want to fake its CD.
                 -- Revisit this if I add base_cooldown to the ability tables.
                 if not raw then
-                    if not state:IsKnown( t.key ) then return 0
-                    elseif ( state:IsDisabled( t.key ) or ability.disabled ) then return ability.cooldown end
+                    if ( state:IsDisabled( t.key ) or ability.disabled ) then return ability.cooldown end
+                    if not state:IsKnown( t.key ) then return 0 end
                 end
 
                 local bonus_cdr = 0
@@ -2962,8 +2952,8 @@ do
 
             elseif k == "charges_fractional" then
                 if not raw then
-                    if not state:IsKnown( t.key ) then return ability.charges or 1
-                    elseif state:IsDisabled( t.key ) or ability.disabled then return 0 end
+                    if state:IsDisabled( t.key ) or ability.disabled then return 0 end
+                    if not state:IsKnown( t.key ) then return ability.charges or 1 end
                 end
 
                 if ability.charges and ability.charges > 1 then
@@ -6669,7 +6659,7 @@ do
 end
 
 
-function state:IsKnown( sID, notoggle )
+function state:IsKnown( sID )
     local original = sID
     if type(sID) ~= "number" then sID = class.abilities[ sID ] and class.abilities[ sID ].id or nil end
 
