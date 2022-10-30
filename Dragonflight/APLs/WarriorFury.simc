@@ -13,12 +13,13 @@ actions+=/berserking,if=buff.recklessness.up
 actions+=/lights_judgment,if=buff.recklessness.down
 actions+=/fireblood
 actions+=/ancestral_call
+actions+=/use_items
 actions+=/bag_of_tricks,if=buff.recklessness.down&buff.enrage.up
-actions+=/avatar,if=talent.titans_torment&buff.enrage.up&(buff.elysian_might.up|!covenant.kyrian)
-actions+=/avatar,if=!talent.titans_torment&(buff.recklessness.up|target.time_to_die<20)
-actions+=/recklessness,if=talent.annihilator&cooldown.avatar.remains<1|cooldown.avatar.remains>40|!talent.avatar|target.time_to_die<20
+actions+=/avatar,if=talent.titans_torment&buff.enrage.up&(buff.elysian_might.up|!(talent.elysian_might.enabled|legendary.elysian_might.enabled)|!action.spear_of_bastion.known|cooldown.spear_of_bastion.remains>80)
+actions+=/avatar,if=!talent.titans_torment&(buff.recklessness.up|boss&fight_remains<20)
+actions+=/recklessness,if=talent.annihilator&cooldown.avatar.remains<1|cooldown.avatar.remains>40|!talent.avatar|boss&fight_remains<20
 actions+=/recklessness,if=!talent.annihilator
-actions+=/spear_of_bastion,if=buff.enrage.up&(buff.recklessness.up|buff.avatar.up|target.time_to_die<20)
+actions+=/spear_of_bastion,if=buff.enrage.up&(buff.recklessness.up|buff.avatar.up|fight_remains<20)
 actions+=/whirlwind,if=spell_targets.whirlwind>1&(talent.improved_whirlwind.enabled&!buff.meat_cleaver.up)|raid_event.adds.in<2&(talent.improved_whirlwind.enabled&!buff.meat_cleaver.up)
 actions+=/call_action_list,name=single_target
 
