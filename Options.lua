@@ -3471,6 +3471,9 @@ do
             end
         end
 
+        if lists.precombat:len() == 0 then lists.precombat = "actions+=/heart_essence,enabled=0" end
+        if lists.default  :len() == 0 then lists.default   = "actions+=/heart_essence,enabled=0" end
+
         local count = 0
         local output = {}
 
@@ -3491,7 +3494,8 @@ do
                 output[ name ] = import
 
                 for i, entry in ipairs( import ) do
-                    entry.enabled = not ( entry.action == 'heroism' or entry.action == 'bloodlust' )
+                    if entry.enabled == nil then entry.enabled = not ( entry.action == 'heroism' or entry.action == 'bloodlust' )
+                    elseif entry.enabled == "0" then entry.enabled = false end
                 end
 
                 count = count + 1
@@ -8364,8 +8368,6 @@ do
                                 if not aggregate[v.name] then aggregate[v.name] = {} end
                                 aggregate[v.name].id = v.spell
                                 aggregate[v.name].pvptalent = true
-                                print( k, v.spell, v.name, v.talent )
-                                for x,y in pairs( v ) do print( x, y ) end
                             end
 
                             -- append( select( 2, GetSpecializationInfo(GetSpecialization())) .. "\nKey\tID\tIs Aura\tIs Ability\tIs Talent\tIs PvP" )
@@ -10014,352 +10016,184 @@ end
 -- End Import/Export Strings
 
 
+local Sanitize
+
 -- Begin APL Parsing
-
-local ignore_actions = {
-    snapshot_stats = 1,
-    flask = 1,
-    food = 1,
-    augmentation = 1
-}
-
-
-local function Sanitize( segment, i, line, warnings )
-    if i == nil then return end
-
-    local operators = {
-        [">"] = true,
-        ["<"] = true,
-        ["="] = true,
-        ["~"] = true,
-        ["+"] = true,
-        ["-"] = true,
-        ["%%"] = true,
-        ["*"] = true
+do
+    local ignore_actions = {
+        snapshot_stats = 1,
+        flask = 1,
+        food = 1,
+        augmentation = 1
     }
 
-    local maths = {
-        ['+'] = true,
-        ['-'] = true,
-        ['*'] = true,
-        ['%%'] = true
+    local expressions = {
+        { "stealthed"                                   , "stealthed.rogue"                 },
+        { "cooldown"                                    , "action_cooldown"                 },
+        { "covenant%.([%w_]+)%.enabled"                 , "covenant.%1"                     },
+        { "talent%.([%w_]+)"                            , "talent.%1.enabled"               },
+        { "legendary%.([%w_]+)"                         , "legendary.%1.enabled"            },
+        { "runeforge%.([%w_]+)"                         , "runeforge.%1.enabled"            },
+        { "rune_word%.([%w_]+)"                         , "buff.rune_word_%1.up"            },
+        { "rune_word%.([%w_]+)%.enabled"                , "buff.rune_word_%1.up"            },
+        { "conduit%.([%w_]+)"                           , "conduit.%1.enabled"              },
+        { "soulbind%.([%w_]+)"                          , "soulbind.%1.enabled"             },
+        { "pet.([%w_]+)%.([%w_]+)%.([%w%._]+)"          , "%3"                              },
+        { "essence%.([%w_]+).rank(%d)"                  , "essence.%1.rank>=%2"             },
+        { "target%.1%.time_to_die"                      , "time_to_die"                     },
+        { "time_to_pct_(%d+)%.remains"                  , "time_to_pct_%1"                  },
+        { "trinket%.(%d)%.([%w%._]+)"                   , "trinket.t%1.%2"                  },
+        { "trinket%.([%w_]+)%.cooldown"                 , "trinket.%1.cooldown.duration"    },
+        { "trinket%.([%w_]+)%.cooldown.([%w_]+)"        , "trinket.%1.cooldown.%2"          },
+        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration" , "trinket.%1.buff_duration"        },
+        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"   , "trinket.%1.has_use_buff"         },
+        { "min:([%w_]+)"                                , "%1"                              },
+        { "position_back"                               , "true"                            },
+        { "max:(%w_]+)"                                 , "%1"                              },
+        { "incanters_flow_time_to%.(%d+)"               , "incanters_flow_time_to_%.%1.any" },
+        { "exsanguinated%.([%w_]+)"                     , "debuff.%1.exsanguinated"         },
+        { "time_to_sht%.(%d+)%.plus"                    , "time_to_sht_plus.%1"             },
+        { "target"                                      , "target.unit"                     },
+        { "player"                                      , "player.unit"                     },
+
+        { "equipped%.(%d+)", nil, function( item )
+            item = tonumber( item )
+
+            if not item then return "equipped.none" end
+
+            if class.abilities[ item ] then
+                return "equipped." .. ( class.abilities[ item ].key or "none" )
+            end
+
+            return "equipped[" .. item .. "]"
+        end },
     }
 
-    for token in i:gmatch( "stealthed" ) do
-        while( i:find(token) ) do
-            local strpos, strend = i:find(token)
+    local operations = {
+        { "=="  , "="  },
+        { "%%%%", "//" },
+        { "%%"  , "/"  },
+        { "//"  , "%%" },
+        -- { "%%", "/" },
+        -- { "//", "%" },
+    }
 
-            local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
-            local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
-            local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
-            local finish = strend < i:len() and i:sub( strend + 1 ) or ''
 
-            if pre ~= '.' and pre ~= '_' and not pre:match('%a') and post ~= '.' and post ~= '_' and not post:match('%a') then
-                i = start .. '\a' .. finish
-            else
-                i = start .. '\v' .. finish
-            end
-
-        end
-
-        i = i:gsub( '\v', token )
-        i = i:gsub( '\a', token..'.rogue' )
+    function Hekili:AddSanitizeExpr( from, to, func )
+        insert( expressions, { from, to, func } )
     end
 
-    for token in i:gmatch( "cooldown" ) do
-        while( i:find(token) ) do
-            local strpos, strend = i:find(token)
-
-            local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
-            local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
-            local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
-            local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-
-            if pre ~= '.' and pre ~= '_' and not pre:match('%a') and post ~= '.' and post ~= '_' and not post:match('%a') then
-                i = start .. '\a' .. finish
-            else
-                i = start .. '\v' .. finish
-            end
-        end
-
-        i = i:gsub( '\v', token )
-        i = i:gsub( '\a', 'action_cooldown' )
+    function Hekili:AddSanitizeOper( from, to )
+        insert( operations, { from, to } )
     end
 
-    for token in i:gmatch( "equipped%.[0-9]+" ) do
-        local itemID = tonumber( token:match( "([0-9]+)" ) )
-        local itemName = GetItemInfo( itemID )
-        local itemKey = formatKey( itemName )
+    Sanitize = function( segment, i, line, warnings )
+        if i == nil then return end
 
-        if itemKey and itemKey ~= '' then
-            i = i:gsub( tostring( itemID ), itemKey )
-        end
+        local operators = {
+            [">"] = true,
+            ["<"] = true,
+            ["="] = true,
+            ["~"] = true,
+            ["+"] = true,
+            ["-"] = true,
+            ["%%"] = true,
+            ["*"] = true
+        }
 
-    end
+        local maths = {
+            ['+'] = true,
+            ['-'] = true,
+            ['*'] = true,
+            ['%%'] = true
+        }
 
-    local times = 0
+        local times, orig = 0
+        local output = ""
 
-    i, times = i:gsub( "==", "=" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Corrected equality check from '==' to '=' (" .. times .. "x)." )
-    end
+        local dbg = "Start: " .. i .. "\n"
 
-    i, times = i:gsub( "([^%%])[ ]*%%[ ]*([^%%])", "%1 / %2" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted SimC syntax % to Lua division operator (/) (" .. times .. "x)." )
-    end
+        for op1, token, op2 in gmatch( i, "([^%w%._ ]*)([%w%._]+)([^%w%._ ]*)" ) do
+            dbg = dbg .. "Matches: " .. ( op1 or "nil" ) .. " / " .. ( token or "nil" ) .. " / " .. ( op2 or "nil" ) .. "\n"
+            local pre
 
-    i, times = i:gsub( "%%%%", "%%" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted SimC syntax %% to Lua modulus operator (%) (" .. times .. "x)." )
-    end
+            if op1 and op1:len() > 0 then
+                pre = op1
+                for _, subs in ipairs( operations ) do
+                    op1, times = op1:gsub( subs[1], subs[2] )
 
-    i, times = i:gsub( "covenant%.([%w_]+)%.enabled", "covenant.%1" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'covenant.X.enabled' to 'covenant.X' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "talent%.([%w_]+)([%+%-%*%%/%&%|= ()<>])", "talent.%1.enabled%2" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'talent.X' to 'talent.X.enabled' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "talent%.([%w_]+)$", "talent.%1.enabled" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'talent.X' to 'talent.X.enabled' at EOL (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "legendary%.([%w_]+)([%+%-%*%%/%&%|= ()<>])", "legendary.%1.enabled%2" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'legendary.X' to 'legendary.X.enabled' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "legendary%.([%w_]+)$", "legendary.%1.enabled" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'legendary.X' to 'legendary.X.enabled' at EOL (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "([^%.])runeforge%.([%w_]+)([%+%-%*%%/=%&%| ()<>])", "%1runeforge.%2.enabled%3" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "([^%.])runeforge%.([%w_]+)$", "%1runeforge.%2.enabled" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' at EOL (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "^runeforge%.([%w_]+)([%+%-%*%%/%&%|= ()<>)])", "runeforge.%1.enabled%2" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "^runeforge%.([%w_]+)$", "runeforge.%1.enabled" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' at EOL (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "rune_word%.([%w_]+)([%+%-%*%%/%&%|= ()<>])", "buff.rune_word_%1.up%2" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'rune_word.X' to 'buff.rune_word_X.up' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "rune_word%.([%w_]+)$", "buff.rune_word_%1.up" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'rune_word.X' to 'buff.rune_word_X.up' at EOL (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "rune_word%.([%w_]+)%.enabled([%+%-%*%%/%&%|= ()<>])", "buff.rune_word_%1.up%2" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'rune_word.X.enabled' to 'buff.rune_word_X.up' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "rune_word%.([%w_]+)%.enabled$", "buff.rune_word_%1.up" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'rune_word.X.enabled' to 'buff.rune_word_X.up' at EOL (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "([^%w_]?)conduit%.([%w_]+)", "%1conduit.%2.enabled" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'conduit.X' to 'conduit.X.enabled' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "([^a-z0-9_])conduit%.([%w_]+)([%+%-%*%%/&|= ()<>)])", "%1conduit.%2.enabled%3" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'conduit.X' to 'conduit.X.enabled' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "([^a-z0-9_])conduit%.([%w_]+)$", "%1conduit.%2.enabled" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'conduit.X' to 'conduit.X.enabled' at EOL (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "soulbind%.([%w_]+)([%+%-%*%%/&|= ()<>)])", "soulbind.%1.enabled%2" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'soulbind.X' to 'soulbind.X.enabled' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "soulbind%.([%w_]+)$", "soulbind.%1.enabled" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'soulbind.X' to 'soulbind.X.enabled' at EOL (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "pet%.[%w_]+%.([%w_]+)%.", "%1." )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y...' to 'Y...' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "(essence%.[%w_]+)%.([%w_]+)%.rank(%d)", "(%1.%2&%1.rank>=%3)" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'essence.X.[major|minor].rank#' to '(essence.X.[major|minor]&essence.X.rank>=#)' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "pet%.[%w_]+%.[%w_]+%.([%w_]+)%.", "%1." )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y.Z...' to 'Z...' (" .. times .. "x)." )
-    end
-
-    -- target.1.time_to_die is basically the end of an encounter.
-    i, times = i:gsub( "target%.1%.time_to_die", "time_to_die" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'target.1.time_to_die' to 'time_to_die' (" .. times .."x)." )
-    end
-
-    -- target.time_to_pct_XX.remains is redundant, Monks.
-    i, times = i:gsub( "time_to_pct_(%d+)%.remains", "time_to_pct_%1" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'time_to_pct_XX.remains' to 'time_to_pct_XX' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "trinket%.1%.", "trinket.t1." )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'trinket.1.X' to 'trinket.t1.X' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "trinket%.2%.", "trinket.t2." )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'trinket.2.X' to 'trinket.t2.X' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "trinket%.([%w_][%w_][%w_]+)%.cooldown", "cooldown.%1" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'trinket.abc.cooldown' to 'cooldown.abc' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "%.(proc%.any)%.", ".has_buff." )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'proc.any' to 'has_buff' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "min:[a-z0-9_%.]+(,?$?)", "%1" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Removed min:X check (not available in emulation) (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "([%|%&]position_back)", "" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Removed position_back check (not available in emulation) (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "(position_back[%|%&]?)", "" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Removed position_back check (not available in emulation) (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "max:[a-z0-9_%.]+(,?$?)", "%1" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Removed max:X check (not available in emulation) (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "(incanters_flow_time_to%.%d+)(^%.)", "%1.any%2")
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted directionless 'incanters_flow_time_to.X' to 'incanters_flow_time_to.X.any' (" .. times .. "x)." )
-    end
-
-    i, times = i:gsub( "exsanguinated%.([a-z0-9_]+)", "debuff.%1.exsanguinated" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'exsanguinated.X' to 'debuff.X.exsanguinated' (" .. times .. "x).")
-    end
-
-    i, times = i:gsub( "time_to_sht%.(%d+)%.plus", "time_to_sht_plus.%1" )
-    if times > 0 then
-        insert( warnings, "Line " .. line .. ": Converted 'time_to_sht.X.plus' to 'time_to_sht_plus.X' (" .. times .. "x).")
-    end
-
-    if segment == 'c' then
-        for token in i:gmatch( "target" ) do
-            local times = 0
-            while (i:find(token)) do
-                local strpos, strend = i:find(token)
-
-                local pre = i:sub( strpos - 1, strpos - 1 )
-                local post = i:sub( strend + 1, strend + 1 )
-
-                if pre ~= '_' and post ~= '.' then
-                    i = i:sub( 1, strpos - 1 ) .. '\v.unit' .. i:sub( strend + 1 )
-                    times = times + 1
-                else
-                    i = i:sub( 1, strpos - 1 ) .. '\v' .. i:sub( strend + 1 )
+                    if times > 0 then
+                        insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. op1 .. "' (" ..times .. "x)." )
+                    end
                 end
             end
 
-            if times > 0 then
-                insert( warnings, "Line " .. line .. ": Converted non-specific 'target' to 'target.unit' (" .. times .. "x)." )
+            if token and token:len() > 0 then
+                pre = token
+                for _, subs in ipairs( expressions ) do
+                    if subs[2] then
+                        times = 0
+                        local s1, s2, s3, s4, s5 = token:match( "^" .. subs[1] .. "$" )
+                        if s1 then
+                            token = subs[2]
+                            token, times = token:gsub( "%%1", s1 )
+
+                            if s2 then token = token:gsub( "%%2", s2 ) end
+                            if s3 then token = token:gsub( "%%3", s3 ) end
+                            if s4 then token = token:gsub( "%%4", s4 ) end
+                            if s5 then token = token:gsub( "%%5", s5 ) end
+
+                            if times > 0 then
+                                insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. token .. "' (" ..times .. "x)." )
+                            end
+                        end
+                    elseif subs[3] then
+                        local val = token:match( "^" .. subs[1] .. "$" )
+                        if val ~= nil then
+                            token = subs[3]( val )
+                            insert( warnings, "Line " .. line .. ":Converted '" .. pre .. "' to '" .. token .. "'." )
+                        end
+                    end
+                end
             end
-            i = i:gsub( '\v', token )
+
+            if op2 and op2:len() > 0 then
+                pre = op2
+                for _, subs in ipairs( operations ) do
+                    op2, times = op2:gsub( subs[1], subs[2] )
+                    if times > 0 then
+                        insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. op2 .. "' (" ..times .. "x)." )
+                    end
+                end
+            end
+
+            output = output .. ( op1 or "" ) .. ( token or "" ) .. ( op2 or "" )
         end
+
+        return output
     end
 
+    local function strsplit( str, delimiter )
+        local result = {}
+        local from = 1
 
-    for token in i:gmatch( "player" ) do
-        local times = 0
-        while (i:find(token)) do
-            local strpos, strend = i:find(token)
-
-            local pre = i:sub( strpos - 1, strpos - 1 )
-            local post = i:sub( strend + 1, strend + 1 )
-
-            if pre ~= '_' and post ~= '.' then
-                i = i:sub( 1, strpos - 1 ) .. '\v.unit' .. i:sub( strend + 1 )
-                times = times + 1
-            else
-                i = i:sub( 1, strpos - 1 ) .. '\v' .. i:sub( strend + 1 )
-            end
+        if not delimiter or delimiter == "" then
+            result[1] = str
+            return result
         end
 
-        if times > 0 then
-            insert( warnings, "Line " .. line .. ": Converted non-specific 'player' to 'player.unit' (" .. times .. "x)." )
+        local delim_from, delim_to = string.find( str, delimiter, from )
+
+        while delim_from do
+            insert( result, string.sub( str, from, delim_from - 1 ) )
+            from = delim_to + 1
+            delim_from, delim_to = string.find( str, delimiter, from )
         end
-        i = i:gsub( '\v', token )
-    end
 
-    return i
-end
-
-
-local function strsplit( str, delimiter )
-    local result = {}
-    local from = 1
-
-    if not delimiter or delimiter == "" then
-        result[1] = str
+        insert( result, string.sub( str, from ) )
         return result
     end
 
-    local delim_from, delim_to = string.find( str, delimiter, from )
-
-    while delim_from do
-        insert( result, string.sub( str, from, delim_from - 1 ) )
-        from = delim_to + 1
-        delim_from, delim_to = string.find( str, delimiter, from )
-    end
-
-    insert( result, string.sub( str, from ) )
-    return result
-end
-
-
-do
     local parseData = {
         warnings = {},
         missing = {},
@@ -10375,7 +10209,6 @@ do
     }
 
     function Hekili:ParseActionList( list )
-
         local line, times = 0, 0
         local output, warnings, missing = {}, parseData.warnings, parseData.missing
 
