@@ -1,5 +1,5 @@
 ## Outlaw Rogue
-## 27 October 2022 ()
+## 30 October 2022 ()
 
 ## Initial Dragonflight import.
 
@@ -81,19 +81,19 @@ actions.cds+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent
 # Pool resource for dreadblades as it costs 50 energy
 actions.cds+=/pool_resource,for_next=1,if=talent.dreadblades.enabled
 # Dreadblades should be used on CD
-actions.cds+=/dreadblades,if=!stealthed.all&combo_points<=2&(!talent.marked_for_death.enabled|!cooldown.marked_for_death.ready)&(!covenant.venthyr|(covenant.venthyr&cooldown.flagellation.remains>10))
+actions.cds+=/dreadblades,if=!stealthed.all&combo_points<=2&(!talent.marked_for_death.enabled|!cooldown.marked_for_death.ready)&(!action.flagellation.known|(action.flagellation.known&cooldown.flagellation.remains>10))
 # If adds are up, snipe the one with lowest TTD. Use when dying faster than CP deficit or without any CP.
 actions.cds+=/marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit|!stealthed.rogue&combo_points.deficit>=cp_max_spend-1)
 # If no adds will die within the next 30s, use MfD on boss without any CP.
-actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration&!stealthed.rogue&combo_points.deficit>=cp_max_spend-1&(!covenant.venthyr|cooldown.flagellation.remains>10|buff.flagellation_buff.up)
+actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration&!stealthed.rogue&combo_points.deficit>=cp_max_spend-1&(!action.flagellation.known|cooldown.flagellation.remains>10|buff.flagellation_buff.up)
 # Attempt to sync Killing Spree with Vanish for Master Assassin
 actions.cds+=/variable,name=killing_spree_vanish_sync,value=!runeforge.mark_of_the_master_assassin|cooldown.vanish.remains>10|master_assassin_remains>2
 # Use in 1-2T if BtE is up and won't cap Energy, or at 3T+ (2T+ with Deathly Shadows) or when Master Assassin is up.
 actions.cds+=/killing_spree,if=variable.blade_flurry_sync&variable.killing_spree_vanish_sync&!stealthed.rogue&(debuff.between_the_eyes.up&buff.dreadblades.down&energy.base_deficit>(energy.regen*2+15)|spell_targets.blade_flurry>(2-buff.deathly_shadows.up)|master_assassin_remains>0)
 actions.cds+=/blade_rush,if=variable.blade_flurry_sync&(energy.base_time_to_max>2&!buff.dreadblades.up&!buff.flagellation_buff.up|energy<=30|spell_targets>2)
 # If using Invigorating Shadowdust, use normal logic in addition to checking major CDs.
-actions.cds+=/vanish,if=runeforge.invigorating_shadowdust&covenant.venthyr&!stealthed.all&variable.finish_condition&(!cooldown.flagellation.ready&(!talent.dreadblades.enabled|!cooldown.dreadblades.ready|!buff.flagellation_buff.up))
-actions.cds+=/vanish,if=runeforge.invigorating_shadowdust&!covenant.venthyr&!stealthed.all&variable.finish_condition&(cooldown.echoing_reprimand.remains>6|!cooldown.sepsis.ready|cooldown.serrated_bone_spike.full_recharge_time>20)
+actions.cds+=/vanish,if=runeforge.invigorating_shadowdust&action.flagellation.known&!stealthed.all&variable.finish_condition&(!cooldown.flagellation.ready&(!talent.dreadblades.enabled|!cooldown.dreadblades.ready|!buff.flagellation_buff.up))
+actions.cds+=/vanish,if=runeforge.invigorating_shadowdust&!action.flagellation.known&!stealthed.all&variable.finish_condition&(cooldown.echoing_reprimand.remains>6|!cooldown.sepsis.ready|cooldown.serrated_bone_spike.full_recharge_time>20)
 actions.cds+=/shadowmeld,if=!stealthed.all&((conduit.count_the_odds|talent.count_the_odds.enabled)&variable.finish_condition|!talent.weaponmaster.enabled&variable.ambush_condition)
 actions.cds+=/thistle_tea,if=energy.deficit>=100&!buff.thistle_tea.up&(charges=3|buff.adrenaline_rush.up|fight_remains<charges*6)
 actions.cds+=/potion,if=buff.bloodlust.react|boss&fight_remains<30|buff.adrenaline_rush.up
