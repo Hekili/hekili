@@ -93,7 +93,7 @@ actions.cds+=/killing_spree,if=variable.blade_flurry_sync&variable.killing_spree
 actions.cds+=/blade_rush,if=variable.blade_flurry_sync&(energy.base_time_to_max>2&!buff.dreadblades.up&!buff.flagellation_buff.up|energy<=30|spell_targets>2)
 # If using Invigorating Shadowdust, use normal logic in addition to checking major CDs.
 actions.cds+=/vanish,if=runeforge.invigorating_shadowdust&action.flagellation.known&!stealthed.all&variable.finish_condition&(!cooldown.flagellation.ready&(!talent.dreadblades.enabled|!cooldown.dreadblades.ready|!buff.flagellation_buff.up))
-actions.cds+=/vanish,if=runeforge.invigorating_shadowdust&!action.flagellation.known&!stealthed.all&variable.finish_condition&(cooldown.echoing_reprimand.remains>6|!cooldown.sepsis.ready|cooldown.serrated_bone_spike.full_recharge_time>20)
+actions.cds+=/vanish,if=runeforge.invigorating_shadowdust&!action.flagellation.known&!stealthed.all&variable.finish_condition&(((action.echoing_reprimand.known&cooldown.echoing_reprimand.remains>6)|(action.sepsis.known&!cooldown.sepsis.ready)|(action.serrated_bone_spike.known&cooldown.serrated_bone_spike.full_recharge_time>20))|!cooldown.adrenaline_rush.ready)
 actions.cds+=/shadowmeld,if=!stealthed.all&((conduit.count_the_odds|talent.count_the_odds.enabled)&variable.finish_condition|!talent.weaponmaster.enabled&variable.ambush_condition)
 actions.cds+=/thistle_tea,if=energy.deficit>=100&!buff.thistle_tea.up&(charges=3|buff.adrenaline_rush.up|fight_remains<charges*6)
 actions.cds+=/potion,if=buff.bloodlust.react|boss&fight_remains<30|buff.adrenaline_rush.up
