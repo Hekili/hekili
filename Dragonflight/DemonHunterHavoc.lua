@@ -903,7 +903,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function () return 35 - ( talent.first_blood.enabled and 20 or 0 ) end,
+        spend = 35,
         spendType = "fury",
 
         startsCombat = true,
@@ -1041,7 +1041,7 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        spend = function () return talent.first_blood.enabled and 15 or 35 end,
+        spend = 35,
         spendType = "fury",
 
         startsCombat = true,
