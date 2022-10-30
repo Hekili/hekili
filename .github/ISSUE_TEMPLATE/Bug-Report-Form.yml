@@ -49,7 +49,7 @@ body:
         3. Realize Beast Mastery Demon Hunters don't exist.
     validations:
       required: true
-  - type: input
+  - type: markdown
     id: player-info
     attributes:
       label: Player Information (Link)
