@@ -124,5 +124,5 @@ actions.finish+=/dispatch
 # Stealth
 actions.stealth=cold_blood,if=variable.finish_condition
 actions.stealth+=/dispatch,if=variable.finish_condition
-actions.stealth+=/ambush,if=stealthed.all&talent.find_weakness&!debuff.find_weakness.up
+actions.stealth+=/ambush
 actions.stealth+=/cheap_shot,cycle_targets=1,if=talent.prey_on_the_weak.enabled&!target.is_boss
