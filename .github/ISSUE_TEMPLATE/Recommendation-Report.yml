@@ -52,6 +52,17 @@ body:
         
     validations:
       required: true
+  - type: input
+    id: talents
+    attributes:
+      label: Talent Loadout
+      description: |
+        Provide your talent loadout string from the Talents tab in-game.
+        * Press `N` to open Specialization & Talents.
+        * Click the Talents tab if not already open.
+        * In the dropdown menu at the bottom left, click `Share (copy to clipboard)`.
+        * Paste the string in the box below.
+      placeholder: BYEAwtJ2KpR8WbGzhz/jy2AP8AAAAAAACAiSKJJSCkQaKJkWJAAAAAAACRSSaJBJU4AJBloEA
   - type: textarea
     id: player-info
     attributes:
