@@ -25,11 +25,10 @@ body:
     id: flavor
     attributes:
       label: WoW Version
+      required: true
       options:
         - label: Retail (Dragonflight)
         - label: Classic (Wrath of the Lich King)
-      validations:
-        required: true
   - type: textarea
     id: description
     attributes:
