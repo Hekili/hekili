@@ -740,6 +740,13 @@ spec:RegisterAbilities( {
         texture = 132112,
 
         handler = function ()
+            removeBuff( "cat_form" )
+            removeBuff( "moonkin_form" )
+            removeBuff( "bear_form" )
+            removeBuff( "dire_bear_form" )
+            removeBuff( "swift_flight_form" )
+            removeBuff( "travel_form" )
+            applyBuff( "aquatic_form" )
         end,
     },
 
@@ -780,23 +787,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Shapeshift into dire bear form, increasing melee attack power, armor contribution from cloth and leather items, and Stamina. Also protects the caster from Polymorph effects and allows the use of various bear abilities. The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
-    dire_bear_form = {
-        id = 9634,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.35,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 132276,
-
-        handler = function ()
-        end,
-    },
-
     -- When activated, this ability causes your Mangle (Bear) ability to hit up to 3 targets and have no cooldown, and reduces the energy cost of all your Cat Form abilities by 50%.  Lasts 15 sec.  You cannot use Tiger's Fury while Berserk is active.     Clears the effect of Fear and makes you immune to Fear for the duration.
     berserk = {
         id = 50334,
@@ -832,6 +822,13 @@ spec:RegisterAbilities( {
         texture = 132115,
 
         handler = function ()
+            removeBuff( "moonkin_form" )
+            removeBuff( "bear_form" )
+            removeBuff( "dire_bear_form" )
+            removeBuff( "aquatic form" )
+            removeBuff( "swift_flight_form" )
+            removeBuff( "travel_form" )
+            applyBuff( "cat_form" )
         end,
     },
 
@@ -967,7 +964,7 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Shapeshift into dire bear form, increasing melee attack power by 240, armor contribution from cloth and leather items by 370%, and Stamina by 25%.  Also protects the caster from Polymorph effects and allows the use of various bear abilities.    The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
+    -- Shapeshift into dire bear form, increasing melee attack power, armor contribution from cloth and leather items, and Stamina. Also protects the caster from Polymorph effects and allows the use of various bear abilities. The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
     dire_bear_form = {
         id = 9634,
         cast = 0,
@@ -981,6 +978,15 @@ spec:RegisterAbilities( {
         texture = 132276,
 
         handler = function ()
+            removeBuff( "cat_form" )
+            removeBuff( "moonkin_form" )
+            removeBuff( "bear_form" )
+            removeBuff( "aquatic form" )
+            removeBuff( "swift_flight_form" )
+            removeBuff( "travel_form" )
+            applyBuff( "dire_bear_form" )
+            spend( rage.current, "rage" )
+            gain(10, "rage")
         end,
     },
 
@@ -1079,6 +1085,7 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo_points" end,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             spend( combo_points.current, "combo_points" )
         end,
     },
@@ -1274,6 +1281,7 @@ spec:RegisterAbilities( {
         texture = 132131,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1336,6 +1344,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "maim" )
+            removeBuff( "clearcasting" )
             spend( combo_points.current, "combo_points" )
         end,
     },
@@ -1356,6 +1365,7 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "mangle_bear" )
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 33986, 33987, 48563, 48654 }
@@ -1377,6 +1387,7 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "mangle_cat" )
+            removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
         end,
 
@@ -1439,6 +1450,13 @@ spec:RegisterAbilities( {
         texture = 136036,
 
         handler = function ()
+            removeBuff( "cat_form" )
+            removeBuff( "bear_form" )
+            removeBuff( "dire_bear_form" )
+            removeBuff( "aquatic form" )
+            removeBuff( "swift_flight_form" )
+            removeBuff( "travel_form" )
+            applyBuff( "moonkin_form" )
         end,
     },
 
@@ -1552,6 +1570,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "rake" )
+            removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
         end,
     },
@@ -1697,6 +1716,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "rip" )
+            removeBuff( "clearcasting" )
             spend( combo_points.current, "combo_points" )
             debuff.rip.xtnd = 0
         end,
@@ -1749,6 +1769,7 @@ spec:RegisterAbilities( {
                 end
             end
             gain( 1, "combo_points" )
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1853,6 +1874,13 @@ spec:RegisterAbilities( {
         texture = 132128,
 
         handler = function ()
+            removeBuff( "cat_form" )
+            removeBuff( "moonkin_form" )
+            removeBuff( "bear_form" )
+            removeBuff( "dire_bear_form" )
+            removeBuff( "aquatic form" )
+            removeBuff( "travel_form" )
+            applyBuff( "swift_flight_form" )
         end,
     },
 
@@ -1893,6 +1921,7 @@ spec:RegisterAbilities( {
         texture = 134296,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1911,6 +1940,7 @@ spec:RegisterAbilities( {
         texture = 134296,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1949,6 +1979,7 @@ spec:RegisterAbilities( {
         texture = 132242,
 
         handler = function ()
+            gain( 60, "energy" )
         end,
     },
 
@@ -2007,6 +2038,13 @@ spec:RegisterAbilities( {
         texture = 132144,
 
         handler = function ()
+            removeBuff( "cat_form" )
+            removeBuff( "moonkin_form" )
+            removeBuff( "bear_form" )
+            removeBuff( "dire_bear_form" )
+            removeBuff( "aquatic form" )
+            removeBuff( "swift_flight_form" )
+            applyBuff( "travel_form" )
         end,
     },
 
@@ -2109,4 +2147,4 @@ spec:RegisterOptions( {
 
 spec:RegisterPack( "Balance (IV)", 20220926, [[Hekili:vwvtVTnpm4Flffiyd71oF12To0MdfDhsp0EWf9OSKLPteISKHKCmYf9BFuoFzNLG3weGaBrYh9qYhstgtENKKZCa51jJMmz09tUlE8VMo5M7jjUnvajPIXxXwGpOyL4)pXKmfV98nsnlpeVvxBchT05QS)E4WMMMybFt0AqOSXCD5WgTtUkIlzwRGpmBlgr5MArEuELnQAnez0oMtOvrCTwMRBu2iwMqkCcWssYQfs3Cfj7809NilQao51XJrEiYZHTUcwoj59LcRNwzeAJWTXtdVLXSqUNQvEQBj4PZ5OHpce2txG0cIXu0OlesmXU(ApDxI7PphyTN(T5F8D)lbltUZttGkhuMbg8vKy(x8VW4HSXgxzaSeKXC)4XHLATALqLwOnLxWdMzvQUifjvAJqM3bj0AbdmciTqyG)tu8OJjbLlwuImDnKN2XCmOyzsiFWvobhVYfdwy01vPLTS0o72EWQX(x4wvmxTb6AY6yMcMu29muySetKadchUgsbfuITPzJhGUVaCX5cmqSC9W0rDJCzTXi4mfCUy76i2haUl12WmLbFZQlkIbUuuzHuzTIzIdsKdzx3ydf59vOs96wRH(07V98B)2t)JAHqbyHcpN6eQvy5iERhDikQ9nOIclQmohKGH50g7fOsDv37VgpxGQHpN3Tf4DS9moBGsgwmMXzwxQtu2R50GSA5)eOvlpxGKeSyQWSgNMMxwPnUWaWK9zTNkXEwOsqsy1ULAd62HHcssR12TfqbRw6WhFTD7XoHg5jschNVWcld3D8)Rm90bE6vHwW2oy41EAupDMNElYMw(rs6GbXHlacx(bB9vWDzf660UUUxrFIp3CXCPVoTLvJBz7jADp9bpD6OJ30U5Ka63(Lq)iehgycGC3fb5cJhNuIpcB3XRaY)8IiVDa6yK7hUcr9RVcFQRocYHjKak3)vqzNQUTm1rz3R3UJDJh95aU34YLaUDsdr1f(QWUT1hMa6wB2VD)e1vpX6P74777(FK)(d]] )
 
-spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:DIvBpQkou4Fl(fJSZOlOIxjr9dBUztM5d3DtCZ(rGkwCidcMs5EZSXWV990IaLsB1zsMmrHZlpNtpV8u9D8)h)9hruS)pMBpFUJ9CVzoEUEl983t)4c2F)fu07OtWhYqNH))NyckTk87)9(QWjFhh)FOO3Sys9rAo6iZAf5LKiqs)9hktsPVK5FqTlwbYEbh5)dhh)9VLC8iUwuCret70KcAbZGxi4O8Zhqu4l)GdyCg6qk(O)F4VpIKqXKeK)(rvHLxQchxfcF6qzC8StjX0G84a6B4GFLKECw5f)9OiAsEM)(ZiY7IV0Nc4ZSX7uocrdIZjNbLOmehJktVd84i6ycbhCaJiCT7Hhszwq9NdyrED8huN0zA0IVgfklWbGXpxi6qqOfAHaodto9XSOscbNrRc3ufUWUZG0KtysrqCj5dMDwQ1or55PhZ)v2mbnMrWNrjzfvH7QcDC7S6bqcm5DMfDnNCIsHWmcvqtYo1l1u8gbZpFw9yh(hXC7DgLDkToDlDYZFoCgYS530AZjCJXm71RTgLKCPluHe4YQqlUFzLO5bxYtYOfDP4TvHc5cqzMlxBYLc(5weX)Eb6NqxyajNhmQFElUMQbUaAS5QQ6TpbNB28yYzj)Bt4)PoUap4WJ8Fdcq(hSQttkJaPe2yZ2UvivOeQU8eDM20Urt4S4HSHRrBSQjU7S0ivrFxTPP41sOEV7mLvU49av9YT2S0KTzFkwxIEhZ8KJ9dp74Z5G2oyh5bKfWcG9dZWDQ(lucveiA6dNFNMqLzjwM3Mdl5j)CyDtCAYzCanpWZ(Hq1D6AvH)PMAM3TLlWIVM2M75zjaE8RFPXe5E6EaZz(DgfXfYwShHl7TTcMsknAExZVUPj8bNchJj5rj5LfbhGGKh(631nsnGV)kq9j9DpsCXdl1LSUc1H9juWJf9BzvSndA87vnypBTIXcY7D)0nTFHjSTLM6xqFtTuueqkLILkMAFSOjx0JG4JufYGHP0T(L5Q4KeJG3HdIb70JtIWZdIzuS522tKVx9m0EC9O3OgAK4PIDWl6SAtwYm93bt)HJUvRnsm62BnmzcmHGmAz)jW12a322gsCgb81mn7fRN43A7AHnZ2DI4g8bSlb0X9L1a(LnK213pYbQ4g15UIwPm1mNx568ckCvn5nVINVFtSCseL9VaXArXA1xQWdk9(j09WKHFToBV5Ry99Km48dMe8Y5l5ek(iVLR2yvH8R0nR6v2D6YJtsXn(Pyw7L8EA7VlF1SNtI3oQ8Y4r84vXT6QEvLzAkCUPE1RTIbVu66wpZUO1wwYGjn3pdURMO6Tx(s8Hc7cywPFT3Mf2IYEB0dtot7s254kQfFgqlcLAzefSR6Sn5P8wr9sjjxycpbK(61HD1BwAnw1C8T9ryxRo3y9ignEW0avp7M)MQacBThp8Pp5yVXz5ttMOcDtDS(nxlRRxLqsBqnwTEWlg6PDEmdPmjOuCNfAL3vP8RS4qDuFSYo(uJrRENFW66Mt7(1E78SvBa1fxFfLzB8Fg4fSDyyXmPIZY5AQMKW(ML2k9ZaY5sUrt12qGmvxb4UTtx8zKxD15MLIWVp3tEhYeffcBDMRTVaEPnRiH)(ogmQQNajnyM1wpsdD)XG86lzpBEaMQKYotaBTCfGRTMY8UXuc8y3aCy)evMpC3z)dYHPLHSrhRHj6MfJhKdvKJ6x4itquEUEFMLd6Rf2(nJbB45nWIzjHjIlgiO4IuPzdBxTw5Uc4PABtwD7D6wF142AYz92q2sUZWqIg1fw01SwtEjyn5nlfQwYZVIe02n31ygujBSnd1rawAThqRhvGp(xzs)E7V8VmAML03YboB3(X35CX8))d]] )
+spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:9Mv3UTkoq4NLCtvYPnzH83jrk0lwD0k1Er3vIv7LaoGjfvcezmNUDvep77yZFgW2HwPDLo60uyMVzMVz8mJtDmD(th7aef78YsJLlnnwzSWW0yP5ohB6hxWo2xq(VHobFibDg()FdtqXfE)4pSl8M(dC4)G8FDgtQpItrbm0YsZj(GKo2hZJIPpL4CCOjmwVZCji7fSVZlMMo2VgfeGlffN5Z0(cjnmkgac5tJstYwCHG9tpFerV36xoJiV5Mg6sFf7(EuCWdrHwtYVC3KJ5HHloffsfF7I8lfpldgFe1nmLCUs9INBedEjjpXT83CJJYOpWiaRJyeHjn3obreSl7jCqeTIk1bd2ODTX7PNAFIPbiqEg2nIIpN1)f0OtysMByo5dMY4em50hl8ZjeCc9WkJ(YFeKgtEJjRFAACq67jleWybbFgfLK9O5M(AM9kbh0giXaf4JYOrjN6q1(v5QKtXy3QqNNLcWCfREdJbLOxx2LPBLAXiFOkKIbDUR)JQ85dRQkfQIrbrjrxAIS19T57Oi6dzyFRHcl4acp9qfltJoJDPPUNr)9DSYRu3lPrj0SA63AZahsPT7b5EJEMgIf(NZq)eoz6ss50NK4B(aXQdCR5R(mYFWYqI4hw3juhrickZILPqrW1RYaCMcYBqbyRpYb82SJQqBUe3qwWEVPXbZ13pDQmhCU5SVTz2SRx75iTeLC9GxiPQCpdiP8GuXnxPu(nsLF7mURoPRVYoyk3hhgx)NqWlVf)kReC)Sb1yO3W1nA62c0Y0WqEiQUb3xgHqmj1pknpZ9i0SMxKovsYWYCPsMdEPbJ7hrJmqsnWSB2ypxnSN7G2O6hvilZ(OoNBxVK0HndMtjKrB7AapRTCAXUb0pctIWUHS4jKTZs)zpccSOzXb1DU4feIZIzKe886bpm4foWVzGGIJ17gXpATDx3tynDDxRM3gkUIcZMkOEJP7ioiM2qR)y2mkSw4Hno2)eymqPYD7m2VCRJ97iscyImh7NoFjLqbEZBDHxj6fESLHYwu8SJn)tSvgzge(5l8TrXjOJX4aNF1X2NahDirihBiH4DxHxvKw4DOWBt9MHaqvULdf8dLy0L1l8E0QWB7UcVRxHvzl8gsOGzS4Uoyzv5bag5Qc6ilFu66fEZASRSCZa1BuRnORlOyb9kLbT0eNg(JYujeLhtLLqQvO3UTIgKBUblgxMSDlVdbpDljvnw0fwCUdUWZ1tgtk8yQiHbPLAxhY1s0SQTiGFQImGOxz0cOqpt9UQUUS8AotH8xvBlgIRvIOS6Swi493yaSrp7XRmN0uY3Dd(w4A35NH52rxEwzG(pw8C)QAxOFhBbf7CseiR1TEw3stM399EEhScEJJjauleSf1LeeD7Cu4n8MbA6kyXpElnWy(4oz(4G7jmkxSIPg0qtddoxB)plUaR(AAZ6WAOu1d1TF72l8gK1ELLBt5QWIuwZx1wC2nYuc9QI4M00qNnhp7RMOMR0FvtF3dTjm4YyUM)Bt5)tECbgWKh5FREa1mzZgLmjUmfPd7gHuC(CVOXus7AHWC1OWyJwm2wh3Tinrw032kux8QJ)(FRay5xp)R(q5(oBIi4U8ZcQxJRL36pN0IvQACJ1Meo2bR)ZT14Ne)jTqZart1dPNQCXrwtrZL3iJYfYyWUGJzKwLM3e(D1vZJSDw3BTYdF1BuOyg8TxDrDb7JJjU4HLKAiwc0q3KEZBUCJ4ybHBywEmBXojfGQ3Tr2(sDV1PQzyTPJ(3ILBYVlUIAzDAN1tPSV88QVKB9xRQJlY9cjF15IB119BDx)QW622gCXJOmCWVN07pPWt)fRXso91uIJD1FFbU8o)7p]] )
