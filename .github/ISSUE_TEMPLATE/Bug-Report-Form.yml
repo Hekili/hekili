@@ -69,7 +69,7 @@ body:
         ...
     validations:
       required: true
-  - type: input
+  - type: markdown
     id: error-messages
     attributes:
       label: Error Messages (Link)
@@ -80,7 +80,7 @@ body:
         * Reload WoW (/rl).
         * When WoW finishes reloading, open BugSack and copy the **first** error message.
           * If you need to do something to trigger the error message, do so, then open BugSack and copy the error message.
-      placeholder: No error messages.
+      placeholder: "No error messages."
       render: text
     validations:
       required: true      
