@@ -19,7 +19,7 @@ actions+=/avatar,if=!talent.titans_torment&(buff.recklessness.up|target.time_to_
 actions+=/recklessness,if=talent.annihilator&cooldown.avatar.remains<1|cooldown.avatar.remains>40|!talent.avatar|target.time_to_die<20
 actions+=/recklessness,if=!talent.annihilator
 actions+=/spear_of_bastion,if=buff.enrage.up&(buff.recklessness.up|buff.avatar.up|target.time_to_die<20)
-actions+=/whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up|raid_event.adds.in<2&!buff.meat_cleaver.up
+actions+=/whirlwind,if=spell_targets.whirlwind>1&(talent.improved_whirlwind.enabled&!buff.meat_cleaver.up)|raid_event.adds.in<2&(talent.improved_whirlwind.enabled&!buff.meat_cleaver.up)
 actions+=/call_action_list,name=single_target
 
 actions.single_target=rampage,if=buff.recklessness.up|buff.enrage.remains<gcd|(rage>110&talent.overwhelming_rage)|(rage>80&!talent.overwhelming_rage)|buff.frenzy.remains<1.5
