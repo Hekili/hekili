@@ -1,6 +1,5 @@
-name: Feature Request
-description: I would like the addon to have a new feature, and I'll explain why.  This template is NOT for anything related to the addon's current recommendations.
-title: "[FEATURE] REPLACE THIS TEXT WITH A BRIEF DESCRIPTION OF YOUR NEW FEATURE"
+name: Request a New Feature
+description: I would like the addon to have a new feature, and I'll explain why. This template is NOT for anything related to the addon's current recommendations.
 labels: [enhancement, triage]
 assignees:
   - Hekili
@@ -19,6 +18,17 @@ body:
           required: true
         - label: I edited the title of this feature request (above) so that it describes the issue I am reporting.
           required: true
+  - type: dropdown
+    id: flavor
+    attributes:
+      label: WoW Version
+      description: "Reminder: Private servers are not supported based on Blizzard's Terms of Service."
+      options:
+        - Retail (Dragonflight)
+        - Classic (Wrath of the Lich King)
+        - All
+    validations:
+      required: true
   - type: textarea
     id: request
     attributes:
