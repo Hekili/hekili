@@ -29,7 +29,7 @@ actions.cat_aoe+=/berserk,if=cooldown.tigers_fury.remains>15
 actions.cat_aoe+=/rake,if=!up&!buff.savage_roar.up&!buff.clearcasting.up
 actions.cat_aoe+=/savage_roar,if=!up
 actions.cat_aoe+=/swipe_cat
-actions.cat_aoe+=/gift_of_the_wild,if=energy.current<45
+actions.cat_aoe+=/gift_of_the_wild,if=energy.current<45&(encounterDifficulty>=3|encounterDifficulty<=6)
 
 actions.bear+=/lacerate,if=up&remains<5
 actions.bear+=/cat_form,if=energy.current>=68|(debuff.rip.remains<=4&buff.savage_roar.remains>debuff.rip.remains&combo_points.current<5)|(buff.clearcasting.up&combo_points<5)

@@ -50,9 +50,13 @@ spec:RegisterResource( Enum.PowerType.Rage, {
     },
 } )
 
+-- Resources
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.ComboPoints )
 spec:RegisterResource( Enum.PowerType.Energy )
+
+-- Sets
+spec:RegisterGear( "tier7", 39557, 39553, 39555, 39554, 39556, 40472, 40473, 40493, 40471, 40494 )
 
 -- Talents
 spec:RegisterTalents( {
@@ -576,7 +580,7 @@ spec:RegisterAuras( {
     -- Bleed damage every $t1 seconds.
     rip = {
         id = 49800,
-        duration = function() return glyph.rip.enabled and 16 or 12 end,
+        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc > 0 and 4) or 0) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
@@ -719,7 +723,9 @@ spec:RegisterStateFunction( "swap_form", function( form )
 
     if (form == "bear_form" or form == "dire_bear_form") then
         spend( rage.current, "rage" )
-        gain( 10, "rage" )
+        if talent.furor.rank==5 then
+            gain( 10, "rage" )
+        end
     end
 
     applyBuff( form );
@@ -840,7 +846,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.35,
+        spend = function() return 0.35 * ((talent.king_of_the_jungle.rank > 0 and 0.60) or 1) * ((talent.natural_shapeshifter.rank > 0 and 0.30) or 1) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -848,6 +854,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             swap_form( "cat_form" )
+
         end,
     },
 
@@ -879,7 +886,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return glyph.claw.enabled and 40 or 45 end,
+        spend = function() return ((glyph.claw.enabled and 40) or 45) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -898,7 +905,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
 
-        spend = 20,
+        spend = function() return 20 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -991,7 +998,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.35,
+        spend = function() return 0.35 * ((talent.king_of_the_jungle.rank > 0 and 0.60) or 1) * ((talent.natural_shapeshifter.rank > 0 and 0.30) or 1) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1090,7 +1097,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 35,
+        spend = function() return 35 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1331,7 +1338,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "off",
 
-        spend = 25,
+        spend = function() return (15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1353,7 +1360,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
 
-        spend = 35,
+        spend = function() return 35 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1376,7 +1383,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = 15,
+        spend = function() return 20 - talent.ferocity.rank end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1401,7 +1408,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return (buff.berserk.up and 20) or 40 end,
+        spend = function () return 40 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1546,7 +1553,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 50,
+        spend = function() return 50 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1586,7 +1593,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (buff.berserk.up and 18) or 35 end,
+        spend = function () return (40 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1609,7 +1616,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 60,
+        spend = function() return 60 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1731,7 +1738,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return buff.berserk.up and 15 or 30 end,
+        spend = function () return 30 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1756,7 +1763,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 25,
+        spend = function() return 25 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = false,
@@ -1778,22 +1785,13 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (talent.shredding_attacks.rank == 2 and buff.berserk.up and 21) or (talent.shredding_attacks.rank == 2 and 42) or 60 end,
+        spend = function () return (60 * ((buff.berserk.up and 0.5) or 1)) - (talent.shredding_attacks.rank * 9) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 136231,
 
         handler = function ()
-            if glyph.shred.enabled and debuff.rip.up then
-                if (not debuff.rip.xtnd) then
-                    debuff.rip.xtnd = 0
-                end
-                if (debuff.rip.xtnd <= 3) then
-                    debuff.rip.expires = debuff.rip.expires + 2
-                    debuff.rip.xtnd = debuff.rip.xtnd + 1
-                end
-            end
             gain( 1, "combo_points" )
             removeBuff( "clearcasting" )
         end,
@@ -1935,7 +1933,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 20,
+        spend = function() return 20 - talent.ferocity.rank end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1954,7 +1952,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (buff.berserk.up and 23) or 50 end,
+        spend = function () return (50 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
