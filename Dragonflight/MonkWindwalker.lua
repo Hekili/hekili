@@ -166,6 +166,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 386276
     },
+    bounce_back = {
+        id = 390239,
+        duration = 4,
+        max_stack = 1
+    },
     -- Increases the damage done by your next Chi Explosion by $s1%.    Chi Explosion is triggered whenever you use Spinning Crane Kick.
     -- https://wowhead.com/beta/spell=393057
     chi_energy = {
@@ -249,7 +254,21 @@ spec:RegisterAuras( {
     faeline_stomp = {
         id = 388193,
         duration = 30,
-        max_stack = 1
+        max_stack = 1,
+        copy = 327104
+    },
+    -- Damage version.
+    fae_exposure = {
+        id = 395414,
+        duration = 10,
+        max_stack = 1,
+        copy = 356773
+    },
+    fae_exposure_heal = {
+        id = 395413,
+        duration = 10,
+        max_stack = 1,
+        copy = 356774
     },
     -- Talent: $w3 damage every $t3 sec. $?s125671[Parrying all attacks.][]
     -- https://wowhead.com/beta/spell=113656
@@ -297,10 +316,10 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     fury_of_xuen = {
-        id = 287062,
+        id = 396167,
         duration = 20,
         max_stack = 67,
-        copy = { 396168, 396167 }
+        copy = { 396168, 396167, 287062 }
     },
     fury_of_xuen_haste = {
         id = 287063,
@@ -364,6 +383,12 @@ spec:RegisterAuras( {
         duration = 1,
         max_stack = 1
     },
+    pressure_point = {
+        id = 393050,
+        duration = 5,
+        max_stack = 1,
+        copy = 337482
+    },
     -- Taunted. Movement speed increased by $s3%.
     -- https://wowhead.com/beta/spell=116189
     provoke = {
@@ -371,6 +396,10 @@ spec:RegisterAuras( {
         duration = 3,
         mechanic = "taunt",
         max_stack = 1
+    },
+    recently_touched = { -- Fake aura for Forbidden Technique.
+        duration = 5,
+        max_stack = 1,
     },
     -- Talent: Nearby enemies will be knocked out of the Ring of Peace.
     -- https://wowhead.com/beta/spell=116844
@@ -383,6 +412,7 @@ spec:RegisterAuras( {
     rising_sun_kick = {
         id = 107428,
         duration = 10,
+        max_stack = 1,
     },
     -- Talent: Dealing physical damage to nearby enemies every $116847t1 sec.
     -- https://wowhead.com/beta/spell=116847
@@ -393,12 +423,29 @@ spec:RegisterAuras( {
         dot = "buff",
         max_stack = 1
     },
+    save_them_all = {
+        id = 390105,
+        duration = 4,
+        max_stack = 1
+    },
     -- Talent: Damage and healing increased by $w2%.  All Chi consumers are free and cool down $w4% more quickly.
     -- https://wowhead.com/beta/spell=152173
     serenity = {
         id = 152173,
         duration = 12,
         max_stack = 1
+    },
+    skyreach = {
+        id = 393047,
+        duration = 6,
+        max_stack = 1,
+        copy = { 344021, "keefers_skyreach" }
+    },
+    skyreach_exhaustion = {
+        id = 393050,
+        duration = 60,
+        max_stack = 1,
+        copy = { 337341, "recently_rushing_tiger_palm" }
     },
     -- Talent: Healing for $w1 every $t1 sec.
     -- https://wowhead.com/beta/spell=115175
@@ -457,6 +504,11 @@ spec:RegisterAuras( {
         max_stack = 20,
         copy = 337291
     },
+    thunderfist = {
+        id = 393565,
+        duration = 30,
+        max_stack = 30
+    },
     -- Talent: Moving $s1% faster.
     -- https://wowhead.com/beta/spell=116841
     tigers_lust = {
@@ -467,11 +519,13 @@ spec:RegisterAuras( {
     },
     touch_of_death = {
         id = 115080,
-        duration = 8
+        duration = 8,
+        max_stack = 1
     },
     touch_of_karma = {
         id = 125174,
         duration = 10,
+        max_stack = 1
     },
     -- Talent: Damage dealt to the Monk is redirected to you as Nature damage over $124280d.
     -- https://wowhead.com/beta/spell=122470
@@ -489,6 +543,11 @@ spec:RegisterAuras( {
     },
     transcendence_transfer = {
         id = 119996,
+    },
+    transfer_the_power = {
+        id = 195321,
+        duration = 30,
+        max_stack = 10
     },
     -- Talent: Your next Vivify is instant.
     -- https://wowhead.com/beta/spell=392883
@@ -587,18 +646,6 @@ spec:RegisterAuras( {
         id = 338321,
         duration = 15,
         max_stack = 1
-    },
-    -- Legendary
-    keefers_skyreach = {
-        id = 344021,
-        duration = 6,
-        max_stack = 1,
-    },
-    skyreach_exhaustion = {
-        id = 337341,
-        duration = 30,
-        max_stack = 1,
-        copy = "recently_rushing_tiger_palm"
     },
     pressure_point = {
         id = 337482,
@@ -770,7 +817,12 @@ spec:RegisterHook( "spend", function( amt, resource )
             chiSpent = chiSpent % 2
         end
 
-        if legendary.last_emperors_capacitor.enabled then
+        if talent.drinking_horn_cover.enabled then
+            if buff.storm_earth_and_fire.up then buff.storm_earth_and_fire.expires = buff.storm_earth_and_fire.expires + 0.4
+            elseif buff.serenity.up then buff.serenity.expires = buff.serenity.expires + 0.3 end
+        end
+
+        if talent.last_emperors_capacitor.enabled or legendary.last_emperors_capacitor.enabled then
             addStack( "the_emperors_capacitor", nil, 1 )
         end
     end
@@ -985,8 +1037,9 @@ spec:RegisterHook( "runHandler", function( key, noStart )
         if last_combo == key then removeBuff( "hit_combo" )
         else
             if talent.hit_combo.enabled then addStack( "hit_combo", 10, 1 ) end
-            if azerite.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end
-            if conduit.xuens_bond.enabled and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.1 ) end
+            if azerite.fury_of_xuen.enabled or talent.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end
+            if ( talent.xuens_bond.enabled or conduit.xuens_bond.enabled ) and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.1 ) end
+            if talent.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then reduceCooldown( "touch_of_death", 0.35 ) end
         end
         virtual_combo = key
     end
@@ -1054,6 +1107,10 @@ spec:RegisterHook( "reset_precast", function ()
     if talent.bonedust_brew.enabled or state:IsKnown( "bonedust_brew" ) then
         ValidateBonedustBrews()
         lastBonedustZoneTime = 0
+    end
+
+    if talent.forbidden_technique.enabled and cooldown.touch_of_death.remains == 0 and query_time - action.touch_of_death.lastCast < 5 then
+        applyBuff( "recently_touched", query_time - action.touch_of_death.lastCast )
     end
 end )
 
@@ -1144,6 +1201,7 @@ spec:RegisterAbilities( {
             removeBuff( "teachings_of_the_monastery" )
             applyDebuff( "target", "mark_of_the_crane", 15 )
             if talent.eye_of_the_tiger.enabled then applyDebuff( "target", "eye_of_the_tiger" ) end
+            if talent.transfer_the_power.enabled then addStack( "transfer_the_power", nil, 1 ) end
         end,
     },
 
@@ -1233,6 +1291,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "crackling_jade_lightning" )
+            removeBuff( "the_emperors_capacitor" )
         end,
     },
 
@@ -1342,11 +1401,11 @@ spec:RegisterAbilities( {
 
     -- Talent: Strike the ground fiercely to expose a faeline for $d, dealing $388207s1 Nature damage to up to 5 enemies, and restores $388207s2 health to up to 5 allies within $388207a1 yds caught in the faeline. $?a137024[Up to 5 allies]?a137025[Up to 5 enemies][Stagger is $s3% more effective for $347480d against enemies] caught in the faeline$?a137023[]?a137024[ are healed with an Essence Font bolt][ suffer an additional $388201s1 damage].    Your abilities have a $s2% chance of resetting the cooldown of Faeline Stomp while fighting on a faeline.
     faeline_stomp = {
-        id = 388193,
+        id = function() return talent.faeline_stomp.enabled and 388193 or 327104 end,
         cast = 0,
-        charges = 1,
-        cooldown = 0.5,
-        recharge = 30,
+        -- charges = 1,
+        cooldown = 30,
+        -- recharge = 30,
         gcd = "totem",
         school = "nature",
 
@@ -1358,6 +1417,13 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "faeline_stomp" )
+
+            if spec.brewmaster then
+                applyDebuff( "target", "breath_of_fire" )
+                active_dot.breath_of_fire = active_enemies
+            end
+
+            if legendary.fae_exposure.enabled then applyDebuff( "target", "fae_exposure" ) end
         end,
     },
 
@@ -1387,6 +1453,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             removeBuff( "fists_of_flowing_momentum" )
+            removeBuff( "transfer_the_power" )
 
             if buff.fury_of_xuen.stack >= 50 then
                 applyBuff( "fury_of_xuen_haste" )
@@ -1411,12 +1478,12 @@ spec:RegisterAbilities( {
 
         tick = function ()
             if legendary.jade_ignition.enabled then
-                addStack( "jade_ignition", nil, active_enemies )
+                addStack( "chi_energy", nil, active_enemies )
             end
         end,
 
         finish = function ()
-            if legendary.xuens_battlegear.enabled then applyBuff( "pressure_point" ) end
+            if talent.xuens_battlegear.enabled or legendary.xuens_battlegear.enabled then applyBuff( "pressure_point" ) end
         end,
     },
 
@@ -1445,7 +1512,7 @@ spec:RegisterAbilities( {
     fortifying_brew = {
         id = 115203,
         cast = 0,
-        cooldown = 360,
+        cooldown = function() return talent.expeditious_fortification.enabled and 240 or 360 end,
         gcd = "off",
         school = "physical",
 
@@ -1507,7 +1574,7 @@ spec:RegisterAbilities( {
     leg_sweep = {
         id = 119381,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - 10 * talent.tiger_tail_sweep.rank end,
         gcd = "spell",
         school = "physical",
 
@@ -1524,7 +1591,7 @@ spec:RegisterAbilities( {
     paralysis = {
         id = 115078,
         cast = 0,
-        cooldown = 45,
+        cooldown = function() return talent.improved_paralysis.enabled and 30 or 45 end,
         gcd = "spell",
         school = "physical",
 
@@ -1670,11 +1737,14 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "mark_of_the_crane" )
+            applyDebuff( "target", "rising_sun_kick" )
 
             if buff.kicks_of_flowing_momentum.up then
                 removeStack( "kicks_of_flowing_momentum" )
                 if set_bonus.tier29_4pc > 0 then addStack( "fists_of_flowing_momentum" ) end
             end
+
+            if talent.transfer_the_power.enabled then addStack( "transfer_the_power", nil, 1 ) end
 
             if talent.whirling_dragon_punch.enabled and cooldown.fists_of_fury.remains > 0 then
                 applyBuff( "whirling_dragon_punch", min( cooldown.fists_of_fury.remains, cooldown.rising_sun_kick.remains ) )
@@ -1730,8 +1800,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            -- trigger rushing_jade_wind [148187]
             applyBuff( "rushing_jade_wind" )
+            if talent.transfer_the_power.enabled then addStack( "transfer_the_power", nil, 1 ) end
         end,
     },
 
@@ -1901,6 +1971,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "strike_of_the_windlord" )
+            if talent.thunderfist.enabled then addStack( "thunderfist", nil, true_active_enemies ) end
         end,
     },
 
@@ -1974,12 +2045,20 @@ spec:RegisterAbilities( {
         buff = function () return prev_gcd[1].tiger_palm and buff.hit_combo.up and "hit_combo" or nil end,
 
         handler = function ()
+            gain( 2, "chi" )
+            applyDebuff( "target", "mark_of_the_crane" )
+
             if talent.eye_of_the_tiger.enabled then
                 applyDebuff( "target", "eye_of_the_tiger" )
                 applyBuff( "eye_of_the_tiger" )
             end
-
+            if ( legendary.keefers_skyreach.enabled or talent.skyreach.enabled ) and debuff.skyreach_exhaustion.down then
+                if target.distance > 10 then setDistance( 5 ) end
+                applyDebuff( "target", "skyreach" )
+                applyDebuff( "player", "skyreach_exhaustion" )
+            end
             if talent.teachings_of_the_monastery.enabled then addStack( "teachings_of_the_monastery" ) end
+
 
             if pvptalent.alpha_tiger.enabled and debuff.recently_challenged.down then
                 if buff.alpha_tiger.down then
@@ -1988,16 +2067,6 @@ spec:RegisterAbilities( {
                     applyDebuff( "target", "recently_challenged" )
                 end
             end
-
-            if legendary.keefers_skyreach.enabled and debuff.skyreach_exhaustion.down then
-                setDistance( 5 )
-                applyDebuff( "target", "keefers_skyreach" )
-                applyDebuff( "target", "skyreach_exhaustion" )
-            end
-
-            gain( 2, "chi" )
-
-            applyDebuff( "target", "mark_of_the_crane" )
         end,
     },
 
@@ -2040,7 +2109,8 @@ spec:RegisterAbilities( {
     touch_of_death = {
         id = 322109,
         cast = 0,
-        cooldown = function () return ( talent.fatal_touch.enabled or legendary.fatal_touch.enabled ) and 60 or 180 end,
+        cooldown = function () return ( talent.fatal_touch.enabled or legendary.fatal_touch.enabled ) and 60 or 180
+        end,
         gcd = "spell",
         school = "physical",
 
@@ -2057,6 +2127,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "touch_of_death" )
+            if talent.forbidden_technique.enabled and buff.recently_touched.down then
+                setCooldown( "touch_of_death", 0 )
+                applyBuff( "recently_touched" )
+            end
         end,
     },
 
@@ -2122,7 +2196,7 @@ spec:RegisterAbilities( {
     -- Causes a surge of invigorating mists, healing the target for $s1$?s274586[ and all allies with your Renewing Mist active for $s2][].
     vivify = {
         id = 116670,
-        cast = 1.5,
+        cast = function() return buff.vivacious_vivification.up and 0 or 1.5 end,
         cooldown = 0,
         gcd = "spell",
         school = "nature",
@@ -2133,6 +2207,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
+            removeBuff( "vivacious_vivification" )
         end,
     },
 
