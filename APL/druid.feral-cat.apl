@@ -1,11 +1,12 @@
 actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
 actions.precombat+=/cat_form,if=!up
 
+actions+=/use_items
 actions+=/run_action_list,name=bear,if=buff.dire_bear_form.up
+actions+=/run_action_list,name=cat_aoe,if=buff.cat_form.up&active_enemies > 1
 actions+=/run_action_list,name=cat,if=buff.cat_form.up
 actions+=/cat_form,if=!up
 
-actions.cat+=/use_items
 actions.cat+=/tigers_fury,if=energy.current<30
 actions.cat+=/berserk,if=cooldown.tigers_fury.remains>15
 actions.cat+=/shred,if=buff.clearcasting.up
@@ -23,6 +24,14 @@ actions.cat+=/rake,if=!up|debuff.rake.remains<0.8
 actions.cat+=/faerie_fire_feral,if=!up&!debuff.faerie_fire.up&!buff.berserk.up
 actions.cat+=/shred
 
+actions.cat_aoe+=/tigers_fury,if=energy.current<30
+actions.cat_aoe+=/berserk,if=cooldown.tigers_fury.remains>15
+actions.cat_aoe+=/rake,if=!up&!buff.savage_roar.up&!buff.clearcasting.up
+actions.cat_aoe+=/savage_roar,if=!up
+actions.cat_aoe+=/swipe_cat
+actions.cat_aoe+=/gift_of_the_wild,if=energy.current<45
+
 actions.bear+=/lacerate,if=up&remains<5
 actions.bear+=/cat_form,if=energy.current>=68|(debuff.rip.remains<=4&buff.savage_roar.remains>debuff.rip.remains&combo_points.current<5)|(buff.clearcasting.up&combo_points<5)
 actions.bear+=/lacerate,if=debuff.lacerate.stack<5
+actions.bear+=/maul,if=rage.current>25

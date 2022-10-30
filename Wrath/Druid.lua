@@ -191,16 +191,6 @@ spec:RegisterGlyphs( {
     [54756] = "wrath",
 } )
 
--- Maul
-spec:RegisterStateFunction( "start_maul", function()
-    applyBuff( "maul", swings.time_to_next_mainhand )
-    state:QueueAuraExpiration( "maul", finish_maul, buff.maul.expires )
-end )
-
-local finish_maul = setfenv( function()
-    spend( 25, "rage" )
-end, state )
-
 -- Auras
 spec:RegisterAuras( {
     -- Attempts to cure $3137s1 poison every $t1 seconds.
@@ -454,6 +444,18 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 34153, 34152, 34151 },
     },
+    mangle_bear = {
+        id = 33878,
+        duration = 60,
+        max_stack = 1,
+        copy = { 33876, 46856, 46857, 57393 }
+    },
+    mangle_cat = {
+        id = 33876,
+        duration = 60,
+        max_stack = 1,
+        copy = { 33878, 46856, 46857, 57393 }
+    },
     maul = {
         duration = function () return swings.mainhand_speed end,
         max_stack = 1,
@@ -706,6 +708,34 @@ spec:RegisterAuras( {
 } )
 
 
+spec:RegisterStateFunction( "swap_form", function( form )
+    removeBuff( "aquatic_form" )
+    removeBuff( "cat_form" )
+    removeBuff( "moonkin_form" )
+    removeBuff( "bear_form" )
+    removeBuff( "dire_bear_form" )
+    removeBuff( "swift_flight_form" )
+    removeBuff( "travel_form" )
+
+    if (form == "bear_form" or form == "dire_bear_form") then
+        spend( rage.current, "rage" )
+        gain( 10, "rage" )
+    end
+
+    applyBuff( form );
+end )
+
+-- Maul
+spec:RegisterStateFunction( "start_maul", function()
+    applyBuff( "maul", swings.time_to_next_mainhand )
+    state:QueueAuraExpiration( "maul", finish_maul, buff.maul.expires )
+end )
+
+local finish_maul = setfenv( function()
+    spend( 25, "rage" )
+end, state )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Attempts to cure 1 poison effect on the target, and 1 more poison effect every 3 seconds for 12 sec.
@@ -740,13 +770,7 @@ spec:RegisterAbilities( {
         texture = 132112,
 
         handler = function ()
-            removeBuff( "cat_form" )
-            removeBuff( "moonkin_form" )
-            removeBuff( "bear_form" )
-            removeBuff( "dire_bear_form" )
-            removeBuff( "swift_flight_form" )
-            removeBuff( "travel_form" )
-            applyBuff( "aquatic_form" )
+            swap_form( "aquatic_form" )
         end,
     },
 
@@ -804,6 +828,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "berserk" )
         end,
     },
 
@@ -822,13 +847,7 @@ spec:RegisterAbilities( {
         texture = 132115,
 
         handler = function ()
-            removeBuff( "moonkin_form" )
-            removeBuff( "bear_form" )
-            removeBuff( "dire_bear_form" )
-            removeBuff( "aquatic form" )
-            removeBuff( "swift_flight_form" )
-            removeBuff( "travel_form" )
-            applyBuff( "cat_form" )
+            swap_form( "cat_form" )
         end,
     },
 
@@ -960,6 +979,7 @@ spec:RegisterAbilities( {
         texture = 132121,
 
         handler = function ()
+            applyBuff( "demoralizing_roar" )
         end,
     },
 
@@ -978,15 +998,7 @@ spec:RegisterAbilities( {
         texture = 132276,
 
         handler = function ()
-            removeBuff( "cat_form" )
-            removeBuff( "moonkin_form" )
-            removeBuff( "bear_form" )
-            removeBuff( "aquatic form" )
-            removeBuff( "swift_flight_form" )
-            removeBuff( "travel_form" )
-            applyBuff( "dire_bear_form" )
-            spend( rage.current, "rage" )
-            gain(10, "rage")
+            swap_form( "dire_bear_form" )
         end,
     },
 
@@ -1026,6 +1038,7 @@ spec:RegisterAbilities( {
         texture = 136100,
 
         handler = function ()
+            applyDebuff( "target", "entangling_roots", 27 )
         end,
 
         copy = { 1062, 5195, 5196, 9852, 9853, 26989, 53308 },
@@ -1046,6 +1059,7 @@ spec:RegisterAbilities( {
         texture = 136033,
 
         handler = function ()
+            applyDebuff( "target", "faerie_fire", 300 )
         end,
     },
 
@@ -1064,6 +1078,7 @@ spec:RegisterAbilities( {
         texture = 136033,
 
         handler = function ()
+            applyDebuff( "target", "faerie_fire_feral", 300 )
         end,
     },
 
@@ -1087,6 +1102,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "clearcasting" )
             spend( combo_points.current, "combo_points" )
+            spend( min( 30, energy.current - 35 ), "energy" )
         end,
     },
 
@@ -1128,6 +1144,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "frenzied_regeneration" )
         end,
     },
 
@@ -1146,6 +1163,7 @@ spec:RegisterAbilities( {
         texture = 136038,
 
         handler = function ()
+            applyBuff( "gift_of_the_wild" )
         end,
 
         copy = { 21850, 26991, 48470 },
@@ -1282,6 +1300,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "clearcasting" )
+            applyDebuff( "target", "lacerate", 15, min( 5, debuff.lacerate.stack + 1 ) )
         end,
     },
 
@@ -1343,7 +1362,7 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo_points" end,
 
         handler = function ()
-            applyDebuff( "target", "maim" )
+            applyDebuff( "target", "maim", combo_points.current )
             removeBuff( "clearcasting" )
             spend( combo_points.current, "combo_points" )
         end,
@@ -1357,14 +1376,17 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = 20,
+        spend = 15,
         spendType = "rage",
 
         startsCombat = true,
         texture = 132135,
 
         handler = function()
-            applyDebuff( "target", "mangle_bear" )
+            removeDebuff( "target", "trauma" )
+            removeDebuff( "target", "stampede" )
+            removeDebuff( "target", "mangle_cat" )
+            applyDebuff( "target", "mangle_bear", 60 )
             removeBuff( "clearcasting" )
         end,
 
@@ -1386,6 +1408,9 @@ spec:RegisterAbilities( {
         texture = 132135,
 
         handler = function()
+            removeDebuff( "target", "trauma" )
+            removeDebuff( "target", "stampede" )
+            removeDebuff( "target", "mangle_bear" )
             applyDebuff( "target", "mangle_cat" )
             removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
@@ -1409,6 +1434,7 @@ spec:RegisterAbilities( {
         texture = 136078,
 
         handler = function ()
+            applyBuff( "mark_of_the_wild" )
         end,
 
         copy = { 5232, 6756, 5234, 8907, 9884, 9885, 26990, 48469 },
@@ -1429,6 +1455,7 @@ spec:RegisterAbilities( {
         texture = 136096,
 
         handler = function ()
+            applyDebuff( "target", "moonfire" )
         end,
 
         copy = { 8924, 8925, 8926, 8927, 8928, 8929, 9833, 9834, 9835, 26987, 26988, 48462, 48463 },
@@ -1450,13 +1477,7 @@ spec:RegisterAbilities( {
         texture = 136036,
 
         handler = function ()
-            removeBuff( "cat_form" )
-            removeBuff( "bear_form" )
-            removeBuff( "dire_bear_form" )
-            removeBuff( "aquatic form" )
-            removeBuff( "swift_flight_form" )
-            removeBuff( "travel_form" )
-            applyBuff( "moonkin_form" )
+            swap_form( "moonkin_form" )
         end,
     },
 
@@ -1474,6 +1495,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "natures_grasp" )
         end,
 
         copy = { 16810, 16811, 16812, 16813, 17329, 27009, 53312 },
@@ -1494,6 +1516,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "natures_swiftness" )
         end,
     },
 
@@ -1530,6 +1553,8 @@ spec:RegisterAbilities( {
         texture = 132142,
 
         handler = function ()
+            applyDebuff( "target", "pounce", 3)
+            applyDebuff( "target", "pounce_bleed", 18 )
             gain( 1, "combo_points" )
         end,
     },
@@ -1549,6 +1574,7 @@ spec:RegisterAbilities( {
         texture = 132089,
 
         handler = function ()
+            applyBuff( "prowl" )
         end,
     },
 
@@ -1712,7 +1738,7 @@ spec:RegisterAbilities( {
         texture = 132152,
 
         usable = function() return combo_points.current > 0, "requires combo_points" end,
-        readyTime = function() return debuff.rip.remains end,
+        readyTime = function() return debuff.rip.remains end, -- Clipping rip is a DPS loss and an unpredictable recommendation. AP snapshot on previous rip will prevent overriding
 
         handler = function ()
             applyDebuff( "target", "rip" )
@@ -1856,6 +1882,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "survival_instincts" )
         end,
     },
 
@@ -1874,13 +1901,7 @@ spec:RegisterAbilities( {
         texture = 132128,
 
         handler = function ()
-            removeBuff( "cat_form" )
-            removeBuff( "moonkin_form" )
-            removeBuff( "bear_form" )
-            removeBuff( "dire_bear_form" )
-            removeBuff( "aquatic form" )
-            removeBuff( "travel_form" )
-            applyBuff( "swift_flight_form" )
+            swap_form( "swift_flight_form" )
         end,
     },
 
@@ -1959,6 +1980,7 @@ spec:RegisterAbilities( {
         texture = 136104,
 
         handler = function ()
+            applyBuff( "thorns" )
         end,
 
         copy = { 782, 1075, 8914, 9756, 9910, 26992, 53307 },
@@ -2038,13 +2060,7 @@ spec:RegisterAbilities( {
         texture = 132144,
 
         handler = function ()
-            removeBuff( "cat_form" )
-            removeBuff( "moonkin_form" )
-            removeBuff( "bear_form" )
-            removeBuff( "dire_bear_form" )
-            removeBuff( "aquatic form" )
-            removeBuff( "swift_flight_form" )
-            applyBuff( "travel_form" )
+            swap_form( "travel_form" )
         end,
     },
 
