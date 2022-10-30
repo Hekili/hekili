@@ -1572,11 +1572,6 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        toggle = "interrupts",
-
-        debuff = "casting",
-        readyTime = state.timeToInterrupt,
-
         handler = function ()
             if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
             if talent.mastery_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
