@@ -1,6 +1,6 @@
 name: Priority/Recommendation Issue
-description: The addon appears fully functional, but its recommendations don't match my expectations.
-title: "[REC] REPLACE THIS TEXT WITH YOUR CLASS/SPEC AND BRIEF ISSUE DETAILS"
+description: I disagree with the recommendations made by the addon, based upon a guide or comparison with a Raidbots sim.
+title: "[BUG] Add a Short Title for your Report"
 labels: [recommendation, triage]
 assignees:
   - Hekili
@@ -52,17 +52,20 @@ body:
         * Recreate the issue you are reporting (i.e., generate 5 Holy Power).
         * When you see the recommendation you disagree with, press `ALT-SHIFT-P` to Pause and Snapshot (or use `ALT-SHIFT-[` to Snapshot without pausing).
           * You can change these keybindings in `/hekili` > Toggles if needed.
+          * If you take the snapshot at a different time, it will **not** be useful and you'll be asked to submit a new one.
         * Type `/hekili` and press Enter.
-        * Open the Snapshots section on the left side.
-        * Select the display which is showing the recommendation (usually Primary).
-        * Select the snapshot number (usually 1, if you took only 1 snapshot).
-        * Copy all of the text in the lower box.
-        * Paste the text to Pastebin (https://pastebin.com).
-        * Provide the Pastebin link here.
+        * Open the Snapshots section on the left side.        
+        * Select the snapshot that shows the recommendation that you disagree with.
+          * Snapshots are labeled with your specialization, the display in question (usually, you'll choose Primary), and the recommendations the addon made with their timings.
+        * Click in the `Export Snapshot` box, press `CTRL+A` to select all text *including hidden text*, press `CTRL+C` to copy, then paste into the box below with `CTRL+V`.
         
         This step is essential, as most issues are related to specific classes, specializations, gear, talent choices, or other game systems.
         If you do not provide this information, I cannot triage your problem.
-      placeholder: http://pastebin.com/AbCdEfGh
+      placeholder: |
+        Feral; Primary - Rake(0.00), Scars of Fraternal Strife(1.00), Thrash (Cat)(1.00), Tiger's Fury(1.00), Convoke the Spirits(1.00), Primal Wrath(4.00), Shred(5.00), Shred(6.00), Shred(7.00), Shred(8.00)
+        build: 10.0.0-99.1
+        level: 60 (60)
+      render: Text
     validations:
       required: true
   - type: input
