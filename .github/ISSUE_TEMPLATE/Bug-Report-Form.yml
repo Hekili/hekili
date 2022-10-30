@@ -1,7 +1,7 @@
 name: In-Game Error Message
 description: |
-  Use this template when there is an error message or the addon behaves unexpectedly EXCEPT recommendations.
-  You will need BugSack and BugGrabber to capture and supply these error messages.
+  Use this template when there is an error message or the addon behaves unexpectedly *except* for disagreement about recommendations.
+  You will need BugSack+BugGrabber to capture these error messages.
 title: "[BUG] Add a Short Title for your Report"
 labels: [bug, triage]
 assignees:
@@ -83,7 +83,22 @@ body:
         * Reload WoW (/reload or /reloadui).
         * When WoW finishes reloading, open BugSack and copy the **first** error message.
           * If you need to do something to trigger the error message, do so, then open BugSack and copy the error message.
-      placeholder: "No error messages."
+        
+        If there are no error messages despite the issue, note that in the box.
+      placeholder: |
+        1x [string "error("Example Error Text")"]:1: Example Error Text
+        [string "=[C]"]: in function `error'
+        [string "error("Example Error Text")"]:1: in main chunk
+        [string "=[C]"]: in function `RunScript'
+        [string "@Interface/FrameXML/ChatFrame.lua"]:2165: in function `?'
+        [string "@Interface/FrameXML/ChatFrame.lua"]:5219: in function `ChatEdit_ParseText'
+        [string "@Interface/FrameXML/ChatFrame.lua"]:4883: in function `ChatEdit_SendText'
+        [string "@Interface/FrameXML/ChatFrame.lua"]:4919: in function <Interface/FrameXML/ChatFrame.lua:4915>
+        [string "=[C]"]: in function `ChatEdit_OnEnterPressed'
+        [string "*ChatFrame.xml:127_OnEnterPressed"]:1: in function <[string "*ChatFrame.xml:127_OnEnterPressed"]:1>
+
+        Locals:
+        (*temporary) = "Example Error Text"
       render: Text
     validations:
       required: true      
