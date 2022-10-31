@@ -1685,24 +1685,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Heals you for $s1% and your pet for $128594s1% of maximum health.$?s270581[    Every $270581s1 Focus spent reduces the cooldown of Exhilaration by ${$270581m2/1000}.1 sec.][]$?s385539[    Exhilaration heals you for an additional ${$385539s1}.1% of your maximum health over $385540d.][]
-    exhilaration = {
-        id = 109304,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-        school = "physical",
-
-        startsCombat = false,
-
-        toggle = "defensives",
-
-        handler = function ()
-            gain( 0.3 * health.max, "health" )
-            if conduit.rejuvenating_wind.enabled or talent.rejuvenating_wind.enabled then applyBuff( "rejuvenating_wind" ) end
-        end,
-    },
-
     -- Talent: Fires an explosive shot at your target. After $t1 sec, the shot will explode, dealing $212680s1 Fire damage to all enemies within $212680A1 yards. Deals reduced damage beyond $s2 targets.
     explosive_shot = {
         id = 212431,
@@ -1902,7 +1884,7 @@ spec:RegisterAbilities( {
 
     -- Talent: You attempt to finish off a wounded target, dealing $s1 Physical damage. Only usable on enemies with less than $s2% health.$?s343248[    Kill Shot deals $343248s1% increased critical damage.][]
     kill_shot = {
-        id = 53351,
+        id = 320976,
         cast = 0,
         cooldown = 10,
         gcd = "spell",
@@ -2208,7 +2190,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "dispellable_enrage" )
             removeBuff( "dispellable_magic" )
-            if talent.improved_tranquilizing_shot.enabled then gain( 10, "focus" ) end
+            if state.spec.survival or talent.improved_tranquilizing_shot.enabled then gain( 10, "focus" ) end
         end,
     },
 

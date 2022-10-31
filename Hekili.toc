@@ -44,7 +44,7 @@ Dragonflight\DruidGuardian.lua
 # Dragonflight\EvokerPreservation.lua
 Dragonflight\HunterBeastMastery.lua
 Dragonflight\HunterMarksmanship.lua
-# Dragonflight\HunterSurvival.lua
+Dragonflight\HunterSurvival.lua
 # Dragonflight\MageArcane.lua
 # Dragonflight\MageFire.lua
 # Dragonflight\MageFrost.lua

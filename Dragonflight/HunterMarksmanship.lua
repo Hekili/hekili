@@ -370,11 +370,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    master_marksman = {
-        id = 269576,
-        duration = 12,
-        max_stack = 1,
-    },
     -- Heals $w1% of the pet's health every $t1 sec.$?s343242[  Each time Mend Pet heals your pet, you have a $343242s2% chance to dispel a harmful magic effect from your pet.][]
     -- https://wowhead.com/beta/spell=136
     mend_pet = {
@@ -1005,21 +1000,6 @@ spec:RegisterAbilities( {
                 removeBuff( "trick_shots" )
                 if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
             end
-        end,
-    },
-
-
-    sentinel_owl = {
-        id = 388045,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        talent = "sentinel_owl",
-        startsCombat = false,
-        texture = 4067367,
-
-        handler = function ()
         end,
     },
 
