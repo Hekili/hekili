@@ -63,7 +63,7 @@ body:
         * In the dropdown menu at the bottom left, click `Share (copy to clipboard)`.
         * Paste the string in the box below.
       placeholder: BYEAwtJ2KpR8WbGzhz/jy2AP8AAAAAAACAiSKJJSCkQaKJkWJAAAAAAACRSSaJBJU4AJBloEA
-  - type: textarea
+  - type: input
     id: player-info
     attributes:
       label: Snapshot
@@ -78,17 +78,13 @@ body:
         * Open the Snapshots section on the left side.        
         * Select the snapshot that shows the recommendation that you disagree with.
           * Snapshots are labeled with your specialization, the display in question (usually, you'll choose Primary), and the recommendations the addon made with their timings.
-        * Click in the `Export Snapshot` box, press `CTRL+A` to select all text *including hidden text*, press `CTRL+C` to copy, then paste into the box below with `CTRL+V`.
+        * Click in the `Export Snapshot` box, press `CTRL+A` to select all text *including hidden text* and press `CTRL+C` to copy.
+        * Open [https://pastebin.com](Pastebin), use `CTRL+V` to paste the snapshot text, then click `Create New Paste`.
+        * Provide the Pastebin link below.
         
         This step is essential, as most issues are related to specific classes, specializations, gear, talent choices, or other game systems.
         If you do not provide this information, I cannot triage your problem.
-      placeholder: |
-        Feral; Primary - Rake(0.00), Scars of Fraternal Strife(1.00), Thrash (Cat)(1.00), Tiger's Fury(1.00), Convoke the Spirits(1.00), Primal Wrath(4.00), Shred(5.00), Shred(6.00), Shred(7.00), Shred(8.00)
-        build: 10.0.0-99.1
-        level: 60 (60)
-        ...
-        
-      render: Text
+      placeholder: https://pastebin.com/aBcDeFgH
     validations:
       required: true
   - type: input
