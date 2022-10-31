@@ -237,21 +237,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Taking damage will grant $102352m1 healing every $102352t sec for $102352d.
-    -- https://wowhead.com/beta/spell=102351
-    cenarion_ward = {
-        id = 102351,
-        duration = 30,
-        max_stack = 1
-    },
-    -- Heals $w1 damage every $t1 seconds.
-    -- https://wowhead.com/beta/spell=102352
-    cenarion_ward = {
-        id = 102352,
-        duration = 8,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Talent / Covenant (Night Fae): Every ${$t1}.2 sec, casting $?a24858|a197625[Starsurge, Starfall,]?a768[Ferocious Bite, Shred, Tiger's Fury,]?a5487[Mangle, Ironfur,][Wild Growth, Swiftmend,] Moonfire, Wrath, Regrowth, Rejuvenation, Rake or Thrash on appropriate nearby targets.
     -- https://wowhead.com/beta/spell=323764
     convoke_the_spirits = {
@@ -370,14 +355,8 @@ spec:RegisterAuras( {
     grove_tending = {
         id = 279793,
         duration = 9,
-        max_stack = 1
-    },
-    -- Heals $w1 every $t1 sec.
-    -- https://wowhead.com/beta/spell=383193
-    grove_tending = {
-        id = 383193,
-        duration = 9,
-        max_stack = 1
+        max_stack = 1,
+        copy = 383193
     },
     -- Taunted.
     -- https://wowhead.com/beta/spell=6795
@@ -466,15 +445,8 @@ spec:RegisterAuras( {
         id = 33763,
         duration = 15,
         type = "Magic",
-        max_stack = 1
-    },
-    -- Healing $w1 every $t1 sec.  Blooms for additional healing when effect expires or is dispelled.
-    -- https://wowhead.com/beta/spell=188550
-    lifebloom = {
-        id = 188550,
-        duration = 15,
-        type = "Magic",
-        max_stack = 1
+        max_stack = 1,
+        copy = 188550
     },
     -- Versatility increased by $w1%.
     -- https://wowhead.com/beta/spell=1126
@@ -806,11 +778,6 @@ spec:RegisterAuras( {
     protector_of_the_pack = {
         id = 201940,
         duration = 3600,
-        max_stack = 1,
-    },
-    sharpened_claws = {
-        id = 279943,
-        duration = 6,
         max_stack = 1,
     },
 
@@ -1616,9 +1583,7 @@ spec:RegisterAbilities( {
 
         talent = "moonkin_form",
         startsCombat = false,
-
         noform = "moonkin_form",
-        talent = "balance_affinity",
 
         handler = function ()
             shift( "moonkin_form" )

@@ -518,14 +518,8 @@ spec:RegisterAuras( {
     prowl = {
         id = 5215,
         duration = 3600,
-        max_stack = 1
-    },
-    -- Stealthed.
-    -- https://wowhead.com/beta/spell=102547
-    prowl = {
-        id = 102547,
-        duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        copy = 102547
     },
     -- Cost of Starsurge and Starfall reduced by $w1%, and their damage increased by $w2%.
     -- https://wowhead.com/beta/spell=393955
@@ -1982,11 +1976,9 @@ spec:RegisterAbilities( {
 
         talent = "innervate",
         startsCombat = false,
+        texture = 136048,
 
         toggle = "cooldowns",
-
-        startsCombat = false,
-        texture = 136048,
 
         usable = function () return group end,
         handler = function ()
@@ -2670,38 +2662,19 @@ spec:RegisterAbilities( {
 
     -- Sprout thorns for $d on the friendly target. When victim to melee attacks, thorns deals $305496s1 Nature damage back to the attacker.    Attackers also have their movement speed reduced by $232559s1% for $232559d.
     thorns = {
-        id = 305496,
-        cast = 0,
-        cooldown = 0.5,
-        gcd = "off",
-        school = "nature",
-
-        pvptalent = "thorns",
-        startsCombat = false,
-
-        handler = function ()
-        end,
-    },
-
-    -- Sprout thorns for $d on the friendly target. When victim to melee attacks, thorns deals $305496s1 Nature damage back to the attacker.    Attackers also have their movement speed reduced by $232559s1% for $232559d.
-    thorns = {
         id = 305497,
         cast = 0,
         cooldown = 45,
         gcd = "totem",
         school = "nature",
 
-        spend = 0.18,
+        spend = 0.12,
         spendType = "mana",
 
         pvptalent = function ()
             if essence.conflict_and_strife.enabled then return end
             return "thorns"
         end,
-
-        spend = 0.12,
-        spendType = "mana",
-
         startsCombat = false,
         texture = 136104,
 
