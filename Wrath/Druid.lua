@@ -325,20 +325,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 339, 1062, 5195, 5196, 9852, 9853, 19970, 19971, 19972, 19973, 19974, 19975, 26989, 27010, 53308, 53313, 65857, 66070 },
     },
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    faerie_fire = {
-        id = 770,
-        duration = 300,
-        max_stack = 1,
-        copy = { 770, 778, 9749, 9907, 26993 },
-    },
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    faerie_fire_feral = {
-        id = 16857,
-        duration = 300,
-        max_stack = 1,
-        copy = { 16857, 17390, 17391, 17392, 27011 },
-    },
     feline_grace = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=20719)
         id = 20719,
         duration = 3600,
@@ -366,6 +352,11 @@ spec:RegisterAuras( {
         id = 33831,
         duration = 30,
         max_stack = 1,
+    },
+    form = {
+        alias = { "aquatic_form", "cat_form", "bear_form", "dire_bear_form", "flight_form", "moonkin_form", "swift_flight_form", "travel_form"  },
+        aliasType = "buff",
+        aliasMode = "first"
     },
     -- Converting rage into health.
     frenzied_regeneration = {
@@ -450,18 +441,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
         copy = { 34153, 34152, 34151 },
-    },
-    mangle_bear = {
-        id = 33878,
-        duration = 60,
-        max_stack = 1,
-        copy = { 33876, 46856, 46857, 57393 }
-    },
-    mangle_cat = {
-        id = 33876,
-        duration = 60,
-        max_stack = 1,
-        copy = { 33878, 46856, 46857, 57393 }
     },
     maul = {
         duration = function () return swings.mainhand_speed end,
@@ -716,13 +695,7 @@ spec:RegisterAuras( {
 
 
 spec:RegisterStateFunction( "swap_form", function( form )
-    removeBuff( "aquatic_form" )
-    removeBuff( "cat_form" )
-    removeBuff( "moonkin_form" )
-    removeBuff( "bear_form" )
-    removeBuff( "dire_bear_form" )
-    removeBuff( "swift_flight_form" )
-    removeBuff( "travel_form" )
+    removeBuff( "form" )
 
     if form == "bear_form" or form == "dire_bear_form" then
         spend( rage.current, "rage" )
@@ -1071,6 +1044,7 @@ spec:RegisterAbilities( {
         texture = 136033,
 
         handler = function ()
+            removeDebuff( "armor_reduction" )
             applyDebuff( "target", "faerie_fire", 300 )
         end,
     },
@@ -1090,6 +1064,7 @@ spec:RegisterAbilities( {
         texture = 136033,
 
         handler = function ()
+            removeDebuff( "armor_reduction" )
             applyDebuff( "target", "faerie_fire_feral", 300 )
         end,
     },
@@ -1396,9 +1371,7 @@ spec:RegisterAbilities( {
         texture = 132135,
 
         handler = function()
-            removeDebuff( "target", "trauma" )
-            removeDebuff( "target", "stampede" )
-            removeDebuff( "target", "mangle_cat" )
+            removeDebuff( "mangle" )
             applyDebuff( "target", "mangle_bear", 60 )
             removeBuff( "clearcasting" )
         end,
@@ -1421,9 +1394,7 @@ spec:RegisterAbilities( {
         texture = 132135,
 
         handler = function()
-            removeDebuff( "target", "trauma" )
-            removeDebuff( "target", "stampede" )
-            removeDebuff( "target", "mangle_bear" )
+            removeDebuff( "target", "mangle" )
             applyDebuff( "target", "mangle_cat" )
             removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
