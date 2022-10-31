@@ -169,21 +169,8 @@ spec:RegisterAuras( {
     ascendance = {
         id = 114050,
         duration = 15,
-        max_stack = 1
-    },
-    -- Talent: Transformed into a powerful Air ascendant. Auto attacks have a $114089r yard range. Stormstrike is empowered and has a $114089r yard range.$?s384411[    Generating $384411s1 $lstack:stacks; of Maelstrom Weapon every $384437t1 sec.][]
-    -- https://wowhead.com/beta/spell=114051
-    ascendance = {
-        id = 114051,
-        duration = 15,
-        max_stack = 1
-    },
-    -- Talent: Transformed into a powerful Water Ascendant. Healing you deal is duplicated and distributed evenly among nearby allies.
-    -- https://wowhead.com/beta/spell=114052
-    ascendance = {
-        id = 114052,
-        duration = 15,
-        max_stack = 1
+        max_stack = 1,
+        copy = { 114051, 114052 }
     },
     -- Talent: Damage taken reduced by $w1%.
     -- https://wowhead.com/beta/spell=108271
@@ -266,12 +253,6 @@ spec:RegisterAuras( {
         alias = { "elemental_blast_critical_strike", "elemental_blast_haste", "elemental_blast_mastery" },
         aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
         aliasType = "buff",
-    },
-    -- buff id is different if not talented.
-    echoes_of_great_sundering = {
-        id = function () return talent.echoes_of_great_sundering.enabled and 384088 or 336217 end,
-        duration = 25,
-        max_stack = 1,
     },
     electrified_shocks = {
         id = 382089,
@@ -452,6 +433,11 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    lightning_rod = {
+        id = 197209,
+        duration = 8,
+        max_stack = 1
+    },
     -- Chance to deal $192109s1 Nature damage when you take melee damage$?a137041[ and have a $s3% chance to generate a stack of Maelstrom Weapon]?a137040[ and have a $s4% chance to generate $s5 Maelstrom][].
     -- https://wowhead.com/beta/spell=192106
     lightning_shield = {
@@ -596,15 +582,8 @@ spec:RegisterAuras( {
         id = 320137,
         duration = 15,
         type = "Magic",
-        max_stack = 2
-    },
-    -- Talent: Your next Lightning Bolt or Chain Lightning will deal $s2% increased damage and be instant cast.
-    -- https://wowhead.com/beta/spell=383009
-    stormkeeper = {
-        id = 383009,
-        duration = 15,
-        type = "Magic",
-        max_stack = 2
+        max_stack = 2,
+        copy = 383009
     },
     -- Incapacitated.
     -- https://wowhead.com/beta/spell=197214
@@ -631,7 +610,8 @@ spec:RegisterAuras( {
         id = 378102,
         duration = 15,
         type = "Magic",
-        max_stack = 3
+        max_stack = 3,
+        copy = 338340
     },
     -- Talent: Movement speed increased by $378075s1%.
     -- https://wowhead.com/beta/spell=378076
@@ -658,21 +638,10 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     },
-    --buff id is different if not talented.
-    windspeakers_lava_resurgence = {
-        id = function () return talent.windspeakers_lava_resurgence.enabled and 378269 or 336065 end,
-        duration = 15,
-        max_stack = 1,
-    },
     wind_gust = {
         id = 263806,
         duration = 30,
         max_stack = 20
-    },
-    wind_rush = {
-        id = 192082,
-        duration = 5,
-        max_stack = 1,
     },
     -- Talent: Lava Burst damage increased by $s1%.
     -- https://wowhead.com/beta/spell=378269
@@ -705,24 +674,8 @@ spec:RegisterAuras( {
             t.caster = "nobody"
         end,
     },
-    -- TODO:  Implement like Bloodtalons, but APL doesn't really require it mechanically.
-    elemental_equilibrium = {
-        id = 347348,
-        duration = 10,
-        max_stack = 1
-    },
-    elemental_equilibrium_debuff = {
-        id = 347349,
-        duration = 30,
-        max_stack = 1
-    },
 
     -- Conduit
-    swirling_currents = {
-        id = 338340,
-        duration = 15,
-        max_stack = 1
-    },
     vital_accretion = {
         id = 337984,
         duration = 60,
