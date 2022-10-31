@@ -1878,13 +1878,15 @@ spec:RegisterAbilities( {
 
     -- Talent: You attempt to finish off a wounded target, dealing $s1 Physical damage. Only usable on enemies with less than $s2% health.$?s343248[    Kill Shot deals $343248s1% increased critical damage.][]
     kill_shot = {
-        id = 320976,
+        id = function() return state.spec.survival and 320976 or 53351 end,
         cast = 0,
-        cooldown = 10,
+        charges = function() return talent.deadeye.enabled and 2 or nil end,
+        cooldown = function() return talent.deadeye.enabled and 7 or 10 end,
+        recharge = function() return talent.deadeye.enabled and 7 or nil end,
         gcd = "spell",
         school = "physical",
 
-        spend = function () return buff.flayers_mark.up and 0 or 10 end,
+        spend = function () return ( buff.hunters_prey.up or buff.flayers_mark.up ) and 0 or 10 end,
         spendType = "focus",
 
         talent = "kill_shot",
@@ -1899,6 +1901,8 @@ spec:RegisterAbilities( {
                 removeBuff( "hunters_prey" )
             end
         end,
+
+        copy = { 53351, 320976 }
     },
 
 
