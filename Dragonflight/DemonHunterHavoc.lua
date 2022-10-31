@@ -326,7 +326,8 @@ spec:RegisterAuras( {
     felfire_haste = {
         id = 389847,
         duration = 8,
-        max_stack = 1
+        max_stack = 1,
+        copy = 338804
     },
     -- Branded, dealing $204021s1% less damage to $@auracaster$?s389220[ and taking $w2% more Fire damage from them][].
     -- https://wowhead.com/beta/spell=207744
@@ -339,15 +340,9 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=391430
     fodder_to_the_flame = {
         id = 391430,
-        duration = 25,
-        max_stack = 1
-    },
-    -- The buff from standing in the pool.
-    fodder_to_the_flame = {
-        id = 330910,
         duration = function () return 30 + ( conduit.brooding_pool.mod * 0.001 ) end,
         max_stack = 1,
-        copy = 391430
+        copy = 330910
     },
     -- The demon is linked to you.
     fodder_to_the_flame_chase = {
@@ -495,7 +490,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=204598
     sigil_of_flame_dot = {
         id = 204598,
-        duration = function() return talent.felfire_heart.enabled and ( 8 or 6 + talent.extended_sigils.rank ) + ( talent.precise_sigils.enabled and 2 or 0 ) end,
+        duration = function() return ( talent.felfire_heart.enabled and 8 or 6 ) + talent.extended_sigils.rank + ( talent.precise_sigils.enabled and 2 or 0 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -621,12 +616,6 @@ spec:RegisterAuras( {
         id = 339229,
         duration = 10,
         max_stack = 1,
-    },
-    -- Conduit
-    felfire_haste = {
-        id = 338804,
-        duration = 8,
-        max_stack = 1
     },
 
     -- PvP Talents
@@ -1267,23 +1256,6 @@ spec:RegisterAbilities( {
             setCooldown( "global_cooldown", 0.25 )
             if conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
             if active_enemies == 1 and talent.isolated_prey.enabled then gain( 25, "fury" ) end
-        end,
-    },
-
-    -- Rush forward, incinerating anything in your path for $192611s1 Chaos damage.
-    fel_rush = {
-        id = 344865,
-        cast = 0,
-        charges = function() return talent.blazing_path.enabled and 2 or nil end,
-        cooldown = 10,
-        recharge = function() return talent.blazing_path.enabled and 10 or nil end,
-        gcd = "off",
-        school = "physical",
-
-        startsCombat = false,
-
-        handler = function ()
-            -- trigger fel_rush [195072]
         end,
     },
 

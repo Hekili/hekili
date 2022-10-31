@@ -512,7 +512,7 @@ spec:RegisterAuras( {
     },
     trueshot = {
         id = 288613,
-        duration = function () return ( 15 + ( legendary.eagletalons_true_focus.enabled and 3 or 0 ) + ( 1.5 * talent.eagletalons_true_focus.rank ) or 15 ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
+        duration = function () return ( 15 + ( legendary.eagletalons_true_focus.enabled and 3 or 0 ) + ( 1.5 * talent.eagletalons_true_focus.rank ) ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
         max_stack = 1,
     },
     -- Talent: Critical strike chance increased by $s1%. Critical damage dealt increased by $s2%.

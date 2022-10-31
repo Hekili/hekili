@@ -397,10 +397,10 @@ spec:RegisterAuras( {
     },
     -- Talent: Movement speed reduced by $s2%.
     -- https://wowhead.com/beta/spell=342240
-    ice_strike = {
+    ice_strike_snare = {
         id = 342240,
         duration = 6,
-        max_stack = 1
+        max_stack = 1,
     },
     -- Talent: Damage of your next Frost Shock increased by $s1%.
     -- https://wowhead.com/beta/spell=384357
@@ -537,13 +537,6 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    -- Talent:
-    -- https://wowhead.com/beta/spell=58876
-    spirit_walk = {
-        id = 58876,
-        duration = 0.1,
-        max_stack = 1
-    },
     -- Talent: Able to move while casting all Shaman spells.
     -- https://wowhead.com/beta/spell=79206
     spiritwalkers_grace = {
@@ -568,21 +561,14 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
-    -- Your next Chain Lightning will deal $s2% increased damage and be instant cast.
-    -- https://wowhead.com/beta/spell=320137
-    stormkeeper = {
-        id = 320137,
-        duration = 15,
-        type = "Magic",
-        max_stack = 2
-    },
     -- Your next Lightning Bolt or Chain Lightning will deal $s2% increased damage and be instant cast.
     -- https://wowhead.com/beta/spell=383009
     stormkeeper = {
         id = 383009,
         duration = 15,
         type = "Magic",
-        max_stack = 2
+        max_stack = 2,
+        copy = 320137
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=197214

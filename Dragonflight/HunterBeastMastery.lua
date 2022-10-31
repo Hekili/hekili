@@ -673,14 +673,8 @@ spec:RegisterAuras( {
     fortitude_of_the_bear = {
         id = 388035,
         duration = 10,
-        max_stack = 1
-    },
-    -- Maximum health increased by $s1%.
-    -- https://wowhead.com/beta/spell=392956
-    fortitude_of_the_bear = {
-        id = 392956,
-        duration = 10,
-        max_stack = 1
+        max_stack = 1,
+        copy = 392956
     },
     freezing_trap = {
         id = 3355,

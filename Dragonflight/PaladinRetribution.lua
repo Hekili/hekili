@@ -407,7 +407,8 @@ spec:RegisterAuras( {
         duration = 6,
         tick_time = 2,
         type = "Magic",
-        max_stack = 1
+        max_stack = 1,
+        copy = 344067
     },
     -- Talent: Counterattacking all melee attacks.
     -- https://wowhead.com/beta/spell=205191
@@ -702,11 +703,6 @@ spec:RegisterAuras( {
         duration = 60,
         max_stack = 1,
         copy = 287731
-    },
-    expurgation = {
-        id = 344067,
-        duration = 6,
-        max_stack = 1
     },
     -- Power: 335069
     negative_energy_token_proc = {
@@ -1375,7 +1371,7 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function() return talent.vanguards_momentum.enabled and 2 or nil end,
         cooldown = function() return 7.5 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) end,
-        charges = function() return talent.vanguards_momentum.enabled and ( 7.5 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) ) or nil end,
+        recharge = function() return talent.vanguards_momentum.enabled and ( 7.5 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) ) or nil end,
         hasteCD = true,
         gcd = "spell",
         school = "holy",

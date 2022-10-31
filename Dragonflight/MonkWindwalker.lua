@@ -387,7 +387,24 @@ spec:RegisterAuras( {
         id = 393050,
         duration = 5,
         max_stack = 1,
-        copy = 337482
+        copy = 337482,
+        generate = function( t, auraType )
+            local lastCast, castTime = action.fists_of_fury.lastCast, action.fists_of_fury.cast
+
+            if query_time - lastCast < castTime + 5 then
+                t.count = 1
+                t.expires = lastCast + castTime + 5
+                t.applied = lastCast + castTime
+                t.caster = "player"
+
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
     },
     -- Taunted. Movement speed increased by $s3%.
     -- https://wowhead.com/beta/spell=116189
@@ -467,7 +484,7 @@ spec:RegisterAuras( {
     spinning_crane_kick = {
         id = 101546,
         duration = function () return 1.5 * haste end,
-        duration = function () return 0.5 * haste end,
+        tick_time = function () return 0.5 * haste end,
         max_stack = 1
     },
     -- Talent: Elemental spirits summoned, mirroring all of the Monk's attacks.  The Monk and spirits each do ${100+$m1}% of normal damage and healing.
@@ -639,35 +656,6 @@ spec:RegisterAuras( {
         id = 273298,
         duration = 15,
         max_stack = 1
-    },
-
-    -- Legendaries
-    invokers_delight = {
-        id = 338321,
-        duration = 15,
-        max_stack = 1
-    },
-    pressure_point = {
-        id = 337482,
-        duration = 5,
-        max_stack = 1,
-        generate = function( t, auraType )
-            local lastCast, castTime = action.fists_of_fury.lastCast, action.fists_of_fury.cast
-
-            if query_time - lastCast < castTime + 5 then
-                t.count = 1
-                t.expires = lastCast + castTime + 5
-                t.applied = lastCast + castTime
-                t.caster = "player"
-
-                return
-            end
-
-            t.count = 0
-            t.expires = 0
-            t.applied = 0
-            t.caster = "nobody"
-        end,
     },
 } )
 

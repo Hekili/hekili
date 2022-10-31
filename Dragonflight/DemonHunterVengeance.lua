@@ -317,7 +317,8 @@ spec:RegisterAuras( {
     sigil_of_flame_active = {
         id = 204596,
         duration = 2,
-        max_stack = 1
+        max_stack = 1,
+        copy = 389810
     },
     -- Talent: Suffering $w2 $@spelldesc395020 damage every $t2 sec.
     -- https://wowhead.com/beta/spell=204598
@@ -325,13 +326,6 @@ spec:RegisterAuras( {
         id = 204598,
         duration = function () return ( talent.concentrated_sigils.enabled and 8 or 6 ) + talent.erratic_felheart.rank + ( 2 * talent.precise_sigils.rank ) end,
         type = "Magic",
-        max_stack = 1
-    },
-    -- Talent: Sigil of Flame is active.
-    -- https://wowhead.com/beta/spell=389810
-    sigil_of_flame_active = {
-        id = 389810,
-        duration = 2,
         max_stack = 1
     },
     -- Talent: Disoriented.
@@ -947,7 +941,7 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function() return talent.blazing_path.enabled and 2 or nil end,
         cooldown = function() return ( talent.meteoric_strikes.enabled and 12 or 20 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) end,
-        charges = function() return talent.blazing_path.enabled and ( ( talent.meteoric_strikes.enabled and 12 or 20 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) ) or nil end,
+        recharge = function() return talent.blazing_path.enabled and ( ( talent.meteoric_strikes.enabled and 12 or 20 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) ) or nil end,
         gcd = "off",
         school = "physical",
 
@@ -1144,9 +1138,6 @@ spec:RegisterAbilities( {
         talent = "soul_barrier",
         startsCombat = false,
 
-        handler = function ()
-            applyBuff( "soul_barrier" )
-        end,
 
         toggle = "defensives",
 

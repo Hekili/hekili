@@ -10047,6 +10047,7 @@ do
         { "trinket%.([%w_]+)%.cooldown.([%w_]+)"        , "trinket.%1.cooldown.%2"          },
         { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration" , "trinket.%1.buff_duration"        },
         { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"   , "trinket.%1.has_use_buff"         },
+        { "trinket%.([%w_]+)%.has_buff%.([%w_]+)"       , "trinket.%1.has_use_buff"         },
         { "min:([%w_]+)"                                , "%1"                              },
         { "position_back"                               , "true"                            },
         { "max:(%w_]+)"                                 , "%1"                              },
