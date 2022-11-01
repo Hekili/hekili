@@ -10056,6 +10056,7 @@ do
         { "time_to_sht%.(%d+)%.plus"                    , "time_to_sht_plus.%1"             },
         { "target"                                      , "target.unit"                     },
         { "player"                                      , "player.unit"                     },
+        { "gcd"                                         , "gcd.max"                         },
 
         { "equipped%.(%d+)", nil, function( item )
             item = tonumber( item )
@@ -10072,11 +10073,8 @@ do
 
     local operations = {
         { "=="  , "="  },
-        { "%%%%", "//" },
         { "%%"  , "/"  },
-        { "//"  , "%%" },
-        -- { "%%", "/" },
-        -- { "//", "%" },
+        { "//"  , "%%" }
     }
 
 
@@ -10109,16 +10107,11 @@ do
             ['%%'] = true
         }
 
-        local times, orig = 0
-        local output = ""
-
-        local dbg = "Start: " .. i .. "\n"
+        local times = 0
+        local output, pre = "", ""
 
         for op1, token, op2 in gmatch( i, "([^%w%._ ]*)([%w%._]+)([^%w%._ ]*)" ) do
-            dbg = dbg .. "Matches: " .. ( op1 or "nil" ) .. " / " .. ( token or "nil" ) .. " / " .. ( op2 or "nil" ) .. "\n"
-            local pre
-
-            if op1 and op1:len() > 0 then
+            --[[ if op1 and op1:len() > 0 then
                 pre = op1
                 for _, subs in ipairs( operations ) do
                     op1, times = op1:gsub( subs[1], subs[2] )
@@ -10127,7 +10120,7 @@ do
                         insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. op1 .. "' (" ..times .. "x)." )
                     end
                 end
-            end
+            end ]]
 
             if token and token:len() > 0 then
                 pre = token
@@ -10145,30 +10138,45 @@ do
                             if s5 then token = token:gsub( "%%5", s5 ) end
 
                             if times > 0 then
-                                insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. token .. "' (" ..times .. "x)." )
+                                insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. token .. "' (" .. times .. "x)." )
                             end
                         end
                     elseif subs[3] then
                         local val = token:match( "^" .. subs[1] .. "$" )
                         if val ~= nil then
                             token = subs[3]( val )
-                            insert( warnings, "Line " .. line .. ":Converted '" .. pre .. "' to '" .. token .. "'." )
+                            insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. token .. "'." )
                         end
                     end
                 end
             end
 
+            --[[
             if op2 and op2:len() > 0 then
-                pre = op2
                 for _, subs in ipairs( operations ) do
                     op2, times = op2:gsub( subs[1], subs[2] )
                     if times > 0 then
                         insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. op2 .. "' (" ..times .. "x)." )
                     end
                 end
-            end
+            end ]]
 
             output = output .. ( op1 or "" ) .. ( token or "" ) .. ( op2 or "" )
+        end
+
+        local ops_swapped = false
+        pre = output
+
+        -- Replace operators after its been stitched back together.
+        for _, subs in ipairs( operations ) do
+            output, times = output:gsub( subs[1], subs[2] )
+            if times > 0 then
+                ops_swapped = true
+            end
+        end
+
+        if ops_swapped then
+            insert( warnings, "Line " .. line .. ": Converted operations in '" .. pre .. "' to '" .. output .. "'." )
         end
 
         return output
