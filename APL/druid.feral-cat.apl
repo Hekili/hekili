@@ -21,7 +21,7 @@ actions.cat+=/ferocious_bite,if=((debuff.rip.remains>=12&buff.savage_roar.remain
 actions.cat+=/dire_bear_form,if=!buff.berserk.up&cooldown.tigers_fury.remains>6&debuff.rip.remains>8&buff.savage_roar.remains>6&energy.current<40
 actions.cat+=/rake,if=!up|debuff.rake.remains<0.8
 actions.cat+=/faerie_fire_feral,if=!debuff.armor_reduction.up&!buff.berserk.up
-actions.cat+=/shred
+actions.cat+=/shred,if=energy.current>60
 
 actions.cat_aoe+=/tigers_fury,if=energy.current<30
 actions.cat_aoe+=/berserk,if=cooldown.tigers_fury.remains>15
