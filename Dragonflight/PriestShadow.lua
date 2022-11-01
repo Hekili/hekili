@@ -32,10 +32,10 @@ spec:RegisterResource( Enum.PowerType.Insanity, {
             local app = state.buff.casting.applied
             local t = state.query_time
 
-            return app + floor( ( t - app ) / class.auras.mind_flay_insanity.tick_time ) * class.auras.mind_flay_insanity.tick_time
+            return app + floor( ( t - app ) / class.auras.mind_flay_insanity_dot.tick_time ) * class.auras.mind_flay_insanity_dot.tick_time
         end,
 
-        interval = function () return class.auras.mind_flay_insanity.tick_time end,
+        interval = function () return class.auras.mind_flay_insanity_dot.tick_time end,
         value = 4,
     },
 
@@ -122,7 +122,7 @@ spec:RegisterResource( Enum.PowerType.Insanity, {
         end,
 
         interval = function() return class.auras.vampiric_touch.tick_time end,
-        value = function() return talent.maddening_touch.rank end,
+        value = function() return state.talent.maddening_touch.rank end,
     }
 } )
 spec:RegisterResource( Enum.PowerType.Mana )
@@ -1425,8 +1425,8 @@ spec:RegisterAbilities( {
         tick_time = function () return class.auras.mind_flay.tick_time end,
 
         start = function ()
-            applyDebuff( "target", buff.mind_flay_insanity.up and "mind_flay_insanity_" or "mind_flay" )
-            channelSpell( "mind_flay" )
+            applyDebuff( "target", buff.mind_flay_insanity.up and "mind_flay_insanity_dot" or "mind_flay" )
+            channelSpell( buff.mind_flay_insanity.up and "mind_flay_insanity" or "mind_flay" )
             if talent.dark_evangelism.enabled then addStack( "dark_evangelism" ) end
             forecastResources( "insanity" )
         end,
