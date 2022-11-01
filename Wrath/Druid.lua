@@ -128,7 +128,7 @@ end )
 spec:RegisterStateTable( "rip_tracker", setmetatable( {
     cache = {},
     reset = function()
-        cache = {}
+        table.wipe(cache)
     end
     }, {
     
