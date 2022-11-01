@@ -1906,7 +1906,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if debuff.rip.up and rip_tracker[target.unit].extension < 6 then
                 rip_tracker[target.unit].extension = rip_tracker[target.unit].extension + 2
-                applyDebuff( "rip", debuff.rip.remains + 2)
+                applyDebuff( "target", "rip", debuff.rip.remains + 2)
             end
             gain( 1, "combo_points" )
             removeBuff( "clearcasting" )
