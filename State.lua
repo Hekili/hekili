@@ -373,7 +373,7 @@ local mt_trinket = {
         elseif k == "has_use_buff" or k == "use_buff" then
             return isEnabled and t.__has_use_buff or false
         elseif k == "use_buff_duration" or k == "buff_duration" then
-            return isEnabled and t.__has_use_buff and t.__use_buff.duration or 0
+            return isEnabled and t.__has_use_buff and t.__use_buff_duration or 0.01
         elseif k == "has_proc" or k == "proc" then
             return isEnabled and t.__proc or false
         end
@@ -3037,7 +3037,7 @@ do
                     class.abilities[ k ] = class.abilities[ shortkey ]
                     entry = class.abilities[ k ]
                 else
-                    if not rawget( t, "null_cooldown" ) then t.null_cooldown = { key = "null_cooldown" } end
+                    if not rawget( t, "null_cooldown" ) then t.null_cooldown = { key = "null_cooldown", duration = 1 } end
                     return t.null_cooldown
                 end
             end

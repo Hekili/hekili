@@ -3481,7 +3481,7 @@ do
             local import, warnings = self:ParseActionList( list )
 
             if warnings then
-                AddWarning( "WARNING:  The import for '" .. name .. "' required some automated changes." )
+                AddWarning( "The import for '" .. name .. "' required some automated changes." )
 
                 for i, warning in ipairs( warnings ) do
                     AddWarning( warning )
@@ -6137,14 +6137,12 @@ do
                                 },
 
                                 warnings = {
-                                    type = "description",
-                                    name = function ()
-                                        local p = rawget( Hekili.DB.profile.packs, pack )
-                                        return "|cFFFFD100Import Log|r\n" .. ( p.warnings or "" ) .. "\n\n"
-                                    end,
+                                    type = "input",
+                                    name = "Import Log",
                                     order = 5,
-                                    fontSize = "medium",
+                                    -- fontSize = "medium",
                                     width = "full",
+                                    multiline = 20,
                                     hidden = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
                                         return not p.warnings or p.warnings == ""

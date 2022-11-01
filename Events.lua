@@ -783,11 +783,20 @@ do
 
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t1.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
-                    state.trinket.t1.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
+                    state.trinket.t1.__use_buff_duration = class.auras[ spellID ] and class.auras[ spellID ].duration or 0.01
                 elseif class.abilities[ tSpell ].self_buff then
                     state.trinket.t1.__has_use_buff = true
-                    state.trinket.t1.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration
+                    state.trinket.t1.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration or 0.01
                 end
+            end
+
+            if not isUsable then
+                state.trinket.t1.cooldown = {
+                    remains = 0,
+                    duration = 1
+                }
+            else
+                state.trinket.t1.cooldown = nil
             end
 
             ns.Tooltip:SetOwner( UIParent )
@@ -831,11 +840,20 @@ do
 
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t2.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
-                    state.trinket.t2.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
+                    state.trinket.t2.__use_buff_duration = class.auras[ spellID ] and class.auras[ spellID ].duration or 0.01
                 elseif tSpell and class.abilities[ tSpell ].self_buff then
                     state.trinket.t2.__has_use_buff = true
-                    state.trinket.t2.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration
+                    state.trinket.t2.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration or 0.01
                 end
+            end
+
+            if not isUsable then
+                state.trinket.t2.cooldown = {
+                    remains = 0,
+                    duration = 1
+                }
+            else
+                state.trinket.t2.cooldown = nil
             end
 
             ns.Tooltip:SetOwner( UIParent )
