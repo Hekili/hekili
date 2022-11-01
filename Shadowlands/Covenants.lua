@@ -2373,15 +2373,26 @@ elseif baseClass == "WARRIOR" then
             id = function () return talent.massacre.enabled and 330325 or 317485 end,
             known = 317349,
             cast = 0,
-            cooldown = function () return state.spec.fury and ( 4.5 * haste ) or 0 end,
+            cooldown = function ()
+                if state.spec.fury then
+                    return ( talent.massacre.enabled and 4.5 or 6 )
+                elseif state.spec.arms then
+                    return ( talent.improved_execute.enabled and 0 or 6 )
+                else -- Protection
+                    return 0
+                end
+            end,
             hasteCD = true,
             gcd = "spell",
 
             rangeSpell = function () return class.abilities.execute and class.abilities.execute.id end,
 
             spend = function ()
-                if state.spec.fury then return -20 end
-                return buff.sudden_death.up and 0 or 20
+                if state.spec.fury then
+                    return ( talent.improved_execute.enabled and -20 or 0 )
+                else 
+                    return 0
+                end
             end,
             spendType = "rage",
 
@@ -2400,14 +2411,22 @@ elseif baseClass == "WARRIOR" then
 
             indicator = function () if cycle_for_condemn then return "cycle" end end,
 
+            timeToReady = function()
+                -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
+                if state.spec.fury or rage.current >= 20 then return 0 end
+                return rage.time_to_20
+            end,
+
             handler = function ()
                 applyDebuff( "target", "condemned" )
 
                 if not state.spec.fury and buff.sudden_death.down then
-                    local extra = min( 20, rage.current )
+                    local extra = min( 40, rage.current ) -- Can spend up to 40 rage max
 
                     if extra > 0 then spend( extra, "rage" ) end
-                    gain( 4 + floor( 0.2 * extra ), "rage" )
+                    if talent.improved_execute.enabled or state.spec.protection then
+                        gain( extra * 0.2, "rage" )
+                    end
                 end
 
                 if legendary.sinful_surge.enabled then
@@ -2420,7 +2439,24 @@ elseif baseClass == "WARRIOR" then
 
                 removeBuff( "sudden_death" )
 
-                if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
+                if state.spec.protection and talent.juggernaut.enabled then
+                    addStack( "juggernaut", nil, 1 ) 
+                end
+
+                if state.spec.fury then
+                    removeStack( "whirlwind" )
+                    if talent.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
+                end
+
+                if state.spec.arms then
+                    if talent.critical_thinking.enabled then
+                        gain( cost * (talent.critical_thinking.rank * 0.05), "rage") -- Regain up to another 10% for critical thinking
+                    end
+                    if talent.executioners_precision.enabled then applyBuff ( "executioners_precision" ) end
+                    if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
+                    if talent.juggernaut.enabled then addStack( "juggernaut", nil, 1 ) end
+                end
+                --if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
             end,
 
             auras = {
