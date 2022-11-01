@@ -1175,7 +1175,7 @@ spec:RegisterAbilities( {
             end
 
             removeStack( "whirlwind" )
-            if talent.ashen_juggernaut.enabled then applyBuff( "ashen_juggernaut" ) end
+            if talent.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
         end,
         auras = {
             -- Target Swapping
