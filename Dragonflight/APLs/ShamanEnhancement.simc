@@ -1,6 +1,7 @@
 actions.precombat+=/windfury_weapon
 actions.precombat+=/flametongue_weapon
-actions.precombat+=/lightning_shield
+actions.precombat+=/lightning_shield,if=buff.lightning_shield.down&(buff.earth_shield.down|talent.elemental_orbit.enabled)
+actions.precombat+=/earth_shield,if=buff.lightning_shield.up&buff.earth_shield.down&talent.elemental_orbit.enabled
 actions.precombat+=/windfury_totem,if=!runeforge.doom_winds.equipped&buff.windfury_totem.down
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/variable,name=trinket1_is_weird,value=trinket.1.is.the_first_sigil|trinket.1.is.scars_of_fraternal_strife|trinket.1.is.cache_of_acquired_treasures

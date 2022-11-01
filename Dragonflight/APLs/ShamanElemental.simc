@@ -1,5 +1,7 @@
 # Ensure weapon enchant is applied.
 actions.precombat+=/flametongue_weapon,if=talent.improved_flametongue_weapon.enabled
+actions.precombat+=/lightning_shield,if=buff.lightning_shield.down&(buff.earth_shield.down|talent.elemental_orbit.enabled)
+actions.precombat+=/earth_shield,if=buff.lightning_shield.up&buff.earth_shield.down&talent.elemental_orbit.enabled
 actions.precombat+=/potion
 
 # Executed every time the actor is available.
@@ -15,6 +17,9 @@ actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 actions+=/use_items
 actions+=/meteor
 actions+=/tempest,if=buff.call_lightning.stack>=10
+actions+=/vesper_totem
+actions+=/fae_transfusion,if=action.fae_transfusion.known&!runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up)&spell_targets.chain_lightning<3
+actions+=/fae_transfusion,if=action.fae_trans&runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up|spell_targets.chain_lightning>=3)&(cooldown.fire_elemental.remains>20|cooldown.storm_elemental.remains>20)
 actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
 actions+=/run_action_list,name=single_target
 
