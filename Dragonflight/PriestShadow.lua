@@ -1587,7 +1587,7 @@ spec:RegisterAbilities( {
 
     -- Covenant (Venthyr): Assault an enemy's mind, dealing ${$s1*$m3/100} Shadow damage and briefly reversing their perception of reality.    $?c3[For $d, the next $<damage> damage they deal will heal their target, and the next $<healing> healing they deal will damage their target.    |cFFFFFFFFReversed damage and healing generate up to ${$323706s2*2} Insanity.|r]  ][For $d, the next $<damage> damage they deal will heal their target, and the next $<healing> healing they deal will damage their target.    |cFFFFFFFFReversed damage and healing restore up to ${$323706s3*2}% mana.|r]
     mindgames = {
-        id = function() return talent.mindgames.known and 375901 or 323673 end,
+        id = function() return talent.mindgames.enabled and 375901 or 323673 end,
         cast = 1.5,
         cooldown = 45,
         gcd = "spell",
@@ -1601,6 +1601,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "mindgames" )
         end,
+
+        copy = { 375901, 323673 }
     },
 
     -- Talent: Infuses the target with power for $d, increasing haste by $s1%.
