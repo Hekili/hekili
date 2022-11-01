@@ -69,7 +69,7 @@ actions.es_fr_active+=/judgment,if=!debuff.judgment.up
 actions.es_fr_active+=/hammer_of_wrath
 actions.es_fr_active+=/crusader_strike
 actions.es_fr_active+=/arcane_torrent
-actions.es_fr_active+=/exorcism
+actions.es_fr_active+=/exorcism,if=active_enemies=1|consecration.up
 actions.es_fr_active+=/consecration
 
 actions.es_fr_pooling=seraphim,if=holy_power=5&(!talent.final_reckoning|cooldown.final_reckoning.remains<=gcd*3)&(!talent.execution_sentence|cooldown.execution_sentence.remains<=gcd*3|talent.final_reckoning)&(!action.divine_toll.known|cooldown.divine_toll.remains<9)
@@ -85,7 +85,7 @@ actions.es_fr_pooling+=/seraphim,if=!talent.final_reckoning&cooldown.execution_s
 actions.es_fr_pooling+=/call_action_list,name=finishers
 actions.es_fr_pooling+=/crusader_strike
 actions.es_fr_pooling+=/arcane_torrent,if=holy_power<=4
-actions.es_fr_pooling+=/exorcism
+actions.es_fr_pooling+=/exorcism,if=active_enemies=1|consecration.up
 actions.es_fr_pooling+=/seraphim,if=(!talent.final_reckoning|cooldown.final_reckoning.remains<=gcd*3)&(!talent.execution_sentence|cooldown.execution_sentence.remains<=gcd*3|talent.final_reckoning)&(!action.divine_toll.known|cooldown.divine_toll.remains<9)
 actions.es_fr_pooling+=/consecration
 
@@ -104,7 +104,7 @@ actions.generators+=/divine_toll,if=holy_power<=2&!debuff.judgment.up&(!talent.s
 actions.generators+=/judgment,if=!debuff.judgment.up&(holy_power>=1&runeforge.the_magistrates_judgment|holy_power>=2)
 actions.generators+=/wake_of_ashes,if=(holy_power=0|holy_power<=2&cooldown.blade_of_justice.remains>gcd*2)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)&(!talent.seraphim|cooldown.seraphim.remains>5|action.divine_toll.known)&(!talent.execution_sentence|cooldown.execution_sentence.remains>15|target.time_to_die<8|spell_targets.divine_storm>=5)&(!talent.final_reckoning|cooldown.final_reckoning.remains>15|fight_remains<8)&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)
 actions.generators+=/call_action_list,name=finishers,if=holy_power>=3&buff.crusade.up&buff.crusade.stack<10
-actions.generators+=/exorcism
+actions.generators+=/exorcism,if=active_enemies=1|consecration.up
 actions.generators+=/blade_of_justice,if=conduit.expurgation&holy_power<=3
 actions.generators+=/judgment,if=!debuff.judgment.up
 actions.generators+=/hammer_of_wrath
