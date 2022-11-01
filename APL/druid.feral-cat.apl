@@ -12,7 +12,7 @@ actions.cat+=/shred,if=buff.clearcasting.up
 actions.cat+=/tigers_fury,if=energy.current<30
 actions.cat+=/berserk,if=cooldown.tigers_fury.remains>15
 actions.cat+=/wait,sec=debuff.rip.remains,if=debuff.rip.remains<energy.time_to_max&combo_points.current=5&!buff.berserk.up&(!debuff.lacerate.up|debuff.lacerate.remains>=debuff.rip.remains+4)
-actions.cat+=/rip,if=(!up|debuff.rip.remains<4)&combo_points.current=5
+actions.cat+=/rip,if=!up&combo_points.current=5
 actions.cat+=/savage_roar,if=(debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-debuff.rip.remains<0&debuff.rip.remains+((debuff.rip.remains<9&2)|10)<14+((combo_points.current-1)*5))|(debuff.rip.up&remains<4&((combo_points.current<4&debuff.rip.remains>10)|(combo_points.current=4&debuff.rip.remains>13)|(combo_points.current=5&debuff.rip.remains>16)))|(!debuff.rip.up&!up&combo_points.current<4)
 actions.cat+=/mangle_cat,if=!debuff.mangle.up
 actions.cat+=/rake,if=!up&energy.current=100&combo_points.current<5
