@@ -334,7 +334,7 @@ spec:RegisterAuras( {
     },
     invoke_xuen = {
         id = 123904,
-        duration = 24,
+        duration = 20, -- 11/1 nerf from 24 to 20.
         max_stack = 1,
         hidden = true,
         copy = "invoke_xuen_the_white_tiger"
