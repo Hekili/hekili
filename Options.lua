@@ -4849,17 +4849,17 @@ do
                                                 out = out .. "\nAlternative(s): "
                                             end
 
-                                            local n = 0
+                                            local n = 1
 
+                                            local name, _, tex = GetSpellInfo( spells.best )
+                                            out = format( out, UnitClass( "player" ), tex, name )
                                             for spell in pairs( spells ) do
-                                                if type( spell ) == "number" then
+                                                if type( spell ) == "number" and spell ~= spells.best then
                                                     n = n + 1
 
-                                                    local name, _, tex = GetSpellInfo( spell )
+                                                    name, _, tex = GetSpellInfo( spell )
 
-                                                    if n == 1 then
-                                                        out = string.format( out, UnitClass( "player" ), tex, name )
-                                                    elseif n == 2 and spells.count == 2 then
+                                                    if n == 2 and spells.count == 2 then
                                                         out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
                                                     elseif n ~= spells.count then
                                                         out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r, "
