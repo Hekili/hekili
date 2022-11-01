@@ -957,7 +957,7 @@ spec:RegisterAbilities( {
                     gain( cost * 0.2, "rage" ) -- Regain 20% for target not dying
                 end
                 if talent.critical_thinking.enabled then
-                    gain( cost * (talent.critical_thinking.rank * 0.1), "rage") -- Regain up to another 20% for critical thinking
+                    gain( cost * (talent.critical_thinking.rank * 0.05), "rage" ) -- Regain up to another 10% for critical thinking
                 end
             end
             removeBuff( "sudden_death" )
