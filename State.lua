@@ -16,7 +16,7 @@ local round, roundUp, roundDown = ns.round, ns.roundUp, ns.roundDown
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
-local FindPlayerAuraByID, IsCovenantSpell = ns.FindPlayerAuraByID, ns.IsCovenantSpell
+local FindPlayerAuraByID, IsDisabledCovenantSpell = ns.FindPlayerAuraByID, ns.IsDisabledCovenantSpell
 
 -- Clean up table_x later.
 local insert, remove, sort, tcopy, unpack, wipe = table.insert, table.remove, table.sort, ns.tableCopy, table.unpack, table.wipe
@@ -6693,7 +6693,7 @@ function state:IsKnown( sID )
         return true
     end
 
-    if IsCovenantSpell( sID ) and not IsUsableSpell( sID ) then return false, "covenant spells require shadowlands" end
+    if IsDisabledCovenantSpell( sID ) then return false, "covenant spells are disabled" end
 
     local profile = Hekili.DB.profile
 

@@ -642,6 +642,47 @@ do
         return CovenantSpells[ spellID ] == 1
     end
     ns.IsCovenantSpell = IsCovenantSpell
+
+
+    local cachedStatus = {}
+
+    local WipeCovenantCache = function()
+        wipe( cachedStatus )
+    end
+    ns.WipeCovenantCache = WipeCovenantCache
+
+    local IsDisabledCovenantSpell = function( spellID )
+        local cached = cachedStatus[ spellID ]
+        if cached ~= nil then return cached end
+
+        if not IsCovenantSpell( spellID ) then
+            cachedStatus[ spellID ] = false
+            return false
+        end
+
+        local tooltip = ns.Tooltip
+
+        tooltip:SetOwner( UIParent )
+        tooltip:SetSpellByID( spellID )
+
+        for n = 1, tooltip:NumLines() do
+           local label = tooltip:GetName() .. "TextLeft" .. n
+           local line = _G[ label ]
+           if line then
+              local text = line:GetText()
+              if text == _G.SPELL_FAILED_NOT_HERE then
+                 tooltip:Hide()
+                 cachedStatus[ spellID ] = true
+                 return true
+              end
+           end
+        end
+
+        tooltip:Hide()
+        cachedStatus[ spellID ] = false
+        return false
+    end
+    ns.IsDisabledCovenantSpell = IsDisabledCovenantSpell
 end
 
 

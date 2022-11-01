@@ -360,25 +360,25 @@ end
 
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
     if login or reload then
-    Hekili.PLAYER_ENTERING_WORLD = true
-    Hekili:SpecializationChanged()
-    Hekili:RestoreDefaults()
+        Hekili.PLAYER_ENTERING_WORLD = true
+        Hekili:SpecializationChanged()
+        Hekili:RestoreDefaults()
 
-    ns.checkImports()
-    ns.updateGear()
+        ns.checkImports()
+        ns.updateGear()
 
-    if state.combat == 0 and InCombatLockdown() then
-        state.combat = GetTime() - 0.01
-        Hekili:UpdateDisplayVisibility()
+        if state.combat == 0 and InCombatLockdown() then
+            state.combat = GetTime() - 0.01
+            Hekili:UpdateDisplayVisibility()
+        end
+
+        local _, zone = GetInstanceInfo()
+        state.bg = zone == "pvp"
+        state.arena = zone == "arena"
+        state.torghast = IsInJailersTower()
+
+        Hekili:BuildUI()
     end
-
-    local _, zone = GetInstanceInfo()
-    state.bg = zone == "pvp"
-    state.arena = zone == "arena"
-    state.torghast = IsInJailersTower()
-
-    Hekili:BuildUI()
-end
 end )
 
 
