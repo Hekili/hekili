@@ -136,7 +136,7 @@ spec:RegisterStateTable( "rip_tracker", setmetatable( {
         if not cache[k] then
             local tr = GetTrackedRip( k )
             if tr then
-                cache[k] = tr
+                cache[k] = { extension = tr.extension }
             end
         end
         return cache[k]
@@ -696,7 +696,7 @@ spec:RegisterAuras( {
     -- Bleed damage every $t1 seconds.
     rip = {
         id = 49800,
-        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc == 1 and 4) or 0) end, -- TODO: Remove assumption that duration is at full stack and track actual / future applications of rip time extension
+        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc == 1 and 4) or 0) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
@@ -845,14 +845,14 @@ spec:RegisterStateFunction( "swap_form", function( form )
 end )
 
 -- Maul Helper
+local finish_maul = setfenv( function()
+    spend( 25, "rage" )
+end, state )
+
 spec:RegisterStateFunction( "start_maul", function()
     applyBuff( "maul", swings.time_to_next_mainhand )
     state:QueueAuraExpiration( "maul", finish_maul, buff.maul.expires )
 end )
-
-local finish_maul = setfenv( function()
-    spend( 25, "rage" )
-end, state )
 
 
 -- Abilities
@@ -1863,7 +1863,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "rip" )
             removeBuff( "clearcasting" )
             spend( combo_points.current, "combo_points" )
-            debuff.rip.xtnd = 0
+            rip_tracker[target.unit].extension = 0
         end,
     },
 
