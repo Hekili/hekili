@@ -360,25 +360,25 @@ end
 
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
     if login or reload then
-    Hekili.PLAYER_ENTERING_WORLD = true
-    Hekili:SpecializationChanged()
-    Hekili:RestoreDefaults()
+        Hekili.PLAYER_ENTERING_WORLD = true
+        Hekili:SpecializationChanged()
+        Hekili:RestoreDefaults()
 
-    ns.checkImports()
-    ns.updateGear()
+        ns.checkImports()
+        ns.updateGear()
 
-    if state.combat == 0 and InCombatLockdown() then
-        state.combat = GetTime() - 0.01
-        Hekili:UpdateDisplayVisibility()
+        if state.combat == 0 and InCombatLockdown() then
+            state.combat = GetTime() - 0.01
+            Hekili:UpdateDisplayVisibility()
+        end
+
+        local _, zone = GetInstanceInfo()
+        state.bg = zone == "pvp"
+        state.arena = zone == "arena"
+        state.torghast = IsInJailersTower()
+
+        Hekili:BuildUI()
     end
-
-    local _, zone = GetInstanceInfo()
-    state.bg = zone == "pvp"
-    state.arena = zone == "arena"
-    state.torghast = IsInJailersTower()
-
-    Hekili:BuildUI()
-end
 end )
 
 
@@ -783,11 +783,20 @@ do
 
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t1.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
-                    state.trinket.t1.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
+                    state.trinket.t1.__use_buff_duration = class.auras[ spellID ] and class.auras[ spellID ].duration or 0.01
                 elseif class.abilities[ tSpell ].self_buff then
                     state.trinket.t1.__has_use_buff = true
-                    state.trinket.t1.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration
+                    state.trinket.t1.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration or 0.01
                 end
+            end
+
+            if not isUsable then
+                state.trinket.t1.cooldown = {
+                    remains = 0,
+                    duration = 1
+                }
+            else
+                state.trinket.t1.cooldown = nil
             end
 
             ns.Tooltip:SetOwner( UIParent )
@@ -831,11 +840,20 @@ do
 
                 if spellID and SpellIsSelfBuff( spellID ) then
                     state.trinket.t2.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
-                    state.trinket.t2.__use_buff_duration = ( class.auras[ spellID ] and class.auras[ spellID ].duration )
+                    state.trinket.t2.__use_buff_duration = class.auras[ spellID ] and class.auras[ spellID ].duration or 0.01
                 elseif tSpell and class.abilities[ tSpell ].self_buff then
                     state.trinket.t2.__has_use_buff = true
-                    state.trinket.t2.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration
+                    state.trinket.t2.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration or 0.01
                 end
+            end
+
+            if not isUsable then
+                state.trinket.t2.cooldown = {
+                    remains = 0,
+                    duration = 1
+                }
+            else
+                state.trinket.t2.cooldown = nil
             end
 
             ns.Tooltip:SetOwner( UIParent )
@@ -2093,29 +2111,31 @@ do
         elseif _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
             table.wipe( slotsUsed )
 
-            for i = 1, 10 do
+            for i = 1, 15 do
                 for b = 1, 12 do
                     local btn = _G["ElvUI_Bar" .. i .. "Button" .. b]
 
-                    local binding = btn.bindstring or btn.keyBoundTarget or ( "CLICK " .. btn:GetName() .. ":LeftButton" )
+                    if btn then
+                        local binding = btn.bindstring or btn.keyBoundTarget or ( "CLICK " .. btn:GetName() .. ":LeftButton" )
 
-                    if i > 6 then
-                        -- Checking whether bar is active.
-                        local bar = _G["ElvUI_Bar" .. i]
+                        if i > 6 then
+                            -- Checking whether bar is active.
+                            local bar = _G["ElvUI_Bar" .. i]
 
-                        if not bar or not bar.db.enabled then
-                            binding = "ACTIONBUTTON" .. b
+                            if not bar or not bar.db.enabled then
+                                binding = "ACTIONBUTTON" .. b
+                            end
                         end
-                    end
 
-                    local action, aType = btn._state_action, "spell"
+                        local action, aType = btn._state_action, "spell"
 
-                    if action and type( action ) == "number" then
-                        slotsUsed[ action ] = true
+                        if action and type( action ) == "number" then
+                            slotsUsed[ action ] = true
 
-                        binding = GetBindingKey( binding )
-                        action, aType = GetActionInfo( action )
-                        if binding then StoreKeybindInfo( i, binding, action, aType ) end
+                            binding = GetBindingKey( binding )
+                            action, aType = GetActionInfo( action )
+                            if binding then StoreKeybindInfo( i, binding, action, aType ) end
+                        end
                     end
                 end
             end
@@ -2158,15 +2178,34 @@ do
                 end
             end
 
-            for i = 72, 119 do
+            for i = 72, 143 do
                 if not slotsUsed[ i ] then
                     StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. 1 + ( i - 72 ) % 12 ), GetActionInfo( i + 1 ) )
                 end
             end
+
+            for i = 144, 155 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 13, GetBindingKey( "MULTIACTIONBAR5BUTTON" .. i - 143 ), GetActionInfo( i ) )
+                end
+            end
+
+            for i = 156, 167 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 14, GetBindingKey( "MULTIACTIONBAR6BUTTON" .. i - 155 ), GetActionInfo( i ) )
+                end
+            end
+
+            for i = 168, 179 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 15, GetBindingKey( "MULTIACTIONBAR7BUTTON" .. i - 167 ), GetActionInfo( i ) )
+                end
+            end
+
         end
 
         if _G.ConsolePort then
-            for i = 1, 120 do
+            for i = 1, 180 do
                 local action, id = GetActionInfo( i )
 
                 if action and id then
@@ -2270,7 +2309,7 @@ local function ReadOneKeybinding( event, slot )
     end
 
     if not completed then
-        if actionBarNumber == 1 or actionBarNumber == 2 or actionBarNumber > 6 then
+        if actionBarNumber == 1 or actionBarNumber == 2 or ( actionBarNumber > 6  and actionBarNumber < 13 ) then
             ability = StoreKeybindInfo( keyNumber, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( slot ) )
 
         elseif actionBarNumber > 2 and actionBarNumber < 5 then
@@ -2281,6 +2320,15 @@ local function ReadOneKeybinding( event, slot )
 
         elseif actionBarNumber == 6 then
             ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. keyNumber ), GetActionInfo( slot ) )
+
+        elseif actionBarNumber == 13 then
+            ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR5BUTTON" .. keyNumber ), GetActionInfo( slot ) )
+
+        elseif actionBarNumber == 14 then
+            ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR6BUTTON" .. keyNumber ), GetActionInfo( slot ) )
+
+        elseif actionBarNumber == 15 then
+            ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR7BUTTON" .. keyNumber ), GetActionInfo( slot ) )
 
         end
     end

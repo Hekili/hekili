@@ -1560,7 +1560,7 @@ elseif baseClass == "PRIEST" then
             known = 325013,
             cast = 0,
             cooldown = 0,
-            gcd = "spell", -- actually 1s and not 1.5s...
+            gcd = "totem", -- actually 1s and not 1.5s...
 
             startsCombat = true,
             texture = 3528287,
@@ -1578,7 +1578,7 @@ elseif baseClass == "PRIEST" then
             cast = 0,
             cooldown = 3,
             hasteCD = true,
-            gcd = "totem", -- actually 1s and not 1.5s...
+            gcd = "totem",
 
             startsCombat = true,
             texture = 3528286,

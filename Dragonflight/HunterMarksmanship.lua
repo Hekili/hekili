@@ -370,11 +370,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    master_marksman = {
-        id = 269576,
-        duration = 12,
-        max_stack = 1,
-    },
     -- Heals $w1% of the pet's health every $t1 sec.$?s343242[  Each time Mend Pet heals your pet, you have a $343242s2% chance to dispel a harmful magic effect from your pet.][]
     -- https://wowhead.com/beta/spell=136
     mend_pet = {
@@ -517,7 +512,7 @@ spec:RegisterAuras( {
     },
     trueshot = {
         id = 288613,
-        duration = function () return ( 15 + ( legendary.eagletalons_true_focus.enabled and 3 or 0 ) + ( 1.5 * talent.eagletalons_true_focus.rank ) or 15 ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
+        duration = function () return ( 15 + ( legendary.eagletalons_true_focus.enabled and 3 or 0 ) + ( 1.5 * talent.eagletalons_true_focus.rank ) ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
         max_stack = 1,
     },
     -- Talent: Critical strike chance increased by $s1%. Critical damage dealt increased by $s2%.
@@ -1005,21 +1000,6 @@ spec:RegisterAbilities( {
                 removeBuff( "trick_shots" )
                 if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
             end
-        end,
-    },
-
-
-    sentinel_owl = {
-        id = 388045,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        talent = "sentinel_owl",
-        startsCombat = false,
-        texture = 4067367,
-
-        handler = function ()
         end,
     },
 

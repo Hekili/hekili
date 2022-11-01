@@ -44,7 +44,7 @@ Dragonflight\DruidGuardian.lua
 # Dragonflight\EvokerPreservation.lua
 Dragonflight\HunterBeastMastery.lua
 Dragonflight\HunterMarksmanship.lua
-# Dragonflight\HunterSurvival.lua
+Dragonflight\HunterSurvival.lua
 # Dragonflight\MageArcane.lua
 # Dragonflight\MageFire.lua
 # Dragonflight\MageFrost.lua
@@ -54,7 +54,7 @@ Dragonflight\MonkWindwalker.lua
 Dragonflight\PaladinRetribution.lua
 # Dragonflight\PriestDiscipline.lua
 # Dragonflight\PriestHoly.lua
-# Dragonflight\PriestShadow.lua
+Dragonflight\PriestShadow.lua
 # Dragonflight\RogueAssassination.lua
 Dragonflight\RogueOutlaw.lua
 # Dragonflight\RogueSubtlety.lua

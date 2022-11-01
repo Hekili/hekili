@@ -1,9 +1,10 @@
+actions.precombat+=/moonkin_form
+actions.precombat+=/mark_of_the_wild
 actions.precombat+=/variable,name=no_cd_talent,value=!talent.celestial_alignment&!talent.incarnation_chosen_of_elune
 actions.precombat+=/variable,name=fourpc_starfall_st,value=talent.aetherial_kindling.rank=2&!talent.power_of_goldrinn
 actions.precombat+=/variable,name=on_use_trinket,value=0
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=trinket.1.has_use_buff&trinket.1.cooldown.duration
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=(trinket.2.has_use_buff&trinket.2.cooldown.duration)*2
-actions.precombat+=/moonkin_form
 actions.precombat+=/wrath,if=(eclipse.any_next|eclipse.lunar_next)
 
 # Executed every time the actor is available.

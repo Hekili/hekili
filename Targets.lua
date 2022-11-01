@@ -72,21 +72,49 @@ do
 
     local petSpells = {
         HUNTER = {
-            [288962] = true,
-            [16827]  = true,
-            [17253]  = true,
-            [49966]  = true,
+            [288962] = 10,
+            [17253]  = 5,
+            [16827]  = 5,
+            [159953] = 5,
+            [49966]  = 5,
+            [263863] = 7,
+            [50433]  = 7,
+            [24423]  = 7,
+            [160060] = 7,
+            [50285]  = 7,
+            [263840] = 7,
+            [263856] = 7,
+            [263861] = 7,
+            [279362] = 7,
+            [160018] = 7,
+            [263853] = 7,
+            [263423] = 7,
+            [54680]  = 7,
+            [344352] = 7,
+            [50245]  = 7,
+            [263857] = 7,
+            [263854] = 7,
+            [263852] = 7,
+            [160065] = 7,
+            [263858] = 7,
+            [341118] = 7,
+            [35346]  = 7,
+            [160067] = 7,
 
-            count    = 4
+            best     = 288962,
+            count    = 28
         },
 
         WARLOCK = {
-            [6360]  = true, -- Whiplash (Succubus)
-            [54049] = true, -- Shadow Bite (Felhunter)
-            [7814]  = true, -- Lash of Pain (Succubus)
-            [30213] = true, -- Legion Strike (Felguard)
+            [6360]   = 10,
+            [7814]   = 7,
+            [30213]  = 7,
+            [115625] = 7,
+            [54049]  = 7,
+            [115778] = 7,
 
-            count   = 4
+            best     = 6360,
+            count    = 6
         }
     }
 
@@ -304,30 +332,35 @@ do
             if checkPets or checkPlates then
                 for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                        local excluded = not UnitIsUnit( unit, "target" )
+
                         local npcid = guid:match( "(%d+)-%x-$" )
                         npcid = tonumber(npcid)
 
-                        local excluded = enemyExclusions[ npcid ]
+                        if excluded then
+                            excluded = enemyExclusions[ npcid ]
 
-                        -- If our table has a number, unit is ruled out only if the buff is present.
-                        if excluded and type( excluded ) == "number" then
-                            excluded = FindExclusionAuraByID( unit, excluded )
+                            -- If our table has a number, unit is ruled out only if the buff is present.
+                            if excluded and type( excluded ) == "number" then
+                                excluded = FindExclusionAuraByID( unit, excluded )
+                            end
+
+                            if not excluded and checkPets then
+                                excluded = not Hekili:TargetIsNearPet( unit )
+                            end
+
+                            local _, range
+                            if not excluded and checkPlates then
+                                _, range = RC:GetRange( unit )
+                                guidRanges[ guid ] = range
+
+                                excluded = range and range > spec.nameplateRange or false
+                            end
+
+                            if not excluded and spec.damageOnScreen and showNPs and not npUnits[ guid ] then
+                                excluded = true
+                            end
                         end
-
-                        if not excluded and checkPets then
-                            excluded = not Hekili:TargetIsNearPet( unit )
-                        end
-
-                        local _, range
-                        if not excluded and checkPlates then
-                            _, range = RC:GetRange( unit )
-                            guidRanges[ guid ] = range
-
-                            excluded = range and range > spec.nameplateRange or false
-                        end
-
-                        -- Always count your target.
-                        if UnitIsUnit( unit, "target" ) then excluded = false end
 
                         if not excluded then
                             local rate, n = Hekili:GetTTD( unit )
@@ -352,29 +385,35 @@ do
 
                     if guid and counted[ guid ] == nil then
                         if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                            local excluded = not UnitIsUnit( unit, "target" )
+
                             local npcid = guid:match( "(%d+)-%x-$" )
                             npcid = tonumber(npcid)
 
-                            local excluded = enemyExclusions[ npcid ]
+                            if excluded then
+                                excluded = enemyExclusions[ npcid ]
 
-                            if excluded and type( excluded ) == "number" then
-                                excluded = FindExclusionAuraByID( unit, excluded )
+                                -- If our table has a number, unit is ruled out only if the buff is present.
+                                if excluded and type( excluded ) == "number" then
+                                    excluded = FindExclusionAuraByID( unit, excluded )
+                                end
+
+                                if not excluded and checkPets then
+                                    excluded = not Hekili:TargetIsNearPet( unit )
+                                end
+
+                                local _, range
+                                if not excluded and checkPlates then
+                                    _, range = RC:GetRange( unit )
+                                    guidRanges[ guid ] = range
+
+                                    excluded = range and range > spec.nameplateRange or false
+                                end
+
+                                if not excluded and spec.damageOnScreen and showNPs and not npUnits[ guid ] then
+                                    excluded = true
+                                end
                             end
-
-                            if not excluded and checkPets then
-                                excluded = not Hekili:TargetIsNearPet( unit )
-                            end
-
-                            local _, range
-                            if not excluded and checkPlates then
-                                _, range = RC:GetRange( unit )
-                                guidRanges[ guid ] = range
-
-                                excluded = range and range > spec.nameplateRange or false
-                            end
-
-                            -- Always count your target.
-                            if UnitIsUnit( unit, "target" ) then excluded = false end
 
                             if not excluded then
                                 local rate, n = Hekili:GetTTD(unit)
@@ -405,27 +444,31 @@ do
                     local npcid = guid:match("(%d+)-%x-$")
                     npcid = tonumber(npcid)
 
-                    local excluded = enemyExclusions[ npcid ]
+                    local unit = Hekili:GetUnitByGUID( guid )
+                    local excluded = false
 
-                    local unit
+                    if unit and not UnitIsUnit( unit, "target" ) then
+                        excluded = enemyExclusions[ npcid ]
 
-                    -- If our table has a number, unit is ruled out only if the buff is present.
-                    if excluded and type( excluded ) == "number" then
-                        unit = Hekili:GetUnitByGUID( guid )
+                        -- If our table has a number, unit is ruled out only if the buff is present.
+                        if excluded and type( excluded ) == "number" then
+                            excluded = FindExclusionAuraByID( unit, excluded )
+                        end
 
-                        if unit then
-                            if UnitIsUnit( unit, "target" ) then
-                                excluded = false
-                            else
-                                if excluded and type( excluded ) == "number" then
-                                    excluded = FindExclusionAuraByID( unit, excluded )
-                                end
-                            end
-                            excluded = false
+                        if not excluded and checkPets then
+                            excluded = not Hekili:TargetIsNearPet( unit )
+                        end
+
+                        local _, range
+                        if not excluded and checkPlates then
+                            _, range = RC:GetRange( unit )
+                            guidRanges[ guid ] = range
+
+                            excluded = range and range > spec.nameplateRange or false
                         end
                     end
 
-                    if not excluded and spec.damageOnScreen and showNps and not npUnits[ guid ] then
+                    if not excluded and spec.damageOnScreen and showNPs and not npUnits[ guid ] then
                         excluded = true
                     end
 

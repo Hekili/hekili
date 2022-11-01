@@ -1,3 +1,4 @@
+actions.precombat+=/mark_of_the_wild
 actions.precombat+=/cat_form,if=druid.catweave_bear=1&time>30
 actions.precombat+=/moonkin_form,if=!druid.catweave_bear=1&time>30
 actions.precombat+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled

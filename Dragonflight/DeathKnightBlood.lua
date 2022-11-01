@@ -793,24 +793,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Surrounded by a vile swarm of insects, infecting enemies within $115994a1 yds with Virulent Plague and an unholy disease that deals damage to enemies.
-    -- https://wowhead.com/beta/spell=115989
-    unholy_blight = {
-        id = 115989,
-        duration = 6,
-        tick_time = 1,
-        type = "Magic",
-        max_stack = 1
-    },
-    -- Suffering $s1 Shadow damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=115994
-    unholy_blight = {
-        id = 115994,
-        duration = 14,
-        tick_time = 2,
-        type = "Magic",
-        max_stack = 4
-    },
     -- Deals $s1 Fire damage.
     -- https://wowhead.com/beta/spell=319245
     unholy_pact = {
@@ -978,10 +960,6 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "spell",
 
-        talent = function()
-            if covenant.necrolord then return end
-            return "abomination_limb"
-        end,
         startsCombat = false,
 
         toggle = "cooldowns",
