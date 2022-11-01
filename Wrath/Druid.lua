@@ -125,8 +125,13 @@ spec:RegisterHook( "UNIT_ELIMINATED", function( guid )
     RemoveRip( guid )
 end )
 
-spec:RegisterStateTable( "rip_tracker", setmetatable( {}, {
+spec:RegisterStateTable( "rip_tracker", setmetatable( {
     cache = {},
+    reset = function()
+        cache = {}
+    end
+    }, {
+    
     __index = function( t, k )
         if not cache[k] then
             local tr = GetTrackedRip( k )
@@ -135,15 +140,11 @@ spec:RegisterStateTable( "rip_tracker", setmetatable( {}, {
             end
         end
         return cache[k]
-    end,
-    reset = function()
-        print("Reset")
-        cache = {}
     end
 }))
 
 spec:RegisterHook( "reset_precast", function()
-    rip_tracker.reset()
+    rip_tracker:reset()
 end )
 
 -- Resources
