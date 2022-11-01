@@ -1376,7 +1376,8 @@ spec:RegisterAbilities( {
 
             if talent.barbed_wrath.enabled then reduceCooldown( "bestial_wrath", 12 ) end
             if talent.thrill_of_the_hunt.enabled then addStack( "thrill_of_the_hunt", nil, 1 ) end
-            if talent.war_orders.rank > 1 then setCooldown( "kill_command", 0 ) end
+            -- No longer predictable (11/1 nerfs).
+            -- if talent.war_orders.rank > 1 then setCooldown( "kill_command", 0 ) end
             removeDebuff( "target", "latent_poison" )
 
             if legendary.qapla_eredun_war_order.enabled then
