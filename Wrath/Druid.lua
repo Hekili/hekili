@@ -4,6 +4,8 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local FindUnitDebuffByID = ns.FindUnitDebuffByID
+
 local spec = Hekili:NewSpecialization( 11 )
 
 local function rage_amount()
@@ -15,6 +17,136 @@ local function rage_amount()
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c )
 end
 
+-- Glyph of Shred helper
+local tracked_rips = {}
+Hekili.TR = tracked_rips;
+
+local function NewRip( target )
+    tracked_rips[ target ] = {
+        extension = 0,
+        applications = 0
+    }
+end
+
+local function RipShred( target )
+    if not tracked_rips[ target ] then
+        NewRip( target )
+    end
+    if tracked_rips[ target ].applications < 3 then
+        tracked_rips[ target ].extension = tracked_rips[ target ].extension + 2
+        tracked_rips[ target ].applications = tracked_rips[ target ].applications + 1
+    end
+end
+
+local function RemoveRip( target )
+    tracked_rips[ target ] = nil
+end
+
+local function GetTrackedRip( target )
+    if not tracked_rips[ target ] then
+        NewRip( target )
+    end
+    return tracked_rips[ target ]
+end
+
+
+--print("SubType: ", subtype)
+--print("SourceGUID: ", sourceGUID)
+--print("SourceName: ", sourceName)
+--print("DestinationGUID: ", destGUID)
+--print("DestinationName: ", destName)
+--print("DestinationFlags: ", destFlags)
+--print("SpellID: ", spellID)
+--print("SpellName: ", spellName)
+
+-- Combat log handler
+local attack_events = {
+    SPELL_CAST_SUCCESS = true
+}
+
+local application_events = {
+    SPELL_AURA_APPLIED      = true,
+    SPELL_AURA_APPLIED_DOSE = true,
+    SPELL_AURA_REFRESH      = true,
+}
+
+local removal_events = {
+    SPELL_AURA_REMOVED      = true,
+    SPELL_AURA_BROKEN       = true,
+    SPELL_AURA_BROKEN_SPELL = true,
+}
+
+local death_events = {
+    UNIT_DIED               = true,
+    UNIT_DESTROYED          = true,
+    UNIT_DISSIPATES         = true,
+    PARTY_KILL              = true,
+    SPELL_INSTAKILL         = true,
+}
+
+spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if not sourceGUID == state.GUID then
+        return
+    end
+
+    if state.glyph.shred.enabled then
+        if attack_events[subtype] then
+            -- Track rip time extension from Glyph of Rip
+            local rip = FindUnitDebuffByID( "target", 49800 )
+            if rip and spellID == 48572 then
+                RipShred( destGUID )
+            end
+        end
+
+        if application_events[subtype] then
+            -- Remove previously tracked rip
+            if spellID == 49800 then
+                RemoveRip( destGUID )
+            end
+        end
+
+        if removal_events[subtype] then
+            -- Remove previously tracked rip
+            if spellID == 49800 then
+                RemoveRip( destGUID )
+            end
+        end
+
+        if death_events[subtype] then
+            -- Remove previously tracked rip
+            if spellID == 49800 then
+                RemoveRip( destGUID )
+            end
+        end
+    end
+end, false )
+
+spec:RegisterHook( "UNIT_ELIMINATED", function( guid )
+    RemoveRip( guid )
+end )
+
+spec:RegisterStateTable( "rip_tracker", setmetatable( {}, {
+    cache = {},
+    __index = function( t, k )
+        if not cache[k] then
+            local tr = GetTrackedRip( k )
+            if tr then
+                cache[k] = tr
+            end
+        end
+        return cache[k]
+    end,
+    reset = function()
+        print("Reset")
+        cache = {}
+    end
+}))
+
+spec:RegisterHook( "reset_precast", function()
+    rip_tracker.reset()
+end )
+
+-- Resources
 spec:RegisterResource( Enum.PowerType.Rage, {
     enrage = {
         aura = "enrage",
@@ -49,17 +181,17 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         end,
     },
 } )
-
--- Resources
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.ComboPoints )
 spec:RegisterResource( Enum.PowerType.Energy )
+
 
 -- Sets
 spec:RegisterGear( "tier7", 39557, 39553, 39555, 39554, 39556, 40472, 40473, 40493, 40471, 40494 )
 spec:RegisterGear( "tier8", 46260, 46262, 46265, 46267, 46269, 46158, 46161, 46160, 46159, 46157 )
 spec:RegisterGear( "tier9", 48799, 48800, 48801, 48802, 48803, 48212, 48211, 48210, 48209, 48208 )
 spec:RegisterGear( "tier10", 51140, 51142, 51143, 51144, 51141, 51299, 51297, 51296, 51295, 51298 )
+
 
 -- Talents
 spec:RegisterTalents( {
@@ -197,6 +329,7 @@ spec:RegisterGlyphs( {
     [62970] = "wild_growth",
     [54756] = "wrath",
 } )
+
 
 -- Auras
 spec:RegisterAuras( {
@@ -562,7 +695,7 @@ spec:RegisterAuras( {
     -- Bleed damage every $t1 seconds.
     rip = {
         id = 49800,
-        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc == 1 and 4) or 0) + ((glyph.shred.enabled and 6) or 0) end, -- TODO: Remove assumption that duration is at full stack and track actual / future applications of rip time extension
+        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc == 1 and 4) or 0) end, -- TODO: Remove assumption that duration is at full stack and track actual / future applications of rip time extension
         tick_time = 2,
         max_stack = 1,
         copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
@@ -694,6 +827,7 @@ spec:RegisterAuras( {
 } )
 
 
+-- Form Helper
 spec:RegisterStateFunction( "swap_form", function( form )
     removeBuff( "form" )
 
@@ -709,7 +843,7 @@ spec:RegisterStateFunction( "swap_form", function( form )
     end
 end )
 
--- Maul
+-- Maul Helper
 spec:RegisterStateFunction( "start_maul", function()
     applyBuff( "maul", swings.time_to_next_mainhand )
     state:QueueAuraExpiration( "maul", finish_maul, buff.maul.expires )
@@ -1769,6 +1903,10 @@ spec:RegisterAbilities( {
         texture = 136231,
 
         handler = function ()
+            if debuff.rip.up and rip_tracker[target.unit].extension < 6 then
+                rip_tracker[target.unit].extension = rip_tracker[target.unit].extension + 2
+                applyDebuff( "rip", debuff.rip.remains + 2)
+            end
             gain( 1, "combo_points" )
             removeBuff( "clearcasting" )
         end,
@@ -2116,6 +2254,7 @@ spec:RegisterAbilities( {
 } )
 
 
+-- Options
 spec:RegisterOptions( {
     enabled = true,
 
@@ -2136,6 +2275,7 @@ spec:RegisterOptions( {
 } )
 
 
+-- Default Packs
 spec:RegisterPack( "Balance (IV)", 20220926, [[Hekili:vwvtVTnpm4Flffiyd71oF12To0MdfDhsp0EWf9OSKLPteISKHKCmYf9BFuoFzNLG3weGaBrYh9qYhstgtENKKZCa51jJMmz09tUlE8VMo5M7jjUnvajPIXxXwGpOyL4)pXKmfV98nsnlpeVvxBchT05QS)E4WMMMybFt0AqOSXCD5WgTtUkIlzwRGpmBlgr5MArEuELnQAnez0oMtOvrCTwMRBu2iwMqkCcWssYQfs3Cfj7809NilQao51XJrEiYZHTUcwoj59LcRNwzeAJWTXtdVLXSqUNQvEQBj4PZ5OHpce2txG0cIXu0OlesmXU(ApDxI7PphyTN(T5F8D)lbltUZttGkhuMbg8vKy(x8VW4HSXgxzaSeKXC)4XHLATALqLwOnLxWdMzvQUifjvAJqM3bj0AbdmciTqyG)tu8OJjbLlwuImDnKN2XCmOyzsiFWvobhVYfdwy01vPLTS0o72EWQX(x4wvmxTb6AY6yMcMu29muySetKadchUgsbfuITPzJhGUVaCX5cmqSC9W0rDJCzTXi4mfCUy76i2haUl12WmLbFZQlkIbUuuzHuzTIzIdsKdzx3ydf59vOs96wRH(07V98B)2t)JAHqbyHcpN6eQvy5iERhDikQ9nOIclQmohKGH50g7fOsDv37VgpxGQHpN3Tf4DS9moBGsgwmMXzwxQtu2R50GSA5)eOvlpxGKeSyQWSgNMMxwPnUWaWK9zTNkXEwOsqsy1ULAd62HHcssR12TfqbRw6WhFTD7XoHg5jschNVWcld3D8)Rm90bE6vHwW2oy41EAupDMNElYMw(rs6GbXHlacx(bB9vWDzf660UUUxrFIp3CXCPVoTLvJBz7jADp9bpD6OJ30U5Ka63(Lq)iehgycGC3fb5cJhNuIpcB3XRaY)8IiVDa6yK7hUcr9RVcFQRocYHjKak3)vqzNQUTm1rz3R3UJDJh95aU34YLaUDsdr1f(QWUT1hMa6wB2VD)e1vpX6P74777(FK)(d]] )
 
 spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:DM12Ujost4NfUbbts43gm8tKWCXQrR0mxKDLy1EPnnM2eRySrTTt2Sc5N9TQgBCF0qMBMjJ7Q(66WxDONe4g8xbB2tkPbVm1z6uxNzUtCDM75opyt5NNObBorIEJCa(HmYr4p)DkJKwV97)5M6TJ(on(FjrVogL6Z0CYEeTI8kweizWMDvjPL)ilyN5Rygi7jAuWlUUbBEnz)E6frPfrO2PjfLfiGrKs4VEHBQ0mYUu6(GFd(mlPKYsiOg7QIJNKsIaJRKoP6u92H1Bv)mJEKKKvuVDv9wprjyjN6oCnCyWgsuzsEgaDcJgUJsyHX5SJbLGpy1m4yfLcchrkktYoagshsfVYafaaMzfaAgLD4ZjrvmgnRKBNZC6qOm5aLvegxX(eXXZkor55P7Z)iBIGgsoiMDBrDhibL9gI4CfelGKZg9yuNUFqsknKiKINGt04xLjhPHL5Hhj)dp6hLFCxE4P8KSYIoN2VE7C(XdQ3YrRXaBZQJ4NykLF(Cp581(Mt3pW5cJr3FH1a6L7u5ou9seMB4xDroqz8k))9DLc3tJVZ)3fK3H6XqwoHz97xTRNSAUowRaEGhKhzvZN5AoL7Uy8W1H)JWjUEcABomagKlx8VXZZJVIIrhwVKTpSVvDDJH2CBwtt9JXS7cJ59IXIwhVdPbMC)gsNvovdRtOjthhaPxlTsV6UUJKSdPuPwvx(ui23fa55(aPX8u7C5JbBN(TCXQbYBu8QCDU7EJFXB4A3xx7JrSt6XMhUtVrPgxijgMP2xwH35oGFzlP5o7Yetz5rj5vfH7aNK7(2hFzPF7nhMSOpQ(YB5vT6By2NNtFZHDTph1qVAGGj39BYsd0p7Ju7QxiSJ5SqGnvX1wOuvj6jKgiai0Wy0hIX9N4xgFARm)u4UXsVnNyumnFR9F6QdBTIdjXLH5XHLVsd)ijDVs5n7nXd7FRgo4DkdnfAtbLx(xKCA)M3xBTg7wYnzIwwR5MefHaNHHRThzDZUw6tVShPvbL7slte(i50LwVsKHEwoXuLJqGqLkCjXTNgtQsVbVI72YvEYoEvw4LFoexw)Yk7HxENaQX9SUCdDQnyJW9one8PJj0MS69DHTuXEt4Q35Dd9xk)kuJiNCRkOHGohl0Q05HREtgg2iYvOkQDJ3(J5QCfCOYILMwaR7EUUruVDXnPAVZM1guQuFPPUIAw72kg9TZeuFOqrj8ox1TgedQ2Z(miGihsNoxSBBvkphdz53bZf)i)HWoppDb(ekwg4WaJ4hhpLZkP75o5fTR3YFe8K6FIZcYJtsPTaxm56WHh8)FQT0Fmj2Fq1PHdSnnO(NMGPn01OE9pVkgCOsfYJyTHpYBrPn3Q4MQ3u0EfbHsZHYTcw7EpGzcir9S7GOgGaYUakM(lnhA5rMR8gQxfS2t8(V2aq9E5Z)7SELsbfHfM)HQixuVAMJQ8nvjOS9ndDT7CvnXh4)ybnYx3XeIncFDL(B9hAQhG)8gUzxf8Wrd0J1NpBjyV2WL)G3yvhaofn0rdeGs0C9gBX80sqD994ak9yTHg2Dq)Bn35tgmdhdmNhgnYGKppC64ZNDDgVY1dKWKX)K74VnFmiLIr2rtnRNz(lCvasgdsMLFMv5NBu(fJ526azJf7Ez2i1YXDpxLxwR(UwnkbSUwB)r5shF4fLMVuD6qB96VmcYVnJZPmKVx77o1ktcoKNCulKmcJtpWSC89wgO3FuRmU3wmlmzClTBAlusrR806UjKp7kXfEV3k4TEAbF1xKjYC0FHNwVkJ0bLPj4GTVAZ6gD(fBy3OTibFGPotdU5qMgKuA6nWIuTpzX0HQ7Eyig4nxmYHKlqV2(9O8c9UCD0KuCMUmYR9xSuUlylmqRlRuoDXTurFT0tjskjoxmRShdoRXftfBF0OdUxjkV42NR9Xnp3rkO7)JmLFxn)4VX)FcRkFnNfSP5xCdFR0G)7d]] )
