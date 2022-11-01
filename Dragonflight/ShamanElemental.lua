@@ -1023,7 +1023,6 @@ spec:RegisterHook( "reset_precast", function ()
     local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
 
     if mh and mh_enchant == 5400 then applyBuff( "flametongue_weapon" ) end
-
     if buff.flametongue_weapon.down and ( now - action.flametongue_weapon.lastCast < 1 ) then applyBuff( "flametongue_weapon" ) end
 
     if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
@@ -1687,17 +1686,11 @@ spec:RegisterAbilities( {
         school = "fire",
 
         startsCombat = false,
+        nobuff = "flametongue_weapon",
 
         handler = function ()
             applyBuff( "flametongue_weapon" )
         end,
-
-        auras = {
-            flametongue_weapon = {
-                duration = 3600,
-                max_stack = 1,
-            }
-        }
     },
 
     -- Talent: Chills the target with frost, causing $s1 Frost damage and reducing the target's movement speed by $s2% for $d.
