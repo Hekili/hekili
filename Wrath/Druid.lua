@@ -134,12 +134,40 @@ spec:RegisterStateTable( "rip_tracker", setmetatable( {
     end
 }))
 
+local predatorsswiftness_spell_assigned = false
+
 spec:RegisterHook( "reset_precast", function()
     rip_tracker:reset()
+
+    if not predatorsswiftness_spell_assigned then
+        class.abilityList.predatorsswiftness_spell = "|cff00ccff[Assigned Predator's Swiftness Spell]|r"
+        class.abilities.predatorsswiftness_spell = class.abilities[ settings.predatorsswiftness_spell or "regrowth" ]
+        predatorsswiftness_spell_assigned = true
+    end
 end )
 
 spec:RegisterStateExpr("rip_maxremains", function()
     return debuff.rip.remains + ((debuff.rip.up and glyph.shred.enabled and (6 - rip_tracker[target.unit].extension)) or 0)
+end)
+
+spec:RegisterStateExpr("flowerweaving_enabled", function()
+    return settings.flowerweaving_enabled and (settings.flowerweaving_instancetype == "any" or (settings.flowerweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.flowerweaving_instancetype == "raid" and instanceType == "raid"))
+end)
+
+spec:RegisterStateExpr("bearweaving_enabled", function()
+    return settings.bearweaving_enabled and (settings.bearweaving_instancetype == "any" or (settings.bearweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.bearweaving_instancetype == "raid" and instanceType == "raid"))
+end)
+
+spec:RegisterStateExpr("bearweaving_lacerate_enabled", function()
+    return bearweaving_enabled and settings.bearweaving_spell == "lacerate"
+end)
+
+spec:RegisterStateExpr("bearweaving_mangle_enabled", function()
+    return bearweaving_enabled and settings.bearweaving_spell == "mangle"
+end)
+
+spec:RegisterStateExpr("predatorsswiftness_enabled", function()
+    return settings.predatorsswiftness_enabled
 end)
 
 -- Resources
@@ -1774,6 +1802,7 @@ spec:RegisterAbilities( {
         texture = 136085,
 
         handler = function ()
+            removeBuff( "predators_swiftness" )
         end,
 
         copy = { 8938, 8939, 8940, 8941, 9750, 9856, 9857, 9858, 26980, 48442, 48443 },
@@ -2243,11 +2272,121 @@ spec:RegisterAbilities( {
         texture = 136006,
 
         handler = function ()
+            removeBuff( "predators_swiftness" )
         end,
 
         copy = { 5177, 5178, 5179, 5180, 6780, 8905, 9912, 26984, 26985, 48459, 48461 },
     },
 } )
+
+
+-- Settings
+local flowerweaving_instancetypes = {}
+local bearweaving_spells = {}
+local bearweaving_instancetypes = {}
+local predatorsswiftness_spells = {}
+
+spec:RegisterSetting("flowerweaving_enabled", true, {
+    type = "toggle",
+    name = "Flowerweaving: Enabled?",
+    desc = "Select whether or not flowerweaving should be used in AOE situations",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_enabled = val
+    end
+})
+
+spec:RegisterSetting("flowerweaving_instancetype", "raid", {
+    type = "select",
+    name = "Flowerweaving: Instance Type",
+    desc = "Select the type of instance that is required before the addon recomments Gift of the Wild in AOE situations" ..
+        "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend flowerweaving in any situation.\n\n",
+    width = "full",
+    values = function()
+        table.wipe(flowerweaving_instancetypes)
+        flowerweaving_instancetypes.any = "any"
+        flowerweaving_instancetypes.dungeon = "dungeon"
+        flowerweaving_instancetypes.raid = "raid"
+        return flowerweaving_instancetypes
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_instancetype = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_enabled", true, {
+    type = "toggle",
+    name = "Bearweaving: Enabled?",
+    desc = "Select whether or not bearweaving should be used",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_enabled = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_spell", "lacerate", {
+    type = "select",
+    name = "Bearweaving: Spell",
+    desc = "Select the type of bearweaving that you want Hekili to recommend.\n\n" ..
+        "In default priorities, selecting Lacerate will recommend your |cff00ccff[bear_lacerate]|r action list. " ..
+        "Selecting Mangle will recommend your |cff00ccff[bear_mangle]|r action list. " ..
+        "Custom priorities may ignore this setting.",
+    width = "full",
+    values = function()
+            table.wipe(bearweaving_spells)
+            bearweaving_spells.lacerate = class.abilityList.lacerate
+            bearweaving_spells.mangle = class.abilityList.mangle_bear
+            return bearweaving_spells
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_spell = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_instancetype", "raid", {
+    type = "select",
+    name = "Bearweaving: Instance Type",
+    desc = "Select the type of instance that is required before the addon recomments your |cff00ccff[bear_lacerate]|r or |cff00ccff[bear_mangle]|r\n\n" ..
+        "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend bearweaving in any situation.\n\n",
+    width = "full",
+    values = function()
+        table.wipe(bearweaving_instancetypes)
+        bearweaving_instancetypes.any = "any"
+        bearweaving_instancetypes.dungeon = "dungeon"
+        bearweaving_instancetypes.raid = "raid"
+        return bearweaving_instancetypes
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_instancetype = val
+    end
+})
+
+spec:RegisterSetting("predatorsswiftness_enabled", true, {
+    type = "toggle",
+    name = "Predator's Swiftness: Enabled?",
+    desc = "Select whether or not predator's swiftness procs should be consumed",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.predatorsswiftness_enabled = val
+    end
+})
+
+spec:RegisterSetting("predatorsswiftness_spell", "regrowth", {
+    type = "select",
+    name = "Predator's Swiftness: Spell",
+    desc = "Select which spell should be recommended when predator's swiftness consumption is recommended",
+    width = "full",
+    values = function()
+        table.wipe(predatorsswiftness_spells)
+        predatorsswiftness_spells.regrowth = class.abilityList.regrowth
+        predatorsswiftness_spells.wrath = class.abilityList.wrath
+        return predatorsswiftness_spells
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.predatorsswiftness_spell = val
+        class.abilities.predatorsswiftness_spell = class.abilities[ val ]
+    end
+})
 
 
 -- Options

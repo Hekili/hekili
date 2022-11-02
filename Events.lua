@@ -354,25 +354,28 @@ end
 
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
     if login or reload then
-    Hekili.PLAYER_ENTERING_WORLD = true
-    Hekili:SpecializationChanged()
-    Hekili:RestoreDefaults()
+        Hekili.PLAYER_ENTERING_WORLD = true
+        Hekili:SpecializationChanged()
+        Hekili:RestoreDefaults()
 
-    ns.checkImports()
-    ns.updateGear()
+        ns.checkImports()
+        ns.updateGear()
 
-    if state.combat == 0 and InCombatLockdown() then
-        state.combat = GetTime() - 0.01
-        Hekili:UpdateDisplayVisibility()
+        if state.combat == 0 and InCombatLockdown() then
+            state.combat = GetTime() - 0.01
+            Hekili:UpdateDisplayVisibility()
+        end
+
+        Hekili:BuildUI()
     end
 
-    local _, zone = GetInstanceInfo()
+    local _, zone, _, difficultyName, maxPlayers = GetInstanceInfo()
+    state.instanceType = zone
+    state.instanceSize = maxPlayers
+    state.instanceDifficulty = (string.find(difficultyName, "Heroic") and "Heroic") or "Normal"
     state.bg = zone == "pvp"
     state.arena = zone == "arena"
     state.torghast = not Hekili.IsWrath() and IsInJailersTower() or false
-
-    Hekili:BuildUI()
-end
 end )
 
 
