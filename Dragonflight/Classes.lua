@@ -19,44 +19,59 @@ setmetatable( state.talent, ns.metatables.mt_generic_traits )
 state.talent.no_trait = { rank = 0, max = 1 }
 
 -- Replace ns.updateTalents() as DF talents use new Traits and ClassTalents API.
-function ns.updateTalents()
-    local configID = C_ClassTalents.GetActiveConfigID() or -1
+do
+    local talentsTab
 
-    for token, data in pairs( class.talents ) do
-        local node = C_Traits.GetNodeInfo( configID, data[1] )
-        local talent = rawget( state.talent, token ) or {}
+    function ns.updateTalents()
+        local configID = C_ClassTalents.GetActiveConfigID() or -1
 
-        talent.rank = data[2] > 0 and IsPlayerSpell( data[2] ) and node.activeRank or 0
-        talent.max = node.maxRanks
+        for token, data in pairs( class.talents ) do
+            local node = C_Traits.GetNodeInfo( configID, data[1] )
+            local talent = rawget( state.talent, token ) or {}
 
-        -- Perform a sanity check on maxRanks vs. data[3].  If they don't match, the talent model is likely wrong.
-        if data[3] and node.maxRanks > 0 and node.maxRanks ~= data[3] then
-            Hekili:Error( "Talent '%s' model expects %d ranks but actual max ranks was %d.", token, data[3], node.maxRanks )
+            talent.rank = data[2] > 0 and IsPlayerSpell( data[2] ) and node.activeRank or 0
+            talent.max = node.maxRanks
+
+            -- Perform a sanity check on maxRanks vs. data[3].  If they don't match, the talent model is likely wrong.
+            if data[3] and node.maxRanks > 0 and node.maxRanks ~= data[3] then
+                Hekili:Error( "Talent '%s' model expects %d ranks but actual max ranks was %d.", token, data[3], node.maxRanks )
+            end
+
+            state.talent[ token ] = talent
         end
 
-        state.talent[ token ] = talent
-    end
-
-    for k, _ in pairs( state.pvptalent ) do
-        state.pvptalent[ k ]._enabled = false
-    end
-
-    for k, v in pairs( class.pvptalents ) do
-        local _, name, _, enabled, _, sID, _, _, _, known = GetPvpTalentInfoByID( v, 1 )
-
-        if not name then
-            enabled = IsPlayerSpell( v )
+        for k, _ in pairs( state.pvptalent ) do
+            state.pvptalent[ k ]._enabled = false
         end
 
-        enabled = enabled or known
+        for k, v in pairs( class.pvptalents ) do
+            local _, name, _, enabled, _, sID, _, _, _, known = GetPvpTalentInfoByID( v, 1 )
 
-        if rawget( state.pvptalent, k ) then
-            state.pvptalent[ k ]._enabled = enabled
-        else
-            state.pvptalent[ k ] = {
-                _enabled = enabled
-            }
+            if not name then
+                enabled = IsPlayerSpell( v )
+            end
+
+            enabled = enabled or known
+
+            if rawget( state.pvptalent, k ) then
+                state.pvptalent[ k ]._enabled = enabled
+            else
+                state.pvptalent[ k ] = {
+                    _enabled = enabled
+                }
+            end
         end
+
+        if not IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then LoadAddOn( "Blizzard_ClassTalentUI" ) end
+        C_Timer.After( 0.1, function()
+            if InCombatLockdown() then
+                Hekili.CurrentTalentExport = nil
+                return
+            end
+            talentsTab = talentsTab or ClassTalentFrame.TalentsTab
+            talentsTab:UpdateTreeInfo()
+            Hekili.CurrentTalentExport = talentsTab:GetLoadoutExportString()
+        end )
     end
 end
 

@@ -230,15 +230,20 @@ local displayTemplate = {
         mode = "autocast",
         coloring = "default",
         color = { 0.95, 0.95, 0.32, 1 },
+
+        highlight = true,
     },
 
     flash = {
         enabled = false,
         color = { 255/255, 215/255, 0, 1 }, -- gold.
-        brightness = 100,
-        size = 240,
         blink = false,
         suppress = false,
+        combat = false,
+
+        size = 240,
+        brightness = 100,
+        speed = 0.4
     },
 
     captions = {
@@ -428,10 +433,7 @@ do
                 autoSnapshot = true,
                 screenshot = true,
 
-                -- SpellFlash shared.
                 flashTexture = "Interface\\Cooldown\\star4",
-                fixedSize = false,
-                fixedBrightness = false,
 
                 toggles = {
                     pause = {
@@ -2177,7 +2179,7 @@ do
                         args = {
                             enabled = {
                                 type = "toggle",
-                                name = "Enabled",
+                                name = "Enable Overlay Glow",
                                 desc = "If enabled, when the ability for the first icon has an active glow (or overlay), it will also glow in this display.",
                                 width = 1.49,
                                 order = 1,
@@ -2236,6 +2238,21 @@ do
                                 order = 5,
                                 disabled = function() return data.glow.coloring ~= "custom" end,
                             },
+
+                            break02 = {
+                                type = "description",
+                                name = " ",
+                                order = 10,
+                                width = "full",
+                            },
+
+                            highlight = {
+                                type = "toggle",
+                                name = "Enable Action Highlight",
+                                desc = "If enabled, the addon will apply the default highlight when the first recommended item/ability is currently queued.",
+                                width = "full",
+                                order = 11
+                            }
                         },
                     },
 
@@ -2246,13 +2263,13 @@ do
                             if SF then
                                 return "If enabled, the addon can highlight abilities on your action bars when they are recommended for use."
                             end
-                            return "This feature requires the SpellFlash addon or library to function properly."
+                            return "This feature requires the SpellFlashCore addon or library to function properly."
                         end,
                         order = 8,
                         args = {
                             warning = {
                                 type = "description",
-                                name = "These settings are unavailable because the SpellFlash addon / library is not installed or is disabled.",
+                                name = "These settings are unavailable because the SpellFlashCore addon / library is not installed or is disabled.",
                                 order = 0,
                                 fontSize = "medium",
                                 width = "full",
@@ -2264,7 +2281,7 @@ do
                                 name = "Enabled",
                                 desc = "If enabled, the addon will place a colorful glow on the first recommended ability for this display.",
 
-                                width = "full",
+                                width = 1.49,
                                 order = 1,
                                 hidden = function () return SF == nil end,
                             },
@@ -2274,82 +2291,34 @@ do
                                 name = "Color",
                                 desc = "Specify a glow color for the SpellFlash highlight.",
                                 order = 2,
-
-                                width = "full",
-                                hidden = function () return SF == nil end,
-                            },
-
-                            size = {
-                                type = "range",
-                                name = "Size",
-                                desc = "Specify the size of the SpellFlash glow.  The default size is |cFFFFD100240|r.",
-                                order = 3,
-                                min = 0,
-                                max = 240 * 8,
-                                step = 1,
                                 width = 1.49,
                                 hidden = function () return SF == nil end,
                             },
 
-                            brightness = {
-                                type = "range",
-                                name = "Brightness",
-                                desc = "Specify the brightness of the SpellFlash glow.  The default brightness is |cFFFFD100100|r.",
-                                order = 4,
-                                min = 0,
-                                max = 100,
-                                step = 1,
-                                width = 1.49,
-                                hidden = function () return SF == nil end,
-                            },
-
-                            break01 = {
+                            break00 = {
                                 type = "description",
                                 name = " ",
-                                order = 4.1,
+                                order = 2.1,
                                 width = "full",
                                 hidden = function () return SF == nil end,
                             },
 
-                            blink = {
-                                type = "toggle",
-                                name = "Blink",
-                                desc = "If enabled, the whole action button will fade in and out.  The default is |cFFFF0000disabled|r.",
-                                order = 5,
-                                width = 1.49,
+                            sample = {
+                                type = "description",
+                                name = "",
+                                image = function() return Hekili.DB.profile.flashTexture end,
+                                order = 3,
+                                width = 0.3,
                                 hidden = function () return SF == nil end,
                             },
 
-                            suppress = {
-                                type = "toggle",
-                                name = "Hide Display",
-                                desc = "If checked, the addon will not show this display and will make recommendations via SpellFlash only.",
-                                order = 10,
-                                width = 1.49,
-                                hidden = function () return SF == nil end,
-                            },
-
-
-                            globalHeader = {
-                                type = "header",
-                                name = "Global SpellFlash Settings",
-                                order = 20,
-                                width = "full",
-                                hidden = function () return SF == nil end,
-                            },
-
-                            texture = {
+                            flashTexture = {
                                 type = "select",
                                 name = "Texture",
-                                desc = "Your selection will override the SpellFlash texture on any frame flashed by the addon.  This setting is universal to all displays.",
-                                order = 21,
-                                width = 1,
-                                get = function()
-                                    return Hekili.DB.profile.flashTexture
-                                end,
-                                set = function( info, value )
-                                    Hekili.DB.profile.flashTexture = value
-                                end,
+                                icon =  function() return data.flash.texture or "Interface\\Cooldown\\star4" end,
+                                desc = "Your selection will override the SpellFlash texture for all displays' flashes.\n\nRequires |cFFFFD100/reload|r.",
+                                order = 3.1,
+                                width = 1.19,
                                 values = {
                                     ["Interface\\Cooldown\\star4"] = "Star (Default)",
                                     ["Interface\\Cooldown\\ping4"] = "Circle",
@@ -2357,36 +2326,117 @@ do
                                     ["Interface\\AddOns\\Hekili\\Textures\\MonoCircle2"] = "Monochrome Circle Thin",
                                     ["Interface\\AddOns\\Hekili\\Textures\\MonoCircle5"] = "Monochrome Circle Thick",
                                 },
+                                get = function()
+                                    return Hekili.DB.profile.flashTexture
+                                end,
+                                set = function( _, val )
+                                    Hekili.DB.profile.flashTexture = val
+                                end,
+                                hidden = function () return SF == nil end,
+                            },
+
+                            speed = {
+                                type = "range",
+                                name = "Speed",
+                                desc = "Specify how frequently the flash should restart.  The default is |cFFFFD1000.4s|r.",
+                                min = 0.1,
+                                max = 2,
+                                step = 0.1,
+                                order = 3.2,
+                                width = 1.49,
+                                hidden = function () return SF == nil end,
+                            },
+
+                            break01 = {
+                                type = "description",
+                                name = " ",
+                                order = 4,
+                                width = "full",
+                                hidden = function () return SF == nil end,
+                            },
+
+                            size = {
+                                type = "range",
+                                name = "Flash Size",
+                                desc = "Specify the size of the SpellFlash glow.  The default size is |cFFFFD100240|r.",
+                                order = 5,
+                                min = 0,
+                                max = 240 * 8,
+                                step = 1,
+                                width = 1.49,
                                 hidden = function () return SF == nil end,
                             },
 
                             fixedSize = {
                                 type = "toggle",
                                 name = "Fixed Size",
-                                desc = "If checked, the SpellFlash pulse (grow and shrink) animation will be suppressed for all displays.",
-                                order = 22,
-                                width = 0.99,
-                                get = function()
-                                    return Hekili.DB.profile.fixedSize
-                                end,
-                                set = function( info, value )
-                                    Hekili.DB.profile.fixedSize = value
-                                end,
+                                desc = "If checked, the SpellFlash pulse (grow and shrink) animation will be suppressed.",
+                                order = 6,
+                                width = 1.49,
+                                hidden = function () return SF == nil end,
+                            },
+
+                            break02 = {
+                                type = "description",
+                                name = " ",
+                                order = 7,
+                                width = "full",
+                                hidden = function () return SF == nil end,
+                            },
+
+                            brightness = {
+                                type = "range",
+                                name = "Flash Brightness",
+                                desc = "Specify the brightness of the SpellFlash glow.  The default brightness is |cFFFFD100100|r.",
+                                order = 8,
+                                min = 0,
+                                max = 100,
+                                step = 1,
+                                width = 1.49,
                                 hidden = function () return SF == nil end,
                             },
 
                             fixedBrightness = {
                                 type = "toggle",
                                 name = "Fixed Brightness",
-                                desc = "If checked, the SpellFlash glow will not dim and brighten for all displays.",
-                                order = 23,
-                                width = 0.99,
-                                get = function()
-                                    return Hekili.DB.profile.fixedBrightness
-                                end,
-                                set = function( info, value )
-                                    Hekili.DB.profile.fixedBrightness = value
-                                end,
+                                desc = "If checked, the SpellFlash glow will not dim/brighten.",
+                                order = 9,
+                                width = 1.49,
+                                hidden = function () return SF == nil end,
+                            },
+
+                            break03 = {
+                                type = "description",
+                                name = " ",
+                                order = 10,
+                                width = "full",
+                                hidden = function () return SF == nil end,
+                            },
+
+                            combat = {
+                                type = "toggle",
+                                name = "Combat Only",
+                                desc = "If checked, the addon will only create flashes when you are in combat.",
+                                order = 11,
+                                width = "full",
+                                hidden = function () return SF == nil end,
+                            },
+
+                            suppress = {
+                                type = "toggle",
+                                name = "Hide Display",
+                                desc = "If checked, the addon will not show this display and will make recommendations via SpellFlash only.",
+                                order = 12,
+                                width = "full",
+                                hidden = function () return SF == nil end,
+                            },
+
+                            blink = {
+                                type = "toggle",
+                                name = "Button Blink",
+                                desc = "If enabled, the whole action button will fade in and out.  The default is |cFFFF0000disabled|r.",
+                                order = 13,
+                                width = "full",
                                 hidden = function () return SF == nil end,
                             },
                         },
@@ -8371,7 +8421,7 @@ do
                             -- append( select( 2, GetSpecializationInfo(GetSpecialization())) .. "\nKey\tID\tIs Aura\tIs Ability\tIs Talent\tIs PvP" )
                             for k,v in orderedPairs( aggregate ) do
                                 if v.id then
-                                    append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) .. "\t" .. ( v.pvptalent and "Yes" or "No" ) )
+                                    append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) .. "\t" .. ( v.pvptalent and "Yes" or "No" ) .. "\t" .. ( v.desc or GetSpellDescription( v.id ) or "" ):gsub( "\r", "" ):gsub( "\n", "" ) )
                                 end
                             end
                         end
@@ -8450,17 +8500,7 @@ function Hekili:GenerateProfile()
 
     local spec = s.spec.key
 
-    local talents
-    --[[ if not IsAddOnLoaded( "Blizzard_ClassTalents" ) then
-        LoadAddOn( "Blizzard_ClassTalents" )
-        local isConfig = self.Config
-        ToggleTalentFrame( 2 )
-        ToggleTalentFrame()
-        if isConfig then ns.StartConfiguration() end
-    end
-    if ClassTalentFrame and ClassTalentFrame.TalentsTab and ClassTalentFrame.TalentsTab.GetLoadoutExportString then
-        talents = ClassTalentFrame.TalentsTab:GetLoadoutExportString()
-    end ]]
+    local talents = Hekili.CurrentTalentExport
 
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then

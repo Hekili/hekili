@@ -863,6 +863,11 @@ spec:RegisterAuras( {
         duration = -1,
         max_stack = 1
     },
+    rejuvenating_wind = {
+        id = 339400,
+        duration = 8,
+        max_stack = 1
+    },
     -- Zzzzzz...
     -- https://wowhead.com/beta/spell=94019
     rest = {
@@ -1128,11 +1133,6 @@ spec:RegisterAuras( {
     },
 
     -- Conduits
-    rejuvenating_wind = {
-        id = 339400,
-        duration = 8,
-        max_stack = 1
-    },
     resilience_of_the_hunter = {
         id = 339461,
         duration = 8,
@@ -1676,7 +1676,23 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         start = function ()
-            applyBuff( "eagle_eye", 60 )
+            applyBuff( "eagle_eye" )
+        end,
+    },
+
+    exhilaration = {
+        id = 109304,
+        cast = 0,
+        cooldown = 120,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 461117,
+
+        toggle = "defensives",
+
+        handler = function ()
+            if talent.rejuvenating_wind.enabled or conduit.rejuvenating_wind.enabled then applyBuff( "rejuvenating_wind" ) end
         end,
     },
 

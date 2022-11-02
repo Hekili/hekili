@@ -750,26 +750,6 @@ do
 
     if LSF then
         hooksecurefunc( LSF, "FlashFrame", function( frame )
-            local flash = frame and frame.SpellFlashCoreAddonFlashFrame
-
-            if flash and not flash.HekiliHooked then
-                flash.FlashTexture:SetTexture( Hekili.DB.profile.flashTexture or "Interface\\Cooldown\\star4" )
-
-                flash:HookScript( "OnUpdate", function( self )
-                    flash.FlashTexture:SetTexture( Hekili.DB.profile.flashTexture or "Interface\\Cooldown\\star4" )
-                    if Hekili.DB.profile.fixedSize then
-                        flash.FlashTexture:SetHeight( flash:GetHeight() * flash.FlashSize )
-                        flash.FlashTexture:SetWidth( flash:GetWidth() * flash.FlashSize )
-                    end
-
-                    if Hekili.DB.profile.fixedBrightness then
-                        flash.FlashTexture:SetAlpha( flash.FlashBrightness )
-                    end
-                end )
-
-                flash.HekiliHooked = true
-            end
-
             -- We need to know what flashed so we can force it to stop flashing when the recommendation changes.
             if catchFlash and flash then
                 lastFramesFlashed[ flash ] = 1
@@ -993,13 +973,17 @@ do
                             b.Texture:Show()
 
                             if i == 1 then
-                                -- local ability = b.Ability
-                                local id = ability.item or ability.id
-                                local isItem = ability.item ~= nil
+                                if conf.glow.highlight then
+                                    local id = ability.item or ability.id
+                                    local isItem = ability.item ~= nil
 
-                                if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) and exact_time > GetTime() then
-                                    b.Highlight:Show()
-                                else
+                                    if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) and exact_time > GetTime() then
+                                        b.Highlight:Show()
+                                    else
+                                        b.Highlight:Hide()
+                                    end
+
+                                elseif b.Highlight:IsShown() then
                                     b.Highlight:Hide()
                                 end
                             end
@@ -1217,19 +1201,15 @@ do
 
                 local postRange = debugprofilestop()
 
-                if conf.flash.enabled and LSF then
+                if self.flashReady and conf.flash.enabled and LSF and ( InCombatLockdown() or not conf.flash.combat ) then
                     self.flashTimer = self.flashTimer - elapsed
                     self.flashWarnings = self.flashWarnings or {}
 
                     local a = self.Buttons[ 1 ].Action
                     local changed = self.lastFlash ~= a
 
-                    if a and ( now > self.flashTimer ) and self.flashReady then
-                        if now % 1 < 0.5 then
-                            self.flashTimer = floor( now ) + 0.5 + flashOffset[ self.id ]
-                        else
-                            self.flashTimer = ceil( now ) + flashOffset[ self.id ]
-                        end
+                    if a and ( changed or self.flashTimer < 0 ) then
+                        self.flashTimer = conf.flash.speed or 0.4
 
                         local ability = class.abilities[ a ]
 
@@ -1243,7 +1223,7 @@ do
                         if ability.item then
                             local iname = LSF.ItemName( ability.item )
                             if LSF.Flashable( iname ) then
-                                LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                                LSF.FlashItem( iname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture, conf.flash.fixedSize, conf.flash.fixedBrightness )
                             elseif conf.flash.suppress and not self.flashWarnings[ iname ] then
                                 self.flashWarnings[ iname ] = true
                                 -- Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended item '" .. iname .. "' (" .. self.id .. ")." )
@@ -1268,7 +1248,7 @@ do
                                 end
 
                                 if flashable then
-                                    LSF.FlashAction( aFlash, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                                    LSF.FlashAction( aFlash, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture, conf.flash.fixedSize, conf.flash.fixedBrightness )
                                 elseif conf.flash.suppress and not self.flashWarnings[ aFlash ] then
                                     self.flashWarnings[ aFlash ] = true
                                     -- Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended action '" .. aFlash .. "' (" .. self.id .. ")." )
@@ -1284,7 +1264,7 @@ do
 
                                 if sname then
                                     if LSF.Flashable( sname ) then
-                                        LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture )
+                                        LSF.FlashAction( sname, self.flashColor, conf.flash.size, conf.flash.brightness, conf.flash.blink, nil, conf.flash.texture, conf.flash.fixedSize, conf.flash.fixedBrightness )
                                     elseif not self.flashWarnings[ sname ] then
                                         self.flashWarnings[ sname ] = true
                                         -- Hekili:Error( "|cffff0000WARNING|r - Could not flash recommended ability '" .. sname .. "' (" .. self.id .. ")." )
@@ -1638,19 +1618,23 @@ do
             if event == "CURRENT_SPELL_CAST_CHANGED" then
                 local b = self.Buttons[ 1 ]
 
-                local ability = b.Ability
-                local isItem, id = false, ability and ability.id
+                if conf.glow.highlight then
+                    local ability = b.Ability
+                    local isItem, id = false, ability and ability.id
 
-                if id and id < 0 then
-                    isItem = true
-                    id = ability.item
-                end
+                    if id and id < 0 then
+                        isItem = true
+                        id = ability.item
+                    end
 
-                local spellID = select( 9, UnitCastingInfo( "player" ) ) or select( 9, UnitChannelInfo( "player" ) )
+                    local spellID = select( 9, UnitCastingInfo( "player" ) ) or select( 9, UnitChannelInfo( "player" ) )
 
-                if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) then --  and b.ExactTime > GetTime() then
-                    b.Highlight:Show()
-                else
+                    if id and ( isItem and IsCurrentItem( id ) or IsCurrentSpell( id ) ) then --  and b.ExactTime > GetTime() then
+                        b.Highlight:Show()
+                    else
+                        b.Highlight:Hide()
+                    end
+                elseif b.Highlight:IsShown() then
                     b.Highlight:Hide()
                 end
             end

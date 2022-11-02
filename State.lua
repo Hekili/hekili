@@ -3240,7 +3240,7 @@ function state:TimeToResource( t, amount )
     if not amount or amount > t.max then return 3600
     elseif t.current >= amount then return 0 end
 
-    local pad, lastTick = 0
+    local pad, lastTick = 0, nil
     if t.resource == "energy" or t.resource == "focus" then
         -- Round any result requiring ticks to the next tick.
         lastTick = t.last_tick

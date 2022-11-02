@@ -18,7 +18,7 @@ actions+=/blood_tap,if=(rune<=2&rune.time_to_4>gcd&charges_fractional>=1.8)|rune
 actions+=/marrowrend,if=buff.bone_shield.remains<gcd
 actions+=/deaths_caress,if=buff.bone_shield.remains<gcd|!buff.bone_shield.up
 actions+=/gorefiends_grasp,if=talent.tightening_grasp.enabled
-actions+=/death_and_decay,if=(talent.unholy_ground|talent.sanguine_ground)&cooldown.dancing_rune_weapon.remains<gcd
+actions+=/death_and_decay,if=!death_and_decay.ticking&(talent.unholy_ground|talent.sanguine_ground)&cooldown.dancing_rune_weapon.remains<gcd
 actions+=/dancing_rune_weapon,if=!buff.dancing_rune_weapon.up
 actions+=/run_action_list,name=drw_up,if=buff.dancing_rune_weapon.up
 actions+=/call_action_list,name=standard
@@ -40,7 +40,7 @@ actions.drw_up+=/blood_boil,if=((charges>=2&rune<=1)|dot.blood_plague.remains<=2
 actions.drw_up+=/variable,name=heart_strike_rp_drw,value=(25+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
 actions.drw_up+=/death_strike,if=runic_power.deficit<=variable.heart_strike_rp_drw
 actions.drw_up+=/consumption
-actions.drw_up+=/death_and_decay,if=(spell_targets.death_and_decay>2&buff.crimson_scourge.up)|spell_targets.death_and_decay>=4
+actions.drw_up+=/death_and_decay,if=!death_and_decay.ticking&((spell_targets.death_and_decay>2&buff.crimson_scourge.up)|spell_targets.death_and_decay>=4)
 actions.drw_up+=/heart_strike,if=rune.time_to_2<gcd|runic_power.deficit>=variable.heart_strike_rp_drw
 
 actions.racials=blood_fury,if=cooldown.dancing_rune_weapon.ready&(!cooldown.blooddrinker.ready|!talent.blooddrinker.enabled)
@@ -64,12 +64,12 @@ actions.standard+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&targe
 actions.standard+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&active_enemies>=2&target.time_to_die>(dot.soul_reaper.remains+5)
 actions.standard+=/death_strike,if=runic_power.deficit<=variable.death_strike_dump_amount&!(talent.bonestorm.enabled&cooldown.bonestorm.remains<2)
 actions.standard+=/blood_boil,if=charges_fractional>=1.8&(buff.hemostasis.stack<=(5-spell_targets.blood_boil)|spell_targets.blood_boil>2)
-actions.standard+=/death_and_decay,if=buff.crimson_scourge.up&talent.relish_in_blood.enabled&runic_power.deficit>10
+actions.standard+=/death_and_decay,if=!death_and_decay.ticking&(buff.crimson_scourge.up&talent.relish_in_blood.enabled&runic_power.deficit>10)
 actions.standard+=/variable,name=heart_strike_rp,value=(15+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
 actions.standard+=/death_strike,if=(runic_power.deficit<=variable.heart_strike_rp)|target.time_to_die<10
 actions.standard+=/death_and_decay,if=spell_targets.death_and_decay>=3
 actions.standard+=/heart_strike,if=rune.time_to_4<gcd
 actions.standard+=/consumption
-actions.standard+=/death_and_decay,if=buff.crimson_scourge.up|talent.rapid_decomposition.enabled
+actions.standard+=/death_and_decay,if=!dead_and_decay.ticking&(buff.crimson_scourge.up|talent.rapid_decomposition.enabled)
 actions.standard+=/blood_boil,if=charges_fractional>=1.1
 actions.standard+=/heart_strike,if=(rune>1&(rune.time_to_3<gcd|buff.bone_shield.stack>7))
