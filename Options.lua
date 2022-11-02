@@ -8450,17 +8450,7 @@ function Hekili:GenerateProfile()
 
     local spec = s.spec.key
 
-    local talents
-    --[[ if not IsAddOnLoaded( "Blizzard_ClassTalents" ) then
-        LoadAddOn( "Blizzard_ClassTalents" )
-        local isConfig = self.Config
-        ToggleTalentFrame( 2 )
-        ToggleTalentFrame()
-        if isConfig then ns.StartConfiguration() end
-    end
-    if ClassTalentFrame and ClassTalentFrame.TalentsTab and ClassTalentFrame.TalentsTab.GetLoadoutExportString then
-        talents = ClassTalentFrame.TalentsTab:GetLoadoutExportString()
-    end ]]
+    local talents = Hekili.CurrentTalentExport
 
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then
