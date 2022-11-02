@@ -1086,6 +1086,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "mind_devourer" )
             applyDebuff( "target", "devouring_plague" )
+
             if talent.mind_flay_insanity.enabled then applyBuff( "mind_flay_insanity" ) end
         end,
     },
@@ -1418,15 +1419,25 @@ spec:RegisterAbilities( {
         spendType = "insanity",
 
         startsCombat = true,
+        texture = function()
+            if buff.mind_flay_insanity.up then return 425954 end
+            return 136208
+        end,
         nobuff = "boon_of_the_ascended",
         bind = "ascended_blast",
 
-        aura = "mind_flay",
+        aura = function() return buff.mind_flay_insanity.up and "mind_flay_insanity" or "mind_flay" end,
         tick_time = function () return class.auras.mind_flay.tick_time end,
 
         start = function ()
-            applyDebuff( "target", buff.mind_flay_insanity.up and "mind_flay_insanity_dot" or "mind_flay" )
-            channelSpell( buff.mind_flay_insanity.up and "mind_flay_insanity" or "mind_flay" )
+            if buff.mind_flay_insanity.up then
+                removeBuff( "mind_flay_insanity" )
+                applyDebuff( "target", "mind_flay_insanity_dot" )
+                channelSpell("mind_flay_insanity" )
+            else
+                applyDebuff( "target", "mind_flay" )
+                channelSpell( "mind_flay" )
+            end
             if talent.dark_evangelism.enabled then addStack( "dark_evangelism" ) end
             forecastResources( "insanity" )
         end,
