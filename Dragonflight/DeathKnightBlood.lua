@@ -475,8 +475,9 @@ spec:RegisterAuras( {
     },
     deaths_due = {
         id = 324165,
-        duration = 12,
-        max_stack = 1
+        duration = function () return legendary.rampant_transference.enabled and 12 or 10 end,
+        max_stack = 1,
+        copy = "deaths_due_buff"
     },
     -- Talent: The next $w2 healing received will be absorbed.
     -- https://wowhead.com/beta/spell=48743
@@ -1290,7 +1291,7 @@ spec:RegisterAbilities( {
                 stat.haste = stat.haste + ( state.spec.blood and 0.1 or 0.15 )
             end
 
-            applyBuff( "death_and_decay" )
+            applyBuff( "death_and_decay_actual" )
         end,
     },
 

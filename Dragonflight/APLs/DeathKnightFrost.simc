@@ -70,7 +70,7 @@ actions.bos_pooling+=/frost_strike,cycle_targets=1,if=cooldown.pillar_of_frost.r
 # Breath of Sindragosa Active Rotation
 actions.bos_ticking=obliterate,cycle_targets=1,if=runic_power<=(45+talent.runic_attenuation*5)
 actions.bos_ticking+=/remorseless_winter,if=variable.rw_buffs|active_enemies>=2|runic_power<32&rune.time_to_2<runic_power%16
-actions.bos_ticking+=/death_and_decay,if=runic_power<32&rune.time_to_2<runic_power%16
+actions.bos_ticking+=/death_and_decay,if=!death_and_decay.ticking&runic_power<32&rune.time_to_2<runic_power%16
 actions.bos_ticking+=/howling_blast,if=variable.rotfc_rime&(runic_power>=45|rune.time_to_3<=gcd|runeforge.rage_of_the_frozen_champion|spell_targets.howling_blast>=2|buff.rime.remains<3)|runic_power<32&rune.time_to_2<runic_power%16
 actions.bos_ticking+=/frostscythe,if=buff.killing_machine.up&spell_targets.frostscythe>2&!variable.deaths_due_active
 actions.bos_ticking+=/obliterate,cycle_targets=1,if=buff.killing_machine.react
@@ -106,7 +106,7 @@ actions.cooldowns+=/frostwyrms_fury,if=talent.obliteration&(buff.pillar_of_frost
 ## actions.cooldowns+=/hypothermic_presence,if=talent.breath_of_sindragosa&runic_power<60&rune<=3&(buff.breath_of_sindragosa.up|cooldown.breath_of_sindragosa.remains>40)|!talent.breath_of_sindragosa&runic_power<=75
 actions.cooldowns+=/raise_dead,if=cooldown.pillar_of_frost.remains<=5
 actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&(fight_remains<3|!buff.breath_of_sindragosa.up&(pet.ghoul.remains<gcd|raid_event.adds.exists&raid_event.adds.remains<3&raid_event.adds.in>pet.ghoul.remains))
-actions.cooldowns+=/death_and_decay,if=active_enemies>5|runeforge.phearomones
+actions.cooldowns+=/death_and_decay,if=!death_and_decay.ticking&(active_enemies>5|runeforge.phearomones)
 
 # Covenant Abilities
 actions.covenants=deaths_due,if=(!talent.obliteration|talent.obliteration&active_enemies>=2&cooldown.pillar_of_frost.remains|active_enemies=1)&(variable.st_planning|variable.adds_remain)

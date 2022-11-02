@@ -109,7 +109,7 @@ actions.generic+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.sta
 actions.generic+=/festering_strike,cycle_targets=1,if=variable.build_wounds
 
 generic+=/death_coil,if=!variable.pooling_runic_power&(buff.sudden_doom.react|runic_power.deficit<=40|rune<3)|pet.gargoyle.active|fight_remains<(30%gcd)
-generic+=/any_dnd,if=active_enemies>=2&death_knight.fwounded_targets=active_enemies
+generic+=/any_dnd,if=!death_and_decay.ticking&(active_enemies>=2&death_knight.fwounded_targets=active_enemies)
 generic+=/wound_spender,cycle_targets=1,if=variable.pop_wounds|active_enemies>=2&death_and_decay.ticking
 generic+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.stack<4&cooldown.apocalypse.remains<variable.apoc_timing
 generic+=/festering_strike,cycle_targets=1,if=variable.build_wounds
