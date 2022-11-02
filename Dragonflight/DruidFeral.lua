@@ -1989,6 +1989,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "rake" )
             debuff.rake.pmultiplier = persistent_multiplier
+            removeBuff( "sudden_ambush" )
+
             if talent.doubleclawed_rake.enabled and active_dot.rake < true_active_enemies then active_dot.rake = active_dot.rake + 1 end
             if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
 
