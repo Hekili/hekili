@@ -116,13 +116,35 @@ spec:RegisterHook( "UNIT_ELIMINATED", function( guid )
     RemoveRip( guid )
 end )
 
+local LastFinisherCp = 0
+local LastSeenCp = 0
+local CurrentCp = 0
+local DruidFinishers = {
+    [52610] = true,
+    [48577] = true,
+    [49800] = true,
+    [49802] = true
+}
+
+spec:RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function(event, unit, _, spellID )
+    if DruidFinishers[spellID] then
+        LastSeenCp = GetComboPoints("player", "target")
+    end
+end)
+
+spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", "COMBO_POINTS", function(event, unit)
+    CurrentCp = GetComboPoints("player", "target")
+    if CurrentCp == 0 and LastSeenCp > 0 then
+        LastFinisherCp = LastSeenCp
+    end
+end)
+
 spec:RegisterStateTable( "rip_tracker", setmetatable( {
     cache = {},
     reset = function()
         table.wipe(cache)
     end
     }, {
-    
     __index = function( t, k )
         if not cache[k] then
             local tr = GetTrackedRip( k )
@@ -134,11 +156,19 @@ spec:RegisterStateTable( "rip_tracker", setmetatable( {
     end
 }))
 
-local predatorsswiftness_spell_assigned = false
+local lastfinishercp = nil
+spec:RegisterStateExpr("last_finisher_cp", function()
+    return lastfinishercp
+end)
 
+spec:RegisterStateFunction("set_last_finisher_cp", function(val)
+    lastfinishercp = val
+end)
+
+local predatorsswiftness_spell_assigned = false
 spec:RegisterHook( "reset_precast", function()
     rip_tracker:reset()
-
+    set_last_finisher_cp(LastFinisherCp)
     if not predatorsswiftness_spell_assigned then
         class.abilityList.predatorsswiftness_spell = "|cff00ccff[Assigned Predator's Swiftness Spell]|r"
         class.abilities.predatorsswiftness_spell = class.abilities[ settings.predatorsswiftness_spell or "regrowth" ]
@@ -1246,6 +1276,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "clearcasting" )
+            if combo_points.current == 5 then
+                applyBuff("predators_swiftness")
+            end
+            set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
             spend( min( 30, energy.current - 35 ), "energy" )
         end,
@@ -1510,6 +1544,10 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "maim", combo_points.current )
             removeBuff( "clearcasting" )
+            if combo_points.current == 5 then
+                applyBuff("predators_swiftness")
+            end
+            set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
         end,
     },
@@ -1886,6 +1924,10 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "rip" )
             removeBuff( "clearcasting" )
+            if combo_points.current == 5 then
+                applyBuff("predators_swiftness")
+            end
+            set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
             rip_tracker[target.unit].extension = 0
         end,
@@ -1909,6 +1951,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "savage_roar" )
+            if combo_points.current == 5 then
+                applyBuff("predators_swiftness")
+            end
+            set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
         end,
     },
@@ -2286,7 +2332,7 @@ local bearweaving_spells = {}
 local bearweaving_instancetypes = {}
 local predatorsswiftness_spells = {}
 
-spec:RegisterSetting("flowerweaving_enabled", true, {
+spec:RegisterSetting("flowerweaving_enabled", false, {
     type = "toggle",
     name = "Flowerweaving: Enabled?",
     desc = "Select whether or not flowerweaving should be used in AOE situations",
@@ -2314,7 +2360,7 @@ spec:RegisterSetting("flowerweaving_instancetype", "raid", {
     end
 })
 
-spec:RegisterSetting("bearweaving_enabled", true, {
+spec:RegisterSetting("bearweaving_enabled", false, {
     type = "toggle",
     name = "Bearweaving: Enabled?",
     desc = "Select whether or not bearweaving should be used",
@@ -2361,10 +2407,10 @@ spec:RegisterSetting("bearweaving_instancetype", "raid", {
     end
 })
 
-spec:RegisterSetting("predatorsswiftness_enabled", true, {
+spec:RegisterSetting("predatorsswiftness_enabled", false, {
     type = "toggle",
     name = "Predator's Swiftness: Enabled?",
-    desc = "Select whether or not predator's swiftness procs should be consumed",
+    desc = "Select whether or not predator's swiftness procs should be consumed by casting a nature spell",
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.predatorsswiftness_enabled = val
@@ -2413,4 +2459,4 @@ spec:RegisterOptions( {
 -- Default Packs
 spec:RegisterPack( "Balance (IV)", 20220926, [[Hekili:vwvtVTnpm4Flffiyd71oF12To0MdfDhsp0EWf9OSKLPteISKHKCmYf9BFuoFzNLG3weGaBrYh9qYhstgtENKKZCa51jJMmz09tUlE8VMo5M7jjUnvajPIXxXwGpOyL4)pXKmfV98nsnlpeVvxBchT05QS)E4WMMMybFt0AqOSXCD5WgTtUkIlzwRGpmBlgr5MArEuELnQAnez0oMtOvrCTwMRBu2iwMqkCcWssYQfs3Cfj7809NilQao51XJrEiYZHTUcwoj59LcRNwzeAJWTXtdVLXSqUNQvEQBj4PZ5OHpce2txG0cIXu0OlesmXU(ApDxI7PphyTN(T5F8D)lbltUZttGkhuMbg8vKy(x8VW4HSXgxzaSeKXC)4XHLATALqLwOnLxWdMzvQUifjvAJqM3bj0AbdmciTqyG)tu8OJjbLlwuImDnKN2XCmOyzsiFWvobhVYfdwy01vPLTS0o72EWQX(x4wvmxTb6AY6yMcMu29muySetKadchUgsbfuITPzJhGUVaCX5cmqSC9W0rDJCzTXi4mfCUy76i2haUl12WmLbFZQlkIbUuuzHuzTIzIdsKdzx3ydf59vOs96wRH(07V98B)2t)JAHqbyHcpN6eQvy5iERhDikQ9nOIclQmohKGH50g7fOsDv37VgpxGQHpN3Tf4DS9moBGsgwmMXzwxQtu2R50GSA5)eOvlpxGKeSyQWSgNMMxwPnUWaWK9zTNkXEwOsqsy1ULAd62HHcssR12TfqbRw6WhFTD7XoHg5jschNVWcld3D8)Rm90bE6vHwW2oy41EAupDMNElYMw(rs6GbXHlacx(bB9vWDzf660UUUxrFIp3CXCPVoTLvJBz7jADp9bpD6OJ30U5Ka63(Lq)iehgycGC3fb5cJhNuIpcB3XRaY)8IiVDa6yK7hUcr9RVcFQRocYHjKak3)vqzNQUTm1rz3R3UJDJh95aU34YLaUDsdr1f(QWUT1hMa6wB2VD)e1vpX6P74777(FK)(d]] )
 
-spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:LMv3VTQnu8)wYlrj32MHtdz5kf6dtxnP79HUjLP9iGdysrLpImq76ue)TVJnyWySjP3jv1MAF((878bexK7F5EiexsCFET161iKfAf6RRr2BCpu(XzI7HZ4GxXNGpKHtHF)7ekoP2)B)5HA)fFJe9V4GxwYO6JKCCitAf5v0aGs3dhRItk)EM7rnQazJwd0EMe4(mc5E4L4WqsdPKIag3NP5rXjGGWbLX5zfRotjb5PhXL358lPy6RE5rELVq8Epoj8(4iNzvNNp7yvu0QtXrLY3UQ6C9p0jMaCPxuonTL96F0rgCzvbXlUKKwiFiTkZR5)8sIlkVNfvCosWuMi4kpmMs8yNWLSSQnXoZkW5KojiSkG35mIFJ4rYiPXKINq3IW0jiz(m71moacg6cmYcjCbMGdG8FjHzzQhrjP44SI92MU5jN1IROXN7oDJQ2lEHsc79HeWocWfLXzNgKhBiUm(eHw4fvr)GXceNON(yvqfLsYk3)OLk9hbQj0xz0gKNNeM)E2kjz0zvi75lMn2RVCXKZHSwQQR3XXL3xqcCg71sXuPt33A(LXPeVYCVu8)mNHvZ9oNhNvwi8lh7wGER3WshFoRvJYVBZihaUvuyP3mgL6WVb9k8O5n1dlK0cid(NLir7zTwZdapm)xezSMRCaAZDlwOZQEaT8l2lxE5II2fmUzUE(GlgQcwkfKIwpFmTpAKw7r0UDj3(Mn0anfM3poXKIZoLq8AR1fYP5unfju8RerICyfIdYYsVshNBfLL)0siIqZdIZRk8oc9v5aKfAAi4GwBewaxYtkQOFTIXAcXSB5YBetpUz4OAVj7KSvNXTZSPTvjfTFZOMys5ZUsC2zD9rSwTBuWhtOXeViM3eXgIlJCW00CQhKFR48SQBsAVtEJWHN2AD5YiwhWmBw3NTZDlp3E3BDClxgmtxZOzxDItRKu6ZnZavVhFMxKQ7s1Du0ed2ylh5yqqGprRCg9sD1qwJOuEmVssYz7UH9hfIbASzeyoMCd19DfOkrYbKZjZigtJZQokROe2mvUjtlpP4ko2McoqVdV229WBGIakB2d16RR36E4DmndmUc3dFp9CoTKew7Bx73iYAF2AvfRQ)H7b(NyR3crv4ppZxCMKHpMqcD)n4yk0sJgJz7VQogU2FETVHjX1(75ACkkEYP2FTmjsPa42A)nILKbTpOBLBj4SgTuD5OEjXlWzc4rJcyiQI7kpA1lbPktMC2yuotvlZDquteArT)SXXjwa(YLPIFGaSQ9x2BzTqoMvzRyvW(AD5qP4CpVST60KVhKtGaX4v54UGUkMAFhbgaCp1AI)poUJEiZDaKHfpa3FRXKcOWwTB2M7JkG8zI7xnkUfdmLwjRPjS(Z7m9hQ9hUnfpyBX5sZfOnCVDb)h9(bireemQ9)cpjSK)dlSQ1ILf(grUXOS7is10eqYonzmgBM)hVj(TnY)wHZ2lLz6C5Rbe23IM67C0N4yyIDtbXuxDTxk974YeYxVbCQA7ihwq2AAlxgcdRhWufY6MB49j1qxlvK5XhlubEdQMrRVs9bNObilD9tmkERBq87eGMBS1WW1(5UV5zsgAaE1jeBNA(4UR5vc(1mqBJ1udxrMho2IlLAqlVIEtBRv70a)mpNSVEz8c7ggFiLguFaaUYuh)zgRZcswn(JrDia4LSxFx7RzB6TL6REf2UMxENCtHHV3VPxWHl8EMfle3yGTRIpT5952WXSLCv8lYw72jxfEjf40mhvCLXL8eGUjXCdYWd7TZHpD3jEEhzrn5og6Q3KceQqHMehRaC6SMMz1iPSMyrPPtzJW)qxTT70TAqVE6MxpzVgDSo5eKrTZvFevv2vyZy9QufXeqnTp5L6Sn5GQz0K8dL1(Gn2Yv3vjn54qse85(Ehck6EN8kqm10yh(E4RiF0t)m6L138KEEnFzhCKMMqZTkD53)olfXOT)L53u3pqHIEsAIH)e6uv06ECNBRzjRQdxqc)JmLVbOV)3S9(QkFjN6EO9RdItV7)n]] )
+spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:DRXwpQno3Fl8cc60YxsGqPsdZdFQALAFO7kXQ9XKycoG1esqojd7ScLF77Xo3C8Lqy7BvA0uQ95(9Jz8S9(tVDhq5yVF4y54yBB5SWXzPR9x82L)(fS3UlOWxrhHpKGod)(3WuuCzWx)JDLbZ(2Fnh(TZCguVhNIoWOwwAbneG0B3(csC(3s82RNfFgG9co07h22E7oroCaxbkolKH9fAAejgiekmNKMKT4cfhMEEpk)PT)VZi6R(Pr(5NW(xjXh(ijA7KIltNSVikAXrsuU4TlkUu(DDKjeL7hLspxJE53BbdUSid7tYXNZep8aHI93Jr0o84SS)5adNEaZVigfcMSCSUJO4Ziss2ZUMU5LTonxrjxApD1ugNUIrVrso63GKpobTpgFquCPfj(v)p)ysw(hzoXTCXSblMkyqd(5zYzuYX4XYIkGhnda)ievLsZYUcU7eCwwlFAVYV9ogZuXOHztJrzqKajHKDct9dVS1ToukmgKWq4wqcz0Gf6K6FjLKKNTiSGsXj5G)dNGPhFV9Gvw3v8zHEO0oBttOiJjmGFJzjWNj4SxShdX0rir8mhQZWaai7eyE6OsF9wg4CYrmyEJkOVZqrs9xAjd)EaAm9vgSHPPXhsVMSqGgTr22UtNnrnZ52ntji2wZL51vej)Jz4WTQzom(RE6Z1IFo5m2ppfce)BT(52GIATH5QEmPvdZFALIca32uptVyO46qVbLO9PPikdXzcCHLJX(SaiApRwA(eGdt)BSmwtLoWE1tZMPtQ(K98p4oF(TBsCVbXvt1JhCrFwWCPav0Q5QWU0iSUkWUEox(M0xanzMFw1XuxHQoBRHovNQjjHIEf34i7NHS12YYqPeJPL)NPqeMMgsslY83tQQ3pBMMMkBTDmgwaxYDkYr)AjJ1aKzZ85JmM2uJwbUpyLK16eUnMfT1Q1W71DsUTKQpUnTNDwBTfRfBuCiimLGH2nGggXMNsmAcrpNs9bFEbhNfTd10P4Jme5L1w3UPGApKzDGE0Q514m(k66Wwm1yIUcuA7(QJss1(MyaQRKl8exDxkpUOgBWk3PrXPxXQHdDeS3yvazfNWsOqOTLzueBsl5m3UEt)ARn0dkkAmOwfCd1mAtUhAEhoygJfhs9L7hMLdBviwPsg5ZOcEwbfuPotGJRI9UQ47VcMUwnPUld7qZGCFZJ60UaIAgbg2blo(oJoFhQknBP3U3aLeaVAJpRV4S2B3venbmmzE7(25lP0Ci3j4ZLbv0TmGnlB2IYV7TJ)j2IKavH)5h8vuRt38()WXuOlgLGy7xQA1Bwxe2TKvv0lhKbJeOFCszWZLblT6OGq5mgDwAKodvaSm4LYaOiyWuyv5YGjLbQdmwgC7M659iGvzW8ojRoiIjvRKKkyWx2o0YbVD4Ygpwu4vHLBiuNjMRc6Ybkd2wguPHG6jhL)ZO4BBVSN49uzWkM9auFxJofGH1C3Sm3zva6Zi3AJKBwprPMYA6CP)8wr)tLb9hlLBST4yP5c7vCTDg)h96bqrBWyug8bUtyo)hMzvRels8vn(gJ0UfizrRjKSLtgTXMXF5OW31i(RBu2oQmrNkFVaHNRJM6QC054yXeFEOqm5Da6Os3YcmISzeXPYLJ2YmYwdl5IHWWmvmw9LrxV7bzqBfvBRHstMPpPLLmB7CN0doq9cS0voXi5Tgb530eZmYkd9xFIR(MBjzO(3DBqS2SEXL4H1Qg810pBvTjrDtMonS)QwCn0CpZ6WvH62IR7uvnBXg1OsBZTp7sJux(Xqxfb3J8YuCMj3v0CoaZ4zvPpg5rtGFoRBzem7v3GjnG0(yXISDWHpAukLhfvmuOxVsnhlA2DhgcwSVZqHzRuIuKF03Hczm7EhqlhhZKEYZQre9R((i6T4GU5HEy5O)Zq)asrfIdpucxgmmJntqm)e18RLFMAntEjVY8Wf3nx2yCkUQ8o8uuvIOWluZ4pJ4Dp3DvZ9XX(6D4hUlTmphnPhrF7oA1WGQYeTFjtdVbtxV)g3NMV6kXrk6)TED3cmMfWgl3GI3JTFKzj5UT)SD1UBZGTmKmCAMc3qkHAVjZ1mKSHstg6k2bO9jMK6ayozqxExvgP23AQJvYbjTXCY5I3F9z91Iemr4J00R5N(jc1elo(qHBSowR3OBzMU2ETBym44r6q9o1fLMa9ELvLqZ4OecMMk7zxUD7R(ifazolq85FQBW7ksXIybpqBtYb9bAwt0wiLxSt74FxLF1DKM9qAF4t59Qg34lJ0zZC3Om8HFpr9pwda8I8tPqa2xXr)dk8ehEV)n]] )

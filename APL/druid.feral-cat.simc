@@ -2,14 +2,14 @@ actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
 actions.precombat+=/cat_form,if=!up
 
 actions+=/use_items
+actions+=/dire_bear_form,if=!buff.dire_bear_form.up&debuff.lacerate.up&debuff.lacerate.remains<5&debuff.lacerate.remains>=2&debuff.rip.remains>4&bearweaving_lacerate_enabled
 actions+=/run_action_list,name=bear_lacerate,if=buff.dire_bear_form.up&bearweaving_lacerate_enabled
 actions+=/run_action_list,name=bear_mangle,if=buff.dire_bear_form.up&bearweaving_mangle_enabled
-actions+=/run_action_list,name=predatorsswiftness,if=buff.predators_swiftness.up&predatorsswiftness_enabled
+actions+=/run_action_list,name=predatorsswiftness,if=buff.predators_swiftness.up&predatorsswiftness_enabled&last_finisher_cp=5&!buff.clearcasting.up&combo_points.current<5&energy.current<40
 actions+=/run_action_list,name=cat_aoe,if=buff.cat_form.up&active_enemies>1
 actions+=/run_action_list,name=cat,if=buff.cat_form.up
 actions+=/cat_form,if=!up
 
-actions.cat+=/dire_bear_form,if=debuff.lacerate.up&debuff.lacerate.remains<5&debuff.lacerate.remains>=2&debuff.rip.remains>4
 actions.cat+=/shred,if=buff.clearcasting.up
 actions.cat+=/tigers_fury,if=energy.current<30
 actions.cat+=/berserk,if=cooldown.tigers_fury.remains>15&(!debuff.lacerate.up|debuff.lacerate.remains>10)
@@ -20,7 +20,7 @@ actions.cat+=/mangle_cat,if=!debuff.mangle.up
 actions.cat+=/rake,if=!up&energy.current=100&combo_points.current<5
 actions.cat+=/shred,if=energy.current=100&combo_points.current<5
 actions.cat+=/ferocious_bite,if=((debuff.rip.remains>=12&buff.savage_roar.remains>=10)|(buff.berserk.up&debuff.rip.remains>=10&buff.savage_roar.remains>=8))&combo_points.current=5
-actions.cat+=/dire_bear_form,if=!buff.berserk.up&cooldown.tigers_fury.remains>6&debuff.rip.remains>8&buff.savage_roar.remains>6&energy.current<40
+actions.cat+=/dire_bear_form,if=!buff.berserk.up&cooldown.tigers_fury.remains>6&debuff.rip.remains>8&buff.savage_roar.remains>6&energy.current<40&bearweaving_enabled
 actions.cat+=/rake,if=!up|debuff.rake.remains<0.8
 actions.cat+=/faerie_fire_feral,if=!debuff.armor_reduction.up&!buff.berserk.up
 actions.cat+=/shred,if=energy.current>60|buff.berserk.up
