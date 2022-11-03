@@ -151,18 +151,18 @@ end)
 
 spec:RegisterStateTable( "rip_tracker", setmetatable( {
     cache = {},
-    reset = function()
-        table.wipe(cache)
+    reset = function( t )
+        table.wipe(t.cache)
     end
     }, {
     __index = function( t, k )
-        if not cache[k] then
+        if not t.cache[k] then
             local tr = GetTrackedRip( k )
             if tr then
-                cache[k] = { extension = tr.extension }
+                t.cache[k] = { extension = tr.extension }
             end
         end
-        return cache[k]
+        return t.cache[k]
     end
 }))
 
