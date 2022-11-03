@@ -181,18 +181,17 @@ local HekiliSpecMixin = {
             timeTo = function( x )
                 return state:TimeToResource( r.state, x )
             end,
+
+            --[[ reset = function()
+                wipe( r.state.times )
+                wipe( r.state.values )
+            end ]]
         }, mt_resource )
         r.state.regenModel = regen
         r.state.meta = meta or {}
 
         for _, func in pairs( r.state.meta ) do
             setfenv( func, state )
-        end
-
-        if model and not model.timeTo then
-            model.timeTo = function( x )
-                return state:TimeToResource( r.state, x )
-            end
         end
 
         if r.state.regenModel then

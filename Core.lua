@@ -486,7 +486,6 @@ function Hekili:CheckChannel( ability, prio )
     local remains = state.channel_remains
 
     if channel == ability then
-        if self.ActiveDebug then self:Debug( "CC: We channeling and checking %s...", ability ) end
         if prio <= remains + 0.01 then
             if self.ActiveDebug then self:Debug( "CC: ...looks like chaining, not breaking channel.", ability ) end
             return false
@@ -946,8 +945,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                     if debug then
                                         if usable then
-                                            if state.action[ action ].cost and state.action[ action ].cost > 0 then
-                                                self:Debug( "The action (%s) is usable at (%.2f + %.2f) with cost of %d %s.", action, state.offset, state.delay, state.action[ action ].cost or 0, state.action[ action ].cost_type )
+                                            local cost = state.action[ action ].cost
+                                            local costType = state.action[ action ].cost_type
+
+                                            if cost and cost > 0 then
+                                                self:Debug( "The action (%s) is usable at (%.2f + %.2f) with cost of %d %s (have %d).", action, state.offset, state.delay, cost or 0, costType or "unknown", costType and state[ costType ] and state[ costType ].current or -1 )
                                             else
                                                 self:Debug( "The action (%s) is usable at (%.2f + %.2f).", action, state.offset, state.delay )
                                             end
@@ -1504,7 +1506,7 @@ function Hekili.Update()
 
     local snaps = nil
 
-    for i, info in ipairs( displayRules ) do
+    for _, info in ipairs( displayRules ) do
         local dispName, rule, fullReset = unpack( info )
         local display = rawget( profile.displays, dispName )
 
@@ -1930,8 +1932,6 @@ function Hekili.Update()
                                 end
 
                                 -- Hekili:Yield( "Post-CD for " .. dispName .. " #" .. i .. ": " .. action )
-                                ns.spendResources( action )
-                                state:RunHandler( action )
                                 -- Hekili:Yield( "Post-RunHandler for " .. dispName .. " #" .. i .. ": " .. action )
 
                                 if debug then Hekili:Debug( "Queueing %s channel finish at %.2f [%.2f+%.2f].", action, state.query_time + cast, state.offset, cast, cast_target ) end
@@ -1941,14 +1941,14 @@ function Hekili.Update()
                                 -- Queue ticks because we may not have an ability.tick function, but may have resources tied to an aura.
                                 if ability.tick_time then
                                     local ticks = floor( cast / ability.tick_time )
-
                                     for i = 1, ticks do
-                                        if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f [+%.2f].", action, i, ticks, state.query_time + ( i * ability.tick_time ), state.offset + ( i * ability.tick_time ) ) end
                                         state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK", cast_target )
-                                        Hekili:Yield( "Post-Queue Tick " .. i .. " for " .. dispName .. " #" .. i .. ": " .. action )
                                     end
+                                    if debug then Hekili:Debug( "Queued %d ticks of channel %s.", ticks, action ) end
                                 end
 
+                                state:RunHandler( action )
+                                ns.spendResources( action )
                             end
                         else
                             -- Instants.

@@ -1157,9 +1157,9 @@ function state.channelSpell( name, start, duration, id )
             duration = duration or ability.cast
         end
 
-        if not duration then return end
+        if not duration or duration == 0 then return end
 
-        applyBuff( "casting", duration, nil, id or ( ability and ability.id ) or 0, nil, true, start )
+        applyBuff( "casting", duration, nil, id or ( ability and ability.id ) or 0, nil, 1, start )
     end
 end
 
@@ -1342,7 +1342,7 @@ do
             else
                 now = e.next
 
-                local bonus = r.regen * ( now - prev )
+                local bonus = r.regen > 0.001 and ( r.regen * ( now - prev ) ) or 0
 
                 local stop = e.stop and e.stop( r.forecast[ r.fcount ].v )
                 local aura = e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < now
@@ -1404,7 +1404,7 @@ do
             if #events > 1 then sort( events, resourceModelSort ) end
         end
 
-        if r.regen > 0 and r.forecast[ r.fcount ].v < r.max then
+        if r.regen > 0.001 and r.forecast[ r.fcount ].v < r.max then
             for k, v in pairs( remains ) do
                 local r = state[ k ]
                 local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
@@ -3246,13 +3246,15 @@ function state:TimeToResource( t, amount )
         lastTick = t.last_tick
     end
 
-    local index, slice
+    local slice
+
     if t.forecast and t.fcount > 0 then
         local q = state.query_time
+        local index, slice
 
         if t.times[ amount ] then return t.times[ amount ] - q end
 
-        if t.regen == 0 then
+        if t.regen <= 0.001 then
             for i = 1, t.fcount do
                 local v = t.forecast[ i ]
                 if v.v >= amount then
@@ -6509,19 +6511,6 @@ function state.GetResourceType( ability )
 end
 
 
-local hysteria_resources = {
-    mana            = true,
-    rage            = true,
-    focus           = true,
-    energy          = true,
-    runic_power     = true,
-    astral_power    = true,
-    maelstrom       = true,
-    insanity        = true,
-    fury            = true,
-    pain            = true
-}
-
 ns.spendResources = function( ability )
     local action = class.abilities[ ability ]
 
@@ -6544,10 +6533,6 @@ ns.spendResources = function( ability )
 
         if cost > 0 and cost < 1 then
             cost = ( cost * state[ resource ].modmax )
-        end
-
-        if state.debuff.hysteria.up and hysteria_resources[ resource ] then
-            cost = cost + ( .03 * state.debuff.hysteria.stack * cost )
         end
 
         if cost ~= 0 then
@@ -7009,13 +6994,17 @@ end ]]
 local ttrCache = {}
 local ttrPoolCache = {}
 local ttrCacheTime = 0
+local ttrCacheSlot = 0
+local ttrCacheDisplay = ""
 
 function state:TimeToReady( action, pool )
     local now = self.now + self.offset
 
-    if now ~= ttrCacheTime then
+    if ttrCacheDisplay ~= state.display or ttrCacheSlot ~= state.index or ttrCacheTime ~= now then
         table.wipe( ttrCache )
         table.wipe( ttrPoolCache )
+        ttrCacheDisplay = state.display
+        ttrCacheSlot = state.index
         ttrCacheTime = now
     else
         if pool and ttrPoolCache[ action ] then
@@ -7080,10 +7069,6 @@ function state:TimeToReady( action, pool )
         end
 
         spend = spend or 0
-
-        --[[ if state.debuff.hysteria.up and resource and hysteria_resources[ resource ] then
-            spend = spend * ( 1 + 0.03 * state.debuff.hysteria.stack )
-        end ]]
     end
 
     if spend and resource and spend > 0 and spend < 1 then
@@ -7105,7 +7090,7 @@ function state:TimeToReady( action, pool )
     -- Okay, so we don't have enough of the resource.
     z = resource and self[ resource ]
     z = z and z[ "time_to_" .. spend ]
-    if spend and z then
+    if spend and z and z > wait then
         wait = max( wait, ceil( z * 100 ) / 100 )
     end
 
