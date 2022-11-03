@@ -10082,7 +10082,6 @@ do
         { "time_to_pct_(%d+)%.remains"                  , "time_to_pct_%1"                  },
         { "trinket%.(%d)%.([%w%._]+)"                   , "trinket.t%1.%2"                  },
         { "trinket%.([%w_]+)%.cooldown"                 , "trinket.%1.cooldown.duration"    },
-        { "trinket%.([%w_]+)%.cooldown.([%w_]+)"        , "trinket.%1.cooldown.%2"          },
         { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration" , "trinket.%1.buff_duration"        },
         { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"   , "trinket.%1.has_use_buff"         },
         { "trinket%.([%w_]+)%.has_buff%.([%w_]+)"       , "trinket.%1.has_use_buff"         },
@@ -10107,6 +10106,15 @@ do
 
             return "equipped[" .. item .. "]"
         end },
+
+        { "trinket%.([%w_]+)%.cooldown%.([%w_]+)", nil, function( trinket, token )
+            if class.abilities[ trinket ] then
+                return "cooldown." .. trinket .. "." .. token
+            end
+
+            return "trinket." .. trinket .. ".cooldown." .. token
+        end,  },
+
     }
 
     local operations = {
@@ -10180,9 +10188,9 @@ do
                             end
                         end
                     elseif subs[3] then
-                        local val = token:match( "^" .. subs[1] .. "$" )
+                        local val, v2, v3, v4, v5 = token:match( "^" .. subs[1] .. "$" )
                         if val ~= nil then
-                            token = subs[3]( val )
+                            token = subs[3]( val, v2, v3, v4, v5 )
                             insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. token .. "'." )
                         end
                     end
