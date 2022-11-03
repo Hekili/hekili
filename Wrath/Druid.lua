@@ -240,6 +240,10 @@ spec:RegisterResource( Enum.PowerType.ComboPoints )
 spec:RegisterResource( Enum.PowerType.Energy )
 
 
+-- Idols
+spec:RegisterGear( "idol_of_worship", 39757)
+spec:RegisterGear( "idol_of_the_ravenous_beast", 40713)
+
 -- Sets
 spec:RegisterGear( "tier7", 39557, 39553, 39555, 39554, 39556, 40472, 40473, 40493, 40471, 40494 )
 spec:RegisterGear( "tier8", 46260, 46262, 46265, 46267, 46269, 46158, 46161, 46160, 46159, 46157 )
