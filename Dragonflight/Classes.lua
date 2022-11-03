@@ -20,8 +20,6 @@ state.talent.no_trait = { rank = 0, max = 1 }
 
 -- Replace ns.updateTalents() as DF talents use new Traits and ClassTalents API.
 do
-    local talentsTab
-
     function ns.updateTalents()
         local configID = C_ClassTalents.GetActiveConfigID() or -1
 
@@ -61,126 +59,32 @@ do
                 }
             end
         end
+    end
+
+
+    local talentsTab
+
+    local UpdateTalentExport = function()
+        if InCombatLockdown() then
+            Hekili.CurrentTalentExport = nil
+            C_Timer.After( 10, UpdateTalentExport )
+            return
+        end
 
         if not IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then LoadAddOn( "Blizzard_ClassTalentUI" ) end
-        C_Timer.After( 0.1, function()
-            if InCombatLockdown() then
-                Hekili.CurrentTalentExport = nil
-                return
-            end
-            talentsTab = talentsTab or ClassTalentFrame.TalentsTab
-            talentsTab:UpdateTreeInfo()
-            Hekili.CurrentTalentExport = talentsTab:GetLoadoutExportString()
-        end )
+        talentsTab = talentsTab or ClassTalentFrame.TalentsTab
+
+        local success, msg = pcall( talentsTab.UpdateTreeInfo, talentsTab, true )
+
+        if not success then
+            Hekili:Error( msg .. "\n\n" .. debugstack() )
+            C_Timer.After( 10, UpdateTalentExport )
+            return
+        end
+
+        Hekili.CurrentTalentExport = talentsTab:GetLoadoutExportString()
     end
+
+    RegisterEvent( "ACTIVE_COMBAT_CONFIG_CHANGED", UpdateTalentExport )
+    RegisterEvent( "PLAYER_ENTERING_WORLD", UpdateTalentExport )
 end
-
-
-local all = Hekili.Class.specs[0]
-
-all:RegisterAuras( {
-    blessing_of_the_bronze = {
-        alias = {
-            "blessing_of_the_bronze_evoker",
-            "blessing_of_the_bronze_deathknight",
-            "blessing_of_the_bronze_demonhunter",
-            "blessing_of_the_bronze_druid",
-            "blessing_of_the_bronze_hunter",
-            "blessing_of_the_bronze_mage",
-            "blessing_of_the_bronze_monk",
-            "blessing_of_the_bronze_paladin",
-            "blessing_of_the_bronze_",
-            "blessing_of_the_bronze_",
-            "blessing_of_the_bronze_",
-        },
-        aliasType = "first",
-    },
-    blessing_of_the_bronze_deathknight = {
-        id = 381732,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_demonhunter = {
-        id = 381741,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_druid = {
-        id = 381746,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_evoker = {
-        id = 381748,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_hunter = {
-        id = 364342,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_mage = {
-        id = 381750,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_monk = {
-        id = 381751,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_paladin = {
-        id = 381752,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_priest = {
-        id = 381753,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_rogue = {
-        id = 381754,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_shaman = {
-        id = 381756,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_warlock = {
-        id = 381757,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    blessing_of_the_bronze_warrior = {
-        id = 381758,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    fury_of_the_aspects = {
-        id = 390386,
-        duration = 40,
-        max_stack = 1,
-        shared = "player"
-    }
-} )
-
--- Make Exhaustion a duplicate of Heroism's Exhaustion aura.
-all.auras.exhaustion.copy = 390435
-all.auras[390435] = all.auras.exhaustion
