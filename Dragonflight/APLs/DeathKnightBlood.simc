@@ -67,7 +67,7 @@ actions.standard+=/blood_boil,if=charges_fractional>=1.8&(buff.hemostasis.stack<
 actions.standard+=/death_and_decay,if=!death_and_decay.ticking&(buff.crimson_scourge.up&talent.relish_in_blood.enabled&runic_power.deficit>10)
 actions.standard+=/variable,name=heart_strike_rp,value=(15+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
 actions.standard+=/death_strike,if=(runic_power.deficit<=variable.heart_strike_rp)|target.time_to_die<10
-actions.standard+=/death_and_decay,if=spell_targets.death_and_decay>=3
+actions.standard+=/death_and_decay,if=!death_and_decay.ticking&spell_targets.death_and_decay>=3
 actions.standard+=/heart_strike,if=rune.time_to_4<gcd
 actions.standard+=/consumption
 actions.standard+=/death_and_decay,if=!death_and_decay.ticking&(buff.crimson_scourge.up|talent.rapid_decomposition.enabled)
