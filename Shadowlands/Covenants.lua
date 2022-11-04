@@ -1836,18 +1836,12 @@ elseif baseClass == "ROGUE" then
 
             cycle = "serrated_bone_spike",
 
-            cp_gain = function () return ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike end,
+            cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike ) end,
 
             handler = function ()
                 applyDebuff( "target", "serrated_bone_spike" )
                 debuff.serrated_bone_spike.exsanguinated_rate = 1
-
-                if set_bonus.tier28_4pc > 0 and debuff.vendetta.up then
-                    debuff.serrated_bone_spike.exsanguinated_rate = 2
-                    debuff.serrated_bone_spike.vendetta_exsg = true
-                end
-
-                gain( ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike, "combo_points" )
+                gain( action.serrated_bone_spike.cp_gain, "combo_points" )
                 if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
