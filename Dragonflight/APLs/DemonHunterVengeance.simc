@@ -1,6 +1,5 @@
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 
-# Executed every time the actor is available.
 actions+=/disrupt
 actions+=/consume_magic
 actions+=/variable,name=brand_build,value=talent.agonizing_flames.enabled&talent.burning_alive.enabled&talent.charred_flesh.enabled
@@ -22,7 +21,7 @@ actions.cooldowns+=/the_hunt
 actions.cooldowns+=/elysian_decree
 
 # Defensives
-actions.defensives=demon_spikes
+actions.defensives=demon_spikes,if=tanking&(buff.demon_spikes.down|charges>1)
 actions.defensives+=/metamorphosis,if=!buff.metamorphosis.up&(!action.sinful_brand.known|!dot.sinful_brand.ticking)|target.time_to_die<15
 actions.defensives+=/fiery_brand
 
