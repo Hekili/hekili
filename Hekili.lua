@@ -36,9 +36,9 @@ ns.PTR = false
 
 ns.Patrons = "|cFFFFD100Current Dragonflight Status|r\n\n"
     .. "|cFF00FF00Up to Date|r\n"
-    .. "- Death Knights, Demon Hunters, Balance and Feral Druids, Hunters, Windwalker Monk, Retribution Paladin, Shadow Priest, and Elemental and Enhancement Shamans\n\n"
+    .. "- Death Knights, Demon Hunters, Balance and Feral Druids, Hunters, Windwalker Monk, Retribution Paladin, Shadow Priest, Outlaw Rogue, Elemental and Enhancement Shamans, Warriors\n\n"
     .. "|cFFFFAE42Beta|r\n"
-    .. "- Guardian Druid, Warriors\n\n"
+    .. "- Guardian Druid\n\n"
     .. "|cFFBB3F3FNot Yet Implemented|r\n"
     .. "- All Other Classes/Specializations\n\n"
     .. "|cFF00FF00Up to Date|r means it is working and using priorities written for Dragonflight.\n"
