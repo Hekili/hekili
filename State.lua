@@ -772,8 +772,18 @@ do
             return
         end
 
-        if cDebuff.up then
+        if cDebuff.up and not ability.cycle_to then
+            -- We want to target enemies with this debuff.
             cycle.expires = cDebuff.expires
+            cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
+            cycle.maxTTD  = ability.max_ttd
+
+            cycle.aura = aura
+
+            if not quiet then
+                debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
+            end
+        elseif cDebuff.down and ability.cycle_to and active_dot[ aura ] > 0 then
             cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
             cycle.maxTTD  = ability.max_ttd
 
@@ -6991,29 +7001,8 @@ local function profilestop( name, reset )
 end ]]
 
 
-local ttrCache = {}
-local ttrPoolCache = {}
-local ttrCacheTime = 0
-local ttrCacheSlot = 0
-local ttrCacheDisplay = ""
-
 function state:TimeToReady( action, pool )
     local now = self.now + self.offset
-
-    if ttrCacheDisplay ~= state.display or ttrCacheSlot ~= state.index or ttrCacheTime ~= now then
-        table.wipe( ttrCache )
-        table.wipe( ttrPoolCache )
-        ttrCacheDisplay = state.display
-        ttrCacheSlot = state.index
-        ttrCacheTime = now
-    else
-        if pool and ttrPoolCache[ action ] then
-            return max( ttrPoolCache[ action ] - self.query_time, self.delayMin )
-        elseif ttrCache[ action ] then
-            return max( ttrCache[ action ] - self.query_time, self.delayMin )
-        end
-    end
-
     action = action or self.this_action
 
     local delay = state.delay
@@ -7022,8 +7011,6 @@ function state:TimeToReady( action, pool )
     -- Need to ignore the wait for this part.
     local wait = self.cooldown[ action ].remains
     local ability = class.abilities[ action ]
-
-    local lastCast = ability.lastCast
 
     -- Working variable.
     local z = ability.id
@@ -7041,23 +7028,6 @@ function state:TimeToReady( action, pool )
             end
         end
     end
-
-    local line_cd = state.args.line_cd
-    if ( line_cd and type( line_cd ) == "number" ) then
-        if lastCast > self.combat then
-            if Hekili.Debug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. lastCast .. ", remaining CD: " .. max( 0, lastCast + line_cd - now ) ) end
-            wait = max( wait, lastCast + line_cd - now )
-        end
-    end
-
-    local sync = state.args.sync
-    local synced = sync and class.abilities[ sync ]
-
-    if synced and sync ~= action and state:IsKnown( sync ) then
-        wait = max( wait, state:TimeToReady( sync ) )
-    end
-
-    wait = ns.callHook( "TimeToReady", wait, action )
 
     local spend, resource = ability.spend
     if spend then
@@ -7132,11 +7102,24 @@ function state:TimeToReady( action, pool )
         wait = z
     end
 
-    if pool then
-        ttrPoolCache[ action ] = now + wait
-    else
-        ttrCache[ action ] = now + wait
+    local lastCast = ability.lastCast
+
+    local line_cd = state.args.line_cd
+    if ( line_cd and type( line_cd ) == "number" ) then
+        if lastCast > self.combat then
+            if Hekili.Debug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. lastCast .. ", remaining CD: " .. max( 0, lastCast + line_cd - now ) ) end
+            wait = max( wait, lastCast + line_cd - now )
+        end
     end
+
+    local sync = state.args.sync
+    local synced = sync and class.abilities[ sync ]
+
+    if synced and sync ~= action and state:IsKnown( sync ) then
+        wait = max( wait, state:TimeToReady( sync ) )
+    end
+
+    wait = ns.callHook( "TimeToReady", wait, action )
 
     state.delay = delay
     return max( wait, self.delayMin )
