@@ -7083,11 +7083,6 @@ function state:TimeToReady( action, pool )
     end
     profilestop( "post-repeat" ) ]]
 
-    z = ability.icd
-    z = z and z + lastCast - now
-    if z and z > wait then
-        wait = z
-    end
 
     -- If ready is a function, it returns time.
     -- Ignore this if we are just checking pool_resources.
@@ -7103,6 +7098,12 @@ function state:TimeToReady( action, pool )
     end
 
     local lastCast = ability.lastCast
+
+    z = ability.icd
+    z = z and z + lastCast - now
+    if z and z > wait then
+        wait = z
+    end
 
     local line_cd = state.args.line_cd
     if ( line_cd and type( line_cd ) == "number" ) then
