@@ -203,7 +203,7 @@ spec:RegisterStateExpr("flowerweaving_enabled", function()
 end)
 
 spec:RegisterStateExpr("bearweaving_enabled", function()
-    return settings.bearweaving_enabled and (settings.bearweaving_instancetype == "any" or (settings.bearweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.bearweaving_instancetype == "raid" and instanceType == "raid"))
+    return settings.bearweaving_enabled and (settings.bearweaving_bossonly == false or state.encounterDifficulty > 0) and (settings.bearweaving_instancetype == "any" or (settings.bearweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.bearweaving_instancetype == "raid" and instanceType == "raid"))
 end)
 
 spec:RegisterStateExpr("bearweaving_lacerate_enabled", function()
@@ -2422,6 +2422,16 @@ spec:RegisterSetting("bearweaving_instancetype", "raid", {
     end,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.bearweaving_instancetype = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_bossonly", true, {
+    type = "toggle",
+    name = "Bearweaving: Boss Only?",
+    desc = "Select whether or not bearweaving should be used in only boss fights, or whether it can be recommended in any engagement",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_bossonly = val
     end
 })
 
