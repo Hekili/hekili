@@ -194,8 +194,12 @@ spec:RegisterStateExpr("rip_maxremains", function()
     end
 end)
 
+spec:RegisterStateExpr("min_roar_offset", function()
+    return settings.min_roar_offset
+end)
+
 spec:RegisterStateExpr("flowerweaving_enabled", function()
-    return settings.flowerweaving_enabled and (settings.flowerweaving_instancetype == "any" or (settings.flowerweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.flowerweaving_instancetype == "raid" and instanceType == "raid"))
+    return settings.flowerweaving_enabled and (state.group_members >= flowerweaving_mingroupsize)
 end)
 
 spec:RegisterStateExpr("bearweaving_enabled", function()
@@ -2334,10 +2338,22 @@ spec:RegisterAbilities( {
 
 
 -- Settings
-local flowerweaving_instancetypes = {}
 local bearweaving_spells = {}
 local bearweaving_instancetypes = {}
 local predatorsswiftness_spells = {}
+
+spec:RegisterSetting("min_roar_offset", 14, {
+    type = "range",
+    name = "Minimum Roar Offset",
+    desc = "Sets the minimum number of seconds over the current rip duration required for Savage Roar recommendations",
+    width = "full",
+    min = 0,
+    softMax = 14,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_roar_offset = val
+    end
+})
 
 spec:RegisterSetting("flowerweaving_enabled", false, {
     type = "toggle",
@@ -2349,21 +2365,16 @@ spec:RegisterSetting("flowerweaving_enabled", false, {
     end
 })
 
-spec:RegisterSetting("flowerweaving_instancetype", "raid", {
-    type = "select",
-    name = "Flowerweaving: Instance Type",
-    desc = "Select the type of instance that is required before the addon recomments Gift of the Wild in AOE situations" ..
-        "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend flowerweaving in any situation.\n\n",
+spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
+    type = "range",
+    name = "Flowerweaving: Minimum Group Size",
+    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
     width = "full",
-    values = function()
-        table.wipe(flowerweaving_instancetypes)
-        flowerweaving_instancetypes.any = "any"
-        flowerweaving_instancetypes.dungeon = "dungeon"
-        flowerweaving_instancetypes.raid = "raid"
-        return flowerweaving_instancetypes
-    end,
+    min = 0,
+    softMax = 40,
+    step = 1,
     set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_instancetype = val
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
     end
 })
 
@@ -2466,4 +2477,4 @@ spec:RegisterOptions( {
 -- Default Packs
 spec:RegisterPack( "Balance (IV)", 20220926, [[Hekili:vwvtVTnpm4Flffiyd71oF12To0MdfDhsp0EWf9OSKLPteISKHKCmYf9BFuoFzNLG3weGaBrYh9qYhstgtENKKZCa51jJMmz09tUlE8VMo5M7jjUnvajPIXxXwGpOyL4)pXKmfV98nsnlpeVvxBchT05QS)E4WMMMybFt0AqOSXCD5WgTtUkIlzwRGpmBlgr5MArEuELnQAnez0oMtOvrCTwMRBu2iwMqkCcWssYQfs3Cfj7809NilQao51XJrEiYZHTUcwoj59LcRNwzeAJWTXtdVLXSqUNQvEQBj4PZ5OHpce2txG0cIXu0OlesmXU(ApDxI7PphyTN(T5F8D)lbltUZttGkhuMbg8vKy(x8VW4HSXgxzaSeKXC)4XHLATALqLwOnLxWdMzvQUifjvAJqM3bj0AbdmciTqyG)tu8OJjbLlwuImDnKN2XCmOyzsiFWvobhVYfdwy01vPLTS0o72EWQX(x4wvmxTb6AY6yMcMu29muySetKadchUgsbfuITPzJhGUVaCX5cmqSC9W0rDJCzTXi4mfCUy76i2haUl12WmLbFZQlkIbUuuzHuzTIzIdsKdzx3ydf59vOs96wRH(07V98B)2t)JAHqbyHcpN6eQvy5iERhDikQ9nOIclQmohKGH50g7fOsDv37VgpxGQHpN3Tf4DS9moBGsgwmMXzwxQtu2R50GSA5)eOvlpxGKeSyQWSgNMMxwPnUWaWK9zTNkXEwOsqsy1ULAd62HHcssR12TfqbRw6WhFTD7XoHg5jschNVWcld3D8)Rm90bE6vHwW2oy41EAupDMNElYMw(rs6GbXHlacx(bB9vWDzf660UUUxrFIp3CXCPVoTLvJBz7jADp9bpD6OJ30U5Ka63(Lq)iehgycGC3fb5cJhNuIpcB3XRaY)8IiVDa6yK7hUcr9RVcFQRocYHjKak3)vqzNQUTm1rz3R3UJDJh95aU34YLaUDsdr1f(QWUT1hMa6wB2VD)e1vpX6P74777(FK)(d]] )
 
-spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:DR1wVTTnu4Fl5fd7MwpjhlhhG48WqXaA2qxbCX2BsIwM2MisIgusXldg63(ouxP4fjL13kqrAm5HNRFNlKoU2UF3D7Euk29RlSwSW22A5CRhSUZ5E3TPVDg7U9mk4f0r4xIrrWp)nmdfM7)5VTn3F6x(RzWpxmJt1BHu0Eo3sOzSaGs3T7YiHPFj2DNQiw74y9aq7zCG7xTTD3EISFpUKuCsG72)MM(h)EUFT4yzK95(FJrOmskbNK)C(ZFNE8yio3hT)vuCag2NrtrPeAm8B4aAueoEFXNtY9jWIPNaQdcrjWNPNl2yoO6m6bsiOWOGYLoxC4DO0B38lri2lE0dEWr9Uqc3)rYHn3KDEYn7YoCy(rYHuXDNNDo)zDSjaL6DGYIQoox7Rid2mlb7rsXrjIlUNWWE7Wiw75kez31bbozpUyJqua4RsX6wIHJqK4KhDmTZtBwuVfJCUz1Lt4s6cg9kj(Ox9H8WXODHG)wqDzzXELFYlKKK(royztHAwFkUjyWc(XfsekgGcJueLepAbaXrafrzjjxGWDmojPronB51ShxyQNOwytaWhGeiXKKtyMxW5novqPGqqddGDbnKZdo0H6DMsIttMhKXy44ui(HJXSJV1SWsRbvFo0drB9n1qrUq4e)k3tGJGCQNShdZ0XiXZzgQZpbqqYjW90YLU2TmXPKJyW9EiJ9g)isM)DwY0VdOgZEHtBaLgUNEjEUapAq22otMEJAMZ1RMsqSTMjlRlis6htWb1Avkjc7Ls9UZIlE10PhvjuByUbtuzmAClaxRRePNdJvxx40ejsqVc159yueRhnwjA2EQkn661Pc2op3tM76wRsIFcodKG(pnkG1KURC79pAV82Pt1z2FYE2hCMPeNQY3RWU1r9Yv15BrVGRDUDXBBST0hXEuXF3aY)FZHdygnGqZs82rkREoDQMs0BSxy0zcBAndchsGjDv6bk7HnRNnBK4mtTTeKEV5LR0PCRnRARuRi2PwVCr(ANlcZiyOqmOTh4JyiImqSikZdIFzfNzEt7(EYhfWmdrRbOXtRSUEv5ODomVo(7TMy1zgFDrDNw18KsN12dthNulxOLQlKZfjS62uEOln(GLotoesVGvHbTmSZWjaBfNtbSO6cq2wMpIyRoPG5MvR7whSPG2sZGzvYnuROjPUVPgkiZiwSpZxUhyskChaXkuYhocLvKbXatQ1fSWrXFxw09NbxxJLu1DHVOzsg29OoZiCqndsc3ykmCGbqhGRstO5U9vWibYlVFM1dlw5U9cIfdoMe3TFj6mLLYVD19WvTk4BUpFIWK55p7UT434x7d4k8FFT4cLvPBU)kSmCFnOwlIFBqvVE9LUGBcYRk6Mc6Grg0fNK7)yU)DwTCqOCgNp3zKp9vam3)PCFOiO)e4IT5(3K7RoKyU)1RQR3Hbw5(ZA1SkqexRwkPvWizngw7qwThLp3MOURIZb)WMCF1504wGUuGCFG8sdeSojqoxfDm64a65wFVmUv1bDKZUvJWIx4y2InLYBWU5I8(HSaE8BAtiSCm1c7stVn9R3OeFk3V7aQL6vP)xENBlsIaCR9YIpmT4F6DMaJTbuuU)hkcxZ6GOeufUbVUpdwEE3wU0oymNjpmKxBsJ7wmIdt02dK4XUqcyocUOSTgDs(7ucnLrSnxiAQCWVn1LlTfdeXliYQiIuHJK7uWpVr2Bnc2VUmEp6uTU3vOW8nxgvnRVsoduvCLz7QqJ73QQpVMI4lRCjQJT3AHDVxrHfAUaFlOxDuEtf(A9LYxnOqyY1T1LC0hxBq(MRUk7z4UmRsmMr2wd3t5DgoaJz02dUMKMxxuuS92NT2ouEfnraqN(HAwUTAyD3gZnmbW8I(axlvWhYVsyFafZ4KESYXjmP3iRCAiVYhkVZmY6A9)U1JUVB57qlkpy)927BCsUIy(nnl2w(Dn1mLH8Td7VKU5IfJZWv1xDdJipDQWtAYLpN5TVpA5ODJt8vxxT)PrKL5Oz9G98f5vTaklt08Ts0)W6Qv108DDiojr3VMKblWywbR9C9QEVVRcywtgSPNTJ2X47T3JKJtZ4KgsjuBxmqBhJde6i2bO51uK6ayozqxExzgP2NvPvuYGKgmNCU4W3uuFTibxe(iJEj90pautS447cUX7yTATU7r05salhEOiDhDG6IsZDouzvPJzCucbxtP)Sn3U5boKaqMZceFPJQg8oICmluic00KS3yqLPjoxHTqkVyN2X)ec)ShinhH0(gFY3MACJVmYGnpCJsW7)Zy1)kcaYZsprba2NXh(xuWPc6D)Vp]] )
+spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:LRv3VTTnq8)wYlg2nTEsU2UEaw5HHIb0SHUc4IT3KeTmLdrKLmOKswgm0F77i1hMIFjLM32akcseV749XV74DhQVR)393DavG9)6cNflCDDwo31zXkxx)DfVCg7V7mk6r0r4xsrNGF(RykkPk8ZFBxv40V8NZGFUygJQxsYqhyslpRKgbu6VBFjjP4lP(71FfaPNXr(FLDxpqoCaxtjopYF3FLv87)wvy7TrljhQc)gLKrjfeCE19v3)9SJhtWvHOdpHsJWW50Scubjlf(nCu2Pt40d8)oVkKaFS4bG6Oeuo83zN5hm3FxcjViN7fWXOYKc4x)k3RGIyK4VRmhhqkWNY93Htr7tWh8)f)cWyyeD9l7Iavdtji)D3ufUVmoE(bcfhShJObXz0tZlpxfoPk8aMFyckcmUcSPptXNqeMQVTkCLDkUZRkCHijuYzHtRcxYpKPjpJrprspg0kKGwdOZC7R0md9Jgnulw54UmAzAq9VhWId1rJGAKgxKTSY0JLVv94ekfqm)aArnJmDyLDD4mfdqUmAEq(ZK4IuCEERI0Du3jTkc)yawweetsj5pGPbrapETX9w4uucOlraDGT0kvaMVpl4CgjTiFEujLItleGm4um94l9oyPZ4mCv9Lz)RTB)rOIEEFMWFI5XXNyzTmSO74UEMKqzCF(Ng9DoArZe7gB5VIYQ9c8zSX5UTeHfLQFS6QWYFa8R2lFOjO9rHGwb5igayXL0xSNDgLLLCi7505cC0RSGBnizkhIPRS0Ll2Q6acWPkC2vnBpCly6J6YvZHc9Tgwb5eoOilq0OEgrke1DDfY261bOVkclzbkjqn6hlEynvMh)hqWcqnYzDzg6S4fRmBXCnmh9e8wBandrhWUTNy0ybS430EVk0wvu(Ym99oL4dWJQKZqLW)UNEv7)Lp52QWtKuUecYIJZX1Oy3L8JMY)NExlCnUaMQk8D8G3SE4lbfBWe4gBUUYDVmWMxbAQc8Zd5d1uf1JH8TH822hGGEKxhZ1z0P8VYBOROIR5YstLHc9AFWDXaXForo8isdQskLYC)hnCoO43uhVhDIxmMMfrYkZd2tQ7qWD4EYKu4bRrU2wFvBgYQA5x77Wk9NmIEXCnxU)kOhrpLrdairjxoT2QMYGx9LiqiyObe4cJznDZVmZDCDn5WMu7q(MR1k7zyUmNAmMrX2c3l4DPWGkd9MSQ6EeAQbQnfadfe8mj5Gujc6JIhoy7(wBxG3hJv1719IVznzq0S7kTVwBfuj5408QHHguvXbdGNmwPFL48yq)ONRlFlikRTMQl7RUZG4KSNXMZ)Kbj1HuXrcEvHvwrU1B09SCV3uxoCvfDSoW0asfUhAycj2mMlkG2TamPGv03pi2k0jyU7oyO0Z0mND)aDH2ztgULC9ZMjasXhPzpx8WBizV)iRwvPgxU4u(UcP8IZ9o(jf(VoaZCDQbg0fNYqG2lbjpOtEbk6r5oTeJlMFuBCW91JcUBPl)XA0CS5tGVL9z(s4C(5fRzJGqtHOtU)UVC6CgTGTkIpvp0oBjA8nJnV6Ew(wwmbQ21i685Dp7ER3pj)y57jXE3uEEYnMENT6EDIPno3WoBdFnKbh2TdoXp2V7ioF8RuzrqtuNTv5tnO8TRmDYDElMOMvC3Yj220LO6kTsI3ZwgHxVkgmtWGf82VKAa2iVI(BkBWlqTEC39OVQ7eZBdBI8MW8w1aLKQOmrxXii(1pRyl0N9qQFtpAD6SWgLMWi(6gSUZDmctNGe5ZmuNXbqaVb3RsrQsQeXc96XyrY8)OJm9nfzz0ARFX7Cxnz6nQzoxUykbX1zM8DXwYX7ZXrEk7VGD9QPtBvjuByUdtimoN0vdsTTsKEjmwDDXQUiHMxl1OXkrZRC1OrxUmT3ozMOiDDFR5g)q)TTS1Zzs)VCR0Ux26U82Pt15e(G7S3TAMsu76gs46R8Quu80q39TU6(Oppxh9XVTkE)oi)pSe6VoaMOMovtbBp3fgDTWHoZGGJe0sxDFGslIzZSzJe1z6rmHB3Aw6ADk3gZQ2A16Jt0SdcfNR8(bergQ7By4StbmZq0AaAC3ANlxuyThZSQ6V2kKn8m(QK64w18KsU1(IMojPw8qlvTZeR7q5wW04dwUAI2rHf9N9AvbeRyxlGf1woY1XmlIp8jfm9wVPFvXUYBlndMvj3qTIUKAB9qWjZiwu2wQ7UwNV0Idq0NPDEdXYAYmZMBGXO40fqxPw5OBOcLiz9z)VnO0z(J0RkqVwFQAdTaTA6Yn)mojzGUJhqQsTp6VBpkhF4psv)pNbmWwzXdzWeLFgh)pOOh4Jc6)V]] )

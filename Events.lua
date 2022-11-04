@@ -46,6 +46,16 @@ Hekili.IC = itemCallbacks
 local eventData = {}
 Hekili.EData = eventData
 
+local function SetZoneInfo()
+    local _, zone, _, difficultyName, maxPlayers = GetInstanceInfo()
+    state.instanceType = zone
+    state.instanceSize = maxPlayers
+    state.instanceDifficulty = (string.find(difficultyName, "Heroic") and "Heroic") or "Normal"
+    state.bg = zone == "pvp"
+    state.arena = zone == "arena"
+    state.torghast = not Hekili.IsWrath() and IsInJailersTower() or false
+end
+
 local function GenericOnEvent( self, event, ... )
     local eventHandlers = handlers[ event ]
 
@@ -369,14 +379,17 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
         Hekili:BuildUI()
     end
 
-    local _, zone, _, difficultyName, maxPlayers = GetInstanceInfo()
-    state.instanceType = zone
-    state.instanceSize = maxPlayers
-    state.instanceDifficulty = (string.find(difficultyName, "Heroic") and "Heroic") or "Normal"
-    state.bg = zone == "pvp"
-    state.arena = zone == "arena"
-    state.torghast = not Hekili.IsWrath() and IsInJailersTower() or false
+    if IsInInstance() then
+        RequestRaidInfo()
+    else
+        SetZoneInfo()
+    end
 end )
+
+
+RegisterEvent( "UPDATE_INSTANCE_INFO", function()
+    SetZoneInfo()
+end)
 
 
 do
@@ -398,10 +411,7 @@ end
 
 
 RegisterEvent( "ZONE_CHANGED", function()
-    local _, zone = GetInstanceInfo()
-    state.bg = zone == "pvp"
-    state.arena = zone == "arena"
-    state.torghast = IsInJailersTower()
+    SetZoneInfo()
 end )
 
 
