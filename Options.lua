@@ -10076,7 +10076,7 @@ do
         { "rune_word%.([%w_]+)%.enabled"                , "buff.rune_word_%1.up"            },
         { "conduit%.([%w_]+)"                           , "conduit.%1.enabled"              },
         { "soulbind%.([%w_]+)"                          , "soulbind.%1.enabled"             },
-        { "pet.([%w_]+)%.([%w_]+)%.([%w%._]+)"          , "%3"                              },
+        { "pet.[%w_]+%.([%w_]+)%.([%w%._]+)"            , "%1.%2"                           },
         { "essence%.([%w_]+).rank(%d)"                  , "essence.%1.rank>=%2"             },
         { "target%.1%.time_to_die"                      , "time_to_die"                     },
         { "time_to_pct_(%d+)%.remains"                  , "time_to_pct_%1"                  },
