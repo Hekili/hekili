@@ -121,7 +121,7 @@ spec:RegisterTalents( {
     marked_for_death          = { 90750, 137619, 1 }, -- Marks the target, instantly generating 5 combo points. Cooldown reset if the target dies within 1 min.
     master_poisoner           = { 90636, 378436, 1 }, -- Increases the non-damaging effects of your weapon poisons by 20%.
     nightstalker              = { 90693, 14062 , 2 }, -- While Stealth is active, your abilities deal 4% more damage.
-    nimble_fingers            = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by 10.  -- TODO: Continue from here.
+    nimble_fingers            = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by 10.
     numbing_poison            = { 90763, 5761  , 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 15% for 10 sec.
     opportunity               = { 90683, 279876, 1 }, -- Sinister Strike has a 35% chance to hit an additional time, making your next Pistol Shot half cost and double damage.
     precise_cuts              = { 90667, 381985, 1 }, -- Blade Flurry damage is increased by an additional 3% per missing target below its maximum.
@@ -263,7 +263,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=382245
     cold_blood = {
         id = 382245,
-        duration = -1,
+        duration = 3600,
         max_stack = 1
     },
     -- Bleeding for $w1 damage every $t1 sec.
@@ -472,7 +472,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=108211
     leeching_poison = {
         id = 108211,
-        duration = -1,
+        duration = 3600,
         max_stack = 1
     },
     -- Talent: Your next $?s5171[Slice and Dice will be $w1% more effective][Roll the Bones will grant at least two matches].
@@ -511,14 +511,6 @@ spec:RegisterAuras( {
         id = 5760,
         duration = 10,
         max_stack = 1
-    },
-    safe_fall = {
-        id = 1860,
-    },
-    subterfuge = {
-        id = 115192,
-        duration = 3,
-        max_stack = 1,
     },
     -- Talent: Your next Pistol Shot costs $s1% less Energy and deals $s3% increased damage.
     -- https://wowhead.com/beta/spell=195627
@@ -659,6 +651,11 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     },
+    soothing_darkness = {
+        id = 393971,
+        duration = 6,
+        max_stack = 1,
+    },
     -- Movement speed increased by $w1%.$?s245751[    Allows you to run over water.][]
     -- https://wowhead.com/beta/spell=2983
     sprint = {
@@ -673,6 +670,16 @@ spec:RegisterAuras( {
         duration = 3600,
         copy = 115191
     },
+    subterfuge = {
+        id = 115192,
+        duration = 3,
+        max_stack = 1,
+    },
+    summarily_dispatched = {
+        id = 386868,
+        duration = 8,
+        max_stack = 5,
+    },
     -- Your next combo point generator will critically strike.
     -- https://wowhead.com/beta/spell=227151
     symbols_of_death = {
@@ -684,7 +691,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=385907
     take_em_by_surprise = {
         id = 385907,
-        duration = -1,
+        duration = 3600,
         max_stack = 1
     },
     -- Talent: Mastery increased by ${$w2*$mas}.1%.
@@ -912,6 +919,7 @@ spec:RegisterHook( "runHandler", function( ability )
     if stealthed.all and ( not a or a.startsCombat ) then
         if buff.stealth.up then
             setCooldown( "stealth", 2 )
+            if buff.take_em_by_surprise.up then buff.take_em_by_surprise.expires = query_time + 10 end
         end
 
         if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
@@ -929,26 +937,32 @@ spec:RegisterHook( "runHandler", function( ability )
 end )
 
 
+local restless_blades_list = {
+    "adrenaline_rush",
+    "between_the_eyes",
+    "blade_flurry",
+    "blade_rush",
+    "dreadblades",
+    "ghostly_strike",
+    "grappling_hook",
+    "keep_it_rolling",
+    "killing_spree",
+    "marked_for_death",
+    "roll_the_bones",
+    "sepsis",
+    "sprint",
+    "vanish"
+}
+
 spec:RegisterHook( "spend", function( amt, resource )
-    if resource == "combo_points" then
-        if amt >= 5 then gain( 1, "combo_points" ) end
+    if amt > 0 and resource == "combo_points" then
+        if amt >= 5 and talent.ruthlessness.enabled then gain( 1, "combo_points" ) end
 
         local cdr = amt * ( ( buff.true_bearing.up and 2 or 1 ) + ( talent.float_like_a_butterfly.enabled and 0.5 or 0 ) )
 
-        reduceCooldown( "adrenaline_rush", cdr )
-        reduceCooldown( "between_the_eyes", cdr )
-        reduceCooldown( "blade_flurry", cdr )
-        reduceCooldown( "grappling_hook", cdr )
-        reduceCooldown( "roll_the_bones", cdr )
-        reduceCooldown( "sprint", cdr )
-        reduceCooldown( "blade_rush", cdr )
-        reduceCooldown( "killing_spree", cdr )
-        reduceCooldown( "vanish", cdr )
-        reduceCooldown( "marked_for_death", cdr )
-        reduceCooldown( "dreadblades", cdr )
-        reduceCooldown( "ghostly_strike", cdr )
-        reduceCooldown( "sepsis", cdr )
-        reduceCooldown( "keep_it_rolling", cdr )
+        for _, action in ipairs( restless_blades_list ) do
+            reduceCooldown( action, cdr )
+        end
 
         if legendary.obedience.enabled and buff.flagellation_buff.up then
             reduceCooldown( "flagellation", amt )
@@ -1041,7 +1055,7 @@ spec:RegisterAbilities( {
         usable = function () return stealthed.all or buff.audacity.up or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
 
         cp_gain = function ()
-            return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 3 or 2 ) + talent.improved_ambush.rank )
+            return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 3 or 2 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) )
         end,
 
         handler = function ()
@@ -1181,7 +1195,7 @@ spec:RegisterAbilities( {
 
         nodebuff = "cheap_shot",
 
-        cp_gain = function () return buff.shadow_blades.up and 2 or 1 end,
+        cp_gain = function () return buff.shadow_blades.up and 2 or 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
 
         handler = function ()
             applyDebuff( "target", "cheap_shot", 4 )
@@ -1189,7 +1203,7 @@ spec:RegisterAbilities( {
             if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
 
             if talent.prey_on_the_weak.enabled then
-                applyDebuff( "target", "prey_on_the_weak", 6 )
+                applyDebuff( "target", "prey_on_the_weak" )
             end
 
             if pvptalent.control_is_king.enabled then
@@ -1339,7 +1353,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function() return talent.tight_spender.enabled and 31.5 or 35 end,
+        spend = function() return ( talent.tight_spender.enabled and 31.5 or 35 ) - 5 * ( buff.summarily_dispatched.up and buff.summarily_dispatched.stack or 0 ) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1349,7 +1363,9 @@ spec:RegisterAbilities( {
             if talent.alacrity.enabled and combo_points.current > 4 then
                 addStack( "alacrity", 15, 1 )
             end
-
+            if talent.summarily_dispatched.enabled and combo_points.current > 5 then
+                addStack( "summarily_dispatched", ( buff.summarily_dispatched.up and buff.summarily_dispatched.remains or nil ), 1 )
+            end
             removeBuff( "storm_of_steel" )
             removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( combo_points.current, "combo_points" )
@@ -1411,10 +1427,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         toggle = "cooldowns",
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2 ) end,
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
 
         handler = function ()
-            -- Can't predict the Animacharge, unless you have the legendary.
+            -- Can't predict the Animacharge, unless you have the talent/legendary.
             if legendary.resounding_clarity.enabled or talent.resounding_clarity.enabled then
                 applyBuff( "echoing_reprimand_2", nil, 2 )
                 applyBuff( "echoing_reprimand_3", nil, 3 )
@@ -1479,7 +1495,7 @@ spec:RegisterAbilities( {
         talent = "ghostly_strike",
         startsCombat = true,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) ) end,
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
 
         handler = function ()
             applyDebuff( "target", "ghostly_strike" )
@@ -1501,7 +1517,7 @@ spec:RegisterAbilities( {
         talent = "gouge",
         startsCombat = true,
 
-        cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) end,
+        cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
 
         handler = function ()
             applyDebuff( "target", "gouge" )
@@ -1581,12 +1597,12 @@ spec:RegisterAbilities( {
 
         usable = function ()
             if target.is_boss then return false, "kidney_shot assumed unusable in boss fights" end
-            return combo_points.current > 0
+            return combo_points.current > 0, "requires combo points"
         end,
 
         handler = function ()
             if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 15, 1 )
+                addStack( "alacrity", nil, 1 )
             end
             applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
             if pvptalent.control_is_king.enabled then
@@ -1669,7 +1685,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( buff.opportunity.up and 5 or 0 ) + ( buff.concealed_blunderbuss.up and 2 or 0 ) ) end,
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.quick_draw.enabled and buff.opportunity.up and 1 or 0 ) + ( buff.concealed_blunderbuss.up and 2 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
 
         handler = function ()
             gain( action.pistol_shot.cp_gain, "combo_points" )
@@ -1751,7 +1767,7 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        cp_gain = function() return debuff.dreadblades.up and combo_points.max or 1 end,
+        cp_gain = function() return debuff.dreadblades.up and combo_points.max or 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
 
         handler = function ()
             applyBuff( "sepsis_buff" )
@@ -1804,6 +1820,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "shadowstep" )
+            setDistance( 5 )
         end,
     },
 
@@ -1821,10 +1838,11 @@ spec:RegisterAbilities( {
         talent = "shiv",
         startsCombat = true,
 
-        cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) end,
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
 
         handler = function ()
             gain( action.shiv.cp_gain, "combo_point" )
+            removeDebuff( "target", "dispellable_enrage" )
         end,
     },
 
@@ -1951,6 +1969,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "stealth" )
+            if talent.take_em_by_surprise.enabled then applyBuff( "take_em_by_surprise" ) end
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
         end,
