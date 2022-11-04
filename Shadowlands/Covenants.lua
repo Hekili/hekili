@@ -2407,7 +2407,9 @@ elseif baseClass == "WARRIOR" then
                     local extra = min( 20, rage.current )
 
                     if extra > 0 then spend( extra, "rage" ) end
-                    gain( 4 + floor( 0.2 * extra ), "rage" )
+                    if talent.improved_execute.enabled or state.spec.protection then
+                        gain( extra * 0.2, "rage" )
+                    end
                 end
 
                 if legendary.sinful_surge.enabled then
@@ -2420,7 +2422,21 @@ elseif baseClass == "WARRIOR" then
 
                 removeBuff( "sudden_death" )
 
-                if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
+                if ( state.spec.arms or state.spec.protection ) and talent.juggernaut.enabled then
+                    addStack( "juggernaut", nil, 1 )
+                end
+
+                if state.spec.fury then
+                    removeStack( "whirlwind" )
+                    if talent.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
+                end
+
+                if state.spec.arms then
+                    if talent.critical_thinking.enabled then gain( cost * ( talent.critical_thinking.rank * 0.05 ), "rage" ) end
+                    if talent.executioners_precision.enabled then applyBuff ( "executioners_precision" ) end
+                    if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
+                end
+                --if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
             end,
 
             auras = {
