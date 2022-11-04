@@ -63,8 +63,9 @@ do
 
 
     local talentsTab
+    local UpdateTalentExport
 
-    local UpdateTalentExport = function()
+    UpdateTalentExport = function()
         if InCombatLockdown() then
             Hekili.CurrentTalentExport = nil
             C_Timer.After( 10, UpdateTalentExport )
@@ -86,5 +87,6 @@ do
     end
 
     RegisterEvent( "ACTIVE_COMBAT_CONFIG_CHANGED", UpdateTalentExport )
+    RegisterEvent( "TRAIT_CONFIG_UPDATED", UpdateTalentExport )
     RegisterEvent( "PLAYER_ENTERING_WORLD", UpdateTalentExport )
 end
