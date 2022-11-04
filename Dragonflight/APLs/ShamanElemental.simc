@@ -28,7 +28,7 @@ actions.aoe=fire_elemental
 # Keep your cooldowns rolling.
 actions.aoe+=/storm_elemental
 # Keep your cooldowns rolling.
-actions.aoe+=/stormkeeper
+actions.aoe+=/stormkeeper,if=!buff.stormkeeper.up
 # Spread Flame Shock using Surge of Power. Don't waste buffs by resets (resets are gone, but I'll keep that logic here).
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up&buff.surge_of_power.up&!buff.splintered_elements.up
 # Spread Flame Shock using Surge of Power. Don't waste buffs by resets (resets are gone, but I'll keep that logic here).
@@ -83,7 +83,7 @@ actions.single_target+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave
 actions.single_target+=/flame_shock,cycle_targets=1,if=refreshable&!buff.surge_of_power.up
 # Keep your cooldowns rolling.
 actions.single_target+=/liquid_magma_totem
-actions.single_target+=/stormkeeper,if=!buff.ascendance.up
+actions.single_target+=/stormkeeper,if=!buff.stormkeeper.up&!buff.ascendance.up
 actions.single_target+=/ascendance,if=!buff.stormkeeper.up
 actions.single_target+=/cancel_buff,name=lava_surge,if=buff.stormkeeper.up&buff.surge_of_power.up
 actions.single_target+=/lava_burst,if=buff.stormkeeper.up&buff.surge_of_power.up
