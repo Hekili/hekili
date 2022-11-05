@@ -905,7 +905,7 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not covenant.kyrian then return c end
+    if not action.echoing_reprimand.known then return c end
     if c < 2 or c > 5 then return c end
     if buff[ "echoing_reprimand_" .. c ].up then return 7 end
     return c
