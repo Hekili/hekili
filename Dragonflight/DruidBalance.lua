@@ -1025,10 +1025,6 @@ do
             spend = 0.05,
             spendType = "mana",
 
-            talent = function()
-                if covenant.necrolord then return end
-                return "adaptive_swarm"
-            end,
             startsCombat = true,
             texture = 3578197,
 
@@ -1042,7 +1038,7 @@ do
                 if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,
 
-            copy = { "adaptive_swarm_damage", "adaptive_swarm_heal", 325727, 325733, 325748 },
+            copy = { "adaptive_swarm_damage", "adaptive_swarm_heal", 325727, 325733, 325748, 391888 },
 
             auras = {
                 -- Suffering $w1 Shadow damage every $t1 sec and damage over time from $@auracaster increased by $w2%.
