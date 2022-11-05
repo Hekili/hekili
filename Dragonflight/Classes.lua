@@ -61,7 +61,7 @@ do
         end
     end
 
-
+    --[[
     local talentsTab
     local UpdateTalentExport
 
@@ -75,7 +75,7 @@ do
         if not IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then LoadAddOn( "Blizzard_ClassTalentUI" ) end
         talentsTab = talentsTab or ClassTalentFrame.TalentsTab
 
-        local success, msg = pcall( talentsTab.UpdateTreeInfo, talentsTab, true )
+        local success, msg = pcall( talentsTab.UpdateTreeInfo, talentsTab )
 
         if not success then
             Hekili:Error( msg .. "\n\n" .. debugstack() )
@@ -89,4 +89,5 @@ do
     RegisterEvent( "ACTIVE_COMBAT_CONFIG_CHANGED", UpdateTalentExport )
     RegisterEvent( "TRAIT_CONFIG_UPDATED", UpdateTalentExport )
     RegisterEvent( "PLAYER_ENTERING_WORLD", UpdateTalentExport )
+    ]]
 end
