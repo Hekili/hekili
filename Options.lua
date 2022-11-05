@@ -7971,7 +7971,6 @@ do
 
                 -- a.key = token
                 a.desc = GetSpellDescription( spellID )
-                if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
                 a.id = spellID
                 a.spend = cost
                 a.spendType = resource
@@ -8275,7 +8274,7 @@ do
                             local formatStr = "%-" .. max_talent_length .. "s = { %5d, %-6d, %d }, -- %s"
 
                             for i, tal in ipairs( talents ) do
-                                local line = format( formatStr, tal.name, tal.talent, tal.spell, tal.ranks or 0, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s+", " " ) )
+                                local line = format( formatStr, tal.name, tal.talent, tal.spell, tal.ranks or 0, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s%s+", " " ) )
                                 append( line )
                             end
 
@@ -8295,7 +8294,7 @@ do
                             local formatPvp = "%-" .. max_pvptalent_length .. "s = %-4d, -- (%d) %s"
 
                             for i, tal in ipairs( pvptalents ) do
-                                append( format( formatPvp, tal.name, tal.talent, tal.spell, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s+", " " ) ) )
+                                append( format( formatPvp, tal.name, tal.talent, tal.spell, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s%s+", " " ) ) )
                             end
                             decreaseIndent()
                             append( "} )\n\n" )
@@ -8305,11 +8304,7 @@ do
                             increaseIndent()
 
                             for k, aura in orderedPairs( auras ) do
-                                local desc = aura.id and GetSpellDescription( aura.id )
-                                if desc then
-                                    desc = desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s+", " " )
-                                    append( "-- " .. desc )
-                                end
+                                if aura.desc then append( "-- " .. aura.desc ) end
                                 append( k .. " = {" )
                                 increaseIndent()
                                 append( "id = " .. aura.id .. "," )
@@ -8338,8 +8333,8 @@ do
 
                             local count = 1
                             for k, a in orderedPairs( abilities ) do
-                                if count > 1 then append( "\n" ) end
                                 count = count + 1
+                                if a.desc then append( "-- " .. a.desc ) end
                                 append( k .. " = {" )
                                 increaseIndent()
                                 appendAttr( a, "id" )
@@ -8421,7 +8416,7 @@ do
                             -- append( select( 2, GetSpecializationInfo(GetSpecialization())) .. "\nKey\tID\tIs Aura\tIs Ability\tIs Talent\tIs PvP" )
                             for k,v in orderedPairs( aggregate ) do
                                 if v.id then
-                                    append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) .. "\t" .. ( v.pvptalent and "Yes" or "No" ) .. "\t" .. ( v.desc or GetSpellDescription( v.id ) or "" ):gsub( "\r", "" ):gsub( "\n", "" ) )
+                                    append( k .. "\t" .. v.id .. "\t" .. ( v.aura and "Yes" or "No" ) .. "\t" .. ( v.ability and "Yes" or "No" ) .. "\t" .. ( v.talent and "Yes" or "No" ) .. "\t" .. ( v.pvptalent and "Yes" or "No" ) .. "\t" .. ( v.desc or GetSpellDescription( v.id ) or "" ):gsub( "\r", " " ):gsub( "\n", " " ):gsub( "%s%s+", " " ) )
                                 end
                             end
                         end

@@ -2150,7 +2150,7 @@ do
                 if coroutine.status( thread ) == "dead" or err then
 
                     if Hekili.ActiveDebug then
-                        Hekili:Debug( format( "Recommendation thread for %s terminated due to error: %s", self.id, err and err:gsub( "%%", "%%%%" ) or "Unknown" ) )
+                        Hekili:Debug( format( "Recommendation thread terminated due to error: %s", err and err:gsub( "%%", "%%%%" ) or "Unknown" ) )
                         Hekili:SaveDebugSnapshot( self.id )
                         Hekili.ActiveDebug = nil
                     end
