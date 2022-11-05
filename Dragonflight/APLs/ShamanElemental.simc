@@ -42,15 +42,15 @@ actions.aoe+=/ascendance
 # Keep your cooldowns rolling.
 actions.aoe+=/liquid_magma_totem
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
-actions.aoe+=/earthquake,if=!talent.echoes_of_great_sundering.enabled|buff.echoes_of_great_sundering.up
+actions.aoe+=/earthquake,if=!(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)|buff.echoes_of_great_sundering.up
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Spread Lightning Rod to as many targets as possible.
-actions.aoe+=/elemental_blast,cycle_targets=1,if=talent.echoes_of_great_sundering.enabled
+actions.aoe+=/elemental_blast,cycle_targets=1,if=(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
-actions.aoe+=/elemental_blast,if=talent.echoes_of_great_sundering.enabled
+actions.aoe+=/elemental_blast,if=(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Spread Lightning Rod to as many targets as possible.
-actions.aoe+=/earth_shock,cycle_targets=1,if=talent.echoes_of_great_sundering.enabled
+actions.aoe+=/earth_shock,cycle_targets=1,if=(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
-actions.aoe+=/earth_shock,if=talent.echoes_of_great_sundering.enabled
+actions.aoe+=/earth_shock,if=(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
 # Stormkeeper is strong and should be used.
 actions.aoe+=/lava_beam,if=buff.stormkeeper.up
 # Stormkeeper is strong and should be used.
@@ -64,7 +64,7 @@ actions.aoe+=/chain_lightning,if=active_enemies>=6&buff.surge_of_power.up
 # Gamble away for Deeply Rooted Elements procs whenever Lava Surge makes Lava Burst more efficient.
 actions.aoe+=/lava_burst,if=buff.lava_surge.up&talent.deeply_rooted_elements.enabled
 # Cast Lava Burst to buff your immediately follow-up Earthquake with Master of the Elements.
-actions.aoe+=/lava_burst,if=cooldown_react&buff.lava_surge.up&talent.master_of_the_elements.enabled&(maelstrom>=60-5*talent.eye_of_the_storm.rank-2*talent.flow_of_power.enabled)&(!talent.echoes_of_great_sundering.enabled|buff.echoes_of_great_sundering.up)
+actions.aoe+=/lava_burst,if=cooldown_react&buff.lava_surge.up&talent.master_of_the_elements.enabled&(maelstrom>=60-5*talent.eye_of_the_storm.rank-2*talent.flow_of_power.enabled)&(!(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)|buff.echoes_of_great_sundering.up)
 # Use Icefury if you can get the full benefit from Electrified Shocks. If more targets are present ignore it.
 actions.aoe+=/icefury,if=talent.electrified_shocks.enabled&active_enemies<5
 # Spread out your Frost Shock casts to empower as many Chain Lightnings as possible.
@@ -103,7 +103,7 @@ actions.single_target+=/lava_burst,if=cooldown_react&buff.lava_surge.up
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Additionally Elemental Blast is stronger than EoGS. In this case don't use Earthquake on single target.
 actions.single_target+=/earthquake,if=buff.echoes_of_great_sundering.up&(!talent.elemental_blast.enabled&active_enemies<2|active_enemies>1)
 # Use Earthquake against two enemies unless you have to alternate because of Echoes of Great Sundering.
-actions.single_target+=/earthquake,if=active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1)&!talent.windspeakers_lava_resurgence.enabled&!talent.echoes_of_great_sundering.enabled
+actions.single_target+=/earthquake,if=active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1)&!talent.windspeakers_lava_resurgence.enabled&!(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
 actions.single_target+=/elemental_blast
 actions.single_target+=/earth_shock
 # Utilize present buffs.
