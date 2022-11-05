@@ -904,7 +904,7 @@ do
                     end
                     piece.r = nil
 
-                elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] and not equality[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] and not equality[ next.a ] ) ) then
+                elseif esDepth > 0 and not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] and not equality[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] and not equality[ next.a ] ) ) then
                     -- This expression is not having math operations performed on it.
                     -- Let's make sure it's a boolean.
                     if piece.s:find("^variable") then
@@ -1278,11 +1278,8 @@ local function ConvertScript( node, hasModifiers, header )
 
                 local sf, e
 
-                if value == 'bool' then
+                if value == 'bool' or value == 'raw' then
                     emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
-
-                elseif value == 'raw' then
-                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
 
                 else -- string
                     o = "'" .. o .. "'"
