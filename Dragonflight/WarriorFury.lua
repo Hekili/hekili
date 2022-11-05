@@ -1037,7 +1037,7 @@ spec:RegisterAbilities( {
         texture = 132215,
 
         notalent = "annihilator",
-
+        talent = "reckless_abandon",
         bind = "raging_blow",
         buff = "recklessness",
 
