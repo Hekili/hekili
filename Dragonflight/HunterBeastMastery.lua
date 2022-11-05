@@ -1227,18 +1227,6 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
 end, false )
 
 
--- Tier 28
-spec:RegisterGear( "tier28", 188861, 188860, 188859, 188858, 188856 )
-spec:RegisterSetBonuses( "tier28_2pc", 364492, "tier28_4pc", 363665 )
--- 2-Set - Killing Frenzy - Your Kill Command critical strike chance is increased by 15% for each stack of Frenzy your pet has.
--- 4-Set - Killing Frenzy - Kill Command critical hits increase the damage and cooldown reduction of your next Cobra Shot by 40%.
-spec:RegisterAura( "killing_frenzy", {
-    id = 363760,
-    duration = 8,
-    max_stack = 1
-} )
-
-
 spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
     __index = function( t, k )
         return state.debuff.tar_trap[ k ]
@@ -1514,7 +1502,6 @@ spec:RegisterAbilities( {
             if talent.killer_cobra.enabled and buff.bestial_wrath.up then setCooldown( "kill_command", 0 )
             else
                 gainChargeTime( "kill_command", talent.cobra_senses.enabled and 2 or 1 )
-                removeBuff( "killing_frenzy" )
             end
             if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end
         end,
@@ -1885,10 +1872,6 @@ spec:RegisterAbilities( {
 
             if conduit.ferocious_appetite.enabled and stat.crit >= 100 then
                 reduceCooldown( "aspect_of_the_wild", conduit.ferocious_appetite.mod / 10 )
-            end
-
-            if set_bonus.tier28_4pc > 0 and stat.crit + ( buff.frenzy.stack * 0.15 ) >= 100 then
-                applyBuff( "killing_frenzy" )
             end
         end,
     },

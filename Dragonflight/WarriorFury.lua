@@ -496,12 +496,6 @@ spec:RegisterAuras( {
 } )
 
 
--- Tier 28
-spec:RegisterSetBonuses( "tier28_2pc", 364554, "tier28_4pc", 363738 )
--- 2-Set - Frenzied Destruction - Raging Blow deals 15% increased damage and gains an additional charge.
--- 4-Set - Frenzied Destruction - Raging Blow has a 20% chance to grant Recklessness for 4 sec.
--- Now appropriately grants Crushing Blow and Bloodbath when Reckless Abandon is talented, and no longer grants 50 Rage when Recklessness triggers while Reckless Abandon is talented.
-
 spec:RegisterSetBonuses( "tier29_2pc", 393708, "tier29_4pc", 393709 )
 -- 2-Set - Execute’s chance to critically strike increased by 10%.
 -- 4-Set - Sudden Death’s chance to reset the cooldown of Execute and make it usable on any target, regardless of health, is greatly increased.
@@ -1028,7 +1022,6 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function () return
               ( talent.raging_blow.enabled and 1 or 0 )
-            + ( set_bonus.tier28_2pc > 0 and 1 or 0 )
             + ( talent.improved_raging_blow and 1 or 0 )
             + ( talent.raging_armaments and 1 or 0 )
         end,
@@ -1402,7 +1395,6 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function () return
             ( talent.raging_blow.enabled and 1 or 0 )
-          + ( set_bonus.tier28_2pc > 0 and 1 or 0 )
           + ( talent.improved_raging_blow and 1 or 0 )
           + ( talent.raging_armaments and 1 or 0 )
         end,

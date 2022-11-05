@@ -606,24 +606,6 @@ spec:RegisterStateExpr( "cycle_for_execute", function ()
     return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
 end )
 
--- Tier 28
--- spec:RegisterGear( 'tier28', 188942, 188941, 188940, 188938, 188937 )
--- spec:RegisterSetBonuses( "tier28_2pc", 364553, "tier28_4pc", 363913 )
--- 2-Set - Pile On - Colossus Smash / Warbreaker lasts 3 sec longer and increases your damage dealt to affected enemies by an additional 5%.
--- 4-Set - Pile On - Tactician has a 50% increased chance to proc against enemies with Colossus Smash and causes your next Overpower to grant 2% Strength, up to 20% for 15 sec.
-spec:RegisterAuras( {
-    pile_on_ready = {
-        id = 363917,
-        duration = 15,
-        max_stack = 1,
-    },
-    pile_on_str = {
-        id = 366769,
-        duration = 15,
-        max_stack = 4,
-        copy = "pile_on"
-    }
-})
 
 spec:RegisterSetBonuses( "tier29_2pc", 393705, "tier29_4pc", 393706 )
 --(2) Set Bonus: Mortal Strike and Cleave damage and chance to critically strike increased by 10%.

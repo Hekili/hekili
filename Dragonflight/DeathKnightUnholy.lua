@@ -1230,20 +1230,6 @@ me:RegisterAbilities( {
             if debuff.festering_wound.up then
                 if debuff.festering_wound.stack > 1 then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
-
-                    if set_bonus.tier28_2pc > 0 then
-                        if buff.harvest_time.up then
-                            applyDebuff( "target", "soul_reaper" )
-                            removeBuff( "harvest_time" )
-                            summonPet( "army_ghoul", 15 )
-                        else
-                            addStack( "harvest_time_stack", nil, 1 )
-                            if buff.harvest_time_stack.stack == 5 then
-                                removeBuff( "harvest_time_stack" )
-                                applyBuff( "harvest_time" )
-                            end
-                        end
-                    end
                 else removeDebuff( "target", "festering_wound" ) end
 
                 if conduit.convocation_of_the_dead.enabled and cooldown.apocalypse.remains > 0 then
@@ -1832,20 +1818,6 @@ me:RegisterAbilities( {
         handler = function ()
             if debuff.festering_wound.stack > 1 then
                 applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
-
-                if set_bonus.tier28_2pc > 0 then
-                    if buff.harvest_time.up then
-                        applyDebuff( "target", "soul_reaper" )
-                        removeBuff( "harvest_time" )
-                        summonPet( "army_ghoul", 15 )
-                    else
-                        addStack( "harvest_time_stack", nil, 1 )
-                        if buff.harvest_time_stack.stack == 5 then
-                            removeBuff( "harvest_time_stack" )
-                            applyBuff( "harvest_time" )
-                        end
-                    end
-                end
             else removeDebuff( "target", "festering_wound" ) end
             apply_festermight( 1 )
 

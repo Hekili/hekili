@@ -616,33 +616,6 @@ spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
 } ) )
 
 
--- Tier 28
-spec:RegisterSetBonuses( "tier28_2pc", 364491, "tier28_4pc", 363666 )
--- 2-Set - Focused Trickery - Trick Shots now also increases the damage of the affected shot by 30%.
--- 4-Set - Focused Trickery - Spending 40 Focus grants you 1 charge of Trick Shots.
-
-local focusSpent = 0
-
-local FOCUS = Enum.PowerType.Focus
-local lastFocus = -1
-
-spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
-    if powerType == "FOCUS" and state.set_bonus.tier28_4pc > 0 then
-        local current = UnitPower( "player", FOCUS )
-
-        if current < lastFocus then
-            focusSpent = ( focusSpent + lastFocus - current ) % 40
-        end
-
-        lastFocus = current
-    end
-end )
-
-spec:RegisterStateExpr( "focused_trickery_count", function ()
-    return 0
-end )
-
-
 spec:RegisterHook( "reset_precast", function ()
     if now - action.serpent_sting.lastCast < gcd.execute * 2 and target.unit == action.serpent_sting.lastUnit then
         applyDebuff( "target", "serpent_sting" )

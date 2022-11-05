@@ -857,21 +857,6 @@ spec:RegisterAuras( {
 } )
 
 
-
--- Tier 28
-spec:RegisterGear( "tier28", 188868, 188867, 188866, 188864, 188863 )
-spec:RegisterSetBonuses( "tier28_2pc", 364399, "tier28_4pc", 363590 )
--- 2-Set - Endless Rune Waltz  Heart Strike increases your Strength by 1% andWhile your Dancing Rune Weapon is active Heart Strike extends the duration of Dancing Rune Weapon by 0.5 seconds and increases your Strength by 1%, persisting for 10 seconds after Dancing Rune Weapon ends.
--- 4-Set - Endless Rune Waltz - Parrying an attack causes your weaponWhen you take damage, you have a chance equal to 100% of your Parry chance to lash out, Heart Striking your attacker. Dancing Rune Weapon now summons 2 Rune Weapons.
-
-    spec:RegisterAuras( {
-        endless_rune_waltz = {
-            id = 366008,
-            duration = 30,
-            max_stack = 1
-        }
-    } )
-
 spec:RegisterGear( "acherus_drapes", 132376 )
 spec:RegisterGear( "cold_heart", 151796 ) -- chilled_heart stacks NYI
 spec:RegisterGear( "consorts_cold_core", 144293 )
@@ -1546,12 +1531,6 @@ spec:RegisterAbilities( {
                 gainChargeTime( "vampiric_blood", 2 )
             end
 
-            if buff.dancing_rune_weapon.up and set_bonus.tier28_2pc > 0 then
-                buff.dancing_rune_weapon.expires = buff.dancing_rune_weapon.expires + ( set_bonus.tier28_4pc > 0 and 0.5 or 1 )
-                addStack( "endless_rune_waltz", nil, 1 )
-                buff.endless_rune_waltz.expires = buff.dancing_rune_weapon.expires + 10
-            end
-
             if talent.heartbreaker.enabled then
                 gain( min( action.heart_strike.max_targets, true_active_enemies ), "runic_power" )
             end
@@ -1630,7 +1609,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            addStack( "bone_shield", 30, buff.bone_shield.stack + ( buff.dancing_rune_weapon.up and ( set_bonus.tier28_4pc > 0 and 9 or 6 ) or 3 ) )
+            addStack( "bone_shield", 30, buff.bone_shield.stack + ( buff.dancing_rune_weapon.up and 6 or 3 ) )
             if azerite.bones_of_the_damned.enabled then applyBuff( "bones_of_the_damned" ) end
         end,
     },

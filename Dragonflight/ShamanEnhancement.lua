@@ -1685,16 +1685,6 @@ spec:RegisterAbilities( {
             end
             removeBuff( "primordial_wave" )
 
-            if set_bonus.tier28_4pc > 0 then
-                if pet.fire_elemental.up then
-                    pet.fire_elemental.expires = pet.fire_elemental.expires + 1.5
-                    buff.fireheart.expires = pet.fire_elemental.expires
-                elseif pet.storm_elemental.up then
-                    pet.storm_elemental.expires = pet.storm_elemental.expires + 1.5
-                    buff.fireheart.expires = pet.storm_elemental.expires
-                end
-            end
-
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 

@@ -1113,12 +1113,6 @@ spec:RegisterHook( "gain", function( amt, resource )
 end )
 
 
--- Tier 28
-spec:RegisterSetBonuses( "tier28_2pc", 364416, "tier28_4pc", 363498 )
--- 2-Set - Heart of the Lion - Each combo point spent reduces the cooldown of Incarnation: King of the Jungle / Berserk by 0.5 sec.
--- 4-Set - Sickle of the Lion - Entering Berserk causes you to strike all nearby enemies, dealing (320.2% of Attack power) Bleed damage over 10 sec. Deals reduced damage beyond 8 targets.
-
-
 local function comboSpender( a, r )
     if r == "combo_points" and a > 0 then
         if talent.soul_of_the_forest.enabled then
@@ -1135,10 +1129,6 @@ local function comboSpender( a, r )
 
         if talent.berserk_heart_of_the_lion.enabled and buff.bs_inc.up then
             reduceCooldown( talent.incarnation.enabled and "incarnation" or "berserk", 0.5 )
-        end
-
-        if set_bonus.tier28_2pc > 0 then
-            reduceCooldown( talent.incarnation.enabled and "incarnation" or "berserk", a * 0.7 )
         end
 
         if talent.raging_fury.enabled and buff.tigers_fury.up then
@@ -1345,10 +1335,6 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.cat_form.down then shift( "cat_form" ) end
             applyBuff( "berserk" )
-            if set_bonus.tier28_4pc > 0 then
-                applyDebuff( "target", "sickle_of_the_lion" )
-                active_dot.sickle_of_the_lion = max( 1, active_enemies )
-            end
         end,
 
         copy = { "berserk_cat", "bs_inc" }

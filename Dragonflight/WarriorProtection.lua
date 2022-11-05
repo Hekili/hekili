@@ -343,11 +343,6 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
-    violent_outburst = { -- Renamed from Outburst to violent Outburst in build 45779
-        id = 386478,
-        duration = 30,
-        max_stack = 1
-    },
     piercing_howl = {
         id = 12323,
         duration = 8,
@@ -477,6 +472,11 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
+    violent_outburst = { -- Renamed from Outburst to violent Outburst in build 45779
+        id = 386478,
+        duration = 30,
+        max_stack = 1
+    },
     war_machine = {
         id = 262232,
         duration = 8,
@@ -484,27 +484,6 @@ spec:RegisterAuras( {
     },
 } )
 
--- Tier 28
-spec:RegisterSetBonuses( "tier28_2pc", 364002, "tier28_4pc", 364639 )
--- 2-Set - Outburst - Consuming 30 rage grants a stack of Seeing Red, which transforms at 8 stacks into Outburst, causing your next Shield Slam or Thunder Clap to be 200% more effective and grant Ignore Pain.
--- 4-Set - Outburst - Avatar increases your damage dealt by an additional 10% and decreases damage taken by 10%.
-spec:RegisterAuras( {
-    seeing_red_tier28 = {
-        id = 364006,
-        duration = 30,
-        max_stack = 8,
-    },
-    outburst = {
-        id = 364010,
-        duration = 30,
-        max_stack = 1
-    },
-    outburst_buff = {
-        id = 364641,
-        duration = function () return class.auras.avatar.duration end,
-        max_stack = 1,
-    }
-})
 
 -- Dragonflight Season 1
 spec:RegisterSetBonuses( "tier29_2pc", 393710, "tier29_4pc", 393711 ) -- Dragonflight Season 1
@@ -541,7 +520,7 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
                 gloryRage = ( gloryRage + lastRage - current ) % 10 -- Glory.
             end
 
-            if state.set_bonus.tier28_2pc > 0 or state.talent.violent_outburst.enabled then
+            if state.talent.violent_outburst.enabled then
                 outburstRage = ( outburstRage + lastRage - current ) % 30 -- Outburst T28 or Violent Outburst
             end
         end
@@ -581,15 +560,15 @@ spec:RegisterHook( "spend", function( amt, resource )
             buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition
         end
 
-        if set_bonus.tier28_2pc > 0 or talent.violent_outburst.enabled then
+        if talent.violent_outburst.enabled then
             outburst_rage = outburst_rage + amt
             local stacks = floor( outburst_rage / 30 )
             outburst_rage = outburst_rage % 30
             if stacks > 0 then
-                if set_bonus.tier28_2pc > 0 then
-                    addStack( "seeing_red_tier28", nil, stacks ) end
-                if talent.violent_outburst.enabled then
-                    addStack( "seeing_red", nil, stacks )
+                addStack( "seeing_red", nil, stacks )
+                if buff.seeing_red.stack > 7 then
+                    applyBuff( "violent_outburst" )
+                    removeBuff( "seeing_red" )
                 end
             end
         end
@@ -623,9 +602,8 @@ spec:RegisterAbilities( {
             if talent.immovable_object.enabled then
                 applyBuff("shield_wall", 4)
             end
-            if set_bonus.tier28_4pc > 0 then
-                applyBuff( "outburst" )
-                applyBuff( "outburst_buff" )
+            if talent.violent_outburst.enabled then
+                applyBuff( "violent_outburst" )
             end
         end,
     },
@@ -1582,8 +1560,8 @@ spec:RegisterAbilities( {
         hasteCD = true,
 
         spend = function () return -5
-            * (buff.violent_outburst.up and 1.5 or 1 ) -- Build xxx
-            * (buff.unnerving_focus.up and 1.5 or 1) end,
+            * ( buff.violent_outburst.up and 2 or 1 )
+            * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
         spendType = "rage",
 
         talent = "thunder_clap",
@@ -1606,11 +1584,6 @@ spec:RegisterAbilities( {
             if buff.violent_outburst.up then
                 applyBuff( "ignore_pain" )
                 removeBuff( "violent_outburst" )
-            end
-
-            if buff.outburst.up then
-                applyBuff( "ignore_pain" )
-                removeBuff( "outburst" )
             end
         end,
     },
@@ -1768,4 +1741,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Protection Warrior", 20221028, [[Hekili:9QvBVTnos4FlTfWXE3ufjN4e3I4a02T9UeKnTOU469jlrlrBZlsIA1ljnhm0V9DgskjkkzNKU7Dy32gtoCMHpZlCMXzHZIVTyEajNU4MX2Jh7ypEQLZBCCCoBX88hsOlMNq8VLSg(Hyse83ZV(lP8CC5hc5Ka84z8IuFyRn55jzV9OJwZY3uS0YNhDuglQiKKZ4X(PKv54N9pAX8LfSW8lJxSux22NyFgi7JNobyzc1FXnNDmWuwqavsjnZFXCu6uFKJLEFNKMY4PLEVU0735bSvmFHSYk9Iib0sVv4M)2Nk9wsYObLE4HMFn8Nl)9p8R46jP0esU)gRYR(SFoFjfOF808nhc)dOsLxvE1h2qIxtZEB5vV(DGQaC59S8CKWlJIkIz5pu6DuP3xPXbIF4BBkIdOP8cql(kNKkweUg0qyFGzPRPaR(e7hiR(nAeV0lBdViV0lLcqweWhI86DpGJG048iw86sV)fN5d3PC4aXCGC(D0uFscCoW8yHQ6na0iu0pgtwgI0Ub(Rd2qjHahoO0JOaUqwgWag8tb0vKIq4ddFLZKrWARk9EGxacNeNlfwgfyczjlKLZOz4HVfw4ogGxPWDpTiBJ4oYIsaDxOQ1BclJspFtwopgV3FhUK3kO5BBs53lrmwoimMVCnsUyX)jaHvlbKbyaa6bwGJxkFfleC3E1Rk96ZB4kCJ3LKYcl9otZqIlRmMYpaEnGffCDGl2AfMhYxJsvaYuqUZzrFai7lxBvFMRzR3KtJBmQVpK7FlarOdWLRJ5Pa88fIaDjrGTbr6CccAP0)OGLsbBCEwdd)k4eChUlpxOfeqXlYehKdMJRjOXAoGrb6NbdrG1F5Nsr7ZxP3rHB2lrZvEUaGf6tQI3CWvif)ywEktayAkWNiHHymcElewC48H0xNJ(Q5yqcaRc)C07q4t9Up)rtVPnKmHJ5gHWr2eWfELGm(4pO(f5Od)s6kb(aE6lrl9s6AgQkEVZ3NMKlyr8RHOKOvfHvIidJCdFa4M6ZwjIyfGdZG)KhsDLHqD3)xND0QqA2gr6N(33Nh)hfG3wAM7ssCmat9swcxCBnVqaUJo65SOQ4nc67dyfO1K7iSqmuSr1N5Rsb8km6xf8b(xhaK)YkNEzAIxQystWW1umEFfpmKFVanFOoLIcXbJhh1KkppHtWAkCRG8SGBImvHsxGB1gbNDdbgFiB1mLZtMLADPYoiTigTBWzH8LPSms4aFopmGFFSLKeyJiWLp781(b68xU7ZJ1aQFNLJLMQPZXKcihzO(kGT3)27j3jetaDzXQvw(qqdinRIKbVq6hBXa7lplt)Kfzuxwonkdpz9ncSAWrQVrZGR02TcUQ2POLcTmKZdCxvaUb6RstZOPIuDARsGm2XuxWbjfYbOVtiMvjZ9)ueSoYyRvqkdHqAXPyFmwMe66JrV6sMS2LVYfJZVT1TvQ9TWsHpnE5BF9GRlGudwH6KBfomEsldlivx5hDXeahILhmlQov6HYenZCqUZI9fpI5kDlDNKDHDlMzgcIhQXZyDiVn429MaWbdGnxikhaE0HOLhscLKIGYs0TaJI3JSB7AHP4DxIz4RHj9fTqpMEorwijQ(aqQPLfPz5gooWfSlcs40wqhO6aqlDHZSYLfx46hssUy2XpUbre6dPoUQjPgiHzPacUwpthSiWJaOuc44PCsNT0LS5EPYhFmxwdk0LVsL6QdQn2LE0SDFyClJIWd2a5hGLjD(Sjt6JJGtqankUVTOYu9pIE0326q2JykD2UTo9JgxRYbnO9LPLpNMav2brWdCzVy2P2duj)KvHzL4NFXyBf4OihXMouD(SX2keZz6G9PBpbMbI8PGppRlzFBPk70vusAp7xxHQBvbQ957rVdssGVwQ5Z2KxBgtuHNBcC3Rb6j2slK2Ec9)q8bg(QvUWtiZC6JDOw1MHDrp0umSNLNAp4f(q1DXq1ZwW)KV5H0rdgkn9tNSlRgj4HTBR9pQjc8)5WZjS)lIpIYPK0cMZqG3wlL9H4Eh2gIfv0HrqfJotJr1pFQjOt(Rkij(gcwg3mrLWyiUK3tM0VS3ZrMA33H7atdmZHuDQJTFoNQhfz0tYZW81NHVOgIcZG35AScVOhrmyOSeRm3vPs2tcVWXA62TDFoE0o0GU2QdHwjPUGsFQqJuULyRQSyhawr2Ch1fcNIGUfVWbuJH998VLZKFr5mhr(X2TAPEo2E02TA31D63HN81IKuNypAxxHgqPVkroo7cPK18HIzreSyHakb0O6YahVFR09W7V7OwhPeADhhBVyo05qgWIUt)4EsAmwQ8I5F)DF9MlV5F82spStyQOjBEAUAYghO6E)G6oldQQ)NuKZJiIou8L98cL9Fny6G(HbU9bEmiDX2h0uN1)(azBe6lvH4WwdD(XOAUC8FlCX5SFw2Gnp(XpFDn)kV6sb0GCzs7EtXR(I5aISHNUy(86rs9bSNWfZfKGZXs9ga8J34u9xW(kzU49apeCfhfLzyXI5(qlYWXjlMBeuaAZ2TsnQjWO07IzW1V0BuP3aW6EvL)SOH8urVBifhBJMEKcV9fpa65nJ105kfv5BkteOFva6pgVZveQkgZGKt0jjVEWwIcZmiDcsApqLQYkD8bj)0DqUQAltYpRF7rdr1zlenJbb7Uk1TcHeG4qCGxQYvGKKIsmegh9vvb8LENx6DYinic2e1LPgQUMMAI74Jc4rEZopIqS3X4OY72Q2NoaVOojKBo2MSJKiPuNZn(qNAlU8DQGa2fNoMebmkIBxN48zYJmOYjfxWzQyH9vL4Zsic1sh4fhqC1DA50Q2OTNOZyDAQlNRnv54oIKNvEw6akoQ5uMcuF2Z6rZ5xg3PcoRxwocJ(ch71hPZine42lQHo1Gn09(udePogUx(UJbEiTP4CCASz1tgOri1ZoPo6VANMbIyCfpTfv1diXGQZ0PQ9atmOCQoLgdqXG03OtA9avm9CSBj6wtyXK0woITg5YEDhLaPjj722Bm2jPfbNIf6c0A(mI8vJNO5LjgUJG)72hOB1kIWpi6toecm2OXD2yedY3oDLFXqn1eje5KEYyVuxYTYQa5qSTFIcs91ziKYPpo2EMHn1ymrMK3YNYCUrMe3YRQZGKmOECN021yXUNmGmd(4EnhgZpQfir4Y0oMz2EsiCvHqI0K1Za)zKO8V0u(1dRAMTFNKOnJ1VtMDnxXE0zToVAbNA9H3Z7OqvLYN96Tr)AT7Nxo99oyZJTd7)HsGGP2vphyolGQIlhQxq50j77TAO9vzoMovp8OTVREmF31OAY4ZmySEV7M0EYFFkrLjSvZYMYBYK9PBpjwm1(XyApqFfN1NySbxo2(NJl7qPhT)ApgQk0OVXoi1SxSd(w561DieIOjhRPYZ33lqJwywjTygi9votfD91sMAuflMF6oQrUjQQAag7OxnTw1gk()D9UPf2U3Vu9TElBOd5OXRDOrCKChdeEVbo7ObXrkZOzpy7(z(JLQRuRmC17D8hQk)1k3Q2Cxxz3tsYtAl5EWg9s)1MTsvPH7PTCJUDB94KXVbgEfIFHqWVZ6qX3VEkntmyfCKdIV1BJVD)IeRo1L19lcsl9dOfrj4ZAUllcVNKEBRuqnnpnSEswJThvvv7EUKlf)2N4Yu)YN0tJcbmr9e4jD9H4FADwKEiiHZY4X7Jc4NPebtKVUwv)vppTUJQ7ej71Ea0Cm8vVEUNBT(O93NCMAxLp7Ndc7NFNSF(P9R4IzjrcIXMfXweB9lxJemX60()08M(FW4MAkfT3XhPBg2rmAl6pPh6FctDQo1E3JjNzsNQ5oV555HMDy1ebxedM0KerqaupBZ1FKHw0Qle9r)0MSwDI07SlQ(Vf)5p]] )
+spec:RegisterPack( "Protection Warrior", 20221104.1, [[Hekili:1M1EVTTnq8plTdWXgRqr2o2oTioaBDdyTOOOyUa7)KeTeTTwKe9OOCBgm0N9DhPEqQxoPRff1rM8EXJ3RFYotD(SZMaIG68Xz2ZMnDQ9nwZMpB(0LoBepEK6S5iX)bYE4Hesm85N4mb1xeYsY9(lcNhY4inpgXibOSszzCFGUdcXX03C917dfhY2A5ZIVonmolIGS6Zj7e439V2zZ2SWiX7sC22PHyFliZJuFNpUAoi1WGaQIuAQVZgq1C2UWiqHePrLADKtbLTLi(51xVlIMEqQS83N)(Fk373)k1ptqdY9ONO8hZ9eHXu4ZdWhGay8CVWu4XtKWiY2iQv(7lKlin)de(E6Rc3Tg5ATT(EhZIJPr6RagDuKlNc2GYDH6)3O7izrICVF5tF4kqrV8pOCwOFU3BLY(LfQp3RC9pqjhZ92XIIyFbn7Tpwsly1SCVa4)Pm8meqIj4QKeGS90ekhCM5E)jSOXP4GuYUrGGXJskvict2NAvSU6qoINLq3XGNS40J8Wus0iFglkG9LelfjWgXKWK0727h0Tx6PlA4o7K1ulnttxIHjck)eCIqHUnB3oGr4RGaqZz0yoCeV7w7ZNLpSA1ijnrKuHBQaChwzhN0Hw1vrwk1nuqJtrvuDqHWabHxDqxdN0ZNLcVyNmd7CBeJf4UlJ)yLH2nDuEkL)a4AgMUDHCQuMdtgjXNMk4KixFsu0W0c5IjbuURFK62xs5Pqwenr4YYeBZ4PcGNrJhl3kLsbZeIIdSaxP)d3VSomi9qinkWnnIex6IUF2KjgMM0g6xrOCmYIy4tTpcNplWqhHfM45kyUbH07MTOr6gH7Y25UfU3LPB17veU0k8bpNfc(aLejoyD0xC)missL8Q2l1s3RD)8jd6cmcC3NW4u3JW6YQgTu16z2DzbRV1E0l8zGrssewWFehEKprfOdBUOpdGe8Ok2Vyzi4X)bP7tX5s7AodOXmiMj8FX730dWvsHaee8oYAlJfJBDcYiPwGLavddkf0knbvLKamxU)n)FvuhPWLYEXIU19aSuwBWK5E8DDLnmKtDU93UinS2o1YKxHLMy725cfFwp1iIxJsm8ACB(rJQOILX6Lv0gkqEYOUsn0nGARVNO7xBxL4wV8DRnLs74dL0gi4qwNFPDhod8amyDnjRqyGr5HSex13CJctfVch0znHP6HnqHaJUEqP32cr2ggAJRx8NShRsjGLFWOybH7tsWIBCoy0OUl6Rz4Yd3FqK6(3zb7JbQWPAkN7bmyGJtapCJfRR)1Cz9ttZ908N6kP4a1wrfBaCsvJy11wgcT92pTMtg9m04U1HSERa6jiufNTCdm1xkSB9qMoB(cHNGJP4S5Z4yGHXhzCboZfmm4vbQb2Uk3Jt)NmOHCq58wKmblMiNLegSb0CkmM1hctGTU5nWqASeqxYTVQ9ShxPMERJDkdYbkgp9RtQK5IFaYC53vzM)(3jDDOOUroon2g2dZgqxdmHEM4aIwytfoG3IJM7SrsccEaI9G)8rjOef)oBkc1C2uOqNF1raxFgKOU6BqYCDs0JTAq3n60PfIAsgyMfbuFlwyrsXqwyVAwzG1RSXNdJQYdji0P(Yq65KdsBXL9Cl1jrl5PH)Oi3OYFOzILmRg5xHwJhEuT4ZgeM(rwr76Cp7wozfgSb9XnWKDbhDjBA4sACuAINZeo3pi0C6UJUXyL7ncky1BoRC7EGZL7DhOq)aRyYxRcx6m47Bx1TH71kIPmkS)WEDmGsPog0R0NbhaORP35ZAlSALKM2tDL7n5cMCTTvbefnVv9AE9GFeSJ1vUwL5zIYPwrvWrrfD7W(HoyVgikY)RF(8xbqf5FQ9ZwavixL83S4WL53esRuiZEMfbXBwvqX4c)CtSS5E3dTanZf6cqhs2mzyYK(RQoD(Z0(mlsR8bsbDHQ91W6LrqTXfld3NTqRSOeuTu2lAum0aXCJIHtFI5F1o6wJ6RCDfPI9pjTKS5LjIdDx0UXfAOnZeRsxRHFB0bPdZCTYo7)CSwvtbi4fOjAcnV00RQajjFXqhhaByDbPgy(0lDHsAPTPK6drTKQHao1uWRAiyD40nP9MVFgrp1Hn13IfdzBpjry2eOlHoWDsFfuEkxyZT)(OMgNUE1(evhJI3saongMw0FFJXDjivF0QUsD9(cKLwgUw5KI7)URe0AAxP4LwB)DP6jD812gva13(U1MkR2pkNzS)(zxmUTAEIL26ti3mvqQMl02RVB(cviJw7gDak8(BhEP6SA1qnFVhkCyUQFMhejgQNMT1QgtRX77WG5sGsOamqxz8YpAIxQ)jn1gRtRLPX7lrkbdClnEvjTqVu97e50epx9VAutMu)Z5)c]] )

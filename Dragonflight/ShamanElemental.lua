@@ -825,10 +825,10 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 vesper_used = 0
             end
 
-        -- Tier 28
+        --[[ Tier 28
         elseif summon.extends and state.set_bonus.tier28_4pc > 0 and subtype == "SPELL_ENERGIZE" and ( spellID == 51505 or spellID == 285466 ) then
             summon.expires = summon.expires + 1.5
-            summon.duration = summon.duration + 1.5
+            summon.duration = summon.duration + 1.5 ]]
 
         -- Vesper Totem heal
         elseif spellID == 324522 then

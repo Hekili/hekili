@@ -1508,7 +1508,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "remorseless_winter" )
-            if set_bonus.tier28_2pc > 0 then applyBuff( "arctic_assault" ) end
 
             if active_enemies > 2 and legendary.biting_cold.enabled then
                 applyBuff( "rime" )
