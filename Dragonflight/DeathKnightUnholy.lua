@@ -1223,7 +1223,7 @@ me:RegisterAbilities( {
         talent = "clawing_shadows",
         startsCombat = true,
 
-        aura = "clawing_shadows",
+        aura = "festering_wound",
         cycle_to = true,
 
         handler = function ()
