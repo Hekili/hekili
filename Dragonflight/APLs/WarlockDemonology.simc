@@ -1,0 +1,91 @@
+actions.precombat+=/summon_pet
+actions.precombat+=/inquisitors_gaze
+## actions.precombat+=/variable,name=first_tyrant_time,op=set,value=12
+## actions.precombat+=/variable,name=first_tyrant_time,op=set,value=15,if=talent.nether_portal.enabled
+## actions.precombat+=/variable,name=in_opener,op=set,value=1
+actions.precombat+=/demonbolt,if=soul_shards<5&(boss|action.demonbolt.cast=0)
+actions.precombat+=/shadow_bolt,if=soul_shards<5&!(boss|action.demonbolt.cast=0)
+actions.precombat+=/variable,name=use_bolt_timings,op=set,value=talent.fel_covenant.enabled+talent.sacrificed_souls.enabled+talent.power_siphon.enabled>1
+
+actions+=/axe_toss
+actions+=/devour_magic
+actions+=/variable,name=next_tyrant_cd,op=set,value=cooldown.summon_demonic_tyrant.remains_expected
+actions+=/variable,name=in_opener,op=set,value=0,if=pet.demonic_tyrant.active
+actions+=/variable,name=buff_sync_cd,op=set,value=variable.next_tyrant_cd
+actions+=/call_action_list,name=trinkets
+actions+=/call_action_list,name=ogcd,strict=1,if=pet.demonic_tyrant.active
+actions+=/implosion,if=time_to_die<2*gcd
+actions+=/call_action_list,name=opener,strict=1,if=time<variable.first_tyrant_time
+actions+=/potion,if=variable.next_tyrant_cd<gcd.max&time>variable.first_tyrant_time
+actions+=/call_action_list,name=tyrant_setup
+actions+=/guillotine,if=active_enemies>1
+actions+=/power_siphon,if=variable.use_bolt_timings&pet.demonic_tyrant.active&(buff.demonic_power.remains<5|buff.stolen_power_final.up)
+actions+=/demonic_strength,if=(!(legendary.wilfreds_sigil_of_superior_summoning.enabled|talent.grand_warlocks_design.enabled)&variable.next_tyrant_cd>9)|(pet.demonic_tyrant.active&(soul_shard<3|buff.demonic_power.remains<12))
+actions+=/bilescourge_bombers,if=buff.tyrant.down&variable.next_tyrant_cd>10&buff.nether_portal.down&buff.power_siphon.down
+actions+=/call_dreadstalkers,if=variable.use_bolt_timings&cooldown.summon_demonic_tyrant.remains_expected>22
+actions+=/call_dreadstalkers,if=!variable.use_bolt_timings&(variable.next_tyrant_cd>20-5*!(legendary.wilfreds_sigil_of_superior_summoning.enabled|talent.grand_warlocks_design.enabled))
+actions+=/implosion,if=active_enemies>1+(1*talent.sacrificed_souls.enabled)&buff.wild_imps.stack>=6&buff.tyrant.down&variable.next_tyrant_cd>5
+actions+=/grimoire_felguard,if=time_to_die<30
+actions+=/summon_vilefiend,if=time_to_die<28
+actions+=/summon_demonic_tyrant,if=time_to_die<15
+actions+=/hand_of_guldan,if=soul_shard=5
+actions+=/shadow_bolt,if=soul_shard<5&talent.fel_covenant.enabled&buff.fel_covenant.remains<5
+# Pop one Doom at irrelevant # of demons before tyrant and replace the kazaaks value with a higher one right before the tick.
+actions+=/doom,if=refreshable&dot.doom.remains<2&talent.kazaaks_final_curse.enabled&pet.demonic_tyrant.active
+actions+=/doom,if=dot.doom.remains=0&talent.kazaaks_final_curse.enabled&(variable.next_tyrant_cd<3|(time>variable.first_tyrant_time-3&time<variable.first_tyrant_time))
+actions+=/guillotine,if=buff.demonic_power.up
+# If Dreadstalkers are already active, no need to save shards
+actions+=/hand_of_guldan,if=soul_shard>=3&(pet.dreadstalker.active|pet.demonic_tyrant.active)
+actions+=/hand_of_guldan,if=soul_shard>=3&buff.nether_portal.up&cooldown.call_dreadstalkers.remains>2*gcd.max
+actions+=/hand_of_guldan,if=soul_shard>=1&variable.next_tyrant_cd<gcd.max&time>variable.first_tyrant_time-gcd.max
+# Without Sacrificed Souls, Soul Strike is stronger than Demonbolt, so it has a higher priority TODO: RETEST - prolly depends on mastery
+actions+=/soul_strike,if=!talent.sacrificed_souls.enabled
+# Spend Demonic Cores for Soul Shards until Tyrant cooldown is close to ready
+actions+=/power_siphon,if=!variable.use_bolt_timings&buff.wild_imps.stack>1&buff.demonic_core.stack<3
+actions+=/demonbolt,if=buff.demonic_core.react&soul_shard<4&variable.next_tyrant_cd>20
+# During Tyrant setup, spend Demonic Cores for Soul Shards
+actions+=/demonbolt,if=buff.demonic_core.react&soul_shard<4&variable.next_tyrant_cd<12
+actions+=/demonbolt,if=buff.demonic_core.react&soul_shard<4&(buff.demonic_core.stack>2|talent.sacrificed_souls.enabled)
+actions+=/demonbolt,if=buff.demonic_core.react&soul_shard<4&active_enemies>1
+actions+=/soul_strike
+# If you can get back to 5 Soul Shards before Dreadstalkers cooldown is ready, it's okay to spend them now
+actions+=/hand_of_guldan,if=soul_shard>=3&variable.next_tyrant_cd>25&(talent.demonic_calling.enabled|cooldown.call_dreadstalkers.remains>((5-soul_shard)*action.shadow_bolt.execute_time)+action.hand_of_guldan.execute_time)
+
+actions+=/doom,cycle_targets=1,if=dot.doom.remains=0&time>variable.first_tyrant_time&!talent.kazaaks_final_curse.enabled
+actions+=/doom,cycle_targets=1,if=dot.doom.remains=0&time>variable.first_tyrant_time&talent.kazaaks_final_curse.enabled&variable.next_tyrant_cd>dot.doom.duration+7&buff.demonic_power.down
+
+actions+=/shadow_bolt
+
+#straight up dps loss. castable while moving tho.
+actions+=/summon_soulkeeper
+#actions+=/summon_soulkeeper,if=cooldown.nether_portal.up&buff.nether_portal.down&variable.next_tyrant_cd>15&buff.demonic_power.down&buff.tormented_soul.stack=10
+
+# opener assumes starting at 5 shards after db precast
+actions.opener+=/nether_portal
+actions.opener+=/grimoire_felguard
+actions.opener+=/summon_vilefiend
+actions.opener+=/call_dreadstalkers,if=buff.nether_portal.up
+actions.opener+=/hand_of_guldan,if=buff.nether_portal.up
+# only build back to 5 shards for the first dogs cast. Hounds of War procs are used at 2 shards.
+actions.opener+=/shadow_bolt,if=soul_shard<5&cooldown.call_dreadstalkers.up&!pet.dreadstalker.active
+actions.opener+=/shadow_bolt,if=variable.use_bolt_timings&soul_shard<5&buff.fel_covenant.stack<4
+actions.opener+=/call_dreadstalkers
+
+actions.ogcd=berserking
+actions.ogcd+=/blood_fury
+actions.ogcd+=/fireblood
+actions.ogcd+=/use_items
+
+actions.trinkets=variable,name=use_buff_trinkets,value=pet.demonic_tyrant.active
+actions.trinkets+=/use_item,slot=trinket1,if=trinket.1.has_use_buff&variable.use_buff_trinkets
+actions.trinkets+=/use_item,slot=trinket2,if=trinket.2.has_use_buff&variable.use_buff_trinkets
+actions.trinkets+=/call_action_list,name=pure_damage_trinks,if=time>variable.first_tyrant_time&variable.buff_sync_cd>20
+
+actions.pure_damage_trinks+=/use_item,slot=trinket1,if=!trinket.1.has_use_buff
+actions.pure_damage_trinks+=/use_item,slot=trinket2,if=!trinket.2.has_use_buff
+
+actions.tyrant_setup=nether_portal,if=variable.next_tyrant_cd<15
+actions.tyrant_setup+=/grimoire_felguard,if=variable.next_tyrant_cd<17
+actions.tyrant_setup+=/summon_vilefiend,if=variable.next_tyrant_cd<15
+actions.tyrant_setup+=/call_dreadstalkers,if=variable.next_tyrant_cd<12
+actions.tyrant_setup+=/summon_demonic_tyrant,if=time>variable.first_tyrant_time

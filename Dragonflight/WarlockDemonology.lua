@@ -1,11 +1,19 @@
 -- WarlockDemonology.lua
--- September 2022
+-- November 2022
 
 if UnitClassBase( "player" ) ~= "WARLOCK" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
+
+local PTR = ns.PTR
+
+local FindPlayerAuraByID, FindUnitBuffByID, FindUnitDebuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID, ns.FindUnitDebuffByID
+local ceil = math.ceil
+
+local RC = LibStub( "LibRangeCheck-2.0" )
+
 
 local spec = Hekili:NewSpecialization( 266 )
 
@@ -14,485 +22,1403 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    abyss_walker                         = { 71954, 389609, 1 }, --
-    accrued_vitality                     = { 71953, 386613, 2 }, --
-    amplify_curse                        = { 71934, 328774, 1 }, --
-    antoran_armaments                    = { 72008, 387494, 1 }, --
-    balespiders_burning_core             = { 72000, 387432, 2 }, --
-    banish                               = { 71944, 710   , 1 }, --
-    bilescourge_bombers                  = { 72021, 267211, 1 }, --
-    bloodbound_imps                      = { 72001, 387349, 1 }, --
-    borne_of_blood                       = { 72026, 386185, 1 }, --
-    burning_rush                         = { 71949, 111400, 1 }, --
-    call_dreadstalkers                   = { 72023, 104316, 1 }, --
-    carnivorous_stalkers                 = { 72018, 386194, 1 }, --
-    claw_of_endereth                     = { 71926, 386689, 1 }, --
-    command_aura                         = { 72006, 387549, 2 }, --
-    curses_of_enfeeblement               = { 71951, 386105, 1 }, --
-    dark_pact                            = { 71936, 108416, 1 }, --
-    darkfury                             = { 71941, 264874, 1 }, --
-    demon_skin                           = { 71952, 219272, 2 }, --
-    demonbolt                            = { 72024, 264178, 1 }, --
-    demonic_calling                      = { 72017, 205145, 2 }, --
-    demonic_circle                       = { 71933, 268358, 1 }, --
-    demonic_durability                   = { 71956, 386659, 1 }, --
-    demonic_embrace                      = { 71930, 288843, 1 }, --
-    demonic_fortitude                    = { 71922, 386617, 1 }, --
-    demonic_gateway                      = { 71955, 111771, 1 }, --
-    demonic_inspiration                  = { 71928, 386858, 1 }, --
-    demonic_meteor                       = { 72012, 387396, 1 }, --
-    demonic_resilience                   = { 71917, 389590, 2 }, --
-    demonic_strength                     = { 72021, 267171, 1 }, --
-    desperate_power                      = { 71929, 386619, 2 }, --
-    doom                                 = { 72028, 603   , 1 }, --
-    dreadlash                            = { 72020, 264078, 1 }, --
-    fel_and_steel                        = { 72016, 386200, 1 }, --
-    fel_armor                            = { 71950, 386124, 2 }, --
-    fel_commando                         = { 72022, 386174, 1 }, --
-    fel_domination                       = { 71931, 333889, 1 }, --
-    fel_might                            = { 72014, 387338, 1 }, --
-    fel_sunder                           = { 72010, 387399, 1 }, --
-    fel_synergy                          = { 71918, 389367, 1 }, --
-    forces_of_the_horned_nightmare       = { 72004, 387541, 2 }, --
-    foul_mouth                           = { 71935, 387972, 1 }, --
-    frequent_donor                       = { 71937, 386686, 1 }, --
-    from_the_shadows                     = { 72015, 267170, 1 }, --
-    gorefiends_resolve                   = { 71916, 389623, 2 }, --
-    greater_banish                       = { 71943, 386651, 1 }, --
-    grim_inquisitors_dread_calling       = { 71999, 387391, 1 }, --
-    grimoire_felguard                    = { 72013, 111898, 1 }, --
-    grimoire_of_synergy                  = { 71924, 171975, 2 }, --
-    guillotine                           = { 72005, 386833, 1 }, --
-    guldans_ambition                     = { 71995, 387578, 1 }, --
-    houndmasters_gambit                  = { 72011, 387488, 2 }, --
-    howl_of_terror                       = { 71947, 5484  , 1 }, --
-    ichor_of_devils                      = { 71937, 386664, 1 }, --
-    imp_gang_boss                        = { 71998, 387445, 2 }, --
-    imp_step                             = { 71948, 386110, 2 }, --
-    implosion                            = { 72002, 196277, 1 }, --
-    inner_demons                         = { 72027, 267216, 2 }, --
-    inquisitors_gaze                     = { 71939, 386344, 1 }, --
-    kazaaks_final_curse                  = { 72029, 387483, 2 }, --
-    lifeblood                            = { 71940, 386646, 2 }, --
-    mortal_coil                          = { 71947, 6789  , 1 }, --
-    nerzhuls_volition                    = { 71996, 387526, 2 }, --
-    nether_portal                        = { 71997, 267217, 1 }, --
-    nightmare                            = { 71945, 386648, 2 }, --
-    power_siphon                         = { 72003, 264130, 1 }, --
-    quick_fiends                         = { 71932, 386113, 2 }, --
-    reign_of_tyranny                     = { 71991, 390173, 1 }, --
-    resolute_barrier                     = { 71915, 389359, 2 }, --
-    ripped_through_the_portal            = { 72009, 387485, 2 }, --
-    sacrificed_souls                     = { 71993, 267214, 2 }, --
-    shadowflame                          = { 71941, 384069, 1 }, --
-    shadowfury                           = { 71942, 30283 , 1 }, --
-    shadows_bite                         = { 72025, 387322, 1 }, --
-    soul_armor                           = { 71919, 389576, 2 }, --
-    soul_conduit                         = { 71923, 215941, 2 }, --
-    soul_link                            = { 71925, 108415, 1 }, --
-    soul_strike                          = { 72019, 264057, 1 }, --
-    soulbound_tyrant                     = { 71992, 334585, 2 }, --
-    soulburn                             = { 71957, 385899, 1 }, --
-    stolen_power                         = { 72007, 387602, 1 }, --
-    strength_of_will                     = { 71956, 317138, 1 }, --
-    summon_demonic_tyrant                = { 72030, 265187, 1 }, --
-    summon_soulkeeper                    = { 71939, 386244, 1 }, --
-    summon_vilefiend                     = { 72019, 264119, 1 }, --
-    sweet_souls                          = { 71927, 386620, 1 }, --
-    teachings_of_the_black_harvest       = { 71938, 385881, 1 }, --
-    the_expendables                      = { 71994, 387600, 1 }, --
-    wilfreds_sigil_of_superior_summoning = { 71991, 337020, 1 }, --
-    wrathful_minion                      = { 71946, 386864, 1 }, --
+    abyss_walker                   = { 71954, 389609, 1 }, -- Using Demonic Circle: Teleport or your Demonic Gateway reduces all damage you take by 4% for 10 sec.
+    accrued_vitality               = { 71953, 386613, 2 }, -- Drain Life heals for 15% of the amount drained over 7.6 sec.
+    amplify_curse                  = { 71934, 328774, 1 }, -- Your next Curse of Exhaustion, Curse of Tongues or Curse of Weakness cast within 15 sec is amplified. Curse of Exhaustion Reduces the target's movement speed by an additional 20%. Curse of Tongues Increases casting time by an additional 40%. Curse of Weakness Enemy is unable to critically strike.
+    annihilan_training             = { 72022, 386174, 1 }, -- Your Felguard deals 20% more damage and takes 10% less damage.
+    antoran_armaments              = { 72008, 387494, 1 }, -- Your Felguard deals 20% additional damage. Soul Strike now deals 25% of its damage to nearby enemies.
+    banish                         = { 71944, 710   , 1 }, -- Banishes an enemy Demon, Aberration, or Elemental, preventing any action for 30 sec. Limit 1. Casting Banish again on the target will cancel the effect.
+    bilescourge_bombers            = { 72021, 267211, 1 }, -- Tear open a portal to the nether above the target location, from which several Bilescourge will pour out of and crash into the ground over 6 sec, dealing 1,179 Shadow damage to all enemies within 8 yards.
+    bloodbound_imps                = { 72001, 387349, 1 }, -- The chance of receiving a Demonic Core from a Wild Imp is increased by 5% or 10% when imploded.
+    burning_rush                   = { 71949, 111400, 1 }, -- Increases your movement speed by 50%, but also damages you for 4% of your maximum health every 1 sec. Movement impairing effects may not reduce you below 100% of normal movement speed. Lasts until canceled.
+    call_dreadstalkers             = { 72023, 104316, 1 }, -- Summons 2 ferocious Dreadstalkers to attack the target for 12 sec.
+    carnivorous_stalkers           = { 72018, 386194, 1 }, -- Your Dreadstalkers' attacks have a 10% chance to trigger an additional Dreadbite.
+    curses_of_enfeeblement         = { 71951, 386105, 1 }, -- Grants access to the following abilities: Curse of Tongues: Forces the target to speak in Demonic, increasing the casting time of all spells by 30% for 1 min. Curses: A warlock can only have one Curse active per target. Curse of Exhaustion: Reduces the target's movement speed by 50% for 12 sec. Curses: A warlock can only have one Curse active per target.
+    dark_accord                    = { 71956, 386659, 1 }, -- Reduces the cooldown of Unending Resolve by 45 sec.
+    dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 250% of the sacrificed health plus an additional 13,655 for 20 sec. Usable while suffering from control impairing effects.
+    darkfury                       = { 71941, 264874, 1 }, -- Reduces the cooldown of Shadowfury by 15 sec and increases its radius by 2 yards.
+    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of 0.2% of maximum health every 1 sec, and may now absorb up to 15% of maximum health.
+    demonbolt                      = { 72024, 264178, 1 }, -- Send the fiery soul of a fallen demon at the enemy, causing 2,201 Shadowflame damage. Generates 2 Soul Shards.
+    demonic_calling                = { 72017, 205145, 2 }, -- Shadow Bolt and Demonbolt have a 10% chance to make your next Call Dreadstalkers cost 2 fewer Soul Shards and have no cast time.
+    demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
+    demonic_embrace                = { 71930, 288843, 1 }, -- Stamina increased by 10%.
+    demonic_fortitude              = { 71922, 386617, 1 }, -- Increases you and your pets' maximum health by 6%.
+    demonic_gateway                = { 71955, 111771, 1 }, -- Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per 1.5 min.
+    demonic_inspiration            = { 71928, 386858, 1 }, -- Filling a Soul Shard increases the attack speed of your primary pet by 5% for 8 sec.
+    demonic_knowledge              = { 72026, 386185, 1 }, -- Hand of Gul'dan has a 15% chance to generate a charge of Demonic Core.
+    demonic_meteor                 = { 72012, 387396, 1 }, -- Hand of Gul'dan deals 5% additional damage and has a 5% chance per Soul Shard spent of refunding a Soul Shard.
+    demonic_resilience             = { 71917, 389590, 2 }, -- Reduces the chance you will be critically struck by 2%. All damage your primary demon takes is reduced by 8%.
+    demonic_strength               = { 72021, 267171, 1 }, -- Infuse your Felguard with demonic strength and command it to charge your target and unleash a Felstorm that will deal 400% increased damage.
+    desperate_pact                 = { 71929, 386619, 2 }, -- Drain Life heals for 15% more while below 50% health.
+    doom                           = { 72028, 603   , 1 }, -- Inflicts impending doom upon the target, causing 5,248 Shadow damage after 15.2 sec. Doom damage generates 1 Soul Shard.
+    dread_calling                  = { 71999, 387391, 1 }, -- Each Soul Shard spent on Hand of Gul'dan increases the damage of your next Call Dreadstalkers by 4%.
+    dreadlash                      = { 72020, 264078, 1 }, -- When your Dreadstalkers charge into battle, their Dreadbite attack now hits all targets within 8 yards and deals 10% more damage.
+    fel_and_steel                  = { 72016, 386200, 1 }, -- Felstorm and Dreadbite deal 10% additional damage.
+    fel_armor                      = { 71950, 386124, 2 }, -- When Soul Leech absorbs damage, 5% of damage taken is absorbed and spread out over 5 sec. Reduces damage taken by 1.5%.
+    fel_covenant                   = { 72000, 387432, 2 }, -- Shadow Bolt increases the damage of your Demonbolt by 7%, stacking up to 4 times. Lasts 20 sec.
+    fel_domination                 = { 71931, 333889, 1 }, -- Your next Imp, Voidwalker, Incubus, Succubus, Felhunter, or Felguard Summon spell is free and has its casting time reduced by 5.5 sec.
+    fel_might                      = { 72014, 387338, 1 }, -- Reduces the cooldown of Felstorm by 10 sec.
+    fel_pact                       = { 71932, 386113, 2 }, -- Reduces the cooldown of Fel Domination by 30 sec.
+    fel_sunder                     = { 72010, 387399, 1 }, -- Each time Felstorm deals damage, it increases the damage the target takes from you and your pets by 1% for 8 sec, up to 5%.
+    fel_synergy                    = { 71918, 389367, 1 }, -- Soul Leech also heals you for 25% and your pet for 50% of the absorption it grants.
+    fiendish_stride                = { 71948, 386110, 2 }, -- Reduces the damage dealt by Burning Rush by 25%. Burning Rush increases your movement speed by an additional 5%.
+    frequent_donor                 = { 71937, 386686, 1 }, -- Reduces the cooldown of Dark Pact by 15 sec.
+    from_the_shadows               = { 72015, 267170, 1 }, -- Dreadbite causes the target to take 20% additional Shadowflame damage from you for the next 12 sec.
+    gorefiends_resolve             = { 71916, 389623, 2 }, -- Targets resurrected with Soulstone resurrect with 20% additional health and 15% additional mana.
+    grand_warlocks_design          = { 71991, 387084, 1 }, -- Every Soul Shard you spend reduces the cooldown of Summon Demonic Tyrant by 0.6 sec.
+    greater_banish                 = { 71943, 386651, 1 }, -- Increases the duration of Banish by 30 sec. Banish now affects Undead.
+    grim_feast                     = { 71926, 386689, 1 }, -- Drain Life now channels 30% faster and restores health 30% faster.
+    grimoire_felguard              = { 72013, 111898, 1 }, -- Summons a Felguard who attacks the target for 17 sec that deals 45% increased damage. This Felguard will stun their target when summoned.
+    grimoire_of_synergy            = { 71924, 171975, 2 }, -- Damage done by you or your demon has a chance to grant the other one 5% increased damage for 15 sec.
+    guillotine                     = { 72005, 386833, 1 }, -- Your Felguard hurls his axe towards the target location, erupting when it lands and dealing 363 Shadowflame damage every 1 sec for 8 sec to nearby enemies. While unarmed, your Felguard's basic attacks deal damage to all nearby enemies and attacks 50% faster.
+    guldans_ambition               = { 71995, 387578, 1 }, -- When Nether Portal ends, you summon a Pit Lord that gains power based on how many demons you summoned, up to 20 demons, while Nether Portal was active. The Pit Lord lasts for 10 sec.
+    hounds_of_war                  = { 72011, 387488, 2 }, -- Shadow Bolt and Demonbolt have a 3% chance to reset the cooldown of Call Dreadstalkers.
+    howl_of_terror                 = { 71947, 5484  , 1 }, -- Let loose a terrifying howl, causing 5 enemies within 10 yds to flee in fear, disorienting them for 20 sec. Damage may cancel the effect.
+    ichor_of_devils                = { 71937, 386664, 1 }, -- Dark Pact sacrifices only 5% of your current health for the same shield value.
+    imp_gang_boss                  = { 71998, 387445, 2 }, -- Summoning a Wild Imp has a 5% chance to summon a Imp Gang Boss instead. An Imp Gang Boss deals 50% additional damage. When imploded, an Imp Gang Boss will summon a Wild Imp.
+    implosion                      = { 72002, 196277, 1 }, -- Demonic forces suck all of your Wild Imps toward the target, and then cause them to violently explode, dealing 1,410 Shadowflame damage to all enemies within 8 yards.
+    infernal_command               = { 72006, 387549, 2 }, -- While your Felguard is active, your Wild Imps and Dreadstalkers deal 5% additional damage.
+    inner_demons                   = { 72027, 267216, 2 }, -- You passively summon a Wild Imp to fight for you every 12 sec. While in combat, you also have a 5% chance to summon an additional Demon to fight for you for 15 sec.
+    inquisitors_gaze               = { 71939, 386344, 1 }, -- Summon an Inquisitor's Eye that periodically blasts enemies for 262 Shadowflame damage and occasionally dealing 300 Shadowflame damage instead. Lasts 1 |4hour:hrs;.
+    kazaaks_final_curse            = { 72029, 387483, 2 }, -- Doom deals 3% increased damage for each demon pet you have active.
+    lifeblood                      = { 71940, 386646, 2 }, -- When you use a Healthstone, gain 7% Leech for 20 sec.
+    mortal_coil                    = { 71947, 6789  , 1 }, -- Horrifies an enemy target into fleeing, incapacitating for 3 sec and healing you for 20% of maximum health.
+    nerzhuls_volition              = { 71996, 387526, 2 }, -- When Nether Portal summons a demon, it has a 15% chance to summon an additional demon.
+    nether_portal                  = { 71997, 267217, 1 }, -- Tear open a portal to the Twisting Nether for 15 sec. Every time you spend Soul Shards, you will also command demons from the Nether to come out and fight for you.
+    nightmare                      = { 71945, 386648, 2 }, -- When Fear ends, the target is slowed by 15% for 4 sec.
+    pact_of_the_imp_mother         = { 72004, 387541, 2 }, -- Hand of Gul'dan has a 5% chance to cast a second time on your target for free.
+    power_siphon                   = { 72003, 264130, 1 }, -- Instantly sacrifice up to 2 Wild Imps, generating 2 charges of Demonic Core that cause Demonbolt to deal 30% additional damage.
+    profane_bargain                = { 71919, 389576, 2 }, -- When your health drops below 35%, the percentage of damage shared via your Soul Link is increased by an additional 5%.
+    reign_of_tyranny               = { 71991, 390173, 1 }, -- Active Wild Imps grant 1 stack of Demonic Servitude. Active greater demons grant 3 stacks of Demonic Servitude. Demonic Tyrant deals 5% additional damage for each stack of Demonic Servitude active at the time of his summon.
+    resolute_barrier               = { 71915, 389359, 2 }, -- Attacks received that deal at least 5% of your health decrease Unending Resolve's cooldown by 10 sec. Cannot occur more than once every 30 sec.
+    ripped_through_the_portal      = { 72009, 387485, 2 }, -- Call Dreadstalkers has a 50% chance to summon an additional Dreadstalker.
+    sacrificed_souls               = { 71993, 267214, 2 }, -- Shadow Bolt and Demonbolt deal 2% additional damage per demon you have summoned.
+    shadowflame                    = { 71941, 384069, 1 }, -- Slows enemies in a 12 yard cone in front of you by 70% for 6 sec.
+    shadowfury                     = { 71942, 30283 , 1 }, -- Stuns all enemies within 8 yds for 3 sec.
+    shadows_bite                   = { 72025, 387322, 1 }, -- When your summoned Dreadstalkers fade away, they increase the damage of your Demonbolt by 10% for 8 sec.
+    soul_conduit                   = { 71923, 215941, 2 }, -- Every Soul Shard you spend has a 5% chance to be refunded.
+    soul_link                      = { 71925, 108415, 1 }, -- 10% of all damage you take is taken by your demon pet instead.
+    soul_strike                    = { 72019, 264057, 1 }, -- Command your Felguard to strike into the soul of its enemy, dealing 2,814 Shadow damage. Generates 1 Soul Shard.
+    soulbound_tyrant               = { 71992, 334585, 2 }, -- Summoning your Demonic Tyrant instantly generates 3 Soul Shards.
+    soulburn                       = { 71957, 385899, 1 }, -- Consumes a Soul Shard, unlocking the hidden power of your spells. Demonic Circle: Teleport: Increases your movement speed by 50% and makes you immune to snares and roots for 8 sec. Demonic Gateway: Can be cast instantly. Drain Life: Gain an absorb shield equal to the amount of healing done for 30 sec. This shield cannot exceed 30% of your maximum health. Health Funnel: Restores 140% more health and reduces the damage taken by your pet by 30% for 10 sec. Healthstone: Increases the healing of your Healthstone by 30% and increases your maximum health by 20% for 12 sec.
+    stolen_power                   = { 72007, 387602, 1 }, -- When your Wild Imps cast Fel Firebolt, you gain an application of Stolen Power. After you reach 100 applications, your next Demonbolt deals 60% increased damage or your next Shadow Bolt deals 60% increased damage.
+    strength_of_will               = { 71956, 317138, 1 }, -- Unending Resolve reduces damage taken by an additional 15%.
+    summon_demonic_tyrant          = { 72030, 265187, 1 }, -- Summon a Demonic Tyrant to increase the duration of all of your current lesser demons by 15 sec, and increase the damage of all of your other demons by 15%, while damaging your target.
+    summon_soulkeeper              = { 71939, 386256, 1 }, -- Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 640 Chaos damage every 1 sec for each Tormented Soul consumed. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
+    summon_vilefiend               = { 72019, 264119, 1 }, -- Summon a Vilefiend to fight for you for the next 15 sec.
+    sweet_souls                    = { 71927, 386620, 1 }, -- Your Healthstone heals you for an additional 10% of your maximum health. Any party or raid member using a Healthstone also heals you for that amount.
+    teachings_of_the_black_harvest = { 71938, 385881, 1 }, -- Your primary pets gain a bonus effect. Imp: Successful Singe Magic casts grant the target 4% damage reduction for 5 sec. Voidwalker: Reduces the cooldown of Shadow Bulwark by 30 sec. Felhunter: Reduces the cooldown of Devour Magic by 5 sec. Sayaad: Reduces the cooldown of Seduction by 10 sec and causes the target to walk faster towards the demon. Felguard: Reduces the cooldown of Pursuit by 5 sec and increases its maximum range by 5 yards.
+    teachings_of_the_satyr         = { 71935, 387972, 1 }, -- Reduces the cooldown of Amplify Curse by 10 sec.
+    the_expendables                = { 71994, 387600, 1 }, -- When your Wild Imps expire or die, your other demons are inspired and gain 1% additional damage, stacking up to 10 times.
+    wrathful_minion                = { 71946, 386864, 1 }, -- Filling a Soul Shard increases the damage done by your primary pet by 5% for 8 sec.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    bane_of_fragility     = 3505, -- 199954
-    bonds_of_fel          = 5545, -- 353753
-    call_fel_lord         = 162 , -- 212459
-    call_felhunter        = 156 , -- 212619
-    call_observer         = 165 , -- 201996
-    casting_circle        = 3626, -- 221703
-    essence_drain         = 3625, -- 221711
-    fel_obelisk           = 5400, -- 353601
-    gateway_mastery       = 3506, -- 248855
-    master_summoner       = 1213, -- 212628
-    nether_ward           = 3624, -- 212295
-    pleasure_through_pain = 158 , -- 212618
-    precognition          = 5505, -- 377360
-    shadow_rift           = 5394, -- 353294
+    bane_of_fragility     = 3505, -- (199954) Reduces the target's maximum health by up to 15% for 10 sec.
+    bonds_of_fel          = 5545, -- (353753) Encircle enemy players with Bonds of Fel. If any affected player leaves the 8 yd radius they explode, dealing 11,355 Fire damage split amongst all nearby enemies.
+    call_fel_lord         = 162 , -- (212459) Summon a fel lord to guard the location for 15 sec. Any enemy that comes within 6 yards will suffer 9,788 Physical damage, and players struck will be stunned for 1 sec.
+    call_felhunter        = 156 , -- (212619) Invoke the power of Felhunter from the nether to instantly Spell Lock the enemy target. Call Felhunter cannot be used if your current pet is a Felhunter.  Spell Lock Counters the enemy's spellcast, preventing any spell from that school of magic from being cast for 6 sec.
+    call_observer         = 165 , -- (201996) Summons a demonic Observer to keep a watchful eye over the area for 20 sec. Anytime an enemy within 20 yards casts a harmful magical spell, the Observer will deal up to 5% of the target's maximum health in Shadow damage.
+    casting_circle        = 3626, -- (221703) Summons a Casting Circle for 12 sec. While within the casting circle, you are immune to silence and interrupt effects.
+    essence_drain         = 3625, -- (221711) Whenever you heal yourself with Drain Life, the enemy target deals 9% reduced damage to you for 10 sec. Stacks up to 4 times.
+    fel_obelisk           = 5400, -- (353601) Summon a Fel Obelisk with 5% of your maximum health. Empowers you and your minions within 40 yds, increasing attack speed by 20% and reducing the cast time of spells by 20% for 15 sec.
+    gateway_mastery       = 3506, -- (248855) Increases the range of your Demonic Gateway by 20 yards, and reduces the cast time by 30%. Reduces the time between how often players can take your Demonic Gateway by 30 sec.
+    master_summoner       = 1213, -- (212628) Your Call Dreadstalkers is now instant cast.
+    nether_ward           = 3624, -- (212295) Surrounds the caster with a shield that lasts 3 sec, reflecting all harmful spells cast on you.
+    pleasure_through_pain = 158 , -- (212618) While your Succubus is active, your Shadow damage is increased by 15% and the cast time of your Shadow Bolt is reduced by 0.5 sec.
+    precognition          = 5505, -- (377360) If an interrupt is used on you while you are not casting, gain 15% haste and become immune to control and interrupt effects for 4 sec.
+    shadow_rift           = 5394, -- (353294) Conjure a Shadow Rift at the target location lasting 2 sec. Enemy players within the rift when it expires are teleported to your Demonic Circle. Must be within 40 yds of your Demonic Circle to cast.
 } )
 
 
+-- Demon Handling
+local dreadstalkers = {}
+local dreadstalkers_v = {}
+
+local vilefiend = {}
+local vilefiend_v = {}
+
+local wild_imps = {}
+local wild_imps_v = {}
+
+local imp_gang_boss = {}
+local imp_gang_boss_v = {}
+
+local demonic_tyrant = {}
+local demonic_tyrant_v = {}
+
+local grim_felguard = {}
+local grim_felguard_v = {}
+
+local other_demon = {}
+local other_demon_v = {}
+
+local imps = {}
+local guldan = {}
+local guldan_v = {}
+
+local last_summon = {}
+
+local FindUnitBuffByID = ns.FindUnitBuffByID
+
+
+local shards_for_guldan = 0
+
+local function UpdateShardsForGuldan()
+    shards_for_guldan = UnitPower( "player", Enum.PowerType.SoulShards )
+end
+
+
+local first_combat_tyrant
+
+spec:RegisterVariable( "first_tyrant_time", function()
+    if first_combat_tyrant and combat > 0 then
+        return first_combat_tyrant - combat
+    end
+
+    -- Tyrant is on CD, we're not starting fresh, skip opener.
+    if cooldown.summon_demonic_tyrant.true_remains > gcd.max then
+        return 0
+    end
+
+    if talent.nether_portal.enabled then return 15 end
+    return 12
+end )
+
+spec:RegisterVariable( "in_opener", function()
+    return time < first_tyrant_time
+end )
+
+
+local dreadstalkers_travel_time = 1
+
+spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID, _, _, _, spellID, spellName )
+    if source == state.GUID then
+        local now = GetTime()
+
+        if subtype == "SPELL_SUMMON" then
+            -- Wild Imp: 104317 (40) and 279910 (20).
+            if spellID == 104317 or spellID == 279910 then
+                local dur = ( spellID == 279910 and 20 or 40 )
+                table.insert( wild_imps, now + dur )
+
+                imps[ destGUID ] = {
+                    t = now,
+                    casts = 0,
+                    expires = math.ceil( now + dur ),
+                    max = math.ceil( now + dur )
+                }
+
+                if guldan[ 1 ] then
+                    -- If this imp is impacting within 0.15s of the expected queued imp, remove that imp from the queue.
+                    if abs( now - guldan[ 1 ] ) < 0.15 then
+                        table.remove( guldan, 1 )
+                    end
+                end
+
+                -- Expire missed/lost Gul'dan predictions.
+                while( guldan[ 1 ] ) do
+                    if guldan[ 1 ] < now then
+                        table.remove( guldan, 1 )
+                    else
+                        break
+                    end
+                end
+
+            -- Grimoire Felguard
+            -- elseif spellID == 111898 then table.insert( grim_felguard, now + 17 )
+
+            -- Demonic Tyrant: 265187, 15 seconds uptime.
+            elseif spellID == 265187 then table.insert( demonic_tyrant, now + 15 )
+                -- for i = 1, #dreadstalkers do dreadstalkers[ i ] = dreadstalkers[ i ] + 15 end
+                -- for i = 1, #vilefiend do vilefiend[ i ] = vilefiend[ i ] + 15 end
+                -- for i = 1, #grim_felguard do grim_felguard[ i ] = grim_felguard[ i ] + 15 end
+                for i = 1, #wild_imps do wild_imps[ i ] = wild_imps[ i ] + 15 end
+
+                for _, imp in pairs( imps ) do
+                    imp.expires = imp.expires + 15
+                    imp.max = imp.max + 15
+                end
+
+            elseif spellID == 364198 then
+                -- Tier 28: Malicious Imp
+                -- TODO: Revise to Imp Gang Boss.
+                imps[ destGUID ] = {
+                    t = now,
+                    casts = 0,
+                    expires = math.ceil( now + 40 ),
+                    max = math.ceil( now + 40 ),
+                    gang_boss = true
+                }
+                table.insert( imp_gang_boss, now + 40 )
+
+
+            -- Other Demons, 15 seconds uptime.
+            -- 267986 - Prince Malchezaar
+            -- 267987 - Illidari Satyr
+            -- 267988 - Vicious Hellhound
+            -- 267989 - Eyes of Gul'dan
+            -- 267991 - Void Terror
+            -- 267992 - Bilescourge
+            -- 267994 - Shivarra
+            -- 267995 - Wrathguard
+            -- 267996 - Darkhound
+            -- 268001 - Ur'zul
+            elseif spellID >= 267986 and spellID <= 268001 then table.insert( other_demon, now + 15 )
+            elseif spellID == 387590 then table.insert( other_demon, now + 10 ) end -- Pit Lord from Gul'dan's Ambition
+
+        elseif subtype == "SPELL_CAST_START" and spellID == 105174 then
+            C_Timer.After( 0.25, UpdateShardsForGuldan )
+
+        elseif subtype == "SPELL_CAST_SUCCESS" then
+            -- Implosion.
+            if spellID == 196277 then
+                table.wipe( wild_imps )
+                table.wipe( imps )
+
+            -- Power Siphon.
+            elseif spellID == 264130 then
+                if wild_imps[1] then table.remove( wild_imps, 1 ) end
+                if wild_imps[1] then table.remove( wild_imps, 1 ) end
+
+                for i = 1, 2 do
+                    local lowest
+
+                    for id, imp in pairs( imps ) do
+                        if not lowest then lowest = id
+                        elseif imp.expires < imps[ lowest ].expires then
+                            lowest = id
+                        end
+                    end
+
+                    if lowest then
+                        imps[ lowest ] = nil
+                    end
+                end
+
+            -- Hand of Guldan (queue imps).
+            elseif spellID == 105174 then
+                hog_time = now
+
+                if shards_for_guldan >= 1 then table.insert( guldan, now + 0.6 ) end
+                if shards_for_guldan >= 2 then table.insert( guldan, now + 0.8 ) end
+                if shards_for_guldan >= 3 then table.insert( guldan, now + 1 ) end
+
+            --[[ elseif spellID == 265187 and InCombatLockdown() and not first_combat_tyrant then
+                first_combat_tyrant = now ]]
+
+            -- Call Dreadstalkers (use travel time to determine buffer delay for Demonic Cores).
+            elseif spellID == 104316 then
+                -- TODO:  Come up with a good estimate of the time it takes.
+                dreadstalkers_travel_time = ( select( 2, RC:GetRange( "target" ) ) or 25 ) / 25
+
+            end
+        end
+
+    elseif imps[ source ] and subtype == "SPELL_CAST_SUCCESS" then
+        local demonic_power = FindPlayerAuraByID( 265273 )
+        local now = GetTime()
+
+        if not demonic_power then
+            local imp = imps[ source ]
+
+            imp.start = now
+            imp.casts = imp.casts + 1
+
+            imp.expires = min( imp.max, now + ( ( ( state.level > 55 and 7 or 6 ) - imp.casts ) * 2 * state.haste ) )
+        end
+    end
+end )
+
+
+spec:RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
+    -- Rethinking this.
+    -- We'll try to make the opener work if Tyrant will be off CD anywhere from 10-20 seconds into the fight.
+    -- If it's later, we'll assume we're starting from the middle.
+    local tyrant, duration = GetSpellCooldown( 265187 )
+    local gcd, gcd_duration = GetSpellCooldown( 61304 )
+
+    tyrant = tyrant + duration
+    gcd = gcd + gcd_duration
+
+    if tyrant > gcd then
+        first_combat_tyrant = GetTime()
+        return
+    end
+
+    first_combat_tyrant = GetTime() + 10
+end )
+
+spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
+    first_combat_tyrant = nil
+end )
+
+
+local ExpireDreadstalkers = setfenv( function()
+    addStack( "demonic_core", nil, talent.ripped_through_the_portal.rank > 1 and 3 or 2 )
+    if talent.shadows_bite.enabled then applyBuff( "shadows_bite" ) end
+end, state )
+
+local ExpireDoom = setfenv( function()
+    gain( 1, "soul_shards" )
+end, state )
+
+local ExpireNetherPortal = setfenv( function()
+    summon_demon( "pit_lord", 10 )
+end, state )
+
+
+local wipe = table.wipe
+
+spec:RegisterHook( "reset_precast", function()
+    local i = 1
+    for id, imp in pairs( imps ) do
+        if imp.expires < now then
+            imps[ id ] = nil
+        end
+    end
+
+    while( wild_imps[ i ] ) do
+        if wild_imps[ i ] < now then
+            table.remove( wild_imps, i )
+        else
+            i = i + 1
+        end
+    end
+
+    wipe( wild_imps_v )
+    wipe( imp_gang_boss_v )
+
+    for n, t in pairs( imps ) do
+        if t.gang_boss then table.insert( imp_gang_boss_v, t.expires )
+        else table.insert( wild_imps_v, t.expires ) end
+    end
+
+    table.sort( wild_imps_v )
+    table.sort( imp_gang_boss_v )
+
+    local difference = #wild_imps_v - GetSpellCount( 196277 )
+
+    while difference > 0 do
+        table.remove( wild_imps_v, 1 )
+        difference = difference - 1
+    end
+
+    wipe( guldan_v )
+    for n, t in ipairs( guldan ) do guldan_v[ n ] = t end
+
+
+    i = 1
+    while( other_demon[ i ] ) do
+        if other_demon[ i ] < now then
+            table.remove( other_demon, i )
+        else
+            i = i + 1
+        end
+    end
+
+    wipe( other_demon_v )
+    for n, t in ipairs( other_demon ) do other_demon_v[ n ] = t end
+
+
+    if #dreadstalkers_v > 0  then wipe( dreadstalkers_v ) end
+    if #vilefiend_v > 0      then wipe( vilefiend_v )     end
+    if #grim_felguard_v > 0  then wipe( grim_felguard_v ) end
+    if #demonic_tyrant_v > 0 then wipe( demonic_tyrant_v ) end
+
+    -- Pull major demons from Totem API.
+    for i = 1, 5 do
+        local exists, name, summoned, duration, texture = GetTotemInfo( i )
+
+        if exists then
+            local demon, extraTime = nil, 0
+
+            -- Grimoire Felguard
+            if texture == 136216 then
+                extraTime = action.grimoire_felguard.lastCast % 1
+                demon = grim_felguard_v
+            elseif texture == 1616211 then
+                extraTime = action.summon_vilefiend.lastCast % 1
+                demon = vilefiend_v
+            elseif texture == 1378282 then
+                extraTime = action.call_dreadstalkers.lastCast % 1
+                demon = dreadstalkers_v
+            elseif texture == 135002 then
+                extraTime = action.summon_demonic_tyrant.lastCast % 1
+                demon = demonic_tyrant_v
+            end
+
+            if demon then
+                insert( demon, summoned + duration + extraTime )
+            end
+        end
+
+        if #grim_felguard_v > 1 then table.sort( grim_felguard_v ) end
+        if #vilefiend_v > 1 then table.sort( vilefiend_v ) end
+        if #dreadstalkers_v > 1 then table.sort( dreadstalkers_v ) end
+        if #demonic_tyrant_v > 1 then table.sort( demonic_tyrant_v ) end
+    end
+
+    last_summon.name = nil
+    last_summon.at = nil
+    last_summon.count = nil
+
+    if demonic_tyrant_v[ 1 ] and demonic_tyrant_v[ 1 ] > query_time then
+        summonPet( "demonic_tyrant", demonic_tyrant_v[ 1 ] - query_time )
+    end
+
+    if buff.demonic_power.up and buff.demonic_power.remains > pet.demonic_tyrant.remains then
+        summonPet( "demonic_tyrant", buff.demonic_power.remains )
+    end
+
+    local subjugated, icon, count, debuffType, duration, expirationTime = FindUnitDebuffByID( "pet", 1098 )
+    if subjugated then
+        summonPet( "subjugated_demon", expirationTime - now )
+    else
+        dismissPet( "subjugated_demon" )
+    end
+
+    if buff.dreadstalkers.up then
+        state:QueueAuraExpiration( "dreadstalkers", ExpireDreadstalkers, 1 + buff.dreadstalkers.expires + dreadstalkers_travel_time )
+    end
+
+    if buff.nether_portal.up and talent.guldans_ambition.enabled then
+        state:QueueAuraExpiration( "nether_portal", ExpireNetherPortal, buff.nether_portal.expires )
+    end
+
+    class.abilities.summon_pet = class.abilities.summon_felguard
+
+    first_tyrant_time = nil
+
+    if debuff.doom.up then
+        state:QueueAuraExpiration( "doom", ExpireDoom, debuff.doom.expires )
+    end
+
+    if Hekili.ActiveDebug then
+        Hekili:Debug(   " - Dreadstalkers: %d, %.2f\n" ..
+                        " - Vilefiend    : %d, %.2f\n" ..
+                        " - Grim Felguard: %d, %.2f\n" ..
+                        " - Wild Imps    : %d, %.2f\n" ..
+                        " - Imp Gang Boss: %d, %.2f\n" ..
+                        "Next Demon Exp. : %.2f",
+                        buff.dreadstalkers.stack, buff.dreadstalkers.remains,
+                        buff.vilefiend.stack, buff.vilefiend.remains,
+                        buff.grimoire_felguard.stack, buff.grimoire_felguard.remains,
+                        buff.wild_imps.stack, buff.wild_imps.remains,
+                        buff.imp_gang_boss.stack, buff.imp_gang_boss.remains,
+                        major_demon_remains )
+    end
+end )
+
+
+spec:RegisterHook( "advance_end", function ()
+    -- For virtual imps, assume they'll take 0.5s to start casting and then chain cast.
+    local longevity = 0.5 + ( state.level > 55 and 7 or 6 ) * 2 * state.haste
+    for i = #guldan_v, 1, -1 do
+        local imp = guldan_v[i]
+
+        if imp <= query_time then
+            if ( imp + longevity ) > query_time then
+                insert( wild_imps_v, imp + longevity )
+            end
+            remove( guldan_v, i )
+        end
+    end
+end )
+
+
+-- Provide a way to confirm if all Hand of Gul'dan imps have landed.
+spec:RegisterStateExpr( "spawn_remains", function ()
+    if #guldan_v > 0 then
+        return max( 0, guldan_v[ #guldan_v ] - query_time )
+    end
+    return 0
+end )
+
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if resource == "soul_shards" then
+        if amt > 0 then
+            if buff.nether_portal.up then
+                summon_demon( "other", 15 )
+            end
+
+            if legendary.wilfreds_sigil_of_superior_summoning.enabled then
+                reduceCooldown( "summon_demonic_tyrant", amt * 0.6 )
+            end
+
+            if talent.grand_warlocks_design.enabled then
+                reduceCooldown( "summon_demonic_tyrant", amt * 0.6 )
+            end
+        elseif amt < 0 and floor( soul_shard ) < floor( soul_shard + amt ) then
+            if talent.demonic_inspiration.enabled then applyBuff( "demonic_inspiration" ) end
+            if talent.wrathful_minion.enabled then applyBuff( "wrathful_minion" ) end
+        end
+    end
+end )
+
+
+spec:RegisterStateFunction( "summon_demon", function( name, duration, count )
+    local db = other_demon_v
+
+    if name == "dreadstalkers" then db = dreadstalkers_v
+    elseif name == "vilefiend" then db = vilefiend_v
+    elseif name == "wild_imps" then db = wild_imps_v
+    elseif name == "imp_gang_boss" then db = imp_gang_boss_v
+    elseif name == "grimoire_felguard" then db = grim_felguard_v
+    elseif name == "demonic_tyrant" then db = demonic_tyrant_v end
+
+    count = count or 1
+    local expires = query_time + duration
+
+    last_summon.name = name
+    last_summon.at = query_time
+    last_summon.count = count
+
+    for i = 1, count do
+        table.insert( db, expires )
+    end
+end )
+
+
+spec:RegisterStateFunction( "extend_demons", function( duration )
+    duration = duration or 15
+
+    for k, v in pairs( dreadstalkers_v ) do dreadstalkers_v [ k ] = v + duration end
+    for k, v in pairs( vilefiend_v     ) do vilefiend_v     [ k ] = v + duration end
+    for k, v in pairs( wild_imps_v     ) do wild_imps_v     [ k ] = v + duration end
+    for k, v in pairs( imp_gang_boss_v ) do imp_gang_boss_v [ k ] = v + duration end
+    for k, v in pairs( grim_felguard_v ) do grim_felguard_v [ k ] = v + duration end
+    for k, v in pairs( other_demon_v   ) do other_demon_v   [ k ] = v + duration end
+end )
+
+
+spec:RegisterStateFunction( "consume_demons", function( name, count )
+    local db = other_demon_v
+
+    if     name == "dreadstalkers"     then db = dreadstalkers_v
+    elseif name == "vilefiend"         then db = vilefiend_v
+    elseif name == "wild_imps"         then db = wild_imps_v
+    elseif name == "imp_gang_boss"     then db = imp_gang_boss_v
+    elseif name == "grimoire_felguard" then db = grim_felguard_v
+    elseif name == "demonic_tyrant"    then db = demonic_tyrant_v end
+
+    if type( count ) == "string" and count == "all" then
+        table.wipe( db )
+
+        -- Wipe queued Guldan imps that should have landed by now.
+        if name == "wild_imps" then
+            while( guldan_v[ 1 ] ) do
+                if guldan_v[ 1 ] < now then table.remove( guldan_v, 1 )
+                else break end
+            end
+        end
+        return
+    end
+
+    count = count or 0
+
+    if count >= #db then
+        count = count - #db
+        table.wipe( db )
+    end
+
+    while( count > 0 ) do
+        if not db[1] then break end
+        table.remove( db, 1 )
+        count = count - 1
+    end
+
+    if name == "wild_imps" and count > 0 then
+        while( count > 0 ) do
+            if not guldan_v[1] or guldan_v[1] > now then break end
+            table.remove( guldan_v, 1 )
+            count = count - 1
+        end
+    end
+end )
+
+
+spec:RegisterStateExpr( "soul_shard", function () return soul_shards.current end )
+
+-- How long before you can complete a 3 Soul Shard HoG cast.
+spec:RegisterStateExpr( "time_to_hog", function ()
+    local shards_needed = max( 0, 3 - soul_shards.current )
+    local cast_time = action.hand_of_guldan.cast_time
+
+    if shards_needed > 0 then
+        local cores = min( shards_needed, buff.demonic_core.stack )
+
+        if cores > 0 then
+            cast_time = cast_time + cores * gcd.execute
+            shards_needed = shards_needed - cores
+        end
+
+        cast_time = cast_time + shards_needed * action.shadow_bolt.cast_time
+    end
+
+    return cast_time
+end )
+
+
+spec:RegisterStateExpr( "major_demons_active", function ()
+    return ( buff.grimoire_felguard.up and 1 or 0 ) + ( buff.vilefiend.up and 1 or 0 ) + ( buff.dreadstalkers.up and 1 or 0 )
+end )
+
+
+-- When the next major demon (anything but Wild Imps) expires.
+spec:RegisterStateExpr( "major_demon_remains", function ()
+    local expire = 3600
+
+    if buff.grimoire_felguard.up then expire = min( expire, buff.grimoire_felguard.remains ) end
+    if buff.vilefiend.up then expire = min( expire, buff.vilefiend.remains ) end
+    if buff.dreadstalkers.up then expire = min( expire, buff.dreadstalkers.remains ) end
+
+    if expire == 3600 then return 0 end
+    return expire
+end )
+
+
+-- New imp forecasting expressions for Demo.
+spec:RegisterStateExpr( "incoming_imps", function ()
+    local n = 0
+
+    for i, time in ipairs( guldan_v ) do
+        if time > query_time then
+            n = n + 1
+        end
+    end
+
+    return n
+end )
+
+
+local time_to_n = 0
+
+spec:RegisterStateTable( "query_imp_spawn", setmetatable( {}, {
+    __index = function( t, k )
+        if k ~= "remains" then return 0 end
+
+        local queued = #guldan_v
+
+        if queued == 0 then return 0 end
+
+        if time_to_n == 0 or time_to_n >= queued then
+            return max( 0, guldan_v[ queued ] - query_time )
+        end
+
+        local count = 0
+        local remains = 0
+
+        for i, time in ipairs( guldan_v ) do
+            if time > query_time then
+                count = count + 1
+                remains = time - query_time
+
+                if count >= time_to_n then break end
+            end
+        end
+
+        return remains
+    end,
+} ) )
+
+spec:RegisterStateTable( "time_to_imps", setmetatable( {}, {
+    __index = function( t, k )
+        if type( k ) == "number" then
+            time_to_n = min( #guldan_v, k )
+        elseif k == "all" then
+            time_to_n = #guldan_v
+        else
+            return 0
+        end
+
+        return query_imp_spawn.remains
+    end
+} ) )
+
+local debugstack = debugstack
+
+spec:RegisterStateTable( "imps_spawned_during", setmetatable( {}, {
+    __index = function( t, k, v )
+        local cap = query_time
+
+        if type(k) == "number" then cap = cap + ( k / 1000 )
+        else
+            if not class.abilities[ k ] then k = "summon_demonic_tyrant" end
+            cap = cap + action[ k ].cast
+        end
+
+        -- In SimC, k would be a numeric value to be interpreted but I don't see the point.
+        -- We're only using it for SDT now, and I don't know what else we'd really use it for.
+
+        -- So imps_spawned_during.summon_demonic_tyrant would be the syntax I'll use here.
+
+        local n = 0
+
+        for i, spawn in ipairs( guldan_v ) do
+            if spawn > cap then break end
+            if spawn > query_time then n = n + 1 end
+        end
+
+        return n
+    end,
+} ) )
+
 -- Auras
 spec:RegisterAuras( {
+    -- Talent: Damage taken is reduced by $s1%.
+    -- https://wowhead.com/beta/spell=389614
     abyss_walker = {
         id = 389614,
         duration = 10,
         max_stack = 1
     },
-    amplify_curse = {
-        id = 328774,
-        duration = 15,
+    -- Talent: Healing $w1 every $t sec.
+    -- https://wowhead.com/beta/spell=386614
+    accrued_vitality = {
+        id = 386614,
+        duration = 10,
+        type = "Magic",
+        max_stack = 1,
+        copy = 339298
+    },
+    -- Talent: Damage done increased by $w1%. Soul Strike deals $w2% of its damage to nearby enemies.
+    -- https://wowhead.com/beta/spell=387496
+    antoran_armaments = {
+        id = 387496,
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Stunned for $d.
+    -- https://wowhead.com/beta/spell=89766
+    axe_toss = {
+        id = 89766,
+        duration = 4,
+        type = "Ranged",
         max_stack = 1
     },
     balespiders_burning_core = {
-        id = 387437,
-        duration = 20,
-        max_stack = 4
-    },
-    bane_of_fragility = {
-        id = 199954,
-        duration = 10,
-        max_stack = 1
-    },
-    banish = {
-        id = 710,
-        duration = 30,
-        max_stack = 1
-    },
-    bilescourge_bombers = { -- TODO: Virtual aura; model from successful cast.
-        id = 267211,
-        duration = 6,
-        max_stack = 1
-    },
-    bonds_of_fel = {
-        id = 353807,
-        duration = 6,
-        max_stack = 1
-    },
-    burning_rush = {
-        id = 111400,
-        duration = 3600,
-        tick_time = 1,
-        max_stack = 1
-    },
-    butchers_bone_fragments = {
-        id = 336908,
-        duration = 12,
-        max_stack = 6
-    },
-    call_fel_lord = { -- TODO: Is a totem.
-        id = 212459,
+        id = 337161,
         duration = 15,
-        max_stack = 1
-    },
-    call_observer = { -- TODO: Virtual aura; model from successful cast.
-        id = 201996,
-        duration = 20,
-        max_stack = 1
-    },
-    casting_circle = { -- TODO: Virtual aura; model from successful cast.
-        id = 221705,
-        duration = 12,
-        max_stack = 1
-    },
-    corruption = {
-        id = 146739,
-        duration = 14,
-        tick_time = 2,
-        max_stack = 1
-    },
-    curse_of_exhaustion = {
-        id = 334275,
-        duration = 12,
-        max_stack = 1
-    },
-    dark_pact = {
-        id = 108416,
-        duration = 20,
-        max_stack = 1
+        max_stack = 4
     },
     demonic_calling = {
         id = 205146,
         duration = 20,
+        type = "Magic",
+        max_stack = 1,
+    },
+    -- The cast time of Demonbolt is reduced by $s1%. $?a334581[Demonbolt damage is increased by $334581s1%.][]
+    -- https://wowhead.com/beta/spell=264173
+    demonic_core = {
+        id = 264173,
+        duration = 20,
+        max_stack = 4
+    },
+    -- Talent: Faded into the nether and unable to use another Demonic Gateway.
+    -- https://wowhead.com/beta/spell=113942
+    demonic_gateway = {
+        id = 113942,
+        duration = 90,
         max_stack = 1
     },
-    demonic_circle = {
-        id = 48018,
-        duration = 1500,
-        max_stack = 1
-    },
+    -- Talent: Attack speed increased by $w1%.
+    -- https://wowhead.com/beta/spell=386861
     demonic_inspiration = {
         id = 386861,
         duration = 8,
         max_stack = 1
     },
+    -- Movement speed increased by $w1%.
+    -- https://wowhead.com/beta/spell=339412
+    demonic_momentum = {
+        id = 339412,
+        duration = 5,
+        max_stack = 1
+    },
+    -- Damage dealt by your demons increased by $s2%.
+    -- https://wowhead.com/beta/spell=265273
+    demonic_power = {
+        id = 265273,
+        duration = 15,
+        max_stack = 1,
+        copy = "tyrant"
+    },
+    demonic_servitude = {
+        duration = 3600,
+        max_stack = 1,
+        -- TODO: Make metafunction based on summons/expirations and GetSpellCount on Summon Demonic Tyrant button.
+    },
+    -- Talent: Your next Felstorm will deal $s2% increased damage.
+    -- https://wowhead.com/beta/spell=267171
     demonic_strength = {
         id = 267171,
         duration = 20,
         max_stack = 1
     },
+    -- Damage done increased by $w2%.
+    -- https://wowhead.com/beta/spell=171982
+    demonic_synergy = {
+        id = 171982,
+        duration = 15,
+        max_stack = 1
+    },
+    -- Talent: Doomed to take $w1 Shadow damage.
+    -- https://wowhead.com/beta/spell=603
     doom = {
         id = 603,
-        duration = 20,
-        tick_time = 20,
+        duration = function() return 15 * haste end,
+        tick_time = function() return 15 * haste end,
+        type = "Magic",
         max_stack = 1
     },
-    drain_life = {
-        id = 234153,
+    dread_calling = {
+        id = 387393,
+        duration = 3600,
+        max_stack = 20,
+    },
+    -- Healing for $m1% of maximum health every $t1 sec.  Spell casts are not delayed by taking damage.
+    -- https://wowhead.com/beta/spell=262080
+    empowered_healthstone = {
+        id = 262080,
+        duration = 6,
+        max_stack = 1
+    },
+    -- Talent: $w1 damage is being delayed every $387846t1 sec.    Damage Remaining: $w2
+    -- https://wowhead.com/beta/spell=387847
+    fel_armor = {
+        id = 387847,
         duration = 5,
-        tick_time = 1,
         max_stack = 1
     },
-    eye_of_kilrogg = {
-        id = 126,
-        duration = 45,
-        max_stack = 1
-    },
-    fel_domination = {
-        id = 333889,
-        duration = 15,
-        max_stack = 1
-    },
-    fel_obelisk = { -- TODO: Is a totem.
-        id = 353601,
-        duration = 15,
-        max_stack = 1
-    },
-    grimoire_felguard = { -- TODO: Is a totem.
-        id = 111898,
-        duration = 17,
-        max_stack = 1
-    },
-    health_funnel = {
-        id = 755,
-        duration = 5,
-        tick_time = 1,
-        max_stack = 1
-    },
-    howl_of_terror = {
-        id = 5484,
+    -- Talent: Damage of your Demonbolt increased by $w1%.
+    -- https://wowhead.com/beta/spell=387437
+    fel_covenant = {
+        id = 387437,
         duration = 20,
+        max_stack = 4
+    },
+    -- Damage taken reduced by $w1%.
+    -- https://wowhead.com/beta/spell=386869
+    fel_resilience = {
+        id = 386869,
+        duration = 5,
         max_stack = 1
     },
-    inquisitors_gaze = {
-        id = 388068,
+    -- Talent: Damage taken from $@auracaster and their pets is increased by $s1%.
+    -- https://wowhead.com/beta/spell=387402
+    fel_sunder = {
+        id = 387402,
+        duration = 8,
+        type = "Magic",
+        max_stack = 5
+    },
+    -- Striking for $<damage> Physical damage every $t1 sec. Unable to use other abilities.
+    -- https://wowhead.com/beta/spell=89751
+    felstorm = {
+        id = 89751,
+        duration = function () return 5 * haste end,
+        tick_time = function () return 1 * haste end,
+        max_stack = 1,
+        generate = function ()
+            local fs = buff.felstorm
+
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 89751 )
+
+            if name then
+                fs.count = 1
+                fs.applied = expires - duration
+                fs.expires = expires
+                fs.caster = "pet"
+                return
+            end
+
+            fs.count = 0
+            fs.applied = 0
+            fs.expires = 0
+            fs.caster = "nobody"
+        end,
+    },
+    -- Unarmed. Basic attacks deal damage to all nearby enemies and attacks $s1% faster.
+    -- https://wowhead.com/beta/spell=386601
+    fiendish_wrath = {
+        id = 386601,
+        duration = 8,
+        max_stack = 1,
+        generate = function( t )
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", id )
+
+            if name then
+                t.count = 1
+                t.applied = expires - duration
+                t.expires = expires
+                t.caster = "pet"
+                return
+            end
+
+            t.count = 0
+            t.applied = 0
+            t.expires = 0
+            t.caster = "nobody"
+        end,
+    },
+    -- Talent: Damage taken from the Warlock's Shadowflame damage spells increased by $s1%.
+    -- https://wowhead.com/beta/spell=270569
+    from_the_shadows = {
+        id = 270569,
+        duration = 12,
+        max_stack = 1
+    },
+    -- Summoned by a Grimoire of Service.  Damage done increased by $s1%.
+    -- https://wowhead.com/beta/spell=216187
+    grimoire_of_service = {
+        id = 216187,
+        duration = 3600,
+        max_stack = 1,
+        generate = function( t )
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", t.id )
+
+            if name then
+                t.count = 1
+                t.applied = expires - duration
+                t.expires = expires
+                t.caster = "pet"
+                return
+            end
+
+            t.count = 0
+            t.applied = 0
+            t.expires = 0
+            t.caster = "nobody"
+        end,
+    },
+    --[[ Talent: Damage done increased by $s2%.
+    -- https://wowhead.com/beta/spell=387458
+    -- TODO: May use this aura to identify Wild Imps who became Imp Gang Bosses.
+    imp_gang_boss = {
+        id = 387458,
+        duration = 3600,
+        max_stack = 1
+    }, ]]
+    implosive_potential = {
+        id = 337139,
+        duration = 8,
+        max_stack = 1
+    },
+    -- Drain Life deals $w1% additional damage and costs $w3% less mana.
+    -- https://wowhead.com/beta/spell=334320
+    inevitable_demise = {
+        id = 334320,
+        duration = 20,
+        type = "Magic",
+        max_stack = 50
+    },
+    -- Talent: Damage done increased by $w1%.
+    -- https://wowhead.com/beta/spell=387552
+    infernal_command = {
+        id = 387552,
         duration = 3600,
         max_stack = 1
     },
+    legion_strike = {
+        id = 30213,
+        duration = 6,
+        max_stack = 1,
+    },
+    -- Talent: Leech increased by $w1%.
+    -- https://wowhead.com/beta/spell=386647
     lifeblood = {
         id = 386647,
         duration = 20,
         max_stack = 1
     },
+    -- Talent: Incapacitated.
+    -- https://wowhead.com/beta/spell=6789
     mortal_coil = {
         id = 6789,
         duration = 3,
+        type = "Magic",
         max_stack = 1
     },
     nether_portal = {
         id = 267218,
         duration = 15,
+        max_stack = 1,
+    },
+    -- Talent: Movement speed reduced by $w1%.
+    -- https://wowhead.com/beta/spell=386649
+    nightmare = {
+        id = 386649,
+        duration = 4,
+        type = "Magic",
         max_stack = 1
     },
-    nether_ward = {
-        id = 212295,
-        duration = 3,
+    -- Dealing damage to all nearby targets every $t1 sec and healing the casting Warlock.
+    -- https://wowhead.com/beta/spell=205179
+    phantom_singularity = {
+        id = 205179,
+        duration = 16,
+        type = "Magic",
         max_stack = 1
     },
-    shadow_rift = {
-        id = 353293,
-        duration = 2,
+    -- TODO: Will need to track based on CLEU events since hidden auras are... hidden.
+    power_siphon = {
+        id = 334581,
+        duration = 20,
+        max_stack = 2
+    },
+    -- Covenant: Suffering $w2 Arcane damage every $t2 sec.
+    -- https://wowhead.com/beta/spell=312321
+    scouring_tithe = {
+        id = 312321,
+        duration = 18,
+        type = "Magic",
         max_stack = 1
     },
-    shadowflame = {
-        id = 384069,
-        duration = 6,
+    -- Disoriented.
+    -- https://wowhead.com/beta/spell=6358
+    seduction = {
+        id = 6358,
+        duration = 30,
+        mechanic = "sleep",
+        type = "Magic",
         max_stack = 1
     },
-    shadowfury = {
-        id = 30283,
-        duration = 3,
+    -- Maximum health increased by $s1%.
+    -- https://wowhead.com/beta/spell=17767
+    shadow_bulwark = {
+        id = 17767,
+        duration = 20,
+        type = "Magic",
         max_stack = 1
     },
-    soulburn = {
-        id = 387626,
+    -- Talent: Demonbolt damage increased by $w1.
+    -- https://wowhead.com/beta/spell=272945
+    shadows_bite = {
+        id = 272945,
+        duration = 8,
+        type = "Magic",
+        max_stack = 1
+    },
+    -- Talent: $s1% of all damage taken is split with the Warlock's summoned demon.    The Warlock is healed for $s2% and your demon is healed for $s3% of all absorption granted by Soul Leech.
+    -- https://wowhead.com/beta/spell=108446
+    soul_link = {
+        id = 108446,
         duration = 3600,
+        type = "Magic",
         max_stack = 1
     },
-    soulstone = {
-        id = 20707,
-        duration = 900,
-        max_stack = 1
-    },
-    subjugate_demon = {
-        id = 1098,
-        duration = 300,
-        max_stack = 1
-    },
-    summon_demonic_tyrant = { -- TODO: Is a totem?
-        id = 265187,
+    -- Talent: After reaching $u stacks, your next Demonbolt deals $387604s2% increased damage or your next Shadow Bolt deals $387604s1% increased damage.
+    -- https://wowhead.com/beta/spell=387603
+    stolen_power = {
+        id = 387603,
         duration = 15,
+        tick_time = 3,
+        max_stack = 100
+    },
+    -- Talent: Increases the damage of Demonbolt by $s2% and Shadow Bolt by $s1%.
+    -- https://wowhead.com/beta/spell=387604
+    stolen_power_final = {
+        id = 387604,
+        duration = 20,
         max_stack = 1
     },
-    summon_vilefiend = { -- TODO: Is a totem.
-        id = 264119,
-        duration = 15,
-        max_stack = 1
-    },
-    tormented_soul = { -- TODO: This isn't a visible aura; instead it sets the count on the Summon Soulkeeper spell.
-        id = 386251,
-        duration = 3600,
+    -- Talent: Damage done increased by $s1%.
+    -- https://wowhead.com/beta/spell=387601
+    the_expendables = {
+        id = 387601,
+        duration = 30,
         max_stack = 10
     },
-    unending_breath = {
-        id = 5697,
-        duration = 600,
+    -- Damage dealt by your demons increased by $w1%.
+    -- https://wowhead.com/beta/spell=339784
+    tyrants_soul = {
+        id = 339784,
+        duration = 15,
         max_stack = 1
     },
-    unending_resolve = {
-        id = 104773,
-        duration = 8,
+    -- Dealing $w1 Shadowflame damage every $t1 sec for $d.
+    -- https://wowhead.com/beta/spell=273526
+    umbral_blaze = {
+        id = 273526,
+        duration = 6,
+        tick_time = 2,
+        type = "Magic",
         max_stack = 1
     },
-    wrathful_minion = {
-        id = 386865,
-        duration = 8,
+    -- Suffering $w1 Shadow damage every $t1 sec.
+    -- https://wowhead.com/beta/spell=386931
+    vile_taint = {
+        id = 386931,
+        duration = 10,
+        tick_time = 2,
+        type = "Magic",
         max_stack = 1
+    },
+
+    dreadstalkers = {
+        duration = 12,
+
+        meta = {
+            up = function ()
+                local exp = dreadstalkers_v[ #dreadstalkers_v ]
+                return exp and exp >= query_time or false
+            end,
+            down = function ( t ) return not t.up end,
+            applied = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and ( exp - 12 ) or 0 end,
+            expires = function () return dreadstalkers_v[ #dreadstalkers_v ] or 0 end,
+            count = function ()
+                local c = 0
+                for i, exp in ipairs( dreadstalkers_v ) do
+                    if exp >= query_time then c = c + 2 end
+                end
+                return c
+            end,
+        }
+    },
+
+    grimoire_felguard = {
+        duration = 17,
+
+        meta = {
+            up = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and exp >= query_time or false end,
+            down = function ( t ) return not t.up end,
+            applied = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and ( exp - 12 ) or 0 end,
+            expires = function () return grim_felguard_v[ #grim_felguard_v ] or 0 end,
+            count = function ()
+                local c = 0
+                for i, exp in ipairs( grim_felguard_v ) do
+                    if exp > query_time then c = c + 1 end
+                end
+                return c
+            end,
+        }
+    },
+
+    vilefiend = {
+        duration = 15,
+
+        meta = {
+            up = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp >= query_time or false end,
+            down = function ( t ) return not t.up end,
+            applied = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and ( exp - 15 ) or 0 end,
+            expires = function () return vilefiend_v[ #vilefiend_v ] or 0 end,
+            count = function ()
+                local c = 0
+                for i, exp in ipairs( vilefiend_v ) do
+                    if exp > query_time then c = c + 1 end
+                end
+                return c
+            end,
+        }
+    },
+
+    wild_imps = {
+        duration = 40,
+
+        meta = {
+            up = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp >= query_time or false end,
+            down = function ( t ) return not t.up end,
+            applied = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and ( exp - 40 ) or 0 end,
+            expires = function () return wild_imps_v[ #wild_imps_v ] or 0 end,
+            count = function ()
+                local c = 0
+                for i, exp in ipairs( wild_imps_v ) do
+                    if exp > query_time then c = c + 1 end
+                end
+                return c
+            end,
+        }
+    },
+
+
+    imp_gang_boss = {
+        duration = 40,
+
+        meta = {
+            up = function () local exp = imp_gang_boss_v[ #imp_gang_boss_v ]; return exp and exp >= query_time or false end,
+            down = function ( t ) return not t.up end,
+            applied = function () local exp = imp_gang_boss_v[ #imp_gang_boss_v ]; return exp and ( exp - 40 ) or 0 end,
+            expires = function () return imp_gang_boss_v[ #imp_gang_boss_v ] or 0 end,
+            count = function ()
+                local c = 0
+                for i, exp in ipairs( imp_gang_boss_v ) do
+                    if exp > query_time then c = c + 1 end
+                end
+                return c
+            end,
+        }
+    },
+
+    other_demon = {
+        duration = 20,
+
+        meta = {
+            up = function () local exp = other_demon_v[ #other_demon_v ]; return exp and exp >= query_time or false end,
+            down = function ( t ) return not t.up end,
+            applied = function () local exp = other_demon_v[ #other_demon_v ]; return exp and ( exp - 15 ) or 0 end,
+            expires = function () return other_demon_v[ #other_demon_v ] or 0 end,
+            count = function ()
+                local c = 0
+                for i, exp in ipairs( other_demon_v ) do
+                    if exp > query_time then c = c + 1 end
+                end
+                return c
+            end,
+        }
     },
 } )
 
 
+local Glyphed = IsSpellKnownOrOverridesKnown
+
+-- Fel Imp          58959
+spec:RegisterPet( "imp",
+    function() return Glyphed( 112866 ) and 58959 or 416 end,
+    "summon_imp",
+    3600 )
+
+-- Voidlord         58960
+spec:RegisterPet( "voidwalker",
+    function() return Glyphed( 112867 ) and 58960 or 1860 end,
+    "summon_voidwalker",
+    3600 )
+
+-- Observer         58964
+spec:RegisterPet( "felhunter",
+    function() return Glyphed( 112869 ) and 58964 or 417 end,
+    "summon_felhunter",
+    3600 )
+
+-- Fel Succubus     120526
+-- Shadow Succubus  120527
+-- Shivarra         58963
+spec:RegisterPet( "sayaad",
+    function()
+        if Glyphed( 240263 ) then return 120526
+        elseif Glyphed( 240266 ) then return 120527
+        elseif Glyphed( 112868 ) then return 58963
+        elseif Glyphed( 365349 ) then return 184600
+        end
+        return 1863
+    end,
+    "summon_sayaad",
+    3600,
+    "incubus", "succubus" )
+
+-- Wrathguard       58965
+spec:RegisterPet( "felguard",
+    function() return Glyphed( 112870 ) and 58965 or 17252 end,
+    "summon_felguard",
+    3600 )
+
+spec:RegisterPet( "doomguard",
+    11859,
+    "ritual_of_doom",
+    300 )
+
+
+--[[ Demonic Tyrant
+spec:RegisterPet( "demonic_tyrant",
+    135002,
+    "summon_demonic_tyrant",
+    15 ) ]]
+
+spec:RegisterTotem( "demonic_tyrant", 135002 )
+spec:RegisterTotem( "vilefiend", 1616211 )
+spec:RegisterTotem( "grimoire_felguard", 136216 )
+spec:RegisterTotem( "dreadstalker", 1378282 )
+
+
+spec:RegisterStateExpr( "extra_shards", function () return 0 end )
+
+spec:RegisterStateExpr( "last_cast_imps", function ()
+    local count = 0
+
+    for i, imp in ipairs( wild_imps_v ) do
+        if imp - query_time <= 2 * haste then count = count + 1 end
+    end
+
+    return count
+end )
+
+spec:RegisterStateExpr( "two_cast_imps", function ()
+    local count = 0
+
+    for i, imp in ipairs( wild_imps_v ) do
+        if imp - query_time <= 4 * haste then count = count + 1 end
+    end
+
+    return count
+end )
+
+
+
 -- Abilities
 spec:RegisterAbilities( {
-    amplify_curse = {
-        id = 328774,
+    axe_toss = {
+        id = 119914,
+        known = function () return IsSpellKnownOrOverridesKnown( 119914 ) end,
         cast = 0,
         cooldown = 30,
-        gcd = "off",
-
-        talent = "amplify_curse",
-        startsCombat = false,
-        texture = 136132,
-
-        handler = function ()
-        end,
-    },
-
-
-    bane_of_fragility = {
-        id = 199954,
-        cast = 0,
-        cooldown = 45,
         gcd = "spell",
 
-        spend = 0.01,
-        spendType = "mana",
+        startsCombat = true,
 
-        pvptalent = "bane_of_fragility",
-        startsCombat = false,
-        texture = 132097,
+        toggle = "interrupts",
+        interrupt = true,
 
+        debuff = "casting",
+        readyTime = state.timeToInterrupt,
+
+        usable = function () return pet.exists, "requires felguard" end,
         handler = function ()
+            interrupt()
+            applyDebuff( "target", "axe_toss", 4 )
         end,
     },
 
-
-    banish = {
-        id = 710,
-        cast = 1.5,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "banish",
-        startsCombat = false,
-        texture = 136135,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Tear open a portal to the nether above the target location, from which several Bilescourge will pour out of and crash into the ground over 6 sec, dealing 1,179 Shadow damage to all enemies within 8 yards.
     bilescourge_bombers = {
         id = 267211,
         cast = 0,
         cooldown = 30,
         gcd = "spell",
+        school = "physical",
 
         spend = 2,
         spendType = "soul_shards",
 
         talent = "bilescourge_bombers",
-        startsCombat = false,
-        texture = 132182,
-
-        handler = function ()
-        end,
+        startsCombat = true,
     },
 
-
-    bonds_of_fel = {
-        id = 353753,
-        cast = 1.5,
-        cooldown = 30,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        pvptalent = "bonds_of_fel",
-        startsCombat = false,
-        texture = 1117883,
-
-        handler = function ()
-        end,
-    },
-
-
-    burning_rush = {
-        id = 111400,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        talent = "burning_rush",
-        startsCombat = false,
-        texture = 538043,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Summons 2 ferocious Dreadstalkers to attack the target for 12 sec.
     call_dreadstalkers = {
         id = 104316,
-        cast = 2,
+        cast = function () if pvptalent.master_summoner.enabled or buff.demonic_calling.up then return 0 end
+            return 1.5 * haste
+        end,
         cooldown = 20,
         gcd = "spell",
+        school = "shadow",
 
-        spend = 2,
+        spend = function () return buff.demonic_calling.up and 0 or 2 end,
         spendType = "soul_shards",
 
         talent = "call_dreadstalkers",
-        startsCombat = false,
-        texture = 1378282,
+        startsCombat = true,
 
         handler = function ()
-        end,
-    },
+            summon_demon( "dreadstalkers", 12, talent.ripped_through_the_portal.rank > 1 and 3 or 2 )
+            applyBuff( "dreadstalkers", 12, talent.ripped_through_the_portal.rank > 1 and 3 or 2 )
+            summonPet( "dreadstalker", 12 )
+            removeStack( "demonic_calling" )
 
-
-    call_fel_lord = {
-        id = 212459,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-
-        spend = 2,
-        spendType = "soul_shards",
-
-        pvptalent = "call_fel_lord",
-        startsCombat = false,
-        texture = 1113433,
-
-        toggle = "cooldowns",
-
-        handler = function ()
+            if talent.from_the_shadows.enabled then applyDebuff( "target", "from_the_shadows" ) end
         end,
     },
 
@@ -500,791 +1426,437 @@ spec:RegisterAbilities( {
     call_felhunter = {
         id = 212619,
         cast = 0,
-        cooldown = 30,
-        gcd = "off",
+        cooldown = 24,
+        gcd = "spell",
 
         spend = 0.01,
         spendType = "mana",
 
+        startsCombat = true,
         pvptalent = "call_felhunter",
-        startsCombat = true,
-        texture = 136174,
+        toggle = "interrupts",
+        interrupt = true,
+
+        debuff = "casting",
+        readyTime = state.timeToInterrupt,
 
         handler = function ()
+            interrupt()
         end,
     },
 
-
-    call_observer = {
-        id = 201996,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        pvptalent = "call_observer",
-        startsCombat = false,
-        texture = 538445,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    casting_circle = {
-        id = 221703,
-        cast = 0.5,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        pvptalent = "casting_circle",
-        startsCombat = false,
-        texture = 1392953,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    corruption = {
-        id = 172,
-        cast = 2,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136118,
-
-        handler = function ()
-        end,
-    },
-
-
-    create_healthstone = {
-        id = 6201,
-        cast = 3,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 538745,
-
-        handler = function ()
-        end,
-    },
-
-
-    create_soulwell = {
-        id = 29893,
-        cast = 3,
-        cooldown = 120,
-        gcd = "spell",
-
-        spend = 0.05,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136194,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    curse_of_exhaustion = {
-        id = 334275,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 136162,
-
-        handler = function ()
-        end,
-    },
-
-
-    dark_pact = {
-        id = 108416,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-
-        talent = "dark_pact",
-        startsCombat = false,
-        texture = 136146,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Send the fiery soul of a fallen demon at the enemy, causing 2,201 Shadowflame damage. Generates 2 Soul Shards.
     demonbolt = {
         id = 264178,
-        cast = 4.5,
+        cast = function () return ( buff.demonic_core.up and 0 or 4.5 ) * haste end,
         cooldown = 0,
         gcd = "spell",
+        school = "shadowflame",
 
         spend = 0.02,
         spendType = "mana",
 
         talent = "demonbolt",
-        startsCombat = false,
-        texture = 2032588,
+        startsCombat = true,
 
         handler = function ()
+            removeBuff( "fel_covenant" )
+            removeBuff( "stolen_power" )
+            removeStack( "demonic_core" )
+            removeStack( "power_siphon" )
+            removeStack( "decimating_bolt" )
+            gain( 2, "soul_shards" )
         end,
     },
 
-
-    demonic_circle = {
-        id = 48018,
-        cast = 0.5,
-        cooldown = 10,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 237559,
-
-        handler = function ()
-        end,
-    },
-
-
-    demonic_circle_teleport = {
-        id = 48020,
-        cast = 0,
-        cooldown = 30,
-        gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 237560,
-
-        handler = function ()
-        end,
-    },
-
-
-    demonic_gateway = {
-        id = 111771,
-        cast = 2,
-        cooldown = 10,
-        gcd = "spell",
-
-        spend = 0.2,
-        spendType = "mana",
-
-        talent = "demonic_gateway",
-        startsCombat = false,
-        texture = 607512,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Infuse your Felguard with demonic strength and command it to charge your target and unleash a Felstorm that will deal 400% increased damage.
     demonic_strength = {
         id = 267171,
         cast = 0,
         cooldown = 60,
         gcd = "spell",
+        school = "shadow",
 
         talent = "demonic_strength",
-        startsCombat = false,
-        texture = 236292,
-
-        toggle = "cooldowns",
+        startsCombat = true,
+        nobuff = "felstorm",
 
         handler = function ()
+            applyBuff( "demonic_strength" )
         end,
     },
 
 
-    doom = {
-        id = 603,
+    devour_magic = {
+        id = 19505,
         cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        talent = "doom",
-        startsCombat = false,
-        texture = 136122,
-
-        handler = function ()
-        end,
-    },
-
-
-    drain_life = {
-        id = 234153,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
+        cooldown = 15,
+        gcd = "off",
 
         spend = 0,
         spendType = "mana",
 
         startsCombat = true,
-        texture = 136169,
+        toggle = "interrupts",
 
-        handler = function ()
+        usable = function ()
+            if buff.dispellable_magic.down then return false, "no dispellable magic aura" end
+            return true
+        end,
+
+        handler = function()
+            removeBuff( "dispellable_magic" )
         end,
     },
 
-
-    eye_of_kilrogg = {
-        id = 126,
-        cast = 2,
+    -- Talent: Inflicts impending doom upon the target, causing 5,248 Shadow damage after 15.2 sec. Doom damage generates 1 Soul Shard.
+    doom = {
+        id = 603,
+        cast = 0,
         cooldown = 0,
         gcd = "spell",
+        school = "shadow",
 
-        spend = 0.03,
+        spend = 0.01,
         spendType = "mana",
 
-        startsCombat = false,
-        texture = 136155,
-
-        handler = function ()
-        end,
-    },
-
-
-    fear = {
-        id = 5782,
-        cast = 1.7,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.05,
-        spendType = "mana",
-
+        talent = "doom",
         startsCombat = true,
-        texture = 136183,
+        cycle = "doom",
+        min_ttd = function () return 3 + debuff.doom.duration end,
 
+        -- readyTime = function () return IsCycling() and 0 or debuff.doom.remains end,
+        -- usable = function () return IsCycling() or ( target.time_to_die < 3600 and target.time_to_die > debuff.doom.duration ) end,
         handler = function ()
+            applyDebuff( "target", "doom" )
         end,
     },
 
-
-    fel_domination = {
-        id = 333889,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
-
-        talent = "fel_domination",
-        startsCombat = false,
-        texture = 237564,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    fel_obelisk = {
-        id = 353601,
-        cast = 0,
-        cooldown = 45,
-        gcd = "spell",
-
-        pvptalent = "fel_obelisk",
-        startsCombat = false,
-        texture = 1718002,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Summons a Felguard who attacks the target for 17 sec that deals 45% increased damage. This Felguard will stun their target when summoned.
     grimoire_felguard = {
         id = 111898,
         cast = 0,
         cooldown = 120,
         gcd = "spell",
+        school = "shadow",
 
         spend = 1,
         spendType = "soul_shards",
 
         talent = "grimoire_felguard",
-        startsCombat = false,
-        texture = 136216,
+        startsCombat = true,
 
         toggle = "cooldowns",
 
         handler = function ()
+            summon_demon( "grimoire_felguard", 17 )
+            applyBuff( "grimoire_felguard" )
+            summonPet( "grimoire_felguard" )
         end,
     },
 
-
+    -- Talent: Your Felguard hurls his axe towards the target location, erupting when it lands and dealing 363 Shadowflame damage every 1 sec for 8 sec to nearby enemies. While unarmed, your Felguard's basic attacks deal damage to all nearby enemies and attacks 50% faster.
     guillotine = {
         id = 386833,
         cast = 0,
         cooldown = 45,
         gcd = "spell",
+        school = "physical",
 
         talent = "guillotine",
-        startsCombat = false,
-        texture = 1109118,
-
-        handler = function ()
-        end,
+        startsCombat = true,
     },
 
-
+    -- Calls down a demonic meteor full of Wild Imps which burst forth to attack the target. Deals up to 2,188 Shadowflame damage on impact to all enemies within 8 yds of the target and summons up to 3 Wild Imps, based on Soul Shards consumed.
     hand_of_guldan = {
         id = 105174,
         cast = 1.5,
         cooldown = 0,
         gcd = "spell",
+        school = "shadowflame",
 
-        spend = 3,
+        spend = 1,
         spendType = "soul_shards",
 
         startsCombat = true,
-        texture = 535592,
 
         handler = function ()
+            extra_shards = min( 2, soul_shards.current )
+            if Hekili.ActiveDebug then Hekili:Debug( "Extra Shards: %d", extra_shards ) end
+            spend( extra_shards, "soul_shards" )
+            insert( guldan_v, query_time + 0.6 )
+            if extra_shards > 0 then insert( guldan_v, query_time + 0.8 ) end
+            if extra_shards > 1 then insert( guldan_v, query_time + 1 ) end
+
+            if talent.dread_calling.enabled then
+                addStack( "dread_calling", nil, 1 + extra_shards )
+            end
         end,
     },
 
-
-    health_funnel = {
-        id = 755,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 136168,
-
-        handler = function ()
-        end,
-    },
-
-
-    howl_of_terror = {
-        id = 5484,
-        cast = 0,
-        cooldown = 40,
-        gcd = "spell",
-
-        talent = "howl_of_terror",
-        startsCombat = false,
-        texture = 607852,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Demonic forces suck all of your Wild Imps toward the target, and then cause them to violently explode, dealing 1,410 Shadowflame damage to all enemies within 8 yards.
     implosion = {
         id = 196277,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
+        school = "shadowflame",
 
         spend = 0.02,
         spendType = "mana",
 
         talent = "implosion",
-        startsCombat = false,
-        texture = 2065588,
+        startsCombat = true,
 
+        usable = function ()
+            if buff.wild_imps.stack < 3 and azerite.explosive_potential.enabled then return false, "too few imps for explosive_potential"
+            elseif buff.wild_imps.stack < 1 then return false, "no imps available" end
+            return true
+        end,
         handler = function ()
+            if azerite.explosive_potential.enabled and buff.wild_imps.stack >= 3 then applyBuff( "explosive_potential" ) end
+            if legendary.implosive_potential.enabled then
+                if buff.implosive_potential.up then
+                    stat.haste = stat.haste - 0.01 * buff.implosive_potential.v1
+                    removeBuff( "implosive_potential" )
+                end
+                if buff.implosive_potential.down then stat.haste = stat.haste + 0.05 * buff.wild_imps.stack end
+                applyBuff( "implosive_potential", 12 )
+                stat.haste = stat.haste + ( active_enemies > 2 and 0.05 or 0.01 ) * buff.wild_imps.stack
+                buff.implosive_potential.v1 = ( active_enemies > 2 and 5 or 1 ) * buff.wild_imps.stack
+            end
+            consume_demons( "wild_imps", "all" )
+            if buff.imp_gang_boss.up then
+                for i = 1, buff.imp_gang_boss.stack do
+                    insert( guldan_v, query_time + 0.1 )
+                end
+                consume_demons( "imp_gang_boss", "all" )
+            end
         end,
     },
 
-
-    inquisitors_gaze = {
-        id = 386344,
-        cast = 0,
-        cooldown = 10,
-        gcd = "spell",
-
-        talent = "inquisitors_gaze",
-        startsCombat = false,
-        texture = 1387707,
-
-        handler = function ()
-        end,
-    },
-
-
-    mortal_coil = {
-        id = 6789,
-        cast = 0,
-        cooldown = 45,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "mortal_coil",
-        startsCombat = false,
-        texture = 607853,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Tear open a portal to the Twisting Nether for 15 sec. Every time you spend Soul Shards, you will also command demons from the Nether to come out and fight for you.
     nether_portal = {
         id = 267217,
         cast = 1.5,
         cooldown = 180,
         gcd = "spell",
+        school = "shadow",
 
         spend = 1,
         spendType = "soul_shards",
 
         talent = "nether_portal",
         startsCombat = false,
-        texture = 2065615,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "nether_portal" )
         end,
     },
 
-
-    nether_ward = {
-        id = 212295,
-        cast = 0,
-        cooldown = 45,
-        gcd = "off",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        pvptalent = "nether_ward",
-        startsCombat = false,
-        texture = 135796,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Instantly sacrifice up to 2 Wild Imps, generating 2 charges of Demonic Core that cause Demonbolt to deal 30% additional damage.
     power_siphon = {
         id = 264130,
         cast = 0,
         cooldown = 30,
         gcd = "spell",
+        school = "shadow",
 
         talent = "power_siphon",
         startsCombat = false,
-        texture = 236290,
+
+        readyTime = function ()
+            if buff.wild_imps.stack >= 2 then return 0 end
+
+            local imp_deficit = 2 - buff.wild_imps.stack
+
+            for i, imp in ipairs( guldan_v ) do
+                if imp > query_time then
+                    imp_deficit = imp_deficit - 1
+                    if imp_deficit == 0 then return imp - query_time end
+                end
+            end
+
+            return 3600
+        end,
 
         handler = function ()
+            local num = min( 2, buff.wild_imps.count )
+            consume_demons( "wild_imps", num )
+
+            addStack( "demonic_core", 20, num )
+            addStack( "power_siphon", 20, num )
         end,
     },
 
-
-    ritual_of_doom = {
-        id = 342601,
-        cast = 0,
-        cooldown = 3600,
-        gcd = "spell",
-
-        spend = 1,
-        spendType = "soul_shards",
-
-        startsCombat = false,
-        texture = 538538,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    ritual_of_summoning = {
-        id = 698,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-
-        spend = 0,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136223,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Sends a shadowy bolt at the enemy, causing 2,105 Shadow damage. Generates 1 Soul Shard.
     shadow_bolt = {
         id = 686,
-        cast = 2,
+        cast = function() return 2 * haste end,
         cooldown = 0,
         gcd = "spell",
+        school = "shadow",
 
-        spend = 0.02,
+        spend = 0.015,
         spendType = "mana",
 
         startsCombat = true,
-        texture = 136197,
 
         handler = function ()
+            removeBuff( "stolen_power" )
+            gain( 1, "soul_shards" )
+
+            if legendary.balespiders_burning_core.enabled then
+                addStack( "balespiders_burning_core", nil, 1 )
+            end
+
+            if talent.fel_covenant.enabled then
+                addStack( "fel_covenant", nil, 1 )
+            end
         end,
     },
 
-
-    shadow_bulwark = {
-        id = 119907,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        startsCombat = true,
-        texture = 136121,
-
-        handler = function ()
-        end,
-    },
-
-
-    shadow_rift = {
-        id = 353294,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        pvptalent = "shadow_rift",
-        startsCombat = false,
-        texture = 4067372,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    shadowflame = {
-        id = 384069,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
-
-        talent = "shadowflame",
-        startsCombat = false,
-        texture = 236302,
-
-        handler = function ()
-        end,
-    },
-
-
-    shadowfury = {
-        id = 30283,
-        cast = 1.5,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        talent = "shadowfury",
-        startsCombat = false,
-        texture = 607865,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Command your Felguard to strike into the soul of its enemy, dealing 2,814 Shadow damage. Generates 1 Soul Shard.
     soul_strike = {
         id = 264057,
         cast = 0,
         cooldown = 10,
         gcd = "spell",
+        school = "physical",
 
         talent = "soul_strike",
-        startsCombat = false,
-        texture = 1452864,
-
-        handler = function ()
-        end,
-    },
-
-
-    soulburn = {
-        id = 385899,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        spend = 1,
-        spendType = "soul_shards",
-
-        talent = "soulburn",
-        startsCombat = false,
-        texture = 463286,
-
-        handler = function ()
-        end,
-    },
-
-
-    soulstone = {
-        id = 20707,
-        cast = 3,
-        cooldown = 600,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136210,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    subjugate_demon = {
-        id = 1098,
-        cast = 3,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
         startsCombat = true,
-        texture = 136154,
 
+        usable = function () return pet.felguard.up and pet.alive, "requires living felguard" end,
         handler = function ()
+            gain( 1, "soul_shards" )
         end,
     },
 
-
+    -- Talent: Summon a Demonic Tyrant to increase the duration of all of your current lesser demons by 15 sec, and increase the damage of all of your other demons by 15%, while damaging your target. Generates 5 Soul Shards.
     summon_demonic_tyrant = {
         id = 265187,
         cast = 2,
         cooldown = 90,
         gcd = "spell",
+        school = "shadow",
 
         spend = 0.02,
         spendType = "mana",
 
         talent = "summon_demonic_tyrant",
         startsCombat = false,
-        texture = 2065628,
 
         toggle = "cooldowns",
 
+        readyTime = function ()
+            if settings.dcon_imps == 0 or buff.wild_imps.stack > settings.dcon_imps then return 0 end
+
+            local missing = settings.dcon_imps - buff.wild_imps.stack
+            if missing <= 0 then return 0 end
+            if missing > 3 or missing > #guldan_v then return 3600 end
+
+            -- Still a little risky, because imps can despawn, too.
+            for i, time in ipairs( guldan_v ) do
+                if time > query_time then
+                    missing = missing - 1
+                    if missing <= 0 then return time - query_time - action.summon_demonic_tyrant.cast end
+                end
+            end
+
+            return 3600
+        end,
+
         handler = function ()
+            summonPet( "demonic_tyrant", 15 )
+            summon_demon( "demonic_tyrant", 15 )
+            applyBuff( "demonic_power", 15 )
+
+            extend_demons()
+
+            if talent.soulbound_tyrant.enabled then
+                gain( ceil( 2.5 * talent.soulbound_tyrant.rank ), "soul_shards" )
+            end
         end,
     },
 
 
+    summon_felguard = {
+        id = 30146,
+        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function () return buff.fel_domination.up and 0 or 1 end,
+        spendType = "soul_shards",
+
+        startsCombat = false,
+        essential = true,
+
+        bind = "summon_pet",
+        nomounted = true,
+
+        usable = function () return not pet.exists, "cannot have an existing pet" end,
+        handler = function ()
+            removeBuff( "fel_domination" )
+            summonPet( "felguard", 3600 )
+        end,
+
+        copy = { "summon_pet", 112870 }
+    },
+
+    -- Talent: Summon a Vilefiend to fight for you for the next 15 sec.
     summon_vilefiend = {
         id = 264119,
         cast = 2,
         cooldown = 45,
         gcd = "spell",
+        school = "fire",
 
         spend = 1,
         spendType = "soul_shards",
 
         talent = "summon_vilefiend",
-        startsCombat = false,
-        texture = 1616211,
+        startsCombat = true,
 
         handler = function ()
+            summon_demon( "vilefiend", 15 )
+            summonPet( "vilefiend", 15 )
         end,
-    },
-
-
-    unending_breath = {
-        id = 5697,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136148,
-
-        handler = function ()
-        end,
-    },
-
-
-    unending_resolve = {
-        id = 104773,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136150,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
+    }
 } )
 
-spec:RegisterPriority( "Demonology", 20220918,
--- Notes
-[[
 
-]],
--- Priority
-[[
+spec:RegisterOptions( {
+    enabled = true,
 
-]] )
+    aoe = 3,
+
+    nameplates = false,
+    nameplateRange = 8,
+
+    cycle = true,
+
+    damage = true,
+    damageExpiration = 6,
+
+    potion = "spectral_intellect",
+
+    package = "Demonology",
+} )
+
+spec:RegisterSetting( "dcon_imps", 0, {
+    type = "range",
+    name = "Wild Imps Required",
+    desc = "If set above zero, Summon Demonic Tyrant will not be recommended unless the specified number of imps are summoned.\n\n" ..
+        "This can backfire horribly, letting your Felguard or Vilefiend expire when you could've extended them with Summon Demonic Tyrant.",
+    min = 0,
+    max = 10,
+    step = 1,
+    width= "full"
+} )
+
+
+spec:RegisterPack( "Demonology", 20221106, [[Hekili:nV1EVnUns8plblGx7nz1zjhVpkIZFCDlW1fhApCoa9)SmJeTJqKfD1J8OWqF2VziLKjPiLKtA6vG2eVIuZloZVz4moRCxDZQLHKC6QFXBQNNR70p5mDQ3m3lxTm)590vl3tcUNSf(qczh8ZVr3XsyXSTpJl9CmJeIKiJvKgalVmA3pUA5TfrX5)CYQBnrBxV5W(3tdGh)PpTA5DrHHuXEPzbRwUAzCuwEgsv2EAcnf(0VWLtAc52yA4Q)PyRPr7ZJyj1BRCnjlRyhnRCDwojnpkzl8O8Y1ZHhChjnewGSjh3y4TLR3Nsdiz5RwsceujHMFhn1FplnNeVkhKoKN1RUnnAhlkL6VHgVTaOMS4aBEM8MbXaSs(peft3ert037LAkdOjGyfrqd3MnokcItX(J0nGeh7hMsjHGggFpnndj38xk5UJKe6Z24VTioKKGK6tAKQrHUJeYE0)wwCUUTpj(5Y14bEi8lWxPCDotXMVHbwCqeGpfLMbNhHSTWJrJVt56)fRib3fBt56FJKINlSa8KkfEHImAO4m0RMEoY6h41f7ZFE56R4mDeqyglge2eN2wlq75B5mGn0Ch51Cqv9bkAe(Sv75de4xWJDabJBm8ZJ2b(zzCQAuA4hbGpJFa7bGMj5oadrReSJlnBGbr4lYEtgo1v8NYXq1uG0(z0C481q4IbviH(ei(I3lqiXUZ7lA40j5N7keQoU50j78oc26mcRtQ69Yd1ahbWH96Y1nmG7TxZbC5wICiILgfuThXjziDdPaCcQpeRFfYtu)CwM2rVkgvi9bag2FhzBuGj4jjbNbWaG3YX3TwSXpfxa)QjmYOW6Ks3rIsY8Ppbi55arrk4lYrOAAnDE0p7NkBC5bRQ8VkCvIRrj(v5lmCq1pdT4yiZbmw2p75KGkTYgAj33r8p8XCzImAvejpnk5EAEw3inDOXzafcYr3JHXq2wH0(Lo9DbNl)WikpoaaB)q5A41C2rE6ixI2TpMLHFeO2x7js4QUJeozLO5K1D6lk2UsB4yYNuS6EwELk7QJQoijxbAgPIDGuXjSpOP7IWYyajuY(SfYXgdctcpjL7aaonMLYQNfF1XvzSQ3XE2JqUXQG960AhouTRSCwmnrSj)nrj86lkxpr26HlLfT)UkBODK5X88YWpJPBbyCs6ZopgfVjLgMbeyBumwQswXEy3mGKCujqRCQiMqSaSAkOrBtXsBEKKgZcUpdWUacKCCNt46Qv3fWU)v(MqkoEaMmTm)ZKmr2nKUECEmrg)wSxi4GMSn)oUbRNQ7QKhePUxLYD6XssuRkS515RjFOXx6OiElKLnlaYYSfDT2DBvErxDOWH6nEIzz4QHxVPPDTdSEMKjYOenUBBOhyd)ipk4d)L6VoPxD2o(UjCLY1NZfExUIujgze4L2efqd9rx6m9igU3bOKH(qUGS6kzVEr56pDC9tXJCULSlUDNEroz1SP9uHPN9egTs89LUlR0ZED16KYqfQTk37x8SNlqgszHIHQ9T28SNlW4DsQoTvUvsZjTX7SOKaW6Tw80b3Ba2ySDA3B8)WGefSeWy9nyrXL8IstPX0hagwU(DIReYTzaFVLcxJe2SW2bBpbe1u6(ysaT62L3t(dc5(m0HdkORC9Jr53bBSC9DrBVdV1pNBPW)ixIE4BMhfCVY9ktPqymOCGEWniHm0FMTtXo4jBlRyUijOFqrAgvXKAVEo0UzhJVnNbNHPNcN7cp7yUQXdQQio03mPAO6SkVwP3qVauDTNSWqkt5gwOwcKNokVLievhVFg8Q(Mm4zvVgiX4dFg(a)C5IY1jm4)POze7OrgbZ3lAcHTimejCwTv3shge27okPycx3SJMBMHgB1tV9dPXR6ARv9BaUXo4SUS52DgGtVUCUh4aKXz6G(nqwCjeU9X9unhJFdWlyfa2WYMSGWNX0Gxi(n8t(7bav8EmMYs2s592Iaz64ngfrcVaRhe2dqP7izkiq7XsbIYbNSB(1V9R)q56)7pDZpT8gUsTpLfJTslKcx1H3rmGO7izGL9zTcy6jBnx)TDxfLcYvnalrgxPirbLR)raHSU)Dv6Fvl9ksYJG)5nvGX1EycdtaKgNkIz4ruNu1xwQWO2tsbFiaKpPUPnJR32ZO2(DbXli3uR7US3cx8MQv2EDoWz65IBVlvR(3ks5DQU2yYVOi6dnWtJ3gvu0nmuF6Pz1Nc30VCP8bOaasQK4oQf1MPVNRkDkIQPsMTXwE6mJ4lhLfCFV40vpZkW(LdXxBP5ADzxnWSUSgTeCQbO8OYlqeQ3JWm3tEUkdNWJdsHSdt(9y)jD6mczE9zE1bAJ5hsd16Eqdnj1y()nNJykltt4jVewuhPYsDOprdkYPhli58MTPA313j)itplSAbTdRmTHKuBe)UK9xrhWZNdIbzKaxappd7FgkM6jKFdfZ(LXE9mAKIWIuckO8dLp3gGxuaOObeM07lNQe5jpJkLiVlv6KE1TXqVN7PqY2u1DdVmoAq2UBjT7cF17UNQZcL(WhL87frzr5S0m)TK)OfqWakFkt66AiSjllteOu572Ga5GZrR(C0gYODmCZC8Sxit1Up4P3e(oVz65di3WX9O0eRM1f44hBPVErichGME0ByuA9RedAAfCgJZtqEEa6fVuZIQ94Q0WbXZCYDbGSm)A6Pg91MllZGlqjrrd(JAC1Zix9EfC1RBFYHcf1SS8CzAvDwNnNFFrk1pKSJSLke2khadp3GRqxhpiCU5tithb9CW7zJYEDrzpHUWN)Joqg24wA69GlFxaz3gZyH(BkWBG0gcRExWPdLVtDyx5nHYiOb7An7AqcFaegCt8VMit)QlyiFKKMWJhxEd2Hg4YaWDARQ(991UvVhRLbGAtXi7mg6wqkYz7i8ofha533sZCk)()oc78J3pGfrNamJVCnvCupDEVOwO3B5WdwES7ttAi6mle1RBI2A5kIw(DdQBBNXttXDFluCBwZxSI)ZCDgP1NRt4uUM)nbcwgZjZ2ef3mxUmNMK0NV4FCmTC53nTUEc5YV)U3vZe1DwJPCbIpSOfUZfS9laW)l4i9lC9(ZIqZViAZIQexQnXPoZ1azuZqW1yGz7stcDK9sLcC18rJXS)hoymZ)IPtmtpP8)TP4zVisQQE6PRv1YoQE48EQC48oQA4Ax0)Ss4arQ(RIH8ZK)Qxi)CvXxTyyvH)uNeMvMyXfykEIyVTJwjNCYvvkARgFjsPN8vqYA87(3jM76cX3vGfUdwbAgLepQ64GzUY7dBhI8vz(K5lsLR6OEejAk(cdGVKfd0vv9VCe(MxpmIAXqk2mVLrY7(yFYrXqyGQ7LX1UQc7r)DfrwpsBKvlpav0(sBvURxn)Wb(Qg)McmrncANYWVrPz8zJFzdx9WHHmy1jJSCcD9xNC4W4o04JiBxnRsdnR)UEtu0sdZphvu9bNAvWCNoYqN(5Vc)5TgDFlNiLER09r(jcjDTNx)C7m7SBSnL2B6hN)H3yxHjwbq0dFoFS7h6jBYKrM6J91l(0ObFqpxjEwFU26aBZMkVD9rx3cg8lg2T6HR(R4QipQDotnv)cLDATIaOGGosxlStMgb9va5HkH(B34JvGYarc1wPXipsV1Bx5nQ)wPzh01e70zXIPdHf2I6qGTX9KH6JZg1tIr14k18sgGnX0yWr3FgZODO(RxVy2OXwMv7HdwpaMCk03aKDX(rdON3xZRyHpG0bZoxBykdTUJp2Ws4O4VXtfvbN54yx4zz6RrHOQ9gnVZUkVQJSFgZy4oYYaZUAwRANQXyTmRRrsyVxAnTJ3uUP51ouY3eH7kxVxhDhBXyETxtrcwZO)64SEnewCDBa)()0e)goiZm7EqZhnU7j(D4Wqq(gpE(hpYXjFqizwNT3KZR2qht1BI69455nvMRK4UEMYJ2nI5OZ6pr7BeN7NXwpPAnhUZ)8id5Kf3IWsrD4cVdCEjI6IWVYrH7bFmatmZr8h5fYAOCQ7IWFTJ9ahybsQ4yOi0JdLdiBhRIgRgNOwjwTDdjRxQAUn9UQEDw6oWixHjiWmw4oLR7q40R4V(WgtGJGkGUQi3gwV1DbmSh9layylMVDMXcvm82TbhS8MO95V6)cbnzq64AiD)3l4OZS994RxUypxVc)BFvhrg(lh0PMuKPd2TSfhNSJ6cWBFCCoTwQzgoTwPzWnYCQUdElm0E2cPb)v1PW(VgtdfL44f40SQBwOOlCgNCXivdTm)ho99KPV3RI(M7vx7P4uFh7UG3BwsUnS8Q0oY62uUtJ4zMTIVe65PqpTrcl7Ui1NYfkGekXj6L7n3mfmbc2jD(Sv6yQtjVaXPNgRzVmwlYJ5EX0HFYQLKciLAQ4VpF(tWjRU6)b]] )
