@@ -243,7 +243,10 @@ local displayTemplate = {
 
         size = 240,
         brightness = 100,
-        speed = 0.4
+        speed = 0.4,
+
+        fixedSize = false,
+        fixedBrightness = false
     },
 
     captions = {
@@ -7970,7 +7973,7 @@ do
                 local a = abilities[ token ] or {}
 
                 -- a.key = token
-                a.desc = GetSpellDescription( spellID )
+                a.desc = GetSpellDescription( spellID ):gsub( "\r", " " ):gsub( "\n", " " ):gsub( "%s%s+", " " )
                 a.id = spellID
                 a.spend = cost
                 a.spendType = resource
