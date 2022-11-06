@@ -874,6 +874,13 @@ spec:RegisterStateTable( "stealthed", setmetatable( {}, {
 } ) )
 
 
+spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, unit, resource )
+    if resource == "COMBO_POINTS" then
+        Hekili:ForceUpdate( event, true )
+    end
+end )
+
+
 -- Legendary from Legion, shows up in APL still.
 spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
 spec:RegisterAura( "master_assassins_initiative", {
@@ -1055,7 +1062,7 @@ spec:RegisterAbilities( {
         usable = function () return stealthed.all or buff.audacity.up or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
 
         cp_gain = function ()
-            return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 3 or 2 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) )
+            return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) )
         end,
 
         handler = function ()
@@ -1195,7 +1202,7 @@ spec:RegisterAbilities( {
 
         nodebuff = "cheap_shot",
 
-        cp_gain = function () return buff.shadow_blades.up and 2 or 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
 
         handler = function ()
             applyDebuff( "target", "cheap_shot", 4 )
@@ -1495,7 +1502,7 @@ spec:RegisterAbilities( {
         talent = "ghostly_strike",
         startsCombat = true,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
 
         handler = function ()
             applyDebuff( "target", "ghostly_strike" )
@@ -1517,7 +1524,7 @@ spec:RegisterAbilities( {
         talent = "gouge",
         startsCombat = true,
 
-        cp_gain = function () return ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
 
         handler = function ()
             applyDebuff( "target", "gouge" )
@@ -1689,7 +1696,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( action.pistol_shot.cp_gain, "combo_points" )
-
             removeStack( "opportunity" )
             removeBuff( "deadshot" )
             removeBuff( "concealed_blunderbuss" ) -- Generating 2 extra combo points is purely a guess.
@@ -1767,7 +1773,7 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        cp_gain = function() return debuff.dreadblades.up and combo_points.max or 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
+        cp_gain = function() return debuff.dreadblades.up and combo_points.max or ( 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) ) end,
 
         handler = function ()
             applyBuff( "sepsis_buff" )
@@ -1876,7 +1882,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136189,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 2 or 1 ) ) end,
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) ) end,
 
         -- 20220604 Outlaw priority spreads bleeds from the trinket.
         cycle = function ()
