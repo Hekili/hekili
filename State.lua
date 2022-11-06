@@ -1318,8 +1318,6 @@ do
                     ( not v.swing     or state.swings[ v.swing .. "_speed" ] and state.swings[ v.swing .. "_speed" ] > 0 ) and
                     ( not v.channel   or state.buff.casting.up and state.buff.casting.v3 == 1 and state.buff.casting.v1 == class.abilities[ v.channel ].id ) then
 
-                    local r = state[ v.resource ]
-
                     local l = v.last()
                     local i = type( v.interval ) == "number" and v.interval or ( type( v.interval ) == "function" and v.interval( now, r.actual ) or ( type( v.interval ) == "string" and state[ v.interval ] or 0 ) )
                     -- local i = roundDown( type( v.interval ) == "number" and v.interval or ( type( v.interval ) == "function" and v.interval( now, r.actual ) or ( type( v.interval ) == "string" and state[ v.interval ] or 0 ) ), 2 )
@@ -1340,10 +1338,11 @@ do
 
         local prev = now
         local iter = 0
+        local regen = r.regen > 0.001 and r.regen or 0
 
         while( #events > 0 and now <= finish and iter < 20 ) do
             local e = events[1]
-            local r = state[ e.resource ]
+
             iter = iter + 1
 
             if e.next > finish or not r or not r.actual then
@@ -1352,7 +1351,7 @@ do
             else
                 now = e.next
 
-                local bonus = r.regen > 0.001 and ( r.regen * ( now - prev ) ) or 0
+                local bonus = regen * ( now - prev )
 
                 local stop = e.stop and e.stop( r.forecast[ r.fcount ].v )
                 local aura = e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < now
@@ -1414,15 +1413,14 @@ do
             if #events > 1 then sort( events, resourceModelSort ) end
         end
 
-        if r.regen > 0.001 and r.forecast[ r.fcount ].v < r.max then
+        if regen > 0 and r.forecast[ r.fcount ].v < r.max then
             for k, v in pairs( remains ) do
-                local r = state[ k ]
                 local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
                 local idx = r.fcount + 1
 
                 r.forecast[ idx ] = r.forecast[ idx ] or {}
                 r.forecast[ idx ].t = finish
-                r.forecast[ idx ].v = min( r.max, val + ( v * r.regen ) )
+                r.forecast[ idx ].v = min( r.max, val + ( v * regen ) )
                 r.fcount = idx
             end
         end
@@ -2118,8 +2116,12 @@ do
             if k == "action_cooldown" then return ability and ability.cooldown or 0
             elseif k == "cast_delay" then return 0
             elseif k == "cast_regen" then
-                if not ability then return t.gcd.execute * t[ ability.spendType or class.primaryResource ].regen end
-                return ( max( t.gcd.execute, ability.cast or 0 ) * t[ ability.spendType or class.primaryResource ].regen ) - ( ability.spend or 0 )
+                local regen = t[ ability and ability.spendType or class.primaryResource ].regen
+                if regen == 0.001 then regen = 0 end
+                if not ability then
+                    return t.gcd.execute * regen
+                end
+                return ( max( t.gcd.execute, ability.cast or 0 ) * regen ) - ( ability.spend or 0 )
 
             elseif k == "cast_time" then return ability and ability.cast or 0
             elseif k == "charges" then return cooldown.charges
@@ -3223,11 +3225,12 @@ end
 
 function state:CombinedResourceRegen( t )
     local regen = t.regen
+    if regen == 0.001 then regen = 0 end
 
     local model = t.regenModel
     if not model then return regen end
 
-    for name, source in pairs( model ) do
+    for _, source in pairs( model ) do
         local value = type( source.value ) == "function" and source.value() or source.value
         local interval = type( source.interval ) == "function" and source.interval() or source.interval
 
@@ -3256,15 +3259,15 @@ function state:TimeToResource( t, amount )
         lastTick = t.last_tick
     end
 
-    local slice
+    local regen, slice = t.regen, nil
+    if regen == 0.001 then regen = 0 end
 
     if t.forecast and t.fcount > 0 then
         local q = state.query_time
-        local index, slice
 
         if t.times[ amount ] then return t.times[ amount ] - q end
 
-        if t.regen <= 0.001 then
+        if regen == 0 then
             for i = 1, t.fcount do
                 local v = t.forecast[ i ]
                 if v.v >= amount then
@@ -3294,7 +3297,7 @@ function state:TimeToResource( t, amount )
                 -- Our next slice will have enough resources.  Check to see if we'd regen enough in-between.
                 local time_diff = after.t - slice.t
                 local deficit = amount - slice.v
-                local regen_time = deficit / t.regen
+                local regen_time = deficit / regen
 
                 if lastTick then
                     pad = ( slice.t - lastTick ) % 0.1
@@ -3320,8 +3323,8 @@ function state:TimeToResource( t, amount )
         pad = 0.1 - pad
     end
 
-    if t.regen <= 0 then return 3600 end
-    return max( 0, pad + ( ( amount - t.current ) / t.regen ) )
+    if regen <= 0 then return 3600 end
+    return max( 0, pad + ( ( amount - t.current ) / regen ) )
 end
 
 
@@ -3345,6 +3348,9 @@ local mt_resource = {
             return 100 - t.pct
 
         elseif k == "current" then
+            local regen = t.regen
+            if regen == 0.001 then regen = 0 end
+
             -- If this is a modeled resource, use our lookup system.
             if t.forecast and t.fcount > 0 then
                 local q = state.query_time
@@ -3364,14 +3370,14 @@ local mt_resource = {
 
                 -- We have a slice.
                 if index and slice and slice.v then
-                    t.values[ q ] = max( 0, min( t.max, slice.v + ( ( state.query_time - slice.t ) * t.regen ) ) )
+                    t.values[ q ] = max( 0, min( t.max, slice.v + ( ( state.query_time - slice.t ) * regen ) ) )
                     return t.values[ q ]
                 end
             end
 
             -- No forecast.
-            if t.regen ~= 0 then
-                return max( 0, min( t.max, t.actual + ( t.regen * state.delay ) ) )
+            if regen ~= 0 then
+                return max( 0, min( t.max, t.actual + ( regen * state.delay ) ) )
             end
 
             return t.actual
@@ -3404,7 +3410,9 @@ local mt_resource = {
             return ( state.time > 0 and t.active_regen or t.inactive_regen ) or 0
 
         elseif k == "regen_combined" then
-            return max( t.regen, state:CombinedResourceRegen( t ) )
+            local regen = t.regen
+            if regen == 0.001 then regen = 0 end
+            return max( regen, state:CombinedResourceRegen( t ) )
 
         elseif k == "modmax" then
             return t.max
@@ -4935,7 +4943,10 @@ local mt_default_action = {
             return 0
 
         elseif k == "cast_regen" then
-            return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen ) - t.cost
+            local regen = t.regen
+            if regen == 0.001 then regen = 0 end
+
+            return floor( max( state.gcd.execute, t.cast_time ) * regen ) - t.cost
 
         elseif k == "cost" then
             if ability then
@@ -6212,7 +6223,7 @@ do
         state.health.current = nil
         state.health.actual = UnitHealth( "player" ) or 10000
         state.health.max = max( 1, UnitHealthMax( "player" ) or 10000 )
-        state.health.regen = 0
+        state.health.regen = 0.001
 
         -- TODO: All of this stuff for swings is terrible.
         state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
@@ -6455,8 +6466,11 @@ function state.advance( time )
         if not resource.regenModel then
             local override = ns.callHook( "advance_resource_regen", false, k, time )
 
-            if not override and resource.regen and resource.regen ~= 0 then
-                resource.actual = min( resource.max, max( 0, resource.actual + ( resource.regen * time ) ) )
+            local regen = resource.regen
+            if regen == 0.001 then regen = 0 end
+
+            if not override and resource.regen and regen ~= 0 then
+                resource.actual = min( resource.max, max( 0, resource.actual + ( regen * time ) ) )
             end
         else
             -- revisit this, may want to forecastResources( k ) instead.
