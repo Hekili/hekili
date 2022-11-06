@@ -1278,8 +1278,11 @@ local function ConvertScript( node, hasModifiers, header )
 
                 local sf, e
 
-                if value == 'bool' or value == 'raw' then
+                if value == 'bool' then
                     emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
+
+                elseif value == 'raw' then
+                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
 
                 else -- string
                     o = "'" .. o .. "'"
