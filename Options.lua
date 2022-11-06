@@ -8063,6 +8063,13 @@ do
                 local nodes = C_Traits.GetTreeNodes( treeID )
                 for _, nodeID in ipairs( nodes ) do
                     local node = C_Traits.GetNodeInfo( configID, nodeID )
+
+                    local isSpec = false
+                    for _, cond in ipairs( node.conditionIDs ) do
+                        local c = C_Traits.GetConditionInfo( configID, cond )
+                        if c.specSetID then isSpec = true; break end
+                    end
+
                     if node.maxRanks > 0 then
                         for _, entryID in ipairs( node.entryIDs ) do
                             local entryInfo = C_Traits.GetEntryInfo( configID, entryID )
@@ -8079,7 +8086,7 @@ do
 
                             local token = key( name )
 
-                            insert( talents, { name = token, talent = nodeID, definition = entryInfo.definitionID, spell = spellID, ranks = node.maxRanks } )
+                            insert( talents, { name = token, talent = nodeID, specialization = isSpec, definition = entryInfo.definitionID, spell = spellID, ranks = node.maxRanks } )
 
                             if not IsPassiveSpell( spellID ) then
                                 EmbedSpellData( spellID, token, true )
@@ -8264,8 +8271,12 @@ do
                             append( "-- Talents" )
                             append( "spec:RegisterTalents( {" )
                             increaseIndent()
+                            append( "-- " .. playerClass )
 
-                            table.sort( talents, function( a, b ) return a.name < b.name end )
+                            table.sort( talents, function( a, b )
+                                if a.specialization ~= b.specialization then return b.specialization end
+                                return a.name < b.name
+                            end )
 
                             local max_talent_length = 10
 
@@ -8276,7 +8287,14 @@ do
 
                             local formatStr = "%-" .. max_talent_length .. "s = { %5d, %-6d, %d }, -- %s"
 
+                            local classes = true
+
                             for i, tal in ipairs( talents ) do
+                                if classes and tal.specialization then
+                                    classes = false
+                                    append( "" )
+                                    append( "-- " .. playerSpec )
+                                end
                                 local line = format( formatStr, tal.name, tal.talent, tal.spell, tal.ranks or 0, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s%s+", " " ) )
                                 append( line )
                             end
