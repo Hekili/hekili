@@ -1481,6 +1481,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         nobuff = "felstorm",
 
+        usable = function() return pet.felguard.up and pet.alive, "requires a living felguard" end,
         handler = function ()
             applyBuff( "demonic_strength" )
         end,
@@ -1565,6 +1566,8 @@ spec:RegisterAbilities( {
 
         talent = "guillotine",
         startsCombat = true,
+
+        usable = function() return pet.felguard.up and pet.alive, "requires a living felguard" end,
     },
 
     -- Calls down a demonic meteor full of Wild Imps which burst forth to attack the target. Deals up to 2,188 Shadowflame damage on impact to all enemies within 8 yds of the target and summons up to 3 Wild Imps, based on Soul Shards consumed.
