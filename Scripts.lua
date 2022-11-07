@@ -851,6 +851,8 @@ do
             local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
             local trimmed_prefix
 
+            local hasMath = prev and prev.t == "op" and math_ops[ prev.a ] or next and next.t == "op" and math_ops[ next.a ]
+
             -- If we get a math op (*) followed by a not (!) followed by an expression, we want to safely wrap up the !expr in safenum().
             if prev and prev.t == "op" and math_ops[ prev.a ] and piece.t == "op" and piece.a == "!" and next and next.t == "expr" then
                 table.remove( results, i )
@@ -874,10 +876,10 @@ do
                         esDepth = esDepth - 1
                         return orig
                     end
-                    piece.s = scripts:EmulateSyntax( piece.s, numeric )
+                    piece.s = scripts:EmulateSyntax( piece.s, numeric or hasMath )
                 end
 
-                if ( prev and prev.t == "op" and math_ops[ prev.a ] and not equality[ prev.a ] ) or ( next and next.t == "op" and math_ops[ next.a ] and not equality[ next.a ] ) then
+                if hasMath then
                     -- This expression is getting mathed.
                     -- Lets see what it returns and wrap it in btoi if it is a boolean expr.
                     if piece.s:find("^variable%.") then
@@ -904,7 +906,7 @@ do
                     end
                     piece.r = nil
 
-                elseif esDepth > 0 and not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] and not equality[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] and not equality[ next.a ] ) ) then
+                elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] and not equality[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] and not equality[ next.a ] ) ) then
                     -- This expression is not having math operations performed on it.
                     -- Let's make sure it's a boolean.
                     if piece.s:find("^variable") then
@@ -1278,19 +1280,14 @@ local function ConvertScript( node, hasModifiers, header )
 
                 local sf, e
 
-                if value == 'bool' then
-                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
-
-                elseif value == 'raw' then
-                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
-
-                else -- string
+                if value == 'string' then
                     o = "'" .. o .. "'"
                     emulated = o
-
+                else
+                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
                 end
 
-                if node.action == "variable" then
+                if node.action == "variable" and value ~= "string" then
                     --[[ local var_val, var_recheck, var_err
                     var_val = scripts:BuildRecheck( node[m] )
                     if var_val then
@@ -1312,7 +1309,7 @@ local function ConvertScript( node, hasModifiers, header )
                         output.VarRecheckError = var_err
                     end ]]
                     local rs, rc, erc
-                    rs = scripts:BuildRecheck( node[m] )
+                    rs = scripts:BuildRecheck( node[ m ] )
 
                     if rs then
                         local orig = rs
@@ -1333,7 +1330,11 @@ local function ConvertScript( node, hasModifiers, header )
                     end
                 end
 
-                sf, e = Hekili:Loadstring( "return " .. emulated )
+                if value == "bool" then
+                    sf, e = Hekili:Loadstring( "return safebool(" .. emulated .. ")" )
+                else
+                    sf, e = Hekili:Loadstring( "return " .. emulated )
+                end
 
                 if sf then
                     setfenv( sf, state )
