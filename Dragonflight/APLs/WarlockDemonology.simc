@@ -16,6 +16,7 @@ actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=ogcd,strict=1,if=pet.demonic_tyrant.active
 actions+=/implosion,if=time_to_die<2*gcd
 actions+=/call_action_list,name=opener,strict=1,if=time<variable.first_tyrant_time
+actions+=/call_action_list,name=covenant_ability,strict=1,if=soulbind.grove_invigoration|soulbind.field_of_blossoms|soulbind.combat_meditation|action.decimating_bolt.known
 actions+=/potion,if=variable.next_tyrant_cd<gcd.max&time>variable.first_tyrant_time
 actions+=/call_action_list,name=tyrant_setup
 actions+=/guillotine,if=active_enemies>1
@@ -50,15 +51,24 @@ actions+=/demonbolt,if=buff.demonic_core.react&soul_shard<4&active_enemies>1
 actions+=/soul_strike
 # If you can get back to 5 Soul Shards before Dreadstalkers cooldown is ready, it's okay to spend them now
 actions+=/hand_of_guldan,if=soul_shard>=3&variable.next_tyrant_cd>25&(talent.demonic_calling.enabled|cooldown.call_dreadstalkers.remains>((5-soul_shard)*action.shadow_bolt.execute_time)+action.hand_of_guldan.execute_time)
-
 actions+=/doom,cycle_targets=1,if=dot.doom.remains=0&time>variable.first_tyrant_time&!talent.kazaaks_final_curse.enabled
 actions+=/doom,cycle_targets=1,if=dot.doom.remains=0&time>variable.first_tyrant_time&talent.kazaaks_final_curse.enabled&variable.next_tyrant_cd>dot.doom.duration+7&buff.demonic_power.down
-
 actions+=/shadow_bolt
-
-#straight up dps loss. castable while moving tho.
+# Straight up dps loss. castable while moving tho.
 actions+=/summon_soulkeeper
-#actions+=/summon_soulkeeper,if=cooldown.nether_portal.up&buff.nether_portal.down&variable.next_tyrant_cd>15&buff.demonic_power.down&buff.tormented_soul.stack=10
+## actions+=/summon_soulkeeper,if=cooldown.nether_portal.up&buff.nether_portal.down&variable.next_tyrant_cd>15&buff.demonic_power.down&buff.tormented_soul.stack=10
+
+actions.covenant_ability=soul_rot,if=(soulbind.field_of_blossoms|runeforge.decaying_soul_satchel)&pet.demonic_tyrant.active
+actions.covenant_ability+=/soul_rot,if=soulbind.grove_invigoration&!runeforge.decaying_soul_satchel&(variable.next_tyrant_cd<20|variable.next_tyrant_cd>30)
+actions.covenant_ability+=/soul_rot,if=!(soulbind.field_of_blossoms|soulbind.grove_invigoration)&!runeforge.decaying_soul_satchel&!pet.demonic_tyrant.active&variable.next_tyrant_cd>18
+actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=!variable.use_bolt_timings&soulbind.lead_by_example&(pet.demonic_tyrant.active&soul_shard<2|!pet.demonic_tyrant.active&variable.next_tyrant_cd>40)
+actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=!variable.use_bolt_timings&soulbind.kevins_oozeling&(pet.demonic_tyrant.active|!pet.demonic_tyrant.active&variable.next_tyrant_cd>40)
+actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=!variable.use_bolt_timings&(soulbind.forgeborne_reveries|(soulbind.volatile_solvent&!soulbind.kevins_oozeling))&!pet.demonic_tyrant.active
+actions.covenant_ability+=/decimating_bolt,cycle_targets=1,if=variable.use_bolt_timings&(!talent.power_siphon|cooldown.power_siphon.remains<action.decimating_bolt.execute_time)&!cooldown.summon_demonic_tyrant.up&(pet.demonic_tyrant.remains<8|cooldown.summon_demonic_tyrant.remains_expected<30)
+actions.covenant_ability+=/fleshcraft,if=soulbind.volatile_solvent&buff.volatile_solvent.down,interrupt_if=buff.volatile_solvent.up
+actions.covenant_ability+=/scouring_tithe,if=soulbind.combat_meditation&pet.demonic_tyrant.active
+actions.covenant_ability+=/scouring_tithe,if=!soulbind.combat_meditation
+actions.covenant_ability+=/impending_catastrophe,if=pet.demonic_tyrant.active&soul_shard=0
 
 # opener assumes starting at 5 shards after db precast
 actions.opener+=/nether_portal
