@@ -448,7 +448,8 @@ do
         { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$", "%1.remains"      },
         { "^!ticking"                          , "remains"         },
         { "^!?remains$"                        , "remains"         },
-        { "^refreshable"                       , "time_to_refresh" },
+        { "^refreshable$"                      , "time_to_refresh" },
+        { "^time>=?(.-)$"                      , "0.01+%1-time"    },
 
         { "^gcd.remains$"            , "gcd.remains"      },
         { "^gcd.remains<?=(.+)$"     , "gcd.remains-%1"   },
@@ -510,13 +511,13 @@ do
         { "^!?action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$", "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
 
         { "^!?variable%.([a-z0-9_]+)$", "safenum(variable.%1)"                        },
-        { "^!?variable%.([a-z0-9_]+)<=?(.-)$", "safenum(variable.%1)-%2"              },
+        { "^!?variable%.([a-z0-9_]+)<=?(.-)$", "0.01+%2-safenum(variable.%1)"         },
         { "^raid_events%.([a-z0-9_]+)%.remains$", "raid_events.%1.remains"            },
         { "^raid_events%.([a-z0-9_]+)%.remains$<=?(.-)$", "raid_events.%1.remains-%2" },
         { "^!?raid_events%.([a-z0-9_]+)%.up$", "raid_events.%1.up"                    },
         { "^!?(pet%.[a-z0-9_]+)%.up$", "%1.remains"                                   },
         { "^!?(pet%.[a-z0-9_]+)%.active$", "%1.remains"                               },
-                                                                                      }
+    }
 
 
     -- Things that tick down.
@@ -593,7 +594,7 @@ do
             for key in pairs( increases ) do
                 if lhs:match( key ) then
                     if comp == ">" then
-                        return true, "(" .. rhs .. " + 0.01) - (" .. rhs .. ")"
+                        return true, "(" .. rhs .. " + 0.01) - (" .. lhs .. ")"
                     elseif moreOrEqual[ comp ] then
                         return true, rhs .. " - " .. lhs
                     end
@@ -612,7 +613,7 @@ do
 
                 if rhs == key then
                     if comp == "<" then
-                        return true, "0.01 + " .. rhs .. ".timeTo( " .. rhs .. " )"
+                        return true, "0.01 + " .. rhs .. ".timeTo( " .. lhs .. " )"
                     elseif lessOrEqual[ comp ] then
                         return true, rhs .. ".timeTo( " .. lhs .. " )"
                     end
