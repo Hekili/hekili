@@ -857,7 +857,10 @@ me:RegisterHook( "step", function ( time )
     if Hekili.ActiveDebug then Hekili:Debug( "Rune Regeneration Time: 1=%.2f, 2=%.2f, 3=%.2f, 4=%.2f, 5=%.2f, 6=%.2f\n", runes.time_to_1, runes.time_to_2, runes.time_to_3, runes.time_to_4, runes.time_to_5, runes.time_to_6 ) end
 end )
 
+local Glyphed = IsSpellKnownOrOverridesKnown
+
 me:RegisterPet( "ghoul", 26125, "raise_dead", 3600 )
+
 me:RegisterTotem( "gargoyle", 458967 )
 me:RegisterTotem( "abomination", 298667 )
 me:RegisterPet( "apoc_ghoul", 24207, "apocalypse", 15 )
@@ -991,6 +994,8 @@ me:RegisterHook( "reset_precast", function ()
             expires = expires - 5
         end
     end
+
+    if Hekili.ActiveDebug then Hekili:Debug( "Pet is %s.", pet.alive and "alive" or "dead" ) end
 end )
 
 local mt_runeforges = {
@@ -1308,7 +1313,10 @@ me:RegisterAbilities( {
         talent = "dark_transformation",
         startsCombat = false,
 
-        usable = function () return pet.ghoul.alive end,
+        usable = function ()
+            if Hekili.ActiveDebug then Hekili:Debug( "Pet is %s.", pet.alive and "alive" or "dead" ) end
+            return pet.alive, "requires a living ghoul"
+        end,
         handler = function ()
             applyBuff( "dark_transformation" )
             if azerite.helchains.enabled then applyBuff( "helchains" ) end
