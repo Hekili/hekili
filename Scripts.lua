@@ -906,7 +906,7 @@ do
                     end
                     piece.r = nil
 
-                elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] and not equality[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] and not equality[ next.a ] ) ) then
+                elseif #results > 1 and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] and not equality[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] and not equality[ next.a ] ) ) then
                     -- This expression is not having math operations performed on it.
                     -- Let's make sure it's a boolean.
                     if piece.s:find("^variable") then
@@ -938,7 +938,7 @@ do
             end
 
             if trimmed_prefix then
-                    piece.s = trimmed_prefix .. piece.s
+                piece.s = trimmed_prefix .. piece.s
             end
 
             output = output .. piece.s
@@ -1284,7 +1284,7 @@ local function ConvertScript( node, hasModifiers, header )
                     o = "'" .. o .. "'"
                     emulated = o
                 else
-                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
+                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ], value == "raw" ) )
                 end
 
                 if node.action == "variable" and value ~= "string" then
