@@ -1127,9 +1127,7 @@ scripts.GetScriptElements = GetScriptElements
 -- newModifiers, key is the name of the element, value is whether to babyproof it or not.
 local newModifiers = {
     chain = 'bool',
-    cycle_targets = 'bool',
     early_chain_if = 'bool',
-    for_next = 'bool',
     interrupt = 'bool',
     interrupt_global = 'bool',
     interrupt_if = 'bool',
@@ -1144,7 +1142,9 @@ local newModifiers = {
     wait = 'bool',
 
     -- Not necessarily a number, but not baby-proofed.
+    cycle_targets = 'raw',
     default = 'raw',
+    for_next = 'raw',
     line_cd = 'raw',
     max_cycle_targets = 'raw',
     sec = 'raw',
@@ -1332,10 +1332,9 @@ local function ConvertScript( node, hasModifiers, header )
                 end
 
                 if value == "bool" then
-                    sf, e = Hekili:Loadstring( "return safebool(" .. emulated .. ")" )
-                else
-                    sf, e = Hekili:Loadstring( "return " .. emulated )
+                    emulated = "safebool(" .. emulated .. ")"
                 end
+                sf, e = Hekili:Loadstring( "return " .. emulated )
 
                 if sf then
                     setfenv( sf, state )
