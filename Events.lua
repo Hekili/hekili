@@ -2086,9 +2086,9 @@ do
             wipe( v.lower )
         end
 
-        -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
+        --[[ Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
         if _G["Bartender4"] then
-            for actionBarNumber = 1, 10 do
+            for actionBarNumber = 1, 15 do
                 local bar = _G["BT4Bar" .. actionBarNumber]
                 for keyNumber = 1, 12 do
                     local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
@@ -2096,17 +2096,17 @@ do
 
                     -- If bar is disabled assume paging / stance switching on bar 1
                     if actionBarNumber > 1 and bar and not bar.disabled then
-                        bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":Keybind"
+                        bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":Click"
                     end
 
                     StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
                 end
             end
 
-            done = true
+            done = true ]]
 
         -- Use ElvUI's actionbars only if they are actually enabled.
-        elseif _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
+        if _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
             table.wipe( slotsUsed )
 
             for i = 1, 15 do
@@ -2265,7 +2265,7 @@ local function ReadOneKeybinding( event, slot )
     local ability
     local completed = false
 
-    -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
+    --[[ Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
     if _G["Bartender4"] then
         local bar = _G["BT4Bar" .. actionBarNumber]
         local bindingKeyName = "ACTIONBUTTON" .. keyNumber
@@ -2279,8 +2279,9 @@ local function ReadOneKeybinding( event, slot )
 
         if ability then completed = true end
 
-        -- Use ElvUI's actionbars only if they are actually enabled.
-    elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+        -- Use ElvUI's actionbars only if they are actually enabled. ]]
+
+    if _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
         local btn = _G[ "ElvUI_Bar" .. actionBarNumber .. "Button" .. keyNumber ]
 
         if btn then
