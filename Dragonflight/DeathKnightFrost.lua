@@ -867,7 +867,7 @@ end )
 
 spec:RegisterHook( "recheck", function( times )
     if buff.breath_of_sindragosa.up then
-        local applied = buff.breath_of_sindragosa.applied
+        local applied = action.breath_of_sindragosa.lastCast
         local tick = applied + ceil( query_time - applied ) - query_time
         if tick > 0 then times[ #times + 1 ] = tick end
         times[ #times + 1 ] = tick + 1
