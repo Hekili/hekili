@@ -63,7 +63,7 @@ actions.single+=/crash_lightning
 actions.single+=/fire_nova,if=active_dot.flame_shock
 actions.single+=/fleshcraft,if=soulbind.pustule_eruption
 actions.single+=/earth_elemental
-actions.single+=/flame_shock
+actions.single+=/flame_shock,if=settings.filler_shock
 actions.single+=/windfury_totem,if=buff.windfury_totem.remains<30
 
 actions.aoe+=/crash_lightning,if=(talent.doom_winds|runeforge.doom_winds.equipped)&buff.doom_winds.up
@@ -98,7 +98,7 @@ actions.aoe+=/windstrike
 actions.aoe+=/lava_lash
 actions.aoe+=/ice_strike
 actions.aoe+=/stormstrike
-actions.aoe+=/flame_shock,cycle_targets=1
+actions.aoe+=/flame_shock,cycle_targets=1,if=settings.filler_shock
 actions.aoe+=/frost_shock
 actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/earth_elemental
