@@ -4,7 +4,7 @@ actions.precombat+=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5
 # Estimates a trinkets value by comparing the cooldown of the trinket, divided by the duration of the buff it provides. Has a strength modifier to give a higher priority to strength trinkets, as well as a modifier for if a trinket will or will not sync with cooldowns.
 actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!trinket.1.has_use_buff&trinket.2.has_use_buff|trinket.2.has_use_buff&((trinket.2.cooldown.duration%trinket.2.proc.any_dps.duration)*(1.5+trinket.2.has_buff.strength)*(variable.trinket_2_sync))>((trinket.1.cooldown.duration%trinket.1.proc.any_dps.duration)*(1.5+trinket.1.has_buff.strength)*(variable.trinket_1_sync))
 actions.precombat+=/variable,name=rw_buffs,value=talent.gathering_storm|talent.everfrost|talent.biting_cold
-actions.precombat+=/variable,name=2h_check,value=main_hand.two_hand&talent.might_of_the_frozen_wastes
+actions.precombat+=/variable,name=two_hand_check,value=main_hand.two_hand&talent.might_of_the_frozen_wastes
 
 # Interrupt
 actions+=/mind_freeze

@@ -1638,6 +1638,8 @@ do
             times[ #times + 1 ] = k
         end
 
+        ns.callHook( "recheck", times )
+
         sort( times )
     end
 end
