@@ -515,6 +515,7 @@ do
                     font = ElvUI and "Expressway" or "Arial Narrow",
                     fontSize = 20,
                     fontStyle = "OUTLINE",
+                    color = { 1, 1, 1, 1 },
 
                     width = 600,
                     height = 40,
@@ -825,6 +826,7 @@ do
 
         local conf = Hekili.DB.profile.notifications
 
+        if option == "color" then return unpack( conf[ option ] ) end
         return conf[ option ]
     end
 
