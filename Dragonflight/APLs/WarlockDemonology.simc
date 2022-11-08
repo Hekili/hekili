@@ -37,7 +37,7 @@ actions+=/guillotine,if=buff.demonic_power.up
 # If Dreadstalkers are already active, no need to save shards
 actions+=/hand_of_guldan,if=soul_shard>=3&(pet.dreadstalker.active|pet.demonic_tyrant.active)
 actions+=/hand_of_guldan,if=soul_shard>=3&buff.nether_portal.up&cooldown.call_dreadstalkers.remains>2*gcd.max
-actions+=/hand_of_guldan,if=soul_shard>=1&variable.next_tyrant_cd<gcd.max&time>variable.first_tyrant_time-gcd.max
+## actions+=/hand_of_guldan,if=soul_shard>=1&variable.next_tyrant_cd<gcd.max&time>variable.first_tyrant_time-gcd.max
 # Without Sacrificed Souls, Soul Strike is stronger than Demonbolt, so it has a higher priority TODO: RETEST - prolly depends on mastery
 actions+=/soul_strike,if=!talent.sacrificed_souls.enabled
 # Spend Demonic Cores for Soul Shards until Tyrant cooldown is close to ready
