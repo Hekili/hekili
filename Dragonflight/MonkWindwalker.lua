@@ -186,6 +186,11 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 2
     },
+    -- TODO: This is a stub until BrM is implemented.
+    counterstrike = {
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Taking $w1 damage every $t1 sec.
     -- https://wowhead.com/beta/spell=117952
     crackling_jade_lightning = {
@@ -1126,17 +1131,17 @@ spec:RegisterStateTable( "spinning_crane_kick", setmetatable( { onReset = functi
                 -- Windwalker:
                 if state.spec.windwalker then
                     -- Mark of the Crane (Cyclone Strikes) + Calculated Strikes (Conduit)
-                    mod = mod * 1 + ( t.count * ( conduit.calculated_strikes.enabled and 0.28 or 0.18 ) )
-                    -- Crane Vortex (Talent)
-                    mod = mod * ( 1 + 0.1 * talent.crane_vortex.rank )
-                    -- Kicks of Flowing Momentum (Tier 29 Buff)
-                    mod = mod * ( buff.kicks_of_flowing_momentum.up and 1.3 or 1 )
+                    mod = mod * ( 1 + ( t.count * ( conduit.calculated_strikes.enabled and 0.28 or 0.18 ) ) )
+                end
+
+                -- Crane Vortex (Talent)
+                mod = mod * ( 1 + 0.1 * talent.crane_vortex.rank )
+                -- Kicks of Flowing Momentum (Tier 29 Buff)
+                mod = mod * ( buff.kicks_of_flowing_momentum.up and 1.3 or 1 )
 
                 -- Brewmaster:
-                elseif state.spec.brewmaster then
-                    -- Counterstrike (Buff)
-                    mod = mod * ( buff.counterstrike.up and 2 or 1 )
-                end
+                -- Counterstrike (Buff)
+                mod = mod * ( buff.counterstrike.up and 2 or 1 )
 
                 -- Fast Feet (Talent)
                 mod = mod * ( 1 + 0.1 * talent.fast_feet.rank )
@@ -1210,7 +1215,10 @@ spec:RegisterAbilities( {
             cooldown.fists_of_fury.expires = max( 0, cooldown.fists_of_fury.expires - ( buff.weapons_of_order.up and 2 or 1 ) )
 
             removeBuff( "teachings_of_the_monastery" )
-            applyDebuff( "target", "mark_of_the_crane", 15 )
+            if talent.mark_of_the_crane.enabled then
+                applyDebuff( "target", "mark_of_the_crane" )
+                if talent.shadowboxing_treads.enabled then active_dot.mark_of_the_crane = min( active_dot.mark_of_the_crane + 2, true_active_enemies ) end
+            end
             if talent.eye_of_the_tiger.enabled then applyDebuff( "target", "eye_of_the_tiger" ) end
             if talent.transfer_the_power.enabled then addStack( "transfer_the_power", nil, 1 ) end
         end,
