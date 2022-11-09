@@ -14,7 +14,7 @@ actions+=/variable,name=hold_sef,op=set,value=cooldown.bonedust_brew.up&cooldown
 # Fixate if using Coordinated Offensive conduit
 actions+=/storm_earth_and_fire_fixate,if=conduit.coordinated_offensive.enabled&spinning_crane_kick.max
 # Potion
-actions+=/potion,if=(buff.serenity.up|buff.storm_earth_and_fire.up)&fight_remains<=60
+actions+=/potion,if=(buff.serenity.up|buff.storm_earth_and_fire.up)&boss&fight_remains<=60
 # Build Chi at the start of combat
 actions+=/call_action_list,name=opener,strict=1,if=time<4&chi<5&!talent.serenity
 # Prioritize Faeline Stomp if playing with Faeline Harmony
@@ -68,41 +68,42 @@ actions.bdb_setup+=/rising_sun_kick,cycle_targets=1,if=combo_strike&active_enemi
 
 # Storm, Earth and Fire Cooldowns
 actions.cd_sef=summon_white_tiger_statue,if=pet.xuen_the_white_tiger.active
-actions.cd_sef+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&action.bonedust_brew.known&cooldown.bonedust_brew.remains<=5&(active_enemies<3&chi>=3|active_enemies>=3&chi>=2)|fight_remains<25
+actions.cd_sef+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&action.bonedust_brew.known&cooldown.bonedust_brew.remains<=5&(active_enemies<3&chi>=3|active_enemies>=3&chi>=2)|boss&fight_remains<25
 actions.cd_sef+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&!action.bonedust_brew.known&(cooldown.rising_sun_kick.remains<2|!action.weapons_of_order.known)&chi>=3
-actions.cd_sef+=/weapons_of_order,if=(raid_event.adds.in>45|raid_event.adds.up)&cooldown.rising_sun_kick.remains<execute_time&cooldown.invoke_xuen_the_white_tiger.remains>(20+20*(runeforge.invokers_delight|talent.invokers_delight))&(!runeforge.xuens_treasure&!talent.xuens_battlegear|cooldown.fists_of_fury.remains|pet.xuen_the_white_tiger.active)|fight_remains<35
-actions.cd_sef+=/storm_earth_and_fire,if=action.bonedust_brew.known&(fight_remains<30&cooldown.bonedust_brew.remains<4&chi>=4|buff.bonedust_brew.up&!variable.hold_sef|!spinning_crane_kick.max&active_enemies>=3&cooldown.bonedust_brew.remains<=2&chi>=2)&(pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time)
-actions.cd_sef+=/bonedust_brew,if=(!buff.bonedust_brew.up&buff.storm_earth_and_fire.up&buff.storm_earth_and_fire.remains<11&spinning_crane_kick.max)|(!buff.bonedust_brew.up&fight_remains<30&fight_remains>10&spinning_crane_kick.max&chi>=4)|fight_remains<10&soulbind.lead_by_example
+actions.cd_sef+=/weapons_of_order,if=(raid_event.adds.in>45|raid_event.adds.up)&cooldown.rising_sun_kick.remains<execute_time&cooldown.invoke_xuen_the_white_tiger.remains>(20+20*(runeforge.invokers_delight|talent.invokers_delight))&(!runeforge.xuens_treasure&!talent.xuens_battlegear|cooldown.fists_of_fury.remains|pet.xuen_the_white_tiger.active)|boss&fight_remains<35
+actions.cd_sef+=/storm_earth_and_fire,if=action.bonedust_brew.known&(boss&fight_remains<30&cooldown.bonedust_brew.remains<4&chi>=4|buff.bonedust_brew.up&!variable.hold_sef|!spinning_crane_kick.max&active_enemies>=3&cooldown.bonedust_brew.remains<=2&chi>=2)&(pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time)
+actions.cd_sef+=/bonedust_brew,if=(!buff.bonedust_brew.up&buff.storm_earth_and_fire.up&buff.storm_earth_and_fire.remains<11&spinning_crane_kick.max)|(!buff.bonedust_brew.up&boss&fight_remains<30&fight_remains>10&spinning_crane_kick.max&chi>=4)|boss&fight_remains<10&soulbind.lead_by_example
 actions.cd_sef+=/call_action_list,name=bdb_setup,if=!buff.bonedust_brew.up&action.bonedust_brew.known&cooldown.bonedust_brew.remains<=2&(fight_remains>60&(cooldown.storm_earth_and_fire.charges>0|cooldown.storm_earth_and_fire.remains>10)&(pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>10|variable.hold_xuen)|((pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>13)&(cooldown.storm_earth_and_fire.charges>0|cooldown.storm_earth_and_fire.remains>13|buff.storm_earth_and_fire.up)))
 actions.cd_sef+=/storm_earth_and_fire,if=buff.storm_earth_and_fire.down&(boss&fight_remains<20|!action.bonedust_brew.known&(cooldown.storm_earth_and_fire.charges=2|buff.weapons_of_order.up|action.weapons_of_order.known&cooldown.weapons_of_order.remains>cooldown.storm_earth_and_fire.full_recharge_time|cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time)&cooldown.fists_of_fury.remains<=9&chi>=2&cooldown.whirling_dragon_punch.remains<=12)
-actions.cd_sef+=/touch_of_death,if=combo_strike&(fight_remains>60|buff.storm_earth_and_fire.down&(!action.bonedust_brew.known|buff.bonedust_brew.up)|fight_remains<10)
+actions.cd_sef+=/touch_of_death,if=combo_strike&(fight_remains>60|buff.storm_earth_and_fire.down&(!action.bonedust_brew.known|buff.bonedust_brew.up)|boss&fight_remains<10)
 actions.cd_sef+=/fallen_order,if=raid_event.adds.in>30|raid_event.adds.up
 actions.cd_sef+=/use_item,name=darkmoon_deck_voracity,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20&pet.xuen_the_white_tiger.remains<20|variable.hold_xuen
 actions.cd_sef+=/touch_of_karma,if=fight_remains>159|variable.hold_xuen
-actions.cd_sef+=/blood_fury,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|fight_remains<20
-actions.cd_sef+=/berserking,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|fight_remains<15
+actions.cd_sef+=/blood_fury,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<20
+actions.cd_sef+=/berserking,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<15
 actions.cd_sef+=/lights_judgment
-actions.cd_sef+=/fireblood,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|fight_remains<10
-actions.cd_sef+=/ancestral_call,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|fight_remains<20
+actions.cd_sef+=/fireblood,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<10
+actions.cd_sef+=/ancestral_call,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<20
 actions.cd_sef+=/bag_of_tricks,if=buff.storm_earth_and_fire.down
 actions.cd_sef+=/fleshcraft,if=soulbind.pustule_eruption&!pet.xuen_the_white_tiger.active&buff.storm_earth_and_fire.down&buff.bonedust_brew.down
 
 # Serenity Cooldowns
 actions.cd_serenity=summon_white_tiger_statue,if=pet.xuen_the_white_tiger.active
-actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&action.bonedust_brew.known&cooldown.bonedust_brew.remains<=5|fight_remains<25
-actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&!action.bonedust_brew.known&(cooldown.rising_sun_kick.remains<2|!action.weapons_of_order.known)|fight_remains<25
-actions.cd_serenity+=/weapons_of_order,if=(raid_event.adds.in>45|raid_event.adds.up)&cooldown.rising_sun_kick.remains<execute_time&cooldown.invoke_xuen_the_white_tiger.remains>(20+20*(runeforge.invokers_delight|talent.invokers_delight))&(!runeforge.xuens_treasure&!talent.xuens_battlegear|cooldown.fists_of_fury.remains|pet.xuen_the_white_tiger.active)|fight_remains<35
-actions.cd_serenity+=/bonedust_brew,if=!buff.bonedust_brew.up&(cooldown.serenity.up|cooldown.serenity.remains>15|fight_remains<30&fight_remains>10)|fight_remains<10&soulbind.lead_by_example
-actions.cd_serenity+=/serenity,if=pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>10|!talent.invoke_xuen_the_white_tiger|fight_remains<15
-actions.cd_serenity+=/touch_of_death,if=combo_strike&(fight_remains>60|buff.bonedust_brew.up|fight_remains<10)
-actions.cd_serenity+=/touch_of_karma,if=fight_remains>90|fight_remains<16
+actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&action.bonedust_brew.known&cooldown.bonedust_brew.remains<=5|boss&fight_remains<25
+actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&!action.bonedust_brew.known&(cooldown.rising_sun_kick.remains<2|!action.weapons_of_order.known)|boss&fight_remains<25
+actions.cd_serenity+=/weapons_of_order,if=(raid_event.adds.in>45|raid_event.adds.up)&cooldown.rising_sun_kick.remains<execute_time&cooldown.invoke_xuen_the_white_tiger.remains>(20+20*(runeforge.invokers_delight|talent.invokers_delight))&(!runeforge.xuens_treasure&!talent.xuens_battlegear|cooldown.fists_of_fury.remains|pet.xuen_the_white_tiger.active)|boss&fight_remains<35
+actions.cd_serenity+=/bonedust_brew,if=!buff.bonedust_brew.up&(cooldown.serenity.up|cooldown.serenity.remains>15|boss&fight_remains<30&fight_remains>10)|boss&fight_remains<10&soulbind.lead_by_example
+actions.cd_serenity+=/serenity,if=pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>10|!talent.invoke_xuen_the_white_tiger|boss&fight_remains<15
+## actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=combo_strike&target.health>0&(target.health<health|fight_remains>60)
+actions.cd_serenity+=/touch_of_death,if=combo_strike&(fight_remains>60|buff.bonedust_brew.up|boss&fight_remains<10)
+actions.cd_serenity+=/touch_of_karma,if=boss&(fight_remains>90|boss&fight_remains<10)
 actions.cd_serenity+=/fallen_order
-actions.cd_serenity+=/blood_fury,if=buff.serenity.up|fight_remains<20
-actions.cd_serenity+=/berserking,if=buff.serenity.up|fight_remains<20
+actions.cd_serenity+=/blood_fury,if=buff.serenity.up|boss&fight_remains<20
+actions.cd_serenity+=/berserking,if=buff.serenity.up|boss&fight_remains<20
 actions.cd_serenity+=/lights_judgment
-actions.cd_serenity+=/fireblood,if=buff.serenity.up|fight_remains<20
-actions.cd_serenity+=/ancestral_call,if=buff.serenity.up|fight_remains<20
-actions.cd_serenity+=/bag_of_tricks,if=buff.serenity.up|fight_remains<20
+actions.cd_serenity+=/fireblood,if=buff.serenity.up|boss&fight_remains<20
+actions.cd_serenity+=/ancestral_call,if=buff.serenity.up|boss&fight_remains<20
+actions.cd_serenity+=/bag_of_tricks,if=buff.serenity.up|boss&fight_remains<20
 actions.cd_serenity+=/fleshcraft,if=soulbind.pustule_eruption&!pet.xuen_the_white_tiger.active&buff.serenity.down&buff.bonedust_brew.down
 actions.cd_serenity+=/use_item,name=darkmoon_deck_voracity,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20|variable.hold_xuen
 
@@ -130,7 +131,7 @@ actions.serenity=strike_of_the_windlord,if=active_enemies<3
 actions.serenity+=/faeline_stomp,if=combo_strike
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike&buff.teachings_of_the_monastery.stack=3
 actions.serenity+=/fists_of_fury,if=buff.serenity.remains<1
-actions.serenity+=/fists_of_fury_cancel
+actions.serenity+=/cancel_action,name=fists_of_fury
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike&active_enemies=3&buff.teachings_of_the_monastery.stack=2
 actions.serenity+=/spinning_crane_kick,if=combo_strike&(active_enemies>3|active_enemies>2&spinning_crane_kick.modifier>=2.3)
 actions.serenity+=/strike_of_the_windlord,if=active_enemies>=3
