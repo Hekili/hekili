@@ -1183,10 +1183,12 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( eve
         lowLevelWarned = true
     end
 
-    local ability = class.abilities[ spellID ]
+    if unit == "player" then
+        local ability = class.abilities[ spellID ]
 
-    if ability and state.holds[ ability.key ] then
-        Hekili:RemoveHold( ability.key, true )
+        if ability and state.holds[ ability.key ] then
+            Hekili:RemoveHold( ability.key, true )
+        end
     end
 
     Hekili:ForceUpdate( event, true )
