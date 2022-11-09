@@ -857,6 +857,7 @@ spec:RegisterAbilities( {
         end,
     },
 
+
     bloodbath = {
         id = 335096,
         known = 23881,
@@ -879,9 +880,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136012,
 
-        bind = "bloodthirst",
         talent = "reckless_abandon",
         buff = "recklessness",
+        bind = "bloodthirst",
 
         handler = function ()
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
@@ -913,7 +914,7 @@ spec:RegisterAbilities( {
         cooldown = 20,
         gcd = "off",
 
-        spend = function() return health.max * (0.05) end,
+        spend = function() return 0.05 * health.max end,
         spendType = "health",
 
         pvptalent = "bloodrage",
@@ -946,15 +947,8 @@ spec:RegisterAbilities( {
 
         talent = "bloodthirst",
         startsCombat = true,
-        texture = 136012,
-
+        nobuff = function() if talent.reckless_abandon.enabled then return "recklessness" end end,
         bind = "bloodbath",
-
-        readyTime = function()
-            if buff.crushing_impact.up then return buff.crushing_impact.remains end
-            if talent.reckless_abandon.enabled then return buff.recklessness.remains end
-            return 0
-        end,
 
         handler = function ()
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
@@ -1022,8 +1016,8 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function () return
               ( talent.raging_blow.enabled and 1 or 0 )
-            + ( talent.improved_raging_blow and 1 or 0 )
-            + ( talent.raging_armaments and 1 or 0 )
+            + ( talent.improved_raging_blow.enabled and 1 or 0 )
+            + ( talent.raging_armaments.enabled and 1 or 0 )
         end,
         cooldown = 8,
         recharge = 8,
@@ -1036,16 +1030,20 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132215,
 
+        talent = function()
+            if buff.crushing_impact.up then return end
+            return "reckless_abandon"
+        end,
         notalent = "annihilator",
-        talent = "reckless_abandon",
         bind = "raging_blow",
-        buff = "recklessness",
+        buff = function()
+            if buff.crushing_impact.up then return "crushing_impact" end
+            return "recklessness"
+        end,
 
-        usable = function () return buff.crushing_impact.up or ( talent.reckless_abandon.enabled and  buff.recklessness.up ) end,
         handler = function ()
             removeStack( "whirlwind" )
-            if talent.reckless_abandon.enabled then spendCharges( "raging_blow", 1 ) end
-
+            spendCharges( "raging_blow", 1 )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
         end,
     },
@@ -1395,43 +1393,31 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function () return
             ( talent.raging_blow.enabled and 1 or 0 )
-          + ( talent.improved_raging_blow and 1 or 0 )
-          + ( talent.raging_armaments and 1 or 0 )
+          + ( talent.improved_raging_blow.enabled and 1 or 0 )
+          + ( talent.raging_armaments.enabled and 1 or 0 )
         end,
         cooldown = 8 * state.haste,
         recharge = 8 * state.haste,
         hasteCD = true,
         gcd = "spell",
 
-        spend = function ()
-            if talent.swift_strikes.rank > 0 then
-                return -12 - talent.swift_strikes.rank * 1
-            else
-                return -12
-            end
-        end,
+        spend = function () return -12 - talent.swift_strikes.rank end,
         spendType = "rage",
 
         talent = "raging_blow",
         notalent = "annihilator",
         startsCombat = true,
-        texture = 589119,
-
-        bind = "crushing_blow",
-        readyTime = function ()
-            if talent.reckless_abandon.enabled or talent.titanic_rage.enabled then
-                return max( buff.recklessness.remains, buff.crushing_impact.remains )
-            else
-                return 0
-            end
+        nobuff = function()
+            if buff.crushing_impact.up then return "crushing_impact" end
+            if talent.reckless_abandon.enabled then return "recklessness" end
         end,
+        bind = "crushing_blow",
 
         handler = function ()
             removeStack( "whirlwind" )
-            if talent.reckless_abandon.enabled then spendCharges( "crushing_blow", 1 ) end
-
+            spendCharges( "crushing_blow", 1 )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
-            if talent.slaughtering_strikes.enabled then addStack ( "slaughtering_strikes_raging_blow" ,nil , 1 ) end
+            if talent.slaughtering_strikes.enabled then addStack( "slaughtering_strikes_raging_blow", nil, 1 ) end
         end,
     },
 
@@ -1452,7 +1438,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "rallying_cry" )
 
-            gain( (talent.inspiring_presence.enabled and 0.25 or 0.15) * health.max, "health" )
+            gain( ( talent.inspiring_presence.enabled and 0.25 or 0.15 ) * health.max, "health" )
         end,
     },
 
