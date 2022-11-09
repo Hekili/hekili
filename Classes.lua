@@ -547,6 +547,13 @@ local HekiliSpecMixin = {
             end
         end
 
+        if data.id and type( data.id ) == "function" then
+            if not data.copy or #data.copy == 0 then
+                Hekili:Error( "RegisterAbility for %s (Specialization %d) will fail; ability has an ID function but needs to have 'copy' entries for the abilities table.", ability, self.id )
+            end
+        end
+
+
         local item = data.item
         if item and type( item ) == "function" then
             setfenv( item, state )
@@ -2398,6 +2405,8 @@ all:RegisterAbilities( {
 
             removeBuff( "dispellable_magic" )
         end,
+
+        copy = { 155145, 129597, 50613, 69179, 25046, 80483, 202719, 232633 }
     },
 
     will_to_survive = {
