@@ -5882,6 +5882,9 @@ do
                         if p.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
                         return pack
                     end,
+                    icon = function()
+                        return class.specs[ data.spec ].texture
+                    end,
                     childGroups = "tab",
                     order = 100 + count,
                     args = {
