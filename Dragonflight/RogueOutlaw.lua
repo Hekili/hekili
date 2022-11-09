@@ -322,15 +322,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 394324
     },
-    -- Bleeding for $w damage every $t sec. Duplicating $@auracaster's Garrote, Rupture, and Lethal poisons applied.
-    -- https://wowhead.com/beta/spell=360194
-    deathmark = {
-        id = 360194,
-        duration = 16,
-        tick_time = 2,
-        mechanic = "bleed",
-        max_stack = 1
-    },
     -- Talent: Sinister Strike, $?s196937[Ghostly Strike, ][]Ambush, and Pistol Shot will refill all of your combo points when used.
     -- https://wowhead.com/beta/spell=343142
     dreadblades = {
@@ -403,13 +394,13 @@ spec:RegisterAuras( {
     },
     -- Suffering $w1 damage every $t1 seconds.
     -- https://wowhead.com/beta/spell=360830
-    garrote = {
+    --[[ garrote = {
         id = 360830,
         duration = 18,
         tick_time = 2,
         mechanic = "bleed",
         max_stack = 1
-    },
+    }, -- Moved to Assassination. ]]
     -- Talent: Taking $s3% increased damage from the Rogue's abilities.
     -- https://wowhead.com/beta/spell=196937
     ghostly_strike = {
@@ -546,15 +537,6 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
-    -- Bleeding for $w1 damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=360826
-    rupture = {
-        id = 360826,
-        duration = 4,
-        tick_time = 2,
-        mechanic = "bleed",
-        max_stack = 1
-    },
     -- Talent: Incapacitated.$?$w2!=0[  Damage taken increased by $w2%.][]
     -- https://wowhead.com/beta/spell=6770
     sap = {
@@ -562,36 +544,6 @@ spec:RegisterAuras( {
         duration = 60,
         mechanic = "sap",
         max_stack = 1
-    },
-    -- Talent: Suffering $w1 Nature damage every $t1 sec, and $394026s1 when the poison ends.
-    -- https://wowhead.com/beta/spell=385408
-    sepsis = {
-        id = 385408,
-        duration = 10,
-        tick_time = 1,
-        max_stack = 1,
-        copy = 328305,
-        exsanguinated = false,
-        meta = {
-            vendetta_exsg = function( t ) return t.up and tracked_bleeds.sepsis.vendetta[ target.unit ] or false end,
-            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.sepsis.rate[ target.unit ] or 1 end,
-            last_tick = function( t ) return t.up and ( tracked_bleeds.sepsis.last_tick[ target.unit ] or t.applied ) or 0 end,
-            tick_time = function( t ) return t.up and ( haste * 2 / t.exsanguinated_rate ) or ( haste * 2 ) end,
-        },
-    },
-    sepsis_buff = {
-        id = 347037,
-        duration = 5,
-        max_stack = 1
-    },
-    -- Bleeding for $w1 every $t1 sec.
-    -- https://wowhead.com/beta/spell=394036
-    serrated_bone_spike = {
-        id = 394036,
-        duration = 3600,
-        tick_time = 3,
-        max_stack = 1,
-        copy = 324073
     },
     -- Talent: Access to Stealth abilities.$?$w3!=0[  Movement speed increased by $w3%.][]$?$w4!=0[  Damage increased by $w4%.][]
     -- https://wowhead.com/beta/spell=185422
@@ -611,13 +563,6 @@ spec:RegisterAuras( {
         id = 121471,
         duration = 20,
         max_stack = 1,
-    },
-    -- Talent: $w1% increased Nature damage taken from $@auracaster.$?${$W2<0}[ Healing received reduced by $w2%.][]
-    -- https://wowhead.com/beta/spell=319504
-    shiv = {
-        id = 319504,
-        duration = 8,
-        max_stack = 1
     },
     sharpened_sabers = {
         id = 252285,
@@ -694,21 +639,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-    -- Talent: Mastery increased by ${$w2*$mas}.1%.
-    -- https://wowhead.com/beta/spell=381623
-    thistle_tea = {
-        id = 381623,
-        duration = 6,
-        type = "Magic",
-        max_stack = 1
-    },
-    -- $s1% increased damage taken from poisons from the casting Rogue.
-    -- https://wowhead.com/beta/spell=245389
-    toxic_blade = {
-        id = 245389,
-        duration = 9,
-        max_stack = 1
-    },
     -- Talent: Threat redirected from Rogue.
     -- https://wowhead.com/beta/spell=57934
     tricks_of_the_trade = {
@@ -736,7 +666,7 @@ spec:RegisterAuras( {
         id = 8680,
         duration = 12,
         max_stack = 3,
-        copy = 394327
+        copy = { 394327, "wound_poison_dot" }
     },
 
     -- Real RtB buffs.
@@ -1047,30 +977,6 @@ spec:RegisterAbilities( {
             end
         end,
     },
-
-    -- Ambush the target, causing $s1 Physical damage.$?s383281[    Has a $193315s3% chance to hit an additional time, making your next Pistol Shot half cost and double damage.][]    |cFFFFFFFFAwards $s2 combo $lpoint:points;$?s383281[ each time it strikes][].|r
-    ambush = {
-        id = 8676,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return talent.tight_spender.enabled and 45 or 50 end,
-        spendType = "energy",
-
-        startsCombat = true,
-        usable = function () return stealthed.all or buff.audacity.up or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
-
-        cp_gain = function ()
-            return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) )
-        end,
-
-        handler = function ()
-            gain( action.ambush.cp_gain, "combo_points" )
-            if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
-            if buff.audacity.up then removeBuff( "audacity" ) end
-        end,
-        },
 
     -- Talent: Coats your weapons with a Non-Lethal Poison that lasts for $d. Each strike has a $h% chance of poisoning the enemy, reducing their damage by ${$392388s1*-1}.1% for $392388d.
     atrophic_poison = {
@@ -1570,26 +1476,6 @@ spec:RegisterAbilities( {
     },
 
 
-    kick = {
-        id = 1766,
-        cast = 0,
-        cooldown = 15,
-        gcd = "off",
-        school = "physical",
-
-        startsCombat = true,
-
-        toggle = "interrupts",
-
-        debuff = "casting",
-        readyTime = state.timeToInterrupt,
-
-        handler = function ()
-            interrupt()
-        end
-    },
-
-
     kidney_shot = {
         id = 408,
         cast = 0,
@@ -1635,31 +1521,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "killing_spree" )
             setCooldown( "global_cooldown", 2 )
-        end,
-    },
-
-
-    marked_for_death = {
-        id = 137619,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-        school = "physical",
-
-        talent = "marked_for_death",
-        startsCombat = false,
-        texture = 236364,
-
-        toggle = "cooldowns",
-
-        usable = function ()
-            return combo_points.current <= settings.mfd_points, "combo_point (" .. combo_points.current .. ") > user preference (" .. settings.mfd_points .. ")"
-        end,
-
-        cp_gain = function () return 5 end,
-
-        handler = function ()
-            gain( action.marked_for_death.cp_gain, "combo_points" )
         end,
     },
 
@@ -1758,33 +1619,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Infect the target's blood, dealing $o1 Nature damage over $d. If the target survives its full duration, they suffer an additional $328306s1 damage and you gain $s6 use of any Stealth ability for $347037d.    Cooldown reduced by $s3 sec if Sepsis does not last its full duration.    |cFFFFFFFFAwards $s7 combo $lpoint:points;.|r
-    sepsis = {
-        id = function() return talent.sepsis.enabled and 385408 or 328305 end,
-        cast = 0,
-        cooldown = 90,
-        gcd = "totem",
-        school = "nature",
-
-        spend = 25,
-        spendType = "energy",
-
-        startsCombat = true,
-
-        toggle = "cooldowns",
-
-        cp_gain = function() return debuff.dreadblades.up and combo_points.max or ( 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) ) end,
-
-        handler = function ()
-            applyBuff( "sepsis_buff" )
-            applyDebuff( "target", "sepsis" )
-            debuff.sepsis.exsanguinated_rate = 1
-            gain( action.sepsis.cp_gain, "combo_points" )
-        end,
-
-        copy = { 385408, 328305 }
-    },
-
     -- Talent: Allows use of all Stealth abilities and grants all the combat benefits of Stealth for $d$?a245687[, and increases damage by $s2%][]. Effect not broken from taking damage or attacking.$?s137035[    If you already know $@spellname185313, instead gain $394930s1 additional $Lcharge:charges; of $@spellname185313.][]
     shadow_dance = {
         id = 185313,
@@ -1809,24 +1643,6 @@ spec:RegisterAbilities( {
                 gain( 2, "combo_points" )
                 applyBuff( "the_first_dance" )
             end
-        end,
-    },
-
-    shadowstep = {
-        id = 36554,
-        cast = 0,
-        charges = 1,
-        cooldown = 30,
-        recharge = 30,
-        gcd = "off",
-
-        talent = "shadowstep",
-        startsCombat = false,
-        texture = 132303,
-
-        handler = function ()
-            applyBuff( "shadowstep" )
-            setDistance( 5 )
         end,
     },
 
@@ -1897,31 +1713,6 @@ spec:RegisterAbilities( {
         copy = 1752
     },
 
-    -- Finishing move that consumes combo points to increase attack speed by $s1%. Lasts longer per combo point.     1 point  : 12 seconds     2 points: 18 seconds     3 points: 24 seconds     4 points: 30 seconds     5 points: 36 seconds$?s193531|((s394320|s394321)&!s193531)[     6 points: 42 seconds][]$?s193531&(s394320|s394321)[     7 points: 48 seconds][]
-    slice_and_dice = {
-        id = 315496,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-        school = "physical",
-
-        spend = function() return talent.tight_spender.enabled and 22.5 or 25 end,
-        spendType = "energy",
-
-        startsCombat = false,
-        texture = 132306,
-
-        usable = function() return combo_points.current > 0, "requires combo points" end,
-
-        handler = function ()
-            if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 15, 1 )
-            end
-            applyBuff( "slice_and_dice" )
-            spend( combo_points.current, "combo_points" )
-        end,
-    },
-
     smoke_bomb = {
         id = 212182,
         cast = 0,
@@ -1935,122 +1726,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "smoke_bomb" )
-        end,
-    },
-
-
-    sprint = {
-        id = 2983,
-        cast = 0,
-        cooldown = function () return talent.improved_sprint.enabled and 60 or 120 end,
-        gcd = "off",
-
-        startsCombat = false,
-        texture = 132307,
-
-        toggle = "interrupts",
-
-        handler = function ()
-            applyBuff( "sprint" )
-        end,
-    },
-
-    -- Conceals you in the shadows until cancelled, allowing you to stalk enemies without being seen. $?s14062[Movement speed while stealthed is increased by $s3% and damage dealt is increased by $s4%.]?s108209[ Abilities cost $112942s1% less while stealthed. ][]$?s31223[ Attacks from Stealth and for $31223s1 sec after deal $31665s1% more damage.][]
-    stealth = {
-        id = 1784,
-        cast = 0,
-        cooldown = 2,
-        gcd = "off",
-        school = "physical",
-
-        startsCombat = false,
-        texture = 132320,
-
-        usable = function ()
-            if time > 0 then return false, "cannot stealth in combat"
-            elseif buff.stealth.up then return false, "already in stealth"
-            elseif buff.vanish.up then return false, "already vanished" end
-            return true
-        end,
-
-        handler = function ()
-            applyBuff( "stealth" )
-            if talent.take_em_by_surprise.enabled then applyBuff( "take_em_by_surprise" ) end
-            if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
-            if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
-        end,
-    },
-
-    thistle_tea = {
-        id = 381623,
-        cast = 0,
-        charges = 3,
-        cooldown = 60,
-        recharge = 60,
-        icd = 1,
-        gcd = "off",
-        school = "physical",
-
-        spend = -100,
-        spendType = "energy",
-
-        talent = "thistle_tea",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "thistle_tea" )
-        end,
-    },
-
-
-    tricks_of_the_trade = {
-        id = 57934,
-        cast = 0,
-        cooldown = 30,
-        gcd = "off",
-
-        talent = "tricks_of_the_trade",
-        startsCombat = false,
-
-        usable = function() return group, "requires an ally" end,
-
-        handler = function ()
-            applyBuff( "tricks_of_the_trade" )
-        end,
-    },
-
-    -- Allows you to vanish from sight, entering stealth while in combat. For the first $11327d after vanishing, damage and harmful effects received will not break stealth. Also breaks movement impairing effects.
-    vanish = {
-        id = 1856,
-        cast = 0,
-        charges = 1,
-        cooldown = 120,
-        recharge = 120,
-        gcd = "off",
-
-        startsCombat = false,
-        texture = 132331,
-
-        disabled = function ()
-            return not settings.solo_vanish and not ( boss and group ), "can only vanish in a boss encounter or with a group"
-        end,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "vanish" )
-            applyBuff( "stealth" )
-
-            if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
-            if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
-
-            if legendary.invigorating_shadowdust.enabled then
-                for name, cd in pairs( cooldown ) do
-                    if cd.remains > 0 then reduceCooldown( name, 20 ) end
-                end
-            end
         end,
     },
 
