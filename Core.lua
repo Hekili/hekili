@@ -809,6 +809,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", ( action .. ":" .. ( state.args.list_name or "unknown" ) ), listName, actID )
                         elseif action == "cancel_buff" then
                             d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", ( action .. ":" .. ( state.args.buff_name or "unknown" ) ), listName, actID )
+                        elseif action == "cancel_action" then
+                            d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", ( action .. ":" .. ( state.args.action_name or "unknown" ) ), listName, actID )
                         else
                             d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )
                         end
@@ -1197,7 +1199,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         end
 
                                                     elseif action == "cancel_action" then
-                                                        if state:IsChanneling() then state.channel_breakable = true end
+                                                        if state.args.action_name and state:IsChanneling( state.args.action_name ) then state.channel_breakable = true end
 
                                                     elseif action == "pool_resource" then
                                                         if state.args.for_next == 1 then

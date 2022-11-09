@@ -6393,6 +6393,44 @@ do
                                                         desc = desc .. ", if |cffffd100" .. entry.criteria .. "|r"
                                                     end
 
+                                                elseif entry.action == "cancel_buff" then
+                                                    if not entry.buff_name then
+                                                        desc = "|cff00ccff(not set)|r"
+                                                        warning = true
+                                                    else
+                                                        local a = class.auras[ entry.buff_name ]
+
+                                                        if a then
+                                                            desc = "|cff00ccff" .. a.name .. "|r"
+                                                        else
+                                                            desc = "|cff00ccff(not found)|r"
+                                                            warning = true
+                                                        end
+                                                    end
+
+                                                    if cLen and cLen > 0 then
+                                                        desc = desc .. ", if |cffffd100" .. entry.criteria .. "|r"
+                                                    end
+
+                                                elseif entry.action == "cancel_action" then
+                                                    if not entry.action_name then
+                                                        desc = "|cff00ccff(not set)|r"
+                                                        warning = true
+                                                    else
+                                                        local a = class.abilities[ entry.action_name ]
+
+                                                        if a then
+                                                            desc = "|cff00ccff" .. a.name .. "|r"
+                                                        else
+                                                            desc = "|cff00ccff(not found)|r"
+                                                            warning = true
+                                                        end
+                                                    end
+
+                                                    if cLen and cLen > 0 then
+                                                        desc = desc .. ", if |cffffd100" .. entry.criteria .. "|r"
+                                                    end
+
                                                 elseif cLen and cLen > 0 then
                                                     desc = "|cffffd100" .. entry.criteria .. "|r"
 
@@ -6655,6 +6693,19 @@ do
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
                                                         return e.action ~= "cancel_buff"
+                                                    end,
+                                                },
+
+                                                action_name = {
+                                                    type = "select",
+                                                    name = "Action Name",
+                                                    order = 3.2,
+                                                    width = 1.5,
+                                                    desc = "Specify the action to cancel; the result is that the addon will allow the channel to be removed immediately.",
+                                                    values = class.abilityList,
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        return e.action ~= "cancel_action"
                                                     end,
                                                 },
 
@@ -10277,6 +10328,7 @@ do
         run_action_list = "list_name",
         potion = "potion",
         variable = "var_name",
+        cancel_action = "action_name",
         cancel_buff = "buff_name",
         op = "op",
     }

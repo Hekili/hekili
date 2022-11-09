@@ -1152,6 +1152,7 @@ local newModifiers = {
     value_else = 'raw',
 
     sync = 'string', -- should be an ability's name.
+    action_name = 'string',
     buff_name = 'string',
     list_name = 'string',
     op = 'string',

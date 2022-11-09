@@ -605,7 +605,9 @@ end
 
 state.safebool = function( val )
     if type( val ) == "boolean" then return val end
-    return val ~= 0 and true or false
+    if val == nil then return false end
+    if val == 0 then return false end
+    return true
 end
 
 state.combat = 0

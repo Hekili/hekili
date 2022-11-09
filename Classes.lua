@@ -2520,6 +2520,16 @@ all:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "off",
+
+        usable = function ()
+            local a = args.action_name
+            local ability = class.abilities[ a ]
+            if not a or not ability then return false, "no action identified" end
+            if buff.casting.down or buff.casting.v3 ~= 1 then return false, "not channeling" end
+            if buff.casting.v1 ~= ability.id then return false, "not channeling " .. a end
+            return true
+        end,
+        timeToReady = function () return gcd.remains end,
     },
 
     variable = {
