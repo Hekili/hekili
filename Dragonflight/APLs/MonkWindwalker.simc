@@ -53,7 +53,7 @@ actions.aoe+=/spinning_crane_kick,if=combo_strike&(active_enemies>=7|active_enem
 actions.aoe+=/strike_of_the_windlord
 actions.aoe+=/spinning_crane_kick,if=combo_strike&active_enemies>=5
 actions.aoe+=/fists_of_fury
-actions.aoe+=/spinning_crane_kick,if=combo_strike&(active_enemies>=4&spinning_crane_kick.modifier>=2.5|!talent.shadowboxing_treads)
+actions.aoe+=/spinning_crane_kick,if=combo_strike
 actions.aoe+=/blackout_kick,cycle_targets=1,if=combo_strike
 actions.aoe+=/rushing_jade_wind,if=!buff.rushing_jade_wind.up
 actions.aoe+=/rising_sun_kick,cycle_targets=1
