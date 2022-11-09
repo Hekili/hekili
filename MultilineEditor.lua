@@ -25,6 +25,8 @@ local class   = Hekili.Class
 local scripts = Hekili.Scripts
 local state   = Hekili.State
 
+local Tooltip = ns.Tooltip
+
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
 -- List them here for Mikk's FindGlobals script
 -- GLOBALS: ACCEPT, ChatFontNormal
@@ -240,11 +242,11 @@ local function GenerateDiagnosticTooltip( widget, event )
 
     if descStyle and descStyle ~= "tooltip" then return end
 
-    GameTooltip:SetOwner( widget.frame, "ANCHOR_TOPRIGHT" )
-    GameTooltip:SetText(name, 1, .82, 0, 1)
+    Tooltip:SetOwner( widget.frame, "ANCHOR_TOPRIGHT" )
+    Tooltip:SetText(name, 1, .82, 0, 1)
 
     if type( arg ) == "string" then
-        GameTooltip:AddLine(arg, 1, 1, 1, 1)
+        Tooltip:AddLine(arg, 1, 1, 1, 1)
     end
 
     local tested = false
@@ -263,16 +265,16 @@ local function GenerateDiagnosticTooltip( widget, event )
         if script == 'criteria' then
             local result, warning = scripts:CheckScript( scriptID, action )
 
-            GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
+            Tooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
 
-            if warning then GameTooltip:AddLine( warning, 1, 0, 0 ) end
+            if warning then Tooltip:AddLine( warning, 1, 0, 0 ) end
 
         else
             local result, warning = scripts:CheckScript( scriptID, action, script )
 
-            GameTooltip:AddLine( ns.formatValue( result ), 1, 1, 1, 1 )
+            Tooltip:AddLine( ns.formatValue( result ), 1, 1, 1, 1 )
 
-            if warning then GameTooltip:AddLine( warning, 1, 0, 0 ) end
+            if warning then Tooltip:AddLine( warning, 1, 0, 0 ) end
             -- handle other types.
         end
 
@@ -282,21 +284,21 @@ local function GenerateDiagnosticTooltip( widget, event )
     local has_args = arg and ( next(arg) ~= nil )
 
     if has_args then
-        if tested then GameTooltip:AddLine(" ") end
+        if tested then Tooltip:AddLine(" ") end
 
-        GameTooltip:AddLine( "Values" )
+        Tooltip:AddLine( "Values" )
         for k, v in orderedPairs( arg ) do
           if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find("floor") and not key_cache[k]:find( "ceil" ) and ( type(v) ~= "string" or not v:find( "function" ) ) then
-            GameTooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
+            Tooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
           end
         end
     end
 
     if type( usage ) == "string" then
-        GameTooltip:AddLine( "Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
+        Tooltip:AddLine( "Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
     end
 
-    GameTooltip:Show()
+    Tooltip:Show()
 
 end
 
@@ -315,7 +317,7 @@ local function OnLeave(self)                                                    
   self = self.obj
   if self.entered then
     self.entered = nil
-    GameTooltip:Hide()
+    Tooltip:Hide()
     self:Fire("OnLeave")
   end
 end

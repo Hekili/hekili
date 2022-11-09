@@ -21,6 +21,7 @@ local round = ns.round
 local format, insert = string.format, table.insert
 
 local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi
+local Tooltip = ns.Tooltip
 
 local Masque, MasqueGroup
 local _
@@ -179,16 +180,16 @@ function ns.StartConfiguration( external )
         local H = Hekili
 
         if H.Config then
-            GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
+            Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
 
-            GameTooltip:SetText( "Hekili: Notifications" )
-            GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-            GameTooltip:AddLine( "Right-click to open Notification panel settings.", 1, 1, 1 )
-            GameTooltip:Show()
+            Tooltip:SetText( "Hekili: Notifications" )
+            Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+            Tooltip:AddLine( "Right-click to open Notification panel settings.", 1, 1, 1 )
+            Tooltip:Show()
         end
     end )
     HekiliNotification:SetScript( "OnLeave", function(self)
-        GameTooltip:Hide()
+        Tooltip:Hide()
     end )
 
     Hekili:ProfileFrame( "NotificationFrame", HekiliNotification )
@@ -259,17 +260,17 @@ function ns.StartConfiguration( external )
                 local H = Hekili
 
                 if H.Config then
-                    GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
+                    Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
 
-                    GameTooltip:SetText( "Hekili: " .. i )
-                    GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-                    GameTooltip:AddLine( "Right-click to open " .. i .. " display settings.", 1, 1, 1 )
-                    if not H:IsDisplayActive( i, true ) then GameTooltip:AddLine( "This display is not currently active.", 0.5, 0.5, 0.5 ) end
-                    GameTooltip:Show()
+                    Tooltip:SetText( "Hekili: " .. i )
+                    Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+                    Tooltip:AddLine( "Right-click to open " .. i .. " display settings.", 1, 1, 1 )
+                    if not H:IsDisplayActive( i, true ) then Tooltip:AddLine( "This display is not currently active.", 0.5, 0.5, 0.5 ) end
+                    Tooltip:Show()
                 end
             end )
             v.Backdrop:SetScript( "OnLeave", function( self )
-                GameTooltip:Hide()
+                Tooltip:Hide()
             end )
             v:Show()
 
@@ -2555,12 +2556,12 @@ do
             local H = Hekili
 
             --[[ if H.Config then
-                GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
-                GameTooltip:SetBackdropColor( 0, 0, 0, 0.8 )
+                Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
+                Tooltip:SetBackdropColor( 0, 0, 0, 0.8 )
 
-                GameTooltip:SetText( "Hekili: " .. dispID  )
-                GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-                GameTooltip:Show()
+                Tooltip:SetText( "Hekili: " .. dispID  )
+                Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+                Tooltip:Show()
                 self:SetMovable( true )
 
             else ]]
