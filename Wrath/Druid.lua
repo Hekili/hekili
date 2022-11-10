@@ -4,7 +4,19 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local FindUnitDebuffByID = ns.FindUnitDebuffByID
+
 local spec = Hekili:NewSpecialization( 11 )
+
+-- Idols
+spec:RegisterGear( "idol_of_worship", 39757)
+spec:RegisterGear( "idol_of_the_ravenous_beast", 40713)
+
+-- Sets
+spec:RegisterGear( "tier7", 39557, 39553, 39555, 39554, 39556, 40472, 40473, 40493, 40471, 40494 )
+spec:RegisterGear( "tier8", 46260, 46262, 46265, 46267, 46269, 46158, 46161, 46160, 46159, 46157 )
+spec:RegisterGear( "tier9", 48799, 48800, 48801, 48802, 48803, 48212, 48211, 48210, 48209, 48208 )
+spec:RegisterGear( "tier10", 51140, 51142, 51143, 51144, 51141, 51299, 51297, 51296, 51295, 51298 )
 
 local function rage_amount()
     local d = UnitDamage( "player" ) * 0.7
@@ -15,6 +27,198 @@ local function rage_amount()
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c )
 end
 
+-- Glyph of Shred helper
+local tracked_rips = {}
+Hekili.TR = tracked_rips;
+
+local function NewRip( target )
+    tracked_rips[ target ] = {
+        extension = 0,
+        applications = 0
+    }
+end
+
+local function RipShred( target )
+    if not tracked_rips[ target ] then
+        NewRip( target )
+    end
+    if tracked_rips[ target ].applications < 3 then
+        tracked_rips[ target ].extension = tracked_rips[ target ].extension + 2
+        tracked_rips[ target ].applications = tracked_rips[ target ].applications + 1
+    end
+end
+
+local function RemoveRip( target )
+    tracked_rips[ target ] = nil
+end
+
+local function GetTrackedRip( target )
+    if not tracked_rips[ target ] then
+        NewRip( target )
+    end
+    return tracked_rips[ target ]
+end
+
+
+-- Combat log handler
+local attack_events = {
+    SPELL_CAST_SUCCESS = true
+}
+
+local application_events = {
+    SPELL_AURA_APPLIED      = true,
+    SPELL_AURA_APPLIED_DOSE = true,
+    SPELL_AURA_REFRESH      = true,
+}
+
+local removal_events = {
+    SPELL_AURA_REMOVED      = true,
+    SPELL_AURA_BROKEN       = true,
+    SPELL_AURA_BROKEN_SPELL = true,
+}
+
+local death_events = {
+    UNIT_DIED               = true,
+    UNIT_DESTROYED          = true,
+    UNIT_DISSIPATES         = true,
+    PARTY_KILL              = true,
+    SPELL_INSTAKILL         = true,
+}
+
+spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if not sourceGUID == state.GUID then
+        return
+    end
+
+    if state.glyph.shred.enabled then
+        if attack_events[subtype] then
+            -- Track rip time extension from Glyph of Rip
+            local rip = FindUnitDebuffByID( "target", 49800 )
+            if rip and spellID == 48572 then
+                RipShred( destGUID )
+            end
+        end
+
+        if application_events[subtype] then
+            -- Remove previously tracked rip
+            if spellID == 49800 then
+                RemoveRip( destGUID )
+            end
+        end
+
+        if removal_events[subtype] then
+            -- Remove previously tracked rip
+            if spellID == 49800 then
+                RemoveRip( destGUID )
+            end
+        end
+
+        if death_events[subtype] then
+            -- Remove previously tracked rip
+            if spellID == 49800 then
+                RemoveRip( destGUID )
+            end
+        end
+    end
+end, false )
+
+spec:RegisterHook( "UNIT_ELIMINATED", function( guid )
+    RemoveRip( guid )
+end )
+
+local LastFinisherCp = 0
+local LastSeenCp = 0
+local CurrentCp = 0
+local DruidFinishers = {
+    [52610] = true,
+    [48577] = true,
+    [49800] = true,
+    [49802] = true
+}
+
+spec:RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function(event, unit, _, spellID )
+    if DruidFinishers[spellID] then
+        LastSeenCp = GetComboPoints("player", "target")
+    end
+end)
+
+spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", "COMBO_POINTS", function(event, unit)
+    CurrentCp = GetComboPoints("player", "target")
+    if CurrentCp == 0 and LastSeenCp > 0 then
+        LastFinisherCp = LastSeenCp
+    end
+end)
+
+spec:RegisterStateTable( "rip_tracker", setmetatable( {
+    cache = {},
+    reset = function( t )
+        table.wipe(t.cache)
+    end
+    }, {
+    __index = function( t, k )
+        if not t.cache[k] then
+            local tr = GetTrackedRip( k )
+            if tr then
+                t.cache[k] = { extension = tr.extension }
+            end
+        end
+        return t.cache[k]
+    end
+}))
+
+local lastfinishercp = nil
+spec:RegisterStateExpr("last_finisher_cp", function()
+    return lastfinishercp
+end)
+
+spec:RegisterStateFunction("set_last_finisher_cp", function(val)
+    lastfinishercp = val
+end)
+
+local predatorsswiftness_spell_assigned = false
+spec:RegisterHook( "reset_precast", function()
+    rip_tracker:reset()
+    set_last_finisher_cp(LastFinisherCp)
+    if not predatorsswiftness_spell_assigned then
+        class.abilityList.predatorsswiftness_spell = "|cff00ccff[Assigned Predator's Swiftness Spell]|r"
+        class.abilities.predatorsswiftness_spell = class.abilities[ settings.predatorsswiftness_spell or "regrowth" ]
+        predatorsswiftness_spell_assigned = true
+    end
+end )
+
+spec:RegisterStateExpr("rip_maxremains", function()
+    if debuff.rip.remains == 0 then
+        return 0
+    else
+        return debuff.rip.remains + ((debuff.rip.up and glyph.shred.enabled and (6 - rip_tracker[target.unit].extension)) or 0)
+    end
+end)
+
+spec:RegisterStateExpr("min_roar_offset", function()
+    return settings.min_roar_offset
+end)
+
+spec:RegisterStateExpr("flowerweaving_enabled", function()
+    return settings.flowerweaving_enabled and (state.group_members >= flowerweaving_mingroupsize)
+end)
+
+spec:RegisterStateExpr("bearweaving_enabled", function()
+    return settings.bearweaving_enabled and (settings.bearweaving_bossonly == false or state.encounterDifficulty > 0) and (settings.bearweaving_instancetype == "any" or (settings.bearweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.bearweaving_instancetype == "raid" and instanceType == "raid"))
+end)
+
+spec:RegisterStateExpr("bearweaving_lacerate_enabled", function()
+    return bearweaving_enabled and settings.bearweaving_spell == "lacerate"
+end)
+
+spec:RegisterStateExpr("bearweaving_mangle_enabled", function()
+    return bearweaving_enabled and settings.bearweaving_spell == "mangle"
+end)
+
+spec:RegisterStateExpr("predatorsswiftness_enabled", function()
+    return settings.predatorsswiftness_enabled
+end)
+
+-- Resources
 spec:RegisterResource( Enum.PowerType.Rage, {
     enrage = {
         aura = "enrage",
@@ -49,10 +253,10 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         end,
     },
 } )
-
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.ComboPoints )
 spec:RegisterResource( Enum.PowerType.Energy )
+
 
 -- Talents
 spec:RegisterTalents( {
@@ -210,7 +414,7 @@ spec:RegisterAuras( {
     -- All damage taken is reduced by $s2%.  While protected, damaging attacks will not cause spellcasting delays.
     barkskin = {
         id = 22812,
-        duration = 12,
+        duration = function() return 12 + ((set_bonus.tier7_4pc == 1 and 3) or 0) end,
         max_stack = 1,
     },
     -- Stunned.
@@ -319,20 +523,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 339, 1062, 5195, 5196, 9852, 9853, 19970, 19971, 19972, 19973, 19974, 19975, 26989, 27010, 53308, 53313, 65857, 66070 },
     },
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    faerie_fire = {
-        id = 770,
-        duration = 300,
-        max_stack = 1,
-        copy = { 770, 778, 9749, 9907, 26993 },
-    },
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    faerie_fire_feral = {
-        id = 16857,
-        duration = 300,
-        max_stack = 1,
-        copy = { 16857, 17390, 17391, 17392, 27011 },
-    },
     feline_grace = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=20719)
         id = 20719,
         duration = 3600,
@@ -360,6 +550,11 @@ spec:RegisterAuras( {
         id = 33831,
         duration = 30,
         max_stack = 1,
+    },
+    form = {
+        alias = { "aquatic_form", "cat_form", "bear_form", "dire_bear_form", "flight_form", "moonkin_form", "swift_flight_form", "travel_form"  },
+        aliasType = "buff",
+        aliasMode = "first"
     },
     -- Converting rage into health.
     frenzied_regeneration = {
@@ -445,7 +640,10 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 34153, 34152, 34151 },
     },
-
+    maul = {
+        duration = function () return swings.mainhand_speed end,
+        max_stack = 1,
+    },
     -- $s1 Arcane damage every $t1 seconds.
     moonfire = {
         id = 8921,
@@ -540,7 +738,7 @@ spec:RegisterAuras( {
     -- Bleeding for $s2 damage every $t2 seconds.
     rake = {
         id = 48574,
-        duration = 9,
+        duration = function() return 9 + ((set_bonus.tier9_2pc == 1 and 3) or 0) end,
         max_stack = 1,
         copy = { 1822, 1823, 1824, 9904, 27003, 48573, 48574, 59881, 59882, 59883, 59884, 59885, 59886 },
     },
@@ -562,7 +760,7 @@ spec:RegisterAuras( {
     -- Bleed damage every $t1 seconds.
     rip = {
         id = 49800,
-        duration = function() return glyph.rip.enabled and 16 or 12 end,
+        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc == 1 and 4) or 0) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
@@ -576,7 +774,7 @@ spec:RegisterAuras( {
     -- Physical damage done increased by $s2%.
     savage_roar = {
         id = 52610,
-        duration = 9,
+        duration = 14,
         max_stack = 1,
         copy = { 52610 },
     },
@@ -694,6 +892,33 @@ spec:RegisterAuras( {
 } )
 
 
+-- Form Helper
+spec:RegisterStateFunction( "swap_form", function( form )
+    removeBuff( "form" )
+
+    if form == "bear_form" or form == "dire_bear_form" then
+        spend( rage.current, "rage" )
+        if talent.furor.rank==5 then
+            gain( 10, "rage" )
+        end
+    end
+    
+    if form then
+        applyBuff( form )
+    end
+end )
+
+-- Maul Helper
+local finish_maul = setfenv( function()
+    spend( 25, "rage" )
+end, state )
+
+spec:RegisterStateFunction( "start_maul", function()
+    applyBuff( "maul", swings.time_to_next_mainhand )
+    state:QueueAuraExpiration( "maul", finish_maul, buff.maul.expires )
+end )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Attempts to cure 1 poison effect on the target, and 1 more poison effect every 3 seconds for 12 sec.
@@ -728,6 +953,7 @@ spec:RegisterAbilities( {
         texture = 132112,
 
         handler = function ()
+            swap_form( "aquatic_form" )
         end,
     },
 
@@ -736,7 +962,7 @@ spec:RegisterAbilities( {
     barkskin = {
         id = 22812,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - ((set_bonus.tier9_4pc == 1 and 12) or 0) end,
         gcd = "off",
 
         startsCombat = true,
@@ -768,7 +994,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     -- When activated, this ability causes your Mangle (Bear) ability to hit up to 3 targets and have no cooldown, and reduces the energy cost of all your Cat Form abilities by 50%.  Lasts 15 sec.  You cannot use Tiger's Fury while Berserk is active.     Clears the effect of Fear and makes you immune to Fear for the duration.
     berserk = {
         id = 50334,
@@ -786,6 +1011,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "berserk" )
         end,
     },
 
@@ -797,13 +1023,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.35,
+        spend = function() return 0.35 * ((talent.king_of_the_jungle.rank > 0 and 0.60) or 1) * ((talent.natural_shapeshifter.rank > 0 and 0.30) or 1) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132115,
 
         handler = function ()
+            swap_form( "cat_form" )
+
         end,
     },
 
@@ -835,7 +1063,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return glyph.claw.enabled and 40 or 45 end,
+        spend = function() return ((glyph.claw.enabled and 40) or 45) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -854,7 +1082,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
 
-        spend = 20,
+        spend = function() return 20 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -935,24 +1163,26 @@ spec:RegisterAbilities( {
         texture = 132121,
 
         handler = function ()
+            applyBuff( "demoralizing_roar" )
         end,
     },
 
 
-    -- Shapeshift into dire bear form, increasing melee attack power by 240, armor contribution from cloth and leather items by 370%, and Stamina by 25%.  Also protects the caster from Polymorph effects and allows the use of various bear abilities.    The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
+    -- Shapeshift into dire bear form, increasing melee attack power, armor contribution from cloth and leather items, and Stamina. Also protects the caster from Polymorph effects and allows the use of various bear abilities. The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
     dire_bear_form = {
         id = 9634,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.35,
+        spend = function() return 0.35 * ((talent.king_of_the_jungle.rank > 0 and 0.60) or 1) * ((talent.natural_shapeshifter.rank > 0 and 0.30) or 1) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 132276,
 
         handler = function ()
+            swap_form( "dire_bear_form" )
         end,
     },
 
@@ -973,9 +1203,10 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            gain(20, "rage" )
+            applyBuff( "enrage" )
         end,
     },
-
 
     -- Roots the target in place and causes 20 Nature damage over 12 sec.  Damage caused may interrupt the effect.
     entangling_roots = {
@@ -991,6 +1222,7 @@ spec:RegisterAbilities( {
         texture = 136100,
 
         handler = function ()
+            applyDebuff( "target", "entangling_roots", 27 )
         end,
 
         copy = { 1062, 5195, 5196, 9852, 9853, 26989, 53308 },
@@ -1011,6 +1243,8 @@ spec:RegisterAbilities( {
         texture = 136033,
 
         handler = function ()
+            removeDebuff( "armor_reduction" )
+            applyDebuff( "target", "faerie_fire", 300 )
         end,
     },
 
@@ -1029,6 +1263,8 @@ spec:RegisterAbilities( {
         texture = 136033,
 
         handler = function ()
+            removeDebuff( "armor_reduction" )
+            applyDebuff( "target", "faerie_fire_feral", 300 )
         end,
     },
 
@@ -1040,7 +1276,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 35,
+        spend = function() return 35 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1050,7 +1286,13 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo_points" end,
 
         handler = function ()
+            removeBuff( "clearcasting" )
+            if combo_points.current == 5 then
+                applyBuff("predators_swiftness")
+            end
+            set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
+            spend( min( 30, energy.current - 35 ), "energy" )
         end,
     },
 
@@ -1092,6 +1334,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "frenzied_regeneration" )
         end,
     },
 
@@ -1110,6 +1353,8 @@ spec:RegisterAbilities( {
         texture = 136038,
 
         handler = function ()
+            applyBuff( "gift_of_the_wild" )
+            swap_form( "" )
         end,
 
         copy = { 21850, 26991, 48470 },
@@ -1120,7 +1365,7 @@ spec:RegisterAbilities( {
     growl = {
         id = 6795,
         cast = 0,
-        cooldown = 8,
+        cooldown = function() return 8 - ((set_bonus.tier9_2pc == 1 and 2) or 0) end,
         gcd = "off",
 
         spend = 0,
@@ -1245,6 +1490,8 @@ spec:RegisterAbilities( {
         texture = 132131,
 
         handler = function ()
+            removeBuff( "clearcasting" )
+            applyDebuff( "target", "lacerate", 15, min( 5, debuff.lacerate.stack + 1 ) )
         end,
     },
 
@@ -1268,6 +1515,27 @@ spec:RegisterAbilities( {
         copy = { 48450, 48451 },
     },
 
+    -- A strong attack that increases melee damage and causes a high amount of threat. Effects which increase Bleed damage also increase Maul damage.
+    maul = {
+        id = 48480,
+        cast = 0,
+        cooldown = 0,
+        gcd = "off",
+
+        spend = function() return (15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132136,
+
+        nobuff = "maul",
+
+        handler = function( rank )
+            start_maul()
+        end,
+
+        copy = { 6807, 6808, 6809, 8972, 9745, 9880, 9881, 26996, 48479 }
+    },
 
     -- Finishing move that causes damage and stuns the target.  Non-player victim spellcasting is also interrupted for 3 sec.  Causes more damage and lasts longer per combo point:     1 point  : 249-250 damage, 1 sec     2 points: 407-408 damage, 2 sec     3 points: 565-566 damage, 3 sec     4 points: 723-724 damage, 4 sec     5 points: 881-882 damage, 5 sec
     maim = {
@@ -1276,7 +1544,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
 
-        spend = 35,
+        spend = function() return 35 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1285,7 +1553,12 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo_points" end,
 
         handler = function ()
-            applyDebuff( "target", "maim" )
+            applyDebuff( "target", "maim", combo_points.current )
+            removeBuff( "clearcasting" )
+            if combo_points.current == 5 then
+                applyBuff("predators_swiftness")
+            end
+            set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
         end,
     },
@@ -1298,14 +1571,16 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = 20,
+        spend = function() return 20 - talent.ferocity.rank end,
         spendType = "rage",
 
         startsCombat = true,
         texture = 132135,
 
         handler = function()
-            applyDebuff( "target", "mangle_bear" )
+            removeDebuff( "mangle" )
+            applyDebuff( "target", "mangle_bear", 60 )
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 33986, 33987, 48563, 48654 }
@@ -1319,14 +1594,16 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 45,
+        spend = function () return 40 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132135,
 
         handler = function()
+            removeDebuff( "target", "mangle" )
             applyDebuff( "target", "mangle_cat" )
+            removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
         end,
 
@@ -1348,6 +1625,7 @@ spec:RegisterAbilities( {
         texture = 136078,
 
         handler = function ()
+            applyBuff( "mark_of_the_wild" )
         end,
 
         copy = { 5232, 6756, 5234, 8907, 9884, 9885, 26990, 48469 },
@@ -1368,6 +1646,7 @@ spec:RegisterAbilities( {
         texture = 136096,
 
         handler = function ()
+            applyDebuff( "target", "moonfire" )
         end,
 
         copy = { 8924, 8925, 8926, 8927, 8928, 8929, 9833, 9834, 9835, 26987, 26988, 48462, 48463 },
@@ -1389,6 +1668,7 @@ spec:RegisterAbilities( {
         texture = 136036,
 
         handler = function ()
+            swap_form( "moonkin_form" )
         end,
     },
 
@@ -1406,6 +1686,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "natures_grasp" )
         end,
 
         copy = { 16810, 16811, 16812, 16813, 17329, 27009, 53312 },
@@ -1426,6 +1707,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "natures_swiftness" )
         end,
     },
 
@@ -1455,13 +1737,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 50,
+        spend = function() return 50 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132142,
 
         handler = function ()
+            applyDebuff( "target", "pounce", 3)
+            applyDebuff( "target", "pounce_bleed", 18 )
             gain( 1, "combo_points" )
         end,
     },
@@ -1481,6 +1765,7 @@ spec:RegisterAbilities( {
         texture = 132089,
 
         handler = function ()
+            applyBuff( "prowl" )
         end,
     },
 
@@ -1492,14 +1777,17 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 40,
+        spend = function () return (40 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132122,
 
+        readyTime = function() return debuff.rake.remains end,
+
         handler = function ()
             applyDebuff( "target", "rake" )
+            removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
         end,
     },
@@ -1512,7 +1800,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 60,
+        spend = function() return 60 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1563,6 +1851,7 @@ spec:RegisterAbilities( {
         texture = 136085,
 
         handler = function ()
+            removeBuff( "predators_swiftness" )
         end,
 
         copy = { 8938, 8939, 8940, 8941, 9750, 9856, 9857, 9858, 26980, 48442, 48443 },
@@ -1634,17 +1923,24 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 30,
+        spend = function () return (30 - ((set_bonus.tier10_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132152,
 
         usable = function() return combo_points.current > 0, "requires combo_points" end,
+        readyTime = function() return debuff.rip.remains end, -- Clipping rip is a DPS loss and an unpredictable recommendation. AP snapshot on previous rip will prevent overriding
 
         handler = function ()
             applyDebuff( "target", "rip" )
+            removeBuff( "clearcasting" )
+            if combo_points.current == 5 then
+                applyBuff("predators_swiftness")
+            end
+            set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
+            rip_tracker[target.unit].extension = 0
         end,
     },
 
@@ -1656,7 +1952,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 25,
+        spend = function() return 25 * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = false,
@@ -1666,6 +1962,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "savage_roar" )
+            if combo_points.current == 5 then
+                applyBuff("predators_swiftness")
+            end
+            set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
         end,
     },
@@ -1678,18 +1978,19 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 60,
+        spend = function () return (60 * ((buff.berserk.up and 0.5) or 1)) - (talent.shredding_attacks.rank * 9) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 136231,
 
         handler = function ()
-            if glyph.shred.enabled and debuff.rip.up then
-                debuff.rip.expires = debuff.rip.expires + 2
-                -- TODO: Cap at 3 applications.
+            if glyph.shred.enabled and debuff.rip.up and rip_tracker[target.unit].extension < 6 then
+                rip_tracker[target.unit].extension = rip_tracker[target.unit].extension + 2
+                applyDebuff( "target", "rip", debuff.rip.remains + 2)
             end
             gain( 1, "combo_points" )
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1776,6 +2077,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "survival_instincts" )
         end,
     },
 
@@ -1794,6 +2096,7 @@ spec:RegisterAbilities( {
         texture = 132128,
 
         handler = function ()
+            swap_form( "swift_flight_form" )
         end,
     },
 
@@ -1827,13 +2130,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 20,
+        spend = function() return 20 - talent.ferocity.rank end,
         spendType = "rage",
 
         startsCombat = true,
         texture = 134296,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1845,13 +2149,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = 50,
+        spend = function () return (50 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 134296,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1870,6 +2175,7 @@ spec:RegisterAbilities( {
         texture = 136104,
 
         handler = function ()
+            applyBuff( "thorns" )
         end,
 
         copy = { 782, 1075, 8914, 9756, 9910, 26992, 53307 },
@@ -1880,7 +2186,7 @@ spec:RegisterAbilities( {
     tigers_fury = {
         id = 50213,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - ((set_bonus.tier7_4pc == 1 and 3) or 0) end,
         gcd = "off",
 
         spend = 0,
@@ -1890,6 +2196,7 @@ spec:RegisterAbilities( {
         texture = 132242,
 
         handler = function ()
+            gain( 60, "energy" )
         end,
     },
 
@@ -1948,6 +2255,7 @@ spec:RegisterAbilities( {
         texture = 132144,
 
         handler = function ()
+            swap_form( "travel_form" )
         end,
     },
 
@@ -2021,6 +2329,7 @@ spec:RegisterAbilities( {
         texture = 136006,
 
         handler = function ()
+            removeBuff( "predators_swiftness" )
         end,
 
         copy = { 5177, 5178, 5179, 5180, 6780, 8905, 9912, 26984, 26985, 48459, 48461 },
@@ -2028,6 +2337,133 @@ spec:RegisterAbilities( {
 } )
 
 
+-- Settings
+local bearweaving_spells = {}
+local bearweaving_instancetypes = {}
+local predatorsswiftness_spells = {}
+
+spec:RegisterSetting("min_roar_offset", 14, {
+    type = "range",
+    name = "Minimum Roar Offset",
+    desc = "Sets the minimum number of seconds over the current rip duration required for Savage Roar recommendations",
+    width = "full",
+    min = 0,
+    softMax = 14,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_roar_offset = val
+    end
+})
+
+spec:RegisterSetting("flowerweaving_enabled", false, {
+    type = "toggle",
+    name = "Flowerweaving: Enabled?",
+    desc = "Select whether or not flowerweaving should be used in AOE situations",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_enabled = val
+    end
+})
+
+spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
+    type = "range",
+    name = "Flowerweaving: Minimum Group Size",
+    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
+    width = "full",
+    min = 0,
+    softMax = 40,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_enabled", false, {
+    type = "toggle",
+    name = "Bearweaving: Enabled?",
+    desc = "Select whether or not bearweaving should be used",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_enabled = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_spell", "lacerate", {
+    type = "select",
+    name = "Bearweaving: Spell",
+    desc = "Select the type of bearweaving that you want Hekili to recommend.\n\n" ..
+        "In default priorities, selecting Lacerate will recommend your |cff00ccff[bear_lacerate]|r action list. " ..
+        "Selecting Mangle will recommend your |cff00ccff[bear_mangle]|r action list. " ..
+        "Custom priorities may ignore this setting.",
+    width = "full",
+    values = function()
+            table.wipe(bearweaving_spells)
+            bearweaving_spells.lacerate = class.abilityList.lacerate
+            bearweaving_spells.mangle = class.abilityList.mangle_bear
+            return bearweaving_spells
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_spell = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_instancetype", "raid", {
+    type = "select",
+    name = "Bearweaving: Instance Type",
+    desc = "Select the type of instance that is required before the addon recomments your |cff00ccff[bear_lacerate]|r or |cff00ccff[bear_mangle]|r\n\n" ..
+        "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend bearweaving in any situation.\n\n",
+    width = "full",
+    values = function()
+        table.wipe(bearweaving_instancetypes)
+        bearweaving_instancetypes.any = "any"
+        bearweaving_instancetypes.dungeon = "dungeon"
+        bearweaving_instancetypes.raid = "raid"
+        return bearweaving_instancetypes
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_instancetype = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_bossonly", true, {
+    type = "toggle",
+    name = "Bearweaving: Boss Only?",
+    desc = "Select whether or not bearweaving should be used in only boss fights, or whether it can be recommended in any engagement",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_bossonly = val
+    end
+})
+
+spec:RegisterSetting("predatorsswiftness_enabled", false, {
+    type = "toggle",
+    name = "Predator's Swiftness: Enabled?",
+    desc = "Select whether or not predator's swiftness procs should be consumed by casting a nature spell",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.predatorsswiftness_enabled = val
+    end
+})
+
+spec:RegisterSetting("predatorsswiftness_spell", "regrowth", {
+    type = "select",
+    name = "Predator's Swiftness: Spell",
+    desc = "Select which spell should be recommended when predator's swiftness consumption is recommended",
+    width = "full",
+    values = function()
+        table.wipe(predatorsswiftness_spells)
+        predatorsswiftness_spells.regrowth = class.abilityList.regrowth
+        predatorsswiftness_spells.wrath = class.abilityList.wrath
+        return predatorsswiftness_spells
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.predatorsswiftness_spell = val
+        class.abilities.predatorsswiftness_spell = class.abilities[ val ]
+    end
+})
+
+
+-- Options
 spec:RegisterOptions( {
     enabled = true,
 
@@ -2048,6 +2484,7 @@ spec:RegisterOptions( {
 } )
 
 
+-- Default Packs
 spec:RegisterPack( "Balance (IV)", 20220926, [[Hekili:vwvtVTnpm4Flffiyd71oF12To0MdfDhsp0EWf9OSKLPteISKHKCmYf9BFuoFzNLG3weGaBrYh9qYhstgtENKKZCa51jJMmz09tUlE8VMo5M7jjUnvajPIXxXwGpOyL4)pXKmfV98nsnlpeVvxBchT05QS)E4WMMMybFt0AqOSXCD5WgTtUkIlzwRGpmBlgr5MArEuELnQAnez0oMtOvrCTwMRBu2iwMqkCcWssYQfs3Cfj7809NilQao51XJrEiYZHTUcwoj59LcRNwzeAJWTXtdVLXSqUNQvEQBj4PZ5OHpce2txG0cIXu0OlesmXU(ApDxI7PphyTN(T5F8D)lbltUZttGkhuMbg8vKy(x8VW4HSXgxzaSeKXC)4XHLATALqLwOnLxWdMzvQUifjvAJqM3bj0AbdmciTqyG)tu8OJjbLlwuImDnKN2XCmOyzsiFWvobhVYfdwy01vPLTS0o72EWQX(x4wvmxTb6AY6yMcMu29muySetKadchUgsbfuITPzJhGUVaCX5cmqSC9W0rDJCzTXi4mfCUy76i2haUl12WmLbFZQlkIbUuuzHuzTIzIdsKdzx3ydf59vOs96wRH(07V98B)2t)JAHqbyHcpN6eQvy5iERhDikQ9nOIclQmohKGH50g7fOsDv37VgpxGQHpN3Tf4DS9moBGsgwmMXzwxQtu2R50GSA5)eOvlpxGKeSyQWSgNMMxwPnUWaWK9zTNkXEwOsqsy1ULAd62HHcssR12TfqbRw6WhFTD7XoHg5jschNVWcld3D8)Rm90bE6vHwW2oy41EAupDMNElYMw(rs6GbXHlacx(bB9vWDzf660UUUxrFIp3CXCPVoTLvJBz7jADp9bpD6OJ30U5Ka63(Lq)iehgycGC3fb5cJhNuIpcB3XRaY)8IiVDa6yK7hUcr9RVcFQRocYHjKak3)vqzNQUTm1rz3R3UJDJh95aU34YLaUDsdr1f(QWUT1hMa6wB2VD)e1vpX6P74777(FK)(d]] )
 
-spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:9AvuVnkoq4FlRQu1DQnKaBtV2tj5HtNwP2hQojwTpc2ygsScGr2MYLx8V9Bmjbm0q290E6uKIa7z((M5BS)er(rFnkmLQHO3cweeS45Gh98FAPFWJrH6dvquyfLTNUfFOKwG))fqsZnK)8VcTBDixqtTqOe1sgU9oTUs97ZN3004XzhM9oWlvEmrX8gHoF)mwovP4S5zwyMLkR5PZsRuZQEhMjfAQMlkNXeI8urtPAgnHNZ1CqffMuZZ1VugLC569bSgQaw0B((yvWttHJHckwu4x3XvgsLKlKC9bdX(wcvbPgIO0q07ad5fgUX3SLRHSfllWdBqPiJNJT1n3yiN7CBnBi)YlF7xnVAxp4rdjeQ0qrciXxXYY8Q5vkZ2lkVkjGTFcvF365fu5(yrwmsyCdpp9YrXO64mHS4Y7I1utUdb4sA(wqQIZQLhUNNTgkb52dESAPek1REyHBSnuU(EfWohLMxaXAr8ZlSPEw59CG0tcfuuw24V8UpKKl0y7Ra5(FaCCZQwbXCu8uUlQOVJN5ILcQ0c3NQRgS7ojKAxpPolZtuaLwrfpAzNUE1v3AflrCLGxQvD6WGflO)TlIyUn)NcOSUm(4BX5CL(E7LN1z8sUAhQhhLOpc56RbPQHxbX4HdB22LFhIX5rbE7yJ)aUP7HwvtZz75LBD3RGwUnVdLP01l2UlV900pfY4mUEvWIljH)452F(UtySvpVAs5z5TAQClO7oaMYHnp9rCqyqdgbJlQvXj4PRRG4WBlBwUikSHklrDdnDEPOsi1wFIhmKJSyi2bQYZ8AuiTwVtiXW68oIcB31AjEUyWNFR1MfkPj5qA0FefYWdwGKtXNUqvziRnKLgYTgYWQZq2GBGv4Xsb5yqxgPXFD8Q(Pi(JcDl5p1ZnoOosiotP156Rt34gzfkPonIJpbc5BbJWbnS6GO38PpDRR2WMBA)N2(a9Gi31jVoqIK)5ROzFxy7RPt2HweFWI4517m8CjbdA5K0(jdPUQhahZrBEpozEt4M1oFV84F1OnqlihET2dwg)T)Vy06Pyj8P)9NINg0rwZhVXgF8RB6V7GS(8KSo0994K3rNoBuBbXFX1gRNCODko07UnTPVjn60qVJEBEJV589KQvJCAozq3UrWIlm89V21JFggonS12p760N70zP03Sd)aQrxHcCJ98NrnkMp7gt7htnmGZ)I(N)]] )
+spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:LR1wVTTnu4Fl5fb7MwpjhBhha78WqXaA2qxbCX2BsIwMYriYscu0Xldg63(oK6gfViPS(2gqrBIi55(578rI664(D3DhquS7xNBpFUJJJ9m7139WDoU7OVLHD3LHcEbDe(He0j4V)fmbfx4)5VTRWFYx(JPSn8wCk6atq5PNjbWMC3T)Cum9ljU77kD71ZCwU0X5byVz4a3V6a655OdhWLBfNh4U7ptP)2Vw4xRjY5Odf(FJeLsIOr48INkE67PhpgJl8rhEfLeGH1jPuenknb(jCq6Pt4Kd8FpVWpc(i9zy3bXOC43tZ4lmZDxCuonNz4bik8pFLhnWjO9X4dU)m8zqJyseI5pHHZcIXisakNgLCC25m3DOaMKaF5zcCak4Lgfaobto(2SGZecoHw4VPW)o7wjqJoIj5EHNjVXKZDgLtqAA8H0ljZeoXmc(ekI5Qpw47SSW3cYnf(3u4FaZn8yuaemPyWOl8VEv97DeGDH)0wlBpOfm5fMvTqYQYHmyTJrJoH9OPEIo1fuev02R0kjkRvHB2w4RicUhazX9PEzPrj0824gS9she8oU0QSpw(amXLgdCW(zEFVcU10bBKjUvJWJNV0ShZTWC0RqdKhjfrgWVzQ8(H8aw(BstkKfmR8lfLz67ngXNGULOmVtO)QJDvg)Lx52c)trjCj4LggMJlRIDwWxAc)p6dTGACGAQc)pWtEt7uFjyym3FDFUFLpFcLaD)D6al)KhRpgeYddfdTAc(I5Fh7(Q820Tab9cMPkh7r3Y)o1qdOIJzyPjYLcTnYmTnFG8pFt28msvvLulf)8gfV9ie)6Y89OB8cXK0GO0Z5E7bNK7(MbvvXaQ0ZayKRm7xClUFVQ(8AG0xufsG5exWOxH5eE1gEJhEiIG9y7WlmLCI7HMH7Bl6rKtPepOK4mxo1(QHqGgB7EbK5qeiESxiZuczZz5MHm(UuBJMIFZWTYgalQzxwMjdBRuXtzJkcrNJBhkxVLZ5ypqfNYfvBVdERdqDd7s12DgqQ5ZTWJ1JFmpbfQNN3x91cLsKAHmMAfZLk94LJtzKZjEL)ShJyuj9iVsAFCrwFuDCbE32rfI973kkpy)d752qgunHOPaaq(LOqAcopV2qAwQzLAdHVmWtKcnhjr5pJjEbzAODiXfCauDZ4fJZXvTxDStKPRIODI(mH)klIJpXOrZ56no1ZKekf3p9ezDoArp4yFrzvRGsyImoz)9dXEVDQFD67iegbwmEW9c8UefFqImb5fXfheGXSbwh5618EF3nWSLm4CpNLA51374hPaNg(LgAjuhxm65lsCcxkoba6aYkj61DcG5MbD9DLDKHXPxWMNulxKuMsfbHExPv2KHvR1rGVd77fdZ)q3rha)rII3qWxshZ4iBHQ9EkmjGx0noiEPPtWK(MYqjc9SGD3envlA4WxEx)0aHIu8rs6f6Z)an7Dhs2RjvfYf5v4i0YloPD8VPW)1lWmJtnWOvCcRcSFiizcD5uuWlY3jtmVyM9X4k3xnQY9Eg4owNMxB(keBzFM)qC2pmFf7Xkijq2bOs)LtzPekJ8Z9L0eyVJg)XXMv8eRFlnmcq7QeD(SMXU3U9NKhw(XOWT3CoZ6gtZzlEsNyQZZvhN9iFvBdwSH1V4h7sXKFo9upTuj5R8PQQ8nlnTYJBNBP2v84cR(4wlAUsKG(iJ(Z2oigmxWGh8JRKYcSrQIUCZhubQ4Xn6rpQRLz(3wYCV3USQuscrXshyeK)62vSbUr(qMFfhTgBwGdRfBZTCMF0zmctNGepN5sD2jGnWVhCRuKqsL2Saxp2rKC)7SL3FfilBV9Xx8rNLwtUrTZ56vtnio2tL1f75q)yooyRYlDYuVA70g1nQnn3uti8QhsQgKAnsKEjmwBD(YMmHMPLASyLSz7PQSORxN051BTuKUUVvPXp19Dz3S12Q7xUv6vA34S42jt0fe(KZ0pSCQswR9Tu52R8JUQePb291H6UvFBDS1N)2Oe9Bk5)xlHUpCitutMObWERZCJHwyr7PqYrQ0shUpSZEeZ6PthzvNPHycAV3U0v6mU1MnTvQ4JwAETsLGR87fkwzO(YKkDNYA9ELUeHQOrwB84k7Rxvqb6CygS(7fIS6mJhMu3Pf7jUrx3T2rA6KKk6H2DvFPyDlkZbttmyXslT3fwmE2HRciwrAlGhvJh5yB(iIt(KsMBxTUlSyd(2cZvZQB3ayrtxDFKi4BZ4yfzFPKETUyzpbaXyM2lCiIRjFy2fhyhu86faT0EprZTkuYKLR9)2KsJ7pYOQW(1gtvz0c7vdn38mCC8a0JhqQs8hD3ThLJp87j6(pNb6m95u4kLFgh(3OGN53f09F(d]] )
