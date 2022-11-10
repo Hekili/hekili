@@ -548,7 +548,7 @@ local HekiliSpecMixin = {
         end
 
         if data.id and type( data.id ) == "function" then
-            if not data.copy or #data.copy == 0 then
+            if not data.copy or type( data.copy ) == "table" and #data.copy == 0 then
                 Hekili:Error( "RegisterAbility for %s (Specialization %d) will fail; ability has an ID function but needs to have 'copy' entries for the abilities table.", ability, self.id )
             end
         end
