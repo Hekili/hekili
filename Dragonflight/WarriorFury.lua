@@ -491,7 +491,7 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = function ()
             if talent.meat_cleaver.enabled then return 4
-            elseif talent.improved_whirlwind.enabled then return 2
+            elseif talent.improved_whirlwind.enabled or talent.titanic_rage.enabled then return 2
             else return 0
             end
         end,
@@ -766,7 +766,10 @@ spec:RegisterAbilities( {
             if talent.titans_torment.enabled then
                 applyBuff( "odyns_fury" )
                 active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
-                if talent.titanic_rage.enabled then applyBuff( "crushing_impact" ) end
+                if talent.titanic_rage.enabled then
+                    applyBuff ( "enrage" )
+                    applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
+                end
             end
         end,
     },
@@ -1322,8 +1325,8 @@ spec:RegisterAbilities( {
             active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
             if talent.dancing_blades.enabled then applyBuff( "dancing_blades" ) end
             if talent.titanic_rage.enabled then
-                applyBuff( "enrage" )
-                applyBuff( "crushing_impact" )
+                applyBuff ( "enrage" )
+                applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
             end
             if talent.titans_torment.enabled then applyBuff( "avatar", 4 ) end
         end,
