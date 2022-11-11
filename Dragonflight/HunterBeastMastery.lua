@@ -565,12 +565,12 @@ spec:RegisterAuras( {
     -- Talent: Taking $w2% increased Physical damage from $@auracaster.
     -- https://wowhead.com/beta/spell=325037
     death_chakram_vulnerability = {
-        id = 325037,
+        id = 375893,
         duration = 10,
         mechanic = "bleed",
         type = "Ranged",
         max_stack = 1,
-        copy = { 361756, 375893 }
+        copy = { 325037, 361756, "death_chakram_debuff" }
     },
     death_chakram = {
         duration = 3.5,
@@ -1556,16 +1556,12 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        talent = function()
-            if covenant.night_fae then return end
-            return "death_chakram"
-        end,
         startsCombat = true,
-
         toggle = "essences",
 
         handler = function ()
             applyBuff( "death_chakram" )
+            applyDebuff( "target", "death_chakram_vulnerability" )
             if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
         end,
 
