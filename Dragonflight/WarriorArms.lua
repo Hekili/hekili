@@ -743,10 +743,8 @@ spec:RegisterAbilities( {
         texture = 236303,
         range = 8,
 
-        --[[ generates 20 rage in beta 46144 currently, but not in PTR
         spend = -20,
         spendType = "rage",
-        ]]
 
         toggle = "cooldowns",
 
