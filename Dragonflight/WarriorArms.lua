@@ -350,7 +350,7 @@ spec:RegisterAuras( {
     juggernaut = {
         id = 383290,
         duration = 12,
-        max_stack = 12
+        max_stack = 15
     },
     overpower = {
         id = 7384,
@@ -1261,7 +1261,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
 
-        spend = -20,
+        spend = -15,
         spendType = "rage",
 
         talent = "skullsplitter",
