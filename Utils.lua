@@ -574,9 +574,179 @@ function ns.IsActiveSpell( id )
     return id == spellID
 end
 
-do
-    -- Check Covenant spells to disable them.
 
+-- Tooltip Parsing Utilities (10.0.2)
+do
+    local SurfaceArgs = TooltipUtil and TooltipUtil.SurfaceArgs
+    local CurrentBuild = Hekili.CurrentBuild
+
+    local tooltip = ns.Tooltip
+
+    local DisableText = {
+        _G.SPELL_FAILED_NOT_HERE,
+        _G.SPELL_FAILED_INCORRECT_AREA,
+        _G.SPELL_FAILED_NOT_IN_MAGE_TOWER,
+        _G.TOOLTIP_NOT_IN_MAGE_TOWER
+    }
+
+    local FindStringInTooltip = function( str, id, ttType, reverse, useMatch )
+        -- Remove after 10.0.2 releases.
+        if CurrentBuild < 100002 then
+            local found = nil
+
+            tooltip:SetOwner( UIParent, "ANCHOR_NONE" )
+
+            if ttType == "spell" then tooltip:SetSpellByID( id )
+            elseif ttType == "item" then tooltip:SetItemByID( id )
+            elseif ttType == "inventory" then tooltip:SetInventoryItem( "player", id )
+            elseif ttType == "conduit" then tooltip:SetConduit( id, 0 )
+            else
+                Hekili:Error( "Usage:  FindStringInTooltip( str, id, { spell | item | inventory | conduit }, reverse, useMatch )\n" ..
+                    "Invalid tooltip type:  '%s'", ttType or "nil" )
+                return
+            end
+
+            if reverse then
+                for i = tooltip:NumLines(), 1, -1 do
+                    local label = tooltip:GetName() .. "TextLeft" .. i
+                    local line = _G[ label ]
+                    if line then
+                        local text = line:GetText()
+
+                        if type( str ) == "table" then
+                            for _, seek in ipairs( str ) do
+                                if ( useMatch and text:match( seek ) ) or ( not useMatch and seek == str ) then
+                                    found = true
+                                    break
+                                end
+                            end
+                            if found then break end
+                        else
+                            if ( useMatch and text:match( str ) ) or ( not useMatch and text == str ) then
+                                found = true
+                                break
+                            end
+                        end
+                    end
+                end
+            else
+                for i = 1, tooltip:NumLines() do
+                    local label = tooltip:GetName() .. "TextLeft" .. i
+                    local line = _G[ label ]
+                    if line then
+                        local text = line:GetText()
+                        if type( str ) == "table" then
+                            for _, seek in ipairs( str ) do
+                                if ( useMatch and text:match( str ) ) or ( not useMatch and text == str ) then
+                                    found = true
+                                    break
+                                end
+                            end
+                            if found then break end
+                        else
+                            if ( useMatch and text:match( str ) ) or ( not useMatch and text == str ) then
+                                found = true
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+
+            tooltip:Hide()
+            return found
+        end
+
+        local data
+
+        if ttType == "spell" then data = C_TooltipInfo.GetSpellByID( id )
+        elseif ttType == "item" then data = C_TooltipInfo.GetItemByID( id )
+        elseif ttType == "inventory" then data = C_TooltipInfo.GetInventoryItem( "player", id )
+        elseif ttType == "conduit" then data = C_TooltipInfo.GetConduit( id, 0 )
+        else
+            Hekili:Error( "Usage:  FindStringInTooltip( str, id, { spell | item | inventory | conduit }, reverse, useMatch )\n" ..
+                "Invalid tooltip type:  '%s'", ttType or "nil" )
+            return
+        end
+
+        SurfaceArgs( data )
+
+        if reverse then
+            for i = #data.lines, 1, -1 do
+                local line = data.lines[ i ]
+                SurfaceArgs( line )
+                if type( str ) == "table" then
+                    for _, seek in ipairs( str ) do
+                        if ( useMatch and line.leftText:match( seek ) ) or ( not useMatch and line.leftText == seek ) then return true end
+                    end
+                else
+                    if ( useMatch and line.leftText:match( str ) ) or ( not useMatch and line.leftText == str ) then return true end
+                end
+            end
+            return
+        end
+
+        for _, line in ipairs( data ) do
+            SurfaceArgs( line )
+            if type( str ) == "table" then
+                for _, seek in ipairs( str ) do
+                    if ( useMatch and line.leftText:match( seek ) ) or ( not useMatch and line.leftText == seek ) then return true end
+                end
+            else
+                if ( useMatch and line.leftText:match( str ) ) or ( not useMatch and line.leftText == str ) then return true end
+            end
+        end
+    end
+    ns.FindStringInTooltip = FindStringInTooltip
+
+    local FindStringInSpellTooltip = function( str, spellID, reverse, useMatch )
+        return FindStringInTooltip( str, spellID, "spell", reverse, useMatch )
+    end
+    ns.FindStringInSpellTooltip = FindStringInSpellTooltip
+
+    local FindStringInItemTooltip = function( str, itemID, reverse, useMatch )
+        return FindStringInTooltip( str, itemID, "item", reverse, useMatch )
+    end
+    ns.FindStringInItemTooltip = FindStringInItemTooltip
+
+    -- Note, this is written to assume we're dealing with the player's inventory only; I'm not messing with inspect right now.
+    local FindStringInInventoryItemTooltip = function( str, slot, reverse, useMatch )
+        return FindStringInTooltip( str, slot, "inventory", reverse, useMatch )
+    end
+    ns.FindStringInInventoryItemTooltip = FindStringInInventoryItemTooltip
+
+    local FindStringInConduitTooltip = function( str, conduit, reverse, useMatch )
+        return FindStringInTooltip( str, conduit, "conduit", reverse, useMatch )
+    end
+    ns.FindStringInConduitTooltip = FindStringInConduitTooltip
+
+    local IsSpellDisabled = function( spellID )
+        return FindStringInSpellTooltip( DisableText, spellID, true, true )
+    end
+    ns.IsSpellDisabled = IsSpellDisabled
+
+    local IsItemDisabled = function( itemID )
+        return FindStringInItemTooltip( DisableText, itemID, true, true )
+    end
+    ns.IsItemDisabled = IsItemDisabled
+
+    local IsInventoryItemDisabled = function( slot )
+        return FindStringInInventoryItemTooltip( DisableText, slot, true, true )
+    end
+    ns.IsInventoryItemDisabled = IsInventoryItemDisabled
+
+    Hekili.FindStringInTooltip = FindStringInTooltip
+    Hekili.FindStringInSpellTooltip = FindStringInSpellTooltip
+    Hekili.FindStringInItemTooltip = FindStringInItemTooltip
+    Hekili.FindStringInInventoryItemTooltip = FindStringInInventoryItemTooltip
+    Hekili.FindStringInConduitTooltip = FindStringInConduitTooltip
+
+    Hekili.IsSpellDisabled = IsSpellDisabled
+    Hekili.IsItemDisabled = IsItemDisabled
+    Hekili.IsInventoryItemDisabled = IsInventoryItemDisabled
+
+
+    -- Check Covenant spells to disable them.
     local CovenantSpells = {
         [300728] = 1,
         [304971] = 1,
@@ -643,46 +813,30 @@ do
     end
     ns.IsCovenantSpell = IsCovenantSpell
 
+    local covenantsDisabled = nil
 
-    local cachedStatus = {}
-
-    local WipeCovenantCache = function()
-        wipe( cachedStatus )
-    end
-    ns.WipeCovenantCache = WipeCovenantCache
-
-    local IsDisabledCovenantSpell = function( spellID )
-        local cached = cachedStatus[ spellID ]
-        if cached ~= nil then return cached end
-
-        if not IsCovenantSpell( spellID ) then
-            cachedStatus[ spellID ] = false
+    local AreCovenantsDisabled = function()
+        if covenantsDisabled == nil then
+            if FindStringInConduitTooltip( DisableText, 5, true, true ) then
+                covenantsDisabled = true
+                return true
+            end
+            covenantsDisabled = false
             return false
         end
+        return covenantsDisabled
+    end
+    ns.AreCovenantsDisabled = AreCovenantsDisabled
 
-        local tooltip = ns.Tooltip
-
-        tooltip:SetOwner( UIParent )
-        tooltip:SetSpellByID( spellID )
-
-        for n = 1, tooltip:NumLines() do
-           local label = tooltip:GetName() .. "TextLeft" .. n
-           local line = _G[ label ]
-           if line then
-              local text = line:GetText()
-              if text == _G.SPELL_FAILED_NOT_HERE then
-                 tooltip:Hide()
-                 cachedStatus[ spellID ] = true
-                 return true
-              end
-           end
-        end
-
-        tooltip:Hide()
-        cachedStatus[ spellID ] = false
-        return false
+    local IsDisabledCovenantSpell = function( spellID )
+        return CovenantSpells[ spellID ] and AreCovenantsDisabled()
     end
     ns.IsDisabledCovenantSpell = IsDisabledCovenantSpell
+
+    local WipeCovenantCache = function()
+        covenantsDisabled = nil
+    end
+    ns.WipeCovenantCache = WipeCovenantCache
 end
 
 

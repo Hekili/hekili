@@ -9,8 +9,12 @@ Hekili.Flavor = GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
 local format = string.format
 local insert, concat = table.insert, table.concat
 
+local buildStr, _, _, buildNum = GetBuildInfo()
+
+Hekili.CurrentBuild = buildNum
+
 if Hekili.Version == ( "@" .. "project-version" .. "@" ) then
-    Hekili.Version = format( "Dev-%s (%s)", GetBuildInfo(), date( "%Y%m%d" ) )
+    Hekili.Version = format( "Dev-%s (%s)", buildStr, date( "%Y%m%d" ) )
 end
 
 Hekili.AllowSimCImports = true
@@ -28,7 +32,7 @@ Hekili.IsClassic = function()
 end
 
 Hekili.IsDragonflight = function()
-    return select( 4, GetBuildInfo() ) >= 100000
+    return buildNum >= 100000
 end
 
 ns.PTR = false

@@ -16,7 +16,7 @@ local lower = string.lower
 local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
-local FindPlayerAuraByID = ns.FindPlayerAuraByID
+local FindPlayerAuraByID, FindStringInInventoryItemTooltip = ns.FindPlayerAuraByID, ns.FindStringInInventoryItemTooltip
 
 local CGetItemInfo = ns.CachedGetItemInfo
 local RC = LibStub( "LibRangeCheck-2.0" )
@@ -799,24 +799,7 @@ do
                 state.trinket.t1.cooldown = nil
             end
 
-            ns.Tooltip:SetOwner( UIParent )
-            ns.Tooltip:SetInventoryItem( "player", 13 )
-
-            local i = 0
-            while( true ) do
-                i = i + 1
-                local ttLine = _G[ "HekiliTooltipTextLeft" .. i ]
-
-                if not ttLine then break end
-
-                local line = ttLine:GetText()
-
-                if line and line:match( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP ) then
-                    state.trinket.t1.__proc = true
-                end
-            end
-
-            ns.Tooltip:Hide()
+            state.trinket.t1.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 13, true, true )
         end
 
         local T2 = GetInventoryItemID( "player", 14 )
@@ -856,24 +839,7 @@ do
                 state.trinket.t2.cooldown = nil
             end
 
-            ns.Tooltip:SetOwner( UIParent )
-            ns.Tooltip:SetInventoryItem( "player", 14 )
-
-            local i = 0
-            while( true ) do
-                i = i + 1
-                local ttLine = _G[ "HekiliTooltipTextLeft" .. i ]
-
-                if not ttLine then break end
-
-                local line = ttLine:GetText()
-
-                if line and line:match( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP ) then
-                    state.trinket.t2.__proc = true
-                end
-            end
-
-            ns.Tooltip:Hide()
+            state.trinket.t2.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 14, true, true )
         end
 
         state.main_hand.size = 0

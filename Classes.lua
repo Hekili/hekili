@@ -12,6 +12,7 @@ local CommitKey = ns.commitKey
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local GetItemInfo = ns.CachedGetItemInfo
 local GetResourceInfo, GetResourceKey = ns.GetResourceInfo, ns.GetResourceKey
+local IsSpellDisabled = ns.IsSpellDisabled
 local RegisterEvent = ns.RegisterEvent
 local RegisterUnitEvent = ns.RegisterUnitEvent
 
@@ -6198,43 +6199,16 @@ function Hekili:SpecializationChanged()
     state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
 
     self:UpdateDisplayVisibility()
-
-    -- if not self:ScriptsLoaded() then self:LoadScripts() end
-
-    Hekili:UpdateDamageDetectionForCLEU()
-
-    -- Use tooltip to detect Mage Tower.
-    local tooltip = ns.Tooltip
-    tooltip:SetOwner( UIParent, "ANCHOR_NONE" )
+    self:UpdateDamageDetectionForCLEU()
 
     wipe( seen )
 
     for k, v in pairs( class.abilities ) do
         if not seen[ v ] then
-            if v.id > 0 then
-                local disable
-                tooltip:SetSpellByID( v.id )
-
-                for i = tooltip:NumLines(), 5, -1 do
-                    local label = tooltip:GetName() .. "TextLeft" .. i
-                    local line = _G[ label ]
-                    if line then
-                        local text = line:GetText()
-                        if text == _G.TOOLTIP_NOT_IN_MAGE_TOWER then
-                            disable = true
-                            break
-                        end
-                    end
-                end
-
-                v.disabled = disable
-            end
-
+            if v.id > 0 then v.disabled = IsSpellDisabled( v.id ) end
             seen[ v ] = true
         end
     end
-
-    tooltip:Hide()
 end
 
 
