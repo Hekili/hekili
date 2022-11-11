@@ -936,7 +936,7 @@ spec:RegisterAbilities( {
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
                 if talent.improved_execute.enabled then
-                    gain( cost * 0.2, "rage" ) -- Regain 20% for target not dying
+                    gain( cost * 0.1, "rage" )
                 end
                 if talent.critical_thinking.enabled then
                     gain( cost * ( talent.critical_thinking.rank * 0.05 ), "rage" ) -- Regain another 5/10% for critical thinking

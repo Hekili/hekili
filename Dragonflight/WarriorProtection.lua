@@ -905,7 +905,7 @@ spec:RegisterAbilities( {
             if not buff.sudden_death.up then
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
-                gain( cost * 0.2, "rage" ) -- Regain 20% for target not dying (Protection spec)
+                gain( cost * 0.1, "rage" )
             else
                 removeBuff( "sudden_death" )
             end
