@@ -47,9 +47,9 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         stop = function () return state.time == 0 or state.swings.mainhand == 0 end,
         value = function ()
             if state.talent.devastator.enabled then -- 1 Rage for instigate with devastator, 2 rage for instigate with devastate
-                return (base_rage_gen * ( state.talent.war_machine.enabled and 1.5 or 1 )) + (state.talent.instigate.enabled and 1 or 0) -- 1 Rage for instigate
+                return ( base_rage_gen * ( state.talent.war_machine.enabled and 1.5 or 1 ) ) + ( state.talent.instigate.enabled and 1 or 0 ) -- 1 Rage for instigate
             else
-                return (base_rage_gen * ( state.talent.war_machine.enabled and 1.5 or 1 )) + (state.talent.instigate.enabled and 2 or 0) -- 2 Rage for instigate
+                return ( base_rage_gen * ( state.talent.war_machine.enabled and 1.5 or 1 ) ) + ( state.talent.instigate.enabled and 2 or 0 ) -- 2 Rage for instigate
             end
         end
     },
@@ -68,7 +68,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         value = 4,
     },
-})
+} )
 
 -- Talents
 spec:RegisterTalents( {
@@ -495,7 +495,7 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     }
-})
+} )
 
 local rageSpent = 0
 local gloryRage = 0
@@ -547,7 +547,7 @@ spec:RegisterHook( "spend", function( amt, resource )
                     end
                 end
                 if talent.indomitable.enabled then
-                    gain( (0.1 * activations) * health.max, "health" )
+                    gain( ( 0.1 * activations ) * health.max, "health" )
                 end
             end
         end
@@ -600,7 +600,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "avatar" )
             if talent.immovable_object.enabled then
-                applyBuff("shield_wall", 4)
+                applyBuff( "shield_wall", 4 )
             end
             if talent.violent_outburst.enabled then
                 applyBuff( "violent_outburst" )
@@ -784,7 +784,7 @@ spec:RegisterAbilities( {
         cooldown = 45,
         gcd = "spell",
 
-        spend = function () return (talent.booming_voice.enabled and -30 or 0) * (buff.unnerving_focus.up and 1.5 or 1) end,
+        spend = function () return ( talent.booming_voice.enabled and -30 or 0 ) * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
         spendType = "rage",
 
         talent = "demoralizing_shout",
@@ -826,7 +826,7 @@ spec:RegisterAbilities( {
         texture = 132343,
 
         handler = function ()
-            applyDebuff( "target", "disarm")
+            applyDebuff( "target", "disarm" )
         end,
     },
 
@@ -900,7 +900,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if not buff.sudden_death.up then
                 local cost = min( rage.current, 40 )
-                spend( cost, "rage", nil, true)
+                spend( cost, "rage", nil, true )
                 gain( cost * 0.2, "rage" ) -- Regain 20% for target not dying (Protection spec)
             else
                 removeBuff( "sudden_death" )
@@ -1144,7 +1144,7 @@ spec:RegisterAbilities( {
     pummel = {
         id = 6552,
         cast = 0,
-        cooldown = function () return 15 - (talent.concussive_blows.enabled and 1 or 0) - (talent.honed_reflexes.enabled and 1 or 0) end,
+        cooldown = function () return 15 - ( talent.concussive_blows.enabled and 1 or 0 ) - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
         gcd = "off",
 
         startsCombat = true,
@@ -1180,7 +1180,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rallying_cry" )
-            gain( (talent.inspiring_presence.enabled and 0.25 or 0.15) * health.max, "health" )
+            gain( ( talent.inspiring_presence.enabled and 0.25 or 0.15 ) * health.max, "health" )
         end,
     },
 
@@ -1188,7 +1188,7 @@ spec:RegisterAbilities( {
     ravager = {
         id = 228920,
         cast = 0,
-        charges = function () return (talent.storm_of_steel.enabled and 2 or 1) end,
+        charges = function () return ( talent.storm_of_steel.enabled and 2 or 1 ) end,
         cooldown = 90,
         recharge = 90,
         gcd = "spell",
@@ -1286,7 +1286,7 @@ spec:RegisterAbilities( {
         texture = 132357,
 
         handler = function ()
-            applyDebuff ( "target", "shield_bash")
+            applyDebuff ( "target", "shield_bash" )
         end,
     },
 
@@ -1347,7 +1347,7 @@ spec:RegisterAbilities( {
     shield_slam = {
         id = 23922,
         cast = 0,
-        cooldown = function () return 9 - (talent.honed_reflexes.enabled and 1 or 0) end,
+        cooldown = function () return 9 - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
         hasteCD = true,
         gcd = "spell",
 
@@ -1360,8 +1360,8 @@ spec:RegisterAbilities( {
 
             return
             ( -15 + reduction + ( talent.heavy_repercussions.enabled and -2 or 0 ) )
-            * ( buff.violent_outburst.up and 1.5 or 1) -- Build 45969
-            * ( buff.unnerving_focus.up and 1.5 or 1)
+            * ( buff.violent_outburst.up and 1.5 or 1 ) -- Build 45969
+            * ( buff.unnerving_focus.up and 1.5 or 1 )
         end,
         spendType = "rage",
 
@@ -1419,9 +1419,8 @@ spec:RegisterAbilities( {
         id = 46968,
         cast = 0,
         cooldown = function () return
-            ((
-                ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40)
-                - ( conduit.disturb_the_peace.enabled and 5 or 0 )
+            ( ( ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40 )
+            - ( conduit.disturb_the_peace.enabled and 5 or 0 )
             ) end,
         gcd = "spell",
 
@@ -1466,7 +1465,7 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "spell",
 
-        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * (buff.unnerving_focus.up and 1.5 or 1) end,
+        spend = function () return ( -25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
         spendType = "rage",
 
         talent = "spear_of_bastion",
@@ -1476,7 +1475,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff ("target", "spear_of_bastion" )
+            applyDebuff ( "target", "spear_of_bastion" )
         end,
     },
 
@@ -1592,7 +1591,7 @@ spec:RegisterAbilities( {
     thunderous_roar = {
         id = 384318,
         cast = 0,
-        cooldown = function() return 90 - (talent.uproar.enabled and 30 or 0 ) end,
+        cooldown = function() return 90 - ( talent.uproar.enabled and 30 or 0 ) end,
         gcd = "spell",
 
         spend = -10,
@@ -1605,7 +1604,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff ("target", "thunderous_roar" )
+            applyDebuff ( "target", "thunderous_roar" )
             active_dot.thunderous_roar = max( active_dot.thunderous_roar, active_enemies )
         end,
     },

@@ -223,7 +223,7 @@ spec:RegisterAuras( {
     },
     bladestorm = {
         id = 227847,
-        duration = function () return (6 + (buff.dance_of_death.up and 3 or 0)) * haste end,
+        duration = function () return ( 6 + ( buff.dance_of_death.up and 3 or 0 ) ) * haste end,
         max_stack = 1,
         onCancel = function()
             setCooldown( "global_cooldown", 0 )
@@ -259,7 +259,7 @@ spec:RegisterAuras( {
     },
     deep_wounds = {
         id = 262115,
-        duration = function() return 12 + (talent.bloodletting.enabled and 6 or 0) end,
+        duration = function() return 12 + ( talent.bloodletting.enabled and 6 or 0 ) end,
         tick_time = 3,
         max_stack = 1
     },
@@ -433,7 +433,7 @@ spec:RegisterAuras( {
     },
     thunderous_roar = {
         id = 384318,
-        duration = function () return 8 + (talent.thunderous_words.enabled and 2 or 0) + (talent.bloodletting.enabled and 6 or 0) end,
+        duration = function () return 8 + ( talent.thunderous_words.enabled and 2 or 0 ) + ( talent.bloodletting.enabled and 6 or 0 ) end,
         tick_time = 2,
         max_stack = 1
     },
@@ -587,11 +587,11 @@ spec:RegisterHook( "reset_precast", function ()
     if debuff.colossus_smash.up and talent.test_of_might.enabled then state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires ) end
 
     if buff.bladestorm.up and talent.hurricane.enabled then
-        local next_hu = query_time + (1 * state.haste) - ( ( query_time - buff.bladestorm.applied ) % (1 * state.haste) )
+        local next_hu = query_time + ( 1 * state.haste ) - ( ( query_time - buff.bladestorm.applied ) % ( 1 * state.haste ) )
 
         while ( next_hu <= buff.bladestorm.expires ) do
             state:QueueAuraEvent( "bladestorm_hurricane", TriggerHurricane, next_hu, "AURA_PERIODIC" )
-            next_hu = next_hu + (1 * state.haste)
+            next_hu = next_hu + ( 1 * state.haste )
         end
 
     end
@@ -614,7 +614,7 @@ spec:RegisterSetBonuses( "tier29_2pc", 393705, "tier29_4pc", 393706 )
         id = 394173,
         duration = 6,
         max_stack = 1
-    })
+    } )
 ------------------------------------------------------------
 
 -- Abilities
@@ -636,7 +636,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "avatar" )
-            if talent.blademasters_torment.enabled then applyBuff ( "bladestorm", 4) end
+            if talent.blademasters_torment.enabled then applyBuff ( "bladestorm", 4 ) end
             if talent.warlords_torment.enabled then applyBuff ( "recklessness" ) end
         end,
     },
@@ -753,7 +753,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "bladestorm" )
             setCooldown( "global_cooldown", class.auras.bladestorm.duration )
-            if talent.blademasters_torment.enabled then applyBuff("avatar", 4) end
+            if talent.blademasters_torment.enabled then applyBuff( "avatar", 4 ) end
 
             if talent.merciless_bonegrinder.enabled then
                 state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
@@ -787,10 +787,10 @@ spec:RegisterAbilities( {
     cleave = {
         id = 845,
         cast = 0,
-        cooldown = function () return 6 - (talent.reaping_swings.enabled and 3 or 0) end,
+        cooldown = function () return 6 - ( talent.reaping_swings.enabled and 3 or 0 ) end,
         gcd = "spell",
 
-        spend = function() return 20 - (buff.battlelord.up and 10 or 0) end,
+        spend = function() return 20 - ( buff.battlelord.up and 10 or 0 ) end,
         spendType = "rage",
 
         talent = "cleave",
@@ -876,7 +876,7 @@ spec:RegisterAbilities( {
         texture = 132343,
 
         handler = function ()
-            applyDebuff( "target", "disarm")
+            applyDebuff( "target", "disarm" )
         end,
     },
 
@@ -939,7 +939,7 @@ spec:RegisterAbilities( {
                     gain( cost * 0.2, "rage" ) -- Regain 20% for target not dying
                 end
                 if talent.critical_thinking.enabled then
-                    gain( cost * (talent.critical_thinking.rank * 0.1), "rage") -- Regain up to another 20% for critical thinking
+                    gain( cost * ( talent.critical_thinking.rank * 0.05 ), "rage" ) -- Regain another 5/10% for critical thinking
                 end
             end
             removeBuff( "sudden_death" )
@@ -998,7 +998,7 @@ spec:RegisterAbilities( {
     heroic_leap = {
         id = 6544,
         cast = 0,
-        cooldown = function () return 45 + (talent.bounding_stride.enabled and -15 or 0) end,
+        cooldown = function () return 45 + ( talent.bounding_stride.enabled and -15 or 0 ) end,
         charges = function () return legendary.leaper.enabled and 3 or nil end,
             recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
         gcd = "off",
@@ -1089,7 +1089,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         hasteCD = true,
 
-        spend = function() return 30 - (buff.battlelord.up and 10 or 0) end,
+        spend = function() return 30 - ( buff.battlelord.up and 10 or 0 ) end,
         spendType = "rage",
 
         talent = "mortal_strike",
@@ -1107,9 +1107,9 @@ spec:RegisterAbilities( {
     overpower = {
         id = 7384,
         cast = 0,
-        charges = function () return 1 + (talent.dreadnaught.enabled and 1 or 0) end,
-        cooldown = function () return 12 - (talent.honed_reflexes.enabled and 1 or 0) end,
-        recharge = function () return 12 - (talent.honed_reflexes.enabled and 1 or 0) end,
+        charges = function () return 1 + ( talent.dreadnaught.enabled and 1 or 0 ) end,
+        cooldown = function () return 12 - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
+        recharge = function () return 12 - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
         gcd = "spell",
 
         talent = "overpower",
@@ -1142,7 +1142,7 @@ spec:RegisterAbilities( {
     pummel = {
         id = 6552,
         cast = 0,
-        cooldown = function () return 15 - (talent.concussive_blows.enabled and 1 or 0) - (talent.honed_reflexes.enabled and 1 or 0) end,
+        cooldown = function () return 15 - ( talent.concussive_blows.enabled and 1 or 0 ) - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
         gcd = "off",
 
         startsCombat = true,
@@ -1176,7 +1176,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rallying_cry" )
-            gain( (talent.inspiring_presence.enabled and 0.25 or 0.15) * health.max, "health" )
+            gain( ( talent.inspiring_presence.enabled and 0.25 or 0.15 ) * health.max, "health" )
         end,
     },
 
@@ -1211,7 +1211,7 @@ spec:RegisterAbilities( {
         texture = 1380678,
 
         handler = function ()
-            applyBuff ("sharpened_blades")
+            applyBuff ( "sharpened_blades" )
         end,
     },
 
@@ -1219,7 +1219,7 @@ spec:RegisterAbilities( {
     shattering_throw = {
         id = 64382,
         cast = 1.5,
-        cooldown = function () return (pvptalent.demolition.enabled and 90 or 180) end,
+        cooldown = function () return ( pvptalent.demolition.enabled and 90 or 180 ) end,
         gcd = "spell",
 
         talent = "shattering_throw",
@@ -1285,7 +1285,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 20 + (talent.barbaric_training.enabled and 5 or 0) end,
+        spend = function() return 20 + ( talent.barbaric_training.enabled and 5 or 0 ) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1302,7 +1302,7 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "spell",
 
-        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) end,
+        spend = function () return ( -25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) end,
         spendType = "rage",
 
         talent = "spear_of_bastion",
@@ -1312,7 +1312,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff ("target", "spear_of_bastion" )
+            applyDebuff ( "target", "spear_of_bastion" )
         end,
     },
 
@@ -1419,7 +1419,7 @@ spec:RegisterAbilities( {
     thunderous_roar = {
         id = 384318,
         cast = 0,
-        cooldown = function() return 90 - (talent.uproar.enabled and 30 or 0 ) end,
+        cooldown = function() return 90 - ( talent.uproar.enabled and 30 or 0 ) end,
         gcd = "spell",
 
         spend = -10,
@@ -1432,7 +1432,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff ("target", "thunderous_roar" )
+            applyDebuff ( "target", "thunderous_roar" )
             active_dot.thunderous_roar = max( active_dot.thunderous_roar, active_enemies )
         end,
     },
@@ -1484,7 +1484,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff ("war_banner")
+            applyBuff ( "war_banner" )
         end,
     },
 
@@ -1518,10 +1518,10 @@ spec:RegisterAbilities( {
     whirlwind = {
         id = 1680,
         cast = 0,
-        cooldown = function () return (talent.storm_of_steel.enabled and 14 or 0) end,
+        cooldown = function () return ( talent.storm_of_steel.enabled and 14 or 0 ) end,
         gcd = "spell",
 
-        spend = function() return 30 + (talent.barbaric_training.enabled and 5 or 0 ) + (talent.storm_of_swords.enabled and 30 or 0) end,
+        spend = function() return 30 + ( talent.barbaric_training.enabled and 5 or 0 ) + ( talent.storm_of_swords.enabled and 30 or 0 ) end,
         spendType = "rage",
 
         startsCombat = false,
@@ -1537,7 +1537,7 @@ spec:RegisterAbilities( {
     wrecking_throw = {
         id = 384110,
         cast = 0,
-        cooldown = function () return (pvptalent.demolition.enabled and 45 * 0.5 or 45) end,
+        cooldown = function () return ( pvptalent.demolition.enabled and 45 * 0.5 or 45 ) end,
         gcd = "spell",
 
         talent = "wrecking_throw",

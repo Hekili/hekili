@@ -51,7 +51,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
              -- annihilator: auto-attacks deal an additional (10% of Attack power) Physical damage and generate 2 Rage.
              -- swift strikes: annihilator generates 2 additional rage
             return ( ( ( state.talent.war_machine.enabled and 1.2 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.mainhand_speed )
-            + ( state.talent.annihilator.enabled and (state.talent.swift_strikes.rank > 0 and 2 + (state.talent.swift_strikes.rank * 1 ) or 2 ) or 0 )
+            + ( state.talent.annihilator.enabled and ( state.talent.swift_strikes.rank > 0 and 2 + ( state.talent.swift_strikes.rank * 1 ) or 2 ) or 0 )
             )
         end
     },
@@ -73,7 +73,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
             -- annihilator: auto-attacks deal an additional (10% of Attack power) Physical damage and generate 2 Rage.
             -- swift strikes: annihilator generates 2 additional rage
             return ( ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.offhand_speed * offhand_mod )
-            + ( state.talent.annihilator.enabled and (state.talent.swift_strikes.rank > 0 and 2 + (state.talent.swift_strikes.rank * 1 ) or 2 ) or 0 )
+            + ( state.talent.annihilator.enabled and ( state.talent.swift_strikes.rank > 0 and 2 + ( state.talent.swift_strikes.rank * 1 ) or 2 ) or 0 )
         end,
     },
 
@@ -640,7 +640,7 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
         local current = UnitPower( "player", RAGE )
         if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decay triggering
             if state.talent.anger_management.enabled then
-                rageSpent = ( rageSpent + (lastRage - current) ) % 20
+                rageSpent = ( rageSpent + ( lastRage - current ) ) % 20
             end
             if state.legendary.glory.enabled and FindPlayerAuraByID( 324143 ) then
                 gloryRage = ( gloryRage + lastRage - current ) % 25
@@ -715,11 +715,11 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if buff.ravager.up and talent.hurricane.enabled then
-        local next_hu = query_time + (1 * state.haste) - ( ( query_time - buff.ravager.applied ) % (1 * state.haste) )
+        local next_hu = query_time + ( 1 * state.haste ) - ( ( query_time - buff.ravager.applied ) % ( 1 * state.haste ) )
 
         while ( next_hu <= buff.ravager.expires ) do
             state:QueueAuraEvent( "ravager_hurricane", TriggerHurricane, next_hu, "AURA_PERIODIC" )
-            next_hu = next_hu + (1 * state.haste)
+            next_hu = next_hu + ( 1 * state.haste )
         end
     end
 end )
@@ -758,7 +758,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "avatar" )
-            if talent.berserkers_torment.enabled then applyBuff ( "recklessness", 4) end
+            if talent.berserkers_torment.enabled then applyBuff ( "recklessness", 4 ) end
             if talent.titans_torment.enabled then
                 applyBuff( "odyns_fury" )
                 active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
@@ -1096,7 +1096,7 @@ spec:RegisterAbilities( {
         texture = 132343,
 
         handler = function ()
-            applyDebuff( "target", "disarm")
+            applyDebuff( "target", "disarm" )
         end,
     },
 
@@ -1138,7 +1138,7 @@ spec:RegisterAbilities( {
         usable = function ()
             if buff.sudden_death.up then return true end
             if cycle_for_execute then return true end
-            return target.health_pct < (talent.massacre.enabled and 35 or 20), "requires target in execute range"
+            return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires target in execute range"
         end,
 
         cycle = "execute_ineligible",
@@ -1368,7 +1368,7 @@ spec:RegisterAbilities( {
     pummel = {
         id = 6552,
         cast = 0,
-        cooldown = function () return 15 - (talent.concussive_blows.enabled and 1 or 0) - (talent.honed_reflexes.enabled and 1 or 0) end,
+        cooldown = function () return 15 - ( talent.concussive_blows.enabled and 1 or 0 ) - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
         gcd = "off",
 
         startsCombat = true,
@@ -1467,7 +1467,7 @@ spec:RegisterAbilities( {
     ravager = {
         id = 228920,
         cast = 0,
-        charges = function () return (talent.storm_of_steel.enabled and 2 or 1) end,
+        charges = function () return ( talent.storm_of_steel.enabled and 2 or 1 ) end,
         cooldown = 90,
         recharge = 90,
         gcd = "spell",
@@ -1679,7 +1679,7 @@ spec:RegisterAbilities( {
     thunderous_roar = {
         id = 384318,
         cast = 0,
-        cooldown = function() return 90 - (talent.uproar.enabled and 30 or 0 ) end,
+        cooldown = function() return 90 - ( talent.uproar.enabled and 30 or 0 ) end,
         gcd = "spell",
 
         spend = -10,
@@ -1692,7 +1692,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff ("target", "thunderous_roar" )
+            applyDebuff( "target", "thunderous_roar" )
             active_dot.thunderous_roar = max( active_dot.thunderous_roar, active_enemies )
         end,
     },
@@ -1764,7 +1764,7 @@ spec:RegisterAbilities( {
     wrecking_throw = {
         id = 384110,
         cast = 0,
-        cooldown = function () return (pvptalent.demolition.enabled and 45 * 0.5 or 45) end,
+        cooldown = function () return ( pvptalent.demolition.enabled and 45 * 0.5 or 45 ) end,
         gcd = "spell",
 
         talent = "wrecking_throw",
