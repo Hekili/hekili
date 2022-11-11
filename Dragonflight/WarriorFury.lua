@@ -259,7 +259,7 @@ spec:RegisterAuras( {
     },
     ashen_juggernaut = {
         id = 392537,
-        duration = 12,
+        duration = 15,
         max_stack = 5
     },
     avatar = {
@@ -762,7 +762,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "avatar" )
-            if talent.berserkers_torment.enabled then applyBuff ( "recklessness", 4 ) end
+            if talent.berserkers_torment.enabled then applyBuff ( "recklessness", 6 ) end
             if talent.titans_torment.enabled then
                 applyBuff( "odyns_fury" )
                 active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
@@ -1507,7 +1507,7 @@ spec:RegisterAbilities( {
             if talent.reckless_abandon.enabled then
                 gain( 50, "rage" )
             end
-            if talent.berserkers_torment.enabled then applyBuff( "avatar", 4 ) end
+            if talent.berserkers_torment.enabled then applyBuff( "avatar", 6 ) end
             if legendary.will_of_the_berserker.enabled then
                 state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
             end
