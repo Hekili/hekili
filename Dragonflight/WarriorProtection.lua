@@ -1087,7 +1087,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         usable = function()
-            if settings.last_stand_offensively and talent.unnerving_focus.enabled then
+            if settings.last_stand_offensively and (talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled) then
                 return true
             else
                 return incoming_damage_3s > 0.3 * health.max, "requires 30% health incoming damage in 3s"
@@ -1716,12 +1716,13 @@ spec:RegisterSetting( "last_stand_offensively", false, {
     desc = function()
         return "If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage.\n\n"
             .. "If unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage.\n\n"
-            .. ( state.talent.unnerving_focus.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires |T571316:0|t Unnerving Focus|r"
+            .. ( state.talent.unnerving_focus.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires Talent|T571316:0|t Unnerving Focus|r\n"
+            .. "or\n"
+            ..( state.conduit.unnerving_focus.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires Conduit|T571316:0|t Unnerving Focus|r"
     end,
     type = "toggle",
     width = "full"
 } )
-
 
 spec:RegisterOptions( {
     enabled = true,
