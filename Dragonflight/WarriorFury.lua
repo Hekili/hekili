@@ -318,11 +318,6 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
-    crushing_impact = {
-        id = 394330,
-        duration = 6,
-        max_stack = 1
-    },
     dancing_blades = {
         id = 391688,
         duration = 10,
@@ -421,6 +416,11 @@ spec:RegisterAuras( {
         duration = 12,
         tick_time = 2,
         max_stack = 1
+    },
+    reckless_abandon = {
+        id = 396752,
+        duration = 12,
+        max_stack = 2,
     },
     recklessness = {
         id = 1719,
@@ -888,10 +888,11 @@ spec:RegisterAbilities( {
         texture = 136012,
 
         talent = "reckless_abandon",
-        buff = "recklessness",
+        buff = "reckless_abandon",
         bind = "bloodthirst",
 
         handler = function ()
+            removeStack( "reckless_abandon" )
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
             if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
             if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
@@ -1037,18 +1038,13 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132215,
 
-        talent = function()
-            if buff.crushing_impact.up then return end
-            return "reckless_abandon"
-        end,
+        talent = "reckless_abandon",
+        buff = "reckless_abandon",
         notalent = "annihilator",
         bind = "raging_blow",
-        buff = function()
-            if buff.crushing_impact.up then return "crushing_impact" end
-            return "recklessness"
-        end,
 
         handler = function ()
+            removeStack( "reckless_abandon" )
             removeStack( "whirlwind" )
             spendCharges( "raging_blow", 1 )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
@@ -1418,8 +1414,7 @@ spec:RegisterAbilities( {
         notalent = "annihilator",
         startsCombat = true,
         nobuff = function()
-            if buff.crushing_impact.up then return "crushing_impact" end
-            if talent.reckless_abandon.enabled then return "recklessness" end
+            if talent.reckless_abandon.enabled then return "reckless_abandon" end
         end,
         bind = "crushing_blow",
 
@@ -1467,6 +1462,7 @@ spec:RegisterAbilities( {
         talent = "rampage",
 
         handler = function ()
+            if talent.reckless_abandon.enabled then addStack( "reckless_abandon", nil, 2 ) end
             if talent.frenzy.enabled then addStack( "frenzy", nil, 1 ) end
             applyBuff( "enrage" )
             removeStack( "whirlwind" )
