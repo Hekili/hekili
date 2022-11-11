@@ -1,4 +1,5 @@
 actions.precombat+=/bottled_flayedwing_toxin
+actions.precombat=apply_poison
 actions.precombat+=/marked_for_death,precombat_seconds=10,if=raid_event.adds.in>25
 actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/stealth
