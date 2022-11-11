@@ -1401,9 +1401,9 @@ spec:RegisterAbilities( {
     shield_wall = {
         id = 871,
         cast = 0,
-        charges = function () return 1 + ( talent.shield_wall.enabled and 1 or 0 ) + ( legendary.unbreakable_will.enabled and 1 or 0 ) end,
-        cooldown = function() return 210 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
-        recharge = function() return 210 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
+        charges = function () return 1 + ( talent.defenders_aegis.enabled and 1 or 0 ) + ( legendary.unbreakable_will.enabled and 1 or 0 ) end,
+        cooldown = function() return 210 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) - ( talent.defenders_aegis.enabled and 30 or 0 ) end,
+        recharge = function() return 210 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) - ( talent.defenders_aegis.enabled and 30 or 0 ) end,
         gcd = "off",
 
         talent = "shield_wall",
