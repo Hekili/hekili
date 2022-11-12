@@ -1,1081 +1,1417 @@
 -- PaladinHoly.lua
--- September 2022
-
-if UnitClassBase( "player" ) ~= "PALADIN" then return end
+-- DF Pre-Patch Nov 2022
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
-local class, state = Hekili.Class, Hekili.State
-
-local spec = Hekili:NewSpecialization( 65 )
-
-spec:RegisterResource( Enum.PowerType.HolyPower )
-spec:RegisterResource( Enum.PowerType.Mana )
-
--- Talents
-spec:RegisterTalents( {
-    afterimage                      = { 79064, 385414, 1 }, --
-    ardent_defender                 = { 78925, 31850 , 1 }, --
-    aspirations_of_divinity         = { 79063, 385416, 2 }, --
-    auras_of_swift_vengeance        = { 78951, 385639, 1 }, --
-    auras_of_the_resolute           = { 78953, 385633, 1 }, --
-    avengers_shield                 = { 78918, 31935 , 1 }, --
-    avenging_wrath                  = { 79050, 384376, 1 }, --
-    avenging_wrath_might            = { 78927, 384442, 1 }, --
-    bastion_of_light                = { 78946, 378974, 1 }, --
-    blessed_hammer                  = { 78921, 204019, 1 }, --
-    blessing_of_freedom             = { 78952, 1044  , 1 }, --
-    blessing_of_protection          = { 79049, 1022  , 1 }, --
-    blessing_of_sacrifice           = { 79065, 6940  , 1 }, --
-    blessing_of_spellwarding        = { 79056, 204018, 1 }, --
-    blinding_light                  = { 79067, 115750, 1 }, --
-    bulwark_of_order                = { 78926, 209389, 2 }, --
-    bulwark_of_righteous_fury       = { 78939, 386653, 1 }, --
-    cavalier                        = { 78914, 230332, 1 }, --
-    cleanse_toxins                  = { 79039, 213644, 1 }, --
-    consecrated_ground              = { 78919, 204054, 1 }, --
-    consecration_in_flame           = { 78929, 379022, 1 }, --
-    crusaders_judgment              = { 78933, 204023, 1 }, --
-    crusaders_resolve               = { 78948, 380188, 2 }, --
-    divine_purpose                  = { 79057, 223817, 1 }, --
-    divine_resonance                = { 78935, 386738, 1 }, --
-    divine_steed                    = { 79052, 190784, 1 }, --
-    divine_toll                     = { 78936, 375576, 1 }, --
-    eye_of_tyr                      = { 78938, 387174, 1 }, --
-    faith_barricade                 = { 78923, 385726, 1 }, --
-    faith_in_the_light              = { 78934, 379043, 2 }, --
-    faiths_armor                    = { 78937, 379017, 1 }, --
-    ferren_marcuss_strength         = { 78955, 378762, 2 }, --
-    final_stand                     = { 78940, 204077, 1 }, --
-    fist_of_justice                 = { 78950, 234299, 2 }, --
-    focused_enmity                  = { 78945, 378845, 1 }, --
-    gift_of_the_golden_valkyr       = { 78956, 378279, 2 }, --
-    golden_path                     = { 79040, 377128, 1 }, --
-    grand_crusader                  = { 78924, 85043 , 1 }, --
-    guardian_of_ancient_kings       = { 78942, 86659 , 1 }, --
-    hallowed_ground                 = { 79047, 377043, 1 }, --
-    hammer_of_the_righteous         = { 78921, 53595 , 1 }, --
-    hammer_of_wrath                 = { 78949, 24275 , 1 }, --
-    hand_of_the_protector           = { 78915, 315924, 1 }, --
-    holy_aegis                      = { 79066, 385515, 2 }, --
-    holy_avenger                    = { 79057, 105809, 1 }, --
-    holy_shield                     = { 78920, 152261, 1 }, --
-    improved_blessing_of_protection = { 79056, 384909, 1 }, --
-    improved_sera__dt               = { 78935, 379391, 1 }, --
-    incandescence                   = { 79048, 385464, 1 }, --
-    inner_light                     = { 78917, 386568, 1 }, --
-    inspiring_vanguard              = { 78922, 279387, 1 }, --
-    judgment_4                      = { 79044, 231663, 1 }, --
-    judgment_of_light               = { 79038, 183778, 1 }, --
-    lay_on_hands                    = { 79068, 633   , 1 }, --
-    light_of_the_titans             = { 78928, 378405, 2 }, --
-    moment_of_glory                 = { 78954, 327193, 1 }, --
-    obduracy                        = { 79055, 385427, 1 }, --
-    of_dusk_and_dawn                = { 79062, 385125, 1 }, --
-    rebuke                          = { 79043, 96231 , 1 }, --
-    recompense                      = { 79036, 384914, 1 }, --
-    redoubt                         = { 78917, 280373, 1 }, --
-    relentless_inquisitor           = { 78943, 383388, 1 }, --
-    repentance                      = { 79067, 20066 , 1 }, --
-    resolute_defender               = { 78944, 385422, 1 }, --
-    righteous_protector             = { 78941, 204074, 2 }, --
-    sacrifice_of_the_just           = { 79036, 384820, 1 }, --
-    sanctified_wrath                = { 79059, 171648, 1 }, --
-    sanctuary                       = { 78930, 379021, 2 }, --
-    seal_of_alacrity                = { 79058, 385425, 2 }, --
-    seal_of_clarity                 = { 79041, 384815, 2 }, --
-    seal_of_mercy                   = { 79042, 384897, 2 }, --
-    seal_of_might_nyi               = { 79060, 385450, 2 }, --
-    seal_of_order                   = { 79061, 385129, 1 }, --
-    seal_of_reprisal                = { 79046, 377053, 2 }, --
-    seal_of_the_crusader            = { 79054, 385728, 2 }, --
-    seal_of_the_templar             = { 79051, 377016, 1 }, --
-    seasoned_warhorse               = { 79051, 376996, 1 }, --
-    sentinel                        = { 78927, 385438, 1 }, --
-    seraphim                        = { 79059, 152262, 1 }, --
-    shining_light                   = { 78916, 321136, 1 }, --
-    soaring_shield                  = { 78945, 378457, 1 }, --
-    strength_of_conviction          = { 78932, 379008, 2 }, --
-    the_mad_paragon                 = { 79053, 391142, 1 }, --
-    touch_of_light                  = { 79048, 385349, 1 }, --
-    turn_evil                       = { 79045, 10326 , 1 }, --
-    tyrs_enforcer                   = { 78947, 378285, 2 }, --
-    unbreakable_spirit              = { 79037, 114154, 1 }, --
-    uthers_guard                    = { 78931, 378425, 1 }, --
-} )
-
-
--- PvP Talents
-spec:RegisterPvpTalents( {
-    aura_of_reckoning       = 5553, -- 247675
-    avenging_light          = 82  , -- 199441
-    blessed_hands           = 88  , -- 199454
-    cleanse_the_weak        = 642 , -- 199330
-    darkest_before_the_dawn = 86  , -- 210378
-    divine_vision           = 640 , -- 199324
-    hallowed_ground         = 3618, -- 216868
-    judgments_of_the_pure   = 5421, -- 355858
-    lights_grace            = 859 , -- 216327
-    precognition            = 5501, -- 377360
-    spreading_the_word      = 87  , -- 199456
-    ultimate_sacrifice      = 85  , -- 199452
-    vengeance_aura          = 5537, -- 210323
-} )
-
-
--- Auras
-spec:RegisterAuras( {
-    aspirations_of_divinity = {
-        id = 385417,
-        duration = 6,
-        max_stack = 3
-    },
-    aura_mastery = {
-        id = 31821,
-        duration = 8,
-        max_stack = 1
-    },
-    avenging_crusader = {
-        id = 216331,
-        duration = 20,
-        max_stack = 1
-    },
-    avenging_wrath = {
-        id = 31884,
-        duration = 20,
-        max_stack = 1
-    },
-    barrier_of_faith = {
-        id = 148039,
-        duration = 18,
-        tick_time = 6,
-        max_stack = 1
-    },
-    beacon_of_faith = {
-        id = 156910,
-        duration = 3600,
-        max_stack = 1
-    },
-    beacon_of_light = {
-        id = 53563,
-        duration = 3600,
-        max_stack = 1
-    },
-    beacon_of_virtue = {
-        id = 200025,
-        duration = 8,
-        max_stack = 1
-    },
-    bestow_faith = {
-        id = 223306,
-        duration = 5,
-        tick_time = 5,
-        max_stack = 1
-    },
-    blessing_of_dawn = {
-        id = 385127,
-        duration = 15,
-        max_stack = 1
-    },
-    blessing_of_dusk = {
-        id = 385126,
-        duration = 15,
-        max_stack = 1
-    },
-    blessing_of_freedom = {
-        id = 1044,
-        duration = 8,
-        max_stack = 1
-    },
-    blessing_of_protection = {
-        id = 1022,
-        duration = 10,
-        max_stack = 1
-    },
-    blessing_of_sacrifice = {
-        id = 6940,
-        duration = 12,
-        max_stack = 1
-    },
-    blessing_of_spellwarding = {
-        id = 204018,
-        duration = 10,
-        max_stack = 1
-    },
-    blessing_of_summer = {
-        id = 388007,
-        duration = 30,
-        max_stack = 1
-    },
-    blessing_of_the_seasons = { -- TODO: Original SL auras in SL/Covenants module.
-        alias = { "blessing_of_autumn", "blessing_of_spring", "blessing_of_summer", "blessing_of_winter" },
-        aliasMode = "first",
-        aliasType = "buff",
-        duration = 3600,
-    },
-    blinding_light = {
-        id = 105421,
-        duration = 6,
-        max_stack = 1
-    },
-    concentration_aura = {
-        id = 317920,
-        duration = 3600,
-        max_stack = 1
-    },
-    consecration = {
-        id = 26573,
-        duration = 12,
-        tick_time = 1,
-        max_stack = 1
-    },
-    devotion_aura = {
-        id = 465,
-        duration = 3600,
-        max_stack = 1
-    },
-    divine_favor = {
-        id = 210294,
-        duration = 3600,
-        max_stack = 1
-    },
-    divine_protection = {
-        id = 498,
-        duration = 8,
-        max_stack = 1
-    },
-    divine_resonance = {
-        id = 387895,
-        duration = 15,
-        tick_time = 5,
-        max_stack = 1
-    },
-    divine_shield = {
-        id = 642,
-        duration = 8,
-        max_stack = 1
-    },
-    empyreal_ward = {
-        id = 387792,
-        duration = 60,
-        max_stack = 1
-    },
-    glimmer_of_light = {
-        id = 287280,
-        duration = 30,
-        max_stack = 1,
-        friendly = true
-    },
-    hammer_of_justice = {
-        id = 853,
-        duration = 6,
-        max_stack = 1
-    },
-    hand_of_reckoning = {
-        id = 62124,
-        duration = 3,
-        max_stack = 1
-    },
-    holy_avenger = {
-        id = 105809,
-        duration = 20,
-        max_stack = 1
-    },
-    infusion_of_light = {
-        id = 54149,
-        duration = 15,
-        max_stack = 1
-    },
-    judgment_of_light = {
-        id = 196941,
-        duration = 30,
-        max_stack = 1
-    },
-    lights_hammer = { -- TODO: Is totem?
-        id = 122773,
-        duration = 15.5,
-        max_stack = 1
-    },
-    power_of_the_silver_hand = {
-        id = 200656,
-        duration = 10,
-        max_stack = 1
-    },
-    repentance = {
-        id = 20066,
-        duration = 60,
-        max_stack = 1
-    },
-    rule_of_law = {
-        id = 214202,
-        duration = 10,
-        max_stack = 1
-    },
-    seal_of_the_crusader = {
-        id = 385723,
-        duration = 5,
-        max_stack = 1
-    },
-    sense_undead = {
-        id = 5502,
-        duration = 3600,
-        max_stack = 1
-    },
-    seraphim = {
-        id = 152262,
-        duration = 15,
-        max_stack = 1
-    },
-    turn_evil = {
-        id = 10326,
-        duration = 40,
-        max_stack = 1
-    },
-    tyrs_deliverance = {
-        id = 200652,
-        duration = 10,
-        tick_time = 1,
-        max_stack = 1
-    },
-    untempered_dedication = {
-        id = 387815,
-        duration = 15,
-        max_stack = 5
-    },
-    veneration = {
-        id = 392939,
-        duration = 15,
-        max_stack = 1
-    },
-} )
-
-
--- Abilities
-spec:RegisterAbilities( {
-    absolution = {
-        id = 212056,
-        cast = 10,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 1030102,
-
-        handler = function ()
-        end,
-    },
-
-
-    ardent_defender = {
-        id = 31850,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-
-        talent = "ardent_defender",
-        startsCombat = false,
-        texture = 135870,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    avengers_shield = {
-        id = 31935,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
-
-        talent = "avengers_shield",
-        startsCombat = false,
-        texture = 135874,
-
-        handler = function ()
-        end,
-    },
-
-
-    bastion_of_light = {
-        id = 378974,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-
-        talent = "bastion_of_light",
-        startsCombat = false,
-        texture = 535594,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    beacon_of_light = {
-        id = 53563,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 236247,
-
-        handler = function ()
-        end,
-    },
-
-
-    blessed_hammer = {
-        id = 204019,
-        cast = 0,
-        charges = 3,
-        cooldown = 6,
-        recharge = 6,
-        gcd = "spell",
-
-        talent = "blessed_hammer",
-        startsCombat = false,
-        texture = 535595,
-
-        handler = function ()
-        end,
-    },
-
-
-    blessing_of_freedom = {
-        id = 1044,
-        cast = 0,
-        charges = 1,
-        cooldown = 25,
-        recharge = 25,
-        gcd = "spell",
-
-        spend = 0.07,
-        spendType = "mana",
-
-        talent = "blessing_of_freedom",
-        startsCombat = false,
-        texture = 135968,
-
-        handler = function ()
-        end,
-    },
-
-
-    blessing_of_protection = {
-        id = 1022,
-        cast = 0,
-        charges = 1,
-        cooldown = 300,
-        recharge = 300,
-        gcd = "spell",
-
-        spend = 0.15,
-        spendType = "mana",
-
-        talent = "blessing_of_protection",
-        startsCombat = false,
-        texture = 135964,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    blessing_of_sacrifice = {
-        id = 6940,
-        cast = 0,
-        charges = 1,
-        cooldown = 120,
-        recharge = 120,
-        gcd = "off",
-
-        spend = 0.07,
-        spendType = "mana",
-
-        talent = "blessing_of_sacrifice",
-        startsCombat = false,
-        texture = 135966,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    blessing_of_spellwarding = {
-        id = 204018,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-
-        spend = 0.15,
-        spendType = "mana",
-
-        talent = "blessing_of_spellwarding",
-        startsCombat = false,
-        texture = 135880,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    blinding_light = {
-        id = 115750,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-
-        spend = 0.06,
-        spendType = "mana",
-
-        talent = "blinding_light",
-        startsCombat = false,
-        texture = 571553,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    cleanse = {
-        id = 4987,
-        cast = 0,
-        charges = 1,
-        cooldown = 8,
-        recharge = 8,
-        gcd = "spell",
-
-        spend = 0.06,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135949,
-
-        handler = function ()
-        end,
-    },
-
-
-    cleanse_toxins = {
-        id = 213644,
-        cast = 0,
-        charges = 1,
-        cooldown = 8,
-        recharge = 8,
-        gcd = "spell",
-
-        spend = 0.06,
-        spendType = "mana",
-
-        talent = "cleanse_toxins",
-        startsCombat = false,
-        texture = 135953,
-
-        handler = function ()
-        end,
-    },
-
-
-    concentration_aura = {
-        id = 317920,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 135933,
-
-        handler = function ()
-        end,
-    },
-
-
-    consecration = {
-        id = 26573,
-        cast = 0,
-        cooldown = 9,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 135926,
-
-        handler = function ()
-        end,
-    },
-
-
-    crusader_strike = {
-        id = 35395,
-        cast = 0,
-        charges = 1,
-        cooldown = 6,
-        recharge = 6,
-        gcd = "spell",
-
-        spend = 0.11,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135891,
-
-        handler = function ()
-        end,
-    },
-
-
-    devotion_aura = {
-        id = 465,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 135893,
-
-        handler = function ()
-        end,
-    },
-
-
-    divine_shield = {
-        id = 642,
-        cast = 0,
-        cooldown = 300,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 524354,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    divine_steed = {
-        id = 190784,
-        cast = 0,
-        charges = 1,
-        cooldown = 45,
-        recharge = 45,
-        gcd = "spell",
-
-        talent = "divine_steed",
-        startsCombat = false,
-        texture = 1360759,
-
-        handler = function ()
-        end,
-    },
-
-
-    divine_toll = {
-        id = 375576,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = 0.15,
-        spendType = "mana",
-
-        talent = "divine_toll",
-        startsCombat = false,
-        texture = 3565448,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    eye_of_tyr = {
-        id = 387174,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        talent = "eye_of_tyr",
-        startsCombat = false,
-        texture = 1272527,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    flash_of_light = {
-        id = 19750,
-        cast = 1.43,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.22,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135907,
-
-        handler = function ()
-        end,
-    },
-
-
-    guardian_of_ancient_kings = {
-        id = 86659,
-        cast = 0,
-        cooldown = 300,
-        gcd = "off",
-
-        talent = "guardian_of_ancient_kings",
-        startsCombat = false,
-        texture = 135919,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    hammer_of_justice = {
-        id = 853,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135963,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    hammer_of_the_righteous = {
-        id = 53595,
-        cast = 0,
-        charges = 1,
-        cooldown = 6,
-        recharge = 6,
-        gcd = "spell",
-
-        talent = "hammer_of_the_righteous",
-        startsCombat = false,
-        texture = 236253,
-
-        handler = function ()
-        end,
-    },
-
-
-    hammer_of_wrath = {
-        id = 24275,
-        cast = 0,
-        charges = 1,
-        cooldown = 7.5,
-        recharge = 7.5,
-        gcd = "spell",
-
-        talent = "hammer_of_wrath",
-        startsCombat = false,
-        texture = 613533,
-
-        handler = function ()
-        end,
-    },
-
-
-    hand_of_reckoning = {
-        id = 62124,
-        cast = 0,
-        charges = 1,
-        cooldown = 8,
-        recharge = 8,
-        gcd = "off",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135984,
-
-        handler = function ()
-        end,
-    },
-
-
-    holy_avenger = {
-        id = 105809,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
-
-        talent = "holy_avenger",
-        startsCombat = false,
-        texture = 571555,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    inspiring_vanguard = {
-        id = 279387,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        talent = "inspiring_vanguard",
-        startsCombat = false,
-        texture = 133176,
-
-        handler = function ()
-        end,
-    },
-
-
-    intercession = {
-        id = 391054,
-        cast = 2,
-        cooldown = 600,
-        gcd = "spell",
-
-        spend = 0,
-        spendType = "holy_power",
-
-        startsCombat = true,
-        texture = 237550,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    judgment = {
-        id = 275773,
-        cast = 0,
-        charges = 1,
-        cooldown = 12,
-        recharge = 12,
-        gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135959,
-
-        handler = function ()
-        end,
-    },
-
-
-    lay_on_hands = {
-        id = 633,
-        cast = 0,
-        cooldown = 600,
-        gcd = "off",
-
-        talent = "lay_on_hands",
-        startsCombat = false,
-        texture = 135928,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    moment_of_glory = {
-        id = 327193,
-        cast = 0,
-        cooldown = 90,
-        gcd = "off",
-
-        talent = "moment_of_glory",
-        startsCombat = false,
-        texture = 237537,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    rebuke = {
-        id = 96231,
-        cast = 0,
-        cooldown = 15,
-        gcd = "off",
-
-        talent = "rebuke",
-        startsCombat = false,
-        texture = 523893,
-
-        handler = function ()
-        end,
-    },
-
-
-    redemption = {
-        id = 7328,
-        cast = 10,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135955,
-
-        handler = function ()
-        end,
-    },
-
-
-    repentance = {
-        id = 20066,
-        cast = 1.7,
-        cooldown = 15,
-        gcd = "spell",
-
-        spend = 0.06,
-        spendType = "mana",
-
-        talent = "repentance",
-        startsCombat = false,
-        texture = 135942,
-
-        handler = function ()
-        end,
-    },
-
-
-    sense_undead = {
-        id = 5502,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 135974,
-
-        handler = function ()
-        end,
-    },
-
-
-    seraphim = {
-        id = 152262,
-        cast = 0,
-        cooldown = 45,
-        gcd = "spell",
-
-        spend = 3,
-        spendType = "holy_power",
-
-        talent = "seraphim",
-        startsCombat = false,
-        texture = 1030103,
-
-        handler = function ()
-        end,
-    },
-
-
-    shield_of_the_righteous = {
-        id = 53600,
-        cast = 0,
-        cooldown = 1,
-        gcd = "off",
-
-        spend = 3,
-        spendType = "holy_power",
-
-        startsCombat = true,
-        texture = 236265,
-
-        handler = function ()
-        end,
-    },
-
-
-    turn_evil = {
-        id = 10326,
-        cast = 1.43,
-        cooldown = 15,
-        gcd = "spell",
-
-        spend = 0.1,
-        spendType = "mana",
-
-        talent = "turn_evil",
-        startsCombat = false,
-        texture = 571559,
-
-        handler = function ()
-        end,
-    },
-
-
-    word_of_glory = {
-        id = 85673,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 3,
-        spendType = "holy_power",
-
-        startsCombat = false,
-        texture = 133192,
-
-        handler = function ()
-        end,
-    },
-} )
-
-spec:RegisterPriority( "Holy", 20220918,
--- Notes
-[[
-
-]],
--- Priority
-[[
-
-]] )
+
+local class = Hekili.Class
+local state = Hekili.State
+
+
+local PTR = ns.PTR
+
+if UnitClassBase( "player" ) == "PALADIN" then
+    local spec = Hekili:NewSpecialization( 65 )
+
+    spec:RegisterResource( Enum.PowerType.HolyPower )
+    spec:RegisterResource( Enum.PowerType.Mana )
+    
+    -- Talents
+    spec:RegisterTalents( {
+        afterimage = { 102601, 385414 },
+        aspiration_of_divinity = { 102613, 385416 },
+        aura_mastery = { 102548, 31821 },
+        auras_of_swift_vengeance = { 102588, 385639 },
+        auras_of_the_resolute = { 102586, 385633 },
+        avenging_crusader = { 102568, 394088 },
+        avenging_wrath = { 102593, 384376 },
+        avenging_wrath_might = { 102569, 384442 },
+        awakening = { 102578, 248033 },
+        barrier_of_faith = { 102537, 148039 },
+        beacon_of_faith = { 102533, 156910 },
+        beacon_of_virtue = { 102532, 200025 },
+        bestow_faith = { 102543, 223306 },
+        blessing_of_freedom = { 102587, 1044 },
+        blessing_of_protection = { 102604, 1022 },
+        blessing_of_sacrifice = { 102602, 6940 },
+        blessing_of_summer = { 102579, 388007 },
+        blinding_light = { 102584, 115750 },
+        boundless_salvation = { 102572, 392951 },
+        breaking_dawn = { 102566, 387879 },
+        cavalier = { 102592, 230332 },
+        commanding_light = { 102564, 387781 },
+        crusaders_might = { 102580, 196926 },
+        divine_favor = { 102551, 210294 },
+        divine_glimpse = { 102570, 387805 },
+        divine_insight = { 102554, 392914 },
+        divine_protection = { 102549, 498 },
+        divine_purpose = { 102608, 223817 },
+        divine_resonance = { 102582, 387893 },
+        divine_revelations = { 102562, 387808 },
+        divine_steed = { 102625, 190784 },
+        divine_toll = { 102563, 375576 },
+        echoing_blessings = { 102535, 387801 },
+        empyreal_ward = { 102558, 387791 },
+        empyrean_legacy = { 102576, 387170 },
+        fist_of_justice = { 102589, 234299 },
+        glimmer_of_light = { 102581, 325966 },
+        golden_path = { 102598, 377128 },
+        hallowed_ground = { 102478, 377043 },
+        hammer_of_wrath = { 102479, 24275 },
+        holy_aegis = { 102597, 385515 },
+        holy_avenger = { 102607, 105809 },
+        holy_light = { 102550, 82326 },
+        holy_prism = { 102560, 114165 },
+        holy_shock = { 102534, 20473 },
+        illumination = { 102555, 387993 },
+        imbued_infusions = { 102536, 392961 },
+        improved_blessing_of_protection = { 102606, 384909 },
+        improved_cleanse = { 102477, 393024 },
+        incandescence = { 102620, 385464 },
+        inflorescence_of_the_sunwell = { 102577, 392907 },
+        judgment = { 114292, 231644 },
+        judgment_of_light = { 102596, 183778 },
+        lay_on_hands = { 102583, 633 },
+        light_of_dawn = { 102545, 85222 },
+        light_of_the_martyr = { 102540, 183998 },
+        lights_hammer = { 102561, 114158 },
+        maraads_dying_breath = { 102538, 388018 },
+        moment_of_compassion = { 102553, 387786 },
+        obduracy = { 102618, 385427 },
+        of_dusk_and_dawn = { 102615, 385125 },
+        power_of_the_silver_hand = { 102574, 200474 },
+        protection_of_tyr = { 102546, 200430 },
+        radiant_onslaught = { 102557, 231667 },
+        rebuke = { 102591, 96231 },
+        recompense = { 102594, 384914 },
+        relentless_inquisitor = { 102575, 383388 },
+        repentance = { 102585, 20066 },
+        resplendent_light = { 102552, 392902 },
+        rule_of_law = { 102541, 214202 },
+        sacrifice_of_the_just = { 102595, 384820 },
+        sanctified_wrath = { 102611, 53376 },
+        saved_by_the_light = { 102542, 157047 },
+        seal_of_alacrity = { 102609, 385425 },
+        seal_of_clarity = { 102600, 384815 },
+        seal_of_mercy = { 102599, 384897 },
+        seal_of_might = { 102612, 385450 },
+        seal_of_order = { 102614, 385129 },
+        seal_of_reprisal = { 102621, 377053 },
+        seal_of_the_crusader = { 102617, 385728 },
+        seal_of_the_templar = { 102623, 377016 },
+        seasoned_warhorse = { 102624, 376996 },
+        second_sunrise = { 102567, 200482 },
+        seraphim = { 102610, 152262 },
+        shining_savior = { 102559, 388005 },
+        tirions_devotion = { 102556, 392928 },
+        touch_of_light = { 102619, 385349 },
+        tower_of_radiance = { 102571, 231642 },
+        turn_evil = { 102622, 10326 },
+        tyrs_deliverance = { 102573, 200652 },
+        unbreakable_spirit = { 102603, 114154 },
+        unending_light = { 102544, 387998 },
+        untempered_dedication = { 102539, 387814 },
+        unwavering_spirit = { 102547, 392911 },
+        veneration = { 102565, 392938 },
+        zealots_paragon = { 102616, 391142 },
+    } )
+
+
+    -- PvP Talents
+    spec:RegisterPvpTalents( { 
+        cleanse_the_weak = 642, -- 199330
+        hallowed_ground = 3618, -- 216868
+        blessed_hands = 88, -- 199454
+        lights_grace = 859, -- 216327
+        ultimate_sacrifice = 85, -- 199452
+        avenging_light = 82, -- 199441
+        darkest_before_the_dawn = 86, -- 210378
+        spreading_the_word = 87, -- 199456
+        judgments_of_the_pure = 5421, -- 355858
+        aura_of_reckoning = 5553, -- 247675
+        divine_vision = 640, -- 199324
+        precognition = 5501, -- 377360
+        vengeance_aura = 5537, -- 210323
+    } )
+
+
+    -- Auras
+    spec:RegisterAuras( {
+        afterimage = {
+            id = 385414,
+        },
+        aspiration_of_divinity = {
+            id = 385416,
+        },
+        aura_mastery = {
+            id = 31821,
+            duration = 8,
+            max_stack = 1,
+        },
+        avenging_crusader = {
+            id = 216331,
+            duration = 25,
+            max_stack = 1,
+        },
+        avenging_wrath = {
+            id = 31884,
+            duration = 25,
+            max_stack = 1,
+        },
+        barrier_of_faith = {
+            id = 148039,
+            duration = 18,
+            max_stack = 1,
+        },
+        beacon_of_faith = {
+            id = 156910,
+            duration = 3600,
+            max_stack = 1,
+        },
+        beacon_of_light = {
+            id = 53563,
+            duration = 3600,
+            max_stack = 1,
+        },
+        beacon_of_virtue = {
+            id = 200025,
+            duration = 8,
+            max_stack = 1,
+        },
+        bestow_faith = {
+            id = 223306,
+            duration = 5,
+            max_stack = 1,
+        },
+        blessing_of_autumn = {
+            id = 388010,
+            duration = 30,
+            max_stack = 1,
+        },
+        blessing_of_freedom = {
+            id = 1044,
+            duration = 8,
+            type = "Magic",
+            max_stack = 1,
+        },
+        blessing_of_protection = {
+            id = 1022,
+            duration = 10,
+            type = "Magic",
+            max_stack = 1,
+        },
+        blessing_of_sacrifice = {
+            id = 6940,
+            duration = 12,
+            max_stack = 1,
+        },
+        blessing_of_spring = {
+            id = 388013,
+            duration = 30,
+            max_stack = 1,
+        },
+        blessing_of_summer = {
+            id = 388007,
+            duration = 30,
+            max_stack = 1,
+        },
+        blessing_of_winter = {
+            id = 388011,
+            duration = 30,
+            max_stack = 1,
+        },
+        blinding_light = {
+            id = 115750,
+        },
+        concentration_aura = {
+            id = 317920,
+            duration = 3600,
+            max_stack = 1,
+        },
+        consecration = {
+            id = 26573,
+        },
+        contemplation = {
+            id = 121183,
+            duration = 8,
+            max_stack = 1,
+        },
+        crusader_aura = {
+            id = 32223,
+            duration = 3600,
+            max_stack = 1,
+        },
+        devotion_aura = {
+            id = 465,
+            duration = 3600,
+            max_stack = 1,
+        },
+        divine_favor = {
+            id = 210294,
+            duration = 3600,
+            type = "Magic",
+            max_stack = 1,
+        },
+        divine_protection = {
+            id = 498,
+            duration = 8,
+            max_stack = 1,
+        },
+        divine_purpose = {
+            id = 223819,
+            duration = 12,
+            max_stack = 1,
+        },
+        divine_resonance = {
+            id = 387895,
+            duration = 15,
+            max_stack = 1,
+        },
+        divine_shield = {
+            id = 642,
+            duration = 8,
+            type = "Magic",
+            max_stack = 1,
+        },
+        divine_steed = {
+            id = 276112,
+            duration = 6.15,
+            max_stack = 1,
+        },
+        echoing_freedom = {
+            id = 339321,
+            duration = 8,
+            type = "Magic",
+            max_stack = 1,
+        },
+        echoing_protection = {
+            id = 339324,
+            duration = 8,
+            type = "Magic",
+            max_stack = 1,
+        },
+        fleshcraft = {
+            id = 324631,
+            duration = 120,
+            max_stack = 1,
+        },
+        forbearance = {
+            id = 25771,
+            duration = 30,
+            max_stack = 1,
+        },
+        golden_path = {
+            id = 377128,
+        },
+        holy_avenger = {
+            id = 105809,
+            duration = 20,
+            max_stack = 1,
+        },
+        incandescence = {
+            id = 385464,
+        },
+        infusion_of_light = {
+            id = 53576,
+            duration = 15,
+            max_stack = 2,
+        },
+        infusion_of_light = {
+            id = 54149,
+            duration = 15,
+            max_stack = 2,
+        },
+        light_of_the_martyr = {
+            id = 196917,
+            duration = 5.113,
+            max_stack = 1,
+        },
+        mastery_lightbringer = {
+            id = 183997,
+        },
+        of_dusk_and_dawn = {
+            id = 385125,
+        },
+        recompense = {
+            id = 384914,
+        },
+        retribution_aura = {
+            id = 183435,
+            duration = 3600,
+            max_stack = 1,
+        },
+        rule_of_law = {
+            id = 214202,
+            duration = 10,
+            max_stack = 1,
+        },
+        seal_of_clarity = {
+            id = 384815,
+        },
+        seal_of_mercy = {
+            id = 384897,
+        },
+        seal_of_might = {
+            id = 385450,
+        },
+        seal_of_the_templar = {
+            id = 377016,
+        },
+        seraphim = {
+            id = 152262,
+            duration = 15,
+            max_stack = 1,
+        },
+        shield_of_the_righteous = {
+            id = 132403,
+            duration = 4.5,
+            max_stack = 1,
+        },
+        shielding_words = {
+            id = 338788,
+            duration = 10,
+            type = "Magic",
+            max_stack = 1,
+        },
+        tyrs_deliverance = {
+            id = 200652,
+            duration = 10,
+            max_stack = 1,
+        },
+        unending_light = {
+            id = 394709,
+            duration = 30,
+            type = "Magic",
+            max_stack = 6,
+        },
+        untempered_dedication = {
+            id = 387815,
+            duration = 15,
+            max_stack = 5,
+        },
+        vanquishers_hammer = {
+            id = 328204,
+        },
+        zealots_paragon = {
+            id = 391142,
+        },
+    } )
+
+
+    -- Abilities
+    spec:RegisterAbilities( {
+        absolution = {
+            id = 212056,
+            cast = 10,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.04,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 1030102,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        aura_mastery = {
+            id = 31821,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 135872,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff("aura_mastery")
+            end,
+        },
+        
+
+        avenging_crusader = {
+            id = 216331,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            spend = 0.5,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 589117,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff("avenging_crusader")
+            end,
+        },
+        
+
+        avenging_wrath = {
+            id = 31884,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 135875,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff("avenging_wrath")
+            end,
+        },
+        
+
+        barrier_of_faith = {
+            id = 148039,
+            cast = 0,
+            cooldown = 25,
+            gcd = "spell",
+            
+            spend = 0.1,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 4067370,
+            
+            handler = function ()
+                applyBuff("barrier_of_faith")
+            end,
+        },
+        
+
+        beacon_of_faith = {
+            id = 156910,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.03,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 1030095,
+            
+            handler = function ()
+                applyBuff("beacon_of_faith")
+            end,
+        },
+        
+
+        beacon_of_light = {
+            id = 53563,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.02,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 236247,
+            
+            handler = function ()
+                applyBuff("beacon_of_light")
+            end,
+        },
+        
+
+        beacon_of_virtue = {
+            id = 200025,
+            cast = 0,
+            cooldown = 15,
+            gcd = "spell",
+            
+            spend = 0.1,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 1030094,
+            
+            handler = function ()
+                applyBuff("beacon_of_virtue")
+            end,
+        },
+        
+
+        bestow_faith = {
+            id = 223306,
+            cast = 0,
+            cooldown = 12,
+            gcd = "spell",
+            
+            spend = 0.06,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 236249,
+            
+            handler = function ()
+                applyBuff("bestow_faith")
+            end,
+        },
+        
+
+        blessing_of_autumn = {
+            id = 388010,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            spend = 0.05,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 3636843,
+            
+            handler = function ()
+                setCooldown( "blessing_of_winter", 45 )
+                setCooldown( "blessing_of_summer", 90 )
+                setCooldown( "blessing_of_spring", 135 )
+            end,
+        },
+        
+
+        blessing_of_freedom = {
+            id = 1044,
+            cast = 0,
+            charges = 1,
+            cooldown = 25,
+            recharge = 25,
+            gcd = "spell",
+            
+            spend = 0.07,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135968,
+            
+            handler = function ()
+                applyBuff("blessing_of_freedom")
+            end,
+        },
+        
+
+        blessing_of_protection = {
+            id = 1022,
+            cast = 0,
+            charges = 1,
+            cooldown = 300,
+            recharge = 300,
+            gcd = "spell",
+            
+            spend = 0.15,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135964,
+            
+            toggle = "defensives",
+            defensives = true,
+
+            handler = function ()
+                applyDebuff("forbearance")
+                applyBuff("blessing_of_protection")
+            end,
+        },
+        
+
+        blessing_of_sacrifice = {
+            id = 6940,
+            cast = 0,
+            charges = 1,
+            cooldown = 60,
+            recharge = 60,
+            gcd = "spell",
+            
+            spend = 0.07,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135966,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff("blessing_of_sacrifice")
+            end,
+        },
+        
+
+        blessing_of_spring = {
+            id = 388013,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            spend = 0.05,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 3636844,
+            
+            handler = function ()
+                setCooldown( "blessing_of_summer", 45 )
+                setCooldown( "blessing_of_autumn", 90 )
+                setCooldown( "blessing_of_winter", 135 )
+            end,
+        },
+        
+
+        blessing_of_summer = {
+            id = 388007,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+            
+            spend = 0.05,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 3636845,
+            
+            handler = function ()
+                setCooldown( "blessing_of_autumn", 45 )
+                setCooldown( "blessing_of_winter", 90 )
+                setCooldown( "blessing_of_spring", 135 )
+            end,
+        },
+        
+
+        blessing_of_winter = {
+            id = 388011,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            spend = 0.05,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 3636846,
+            
+            handler = function ()
+                setCooldown( "blessing_of_spring", 45 )
+                setCooldown( "blessing_of_summer", 90 )
+                setCooldown( "blessing_of_autumn", 135 )
+            end,
+        },
+        
+
+        blinding_light = {
+            id = 115750,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+            
+            spend = 0.06,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 571553,
+            
+            handler = function ()
+                applyDebuff("blinding_light")
+            end,
+        },
+        
+
+        cleanse = {
+            id = 4987,
+            cast = 0,
+            charges = 1,
+            cooldown = 8,
+            recharge = 8,
+            gcd = "spell",
+            
+            spend = 0.06,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135949,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        concentration_aura = {
+            id = 317920,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 135933,
+            
+            handler = function ()
+                applyBuff("concentration_aura")
+                removeBuff("devotion_aura")
+                removeBuff("crusader_aura")
+                removeBuff("retribution_aura")
+            end,
+        },
+        
+
+        consecration = {
+            id = 26573,
+            cast = 0,
+            cooldown = 9,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 135926,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        contemplation = {
+            id = 121183,
+            cast = 0,
+            cooldown = 8,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 134916,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        crusader_aura = {
+            id = 32223,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 135890,
+            
+            handler = function ()
+                applyBuff("crusader_aura")
+                removeBuff("devotion_aura")
+                removeBuff("retribution_aura")
+                removeBuff("concentration_aura")
+            end,
+        },
+        
+
+        crusader_strike = {
+            id = 35395,
+            cast = 0,
+            charges = 2,
+            cooldown = 6,
+            recharge = 6,
+            gcd = "spell",
+            
+            spend = 0.11,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 135891,
+            
+            handler = function ()
+                gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+
+                if talent.crusaders_might.enabled then
+                    setCooldown( "holy_shock", max( 0, cooldown.holy_shock.remains - 2.0 ) )
+                end
+            end,
+        },
+        
+
+        devotion_aura = {
+            id = 465,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 135893,
+            
+            handler = function ()
+                applyBuff("devotion_aura")
+                removeBuff("retribution_aura")
+                removeBuff("crusader_aura")
+                removeBuff("concentration_aura")
+            end,
+        },
+        
+
+        divine_favor = {
+            id = 210294,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 135915,
+            
+            handler = function ()
+                applyBuff("divine_favor")
+            end,
+        },
+        
+
+        divine_protection = {
+            id = 498,
+            cast = 0,
+            cooldown = function () return ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * 60 end,
+            gcd = "spell",
+            
+            spend = 0.04,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 524353,
+            
+            toggle = "defensives",
+            defensives = true,
+
+            handler = function ()
+                applyBuff("divine_protection")
+            end,
+        },
+        
+
+        divine_shield = {
+            id = 642,
+            cast = 0,
+            cooldown = function () return ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * 300 end,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 524354,
+            
+            toggle = "defensives",
+            defensives = true,
+
+            handler = function ()
+                applyDebuff("forbearance")
+                applyBuff("divine_shield")
+            end,
+        },
+        
+
+        divine_steed = {
+            id = 190784,
+            cast = 0,
+            charges = 2,
+            cooldown = 45,
+            recharge = 45,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 1360759,
+            
+            handler = function ()
+                applyBuff("divine_steed")
+            end,
+        },
+        
+
+        divine_toll = {
+            id = 375576,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 0.15,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 3565448,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                gain( buff.holy_avenger.up and 5 or 2, "holy_power" )
+            end,
+        },
+        
+
+        flash_of_light = {
+            id = 19750,
+            cast = 1.5,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.22,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135907,
+            
+            handler = function ()
+                removeBuff("infusion_of_light")
+                removeBuff("divine_favor")
+            end,
+        },
+        
+
+        fleshcraft = {
+            id = 324631,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 3586267,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff("fleshcraft")
+            end,
+        },
+        
+
+        hammer_of_justice = {
+            id = 853,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 0.04,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 135963,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyDebuff("hammer_of_justice")
+            end,
+        },
+        
+
+        hammer_of_wrath = {
+            id = 24275,
+            cast = 0,
+            cooldown = 7.5,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 613533,
+
+            usable = function () return target.health_pct < 20 end,
+
+            handler = function ()
+                gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+            end,
+        },
+        
+
+        hand_of_reckoning = {
+            id = 62124,
+            cast = 0,
+            cooldown = 8,
+            gcd = "spell",
+            
+            spend = 0.03,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 135984,
+            
+            handler = function ()
+                applyDeuff("hand_of_reckoning")
+            end,
+        },
+        
+
+        holy_avenger = {
+            id = 105809,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 571555,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff("holy_avenger")
+            end,
+        },
+        
+
+        holy_light = {
+            id = 82326,
+            cast = 2.5,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.15,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135981,
+            
+            handler = function ()
+                removeBuff("infusion_of_light")
+                removeBuff("divine_favor")
+            end,
+        },
+        
+
+        holy_prism = {
+            id = 114165,
+            cast = 0,
+            cooldown = 20,
+            gcd = "spell",
+            
+            spend = 0.13,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 613408,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        holy_shock = {
+            id = 20473,
+            cast = 0,
+            cooldown = 7.5,
+            gcd = "spell",
+            
+            spend = 0.16,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 135972,
+            
+            handler = function ()
+                gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+            end,
+        },
+        
+
+        intercession = {
+            id = 391054,
+            cast = 2.0003372583008,
+            cooldown = 600,
+            gcd = "spell",
+            
+            spend = 0,
+            spendType = "holy_power",
+            
+            startsCombat = false,
+            texture = 4726195,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        judgment = {
+            id = 275773,
+            cast = 0,
+            cooldown = 12,
+            gcd = "spell",
+            
+            spend = 0.03,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 135959,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        lay_on_hands = {
+            id = 633,
+            cast = 0,
+            cooldown = function () return ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * 600 end,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 135928,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyDebuff("forbearance")
+            end,
+        },
+        
+
+        light_of_dawn = {
+            id = 85222,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = function ()
+                if buff.divine_purpose.up then return 0 end
+                return 3
+            end,
+            spendType = "holy_power",
+            
+            startsCombat = false,
+            texture = 461859,
+            
+            handler = function ()
+                removeBuff("divine_purpose")
+            end,
+        },
+        
+
+        light_of_the_martyr = {
+            id = 183998,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.07,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 1360762,
+            
+            handler = function ()
+                removeBuff( "maraads_dying_breath" )
+            end,
+        },
+        
+
+        lights_hammer = {
+            id = 114158,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 0.18,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 613955,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        rebuke = {
+            id = 96231,
+            cast = 0,
+            cooldown = 15,
+            gcd = "off",
+            
+            startsCombat = true,
+            texture = 523893,
+            
+            toggle = "interrupts",
+
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
+            handler = function ()
+                interrupt()
+            end,
+        },
+        
+
+        redemption = {
+            id = 7328,
+            cast = 10.000345582886,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.04,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135955,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        repentance = {
+            id = 20066,
+            cast = 1.7,
+            cooldown = 15,
+            gcd = "spell",
+            
+            spend = 0.06,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135942,
+            
+            handler = function ()
+                applyDebuff("repentance")
+            end,
+        },
+        
+
+        retribution_aura = {
+            id = 183435,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 135889,
+            
+            handler = function ()
+                applyBuff("retribution_aura")
+                removeBuff("devotion_aura")
+                removeBuff("crusader_aura")
+                removeBuff("concentration_aura")
+            end,
+        },
+        
+
+        rule_of_law = {
+            id = 214202,
+            cast = 0,
+            charges = 2,
+            cooldown = 30,
+            recharge = 30,
+            gcd = "off",
+            
+            startsCombat = false,
+            texture = 571556,
+            
+            handler = function ()
+                applyBuff("rule_of_law")
+            end,
+        },
+        
+
+        seraphim = {
+            id = 152262,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            spend = 3,
+            spendType = "holy_power",
+            
+            startsCombat = false,
+            texture = 1030103,
+            
+            handler = function ()
+                applyBuff("seraphim")
+            end,
+        },
+        
+
+        shield_of_the_righteous = {
+            id = 53600,
+            cast = 0,
+            cooldown = 1,
+            gcd = "spell",
+            
+            spend = function ()
+                if buff.divine_purpose.up then return 0 end
+                return 3
+            end,
+            spendType = "holy_power",
+            
+            startsCombat = true,
+            texture = 236265,
+            
+            handler = function ()
+                applyBuff("shield_of_the_righteous")
+            end,
+        },
+        
+
+        turn_evil = {
+            id = 10326,
+            cast = 1.5,
+            cooldown = 15,
+            gcd = "spell",
+            
+            spend = 0.1,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 571559,
+            
+            handler = function ()
+                applyDebuff("turn_evil")
+            end,
+        },
+        
+
+        tyrs_deliverance = {
+            id = 200652,
+            cast = 2,
+            cooldown = 90,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 1122562,
+            
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff("tyrs_deliverance")
+            end,
+        },
+        
+
+        vanquishers_hammer = {
+            id = 328204,
+            cast = 0,
+            charges = 2,
+            cooldown = 30,
+            recharge = 30,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 3578228,
+            
+            handler = function ()
+                gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+                applyBuff("vanquishers_hammer")
+            end,
+        },
+        
+
+        word_of_glory = {
+            id = 85673,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = function ()
+                if buff.divine_purpose.up then return 0 end
+                return 3
+            end,
+            spendType = "holy_power",
+            
+            startsCombat = false,
+            texture = 133192,
+            
+            handler = function ()
+                removeBuff("divine_purpose")
+            end,
+        },
+    } )
+
+end
