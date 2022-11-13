@@ -1174,6 +1174,45 @@ RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, 
 end )
 
 
+do
+    local empowerment = state.empowerment
+    local stages = empowerment.stages
+
+    RegisterUnitEvent( "UNIT_SPELLCAST_EMPOWER_START", "player", nil, function( event, unit, cast, spellID )
+        local ability = class.abilities[ spellID ]
+
+        wipe( stages )
+        local start = GetTime()
+
+        empowerment.spell = ability.key
+        empowerment.start = start
+
+        for i = 1, 4 do
+            n = GetUnitEmpowerStageDuration( "player", i - 1 )
+            if n == 0 then break end
+
+            if i == 1 then insert( stages, start + n * 0.001 )
+            else insert( stages, stages[ i - 1 ] + n * 0.001 ) end
+        end
+
+        empowerment.finish = stages[ #stages ]
+        empowerment.hold = empowerment.finish + GetUnitEmpowerHoldAtMaxTime( "player" ) * 0.001
+
+        Hekili:ForceUpdate( event, true )
+    end )
+
+    RegisterUnitEvent( "UNIT_SPELLCAST_EMPOWER_STOP", "player", nil, function( event, unit, cast, spellID )
+        empowerment.spell = nil
+
+        empowerment.start = 0
+        empowerment.finish = 0
+        empowerment.hold = 0
+
+        Hekili:ForceUpdate( event, true )
+    end )
+end
+
+
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( event, unit, cast, spellID )
     if unit == "player" then
         local ability = class.abilities[ spellID ]

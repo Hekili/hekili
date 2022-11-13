@@ -88,7 +88,8 @@ end
 local passive_regen = {
     mana = 1,
     focus = 1,
-    energy = 1
+    energy = 1,
+    essence = 1
 }
 
 function ns.ResourceRegenerates( key )

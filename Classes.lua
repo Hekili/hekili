@@ -809,6 +809,10 @@ local HekiliSpecMixin = {
             self.dual_cast[ a.key ] = true
         end
 
+        if a.empowered or a.funcs.empowered then
+            self.can_empower = true
+        end
+
         if a.auras then
             self:RegisterAuras( a.auras )
         end

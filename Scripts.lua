@@ -1144,6 +1144,7 @@ local newModifiers = {
     -- Not necessarily a number, but not baby-proofed.
     cycle_targets = 'raw',
     default = 'raw',
+    empower_to = 'raw',
     for_next = 'raw',
     line_cd = 'raw',
     max_cycle_targets = 'raw',
@@ -1166,7 +1167,8 @@ local valueModifiers = {
     value = true,
     value_else = true,
     line_cd = true,
-    max_cycle_targets = true
+    max_cycle_targets = true,
+    empower_to = true,
 }
 
 
