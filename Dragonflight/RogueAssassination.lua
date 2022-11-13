@@ -696,6 +696,7 @@ spec:RegisterHook( "reset_precast", function ()
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
     if buff.vanish.up then applyBuff( "stealth" ) end
+    if buff.stealth.up and talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
 
     if buff.indiscriminate_carnage.up then
         if action.garrote.lastCast < action.indiscriminate_carnage.lastCast then applyBuff( "indiscriminate_carnage_garrote" ) end
@@ -1581,7 +1582,10 @@ spec:RegisterAbilities( {
             if buff.indiscriminate_carnage_garrote.up then
                 active_dot.garrote = min( true_active_enemies, active_dot.garrote + 8 )
                 removeBuff( "indiscriminate_carnage_garrote" )
-                if buff.indiscriminate_carnage_rupture.down then removeBuff( "indiscriminate_carnage" ) end
+                if buff.indiscriminate_carnage_rupture.down then
+                    removeBuff( "indiscriminate_carnage" )
+                    setCooldown( "indiscriminate_carnage", action.indiscriminate_carnage.cooldown )
+                end
             end
 
             gain( action.garrote.cp_gain, "combo_points" )
@@ -1823,7 +1827,10 @@ spec:RegisterAbilities( {
             if buff.indiscriminate_carnage_rupture.up then
                 active_dot.rupture = min( true_active_enemies, active_dot.rupture + 8 )
                 removeBuff( "indiscriminate_carnage_rupture" )
-                if buff.indiscriminate_carnage_garrote.down then removeBuff( "indiscriminate_carnage" ) end
+                if buff.indiscriminate_carnage_garrote.down then
+                    removeBuff( "indiscriminate_carnage" )
+                    setCooldown( "indiscriminate_carnage", action.indiscriminate_carnage.cooldown )
+                end
             end
 
             if talent.scent_of_blood.enabled or azerite.scent_of_blood.enabled then
@@ -2091,7 +2098,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "vanish" )
             applyBuff( "stealth" )
-
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
 
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
