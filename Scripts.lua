@@ -495,6 +495,7 @@ do
         { "^!?stealthed.mantle$"                    , "stealthed.mantle_remains"                                       },
         { "^!?stealthed.sepsis$"                    , "stealthed.sepsis_remains"                                       },
         { "^!?stealthed.rogue$"                     , "stealthed.rogue_remains"                                        },
+        { "^!?stealthed.basic$"                     , "stealthed.basic_remains"                                        },
 
         { "^!?time_to_hpg$"           , "time_to_hpg"          }, -- Retribution Paladin
         { "^!?time_to_hpg[<=]=?(.-)$" , "time_to_hpg-%1"       }, -- Retribution Paladin
