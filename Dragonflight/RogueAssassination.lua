@@ -695,6 +695,8 @@ spec:RegisterHook( "reset_precast", function ()
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
+    if buff.vanish.up then applyBuff( "stealth" ) end
+
     if buff.indiscriminate_carnage.up then
         if action.garrote.lastCast < action.indiscriminate_carnage.lastCast then applyBuff( "indiscriminate_carnage_garrote" ) end
         if action.rupture.lastCast < action.indiscriminate_carnage.lastCast then applyBuff( "indiscriminate_carnage_rupture" ) end
