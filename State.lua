@@ -6697,8 +6697,7 @@ function state:IsKnown( sID )
         return false
     end
 
-    -- Mage Tower Disabled.
-    if ability.disabled then return false, "not usable in Mage Tower" end
+    if ability.disabled then return false, "not usable here" end
 
     if sID < 0 then
         if ability.known ~= nil then
