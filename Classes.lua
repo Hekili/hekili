@@ -7,7 +7,6 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
-
 local CommitKey = ns.commitKey
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local GetItemInfo = ns.CachedGetItemInfo
@@ -26,11 +25,10 @@ local insert, wipe = table.insert, table.wipe
 local mt_resource = ns.metatables.mt_resource
 
 local GetItemCooldown = _G.GetItemCooldown
-local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local GetSpellDescription, GetSpellTexture = _G.GetSpellDescription, _G.GetSpellTexture
 local GetSpecialization, GetSpecializationInfo = _G.GetSpecialization, _G.GetSpecializationInfo
 
-local Casting = _G.SPELL_CASTING or "Casting"
+local FlagDisabledSpells
 
 
 local specTemplate = {
@@ -5921,7 +5919,21 @@ function Hekili:GetActivePack()
 end
 
 
-local seen = {}
+do
+    local seen = {}
+
+    FlagDisabledSpells = function()
+        wipe( seen )
+
+        for _, v in pairs( class.abilities ) do
+            if not seen[ v ] then
+                if v.id > 0 then v.disabled = IsSpellDisabled( v.id ) end
+                seen[ v ] = true
+            end
+        end
+    end
+end
+
 
 Hekili.SpecChangeHistory = {}
 
@@ -6205,14 +6217,7 @@ function Hekili:SpecializationChanged()
     self:UpdateDisplayVisibility()
     self:UpdateDamageDetectionForCLEU()
 
-    wipe( seen )
-
-    for k, v in pairs( class.abilities ) do
-        if not seen[ v ] then
-            if v.id > 0 then v.disabled = IsSpellDisabled( v.id ) end
-            seen[ v ] = true
-        end
-    end
+    FlagDisabledSpells()
 end
 
 
@@ -6226,6 +6231,21 @@ do
                 Hekili:SpecializationChanged()
             end
         end
+    end )
+
+    RegisterEvent( "CHALLENGE_MODE_START", function( event )
+        FlagDisabledSpells()
+        ns.updateGear()
+    end )
+
+    RegisterEvent( "CHALLENGE_MODE_RESET", function( event )
+        FlagDisabledSpells()
+        ns.updateGear()
+    end )
+
+    RegisterEvent( "CHALLENGE_MODE_COMPLETED", function( event )
+        FlagDisabledSpells()
+        ns.updateGear()
     end )
 end
 
