@@ -11,7 +11,7 @@ local class = Hekili.Class
 local state = Hekili.State
 
 local PTR = ns.PTR
-
+local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 local spec = Hekili:NewSpecialization( 260 )
 
@@ -808,6 +808,31 @@ spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, uni
 end )
 
 
+local lastShot = 0
+local numShots = 0
+
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if sourceGUID ~= state.GUID then return end
+
+    if state.talent.fan_the_hammer.enabled and subtype == "SPELL_CAST_SUCCESS" and spellID == 185763 then
+        -- Opportunity: Fan the Hammer can queue 1-2 extra Pistol Shots (and consume additional stacks of Opportunity).
+        local now = GetTime()
+
+        if now - lastShot > 0.5 then
+            -- This is a fresh cast.
+            local oppoStacks = ( select( 3, FindPlayerAuraByID( 195627 ) ) or 1 ) - 1
+            lastShot = now
+            numShots = min( state.talent.fan_the_hammer.rank, oppoStacks, 2 )
+
+            Hekili:ForceUpdate( "FAN_THE_HAMMER", true )
+        else
+            -- This is *probably* one of the Fan the Hammer casts.
+            numShots = max( 0, numShots - 1 )
+        end
+    end
+end )
+
+
 -- Legendary from Legion, shows up in APL still.
 spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
 spec:RegisterAura( "master_assassins_initiative", {
@@ -935,6 +960,15 @@ spec:RegisterHook( "reset_precast", function()
     end
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
+
+    -- Fan the Hammer.
+    if query_time - lastShot < 0.5 and numShots > 0 then
+        local n = numShots * action.pistol_shot.cp_gain
+
+        if Hekili.ActiveDebug then Hekili:Debug( "Generating %d combo points from pending Fan the Hammer casts; removing %d stacks of Opportunity.", n, numShots ) end
+        gain( n, "combo_points" )
+        removeStack( "opportunity", numShots )
+    end
 
     if not dreadbladesSet then
         rawset( state.buff, "dreadblades", state.debuff.dreadblades )
@@ -1501,6 +1535,14 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( action.pistol_shot.cp_gain, "combo_points" )
             removeStack( "opportunity" )
+
+            -- If Fan the Hammer is talented, let's generate more.
+            if talent.fan_the_hammer.enabled then
+                local shots = min( talent.fan_the_hammer.rank, buff.opportunity.stack )
+                gain( shots * action.pistol_shot.cp_gain, "combo_points" )
+                removeStack( "opportunity", shots )
+            end
+
             removeBuff( "deadshot" )
             removeBuff( "concealed_blunderbuss" ) -- Generating 2 extra combo points is purely a guess.
             removeBuff( "greenskins_wickers" )
