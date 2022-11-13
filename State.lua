@@ -3743,6 +3743,7 @@ do
                 return 0
 
             elseif k == "last_expire" then
+                if t.last_expiry > state.query_time then return 0 end
                 if state.combat > 0 then return max( 0, t.last_expiry - state.combat ) end
                 return 0
 
