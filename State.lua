@@ -3743,8 +3743,7 @@ do
                 return 0
 
             elseif k == "last_expire" then
-                if t.last_expiry > state.query_time then return 0 end
-                if state.combat > 0 then return max( 0, t.last_expiry - state.combat ) end
+                if state.combat > 0 and t.last_expiry < state.query_time then return max( 0, t.last_expiry - state.combat ) end
                 return 0
 
             else
@@ -4261,8 +4260,6 @@ do
             local debug = Hekili.ActiveDebug
 
             if class.variables[ var ] then
-                -- We have a hardcoded shortcut.
-                if debug then Hekili:Debug( "Using class var '%s'.", var ) end
                 return class.variables[ var ]()
             end
 
