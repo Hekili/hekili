@@ -255,7 +255,6 @@ spec:RegisterStateTable( "stealthed", setmetatable( {}, {
 
 spec:RegisterStateExpr( "master_assassin_remains", function ()
     if not ( talent.master_assassin.enabled or legendary.mark_of_the_master_assassin.enabled ) then return 0 end
-
     if stealthed.mantle then return cooldown.global_cooldown.remains + ( legendary.mark_of_the_master_assassin.enabled and 4 or 3 )
     elseif buff.master_assassin_any.up then return buff.master_assassin_any.remains end
     return 0
@@ -280,6 +279,10 @@ local calculate_multiplier = setfenv( function( spellID )
         if talent.subterfuge.enabled and spellID == 703 then
             mult = mult * 1.8
         end
+    end
+
+    if FindPlayerAuraByID( 392401 ) and spellID == 703 then
+        mult = mult * 1.5
     end
 
     return mult
@@ -521,6 +524,8 @@ spec:RegisterStateExpr( "persistent_multiplier", function ()
             mult = mult * 1.8
         end
     end
+
+    if buff.improved_garrote.up and this_action == "garrote" then mult = mult * 1.5 end
 
     return mult
 end )
@@ -1560,7 +1565,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "garrote" )
-            debuff.garrote.pmultiplier = persistent_multiplier * ( buff.improved_garrote.up and 1.5 or 1 )
+            debuff.garrote.pmultiplier = persistent_multiplier
             debuff.garrote.exsanguinated_rate = 1
             debuff.garrote.exsanguinated = false
 
