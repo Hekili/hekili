@@ -688,12 +688,7 @@ spec:RegisterHook( "reset_precast", function ()
         state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
     end
 
-    class.abilities.apply_poison = class.abilities.apply_poison_actual
-    if buff.lethal_poison.down or level < 33 then
-        class.abilities.apply_poison = state.spec.assassination and level > 12 and class.abilities.deadly_poison or class.abilities.instant_poison
-    else
-        if level > 32 and buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
-    end
+    class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
     if buff.indiscriminate_carnage.up then
         if action.garrote.lastCast < action.indiscriminate_carnage.lastCast then applyBuff( "indiscriminate_carnage_garrote" ) end
@@ -731,14 +726,7 @@ spec:RegisterHook( "runHandler", function( ability )
         end
     end
 
-    if ability == "apply_poison" then
-        class.abilities.apply_poison = class.abilities.apply_poison_actual
-        if buff.lethal_poison.down then
-            class.abilities.apply_poison = state.spec.assassination and class.abilities.deadly_poison or class.abilities.instant_poison
-        else
-            if buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
-        end
-    end
+    class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 end )
 
 
@@ -1251,20 +1239,20 @@ spec:RegisterAuras( {
     },
 
     poisoned = {
-        alias = { "amplifying_poison_dot", "amplifying_poison_dot_deathmark", "deadly_poison_dot", "deadly_poison_dot_deathmark", "kingsbane_dot", "sepsis" },
+        alias = { "amplifying_poison_dot", "amplifying_poison_dot_deathmark", "deadly_poison_dot", "deadly_poison_dot_deathmark", "kingsbane_dot", "sepsis", "wound_poison_dot" },
         aliasMode = "longest",
         aliasType = "debuff",
         duration = 3600,
     },
     lethal_poison = {
-        alias = { "deadly_poison", "wound_poison", "instant_poison", "amplifying_poison" },
-        aliasMode = "first",
+        alias = { "amplifying_poison", "deadly_poison", "wound_poison", "instant_poison" },
+        aliasMode = "shortest",
         aliasType = "buff",
         duration = 3600
     },
     nonlethal_poison = {
-        alias = { "crippling_poison", "numbing_poison" },
-        aliasMode = "first",
+        alias = { "atrophic_poison", "crippling_poison", "numbing_poison" },
+        aliasMode = "shortest",
         aliasType = "buff",
         duration = 3600
     },
@@ -1347,8 +1335,25 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            removeBuff( "lethal_poison" )
             applyBuff( "amplifying_poison" )
+        end,
+    },
+
+    -- Talent: Coats your weapons with a Non-Lethal Poison that lasts for $d. Each strike has a $h% chance of poisoning the enemy, reducing their damage by ${$392388s1*-1}.1% for $392388d.
+    atrophic_poison = {
+        id = 381637,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "off",
+
+        talent = "atrophic_poison",
+        startsCombat = false,
+        essential = true,
+
+        readyTime = function() return buff.atrophic_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "atrophic_poison" )
         end,
     },
 
@@ -1380,6 +1385,44 @@ spec:RegisterAbilities( {
             spend( combo_points.current, "combo_points" )
 
             if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+        end,
+    },
+
+
+    crippling_poison = {
+        id = 3408,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        essential = true,
+
+        texture = 132274,
+
+        readyTime = function () return buff.crippling_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "crippling_poison" )
+        end,
+    },
+
+
+    deadly_poison = {
+        id = 2823,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        essential = true,
+        texture = 132290,
+
+
+        readyTime = function () return buff.deadly_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "deadly_poison" )
         end,
     },
 
@@ -1567,6 +1610,24 @@ spec:RegisterAbilities( {
         end,
     },
 
+    instant_poison = {
+        id = 315584,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        essential = true,
+
+        texture = 132273,
+
+        readyTime = function () return buff.instant_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "instant_poison" )
+        end,
+    },
+
     -- A quick kick that interrupts spellcasting and prevents any spell in that school from being cast for 5 sec.
     kick = {
         id = 1766,
@@ -1704,6 +1765,22 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+        end,
+    },
+
+    -- Coats your weapons with a Non-Lethal Poison that lasts for 1 hour.  Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 15% for 10 sec.
+    numbing_poison = {
+        id = 5761,
+        cast = 1,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+
+        readyTime = function () return buff.numbing_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "numbing_poison" )
         end,
     },
 
@@ -2021,6 +2098,25 @@ spec:RegisterAbilities( {
         end,
     },
 
+
+    wound_poison = {
+        id = 8679,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        essential = true,
+
+        texture = 134197,
+
+        readyTime = function () return buff.wound_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "wound_poison" )
+        end,
+    },
+
     -- TODO: Dragontempered Blades allows for 2 Lethal Poisons and 2 Non-Lethal Poisons.
     apply_poison = {
         name = _G.MINIMAP_TRACKING_VENDOR_POISON,
@@ -2031,36 +2127,40 @@ spec:RegisterAbilities( {
         startsCombat = false,
         essential = true,
 
-        texture = function ()
-            if buff.lethal_poison.down then
-                if talent.amplifying_poison.enabled then return GetSpellTexture( action.amplifying_poison.id ) end
-                if state.spec.assassination then return GetSpellTexture( action.deadly_poison.id ) end
-                return GetSpellTexture( action.instant_poison.id )
+        next_poison = function()
+            if buff.lethal_poison.down or talent.dragontempered_blades.enabled and buff.lethal_poison.stack < 2 then
+                if talent.amplifying_poison.enabled and buff.amplifying_poison.down then return "amplifying_poison"
+                elseif action.deadly_poison.known and buff.deadly_poison.down then return "deadly_poison"
+                elseif action.instant_poison.known and buff.instant_poison.down then return "instant_poison"
+                elseif action.wound_poison.known and buff.wound_poison.down then return "wound_poison" end
+
+            elseif buff.nonlethal_poison.down or talent.dragontempered_blades.enabled and buff.nonlethal_poison.stack < 2 then
+                if talent.atrophic_poison.enabled and buff.atrophic_poison.down then return "atrophic_poison"
+                elseif action.crippling_poison.known and buff.crippling_poison.down then return "crippling_poison"
+                elseif action.numbing_poison.known and buff.numbing_poison.down then return "numbing_poison" end
+
             end
-            return GetSpellTexture( action.crippling_poison.id )
+
+            return "apply_poison_actual"
+        end,
+
+        texture = function ()
+            local np = action.apply_poison.next_poison
+            if np == "apply_poison_actual" then return 136242 end
+            return action[ np ].texture
         end,
 
         bind = function ()
-            if buff.lethal_poison.down then
-                if talent.amplifying_poison.enabled then return "amplifying_poison" end
-                if state.spec.assassination then return "deadly_poison" end
-                return "instant_poison"
-            end
-            return "crippling_poison"
+            return action.apply_poison.next_poison
         end,
 
-        usable = function ()
-            return buff.lethal_poison.down or buff.nonlethal_poison.down, "requires missing poison"
+        readyTime = function ()
+            if action.apply_poison.next_poison ~= "apply_poison_actual" then return 0 end
+            return 0.01 + min( buff.lethal_poison.remains, buff.nonlethal_poison.remains )
         end,
 
         handler = function ()
-            if buff.lethal_poison.down then
-                if talent.amplifying_poison.enabled then applyBuff( "amplifying_poison" )
-                elseif state.spec.assassination then applyBuff( "deadly_poison" )
-                else applyBuff( "instant_poison" ) end
-            else
-                applyBuff( "crippling_poison" )
-            end
+            applyBuff( action.apply_poison.next_poison )
         end,
 
         copy = "apply_poison_actual"
