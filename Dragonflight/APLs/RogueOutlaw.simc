@@ -19,7 +19,7 @@ actions+=/variable,name=rtb_reroll,value=rtb_buffs<2&(!buff.broadside.up&(!talen
 # Ensure we get full Ambush CP gains and aren't rerolling Count the Odds buffs away
 actions+=/variable,name=ambush_condition,value=combo_points.deficit>=2+talent.improved_ambush+buff.broadside.up&energy>=50&(!talent.count_the_odds|buff.roll_the_bones.remains>=10)
 # Finish at max possible CP without overflowing bonus combo points, unless for BtE which always should be 5+ CP
-actions+=/variable,name=finish_condition,value=combo_points>=cp_max_spend-buff.broadside.up-(buff.opportunity.up*(talent.quick_draw|talent.fan_the_hammer)|buff.concealed_blunderbuss.up)|effective_combo_points>=cp_max_spend
+actions+=/variable,name=finish_condition,value=combo_points>=cp_max_spend-buff.broadside.up-(buff.opportunity.up&(talent.quick_draw|talent.fan_the_hammer)|buff.concealed_blunderbuss.up)|effective_combo_points>=cp_max_spend
 # Always attempt to use BtE at 5+ CP, regardless of CP gen waste
 actions+=/variable,name=finish_condition,op=reset,if=cooldown.between_the_eyes.ready&effective_combo_points<5
 # Finish at 2+ in the last GCD of Flagellation
@@ -50,7 +50,7 @@ actions.build+=/pistol_shot,if=buff.greenskins_wickers.up&(!talent.fan_the_hamme
 actions.build+=/pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&(buff.opportunity.stack>=buff.opportunity.max_stack|buff.opportunity.remains<2)
 actions.build+=/pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&combo_points.deficit>4&!debuff.dreadblades.up
 actions.build+=/pool_resource,for_next=1
-actions.build+=/ambush,if=talent.hidden_opportunity|talent.find_weakness&debuff.find_weakness.down
+actions.build+=/ambush
 # Apply SBS to all targets without a debuff as priority, preferring targets dying sooner after the primary target
 actions.build+=/serrated_bone_spike,if=!dot.serrated_bone_spike_dot.ticking
 actions.build+=/serrated_bone_spike,cycle_targets=1,if=!dot.serrated_bone_spike_dot.ticking
@@ -72,6 +72,7 @@ actions.cds+=/shadow_dance,if=!talent.keep_it_rolling&variable.shadow_dance_cond
 actions.cds+=/shadow_dance,if=talent.keep_it_rolling&variable.shadow_dance_condition&(cooldown.keep_it_rolling.remains<=30|cooldown.keep_it_rolling.remains>120&(variable.finish_condition|talent.hidden_opportunity))
 actions.cds+=/flagellation,cycle_targets=1,if=!stealthed.all&(variable.finish_condition&target.time_to_die>10|fight_remains<13)
 actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&(!talent.improved_adrenaline_rush|combo_points<=2)
+actions.cds+=/dreadblades,if=!stealthed.all&combo_points<=2&(!talent.marked_for_death|!cooldown.marked_for_death.ready)&target.time_to_die>=10
 # Fleshcraft for Pustule Eruption if not stealthed and not with Blade Flurry
 actions.cds+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent)&!stealthed.all&(!buff.blade_flurry.up|spell_targets.blade_flurry<2)&(!buff.adrenaline_rush.up|energy.base_time_to_max>2)
 # If adds are up, snipe the one with lowest TTD. Use when dying faster than CP deficit or without any CP.
