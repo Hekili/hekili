@@ -1270,6 +1270,13 @@ spec:RegisterAuras( {
         },
         copy = { "serrated_bone_spike_dot", 324073 }
     },
+    -- Talent: Combo point generating abilities generate $s2 additional combo point and deal $s1% additional damage as Shadow.
+    -- https://wowhead.com/beta/spell=121471
+    shadow_blades = {
+        id = 121471,
+        duration = 20,
+        max_stack = 1
+    },
     -- Talent: Access to Stealth abilities.$?$w3!=0[  Movement speed increased by $w3%.][]$?$w4!=0[  Damage increased by $w4%.][]
     -- https://wowhead.com/beta/spell=185422
     shadow_dance = {
