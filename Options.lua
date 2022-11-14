@@ -8014,9 +8014,7 @@ do
     local indent = ""
     local output = {}
 
-    local function key( s )
-        return ( lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
-    end
+    local key = formatKey
 
     local function increaseIndent()
         indent = indent .. "    "

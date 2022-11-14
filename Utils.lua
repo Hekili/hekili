@@ -67,8 +67,10 @@ local LT = LibStub( "LibTranslit-1.0" )
 
 -- Converts `s' to a SimC-like key: strip non alphanumeric characters, replace spaces with _, convert to lower case.
 function ns.formatKey( s )
+    s = s:gsub( "|c........", "" ):gsub( "|r", "" )
     s = LT:Transliterate( s )
-    return ( lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
+    s = lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s+", "_" )
+    return s
 end
 
 
