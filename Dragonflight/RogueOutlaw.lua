@@ -831,7 +831,7 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         talent = "blade_flurry",
-        startsCombat = false,
+        startsCombat = true,
 
         readyTime = function() return buff.blade_flurry.remains - gcd.execute end,
         handler = function ()
