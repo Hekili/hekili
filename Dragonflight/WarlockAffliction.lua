@@ -1746,7 +1746,6 @@ spec:RegisterAbilities( {
         spend = 0.005,
         spendType = "mana",
 
-        talent = "soul_rot",
         startsCombat = true,
 
         toggle = "cooldowns",
