@@ -900,7 +900,15 @@ do
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
                                 Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                             else
-                                if trimmed_prefix ~= "safenum" and ( val == nil or type( val ) ~= "number" ) then piece.s = "safenum(" .. piece.s .. ")" end
+                                if trimmed_prefix ~= "safenum" then
+                                    if trimmed_prefix then
+                                        if piece.s:sub( 1, 1 ) == "(" then piece.s = "(safenum" .. piece.s .. ")"
+                                        else piece.s = "(safenum(" .. piece.s .. "))" end
+                                    else
+                                        if piece.s:sub( 1, 1 ) == "(" then piece.s = "safenum" .. piece.s
+                                        else piece.s = "safenum(" .. piece.s .. ")" end
+                                    end
+                                end
                             end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-n)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
