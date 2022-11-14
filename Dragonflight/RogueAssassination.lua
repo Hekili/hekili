@@ -774,10 +774,27 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 13877
     },
+    -- Talent: Disoriented.
+    -- https://wowhead.com/beta/spell=2094
+    blind = {
+        id = 2094,
+        duration = 60,
+        mechanic = "disorient",
+        type = "Ranged",
+        max_stack = 1
+    },
     blindside = {
         id = 121153,
         duration = 10,
         max_stack = 1,
+    },
+    -- Stunned.
+    -- https://wowhead.com/beta/spell=1833
+    cheap_shot = {
+        id = 1833,
+        duration = 4,
+        mechanic = "stun",
+        max_stack = 1
     },
     -- You have recently escaped certain death.  You will not be so lucky a second time.
     -- https://wowhead.com/beta/spell=45181
@@ -791,6 +808,20 @@ spec:RegisterAuras( {
     cheating_death = {
         id = 45182,
         duration = 3,
+        max_stack = 1
+    },
+    -- Talent: Resisting all harmful spells.
+    -- https://wowhead.com/beta/spell=31224
+    cloak_of_shadows = {
+        id = 31224,
+        duration = 5,
+        max_stack = 1
+    },
+    -- Talent: Critical strike chance of your next damaging ability increased by $s1%.
+    -- https://wowhead.com/beta/spell=382245
+    cold_blood = {
+        id = 382245,
+        duration = 3600,
         max_stack = 1
     },
     crimson_tempest = {
@@ -820,6 +851,37 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 212198, 185311 }
     },
+    -- Each strike has a chance of poisoning the enemy, slowing movement speed by $3409s1% for $3409d.
+    -- https://wowhead.com/beta/spell=3408
+    crippling_poison = {
+        id = 3408,
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Movement slowed by $s1%.
+    -- https://wowhead.com/beta/spell=3409
+    crippling_poison_dot = {
+        id = 3409,
+        duration = 12,
+        mechanic = "snare",
+        type = "Magic",
+        max_stack = 1
+    },
+    -- Movement speed slowed by $s1%.
+    -- https://wowhead.com/beta/spell=115196
+    crippling_poison_snare = {
+        id = 115196,
+        duration = 5,
+        mechanic = "snare",
+        max_stack = 1
+    },
+    -- Each strike has a chance of causing the target to suffer Nature damage every $2818t1 sec for $2818d. Subsequent poison applications deal instant Nature damage.
+    -- https://wowhead.com/beta/spell=2823
+    deadly_poison = {
+        id = 2823,
+        duration = 3600,
+        max_stack = 1
+    },
     -- Talent: Suffering $w1 Nature damage every $t1 seconds.
     -- https://wowhead.com/beta/spell=394324
     deadly_poison_dot = {
@@ -827,6 +889,7 @@ spec:RegisterAuras( {
         duration = function () return 12 * haste end,
         max_stack = 1,
         exsanguinated = false,
+        copy = 394324,
         meta = {
             exsanguinated_rate = function( t ) return t.up and tracked_bleeds.deadly_poison_dot.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.deadly_poison_dot.last_tick[ target.unit ] or t.applied ) or 0 end,
@@ -917,6 +980,12 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    flagellation = {
+        id = 384631,
+        duration = 12,
+        max_stack = 30,
+        copy = { "flagellation_buff", 323654 }
+    },
     garrote = {
         id = 703,
         duration = 18,
@@ -965,6 +1034,14 @@ spec:RegisterAuras( {
         mechanic = "silence",
         max_stack = 1
     },
+    -- Talent: Incapacitated.
+    -- https://wowhead.com/beta/spell=1776
+    gouge = {
+        id = 1776,
+        duration = 4,
+        mechanic = "incapacitate",
+        max_stack = 1
+    },
     improved_garrote = {
         id = 392401,
         duration = 3600,
@@ -983,6 +1060,13 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     indiscriminate_carnage_rupture = {
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Each strike has a chance of poisoning the enemy, inflicting $315585s1 Nature damage.
+    -- https://wowhead.com/beta/spell=315584
+    instant_poison = {
+        id = 315584,
         duration = 3600,
         max_stack = 1
     },
@@ -1011,6 +1095,14 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    -- Stunned.
+    -- https://wowhead.com/beta/spell=408
+    kidney_shot = {
+        id = 408,
+        duration = function() return ( 1 + effective_combo_points ) end,
+        mechanic = "stun",
+        max_stack = 1
+    },
     -- Talent: Suffering $w4 Nature damage every $t4 sec.
     -- https://wowhead.com/beta/spell=385627
     kingsbane_dot = {
@@ -1030,6 +1122,13 @@ spec:RegisterAuras( {
     maneuverability = {
         id = 197003,
         duration = 4,
+        max_stack = 1
+    },
+    -- Talent: Marked for Death will reset upon death.
+    -- https://wowhead.com/beta/spell=137619
+    marked_for_death = {
+        id = 137619,
+        duration = 60,
         max_stack = 1
     },
     -- Talent: Critical strike chance increased by $w1%.
@@ -1071,11 +1170,11 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1,
     },
-    -- Gained a random combat enhancement.
-    -- https://wowhead.com/beta/spell=315508
-    roll_the_bones = {
-        id = 315508,
-        duration = 30,
+    -- Talent: Damage taken increased by $s1%.
+    -- https://wowhead.com/beta/spell=255909
+    prey_on_the_weak = {
+        id = 255909,
+        duration = 6,
         max_stack = 1
     },
     -- Bleeding for $w1 damage every $t1 sec.
@@ -1120,6 +1219,14 @@ spec:RegisterAuras( {
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.rupture_deathmark.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
         },
     },
+    -- Talent: Incapacitated.$?$w2!=0[  Damage taken increased by $w2%.][]
+    -- https://wowhead.com/beta/spell=6770
+    sap = {
+        id = 6770,
+        duration = 60,
+        mechanic = "sap",
+        max_stack = 1
+    },
     -- Talent: Your Ruptures are increasing your Agility by $w1%.
     -- https://wowhead.com/beta/spell=394080
     scent_of_blood = {
@@ -1163,6 +1270,21 @@ spec:RegisterAuras( {
         },
         copy = { "serrated_bone_spike_dot", 324073 }
     },
+    -- Talent: Access to Stealth abilities.$?$w3!=0[  Movement speed increased by $w3%.][]$?$w4!=0[  Damage increased by $w4%.][]
+    -- https://wowhead.com/beta/spell=185422
+    shadow_dance = {
+        id = 185422,
+        duration = function () return talent.subterfuge.enabled and 9 or 8 end,
+        max_stack = 1,
+        copy = 185313
+    },
+    -- Talent: Movement speed increased by $s2%.
+    -- https://wowhead.com/beta/spell=36554
+    shadowstep = {
+        id = 36554,
+        duration = 2,
+        max_stack = 1
+    },
     -- Energy cost of abilities reduced by $w1%.
     -- https://wowhead.com/beta/spell=112942
     shadow_focus = {
@@ -1191,10 +1313,32 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    -- Concealing allies within $115834A1 yards in shadows.
+    -- https://wowhead.com/beta/spell=114018
+    shroud_of_concealment = {
+        id = 114018,
+        duration = 15,
+        tick_time = 0.5,
+        max_stack = 1
+    },
+    -- Concealed in shadows.
+    -- https://wowhead.com/beta/spell=115834
+    shroud_of_concealment_buff = {
+        id = 115834,
+        duration = 2,
+        max_stack = 1
+    },
+    -- Attack speed increased by $w1%.
+    -- https://wowhead.com/beta/spell=315496
     slice_and_dice = {
         id = 315496,
         duration = function () return 6 * ( 1 + effective_combo_points ) end,
-        max_stack = 1
+        max_stack = 1,
+    },
+    smoke_bomb = {
+        id = 212182,
+        duration = 5,
+        max_stack = 1,
     },
     sprint = {
         id = 2983,
@@ -1208,6 +1352,14 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
         copy = 1784
+    },
+    -- Your next combo point generator will critically strike.
+    -- https://wowhead.com/beta/spell=227151
+    symbols_of_death = {
+        id = 227151,
+        duration = 10,
+        max_stack = 1,
+        copy = 227151
     },
     -- Talent: Mastery increased by ${$w2*$mas}.1%.
     -- https://wowhead.com/beta/spell=381623
@@ -1244,6 +1396,21 @@ spec:RegisterAuras( {
         id = 11327,
         duration = 3,
         max_stack = 1
+    },
+    -- Each strike has a chance of inflicting additional Nature damage to the victim and reducing all healing received for $8680d.
+    -- https://wowhead.com/beta/spell=8679
+    wound_poison = {
+        id = 8679,
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Healing effects reduced by $w2%.
+    -- https://wowhead.com/beta/spell=8680
+    wound_poison_debuff = {
+        id = 8680,
+        duration = 12,
+        max_stack = 3,
+        copy = { 394327, "wound_poison_dot" }
     },
 
     poisoned = {
@@ -1365,6 +1532,121 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Talent: Blinds the target, causing it to wander disoriented for $d. Damage will interrupt the effect. Limit 1.
+    blind = {
+        id = 2094,
+        cast = 0,
+        cooldown = function () return talent.blinding_powder.enabled and 90 or 120 end,
+        gcd = "spell",
+
+        talent = "blind",
+        startsCombat = true,
+
+        toggle = "interrupts",
+
+        handler = function ()
+            applyDebuff( "target", "blind" )
+        end,
+    },
+
+    -- Stuns the target for $d.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
+    cheap_shot = {
+        id = 1833,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function ()
+            if talent.dirty_tricks.enabled then return 0 end
+            return ( talent.tight_spender.enabled and 36 or 40 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spendType = "energy",
+
+        startsCombat = true,
+
+        cycle = function ()
+            if talent.prey_on_the_weak.enabled then return "prey_on_the_weak" end
+        end,
+
+        usable = function ()
+            if target.is_boss then return false, "cheap_shot assumed unusable in boss fights" end
+            return stealthed.all or buff.subterfuge.up, "not stealthed"
+        end,
+
+        nodebuff = "cheap_shot",
+
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
+
+        handler = function ()
+            applyDebuff( "target", "cheap_shot", 4 )
+
+            if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
+
+            if talent.prey_on_the_weak.enabled then
+                applyDebuff( "target", "prey_on_the_weak" )
+            end
+
+            if pvptalent.control_is_king.enabled then
+                applyBuff( "slice_and_dice" )
+            end
+
+            gain( action.cheap_shot.cp_gain, "combo_points" )
+        end,
+    },
+
+    -- Talent: Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for $d.
+    cloak_of_shadows = {
+        id = 31224,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        talent = "cloak_of_shadows",
+        startsCombat = false,
+
+        toggle = "interrupts",
+        buff = "dispellable_magic",
+
+        handler = function ()
+            removeBuff( "dispellable_magic" )
+            applyBuff( "cloak_of_shadows" )
+        end,
+    },
+
+    -- Talent: Increases the critical strike chance of your next damaging ability by $s1%.
+    cold_blood = {
+        id = 382245,
+        cast = 0,
+        cooldown = 45,
+        gcd = "off",
+        school = "physical",
+
+        talent = "cold_blood",
+        startsCombat = false,
+
+        handler = function ()
+            applyBuff( "cold_blood" )
+        end,
+    },
+
+    -- Drink an alchemical concoction that heals you for $?a354425&a193546[${$O1}.1][$o1]% of your maximum health over $d.
+    crimson_vial = {
+        id = 185311,
+        cast = 0,
+        cooldown = 30,
+        gcd = "totem",
+        school = "nature",
+
+        spend = function () return 20 - ( 10 * talent.nimble_fingers.rank ) + conduit.nimble_fingers.mod end,
+        spendType = "energy",
+
+        startsCombat = false,
+        texture = 1373904,
+
+        handler = function ()
+            applyBuff( "crimson_vial" )
+        end,
+    },
+
     -- Talent: Finishing move that slashes all enemies within 13 yards, dealing instant damage and causing victims to bleed for additional damage. Deals reduced damage beyond 8 targets. Lasts longer per combo point. 1 point : 325 plus 307 over 4 sec 2 points: 487 plus 460 over 6 sec 3 points: 650 plus 613 over 8 sec 4 points: 812 plus 767 over 10 sec 5 points: 975 plus 920 over 12 sec
     crimson_tempest = {
         id = 121411,
@@ -1452,6 +1734,55 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Throws a distraction, attracting the attention of all nearby monsters for $s1 seconds. Usable while stealthed.
+    distract = {
+        id = 1725,
+        cast = 0,
+        cooldown = 30,
+        gcd = "totem",
+        school = "physical",
+
+        spend = function () return 30 * ( talent.rushed_setup.enabled and 0.8 or 1 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spendType = "energy",
+
+        startsCombat = false,
+        texture = 132289,
+
+        handler = function ()
+        end,
+    },
+
+
+    -- Talent: Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.    Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.    |cFFFFFFFFAwards $s3 combo $lpoint:points;.|r
+    echoing_reprimand = {
+        id = function() return talent.echoing_reprimand.enabled and 385616 or 323547 end,
+        cast = 0,
+        cooldown = 45,
+        gcd = "totem",
+        school = "arcane",
+
+        spend = 10,
+        spendType = "energy",
+
+        startsCombat = true,
+        toggle = "cooldowns",
+
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+
+        handler = function ()
+            -- Can't predict the Animacharge, unless you have the talent/legendary.
+            if legendary.resounding_clarity.enabled or talent.resounding_clarity.enabled then
+                applyBuff( "echoing_reprimand_2", nil, 2 )
+                applyBuff( "echoing_reprimand_3", nil, 3 )
+                applyBuff( "echoing_reprimand_4", nil, 4 )
+                applyBuff( "echoing_reprimand_5", nil, 5 )
+            end
+            gain( action.echoing_reprimand.cp_gain, "combo_points" )
+        end,
+
+        copy = { 385616, 323547 },
+    },
+
     -- Finishing move that drives your poisoned blades in deep, dealing instant Nature damage and increasing your poison application chance by 30%. Damage and duration increased per combo point. 1 point : 288 damage, 2 sec 2 points: 575 damage, 3 sec 3 points: 863 damage, 4 sec 4 points: 1,150 damage, 5 sec 5 points: 1,438 damage, 6 sec
     envenom = {
         id = 32645,
@@ -1486,6 +1817,24 @@ spec:RegisterAbilities( {
             spend( combo_points.current, "combo_points" )
 
             if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+        end,
+    },
+
+-- Talent: Increases your dodge chance by ${$s1/2}% for $d.$?a344363[ Dodging an attack while Evasion is active will trigger Mastery: Main Gauche.][]
+    evasion = {
+        id = 5277,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+        school = "physical",
+
+        talent = "evasion",
+        startsCombat = false,
+
+        toggle = "defensives",
+
+        handler = function ()
+            applyBuff( "evasion" )
         end,
     },
 
@@ -1549,6 +1898,26 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Talent: Performs an evasive maneuver, reducing damage taken from area-of-effect attacks by $s1% $?s79008[and all other damage taken by $s2% ][]for $d.
+    feint = {
+        id = 1966,
+        cast = 0,
+        cooldown = 15,
+        gcd = "totem",
+        school = "physical",
+
+        talent = "feint",
+        spend = function () return talent.nimble_fingers.enabled and 25 or 35 + conduit.nimble_fingers.mod end,
+        spendType = "energy",
+
+        startsCombat = false,
+        texture = 132294,
+
+        handler = function ()
+            applyBuff( "feint" )
+        end,
+    },
+
     -- Garrote the enemy, causing 2,407 Bleed damage over 18 sec. Awards 1 combo point.
     garrote = {
         id = 703,
@@ -1599,6 +1968,28 @@ spec:RegisterAbilities( {
                     debuff.garrote.ss_buffed = true
                 end
             end
+        end,
+    },
+
+    -- Talent: Gouges the eyes of an enemy target, incapacitating for $d. Damage will interrupt the effect.    Must be in front of your target.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
+    gouge = {
+        id = 1776,
+        cast = 0,
+        cooldown = 20,
+        gcd = "totem",
+        school = "physical",
+
+        spend = function () return talent.dirty_tricks.enabled and 0 or 25 end,
+        spendType = "energy",
+
+        talent = "gouge",
+        startsCombat = true,
+
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+
+        handler = function ()
+            applyDebuff( "target", "gouge" )
+            gain( action.gouge.cp_gain, "combo_points" )
         end,
     },
 
@@ -1666,18 +2057,22 @@ spec:RegisterAbilities( {
         cooldown = 20,
         gcd = "spell",
 
-        spend = function () return 25 * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spend = function () return ( talent.rushed_setup.enabled and 20 or 25 ) * ( 1 - 0.1 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
         spendType = "energy",
 
         startsCombat = true,
         aura = "internal_bleeding",
         cycle = "internal_bleeding",
 
-        usable = function () return combo_points.current > 0 end,
+        usable = function ()
+            if target.is_boss then return false, "kidney_shot assumed unusable in boss fights" end
+            return combo_points.current > 0, "requires combo points"
+        end,
+
         handler = function ()
-            if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 20, 1 )
-            end
+            applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
+            if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end
+            if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
             if talent.internal_bleeding.enabled then
                 applyDebuff( "target", "internal_bleeding" )
                 debuff.internal_bleeding.pmultiplier = persistent_multiplier
@@ -1685,10 +2080,11 @@ spec:RegisterAbilities( {
                 debuff.internal_bleeding.exsanguinated_rate = 1
             end
 
-            applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
-            spend( combo_points.current, "combo_points" )
+            if pvptalent.control_is_king.enabled then
+                gain( 10 * combo_points.current, "energy" )
+            end
 
-            if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1841,6 +2237,25 @@ spec:RegisterAbilities( {
         end,
     },
 
+
+    sap = {
+        id = 6770,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+        school = "physical",
+
+        spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spendType = "energy",
+
+        talent = "sap",
+        startsCombat = false,
+
+        handler = function ()
+            applyDebuff( "target", "sap" )
+        end,
+    },
+
     -- Talent: Infect the target's blood, dealing $o1 Nature damage over $d. If the target survives its full duration, they suffer an additional $328306s1 damage and you gain $s6 use of any Stealth ability for $347037d.    Cooldown reduced by $s3 sec if Sepsis does not last its full duration.    |cFFFFFFFFAwards $s7 combo $lpoint:points;.|r
     sepsis = {
         id = function() return talent.sepsis.enabled and 385408 or 328305 end,
@@ -1895,6 +2310,33 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 385424, 328547 }
+    },
+
+    -- Talent: Allows use of all Stealth abilities and grants all the combat benefits of Stealth for $d$?a245687[, and increases damage by $s2%][]. Effect not broken from taking damage or attacking.$?s137035[    If you already know $@spellname185313, instead gain $394930s1 additional $Lcharge:charges; of $@spellname185313.][]
+    shadow_dance = {
+        id = 185313,
+        cast = 0,
+        charges = function () return talent.enveloping_shadows.enabled and 2 or nil end,
+        cooldown = 60,
+        recharge = function () return talent.enveloping_shadows.enabled and 60 or nil end,
+        gcd = "off",
+
+        talent = "shadow_dance",
+        startsCombat = false,
+
+        toggle = "cooldowns",
+        nobuff = "shadow_dance",
+
+        usable = function () return not stealthed.all, "not used in stealth" end,
+        handler = function ()
+            applyBuff( "shadow_dance" )
+            if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
+            if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows" ) end
+            if azerite.the_first_dance.enabled then
+                gain( 2, "combo_points" )
+                applyBuff( "the_first_dance" )
+            end
+        end,
     },
 
     -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
@@ -2034,6 +2476,8 @@ spec:RegisterAbilities( {
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
         end,
+
+        copy = 115191
     },
 
     -- Talent: Restore 100 Energy. Mastery increased by 13.6% for 6 sec.

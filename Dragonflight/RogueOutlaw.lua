@@ -30,20 +30,6 @@ spec:RegisterResource( Enum.PowerType.Energy, {
             interval = function() return class.auras.blade_rush.tick_time end,
             value = 5,
         },
-
-        --[[ vendetta_regen = {            -- TODO: Vendetta regen?
-            --aura = "vendetta_regen",
-
-            --last = function ()
-                --local app = state.buff.vendetta_regen.applied
-                --local t = state.query_time
-
-                --return app + floor( t - app )
-            --end,
-
-            --interval = 1,
-            --value = 20,
-        --}, ]]
     },
     nil, -- No replacement model.
     {    -- Meta function replacements.
@@ -235,93 +221,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
-    -- Talent: Disoriented.
-    -- https://wowhead.com/beta/spell=2094
-    blind = {
-        id = 2094,
-        duration = 60,
-        mechanic = "disorient",
-        type = "Ranged",
-        max_stack = 1
-    },
-    -- Stunned.
-    -- https://wowhead.com/beta/spell=1833
-    cheap_shot = {
-        id = 1833,
-        duration = 4,
-        mechanic = "stun",
-        max_stack = 1
-    },
-    -- Talent: Resisting all harmful spells.
-    -- https://wowhead.com/beta/spell=31224
-    cloak_of_shadows = {
-        id = 31224,
-        duration = 5,
-        max_stack = 1
-    },
-    -- Talent: Critical strike chance of your next damaging ability increased by $s1%.
-    -- https://wowhead.com/beta/spell=382245
-    cold_blood = {
-        id = 382245,
-        duration = 3600,
-        max_stack = 1
-    },
-    -- Bleeding for $w1 damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=121411
-    crimson_tempest = {
-        id = 121411,
-        duration = 2,
-        tick_time = 2,
-        max_stack = 1
-    },
-    -- Healing for $?a354425|a193546[${$W1}.2][$w1]% of maximum health every $t1 sec.
-    -- https://wowhead.com/beta/spell=185311
-    crimson_vial = {
-        id = 185311,
-        duration = 4,
-        type = "Magic",
-        max_stack = 1
-    },
-    -- Each strike has a chance of poisoning the enemy, slowing movement speed by $3409s1% for $3409d.
-    -- https://wowhead.com/beta/spell=3408
-    crippling_poison = {
-        id = 3408,
-        duration = 3600,
-        max_stack = 1
-    },
-    -- Movement slowed by $s1%.
-    -- https://wowhead.com/beta/spell=3409
-    crippling_poison_dot = {
-        id = 3409,
-        duration = 12,
-        mechanic = "snare",
-        type = "Magic",
-        max_stack = 1
-    },
-    -- Movement speed slowed by $s1%.
-    -- https://wowhead.com/beta/spell=115196
-    crippling_poison_snare = {
-        id = 115196,
-        duration = 5,
-        mechanic = "snare",
-        max_stack = 1
-    },
-    -- Each strike has a chance of causing the target to suffer Nature damage every $2818t1 sec for $2818d. Subsequent poison applications deal instant Nature damage.
-    -- https://wowhead.com/beta/spell=2823
-    deadly_poison = {
-        id = 2823,
-        duration = 3600,
-        max_stack = 1
-    },
-    -- Suffering $w1 Nature damage every $t1 seconds.
-    -- https://wowhead.com/beta/spell=394324
-    deadly_poison_dot = {
-        id = 2818,
-        duration = 12,
-        tick_time = 2,
-        max_stack = 1,
-        copy = 394324
-    },
     -- Talent: Sinister Strike, $?s196937[Ghostly Strike, ][]Ambush, and Pistol Shot will refill all of your combo points when used.
     -- https://wowhead.com/beta/spell=343142
     dreadblades = {
@@ -367,26 +266,6 @@ spec:RegisterAuras( {
             end
         }
     },
-    -- Talent: Dodge chance increased by ${$w1/2}%.$?a344363[ Dodging an attack while Evasion is active will trigger Mastery: Main Gauche.][]
-    -- https://wowhead.com/beta/spell=5277
-    evasion = {
-        id = 5277,
-        duration = 10,
-        max_stack = 1
-    },
-    -- Talent: Damage taken from area-of-effect attacks reduced by $s1%$?$w2!=0[ and all other damage taken reduced by $w2%.  ][.]
-    -- https://wowhead.com/beta/spell=1966
-    feint = {
-        id = 1966,
-        duration = 6,
-        max_stack = 1
-    },
-    flagellation = {
-        id = 384631,
-        duration = 12,
-        max_stack = 30,
-        copy = { "flagellation_buff", 323654 }
-    },
     find_weakness = {
         id = 316220,
         duration = 10,
@@ -408,21 +287,6 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
-    -- Talent: Incapacitated.
-    -- https://wowhead.com/beta/spell=1776
-    gouge = {
-        id = 1776,
-        duration = 4,
-        mechanic = "incapacitate",
-        max_stack = 1
-    },
-    -- Each strike has a chance of poisoning the enemy, inflicting $315585s1 Nature damage.
-    -- https://wowhead.com/beta/spell=315584
-    instant_poison = {
-        id = 315584,
-        duration = 3600,
-        max_stack = 1
-    },
     -- Suffering $w1 damage every $t1 sec.
     -- https://wowhead.com/beta/spell=154953
     internal_bleeding = {
@@ -430,14 +294,6 @@ spec:RegisterAuras( {
         duration = 6,
         tick_time = 1,
         mechanic = "bleed",
-        max_stack = 1
-    },
-    -- Stunned.
-    -- https://wowhead.com/beta/spell=408
-    kidney_shot = {
-        id = 408,
-        duration = function() return ( 1 + effective_combo_points ) end,
-        mechanic = "stun",
         max_stack = 1
     },
     -- Increase the remaining duration of your active Roll the Bones combat enhancements by 30 sec.
@@ -473,13 +329,6 @@ spec:RegisterAuras( {
         duration = 45,
         max_stack = 1,
         copy = 240837
-    },
-    -- Talent: Marked for Death will reset upon death.
-    -- https://wowhead.com/beta/spell=137619
-    marked_for_death = {
-        id = 137619,
-        duration = 60,
-        max_stack = 1
     },
     -- Suffering $w1 Nature damage every $t1 sec.
     -- https://wowhead.com/beta/spell=286581
@@ -537,64 +386,10 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
-    -- Talent: Incapacitated.$?$w2!=0[  Damage taken increased by $w2%.][]
-    -- https://wowhead.com/beta/spell=6770
-    sap = {
-        id = 6770,
-        duration = 60,
-        mechanic = "sap",
-        max_stack = 1
-    },
-    -- Talent: Access to Stealth abilities.$?$w3!=0[  Movement speed increased by $w3%.][]$?$w4!=0[  Damage increased by $w4%.][]
-    -- https://wowhead.com/beta/spell=185422
-    shadow_dance = {
-        id = 185422,
-        duration = 6,
-        max_stack = 1
-    },
-    -- Talent: Movement speed increased by $s2%.
-    -- https://wowhead.com/beta/spell=36554
-    shadowstep = {
-        id = 36554,
-        duration = 2,
-        max_stack = 1
-    },
-    shadow_blades = {
-        id = 121471,
-        duration = 20,
-        max_stack = 1,
-    },
     sharpened_sabers = {
         id = 252285,
         duration = 15,
         max_stack = 2,
-    },
-    -- Concealing allies within $115834A1 yards in shadows.
-    -- https://wowhead.com/beta/spell=114018
-    shroud_of_concealment = {
-        id = 114018,
-        duration = 15,
-        tick_time = 0.5,
-        max_stack = 1
-    },
-    -- Concealed in shadows.
-    -- https://wowhead.com/beta/spell=115834
-    shroud_of_concealment_buff = {
-        id = 115834,
-        duration = 2,
-        max_stack = 1
-    },
-    -- Attack speed increased by $w1%.
-    -- https://wowhead.com/beta/spell=315496
-    slice_and_dice = {
-        id = 315496,
-        duration = function () return 6 * ( 1 + effective_combo_points ) end,
-        max_stack = 1,
-    },
-    smoke_bomb = {
-        id = 212182,
-        duration = 5,
-        max_stack = 1,
     },
     soothing_darkness = {
         id = 393971,
@@ -608,13 +403,6 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
     },
-    -- Stealthed.$?$w3!=0[  Movement speed increased by $w3%.][]$?$w4!=0[  Damage increased by $w4%.][]
-    -- https://wowhead.com/beta/spell=1784
-    stealth = {
-        id = 1784,
-        duration = 3600,
-        copy = 115191
-    },
     subterfuge = {
         id = 115192,
         duration = 3,
@@ -624,13 +412,6 @@ spec:RegisterAuras( {
         id = 386868,
         duration = 8,
         max_stack = 5,
-    },
-    -- Your next combo point generator will critically strike.
-    -- https://wowhead.com/beta/spell=227151
-    symbols_of_death = {
-        id = 227151,
-        duration = 10,
-        max_stack = 1
     },
     -- Talent: Haste increased by $w1%.
     -- https://wowhead.com/beta/spell=385907
@@ -645,28 +426,6 @@ spec:RegisterAuras( {
         id = 57934,
         duration = 30,
         max_stack = 1
-    },
-    -- Improved stealth.$?$w3!=0[  Movement speed increased by $w3%.][]$?$w4!=0[  Damage increased by $w4%.][]
-    -- https://wowhead.com/beta/spell=11327
-    vanish = {
-        id = 11327,
-        duration = 3,
-        max_stack = 1
-    },
-    -- Each strike has a chance of inflicting additional Nature damage to the victim and reducing all healing received for $8680d.
-    -- https://wowhead.com/beta/spell=8679
-    wound_poison = {
-        id = 8679,
-        duration = 3600,
-        max_stack = 1
-    },
-    -- Healing effects reduced by $w2%.
-    -- https://wowhead.com/beta/spell=8680
-    wound_poison_debuff = {
-        id = 8680,
-        duration = 12,
-        max_stack = 3,
-        copy = { 394327, "wound_poison_dot" }
     },
 
     -- Real RtB buffs.
@@ -1097,121 +856,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Blinds the target, causing it to wander disoriented for $d. Damage will interrupt the effect. Limit 1.
-    blind = {
-        id = 2094,
-        cast = 0,
-        cooldown = function () return talent.blinding_powder.enabled and 90 or 120 end,
-        gcd = "spell",
-
-        talent = "blind",
-        startsCombat = true,
-
-        toggle = "interrupts",
-
-        handler = function ()
-            applyDebuff( "target", "blind" )
-        end,
-    },
-
-    -- Stuns the target for $d.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
-    cheap_shot = {
-        id = 1833,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function ()
-            if talent.dirty_tricks.enabled then return 0 end
-            return ( talent.tight_spender.enabled and 36 or 40 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
-        spendType = "energy",
-
-        startsCombat = true,
-
-        cycle = function ()
-            if talent.prey_on_the_weak.enabled then return "prey_on_the_weak" end
-        end,
-
-        usable = function ()
-            if target.is_boss then return false, "cheap_shot assumed unusable in boss fights" end
-            return stealthed.all or buff.subterfuge.up, "not stealthed"
-        end,
-
-        nodebuff = "cheap_shot",
-
-        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
-
-        handler = function ()
-            applyDebuff( "target", "cheap_shot", 4 )
-
-            if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
-
-            if talent.prey_on_the_weak.enabled then
-                applyDebuff( "target", "prey_on_the_weak" )
-            end
-
-            if pvptalent.control_is_king.enabled then
-                applyBuff( "slice_and_dice" )
-            end
-
-            gain( action.cheap_shot.cp_gain, "combo_points" )
-        end,
-    },
-
-    -- Talent: Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for $d.
-    cloak_of_shadows = {
-        id = 31224,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-
-        talent = "cloak_of_shadows",
-        startsCombat = false,
-
-        toggle = "interrupts",
-        buff = "dispellable_magic",
-
-        handler = function ()
-            removeBuff( "dispellable_magic" )
-            applyBuff( "cloak_of_shadows" )
-        end,
-    },
-
-    -- Talent: Increases the critical strike chance of your next damaging ability by $s1%.
-    cold_blood = {
-        id = 382245,
-        cast = 0,
-        cooldown = 45,
-        gcd = "off",
-        school = "physical",
-
-        talent = "cold_blood",
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "cold_blood" )
-        end,
-    },
-
-    -- Drink an alchemical concoction that heals you for $?a354425&a193546[${$O1}.1][$o1]% of your maximum health over $d.
-    crimson_vial = {
-        id = 185311,
-        cast = 0,
-        cooldown = 30,
-        gcd = "totem",
-        school = "nature",
-
-        spend = function () return 20 - ( 10 * talent.nimble_fingers.rank ) + conduit.nimble_fingers.mod end,
-        spendType = "energy",
-
-        startsCombat = false,
-        texture = 1373904,
-
-        handler = function ()
-            applyBuff( "crimson_vial" )
-        end,
-    },
-
 
     death_from_above = {
         id = 269513,
@@ -1278,24 +922,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Throws a distraction, attracting the attention of all nearby monsters for $s1 seconds. Usable while stealthed.
-    distract = {
-        id = 1725,
-        cast = 0,
-        cooldown = 30,
-        gcd = "totem",
-        school = "physical",
-
-        spend = function () return 30 * ( talent.rushed_setup.enabled and 0.8 or 1 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
-        spendType = "energy",
-
-        startsCombat = false,
-        texture = 132289,
-
-        handler = function ()
-        end,
-    },
-
     -- Talent: Strike at an enemy, dealing $s1 Physical damage and empowering your weapons for $d, causing your Sinister Strike,$?s196937[ Ghostly Strike,][]$?s328305[ Sepsis,][]$?s323547[ Echoing Reprimand,][]$?s328547[ Serrated Bone Spike,][] Ambush, and Pistol Shot to fill your combo points, but your finishing moves consume $343145s1% of your current health.
     dreadblades = {
         id = 343142,
@@ -1319,74 +945,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.    Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.    |cFFFFFFFFAwards $s3 combo $lpoint:points;.|r
-    echoing_reprimand = {
-        id = function() return talent.echoing_reprimand.enabled and 385616 or 323547 end,
-        cast = 0,
-        cooldown = 45,
-        gcd = "totem",
-        school = "arcane",
-
-        spend = 10,
-        spendType = "energy",
-
-        startsCombat = true,
-        toggle = "cooldowns",
-
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
-
-        handler = function ()
-            -- Can't predict the Animacharge, unless you have the talent/legendary.
-            if legendary.resounding_clarity.enabled or talent.resounding_clarity.enabled then
-                applyBuff( "echoing_reprimand_2", nil, 2 )
-                applyBuff( "echoing_reprimand_3", nil, 3 )
-                applyBuff( "echoing_reprimand_4", nil, 4 )
-                applyBuff( "echoing_reprimand_5", nil, 5 )
-            end
-            gain( action.echoing_reprimand.cp_gain, "combo_points" )
-        end,
-
-        copy = { 385616, 323547 },
-    },
-
-    -- Talent: Increases your dodge chance by ${$s1/2}% for $d.$?a344363[ Dodging an attack while Evasion is active will trigger Mastery: Main Gauche.][]
-    evasion = {
-        id = 5277,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-        school = "physical",
-
-        talent = "evasion",
-        startsCombat = false,
-
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "evasion" )
-        end,
-    },
-
-    -- Talent: Performs an evasive maneuver, reducing damage taken from area-of-effect attacks by $s1% $?s79008[and all other damage taken by $s2% ][]for $d.
-    feint = {
-        id = 1966,
-        cast = 0,
-        cooldown = 15,
-        gcd = "totem",
-        school = "physical",
-
-        talent = "feint",
-        spend = function () return talent.nimble_fingers.enabled and 25 or 35 + conduit.nimble_fingers.mod end,
-        spendType = "energy",
-
-        startsCombat = false,
-        texture = 132294,
-
-        handler = function ()
-            applyBuff( "feint" )
-        end,
-    },
-
     -- Talent: Strikes an enemy, dealing $s1 Physical damage and causing the target to take $s3% increased damage from your abilities for $d.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
     ghostly_strike = {
         id = 196937,
@@ -1406,28 +964,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "ghostly_strike" )
             gain( action.ghostly_strike.cp_gain, "combo_points" )
-        end,
-    },
-
-    -- Talent: Gouges the eyes of an enemy target, incapacitating for $d. Damage will interrupt the effect.    Must be in front of your target.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
-    gouge = {
-        id = 1776,
-        cast = 0,
-        cooldown = 20,
-        gcd = "totem",
-        school = "physical",
-
-        spend = function () return talent.dirty_tricks.enabled and 0 or 25 end,
-        spendType = "energy",
-
-        talent = "gouge",
-        startsCombat = true,
-
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
-
-        handler = function ()
-            applyDebuff( "target", "gouge" )
-            gain( action.gouge.cp_gain, "combo_points" )
         end,
     },
 
@@ -1465,36 +1001,6 @@ spec:RegisterAbilities( {
             for _, v in pairs( rtb_buff_list ) do
                 if buff[ v ].up then buff[ v ].expires = buff[ v ].expires + 30 end
             end
-        end,
-    },
-
-
-    kidney_shot = {
-        id = 408,
-        cast = 0,
-        cooldown = 20,
-        gcd = "spell",
-
-        spend = function () return ( talent.rushed_setup.enabled and 20 or 25 ) * ( 1 - 0.1 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132298,
-
-        usable = function ()
-            if target.is_boss then return false, "kidney_shot assumed unusable in boss fights" end
-            return combo_points.current > 0, "requires combo points"
-        end,
-
-        handler = function ()
-            if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", nil, 1 )
-            end
-            applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
-            if pvptalent.control_is_king.enabled then
-                gain( 10 * combo_points.current, "energy" )
-            end
-            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1584,51 +1090,6 @@ spec:RegisterAbilities( {
                 applyBuff( "take_your_cut" )
             end
         end,
-        },
-
-    sap = {
-        id = 6770,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-        school = "physical",
-
-        spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
-        spendType = "energy",
-
-        talent = "sap",
-        startsCombat = false,
-
-        handler = function ()
-            applyDebuff( "target", "sap" )
-        end,
-    },
-
-    -- Talent: Allows use of all Stealth abilities and grants all the combat benefits of Stealth for $d$?a245687[, and increases damage by $s2%][]. Effect not broken from taking damage or attacking.$?s137035[    If you already know $@spellname185313, instead gain $394930s1 additional $Lcharge:charges; of $@spellname185313.][]
-    shadow_dance = {
-        id = 185313,
-        cast = 0,
-        charges = 1,
-        cooldown = 60,
-        recharge = 60,
-        gcd = "off",
-
-        talent = "shadow_dance",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-        nobuff = "shadow_dance",
-
-        usable = function () return not stealthed.all, "not used in stealth" end,
-        handler = function ()
-            applyBuff( "shadow_dance" )
-            if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
-            if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows" ) end
-            if azerite.the_first_dance.enabled then
-                gain( 2, "combo_points" )
-                applyBuff( "the_first_dance" )
-            end
-        end,
     },
 
 
@@ -1652,6 +1113,7 @@ spec:RegisterAbilities( {
             removeDebuff( "target", "dispellable_enrage" )
         end,
     },
+
 
     shroud_of_concealment = {
         id = 114018,
