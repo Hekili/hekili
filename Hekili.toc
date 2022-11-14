@@ -61,7 +61,7 @@ Dragonflight\RogueOutlaw.lua
 Dragonflight\ShamanElemental.lua
 Dragonflight\ShamanEnhancement.lua
 # Dragonflight\ShamanRestoration.lua
-# Dragonflight\WarlockAffliction.lua
+Dragonflight\WarlockAffliction.lua
 Dragonflight\WarlockDemonology.lua
 Dragonflight\WarlockDestruction.lua
 Dragonflight\WarriorArms.lua

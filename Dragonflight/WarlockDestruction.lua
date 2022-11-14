@@ -1154,59 +1154,6 @@ spec:RegisterPet( "felguard",
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- Talent: Your next Curse of Exhaustion, Curse of Tongues or Curse of Weakness cast within 15 sec is amplified. Curse of Exhaustion Reduces the target's movement speed by an additional 20%. Curse of Tongues Increases casting time by an additional 40%. Curse of Weakness Enemy is unable to critically strike.
-    amplify_curse = {
-        id = 328774,
-        cast = 0,
-        cooldown = function() return talent.teachings_of_the_satyr.enabled and 20 or 30 end,
-        gcd = "off",
-        school = "shadow",
-
-        talent = "amplify_curse",
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "amplify_curse" )
-        end,
-    },
-
-    -- Talent: Banishes an enemy Demon, Aberration, or Elemental, preventing any action for 30 sec. Limit 1. Casting Banish again on the target will cancel the effect.
-    banish = {
-        id = 710,
-        cast = 1.5,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.015,
-        spendType = "mana",
-
-        talent = "banish",
-        startsCombat = false,
-
-        handler = function ()
-            if debuff.banish.up then removeDebuff( "target", "banish" )
-            else applyDebuff( "target", "banish" ) end
-        end,
-    },
-
-    -- Talent: Increases your movement speed by 50%, but also damages you for 4% of your maximum health every 1 sec. Movement impairing effects may not reduce you below 100% of normal movement speed. Lasts until canceled.
-    burning_rush = {
-        id = 111400,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "physical",
-
-        talent = "burning_rush",
-        startsCombat = false,
-
-        handler = function ()
-            if buff.burning_rush.up then removeBuff( "burning_rush" )
-            else applyBuff( "burning_rush" ) end
-        end,
-    },
-
     -- Talent: Calls forth a cataclysm at the target location, dealing 6,264 Shadowflame damage to all enemies within 8 yards and afflicting them with Immolate.
     cataclysm = {
         id = 152108,
@@ -1362,150 +1309,6 @@ spec:RegisterAbilities( {
         end,
     }, ]]
 
-    -- Reduces the target's movement speed by 50% for 12 sec. Curses: A warlock can only have one Curse active per target.
-    curse_of_exhaustion = {
-        id = 334275,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        talent = "curses_of_enfeeblement",
-        startsCombat = true,
-
-        handler = function ()
-            removeBuff( "amplify_curse" )
-            applyDebuff( "target", "curse_of_exhaustion" )
-            removeDebuff( "target", "curse_of_tongues" )
-            removeDebuff( "target", "curse_of_weakness" )
-        end,
-    },
-
-    -- Forces the target to speak in Demonic, increasing the casting time of all spells by 30% for 1 min. Curses: A warlock can only have one Curse active per target.
-    curse_of_tongues = {
-        id = 1714,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        talent = "curses_of_enfeeblement",
-        startsCombat = true,
-
-        handler = function ()
-            removeBuff( "amplify_curse" )
-            removeDebuff( "target", "curse_of_exhaustion" )
-            applyDebuff( "target", "curse_of_tongues" )
-            removeDebuff( "target", "curse_of_weakness" )
-        end,
-    },
-
-    -- Increases the time between an enemy's attacks by 20% for 2 min. Curses: A warlock can only have one Curse active per target.
-    curse_of_weakness = {
-        id = 702,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        handler = function ()
-            removeBuff( "amplify_curse" )
-            removeDebuff( "target", "curse_of_exhaustion" )
-            removeDebuff( "target", "curse_of_tongues" )
-            applyDebuff( "target", "curse_of_weakness" )
-        end,
-    },
-
-    -- Talent: Sacrifices 20% of your current health to shield you for 250% of the sacrificed health plus an additional 12,365 for 20 sec. Usable while suffering from control impairing effects.
-    dark_pact = {
-        id = 108416,
-        cast = 0,
-        cooldown = function() return talent.frequent_donor.enabled and 45 or 60 end,
-        gcd = "off",
-        school = "physical",
-
-        talent = "dark_pact",
-        startsCombat = false,
-
-        toggle = "defensives",
-
-        usable = function () return health.pct > ( talent.ichor_of_devils.enabled and 10 or 25 ), "insufficient health" end,
-        handler = function ()
-            applyBuff( "dark_pact" )
-            spend( ( talent.ichor_of_devils.enabled and 0.05 or 0.2 ) * health.max, "health" )
-        end,
-    },
-
-    -- Talent: Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
-    demonic_circle = {
-        id = 268358,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-        school = "shadow",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "demonic_circle",
-        startsCombat = false,
-        nobuff = "demonic_circle",
-
-        handler = function ()
-            applyBuff( "demonic_circle" )
-        end,
-    },
-
-
-    demonic_circle_teleport = {
-        id = 48020,
-        cast = 0,
-        cooldown = 30,
-        gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        talent = "demonic_circle",
-        buff = "demonic_circle",
-
-        handler = function ()
-            if talent.abyss_walker.enabled then applyBuff( "abyss_walker" ) end
-            if conduit.demonic_momentum.enabled then applyBuff( "demonic_momentum" ) end
-        end,
-    },
-
-    -- Talent: Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per 1.5 min.
-    demonic_gateway = {
-        id = 111771,
-        cast = function ()
-            if legendary.pillars_of_the_dark_portal.enabled or buff.soulburn.up then return 0 end
-            return 2 * haste
-        end,
-        cooldown = 10,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.2,
-        spendType = "mana",
-
-        talent = "demonic_gateway",
-        startsCombat = false,
-
-        handler = function ()
-            removeBuff( "soulburn" )
-        end,
-    },
 
     -- Talent: Rips a hole in time and space, opening a random portal that damages your target: Shadowy Tear Deals 15,954 Shadow damage over 14 sec. Unstable Tear Deals 13,709 Chaos damage over 6 sec. Chaos Tear Fires a Chaos Bolt, dealing 4,524 Chaos damage. This Chaos Bolt always critically strikes and your critical strike chance increases its damage. Generates 3 Soul Shard Fragments.
     dimensional_rift = {
@@ -1522,33 +1325,6 @@ spec:RegisterAbilities( {
 
         talent = "dimensional_rift",
         startsCombat = true,
-    },
-
-    -- Drains life from the target, causing 2,174 Shadow damage over 4.0 sec, and healing you for 500% of the damage done. Drain Life heals for 15% more while below 50% health.
-    drain_life = {
-        id = 234153,
-        cast = function () return 5
-            * haste
-            * ( talent.grim_feast.enabled and 0.7 or 1 )
-            * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
-        channeled = true,
-        breakable = true,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = function () return debuff.soul_rot.up and 0 or 0.03 end,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        start = function ()
-            applyDebuff( "target", "drain_life" )
-        end,
-
-        finish = function ()
-            if talent.accrued_vitality.enabled or conduit.accrued_vitality.enabled then applyBuff( "accrued_vitality" ) end
-        end,
     },
 
     --[[ Summons an Eye of Kilrogg and binds your vision to it. The eye is stealthed and moves quickly but is very fragile.
@@ -1569,42 +1345,6 @@ spec:RegisterAbilities( {
         end,
     }, ]]
 
-    -- Strikes fear in the enemy, disorienting for 20 sec. Damage may cancel the effect. Limit 1.
-    fear = {
-        id = 5782,
-        cast = 1.7,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.05,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "fear" )
-        end,
-    },
-
-    -- Talent: Your next Imp, Voidwalker, Incubus, Succubus, Felhunter, or Felguard Summon spell is free and has its casting time reduced by 5.5 sec.
-    fel_domination = {
-        id = 333889,
-        cast = 0,
-        cooldown = function () return 180 - 30 * talent.fel_pact.rank + conduit.fel_celerity.mod * 0.001 end,
-        gcd = "off",
-        school = "shadowstrike",
-
-        talent = "fel_domination",
-        startsCombat = false,
-        essential = true,
-        nomounted = true,
-        nobuff = "grimoire_of_sacrifice",
-
-        handler = function ()
-            applyBuff( "fel_domination" )
-        end,
-    },
 
     -- Talent: Sacrifices your demon pet for power, gaining its command demon ability, and causing your spells to sometimes also deal 1,678 additional Shadow damage. Lasts 1 |4hour:hrs; or until you summon a demon pet.
     grimoire_of_sacrifice = {
@@ -1629,6 +1369,7 @@ spec:RegisterAbilities( {
             applyBuff( "grimoire_of_sacrifice" )
         end,
     },
+
     -- Talent: Marks a target with Havoc for 15 sec, causing your single target spells to also strike the Havoc victim for 60% of normal initial damage.
     havoc = {
         id = 80240,
@@ -1682,24 +1423,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "bane_of_havoc" )
             active_dot.bane_of_havoc = active_enemies
             applyBuff( "active_havoc" )
-        end,
-    },
-
-    -- Sacrifices 25% of your maximum health to heal your summoned Demon for twice as much over 4.0 sec.
-    health_funnel = {
-        id = 755,
-        cast = 5,
-        channeled = true,
-        breakable = true,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        startsCombat = false,
-
-        usable = function () return pet.active and pet.alive and pet.health_pct < 100, "requires pet" end,
-        start = function ()
-            applyBuff( "health_funnel" )
         end,
     },
 
@@ -1770,64 +1493,6 @@ spec:RegisterAbilities( {
             gain( ( 0.2 + ( 0.125 * ( true_active_enemies - 1 ) * talent.fire_and_brimstone.rank ) )
                 * ( legendary.embers_of_the_diabolic_raiment.enabled and 2 or 1 )
                 * ( talent.diabolic_embers.enabled and 2 or 1 ), "soul_shards" )
-        end,
-    },
-
-    -- Talent: Summon an Inquisitor's Eye that periodically blasts enemies for 254 Shadowflame damage and occasionally dealing 290 Shadowflame damage instead. Lasts 1 |4hour:hrs;.
-    inquisitors_gaze = {
-        id = 386344,
-        cast = 0,
-        cooldown = 10,
-        gcd = "spell",
-        school = "shadow",
-
-        talent = "inquisitors_gaze",
-        startsCombat = false,
-        nobuff = "inquisitors_gaze",
-
-        handler = function ()
-            applyBuff( "inquisitors_gaze" )
-        end,
-    },
-
-    -- Talent: Horrifies an enemy target into fleeing, incapacitating for 3 sec and healing you for 20% of maximum health.
-    mortal_coil = {
-        id = 6789,
-        cast = 0,
-        cooldown = 45,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "mortal_coil",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "mortal_coil" )
-            active_dot.mortal_coil = max( active_dot.mortal_coil, active_dot.bane_of_havoc )
-            gain( 0.2 * health.max, "health" )
-        end,
-    },
-
-    -- Surrounds the caster with a shield that lasts 3 sec, reflecting all harmful spells cast on you.
-    nether_ward = {
-        id = 212295,
-        cast = 0,
-        cooldown = 45,
-        gcd = "off",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        pvptalent = "nether_ward",
-        startsCombat = false,
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "nether_ward" )
         end,
     },
 
@@ -1926,41 +1591,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Slows enemies in a 12 yard cone in front of you by 70% for 6 sec.
-    shadowflame = {
-        id = 384069,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
-        school = "shadowflame",
-
-        talent = "shadowflame",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "shadowflame" )
-        end,
-    },
-
-    -- Talent: Stuns all enemies within 8 yds for 3 sec.
-    shadowfury = {
-        id = 30283,
-        cast = 1.5,
-        cooldown = function () return talent.darkfury.enabled and 45 or 60 end,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        talent = "shadowfury",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "shadowfury" )
-        end,
-    },
-
     -- Talent: Burns the enemy's soul, dealing 9,135 Fire damage and applying Immolate. Generates 1 Soul Shard.
     soul_fire = {
         id = 6353,
@@ -1979,145 +1609,6 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( 1, "soul_shards" )
             applyDebuff( "target", "immolate" )
-        end,
-    },
-
-    -- Talent: Consumes a Soul Shard, unlocking the hidden power of your spells. Demonic Circle: Teleport: Increases your movement speed by 50% and makes you immune to snares and roots for 8 sec. Demonic Gateway: Can be cast instantly. Drain Life: Gain an absorb shield equal to the amount of healing done for 30 sec. This shield cannot exceed 30% of your maximum health. Health Funnel: Restores 140% more health and reduces the damage taken by your pet by 30% for 10 sec. Healthstone: Increases the healing of your Healthstone by 30% and increases your maximum health by 20% for 12 sec.
-    soulburn = {
-        id = 385899,
-        cast = 0,
-        cooldown = 6,
-        gcd = "off",
-        school = "shadow",
-
-        spend = 1,
-        spendType = "soul_shards",
-
-        talent = "soulburn",
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "soulburn" )
-        end,
-    },
-
-    -- Stores the soul of the target party or raid member, allowing resurrection upon death. Also castable to resurrect a dead target. Targets resurrect with 60% health and at least 20% mana.
-    soulstone = {
-        id = 20707,
-        cast = 3,
-        cooldown = 600,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "soulstone" )
-        end,
-    },
-
-
-    spell_lock = {
-        id = 19647,
-        known = function () return IsSpellKnownOrOverridesKnown( 119910 ) or IsSpellKnownOrOverridesKnown( 132409 ) end,
-        cast = 0,
-        cooldown = 24,
-        gcd = "off",
-
-        startsCombat = true,
-        -- texture = ?
-
-        toggle = "interrupts",
-        interrupt = true,
-
-        debuff = "casting",
-        readyTime = state.timeToInterrupt,
-
-        handler = function ()
-            interrupt()
-        end,
-
-        bind = { 119910, 132409, 119898 }
-    },
-
-    -- Subjugates the target demon up to level 61, forcing it to do your bidding for 5 min.
-    subjugate_demon = {
-        id = 1098,
-        cast = 3,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        usable = function () return target.is_demon and target.level < level + 2, "requires demon target" end,
-        handler = function ()
-            summonPet( "controlled_demon" )
-        end,
-    },
-
-
-    summon_felhunter = {
-        id = 691,
-        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.fel_domination.up and 0 or 1 end,
-        spendType = "soul_shards",
-
-        essential = true,
-
-        usable = function ()
-            if pet.alive then return false, "pet is alive"
-            elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
-            return true
-        end,
-        handler = function ()
-            removeBuff( "fel_domination" )
-            removeBuff( "grimoire_of_sacrifice" )
-            summonPet( "felhunter" )
-        end,
-
-        copy = 112869,
-
-        bind = function ()
-            if settings.default_pet == "summon_felhunter" then return "summon_pet" end
-        end,
-    },
-
-
-    summon_imp = {
-        id = 688,
-        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.fel_domination.up and 0 or 1 end,
-        spendType = "soul_shards",
-
-        essential = true,
-        nomounted = true,
-
-        usable = function ()
-            if pet.alive then return false, "pet is alive"
-            elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
-            return true
-        end,
-        handler = function ()
-            removeBuff( "fel_domination" )
-            removeBuff( "grimoire_of_sacrifice" )
-            summonPet( "imp" )
-        end,
-
-        bind = function ()
-            if settings.default_pet == "summon_imp" then return "summon_pet" end
         end,
     },
 
@@ -2144,37 +1635,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-    summon_pet = {
-        name = "|T136082:0|t |cff00ccff[Summon Demon]|r",
-        bind = function () return settings.default_pet end
-    },
-
-
-    summon_sayaad = {
-        id = 366222,
-        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.fel_domination.up and 0 or 1 end,
-        spendType = "soul_shards",
-
-        usable = function () return not pet.alive end,
-        handler = function ()
-            removeBuff( "fel_domination" )
-            removeBuff( "grimoire_of_sacrifice" )
-            summonPet( "sayaad" )
-        end,
-
-        copy = { 365349, "summon_incubus", "summon_succubus" },
-
-        bind = function()
-            if settings.default_pet == "summon_sayaad" then return { "summon_incubus", "summon_succubus", "summon_pet" } end
-            return { "summon_incubus", "summon_succubus" }
-        end,
-    },
-
     -- Talent: Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 580 Chaos damage every 1 sec for each Tormented Soul consumed. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
     summon_soulkeeper = {
         id = 386256,
@@ -2194,70 +1654,6 @@ spec:RegisterAbilities( {
     },
 
 
-    summon_voidwalker = {
-        id = 697,
-        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.fel_domination.up and 0 or 1 end,
-        spendType = "soul_shards",
-
-        startsCombat = true,
-        essential = true,
-
-        usable = function ()
-            if pet.alive then return false, "pet is alive"
-            elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
-            return true
-        end,
-        handler = function ()
-            removeBuff( "fel_domination" )
-            removeBuff( "grimoire_of_sacrifice" )
-            summonPet( "voidwalker" )
-        end,
-
-        bind = function ()
-            if settings.default_pet == "summon_voidwalker" then return "summon_pet" end
-        end,
-    },
-
-
-    unending_breath = {
-        id = 5697,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "unending_breath" )
-        end,
-    },
-
-    -- Hardens your skin, reducing all damage you take by 25% and granting immunity to interrupt, silence, and pushback effects for 8 sec.
-    unending_resolve = {
-        id = 104773,
-        cast = 0,
-        cooldown = function() return 180 - 45 * talent.dark_accord.rank end,
-        gcd = "off",
-        school = "shadow",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "unending_resolve" )
-        end,
-    },
 } )
 
 
