@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 100002
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
@@ -47,7 +47,7 @@ Dragonflight\HunterMarksmanship.lua
 Dragonflight\HunterSurvival.lua
 # Dragonflight\MageArcane.lua
 Dragonflight\MageFire.lua
-# Dragonflight\MageFrost.lua
+Dragonflight\MageFrost.lua
 # Dragonflight\MonkBrewmaster.lua
 # Dragonflight\MonkMistweaver.lua
 Dragonflight\MonkWindwalker.lua

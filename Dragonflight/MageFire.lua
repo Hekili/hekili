@@ -1513,6 +1513,7 @@ spec:RegisterAbilities( {
         cooldown = function () return ( talent.shimmer.enabled and 20 or 15 ) - conduit.flow_of_time.mod * 0.001 - talent.flow_of_time.rank end,
         recharge = function () return ( talent.shimmer.enabled and ( 20 - conduit.flow_of_time.mod * 0.001 - talent.flow_of_time.rank ) or nil ) end,
         gcd = "off",
+        icd = 6,
 
         spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
         spendType = "mana",
@@ -1525,7 +1526,7 @@ spec:RegisterAbilities( {
             if talent.tempest_barrier.enabled then applyBuff( "tempest_barrier" ) end
         end,
 
-        copy = { 212653, 1953, "shimmer" }
+        copy = { 212653, 1953, "shimmer", "blink_any" }
     },
 
     -- Talent: Engulfs you in flames for 10 sec, increasing your spells' critical strike chance by 100% . Castable while casting other spells.
@@ -1555,25 +1556,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Targets in a cone in front of you take 383 Frost damage and have movement slowed by 70% for 5 sec.
-    cone_of_cold = {
-        id = 120,
-        cast = 0,
-        cooldown = 12,
-        gcd = "spell",
-        school = "frost",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        handler = function ()
-            if talent.freezing_cold.enabled then applyDebuff( "target", "freezing_cold" )
-            else applyDebuff( "target", "cone_of_cold" ) end
-
-        end,
-    },
 
     -- Counters the enemy's spellcast, preventing any spell from that school of magic from being cast for 6 sec.
     counterspell = {
@@ -1791,81 +1773,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "chilled" )
             if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
-        end,
-    },
-
-    -- Blasts enemies within 12 yds of you for 45 Frost damage and freezes them in place for 6 sec. Damage may interrupt the freeze effect.
-    frost_nova = {
-        id = 122,
-        cast = 0,
-        charges = function () return talent.ice_ward.enabled and 2 or nil end,
-        cooldown = 30,
-        recharge = function () return talent.ice_ward.enabled and 30 or nil end,
-        gcd = "spell",
-        school = "frost",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        handler = function ()
-            applyDebuff( "target", "frost_nova" )
-            if legendary.grisly_icicle.enabled then applyDebuff( "target", "grisly_icicle" ) end
-        end,
-    },
-
-    -- Talent: Encases you in a block of ice, protecting you from all attacks and damage for 10 sec, but during that time you cannot attack, move, or cast spells. While inside Ice Block, you heal for 40% of your maximum health over the duration. Causes Hypothermia, preventing you from recasting Ice Block for 30 sec.
-    ice_block = {
-        id = 45438,
-        cast = 0,
-        cooldown = function () return 240 + ( conduit.winters_protection.mod * 0.001 ) - 20 * talent.winters_protection.rank end,
-        gcd = "spell",
-        school = "frost",
-
-        talent = "ice_block",
-        startsCombat = false,
-        nodebuff = "hypothermia",
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "ice_block" )
-            applyDebuff( "player", "hypothermia" )
-        end,
-    },
-
-    -- Talent: Makes your next Mage spell with a cast time shorter than 10 sec castable while moving. Unaffected by the global cooldown and castable while casting.
-    ice_floes = {
-        id = 108839,
-        cast = 0,
-        charges = 3,
-        cooldown = 20,
-        recharge = 20,
-        gcd = "off",
-        dual_cast = true,
-        school = "frost",
-
-        talent = "ice_floes",
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "ice_floes" )
-        end,
-    },
-
-    -- Talent: Causes a whirl of icy wind around the enemy, dealing 1,226 Frost damage to the target and reduced damage to all other enemies within 8 yards, and freezing them in place for 2 sec.
-    ice_nova = {
-        id = 157997,
-        cast = 0,
-        cooldown = 25,
-        gcd = "spell",
-        school = "frost",
-
-        talent = "ice_nova",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "ice_nova" )
         end,
     },
 
@@ -2113,24 +2020,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Summons a Ring of Frost for 10 sec at the target location. Enemies entering the ring are incapacitated for 10 sec. Limit 10 targets. When the incapacitate expires, enemies are slowed by 65% for 4 sec.
-    ring_of_frost = {
-        id = 113724,
-        cast = 2,
-        cooldown = 45,
-        gcd = "spell",
-        school = "frost",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        talent = "ring_of_frost",
-        startsCombat = true,
-
-        handler = function ()
-        end,
-    },
-
     -- Talent: Places a Rune of Power on the ground for 12 sec which increases your spell damage by 40% while you stand within 8 yds. Casting Combustion will also create a Rune of Power at your location.
     rune_of_power = {
         id = 116011,
@@ -2182,7 +2071,6 @@ spec:RegisterAbilities( {
         spend = 0.05,
         spendType = "mana",
 
-        talent = "shifting_power",
         startsCombat = true,
 
         cdr = function ()
