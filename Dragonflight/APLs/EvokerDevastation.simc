@@ -20,6 +20,7 @@ actions+=/tip_the_scales,if=buff.dragonrage.up&cooldown.fire_breath.up&talent.ev
 actions+=/fire_breath,empower_to=1,if=talent.everburning_flame&(cooldown.firestorm.remains>=2*gcd.max|!dot.firestorm.ticking)|cooldown.dragonrage.remains>=10&talent.feed_the_flames|!talent.everburning_flame&!talent.feed_the_flames
 actions+=/fire_breath,empower_to=2,if=talent.everburning_flame
 actions+=/firestorm,if=talent.everburning_flame&(cooldown.fire_breath.up|dot.fire_breath_damage.remains>=cast_time&dot.fire_breath_damage.remains<cooldown.fire_breath.remains)|buff.snapfire.up|spell_targets.firestorm>1
+actions+=/shattering_star,if=talent.eternity_surge&cooldown.eternity_surge.remains<=gcd.max
 actions+=/eternity_surge,empower_to=4,if=spell_targets.pyre>3*(1+talent.eternitys_span)
 actions+=/eternity_surge,empower_to=3,if=spell_targets.pyre>2*(1+talent.eternitys_span)
 actions+=/eternity_surge,empower_to=2,if=spell_targets.pyre>(1+talent.eternitys_span)
