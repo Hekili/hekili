@@ -927,6 +927,7 @@ end )
 -- Maul Helper
 local finish_maul = setfenv( function()
     spend( 25, "rage" )
+    removeBuff( "clearcasting" )
 end, state )
 
 spec:RegisterStateFunction( "start_maul", function()
@@ -998,7 +999,7 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        spend = 10,
+        spend = function() return (buff.clearcasting.up and 0) or 10 end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1007,6 +1008,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1079,13 +1081,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return ((glyph.claw.enabled and 40) or 45) * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (((glyph.claw.enabled and 40) or 45) * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132140,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
         end,
     },
@@ -1172,14 +1175,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 10,
+        spend = function() return (buff.clearcasting.up and 0) or 10 end,
         spendType = "rage",
 
         startsCombat = true,
         texture = 132121,
 
         handler = function ()
-            applyBuff( "demoralizing_roar" )
+            removeBuff( "clearcasting" )
+            applyDebuff( "demoralizing_roar" )
         end,
     },
 
@@ -1231,13 +1235,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.07,
+        spend = function() return (buff.clearcasting.up and 0) or 0.07 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136100,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             applyDebuff( "target", "entangling_roots", 27 )
         end,
 
@@ -1292,13 +1297,12 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return 35 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132127,
 
-        readyTime = function() return energy.time_to_65 end,
         usable = function() return combo_points.current > 0, "requires combo_points" end,
 
         handler = function ()
@@ -1320,7 +1324,7 @@ spec:RegisterAbilities( {
         cooldown = 180,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = function() return (buff.clearcasting.up and 0) or 0.12 end,
         spendType = "mana",
 
         talent = "force_of_nature",
@@ -1330,6 +1334,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1402,13 +1407,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.17,
+        spend = function() return (buff.clearcasting.up and 0) or 0.17 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136041,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 5186, 5187, 5188, 5189, 6778, 8903, 9758, 9888, 9889, 25297, 26978, 26979, 48377, 48378 },
@@ -1442,13 +1448,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.81,
+        spend = function() return (buff.clearcasting.up and 0) or 0.81 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136018,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 17401, 17402, 27012, 48467 },
@@ -1480,7 +1487,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return (buff.clearcasting.up and 0) or 0.08 end,
         spendType = "mana",
 
         talent = "insect_swarm",
@@ -1488,6 +1495,7 @@ spec:RegisterAbilities( {
         texture = 136045,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1499,7 +1507,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 15,
+        spend = function() return (buff.clearcasting.up and 0) or 15 end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1519,38 +1527,17 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.28,
+        spend = function() return (buff.clearcasting.up and 0) or 0.28 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 134206,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 48450, 48451 },
-    },
-
-    -- A strong attack that increases melee damage and causes a high amount of threat. Effects which increase Bleed damage also increase Maul damage.
-    maul = {
-        id = 48480,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        spend = function() return (15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132136,
-
-        nobuff = "maul",
-
-        handler = function( rank )
-            start_maul()
-        end,
-
-        copy = { 6807, 6808, 6809, 8972, 9745, 9880, 9881, 26996, 48479 }
     },
 
     -- Finishing move that causes damage and stuns the target.  Non-player victim spellcasting is also interrupted for 3 sec.  Causes more damage and lasts longer per combo point:     1 point  : 249-250 damage, 1 sec     2 points: 407-408 damage, 2 sec     3 points: 565-566 damage, 3 sec     4 points: 723-724 damage, 4 sec     5 points: 881-882 damage, 5 sec
@@ -1560,7 +1547,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
 
-        spend = function() return 35 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1587,7 +1574,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = function() return 20 - talent.ferocity.rank end,
+        spend = function() return (buff.clearcasting.up and 0) or (20 - talent.ferocity.rank) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1610,7 +1597,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return 40 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (buff.clearcasting.up and 0) or (40 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1624,6 +1611,29 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 33982, 33983, 48565, 48566 }
+    },
+
+
+    -- A strong attack that increases melee damage and causes a high amount of threat. Effects which increase Bleed damage also increase Maul damage.
+    maul = {
+        id = 48480,
+        cast = 0,
+        cooldown = 0,
+        gcd = "off",
+
+        spend = function() return (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132136,
+
+        nobuff = "maul",
+
+        handler = function( rank )
+            start_maul()
+        end,
+
+        copy = { 6807, 6808, 6809, 8972, 9745, 9880, 9881, 26996, 48479 }
     },
 
 
@@ -1655,13 +1665,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.18,
+        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136096,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             applyDebuff( "target", "moonfire" )
         end,
 
@@ -1735,13 +1746,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.18,
+        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 236162,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1753,13 +1765,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return 50 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (50 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132142,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             applyDebuff( "target", "pounce", 3)
             applyDebuff( "target", "pounce_bleed", 18 )
             gain( 1, "combo_points" )
@@ -1793,7 +1806,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (40 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (buff.clearcasting.up and 0) or ((40 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1816,7 +1829,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return 60 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (60 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1825,6 +1838,7 @@ spec:RegisterAbilities( {
         buff = "prowl",
 
         handler = function ()
+            removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
         end,
     },
@@ -1860,13 +1874,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.29,
+        spend = function() return (buff.clearcasting.up and 0) or 0.29 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136085,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             removeBuff( "predators_swiftness" )
         end,
 
@@ -1881,13 +1896,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.18,
+        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136081,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 1058, 1430, 2090, 2091, 3627, 8910, 9839, 9840, 9841, 25299, 26981, 26982, 48440, 48441 },
@@ -1939,7 +1955,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (30 - ((set_bonus.tier10_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (buff.clearcasting.up and 0) or ((30 - ((set_bonus.tier10_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1994,7 +2010,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (60 * ((buff.berserk.up and 0.5) or 1)) - (talent.shredding_attacks.rank * 9) end,
+        spend = function () return (buff.clearcasting.up and 0) or ((60 * ((buff.berserk.up and 0.5) or 1)) - (talent.shredding_attacks.rank * 9)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2038,7 +2054,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.starfall.enabled and 60 or 90 end,
         gcd = "spell",
 
-        spend = 0.35,
+        spend = function() return (buff.clearcasting.up and 0) or 0.35 end,
         spendType = "mana",
 
         talent = "starfall",
@@ -2048,6 +2064,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -2059,13 +2076,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.16,
+        spend = function() return (buff.clearcasting.up and 0) or 0.16 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135753,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             if glyph.starfire.enabled and debuff.moonfire.up then
                 debuff.moonfire.expires = debuff.moonfire.expires + 3
                 -- TODO: Cap at 3 applications.
@@ -2124,7 +2142,7 @@ spec:RegisterAbilities( {
         cooldown = 15,
         gcd = "spell",
 
-        spend = 0.16,
+        spend = function() return (buff.clearcasting.up and 0) or 0.16 end,
         spendType = "mana",
 
         talent = "swiftmend",
@@ -2132,6 +2150,7 @@ spec:RegisterAbilities( {
         texture = 134914,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             if glyph.swiftmend.enabled then return end
             if buff.rejuvenation.up then removeBuff( "rejuvenation" )
             elseif buff.regrowth.up then removeBuff( "regrowth" ) end
@@ -2146,7 +2165,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 20 - talent.ferocity.rank end,
+        spend = function() return (buff.clearcasting.up and 0) or (20 - talent.ferocity.rank) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -2165,7 +2184,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (50 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (buff.clearcasting.up and 0) or ((50 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2184,13 +2203,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.17,
+        spend = function() return (buff.clearcasting.up and 0) or 0.17 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136104,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             applyBuff( "thorns" )
         end,
 
@@ -2242,7 +2262,7 @@ spec:RegisterAbilities( {
         cooldown = 480,
         gcd = "spell",
 
-        spend = 0.7,
+        spend = function() return (buff.clearcasting.up and 0) or 0.7 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -2251,6 +2271,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 8918, 9862, 9863, 26983, 48446 },
@@ -2283,7 +2304,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.monsoon.enabled and 17 or 20 end,
         gcd = "spell",
 
-        spend = function() return 0.25 * ( glyph.typhoon.enabled and 0.92 or 1 ) end,
+        spend = function() return (buff.clearcasting.up and 0) or (0.25 * ( glyph.typhoon.enabled and 0.92 or 1 )) end,
         spendType = "mana",
 
         talent = "typhoon",
@@ -2291,6 +2312,7 @@ spec:RegisterAbilities( {
         texture = 236170,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -2319,7 +2341,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = 0.23,
+        spend = function() return (buff.clearcasting.up and 0) or 0.23 end,
         spendType = "mana",
 
         talent = "wild_growth",
@@ -2327,6 +2349,7 @@ spec:RegisterAbilities( {
         texture = 236153,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -2338,13 +2361,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return (buff.clearcasting.up and 0) or 0.08 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136006,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             removeBuff( "predators_swiftness" )
         end,
 
