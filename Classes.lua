@@ -1940,7 +1940,32 @@ all:RegisterAuras( {
             t.applied = 0
             t.caster = "nobody"
         end,
-    }
+    },
+
+    all_absorbs = {
+        duration = 15,
+        max_stack = 1,
+        -- TODO: Check if function works.
+        generate = function( t, auraType )
+            local unit = auraType == "debuff" and "target" or "player"
+            local amount = UnitGetTotalAbsorbs( unit )
+
+            if amount > 0 then
+                t.name = ABSORB
+                t.count = 1
+                t.expires = now + 10
+                t.applied = now - 5
+                t.caster = unit
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+        copy = "unravel_absorb"
+    },
 } )
 
 
