@@ -16,7 +16,7 @@ actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=ogcd,strict=1,if=pet.demonic_tyrant.active
 actions+=/implosion,if=time_to_die<2*gcd
 actions+=/call_action_list,name=opener,strict=1,if=time<variable.first_tyrant_time
-actions+=/call_action_list,name=covenant_ability,strict=1,if=soulbind.grove_invigoration|soulbind.field_of_blossoms|soulbind.combat_meditation|action.decimating_bolt.known
+actions+=/call_action_list,name=covenant_ability,strict=1,if=action.soul_rot.known|action.decimating_bolt.known|action.scouring_tithe.known|action.impending_catastrophe.known
 actions+=/potion,if=variable.next_tyrant_cd<gcd.max&time>variable.first_tyrant_time
 actions+=/call_action_list,name=tyrant_setup
 actions+=/guillotine,if=active_enemies>1
