@@ -198,6 +198,22 @@ spec:RegisterStateExpr("min_roar_offset", function()
     return settings.min_roar_offset
 end)
 
+spec:RegisterStateExpr("ferociousbite_enabled", function()
+    return settings.ferociousbite_enabled
+end)
+
+spec:RegisterStateExpr("min_bite_sr_remains", function()
+    return settings.min_bite_sr_remains
+end)
+
+spec:RegisterStateExpr("min_bite_rip_remains", function()
+    return settings.min_bite_rip_remains
+end)
+
+spec:RegisterStateExpr("max_bite_energy", function()
+    return settings.max_bite_energy
+end)
+
 spec:RegisterStateExpr("flowerweaving_enabled", function()
     return settings.flowerweaving_enabled and (state.group_members >= flowerweaving_mingroupsize)
 end)
@@ -2352,6 +2368,55 @@ spec:RegisterSetting("min_roar_offset", 14, {
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.min_roar_offset = val
+    end
+})
+
+spec:RegisterSetting("ferociousbite_enabled", true, {
+    type = "toggle",
+    name = "Ferocious Bite: Enabled?",
+    desc = "Select whether or not ferocious bite should be used",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.ferociousbite_enabled = val
+    end
+})
+
+spec:RegisterSetting("min_bite_sr_remains", 14, {
+    type = "range",
+    name = "Minimum Roar Remains For Bite",
+    desc = "Sets the minimum number of seconds left on Savage Roar when deciding whether to recommend Ferocious Bite",
+    width = "full",
+    min = 0,
+    softMax = 14,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_bite_sr_remains = val
+    end
+})
+
+spec:RegisterSetting("min_bite_rip_remains", 12, {
+    type = "range",
+    name = "Minimum Rip Remains For Bite",
+    desc = "Sets the minimum number of seconds left on Rip when deciding whether to recommend Ferocious Bite",
+    width = "full",
+    min = 0,
+    softMax = 14,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_bite_rip_remains = val
+    end
+})
+
+spec:RegisterSetting("max_bite_energy", 35, {
+    type = "range",
+    name = "Maximum Energy Used For Bite",
+    desc = "Sets the energy allowed for Ferocious Bite recommendations",
+    width = "full",
+    min = 35,
+    softMax = 65,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.max_bite_energy = val
     end
 })
 
