@@ -415,12 +415,6 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
-    spear_of_bastion = {
-        id = 376080,
-        duration = function() return talent.elysian_might.enabled and 6 or 4 end,
-        tick_time = 1,
-        max_stack = 1
-    },
     spell_block = {
         id = 392966,
         duration = 20,
@@ -1456,27 +1450,6 @@ spec:RegisterAbilities( {
         texture = 132340,
 
         handler = function ()
-        end,
-    },
-
-
-    spear_of_bastion = {
-        id = 376079,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-
-        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * (buff.unnerving_focus.up and 1.5 or 1) end,
-        spendType = "rage",
-
-        talent = "spear_of_bastion",
-        startsCombat = false,
-        texture = 3565453,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyDebuff ("target", "spear_of_bastion" )
         end,
     },
 

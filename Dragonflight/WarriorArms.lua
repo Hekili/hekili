@@ -387,9 +387,10 @@ spec:RegisterAuras( {
     },
     spear_of_bastion = {
         id = 376080,
-        duration = function() return talent.elysian_might.enabled and 6 or 4 end,
+        duration = function () return ( legendary.elysian_might.enabled and 8 or 4 ) + ( talent.elysian_might.enabled and 2 or 0 ) end,
         tick_time = 1,
-        max_stack = 1
+        max_stack = 1,
+        copy = 307871 -- Covenant version.
     },
     spell_reflection = {
         id = 23920,
@@ -1297,23 +1298,27 @@ spec:RegisterAbilities( {
 
 
     spear_of_bastion = {
-        id = 376079,
+        id = function() return talent.spear_of_bastion.enabled and 376079 or 307865 end,
         cast = 0,
         cooldown = 90,
         gcd = "spell",
 
-        spend = function () return (-25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) end,
+        spend = function () return ( -25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * ( 1 + conduit.piercing_verdict.mod * 0.01 ) end,
         spendType = "rage",
 
-        talent = "spear_of_bastion",
-        startsCombat = false,
+        startsCombat = true,
         texture = 3565453,
 
         toggle = "cooldowns",
 
+        velocity = 30,
+
         handler = function ()
-            applyDebuff ("target", "spear_of_bastion" )
+            applyDebuff( "target", "spear_of_bastion" )
+            if legendary.elysian_might.enabled or talent.elysian_might.enabled then applyBuff( "elysian_might" ) end
         end,
+
+        copy = { 307865, 376079 }
     },
 
 
