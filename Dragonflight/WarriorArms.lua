@@ -1,7 +1,5 @@
 -- WarriorArms.lua
--- October 2022
--- Updated for PTR Build 46181
--- Last Modified 10/20/2022 18:15 UTC
+-- November 2022
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -11,21 +9,6 @@ local class, state = Hekili.Class, Hekili.State
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 local spec = Hekili:NewSpecialization( 71 )
-
--- Conduits (Patch 10.0) : In all cases, talents override and disable conduits they share effects with.
--- Talents override:
-
--- Fueled by Violence
--- Piercing Verdict
--- Cacophonous Roar
--- Inspiring Presence
--- Merciless Bonegrinder
--- Ashen Juggernaut
-
--- Conduits that need modeled.
--- [X] Indelible Victory
--- [X] Stalwart Guardian
--- [X] Disturb the Peace
 
 local base_rage_gen, arms_rage_mult = 1.75, 4.000
 
@@ -504,10 +487,6 @@ local collateralDmgStacks = 0
 local TriggerCollateralDamage = setfenv( function()
     addStack( "collateral_damage", nil, collateralDmgStacks )
     collateralDmgStacks = 0
-end, state )
-
-local TriggerTier29Crit = setfenv( function()
-    applyBuff( "strike_vulnerabilities" )
 end, state )
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical_swing, _, _, critical_spell )
