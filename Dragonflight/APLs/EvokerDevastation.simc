@@ -14,8 +14,8 @@ actions+=/use_item,name=crimson_aspirants_badge_of_ferocity,if=cooldown.dragonra
 actions+=/call_action_list,name=trinkets
 actions+=/deep_breath,if=spell_targets.deep_breath>1&buff.dragonrage.down
 actions+=/dragonrage,if=cooldown.eternity_surge.remains<=(buff.dragonrage.duration+6)&(cooldown.fire_breath.remains<=2*gcd.max|!talent.feed_the_flames)
-actions+=/tip_the_scales,if=buff.dragonrage.up&(cooldown.eternity_surge.up|cooldown.fire_breath.up)&talent.animosity
-actions+=/eternity_surge,empower_to=1,if=buff.dragonrage.up&(buff.bloodlust.up|buff.power_infusion.up)&talent.feed_the_flames
+actions+=/tip_the_scales,if=buff.dragonrage.up&(cooldown.eternity_surge.up&cooldown.fire_breath.remains|!talent.eternity_surge&cooldown.fire_breath.up)&talent.animosity
+actions+=/eternity_surge,empower_to=1,if=buff.dragonrage.up&(buff.bloodlust.up|buff.power_infusion.up|buff.tip_the_scales.up)&talent.feed_the_flames
 actions+=/tip_the_scales,if=buff.dragonrage.up&cooldown.fire_breath.up&talent.everburning_flame
 actions+=/fire_breath,empower_to=1,if=talent.everburning_flame&(cooldown.firestorm.remains>=2*gcd.max|!dot.firestorm.ticking)|cooldown.dragonrage.remains>=10&talent.feed_the_flames|!talent.everburning_flame&!talent.feed_the_flames
 actions+=/fire_breath,empower_to=2,if=talent.everburning_flame
