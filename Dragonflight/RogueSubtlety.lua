@@ -167,6 +167,44 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
+    flagellation = {
+        id = 384631,
+        duration = 12,
+        max_stack = 30,
+        generate = function( t, aType )
+            local unit, func
+
+            if aType == "debuff" then
+                unit = "target"
+                func = FindUnitDebuffByID
+            else
+                unit = "player"
+                func = FindUnitBuffByID
+            end
+
+            local name, _, count, _, duration, expires = func( unit, talent.flagellation.enabled and 384631 or 323654 )
+
+            if name then
+                t.count = count
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+        copy = 323654
+    },
+    flagellation_persist = {
+        id = 394758,
+        duration = 12,
+        max_stack = 30,
+        copy = { "flagellation_buff", 345569 }
+    },
     -- Talent: $?s200758[Gloomblade][Backstab] deals an additional $s1% damage as Shadow.
     -- https://wowhead.com/beta/spell=385960
     lingering_shadow = {
@@ -763,6 +801,34 @@ spec:RegisterAbilities( {
 
             if conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
+    },
+
+    flagellation = {
+        id = function() return talent.flagellation.enabled and 384631 or 323654 end,
+        cast = 0,
+        cooldown = 90,
+        gcd = "spell",
+
+        spend = 0,
+        spendType = "energy",
+
+        startsCombat = true,
+        texture = 3565724,
+
+        toggle = "essences",
+
+        indicator = function ()
+            if settings.cycle and args.cycle_targets == 1 and active_enemies > 1 and target.time_to_die < longest_ttd then
+                return "cycle"
+            end
+        end,
+
+        handler = function ()
+            applyBuff( "flagellation" )
+            applyDebuff( "target", "flagellation" )
+        end,
+
+        copy = { 384631, 323654 }
     },
 
     -- Talent: Punctures your target with your shadow-infused blade for 760 Shadow damage, bypassing armor. Critical strikes apply Find Weakness for 10 sec. Awards 1 combo point.

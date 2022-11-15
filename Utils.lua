@@ -516,7 +516,7 @@ end
 local function FindPlayerAuraByID( id )
     local aura = GetPlayerAuraBySpellID( id )
 
-    if aura then
+    if aura and aura.name then
         return aura.name, aura.icon, aura.applications, aura.dispelName, aura.expirationTime, aura.sourceUnit, aura.isStealable, aura.nameplateShowPersonal, aura.spellId, aura.canApplyAura, aura.isBossAura, aura.nameplateShowAll, aura.timeMod, unpack( aura.points )
     end
 end
@@ -565,7 +565,9 @@ function ns.FindUnitDebuffByID( unit, id, filter )
         name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitDebuff( unit, i, filter )
     end
 
-    return name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3
+    if name and name ~= nil then
+        return name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3
+    end
 end
 
 function ns.IsActiveSpell( id )

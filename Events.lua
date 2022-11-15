@@ -17,6 +17,8 @@ local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local FindPlayerAuraByID, FindStringInInventoryItemTooltip = ns.FindPlayerAuraByID, ns.FindStringInInventoryItemTooltip
+local FlagDisabledSpells = ns.FlagDisabledSpells
+local WipeCovenantCache = ns.WipeCovenantCache
 
 local CGetItemInfo = ns.CachedGetItemInfo
 local RC = LibStub( "LibRangeCheck-2.0" )
@@ -475,6 +477,8 @@ function ns.updateTalents()
         end
     end
 
+    WipeCovenantCache()
+    FlagDisabledSpells()
 end
 
 

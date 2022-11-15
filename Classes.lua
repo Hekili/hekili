@@ -5957,6 +5957,7 @@ do
             end
         end
     end
+    ns.FlagDisabledSpells = FlagDisabledSpells
 end
 
 

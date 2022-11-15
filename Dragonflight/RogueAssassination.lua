@@ -980,12 +980,6 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
-    flagellation = {
-        id = 384631,
-        duration = 12,
-        max_stack = 30,
-        copy = { "flagellation_buff", 323654 }
-    },
     garrote = {
         id = 703,
         duration = 18,
