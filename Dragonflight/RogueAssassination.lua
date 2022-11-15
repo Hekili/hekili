@@ -2317,12 +2317,16 @@ spec:RegisterAbilities( {
     shadow_dance = {
         id = 185313,
         cast = 0,
-        charges = function () return talent.enveloping_shadows.enabled and 2 or nil end,
+        charges = function ()
+            if state.spec.subtlety and talent.shadow_dance.enabled then return 2 end
+            return talent.enveloping_shadows.enabled and 2 or nil end,
         cooldown = 60,
-        recharge = function () return talent.enveloping_shadows.enabled and 60 or nil end,
+        recharge = function ()
+            if state.spec.subtlety and talent.shadow_dance.enabled then return 60 end
+            return talent.enveloping_shadows.enabled and 60 or nil
+        end,
         gcd = "off",
 
-        talent = "shadow_dance",
         startsCombat = false,
 
         toggle = "cooldowns",
