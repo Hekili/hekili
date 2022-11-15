@@ -673,7 +673,7 @@ do
             return
         end
 
-        SurfaceArgs( data )
+        if data then SurfaceArgs( data ) end
 
         if reverse then
             for i = #data.lines, 1, -1 do
