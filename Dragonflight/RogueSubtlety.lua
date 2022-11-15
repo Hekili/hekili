@@ -171,32 +171,6 @@ spec:RegisterAuras( {
         id = 384631,
         duration = 12,
         max_stack = 30,
-        generate = function( t, aType )
-            local unit, func
-
-            if aType == "debuff" then
-                unit = "target"
-                func = FindUnitDebuffByID
-            else
-                unit = "player"
-                func = FindUnitBuffByID
-            end
-
-            local name, _, count, _, duration, expires = func( unit, talent.flagellation.enabled and 384631 or 323654 )
-
-            if name and name ~= "nil" then
-                t.count = count
-                t.expires = expires
-                t.applied = expires - duration
-                t.caster = "player"
-                return
-            end
-
-            t.count = 0
-            t.expires = 0
-            t.applied = 0
-            t.caster = "nobody"
-        end,
         copy = 323654
     },
     flagellation_persist = {
