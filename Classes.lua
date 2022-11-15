@@ -6233,20 +6233,29 @@ do
         end
     end )
 
-    RegisterEvent( "CHALLENGE_MODE_START", function( event )
-        FlagDisabledSpells()
-        ns.updateGear()
-    end )
+    local SpellDisableEvents = {
+        CHALLENGE_MODE_START = 1,
+        CHALLENGE_MODE_RESET = 1,
+        CHALLENGE_MODE_COMPLETED = 1,
+        PLAYER_ENTERING_WORLD = 1,
+        PLAYER_ALIVE = 1,
+        ZONE_CHANGED_NEW_AREA = 1
+    }
 
-    RegisterEvent( "CHALLENGE_MODE_RESET", function( event )
-        FlagDisabledSpells()
-        ns.updateGear()
-    end )
+    local WipeCovenantCache = ns.WipeCovenantCache
 
-    RegisterEvent( "CHALLENGE_MODE_COMPLETED", function( event )
+
+    local function CheckSpellsAndGear()
+        WipeCovenantCache()
         FlagDisabledSpells()
         ns.updateGear()
-    end )
+    end
+
+    for k in pairs( SpellDisableEvents ) do
+        RegisterEvent( k, function( event )
+            C_Timer.After( 1, CheckSpellsAndGear )
+        end )
+    end
 end
 
 
