@@ -18,7 +18,6 @@ actions+=/kick
 actions+=/variable,name=single_target,value=spell_targets.fan_of_knives<2
 # Combined Energy Regen needed to saturate
 actions+=/variable,name=regen_saturated,value=energy.regen_combined>35
-actions+=/variable,name=deathmark_cooldown_remains,value=cooldown.deathmark.remains*variable.deathmark_cdr
 actions+=/call_action_list,name=stealthed,if=stealthed.rogue|stealthed.improved_garrote
 actions+=/call_action_list,name=cds
 # Put SnD up initially for Cut to the Chase, refresh with Envenom if at low duration
@@ -47,16 +46,16 @@ actions.cds+=/variable,name=deathmark_covenant_condition,if=covenant.venthyr,val
 # Fleshcraft for Pustule Eruption if not stealthed or in a cooldown cycle
 actions.cds+=/fleshcraft,if=(soulbind.pustule_eruption|soulbind.volatile_solvent)&!stealthed.all&!debuff.deathmark.up&master_assassin_remains=0&(energy.time_to_max_combined>2|!debuff.shiv.up)
 # Sync Flagellation with Deathmark as long as we won't lose a cast over the fight duration
-actions.cds+=/flagellation,if=!stealthed.rogue&(variable.deathmark_cooldown_remains<3&variable.deathmark_ma_condition&effective_combo_points>=4&target.time_to_die>10|debuff.deathmark.up|fight_remains<24)
-actions.cds+=/flagellation,if=!stealthed.rogue&effective_combo_points>=4&(floor((fight_remains-24)%(cooldown*variable.flagellation_cdr))>floor((fight_remains-24-variable.deathmark_cooldown_remains)%(cooldown*variable.flagellation_cdr)))
+actions.cds+=/flagellation,if=!stealthed.rogue&(cooldown.deathmark.remains_expected<3&variable.deathmark_ma_condition&effective_combo_points>=4&target.time_to_die>10|debuff.deathmark.up|fight_remains<24)
+actions.cds+=/flagellation,if=!stealthed.rogue&effective_combo_points>=4&(floor((fight_remains-24)%(cooldown*variable.flagellation_cdr))>floor((fight_remains-24-cooldown.deathmark.remains_expected)%(cooldown*variable.flagellation_cdr)))
 actions.cds+=/sepsis,if=!stealthed.rogue&dot.garrote.ticking&(target.time_to_die>10|fight_remains<10)
 # Deathmark to be used if not stealthed, Rupture is up, and all other talent/covenant conditions are satisfied
 actions.cds+=/variable,name=deathmark_condition,value=!stealthed.rogue&dot.rupture.ticking&!debuff.deathmark.up&variable.deathmark_exsanguinate_condition&variable.deathmark_ma_condition&variable.deathmark_covenant_condition
 actions.cds+=/use_item,name=wraps_of_electrostatic_potential
 actions.cds+=/use_item,name=ring_of_collapsing_futures,if=buff.temptation.down|fight_remains<30
 # Sync the priority stat buff trinket with Deathmark, otherwise use on cooldown
-actions.cds+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(debuff.deathmark.up|fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|variable.deathmark_cooldown_remains>20))|!variable.trinket_sync_slot)
-actions.cds+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(debuff.deathmark.up|fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|variable.deathmark_cooldown_remains>20))|!variable.trinket_sync_slot)
+actions.cds+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(debuff.deathmark.up|fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|cooldown.deathmark.remains_expected>20))|!variable.trinket_sync_slot)
+actions.cds+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(debuff.deathmark.up|fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|cooldown.deathmark.remains_expected>20))|!variable.trinket_sync_slot)
 actions.cds+=/deathmark,if=variable.deathmark_condition
 actions.cds+=/kingsbane,if=(debuff.shiv.up|cooldown.shiv.remains<6)&buff.envenom.up&(cooldown.deathmark.remains>=50|dot.deathmark.ticking)
 # Exsanguinate when not stealthed and both Rupture and Garrote are up for long enough.
@@ -64,7 +63,7 @@ actions.cds+=/exsanguinate,if=!stealthed.rogue&!stealthed.improved_garrote&!dot.
 # Shiv if DoTs are up; if Night Fae attempt to sync with Sepsis or Deathmark if we won't waste more than half Shiv's cooldown
 actions.cds+=/shiv,if=talent.kingsbane&!debuff.shiv.up&dot.kingsbane.ticking&dot.garrote.ticking&dot.rupture.ticking&(!talent.crimson_tempest.enabled|variable.single_target|dot.crimson_tempest.ticking)
 actions.cds+=/shiv,if=!talent.kingsbane&!covenant.night_fae&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&(!talent.crimson_tempest.enabled|variable.single_target|dot.crimson_tempest.ticking)
-actions.cds+=/shiv,if=!talent.kingsbane&covenant.night_fae&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&((cooldown.sepsis.ready|cooldown.sepsis.remains>12)+(cooldown.deathmark.ready|variable.deathmark_cooldown_remains>12)=2)
+actions.cds+=/shiv,if=!talent.kingsbane&covenant.night_fae&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&((cooldown.sepsis.ready|cooldown.sepsis.remains>12)+(cooldown.deathmark.ready|cooldown.deathmark.remains_expected>12)=2)
 actions.cds+=/thistle_tea,if=energy.deficit>=100&!buff.thistle_tea.up&(charges=3|debuff.deathmark.up|fight_remains<cooldown.deathmark.remains)
 actions.cds+=/indiscriminate_carnage,if=(spell_targets.fan_of_knives>desired_targets|spell_targets.fan_of_knives>1&raid_event.adds.in>60)&(!talent.improved_garrote|cooldown.vanish.remains>45)
 actions.cds+=/potion,if=buff.bloodlust.react|fight_remains<30|debuff.deathmark.up
@@ -88,12 +87,12 @@ actions.direct+=/serrated_bone_spike,cycle_targets=1,if=variable.use_filler&!dot
 actions.direct+=/serrated_bone_spike,if=variable.use_filler&master_assassin_remains<0.8&(fight_remains<=5|cooldown.serrated_bone_spike.max_charges-charges_fractional<=0.25)
 # When MA is not at high duration, sync with damage buffs without overwriting Lead by Example
 actions.direct+=/serrated_bone_spike,if=variable.use_filler&master_assassin_remains<0.8&(soulbind.lead_by_example.enabled&!buff.lead_by_example.up&debuff.deathmark.up|buff.marrowed_gemstone_enhancement.up|!variable.single_target&debuff.shiv.up)
+actions.direct+=/echoing_reprimand,if=variable.use_filler&cooldown.deathmark.remains_expected>10
+actions.direct+=/ambush,if=variable.use_filler&(master_assassin_remains=0&!runeforge.doomblade|buff.blindside.up)
 # Fan of Knives at 19+ stacks of Hidden Blades or against 4+ targets.
 actions.direct+=/fan_of_knives,if=variable.use_filler&(!priority_rotation&spell_targets.fan_of_knives>=3+stealthed.rogue+talent.dragontempered_blades)
 # Fan of Knives to apply poisons if inactive on any target (or any bleeding targets with priority rotation) at 3T
 actions.direct+=/fan_of_knives,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking)&variable.use_filler&spell_targets.fan_of_knives>=3
-actions.direct+=/echoing_reprimand,if=variable.use_filler&variable.deathmark_cooldown_remains>10
-actions.direct+=/ambush,if=variable.use_filler&(master_assassin_remains=0&!runeforge.doomblade|buff.blindside.up)
 # Tab-Mutilate to apply Deadly Poison at 2 targets
 actions.direct+=/mutilate,cycle_targets=1,if=variable.use_filler&spell_targets.fan_of_knives=2
 actions.direct+=/mutilate,if=variable.use_filler
