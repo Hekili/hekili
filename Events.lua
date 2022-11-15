@@ -791,10 +791,7 @@ do
             end
 
             if not isUsable then
-                state.trinket.t1.cooldown = {
-                    remains = 0,
-                    duration = 1
-                }
+                state.trinket.t1.cooldown = state.cooldown.null_cooldown
             else
                 state.trinket.t1.cooldown = nil
             end
@@ -831,10 +828,7 @@ do
             end
 
             if not isUsable then
-                state.trinket.t2.cooldown = {
-                    remains = 0,
-                    duration = 1
-                }
+                state.trinket.t2.cooldown = state.cooldown.null_cooldown
             else
                 state.trinket.t2.cooldown = nil
             end
