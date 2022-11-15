@@ -265,6 +265,22 @@ local displayTemplate = {
         color = { 1, 1, 1, 1 },
     },
 
+    empowerment = {
+        enabled = true,
+        queued = true,
+
+        align = "CENTER",
+        anchor = "BOTTOM",
+        x = 0,
+        y = 1,
+
+        font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+        fontSize = 16,
+        fontStyle = "THICKOUTLINE",
+
+        color = { 1, 0.8196079, 0, 1 },
+    },
+
     indicators = {
         enabled = true,
         queued = true,
@@ -2534,6 +2550,93 @@ do
                         }
                     },
 
+                    empowerment = {
+                        type = "group",
+                        name = NewFeature .. "Empowerment",
+                        desc = "Empowerment stages are shown with additional text placed on the recommendation icon.",
+                        order = 9.1,
+                        args = {
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If enabled, when the first ability shown is an empowered spell, the empowerment stage of the spell will be shown.",
+                                order = 1,
+                                width = 1.49,
+                            },
+
+                            queued = {
+                                type = "toggle",
+                                name = "Enabled for Queued Icons",
+                                desc = "If enabled, empowerment stage text will be shown for queued empowered abilities.",
+                                order = 2,
+                                width = 1.49,
+                                disabled = function () return data.empowerment.enabled == false end,
+                            },
+
+                            position = {
+                                type = "group",
+                                inline = true,
+                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                order = 3,
+                                args = {
+                                    anchor = {
+                                        type = "select",
+                                        name = 'Anchor Point',
+                                        order = 1,
+                                        width = 1,
+                                        values = {
+                                            TOP = 'Top',
+                                            BOTTOM = 'Bottom',
+                                        }
+                                    },
+
+                                    x = {
+                                        type = "range",
+                                        name = "X Offset",
+                                        order = 2,
+                                        width = 0.99,
+                                        step = 1,
+                                    },
+
+                                    y = {
+                                        type = "range",
+                                        name = "Y Offset",
+                                        order = 3,
+                                        width = 0.99,
+                                        step = 1,
+                                    },
+
+                                    break01 = {
+                                        type = "description",
+                                        name = " ",
+                                        order = 3.1,
+                                        width = "full",
+                                    },
+
+                                    align = {
+                                        type = "select",
+                                        name = "Alignment",
+                                        order = 4,
+                                        width = 1.49,
+                                        values = {
+                                            LEFT = "Left",
+                                            RIGHT = "Right",
+                                            CENTER = "Center"
+                                        },
+                                    },
+                                }
+                            },
+
+                            textStyle = {
+                                type = "group",
+                                inline = true,
+                                name = "Text",
+                                order = 4,
+                                args = tableCopy( fontElements ),
+                            },
+                        }
+                    },
+
                     targets = {
                         type = "group",
                         name = "Targets",
@@ -2921,11 +3024,10 @@ do
                     end,
                     set = function( info, val )
                         -- Set all fonts in all displays.
-                        for name, display in pairs( Hekili.DB.profile.displays ) do
-                            display.captions.font = val
-                            display.delays.font = val
-                            display.keybindings.font = val
-                            display.targets.font = val
+                        for _, display in pairs( Hekili.DB.profile.displays ) do
+                            for _, data in pairs( display ) do
+                                if type( data ) == "table" and data.font then data.font = val end
+                            end
                         end
                         QueueRebuildUI()
                     end,
@@ -2944,11 +3046,10 @@ do
                     end,
                     set = function( info, val )
                         -- Set all fonts in all displays.
-                        for name, display in pairs( Hekili.DB.profile.displays ) do
-                            display.captions.fontSize = val
-                            display.delays.fontSize = val
-                            display.keybindings.fontSize = val
-                            display.targets.fontSize = val
+                        for _, display in pairs( Hekili.DB.profile.displays ) do
+                            for _, data in pairs( display ) do
+                                if type( data ) == "table" and data.fontSize then data.fontSize = val end
+                            end
                         end
                         QueueRebuildUI()
                     end,
@@ -2973,11 +3074,10 @@ do
                     end,
                     set = function( info, val )
                         -- Set all fonts in all displays.
-                        for name, display in pairs( Hekili.DB.profile.displays ) do
-                            display.captions.fontStyle = val
-                            display.delays.fontStyle = val
-                            display.keybindings.fontStyle = val
-                            display.targets.fontStyle = val
+                        for _, display in pairs( Hekili.DB.profile.displays ) do
+                            for _, data in pairs( display ) do
+                                if type( data ) == "table" and data.fontStyle then data.fontStyle = val end
+                            end
                         end
                         QueueRebuildUI()
                     end,
@@ -2993,10 +3093,9 @@ do
                     end,
                     set = function( info, ... )
                         for name, display in pairs( Hekili.DB.profile.displays ) do
-                            display.captions.color = { ... }
-                            display.delays.color = { ... }
-                            display.keybindings.color = { ... }
-                            display.targets.color = { ... }
+                            for _, data in pairs( display ) do
+                                if type( data ) == "table" and data.color then data.color = { ... } end
+                            end
                         end
                         QueueRebuildUI()
                     end,
@@ -3904,7 +4003,7 @@ do
 
         for k, v in pairs( class.abilityList ) do
             local a = class.abilities[ k ]
-            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
+            if a and a.id and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
                 abilities[ v ] = k
             end
         end
@@ -4400,7 +4499,7 @@ do
         wipe( tAbilities )
         for k, v in pairs( class.abilityList ) do
             local a = class.abilities[ k ]
-            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
+            if a and a.id and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
                 if settings.abilities[ k ].toggle == section or a.toggle == section and settings.abilities[ k ].toggle == 'default' then
                     tAbilities[ k ] = class.abilityList[ k ] or v
                 end
@@ -4839,7 +4938,7 @@ do
                                     hidden = function()
                                         return self.DB.profile.specs[ id ].nameplates == false
                                     end,
-                                    min = 5,
+                                    min = 0,
                                     max = 100,
                                     step = 1,
                                     order = 2,
@@ -5088,12 +5187,12 @@ do
 
                         performance = {
                             type = "group",
-                            name = NewFeature .. " Performance",
+                            name = "Performance",
                             order = 10,
                             args = {
                                 throttleRefresh = {
                                     type = "toggle",
-                                    name = NewFeature .. " Throttle Updates",
+                                    name = "Throttle Updates",
                                     desc = "By default, the addon will update its recommendations immediately following |cffff0000critical|r combat events, within |cffffd1000.1|rs of routine combat events, or every |cffffd1000.5|rs.\n" ..
                                         "If |cffffd100Throttle Updates|r is checked, you can specify the |cffffd100Combat Refresh Interval|r and |cff00ff00Regular Refresh Interval|r for this specialization.",
                                     order = 1,
@@ -5109,7 +5208,7 @@ do
 
                                 regularRefresh = {
                                     type = "range",
-                                    name = NewFeature .. " Regular Refresh Interval",
+                                    name = "Regular Refresh Interval",
                                     desc = "In the absence of combat events, this addon will allow itself to update according to the specified interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though " ..
                                         "combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1001.0|rs, the addon will not provide new updates until 1 second after its last update (unless forced by a combat event).\n\n" ..
                                         "Default value:  |cffffd1000.5|rs.",
@@ -5123,7 +5222,7 @@ do
 
                                 combatRefresh = {
                                     type = "range",
-                                    name = NewFeature .. " Combat Refresh Interval",
+                                    name = "Combat Refresh Interval",
                                     desc = "When routine combat events occur, the addon will update more frequently than its Regular Refresh Interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though " ..
                                         "critical combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1000.2|rs, the addon will not provide new updates until 0.2 seconds after its last update (unless forced by a critical combat event).\n\n" ..
                                         "Default value:  |cffffd1000.1|rs.",
@@ -5144,7 +5243,7 @@ do
 
                                 throttleTime = {
                                     type = "toggle",
-                                    name = NewFeature .. " Throttle Time",
+                                    name = "Throttle Time",
                                     desc = "By default, when the addon needs to generate new recommendations, it will use up to |cffffd10010ms|r per frame or up to half a frame, whichever is lower.  If you get 60 FPS, that is 1 second / 60 frames, which equals equals 16.67ms.  " ..
                                         "Half of 16.67 is ~|cffffd1008ms|r, so the addon could use up to ~8ms per frame until it has successfully updated its recommendations for all visible displays.  If more time is needed, the work will be split across multiple frames.\n\n" ..
                                         "If you choose to |cffffd100Throttle Time|r, you can specify the |cffffd100Maximum Update Time|r the addon should use per frame.",
@@ -5154,7 +5253,7 @@ do
 
                                 maxTime = {
                                     type = "range",
-                                    name = NewFeature .. " Maximum Update Time (ms)",
+                                    name = "Maximum Update Time (ms)",
                                     desc = "Specify the maximum amount of time (in milliseconds) that the addon can use |cffffd100per frame|r when updating its recommendations.\n\n" ..
                                         "If set to |cffffd10010|r, then recommendations should not impact a 100 FPS system (1 second / 100 frames = 10ms).\n" ..
                                         "If set to |cffffd10016|r, then recommendations should not impact a 60 FPS system (1 second / 60 frames = 16.7ms).\n\n" ..
@@ -5238,7 +5337,7 @@ do
                         -- Test Option for Separate Cooldowns
                         noFeignedCooldown = {
                             type = "toggle",
-                            name = NewFeature .. " Cooldown: Show Separately - Use Actual Cooldowns",
+                            name = "Cooldown: Show Separately - Use Actual Cooldowns",
                             desc = "If checked, when using the Cooldown: Show Separately feature and Cooldowns are enabled, the addon will |cFFFF0000NOT|r pretend your " ..
                                 "cooldown abilities are fully on cooldown.  This may help resolve scenarios where abilities become desynchronized due to behavior differences " ..
                                 "between the Cooldowns display and your other displays.\n\n" ..
@@ -6450,6 +6549,10 @@ do
                                                     color = warning and "|cFFFF0000" or "|cFFFFD100"
                                                 end
 
+                                                if entry.empower_to then
+                                                    action = action .. " (" .. entry.empower_to .. ")"
+                                                end
+
                                                 if desc then
                                                     v[ key ] = color .. i .. ".|r " .. action .. " - " .. "|cFFFFD100" .. desc .. "|r"
                                                 else
@@ -6636,27 +6739,6 @@ do
                                                     width = 1.5,
                                                 },
 
-                                                caption = {
-                                                    type = "input",
-                                                    name = "Caption",
-                                                    desc = "Captions are |cFFFF0000very|r short descriptions that can appear on the icon of a recommended ability.\n\n" ..
-                                                        "This can be useful for understanding why an ability was recommended at a particular time.\n\n" ..
-                                                        "Requires Captions to be Enabled on each display.",
-                                                    order = 3.201,
-                                                    width = 1.5,
-                                                    validate = function( info, val )
-                                                        val = val:trim()
-                                                        if val:len() > 20 then return "Captions should be 20 characters or less." end
-                                                        return true
-                                                    end,
-                                                    hidden = function()
-                                                        local e = GetListEntry( pack )
-                                                        local ability = e.action and class.abilities[ e.action ]
-
-                                                        return not ability or ( ability.id < 0 and ability.id > -10 )
-                                                    end,
-                                                },
-
                                                 list_name = {
                                                     type = "select",
                                                     name = "Action List",
@@ -6679,7 +6761,7 @@ do
                                                         return v
                                                     end,
                                                     order = 3.2,
-                                                    width = 1.2,
+                                                    width = 1.5,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
                                                         return not ( e.action == "call_action_list" or e.action == "run_action_list" )
@@ -6722,14 +6804,14 @@ do
                                                         local e = GetListEntry( pack )
                                                         return e.action ~= "potion"
                                                     end,
-                                                    width = 1.2,
+                                                    width = 1.5,
                                                 },
 
                                                 sec = {
                                                     type = "input",
                                                     name = "Seconds",
                                                     order = 3.2,
-                                                    width = 1.2,
+                                                    width = 1.5,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
                                                         return e.action ~= "wait"
@@ -6740,7 +6822,7 @@ do
                                                     type = "toggle",
                                                     name = "Max Energy",
                                                     order = 3.2,
-                                                    width = 1.2,
+                                                    width = 1.5,
                                                     desc = "When checked, this entry will require that the player have enough energy to trigger Ferocious Bite's full damage bonus.",
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
@@ -6752,21 +6834,48 @@ do
                                                     type = "select",
                                                     name = "Empower To",
                                                     order = 3.2,
-                                                    width = 1.2,
+                                                    width = 1.5,
                                                     desc = "For Empowered spells, specify the empowerment level for this usage (default is max).",
                                                     values = {
                                                         [1] = "I",
                                                         [2] = "II",
                                                         [3] = "III",
                                                         [4] = "IV",
-                                                        maximum = "Max",
-                                                        minimum = "Min"
+                                                        maximum = "Max"
                                                     },
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
                                                         local action = e.action
                                                         local ability = action and class.abilities[ action ]
                                                         return not ( ability and ability.empowered )
+                                                    end,
+                                                },
+
+                                                lb00 = {
+                                                    type = "description",
+                                                    name = "",
+                                                    order = 3.201,
+                                                    width = "full",
+                                                },
+
+                                                caption = {
+                                                    type = "input",
+                                                    name = "Caption",
+                                                    desc = "Captions are |cFFFF0000very|r short descriptions that can appear on the icon of a recommended ability.\n\n" ..
+                                                        "This can be useful for understanding why an ability was recommended at a particular time.\n\n" ..
+                                                        "Requires Captions to be Enabled on each display.",
+                                                    order = 3.202,
+                                                    width = 1.5,
+                                                    validate = function( info, val )
+                                                        val = val:trim()
+                                                        if val:len() > 20 then return "Captions should be 20 characters or less." end
+                                                        return true
+                                                    end,
+                                                    hidden = function()
+                                                        local e = GetListEntry( pack )
+                                                        local ability = e.action and class.abilities[ e.action ]
+
+                                                        return not ability or ( ability.id < 0 and ability.id > -10 )
                                                     end,
                                                 },
 
@@ -7488,7 +7597,7 @@ do
 
                         separate = {
                             type = "toggle",
-                            name = NewFeature .. " Show Separately",
+                            name = "Show Separately",
                             desc = "If checked, cooldown abilities will be shown separately in your Cooldowns Display.\n\n" ..
                                 "This is an experimental feature and may not work well for some specializations.",
                             order = 3,
@@ -7905,9 +8014,7 @@ do
     local indent = ""
     local output = {}
 
-    local function key( s )
-        return ( lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
-    end
+    local key = formatKey
 
     local function increaseIndent()
         indent = indent .. "    "
@@ -10469,6 +10576,8 @@ do
 
             if result.target_if then result.target_if = result.target_if:gsub( "min:", "" ):gsub( "max:", "" ) end
 
+            -- As of 11/11/2022 (11/11/2022 in Europe), empower_to is purely a number 1-4.
+            if result.empower_to then result.empower_to = tonumber( result.empower_to ) end
             if result.for_next then result.for_next = tonumber( result.for_next ) end
             if result.cycle_targets then result.cycle_targets = tonumber( result.cycle_targets ) end
             if result.max_energy then result.max_energy = tonumber( result.max_energy ) end

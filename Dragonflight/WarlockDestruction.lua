@@ -621,21 +621,24 @@ spec:RegisterAuras( {
     madness_of_the_azjaqir_cb = {
         id = 387409,
         duration = 5,
-        max_stack = 1
+        max_stack = 1,
+        copy = "madness_cb"
     },
     -- Talent: Rain of Fire damage is increased by $w1%.
     -- https://wowhead.com/beta/spell=387413
     madness_of_the_azjaqir_rof = {
         id = 387413,
         duration = 5,
-        max_stack = 1
+        max_stack = 1,
+        copy = "madness_rof"
     },
     -- Talent: Shadowburn damage is increased by $w1%.
     -- https://wowhead.com/beta/spell=387414
     madness_of_the_azjaqir_sb = {
         id = 387414,
         duration = 5,
-        max_stack = 1
+        max_stack = 1,
+        copy = "madness_sb"
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=6789
@@ -1151,59 +1154,6 @@ spec:RegisterPet( "felguard",
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- Talent: Your next Curse of Exhaustion, Curse of Tongues or Curse of Weakness cast within 15 sec is amplified. Curse of Exhaustion Reduces the target's movement speed by an additional 20%. Curse of Tongues Increases casting time by an additional 40%. Curse of Weakness Enemy is unable to critically strike.
-    amplify_curse = {
-        id = 328774,
-        cast = 0,
-        cooldown = function() return talent.teachings_of_the_satyr.enabled and 20 or 30 end,
-        gcd = "off",
-        school = "shadow",
-
-        talent = "amplify_curse",
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "amplify_curse" )
-        end,
-    },
-
-    -- Talent: Banishes an enemy Demon, Aberration, or Elemental, preventing any action for 30 sec. Limit 1. Casting Banish again on the target will cancel the effect.
-    banish = {
-        id = 710,
-        cast = 1.5,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.015,
-        spendType = "mana",
-
-        talent = "banish",
-        startsCombat = false,
-
-        handler = function ()
-            if debuff.banish.up then removeDebuff( "target", "banish" )
-            else applyDebuff( "target", "banish" ) end
-        end,
-    },
-
-    -- Talent: Increases your movement speed by 50%, but also damages you for 4% of your maximum health every 1 sec. Movement impairing effects may not reduce you below 100% of normal movement speed. Lasts until canceled.
-    burning_rush = {
-        id = 111400,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "physical",
-
-        talent = "burning_rush",
-        startsCombat = false,
-
-        handler = function ()
-            if buff.burning_rush.up then removeBuff( "burning_rush" )
-            else applyBuff( "burning_rush" ) end
-        end,
-    },
-
     -- Talent: Calls forth a cataclysm at the target location, dealing 6,264 Shadowflame damage to all enemies within 8 yards and afflicting them with Immolate.
     cataclysm = {
         id = 152108,
@@ -1359,150 +1309,6 @@ spec:RegisterAbilities( {
         end,
     }, ]]
 
-    -- Reduces the target's movement speed by 50% for 12 sec. Curses: A warlock can only have one Curse active per target.
-    curse_of_exhaustion = {
-        id = 334275,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        talent = "curses_of_enfeeblement",
-        startsCombat = true,
-
-        handler = function ()
-            removeBuff( "amplify_curse" )
-            applyDebuff( "target", "curse_of_exhaustion" )
-            removeDebuff( "target", "curse_of_tongues" )
-            removeDebuff( "target", "curse_of_weakness" )
-        end,
-    },
-
-    -- Forces the target to speak in Demonic, increasing the casting time of all spells by 30% for 1 min. Curses: A warlock can only have one Curse active per target.
-    curse_of_tongues = {
-        id = 1714,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        talent = "curses_of_enfeeblement",
-        startsCombat = true,
-
-        handler = function ()
-            removeBuff( "amplify_curse" )
-            removeDebuff( "target", "curse_of_exhaustion" )
-            applyDebuff( "target", "curse_of_tongues" )
-            removeDebuff( "target", "curse_of_weakness" )
-        end,
-    },
-
-    -- Increases the time between an enemy's attacks by 20% for 2 min. Curses: A warlock can only have one Curse active per target.
-    curse_of_weakness = {
-        id = 702,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        handler = function ()
-            removeBuff( "amplify_curse" )
-            removeDebuff( "target", "curse_of_exhaustion" )
-            removeDebuff( "target", "curse_of_tongues" )
-            applyDebuff( "target", "curse_of_weakness" )
-        end,
-    },
-
-    -- Talent: Sacrifices 20% of your current health to shield you for 250% of the sacrificed health plus an additional 12,365 for 20 sec. Usable while suffering from control impairing effects.
-    dark_pact = {
-        id = 108416,
-        cast = 0,
-        cooldown = function() return talent.frequent_donor.enabled and 45 or 60 end,
-        gcd = "off",
-        school = "physical",
-
-        talent = "dark_pact",
-        startsCombat = false,
-
-        toggle = "defensives",
-
-        usable = function () return health.pct > ( talent.ichor_of_devils.enabled and 10 or 25 ), "insufficient health" end,
-        handler = function ()
-            applyBuff( "dark_pact" )
-            spend( ( talent.ichor_of_devils.enabled and 0.05 or 0.2 ) * health.max, "health" )
-        end,
-    },
-
-    -- Talent: Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
-    demonic_circle = {
-        id = 268358,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-        school = "shadow",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "demonic_circle",
-        startsCombat = false,
-        nobuff = "demonic_circle",
-
-        handler = function ()
-            applyBuff( "demonic_circle" )
-        end,
-    },
-
-
-    demonic_circle_teleport = {
-        id = 48020,
-        cast = 0,
-        cooldown = 30,
-        gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        talent = "demonic_circle",
-        buff = "demonic_circle",
-
-        handler = function ()
-            if talent.abyss_walker.enabled then applyBuff( "abyss_walker" ) end
-            if conduit.demonic_momentum.enabled then applyBuff( "demonic_momentum" ) end
-        end,
-    },
-
-    -- Talent: Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per 1.5 min.
-    demonic_gateway = {
-        id = 111771,
-        cast = function ()
-            if legendary.pillars_of_the_dark_portal.enabled or buff.soulburn.up then return 0 end
-            return 2 * haste
-        end,
-        cooldown = 10,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.2,
-        spendType = "mana",
-
-        talent = "demonic_gateway",
-        startsCombat = false,
-
-        handler = function ()
-            removeBuff( "soulburn" )
-        end,
-    },
 
     -- Talent: Rips a hole in time and space, opening a random portal that damages your target: Shadowy Tear Deals 15,954 Shadow damage over 14 sec. Unstable Tear Deals 13,709 Chaos damage over 6 sec. Chaos Tear Fires a Chaos Bolt, dealing 4,524 Chaos damage. This Chaos Bolt always critically strikes and your critical strike chance increases its damage. Generates 3 Soul Shard Fragments.
     dimensional_rift = {
@@ -1519,33 +1325,6 @@ spec:RegisterAbilities( {
 
         talent = "dimensional_rift",
         startsCombat = true,
-    },
-
-    -- Drains life from the target, causing 2,174 Shadow damage over 4.0 sec, and healing you for 500% of the damage done. Drain Life heals for 15% more while below 50% health.
-    drain_life = {
-        id = 234153,
-        cast = function () return 5
-            * haste
-            * ( talent.grim_feast.enabled and 0.7 or 1 )
-            * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
-        channeled = true,
-        breakable = true,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = function () return debuff.soul_rot.up and 0 or 0.03 end,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        start = function ()
-            applyDebuff( "target", "drain_life" )
-        end,
-
-        finish = function ()
-            if talent.accrued_vitality.enabled or conduit.accrued_vitality.enabled then applyBuff( "accrued_vitality" ) end
-        end,
     },
 
     --[[ Summons an Eye of Kilrogg and binds your vision to it. The eye is stealthed and moves quickly but is very fragile.
@@ -1566,42 +1345,6 @@ spec:RegisterAbilities( {
         end,
     }, ]]
 
-    -- Strikes fear in the enemy, disorienting for 20 sec. Damage may cancel the effect. Limit 1.
-    fear = {
-        id = 5782,
-        cast = 1.7,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.05,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "fear" )
-        end,
-    },
-
-    -- Talent: Your next Imp, Voidwalker, Incubus, Succubus, Felhunter, or Felguard Summon spell is free and has its casting time reduced by 5.5 sec.
-    fel_domination = {
-        id = 333889,
-        cast = 0,
-        cooldown = function () return 180 - 30 * talent.fel_pact.rank + conduit.fel_celerity.mod * 0.001 end,
-        gcd = "off",
-        school = "shadowstrike",
-
-        talent = "fel_domination",
-        startsCombat = false,
-        essential = true,
-        nomounted = true,
-        nobuff = "grimoire_of_sacrifice",
-
-        handler = function ()
-            applyBuff( "fel_domination" )
-        end,
-    },
 
     -- Talent: Sacrifices your demon pet for power, gaining its command demon ability, and causing your spells to sometimes also deal 1,678 additional Shadow damage. Lasts 1 |4hour:hrs; or until you summon a demon pet.
     grimoire_of_sacrifice = {
@@ -1626,6 +1369,7 @@ spec:RegisterAbilities( {
             applyBuff( "grimoire_of_sacrifice" )
         end,
     },
+
     -- Talent: Marks a target with Havoc for 15 sec, causing your single target spells to also strike the Havoc victim for 60% of normal initial damage.
     havoc = {
         id = 80240,
@@ -1679,24 +1423,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "bane_of_havoc" )
             active_dot.bane_of_havoc = active_enemies
             applyBuff( "active_havoc" )
-        end,
-    },
-
-    -- Sacrifices 25% of your maximum health to heal your summoned Demon for twice as much over 4.0 sec.
-    health_funnel = {
-        id = 755,
-        cast = 5,
-        channeled = true,
-        breakable = true,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        startsCombat = false,
-
-        usable = function () return pet.active and pet.alive and pet.health_pct < 100, "requires pet" end,
-        start = function ()
-            applyBuff( "health_funnel" )
         end,
     },
 
@@ -1767,64 +1493,6 @@ spec:RegisterAbilities( {
             gain( ( 0.2 + ( 0.125 * ( true_active_enemies - 1 ) * talent.fire_and_brimstone.rank ) )
                 * ( legendary.embers_of_the_diabolic_raiment.enabled and 2 or 1 )
                 * ( talent.diabolic_embers.enabled and 2 or 1 ), "soul_shards" )
-        end,
-    },
-
-    -- Talent: Summon an Inquisitor's Eye that periodically blasts enemies for 254 Shadowflame damage and occasionally dealing 290 Shadowflame damage instead. Lasts 1 |4hour:hrs;.
-    inquisitors_gaze = {
-        id = 386344,
-        cast = 0,
-        cooldown = 10,
-        gcd = "spell",
-        school = "shadow",
-
-        talent = "inquisitors_gaze",
-        startsCombat = false,
-        nobuff = "inquisitors_gaze",
-
-        handler = function ()
-            applyBuff( "inquisitors_gaze" )
-        end,
-    },
-
-    -- Talent: Horrifies an enemy target into fleeing, incapacitating for 3 sec and healing you for 20% of maximum health.
-    mortal_coil = {
-        id = 6789,
-        cast = 0,
-        cooldown = 45,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "mortal_coil",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "mortal_coil" )
-            active_dot.mortal_coil = max( active_dot.mortal_coil, active_dot.bane_of_havoc )
-            gain( 0.2 * health.max, "health" )
-        end,
-    },
-
-    -- Surrounds the caster with a shield that lasts 3 sec, reflecting all harmful spells cast on you.
-    nether_ward = {
-        id = 212295,
-        cast = 0,
-        cooldown = 45,
-        gcd = "off",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        pvptalent = "nether_ward",
-        startsCombat = false,
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "nether_ward" )
         end,
     },
 
@@ -1923,41 +1591,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Slows enemies in a 12 yard cone in front of you by 70% for 6 sec.
-    shadowflame = {
-        id = 384069,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
-        school = "shadowflame",
-
-        talent = "shadowflame",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "shadowflame" )
-        end,
-    },
-
-    -- Talent: Stuns all enemies within 8 yds for 3 sec.
-    shadowfury = {
-        id = 30283,
-        cast = 1.5,
-        cooldown = function () return talent.darkfury.enabled and 45 or 60 end,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        talent = "shadowfury",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "shadowfury" )
-        end,
-    },
-
     -- Talent: Burns the enemy's soul, dealing 9,135 Fire damage and applying Immolate. Generates 1 Soul Shard.
     soul_fire = {
         id = 6353,
@@ -1976,145 +1609,6 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( 1, "soul_shards" )
             applyDebuff( "target", "immolate" )
-        end,
-    },
-
-    -- Talent: Consumes a Soul Shard, unlocking the hidden power of your spells. Demonic Circle: Teleport: Increases your movement speed by 50% and makes you immune to snares and roots for 8 sec. Demonic Gateway: Can be cast instantly. Drain Life: Gain an absorb shield equal to the amount of healing done for 30 sec. This shield cannot exceed 30% of your maximum health. Health Funnel: Restores 140% more health and reduces the damage taken by your pet by 30% for 10 sec. Healthstone: Increases the healing of your Healthstone by 30% and increases your maximum health by 20% for 12 sec.
-    soulburn = {
-        id = 385899,
-        cast = 0,
-        cooldown = 6,
-        gcd = "off",
-        school = "shadow",
-
-        spend = 1,
-        spendType = "soul_shards",
-
-        talent = "soulburn",
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "soulburn" )
-        end,
-    },
-
-    -- Stores the soul of the target party or raid member, allowing resurrection upon death. Also castable to resurrect a dead target. Targets resurrect with 60% health and at least 20% mana.
-    soulstone = {
-        id = 20707,
-        cast = 3,
-        cooldown = 600,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "soulstone" )
-        end,
-    },
-
-
-    spell_lock = {
-        id = 19647,
-        known = function () return IsSpellKnownOrOverridesKnown( 119910 ) or IsSpellKnownOrOverridesKnown( 132409 ) end,
-        cast = 0,
-        cooldown = 24,
-        gcd = "off",
-
-        startsCombat = true,
-        -- texture = ?
-
-        toggle = "interrupts",
-        interrupt = true,
-
-        debuff = "casting",
-        readyTime = state.timeToInterrupt,
-
-        handler = function ()
-            interrupt()
-        end,
-
-        bind = { 119910, 132409, 119898 }
-    },
-
-    -- Subjugates the target demon up to level 61, forcing it to do your bidding for 5 min.
-    subjugate_demon = {
-        id = 1098,
-        cast = 3,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        usable = function () return target.is_demon and target.level < level + 2, "requires demon target" end,
-        handler = function ()
-            summonPet( "controlled_demon" )
-        end,
-    },
-
-
-    summon_felhunter = {
-        id = 691,
-        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.fel_domination.up and 0 or 1 end,
-        spendType = "soul_shards",
-
-        essential = true,
-
-        usable = function ()
-            if pet.alive then return false, "pet is alive"
-            elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
-            return true
-        end,
-        handler = function ()
-            removeBuff( "fel_domination" )
-            removeBuff( "grimoire_of_sacrifice" )
-            summonPet( "felhunter" )
-        end,
-
-        copy = 112869,
-
-        bind = function ()
-            if settings.default_pet == "summon_felhunter" then return "summon_pet" end
-        end,
-    },
-
-
-    summon_imp = {
-        id = 688,
-        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.fel_domination.up and 0 or 1 end,
-        spendType = "soul_shards",
-
-        essential = true,
-        nomounted = true,
-
-        usable = function ()
-            if pet.alive then return false, "pet is alive"
-            elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
-            return true
-        end,
-        handler = function ()
-            removeBuff( "fel_domination" )
-            removeBuff( "grimoire_of_sacrifice" )
-            summonPet( "imp" )
-        end,
-
-        bind = function ()
-            if settings.default_pet == "summon_imp" then return "summon_pet" end
         end,
     },
 
@@ -2141,37 +1635,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-    summon_pet = {
-        name = "|T136082:0|t |cff00ccff[Summon Demon]|r",
-        bind = function () return settings.default_pet end
-    },
-
-
-    summon_sayaad = {
-        id = 366222,
-        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.fel_domination.up and 0 or 1 end,
-        spendType = "soul_shards",
-
-        usable = function () return not pet.alive end,
-        handler = function ()
-            removeBuff( "fel_domination" )
-            removeBuff( "grimoire_of_sacrifice" )
-            summonPet( "sayaad" )
-        end,
-
-        copy = { 365349, "summon_incubus", "summon_succubus" },
-
-        bind = function()
-            if settings.default_pet == "summon_sayaad" then return { "summon_incubus", "summon_succubus", "summon_pet" } end
-            return { "summon_incubus", "summon_succubus" }
-        end,
-    },
-
     -- Talent: Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 580 Chaos damage every 1 sec for each Tormented Soul consumed. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
     summon_soulkeeper = {
         id = 386256,
@@ -2191,70 +1654,6 @@ spec:RegisterAbilities( {
     },
 
 
-    summon_voidwalker = {
-        id = 697,
-        cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.fel_domination.up and 0 or 1 end,
-        spendType = "soul_shards",
-
-        startsCombat = true,
-        essential = true,
-
-        usable = function ()
-            if pet.alive then return false, "pet is alive"
-            elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
-            return true
-        end,
-        handler = function ()
-            removeBuff( "fel_domination" )
-            removeBuff( "grimoire_of_sacrifice" )
-            summonPet( "voidwalker" )
-        end,
-
-        bind = function ()
-            if settings.default_pet == "summon_voidwalker" then return "summon_pet" end
-        end,
-    },
-
-
-    unending_breath = {
-        id = 5697,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "unending_breath" )
-        end,
-    },
-
-    -- Hardens your skin, reducing all damage you take by 25% and granting immunity to interrupt, silence, and pushback effects for 8 sec.
-    unending_resolve = {
-        id = 104773,
-        cast = 0,
-        cooldown = function() return 180 - 45 * talent.dark_accord.rank end,
-        gcd = "off",
-        school = "shadow",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "unending_resolve" )
-        end,
-    },
 } )
 
 
@@ -2336,4 +1735,4 @@ spec:RegisterSetting( "immolate_macro", nil, {
 } )
 
 
-spec:RegisterPack( "Destruction", 20221105, [[Hekili:DV1xZTPow8plzUZ4M0Msny72CVJTFyV7lTZo9fFF2yzqeZgmIkbPj74XF23JeGqsiHj5MUpSV06cIZ)0587C(jOB93(xB3eJkXB)EW0GaF)Pl88xmpiy(2nLpxG3UPaf9a6E4h5OJWF(pXSsAvuzkjNFVNZiOyUmyKkAeC)dLLfS)4tF6(0Ydv79Iih)el9yvgI)eruusj)Fh9PTB2xLMv(18T7nnGTBqvLhi0TB2KE8pbrMghJRxhMfTDZ2nzPSsgxRhqpsIGF8DHFGZr7ZWXB)hB3ertlX0uexnjjE7bNiMRCVyYpZpVBY5DGbNfYoGOXN3TE15D(9U6s4Qqya14SrK8Km09uUTwcwRtngHyLHLPhXGioVtyIHu8ruAoRtAcfLKsfYA2Rrws7DFAESxggfhU)5q8tOJfzyVwPjvymok9iSlKFF4EswjxTZFnQvXfIG9CU8kH9AHFSWPalr07XLECrgwscJtbjV(8U7eorjkdNx6LMdlohLfcjn7RyCL06gILj9BWKIROImQZ7E)5Dt9wCE3PtN3D1lqwjumSpdxOZHspEKK1S9(5xtSriAWiUwAhWtvbwbjjKwLQBcCT(ioeNJpMIzIWHVE4ibCbs3ZCJsU4beHj3h)ItBLHlHvLxXGipMgCx48IOxJY70mf8tU70M6Ehx3YmIdiO(AFfnx1EGv97VMOPYgtEuAoUPYReWDOy((kQC4s)AXcU202nMciheLbEENStWzHXKJP5I8jzLT0LQGKI8q4bnCjZA2A4XscKGdHh4zaCssfdsaZLiMkU0LwOLYZAnWiqP(bwidhrHD3sC0H80FuHvHwCSIluHk24VNMEKa7TCBJHGBNKgzbnX6YK1nD7B)OkLLwsOSW7r)hSri8lQRnjdQhfnimw1D2ddIunCCiHUNBeGooc2VzUy)f0Mn2hiwxT(t19ezgO2Y4kKGhonKN0vxpHY8Ql8e5JxlsjJiKmEtjprUVhfWXFUgnZsn6mnuaZAr3TKgenYTaN1lqrjMBpZ1cthlW5X8EcrOsepXU4GzG1DkymbcunyWEsivWTLGeAiG558sxmub1AVUbTnJLawZIg8UbAmP2XzHYEwt4K7JrzpZo2HrZ33K7OD3x1zK)(glDE2e9CugyjcRIXZQSGVlJbOSSW6)riFKO6bJcRlqIIz2QEgmKOmTt9KvwnhTYhTugBvqwS7bKTVVQWnNzXq(xmFNBuHOCyWiaUIvsYXADGngnSQO)iGI99pYhXiqmQHEqZrhQV73VWXw8X98xwgAvzBxFqu)lo11bmkR8GxruPWJcMATJnxuUlGUqDYqttzFJwd83yusJ4K7CyJ9Q5ElusEatnNb)eq8G(tcKFFZbr4mkOPf1pXxl5L2pWlg(Y5Dawgik43KKZ72ak6bmUatHLqoVd)ueMNfbdn9v5wVNQPDv70mki(IT1MgrqNjU1Z8yaiXdwsUeX3p3BseM0seq(JTlfhoyWUusuRg9i7yPccoRgHBpHvpRRw6aFdi4TO)STbWAnNlmf2GDD7eAbr83wgYAKcypMYW0hGu2HBPnSqYiK4WKk6Zd38AqHWbwecYwNcT0rr2hlcbdJXbS5PjcksqB60eC4CaauU75AvQLSUwYGDDgHriYSS6ZVngNBYiwNuBWe(a)oLwXWHGKoYQR4IXjOQSokksBRadTTZirpyKl7UDwpGelif(wVHSbMlsLFqLTAV7osY5WKm8WBehHDKJNupdGLkyHIOvfLHPjnPlpY7JKcTqaMnpYngEIQm)xH3GEJbX5I07zBv1G1(TZltqIUs7ZaYlArLySWY0xGksPVARiJo2luthKdjAKn4goai1ZhjIbJ38eGFc8pcNfwKvXCLAeipDKxZJ(rxhMbfL)G1nEAvUZ9DoBPbbQuMLW(jY9RCoCLr1Sn0IBynJMKxIyXViZF4rUCJ79wC6C12Gx3jtbprysw69hkV4P3zXdSXFOZGV2AdI64g)gq9idyEE8z5DUPxY0AJJ3v7i18nhuAuGAnCU81gGPptvJXBNn(jH1iBFb2rVcE2A34VXrS2zJdr1t)OIgXjhyWzW(5rmaBbaxcNqaBWJet5Pb)uaMbX5WNpMs)3iQh(hvPff99aBChifcS4UL(i0mGFx(VYAproRTP7DOpT1g8xeX0Mzoeny0HCBgoQfpUH7Ti1Tl2dMrt(ybOMWUCEwhJb3ZMnMxvIxlP4zIKJw22qr3bYJyQgUaKW0gx86zpU6qg8cpnTU4Lwi5YNHKsjFG75VSFqbJ0Z0vIBclnrrG(wCAeQh(6qAtDKe1NxfZ9Y(V7XHgw38GFpGvvqD9dziWnWKMuGgPAZqPBSUhpsoREcV3ty)ZWZr3oL3ebmuCjf9iaApyaZ9qmWcbDiR45riBAfmP7JI9oIEYDLWB3HFe8)Bh(XSrE4haenGkXJgQVK5FIO58zH3U5VoGfEmHcXaObX5DVRH8274ZTaTeOC3Lr45gOQsc01LFbENDyx2783(xGMH81)48U)KKd6sC735KeY7QJJUxqBLpSWR9F6gPg8)DdvyRtqR0hQlHPGdmT9(OrgI1covNqp)TVkcNCrTOD2WZ7eV3E4283GhjjT70czEYxP3k9xi3TPjR41mRNo5k5BV78369yFy1N6EvD2VFl)8B5nhxDHxa3yeHRx0M9N16Rmt4EJ4nVzxKMVFn7RQJH8OCk7NlNJqElFjx2xBjjpLOzfR6oaKURzowDTTiWqUTMH5kFESsfvzIoKXAFJlSCXhTFUgF4A7xFYLNS9gPjRfy5MMZI5BvpsJvUordvbR0dqjbX6PrmzOtIyjFsnv52YKu9IgS1RJ8anDT4UZdoWCti40PRg)I)O7twq1eLPz3QrKO20uoWGjDTexUA(KRVYfd7tNCZUEDZFRTv3YkYUbuhSNnPFp(139lXkejfw01LtGNulnR80N06jTu)E)uJ8h5dXTGRTmk(Pt2OFFJYgZ6vZ1tjTv4dePn0RofATKdngZQ3XGGS6TQrwSSzAJB8AR8I5bhiz)YHC9Dql0C7LQdSA7BS8mTXtGv95BNDVo2Aoa)TcYQR6bMANJ6Yv(tpDYo30j2M4yaCnl8n1sua0RpcCmFVl(LtUYnReNzTwtADZDCDhTaNISh9WxLH1FUQbeZe3S9wA1I74GX1LBbF6KwP6q1)klC2qRJtiBIgzSLlSbvkT7pOq(AG0NgswR9pDQV0wceR0WcmieP7alfo6Vb8z(7YcslMBsAre61gHXnPO3Buq(znyeBdw5bnAxP(9y4iDh6iz7Jo60jdno7gnrZhvWq4d(zfz(W9q2AU(WqInlQxhaNy19Z(L6XDlCDp3E65Dt6YEFR6P36DxSjyZcD22YWbMp0o3OeQ5IC1lTn4ktivYlC)53mPpKPsXih1pWi)3A2KnV5Y9y6jknOXEFZmldM(ssLCK509sTm1U9XxAd7)Vg2Q1Q(1aD1lBrf(cY3xnkUOcW)l85QSCg0vN34rTNW8anT15NTpnem)T2JRODjXi6d1DibXwI2NMLw(S7jj468sgxi(PcCee1wRECGgMw93OIdfzU4UVhLX(aYV9Kr(aYVZKrUEJDsxFqgI8QX8rH86f)iK(KxGdXgEVxnFlWxn)wu9S6Y4t6ZaRZP1qAQaHIQI2MFl1))LqVNYaoFGNDI8CnC8FXelMKgK2lYUEly4AJf7OiQzhMU100hQ1v06QRhCOO(NzL9JI6M(63C4lB)F7ySI3YEMSjOLnfTM7o8CXh2ue)nZ8fXrUV9)(]] )
+spec:RegisterPack( "Destruction", 20221113, [[Hekili:TZ1xZTTns8pl(ff52uftj74Kow6HR3lnZn5f3NffejKfVqsOW)4g3rJ(SFlajbbaXcszj7C9UmTtASjWUl2)(Bxc2LEl)JL3hskOl)80RMo1ZZB2eVBN9(PlVV4PD0L3VJe8fYdWFjLKa)5)KMxKvgueXs5p7PygjKtICwzwa88Tff7Y)139UhIk2wUEsal5D5rjLXe(ocYiBk4)CW7wE)6YO4IFpD5AR8)QzlVNuwSLLT8(7Js(nGYrHH0QLtZdwE)Y7JJYlY5mpQGMW)lFwCAOPK1X0WL)JL3hKbpklIaIkTysu6gAwkjEcbK)hPhwTF)HvxCyvbjMMwmjVmjHL6lxvnDQwwruc1VG5hgb77UdRM6bYxTAOmN6xjcfW)aI3gszCHuEAww(oACSFml4lQYybCWnK6MnSjMMVvOZupjGMoEDuA4KhzCTAm1pNf)i)a0qI7JsH1MvURWpAdxrVzt3fxUJZ6zOkSkDKpnLMerZpSAoCMBfTacCuQ(bFUzOYy4x5Jeetjps5K)6bt(fa9Nnq6tycIFdkXhlTPzmswu6d(RJj)fT1Io6WQqQqVeWs3etEid8aNKrtirP5c7R3KBoS6YkBFWws2d16GeY38R)zfPTLiCb79Ocg325NdBpuWKRNCRqwgRWJfGE2UlxaJfhY(Z0jHWdsZbotI9ZI2umjSmteFbsCRqzUkUKDRQ)yaPGee)uEIH74hqf)gLk5bUonKcHlBIYOToEssVLKMsJBxcNUFCyQfqjFTsqd)rnuW7kxMC4Fdzquoefhxzo3Kbbq8fl0Y1sVi4GRuGCtRlZ5SP1XO2IBqNw3IzILuzYAZCi1K65mKgS2NlP1cmMyH8sDac5BF(aiFRQT5Hcn7ZiZj)bqCv(UT0KN0EIQ9CHU9e8my5(RzXc)rpSuFoJ)BY1(zpZ0xdA7Shccf7(ATSZ6z)nIj8Wt20euugLcrgPFrO89ewXlegY6fegrGJDuGpnznnlxlzu9sipcokz(SnqGJSmR2cBj36YSuE2bs(wAUrTQAVsHQoknGahOcQMt(L9eR6HNdtK2CnGkiKxzAc3duiAMgDidkAgsVBDt(mWzLRgehbnV6acyh5zgrDPWtFzi5qfqmAGNQQw3sZiHrbKo2N6QkQpwn9Hu6BCpQ4)Kw2dHA(BIJEyBbMWnfpjOG3jKWuAEUFWAhNWP4X7)91PD6u1a6o1)maDHd9rZtgY5R5iRRgXb4OM7g8(dlJk0ukTP3BmyGgSyl1N8x)BYxJY01oTRU1)1wvxvzZrkldKf3uzpv)Tl0Cw)z4PzaMUyNHEtXtAOcVzSgkQdR(fr6YlTd6bYvdkOVDy1pjXiHMvzQg8M8aOLeooLcOveQP1)dAUk0GOeiALduKFwmw7hvxBuYoAAiFP8Q6GdpBxhQp7knbH7cKXmj7mTMdap(OuQ4KOTmyx7YOCOkK2okqnQc97vn(x8c0KyOQClB2WJzyjrPICtYMpmkccB0uynyBvL0cgySa3wypCfrzo3txMdqXq13cT0QqfhGUvOKT5(50Gmk4nsd2Mg91sQQ2fzfo7qOoy6HSOegK9GlB5e4XBIcSaN16YKi9BnHFTmkpQGLL7)a0UHHkuZ5uT1oTvzw9QwnSLa1zPH(SS1I8eSmi5MsjcSf0a7wZxuKV0aFJMhlwNbEd1LL3H2X2oElHBQ(lZR3Nz0zjiC6IxbWo2zu4hDlfz6n3M9OgZDVmtMw(LRtdqiEc6v3VGNwTiNBVSe006umei5MLag0UBqKFRLCriaY1YFRzy1xNjsUMTSL8ilqRcLqv0opcOOKD9JJMqRnsCXWNKg6VgYBKxWs1N8GdyOkHuDc3qdDXdpScvF4WjmWSJhUO0PTfx9cZwTCK4OYS4UohIGBt3I3CsNFRXChmHwGkokOKGqwH87ldXm5H2mU0gTbwNSdiHHIU3M)koe1(eDTob6hMFvAC9qi9bVWJKzkq61sIQaKS362NDHbViboM2NtqeEFVomgi5h4tfUAsRoJxQivL(qObmm0lKGShy26QyulbfmitwovbvYJeqceoMpsI5G2K1Pe0qPyhpK8kTgbtipTLM0QqbAvZ)Dar8BdRYDxk)78SGXJ((Epl4BgcIpCV)tBwW4XbDYj3KkQXzAsh7V9mQMiPDLrDSAMoNdiEKRHm)Ao94Z)aJ7dyi(qXErhrSjCRbLJsIhTZGTh02LJi2w3XyJigRe(ja1S3Xl9)ytDgVW)Gb2n5MJiHHje3EM69Pmw6EM4TA)ahZbyOZ(UN5w7IBVwd22Xu3pIbBJ3DM9kliWnSws5htn)LEQ596howVi3l6K1D0HY)VpCDhTWlQDESd)BG3fNwbyht8FD2A(5Gp84xA2xamUUBZ4SWRygl0Ftz2tU7C4CWlE0VGFcJgy2EeoO8NuFnSUcIE)tiBcCWbFI)ylWHOKDSSIdR2WYoS6ncewVHJA8RLaTc5LI5EZKYcwc4xekCPsbxQjh(0)cCwahXF9WQFJLcCs843yxwbAwWqFAZjbw1yVVDjq7dFYI0vFhSoo5BQH8XZWy9Mw1iIOlORuwXHBSRb06m148BTRvt6(be6A0CMjPr6DZK6ExzN8wAuYGdoALAOmr29JbP7010qjOSIUPJMzttDiiI1ZOAVbzrWcmuIBfNGblCILyOmsdKHbdScazOe2aBIPz0oYLoe)J2jUcEudcBbPRjrNIKq6SyqXi(z3GIXOt2GIr4ZIbD61oIoRr1zla1aW3qjRDKGgmWnCXHYkjmstDUj8Y34UegHXvTNq5RxkhopegDUo4vd1(SC2R6QRJzwTvpZt37FrlLIuO(SwjfHhp7cPi075xhfjW5SK2fJ4N)OaSW)tnTlgHplPD9qmMNwDueKwpJOVFus(hLK)V3sYIj5)MJQWeMNWXlrv071k92Rv7iiLBFg6hRwm(WOolgStCiforPCwO9SxqAJLy40O9Hp97cBfNK328gdoSs8v9bpw8bZfWh85T87alBtu7TlkFI8sXox)kT(2OnZ5J5CXvJUqE)xp8PoB7NN)U2l7Q9N38z99w(7eCEpxH1HqcSRQQ99A9sNkoEv6xN3Dv7K08gQAFvT3n1bDOSFZtru5nydT)yjuumXVzOZCNN6vmV9ZQu(70oeCvg6G6ER6Nk5CSVusvcB(EJR0cv9SWzv18yBE7UZN2)EHg96UXfZNPTZ2HXZx74AFaTHdoc)ASCN3KBUC)(6z8px9neOWeZ39tJMR69VC31tUD046TTy6(9kVnH76)(OCPUIW0qZ)LMVDkfNDZ(Ru3N0PYqENFT6QAUqgc13yS7WXOA(zPDlq)z7IDC3Slhn(IgKwnNlqxJE9nwyJmkerEEuisNBSHDIyOoRF9r8JSL3zW(92UEg733QcxORcT7(kEra9VmELynRME5Hb7i0CHhw4n6IMWad8)JCbezuZM0aCdEZ1wqDSYxEPJOql3jHrQkp(Dra1GGFHcw0(UbDVBT7ma6sRpyk9Xnc)L5FNK3JUOIGwFf(9iyAVP(ETSV6MrZCu4NgfR5mxgt1i362Hg1eoBVfM97VWesRdYRKP9Mrk)uRRYpR8kKD4Y2K(ESsjGFX7s9K5qK6pzP8G(huLMcv)7NspTRLpxQozVZy6BYwH(jqDY5Q3oxK0AABaiM5wC5vzUxR(R2Y8AjMTMeY6oAxWR5EyucmWDlN0aR74lR05enGC4oxQwE86vILl3IfW8zIwQTPB0UKCl86OwLUik2uodS)HxmcpHzZzOl00A1qVj9DflB6fauq9kJIEQuD8Raxo3U9OsbcKv9EEps7oEVqZKvrnGznx0Mk6yEBBER4kBp3(n2(U5ExjZ1wnrplmyiGwLgOtc8AlpFLWWQCi72Zs7ZEoiAB3ooW2rxGFlP6shxPGgpghX7imuYNpOWpx0VDtVPQ0pN4EvT0di1zpRMzpuenbQCfhFEYH5f(DdonAAIbGQ(4C)pbC3ojIA1KtrISaqhNANrS7opC2HWpOCt9ww47Fta41l6v7G0sa2YDyjhFw6AO)uGp3UhqJqF2nrOusYkqhrsU5gCZ8aBcLRBcIr2hcuf5n9DL6G70WmPsJzDjXrGQ3cyVgQOBNWKezOH9yGQYxTvaAhHL2x44LDz)X0z0qzJLdPU50buzPYvdBpIAr1VrudEU8)n8Hw3xIXqVCRUJ7upvsZlypV6YgFSKvNiW5Q9UeF6KsEvHpzsXT(cYDSusCVHx(Fo]] )

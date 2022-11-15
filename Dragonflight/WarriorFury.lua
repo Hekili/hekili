@@ -443,13 +443,6 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 5
     },
-    spear_of_bastion = {
-        id = 376080,
-        duration = function () return ( legendary.elysian_might.enabled and 8 or 4 ) + ( talent.elysian_might.enabled and 2 or 0 ) end,
-        tick_time = 1,
-        max_stack = 1,
-        copy = 307871 -- Covenant version.
-    },
     spell_reflection = {
         id = 23920,
         duration = function () return legendary.misshapen_mirror.enabled and 8 or 5 end,
@@ -1582,33 +1575,6 @@ spec:RegisterAbilities( {
     },
 
 
-    spear_of_bastion = {
-        id = function() return talent.spear_of_bastion.enabled and 376079 or 307865 end,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-
-        spend = function () return ( -25 * ( talent.piercing_verdict.enabled and 2 or 1 ) ) * ( 1 + conduit.piercing_verdict.mod * 0.01 ) end,
-        spendType = "rage",
-
-        talent = function()
-            if covenant.kyrian then return end
-            return "spear_of_bastion"
-        end,
-        startsCombat = false,
-        texture = 3565453,
-
-        toggle = "cooldowns",
-
-        velocity = 30,
-
-        handler = function ()
-            applyDebuff( "target", "spear_of_bastion" )
-            if legendary.elysian_might.enabled or talent.elysian_might.enabled then applyBuff( "elysian_might" ) end
-        end,
-    },
-
-
     spell_reflection = {
         id = 23920,
         cast = 0,
@@ -1628,6 +1594,7 @@ spec:RegisterAbilities( {
             applyBuff( "spell_reflection" )
         end,
     },
+
 
     storm_bolt = {
         id = 107570,

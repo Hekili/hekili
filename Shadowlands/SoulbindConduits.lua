@@ -9,7 +9,7 @@ local state = Hekili.State
 
 local all = Hekili.Class.specs[ 0 ]
 
-local WipeCovenantCache = ns.WipeCovenantCache
+local AreCovenantsDisabled, WipeCovenantCache = ns.AreCovenantsDisabled, ns.WipeCovenantCache
 
 
 state.conduit = {}
@@ -477,6 +477,8 @@ do
             v.rank = 0
         end
 
+        if AreCovenantsDisabled() then return end
+
         local found = false
 
         local soulbind = GetActiveSoulbindID()
@@ -502,7 +504,7 @@ do
                         }
 
                         conduit.rank = node.conduitRank > 0 and 1 or 0
-                        conduit.mod = data[ 2 ]
+                        conduit.mod  = data[ 2 ]
 
                         state.conduit[ key ] = conduit
                     end
@@ -512,10 +514,10 @@ do
 
                         local key = soulbinds[ node.spellID ]
 
-                        local soulbind = rawget( state.soulbind, key ) or {}
-                        soulbind.rank = 1
+                        local sb = rawget( state.soulbind, key ) or {}
+                        sb.rank = 1
 
-                        state.soulbind[ key ] = soulbind
+                        state.soulbind[ key ] = sb
                     end
                 end
             end

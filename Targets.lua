@@ -355,7 +355,7 @@ do
                             end
 
                             local _, range
-                            if not excluded and checkPlates then
+                            if not excluded and checkPlates and spec.nameplateRange > 0 then
                                 _, range = RC:GetRange( unit )
                                 guidRanges[ guid ] = range
 

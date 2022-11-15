@@ -19,7 +19,8 @@ actions+=/meteor
 actions+=/tempest,if=buff.call_lightning.stack>=10
 actions+=/vesper_totem
 actions+=/fae_transfusion,if=action.fae_transfusion.known&!runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up)&spell_targets.chain_lightning<3
-actions+=/fae_transfusion,if=action.fae_trans&runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up|spell_targets.chain_lightning>=3)&(cooldown.fire_elemental.remains>20|cooldown.storm_elemental.remains>20)
+actions+=/fae_transfusion,if=action.fae_transfusion.known&runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up|spell_targets.chain_lightning>=3)&(cooldown.fire_elemental.remains>20|cooldown.storm_elemental.remains>20)
+actions+=/natures_swiftness
 actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
 actions+=/run_action_list,name=single_target
 
@@ -42,15 +43,15 @@ actions.aoe+=/ascendance
 # Keep your cooldowns rolling.
 actions.aoe+=/liquid_magma_totem
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
-actions.aoe+=/earthquake,if=!(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)|buff.echoes_of_great_sundering.up
+actions.aoe+=/earthquake,if=!(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)|buff.echoes_of_great_sundering.up
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Spread Lightning Rod to as many targets as possible.
-actions.aoe+=/elemental_blast,cycle_targets=1,if=(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
+actions.aoe+=/elemental_blast,cycle_targets=1,if=(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
-actions.aoe+=/elemental_blast,if=(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
+actions.aoe+=/elemental_blast,if=(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Spread Lightning Rod to as many targets as possible.
-actions.aoe+=/earth_shock,cycle_targets=1,if=(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
+actions.aoe+=/earth_shock,cycle_targets=1,if=(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
-actions.aoe+=/earth_shock,if=(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
+actions.aoe+=/earth_shock,if=(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)
 # Stormkeeper is strong and should be used.
 actions.aoe+=/lava_beam,if=buff.stormkeeper.up
 # Stormkeeper is strong and should be used.
@@ -78,11 +79,13 @@ actions.aoe+=/frost_shock,moving=1
 actions.single_target=fire_elemental
 # Keep your cooldowns rolling.
 actions.single_target+=/storm_elemental
+# Reset LMT CD as early as possible.
+actions.single_target+=/totemic_recall,if=cooldown.liquid_magma_totem.remains>45
+# Keep your cooldowns rolling.
+actions.single_target+=/liquid_magma_totem
 # Use Primordial Wave as much as possible without wasting buffs.
 actions.single_target+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up&!buff.splintered_elements.up
 actions.single_target+=/flame_shock,cycle_targets=1,if=refreshable&!buff.surge_of_power.up
-# Keep your cooldowns rolling.
-actions.single_target+=/liquid_magma_totem
 actions.single_target+=/stormkeeper,if=!buff.stormkeeper.up&!buff.ascendance.up
 actions.single_target+=/ascendance,if=!buff.stormkeeper.up
 actions.single_target+=/cancel_buff,name=lava_surge,if=buff.stormkeeper.up&buff.surge_of_power.up
@@ -101,7 +104,7 @@ actions.single_target+=/lava_burst,if=buff.windspeakers_lava_resurgence.up
 # Lava Surge is neat. Utilize it.
 actions.single_target+=/lava_burst,if=cooldown_react&buff.lava_surge.up
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Additionally Elemental Blast is stronger than EoGS. In this case don't use Earthquake on single target.
-actions.single_target+=/earthquake,if=buff.echoes_of_great_sundering.up&(!talent.elemental_blast.enabled&active_enemies<2|active_enemies>1)
+actions.single_target+=/earthquake,if=(legendary.echoes_of_great_sundering.enabled|talent.echoes_of_great_sundering.rank>1)&buff.echoes_of_great_sundering.up&(!talent.elemental_blast.enabled&active_enemies<2|active_enemies>1)
 # Use Earthquake against two enemies unless you have to alternate because of Echoes of Great Sundering.
 actions.single_target+=/earthquake,if=active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1)&!talent.windspeakers_lava_resurgence.enabled&!(talent.echoes_of_great_sundering.enabled|legendary.echoes_of_great_sundering.enabled)
 actions.single_target+=/elemental_blast

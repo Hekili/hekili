@@ -255,7 +255,6 @@ spec:RegisterStateTable( "stealthed", setmetatable( {}, {
 
 spec:RegisterStateExpr( "master_assassin_remains", function ()
     if not ( talent.master_assassin.enabled or legendary.mark_of_the_master_assassin.enabled ) then return 0 end
-
     if stealthed.mantle then return cooldown.global_cooldown.remains + ( legendary.mark_of_the_master_assassin.enabled and 4 or 3 )
     elseif buff.master_assassin_any.up then return buff.master_assassin_any.remains end
     return 0
@@ -280,6 +279,10 @@ local calculate_multiplier = setfenv( function( spellID )
         if talent.subterfuge.enabled and spellID == 703 then
             mult = mult * 1.8
         end
+    end
+
+    if FindPlayerAuraByID( 392401 ) and spellID == 703 then
+        mult = mult * 1.5
     end
 
     return mult
@@ -522,6 +525,8 @@ spec:RegisterStateExpr( "persistent_multiplier", function ()
         end
     end
 
+    if buff.improved_garrote.up and this_action == "garrote" then mult = mult * 1.5 end
+
     return mult
 end )
 
@@ -688,12 +693,10 @@ spec:RegisterHook( "reset_precast", function ()
         state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
     end
 
-    class.abilities.apply_poison = class.abilities.apply_poison_actual
-    if buff.lethal_poison.down or level < 33 then
-        class.abilities.apply_poison = state.spec.assassination and level > 12 and class.abilities.deadly_poison or class.abilities.instant_poison
-    else
-        if level > 32 and buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
-    end
+    class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
+
+    if buff.vanish.up then applyBuff( "stealth" ) end
+    if buff.stealth.up and talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
 
     if buff.indiscriminate_carnage.up then
         if action.garrote.lastCast < action.indiscriminate_carnage.lastCast then applyBuff( "indiscriminate_carnage_garrote" ) end
@@ -731,14 +734,7 @@ spec:RegisterHook( "runHandler", function( ability )
         end
     end
 
-    if ability == "apply_poison" then
-        class.abilities.apply_poison = class.abilities.apply_poison_actual
-        if buff.lethal_poison.down then
-            class.abilities.apply_poison = state.spec.assassination and class.abilities.deadly_poison or class.abilities.instant_poison
-        else
-            if buff.nonlethal_poison.down then class.abilities.apply_poison = class.abilities.crippling_poison end
-        end
-    end
+    class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 end )
 
 
@@ -778,10 +774,27 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 13877
     },
+    -- Talent: Disoriented.
+    -- https://wowhead.com/beta/spell=2094
+    blind = {
+        id = 2094,
+        duration = 60,
+        mechanic = "disorient",
+        type = "Ranged",
+        max_stack = 1
+    },
     blindside = {
         id = 121153,
         duration = 10,
         max_stack = 1,
+    },
+    -- Stunned.
+    -- https://wowhead.com/beta/spell=1833
+    cheap_shot = {
+        id = 1833,
+        duration = 4,
+        mechanic = "stun",
+        max_stack = 1
     },
     -- You have recently escaped certain death.  You will not be so lucky a second time.
     -- https://wowhead.com/beta/spell=45181
@@ -795,6 +808,20 @@ spec:RegisterAuras( {
     cheating_death = {
         id = 45182,
         duration = 3,
+        max_stack = 1
+    },
+    -- Talent: Resisting all harmful spells.
+    -- https://wowhead.com/beta/spell=31224
+    cloak_of_shadows = {
+        id = 31224,
+        duration = 5,
+        max_stack = 1
+    },
+    -- Talent: Critical strike chance of your next damaging ability increased by $s1%.
+    -- https://wowhead.com/beta/spell=382245
+    cold_blood = {
+        id = 382245,
+        duration = 3600,
         max_stack = 1
     },
     crimson_tempest = {
@@ -824,6 +851,37 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 212198, 185311 }
     },
+    -- Each strike has a chance of poisoning the enemy, slowing movement speed by $3409s1% for $3409d.
+    -- https://wowhead.com/beta/spell=3408
+    crippling_poison = {
+        id = 3408,
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Movement slowed by $s1%.
+    -- https://wowhead.com/beta/spell=3409
+    crippling_poison_dot = {
+        id = 3409,
+        duration = 12,
+        mechanic = "snare",
+        type = "Magic",
+        max_stack = 1
+    },
+    -- Movement speed slowed by $s1%.
+    -- https://wowhead.com/beta/spell=115196
+    crippling_poison_snare = {
+        id = 115196,
+        duration = 5,
+        mechanic = "snare",
+        max_stack = 1
+    },
+    -- Each strike has a chance of causing the target to suffer Nature damage every $2818t1 sec for $2818d. Subsequent poison applications deal instant Nature damage.
+    -- https://wowhead.com/beta/spell=2823
+    deadly_poison = {
+        id = 2823,
+        duration = 3600,
+        max_stack = 1
+    },
     -- Talent: Suffering $w1 Nature damage every $t1 seconds.
     -- https://wowhead.com/beta/spell=394324
     deadly_poison_dot = {
@@ -831,6 +889,7 @@ spec:RegisterAuras( {
         duration = function () return 12 * haste end,
         max_stack = 1,
         exsanguinated = false,
+        copy = 394324,
         meta = {
             exsanguinated_rate = function( t ) return t.up and tracked_bleeds.deadly_poison_dot.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.deadly_poison_dot.last_tick[ target.unit ] or t.applied ) or 0 end,
@@ -921,6 +980,12 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    flagellation = {
+        id = 384631,
+        duration = 12,
+        max_stack = 30,
+        copy = { "flagellation_buff", 323654 }
+    },
     garrote = {
         id = 703,
         duration = 18,
@@ -969,6 +1034,14 @@ spec:RegisterAuras( {
         mechanic = "silence",
         max_stack = 1
     },
+    -- Talent: Incapacitated.
+    -- https://wowhead.com/beta/spell=1776
+    gouge = {
+        id = 1776,
+        duration = 4,
+        mechanic = "incapacitate",
+        max_stack = 1
+    },
     improved_garrote = {
         id = 392401,
         duration = 3600,
@@ -987,6 +1060,13 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     indiscriminate_carnage_rupture = {
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Each strike has a chance of poisoning the enemy, inflicting $315585s1 Nature damage.
+    -- https://wowhead.com/beta/spell=315584
+    instant_poison = {
+        id = 315584,
         duration = 3600,
         max_stack = 1
     },
@@ -1015,6 +1095,14 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    -- Stunned.
+    -- https://wowhead.com/beta/spell=408
+    kidney_shot = {
+        id = 408,
+        duration = function() return ( 1 + effective_combo_points ) end,
+        mechanic = "stun",
+        max_stack = 1
+    },
     -- Talent: Suffering $w4 Nature damage every $t4 sec.
     -- https://wowhead.com/beta/spell=385627
     kingsbane_dot = {
@@ -1034,6 +1122,13 @@ spec:RegisterAuras( {
     maneuverability = {
         id = 197003,
         duration = 4,
+        max_stack = 1
+    },
+    -- Talent: Marked for Death will reset upon death.
+    -- https://wowhead.com/beta/spell=137619
+    marked_for_death = {
+        id = 137619,
+        duration = 60,
         max_stack = 1
     },
     -- Talent: Critical strike chance increased by $w1%.
@@ -1075,11 +1170,11 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1,
     },
-    -- Gained a random combat enhancement.
-    -- https://wowhead.com/beta/spell=315508
-    roll_the_bones = {
-        id = 315508,
-        duration = 30,
+    -- Talent: Damage taken increased by $s1%.
+    -- https://wowhead.com/beta/spell=255909
+    prey_on_the_weak = {
+        id = 255909,
+        duration = 6,
         max_stack = 1
     },
     -- Bleeding for $w1 damage every $t1 sec.
@@ -1124,6 +1219,14 @@ spec:RegisterAuras( {
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.rupture_deathmark.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
         },
     },
+    -- Talent: Incapacitated.$?$w2!=0[  Damage taken increased by $w2%.][]
+    -- https://wowhead.com/beta/spell=6770
+    sap = {
+        id = 6770,
+        duration = 60,
+        mechanic = "sap",
+        max_stack = 1
+    },
     -- Talent: Your Ruptures are increasing your Agility by $w1%.
     -- https://wowhead.com/beta/spell=394080
     scent_of_blood = {
@@ -1167,6 +1270,28 @@ spec:RegisterAuras( {
         },
         copy = { "serrated_bone_spike_dot", 324073 }
     },
+    -- Talent: Combo point generating abilities generate $s2 additional combo point and deal $s1% additional damage as Shadow.
+    -- https://wowhead.com/beta/spell=121471
+    shadow_blades = {
+        id = 121471,
+        duration = 20,
+        max_stack = 1
+    },
+    -- Talent: Access to Stealth abilities.$?$w3!=0[  Movement speed increased by $w3%.][]$?$w4!=0[  Damage increased by $w4%.][]
+    -- https://wowhead.com/beta/spell=185422
+    shadow_dance = {
+        id = 185422,
+        duration = function () return talent.subterfuge.enabled and 9 or 8 end,
+        max_stack = 1,
+        copy = 185313
+    },
+    -- Talent: Movement speed increased by $s2%.
+    -- https://wowhead.com/beta/spell=36554
+    shadowstep = {
+        id = 36554,
+        duration = 2,
+        max_stack = 1
+    },
     -- Energy cost of abilities reduced by $w1%.
     -- https://wowhead.com/beta/spell=112942
     shadow_focus = {
@@ -1195,10 +1320,32 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    -- Concealing allies within $115834A1 yards in shadows.
+    -- https://wowhead.com/beta/spell=114018
+    shroud_of_concealment = {
+        id = 114018,
+        duration = 15,
+        tick_time = 0.5,
+        max_stack = 1
+    },
+    -- Concealed in shadows.
+    -- https://wowhead.com/beta/spell=115834
+    shroud_of_concealment_buff = {
+        id = 115834,
+        duration = 2,
+        max_stack = 1
+    },
+    -- Attack speed increased by $w1%.
+    -- https://wowhead.com/beta/spell=315496
     slice_and_dice = {
         id = 315496,
         duration = function () return 6 * ( 1 + effective_combo_points ) end,
-        max_stack = 1
+        max_stack = 1,
+    },
+    smoke_bomb = {
+        id = 212182,
+        duration = 5,
+        max_stack = 1,
     },
     sprint = {
         id = 2983,
@@ -1212,6 +1359,14 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
         copy = 1784
+    },
+    -- Your next combo point generator will critically strike.
+    -- https://wowhead.com/beta/spell=227151
+    symbols_of_death = {
+        id = 227151,
+        duration = 10,
+        max_stack = 1,
+        copy = 227151
     },
     -- Talent: Mastery increased by ${$w2*$mas}.1%.
     -- https://wowhead.com/beta/spell=381623
@@ -1249,22 +1404,37 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1
     },
+    -- Each strike has a chance of inflicting additional Nature damage to the victim and reducing all healing received for $8680d.
+    -- https://wowhead.com/beta/spell=8679
+    wound_poison = {
+        id = 8679,
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Healing effects reduced by $w2%.
+    -- https://wowhead.com/beta/spell=8680
+    wound_poison_debuff = {
+        id = 8680,
+        duration = 12,
+        max_stack = 3,
+        copy = { 394327, "wound_poison_dot" }
+    },
 
     poisoned = {
-        alias = { "amplifying_poison_dot", "amplifying_poison_dot_deathmark", "deadly_poison_dot", "deadly_poison_dot_deathmark", "kingsbane_dot", "sepsis" },
+        alias = { "amplifying_poison_dot", "amplifying_poison_dot_deathmark", "deadly_poison_dot", "deadly_poison_dot_deathmark", "kingsbane_dot", "sepsis", "wound_poison_dot" },
         aliasMode = "longest",
         aliasType = "debuff",
         duration = 3600,
     },
     lethal_poison = {
-        alias = { "deadly_poison", "wound_poison", "instant_poison", "amplifying_poison" },
-        aliasMode = "first",
+        alias = { "amplifying_poison", "deadly_poison", "wound_poison", "instant_poison" },
+        aliasMode = "shortest",
         aliasType = "buff",
         duration = 3600
     },
     nonlethal_poison = {
-        alias = { "crippling_poison", "numbing_poison" },
-        aliasMode = "first",
+        alias = { "atrophic_poison", "crippling_poison", "numbing_poison" },
+        aliasMode = "shortest",
         aliasType = "buff",
         duration = 3600
     },
@@ -1347,8 +1517,140 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            removeBuff( "lethal_poison" )
             applyBuff( "amplifying_poison" )
+        end,
+    },
+
+    -- Talent: Coats your weapons with a Non-Lethal Poison that lasts for $d. Each strike has a $h% chance of poisoning the enemy, reducing their damage by ${$392388s1*-1}.1% for $392388d.
+    atrophic_poison = {
+        id = 381637,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "off",
+
+        talent = "atrophic_poison",
+        startsCombat = false,
+        essential = true,
+
+        readyTime = function() return buff.atrophic_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "atrophic_poison" )
+        end,
+    },
+
+    -- Talent: Blinds the target, causing it to wander disoriented for $d. Damage will interrupt the effect. Limit 1.
+    blind = {
+        id = 2094,
+        cast = 0,
+        cooldown = function () return talent.blinding_powder.enabled and 90 or 120 end,
+        gcd = "spell",
+
+        talent = "blind",
+        startsCombat = true,
+
+        toggle = "interrupts",
+
+        handler = function ()
+            applyDebuff( "target", "blind" )
+        end,
+    },
+
+    -- Stuns the target for $d.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
+    cheap_shot = {
+        id = 1833,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function ()
+            if talent.dirty_tricks.enabled then return 0 end
+            return ( talent.tight_spender.enabled and 36 or 40 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spendType = "energy",
+
+        startsCombat = true,
+
+        cycle = function ()
+            if talent.prey_on_the_weak.enabled then return "prey_on_the_weak" end
+        end,
+
+        usable = function ()
+            if target.is_boss then return false, "cheap_shot assumed unusable in boss fights" end
+            return stealthed.all or buff.subterfuge.up, "not stealthed"
+        end,
+
+        nodebuff = "cheap_shot",
+
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
+
+        handler = function ()
+            applyDebuff( "target", "cheap_shot", 4 )
+
+            if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
+
+            if talent.prey_on_the_weak.enabled then
+                applyDebuff( "target", "prey_on_the_weak" )
+            end
+
+            if pvptalent.control_is_king.enabled then
+                applyBuff( "slice_and_dice" )
+            end
+
+            gain( action.cheap_shot.cp_gain, "combo_points" )
+        end,
+    },
+
+    -- Talent: Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for $d.
+    cloak_of_shadows = {
+        id = 31224,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        talent = "cloak_of_shadows",
+        startsCombat = false,
+
+        toggle = "interrupts",
+        buff = "dispellable_magic",
+
+        handler = function ()
+            removeBuff( "dispellable_magic" )
+            applyBuff( "cloak_of_shadows" )
+        end,
+    },
+
+    -- Talent: Increases the critical strike chance of your next damaging ability by $s1%.
+    cold_blood = {
+        id = 382245,
+        cast = 0,
+        cooldown = 45,
+        gcd = "off",
+        school = "physical",
+
+        talent = "cold_blood",
+        startsCombat = false,
+
+        handler = function ()
+            applyBuff( "cold_blood" )
+        end,
+    },
+
+    -- Drink an alchemical concoction that heals you for $?a354425&a193546[${$O1}.1][$o1]% of your maximum health over $d.
+    crimson_vial = {
+        id = 185311,
+        cast = 0,
+        cooldown = 30,
+        gcd = "totem",
+        school = "nature",
+
+        spend = function () return 20 - ( 10 * talent.nimble_fingers.rank ) + conduit.nimble_fingers.mod end,
+        spendType = "energy",
+
+        startsCombat = false,
+        texture = 1373904,
+
+        handler = function ()
+            applyBuff( "crimson_vial" )
         end,
     },
 
@@ -1383,6 +1685,44 @@ spec:RegisterAbilities( {
         end,
     },
 
+
+    crippling_poison = {
+        id = 3408,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        essential = true,
+
+        texture = 132274,
+
+        readyTime = function () return buff.crippling_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "crippling_poison" )
+        end,
+    },
+
+
+    deadly_poison = {
+        id = 2823,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        essential = true,
+        texture = 132290,
+
+
+        readyTime = function () return buff.deadly_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "deadly_poison" )
+        end,
+    },
+
     -- Talent: Carve a deathmark into an enemy, dealing 3,209 Bleed damage over 16 sec. While marked your Garrote, Rupture, and Lethal poisons applied to the target are duplicated, dealing 100% of normal damage.
     deathmark = {
         id = 360194,
@@ -1399,6 +1739,55 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "deathmark" )
         end,
+    },
+
+    -- Throws a distraction, attracting the attention of all nearby monsters for $s1 seconds. Usable while stealthed.
+    distract = {
+        id = 1725,
+        cast = 0,
+        cooldown = 30,
+        gcd = "totem",
+        school = "physical",
+
+        spend = function () return 30 * ( talent.rushed_setup.enabled and 0.8 or 1 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spendType = "energy",
+
+        startsCombat = false,
+        texture = 132289,
+
+        handler = function ()
+        end,
+    },
+
+
+    -- Talent: Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.    Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.    |cFFFFFFFFAwards $s3 combo $lpoint:points;.|r
+    echoing_reprimand = {
+        id = function() return talent.echoing_reprimand.enabled and 385616 or 323547 end,
+        cast = 0,
+        cooldown = 45,
+        gcd = "totem",
+        school = "arcane",
+
+        spend = 10,
+        spendType = "energy",
+
+        startsCombat = true,
+        toggle = "cooldowns",
+
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+
+        handler = function ()
+            -- Can't predict the Animacharge, unless you have the talent/legendary.
+            if legendary.resounding_clarity.enabled or talent.resounding_clarity.enabled then
+                applyBuff( "echoing_reprimand_2", nil, 2 )
+                applyBuff( "echoing_reprimand_3", nil, 3 )
+                applyBuff( "echoing_reprimand_4", nil, 4 )
+                applyBuff( "echoing_reprimand_5", nil, 5 )
+            end
+            gain( action.echoing_reprimand.cp_gain, "combo_points" )
+        end,
+
+        copy = { 385616, 323547 },
     },
 
     -- Finishing move that drives your poisoned blades in deep, dealing instant Nature damage and increasing your poison application chance by 30%. Damage and duration increased per combo point. 1 point : 288 damage, 2 sec 2 points: 575 damage, 3 sec 3 points: 863 damage, 4 sec 4 points: 1,150 damage, 5 sec 5 points: 1,438 damage, 6 sec
@@ -1435,6 +1824,24 @@ spec:RegisterAbilities( {
             spend( combo_points.current, "combo_points" )
 
             if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+        end,
+    },
+
+-- Talent: Increases your dodge chance by ${$s1/2}% for $d.$?a344363[ Dodging an attack while Evasion is active will trigger Mastery: Main Gauche.][]
+    evasion = {
+        id = 5277,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+        school = "physical",
+
+        talent = "evasion",
+        startsCombat = false,
+
+        toggle = "defensives",
+
+        handler = function ()
+            applyBuff( "evasion" )
         end,
     },
 
@@ -1498,6 +1905,26 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Talent: Performs an evasive maneuver, reducing damage taken from area-of-effect attacks by $s1% $?s79008[and all other damage taken by $s2% ][]for $d.
+    feint = {
+        id = 1966,
+        cast = 0,
+        cooldown = 15,
+        gcd = "totem",
+        school = "physical",
+
+        talent = "feint",
+        spend = function () return talent.nimble_fingers.enabled and 25 or 35 + conduit.nimble_fingers.mod end,
+        spendType = "energy",
+
+        startsCombat = false,
+        texture = 132294,
+
+        handler = function ()
+            applyBuff( "feint" )
+        end,
+    },
+
     -- Garrote the enemy, causing 2,407 Bleed damage over 18 sec. Awards 1 combo point.
     garrote = {
         id = 703,
@@ -1517,7 +1944,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "garrote" )
-            debuff.garrote.pmultiplier = persistent_multiplier * ( buff.improved_garrote.up and 1.5 or 1 )
+            debuff.garrote.pmultiplier = persistent_multiplier
             debuff.garrote.exsanguinated_rate = 1
             debuff.garrote.exsanguinated = false
 
@@ -1531,7 +1958,10 @@ spec:RegisterAbilities( {
             if buff.indiscriminate_carnage_garrote.up then
                 active_dot.garrote = min( true_active_enemies, active_dot.garrote + 8 )
                 removeBuff( "indiscriminate_carnage_garrote" )
-                if buff.indiscriminate_carnage_rupture.down then removeBuff( "indiscriminate_carnage" ) end
+                if buff.indiscriminate_carnage_rupture.down then
+                    removeBuff( "indiscriminate_carnage" )
+                    setCooldown( "indiscriminate_carnage", action.indiscriminate_carnage.cooldown )
+                end
             end
 
             gain( action.garrote.cp_gain, "combo_points" )
@@ -1545,6 +1975,28 @@ spec:RegisterAbilities( {
                     debuff.garrote.ss_buffed = true
                 end
             end
+        end,
+    },
+
+    -- Talent: Gouges the eyes of an enemy target, incapacitating for $d. Damage will interrupt the effect.    Must be in front of your target.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
+    gouge = {
+        id = 1776,
+        cast = 0,
+        cooldown = 20,
+        gcd = "totem",
+        school = "physical",
+
+        spend = function () return talent.dirty_tricks.enabled and 0 or 25 end,
+        spendType = "energy",
+
+        talent = "gouge",
+        startsCombat = true,
+
+        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+
+        handler = function ()
+            applyDebuff( "target", "gouge" )
+            gain( action.gouge.cp_gain, "combo_points" )
         end,
     },
 
@@ -1564,6 +2016,24 @@ spec:RegisterAbilities( {
             applyBuff( "indiscriminate_carnage" )
             applyBuff( "indiscriminate_carnage_garrote" )
             applyBuff( "indiscriminate_carnage_rupture" )
+        end,
+    },
+
+    instant_poison = {
+        id = 315584,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        essential = true,
+
+        texture = 132273,
+
+        readyTime = function () return buff.instant_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "instant_poison" )
         end,
     },
 
@@ -1594,18 +2064,22 @@ spec:RegisterAbilities( {
         cooldown = 20,
         gcd = "spell",
 
-        spend = function () return 25 * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spend = function () return ( talent.rushed_setup.enabled and 20 or 25 ) * ( 1 - 0.1 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
         spendType = "energy",
 
         startsCombat = true,
         aura = "internal_bleeding",
         cycle = "internal_bleeding",
 
-        usable = function () return combo_points.current > 0 end,
+        usable = function ()
+            if target.is_boss then return false, "kidney_shot assumed unusable in boss fights" end
+            return combo_points.current > 0, "requires combo points"
+        end,
+
         handler = function ()
-            if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 20, 1 )
-            end
+            applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
+            if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end
+            if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
             if talent.internal_bleeding.enabled then
                 applyDebuff( "target", "internal_bleeding" )
                 debuff.internal_bleeding.pmultiplier = persistent_multiplier
@@ -1613,10 +2087,11 @@ spec:RegisterAbilities( {
                 debuff.internal_bleeding.exsanguinated_rate = 1
             end
 
-            applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
-            spend( combo_points.current, "combo_points" )
+            if pvptalent.control_is_king.enabled then
+                gain( 10 * combo_points.current, "energy" )
+            end
 
-            if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1707,6 +2182,22 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Coats your weapons with a Non-Lethal Poison that lasts for 1 hour.  Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 15% for 10 sec.
+    numbing_poison = {
+        id = 5761,
+        cast = 1,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+
+        readyTime = function () return buff.numbing_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "numbing_poison" )
+        end,
+    },
+
     -- Finishing move that tears open the target, dealing Bleed damage over time. Lasts longer per combo point. 1 point : 1,250 over 8 sec 2 points: 1,876 over 12 sec 3 points: 2,501 over 16 sec 4 points: 3,126 over 20 sec 5 points: 3,752 over 24 sec
     rupture = {
         id = 1943,
@@ -1739,7 +2230,10 @@ spec:RegisterAbilities( {
             if buff.indiscriminate_carnage_rupture.up then
                 active_dot.rupture = min( true_active_enemies, active_dot.rupture + 8 )
                 removeBuff( "indiscriminate_carnage_rupture" )
-                if buff.indiscriminate_carnage_garrote.down then removeBuff( "indiscriminate_carnage" ) end
+                if buff.indiscriminate_carnage_garrote.down then
+                    removeBuff( "indiscriminate_carnage" )
+                    setCooldown( "indiscriminate_carnage", action.indiscriminate_carnage.cooldown )
+                end
             end
 
             if talent.scent_of_blood.enabled or azerite.scent_of_blood.enabled then
@@ -1747,6 +2241,25 @@ spec:RegisterAbilities( {
             end
 
             spend( combo_points.current, "combo_points" )
+        end,
+    },
+
+
+    sap = {
+        id = 6770,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+        school = "physical",
+
+        spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spendType = "energy",
+
+        talent = "sap",
+        startsCombat = false,
+
+        handler = function ()
+            applyDebuff( "target", "sap" )
         end,
     },
 
@@ -1804,6 +2317,33 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 385424, 328547 }
+    },
+
+    -- Talent: Allows use of all Stealth abilities and grants all the combat benefits of Stealth for $d$?a245687[, and increases damage by $s2%][]. Effect not broken from taking damage or attacking.$?s137035[    If you already know $@spellname185313, instead gain $394930s1 additional $Lcharge:charges; of $@spellname185313.][]
+    shadow_dance = {
+        id = 185313,
+        cast = 0,
+        charges = function () return talent.enveloping_shadows.enabled and 2 or nil end,
+        cooldown = 60,
+        recharge = function () return talent.enveloping_shadows.enabled and 60 or nil end,
+        gcd = "off",
+
+        talent = "shadow_dance",
+        startsCombat = false,
+
+        toggle = "cooldowns",
+        nobuff = "shadow_dance",
+
+        usable = function () return not stealthed.all, "not used in stealth" end,
+        handler = function ()
+            applyBuff( "shadow_dance" )
+            if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
+            if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows" ) end
+            if azerite.the_first_dance.enabled then
+                gain( 2, "combo_points" )
+                applyBuff( "the_first_dance" )
+            end
+        end,
     },
 
     -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
@@ -1943,6 +2483,8 @@ spec:RegisterAbilities( {
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
         end,
+
+        copy = 115191
     },
 
     -- Talent: Restore 100 Energy. Mastery increased by 13.6% for 6 sec.
@@ -2007,7 +2549,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "vanish" )
             applyBuff( "stealth" )
-
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
 
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
@@ -2021,6 +2562,25 @@ spec:RegisterAbilities( {
         end,
     },
 
+
+    wound_poison = {
+        id = 8679,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        essential = true,
+
+        texture = 134197,
+
+        readyTime = function () return buff.wound_poison.remains - 120 end,
+
+        handler = function ()
+            applyBuff( "wound_poison" )
+        end,
+    },
+
     -- TODO: Dragontempered Blades allows for 2 Lethal Poisons and 2 Non-Lethal Poisons.
     apply_poison = {
         name = _G.MINIMAP_TRACKING_VENDOR_POISON,
@@ -2031,36 +2591,40 @@ spec:RegisterAbilities( {
         startsCombat = false,
         essential = true,
 
-        texture = function ()
-            if buff.lethal_poison.down then
-                if talent.amplifying_poison.enabled then return GetSpellTexture( action.amplifying_poison.id ) end
-                if state.spec.assassination then return GetSpellTexture( action.deadly_poison.id ) end
-                return GetSpellTexture( action.instant_poison.id )
+        next_poison = function()
+            if buff.lethal_poison.down or talent.dragontempered_blades.enabled and buff.lethal_poison.stack < 2 then
+                if talent.amplifying_poison.enabled and buff.amplifying_poison.down then return "amplifying_poison"
+                elseif action.deadly_poison.known and buff.deadly_poison.down then return "deadly_poison"
+                elseif action.instant_poison.known and buff.instant_poison.down then return "instant_poison"
+                elseif action.wound_poison.known and buff.wound_poison.down then return "wound_poison" end
+
+            elseif buff.nonlethal_poison.down or talent.dragontempered_blades.enabled and buff.nonlethal_poison.stack < 2 then
+                if talent.atrophic_poison.enabled and buff.atrophic_poison.down then return "atrophic_poison"
+                elseif action.crippling_poison.known and buff.crippling_poison.down then return "crippling_poison"
+                elseif action.numbing_poison.known and buff.numbing_poison.down then return "numbing_poison" end
+
             end
-            return GetSpellTexture( action.crippling_poison.id )
+
+            return "apply_poison_actual"
+        end,
+
+        texture = function ()
+            local np = action.apply_poison.next_poison
+            if np == "apply_poison_actual" then return 136242 end
+            return action[ np ].texture
         end,
 
         bind = function ()
-            if buff.lethal_poison.down then
-                if talent.amplifying_poison.enabled then return "amplifying_poison" end
-                if state.spec.assassination then return "deadly_poison" end
-                return "instant_poison"
-            end
-            return "crippling_poison"
+            return action.apply_poison.next_poison
         end,
 
-        usable = function ()
-            return buff.lethal_poison.down or buff.nonlethal_poison.down, "requires missing poison"
+        readyTime = function ()
+            if action.apply_poison.next_poison ~= "apply_poison_actual" then return 0 end
+            return 0.01 + min( buff.lethal_poison.remains, buff.nonlethal_poison.remains )
         end,
 
         handler = function ()
-            if buff.lethal_poison.down then
-                if talent.amplifying_poison.enabled then applyBuff( "amplifying_poison" )
-                elseif state.spec.assassination then applyBuff( "deadly_poison" )
-                else applyBuff( "instant_poison" ) end
-            else
-                applyBuff( "crippling_poison" )
-            end
+            applyBuff( action.apply_poison.next_poison )
         end,
 
         copy = "apply_poison_actual"

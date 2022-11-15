@@ -84,19 +84,23 @@ state.auras = auras
 state.buff = {}
 state.consumable = {}
 state.cooldown = {}
-state.corruptions = {} -- TODO: REMOVE
+
+state.empowerment = {
+    id = 0,
+    spell = "none",
+    start = 0,
+    finish = 0,
+    hold = 0,
+    stages = {}
+}
+state.max_empower = 3
+
 state.health = {
     max = 1,
     initialized = false
 }
 state.legendary = {}
 state.runeforge = state.legendary -- Different APLs use runeforge.X.equipped vs. legendary.X.enabled.
---[[ state.health = {
-    resource = "health",
-    actual = 10000,
-    max = 10000,
-    regen = 0
-} ]]
 state.debuff = {}
 state.dot = {}
 state.equipped = {}
@@ -1196,7 +1200,6 @@ function state.stopChanneling( reset, action )
     removeBuff( "casting" )
 end
 -- See mt_state for 'isChanneling'.
-
 
 
 -- Spell Targets, so I don't have to convert it in APLs any more.
@@ -2886,6 +2889,10 @@ do
 
                     end
 
+                elseif state.empowerment.active and t.key == state.empowerment.spell then
+                    start = 0
+                    duration = 0
+
                 end
 
                 t.duration = max( duration or 0, ability.cooldown or 0, ability.recharge or 0 )
@@ -3736,7 +3743,7 @@ do
                 return 0
 
             elseif k == "last_expire" then
-                if state.combat > 0 then return max( 0, t.last_expiry - state.combat ) end
+                if state.combat > 0 and t.last_expiry < state.query_time then return max( 0, t.last_expiry - state.combat ) end
                 return 0
 
             else
@@ -3966,9 +3973,6 @@ do
         end
     }
     ns.metatables.mt_generic_traits = mt_generic_traits
-
-    setmetatable( state.corruptions, mt_generic_traits )
-    state.corruptions.no_trait = { rank = 0 }
 
     setmetatable( state.legendary, mt_generic_traits )
     state.legendary.no_trait = { rank = 0 }
@@ -4256,8 +4260,6 @@ do
             local debug = Hekili.ActiveDebug
 
             if class.variables[ var ] then
-                -- We have a hardcoded shortcut.
-                if debug then Hekili:Debug( "Using class var '%s'.", var ) end
                 return class.variables[ var ]()
             end
 
@@ -4465,7 +4467,7 @@ ns.metatables.mt_set_bonuses = mt_set_bonuses
 local mt_equipped = {
     __index = function(t, k)
         -- if not class.artifacts[ k ] and ( state.bg or state.arena ) then return false end
-        return state.set_bonus[k] > 0 or state.legendary[k].rank > 0 or state.corruptions[k].rank > 0
+        return state.set_bonus[k] > 0 or state.legendary[k].rank > 0
     end
 }
 ns.metatables.mt_equipped = mt_equipped
@@ -6123,7 +6125,10 @@ do
             if dispName == 'Primary' then
                 if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
                 elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
-            elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
+                -- if state.empowerment.active then state.filter = "empowerment" end
+            elseif dispName == 'AOE' then
+                state.min_targets = spec and spec.aoe or 3
+                -- if state.empowerment.active then state.filter = "empowerment" end
             elseif dispName == 'Cooldowns' then state.filter = "cooldowns"
             elseif dispName == 'Interrupts' then state.filter = "interrupts"
             elseif dispName == 'Defensives' then state.filter = "defensives"
@@ -6277,99 +6282,103 @@ do
             end
         end
 
+        state.empowerment.active = state.empowerment.hold > state.now
+
         Hekili:Yield( "Reset Pre-Cast Hook" )
-
         ns.callHook( "reset_precast" )
-
         Hekili:Yield( "Reset Pre-Casting" )
 
-        -- TODO: All of this cast-queuing seems like it should be simpler, but that's for another time.
-        local cast_time, casting, ability = 0, nil, nil
-        state.buff.casting.generate( state.buff.casting, "buff" )
+        if state.empowerment.active then
+            removeBuff( "casting" )
+        else
+            -- TODO: All of this cast-queuing seems like it should be simpler, but that's for another time.
+            local cast_time, casting, ability = 0, nil, nil
+            state.buff.casting.generate( state.buff.casting, "buff" )
 
-        if state.buff.casting.up then
-            cast_time = state.buff.casting.remains
+            if state.buff.casting.up then
+                cast_time = state.buff.casting.remains
 
-            local castID = state.buff.casting.v1
-            ability = class.abilities[ castID ]
+                local castID = state.buff.casting.v1
+                ability = class.abilities[ castID ]
 
-            casting = ability and ability.key or formatKey( state.buff.casting.name )
+                casting = ability and ability.key or formatKey( state.buff.casting.name )
 
-            if castID == class.abilities.cyclotronic_blast.id then
-                -- Set up Pocket-Sized Computation Device.
-                if state.buff.casting.v3 == 1 then
-                    -- We are in the channeled part of the cast.
-                    setCooldown( "pocketsized_computation_device", state.buff.casting.applied + 120 - state.now )
-                    setCooldown( "global_cooldown", cast_time )
-                else
-                    -- This is the casting portion.
-                    casting = class.abilities.pocketsized_computation_device.key
-                    state.buff.casting.v1 = class.abilities.pocketsized_computation_device.id
+                if castID == class.abilities.cyclotronic_blast.id then
+                    -- Set up Pocket-Sized Computation Device.
+                    if state.buff.casting.v3 == 1 then
+                        -- We are in the channeled part of the cast.
+                        setCooldown( "pocketsized_computation_device", state.buff.casting.applied + 120 - state.now )
+                        setCooldown( "global_cooldown", cast_time )
+                    else
+                        -- This is the casting portion.
+                        casting = class.abilities.pocketsized_computation_device.key
+                        state.buff.casting.v1 = class.abilities.pocketsized_computation_device.id
+                    end
                 end
             end
-        end
 
-        -- Okay, two paths here.
-        -- 1.  We can cast while casting (i.e., Fire Blast for Fire Mage), so we want to hand off the current cast to the event system, and then let the recommendation engine sort it out.
-        -- 2.  We cannot cast anything while casting (typical), so we want to advance the clock, complete the cast, and then generate recommendations.
+            -- Okay, two paths here.
+            -- 1.  We can cast while casting (i.e., Fire Blast for Fire Mage), so we want to hand off the current cast to the event system, and then let the recommendation engine sort it out.
+            -- 2.  We cannot cast anything while casting (typical), so we want to advance the clock, complete the cast, and then generate recommendations.
 
-        if casting and cast_time > 0 then
-            local channeled, destGUID = state.buff.casting.v3 == 1
+            if casting and cast_time > 0 then
+                local channeled, destGUID = state.buff.casting.v3 == 1
 
-            if ability then
-                channeled = channeled or ability.channeled
-                destGUID  = Hekili:GetMacroCastTarget( ability.key, state.buff.casting.applied, "RESET" ) or state.target.unit
-            end
-
-            if not state:IsCasting() and not channeled then
-                state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CAST_FINISH", destGUID )
-
-                -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
-                if ability and ability.isProjectile then
-                    state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
-                    -- state:QueueEvent( action, "projectile", true )
+                if ability then
+                    channeled = channeled or ability.channeled
+                    destGUID  = Hekili:GetMacroCastTarget( ability.key, state.buff.casting.applied, "RESET" ) or state.target.unit
                 end
 
-            elseif not state:IsChanneling() and channeled then
-                state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CHANNEL_FINISH", destGUID )
+                if not state:IsCasting() and not channeled then
+                    state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CAST_FINISH", destGUID )
 
-                if channeled and ability then
-                    local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
+                    -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+                    if ability and ability.isProjectile then
+                        state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
+                        -- state:QueueEvent( action, "projectile", true )
+                    end
 
-                    if tick_time and tick_time > 0 then
-                        local eoc = state.buff.casting.expires - tick_time
+                elseif not state:IsChanneling() and channeled then
+                    state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CHANNEL_FINISH", destGUID )
 
-                        while ( eoc > state.now ) do
-                            state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", destGUID )
-                            eoc = eoc - tick_time
+                    if channeled and ability then
+                        local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
+
+                        if tick_time and tick_time > 0 then
+                            local eoc = state.buff.casting.expires - tick_time
+
+                            while ( eoc > state.now ) do
+                                state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", destGUID )
+                                eoc = eoc - tick_time
+                            end
                         end
+                    end
+
+                    -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+                    if ability and ability.isProjectile then
+                        state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
+                        -- state:QueueEvent( action, "projectile", true )
                     end
                 end
 
-                -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
-                if ability and ability.isProjectile then
-                    state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
-                    -- state:QueueEvent( action, "projectile", true )
+                -- Delay to end of GCD.
+                if dispName == "Primary" or dispName == "AOE" then
+                    local delay = 0
+
+                    if not state.spec.can_dual_cast and state.buff.casting.up and state.buff.casting.v3 ~= 1 then -- v3=1 means it's channeled.
+                        delay = max( delay, state.buff.casting.remains )
+                    end
+
+                    delay = ns.callHook( "reset_postcast", delay )
+
+                    if delay > 0 then
+                        if Hekili.ActiveDebug then Hekili:Debug( "Advancing by %.2f per GCD or cast or channel or reset_postcast value.", delay ) end
+                        state.advance( delay )
+                    end
                 end
+
+                state.resetType = "none"
             end
-
-            -- Delay to end of GCD.
-            if dispName == "Primary" or dispName == "AOE" then
-                local delay = 0
-
-                if not state.spec.can_dual_cast and state.buff.casting.up and state.buff.casting.v3 ~= 1 then -- v3=1 means it's channeled.
-                    delay = max( delay, state.buff.casting.remains )
-                end
-
-                delay = ns.callHook( "reset_postcast", delay )
-
-                if delay > 0 then
-                    if Hekili.ActiveDebug then Hekili:Debug( "Advancing by %.2f per GCD or cast or channel or reset_postcast value.", delay ) end
-                    state.advance( delay )
-                end
-            end
-
-            state.resetType = "none"
         end
 
         Hekili:Yield( "Reset Post-Casting" )
@@ -6688,8 +6697,7 @@ function state:IsKnown( sID )
         return false
     end
 
-    -- Mage Tower Disabled.
-    if ability.disabled then return false, "not usable in Mage Tower" end
+    if ability.disabled then return false, "not usable here" end
 
     if sID < 0 then
         if ability.known ~= nil then
@@ -6779,6 +6787,7 @@ do
 
         spell = ability.key
 
+        if self.empowerment.active and spell ~= self.empowerment.spell then return true, "empowerment:" .. self.empowerment.spell end
         if self.holds[ spell ] then return true, "on hold" end
 
         local profile = Hekili.DB.profile
@@ -6814,13 +6823,15 @@ do
 
     -- TODO:  Finish this, need to support toggles that knock spells to their own display vs. toggles that disable an ability entirely.
     function state:IsFiltered( spell )
-        if state.filter == "none" then return false end
         spell = spell or self.this_action
 
         local ability = class.abilities[ spell ]
         if not ability then return false end
 
         spell = ability.key
+
+        if state.empowerment.active and state.empowerment.spell ~= spell then return true, "empowerment" end
+        if state.filter == "none" then return false end
 
         local profile = Hekili.DB.profile
         local spec = rawget( profile.specs, state.spec.id )
@@ -6893,6 +6904,10 @@ do
 
         if ability.disabled then
             return false, "ability.disabled returned true"
+        end
+
+        if ability.empowered and self.args.empower_to and self.args.empower_to > self.max_empower then
+            return false, "empowerment level " .. self.args.empower_to .. " not available"
         end
 
         if self.args.only_cwc and ( not self.buff.casting.up or self.buff.casting.v3 ~= 1 or not ability.dual_cast ) then
@@ -7139,6 +7154,10 @@ function state:TimeToReady( action, pool )
     end
 
     wait = ns.callHook( "TimeToReady", wait, action )
+
+    if state.empowerment.active and action == state.empowerment.spell then
+        wait = max( wait, ( state.empowerment.stages[ state.args.empower_to or state.max_empower ] or 0 ) - now )
+    end
 
     state.delay = delay
     return max( wait, self.delayMin )
