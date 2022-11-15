@@ -184,7 +184,7 @@ spec:RegisterAuras( {
 
             local name, _, count, _, duration, expires = func( unit, talent.flagellation.enabled and 384631 or 323654 )
 
-            if name then
+            if name and name ~= "nil" then
                 t.count = count
                 t.expires = expires
                 t.applied = expires - duration
