@@ -1178,6 +1178,7 @@ do
 
     RegisterUnitEvent( "UNIT_SPELLCAST_EMPOWER_START", "player", nil, function( event, unit, cast, spellID )
         local ability = class.abilities[ spellID ]
+        if not ability then return end
 
         wipe( stages )
         local start = GetTime()
