@@ -1241,7 +1241,7 @@ spec:RegisterAbilities( {
     skullsplitter = {
         id = 260643,
         cast = 0,
-        cooldown = 30,
+        cooldown = 21,
         gcd = "spell",
 
         spend = -15,
