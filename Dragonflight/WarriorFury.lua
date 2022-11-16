@@ -1,7 +1,5 @@
 -- WarriorFury.lua
 -- October 2022
--- Updated for PTR Build 46181
--- Last Modified 10/20/2022 18:18 UTC
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -12,21 +10,6 @@ local state = Hekili.State
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 local IsActiveSpell = ns.IsActiveSpell
-
--- Conduits (Patch 10.0) : In all cases, talents override and disable conduits they share effects with.
--- Talents override:
-
--- Piercing Verdict
--- Cacophonous Roar
--- Inspiring Presence
--- Merciless Bonegrinder
--- Ashen Juggernaut
--- Depths of Insanity
-
--- Conduits that need modeled.
--- [X] Indelible Victory
--- [X] Stalwart Guardian
--- [X] Disturb the Peace
 
 local spec = Hekili:NewSpecialization( 72 )
 
