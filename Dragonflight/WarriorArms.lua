@@ -55,14 +55,14 @@ spec:RegisterTalents( {
     avatar                          = { 90365, 107574, 1 }, -- Transform into a colossus for 20 sec, causing you to deal 20% increased damage and removing all roots and snares. Generates 10 Rage.
     berserker_rage                  = { 90372, 18499 , 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec.
     berserker_shout                 = { 90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also remove fear effects from group members within 12 yards.
-    bitter_immunity                 = { 90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you. 
+    bitter_immunity                 = { 90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you.
     blood_and_thunder               = { 90342, 384277, 1 }, -- Thunderclap costs 10 more Rage and deals 10% increased damage. If you have Rend, Thunder Clap affects 5 nearby targets with Rend.
     bounding_stride                 = { 90355, 202163, 1 }, -- Reduces the cooldown of Heroic Leap by 15 sec, and Heroic Leap now also increases your run speed by 70% for 3 sec.
     cacophonous_roar                = { 90383, 382954, 1 }, -- Intimidating Shout can withstand 200% more damage before breaking.
     crackling_thunder               = { 90342, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
-    cruel_strikes                   = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%. 
+    cruel_strikes                   = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%.
     double_time                     = { 90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
-    elysian_might                   = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%. 
+    elysian_might                   = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%.
     fast_footwork                   = { 90371, 382260, 1 }, -- Movement speed increased by 5%.
     furious_blows                   = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
     heroic_leap                     = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 782 Physical damage to all enemies within 8 yards.
@@ -93,7 +93,7 @@ spec:RegisterTalents( {
     uproar                          = { 90357, 391572, 1 }, -- Thunderous Roar's cooldown reduced by 30 sec.
     wild_strikes                    = { 90360, 382946, 2 }, -- Haste increased by 1% and your auto-attack critical strikes increase your auto-attack speed by 10% for 10 sec.
     wrecking_throw                  = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 3,328 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
-    
+
     -- Arms
     anger_management                = { 90289, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Colossus Smash and Bladestorm by 1 sec.
     armored_to_the_teeth            = { 90366, 384124, 2 }, -- Gain Strength equal to 5% of your Armor.
@@ -112,7 +112,7 @@ spec:RegisterTalents( {
     concussive_blows                = { 90333, 383115, 1 }, -- Cooldown of Pummel reduced by 1.0 sec. Successfully interrupting an enemy increases the damage you deal to them by 5% for 10 sec.
     critical_thinking               = { 90444, 389306, 2 }, -- Critical Strike chance increased by 1% and Execute immediately refunds 5% of the Rage spent.
     crushing_force                  = { 90347, 382764, 2 }, -- Slam deals and additional 30% damage and has a 7.50% increased critical strike chance.
-    dance_of_death                  = { 90263, 390713, 1 }, -- If your Bladestorm helps kill an enemy your next Bladestorm lasts 3.0 sec longer. 
+    dance_of_death                  = { 90263, 390713, 1 }, -- If your Bladestorm helps kill an enemy your next Bladestorm lasts 3.0 sec longer.
     defensive_stance                = { 90330, 386208, 1 }, -- A defensive combat state that reduces all damage you take by 20%, and all damage you deal by 10%. Lasts until canceled.
     deft_experience                 = { 90437, 389308, 2 }, -- Mastery increased by 1.1% and Tactician's chance to trigger is increased by an additional 0.5%.
     die_by_the_sword                = { 90276, 118038, 1 }, -- Increases your parry chance by 100% and reduces all damage you take by 30% for 8 sec.
@@ -136,7 +136,7 @@ spec:RegisterTalents( {
     massacre                        = { 90291, 281001, 1 }, -- Execute is now usable on targets below 35% health.
     merciless_bonegrinder           = { 90266, 383317, 1 }, -- When Bladestorm ends, Whirlwind and Cleave deal 50% increased damage for 9 sec.
     mortal_strike                   = { 90270, 12294 , 1 }, -- A vicious strike that deals 6,211 Physical damage and reduces the effectiveness of healing on the target by 50% for 10 sec.
-    overpower                       = { 90271, 7384  , 1 }, -- Overpower the enemy, dealing 3,445 Physical damage. Cannot be blocked, dodged, or parried. Increases the damage of your next Mortal Strike by 25%. Stacking up to 2 times. 
+    overpower                       = { 90271, 7384  , 1 }, -- Overpower the enemy, dealing 3,445 Physical damage. Cannot be blocked, dodged, or parried. Increases the damage of your next Mortal Strike by 25%. Stacking up to 2 times.
     reaping_swings                  = { 90294, 383293, 1 }, -- Cooldown of Cleave reduced by 3 sec.
     rend                            = { 90284, 772   , 1 }, -- Wounds the target, causing 2,137 Physical damage instantly and an additional 4,843 Bleed damage over 15 sec.
     sharpened_blades                = { 90447, 383341, 1 }, -- Your Mortal Strike, Cleave and Execute critical strike damage is increased by 10% and your Execute has a 5% increased critical hit chance.
@@ -150,8 +150,8 @@ spec:RegisterTalents( {
     test_of_might                   = { 90288, 385008, 1 }, -- When Colossus Smash expires, your Strength is increased by 1% for every 10 Rage you spent during Colossus Smash. Lasts 12 sec.
     thunder_clap                    = { 92224, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,538 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
     tide_of_blood                   = { 90280, 386357, 1 }, -- When Skullsplitter damages an enemy it causes your Deep Wounds and Rend to expire instantly.
-    twohanded_weapon_specialization = { 90322, 382896, 1 }, -- Increases your damage while using two-handed weapons by 5%. 
-    unhinged                        = { 90440, 386628, 1 }, -- While Bladestorm is active, you automatically cast a total of 2 Mortal Strikes at random nearby enemies. 
+    twohanded_weapon_specialization = { 90322, 382896, 1 }, -- Increases your damage while using two-handed weapons by 5%.
+    unhinged                        = { 90440, 386628, 1 }, -- While Bladestorm is active, you automatically cast a total of 2 Mortal Strikes at random nearby enemies.
     valor_in_victory                = { 90442, 383338, 2 }, -- Increases versatility by 1% and reduces the cooldown of Die by the Sword by 15.0 sec.
     war_machine                     = { 90328, 262231, 1 }, -- Your auto attacks generate 10% more Rage. Killing an enemy instantly generates 5 Rage, and increases your movement speed by 30% for 8 sec.
     warbreaker                      = { 90287, 262161, 1 }, -- Smash the ground and shatter the armor of all enemies within 8 yds, dealing 7,854 Physical damage and increasing damage you deal to them by 30% for 13 sec.
@@ -160,7 +160,7 @@ spec:RegisterTalents( {
 
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     death_sentence         = 3522, -- (198500) Execute charges you to targets up to 15 yards away. This effect has a 6 sec cooldown.
     demolition             = 5372, -- (329033) Reduces the cooldown of your Shattering Throw or Wrecking Throw by 50% and increases its damage to absorb shields by an additional 250%.
     disarm                 = 3534, -- (236077) Disarm the enemy's weapons and shield for 6 sec. Disarmed creatures deal significantly reduced damage.
@@ -356,7 +356,7 @@ spec:RegisterAuras( {
     },
     recklessness = {
         id = 1719,
-        duration = 4,
+        duration = 8, -- Can max out to 8 seconds via Avatar+CB/WB landing simultaneously
         max_stack = 1
     },
     rend = {
@@ -620,7 +620,13 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "avatar" )
             if talent.blademasters_torment.enabled then applyBuff ( "bladestorm", 4 ) end
-            if talent.warlords_torment.enabled then applyBuff ( "recklessness" ) end
+            if talent.warlords_torment.enabled then
+                if buff.reckless.up then
+                    buff.reckless.expires = buff.reckless.expires + 4
+                else
+                    applyBuff ( "recklessness", 4 )
+                end
+            end
         end,
     },
 
@@ -806,6 +812,13 @@ spec:RegisterAbilities( {
             end
             if talent.test_of_might.enabled then
                 state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
+            end
+            if talent.warlords_torment.enabled then
+                if buff.reckless.up then
+                    buff.reckless.expires = buff.reckless.expires + 4
+                else
+                    applyBuff ( "recklessness", 4 )
+                end
             end
         end,
     },
@@ -1495,6 +1508,13 @@ spec:RegisterAbilities( {
 
             if talent.test_of_might.enabled then
                 state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
+            end
+            if talent.warlords_torment.enabled then
+                if buff.reckless.up then
+                    buff.reckless.expires = buff.reckless.expires + 4
+                else
+                    applyBuff ( "recklessness", 4 )
+                end
             end
         end,
     },
