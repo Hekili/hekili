@@ -1,5 +1,5 @@
 -- WarriorFury.lua
--- October 2022
+-- November 2022
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -573,6 +573,12 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
             if not ability then return end
             if state.talent.improved_whirlwind.enabled and ability.key == "whirlwind" then
                 whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
+            elseif state.talent.titanic_rage.enabled and ( ability.key == "odyns_fury" or ( ability.key == "avatar" and state.talent.titans_torment.enabled ) ) then
+                if state.talent.meat_cleaver.enabled then
+                    whirlwind_stacks = 4
+                else
+                    whirlwind_stacks = 2 -- Titanic Rage gives 2 stacks of WW even if Imp. WW / Meatcleaver are untalented.
+                end
             elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
                 whirlwind_stacks = whirlwind_stacks - 1
             elseif ability.key == "rampage" and last_rampage_target ~= destGUID and state.talent.frenzy.enabled then
@@ -1297,8 +1303,8 @@ spec:RegisterAbilities( {
             active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
             if talent.dancing_blades.enabled then applyBuff( "dancing_blades" ) end
             if talent.titanic_rage.enabled then
-                applyBuff ( "enrage" )
-                applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
+                applyBuff( "enrage" )
+                applyBuff( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
             end
             if talent.titans_torment.enabled then applyBuff( "avatar", 4 ) end
         end,
@@ -1312,7 +1318,7 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        spend = -30,
+        spend = -20,
         spendType = "rage",
 
         talent = "onslaught",
@@ -1350,7 +1356,7 @@ spec:RegisterAbilities( {
     pummel = {
         id = 6552,
         cast = 0,
-        cooldown = function () return 15 - ( talent.concussive_blows.enabled and 1 or 0 ) - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
+        cooldown = function () return 15 - (talent.concussive_blows.enabled and 1 or 0) - (talent.honed_reflexes.enabled and 1 or 0) end,
         gcd = "off",
 
         startsCombat = true,
@@ -1720,7 +1726,7 @@ spec:RegisterAbilities( {
     wrecking_throw = {
         id = 384110,
         cast = 0,
-        cooldown = function () return ( pvptalent.demolition.enabled and 45 * 0.5 or 45 ) end,
+        cooldown = function () return (pvptalent.demolition.enabled and 45 * 0.5 or 45) end,
         gcd = "spell",
 
         talent = "wrecking_throw",
