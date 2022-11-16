@@ -356,7 +356,7 @@ spec:RegisterAuras( {
     },
     recklessness = {
         id = 1719,
-        duration = 8, -- Can max out to 8 seconds via Avatar+CB/WB landing simultaneously
+        duration = 4,
         max_stack = 1
     },
     rend = {
