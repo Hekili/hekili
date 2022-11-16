@@ -113,14 +113,14 @@ spec:RegisterTalents( {
     avatar                    = { 90365, 107574, 1 }, -- Transform into a colossus for 20 sec, causing you to deal 20% increased damage and removing all roots and snares. Generates 10 Rage.
     berserker_rage            = { 90372, 18499 , 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec.
     berserker_shout           = { 90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also remove fear effects from group members within 12 yards.
-    bitter_immunity           = { 90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you. 
+    bitter_immunity           = { 90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you.
     blood_and_thunder         = { 90342, 384277, 1 }, -- Thunderclap costs 10 more Rage and deals 10% increased damage.
     bounding_stride           = { 90355, 202163, 1 }, -- Reduces the cooldown of Heroic Leap by 15 sec, and Heroic Leap now also increases your run speed by 70% for 3 sec.
     cacophonous_roar          = { 90383, 382954, 1 }, -- Intimidating Shout can withstand 200% more damage before breaking.
     crackling_thunder         = { 90342, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
-    cruel_strikes             = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%. 
+    cruel_strikes             = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%.
     double_time               = { 90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
-    elysian_might             = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%. 
+    elysian_might             = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%.
     fast_footwork             = { 90371, 382260, 1 }, -- Movement speed increased by 5%.
     furious_blows             = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
     heroic_leap               = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 762 Physical damage to all enemies within 8 yards.
@@ -151,7 +151,7 @@ spec:RegisterTalents( {
     uproar                    = { 90357, 391572, 1 }, -- Thunderous Roar's cooldown reduced by 30 sec.
     wild_strikes              = { 90360, 382946, 2 }, -- Haste increased by 1% and your auto-attack critical strikes increase your auto-attack speed by 10% for 10 sec.
     wrecking_throw            = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 3,242 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
-    
+
     -- Fury
     anger_management          = { 90415, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Recklessness by 1 sec.
     annihilator               = { 90419, 383916, 1 }, -- Your auto-attacks deal an additional 373 Physical damage and generate 4 Rage.
@@ -176,7 +176,7 @@ spec:RegisterTalents( {
     endurance_training        = { 90376, 391997, 1 }, -- Increases Stamina by 5% and reduces the duration of movement impairing effects on you by 10.0%.
     enraged_regeneration      = { 90395, 184364, 1 }, -- Reduces damage taken by 30%, and Bloodthirst restores an additional 20% health. Usable while stunned or incapacitated. Lasts 8 sec.
     focus_in_chaos            = { 90403, 383486, 1 }, -- While Enraged, your auto-attacks can no longer miss.
-    frenzied_flurry           = { 90422, 383605, 1 }, -- Increases auto-attack damage with one-handed weapons by 5% and your auto-attack critical strikes have a 50% chance to Enrage you. 
+    frenzied_flurry           = { 90422, 383605, 1 }, -- Increases auto-attack damage with one-handed weapons by 5% and your auto-attack critical strikes have a 50% chance to Enrage you.
     frenzy                    = { 90406, 335077, 1 }, -- Rampage increases your Haste by 2% for 12 sec, stacking up to 4 times. This effect is reset if you Rampage a different primary target.
     fresh_meat                = { 90399, 215568, 1 }, -- Bloodthirst always Enrages you the first time you strike a target, and it has a 15% increased chance to trigger Enrage.
     frothing_berserker        = { 90350, 215571, 1 }, -- Rampage has a 20% chance to immediately refund 20% of the Rage spent.
@@ -191,7 +191,7 @@ spec:RegisterTalents( {
     invigorating_fury         = { 90393, 383468, 1 }, -- Enraged Regeneration lasts 3 sec longer and instantly heals for 20% of your maximum health.
     massacre                  = { 90410, 206315, 1 }, -- Execute is now usable on targets below 35% health, and its cooldown is reduced by 1.5 sec.
     meat_cleaver              = { 90391, 280392, 1 }, -- Whirlwind deals 25% more damage and now affects your next 4 single-target melee attacks, instead of the next 2 attacks.
-    odyns_fury                = { 90418, 385059, 1 }, -- Unleashes your power, dealing 6,304 Physical damage and an additional 2,723 Physical damage over 4 sec to all enemies within 12 yards. Generates 15 Rage. 
+    odyns_fury                = { 90418, 385059, 1 }, -- Unleashes your power, dealing 6,304 Physical damage and an additional 2,723 Physical damage over 4 sec to all enemies within 12 yards. Generates 15 Rage.
     onslaught                 = { 90424, 315720, 1 }, -- Brutally attack an enemy for 4,915 Physical damage. Generates 30 Rage.
     raging_armaments          = { 90426, 388049, 1 }, -- Raging Blow gains an extra charge.
     raging_blow               = { 90396, 85288 , 1 }, -- A mighty blow with both weapons that deals a total of 3,461 Physical damage. Raging Blow has a 20% chance to instantly reset its own cooldown. Generates 14 Rage.
@@ -201,25 +201,25 @@ spec:RegisterTalents( {
     recklessness              = { 90412, 1719  , 1 }, -- Go berserk, increasing all Rage generation by 100% and granting your abilities 20% increased critical strike chance for 12 sec.
     sidearm                   = { 90335, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 810 Physical damage.
     singleminded_fury         = { 90400, 81099 , 1 }, -- While dual-wielding a pair of one-handed weapons, your damage done is increased by 5% and your movement speed is increased by 5%.
-    slaughtering_strikes      = { 90411, 388004, 1 }, -- Raging Blow causes every strike of your next Rampage to deal an additional 20% damage, stacking up to 5 times. Annihilator causes every strike of your next Rampage to deal an additional 2% damage, stacking up to 5 times. 
+    slaughtering_strikes      = { 90411, 388004, 1 }, -- Raging Blow causes every strike of your next Rampage to deal an additional 20% damage, stacking up to 5 times. Annihilator causes every strike of your next Rampage to deal an additional 2% damage, stacking up to 5 times.
     storm_of_steel            = { 90389, 382953, 1 }, -- Ravager's damage is reduced by 40% but it now has 2 charges and generates 15 Rage each time it deals damage.
     storm_of_swords           = { 90420, 388903, 1 }, -- Whirlwind has a 7.0 sec cooldown, but deals 70% increased damage. Slam has a 12.0 sec cooldown and generates 10 Rage, but deals 100% increased damage.
     sudden_death              = { 90429, 280721, 1 }, -- Your attacks have a chance to reset the cooldown of Execute and make it usable on any target, regardless of their health.
     swift_strikes             = { 90416, 383459, 2 }, -- Increases haste by 1%, Raging Blow generates an additional 1 Rage and Annihilator generates an 1 additional Rage.
-    tenderize                 = { 90423, 388933, 1 }, -- Onslaught Enrages you and grants you 3 stacks of Slaughtering Strikes. Enrage now lasts 1 sec longer. 
+    tenderize                 = { 90423, 388933, 1 }, -- Onslaught Enrages you and grants you 3 stacks of Slaughtering Strikes. Enrage now lasts 1 sec longer.
     thunder_clap              = { 92223, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,648 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
-    titanic_rage              = { 90417, 394329, 1 }, -- Odyn's Fury's Enrages you, deals 10% increased damage and grants you 4 stacks of Whirlwind. 
+    titanic_rage              = { 90417, 394329, 1 }, -- Odyn's Fury's Enrages you, deals 10% increased damage and grants you 4 stacks of Whirlwind.
     titans_torment            = { 90362, 390135, 1 }, -- Activating Avatar casts Odyn's Fury, activating Odyn's Fury casts Avatar at reduced effectiveness.
     unbridled_ferocity        = { 90414, 389603, 1 }, -- Rampage has a 20% chance to grant Recklessness for 4 sec.
     vicious_contempt          = { 90404, 383885, 2 }, -- Bloodthirst deals 25% increased damage to enemies who are below 35% health.
     war_machine               = { 90386, 346002, 1 }, -- Your auto attacks generate 20% more Rage. Killing an enemy instantly generates 5 Rage, and increases your movement speed by 30% for 8 sec.
     warpaint                  = { 90394, 208154, 1 }, -- You take 10% reduced damage while Enrage is active.
-    wrath_and_fury            = { 90387, 392936, 1 }, -- Raging Blow deals 15% increased damage and while Enraged, Raging Blow has a 30% chance to instantly reset its own cooldown. 
+    wrath_and_fury            = { 90387, 392936, 1 }, -- Raging Blow deals 15% increased damage and while Enraged, Raging Blow has a 30% chance to instantly reset its own cooldown.
 } )
 
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     barbarian            = 166 , -- (280745) For 3 sec after casting Heroic Leap, you may cast the spell a second time without regard for its cooldown. Increases the damage done by your Heroic Leap by 200%.
     battle_trance        = 170 , -- (213857) You go into a trance causing you to regenerate 3% of your health and generate 3 Rage every 3 sec for 18 sec after using Raging Blow twice in a row on a target. Attacking a new target with Raging Blow will cancel this effect.
     bloodrage            = 172 , -- (329038) You gain 40 Rage over 4 sec, and all snares and roots are cleared from you, but at a cost of 5% of your health.
@@ -701,11 +701,11 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if buff.ravager.up and talent.hurricane.enabled then
-        local next_hu = query_time + ( 1 * state.haste ) - ( ( query_time - buff.ravager.applied ) % ( 1 * state.haste ) )
+        local next_hu = query_time + haste - ( ( query_time - buff.ravager.applied ) % haste )
 
         while ( next_hu <= buff.ravager.expires ) do
             state:QueueAuraEvent( "ravager_hurricane", TriggerHurricane, next_hu, "AURA_PERIODIC" )
-            next_hu = next_hu + ( 1 * state.haste )
+            next_hu = next_hu + haste
         end
     end
 end )
@@ -851,14 +851,7 @@ spec:RegisterAbilities( {
         id = 335096,
         known = 23881,
         cast = 0,
-        cooldown = function ()
-            if talent.deft_experience.enabled then
-                return 3 - talent.deft_experience.rank * 0.75
-            else
-                return 3
-            end
-        end,
-        hasteCD = true,
+        cooldown = function () return ( 3 - talent.deft_experience.rank * 0.75 ) * haste end,
         gcd = "spell",
 
         spend = -8,
@@ -867,32 +860,30 @@ spec:RegisterAbilities( {
         cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
 
         startsCombat = true,
-        texture = 136012,
-
-        talent = "reckless_abandon",
+        texture = 236304,
         buff = "reckless_abandon",
         bind = "bloodthirst",
 
         handler = function ()
-            removeStack( "reckless_abandon" )
-            gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
-            if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
-            if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
             removeStack( "whirlwind" )
+            removeStack( "reckless_abandon" )
 
+            gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
+
+            if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
             if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
             end
+            if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
+                applyBuff( "enrage" )
+                applyDebuff( "target", "hit_by_fresh_meat" )
+            end
+            if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
 
             if legendary.cadence_of_fujieda.enabled then
                 if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
                 addStack( "cadence_of_fujieda", nil, 1 )
-            end
-
-            if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
-                applyBuff( "enrage" )
-                applyDebuff( "target", "hit_by_fresh_meat" )
             end
         end,
     },
@@ -920,14 +911,7 @@ spec:RegisterAbilities( {
     bloodthirst = {
         id = 23881,
         cast = 0,
-        cooldown = function ()
-            if talent.deft_experience.enabled then
-                return 4.5 - talent.deft_experience.rank * 0.75
-            else
-                return 4.5
-            end
-        end,
-        hasteCD = true,
+        cooldown = function () return ( 4.5 - talent.deft_experience.rank * 0.75 ) * haste end,
         gcd = "spell",
 
         spend = -8,
@@ -936,21 +920,24 @@ spec:RegisterAbilities( {
         cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
 
         talent = "bloodthirst",
+        texture = 136012,
+        nobuff = "reckless_abandon",
         startsCombat = true,
-        nobuff = function() if talent.reckless_abandon.enabled then return "recklessness" end end,
         bind = "bloodbath",
 
         handler = function ()
+            removeStack( "whirlwind" )
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
 
             if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
-            removeStack( "whirlwind" )
-
             if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
             end
-
+            if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
+                applyBuff( "enrage" )
+                applyDebuff( "target", "hit_by_fresh_meat" )
+            end
             if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
 
             if legendary.cadence_of_fujieda.enabled then
@@ -958,10 +945,6 @@ spec:RegisterAbilities( {
                 addStack( "cadence_of_fujieda", nil, 1 )
             end
 
-            if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
-                applyBuff( "enrage" )
-                applyDebuff( "target", "hit_by_fresh_meat" )
-            end
         end,
 
         auras = {
@@ -1009,9 +992,8 @@ spec:RegisterAbilities( {
             + ( talent.improved_raging_blow.enabled and 1 or 0 )
             + ( talent.raging_armaments.enabled and 1 or 0 )
         end,
-        cooldown = 8,
-        recharge = 8,
-        hasteCD = true,
+        cooldown = function() return 7 * haste end,
+        recharge = function() return 7 * haste end,
         gcd = "spell",
 
         spend = function () return -12 - talent.swift_strikes.rank end,
@@ -1026,8 +1008,8 @@ spec:RegisterAbilities( {
         bind = "raging_blow",
 
         handler = function ()
-            removeStack( "reckless_abandon" )
             removeStack( "whirlwind" )
+            removeStack( "reckless_abandon" )
             spendCharges( "raging_blow", 1 )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
         end,
@@ -1327,7 +1309,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "whirlwind" )
-            if talent.tenderize.enabled then 
+            if talent.tenderize.enabled then
                 applyBuff( "enrage" , 6 )
                 addStacks( "slaughtering_strikes", 3 )
             end
@@ -1384,20 +1366,18 @@ spec:RegisterAbilities( {
           + ( talent.improved_raging_blow.enabled and 1 or 0 )
           + ( talent.raging_armaments.enabled and 1 or 0 )
         end,
-        cooldown = 8 * state.haste,
-        recharge = 8 * state.haste,
-        hasteCD = true,
+        cooldown = function() return 8 * state.haste end,
+        recharge = function() return 8 * state.haste end,
         gcd = "spell",
 
         spend = function () return -12 - talent.swift_strikes.rank end,
         spendType = "rage",
 
         talent = "raging_blow",
+        texture = 589119,
         notalent = "annihilator",
         startsCombat = true,
-        nobuff = function()
-            if talent.reckless_abandon.enabled then return "reckless_abandon" end
-        end,
+        nobuff = "reckless_abandon",
         bind = "crushing_blow",
 
         handler = function ()
@@ -1444,10 +1424,10 @@ spec:RegisterAbilities( {
         talent = "rampage",
 
         handler = function ()
-            if talent.reckless_abandon.enabled then addStack( "reckless_abandon", nil, 2 ) end
-            if talent.frenzy.enabled then addStack( "frenzy", nil, 1 ) end
             applyBuff( "enrage" )
             removeStack( "whirlwind" )
+            if talent.frenzy.enabled then addStack( "frenzy", nil, 1 ) end
+            if talent.reckless_abandon.enabled then addStack( "reckless_abandon", nil, 2 ) end
         end,
     },
 
