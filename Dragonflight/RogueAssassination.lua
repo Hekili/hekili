@@ -676,6 +676,8 @@ local ExpireSepsis = setfenv( function ()
 end, state )
 
 
+local kingsbaneReady = false
+
 spec:RegisterHook( "reset_precast", function ()
     local status = "Bleed Snapshots       Remains  Multip.  RateMod  Exsang.\n"
     for _, aura in orderedPairs( exsanguinated_spells ) do
@@ -701,6 +703,12 @@ spec:RegisterHook( "reset_precast", function ()
     if buff.indiscriminate_carnage.up then
         if action.garrote.lastCast < action.indiscriminate_carnage.lastCast then applyBuff( "indiscriminate_carnage_garrote" ) end
         if action.rupture.lastCast < action.indiscriminate_carnage.lastCast then applyBuff( "indiscriminate_carnage_rupture" ) end
+    end
+
+    if not kingsbaneReady then
+        rawset( buff, "kingsbane", buff.kingsbane_buff )
+        rawset( debuff, "kingsbane", debuff.kingsbane_dot )
+        kingsbaneReady = true
     end
 end )
 
@@ -1102,11 +1110,12 @@ spec:RegisterAuras( {
     kingsbane_dot = {
         id = 385627,
         duration = 14,
-        max_stack = 1
+        max_stack = 1,
+        copy = "kingsbane"
     },
     -- Talent: Kingsbane damage increased by $s1%.
     -- https://wowhead.com/beta/spell=394095
-    kingsbane = {
+    kingsbane_buff = {
         id = 394095,
         duration = 20,
         max_stack = 99
@@ -2106,7 +2115,7 @@ spec:RegisterAbilities( {
         cp_gain = 1,
 
         handler = function ()
-            applyDebuff( "target", "kingsbane" )
+            applyDebuff( "target", "kingsbane_dot" )
             gain( action.kingsbane.cp_gain, "combo_points" )
         end,
     },
