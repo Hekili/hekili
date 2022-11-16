@@ -356,7 +356,7 @@ spec:RegisterAuras( {
     },
     recklessness = {
         id = 1719,
-        duration = 4,
+        duration = 12,
         max_stack = 1
     },
     rend = {
@@ -621,11 +621,8 @@ spec:RegisterAbilities( {
             applyBuff( "avatar" )
             if talent.blademasters_torment.enabled then applyBuff ( "bladestorm", 4 ) end
             if talent.warlords_torment.enabled then
-                if buff.reckless.up then
-                    buff.reckless.expires = buff.reckless.expires + 4
-                else
-                    applyBuff ( "recklessness", 4 )
-                end
+                if buff.recklessness.up then buff.recklessness.expires = buff.recklessness.expires + 4
+                else applyBuff( "recklessness", 4 ) end
             end
         end,
     },
@@ -814,11 +811,8 @@ spec:RegisterAbilities( {
                 state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
             if talent.warlords_torment.enabled then
-                if buff.reckless.up then
-                    buff.reckless.expires = buff.reckless.expires + 4
-                else
-                    applyBuff ( "recklessness", 4 )
-                end
+                if buff.recklessness.up then buff.recklessness.expires = buff.recklessness.expires + 4
+                else applyBuff( "recklessness", 4 ) end
             end
         end,
     },
@@ -1510,11 +1504,8 @@ spec:RegisterAbilities( {
                 state:QueueAuraExpiration( "test_of_might", TriggerTestOfMight, debuff.colossus_smash.expires )
             end
             if talent.warlords_torment.enabled then
-                if buff.reckless.up then
-                    buff.reckless.expires = buff.reckless.expires + 4
-                else
-                    applyBuff ( "recklessness", 4 )
-                end
+                if buff.recklessness.up then buff.recklessness.expires = buff.recklessness.expires + 4
+                else applyBuff( "recklessness", 4 ) end
             end
         end,
     },
