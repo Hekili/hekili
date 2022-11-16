@@ -29,21 +29,18 @@ do
             local node = C_Traits.GetNodeInfo( configID, data[1] )
             local talent = rawget( state.talent, token ) or {}
 
-            if not node.activeEntry then
+            if not node or not node.activeEntry then
                 talent.rank = 0
+                talent.max = 1
             else
                 local entryID = node.activeEntry.entryID
                 local entry   = entryID and C_Traits.GetEntryInfo( configID, entryID )
                 local defn    = entry and C_Traits.GetDefinitionInfo( entry.definitionID )
 
-                if not defn or defn.spellID ~= data[2] then
-                    talent.rank = 0
-                else
-                    talent.rank = node.activeEntry.rank
-                end
+                talent.rank = defn and defn.spellID == data[2] and node.activeEntry.rank or 0
+                talent.max = node.maxRanks
             end
 
-            talent.max = node.maxRanks
 
             -- Perform a sanity check on maxRanks vs. data[3].  If they don't match, the talent model is likely wrong.
             if data[3] and node.maxRanks > 0 and node.maxRanks ~= data[3] then
