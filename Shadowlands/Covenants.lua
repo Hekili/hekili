@@ -2387,7 +2387,9 @@ elseif baseClass == "WARRIOR" then
                     local extra = min( 20, rage.current )
 
                     if extra > 0 then spend( extra, "rage" ) end
-                    gain( 4 + floor( 0.2 * extra ), "rage" )
+                    if state.spec.arms and state.talent.improved_execute.enabled then
+                        gain( 4 + floor( 0.1 * extra ), "rage" )
+                    end
                 end
 
                 if legendary.sinful_surge.enabled then

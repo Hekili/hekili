@@ -83,7 +83,7 @@ spec:RegisterTalents( {
     crackling_thunder               = { 90342, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
     cruel_strikes                   = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%. 
     double_time                     = { 90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
-    elysian_might                   = { 90323, 386285, 1 }, --  
+    elysian_might                   = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%.   
     fast_footwork                   = { 90371, 382260, 1 }, -- Movement speed increased by 5%.
     furious_blows                   = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
     heroic_leap                     = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 959 Physical damage to all enemies within 8 yards, and resetting the remaining cooldown on Taunt.
@@ -869,7 +869,7 @@ spec:RegisterAbilities( {
         copy = { 163201, 281000 },
         noOverride = 317485, -- Condemn
         cast = 0,
-        cooldown = 6,
+        cooldown = 0,
         gcd = "spell",
         hasteCD = true,
 
@@ -899,7 +899,6 @@ spec:RegisterAbilities( {
             if not buff.sudden_death.up then
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
-                gain( cost * 0.1, "rage" )
             else
                 removeBuff( "sudden_death" )
             end
@@ -1085,7 +1084,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         usable = function()
-            if settings.last_stand_offensively and (talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled) then
+            if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled ) then
                 return true
             else
                 return incoming_damage_3s > 0.3 * health.max, "requires 30% health incoming damage in 3s"
@@ -1321,7 +1320,7 @@ spec:RegisterAbilities( {
         id = 385952,
         cast = 0,
         cooldown = 45,
-        gcd = "off",
+        gcd = "spell",
         spend = -20,
         spendType = "rage",
 
