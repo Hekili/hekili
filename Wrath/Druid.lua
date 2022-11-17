@@ -60,7 +60,7 @@ local function GetTrackedRip( target )
 end
 
 
--- Combat log handler
+-- Combat log handlers
 local attack_events = {
     SPELL_CAST_SUCCESS = true
 }
@@ -185,6 +185,10 @@ spec:RegisterHook( "reset_precast", function()
         predatorsswiftness_spell_assigned = true
     end
 end )
+
+spec:RegisterStateExpr("maul_queued", function()
+    return IsCurrentSpell(48480)
+end)
 
 spec:RegisterStateExpr("rip_maxremains", function()
     if debuff.rip.remains == 0 then
