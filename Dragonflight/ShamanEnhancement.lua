@@ -238,7 +238,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=198103
     earth_elemental = {
         id = 198103,
-        duration = -1,
+        duration = 60,
         type = "Magic",
         max_stack = 1
     },
@@ -352,7 +352,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=2645
     ghost_wolf = {
         id = 2645,
-        duration = -1,
+        duration = 3600,
         type = "Magic",
         max_stack = 1
     },
@@ -491,15 +491,19 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=378081
     natures_swiftness = {
         id = 378081,
-        duration = -1,
+        duration = 3600,
         type = "Magic",
-        max_stack = 1
+        max_stack = 1,
+        onRemove = function( t )
+            -- 20221117:  This function is triggered when the buff is removed.
+            setCooldown( "natures_swiftness", action.natures_swiftness.cooldown )
+        end
     },
     -- Heals $w1 damage every $t1 seconds.
     -- https://wowhead.com/beta/spell=280205
     pack_spirit = {
         id = 280205,
-        duration = -1,
+        duration = 3600,
         max_stack = 1
     },
     -- Cleansing $383015s1 poison effect from a nearby party or raid member every $t1 sec.
@@ -1073,7 +1077,7 @@ spec:RegisterAbilities( {
             consume_maelstrom()
 
             removeBuff( "chains_of_devastation_ch" )
-            removeBuff( "natures_swiftness" ) -- TODO: Determine order of instant cast effect consumption.
+            removeBuff( "natures_swiftness" )
             removeBuff( "focused_insight" )
 
             if legendary.chains_of_devastation.enabled then
@@ -1840,6 +1844,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         toggle = "cooldowns",
+        nobuff = "natures_swiftness",
 
         handler = function ()
             applyBuff( "natures_swiftness" )

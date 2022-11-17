@@ -882,7 +882,8 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
 
     local b = state.buff[ aura ]
     if not b then return end
-    if not duration then duration = class.auras[ aura ].duration or 15 end
+
+    duration = duration or auraInfo.duration or 15
 
     if duration == 0 then
         b.last_expiry = b.expires or 0
@@ -901,6 +902,8 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         b.caster = "unknown"
 
         state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
+
+        if auraInfo.funcs.onRemove then auraInfo.funcs.onRemove() end
 
     else
         if not b.up then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
