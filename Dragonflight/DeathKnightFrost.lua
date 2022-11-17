@@ -1072,15 +1072,9 @@ spec:RegisterAbilities( {
         id = 43265,
         noOverride = 324128,
         cast = 0,
-        charges = function ()
-            if not talent.deaths_echo.enabled then return end
-            return 2
-        end,
+        charges = function() if talent.deaths_echo.enabled then return 2 end end,
         cooldown = 30,
-        recharge = function ()
-            if not talent.deaths_echo.enabled then return end
-            return 30
-        end,
+        recharge = function() if talent.deaths_echo.enabled then return 30 end end,
         gcd = "spell",
 
         spend = 1,
@@ -1130,15 +1124,10 @@ spec:RegisterAbilities( {
     death_grip = {
         id = 49576,
         cast = 0,
-        charges = function ()
-            if not talent.deaths_echo.enabled then return end
-            return 2
-        end,
+        charges = function() if talent.deaths_echo.enabled then return 2 end end,
         cooldown = 25,
-        recharge = function ()
-            if not talent.deaths_echo.enabled then return end
-            return 25
-        end,
+        recharge = function() if talent.deaths_echo.enabled then return 25 end end,
+
         gcd = "off",
 
         startsCombat = false,
@@ -1190,15 +1179,10 @@ spec:RegisterAbilities( {
     deaths_advance = {
         id = 48265,
         cast = 0,
-        charges = function ()
-            if not talent.deaths_echo.enabled then return end
-            return 2
-        end,
+        charges = function() if talent.deaths_echo.enabled then return 2 end end,
         cooldown = 45,
-        recharge = function ()
-            if not talent.deaths_echo.enabled then return end
-            return 45
-        end,
+        recharge = function() if talent.deaths_echo.enabled then return 45 end end,
+
         gcd = "off",
 
         startsCombat = false,

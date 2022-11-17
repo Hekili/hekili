@@ -1250,14 +1250,9 @@ spec:RegisterAbilities( {
         id = 43265,
         noOverride = 324128,
         cast = 0,
-        recharge = function ()
-            if pvptalent.deaths_echo.enabled then return end
-            return 15
-        end,
-        charges = function ()
-            if pvptalent.deaths_echo.enabled then return end
-            return 2
-        end,
+        charges = function () if talent.deaths_echo.enabled then return 2 end end,
+        cooldown = 15,
+        recharge = function () if talent.deaths_echo.enabled then return 15 end end,
         gcd = "spell",
 
         spend = function () return buff.crimson_scourge.up and 0 or 1 end,
@@ -1334,15 +1329,9 @@ spec:RegisterAbilities( {
     death_grip = {
         id = 49576,
         cast = 0,
-        charges = function ()
-            if not pvptalent.deaths_echo.enabled then return end
-            return 2
-        end,
+        charges = function () if talent.deaths_echo.enabled then return 2 end end,
         cooldown = 15,
-        recharge = function ()
-            if not pvptalent.deaths_echo.enabled then return end
-            return 15
-        end,
+        recharge = function () if talent.deaths_echo.enabled then return 15 end end,
         gcd = "off",
 
         startsCombat = true,
@@ -1416,15 +1405,9 @@ spec:RegisterAbilities( {
     deaths_advance = {
         id = 48265,
         cast = 0,
+        charges = function () if talent.deaths_echo.enabled then return 2 end end,
         cooldown = function () return azerite.march_of_the_damned.enabled and 40 or 45 end,
-        recharge = function ()
-            if pvptalent.deaths_echo.enabled then return end
-            return azerite.march_of_the_damned.enabled and 40 or 45
-        end,
-        charges = function ()
-            if pvptalent.deaths_echo.enabled then return end
-            return 2
-        end,
+        recharge = function () if talent.deaths_echo.enabled then return ( azerite.march_of_the_damned.enabled and 40 or 45 ) end end,
         gcd = "off",
 
         startsCombat = false,
