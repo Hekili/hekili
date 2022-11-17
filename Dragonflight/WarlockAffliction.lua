@@ -1731,7 +1731,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            applyBuff( "siphon_life" )
+            applyDebuff( "target", "siphon_life" )
         end,
     },
 
