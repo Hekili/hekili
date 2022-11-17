@@ -2256,15 +2256,17 @@ local gotn_classes = {
     PALADIN = 59542
 }
 
+local baseClass = UnitClassBase( "player" ) or "WARRIOR"
+
 all:RegisterAura( "gift_of_the_naaru", {
-    id = gotn_classes[ UnitClassBase( "player" ) or "WARRIOR" ],
+    id = gotn_classes[ baseClass ],
     duration = 5,
     max_stack = 1,
     copy = { 28800, 121093, 59545, 59547, 59543, 59544, 59548, 59542 }
 } )
 
 all:RegisterAbility( "gift_of_the_naaru", {
-    id = 59544,
+    id = gotn_classes[ baseClass ],
     cast = 0,
     cooldown = 180,
     gcd = "off",
