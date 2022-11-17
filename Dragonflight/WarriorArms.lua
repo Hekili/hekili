@@ -209,11 +209,12 @@ spec:RegisterAuras( {
     },
     bladestorm = {
         id = 227847,
-        duration = function () return ( 6 + ( buff.dance_of_death.up and 3 or 0 ) ) * haste end,
+        duration = function () return ( buff.dance_of_death.up and 9 or 6 ) * haste end,
         max_stack = 1,
         onCancel = function()
             setCooldown( "global_cooldown", 0 )
         end,
+        copy = 389774
     },
     bounding_stride = {
         id = 202164,
@@ -718,8 +719,11 @@ spec:RegisterAbilities( {
     },
 
 
+    -- ID: 227847
+    -- 227847 w/ MB
+
     bladestorm = {
-        id = 227847,
+        id = function() return talent.hurricane.enabled and 389774 or 227847 end,
         cast = 0,
         cooldown = 90,
         gcd = "spell",
@@ -738,11 +742,12 @@ spec:RegisterAbilities( {
             applyBuff( "bladestorm" )
             setCooldown( "global_cooldown", class.auras.bladestorm.duration )
             if talent.blademasters_torment.enabled then applyBuff( "avatar", 4 ) end
-
             if talent.merciless_bonegrinder.enabled then
                 state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
             end
         end,
+
+        copy = { 227847, 389774 }
     },
 
 
