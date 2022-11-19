@@ -26,8 +26,9 @@ actions+=/eternity_surge,empower_to=3,if=spell_targets.pyre>2*(1+talent.eternity
 actions+=/eternity_surge,empower_to=2,if=spell_targets.pyre>(1+talent.eternitys_span)
 actions+=/eternity_surge,empower_to=1,if=(cooldown.eternity_surge.duration-cooldown.dragonrage.remains)<(buff.dragonrage.duration+6-gcd.max)
 actions+=/shattering_star,if=!talent.arcane_vigor|essence+1<essence.max|buff.dragonrage.up
+actions+=/pyre,if=buff.charged_blast.stack=buff.charged_blast.max_stack&cooldown.dragonrage.remains>20&spell_targets.pyre>2
 actions+=/azure_strike,if=essence.time_to_max>gcd.max*(1+buff.essence_burst.stack)&!buff.burnout.up&spell_targets.azure_strike>(2-buff.dragonrage.up)&buff.essence_burst.stack<buff.essence_burst.max_stack&(!talent.ruby_embers|spell_targets.azure_strike>2)
-actions+=/pyre,if=spell_targets.pyre>(2+talent.scintillation*talent.eternitys_span)|buff.charged_blast.stack=buff.charged_blast.max_stack&cooldown.dragonrage.remains>20&spell_targets.pyre>2
+actions+=/pyre,if=spell_targets.pyre>(2+talent.scintillation*talent.eternitys_span)
 actions+=/living_flame,if=essence.time_to_max>gcd.max*(1+buff.essence_burst.stack)&buff.essence_burst.stack<buff.essence_burst.max_stack&(buff.burnout.up|!talent.engulfing_blaze&!talent.shattering_star&buff.dragonrage.up&target.health.pct>80)
 actions+=/disintegrate,chain=1,if=buff.dragonrage.up,interrupt_if=buff.dragonrage.up&ticks>=2,interrupt_immediate=1
 actions+=/disintegrate,chain=1,if=essence.time_to_max>gcd.max*(1+buff.essence_burst.stack)|buff.essence_burst.stack=buff.essence_burst.max_stack|debuff.shattering_star_debuff.up|cooldown.shattering_star.remains>=3*gcd.max|!talent.shattering_star
