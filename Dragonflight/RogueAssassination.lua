@@ -2306,7 +2306,6 @@ spec:RegisterAbilities( {
         spend = 15,
         spendType = "energy",
 
-        talent = "serrated_bone_spike",
         startsCombat = true,
         cycle = "serrated_bone_spike",
 
