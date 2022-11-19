@@ -1092,17 +1092,17 @@ state.setStance = setStance
 
 
 local function interrupt()
-    removeDebuff( "target", "casting" )
+    state.removeDebuff( "target", "casting" )
 end
 state.interrupt = interrupt
 
 
 -- Use this for readyTime in an interrupt action; will interrupt casts at end of cast and channels ASAP.
 local function timeToInterrupt()
-    -- Why v2?
-    if debuff.casting.down or debuff.casting.v2 == 1 then return 3600 end
-    if debuff.casting.v3 == 1 then return 0 end
-    return max( 0, debuff.casting.remains - 0.25 )
+    local casting = state.debuff.casting
+    if casting.down or casting.v2 == 1 then return 3600 end
+    if casting.v3 == 1 then return 0 end
+    return max( 0, casting.remains - 0.25 )
 end
 state.timeToInterrupt = timeToInterrupt
 

@@ -1528,9 +1528,12 @@ do
                     end
 
                     if enabled and enabled == 0 then
-                        cd:SetCooldown( 0, 0, 1 )
+                        start = 0
+                        duration = 0
+                        modRate = 1
+                    end
 
-                    elseif cd.lastStart ~= start or cd.lastDuration ~= duration then
+                    if cd.lastStart ~= start or cd.lastDuration ~= duration then
                         cd:SetCooldown( start, duration, modRate )
                         cd.lastStart = start
                         cd.lastDuration = duration
