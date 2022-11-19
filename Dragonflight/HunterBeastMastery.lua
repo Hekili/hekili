@@ -1859,7 +1859,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         disabled = function()
-            if settings.check_pet_range and Hekili:PetBasedTargetDetectionIsReady( true ) and not Hekili:TargetIsNearPet( "target" ) then return true, "not in-range of pet" end
+            if settings.check_pet_range and settings.petbased and Hekili:PetBasedTargetDetectionIsReady( true ) and not Hekili:TargetIsNearPet( "target" ) then return true, "not in-range of pet" end
         end,
 
         handler = function ()
@@ -2056,6 +2056,8 @@ spec:RegisterAbilities( {
 
         talent = "serpent_sting",
         startsCombat = false,
+
+        velocity = 60,
 
         impact = function ()
             applyDebuff( "target", "serpent_sting" )
@@ -2287,11 +2289,11 @@ spec:RegisterSetting( "avoid_bw_overlap", false, {
     width = "full"
 } )
 
-spec:RegisterSetting( "check_pet_range", true, {
+spec:RegisterSetting( "check_pet_range", false, {
     name = "Check Pet Range for |T132176:0|t Kill Command",
     desc = function ()
         return "If checked, the addon will not recommend |T132176:0|t Kill Command if your pet is not in range of your target.\n\n" ..
-            "Requires |c" .. ( state.settings.petbased and "FF00FF00" or "FFFF0000" ) .. "Pet-Based Target Detection"
+            "Requires |c" .. ( state.settings.petbased and "FF00FF00" or "FFFF0000" ) .. "Pet-Based Target Detection|r"
     end,
     type = "toggle",
     width = "full"
