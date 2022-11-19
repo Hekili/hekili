@@ -2092,27 +2092,23 @@ do
             wipe( v.lower )
         end
 
-        --[[ Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
+        -- Bartender4 support; if BT4 bindings are set, use them, otherwise fall back on default UI bindings below.
+        -- This will still get viewed as misleading...
         if _G["Bartender4"] then
-            for actionBarNumber = 1, 15 do
-                local bar = _G["BT4Bar" .. actionBarNumber]
-                for keyNumber = 1, 12 do
-                    local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
-                    local bindingKeyName = "ACTIONBUTTON" .. keyNumber
+            table.wipe( slotsUsed )
 
-                    -- If bar is disabled assume paging / stance switching on bar 1
-                    if actionBarNumber > 1 and bar and not bar.disabled then
-                        bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":Click"
-                    end
+            for i = 1, 180 do
+                local keybind = "CLICK BT4Button" .. i .. ":Keybind"
+                local bar = ceil( i / 12 )
 
-                    StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
+                if GetBindingKey( keybind ) then
+                    StoreKeybindInfo( bar, GetBindingKey( keybind ), GetActionInfo( i ) )
+                    slotsUsed[ i ] = true
                 end
             end
 
-            done = true ]]
-
         -- Use ElvUI's actionbars only if they are actually enabled.
-        if _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
+        elseif _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
             table.wipe( slotsUsed )
 
             for i = 1, 15 do
