@@ -1223,7 +1223,7 @@ spec:RegisterAbilities( {
     },
 
 
-revenge = {
+    revenge = {
         id = 6572,
         cast = 0,
         cooldown = 0,
