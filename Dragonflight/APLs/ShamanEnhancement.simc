@@ -67,7 +67,7 @@ actions.single+=/flame_shock,if=settings.filler_shock
 actions.single+=/windfury_totem,if=buff.windfury_totem.remains<30
 
 actions.aoe+=/crash_lightning,if=(talent.doom_winds|runeforge.doom_winds.equipped)&buff.doom_winds.up
-actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock>=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack>=(5+5*talent.overflowing_maelstrom.enabled)&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd)
+actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock>=active_enemies|active_dot.flame_shock>5)&buff.primordial_wave.up&buff.maelstrom_weapon.stack>=(5+5*talent.overflowing_maelstrom.enabled)&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd)
 actions.aoe+=/chain_harvest,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/sundering,if=(talent.doom_winds|runeforge.doom_winds.equipped)&buff.doom_winds.up
 actions.aoe+=/fire_nova,if=active_dot.flame_shock>=6|(active_dot.flame_shock>=4&active_dot.flame_shock>=active_enemies)
