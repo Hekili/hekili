@@ -12,8 +12,8 @@ actions.precombat+=/incinerate
 
 actions=spell_lock
 actions+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up
-actions+=/call_action_list,name=cleave,if=active_enemies=2
-actions+=/call_action_list,name=aoe,if=active_enemies>=3
+actions=call_action_list,name=cleave,strict=1,if=active_enemies>1&active_enemies<=2+(!talent.inferno&talent.madness_of_the_azjaqir&talent.ashen_remains)
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=3
 actions+=/conflagrate,if=(talent.roaring_blaze&debuff.conflagrate.remains<1.5)|charges=max_charges
 actions+=/dimensional_rift,if=soul_shard<4.7&(charges>2|time_to_die<cooldown.dimensional_rift.duration)
 actions+=/cataclysm
@@ -42,19 +42,27 @@ actions+=/impending_catastrophe
 actions+=/soul_rot
 actions+=/incinerate
 
-actions.aoe=rain_of_fire,if=pet.infernal.active
+actions.aoe=call_action_list,name=havoc,strict=1,if=havoc_active&havoc_remains>gcd&active_enemies<5
+actions.aoe+=/rain_of_fire,if=pet.infernal.active
 actions.aoe+=/rain_of_fire,if=talent.avatar_of_destruction
-actions.aoe+=/channel_demonfire,if=dot.immolate.remains>cast_time
-actions.aoe+=/immolate,cycle_targets=1,if=dot.immolate.remains<5&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains)
+actions.aoe+=/rain_of_fire,if=soul_shard=5
+actions.aoe+=/chaos_bolt,if=soul_shard>3.5-(0.1*active_enemies)&!talent.rain_of_fire
+actions.aoe+=/cataclysm
+actions.aoe+=/channel_demonfire,if=dot.immolate.remains>cast_time&(talent.raging_demonfire.rank+talent.roaring_blaze.rank)>1
+actions.aoe+=/immolate,cycle_targets=1,if=dot.immolate.remains<5&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains)&active_dot.immolate<=6
+actions.aoe+=/havoc,cycle_targets=1,if=!talent.rain_of_fire
 actions.aoe+=/call_action_list,name=items
+actions.aoe+=/summon_soulkeeper,if=buff.tormented_soul.stack=10
 actions.aoe+=/call_action_list,name=ogcd
 actions.aoe+=/summon_infernal
 actions.aoe+=/rain_of_fire
 actions.aoe+=/havoc,cycle_targets=1,if=cycle_enemies>1
+actions.aoe+=/immolate,cycle_targets=1,if=dot.immolate.remains<5&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains)
+actions.aoe+=/soul_fire,if=buff.backdraft.up
 actions.aoe+=/incinerate,if=talent.fire_and_brimstone.enabled&buff.backdraft.up
-actions.aoe+=/soul_fire
 actions.aoe+=/conflagrate,if=buff.backdraft.down|!talent.backdraft
-actions.aoe+=/immolate,if=refreshable
+actions.aoe+=/dimensional_rift
+actions.aoe+=/immolate,if=dot.immolate.refreshable
 actions.aoe+=/incinerate
 
 actions.cleave=call_action_list,name=havoc,if=havoc_active&havoc_remains>gcd
@@ -65,11 +73,11 @@ actions.cleave+=/cataclysm
 actions.cleave+=/channel_demonfire,if=talent.raging_demonfire
 actions.cleave+=/soul_fire,if=soul_shard<=4&!variable.pool_soul_shards
 actions.cleave+=/immolate,cycle_targets=1,if=((talent.internal_combustion&dot.immolate.refreshable)|dot.immolate.remains<3)&(!talent.cataclysm|cooldown.cataclysm.remains>remains)&(!talent.soul_fire|cooldown.soul_fire.remains>remains)
+actions.cleave+=/havoc,cycle_targets=1,if=!cooldown.summon_infernal.up|!talent.summon_infernal
 actions.cleave+=/chaos_bolt,if=pet.infernal.active|pet.blasphemy.active|soul_shard>=4
 actions.cleave+=/call_action_list,name=items
 actions.cleave+=/call_action_list,name=ogcd
 actions.cleave+=/summon_infernal
-actions.cleave+=/havoc,cycle_targets=1,if=cycle_enemies>1
 actions.cleave+=/channel_demonfire,if=talent.ruin.rank>1&!(talent.diabolic_embers&talent.avatar_of_destruction&(talent.burn_to_ashes|talent.chaos_incarnate))
 actions.cleave+=/conflagrate,if=buff.backdraft.down&soul_shard>=1.5&!variable.pool_soul_shards
 actions.cleave+=/chaos_bolt,if=buff.rain_of_chaos.remains>cast_time
@@ -87,9 +95,10 @@ actions.cleave+=/incinerate
 
 actions.havoc=conflagrate,if=talent.backdraft&buff.backdraft.down&soul_shard>=1&soul_shard<=4
 actions.havoc+=/soul_fire,if=cast_time<havoc_remains&soul_shard<3
-actions.havoc+=/immolate,cycle_targets=1,if=dot.immolate.refreshable
-actions.havoc+=/chaos_bolt,if=cast_time<havoc_remains&!(talent.avatar_of_destruction&active_enemies>1&talent.inferno.enabled)
-actions.havoc+=/rain_of_fire,if=talent.avatar_of_destruction&active_enemies>1&talent.inferno.enabled
+actions.havoc+=/channel_demonfire,if=soul_shard<4.5&talent.raging_demonfire.rank=2&active_enemies>2
+actions.havoc+=/immolate,cycle_targets=1,if=dot.immolate.refreshable&dot.immolate.remains<havoc_remains&soul_shard<4.5&(debuff.havoc.down|!dot.immolate.ticking)
+actions.havoc+=/chaos_bolt,if=cast_time<havoc_remains&(active_enemies<4-talent.inferno+talent.madness_of_the_azjaqir+(!talent.inferno&talent.ashen_remains))
+actions.havoc+=/rain_of_fire,if=(active_enemies>=4-talent.inferno+talent.madness_of_the_azjaqir+(!talent.inferno&talent.ashen_remains))
 actions.havoc+=/conflagrate,if=!talent.backdraft
 actions.havoc+=/incinerate,if=cast_time<havoc_remains
 
