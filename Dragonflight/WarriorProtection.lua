@@ -891,9 +891,9 @@ spec:RegisterAbilities( {
 
         timeToReady = function()
             if buff.sudden_death.up then return 0 end
-            local threshold = settings.reserve_rage + 20
+            local threshold = settings.reserve_rage + 40
             if rage.current >= threshold then return 0 end
-            return rage[ "time_to_" .. ( settings.reserve_rage + 20 ) ]
+            return rage[ "time_to_" .. ( settings.reserve_rage + 40 ) ]
         end,
 
         handler = function ()
@@ -1223,7 +1223,7 @@ spec:RegisterAbilities( {
     },
 
 
-    revenge = {
+revenge = {
         id = 6572,
         cast = 0,
         cooldown = 0,
