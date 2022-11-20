@@ -60,7 +60,7 @@ local function GetTrackedRip( target )
 end
 
 
--- Combat log handler
+-- Combat log handlers
 local attack_events = {
     SPELL_CAST_SUCCESS = true
 }
@@ -186,6 +186,10 @@ spec:RegisterHook( "reset_precast", function()
     end
 end )
 
+spec:RegisterStateExpr("maul_queued", function()
+    return IsCurrentSpell(48480)
+end)
+
 spec:RegisterStateExpr("rip_maxremains", function()
     if debuff.rip.remains == 0 then
         return 0
@@ -196,6 +200,22 @@ end)
 
 spec:RegisterStateExpr("min_roar_offset", function()
     return settings.min_roar_offset
+end)
+
+spec:RegisterStateExpr("ferociousbite_enabled", function()
+    return settings.ferociousbite_enabled
+end)
+
+spec:RegisterStateExpr("min_bite_sr_remains", function()
+    return settings.min_bite_sr_remains
+end)
+
+spec:RegisterStateExpr("min_bite_rip_remains", function()
+    return settings.min_bite_rip_remains
+end)
+
+spec:RegisterStateExpr("max_bite_energy", function()
+    return settings.max_bite_energy
 end)
 
 spec:RegisterStateExpr("flowerweaving_enabled", function()
@@ -911,6 +931,7 @@ end )
 -- Maul Helper
 local finish_maul = setfenv( function()
     spend( 25, "rage" )
+    removeBuff( "clearcasting" )
 end, state )
 
 spec:RegisterStateFunction( "start_maul", function()
@@ -982,7 +1003,7 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        spend = 10,
+        spend = function() return (buff.clearcasting.up and 0) or 10 end,
         spendType = "rage",
 
         startsCombat = true,
@@ -991,6 +1012,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1063,13 +1085,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return ((glyph.claw.enabled and 40) or 45) * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (((glyph.claw.enabled and 40) or 45) * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132140,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
         end,
     },
@@ -1156,14 +1179,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 10,
+        spend = function() return (buff.clearcasting.up and 0) or 10 end,
         spendType = "rage",
 
         startsCombat = true,
         texture = 132121,
 
         handler = function ()
-            applyBuff( "demoralizing_roar" )
+            removeBuff( "clearcasting" )
+            applyDebuff( "demoralizing_roar" )
         end,
     },
 
@@ -1215,13 +1239,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.07,
+        spend = function() return (buff.clearcasting.up and 0) or 0.07 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136100,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             applyDebuff( "target", "entangling_roots", 27 )
         end,
 
@@ -1276,13 +1301,12 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return 35 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132127,
 
-        readyTime = function() return energy.time_to_65 end,
         usable = function() return combo_points.current > 0, "requires combo_points" end,
 
         handler = function ()
@@ -1304,7 +1328,7 @@ spec:RegisterAbilities( {
         cooldown = 180,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = function() return (buff.clearcasting.up and 0) or 0.12 end,
         spendType = "mana",
 
         talent = "force_of_nature",
@@ -1314,6 +1338,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1386,13 +1411,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.17,
+        spend = function() return (buff.clearcasting.up and 0) or 0.17 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136041,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 5186, 5187, 5188, 5189, 6778, 8903, 9758, 9888, 9889, 25297, 26978, 26979, 48377, 48378 },
@@ -1426,13 +1452,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.81,
+        spend = function() return (buff.clearcasting.up and 0) or 0.81 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136018,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 17401, 17402, 27012, 48467 },
@@ -1464,7 +1491,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return (buff.clearcasting.up and 0) or 0.08 end,
         spendType = "mana",
 
         talent = "insect_swarm",
@@ -1472,6 +1499,7 @@ spec:RegisterAbilities( {
         texture = 136045,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1483,7 +1511,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 15,
+        spend = function() return (buff.clearcasting.up and 0) or 15 end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1503,38 +1531,17 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.28,
+        spend = function() return (buff.clearcasting.up and 0) or 0.28 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 134206,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 48450, 48451 },
-    },
-
-    -- A strong attack that increases melee damage and causes a high amount of threat. Effects which increase Bleed damage also increase Maul damage.
-    maul = {
-        id = 48480,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        spend = function() return (15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132136,
-
-        nobuff = "maul",
-
-        handler = function( rank )
-            start_maul()
-        end,
-
-        copy = { 6807, 6808, 6809, 8972, 9745, 9880, 9881, 26996, 48479 }
     },
 
     -- Finishing move that causes damage and stuns the target.  Non-player victim spellcasting is also interrupted for 3 sec.  Causes more damage and lasts longer per combo point:     1 point  : 249-250 damage, 1 sec     2 points: 407-408 damage, 2 sec     3 points: 565-566 damage, 3 sec     4 points: 723-724 damage, 4 sec     5 points: 881-882 damage, 5 sec
@@ -1544,7 +1551,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
 
-        spend = function() return 35 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1571,7 +1578,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = function() return 20 - talent.ferocity.rank end,
+        spend = function() return (buff.clearcasting.up and 0) or (20 - talent.ferocity.rank) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1594,7 +1601,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return 40 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (buff.clearcasting.up and 0) or (40 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1608,6 +1615,29 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 33982, 33983, 48565, 48566 }
+    },
+
+
+    -- A strong attack that increases melee damage and causes a high amount of threat. Effects which increase Bleed damage also increase Maul damage.
+    maul = {
+        id = 48480,
+        cast = 0,
+        cooldown = 0,
+        gcd = "off",
+
+        spend = function() return (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132136,
+
+        nobuff = "maul",
+
+        handler = function( rank )
+            start_maul()
+        end,
+
+        copy = { 6807, 6808, 6809, 8972, 9745, 9880, 9881, 26996, 48479 }
     },
 
 
@@ -1639,13 +1669,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.18,
+        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136096,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             applyDebuff( "target", "moonfire" )
         end,
 
@@ -1719,13 +1750,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.18,
+        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 236162,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -1737,13 +1769,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return 50 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (50 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
         texture = 132142,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             applyDebuff( "target", "pounce", 3)
             applyDebuff( "target", "pounce_bleed", 18 )
             gain( 1, "combo_points" )
@@ -1777,7 +1810,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (40 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (buff.clearcasting.up and 0) or ((40 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1800,7 +1833,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return 60 * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function() return (buff.clearcasting.up and 0) or (60 * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1809,6 +1842,7 @@ spec:RegisterAbilities( {
         buff = "prowl",
 
         handler = function ()
+            removeBuff( "clearcasting" )
             gain( 1, "combo_points" )
         end,
     },
@@ -1844,13 +1878,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.29,
+        spend = function() return (buff.clearcasting.up and 0) or 0.29 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136085,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             removeBuff( "predators_swiftness" )
         end,
 
@@ -1865,13 +1900,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.18,
+        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136081,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 1058, 1430, 2090, 2091, 3627, 8910, 9839, 9840, 9841, 25299, 26981, 26982, 48440, 48441 },
@@ -1923,7 +1959,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (30 - ((set_bonus.tier10_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (buff.clearcasting.up and 0) or ((30 - ((set_bonus.tier10_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1978,7 +2014,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (60 * ((buff.berserk.up and 0.5) or 1)) - (talent.shredding_attacks.rank * 9) end,
+        spend = function () return (buff.clearcasting.up and 0) or ((60 * ((buff.berserk.up and 0.5) or 1)) - (talent.shredding_attacks.rank * 9)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2022,7 +2058,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.starfall.enabled and 60 or 90 end,
         gcd = "spell",
 
-        spend = 0.35,
+        spend = function() return (buff.clearcasting.up and 0) or 0.35 end,
         spendType = "mana",
 
         talent = "starfall",
@@ -2032,6 +2068,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -2043,13 +2080,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.16,
+        spend = function() return (buff.clearcasting.up and 0) or 0.16 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 135753,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             if glyph.starfire.enabled and debuff.moonfire.up then
                 debuff.moonfire.expires = debuff.moonfire.expires + 3
                 -- TODO: Cap at 3 applications.
@@ -2108,7 +2146,7 @@ spec:RegisterAbilities( {
         cooldown = 15,
         gcd = "spell",
 
-        spend = 0.16,
+        spend = function() return (buff.clearcasting.up and 0) or 0.16 end,
         spendType = "mana",
 
         talent = "swiftmend",
@@ -2116,6 +2154,7 @@ spec:RegisterAbilities( {
         texture = 134914,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             if glyph.swiftmend.enabled then return end
             if buff.rejuvenation.up then removeBuff( "rejuvenation" )
             elseif buff.regrowth.up then removeBuff( "regrowth" ) end
@@ -2130,7 +2169,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 20 - talent.ferocity.rank end,
+        spend = function() return (buff.clearcasting.up and 0) or (20 - talent.ferocity.rank) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -2149,7 +2188,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (50 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1) end,
+        spend = function () return (buff.clearcasting.up and 0) or ((50 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2168,13 +2207,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.17,
+        spend = function() return (buff.clearcasting.up and 0) or 0.17 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136104,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             applyBuff( "thorns" )
         end,
 
@@ -2226,7 +2266,7 @@ spec:RegisterAbilities( {
         cooldown = 480,
         gcd = "spell",
 
-        spend = 0.7,
+        spend = function() return (buff.clearcasting.up and 0) or 0.7 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -2235,6 +2275,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
 
         copy = { 8918, 9862, 9863, 26983, 48446 },
@@ -2267,7 +2308,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.monsoon.enabled and 17 or 20 end,
         gcd = "spell",
 
-        spend = function() return 0.25 * ( glyph.typhoon.enabled and 0.92 or 1 ) end,
+        spend = function() return (buff.clearcasting.up and 0) or (0.25 * ( glyph.typhoon.enabled and 0.92 or 1 )) end,
         spendType = "mana",
 
         talent = "typhoon",
@@ -2275,6 +2316,7 @@ spec:RegisterAbilities( {
         texture = 236170,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -2303,7 +2345,7 @@ spec:RegisterAbilities( {
         cooldown = 6,
         gcd = "spell",
 
-        spend = 0.23,
+        spend = function() return (buff.clearcasting.up and 0) or 0.23 end,
         spendType = "mana",
 
         talent = "wild_growth",
@@ -2311,6 +2353,7 @@ spec:RegisterAbilities( {
         texture = 236153,
 
         handler = function ()
+            removeBuff( "clearcasting" )
         end,
     },
 
@@ -2322,13 +2365,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.08,
+        spend = function() return (buff.clearcasting.up and 0) or 0.08 end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136006,
 
         handler = function ()
+            removeBuff( "clearcasting" )
             removeBuff( "predators_swiftness" )
         end,
 
@@ -2352,6 +2396,55 @@ spec:RegisterSetting("min_roar_offset", 14, {
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.min_roar_offset = val
+    end
+})
+
+spec:RegisterSetting("ferociousbite_enabled", true, {
+    type = "toggle",
+    name = "Ferocious Bite: Enabled?",
+    desc = "Select whether or not ferocious bite should be used",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.ferociousbite_enabled = val
+    end
+})
+
+spec:RegisterSetting("min_bite_sr_remains", 14, {
+    type = "range",
+    name = "Minimum Roar Remains For Bite",
+    desc = "Sets the minimum number of seconds left on Savage Roar when deciding whether to recommend Ferocious Bite",
+    width = "full",
+    min = 0,
+    softMax = 14,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_bite_sr_remains = val
+    end
+})
+
+spec:RegisterSetting("min_bite_rip_remains", 12, {
+    type = "range",
+    name = "Minimum Rip Remains For Bite",
+    desc = "Sets the minimum number of seconds left on Rip when deciding whether to recommend Ferocious Bite",
+    width = "full",
+    min = 0,
+    softMax = 14,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_bite_rip_remains = val
+    end
+})
+
+spec:RegisterSetting("max_bite_energy", 35, {
+    type = "range",
+    name = "Maximum Energy Used For Bite",
+    desc = "Sets the energy allowed for Ferocious Bite recommendations",
+    width = "full",
+    min = 35,
+    softMax = 65,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.max_bite_energy = val
     end
 })
 
@@ -2487,4 +2580,4 @@ spec:RegisterOptions( {
 -- Default Packs
 spec:RegisterPack( "Balance (IV)", 20220926, [[Hekili:vwvtVTnpm4Flffiyd71oF12To0MdfDhsp0EWf9OSKLPteISKHKCmYf9BFuoFzNLG3weGaBrYh9qYhstgtENKKZCa51jJMmz09tUlE8VMo5M7jjUnvajPIXxXwGpOyL4)pXKmfV98nsnlpeVvxBchT05QS)E4WMMMybFt0AqOSXCD5WgTtUkIlzwRGpmBlgr5MArEuELnQAnez0oMtOvrCTwMRBu2iwMqkCcWssYQfs3Cfj7809NilQao51XJrEiYZHTUcwoj59LcRNwzeAJWTXtdVLXSqUNQvEQBj4PZ5OHpce2txG0cIXu0OlesmXU(ApDxI7PphyTN(T5F8D)lbltUZttGkhuMbg8vKy(x8VW4HSXgxzaSeKXC)4XHLATALqLwOnLxWdMzvQUifjvAJqM3bj0AbdmciTqyG)tu8OJjbLlwuImDnKN2XCmOyzsiFWvobhVYfdwy01vPLTS0o72EWQX(x4wvmxTb6AY6yMcMu29muySetKadchUgsbfuITPzJhGUVaCX5cmqSC9W0rDJCzTXi4mfCUy76i2haUl12WmLbFZQlkIbUuuzHuzTIzIdsKdzx3ydf59vOs96wRH(07V98B)2t)JAHqbyHcpN6eQvy5iERhDikQ9nOIclQmohKGH50g7fOsDv37VgpxGQHpN3Tf4DS9moBGsgwmMXzwxQtu2R50GSA5)eOvlpxGKeSyQWSgNMMxwPnUWaWK9zTNkXEwOsqsy1ULAd62HHcssR12TfqbRw6WhFTD7XoHg5jschNVWcld3D8)Rm90bE6vHwW2oy41EAupDMNElYMw(rs6GbXHlacx(bB9vWDzf660UUUxrFIp3CXCPVoTLvJBz7jADp9bpD6OJ30U5Ka63(Lq)iehgycGC3fb5cJhNuIpcB3XRaY)8IiVDa6yK7hUcr9RVcFQRocYHjKak3)vqzNQUTm1rz3R3UJDJh95aU34YLaUDsdr1f(QWUT1hMa6wB2VD)e1vpX6P74777(FK)(d]] )
 
-spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:LR1wVTTnu4Fl5fb7MwpjhBhha78WqXaA2qxbCX2BsIwMYriYscu0Xldg63(oK6gfViPS(2gqrBIi55(578rI664(D3DhquS7xNBpFUJJJ9m7139WDoU7OVLHD3LHcEbDe(He0j4V)fmbfx4)5VTRWFYx(JPSn8wCk6atq5PNjbWMC3T)Cum9ljU77kD71ZCwU0X5byVz4a3V6a655OdhWLBfNh4U7ptP)2Vw4xRjY5Odf(FJeLsIOr48INkE67PhpgJl8rhEfLeGH1jPuenknb(jCq6Pt4Kd8FpVWpc(i9zy3bXOC43tZ4lmZDxCuonNz4bik8pFLhnWjO9X4dU)m8zqJyseI5pHHZcIXisakNgLCC25m3DOaMKaF5zcCak4Lgfaobto(2SGZecoHw4VPW)o7wjqJoIj5EHNjVXKZDgLtqAA8H0ljZeoXmc(ekI5Qpw47SSW3cYnf(3u4FaZn8yuaemPyWOl8VEv97DeGDH)0wlBpOfm5fMvTqYQYHmyTJrJoH9OPEIo1fuev02R0kjkRvHB2w4RicUhazX9PEzPrj0824gS9she8oU0QSpw(amXLgdCW(zEFVcU10bBKjUvJWJNV0ShZTWC0RqdKhjfrgWVzQ8(H8aw(BstkKfmR8lfLz67ngXNGULOmVtO)QJDvg)Lx52c)trjCj4LggMJlRIDwWxAc)p6dTGACGAQc)pWtEt7uFjyym3FDFUFLpFcLaD)D6al)KhRpgeYddfdTAc(I5Fh7(Q820Tab9cMPkh7r3Y)o1qdOIJzyPjYLcTnYmTnFG8pFt28msvvLulf)8gfV9ie)6Y89OB8cXK0GO0Z5E7bNK7(MbvvXaQ0ZayKRm7xClUFVQ(8AG0xufsG5exWOxH5eE1gEJhEiIG9y7WlmLCI7HMH7Bl6rKtPepOK4mxo1(QHqGgB7EbK5qeiESxiZuczZz5MHm(UuBJMIFZWTYgalQzxwMjdBRuXtzJkcrNJBhkxVLZ5ypqfNYfvBVdERdqDd7s12DgqQ5ZTWJ1JFmpbfQNN3x91cLsKAHmMAfZLk94LJtzKZjEL)ShJyuj9iVsAFCrwFuDCbE32rfI973kkpy)d752qgunHOPaaq(LOqAcopV2qAwQzLAdHVmWtKcnhjr5pJjEbzAODiXfCauDZ4fJZXvTxDStKPRIODI(mH)klIJpXOrZ56no1ZKekf3p9ezDoArp4yFrzvRGsyImoz)9dXEVDQFD67iegbwmEW9c8UefFqImb5fXfheGXSbwh5618EF3nWSLm4CpNLA51374hPaNg(LgAjuhxm65lsCcxkoba6aYkj61DcG5MbD9DLDKHXPxWMNulxKuMsfbHExPv2KHvR1rGVd77fdZ)q3rha)rII3qWxshZ4iBHQ9EkmjGx0noiEPPtWK(MYqjc9SGD3envlA4WxEx)0aHIu8rs6f6Z)an7Dhs2RjvfYf5v4i0YloPD8VPW)1lWmJtnWOvCcRcSFiizcD5uuWlY3jtmVyM9X4k3xnQY9Eg4owNMxB(keBzFM)qC2pmFf7Xkijq2bOs)LtzPekJ8Z9L0eyVJg)XXMv8eRFlnmcq7QeD(SMXU3U9NKhw(XOWT3CoZ6gtZzlEsNyQZZvhN9iFvBdwSH1V4h7sXKFo9upTuj5R8PQQ8nlnTYJBNBP2v84cR(4wlAUsKG(iJ(Z2oigmxWGh8JRKYcSrQIUCZhubQ4Xn6rpQRLz(3wYCV3USQuscrXshyeK)62vSbUr(qMFfhTgBwGdRfBZTCMF0zmctNGepN5sD2jGnWVhCRuKqsL2Saxp2rKC)7SL3FfilBV9Xx8rNLwtUrTZ56vtnio2tL1f75q)yooyRYlDYuVA70g1nQnn3uti8QhsQgKAnsKEjmwBD(YMmHMPLASyLSz7PQSORxN051BTuKUUVvPXp19Dz3S12Q7xUv6vA34S42jt0fe(KZ0pSCQswR9Tu52R8JUQePb291H6UvFBDS1N)2Oe9Bk5)xlHUpCitutMObWERZCJHwyr7PqYrQ0shUpSZEeZ6PthzvNPHycAV3U0v6mU1MnTvQ4JwAETsLGR87fkwzO(YKkDNYA9ELUeHQOrwB84k7Rxvqb6CygS(7fIS6mJhMu3Pf7jUrx3T2rA6KKk6H2DvFPyDlkZbttmyXslT3fwmE2HRciwrAlGhvJh5yB(iIt(KsMBxTUlSyd(2cZvZQB3ayrtxDFKi4BZ4yfzFPKETUyzpbaXyM2lCiIRjFy2fhyhu86faT0EprZTkuYKLR9)2KsJ7pYOQW(1gtvz0c7vdn38mCC8a0JhqQs8hD3ThLJp87j6(pNb6m95u4kLFgh(3OGN53f09F(d]] )
+spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:TQvFRTnst8plLcM4KgvlBRKgWYWDuoO55Opf0XD)NK2iV2ruzj)Ssk56dg9z)MD1B772X9Gsjr7SZ7ZVz2He6g(hHbBqv4WVoF285UUU374EV79l)uyq1poGddoGs(oAh8d5O9W))ByckRj(ZFlOj(QV8NtH)F(ukv)iRaTHYTYIAscqzyWt1PzvFjp8j9Iyjq7bCs4xDDddEoDZgClP4YKWG)QO63)pnX9IJuNUPj(BK0csAvkUS5XMh)JID7YWnXOnVGYtWW5KIkuvAro8t4KI97X5By)EztCk8XQNbQtYqLWVxCGDGtyqwAzvjZnG3IQZQGF8Rm3ckHssyqDjokTcVVmmaNJEkdVj8xdRaRHs04xcsavdtsrGHJrKxXOxsZ3fLHsaBOch1rzt8KM431e)u92ToBsj4ik1rBli7DQpWoDdMDy)nDkRGyqt86M4fApNG3JsPg5kGchp70aCX1XB06evbQDT4YTl9g1OWi15rT)Ce1T368JAZSy3ONRu9y5zPh7r5qwW)UArlpP6GNrD4abdjxfKYYxt3wLJllv1HbAIgiQpgdzHvrBtZtlFgtIsGp63e7jKCKKb6scqhyM9xdYQFQi6qrAEvPtsnHGZRyX92RIZXKD)q4GLZopdx1EO2)DMJbmvevjK5sz(l0GbEpTiLMSn)8epLtOcMp)(ZwMNnRPS9tgzl4W55vVacPxJD7Eebt3URydr2xqIa)ynJt9oLkezhUYPOUQmDd2LlESfbSadPbqQ6wksNDyfnr3fCCRkDhgs12wt(H9Y4KIISnfVM7WDdoacir0LdG4jGem576Qi7j5aWqWU7r(LcyLOxGgirKceraQQ92chd9dYH6NpcAWmHAHoLGfZHytuo(VRObfRLOsXvobzp1UlCssp0hcvSdtFFW(Uf6bLEaqs(7rtgCSTwL8j30eVpnNXHOITBlXTbx3LSJUI9p9v(GyCBIHUWxZGaMA0ApvrLiwdhBEgYN1v(CYypNxutuN(5ljA)G9OTfqsk(khGr6bk7GQXl0SqFhR1UOF)smmxRimcyDGiy3qgP4C1922B60(UMPaM3LzdMXCgrj7KoVfnkwgxm34hajlsslQlFkvAYdZXC2XxPP3iCiueg1Xk6HnXhpQ5JueX78yLzAkEPNsREzxHE4WjwbieUwjP)wCnh6TvgjmhJvOo7nHuJEMgy4(t1GY1mYPrCQ2juOExzjE7yJakutFE3ndgKaaY1TPJuNNkqYutH6tldHQzncHRQEQgWrxlWRCZQYNWQDuTto)NoFcmK1shpJ1O9kRYG(vSH(OXl9J4mwDs(o0wkcE(u0RPzBAFIgOcTh)lF73BIFzHd8YJBDDDEOj(96HL7vUDW8L88JQLwN75uZNXgC06mANyUyPjNmRjx8KtwbgTmKIzOqv)QM5tmKkP2lHHSmOdVMEOfnMt0wNysN)1ugj7ZBZkEflxxmQbYPiTHA(3M9Mc3RPOATWpgMkzr7P2DwCjEwYriqqqWtWpX)B512Imso5QRNjLx2tu0WMfJSH)b3wBVShvNf9)QX18Xj6hhqsKF(O1qKL3hZLDI3rkET65Fc4bXTkyvLSS2LrUJZP(t7kuxooF(LNEpUvybopEFJn1y58U2QApSBYnZ7ccO5btnnFBfn813tB)NsAILK0)TeU(IvZj26DBwqde0j5uLw1AymeZu5PNn823dcEq(KgRJFPb9rBoqNUmmG8PYrM(wbinpr0BbxJvd)ceEPNX2F8ShMFxyWRisoiDyC5VS)qbPIwICF)4AnXSD6608ifxQyBk0Vi49nXAMuP5X2Ru6mmk0n(FuEINpKU1)D1hM8otZVONn9UJURt3zDhzWHdBvM)JIThO3Z2kx70hLnDorBWE9cLV3fKxboetNT2fgTKtdLw02hORyZxaK9KATEL(8esB2HSie3b8Lka1wyu5yEpVtS0dBI8(D996Iwsfpt09EPvEtebexbpn4uQF3GWmFdtqJ7jDcL4X9YUE(5WmDmI)EMZUP3aiq5XJmkn(m1jY7jvMFCZCt5KKhAHc9DDfO0ABU91(UEYxvydkFOFlh(Ud(enpPFvllu3N5hDN1f75AskjqUln4pTsHWokNOOt6(wNEER4cmw5pBI4xUrAxKRCxEZvxPlp9w3Px7nvrtPVkEm7rQ)5BWtR25V3hp8O)ZX3ce3dGRZi8FtrFnlmyqPgwsWzPva1gc1NH8fxHxVgiV(UZrpgVdF55Ws6ukQf2kf9kA3jNbp9KRKQA9Lw22XJsFyT)DEtLsqx7RBFBgt45iFCpB)SGvYUvza77vGJgkl0wkTY74rrwCBpEY4kRUrTI4A3zR9LRkMk7NTXlUmzbMnKnRuGBFkL(maLoygAaQAtRx64PjVvqnOT6ozpHLZ0DNlTVq31pbuDhvCL3DMIe8SwNHw51VngDhkplQoNGQVCI21VW7HfMOdKt7ZE5aGKNT08v5NleeDpKLN5BqFUiZ3X9c4jxX)SH1(ZH6fPpbGDMgI1)b5kI13p74rnnywC8OKZA60PMvv(HGUubCEUozJTNpszqdYumaTAbGjO)ep1R0RRpCMwUGUTstCGjjFZpYW)HP6nhBjjdVtKQcsEhpLK5w6)Pcz21TbbOcpk5EmDXtAs6VgFwICsIzrPwIX7YuF1dDUe1NcbniYYgM1ZWFVl25Q07icdEcvI38FZv)Bnlmavx9Cbjm4Z4T)FuYZS1de(pp]] )
