@@ -894,7 +894,7 @@ spec:RegisterAbilities( {
         timeToReady = function()
             if buff.sudden_death.up then return 0 end
             local threshold = settings.reserve_rage + 40
-            if rage.current > threshold then return 0 end
+            if rage.current >= threshold then return 0 end
             return rage[ "time_to_" .. ( settings.reserve_rage + 40 ) ]
         end,
 
@@ -1265,7 +1265,7 @@ spec:RegisterAbilities( {
         readyTime = function()
             if buff.revenge.up then return 0 end
             local threshold = action.revenge.cost + settings.reserve_rage
-            if rage.current > threshold then return 0 end
+            if rage.current >= threshold then return 0 end
             return rage[ "time_to_" .. threshold ]
         end,
 
