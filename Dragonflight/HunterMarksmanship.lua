@@ -577,6 +577,7 @@ end )
 
 
 local steady_focus_applied = 0
+local steady_focus_casts = 0
 local bombardment_arcane_shots = 0
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
@@ -588,14 +589,22 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             elseif spellID == 378880 then
                 bombardment_arcane_shots = 0
             end
-        elseif subtype == "SPELL_CAST_SUCCESS" and spellID == 185358 and state.talent.bombardment.enabled then
-            bombardment_arcane_shots = ( bombardment_arcane_shots + 1 ) % 4
+        elseif subtype == "SPELL_CAST_SUCCESS" then
+            if spellID == 185358 and state.talent.bombardment.enabled then
+                bombardment_arcane_shots = ( bombardment_arcane_shots + 1 ) % 4
+            elseif spellID == 56641 and state.talent.steady_focus.enabled then
+                steady_focus_casts = ( steady_focus_casts + 1 ) % 2
+            end
         end
     end
 end )
 
 spec:RegisterStateExpr( "last_steady_focus", function ()
     return steady_focus_applied
+end )
+
+spec:RegisterStateExpr( "steady_focus_count", function ()
+    return steady_focus_casts
 end )
 
 spec:RegisterStateExpr( "bombardment_count", function ()
@@ -641,6 +650,22 @@ spec:RegisterHook( "reset_precast", function ()
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
 
     last_steady_focus = nil
+    steady_focus_count = nil
+end )
+
+spec:RegisterHook( "runHandler", function( token )
+    if talent.steady_focus.enabled then
+        if token == "steady_shot" then
+            steady_focus_count = steady_focus_count + 1
+
+            if steady_focus_count == 2 then
+                applyBuff( "steady_focus" )
+                steady_focus_count = 0
+            end
+        else
+            steady_focus_count = 0
+        end
+    end
 end )
 
 
@@ -1026,10 +1051,6 @@ spec:RegisterAbilities( {
         texture = 132213,
 
         handler = function ()
-            if talent.steady_focus.enabled and prev[1].steady_shot and action.steady_shot.lastCast > last_steady_focus then
-                applyBuff( "steady_focus" )
-                last_steady_focus = query_time
-            end
             if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end
         end,
     },
