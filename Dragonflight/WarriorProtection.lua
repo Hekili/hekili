@@ -890,9 +890,10 @@ spec:RegisterAbilities( {
         indicator = function () if cycle_for_execute then return "cycle" end end,
 
         timeToReady = function()
-            -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
-            if rage.current >= 20 then return 0 end
-            return rage.time_to_20
+            if buff.sudden_death.up then return 0 end
+            local threshold = settings.reserve_rage + 40
+            if rage.current > threshold then return 0 end
+            return rage[ "time_to_" .. ( settings.reserve_rage + 40 ) ]
         end,
 
         handler = function ()
@@ -904,6 +905,7 @@ spec:RegisterAbilities( {
             end
             if talent.juggernaut.enabled then addStack( "juggernaut", nil, 1 ) end
         end,
+
         auras = {
             -- Target Swapping
             execute_ineligible = {
@@ -1151,7 +1153,7 @@ spec:RegisterAbilities( {
         interrupt = true,
 
         debuff = "casting",
-            readyTime = state.timeToInterrupt,
+        readyTime = state.timeToInterrupt,
 
         handler = function ()
             interrupt()
@@ -1229,7 +1231,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.revenge.up then return 0 end
-            return  talent.barbaric_training.enabled and 30 or 20
+            return talent.barbaric_training.enabled and 30 or 20
         end,
         spendType = "rage",
 
@@ -1240,8 +1242,14 @@ spec:RegisterAbilities( {
         usable = function ()
             if action.revenge.cost == 0 then return true end
             if toggle.defensives and buff.ignore_pain.down and incoming_damage_5s > 0.1 * health.max then return false, "don't spend on revenge if ignore_pain is down and there is incoming damage" end
-            if settings.free_revenge and action.revenge.cost ~= 0 then return false, "free_revenge is checked and revenge is not free" end
             return true
+        end,
+
+        readyTime = function()
+            if buff.revenge.up then return 0 end
+            local threshold = action.revenge.cost + settings.reserve_rage
+            if rage.current > threshold then return 0 end
+            return rage[ "time_to_" .. threshold ]
         end,
 
         handler = function ()
@@ -1649,14 +1657,6 @@ spec:RegisterAbilities( {
     },
 } )
 
-
-spec:RegisterSetting( "free_revenge", true, {
-    name = "Only |T132353:0|t Revenge when Free",
-    desc = "If checked, the |T132353:0|t Revenge ability will only be recommended when it costs 0 Rage to use.",
-    type = "toggle",
-    width = "full"
-} )
-
 spec:RegisterSetting( "shockwave_interrupt", true, {
     name = "Only |T236312:0|t Shockwave as Interrupt",
     desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting (and talented).",
@@ -1679,6 +1679,17 @@ spec:RegisterSetting( "stack_shield_block", false, {
     end,
     type = "toggle",
     width = "full"
+} )
+
+spec:RegisterSetting( "reserve_rage", 35, { -- Ignore Pain cost is 35, Shield Block is 30.
+    name = "|T135726:0|t Reserve Rage for Mitigation",
+    desc = "If set above 0, the addon will not recommend |T132353:0|t Revenge or |T135358:0|t Execute unless you'll be still have this much Rage afterward.\n\n"
+        .. "When set to |cFFFFD10035|r or higher, this feature ensures that you can always use |T1377132:0|t Ignore Pain and |T132110:0|t Shield Block when following recommendations for damage and threat.",
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
 } )
 
 spec:RegisterSetting( "last_stand_offensively", false, {
