@@ -213,7 +213,8 @@ spec:RegisterAuras( {
     battle_shout = {
         id = 6673,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        shared = "player"
     },
     battle_stance = {
         id = 386164,
@@ -366,6 +367,7 @@ spec:RegisterAuras( {
         id = 97463,
         duration = function () return 10 + ( talent.inspiring_presence.enabled and 3 or 0 ) end,
         max_stack = 1,
+        shared = "player",
     },
     ravager = {
         id = 228920,
@@ -1083,14 +1085,20 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 135871,
 
-        toggle = "cooldowns",
+        toggle = function()
+            return settings.last_stand_offensively and "cooldowns" or "defensives"
+        end,
 
         usable = function()
-            if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled ) then
-                return true
-            else
-                return incoming_damage_3s > 0.3 * health.max, "requires 30% health incoming damage in 3s"
+            if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled ) then return true end
+
+            local dmg_required = ( settings.last_stand_amount * 0.01 ) * health.max
+            local hp_required = ( settings.last_stand_health * 0.01 )
+
+            if settings.last_stand_condition then
+                return incoming_damage_5s >= dmg_required and health.percent <= hp_required, "hp or dmg requirement not met"
             end
+            return incoming_damage_5s >= dmg_required or health.percent <= hp_required, "hp or dmg requirement not met"
         end,
 
         handler = function ()
@@ -1174,8 +1182,17 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132351,
 
-        toggle = "cooldowns",
-        shared = "player",
+        toggle = "defensives",
+
+        usable = function()
+            local dmg_required = ( settings.rallying_cry_amount * 0.01 ) * health.max
+            local hp_required = ( settings.rallying_cry_health * 0.01 )
+
+            if settings.rallying_cry_condition then
+                return incoming_damage_5s >= dmg_required and health.percent <= hp_required, "hp or dmg requirement not met"
+            end
+            return incoming_damage_5s >= dmg_required or health.percent <= hp_required, "hp or dmg requirement not met"
+        end,
 
         handler = function ()
             applyBuff( "rallying_cry" )
@@ -1406,7 +1423,17 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132362,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
+
+        usable = function()
+            local dmg_required = ( settings.shield_wall_amount * 0.01 ) * health.max
+            local hp_required = ( settings.shield_wall_health * 0.01 )
+
+            if settings.shield_wall_condition then
+                return incoming_damage_5s >= dmg_required and health.percent <= hp_required, "hp or dmg requirement not met"
+            end
+            return incoming_damage_5s >= dmg_required or health.percent <= hp_required, "hp or dmg requirement not met"
+        end,
 
         handler = function ()
             applyBuff( "shield_wall" )
@@ -1692,18 +1719,110 @@ spec:RegisterSetting( "reserve_rage", 35, { -- Ignore Pain cost is 35, Shield Bl
     width = "full",
 } )
 
+spec:RegisterSetting( "shield_wall_amount", 50, {
+    name = "|T132362:0|t Shield Wall Damage Required",
+    desc = "If set above 0, the addon will not recommend |T132362:0|t Shield Wall unless you have taken this much damage in the past 5 seconds, based on your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Shield Wall when you've taken 25,000 damage in the past 5 seconds.",
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
+} )
+
+spec:RegisterSetting( "shield_wall_health", 50, {
+    name = "|T132362:0|t Shield Wall Health Percentage",
+    desc = "If set below 100, the addon will not recommend |T132362:0|t Shield Wall unless your current health has fallen below this percentage.",
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
+} )
+
+spec:RegisterSetting( "shield_wall_condition", false, {
+    name = "Require |T132362:0|t Shield Wall Damage and Health",
+    desc = "If checked, |T132362:0|t Shield Wall will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
+        .. "Otherwise, Shield Wall can be recommended when |cFFFFD100either|r requirement is met.",
+    type = "toggle",
+    width = "full"
+} )
+
+spec:RegisterSetting( "rallying_cry_amount", 50, {
+    name = "|T132351:0|t Rallying Cry Damage Required",
+    desc = "If set above 0, the addon will not recommend |T132351:0|t Rallying Cry unless you have taken this much damage in the past 5 seconds, based on your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Rallying Cry when you've taken 25,000 damage in the past 5 seconds.",
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
+} )
+
+spec:RegisterSetting( "rallying_cry_health", 50, {
+    name = "|T132351:0|t Rallying Cry Health Percentage",
+    desc = "If set below 100, the addon will not recommend |T132351:0|t Rallying Cry unless your current health has fallen below this percentage.",
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
+} )
+
+spec:RegisterSetting( "rallying_cry_condition", false, {
+    name = "Require |T132351:0|t Rallying Cry Damage and Health",
+    desc = "If checked, |T132351:0|t Rallying Cry will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
+        .. "Otherwise, Rallying Cry can be recommended when |cFFFFD100either|r requirement is met.",
+    type = "toggle",
+    width = "full"
+} )
+
 spec:RegisterSetting( "last_stand_offensively", false, {
     name = "Use |T135871:0|t Last Stand Offensively",
     desc = function()
         return "If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage.\n\n"
             .. "If unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage.\n\n"
-            .. ( state.talent.unnerving_focus.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires Talent|T571316:0|t Unnerving Focus|r\n"
-            .. "or\n"
-            ..( state.conduit.unnerving_focus.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires Conduit|T571316:0|t Unnerving Focus|r"
+            .. "Requires |T571316:0|t Unnerving Focus "
+            .. ( state.talent.unnerving_focus.enabled and "|cFF00FF00Talent|r" or "|cFFFF0000Talent|r" )
+            .. " or "
+            .. ( state.conduit.unnerving_focus.enabled and "|cFF00FF00Conduit|r" or "|cFFFF0000Conduit|r" )
     end,
     type = "toggle",
     width = "full"
 } )
+
+spec:RegisterSetting( "last_stand_amount", 50, {
+    name = "|T135871:0|t Last Stand Damage Required",
+    desc = "If set above 0, the addon will not recommend |T135871:0|t Last Stand unless you have taken this much damage in the past 5 seconds, based on your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Last Stand when you've taken 25,000 damage in the past 5 seconds.",
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
+    disabled = function() return state.settings.last_stand_offensively end,
+} )
+
+spec:RegisterSetting( "last_stand_health", 50, {
+    name = "|T135871:0|t Last Stand Health Percentage",
+    desc = "If set below 100, the addon will not recommend |T135871:0|t Last Stand unless your current health has fallen below this percentage.",
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
+    disabled = function() return state.settings.last_stand_offensively end,
+} )
+
+spec:RegisterSetting( "last_stand_condition", false, {
+    name = "Require |T135871:0|t Last Stand Damage and Health",
+    desc = "If checked, |T135871:0|t Last Stand will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
+        .. "Otherwise, Last Stand can be recommended when |cFFFFD100either|r requirement is met.",
+    type = "toggle",
+    width = "full",
+    disabled = function() return state.settings.last_stand_offensively end,
+} )
+
 
 spec:RegisterOptions( {
     enabled = true,
@@ -1722,4 +1841,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Protection Warrior", 20221104.1, [[Hekili:1M1EVTTnq8plTdWXgRqr2o2oTioaBDdyTOOOyUa7)KeTeTTwKe9OOCBgm0N9DhPEqQxoPRff1rM8EXJ3RFYotD(SZMaIG68Xz2ZMnDQ9nwZMpB(0LoBepEK6S5iX)bYE4Hesm85N4mb1xeYsY9(lcNhY4inpgXibOSszzCFGUdcXX03C917dfhY2A5ZIVonmolIGS6Zj7e439V2zZ2SWiX7sC22PHyFliZJuFNpUAoi1WGaQIuAQVZgq1C2UWiqHePrLADKtbLTLi(51xVlIMEqQS83N)(Fk373)k1ptqdY9ONO8hZ9eHXu4ZdWhGay8CVWu4XtKWiY2iQv(7lKlin)de(E6Rc3Tg5ATT(EhZIJPr6RagDuKlNc2GYDH6)3O7izrICVF5tF4kqrV8pOCwOFU3BLY(LfQp3RC9pqjhZ92XIIyFbn7Tpwsly1SCVa4)Pm8meqIj4QKeGS90ekhCM5E)jSOXP4GuYUrGGXJskvict2NAvSU6qoINLq3XGNS40J8Wus0iFglkG9LelfjWgXKWK0727h0Tx6PlA4o7K1ulnttxIHjck)eCIqHUnB3oGr4RGaqZz0yoCeV7w7ZNLpSA1ijnrKuHBQaChwzhN0Hw1vrwk1nuqJtrvuDqHWabHxDqxdN0ZNLcVyNmd7CBeJf4UlJ)yLH2nDuEkL)a4AgMUDHCQuMdtgjXNMk4KixFsu0W0c5IjbuURFK62xs5Pqwenr4YYeBZ4PcGNrJhl3kLsbZeIIdSaxP)d3VSomi9qinkWnnIex6IUF2KjgMM0g6xrOCmYIy4tTpcNplWqhHfM45kyUbH07MTOr6gH7Y25UfU3LPB17veU0k8bpNfc(aLejoyD0xC)missL8Q2l1s3RD)8jd6cmcC3NW4u3JW6YQgTu16z2DzbRV1E0l8zGrssewWFehEKprfOdBUOpdGe8Ok2Vyzi4X)bP7tX5s7AodOXmiMj8FX730dWvsHaee8oYAlJfJBDcYiPwGLavddkf0knbvLKamxU)n)FvuhPWLYEXIU19aSuwBWK5E8DDLnmKtDU93UinS2o1YKxHLMy725cfFwp1iIxJsm8ACB(rJQOILX6Lv0gkqEYOUsn0nGARVNO7xBxL4wV8DRnLs74dL0gi4qwNFPDhod8amyDnjRqyGr5HSex13CJctfVch0znHP6HnqHaJUEqP32cr2ggAJRx8NShRsjGLFWOybH7tsWIBCoy0OUl6Rz4Yd3FqK6(3zb7JbQWPAkN7bmyGJtapCJfRR)1Cz9ttZ908N6kP4a1wrfBaCsvJy11wgcT92pTMtg9m04U1HSERa6jiufNTCdm1xkSB9qMoB(cHNGJP4S5Z4yGHXhzCboZfmm4vbQb2Uk3Jt)NmOHCq58wKmblMiNLegSb0CkmM1hctGTU5nWqASeqxYTVQ9ShxPMERJDkdYbkgp9RtQK5IFaYC53vzM)(3jDDOOUroon2g2dZgqxdmHEM4aIwytfoG3IJM7SrsccEaI9G)8rjOef)oBkc1C2uOqNF1raxFgKOU6BqYCDs0JTAq3n60PfIAsgyMfbuFlwyrsXqwyVAwzG1RSXNdJQYdji0P(Yq65KdsBXL9Cl1jrl5PH)Oi3OYFOzILmRg5xHwJhEuT4ZgeM(rwr76Cp7wozfgSb9XnWKDbhDjBA4sACuAINZeo3pi0C6UJUXyL7ncky1BoRC7EGZL7DhOq)aRyYxRcx6m47Bx1TH71kIPmkS)WEDmGsPog0R0NbhaORP35ZAlSALKM2tDL7n5cMCTTvbefnVv9AE9GFeSJ1vUwL5zIYPwrvWrrfD7W(HoyVgikY)RF(8xbqf5FQ9ZwavixL83S4WL53esRuiZEMfbXBwvqX4c)CtSS5E3dTanZf6cqhs2mzyYK(RQoD(Z0(mlsR8bsbDHQ91W6LrqTXfld3NTqRSOeuTu2lAum0aXCJIHtFI5F1o6wJ6RCDfPI9pjTKS5LjIdDx0UXfAOnZeRsxRHFB0bPdZCTYo7)CSwvtbi4fOjAcnV00RQajjFXqhhaByDbPgy(0lDHsAPTPK6drTKQHao1uWRAiyD40nP9MVFgrp1Hn13IfdzBpjry2eOlHoWDsFfuEkxyZT)(OMgNUE1(evhJI3saongMw0FFJXDjivF0QUsD9(cKLwgUw5KI7)URe0AAxP4LwB)DP6jD812gva13(U1MkR2pkNzS)(zxmUTAEIL26ti3mvqQMl02RVB(cviJw7gDak8(BhEP6SA1qnFVhkCyUQFMhejgQNMT1QgtRX77WG5sGsOamqxz8YpAIxQ)jn1gRtRLPX7lrkbdClnEvjTqVu97e50epx9VAutMu)Z5)c]] )
+spec:RegisterPack( "Protection Warrior", 20221120.1, [[Hekili:fR16pQTow8)wQwjkC3kMammdt1q)WE1(HB1QQvIR09BjysmG3gI564WuwHYF77Xooj(v4Xu2DvvNzi(8YNh)8X5q4OWFpCrcIJd)24GXJhnACWWrtF8PjVeUGFCpoCXEu83rBG)idTd(5)Kr54yoHMvU8pqmgHYe0CmLIseYkNwWIb62Y57Z)8dpSHW3wSAymD3d5KDfPibRXm0AU4ZXpeUyvbjL)BzHR8BipdYCpoo8BppbKkjjbxrkopoCbOAgDnjfuisAu5d3ZWGYwH4)15pSofNVvQSYVw(1)s5Y)(pWXfCCs5s8bm7y5sozhg(5w4hGaOSYLKC4ppGiPOvP4HLFvjxqA7l2TdNQ)eWWstJyyqpvUe912sWPjrXBrSn4prwpxOQ5b6KCU1kYXreoExUCzukoJpemloI1RFmLMMqFlt9GHm8oejl)15BItoDAvX611RuSFWPtFWGDDLSkLstIwxWok0IjJNLpmlhZ(ojBZTX3Acdl15TXgklgNZzO0OyuA6TX7EQ4V8XZkAEEV1KnB5r1oWXt1zLb5izvXhjVQpdm3Rpxe54d3IrP8Td3hZ)Y4GtNQYhQwlFiK4NLGzrXPO9FzYGEnHnvQrEkAxDStxVKnzugoAp88QGVTQMpoWNfmFwqVpetbJebUc4x8Thzd61NbLVWIt7Yaqjh7j3GQhdrO4VlDrvC(uqlNj4Duiqq(3qSpkFlTGReGkaSIs3jw6aLeJhcwcueLulON1eutQlWC96p(ZQOQTrkkNhLZrzjABIPt9R7ZWYSaFm3HV7aHkSRiWqxvWY5ISKZ5uNe8(fPH16vld(Ka)GUEDeajmFKhCjjLI0R(U8lmkfoIXZRltoxI8GE(kn8yacMAkT8Tvf(PxbxVbWdAdSRI4ms83nQzqSyugocqWzGCeYvY(mdnNkk2ZJ(xfjB2bu5XOEtHVa(wb6wVp4XFx9mi3m9OibmMDeEQHAAi3vuA6Ptzb4iyoh(CUMMfbtCwo5ao9ObiLgVxNLBAc6YYTM79iXl7GuhFaqJIGKry0b)gGurmrmFfOyRJyJPz)zbMrz5WQzzy7dniIuk4WFqDBH8xd3wrwu1NIsj58pjAUzoII)uUi3IpFKyNFo4Cd7a2QUsBdgSisSOZJ6Etafm3cDx4baWU1KycGGpzAv5SgrdpGslWVQkN2H(XVemCIHipNxsTUY2Pf5rmQMdwTmd87BWopw61EdDa7UGwVnocR9ytJn3KGoSkPh1zncKJrIJ4Bz03CvrvTv9X(kbjKtV6Nv1BJOYrTAhBcboK9sqIful44fXvDpA)4e8bWRJCxGSBpyOYtPiIMlp6ycWd3fTIMY1Zsujo2zk9FFPkW)NoqHMRtBnyoCaHJQ9Ls0UuNjtTK0D(Ogn(tI0jWj9RDrNqu7soHjhDAgZD2zYesHlxqXbCeS(ocoh6760P(Q0lrkyVUs1g41J(ZL0QlOUkW65yWE3L6LwE3M(4YtwE7IBH0b3I1ou5L8832E2h1NPWtlxOP4lCbCzWCy527EgU4neltCgC4IFxC7qqKugVC5AXDe)iu((XYLm8Fwa3ObUnzovCnsubNUdjVEjKvdMBoC)X)bjdwAuWNlx(R0mqrY1)OBsaiqo17k1T3cu0F0pgCrH6KfzjAN1Dvq5x9SRv(U7ZoxuoyzxIh9)H9QsbJ(VreQdHEhSAVriOSavKYVTi0u)2yvVywgM6QtDSDVFs6P7MKE(UjPz3nj9YDqsLF93KHEHaEu(2ReNZUu0)Pi0gUq(xIxjhawb)6BYx1NsmH)TWfXmc0zmbfUqhrTC5xMxUCY0YL9kx6VbJYLVwUSTjJYL)s5sOrJ6xbx4cnoc5aMQ0iuRz3zGUjb0orNwRgnSi9rDsvTRyrYudnx3oHfrpzsKwtjwe(816ab)xGMPvD0LqcZ8S7Kh5zPPxmOt)Stlchf0Pn9binQtCkz0TLIoHB03fzjsnoYJ7s0pLTLze1vDRztJr0w12MnngH5MMqSPYis7C8Vn1MHCT(a0jd(O6aVZx90haBVlfqQFdCoOC5PtE4U(Lfk4h6BxW81v15V849wSDHA4PxBb1txt55ZxopA2LtJE5kZA7UEsWCBtYvr5XvXP(nfs6DWitaUubgeR7arOPw7)Pv3JVfmoPE86x8I(vvUF9o3UGaFNOc63r5SacNfW95RecF0SBXt63F9YTaQno4kb1u9i6dutmungzFLiU5zL1Q9QjL5GczpUmFWrE9yvAgYjc6cyPgI6QzVLVPDZNVoWKj9qfFhdHdWMN3aoRbJ3m4Pg092cutf0AJnZaSbS0RzAl)Rt4TZ(RbL9Ek9Mje2aqFhLEZCeBG2VJc3CAJx4ubFQqmyrzwIXWfLhApEQwrICYKxaNV6vP3m4X6KpNzSiXrghuzaD)ERRGBKPG90sH9mhh)is2hp0aoP17HrbKRzoVYo7EFaemlO(im7XzwB6QMUuKp9CBhuYX2EXSMtwL)QvspfykPUMcPXz7(MePTGF2sW6JG0M2hVFgr922yQn26B60ZzBxLiMfCjHEMyINH)D1bSjb3h1yT76u7dQqLvtwvCc65BSPVpbjSuTJg8nJvjAXz)cdOke6cjW5GsP4B7DQB0MU8tvo9xLXw)9s70YLX4A92ZvNnijDaZ02gMt41TxmRH7E9TJPMVznIthPd1RynwthhXB1Nz09Xs(uO1qzpJgvq8NFcXAULM1BBs8QTQUDdM2R2HfAgRuHDF02pJcVUqIlWP0Km6j1Cw029uBCd5kCrBsULBgp2O6Wz812uBCRe35zBtE39WDPgce3xqm2BbEwBO0Ce5vVqXOQVfGIxPOqL2vvnBnRjIBWC9BvrEBKMVUEn3hPPjVMV8E2xHbEaQGVv8npCrZ3PWFvsP4FH)N]] )
