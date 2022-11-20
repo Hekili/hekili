@@ -881,6 +881,7 @@ spec:RegisterAbilities( {
 
         usable = function ()
             if buff.sudden_death.up then return true end
+            if rage.current < settings.reserve_rage then return false, "Reserving enough rage for rotational defensives" end
             if cycle_for_execute then return true end
             return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
         end,
@@ -1240,7 +1241,7 @@ spec:RegisterAbilities( {
         usable = function ()
             if action.revenge.cost == 0 then return true end
             if toggle.defensives and buff.ignore_pain.down and incoming_damage_5s > 0.1 * health.max then return false, "don't spend on revenge if ignore_pain is down and there is incoming damage" end
-            if settings.free_revenge and action.revenge.cost ~= 0 then return false, "free_revenge is checked and revenge is not free" end
+            if rage.current < settings.reserve_rage then return false, "Reserving enough rage for rotational defensives" end
             return true
         end,
 
@@ -1650,11 +1651,16 @@ spec:RegisterAbilities( {
 } )
 
 
-spec:RegisterSetting( "free_revenge", true, {
-    name = "Only |T132353:0|t Revenge when Free",
-    desc = "If checked, the |T132353:0|t Revenge ability will only be recommended when it costs 0 Rage to use.",
-    type = "toggle",
-    width = "full"
+spec:RegisterSetting( "reserve_rage", 35, { -- Ignore Pain cost is 35, Shield Block is 30
+    name = "Reserved rage for rotational defensives |T1377132:0|t Ignore Pain and |T132110:0|t Shield Block",
+    desc = "The addon will only recommend |T132353:0|t Revenge and |T135358:0|t Execute if you have more than this much Rage.",
+    icon = 135726, -- Same as talent "Overwhelming Rage"
+    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = 3
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
