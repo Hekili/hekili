@@ -524,7 +524,7 @@ do
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         } )
                         insert( menuData, {
-                            text = "Recommend Target Swaps",
+                            text = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t Recommend Target Swaps",
                             func = function ()
                                 local spec = rawget( Hekili.DB.profile.specs, i )
                                 if spec then
@@ -602,7 +602,8 @@ do
 
                                     insert( menuData, submenu )
 
-                                elseif setting.info.type == "range" and setting.info.step == 1 and ( ( setting.info.max or 999 ) - ( setting.info.min or -999 ) ) < 30 then
+                                elseif setting.info.type == "range" and setting.info.step % 1 == 0 then
+
                                     local submenu = {
                                         text = setting.info.name,
                                         hasArrow = true,
@@ -611,12 +612,21 @@ do
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }
 
-                                    for j = setting.info.min, setting.info.max do
+                                    local low, high, step = setting.info.min, setting.info.max, setting.info.step
+
+                                    if ceil( ( high - low ) / step ) > 20 then step = ceil( ( high - low ) / 20 ) end
+
+                                    for j = low, high, step do
                                         insert( submenu.menuList, {
                                             text = tostring( j ),
                                             func = function ()
                                                 menu.args[1] = setting.name
                                                 setting.info.set( menu.args, j )
+                                                if Hekili.DB.profile.notifications.enabled then
+                                                    Hekili:Notify( setting.info.name .. " set to |cFF00FF00" .. j .. "|r." )
+                                                else
+                                                    Hekili:Print( setting.info.name .. " set to |cFF00FF00" .. j .. "|r." )
+                                                end
                                             end,
                                             checked = function ()
                                                 menu.args[1] = setting.name
@@ -1528,9 +1538,12 @@ do
                     end
 
                     if enabled and enabled == 0 then
-                        cd:SetCooldown( 0, 0, 1 )
+                        start = 0
+                        duration = 0
+                        modRate = 1
+                    end
 
-                    elseif cd.lastStart ~= start or cd.lastDuration ~= duration then
+                    if cd.lastStart ~= start or cd.lastDuration ~= duration then
                         cd:SetCooldown( start, duration, modRate )
                         cd.lastStart = start
                         cd.lastDuration = duration

@@ -7011,7 +7011,7 @@ do
                                                         local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
                                                         local results = {}
 
-                                                        state.reset()
+                                                        state.reset( "Primary", true )
 
                                                         local apack = rawget( self.DB.profile.packs, pack )
 
@@ -7051,7 +7051,7 @@ do
                                                         local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
                                                         local results = {}
 
-                                                        state.reset()
+                                                        state.reset( "Primary", true )
 
                                                         local apack = rawget( self.DB.profile.packs, pack )
 
@@ -7095,7 +7095,7 @@ do
                                                         local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
                                                         local results = {}
 
-                                                        state.reset()
+                                                        state.reset( "Primary", true )
 
                                                         local apack = rawget( self.DB.profile.packs, pack )
 
