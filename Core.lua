@@ -1355,6 +1355,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
         if debug then self:Debug( "ListActive: N (%s-%s)", packName, listName ) end
     end
 
+    if debug then self:Debug( "Exiting %s with recommendation of %s at +%.2fs.", listName or "UNKNOWN", action or "NO ACTION", wait or 60 ) end
+
+
     local scriptID = listStack[ listName ]
     listStack[ listName ] = nil
 
