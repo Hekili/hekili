@@ -734,7 +734,7 @@ spec:RegisterAbilities( {
     avengers_shield = {
         id = 31935,
         cast = 0,
-        cooldown = function() return 15 * ( buff.moment_of_glory.up and 0.25 or 1 ) * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) end,
+        cooldown = function() return 15 * ( buff.moment_of_glory.up and 0.25 or 1 ) end,
         gcd = "spell",
 
         talent = "avengers_shield",
@@ -745,7 +745,6 @@ spec:RegisterAbilities( {
             interrupt()
             removeStack( "moment_of_glory", nil, 1 )
             removeBuff( "shield_of_virtue" )
-            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
 
             if talent.barricade_of_faith.enabled then applyBuff( "barricade_of_faith" ) end
             if talent.bulwark_of_order.enabled then applyBuff( "bulwark_of_order" ) end
