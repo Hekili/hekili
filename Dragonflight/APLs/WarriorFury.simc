@@ -29,12 +29,14 @@ actions.single_target+=/thunderous_roar,if=buff.enrage.up&(spell_targets.whirlwi
 actions.single_target+=/crushing_blow,if=talent.wrath_and_fury
 actions.single_target+=/condemn,if=buff.enrage.up
 actions.single_target+=/execute,if=buff.enrage.up
-actions.single_target+=/odyns_fury,if=!talent.annihilator&buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
+# With Titanic Rage, Odyn's Fury procs Enrage before doing its damage, so there's no need to wait for Enrage first.
+actions.single_target+=/odyns_fury,if=!talent.annihilator&(talent.titanic_rage|buff.enrage.up)&(spell_targets.whirlwind>1|raid_event.adds.in>15)
 actions.single_target+=/rampage,if=buff.recklessness.up|buff.enrage.remains<gcd|(rage>110&talent.overwhelming_rage)|(rage>80&!talent.overwhelming_rage)|buff.frenzy.remains<gcd
 actions.single_target+=/condemn
 actions.single_target+=/execute
 actions.single_target+=/bloodthirst,if=buff.enrage.down|(talent.annihilator&!buff.recklessness.up)
-actions.single_target+=/odyns_fury,if=talent.annihilator&buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
+# With Titanic Rage, Odyn's Fury procs Enrage before doing its damage, so there's no need to wait for Enrage first.
+actions.single_target+=/odyns_fury,if=talent.annihilator&(talent.titanic_rage|buff.enrage.up)&(spell_targets.whirlwind>1|raid_event.adds.in>15)
 actions.single_target+=/onslaught,if=!talent.annihilator&buff.enrage.up|talent.tenderize
 actions.single_target+=/raging_blow,if=charges>1&talent.wrath_and_fury
 actions.single_target+=/bloodbath,if=buff.enrage.down|!talent.wrath_and_fury
