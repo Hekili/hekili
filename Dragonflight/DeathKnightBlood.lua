@@ -459,19 +459,14 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 3
     },
-    death_and_decay = {
-        alias = { "death_and_decay_actual", "deaths_due" },
-        aliasMode = "first",
-        aliasType = "buff",
-        duration = 3600,
-    },
     -- $?s206930[Heart Strike will hit up to ${$m3+2} targets.]?s207311[Clawing Shadows will hit ${$55090s4-1} enemies near the target.]?s55090[Scourge Strike will hit ${$55090s4-1} enemies near the target.][Dealing Shadow damage to enemies inside Death and Decay.]
     -- https://wowhead.com/beta/spell=188290
-    death_and_decay_actual = {
+    death_and_decay = {
         id = 188290,
         duration = 10,
         tick_time = function() return talent.rapid_decomposition.enabled and 0.85 or 1 end,
-        max_stack = 1
+        max_stack = 1,
+        copy = "death_and_decay_actual"
     },
     deaths_due = {
         id = 324165,
