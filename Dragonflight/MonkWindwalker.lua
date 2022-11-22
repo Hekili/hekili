@@ -1233,10 +1233,6 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "shadow",
 
-        talent = function()
-            if covenant.necrolord then return end
-            return "bonedust_brew"
-        end,
         startsCombat = false,
 
         handler = function ()
@@ -1641,83 +1637,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "provoke" )
         end,
     },
-
-    --[[ Deprecated.
-    reverse_harm = {
-        id = 287771,
-        cast = 0,
-        cooldown = 10,
-        gcd = "spell",
-
-        spend = 40,
-        spendType = "energy",
-
-        pvptalent = function ()
-            if essence.conflict_and_strife.major then return end
-            return "reverse_harm"
-        end,
-
-        startsCombat = true,
-        texture = 627486,
-
-        indicator = function ()
-            local caption = class.abilities.reverse_harm.caption
-            if caption and caption ~= UnitName( "player" ) then return "cycle" end
-        end,
-
-        caption = function ()
-            if not group or not settings.optimize_reverse_harm then return end
-            if reverse_harm_target then return reverse_harm_target end
-
-            local targetName, dmg = UnitName( "player "), -1
-
-            if raid then
-                for i = 1, 5 do
-                    local unit = "raid" .. i
-
-                    if UnitExists( unit ) and UnitIsFriend( "player", unit ) then
-                        local h, m = UnitHealth( unit ), UnitHealthMax( unit )
-                        local deficit = min( m - h, m * 0.08 )
-
-                        if deficit > dmg then
-                            targetName = i < 5 and UnitName( "target" ) or nil
-                            dmg = deficit
-                        end
-                    end
-                end
-
-            elseif group then
-                for i = 1, 5 do
-                    local unit = i < 5 and ( "party" .. i ) or "player"
-
-                    if UnitExists( unit ) and UnitIsFriend( "player", unit ) then
-                        local h, m = UnitHealth( unit ), UnitHealthMax( unit )
-                        local deficit = min( m - h, m * 0.08 )
-
-                        if deficit > dmg then
-                            targetName = not UnitIsUnit( "player", unit ) and UnitName( unit ) or nil
-                            dmg = deficit
-                        end
-                    end
-                end
-
-            end
-
-            -- Consider using LibGetFrame to highlight a raid frame.
-            reverse_harm_target = targetName
-            return reverse_harm_target
-        end,
-
-        usable = function ()
-            if not group and health.deficit / health.max < 0.02 then return false, "solo and health deficit is too low" end
-            return true
-        end,
-
-        handler = function ()
-            health.actual = min( health.max, health.current + 0.08 * health.max )
-            gain( 1, "chi" )
-        end,
-    }, ]]
 
     -- Talent: Form a Ring of Peace at the target location for $d. Enemies that enter will be ejected from the Ring.
     ring_of_peace = {

@@ -1518,10 +1518,8 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
 
-        talent = "the_hunt",
-        startsCombat = false,
-
-        toggle = function() return talent.the_hunt.enabled and "cooldowns" or "essences" end,
+        startsCombat = true,
+        toggle = "cooldowns",
 
         handler = function ()
             applyDebuff( "target", "the_hunt" )
