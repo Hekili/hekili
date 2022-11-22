@@ -975,8 +975,8 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         startsCombat = true,
-        texture = 132453,
 
+        usable = function () return target.minR > 7, "requires 8 yard range or more" end,
         handler = function ()
             if talent.improved_heroic_throw.enabled then applyDebuff( "target", "deep_wounds" ) end
         end,
