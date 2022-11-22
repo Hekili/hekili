@@ -691,7 +691,7 @@ spec:RegisterAbilities( {
         spendType = "focus",
 
         talent = "aimed_shot",
-        startsCombat = false,
+        startsCombat = true,
 
         cycle = function () return runeforge.serpentstalkers_trickery.enabled and "serpent_sting" or nil end,
 
