@@ -47,12 +47,12 @@ ns.Patrons = "|cFFFFD100Current Dragonflight Status|r\n\n"
     .. "|cFFFFAE42Beta|r\n"
     .. "- |c" .. RAID_CLASS_COLORS.DRUID.colorStr .. "Guardian Druid|r, |c" .. RAID_CLASS_COLORS.EVOKER.colorStr .. "Devastation Evoker|r, |c" .. RAID_CLASS_COLORS.MAGE.colorStr .. "Mages|r, |c"
     .. RAID_CLASS_COLORS.MONK.colorStr .. "Brewmaster Monk|r, |c" .. RAID_CLASS_COLORS.PALADIN.colorStr .. "Protection Paladin|r, |c" .. RAID_CLASS_COLORS.WARLOCK.colorStr .. "Warlocks|r\n\n"
-    .. "|cFFBB3F3FNot Yet Implemented|r\n"
-    .. "- |c" .. RAID_CLASS_COLORS.MONK.colorStr .. "Brewmaster Monk|r, Healers\n\n"
+    .. "|cFFBB3F3FNot Supported|r\n"
+    .. "- Healers\n\n"
     .. "|cFF00FF00Up to Date|r means it is working and using priorities written for Dragonflight.\n"
-    .. "|cFFFFAE42Beta|r means it is playable, but may be using priorities from Shadowlands.\n"
-    .. "|cFFBB3F3FNot Yet Implemented|r means the class is not yet playable in the addon.\n\n"
-    .. "Do not report issues for any classes that are |cFFBB3F3FNot Yet Implemented|r.  For |cFFFFAE42Beta|r or |cFF00FF00Up to Date|r classes, report issues using the links below.  I am working to update every class as quickly as possible.  Thanks!"
+    .. "|cFFFFAE42Beta|r means it is playable, but may be using priorities from Shadowlands or needs additional work.\n"
+    .. "|cFFBB3F3FNot Supported|r means the specialization is not available in the addon, but may be supported at a later date.\n\n"
+    .. "Do not report issues for any classes that are |cFFBB3F3FNot Supported|r.  For |cFFFFAE42Beta|r or |cFF00FF00Up to Date|r classes, report issues using the links below.  I am working to update every class as quickly as possible.  Thanks!"
 
 do
     local cpuProfileDB = {}
