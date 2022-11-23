@@ -149,8 +149,9 @@ ns.RegisterEvent = function( event, handler )
     local key = event .. "_" .. #handlers[event]
     Hekili:ProfileCPU( key, handler )
 
-    local file, line = debugstack(2):match([[Hekili\(.-)"%]:(%d+): in main chunk]])
-    Hekili.EventSources[ key ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
+    local stack = debugstack(2)
+    local file, line = stack:match([[Hekili/(.-)"%]:(%d+)]])
+    Hekili.EventSources[ key ] = file and ( file .. ":" .. ( line or 0 ) ) or stack:match( "^(.*)\n" )
 end
 local RegisterEvent = ns.RegisterEvent
 
@@ -187,8 +188,9 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
     unitFrame.events[ event ] = unitFrame.events[ event ] or {}
     insert( unitFrame.events[ event ], handler )
 
-    local file, line = debugstack(2):match([[Hekili\(.-)"%]:(%d+): in main chunk]])
-    Hekili.EventSources[ event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ] ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
+    local stack = debugstack(2)
+    local file, line = stack:match([[Hekili/(.-)"%]:(%d+)]])
+    Hekili.EventSources[ event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ] ] = file and ( file .. ":" .. ( line or 0 ) ) or stack:match( "^(.*)\n" )
 
     unitFrame:RegisterUnitEvent( event, unit1 )
     Hekili:ProfileCPU( event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ], handler )
@@ -206,7 +208,7 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
         unitFrame.events[ event ] = unitFrame.events[ event ] or {}
         insert( unitFrame.events[ event ], handler )
 
-        Hekili.EventSources[ event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ] ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
+        Hekili.EventSources[ event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ] ] = file and ( file .. ":" .. ( line or 0 ) ) or stack:match( "^(.*)\n" )
 
         unitFrame:RegisterUnitEvent( event, unit2 )
         Hekili:ProfileCPU( event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ], handler )
