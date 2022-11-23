@@ -7,9 +7,13 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 
 local class = Hekili.Class
+local state = Hekili.State
+
 local all = Hekili.Class.specs[ 0 ]
 
-local state = Hekili.State
+
+local IsInventoryItemDisabled = ns.IsInventoryItemDisabled
+
 
 local legendaries = {
     -- Death Knight/Blood
@@ -387,30 +391,8 @@ local function UpdateLegendary( slot, item )
     local link = GetInventoryItemLink( "player", slot )
     local numBonuses = select( 14, string.split( ":", link ) )
     local covenant = GetActiveCovenantID()
-    local disable, hasTooltip = false, false
-    local tooltip = ns.Tooltip
-    local ttText = tooltip:GetName() .. "TextLeft"
 
-    tooltip:SetOwner( UIParent )
-    hasTooltip = tooltip:SetInventoryItem( "player", slot )
-
-    if hasTooltip then
-        for i = tooltip:NumLines(), 1, -1 do
-            local label = ttText .. i
-            local line = _G[ label ]
-
-            if line then
-                local text = line:GetText()
-                if text == _G.SPELL_FAILED_NOT_HERE then
-                    disable = true
-                    break
-                end
-            end
-        end
-    end
-
-    tooltip:Hide()
-
+    local disable = IsInventoryItemDisabled( slot )
 
     numBonuses = tonumber( numBonuses )
     if numBonuses and numBonuses > 0 then

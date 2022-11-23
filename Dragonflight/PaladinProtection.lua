@@ -6,6 +6,7 @@ if UnitClassBase( "player" ) ~= "PALADIN" then return end
 local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
+local FindUnitBuffByID = ns.FindUnitBuffByID
 
 local spec = Hekili:NewSpecialization( 66 )
 
@@ -14,147 +15,177 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    afterimage                      = { 79064, 385414, 1 }, --
-    ardent_defender                 = { 78925, 31850 , 1 }, --
-    aspirations_of_divinity         = { 79063, 385416, 2 }, --
-    auras_of_swift_vengeance        = { 78951, 385639, 1 }, --
-    auras_of_the_resolute           = { 78953, 385633, 1 }, --
-    avengers_shield                 = { 78918, 31935 , 1 }, --
-    avenging_wrath                  = { 79050, 384376, 1 }, --
-    avenging_wrath_might            = { 78927, 384442, 1 }, --
-    bastion_of_light                = { 78946, 378974, 1 }, --
-    blessed_hammer                  = { 78921, 204019, 1 }, --
-    blessing_of_freedom             = { 78952, 1044  , 1 }, --
-    blessing_of_protection          = { 79049, 1022  , 1 }, --
-    blessing_of_sacrifice           = { 79065, 6940  , 1 }, --
-    blessing_of_spellwarding        = { 79056, 204018, 1 }, --
-    blinding_light                  = { 79067, 115750, 1 }, --
-    bulwark_of_order                = { 78926, 209389, 2 }, --
-    bulwark_of_righteous_fury       = { 78939, 386653, 1 }, --
-    cavalier                        = { 78914, 230332, 1 }, --
-    cleanse_toxins                  = { 79039, 213644, 1 }, --
-    consecrated_ground              = { 78919, 204054, 1 }, --
-    consecration_in_flame           = { 78929, 379022, 1 }, --
-    crusaders_judgment              = { 78933, 204023, 1 }, --
-    crusaders_resolve               = { 78948, 380188, 2 }, --
-    divine_purpose                  = { 79057, 223817, 1 }, --
-    divine_resonance                = { 78935, 386738, 1 }, --
-    divine_steed                    = { 79052, 190784, 1 }, --
-    divine_toll                     = { 78936, 375576, 1 }, --
-    eye_of_tyr                      = { 78938, 387174, 1 }, --
-    faith_barricade                 = { 78923, 385726, 1 }, --
-    faith_in_the_light              = { 78934, 379043, 2 }, --
-    faiths_armor                    = { 78937, 379017, 1 }, --
-    ferren_marcuss_strength         = { 78955, 378762, 2 }, --
-    final_stand                     = { 78940, 204077, 1 }, --
-    fist_of_justice                 = { 78950, 234299, 2 }, --
-    focused_enmity                  = { 78945, 378845, 1 }, --
-    gift_of_the_golden_valkyr       = { 78956, 378279, 2 }, --
-    golden_path                     = { 79040, 377128, 1 }, --
-    grand_crusader                  = { 78924, 85043 , 1 }, --
-    guardian_of_ancient_kings       = { 78942, 86659 , 1 }, --
-    hallowed_ground                 = { 79047, 377043, 1 }, --
-    hammer_of_the_righteous         = { 78921, 53595 , 1 }, --
-    hammer_of_wrath                 = { 78949, 24275 , 1 }, --
-    hand_of_the_protector           = { 78915, 315924, 1 }, --
-    holy_aegis                      = { 79066, 385515, 2 }, --
-    holy_avenger                    = { 79057, 105809, 1 }, --
-    holy_shield                     = { 78920, 152261, 1 }, --
-    improved_blessing_of_protection = { 79056, 384909, 1 }, --
-    improved_sera__dt               = { 78935, 379391, 1 }, --
-    incandescence                   = { 79048, 385464, 1 }, --
-    inner_light                     = { 78917, 386568, 1 }, --
-    inspiring_vanguard              = { 78922, 279387, 1 }, --
-    judgment_4                      = { 79044, 231663, 1 }, --
-    judgment_of_light               = { 79038, 183778, 1 }, --
-    lay_on_hands                    = { 79068, 633   , 1 }, --
-    light_of_the_titans             = { 78928, 378405, 2 }, --
-    moment_of_glory                 = { 78954, 327193, 1 }, --
-    obduracy                        = { 79055, 385427, 1 }, --
-    of_dusk_and_dawn                = { 79062, 385125, 1 }, --
-    rebuke                          = { 79043, 96231 , 1 }, --
-    recompense                      = { 79036, 384914, 1 }, --
-    redoubt                         = { 78917, 280373, 1 }, --
-    relentless_inquisitor           = { 78943, 383388, 1 }, --
-    repentance                      = { 79067, 20066 , 1 }, --
-    resolute_defender               = { 78944, 385422, 1 }, --
-    righteous_protector             = { 78941, 204074, 2 }, --
-    sacrifice_of_the_just           = { 79036, 384820, 1 }, --
-    sanctified_wrath                = { 79059, 171648, 1 }, --
-    sanctuary                       = { 78930, 379021, 2 }, --
-    seal_of_alacrity                = { 79058, 385425, 2 }, --
-    seal_of_clarity                 = { 79041, 384815, 2 }, --
-    seal_of_mercy                   = { 79042, 384897, 2 }, --
-    seal_of_might_nyi               = { 79060, 385450, 2 }, --
-    seal_of_order                   = { 79061, 385129, 1 }, --
-    seal_of_reprisal                = { 79046, 377053, 2 }, --
-    seal_of_the_crusader            = { 79054, 385728, 2 }, --
-    seal_of_the_templar             = { 79051, 377016, 1 }, --
-    seasoned_warhorse               = { 79051, 376996, 1 }, --
-    sentinel                        = { 78927, 385438, 1 }, --
-    seraphim                        = { 79059, 152262, 1 }, --
-    shining_light                   = { 78916, 321136, 1 }, --
-    soaring_shield                  = { 78945, 378457, 1 }, --
-    strength_of_conviction          = { 78932, 379008, 2 }, --
-    the_mad_paragon                 = { 79053, 391142, 1 }, --
-    touch_of_light                  = { 79048, 385349, 1 }, --
-    turn_evil                       = { 79045, 10326 , 1 }, --
-    tyrs_enforcer                   = { 78947, 378285, 2 }, --
-    unbreakable_spirit              = { 79037, 114154, 1 }, --
-    uthers_guard                    = { 78931, 378425, 1 }, --
+    -- Paladin
+    afterimage                      = { 81613, 385414, 1 }, -- After you spend 20 holy power, your next Word of Glory echoes onto a nearby ally at 30% effectiveness
+    aspiration_of_divinity          = { 81622, 385416, 2 }, -- Your Blessed Hammer now also grants you 1% increased Strength for 6 sec. Multiple applications may overlap.
+    avenging_wrath                  = { 81606, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, causing Judgment to generate 1 additional Holy Power, allowing Hammer of Wrath to be used on any target, increasing your damage, healing and critical strike chance by 20% for 25 sec.
+    blessing_of_freedom             = { 81600, 1044  , 1 }, -- Blesses a party or raid member, granting immunity to movement impairing effects for 8 sec.
+    blessing_of_protection          = { 81616, 1022  , 1 }, -- Blesses a party or raid member, granting immunity to Physical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec. Shares a cooldown with Blessing of Spellwarding.
+    blessing_of_sacrifice           = { 81614, 6940  , 1 }, -- Blesses a party or raid member, reducing their damage taken by 30%, but you suffer 100% of damage prevented. Last 12 sec, or until transferred damage would cause you to fall below 20% health.
+    blinding_light                  = { 81598, 115750, 1 }, -- Emits dazzling light in all directions, blinding enemies within 10 yards, causing them to wander disoriented for 6 sec. Non-Holy damage will break the disorient effect.
+    cavalier                        = { 81605, 230332, 1 }, -- Divine Steed now has 2 charges.
+    divine_purpose                  = { 81618, 223817, 1 }, -- Holy Power abilities have a 15% chance to make your next Holy Power ability free and deal 15% increased damage and healing.
+    divine_steed                    = { 81632, 190784, 1 }, -- Leap atop your Charger for 5.1 sec, increasing movement speed by 100%. Usable while indoors or in combat.
+    fist_of_justice                 = { 81602, 234299, 2 }, -- Each Holy Power spent reduces the remaining cooldown on Hammer of Justice by 1 sec.
+    golden_path                     = { 81610, 377128, 1 }, -- Consecration heals you and 5 allies within it for 104 every 0.9 sec.
+    hallowed_ground                 = { 81509, 377043, 1 }, -- Consecration's damage is increased by 10%.
+    holy_aegis                      = { 81609, 385515, 2 }, -- Armor and critical strike chance increased by 2%.
+    holy_avenger                    = { 81618, 105809, 1 }, -- Your Holy Power generation is tripled for 20 sec.
+    improved_blessing_of_protection = { 81617, 384909, 1 }, -- Reduces the cooldown of Blessing of Protection and Blessing of Spellwarding by 60 sec.
+    incandescence                   = { 81628, 385464, 1 }, -- Each Holy Power you spend has a 5% chance to cause your Consecration to flare up, dealing 852 Holy damage to up to 5 enemies standing within it.
+    judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next 25 successful attacks against the target to heal the attacker for 83.
+    obduracy                        = { 81627, 385427, 1 }, -- Speed and Avoidance increased by 2%.
+    of_dusk_and_dawn                = { 81624, 385125, 1 }, -- When you reach 5 Holy Power, you gain Blessing of Dawn. When you reach 0 Holy Power, you gain Blessing of Dusk. Blessing of Dawn Damage and healing increased by 6% for 15 sec. Blessing of Dusk Damage taken reduced by 4% for 15 sec.
+    rebuke                          = { 81604, 96231 , 1 }, -- Interrupts spellcasting and prevents any spell in that school from being cast for 4 sec.
+    recompense                      = { 81607, 384914, 1 }, -- After your Blessing of Sacrifice ends, 50% of the total damage it diverted is added to your next Judgment as bonus damage, or your next Word of Glory as bonus healing. This effect's bonus damage cannot exceed 30% of your maximum health and its bonus healing cannot exceed 100% of your maximum health.
+    repentance                      = { 81598, 20066 , 1 }, -- Forces an enemy target to meditate, incapacitating them for 1 min. Usable against Humanoids, Demons, Undead, Dragonkin, and Giants.
+    sacrifice_of_the_just           = { 81607, 384820, 1 }, -- Reduces the cooldown of Blessing of Sacrifice by 60 sec.
+    sanctified_wrath                = { 81620, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, causing Judgment to generate 1 additional Holy Power, allowing Hammer of Wrath to be used on any target, increasing your damage, healing and critical strike chance by 20% for 25 sec.
+    seal_of_alacrity                = { 81619, 385425, 2 }, -- Haste increased by 2%.
+    seal_of_clarity                 = { 81612, 384815, 2 }, -- Spending Holy Power has a 5% chance to reduce the Holy Power cost of your next Word of Glory or Shield of the Righteous by 1.
+    seal_of_mercy                   = { 81611, 384897, 2 }, -- Golden Path strikes the lowest health ally within it an additional time for 50.0% of its effect.
+    seal_of_might                   = { 81621, 385450, 2 }, -- During Avenging Wrath, your Mastery is increased by 4%.
+    seal_of_order                   = { 81623, 385129, 1 }, -- In the Dawn, your Holy Power-spending abilities deal 10% increased damage and healing. In the Dusk, your armor is increased by 10% and your Holy Power generating abilities cool down 10% faster.
+    seal_of_reprisal                = { 81629, 377053, 2 }, -- Your Blessed Hammer deals 10% increased damage.
+    seal_of_the_crusader            = { 81626, 385728, 2 }, -- Your attacks have a chance to cause your target to take 3% increased Holy damage for 5 sec.
+    seal_of_the_templar             = { 81631, 377016, 1 }, -- While mounted on your Charger or under the effects of Crusader Aura, the ranges of Hammer of the Righteous, Rebuke, and Hammer of Justice are increased by 3 yards.
+    seasoned_warhorse               = { 81631, 376996, 1 }, -- Increases the duration of Divine Steed by 1 sec.
+    seraphim                        = { 81620, 152262, 1 }, -- The Light magnifies your power for 15 sec, granting 8% Haste, Critical Strike, and Versatility, and 8% Mastery.
+    touch_of_light                  = { 81628, 385349, 1 }, -- Your spells and abilities have a chance to cause your target to erupt in a blinding light dealing 100 Holy damage or healing an ally for 103 health.
+    turn_evil                       = { 81630, 10326 , 1 }, -- The power of the Light compels an Undead, Aberration, or Demon target to flee for up to 40 sec. Damage may break the effect. Lesser creatures have a chance to be destroyed. Only one target can be turned at a time.
+    unbreakable_spirit              = { 81615, 114154, 1 }, -- Reduces the cooldown of your Divine Shield, Ardent Defender, and Lay on Hands by 30%.
+    zealots_paragon                 = { 81625, 391142, 1 }, -- Hammer of Wrath and Judgment deal 10% additional damage and extend the duration of Avenging Wrath by 0.5 sec.
+
+    -- Protection
+    ardent_defender                 = { 81481, 31850 , 1 }, -- Reduces all damage you take by 20% for 8 sec. While Ardent Defender is active, the next attack that would otherwise kill you will instead bring you to 20% of your maximum health.
+    auras_of_swift_vengeance        = { 81601, 385639, 1 }, -- Learn Retribution Aura and Crusader Aura:
+    auras_of_the_resolute           = { 81599, 385633, 1 }, -- Learn Concentration Aura and Devotion Aura:
+    avengers_shield                 = { 81502, 31935 , 1 }, -- Hurls your shield at an enemy target, dealing 1,240 Holy damage, interrupting and silencing the non-Player target for 3 sec, and then jumping to 2 additional nearby enemies. Shields you for 8 sec, absorbing 25% as much damage as it dealt. Deals 167 additional damage to all enemies within 5 yards of each target hit.
+    avenging_wrath_might            = { 81483, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, increasing your critical strike chance by 20% for 25 sec.
+    barricade_of_faith              = { 81501, 385726, 1 }, -- When you use Avenger's Shield, your block chance is increased by 10% for 10 sec.
+    bastion_of_light                = { 81488, 378974, 1 }, -- Your next 3 casts of Shield of the Righteous or Word of Glory cost no holy power.
+    blessed_hammer                  = { 81469, 204019, 1 }, -- Throws a Blessed Hammer that spirals outward, dealing 260 Holy damage to enemies and reducing the next damage they deal to you by 626. Generates 1 Holy Power.
+    blessing_of_spellwarding        = { 90062, 204018, 1 }, -- Blesses a party or raid member, granting immunity to magical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec. Shares a cooldown with Blessing of Protection.
+    bulwark_of_order                = { 81499, 209389, 2 }, -- Avenger's Shield also shields you for 8 sec, absorbing 25% as much damage as it dealt, up to 30% of your maximum health.
+    bulwark_of_righteous_fury       = { 81491, 386653, 1 }, -- Avenger's Shield increases the damage of your next Shield of the Righteous by 30% for each target hit by Avenger's Shield, stacking up to 5 times, and increases its radius by 6 yds.
+    cleanse_toxins                  = { 81507, 213644, 1 }, -- Cleanses a friendly target, removing all Poison and Disease effects.
+    consecrated_ground              = { 81492, 204054, 1 }, -- Your Consecration is 15% larger, and enemies within it have 50% reduced movement speed.
+    consecration_in_flame           = { 81470, 379022, 1 }, -- Consecration lasts 2 sec longer and its damage is increased by 20%.
+    crusaders_judgment              = { 81473, 204023, 1 }, -- Judgment now has 2 charges, and Grand Crusader now also reduces the cooldown of Judgment by 3 sec.
+    crusaders_resolve               = { 81493, 380188, 1 }, -- Enemies hit by Avenger's Shield deal 2% reduced damage to you for 10 sec. Multiple applications may overlap, up to a maximum of 3.
+    divine_resonance                = { 81479, 386738, 1 }, -- After casting Divine Toll, you instantly cast Avenger's Shield every 5 sec for 15 sec.
+    divine_toll                     = { 81496, 375576, 1 }, -- Instantly cast Avenger's Shield on up to 5 targets within 30 yds. Generates 1 Holy Power per target hit.
+    eye_of_tyr                      = { 81497, 387174, 1 }, -- Releases a blinding flash from your shield, causing 1,342 Holy damage to all nearby enemies within 8 yds and reducing all damage they deal to you by 25% for 9 sec.
+    faith_in_the_light              = { 81480, 379043, 2 }, -- Casting Word of Glory grants you an additional 5% block chance for 5 sec.
+    faiths_armor                    = { 81495, 379017, 1 }, -- Shield of the Righteous grants 10% additional armor.
+    ferren_marcuss_fervor           = { 81482, 378762, 2 }, -- Avenger's Shield deals 10% increased damage to its primary target.
+    final_stand                     = { 81504, 204077, 1 }, -- During Divine Shield, all targets within 15 yards are taunted.
+    focused_enmity                  = { 81472, 378845, 1 }, -- Avenger's Shield deals 100% increased damage but only strikes one target.
+    gift_of_the_golden_valkyr       = { 81484, 378279, 2 }, -- Each enemy hit by Avenger's Shield reduces the remaining cooldown on Guardian of Ancient Kings by 0.5 sec. When you drop below 30% health, you become infused with Guardian of Ancient Kings for 4 sec. This cannot occur again for 45 sec.
+    grand_crusader                  = { 81487, 85043 , 1 }, -- When you avoid a melee attack or use Blessed Hammer, you have a 20% chance to reset the remaining cooldown on Avenger's Shield and increase your Strength by 2% for 8 sec. Grants a charge of Judgment.
+    greater_judgment                = { 81603, 231663, 1 }, -- Judgment causes the target to take 20% increased damage from your next Holy Power ability.
+    guardian_of_ancient_kings       = { 81490, 86659 , 1 }, -- Empowers you with the spirit of ancient kings, reducing all damage you take by 50% for 8 sec.
+    hammer_of_the_righteous         = { 81469, 53595 , 1 }, -- Hammers the current target for 1,302 Physical damage. While you are standing in your Consecration, Hammer of the Righteous also causes a wave of light that hits all other targets within 8 yds for 226 Holy damage. Generates 1 Holy Power.
+    hammer_of_wrath                 = { 81510, 24275 , 1 }, -- Hurls a divine hammer that strikes an enemy for 2,840 Holy damage. Only usable on enemies that have less than 20% health, or during Avenging Wrath. Generates 1 Holy Power.
+    hand_of_the_protector           = { 81475, 315924, 1 }, -- Word of Glory's healing is increased by the target's missing health, on any target.
+    holy_shield                     = { 81489, 152261, 1 }, -- Your block chance is increased by 20%, you are able to block spells, and your successful blocks deal 232 Holy damage to your attacker.
+    improved_ardent_defender        = { 90062, 393114, 1 }, -- Ardent Defender reduces damage taken by an additional 10%.
+    improved_holy_shield            = { 81486, 393030, 1 }, -- Your chance to block spells is increased by 10%.
+    improved_lay_on_hands           = { 81492, 393027, 1 }, -- Cooldown of Lay on Hands reduced by 10%.
+    inner_light                     = { 81494, 386568, 1 }, -- When Shield of the Righteous expires, gain 10% block chance and deal 473 Holy damage to all attackers for 4 sec.
+    inspiring_vanguard              = { 81476, 393022, 1 }, -- Grand Crusader's chance is increased to 20% and it grants you 2% Strength for 8 sec.
+    lay_on_hands                    = { 81597, 633   , 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
+    light_of_the_titans             = { 81503, 378405, 2 }, -- Word of Glory heals for an additional 1,830 over 15 sec. Increased by 50% if cast on yourself while you are afflicted by a harmful periodic effect.
+    moment_of_glory                 = { 81505, 327193, 1 }, -- For the next 15 sec, you generate an absorb shield for 20% of all damage you deal, and Avenger's Shield damage is increased by 20% and its cooldown is reduced by 75%.
+    quickened_invocations           = { 81479, 379391, 1 }, -- Cooldown of Seraphim is reduced by 5 sec and Divine Toll by 15 sec.
+    redoubt                         = { 81494, 280373, 1 }, -- Shield of the Righteous increases your Strength and Stamina by 2% for 10 sec, stacking up to 3.
+    relentless_inquisitor           = { 81506, 383388, 1 }, -- Spending Holy Power grants you 1% haste per finisher for 12 sec, stacking up to 3 times.
+    resolute_defender               = { 81471, 385422, 1 }, -- Each 3 Holy Power you spend reduces the cooldown of Ardent Defender and Divine Shield by 1.0 sec.
+    righteous_protector             = { 81477, 204074, 2 }, -- Each Holy Power spent reduces the remaining cooldown on Avenging Wrath and Guardian of Ancient Kings by 0.5 sec.
+    sanctuary                       = { 81486, 379021, 1 }, -- While in your Consecration, your damage taken is reduced by an additional 5%.
+    sentinel                        = { 81483, 389539, 1 }, -- Call upon the Light and gain 15 stacks of Divine Resolve, increasing your maximum health by 2% and reducing your damage taken by 2% per stack for 25 sec. After 10 sec, you will begin to lose 1 stack per second, but each 3 Holy Power spent will delay the loss of your next stack by 1 sec. While active, your Judgment generates 1 additional Holy Power, your damage and healing is increased by 20%, and Hammer of Wrath may be cast on any target. Combines with Avenging Wrath.
+    shining_light                   = { 81498, 321136, 1 }, -- Every 3 Shields of the Righteous make your next Word of Glory free.
+    soaring_shield                  = { 81472, 378457, 1 }, -- Avenger's Shield jumps to 2 additional targets.
+    strength_in_adversity           = { 81493, 393071, 1 }, -- For each target hit by Avenger's Shield, gain 2% parry for 15 sec.
+    strength_of_conviction          = { 81485, 379008, 2 }, -- While in your Consecration, your Shield of the Righteous and Word of Glory have 10% increased damage and healing.
+    tyrs_enforcer                   = { 81474, 378285, 2 }, -- Your Avenger's Shield is imbued with holy fire, causing it to deal 168 Holy damage to all enemies within 5 yards of each target hit.
+    uthers_counsel                  = { 81500, 378425, 1 }, -- Your Lay on Hands, Divine Shield, Blessing of Protection, and Blessing of Spellwarding have 20% reduced cooldown.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    aura_of_reckoning               = 5554, -- 247675
-    guarded_by_the_light            = 97  , -- 216855
-    guardian_of_the_forgotten_queen = 94  , -- 228049
-    hallowed_ground                 = 90  , -- 216868
-    inquisition                     = 844 , -- 207028
-    judgments_of_the_pure           = 93  , -- 355858
-    luminescence                    = 3474, -- 199428
-    sacred_duty                     = 92  , -- 216853
-    shield_of_virtue                = 861 , -- 215652
-    steed_of_glory                  = 91  , -- 199542
-    unbound_freedom                 = 3475, -- 305394
-    vengeance_aura                  = 5536, -- 210323
-    warrior_of_light                = 860 , -- 210341
+    aura_of_reckoning               = 5554, -- (247675) When you or allies within your Aura are critically struck, gain Reckoning. Gain 1 additional stack if you are the victim. At 50 stacks of Reckoning, your next weapon swing deals 200% increased damage, will critically strike, and activates Avenging Wrath for 6 sec.
+    guarded_by_the_light            = 97  , -- (216855) Your Flash of Light reduces all damage the target receives by 10% for 6 sec. Stacks up to 2 times.
+    guardian_of_the_forgotten_queen = 94  , -- (228049) Empowers the friendly target with the spirit of the forgotten queen, causing the target to be immune to all damage for 10 sec.
+    hallowed_ground                 = 90  , -- (216868) Your Consecration clears and suppresses all snare effects on allies within its area of effect.
+    inquisition                     = 844 , -- (207028) You focus the assault on this target, increasing their damage taken by 3% for 6 sec. Each unique player that attacks the target increases the damage taken by an additional 3%, stacking up to 5 times. Your melee attacks refresh the duration of Focused Assault.
+    judgments_of_the_pure           = 93  , -- (355858) Casting Judgment on an enemy cleanses 1 Poison, Disease, and Magic effect they have caused on allies within your Aura.
+    luminescence                    = 3474, -- (199428) When healed by an ally, allies within your Aura gain 4% increased damage and healing for 6 sec.
+    sacred_duty                     = 92  , -- (216853) Reduces the cooldown of your Blessing of Protection and Blessing of Sacrifice by 33%.
+    shield_of_virtue                = 861 , -- (215652) When activated, your next Avenger's Shield will interrupt and silence all enemies within 8 yards of the target.
+    steed_of_glory                  = 91  , -- (199542) Your Divine Steed lasts for an additional 2 sec. While active you become immune to movement impairing effects, and you knock back enemies that you move through.
+    unbound_freedom                 = 3475, -- (305394) Blessing of Freedom increases movement speed by 30%, and you gain Blessing of Freedom when cast on a friendly target. Unbound Freedom also causes any Blessing of Freedom applied to yourself to be undispellable.
+    vengeance_aura                  = 5536, -- (210323) When a full loss of control effect is applied to you or an ally within your Aura, gain 6% critical strike chance for 8 sec. Max 2 stacks.
+    warrior_of_light                = 860 , -- (210341) Increases the damage done by your Shield of the Righteous by 30%, but reduces armor granted by 30%.
 } )
 
 
 -- Auras
 spec:RegisterAuras( {
+    -- Talent: Damage taken reduced by $w1%.  The next attack that would otherwise kill you will instead bring you to $w2% of your maximum health.
+    -- https://wowhead.com/beta/spell=31850
     ardent_defender = {
         id = 31850,
         duration = 8,
+        type = "Magic",
         max_stack = 1
     },
-    aspirations_of_divinity = {
+    -- Talent: $pri increased by $s1%.
+    -- https://wowhead.com/beta/spell=385417
+    aspiration_of_divinity = {
         id = 385417,
         duration = 6,
         max_stack = 3
     },
+    -- Talent: Silenced.
+    -- https://wowhead.com/beta/spell=31935
     avengers_shield = {
         id = 31935,
         duration = 3,
+        type = "Magic",
         max_stack = 1
     },
+    -- Talent: $?$w2>0&w4>0[Damage, healing and critical strike chance increased by $w2%.]?w4==0[Damage and healing increased by $w2%.]?w2==0[Critical strike chance increased by $w4%.][]
+    -- https://wowhead.com/beta/spell=31884
     avenging_wrath = {
         id = 31884,
-        duration = 20,
+        duration = function() return talent.sanctified_wrath.enabled and 25 or 20 end,
         max_stack = 1
     },
+    -- Talent: Block chance increased by $s1%.
+    -- https://wowhead.com/beta/spell=385724
+    barricade_of_faith = {
+        id = 385724,
+        duration = 10,
+        max_stack = 1
+    },
+    -- Talent: Your next cast of Shield of the Righteous or Word of Glory cost no Holy Power.
+    -- https://wowhead.com/beta/spell=378974
     bastion_of_light = {
         id = 378974,
         duration = 30,
-        max_stack = 3
-    },
-    blessed_hammer = { -- TODO: Model based on cast time.
-        id = 204019,
-        duration = 5,
         max_stack = 1
     },
+    -- Talent: Damage against $@auracaster reduced by $w2.
+    -- https://wowhead.com/beta/spell=204301
+    blessed_hammer = {
+        id = 204301,
+        duration = 10,
+        max_stack = 1
+    },
+    -- Damage and healing increased by $w1%$?s385129[, and Holy Power-spending abilities dealing $w4% additional increased damage and healing.][.]
+    -- https://wowhead.com/beta/spell=385127
     blessing_of_dawn = {
         id = 385127,
         duration = 15,
@@ -165,40 +196,111 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    -- Talent: Immune to movement impairing effects. $?s199325[Movement speed increased by $199325m1%][]
+    -- https://wowhead.com/beta/spell=1044
     blessing_of_freedom = {
         id = 1044,
         duration = 8,
+        type = "Magic",
         max_stack = 1
     },
+    -- Talent: Immune to Physical damage and harmful effects.
+    -- https://wowhead.com/beta/spell=1022
     blessing_of_protection = {
         id = 1022,
         duration = 10,
+        mechanic = "invulneraility",
+        type = "Magic",
         max_stack = 1
     },
+    -- Talent: $?$w1>0[$w1% of damage taken is redirected to $@auracaster.][Taking ${$s1*$e1}% of damage taken by target ally.]
+    -- https://wowhead.com/beta/spell=6940
     blessing_of_sacrifice = {
         id = 6940,
         duration = 12,
+        type = "Magic",
         max_stack = 1
     },
+    -- Talent: Immune to magical damage and harmful effects.
+    -- https://wowhead.com/beta/spell=204018
     blessing_of_spellwarding = {
         id = 204018,
         duration = 10,
+        mechanic = "invulneraility",
+        type = "Magic",
         max_stack = 1
     },
     blinding_light = {
         id = 105421,
         duration = 6,
+        type = "Magic",
         max_stack = 1
     },
+    bulwark_of_order = {
+        id = 209388,
+        duration = 8,
+        max_stack = 1
+    },
+    bulwark_of_righteous_fury = {
+        id = 386652,
+        duration = 15,
+        max_stack = 5,
+        copy = 337848
+    },
+    -- Interrupt and Silence effects reduced by $w1%. $?s339124[Fear effects are reduced by $w4%.][]
+    -- https://wowhead.com/beta/spell=317920
     concentration_aura = {
         id = 317920,
         duration = 3600,
         max_stack = 1
     },
+    -- Damage every $t1 sec.
+    -- https://wowhead.com/beta/spell=26573
     consecration = {
         id = 26573,
-        duration = 12,
+        duration = function() return talent.consecration_in_flame.enabled and 14 or 12 end,
         tick_time = 1,
+        type = "Magic",
+        max_stack = 1,
+        generate = function( c, type )
+            if type == "buff" and FindUnitBuffByID( "player", 188370 ) then
+                local dropped, expires
+
+                for i = 1, 5 do
+                    local up, name, start, duration = GetTotemInfo( i )
+
+                    if up and name == class.abilities.consecration.name then
+                        dropped = start
+                        expires = dropped + duration
+                        break
+                    end
+                end
+
+                if dropped and expires > query_time then
+                    c.expires = expires
+                    c.applied = dropped
+                c.count = 1
+                c.caster = "player"
+                return
+            end
+            end
+
+            c.count = 0
+            c.expires = 0
+            c.applied = 0
+            c.caster = "unknown"
+        end
+    },
+    consecration_dot = {
+        id = 204242,
+        duration = 12,
+        max_stack = 1,
+    },
+    -- Mounted speed increased by $w1%.$?$w5>0[  Incoming fear duration reduced by $w5%.][]
+    -- https://wowhead.com/beta/spell=32223
+    crusader_aura = {
+        id = 32223,
+        duration = 3600,
         max_stack = 1
     },
     crusaders_resolve = {
@@ -206,15 +308,24 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 3
     },
+    -- Damage taken reduced by $w1%.
+    -- https://wowhead.com/beta/spell=465
     devotion_aura = {
         id = 465,
         duration = 3600,
         max_stack = 1
     },
+    -- Damage taken reduced by $w1%.
+    -- https://wowhead.com/beta/spell=498
     divine_protection = {
         id = 498,
         duration = 8,
         max_stack = 1
+    },
+    divine_purpose = {
+        id = 223819,
+        duration = 12,
+        max_stack = 1,
     },
     divine_resonance = {
         id = 384029,
@@ -225,21 +336,36 @@ spec:RegisterAuras( {
     divine_shield = {
         id = 642,
         duration = 8,
+        mechanic = "invulneraility",
+        type = "Magic",
         max_stack = 1
     },
+    divine_steed = {
+        id = 221886,
+        duration = function () return 3 * ( 1 + ( conduit.lights_barding.mod * 0.01 ) ) + talent.seasoned_warhorse.rank end,
+        max_stack = 1,
+    },
+    -- Sentenced to suffer $w1 Holy damage.
+    -- https://wowhead.com/beta/spell=343527
     execution_sentence = {
         id = 343527,
         duration = 8,
+        type = "Magic",
         max_stack = 1
     },
+    -- Counterattacking all melee attacks.
+    -- https://wowhead.com/beta/spell=205191
     eye_for_an_eye = {
         id = 205191,
         duration = 10,
         max_stack = 1
     },
+    -- Talent: Dealing $s1% less damage to the Paladin.
+    -- https://wowhead.com/beta/spell=387174
     eye_of_tyr = {
         id = 387174,
         duration = 9,
+        type = "Magic",
         max_stack = 1
     },
     faith_barricade = {
@@ -257,16 +383,28 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    final_stand = {
+        id = 204079,
+        duration = 8,
+        max_stack = 1,
+    },
     first_avenger = {
         id = 327225,
         duration = 8,
         max_stack = 1
+    },
+    forbearance = {
+        id = 25771,
+        duration = 30,
+        max_stack = 1,
     },
     focused_assault = {
         id = 206891,
         duration = 6,
         max_stack = 5
     },
+    -- Talent: Damage taken reduced by $86657s2%.
+    -- https://wowhead.com/beta/spell=86659
     guardian_of_ancient_kings = {
         id = 86659,
         duration = 8,
@@ -282,9 +420,13 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    -- Stunned.
+    -- https://wowhead.com/beta/spell=853
     hammer_of_justice = {
         id = 853,
         duration = 6,
+        mechanic = "stun",
+        type = "Magic",
         max_stack = 1
     },
     hand_of_hindrance = {
@@ -292,62 +434,103 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    -- Taunted.
+    -- https://wowhead.com/beta/spell=62124
     hand_of_reckoning = {
         id = 62124,
         duration = 3,
+        mechanic = "taunt",
         max_stack = 1
     },
+    -- Talent: Your Holy Power generation is tripled.
+    -- https://wowhead.com/beta/spell=105809
     holy_avenger = {
         id = 105809,
         duration = 20,
         max_stack = 1
     },
-    inquisition = { -- TODO: Check Aura (https://wowhead.com/beta/spell=207028)
-        id = 207028,
-        duration = 300,
+    inner_light = {
+        id = 386556,
+        duration = 4,
         max_stack = 1
     },
-    inspiring_vanguard_279387 = { -- TODO: Disambiguate -- TODO: Check Aura (https://wowhead.com/beta/spell=279387)
-        id = 279387,
-        duration = 3600,
-        max_stack = 1
-    },
-    inspiring_vanguard_279397 = { -- TODO: Disambiguate
-        id = 279397,
+    -- Talent: Strength increased by $w1.
+    -- https://wowhead.com/beta/spell=393019
+    inspiring_vanguard = {
+        id = 393019,
         duration = 8,
+        max_stack = 1,
+        copy = 279397
+    },
+    -- Taking $w1% increased damage from $@auracaster's next Holy Power ability.
+    -- https://wowhead.com/beta/spell=197277
+    judgment = {
+        id = 197277,
+        duration = 15,
         max_stack = 1
     },
+    -- Talent: Attackers are healed for $183811s1.
+    -- https://wowhead.com/beta/spell=196941
     judgment_of_light = {
         id = 196941,
         duration = 30,
-        max_stack = 1
+        max_stack = 25
     },
+    -- Talent: Healing for $w1 every $t1 sec.
+    -- https://wowhead.com/beta/spell=378412
     light_of_the_titans = {
         id = 378412,
         duration = 15,
-        tick_time = 3,
+        type = "Magic",
         max_stack = 1
     },
-    moment_of_glory = { -- TODO: Check Aura (https://wowhead.com/beta/spell=327193)
+    -- Talent: Avenger's Shield damage increased by $s2% and cooldown reduced by $s1%. Generating an absorb shield for $s2% of all damage dealt.
+    -- https://wowhead.com/beta/spell=327193
+    moment_of_glory = {
         id = 327193,
         duration = 15,
         max_stack = 1
     },
-    rebuke = { -- TODO: Check Aura (https://wowhead.com/beta/spell=96231)
-        id = 96231,
-        duration = 4,
+    -- Movement speed reduced by $s2%.
+    -- https://wowhead.com/beta/spell=383469
+    radiant_decree = {
+        id = 383469,
+        duration = 5,
+        type = "Magic",
         max_stack = 1
     },
+    -- Talent: Strength and Stamina increased by $w1%.
+    -- https://wowhead.com/beta/spell=280375
     redoubt = {
         id = 280375,
         duration = 10,
         max_stack = 3
     },
+    -- Talent: Haste increased by $w1%.
+    -- https://wowhead.com/beta/spell=383389
+    relentless_inquisitor = {
+        id = 383389,
+        duration = 12,
+        max_stack = 3
+    },
+    -- Talent: Incapacitated.
+    -- https://wowhead.com/beta/spell=20066
     repentance = {
         id = 20066,
         duration = 60,
+        mechanic = "incapacitate",
+        type = "Magic",
         max_stack = 1
     },
+    -- When any party or raid member within $a1 yards dies, you gain Avenging Wrath for $w1 sec.    When any party or raid member within $a1 yards takes more than $s3% of their health in damage, you gain Seraphim for $s4 sec. This cannot occur more than once every 30 sec.
+    -- https://wowhead.com/beta/spell=183435
+    retribution_aura = {
+        id = 183435,
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Talent: $@spellaura385728
+    -- https://wowhead.com/beta/spell=385723
     seal_of_the_crusader = {
         id = 385723,
         duration = 5,
@@ -358,127 +541,288 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-    seraphim_152262 = { -- TODO: Disambiguate
+    -- Talent: Damage taken reduced by $s12%. Maximum health increased by $s11%.  $?s53376[  Judgment generates $53376s3~ additional Holy Power.][]  $?s384376[  Damage and healing increased by $384376s1~%. Hammer of Wrath may be cast on any target.][]
+    -- https://wowhead.com/beta/spell=389539
+    sentinel = {
+        id = 389539,
+        duration = 20,
+        max_stack = 15,
+        copy = "divine_resolve"
+    },
+    -- Talent: Haste, Critical Strike, and Versatility increased by $s1%, and Mastery increased by $?c1[${$s4*$183997bc1}]?c2[${$s4*$76671bc1}][${$s4*$267316bc1}]%.
+    -- https://wowhead.com/beta/spell=152262
+    seraphim = {
         id = 152262,
         duration = 15,
         max_stack = 1
     },
+    -- Armor increased by $?c1[${$W1*$INT/100}][${$W1*$STR/100}].
+    -- https://wowhead.com/beta/spell=132403
+    shield_of_the_righteous = {
+        id = 132403,
+        duration = 4.5,
+        max_stack = 1
+    },
+    -- Absorbs $w1 damage and deals damage when the barrier fades or is fully consumed.
+    -- https://wowhead.com/beta/spell=184662
     shield_of_vengeance = {
         id = 184662,
         duration = 15,
+        mechanic = "shield",
+        type = "Magic",
         max_stack = 1
     },
-    shield_of_virtue_215652 = { -- TODO: Disambiguate
+    shield_of_virtue = {
         id = 215652,
         duration = 3600,
         max_stack = 1
     },
-    shield_of_virtue_217824 = { -- TODO: Disambiguate
-        id = 217824,
-        duration = 4,
-        max_stack = 1
+    shining_light = {
+        id = 182104,
+        duration = 15,
+        max_stack = 5,
     },
-    sign_of_the_emissary = {
-        id = 225788,
-        duration = 3600,
-        max_stack = 1
+    shining_light_free = {
+        id = 327510,
+        duration = 15,
+        max_stack = 1,
+        copy = "shining_light_full"
     },
+    -- Talent: Disoriented.
+    -- https://wowhead.com/beta/spell=10326
     turn_evil = {
         id = 10326,
         duration = 40,
+        mechanic = "turn",
+        type = "Magic",
         max_stack = 1
     },
-    wake_of_ashes = {
-        id = 255937,
+
+    -- Generic Aura to cover any Aura.
+    paladin_aura = {
+        alias = { "concentration_aura", "crusader_aura", "devotion_aura", "retribution_aura" },
+        aliasMode = "first",
+        aliasType = "buff",
+        duration = 3600,
+    },
+
+    -- Azerite Powers
+    empyreal_ward = {
+        id = 287731,
+        duration = 60,
+        max_stack = 1,
+    },
+
+    -- Conduits
+    royal_decree = {
+        id = 340147,
+        duration = 15,
+        max_stack = 1
+    },
+    shielding_words = {
+        id = 338788,
+        duration = 10,
+        max_stack = 1
+    },
+    vengeful_shock = {
+        id = 340007,
         duration = 5,
         max_stack = 1
     },
 } )
 
 
+-- Gear Sets
+spec:RegisterGear( "tier19", 138350, 138353, 138356, 138359, 138362, 138369 )
+spec:RegisterGear( "tier20", 147160, 147162, 147158, 147157, 147159, 147161 )
+    spec:RegisterAura( "sacred_judgment", {
+        id = 246973,
+        duration = 8,
+        max_stack = 1,
+    } )
+
+spec:RegisterGear( "tier21", 152151, 152153, 152149, 152148, 152150, 152152 )
+spec:RegisterGear( "class", 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
+
+spec:RegisterGear( "breastplate_of_the_golden_valkyr", 137017 )
+spec:RegisterGear( "heathcliffs_immortality", 137047 )
+spec:RegisterGear( "justice_gaze", 137065 )
+spec:RegisterGear( "saruans_resolve", 144275 )
+spec:RegisterGear( "tyelca_ferren_marcuss_stature", 137070 )
+spec:RegisterGear( "tyrs_hand_of_faith", 137059 )
+spec:RegisterGear( "uthers_guard", 137105 )
+
+spec:RegisterGear( "soul_of_the_highlord", 151644 )
+spec:RegisterGear( "pillars_of_inmost_light", 151812 )
+
+
+spec:RegisterStateExpr( "last_consecration", function () return action.consecration.lastCast end )
+spec:RegisterStateExpr( "last_blessed_hammer", function () return action.blessed_hammer.lastCast end )
+spec:RegisterStateExpr( "last_shield", function () return action.shield_of_the_righteous.lastCast end )
+
+spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
+
+spec:RegisterHook( "reset_precast", function ()
+    last_consecration = nil
+    last_blessed_hammer = nil
+    last_shield = nil
+
+    if buff.divine_resonance.up then
+        state:QueueAuraEvent( "divine_toll", class.abilities.avengers_shield.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
+        if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.avengers_shield.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
+        if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.avengers_shield.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
+    end
+end )
+
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if amt > 0 and resource == "holy_power" then
+        if talent.righteous_protector.enabled then
+            reduceCooldown( "avenging_wrath", amt )
+            reduceCooldown( "guardian_of_ancient_kings", amt )
+        end
+        if talent.fist_of_justice.enabled then
+            reduceCooldown( "hammer_of_justice", talent.fist_of_justice.rank * amt )
+        end
+        if ( talent.of_dusk_and_dawn.enabled or legendary.of_dusk_and_dawn.enabled ) and holy_power.current == 0 then applyBuff( "blessing_of_dusk" ) end
+        if talent.relentless_inquisitor.enabled or legendary.relentless_inquisitor.enabled then
+            addStack( "relentless_inquisitor" )
+        end
+        if talent.righteous_protector.enabled then
+            reduceCooldown( "avenging_wrath", 0.5 * amt * talent.righteous_protector.rank )
+        end
+        if legendary.uthers_devotion.enabled then
+            reduceCooldown( "blessing_of_freedom", 1 )
+            reduceCooldown( "blessing_of_protection", 1 )
+            reduceCooldown( "blessing_of_sacrifice", 1 )
+            reduceCooldown( "blessing_of_spellwarding", 1 )
+        end
+    end
+end )
+
+
+spec:RegisterHook( "gain", function( amt, resource, overcap )
+    if ( talent.of_dusk_and_dawn.enabled or legendary.of_dusk_and_dawn.enabled ) and amt > 0 and resource == "holy_power" and holy_power.current == 5 then
+        applyBuff( "blessing_of_dawn" )
+    end
+end )
+
+
 -- Abilities
 spec:RegisterAbilities( {
+    -- Talent: Reduces all damage you take by 20% for 8 sec. While Ardent Defender is active, the next attack that would otherwise kill you will instead bring you to 20% of your maximum health.
     ardent_defender = {
         id = 31850,
         cast = 0,
-        cooldown = 120,
+        cooldown = function ()
+            return ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * 120
+        end,
         gcd = "off",
+        school = "physical",
 
         talent = "ardent_defender",
         startsCombat = false,
-        texture = 135870,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "ardent_defender" )
         end,
     },
 
-
+    -- Talent: Hurls your shield at an enemy target, dealing 1,240 Holy damage, interrupting and silencing the non-Player target for 3 sec, and then jumping to 2 additional nearby enemies. Shields you for 8 sec, absorbing 25% as much damage as it dealt. Deals 167 additional damage to all enemies within 5 yards of each target hit.
     avengers_shield = {
         id = 31935,
         cast = 0,
-        cooldown = 15,
+        cooldown = function() return 15 * ( buff.moment_of_glory.up and 0.25 or 1 ) end,
         gcd = "spell",
 
         talent = "avengers_shield",
-        startsCombat = false,
-        texture = 135874,
+        startsCombat = true,
 
         handler = function ()
+            applyDebuff( "target", "avengers_shield" )
+            interrupt()
+            removeStack( "moment_of_glory", nil, 1 )
+            removeBuff( "shield_of_virtue" )
+
+            if talent.barricade_of_faith.enabled then applyBuff( "barricade_of_faith" ) end
+            if talent.bulwark_of_order.enabled then applyBuff( "bulwark_of_order" ) end
+            if talent.crusaders_resolve.enabled then applyDebuff( "target", "crusaders_resolve" ) end
+            if talent.first_avenger.enabled then applyBuff( "first_avenger" ) end
+            if talent.gift_of_the_golden_valkyr.enabled then
+                reduceCooldown( "guardian_of_ancient_kings", 0.5 * talent.gift_of_the_golden_valkyr.rank * min( active_enemies, (talent.focused_enmity.enabled and 1 or 3 ) + ( talent.soaring_shield.enabled and 2 or 0 ) ) )
+            end
+            if talent.strength_in_adversity.enabled then addStack( "strength_in_adversity", nil, min( active_enemies, (talent.focused_enmity.enabled and 1 or 3 ) + ( talent.soaring_shield.enabled and 2 or 0 ) ) ) end
+            if conduit.vengeful_shock.enabled then applyDebuff( "target", "vengeful_shock" ) end
+            if legendary.bulwark_of_righteous_fury.enabled then addStack( "bulwark_of_righteous_fury", nil, min( 5, active_enemies ) ) end
         end,
     },
 
+    -- Talent: Call upon the Light to become an avatar of retribution, causing Judgment to generate 1 additional Holy Power, allowing Hammer of Wrath to be used on any target, increasing your damage, healing and critical strike chance by 20% for 25 sec.
+    avenging_wrath = {
+        id = 31884,
+        cast = 0,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
+        gcd = "off",
+        school = "holy",
 
+        startsCombat = false,
+        toggle = "cooldowns",
+
+        handler = function ()
+            -- Talents:
+            -- Avenging Wrath - 20% damage/healing, use Hammer of Wrath on any target.
+            -- Sanctified Wrath - +5 seconds, Judgment generates +1 HP.
+            -- Avenging Wrath: Might - +20% critical strike.
+            -- Sentinel - Gain 15 stacks of Divine Resolve, decaying every 1 second after 5 seconds.
+            if talent.sentinel.enabled then applyBuff( "sentinel", nil, 15 )
+            else applyBuff( "avenging_wrath" ) end
+        end,
+
+        copy = { "sentinel", 389539 }
+    },
+
+    -- Talent: Your next 3 casts of Shield of the Righteous or Word of Glory cost no holy power.
     bastion_of_light = {
         id = 378974,
         cast = 0,
         cooldown = 120,
         gcd = "off",
+        school = "holy",
 
         talent = "bastion_of_light",
         startsCombat = false,
-        texture = 535594,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "bastion_of_light", nil, 3 )
         end,
     },
 
-
-    blade_of_justice = {
-        id = 184575,
-        cast = 0,
-        cooldown = 12,
-        gcd = "spell",
-
-        talent = "blade_of_justice",
-        startsCombat = false,
-        texture = 1360757,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Throws a Blessed Hammer that spirals outward, dealing 260 Holy damage to enemies and reducing the next damage they deal to you by 626. Generates 1 Holy Power.
     blessed_hammer = {
         id = 204019,
         cast = 0,
         charges = 3,
-        cooldown = 6,
-        recharge = 6,
+        cooldown = function() return 6 * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) end,
+        recharge = function() return 6 * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) end,
         gcd = "spell",
+        school = "holy",
 
         talent = "blessed_hammer",
-        startsCombat = false,
-        texture = 535595,
+        startsCombat = true,
 
         handler = function ()
+            applyDebuff( "target", "blessed_hammer" )
+            last_blessed_hammer = query_time
+            if talent.aspiration_of_divinity.enabled then addStack( "aspiration_of_divinity" ) end
+            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
         end,
     },
 
-
+    -- Talent: Blesses a party or raid member, granting immunity to movement impairing effects for 8 sec.
     blessing_of_freedom = {
         id = 1044,
         cast = 0,
@@ -486,103 +830,91 @@ spec:RegisterAbilities( {
         cooldown = 25,
         recharge = 25,
         gcd = "spell",
+        school = "holy",
 
         spend = 0.07,
         spendType = "mana",
 
         talent = "blessing_of_freedom",
         startsCombat = false,
-        texture = 135968,
 
         handler = function ()
+            applyBuff( "blessing_of_freedom" )
         end,
     },
 
-
+    -- Talent: Blesses a party or raid member, granting immunity to Physical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec. Shares a cooldown with Blessing of Spellwarding.
     blessing_of_protection = {
         id = 1022,
         cast = 0,
         charges = 1,
-        cooldown = 300,
-        recharge = 300,
+        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
+        recharge = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
         gcd = "spell",
+        school = "holy",
 
         spend = 0.15,
         spendType = "mana",
 
         talent = "blessing_of_protection",
         startsCombat = false,
-        texture = 135964,
-
-        toggle = "cooldowns",
+        notalent = "blessing_of_spellwarding",
+        nodebuff = "forbearance",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "blessing_of_protection" )
+            applyDebuff( "player", "forbearance" )
         end,
     },
 
-
+    -- Talent: Blesses a party or raid member, reducing their damage taken by 30%, but you suffer 100% of damage prevented. Last 12 sec, or until transferred damage would cause you to fall below 20% health.
     blessing_of_sacrifice = {
         id = 6940,
         cast = 0,
         charges = 1,
-        cooldown = 120,
+        cooldown = function() return talent.sacrifice_of_the_just.enabled and 60 or 120 end,
         recharge = 120,
         gcd = "off",
+        school = "holy",
 
         spend = 0.07,
         spendType = "mana",
 
         talent = "blessing_of_sacrifice",
         startsCombat = false,
-        texture = 135966,
 
-        toggle = "cooldowns",
+        usable = function() return group, "requires an ally" end,
 
         handler = function ()
+            active_dot.blessing_of_sacrifice = 1
         end,
     },
 
-
+    -- Talent: Blesses a party or raid member, granting immunity to magical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec. Shares a cooldown with Blessing of Protection.
     blessing_of_spellwarding = {
         id = 204018,
         cast = 0,
-        cooldown = 180,
+        charges = 1,
+        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
+        recharge = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
         gcd = "spell",
+        school = "holy",
 
         spend = 0.15,
         spendType = "mana",
 
         talent = "blessing_of_spellwarding",
         startsCombat = false,
-        texture = 135880,
-
-        toggle = "cooldowns",
+        nodebuff = "forbearance",
 
         handler = function ()
+            applyBuff( "blessing_of_spellwarding" )
+            applyDebuff( "player", "forbearance" )
         end,
     },
 
-
-    blinding_light = {
-        id = 115750,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-
-        spend = 0.06,
-        spendType = "mana",
-
-        talent = "blinding_light",
-        startsCombat = false,
-        texture = 571553,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Cleanses a friendly target, removing all Poison and Disease effects.
     cleanse_toxins = {
         id = 213644,
         cast = 0,
@@ -590,357 +922,279 @@ spec:RegisterAbilities( {
         cooldown = 8,
         recharge = 8,
         gcd = "spell",
+        school = "holy",
 
-        spend = 0.06,
+        spend = 0.065,
         spendType = "mana",
 
         talent = "cleanse_toxins",
         startsCombat = false,
-        texture = 135953,
+        toggle = "interrupts",
+
+        usable = function ()
+            return buff.dispellable_poison.up or buff.dispellable_disease.up, "requires poison or disease"
+        end,
 
         handler = function ()
+            removeBuff( "dispellable_poison" )
+            removeBuff( "dispellable_disease" )
         end,
     },
 
-
+    -- Interrupt and Silence effects on party and raid members within 40 yards are 30% shorter.
     concentration_aura = {
         id = 317920,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
+        school = "holy",
 
+        talent = "auras_of_the_resolute",
         startsCombat = false,
-        texture = 135933,
+        nobuff = "paladin_aura",
 
         handler = function ()
+            applyBuff( "concentration_aura" )
         end,
     },
 
-
+    -- Consecrates the land beneath you, causing 1,952 Holy damage over 12 sec to enemies who enter the area. Limit 1.
     consecration = {
         id = 26573,
         cast = 0,
         cooldown = 9,
         gcd = "spell",
+        school = "holy",
 
-        startsCombat = false,
-        texture = 135926,
+        startsCombat = true,
 
         handler = function ()
+            applyBuff( "consecration" )
+            applyDebuff( "target", "consecration_dot" )
+            last_consecration = query_time
         end,
     },
 
+    -- Increases mounted speed by 20% for all party and raid members within 40 yards.
+    crusader_aura = {
+        id = 32223,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+        school = "holy",
 
+        talent = "auras_of_swift_vengeance",
+        startsCombat = false,
+        nobuff = "paladin_aura",
+
+        handler = function ()
+            applyBuff( "crusader_aura" )
+        end,
+    },
+
+    -- Strike the target for $<damage> Physical damage.$?a196926[    Reduces the cooldown of Holy Shock by ${$196926m1/-1000}.1 sec.][]    |cFFFFFFFFGenerates $s2 Holy Power.
     crusader_strike = {
         id = 35395,
         cast = 0,
-        charges = 1,
-        cooldown = 6,
-        recharge = 6,
+        charges = function() return talent.improved_crusader_strike.enabled and 2 or nil end,
+        cooldown = function () return 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
+        recharge = function () return talent.improved_crusader_strike.enabled and ( 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste ) or nil end,
         gcd = "spell",
+        school = "physical",
 
         spend = 0.11,
         spendType = "mana",
 
+        notalent = function() return talent.blessed_hammer.enabled and "blessed_hammer" or "hammer_of_the_righteous" end,
         startsCombat = true,
-        texture = 135891,
 
         handler = function ()
+            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+            if talent.aspiration_of_divinity.enabled then addStack( "aspiration_of_divinity" ) end
+            if talent.crusaders_might.enabled then reduceCooldown( "holy_shock", 1 ) end
         end,
     },
 
-
+    -- Party and raid members within 40 yards are bolstered by their devotion, reducing damage taken by 3%.
     devotion_aura = {
         id = 465,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
+        school = "holy",
 
+        talent = "auras_of_the_resolute",
         startsCombat = false,
-        texture = 135893,
+        nobuff = "paladin_aura",
 
         handler = function ()
+            applyBuff( "devotion_aura" )
         end,
     },
 
-
-    divine_protection = {
-        id = 498,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        talent = "divine_protection",
-        startsCombat = false,
-        texture = 524353,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Grants immunity to all damage and harmful effects for 8 sec. Cannot be used if you have Forbearance. Causes Forbearance for 30 sec.
     divine_shield = {
         id = 642,
         cast = 0,
-        cooldown = 300,
+        cooldown = function () return 300 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
         gcd = "spell",
+        school = "holy",
 
         startsCombat = false,
-        texture = 524354,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
+        nodebuff = "forbearance",
 
         handler = function ()
+            applyBuff( "divine_shield" )
+            applyDebuff( "player", "forbearance" )
+
+            if talent.final_stand.enabled then
+                applyDebuff( "target", "final_stand" )
+                active_dot.final_stand = min( active_dot.final_stand, active_enemies )
+            end
         end,
     },
 
-
-    divine_steed = {
-        id = 190784,
-        cast = 0,
-        charges = 1,
-        cooldown = 45,
-        recharge = 45,
-        gcd = "spell",
-
-        talent = "divine_steed",
-        startsCombat = false,
-        texture = 1360759,
-
-        handler = function ()
-        end,
-    },
-
-
-    divine_storm = {
-        id = 53385,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 3,
-        spendType = "holy_power",
-
-        talent = "divine_storm",
-        startsCombat = false,
-        texture = 236250,
-
-        handler = function ()
-        end,
-    },
-
-
-    divine_toll = {
-        id = 375576,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = 0.15,
-        spendType = "mana",
-
-        talent = "divine_toll",
-        startsCombat = false,
-        texture = 3565448,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    execution_sentence = {
-        id = 343527,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = 3,
-        spendType = "holy_power",
-
-        talent = "execution_sentence",
-        startsCombat = false,
-        texture = 613954,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    exorcism = {
-        id = 383185,
-        cast = 0,
-        cooldown = 20,
-        gcd = "spell",
-
-        talent = "exorcism",
-        startsCombat = false,
-        texture = 135903,
-
-        handler = function ()
-        end,
-    },
-
-
-    eye_for_an_eye = {
-        id = 205191,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        talent = "eye_for_an_eye",
-        startsCombat = false,
-        texture = 135986,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Releases a blinding flash from your shield, causing 1,342 Holy damage to all nearby enemies within 8 yds and reducing all damage they deal to you by 25% for 9 sec.
     eye_of_tyr = {
         id = 387174,
         cast = 0,
         cooldown = 60,
         gcd = "spell",
+        school = "holy",
 
         talent = "eye_of_tyr",
-        startsCombat = false,
-        texture = 1272527,
-
-        toggle = "cooldowns",
+        startsCombat = true,
+        toggle = "defensives",
 
         handler = function ()
+            applyDebuff( "target", "eye_of_tyr" )
+            active_dot.eye_of_tyr = active_enemies
         end,
     },
 
-
-    final_reckoning = {
-        id = 343721,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        talent = "final_reckoning",
-        startsCombat = false,
-        texture = 135878,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Expends a large amount of mana to quickly heal a friendly target for 6,713.
     flash_of_light = {
         id = 19750,
-        cast = 1.43,
+        cast = 1.5,
         cooldown = 0,
         gcd = "spell",
+        school = "holy",
 
         spend = 0.22,
         spendType = "mana",
 
         startsCombat = false,
-        texture = 135907,
 
         handler = function ()
+            gain( 1.67 * 1.68 * ( 1 + stat.versatility_atk_mod ) * stat.spell_power, "health" )
         end,
     },
 
-
+    -- Talent: Empowers you with the spirit of ancient kings, reducing all damage you take by 50% for 8 sec.
     guardian_of_ancient_kings = {
-        id = 86659,
+        id = function () return IsSpellKnownOrOverridesKnown( 212641 ) and 212641 or 86659 end,
         cast = 0,
-        cooldown = 300,
+        cooldown = function () return 300 - ( conduit.royal_decree.mod * 0.001 ) end,
         gcd = "off",
+        school = "holy",
 
         talent = "guardian_of_ancient_kings",
         startsCombat = false,
-        texture = 135919,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "guardian_of_ancient_kings" )
+            if conduit.royal_decree.enabled then applyBuff( "royal_decree" ) end
         end,
+
+        copy = { 86659, 212641 }
     },
 
-
+    -- Empowers the friendly target with the spirit of the forgotten queen, causing the target to be immune to all damage for 10 sec.
     guardian_of_the_forgotten_queen = {
         id = 228049,
         cast = 0,
         cooldown = 180,
         gcd = "spell",
+        school = "holy",
 
         pvptalent = "guardian_of_the_forgotten_queen",
         startsCombat = false,
-        texture = 135919,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "guardian_of_the_forgotten_queen" )
         end,
     },
 
-
+    -- Stuns the target for 6 sec.
     hammer_of_justice = {
         id = 853,
         cast = 0,
         cooldown = 60,
         gcd = "spell",
+        school = "holy",
 
-        spend = 0.04,
+        spend = 0.035,
         spendType = "mana",
 
-        startsCombat = true,
-        texture = 135963,
-
-        toggle = "cooldowns",
+        startsCombat = false,
 
         handler = function ()
+            applyDebuff( "target", "hammer_of_justice" )
         end,
     },
 
-
+    -- Talent: Hammers the current target for 1,302 Physical damage. While you are standing in your Consecration, Hammer of the Righteous also causes a wave of light that hits all other targets within 8 yds for 226 Holy damage. Generates 1 Holy Power.
     hammer_of_the_righteous = {
         id = 53595,
         cast = 0,
-        charges = 1,
-        cooldown = 6,
-        recharge = 6,
+        charges = 2,
+        cooldown = function() return 6 * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) end,
+        recharge = function() return 6 * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) end,
         gcd = "spell",
+        school = "physical",
 
         talent = "hammer_of_the_righteous",
-        startsCombat = false,
-        texture = 236253,
+        startsCombat = true,
+        notalent = "blessed_hammer",
 
         handler = function ()
+            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+            if talent.aspiration_of_divinity.enabled then addStack( "aspiration_of_divinity" ) end
         end,
     },
 
-
+    -- Talent: Hurls a divine hammer that strikes an enemy for 2,840 Holy damage. Only usable on enemies that have less than 20% health, or during Avenging Wrath. Generates 1 Holy Power.
     hammer_of_wrath = {
         id = 24275,
         cast = 0,
         charges = 1,
-        cooldown = 7.5,
-        recharge = 7.5,
+        cooldown = function() return 7.5 * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) end,
+        recharge = function() return 7.5 * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) end,
         gcd = "spell",
+        school = "holy",
 
         talent = "hammer_of_wrath",
         startsCombat = false,
-        texture = 613533,
 
+        usable = function () return target.health_pct < 20 or ( ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.avenging_wrath.enabled ) or buff.hammer_of_wrath_hallow.up or buff.negative_energy_token_proc.up, "requires low health, avenging_wrath, or ashen_hallow" end,
         handler = function ()
+            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+
+            if talent.zealots_paragon.enabled then
+                if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 0.5 end
+                if buff.sentinel.up then buff.sentinel.expires = buff.sentinel.expires + 0.5 end
+            end
+
+            if legendary.the_mad_paragon.enabled then
+                if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 1 end
+                if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 1 end
+            end
         end,
     },
 
@@ -955,14 +1209,15 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "hand_of_hindrance",
-        startsCombat = false,
+        startsCombat = true,
         texture = 1360760,
 
         handler = function ()
+            applyDebuff( "target", "hand_of_hindrance" )
         end,
     },
 
-
+    -- Commands the attention of an enemy target, forcing them to attack you.
     hand_of_reckoning = {
         id = 62124,
         cast = 0,
@@ -970,267 +1225,223 @@ spec:RegisterAbilities( {
         cooldown = 8,
         recharge = 8,
         gcd = "off",
+        school = "holy",
 
         spend = 0.03,
         spendType = "mana",
 
         startsCombat = true,
-        texture = 135984,
 
         handler = function ()
+            applyDebuff( "target", "hand_of_reckoning" )
         end,
     },
 
-
+    -- Talent: Your Holy Power generation is tripled for 20 sec.
     holy_avenger = {
         id = 105809,
         cast = 0,
         cooldown = 180,
         gcd = "off",
+        school = "physical",
 
         talent = "holy_avenger",
         startsCombat = false,
-        texture = 571555,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "holy_avenger" )
         end,
     },
 
-
-    inquisition = {
-        id = 207028,
-        cast = 0,
-        cooldown = 20,
-        gcd = "spell",
-
-        pvptalent = "inquisition",
-        startsCombat = false,
-        texture = 135984,
-
-        handler = function ()
-        end,
-    },
-
-
-    inspiring_vanguard = {
-        id = 279387,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        talent = "inspiring_vanguard",
-        startsCombat = false,
-        texture = 133176,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Petition the Light on the behalf of a fallen ally, restoring spirit to body and allowing them to reenter battle with 60% health and at least 20% mana.
     intercession = {
         id = 391054,
-        cast = 0,
+        cast = 2,
         cooldown = 600,
         gcd = "spell",
+        school = "holy",
 
         spend = 3,
         spendType = "holy_power",
 
-        startsCombat = true,
-        texture = 237550,
+        startsCombat = false,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
         end,
     },
 
-
+    -- Judges the target, dealing 2,824 Holy damage, and causing them to take 20% increased damage from your next Holy Power ability. Generates 1 Holy Power.
     judgment = {
         id = 275779,
         cast = 0,
-        charges = 1,
-        cooldown = 6,
-        recharge = 6,
+        charges = function () return talent.crusaders_judgment.enabled and 2 or nil end,
+        cooldown = function() return 6 * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) end,
+        recharge = function () return talent.crusaders_judgment.enabled and ( 6 * ( buff.blessing_of_dusk.up and talent.seal_of_order.enabled and 0.9 or 1 ) ) or nil end,
         gcd = "spell",
+        school = "holy",
 
         spend = 0.03,
         spendType = "mana",
 
         startsCombat = true,
-        texture = 135959,
+        aura = "judgment",
 
         handler = function ()
+            if talent.greater_judgment.enabled then applyDebuff( "target", "judgment" ) end
+            removeBuff( "recompense" )
+            gain( ( buff.holy_avenger.up and 3 or 1 ) + ( ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.sanctified_wrath.enabled and 1 or 0 ), "holy_power" )
+            if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", nil, 25 ) end
         end,
     },
 
-
-    justicars_vengeance = {
-        id = 215661,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 3,
-        spendType = "holy_power",
-
-        talent = "justicars_vengeance",
-        startsCombat = false,
-        texture = 135957,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Talent: Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
     lay_on_hands = {
         id = 633,
         cast = 0,
-        cooldown = 600,
+        cooldown = function () return 600 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( talent.improved_lay_on_hands.enabled and 0.9 or 1 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
         gcd = "off",
+        school = "holy",
 
         talent = "lay_on_hands",
         startsCombat = false,
-        texture = 135928,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
+        nodebuff = "forbearance",
 
         handler = function ()
+            gain( health.max, "health" )
+            applyDebuff( "player", "forbearance" )
+            if azerite.empyreal_ward.enabled then applyBuff( "empyrael_ward" ) end
         end,
     },
 
-
+    -- Talent: For the next 15 sec, you generate an absorb shield for 20% of all damage you deal, and Avenger's Shield damage is increased by 20% and its cooldown is reduced by 75%.
     moment_of_glory = {
         id = 327193,
         cast = 0,
         cooldown = 90,
         gcd = "off",
+        school = "holy",
 
         talent = "moment_of_glory",
         startsCombat = false,
-        texture = 237537,
 
         toggle = "cooldowns",
 
         handler = function ()
+            setCooldown( "avengers_shield", 0 )
+            applyBuff( "moment_of_glory" )
         end,
     },
 
-
+    -- Talent: Interrupts spellcasting and prevents any spell in that school from being cast for 4 sec.
     rebuke = {
         id = 96231,
         cast = 0,
         cooldown = 15,
         gcd = "off",
+        school = "physical",
 
         talent = "rebuke",
-        startsCombat = false,
-        texture = 523893,
-
-        handler = function ()
-        end,
-    },
-
-
-    redemption = {
-        id = 7328,
-        cast = 10,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.04,
-        spendType = "mana",
-
         startsCombat = true,
-        texture = 135955,
+
+        toggle = "interrupts",
+
+        debuff = "casting",
+        readyTime = state.timeToInterrupt,
 
         handler = function ()
+            interrupt()
         end,
     },
 
-
-    repentance = {
-        id = 20066,
-        cast = 1.7,
-        cooldown = 15,
-        gcd = "spell",
-
-        spend = 0.06,
-        spendType = "mana",
-
-        talent = "repentance",
-        startsCombat = false,
-        texture = 135942,
-
-        handler = function ()
-        end,
-    },
-
-
-    sense_undead = {
-        id = 5502,
+    -- When any party or raid member within 40 yards dies, you gain Avenging Wrath for 12 sec. When any party or raid member within 40 yards takes more than 50% of their health in damage, you gain Seraphim for 4 sec. This cannot occur more than once every 30 sec.
+    retribution_aura = {
+        id = 183435,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
+        school = "physical",
 
+        talent = "auras_of_swift_vengeance",
         startsCombat = false,
-        texture = 135974,
+        nobuff = "paladin_aura",
 
         handler = function ()
+            applyBuff( "retribution_aura" )
         end,
     },
 
-
+    -- Talent: The Light magnifies your power for $d, granting $s1% Haste, Critical Strike, and Versatility, and $?c1[${$s4*$183997bc1}]?c2[${$s4*$76671bc1}][${$s4*$267316bc1}]% Mastery.
     seraphim = {
         id = 152262,
         cast = 0,
-        cooldown = 45,
+        cooldown = function() return talent.quickened_invocations.enabled and 40 or 45 end,
         gcd = "spell",
+        school = "holy",
 
-        spend = 3,
+        spend = function ()
+            if buff.divine_purpose.up then return 0 end
+            return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 )
+        end,
         spendType = "holy_power",
 
         talent = "seraphim",
         startsCombat = false,
-        texture = 1030103,
 
         handler = function ()
+            removeBuff( "divine_purpose" )
+            removeBuff( "the_magistrates_judgment" )
+            applyBuff( "seraphim", min( 2, cooldown.shield_of_the_righteous.charges ) * 8 )
         end,
     },
 
-
+    -- Slams enemies in front of you with your shield, causing $s1 Holy damage, and increasing your Armor by $?c1[${$132403s1*$INT/100}][${$132403s1*$STR/100}] for $132403d.$?a386568[    $@spelldesc386568][]$?a280373[    $@spelldesc280373][]
     shield_of_the_righteous = {
         id = 53600,
         cast = 0,
         cooldown = 1,
         gcd = "off",
+        school = "holy",
 
-        spend = 3,
+        spend = function ()
+            if buff.bastion_of_light.up then return 0 end
+            return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 ) - ( buff.seal_of_clarity.up and 1 or 0 )
+        end,
         spendType = "holy_power",
 
         startsCombat = true,
-        texture = 236265,
+
+        usable = function() return equipped.shield, "requires a shield" end,
 
         handler = function ()
-        end,
-    },
+            removeStack( "bastion_of_light" )
+            removeBuff( "bulwark_of_righteous_fury" )
+            removeBuff( "divine_purpose" )
+            removeBuff( "the_magistrates_judgment" )
+            removeDebuff( "target", "judgment" )
 
+            if talent.redoubt.enabled then addStack( "redoubt", nil, 3 ) end
 
-    shield_of_vengeance = {
-        id = 184662,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
+            if buff.shining_light_full.up then removeBuff( "shining_light_full" )
+            elseif talent.shining_light.enabled then
+                addStack( "shining_light", nil, 1 )
+                if buff.shining_light.stack == 3 then
+                    applyBuff( "shining_light_full" )
+                    removeBuff( "shining_light" )
+                end
+            end
 
-        talent = "shield_of_vengeance",
-        startsCombat = false,
-        texture = 236264,
+            applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
+            last_shield = query_time
 
-        toggle = "cooldowns",
-
-        handler = function ()
+            if conduit.resolute_defender.enabled and buff.ardent_defender.up then
+                buff.ardent_defender.expires = buff.ardent_defender.expires + ( buff.ardent_defender.duration * ( conduit.resolute_defender.mod * 0.01 ) )
+            end
         end,
     },
 
@@ -1246,66 +1457,65 @@ spec:RegisterAbilities( {
         texture = 237452,
 
         handler = function ()
+            applyBuff( "shield_of_virtue" )
         end,
     },
 
-
-    turn_evil = {
-        id = 10326,
-        cast = 1.43,
-        cooldown = 15,
-        gcd = "spell",
-
-        spend = 0.1,
-        spendType = "mana",
-
-        talent = "turn_evil",
-        startsCombat = false,
-        texture = 571559,
-
-        handler = function ()
-        end,
-    },
-
-
-    wake_of_ashes = {
-        id = 255937,
-        cast = 0,
-        cooldown = 45,
-        gcd = "spell",
-
-        talent = "wake_of_ashes",
-        startsCombat = false,
-        texture = 1112939,
-
-        handler = function ()
-        end,
-    },
-
-
+    -- Calls down the Light to heal a friendly target for 7,531 and an additional 313 over 15 sec. Protection: Healing increased by up to 250% based on the target's missing health.
     word_of_glory = {
         id = 85673,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
+        school = "holy",
 
-        spend = 3,
+        spend = function ()
+            if buff.divine_purpose.up or buff.shining_light.stack == 5 or buff.royal_decree.up or buff.bastion_of_light.up then return 0 end
+            return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 )
+        end,
         spendType = "holy_power",
 
         startsCombat = false,
-        texture = 133192,
 
         handler = function ()
+            if buff.royal_decree.up then removeBuff( "royal_decree" )
+            elseif buff.divine_purpose.up then removeBuff( "divine_purpose" )
+            elseif buff.bastion_of_light.up then removeStack( "bastion_of_light" )
+            else removeBuff( "shining_light_full" ) end
+
+            removeBuff( "the_magistrates_judgment" )
+            gain( 2.9 * stat.spell_power * ( 1 + stat.versatility_atk_mod ), "health" )
+
+            if buff.vanquishers_hammer.up then
+                applyBuff( "shield_of_the_righteous" )
+                removeStack( "vanquishers_hammer" )
+            end
+
+            if talent.faith_in_the_light.enabled then applyBuff( "faith_in_the_light" ) end
+            if talent.light_of_the_titans.enabled then applyBuff( "light_of_the_titans" ) end
+
+            if conduit.shielding_words.enabled then applyBuff( "shielding_words" ) end
+
         end,
     },
 } )
 
-spec:RegisterPriority( "Protection", 20220918,
--- Notes
-[[
 
-]],
--- Priority
-[[
+spec:RegisterOptions( {
+    enabled = true,
 
-]] )
+    aoe = 2,
+
+    nameplates = true,
+    nameplateRange = 8,
+
+    damage = true,
+    damageExpiration = 8,
+
+    potion = "phantom_fire",
+
+    package = "Protection Paladin",
+} )
+
+
+spec:RegisterPack( "Protection Paladin", 20221120, [[Hekili:vNvwVnUUv4FldUag2tNQ49KPi2p0LhUZddUa((SLPLOTzJKOkLuY4Ia9BVhsTXvj70f0POyWnwhE2x(ip7NT)33VleLJ3)95tNpF2S5Z8MoD2QLR3Vl)AkE)UuuWlOZW)rckg(3FJrZXb5eAs5HFdfHcjjCAUgrrHCELrlybaDxYZtZ(tp8Wzs(LIJEb04hYiXfri(rdyOt58)o4H97owqIY)1K9h1uKP73HkYVqz73TJe)xawscdXv0HZcSQkLhcP4SYdj08YdxXW)Cb9kU8aQ8qkd)htr5bxE4VYqNPjNIiNVKZ)DcLrYV6vEO8WVFbiE3fui9Tiusyw3NlpqG)kRinnIGdb(IzaPhlaoeJUwlXJWprtZjXOiV97Iiz5zc)l(eQikh(p)UWFJtqhJWH7)ZvwcJKYnI97(B)ahuKZ5o(vmdykWjGJ5CLcfKtzvkb6vejIZbqgOGQJYWhlEbVph8EAsOHIauuKF1F4Z1Sk9ZVkQgqPrGnNKX5WIpchIj5KZIGlNfl5SO9Cryusg2pN(dcibjwduU6JiSSCi4GyHCgSwJbG7mhZiiiFHgD1pL(gM5brasabIqBkpmT8WOYdJf))JfNo5bzijNjjN9FJHYV4vKki4tGJhfHtY9YWmu6fsSxTukpmP8W7VxF62VYp3Kodi7cbhf6tp5dXpFgpzdtleo4hDQY9Rs2(edhJaVA5HNlpS8wv8X66Ujx(O22t3v4yleo6y7fuCmMXzRW24S7RozNPcAO1Yw1IoXik8Z8)7fHNJb3exmZM6uoG7mGcPVqpl(XbjjLKk9bbB0lVvISnfzEnswrbphe6fJ(HWmmPm4cIDgN5FIvjBuKW5ntHCFgg(ABuUlriGvKHcXSoJUjLOZwuCh6nr6Sdvz1DCrAjxcv5gcUO3iXfx(3wDx2x0ZzXGTs4(ZsC1Sc(7SmCOFvcmV)eJ8cgA1TqCS1YDd7sYvRDuBlo7rLoOY5zkecrayWgmD9iY68fT6L0QXK(OcgYJha6Kri(vQOBl)BTdsA(6jWcVigBRPOlUn9uDIGUV1YiH28QSl4eWXgfrFZW07gBnSPB0svY4iW4Zikn0WSBYm6ZOvzSnZ(ouQQSY26Fxn7Hs)1Yno5TwRRaTnuvtQYKRLfCeLjscG0trqQ)jSd5ytPnDgDpYZgpu1jLuGMrmnF8vuY)OGauaDlAk)uIaUNGm8aPqYRKeoWLOObMsyonsTLME3NozuaiJaUeNnWae1CIUoTnjfDCmMYlQ4HWZru2vRn0BO9mJMCoZhq5cyw9zcG(kdTSo36ubaodA7igk5xHsDRa5qn6IBPxUy0f086vF(OVzTCxm)AI6Cqh2CJuDp5V673iSNjnxYXIxX28SwhoCxGxYVGGXZOKZAJF6bpNH(mCEJKsQjvBZbRiKH(NHfjVK5FKCgIAH(WTwYPsfyUiq0Jvcy)WnzDamuuq3yYUHL3oqUUUlTGLsZW3b6t34we81SzHs7Q3OSqLYg3ayAS2eEqv0P0NxuOId18Zwb895YdZfN6cgfbzhPCerabpnTbpFafYFqq6qcmDLcAxypkT7roJneXYPkEwdE5EqcWlscG7GBGHOyOeXF2u4)fxzC1YPX(M5nFvtrTMkSAL4xRZ3BJMqXN429uMzltd109ekBQ5IEuZ1o1YEeFV3Ntx8RDk9PEp6q6R)pGpY9fZSOKFTVi5hXfPpfUD(tbCnEcsa4aLeq4dUEbuKmTNgPI(mVUUr)Hnp4OrWxiN2my3OrJ76dTD(7VBVVZez)KUtA(QkN0wlrY2RI3EJEwi32GoE4KqrFhP(Do9cQKvRE1Zav(ufsR6oL9dvPol6ebUePV4LuuMi)tJvQJst6INUNs9ZN1PjuRO5KW0QwtotQMmcD1NYXrNeMvnAV9z06DWEiwODTW3KNy(Hgf3v4jg8VsYfOCZKgNJg9lL7fMbU6CYjcaAPcALCQ8qxpPhT3fuVURSkHmV6Tzek3875TmcUgebWN5NopJhc0VNS(dI1Z9KpYFccUzceNvy5EqRDrnQiViorJ6hDr9BKKCdE)KtnbGqZreRq9x3RF7zP3nsLuJ2ywIdwCIvnaU5Ri2t90D96FkplG8Dh1eNocnfpN0ZizpfBH07ln3BPGJ34tMu)uuwTuLSyBPGg1iZ0X94Yomu3NSNK37dIPK10uv5xXAnANpvMw8vSG5x1d7ZvYs6)nPMR8SqiwaseBzmlKEJpjMOf8Rqsj)lsl96nelPcb0VgNszI9bTsSaicFtxITk5v(n(d)rprIWDGJAFjqaBKYZ51IiY49)k)MTd39AF2)USrzNcnVPDIKtul)w53(LYd39kWA58MQvG1(3C1uBhsFHFF4nTpA4WK2H2uHwL9znmxAgZYnXoA7b8Q5nK3mD04X2hNn6toEQGj1GALEDHj3Oc4su2(56R0(8Y(uKXwF3f4m9QHAJ)S7A2ov(iA5DDxfOteJSRllucKsj4CE8jTHaY0klRXo3XZZW19hDl71z7SrQBhbCFFAqWeYkK2ivUEPTVfhAVkv3RyT46DLryMzkZi1XhFPE6XMf2tnusEDfdLk98Akh30tbGjMxZZFR1WBwvBUAGBF)DjAwoAaaTwR9COwTHafSrBMjIXvjCBMFxHxzURvvALMJgOrhKSkyOdswf(ZbjRc4PvY0kpUlpOvInXxALSBUNI8HKqr62MnRvaGwYb7f2DekJF7nsBKE3MgDNA19ih7ErvKFwPPdXN1p7eBISVrbH3GXt5(lT4l20UxX2Xq9u)2EmEFL6gJ2)QktStJCVg3s)93hytJBxp1o)13tyRmm2TO9Zx9wh3RFroJ11zDlZ(QtLPtQMBqihkhSDvE2GD01V1yNowzM2w8KNp7CDy9QvvGrnxTLa3IfGlMl5B7saj3WtngzzPEtMmAiTFRoAW2FVhaKtUfBwDtzIEVoa4o(2JA3KKDSzn52fD3XOpajv61n(E2D3AW57ABt(G2R8U9TY16AZUloyDtzJC9jjiZFE(OUN085NMo6tM7c7w1KXsCA50B2fm2XEUEU7bJ)mF)wtK10vRgn82A(4AWclAWAnf4dZ91gmFQ3JkmF9)vTUVAZ9AyC)sZtI8)(Lc5WYCUbaUSTV4HTkoz4k01382yrd16sFlzqvDBxWq9p3UCbxAVY54AS79en6)7ngnz(traqE)mcChD57814KLId2)91RfVB4()1d]] )

@@ -7,6 +7,7 @@ actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in
 actions+=/potion
 actions+=/pummel,if=target.debuff.casting.react
 actions+=/ravager,if=cooldown.avatar.remains<3
+actions+=/use_item,name=scars_of_fraternal_strife
 actions+=/use_item,name=gavel_of_the_first_arbiter
 actions+=/blood_fury
 actions+=/berserking,if=buff.recklessness.up
@@ -15,7 +16,7 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/use_items
 actions+=/bag_of_tricks,if=buff.recklessness.down&buff.enrage.up
-actions+=/avatar,if=talent.titans_torment&buff.enrage.up&(buff.elysian_might.up|!(talent.elysian_might.enabled|legendary.elysian_might.enabled)|!action.spear_of_bastion.known|cooldown.spear_of_bastion.remains>80)
+actions+=/avatar,if=talent.titans_torment&buff.enrage.up&(buff.elysian_might.up|(!runeforge.elysian_might&!talent.elysian_might))
 actions+=/avatar,if=!talent.titans_torment&(buff.recklessness.up|boss&fight_remains<20)
 actions+=/recklessness,if=talent.annihilator&cooldown.avatar.remains<1|cooldown.avatar.remains>40|!talent.avatar|boss&fight_remains<20
 actions+=/recklessness,if=!talent.annihilator
@@ -23,20 +24,26 @@ actions+=/spear_of_bastion,if=buff.enrage.up&(buff.recklessness.up|buff.avatar.u
 actions+=/whirlwind,if=spell_targets.whirlwind>1&(talent.improved_whirlwind.enabled&!buff.meat_cleaver.up)|raid_event.adds.in<2&(talent.improved_whirlwind.enabled&!buff.meat_cleaver.up)
 actions+=/call_action_list,name=single_target
 
-actions.single_target=rampage,if=buff.recklessness.up|buff.enrage.remains<gcd|(rage>110&talent.overwhelming_rage)|(rage>80&!talent.overwhelming_rage)|buff.frenzy.remains<1.5
-actions.single_target+=/execute
-actions.single_target+=/condemn
-actions.single_target+=/bloodthirst,if=buff.enrage.down|(talent.annihilator&!buff.recklessness.up)
+actions.single_target=execute,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd
 actions.single_target+=/thunderous_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
-actions.single_target+=/odyns_fury,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
+actions.single_target+=/crushing_blow,if=talent.wrath_and_fury
+actions.single_target+=/condemn,if=buff.enrage.up
+actions.single_target+=/execute,if=buff.enrage.up
+# With Titanic Rage, Odyn's Fury procs Enrage before doing its damage, so there's no need to wait for Enrage first.
+actions.single_target+=/odyns_fury,if=!talent.annihilator&(talent.titanic_rage|buff.enrage.up)&(spell_targets.whirlwind>1|raid_event.adds.in>15)
+actions.single_target+=/rampage,if=buff.recklessness.up|buff.enrage.remains<gcd|(rage>110&talent.overwhelming_rage)|(rage>80&!talent.overwhelming_rage)|buff.frenzy.remains<gcd
+actions.single_target+=/condemn
+actions.single_target+=/execute
+actions.single_target+=/bloodthirst,if=buff.enrage.down|(talent.annihilator&!buff.recklessness.up)
+# With Titanic Rage, Odyn's Fury procs Enrage before doing its damage, so there's no need to wait for Enrage first.
+actions.single_target+=/odyns_fury,if=talent.annihilator&(talent.titanic_rage|buff.enrage.up)&(spell_targets.whirlwind>1|raid_event.adds.in>15)
 actions.single_target+=/onslaught,if=!talent.annihilator&buff.enrage.up|talent.tenderize
+actions.single_target+=/raging_blow,if=charges>1&talent.wrath_and_fury
+actions.single_target+=/bloodbath,if=buff.enrage.down|!talent.wrath_and_fury
+actions.single_target+=/bloodthirst,if=!talent.wrath_and_fury
 actions.single_target+=/raging_blow,if=charges>1
-actions.single_target+=/crushing_blow,if=charges>1
-actions.single_target+=/bloodbath,if=buff.enrage.down|talent.annihilator
-actions.single_target+=/bloodthirst,if=talent.annihilator
 actions.single_target+=/rampage
-actions.single_target+=/slam,if=talent.annihilator
-actions.single_target+=/bloodthirst,if=!talent.annihilator
+actions.single_target+=/slam,if=talent.storm_of_swords
 actions.single_target+=/bloodbath
 actions.single_target+=/raging_blow
 actions.single_target+=/crushing_blow

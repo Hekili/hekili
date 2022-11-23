@@ -33,7 +33,7 @@ actions.normal+=/fel_devastation
 actions.normal+=/soul_cleave,if=((talent.spirit_bomb.enabled&soul_fragments=0)|!talent.spirit_bomb.enabled)&((talent.fracture.enabled&fury>=55)|(!talent.fracture.enabled&fury>=70)|cooldown.fel_devastation.remains>target.time_to_die|(buff.metamorphosis.up&((talent.fracture.enabled&fury>=35)|(!talent.fracture.enabled&fury>=50))))
 actions.normal+=/immolation_aura,if=((variable.brand_build&cooldown.fiery_brand.remains>10)|!variable.brand_build)&fury<=90
 actions.normal+=/felblade,if=fury<=60
+actions.normal+=/sigil_of_flame
 actions.normal+=/fracture,if=((talent.spirit_bomb.enabled&soul_fragments<=3)|(!talent.spirit_bomb.enabled&((buff.metamorphosis.up&fury<=55)|(buff.metamorphosis.down&fury<=70))))
-actions.normal+=/sigil_of_flame,if=!(action.elysian_decree.known&runeforge.razelikhs_defilement)
 actions.normal+=/shear
 actions.normal+=/throw_glaive

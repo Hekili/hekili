@@ -25,7 +25,7 @@ actions+=/fae_transfusion,if=runeforge.seeds_of_rampant_growth.equipped|soulbind
 actions+=/vesper_totem,if=raid_event.adds.in>40|active_enemies>1
 actions+=/ascendance,if=(ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=90)|(ti_chain_lightning&active_enemies>1)
 actions+=/doom_winds,if=raid_event.adds.in>=90|active_enemies>1
-actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down&(raid_event.adds.in>=60|active_enemies>1)
+actions+=/windfury_totem,if=runeforge.doom_winds.equipped&debuff.doom_winds_cd.down&(raid_event.adds.in>=60|active_enemies>1)
 # if only one enemy, priority follows the 'single' action list.
 actions+=/call_action_list,name=single,if=active_enemies=1
 # on multiple enemies, the priority follows the 'aoe' action list.
@@ -67,9 +67,9 @@ actions.single+=/flame_shock,if=settings.filler_shock
 actions.single+=/windfury_totem,if=buff.windfury_totem.remains<30
 
 actions.aoe+=/crash_lightning,if=(talent.doom_winds|runeforge.doom_winds.equipped)&buff.doom_winds.up
-actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock>=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack>=(5+5*talent.overflowing_maelstrom.enabled)&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd)
+actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock>=active_enemies|active_dot.flame_shock>5)&buff.primordial_wave.up&buff.maelstrom_weapon.stack>=(5+5*talent.overflowing_maelstrom.enabled)&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd)
 actions.aoe+=/chain_harvest,if=buff.maelstrom_weapon.stack>=5
-actions.aoe+=/sundering,if=(talent.doomwinds|runeforge.doom_winds.equipped)&buff.doom_winds.up
+actions.aoe+=/sundering,if=(talent.doom_winds|runeforge.doom_winds.equipped)&buff.doom_winds.up
 actions.aoe+=/fire_nova,if=active_dot.flame_shock>=6|(active_dot.flame_shock>=4&active_dot.flame_shock>=active_enemies)
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/windstrike,if=talent.thorims_invocation.enabled&ti_chain_lightning&buff.maelstrom_weapon.stack>1

@@ -10,6 +10,8 @@ local C_ClassTalents, C_Traits = _G.C_ClassTalents, _G.C_Traits
 local IsPlayerSpell = _G.IsPlayerSpell
 
 local RegisterEvent = ns.RegisterEvent
+local FlagDisabledSpells = ns.FlagDisabledSpells
+local WipeCovenantCache = ns.WipeCovenantCache
 
 local state, class = Hekili.State, Hekili.Class
 
@@ -27,8 +29,18 @@ do
             local node = C_Traits.GetNodeInfo( configID, data[1] )
             local talent = rawget( state.talent, token ) or {}
 
-            talent.rank = data[2] > 0 and IsPlayerSpell( data[2] ) and node.activeRank or 0
-            talent.max = node.maxRanks
+            if not node or not node.activeEntry then
+                talent.rank = 0
+                talent.max = 1
+            else
+                local entryID = node.activeEntry.entryID
+                local entry   = entryID and C_Traits.GetEntryInfo( configID, entryID )
+                local defn    = entry and C_Traits.GetDefinitionInfo( entry.definitionID )
+
+                talent.rank = defn and defn.spellID == data[2] and node.activeEntry.rank or 0
+                talent.max = node.maxRanks
+            end
+
 
             -- Perform a sanity check on maxRanks vs. data[3].  If they don't match, the talent model is likely wrong.
             if data[3] and node.maxRanks > 0 and node.maxRanks ~= data[3] then
@@ -59,6 +71,9 @@ do
                 }
             end
         end
+
+        WipeCovenantCache()
+        FlagDisabledSpells()
     end
 
     --[[

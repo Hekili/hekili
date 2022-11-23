@@ -9,7 +9,7 @@ local state = Hekili.State
 
 local all = Hekili.Class.specs[ 0 ]
 
-local WipeCovenantCache = ns.WipeCovenantCache
+local AreCovenantsDisabled, WipeCovenantCache = ns.AreCovenantsDisabled, ns.WipeCovenantCache
 
 
 state.conduit = {}
@@ -446,21 +446,26 @@ do
     }
 
     local soulbindEvents = {
+        "CHALLENGE_MODE_COMPLETED",
+        "CHALLENGE_MODE_RESET",
+        "CHALLENGE_MODE_START",
+        "PLAYER_ALIVE",
+        "PLAYER_ENTERING_WORLD",
+        "PLAYER_TALENT_UPDATE",
         "SOULBIND_ACTIVATED",
         "SOULBIND_CONDUIT_COLLECTION_CLEARED",
         "SOULBIND_CONDUIT_COLLECTION_REMOVED",
         "SOULBIND_CONDUIT_COLLECTION_UPDATED",
         "SOULBIND_CONDUIT_INSTALLED",
         "SOULBIND_CONDUIT_UNINSTALLED",
-        "SOULBIND_FORGE_INTERACTION_STARTED",
         "SOULBIND_FORGE_INTERACTION_ENDED",
+        "SOULBIND_FORGE_INTERACTION_STARTED",
         "SOULBIND_NODE_LEARNED",
         "SOULBIND_NODE_UNLEARNED",
         "SOULBIND_NODE_UPDATED",
         "SOULBIND_PATH_CHANGED",
         "SOULBIND_PENDING_CONDUIT_CHANGED",
-        "PLAYER_ENTERING_WORLD",
-        "PLAYER_TALENT_UPDATE"
+        "ZONE_CHANGED_NEW_AREA"
     }
 
     local GetActiveSoulbindID, GetSoulbindData, GetConduitSpellID = C_Soulbinds.GetActiveSoulbindID, C_Soulbinds.GetSoulbindData, C_Soulbinds.GetConduitSpellID
@@ -476,6 +481,8 @@ do
         for k, v in pairs( state.soulbind ) do
             v.rank = 0
         end
+
+        if AreCovenantsDisabled() then return end
 
         local found = false
 
@@ -502,7 +509,7 @@ do
                         }
 
                         conduit.rank = node.conduitRank > 0 and 1 or 0
-                        conduit.mod = data[ 2 ]
+                        conduit.mod  = data[ 2 ]
 
                         state.conduit[ key ] = conduit
                     end
@@ -512,10 +519,10 @@ do
 
                         local key = soulbinds[ node.spellID ]
 
-                        local soulbind = rawget( state.soulbind, key ) or {}
-                        soulbind.rank = 1
+                        local sb = rawget( state.soulbind, key ) or {}
+                        sb.rank = 1
 
-                        state.soulbind[ key ] = soulbind
+                        state.soulbind[ key ] = sb
                     end
                 end
             end
@@ -529,7 +536,9 @@ do
     ns.updateConduits()
 
     for i, event in pairs( soulbindEvents ) do
-        RegisterEvent( event, ns.updateConduits )
+        RegisterEvent( event, function()
+            C_Timer.After( 1, ns.updateConduits )
+        end )
     end
 end
 

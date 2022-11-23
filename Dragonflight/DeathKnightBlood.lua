@@ -459,19 +459,14 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 3
     },
-    death_and_decay = {
-        alias = { "death_and_decay_actual", "deaths_due" },
-        aliasMode = "first",
-        aliasType = "buff",
-        duration = 3600,
-    },
     -- $?s206930[Heart Strike will hit up to ${$m3+2} targets.]?s207311[Clawing Shadows will hit ${$55090s4-1} enemies near the target.]?s55090[Scourge Strike will hit ${$55090s4-1} enemies near the target.][Dealing Shadow damage to enemies inside Death and Decay.]
     -- https://wowhead.com/beta/spell=188290
-    death_and_decay_actual = {
+    death_and_decay = {
         id = 188290,
         duration = 10,
         tick_time = function() return talent.rapid_decomposition.enabled and 0.85 or 1 end,
-        max_stack = 1
+        max_stack = 1,
+        copy = "death_and_decay_actual"
     },
     deaths_due = {
         id = 324165,
@@ -1250,14 +1245,9 @@ spec:RegisterAbilities( {
         id = 43265,
         noOverride = 324128,
         cast = 0,
-        recharge = function ()
-            if pvptalent.deaths_echo.enabled then return end
-            return 15
-        end,
-        charges = function ()
-            if pvptalent.deaths_echo.enabled then return end
-            return 2
-        end,
+        charges = function () if talent.deaths_echo.enabled then return 2 end end,
+        cooldown = 15,
+        recharge = function () if talent.deaths_echo.enabled then return 15 end end,
         gcd = "spell",
 
         spend = function () return buff.crimson_scourge.up and 0 or 1 end,
@@ -1334,15 +1324,9 @@ spec:RegisterAbilities( {
     death_grip = {
         id = 49576,
         cast = 0,
-        charges = function ()
-            if not pvptalent.deaths_echo.enabled then return end
-            return 2
-        end,
+        charges = function () if talent.deaths_echo.enabled then return 2 end end,
         cooldown = 15,
-        recharge = function ()
-            if not pvptalent.deaths_echo.enabled then return end
-            return 15
-        end,
+        recharge = function () if talent.deaths_echo.enabled then return 15 end end,
         gcd = "off",
 
         startsCombat = true,
@@ -1416,15 +1400,9 @@ spec:RegisterAbilities( {
     deaths_advance = {
         id = 48265,
         cast = 0,
+        charges = function () if talent.deaths_echo.enabled then return 2 end end,
         cooldown = function () return azerite.march_of_the_damned.enabled and 40 or 45 end,
-        recharge = function ()
-            if pvptalent.deaths_echo.enabled then return end
-            return azerite.march_of_the_damned.enabled and 40 or 45
-        end,
-        charges = function ()
-            if pvptalent.deaths_echo.enabled then return end
-            return 2
-        end,
+        recharge = function () if talent.deaths_echo.enabled then return ( azerite.march_of_the_damned.enabled and 40 or 45 ) end end,
         gcd = "off",
 
         startsCombat = false,

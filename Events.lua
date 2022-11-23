@@ -16,7 +16,9 @@ local lower = string.lower
 local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
-local FindPlayerAuraByID = ns.FindPlayerAuraByID
+local FindPlayerAuraByID, FindStringInInventoryItemTooltip = ns.FindPlayerAuraByID, ns.FindStringInInventoryItemTooltip
+local FlagDisabledSpells = ns.FlagDisabledSpells
+local WipeCovenantCache = ns.WipeCovenantCache
 
 local CGetItemInfo = ns.CachedGetItemInfo
 local RC = LibStub( "LibRangeCheck-2.0" )
@@ -475,6 +477,8 @@ function ns.updateTalents()
         end
     end
 
+    WipeCovenantCache()
+    FlagDisabledSpells()
 end
 
 
@@ -791,32 +795,12 @@ do
             end
 
             if not isUsable then
-                state.trinket.t1.cooldown = {
-                    remains = 0,
-                    duration = 1
-                }
+                state.trinket.t1.cooldown = state.cooldown.null_cooldown
             else
                 state.trinket.t1.cooldown = nil
             end
 
-            ns.Tooltip:SetOwner( UIParent )
-            ns.Tooltip:SetInventoryItem( "player", 13 )
-
-            local i = 0
-            while( true ) do
-                i = i + 1
-                local ttLine = _G[ "HekiliTooltipTextLeft" .. i ]
-
-                if not ttLine then break end
-
-                local line = ttLine:GetText()
-
-                if line and line:match( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP ) then
-                    state.trinket.t1.__proc = true
-                end
-            end
-
-            ns.Tooltip:Hide()
+            state.trinket.t1.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 13, true, true )
         end
 
         local T2 = GetInventoryItemID( "player", 14 )
@@ -848,32 +832,12 @@ do
             end
 
             if not isUsable then
-                state.trinket.t2.cooldown = {
-                    remains = 0,
-                    duration = 1
-                }
+                state.trinket.t2.cooldown = state.cooldown.null_cooldown
             else
                 state.trinket.t2.cooldown = nil
             end
 
-            ns.Tooltip:SetOwner( UIParent )
-            ns.Tooltip:SetInventoryItem( "player", 14 )
-
-            local i = 0
-            while( true ) do
-                i = i + 1
-                local ttLine = _G[ "HekiliTooltipTextLeft" .. i ]
-
-                if not ttLine then break end
-
-                local line = ttLine:GetText()
-
-                if line and line:match( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP ) then
-                    state.trinket.t2.__proc = true
-                end
-            end
-
-            ns.Tooltip:Hide()
+            state.trinket.t2.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 14, true, true )
         end
 
         state.main_hand.size = 0
@@ -1206,6 +1170,46 @@ RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, 
 
     Hekili:ForceUpdate( event )
 end )
+
+
+do
+    local empowerment = state.empowerment
+    local stages = empowerment.stages
+
+    RegisterUnitEvent( "UNIT_SPELLCAST_EMPOWER_START", "player", nil, function( event, unit, cast, spellID )
+        local ability = class.abilities[ spellID ]
+        if not ability then return end
+
+        wipe( stages )
+        local start = GetTime()
+
+        empowerment.spell = ability.key
+        empowerment.start = start
+
+        for i = 1, 4 do
+            n = GetUnitEmpowerStageDuration( "player", i - 1 )
+            if n == 0 then break end
+
+            if i == 1 then insert( stages, start + n * 0.001 )
+            else insert( stages, stages[ i - 1 ] + n * 0.001 ) end
+        end
+
+        empowerment.finish = stages[ #stages ]
+        empowerment.hold = empowerment.finish + GetUnitEmpowerHoldAtMaxTime( "player" ) * 0.001
+
+        Hekili:ForceUpdate( event, true )
+    end )
+
+    RegisterUnitEvent( "UNIT_SPELLCAST_EMPOWER_STOP", "player", nil, function( event, unit, cast, spellID )
+        empowerment.spell = nil
+
+        empowerment.start = 0
+        empowerment.finish = 0
+        empowerment.hold = 0
+
+        Hekili:ForceUpdate( event, true )
+    end )
+end
 
 
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( event, unit, cast, spellID )
@@ -2088,27 +2092,23 @@ do
             wipe( v.lower )
         end
 
-        --[[ Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
+        -- Bartender4 support; if BT4 bindings are set, use them, otherwise fall back on default UI bindings below.
+        -- This will still get viewed as misleading...
         if _G["Bartender4"] then
-            for actionBarNumber = 1, 15 do
-                local bar = _G["BT4Bar" .. actionBarNumber]
-                for keyNumber = 1, 12 do
-                    local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
-                    local bindingKeyName = "ACTIONBUTTON" .. keyNumber
+            table.wipe( slotsUsed )
 
-                    -- If bar is disabled assume paging / stance switching on bar 1
-                    if actionBarNumber > 1 and bar and not bar.disabled then
-                        bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":Click"
-                    end
+            for i = 1, 180 do
+                local keybind = "CLICK BT4Button" .. i .. ":Keybind"
+                local bar = ceil( i / 12 )
 
-                    StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
+                if GetBindingKey( keybind ) then
+                    StoreKeybindInfo( bar, GetBindingKey( keybind ), GetActionInfo( i ) )
+                    slotsUsed[ i ] = true
                 end
             end
 
-            done = true ]]
-
         -- Use ElvUI's actionbars only if they are actually enabled.
-        if _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
+        elseif _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
             table.wipe( slotsUsed )
 
             for i = 1, 15 do

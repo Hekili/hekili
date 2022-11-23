@@ -59,100 +59,103 @@ spec:RegisterResource( Enum.PowerType.Energy )
 
 -- Talents
 spec:RegisterTalents( {
-    after_the_wildfire            = { 82140, 371905, 1 }, -- TODO: Every 200 Rage you spend causes a burst of restorative energy, healing allies within 8 yds for 486.
-    astral_influence              = { 82210, 197524, 2 }, -- Increases the range of all of your abilities by 1/2 yards.
-    berserk_persistence           = { 82144, 377779, 1 }, -- Go berserk for 15 sec, reducing the cooldown of Frenzied Regeneration by 100% and cost of Ironfur by 50%. Combines with other Berserk abilities.
-    berserk_ravage                = { 82149, 343240, 1 }, -- Go berserk for 15 sec, reducing the cooldowns of Mangle, Thrash, and Growl by 100%. Combines with other Berserk abilities.
-    berserk_unchecked_aggression  = { 82155, 377623, 1 }, -- Go berserk for 15 sec, increasing haste by 15%, and reducing the rage cost of Maul by 50%. Combines with other Berserk abilities.
-    blood_frenzy                  = { 82142, 203962, 1 }, -- Thrash also generates 2 Rage each time it deals damage.
-    brambles                      = { 82161, 203953, 1 }, -- Sharp brambles protect you, absorbing and reflecting up to 29 damage from each attack. While Barkskin is active, the brambles also deal 13 Nature damage to all nearby enemies every 1 sec.
-    bristling_fur                 = { 82161, 155835, 1 }, -- Bristle your fur, causing you to generate Rage based on damage taken for 8 sec.
-    circle_of_life_and_death      = { 82137, 391969, 1 }, -- Your damage over time effects deal their damage in 25% less time, and your healing over time effects in 15% less time.
-    convoke_the_spirits           = { 82136, 391528, 1 }, -- Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of 16 Druid spells and abilities over 4 sec. You will cast Mangle, Ironfur, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
+    -- Druid
+    astral_influence              = { 82210, 197524, 2 }, -- Increases the range of all of your abilities by -1 yards.
     cyclone                       = { 82213, 33786 , 1 }, -- Tosses the enemy target into the air, disorienting them but making them invulnerable for up to 6 sec. Only one target can be affected by your Cyclone at a time.
-    dream_of_cenarius             = { 82151, 372119, 1 }, -- When you take non-periodic damage, you have a chance equal to your critical strike to cause your next Regrowth to be instant, free, and castable in all forms for 30 sec. This effect cannot occur more than once every 20 sec.
-    earthwarden                   = { 82156, 203974, 1 }, -- When you deal direct damage with Thrash, you gain a charge of Earthwarden, reducing the damage of the next auto attack you take by 30%. Earthwarden may have up to 3 charges.
-    elunes_favored                = { 82134, 370586, 1 }, -- While in Bear Form, you deal 10% increased Arcane damage, and are healed for 30% of all Arcane damage done.
     feline_swiftness              = { 82239, 131768, 2 }, -- Increases your movement speed by 15%.
-    flashing_claws                = { 82157, 393427, 2 }, -- Thrash has a 10% chance to trigger an additional Thrash.
-    frenzied_regeneration         = { 82220, 22842 , 1 }, -- Heals you for 32% health over 3 sec.
-    front_of_the_pack             = { 82125, 377835, 1 }, -- Stampeding Roar's radius and duration are increased by 15%. Your movement speed is increased by 5%.
-    fury_of_nature                = { 82138, 370695, 2 }, -- While in Bear From, you deal 10% increased Arcane damage.
-    galactic_guardian             = { 82147, 203964, 1 }, -- Your damage has a 5% chance to trigger a free automatic Moonfire on that target. When this occurs, the next Moonfire you cast generates 8 Rage, and deals 300% increased direct damage.
-    gore                          = { 82126, 210706, 1 }, -- Thrash, Swipe, Moonfire, and Maul have a 15% chance to reset the cooldown on Mangle, and to cause it to generate an additional 4 Rage.
-    gory_fur                      = { 82132, 200854, 1 }, -- Mangle has a 15% chance to reduce the Rage cost of your next Ironfur by 25%.
-    guardian_of_elune             = { 82140, 155578, 1 }, -- Mangle increases the duration of your next Ironfur by 2 sec, or the healing of your next Frenzied Regeneration by 20%.
-    heart_of_the_wild             = { 82231, 319454, 1 }, -- TODO: (mana costs) Abilities not associated with your specialization are substantially empowered for 45 sec. Balance: Magical damage increased by 30%. Feral: Physical damage increased by 30%. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
+    heart_of_the_wild             = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for 45 sec. Balance: Magical damage increased by 30%. Feral: Physical damage increased by 30%. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
     hibernate                     = { 82211, 2637  , 1 }, -- Forces the enemy target to sleep for up to 40 sec. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
     improved_barkskin             = { 82219, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_rejuvenation         = { 82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec.
     improved_stampeding_roar      = { 82230, 288826, 1 }, -- Cooldown reduced by 60 sec.
     improved_sunfire              = { 82207, 231050, 1 }, -- Sunfire now applies its damage over time effect to all enemies within 8 yards.
-    improved_survival_instincts   = { 82128, 328767, 1 }, -- Survival Instincts now has 2 charges.
     incapacitating_roar           = { 82237, 99    , 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage will cancel the effect.
-    incarnation_guardian_of_ursoc = { 82136, 394786, 1 }, -- An improved Bear Form that grants the benefits of Berserk, causes Mangle to hit up to 3 targets, and increases maximum health by 30%. Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration.
-    incarnation                   = { 82136, 394786, 1 }, -- An improved Bear Form that grants the benefits of Berserk, causes Mangle to hit up to 3 targets, and increases maximum health by 30%. Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration.
-    infected_wounds               = { 82162, 345208, 1 }, -- Mangle and Maul cause an Infected Wound in the target, reducing their movement speed by 50% for 12 sec.
-    innate_resolve                = { 82160, 377811, 1 }, -- Regrowth and Frenzied Regeneration healing is increased by 20.0% on yourself. Frenzied Regeneration has 1 additional charge.
     innervate                     = { 82243, 29166 , 1 }, -- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 10 sec.
-    ironfur                       = { 82227, 192081, 1 }, -- Increases armor by 448 for 7 sec.
+    ironfur                       = { 82227, 192081, 1 }, -- Increases armor by 484 for 9 sec.
     killer_instinct               = { 82225, 108299, 3 }, -- Physical damage and Armor increased by 2%.
-    layered_mane                  = { 82148, 384721, 2 }, -- Ironfur has a 10.0% chance to apply two stacks and Frenzied Regeneration has a 10% chance to not consume a charge.
     lycaras_teachings             = { 82233, 378988, 3 }, -- You gain 2% of a stat while in each form: No Form: Haste Cat Form: Critical Strike Bear Form: Versatility Moonkin Form: Mastery
-    maim                          = { 82221, 22570 , 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 60 damage, 1 sec 2 points: 119 damage, 2 sec 3 points: 179 damage, 3 sec 4 points: 238 damage, 4 sec 5 points: 298 damage, 5 sec
-    mangle                        = { 82131, 231064, 1 }, -- Mangle deals 20% additional damage against bleeding targets.
+    maim                          = { 82221, 22570 , 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 63 damage, 1 sec 2 points: 127 damage, 2 sec 3 points: 190 damage, 3 sec 4 points: 253 damage, 4 sec 5 points: 316 damage, 5 sec
     mass_entanglement             = { 82242, 102359, 1 }, -- Roots the target and all enemies within 15 yards in place for 30 sec. Damage may interrupt the effect. Usable in all shapeshift forms.
-    matted_fur                    = { 82236, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 1,227 damage for 8 sec.
-    maul                          = { 82127, 6807  , 1 }, -- Maul the target for 420 Physical damage.
+    matted_fur                    = { 82236, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 1,229 damage for 8 sec.
     mighty_bash                   = { 82237, 5211  , 1 }, -- Invokes the spirit of Ursoc to stun the target for 4 sec. Usable in all shapeshift forms.
-    moonkin_form                  = { 91043, 197625, 1 }, -- Shapeshift into Moonkin Form, increasing your armor by 125%, and granting protection from Polymorph effects. The act of shapeshifting frees you from movement impairing effects.
     natural_recovery              = { 82206, 377796, 2 }, -- Healing done and healing taken increased by 3%.
     natures_vigil                 = { 82244, 124974, 1 }, -- For 30 sec, all single-target damage also heals a nearby friendly target for 20% of the damage done.
     nurturing_instinct            = { 82214, 33873 , 3 }, -- Magical damage and healing increased by 2%.
     primal_fury                   = { 82238, 159286, 1 }, -- When you critically strike with an attack that generates a combo point, you gain an additional combo point. Damage over time cannot trigger this effect.
-    protector_of_the_pack         = { 82245, 378986, 1 }, -- Store 10% of your damage, up to 560. Your next Regrowth consumes all stored damage to increase its healing.
-    pulverize                     = { 82153, 80313 , 1 }, -- A devastating blow that consumes 2 stacks of your Thrash on the target to deal 475 Physical damage and reduce the damage they deal to you by 35% for 10 sec.
-    rage_of_the_sleeper           = { 82141, 200851, 1 }, -- Unleashes the rage of Ursoc for 10 sec, preventing 25% of all damage you take and reflecting 231 Nature damage back at your attackers.
-    rake                          = { 82199, 1822  , 1 }, -- Rake the target for 78 Bleed damage and an additional 567 Bleed damage over 15 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
-    reinforced_fur                = { 82139, 393618, 1 }, -- Ironfur increases armor by an additional 4% and Barkskin reduces damage taken by an additional 5%.
-    reinvigoration                = { 82154, 372945, 2 }, -- Frenzied Regeneration's cooldown is reduced by 10%.
-    rejuvenation                  = { 82217, 774   , 1 }, -- Heals the target for 580 over 12 sec.
-    remove_corruption             = { 82215, 2782  , 1 }, -- Nullifies corrupting effects on the friendly target, removing all Curse and Poison effects.
-    rend_and_tear                 = { 82152, 204053, 1 }, -- Each stack of Thrash reduces the target's damage to you by 2% and increases your damage to them by 2%.
+    protector_of_the_pack         = { 82245, 378986, 1 }, -- Store 10% of your damage, up to 562. Your next Regrowth consumes all stored damage to increase its healing.
     renewal                       = { 82232, 108238, 1 }, -- Instantly heals you for 30% of maximum health. Usable in all shapeshift forms.
-    rip                           = { 82222, 1079  , 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 359 over 8 sec 2 points: 539 over 12 sec 3 points: 719 over 16 sec 4 points: 898 over 20 sec 5 points: 1,077 over 24 sec
-    scintillating_moonlight       = { 82146, 238049, 2 }, -- Moonfire reduces damage dealt to you by -1%.
+    rip                           = { 82222, 1079  , 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 405 over 8 sec 2 points: 607 over 12 sec 3 points: 809 over 16 sec 4 points: 1,011 over 20 sec 5 points: 1,213 over 24 sec
     skull_bash                    = { 82224, 106839, 1 }, -- You charge and bash the target's skull, interrupting spellcasting and preventing any spell in that school from being cast for 4 sec.
     soothe                        = { 82229, 2908  , 1 }, -- Soothes the target, dispelling all enrage effects.
-    soul_of_the_forest            = { 82142, 158477, 1 }, -- Mangle generates 5 more Rage and deals 25% more damage.
     stampeding_roar               = { 82234, 106898, 1 }, -- Shift into Bear Form and let loose a wild roar, increasing the movement speed of all friendly players within 15 yards by 60% for 8 sec.
-    starfire                      = { 91041, 197628, 1 }, -- Call down a burst of energy, causing 413 Arcane damage to the target, and 141 Arcane damage to all other enemies within 5 yards.
-    starsurge                     = { 82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing 764 Astral damage.
-    sunfire                       = { 82208, 93402 , 1 }, -- A quick beam of solar light burns the enemy for 94 Nature damage and then an additional 738 Nature damage over 18 sec.
-    survival_instincts            = { 82129, 61336 , 1 }, -- Reduces all damage you take by 50% for 6 sec.
-    survival_of_the_fittest       = { 82143, 203965, 2 }, -- Reduces the cooldowns of Barkskin and Survival Instincts by 15%.
-    swiftmend                     = { 82216, 18562 , 1 }, -- Consumes a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for 1,625.
+    sunfire                       = { 82208, 93402 , 1 }, -- A quick beam of solar light burns the enemy for 100 Nature damage and then an additional 831 Nature damage over 18 sec.
     swipe                         = { 82226, 213764, 1 }, -- Swipe nearby enemies, inflicting Physical damage. Damage varies by shapeshift form.
     thick_hide                    = { 82228, 16931 , 2 }, -- Reduces all damage taken by 6%.
-    thrash                        = { 82223, 106832, 1 }, -- Thrash all nearby enemies, dealing immediate physical damage and periodic bleed damage. Damage varies by shapeshift form.
     tiger_dash                    = { 82198, 252216, 1 }, -- Shift into Cat Form and increase your movement speed by 200%, reducing gradually over 5 sec.
     tireless_pursuit              = { 82197, 377801, 1 }, -- For 3 sec after leaving Cat Form or Travel Form, you retain up to 40% movement speed.
-    tooth_and_claw                = { 82159, 135288, 1 }, -- Autoattacks have a 20% chance to empower your next Maul, stacking up to 2 times. Empowered Maul deals 40% increased damage and reduces the target's damage to you by 15% for 6 sec.
-    twin_moonfire                 = { 82145, 372567, 1 }, -- Moonfire deals 20% increased damage and also hits another nearby enemy within 15 yds of the target.
     typhoon                       = { 82209, 132469, 1 }, -- Blasts targets within 15 yards in front of you with a violent Typhoon, knocking them back and dazing them for 6 sec. Usable in all shapeshift forms.
-    untamed_savagery              = { 82152, 372943, 1 }, -- Increases the damage and radius of Thrash by 25%.
-    ursine_adept                  = { 82150, 300346, 1 }, -- Moonfire, Soothe, Remove Corruption, and Rebirth are usable in Bear Form. Multiple uses of Ironfur may overlap. All damage taken in Bear Form reduced by 10%.
     ursine_vigor                  = { 82235, 377842, 2 }, -- For 4 sec after shifting into Bear Form, your health and armor are increased by 10%.
-    ursocs_endurance              = { 82130, 393611, 2 }, -- Increases the duration of Barkskin and Ironfur by 1.0 sec.
-    ursocs_fury                   = { 82151, 377210, 1 }, -- Thrash and Maul grant you an absorb shield for 30% of the damage dealt for 15 sec.
-    ursocs_guidance               = { 82135, 393414, 1 }, -- Incarnation: Guardian of Ursoc: Every 20 Rage you spend reduces the cooldown of Incarnation: Guardian of Ursoc by 1 sec.  Convoke the Spirits: Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
     ursols_vortex                 = { 82242, 102793, 1 }, -- Conjures a vortex of wind for 10 sec at the destination, reducing the movement speed of all enemies within 8 yards by 50%. The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center. Usable in all shapeshift forms.
     verdant_heart                 = { 82218, 301768, 1 }, -- Frenzied Regeneration and Barkskin increase all healing received by 20%.
-    vicious_cycle                 = { 82158, 371999, 1 }, -- Mangle increases the damage of your next Maul, and Maul increases the damage of your next Mangle by 15%. Stacks up to 3.
-    vulnerable_flesh              = { 82133, 372618, 2 }, -- Maul has an additional 30% chance to critically strike.
     wellhoned_instincts           = { 82246, 377847, 2 }, -- When you fall below 40% health, you cast Frenzied Regeneration, up to once every 120 sec.
     wild_charge                   = { 82198, 102401, 1 }, -- Fly to a nearby ally's position.
-    wild_growth                   = { 82241, 48438 , 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 461 over 7 sec. Healing starts high and declines over the duration.
+    wild_growth                   = { 82241, 48438 , 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 519 over 7 sec. Healing starts high and declines over the duration.
+
+    -- Guardian
+    after_the_wildfire            = { 82140, 371905, 1 }, -- Every 200 Rage you spend causes a burst of restorative energy, healing allies within 12 yds for 2,922.
+    berserk_persistence           = { 82144, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldowns of Frenzied Regeneration, Mangle, Thrash, and Growl by 100%, and reducing the cost of Maul and Ironfur by 50%.
+    berserk_ravage                = { 82149, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldowns of Frenzied Regeneration, Mangle, Thrash, and Growl by 100%, and reducing the cost of Maul and Ironfur by 50%.
+    berserk_unchecked_aggression  = { 82155, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldowns of Frenzied Regeneration, Mangle, Thrash, and Growl by 100%, and reducing the cost of Maul and Ironfur by 50%.
+    blood_frenzy                  = { 82142, 203962, 1 }, -- Thrash also generates 2 Rage each time it deals damage.
+    brambles                      = { 82161, 203953, 1 }, -- Sharp brambles protect you, absorbing and reflecting up to 29 damage from each attack. While Barkskin is active, the brambles also deal 20 Nature damage to all nearby enemies every 1 sec.
+    bristling_fur                 = { 82161, 155835, 1 }, -- Bristle your fur, causing you to generate Rage based on damage taken for 8 sec.
+    circle_of_life_and_death      = { 82137, 391969, 1 }, -- Your damage over time effects deal their damage in 25% less time, and your healing over time effects in 15% less time.
+    convoke_the_spirits           = { 82136, 391528, 1 }, -- Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of 16 Druid spells and abilities over 4 sec. You will cast Wild Growth, Swiftmend, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
+    dream_of_cenarius             = { 92227, 372119, 1 }, -- When you take non-periodic damage, you have a chance equal to your critical strike to cause your next Regrowth to heal for an additional 200%, and to be instant, free, and castable in all forms for 30 sec. This effect cannot occur more than once every 20 sec.
+    earthwarden                   = { 82156, 203974, 1 }, -- When you deal direct damage with Thrash, you gain a charge of Earthwarden, reducing the damage of the next auto attack you take by 30%. Earthwarden may have up to 3 charges.
+    elunes_favored                = { 82134, 370586, 1 }, -- While in Bear Form, you deal 10% increased Arcane damage, and are healed for 30% of all Arcane damage done.
+    flashing_claws                = { 82157, 393427, 2 }, -- Thrash has a 10% chance to trigger an additional Thrash.
+    frenzied_regeneration         = { 82220, 22842 , 1 }, -- Heals you for 32% health over 3 sec, and increases healing received by 20%.
+    front_of_the_pack             = { 82125, 377835, 1 }, -- Stampeding Roar's radius and duration are increased by 15%. Your movement speed is increased by 5%.
+    fury_of_nature                = { 82138, 370695, 2 }, -- While in Bear From, you deal 10% increased Arcane damage.
+    galactic_guardian             = { 82147, 203964, 1 }, -- Your damage has a 5% chance to trigger a free automatic Moonfire on that target. When this occurs, the next Moonfire you cast generates 8 Rage, and deals 300% increased direct damage.
+    gore                          = { 82126, 210706, 1 }, -- Thrash, Swipe, Moonfire, and Maul have a 15% chance to reset the cooldown on Mangle, and to cause it to generate an additional 4 Rage.
+    gory_fur                      = { 82132, 200854, 1 }, -- Mangle has a 15% chance to reduce the Rage cost of your next Ironfur by 25%.
+    guardian_of_elune             = { 82140, 155578, 1 }, -- Mangle increases the duration of your next Ironfur by 3 sec, or the healing of your next Frenzied Regeneration by 20%.
+    improved_survival_instincts   = { 82128, 328767, 1 }, -- Survival Instincts now has 2 charges.
+    incarnation_guardian_of_ursoc = { 82136, 102558, 1 }, -- An improved Bear Form that grants the benefits of Berserk, causes Mangle to hit up to 3 targets, and increases maximum health by 30%. Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration.
+    incarnation                   = { 82136, 102558, 1 }, -- An improved Bear Form that grants the benefits of Berserk, causes Mangle to hit up to 3 targets, and increases maximum health by 30%. Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration.
+    infected_wounds               = { 82162, 345208, 1 }, -- Mangle and Maul cause an Infected Wound in the target, reducing their movement speed by 50% for 12 sec.
+    innate_resolve                = { 82160, 377811, 1 }, -- Regrowth and Frenzied Regeneration healing is increased by 20.0% on yourself. Frenzied Regeneration has 1 additional charge.
+    layered_mane                  = { 82148, 384721, 2 }, -- Ironfur has a 10% chance to apply two stacks and Frenzied Regeneration has a 10% chance to not consume a charge.
+    mangle                        = { 82131, 231064, 1 }, -- Mangle deals 20% additional damage against bleeding targets.
+    maul                          = { 82127, 6807  , 1 }, -- Maul the target for 936 Physical damage.
+    moonkin_form                  = { 91043, 197625, 1 }, -- Shapeshift into Moonkin Form, increasing the damage of your spells by 10% and your armor by 125%, and granting protection from Polymorph effects. The act of shapeshifting frees you from movement impairing effects.
+    pulverize                     = { 82153, 80313 , 1 }, -- A devastating blow that consumes 2 stacks of your Thrash on the target to deal 1,061 Physical damage and reduce the damage they deal to you by 35% for 10 sec.
+    rage_of_the_sleeper           = { 82141, 200851, 1 }, -- Unleashes the rage of Ursoc for 10 sec, preventing 25% of all damage you take, increasing your damage done by 15%, granting you 25% leech, and reflecting 232 Nature damage back at your attackers.
+    rake                          = { 82199, 1822  , 1 }, -- Rake the target for 83 Bleed damage and an additional 638 Bleed damage over 15 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
+    reinforced_fur                = { 82139, 393618, 1 }, -- Ironfur increases armor by an additional 8% and Barkskin reduces damage taken by an additional 5%.
+    reinvigoration                = { 82154, 372945, 2 }, -- Frenzied Regeneration's cooldown is reduced by 10%.
+    rejuvenation                  = { 82217, 774   , 1 }, -- Heals the target for 646 over 12 sec.
+    remove_corruption             = { 82215, 2782  , 1 }, -- Nullifies corrupting effects on the friendly target, removing all Curse and Poison effects.
+    rend_and_tear                 = { 82152, 204053, 1 }, -- Each stack of Thrash reduces the target's damage to you by 2% and increases your damage to them by 2%.
+    scintillating_moonlight       = { 82146, 238049, 2 }, -- Moonfire reduces damage dealt to you by -1%.
+    soul_of_the_forest            = { 92226, 158477, 1 }, -- Mangle generates 5 more Rage and deals 25% more damage.
+    starfire                      = { 91041, 197628, 1 }, -- Call down a burst of energy, causing 438 Arcane damage to the target, and 150 Arcane damage to all other enemies within 5 yards.
+    starsurge                     = { 82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing 811 Astral damage.
+    survival_instincts            = { 82129, 61336 , 1 }, -- Reduces all damage you take by 50% for 6 sec.
+    survival_of_the_fittest       = { 82143, 203965, 2 }, -- Reduces the cooldowns of Barkskin and Survival Instincts by 15%.
+    swiftmend                     = { 82216, 18562 , 1 }, -- Consumes a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for 1,726.
+    thrash                        = { 82223, 106832, 1 }, -- Thrash all nearby enemies, dealing immediate physical damage and periodic bleed damage. Damage varies by shapeshift form.
+    tooth_and_claw                = { 82133, 135288, 1 }, -- Autoattacks have a 20% chance to empower your next Maul, stacking up to 2 times. Empowered Maul deals 40% increased damage, costs 100% less rage, and reduces the target's damage to you by 15% for 6 sec.
+    twin_moonfire                 = { 82145, 372567, 1 }, -- Moonfire deals 10% increased damage and also hits another nearby enemy within 15 yds of the target.
+    untamed_savagery              = { 82152, 372943, 1 }, -- Increases the damage and radius of Thrash by 25%.
+    ursine_adept                  = { 82150, 300346, 1 }, -- Moonfire, Soothe, Remove Corruption, and Rebirth are usable in Bear Form. Multiple uses of Ironfur may overlap. All damage taken in Bear Form reduced by 10%.
+    ursocs_endurance              = { 82130, 393611, 1 }, -- Increases the duration of Barkskin and Ironfur by 2.0 sec.
+    ursocs_fury                   = { 82151, 377210, 1 }, -- Thrash and Maul grant you an absorb shield for 30% of the damage dealt for 15 sec.
+    ursocs_guidance               = { 82135, 393414, 1 }, -- Incarnation: Guardian of Ursoc: Every 20 Rage you spend reduces the cooldown of Incarnation: Guardian of Ursoc by 1 sec.  Convoke the Spirits: Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
+    vicious_cycle                 = { 82158, 371999, 1 }, -- Mangle increases the damage of your next Maul, and Maul increases the damage of your next Mangle by 15%. Stacks up to 3.
+    vulnerable_flesh              = { 82159, 372618, 2 }, -- Maul has an additional 30% chance to critically strike.
 } )
 
 
@@ -1454,7 +1457,10 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return buff.berserk_bear.up and talent.berserk_unchecked_aggression.enabled and 20 or 40 end,
+        spend = function()
+            if buff.tooth_and_claw.up then return 0 end
+            return buff.berserk_bear.up and talent.berserk_unchecked_aggression.enabled and 20 or 40
+        end,
         spendType = "rage",
 
         talent = "maul",
@@ -1463,17 +1469,21 @@ spec:RegisterAbilities( {
         form = "bear_form",
 
         usable = function ()
-            if ( settings.maul_rage or 0 ) > 0 and rage.current - cost < ( settings.maul_rage or 0 ) then return false, "not enough additional rage" end
+            if action.maul.spend > 0 and ( settings.maul_rage or 0 ) > 0 and rage.current - action.maul.spend < ( settings.maul_rage or 0 ) then return false, "not enough additional rage" end
             return true
         end,
 
         handler = function ()
-            removeBuff( "vicious_cycle_maul" )
             addStack( "vicious_cycle_mangle" )
-            if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
-            if pvptalent.sharpened_claws.enabled or essence.conflict_and_strife.major then applyBuff( "sharpened_claws" ) end
-            if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
             removeBuff( "savage_combatant" )
+            removeBuff( "vicious_cycle_maul" )
+            if buff.tooth_and_claw.up then
+                removeStack( "tooth_and_claw" )
+                applyDebuff( "target", "tooth_and_claw_debuff" )
+            end
+            if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
+            if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
+            if pvptalent.sharpened_claws.enabled or essence.conflict_and_strife.major then applyBuff( "sharpened_claws" ) end
         end,
     },
 
@@ -1665,6 +1675,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "regrowth" )
+            removeBuff( "dream_of_cenarius" )
             removeBuff( "protector_of_the_pack" )
         end,
     },
@@ -2103,7 +2114,7 @@ spec:RegisterSetting( "maul_rage", 20, {
 
 spec:RegisterSetting( "mangle_more", false, {
     name = "Use |T132135:0|t Mangle More in Multi-Target",
-    desc = "If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.  This will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, " ..
+    desc = "If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, " ..
         "funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets.",
     type = "toggle",
     width = "full",
@@ -2121,7 +2132,7 @@ spec:RegisterSetting( "ironfur_damage_threshold", 5, {
 
 spec:RegisterSetting( "shift_for_convoke", false, {
     name = "|T3636839:0|t Powershift for Convoke the Spirits",
-    desc = "If checked and you are a Night Fae, the addon will recommend swapping to your Feral/Balance Affinity specialization before using |T3636839:0|t Convoke the Spirits.  " ..
+    desc = "If checked, the addon will recommend swapping to Cat Form before using |T3636839:0|t Convoke the Spirits.\n\n" ..
         "This is a DPS gain unless you die horribly.",
     type = "toggle",
     width = "full"
@@ -2129,36 +2140,16 @@ spec:RegisterSetting( "shift_for_convoke", false, {
 
 spec:RegisterSetting( "catweave_bear", false, {
     name = "|T132115:0|t Attempt Catweaving (Experimental)",
-    desc = function()
-        local affinity
-
-        if state.talent.feral_affinity.enabled then
-            affinity = "|cFF00FF00" .. ( GetSpellInfo( 202155 ) ) .. "|r"
-        else
-            affinity = "|cFFFF0000" .. ( GetSpellInfo( 202155 ) ) .. "|r"
-        end
-
-        return "If checked, the addon will use the experimental |cFFFFD100catweave|r priority included in the default priority pack.\n\nRequires " .. affinity .. "."
-    end,
+    desc = "If checked, the addon will use the experimental |cFFFFD100catweave|r priority included in the default priority pack.",
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "owlweave_bear", false, {
     name = "|T136036:0|t Attempt Owlweaving (Experimental)",
-    desc = function()
-        local affinity
-
-        if state.talent.balance_affinity.enabled then
-            affinity = "|cFF00FF00" .. ( GetSpellInfo( 197488 ) ) .. "|r"
-        else
-            affinity = "|cFFFF0000" .. ( GetSpellInfo( 197488 ) ) .. "|r"
-        end
-
-        return "If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack.\n\nRequires " .. affinity .. "."
-    end,
+    desc = "If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack.",
     type = "toggle",
     width = "full"
 } )
 
-spec:RegisterPack( "Guardian", 20221101, [[Hekili:TZZ6okoo6(SGwPuG6sueU0xwvus7oA1SDVh1R0wJ08pcMGbYwHe2eNIPgHqNxJZR35jz)(SJtCsStcuunZnnJ6Ho2(7U)Uz7zM9SFy2Jljm6SVoCWWH22dS7p4JJNm4dZEK9Yo6Sh3rCFISg(razl8NFFcjAPhjah4f)qYseaXHjrUWGBySDX)57UBThBtYI(UHBVl2BBIpH5fg4grwXW)U7DZECrINp7ZbZwOd7JNyp7rscBty0ShF0B73bq2B5sQy60y3zpo7rFVywmI8q3WGNdFIc)(RC2Hgqw4txo7Vo7r3ipgnYJamdXNgW6VHsIyoHRCyBOo798x2pD2hNBDCENJZxKSALMzLSRWe2ggg8KxGZQWOTWya16ISiqNLx5mgWBgPQgHN6aiOgHGsoykJZXv8opaQXQ4Hb)diUwrs8z6eosWe)uIVVZcs8gH0nYBNyG)2prDtyOSH(mn6LJZzEBPWFUb(dyXHrhN7fd)8zINpc1(6yTDrH79rEsJGqsb)7qwsWAQxuKdqamVGxIDCj((1bpP(Wn8zaIGQf(pSnVejnunctPuudDWI8cEIYSph8k)Ekm6ZS77f33L4ckhWEG4(Fs8IOlDyrusCsenMVGU52uzZG8t0Y2BzJfVpmQI1y2O7jbIb7bAv)qMchbC94656HxeUE4VG46HixpPUnFAzNUY)Tv(mQXHrpj4wgL4TeKkS9uYZuNfWSpo)Wb5aGiwDGEfyZCnqpXAe0gFSf0OyA0t81XNcooFeVaxsua3VRZ6ux2i9Lefh6wK46yG(SugQkf2JlULMq7c5)xqC)(sI7cou(obg8cwZDGaF74C0p(X5GmZhiDWXseb(O3QB3t)))F))IGpeeYWr4lAl1NsxEl8dsWAF6DSnrGBlay4erO5IdgbXReUMwq9d3FC(4bWx)zqsbZmauBksN01UmCFamhUlTvWp2tVb)Shcscd9(MUuAanA9lPo(waMphNpCs6k)7HSFmDeG5EMMlFIscCe)2b5xvRWUs3Qpm948rdKkgTQeyg2kMOUHH(iH3xtGG(r0TeVaGwUxSQm9DlSpqGMBCxWktmuUP4fcAwfziHEvmNmg5HJZhWNz20ewbAMXYqgpM6kWbHYWGKyTlOeFhmV(tQWgG0wgbMdfPU(buhxz2gtsqzzFAGCNcQ2DerMKkvC7YhQB7Y)uSRRvBxqt262WajafboGXngOeansrYTXnf9FngXDv8(vYfIQr5LWgs1SiwYRYOckcFjzGc)pwNW)ZRuePIibuUuIfIOIVHlvYTNlRcUbvmqWey6HC3gCeDNeJ3Qm7ne0XXcIpjWLE3kAebuNKvR8c8yVKJoyj)4gWCcY(sbNQ6peyX79yUBKKwoueETe0cA04Xa4THI8tAALI58Bzv8NAwfFZVfvWzbTUqk40uH0fOjlzOQUXpP4sMYdjBAL8Ikl7d0Y2dmKABf2vbai0f1iX)vTvp2jZQKevTiTSVwFXEnLozdvrAQOfzCUs6sHeL55(epqGLq76WcDw6r5bNShQgtlIUcspFdc(6MTqDjYVXbSC36H50F)X5VhW)lU(WAiW2sOs0VQTOJCASobkj6PyGURp)9880BFjxiZEc1QO48QsHk9uLENCHFNwntkPAhb7mcctIDa1vWp)IUCUly3EQ52B9wlsRV)fAYjQGgV(I2Edj7gSeY5kLOC6sYOUEnCcKVbIrxD)LJbwxD)NGePDuWqT(NfEGxdwD(s3CGlmW1mjAbsk5eznZbbCzx2caVpISlgxeK9RllkeYwaCe6avPcwmEe)CW34mrKu2LUaja)TgxPBOVpae8VTkHHYgLnRMNdcytU0Bt)WoN(Ez3qlGAUXxn2)Nwz529nQ)pID1NDVRUQ0UUDU2Ld(DYTSRrEUv7ZFR45xP(6Qs7A9ZzosSwMPCvrfBvXWXnmjmd6Ht01foBZXqp5ucAmETD5qCfcyZj)sjTK1RsTA5EQzwZRcKJLYHXUCyPue7HLJwvftVQgVwH9GWcC8YdMjhJUDx4EAKZIWGLfpvNVo0CngP1rfY6tws2XtspEpjARZsYwcuTSA9aDKDvYWCXJDY3B9gMY(inqgkwXphU8UABysQ9PBu22FZelem29jEXfJ4KG5zMVL448jnm3msvrruCMCzC5yZ5Y44We)fEGFGDjXSeOIhAucVJcfoxGUxWoAMFqcg7R5OJx2o8khAnXhfsUzWiVNTP6VmXXZH4b9cYJ4qFCBwEDTEbGOdfsoERuKFLxGv36expmWYGy6Hb9kGJTBPaLYGKHSZvXR8HQB5NbT6Cx7hUaZhKhUD4y1nG4Piit8m2Ns3HPLwCFyT1M(g6OO2c(eqpcmssIkuvD634qWC8bdA90aIggTqijLwSRPlfi2nhWOqxiKEhungk4taNq5wrGBggRKPu(A5O2CuKwOvAZUMgON49E7OzKZOAd1OzRSmVjnikZnPCzSWq2ghiHfhxFYEPKJNzrPUxyyfQ68sdP6W1o9OumstkgYBjjItG3CV2mYxC64zpxpmeVOxti4uzmd2ezGOtwNm1ahA52WLrS1gVvRksNSyQAupHuxCsL3NDqrMfHAx1hBqWBLXUOp3SQOdHTySc9Tv9CTwddx2)JWFlxwyoUyflFW0W4gXrMBmOHT84PWPKRBceYiY7Nfe1evh3QyQOd7rMDCQraouV3RrFqfzk7NlGlS16YZ5RM7Et1o9w8ik8wDC(lHjy7zjGQITbpxGNcWd1MTHazM9pspAa4ZeWBzY2TVm7e65CHQCA8ApPCaPCNPnggsDb5LrK(rUWSE3XzxEiLOYIw(B285vZY1PDy11qAn1vziFEwDnTfT)r2SFLGHYtwgmohpPQmXCqDoi921VCt(Dd3Ui0zxiKquAOkLDSWcqO(rvZ9gVYzv62OAjWLrMOaxLZlFYaLe2OrHcF0y7(4LaAoAzryJUAvKpXBGs35aWCuN)OWPluHtv6w6Pw4KIr(Ojx8smeq)EiIXLOIb7rvJfa7)RekyxefTqj53dZ8iRqgKf8)xy3KzHz9xqO0tYfpi3t1XRPgevpSlFrvpF)Zxs3Vnr184l17nURUguwO0mLd)1Sh4wy7FzT0Ve23ysmxHBxT2SgoZBwD7YaP1H3ykxVKFLjrUCf2BBiX4At)ior21QSuqu8CMKbLc9Gj7A(uwla6bi9)yCsINoWGHFy2JqmOaicfOZ(X)Y)6RF(RF)F(48JZ)b8(Q7bPFfX43hMJZVb30EdMuTOT(4(o07ajHfULWVgqUBGsEOX9p(L)hVayOjaO(oW6GgXh(g5Hq00zgDJ4c6CtRpKjybDT)PEnI4Mo8JkiUflOviUfmWVs543FT4ytiUfmWRJJ)W1IJnH4wWaVoo(Jxlo(txlo2E81ILVIy(Q5d5AG5JFPHWDPpcStlI3ORLYZKvtleiNVe8ZCbgIVpu8Y2JceEHcR8YZyjUFwfDVB6DLRH74x0nlzoC36TAQMsvMABHLO8WOb6xUAbwii6CgWOsgJiGAmtvTGIxl0zYkzLmHRVBNc1w1t)sYRvbxtJftD4qJfsDRMYJMAFB5cHk8jvuxgUOr0F648t(ntMXVtZFhMC9BXsoLZcKfjXuhiZ6T3Ix4RPMUVxvHHvNk3ccDqfVwltt3dz3gOy1PTUgSsv2zJiUiowL(Q8k4u(7Px(MEns2dpnYUj)eVbKT4Q6WjZk0v3UDBApPLXYg7z1vZoYdh0CXE6zvAR3HdD7Y)sPtT(WHYNXL2tSgqToNswD0H7E94Bx(D2lcu1eO0BtqSBwk54Eg5orNoAqpl9oz72TnV0I7NAdAMwObrazvv)JFgnnELq48VChw6U1lpmDT7Y3nO)KmstPhjPD59HH5JQBVICAFAqQ14ViEWDnAJK9EJkAJ0TRM9zOU)1P4S0(MReYRFh9g5(vNw53bpRTg1jYMxxrN08Zzt1FvJox1NlEVEnsG8ZO4l5P8YxyH0J7KQ)ZFMufN9RpR(uOiDWEBHxX1uEgGD72j9W)SuEwypypeDVQ0q3YJ2Zse2tETkU)9vqR8PEHOPzwT0n8vqBDBB6Nho02m(s3EwkHVEi72(KDBD(L9QWNAS4mvZN20RSElKjvOsfVxIk50Kk7BaDyq3uH8mxrtBjkTyQD4zOkEAILor8WDDy(Hr1WcB6jp1WYJm(KMAyH1vOQXctBwxwQmVREXPho0(cp)grsTtAQRO5REnZNI08BejvrAMxlFfARCsE5vVmCSXbVF6Wjx8icvd8QKsj37nNCQ(eAanqz2Q5ibVgyLFx3Zb1z2qIkWw9s4vzWI3LjreTgVnuwDeqPPRcMLwyPEfWoCOHR)1dJ6PDoQx6R7hz14L96(j1mNuIPQO7e7aRAZjoX69XwyPTI)rV6(yi(S(30cMD338UgF(DfPQgsZdw5B6MR03xIWTeLdKIVAaN0VMSlput(dvXCfjYsd0D5vmPrZ8LM2MOkqxrCJiqPkgXMSk3a97hD4qXYzEy64kGLFhaZO4Z3qTzmHVobrbqvcKG9ITiaa)cD1OreCgenQxEZFR8iqS09zP81U)KQ4QQTHKyRqvCyB6rDaB5llZHL0PXNWHg0JBEYn5lkSkt)thXLg4(P7)0anSx2OFudZB14tUiRPKPp1IQIRsgNLmgSRMcI81qGZwR17ddRdj1U3Redwfq5VbI0db7CE1c5qvMmZ0ZQXgPPTPTFVIHuAuCvK(UIhuB7wbEb8Z2Zx5i7uN5LML0Ie1SC4geAUyS1Xg6EachoKEZPhpr)A92LT0Ip0al17M)dtT1lZRMER25v8rbiY5wf6JL90FYaTRN)uakVS7NQNN(Jec1MqOQ64etkm723Fns1kd56TmKxEF1(XkBG83wxrPi9eCfPScDBKYNz4Bmdv6)rwxfXVtZnzP1RSjMlTG33kMtRSxI0lAcR2AHF6TKw6NvZnQw)YYVe1X7OU47OAm)kup7)(]] )
+spec:RegisterPack( "Guardian", 20221121, [[Hekili:TZX2UnoU1VLGcOyVBGJLVmzMfX5HUOODNwS9HSa9nllltBZgzjxjQ4jlme6Vr)96xsphsrjkjsjzNKX7GUOfTzejp355gj9C75)Y8hx5YiZ)5rdhnY2EK9a7jtNoD88hzVSNm)X9UEp5Ub(Ja3DW)7FoXnAf1nah4f)q3viaIdtI8Gb3Yy7J)HBVDdLTnz5aVWD3gt3L47YOHbErURz4)2725pUmH6Z(PG5l1H9XtVB(JUjSTHrZF8r6UFeGmD1kIy6KyV5po)rFAmlgrUNl7aX9zc83)mNDibUl9jRM)hHXIOmse1fygxFsaBWwIBeZjCTdBlX5a1F1GSzNUWkDXvPlwMSETMzLSV0eaC6SomAh8DGs9q2dOXQRsqSr09IXPRtx8sys6IiIlGp2wAC6INccpG)TllDXFLY82MUa)SB6Ivj729YCgiAmYunsoYpIGySrqWx)(OWd(LwCK7teCHtE)eOnj4amp1iMxfLqxnqQ2DwcRUawKD7dpqICwggWbZhmdMq2aKnherwhrI3ItjDXXJPlibKOnVKU4(0ftMwxMCxZGKUVmebXaSryzOZ(qAad0TpmlDHTcyP7rO(reQ56UWGNdFIWfiX7PacIvrjm9pzKiQJSjCIqYvpKUy6WcuTMef6rdtIDwcqabT9Woc77byRiFI3gr4YCBZBd7XTjq5K7kxyFbO)Ip4gTZzL7oWlZag17jAWgPXJa0gMlnWzTpDZwgF2gHmyD5xaxu)AAsrKDU0GyUiAC6I(gNDgbeZaFJCZKXCsW8mZHmm3PTm3CsTFHOT8m5YyZEfaVX(lPbRgSpjML4tCirjCxqL2AQyKpEQGtZx4ZHOlByLXH(pJ7YL45rqXtIqW5qxRGPQlWsa97hpT0s2TJaXoaRShvS)x7dBv4bhuN7g)WLU(4erMDS6MJ4d09ehy)F5Tem0D7A3eFwZrcK(KQ70l(PeFFNLUXBR45(p9fIxcdfCKNjrGqJr3rqV2eUjAyuMt7NDP(ighK72oh0HHWSRShUQxzre2)ziljydHgf5aebJg8smWS((faZ8mmZLYDuEHG(XfuPOAA7lrn7KVRqr(Dwen4jcBaZEangCr7b(Va)6UE)Rek4CWHbH(ItaFJkBz5iiFgUFHunyB(yXhcJQfkoF0dUbIbv23KrpG1wSFit5F3yaMZMRh9BkUEufUEuZXdnXG9K)3ofXVH8N6lbNMa4zUA5dacD1b6xIXl0jzUNf0gFSLKOys0t81XNcooFeAGNBuapnuNnzzWI0xsuCOxzI7kd0NLYq1PW(Lua7d5))AYvOKBLFuGbUZEXstxGP1MUaKz(aPdUxICHpsxFZbY)9F)FIGpeeYWr4lAhXNqwDd8hUbB8j3Y2gboVaGHteHMhoyeevr4GAjXhZ2CYq4R)kiPGzgaQnfPt2AxfEiaMd3X2A4poqUg)mfbPldZQmBPYOiC3FlbZN0fJMMTY)si7FKnIhg8sjLNKahXF7G8Blj3LVnZnip3GEsDvwgcAsyAaMADGWiWlm0h5jTZRi4mMyM0uOd2nR4W3sN1x(q5ywOBeJQMOXWYttOj1mdmHHDHHbRHT9kddK8gVvWY(s6IVhM7ar6fcDoMa7qLTbk1junLWrtvMNX6FuwWNgYn5r9NJiWvEHyYSznz3)3fBF6KDpA71KLpuhse4Bf5wVvcRnKwB16EWjynwz7EDRX3ABLyjtXtprrelPeDvause)tRZ30cLsgGzjV2LKjroWLbbxJcCWBpWlH891CqFRehOOFlOWHmEqsJVVPSqgHdKmMOO1GmGKUq4Eq8prLkL1nHDmHb5YSjEq8w6AUHQtoATolhZ11uT7UW6K8wuEdq28BPiQRYncCJQx2E(x1wjvrX9qMQLKJk0XokJUXvgcQwLcgvfkGGxunpNA(F9QATslf6BUqMCN8QvfIPE7WcDwrjC)q2JutfOAL3gMD)CJbWwbSX3rjIIZ(qbXkD2cu0lEqPnWEYneOo8F2UdDuXGU1n6PyGtAoP7IeU6E20i7FcPHQeIRwoO9vLNNCo9Nw6W9v7UcK0j2gcqbg8RV0Ag6NHVG3xrAZDVPXuV7zU8IlTLqbxPeFR5UGDceRbu3Tc4QMJHgkOD(VRuG2IPQgcw47Cdy05l9YbEqaNQUryZ1uAtzdZrxWdbGpe5UpgxeK8Jhlkesta8m6avBagmuxLoe06m1fBrGeG92GR0l03hac(VwNWqHLAllnohDbCEl7RHU(xyB2zS2s5BTo(oz4(EvhVyl8z3dIlkT3TnU2NydNALN70283lE(vQVUO0E3CZzBoqSw2RA5qLlxD0KwMeMy9OP66MIDJDV60YiO1W12MJWjB4uLCwY75Kw9EF1C85L)XXI5OyVwSujGTT5Jm6nPbA1ypiSap)(HQncV05ZvUD4J(9Jn6D)yJg9Ap2ir(OVnD1QOHWg7T1yLz1bdXU0Lf(qBC9rHKxomYgVO4N3WddRxtIRhgAzqm9WW(VjNE2OsNEg2zqzINX(eYEmT0Y7dBS003rhfTFIm0iWijjQuc6zFJdbZXhmO1ZcrAy0sHKQ0MvnnkaPaZbnQDndqREvdIs(fWjuT)e8ZYxjKDXA5O2CKeuNpyfzn1JYeTbrS)mVJBcdpNDHrkDPx8roOnh6Odk9USPSfwvCKVsoDS5ER1tRNIbfNWtveL7fwUmgEsToqgsoE(UhKkfEIlv6nIHvOAsvziv)52yN6BIM6RQjs4LSn2CesJ8fNoEMkUIhIozHGtLXmyULdIRYp7pnWj3BynITXg7PvfPtwmtnOQqQNF4gFAylIqTR6JTi4TYzx0LEEr6WEJywrSWcylCEadx19wXgOXMRqTMLFPlhuL94Jn7A2G3e8ODusLobIifr)vbrnvnUGkMkhpySzVQAeGJ07yC8DQitz)CjCXk186g76my7eUd78Gi)hNPczxw0a5xbUc85cHxvQ5ilgI6MrqR)DPl26gZi6dSyKmWmazBhS3Jj6FS69fJSbkgKTLZ(NhacihenRPP7HxXPB0aS41oqHI)aQcpfV8Ycmh0TNsPtDTQQ89f6COpYqzaSM6nAd83DICInyjmCGTqRkwee6wjXdLgXBoIn3Cbkc)z6ZU(oGTceS0JfxnGwgSk(Cv1WWMjt8OxnqN1rUytY(icEv8Cp7R60oGO7(bXOT5g9uYr2CjdDkvAUxZoMn9BskXM3o22HzLxYIHTfC5uPZz34fBroB0n5tyvPQRq)ifHMaEXnWJ44UEnnGYEPKOukj0EEBMDLuN2T0YOkXtqdIM9IK39PGxkbxt(pSAZRJa3Mpcx1Yluok1wknqNOUb6R7eXbWv72o4N5uiGUJD8MeKfcgpRD5bu)QopxPmGt2Vvxv(o5)PB3Z98bA7suZuUqfFJjrEBlN12qoBnMSzCISFn511Qg4khktkL4N8MTuvta6ciZ0yCs5VfeyZduEawG68h)f8U2sHSgIe3WK0fxJBhUgpYFrBTX4m4TY1nHfUZLFBD92czGtIhK(5)gnagAYpKU4hbRcseF4RLnHVTZm5AX1z56oFilWc6z)L(TI42A(Fne3Hf0je3bg4BuoE6LIJnH4oWaVoo(dxko2eI7ad86447UuC8hVuCS94lflFbX8fZhYLaZPFwtiUSh0Y3ir5UaEat)8pXfyi(UR8Tjgfi8kuwtlYmjEqEPZF)SBRwf8n01ZUQCLUFw36kQWS(kS61AvXhp2AfX9VrtvUZSVPA9SL(eqlgbSEgPwwNi)0w2Uw90uDMv1uBpEut1lw6k154rDF1QLcD7RNJ4QbKlQspw6kPuliYlBSq5Qu8Q1v64RR0jsUQT600JFEfJ5SqvXIwSFEiswC4jHR2rf(F(dPlo5hnxoroR4H41WosKb4VQo1VKetCGIu2DdENZMz6cLPzx7v1Ukf6GkE3yML5MYUlqX6QU691QxMPMCeX97XQYxL3SNQFp7o90VvYE0Pr2T5k(DGSf33hozwJU61RxRUNmwfEFTEU06OQVvzru)Jh71J)Lkh9DMZR2o2Ba16DrOd397Z3a9)zppmvtGkpnbXUzPKdTm0klZoQaWiPvhIhp2Lh5X9ZS7B1b9lchR6wh8pFU39dlDxkMhMTXB13pCWuluRD)KHzMFQX5eY8hgnnBmD7eKt6tdfMA)M4fz1Qbq(ltk3aOsyqPbWBLkt9DyXLt)g7zv1Qet2WxuIz(5vzi7LgfXTTbZQJ7VuzbnjEL)Pkr(R((NeSBXzh3QKrK(xrEr4)(CtiUguKBBVP0lhAgpJbW5u2v1Zs5Xj9G9imeJsVuRoAFlHBs5rQE)hQHw5jrMNpNwPNC2vUwPcARxxtx54XUMHqMh0kji0hz3UNCuNZhPFn(uJ9h3(QZ28VhYKAuPI3kUMqxQpVd0HbDtnYZCgWDLO0IPUHNrQ4Pnw6eXd3zG5xJtllST3ztllpY47OPLf2uHnglKPDDzLYcU4fZC8y3lu5Rej1nPPUISU41yDksZVsKunPzrTF1OTQj1vKt8Ojgh8(zJM(MhrOEGxLui5EV5Kt93TbObQYwThj41aRIlyDbOoZcyRbB1RWvTbl)Yder0A9TlK3hRwE4gwAHL6d2aQPV5hRXdJ7RDoQprJ7hB16tZ4(PnmNmIPUORC)JBTFXqO)ZTksSLhARJCmmshu8nvMe)Z6Fify2DT2J736wC)kENfAsoU2RK4R6MRS7EQWTeHdKY3LCNSVMSViutXRJWCfjYsd0D3rmPrZ9LM18HAqxrCJiqPkgXMSA3l57hF8y5YzEy2K6enxnXHOYdy4b7Hw6E4c1wo)sgNZWNVDExi0eFr9t1IdHT(Rmaa3k90Oqfcgiyw)IEnw7LfyP7Zs1J9GP1XvDtljXwJQ4W20lfa8yuvLbl5QwFxanOu1jSQs)ZgZLg8UD9PHAyV8r)OgM3Q17XpUEHvV4(7xxCvX2UIXGD9myKxXEExQ0z8)WOMqsJBDRWG1buXfRp7uyoNF0zlGQmxOzNvFrYY6tBdifdPEztRHumtTSXl8X12kWFKwZ3Zx)uCvM5BnlPfjQjjXniA6qi1Wg6(rQ94rr3BVFYu9RLUpFPL)XO1s93V1huA(wjzE9SJ1oVY)WXkszxf6tKnzE6qTRN)ZfB1LD)m980VNpP28jvvhNyoLe5VqRxIm1YrUEld5pWRQnOv2k7VUUIYq6j4kszf62ivmZIMvptjBV6VsKhm9KMSkL0N0aA83XFgt6Wd6Bi7njHOQ4zQC)hMAC(8NGuxNU2xzKq)io2GUaKQ(mpHtoTEwLJmGe1ELRH4UBQLgnXWb2F328NPJbihx7n7KhpQ(qQjEQ(oIkjOgQNwgnTeXuqoszYx1TksK(MwSHTw4ND5YLb50Cr01VSI7EE8EIh(ZS0e(npF()7p]] )

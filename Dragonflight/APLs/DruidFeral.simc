@@ -2,7 +2,7 @@ actions.precombat+=/mark_of_the_wild,if=buff.prowl.down
 actions.precombat+=/prowl
 actions.precombat+=/cat_form
 actions.precombat+=/variable,name=swipe_v_shred,value=2
-actions.precombat+=/variable,name=pw_v_fb,op=setif,value=0,condition=talent.tear_open_wounds.enabled&talent.rip_and_tear.enabled,value_else=4
+actions.precombat+=/variable,name=pw_v_fb,op=setif,value=1,condition=talent.tear_open_wounds.enabled&talent.rip_and_tear.enabled,value_else=4
 
 actions+=/prowl
 actions+=/skull_bash

@@ -78,6 +78,8 @@ actions.cd_sef+=/storm_earth_and_fire,if=buff.storm_earth_and_fire.down&(boss&fi
 actions.cd_sef+=/touch_of_death,if=combo_strike&(fight_remains>60|buff.storm_earth_and_fire.down&(!action.bonedust_brew.known|buff.bonedust_brew.up)|boss&fight_remains<10)
 actions.cd_sef+=/fallen_order,if=raid_event.adds.in>30|raid_event.adds.up
 actions.cd_sef+=/use_item,name=darkmoon_deck_voracity,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20&pet.xuen_the_white_tiger.remains<20|variable.hold_xuen
+actions.cd_sef+=/use_item,name=inscrutable_quantum_device,if=pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>60&fight_remains>180|boss&fight_remains<20
+actions.cd_sef+=/use_item,name=earthbreakers_impact,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20&pet.xuen_the_white_tiger.remains<20|variable.hold_xuen
 actions.cd_sef+=/touch_of_karma,if=fight_remains>159|variable.hold_xuen
 actions.cd_sef+=/blood_fury,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<20
 actions.cd_sef+=/berserking,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<15
@@ -106,15 +108,17 @@ actions.cd_serenity+=/ancestral_call,if=buff.serenity.up|boss&fight_remains<20
 actions.cd_serenity+=/bag_of_tricks,if=buff.serenity.up|boss&fight_remains<20
 actions.cd_serenity+=/fleshcraft,if=soulbind.pustule_eruption&!pet.xuen_the_white_tiger.active&buff.serenity.down&buff.bonedust_brew.down
 actions.cd_serenity+=/use_item,name=darkmoon_deck_voracity,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20|variable.hold_xuen
+actions.cd_serenity+=/use_item,name=inscrutable_quantum_device,if=buff.serenity.up|boss&fight_remains<20
+actions.cd_serenity+=/use_item,name=earthbreakers_impact,if=!variable.xuen_on_use_trinket|cooldown.invoke_xuen_the_white_tiger.remains>20|variable.hold_xuen
 
 # Fallthru
-actions.fallthru=crackling_jade_lightning,if=buff.the_emperors_capacitor.stack>19&energy.time_to_max>execute_time-1&cooldown.rising_sun_kick.remains>execute_time|buff.the_emperors_capacitor.stack>14&(cooldown.serenity.remains<5&talent.serenity|cooldown.weapons_of_order.remains<5&action.weapons_of_order.known|fight_remains<5)
+actions.fallthru=crackling_jade_lightning,if=buff.the_emperors_capacitor.stack>19&energy.time_to_max>execute_time-1&cooldown.rising_sun_kick.remains>execute_time|buff.the_emperors_capacitor.stack>14&(cooldown.serenity.remains<5&talent.serenity|cooldown.weapons_of_order.remains<5&action.weapons_of_order.known|boss&fight_remains<5)
 actions.fallthru+=/tiger_palm,cycle_targets=1,if=combo_strike&buff.bonedust_brew.up&chi.max-chi>=(2+buff.power_strikes.up)
 actions.fallthru+=/expel_harm,if=chi.max-chi>=1
 actions.fallthru+=/chi_burst,if=chi.max-chi>=1&active_enemies=1&raid_event.adds.in>20|chi.max-chi>=2&active_enemies>=2
 actions.fallthru+=/chi_wave
 actions.fallthru+=/tiger_palm,cycle_targets=1,if=combo_strike&chi.max-chi>=(2+buff.power_strikes.up)&buff.storm_earth_and_fire.down
-actions.fallthru+=/spinning_crane_kick,if=combo_strike&buff.chi_energy.stack>30-5*active_enemies&buff.storm_earth_and_fire.down&(cooldown.rising_sun_kick.remains>2&cooldown.fists_of_fury.remains>2|cooldown.rising_sun_kick.remains<3&cooldown.fists_of_fury.remains>3&chi>3|cooldown.rising_sun_kick.remains>3&cooldown.fists_of_fury.remains<3&chi>4|chi.max-chi<=1&energy.time_to_max<2)|buff.chi_energy.stack>10&fight_remains<7
+actions.fallthru+=/spinning_crane_kick,if=combo_strike&buff.chi_energy.stack>30-5*active_enemies&buff.storm_earth_and_fire.down&(cooldown.rising_sun_kick.remains>2&cooldown.fists_of_fury.remains>2|cooldown.rising_sun_kick.remains<3&cooldown.fists_of_fury.remains>3&chi>3|cooldown.rising_sun_kick.remains>3&cooldown.fists_of_fury.remains<3&chi>4|chi.max-chi<=1&energy.time_to_max<2)|buff.chi_energy.stack>10&boss&fight_remains<7
 actions.fallthru+=/tiger_palm,cycle_targets=1,if=combo_strike&chi.max-chi>=(2+buff.power_strikes.up)
 actions.fallthru+=/arcane_torrent,if=chi.max-chi>=1
 actions.fallthru+=/flying_serpent_kick,interrupt=1
