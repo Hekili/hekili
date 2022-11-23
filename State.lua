@@ -3980,37 +3980,56 @@ do
     setmetatable( state.legendary, mt_generic_traits )
     state.legendary.no_trait = { rank = 0 }
 
+
+
     -- Azerite and Essences.
     local mt_default_trait = {
         __index = function( t, k )
-            local heart, active = rawget( state.azerite, "heart" ), false
-
-            if heart and heart:IsEquipmentSlot() then
-                active = C_AzeriteItem.IsAzeriteItemEnabled( heart )
+            if not state.azerite.active then
+                if k == "enabled" or k == "equipped" or k == "major" or k == "minor" then
+                    return false
+                elseif k == "disabled" then
+                    return true
+                end
+                return 0
             end
 
-            if k == "enabled" or k == "minor" or k == "equipped" then
-                return active and t.__rank and t.__rank > 0
+            if k == "enabled" or k == "equipped" then
+                return t.__rank and t.__rank > 0
             elseif k == "disabled" then
-                return not active or not t.__rank or t.__rank == 0
+                return not t.__rank or t.__rank == 0
             elseif k == "rank" then
-                return active and t.__rank or 0
+                return t.__rank or 0
             elseif k == "major" then
-                return active and t.__major or false
+                return t.__major or false
             elseif k == "minor" then
-                return active and t.__minor or false
+                return t.__minor or false
             end
         end
     }
 
+
+    local HEART_OF_AZEROTH_ITEM_ID = 158075
+
     local mt_artifact_traits = {
         __index = function( t, k )
+            if k == "active" then
+                local neck = GetInventoryItemID( "player", INVSLOT_NECK )
+                if not neck or neck ~= HEART_OF_AZEROTH_ITEM_ID then
+                    rawset( t, "active", false )
+                    return false
+                end
+
+                local item = C_AzeriteItem.FindActiveAzeriteItem()
+                rawset( t, "active", item and item:IsEquipmentSlot() and C_AzeriteItem.IsAzeriteItemEnabled( item ) )
+                return t.active
+            end
+
             return t.no_trait
         end,
 
         __newindex = function( t, k, v )
-            rawset( t, k, setmetatable( v, mt_default_trait ) )
-            return t[ k ]
+            if v ~= nil then rawset( t, k, setmetatable( v, mt_default_trait ) ) end
         end
     }
 
