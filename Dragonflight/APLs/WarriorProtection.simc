@@ -1,3 +1,4 @@
+actions.precombat+=/battle_shout
 actions.precombat+=/fleshcraft
 
 # Executed every time the actor is available.
@@ -12,7 +13,7 @@ actions+=/fireblood,if=buff.avatar.up|!talent.avatar
 actions+=/ancestral_call,if=buff.avatar.up|!talent.avatar
 actions+=/potion,if=buff.avatar.up|boss&fight_remains<25
 actions+=/revenge,if=buff.revenge.up&(target.health.pct>20|spell_targets.thunder_clap>3)&cooldown.shield_slam.remains
-actions+=/ignore_pain,if=target.health.pct>=20&(target.health.pct>=80&!covenant.venthyr)&(rage>=85&cooldown.shield_slam.ready&buff.shield_block.up|rage>=60&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled|rage>=70&cooldown.avatar.ready|rage>=40&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled&buff.last_stand.up|rage>=55&cooldown.avatar.ready&buff.last_stand.up|rage>=80|rage>=55&cooldown.shield_slam.ready&buff.violent_outburst.up&buff.shield_block.up|rage>=30&cooldown.shield_slam.ready&buff.violent_outburst.up&buff.last_stand.up&buff.shield_block.up),use_off_gcd=1
+actions+=/ignore_pain,if=incoming_damage_3s>0.1*health.max&(target.health.pct>=20&(target.health.pct>=80&!action.condemn.known)&(rage>=85&cooldown.shield_slam.ready&buff.shield_block.up|rage>=60&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled|rage>=70&cooldown.avatar.ready|rage>=40&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled&buff.last_stand.up|rage>=55&cooldown.avatar.ready&buff.last_stand.up|rage>=80|rage>=55&cooldown.shield_slam.ready&buff.violent_outburst.up&buff.shield_block.up|rage>=30&cooldown.shield_slam.ready&buff.violent_outburst.up&buff.last_stand.up&buff.shield_block.up)),use_off_gcd=1
 actions+=/shield_block,if=(buff.shield_block.down|buff.shield_block.remains<cooldown.shield_slam.remains)&target.health.pct>20
 actions+=/shield_slam,if=buff.violent_outburst.up&rage<=55
 actions+=/bag_of_tricks
@@ -21,7 +22,7 @@ actions+=/lights_judgment
 actions+=/shield_wall,if=tanking&!buff.last_stand.up&!buff.rallying_cry.up
 actions+=/last_stand,if=tanking&!buff.shield_wall.up&!buff.rallying_cry.up|settings.last_stand_offensively
 actions+=/rallying_cry,if=tanking&!buff.last_stand.up&!buff.shield_wall.up
-actions+=/demoralizing_shout,if=tanking&!buff.last_stand.up&!buff.shield_wall.up&!buff.rallying_cry.up
+actions+=/demoralizing_shout,if=talent.booming_voice|tanking&!buff.last_stand.up&!buff.shield_wall.up&!buff.rallying_cry.up
 actions+=/berserker_rage
 actions+=/avatar
 actions+=/spear_of_bastion
@@ -30,24 +31,25 @@ actions+=/ancient_aftershock
 actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.thunder_clap>3
 actions+=/call_action_list,name=generic
 
-actions.aoe=ignore_pain,if=rage.deficit>=35&buff.ignore_pain.value<health.max*0.3
+actions.aoe=ignore_pain,if=incoming_damage_3s>0.1*health.max&buff.ignore_pain.value<health.max*0.3
 actions.aoe+=/spear_of_bastion
 actions.aoe+=/thunderous_roar
 actions.aoe+=/ravager
 actions.aoe+=/shockwave
 actions.aoe+=/shield_charge
-actions.aoe+=/revenge,if=rage.deficit>30
+actions.aoe+=/revenge
 actions.aoe+=/thunder_clap
 actions.aoe+=/titanic_throw
 actions.aoe+=/rend,if=!talent.thunderclap&!talent.blood_and_thunder
 actions.aoe+=/shield_slam
 actions.aoe+=/condemn
 actions.aoe+=/execute
+actions.aoe+=/impending_victory,if=health.percent<70
+actions.aoe+=/victory_rush,if=health.percent<80
 actions.aoe+=/devastate
-actions.aoe+=/impending_victory
-actions.aoe+=/storm_bolt
+actions.aoe+=/storm_bolt,if=!boss&debuff.casting.up&debuff.casting.v2
 
-actions.generic=ignore_pain,if=(rage.deficit>=35&buff.ignore_pain.value<health.max*0.3*0.5)|buff.ignore_pain.remains<gcd
+actions.generic=ignore_pain,if=incoming_damage_3s>0.1*health.max&(buff.ignore_pain.value<health.max*0.15|buff.ignore_pain.remains<gcd)
 actions.generic+=/ravager
 actions.generic+=/thunderous_roar
 actions.generic+=/spear_of_bastion
@@ -58,12 +60,13 @@ actions.generic+=/execute
 actions.generic+=/shield_slam
 actions.generic+=/thunder_clap,if=active_enemies>=2|(talent.rend&talent.blood_and_thunder)
 actions.generic+=/rend,if=!talent.thunderclap&!talent.blood_and_thunder
-actions.generic+=/revenge,if=rage.deficit>30&active_enemies>=2
+actions.generic+=/revenge,if=active_enemies>=2
 actions.generic+=/titanic_throw,if=active_enemies>=2
 actions.generic+=/devastate
 actions.generic+=/heroic_throw
 actions.generic+=/titanic_throw
 actions.generic+=/thunder_clap
-actions.generic+=/revenge,if=rage.deficit>30
-actions.generic+=/impending_victory
-actions.generic+=/storm_bolt
+actions.generic+=/revenge
+actions.generic+=/impending_victory,if=health.percent<70
+actions.generic+=/victory_rush,if=health.percent<80
+actions.generic+=/storm_bolt,if=!boss&debuff.casting.up&debuff.casting.v2

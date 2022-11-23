@@ -269,7 +269,7 @@ spec:RegisterAuras( {
     },
     dance_of_death = {
         id = 393966,
-        duration = 180,
+        duration = 120,
         max_stack = 1,
     },
     deep_wounds = {
@@ -307,6 +307,25 @@ spec:RegisterAuras( {
         id = 386286,
         duration = 8,
         max_stack = 1
+    },
+    -- Target Swapping
+    execute_ineligible = {
+        duration = 3600,
+        max_stack = 1,
+        generate = function( t )
+            if buff.sudden_death.down and target.health_pct > ( talent.massacre.enabled and 35 or 20 ) then
+                t.count = 1
+                t.expires = query_time + 3600
+                t.applied = query_time
+                t.duration = 3600
+                t.caster = "player"
+                return
+            end
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end
     },
     focused_assault = {
         id = 206891,
@@ -358,14 +377,9 @@ spec:RegisterAuras( {
         duration = 9,
         max_stack = 5
     },
-    wild_strikes = { --Renamed from Quick Thinking to Wild Strikes in build 45779,
-        id = 382946, --392778 is quick_thinking aura,
-        duration = 10,
-        max_stack = 1
-    },
     rallying_cry = {
         id = 97463,
-        duration = function () return 10 + ( talent.inspiring_presence.enabled and 3 or 0 ) end,
+        duration = function () return talent.inspiring_presence.enabled and 13 or 10 end,
         max_stack = 1,
         shared = "player",
     },
@@ -398,7 +412,7 @@ spec:RegisterAuras( {
     },
     shield_block = {
         id = 132404,
-        duration = function () return 6 + ( talent.enduring_defenses.enabled and 2 or 0 ) + ( talent.heavy_repercussions.enabled and 1 or 0 )  end,
+        duration = function () return ( talent.enduring_defenses.enabled and 8 or 6 ) + ( talent.heavy_repercussions.enabled and 1 or 0 )  end,
         max_stack = 1
     },
     shield_charge = {
@@ -482,6 +496,11 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    wild_strikes = {
+        id = 392778,
+        duration = 10,
+        max_stack = 1
+    }
 } )
 
 
@@ -588,7 +607,7 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
-        spend = function () return -10 * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
+        spend = function () return buff.unnerving_focus.up and -15 or -10 end,
         spendType = "rage",
 
         talent = "avatar",
@@ -654,7 +673,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136009,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "berserker_rage" )
@@ -672,7 +691,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136009,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "berserker_shout" )
@@ -693,6 +712,9 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "dispellable_disease" )
+            removeBuff( "dispellable_poison" )
+            removeBuff( "dispellable_curse" )
             gain( 0.2 * health.max, "health" )
         end,
     },
@@ -804,9 +826,10 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        startsCombat = true,
-        texture = 135291,
+        spend = function() return ( talent.instigate.enabled and -2 or 0 ) * ( buff.unnerving_focus.up and 1.5 or 1) end,
+        spendType = "rage",
 
+        startsCombat = true,
         notalent = "devastator",
 
         handler = function ()
@@ -898,37 +921,15 @@ spec:RegisterAbilities( {
             return rage[ "time_to_" .. ( settings.reserve_rage + 40 ) ]
         end,
 
-        handler = function ()
+        handler = function()
             if not buff.sudden_death.up then
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
             else
                 removeBuff( "sudden_death" )
             end
-            if talent.juggernaut.enabled then addStack( "juggernaut", nil, 1 ) end
+            if talent.juggernaut.enabled then addStack( "juggernaut" ) end
         end,
-
-        auras = {
-            -- Target Swapping
-            execute_ineligible = {
-                duration = 3600,
-                max_stack = 1,
-                generate = function( t, auraType )
-                    if buff.sudden_death.down and target.health_pct > ( talent.massacre.enabled and 35 or 20 ) then
-                        t.count = 1
-                        t.expires = query_time + 3600
-                        t.applied = query_time
-                        t.duration = 3600
-                        t.caster = "player"
-                        return
-                    end
-                    t.count = 0
-                    t.expires = 0
-                    t.applied = 0
-                    t.caster = "nobody"
-                end
-            }
-        }
     },
 
 
@@ -1000,17 +1001,19 @@ spec:RegisterAbilities( {
 
         readyTime = function ()
             if settings.overlap_ignore_pain then return end
-
-            if buff.ignore_pain.up and buff.ignore_pain.v1 > 0.3 * stat.attack_power * 3.5 * ( 1 + stat.versatility_atk_mod / 100 ) then
+            if buff.ignore_pain.up and buff.ignore_pain.v1 >= 0.3 * health.max then
                 return buff.ignore_pain.remains - gcd.max
             end
-
-            return 0
         end,
 
         handler = function ()
-
-            applyBuff( "ignore_pain" )
+            if buff.ignore_pain.up then
+                buff.ignore_pain.expires = query_time + class.auras.ignore_pain.duration
+                buff.ignore_pain.v1 = min( 0.3 * health.max, buff.ignore_pain.v1 + stat.attack_power * 3.5 * ( 1 + stat.versatility_atk_mod / 100 ) )
+            else
+                applyBuff( "ignore_pain" )
+                buff.ignore_pain.v1 = min( 0.3 * health.max, stat.attack_power * 3.5 * ( 1 + stat.versatility_atk_mod / 100 ) )
+            end
         end,
     },
 
@@ -1021,14 +1024,14 @@ spec:RegisterAbilities( {
         cooldown = 25,
         gcd = "spell",
 
-        spend = 10,
+        spend = function() return buff.victorious.up and 0 or 10 end,
         spendType = "rage",
 
         talent = "impending_victory",
-        startsCombat = false,
-        texture = 589768,
+        startsCombat = true,
 
         handler = function ()
+            removeBuff( "victorious" )
             gain( health.max * 0.3, "health" )
             if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
         end,
@@ -1043,7 +1046,6 @@ spec:RegisterAbilities( {
 
         talent = "intervene",
         startsCombat = false,
-        texture = 132365,
 
         handler = function ()
             if legendary.reprisal.enabled then
@@ -1165,9 +1167,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             interrupt()
-            if talent.concussive_blows.enabled then
-                applyDebuff( "target", "concussive_blows" )
-            end
+            if talent.concussive_blows.enabled then applyDebuff( "target", "concussive_blows" ) end
         end,
     },
 
@@ -1211,8 +1211,6 @@ spec:RegisterAbilities( {
 
         talent = "ravager",
         startsCombat = true,
-        texture = 970854,
-
         toggle = "cooldowns",
 
         handler = function ()
@@ -1235,7 +1233,7 @@ spec:RegisterAbilities( {
         texture = 132155,
 
         handler = function ()
-            applyDebuff ( "target", "rend" )
+            applyDebuff( "target", "rend" )
         end,
     },
 
@@ -1256,12 +1254,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132353,
 
-        usable = function ()
-            if action.revenge.cost == 0 then return true end
-            if toggle.defensives and buff.ignore_pain.down and incoming_damage_5s > 0.1 * health.max then return false, "don't spend on revenge if ignore_pain is down and there is incoming damage" end
-            return true
-        end,
-
         readyTime = function()
             if buff.revenge.up then return 0 end
             local threshold = action.revenge.cost + settings.reserve_rage
@@ -1273,7 +1265,7 @@ spec:RegisterAbilities( {
             if state.set_bonus.tier29_2pc > 0 then applyBuff( "vanguards_determination" ) end
             if buff.revenge.up then removeBuff( "revenge" ) end
             if talent.show_of_force.enabled then applyBuff( "show_of_force" ) end
-            applyDebuff ( "target", "deep_wounds" )
+            applyDebuff( "target", "deep_wounds" )
         end,
     },
 
@@ -1285,12 +1277,11 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "shattering_throw",
-        startsCombat = false,
-        texture = 311430,
-
+        startsCombat = true,
         toggle = "cooldowns",
 
         handler = function ()
+            removeDebuff( "target", "all_absorbs" )
         end,
     },
 
@@ -1308,7 +1299,7 @@ spec:RegisterAbilities( {
         texture = 132357,
 
         handler = function ()
-            applyDebuff ( "target", "shield_bash" )
+            applyDebuff( "target", "shield_bash" )
         end,
     },
 
@@ -1346,12 +1337,12 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 45,
         gcd = "spell",
+
         spend = -20,
         spendType = "rage",
 
         talent = "shield_charge",
         startsCombat = true,
-        texture = 4667427,
 
         handler = function ()
             if talent.battering_ram.enabled then
@@ -1391,21 +1382,21 @@ spec:RegisterAbilities( {
         texture = 134951,
 
         handler = function ()
-            if talent.brace_for_impact.enabled then applyBuff ( "brace_for_impact" ) end
-
-            if talent.punish.enabled then applyDebuff ( "target" , "punish" ) end
-
-            if ( legendary.the_wall.enabled or talent.impenetrable_wall.enabled ) and cooldown.shield_wall.remains > 0 then
-                reduceCooldown( "shield_wall", 5 )
+            if buff.violent_outburst.up then
+                applyBuff( "ignore_pain" )
+                removeBuff( "violent_outburst" )
             end
+
+            if talent.brace_for_impact.enabled then applyBuff( "brace_for_impact" ) end
 
             if talent.heavy_repercussions.enabled and buff.shield_block.up then
                 buff.shield_block.expires = buff.shield_block.expires + 1
             end
 
-            if buff.violent_outburst.up then
-                applyBuff( "ignore_pain" )
-                removeBuff( "violent_outburst" )
+            if talent.punish.enabled then applyDebuff( "target", "punish" ) end
+
+            if ( legendary.the_wall.enabled or talent.impenetrable_wall.enabled ) and cooldown.shield_wall.remains > 0 then
+                reduceCooldown( "shield_wall", 5 )
             end
         end,
     },
@@ -1437,7 +1428,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "shield_wall" )
-            if talent.immovable_object.enabled then applyBuff ( "avatar", 10 ) end
+            if talent.immovable_object.enabled then applyBuff( "avatar", 10 ) end
         end,
     },
 
@@ -1485,6 +1476,7 @@ spec:RegisterAbilities( {
         end,
     },
 
+
     spell_block = {
         id = 392966,
         cast = 0,
@@ -1493,9 +1485,8 @@ spec:RegisterAbilities( {
 
         talent = "spell_block",
         startsCombat = false,
-        texture = 132358,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "spell_block" )
@@ -1533,7 +1524,6 @@ spec:RegisterAbilities( {
 
         talent = "storm_bolt",
         startsCombat = true,
-        texture = 613535,
 
         handler = function ()
             applyDebuff( "target", "storm_bolt" )
@@ -1575,8 +1565,9 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "thunder_clap" )
             active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
+            removeBuff( "show_of_force" )
 
-            if ( legendary.thunderlord.enabled or talent.thunderlord.enabled ) and cooldown.demoralizing_shout.remains > 0 then
+            if ( talent.thunderlord.enabled or legendary.thunderlord.enabled ) and cooldown.demoralizing_shout.remains > 0 then
                 reduceCooldown( "demoralizing_shout", min( 3, active_enemies ) )
             end
 
@@ -1596,7 +1587,7 @@ spec:RegisterAbilities( {
     thunderous_roar = {
         id = 384318,
         cast = 0,
-        cooldown = function() return 90 - ( talent.uproar.enabled and 30 or 0 ) end,
+        cooldown = function() return talent.uproar.enabled and 60 or 90 end,
         gcd = "spell",
 
         spend = -10,
@@ -1604,12 +1595,11 @@ spec:RegisterAbilities( {
 
         talent = "thunderous_roar",
         startsCombat = true,
-        texture = 642418,
 
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff ( "target", "thunderous_roar" )
+            applyDebuff( "target", "thunderous_roar" )
             active_dot.thunderous_roar = max( active_dot.thunderous_roar, active_enemies )
         end,
     },
@@ -1618,12 +1608,11 @@ spec:RegisterAbilities( {
     titanic_throw = {
         id = 384090,
         cast = 0,
-        cooldown = 3,
+        cooldown = 8,
         gcd = "spell",
 
         talent = "titanic_throw",
         startsCombat = true,
-        texture = 132453,
 
         handler = function ()
             if talent.improved_heroic_throw.enabled then
@@ -1641,9 +1630,8 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         startsCombat = true,
-        texture = 132342,
-
         buff = "victorious",
+
         handler = function ()
             removeBuff( "victorious" )
             gain( 0.2 * health.max, "health" )
@@ -1676,10 +1664,10 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "wrecking_throw",
-        startsCombat = false,
-        texture = 460959,
+        startsCombat = true,
 
         handler = function ()
+            removeDebuff( "target", "all_absorbs" )
         end,
     },
 } )
@@ -1841,4 +1829,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Protection Warrior", 20221120.1, [[Hekili:fR16pQTow8)wQwjkC3kMammdt1q)WE1(HB1QQvIR09BjysmG3gI564WuwHYF77Xooj(v4Xu2DvvNzi(8YNh)8X5q4OWFpCrcIJd)24GXJhnACWWrtF8PjVeUGFCpoCXEu83rBG)idTd(5)Kr54yoHMvU8pqmgHYe0CmLIseYkNwWIb62Y57Z)8dpSHW3wSAymD3d5KDfPibRXm0AU4ZXpeUyvbjL)BzHR8BipdYCpoo8BppbKkjjbxrkopoCbOAgDnjfuisAu5d3ZWGYwH4)15pSofNVvQSYVw(1)s5Y)(pWXfCCs5s8bm7y5sozhg(5w4hGaOSYLKC4ppGiPOvP4HLFvjxqA7l2TdNQ)eWWstJyyqpvUe912sWPjrXBrSn4prwpxOQ5b6KCU1kYXreoExUCzukoJpemloI1RFmLMMqFlt9GHm8oejl)15BItoDAvX611RuSFWPtFWGDDLSkLstIwxWok0IjJNLpmlhZ(ojBZTX3Acdl15TXgklgNZzO0OyuA6TX7EQ4V8XZkAEEV1KnB5r1oWXt1zLb5izvXhjVQpdm3Rpxe54d3IrP8Td3hZ)Y4GtNQYhQwlFiK4NLGzrXPO9FzYGEnHnvQrEkAxDStxVKnzugoAp88QGVTQMpoWNfmFwqVpetbJebUc4x8Thzd61NbLVWIt7Yaqjh7j3GQhdrO4VlDrvC(uqlNj4Duiqq(3qSpkFlTGReGkaSIs3jw6aLeJhcwcueLulON1eutQlWC96p(ZQOQTrkkNhLZrzjABIPt9R7ZWYSaFm3HV7aHkSRiWqxvWY5ISKZ5uNe8(fPH16vld(Ka)GUEDeajmFKhCjjLI0R(U8lmkfoIXZRltoxI8GE(kn8yacMAkT8Tvf(PxbxVbWdAdSRI4ms83nQzqSyugocqWzGCeYvY(mdnNkk2ZJ(xfjB2bu5XOEtHVa(wb6wVp4XFx9mi3m9OibmMDeEQHAAi3vuA6Ptzb4iyoh(CUMMfbtCwo5ao9ObiLgVxNLBAc6YYTM79iXl7GuhFaqJIGKry0b)gGurmrmFfOyRJyJPz)zbMrz5WQzzy7dniIuk4WFqDBH8xd3wrwu1NIsj58pjAUzoII)uUi3IpFKyNFo4Cd7a2QUsBdgSisSOZJ6Etafm3cDx4baWU1KycGGpzAv5SgrdpGslWVQkN2H(XVemCIHipNxsTUY2Pf5rmQMdwTmd87BWopw61EdDa7UGwVnocR9ytJn3KGoSkPh1zncKJrIJ4Bz03CvrvTv9X(kbjKtV6Nv1BJOYrTAhBcboK9sqIful44fXvDpA)4e8bWRJCxGSBpyOYtPiIMlp6ycWd3fTIMY1Zsujo2zk9FFPkW)NoqHMRtBnyoCaHJQ9Ls0UuNjtTK0D(Ogn(tI0jWj9RDrNqu7soHjhDAgZD2zYesHlxqXbCeS(ocoh6760P(Q0lrkyVUs1g41J(ZL0QlOUkW65yWE3L6LwE3M(4YtwE7IBH0b3I1ou5L8832E2h1NPWtlxOP4lCbCzWCy527EgU4neltCgC4IFxC7qqKugVC5AXDe)iu((XYLm8Fwa3ObUnzovCnsubNUdjVEjKvdMBoC)X)bjdwAuWNlx(R0mqrY1)OBsaiqo17k1T3cu0F0pgCrH6KfzjAN1Dvq5x9SRv(U7ZoxuoyzxIh9)H9QsbJ(VreQdHEhSAVriOSavKYVTi0u)2yvVywgM6QtDSDVFs6P7MKE(UjPz3nj9YDqsLF93KHEHaEu(2ReNZUu0)Pi0gUq(xIxjhawb)6BYx1NsmH)TWfXmc0zmbfUqhrTC5xMxUCY0YL9kx6VbJYLVwUSTjJYL)s5sOrJ6xbx4cnoc5aMQ0iuRz3zGUjb0orNwRgnSi9rDsvTRyrYudnx3oHfrpzsKwtjwe(816ab)xGMPvD0LqcZ8S7Kh5zPPxmOt)Stlchf0Pn9binQtCkz0TLIoHB03fzjsnoYJ7s0pLTLze1vDRztJr0w12MnngH5MMqSPYis7C8Vn1MHCT(a0jd(O6aVZx90haBVlfqQFdCoOC5PtE4U(Lfk4h6BxW81v15V849wSDHA4PxBb1txt55ZxopA2LtJE5kZA7UEsWCBtYvr5XvXP(nfs6DWitaUubgeR7arOPw7)Pv3JVfmoPE86x8I(vvUF9o3UGaFNOc63r5SacNfW95RecF0SBXt63F9YTaQno4kb1u9i6dutmungzFLiU5zL1Q9QjL5GczpUmFWrE9yvAgYjc6cyPgI6QzVLVPDZNVoWKj9qfFhdHdWMN3aoRbJ3m4Pg092cutf0AJnZaSbS0RzAl)Rt4TZ(RbL9Ek9Mje2aqFhLEZCeBG2VJc3CAJx4ubFQqmyrzwIXWfLhApEQwrICYKxaNV6vP3m4X6KpNzSiXrghuzaD)ERRGBKPG90sH9mhh)is2hp0aoP17HrbKRzoVYo7EFaemlO(im7XzwB6QMUuKp9CBhuYX2EXSMtwL)QvspfykPUMcPXz7(MePTGF2sW6JG0M2hVFgr922yQn26B60ZzBxLiMfCjHEMyINH)D1bSjb3h1yT76u7dQqLvtwvCc65BSPVpbjSuTJg8nJvjAXz)cdOke6cjW5GsP4B7DQB0MU8tvo9xLXw)9s70YLX4A92ZvNnijDaZ02gMt41TxmRH7E9TJPMVznIthPd1RynwthhXB1Nz09Xs(uO1qzpJgvq8NFcXAULM1BBs8QTQUDdM2R2HfAgRuHDF02pJcVUqIlWP0Km6j1Cw029uBCd5kCrBsULBgp2O6Wz812uBCRe35zBtE39WDPgce3xqm2BbEwBO0Ce5vVqXOQVfGIxPOqL2vvnBnRjIBWC9BvrEBKMVUEn3hPPjVMV8E2xHbEaQGVv8npCrZ3PWFvsP4FH)N]] )
+spec:RegisterPack( "Protection Warrior", 20221122.3, [[Hekili:fR1wVnUUr4FlbfWR92foYYXXEpiop0d6dNfflkGpaN3KmTeTnBKL8HIYzDHH(T3Hu34njBTXTflq2eY5ghoZ3muKEt8(DVvHig277UoUUtM46oEYtoZN66TID(i2B1ruWBODWVeJoa)8Fsty4agjjoF9FGOuscLtZ5OeuixwPjz0aGU9m2X0F5Xh3ry7Z2moi5WJPKdzrioRbu0wg)VdE0B1Mmse73I92y3qarEeh49D(VTNegIlOeNg4Tc0mnzljc0hsytPJpsXGU2Gy)1Lpc)KfH9t3NKXY)Mnk2gHt3lSM8VL)T)s(6)(pWbzmCy(A8jm9C(Ag5ag(5E4hGasO5RjPWVEcrIqBIWJRLliTJzhoGJKhbm9OiFkg0tHptEU9eCuOFWEeDh(lKTl5QAPJmjDnxwk2NWWhsftJIWXSXGzXq0bddssIctEpUCGXu8bejo9LL7ccVCzt22TvZKDC0LlpOWUSs2eLKe6VnJEMRfvg7KpmnftFJeVRF8TLqXcD2p2qXb4ugff5hGII6hVht4)MnE2KKMoylz3EMFLd0DMmRuigjUy)rWB5FdmpyiJVZXgVhJIy7hFmG9QRZLlfXdfZLogYmIdXu)Gi0XxNoAq92wzOrAe6q1ENSEj7ItOy)JW4CDtIH4zWv7hIoazQ(ttF1z8KpxQ6dOFyZAw66yD4fodEOqtqolyDhIh)wmytJgmKcchiywB2jk88aHFOCyyJm4nHNSGZNDA4eeCcSFr(3C7wKGwkGY9PnjflPtjKa8yCmpxlSsqZLeuDeoWC18p9rvuXYicLY8tzO4qPfXSz21DhSSWXgZT47ors42LpyOBYOPmEWuxo1Po)8IuXATQLrJ(chNjz7wFa6y5el4xcs5HHdnfa3QkXBugVkDQRa(rdSLczXa4mvNcABTYDuVa(Efak0oyv5ZOKG3uYTq0aum2hq6PGC4YvW(cfnhXbfs9)xzH7oauzXOEVehcCUCuWbpyXHxmgeCgDMhbgqpdJQOMAYnfLKEAvwaEdMXG)ovsZ8ntCCk5eo6ScyMeV3MLRAcYYYmPtQiLsg3Ll9vpx3Tvw8baw5BDkBUgO)aGmIYJe2akwRanG)9NzyAcnfMnogRxYHWd0Gwha1ThIQvCMzX(f)LFejL9fEVtlrj4VKYJ4ylNW9hDvmqXoGLQP02HblIeW7BPK0XGcw27AdcVPexJpHIYWV0qXNDgpvrhD52kNVCXKKL6ttK84LttHnIDyJHfUX3rNWMti1QKHWAQcZ3Vbe)TKac71PoTyvcxSXCeiOJe4Z2ttE3uffPGvDrukiUCgunwrRs8eSYzBzrWHR0NQSsR(W4IMr1hMC4iypIuicVLur6AfkjyvG18YCJfFjT(0S09wyyHbdH4tWMlYu)PGCo4VjjsKv)GOnPqSiokGhoeVJNMQnYjx5i1YG3(hTo8wcxNmRSOJmDv1CG6yJmmeBXKnt1A0CdjTNqirJ9OyzcmI)BM0igPzkJ4edDQg0zSYeze8naofNW(W8hi4uOjXlxgwgFZZbg0wSUDp6hlRrwq1z4ggO1vLCU8nZLL49Mj3dB)MOdTOYR5P7ynABQ(MV3WzpY5Lcz(5sV9wbhyofKL8b49w9oIgZ7aXB1VZpdnSwsOS81B5NK(taEYNYxtX)zgCUp4m3Pj8dBJYyjhqIdHd5kGtjfoL9)GedtnX5xYx)RjXGQeZ)jZqlqGSeRZu1DpqXWj)y0vfQrSPMOnM3ub5FZYQU0vFFw58Kmn7Ip0)hwRLkyY)n2HArO3bR26oe0cbklI1VDOz2TXIEo1mSYto2YY9(jPNVBsA(DtslUBs6R3nj52waM8zv0dUS9LdKdS(nrmfxCpj(4H82cwZBGNhZ4TccL2Z)4PRQ)SO)k)dr6Tsqc)BPcWJW)9DX3OTu(E)nVvbucCMdcYBLz)s5RFnFn0bu(6pNVUPPO81dYxBV1P81VOs5N5cyA1xufusdhEmaCxyzLZP32JSDc0ovMwTUO0i9jzsl7ftJKzkAUQxjnIEwLiPoU0iCEREv5tri8NtDKmTI60CjSWYQtuFxttFvHo5gf0iCItR20dqSxRWLID3gkAf1tEvehk04elUlEZI6wMYUEzRO60OSBx2tQonp16kuT3eru5Cj)UrtqcXnRpIBHK4K7msijL4M6wb1n)2dAa3pVtjXwHr3s2gL3XuTJVULlp()wv2HW9m5Fy)Y)NmlF9Llw4P6ZrZ5cokvblJUn0c7P1)SGexb7z2Tce88TaRm)6X)lUE4)xVXST2Xb4m3CsgydFju8QyRAynaGCdGIn)RbmOSdQGKvJr8)uuj3(T(TIoxah9Zievi6AuRRcoOeXjFGrDcF(Mlim)glXmrj4RYlOrZx7dy5vXEDBpiTNyVUDgGD)qvl7Q3gQk)6KPKJf8177aUrLf3aSbWN(1aBdb066VqZq4PtByzvOI3m7n81EXtR9mxvgPLlxg2MxkvsOU4r9fQcGmfd3GjOQGgBS(UTRXNTAM6Y)2eEZDAxdSFpLE9nFxxt4ok967hVUAYDu4Q3I(vkeztf1PQkxAUi)3DMusI4g3VsPLIl5P(c1Rc(mUtqrppUofgq73OsrF8IqWbsHWwU3r7ft0Rivdnk1UZhP3mBRRLflSojyHtvz2cls9s7RwVa)IRcRGLzD5dqHNBoSO2Tbx4KBK0ZoQsQT7AxPheBNAwxWZ1eS8fTRt7t3pJOAzRCjK66B2SUSTBselCUMq7ypXYnCFZBytDUpQrB11Q2hjASu6feWR82DVzdTjRqrSCDjfBVLabktNpGMYCH2qqmkWkeFt7FTJs1MRQWV)Iy71EB)gDnQ8SeS22OvZOutQTzP(sgmBNu7rmyTJYw6oqCJ9vapTerunJ2f1B4iEVQwt7LZSPqThFqhASS0q3Vecj3s98xPl3(5guTxPImsg7vAg(6iOFet6220mrxfgTs3UQV)cT4kxLJ7xaEQtsFoMVRs(JXt2qNALJEz(go0jV9UdVwRg8JFWFQhCeVMnB1NfsXN61V4H1Y)yVCvQN3vV00Efikmx9bJeNZP(bUwFsNg4LMheR(svMUMNfRkvv)Z7)m]] )

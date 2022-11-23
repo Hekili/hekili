@@ -182,7 +182,7 @@ all:RegisterAuras( {
         id = 280655,
         duration = 10,
         max_stack = 1,
-        copy = 280847,            
+        copy = 280847,
     },
 
     building_pressure = {
@@ -3044,7 +3044,7 @@ all:RegisterPowers( {
             arcane_heart = { 303211, 303209, 303210 },
         }
     },
-    
+
     -- Loyal to the End
     loyal_to_the_end = {
         id = 303007,
@@ -3064,13 +3064,7 @@ all:RegisterPowers( {
 
 
 local function ResetAzerite()
-    local heart = FindActiveAzeriteItem()
-
-    if heart and heart:IsValid() then
-        rawset( state.azerite, "heart", heart )
-    else
-        rawset( state.azerite, "heart", nil )
-    end
+    state.azerite.active = nil
 end
 
 

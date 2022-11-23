@@ -13,12 +13,12 @@ actions+=/bag_of_tricks,if=debuff.colossus_smash.down&cooldown.mortal_strike.rem
 actions+=/use_item,name=scars_of_fraternal_strife
 actions+=/use_item,name=gavel_of_the_first_arbiter
 actions+=/use_items
+actions+=/thunder_clap,if=active_enemies>1&talent.blood_and_thunder&talent.rend&debuff.rend.remains<4
 actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(!talent.bladestorm.enabled|cooldown.bladestorm.remains>15)
 actions+=/call_action_list,name=execute,strict=1,if=talent.massacre.enabled&target.health.pct<35|target.health.pct<20|action.condemn.known&target.health.pct>80|cycle_for_execute|cycle_for_condemn
 actions+=/call_action_list,name=hac,strict=1,if=raid_event.adds.up|spell_targets.whirlwind>1
 actions+=/run_action_list,name=single_target
 
-actions.execute=sweeping_strikes,if=spell_targets.whirlwind>1
 actions.execute+=/rend,if=remains<=gcd&(!talent.warbreaker&cooldown.colossus_smash.remains<4|talent.warbreaker&cooldown.warbreaker.remains<4)&target.time_to_die>12
 actions.execute+=/avatar,if=gcd.remains=0|boss&fight_remains<20
 actions.execute+=/thunderous_roar,if=buff.test_of_might.up|!talent.test_of_might&debuff.colossus_smash.up
@@ -36,6 +36,7 @@ actions.execute+=/shockwave,if=talent.sonic_boom
 actions.execute+=/overpower
 actions.execute+=/ravager
 actions.execute+=/bladestorm
+actions.execute+=/thunder_clap,if=active_enemies>1
 
 actions.hac=skullsplitter,if=rage<60
 actions.hac+=/avatar,if=cooldown.colossus_smash.remains<1
@@ -57,6 +58,7 @@ actions.hac+=/execute,if=buff.sudden_death.react
 actions.hac+=/mortal_strike
 actions.hac+=/overpower
 actions.hac+=/whirlwind
+actions.hac+=/thunder_clap,if=active_enemies>1
 
 actions.single_target=sweeping_strikes,if=spell_targets.whirlwind>1
 actions.single_target+=/rend,if=remains<=gcd|talent.tide_of_blood&cooldown.skullsplitter.remains<=gcd&(cooldown.colossus_smash.remains<=gcd|debuff.colossus_smash.up)&dot.rend.remains<duration*0.85
@@ -81,5 +83,5 @@ actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled|spell_targets.w
 actions.single_target+=/whirlwind,if=talent.fervor_of_battle.enabled&spell_targets.whirlwind>1
 actions.single_target+=/impending_victory
 actions.single_target+=/wrecking_throw
-
+actions.single_target+=/thunder_clap,if=active_enemies>1
 
