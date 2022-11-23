@@ -1169,7 +1169,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rallying_cry" )
-            gain( ( talent.inspiring_presence.enabled and 0.25 or 0.15 ) * health.max, "health" )
+            gain( ( talent.inspiring_presence.enabled and 0.2 or 0.15 ) * health.max, "health" )
         end,
     },
 
@@ -1201,7 +1201,6 @@ spec:RegisterAbilities( {
 
         pvptalent = "sharpen_blade",
         startsCombat = false,
-        texture = 1380678,
 
         handler = function ()
             applyBuff ( "sharpened_blades" )
@@ -1217,11 +1216,10 @@ spec:RegisterAbilities( {
 
         talent = "shattering_throw",
         startsCombat = true,
-        texture = 311430,
-
         toggle = "cooldowns",
 
         handler = function ()
+            removeDebuff( "target", "all_absorbs" )
         end,
     },
 
@@ -1232,9 +1230,11 @@ spec:RegisterAbilities( {
         cooldown = function () return ( ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40 ) end,
         gcd = "spell",
 
+        spend = -10,
+        spendType = "rage",
+
         talent = "shockwave",
         startsCombat = true,
-        texture = 236312,
 
         toggle = "interrupts",
         debuff = function () return settings.shockwave_interrupt and "casting" or nil end,
@@ -1260,8 +1260,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         talent = "skullsplitter",
-        startsCombat = false,
-        texture = 2065621,
+        startsCombat = true,
 
         handler = function ()
             if talent.tide_of_blood.enabled then
@@ -1282,7 +1281,6 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = true,
-        texture = 132340,
 
         handler = function ()
         end,
@@ -1299,15 +1297,12 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = true,
-        texture = 3565453,
-
         toggle = "cooldowns",
-
         velocity = 30,
 
         handler = function ()
             applyDebuff( "target", "spear_of_bastion" )
-            if legendary.elysian_might.enabled or talent.elysian_might.enabled then applyBuff( "elysian_might" ) end
+            if talent.elysian_might.enabled or legendary.elysian_might.enabled then applyBuff( "elysian_might" ) end
         end,
 
         copy = { 307865, 376079 }
@@ -1324,7 +1319,6 @@ spec:RegisterAbilities( {
 
         talent = "spell_reflection",
         startsCombat = false,
-        texture = 132361,
         toggle = "interrupts",
 
         handler = function ()
@@ -1388,7 +1382,7 @@ spec:RegisterAbilities( {
 
 
     thunder_clap = {
-        id = 6343,
+        id = 396719,
         cast = 0,
         cooldown = 6,
         hasteCD = true,
@@ -1399,7 +1393,6 @@ spec:RegisterAbilities( {
 
         talent = "thunder_clap",
         startsCombat = true,
-        texture = 136105,
 
         handler = function ()
             applyDebuff( "target", "thunder_clap" )
@@ -1584,4 +1577,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Arms", 20221120, [[Hekili:nR1xVTnos8pl9f3K9kCKuItsxeBG72N2fh2xCF2Y0s026IKOpkQ4wad)z)gsQ)qsrsz3MaCVu0iroZWHZ8BM5N8QWvFB1YuedV6VJcIIcdJcMgoBw09FD1s2poGxT8ak5v0o4)uIkG)9FslQ4p8h5eukFZvKAAc8I9m2HQF)U72LX2xVzAcP4UQSI6CelJuMqrBz8)o5Uvl3uNLZ(ZYvBSR5NwTevZ2tORwUSta)bxaGsYstXYDIRswTC1Y8SkwLWoYk3LJJzi6omdEWFloA4s0MCC6Q)1QLj0mgMMHGLEaNN3SYQPh3NrZpMvMEE9IZRdbTNW1iSSJy8bqQXvmA2R4QvmWuDkukUaLvwDE9lZpVExs60c03pV(0PZRzOCCjBkllfht2gVjNqsN2iJZRNCEDcHKNsowoT61688Qd5zmqOtTlry93OSLesoPQQUkUQavT3XE4wrkEt92TMRV(W513keAkHb7UmvreWdRPc3)51)251btFEwV3HVwUh5ENEeU67egyob9Bg9gcC)8T)aF7Tp(iIUHIrVIPQIew1m1vPFemw5Jonh3oaU7r8ogUIXVIkY2TNbVQxNqmDzkMsG9rjsl)PpgnbbNiQiobvjEcOQNDQQMyR91uAwcQeRfxDJdLjTJp1hzQ9Evj4nOXFu1KoXxxUhYIWDX89N1n5iipMrOf8t5xh7u6odAyWRYX3mpU184wXB4yCjUiddBzbeJgn2XY5nyNlHcOLIKNhuc41YS5h2Wa3ij1L4TeaCcoIqci3YHt8X(dSqlDlAdIXYX5eAQ(k4(Ku4KhFKaXUvJdnG)ooPMBUyAv8bkojRc(JPvmOcGiboQ)8uqOWLsJhvCECd3kVeQ5i3XPyeJJsbYrnHgYTker6HUbyhvms7xAnUrLAILQiLzjXBiKIHHLv7jjVEe9Muup8ZvhreIjS5cmnjlhxvbQReVdUqbKeTC(UTku4mNkmzpxxs00O2y8rZJvRbDLz68smqGDVLsEdtpqo2ed)OkSSEiHoQCOBWspLBUFy1MWN1QeKJ53sg6YnosxQ5tbJEO1sLVpWHliYDAC)9Ywm9nsdMopxv)QXzu0C9UrYrcuYi3jAJQUjE0MEVpArKrrQo9SIdWLbhv6TSea7(hg()O71kPd4iVYxmBpLCuFPmEPYTO68r6xJLvGLWwbtNjDAfWTqb)WMc9)HktWIdGs7jYuLUw2AF8H6IcCUHfFfTW4jSPBDGH8S0k3YtZIvJWJumXdK267UHyCvisTgkummEBnCp02O0vijvJ(rfHcLaWu(9M)EQ6Advl5xtQH8RSjk5sZu7dKYBAjgIIGeC2ptxvYKv1MOTAk9QmNFNuf)FQt3v0Ot3TxnU7FBgflUc83bZ4cIhed2my5jO88rAr4DYxSbTJdtaVn51kRvXLd9vLGGwcGvUfWNX0YgrUfRap5Cj2QQlf7oa8oxya7XXGJeQnbdaWpJ9Y1ZA6QZ3U26kCm8g(aQ6ve(vkHRvHTVHvDm8ohUYc0scMPvf12KLEk73OC4oUcLq1XZLM(09yuo0r0HeMSE1S2Y(2EBuG8TsZzAt7xtFTSn(XY24GAnBl5hqD3yO5Z4MoUmFCB)Cl5hVe(ztbxgcUJL)rmF2D5e8XYac1o4Cd6qrzPX434UeuAAvxB5JuA7AnM9OeRTU01ssDPZ9QtgHOshVHAsburURwxhec0B4(ejbhgLhBDi))cDgM5d9dSBNqdNStathP1y6ycs59gc5w1iwENcq1K40mzdbHrdBH8QQ2lg3doccLyPCUBonSQHpOXX7ncl8uOXDItgw0AL3ldlxBf6peEpUKHB7L9GPvDxOE8ccUvTfn3mHI)Q5xiJbUraU4b4VCMb8488mJUVH5gzIRHjQ6f37kQyP0E7AAHlnwZOvwVCYa0st6Ne0qHpPUkkamSB4A0gKvHimZsa8YqEH)7IEE0x0J77SlbSo0gm39xeWYdxmWY1o7YVaWIhwIVQCJ(07piurl45xuGJeHBKqWa110hNBSkprEQ(gRP7U4F1sYU2y62j2XDLB3886hVtV1M(sWs9pemyiwO7A9nIkfYkslr1k1YTHG4hNY)5BuMrvjy1DO)4xwQ9N7oGFuZrvmArZEPq8Rxc0BKwmDplwgOQGXacGxDS5RpgWz4dWWkHJom(432dqQzfha7bA7JqpV(ZAT0)5ZRP4)Bnm7p0zqfHtpfQMrkGrFHhKShvUdCDN)R)Dwj8QOF)86)GucAu86pB7ZzasKrC8U24gyn3e(9B7K7Z2LB3hdYqMd(irxO80qNmTtB9QEHYT97czisZpxKP0(6hK3mmWqWo(omTYEKptZvi((VGZqzp8R7mqWZ(GU2(ae85)YsMvdCW7sovFBigg2WbmnpUV)s8H3D)N)lM(2ynK6W(BvVs(tXTbxqZA5e68AXVRc41I(NsG(Bc5uyq2ML3r6x10oon(hZVRNfdUmBwb8Cjr8FjB7C(W5Vmpy6StNgqF)IzQ7rYsV2teCLZLIYq6ZdM4Lv7fpF6K2m7VePPMEQZ5c2zFAQ7OJxC37Ov5pQUrDIU5B2phTlcNoBcVZ(xMfOkhd2RDBfCrpze65vKBhn2xQNqNU6lDxAeo)Uz8T8((fo5BZDYeT7T4MKzB7rt3M9lXpuo4qyr4KB(eZfrYNo5He5fHZUvlPYG4s5XObi9lsMoNhks6SZD8Kbu8(Y9qE5WNgfC6Kur68epualEgw6aUHvFuJag)GaZ8QDigY47PtoDYQI3GJ2Mae1o5uaRA4pbwW1CNoy7C1cDeiS7gyhoOv)DFFHJjJm79lpWVsCUPHKI(Yd3ozivOlcJSzLYj5hGPE6eNWZjgaNb2KGX0PCrzDE2tN(KT6BoqVvGmu0v)H12B1fHTvysdGpilWfyLOwlIvdCsit7dBkIbSA5Irn9dB4sMoePg5pY8hOqYdwVchA)JZL48OtNU2JPzkrlDb)wW07Dehi(CMwVR1HruEv7hKYMtPLFdfuX((ISTJUzmTEEKuQy7v9W3QGlaM2C7xmpgOTkTmZXaicn3QT0e5BCLIiF77A6rJc7ISVSGf5USGP8lAhQ3h6VzWLyJVOnuzW6nX11IIDssJv)I5thKi6sCUZ94vzAbA1zWYuzDH2kjdwiQAyiKiZZV15G(htz12SIhzn6wgvjAovNoHb5qDF1hL8xTUg(zBrqti2cOGRWUs(ASwmX)ps8MwmgdUqkFx5t3oX83rRkm9ZZCFoC0kH7nydMYCnUaSmx37jIHPSFxHfnfEpWKsAyhlDtU5DPxQBDFFpHPZ4Mh3GzHlRHOMrpnNalz2t4kQ)3E9crhfxNBfoxdARX0ShGP6GZoquwiCZFtoDgS)oL8fEBaM6bnZCVxds4G7sVncne6FqQBlWM)Ewf2LRF6ZULUwLPMFVZZJ6hEslmOhQ8csf44I3EHXkxoITAhaEURnk579ulcRFYf3w8JrtO)9Ec95)CH5cR1V56hfSZbPN7PSLwiWikyYprzXb)eJ9yk6)(I5FANv)Vd]] )
+spec:RegisterPack( "Arms", 20221122, [[Hekili:vV1sZTnos4Fl5II9SPuiPSCCMYYvT7CAMAR5IYzrbrcjX18Hw(WoPkv63(2aGpWRgKkX(WEzQXeaD3Or3F9hAOSXFZ32SoMut383bEbb((bbZdw49fV73SU(hNOBwFIe9m5a8)KtYG)7)SmRI9XFKwqIzlUQOPmcg4yD9PQF)ZF(qs9XMDZJkY(CvswtkPoPipQKSVM93rFEZ6DnjP1)z(MD218InRjn1hlk3SEDVa(dMaaLKehtfRKwfTz9M1Pjv1vC7ij)qknSMuEGwdF4V5BnAozxknEZ)AZ6OYKAAzcbM6jAAA7mRM)6XKY0xtYJVS9PlB9bThX0imTxP0tGudRQltEMwTPgmvuHwsZij5vx2(4QlBpefppJ89lBpF(Y2AsknVEEDsmnSyF4U0II45TY4Y2zx2gvuKgx8A(8QNBstRoLMudcDUDjcZ)gPLevKwuv1ufwLrQoISgMvet31SFV(8BoDz7TCHgxudRopwseWhBk5U)lB)TlB9M)WYbVdBUmpYcupct99cdmhVHftEHaUF2YVJT8Up)kPCxjL8mTuwKWSwkpl1TG2mVh1CWDam3dFSAAvn7ikl5WXAyObDcX05X0YcyDLfcl)lVpAccojL84esf)lGQEavvTXwhBkltIi5uL4QBquMWo(WqKPY4YsWzqJ7OQz9IVj)iKfr7J5h2R7sjqECDrzgBx(1X2L4zqMbVsBF984oZJzfVqdP50SekSKNGy0GX2wONG9UKsaTKN8CNuaVsMnBZ67HJK0Kt3xaGtWwesazwoSJFDydZ1s)K2rQRtPPfLXQZG5tIHDE4RfqSB14qd0VtJAyMlTSk8ujnkPc(J5v1qfaEcCWW(jROeouA9O89doCR4qOHHChgtj1mukqoYj0qUvgps3hhGDuXiSFH1GJk1glvvKNefUROiZmSS6yr0ZVsEriQ7(5QJWdX42CgTmkjLwvbQlNEaoqbKeLC((LYv4sufgDKPlbAAqxm(O5XY1GUYmDwjgiWEWslEHwEQ412y47LHLvdjurL9XblDuUzHz1g)huQeKszNsA6chhPp18lEJUPvsLx4H4ccWtJhox2tlFPOftNLRQE0GgfTsLnskHJsgGNOnQ6M5qBQCFuIidcKD6jzNGddgQ0ljra29p08)blukPd4ipZMC9XYIx1NkEULb4SI51woomkLCceunRM7Est6ie)QtYOc8pV5lfE)m44mJ51IbIKK8ikxvs8Ce5C9C)6(8PMSmAQ2(5k4c5i(RFEGH8GWk3ZYxdLtvcKmXtfDefW9Nyv0Klgdvvd33ahODmUUcjjB03ljuOwcTKfa4MCwpFwfuefP6ZoYMjLuUuMqzjJ9tieocif1)m0Zez9YSXTAkdQmLDMuf(FAIpK1QtCEAJ7(3Nus5hbUPcnUGybXGndwEejnDeUgVr(IDKdm8gy0ONRSshqC7XQicWTaM5EaONwM3kY9ujCo0PyJEGqShGQaPCd4ineCKqro4MeS94GCDmNEcdDZTPIgcJWUPRAPLRdVsMeSi7IKhh2IDPGk3ojofwlvLnUx2DOqHUOpmoFff6edSZvly1huinbLe1LkugSDnAFCKGwLdXHvKOsQMBIz6ZpsjPa9Vtr1IIZl744yB0apXOcZzElxZ5pN3fJBzzmG32Lf9dGKriW0oSLEP(N7iVUMT9Iy7nPAhqcyO4pcznQq0UIqrqRmDvh0JijXH0xyUesCCv)DqgPo(1Amhjrd0RKmKE(xn5ORvTZl8QXSBpuKb0p6Rh3dZbeHpgj6MJCUv9GdXzjCxnfzi0DOrc2B0cAxtGulfcZJjiPX1eYTYbxmIhqXPW4eb)c)atQT438Xc5b(1qHTaxjwyhyTxl40tENAtGbkLC)t()Ko)yRFmo4wmHlDpiBJBrJtGyCSBCvBrZT3CYjvJF5gzm5(km9gw4W35OdeUUJ5ixe0mp1pqnKSf(xLOGcDIoGTjtM4Q7rHswYWfu1uOY11lbCHdMZ5lYZrQ)CAtdpq1griu2k1IkpUr87cdV3vyio65ua99rHlhfG6UjdqDTxP6xaGYbw4vLKnatCTxNAIgVL6cpmPiWVoHyzp55mKWOnRPaBScb3aR)YJIAyTXvJuF2AFSDdCQsrAOuUq)MOkMGQJcsfdzfX5Kgjob2GIQDEZe37Vr78RCdKXd9h)WAAuYh1CKfJs0SZwK(1PGHhOetp0LoTzHhtFLWZWUcSew96(NP1JdgMd(q46XF7iGnNKDc2yap0IYlB)OY1b(4LTL0)BtsjJPyvbR9BKM6Im4Q9WhIosYpaNbx(R)DsomuWVFz7FuKdAKp8hT9UpGeRlqgRlaeMZn(F)2E5(GD52)QzAY0410MO8uG50TtBKNNOC7EannrQ)UA6s7RVtEtFpnbJ8GvDYEK3Z6ke)WtDzkBZNbZqWlFNo2Ehe8L)YsMvBpUVUCk)7SBCgnKsZarByLXUhrbSkFAYuU)wJSxBXqVY9QDlzG7MM9yE7EJn3BUex8MhR4(yy4seAs182fYhj)j)0GjOLD9o7Yw(p2gyyoPZiGuOpRvpf7ts7BGB18(E)8pw95HU9WKz7mGVlEuLpLSFfRZipUYB(YZNnEkMNwkVgXlUO8f(7EWKIuhsw5nZ5lu80dNpR0WKhduuZWZGWemk5w5v0)gh4ROt53lVq1hTGTy39B)j)5lNXUo0Jl9KLJ2lrGBfmrpBKNArsU9pjXu9eQp9WuxLYJh8Mz8D9W)tSMuUc9vfWxc(dgyBnk6wMgfBdPs66j)zyySZKakNzP5)pENSA05YYufsFIaDEZh61QEF9pF2rp9FYF5Tk5UA9rw4TAXR)KOXZR8552c9P3k)zgDC)Xfq6V5xd8oFwOi122BkGNEaMQrR6L)uRagFJCKePSjmBa)5ZOozzXR1Y824qzYXsyITnjJYwhCEZvC7rodCB4WBOaZSrASXJ3X8POlYSZ1pE3TZm7x9t(b2SsrBsmWEpFM1v6zAaSE2KG2v)zIYAZcoF(d2QdIGYlbTiPRHnRTrvfHTzO3JfxqBGlWA30TiwfqmUmTFtEEmGvlNFpE359yYerKkDwtKaafCUZ6rOP9pEhFxfC(81Un1tj66fZV5nFbsCa)jSTEwRIdinu3d8zZP018ijyTb(t2wr)f4TUFe9RY2qd4VoYzqlSiJOaazRSFyEVNYSuYMhduXxFP2sTeJGLwjg9nnLQvH9zdtlatSkl4q)I2HTZqXigh8T(IUWlJ5RxlqjYhTRzw9l6F1i5ftC45RSktDGZQTuuxz9Pdsjqw6COziepB1T1H0poDz1XqXHSgDjJQefNkQtWihQ)58ShBoP8DfQfRUkUHicXwaiCK3tRqPBrZC)VIHwAmJbViKpw(3TZ0)HElxk4HL47de6k4lWgSM(CWa40N3BjcJUSFtHr1f(aqMuABF3rNDZBcFTBXpV7UouxNoD4g0l0znevp6PDhybjyMwMgN1Y15wH9Lb1jDZ2adgPxPGOS0Ot3eP6ny3SXCfERb(6a9tFTxdYPXzPtYwMLkmsD7a2CZlMBxy)28XLUsLS2Fq(RcgUGMsyWau5esfy4I3oXyLPJylZyWXzTgfbN7AEy9xW6ZgBB0g6VWrOp73ZotyD(nSF16O32ELJYwkHaJOGz)eLfn(nW7Wuu(bWpArc0s98hJBZ)l]] )
