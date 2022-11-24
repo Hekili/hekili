@@ -1311,7 +1311,7 @@ spec:RegisterAbilities( {
             removeStack( "whirlwind" )
             if talent.tenderize.enabled then
                 applyBuff( "enrage" , 6 )
-                addStacks( "slaughtering_strikes", 3 )
+                addStack( "slaughtering_strikes", 3 )
             end
             -- Tenderize increases the enrage by 1 second only when using onslaught
         end,
