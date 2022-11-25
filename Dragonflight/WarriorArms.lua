@@ -1009,7 +1009,7 @@ spec:RegisterAbilities( {
     heroic_throw = {
         id = 57755,
         cast = 0,
-        cooldown = 8,
+        cooldown = 6,
         gcd = "spell",
 
         startsCombat = true,
