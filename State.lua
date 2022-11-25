@@ -3132,10 +3132,10 @@ local mt_gcd = {
             if gcd == "totem" then return 1 end
 
             if UnitPowerType( "player" ) == Enum.PowerType.Energy then
-                return state.buff.adrenaline_rush.up and 0.8 or 1
+                return state.spec.rogue and state.buff.adrenaline_rush.up and 0.8 or 1
             end
 
-            return max( ( state.spec.deathknight and state.buff.unholy_presence.up and 1 or 1.5 ) * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
+            return max( ( state.spec.deathknight and state.buff.unholy_presence.up and 1 or 1.5 ) * state.haste, state.spec.priest and state.buff.voidform.up and 0.67 or 0.75 )
 
         elseif k == "remains" then
             return state.cooldown.global_cooldown.remains
@@ -3148,7 +3148,7 @@ local mt_gcd = {
                 return state.buff.adrenaline_rush.up and 0.8 or 1
             end
 
-            return max( ( state.buff.unholy_presence.up and 1 or 1.5 ) * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
+            return max( ( state.spec.deathknight and state.buff.unholy_presence.up and 1 or 1.5 ) * state.haste, state.spec.priest and state.buff.voidform.up and 0.67 or 0.75 )
 
         elseif k == "lastStart" then
             return 0
