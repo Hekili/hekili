@@ -1202,11 +1202,13 @@ spec:RegisterAbilities( {
     heroic_throw = {
         id = 57755,
         cast = 0,
-        cooldown = 1,
+        cooldown = 6,
         gcd = "spell",
 
         startsCombat = true,
         texture = 132453,
+
+        usable = function () return target.minR > 7, "requires 8 yard range or more" end,
 
         handler = function ()
         end,
@@ -1643,12 +1645,14 @@ spec:RegisterAbilities( {
     titanic_throw = {
         id = 384090,
         cast = 0,
-        cooldown = 6,
+        cooldown = 8,
         gcd = "spell",
 
         talent = "titanic_throw",
         startsCombat = true,
         texture = 132453,
+
+        usable = function () return target.minR > 7, "requires 8 yard range or more" end,
 
         handler = function ()
         end,

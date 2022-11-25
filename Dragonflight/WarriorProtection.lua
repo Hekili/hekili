@@ -1608,11 +1608,13 @@ spec:RegisterAbilities( {
     titanic_throw = {
         id = 384090,
         cast = 0,
-        cooldown = 8,
+        cooldown = 3,
         gcd = "spell",
 
         talent = "titanic_throw",
         startsCombat = true,
+
+        usable = function () return target.minR > 7, "requires 8 yard range or more" end,
 
         handler = function ()
             if talent.improved_heroic_throw.enabled then
