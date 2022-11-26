@@ -1126,7 +1126,7 @@ spec:RegisterAbilities( {
             removeStack( "stormkeeper" )
 
             if pet.storm_elemental.up then
-                addStack( "wind_gust", nil, 1 )
+                addStack( "wind_gust" )
             end
 
             if buff.feral_spirit.up and talent.alpha_wolf.enabled then
@@ -1455,7 +1455,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "flame_shock" )
-            if talent.primal_lava_actuators.enabled then addStack( "primal_lava_actuators_df", nil, 1 ) end
+            if talent.primal_lava_actuators.enabled then addStack( "primal_lava_actuators_df" ) end
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
@@ -2335,7 +2335,7 @@ spec:RegisterAbilities( {
             removeBuff( "legacy_of_the_frost_witch" )
 
             if talent.elemental_assault.enabled then
-                addStack( "maelstrom_weapon", nil, 1 )
+                addStack( "maelstrom_weapon" )
             end
 
             if azerite.natural_harmony.enabled then

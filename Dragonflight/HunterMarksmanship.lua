@@ -706,7 +706,7 @@ spec:RegisterAbilities( {
             elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
             if talent.precise_shots.enabled then applyBuff( "precise_shots" ) end
             if talent.bulletstorm.enabled and buff.trick_shots.up then
-                addStack( "bulletstorm", min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
+                addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end
             if buff.volley.down and buff.trick_shots.up then
                 removeBuff( "trick_shots" )
@@ -987,7 +987,7 @@ spec:RegisterAbilities( {
             removeBuff( "brutal_projectiles" )
             applyBuff( "rapid_fire" )
             if talent.bulletstorm.enabled and buff.trick_shots.up then
-                addStack( "bulletstorm", min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
+                addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end
             if talent.streamline.enabled then applyBuff( "streamline" ) end
         end,

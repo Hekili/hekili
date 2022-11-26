@@ -801,7 +801,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.alacrity.enabled and effective_combo_points > 4 then
-                addStack( "alacrity", 15, 1 )
+                addStack( "alacrity" )
             end
 
             applyDebuff( "target", "between_the_eyes", 3 * effective_combo_points )
@@ -911,7 +911,7 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo points" end,
         handler = function ()
             if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 15, 1 )
+                addStack( "alacrity" )
             end
             if talent.summarily_dispatched.enabled and combo_points.current > 5 then
                 addStack( "summarily_dispatched", ( buff.summarily_dispatched.up and buff.summarily_dispatched.remains or nil ), 1 )

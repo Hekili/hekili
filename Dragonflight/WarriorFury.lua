@@ -557,7 +557,7 @@ local TriggerColdSteelHotBlood = setfenv( function()
 end, state )
 
 local TriggerSlaughteringStrikesAnnihilator = setfenv( function()
-    addStack( "slaughtering_strikes_annihilator", nil, 1 )
+    addStack( "slaughtering_strikes_annihilator" )
 end, state )
 
 local RemoveFrenzy = setfenv( function()
@@ -669,7 +669,7 @@ local WillOfTheBerserker = setfenv( function()
 end, state )
 
 local TriggerHurricane = setfenv( function()
-    addStack( "hurricane", nil, 1 )
+    addStack( "hurricane" )
 end, state )
 
 spec:RegisterHook( "reset_precast", function ()
@@ -870,7 +870,7 @@ spec:RegisterAbilities( {
 
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
 
-            if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
+            if talent.bloodcraze.enabled then addStack( "bloodcraze" ) end
             if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
@@ -883,7 +883,7 @@ spec:RegisterAbilities( {
 
             if legendary.cadence_of_fujieda.enabled then
                 if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
-                addStack( "cadence_of_fujieda", nil, 1 )
+                addStack( "cadence_of_fujieda" )
             end
         end,
     },
@@ -929,7 +929,7 @@ spec:RegisterAbilities( {
             removeStack( "whirlwind" )
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
 
-            if talent.bloodcraze.enabled then addStack( "bloodcraze", nil, 1 ) end
+            if talent.bloodcraze.enabled then addStack( "bloodcraze" ) end
             if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
@@ -942,7 +942,7 @@ spec:RegisterAbilities( {
 
             if legendary.cadence_of_fujieda.enabled then
                 if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
-                addStack( "cadence_of_fujieda", nil, 1 )
+                addStack( "cadence_of_fujieda" )
             end
 
         end,
@@ -1030,7 +1030,7 @@ spec:RegisterAbilities( {
         texture = 136146,
 
         handler = function ()
-            addStack( "death_wish", nil, 1 )
+            addStack( "death_wish" )
         end,
     },
 
@@ -1311,7 +1311,7 @@ spec:RegisterAbilities( {
             removeStack( "whirlwind" )
             if talent.tenderize.enabled then
                 applyBuff( "enrage" , 6 )
-                addStack( "slaughtering_strikes", 3 )
+                addStack( "slaughtering_strikes", nil, 3 )
             end
             -- Tenderize increases the enrage by 1 second only when using onslaught
         end,
@@ -1384,7 +1384,7 @@ spec:RegisterAbilities( {
             removeStack( "whirlwind" )
             spendCharges( "crushing_blow", 1 )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
-            if talent.slaughtering_strikes.enabled then addStack( "slaughtering_strikes_raging_blow", nil, 1 ) end
+            if talent.slaughtering_strikes.enabled then addStack( "slaughtering_strikes_raging_blow" ) end
         end,
     },
 
@@ -1426,7 +1426,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "enrage" )
             removeStack( "whirlwind" )
-            if talent.frenzy.enabled then addStack( "frenzy", nil, 1 ) end
+            if talent.frenzy.enabled then addStack( "frenzy" ) end
             if talent.reckless_abandon.enabled then addStack( "reckless_abandon", nil, 2 ) end
         end,
     },

@@ -854,7 +854,7 @@ spec:RegisterAbilities( {
                 applyBuff( "predator", 8 )
                 applyDebuff( "target", "kill_command", 8 )
             end
-            if talent.tip_of_the_spear.enabled then addStack( "tip_of_the_spear", 20, 1 ) end
+            if talent.tip_of_the_spear.enabled then addStack( "tip_of_the_spear", nil, 1 ) end
         end,
     },
 

@@ -816,7 +816,7 @@ spec:RegisterHook( "spend", function( amt, resource )
         end
 
         if talent.last_emperors_capacitor.enabled or legendary.last_emperors_capacitor.enabled then
-            addStack( "the_emperors_capacitor", nil, 1 )
+            addStack( "the_emperors_capacitor" )
         end
     end
 end )
@@ -1030,8 +1030,8 @@ spec:RegisterHook( "runHandler", function( key, noStart )
     if combos[ key ] then
         if last_combo == key then removeBuff( "hit_combo" )
         else
-            if talent.hit_combo.enabled then addStack( "hit_combo", 10, 1 ) end
-            if azerite.fury_of_xuen.enabled or talent.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end
+            if talent.hit_combo.enabled then addStack( "hit_combo" ) end
+            if azerite.fury_of_xuen.enabled or talent.fury_of_xuen.enabled then addStack( "fury_of_xuen" ) end
             if ( talent.xuens_bond.enabled or conduit.xuens_bond.enabled ) and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.1 ) end
             if talent.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then reduceCooldown( "touch_of_death", 0.35 ) end
         end
@@ -1221,7 +1221,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "mark_of_the_crane" )
                 if talent.shadowboxing_treads.enabled then active_dot.mark_of_the_crane = min( active_dot.mark_of_the_crane + 2, active_enemies ) end
             end
-                if talent.transfer_the_power.enabled then addStack( "transfer_the_power", nil, 1 ) end
+                if talent.transfer_the_power.enabled then addStack( "transfer_the_power" ) end
         end,
     },
 
@@ -1684,7 +1684,7 @@ spec:RegisterAbilities( {
                 if set_bonus.tier29_4pc > 0 then addStack( "fists_of_flowing_momentum" ) end
             end
 
-            if talent.transfer_the_power.enabled then addStack( "transfer_the_power", nil, 1 ) end
+            if talent.transfer_the_power.enabled then addStack( "transfer_the_power" ) end
 
             if talent.whirling_dragon_punch.enabled and cooldown.fists_of_fury.remains > 0 then
                 applyBuff( "whirling_dragon_punch", min( cooldown.fists_of_fury.remains, cooldown.rising_sun_kick.remains ) )
@@ -1741,7 +1741,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rushing_jade_wind" )
-            if talent.transfer_the_power.enabled then addStack( "transfer_the_power", nil, 1 ) end
+            if talent.transfer_the_power.enabled then addStack( "transfer_the_power" ) end
         end,
     },
 
