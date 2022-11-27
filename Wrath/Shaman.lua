@@ -1060,8 +1060,8 @@ spec:RegisterAbilities( {
     chain_lightning = {
         id = 421,
         cast = function ()
-            if buff.elemental_mastery.up then return 0 end
-            return 2 * (1 - (talent.maelstrom_weapon.rank * 2) / 10) * haste
+            if buff.elemental_mastery.up then return 0 end 
+            return 2 * (1 - (buff.maelstrom_weapon.stack * 2) / 10) * haste
         end,
         cooldown = 6,
         gcd = "spell",
@@ -1747,7 +1747,7 @@ spec:RegisterAbilities( {
         id = 403,
         cast = function ()
             if buff.elemental_mastery.up or buff.natures_swiftness.up then return 0 end
-            return 2.5 * (1 - (talent.maelstrom_weapon.rank * 2) / 10) * haste
+            return 2.5 * (1 - (buff.maelstrom_weapon.stack * 2) / 10) * haste
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1759,6 +1759,14 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136048,
+
+        readyTime = function()
+            if spec.id == 7 and buff.maelstrom_weapon.stack < 5 and buff.maelstrom_weapon.stack >= settings.maelstrom_weapon_stack_limit then
+                return mainhand_remains
+            else
+                return 0
+            end
+        end,
 
         handler = function ()
             removeStack( "clearcasting" )
