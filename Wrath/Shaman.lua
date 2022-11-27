@@ -846,6 +846,30 @@ local enchant_ids = {
     [3043] = "rockbiter"  -- ???
 }
 
+spec:RegisterStateExpr( "mainhand_remains", function()
+    local nextSwing = nextMH - now
+    if nextSwing <= 0 then
+        nextSwing = 0
+    end
+    return nextSwing
+end)
+
+local MainhandHasSpellpower = false
+spec:RegisterStateExpr( "mainhand_has_spellpower", function() return MainhandHasSpellpower end )
+
+local reset_gear = function()
+    MainhandHasSpellpower = false
+end
+
+local update_gear = function(slotId, itemId)
+    if slotId == 16 then
+        local stats = GetItemStats("item:"..itemId)
+        local spellPower = stats["ITEM_MOD_STAMINA_SHORT"]
+        MainhandHasSpellpower = spellPower and tonumber(spellPower) > 0 or false
+    end
+end
+
+Hekili:RegisterGearHook( reset_gear, update_gear )
 
 spec:RegisterHook( "reset_precast", function()
     windfury_mainhand = nil
@@ -1037,7 +1061,7 @@ spec:RegisterAbilities( {
         id = 421,
         cast = function ()
             if buff.elemental_mastery.up then return 0 end
-            return 2 * haste
+            return 2 * (1 - (talent.maelstrom_weapon.rank * 2) / 10) * haste
         end,
         cooldown = 6,
         gcd = "spell",
@@ -1052,6 +1076,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "elemental_mastery" )
+            removeBuff( "maelstrom_weapon" )
             removeStack( "clearcasting" )
         end,
 
@@ -1437,6 +1462,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "totem",
+        max_rank = 10,
 
         spend = 0.06,
         spendType = "mana",
@@ -1721,7 +1747,7 @@ spec:RegisterAbilities( {
         id = 403,
         cast = function ()
             if buff.elemental_mastery.up or buff.natures_swiftness.up then return 0 end
-            return 2.5 * haste
+            return 2.5 * (1 - (talent.maelstrom_weapon.rank * 2) / 10) * haste
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1738,6 +1764,7 @@ spec:RegisterAbilities( {
             removeStack( "clearcasting" )
             removeBuff( "natures_swiftness" )
             removeBuff( "elemental_mastery" )
+            removeBuff( "maelstrom_weapon" )
         end,
 
         copy = { 529, 548, 915, 943, 6041, 10391, 10392, 15207, 15208, 25448, 25449, 49237, 49238 },
@@ -2408,6 +2435,19 @@ spec:RegisterSetting( "shaman_rage_threshold", 60, {
     step = 1,
     width = "full",
 } )
+
+spec:RegisterSetting("maelstrom_weapon_stack_limit", 3, {
+    type = "range",
+    name = "Minimum Maelstrom Weapon Stacks",
+    desc = "Sets the minimum number of Maelstrom Weapon stacks before recommending the player cast a spell",
+    width = "full",
+    min = 1,
+    max = 5,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 7 ].settings.maelstrome_weapon_stack_limit = val
+    end
+})
 
 
 spec:RegisterOptions( {
