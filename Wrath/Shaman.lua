@@ -847,11 +847,19 @@ local enchant_ids = {
 }
 
 spec:RegisterStateExpr( "mainhand_remains", function()
-    local nextSwing = nextMH - now
-    if nextSwing <= 0 then
-        nextSwing = 0
+    local next_swing, real_swing, pseudo_swing = 0, 0, 0
+    if now == query_time then
+        real_swing = nextMH - now
+        next_swing = real_swing > 0 and real_swing or 0
+    else
+        if query_time <= nextMH then
+            pseudo_swing = nextMH - query_time
+        else
+            pseudo_swing = (query_time - nextMH) % mainhand_speed
+        end
+        next_swing = pseudo_swing
     end
-    return nextSwing
+    return next_swing
 end)
 
 local MainhandHasSpellpower = false
@@ -1760,14 +1768,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136048,
 
-        readyTime = function()
-            if spec.id == 7 and buff.maelstrom_weapon.stack < 5 and buff.maelstrom_weapon.stack >= settings.maelstrom_weapon_stack_limit then
-                return mainhand_remains
-            else
-                return 0
-            end
-        end,
-
         handler = function ()
             removeStack( "clearcasting" )
             removeBuff( "natures_swiftness" )
@@ -2481,4 +2481,4 @@ spec:RegisterOptions( {
 
 spec:RegisterPack( "Elemental / Resto DPS (IV)", 20220925, [[Hekili:1EvZUnUnq4NLGfWjbnw(NDZUnTj5q72djhcwuVy7njslrzXAksbskl4Ia(S3zOSLLKLtt32CXwIC4W5NVz(gfol8RHlsOww4tZNoF(0BMFDWS5F465FmCHDBblCrbnEnDf8GKMd)(BcwotAPchzIJ87mJv5iF(llCKlE4BxIIVvOOjOAnQsDmCKmRTW8ttMuvvfWJ3oEdJlnbXQ8jvkRy94yb1y4Xty7v9ytgnNkhNuygxSHnwRSulxjhhRuIevL0mMUKl4woZeUyzjxyFqgUCyh5AWqkyXHp9jWs4jjSAjzM4WfFnJBCKcnxP52TWtGVELJaBYxjzjosQs7iTC5lwwADendmEyPKgrAhhOGkRycXLocQ9LudkwzHs6ipaU)3q3)8oQDH3FDKvL8e2ov(hAQnliCHGBSgmCsvm4VN8zmMKUuWsc)LWfXGPZ0Ckgistds5AwKvzz5byKcowmg6cxKtxLtR3j0cbjVk3TN)qs1gABndc9(2c1KEIYPg4k32t4p0w44mkxgj4RYSsUCvprVUNpS)u2SsiOQHyPoVohP5f1BvlIjaIc)WDtAl4v807GOhnOi2E7ntF(zlvVIzdsGahvgZUD20rReBlYc8)gPsJAF8G92rRizpn4i3ENJmBQJmYr2FvWIoYnWAp)CVfnmRf8ztGXgfJrlje3Z0mtgGEb33IUwkTuyBYN7davCzsKjJr19IyhNUoKoQZPVqMR0WIaxl3mugBqOeEYnWDiz5qnMJCp4(TsUuHiQ(LieEwdsJQBqGW09P4xl05JN0qoZrS841EiuJ7lGlcIsQ414H)0jpCIYg0s4anlhqL1UtmyirwU3I3PxbDdnAzjalq1(JNuT5QnG94bd9VHJSvitAZoyR3CcG)rLlDW(pXWoiydMyndAXbp7BCH914ub)V8DhDeLx(Go2AdW8()zG5tZMEsN(TSKy46F0E6uC0eEIwQGANoqi41cFB5Lu7l3L8m004YmkuPXZxwYs6HSSk5QswufJcTSBQ9gkPHLb(UjnvJMEzUViOySAlWeIjqSgeyfsXeiB75AylPcIqubKxt2ISei9JsEoSyfvARZ6q9lCkB9jRyNVH5xdWeu0z(tKU4x)8Uli4ikHAm4bobFoBiYIdBubOm9G7q5TxVPvZ3bHKFnm(vHmDd1pAVKgWdW0(UgDNO2if6D6Jiv0T1RSbmJu85mQ1hYbGOKwaGo41mKN2sxZaNRatthh46AHbLfhcdjSCLKhhbtmyHn8iqadc3ObnRMzqGw6unIzbKXd5fkTfn33d2zCDnRNEpW9iIFvPCb0p6DVBWHdUagEWr8tpCP7rui8sgp9MXZV29O7X9mKn1bap5XaAKT8SEfaG2CK)9q1F()muDyJEO6k0ShempAiq2ObbXJgaapSf0nX3C39lxWW2)J4VHTLoG)gt5iO5OHGLTGfGMomCr7vhAyI273m8q7f7pbWvi3)Da1pAGDhE4(zTp4rtc0XuoWK6HP7ytBlYboAuItqWFFd5ENR(avSFKrpl(OtWG3l3(Q4D7eG6sO3Eg17FrYW2kP)uU9hS9oyY2ot(28YR(k6YP2Uns9G2T(QHtxg09inFmr)noDUFNa9cA1n5oKeQzgGVschJ3S7ZKQZi42vk96aFERRwFd(wH(g(BuIcyalTzk4BbA(Urpnt4F)d]] )
 
-spec:RegisterPack( "Enhancement (IV)", 20221127, [[Hekili:nJvZUnUnq4NLCjOlYwvl34n1aX(qrlqtoKEql6rjrlrzryjsbsQ4MIa9S3HuYs0u)yNyFyXInjMC(LZ33WX031)7(EXij2)L5ZMp31D(doZwU4BZx67jFRa77vGI2H2c)bfLd)8pPPiAeohtLvH)0t)ZxGFo)lkXElJHIvMtWk5rGO(EBkjzYNO(BgWhZxSa8bQuMY4(E)bo5)qrP(EPK4yCTgyrKV33tjIQq1)rvHnXsvilb(CKKWOvHzeHe2oHXRc)l8osgXbcholHKbbrTucNcooILVbjVB1VSNqJtk5VfShJky0VsswDtoIOYS4as(MsC8TDlKIebIcCwwbBpMx98qwmjdoCKm62s8bJYr0DRQL1P)2o5O)nqjYp7oO7VuVRSjljXWKdRAgzBQKsOBdePeCwSsXnLjjo1F0jMTNoSMrOSSawsGmfhGZ0acrR2yexMgizsCU2e3QxnHWX9wCpam49wfrmxBK0wzUgxJYQfV65wzBk0qIbrJkYIXAthHesiHDklU1ALxDxpR3AZxnZ0Kd7uJ9XCyzrbHtKMRxkWbeqwH5IIuuoIc4xseag2IvrPeX3ILo7jYuc1DgGeOiNIi5JcSufrcNAT0kaN(CSiLLfBAwEjnO(tbkYXxvm3viM28Q1FfYakoNGfRDpPEcPXzQJ4yqZgwMSTONJWzcjNLFaJlKaFD1clTfsgphKJSdBTJghd1lw0onagow2bE52MJejjxbFcIj41RwAPBoABoQUC0gqw4TrZIoOpusH6QkWvLeDK4GPOnzaLCCAH2C1q(2GpMjDmYhNMC5937NmpANl64MYEfDjN7Rx1cySfiqlauJZjYUonCS6pfRN54ExtFRJDOMtyhsOxrbzirQjibGAF0ksTkdK41BeLcHwqB48bGC16)Ho56R(Gq2Mq(ZHzTdRlfcwBVRdg8ZCKFnqBwE0cU9jkKxJGAskqtmDGd479kMlGDAg0zM7cFV9iUsDHV3t5fmUeUjo8ERPxCQEggBQah5)YdWutibo(VPdmRLVNwC1qwGRHF9IE(Tg4H)V77fbx7G5eKA2R(8TdJd57zqo9Lq4QnzZETSqtldc9Rt7RHRbvHRQcx0zCRISYU3FnS7X1jLzxyMtgmyRS6BJ69BQcBymvH3c)Dpstv4AiiwACY1r2uM(Hrn9eKCTVSj6dLN1BR8ZVnQFgPdqv47VpCc94r5Jr)eLFw(5kuQdPZIiQtDBYiOFviqiRcV7aRzWoftcXCN9JsOpq)KPaXUUMOyJonMyyP6llLGkbvMSLqVbG1rDVHGRd7b3BUM2nRlI6MWE42iwtkpuhLw5nMC2sU7nLRDsAlHwmbB7OrQBQv1JvRH8tpATrxeR51hQ)XbzTgM2mEul3ndU(42TU1Eq9xYw1CFG(hJAAdvfYAaH4eyHlQ168ZR164xyCXTwpXDgN79EtHzUMDOh)sMRBh6hoN7Xh)6IFS7fU88Af2(ebttaUXigBEHevCBU8XV9YXn9mE)OwgXhXpN0j9FuhG4JO7oiX0pQ0jPFh)4qt62tt3oBEW48TbF2OoMM9xCSDd7NpQBNJFcjJXdg4HRA5ON)Lxh(N)))]] )
+spec:RegisterPack( "Enhancement (IV)", 20221127, [[Hekili:nJ1sVnUnq4Fl5IrxSPQw25jqSpu0c0KdBpOf9OKOLOSimLObjDCtrG(T3HsYYuuupYJwShIJJ4mdNhFFZmk(U(F33lgjX(FBX8flCDxCRJ7nxD)vl99KVSh77ThfTdTf(sokd(83Ztr5r4mCUSi8NE8V(c85IVOe7fkdfRmNGDGhbI67T5aHkFm3FJ17y5D(EOdYug3373Wj)dkk13lLehJR0alI89(EkrueQ(bvew7lfHSe4VJKewEriLiKWXjmEr4FG3rOehFVYhQCgedd)6BLXjohTHIJ9)vFViorI5eKYhtsCYqyQqYzzbhXO9SChHeUQIWvfHxd2O8MaLsrK8akzBQmNKV1xcb0NHDBSyWggvQm7YHnRqY4zGDj7WoXSJ5NnL2jk7C1W2jHWXbsMeNzyMm02mu1jkZC97lkxdHPalLqKj6iuqPqq2mJaiPzfHzqYfWwXbCS6RqjDDr4Ch3IWVEQy7yubCIqc5G1NB(rXZBxJnC8UaGBlXUwkQAbdi2D6IvwnZzpJme6(EZbxuekjr7GlUmoKi(wS0rsYuOIGycUktCV2DqHUabIuw0oLPDN3RTLik0JqLqHROsdNAblVSkGCkbtJnaFNZgvhxEr9tGJzshn3YPjIE9v7H0dTIimIlt1IOry0AuMMQnyWB6L74UuVgrrpJcOirA7AKuvK)06t1fonsqn5(jJ0xAQ9tgPT0)FSYH7N0np2FJWpmvQ)ovFUmPBNmrspVD97KoD306JD)u6JnqZMHOMl7NA6onQzmobDGoc)mgx6ekeKcjDyFzTX4PpVOKRo)8TEKaiurkK2A4PTYdyA5UwiATB3oL0Q3scMdIj2taFYqUR0L7GahaEDMWqO(b31L9Jezkj3DEn9kh5SpswMJByLIueCqah2slqMYXaqaGDNraLhd7MbazLmdd8vA9mKcYXzeCfo09ST4hYdQ(EGABVQD(cQ2svT1NfS(uuviRk6754iw2g0iL9l0A0qY2COMtQ)4uKaQkykDp7iM3U0NCG)sDdmB9PB1RqYY3EaFs6X9HEDaokF3jB7010qR1)oqjZp7oCp)lulINODTd6WJ33FY9WgzF0QEqNNdDUlPXaQZhCeE9eU1tqeU1rAriknGLaO8gsQObopDkCjw7zmxOKV69JM7cZYpI4QGg4OpMTNXLQA6vgV0JtXtaEDposH092Ge44)m3YROPaZSecfFYXeonO7VU6xmWHxsswDHbEA2f9aMkEYMf7w9VuHNwnfiN1R)JE7kB2gQAxvtWMsrtOPDnTbhA02eqoZgyCMvG4mlGWEcBlyTINAKTUqxnRr5zDgynRZWQvZ1v3(fODU28h9N3mVr)HMtcuEKXyMzNgX8WWJx0nRrN9lv90xbtduMV94K1UJQNqQL)G9VAbquRe2uGTVX6QRn0wBbOZilJDVnurBLLgvm7I9bCX1RM0c1ZmxMEnSi9xRPZ2wI2WN0wRSKlwVQ8SU7tUE199gpN5KdSs8S(5RLMtBb1swG9LExF9RV215EW030kEMr8PLyFB1Z6R)HLMjHtlNQJibCTQZt70)BatwP)BcV0v93gMUsN3eO(9eL)3dRFh5UpdNYY)gPbkiMhzbuwFW7JFAMe(Oe0k7ncdT23gJFojK2j62nDIPMxguTGM))o]] )
