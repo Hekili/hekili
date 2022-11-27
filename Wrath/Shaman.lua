@@ -1086,7 +1086,7 @@ spec:RegisterAbilities( {
             removeBuff( "elemental_mastery" )
             removeBuff( "maelstrom_weapon" )
             removeStack( "clearcasting" )
-            removeDebuffStack( "stormstrike" )
+            removeDebuffStack( "target", "stormstrike" )
         end,
 
         copy = { 930, 2860, 10605, 25439, 25442, 49270, 49271 },
@@ -1223,7 +1223,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "earth_shock" )
             setCooldown( "flame_shock", 6 )
             setCooldown( "frost_shock", 6 )
-            removeDebuffStack( "stormstrike" )
+            removeDebuffStack( "target", "stormstrike" )
         end,
 
         copy = { 8044, 8045, 8046, 10412, 10413, 10414, 25454, 49230, 49231 },
@@ -1775,7 +1775,7 @@ spec:RegisterAbilities( {
             removeBuff( "natures_swiftness" )
             removeBuff( "elemental_mastery" )
             removeBuff( "maelstrom_weapon" )
-            removeDebuffStack( "stormstrike" )
+            removeDebuffStack( "target", "stormstrike" )
         end,
 
         copy = { 529, 548, 915, 943, 6041, 10391, 10392, 15207, 15208, 25448, 25449, 49237, 49238 },
