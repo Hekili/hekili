@@ -201,6 +201,22 @@ spec:RegisterStateExpr("rip_maxremains", function()
     end
 end)
 
+spec:RegisterStateExpr( "mainhand_remains", function()
+    local next_swing, real_swing, pseudo_swing = 0, 0, 0
+    if now == query_time then
+        real_swing = nextMH - now
+        next_swing = real_swing > 0 and real_swing or 0
+    else
+        if query_time <= nextMH then
+            pseudo_swing = nextMH - query_time
+        else
+            pseudo_swing = (query_time - nextMH) % mainhand_speed
+        end
+        next_swing = pseudo_swing
+    end
+    return next_swing
+end)
+
 spec:RegisterStateExpr("bearweaving_lacerate_should_maul", function()
     if buff.clearcasting.up then
         return false
@@ -227,11 +243,11 @@ spec:RegisterStateExpr("bearweaving_lacerate_should_maul", function()
         end
     end
 
-    local nextSwing = nextMH - now
+    local nextSwing = mainhand_remains
     --[[if nextSwing <= 0 then
         nextSwing = mainhand_speed
     end]]--
-    local willMaul = nextSwing <= min(bearRipRemains, energy.time_to_max)
+    local willMaul = nextSwing <= min(bearRipRemains + 1.5, energy.time_to_85)
     return willMaul and energy.current < 70 and rage.current > rageNeeded
 end)
 
@@ -972,14 +988,11 @@ local finish_maul = setfenv( function()
 end, state )
 
 spec:RegisterStateFunction( "start_maul", function()
-    local nextSwing = nextMH - now
-    local buffExpires = 0
-    if nextSwing <= 0 then
-        buffExpires = mainhand_speed
-    else
-        buffExpires = nextSwing
+    local next_swing = mainhand_remains
+    if next_swing <= 0 then
+        next_swing = mainhand_speed
     end
-    applyBuff( "maul", buffExpires )
+    applyBuff( "maul", next_swing )
     state:QueueAuraExpiration( "maul", finish_maul, buff.maul.expires )
 end )
 
