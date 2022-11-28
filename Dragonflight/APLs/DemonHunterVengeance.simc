@@ -17,8 +17,8 @@ actions.cooldowns=potion
 # Default fallback for usable items.
 actions.cooldowns+=/use_items
 actions.cooldowns+=/sinful_brand,if=!dot.sinful_brand.ticking
-actions.cooldowns+=/the_hunt
-actions.cooldowns+=/elysian_decree
+actions.cooldowns+=/elysian_decree,if=!talent.frailty|debuff.frailty.stack>=6
+actions.cooldowns+=/the_hunt,if=!talent.frailty|debuff.frailty.stack>=3
 
 # Defensives
 actions.defensives=demon_spikes,if=tanking&(buff.demon_spikes.down|charges>1)
@@ -26,7 +26,7 @@ actions.defensives+=/metamorphosis,if=!buff.metamorphosis.up&(!action.sinful_bra
 actions.defensives+=/fiery_brand
 
 # Normal Rotation
-actions.normal=infernal_strike
+actions.normal=infernal_strike,if=time_to_max_charges<gcd.max
 actions.normal+=/bulk_extraction
 actions.normal+=/spirit_bomb,if=((buff.metamorphosis.up&talent.fracture.enabled&soul_fragments>=3)|soul_fragments>=4)
 actions.normal+=/fel_devastation
@@ -34,6 +34,7 @@ actions.normal+=/soul_cleave,if=((talent.spirit_bomb.enabled&soul_fragments=0)|!
 actions.normal+=/immolation_aura,if=((variable.brand_build&cooldown.fiery_brand.remains>10)|!variable.brand_build)&fury<=90
 actions.normal+=/felblade,if=fury<=60
 actions.normal+=/sigil_of_flame
+actions.normal+=/soul_carver,if=!talent.frailty|debuff.frailty.stack>=6
 actions.normal+=/fracture,if=((talent.spirit_bomb.enabled&soul_fragments<=3)|(!talent.spirit_bomb.enabled&((buff.metamorphosis.up&fury<=55)|(buff.metamorphosis.down&fury<=70))))
 actions.normal+=/shear
 actions.normal+=/throw_glaive

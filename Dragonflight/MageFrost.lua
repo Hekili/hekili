@@ -944,7 +944,7 @@ spec:RegisterAbilities( {
             end
 
             applyDebuff( "target", "flurry" )
-            addStack( "icicles", nil, 1 )
+            addStack( "icicles" )
 
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
             removeBuff( "ice_floes" )
@@ -994,7 +994,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            addStack( "icicles", nil, 1 )
+            addStack( "icicles" )
             applyDebuff( "target", "chilled" )
             removeBuff( "ice_floes" )
             removeBuff( "cold_front_ready" )
@@ -1012,7 +1012,7 @@ spec:RegisterAbilities( {
 
             if azerite.tunnel_of_ice.enabled then
                 if frost_info.last_target_virtual == target.unit then
-                    addStack( "tunnel_of_ice", nil, 1 )
+                    addStack( "tunnel_of_ice" )
                 else
                     removeBuff( "tunnel_of_ice" )
                 end
@@ -1043,10 +1043,9 @@ spec:RegisterAbilities( {
             applyBuff( "frozen_orb" )
         end,
 
-
         --[[ Not modeling because you can throw it off in a random direction and get no procs.  Just react.
         impact = function ()
-            addStack( "fingers_of_frost", nil, 1 )
+            addStack( "fingers_of_frost" )
             applyDebuff( "target", "frozen_orb_snare" )
         end, ]]
 
@@ -1212,7 +1211,7 @@ spec:RegisterAbilities( {
 
             if azerite.frigid_grasp.enabled then
                 applyBuff( "frigid_grasp", 10 )
-                addStack( "fingers_of_frost", nil, 1 )
+                addStack( "fingers_of_frost" )
             end
         end,
 

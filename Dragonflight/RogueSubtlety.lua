@@ -487,7 +487,7 @@ local function comboSpender( amt, resource )
         end
 
         if talent.alacrity.enabled and amt >= 5 then
-            addStack( "alacrity", 20, 1 )
+            addStack( "alacrity" )
         end
 
         if talent.secret_technique.enabled then
@@ -663,7 +663,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "shadows_grasp", 8 )
             if azerite.perforate.enabled and buff.perforate.up then
                 -- We'll assume we're attacking from behind if we've already put up Perforate once.
-                addStack( "perforate", nil, 1 )
+                addStack( "perforate" )
                 gainChargeTime( "shadow_blades", 0.5 )
             end
             gain( ( buff.shadow_blades.up and 2 or 1 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
@@ -689,7 +689,7 @@ spec:RegisterAbilities( {
 
         usable = function () return combo_points.current > 0, "requires combo_points" end,
         handler = function ()
-            if talent.alacrity.enabled and effective_combo_points > 4 then addStack( "alacrity", nil, 1 ) end
+            if talent.alacrity.enabled and effective_combo_points > 4 then addStack( "alacrity" ) end
             removeBuff( "echoing_reprimand_" .. combo_points.current )
 
             if buff.finality_black_powder.up then removeBuff( "finality_black_powder" )
@@ -763,7 +763,7 @@ spec:RegisterAbilities( {
         usable = function () return combo_points.current > 0 end,
         handler = function ()
             if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 20, 1 )
+                addStack( "alacrity" )
             end
             removeBuff( "nights_vengeance" )
 
@@ -844,7 +844,7 @@ spec:RegisterAbilities( {
 
         usable = function () return combo_points.current > 0, "requires combo_points" end,
         handler = function ()
-            if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end
+            if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity" ) end
             removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
         end,
@@ -888,7 +888,7 @@ spec:RegisterAbilities( {
             removeBuff( "the_rotten" )
             removeBuff( "symbols_of_death_crit" )
 
-            if azerite.blade_in_the_shadows.enabled then addStack( "blade_in_the_shadows", nil, 1 ) end
+            if azerite.blade_in_the_shadows.enabled then addStack( "blade_in_the_shadows" ) end
             if buff.premeditation.up then
                 if buff.slice_and_dice.up then
                     gain( 2, "combo_points" )
@@ -900,7 +900,7 @@ spec:RegisterAbilities( {
             end
 
             if conduit.perforated_veins.enabled then
-                addStack( "perforated_veins", nil, 1 )
+                addStack( "perforated_veins" )
             end
 
             removeBuff( "sepsis_buff" )

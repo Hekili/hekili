@@ -14,10 +14,10 @@ actions+=/wrath,if=time<1&(eclipse.any_next|eclipse.lunar_next)
 actions=variable,name=is_aoe,value=spell_targets.starfall>1
 actions+=/variable,name=is_cleave,value=spell_targets.starfire>1
 actions+=/variable,name=passive_asp,value=6%spell_haste+talent.natures_balance+talent.orbit_breaker*dot.moonfire.ticking*(buff.orbit_breaker.stack>25)*40
-actions+=/berserking,if=buff.ca_inc.up|variable.no_cd_talent|fight_remains<15
-actions+=/potion,if=buff.ca_inc.up|variable.no_cd_talent|fight_remains<25
-actions+=/use_items,slots=trinket1,if=variable.on_use_trinket!=1&!trinket.2.ready_cooldown|(variable.on_use_trinket=1|variable.on_use_trinket=3)&buff.ca_inc.up|variable.no_cd_talent|fight_remains<20|variable.on_use_trinket=0
-actions+=/use_items,slots=trinket2,if=variable.on_use_trinket!=2&!trinket.1.ready_cooldown|variable.on_use_trinket=2&buff.ca_inc.up|variable.no_cd_talent|fight_remains<20|variable.on_use_trinket=0
+actions+=/berserking,if=buff.ca_inc.up|variable.no_cd_talent|boss&fight_remains<15
+actions+=/potion,if=buff.ca_inc.up|variable.no_cd_talent|boss&fight_remains<25
+actions+=/use_items,slots=trinket1,if=variable.on_use_trinket!=1&!trinket.2.ready_cooldown|(variable.on_use_trinket=1|variable.on_use_trinket=3)&buff.ca_inc.up|variable.no_cd_talent|boss&fight_remains<20|variable.on_use_trinket=0
+actions+=/use_items,slots=trinket2,if=variable.on_use_trinket!=2&!trinket.1.ready_cooldown|variable.on_use_trinket=2&buff.ca_inc.up|variable.no_cd_talent|boss&fight_remains<20|variable.on_use_trinket=0
 actions+=/use_items
 actions+=/run_action_list,name=aoe,if=variable.is_aoe
 actions+=/run_action_list,name=st
@@ -25,7 +25,7 @@ actions+=/run_action_list,name=st
 actions.aoe=sunfire,cycle_targets=1,if=refreshable&(target.time_to_die-remains)>8&astral_power.deficit>variable.passive_asp+3
 actions.aoe+=/moonfire,cycle_targets=1,if=refreshable&(target.time_to_die-remains)>8&astral_power.deficit>variable.passive_asp+3
 actions.aoe+=/adaptive_swarm,cycle_targets=1,if=!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>5)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<3&dot.adaptive_swarm_damage.ticking
-actions.aoe+=/variable,name=cd_condition_aoe,value=cooldown.ca_inc.remains<5&!buff.ca_inc.up&(target.1.time_to_die>10-5*talent.orbital_strike|fight_remains<25+10*talent.incarnation_chosen_of_elune)
+actions.aoe+=/variable,name=cd_condition_aoe,value=cooldown.ca_inc.remains<5&!buff.ca_inc.up&(target.1.time_to_die>10-5*talent.orbital_strike|boss&fight_remains<25+10*talent.incarnation_chosen_of_elune)
 actions.aoe+=/wrath,if=variable.cd_condition_aoe&set_bonus.tier29_4pc&eclipse.any_next
 actions.aoe+=/starfall,if=variable.cd_condition_aoe&talent.orbital_strike&astral_power.deficit<variable.passive_asp+8*spell_targets|astral_power.deficit<(variable.passive_asp+8+12*(buff.eclipse_lunar.remains<4|buff.eclipse_solar.remains<4))
 actions.aoe+=/celestial_alignment,if=variable.cd_condition_aoe
@@ -60,7 +60,7 @@ actions.st=sunfire,cycle_targets=1,if=refreshable&remains<2
 actions.st+=/moonfire,cycle_targets=1,if=refreshable&remains<2
 actions.st+=/adaptive_swarm,cycle_targets=1,if=!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>5)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<3&dot.adaptive_swarm_damage.ticking
 actions.st+=/stellar_flare,cycle_targets=1,if=refreshable&astral_power.deficit>variable.passive_asp+8&remains<2
-actions.st+=/variable,name=cd_condition_st,value=cooldown.ca_inc.remains<15&!buff.ca_inc.up&(target.1.time_to_die>15|fight_remains<25+10*talent.incarnation_chosen_of_elune)
+actions.st+=/variable,name=cd_condition_st,value=cooldown.ca_inc.remains<15&!buff.ca_inc.up&(target.1.time_to_die>15|boss&fight_remains<25+10*talent.incarnation_chosen_of_elune)
 actions.st+=/wrath,if=variable.cd_condition_st&set_bonus.tier29_4pc&eclipse.any_next
 actions.st+=/starsurge,if=variable.cd_condition_st&buff.touch_the_cosmos.up
 actions.st+=/celestial_alignment,if=variable.cd_condition_st
@@ -84,8 +84,8 @@ actions.st+=/stellar_flare,cycle_targets=1,if=refreshable&astral_power.deficit>v
 actions.st+=/new_moon,if=astral_power.deficit>variable.passive_asp+10
 actions.st+=/half_moon,if=astral_power.deficit>variable.passive_asp+20&(buff.eclipse_lunar.remains>execute_time|buff.eclipse_solar.remains>execute_time)
 actions.st+=/full_moon,if=astral_power.deficit>variable.passive_asp+40&(buff.eclipse_lunar.remains>execute_time|buff.eclipse_solar.remains>execute_time)
-actions.st+=/starsurge,if=buff.starweavers_weft.up|astral_power.deficit<variable.passive_asp+(8*(1+0.5*talent.soul_of_the_forest*buff.eclipse_solar.up))|talent.astral_communion&cooldown.astral_communion.remains<3|fight_remains<5
-actions.st+=/wild_mushroom,if=astral_power.deficit>variable.passive_asp+5&cooldown.ca_inc.remains-30>full_recharge_time&(!talent.primordial_arcanic_pulsar|buff.ca_inc.remains>3)&(!talent.fungal_growth|talent.stellar_flare|!prev_gcd.1.wild_mushroom&!prev_gcd.2.wild_mushroom&dot.fungal_growth.remains<2)|fight_remains<10
+actions.st+=/starsurge,if=buff.starweavers_weft.up|astral_power.deficit<variable.passive_asp+(8*(1+0.5*talent.soul_of_the_forest*buff.eclipse_solar.up))|talent.astral_communion&cooldown.astral_communion.remains<3|boss&fight_remains<5
+actions.st+=/wild_mushroom,if=astral_power.deficit>variable.passive_asp+5&cooldown.ca_inc.remains-30>full_recharge_time&(!talent.primordial_arcanic_pulsar|buff.ca_inc.remains>3)&(!talent.fungal_growth|talent.stellar_flare|!prev_gcd.1.wild_mushroom&!prev_gcd.2.wild_mushroom&dot.fungal_growth.remains<2)|boss&fight_remains<10
 actions.st+=/starfire,if=eclipse.in_lunar|buff.warrior_of_elune.up&(buff.eclipse_lunar.up|buff.umbral_embrace.react)
 actions.st+=/wrath
 actions.st+=/run_action_list,name=fallthru

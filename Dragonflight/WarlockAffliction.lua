@@ -1521,9 +1521,9 @@ spec:RegisterAbilities( {
                 if buff.malefic_affliction.stack == 3 then
                     if debuff.unstable_affliction.up then applyDebuff( "target", "dread_touch" )
                     else active_dot.dread_touch = 1 end
-                else addStack( "malefic_affliction", 1 ) end
+                else addStack( "malefic_affliction" ) end
             end
-            if legendary.malefic_wrath.enabled then addStack( "malefic_wrath", nil, 1 ) end
+            if legendary.malefic_wrath.enabled then addStack( "malefic_wrath" ) end
         end,
     },
 

@@ -2402,7 +2402,7 @@ elseif baseClass == "WARRIOR" then
 
                 removeBuff( "sudden_death" )
 
-                if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
+                if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut" ) end
             end,
 
             auras = {

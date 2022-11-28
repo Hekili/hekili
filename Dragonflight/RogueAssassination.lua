@@ -2081,7 +2081,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
-            if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end
+            if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity" ) end
             if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
             if talent.internal_bleeding.enabled then
                 applyDebuff( "target", "internal_bleeding" )
@@ -2440,7 +2440,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.alacrity.enabled and combo_points.current > 4 then
-                addStack( "alacrity", 15, 1 )
+                addStack( "alacrity" )
             end
             applyBuff( "slice_and_dice" )
             spend( combo_points.current, "combo_points" )

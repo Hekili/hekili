@@ -629,7 +629,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.azure_essence_burst.enabled and buff.dragonrage.up then addStack( "essence_burst", nil, 1 ) end -- TODO:  Does this give 2 stacks if hitting 2 targets w/ Essence Attunement?
-            if talent.charged_blast.enabled then addStack( "charged_blast", min( active_enemies, spell_targets.azure_strike ) ) end
+            if talent.charged_blast.enabled then addStack( "charged_blast", nil, min( active_enemies, spell_targets.azure_strike ) ) end
         end,
     },
 
@@ -842,8 +842,8 @@ spec:RegisterAbilities( {
         handler = function ()
             if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = buff.dragonrage.expires + 6 end
             -- TODO: Determine if we need to model projectiles instead.
-            if talent.charged_blast.enabled then addStack( "charged_blast", spell_targets.eternity_surge ) end
-            if talent.iridescence.enabled then applyBuff( "iridescence_blue", nil, 2 ) end
+            if talent.charged_blast.enabled then addStack( "charged_blast", nil, spell_targets.eternity_surge ) end
+            if talent.iridescence.enabled then addStack( "iridescence_blue", nil, 2 ) end
 
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )

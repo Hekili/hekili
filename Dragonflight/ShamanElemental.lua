@@ -1309,7 +1309,7 @@ spec:RegisterAbilities( {
             removeBuff( "surge_of_power" )
 
             if pet.storm_elemental.up then
-                addStack( "wind_gust", nil, 1 )
+                addStack( "wind_gust" )
             end
 
             if talent.flash_of_lightning.enabled then flash_of_lightning() end
@@ -1666,7 +1666,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "flame_shock" )
             if talent.focused_insight.enabled then applyBuff( "focused_insight" ) end
-            if talent.magma_chamber.enabled then addStack( "magma_chamber", nil, 1 ) end
+            if talent.magma_chamber.enabled then addStack( "magma_chamber" ) end
 
             if buff.surge_of_power.up then
                 active_dot.surge_of_power_debuff = min( active_enemies, active_dot.flame_shock + 1 )
@@ -2018,7 +2018,7 @@ spec:RegisterAbilities( {
             removeStack( "stormkeeper" )
 
             if pet.storm_elemental.up then
-                addStack( "wind_gust", nil, 1 )
+                addStack( "wind_gust" )
             end
 
             if talent.flash_of_lightning.enabled then flash_of_lightning() end
