@@ -833,14 +833,6 @@ spec:RegisterHook( "advance_end", function( time )
 end )
 
 
-spec:RegisterCycle( function ()
-    if active_enemies == 1 then return end
-
-    -- For Nemesis, we want to cast it on the lowest health enemy.
-    if this_action == "nemesis" and Hekili:GetNumTTDsWithin( target.time_to_die ) > 1 then return "cycle" end
-end )
-
-
 -- Gear Sets
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
 spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
