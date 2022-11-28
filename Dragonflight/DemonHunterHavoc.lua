@@ -782,7 +782,18 @@ spec:RegisterStateExpr( "fury_spent", function ()
 end )
 
 
+local sigil_types = { "chains", "flame", "misery", "silence" }
+
 spec:RegisterHook( "reset_precast", function ()
+    last_metamorphosis = nil
+    last_infernal_strike = nil
+
+    for i, sigil in ipairs( sigil_types ) do
+        local activation = ( action[ "sigil_of_" .. sigil ].lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
+        if activation > now then sigils[ sigil ] = activation
+        else sigils[ sigil ] = 0 end
+    end
+
     last_darkness = 0
     last_metamorphosis = 0
     last_eye_beam = 0
@@ -809,6 +820,16 @@ spec:RegisterHook( "reset_precast", function ()
     meta_cd_multiplier = 1 / ( 1 + rps )
 
     fury_spent = nil
+end )
+
+
+spec:RegisterHook( "advance_end", function( time )
+    if query_time - time < sigils.flame and query_time >= sigils.flame then
+        -- SoF should've applied.
+        applyDebuff( "target", "sigil_of_flame", debuff.sigil_of_flame.duration - ( query_time - sigils.flame ) )
+        active_dot.sigil_of_flame = active_enemies
+        sigils.flame = 0
+    end
 end )
 
 
@@ -1461,10 +1482,6 @@ spec:RegisterAbilities( {
 
         talent = "sigil_of_flame",
         startsCombat = false,
-
-        readyTime = function ()
-            return sigils.flame - query_time
-        end,
 
         sigil_placed = function() return sigil_placed end,
 
