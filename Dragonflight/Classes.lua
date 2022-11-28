@@ -9,9 +9,7 @@ if not Hekili.IsDragonflight() then return end
 local C_ClassTalents, C_Traits = _G.C_ClassTalents, _G.C_Traits
 local IsPlayerSpell = _G.IsPlayerSpell
 
-local RegisterEvent = ns.RegisterEvent
-local FlagDisabledSpells = ns.FlagDisabledSpells
-local WipeCovenantCache = ns.WipeCovenantCache
+local ResetDisabledGearAndSpells, WipeCovenantCache = ns.ResetDisabledGearAndSpells, ns.WipeCovenantCache
 
 local state, class = Hekili.State, Hekili.Class
 
@@ -73,7 +71,7 @@ do
         end
 
         WipeCovenantCache()
-        FlagDisabledSpells()
+        ResetDisabledGearAndSpells()
     end
 
     --[[

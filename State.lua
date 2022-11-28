@@ -16,7 +16,7 @@ local round, roundUp, roundDown = ns.round, ns.roundUp, ns.roundDown
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
-local FindPlayerAuraByID, IsDisabledCovenantSpell = ns.FindPlayerAuraByID, ns.IsDisabledCovenantSpell
+local FindPlayerAuraByID, IsAbilityDisabled, IsDisabledCovenantSpell = ns.FindPlayerAuraByID, ns.IsAbilityDisabled, ns.IsDisabledCovenantSpell
 
 -- Clean up table_x later.
 local insert, remove, sort, tcopy, unpack, wipe = table.insert, table.remove, table.sort, ns.tableCopy, table.unpack, table.wipe
@@ -6719,7 +6719,7 @@ function state:IsKnown( sID )
         return false
     end
 
-    if ability.disabled then return false, "not usable here" end
+    if IsAbilityDisabled( ability ) then return false, "not usable here" end
 
     if sID < 0 then
         if ability.known ~= nil then
