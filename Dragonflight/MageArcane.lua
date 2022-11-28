@@ -441,7 +441,10 @@ spec:RegisterAuras( {
     presence_of_mind = {
         id = 205025,
         duration = 3600,
-        max_stack = 2
+        max_stack = 2,
+        onRemove = function( t )
+            setCooldown( "presence_of_mind", action.presence_of_mind.cooldown )
+        end,
     },
     -- Talent: Absorbs $w1 damage.  Magic damage taken reduced by $s3%.  Duration of all harmful Magic effects reduced by $w4%.
     -- https://wowhead.com/beta/spell=235450
@@ -2040,6 +2043,7 @@ spec:RegisterAbilities( {
 
         talent = "presence_of_mind",
         startsCombat = false,
+        nobuff = "presence_of_mind",
 
         handler = function ()
             applyBuff( "presence_of_mind", nil, 2 )
