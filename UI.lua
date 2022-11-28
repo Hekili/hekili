@@ -712,7 +712,7 @@ do
     }
 
     local kbEvents = {
-        ACTIONBAR_SLOT_CHANGED = 1,
+        -- ACTIONBAR_SLOT_CHANGED = 1,
         ACTIONBAR_PAGE_CHANGED = 1,
         ACTIONBAR_UPDATE_STATE = 1,
         SPELLS_CHANGED = 1,

@@ -1585,7 +1585,7 @@ spec:RegisterAbilities( {
             removeDebuff( "target", "judgment" )
             removeDebuff( "target", "reckoning" )
             if target.is_undead or target.is_demon then applyDebuff( "target", "radiant_decree" ) end
-            if talent.divine_judgment.enabled then addStack( "divine_judgment", 15, 1 ) end
+            if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if talent.truths_wake.enabled or conduit.truths_wake.enabled then applyDebuff( "target", "truths_wake" ) end
         end,
     },
@@ -1744,7 +1744,7 @@ spec:RegisterAbilities( {
                 debuff.execution_sentence.expires = debuff.execution_sentence.expires + 1
             end
             if talent.righteous_verdict.enabled then applyBuff( "righteous_verdict" ) end
-            if talent.divine_judgment.enabled then addStack( "divine_judgment", 15, 1 ) end
+            if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
         end,
 
         copy = { "final_verdict", 336872, 383328 },
@@ -1791,7 +1791,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if target.is_undead or target.is_demon then applyDebuff( "target", "wake_of_ashes" ) end
-            if talent.divine_judgment.enabled then addStack( "divine_judgment", 15, 1 ) end
+            if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if conduit.truths_wake.enabled then applyDebuff( "target", "truths_wake" ) end
         end,
 

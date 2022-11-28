@@ -17,7 +17,7 @@ local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local FindPlayerAuraByID, FindStringInInventoryItemTooltip = ns.FindPlayerAuraByID, ns.FindStringInInventoryItemTooltip
-local FlagDisabledSpells = ns.FlagDisabledSpells
+local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
 
 local CGetItemInfo = ns.CachedGetItemInfo
@@ -242,27 +242,6 @@ end
 Hekili.FeignEvent = ns.FeignEvent
 
 
---[[ do
-    local updatedEquippedItem = false
-
-    local function CheckForEquipmentUpdates()
-        if updatedEquippedItem then
-            updatedEquippedItem = false
-            ns.updateGear()
-        end
-    end
-
-    RegisterEvent( "GET_ITEM_INFO_RECEIVED", function( event, itemID, success )
-        if success then
-            if state.set_bonus[ itemID ] > 0 and not updatedEquippedItem then
-                updatedEquippedItem = true
-                C_Timer.After( 0.5, CheckForEquipmentUpdates )
-            end
-        end
-    end )
-end ]]
-
-
 do
     local isUnregistered = false
     local next = _G.next
@@ -322,44 +301,9 @@ end
 end
 
 
-
-RegisterEvent( "DISPLAY_SIZE_CHANGED", function () Hekili:BuildUI() end )
-
-
-do
-    local itemAuditComplete = false
-
-    local auditItemNames = function ()
-        local failure = false
-
-        for key, ability in pairs( class.abilities ) do
-            if ability.recheck_name then
-                local name, link = CGetItemInfo( ability.item )
-
-                if name then
-                    ability.name = name
-                    ability.texture = nil
-                    ability.link = link
-                    ability.elem.name = name
-                    ability.elem.texture = select( 10, CGetItemInfo( ability.item ) )
-
-                    class.abilities[ name ] = ability
-                    ability.recheck_name = nil
-                else
-                    failure = true
-                end
-            end
-        end
-
-        if failure then
-            C_Timer.After( 1, ns.auditItemNames )
-        else
-            ns.ReadKeybindings()
-            ns.updateGear()
-            itemAuditComplete = true
-        end
-    end
-end
+RegisterEvent( "DISPLAY_SIZE_CHANGED", function()
+    Hekili:BuildUI()
+end )
 
 
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
@@ -433,7 +377,6 @@ end )
 
 
 function ns.updateTalents()
-
     for k, _ in pairs( state.talent ) do
         state.talent[ k ].enabled = false
     end
@@ -480,7 +423,7 @@ function ns.updateTalents()
     end
 
     WipeCovenantCache()
-    FlagDisabledSpells()
+    ResetDisabledGearAndSpells()
 end
 
 
@@ -503,7 +446,6 @@ end )
 do
     local loc = ItemLocation:CreateEmpty()
 
-    local GetAllTierInfoByItemID = C_AzeriteEmpoweredItem.GetAllTierInfoByItemID
     local GetAllTierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo
     local GetPowerInfo = C_AzeriteEmpoweredItem.GetPowerInfo
     local IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
@@ -663,9 +605,6 @@ end
 
 
 do
-    local gearInitialized = false
-    local lastUpdate = 0
-
     local function itemSorter( a, b )
         local action1, action2 = class.abilities[ a.action ].cooldown, class.abilities[ b.action ].cooldown
         return action1 > action2
@@ -717,15 +656,22 @@ do
     end
 
     local wasWearing = {}
-    local updateIsQueued = false
     local maxItemSlot = Hekili.IsWrath() and INVSLOT_LAST_EQUIPPED or Enum.ItemSlotFilterTypeMeta.MaxValue
 
+    local timer
+
+    local function Update()
+        ns.updateGear()
+    end
+
+    local function QueueUpdate()
+        if timer and not timer:IsCancelled() then timer:Cancel() end
+        timer = C_Timer.NewTimer( 1, Update )
+    end
+
     function ns.updateGear()
-        if not Hekili.PLAYER_ENTERING_WORLD or GetTime() - lastUpdate < 1 then
-            if not updateIsQueued then
-                C_Timer.After( 1, ns.updateGear )
-                updateIsQueued = true
-            end
+        if not Hekili.PLAYER_ENTERING_WORLD then
+            QueueUpdate()
             return
         end
 
@@ -854,7 +800,6 @@ do
                 if key then
                     key = formatKey( key )
                     state.set_bonus[ key ] = 1
-                    gearInitialized = true
                 end
 
                 if i == 16 then
@@ -862,16 +807,22 @@ do
                         state.main_hand.size = 2
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND" then
                         state.main_hand.size = 1
-                    end
+                    elseif equipLoc == "INVTYPE_RANGED" or equipLoc == "INVTYPE_RANGEDRIGHT" then
+                        state.set_bonus.ranged = 1
+                            end
                 elseif i == 17 then
                     if equipLoc == "INVTYPE_2HWEAPON" then
                         state.off_hand.size = 2
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONOFFHAND" then
                         state.off_hand.size = 1
+                    elseif equipLoc == "INVTYPE_RANGED" or equipLoc == "INVTYPE_RANGEDRIGHT" then
+                        state.set_bonus.ranged = 1
                     elseif equipLoc == "INVTYPE_SHIELD" then
                         state.set_bonus.shield = 1
                     end
                 end
+
+
 
                 -- Fire any/all GearHooks (may be expansion-driven).
                 for _, hook in ipairs( GearHooks ) do
@@ -907,8 +858,6 @@ do
 
         ns.updatePowers()
         ns.updateTalents()
-
-        local lastEssence = class.active_essence
         ns.updateEssences()
 
         local sameItems = #wasWearing == #state.items
@@ -923,28 +872,11 @@ do
         end
 
         Hekili:UpdateUseItems()
-
         state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
-
-        if not gearInitialized then
-            if not updateIsQueued then
-                C_Timer.After( 1, ns.updateGear )
-                updateIsQueued = true
             end
-        else
-            ns.ReadKeybindings()
-        end
-    end
+
+    RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", QueueUpdate )
 end
-
-
-RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
-    ns.updateGear()
-end )
-
-RegisterUnitEvent( "UNIT_INVENTORY_CHANGED", "player", nil, function()
-    ns.updateGear()
-end )
 
 
 do
@@ -2061,32 +1993,10 @@ local defaultBarMap = {
 }
 
 
-local ReadKeybindings
-
-do
-    local lastRefresh = 0
-    local queuedRefresh = false
-
     local slotsUsed = {}
 
-    ReadKeybindings = function( event )
+local function ReadKeybindings( event )
         if not Hekili:IsValidSpec() then return end
-
-        local now = GetTime()
-
-        if now - lastRefresh < 0.25 then
-            if queuedRefresh then return end
-
-            queuedRefresh = true
-            C_Timer.After( 0.3 - ( now - lastRefresh ), ReadKeybindings )
-
-            return
-        end
-
-        lastRefresh = now
-        queuedRefresh = false
-
-        local done = false
 
         for k, v in pairs( keys ) do
             wipe( v.console )
@@ -2143,7 +2053,6 @@ do
             end
         end
 
-        if not done then
             for i = 1, 12 do
                 if not slotsUsed[ i ] then
                     StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
@@ -2204,8 +2113,6 @@ do
                 end
             end
 
-        end
-
         if _G.ConsolePort then
             for i = 1, 180 do
                 local action, id = GetActionInfo( i )
@@ -2255,7 +2162,6 @@ do
 
         -- This is also the right time to update pet-based target detection.
         Hekili:SetupPetBasedTargetDetection()
-    end
 end
 ns.ReadKeybindings = ReadKeybindings
 
@@ -2269,23 +2175,17 @@ local function ReadOneKeybinding( event, slot )
     local ability
     local completed = false
 
-    --[[ Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
+    -- Bartender4 support; if BT4 bindings are set, use them, otherwise fall back on default UI bindings below.
+    -- This will still get viewed as misleading...
     if _G["Bartender4"] then
-        local bar = _G["BT4Bar" .. actionBarNumber]
-        local bindingKeyName = "ACTIONBUTTON" .. keyNumber
+        local keybind = "CLICK BT4Button" .. slot .. ":Keybind"
 
-        -- If bar is disabled assume paging / stance switching on bar 1
-        if actionBarNumber > 1 and bar and not bar.disabled then
-            bindingKeyName = "CLICK BT4Button" .. slot .. ":Keybind"
+        if GetBindingKey( keybind ) then
+            StoreKeybindInfo( actionBarNumber, GetBindingKey( keybind ), GetActionInfo( slot ) )
+            completed = true
         end
 
-        ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( slot ) )
-
-        if ability then completed = true end
-
-        -- Use ElvUI's actionbars only if they are actually enabled. ]]
-
-    if _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+    elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
         local btn = _G[ "ElvUI_Bar" .. actionBarNumber .. "Button" .. keyNumber ]
 
         if btn then
@@ -2293,7 +2193,7 @@ local function ReadOneKeybinding( event, slot )
 
             if actionBarNumber > 6 then
                 -- Checking whether bar is active.
-                local bar = _G[ "ElvUI_Bar" .. slot ]
+                local bar = _G[ "ElvUI_Bar" .. actionBarNumber ]
 
                 if not bar or not bar.db.enabled then
                     binding = "ACTIONBUTTON" .. keyNumber
@@ -2308,7 +2208,6 @@ local function ReadOneKeybinding( event, slot )
                 if binding then StoreKeybindInfo( actionBarNumber, binding, action, aType ) end
             end
         end
-
     end
 
     if not completed then
@@ -2384,14 +2283,17 @@ local function ReadOneKeybinding( event, slot )
 end
 
 
+local allTimer
+
 local function DelayedUpdateKeybindings( event )
-    C_Timer.After( 0.05, function() ReadKeybindings( event ) end )
+    if allTimer and not allTimer:IsCancelled() then allTimer:Cancel() end
+    allTimer = C_Timer.After( 0.2, function() ReadKeybindings( event ) end )
 end
 
-local function DelayedUpdateOneKeybinding( event, slot )
-    C_Timer.After( 0.05, function() ReadOneKeybinding( event, slot ) end )
-end
-
+--[[ local function DelayedUpdateOneKeybinding( event, slot )
+    if oneTimer and not oneTimer:IsCancelled() then oneTimer:Cancel() end
+    oneTimer = C_Timer.After( 0.2, function() ReadOneKeybinding( event, slot ) end )
+end ]]
 
 RegisterEvent( "UPDATE_BINDINGS", DelayedUpdateKeybindings )
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
@@ -2400,25 +2302,14 @@ end )
 RegisterEvent( "ACTIONBAR_SHOWGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_HIDEGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
--- RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
--- RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
--- RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
--- RegisterEvent( "ACTIONBAR_SLOT_CHANGED", DelayedUpdateOneKeybinding )
+RegisterEvent( "UPDATE_SHAPESHIFT_FORM", DelayedUpdateKeybindings )
 
 if Hekili.IsWrath() then
-    RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function( event )
-        DelayedUpdateKeybindings( event )
-    end )
+    RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", DelayedUpdateKeybindings )
 else
-    RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function( event )
-        DelayedUpdateKeybindings( event )
-    end )
+    RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, DelayedUpdateKeybindings )
 end
 
-RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
-    DelayedUpdateKeybindings()
-    -- Hekili:ForceUpdate( event )
-end )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then

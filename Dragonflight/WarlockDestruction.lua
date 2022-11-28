@@ -1278,7 +1278,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( 0.5, "soul_shards" )
-            addStack( "backdraft", nil, 1 )
+            addStack( "backdraft" )
 
             removeBuff( "conflagration_of_chaos_cf" )
 

@@ -538,11 +538,11 @@ local ExpireBladestorm = setfenv( function()
 end, state )
 
 local TriggerHurricane = setfenv( function()
-    addStack( "hurricane", nil, 1 )
+    addStack( "hurricane" )
 end, state )
 
 local TriggerTestOfMight = setfenv( function()
-    addStack( "test_of_might", nil, 1 )
+    addStack( "test_of_might" )
 end, state )
 
 spec:RegisterHook( "reset_precast", function ()
@@ -938,7 +938,7 @@ spec:RegisterAbilities( {
             removeBuff( "sudden_death" )
             if talent.executioners_precision.enabled then applyBuff ( "executioners_precision" ) end
             if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
-            if talent.juggernaut.enabled then addStack( "juggernaut", nil, 1 ) end
+            if talent.juggernaut.enabled then addStack( "juggernaut" ) end
         end,
 
         auras = {

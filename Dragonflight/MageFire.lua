@@ -1581,7 +1581,7 @@ spec:RegisterAbilities( {
             if talent.feel_the_burn.enabled then addStack( "feel_the_burn" ) end
             if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
             if talent.master_of_flame.enabled and buff.combustion.up then active_dot.ignite = min( active_enemies, active_dot.ignite + 4 ) end
-            if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
+            if azerite.blaster_master.enabled then addStack( "blaster_master" ) end
             if conduit.infernal_cascade.enabled and buff.combustion.up then addStack( "infernal_cascade" ) end
             if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
         end,
@@ -1615,7 +1615,7 @@ spec:RegisterAbilities( {
                 removeBuff( "fireball" )
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
             else
-                addStack( "fireball", nil, 1 )
+                addStack( "fireball" )
                 if conduit.flame_accretion.enabled then addStack( "flame_accretion" ) end
             end
 
@@ -1670,7 +1670,7 @@ spec:RegisterAbilities( {
                 else
                     removeBuff( "hot_streak" )
                     if legendary.sun_kings_blessing.enabled then
-                        addStack( "sun_kings_blessing", nil, 1 )
+                        addStack( "sun_kings_blessing" )
                         if buff.sun_kings_blessing.stack == 8 then
                             removeBuff( "sun_kings_blessing" )
                             applyBuff( "sun_kings_blessing_ready" )
@@ -1865,7 +1865,7 @@ spec:RegisterAbilities( {
                     else
                         removeBuff( "hot_streak" )
                         if legendary.sun_kings_blessing.enabled then
-                            addStack( "sun_kings_blessing", nil, 1 )
+                            addStack( "sun_kings_blessing" )
                             if buff.sun_kings_blessing.stack == 12 then
                                 removeBuff( "sun_kings_blessing" )
                                 applyBuff( "sun_kings_blessing_ready" )

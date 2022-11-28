@@ -17,15 +17,15 @@ actions+=/variable,name=st_planning,value=active_enemies<=3&(!raid_event.adds.ex
 actions+=/variable,name=adds_remain,value=active_enemies>=4&(!raid_event.adds.exists|raid_event.adds.exists&raid_event.adds.remains>6)
 # Prioritize Army, Outbreak and Maintaining Plaguebringer
 actions+=/army_of_the_dead,if=talent.commander_of_the_dead&(cooldown.dark_transformation.remains<4|buff.commander_of_the_dead_window.up)|!talent.commander_of_the_dead&talent.unholy_assault&cooldown.unholy_assault.remains<10|!talent.unholy_assault&!talent.commander_of_the_dead|fight_remains<=30
-actions+=/outbreak,cycle_targets=1,if=(dot.virulent_plague.refreshable|talent.superstrain&(dot.frost_fever_superstrain.refreshable|dot.blood_plague_superstrain.refreshable))&(!talent.unholy_blight|talent.unholy_blight&cooldown.unholy_blight.remains>15%((talent.superstrain*3)+(talent.plaguebringer*2)))
-actions+=/wound_spender,if=cooldown.apocalypse.remains>variable.apoc_timing&talent.plaguebringer&talent.superstrain&buff.plaguebringer.remains<gcd
+actions+=/outbreak,cycle_targets=1,if=(dot.virulent_plague.refreshable|talent.superstrain&(dot.frost_fever_superstrain.refreshable|dot.blood_plague_superstrain.refreshable))&(!talent.unholy_blight|talent.unholy_blight&buff.unholy_blight_buff.down&cooldown.unholy_blight.remains>15%((talent.superstrain*3)+(talent.plaguebringer*2)))
 ## Call Action Lists
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=racials
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=covenants
-actions+=/run_action_list,name=aoe,if=active_enemies>=4
-actions+=/run_action_list,name=generic,if=active_enemies<=3
+actions+=/wound_spender,if=cooldown.apocalypse.remains>variable.apoc_timing&talent.plaguebringer&talent.superstrain&buff.plaguebringer.remains<gcd
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>=4
+actions+=/run_action_list,name=generic,strict=1,if=active_enemies<=3
 
 ## AoE Action List
 actions.aoe=any_dnd,if=!death_and_decay.ticking&(variable.adds_remain&(talent.festermight&buff.festermight.remains<3|!talent.festermight)&(death_knight.fwounded_targets>=cycle_enemies|death_knight.fwounded_targets=8|!talent.bursting_sores&!talent.vile_contagion|raid_event.adds.exists&raid_event.adds.remains<=11&raid_event.adds.remains>5|(cooldown.vile_contagion.remains|!talent.vile_contagion)&buff.dark_transformation.up&talent.infected_claws&(buff.empower_rune_weapon.up|buff.unholy_assault.up))|fight_remains<10)
@@ -47,8 +47,8 @@ actions.cooldowns+=/empower_rune_weapon,if=variable.st_planning&runic_power.defi
 actions.cooldowns+=/empower_rune_weapon,if=variable.adds_remain&buff.dark_transformation.up
 actions.cooldowns+=/summon_gargoyle,if=buff.commander_of_the_dead_window.up|!talent.commander_of_the_dead&runic_power>=40
 actions.cooldowns+=/unholy_assault,if=variable.st_planning
-actions.cooldowns+=/apocalypse,cycle_targets=1,if=active_enemies<=3&(!talent.commander_of_the_dead|talent.commander_of_the_dead&buff.commander_of_the_dead_window.up)
-actions.cooldowns+=/dark_transformation,if=variable.st_planning&cooldown.apocalypse.remains<gcd
+actions.cooldowns+=/apocalypse,cycle_targets=1,if=debuff.festering_wound.stack>3&active_enemies<=3&(!talent.commander_of_the_dead|talent.commander_of_the_dead&buff.commander_of_the_dead_window.up)
+actions.cooldowns+=/dark_transformation,if=variable.st_planning&(!talent.apocalypse|debuff.festering_wound.stack>=4&cooldown.apocalypse.remains<gcd)
 actions.cooldowns+=/dark_transformation,if=variable.adds_remain&(cooldown.any_dnd.remains<10&talent.infected_claws&((cooldown.vile_contagion.remains|raid_event.adds.exists&raid_event.adds.in>10)&death_knight.fwounded_targets<cycle_enemies|!talent.vile_contagion)&(raid_event.adds.remains>5|!raid_event.adds.exists)|!talent.infected_claws)|fight_remains<25
 actions.cooldowns+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5
 actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&active_enemies>=2&target.time_to_die>(dot.soul_reaper.remains+5)
@@ -70,7 +70,7 @@ actions.covenants+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_so
 
 ## Generic
 actions.generic=death_coil,if=!variable.pooling_runic_power&(rune<3|pet.gargoyle.active|buff.sudden_doom.react)
-actions.generic+=/any_dnd,if=!death_and_decay.ticking&(active_enemies>=2&death_knight.fwounded_targets>=cycle_enemies|covenant.night_fae|runeforge.phearomones)
+actions.generic+=/any_dnd,if=!death_and_decay.ticking&(active_enemies>=2&death_knight.fwounded_targets>=cycle_enemies|covenant.night_fae&(!talent.apocalypse|debuff.festering_wound.stack>=4&(cooldown.apocalypse.remains<gcd.max|cooldown.apocalypse.remains>time_to_max_charges))|runeforge.phearomones)
 actions.generic+=/wound_spender,cycle_targets=1,if=variable.pop_wounds|active_enemies>=2&death_and_decay.ticking
 actions.generic+=/festering_strike,cycle_targets=1,if=!variable.pop_wounds
 actions.generic+=/death_coil

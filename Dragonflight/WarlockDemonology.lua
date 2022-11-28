@@ -1680,8 +1680,8 @@ spec:RegisterAbilities( {
             local num = min( 2, buff.wild_imps.count )
             consume_demons( "wild_imps", num )
 
-            addStack( "demonic_core", 20, num )
-            addStack( "power_siphon", 20, num )
+            addStack( "demonic_core", nil, num )
+            addStack( "power_siphon", nil, num )
         end,
     },
 
@@ -1703,11 +1703,11 @@ spec:RegisterAbilities( {
             gain( 1, "soul_shards" )
 
             if legendary.balespiders_burning_core.enabled then
-                addStack( "balespiders_burning_core", nil, 1 )
+                addStack( "balespiders_burning_core" )
             end
 
             if talent.fel_covenant.enabled then
-                addStack( "fel_covenant", nil, 1 )
+                addStack( "fel_covenant" )
             end
         end,
     },

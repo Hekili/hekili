@@ -548,7 +548,7 @@ spec:RegisterGear( "the_wind_blows", 151811 )
 
 spec:RegisterHook( "spend", function( amount, resource )
     if equipped.the_emperors_capacitor and resource == "chi" then
-        addStack( "the_emperors_capacitor", nil, 1 )
+        addStack( "the_emperors_capacitor" )
     end
 end )
 
@@ -827,7 +827,7 @@ spec:RegisterAbilities( {
 
             if conduit.walk_with_the_ox.enabled and cooldown.invoke_niuzao.remains > 0 then reduceCooldown( "invoke_niuzao", 0.5 ) end
 
-            addStack( "elusive_brawler", 10, 1 )
+            addStack( "elusive_brawler" )
         end,
     },
 
@@ -851,7 +851,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "blackout_combo" )
-            addStack( "elusive_brawler", 10, active_enemies * ( 1 + set_bonus.tier21_2pc ) )
+            addStack( "elusive_brawler", nil, active_enemies * ( 1 + set_bonus.tier21_2pc ) )
             if debuff.keg_smash.up then applyDebuff( "target", "breath_of_fire_dot" ) end
             if talent.charred_passions.enabled or legendary.charred_passions.enabled then applyBuff( "charred_passions" ) end
         end,
@@ -910,7 +910,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            addStack( "chi_torpedo", nil, 1 )
+            addStack( "chi_torpedo" )
         end,
     },
 
@@ -1220,7 +1220,7 @@ spec:RegisterAbilities( {
             if talent.walk_with_the_ox.enabled then reduceCooldown( "invoke_niuzao", 0.25 * talent.walk_with_the_ox.rank ) end
 
             removeBuff( "blackout_combo" )
-            addStack( "elusive_brawler", nil, 1 )
+            addStack( "elusive_brawler" )
         end,
     },
 
@@ -1330,7 +1330,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.blackout_combo.up then
-                addStack( "elusive_brawler", 10, 1 )
+                addStack( "elusive_brawler" )
                 removeBuff( "blackout_combo" )
             end
 
