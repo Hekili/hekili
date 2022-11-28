@@ -1274,7 +1274,6 @@ spec:RegisterAbilities( {
 
         talent = "earth_shield",
         startsCombat = false,
-        essential = true,
 
         timeToReady = function () return buff.earth_shield.remains - 120 end,
 
