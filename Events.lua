@@ -807,16 +807,22 @@ do
                         state.main_hand.size = 2
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND" then
                         state.main_hand.size = 1
-                    end
+                    elseif equipLoc == "INVTYPE_RANGED" or equipLoc == "INVTYPE_RANGEDRIGHT" then
+                        state.set_bonus.ranged = 1
+                            end
                 elseif i == 17 then
                     if equipLoc == "INVTYPE_2HWEAPON" then
                         state.off_hand.size = 2
                     elseif equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONOFFHAND" then
                         state.off_hand.size = 1
+                    elseif equipLoc == "INVTYPE_RANGED" or equipLoc == "INVTYPE_RANGEDRIGHT" then
+                        state.set_bonus.ranged = 1
                     elseif equipLoc == "INVTYPE_SHIELD" then
                         state.set_bonus.shield = 1
                     end
                 end
+
+
 
                 -- Fire any/all GearHooks (may be expansion-driven).
                 for _, hook in ipairs( GearHooks ) do
