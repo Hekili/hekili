@@ -728,7 +728,7 @@ spec:RegisterAuras( {
     },
 
     any_form = {
-        alias = { "bear_form", "cat_form", "moonkin_form" },
+        alias = { "bear_form", "cat_form", "moonkin_form", "travel_form", "aquatic_form", "stag_form" },
         duration = 3600,
         aliasMode = "first",
         aliasType = "buff",
@@ -824,19 +824,8 @@ spec:RegisterStateFunction( "unshift", function()
     removeBuff( "travel_form" )
     removeBuff( "aquatic_form" )
     removeBuff( "stag_form" )
-
-    if legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent.restoration_affinity.enabled then
-        applyBuff( "heart_of_the_wild" )
-        applyDebuff( "player", "oath_of_the_elder_druid_icd" )
-    end
 end )
 
-
-local affinities = {
-    bear_form = "guardian_affinity",
-    cat_form = "feral_affinity",
-    moonkin_form = "balance_affinity",
-}
 
 -- Function to apply form that is passed into it via string.
 spec:RegisterStateFunction( "shift", function( form )
@@ -850,11 +839,6 @@ spec:RegisterStateFunction( "shift", function( form )
     removeBuff( "aquatic_form" )
     removeBuff( "stag_form" )
     applyBuff( form )
-
-    if affinities[ form ] and legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent[ affinities[ form ] ].enabled then
-        applyBuff( "heart_of_the_wild" )
-        applyDebuff( "player", "oath_of_the_elder_druid_icd" )
-    end
 end )
 
 spec:RegisterStateExpr( "ironfur_damage_threshold", function ()
@@ -1666,12 +1650,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
-
-        talent = "restoration_affinity",
-        usable = function ()
-            if not ( buff.bear_form.down and buff.cat_form.down and buff.travel_form.down and buff.moonkin_form.down ) then return false, "player is in a form" end
-            return true
-        end,
+        usable = function() return buff.dream_of_cenarius.up or buff.any_form.down, "not used in form without dream_of_cenarius" end,
 
         handler = function ()
             applyBuff( "regrowth" )
