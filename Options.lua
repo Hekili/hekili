@@ -9628,6 +9628,24 @@ do
     end
 end
 
+function Hekili:GetSelectValuesString( setting )
+    local output = ""
+    if not setting or not setting.info or type(setting.info.values) ~= 'function' then
+        return output
+    end
+    local values = setting.info.values()
+
+    if not values then return output end
+
+    local pastFirstIndex
+    for k, v in pairs(setting.info.values()) do
+        output = (output or "").. (pastFirstIndex and ", " or "") .. k 
+        pastFirstIndex = true
+    end
+
+    return output
+end
+
 
 function Hekili:TotalRefresh( noOptions )
     if Hekili.PLAYER_ENTERING_WORLD then
@@ -10297,9 +10315,14 @@ do
                                 hasToggle = true
                                 exToggle = setting.name
                             elseif setting.info.type == "range" then
-                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
+                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %s, max: %s (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
                                 hasNumber = true
                                 exNumber = setting.name
+                                if setting.info.type == "select" then
+                                    local values = Hekili:GetSelectValuesString(setting)
+                                    output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ], setting.info.name)
+                                    output = format( "%s\n   - valid values: [%s]", output, values)
+                                end
                             end
                         end
                     end
@@ -10436,6 +10459,27 @@ do
                     Hekili:ForceUpdate( "CLI_NUMBER" )
                     return
 
+                elseif setting.info.type == "select" then
+                    local to
+
+                    if args[3] == "default" then
+                        to = setting.default
+                    else
+                        to = args[3]
+                    end
+
+                    local values = setting.info.values()
+
+                    if not to or values[to] == nil then
+                        to = to or "(blank)"
+                        Hekili:Print( format("Invalid value %s for |cFFFFD100%s|r. Valid values are [%s]", to, args[2], Hekili:GetSelectValuesString(setting)) )
+                        return
+                    end
+
+                    Hekili:Print( format( "%s set to |cFF00B4FF%s|r.", setting.info.name, to ) )
+                    prefs[ setting.name ] = to
+                    Hekili:ForceUpdate( "CLI_SELECT" )
+                    return
                 end
 
 
