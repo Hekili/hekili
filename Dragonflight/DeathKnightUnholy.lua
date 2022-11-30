@@ -359,14 +359,15 @@ me:RegisterAuras( {
         duration = 4,
         max_stack = 1,
         generate = function( t )
-            local expires = action.dark_transformation.lastCast
+            local applied = action.dark_transformation.lastCast
+            local expires = applied + 4
 
             if query_time < expires then
                 t.name = t.name or GetSpellInfo( 390264 ) or "commander_of_the_dead_window"
                 t.count = 1
                 t.expires = expires
                 t.duration = 4
-                t.applied = expires - 4
+                t.applied = applied
                 t.caster = "player"
                 return
             end
