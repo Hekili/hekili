@@ -6809,7 +6809,6 @@ do
 
         spell = ability.key
 
-        if self.empowerment.active and spell ~= self.empowerment.spell then return true, "empowerment:" .. self.empowerment.spell end
         if self.holds[ spell ] then return true, "on hold" end
 
         local profile = Hekili.DB.profile
@@ -6833,6 +6832,7 @@ do
             if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, "toggle" end
 
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
+                if self.empowerment.active and spell ~= self.empowerment.spell then return true, "empowerment:" .. self.empowerment.spell end
                 if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
                 elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false
                 end
