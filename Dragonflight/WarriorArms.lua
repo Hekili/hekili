@@ -389,6 +389,12 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1
     },
+    stance = {
+        alias = { "battle_stance", "berserker_stance", "defensive_stance" },
+        aliasMode = "first",
+        aliasType = "buff",
+        duration = 3600,
+    },
     storm_bolt = {
         id = 107570,
         duration = 4,
@@ -657,6 +663,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132349,
         essential = true,
+        nobuff = "stance",
 
         handler = function ()
             applyBuff( "battle_stance" )
@@ -832,10 +839,11 @@ spec:RegisterAbilities( {
         talent = "defensive_stance",
         startsCombat = false,
         texture = 132341,
+        nobuff = "stance",
 
         handler = function ()
-            removeBuff( "battle_stance" )
             applyBuff( "defensive_stance" )
+            removeBuff( "battle_stance" )
         end,
     },
 

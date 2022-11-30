@@ -431,6 +431,12 @@ spec:RegisterAuras( {
         duration = function () return legendary.misshapen_mirror.enabled and 8 or 5 end,
         max_stack = 1,
     },
+    stance = {
+        alias = { "battle_stance", "berserker_stance", "defensive_stance" },
+        aliasMode = "first",
+        aliasType = "buff",
+        duration = 3600,
+    },
     sudden_death = {
         id = 280776,
         duration = 10,
@@ -818,9 +824,9 @@ spec:RegisterAbilities( {
 
         talent = "berserker_stance",
         startsCombat = false,
-        texture = 132275,
-
         essential = true,
+
+        nobuff = "stance",
 
         handler = function ()
             applyBuff( "berserker_stance" )
@@ -1043,7 +1049,7 @@ spec:RegisterAbilities( {
 
         talent = "defensive_stance",
         startsCombat = false,
-        texture = 132341,
+        nobuff = "stance",
 
         handler = function ()
             applyBuff( "defensive_stance" )
