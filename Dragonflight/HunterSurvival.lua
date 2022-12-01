@@ -871,7 +871,6 @@ spec:RegisterAbilities( {
 
         talent = "kill_shot",
         startsCombat = true,
-        equipped = "ranged",
 
         usable = function () return buff.flayers_mark.up or talent.coordinated_kill.enabled and buff.coordinated_assault.up or target.health_pct < 20, "requires target health below 20 percent" end,
         handler = function ()
