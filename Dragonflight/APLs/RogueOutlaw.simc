@@ -1,9 +1,7 @@
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/apply_poison
-actions.precombat+=/bottled_flayedwing_toxin
-actions.precombat+=/marked_for_death,precombat_seconds=10,if=raid_event.adds.in>25
-actions.precombat+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent
 actions.precombat+=/stealth
+actions.precombat+=/marked_for_death,precombat_seconds=10,if=raid_event.adds.in>25
 actions.precombat+=/adrenaline_rush,precombat_seconds=3,if=talent.improved_adrenaline_rush
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=remains<3
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
