@@ -745,6 +745,11 @@ end )
 spec:RegisterAuras( {
     -- Talent: Each strike has a chance of inflicting Nature damage and applying Amplification. Envenom consumes Amplification to deal increased damage.
     -- https://wowhead.com/beta/spell=381664
+    alacrity = {
+        id = 193538,
+        duration = 15,
+        max_stack = 5,
+    },
     amplifying_poison = {
         id = 381664,
         duration = 3600,
