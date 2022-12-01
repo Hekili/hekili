@@ -3,7 +3,9 @@ actions.precombat+=/firestorm,if=talent.firestorm
 actions.precombat+=/living_flame,if=!talent.firestorm
 
 actions+=/potion,if=buff.dragonrage.up|boss&fight_remains<35
-actions+=/variable,name=next_dragonrage,value=cooldown.dragonrage.remains<?(cooldown.eternity_surge.remains-2*gcd.max)<?(cooldown.fire_breath.remains-gcd.max)
+actions+=/variable,name=next_dragonrage,value=cooldown.dragonrage.remains
+actions+=/variable,name=next_dragonrage,op=max,value=cooldown.eternity_surge.remains-2*gcd.max
+actions+=/variable,name=next_dragonrage,op=max,value=cooldown.fire_breath.remains-gcd.max
 actions+=/call_action_list,name=trinkets
 actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.pyre>=3
 actions+=/run_action_list,name=st
