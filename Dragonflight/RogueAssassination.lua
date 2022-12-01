@@ -1938,7 +1938,7 @@ spec:RegisterAbilities( {
         aura = "garrote",
         cycle = "garrote",
 
-        cp_gain = function() return stealthed.rogue or stealthed.improved_garrote and talent.shrouded_suffocation.enabled and 3 or 1 end,
+        cp_gain = function() return ( stealthed.rogue or stealthed.improved_garrote ) and talent.shrouded_suffocation.enabled and 3 or 1 end,
 
         handler = function ()
             applyDebuff( "target", "garrote" )
