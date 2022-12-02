@@ -16,7 +16,7 @@ actions+=/ancestral_call,if=!talent.ascendance.enabled|buff.ascendance.up|cooldo
 actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 actions+=/use_items
 actions+=/meteor
-actions+=/tempest,if=buff.call_lightning.stack>=10
+actions+=/tempest,if=buff.call_lightning.up
 actions+=/vesper_totem
 actions+=/fae_transfusion,if=action.fae_transfusion.known&!runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up)&spell_targets.chain_lightning<3
 actions+=/fae_transfusion,if=action.fae_transfusion.known&runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up|spell_targets.chain_lightning>=3)&(cooldown.fire_elemental.remains>20|cooldown.storm_elemental.remains>20)
