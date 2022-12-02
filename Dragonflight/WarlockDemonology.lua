@@ -914,23 +914,21 @@ spec:RegisterAuras( {
         duration = function () return 5 * haste end,
         tick_time = function () return 1 * haste end,
         max_stack = 1,
-        generate = function ()
-            local fs = buff.felstorm
-
+        generate = function( t )
             local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 89751 )
 
             if name then
-                fs.count = 1
-                fs.applied = expires - duration
-                fs.expires = expires
-                fs.caster = "pet"
+                t.count = 1
+                t.applied = expires - duration
+                t.expires = expires
+                t.caster = "pet"
                 return
             end
 
-            fs.count = 0
-            fs.applied = 0
-            fs.expires = 0
-            fs.caster = "nobody"
+            t.count = 0
+            t.applied = 0
+            t.expires = 0
+            t.caster = "nobody"
         end,
     },
     -- Unarmed. Basic attacks deal damage to all nearby enemies and attacks $s1% faster.
@@ -1270,19 +1268,22 @@ local Glyphed = IsSpellKnownOrOverridesKnown
 spec:RegisterPet( "imp",
     function() return Glyphed( 112866 ) and 58959 or 416 end,
     "summon_imp",
-    3600 )
+    3600,
+    58959, 416 )
 
 -- Voidlord         58960
 spec:RegisterPet( "voidwalker",
     function() return Glyphed( 112867 ) and 58960 or 1860 end,
     "summon_voidwalker",
-    3600 )
+    3600,
+    58960, 1860 )
 
 -- Observer         58964
 spec:RegisterPet( "felhunter",
     function() return Glyphed( 112869 ) and 58964 or 417 end,
     "summon_felhunter",
-    3600 )
+    3600,
+    58964, 417 )
 
 -- Fel Succubus     120526
 -- Shadow Succubus  120527
@@ -1298,13 +1299,13 @@ spec:RegisterPet( "sayaad",
     end,
     "summon_sayaad",
     3600,
-    "incubus", "succubus" )
+    "incubus", "succubus", 120526, 120527, 58963, 184600 )
 
 -- Wrathguard       58965
 spec:RegisterPet( "felguard",
     function() return Glyphed( 112870 ) and 58965 or 17252 end,
     "summon_felguard",
-    3600 )
+    3600, 58965, 17252 )
 
 spec:RegisterPet( "doomguard",
     11859,
@@ -1557,6 +1558,7 @@ spec:RegisterAbilities( {
 
         talent = "guillotine",
         startsCombat = true,
+        nobuff = "felstorm",
 
         usable = function() return pet.felguard.up and pet.alive, "requires a living felguard" end,
     },
@@ -1722,6 +1724,7 @@ spec:RegisterAbilities( {
 
         talent = "soul_strike",
         startsCombat = true,
+        nobuff = "felstorm",
 
         usable = function () return pet.felguard.up and pet.alive, "requires living felguard" end,
         handler = function ()
