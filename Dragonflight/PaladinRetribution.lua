@@ -657,14 +657,6 @@ spec:RegisterAuras( {
         max_stack = 3,
         copy = 345046
     },
-    -- Covenant: Your next $?c3[Templar's Verdict automatically triggers Divine Storm]?c1[Word of Glory automatically triggers Light of Dawn][Word of Glory automatically triggers Shield of the Righteous] with $s2% increased effectiveness.
-    -- https://wowhead.com/beta/spell=328204
-    vanquishers_hammer = {
-        id = 328204,
-        duration = 20,
-        type = "Magic",
-        max_stack = 1
-    },
     virtuous_command = {
         id = 383307,
         duration = 5,
