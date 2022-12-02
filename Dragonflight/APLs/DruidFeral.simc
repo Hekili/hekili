@@ -21,16 +21,16 @@ actions+=/call_action_list,name=berserk_builders,strict=1,if=combo_points<5&buff
 actions+=/call_action_list,name=builder,strict=1,if=combo_points<5
 
 # AoE
-actions.aoe+=/pool_resource,for_next=1
+## actions.aoe+=/pool_resource,for_next=1
 actions.aoe+=/primal_wrath,if=combo_points=5
 actions.aoe+=/ferocious_bite,if=buff.apex_predators_craving.up&buff.sabertooth.down
 actions.aoe+=/run_action_list,name=bloodtalons,if=variable.need_bt&active_bt_triggers>=1
-actions.aoe+=/pool_resource,for_next=1
+## actions.aoe+=/pool_resource,for_next=1
 actions.aoe+=/thrash_cat,cycle_targets=1,if=refreshable
 # At this target count BRS also crushes everything except full thrashes
 actions.aoe+=/brutal_slash
 # This means that a full rake (5.5+ ticks) is stronger up to 10ish targets
-actions.aoe+=/pool_resource,for_next=1
+## actions.aoe+=/pool_resource,for_next=1
 ## TODO: actions.aoe+=/rake,target_if=max((dot.rake.ticks_gained_on_refresh.pmult*(1+talent.doubleclawed_rake.enabled))-(spell_targets.swipe_cat*0.216+3.32))
 actions.aoe+=/rake,cycle_targets=1,if=refreshable|active_dot.rake<cycle_enemies
 # Full Lis beat Swipe up til around 3-ish targets depending on haste
@@ -60,7 +60,7 @@ actions.berserk_builders+=/shred
 actions.builder+=/run_action_list,name=clearcasting,if=buff.clearcasting.react
 actions.builder+=/rake,cycle_targets=1,if=refreshable|(buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier&dot.rake.duration>6)
 actions.builder+=/moonfire_cat,cycle_targets=1,if=refreshable
-actions.builder+=/pool_resource,for_next=1
+## actions.builder+=/pool_resource,for_next=1
 actions.builder+=/thrash_cat,cycle_targets=1,if=refreshable
 actions.builder+=/brutal_slash
 actions.builder+=/swipe_cat,if=spell_targets.swipe_cat>1
@@ -82,7 +82,7 @@ actions.cooldown+=/use_items
 actions.finisher+=/primal_wrath,if=spell_targets.primal_wrath>2
 actions.finisher+=/primal_wrath,cycle_targets=1,if=refreshable&spell_targets.primal_wrath>1
 actions.finisher+=/rip,cycle_targets=1,if=refreshable&target.time_to_die>=settings.rip_duration
-actions.finisher+=/pool_resource,for_next=1
+## actions.finisher+=/pool_resource,for_next=1
 actions.finisher+=/ferocious_bite,max_energy=1,if=(active_dot.rip>0|target.time_to_die<settings.rip_duration)&(!buff.bs_inc.up|buff.bs_inc.up&!talent.soul_of_the_forest.enabled)
 actions.finisher+=/ferocious_bite,if=(active_dot.rip>0|target.time_to_die<settings.rip_duration)&(buff.bs_inc.up&talent.soul_of_the_forest.enabled)
 
