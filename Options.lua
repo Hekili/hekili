@@ -451,6 +451,7 @@ do
                 minimapIcon = false,
                 autoSnapshot = true,
                 screenshot = true,
+                omniCC = false,
 
                 flashTexture = "Interface\\Cooldown\\star4",
 
@@ -8864,11 +8865,19 @@ do
                         order = 2,
                     },
 
+                    omniCC = {
+                        type = "toggle",
+                        name = "Hide OmniCC",
+                        desc = "If checked, OmniCC Cooldown Counts are hidden on icons in all displays.\n\n|c00E30016WARNING:|r Your UI will be reloaded in the process!",
+                        order = 3,
+                        confirm = true,
+                    },
+
                     monitorPerformance = {
                         type = "toggle",
                         name = BlizzBlue .. "Monitor Performance|r",
                         desc = "If checked, the addon will track processing time and volume of events.",
-                        order = 3,
+                        order = 4,
                         hidden = function()
                             return not Hekili.Version:match("Dev")
                         end,
@@ -9420,6 +9429,10 @@ function Hekili:SetOption( info, input, ... )
             else
                 LDBIcon:Show( "Hekili" )
             end
+
+        elseif option == 'omniCC' then
+            profile.omniCC = input
+            ReloadUI()
         end
 
         -- General options do not need add'l handling.

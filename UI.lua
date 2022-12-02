@@ -2413,6 +2413,9 @@ do
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
 
+        -- OmniCC
+        b.Cooldown.noCooldownCount = Hekili.DB.profile.omniCC
+
         if _G["ElvUI"] and not b.isRegisteredCooldown and ( ( id == 1 and conf.elvuiCooldown ) or ( id > 1 and conf.queue.elvuiCooldown ) ) then
             local E = unpack( ElvUI )
 
