@@ -1759,7 +1759,7 @@ spec:RegisterAbilities( {
 
             removeBuff( "natures_swiftness" )
 
-            if buff.primordial_wave.up and state.spec.enhancement and ( legendary.splintered_elements.enabled or talent.splintered_elements.enabled ) then
+            if buff.primordial_wave.up and state.spec.enhancement and ( talent.splintered_elements.enabled or legendary.splintered_elements.enabled ) then
                 applyBuff( "splintered_elements", nil, active_dot.flame_shock )
             end
             removeBuff( "primordial_wave" )
@@ -1912,14 +1912,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         velocity = 40,
 
-        handler = function ()
-            applyDebuff( "target", "flame_shock" )
-            if talent.primal_maelstrom.enabled then gain_maelstrom( 5 ) end
-            if talent.splintered_elements.enabled then applyBuff( "splintered_elements", nil, active_dot.flame_shock ) end
-        end,
-
         impact = function ()
+            if talent.primal_maelstrom.enabled then gain_maelstrom( 5 * talent.primal_maelstrom.rank ) end
             applyBuff( "primordial_wave" )
+            applyDebuff( "target", "flame_shock" )
         end,
 
         copy = { 326059, 375982 }
