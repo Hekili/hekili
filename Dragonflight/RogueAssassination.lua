@@ -2343,8 +2343,9 @@ spec:RegisterAbilities( {
         usable = function () return not stealthed.all, "not used in stealth" end,
         handler = function ()
             applyBuff( "shadow_dance" )
-            if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
+            if talent.danse_macabre.enabled then applyBuff( "danse_macabre" ) end
             if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows" ) end
+            if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
             if azerite.the_first_dance.enabled then
                 gain( 2, "combo_points" )
                 applyBuff( "the_first_dance" )
