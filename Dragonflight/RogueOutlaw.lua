@@ -386,6 +386,12 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
+    shadow_dance = {	
+        id = 185313,	
+        duration = 6,	
+        max_stack = 1,	
+        copy = 185422	
+    },
     sharpened_sabers = {
         id = 252285,
         duration = 15,
