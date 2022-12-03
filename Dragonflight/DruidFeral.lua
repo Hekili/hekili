@@ -1355,7 +1355,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function ()
-            if buff.clearcasting.up then return 0 + ( legendary.catseye_curio.enabled and ( 25 * -0.3 ) or 0 ) + ( talent.cats_curiosity.enabled and ( 25 * -0.25 ) or 0 ) end
+            if buff.clearcasting.up then return 0 end
             return max( 0, 25 * ( buff.incarnation.up and 0.8 or 1 ) + buff.scent_of_blood.v1 )
         end,
         spendType = "energy",
@@ -1376,9 +1376,15 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( 1, "combo_points" )
+            if buff.bs_inc.up and talent.berserk_frenzy.enabled then applyDebuff( "target", "frenzied_assault" ) end
+
             applyBuff( "bt_brutal_slash" )
             check_bloodtalons()
-            if buff.bs_inc.up and talent.berserk_frenzy.enabled then applyDebuff( "target", "frenzied_assault" ) end
+
+            if talent.cats_curiosity.enabled and buff.clearcasting.up then
+                gain( 25 * 0.25, "energy" )
+            end
+            removeStack( "clearcasting" )
         end,
     },
 
@@ -1867,9 +1873,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function ()
-            return 20 * ( buff.incarnation.up and 0.8 or 1 ), "energy"
-        end,
+        spend = function () return 20 * ( buff.incarnation.up and 0.8 or 1 ) end,
         spendType = "energy",
 
         talent = "primal_wrath",
@@ -2151,7 +2155,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function ()
-            if buff.clearcasting.up then return 0 + ( legendary.catseye_curio.enabled and ( 40 * -0.3 ) or 0 ) + ( talent.cats_curiosity.enabled and ( 40 * -0.25 ) or 0 ) end
+            if buff.clearcasting.up then return 0 end
             return 40 * ( buff.incarnation.up and 0.8 or 1 )
         end,
         spendType = "energy",
@@ -2167,12 +2171,16 @@ spec:RegisterAbilities( {
         cost = function () return max( 1, class.abilities.shred.spend ) end,
 
         handler = function ()
-            gain( talent.pouncing_strikes.enabled and ( buff.prowl.up or buff.bs_inc.up ) and 2 or 1, "combo_points" )
-            removeStack( "clearcasting" )
             removeBuff( "sudden_ambush" )
+            gain( talent.pouncing_strikes.enabled and ( buff.prowl.up or buff.bs_inc.up ) and 2 or 1, "combo_points" )
 
             applyBuff( "bt_shred" )
             check_bloodtalons()
+
+            if talent.cats_curiosity.enabled and buff.clearcasting.up then
+                gain( 40 * 0.25, "energy" )
+            end
+            removeStack( "clearcasting" )
         end,
     },
 
@@ -2302,7 +2310,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function ()
-            if buff.clearcasting.up then return 0 + ( legendary.catseye_curio.enabled and ( 35 * -0.3 ) or 0 ) + ( talent.cats_curiosity.enabled and ( 35 * -0.25 ) or 0 ) end
+            if buff.clearcasting.up then return 0 end
             return max( 0, ( 35 * ( buff.incarnation.up and 0.8 or 1 ) ) + buff.scent_of_blood.v1 )
         end,
 
@@ -2326,6 +2334,9 @@ spec:RegisterAbilities( {
             applyBuff( "bt_swipe" )
             check_bloodtalons()
 
+            if talent.cats_curiosity.enabled and buff.clearcasting.up then
+                gain( 35 * 0.25, "energy" )
+            end
             removeStack( "clearcasting" )
         end,
 
@@ -2363,7 +2374,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function ()
-            if buff.clearcasting.up then return 0 + ( legendary.catseye_curio.enabled and ( 40 * -0.3 ) or 0 ) + ( talent.cats_curiosity.enabled and ( 40 * -0.25 ) or 0 ) end
+            if buff.clearcasting.up then return 0 end
             return 40 * ( buff.incarnation.up and 0.8 or 1 )
         end,
         spendType = "energy",
@@ -2391,12 +2402,16 @@ spec:RegisterAbilities( {
             active_dot.thrash_cat = max( active_dot.thrash, active_enemies )
             debuff.thrash_cat.pmultiplier = persistent_multiplier
 
+            if talent.cats_curiosity.enabled and buff.clearcasting.up then
+                gain( 40 * 0.25, "energy" )
+            end
+            removeStack( "clearcasting" )
+
             if talent.scent_of_blood.enabled then
                 applyBuff( "scent_of_blood" )
                 buff.scent_of_blood.v1 = -3 * active_enemies
             end
 
-            removeStack( "clearcasting" )
             if target.within8 then
                 gain( 1, "combo_points" )
             end
