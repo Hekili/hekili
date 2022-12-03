@@ -28,7 +28,7 @@ actions+=/shield_block,if=buff.shield_block.duration<=18&talent.enduring_defense
 actions+=/run_action_list,name=aoe,if=spell_targets.thunder_clap>=3
 actions+=/call_action_list,name=generic
 
-actions.aoe+=/actions.aoe=thunder_clap,if=dot.rend.remains<=1
+actions.aoe+=/thunder_clap,if=dot.rend.remains<=1
 actions.aoe+=/thunder_clap,if=buff.violent_outburst.up&spell_targets.thunderclap>5&buff.avatar.up&talent.unstoppable_force.enabled
 actions.aoe+=/revenge,if=rage>=70&talent.seismic_reverberation.enabled&spell_targets.revenge>=3
 actions.aoe+=/shield_slam,if=rage<=60|buff.violent_outburst.up&spell_targets.thunderclap<=4
