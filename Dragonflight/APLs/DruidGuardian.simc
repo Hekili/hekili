@@ -1,83 +1,56 @@
 actions.precombat+=/mark_of_the_wild,if=!buff.prowl.up
 actions.precombat+=/fleshcraft,if=!buff.prowl.up&(soulbind.pustule_eruption.enabled|soulbind.volatile_solvent.enabled),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
-actions.precombat+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&(druid.catweave_bear&buff.cat_form.up|druid.owlweave_bear&buff.moonkin_form.up|buff.moonkin_form.up&talent.balance_affinity.enabled)
+actions.precombat+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&(druid.catweave_bear&buff.cat_form.up|druid.owlweave_bear&buff.moonkin_form.up)
 actions.precombat+=/prowl,if=buff.cat_form.up&druid.catweave_bear
-actions.precombat+=/bear_form,if=!buff.any_form.up&!druid.owlweave_bear&!druid.catweave_bear&!action.convoke_the_spirits.known
-actions.precombat+=/wrath,if=buff.moonkin_form.up&druid.owlweave_bear&!action.convoke_the_spirits.known
-actions.precombat+=/starfire,if=buff.moonkin_form.up&druid.owlweave_bear&action.convoke_the_spirits.known
-
+actions.precombat+=/bear_form,if=!buff.any_form.up|!druid.owlweave_bear&!druid.catweave_bear&!action.convoke_the_spirits.known
 
 # Executed every time the actor is available.
 actions=skull_bash,if=!buff.prowl.up
 actions+=/soothe
-actions+=/use_item,name=jotungeirr_destinys_call,if=!buff.prowl.up&!covenant.venthyr
-actions+=/use_item,slot=trinket1,if=!buff.prowl.up&!covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
-actions+=/use_item,slot=trinket2,if=!buff.prowl.up&!covenant.venthyr&!trinket.2.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
-actions+=/potion,if=!covenant.venthyr&(((talent.heart_of_the_wild.enabled&buff.heart_of_the_wild.up)&(druid.catweave_bear|druid.owlweave_bear)&!buff.prowl.up)|((buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)&(!druid.catweave_bear&!druid.owlweave_bear)))
-# Catweaving action list will be ran if,we’re not being meleed, mangle/thrash are on cd, rage is below 40, zerk and incarnation are down, or if, we're in catform and energy is above 25, or HotW is active
-actions+=/run_action_list,name=catweave,if=druid.catweave_bear&!tanking&((!action.convoke_the_spirits.known|cooldown.convoke_the_spirits.remains<=1)&buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5&rage<40|buff.cat_form.up&energy>25|buff.heart_of_the_wild.up&energy>90)
-# Owlweaving action list will be ran if, we’re not being meleed, Starsurge cd is up zerk and incarnation are down.
-actions+=/run_action_list,name=owlweave,if=druid.owlweave_bear&!tanking&buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&cooldown.starsurge.up
-# If we're a nightfae and we don't want to catweave/owlweave, whenever convoke cd is up we switch into cat form to cast it.
-actions+=/run_action_list,name=cconvoke,if=settings.shift_for_convoke&!druid.catweave_bear&!druid.owlweave_bear&!tanking&action.convoke_the_spirits.known&cooldown.convoke_the_spirits.remains<=1
+actions+=/use_item,slot=trinket1
+actions+=/use_item,slot=trinket2
+actions+=/potion,if=((talent.heart_of_the_wild.enabled&buff.heart_of_the_wild.up)|((buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)&(!druid.catweave_bear&!druid.owlweave_bear)))
+actions+=/run_action_list,name=catweave,if=!tanking&druid.catweave_bear&buff.tooth_and_claw.remains<1.5&(buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down)&(cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5)|(buff.cat_form.up&energy>25&druid.catweave_bear=1&buff.tooth_and_claw.remains<1.5)|(buff.heart_of_the_wild.up&energy>90&druid.catweave_bear=1&buff.tooth_and_claw.remains<1.5)
+actions+=/run_action_list,name=owlweave,if=!tanking&druid.owlweave_bear&buff.tooth_and_claw.remains<1.5&(buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&cooldown.starsurge.up)
 actions+=/bear_form,if=!buff.bear_form.up
 actions+=/call_action_list,name=mitigation
 actions+=/run_action_list,name=bear
 
 actions.bear+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled
-actions.bear+=/moonfire,cycle_targets=1,if=((!ticking&time_to_die>12)|(refreshable&time_to_die>12))&active_enemies<6
+actions.bear+=/moonfire,cycle_targets=1,if=((!ticking&time_to_die>12)|(refreshable&time_to_die>12))&active_enemies<8
 actions.bear+=/barkskin,if=buff.bear_form.up
-actions.bear+=/ravenous_frenzy,if=(((trinket.1.is.cache_of_acquired_treasures|trinket.2.is.cache_of_acquired_treasures)&buff.acquired_axe.up))|(!trinket.1.is.cache_of_acquired_treasures&!trinket.2.is.cache_of_acquired_treasures)
-actions.bear+=/convoke_the_spirits,if=!druid.catweave_bear&!druid.owlweave_bear&(trinket.1.is.cache_of_acquired_treasures|trinket.2.is.cache_of_acquired_treasures)
-actions.bear+=/incarnation,if=(!covenant.venthyr&((trinket.1.is.cache_of_acquired_treasures|trinket.2.is.cache_of_acquired_treasures)&buff.acquired_axe.up))
-actions.bear+=/use_item,slot=trinket1,if=trinket.1.is.cache_of_acquired_treasures&buff.acquired_axe.up
-actions.bear+=/use_item,slot=trinket2,if=trinket.2.is.cache_of_acquired_treasures&buff.acquired_axe.up
-actions.bear+=/use_item,name=gavel_of_the_first_arbiter
-actions.bear+=/use_item,name=wraps_of_electrostatic_potential
-actions.bear+=/use_item,name=ring_of_collapsing_futures
-actions.bear+=/use_item,name=jotungeirr_destinys_call,if=covenant.venthyr
-actions.bear+=/use_item,slot=trinket1,if=!buff.prowl.up&covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)|!buff.prowl.up&!covenant.venthyr&!trinket.1.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
-actions.bear+=/use_item,slot=trinket2,if=!buff.prowl.up&covenant.venthyr&!trinket.2.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)|!buff.prowl.up&!covenant.venthyr&!trinket.2.is.cache_of_acquired_treasures&(!buff.acquired_axe.up&!buff.acquired_sword.up&!buff.acquired_wand.up)
-actions.bear+=/potion,if=covenant.venthyr&buff.incarnation.remains>=24&buff.incarnation.remains<=25
-actions.bear+=/convoke_the_spirits,if=!druid.catweave_bear&!druid.owlweave_bear
-actions.bear+=/berserk_bear,if=(buff.ravenous_frenzy.up|!covenant.venthyr)
-actions.bear+=/incarnation,if=(buff.ravenous_frenzy.up|!covenant.venthyr)
+actions.bear+=/convoke_the_spirits
+actions.bear+=/berserk_bear
+actions.bear+=/incarnation
+actions.bear+=/rage_of_the_sleeper,if=buff.incarnation_guardian_of_ursoc.down&cooldown.incarnation_guardian_of_ursoc.remains>60|buff.incarnation_guardian_of_ursoc.up
 actions.bear+=/berserking,if=(buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)
-actions.bear+=/empower_bond
-actions.bear+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
-actions.bear+=/fleshcraft,if=soulbind.pustule_eruption.enabled&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0)&(dot.moonfire.remains>=3)&(buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&buff.galactic_guardian.down))|soulbind.volatile_solvent.enabled,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent&(cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0)
-actions.bear+=/rage_of_the_sleeper
-actions.bear+=/berserking,if=(buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)
-actions.bear+=/ironfur,if=!debuff.tooth_and_claw_debuff.up,if=!buff.ironfur.up
+actions.bear+=/maul,if=buff.rage_of_the_sleeper.up&buff.tooth_and_claw.stack>0&active_enemies<=6
+actions.bear+=/ironfur,cycle_targets=1,if=!debuff.tooth_and_claw_debuff.up&!buff.ironfur.up&tanking|rage>90
 actions.bear+=/moonfire,if=buff.galactic_guardian.up&buff.galactic_guardian.remains<=gcd+0.5
-actions.bear+=/thrash_bear,if=refreshable|dot.thrash_bear.stack<3|active_enemies>=4
+actions.bear+=/mangle,if=buff.gore.up&active_enemies<11|buff.vicious_cycle_mangle.stack=3
+actions.bear+=/maul,if=((buff.incarnation.up|buff.berserk_bear.up)&active_enemies<=5&(buff.tooth_and_claw.stack>=2))
+actions.bear+=/thrash_bear,cycle_targets=1,if=refreshable|dot.thrash_bear.stack<3|active_enemies>=5
 actions.bear+=/mangle,if=rage.deficit>10&settings.mangle_more
-actions.bear+=/swipe,if=buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&active_enemies>=4
-actions.bear+=/maul,if=((buff.incarnation.up)&active_enemies<3&(buff.tooth_and_claw.stack>=2))|((buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5)&active_enemies<3)
-actions.bear+=/maul,if=active_enemies<3&buff.vicious_cycle_maul.stack>=3|active_enemies<3&!talent.vicious_cycle_maul.enabled
-actions.bear+=/mangle,if=(buff.incarnation.up&active_enemies<=3)|((rage<90)&active_enemies<3)|((rage<85)&active_enemies<3&talent.soul_of_the_forest.enabled)|(buff.gore.up)
+actions.bear+=/swipe,if=buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&active_enemies>=11
+actions.bear+=/maul,if=((buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5)&active_enemies<=5)
+actions.bear+=/maul,if=active_enemies<=5&buff.vicious_cycle_maul.stack>=3|active_enemies<4&!talent.vicious_cycle_maul.enabled
+actions.bear+=/mangle,if=(buff.incarnation.up&active_enemies<=4)|(buff.incarnation.up&talent.soul_of_the_forest.enabled&active_enemies<=5)|((rage<90)&active_enemies<11)|((rage<85)&active_enemies<11&talent.soul_of_the_forest.enabled)
 actions.bear+=/thrash_bear,if=active_enemies>1
 actions.bear+=/pulverize,if=dot.thrash_bear.stack>2
 actions.bear+=/thrash_bear
-actions.bear+=/moonfire,if=active_enemies<2
 actions.bear+=/swipe_bear
 
-# if you read this know that Kitch is a dummy
 actions.catweave=heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up&!buff.cat_form.up
 actions.catweave+=/cat_form,if=!buff.cat_form.up
 actions.catweave+=/rake,if=buff.prowl.up
 actions.catweave+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
-actions.catweave+=/empower_bond,if=druid.catweave_bear
 actions.catweave+=/rake,if=dot.rake.refreshable|energy<45
 actions.catweave+=/rip,if=dot.rip.refreshable&combo_points>=1
 actions.catweave+=/convoke_the_spirits
 actions.catweave+=/ferocious_bite,if=combo_points>=4&energy>50
 actions.catweave+=/shred,if=combo_points<=5
-actions.catweave+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
-actions.catweave+=/fleshcraft,if=soulbind.pustule_eruption.enabled&energy<35|soulbind.volatile_solvent.enabled,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent&energy<35
-actions.catweave+=/swipe_cat
 
-actions.cconvoke=heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up&!buff.cat_form.up
+actions.cconvoke+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up&!buff.cat_form.up
 actions.cconvoke+=/cat_form,if=!buff.cat_form.up
 actions.cconvoke+=/convoke_the_spirits
 

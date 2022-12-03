@@ -2412,6 +2412,12 @@ do
     mt_default_pet = {
         __index = function( t, k )
             if k == "expires" then
+                local petGUID = UnitGUID( "pet" )
+                if petGUID and t.id == tonumber( petGUID:match( "%-(%d+)%-[0-9A-F]+$" ) ) then
+                    t[ k ] = state.query_time + 3600
+                    return t[ k ]
+                end
+
                 local present, name, start, duration
 
                 for i = 1, 5 do
@@ -2431,14 +2437,16 @@ do
                 return max( 0, t.expires - ( state.query_time ) )
 
             elseif k == "up" or k == "active" or k == "alive" or k == "exists" then
-                -- TODO:  Need to make pet.alive work here.
                 return ( t.expires >= ( state.query_time ) )
 
             elseif k == "down" then
                 return ( t.expires < ( state.query_time ) )
 
             elseif k == "id" then
-                return t.exists and UnitGUID( "pet" ) and tonumber( UnitGUID( "pet" ):match("(%d+)-%x-$" ) ) or nil
+                local id = t.model and t.model.id
+                if type( id ) == "function" then id = id() end
+
+                return id
 
             elseif k == "spec" then
                 return t.exists and GetSpecialization( false, true )
@@ -2536,11 +2544,11 @@ do
 
             if model then
                 t[ k ] = {
-                    id = model.id,
                     name = k,
                     duration = model.duration,
                     expires = nil,
                     spec = model.spec,
+                    model = model
                 }
 
                 if model.spec then
@@ -6809,7 +6817,6 @@ do
 
         spell = ability.key
 
-        if self.empowerment.active and spell ~= self.empowerment.spell then return true, "empowerment:" .. self.empowerment.spell end
         if self.holds[ spell ] then return true, "on hold" end
 
         local profile = Hekili.DB.profile
@@ -6833,6 +6840,7 @@ do
             if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, "toggle" end
 
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
+                if self.empowerment.active and spell ~= self.empowerment.spell then return true, "empowerment:" .. self.empowerment.spell end
                 if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
                 elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false
                 end
