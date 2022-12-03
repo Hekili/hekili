@@ -2485,6 +2485,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "stealth" )
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
+            if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.take_em_by_surprise.enabled then applyBuff( "take_em_by_surprise" ) end
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
@@ -2606,8 +2607,8 @@ spec:RegisterAbilities( {
 
             elseif buff.nonlethal_poison.down or talent.dragontempered_blades.enabled and buff.nonlethal_poison.stack < 2 then
                 if talent.atrophic_poison.enabled and buff.atrophic_poison.down then return "atrophic_poison"
-                elseif action.crippling_poison.known and buff.crippling_poison.down then return "crippling_poison"
-                elseif action.numbing_poison.known and buff.numbing_poison.down then return "numbing_poison" end
+                elseif action.numbing_poison.known and buff.numbing_poison.down then return "numbing_poison"
+                elseif action.crippling_poison.known and buff.crippling_poison.down then return "crippling_poison" end
 
             end
 
