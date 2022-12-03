@@ -239,10 +239,11 @@ local StackPool = {}
 function Hekili:AddToStack( script, list, parent, run )
     local entry = tremove( StackPool ) or {}
 
-    entry.script = script
-    entry.list   = list
-    entry.parent = parent
-    entry.run    = run
+    entry.script   = script
+    entry.list     = list
+    entry.parent   = parent
+    entry.run      = run
+    entry.priorMin = nil
 
     tinsert( Stack, entry )
 
