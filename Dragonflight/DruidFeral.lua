@@ -1366,7 +1366,7 @@ spec:RegisterAbilities( {
         form = "cat_form",
 
         damage = function ()
-            return calculate_damage( 0.69, false, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 )
+            return calculate_damage( 0.9837, false, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 )
         end,
 
         max_targets = 5,
@@ -1488,13 +1488,13 @@ spec:RegisterAbilities( {
         school = "physical",
 
         damage = function ()
-            return calculate_damage( 0.075 * 5, true, true )
+            return calculate_damage( 0.099 * 5, true, true )
         end,
         tick_damage = function ()
-            return calculate_damage( 0.15 * 5, true )
+            return calculate_damage( 0.198 * 5, true )
         end,
         tick_dmg = function ()
-            return calculate_damage( 0.15 * 5, true )
+            return calculate_damage( 0.198 * 5, true )
         end,
 
         spend = function ()
@@ -1540,7 +1540,7 @@ spec:RegisterAbilities( {
 
         -- Use maximum damage.
         damage = function () -- TODO: Taste For Blood soulbind conduit
-            return calculate_damage( 0.9828 * 2 , true, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1) * ( talent.sabertooth.enabled and 1.15 or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 ) * ( talent.lions_strength.enabled and 1.15 or 1 ) *
+            return calculate_damage( 1.05 * 2 , true, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1 ) * ( talent.sabertooth.enabled and 1.15 or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 ) * ( talent.lions_strength.enabled and 1.15 or 1 ) *
                 ( 1 + 0.3 * talent.taste_for_blood.rank * ( ( debuff.rip.up and 1 or 0 ) + ( debuff.tear.up and 1 or 0 ) + ( debuff.thrash_cat.up and 1 or 0 ) + ( debuff.sickle_of_the_lion.up and 1 or 0 ) ) )
         end,
 
@@ -1652,18 +1652,16 @@ spec:RegisterAbilities( {
     },
 
     -- Talent: An improved Cat Form that grants all of your known Berserk effects and lasts $d. You may shapeshift in and out of this improved Cat Form for its duration. During Incarnation:    Energy cost of all Cat Form abilities is reduced by $s3%, and Prowl can be used once while in combat.$?s343223[    Finishing moves have a $s1% chance per combo point spent to refund $343216s1 combo $lpoint:points;.    Rake and Shred deal damage as though you were stealthed.][]
-    incarnation_avatar_of_ashamane = {
+    incarnation = {
         id = 102543,
         cast = 0,
         cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
         gcd = "off",
         school = "physical",
 
-        talent = "incarnation_avatar_of_ashamane",
+        talent = "incarnation",
         startsCombat = false,
-
         toggle = "cooldowns",
-
         nobuff = "incarnation", -- VoP
 
         handler = function ()
@@ -1673,7 +1671,7 @@ spec:RegisterAbilities( {
             energy.max = energy.max + 50
         end,
 
-        copy = { "incarnation", "Incarnation" }
+        copy = { "incarnation_avatar_of_ashamane", "Incarnation" }
     },
 
     -- Talent: Increases armor by ${$s1*$AGI/100} for $d.$?a231070[ Multiple uses of this ability may overlap.][]
@@ -1781,13 +1779,13 @@ spec:RegisterAbilities( {
         form = "cat_form",
 
         damage = function ()
-            return calculate_damage( 0.15 )
+            return calculate_damage( 0.12 )
         end,
         tick_damage = function ()
-            return calculate_damage( 0.15 )
+            return calculate_damage( 0.12 )
         end,
         tick_dmg = function ()
-            return calculate_damage( 0.15 )
+            return calculate_damage( 0.12 )
         end,
 
         cycle = "lunar_inspiration",
@@ -1961,13 +1959,13 @@ spec:RegisterAbilities( {
         min_ttd = 6,
 
         damage = function ()
-            return calculate_damage( 0.18225, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.infected_wounds.enabled and 1.3 or 1 )
+            return calculate_damage( 0.16, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.infected_wounds.enabled and 1.3 or 1 )
         end,
         tick_damage = function ()
-            return calculate_damage( 0.15561, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.infected_wounds.enabled and 1.3 or 1 )
+            return calculate_damage( 0.2311, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.infected_wounds.enabled and 1.3 or 1 )
         end,
         tick_dmg = function ()
-            return calculate_damage( 0.15561, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.infected_wounds.enabled and 1.3 or 1 )
+            return calculate_damage( 0.2311, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.infected_wounds.enabled and 1.3 or 1 )
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -2108,10 +2106,10 @@ spec:RegisterAbilities( {
         min_ttd = 9.6,
 
         tick_damage = function ()
-            return ( talent.dreadful_bleeding.enabled and 1.2 or 1 ) * calculate_damage( 0.14, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 ) * ( talent.lions_strength.enabled and 1.15 or 1 )
+            return ( talent.dreadful_bleeding.enabled and 1.2 or 1 ) * calculate_damage( 0.0915, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 ) * ( talent.lions_strength.enabled and 1.15 or 1 )
         end,
         tick_dmg = function ()
-            return ( talent.dreadful_bleeding.enabled and 1.2 or 1 ) * calculate_damage( 0.14, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 ) * ( talent.lions_strength.enabled and 1.15 or 1 )
+            return ( talent.dreadful_bleeding.enabled and 1.2 or 1 ) * calculate_damage( 0.0915, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 ) * ( talent.lions_strength.enabled and 1.15 or 1 )
         end,
 
         form = "cat_form",
@@ -2162,7 +2160,7 @@ spec:RegisterAbilities( {
         form = "cat_form",
 
         damage = function ()
-            return calculate_damage( 0.46, false, true, ( effective_stealth and 2 or 1 ) ) * ( talent.pouncing_strikes.enabled and effective_stealth and class.auras.prowl.multiplier or 1 ) * ( bleeding and 1.2 or 1 ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.merciless_claws.enabled and 1.2 or 1 )
+            return calculate_damage( 0.6837, false, true, ( talent.pouncing_strikes.enabled and effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.merciless_claws.enabled and bleeding and 1.2 or 1 ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) )
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -2314,7 +2312,7 @@ spec:RegisterAbilities( {
         form = "cat_form",
 
         damage = function ()
-            return calculate_damage( 0.35, false, true ) * ( bleeding and 1.2 or 1 ) * ( talent.moment_of_clarity.enabled and buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.wild_slashes.enabled and 1.2 or 1 ) * ( talent.merciless_claws.enabled and ( debuff.rip.up or debuff.rake.up or debuff.thrash_cat.up ) and 1.1 or 1 )
+            return calculate_damage( 0.3824, false, true ) * ( talent.merciless_claws.enabled and bleeding and 1.1 or 1 ) * ( talent.moment_of_clarity.enabled and buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.wild_slashes.enabled and 1.2 or 1 ) * ( talent.merciless_claws.enabled and ( debuff.rip.up or debuff.rake.up or debuff.thrash_cat.up ) and 1.1 or 1 )
         end,
 
         max_targets = 5,
@@ -2377,13 +2375,13 @@ spec:RegisterAbilities( {
         cycle = "thrash_cat",
 
         damage = function ()
-            return calculate_damage( 0.055, true ) * ( talent.moment_of_clarity.enabled and buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.wild_slashes.enabled and 1.2 or 1 )
+            return calculate_damage( 0.098, true ) * ( talent.moment_of_clarity.enabled and buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.wild_slashes.enabled and 1.2 or 1 )
         end,
         tick_damage = function ()
-            return calculate_damage( 0.035, true ) * ( talent.moment_of_clarity.enabled and buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.wild_slashes.enabled and 1.2 or 1 )
+            return calculate_damage( 0.0624, true ) * ( talent.moment_of_clarity.enabled and buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.wild_slashes.enabled and 1.2 or 1 )
         end,
         tick_dmg = function ()
-            return calculate_damage( 0.035, true ) * ( talent.moment_of_clarity.enabled and buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.wild_slashes.enabled and 1.2 or 1 )
+            return calculate_damage( 0.0624, true ) * ( talent.moment_of_clarity.enabled and buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.wild_slashes.enabled and 1.2 or 1 )
         end,
 
         form = "cat_form",
@@ -2500,4 +2498,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Feral", 20221202.1, [[Hekili:1Qv6Unoos4NLGbqWohAT8rMzwyBGT3EhGPXIEag3)2Y0s02crxqhjDwy4N9TksDqsrkz3h)jPBrYI15xDeU1z7x2UXNuq3(5PtMo1b(HTZZZwm5x3UP49u62nPeVxihH)rmjc(5FqZiH4xFpmH4JNopPmZdwz7M9LbHf)z8296i58P)22nKYItjzB3Sji6FVDZPaFFkF70CpKcHb5f5ir3hMK4xqctIX)7NzSjnMSpK6V9daD8kcsI3UjJ8cCZEzbf0SaY2nJUSlJEiJMFc36LDNpFzNJ98l7U)YUuAwoqEACHBuzyrqAyan7YU1x25NuyJuYovCHXx2zDz3(YdhS3x4Yw3p5n4s9E3lK6wqYosbMf4TcqsvyWwwsIFeiyuss8HGSAIwlrHLXKm3G480Gmc7ta1NzK61uBFwjOTCZdj5NuOO4siXMBqxwCkd2HRhP4AyF(U7rJSyqEo)ug1xHzzFdp(ZdF83csv1ESVXebGe)63pj(TbjHKEqJQeiYVpirACUyQyVKO9jUPjbXf5m)Z5ko8iv3Ciioi)entx4r7nKNsddRTm2PzbrGRWBGN1jgLN2szX105rRDF94OmWn7O3Rr1tVrUds77Y4eXUiiciyIRFa851RaMGwueeFm3goVRFzveL2BwnSqcubzJxPUmGIGuMamHJUO7MxA4IRXuacExDKuoeR7zxMYPM63Sy7ecFbulBaOn0n5a4YrDpKaYFHDf)ceUvvDGML4fKuM7UhKGTBIiF1LgtZo((GrM)mKunI03L8WC(bZhjZJKJ3C)bacEkMIpnJDl7d3GmOg6ibzygRwMAIWYmcUqu3eLeHjQaTJxibOW71QMbW1LXrf4dMAdtq7peKbZGjQGTZOazfIflJD5)BxmFnpRTlV8ajdtpOiQjU7K1U2ZjVeRrWLeTVeGzRCGU1u5wcl06IcB)zMN21aenGhL202MHuUcVYfIMtjBTKvTNeL95960xoZ(DIsEl8nk5vdrEnNTKvDd6CeduhiZ87p65ZjHp9abmpnNVn3cqCf5BQeh9sjis77QfMjTRKeatrzhZh6IKu4fbhbFm3dLzVF16BM)kJYY45GDgYThrd9HV3jvEpLPuNKaSniazK0XR)OUYusG9b4YTB(vadH7S9kjSe(vfmJqz2TyVnv5jSiV(gGmvX5XuQV7ETL30YGGPYiorssiJMabCMyGceFsklBu(BeqqLtuXtIIH1YBZ1Neb9Ra5P8Eb8r52bZBlJgrGWwwQSPcPTmFI8cOJi2(NXjUE24eLewVxmGRM23XZXMeR9abXUhcdoEQO)9wXkx3Uf32yZLlXYaHYtvjaqndrbuEfOtRVGRqFdBKxUbxhTO3Bup4RJ5StYfhVukp8bS3uxazn()9oJmFJz2ftelw4ABo48ISap8gUUSIKewKUZa9XrsPF1nfWCjfja4JxgdLvkQVtXqF2XCwgzD1kM6wdN3BGAtBg4zmx5ynaJDfWqT)IC1Fx5Dk28pETMHC74nSqa(Q9wVvHEpG9tZEXTQEjoxygNUlx8nCLvLMXRtt9(VHrGivAXTnQIVLcgm7sxbJG9iNfCetNY8bNkngHFaZTOBPx3I2yXWf8GrV9yaKBigNKf0jeFP)vY)zG4XETh9dk0QhZjGdtbw0JIkSlAHzZL2iyD2qSV6Re3tjq(BEYt9y6eiNSQheGItb51PEWXQugd)6d)9gqUcZtGVKb9uGz4OVsZEh2nM(I(vpAkSVdqLMijqwJMB2TufCsjUuLV7RNNkTDDRkmOeobQYfRiJFHjFrucw)sXjmsLuZ4CcmAH9IhG1GCZ5qQFC7aWus8rSRi0fQaudotcWwqRzsnLK2xO21kGwkYYLDpjjXDODDx2sI8FWeU)lki7POaVbbJQKLayjsgyMHIyN9KOqbfUqtPX(mlms6tqlQ0MsN7ISjxZVPsCRWlK4W)8WLDVrXB4v4NFid92qgkoPYbBpTOav)OQh7u(r4xNOyzIbWr)cZH7YUp(rUecS(g(TiJScv5vn)uw5xmLv13BdNQwSTiBDrCkODnvMR2CwvsP(ApdY3sYIzwpxYReq5JtWaUjGnIvBiBGIHe6aRgSRtE2QcW3NKNZ2WbSixxXs6xiK(nj(1KxOSXnHozbfTGskYi2BRMMdVjMvSgedJ2f4V5cO4st6O5i6NOXs8VRXZsfBJdkEc)izLb(8dXI8Dpc6dauhSkvHKSDBmD)9SS0p1wjSPA3BJdQ7WvhIOIUsDKNMnE1UI1hPzTbo3mbwlnH97cLrBuMtDbUkkVJ)pKQfTsKcD5812SVCo3icu4w1unFlGRrKcs0n7bPXx00zVcRbm3R4GVG908xwB7gOhSyC(RaYtuAswb2bVZKAWGl7y)j1SV8j2fFiODGt4q5Re1hw9puz7hdoSsrgV8jDhKTU(LQfKlFQz9oha(q7qDK(kBio9EqHOoXpJo(kSFz65ZDNfJ4HQ5v8G3Po1fXnwxN0JyjoRQkw6r2yvwzEQkwANOImdi3DaN(1HaI7uU)7hLYaVYbfGrJUBWg1pFEWHISC6yRrdmiKLZoFw3L1o(J1oJTURk1uVJ8W0Uuh2HH91UHXwDHSwV48z8yTd2y9uRH1swC01LZwOLMIMfXPpGgbrS(LtLCqLlzMBPHUmEK30i3gAaDg46EMmHc)iu8FtaH5(jg0zSEwas8POyUAXWerigapUABhw3PKKyycQ0SSrUB5cRBM2CA2djrSTF5YoOtp43)snSBUnyorili8fsnXFIepcOjUX0Vc0PfVSAFc2YEuQv7(wTSw66suLOADkhYyvfrj0F4Au4(2veTfMQdxtSHcMw)hBtEQmJ0FIUBsOW9(L)6J)1)u9iSCtCM1feOiYxhnQPcpdfRXR87(ropuf57NucAaVqYBW(yNSk8F84Ngza34(j2tDE(Hz2ZMoEmt59tP7XoEvO82VLSbxUwpSuUprZkZoTmQQznOqFWPh90u75)ETk6hA3MQQMUCF)6jlj1YtckTouA9u1lRT6EuU(j1JANlf)ikfv5RfByDD1360SQzebHYifRKQhVSrsUzo2ZVx7F54166XASv3xNJHRVRLuXYvtjP38LjQjI60GTRBuPMiWvJH2WxcpIjteTXwwFM2xVLXJu7ZjDSMNC1p4Jji1cN7kKmP2fen3wIzHxpxY9tPMJRdPR3Zlj2Mk(ZPxsO650n78QPwxJ7uxsx75EfEv9lLCCcH9WxZubiIVNKgJu3hNIw6nSb585rAg9cuW01dty15HLS(5X6yhjnyBEk5sAekXO9Kdx7u7EfIcmChDpJCzoDx)M9mBpPQ1w0Y1jMvlBQCIRIxMA84QriMFswRxu3NLXNILzMSJyx1fpYb8ycTRjm(uTRRzcMnXeYtGuc6cBrhNwML0KYwUOp(dRcq3YTZpX0nRo3tzwzULHzDAPl4APJ9ZvDGVE(eRHNR5AJv1900(BGxui5ZmSnNqD)IAvJggsP29ot)91mmsrFM6MTFOB3HMFATIU(MiWa1e0dXD0s8SG0HOPgn)k9VBujiqrjyqmqHnR0FC7dGTQQWQ8IvVX11toFUldUul)n2A0DD8jK()w3vm0RBD81W0F38PcBDnCvlF1(g)WyE(t57XQxY3k(d5dFTaE4FxPzSrtV9))d]] )
+spec:RegisterPack( "Feral", 20221203, [[Hekili:1Q1EVnooo8plflGrsF4Rop6E7IKaC7n3cSdomlWM5VJJsIsJr9l4hTtpeKp7hPKLTKSKTt3z(N2zSOOiPi)XhvB8281nRpqkOB(YKhNmXBYJtDHF80uVnRlEpLUzDkz)lKNH)rmjc(5VtZiH4xFpmHCa3DEsz2EyLnR3vgew8hXB2zMLBwtkloLKTz96GO)9M1NcoCGYPMMVhzqyqEroYZDHjjhkiHjX4)9lmPKgt2fspS53a(SViijEZ6mYlWbVplOGMfq2SE0LTz0Jz08tiPx2E(8LTEUZUS92lBtPz5a7PXf(rLHfbPHb0SlBxDz7HKcxKtUPYlm(YwNlB3vE8O7UcF26hsEdo09VVpK6xqYEMccliBfGIQjGnIKI8iXWOKK4JbzcMk0OWYysMFqCEAqgH9jG7tTYDb32Lvcwl)8qs(jnokVeYSzwSLfNYak83tkgI4ZPUdlYCRYCEknmuqTB(BbPu8uzxfEkhcBnn1PME8qEQxdt(Pm6bDwGFd3(p3)27tc(N9YcflLbJnWKFPxMu7(XSp7tI2L4NMeexKZmBZ0cjqUU(yqCq(jAMPaiB3gPzbrGZYBGV3jgNN0Wz51m5ZBKUoCL65K9m7xPhluR3bPDDyCM4weebmmX)qa85vlbHGwuee)CUlSF)dLvXCgpz9ahfyhumEL6ZGscszkWJC8htN8clhSa1by4nIWGCanyVBzkNB6FZHrjeGd4AUasCOFYrWLJ6Fmb0)c3k5fyCJP6inlzFqszU)oqd2SoI8nFAmn7537n29hHMAqL(BPpmNF46JKTNKJNC3basEk2IpTJU3jwMfid7O5QCtg4MXW5Y2MOKimvgyD2hsao8UW00dYVkiOKCWmByg8d9bzWUWKnWUzuGTsXILX(8)TpMrNNx3Nx)GYfthOi6P2BLxx45KxIvr4tI2vcWSvoqxBYEhPfACrbYFI5PneGOE8OmMy3oKYa8kNlFDQCxRCR2rsYpI37p3VtuYBHVrjVAjYREVLS6FqNJyG7aBMD7Z7pWzXb6rcC9uV)MClaZ10Vjks0lLGkTRTvyQcvjjaMIgfZ67Gum4fbpd(y(hlZEFW2BM)kJZQ45W9mKBpIgEa(ERu5DuMIijbC3GaKrkBx8rtLPKa0b4Yne)kGHWD2ELewc)QcMrQq8gS36s0KwKxFdWMQ48yk9G)oJL30iGWvLvCIKKqgpbg49OfoqoqszzJYFJakQAIkEsumSwLm)dKiOHgip1(xaFu(9GDYYOreiSLLkBIuAl77iVaAzIr)uoZnlgNOKqbT8sFhlYNZ1pJBii2)yyWZNk6M2krzyult2y7LlXYaH6tvjaqndrbuEfOtehWaS3aH8Yn42O5DEIMbF9SNDsT44fkLWEeBE1hqwJ)FVZyZhmZUCIy5cxBYbNxKfShpHHLvKKWI096Ptpsk9B(PaMlPibaF2NXqzvI6Bvm0x8SNLr1wTKzUni5DgOw3MbUh7vokayCRage(lQv)nWZuE8a4XAhYTL3WCj4RMt9Av6Da2pn7f)Q6L4sHDC62sXh4iRknJxNM(5FfdjrP0IRBygFKcgS7sxbJG9iNf8mMoL5dorzgaFhMSr7sVUgRX8(l4bJE74cqTHyCwxqNq8L(xj)NEIh78(OBqHg7yobCykWIE0mHTrlSFDzmc20Di2x9aX90cK)WZMQJRoj2PA6bfO4uqUi1dowLYy4x)2FTg0RW8e4lzqpfygo6R0S3bQX0x0VTNMc0DeQ0ezbkA0C7UL6GtAXL6YDx98uzTfTQWGs4mOkxSMo(vM(frjy9lfNWivIqW5my0C353bRb5MZHu)i5aWus8ZyxrOlubyg8EmaBbviKgkjTRqTHQGoA6YLTpOOXT4TyavkQ8VZuU)lQi7OOcVgbJQ0LayjsgCndfXo9bzLckCHMsJpWUHrwFcArLwx6CBKn1A(TvIBfEHIe(hhVS9nkEcVc)83YqVnuGItQCW2rlkqZpA6XoLVh(1jkwMyaS1VYC4US9tFIRHGOVMFkQiRqvEvd)Kv(fZyv99MWPQfBkY2ueNgAxDL56nNvLuQR2ZG8TKSy2TNp5vcy8XjyaNeigX6nK1tXqsDGja7ALNTQa8Dj55mcoIf56lxs)CP0VjXVM8cLnUj0jlOObusthXEBn0C4vjSY1Gyz0UG8ntcfxzsh1BX8enwG)LpEsPyBCqXpY3swzWb(Myr((pd2dauhUvQcjzuBnD)TSS0piYvBV29M4arhUMqe1Sv6J80(LNWvuSL616zFtLeT0e2Vl0gTrzo1hKQO8w()qQw8wIuykNVXM9vZ5grGc3QMQ5BbClIsqIPzpOm(I6o71enq4Efh8fqJ4p92exaWf6clgNalG9eLMKvG9W79Oao4Yw2F2n3lFMvG3Eekyktkog0m9jCc9v69Dl)h66W9bhxQPWx(SPnYw38scT6YNRxV1gGp0mHhLVYMOtNBukeu(ZyuGM4xME(C7bZiVjHSIB8g9rWitOOOP7X6Dwwv509SzSS0(iwCmoEfvbqTvbo)fXdYuQ2m(9kPJx6HkWOr30Bx7Np37eswmzSZOEMkYIPNpB6WAMfYkVXo3uLNQZ5FyJk9jFyHUgcg70g)A18ZNXT1mLJvtC63k5WHAxmDUrEkFTipkc8sqg4FXefhu16N530qlh3Z7GKFhAbQELNthJPqtEK6eOoGWEZf96mkgmGICkRMlN3ptKIbWTR3dIZnAzm6NHADoBv6wm35Q5nNNDWseB7NUSfA7d(9pjqGZDHRteYccFH8u8huX9aAIFm9BaFAWlROt6USdJAf1x7nRJPwg1zQrNY(USQIOKAwCfQCFCdrtvQMW1K7UGz1)(2XNUWO83R7QukK2V(NF6p)v9TWYnXfwFqHIiF7xRR2ZsHB8Qa5W6dJ2Bh5DxfiXHKsWyTpK8gqhBNvifJhVAKfiMBF0DI3t3n1D6KXJz25FiDD2YbennDFPxdHlSdlu7V0UDVvRMQxcJgzXGEN34hSANM4o7xeMOVRDPQBAAl9DBNCumlpiz0AXPvt0pSMUcq96huVTTou8JOwuLAxUr3vvFRvtU2bpKQ4uUORo8YgP4M55o7wJ)fNxzQ3SXoTFvpwo(23KA3CcoP8AYSXnzaQ60aMgXQngmy42A5s6XpzJP1oqDxgJGJnVilRmu4CuVL63a2GKHHFss2dP9naDwPNdzhbh5u5RMP4yQv4YWWa7C)dZ03jl09PANIF5eNH4O1M1cF6b4V1TwYrqKOHVMTQyKFHk1xsTFUlg5x)xiNppYWWCGQUgoaItRNQYQNgBsCuSGnzWuRlsQoLMD2Fbyn0kffy5mAVh1ALAV(v7z2St9BB5BUwXSgftTDCTYI221JqS)iVwnx0SM1h3LDHSLAxnkauc4XegxtAGSgx3WmrRJjuNPPc0f2Npo)nhLzVTyExYhwFGPLBgcJTtwFsQQIYmhltp1XuW1cp3NQAJF1ShD6FsPRSwV3dt6EkaYkjFkKn5eenDA0mAzSNgPDQ5ZRE8MY(mIo2VRDlM2FSUYLeAJb9uTqhm3ZiZZcs7JNgS8ln)suvGaL1GEXaLiwRj7MNuBv9Iv5fRE1SRE8852c4cJY3yNr30YNq5)7CtrFVx2XdrO)BlNAI1qKQg5Q5vdIX88hh49vVnWLnpnWn))p]] )
