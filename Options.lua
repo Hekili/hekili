@@ -9432,7 +9432,7 @@ function Hekili:SetOption( info, input, ... )
 
         elseif option == 'omniCC' then
             profile.omniCC = input
-            ReloadUI()
+            C_UI.Reload()
         end
 
         -- General options do not need add'l handling.
