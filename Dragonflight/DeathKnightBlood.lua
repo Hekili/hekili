@@ -928,15 +928,15 @@ spec:RegisterHook( "reset_precast", function ()
 end )
 
 spec:RegisterStateExpr( "save_blood_shield", function ()
-    return settings.save_blood_shield
+    return ( settings.save_blood_shield or false )
 end )
 
 spec:RegisterStateExpr( "ibf_damage", function ()
-    return health.max * settings.ibf_damage * 0.01
+    return health.max * ( settings.ibf_damage or 0 ) * 0.01
 end )
 
 spec:RegisterStateExpr( "vb_damage", function ()
-    return health.max * settings.vb_damage * 0.01
+    return health.max * ( settings.vb_damage or 0 ) * 0.01
 end )
 
 
