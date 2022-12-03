@@ -7,7 +7,7 @@ actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=normal
 
 # Fiery Brand Rotation
-actions.brand=fiery_brand
+actions.brand=fiery_brand,if=!dot.fiery_brand.ticking
 actions.brand+=/immolation_aura,if=dot.fiery_brand.ticking
 
 actions.cooldowns=potion
@@ -19,7 +19,7 @@ actions.cooldowns+=/elysian_decree,if=!talent.frailty|debuff.frailty.up
 # Defensives
 actions.defensives=demon_spikes,if=tanking&(buff.demon_spikes.down|charges>1)
 actions.defensives+=/metamorphosis,if=!buff.metamorphosis.up|boss&fight_remains<15
-actions.defensives+=/fiery_brand
+actions.defensives+=/fiery_brand,if=!dot.fiery_brand.ticking
 
 # Normal Rotation
 actions.normal=infernal_strike,if=time_to_max_charges<gcd.max
