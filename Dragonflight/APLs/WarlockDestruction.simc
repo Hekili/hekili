@@ -12,7 +12,7 @@ actions.precombat+=/incinerate
 actions=spell_lock
 actions+=/call_action_list,name=items
 actions+=/call_action_list,name=ogcd
-actions=call_action_list,name=cleave,strict=1,if=active_enemies>1&active_enemies<=2+(!talent.inferno&talent.madness_of_the_azjaqir&talent.ashen_remains)
+actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>1&active_enemies<=2+(!talent.inferno&talent.madness_of_the_azjaqir&talent.ashen_remains)
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=3
 actions+=/conflagrate,if=(talent.roaring_blaze&debuff.conflagrate.remains<1.5)|charges=max_charges
 actions+=/dimensional_rift,if=soul_shard<4.7&(charges>2|boss&fight_remains<cooldown.dimensional_rift.duration)

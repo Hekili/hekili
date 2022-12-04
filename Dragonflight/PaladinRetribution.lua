@@ -1557,6 +1557,7 @@ spec:RegisterAbilities( {
     radiant_decree = {
         id = 383469,
         known = 255937,
+        flash = { 383469, 255937 },
         cast = 0,
         cooldown = 15,
         gcd = "spell",
@@ -1763,13 +1764,14 @@ spec:RegisterAbilities( {
 
     -- Talent: Lash out at your enemies, dealing $s1 Radiant damage to all enemies within $a1 yd in front of you and reducing their movement speed by $s2% for $d. Damage reduced on secondary targets.    Demon and Undead enemies are also stunned for $255941d.    |cFFFFFFFFGenerates $s3 Holy Power.
     wake_of_ashes = {
-        id = function() return talent.radiant_decree.enabled and 384052 or 255937 end,
+        id = 255937,
+        flash = { 383469, 255937 },
         cast = 0,
-        cooldown = function() return talent.radiant_decree.enabled and 15 or 45 end,
+        cooldown = 15,
         gcd = "spell",
         school = "holyfire",
 
-        spend = function() return talent.radiant_decree.enabled and 3 or ( -3 + ( buff.holy_avenger.up and -6 or 0 ) ) end,
+        spend = function() return -3 + ( buff.holy_avenger.up and -6 or 0 ) end,
         spendType = "holy_power",
 
         talent = "wake_of_ashes",
@@ -1786,8 +1788,6 @@ spec:RegisterAbilities( {
             if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if conduit.truths_wake.enabled then applyDebuff( "target", "truths_wake" ) end
         end,
-
-        copy = { 384052, 255937 }
     },
 
     -- Calls down the Light to heal a friendly target for $130551s1$?a378405[ and an additional $378412s1 over $378412d][].$?a379043[ Your block chance is increased by$379043s1% for $379041d.][]$?a315921&!a315924[    |cFFFFFFFFProtection:|r If cast on yourself, healing increased by up to $315921s1% based on your missing health.][]$?a315924[    |cFFFFFFFFProtection:|r Healing increased by up to $315921s1% based on the target's missing health.][]

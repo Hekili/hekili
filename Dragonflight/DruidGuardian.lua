@@ -1290,7 +1290,7 @@ spec:RegisterAbilities( {
     },
 
 
-    incarnation_guardian_of_ursoc = {
+    incarnation = {
         id = 102558,
         cast = 0,
         cooldown = function () return legendary.legacy_of_the_sleeper.enabled and 150 or 180 end,
@@ -1305,7 +1305,7 @@ spec:RegisterAbilities( {
             applyBuff( "incarnation" )
         end,
 
-        copy = { "incarnation", "Incarnation" }
+        copy = { "incarnation_guardian_of_ursoc", "Incarnation" }
     },
 
     -- Talent: Infuse a friendly healer with energy, allowing them to cast spells without spending mana for $d.$?s326228[    If cast on somebody else, you gain the effect at $326228s1% effectiveness.][]

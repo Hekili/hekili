@@ -546,7 +546,7 @@ do
 
                         -- Check for Toggles.
                         for n, setting in pairs( spec.settings ) do
-                            if not setting.info.arg or setting.info.arg() then
+                            if setting.info and ( not setting.info.arg or setting.info.arg() ) then
                                 if setting.info.type == "toggle" then
                                     insert( menuData, {
                                         text = setting.info.name,
