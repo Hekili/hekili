@@ -249,8 +249,8 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     demon_soul = {
-        id = 208195,
-        duration = 20,
+        id = 347765,
+        duration = 15,
         max_stack = 1,
     },
     elysian_decree = { -- TODO: This aura determines sigil pop time.
@@ -910,8 +910,7 @@ spec:RegisterAbilities( {
     blade_dance = {
         id = 188499,
         cast = 0,
-        cooldown = 15,
-        hasteCD = true,
+        cooldown = function() return ( level > 21 and 10 or 15 ) * haste end,
         gcd = "spell",
         school = "physical",
 
@@ -926,7 +925,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "restless_hunter" )
             applyBuff( "blade_dance" )
-            setCooldown( "death_sweep", 15 * haste )
+            setCooldown( "death_sweep", action.blade_dance.cooldown )
             if talent.chaos_theory.enabled then applyBuff( "chaos_theory" ) end
             if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then applyDebuff( "target", "mortal_dance" ) end
             if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
@@ -1049,8 +1048,7 @@ spec:RegisterAbilities( {
         id = 210152,
         known = 188499,
         cast = 0,
-        cooldown = 9,
-        hasteCD = true,
+        cooldown = function() return 9 * haste end,
         gcd = "spell",
 
         spend = 35,
@@ -1065,7 +1063,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "restless_hunter" )
             applyBuff( "death_sweep" )
-            setCooldown( "blade_dance", 9 * haste )
+            setCooldown( "blade_dance", action.death_sweep.cooldown )
 
             if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then
                 applyDebuff( "target", "mortal_dance" )
