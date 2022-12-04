@@ -927,6 +927,7 @@ spec:RegisterAbilities( {
             removeBuff( "restless_hunter" )
             applyBuff( "blade_dance" )
             setCooldown( "death_sweep", 15 * haste )
+            if level >= 22 then setCooldown( "blade_dance", 10 * haste ) end
             if talent.chaos_theory.enabled then applyBuff( "chaos_theory" ) end
             if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then applyDebuff( "target", "mortal_dance" ) end
             if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
