@@ -1124,10 +1124,6 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        talent = function()
-            if covenant.kyrian then return end
-            return "elysian_decree"
-        end,
         startsCombat = false,
 
         handler = function ()
