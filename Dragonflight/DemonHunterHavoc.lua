@@ -249,8 +249,8 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     demon_soul = {
-        id = 208195,
-        duration = 20,
+        id = 347765,
+        duration = 15,
         max_stack = 1,
     },
     elysian_decree = { -- TODO: This aura determines sigil pop time.
