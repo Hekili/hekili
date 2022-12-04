@@ -276,7 +276,7 @@ local calculate_multiplier = setfenv( function( spellID )
         end
     end
 
-    if FindPlayerAuraByID( 392401 ) or FindPlayerAuraByID( 392403 ) and spellID == 703 then
+    if ( FindPlayerAuraByID( 392401 ) or FindPlayerAuraByID( 392403 ) ) and spellID == 703 then
         mult = mult * 1.5
     end
 
