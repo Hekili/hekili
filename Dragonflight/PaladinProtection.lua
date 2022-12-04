@@ -1512,7 +1512,7 @@ spec:RegisterSetting( "wog_health", 40, {
 } )
 
 spec:RegisterStateExpr( "wog_health", function ()
-    return settings.wog_health
+    return settings.wog_health or 0
 end )
 
 
@@ -1530,7 +1530,7 @@ spec:RegisterSetting( "goak_damage", 40, {
 } )
 
 spec:RegisterStateExpr( "goak_damage", function ()
-    return settings.goak_damage * health.max * 0.01
+    return ( settings.goak_damage or 0 ) * health.max * 0.01
 end )
 
 
@@ -1548,7 +1548,7 @@ spec:RegisterSetting( "ds_damage", 60, {
 } )
 
 spec:RegisterStateExpr( "ds_damage", function ()
-    return settings.ds_damage * health.max * 0.01
+    return ( settings.ds_damage or 0 ) * health.max * 0.01
 end )
 
 

@@ -13,7 +13,7 @@ actions+=/berserking,if=buff.recklessness.up
 actions+=/lights_judgment,if=buff.recklessness.down
 actions+=/fireblood
 actions+=/ancestral_call
-actions+=/bag_of_tricks,if=buff.recklessness.down&debuff.siegebreaker.down&buff.enrage.up
+actions+=/bag_of_tricks,if=buff.recklessness.down&buff.enrage.up
 actions+=/avatar,if=talent.titans_torment&buff.enrage.up&raid_event.adds.in>15|!talent.titans_torment&(buff.recklessness.up|boss&fight_remains<20)
 actions+=/recklessness,if=!raid_event.adds.exists&(talent.annihilator&cooldown.avatar.remains<1|cooldown.avatar.remains>40|!talent.avatar|boss&fight_remains<12)
 actions+=/recklessness,if=!raid_event.adds.exists&!talent.annihilator|boss&fight_remains<12

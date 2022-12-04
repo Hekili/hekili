@@ -30,6 +30,7 @@ Shadowlands\SoulbindConduits.lua
 Shadowlands\Trinkets.lua
 Shadowlands\Legendaries.lua
 
+Dragonflight\Items.lua
 Dragonflight\Classes.lua
 Dragonflight\DeathKnightBlood.lua
 Dragonflight\DeathKnightFrost.lua
