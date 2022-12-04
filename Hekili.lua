@@ -38,21 +38,11 @@ end
 ns.PTR = false
 
 
-ns.Patrons = "|cFFFFD100Current Dragonflight Status|r\n\n"
-    .. "|cFF00FF00Up to Date|r\n"
-    .. "- |c" .. RAID_CLASS_COLORS.DEATHKNIGHT.colorStr .. "Death Knights|r, |c" .. RAID_CLASS_COLORS.DEMONHUNTER.colorStr .. "Demon Hunters|r, |c"
-    .. RAID_CLASS_COLORS.DRUID.colorStr .. "Balance and Feral Druids|r, |c" .. RAID_CLASS_COLORS.HUNTER.colorStr .. "Hunters|r, |c" .. RAID_CLASS_COLORS.MONK.colorStr .. "Windwalker Monk|r, |c"
-    .. RAID_CLASS_COLORS.PALADIN.colorStr .. "Retribution Paladin|r, |c" .. RAID_CLASS_COLORS.PRIEST.colorStr .. "Shadow Priest|r, |c" .. RAID_CLASS_COLORS.ROGUE.colorStr .. "Rogues|r, |c"
-    .. RAID_CLASS_COLORS.SHAMAN.colorStr .. "Elemental and Enhancement Shamans|r, |c" .. RAID_CLASS_COLORS.WARRIOR.colorStr .. "Warriors|r\n\n"
-    .. "|cFFFFAE42Beta|r\n"
-    .. "- |c" .. RAID_CLASS_COLORS.DRUID.colorStr .. "Guardian Druid|r, |c" .. RAID_CLASS_COLORS.EVOKER.colorStr .. "Devastation Evoker|r, |c" .. RAID_CLASS_COLORS.MAGE.colorStr .. "Mages|r, |c"
-    .. RAID_CLASS_COLORS.MONK.colorStr .. "Brewmaster Monk|r, |c" .. RAID_CLASS_COLORS.PALADIN.colorStr .. "Protection Paladin|r, |c" .. RAID_CLASS_COLORS.WARLOCK.colorStr .. "Warlocks|r\n\n"
-    .. "|cFFBB3F3FNot Supported|r\n"
-    .. "- Healers\n\n"
-    .. "|cFF00FF00Up to Date|r means it is working and using priorities written for Dragonflight.\n"
-    .. "|cFFFFAE42Beta|r means it is playable, but may be using priorities from Shadowlands or needs additional work.\n"
-    .. "|cFFBB3F3FNot Supported|r means the specialization is not available in the addon, but may be supported at a later date.\n\n"
-    .. "Do not report issues for any classes that are |cFFBB3F3FNot Supported|r.  For |cFFFFAE42Beta|r or |cFF00FF00Up to Date|r classes, report issues using the links below.  I am working to update every class as quickly as possible.  Thanks!"
+ns.Patrons = "|cFFFFD100Current Status|r\n\n"
+    .. "All tank and DPS specializations are currently supported, though priorities are being regularly updated for Dragonflight.\n\n"
+    .. "DPS priorities for healer specializations may be supported at a later date.\n\n"
+    .. "If you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue troubleshooted.\n\n"
+    .. "Please do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"
 
 do
     local cpuProfileDB = {}
