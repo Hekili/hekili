@@ -2471,7 +2471,13 @@ do
 
     local petAutoReset = setmetatable( {
         real_pet = 1,
+        up = 1,
         exists = 1,
+        active = 1,
+        alive = 1,
+        dead = 1,
+        health_pct = 1,
+        health_percent = 1,
     }, {
         __index = function( t, k, v )
             if v == nil then return end
@@ -2488,36 +2494,24 @@ do
 
                 if petID then
                     petID = tonumber( petID:match( "%-(%d+)%-[0-9A-F]+$" ) )
+                    local model = class.pets[ petID ]
 
-                    for k, v in pairs( class.pets ) do
-                        local id = v.id and ( type( v.id ) == "function" and v.id() ) or v.id
+                    if model then
+                        key = model.token
+                        local spell = model.spell
+                        local ability = spell and class.abilities[ spell ]
+                        local lastCast = ability and ability.lastCast or 0
+                        local duration = model.duration and ( type( model.duration ) == "function" and model.duration() or model.duration ) or 3600
 
-                        if id == petID then
-                            local spell = v.spell
-                            local ability = spell and class.abilities[ spell ]
-                            local lastCast = ability and ability.lastCast or 0
-                            local duration = v.duration and ( type( v.duration ) == "function" and v.duration() or v.duration ) or 3600
-
-                            if lastCast > 0 and duration < 3600 then
-                                summonPet( k, lastCast + duration - state.now )
-                            else
-                                summonPet( k )
-                            end
-
-                            key = k
-                            break
+                        if lastCast > 0 and duration < 3600 then
+                            summonPet( key, lastCast + duration - state.now )
+                        else
+                            summonPet( key )
                         end
                     end
                 end
 
                 t.real_pet = key or "fake_pet"
-            end
-
-            -- Should probably add all totems, but holding off for now.
-            for _, pet in pairs( t ) do
-                if type( pet ) == "table" and pet.up and pet[ k ] ~= nil then
-                    return pet[ k ]
-                end
             end
 
             if k == "up" or k == "exists" or k == "active" then
