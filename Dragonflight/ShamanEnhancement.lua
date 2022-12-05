@@ -1471,10 +1471,10 @@ spec:RegisterAbilities( {
         school = "fire",
 
         startsCombat = false,
-
         nobuff = "flametongue_weapon",
-        usable = function () return swings.oh_speed > 0, "requires an offhand weapon" end,
+        essential = true,
 
+        usable = function () return off_hand.size > 0, "requires an offhand weapon" end,
         handler = function ()
             applyBuff( "flametongue_weapon" )
         end,
@@ -2301,9 +2301,9 @@ spec:RegisterAbilities( {
         talent = "windfury_weapon",
         startsCombat = false,
         essential = true,
-
         nobuff = "windfury_weapon",
 
+        usable = function() return main_hand.size > 0, "requires a mainhand weapon" end,
         handler = function ()
             applyBuff( "windfury_weapon" )
         end,
