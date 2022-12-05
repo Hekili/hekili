@@ -1371,9 +1371,6 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = 2,
-        spendType = "chi",
-
         talent = "rising_sun_kick",
         startsCombat = true,
 
@@ -1406,9 +1403,6 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
         school = "nature",
-
-        spend = 1,
-        spendType = "chi",
 
         talent = "rushing_jade_wind",
         startsCombat = false,

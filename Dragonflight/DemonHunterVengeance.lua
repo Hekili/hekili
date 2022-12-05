@@ -178,7 +178,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     demon_soul = {
-        id = 163073,
+        id = 347765,
         duration = 15,
         max_stack = 1,
     },

@@ -1305,6 +1305,7 @@ spec:RegisterAbilities( {
     -- Talent: Drains the target's soul, causing 5,810 Shadow damage over 3.8 sec. Damage is increased by 100% against enemies below 20% health. Generates 1 Soul Shard if the target dies during this effect.
     drain_soul = {
         id = 198590,
+        flash = { 686, 198590 },
         cast = function() return 5 * ( buff.nightfall.up and 0.5 or 1 ) * haste end,
         channeled = true,
         cooldown = 0,

@@ -580,7 +580,7 @@ spec:RegisterAuras( {
     shining_light = {
         id = 182104,
         duration = 15,
-        max_stack = 5,
+        max_stack = 3,
     },
     shining_light_free = {
         id = 327510,
@@ -1470,7 +1470,7 @@ spec:RegisterAbilities( {
         school = "holy",
 
         spend = function ()
-            if buff.divine_purpose.up or buff.shining_light.stack == 5 or buff.royal_decree.up or buff.bastion_of_light.up then return 0 end
+            if buff.divine_purpose.up or buff.shining_light_full.up or buff.royal_decree.up or buff.bastion_of_light.up then return 0 end
             return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",

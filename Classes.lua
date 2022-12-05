@@ -2251,7 +2251,8 @@ local gotn_classes = {
     HUNTER = 59543,
     PRIEST = 59544,
     MAGE = 59548,
-    PALADIN = 59542
+    PALADIN = 59542,
+    ROGUE = 370626
 }
 
 local baseClass = UnitClassBase( "player" ) or "WARRIOR"
@@ -2260,7 +2261,7 @@ all:RegisterAura( "gift_of_the_naaru", {
     id = gotn_classes[ baseClass ],
     duration = 5,
     max_stack = 1,
-    copy = { 28800, 121093, 59545, 59547, 59543, 59544, 59548, 59542 }
+    copy = { 28800, 121093, 59545, 59547, 59543, 59544, 59548, 59542, 370626 }
 } )
 
 all:RegisterAbility( "gift_of_the_naaru", {
@@ -2381,6 +2382,7 @@ local bf_classes = {
     SHAMAN = 33697,
     WARLOCK = 33702,
     WARRIOR = 20572,
+    PRIEST = 33702
 }
 
 all:RegisterAbilities( {

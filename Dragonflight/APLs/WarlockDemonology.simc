@@ -34,7 +34,7 @@ actions+=/shadow_bolt,if=soul_shard<5&talent.fel_covenant.enabled&buff.fel_coven
 # Pop one Doom at irrelevant # of demons before tyrant and replace the kazaaks value with a higher one right before the tick.
 actions+=/doom,if=refreshable&dot.doom.remains<2&talent.kazaaks_final_curse.enabled&pet.demonic_tyrant.active
 actions+=/doom,if=dot.doom.remains=0&talent.kazaaks_final_curse.enabled&(variable.next_tyrant_cd<3|(time>variable.first_tyrant_time-3&time<variable.first_tyrant_time))
-actions+=/guillotine,if=buff.demonic_power.up
+actions+=/guillotine,if=buff.demonic_power.up|!talent.summon_demonic_tyrant
 # If Dreadstalkers are already active, no need to save shards
 actions+=/hand_of_guldan,if=soul_shard>=3&(pet.dreadstalker.active|pet.demonic_tyrant.active)
 actions+=/hand_of_guldan,if=soul_shard>=3&buff.nether_portal.up&cooldown.call_dreadstalkers.remains>2*gcd.max
