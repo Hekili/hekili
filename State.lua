@@ -986,27 +986,10 @@ local function removeStack( aura, stacks )
         b.lastCount = b.count
         b.count = max( 1, b.count - stacks )
     else
-        removeBuff( aura )
+        state.removeBuff( aura )
     end
 end
 state.removeStack = removeStack
-
-
-local function removeDebuffStack( unit, aura, stacks )
-    stacks = stacks or 1
-
-    local d = state.debuff[ aura ]
-
-    if not d then return end
-
-    if d.count > stacks then
-        d.lastCount = d.count
-        d.count = max( 1, d.count - stacks )
-    else
-        removeDebuff( unit, aura )
-    end
-end
-state.removeDebuffStack = removeDebuffStack
 
 
 -- Add a debuff to the simulated game state.
@@ -1080,6 +1063,23 @@ local function removeDebuff( unit, aura )
     applyDebuff( unit, aura, 0 )
 end
 state.removeDebuff = removeDebuff
+
+
+local function removeDebuffStack( unit, aura, stacks )
+    stacks = stacks or 1
+
+    local d = state.debuff[ aura ]
+
+    if not d then return end
+
+    if d.count > stacks then
+        d.lastCount = d.count
+        d.count = max( 1, d.count - stacks )
+    else
+        removeDebuff( unit, aura )
+    end
+end
+state.removeDebuffStack = removeDebuffStack
 
 
 local function setStance( stance )
