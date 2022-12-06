@@ -1739,7 +1739,6 @@ spec:RegisterAbilities( {
 
         talent = "soul_strike",
         startsCombat = true,
-        nobuff = "fiendish_wrath",
 
         usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
         handler = function ()
