@@ -80,11 +80,13 @@ actions.generic+=/festering_strike,cycle_targets=1,if=!variable.pop_wounds
 actions.generic+=/death_coil
 
 # Opener
-actions.opener=festering_strike,cycle_targets=1,if=!variable.pop_wounds
-actions.opener+=/summon_gargoyle,use_off_gcd=1,if=buff.commander_of_the_dead_window.up
-actions.opener+=/death_coil,if=pet.gargoyle.active&runic_power.deficit=0
+actions.opener=summon_gargoyle,use_off_gcd=1,if=buff.commander_of_the_dead_window.up
+actions.opener+=/potion,if=pet.gargoyle.active|!talent.summon_gargoyle&pet.army_ghoul.active|!talent.summon_gargoyle&!talent.army_of_the_dead&buff.dark_transformation.up
+actions.opener+=/death_coil,if=pet.gargoyle.active&!prev_gcd.1.death_coil
 actions.opener+=/apocalypse,if=buff.commander_of_the_dead_window.up
 actions.opener+=/dark_transformation,if=debuff.festering_wound.stack>=4
+actions.opener+=/festering_strike,cycle_targets=1,if=!variable.pop_wounds
+
 ## Racials
 actions.racials=arcane_torrent,if=runic_power.deficit>20&(cooldown.summon_gargoyle.remains<gcd|!talent.summon_gargoyle.enabled|pet.gargoyle.active&rune<2&debuff.festering_wound.stack<1)
 actions.racials+=/blood_fury,if=(buff.blood_fury.duration>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(buff.dark_transformation.up&buff.blood_fury.duration>=buff.dark_transformation.remains|pet.army_ghoul.active&pet.army_ghoul.remains<=buff.blood_fury.duration|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=buff.blood_fury.duration|active_enemies>=2&death_and_decay.ticking)|fight_remains<=buff.blood_fury.duration
