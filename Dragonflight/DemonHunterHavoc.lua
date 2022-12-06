@@ -884,6 +884,7 @@ spec:RegisterAbilities( {
     annihilation = {
         id = 201427,
         known = 162794,
+        flash = { 201427, 162794 },
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -909,6 +910,7 @@ spec:RegisterAbilities( {
     -- Strike $?a206416[your primary target for $<firstbloodDmg> Chaos damage and ][]all nearby enemies for $<baseDmg> Physical damage$?s320398[, and increase your chance to dodge by $193311s1% for $193311d.][. Deals reduced damage beyond $199552s1 targets.]
     blade_dance = {
         id = 188499,
+        flash = { 188499, 210152 },
         cast = 0,
         cooldown = function() return ( level > 21 and 10 or 15 ) * haste end,
         gcd = "spell",
@@ -975,6 +977,7 @@ spec:RegisterAbilities( {
     -- Slice your target for ${$222031s1+$199547s1} Chaos damage. Chaos Strike has a ${$min($197125h,100)}% chance to refund $193840s1 Fury.
     chaos_strike = {
         id = 162794,
+        flash = { 162794, 201427 },
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1047,6 +1050,7 @@ spec:RegisterAbilities( {
     death_sweep = {
         id = 210152,
         known = 188499,
+        flash = { 210152, 188499 },
         cast = 0,
         cooldown = function() return 9 * haste end,
         gcd = "spell",
