@@ -2555,6 +2555,9 @@ do
                         name = NewFeature .. "Empowerment",
                         desc = "Empowerment stages are shown with additional text placed on the recommendation icon.",
                         order = 9.1,
+                        hidden = function()
+                            return class.file ~= "EVOKER"
+                        end,
                         args = {
                             enabled = {
                                 type = "toggle",
