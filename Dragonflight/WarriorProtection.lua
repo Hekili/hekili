@@ -1099,7 +1099,7 @@ spec:RegisterAbilities( {
         usable = function()
             if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled ) then return true end
 
-            local dmg_required = ( settings.last_stand_amount * 0.01 ) * health.max
+            local dmg_required = ( settings.last_stand_amount * 0.01 ) * health.max * ( solo and 0.5 or 1 )
             local hp_required = ( settings.last_stand_health * 0.01 )
 
             if settings.last_stand_condition then
@@ -1190,7 +1190,7 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         usable = function()
-            local dmg_required = ( settings.rallying_cry_amount * 0.01 ) * health.max
+            local dmg_required = ( settings.rallying_cry_amount * 0.01 ) * health.max * ( solo and 0.5 or 1 )
             local hp_required = ( settings.rallying_cry_health * 0.01 )
 
             if settings.rallying_cry_condition then
@@ -1422,7 +1422,7 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         usable = function()
-            local dmg_required = ( settings.shield_wall_amount * 0.01 ) * health.max
+            local dmg_required = ( settings.shield_wall_amount * 0.01 ) * health.max * ( solo and 0.5 or 1 )
             local hp_required = ( settings.shield_wall_health * 0.01 )
 
             if settings.shield_wall_condition then
@@ -1714,11 +1714,12 @@ spec:RegisterSetting( "reserve_rage", 35, { -- Ignore Pain cost is 35, Shield Bl
 
 spec:RegisterSetting( "shield_wall_amount", 50, {
     name = "|T132362:0|t Shield Wall Damage Required",
-    desc = "If set above 0, the addon will not recommend |T132362:0|t Shield Wall unless you have taken this much damage in the past 5 seconds, based on your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Shield Wall when you've taken 25,000 damage in the past 5 seconds.",
+    desc = "If set above 0, the addon will not recommend |T132362:0|t Shield Wall unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Shield Wall when you've taken 25,000 damage in the past 5 seconds.\n\n"
+        .. "This value is reduced by 50% when playing solo.",
     type = "range",
     min = 0,
-    max = 100,
+    max = 200,
     step = 1,
     width = "full",
 } )
@@ -1743,11 +1744,12 @@ spec:RegisterSetting( "shield_wall_condition", false, {
 
 spec:RegisterSetting( "rallying_cry_amount", 50, {
     name = "|T132351:0|t Rallying Cry Damage Required",
-    desc = "If set above 0, the addon will not recommend |T132351:0|t Rallying Cry unless you have taken this much damage in the past 5 seconds, based on your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Rallying Cry when you've taken 25,000 damage in the past 5 seconds.",
+    desc = "If set above 0, the addon will not recommend |T132351:0|t Rallying Cry unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Rallying Cry when you've taken 25,000 damage in the past 5 seconds.\n\n"
+        .. "This value is reduced by 50% when playing solo.",
     type = "range",
     min = 0,
-    max = 100,
+    max = 200,
     step = 1,
     width = "full",
 } )
@@ -1786,11 +1788,12 @@ spec:RegisterSetting( "last_stand_offensively", false, {
 
 spec:RegisterSetting( "last_stand_amount", 50, {
     name = "|T135871:0|t Last Stand Damage Required",
-    desc = "If set above 0, the addon will not recommend |T135871:0|t Last Stand unless you have taken this much damage in the past 5 seconds, based on your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Last Stand when you've taken 25,000 damage in the past 5 seconds.",
+    desc = "If set above 0, the addon will not recommend |T135871:0|t Last Stand unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Last Stand when you've taken 25,000 damage in the past 5 seconds.\n\n"
+        .. "This value is reduced by 50% when playing solo.",
     type = "range",
     min = 0,
-    max = 100,
+    max = 200,
     step = 1,
     width = "full",
     disabled = function() return state.settings.last_stand_offensively end,

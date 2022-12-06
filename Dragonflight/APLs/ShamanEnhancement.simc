@@ -9,6 +9,8 @@ actions.precombat+=/variable,name=trinket2_is_weird,value=trinket.2.is.the_first
 actions+=/potion,if=(talent.ascendance.enabled&raid_event.adds.in>=90&cooldown.ascendance.remains<10)|(talent.hot_hand.enabled&buff.molten_weapon.up)|buff.icy_edge.up|(talent.stormflurry.enabled&buff.crackling_surge.up)|active_enemies>1|fight_remains<30
 # interrupt of casts.
 actions+=/wind_shear
+actions+=/purge,if=settings.hostile_dispel
+actions+=/greater_purge,if=settings.hostile_dispel
 actions+=/use_item,name=the_first_sigil,if=(talent.ascendance.enabled&raid_event.adds.in>=90&cooldown.ascendance.remains<10)|(talent.hot_hand.enabled&buff.molten_weapon.up)|buff.icy_edge.up|(talent.stormflurry.enabled&buff.crackling_surge.up)|active_enemies>1|fight_remains<30
 actions+=/use_item,name=cache_of_acquired_treasures,if=buff.acquired_sword.up|fight_remains<25
 actions+=/use_item,name=scars_of_fraternal_strife,if=!buff.scars_of_fraternal_strife_4.up|fight_remains<31|raid_event.adds.in<16|active_enemies>1
@@ -26,7 +28,7 @@ actions+=/call_action_list,name=single,if=active_enemies=1
 # on multiple enemies, the priority follows the 'aoe' action list.
 actions+=/call_action_list,name=aoe,if=active_enemies>1
 
-actions.single+=/windstrike
+actions.single=windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>=1
 actions.single+=/windfury_totem,if=!buff.windfury_totem.up
 actions.single+=/stormstrike,if=buff.doom_winds_talent.up
 actions.single+=/crash_lightning,if=buff.doom_winds_talent.up
@@ -38,10 +40,12 @@ actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack>=5&buff.primordia
 actions.single+=/ice_strike,if=talent.hailstorm.enabled
 actions.single+=/frost_shock,if=buff.hailstorm.up
 actions.single+=/lava_lash,if=dot.flame_shock.refreshable
-actions.single+=/stormstrike,if=talent.stormflurry.enabled&buff.stormbringer.up
+actions.single+=/windstrike,if=talent.deeply_rooted_elements.enabled|buff.earthen_weapon.up|buff.legacy_of_the_frost_witch.up
+actions.single+=/stormstrike,if=talent.deeply_rooted_elements.enabled|buff.earthen_weapon.up|buff.legacy_of_the_frost_witch.up
 actions.single+=/elemental_blast,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|buff.feral_spirit.up)))&buff.maelstrom_weapon.stack>=5
 actions.single+=/lava_burst,if=buff.maelstrom_weapon.stack>=5
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack=10&buff.primordial_wave.down
+actions.single+=/windstrike
 actions.single+=/stormstrike
 actions.single+=/windfury_totem,if=buff.windfury_totem.remains<10
 actions.single+=/ice_strike

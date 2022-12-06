@@ -830,7 +830,10 @@ spec:RegisterAuras( {
     cold_blood = {
         id = 382245,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        onRemove = function()
+            setCooldown( "cold_blood", action.cold_blood.cooldown )
+        end,
     },
     crimson_tempest = {
         id = 121411,
@@ -1645,6 +1648,7 @@ spec:RegisterAbilities( {
 
         talent = "cold_blood",
         startsCombat = false,
+        nobuff = "cold_blood",
 
         handler = function ()
             applyBuff( "cold_blood" )
