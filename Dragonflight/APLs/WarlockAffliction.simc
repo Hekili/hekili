@@ -1,226 +1,85 @@
 actions.precombat=fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet
-actions.precombat+=/use_item,name=tome_of_monstrous_constructions
-actions.precombat+=/use_item,name=soleahs_secret_technique
 actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
-actions.precombat+=/fleshcraft
-actions.precombat+=/variable,name=dots_ready,value=active_dot.corruption>0&active_dot.agony>0&active_dot.unstable_affliction>0&(!talent.siphon_life.enabled|active_dot.siphon_life>0)&(dot.phantom_singularity.ticking|!talent.phantom_singularity.enabled)
-actions.precombat+=/seed_of_corruption,line_cd=10,if=spell_targets.seed_of_corruption_aoe>=3
+actions.precombat+=/inquisitors_gaze
+actions.precombat+=/seed_of_corruption,if=spell_targets.seed_of_corruption_aoe>3
 actions.precombat+=/haunt
-actions.precombat+=/soul_swap
-actions.precombat+=/unstable_affliction,if=!ticking
+actions.precombat+=/unstable_affliction,if=!talent.soul_swap
+actions.precombat+=/shadow_bolt
 
-## Executed every time the actor is available.
-actions=spell_lock
-actions+=/devour_magic
+# Executed every time the actor is available.
+actions+=/call_action_list,name=ogcd
+actions+=/call_action_list,name=items
+actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>1&active_enemies<4
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>3
-actions+=/malefic_rapture,if=buff.calamitous_crescendo.up
-# Call separate action list for Necrolord MW in ST. Currently only optimized for use with PS.
-actions+=/call_action_list,name=necro_mw,strict=1,if=action.decimating_bolt.known&runeforge.malefic_wrath&active_enemies=1&talent.phantom_singularity
-# Action lists for trinket behavior. Stats are saved for before Soul Rot/Impending Catastrophe/Phantom Singularity, otherwise on cooldown.
-actions+=/call_action_list,name=trinket_split_check
-actions+=/call_action_list,name=delayed_trinkets
-actions+=/call_action_list,name=stat_trinkets,strict=1,if=(dot.soul_rot.ticking|dot.impending_catastrophe_dot.ticking|dot.phantom_singularity.ticking)&soul_shard>3|dot.vile_taint.ticking|talent.sow_the_seeds
-actions+=/call_action_list,name=damage_trinkets,if=action.soul_rot.known&(!variable.trinket_split|cooldown.soul_rot.remains>20|(variable.trinket_one&cooldown.soul_rot.remains<trinket.1.cooldown.remains)|(variable.trinket_two&cooldown.soul_rot.remains<trinket.2.cooldown.remains))|action.impending_catastrophe.known&(!variable.trinket_split|cooldown.impending_catastrophe.remains>20|(variable.trinket_one&cooldown.impending_catastrophe.remains<trinket.1.cooldown.remains)|(variable.trinket_two&cooldown.impending_catastrophe.remains<trinket.2.cooldown.remains))|(action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)&(!variable.trinket_split|cooldown.phantom_singularity.remains>20|(variable.trinket_one&cooldown.phantom_singularity.remains<trinket.1.cooldown.remains)|(variable.trinket_two&cooldown.phantom_singularity.remains<trinket.2.cooldown.remains))|!talent.phantom_singularity.enabled&(!variable.trinket_split|cooldown.summon_darkglare.remains>20|(variable.trinket_one&cooldown.summon_darkglare.remains<trinket.1.cooldown.remains)|(variable.trinket_two&cooldown.summon_darkglare.remains<trinket.2.cooldown.remains))
-# Burn soul shards if fight is almost over
-actions+=/malefic_rapture,if=boss&fight_remains<execute_time*soul_shard&dot.unstable_affliction.ticking
-# If covenant dot/Phantom Singularity is running, use Darkglare to extend the current set
-actions+=/call_action_list,name=darkglare_prep,if=(action.impending_catastrophe.known&dot.impending_catastrophe_dot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))|(action.soul_rot.known&dot.soul_rot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))|((action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)&dot.phantom_singularity.ticking&dot.phantom_singularity.remains<2)
-# Refresh dots early if going into a shard spending phase
-actions+=/call_action_list,name=dot_prep,if=(action.soul_rot.known&!dot.soul_rot.ticking&cooldown.soul_rot.remains<4)|(action.impending_catastrophe.known&!dot.impending_catastrophe_dot.ticking&cooldown.impending_catastrophe.remains<4)|((action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)&talent.phantom_singularity&!dot.phantom_singularity.ticking&cooldown.phantom_singularity.remains<4)
-# Sync Phantom Singularity with Venthyr/Night Fae covenant dot, otherwise use on cooldown. If Empyreal Ordnance buff is incoming, hold until it's ready (18 seconds after use)
-actions+=/phantom_singularity,if=action.soul_rot.known&time>5&cooldown.soul_rot.remains<1&(trinket.empyreal_ordnance.cooldown.remains<162|!equipped.empyreal_ordnance)
-actions+=/phantom_singularity,if=action.impending_catastrophe.known&time>5&cooldown.impending_catastrophe.remains<1&(trinket.empyreal_ordnance.cooldown.remains<162|!equipped.empyreal_ordnance)
-# Necrolord with Malefic Wrath casts phantom singularity in line with Decimating Bolt
-actions+=/phantom_singularity,if=action.decimating_bolt.known&runeforge.malefic_wrath&time>5&cooldown.decimating_bolt.remains<3&(trinket.empyreal_ordnance.cooldown.remains<162|!equipped.empyreal_ordnance)
-# Other covenants (including non-MW Necro) cast PS on cooldown
-actions+=/phantom_singularity,if=(action.scouring_tithe.known|covenant.none|(action.decimating_bolt.known&!runeforge.malefic_wrath))&(trinket.empyreal_ordnance.cooldown.remains<162|!equipped.empyreal_ordnance)
-actions+=/phantom_singularity,if=boss&fight_remains<16
-# If Phantom Singularity is ticking, it's time to use other major dots
-actions+=/call_action_list,name=covenant,strict=1,if=dot.phantom_singularity.ticking&(action.soul_rot.known|action.impending_catastrophe.known)
-actions+=/agony,cycle_targets=1,if=dot.agony.remains<4
+actions+=/malefic_rapture,if=soul_shard=5
 actions+=/haunt
-# Sow the Seeds on 3 targets if it isn't currently in flight or on the target. With Siphon Life it's also better to use Seed over manually applying 3 Corruptions.
-actions+=/seed_of_corruption,if=active_enemies>2&talent.sow_the_seeds&!dot.seed_of_corruption.ticking&!in_flight
-actions+=/seed_of_corruption,if=active_enemies>2&talent.siphon_life&!dot.seed_of_corruption.ticking&!in_flight&dot.corruption.remains<4
-actions+=/vile_taint,if=(soul_shard>1|active_enemies>2)&cooldown.summon_darkglare.remains>12
-actions+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&dot.unstable_affliction.remains<4
-actions+=/siphon_life,cycle_targets=1,if=dot.siphon_life.remains<4
-actions+=/call_action_list,name=covenant,strict=1,if=!action.decimating_bolt.known
-# Apply Corruption manually on 1-2 targets, or on 3 with Absolute Corruption
-actions+=/corruption,cycle_targets=1,if=active_enemies<4-(talent.sow_the_seeds|talent.siphon_life)&dot.corruption.remains<2
-# After the opener, spend a shard when at 5 on Malefic Rapture to avoid overcapping
-actions+=/malefic_rapture,if=soul_shard>4&time>21
-# When not syncing Phantom Singularity to Venthyr/Night Fae, Summon Darkglare if all dots are applied
-actions+=/call_action_list,name=darkglare_prep,if=(action.impending_catastrophe.known&!talent.phantom_singularity&dot.impending_catastrophe_dot.ticking&cooldown.summon_darkglare.ready)|(action.soul_rot.known&!talent.phantom_singularity&dot.soul_rot.ticking&cooldown.summon_darkglare.ready)|((action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)&cooldown.summon_darkglare.ready)
-# Catch-all item usage for anything not specified elsewhere
-actions+=/call_action_list,name=item
-## Refresh Shadow Embrace before spending shards on Malefic Rapture
-actions+=/call_action_list,name=se,if=talent.shadow_embrace.enabled&(debuff.shadow_embrace.stack<(2-action.shadow_bolt.in_flight)|debuff.shadow_embrace.remains<3)
-# Use Malefic Rapture when major dots are up, or if there will be significant time until the next Phantom Singularity. If utilizing Malefic Wrath, hold a shard to refresh the buff
-actions+=/malefic_rapture,if=(dot.vile_taint.ticking|dot.impending_catastrophe_dot.ticking|dot.soul_rot.ticking)&(!runeforge.malefic_wrath|buff.malefic_wrath.stack<3|soul_shard>1)
-# Use Malefic Rapture to maintain the malefic wrath buff until shards need to be generated for the next burst window (20 seconds is more than sufficient to generate 3 shards)
-actions+=/malefic_rapture,if=runeforge.malefic_wrath&cooldown.soul_rot.remains>20&buff.malefic_wrath.remains<4
-# Maintain Malefic Wrath at all times for the Necrolord or Kyrian covenant
-actions+=/malefic_rapture,if=runeforge.malefic_wrath&(action.decimating_bolt.known|action.scouring_tithe.known)&buff.malefic_wrath.remains<4
-# Use Malefic Rapture on Phantom Singularity casts, making sure to save a shard to stack Malefic Wrath if using it
-actions+=/malefic_rapture,if=talent.phantom_singularity&(dot.phantom_singularity.ticking|cooldown.phantom_singularity.remains>25|boss&time_to_die<cooldown.phantom_singularity.remains)&(!runeforge.malefic_wrath|buff.malefic_wrath.stack<3|soul_shard>1)
-actions+=/malefic_rapture,if=talent.sow_the_seeds
-# Drain Life is only a DPS gain with Inevitable Demise near max stacks. If fight is about to end do not miss spending the stacks
-actions+=/drain_life,if=buff.inevitable_demise.stack>40|buff.inevitable_demise.up&boss&fight_remains<4
-actions+=/call_action_list,name=covenant
-actions+=/agony,cycle_targets=1,if=refreshable
-actions+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&refreshable
-actions+=/siphon_life,cycle_targets=1,if=refreshable
-actions+=/corruption,cycle_targets=1,if=refreshable&active_enemies<4-(talent.sow_the_seeds|talent.siphon_life)
-actions+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up
-actions+=/drain_soul,interrupt_if=buff.decimating_bolt.down&(!talent.shadow_embrace.enabled|debuff.shadow_embrace.stack>=3&debuff.shadow_embrace.remains>3)
+actions+=/soul_swap,if=dot.unstable_affliction.remains<5
+actions+=/unstable_affliction,if=remains<5
+actions+=/agony,if=remains<5
+actions+=/siphon_life,if=remains<5
+actions+=/corruption,if=remains<5
+actions+=/soul_tap
+actions+=/phantom_singularity
+actions+=/vile_taint
+actions+=/soul_rot
+actions+=/summon_darkglare
+actions+=/malefic_rapture,if=talent.malefic_affliction&buff.malefic_affliction.stack<3
+actions+=/malefic_rapture,if=talent.dread_touch&debuff.dread_touch.remains<gcd
+actions+=/malefic_rapture,if=!talent.dread_touch&buff.tormented_crescendo.up
+actions+=/malefic_rapture,if=!talent.dread_touch&(dot.soul_rot.remains>cast_time|dot.phantom_singularity.remains>cast_time|dot.vile_taint.remains>cast_time|pet.darkglare.active)
+actions+=/drain_soul,if=buff.nightfall.react|talent.shadow_embrace&(debuff.shadow_embrace.stack<3|debuff.shadow_embrace.remains<2)
+actions+=/shadow_bolt,if=buff.nightfall.react|talent.shadow_embrace&(debuff.shadow_embrace.stack<3|debuff.shadow_embrace.remains<2)
+actions+=/drain_life,if=buff.inevitable_demise.stack>48|buff.inevitable_demise.stack>20&boss&fight_remains<4
+actions+=/agony,if=refreshable
+actions+=/corruption,if=refreshable
+actions+=/drain_soul,interrupt=1
 actions+=/shadow_bolt
 
-actions.aoe=phantom_singularity
 actions.aoe+=/haunt
-actions.aoe+=/call_action_list,name=darkglare_prep,if=action.impending_catastrophe.known&dot.impending_catastrophe_dot.ticking&cooldown.summon_darkglare.ready&(dot.phantom_singularity.remains>2|!talent.phantom_singularity)|action.soul_rot.known&dot.soul_rot.ticking&cooldown.summon_darkglare.ready&(dot.phantom_singularity.remains>2|!talent.phantom_singularity)|(action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)&dot.phantom_singularity.ticking&dot.phantom_singularity.remains<2
-actions.aoe+=/seed_of_corruption,if=talent.sow_the_seeds&can_seed
-actions.aoe+=/seed_of_corruption,if=!talent.sow_the_seeds&!dot.seed_of_corruption.ticking&!in_flight&dot.corruption.refreshable
-actions.aoe+=/agony,cycle_targets=1,if=active_dot.agony<4&!dot.agony.ticking
-actions.aoe+=/agony,cycle_targets=1,if=active_dot.agony>=4&refreshable&dot.agony.ticking
-actions.aoe+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&refreshable
-actions.aoe+=/unstable_affliction,cycle_targets=1,if=!ticking&pvptalent.rampant_afflictions.enabled&active_dot.unstable_affliction<3
-actions.aoe+=/vile_taint,if=soul_shard>1
-actions.aoe+=/call_action_list,name=covenant,strict=1,if=!action.decimating_bolt.known
-actions.aoe+=/call_action_list,name=darkglare_prep,if=(action.impending_catastrophe.known&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.ready&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))&((action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))|(action.soul_rot.known&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity))
-actions.aoe+=/call_action_list,name=item
-actions.aoe+=/call_action_list,name=delayed_trinkets
-actions.aoe+=/call_action_list,name=damage_trinkets
-actions.aoe+=/call_action_list,name=stat_trinkets,strict=1,if=dot.phantom_singularity.ticking|!talent.phantom_singularity
-actions.aoe+=/malefic_rapture,if=dot.vile_taint.ticking
-actions.aoe+=/malefic_rapture,if=dot.soul_rot.ticking&!talent.sow_the_seeds
-actions.aoe+=/malefic_rapture,if=!talent.vile_taint
-actions.aoe+=/malefic_rapture,if=soul_shard>4
-actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<=3&refreshable&!dot.siphon_life.ticking
-actions.aoe+=/call_action_list,name=covenant,strict=1,if=action.decimating_bolt.known
-actions.aoe+=/drain_life,if=buff.inevitable_demise.stack>=50|boss&buff.inevitable_demise.up&fight_remains<5|buff.inevitable_demise.stack>=35&dot.soul_rot.ticking
-actions.aoe+=/fleshcraft,if=soulbind.volatile_solvent,interrupt_if=buff.volatile_solvent.up
-actions.aoe+=/drain_soul,interrupt_if=buff.decimating_bolt.down&(!talent.shadow_embrace.enabled|debuff.shadow_embrace.stack>=3&debuff.shadow_embrace.remains>3)
+actions.aoe+=/vile_taint
+actions.aoe+=/phantom_singularity
+actions.aoe+=/soul_rot
+actions.aoe+=/seed_of_corruption,if=dot.corruption.remains<5
+actions.aoe+=/agony,cycle_targets=1,if=remains<5&active_dot.agony<5
+actions.aoe+=/summon_darkglare
+actions.aoe+=/seed_of_corruption,if=talent.sow_the_seeds
+actions.aoe+=/malefic_rapture
+actions.aoe+=/drain_life,if=(buff.soul_rot.up|!talent.soul_rot)&buff.inevitable_demise.stack>10
+actions.aoe+=/siphon_life,cycle_targets=1,if=remains<5&active_dot.siphon_life<3
+actions.aoe+=/drain_soul,interrupt_global=1
 actions.aoe+=/shadow_bolt
 
-actions.covenant=impending_catastrophe,if=!talent.phantom_singularity&(cooldown.summon_darkglare.remains<10|cooldown.summon_darkglare.remains>50|cooldown.summon_darkglare.remains>25&conduit.corrupting_leer)
-actions.covenant+=/impending_catastrophe,if=talent.phantom_singularity&dot.phantom_singularity.ticking
-actions.covenant+=/decimating_bolt,if=cooldown.summon_darkglare.remains>5&(debuff.haunt.remains>4|!talent.haunt)
-actions.covenant+=/soul_rot,if=!talent.phantom_singularity&(cooldown.summon_darkglare.remains<5|cooldown.summon_darkglare.remains>50|cooldown.summon_darkglare.remains>25&conduit.corrupting_leer)
-actions.covenant+=/soul_rot,if=talent.phantom_singularity&dot.phantom_singularity.ticking
-actions.covenant+=/scouring_tithe
+actions.cleave+=/malefic_rapture,if=soul_shard=5
+actions.cleave+=/haunt
+actions.cleave+=/soul_swap,if=dot.unstable_affliction.remains<5
+actions.cleave+=/unstable_affliction,if=remains<5
+actions.cleave+=/agony,if=remains<5
+actions.cleave+=/agony,cycle_targets=1,if=remains<5
+actions.cleave+=/siphon_life,if=remains<5
+actions.cleave+=/siphon_life,cycle_targets=1,if=remains<3
+actions.cleave+=/seed_of_corruption,if=!talent.absolute_corruption&dot.corruption.remains<5
+actions.cleave+=/corruption,cycle_targets=1,if=remains<5&(talent.absolute_corruption|!talent.seed_of_corruption)
+actions.cleave+=/phantom_singularity
+actions.cleave+=/vile_taint
+actions.cleave+=/soul_rot
+actions.cleave+=/summon_darkglare
+actions.cleave+=/malefic_rapture,if=talent.malefic_affliction&buff.malefic_affliction.stack<3
+actions.cleave+=/malefic_rapture,if=talent.dread_touch&debuff.dread_touch.remains<gcd
+actions.cleave+=/malefic_rapture,if=!talent.dread_touch&buff.tormented_crescendo.up
+actions.cleave+=/malefic_rapture,if=!talent.dread_touch&(dot.soul_rot.remains>cast_time|dot.phantom_singularity.remains>cast_time|dot.vile_taint.remains>cast_time|pet.darkglare.active)
+actions.cleave+=/drain_soul,if=buff.nightfall.react
+actions.cleave+=/shadow_bolt,if=buff.nightfall.react
+actions.cleave+=/drain_life,if=buff.inevitable_demise.stack>48|buff.inevitable_demise.stack>20&boss&fight_remains<4
+actions.cleave+=/drain_life,if=buff.soul_rot.up&buff.inevitable_demise.stack>10
+actions.cleave+=/agony,cycle_targets=1,if=refreshable
+actions.cleave+=/corruption,cycle_targets=1,if=refreshable
+actions.cleave+=/drain_soul,interrupt_global=1
+actions.cleave+=/shadow_bolt
 
-actions.damage_trinkets=use_item,name=soul_igniter
-actions.damage_trinkets+=/use_item,name=dreadfire_vessel
-actions.damage_trinkets+=/use_item,name=glyph_of_assimilation
-actions.damage_trinkets+=/use_item,name=unchained_gladiators_shackles
-actions.damage_trinkets+=/use_item,name=ebonsoul_vice
-actions.damage_trinkets+=/use_item,name=resonant_reservoir
-actions.damage_trinkets+=/use_item,name=architects_ingenuity_core
-actions.damage_trinkets+=/use_item,name=grim_eclipse
-actions.damage_trinkets+=/use_item,name=toe_knees_promise
-actions.damage_trinkets+=/use_item,name=mrrgrias_favor
-actions.damage_trinkets+=/use_item,name=cosmic_gladiators_resonator
+actions.items=use_items,if=pet.darkglare.active|dot.soul_rot.ticking|!talent.summon_darkglare&!talent.soul_rot|boss&fight_remains<21
 
-actions.darkglare_prep=vile_taint
-actions.darkglare_prep+=/potion
-actions.darkglare_prep+=/fireblood
-actions.darkglare_prep+=/blood_fury
-actions.darkglare_prep+=/berserking
-actions.darkglare_prep+=/call_action_list,name=covenant,strict=1,if=!action.decimating_bolt.known
-actions.darkglare_prep+=/summon_darkglare
-
-actions.delayed_trinkets=use_item,name=grim_eclipse,if=(action.soul_rot.known&cooldown.soul_rot.remains<6)|(action.impending_catastrophe.known&cooldown.impending_catastrophe.remains<6)|(action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)
-actions.delayed_trinkets+=/use_item,name=empyreal_ordnance,if=(action.soul_rot.known&cooldown.soul_rot.remains<20)|(action.impending_catastrophe.known&cooldown.impending_catastrophe.remains<20)|(action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)
-actions.delayed_trinkets+=/use_item,name=sunblood_amethyst,if=(action.soul_rot.known&cooldown.soul_rot.remains<6)|(action.impending_catastrophe.known&cooldown.impending_catastrophe.remains<6)|(action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)
-actions.delayed_trinkets+=/use_item,name=soulletting_ruby,if=(action.soul_rot.known&cooldown.soul_rot.remains<8)|(action.impending_catastrophe.known&cooldown.impending_catastrophe.remains<8)|(action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)
-actions.delayed_trinkets+=/use_item,name=shadowed_orb_of_torment,if=(action.soul_rot.known&cooldown.soul_rot.remains<4)|(action.impending_catastrophe.known&cooldown.impending_catastrophe.remains<4)|(action.decimating_bolt.known|action.scouring_tithe.known|covenant.none)
-
-actions.dot_prep=agony,if=dot.agony.remains<8&cooldown.summon_darkglare.remains>dot.agony.remains
-actions.dot_prep+=/siphon_life,if=dot.siphon_life.remains<8&cooldown.summon_darkglare.remains>dot.siphon_life.remains
-actions.dot_prep+=/unstable_affliction,if=dot.unstable_affliction.remains<8&cooldown.summon_darkglare.remains>dot.unstable_affliction.remains
-actions.dot_prep+=/corruption,if=dot.corruption.remains<8&cooldown.summon_darkglare.remains>dot.corruption.remains
-
-actions.item=use_items
-
-actions.necro_mw=variable,name=dots_ticking,value=dot.corruption.remains>2&dot.agony.remains>2&dot.unstable_affliction.remains>2&(!talent.siphon_life|dot.siphon_life.remains>2)
-# Trinkets align with PS for Shadow Embrace, DB for Haunt.
-actions.necro_mw+=/variable,name=trinket_delay,value=cooldown.phantom_singularity.remains,value_else=cooldown.decimating_bolt.remains,op=setif,condition=talent.shadow_embrace,if=action.decimating_bolt.known
-# Burn soul shards if the fight will be ending soon.
-actions.necro_mw+=/malefic_rapture,if=time_to_die<execute_time*soul_shard&dot.unstable_affliction.ticking
-# Cast haunt to refresh before falloff.
-actions.necro_mw+=/haunt,if=dot.haunt.remains<2+execute_time
-# High - priority MW refresh if spending one global would cause us to miss the opportunity to refresh MW.
-actions.necro_mw+=/malefic_rapture,if=time>7&buff.malefic_wrath.remains<gcd.max+execute_time
-# Fire delayed trinkets in anticipation of Decimating Bolt.
-actions.necro_mw+=/use_item,name=empyreal_ordnance,if=variable.trinket_delay<20
-actions.necro_mw+=/use_item,name=sunblood_amethyst,if=variable.trinket_delay<6
-actions.necro_mw+=/use_item,name=soulletting_ruby,if=variable.trinket_delay<8
-actions.necro_mw+=/use_item,name=shadowed_orb_of_torment,if=variable.trinket_delay<4
-# If the player is using Haunt, fire PS on cooldown then follow with DB
-actions.necro_mw+=/phantom_singularity,if=talent.haunt&variable.dots_ticking
-actions.necro_mw+=/decimating_bolt,if=talent.haunt&cooldown.phantom_singularity.remains>0
-# If the player is using SE, fire DB on cooldown then following with PS
-actions.necro_mw+=/decimating_bolt,if=talent.shadow_embrace&variable.dots_ticking
-actions.necro_mw+=/phantom_singularity,if=talent.shadow_embrace&cooldown.decimating_bolt.remains>0
-actions.necro_mw+=/unstable_affliction,if=dot.unstable_affliction.remains<6
-actions.necro_mw+=/agony,if=dot.agony.remains<4
-actions.necro_mw+=/siphon_life,if=dot.siphon_life.remains<4
-actions.necro_mw+=/corruption,if=dot.corruption.remains<4
-# Refresh MW after the opener if darkglare_prep would cause us to miss a MW refresh
-actions.necro_mw+=/malefic_rapture,if=time>7&buff.malefic_wrath.remains<2*gcd.max+execute_time
-# Call darkglare_prep if Phantom Singularity is currently ticking
-actions.necro_mw+=/call_action_list,name=darkglare_prep,strict=1,if=dot.phantom_singularity.ticking
-# Utilize any other stat trinkets if Phantom Singularity is ticking
-actions.necro_mw+=/call_action_list,name=stat_trinkets,strict=1,if=dot.phantom_singularity.ticking
-# Stack Malefic Wrath to 3, or refresh when getting low (ideally looking for a calculated number, but 4.5s remaining is the result of testing with T27)
-actions.necro_mw+=/malefic_rapture,if=time>7&(buff.malefic_wrath.stack<3|buff.malefic_wrath.remains<4.5)
-# Additional MR spends when extra shards are available and either Phantom Singularity is ticking, or the fight is ending.
-actions.necro_mw+=/malefic_rapture,if=(dot.phantom_singularity.ticking|time_to_die<cooldown.phantom_singularity.remains)&(buff.malefic_wrath.stack<3|soul_shard>1)
-# Additional Drain Soul cast when PS is ticking
-actions.necro_mw+=/drain_soul,if=dot.phantom_singularity.ticking
-# Low - priority dot refresh when refreshable.
-actions.necro_mw+=/agony,if=refreshable
-actions.necro_mw+=/unstable_affliction,if=refreshable
-actions.necro_mw+=/corruption,if=refreshable
-actions.necro_mw+=/siphon_life,if=talent.siphon_life&refreshable
-# Fleshcraft to maintain Volatile Solvent.
-actions.necro_mw+=/fleshcraft,if=soulbind.volatile_solvent,cancel_if=buff.volatile_solvent_humanoid.up
-# Low-priority haunt refresh.
-actions.necro_mw+=/haunt,if=dot.haunt.remains<3
-# Uninterruptible DS channel if we have the DB buff.
-actions.necro_mw+=/drain_soul,if=buff.decimating_bolt.up
-actions.necro_mw+=/drain_soul,if=talent.shadow_embrace&debuff.shadow_embrace.remains<3|debuff.shadow_embrace.stack<3,interrupt_if=buff.decimating_bolt.down&(!talent.shadow_embrace.enabled|debuff.shadow_embrace.stack>=3&debuff.shadow_embrace.remains>3)
-actions.necro_mw+=/drain_soul,interrupt_if=buff.decimating_bolt.down&(!talent.shadow_embrace.enabled|debuff.shadow_embrace.stack>=3&debuff.shadow_embrace.remains>3)
-actions.necro_mw+=/shadow_bolt
-
-actions.se=haunt
-actions.se+=/drain_soul,interrupt_if=buff.decimating_bolt.down&(!talent.shadow_embrace.enabled|debuff.shadow_embrace.stack>=3&debuff.shadow_embrace.remains>3)
-actions.se+=/shadow_bolt
-
-actions.stat_trinkets=use_item,name=the_first_sigil
-actions.stat_trinkets+=/use_item,name=scars_of_fraternal_strife
-actions.stat_trinkets+=/use_item,name=inscrutable_quantum_device
-actions.stat_trinkets+=/use_item,name=instructors_divine_bell
-actions.stat_trinkets+=/use_item,name=overflowing_anima_cage
-actions.stat_trinkets+=/use_item,name=darkmoon_deck_putrescence
-actions.stat_trinkets+=/use_item,name=macabre_sheet_music
-actions.stat_trinkets+=/use_item,name=flame_of_battle
-actions.stat_trinkets+=/use_item,name=wakeners_frond
-actions.stat_trinkets+=/use_item,name=tablet_of_despair
-actions.stat_trinkets+=/use_item,name=gladiators_badge
-actions.stat_trinkets+=/use_item,name=obelisk_of_the_void
-actions.stat_trinkets+=/use_item,name=horn_of_valor
-actions.stat_trinkets+=/use_item,name=moonlit_prism
-actions.stat_trinkets+=/use_item,name=figurehead_of_the_naglfar
-actions.stat_trinkets+=/blood_fury
-actions.stat_trinkets+=/fireblood
-actions.stat_trinkets+=/berserking
-
-# We don't support ^ as XOR in Lua, so I've converted this to arithmetic.
-actions.trinket_split_check=variable,name=special_equipped,value=((1*equipped.empyreal_ordnance)+(1*equipped.inscrutable_quantum_device)+(1*equipped.soulletting_ruby)+(1*equipped.sunblood_amethyst))=1
-actions.trinket_split_check+=/variable,name=trinket_one,value=(trinket.1.has_proc&trinket.1.has_cooldown)
-actions.trinket_split_check+=/variable,name=trinket_two,value=(trinket.2.has_proc&trinket.2.has_cooldown)
-actions.trinket_split_check+=/variable,name=damage_trinket,value=(!(trinket.1.has_proc&trinket.1.has_cooldown))|(!(trinket.2.has_proc&trinket.2.has_cooldown))|equipped.glyph_of_assimilation
-actions.trinket_split_check+=/variable,name=trinket_split,value=(variable.trinket_one&variable.damage_trinket)|(variable.trinket_two&variable.damage_trinket)|(1*variable.trinket_one)+(1*variable.special_equipped)=1|(1*variable.trinket_two)+(1*variable.special_equipped)=1
+actions.ogcd=potion,if=pet.darkglare.active|dot.soul_rot.ticking|!talent.summon_darkglare&!talent.soul_rot
+actions.ogcd+=/berserking,if=pet.darkglare.active|dot.soul_rot.ticking|!talent.summon_darkglare&!talent.soul_rot
+actions.ogcd+=/blood_fury,if=pet.darkglare.active|dot.soul_rot.ticking|!talent.summon_darkglare&!talent.soul_rot
+actions.ogcd+=/fireblood,if=pet.darkglare.active|dot.soul_rot.ticking|!talent.summon_darkglare&!talent.soul_rot

@@ -1113,8 +1113,13 @@ local function summonPet( name, duration, spec )
     state.pet[ name ].name = name
     state.pet[ name ].expires = state.query_time + ( duration or 3600 )
 
-    if class.pets[ name ] then
-        state.pet[ name ].id = id
+    local model = class.pets[ name ]
+
+    if model then
+        state.pet[ name ].id = type( model.id ) == "function" and model.id() or id
+        if ( type( model.duration ) == "function" and model.duration() or model.duration ) == 3600 then
+            state.pet.alive = true
+        end
     end
 
     if spec then
