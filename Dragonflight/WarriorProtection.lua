@@ -654,7 +654,9 @@ spec:RegisterAbilities( {
 
         talent = "battle_stance",
         startsCombat = false,
-        nobuff = "battle_stance",
+        nobuff = function()
+            if not settings.stance_weaving then return "stance"  else return "battle_stance" end
+        end,
 
         handler = function ()
             applyBuff( "battle_stance" )
@@ -790,7 +792,9 @@ spec:RegisterAbilities( {
         talent = "defensive_stance",
         startsCombat = false,
         essential = true,
-        nobuff = "defensive_stance",
+        nobuff = function()
+            if not settings.stance_weaving then return "stance" else return "defensive_stance" end
+        end,
 
         handler = function ()
             removeBuff( "battle_stance" )
@@ -1690,6 +1694,17 @@ spec:RegisterSetting( "stack_shield_block", false, {
     desc = function()
         return "If checked, the addon can recommend overlapping |T132110:0|t Shield Block usage. \n\n" ..
         "This setting avoids leaving Shield Block at 2 charges, which wastes cooldown recovery time."
+    end,
+    type = "toggle",
+    width = "full"
+} )
+
+spec:RegisterSetting( "stance_weaving", false, {
+    name = "Enable Stance Weaving",
+    desc = function()
+        return "If checked, the addon will recommend swapping stances based on the APL to optimize " ..
+        "the rotation based on damage intake and cooldowns.  \n\nThis setting is not recommended for " ..
+        "players who are not familiar with stance weaving."
     end,
     type = "toggle",
     width = "full"
