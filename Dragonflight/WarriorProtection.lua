@@ -654,9 +654,7 @@ spec:RegisterAbilities( {
 
         talent = "battle_stance",
         startsCombat = false,
-        nobuff = function()
-            if not settings.stance_weaving then return "stance"  else return "battle_stance" end
-        end,
+        nobuff = function() return settings.stance_weaving and "battle_stance" or "stance" end,
 
         handler = function ()
             applyBuff( "battle_stance" )
@@ -792,9 +790,7 @@ spec:RegisterAbilities( {
         talent = "defensive_stance",
         startsCombat = false,
         essential = true,
-        nobuff = function()
-            if not settings.stance_weaving then return "stance" else return "defensive_stance" end
-        end,
+        nobuff = function() return settings.stance_weaving and "defensive_stance" or "stance" end,
 
         handler = function ()
             removeBuff( "battle_stance" )
@@ -1700,11 +1696,12 @@ spec:RegisterSetting( "stack_shield_block", false, {
 } )
 
 spec:RegisterSetting( "stance_weaving", false, {
-    name = "Enable Stance Weaving",
+    name = "Allow Stance Changes",
     desc = function()
-        return "If checked, the addon will recommend swapping stances based on the APL to optimize " ..
-        "the rotation based on damage intake and cooldowns.  \n\nThis setting is not recommended for " ..
-        "players who are not familiar with stance weaving."
+        return "If checked, custom priorities can be written to recommend changing between stances.  For example, Battle Stance could be recommended when "
+            .. "using offensive cooldowns, then Defensive Stance can be recommended when tanking resumes.\n\n"
+            .. "If left unchecked, the addon will not recommend changing your stance as long as you are already in a stance.  This choice prevents the addon "
+            .. "from endlessly recommending that you change your stance when you do not want to change it."
     end,
     type = "toggle",
     width = "full"
