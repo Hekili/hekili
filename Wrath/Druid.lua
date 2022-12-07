@@ -179,16 +179,19 @@ local predatorsswiftness_spell_assigned = false
 spec:RegisterHook( "reset_precast", function()
     rip_tracker:reset()
     set_last_finisher_cp(LastFinisherCp)
+
+    if IsCurrentSpell( class.abilities.maul.id ) then
+        start_maul()
+        Hekili:Debug( "Starting Maul, next swing in %.2f...", buff.maul.remains)
+    end
+
     if not predatorsswiftness_spell_assigned then
         class.abilityList.predatorsswiftness_spell = "|cff00ccff[Assigned Predator's Swiftness Spell]|r"
         class.abilities.predatorsswiftness_spell = class.abilities[ settings.predatorsswiftness_spell or "regrowth" ]
         predatorsswiftness_spell_assigned = true
     end
-end )
 
-spec:RegisterStateExpr("maul_queued", function()
-    return IsCurrentSpell(48480)
-end)
+end )
 
 spec:RegisterStateExpr("rip_maxremains", function()
     if debuff.rip.remains == 0 then
@@ -196,6 +199,56 @@ spec:RegisterStateExpr("rip_maxremains", function()
     else
         return debuff.rip.remains + ((debuff.rip.up and glyph.shred.enabled and (6 - rip_tracker[target.unit].extension)) or 0)
     end
+end)
+
+spec:RegisterStateExpr( "mainhand_remains", function()
+    local next_swing, real_swing, pseudo_swing = 0, 0, 0
+    if now == query_time then
+        real_swing = nextMH - now
+        next_swing = real_swing > 0 and real_swing or 0
+    else
+        if query_time <= nextMH then
+            pseudo_swing = nextMH - query_time
+        else
+            pseudo_swing = (query_time - nextMH) % mainhand_speed
+        end
+        next_swing = pseudo_swing
+    end
+    return next_swing
+end)
+
+spec:RegisterStateExpr("bearweaving_lacerate_should_maul", function()
+    if buff.clearcasting.up then
+        return false
+    end
+
+    local bearRipRemains = max(debuff.rip.remains - 3, 0)
+    local ripGCDs = floor(bearRipRemains / gcd.max)
+    local energyGCDs = floor(energy.time_to_70 / gcd.max)
+    local gcdsRemaining = min(ripGCDs, energyGCDs)
+
+    local rageNeeded = action.maul.spend
+    if gcdsRemaining == 0 then
+        rageNeeded = rageNeeded + (debuff.lacerate.remains < 9 and action.lacerate.spend or 0)
+    else
+        local gcdPool = gcdsRemaining
+        local laceratesNeeded = (debuff.lacerate.max_stack - debuff.lacerate.stack) + (debuff.lacerate.stack == 5 and debuff.lacerate.remains < 9 and 1 or 0)
+        local laceratesUsed = min(gcdPool, laceratesNeeded)
+        rageNeeded = rageNeeded + laceratesUsed * action.lacerate.spend
+        gcdPool = gcdPool - laceratesUsed
+
+        if gcdPool > 0 and cooldown.mangle_bear.up then
+            rageNeeded = rageNeeded + action.mangle_bear.spend
+            gcdPool = gcdPool - 1
+        end
+    end
+
+    local nextSwing = mainhand_remains
+    --[[if nextSwing <= 0 then
+        nextSwing = mainhand_speed
+    end]]--
+    local willMaul = nextSwing <= min(bearRipRemains + 1.5, energy.time_to_85)
+    return willMaul and energy.current < 70 and rage.current > rageNeeded
 end)
 
 spec:RegisterStateExpr("min_roar_offset", function()
@@ -256,7 +309,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
     mainhand = {
         swing = "mainhand",
-        aura = "bear_form",
+        aura = "dire_bear_form",
 
         last = function ()
             local swing = state.combat == 0 and state.now or state.swings.mainhand
@@ -909,12 +962,46 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 33607, 33606, 33605, 33604, 33603 },
     },
+
+    rupture = {
+        id = 48672,
+        duration = 6,
+        max_stack = 1,
+        shared = "target",
+        copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671 }
+    },
+    garrote = {
+        id = 48676,
+        duration = 18,
+        max_stack = 1,
+        shared = "target",
+        copy = { 703, 8631, 8632, 8633, 11289, 11290, 26839, 26884, 48675 }
+    },
+    rend = {
+        id = 47465,
+        duration = 15,
+        max_stack = 1,
+        shared = "target",
+        copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208 }
+    },
+    deep_wound = {
+        id = 43104,
+        duration = 12,
+        max_stack = 1,
+        shared = "target"
+    },
+    bleed = {
+        alias = { "lacerate", "pounce_bleed", "rip", "rake", "deep_wound", "rend", "garrote", "rupture" },
+        aliasType = "debuff",
+        aliasMode = "longest"
+    }
 } )
 
 
 -- Form Helper
 spec:RegisterStateFunction( "swap_form", function( form )
     removeBuff( "form" )
+    removeBuff( "maul" )
 
     if form == "bear_form" or form == "dire_bear_form" then
         spend( rage.current, "rage" )
@@ -930,12 +1017,15 @@ end )
 
 -- Maul Helper
 local finish_maul = setfenv( function()
-    spend( 25, "rage" )
-    removeBuff( "clearcasting" )
+    spend( (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)), "rage" )
 end, state )
 
 spec:RegisterStateFunction( "start_maul", function()
-    applyBuff( "maul", swings.time_to_next_mainhand )
+    local next_swing = mainhand_remains
+    if next_swing <= 0 then
+        next_swing = mainhand_speed
+    end
+    applyBuff( "maul", next_swing )
     state:QueueAuraExpiration( "maul", finish_maul, buff.maul.expires )
 end )
 
@@ -1053,7 +1143,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             swap_form( "cat_form" )
-
         end,
     },
 
@@ -1316,7 +1405,7 @@ spec:RegisterAbilities( {
             end
             set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
-            spend( min( 30, energy.current - 35 ), "energy" )
+            spend( min( 30, energy.current ), "energy" )
         end,
     },
 
@@ -1511,7 +1600,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return (buff.clearcasting.up and 0) or 15 end,
+        spend = function() return (buff.clearcasting.up and 0) or (15 - talent.shredding_attacks.rank) end, 
         spendType = "rage",
 
         startsCombat = true,
@@ -1590,7 +1679,7 @@ spec:RegisterAbilities( {
             removeBuff( "clearcasting" )
         end,
 
-        copy = { 33986, 33987, 48563, 48654 }
+        copy = { 33878, 33986, 33987, 48563, 48564 }
     },
 
 
@@ -1625,7 +1714,9 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "off",
 
-        spend = function() return (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
+        spend = function()
+            return (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1))
+        end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1633,7 +1724,11 @@ spec:RegisterAbilities( {
 
         nobuff = "maul",
 
+        usable = function() return not buff.maul.up end,
+        readyTime = function() return buff.maul.expires end,
+
         handler = function( rank )
+            gain( (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)), "rage" )
             start_maul()
         end,
 
@@ -2235,6 +2330,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132242,
 
+        usable = function() return not buff.berserk.up end,
+
         handler = function ()
             gain( 60, "energy" )
         end,
@@ -2580,4 +2677,4 @@ spec:RegisterOptions( {
 -- Default Packs
 spec:RegisterPack( "Balance (IV)", 20220926, [[Hekili:vwvtVTnpm4Flffiyd71oF12To0MdfDhsp0EWf9OSKLPteISKHKCmYf9BFuoFzNLG3weGaBrYh9qYhstgtENKKZCa51jJMmz09tUlE8VMo5M7jjUnvajPIXxXwGpOyL4)pXKmfV98nsnlpeVvxBchT05QS)E4WMMMybFt0AqOSXCD5WgTtUkIlzwRGpmBlgr5MArEuELnQAnez0oMtOvrCTwMRBu2iwMqkCcWssYQfs3Cfj7809NilQao51XJrEiYZHTUcwoj59LcRNwzeAJWTXtdVLXSqUNQvEQBj4PZ5OHpce2txG0cIXu0OlesmXU(ApDxI7PphyTN(T5F8D)lbltUZttGkhuMbg8vKy(x8VW4HSXgxzaSeKXC)4XHLATALqLwOnLxWdMzvQUifjvAJqM3bj0AbdmciTqyG)tu8OJjbLlwuImDnKN2XCmOyzsiFWvobhVYfdwy01vPLTS0o72EWQX(x4wvmxTb6AY6yMcMu29muySetKadchUgsbfuITPzJhGUVaCX5cmqSC9W0rDJCzTXi4mfCUy76i2haUl12WmLbFZQlkIbUuuzHuzTIzIdsKdzx3ydf59vOs96wRH(07V98B)2t)JAHqbyHcpN6eQvy5iERhDikQ9nOIclQmohKGH50g7fOsDv37VgpxGQHpN3Tf4DS9moBGsgwmMXzwxQtu2R50GSA5)eOvlpxGKeSyQWSgNMMxwPnUWaWK9zTNkXEwOsqsy1ULAd62HHcssR12TfqbRw6WhFTD7XoHg5jschNVWcld3D8)Rm90bE6vHwW2oy41EAupDMNElYMw(rs6GbXHlacx(bB9vWDzf660UUUxrFIp3CXCPVoTLvJBz7jADp9bpD6OJ30U5Ka63(Lq)iehgycGC3fb5cJhNuIpcB3XRaY)8IiVDa6yK7hUcr9RVcFQRocYHjKak3)vqzNQUTm1rz3R3UJDJh95aU34YLaUDsdr1f(QWUT1hMa6wB2VD)e1vpX6P74777(FK)(d]] )
 
-spec:RegisterPack( "Feral DPS (IV)", 20220926, [[Hekili:TQvFRTnst8plLcM4KgvlBRKgWYWDuoO55Opf0XD)NK2iV2ruzj)Ssk56dg9z)MD1B772X9Gsjr7SZ7ZVz2He6g(hHbBqv4WVoF285UUU374EV79l)uyq1poGddoGs(oAh8d5O9W))ByckRj(ZFlOj(QV8NtH)F(ukv)iRaTHYTYIAscqzyWt1PzvFjp8j9Iyjq7bCs4xDDddEoDZgClP4YKWG)QO63)pnX9IJuNUPj(BK0csAvkUS5XMh)JID7YWnXOnVGYtWW5KIkuvAro8t4KI97X5By)EztCk8XQNbQtYqLWVxCGDGtyqwAzvjZnG3IQZQGF8Rm3ckHssyqDjokTcVVmmaNJEkdVj8xdRaRHs04xcsavdtsrGHJrKxXOxsZ3fLHsaBOch1rzt8KM431e)u92ToBsj4ik1rBli7DQpWoDdMDy)nDkRGyqt86M4fApNG3JsPg5kGchp70aCX1XB06evbQDT4YTl9g1OWi15rT)Ce1T368JAZSy3ONRu9y5zPh7r5qwW)UArlpP6GNrD4abdjxfKYYxt3wLJllv1HbAIgiQpgdzHvrBtZtlFgtIsGp63e7jKCKKb6scqhyM9xdYQFQi6qrAEvPtsnHGZRyX92RIZXKD)q4GLZopdx1EO2)DMJbmvevjK5sz(l0GbEpTiLMSn)8epLtOcMp)(ZwMNnRPS9tgzl4W55vVacPxJD7Eebt3URydr2xqIa)ynJt9oLkezhUYPOUQmDd2LlESfbSadPbqQ6wksNDyfnr3fCCRkDhgs12wt(H9Y4KIISnfVM7WDdoacir0LdG4jGem576Qi7j5aWqWU7r(LcyLOxGgirKceraQQ92chd9dYH6NpcAWmHAHoLGfZHytuo(VRObfRLOsXvobzp1UlCssp0hcvSdtFFW(Uf6bLEaqs(7rtgCSTwL8j30eVpnNXHOITBlXTbx3LSJUI9p9v(GyCBIHUWxZGaMA0ApvrLiwdhBEgYN1v(CYypNxutuN(5ljA)G9OTfqsk(khGr6bk7GQXl0SqFhR1UOF)smmxRimcyDGiy3qgP4C1922B60(UMPaM3LzdMXCgrj7KoVfnkwgxm34hajlsslQlFkvAYdZXC2XxPP3iCiueg1Xk6HnXhpQ5JueX78yLzAkEPNsREzxHE4WjwbieUwjP)wCnh6TvgjmhJvOo7nHuJEMgy4(t1GY1mYPrCQ2juOExzjE7yJakutFE3ndgKaaY1TPJuNNkqYutH6tldHQzncHRQEQgWrxlWRCZQYNWQDuTto)NoFcmK1shpJ1O9kRYG(vSH(OXl9J4mwDs(o0wkcE(u0RPzBAFIgOcTh)lF73BIFzHd8YJBDDDEOj(96HL7vUDW8L88JQLwN75uZNXgC06mANyUyPjNmRjx8KtwbgTmKIzOqv)QM5tmKkP2lHHSmOdVMEOfnMt0wNysN)1ugj7ZBZkEflxxmQbYPiTHA(3M9Mc3RPOATWpgMkzr7P2DwCjEwYriqqqWtWpX)B512Imso5QRNjLx2tu0WMfJSH)b3wBVShvNf9)QX18Xj6hhqsKF(O1qKL3hZLDI3rkET65Fc4bXTkyvLSS2LrUJZP(t7kuxooF(LNEpUvybopEFJn1y58U2QApSBYnZ7ccO5btnnFBfn813tB)NsAILK0)TeU(IvZj26DBwqde0j5uLw1AymeZu5PNn823dcEq(KgRJFPb9rBoqNUmmG8PYrM(wbinpr0BbxJvd)ceEPNX2F8ShMFxyWRisoiDyC5VS)qbPIwICF)4AnXSD6608ifxQyBk0Vi49nXAMuP5X2Ru6mmk0n(FuEINpKU1)D1hM8otZVONn9UJURt3zDhzWHdBvM)JIThO3Z2kx70hLnDorBWE9cLV3fKxboetNT2fgTKtdLw02hORyZxaK9KATEL(8esB2HSie3b8Lka1wyu5yEpVtS0dBI8(D996Iwsfpt09EPvEtebexbpn4uQF3GWmFdtqJ7jDcL4X9YUE(5WmDmI)EMZUP3aiq5XJmkn(m1jY7jvMFCZCt5KKhAHc9DDfO0ABU91(UEYxvydkFOFlh(Ud(enpPFvllu3N5hDN1f75AskjqUln4pTsHWokNOOt6(wNEER4cmw5pBI4xUrAxKRCxEZvxPlp9w3Px7nvrtPVkEm7rQ)5BWtR25V3hp8O)ZX3ce3dGRZi8FtrFnlmyqPgwsWzPva1gc1NH8fxHxVgiV(UZrpgVdF55Ws6ukQf2kf9kA3jNbp9KRKQA9Lw22XJsFyT)DEtLsqx7RBFBgt45iFCpB)SGvYUvza77vGJgkl0wkTY74rrwCBpEY4kRUrTI4A3zR9LRkMk7NTXlUmzbMnKnRuGBFkL(maLoygAaQAtRx64PjVvqnOT6ozpHLZ0DNlTVq31pbuDhvCL3DMIe8SwNHw51VngDhkplQoNGQVCI21VW7HfMOdKt7ZE5aGKNT08v5NleeDpKLN5BqFUiZ3X9c4jxX)SH1(ZH6fPpbGDMgI1)b5kI13p74rnnywC8OKZA60PMvv(HGUubCEUozJTNpszqdYumaTAbGjO)ep1R0RRpCMwUGUTstCGjjFZpYW)HP6nhBjjdVtKQcsEhpLK5w6)Pcz21TbbOcpk5EmDXtAs6VgFwICsIzrPwIX7YuF1dDUe1NcbniYYgM1ZWFVl25Q07icdEcvI38FZv)Bnlmavx9Cbjm4Z4T)FuYZS1de(pp]] )
+spec:RegisterPack( "Feral DPS (IV)", 20221129, [[Hekili:vRXARnUo2FlLleIN26XojUDkehyxUSWm7Lzhid79B(rTvsnJJDq2U52LG)TVhj5hY6HDs7(LfkPjshDE)u2E2E)0BBCyjY77lSwSW2EXtM2RSSDw4TT8TJiVThdJ(v4E4lzHhGp)hiCyADWV)JT1bZ)6)2a(CHbbQ3sZdJjyRiVchbq6T95QK0YVM59Smjw6SAXtaShrrEF322B7ljXXigOOIiVT)zE5F8pRdAjhUkjUo4h4KCCszcQO(B1F7N573NIQdcJFnmlcb7JZldltYZGVHIYpCaLft)DrDqcSy5la0rPHfWVZps3WeyDC(UKuGH)T6G)2p(J6GxxAU6EBBZfw1b)w93cJyqEKIZNdlV19ZhcX)YpFNpGr)tjPX3LSZ9MQJZU55QD7m3NSRKFxZQJQrt5l54SIMdRgKOWs)D54dDa1bgSzvbYpPeDOGFX4emY)zuiU7CKFCcf(As2E)0WiqLwI8rzHpNIIBy5Hhcy4zZJr0DApGzrj4j46C(m7epJWfi8VaqnMjckgDimjRy9sthD7TX20HNRXvz(SF5NMuuEhXBJY4DC8KsIAb5YiYHWmWxsKeSv)OeamNGByoUO4e4yKHkOwC5vhsNU997aGywaVxWHijlP4fe2p6ORtJfmkf4PiyxGXjas8GY9pMNKvwygvHXOSY1oZqzi8(36wyL1KSpXdmmNPBOeQXJKqecWVsuqOdqq5MfxcYuHi(ZP3JNCcaGDHiCccucGHyhj)afYg)Sq8HCSpO7QONHWKLH49OsZ8QYIKy0cr0vMShCL93vHF7osav(UD(7JIDTjOvqDT0A28BgZjeIoeD4RoE(SYyP1UlL3Pn8WXqKpBc4iCvuEEAC(PmtoEV7KU2oIh9iapOtyzMVduU(zO)QKjHuYxe(kKJ3hNhI7cEzOyWwq66S4pBBjIFoyKsMPeIgPgNCKyGKybvR1Ww3dNbIl)RwU01A2WvU9qsg9eedzbQCT9QBNpxv0W92gFswnx8c4807Jkev1W4GPgnmT(0kAozwqftwsNQf2RT4IkzWvYwJd)fQ9ekf71qk8HU133YhWrzmYTYm7NST24kYWsAVlqbWsQkQdAs1cyrRQOhe(a(g0rIYMRMcIj9UxdjF3cnKekpkjVQW)5ewDQUvil0LxxTbC2CHKmUGZSFZbjBC(SWcBCFWXqWTFJlXVNcezJMv1ggXbEbUf6pAIwXgdel28OCIJ2Gn1rO6DvPh8knBIk6XWfjsqfY6IqmmeznxBlj5tUxS5ZhThM5IodlK7GIv8yjWaIaVYsnWBCxAqy45J0CJeQmm00zHS(EZkthjRVqHBspexz12vwQWW7ToyZXNOwvdu8zrVrv9jLQgL07uYrAsgvBkoPGkLGSMD2U08tOodzJfKxFpOXzGoOmmW8tQWDS0yC1J5dHvPY49MM8WvPA1vZughu8sEvASp5K6Pj)ebKQCDj6pFMsjM027i8ft(Y8IyJVFZH6JnpA11GgFz7Ln0P3IqcTgjurCgkTdf5(0imkVyRoNGJ2(jx)0yMqAIaYYs(qS9(FVhuhEF)(pKsgnH)CsazhQ1V1g6UWrotPwlRHO(VJrF)UjAtsmKaY1k4LJ189djQc5SFQbP1AZBFLhaL0)M8uPq5U00UgIvpw6eyvyKoVTVcroa4D3iKJ32tH4mqbv4T9RhoMJlj3NZJ1bm8whqgHSWS(BEBPFJCrtawH)9D6vy1Kd07VdlJHUAWjHEBVPoqBZk1bZQdeMm0BlJAEBL68XRe4vTeAO)qDW66GLwukmVoa4IXk5xhC(mfi55gzBPmuhOHlqe1q02oxWM6aN6aJE5IRoP3wUOoIweKWLALWXQ0c0b4fBNEY0KyKGYvcOSfKbdkWtjPITDuzDR3G8mP1bFg4alWW1mXrJa5mMVbXrSLD4Wi5CpO9CdMCLAIv0DG617eK7Rdg28oZAY8ye3526aHjAPAc7v0TMt)tvVZuYydw)6Gpj6giiTpQvAvM)IWLcZbZHAsZ0eK(LR1WlNbL3K31gVot9tJBQPCTA9eO658DbcrqhqHPXNwv)AQgNeBkMA4(EjQBwcQLuL4)jIKYcVKvdC2tcQOmTyUWlvPpCIzE9U4qY6u)26Zo2NBRBwDMUzU4g803HQH1R(KzSpOsShHu5rFUqLd3pH)vR7IuLcytHP7z6gPfj8)do04zfzji7Q6caMit0GJ1FraCfchC1gufJyg9ROE7nn8c3qIQmYG1)rRjkgBRp1(y5eVKatU7d4D6uPZApnn4U3bLeHlNHb9pvIcPASLLICY26RRXuAJ3OYS26nkmylC4Rli1ScTxfJUWEfiyL1yiyJBlgm4XJ(7ZqNJfHmgTMOw)XrQWnWQd9trgLrTRCV(EyN8EK8jqI2DW0m9nS2cB3JWJ3UmAZMtAJAzn5NuvJfuJo2Tl2qvCQHsZdFg7LMQ9b4vF2MoJONgPb0jLA1ImxnYHpok2Ce(ShQ9GjIv11QA(qHh3hMly4C8Ex1)Od75bnZPr2x8riYvHASaIXsOQlw7YeCz5z8EWzSi3tpKqFcY7FuKuNTfxg5BUoUlPt4EAEXOwvVWAhdPLaSCgDVhaQgZTVTLHVkcSxGciTfBB53Ob1TY2A5v8UlmE6ibjG9knmES8OcDR1y0j7NWzBIXC1lmV7XCVyHvy0RrBMsW0OygtnXRYtg4WxZP7kPfQ5OpItL(wxDq6YkVH6Eoq0lRZFxmpWOEbJKOJtdG2JZpv(Yv5fp0LKpX816w6ynr3e9eLDfRxNdBR6V5QsNmjEBVXkV4u2KfCx6iZLFHZyTUTH0S(G7HsCc(M(24tzvLEDx)07IOKDhp6GZmpsK4qnYA24V67HzqOgNcwvWwlyD9EmaMsXot()CNpL9WX9eF(iEi9(3cxIqNxWWNkeZ1(lMdVySlRhWpM3iFMY2XyMyie1DQpAR2aipnq049113AP(53CM4UMbqEsTI8HlkGG5UhwGI)xzYVMPacQiTw4T93r7(pHrVqH37)(d]] )

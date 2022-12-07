@@ -846,6 +846,38 @@ local enchant_ids = {
     [3043] = "rockbiter"  -- ???
 }
 
+spec:RegisterStateExpr( "mainhand_remains", function()
+    local next_swing, real_swing, pseudo_swing = 0, 0, 0
+    if now == query_time then
+        real_swing = nextMH - now
+        next_swing = real_swing > 0 and real_swing or 0
+    else
+        if query_time <= nextMH then
+            pseudo_swing = nextMH - query_time
+        else
+            pseudo_swing = (query_time - nextMH) % mainhand_speed
+        end
+        next_swing = pseudo_swing
+    end
+    return next_swing
+end)
+
+local MainhandHasSpellpower = false
+spec:RegisterStateExpr( "mainhand_has_spellpower", function() return MainhandHasSpellpower end )
+
+local reset_gear = function()
+    MainhandHasSpellpower = false
+end
+
+local update_gear = function(slotId, itemId)
+    if slotId == 16 then
+        local stats = GetItemStats("item:"..itemId)
+        local spellPower = stats["ITEM_MOD_STAMINA_SHORT"]
+        MainhandHasSpellpower = spellPower and tonumber(spellPower) > 0 or false
+    end
+end
+
+Hekili:RegisterGearHook( reset_gear, update_gear )
 
 spec:RegisterHook( "reset_precast", function()
     windfury_mainhand = nil
@@ -1036,8 +1068,8 @@ spec:RegisterAbilities( {
     chain_lightning = {
         id = 421,
         cast = function ()
-            if buff.elemental_mastery.up then return 0 end
-            return 2 * haste
+            if buff.elemental_mastery.up then return 0 end 
+            return 2 * (1 - (buff.maelstrom_weapon.stack * 2) / 10) * haste
         end,
         cooldown = 6,
         gcd = "spell",
@@ -1052,7 +1084,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "elemental_mastery" )
+            removeBuff( "maelstrom_weapon" )
             removeStack( "clearcasting" )
+            removeDebuffStack( "target", "stormstrike" )
         end,
 
         copy = { 930, 2860, 10605, 25439, 25442, 49270, 49271 },
@@ -1189,6 +1223,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "earth_shock" )
             setCooldown( "flame_shock", 6 )
             setCooldown( "frost_shock", 6 )
+            removeDebuffStack( "target", "stormstrike" )
         end,
 
         copy = { 8044, 8045, 8046, 10412, 10413, 10414, 25454, 49230, 49231 },
@@ -1437,6 +1472,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "totem",
+        max_rank = 10,
 
         spend = 0.06,
         spendType = "mana",
@@ -1721,7 +1757,7 @@ spec:RegisterAbilities( {
         id = 403,
         cast = function ()
             if buff.elemental_mastery.up or buff.natures_swiftness.up then return 0 end
-            return 2.5 * haste
+            return 2.5 * (1 - (buff.maelstrom_weapon.stack * 2) / 10) * haste
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1738,6 +1774,8 @@ spec:RegisterAbilities( {
             removeStack( "clearcasting" )
             removeBuff( "natures_swiftness" )
             removeBuff( "elemental_mastery" )
+            removeBuff( "maelstrom_weapon" )
+            removeDebuffStack( "target", "stormstrike" )
         end,
 
         copy = { 529, 548, 915, 943, 6041, 10391, 10392, 15207, 15208, 25448, 25449, 49237, 49238 },
@@ -2409,6 +2447,19 @@ spec:RegisterSetting( "shaman_rage_threshold", 60, {
     width = "full",
 } )
 
+spec:RegisterSetting("maelstrom_weapon_stack_limit", 3, {
+    type = "range",
+    name = "Minimum Maelstrom Weapon Stacks",
+    desc = "Sets the minimum number of Maelstrom Weapon stacks before recommending the player cast a spell",
+    width = "full",
+    min = 1,
+    max = 5,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 7 ].settings.maelstrome_weapon_stack_limit = val
+    end
+})
+
 
 spec:RegisterOptions( {
     enabled = true,
@@ -2431,6 +2482,6 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Enhancement (IV)", 20221015, [[Hekili:vJv3YTTnt0NLmzgNMjw0Ikwn1Pr(IV60(5CHtMkp5sscrcjIkqcwcqXOz8WN9Ulaf)xks2UTtVWjK4Nf7E2ZE4k4y7CVZ8aII6C3KXtMyp2EQLTT9KjVZzUABc1zEcXFnzf8qmjc(3pghsI9Pr0yvH3pC7xFnUITCbjaTKuKL6dRkuPsKV)IlYZZTy(BhTHYILw(IOlYfk(6r(CIuY8VGwBTrYqsejEuqICuYg6OvzSaWslYyC1TXolgYnTNEjCMjuFN7a)nKfeqnRKk9DMFFitw4H)rk8kdJcpXs4DFftex4Xzsfm9srAH3)NUMXzwq4KkwY4Wr)Yxw41kCNR9qmS93w49vmMEDXNWLHo1i7XJSNw8PIpzmV0kjLcH8cI6nZUiNfhSmlDRBoLKiIpNTC2lIim08bUSOfz0aJPUJcp5PefE0VLWfPGlhkYnJiZssePGNWf5uWNtjXRnr0soKDuI4vz0Ytagh(B3ra4aSQCgLhWIxPrea348eJHmBXY4bd5(9T)54HpZSwR(tBfr(MlUKr2dfRNT7DRqI0THRmi4nWPJ2uSCzl4BOTYzRcvXqm7kdXOh34ISLlTmVAfiYJHWUW7lCIpG1Bbgmc2kAK0aAQq62xHPHybG8eEkLeaP)SKFUWlqe)kyWCcspWmuMewitvc30xTHQhlqJ4rK)azA)YnLhG1WUSpHZDflDHd2LY1CpzLBtjPQqxZ2rF)m9OlzP0EdMd1lP9gLWAoMo0VnGch52Zbk3FMXs2bclOsK0)LcVvWPw49McVFJVnj0W4(vgIjF04FeEH39OrHcTu6OKmoVSScc7PqKZInXnYjHHqpbbLog5CnAdlrMtsmakG28DoWotVhCtdc0D2YeKnkhllcbEaASgJo8(AmpnfgwMWsHeBJXH8QltZtqqCovTd4m6eG2cZVW731Qo3hMsLHcEzPTViwLkGalxhUqqdWsqaIo5me70Hf4q461YyAWeSkbNBfng8jJgwswAIqsLwnDnzThafHROi9rrsxrvw5mWGX2JpdnMvIV6dsQsbfislZU0BaiF7C4gMnnl218MlkDEo(jHzeH2844BaCmMgXOYRTnAj3)5B(87l8UHQO(kD4cXkej(eKBPyruJcnNkLyOIYRgqmM(nfseapRvO5hckhUvL1vfgrekxcGA0obiPcK8NnT5ERfdwi4QtARsLincweBnTf3avMakLWFTwsca81G9pReSXaeiuUbm61ZUQ5gJiRIigUwLF0PkEypVwgdiRaJfDwmnR9blAmzbhKx7lXvBlJesLphiuwncdRYq4Hh6hdF4QE1nXInKwokzdXf(6E4JkNLLCMjJx95Huk(O86Xw2VbjnUAoZJiNE0MUwCby2NyMQCl9rMYjoAGOldSC)hBWUNTpejENl)OiY9CRNi7S0Eplm0D(wpc5PMloAMZJlxDKM3z(gAQeSVPf4XxnzQZ8CskEcsN53gHDgIFt9TD6VfupDMRFc7qh8n4)Ut33Fz6W5)5m3h(2gnLrWgU7ZVHTPTOZ8gfdokWt0MSCUkwFtldl6Th(SgM8w4nd6CO24DYwODV85WUTZsOzN2mMAuX0jQ(X9E6Va)WMMHw4Dg8CpsAH31GtCvdKRMCJM(D710hOOsFwDlSgkontJNZpT3ZzpvCfEp8WWb0hAfpnQFXZ5QMiAv9yh80E8jMoZs0H8W1oaex4b1p6UwBudDa6K93PM451b6X7u4pBDjjdEzx95U1w32AhmRF5xN2yhQsSA9nARTZ6US56QAZTZIM2bUQkz607P5NJNYsmt)VEFYTRNA1tSoFURVynP(W9gFyDaeqQ7iwtiSRHPo9sBKODnxYcksFqDGtqGBaM((R7pb72x48QJt48af6pzLZVxn8X(Dn7j)djbBV)po(8QbBF5X8PA7PhLu9(58)nOuoKu9Pwz8KCGHKQRU3Hd3m1lQVbUYBPQTQEJBeSspFFgQ9TD1PeO1LJDenDD0e0UnzvLvg4sQ6O0F63O25p5BuRxG29(YQRr7(B4QMO79Mvpt77oBOpc2ca(p39Q9DAMOK7tYuHcOvKB93osFj46HD(R]] )
-
 spec:RegisterPack( "Elemental / Resto DPS (IV)", 20220925, [[Hekili:1EvZUnUnq4NLGfWjbnw(NDZUnTj5q72djhcwuVy7njslrzXAksbskl4Ia(S3zOSLLKLtt32CXwIC4W5NVz(gfol8RHlsOww4tZNoF(0BMFDWS5F465FmCHDBblCrbnEnDf8GKMd)(BcwotAPchzIJ87mJv5iF(llCKlE4BxIIVvOOjOAnQsDmCKmRTW8ttMuvvfWJ3oEdJlnbXQ8jvkRy94yb1y4Xty7v9ytgnNkhNuygxSHnwRSulxjhhRuIevL0mMUKl4woZeUyzjxyFqgUCyh5AWqkyXHp9jWs4jjSAjzM4WfFnJBCKcnxP52TWtGVELJaBYxjzjosQs7iTC5lwwADendmEyPKgrAhhOGkRycXLocQ9LudkwzHs6ipaU)3q3)8oQDH3FDKvL8e2ov(hAQnliCHGBSgmCsvm4VN8zmMKUuWsc)LWfXGPZ0Ckgistds5AwKvzz5byKcowmg6cxKtxLtR3j0cbjVk3TN)qs1gABndc9(2c1KEIYPg4k32t4p0w44mkxgj4RYSsUCvprVUNpS)u2SsiOQHyPoVohP5f1BvlIjaIc)WDtAl4v807GOhnOi2E7ntF(zlvVIzdsGahvgZUD20rReBlYc8)gPsJAF8G92rRizpn4i3ENJmBQJmYr2FvWIoYnWAp)CVfnmRf8ztGXgfJrlje3Z0mtgGEb33IUwkTuyBYN7davCzsKjJr19IyhNUoKoQZPVqMR0WIaxl3mugBqOeEYnWDiz5qnMJCp4(TsUuHiQ(LieEwdsJQBqGW09P4xl05JN0qoZrS841EiuJ7lGlcIsQ414H)0jpCIYg0s4anlhqL1UtmyirwU3I3PxbDdnAzjalq1(JNuT5QnG94bd9VHJSvitAZoyR3CcG)rLlDW(pXWoiydMyndAXbp7BCH914ub)V8DhDeLx(Go2AdW8()zG5tZMEsN(TSKy46F0E6uC0eEIwQGANoqi41cFB5Lu7l3L8m004YmkuPXZxwYs6HSSk5QswufJcTSBQ9gkPHLb(UjnvJMEzUViOySAlWeIjqSgeyfsXeiB75AylPcIqubKxt2ISei9JsEoSyfvARZ6q9lCkB9jRyNVH5xdWeu0z(tKU4x)8Uli4ikHAm4bobFoBiYIdBubOm9G7q5TxVPvZ3bHKFnm(vHmDd1pAVKgWdW0(UgDNO2if6D6Jiv0T1RSbmJu85mQ1hYbGOKwaGo41mKN2sxZaNRatthh46AHbLfhcdjSCLKhhbtmyHn8iqadc3ObnRMzqGw6unIzbKXd5fkTfn33d2zCDnRNEpW9iIFvPCb0p6DVBWHdUagEWr8tpCP7rui8sgp9MXZV29O7X9mKn1bap5XaAKT8SEfaG2CK)9q1F()muDyJEO6k0ShempAiq2ObbXJgaapSf0nX3C39lxWW2)J4VHTLoG)gt5iO5OHGLTGfGMomCr7vhAyI273m8q7f7pbWvi3)Da1pAGDhE4(zTp4rtc0XuoWK6HP7ytBlYboAuItqWFFd5ENR(avSFKrpl(OtWG3l3(Q4D7eG6sO3Eg17FrYW2kP)uU9hS9oyY2ot(28YR(k6YP2Uns9G2T(QHtxg09inFmr)noDUFNa9cA1n5oKeQzgGVschJ3S7ZKQZi42vk96aFERRwFd(wH(g(BuIcyalTzk4BbA(Urpnt4F)d]] )
+
+spec:RegisterPack( "Enhancement (IV)", 20221127, [[Hekili:nJ1sVnUnq4Fl5IrxSPQw25jqSpu0c0KdBpOf9OKOLOSimLObjDCtrG(T3HsYYuuupYJwShIJJ4mdNhFFZmk(U(F33lgjX(FBX8flCDxCRJ7nxD)vl99KVSh77ThfTdTf(sokd(83Ztr5r4mCUSi8NE8V(c85IVOe7fkdfRmNGDGhbI67T5aHkFm3FJ17y5D(EOdYug3373Wj)dkk13lLehJR0alI89(EkrueQ(bvew7lfHSe4VJKewEriLiKWXjmEr4FG3rOehFVYhQCgedd)6BLXjohTHIJ9)vFViorI5eKYhtsCYqyQqYzzbhXO9SChHeUQIWvfHxd2O8MaLsrK8akzBQmNKV1xcb0NHDBSyWggvQm7YHnRqY4zGDj7WoXSJ5NnL2jk7C1W2jHWXbsMeNzyMm02mu1jkZC97lkxdHPalLqKj6iuqPqq2mJaiPzfHzqYfWwXbCS6RqjDDr4Ch3IWVEQy7yubCIqc5G1NB(rXZBxJnC8UaGBlXUwkQAbdi2D6IvwnZzpJme6(EZbxuekjr7GlUmoKi(wS0rsYuOIGycUktCV2DqHUabIuw0oLPDN3RTLik0JqLqHROsdNAblVSkGCkbtJnaFNZgvhxEr9tGJzshn3YPjIE9v7H0dTIimIlt1IOry0AuMMQnyWB6L74UuVgrrpJcOirA7AKuvK)06t1fonsqn5(jJ0xAQ9tgPT0)FSYH7N0np2FJWpmvQ)ovFUmPBNmrspVD97KoD306JD)u6JnqZMHOMl7NA6onQzmobDGoc)mgx6ekeKcjDyFzTX4PpVOKRo)8TEKaiurkK2A4PTYdyA5UwiATB3oL0Q3scMdIj2taFYqUR0L7GahaEDMWqO(b31L9Jezkj3DEn9kh5SpswMJByLIueCqah2slqMYXaqaGDNraLhd7MbazLmdd8vA9mKcYXzeCfo09ST4hYdQ(EGABVQD(cQ2svT1NfS(uuviRk6754iw2g0iL9l0A0qY2COMtQ)4uKaQkykDp7iM3U0NCG)sDdmB9PB1RqYY3EaFs6X9HEDaokF3jB7010qR1)oqjZp7oCp)lulINODTd6WJ33FY9WgzF0QEqNNdDUlPXaQZhCeE9eU1tqeU1rAriknGLaO8gsQObopDkCjw7zmxOKV69JM7cZYpI4QGg4OpMTNXLQA6vgV0JtXtaEDposH092Ge44)m3YROPaZSecfFYXeonO7VU6xmWHxsswDHbEA2f9aMkEYMf7w9VuHNwnfiN1R)JE7kB2gQAxvtWMsrtOPDnTbhA02eqoZgyCMvG4mlGWEcBlyTINAKTUqxnRr5zDgynRZWQvZ1v3(fODU28h9N3mVr)HMtcuEKXyMzNgX8WWJx0nRrN9lv90xbtduMV94K1UJQNqQL)G9VAbquRe2uGTVX6QRn0wBbOZilJDVnurBLLgvm7I9bCX1RM0c1ZmxMEnSi9xRPZ2wI2WN0wRSKlwVQ8SU7tUE199gpN5KdSs8S(5RLMtBb1swG9LExF9RV215EW030kEMr8PLyFB1Z6R)HLMjHtlNQJibCTQZt70)BatwP)BcV0v93gMUsN3eO(9eL)3dRFh5UpdNYY)gPbkiMhzbuwFW7JFAMe(Oe0k7ncdT23gJFojK2j62nDIPMxguTGM))o]] )

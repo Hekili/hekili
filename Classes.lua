@@ -1462,7 +1462,7 @@ all:RegisterAuras( {
     mangle = {
         alias = { "mangle_bear", "mangle_cat", "trauma", "stampede" },
         aliasType = "debuff",
-        aliasMode = "first"
+        aliasMode = "longest"
     },
 
     -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
