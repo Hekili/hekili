@@ -654,7 +654,7 @@ spec:RegisterAbilities( {
 
         talent = "battle_stance",
         startsCombat = false,
-        nobuff = "stance",
+        nobuff = "battle_stance",
 
         handler = function ()
             applyBuff( "battle_stance" )
@@ -790,7 +790,7 @@ spec:RegisterAbilities( {
         talent = "defensive_stance",
         startsCombat = false,
         essential = true,
-        nobuff = "stance",
+        nobuff = "defensive_stance",
 
         handler = function ()
             removeBuff( "battle_stance" )
