@@ -3029,7 +3029,7 @@ do
                 local reduction = ( state.query_time - lastCast ) / ( t.duration - t.remains )
                 return t.remains * reduction
 
-            elseif k == "duration_guess" then
+            elseif k == "duration_guess" or k == "duration_expected" then
                 if t.remains == t.duration then return t.duration end
 
                 -- not actually the same as simc here, which tracks when CDs charge.
