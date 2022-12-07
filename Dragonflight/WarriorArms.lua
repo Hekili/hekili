@@ -658,7 +658,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132349,
         essential = true,
-        nobuff = "stance",
+        nobuff = "battle_stance",
 
         handler = function ()
             applyBuff( "battle_stance" )
@@ -834,7 +834,7 @@ spec:RegisterAbilities( {
         talent = "defensive_stance",
         startsCombat = false,
         texture = 132341,
-        nobuff = "stance",
+        nobuff = "defensive_stance",
 
         handler = function ()
             applyBuff( "defensive_stance" )
