@@ -654,7 +654,7 @@ spec:RegisterAbilities( {
 
         talent = "battle_stance",
         startsCombat = false,
-        nobuff = "stance",
+        nobuff = function() return settings.stance_weaving and "battle_stance" or "stance" end,
 
         handler = function ()
             applyBuff( "battle_stance" )
@@ -790,7 +790,7 @@ spec:RegisterAbilities( {
         talent = "defensive_stance",
         startsCombat = false,
         essential = true,
-        nobuff = "stance",
+        nobuff = function() return settings.stance_weaving and "defensive_stance" or "stance" end,
 
         handler = function ()
             removeBuff( "battle_stance" )
@@ -1690,6 +1690,18 @@ spec:RegisterSetting( "stack_shield_block", false, {
     desc = function()
         return "If checked, the addon can recommend overlapping |T132110:0|t Shield Block usage. \n\n" ..
         "This setting avoids leaving Shield Block at 2 charges, which wastes cooldown recovery time."
+    end,
+    type = "toggle",
+    width = "full"
+} )
+
+spec:RegisterSetting( "stance_weaving", false, {
+    name = "Allow Stance Changes",
+    desc = function()
+        return "If checked, custom priorities can be written to recommend changing between stances.  For example, Battle Stance could be recommended when "
+            .. "using offensive cooldowns, then Defensive Stance can be recommended when tanking resumes.\n\n"
+            .. "If left unchecked, the addon will not recommend changing your stance as long as you are already in a stance.  This choice prevents the addon "
+            .. "from endlessly recommending that you change your stance when you do not want to change it."
     end,
     type = "toggle",
     width = "full"
