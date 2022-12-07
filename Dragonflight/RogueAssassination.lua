@@ -272,16 +272,11 @@ local calculate_multiplier = setfenv( function( spellID )
 
     if stealth then
         if talent.nightstalker.enabled then
-            mult = mult * 1.5
-        end
-
-        -- Garrote.
-        if talent.subterfuge.enabled and spellID == 703 then
-            mult = mult * 1.8
+            mult = mult * 1.08
         end
     end
 
-    if FindPlayerAuraByID( 392401 ) and spellID == 703 then
+    if ( FindPlayerAuraByID( 392401 ) or FindPlayerAuraByID( 392403 ) ) and spellID == 703 then
         mult = mult * 1.5
     end
 
@@ -750,6 +745,11 @@ end )
 spec:RegisterAuras( {
     -- Talent: Each strike has a chance of inflicting Nature damage and applying Amplification. Envenom consumes Amplification to deal increased damage.
     -- https://wowhead.com/beta/spell=381664
+    alacrity = {
+        id = 193538,
+        duration = 15,
+        max_stack = 5,
+    },
     amplifying_poison = {
         id = 381664,
         duration = 3600,
@@ -1051,7 +1051,7 @@ spec:RegisterAuras( {
         id = 392401,
         duration = 3600,
         max_stack = 1,
-        copy = { "improved_garrote_aura", "improved_garrote_buff" }
+        copy = { 392403, "improved_garrote_aura", "improved_garrote_buff" }
     },
     -- Talent: Your next Garrote and Rupture apply to $s1 nearby targets.
     -- https://wowhead.com/beta/spell=381802
@@ -1300,7 +1300,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=185422
     shadow_dance = {
         id = 185422,
-        duration = function () return talent.subterfuge.enabled and 9 or 8 end,
+        duration = 6,
         max_stack = 1,
         copy = 185313
     },
@@ -1960,7 +1960,7 @@ spec:RegisterAbilities( {
         aura = "garrote",
         cycle = "garrote",
 
-        cp_gain = function() return stealthed.rogue and talent.shrouded_suffocation.enabled and 3 or 1 end,
+        cp_gain = function() return ( stealthed.rogue or stealthed.improved_garrote ) and talent.shrouded_suffocation.enabled and 3 or 1 end,
 
         handler = function ()
             applyDebuff( "target", "garrote" )
