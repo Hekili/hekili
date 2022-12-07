@@ -2370,7 +2370,7 @@ spec:RegisterAbilities( {
         suffix = "(Cat)",
         cast = 0,
         cooldown = 0,
-        gcd = "off",
+        gcd = "spell",
         school = "physical",
 
         spend = function ()
