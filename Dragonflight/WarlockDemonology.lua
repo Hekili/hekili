@@ -491,7 +491,7 @@ spec:RegisterHook( "reset_precast", function()
         state:QueueAuraExpiration( "doom", ExpireDoom, debuff.doom.expires )
     end
 
-    if action.guillotine.lastCast - query_time < 1 and buff.fiendish_wrath.down then
+    if prev_gcd[1].guillotine and now - action.guillotine.lastCast < 1 and buff.fiendish_wrath.down then
         applyBuff( "fiendish_wrath" )
     end
 
