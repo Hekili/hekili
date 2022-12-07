@@ -26,15 +26,15 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
 # Cooldown Action Lists
-actions+=/call_action_list,name=cooldowns_improved_niuzao_woo,if=(talent.invoke_niuzao_the_black_ox.enabled+talent.improved_invoke_niuzao_the_black_ox.enabled)=2&(talent.weapons_of_order.enabled+talent.call_to_arms.enabled)<=1
-actions+=/call_action_list,name=cooldowns_improved_niuzao_cta,if=(talent.invoke_niuzao_the_black_ox.enabled+talent.improved_invoke_niuzao_the_black_ox.enabled)=2&(talent.weapons_of_order.enabled+talent.call_to_arms.enabled)=2
-actions+=/call_action_list,name=cooldowns_niuzao_woo,if=(talent.invoke_niuzao_the_black_ox.enabled+talent.improved_invoke_niuzao_the_black_ox.enabled)<=1
+actions+=/call_action_list,name=cooldowns_improved_niuzao_woo,strict=1,if=(talent.invoke_niuzao_the_black_ox.enabled+talent.improved_invoke_niuzao_the_black_ox.enabled)=2&(talent.weapons_of_order.enabled+talent.call_to_arms.enabled)<=1
+actions+=/call_action_list,name=cooldowns_improved_niuzao_cta,strict=1,if=(talent.invoke_niuzao_the_black_ox.enabled+talent.improved_invoke_niuzao_the_black_ox.enabled)=2&(talent.weapons_of_order.enabled+talent.call_to_arms.enabled)=2
+actions+=/call_action_list,name=cooldowns_niuzao_woo,strict=1,if=(talent.invoke_niuzao_the_black_ox.enabled+talent.improved_invoke_niuzao_the_black_ox.enabled)<=1
 # Rotation Action Lists
-actions+=/call_action_list,name=rotation_blackout_combo,if=talent.blackout_combo.enabled&talent.salsalabims_strength.enabled&talent.charred_passions.enabled&!talent.fluidity_of_motion.enabled
-actions+=/call_action_list,name=rotation_fom_boc,if=talent.blackout_combo.enabled&talent.salsalabims_strength.enabled&talent.charred_passions.enabled&talent.fluidity_of_motion.enabled
-actions+=/call_action_list,name=rotation_salsal_chp,if=!talent.blackout_combo.enabled&talent.salsalabims_strength.enabled&talent.charred_passions.enabled
+actions+=/call_action_list,name=rotation_blackout_combo,strict=1,if=talent.blackout_combo.enabled&talent.salsalabims_strength.enabled&talent.charred_passions.enabled&!talent.fluidity_of_motion.enabled
+actions+=/call_action_list,name=rotation_fom_boc,strict=1,if=talent.blackout_combo.enabled&talent.salsalabims_strength.enabled&talent.charred_passions.enabled&talent.fluidity_of_motion.enabled
+actions+=/call_action_list,name=rotation_salsal_chp,strict=1,if=!talent.blackout_combo.enabled&talent.salsalabims_strength.enabled&talent.charred_passions.enabled
 # Fallback Rotation
-actions+=/call_action_list,name=rotation_fallback,if=!talent.salsalabims_strength.enabled|!talent.charred_passions.enabled
+actions+=/call_action_list,name=rotation_fallback,strict=1,if=!talent.salsalabims_strength.enabled|!talent.charred_passions.enabled
 
 # Name: Niuzao + Weapons of Order / Niuzao + Call to Arms
 actions.cooldowns_niuzao_woo+=/weapons_of_order,if=talent.weapons_of_order.enabled
