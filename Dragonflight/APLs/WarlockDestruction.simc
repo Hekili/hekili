@@ -99,7 +99,15 @@ actions.havoc+=/rain_of_fire,if=active_enemies>1&(talent.avatar_of_destruction|(
 actions.havoc+=/conflagrate,if=!talent.backdraft
 actions.havoc+=/incinerate,if=cast_time<havoc_remains
 
-actions.items=use_items,if=pet.infernal.active|!talent.summon_infernal|boss&fight_remains<21
+actions.items+=/use_item,slot=trinket1,if=pet.infernal.active|!talent.summon_infernal|boss&fight_remains<21|trinket.1.cooldown.duration<cooldown.summon_infernal.remains
+actions.items+=/use_item,slot=trinket2,if=pet.infernal.active|!talent.summon_infernal|boss&fight_remains<21|trinket.2.cooldown.duration<cooldown.summon_infernal.remains
+# We might use trinket outside of infernal to not lose a use if we don't have RoC
+actions.items+=/use_item,slot=trinket1,if=(!talent.rain_of_chaos&boss&fight_remains<cooldown.summon_infernal.remains+trinket.1.cooldown.duration&time_to_die>trinket.1.cooldown.duration)|boss&fight_remains<cooldown.summon_infernal.remains|(trinket.2.cooldown.remains>0&trinket.2.cooldown.remains<cooldown.summon_infernal.remains)
+actions.items+=/use_item,slot=trinket2,if=(!talent.rain_of_chaos&boss&fight_remains<cooldown.summon_infernal.remains+trinket.2.cooldown.duration&time_to_die>trinket.2.cooldown.duration)|boss&fight_remains<cooldown.summon_infernal.remains|(trinket.1.cooldown.remains>0&trinket.1.cooldown.remains<cooldown.summon_infernal.remains)
+actions.items+=/use_item,name=erupting_spear_fragment,if=(!talent.rain_of_chaos&boss&fight_remains<cooldown.summon_infernal.remains+trinket.erupting_spear_fragment.cooldown.duration&time_to_die>trinket.erupting_spear_fragment.cooldown.duration)|boss&fight_remains<cooldown.summon_infernal.remains|trinket.erupting_spear_fragment.cooldown.duration<cooldown.summon_infernal.remains+5
+actions.items+=/use_item,name=desperate_invokers_codex
+actions.items+=/use_item,name=iceblood_deathsnare
+actions.items+=/use_item,name=conjured_chillglobe
 
 actions.ogcd=potion,if=pet.infernal.active|!talent.summon_infernal
 actions.ogcd+=/berserking,if=pet.infernal.active|!talent.summon_infernal

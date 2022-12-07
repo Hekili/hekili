@@ -675,7 +675,20 @@ all:RegisterAbilities( {
         item = 193773,
         toggle = "cooldowns",
 
-        proc = "random", -- TODO: Actually model the indicator buff like Acquired Treasure.
+        proc = function()
+            if     buff.spoils_of_neltharus_crit.up    then return "critical_strike"
+            elseif buff.spoils_of_neltharus_haste.up   then return "haste"
+            elseif buff.spoils_of_neltharus_mastery.up then return "mastery"
+            elseif buff.spoils_of_neltharus_vers.up    then return "versatility"     end
+            return "random"
+        end,
+
+        handler = function()
+            if     buff.spoils_of_neltharus_crit.up    then applyBuff( "spoils_of_neltharus_crit"    )
+            elseif buff.spoils_of_neltharus_haste.up   then applyBuff( "spoils_of_neltharus_haste"   )
+            elseif buff.spoils_of_neltharus_mastery.up then applyBuff( "spoils_of_neltharus_mastery" )
+            elseif buff.spoils_of_neltharus_vers.up    then applyBuff( "spoils_of_neltharus_vers"    ) end
+        end,
 
         auras = {
             spoils_of_neltharus_crit = {

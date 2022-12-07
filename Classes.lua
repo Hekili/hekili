@@ -1373,7 +1373,15 @@ all:RegisterAuras( {
     power_infusion = {
         id = 10060,
         duration = 20,
-        max_stack = 1
+        max_stack = 1,
+        shared = "player"
+    },
+
+    battle_shout = {
+        id = 6673,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player"
     },
 
     -- SL Season 3

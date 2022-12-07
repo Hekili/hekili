@@ -70,7 +70,7 @@ spec:RegisterTalents( {
     wind_rush_totem             = { 81082, 192077, 1 },
     wind_shear                  = { 81068, 57994 , 1 },
     winds_of_alakir             = { 81087, 382215, 2 },
-    
+
     -- Restoration
     acid_rain                   = { 81039, 378443, 1 },
     ancestral_awakening         = { 81043, 382309, 2 },
@@ -95,7 +95,7 @@ spec:RegisterTalents( {
     flash_flood                 = { 81020, 280614, 2 },
     flow_of_the_tides           = { 81031, 382039, 1 },
     healing_rain                = { 81040, 73920 , 1 },
-    healing_stream_totem        = { 81022, 5394  , 1 },
+    healing_stream_totem_2      = { 81022, 5394  , 1 },
     healing_tide_totem          = { 81032, 108280, 1 },
     healing_wave                = { 81026, 77472 , 1 },
     high_tide                   = { 81042, 157154, 1 },
@@ -131,20 +131,20 @@ spec:RegisterTalents( {
 
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
-    ancestral_gift      = 3756, -- (290254) 
-    cleansing_waters    = 3755, -- (290250) 
-    counterstrike_totem = 708 , -- (204331) 
-    electrocute         = 714 , -- (206642) 
-    grounding_totem     = 715 , -- (204336) 
-    living_tide         = 5388, -- (353115) 
-    precognition        = 5458, -- (377360) 
-    skyfury_totem       = 707 , -- (204330) 
-    spectral_recovery   = 3520, -- (204261) 
-    swelling_waves      = 712 , -- (204264) 
-    tidebringer         = 1930, -- (236501) 
-    traveling_storms    = 5528, -- (204403) 
-    unleash_shield      = 5437, -- (356736) 
+spec:RegisterPvpTalents( {
+    ancestral_gift      = 3756, -- (290254)
+    cleansing_waters    = 3755, -- (290250)
+    counterstrike_totem = 708 , -- (204331)
+    electrocute         = 714 , -- (206642)
+    grounding_totem     = 715 , -- (204336)
+    living_tide         = 5388, -- (353115)
+    precognition        = 5458, -- (377360)
+    skyfury_totem       = 707 , -- (204330)
+    spectral_recovery   = 3520, -- (204261)
+    swelling_waves      = 712 , -- (204264)
+    tidebringer         = 1930, -- (236501)
+    traveling_storms    = 5528, -- (204403)
+    unleash_shield      = 5437, -- (356736)
 } )
 
 
@@ -163,7 +163,7 @@ spec:RegisterAuras( {
         duration = 8,
     },
     earth_elemental = {
-        id = 198103,        
+        id = 198103,
     },
     earthliving_weapon = {
         id = 382021,
@@ -236,10 +236,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 120,
         gcd = "off",
-        
+
         startsCombat = false,
         texture = 538564,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -251,13 +251,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 300,
         gcd = "totem",
-        
+
         spend = 0.11,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136080,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -269,13 +269,13 @@ spec:RegisterAbilities( {
         cast = 10,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.04,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136077,
-        
+
         handler = function ()
         end,
     },
@@ -284,13 +284,13 @@ spec:RegisterAbilities( {
         cast = 10,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.04,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 237576,
-        
+
         handler = function ()
         end,
     },
@@ -299,10 +299,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 180,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 135791,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -314,10 +314,10 @@ spec:RegisterAbilities( {
         cast = 10,
         cooldown = 600,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 136010,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -328,10 +328,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 120,
         gcd = "off",
-        
+
         startsCombat = false,
         texture = 538565,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -343,13 +343,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "totem",
-        
+
         spend = 0.1,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 136013,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -361,13 +361,13 @@ spec:RegisterAbilities( {
         cast = 2.5,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.3,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136042,
-        
+
         handler = function ()
             removeStack("tidal_waves")
         end,
@@ -377,13 +377,13 @@ spec:RegisterAbilities( {
         cast = 2,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.01,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 136015,
-        
+
         handler = function ()
         end,
     },
@@ -394,13 +394,13 @@ spec:RegisterAbilities( {
         cooldown = 45,
         recharge = 45,
         gcd = "totem",
-        
+
         spend = 0.09,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 971076,
-        
+
         handler = function ()
         end,
     },
@@ -409,13 +409,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 45,
         gcd = "totem",
-        
+
         spend = 0.03,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 511726,
-        
+
         handler = function ()
         end,
     },
@@ -424,13 +424,13 @@ spec:RegisterAbilities( {
         cast = 1.5,
         cooldown = 5,
         gcd = "spell",
-        
+
         spend = 0.15,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 1698701,
-        
+
         handler = function ()
         end,
     },
@@ -439,10 +439,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 300,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 136024,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -453,15 +453,15 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.1,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136089,
-        
+
         handler = function ()
-            applyBuff("earth_shield")            
+            applyBuff("earth_shield")
         end,
     },
     earthbind_totem = {
@@ -469,13 +469,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "totem",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 136102,
-        
+
         handler = function ()
             applyDebuff("earthbind_totem")
         end,
@@ -485,13 +485,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "totem",
-        
+
         spend = 0.11,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136098,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -503,13 +503,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "totem",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136100,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -521,10 +521,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "totem",
-        
+
         startsCombat = false,
         texture = 237578,
-        
+
         handler = function ()
             applyBuff("earthliving_weapon")
         end,
@@ -534,10 +534,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "off",
-        
+
         startsCombat = false,
         texture = 132852,
-        
+
         handler = function ()
             applyBuff("everrising_tide")
         end,
@@ -547,10 +547,10 @@ spec:RegisterAbilities( {
         cast = 2,
         cooldown = 0,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 136034,
-        
+
         handler = function ()
             applyBuff("far_sight")
         end,
@@ -560,13 +560,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 6,
         gcd = "spell",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 135813,
-        
+
         handler = function ()
             applyDebuff("flame_shock")
         end,
@@ -576,10 +576,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 135814,
-        
+
         handler = function ()
             applyBuff("flametongue_weapon")
         end,
@@ -589,13 +589,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.01,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 135849,
-        
+
         handler = function ()
             applyDebuff("frost_shock")
         end,
@@ -605,10 +605,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 136095,
-        
+
         handler = function ()
             applyBuff("ghost_wolf")
         end,
@@ -618,13 +618,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 12,
         gcd = "spell",
-        
+
         spend = 0.2,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 451166,
-        
+
         handler = function ()
         end,
     },
@@ -633,13 +633,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "totem",
-        
+
         spend = 0.06,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136039,
-        
+
         handler = function ()
         end,
     },
@@ -648,10 +648,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 1029585,
-        
+
         handler = function ()
         end,
     },
@@ -660,30 +660,34 @@ spec:RegisterAbilities( {
         cast = 2,
         cooldown = 10,
         gcd = "spell",
-        
+
         spend = 0.22,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 136037,
-        
+
         handler = function ()
         end,
     },
     healing_stream_totem = {
         id = 5394,
         cast = 0,
-        charges = 1,
+        charges = function()
+            if talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank > 1 then return 2 end
+        end,
         cooldown = 30,
-        recharge = 30,
+        recharge = function()
+            if talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank > 1 then return 30 end
+        end,
         gcd = "totem",
-        
+
         spend = 0.09,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 135127,
-        
+
         handler = function ()
         end,
     },
@@ -692,16 +696,16 @@ spec:RegisterAbilities( {
         cast = 1.5,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.24,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136044,
-        
+
         handler = function ()
             removeStack("tidal_waves")
-            if talent.earthen_harmony.enabled then 
+            if talent.earthen_harmony.enabled then
                 addStack("earth_shield", nil, 1)
             end
         end,
@@ -711,13 +715,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 180,
         gcd = "totem",
-        
+
         spend = 0.06,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 538569,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -728,16 +732,16 @@ spec:RegisterAbilities( {
         cast = 2.5,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.15,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136043,
-        
+
         handler = function ()
             removeStack("tidal_waves")
-            if talent.earthen_harmony.enabled then 
+            if talent.earthen_harmony.enabled then
                 addStack("earth_shield", nil, 1)
             end
         end,
@@ -747,13 +751,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 300,
         gcd = "off",
-        
+
         spend = 0.22,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 132313,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -765,10 +769,10 @@ spec:RegisterAbilities( {
         cast = 1.7,
         cooldown = 30,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 237579,
-        
+
         handler = function ()
             applyDebuff("hex")
         end,
@@ -780,13 +784,13 @@ spec:RegisterAbilities( {
         cooldown = 8,
         recharge = 8,
         gcd = "spell",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 237582,
-        
+
         handler = function ()
         end,
     },
@@ -795,13 +799,13 @@ spec:RegisterAbilities( {
         cast = 2,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.01,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 136048,
-        
+
         handler = function ()
         end,
     },
@@ -810,10 +814,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 45,
         gcd = "spell",
-        
+
         startsCombat = true,
         texture = 1385911,
-        
+
         handler = function ()
             applyDebuff("lightning_lasso")
         end,
@@ -823,13 +827,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136051,
-        
+
         handler = function ()
             applyBuff("lightning_shield")
         end,
@@ -839,13 +843,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "totem",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136053,
-        
+
         handler = function ()
             applyBuff("mana_spring_totem")
         end,
@@ -855,10 +859,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 180,
         gcd = "totem",
-        
+
         startsCombat = false,
         texture = 4667424,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -870,10 +874,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "off",
-        
+
         startsCombat = false,
         texture = 136076,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -885,13 +889,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 45,
         gcd = "totem",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136070,
-        
+
         handler = function ()
         end,
     },
@@ -900,13 +904,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.09,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 460956,
-        
+
         handler = function ()
         end,
     },
@@ -917,13 +921,13 @@ spec:RegisterAbilities( {
         cooldown = 45,
         recharge = 45,
         gcd = "spell",
-        
+
         spend = 0.03,
         spendType = "mana",
-        
+
         startsCombat = true,
         texture = 3578231,
-        
+
         handler = function ()
             applyBuff("riptide")
             applyDebuff("flame_shock")
@@ -934,14 +938,14 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.1,
         spendType = "mana",
-        
+
         talent = "purge",
         startsCombat = true,
         texture = 136075,
-        
+
         handler = function ()
         end,
     },
@@ -952,13 +956,13 @@ spec:RegisterAbilities( {
         cooldown = 8,
         recharge = 8,
         gcd = "spell",
-        
+
         spend = 0.06,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 236288,
-        
+
         handler = function ()
         end,
     },
@@ -969,13 +973,13 @@ spec:RegisterAbilities( {
         cooldown = 6,
         recharge = 6,
         gcd = "spell",
-        
+
         spend = 0.08,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 252995,
-        
+
         handler = function ()
             applyBuff("riptide")
             if talent.tidal_waves.enabled then
@@ -988,13 +992,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 40,
         gcd = "totem",
-        
+
         spend = 0.03,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 135829,
-        
+
         handler = function ()
         end,
     },
@@ -1005,13 +1009,13 @@ spec:RegisterAbilities( {
         cooldown = 180,
         recharge = 180,
         gcd = "totem",
-        
+
         spend = 0.11,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 237586,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -1022,10 +1026,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "off",
-        
+
         startsCombat = false,
         texture = 132328,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -1036,13 +1040,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 120,
         gcd = "off",
-        
+
         spend = 0.14,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 451170,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -1054,13 +1058,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "totem",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 4667425,
-        
+
         handler = function ()
         end,
     },
@@ -1069,10 +1073,10 @@ spec:RegisterAbilities( {
         cast = 1.5,
         cooldown = 60,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 839977,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -1084,10 +1088,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "spell",
-        
+
         startsCombat = true,
         texture = 237589,
-        
+
         handler = function ()
         end,
     },
@@ -1096,10 +1100,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 10,
         gcd = "off",
-        
+
         startsCombat = false,
         texture = 538574,
-        
+
         handler = function ()
         end,
     },
@@ -1108,10 +1112,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 180,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 538570,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -1122,13 +1126,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "totem",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 538575,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -1140,13 +1144,13 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "totem",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 136108,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -1159,13 +1163,13 @@ spec:RegisterAbilities( {
         cooldown = 15,
         recharge = 15,
         gcd = "spell",
-        
+
         spend = 0.04,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 462328,
-        
+
         handler = function ()
         end,
     },
@@ -1174,10 +1178,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 538567,
-        
+
         handler = function ()
             applyBuff("unleash_life")
         end,
@@ -1187,10 +1191,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 132315,
-        
+
         handler = function ()
             applyBuff("water_shield")
         end,
@@ -1200,10 +1204,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         startsCombat = false,
         texture = 135863,
-        
+
         handler = function ()
             applyBuff("water_walking")
         end,
@@ -1213,13 +1217,13 @@ spec:RegisterAbilities( {
         cast = 1.5,
         cooldown = 20,
         gcd = "spell",
-        
+
         spend = 0.2,
         spendType = "mana",
-        
+
         startsCombat = false,
         texture = 893778,
-        
+
         handler = function ()
         end,
     },
@@ -1228,10 +1232,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 120,
         gcd = "totem",
-        
+
         startsCombat = false,
         texture = 538576,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -1243,7 +1247,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 12,
         gcd = "off",
-        
+
         toggle = "interrupts",
 
         debuff = "casting",

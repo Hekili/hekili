@@ -210,12 +210,6 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1,
     },
-    battle_shout = {
-        id = 6673,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
     battle_stance = {
         id = 386164,
         duration = 3600,

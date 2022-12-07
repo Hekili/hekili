@@ -46,4 +46,6 @@ actions.tyrant+=/call_action_list,name=ogcd,if=variable.next_tyrant-time<3
 actions.tyrant+=/call_action_list,name=items,if=variable.next_tyrant-time<3
 actions.tyrant+=/summon_demonic_tyrant,if=variable.next_tyrant-time<3
 actions.tyrant+=/demonbolt,if=buff.demonic_core.up
+# Soul Strike during Tyrant prep if you'll still get to use Soul Strike twice during the Tyrant window.
+actions.tyrant+=/soul_strike,if=variable.next_tyrant-time>5
 actions.tyrant+=/shadow_bolt
