@@ -94,6 +94,7 @@ state.empowerment = {
     stages = {}
 }
 state.max_empower = 3
+state.empowering = {}
 
 state.health = {
     max = 1,
@@ -5160,6 +5161,13 @@ local mt_aura = {
 }
 
 
+local mt_empowering = {
+    __index = function( t, k )
+        return state.empowerment.active and state.empowerment.spell == k
+    end
+}
+
+
 setmetatable( state, mt_state )
 setmetatable( state.action, mt_actions )
 setmetatable( state.active_dot, mt_active_dot )
@@ -5168,6 +5176,7 @@ setmetatable( state.buff, mt_buffs )
 setmetatable( state.cooldown, mt_cooldowns )
 setmetatable( state.debuff, mt_debuffs )
 setmetatable( state.dot, mt_dot )
+setmetatable( state.empowering, mt_empowering )
 setmetatable( state.equipped, mt_equipped )
 setmetatable( state.main_hand, mt_weapon_type )
 setmetatable( state.off_hand, mt_weapon_type )
