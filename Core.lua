@@ -1915,7 +1915,7 @@ function Hekili.Update()
 
                         -- Hekili:Yield( "Post-GCD for " .. dispName .. " #" .. i .. ": " .. action )
 
-                        local cast_target = state.cast_target ~= "nobody" and state.cast_target or state.target.unit
+                        local cast_target = i == 1 and state.cast_target ~= "nobody" and state.cast_target or state.target.unit
 
                         if state.buff.casting.up and not ability.dual_cast then
                             state.stopChanneling( false, action )
