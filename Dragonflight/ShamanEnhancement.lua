@@ -1437,7 +1437,9 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
             if talent.focused_insight.enabled then applyBuff( "focused_insight" ) end
-            if talent.swirling_maelstrom.enabled then gain_maelstrom( 2 ) end
+            if talent.swirling_maelstrom.enabled then
+                gain_maelstrom( min( 6, active_dot.flame_shock ) )
+            end
         end,
     },
 
@@ -1497,12 +1499,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.hailstorm.up then
-                if talent.swirling_maelstrom.enabled and buff.hailstorm.stack > 1 then gain_maelstrom( 2 ) end
+                if talent.swirling_maelstrom.enabled and buff.hailstorm.stack > 1 then gain_maelstrom( 1 ) end
                 removeBuff( "hailstorm" )
             end
-            removeBuff( "ice_strike_buff" )
 
-            setCooldown( "flame_shock", 6 * haste )
+            removeBuff( "ice_strike_buff" )
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
@@ -1650,7 +1651,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "ice_strike" )
             applyBuff( "ice_strike_buff" )
 
-            if talent.swirling_maelstrom.enabled then gain_maelstrom( 2 ) end
+            if talent.swirling_maelstrom.enabled then gain_maelstrom( 1 ) end
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
@@ -1728,6 +1729,7 @@ spec:RegisterAbilities( {
             if talent.lashing_flames.enabled then applyDebuff( "target", "lashing_flames" ) end
 
             removeBuff( "primal_lava_actuators" )
+            removeBuff( "ashen_catalyst" )
 
             if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
             if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_fire" ) end
