@@ -161,6 +161,8 @@ local displayTemplate = {
     frameStrata = "LOW",
     frameLevel = 10,
 
+    hideOmniCC = false,
+
     queue = {
         anchor = 'RIGHT',
         direction = 'RIGHT',
@@ -1563,6 +1565,14 @@ do
                                         order = 2,
                                     }
                                 }
+                            },
+
+                            hideOmniCC = {
+                                type = "toggle",
+                                name = "Hide OmniCC",
+                                desc = "If enabled, OmniCC will be hidden from each icon oh this display.",
+                                width = "full",
+                                order = 18,
                             },
                         },
                     },
