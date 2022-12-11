@@ -451,11 +451,16 @@ all:RegisterAbilities( {
         gcd = "off",
 
         item = 193732,
-        buff = "skewering_cold",
 
+
+        usable = function() return active_dot.skewering_cold > 0, "requires skewering_cold stacks" end,
         handler = function()
-            removeDebuff( "target", "skewering_cold" )
-            applyDebuff( "target", "breaking_the_ice" )
+            if debuff.skewering_cold.up then
+                removeDebuff( "target", "skewering_cold" )
+                applyDebuff( "target", "breaking_the_ice" )
+            end
+
+            active_dot.skewering_cold = 0
         end,
 
         proc = "damage",

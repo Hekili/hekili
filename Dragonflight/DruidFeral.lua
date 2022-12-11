@@ -2494,6 +2494,18 @@ spec:RegisterSetting( "rip_duration", 9, {
     width = "full",
 } )
 
+spec:RegisterSetting( "allow_shadowmeld", nil, {
+    name = "Allow |T132089:0|t Shadowmeld",
+    desc = "If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  " ..
+        "Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat).",
+    type = "toggle",
+    width = "full",
+    get = function () return not Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled end,
+    set = function ( _, val )
+        Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled = not val
+    end,
+} )
+
 
 spec:RegisterOptions( {
     enabled = true,

@@ -2190,6 +2190,7 @@ spec:RegisterOptions( {
     nameplateRange = 8,
 
     damage = true,
+    damageDots = true,
     damageExpiration = 6,
 
     potion = "spectral_intellect",
