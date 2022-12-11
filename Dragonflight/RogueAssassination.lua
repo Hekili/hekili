@@ -1868,7 +1868,7 @@ spec:RegisterAbilities( {
     exsanguinate = {
         id = 200806,
         cast = 0,
-        cooldown = 45,
+        cooldown = 180,
         gcd = "totem",
         school = "physical",
 
