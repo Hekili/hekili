@@ -7,7 +7,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_sta
 # Determine if we should be be casting our pre-Exsanguinate Rupture with Echoing Reprimand CP
 actions.precombat+=/variable,name=exsanguinate_rupture_cp,value=cp_max_spend<?(talent.resounding_clarity*7)
 actions.precombat+=/stealth
-actions.precombat+=/slice_and_dice,precombat_seconds=1
+actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 
 # Executed every time the actor is available.
 # Restealth if possible (no vulnerable enemies in combat)
@@ -41,8 +41,8 @@ actions.cds+=/sepsis,if=!stealthed.rogue&dot.garrote.ticking&(target.time_to_die
 # Deathmark to be used if not stealthed, Rupture is up, and all other talent conditions are satisfied
 actions.cds+=/variable,name=deathmark_condition,value=!stealthed.rogue&dot.rupture.ticking&!debuff.deathmark.up&variable.deathmark_exsanguinate_condition&variable.deathmark_ma_condition
 # Sync the priority stat buff trinket with Deathmark, otherwise use on cooldown
-actions.cds+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
-actions.cds+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
+actions.cds+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|!debuff.deathmark.up&cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
+actions.cds+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|!debuff.deathmark.up&cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
 actions.cds+=/deathmark,if=variable.deathmark_condition
 actions.cds+=/kingsbane,if=(debuff.shiv.up|cooldown.shiv.remains<6)&buff.envenom.up&(cooldown.deathmark.remains>=50|dot.deathmark.ticking)
 # Exsanguinate when not stealthed and both Rupture and Garrote are up for long enough. Attempt to sync with Echoing Reprimand if using Resounding Clarity.
