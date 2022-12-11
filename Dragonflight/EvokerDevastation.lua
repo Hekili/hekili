@@ -1448,6 +1448,7 @@ spec:RegisterOptions( {
     nameplateRange = 35,
 
     damage = true,
+    damageDots = true,
     damageOnScreen = true,
     damageExpiration = 8,
 
