@@ -1379,13 +1379,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 1784
     },
-    -- Your next combo point generator will critically strike.
-    -- https://wowhead.com/beta/spell=227151
+    -- Damage done increased by 10%.
+    -- https://wowhead.com/beta/spell= = {
     symbols_of_death = {
-        id = 227151,
+        id = 212283,
         duration = 10,
         max_stack = 1,
-        copy = 227151
     },
     -- Talent: Mastery increased by ${$w2*$mas}.1%.
     -- https://wowhead.com/beta/spell=381623
@@ -2361,9 +2360,12 @@ spec:RegisterAbilities( {
         usable = function () return not stealthed.all, "not used in stealth" end,
         handler = function ()
             applyBuff( "shadow_dance" )
+
             if talent.danse_macabre.enabled then applyBuff( "danse_macabre" ) end
             if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows" ) end
             if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
+            if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+
             if azerite.the_first_dance.enabled then
                 gain( 2, "combo_points" )
                 applyBuff( "the_first_dance" )
@@ -2503,9 +2505,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "stealth" )
+
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
+            if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
             if talent.take_em_by_surprise.enabled then applyBuff( "take_em_by_surprise" ) end
+
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
         end,
@@ -2575,7 +2580,9 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "vanish" )
             applyBuff( "stealth" )
+
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
+            if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
 
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end

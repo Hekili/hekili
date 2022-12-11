@@ -246,6 +246,11 @@ spec:RegisterAuras( {
         duration = 4,
         max_stack = 1
     },
+    silent_storm = {
+        id = 385727,
+        duration = 3600,
+        max_stack = 1
+    },
     subterfuge = {
         id = 115192,
         duration = 3,
@@ -984,6 +989,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
+            if buff.silent_storm.up then
+                applyDebuff( "target", "find_weakness" )
+                active_dot.find_weakness = active_enemies
+                removeBuff( "silent_storm" )
+            end
             removeBuff( "symbols_of_death_crit" )
         end,
     },
@@ -1040,7 +1050,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "symbols_of_death" )
-            applyBuff( "symbols_of_death_crit" )
+            -- applyBuff( "symbols_of_death_crit" )
 
             if legendary.the_rotten.enabled then applyBuff( "the_rotten" ) end
         end,
