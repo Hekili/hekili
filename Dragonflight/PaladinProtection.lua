@@ -1182,7 +1182,7 @@ spec:RegisterAbilities( {
         talent = "hammer_of_wrath",
         startsCombat = false,
 
-        usable = function () return target.health_pct < 20 or ( ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.avenging_wrath.enabled ) or buff.hammer_of_wrath_hallow.up or buff.negative_energy_token_proc.up, "requires low health, avenging_wrath, or ashen_hallow" end,
+        usable = function () return target.health_pct < 20 or ( level > 57 and ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.avenging_wrath.enabled ) or buff.hammer_of_wrath_hallow.up or buff.negative_energy_token_proc.up, "requires low health, avenging_wrath, or ashen_hallow" end,
         handler = function ()
             gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
 
