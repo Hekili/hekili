@@ -7,7 +7,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_sta
 # Determine if we should be be casting our pre-Exsanguinate Rupture with Echoing Reprimand CP
 actions.precombat+=/variable,name=exsanguinate_rupture_cp,value=cp_max_spend<?(talent.resounding_clarity*7)
 actions.precombat+=/stealth
-actions.precombat+=/slice_and_dice,precombat_seconds=1
+actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 
 # Executed every time the actor is available.
 # Restealth if possible (no vulnerable enemies in combat)
@@ -30,7 +30,7 @@ actions+=/lights_judgment
 actions+=/bag_of_tricks
 
 # Cooldowns  If adds are up, snipe the one with lowest TTD. Use when dying faster than CP deficit or without any CP.
-actions.cds=marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up&(!variable.single_target|target.time_to_die<30)&(target.time_to_die<combo_points.deficit*1.5|combo_points.deficit>=cp_max_spend)
+actions.cds=marked_for_death,line_cd=1.5,cycle_targets=1,if=raid_event.adds.up&(!variable.single_target|boss&fight_remains<30)&(target.time_to_die<combo_points.deficit*1.5|combo_points.deficit>=cp_max_spend)
 # If no adds will die within the next 30s, use MfD for max CP.
 actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration&combo_points.deficit>=cp_max_spend
 # Sync Deathmark window with Exsanguinate if applicable
@@ -41,8 +41,8 @@ actions.cds+=/sepsis,if=!stealthed.rogue&dot.garrote.ticking&(target.time_to_die
 # Deathmark to be used if not stealthed, Rupture is up, and all other talent conditions are satisfied
 actions.cds+=/variable,name=deathmark_condition,value=!stealthed.rogue&dot.rupture.ticking&!debuff.deathmark.up&variable.deathmark_exsanguinate_condition&variable.deathmark_ma_condition
 # Sync the priority stat buff trinket with Deathmark, otherwise use on cooldown
-actions.cds+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
-actions.cds+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
+actions.cds+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|!debuff.deathmark.up&cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
+actions.cds+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|!debuff.deathmark.up&cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
 actions.cds+=/deathmark,if=variable.deathmark_condition
 actions.cds+=/kingsbane,if=(debuff.shiv.up|cooldown.shiv.remains<6)&buff.envenom.up&(cooldown.deathmark.remains>=50|dot.deathmark.ticking)
 # Exsanguinate when not stealthed and both Rupture and Garrote are up for long enough. Attempt to sync with Echoing Reprimand if using Resounding Clarity.
@@ -64,7 +64,7 @@ actions.cds+=/call_action_list,name=vanish,if=!stealthed.all&master_assassin_rem
 actions.cds+=/cold_blood,if=combo_points>=4
 
 # Direct damage abilities  Envenom at 4+ (5+ with DS) CP. Immediately on 2+ targets, with Deathmark, or with TB; otherwise wait for some energy. Also wait if Exsg combo is coming up.
-actions.direct=envenom,if=effective_combo_points>=4+talent.deeper_stratagem.enabled&(debuff.deathmark.up|debuff.shiv.up|debuff.amplifying_poison.stack>=10|energy.deficit<=25+energy.regen_combined|!variable.single_target|effective_combo_points>cp_max_spend)&(!talent.exsanguinate.enabled|cooldown.exsanguinate.remains>2|talent.resounding_clarity&(cooldown.echoing_reprimand.ready&combo_points>2|effective_combo_points>5))
+actions.direct+=/envenom,if=effective_combo_points>=4+talent.deeper_stratagem.enabled&(debuff.deathmark.up|debuff.shiv.up|debuff.amplifying_poison.stack>=10|energy.deficit<=25+energy.regen_combined|!variable.single_target|effective_combo_points>cp_max_spend)&(!talent.exsanguinate.enabled|cooldown.exsanguinate.remains>2|talent.resounding_clarity&(cooldown.echoing_reprimand.ready&combo_points>2|effective_combo_points>5))
 actions.direct+=/variable,name=use_filler,value=combo_points.deficit>1|energy.deficit<=25+energy.regen_combined|!variable.single_target
 # Apply SBS to all targets without a debuff as priority, preferring targets dying sooner after the primary target
 actions.direct+=/serrated_bone_spike,if=variable.use_filler&!dot.serrated_bone_spike_dot.ticking
@@ -76,7 +76,7 @@ actions.direct+=/serrated_bone_spike,if=variable.use_filler&master_assassin_rema
 # Fan of Knives at 19+ stacks of Hidden Blades or against 4+ targets.
 actions.direct+=/fan_of_knives,if=variable.use_filler&(!priority_rotation&spell_targets.fan_of_knives>=3+stealthed.rogue+talent.dragontempered_blades)
 # Fan of Knives to apply poisons if inactive on any target (or any bleeding targets with priority rotation) at 3T
-actions.direct+=/fan_of_knives,if=variable.use_filler&spell_targets.fan_of_knives>=3&active_dot.deadly_poison_dot<cycle_enemies
+actions.direct+=/fan_of_knives,cycle_targets=1,if=variable.use_filler&spell_targets.fan_of_knives>=3&!dot.deadly_poison_dot.ticking&(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking)
 actions.direct+=/echoing_reprimand,if=(!talent.exsanguinate|!talent.resounding_clarity)&variable.use_filler&cooldown.deathmark.remains>10|boss&fight_remains<20
 actions.direct+=/ambush,if=variable.use_filler
 # Tab-Mutilate to apply Deadly Poison at 2 targets
@@ -84,7 +84,7 @@ actions.direct+=/mutilate,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&!deb
 actions.direct+=/mutilate,if=variable.use_filler
 
 # Damage over time abilities  Limit secondary Garrotes for priority rotation if we have 35 energy regen or Garrote will expire on the primary target
-actions.dot=variable,name=skip_cycle_garrote,value=priority_rotation&(dot.garrote.remains<cooldown.garrote.duration|variable.regen_saturated)
+actions.dot+=/variable,name=skip_cycle_garrote,value=priority_rotation&(dot.garrote.remains<cooldown.garrote.duration|variable.regen_saturated)
 # Limit secondary Ruptures for priority rotation if we have 35 energy regen or Shiv is up on 2T+
 actions.dot+=/variable,name=skip_cycle_rupture,value=priority_rotation&(debuff.shiv.up&spell_targets.fan_of_knives>2|variable.regen_saturated)
 # Limit Ruptures when appropriate, not currently used
@@ -108,7 +108,7 @@ actions.dot+=/crimson_tempest,if=spell_targets>=2&effective_combo_points>=4&rema
 actions.dot+=/crimson_tempest,if=spell_targets=1&!talent.dashing_scoundrel&effective_combo_points>=(cp_max_spend-1)&refreshable&!will_lose_exsanguinate&!debuff.shiv.up&debuff.amplifying_poison.stack<15&target.time_to_die-remains>4
 
 # Stealthed Actions
-actions.stealthed=indiscriminate_carnage,if=spell_targets.fan_of_knives>desired_targets|spell_targets.fan_of_knives>1&raid_event.adds.in>60
+actions.stealthed+=/indiscriminate_carnage,if=spell_targets.fan_of_knives>desired_targets|spell_targets.fan_of_knives>1&raid_event.adds.in>60
 ## actions.stealthed+=/pool_resource,for_next=1
 # Improved Garrote: Apply or Refresh with buffed Garrotes
 actions.stealthed+=/garrote,cycle_targets=1,if=stealthed.improved_garrote&!will_lose_exsanguinate&(remains<12%exsanguinated_rate|pmultiplier<=1)&target.time_to_die-remains>2
@@ -116,8 +116,8 @@ actions.stealthed+=/garrote,cycle_targets=1,if=stealthed.improved_garrote&!will_
 # Improved Garrote + Exsg on 1T: Refresh Garrote at the end of stealth to get max duration before Exsanguinate
 actions.stealthed+=/garrote,if=talent.exsanguinate.enabled&stealthed.improved_garrote&active_enemies=1&!will_lose_exsanguinate&improved_garrote_remains<1.3
 
-## actions.vanish=pool_resource,for_next=1,extra_amount=45
-# Vanish Sync for Improved Garrote with Deathmark
+# Vanish  Vanish Sync for Improved Garrote with Deathmark
+actions.vanish+=/pool_resource,for_next=1,extra_amount=45
 actions.vanish+=/vanish,if=talent.improved_garrote&cooldown.garrote.up&!exsanguinated.garrote&dot.garrote.pmultiplier<=1&(debuff.deathmark.up|cooldown.deathmark.remains<4)&combo_points.deficit>=(spell_targets.fan_of_knives>?4)
 ## actions.vanish+=/pool_resource,for_next=1,extra_amount=45
 # Vanish for Indiscriminate Carnage or Improved Garrote at 2-3+ targets
