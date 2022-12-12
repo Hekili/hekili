@@ -25,7 +25,7 @@ actions+=/thunderous_roar
 actions+=/shockwave,if=talent.sonic_boom.enabled&buff.avatar.up&talent.unstoppable_force.enabled&!talent.rumbling_earth.enabled
 actions+=/shield_charge
 actions+=/shield_block,if=buff.shield_block.duration<=18&talent.enduring_defenses.enabled|buff.shield_block.duration<=12
-actions+=/run_action_list,name=aoe,if=spell_targets.thunder_clap>=3
+actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.thunder_clap>=3
 actions+=/call_action_list,name=generic
 
 actions.aoe+=/thunder_clap,if=dot.rend.remains<=1&talent.blood_and_thunder&talent.rend
