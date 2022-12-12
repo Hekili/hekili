@@ -55,7 +55,8 @@ actions.cooldowns+=/summon_gargoyle,if=buff.commander_of_the_dead_window.up|!tal
 actions.cooldowns+=/unholy_blight,if=variable.st_planning&((!talent.apocalypse|cooldown.apocalypse.remains)&talent.morbidity|!talent.morbidity)
 actions.cooldowns+=/unholy_blight,if=variable.adds_remain|boss&fight_remains<21
 actions.cooldowns+=/abomination_limb,if=rune<3&variable.st_planning
-actions.cooldowns+=/unholy_assault,if=variable.st_planning|variable.adds_remain
+actions.cooldowns+=/unholy_assault,if=variable.st_planning
+actions.cooldowns+=/unholy_assault,cycle_targets=1,if=variable.adds_remain&debuff.festering_wound.stack<2
 actions.cooldowns+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5
 actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&active_enemies>=2&target.time_to_die>(dot.soul_reaper.remains+5)
 actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&cooldown.dark_transformation.remains>6|boss&fight_remains<gcd
@@ -103,7 +104,7 @@ actions.trinkets+=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5,
 actions.trinkets+=/variable,name=trinket_1_buffs,value=trinket.1.has_buff.strength|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit
 actions.trinkets+=/variable,name=trinket_2_buffs,value=trinket.2.has_buff.strength|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit
 actions.trinkets+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&variable.trinket_2_buffs|variable.trinket_2_buffs&((trinket.2.cooldown.duration%trinket.2.proc.any_dps.duration)*(1.5+trinket.2.has_buff.strength)*(variable.trinket_2_sync))>((trinket.1.cooldown.duration%trinket.1.proc.any_dps.duration)*(1.5+trinket.1.has_buff.strength)*(variable.trinket_1_sync))
-actions.trinkets+=/use_item,slot=trinket1,if=((!talent.summon_gargoyle|talent.summon_gargoyle&pet.gargoyle.active|cooldown.summon_gargoyle.remains>90)&(pet.apoc_ghoul.active|buff.dark_transformation.up)&variable.trinket_priority=1)|trinket.1.proc.any_dps.duration>=fight_remains
-actions.trinkets+=/use_item,slot=trinket2,if=((!talent.summon_gargoyle|talent.summon_gargoyle&pet.gargoyle.active|cooldown.summon_gargoyle.remains>90)&(pet.apoc_ghoul.active|buff.dark_transformation.up)&variable.trinket_priority=2)|trinket.2.proc.any_dps.duration>=fight_remains
-actions.trinkets+=/use_item,slot=trinket1,if=!variable.trinket_1_buffs&(trinket.2.cooldown.remains|!variable.trinket_2_buffs|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>20&!pet.gargoyle.active)|boss&fight_remains<15
-actions.trinkets+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(trinket.1.cooldown.remains|!variable.trinket_1_buffs|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>20&!pet.gargoyle.active)|boss&fight_remains<15
+actions.trinkets+=/use_item,slot=trinket1,if=((!talent.summon_gargoyle|talent.summon_gargoyle&pet.gargoyle.active|cooldown.summon_gargoyle.remains>90|variable.trinket_priority=2&cooldown.summon_gargoyle.remains>20)&(pet.apoc_ghoul.active|buff.dark_transformation.up)&(variable.trinket_priority=1|trinket.2.cooldown.remains))|trinket.1.proc.any_dps.duration>=fight_remains
+actions.trinkets+=/use_item,slot=trinket2,if=((!talent.summon_gargoyle|talent.summon_gargoyle&pet.gargoyle.active|cooldown.summon_gargoyle.remains>90|variable.trinket_priority=1&cooldown.summon_gargoyle.remains>20)&(pet.apoc_ghoul.active|buff.dark_transformation.up)&(variable.trinket_priority=2|trinket.1.cooldown.remains))|trinket.2.proc.any_dps.duration>=fight_remains
+actions.trinkets+=/use_item,slot=trinket1,if=!variable.trinket_1_buffs&(trinket.2.cooldown.remains|!variable.trinket_2_buffs|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>20&!pet.gargoyle.active)|fight_remains<15
+actions.trinkets+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(trinket.1.cooldown.remains|!variable.trinket_1_buffs|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>20&!pet.gargoyle.active)|fight_remains<15

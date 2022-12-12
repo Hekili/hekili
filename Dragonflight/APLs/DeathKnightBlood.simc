@@ -3,26 +3,25 @@ actions.precombat+=/fleshcraft
 # Interrupt
 actions+=/mind_freeze
 actions+=/strangulate
-actions+=/variable,name=death_strike_dump_amount,value=70
-# Since the potion cooldown has changed, we'll sync with DRW
+actions+=/variable,name=death_strike_dump_amount,value=65
+actions+=/variable,name=bone_shield_refresh_value,value=4,op=setif,condition=!talent.deaths_caress.enabled|talent.consumption.enabled|talent.blooddrinker.enabled,value_else=5
 actions+=/potion,if=buff.dancing_rune_weapon.up
-actions+=/use_items
+actions+=/call_action_list,name=trinkets
 actions+=/raise_dead
 actions+=/icebound_fortitude,if=tanking&incoming_damage_5s>=ibf_damage&!(buff.dancing_rune_weapon.up|buff.vampiric_blood.up)
 actions+=/vampiric_blood,if=tanking&incoming_damage_5s>=vb_damage&!(buff.dancing_rune_weapon.up|buff.icebound_fortitude.up)
 actions+=/death_strike,if=buff.blood_shield.up&buff.blood_shield.remains<=gcd.max
 actions+=/deaths_caress,if=!buff.bone_shield.up
+actions+=/death_and_decay,if=!death_and_decay.ticking&(talent.unholy_ground|talent.sanguine_ground)|spell_targets.death_and_decay>3|buff.crimson_scourge.up
+actions+=/death_strike,if=buff.coagulopathy.remains<=gcd|buff.icy_talons.remains<=gcd|runic_power<=variable.death_strike_dump_amount|runic_power.deficit<=variable.heart_strike_rp|target.time_to_die<10
 actions+=/blooddrinker,if=!buff.dancing_rune_weapon.up
 actions+=/call_action_list,name=racials
-# Attempt to sacrifice the ghoul if we predictably will not do much in the near future
 actions+=/sacrificial_pact,if=!buff.dancing_rune_weapon.up&(pet.ghoul.remains<2|boss&fight_remains<gcd)
 actions+=/call_action_list,name=covenants
 actions+=/blood_tap,if=(rune<=2&rune.time_to_4>gcd&charges_fractional>=1.8)|rune.time_to_3>gcd
-actions+=/abomination_limb,if=buff.bone_shield.remains<gcd
-actions+=/marrowrend,if=buff.bone_shield.remains<gcd
-actions+=/deaths_caress,if=buff.bone_shield.remains<gcd|!buff.bone_shield.up
 actions+=/gorefiends_grasp,if=talent.tightening_grasp.enabled
-actions+=/death_and_decay,if=!death_and_decay.ticking&(talent.unholy_ground|talent.sanguine_ground)&cooldown.dancing_rune_weapon.remains<gcd
+actions+=/empower_rune_weapon,if=rune<6&runic_power.deficit>5
+actions+=/abomination_limb
 actions+=/dancing_rune_weapon,if=!buff.dancing_rune_weapon.up
 actions+=/run_action_list,name=drw_up,if=buff.dancing_rune_weapon.up
 actions+=/call_action_list,name=standard
@@ -32,21 +31,21 @@ actions.covenants+=/swarming_mist,if=cooldown.dancing_rune_weapon.remains>3&runi
 actions.covenants+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent&!buff.volatile_solvent_humanoid.up,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 actions.covenants+=/shackle_the_unworthy,if=rune<3&runic_power<100
 
-actions.drw_up=tombstone,if=buff.bone_shield.stack>5&rune>=2&runic_power.deficit>=30&((talent.shattering_bone&death_and_decay.ticking)|!talent.shattering_bone)
-actions.drw_up+=/empower_rune_weapon,if=rune<6&runic_power.deficit>5
-actions.drw_up+=/marrowrend,if=buff.bone_shield.stack<5&buff.dancing_rune_weapon.remains<gcd
-actions.drw_up+=/marrowrend,if=(buff.bone_shield.remains<=rune.time_to_3|(buff.bone_shield.stack<2&buff.abomination_limb.up))&runic_power.deficit>20
-actions.drw_up+=/deaths_caress,if=buff.bone_shield.remains<=rune.time_to_3&rune<=1
+actions.drw_up+=/blood_boil,if=!dot.blood_plague.ticking
+actions.drw_up+=/tombstone,if=buff.bone_shield.stack>5&rune>=2&runic_power.deficit>=30&!(talent.shattering_bones.enabled&death_and_decay.ticking)
 actions.drw_up+=/death_strike,if=buff.coagulopathy.remains<=gcd|buff.icy_talons.remains<=gcd
+actions.drw_up+=/deaths_caress,if=(buff.bone_shield.remains<=4|(buff.bone_shield.stack<variable.bone_shield_refresh_value+1))&runic_power.deficit>10&rune.time_to_3>gcd
+actions.drw_up+=/marrowrend,if=(buff.bone_shield.remains<=4|buff.bone_shield.stack<variable.bone_shield_refresh_value)&runic_power.deficit>20
 actions.drw_up+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&target.time_to_die>(dot.soul_reaper.remains+5)
 actions.drw_up+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&active_enemies>=2&target.time_to_die>(dot.soul_reaper.remains+5)
 actions.drw_up+=/death_and_decay,if=!death_and_decay.ticking&(talent.sanguine_ground|talent.unholy_ground)
-actions.drw_up+=/blood_boil,if=((charges>=2&rune<=1)|dot.blood_plague.remains<=2)|(spell_targets.blood_boil>5&charges_fractional>=1.1)
+actions.drw_up+=/blood_boil,if=spell_targets.blood_boil>2&charges_fractional>=1.1
 actions.drw_up+=/variable,name=heart_strike_rp_drw,value=(25+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
-actions.drw_up+=/death_strike,if=runic_power.deficit<=variable.heart_strike_rp_drw
+actions.drw_up+=/death_strike,if=runic_power.deficit<=variable.heart_strike_rp_drw|runic_power>=variable.death_strike_dump_amount
 actions.drw_up+=/consumption
-actions.drw_up+=/death_and_decay,if=!death_and_decay.ticking&(spell_targets.death_and_decay==3&buff.crimson_scourge.up)|spell_targets.death_and_decay>=4
+actions.drw_up+=/blood_boil,if=charges_fractional>=1.1&buff.hemostasis.stack<5
 actions.drw_up+=/heart_strike,if=rune.time_to_2<gcd|runic_power.deficit>=variable.heart_strike_rp_drw
+
 
 actions.racials=blood_fury,if=cooldown.dancing_rune_weapon.ready&(!cooldown.blooddrinker.ready|!talent.blooddrinker.enabled)
 actions.racials+=/berserking
@@ -57,23 +56,24 @@ actions.racials+=/fireblood
 actions.racials+=/bag_of_tricks
 actions.racials+=/arcane_torrent,if=runic_power.deficit>20
 
-actions.standard=tombstone,if=buff.bone_shield.stack>5&rune>=2&runic_power.deficit>=30&((talent.shattering_bone&death_and_decay.ticking)|!talent.shattering_bone)
-actions.standard+=/abomination_limb,if=buff.bone_shield.stack<6
-actions.standard+=/marrowrend,if=buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*4)|buff.bone_shield.stack<6&runic_power.deficit>20&!(talent.insatiable_blade&cooldown.dancing_rune_weapon.remains<buff.bone_shield.remains)
-actions.standard+=/deaths_caress,if=buff.bone_shield.remains<=rune.time_to_3&rune<=1
-actions.standard+=/death_strike,if=buff.coagulopathy.remains<=gcd|buff.icy_talons.remains<=gcd
-actions.standard+=/death_and_decay,if=!death_and_decay.ticking&(talent.sanguine_ground|talent.unholy_ground)
-actions.standard+=/bonestorm,if=runic_power>=100
+actions.standard+=/tombstone,if=buff.bone_shield.stack>5&rune>=2&runic_power.deficit>=30&!(talent.shattering_bones.enabled&death_and_decay.ticking)&cooldown.dancing_rune_weapon.remains>=25
+actions.standard+=/variable,name=heart_strike_rp,value=(10+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
+actions.standard+=/death_strike,if=buff.coagulopathy.remains<=gcd|buff.icy_talons.remains<=gcd|runic_power<=variable.death_strike_dump_amount|runic_power.deficit<=variable.heart_strike_rp|target.time_to_die<10
+actions.standard+=/deaths_caress,if=(buff.bone_shield.remains<=4|(buff.bone_shield.stack<variable.bone_shield_refresh_value+1))&runic_power.deficit>10&!(talent.insatiable_blade&cooldown.dancing_rune_weapon.remains<buff.bone_shield.remains)&!talent.consumption.enabled&!talent.blooddrinker.enabled&rune.time_to_3>gcd
+actions.standard+=/marrowrend,if=(buff.bone_shield.remains<=4|buff.bone_shield.stack<variable.bone_shield_refresh_value)&runic_power.deficit>20&!(talent.insatiable_blade&cooldown.dancing_rune_weapon.remains<buff.bone_shield.remains)
+actions.standard+=/consumption
 actions.standard+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&target.time_to_die>(dot.soul_reaper.remains+5)
 actions.standard+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&active_enemies>=2&target.time_to_die>(dot.soul_reaper.remains+5)
-actions.standard+=/death_strike,if=runic_power.deficit<=variable.death_strike_dump_amount&!(talent.bonestorm.enabled&cooldown.bonestorm.remains<2)
+actions.standard+=/bonestorm,if=runic_power>=100
 actions.standard+=/blood_boil,if=charges_fractional>=1.8&(buff.hemostasis.stack<=(5-spell_targets.blood_boil)|spell_targets.blood_boil>2)
-actions.standard+=/death_and_decay,if=!death_and_decay.ticking&buff.crimson_scourge.up&talent.relish_in_blood.enabled&runic_power.deficit>10
-actions.standard+=/variable,name=heart_strike_rp,value=(15+spell_targets.heart_strike*talent.heartbreaker.enabled*2)
-actions.standard+=/death_strike,if=(runic_power.deficit<=variable.heart_strike_rp)|boss&fight_remains<10
-actions.standard+=/death_and_decay,if=!death_and_decay.ticking&spell_targets.death_and_decay>=3
 actions.standard+=/heart_strike,if=rune.time_to_4<gcd
-actions.standard+=/consumption
-actions.standard+=/death_and_decay,if=!death_and_decay.ticking&(buff.crimson_scourge.up|talent.rapid_decomposition.enabled)
 actions.standard+=/blood_boil,if=charges_fractional>=1.1
 actions.standard+=/heart_strike,if=(rune>1&(rune.time_to_3<gcd|buff.bone_shield.stack>7))
+
+# Prioritize damange dealing on use trinkets over trinkets that give buffs
+actions.trinkets+=/variable,name=trinket_1_buffs,value=trinket.1.has_buff.strength|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit
+actions.trinkets+=/variable,name=trinket_2_buffs,value=trinket.2.has_buff.strength|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit
+actions.trinkets+=/use_item,slot=trinket1,if=!variable.trinket_1_buffs
+actions.trinkets+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs
+actions.trinkets+=/use_item,slot=trinket1,if=variable.trinket_1_buffs&(buff.dancing_rune_weapon.up|!talent.dancing_rune_weapon|cooldown.dancing_rune_weapon.remains>20)&(trinket.2.cooldown.remains|variable.trinket_2_buffs)
+actions.trinkets+=/use_item,slot=trinket2,if=variable.trinket_2_buffs&(buff.dancing_rune_weapon.up|!talent.dancing_rune_weapon|cooldown.dancing_rune_weapon.remains>20)&(trinket.1.cooldown.remains|variable.trinket_1_buffs)
