@@ -29,6 +29,7 @@ actions+=/call_action_list,name=single,if=active_enemies=1
 actions+=/call_action_list,name=aoe,if=active_enemies>1
 
 actions.single=windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>=1
+actions.single+=/lava_lash,if=buff.hot_hand.up|buff.ashen_catalyst.stack=8
 actions.single+=/windfury_totem,if=!buff.windfury_totem.up
 actions.single+=/stormstrike,if=buff.doom_winds_talent.up
 actions.single+=/crash_lightning,if=buff.doom_winds_talent.up
