@@ -46,6 +46,7 @@ actions.aoe+=/summon_darkglare
 actions.aoe+=/seed_of_corruption,if=talent.sow_the_seeds
 actions.aoe+=/malefic_rapture
 actions.aoe+=/drain_life,if=(buff.soul_rot.up|!talent.soul_rot)&buff.inevitable_demise.stack>10
+actions.aoe+=/summon_soulkeeper,if=buff.tormented_soul.stack=10
 actions.aoe+=/siphon_life,cycle_targets=1,if=remains<5&active_dot.siphon_life<3
 actions.aoe+=/drain_soul,interrupt_global=1
 actions.aoe+=/shadow_bolt

@@ -12,6 +12,7 @@ actions+=/devour_magic
 actions+=/call_action_list,name=tyrant,if=(variable.next_tyrant-time)<=15&talent.summon_demonic_tyrant&cooldown.summon_demonic_tyrant.up|talent.summon_demonic_tyrant&cooldown.summon_demonic_tyrant.remains_expected<=variable.tyrant_prep_start
 actions+=/nether_portal,if=!talent.summon_demonic_tyrant&soul_shard>2
 actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains_expected>cooldown+variable.tyrant_prep_start
+actions+=/call_dreadstalkers,if=!talent.summon_demonic_tyrant
 actions+=/grimoire_felguard,if=!talent.summon_demonic_tyrant
 actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>cooldown+variable.tyrant_prep_start
 actions+=/call_action_list,name=ogcd,if=!talent.summon_demonic_tyrant
@@ -21,6 +22,7 @@ actions+=/demonic_strength
 actions+=/bilescourge_bombers,if=!pet.demonic_tyrant.active
 actions+=/power_siphon
 actions+=/implosion,if=active_enemies>2&buff.wild_imps.stack>=6
+actions+=/summon_soulkeeper,if=active_enemies>1&buff.tormented_soul.stack=10
 actions+=/shadow_bolt,if=talent.fel_covenant&buff.fel_covenant.remains<4
 actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<4
 actions+=/hand_of_guldan,if=soul_shard>2
