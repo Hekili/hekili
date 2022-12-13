@@ -546,6 +546,7 @@ local TriggerTestOfMight = setfenv( function()
     addStack( "test_of_might" )
 end, state )
 
+
 spec:RegisterHook( "reset_precast", function ()
     rage_spent = nil
     glory_rage = nil
@@ -592,15 +593,16 @@ spec:RegisterStateExpr( "cycle_for_execute", function ()
 end )
 
 
+spec:RegisterGear( "tier29", 200426, 200428, 200423, 200425, 200427 )
 spec:RegisterSetBonuses( "tier29_2pc", 393705, "tier29_4pc", 393706 )
 --(2) Set Bonus: Mortal Strike and Cleave damage and chance to critically strike increased by 10%.
 --(4) Set Bonus: Mortal Strike, Cleave, & Execute critical strikes increase your damage and critical strike chance by 5% for 6 seconds.
-    spec:RegisterAura( "strike_vulnerabilities", {
-        id = 394173,
-        duration = 6,
-        max_stack = 1
-    } )
-------------------------------------------------------------
+spec:RegisterAura( "strike_vulnerabilities", {
+    id = 394173,
+    duration = 6,
+    max_stack = 1
+} )
+
 
 -- Abilities
 spec:RegisterAbilities( {

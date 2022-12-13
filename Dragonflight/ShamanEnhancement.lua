@@ -909,6 +909,21 @@ spec:RegisterHook( "runHandler", function( action )
 end )
 
 
+spec:RegisterGear( "tier29", 200396, 200398, 200400, 200401, 200399 )
+spec:RegisterAuras( {
+    maelstrom_of_elements = {
+        id = 394677,
+        duration = 15,
+        max_stack = 1
+    },
+    fury_of_the_storm = {
+        id = 396006,
+        duration = 4,
+        max_stack = 10
+    }
+} )
+
+
 spec:RegisterGear( "waycrest_legacy", 158362, 159631 )
 spec:RegisterGear( "electric_mail", 161031, 161034, 161032, 161033, 161035 )
 
@@ -920,6 +935,7 @@ spec:RegisterStateFunction( "consume_maelstrom", function( cap )
     end
 
     removeStack( "maelstrom_weapon", stacks )
+    if set_bonus.tier29_4pc > 0 then addStack( "fury_of_the_storm", nil, stacks ) end
 
     -- TODO: Have to actually track consumed MW stacks.
     if legendary.legacy_oF_the_frost_witch.enabled and stacks > 4 or talent.legacy_of_the_frost_witch.enabled and stacks > 9 then
@@ -1438,8 +1454,9 @@ spec:RegisterAbilities( {
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
             if talent.focused_insight.enabled then applyBuff( "focused_insight" ) end
             if talent.swirling_maelstrom.enabled then
-                gain_maelstrom( min( 6, active_dot.flame_shock ) )
+                gain_maelstrom( min( 6, active_dot.flame_shock ) + ( buff.maelstrom_of_elements.up and 1 or 0 ) )
             end
+            removeBuff( "maelstrom_of_elements" )
         end,
     },
 
@@ -1499,11 +1516,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.hailstorm.up then
-                if talent.swirling_maelstrom.enabled and buff.hailstorm.stack > 1 then gain_maelstrom( 1 ) end
+                if talent.swirling_maelstrom.enabled and buff.hailstorm.stack > 1 then gain_maelstrom( 1 + ( buff.maelstrom_of_elements.up and 1 or 0 ) ) end
                 removeBuff( "hailstorm" )
             end
 
             removeBuff( "ice_strike_buff" )
+            removeBuff( "maelstrom_of_elements" )
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
@@ -1651,7 +1669,9 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "ice_strike" )
             applyBuff( "ice_strike_buff" )
 
-            if talent.swirling_maelstrom.enabled then gain_maelstrom( 1 ) end
+            if talent.swirling_maelstrom.enabled then gain_maelstrom( 1 + ( buff.maelstrom_of_elements.up and 1 or 0 ) ) end
+            removeBuff( "maelstrom_of_elements" )
+
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
@@ -1680,8 +1700,6 @@ spec:RegisterAbilities( {
             removeBuff( "windspeakers_lava_resurgence" )
             removeBuff( "lava_surge" )
             removeBuff( "echoing_shock" )
-
-            gain( 10, "maelstrom" )
 
             if talent.master_of_the_elements.enabled then applyBuff( "master_of_the_elements" ) end
 
@@ -2065,9 +2083,11 @@ spec:RegisterAbilities( {
             removeBuff( "strength_of_earth" )
             removeBuff( "legacy_of_the_frost_witch" )
 
-            if talent.elemetnal_assault.rank > 1 then
+            if talent.elemental_assault.rank > 1 then
                 gain_maelstrom( 1 )
             end
+
+            if set_bonus.tier29_2pc > 0 then applyBuff( "maelstrom_of_elements" ) end
 
             if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
             if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end

@@ -633,6 +633,20 @@ spec:RegisterAuras( {
 
 
 -- Gear Sets
+spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
+spec:RegisterAuras( {
+    ally_of_the_light = {
+        id = 394714,
+        duration = 8,
+        max_stack = 1
+    },
+    deflecting_light = {
+        id = 394727,
+        duration = 10,
+        max_stack = 1
+    }
+} )
+
 spec:RegisterGear( "tier19", 138350, 138353, 138356, 138359, 138362, 138369 )
 spec:RegisterGear( "tier20", 147160, 147162, 147158, 147157, 147159, 147161 )
     spec:RegisterAura( "sacred_judgment", {
@@ -754,6 +768,9 @@ spec:RegisterAbilities( {
                 reduceCooldown( "guardian_of_ancient_kings", 0.5 * talent.gift_of_the_golden_valkyr.rank * min( active_enemies, (talent.focused_enmity.enabled and 1 or 3 ) + ( talent.soaring_shield.enabled and 2 or 0 ) ) )
             end
             if talent.strength_in_adversity.enabled then addStack( "strength_in_adversity", nil, min( active_enemies, (talent.focused_enmity.enabled and 1 or 3 ) + ( talent.soaring_shield.enabled and 2 or 0 ) ) ) end
+
+            if set_bonus.tier29_2pc > 0 then applyBuff( "ally_of_the_light" ) end
+
             if conduit.vengeful_shock.enabled then applyDebuff( "target", "vengeful_shock" ) end
             if legendary.bulwark_of_righteous_fury.enabled then addStack( "bulwark_of_righteous_fury", nil, min( 5, active_enemies ) ) end
         end,
@@ -819,6 +836,11 @@ spec:RegisterAbilities( {
             last_blessed_hammer = query_time
             if talent.aspiration_of_divinity.enabled then addStack( "aspiration_of_divinity" ) end
             gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+
+            if set_bonus.tier29_4pc > 0 then
+                applyBuff( "deflecting_light" )
+                if buff.ally_of_the_light.up then buff.ally_of_the_light.expires = buff.ally_of_the_light.expires + 1 end
+            end
         end,
     },
 
@@ -1012,6 +1034,11 @@ spec:RegisterAbilities( {
             gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
             if talent.aspiration_of_divinity.enabled then addStack( "aspiration_of_divinity" ) end
             if talent.crusaders_might.enabled then reduceCooldown( "holy_shock", 1 ) end
+
+            if set_bonus.tier29_4pc > 0 then
+                applyBuff( "deflecting_light" )
+                if buff.ally_of_the_light.up then buff.ally_of_the_light.expires = buff.ally_of_the_light.expires + 1 end
+            end
         end,
     },
 
@@ -1166,6 +1193,11 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
             if talent.aspiration_of_divinity.enabled then addStack( "aspiration_of_divinity" ) end
+
+            if set_bonus.tier29_4pc > 0 then
+                applyBuff( "deflecting_light" )
+                if buff.ally_of_the_light.up then buff.ally_of_the_light.expires = buff.ally_of_the_light.expires + 1 end
+            end
         end,
     },
 

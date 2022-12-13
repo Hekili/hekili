@@ -1146,6 +1146,10 @@ local function comboSpender( a, r )
         if a >= 5 then
             applyBuff( "predatory_swiftness" )
         end
+
+        if set_bonus.tier29_4pc > 0 then
+            applyBuff( "sharpened_claws", nil, a )
+        end
     end
 end
 
@@ -1250,6 +1254,14 @@ spec:RegisterGear( "fiery_red_maimers", 144354 )
 spec:RegisterGear( "luffa_wrappings", 137056 )
 spec:RegisterGear( "soul_of_the_archdruid", 151636 )
 spec:RegisterGear( "the_wildshapers_clutch", 137094 )
+
+-- Dragonflight
+spec:RegisterGear( "tier29", 200354, 200356, 200351, 200353, 200355 )
+spec:RegisterAura( "sharpened_claws", {
+    id = 394465,
+    duration = 4,
+    max_stack = 1
+} )
 
 -- Legion Sets (for now).
 spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )

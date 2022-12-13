@@ -504,7 +504,7 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not covenant.kyrian then return c end
+    if not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
     if c < 2 or c > 5 then return c end
     if buff[ "echoing_reprimand_" .. c ].up then return 7 end
     return c
@@ -674,7 +674,18 @@ spec:RegisterGear( "tier19", 138332, 138338, 138371, 138326, 138329, 138335 )
 
 -- DF Tier Set
 spec:RegisterGear( "tier29", 200369, 200371, 200372, 200373, 200374 )
-
+spec:RegisterAuras( {
+    honed_blades = {
+        id = 394894,
+        duration = 15,
+        max_stack = 7 -- ???
+    },
+    masterful_finish = {
+        id = 395003,
+        duration = 3,
+        max_stack = 1
+    }
+})
 
 
 
@@ -695,7 +706,9 @@ spec:RegisterAbilities( {
         notalent = "gloomblade",
 
         handler = function ()
+            removeBuff( "honed_blades" )
             applyDebuff( "target", "shadows_grasp", 8 )
+
             if azerite.perforate.enabled and buff.perforate.up then
                 -- We'll assume we're attacking from behind if we've already put up Perforate once.
                 addStack( "perforate" )
@@ -724,11 +737,15 @@ spec:RegisterAbilities( {
 
         usable = function () return combo_points.current > 0, "requires combo_points" end,
         handler = function ()
+            removeBuff( "masterful_finish" )
+
             if talent.alacrity.enabled and effective_combo_points > 4 then addStack( "alacrity" ) end
             removeBuff( "echoing_reprimand_" .. combo_points.current )
 
             if buff.finality_black_powder.up then removeBuff( "finality_black_powder" )
             elseif legendary.finality.enabled then applyBuff( "finality_black_powder" ) end
+
+            if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
             spend( combo_points.current, "combo_points" )
             if conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
@@ -797,6 +814,8 @@ spec:RegisterAbilities( {
 
         usable = function () return combo_points.current > 0 end,
         handler = function ()
+            removeBuff( "masterful_finish" )
+
             if talent.alacrity.enabled and combo_points.current > 4 then
                 addStack( "alacrity" )
             end
@@ -804,6 +823,8 @@ spec:RegisterAbilities( {
 
             if buff.finality_eviscerate.up then removeBuff( "finality_eviscerate" )
             elseif legendary.finality.enabled then applyBuff( "finality_eviscerate" ) end
+
+            if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
             removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( combo_points.current, "combo_points" )
@@ -921,8 +942,9 @@ spec:RegisterAbilities( {
         usable = function () return stealthed.all or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
         handler = function ()
             gain( ( buff.shadow_blades.up and 3 or 2 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
-            removeBuff( "the_rotten" )
+            removeBuff( "honed_blades" )
             removeBuff( "symbols_of_death_crit" )
+            removeBuff( "the_rotten" )
 
             if azerite.blade_in_the_shadows.enabled then addStack( "blade_in_the_shadows" ) end
             if buff.premeditation.up then
@@ -988,13 +1010,16 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
+            removeBuff( "honed_blades" )
+            removeBuff( "symbols_of_death_crit" )
+
             if buff.silent_storm.up then
                 applyDebuff( "target", "find_weakness" )
                 active_dot.find_weakness = active_enemies
                 removeBuff( "silent_storm" )
             end
-            removeBuff( "symbols_of_death_crit" )
+
+            gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
         end,
     },
 

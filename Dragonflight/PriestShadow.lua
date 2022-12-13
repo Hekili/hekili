@@ -286,6 +286,22 @@ local ExpireVoidform = setfenv( function()
     if Hekili.ActiveDebug then Hekili:Debug( "Voidform expired, Shadowform applied.  Did it stick?  %s.", buff.voidform.up and "Yes" or "No" ) end
 end, state )
 
+
+spec:RegisterGear( "tier29", 200327, 200329, 200324, 200326, 200328 )
+spec:RegisterAuras( {
+    dark_reveries = {
+        id = 394963,
+        duration = 8,
+        max_stack = 1
+    },
+    gathering_shadows = {
+        id = 394961,
+        duration = 15,
+        max_stack = 3
+    }
+} )
+
+
 spec:RegisterHook( "reset_precast", function ()
     if buff.voidform.up or time > 0 then
         applyBuff( "shadowform" )
@@ -422,11 +438,6 @@ spec:RegisterAuras( {
         duration = 25,
         max_stack = 5
     },
-    dark_reveries = {
-        id = 394963,
-        duration = 8,
-        max_stack = 1
-    },
     dark_thought = {
         id = 341207,
         duration = 10,
@@ -525,11 +536,6 @@ spec:RegisterAuras( {
         id = 390617,
         duration = 15,
         max_stack = 50
-    },
-    gathering_shadows = {
-        id = 394961,
-        duration = 15,
-        max_stack = 3
     },
     -- Talent: Conjuring $373273s1 Shadowy Apparitions will summon a Thing from Beyond.
     -- https://wowhead.com/beta/spell=373276
@@ -952,6 +958,9 @@ spec:RegisterAuras( {
         max_stack = 1
     },
 } )
+
+
+
 
 
 -- Abilities

@@ -625,6 +625,28 @@ spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
 } ) )
 
 
+spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
+spec:RegisterAuras( {
+    -- 2pc
+    find_the_mark = {
+        id = 394366,
+        duration = 15,
+        max_stack = 1
+    },
+    hit_the_mark = {
+        id = 394371,
+        duration = 6,
+        max_stack = 1
+    },
+    -- 4pc
+    focusing_aim = {
+        id = 394384,
+        duration = 15,
+        max_stack = 1
+    }
+} )
+
+
 spec:RegisterHook( "reset_precast", function ()
     if now - action.serpent_sting.lastCast < gcd.execute * 2 and target.unit == action.serpent_sting.lastUnit then
         applyDebuff( "target", "serpent_sting" )
@@ -708,6 +730,10 @@ spec:RegisterAbilities( {
             if talent.bulletstorm.enabled and buff.trick_shots.up then
                 addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end
+            if buff.find_the_mark.up then
+                removeBuff( "find_the_mark" )
+                applyDebuff( "target", "hit_the_mark" )
+            end
             if buff.volley.down and buff.trick_shots.up then
                 removeBuff( "trick_shots" )
                 if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
@@ -733,6 +759,7 @@ spec:RegisterAbilities( {
         notalent = "chimaera_shot",
 
         handler = function ()
+            removeBuff( "focusing_aim" )
             removeStack( "precise_shots" )
 
             if talent.bombardment.enabled then
@@ -816,6 +843,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "focusing_aim" )
             removeStack( "precise_shots" )
         end,
     },
@@ -957,13 +985,16 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "bulletstorm" )
+            removeBuff( "focusing_aim" )
             removeStack( "precise_shots" )
-            if talent.trick_shots.enabled and active_enemies > 2 then applyBuff( "trick_shots" ) end
-            if talent.calling_the_shots.enabled then cooldown.rapid_fire.expires = max( 0, cooldown.rapid_fire.expires - 2.5 ) end
+
             if buff.bombardment.up then
                 applyBuff( "trick_shots" )
                 removeBuff( "bombardment" )
             end
+
+            if talent.trick_shots.enabled and active_enemies > 2 then applyBuff( "trick_shots" ) end
+            if talent.calling_the_shots.enabled then cooldown.rapid_fire.expires = max( 0, cooldown.rapid_fire.expires - 2.5 ) end
             if talent.salvo.enabled and debuff.salvo.down then
                 applyDebuff( "target", "explosive_shot" )
                 applyDebuff( "player", "salvo" )

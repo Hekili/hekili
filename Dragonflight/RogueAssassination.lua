@@ -206,7 +206,7 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not action.echoing_reprimand.known then return c end
+    if not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
     if c < 2 or c > 5 then return c end
     if buff[ "echoing_reprimand_" .. c ].up then return 7 end
     return c
@@ -669,6 +669,15 @@ local ExpireSepsis = setfenv( function ()
         applyBuff( "shadow_blades", 10 )
     end
 end, state )
+
+
+-- Tier Set
+spec:RegisterGear( "tier29", 200372, 200374, 200369, 200371, 200373 )
+spec:RegisterAura( "septic_wounds", {
+    id = 394845,
+    duration = 8,
+    max_stack = 5
+} )
 
 
 local kingsbaneReady = false
@@ -2235,6 +2244,8 @@ spec:RegisterAbilities( {
 
         usable = function () return combo_points.current > 0, "requires combo_points" end,
         handler = function ()
+            removeBuff( "masterful_finish" )
+
             applyDebuff( "target", "rupture" )
             debuff.rupture.pmultiplier = persistent_multiplier
             debuff.rupture.exsanguinated = false

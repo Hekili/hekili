@@ -806,6 +806,9 @@ end )
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
 
 
+spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
+
+
 spec:RegisterHook( "reset_precast", function ()
     if buff.divine_resonance.up then
         state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )

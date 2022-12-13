@@ -834,6 +834,13 @@ end )
 
 
 -- Gear Sets
+spec:RegisterGear( "tier29", 200345, 200347, 200342, 200344, 200346 )
+spec:RegisterAura( "seething_chaos", {
+    id = 394934,
+    duration = 6,
+    max_stack = 1
+} )
+
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
 spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
 spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )

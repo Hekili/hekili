@@ -852,6 +852,16 @@ spec:RegisterAuras( {
 } )
 
 
+-- Tier 29
+spec:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
+-- TODO: Proactively count Bone Shields consumed and proactively model Vigorous Lifeblood proc.
+spec:RegisterAura( "vigorous_lifeblood", {
+    id = 394570,
+    duration = 10,
+    max_stack = 1
+} )
+
+-- Legacy Legendaries
 spec:RegisterGear( "acherus_drapes", 132376 )
 spec:RegisterGear( "cold_heart", 151796 ) -- chilled_heart stacks NYI
 spec:RegisterGear( "consorts_cold_core", 144293 )

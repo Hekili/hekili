@@ -675,7 +675,7 @@ spec:RegisterAuras( {
     fists_of_flowing_momentum = {
         id = 394949,
         duration = 30,
-        max_stack = 1,
+        max_stack = 3,
     }
 } )
 

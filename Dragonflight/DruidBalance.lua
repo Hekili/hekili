@@ -1514,7 +1514,7 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     }
-})
+} )
 
 -- Legion Sets (for now).
 spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
@@ -2421,10 +2421,15 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.starweavers_warp.up then removeBuff( "starweavers_warp" )
             else removeBuff( "touch_the_cosmos" ) end
+
             if talent.rattle_the_stars.enabled then addStack( "rattled_stars" ) end
             if talent.starlord.enabled then
                 if buff.starlord.stack < 3 then stat.haste = stat.haste + 0.04 end
                 addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
+            end
+
+            if set_bonus.tier29_2pc > 0 then
+                addStack( "gathering_starstuff" )
             end
 
             applyBuff( "starfall" )
@@ -2464,6 +2469,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if not buff.moonkin_form.up then unshift() end
+
+            removeBuff( "gathering_starstuff" )
 
             if eclipse.state == "ANY_NEXT" or eclipse.state == "SOLAR_NEXT" then
                 eclipse.starfire_counter = eclipse.starfire_counter - 1
@@ -2511,10 +2518,15 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.starweavers_weft.up then removeBuff( "starweavers_weft" )
             else removeBuff( "touch_the_cosmos" ) end
+
             if talent.rattle_the_stars.enabled then addStack( "rattled_stars" ) end
             if talent.starlord.enabled then
                 if buff.starlord.stack < 3 then stat.haste = stat.haste + 0.04 end
                 addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
+            end
+
+            if set_bonus.tier29_2pc > 0 then
+                addStack( "gathering_starstuff" )
             end
 
             removeBuff( "oneths_clear_vision" )
@@ -2883,6 +2895,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if not buff.moonkin_form.up then unshift() end
+
+            removeBuff( "gathering_starstuff" )
 
             if state.spec.balance and ( eclipse.state == "ANY_NEXT" or eclipse.state == "LUNAR_NEXT" ) then
                 eclipse.wrath_counter = eclipse.wrath_counter - 1

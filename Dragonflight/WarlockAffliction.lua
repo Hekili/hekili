@@ -802,9 +802,23 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
 end, false )
 
 
-spec:RegisterGear( "tier28", 188884, 188887, 188888, 188889, 188890 )
+-- Tier 29
+spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
+spec:RegisterAuras( {
+    cruel_inspiration = {
+        id = 394215,
+        duration = 6,
+        max_stack = 1
+    },
+    cruel_epiphany = {
+        id = 394253,
+        duration = 40,
+        max_stack = 5
+    }
+} )
 
 -- Tier 28
+spec:RegisterGear( "tier28", 188884, 188887, 188888, 188889, 188890 )
 spec:RegisterSetBonuses( "tier28_2pc", 364437, "tier28_4pc", 363953 )
 -- 2-Set - Deliberate Malice - Malefic Rapture's damage is increased by 15% and each cast extends the duration of Corruption, Agony, and Unstable Affliction by 2 sec.
 -- 4-Set - Calamitous Crescendo - While Agony, Corruption, and Unstable Affliction are active, your Drain Soul has a 10% chance / Shadow Bolt has a 20% chance to make your next Malefic Rapture cost no Soul Shards and cast instantly.
@@ -1515,6 +1529,8 @@ spec:RegisterAbilities( {
         texture = 236296,
 
         handler = function ()
+            removeStack( "cruel_epiphany" )
+
             if buff.calamitous_crescendo.up then removeBuff( "calamitous_crescendo" ) end
             if buff.tormented_crescendo.up then removeBuff( "tormented_crescendo" ) end
 
@@ -1643,6 +1659,10 @@ spec:RegisterAbilities( {
         nodebuff = "seed_of_corruption",
 
         velocity = 30,
+
+        handler = function()
+            removeStack( "cruel_epiphany" )
+        end,
 
         impact = function ()
             applyDebuff( "target", "seed_of_corruption" )

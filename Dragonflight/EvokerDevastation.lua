@@ -568,6 +568,14 @@ spec:RegisterHook( "runHandler", function( action )
 end )
 
 
+spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
+spec:RegisterAura( "limitless_potential", {
+    id = 394402,
+    duration = 6,
+    max_stack = 1
+} )
+
+
 spec:RegisterHook( "reset_precast", function()
     max_empower = talent.font_of_magic.enabled and 4 or 3
 
@@ -849,6 +857,8 @@ spec:RegisterAbilities( {
                 removeBuff( "tip_the_scales" )
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
             end
+
+            if set_bonus.tier29_2pc > 0 then applyBuff( "limitless_potential" ) end
         end,
 
         copy = { 382411, 359073 }
@@ -909,6 +919,8 @@ spec:RegisterAbilities( {
                 removeBuff( "tip_the_scales" )
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
             end
+
+            if set_bonus.tier29_2pc > 0 then applyBuff( "limitless_potential" ) end
         end,
 
         copy = { 382266, 357208 }

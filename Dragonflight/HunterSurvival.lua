@@ -519,6 +519,13 @@ local TriggerBombardier = setfenv( function()
 end, state )
 
 
+spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
+spec:RegisterAuras( "bestial_barrage", {
+    id = 394388,
+    duration = 15,
+    max_stack = 1
+} )
+
 
 spec:RegisterHook( "reset_precast", function()
     if talent.wildfire_infusion.enabled then
@@ -659,7 +666,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = 30,
+        spend = function() return buff.bestial_barrage.up and 0 or 30 end,
         spendType = "focus",
 
         talent = "butchery",
@@ -669,6 +676,7 @@ spec:RegisterAbilities( {
 
         usable = function () return charges > 1 or active_enemies > 1 or target.time_to_die < ( 9 * haste ) end,
         handler = function ()
+            removeBuff( "bestial_barrage" )
             removeBuff( "butchers_bone_fragments" )
 
             if talent.frenzy_strikes.enabled then
@@ -696,7 +704,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = 35,
+        spend = function() return buff.bestial_barrage.up and 0 or 35 end,
         spendType = "focus",
 
         talent = "carve",
@@ -704,6 +712,11 @@ spec:RegisterAbilities( {
         notalent = "butchery",
 
         handler = function ()
+            removeBuff( "bestial_barrage" )
+            removeBuff( "butchers_bone_fragments" )
+
+            if debuff.shrapnel_bomb.up then applyDebuff( "target", "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
+
             if talent.frenzy_strikes.enabled then
                 gainChargeTime( "wildfire_bomb", min( 5, true_active_enemies ) )
                 gainChargeTime( "shrapnel_bomb", min( 5, true_active_enemies ) )
@@ -711,10 +724,6 @@ spec:RegisterAbilities( {
                 gainChargeTime( "pheromone_bomb", min( 5, true_active_enemies ) )
                 reduceCooldown( "flanking_strike", min( 5, true_active_enemies ) )
             end
-
-            if debuff.shrapnel_bomb.up then applyDebuff( "target", "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
-
-            removeBuff( "butchers_bone_fragments" )
 
             if conduit.flame_infusion.enabled then
                 addStack( "flame_infusion", nil, 1 )
@@ -926,7 +935,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = 30,
+        spend = function() return buff.bestial_barrage.up and 0 or 30 end,
         spendType = "focus",
 
         talent = "mongoose_bite",
@@ -935,9 +944,10 @@ spec:RegisterAbilities( {
         cycle = function () return debuff.shrapnel_bomb.up and "internal_bleeding" or nil end,
 
         handler = function ()
+            removeBuff( "bestial_barrage" )
+            removeBuff( "tip_of_the_spear" )
             removeDebuff( "target", "latent_poison" )
             removeDebuff( "target", "latent_poison_injection" )
-            removeBuff( "tip_of_the_spear" )
 
             if buff.spearhead.up then
                 applyDebuff( "target", "spearhead_damage" )
@@ -1044,9 +1054,10 @@ spec:RegisterAbilities( {
         notalent = "mongoose_bite",
 
         handler = function ()
+            removeBuff( "bestial_barrage" )
+            removeBuff( "tip_of_the_spear" )
             removeDebuff( "target", "latent_poison" )
             removeDebuff( "target", "latent_poison_injection" )
-            removeBuff( "tip_of_the_spear" )
 
             if debuff.shrapnel_bomb.up then
                 applyDebuff( "target", "internal_bleeding", 9, debuff.internal_bleeding.stack + 1 )

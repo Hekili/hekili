@@ -365,6 +365,15 @@ local ExpireNetherPortal = setfenv( function()
 end, state )
 
 
+-- Tier 29
+spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
+spec:RegisterAuras( "blazing_meteor", {
+    id = 394215,
+    duration = 6,
+    max_stack = 1
+} )
+
+
 local wipe = table.wipe
 
 spec:RegisterHook( "reset_precast", function()
@@ -1592,6 +1601,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "blazing_meteor" )
+
             extra_shards = min( 2, soul_shards.current )
             if Hekili.ActiveDebug then Hekili:Debug( "Extra Shards: %d", extra_shards ) end
             spend( extra_shards, "soul_shards" )

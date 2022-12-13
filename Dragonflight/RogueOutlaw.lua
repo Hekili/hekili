@@ -585,6 +585,21 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
 end )
 
 
+-- Tier Set
+spec:RegisterGear( "tier29", 200372, 200374, 200369, 200371, 200373 )
+spec:RegisterAuras( {
+    vicious_followup = {
+        id = 394879,
+        duration = 15,
+        max_stack = 1
+    },
+    brutal_opportunist = {
+        id = 394888,
+        duration = 15,
+        max_stack = 1
+    }
+} )
+
 -- Legendary from Legion, shows up in APL still.
 spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
 spec:RegisterAura( "master_assassins_initiative", {
@@ -616,7 +631,7 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not action.echoing_reprimand.known then return c end
+    if not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
     if c < 2 or c > 5 then return c end
     if buff[ "echoing_reprimand_" .. c ].up then return 7 end
     return c
@@ -904,14 +919,19 @@ spec:RegisterAbilities( {
 
         usable = function() return combo_points.current > 0, "requires combo points" end,
         handler = function ()
+            removeBuff( "brutal_opportunist" )
+            removeBuff( "echoing_reprimand_" .. combo_points.current )
+            removeBuff( "storm_of_steel" )
+
             if talent.alacrity.enabled and combo_points.current > 4 then
                 addStack( "alacrity" )
             end
             if talent.summarily_dispatched.enabled and combo_points.current > 5 then
                 addStack( "summarily_dispatched", ( buff.summarily_dispatched.up and buff.summarily_dispatched.remains or nil ), 1 )
             end
-            removeBuff( "storm_of_steel" )
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
+
+            if set_bonus.tier29_2pc > 0 then applyBuff( "vicious_followup" ) end
+
             spend( combo_points.current, "combo_points" )
         end,
     },
@@ -1034,7 +1054,16 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( action.pistol_shot.cp_gain, "combo_points" )
-            removeStack( "opportunity" )
+
+            removeBuff( "deadshot" )
+            removeBuff( "concealed_blunderbuss" ) -- Generating 2 extra combo points is purely a guess.
+            removeBuff( "greenskins_wickers" )
+            removeBuff( "tornado_trigger" )
+
+            if buff.opportunity.up then
+                removeStack( "opportunity" )
+                if set_bonus.tier29_4pc > 0 then applyBuff( "brutal_opportunist" ) end
+            end
 
             -- If Fan the Hammer is talented, let's generate more.
             if talent.fan_the_hammer.enabled then
@@ -1042,11 +1071,6 @@ spec:RegisterAbilities( {
                 gain( shots * action.pistol_shot.cp_gain, "combo_points" )
                 removeStack( "opportunity", shots )
             end
-
-            removeBuff( "deadshot" )
-            removeBuff( "concealed_blunderbuss" ) -- Generating 2 extra combo points is purely a guess.
-            removeBuff( "greenskins_wickers" )
-            removeBuff( "tornado_trigger" )
         end,
     },
 

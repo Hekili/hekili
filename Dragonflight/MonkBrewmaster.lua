@@ -524,6 +524,13 @@ spec:RegisterHook( "reset_postcast", function( x )
 end )
 
 
+spec:RegisterGear( "tier29", 200363, 200365, 200360, 200362, 200364 )
+spec:RegisterAuras( "brewmasters_rhythm", {
+    id = 394797,
+    duration = 15,
+    max_stack = 4
+} )
+
 spec:RegisterGear( "tier19", 138325, 138328, 138331, 138334, 138337, 138367 )
 spec:RegisterGear( "tier20", 147154, 147156, 147152, 147151, 147153, 147155 )
 spec:RegisterGear( "tier21", 152145, 152147, 152143, 152142, 152144, 152146 )
@@ -1371,7 +1378,7 @@ spec:RegisterAbilities( {
             local stacks = stagger.heavy and 3 or stagger.moderate and 2 or 1
             addStack( "purified_brew", nil, stacks )
 
-            local reduction = stagger.amount_remains * 0.5
+            local reduction = stagger.amount_remains * ( 0.5 + 0.03 * buff.brewmasters_rhythm.stack )
             stagger.amount_remains = stagger.amount_remains - reduction
             gain( 0.25 * reduction, "health" )
         end,
@@ -1512,6 +1519,8 @@ spec:RegisterAbilities( {
             end
 
             if talent.walk_with_the_ox.enabled then reduceCooldown( "invoke_niuzao", 0.25 * talent.walk_with_the_ox.rank ) end
+
+            if set_bonus.tier29_2pc > 0 then addStack( "brewmasters_rhythm" ) end
         end,
     },
 
@@ -1541,6 +1550,7 @@ spec:RegisterAbilities( {
                 applyBuff( "eye_of_the_tiger" )
             end
 
+            if set_bonus.tier29_2pc > 0 then addStack( "brewmasters_rhythm" ) end
         end,
     },
 

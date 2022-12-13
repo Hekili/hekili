@@ -1068,6 +1068,15 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
 end, false )
 
 
+-- Tier 29
+spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
+spec:RegisterAura( "chaos_maelstrom", {
+    id = 394679,
+    duration = 10,
+    max_stack = 1
+} )
+
+
 local SUMMON_DEMON_TEXT
 
 spec:RegisterHook( "reset_precast", function ()

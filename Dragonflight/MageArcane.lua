@@ -7,6 +7,8 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
+
 local GetItemCooldown = _G.GetItemCooldown
 
 local spec = Hekili:NewSpecialization( 62 )
@@ -992,8 +994,206 @@ spec:RegisterStateExpr( "full_reduction", function ()
 end )
 
 
+-- Dragonflight APL 20221207
+-- aoe_spark_phase starts:
+--     active_enemies>=variable.aoe_target_count&(action.arcane_orb.charges>0|buff.arcane_charge.stack>=3)&(!talent.rune_of_power|cooldown.rune_of_power.ready)&cooldown.radiant_spark.ready&cooldown.touch_of_the_magi.remains<=(gcd.max*2)
+-- aoe_spark_phase ends:
+--     variable.aoe_spark_phase&debuff.radiant_spark_vulnerability.down&dot.radiant_spark.remains<5&cooldown.radiant_spark.remains
+
+local realAoeSparkPhase = {}
+local virtualAoeSparkPhase = false
+
+local function updateAoeSparkPhase()
+    if realAoeSparkPhase[ state.display ] == nil then realAoeSparkPhase[ state.display ] = false end
+    local arcaneOrbCharges = GetSpellCharges( 153626 )
+    local arcaneCharges = UnitPower( "player", Enum.PowerType.ArcaneCharges )
+
+    local now = GetTime()
+
+    local ropCooldown = 0
+    local start, duration = GetSpellCooldown( 116011 )
+    ropCooldown = max( 0, start + duration - now )
+
+    local rsCooldown = 0
+    start, duration = GetSpellCooldown( 376103 )
+    rsCooldown = max( 0, start + duration - now )
+
+    local totmCooldown = 0
+    start, duration = GetSpellCooldown( 321507 )
+    totmCooldown = max( 0, start + duration - now )
+
+    local _, gcd = GetSpellBaseCooldown( 61304 )
+    local haste = 100 / ( 100 + UnitSpellHaste( "player" ) )
+    gcd = gcd * haste * 0.001
+
+    if not realAoeSparkPhase[ state.display ] then
+        realAoeSparkPhase[ state.display ] = state.active_enemies >= state.variable.aoe_target_count and ( arcaneOrbCharges > 0 or arcaneCharges >= 3 ) and ( not state.talent.rune_of_power.enabled or ropCooldown == 0 ) and rsCooldown == 0 and totmCooldown <= gcd * 2
+    end
+
+    local rsVulnerability = FindUnitDebuffByID( "target", 376104 )
+    local rsDebuff, _, _, _, _, expires = FindUnitDebuffByID( "target", 376103 )
+    local rsRemains = max( 0, ( expires or now )- now )
+
+    if realAoeSparkPhase[ state.display ] and not rsVulnerability and rsRemains < 5 and rsCooldown > 0 then
+        realAoeSparkPhase[ state.display ] = false
+    end
+
+    virtualAoeSparkPhase = realAoeSparkPhase[ state.display ]
+    print( "virtualAoeSparkPhase", virtualAoeSparkPhase, state.display )
+end
+
+spec:RegisterVariable( "aoe_spark_phase", function ()
+    local start = virtualAoeSparkPhase
+    local phase = virtualAoeSparkPhase
+
+    if not phase and active_enemies >= variable.aoe_target_count and ( action.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and
+        ( not talent.rune_of_power.enabled or cooldown.rune_of_power.ready ) and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= gcd.max * 2 then
+            phase = true
+    end
+
+    if phase and debuff.radiant_spark_vulnerability.down and dot.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > 0 then
+        phase = false
+    end
+
+    if start ~= phase then print( "aoe_spark_phase_swapped", start, phase, index ) end
+    return phase
+end )
+
+-- spark_phase starts:
+--     buff.arcane_charge.stack>=3&active_enemies<variable.aoe_target_count&(!talent.rune_of_power|cooldown.rune_of_power.ready)&cooldown.radiant_spark.ready&cooldown.touch_of_the_magi.remains<=(gcd.max*7)
+-- spark_phase ends:
+--     variable.spark_phase&debuff.radiant_spark_vulnerability.down&dot.radiant_spark.remains<5&cooldown.radiant_spark.remains
+
+local realSparkPhase = {}
+local virtualSparkPhase = false
+
+local function updateSparkPhase()
+    if realSparkPhase[ state.display ] == nil then realSparkPhase[ state.display ] = false end
+
+    local arcaneCharges = UnitPower( "player", Enum.PowerType.ArcaneCharges )
+
+    local now = GetTime()
+
+    local ropCooldown = 0
+    local start, duration = GetSpellCooldown( 116011 )
+    ropCooldown = max( 0, start + duration - now )
+
+    local rsCooldown = 0
+    start, duration = GetSpellCooldown( 376103 )
+    rsCooldown = max( 0, start + duration - now )
+
+    local totmCooldown = 0
+    start, duration = GetSpellCooldown( 321507 )
+    totmCooldown = max( 0, start + duration - now )
+
+    local _, gcd = GetSpellBaseCooldown( 61304 )
+    local haste = 100 / ( 100 + UnitSpellHaste( "player" ) )
+    gcd = gcd * haste * 0.001
+
+    if not realSparkPhase[ state.display ] then
+        realSparkPhase[ state.display ] = arcaneCharges >= 3 and state.active_enemies < state.variable.aoe_target_count and ( not state.talent.rune_of_power.enabled or ropCooldown == 0 ) and rsCooldown == 0 and totmCooldown <= gcd * 7
+        Hekili:Debug( "RealSparkPhase set to %s.", realSparkPhase[ state.display ] and "true" or "false" )
+    end
+
+    local rsVulnerability = FindUnitDebuffByID( "target", 376104 )
+    local _, _, _, _, _, expires = FindUnitDebuffByID( "target", 376103 )
+    local rsRemains = max( 0, ( expires or now )- now )
+
+    if realSparkPhase[ state.display ] and not rsVulnerability and rsRemains < 5 and rsCooldown > 0 then
+        realSparkPhase[ state.display ] = false
+        Hekili:Debug( "RealSparkPhase set to false." )
+    end
+
+    virtualSparkPhase = realSparkPhase[ state.display ]
+    Hekili:Debug( "VirtualSparkPhase set to %s.", virtualSparkPhase and "true" or "false" )
+end
+
+
+spec:RegisterVariable( "spark_phase", function ()
+    local start = virtualSparkPhase
+    local phase = virtualSparkPhase
+
+    if not phase and buff.arcane_charge.stack >= 3 and active_enemies < variable.aoe_target_count and ( not talent.rune_of_power.ready or cooldown.rune_of_power.ready ) and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= gcd.max * 7 then
+        phase = true
+        Hekili:Debug( "vSpark overridden to true at %.2f", delay + offset )
+    end
+
+    if phase and debuff.radiant_spark_vulnerability.down and dot.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > 0 then
+        phase = false
+        print( "vSpark", false, debuff.radiant_spark_vulnerability.down, dot.radiant_spark.remains, cooldown.radiant_spark.remains, dot.radiant_spark.applied, dot.radiant_spark.expires, query_time )
+        Hekili:Debug( "vSpark overridden to false at %.2f", delay + offset )
+    end
+
+    if start ~= phase then Hekili:Debug( "vSpark overridden to %s at %.2f", phase and "true" or "false", delay + offset ) end
+    return phase
+end )
+
+-- rop_phase starts:
+--     talent.rune_of_power&!talent.radiant_spark&buff.arcane_charge.stack>=3&cooldown.rune_of_power.ready&active_enemies<variable.aoe_target_count
+-- rop_phase ends:
+--     debuff.touch_of_the_magi.up|!talent.rune_of_power
+
+local realRopPhase = {}
+local virtualRopPhase = false
+
+local function updateRopPhase()
+    if realRopPhase[ state.display ] == nil then realRopPhase[ state.display ] = false end
+
+    local arcaneCharges = UnitPower( "player", Enum.PowerType.ArcaneCharges )
+
+    local now = GetTime()
+
+    local ropCooldown = 0
+    local start, duration = GetSpellCooldown( 116011 )
+    ropCooldown = max( 0, start + duration - now )
+
+    local _, gcd = GetSpellBaseCooldown( 61304 )
+    local haste = 100 / ( 100 + UnitSpellHaste( "player" ) )
+    gcd = gcd * haste * 0.001
+
+    if not realRopPhase[ state.display ] then
+        realRopPhase[ state.display ] = state.talent.rune_of_power.enabled and not state.talent.radiant_spark.enabled and arcaneCharges >= 3 and ropCooldown == 0 and state.active_enemies < state.variable.aoe_target_count
+    end
+
+    local totmDebuff = FindUnitDebuffByID( "target", 210824 )
+
+    if realRopPhase[ state.display ] and ( totmDebuff or not state.talent.rune_of_power.enabled ) then
+        realRopPhase[ state.display ] = false
+    end
+
+    virtualRopPhase = realRopPhase[ state.display ]
+    print( "virtualRopPhase", virtualRopPhase, state.display )
+end
+
+
+spec:RegisterVariable( "rop_phase", function ()
+    local start = virtualRopPhase
+    local phase = virtualRopPhase
+
+    if not phase and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.ready and active_enemies < variable.aoe_target_count then
+        print( "VRop", true )
+        phase = true
+    end
+
+    if debuff.touch_of_the_magi.up or not talent.rune_of_power.enabled then
+        print( "VRop", false )
+        phase = false
+    end
+
+    if start ~= phase then print( "rop_phase_swapped", start, phase, state.index, debuff.touch_of_the_magi.up, talent.rune_of_power.enabled ) end
+    return phase
+end )
+
+
 local abs = math.abs
 
+
+spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
+spec:RegisterAuras( "bursting_energy", {
+    id = 395006,
+    duration = 12,
+    max_stack = 4
+} )
 
 spec:RegisterHook( "reset_precast", function ()
     if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
@@ -1007,12 +1207,22 @@ spec:RegisterHook( "reset_precast", function ()
 
     mana_gem_charges = GetItemCount( 36799, nil, true )
 
+    if prev[1].conjure_mana_gem and now - action.conjure_mana_gem.lastCast < 1 and mana_gem_charges == 0 then
+        mana_gem_charges = 3
+    end
+
     incanters_flow.reset()
+
+    updateAoeSparkPhase()
+    updateSparkPhase()
+    updateRopPhase()
 end )
 
 
 spec:RegisterStateFunction( "handle_radiant_spark", function()
-    if debuff.radiant_spark_vulnerability.down then applyDebuff( "target", "radiant_spark_vulnerability" )
+    if debuff.radiant_spark_vulnerability.down then
+        applyDebuff( "target", "radiant_spark_vulnerability" )
+        print( "Applying RSV", state.index, debuff.radiant_spark_vulnerability.remains )
     else
         debuff.radiant_spark_vulnerability.count = debuff.radiant_spark_vulnerability.count + 1
 
@@ -1069,6 +1279,7 @@ spec:RegisterAbilities( {
 
             spend( arcane_charges.current, "arcane_charges" )
             removeBuff( "arcane_harmony" )
+            removeBuff( "bursting_energy" )
 
             if talent.chrono_shift.enabled then
                 applyBuff( "chrono_shift_buff" )
@@ -1806,8 +2017,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyBuff( "radiant_spark" )
             applyDebuff( "target", "radiant_spark" )
+            print( "RS", debuff.radiant_spark.remains )
         end,
 
         copy = { 376103, 307443 }

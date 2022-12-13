@@ -1183,6 +1183,14 @@ local ExpireNesingwarysTrappingApparatus = setfenv( function()
 end, state )
 
 
+spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
+spec:RegisterAura( "lethal_command", {
+    id = 394298,
+    duration = 15,
+    max_stack = 1
+} )
+
+
 spec:RegisterHook( "reset_precast", function()
     if debuff.tar_trap.up then
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
@@ -1367,6 +1375,8 @@ spec:RegisterAbilities( {
             -- No longer predictable (11/1 nerfs).
             -- if talent.war_orders.rank > 1 then setCooldown( "kill_command", 0 ) end
             removeDebuff( "target", "latent_poison" )
+
+            if set_bonus.tier29_4pc > 0 then applyBuff( "lethal_command" ) end
 
             if legendary.qapla_eredun_war_order.enabled then
                 setCooldown( "kill_command", 0 )
@@ -1863,8 +1873,9 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            removeBuff( "flamewakers_cobra_sting" )
             removeBuff( "cobra_sting" )
+            removeBuff( "flamewakers_cobra_sting" )
+            removeBuff( "lethal_command" )
 
             if conduit.ferocious_appetite.enabled and stat.crit >= 100 then
                 reduceCooldown( "aspect_of_the_wild", conduit.ferocious_appetite.mod / 10 )

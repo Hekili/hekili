@@ -632,6 +632,13 @@ end )
 
 
 -- Gear Sets
+spec:RegisterGear( "tier29", 200345, 200347, 200342, 200344, 200346 )
+spec:RegisterAura( "decrepit_souls", {
+    id = 394958,
+    duration = 8,
+    max_stack = 1
+} )
+
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
 spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
 spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )
@@ -867,7 +874,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return buff.metamorphosis.up and -45 or -25 end,
+        spend = function() return ( buff.metamorphosis.up and -45 or -25 ) * ( set_bonus.tier29_2pc > 0 and 1.2 or 1 ) end,
         spendType = "fury",
 
         talent = "fracture",
@@ -1025,7 +1032,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function () return ( level > 47 and buff.metamorphosis.up and -30 or -10 ) - ( talent.shear_fury.enabled and 20 or 0 ) end,
+        spend = function () return ( ( level > 47 and buff.metamorphosis.up and -30 or -10 ) - ( talent.shear_fury.enabled and 20 or 0 ) ) * ( set_bonus.tier29_2pc > 0 and 1.2 or 1 ) end,
 
         notalent = "fracture",
         bind = "fracture",

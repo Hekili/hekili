@@ -505,16 +505,16 @@ spec:RegisterAuras( {
 
 
 -- Dragonflight Season 1
+spec:RegisterGear( "tier29", 200426, 200428, 200423, 200425, 200427 )
 spec:RegisterSetBonuses( "tier29_2pc", 393710, "tier29_4pc", 393711 ) -- Dragonflight Season 1
 -- 2-Set - Revenge grants you Vanguard's Determination, increasing your damage done and reducing damage you take by 4% for 5 sec seconds.
 -- 4-Set - During Vanguard's Determination, gain Ignore Pain equal to 5% of damage you deal.
-spec:RegisterAuras( {
-    vanguards_determination = {
-        id = 394056,
-        duration = 5,
-        max_stack = 1,
-    }
+spec:RegisterAura( "vanguards_determination", {
+    id = 394056,
+    duration = 5,
+    max_stack = 1,
 } )
+
 
 local rageSpent = 0
 local gloryRage = 0

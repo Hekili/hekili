@@ -779,6 +779,15 @@ spec:RegisterStateExpr( "bf_flurry", function () return false end )
 spec:RegisterStateExpr( "comet_storm_remains", function () return buff.active_comet_storm.remains end )
 
 
+
+spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
+spec:RegisterAuras( "touch_of_ice", {
+    id = 394994,
+    duration = 6,
+    max_stack = 1
+} )
+
+
 spec:RegisterHook( "reset_precast", function ()
     if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
     else removeBuff( "rune_of_power" ) end
@@ -1115,7 +1124,10 @@ spec:RegisterAbilities( {
         end,
 
         impact = function ()
-            removeStack( "fingers_of_frost" )
+            if buff.fingers_of_frost.up then
+                removeStack( "fingers_of_frost" )
+                if set_bonus.tier29_4pc > 0 then applyBuff( "touch_of_ice" ) end
+            end
             removeDebuffStack( "target", "winters_chill" )
         end,
 

@@ -846,6 +846,15 @@ spec:RegisterStateExpr( "ironfur_damage_threshold", function ()
 end )
 
 
+-- Tier 29
+spec:RegisterGear( "tier29", 200351, 200353, 200354, 200355, 200356 )
+spec:RegisterAura( "bloody_healing", {
+    id = 394504,
+    duration = 6,
+    max_stack = 1,
+} )
+
+
 -- Gear.
 spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
 spec:RegisterGear( "tier19", 138330, 138336, 138366, 138324, 138327, 138333 )
@@ -1406,6 +1415,8 @@ spec:RegisterAbilities( {
             if buff.gore.up then
                 gain( 4, "rage" )
                 removeBuff( "gore" )
+
+                if set_bonus.tier29_4pc > 0 then applyBuff( "bloody_healing" ) end
             end
 
             if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end

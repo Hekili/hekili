@@ -168,6 +168,7 @@ spec:RegisterResource( Enum.PowerType.Runes, {
         end
     end
 } ) )
+
 spec:RegisterResource( Enum.PowerType.RunicPower, {
     breath = {
         talent = "breath_of_sindragosa",
@@ -823,6 +824,11 @@ spec:RegisterAuras( {
 
 spec:RegisterTotem( "ghoul", 1100170 )
 
+
+-- Tier 29
+spec:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
+
+
 local TriggerERW = setfenv( function()
     gain( 1, "runes" )
     gain( 5, "runic_power" )
@@ -871,6 +877,7 @@ spec:RegisterHook( "reset_precast", function ()
         end
     end
 end )
+
 
 spec:RegisterHook( "recheck", function( times )
     if buff.breath_of_sindragosa.up then

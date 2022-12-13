@@ -477,6 +477,7 @@ spec:RegisterAuras( {
 } )
 
 
+spec:RegisterGear( "tier29", 200426, 200428, 200423, 200425, 200427 )
 spec:RegisterSetBonuses( "tier29_2pc", 393708, "tier29_4pc", 393709 )
 -- 2-Set - Execute’s chance to critically strike increased by 10%.
 -- 4-Set - Sudden Death’s chance to reset the cooldown of Execute and make it usable on any target, regardless of health, is greatly increased.

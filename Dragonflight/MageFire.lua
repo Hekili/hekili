@@ -735,6 +735,10 @@ spec:RegisterStateTable( "searing_touch", setmetatable( {}, {
 
 spec:RegisterTotem( "rune_of_power", 609815 )
 
+
+spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
+
+
 spec:RegisterHook( "reset_precast", function ()
     if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
     else removeBuff( "rune_of_power" ) end

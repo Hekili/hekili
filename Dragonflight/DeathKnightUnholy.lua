@@ -868,6 +868,23 @@ me:RegisterPet( "apoc_ghoul", 24207, "apocalypse", 15 )
 me:RegisterPet( "army_ghoul", 24207, "army_of_the_dead", 30 )
 
 
+-- Tier 29
+spec:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
+spec:RegisterAuras( {
+    vile_infusion = {
+        id = 3945863,
+        duration = 5,
+        max_stack = 1,
+        shared = "pet"
+    },
+    ghoulish_infusion = {
+        id = 394899,
+        duration = 8,
+        max_stack = 1
+    }
+} )
+
+
 local any_dnd_set, wound_spender_set = false, false
 
 local ExpireRunicCorruption = setfenv( function()
@@ -1131,7 +1148,7 @@ me:RegisterAbilities( {
             end
 
             if level > 57 then gain( 2, "runes" ) end
-
+            if set_bonus.tier29_2pc > 0 then applyBuff( "vile_infusion" ) end
             if pvptalent.necromancers_bargain.enabled then applyDebuff( "target", "crypt_fever" ) end
         end,
     },
@@ -1243,6 +1260,7 @@ me:RegisterAbilities( {
                 end
 
                 apply_festermight( 1 )
+                if set_bonus.tier29_2pc > 0 then applyBuff( "vile_infusion" ) end
             end
             gain( 3, "runic_power" )
         end,
@@ -1394,6 +1412,7 @@ me:RegisterAbilities( {
                     removeDebuff( "target", "festering_wound" )
                     applyDebuff( "target", "doomburst", debuff.doomburst.up and debuff.doomburst.remains or nil, debuff.doomburst.stack + 1 )
                 end
+                if set_bonus.tier29_2pc > 0 then applyBuff( "vile_infusion" ) end
             end
 
             if buff.sudden_doom.up then
@@ -1808,10 +1827,15 @@ me:RegisterAbilities( {
         cycle_to = true,
 
         handler = function ()
-            if debuff.festering_wound.stack > 1 then
-                applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
-            else removeDebuff( "target", "festering_wound" ) end
-            apply_festermight( 1 )
+            if debuff.festering_wound.up then
+                if debuff.festering_wound.stack > 1 then
+                    applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
+                else
+                    removeDebuff( "target", "festering_wound" )
+                end
+                apply_festermight( 1 )
+                if set_bonus.tier29_2pc > 0 then applyBuff( "vile_infusion" ) end
+            end
 
             if conduit.lingering_plague.enabled and debuff.virulent_plague.up then
                 debuff.virulent_plague.expires = debuff.virulent_plague.expires + ( conduit.lingering_plague.mod * 0.001 )
