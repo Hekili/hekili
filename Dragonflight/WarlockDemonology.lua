@@ -367,7 +367,7 @@ end, state )
 
 -- Tier 29
 spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
-spec:RegisterAuras( "blazing_meteor", {
+spec:RegisterAura( "blazing_meteor", {
     id = 394215,
     duration = 6,
     max_stack = 1
