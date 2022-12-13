@@ -391,9 +391,6 @@ local actionTemplate = {
     for_next = 0,
     extra_amount = "0",
 
-    -- Potion
-    potion = "default",
-
     -- Variable
     op = "set",
     condition = "",
@@ -3619,11 +3616,6 @@ do
             if list and action then
                 lists[ list ] = lists[ list ] or ""
 
-                --[[ if action:sub( 1, 6 ) == "potion" then
-                    local potion = action:match( ",name=(.-),") or action:match( ",name=(.-)$" ) or class.potion or ""
-                    action = action:gsub( potion, "\"" .. potion .. "\"" )
-                end ]]
-
                 if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
                     local name = action:match( ",name=(.-)," ) or action:match( ",name=(.-)$" )
                     if name then action:gsub( ",name=" .. name, ",name=\"" .. name .. "\"" ) end
@@ -3802,7 +3794,6 @@ do
         self.DB.profile.specs[ spec ][ option ] = val
 
         if option == "package" then self:UpdateUseItems(); self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
-        elseif option == "potion" and state.spec[ info[1] ] then class.potion = val
         elseif option == "enabled" then ns.StartConfiguration() end
 
         Hekili:UpdateDamageDetectionForCLEU()
@@ -4896,31 +4887,6 @@ do
                                     order = 1.2,
                                     width = 'full'
                                 },
-
-                                potion = {
-                                    type = "select",
-                                    name = "Default Potion",
-                                    desc = "When recommending a potion, the addon will suggest this potion unless the action list specifies otherwise.",
-                                    order = 2,
-                                    width = 3,
-                                    values = function ()
-                                        local v = {}
-
-                                        for k, p in pairs( class.potionList ) do
-                                            if k ~= "default" then v[ k ] = p end
-                                        end
-
-                                        return v
-                                    end,
-                                },
-
-                                blankLine2 = {
-                                    type = 'description',
-                                    name = '',
-                                    order = 2.1,
-                                    width = 'full'
-                                }
-
                             },
                             plugins = {
                                 settings = {}
@@ -5408,7 +5374,6 @@ do
     local nameMap = {
         call_action_list = "list_name",
         run_action_list = "list_name",
-        potion = "potion",
         variable = "var_name",
         op = "op"
     }
@@ -5416,7 +5381,6 @@ do
 
     local defaultNames = {
         list_name = "default",
-        potion = "prolonged_power",
         var_name = "unnamed_var",
     }
 
@@ -6807,7 +6771,7 @@ do
                                                     end,
                                                 },
 
-                                                potion = {
+                                                --[[ potion = {
                                                     type = "select",
                                                     name = "Potion",
                                                     order = 3.2,
@@ -6818,7 +6782,7 @@ do
                                                         return e.action ~= "potion"
                                                     end,
                                                     width = 1.5,
-                                                },
+                                                }, ]]
 
                                                 sec = {
                                                     type = "input",
@@ -10438,7 +10402,6 @@ do
     local nameMap = {
         call_action_list = "list_name",
         run_action_list = "list_name",
-        potion = "potion",
         variable = "var_name",
         cancel_action = "action_name",
         cancel_buff = "buff_name",

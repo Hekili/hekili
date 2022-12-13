@@ -2888,11 +2888,9 @@ do
                     duration = class.abilities[ "ascendance" ].cooldown
 
                 elseif t.key == "potion" then
-                    local itemName = state.args.ModName or state.args.name or class.potion
-                    local potion = class.potions[ itemName ]
-
-                    if state.toggle.potions and potion and GetItemCount( potion.item ) > 0 then
-                        start, duration = GetItemCooldown( potion.item )
+                    local potion = class.abilities.potion.item
+                    if state.toggle.potions and potion then
+                        start, duration = GetItemCooldown( potion )
 
                     else
                         start = state.now

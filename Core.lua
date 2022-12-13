@@ -1093,48 +1093,39 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                 if aScriptPass then
                                                     if action == "potion" then
-                                                        local potionName = state.args.potion or state.args.name
-                                                        if not potionName or potionName == "default" then potionName = class.potion end
-                                                        local potion = class.potions[ potionName ]
+                                                        local item = class.abilities.potion.item
+
+                                                        slot.scriptType = "simc"
+                                                        slot.script = scriptID
+                                                        slot.hook = caller
+
+                                                        slot.display = dispName
+                                                        slot.pack = packName
+                                                        slot.list = listName
+                                                        slot.listName = listName
+                                                        slot.action = actID
+                                                        slot.actionName = state.this_action
+                                                        slot.actionID = -1 * item
+
+                                                        slot.texture = select( 10, GetItemInfo( item ) )
+                                                        slot.caption = ability.caption or entry.caption
+                                                        slot.item = item
+
+                                                        slot.wait = state.delay
+                                                        slot.resource = state.GetResourceType( rAction )
+
+                                                        rAction = state.this_action
+                                                        rWait = state.delay
 
                                                         if debug then
-                                                            if not potionName then self:Debug( "No potion name set." )
-                                                            elseif not potion then self:Debug( "Unable to find potion '" .. potionName .. "'." ) end
+                                                            -- scripts:ImplantDebugData( slot )
+                                                            self:Debug( "Action chosen:  %s at %.2f!", rAction, rWait )
                                                         end
 
-                                                        if potion then
-                                                            slot.scriptType = "simc"
-                                                            slot.script = scriptID
-                                                            slot.hook = caller
+                                                        -- slot.indicator = ( entry.Indicator and entry.Indicator ~= "none" ) and entry.Indicator
 
-                                                            slot.display = dispName
-                                                            slot.pack = packName
-                                                            slot.list = listName
-                                                            slot.listName = listName
-                                                            slot.action = actID
-                                                            slot.actionName = state.this_action
-                                                            slot.actionID = -1 * potion.item
-
-                                                            slot.texture = select( 10, GetItemInfo( potion.item ) )
-                                                            slot.caption = ability.caption or entry.caption
-                                                            slot.item = potion.item
-
-                                                            slot.wait = state.delay
-                                                            slot.resource = state.GetResourceType( rAction )
-
-                                                            rAction = state.this_action
-                                                            rWait = state.delay
-
-                                                            if debug then
-                                                                -- scripts:ImplantDebugData( slot )
-                                                                self:Debug( "Action chosen:  %s at %.2f!", rAction, rWait )
-                                                            end
-
-                                                            -- slot.indicator = ( entry.Indicator and entry.Indicator ~= "none" ) and entry.Indicator
-
-                                                            state.selection_time = state.delay
-                                                            state.selected_action = rAction
-                                                        end
+                                                        state.selection_time = state.delay
+                                                        state.selected_action = rAction
 
                                                     --[[ elseif action == "wait" then
                                                         -- local args = scripts:GetModifiers()

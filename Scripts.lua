@@ -1156,7 +1156,6 @@ local newModifiers = {
     buff_name = 'string',
     list_name = 'string',
     op = 'string',
-    potion = 'string',
     var_name = 'string',
 }
 
@@ -1175,7 +1174,6 @@ local valueModifiers = {
     call_action_list = "list_name",
     run_action_list = "list_name",
     variable = "var_name",
-    potion = "potion",
     cancel_buff = "buff_name",
 } ]]
 

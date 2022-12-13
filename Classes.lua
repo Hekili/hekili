@@ -32,8 +32,6 @@ local GetSpecialization, GetSpecializationInfo = _G.GetSpecialization, _G.GetSpe
 local specTemplate = {
     enabled = true,
 
-    potion = "prolonged_power",
-
     aoe = 2,
     cycle = false,
     cycle_min = 6,
@@ -492,11 +490,6 @@ local HekiliSpecMixin = {
         for k, v in pairs( potions ) do
             self:RegisterPotion( k, v )
         end
-    end,
-
-    SetPotion = function( self, potion )
-        -- if not class.potions[ potion ] then return end
-        self.potion = potion
     end,
 
     RegisterRecheck = function( self, func )
@@ -1975,280 +1968,85 @@ all:RegisterAuras( {
 } )
 
 
-all:RegisterPotions( {
-    -- 9.0
-    potion_of_spectral_strength = {
-        item = 171275,
-        buff = "potion_of_spectral_strength",
-        copy = "spectral_strength",
-    },
-    potion_of_spectral_agility = {
-        item = 171270,
-        buff = "potion_of_spectral_agility",
-        copy = "spectral_agility",
-    },
-    potion_of_spiritual_clarity = {
-        item = 171272,
-        buff = "potion_of_spiritual_clarity",
-        copy = "spiritual_clarity"
-    },
-    potion_of_phantom_fire = {
-        item = 171349,
-        buff = "potion_of_phantom_fire",
-        copy = "phantom_fire",
-    },
-    potion_of_spectral_intellect = {
-        item = 171273,
-        buff = "potion_of_spectral_intellect",
-        copy = "spectral_intellect"
-    },
-    potion_of_deathly_fixation = {
-        item = 171351,
-        buff = "potion_of_deathly_fixation",
-        copy = "deathly_fixation"
-    },
-    strength_of_blood = {
-        item = 182163,
-        buff = "strength_of_blood",
-    },
-    potion_of_empowered_exorcisms = {
-        item = 171352,
-        buff = "potion_of_empowered_exorcisms",
-        copy = "empowered_exorcisms"
-    },
-    potion_of_unusual_strength = {
-        item = 180771,
-        buff = "potion_of_unusual_strength",
-        copy = "unusual_strength"
-    },
-    potion_of_spectral_stamina = {
-        item = 171274,
-        buff = "potion_of_spectral_stamina",
-        copy = "spectral_stamina"
-    },
-
-    -- 8.2
-    potion_of_empowered_proximity = {
-        item = 168529,
-        buff = "potion_of_empowered_proximity",
-        copy = "empowered_proximity"
-    },
-    potion_of_focused_resolve = {
-        item = 168506,
-        buff = "potion_of_focused_resolve",
-        copy = "focused_resolve"
-    },
-    potion_of_unbridled_fury = {
-        item = 169299,
-        buff = "potion_of_unbridled_fury",
-        copy = "unbridled_fury"
-    },
-    superior_battle_potion_of_agility = {
-        item = 168489,
-        buff = "superior_battle_potion_of_agility",
-    },
-    superior_battle_potion_of_intellect = {
-        item = 168498,
-        buff = "superior_battle_potion_of_intellect",
-    },
-    superior_battle_potion_of_stamina = {
-        item = 168499,
-        buff = "superior_battle_potion_of_stamina",
-    },
-    superior_battle_potion_of_strength = {
-        item = 168500,
-        buff = "superior_battle_potion_of_strength",
-    },
-    superior_steelskin_potion = {
-        item = 168501,
-        buff = "superior_steelskin_potion",
-    },
-
-    -- 8.0
-    battle_potion_of_agility = {
-        item = 163223,
-        buff = "battle_potion_of_agility",
-    },
-    battle_potion_of_intellect = {
-        item = 163222,
-        buff = "battle_potion_of_intellect",
-    },
-    battle_potion_of_stamina = {
-        item = 163225,
-        buff = "battle_potion_of_stamina",
-    },
-    battle_potion_of_strength = {
-        item = 163224,
-        buff = "battle_potion_of_strength",
-    },
-    bursting_blood = {
-        item = 152560,
-        buff = "potion_of_bursting_blood",
-        copy = "bursting_blood",
-    },
-    potion_of_rising_death = {
-        item = 152559,
-        buff = "potion_of_rising_death",
-        copy = "rising_death",
-    },
-    steelskin_potion = {
-        item = 152557,
-        buff = "steelskin_potion",
-    },
-
-    -- 7.0
-    prolonged_power = {
-        item = 142117,
-        buff = "prolonged_power",
-        copy = "potion_of_prolonged_power"
+do
+    -- Dragonflight Potions
+    -- There are multiple items for each potion, and there are also Toxic potions that people may not want to use.
+    local df_potions = {
+        {
+            name = "elemental_potion_of_ultimate_power",
+            items = { 191914, 191913, 191912, 191383, 191382, 191381 }
+        },
+        {
+            name = "elemental_potion_of_power",
+            items = { 191907, 191906, 191905, 191389, 191388, 191387 }
+        },
     }
-} )
+
+    all:RegisterAuras( {
+        elemental_potion_of_ultimate_power = {
+            id = 371028,
+            duration = 30,
+            max_stack = 1
+        },
+        elemental_potion_of_power = {
+            id = 371024,
+            duration = 30,
+            max_stack = 1
+        }
+    } )
+
+    local function getValidPotion()
+        for _, potion in ipairs( df_potions ) do
+            for _, item in ipairs( potion.items ) do
+                if GetItemCount( item, false ) > 0 then return item, potion.name end
+            end
+        end
+    end
 
 
-all:RegisterAuras( {
-    -- 9.0
-    potion_of_spectral_strength = {
-        id = 307164,
-        duration = 25,
-        max_stack = 1,
-        copy = "spectral_strength"
-    },
-    potion_of_spectral_agility = {
-        id = 307159,
-        duration = 25,
-        max_stack = 1,
-        copy = "spectral_agility"
-    },
-    potion_of_spiritual_clarity = {
-        id = 307161,
-        duration = 10,
-        max_stack = 1,
-        copy = "spiritual_clarity"
-    },
-    potion_of_phantom_fire = {
-        id = 307495,
-        duration = 25,
-        max_stack = 1,
-        copy = "phantom_fire",
-    },
-    potion_of_spectral_intellect = {
-        id = 307162,
-        duration = 25,
-        max_stack = 1,
-        copy = "spectral_intellect"
-    },
-    potion_of_deathly_fixation = {
-        id = 307497,
-        duration = 25,
-        max_stack = 1,
-        copy = "deathly_fixation"
-    },
-    strength_of_blood = {
-        id = 338385,
-        duration = 60,
-        max_stack = 1
-    },
-    potion_of_empowered_exorcisms = {
-        id = 307494,
-        duration = 25,
-        max_stack = 1,
-        copy = "empowered_exorcisms"
-    },
-    potion_of_unusual_strength = {
-        id = 334436,
-        duration = 25,
-        max_stack = 1,
-        copy = "unusual_strength"
-    },
-    potion_of_spectral_stamina = {
-        id = 307163,
-        duration = 25,
-        max_stack = 1,
-        copy = "spectral_stamina"
-    },
+    all:RegisterAbility( "potion", {
+        name = "Potion",
+        listName = '|T136243:0|t |cff00ccff[Potion]|r',
+        cast = 0,
+        cooldown = 300,
+        gcd = "off",
 
-    -- 8.2
-    potion_of_empowered_proximity = {
-        id = 298225,
-        duration = 25,
-        max_stack = 1
-    },
-    potion_of_focused_resolve = {
-        id = 298317,
-        duration = 25,
-        max_stack = 1
-    },
-    potion_of_unbridled_fury = {
-        id = 300714,
-        duration = 60,
-        max_stack = 1
-    },
-    superior_battle_potion_of_agility = {
-        id = 298146,
-        duration = 25,
-        max_stack = 1
-    },
-    superior_battle_potion_of_intellect = {
-        id = 298152,
-        duration = 25,
-        max_stack = 1
-    },
-    superior_battle_potion_of_stamina = {
-        id = 298153,
-        duration = 25,
-        max_stack = 1
-    },
-    superior_battle_potion_of_strength = {
-        id = 298154,
-        duration = 25,
-        max_stack = 1
-    },
-    superior_steelskin_potion = {
-        id = 298155,
-        duration = 25,
-        max_stack = 1
-    },
+        startsCombat = false,
+        toggle = "potions",
 
-    -- 8.0
-    battle_potion_of_agility = {
-        id = 279152,
-        duration = 25,
-        max_stack = 1,
-    },
-    battle_potion_of_intellect = {
-        id = 279151,
-        duration = 25,
-        max_stack = 1,
-    },
-    battle_potion_of_stamina = {
-        id = 279154,
-        duration = 25,
-        max_stack = 1,
-    },
-    battle_potion_of_strength = {
-        id = 279153,
-        duration = 25,
-        max_stack = 1,
-    },
-    potion_of_bursting_blood = {
-        id = 251316,
-        duration = 25,
-        max_stack = 1,
-    },
-    potion_of_rising_death = {
-        id = 269853,
-        duration = 25,
-        max_stack = 1,
-    },
-    steelskin_potion = {
-        id = 251231,
-        duration = 25,
-        max_stack = 1,
-    },
-} )
+        item = function ()
+            return getValidPotion()
+        end,
+        bagItem = true,
+
+        timeToReady = function ()
+            local item = getValidPotion()
+
+            if item then
+                local start, dur = GetItemCooldown( item )
+                return max( 0, start + dur - query_time )
+            end
+
+            return 3600
+        end,
+
+        handler = function ()
+            local item, effect = getValidPotion()
+
+            if item and effect then
+                applyBuff( effect )
+            end
+        end,
+
+        usable = function ()
+            if getValidPotion() ~= nil then return true end
+            return false, "no valid potions found in inventory"
+        end,
+    } )
+end
 
 
-all:SetPotion( "prolonged_power" )
+
 
 
 local gotn_classes = {
@@ -2586,59 +2384,6 @@ all:RegisterAbilities( {
         cooldown = 0,
         gcd = "off",
         essential = true,
-    },
-
-    potion = {
-        name = "Potion",
-        listName = '|T136243:0|t |cff00ccff[Potion]|r',
-        cast = 0,
-        cooldown = function () return time > 0 and 3600 or 60 end,
-        gcd = "off",
-
-        startsCombat = false,
-        toggle = "potions",
-
-        item = function ()
-            local potion = args.potion or args.name
-            if not potion or potion == default then potion = class.potion end
-            potion = class.potions[ potion ]
-
-            if potion then return potion.item end
-        end,
-        bagItem = true,
-
-        timeToReady = function ()
-            local potion = args.potion or args.name
-            if not potion or potion == "default" then potion = class.potion end
-            potion = class.potions[ potion ]
-
-            if potion then
-                local start, dur = GetItemCooldown( potion.item )
-                return max( 0, start + dur - query_time )
-            end
-
-            return 3600
-        end,
-
-        handler = function ()
-            local potion = args.potion or args.name
-            if not potion or potion == "default" then potion = class.potion end
-            potion = class.potions[ potion ]
-
-            if potion then
-                applyBuff( potion.buff, potion.duration or 25 )
-            end
-        end,
-
-        usable = function ()
-            local pName = args.potion or args.name
-            if not pName or pName == "default" then pName = class.potion end
-            local potion = class.potions[ pName ]
-
-            if not potion or GetItemCount( potion.item ) == 0 then return false, "no potion found/" .. tostring(potion) .. "/" .. ( potion and potion.item or 0 ) end
-
-            return true
-        end,
     },
 
     healthstone = {
@@ -6004,8 +5749,6 @@ function Hekili:SpecializationChanged()
 
     wipe( class.pets )
 
-    class.potion = nil
-
     local specs = {}
 
     for i = 1, 4 do
@@ -6112,14 +5855,6 @@ function Hekili:SpecializationChanged()
                 class.potionList.default = "|cFFFFD100Default|r"
             end
 
-            if self.currentSpecOpts and self.currentSpecOpts.potion then
-                class.potion = self.currentSpecOpts.potion
-            end
-
-            if not class.potion and spec.potion then
-                class.potion = spec.potion
-            end
-
             for res, model in pairs( spec.resources ) do
                 if not class.resources[ res ] then
                     class.resources[ res ] = model
@@ -6154,13 +5889,6 @@ function Hekili:SpecializationChanged()
 
             for k, v in pairs( spec.totems ) do
                 if not class.totems[ k ] then class.totems[ k ] = v end
-            end
-
-            for k, v in pairs( spec.potions ) do
-                if not class.potions[ k ] then
-                    class.potions[ k ] = v
-                end
-                if class.potion == k and class.auras[ k ] then class.auras.potion = class.auras[ k ] end
             end
 
             for k, v in pairs( spec.packs ) do
