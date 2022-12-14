@@ -325,8 +325,8 @@ function Hekili:SaveDebugSnapshot( dispName )
                 custom = format( " |cFFFFA700(Custom: %s[%d])|r", state.spec.name, state.spec.id )
             end
 
-            local overview = format( "%s%s; %s|r", state.system.packName, custom, dispName )
-            local recs = Hekili.DisplayPool[ dispName ].Recommendations
+            local overview = format( "%s%s; %s|r", state.system.packName, custom, dispName or state.display )
+            local recs = Hekili.DisplayPool[ dispName or state.display ].Recommendations
 
             for i, rec in ipairs( recs ) do
                 if not rec.actionName then

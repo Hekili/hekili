@@ -1003,51 +1003,22 @@ end )
 local realAoeSparkPhase = {}
 local virtualAoeSparkPhase = false
 
-local function SetAoeSparkPhase( display )
+local SetAoeSparkPhase = setfenv( function()
     if realAoeSparkPhase[ display ] == nil then realAoeSparkPhase[ display ] = false end
 
-    local arcaneOrbCharges = GetSpellCharges( 153626 )
-    local arcaneCharges = UnitPower( "player", Enum.PowerType.ArcaneCharges )
-
-    local now = GetTime()
-
-    local gcdRemains = 0
-    start, duration = GetSpellCooldown( 61304 )
-    gcdRemains = max( 0, start + duration - now )
-
-    local ropCooldown = 0
-    local start, duration = GetSpellCooldown( 116011 )
-    ropCooldown = max( 0, start + duration - now )
-    if ropCooldown <= gcdRemains then ropCooldown = 0 end
-
-    local rsCooldown = 0
-    start, duration = GetSpellCooldown( 376103 )
-    rsCooldown = max( 0, start + duration - now )
-    if rsCooldown <= gcdRemains then rsCooldown = 0 end
-
-    local totmCooldown = 0
-    start, duration = GetSpellCooldown( 321507 )
-    totmCooldown = max( 0, start + duration - now )
-    if totmCooldown <= gcdRemains then totmCooldown = 0 end
-
-    local _, gcd = GetSpellBaseCooldown( 61304 )
-    local haste = 100 / ( 100 + UnitSpellHaste( "player" ) )
-    gcd = gcd * haste * 0.001
-
-    if not realAoeSparkPhase[ display ] and state.active_enemies >= state.variable.aoe_target_count and ( arcaneOrbCharges > 0 or arcaneCharges >= 3 ) and ( not state.talent.rune_of_power.enabled or ropCooldown == 0 ) and rsCooldown == 0 and totmCooldown <= gcd * 2 then
+    if not realAoeSparkPhase[ display ] and active_enemies >= variable.aoe_target_count and ( cooldown.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and ( not talent.rune_of_power.enabled or cooldown.rune_of_power.remains == 0 ) and cooldown.radiant_spark.remains == 0 and cooldown.touch_of_the_magi.remains <= gcd.max * 2 then
         realAoeSparkPhase[ display ] = true
     end
 
-    local rsVulnerability = FindUnitDebuffByID( "target", 376104 )
-    local _, _, _, _, _, expires = FindUnitDebuffByID( "target", 376103 )
-    local rsRemains = expires and max( 0, expires - now ) or 0
+    local rsVulnerability = debuff.radiant_spark_vulnerability.up
+    local rsRemains = debuff.radiant_spark.remains
 
-    if realAoeSparkPhase[ display ] and not state.prev[1].radiant_spark and not state.prev[2].radiant_spark and not rsVulnerability and rsRemains < 5 and rsCooldown > 0 then
+    if realAoeSparkPhase[ display ] and not prev[1].radiant_spark and not prev[2].radiant_spark and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > 0 then
         realAoeSparkPhase[ display ] = false
     end
 
     virtualAoeSparkPhase = realAoeSparkPhase[ display ]
-end
+end, state )
 
 local UpdateAoeSparkPhase = setfenv( function()
     if not virtualAoeSparkPhase and active_enemies >= variable.aoe_target_count and ( action.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and ( not talent.rune_of_power.enabled or cooldown.rune_of_power.ready ) and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= 2 * gcd.max then
@@ -1072,50 +1043,19 @@ end )
 local realSparkPhase = {}
 local virtualSparkPhase = false
 
-local function SetSparkPhase( display )
+local SetSparkPhase = setfenv( function()
     if realSparkPhase[ display ] == nil then realSparkPhase[ display ] = false end
 
-    local arcaneCharges = UnitPower( "player", Enum.PowerType.ArcaneCharges )
-
-    local now = GetTime()
-
-    local gcdRemains = 0
-    start, duration = GetSpellCooldown( 61304 )
-    gcdRemains = max( 0, start + duration - now )
-
-    local ropCooldown = 0
-    local start, duration = GetSpellCooldown( 116011 )
-    ropCooldown = max( 0, start + duration - now )
-    if ropCooldown <= gcdRemains then ropCooldown = 0 end
-
-    local rsCooldown = 0
-    start, duration = GetSpellCooldown( 376103 )
-    rsCooldown = max( 0, start + duration - now )
-    if rsCooldown <= gcdRemains then rsCooldown = 0 end
-
-    local totmCooldown = 0
-    start, duration = GetSpellCooldown( 321507 )
-    totmCooldown = max( 0, start + duration - now )
-    if totmCooldown <= gcdRemains then totmCooldown = 0 end
-
-    local _, gcd = GetSpellBaseCooldown( 61304 )
-    local haste = 100 / ( 100 + UnitSpellHaste( "player" ) )
-    gcd = gcd * haste * 0.001
-
-    if not realSparkPhase[ display ] and arcaneCharges >= 3 and state.active_enemies < state.variable.aoe_target_count and ( not state.talent.rune_of_power.enabled or ropCooldown == 0 ) and rsCooldown == 0 and totmCooldown <= gcd * 7 then
+    if not realSparkPhase[ display ] and buff.arcane_charge.stack >= 3 and active_enemies < variable.aoe_target_count and ( not state.talent.rune_of_power.enabled or cooldown.rune_of_power.remains == 0 ) and cooldown.radiant_spark.remains == 0 and cooldown.touch_of_the_magi.remains <= gcd.max * 7 then
         realSparkPhase[ display ] = true
     end
 
-    local rsVulnerability = FindUnitDebuffByID( "target", 376104 )
-    local _, _, _, _, _, expires = FindUnitDebuffByID( "target", 376103 )
-    local rsRemains = max( 0, ( expires or now )- now )
-
-    if realSparkPhase[ display ] and not state.prev[1].radiant_spark and not state.prev[2].radiant_spark and not rsVulnerability and rsRemains < 5 and rsCooldown > 0 then
+    if realSparkPhase[ display ] and not prev[1].radiant_spark and not prev[2].radiant_spark and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > 0 then
         realSparkPhase[ display ] = false
     end
 
     virtualSparkPhase = realSparkPhase[ display ]
-end
+end, state )
 
 local UpdateSparkPhase = setfenv( function()
     if not virtualSparkPhase and buff.arcane_charge.stack >= 3 and active_enemies < variable.aoe_target_count and ( not talent.rune_of_power.ready or cooldown.rune_of_power.ready ) and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= gcd.max * 7 then
@@ -1140,38 +1080,19 @@ end )
 local realRopPhase = {}
 local virtualRopPhase = false
 
-local function SetRopPhase( display )
+local SetRopPhase = setfenv( function()
     if realRopPhase[ display ] == nil then realRopPhase[ display ] = false end
 
-    local arcaneCharges = UnitPower( "player", Enum.PowerType.ArcaneCharges )
-
-    local now = GetTime()
-
-    local gcdRemains = 0
-    start, duration = GetSpellCooldown( 61304 )
-    gcdRemains = max( 0, start + duration - now )
-
-    local ropCooldown = 0
-    local start, duration = GetSpellCooldown( 116011 )
-    ropCooldown = max( 0, start + duration - now )
-    if ropCooldown <= gcdRemains then ropCooldown = 0 end
-
-    local _, gcd = GetSpellBaseCooldown( 61304 )
-    local haste = 100 / ( 100 + UnitSpellHaste( "player" ) )
-    gcd = gcd * haste * 0.001
-
-    if not realRopPhase[ display ] and state.talent.rune_of_power.enabled and not state.talent.radiant_spark.enabled and arcaneCharges >= 3 and ropCooldown == 0 and state.active_enemies < state.variable.aoe_target_count then
+    if not realRopPhase[ display ] and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.remains == 0 and active_enemies < variable.aoe_target_count then
         realRopPhase[ display ] = true
     end
 
-    local totmDebuff = FindUnitDebuffByID( "target", 210824 )
-
-    if realRopPhase[ display ] and ( totmDebuff or not state.talent.rune_of_power.enabled ) then
+    if realRopPhase[ display ] and ( debuff.touch_of_the_magi.up or not talent.rune_of_power.enabled ) then
         realRopPhase[ display ] = false
     end
 
     virtualRopPhase = realRopPhase[ display ]
-end
+end, state )
 
 local UpdateRopPhase = setfenv( function()
     if not virtualRopPhase and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.ready and active_enemies < variable.aoe_target_count then

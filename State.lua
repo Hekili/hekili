@@ -3208,8 +3208,6 @@ do
     mt_prev = {
         __index = function( t, k )
             if type( k ) == "number" then
-                -- This is a SimulationCraft 7.1.5 or later indexed lookup, we support up to #5.
-                if k < 1 or k > 10 then return "no_action" end
                 prev_lookup.meta = t.meta -- Which data to use? castsAll, castsOn (GCD), castsOff (offGCD)?
                 prev_lookup.index = k
                 return prev_lookup
