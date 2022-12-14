@@ -1189,7 +1189,7 @@ local abs = math.abs
 
 
 spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
-spec:RegisterAuras( "bursting_energy", {
+spec:RegisterAura( "bursting_energy", {
     id = 395006,
     duration = 12,
     max_stack = 4

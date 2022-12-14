@@ -2267,6 +2267,9 @@ spec:RegisterAbilities( {
                 end
             end
 
+            if buff.finality_rupture.up then removeBuff( "finality_rupture" )
+            elseif talent.finality.enabled then applyBuff( "finality_rupture" ) end
+
             if talent.scent_of_blood.enabled or azerite.scent_of_blood.enabled then
                 applyBuff( "scent_of_blood", dot.rupture.remains, active_dot.rupture )
             end

@@ -12,7 +12,7 @@ actions+=/cat_form,if=!buff.cat_form.up
 actions+=/variable,name=need_bt,value=talent.bloodtalons.enabled&buff.bloodtalons.down
 actions+=/call_action_list,name=cooldown
 actions+=/adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.ticking|dot.adaptive_swarm_damage.remains<2)&(dot.adaptive_swarm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1)&!action.adaptive_swarm_heal.in_flight&!action.adaptive_swarm_damage.in_flight&!action.adaptive_swarm.in_flight)&target.time_to_die>5|active_enemies>2&!dot.adaptive_swarm_damage.ticking&energy<35&target.time_to_die>5
-actions+=/feral_frenzy,if=combo_points<2
+actions+=/feral_frenzy,if=combo_points<2|combo_points=2&buff.bs_inc.up
 actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.swipe_cat>1&talent.primal_wrath.enabled
 actions+=/ferocious_bite,if=buff.apex_predators_craving.up
 actions+=/call_action_list,name=finisher,strict=1,if=combo_points=5
@@ -30,10 +30,10 @@ actions.aoe+=/thrash_cat,cycle_targets=1,if=refreshable
 # At this target count BRS also crushes everything except full thrashes
 actions.aoe+=/brutal_slash
 ## actions.aoe+=/pool_resource,for_next=1
-## TODO: actions.aoe+=/rake,target_if=max:dot.rake.ticks_gained_on_refresh.pmult,if=((dot.rake.ticks_gained_on_refresh.pmult*(1+talent.doubleclawed_rake.enabled))>(spell_targets.swipe_cat*0.216+3.32))
+## TODO: actions.aoe+=/rake,cycle_targets=1,if=((dot.rake.ticks_gained_on_refresh.pmult*(1+talent.doubleclawed_rake.enabled))>(spell_targets.swipe_cat*0.216+3.32))
 # This means that a full rake (5.5+ ticks) is stronger up to 10ish targets
 actions.aoe+=/rake,cycle_targets=1,if=refreshable|active_dot.rake<cycle_enemies
-## TODO: actions.aoe+=/lunar_inspiration,target_if=max((ticks_gained_on_refresh+1)-(spell_targets.swipe_cat*2.492))
+## TODO: actions.aoe+=/lunar_inspiration,cycle_targets=1,if=max((ticks_gained_on_refresh+1)-(spell_targets.swipe_cat*2.492))
 # Full Lis beat Swipe up til around 3-ish targets depending on haste
 actions.aoe+=/lunar_inspiration,cycle_targets=1,if=refreshable&cycle_enemies-active_dot.lunar_inspiration>2
 actions.aoe+=/swipe_cat
@@ -59,9 +59,9 @@ actions.berserk_builders+=/shred
 
 actions.builder+=/run_action_list,name=clearcasting,if=buff.clearcasting.react
 actions.builder+=/rake,cycle_targets=1,if=refreshable|(buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier&dot.rake.duration>6)
-actions.builder+=/moonfire_cat,target_if=refreshable
+actions.builder+=/moonfire_cat,cycle_targets=1,if=refreshable
 ## actions.builder+=/pool_resource,for_next=1
-actions.builder+=/thrash_cat,target_if=refreshable
+actions.builder+=/thrash_cat,cycle_targets=1,if=refreshable
 actions.builder+=/brutal_slash
 actions.builder+=/swipe_cat,if=spell_targets.swipe_cat>1
 actions.builder+=/shred
@@ -77,6 +77,7 @@ actions.cooldown+=/convoke_the_spirits,if=buff.tigers_fury.up&combo_points<3|bos
 actions.cooldown+=/berserking
 actions.cooldown+=/shadowmeld,if=buff.tigers_fury.up&buff.bs_inc.down&combo_points<4&buff.sudden_ambush.down&dot.rake.pmultiplier<1.6&energy>40&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2&target.time_to_die>5
 actions.cooldown+=/potion,if=buff.bs_inc.up|boss&fight_remains<cooldown.bs_inc.remains|boss&fight_remains<35
+actions.cooldown+=/use_item,name=manic_grieftorch,if=energy.deficit>40
 actions.cooldown+=/use_items
 
 actions.finisher+=/primal_wrath,if=spell_targets.primal_wrath>2
