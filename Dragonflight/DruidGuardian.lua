@@ -1096,7 +1096,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "cyclone",
-        startsCombat = false,
+        startsCombat = true,
 
         handler = function ()
             applyDebuff( "target", "cyclone" )
@@ -1229,7 +1229,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "physical",
 
-        startsCombat = false,
+        startsCombat = true,
 
         handler = function ()
             applyBuff( "growl" )
@@ -1290,7 +1290,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         talent = "incapacitating_roar",
-        startsCombat = false,
+        startsCombat = true,
 
         handler = function ()
             if buff.bear_form.down then shift( "bear_form" ) end
@@ -1379,7 +1379,7 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         talent = "maim",
-        startsCombat = false,
+        startsCombat = true,
 
         form = "cat_form",
 
@@ -1433,7 +1433,7 @@ spec:RegisterAbilities( {
         school = "nature",
 
         talent = "mass_entanglement",
-        startsCombat = false,
+        startsCombat = true,
 
         handler = function ()
             applyDebuff( "target", "mass_entanglement" )
@@ -1507,7 +1507,7 @@ spec:RegisterAbilities( {
         spend = 0.06,
         spendType = "mana",
 
-        startsCombat = false,
+        startsCombat = true,
 
         handler = function ()
             if buff.bear_form.up and not talent.ursine_adept.enabled then unshift() end
@@ -1743,7 +1743,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         talent = "skull_bash",
-        startsCombat = false,
+        startsCombat = true,
 
         toggle = "interrupts",
 
@@ -1767,7 +1767,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "soothe",
-        startsCombat = false,
+        startsCombat = true,
 
         debuff = "dispellable_enrage",
 
@@ -1812,7 +1812,7 @@ spec:RegisterAbilities( {
         spendType = "eclipse",
 
         talent = "starsurge",
-        startsCombat = false,
+        startsCombat = true,
 
         form = "moonkin_form",
 
@@ -1824,7 +1824,7 @@ spec:RegisterAbilities( {
 
     -- Talent: A quick beam of solar light burns the enemy for $164815s1 Nature damage and then an additional $164815o2 Nature damage over $164815d$?s231050[ to the primary target and all enemies within $164815A2 yards][].$?s137013[    |cFFFFFFFFGenerates ${$m3/10} Astral Power.|r][]
     sunfire = {
-        id = 197630,
+        id = 93402,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1834,9 +1834,9 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "sunfire",
-        startsCombat = false,
+        startsCombat = true,
 
-        form = "moonkin_form",
+        usable = function() return buff.moonkin_form.up or buff.any_form.down, "requires moonkin_form or no form" end,
 
         handler = function ()
             applyDebuff( "target", "sunfire" )
@@ -1999,7 +1999,7 @@ spec:RegisterAbilities( {
         school = "nature",
 
         talent = "typhoon",
-        startsCombat = false,
+        startsCombat = true,
 
         handler = function ()
             if target.distance < 15 then
@@ -2017,7 +2017,7 @@ spec:RegisterAbilities( {
         school = "nature",
 
         talent = "ursols_vortex",
-        startsCombat = false,
+        startsCombat = true,
 
         handler = function ()
             applyDebuff( "target", "ursols_vortex" )
@@ -2039,7 +2039,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         talent = "wild_charge",
-        startsCombat = false,
+        startsCombat = true,
 
         usable = function () return target.exists and target.distance > 7, "target must be 8+ yards away" end,
 
