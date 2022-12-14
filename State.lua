@@ -141,16 +141,16 @@ state.player = {
     channel_spell = nil
 }
 state.prev = {
-    meta = 'castsAll',
-    history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
+    meta = "castsAll",
+    history = { "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.prev_gcd = {
-    meta = 'castsOn',
-    history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
+    meta = "castsOn",
+    history = { "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.prev_off_gcd = {
-    meta = 'castsOff',
-    history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
+    meta = "castsOff",
+    history = { "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.predictions = {}
 state.predictionsOff = {}
@@ -3154,9 +3154,9 @@ local mt_prev_lookup = {
         local preds, prev
         local action
 
-        if t.meta == 'castsAll' then preds, prev = state.predictions, state.prev
-        elseif t.meta == 'castsOn' then preds, prev = state.predictionsOn, state.prev_gcd
-        elseif t.meta == 'castsOff' then preds, prev = state.predictionsOff, state.prev_off_gcd end
+        if     t.meta == "castsAll" then preds, prev = state.predictions   , state.prev
+        elseif t.meta == "castsOn"  then preds, prev = state.predictionsOn , state.prev_gcd
+        elseif t.meta == "castsOff" then preds, prev = state.predictionsOff, state.prev_off_gcd end
 
         if k == "spell" then
             -- Return the actual spell for the slot, for lookups.
@@ -3209,7 +3209,7 @@ do
         __index = function( t, k )
             if type( k ) == "number" then
                 -- This is a SimulationCraft 7.1.5 or later indexed lookup, we support up to #5.
-                if k < 1 or k > 5 then return false end
+                if k < 1 or k > 10 then return "no_action" end
                 prev_lookup.meta = t.meta -- Which data to use? castsAll, castsOn (GCD), castsOff (offGCD)?
                 prev_lookup.index = k
                 return prev_lookup
@@ -6094,9 +6094,9 @@ function state:RunHandler( key, noStart )
 
     self.history.casts[ key ] = self.query_time
 
-    self.predictions[6] = nil
-    self.predictionsOn[6] = nil
-    self.predictionsOff[6] = nil
+    self.predictions[11] = nil
+    self.predictionsOn[11] = nil
+    self.predictionsOff[11] = nil
 
     self.prev.override = nil
     self.prev_gcd.override = nil
