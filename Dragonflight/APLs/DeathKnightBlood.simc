@@ -12,7 +12,7 @@ actions+=/icebound_fortitude,if=tanking&incoming_damage_5s>=ibf_damage&!(buff.da
 actions+=/vampiric_blood,if=tanking&incoming_damage_5s>=vb_damage&!(buff.dancing_rune_weapon.up|buff.icebound_fortitude.up)
 actions+=/death_strike,if=buff.blood_shield.up&buff.blood_shield.remains<=gcd.max
 actions+=/deaths_caress,if=!buff.bone_shield.up
-actions+=/death_and_decay,if=!death_and_decay.ticking&(talent.unholy_ground|talent.sanguine_ground)|spell_targets.death_and_decay>3|buff.crimson_scourge.up
+actions+=/death_and_decay,if=!death_and_decay.ticking&(talent.unholy_ground|talent.sanguine_ground|spell_targets.death_and_decay>3)|buff.crimson_scourge.up
 actions+=/death_strike,if=buff.coagulopathy.remains<=gcd|buff.icy_talons.remains<=gcd|runic_power<=variable.death_strike_dump_amount|runic_power.deficit<=variable.heart_strike_rp|target.time_to_die<10
 actions+=/blooddrinker,if=!buff.dancing_rune_weapon.up
 actions+=/call_action_list,name=racials
