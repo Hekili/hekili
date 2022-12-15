@@ -1,10 +1,10 @@
 actions+=/disrupt
 actions+=/consume_magic
-actions+=/variable,name=ramph_done,op=set,value=!(talent.the_hunt.enabled&cooldown.the_hunt.remains<5)|talent.the_hunt.enabled&cooldown.the_hunt.remains
-actions+=/variable,name=ramped_done,op=set,value=!(talent.elysian_decree.enabled&cooldown.elysian_decree.remains<5)|talent.elysian_decree.enabled&cooldown.elysian_decree.remains
-actions+=/variable,name=rampsc_done,op=set,value=!(talent.soul_carver.enabled&cooldown.soul_carver.remains<5&!talent.fiery_demise.enabled)|talent.soul_carver.enabled&cooldown.soul_carver.remains&!talent.fiery_demise.enabled
+actions+=/variable,name=ramph_done,op=set,value=!(talent.the_hunt.enabled&cooldown.the_hunt.remains<5)|talent.the_hunt.enabled&cooldown.the_hunt.remains>0
+actions+=/variable,name=ramped_done,op=set,value=!(talent.elysian_decree.enabled&cooldown.elysian_decree.remains<5)|talent.elysian_decree.enabled&cooldown.elysian_decree.remains>0
+actions+=/variable,name=rampsc_done,op=set,value=!(talent.soul_carver.enabled&cooldown.soul_carver.remains<5&!talent.fiery_demise.enabled)|talent.soul_carver.enabled&cooldown.soul_carver.remains>0&!talent.fiery_demise.enabled
 actions+=/variable,name=fd_done,op=set,value=!talent.fiery_demise.enabled|cooldown.soul_carver.remains>0|cooldown.fiery_brand.remains>0|cooldown.immolation_aura.remains>0|cooldown.fel_devastation.remains>=10|!dot.fiery_brand.ticking
-actions+=/variable,name=fd_done,op=set,value=!(talent.fiery_demise.enabled&cooldown.soul_carver.up&cooldown.fiery_brand.up&cooldown.immolation_aura.up&cooldown.fel_devastation.remains<10|dot.fiery_brand.ticking&talent.fiery_demise)|talent.fiery_demise.enabled&cooldown.soul_carver.remains&cooldown.fiery_brand.remains&cooldown.immolation_aura.remains&cooldown.fel_devastation.remains
+actions+=/variable,name=fd_done,op=set,value=!(talent.fiery_demise.enabled&cooldown.soul_carver.up&cooldown.fiery_brand.up&cooldown.immolation_aura.up&cooldown.fel_devastation.remains<10|dot.fiery_brand.ticking&talent.fiery_demise)|talent.fiery_demise.enabled&cooldown.soul_carver.remains>0&cooldown.fiery_brand.remains>0&cooldown.immolation_aura.remains>0&cooldown.fel_devastation.remains>0
 
 actions+=/infernal_strike,if=time_to_max_charges<gcd.max&target.distance>10
 actions+=/demon_spikes,if=tanking&(buff.demon_spikes.down|charges>1)

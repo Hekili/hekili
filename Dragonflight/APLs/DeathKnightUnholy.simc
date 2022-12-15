@@ -47,6 +47,7 @@ actions.cooldowns=potion,if=(30>=pet.gargoyle.remains&pet.gargoyle.active)|(!tal
 ## Cooldowns
 actions.cooldowns+=/summon_gargoyle,if=buff.commander_of_the_dead_window.up|!talent.commander_of_the_dead&runic_power>=40
 actions.cooldowns+=/vile_contagion,cycle_targets=1,if=active_enemies>=2&debuff.festering_wound.stack>=4&cooldown.any_dnd.remains<3
+actions.cooldowns+=/unholy_blight,if=variable.adds_remain|boss&fight_remains<21
 actions.cooldowns+=/abomination_limb,if=rune<2&variable.adds_remain
 actions.cooldowns+=/raise_dead,if=!pet.ghoul.active
 actions.cooldowns+=/dark_transformation,if=variable.st_planning&(talent.commander_of_the_dead&cooldown.apocalypse.remains<gcd|cooldown.apocalypse.remains>30|!talent.commander_of_the_dead)
@@ -56,7 +57,6 @@ actions.cooldowns+=/apocalypse,cycle_targets=1,if=debuff.festering_wound.up&vari
 actions.cooldowns+=/empower_rune_weapon,if=variable.st_planning&(pet.gargoyle.active&pet.apoc_ghoul.active|!talent.summon_gargoyle&talent.army_of_the_damned&pet.army_ghoul.active&pet.apoc_ghoul.active|!talent.summon_gargoyle&!talent.army_of_the_damned&buff.dark_transformation.up|!talent.summon_gargoyle&!talent.summon_gargoyle&buff.dark_transformation.up)|boss&fight_remains<=21
 actions.cooldowns+=/empower_rune_weapon,if=variable.adds_remain&buff.dark_transformation.up
 actions.cooldowns+=/unholy_blight,if=variable.st_planning&((!talent.apocalypse|cooldown.apocalypse.remains)&talent.morbidity|!talent.morbidity)
-actions.cooldowns+=/unholy_blight,if=variable.adds_remain|boss&fight_remains<21
 actions.cooldowns+=/abomination_limb,if=rune<3&variable.st_planning
 actions.cooldowns+=/unholy_assault,if=variable.st_planning
 actions.cooldowns+=/unholy_assault,cycle_targets=1,if=variable.adds_remain&debuff.festering_wound.stack<2
