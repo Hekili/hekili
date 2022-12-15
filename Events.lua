@@ -2308,6 +2308,7 @@ if Hekili.IsWrath() then
     RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", DelayedUpdateKeybindings )
 else
     RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, DelayedUpdateKeybindings )
+    RegisterEvent( "TRAIT_CONFIG_UPDATED", DelayedUpdateKeybindings )
 end
 
 
