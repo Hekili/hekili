@@ -728,7 +728,6 @@ all:RegisterAbilities( {
 
         handler = function()
             applyBuff( "stormeaters_boon" )
-            setCooldown( "global_cooldown", 10 )
         end,
 
         proc = "damage",
