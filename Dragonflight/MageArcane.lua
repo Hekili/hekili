@@ -1006,7 +1006,7 @@ local virtualAoeSparkPhase = false
 local SetAoeSparkPhase = setfenv( function()
     if realAoeSparkPhase[ display ] == nil then realAoeSparkPhase[ display ] = false end
 
-    if not realAoeSparkPhase[ display ] and active_enemies >= variable.aoe_target_count and ( cooldown.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and ( not talent.rune_of_power.enabled or cooldown.rune_of_power.remains == 0 ) and cooldown.radiant_spark.remains == 0 and cooldown.touch_of_the_magi.remains <= gcd.max * 2 then
+    if not realAoeSparkPhase[ display ] and active_enemies >= variable.aoe_target_count and ( cooldown.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and ( not talent.rune_of_power.enabled or cooldown.rune_of_power.remains < gcd.max ) and cooldown.radiant_spark.remains < gcd.max and cooldown.touch_of_the_magi.remains <= gcd.max * 2 then
         realAoeSparkPhase[ display ] = true
     end
 
@@ -1021,7 +1021,7 @@ local SetAoeSparkPhase = setfenv( function()
 end, state )
 
 local UpdateAoeSparkPhase = setfenv( function()
-    if not virtualAoeSparkPhase and active_enemies >= variable.aoe_target_count and ( action.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and ( not talent.rune_of_power.enabled or cooldown.rune_of_power.ready ) and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= 2 * gcd.max then
+    if not virtualAoeSparkPhase and active_enemies >= variable.aoe_target_count and ( action.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and ( not talent.rune_of_power.enabled or cooldown.rune_of_power.remains < gcd.max ) and cooldown.radiant_spark.remains < gcd.max and cooldown.touch_of_the_magi.remains <= 2 * gcd.max then
         virtualAoeSparkPhase = true
     end
 
@@ -1046,7 +1046,7 @@ local virtualSparkPhase = false
 local SetSparkPhase = setfenv( function()
     if realSparkPhase[ display ] == nil then realSparkPhase[ display ] = false end
 
-    if not realSparkPhase[ display ] and buff.arcane_charge.stack >= 3 and active_enemies < variable.aoe_target_count and ( not state.talent.rune_of_power.enabled or cooldown.rune_of_power.remains == 0 ) and cooldown.radiant_spark.remains == 0 and cooldown.touch_of_the_magi.remains <= gcd.max * 7 then
+    if not realSparkPhase[ display ] and buff.arcane_charge.stack >= 3 and active_enemies < variable.aoe_target_count and ( not talent.rune_of_power.enabled or cooldown.rune_of_power.remains < gcd.max ) and cooldown.radiant_spark.remains < gcd.max and cooldown.touch_of_the_magi.remains <= gcd.max * 7 then
         realSparkPhase[ display ] = true
     end
 
@@ -1058,7 +1058,7 @@ local SetSparkPhase = setfenv( function()
 end, state )
 
 local UpdateSparkPhase = setfenv( function()
-    if not virtualSparkPhase and buff.arcane_charge.stack >= 3 and active_enemies < variable.aoe_target_count and ( not talent.rune_of_power.ready or cooldown.rune_of_power.ready ) and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= gcd.max * 7 then
+    if not virtualSparkPhase and buff.arcane_charge.stack >= 3 and active_enemies < variable.aoe_target_count and ( not talent.rune_of_power.enabled or cooldown.rune_of_power.remains < gcd.max ) and cooldown.radiant_spark.remains < gcd.max and cooldown.touch_of_the_magi.remains <= gcd.max * 7 then
         virtualSparkPhase = true
     end
 
@@ -1083,7 +1083,7 @@ local virtualRopPhase = false
 local SetRopPhase = setfenv( function()
     if realRopPhase[ display ] == nil then realRopPhase[ display ] = false end
 
-    if not realRopPhase[ display ] and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.remains == 0 and active_enemies < variable.aoe_target_count then
+    if not realRopPhase[ display ] and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.remains < gcd.max and active_enemies < variable.aoe_target_count then
         realRopPhase[ display ] = true
     end
 
@@ -1095,7 +1095,7 @@ local SetRopPhase = setfenv( function()
 end, state )
 
 local UpdateRopPhase = setfenv( function()
-    if not virtualRopPhase and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.ready and active_enemies < variable.aoe_target_count then
+    if not virtualRopPhase and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.remains < gcd.max and active_enemies < variable.aoe_target_count then
         virtualRopPhase = true
     end
 
@@ -1141,7 +1141,7 @@ spec:RegisterHook( "reset_precast", function ()
     SetSparkPhase( display )
     SetRopPhase( display )
 
-    if Hekili.ActiveDebug then Hekili:Debug( "Arcane Phases: aoe_spark_phase[%s], spark_phase[%s], rop_phase[%s]", tostring( virtualAoeSparkPhase ), tostring( virtualSparkPhase ), tostring( virtualRopPhase ) ) end
+    if Hekili.ActiveDebug then Hekili:Debug( "Arcane Phases (reset): aoe_spark_phase[%s], spark_phase[%s], rop_phase[%s]", tostring( virtualAoeSparkPhase ), tostring( virtualSparkPhase ), tostring( virtualRopPhase ) ) end
 end )
 
 spec:RegisterHook( "runHandler", function()
@@ -1149,7 +1149,15 @@ spec:RegisterHook( "runHandler", function()
     UpdateSparkPhase()
     UpdateRopPhase()
 
-    if Hekili.ActiveDebug then Hekili:Debug( "Arcane Phases: aoe_spark_phase[%s], spark_phase[%s], rop_phase[%s]", tostring( virtualAoeSparkPhase ), tostring( virtualSparkPhase ), tostring( virtualRopPhase ) ) end
+    if Hekili.ActiveDebug then Hekili:Debug( "Arcane Phases (handler): aoe_spark_phase[%s], spark_phase[%s], rop_phase[%s]", tostring( virtualAoeSparkPhase ), tostring( virtualSparkPhase ), tostring( virtualRopPhase ) ) end
+end )
+
+spec:RegisterHook( "advance", function()
+    UpdateAoeSparkPhase()
+    UpdateSparkPhase()
+    UpdateRopPhase()
+
+    if Hekili.ActiveDebug then Hekili:Debug( "Arcane Phases (advance): aoe_spark_phase[%s], spark_phase[%s], rop_phase[%s]", tostring( virtualAoeSparkPhase ), tostring( virtualSparkPhase ), tostring( virtualRopPhase ) ) end
 end )
 
 
