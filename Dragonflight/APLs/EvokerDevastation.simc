@@ -54,11 +54,11 @@ actions.st+=/living_flame
 # AOE action list, also a mess.
 actions.aoe+=/dragonrage,if=cooldown.fire_breath.remains<=gcd.max&cooldown.eternity_surge.remains<3*gcd.max
 actions.aoe+=/tip_the_scales,if=buff.dragonrage.up&(spell_targets.pyre<=6|!cooldown.fire_breath.up)
-actions.aoe+=/call_action_list,name=fb,if=buff.dragonrage.up|!talent.dragonrage|cooldown.dragonrage.remains>10&talent.everburning_flame|empowering.fire_breath
+actions.aoe+=/call_action_list,name=fb,if=buff.dragonrage.up|!talent.dragonrage|cooldown.dragonrage.remains>10&talent.everburning_flame
 actions.aoe+=/fire_breath,empower_to=1,if=cooldown.dragonrage.remains>10&spell_targets.pyre>=7
 actions.aoe+=/fire_breath,empower_to=2,if=cooldown.dragonrage.remains>10&spell_targets.pyre>=6
 actions.aoe+=/fire_breath,empower_to=3,if=cooldown.dragonrage.remains>10&spell_targets.pyre>=4
-actions.aoe+=/fire_breath,empower_to=2,if=cooldown.dragonrage.remains>10
+actions.aoe+=/fire_breath,empower_to=2,if=cooldown.dragonrage.remains>10|empowering.fire_breath
 actions.aoe+=/call_action_list,name=es,if=buff.dragonrage.up|!talent.dragonrage|cooldown.dragonrage.remains>15|empowering.eternity_surge
 actions.aoe+=/azure_strike,if=buff.dragonrage.up&buff.dragonrage.remains<(buff.essence_burst.max_stack-buff.essence_burst.stack)*gcd.max
 actions.aoe+=/deep_breath,if=!buff.dragonrage.up
