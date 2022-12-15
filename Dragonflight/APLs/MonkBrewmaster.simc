@@ -1,8 +1,8 @@
 actions.precombat+=/potion
 actions.precombat+=/chi_burst,if=talent.chi_burst.enabled
 actions.precombat+=/chi_wave,if=talent.chi_wave.enabled
-# Blackout Combo
-actions.precombat+=/variable,name=boc_count,op=set,value=0
+## Blackout Combo
+## actions.precombat+=/variable,name=boc_count,op=set,value=0
 # Rotation Selection
 actions.precombat+=/variable,op=set,name=rotation_selection,value=0
 actions.precombat+=/variable,op=set,name=rotation_selection,value=1,if=(talent.charred_passions.enabled|talent.dragonfire_brew.enabled)&talent.salsalabims_strength.enabled
@@ -12,6 +12,7 @@ actions.precombat+=/variable,op=set,name=rotation_selection,value=3-variable.rot
 actions+=/spear_hand_strike
 actions+=/diffuse_magic
 actions+=/purifying_brew,if=settings.purify_for_celestial&(time_to_max_charges<gcd.max|buff.purified_chi.up&buff.purified_chi.remains<1.5*gcd.max)|cooldown.celestial_brew.remains<2*gcd.max&charges_fractional>1.5
+actions+=/celestial_brew,if=buff.purified_chi.up&buff.blackout_combo.down
 # Use configured purify_stagger_currhp from Brewmaster options.
 actions+=/purifying_brew,if=settings.purify_stagger_currhp>0&group&stagger.pct>=settings.purify_stagger_currhp
 # Use configured purify_stagger_currhp from Brewmaster options.
@@ -49,11 +50,11 @@ actions+=/call_action_list,name=cooldowns_improved_niuzao_woo,strict=1,if=(talen
 actions+=/call_action_list,name=cooldowns_improved_niuzao_cta,strict=1,if=(talent.invoke_niuzao_the_black_ox.enabled+talent.improved_invoke_niuzao_the_black_ox.enabled)=2&(talent.weapons_of_order.enabled+talent.call_to_arms.enabled)=2
 actions+=/call_action_list,name=cooldowns_niuzao_woo,strict=1,if=(talent.invoke_niuzao_the_black_ox.enabled+talent.improved_invoke_niuzao_the_black_ox.enabled)<=1
 # Rotation Action Lists
-actions+=/call_action_list,name=rotation_boc,if=variable.rotation_selection=1&(((1%spell_haste-1)*100>=1%3&talent.fluidity_of_motion.enabled)|!talent.fluidity_of_motion.enabled)
-actions+=/call_action_list,name=rotation_fom_boc,if=variable.rotation_selection=1&((1%spell_haste-1)*100<1%3&talent.fluidity_of_motion.enabled)
-actions+=/call_action_list,name=rotation_chp_dfb,if=variable.rotation_selection=2
+actions+=/call_action_list,name=rotation_boc,strict=1,if=variable.rotation_selection=1&(((1%spell_haste-1)*100>=1%3&talent.fluidity_of_motion.enabled)|!talent.fluidity_of_motion.enabled)
+actions+=/call_action_list,name=rotation_fom_boc,strict=1,if=variable.rotation_selection=1&((1%spell_haste-1)*100<1%3&talent.fluidity_of_motion.enabled)
+actions+=/call_action_list,name=rotation_chp_dfb,strict=1,if=variable.rotation_selection=2
 # Fallback Rotation
-actions+=/call_action_list,name=rotation_fallback,if=variable.rotation_selection=3
+actions+=/call_action_list,name=rotation_fallback,strict=1,if=variable.rotation_selection=3
 
 # Name: Niuzao + Weapons of Order / Niuzao + Call to Arms
 actions.cooldowns_niuzao_woo+=/weapons_of_order,if=talent.weapons_of_order.enabled
@@ -90,8 +91,8 @@ actions.cooldowns_improved_niuzao_cta+=/purifying_brew,if=talent.purifying_brew.
 actions.rotation_boc+=/variable,name=time_to_scheduled_ks,op=set,value=cooldown.blackout_kick.duration_expected*(1-(boc_count)%%2)+cooldown.blackout_kick.remains+1
 actions.rotation_boc+=/blackout_kick
 actions.rotation_boc+=/rising_sun_kick,if=talent.rising_sun_kick.enabled
-actions.rotation_boc+=/keg_smash,if=buff.blackout_combo.up&variable.boc_count%%2=0
-actions.rotation_boc+=/breath_of_fire,if=buff.blackout_combo.up&variable.boc_count%%2=1
+actions.rotation_boc+=/keg_smash,if=buff.blackout_combo.up&boc_count%%2=0
+actions.rotation_boc+=/breath_of_fire,if=buff.blackout_combo.up&boc_count%%2=1
 actions.rotation_boc+=/exploding_keg,if=talent.exploding_keg.enabled
 actions.rotation_boc+=/rushing_jade_wind,if=buff.rushing_jade_wind.down&talent.rushing_jade_wind.enabled
 actions.rotation_boc+=/black_ox_brew,if=energy+energy.regen*(variable.time_to_scheduled_ks+execute_time)>=65&talent.black_ox_brew.enabled
