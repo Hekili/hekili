@@ -1992,6 +1992,12 @@ do
             id = 371024,
             duration = 30,
             max_stack = 1
+        },
+        potion = {
+            alias = { "elemental_potion_of_ultimate_power", "elemental_potion_of_power" },
+            aliasMode = "first",
+            aliasType = "buff",
+            duration = 30
         }
     } )
 
