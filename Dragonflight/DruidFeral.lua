@@ -825,6 +825,7 @@ local function calculate_pmultiplier( spellID )
     local prowling = ( GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", a.incarnation.id, "PLAYER" ) or FindUnitBuffByID( "player", a.berserk.id, "PLAYER" ) ) and a.prowl.multiplier or 1
 
     if spellID == a.rake.id then
+        print( spellID, tigers_fury, prowling )
         return 1 * tigers_fury * prowling
 
     elseif spellID == a.rip.id or spellID == a.primal_wrath.id then
@@ -885,8 +886,8 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
 
     if sourceGUID == state.GUID then
         if subtype == "SPELL_AURA_REMOVED" then
-            -- Track Prowl and Shadowmeld dropping, give a 0.2s window for the Rake snapshot.
-            if spellID == 58984 or spellID == 5215 or spellID == 1102547 then
+            -- Track Prowl and Shadowmeld and Sudden Ambush dropping, give a 0.2s window for the Rake snapshot.
+            if spellID == 58984 or spellID == 5215 or spellID == 1102547 or spellID == 391974 or spellID == 340698 then
                 stealth_dropped = GetTime()
             end
         elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
