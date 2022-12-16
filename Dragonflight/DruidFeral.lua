@@ -825,7 +825,6 @@ local function calculate_pmultiplier( spellID )
     local prowling = ( GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", a.incarnation.id, "PLAYER" ) or FindUnitBuffByID( "player", a.berserk.id, "PLAYER" ) ) and a.prowl.multiplier or 1
 
     if spellID == a.rake.id then
-        print( spellID, tigers_fury, prowling )
         return 1 * tigers_fury * prowling
 
     elseif spellID == a.rip.id or spellID == a.primal_wrath.id then
