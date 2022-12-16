@@ -1658,16 +1658,15 @@ spec:RegisterAbilities( {
         talent = "seraphim",
         startsCombat = false,
 
-        -- If the sync_burst_with_seraphim option is enabled, we check if final_reckoning is active and if its actual cooldown is more than 3 seconds. 
-        -- The same goes for execution_sentence. 
-        -- This allows us to sync seraphim with the one-minute cooldown burst abilities, and not recommend seraphim even if crusade or avenging wrath are ready
-        usable = function ()
-            if not settings.sync_burst_with_seraphim then return true end
+        -- If the settings.sync_burst_with_seraphim option is enabled and at least one of the talent Final Reckoning or Execution Sentence has been selected in the talent tree
+        -- then we will sync Seraphim with the highest remaining cooldown of the two in order to sync these spells.
+        readyTime = function ()
+            if not settings.sync_burst_with_seraphim then return 0 end
+            local cd = 0
+            if talent.final_reckoning.enabled then cd = max( cd, cooldown.final_reckoning.true_remains ) end
+            if talent.execution_sentence.enabled then cd = max( cooldown, cooldown.execution_sentence.true_remains ) end
         
-            if talent.final_reckoning.enabled and cooldown.final_reckoning.true_remains > 3 then return false end
-            if talent.execution_sentence.enabled and cooldown.execution_sentence.true_remains > 3 then return false end
-        
-            return true
+            return cd
         end,
 
         handler = function ()
@@ -1863,7 +1862,7 @@ spec:RegisterSetting( "check_wake_range", false, {
 
 spec:RegisterSetting( "sync_burst_with_seraphim", false, {
     name = "Sync Seraphim with FR and/or ES",
-    desc = "If checked, |T1030103:0|t Seraphim will only be recommended when |T135878:0|t Final Reckoning and / or |T613954:0|t Execution Sentence are active.",
+    desc = "If checked, |T1030103:0|t Seraphim will only be recommended when |T135878:0|t Final Reckoning and / or |T613954:0|t Execution Sentence are usable. For better results, you can unset |T135878:0|t Final Reckoning from cooldown groups in the options (Toggles tab).",
     type = "toggle",
     width = 1.5
 } )
