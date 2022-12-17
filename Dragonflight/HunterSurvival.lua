@@ -1095,7 +1095,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Fire a shot that poisons your target, causing them to take $s1 Nature damage instantly and an additional $o2 Nature damage over $d.$?s260241[    Serpent Sting fires arrows at $260241s1 additional $Lenemy:enemies; near your target.][]$?s378014[    Serpent Sting's damage applies Latent Poison to the target, stacking up to $378015u times. $@spelldesc393949 consumes all stacks of Latent Poison, dealing $378016s1 Nature damage to the target per stack consumed.][]
     serpent_sting = {
-        id = 259491,
+        id = 271788,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
