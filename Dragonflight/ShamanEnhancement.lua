@@ -825,6 +825,12 @@ spec:RegisterHook( "reset_precast", function ()
         reduceCooldown( "lava_lash", latency * 2 )
     end
 
+    if action.windfury_totem.lastCast < 1 and buff.windfury_totem.down then
+        applyBuff( "windfury_totem" )
+    elseif totem.windfury_totem.up and buff.windfury_totem.down then
+        dismissPet( "windfury_totem" )
+    end
+
     if vesper_expires > 0 and now > vesper_expires then
         vesper_expires = 0
         vesper_heal = 0
