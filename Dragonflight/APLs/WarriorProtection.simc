@@ -1,4 +1,5 @@
 actions.precombat+=/battle_shout
+actions.precombat+=/use_item,name=algethar_puzzle_box
 
 # Executed every time the actor is available.
 actions+=/pummel

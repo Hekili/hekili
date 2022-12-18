@@ -1,14 +1,15 @@
 actions.precombat+=/berserker_stance,toggle=on
 actions.precombat+=/battle_stance,toggle=on
+actions.precombat+=/use_item,name=algethar_puzzle_box
 
 actions+=/charge,if=time<=0.5|movement.distance>5
 actions+=/pummel
 actions+=/potion,if=gcd.remains=0&debuff.colossus_smash.remains>8|boss&fight_remains<25
 actions+=/pummel,if=target.debuff.casting.react
 actions+=/use_items
-actions+=/call_action_list,name=execute,cycle_targets=1,strict=1,if=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20
 actions+=/run_action_list,name=hac,strict=1,if=raid_event.adds.exists|active_enemies>2
-actions+=/run_action_list,name=single_target
+actions+=/call_action_list,name=execute,cycle_targets=1,strict=1,if=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20
+actions+=/run_action_list,name=single_target,strict=1,if=!raid_event.adds.exists
 
 actions.execute+=/sweeping_strikes,if=spell_targets.whirlwind>1
 actions.execute+=/rend,if=remains<=gcd&(!talent.warbreaker&cooldown.colossus_smash.remains<4|talent.warbreaker&cooldown.warbreaker.remains<4)&target.time_to_die>12
@@ -37,7 +38,6 @@ actions.hac+=/thunderous_roar,if=(buff.test_of_might.up|!talent.test_of_might&de
 actions.hac+=/spear_of_bastion,if=(buff.test_of_might.up|!talent.test_of_might&debuff.colossus_smash.up)&raid_event.adds.in>15
 actions.hac+=/bladestorm,if=talent.unhinged&(buff.test_of_might.up|!talent.test_of_might&debuff.colossus_smash.up)
 actions.hac+=/bladestorm,if=active_enemies>1&(buff.test_of_might.up|!talent.test_of_might&debuff.colossus_smash.up)&raid_event.adds.in>30|active_enemies>1&dot.deep_wounds.remains
-actions.hac+=/execute,if=active_enemies<=2&buff.hurricane.up
 actions.hac+=/cleave,if=active_enemies>2|buff.merciless_bonegrinder.up&cooldown.mortal_strike.remains>gcd
 actions.hac+=/whirlwind,if=active_enemies>2|talent.storm_of_swords&(buff.merciless_bonegrinder.up|buff.hurricane.up)
 actions.hac+=/skullsplitter,if=rage<40|talent.tide_of_blood&dot.rend.remains&(buff.sweeping_strikes.up&active_enemies>=2|debuff.colossus_smash.up|buff.test_of_might.up)
@@ -53,7 +53,7 @@ actions.hac+=/mortal_strike
 actions.hac+=/rend,if=active_enemies=1&dot.rend.remains<duration*0.3
 actions.hac+=/whirlwind,if=talent.storm_of_swords|talent.fervor_of_battle&active_enemies>1
 actions.hac+=/cleave,if=!talent.crushing_force
-actions.hac+=/slam,if=talent.crushing_force&rage>30&(talent.fervor_of_battle&active_enemies=1|!talent.fervor_of_battle)
+actions.hac+=/slam,if=talent.crushing_force&rage>30&!talent.fervor_of_battle
 actions.hac+=/shockwave,if=talent.sonic_boom
 actions.hac+=/bladestorm,if=raid_event.adds.in>30
 actions.hac+=/wrecking_throw
@@ -73,10 +73,10 @@ actions.single_target+=/shockwave,if=talent.sonic_boom.enabled
 actions.single_target+=/overpower,if=charges=2&(debuff.colossus_smash.down|rage.pct<25)
 actions.single_target+=/mortal_strike
 actions.single_target+=/rend,if=remains<duration*0.3
-actions.single_target+=/whirlwind,if=talent.storm_of_swords
+actions.single_target+=/whirlwind,if=talent.storm_of_swords|talent.fervor_of_battle&active_enemies>1
 actions.single_target+=/overpower,if=debuff.colossus_smash.down&rage.pct<50|rage.pct<25
 actions.single_target+=/whirlwind,if=buff.merciless_bonegrinder.up
 actions.single_target+=/cleave,if=set_bonus.tier29_2pc&!talent.crushing_force
-actions.single_target+=/slam,if=rage>30
+actions.single_target+=/slam,if=rage>30&!talent.fervor_of_battle
 actions.single_target+=/wrecking_throw
 
