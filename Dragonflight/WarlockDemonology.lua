@@ -504,6 +504,11 @@ spec:RegisterHook( "reset_precast", function()
         applyBuff( "fiendish_wrath" )
     end
 
+    if prev_gcd[1].demonic_strength and now - action.demonic_strength.lastCast < 1 and buff.felstorm.down then
+        applyBuff( "felstorm" )
+        buff.demonic_strength.expires = buff.felstorm.expires
+    end
+
     if Hekili.ActiveDebug then
         Hekili:Debug(   " - Dreadstalkers: %d, %.2f\n" ..
                         " - Vilefiend    : %d, %.2f\n" ..
@@ -1494,8 +1499,9 @@ spec:RegisterAbilities( {
 
         usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
         handler = function ()
-            applyBuff( "demonic_strength" )
             applyBuff( "felstorm" )
+            applyBuff( "demonic_strength" )
+            buff.demonic_strength.expires = buff.felstorm.expires
         end,
     },
 
