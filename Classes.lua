@@ -87,6 +87,7 @@ local specTemplate = {
         }
     },
     settings = {},
+    phases = {},
     cooldowns = {},
     utility = {},
     defensives = {},
@@ -418,6 +419,68 @@ local HekiliSpecMixin = {
         self.stateTables[ key ] = data
         class.stateTables[ key ] = data
         CommitKey( key )
+    end,
+
+    -- Phases are for more durable variables that should be recalculated over the course of recommendations.
+    -- The start/finish conditions are calculated on reset and that state is persistent between sets of recommendations.
+    -- Within a set of recommendations, the phase conditions are recalculated when the clock advances and/or when ability handlers are fired.
+    -- Notably, finish is only fired if we are currently in the phase.
+    RegisterPhase = function( self, key, start, finish, ... )
+        if start then start = setfenv( start, state ) end
+        if finish then finish = setfenv( finish, state ) end
+
+        self.phases[ key ] = {
+            activate = start,
+            deactivate = finish,
+            virtual = {},
+            real = {}
+        }
+
+        local phase = self.phases[ key ]
+        local n = select( "#", ... )
+
+        for i = 1, n do
+            local hook = select( i, ... )
+
+            if hook == "reset_precast" then
+                self:RegisterHook( hook, function()
+                    local d = display or "Primary"
+
+                    if phase.real[ d ] == nil then phase.real[ d ] = false end
+
+                    if phase.real[ d ] ~= true and phase.activate() then
+                        phase.real[ d ] = true
+                    end
+
+                    if phase.real[ d ] == true and phase.deactivate() then
+                        phase.real[ d ] = false
+                    end
+
+                    phase.virtual[ d ] = phase.real[ d ]
+
+                    if Hekili.ActiveDebug then Hekili:Debug( "[ %s ] Phase '%s' set to '%s' (%s).", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
+                end )
+            else
+                self:RegisterHook( hook, function()
+                    local d = display or "Primary"
+                    local previous = phase.virtual[ d ]
+
+                    if phase.virtual[ d ] ~= true and phase.activate() then
+                        phase.virtual[ d ] = true
+                    end
+
+                    if phase.virtual[ d ] == true and phase.deactivate() then
+                        phase.virtual[ d ] = false
+                    end
+
+                    if Hekili.ActiveDebug and phase.virtual[ d ] ~= previous then Hekili:Debug( "[ %s ] Phase '%s' set to '%s' (%s) - virtual.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
+                end )
+            end
+        end
+
+        self:RegisterVariable( key, function()
+            return self.phases[ key ].virtual[ display or "Primary" ]
+        end )
     end,
 
     RegisterGear = function( self, key, ... )
@@ -1084,6 +1147,7 @@ function Hekili:NewSpecialization( specID, isRanged, icon )
 
         hooks = {},
         funcHooks = {},
+        phases = {},
         interrupts = {},
 
         dual_cast = {},
