@@ -2220,7 +2220,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "wailing_arrow" )
             if talent.readiness.enabled then
                 setCooldown( "rapid_fire", 0 )
-                gainCharges( 2, "aimed_shot" )
+                gainCharges( "aimed_shot", 2 )
             end
         end,
 
