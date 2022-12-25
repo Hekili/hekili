@@ -2150,7 +2150,7 @@ do
                 end
 
                 -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
-                Hekili.maxFrameTime = 1000
+                Hekili.maxFrameTime = min( Hekili.maxFrameTime, 500 / GetFramerate() )
                 thread = self.activeThread
             end
 
