@@ -2087,7 +2087,7 @@ function Hekili_GetRecommendedAbility( display, entry )
         return nil, "No entry #" .. entry .. " for that display."
     end
 
-    return slot.actionID
+    return slot.actionID, slot.empower_to
 end
 
 
