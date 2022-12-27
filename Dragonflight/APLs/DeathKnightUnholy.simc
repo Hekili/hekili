@@ -21,7 +21,7 @@ actions+=/epidemic,if=active_enemies>=4&(pet.gargoyle.active&buff.commander_of_t
 actions+=/outbreak,cycle_targets=1,if=target.time_to_die>dot.virulent_plague.remains&(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&(dot.virulent_plague.refreshable|talent.superstrain&(dot.frost_fever_superstrain.refreshable|dot.blood_plague_superstrain.refreshable))&(!talent.unholy_blight|talent.unholy_blight&cooldown.unholy_blight.remains>15%((talent.superstrain*3)+(talent.plaguebringer*2)))
 actions+=/wound_spender,if=(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&cooldown.apocalypse.remains>variable.apoc_timing&talent.plaguebringer&talent.superstrain&buff.plaguebringer.remains<gcd
 ## Call Action Lists
-actions+=/call_action_list,name=opener,if=!variable.garg_setup
+actions+=/call_action_list,name=garg_setup,strict=1,if=!variable.garg_setup
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=racials
