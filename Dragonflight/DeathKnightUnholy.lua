@@ -953,15 +953,6 @@ me:RegisterHook( "reset_precast", function ()
         applyDebuff( "target", "virulent_plague" )
     end
 
-    rawset( cooldown, "army_of_the_dead", nil )
-    rawset( cooldown, "raise_abomination", nil )
-
-    if pvptalent.raise_abomination.enabled then
-        cooldown.army_of_the_dead = cooldown.raise_abomination
-    else
-        cooldown.raise_abomination = cooldown.army_of_the_dead
-    end
-
     if state:IsKnown( "deaths_due" ) then
         class.abilities.any_dnd = class.abilities.deaths_due
         cooldown.any_dnd = cooldown.deaths_due
