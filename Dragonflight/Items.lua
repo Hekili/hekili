@@ -865,4 +865,27 @@ all:RegisterAbilities( {
             }
         }
     },
+
+
+    -- Shadowmoon Burial Grounds
+    bonemaws_big_toe = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 110012,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "bonemaws_big_toe" )
+        end,
+
+        auras = {
+            bonemaws_big_toe = {
+                id = 397400,
+                duration = 20,
+                max_stack = 1
+            }
+        }
+    }
 } )

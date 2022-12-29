@@ -2,23 +2,24 @@ actions.precombat+=/fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrif
 actions.precombat+=/summon_pet
 actions.precombat+=/inquisitors_gaze
 actions.precombat+=/variable,name=tyrant_prep_start,op=set,value=12
-actions.precombat+=/variable,name=next_tyrant,op=set,value=14+talent.grimoire_felguard.rank+talent.summon_vilefiend.rank
+## Moved next_tyrant to WarlockDemonology.lua
+## actions.precombat+=/variable,name=next_tyrant,op=set,value=14+talent.grimoire_felguard.rank+talent.summon_vilefiend.rank
 actions.precombat+=/power_siphon
 actions.precombat+=/demonbolt,if=soul_shards<5&(boss|action.demonbolt.cast=0&!buff.power_siphon.up)
 actions.precombat+=/shadow_bolt,if=soul_shards<5&!(boss|action.demonbolt.cast=0&!buff.power_siphon.up)
 
 actions+=/axe_toss
 actions+=/devour_magic
-actions+=/call_action_list,name=tyrant,if=talent.summon_demonic_tyrant&(time-variable.next_tyrant)<=(variable.tyrant_prep_start+2)&cooldown.summon_demonic_tyrant.up|talent.summon_demonic_tyrant&cooldown.summon_demonic_tyrant.remains_expected<=variable.tyrant_prep_start
-actions+=/implosion,if=time_to_die<2*gcd
-actions+=/nether_portal,if=!talent.summon_demonic_tyrant&soul_shard>2|time_to_die<30
+actions+=/call_action_list,name=tyrant,if=talent.summon_demonic_tyrant&(variable.next_tyrant-time)<=(variable.tyrant_prep_start+2)&cooldown.summon_demonic_tyrant.up|talent.summon_demonic_tyrant&cooldown.summon_demonic_tyrant.remains_expected<=variable.tyrant_prep_start
+actions+=/implosion,if=boss&time_to_die<2*gcd
+actions+=/nether_portal,if=!talent.summon_demonic_tyrant&soul_shard>2|boss&time_to_die<30
 actions+=/hand_of_guldan,if=buff.nether_portal.up
 actions+=/call_action_list,name=items
 actions+=/call_action_list,name=ogcd,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)
 actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains_expected>cooldown
 actions+=/call_dreadstalkers,if=!talent.summon_demonic_tyrant|time_to_die<14
-actions+=/grimoire_felguard,if=!talent.summon_demonic_tyrant|time_to_die<cooldown.summon_demonic_tyrant.remains_expected
-actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>cooldown+variable.tyrant_prep_start|time_to_die<cooldown.summon_demonic_tyrant.remains_expected
+actions+=/grimoire_felguard,if=!talent.summon_demonic_tyrant|boss&time_to_die<cooldown.summon_demonic_tyrant.remains_expected
+actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>cooldown+variable.tyrant_prep_start|boss&time_to_die<cooldown.summon_demonic_tyrant.remains_expected
 actions+=/guillotine,if=cooldown.demonic_strength.remains
 actions+=/demonic_strength
 actions+=/bilescourge_bombers,if=!pet.demonic_tyrant.active
@@ -33,24 +34,26 @@ actions+=/doom,cycle_targets=1,if=refreshable
 actions+=/soul_strike,if=soul_shard<5
 actions+=/shadow_bolt
 
-actions.items=use_items
+actions.items+=/use_item,name=timebreaching_talon,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)
+actions.items+=/use_items
 
-actions.ogcd=potion
+actions.ogcd+=/potion
 actions.ogcd+=/berserking
 actions.ogcd+=/blood_fury
 actions.ogcd+=/fireblood
 
-## actions.tyrant=variable,name=next_tyrant,op=set,if=variable.next_tyrant<=time,value=15+time-variable.next_tyrant
+## Moved next_tyrant to WarlockDemonology.lua
+## actions.tyrant+=/variable,name=next_tyrant,op=set,value=time+14+cooldown.grimoire_felguard.ready+cooldown.summon_vilefiend.ready,if=variable.next_tyrant<=time
+actions.tyrant+=/shadow_bolt,if=time<2&soul_shard<5
 actions.tyrant+=/nether_portal
 actions.tyrant+=/grimoire_felguard
 actions.tyrant+=/summon_vilefiend
-actions.tyrant+=/call_dreadstalkers,if=variable.next_tyrant-time<12
-actions.tyrant+=/hand_of_guldan,if=buff.nether_portal.up|soul_shard>2&variable.next_tyrant-time<12|soul_shard=5
-actions.tyrant+=/hand_of_guldan,if=talent.soulbound_tyrant&variable.next_tyrant-time<4
-actions.tyrant+=/call_action_list,name=ogcd,if=variable.next_tyrant-time<3
-actions.tyrant+=/call_action_list,name=items,if=variable.next_tyrant-time<3
-actions.tyrant+=/summon_demonic_tyrant,if=variable.next_tyrant-time<3
+actions.tyrant+=/call_dreadstalkers
+actions.tyrant+=/soulburn,if=buff.nether_portal.up&soul_shard>=2,line_cd=40
+actions.tyrant+=/hand_of_guldan,if=variable.next_tyrant-time>2&(buff.nether_portal.up|soul_shard>2&variable.next_tyrant-time<12|soul_shard=5)
+actions.tyrant+=/hand_of_guldan,if=talent.soulbound_tyrant&variable.next_tyrant-time<4&variable.next_tyrant-time>action.summon_demonic_tyrant.cast_time
+actions.tyrant+=/summon_demonic_tyrant,if=variable.next_tyrant-time<cast_time*2
 actions.tyrant+=/demonbolt,if=buff.demonic_core.up
-# Soul Strike during Tyrant prep if you'll still get to use Soul Strike twice during the Tyrant window.
-actions.tyrant+=/soul_strike,if=variable.next_tyrant-time>5
+actions.tyrant+=/power_siphon,if=buff.wild_imps.stack>1&!buff.nether_portal.up
+actions.tyrant+=/soul_strike
 actions.tyrant+=/shadow_bolt
