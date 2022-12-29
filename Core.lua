@@ -412,7 +412,7 @@ function Hekili:CheckStack()
 
             values[ t ] = values[ t ] or scripts:GetConditionsAndValues( s.script )
             self:Debug( "List ( %s ) called from ( %s ) would %s at %.2f.", s.list, s.script, cache[ t ] and "PASS" or "FAIL", state.delay )
-            self:Debug( values[ t ] )
+            self:Debug( values[ t ]:gsub( "%%", "%%%%" ) )
         end
 
         if not cache[ t ] then
@@ -1945,6 +1945,10 @@ function Hekili.Update()
                                         state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK", cast_target )
                                     end
                                     if debug then Hekili:Debug( "Queued %d ticks of channel %s.", ticks, action ) end
+                                end
+
+                                if Hekili.Scripts.Channels and Hekili.Scripts.Channels[ packName ] and Hekili.Scripts.Channels[ packName ][ action ] then
+                                    state:QueueEvent( action, state.query_time, state.cooldown.global_cooldown.expires, "GCD_FINISH", cast_target )
                                 end
 
                                 state:RunHandler( action )

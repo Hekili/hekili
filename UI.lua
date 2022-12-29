@@ -1224,18 +1224,26 @@ do
                 if self.flashReady and conf.flash.enabled and LSF and ( InCombatLockdown() or not conf.flash.combat ) then
                     self.flashTimer = self.flashTimer - elapsed
                     self.flashWarnings = self.flashWarnings or {}
+                    self.lastFlashFrames = self.lastFlashFrames or {}
 
                     local a = self.Buttons[ 1 ].Action
                     local changed = self.lastFlash ~= a
 
                     if a and ( changed or self.flashTimer < 0 ) then
+                        if changed then
+                            for frame in pairs( self.lastFlashFrames ) do
+                                frame:Hide()
+                                frame.flashDuration = 0
+                                self.lastFlashFrames[ frame ] = nil
+                            end
+                        end
+
                         self.flashTimer = conf.flash.speed or 0.4
 
                         local ability = class.abilities[ a ]
 
                         self.flashColor = self.flashColor or {}
                         self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
-                        self.lastFlashFrames = self.lastFlashFrames or {}
 
                         catchFlash = GetTime()
                         table.wipe( lastFramesFlashed )
@@ -1294,29 +1302,11 @@ do
                         end
 
                         catchFlash = nil
-
-                        if changed then
-                            for i = #self.lastFlashFrames, 1, -1 do
-                                local frame = self.lastFlashFrames[ i ]
-
-                                if not lastFramesFlashed[ frame ] then
-                                    frame:Hide()
-                                    frame.flashDuration = 0
-
-                                    table.remove( self.lastFlashFrames, i )
-                                else
-                                    -- Mark with a zero so we don't add it again.
-                                    lastFramesFlashed[ frame ] = 0
-                                end
-                            end
-
-                            for frame, status in pairs( lastFramesFlashed ) do
-                                if status ~= 0 then
-                                    table.insert( self.lastFlashFrames, frame )
-                                end
+                        for frame, status in pairs( lastFramesFlashed ) do
+                            if status ~= 0 then
+                                self.lastFlashFrames[ frame ] = 1
                             end
                         end
-
                         self.lastFlash = a
                     end
                 end

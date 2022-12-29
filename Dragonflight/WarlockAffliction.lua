@@ -606,7 +606,10 @@ spec:RegisterAuras( {
     soulburn = {
         id = 387626,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        onRemove = function()
+            setCooldown( "soulburn", action.soulburn.cooldown )
+        end,
     },
     -- Soul stored by $@auracaster.
     -- https://wowhead.com/beta/spell=20707
@@ -1836,6 +1839,7 @@ spec:RegisterAbilities( {
 
         talent = "soulburn",
         startsCombat = false,
+        nobuff = "soulburn",
 
         handler = function ()
             applyBuff( "soulburn" )

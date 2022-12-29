@@ -2294,7 +2294,8 @@ all:RegisterAbilities( {
         cooldown = 120,
         gcd = "spell",
 
-        startsCombat = true,
+        -- It does start combat if there are enemies in range, but we often use it precombat for resources.
+        startsCombat = false,
 
         -- usable = function () return race.blood_elf end,
         toggle = "cooldowns",
