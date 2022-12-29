@@ -392,6 +392,12 @@ spec:RegisterStateExpr( "empowerment_level", function()
     return buff.tip_the_scales.down and args.empower_to or max_empower
 end )
 
+spec:RegisterHook( "runHandler", function( action )
+    local ability = class.abilities[ action ]
+    local color = ability.color
+
+    empowerment.active = false
+end )
 
 spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
 spec:RegisterAura( "time_bender", {
@@ -672,14 +678,14 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack("essence_burst")
-            if talent.cycle_of_life.enabled then
-                if cycle_of_life_count == 2 then
-                    cycle_of_life_count = 0
-                    applyBuff( "cycle_of_life" )
-                else
-                    cycle_of_life_count = cycle_of_life_count + 1
-                end
-            end
+            -- if talent.cycle_of_life.enabled then
+            --     if cycle_of_life_count == 2 then
+            --         cycle_of_life_count = 0
+            --         applyBuff( "cycle_of_life" )
+            --     else
+            --         cycle_of_life_count = cycle_of_life_count + 1
+            --     end
+            -- end
         end,
     },
     emerald_communion = {
