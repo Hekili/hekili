@@ -498,15 +498,17 @@ spec:RegisterAbilities( {
         
         healing = function () return 3.50 * stat.spell_power end,
 
+        toggle = "interrupts",
+
         usable = function()
-            return buff.dispellable_poison.up or buff.dispellable_curse.up or buff.dispellable_disease.up or buff.dispellable_bleed.up, "requires dispellable effect"
+            return buff.dispellable_poison.up or buff.dispellable_curse.up or buff.dispellable_disease.up, "requires dispellable effect" --add dispellable_bleed later?
         end,
 
         handler = function ()
             removeBuff( "dispellable_poison" )
             removeBuff( "dispellable_curse" )
             removeBuff( "dispellable_disease" )
-            removeBuff( "dispellable_bleed")
+            -- removeBuff( "dispellable_bleed" )
             health.current = min( health.max, health.current + action.cauterizing_flame.healing )            
         end,
 
