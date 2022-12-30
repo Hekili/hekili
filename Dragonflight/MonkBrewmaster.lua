@@ -723,19 +723,22 @@ spec:RegisterStateTable( "stagger", setmetatable( {}, {
             return avg_stagger_ps_in_last( 10 )
 
         elseif k == "time_to_death" then
-            return ceil( health.current / ( stagger.tick * 2 ) )
+            return ceil( health.current / ( t.tick * 2 ) )
 
         elseif k == "percent_max_hp" then
-            return ( 100 * stagger.amount / health.max )
+            return ( 100 * t.amount / health.max )
 
         elseif k == "percent_remains" then
-            return total_staggered > 0 and ( 100 * stagger.amount / stagger_in_last( 10 ) ) or 0
+            return total_staggered > 0 and ( 100 * t.amount / stagger_in_last( 10 ) ) or 0
 
         elseif k == "total" then
             return total_staggered
 
         elseif k == "dump" then
             if DevTools_Dump then DevTools_Dump( staggered_damage ) end
+
+        else
+            return stagger[ k ]
 
         end
 
@@ -780,14 +783,15 @@ spec:RegisterHook( "reset_precast", function ()
     if healing_sphere.count > 0 then
         applyBuff( "gift_of_the_ox", nil, healing_sphere.count )
     end
-    stagger.amount = nil
 
     -- Reset blackoutComboCount if we are not in combat and Blackout Combo has fallen off.
     if state.combat == 0 and buff.blackout_combo.down then
         blackoutComboCount = 0
     end
-
     boc_count = nil
+
+    stagger.amount = nil
+    stagger.amount_remains = nil
 end )
 
 
