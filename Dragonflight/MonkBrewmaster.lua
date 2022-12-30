@@ -1380,7 +1380,7 @@ spec:RegisterAbilities( {
             if talent.pretense_of_instability.enabled then applyBuff( "pretense_of_instability" ) end
 
             local stacks = stagger.heavy and 3 or stagger.moderate and 2 or 1
-            addStack( "purified_brew", nil, stacks )
+            addStack( "purified_chi", nil, stacks )
 
             local reduction = stagger.amount_remains * ( 0.5 + 0.03 * buff.brewmasters_rhythm.stack )
             stagger.amount_remains = stagger.amount_remains - reduction
