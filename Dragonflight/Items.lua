@@ -15,15 +15,16 @@ local RegisterEvent = ns.RegisterEvent
 
 all:RegisterAbilities( {
     algethar_puzzle_box = {
-        cast = 0,
+        cast = 2,
         cooldown = 180,
-        gcd = "off",
+        gcd = "on",
 
         item = 193701,
         toggle = "cooldowns",
 
         handler = function()
             applyBuff( "algethar_puzzle" )
+            if buff.stealth.up then removeBuff( "stealth" ) end
         end,
 
         proc = "mastery",
