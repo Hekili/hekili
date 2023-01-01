@@ -2309,6 +2309,7 @@ spec:RegisterAbilities( {
         talent = "windfury_totem",
         startsCombat = false,
         readyTime = function() return totem.windfury_totem.remains - 30 end,
+        essential = true,
 
         handler = function ()
             applyBuff( "windfury_totem" )
