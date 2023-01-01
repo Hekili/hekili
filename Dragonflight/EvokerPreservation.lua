@@ -144,7 +144,7 @@ spec:RegisterPvpTalents( {
 -- Auras
 spec:RegisterAuras( {
     blessing_of_the_bronze = {
-        id = 364342,
+        id = 381748,
         duration = 3600,
         max_stack = 1,
         shared = "player"
