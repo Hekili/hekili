@@ -84,7 +84,7 @@ actions.finisher+=/primal_wrath,if=spell_targets.primal_wrath>2
 actions.finisher+=/primal_wrath,cycle_targets=1,if=refreshable&spell_targets.primal_wrath>1
 actions.finisher+=/rip,cycle_targets=1,if=refreshable&target.time_to_die>=settings.rip_duration
 ## actions.finisher+=/pool_resource,for_next=1
-actions.finisher+=/ferocious_bite,max_energy=1,if=(active_dot.rip>0|target.time_to_die<settings.rip_duration)&(!buff.bs_inc.up|buff.bs_inc.up&!talent.soul_of_the_forest.enabled)
-actions.finisher+=/ferocious_bite,if=(active_dot.rip>0|target.time_to_die<settings.rip_duration)&(buff.bs_inc.up&talent.soul_of_the_forest.enabled)
+actions.finisher+=/ferocious_bite,max_energy=1,if=(dot.rip.ticking|target.time_to_die<settings.rip_duration)&(!buff.bs_inc.up|(buff.bs_inc.up&!talent.soul_of_the_forest.enabled))
+actions.finisher+=/ferocious_bite,if=(dot.rip.ticking|target.time_to_die<settings.rip_duration)&buff.bs_inc.up&talent.soul_of_the_forest.enabled
 
 actions.owlweaving+=/sunfire,line_cd=4*gcd
