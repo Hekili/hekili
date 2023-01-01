@@ -1287,6 +1287,13 @@ local function calculate_damage( coefficient, masteryFlag, armorFlag, critChance
     return coefficient * state.stat.attack_power * crit * vers * mastery * feralAura * armor * tf
 end
 
+-- Force reset when Combo Points change, even if recommendations are in progress.
+spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( _, _, powerType )
+    if powerType == "COMBO_POINTS" then
+        Hekili:ForceUpdate( powerType, true )
+    end
+end )
+
 
 -- Abilities
 spec:RegisterAbilities( {
