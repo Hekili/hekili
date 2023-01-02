@@ -143,12 +143,6 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
-    blessing_of_the_bronze = {
-        id = 381748,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
     call_of_ysera = {
         id = 373835,
         duration = 15,
@@ -224,11 +218,6 @@ spec:RegisterAuras( {
     fly_with_me = {
         id = 370665,
         duration = 1,
-        max_stack = 1
-    },
-    fury_of_the_aspects = {
-        id = 390386,
-        duration = 40,
         max_stack = 1
     },
     hover = {
