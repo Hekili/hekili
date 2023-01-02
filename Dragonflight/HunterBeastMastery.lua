@@ -860,7 +860,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=24450
     prowl = {
         id = 24450,
-        duration = -1,
+        duration = 3600,
         max_stack = 1
     },
     rejuvenating_wind = {
@@ -963,7 +963,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=90328
     spirit_walk = {
         id = 90328,
-        duration = -1,
+        duration = 3600,
         max_stack = 1
     },
     -- Talent: Slowed by $s2%.  $s3% increased chance suffer a critical strike from $@auracaster.
