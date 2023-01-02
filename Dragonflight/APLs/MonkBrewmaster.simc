@@ -49,6 +49,7 @@ actions+=/variable,op=set,name=rotation_selection,value=0
 actions+=/variable,op=set,name=rotation_selection,value=1,if=(talent.charred_passions.enabled|talent.dragonfire_brew.enabled)&talent.salsalabims_strength.enabled
 actions+=/variable,op=set,name=rotation_selection,value=2,if=(talent.charred_passions.enabled|talent.dragonfire_brew.enabled)&talent.salsalabims_strength.enabled&talent.blackout_combo.enabled
 actions+=/variable,op=set,name=rotation_selection,value=3-variable.rotation_selection
+actions+=/variable,op=set,name=time_to_scheduled_ks,value=cooldown.blackout_kick.duration_expected*(1-(boc_count%%3))+cooldown.blackout_kick.remains+1
 # Rotation Action Lists
 actions+=/call_action_list,name=rotation_boc,strict=1,if=variable.rotation_selection=1&(((1%spell_haste-1)*100>=1%3&talent.fluidity_of_motion.enabled)|!talent.fluidity_of_motion.enabled)
 actions+=/call_action_list,name=rotation_fom_boc,strict=1,if=variable.rotation_selection=1&((1%spell_haste-1)*100<1%3&talent.fluidity_of_motion.enabled)
@@ -103,7 +104,6 @@ actions.rotation_boc+=/chi_burst,if=talent.chi_burst.enabled
 
 # Name: Blackout Combo Salsalabim's Strength Chared Passions Fluidity of Motion Not High Haste
 ## actions.rotation_fom_boc+=/variable,name=boc_count,op=add,value=1,if=prev.blackout_kick
-actions.rotation_fom_boc+=/variable,name=time_to_scheduled_ks,op=set,value=cooldown.blackout_kick.duration_expected*(1-(boc_count)%%3)+cooldown.blackout_kick.remains+1
 actions.rotation_fom_boc+=/blackout_kick,if=buff.blackout_combo.down
 actions.rotation_fom_boc+=/rising_sun_kick,if=boc_count%%3=1&talent.rising_sun_kick.enabled
 actions.rotation_fom_boc+=/breath_of_fire,if=buff.blackout_combo.up&boc_count%%3=1

@@ -2344,7 +2344,7 @@ do
                                 type = "select",
                                 name = "Texture",
                                 icon =  function() return data.flash.texture or "Interface\\Cooldown\\star4" end,
-                                desc = "Your selection will override the SpellFlash texture for all displays' flashes.\n\nRequires |cFFFFD100/reload|r.",
+                                desc = "Your selection will override the SpellFlash texture for all displays' flashes.",
                                 order = 3.1,
                                 width = 1.19,
                                 values = {

@@ -12,18 +12,18 @@ local RegisterEvent = ns.RegisterEvent
 
 
 -- 10.0
-
 all:RegisterAbilities( {
     algethar_puzzle_box = {
-        cast = 0,
+        cast = 2,
         cooldown = 180,
-        gcd = "off",
+        gcd = "on",
 
         item = 193701,
         toggle = "cooldowns",
 
         handler = function()
             applyBuff( "algethar_puzzle" )
+            if buff.stealth.up then removeBuff( "stealth" ) end
         end,
 
         proc = "mastery",
@@ -887,5 +887,34 @@ all:RegisterAbilities( {
                 max_stack = 1
             }
         }
-    }
+    },
+    voidmenders_shadowgem = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 110007,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "voidmenders_shadowgem" )
+        end,
+
+        auras = {
+            voidmenders_shadowgem = {
+                id = 397399,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+
+    -- Trial of Valor
+    gift_of_radiance = {
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = 133647,
+    },
 } )
