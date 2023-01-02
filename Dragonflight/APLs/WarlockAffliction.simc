@@ -4,7 +4,7 @@ actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enable
 actions.precombat+=/inquisitors_gaze
 actions.precombat+=/seed_of_corruption,if=spell_targets.seed_of_corruption_aoe>3
 actions.precombat+=/haunt
-actions.precombat+=/unstable_affliction,if=!talent.soul_swap
+actions.precombat+=/unstable_affliction,if=active_dot.unstable_affliction=0&!talent.soul_swap
 actions.precombat+=/shadow_bolt
 
 # Executed every time the actor is available.
@@ -15,7 +15,7 @@ actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>3
 actions+=/malefic_rapture,if=soul_shard=5
 actions+=/haunt
 actions+=/soul_swap,if=dot.unstable_affliction.remains<5
-actions+=/unstable_affliction,if=remains<5
+actions+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&remains<5
 actions+=/agony,if=remains<5
 actions+=/siphon_life,if=remains<5
 actions+=/corruption,if=remains<5
@@ -54,7 +54,7 @@ actions.aoe+=/shadow_bolt
 actions.cleave+=/malefic_rapture,if=soul_shard=5
 actions.cleave+=/haunt
 actions.cleave+=/soul_swap,if=dot.unstable_affliction.remains<5
-actions.cleave+=/unstable_affliction,if=remains<5
+actions.cleave+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&remains<5
 actions.cleave+=/agony,if=remains<5
 actions.cleave+=/agony,cycle_targets=1,if=remains<5
 actions.cleave+=/siphon_life,if=remains<5

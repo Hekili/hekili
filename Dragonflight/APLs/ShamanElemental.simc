@@ -7,6 +7,8 @@ actions.precombat+=/potion
 # Executed every time the actor is available.
 # Interrupt of casts.
 actions+=/wind_shear
+actions+=/purge,if=settings.hostile_dispel
+actions+=/greater_purge,if=settings.hostile_dispel
 # Enable more movement.
 actions=spiritwalkers_grace,moving=1,if=movement.distance>6
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50

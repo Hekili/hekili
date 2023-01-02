@@ -147,14 +147,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-    -- Cooldown of Hover reduced by $s1%.
-    -- https://wowhead.com/beta/spell=381748
-    blessing_of_the_bronze = {
-        id = 381748,
-        duration = 3600,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Talent: Next Living Flame's cast time is reduced by $w1%.
     -- https://wowhead.com/beta/spell=375802
     burnout = {
@@ -548,6 +540,10 @@ end
 
 spec:RegisterStateExpr( "empowerment_level", function()
     return buff.tip_the_scales.down and args.empower_to or max_empower
+end )
+
+spec:RegisterStateExpr( "maximum", function()
+    return max_empower
 end )
 
 

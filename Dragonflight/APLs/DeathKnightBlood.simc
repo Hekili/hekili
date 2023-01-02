@@ -10,6 +10,7 @@ actions+=/call_action_list,name=trinkets
 actions+=/raise_dead
 actions+=/icebound_fortitude,if=tanking&incoming_damage_5s>=ibf_damage&!(buff.dancing_rune_weapon.up|buff.vampiric_blood.up)
 actions+=/vampiric_blood,if=tanking&incoming_damage_5s>=vb_damage&!(buff.dancing_rune_weapon.up|buff.icebound_fortitude.up)
+actions+=/rune_tap,if=tanking&incoming_damage_5s>=rt_damage&!(buff.dancing_rune_weapon.up|buff.vampiric_blood.up|buff.icebound_fortitude.up)
 actions+=/death_strike,if=buff.blood_shield.up&buff.blood_shield.remains<=gcd.max
 actions+=/deaths_caress,if=!buff.bone_shield.up
 actions+=/death_and_decay,if=!death_and_decay.ticking&(talent.unholy_ground|talent.sanguine_ground|spell_targets.death_and_decay>3)|buff.crimson_scourge.up
@@ -45,7 +46,6 @@ actions.drw_up+=/death_strike,if=runic_power.deficit<=variable.heart_strike_rp_d
 actions.drw_up+=/consumption
 actions.drw_up+=/blood_boil,if=charges_fractional>=1.1&buff.hemostasis.stack<5
 actions.drw_up+=/heart_strike,if=rune.time_to_2<gcd|runic_power.deficit>=variable.heart_strike_rp_drw
-
 
 actions.racials=blood_fury,if=cooldown.dancing_rune_weapon.ready&(!cooldown.blooddrinker.ready|!talent.blooddrinker.enabled)
 actions.racials+=/berserking

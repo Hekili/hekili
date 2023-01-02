@@ -500,13 +500,6 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
-    -- Stealthed.
-    -- https://wowhead.com/beta/spell=5215
-    prowl = {
-        id = 5215,
-        duration = 3600,
-        max_stack = 1
-    },
     -- Talent: Dealing $w2% reduced damage to $@auracaster.
     -- https://wowhead.com/beta/spell=80313
     pulverize = {
@@ -1577,28 +1570,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "overrun" )
             setDistance( 5 )
-        end,
-    },
-
-    -- Shift into Cat Form and enter stealth.
-    prowl = {
-        id = 5215,
-        cast = 0,
-        cooldown = 6,
-        gcd = "off",
-        school = "physical",
-
-        startsCombat = false,
-
-        usable = function ()
-            if time > 0 and ( not boss or not buff.shadowmeld.up ) then return false, "cannot stealth in combat"
-            elseif buff.prowl.up then return false, "player is already prowling" end
-            return true
-        end,
-
-        handler = function ()
-            shift( "cat_form" )
-            applyBuff( "prowl" )
         end,
     },
 

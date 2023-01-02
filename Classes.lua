@@ -1342,9 +1342,11 @@ all:RegisterAuras( {
             "blessing_of_the_bronze_mage",
             "blessing_of_the_bronze_monk",
             "blessing_of_the_bronze_paladin",
-            "blessing_of_the_bronze_",
-            "blessing_of_the_bronze_",
-            "blessing_of_the_bronze_",
+            "blessing_of_the_bronze_priest",
+            "blessing_of_the_bronze_rogue",
+            "blessing_of_the_bronze_shaman",
+            "blessing_of_the_bronze_warlock",
+            "blessing_of_the_bronze_warrior",
         },
         aliasType = "first",
     },
@@ -5091,7 +5093,8 @@ all:RegisterAbility( "horn_of_valor", {
 
 all:RegisterAura( "valarjars_path", {
     id = 215956,
-    duration = 30
+    duration = 30,
+    max_stack = 1
 } )
 
 

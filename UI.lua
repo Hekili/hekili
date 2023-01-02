@@ -1305,6 +1305,10 @@ do
                         for frame, status in pairs( lastFramesFlashed ) do
                             if status ~= 0 then
                                 self.lastFlashFrames[ frame ] = 1
+                                if frame.texture ~= profile.flashTexture then
+                                    frame.FlashTexture:SetTexture( profile.flashTexture )
+                                    frame.texture = profile.flashTexture
+                                end
                             end
                         end
                         self.lastFlash = a
