@@ -381,6 +381,11 @@ spec:RegisterStateExpr( "empowerment_level", function()
     return buff.tip_the_scales.down and args.empower_to or max_empower
 end )
 
+-- This deserves a better fix; when args.empower_to = "maximum" this will cause that value to become max_empower (i.e., 3 or 4).
+spec:RegisterStateExpr( "maximum", function()
+    return max_empower
+end )
+
 spec:RegisterHook( "runHandler", function( action )
     local ability = class.abilities[ action ]
     local color = ability.color
