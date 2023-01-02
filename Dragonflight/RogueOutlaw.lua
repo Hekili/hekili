@@ -710,10 +710,15 @@ spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "combo_points" then
         if amt >= 5 and talent.ruthlessness.enabled then gain( 1, "combo_points" ) end
 
-        local cdr = amt * ( ( buff.true_bearing.up and 2 or 1 ) + ( talent.float_like_a_butterfly.enabled and 0.5 or 0 ) )
+        local cdr = amt * ( buff.true_bearing.up and 1.5 or 1 )
 
         for _, action in ipairs( restless_blades_list ) do
             reduceCooldown( action, cdr )
+        end
+
+        if talent.float_like_a_butterfly.enabled then
+            reduceCooldown( "evasion", amt * 0.5 )
+            reduceCooldown( "feint", amt * 0.5 )
         end
 
         if legendary.obedience.enabled and buff.flagellation_buff.up then
