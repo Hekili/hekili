@@ -1441,7 +1441,7 @@ spec:RegisterAbilities( {
         school = "holy",
 
         spend = function ()
-            if buff.bastion_of_light.up then return 0 end
+            if buff.bastion_of_light.up or buff.divine_purpose.up then return 0 end
             return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 ) - ( buff.seal_of_clarity.up and 1 or 0 )
         end,
         spendType = "holy_power",
