@@ -5091,7 +5091,8 @@ all:RegisterAbility( "horn_of_valor", {
 
 all:RegisterAura( "valarjars_path", {
     id = 215956,
-    duration = 30
+    duration = 30,
+    max_stack = 1
 } )
 
 
