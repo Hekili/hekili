@@ -907,5 +907,14 @@ all:RegisterAbilities( {
                 max_stack = 1
             }
         }
-    }
+    },
+
+    -- Trial of Valor
+    gift_of_radiance = {
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = 133647,
+    },
 } )
