@@ -1,5 +1,5 @@
-actions.precombat+=/berserker_stance,toggle=on
-actions.precombat+=/battle_stance,toggle=on
+actions.precombat+=/battle_stance
+actions.precombat+=/battle_shout
 actions.precombat+=/use_item,name=algethar_puzzle_box
 
 actions+=/charge,if=time<=0.5|movement.distance>5
