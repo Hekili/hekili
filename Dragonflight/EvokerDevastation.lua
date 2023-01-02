@@ -542,6 +542,10 @@ spec:RegisterStateExpr( "empowerment_level", function()
     return buff.tip_the_scales.down and args.empower_to or max_empower
 end )
 
+spec:RegisterStateExpr( "maximum", function()
+    return max_empower
+end )
+
 
 spec:RegisterHook( "runHandler", function( action )
     local ability = class.abilities[ action ]
