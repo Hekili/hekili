@@ -148,38 +148,10 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
-    chrono_loop = {
-        id = 383005,
-        duration = 5,
-        max_stack = 1
-    },
-    deep_breath = {
-        id = 357210,
-        duration = 6,
-        max_stack = 1
-    },
-    disintegrate = {
-        id = 356995,
-        duration = function () return 3 * ( talent.natural_convergence.enabled and 0.8 or 1 ) end,
-        tick_time = function () return talent.natural_convergence.enabled and 0.8 or 1 end,
-        max_stack = 1
-    },
     dream_breath = { -- TODO: This is the empowerment cast.
         id = 355936,
         duration = 2.5,
         max_stack = 1
-    },
-    dream_flight = {
-        id = 359816,
-        duration = 6,
-        max_stack = 1
-    },
-    dream_flight_hot = {
-        id = 363502,
-        duration = 15,
-        type = "Magic",
-        max_stack = 1,
-        dot = "buff"
     },
     dream_projection = { -- TODO: PvP talent summon/pet?
         id = 377509,
@@ -189,31 +161,18 @@ spec:RegisterAuras( {
     dreamwalker = {
         id = 377082,
     },
-    echo = {
-        id = 364343,
-        duration = 15,
-        max_stack = 1
-    },
     emerald_blossom = { -- TODO: Check Aura (https://wowhead.com/beta/spell=355913)
         id = 355913,
         duration = 2,
         max_stack = 1
     },
-    emerald_communion = {
-        id = 370960,
-        duration = 5,
-        tick_time = 1,
-        max_stack = 1
-    },
-    essence_burst = {
-        id = 369299,
-        duration = 15,
-        max_stack = function() return talent.essence_attunement.enabled and 2 or 1 end,
-    },
-    fire_breath = { -- TODO: This is the empowerment cast.
-        id = 357208,
-        duration = 2.5,
-        max_stack = 1
+    fire_breath = {
+        id = 357209,
+        duration = function ()
+            return 4 * empowerment_level
+        end,
+        -- TODO: damage = function () return 0.322 * stat.spell_power * action.fire_breath.spell_targets * ( talent.heat_wave.enabled and 1.2 or 1 ) * ( debuff.shattering_star.up and 1.2 or 1 ) end,
+        max_stack = 1,
     },
     fly_with_me = {
         id = 370665,
@@ -226,18 +185,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
-    landslide = {
-        id = 355689,
-        duration = 30,
-        mechanic = "root",
-        type = "Magic",
-        max_stack = 1
-    },
-    leaping_flames = {
-        id = 370901,
-        duration = 30,
-        max_stack = function() return max_empower end,
-    },
     mastery_lifebinder = {
         id = 363510,
     },
@@ -245,37 +192,6 @@ spec:RegisterAuras( {
         id = 378464,
         duration = 30,
         max_stack = 3
-    },
-    obsidian_scales = {
-        id = 363916,
-        duration = 12,
-        max_stack = 1
-    },
-    oppressing_roar = {
-        id = 372048,
-        duration = 10,
-        max_stack = 1
-    },
-    permeating_chill = {
-        id = 370898,
-        duration = 3,
-        mechanic = "snare",
-        max_stack = 1
-    },
-    renewing_blaze = {
-        id = 374348,
-        duration = 8,
-        max_stack = 1
-    },
-    recall = {
-        id = 371807,
-        duration = 10,
-        max_stack = function () return talent.essence_attunement.enabled and 2 or 1 end,
-    },
-    renewing_blaze_heal = {
-        id = 374349,
-        duration = 14,
-        max_stack = 1
     },
     reversion = {
         id = 366155,
@@ -287,18 +203,6 @@ spec:RegisterAuras( {
         id = 363534,
         duration = 4,
         tick_time = 1,
-        max_stack = 1
-    },
-    sleep_walk = {
-        id = 360806,
-        duration = 20,
-        mechanic = "sleep",
-        type = "Magic",
-        max_stack = 1
-    },
-    source_of_magic = {
-        id = 369459,
-        duration = 1800,
         max_stack = 1
     },
     spiritbloom = { -- TODO: This is the empowerment channel.
@@ -322,12 +226,6 @@ spec:RegisterAuras( {
         duration = 15,        
         max_stack = 4
     },
-    terror_of_the_skies = {
-        id = 372245,
-        duration = 3,
-        mechanic = "stun",
-        max_stack = 1
-    },
     time_dilation = {
         id = 357170,
         duration = 8,
@@ -338,21 +236,11 @@ spec:RegisterAuras( {
         duration = 4,
         max_stack = 1
     },
-    tip_the_scales = {
-        id = 370553,
-        duration = 3600,
-        max_stack = 1
-    },
     youre_coming_with_me = {
         id = 370388,
         duration = 1,
         max_stack = 1
-    },
-    zephyr = {
-        id = 374227,
-        duration = 8,
-        max_stack = 1
-    },
+    }
 } )
 
 local lastEssenceTick = 0
