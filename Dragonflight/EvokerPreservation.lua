@@ -337,8 +337,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = true,
-        texture = 4622447,
-
+        
         minRange = 0,
         maxRange = 25,
 
@@ -346,24 +345,6 @@ spec:RegisterAbilities( {
         spell_targets = function() return talent.protracted_talons.enabled and 3 or 2 end,
         
         handler = function ()
-        end,
-    },
-    blessing_of_the_bronze = {
-        id = 364342,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
-        
-        spend = 0.04,
-        spendType = "mana",
-        
-        startsCombat = false,
-        texture = 4622448,
-
-        nobuff = "blessing_of_the_bronze",
-        
-        handler = function ()
-            applyBuff( "blessing_of_the_bronze" )
         end,
     },
     cauterizing_flame = {
@@ -376,8 +357,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4630446,
-        
+                
         healing = function () return 3.50 * stat.spell_power end,
 
         toggle = "interrupts",
@@ -407,8 +387,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = true,
-        texture = 4630470,
-        
+                
         toggle = "cooldowns",
 
         handler = function ()
@@ -421,8 +400,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         
         startsCombat = true,
-        texture = 4622450,
-        
+                
         toggle = "cooldowns",
 
         min_range = 20,
@@ -457,8 +435,7 @@ spec:RegisterAbilities( {
         spendType = "essence",
         
         startsCombat = true,
-        texture = 4622451,
-
+        
         damage = function () return 2.28 * stat.spell_power * ( talent.energy_loop.enabled and 1.2 or 1 ) end,
         
         min_range = 0,
@@ -481,8 +458,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4622454,
-        
+                
         handler = function ()
             applyBuff("dream_breath")
             removeBuff("call_of_ysera")
@@ -505,8 +481,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4622455,
-        
+                
         toggle = "cooldowns",
 
         handler = function ()
@@ -519,8 +494,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         
         startsCombat = false,
-        texture = 4622475,
-        
+                
         toggle = "cooldowns",
 
         handler = function ()
@@ -536,8 +510,7 @@ spec:RegisterAbilities( {
         spendType = "essence",
         
         startsCombat = false,
-        texture = 4622456,
-        
+                
         handler = function ()
             removeStack("essence_burst")
         end,
@@ -552,8 +525,7 @@ spec:RegisterAbilities( {
         spendType = "essence",
         
         startsCombat = false,
-        texture = 4622457,
-        
+                
         healing = function () return 2.5 * stat.spell_power end,    -- TODO: Make a fake aura so we know if an Emerald Blossom is pending for a target already?
                                                                     -- TODO: Factor in Fluttering Seedlings?  ( 0.9 * stat.spell_power * targets impacted )
 
@@ -579,8 +551,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         
         startsCombat = false,
-        texture = 4630447,
-        
+                
         toggle = "cooldowns",
 
         handler = function ()
@@ -599,8 +570,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = true,
-        texture = 4622458,
-        
+                
         spell_targets = function () return active_enemies end,
         damage = function () return 1.334 * stat.spell_power * ( 1 + 0.1 * talent.blast_furnace.rank ) end,
         
@@ -619,40 +589,6 @@ spec:RegisterAbilities( {
 
         copy = { 382266, 357208 }
     },
-    fury_of_the_aspects = {
-        id = 390386,
-        cast = 0,
-        cooldown = 300,
-        gcd = "off",
-        
-        spend = 0.04,
-        spendType = "mana",
-        
-        startsCombat = false,
-        texture = 4723908,
-        
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "fury_of_the_aspects" )
-            applyDebuff( "player", "exhaustion" )
-        end,
-    },
-    hover = {
-        id = 358267,
-        cast = 0,
-        charges = function() return talent.aerial_mastery.enabled and 2 or nil end,
-        cooldown = 35,
-        recharge = function() return talent.aerial_mastery.enabled and 35 or nil end,
-        gcd = "off",
-        
-        startsCombat = false,
-        texture = 4622463,
-        
-        handler = function ()
-            applyBuff( "hover" )
-        end,
-    },
     landslide = {
         id = 358385,
         cast = 0,
@@ -663,8 +599,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = true,
-        texture = 1016245,
-        
+                
         toggle = "cooldowns",
 
         handler = function ()
@@ -680,8 +615,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = true,
-        texture = 4622464,
-        
+                
         damage = function () return 1.61 * stat.spell_power end,
         healing = function () return 2.75 * stat.spell_power * ( 1 + 0.03 * talent.enkindled.rank ) end,
         spell_targets = function () return buff.leaping_flames.up and min( active_enemies, 1 + buff.leaping_flames.stack ) end,
@@ -703,8 +637,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4630445,
-
+        
         toggle = "interrupts",
         
         usable = function()
@@ -726,8 +659,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 135752,
-        
+                
         toggle = "cooldowns",
 
         handler = function ()
@@ -742,31 +674,11 @@ spec:RegisterAbilities( {
         gcd = "off",
         
         startsCombat = false,
-        texture = 1394891,
-        
+                
         toggle = "defensives",
 
         handler = function ()
             applyBuff( "obsidian_scales" )
-        end,
-    },
-    oppressing_roar = {
-        id = 372048,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-        
-        startsCombat = true,
-        texture = 4622466,
-        
-        toggle = "interrupts",
-
-        handler = function ()
-            applyDebuff( "target", "oppressing_roar" )
-            if talent.overawe.enabled and debuff.dispellable_enrage.up then
-                removeDebuff( "target", "dispellable_enrage" )
-                reduceCooldown( "oppressing_roar", 20 )
-            end
         end,
     },
     quell = {
@@ -776,8 +688,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         
         startsCombat = true,
-        texture = 4622469,
-        
+                
         toggle = "interrupts",
         debuff = "casting",
         readyTime = state.timeToInterrupt,
@@ -794,7 +705,6 @@ spec:RegisterAbilities( {
         gcd = "off",
         
         startsCombat = false,
-        texture = 4630463,
         
         toggle = "defensives",
 
@@ -802,40 +712,6 @@ spec:RegisterAbilities( {
             applyBuff( "renewing_blaze" )
             applyBuff( "renewing_blaze_heal" )
         end,
-    },
-    rescue = {
-        id = 370665,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-        
-        startsCombat = false,
-        texture = 4622460,
-        
-        toggle = "interrupts",
-
-        usable = function() return not solo, "requires an ally" end,
-
-        handler = function ()
-            if talent.twin_guardian.enabled then applyBuff( "twin_guardian" ) end
-        end,
-    },
-    action_return = {
-        id = 361227,
-        cast = 10,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 4622472,
-
-        handler = function ()
-        end,
-
-        copy = "return"
     },
     reversion = {
         id = 366155,
@@ -849,7 +725,6 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4630467,
         
         handler = function ()
         end,
@@ -866,42 +741,10 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4622474,
         
         toggle = "cooldowns",
 
         handler = function ()
-        end,
-    },
-    sleep_walk = {
-        id = 360806,
-        cast = 1.5,
-        cooldown = 15,
-        gcd = "spell",
-        
-        spend = 0.02,
-        spendType = "mana",
-        
-        startsCombat = true,
-        texture = 1396974,
-
-        toggle = "interrupts",
-        
-        handler = function ()
-            applyDebuff( "target", "sleep_walk" )
-        end,
-    },
-    source_of_magic = {
-        id = 369459,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        
-        startsCombat = false,
-        texture = 4630412,
-        
-        handler = function ()
-            active_dot.source_of_magic = 1
         end,
     },
     spiritbloom = {
@@ -917,7 +760,6 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4622476,
         
         handler = function ()
             if buff.tip_the_scales.up then
@@ -939,39 +781,10 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4630476,
-        
+                
         toggle = "cooldowns",
 
         handler = function ()
-        end,
-    },
-    swoop_up = {
-        id = 370388,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-        
-        startsCombat = false,
-        texture = 4622446,
-        
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-    tail_swipe = {
-        id = 368970,
-        cast = 0,
-        cooldown = function() return talent.clobbering_sweep.enabled and 45 or 90 end,
-        gcd = "spell",
-
-        startsCombat = true,
-
-        toggle = "interrupts",
-
-        handler = function()
-            if talent.walloping_blow.enabled then applyDebuff( "target", "walloping_blow" ) end
         end,
     },
     temporal_anomaly = {
@@ -984,8 +797,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4630480,
-        
+                
         handler = function ()
         end,
     },
@@ -999,58 +811,10 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = false,
-        texture = 4622478,
         
         toggle = "cooldowns",
 
         handler = function ()
-        end,
-    },
-    time_spiral = {
-        id = 374968,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-        
-        startsCombat = false,
-        texture = 4622479,
-        
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "time_spiral" )
-            active_dot.time_spiral = group_members
-            setCooldown( "hover", 0 )
-        end,
-    },
-    time_stop = {
-        id = 378441,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-        
-        startsCombat = false,
-        texture = 4631367,
-        
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-    tip_the_scales = {
-        id = 370553,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-        
-        startsCombat = false,
-        texture = 4622480,
-        
-        toggle = "cooldowns",
-        nobuff = "tip_the_scales",
-
-        handler = function ()
-            applyBuff( "tip_the_scales" )
         end,
     },
     unravel = {
@@ -1063,7 +827,6 @@ spec:RegisterAbilities( {
         spendType = "mana",
         
         startsCombat = true,
-        texture = 4630499,
         
         debuff = "all_absorbs",
 
@@ -1072,50 +835,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeDebuff( "all_absorbs" )            
         end,
-    },
-    verdant_embrace = {
-        id = 360995,
-        cast = 0,
-        cooldown = 24,
-        gcd = "spell",
-        
-        spend = 0.03,
-        spendType = "mana",
-        
-        startsCombat = false,
-        texture = 4622471,
-        
-        handler = function ()
-        end,
-    },
-    wing_buffet = {
-        id = 357214,
-        cast = 0,
-        cooldown = function() return talent.heavy_wingbeats.enabled and 45 or 90 end,
-        gcd = "spell",
-
-        startsCombat = true,
-
-        handler = function()
-            if talent.walloping_blow.enabled then applyDebuff( "target", "walloping_blow" ) end
-        end,
-    },
-    zephyr = {
-        id = 374227,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-        
-        startsCombat = false,
-        texture = 4630449,
-        
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "zephyr" )
-            active_dot.zephyr = min( 5, group_members )
-        end,
-    },
+    }
 } )
 
 spec:RegisterSetting( "use_deep_breath", true, {
