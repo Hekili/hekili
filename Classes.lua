@@ -1348,7 +1348,8 @@ all:RegisterAuras( {
             "blessing_of_the_bronze_warlock",
             "blessing_of_the_bronze_warrior",
         },
-        aliasType = "first",
+        aliasType = "buff",
+        aliasMode = "longest"
     },
     blessing_of_the_bronze_deathknight = {
         id = 381732,
