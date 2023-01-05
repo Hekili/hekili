@@ -797,7 +797,24 @@ spec:RegisterAuras( {
         id = 136,
         duration = 10,
         type = "Magic",
-        max_stack = 1
+        max_stack = 1,
+        generate = function( t )
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 136 )
+
+            if name then
+                t.name = name
+                t.count = count
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
     },
     -- Talent: Threat redirected from Hunter.
     -- https://wowhead.com/beta/spell=35079

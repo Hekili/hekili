@@ -282,14 +282,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1,
     },
-    -- Heals $w1% of the pet's health every $t1 sec.$?s343242[  Each time Mend Pet heals your pet, you have a $343242s2% chance to dispel a harmful magic effect from your pet.][]
-    -- https://wowhead.com/beta/spell=136
-    mend_pet = {
-        id = 136,
-        duration = 10,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Talent: Threat redirected from Hunter.
     -- https://wowhead.com/beta/spell=34477
     misdirection_buff = {
