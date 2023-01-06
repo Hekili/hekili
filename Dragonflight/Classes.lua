@@ -23,6 +23,10 @@ do
     function ns.updateTalents()
         local configID = C_ClassTalents.GetActiveConfigID() or -1
 
+        for token, data in pairs( state.talent ) do
+            data.rank = 0
+        end
+
         for token, data in pairs( class.talents ) do
             local node = C_Traits.GetNodeInfo( configID, data[1] )
             local talent = rawget( state.talent, token ) or {}
