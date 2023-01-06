@@ -1584,7 +1584,6 @@ spec:RegisterAbilities( {
         school = "physical",
 
         startsCombat = true,
-        toggle = "essences",
 
         handler = function ()
             applyBuff( "death_chakram" )
