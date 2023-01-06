@@ -512,11 +512,7 @@ spec:RegisterStateExpr( "persistent_multiplier", function ()
 
     if buff.stealth.up or buff.subterfuge.up then
         if talent.nightstalker.enabled then
-            mult = mult * 2
-        end
-
-        if talent.subterfuge.enabled and this_action == "garrote" then
-            mult = mult * 1.8
+            mult = mult * 1.08
         end
     end
 
