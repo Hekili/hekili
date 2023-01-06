@@ -548,9 +548,10 @@ spec:RegisterAuras( {
     },
     -- Talent
     splintered_elements = {
-        id = 382042,
+        id = 382043,
         duration = 12,
-        max_stack = 10
+        max_stack = 10,
+        copy = { 382042, 354648 } -- Old spell ID, just in case.
     },
     -- Talent: Stunned.
     -- https://wowhead.com/beta/spell=118905
