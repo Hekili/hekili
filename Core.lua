@@ -182,7 +182,6 @@ function Hekili:OnEnable()
     self:UpdateDisplayVisibility()
     self:ForceUpdate( "ADDON_ENABLED" )
 
-    self:Print( "Dragonflight is a work-in-progress.  See |cFFFFD100/hekili|r for class/specialization status." )
     ns.Audit()
 end
 
