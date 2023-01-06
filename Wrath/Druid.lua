@@ -2549,7 +2549,7 @@ spec:RegisterSetting("max_bite_energy", 25, {
     name = "Maximum Energy Used For Bite",
     desc = "Sets the energy allowed for Ferocious Bite recommendations during Berserk.\n\nWhen Berserk is down, any energy level is allowed as long as Minimum Rip and Minimum Roar settings are satisfied",
     width = "full",
-    min = 35,
+    min = 18,
     softMax = 65,
     step = 1,
     set = function( _, val )
