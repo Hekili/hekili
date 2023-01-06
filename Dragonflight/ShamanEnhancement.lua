@@ -1378,6 +1378,8 @@ spec:RegisterAbilities( {
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
+
+        bind = "lava_burst"
     },
 
     -- Changes your viewpoint to the targeted location for $d.
@@ -1723,6 +1725,8 @@ spec:RegisterAbilities( {
         end,
 
         impact = function () end,  -- This + velocity makes action.lava_burst.in_flight work in APL logic.
+
+        bind = "elemental_blast",
     },
 
     -- Talent: Charges your off-hand weapon with lava and burns your target, dealing $s1 Fire damage.    Damage is increased by $s2% if your offhand weapon is imbued with Flametongue Weapon. $?s334033[Lava Lash will spread Flame Shock from your target to $s3 nearby targets.][]$?s334046[    Lava Lash increases the damage of Flame Shock on its target by $334168s1% for $334168d.][]
