@@ -23,7 +23,7 @@ do
     function ns.updateTalents()
         local configID = C_ClassTalents.GetActiveConfigID() or -1
 
-        for token, data in pairs( state.talent ) do
+        for _, data in pairs( state.talent ) do
             data.rank = 0
         end
 

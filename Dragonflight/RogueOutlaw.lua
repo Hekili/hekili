@@ -743,7 +743,6 @@ end, state )
 
 
 local dreadbladesSet = false
-local applyPoisonsSet = false
 
 spec:RegisterHook( "reset_precast", function()
     if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
