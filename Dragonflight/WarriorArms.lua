@@ -1525,7 +1525,7 @@ spec:RegisterAbilities( {
         cooldown = function () return ( talent.storm_of_steel.enabled and 14 or 0 ) end,
         gcd = "spell",
 
-        spend = function() return 30 + ( talent.barbaric_training.enabled and 5 or 0 ) + ( talent.storm_of_swords.enabled and 30 or 0 ) end,
+        spend = function() return 30 + ( talent.barbaric_training.enabled and 10 or 0 ) + ( talent.storm_of_swords.enabled and 20 or 0 ) end,
         spendType = "rage",
 
         startsCombat = false,
