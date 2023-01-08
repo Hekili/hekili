@@ -1302,7 +1302,7 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        spend = -20,
+        spend = -30,
         spendType = "rage",
 
         talent = "onslaught",
@@ -1312,7 +1312,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeStack( "whirlwind" )
             if talent.tenderize.enabled then
-                applyBuff( "enrage" , 6 )
+                applyBuff( "enrage" , 7 )
                 addStack( "slaughtering_strikes", nil, 3 )
             end
             -- Tenderize increases the enrage by 1 second only when using onslaught
