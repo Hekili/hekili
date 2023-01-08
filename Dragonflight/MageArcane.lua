@@ -1010,10 +1010,7 @@ local SetAoeSparkPhase = setfenv( function()
         realAoeSparkPhase[ display ] = true
     end
 
-    local rsVulnerability = debuff.radiant_spark_vulnerability.up
-    local rsRemains = debuff.radiant_spark.remains
-
-    if realAoeSparkPhase[ display ] and not prev[1].radiant_spark and not prev[2].radiant_spark and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > 0 then
+    if realAoeSparkPhase[ display ] and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > gcd.max then
         realAoeSparkPhase[ display ] = false
     end
 
@@ -1025,7 +1022,7 @@ local UpdateAoeSparkPhase = setfenv( function()
         virtualAoeSparkPhase = true
     end
 
-    if virtualAoeSparkPhase and not prev[1].radiant_spark and not prev[2].radiant_spark and debuff.radiant_spark_vulnerability.down and dot.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > 0 then
+    if virtualAoeSparkPhase and debuff.radiant_spark_vulnerability.down and dot.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > gcd.max then
         virtualAoeSparkPhase = false
     end
 end, state )
@@ -1050,7 +1047,7 @@ local SetSparkPhase = setfenv( function()
         realSparkPhase[ display ] = true
     end
 
-    if realSparkPhase[ display ] and not prev[1].radiant_spark and not prev[2].radiant_spark and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > 0 then
+    if realSparkPhase[ display ] and not prev[1].radiant_spark and not prev[2].radiant_spark and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > gcd.max and cooldown.touch_of_the_magi.remains > gcd.max * 7 then
         realSparkPhase[ display ] = false
     end
 
@@ -1062,7 +1059,7 @@ local UpdateSparkPhase = setfenv( function()
         virtualSparkPhase = true
     end
 
-    if virtualSparkPhase and not prev[1].radiant_spark and not prev[2].radiant_spark and debuff.radiant_spark_vulnerability.down and dot.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > 0 then
+    if virtualSparkPhase and debuff.radiant_spark_vulnerability.down and dot.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > gcd.max and cooldown.touch_of_the_magi.remains > gcd.max * 7 then
         virtualSparkPhase = false
     end
 end, state )
