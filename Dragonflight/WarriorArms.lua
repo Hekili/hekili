@@ -285,7 +285,7 @@ spec:RegisterAuras( {
     },
     fatal_mark = {
         id = 383704,
-        duration = 60,
+        duration = 120,
         max_stack = 999
     },
     hamstring = {
