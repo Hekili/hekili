@@ -537,6 +537,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+	inferno = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=1122)
+        id = 89,
+        duration = 60,
+        max_stack = 1,
+    },
     -- Underwater Breathing.
     unending_breath = {
         id = 5697,
@@ -611,6 +616,7 @@ spec:RegisterPet( "felhunter", 417, "summon_felhunter", 3600 )
 spec:RegisterPet( "succubus", 1863, "summon_succubus", 3600 )
 spec:RegisterPet( "incubus", 185317, "summon_incubus", 3600 )
 spec:RegisterPet( "felguard", 17252, "summon_felguard", 3600 )
+spec:RegisterPet( "infernal", 89, "inferno", 3600 )
 
 local cataclysm_reduction = {
     [0] = 1,
@@ -731,6 +737,9 @@ spec:RegisterHook( "runHandler", function( action )
     end
 end )
 
+spec:RegisterStateExpr("inferno_enabled", function()
+    return settings.inferno_enabled
+end)
 
 
 -- Abilities
@@ -1403,7 +1412,10 @@ spec:RegisterAbilities( {
     -- You send a ghostly soul into the target, dealing 405 to 473 Shadow damage and increasing all damage done by your Shadow damage-over-time effects on the target by 20% for 12 sec. When the Haunt spell ends or is dispelled, the soul returns to you, healing you for 100% of the damage it did to the target.
     haunt = {
         id = 48181,
-        cast = 1.5,
+        cast = function()
+            return ( 1.5 * haste)
+        end,
+		
         cooldown = 8,
         gcd = "spell",
 
@@ -1763,7 +1775,7 @@ spec:RegisterAbilities( {
         cast = function()
             if buff.backlash.up then return 0 end
             if buff.shadow_trance.up then return 0 end
-            return ( 1.7 - 0.1 * talent.bane.rank ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) )
+            return ( 1.7 - 0.1 * talent.bane.rank ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) * haste )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1954,7 +1966,7 @@ spec:RegisterAbilities( {
 
 
     -- Reduces threat by 50% for all enemies within 50 yards.
-    soulshatter = {
+    soulshatter = {	
         id = 29858,
         cast = 0,
         cooldown = 180,
@@ -2021,7 +2033,31 @@ spec:RegisterAbilities( {
             dismissPet( "felhunter" )
             dismissPet( "succubus" )
             summonPet( "felguard" )
+			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
+        end
+    },
+	
+	inferno = {
+        id = 1122,
+        cast = function() return (1.5 * haste) end,
+        cooldown = 600,
+        gcd = "spell",
+
+        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136219,
+        essential = true,
+
+        handler = function()
+            dismissPet( "imp" )
+            dismissPet( "voidwalker" )
+            dismissPet( "felhunter" )
+            dismissPet( "succubus" )
+            dismissPet( "felguard" )
+			summonPet( "infernal" )
         end
     },
 
@@ -2048,6 +2084,7 @@ spec:RegisterAbilities( {
             summonPet( "felhunter" )
             dismissPet( "succubus" )
             dismissPet( "felguard" )
+			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
         end
     },
@@ -2073,6 +2110,7 @@ spec:RegisterAbilities( {
             dismissPet( "felhunter" )
             dismissPet( "succubus" )
             dismissPet( "felguard" )
+			dismissPet( "infernal" )
         end
     },
 
@@ -2097,6 +2135,7 @@ spec:RegisterAbilities( {
             dismissPet( "felhunter" )
             summonPet( "succubus" )
             dismissPet( "felguard" )
+			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
         end
     },
@@ -2122,6 +2161,7 @@ spec:RegisterAbilities( {
             dismissPet( "felhunter" )
             summonPet( "succubus" )
             dismissPet( "felguard" )
+			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
         end
     },
@@ -2149,6 +2189,7 @@ spec:RegisterAbilities( {
             dismissPet( "felhunter" )
             dismissPet( "succubus" )
             dismissPet( "felguard" )
+			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
         end
     },
@@ -2176,7 +2217,10 @@ spec:RegisterAbilities( {
     -- Shadow energy slowly destroys the target, causing 550 damage over 15 sec.  In addition, if the Unstable Affliction is dispelled it will cause 990 damage to the dispeller and silence them for 5 sec. Only one Unstable Affliction or Immolate per Warlock can be active on any one target.
     unstable_affliction = {
         id = 47843,
-        cast = function() return glyph.unstable_affliction.enabled and 1.3 or 1.5 end,
+        cast = function() 
+			if glyph.unstable_affliction.enabled then return 1.3 or 1.5 * haste end
+			return (1.5 * haste)
+			end,
         cooldown = 0,
         gcd = "spell",
 
@@ -2247,6 +2291,16 @@ spec:RegisterSetting( "group_curse", "curse_of_the_elements", {
     end,
 } )
 
+spec:RegisterSetting("inferno_enabled", false, {
+    type = "toggle",
+    name = "Inferno: Enabled?",
+    desc = "Select whether or not Inferno should be used",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 9 ].settings.inferno_enabled = val
+    end
+})
+
 spec:RegisterSetting( "group_type", "party", {
     type = "select",
     name = "Group Type for Group Curse",
@@ -2284,14 +2338,14 @@ spec:RegisterOptions( {
 
     potion = "wild_magic",
 
-    package = "Affliction (wowtbc.gg)",
+    package = "Affliction",
 
-    package1 = "Affliction (wowtbc.gg)",
+    package1 = "Affliction",
     package2 = "Demonology (wowtbc.gg)",
     package3 = "Destruction (wowtbc.gg)",
 } )
 
-spec:RegisterPack( "Affliction (wowtbc.gg)", 20221002, [[Hekili:1EvuVnkoq4FlvRu0DQzjbs6U3EkPs3922h69aR09gGdycwXGrgtJIue)2VX2jGdXqsv79sBap(Bgp(B(MHa3GFf4NGe4Gx9M755oFUNJ7Y5Ulxe4louId8lrX7qBHFuGYH)(xPPusSGWkAI(T9S9InXoB3(7s7oqzOejEvSAEmyBMquw9NZM1Ag8lbD3SykQQ6RBRjj4QzOwa)6EeNYI3nlWFtnHk(zrWgRbNRh4JsCCWR)aCcjjbRTexfh4)RmsvtujNW4eXHMi5tBqv4KMizmlYWnrTbutKkkCc8PKkrLm4rmm8VxvjgCbAdfNe83b(XaAyobbgab7B4qCboNGbWFUjArt0eaAeFlw4KaiHkIb3SQjYDUEdSciKZqjS9PuzEuahPEEO1mmojKLggZ486s97UdV)aeaK4DKITG5hIP4qD8ujplG7wmG7S7Mo0uG33RWjBPD3SCa3uxazf4LHD33Fk(7Pb8hjpNrLuNHDI8refxiCSeCoNW89focjlmfvtfJZHmVSgldzHM8Xoowsqw4g29XXJqDfMxb8BWlH5WPKusjyUIfMWeoDCjNYULTY1Sqv68QeRmunCu44CePqNYJrvIqbjhQSESjYRdwLP2idgiI3uNM6KFimUMxHDGcXcvwt9y4woRU0m7OFnufc6fHykohoXvsx8T3LlSaiAlR4GePVRuBoTCjt))oKbl(dtlQHTdUkVQNr)yWaAl9qzMdLKkjPLxqOvrA7kxgPNFTeCq(6Did6cIxcoq4Ku)UtoIsd1pekvz1ATH62js1wP5dxQCIttYl5S3aLrTkA4ggvCXrQcleanTY5Kb5aBbZpOw70vZLRCFCld3Pc0Hlhpj)NHrurMtzSqbS3tDyLWb)fcDhPq5xbSnzXqijvt4Tv1Ekex5D8yV6lZvSr8KX6ct(J5b5cge8yjhhZY3GUHQLYniEoJ3JYKIHBy57VPGvjKH0mhJiRgKIkcbqYQLzLBQinciVXij7r0DAugwHzCuaY24YjFcLwF7ML)F))RAIHy3kUWBsfEyT2rUc8H5YkKWe4)Z8sgxirFHUROCKk1OtonVaWwlYasGF78vsQflLqHu8x(stK5WJ)REyVMxKl41e9pXc2gzVePFBEP5fn8voTKZhxpRLOnLKUUhD0(o6tUKB8HUR(r3uhz69Sl4w5Um)mzqASD(0KR5s2HstFgiQ6UILE6oOotgskT7sbW1ICL6yFECbdtppQH56tE42dRyIrN0NjkhpADGKNhEyetmvZniH7Q5nw12p4rpZDOMtqlZQ2NfL3jxmrH5MRyu247106E3PYm(5jamF5hJfjtS9Appv2yEn0xEQUx(Axj0AI85U9p7EX56tJHnz0g1dDP01wDQzx11F6nv1NUED5x590ajdtrmiF2UO6laTKuxmP3xqUYD(viC1hho9IpdX6T1IjxvvEcUXHPTw9s8wTSpm20c(i41kymgi3HaYvos1Il4)(d]] )
+spec:RegisterPack( "Affliction", 20230108, [[Hekili:TIvtVTkou0Flvpj20wY3T9nIeP5T71rQBYin7aCatIvnyKTPvzue)2FxJdGdyiTQDttc2(C)6CV(u8N5)V(BJrsS)lZNoFX0ztFYD2Y5lwT0FR8yo2FBok6v0E4lzOu4V)DscLejjSm1shPmuSccbRGhblFqkZf)1KjVZExUlYD)E4Bs6RtIOiH4(9fKySycQbJ7FhXPSOxN4VDxbHk)DM)oR(Z8NaBKJJ8F5NGriXXy9oXIitFQm8)0awgMZjmorESmmQqizPK)hhxgUd(9)qu74(FHZWX1HcLiKcvGGyy4JxQYl4m0oko2)x(BJaOWCcc2aCI3WbWHtjyrz4MYWfLHoLHseFpw6gdiHYIWLHELHZMQpGYeIdOy27juvAucHxhl0SnmooGLeeX48IC9Z(aw)gWbirVsY2dB)yefhO9hHkwaZTyaZz3mTOvbExRcr2s7Mz5aMPidYkWddqg8NVb7TAa7rstzufnAyJO(jIIZKUwCo3Zy(5ChPIrMGkOYX5qXmP7bubyAoofrY0fYiKqgijPyt60bmIkp4Mhj1f7PvlQaWMx3aNNbCJxfSqfh1rVTmCvz4PtANOZIExefWwN3A8QTAJkoyf67lfu5lZUAIOl71UNPI9Cmxan6a7jifk3KCkbZRCpLF12u5M3US1MolC4wREobOIGajliMOMQSUm8bDkifLHAslZng1qYsW8mMc8hUg49YUgUzbxGvZIKha2pfNcHRqb6JdtyW7kssCtpguDyxyIx2O1slwdTNLDuzMNg0mTrE1qwDnPYYusIQPm)cEWzc7E6X8dT7WSf)YZQ86whR(Xkx6Nv3ruZIa)f8OuHPxcBcM6BSRCM(Zl3YN6cgG5kKCGNQgQ0MWquAG(hbQ7V03IfOVNwDpMA7d3BFE4hjnNZEdUZrF)uWogvErQrGLsG3lCpVHuOPcZpQBc1L7lxzSXbJWfM)y37kR8LQOy4rgwWYtHvZmI(Zzx1ANyo80aq8cTYmd3))zDzOyKZXrS0DORCxqvceXtz8o0UemuDvpF8r03OggjD1Sgd3PaUbmlaa5ae)y(vh8ociVXiXVJOVQrz0HKJGcq0gFA33q75dxTXB4rxFX(HHzcax4n11fWAnIA93ckFZuW4V93P5mUuH(cTwdLo2kbPULpR4rSecfYN)4hLH2K6(SAH3w4U0D69ZCN5US85YN14iCByH3UEsdJ6osY6o8o7NOllsDWBARXJEOwwZN5uq6)dT96QUAZ2joo9jn2HsZtgWRARLkl9b4iodnVSTOa4AraIc)EdS20m)0P3iOnlM6CfvqETJFnmELfSAUBxD6uVh2cYTZ)aXWnNfk9fD4BNzARwftMM40jR6W2mSgmtmpRssxx7k0YB9dtDQLzSz(076fnElN6CgIG65dgOVNZkY1QGQs1weg5OL8uTtCSHFCrkZeubJYUcMxdcZgN64ZB20tNSkFYdieF(2lf5OwBK5d70PPQRD0WCNs9YAq8YDAbpRNP8t9GGAjrBUGz891H6mQAgZUaljzqXHHt1QRWAv1B(Jo9B1xnAyzZGMd6HCwZXQEjdwsClC68skGcFpe69(hU7I)txRvKfo1TKDHBCyAMvCjEEl7cJTznFf8QF)aJcYnx)9d0ZqGmGc5bq02w9RzQ6(F))8]] )
 
 spec:RegisterPack( "Demonology (wowtbc.gg)", 20221002, [[Hekili:TEvxVnkou0FlJgPODv7qcjTZ0zvBFy1(Y0Du3hYinVb4ymGvnyKTPrrQIF7712aXqaAAN5LwaF)Y3ZXxFsGFWpc2gJuKGhxVA9A)vRw75VEZM1xfSvDOKeSTeHFcLcpuGYH)(pKCEbNXtpuh9h757v7WEPP)P2UdmokwhpjVsGbBZuQs5FTCzNzWtk2tlXmKu(P0kAmrUmUlGFApsW44NwgSDxfLP(wrWUrlo)Vc5OKGdEeEiJghtSwsK4GT)iJkRJkfuUGQGICpcEDp8SIuuhTdjjX1rC4rvgbwOT0QJ(PaPYGLsAw67um86)slG1m1QxWwgvQK6TiItG)9OP9rkq7yK4G)oylgYdrqrGbyf9zsiPGKtjqfCFD0g7x5fbBZjkuoxuMXLuzGc2FtgOpuhvvE0tAEoNH0phIQeiTVBENfHmdfZ3NW04keMREVHHqId5jHyUquvA(geTRheTwRDSQ)MurXpz61lQJgMWBRJa(i(aMrcvirkbabO3dP5ZtKMM2e53rsuAQvcQIP6G820yiVuCijVKVNiYjfk3YPfyBnVKB)FplMg(guW2IYtrZHcKhgtjgOiMR8A3UEXaNWMJt6eZcXXKDvjjE5hcXvcjeh((ctsnVgMk4vLGphHrZNbuhoQesye9oxogUpFkgjGOuEXHXG23tF5iBBKotFc7xMmDj00mvOGKJOfw2pmkQo6LxGXjCP0uddSrZLwnZX9BCzfvWghYvUCaX4Rtwr2gPBq9QkD7fXWCkub22iUzaFneNPTsNc)v)cZD8Ftt)8HjfkbfRD0bdqmwO9Lq9Wv7i2q7Dn6HSAZNE4OcXaIhq)lf8NHXq2rAH74mLxJdM2sd3Rz5CKe8)GNlCHHVfQPq1rxaa8WPKMqAkMPpUMYouM5XOj65hL9YVj7DR0N53(zt0VYLy0N20NC4p9bTMMsmbtZniwVsPHHKrqmvMxjwz2(BU(yDcanCxPEEoXZLcaxRZctOclOm9XZzdcTatliIMbs(FXD)62Q7TBHxlfempFhsn)1UMCJeqxBqxoHa8m93F1BBlHUJL)6uzv56doqqsRqI4xDS9mX4zonEpI9erm)e55JcW4NFA7VbY4NF1RUMEM5zCWCCILbSFMiK6v6K9fSf0gwad8HJbFdURvO07Ln2lX1I5mcZ8QFacALkdq5TDk70ChEcLbnXp(X6ixbS)0k4S(b9cRRJ(pSIVJiGNH8w)q9d2Wl96yFxC3YoM0L0K7gW3g3JbShTFF4i2oRphzlVfVG2(zzElARnECcZItjlJhkl)yIQQfF155mygoDEW7r0y5U8GedFPvXJPf0iuyXPIeUFuHtUbYO6XQwrhRXeWSON(ixNLahBEFDT(OwKZPQhrwJBW6DVHoE9uNCpCI6Lx0kxw0773E1k3G0Pk5eSOr)qh9FOqKfdeHC)nJGo0gHeMTliEXTxmqtWLA1a3bIbU0kG4oFTtwEDReJ79717pYPotk3IzviCBN6Glw7MNFTZpdrQ(SNtpYC6f6lo5Y8B3C9IrU)Tha0Dd8reCsJDAvUZdbWymE2amzZqhEfSVXkNFx65e0t)9NNJxow37N8zjxDha7hMBVAIDe5nfeZLCb))p]] )
 
