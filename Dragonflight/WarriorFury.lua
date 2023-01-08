@@ -653,7 +653,10 @@ spec:RegisterHook( "spend", function( amt, resource )
             rage_spent = rage_spent + amt
             local reduction = floor( rage_spent / 20 )
             rage_spent = rage_spent % 20
-            if reduction > 0 then cooldown.recklessness.expires = cooldown.recklessness.expires - reduction end
+            if reduction > 0 then 
+                cooldown.recklessness.expires = cooldown.recklessness.expires - reduction
+                cooldown.ravager.expires = cooldown.ravager.expires - reduction
+            end
         end
 
         if legendary.glory.enabled and buff.conquerors_banner.up then
