@@ -182,7 +182,7 @@ spec:RegisterPvpTalents( {
 spec:RegisterAuras( {
     avatar = {
         id = 107574,
-        duration = 20,
+        duration = function() return ( talent.spiteful_serenity.enabled and 40 or 20) end, -- 100% buff from spiteful_serenity
         max_stack = 1
     },
     battle_stance = {
@@ -231,7 +231,7 @@ spec:RegisterAuras( {
     },
     colossus_smash = {
         id = 208086,
-        duration = function () return 10 + ( talent.blunt_instruments.enabled and 3 or 0 ) end,
+        duration = function () return ( 10 + ( talent.blunt_instruments.enabled and 3 or 0 ) ) * ( talent.spiteful_serenity.enabled and 2 or 1 ) end, -- 100% buff from spiteful_serenity
         max_stack = 1,
     },
     crushing_force = {
