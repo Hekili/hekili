@@ -400,7 +400,7 @@ spec:RegisterAuras( {
     },
     sweeping_strikes = {
         id = 260708,
-        duration = 15,
+        duration = function() return 15 + ( talent.improved_sweeping_strikes.enabled and 6 or 0 ) end,
         max_stack = 1
     },
     sudden_death = {
