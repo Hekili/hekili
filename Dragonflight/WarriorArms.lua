@@ -1113,6 +1113,9 @@ spec:RegisterAbilities( {
         recharge = function () return 12 - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
         gcd = "spell",
 
+        spend = function() return 0 + ( talent.strength_of_arms.enabled and target.health_pct < 35 ) and 8 or 0 end,
+        spendType = "rage",
+
         talent = "overpower",
         startsCombat = true,
         texture = 132223,
