@@ -102,7 +102,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         interval = function () return state.haste end,
 
-        value = function () return state.talent.storm_of_steel.enabled and 15 or 10 end,
+        value = function () return state.talent.storm_of_steel.enabled and 20 or 10 end,
     },
 } )
 
