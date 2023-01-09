@@ -6320,7 +6320,11 @@ do
         Hekili:Yield( "Reset Pre-Casting" )
 
         if state.empowerment.active then
-            state.now = buff.casting.applied
+            local timeDiff = state.now - state.buff.casting.applied
+            if timeDiff > 0 then
+                if Hekili.ActiveDebug then Hekili:Debug( "Empowerment is active; turning back time by " .. timeDiff .. "s..." ) end
+                state.now = state.now - timeDiff
+            end
             removeBuff( "casting" )
         else
             -- TODO: All of this cast-queuing seems like it should be simpler, but that's for another time.
