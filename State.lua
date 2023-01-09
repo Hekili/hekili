@@ -4350,10 +4350,7 @@ do
                         local passed = scripts:CheckScript( scriptID )
 
                         local conditions = "(none)"
-
-                        if debug then
-                            conditions = format( "%s: %s\n", passed and "PASS" or "FAIL", scripts:GetConditionsAndValues( scriptID ) )
-                        end
+                        local valueString = "(none)"
 
                         --[[    add = "Add Value",
                                 ceil
@@ -4432,7 +4429,12 @@ do
                         end
 
                         -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
-                        if debug then Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. " - value = " .. tostring( value or "nil" ) .. "." ) end
+                        if debug then
+                            conditions = format( "%s: %s", passed and "PASS" or "FAIL", scripts:GetConditionsAndValues( scriptID ) )
+                            valueString = format( "%s: %s", state.args.value ~= nil and tostring( state.args.value ) or "nil", scripts:GetModifierValues( "value", scriptID ) )
+
+                            Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. "\n - value = " .. valueString )
+                        end
                         state.variable[ var ] = value
                         cache[ var ][ pathKey ] = value
                     end
