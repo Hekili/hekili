@@ -1043,9 +1043,13 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.burnout.up then removeStack( "burnout" )
             else removeBuff( "ancient_flame" ) end
+
             -- Burnout is not consumed.
-            if talent.ruby_essence_burst.enabled and buff.dragonrage.up then addStack( "essence_burst", nil, 1 ) end
+            if talent.ruby_essence_burst.enabled and buff.dragonrage.up then
+                addStack( "essence_burst", nil, buff.leaping_flames.up and ( active_enemies > 1 or group or health.percent < 100 ) and 2 or 1 )
+            end
             if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
+
             removeBuff( "leaping_flames" )
             removeBuff( "scarlet_adaptation" )
         end,
