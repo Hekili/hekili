@@ -244,19 +244,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
                     imp.max = imp.max + 15
                 end
 
-            elseif spellID == 364198 then
-                -- Tier 28: Malicious Imp
-                -- TODO: Revise to Imp Gang Boss.
-                imps[ destGUID ] = {
-                    t = now,
-                    casts = 0,
-                    expires = math.ceil( now + 40 ),
-                    max = math.ceil( now + 40 ),
-                    gang_boss = true
-                }
-                table.insert( imp_gang_boss, now + 40 )
-
-
             -- Other Demons, 15 seconds uptime.
             -- 267986 - Prince Malchezaar
             -- 267987 - Illidari Satyr
@@ -270,6 +257,9 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
             -- 268001 - Ur'zul
             elseif spellID >= 267986 and spellID <= 268001 then table.insert( other_demon, now + 15 )
             elseif spellID == 387590 then table.insert( other_demon, now + 10 ) end -- Pit Lord from Gul'dan's Ambition
+
+        elseif spellID == 387458 and imps[ destGUID ] then
+            imps[ destGUID ].boss = true
 
         elseif subtype == "SPELL_CAST_START" and spellID == 105174 then
             C_Timer.After( 0.25, UpdateShardsForGuldan )
@@ -403,14 +393,14 @@ spec:RegisterHook( "reset_precast", function()
     wipe( imp_gang_boss_v )
 
     for n, t in pairs( imps ) do
-        if t.gang_boss then table.insert( imp_gang_boss_v, t.expires )
+        if t.boss then table.insert( imp_gang_boss_v, t.expires )
         else table.insert( wild_imps_v, t.expires ) end
     end
 
     table.sort( wild_imps_v )
     table.sort( imp_gang_boss_v )
 
-    local difference = #wild_imps_v - GetSpellCount( 196277 )
+    local difference = #wild_imps_v + #imp_gang_boss_v - GetSpellCount( 196277 )
 
     while difference > 0 do
         table.remove( wild_imps_v, 1 )
@@ -432,7 +422,6 @@ spec:RegisterHook( "reset_precast", function()
 
     wipe( other_demon_v )
     for n, t in ipairs( other_demon ) do other_demon_v[ n ] = t end
-
 
     if #dreadstalkers_v > 0  then wipe( dreadstalkers_v ) end
     if #vilefiend_v > 0      then wipe( vilefiend_v )     end
@@ -555,6 +544,12 @@ spec:RegisterStateExpr( "spawn_remains", function ()
         return max( 0, guldan_v[ #guldan_v ] - query_time )
     end
     return 0
+end )
+
+
+-- 20230109
+spec:RegisterStateExpr( "igb_ratio", function ()
+    return buff.imp_gang_boss.stack / buff.wild_imps.stack
 end )
 
 
