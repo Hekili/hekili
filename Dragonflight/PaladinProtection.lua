@@ -588,6 +588,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = "shining_light_full"
     },
+    strength_in_adversity = {
+        id = 393038,
+        duration = 15,
+        max_stack = 1,
+    },
     -- Talent: Disoriented.
     -- https://wowhead.com/beta/spell=10326
     turn_evil = {
