@@ -907,7 +907,7 @@ spec:RegisterAbilities( {
     celestial_brew = {
         id = 322507,
         cast = 0,
-        cooldown = function() return talent.light_brewing.enabled and 48 or 60 end,
+        cooldown = function() return talent.light_brewing.enabled and 36 or 45 end,
         gcd = "totem",
         school = "physical",
 

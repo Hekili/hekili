@@ -296,7 +296,7 @@ spec:RegisterAuras( {
     },
     painbringer = {
         id = 212988,
-        duration = 4,
+        duration = 6,
         max_stack = 1
     },
     ruinous_bulwark = {
