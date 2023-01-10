@@ -210,9 +210,6 @@ spec:RegisterAuras( {
         id = 79206,
         duration = 15,
     },
-    stormkeeper = {
-        id = 383009,
-    },
     tidal_waves = {
         id = 53390,
         duration = 15,

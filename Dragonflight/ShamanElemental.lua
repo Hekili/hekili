@@ -585,11 +585,14 @@ spec:RegisterAuras( {
     -- Talent: Your next Chain Lightning will deal $s2% increased damage and be instant cast.
     -- https://wowhead.com/beta/spell=320137
     stormkeeper = {
-        id = 320137,
+        -- Elemental: 191634
+        -- Enhancement: 320137
+        -- Restoration: 383009
+        id = 191634,
         duration = 15,
         type = "Magic",
         max_stack = 2,
-        copy = 383009
+        copy = { 320137, 383009 }
     },
     -- Incapacitated.
     -- https://wowhead.com/beta/spell=197214
