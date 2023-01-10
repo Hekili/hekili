@@ -510,6 +510,73 @@ spec:RegisterAuras( {
 } )
 
 
+local lastShot = 0
+local numShots = 0
+
+local rtbApplicators = {
+    roll_the_bones = true,
+    ambush = true,
+    dispatch = true,
+    keep_it_rolling = true,
+}
+
+local lastApplicator = "roll_the_bones"
+
+local rtbSpellIDs = {
+    [315508] = "roll_the_bones",
+    [381989] = "keep_it_rolling",
+    [193356] = "broadside",
+    [199600] = "buried_treasure",
+    [193358] = "grand_melee",
+    [193357] = "ruthless_precision",
+    [199603] = "skull_and_crossbones",
+    [193359] = "true_bearing",
+}
+
+local rtbAuraAppliedBy = {}
+
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if sourceGUID ~= state.GUID then return end
+
+    if state.talent.fan_the_hammer.enabled and subtype == "SPELL_CAST_SUCCESS" and spellID == 185763 then
+        -- Opportunity: Fan the Hammer can queue 1-2 extra Pistol Shots (and consume additional stacks of Opportunity).
+        local now = GetTime()
+
+        if now - lastShot > 0.5 then
+            -- This is a fresh cast.
+            local oppoStacks = ( select( 3, FindPlayerAuraByID( 195627 ) ) or 1 ) - 1
+            lastShot = now
+            numShots = min( state.talent.fan_the_hammer.rank, oppoStacks, 2 )
+
+            Hekili:ForceUpdate( "FAN_THE_HAMMER", true )
+        else
+            -- This is *probably* one of the Fan the Hammer casts.
+            numShots = max( 0, numShots - 1 )
+        end
+    end
+
+    local aura = rtbSpellIDs[ spellID ]
+
+    if aura and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) then
+        if IsCurrentSpell( 2098 ) then
+            rtbAuraAppliedBy[ aura ] = "dispatch"
+        elseif IsCurrentSpell( 8676 ) then
+            rtbAuraAppliedBy[ aura ] = "ambush"
+        elseif aura == "roll_the_bones" then
+            lastApplicator = aura
+        elseif aura == "keep_it_rolling" then
+            lastApplicator = aura
+            for bone in pairs( rtbAuraAppliedBy ) do
+                rtbAuraAppliedBy[ bone ] = aura
+            end
+        else
+            rtbAuraAppliedBy[ aura ] = lastApplicator
+        end
+    end
+end )
+
+
+
 spec:RegisterStateExpr( "rtb_buffs", function ()
     return buff.roll_the_bones.count
 end )
@@ -526,7 +593,7 @@ spec:RegisterStateExpr( "rtb_buffs_normal", function ()
     local n = 0
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
-        if bone.up and bone.duration >= 30 and bone.duration <= 39 then n = n + 1 end
+        if bone.up and rtbAuraAppliedBy[ rtb ] == "roll_the_bones" then n = n + 1 end
     end
     return n
 end )
@@ -535,7 +602,7 @@ spec:RegisterStateExpr( "rtb_buffs_longer", function ()
     local n = 0
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
-        if bone.up and bone.duration > 39 then n = n + 1 end
+        if bone.up and bone.duration > 30 and rtbAuraAppliedBy[ rtb ] ~= "roll_the_bones" then n = n + 1 end
     end
     return n
 end )
@@ -548,7 +615,7 @@ spec:RegisterStateTable( "rtb_buffs_will_lose_buff", setmetatable( {}, {
     __index = function( t, k )
         local bone = buff[ k ]
         -- This is not perfect; a Keep It Rolling buff can be in this range and may not reroll.
-        return bone.up and bone.duration > 10 and bone.duration <= 39
+        return bone.up and rtbAuraAppliedBy[ k ] == "roll_the_bones"
     end
 } ) )
 
@@ -597,30 +664,6 @@ spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, uni
     end
 end )
 
-
-local lastShot = 0
-local numShots = 0
-
-spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if sourceGUID ~= state.GUID then return end
-
-    if state.talent.fan_the_hammer.enabled and subtype == "SPELL_CAST_SUCCESS" and spellID == 185763 then
-        -- Opportunity: Fan the Hammer can queue 1-2 extra Pistol Shots (and consume additional stacks of Opportunity).
-        local now = GetTime()
-
-        if now - lastShot > 0.5 then
-            -- This is a fresh cast.
-            local oppoStacks = ( select( 3, FindPlayerAuraByID( 195627 ) ) or 1 ) - 1
-            lastShot = now
-            numShots = min( state.talent.fan_the_hammer.rank, oppoStacks, 2 )
-
-            Hekili:ForceUpdate( "FAN_THE_HAMMER", true )
-        else
-            -- This is *probably* one of the Fan the Hammer casts.
-            numShots = max( 0, numShots - 1 )
-        end
-    end
-end )
 
 
 -- Tier Set
@@ -791,7 +834,7 @@ spec:RegisterHook( "reset_precast", function()
             local bone = rtb_buff_list[ i ]
 
             if buff[ bone ].up then
-                Hekili:Debug( " - %-20s %5.2f : %5.2f %s", bone, buff[ bone ].remains, buff[ bone ].duration, rtb_buffs_will_lose_buff[ bone ] and "lose" or "keep" )
+                Hekili:Debug( " - %-20s %5.2f : %5.2f %s | %s", bone, buff[ bone ].remains, buff[ bone ].duration, rtb_buffs_will_lose_buff[ bone ] and "lose" or "keep", rtbAuraAppliedBy[ bone ] or "unknown" )
             end
         end
     end
