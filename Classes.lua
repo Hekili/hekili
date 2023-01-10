@@ -483,6 +483,55 @@ local HekiliSpecMixin = {
         end )
     end,
 
+    RegisterPhasedVariable = function( self, key, default, value, ... )
+        value = setfenv( value, state )
+
+        self.phases[ key ] = {
+            update = value,
+            virtual = {},
+            real = {}
+        }
+
+        local phase = self.phases[ key ]
+        local n = select( "#", ... )
+
+        if type( default ) == "function" then
+            phase.default = setfenv( default, state )
+        else
+            phase.default = setfenv( function() return default end, state )
+        end
+
+        for i = 1, n do
+            local hook = select( i, ... )
+
+            if hook == "reset_precast" then
+                self:RegisterHook( hook, function()
+                    local d = display or "Primary"
+
+                    phase.real[ d ] = phase.update( phase.real[ d ], phase.default() )
+                    phase.virtual[ d ] = phase.real[ d ]
+
+                    if Hekili.ActiveDebug then
+                        Hekili:Debug( "[ %s ] Phased variable '%s' set to '%s' (%s).", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook )
+                    end
+                end )
+            else
+                self:RegisterHook( hook, function()
+                    local d = display or "Primary"
+                    local previous = phase.virtual[ d ]
+
+                    phase.virtual[ d ] = phase.update( phase.virtual[ d ], phase.default() )
+
+                    if Hekili.ActiveDebug and phase.virtual[ d ] ~= previous then Hekili:Debug( "[ %s ] Phased variable '%s' set to '%s' (%s) - virtual.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
+                end )
+            end
+        end
+
+        self:RegisterVariable( key, function()
+            return self.phases[ key ].virtual[ display or "Primary" ]
+        end )
+    end,
+
     RegisterGear = function( self, key, ... )
         local n = select( "#", ... )
 
@@ -6040,6 +6089,7 @@ function Hekili:SpecializationChanged()
 
     state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
 
+    HekiliEngine.activeThread = nil
     self:UpdateDisplayVisibility()
     self:UpdateDamageDetectionForCLEU()
 end
