@@ -505,12 +505,6 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 2
     },
-    -- Talent: Primordial Wave
-    primordial_wave = {
-        id = 375986,
-        duration = 15,
-        max_stack = 1,
-    },
     -- Heals $w2 every $t2 seconds.
     -- https://wowhead.com/beta/spell=61295
     riptide = {
@@ -2209,7 +2203,7 @@ spec:RegisterAbilities( {
             end
         end,
 
-        copy = 326059
+        copy = { 326059, 375982 }
     },
 
 
