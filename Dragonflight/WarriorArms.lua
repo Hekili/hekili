@@ -307,6 +307,11 @@ spec:RegisterAuras( {
     improved_overpower = {
         id = 385571,
     },
+    ignore_pain = {
+        id = 190456,
+        duration = 12,
+        max_stack = 1
+    },
     in_for_the_kill = {
         id = 248622,
         duration = 10,
@@ -1027,6 +1032,37 @@ spec:RegisterAbilities( {
         end,
     },
 
+    ignore_pain = {
+        id = 190456,
+        cast = 0,
+        cooldown = 1,
+        gcd = "off",
+
+        spend = 35,
+        spendType = "rage",
+
+        talent = "ignore_pain",
+        startsCombat = false,
+        texture = 1377132,
+
+        toggle = "defensives",
+
+        readyTime = function ()
+            if buff.ignore_pain.up and buff.ignore_pain.v1 >= 0.3 * health.max then
+                return buff.ignore_pain.remains - gcd.max
+            end
+        end,
+
+        handler = function ()
+            if buff.ignore_pain.up then
+                buff.ignore_pain.expires = query_time + class.auras.ignore_pain.duration
+                buff.ignore_pain.v1 = min( 0.3 * health.max, buff.ignore_pain.v1 + stat.attack_power * 3.5 * ( 1 + stat.versatility_atk_mod / 100 ) )
+            else
+                applyBuff( "ignore_pain" )
+                buff.ignore_pain.v1 = min( 0.3 * health.max, stat.attack_power * 3.5 * ( 1 + stat.versatility_atk_mod / 100 ) )
+            end
+        end,
+    },
 
     impending_victory = {
         id = 202168,
