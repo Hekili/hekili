@@ -12,6 +12,7 @@ local PTR = ns.PTR
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 102 )
+local race, raceEn = UnitRace("player")
 
 spec:RegisterResource( Enum.PowerType.Rage )
 spec:RegisterResource( Enum.PowerType.LunarPower, {

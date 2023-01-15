@@ -971,7 +971,7 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
         state.combat = GetTime() - 0.01
     end
 
-    if Hekili.Config and not LibStub( "AceConfigDialog-3.0" ).OpenFrames[ "Hekili" ] then
+    if Hekili.Config and not LibStub( "AceConfigDialog-3.0" ).OpenFrames[ ns.addon_name ] then
         ns.StopConfiguration()
         Hekili:UpdateDisplayVisibility()
     end
