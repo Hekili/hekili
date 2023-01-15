@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -35,13 +36,13 @@ ns.checkImports = checkImports
 
 local function EmbedBlizOptions()
     local panel = CreateFrame( "Frame", "HekiliDummyPanel", UIParent )
-    panel.name = "Hekili"
+    panel.name = ns.addon_name
 
     local open = CreateFrame( "Button", "HekiliOptionsButton", panel, "UIPanelButtonTemplate" )
     open:SetPoint( "CENTER", panel, "CENTER", 0, 0 )
     open:SetWidth( 250 )
     open:SetHeight( 25 )
-    open:SetText( "Open Hekili Options Panel" )
+    open:SetText( L["Open Hekili Options Panel"] )
 
     open:SetScript( "OnClick", function ()
         ns.StartConfiguration()
@@ -63,7 +64,7 @@ function Hekili:OnInitialize()
 
     -- Reimplement LibDualSpec; some folks want different layouts w/ specs of the same class.
     local LDS = LibStub( "LibDualSpec-1.0" )
-    LDS:EnhanceDatabase( self.DB, "Hekili" )
+    LDS:EnhanceDatabase( self.DB, ns.addon_name )
     LDS:EnhanceOptions( self.Options.args.profiles, self.DB )
 
     self.DB.RegisterCallback( self, "OnProfileChanged", "TotalRefresh" )
@@ -71,7 +72,7 @@ function Hekili:OnInitialize()
     self.DB.RegisterCallback( self, "OnProfileReset", "TotalRefresh" )
 
     local AceConfig = LibStub( "AceConfig-3.0" )
-    AceConfig:RegisterOptionsTable( "Hekili", self.Options )
+    AceConfig:RegisterOptionsTable( ns.addon_name, self.Options )
 
     local AceConfigDialog = LibStub( "AceConfigDialog-3.0" )
     -- EmbedBlizOptions()
@@ -82,9 +83,9 @@ function Hekili:OnInitialize()
     local LDB = LibStub( "LibDataBroker-1.1", true )
     local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
     if LDB then
-        ns.UI.Minimap = ns.UI.Minimap or LDB:NewDataObject( "Hekili", {
+        ns.UI.Minimap = ns.UI.Minimap or LDB:NewDataObject( ns.addon_name, {
             type = "data source",
-            text = "Hekili",
+            text = ns.addon_name,
             icon = "Interface\\ICONS\\spell_nature_bloodlust",
             OnClick = function( f, button )
                 if button == "RightButton" then ns.StartConfiguration()
@@ -94,9 +95,9 @@ function Hekili:OnInitialize()
                 GameTooltip:Hide()
             end,
             OnTooltipShow = function( tt )
-                tt:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
-                tt:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
-                tt:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
+                tt:AddDoubleLine( ns.addon_name, ns.UI.Minimap.text )
+                tt:AddLine( "|cFFFFFFFF" .. L["Left-click to make quick adjustments."] .. "|r" )
+                tt:AddLine( "|cFFFFFFFF" .. L["Right-click to open the options interface."] .. "|r" )
             end,
         } )
 
@@ -107,15 +108,15 @@ function Hekili:OnInitialize()
 
             if p.toggles.essences.override then
                 -- Don't show Essences here if it's overridden by CDs anyway?
-                self.text = format( "|c%s%s|r %sCD|r %sInt|r %sDef|r", color,
-                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
+                self.text = format( L["|c%s%s|r %sCD|r %sInt|r %sDef|r"], color,
+                    m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
                     p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
                     p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
                     p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
             else
-                self.text = format( "|c%s%s|r %sCD|r %sCov|r %sInt|r",
+                self.text = format( L["|c%s%s|r %sCD|r %sCov|r %sInt|r"],
                     color,
-                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
+                    m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
                     p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
                     p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
                     p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000" )
@@ -125,7 +126,7 @@ function Hekili:OnInitialize()
         ns.UI.Minimap:RefreshDataText()
 
         if LDBIcon then
-            LDBIcon:Register( "Hekili", ns.UI.Minimap, self.DB.profile.iconStore )
+            LDBIcon:Register( ns.addon_name, ns.UI.Minimap, self.DB.profile.iconStore )
         end
     end
 
@@ -630,7 +631,7 @@ do
         if force or time - self.frameStartTime > self.maxFrameTime then
             coroutine.yield()
 
-            prevMsg = "Resumed thread..."
+            prevMsg = L["Resumed thread..."]
             prevTime = debugprofilestop()
 
             resumeTime = prevTime
@@ -652,7 +653,7 @@ do
     function Hekili:ResetThreadClock()
         resumeTime = debugprofilestop()
 
-        prevMsg = "Started thread..."
+        prevMsg = L["Started thread..."]
         prevTime = resumeTime
     end
 end
@@ -2015,7 +2016,7 @@ function Hekili.Update()
                         end
                     else
                         if not hasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 50 and ( dispName == "Primary" or dispName == "AOE" ) then
-                            Hekili:Print( "Unable to make recommendation for " .. dispName .. " #" .. i .. "; triggering auto-snapshot..." )
+                            Hekili:Print( format( L["Unable to make recommendation for %s #%d; triggering auto-snapshot..."], dispName, i ) )
                             hasSnapped = dispName
                             UI:SetThreadLocked( false )
                             return "AutoSnapshot"
@@ -2043,12 +2044,12 @@ function Hekili.Update()
 
                 if Hekili:SaveDebugSnapshot( dispName ) then
                     if snaps then
-                        snaps = snaps .. ", " .. dispName
+                        snaps = snaps .. ", " .. L[dispName]
                     else
-                        snaps = dispName
+                        snaps = L[dispName]
                     end
 
-                    if Hekili.Config then LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "snapshots" ) end
+                    if Hekili.Config then LibStub( "AceConfigDialog-3.0" ):SelectGroup( ns.addon_name, "snapshots" ) end
                 end
             -- else
                 -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
@@ -2065,7 +2066,7 @@ function Hekili.Update()
     end
 
     if snaps then
-        Hekili:Print( "Snapshots saved:  " .. snaps .. "." )
+        Hekili:Print( format( L["Snapshots saved:  %s."], snaps ) )
     end
 end
 Hekili:ProfileCPU( "ThreadedUpdate", Hekili.Update )
@@ -2075,17 +2076,17 @@ function Hekili_GetRecommendedAbility( display, entry )
     entry = entry or 1
 
     if not rawget( Hekili.DB.profile.displays, display ) then
-        return nil, "Display not found."
+        return nil, L["Display not found."]
     end
 
     if not ns.queue[ display ] then
-        return nil, "No queue for that display."
+        return nil, L["No queue for that display."]
     end
 
     local slot = ns.queue[ display ][ entry ]
 
     if not slot or not slot.actionID then
-        return nil, "No entry #" .. entry .. " for that display."
+        return nil, format( L["No entry #%s for that display."], entry )
     end
 
     return slot.actionID
@@ -2108,7 +2109,7 @@ function Hekili:DumpProfileInfo( deep, orderBy )
             if usage and calls > 0 then
                 local db = {}
 
-                db.func  = "Hekili." .. k
+                db.func  = ns.addon_name .. "." .. k
                 db.calls = calls
                 db.usage = usage
                 db.average = usage / ( calls == 0 and 1 or calls )
@@ -2210,7 +2211,7 @@ end
 function Hekili:DumpFrameInfo()
     local output
 
-    local cpu = GetAddOnCPUUsage( "Hekili" )
+    local cpu = GetAddOnCPUUsage( ns.addon_name )
 
     wipe( usedCPU )
 

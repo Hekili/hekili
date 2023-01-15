@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 254, true )
@@ -1171,16 +1172,15 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "prevent_hardcasts", false, {
-    name = "Prevent Hardcasts of |T135130:0|t Aimed Shot During Movement",
-    desc = "If checked, the addon will not recommend |T135130:0|t Aimed Shot if it has a cast time and you are moving.",
+    name = L["Prevent Hardcasts of |T135130:0|t Aimed Shot During Movement"],
+    desc = L["If checked, the addon will not recommend |T135130:0|t Aimed Shot if it has a cast time and you are moving."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "eagletalon_swap", false, {
-    name = "Use |T132329:0|t Trueshot with Eagletalon's True Focus Runeforge",
-    desc = "If checked, the default priority includes usage of |T132329:0|t Trueshot pre-pull, assuming you will successfully swap " ..
-        "your legendary on your own.  The addon will not tell you to swap your gear.",
+    name = L["Use |T132329:0|t Trueshot with |T537444:0|t Eagletalon's True Focus Runeforge"],
+    desc = L["If checked, the default priority includes usage of |T132329:0|t Trueshot pre-pull, assuming you will successfully swap your legendary on your own.  The addon will not tell you to swap your gear."],
     type = "toggle",
     width = "full",
 } )

@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "ROGUE" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
@@ -15,6 +16,7 @@ local orderedPairs = ns.orderedPairs
 local format = string.format
 
 local spec = Hekili:NewSpecialization( 259 )
+local race, raceEn = UnitRace("player")
 
 spec:RegisterResource( Enum.PowerType.ComboPoints )
 spec:RegisterResource( Enum.PowerType.Energy, {
@@ -2696,15 +2698,15 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "priority_rotation", false, {
-    name = "Funnel AOE -> Target",
-    desc = "If checked, the addon's default priority list will focus on funneling damage into your primary target when multiple enemies are present.",
+    name = L["Funnel AOE -> Target"],
+    desc = L["If checked, the addon's default priority list will focus on funneling damage into your primary target when multiple enemies are present."],
     type = "toggle",
     width = 1.5
 } )
 
 spec:RegisterSetting( "envenom_pool_pct", 50, {
-    name = "Energy % for |T132287:0|t Envenom",
-    desc = "If set above 0, the addon will pool to this Energy threshold before recommending |T132287:0|t Envenom.",
+    name = L["Energy % for |T132287:0|t Envenom"],
+    desc = L["If set above 0, the addon will pool to this Energy threshold before recommending |T132287:0|t Envenom."],
     type = "range",
     min = 0,
     max = 100,
@@ -2717,8 +2719,8 @@ spec:RegisterStateExpr( "envenom_pool_deficit", function ()
 end )
 
 spec:RegisterSetting( "mfd_points", 3, {
-    name = "|T236340:0|t Marked for Death Combo Points",
-    desc = "The addon will only recommend |T236364:0|t Marked for Death when you have the specified number of combo points or fewer.",
+    name = L["|T236364:0|t Marked for Death Combo Points"],
+    desc = L["The addon will only recommend |T236364:0|t Marked for Death when you have the specified number of combo points or fewer."],
     type = "range",
     min = 0,
     max = 5,
@@ -2727,22 +2729,22 @@ spec:RegisterSetting( "mfd_points", 3, {
 } )
 
 spec:RegisterSetting( "solo_vanish", true, {
-    name = "Allow |T132331:0|t Vanish when Solo",
-    desc = "If unchecked, the addon will not recommend |T132331:0|t Vanish when you are alone (to avoid resetting combat).",
+    name = L["Allow |T132331:0|t Vanish when Solo"],
+    desc = L["If unchecked, the addon will not recommend |T132331:0|t Vanish when you are alone (to avoid resetting combat)."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "allow_shadowmeld", nil, {
-    name = "Allow |T132089:0|t Shadowmeld",
-    desc = "If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  " ..
-        "Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat).",
+    name = L["Allow |T132089:0|t Shadowmeld (Night Elf only)"],
+    desc = L["If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
     type = "toggle",
     width = "full",
-    get = function () return not Hekili.DB.profile.specs[ 259 ].abilities.shadowmeld.disabled end,
+    get = function () return not Hekili.DB.profile.specs[ 259 ].abilities.shadowmeld.disabled and raceEn == "NightElf" end,
     set = function ( _, val )
         Hekili.DB.profile.specs[ 259 ].abilities.shadowmeld.disabled = not val
     end,
+    disabled = function () return raceEn ~= "NightElf" end,
 } )
 
 

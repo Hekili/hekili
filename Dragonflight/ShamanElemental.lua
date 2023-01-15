@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "SHAMAN" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
@@ -2505,9 +2506,8 @@ end )
 
 
 spec:RegisterSetting( "stack_buffer", 1.1, {
-    name = "|T135855:0|t Icefury and |T839977:0|t Stormkeeper Padding",
-    desc = "The default priority tries to avoid wasting |T839977:0|t Stormkeeper and |T135855:0|t Icefury stacks with a grace period of 1.1 GCD per stack.\n\n" ..
-            "Increasing this number will reduce the likelihood of wasted Icefury / Stormkeeper stacks due to other procs taking priority, and leave you with more time to react.",
+    name = L["|T135855:0|t Icefury and |T839977:0|t Stormkeeper Padding"],
+    desc = L["The default priority tries to avoid wasting |T839977:0|t Stormkeeper and |T135855:0|t Icefury stacks with a grace period of 1.1 GCD per stack.\n\nIncreasing this number will reduce the likelihood of wasted Icefury / Stormkeeper stacks due to other procs taking priority, and leave you with more time to react."],
     type = "range",
     min = 1,
     max = 2,
@@ -2516,18 +2516,15 @@ spec:RegisterSetting( "stack_buffer", 1.1, {
 } )
 
 spec:RegisterSetting( "hostile_dispel", false, {
-    name = "Use |T136075:0|t Purge or |T451166:0|t Greater Purge on Enemies",
-    desc = "If checked, |T136075:0|t Purge or |T451166:0|t Greater Purge can be recommended by the addon when your target has a dispellable magic effect.\n\n"
-        .. "These abilities are also on the Interrupts toggle by default.",
+    name = L["Use |T136075:0|t Purge or |T451166:0|t Greater Purge on Enemies"],
+    desc = L["If checked, |T136075:0|t Purge or |T451166:0|t Greater Purge can be recommended by the addon when your target has a dispellable magic effect.\n\nThese abilities are also on the Interrupts toggle by default."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "purge_icd", 12, {
-    name = "|T136075:0|t Purge Internal Cooldown",
-    desc = "If set above zero, the addon will not recommend |T136075:0|t Purge more frequently than this amount of time, even if there are more "
-        .. "dispellable magic effects on your target.  This can prevent you from being encouraged to spam Purge endlessly against enemies "
-        .. "with rapidly stacking magic buffs.",
+    name = L["|T136075:0|t Purge Internal Cooldown"],
+    desc = L["If set above zero, the addon will not recommend |T136075:0|t Purge more frequently than this amount of time, even if there are more dispellable magic effects on your target.  This can prevent you from being encouraged to spam Purge endlessly against enemies with rapidly stacking magic buffs."],
     type = "range",
     min = 0,
     max = 20,

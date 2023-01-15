@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local roundUp = ns.roundUp
@@ -967,7 +968,7 @@ me:RegisterHook( "reset_precast", function ()
     end
 
     if not any_dnd_set then
-        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any]|r " .. class.abilities.death_and_decay.name
+        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. L["Any"] .. "|r " .. class.abilities.death_and_decay.name
         any_dnd_set = true
     end
 
@@ -980,7 +981,7 @@ me:RegisterHook( "reset_precast", function ()
     end
 
     if not wound_spender_set then
-        class.abilityList.wound_spender = "|T237530:0|t |cff00ccff[Wound Spender]|r"
+        class.abilityList.wound_spender = "|T237530:0|t |cff00ccff" .. L["[Wound Spender]"] .."|r"
         wound_spender_set = true
     end
 
@@ -1984,11 +1985,11 @@ me:RegisterAbilities( {
 
     -- Stub.
     any_dnd = {
-        name = function () return "|T136144:0|t |cff00ccff[Any]|r " .. ( class.abilities.death_and_decay and class.abilities.death_and_decay.name or "Death and Decay" ) end,
+        name = function () return "|T136144:0|t |cff00ccff" .. L["[Any]"] .. "|r " .. ( class.abilities.death_and_decay and class.abilities.death_and_decay.name or L["Death and Decay"] ) end,
     },
 
     wound_spender = {
-        name = "|T237530:0|t |cff00ccff[Wound Spender]|r",
+        name = "|T237530:0|t |cff00ccff" .. L["[Wound Spender]"] .. "|r",
     }
 } )
 
@@ -2016,8 +2017,8 @@ me:RegisterOptions( {
 
 
 me:RegisterSetting( "disable_iqd_execute", false, {
-    name = "Disable |T2000857:0|t Inscrutable Quantum Device Execute",
-    desc = "If checked, the default Unholy priority will not try to use Inscrutable Quantum Device solely because your enemy is in execute range.",
+    name = L["Disable |T2000857:0|t Inscrutable Quantum Device Execute"],
+    desc = L["If checked, the default Unholy priority will not try to use |T2000857:0|t Inscrutable Quantum Device solely because your enemy is in execute range."],
     type = "toggle",
     width = "full"
 } )

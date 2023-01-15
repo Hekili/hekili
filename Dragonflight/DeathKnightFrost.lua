@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local roundUp = ns.roundUp
@@ -528,7 +529,7 @@ spec:RegisterAuras( {
     },
     frozen_pulse = {
         -- Pseudo aura for legacy talent.
-        name = "Frozen Pulse",
+        name = L["Frozen Pulse"],
         meta = {
             up = function () return runes.current < 3 end,
             down = function () return runes.current >= 3 end,
@@ -851,7 +852,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if not any_dnd_set then
-        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any]|r " .. class.abilities.death_and_decay.name
+        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. L["[Any]"] .. "|r " .. class.abilities.death_and_decay.name
         any_dnd_set = true
     end
 
@@ -1675,8 +1676,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "bos_rp", 50, {
-    name = "Runic Power for |T1029007:0|t Breath of Sindragosa",
-    desc = "The addon will recommend |T1029007:0|t Breath of Sindragosa only if you have this much Runic Power (or more).",
+    name = L["Runic Power for |T1029007:0|t Breath of Sindragosa"],
+    desc = L["The addon will recommend |T1029007:0|t Breath of Sindragosa only if you have this much Runic Power (or more)."],
     icon = 1029007,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",

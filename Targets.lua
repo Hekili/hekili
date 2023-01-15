@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[addon]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -487,7 +488,7 @@ do
                             stationary = stationary + 1
                         end
 
-                        Hekili.TargetDebug = format("%s    %-12s - %2d - %s %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid, ( moving and "(moving)" or "" ) )
+                        Hekili.TargetDebug = format( "%s    %-12s - %2d - %s %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid, ( moving and "(moving)" or "" ) )
                     else
                         counted[ guid ] = false
                     end
@@ -507,7 +508,7 @@ do
                     stationary = stationary + 1
                 end
 
-                Hekili.TargetDebug = format("%s    %-12s - %2d - %s %s\n", Hekili.TargetDebug, "target", 0, targetGUID, ( moving and "(moving)" or "" ) )
+                Hekili.TargetDebug = format( "%s    %-12s - %2d - %s %s\n", Hekili.TargetDebug, "target", 0, targetGUID, ( moving and "(moving)" or "" ) )
             else
                 counted[ targetGUID ] = false
             end
@@ -579,7 +580,7 @@ end
 
 ns.reportTargets = function()
     for k, v in pairs(targets) do
-        Hekili:Print("Saw " .. k .. " exactly " .. GetTime() - v .. " seconds ago.")
+        Hekili:Print( format( L["Saw %s exactly %.2f seconds ago."], k, GetTime() - v ) )
     end
 end
 
@@ -901,7 +902,7 @@ function Hekili:DumpDotInfo( aura )
 
     aura = aura and class.auras[ aura ] and class.auras[ aura ].id or aura
 
-    Hekili:Print( "Current DoT Information at " .. GetTime() .. ( aura and ( " for " .. aura ) or "" ) .. ":" )
+    Hekili:Print( format( aura and L["Current DoT Information at %1$s for %2$s:"] or L["Current DoT Information at %s:"], GetTime(), aura ) )
     DevTools_Dump( aura and debuffs[ aura ] or debuffs )
 end
 

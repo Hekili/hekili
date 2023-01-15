@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -437,7 +438,7 @@ end )
 
 RegisterEvent( "ENCOUNTER_END", function ()
     state.encounterID = 0
-    state.encounterName = "None"
+    state.encounterName = L["None"]
     state.encounterDifficulty = 0
     state.encounterSize = 0
 end )
@@ -943,7 +944,7 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
         state.combat = GetTime() - 0.01
     end
 
-    if Hekili.Config and not LibStub( "AceConfigDialog-3.0" ).OpenFrames[ "Hekili" ] then
+    if Hekili.Config and not LibStub( "AceConfigDialog-3.0" ).OpenFrames[ ns.addon_name ] then
         ns.StopConfiguration()
         Hekili:UpdateDisplayVisibility()
     end
@@ -1074,10 +1075,10 @@ local noClassWarned = false
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( event, unit, _, spellID )
     if not noClassWarned and not class.initialized then
-        Hekili:Notify( UnitClass( "player" ) .. " does not have any Hekili modules loaded (yet).\nWatch for updates.", 5 )
+        Hekili:Notify( format( L["%s does not have any Hekili modules loaded (yet).\nWatch for updates."], UnitClass( "player" ) ), 5 )
         noClassWarned = true
     elseif not lowLevelWarned and UnitLevel( "player" ) < 50 then
-        Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
+        Hekili:Notify( L["Hekili is designed for current content.\nUse below level 50 at your own risk."], 5 )
         lowLevelWarned = true
     end
 

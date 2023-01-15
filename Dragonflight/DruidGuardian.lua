@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 104 )
@@ -1305,7 +1306,7 @@ spec:RegisterAbilities( {
             applyBuff( "incarnation" )
         end,
 
-        copy = { "incarnation_guardian_of_ursoc", "Incarnation" }
+        copy = { "incarnation_guardian_of_ursoc", L["Incarnation"] }
     },
 
     -- Talent: Infuse a friendly healer with energy, allowing them to cast spells without spending mana for $d.$?s326228[    If cast on somebody else, you gain the effect at $326228s1% effectiveness.][]
@@ -1877,7 +1878,7 @@ spec:RegisterAbilities( {
     swipe_bear = {
         id = 213771,
         known = 213764,
-        suffix = "(Bear)",
+        suffix = L["(Bear)"],
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1899,7 +1900,7 @@ spec:RegisterAbilities( {
     thrash_bear = {
         id = 77758,
         known = 106832,
-        suffix = "(Bear)",
+        suffix = L["(Bear)"],
         cast = 0,
         cooldown = function () return ( buff.berserk_bear.up and talent.berserk_ravage.enabled and 0 or 6 ) * haste end,
         gcd = "spell",
@@ -2058,8 +2059,8 @@ spec:RegisterOptions( {
 } )
 
 spec:RegisterSetting( "maul_rage", 20, {
-    name = "Excess Rage for |T132136:0|t Maul",
-    desc = "If set above zero, the addon will recommend |T132136:0|t Maul only if you have at least this much excess Rage.",
+    name = L["Excess Rage for |T132136:0|t Maul"],
+    desc = L["If set above zero, the addon will recommend |T132136:0|t Maul only if you have at least this much excess Rage."],
     type = "range",
     min = 0,
     max = 60,
@@ -2068,16 +2069,15 @@ spec:RegisterSetting( "maul_rage", 20, {
 } )
 
 spec:RegisterSetting( "mangle_more", false, {
-    name = "Use |T132135:0|t Mangle More in Multi-Target",
-    desc = "If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, " ..
-        "funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets.",
+    name = L["Use |T132135:0|t Mangle More in Multi-Target"],
+    desc = L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."],
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "ironfur_damage_threshold", 5, {
-    name = "Required Damage % for |T1378702:0|t Ironfur",
-    desc = "If set above zero, the addon will not recommend |T1378702:0|t Ironfur unless your incoming damage for the past 5 seconds is greater than this percentage of your maximum health.",
+    name = L["Required Damage % for |T1378702:0|t Ironfur"],
+    desc = L["If set above zero, the addon will not recommend |T1378702:0|t Ironfur unless your incoming damage for the past 5 seconds is greater than this percentage of your maximum health."],
     type = "range",
     min = 0,
     max = 100,
@@ -2086,23 +2086,22 @@ spec:RegisterSetting( "ironfur_damage_threshold", 5, {
 } )
 
 --[[ spec:RegisterSetting( "shift_for_convoke", false, {
-    name = "|T3636839:0|t Powershift for Convoke the Spirits",
-    desc = "If checked, the addon will recommend swapping to Cat Form before using |T3636839:0|t Convoke the Spirits.\n\n" ..
-        "This is a DPS gain unless you die horribly.",
+    name = L["|T3636839:0|t Powershift for Convoke the Spirits"],
+    desc = L["If checked, the addon will recommend swapping to Cat Form before using |T3636839:0|t Convoke the Spirits.\n\nThis is a DPS gain unless you die horribly."],
     type = "toggle",
     width = "full"
 } ) ]]
 
 spec:RegisterSetting( "catweave_bear", false, {
-    name = "|T132115:0|t Attempt Catweaving (Experimental)",
-    desc = "If checked, the addon will use the experimental |cFFFFD100catweave|r priority included in the default priority pack.",
+    name = L["|T132115:0|t Attempt Catweaving (Experimental)"],
+    desc = L["If checked, the addon will use the experimental |cFFFFD100catweave|r priority included in the default priority pack."],
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "owlweave_bear", false, {
-    name = "|T136036:0|t Attempt Owlweaving (Experimental)",
-    desc = "If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack.",
+    name = L["|T136036:0|t Attempt Owlweaving (Experimental)"],
+    desc = L["If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack."],
     type = "toggle",
     width = "full"
 } )

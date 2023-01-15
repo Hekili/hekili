@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "PALADIN" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 70 )
@@ -1843,8 +1844,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "check_wake_range", false, {
-    name = "Check |T1112939:0|t Wake of Ashes Range",
-    desc = "If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended.",
+    name = L["Check |T1112939:0|t Wake of Ashes Range"],
+    desc = L["If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended."],
     type = "toggle",
     width = 1.5
 } )

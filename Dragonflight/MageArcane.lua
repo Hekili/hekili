@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "MAGE" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
@@ -1518,7 +1519,7 @@ spec:RegisterAbilities( {
     },
 
     mana_gem = {
-        name = "|cff00ccff[Mana Gem]|r",
+        name = "|cff00ccff[" .. L["Mana Gem"] .. "|r",
         known = function ()
             return state.mana_gem_charges > 0
         end,

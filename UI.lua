@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[addon]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -78,10 +79,10 @@ local function Mover_OnMouseUp(self, btn)
         Hekili:SaveCoordinates()
     elseif btn == "RightButton" then
         if obj:GetName() == "HekiliNotification" then
-            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", "nPanel" )
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( ns.addon_name, "displays", "nPanel" )
             return
         elseif obj and obj.id then
-            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", obj.id )
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( ns.addon_name, "displays", obj.id )
             return
         end
     end
@@ -161,7 +162,7 @@ function ns.StartConfiguration( external )
         f.Header:SetFont( path, 18, "OUTLINE" )
     end
     f.Header:SetAllPoints( HekiliNotificationMover )
-    f.Header:SetText( "Notifications" )
+    f.Header:SetText( L["Notifications"] )
     f.Header:SetJustifyH( "CENTER" )
     f.Header:Show()
 
@@ -182,9 +183,9 @@ function ns.StartConfiguration( external )
         if H.Config then
             Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
 
-            Tooltip:SetText( "Hekili: Notifications" )
-            Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-            Tooltip:AddLine( "Right-click to open Notification panel settings.", 1, 1, 1 )
+            Tooltip:SetText( ns.addon_name .. ": " .. L["Notifications"] )
+            Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
+            Tooltip:AddLine( L["Right-click to open Notification panel settings."], 1, 1, 1 )
             Tooltip:Show()
         end
     end )
@@ -262,10 +263,10 @@ function ns.StartConfiguration( external )
                 if H.Config then
                     Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
 
-                    Tooltip:SetText( "Hekili: " .. i )
-                    Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-                    Tooltip:AddLine( "Right-click to open " .. i .. " display settings.", 1, 1, 1 )
-                    if not H:IsDisplayActive( i, true ) then Tooltip:AddLine( "This display is not currently active.", 0.5, 0.5, 0.5 ) end
+                    Tooltip:SetText( ns.addon_name .. ": " .. L[i] )
+                    Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
+                    Tooltip:AddLine( format( L["Right-click to open %s display settings."], L[i] ), 1, 1, 1 )
+                    if not H:IsDisplayActive( i, true ) then Tooltip:AddLine( L["This display is not currently active."], 0.5, 0.5, 0.5 ) end
                     Tooltip:Show()
                 end
             end )
@@ -285,7 +286,7 @@ function ns.StartConfiguration( external )
             if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield" ) )
             elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "voicechat-icon-speaker-mute" ) )
             elseif i == "Cooldowns" then v.Header:SetText( AtlasToString( "chromietime-32x32" ) )
-            else v.Header:SetText( i ) end
+            else v.Header:SetText( L[i] ) end
 
             v.Header:SetJustifyH("CENTER")
             v.Header:Show()
@@ -298,10 +299,10 @@ function ns.StartConfiguration( external )
         if not Hekili.OptionsReady then Hekili:RefreshOptions() end
 
         local ACD = LibStub( "AceConfigDialog-3.0" )
-        ACD:SetDefaultSize( "Hekili", 800, 608 )
-        ACD:Open( "Hekili" )
+        ACD:SetDefaultSize( ns.addon_name, 800, 608 )
+        ACD:Open( ns.addon_name )
 
-        local oFrame = ACD.OpenFrames["Hekili"].frame
+        local oFrame = ACD.OpenFrames[ ns.addon_name ].frame
         if not Hekili.IsDragonflight() then oFrame:SetMinResize( 800, 608 ) end
 
         ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame" )
@@ -315,10 +316,10 @@ function ns.StartConfiguration( external )
         end )
 
         if not ns.OnHideFrame.firstTime then
-            ACD:SelectGroup( "Hekili", "packs" )
-            ACD:SelectGroup( "Hekili", "displays" )
-            ACD:SelectGroup( "Hekili", "displays", "Multi" )
-            ACD:SelectGroup( "Hekili", "general" )
+            ACD:SelectGroup( ns.addon_name, "packs" )
+            ACD:SelectGroup( ns.addon_name, "displays" )
+            ACD:SelectGroup( ns.addon_name, "displays", "Multi" )
+            ACD:SelectGroup( ns.addon_name, "general" )
             ns.OnHideFrame.firstTime = true
         end
 
@@ -402,18 +403,18 @@ do
     local menuData = {
         {
             isTitle = 1,
-            text = "Hekili",
+            text = ns.addon_name,
             notCheckable = 1,
         },
 
         {
-            text = "Enable",
+            text = L["Enable"],
             func = function () Hekili:Toggle() end,
             checked = function () return Hekili.DB.profile.enabled end,
         },
 
         {
-            text = "Pause",
+            text = L["Pause"],
             func = function () return Hekili:TogglePause() end,
             checked = function () return Hekili.Pause end,
         },
@@ -424,36 +425,36 @@ do
 
         {
             isTitle = 1,
-            text = "Display Mode",
+            text = L["Display Mode"],
             notCheckable = 1,
         },
 
         {
-            text = "Auto",
+            text = L["Auto"],
             func = function () SetDisplayMode( "automatic" ) end,
             checked = function () return IsDisplayMode( p, "automatic" ) end,
         },
 
         {
-            text = "Single",
+            text = L["Single"],
             func = function () SetDisplayMode( "single" ) end,
             checked = function () return IsDisplayMode( p, "single" ) end,
         },
 
         {
-            text = "AOE",
+            text = L["AOE"],
             func = function () SetDisplayMode( "aoe" ) end,
             checked = function () return IsDisplayMode( p, "aoe" ) end,
         },
 
         {
-            text = "Dual",
+            text = L["Dual"],
             func = function () SetDisplayMode( "dual" ) end,
             checked = function () return IsDisplayMode( p, "dual" ) end,
         },
 
         {
-            text = "Reactive",
+            text = L["Reactive"],
             func = function () SetDisplayMode( "reactive" ) end,
             checked = function () return IsDisplayMode( p, "reactive" ) end,
         },
@@ -464,36 +465,36 @@ do
 
         {
             isTitle = 1,
-            text = "Toggles",
+            text = L["Toggles"],
             notCheckable = 1,
         },
 
         {
-            text = "Cooldowns",
+            text = L["Cooldowns"],
             func = function() Hekili:FireToggle( "cooldowns" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.cooldowns.value end,
         },
 
         {
-            text = "Covenants",
+            text = L["Covenants"],
             func = function() Hekili:FireToggle( "essences" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.essences.value end,
         },
 
         {
-            text = "Interrupts",
+            text = L["Interrupts"],
             func = function() Hekili:FireToggle( "interrupts" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.interrupts.value end,
         },
 
         {
-            text = "Defensives",
+            text = L["Defensives"],
             func = function() Hekili:FireToggle( "defensives" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.defensives.value end,
         },
 
         {
-            text = "Potions",
+            text = L["Potions"],
             func = function() Hekili:FireToggle( "potions" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.potions.value end,
         },
@@ -524,15 +525,15 @@ do
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         } )
                         insert( menuData, {
-                            text = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t Recommend Target Swaps",
+                            text = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t " .. L["Recommend Target Swaps"],
                             func = function ()
                                 local spec = rawget( Hekili.DB.profile.specs, i )
                                 if spec then
                                     spec.cycle = not spec.cycle
                                     if Hekili.DB.profile.notifications.enabled then
-                                        Hekili:Notify( "Recommend Target Swaps: " .. ( spec.cycle and "ON" or "OFF" ) )
+                                        Hekili:Notify( L["Recommend Target Swaps"] .. ": " .. ( spec.cycle and L["ON"] or L["OFF"] ) )
                                     else
-                                        Hekili:Print( "Recommend Target Swaps: " .. ( spec.cycle and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                        Hekili:Print( L["Recommend Target Swaps"] .. ": " .. ( spec.cycle and " |cFF00FF00" .. L["ENABLED"] .. "|r." or " |cFFFF0000" .. L["DISABLED"] .. "|r." ) )
                                     end
                                 end
                             end,
@@ -555,9 +556,9 @@ do
                                             setting.info.set( menu.args, not setting.info.get( menu.args ) )
 
                                             if Hekili.DB.profile.notifications.enabled then
-                                                Hekili:Notify( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
+                                                Hekili:Notify( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and L["ON"] or L["OFF"] ) )
                                             else
-                                                Hekili:Print( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                                Hekili:Print( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00" .. L["ENABLED"] .. "|r." or " |cFFFF0000" .. L["DISABLED"] .. "|r." ) )
                                             end
                                         end,
                                         checked = function ()
@@ -623,9 +624,9 @@ do
                                                 menu.args[1] = setting.name
                                                 setting.info.set( menu.args, j )
                                                 if Hekili.DB.profile.notifications.enabled then
-                                                    Hekili:Notify( setting.info.name .. " set to |cFF00FF00" .. j .. "|r." )
+                                                    Hekili:Notify( format( L["%s set to |cFF00FF00%d|r."], setting.info.name, j ) )
                                                 else
-                                                    Hekili:Print( setting.info.name .. " set to |cFF00FF00" .. j .. "|r." )
+                                                    Hekili:Print( format( L["%s set to |cFF00FF00%d|r."], setting.info.name, j ) )
                                                 end
                                             end,
                                             checked = function ()
@@ -2636,8 +2637,8 @@ do
                 Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
                 Tooltip:SetBackdropColor( 0, 0, 0, 0.8 )
 
-                Tooltip:SetText( "Hekili: " .. dispID  )
-                Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+                Tooltip:SetText( ns.addon_name .. ": " .. dispID  )
+                Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
                 Tooltip:Show()
                 self:SetMovable( true )
 
@@ -2889,7 +2890,7 @@ function Hekili:ShowDiagnosticTooltip( q )
             tt:AddLine(q.HookHeader)
         else
             tt:AddLine(" ")
-            tt:AddLine("Hook Criteria")
+            tt:AddLine(L["Hook Criteria"])
         end
 
         if q.HookScript and q.HookScript ~= "" then
@@ -2902,7 +2903,7 @@ function Hekili:ShowDiagnosticTooltip( q )
             for k, v in orderedPairs(q.HookElements) do
                 if not applied then
                     tt:AddLine(" ")
-                    tt:AddLine("Values")
+                    tt:AddLine(L["Values"])
                     applied = true
                 end
                 if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
@@ -2914,12 +2915,12 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     if q.ReadyScript and q.ReadyScript ~= "" then
         tt:AddLine(" ")
-        tt:AddLine("Time Script")
+        tt:AddLine(L["Time Script"])
 
         tt:AddLine(fmt.FormatCode(q.ReadyScript, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ReadyElements then
-            tt:AddLine("Values")
+            tt:AddLine(L["Values"])
             for k, v in orderedPairs(q.ReadyElements) do
                 if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
                     tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
@@ -2930,13 +2931,13 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     if q.ActScript and q.ActScript ~= "" then
         tt:AddLine(" ")
-        tt:AddLine("Action Criteria")
+        tt:AddLine(L["Action Criteria"])
 
         tt:AddLine(fmt.FormatCode(q.ActScript, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ActElements then
             tt:AddLine(" ")
-            tt:AddLine("Values")
+            tt:AddLine(L["Values"])
             for k, v in orderedPairs(q.ActElements) do
                 if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
                     tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)

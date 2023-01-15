@@ -5,11 +5,13 @@ if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
 
 local spec = Hekili:NewSpecialization( 103 )
+local race, raceEn = UnitRace("player")
 
 spec:RegisterResource( Enum.PowerType.Energy )
 spec:RegisterResource( Enum.PowerType.ComboPoints )
@@ -1697,7 +1699,7 @@ spec:RegisterAbilities( {
             energy.max = energy.max + 50
         end,
 
-        copy = { "incarnation_avatar_of_ashamane", "Incarnation" }
+        copy = { "incarnation_avatar_of_ashamane", L["Incarnation"] }
     },
 
     -- Talent: Increases armor by ${$s1*$AGI/100} for $d.$?a231070[ Multiple uses of this ability may overlap.][]
@@ -1790,7 +1792,7 @@ spec:RegisterAbilities( {
         id = 155625,
         known = 8921,
         flash = { 8921, 155625 },
-        suffix = "(Cat)",
+        suffix = L["(Cat)"],
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -2323,7 +2325,7 @@ spec:RegisterAbilities( {
     swipe_cat = {
         id = 106785,
         known = 213764,
-        suffix = "(Cat)",
+        suffix = L["(Cat)"],
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -2387,7 +2389,7 @@ spec:RegisterAbilities( {
     thrash_cat = {
         id = 106830,
         known = 106832,
-        suffix = "(Cat)",
+        suffix = L["(Cat)"],
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -2491,22 +2493,22 @@ spec:RegisterAbilities( {
 
 
 --[[ spec:RegisterSetting( "owlweave_cat", false, {
-    name = "|T136036:0|t Attempt Owlweaving (Experimental)",
-    desc = "If checked, the addon will swap to Moonkin Form based on the default priority.",
+    name = L["|T136036:0|t Attempt Owlweaving (Experimental)"],
+    desc = L["If checked, the addon will swap to Moonkin Form based on the default priority."],
     type = "toggle",
     width = "full"
 } ) ]]
 
 --[[ spec:RegisterSetting( "filler_regrowth", false, {
-    name = "|T136085:0|t Use Regrowth as Filler",
-    desc = "If checked, the default priority will recommend |T136085:0|t Regrowth when you use the Bloodtalons talent and would otherwise be pooling Energy to retrigger Bloodtalons.",
+    name = L["|T136085:0|t Use Regrowth as Filler"],
+    desc = L["If checked, the default priority will recommend |T136085:0|t Regrowth when you use the Bloodtalons talent and would otherwise be pooling Energy to retrigger Bloodtalons."],
     type = "toggle",
     width = "full",
 } ) ]]
 
 spec:RegisterSetting( "rip_duration", 9, {
-    name = "|T132152:0|t Rip Duration",
-    desc = "If set above 0, the addon will not recommend |T132152:0|t Rip if your target will die within the timeframe specified.",
+    name = L["|T132152:0|t Rip Duration"],
+    desc = L["If set above 0, the addon will not recommend |T132152:0|t Rip if your target will die within the timeframe specified."],
     type = "range",
     min = 0,
     max = 18,
@@ -2515,15 +2517,15 @@ spec:RegisterSetting( "rip_duration", 9, {
 } )
 
 spec:RegisterSetting( "allow_shadowmeld", nil, {
-    name = "Allow |T132089:0|t Shadowmeld",
-    desc = "If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  " ..
-        "Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat).",
+    name = L["Allow |T132089:0|t Shadowmeld (Night Elf only)"],
+    desc = L["If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
     type = "toggle",
     width = "full",
-    get = function () return not Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled end,
+    get = function () return not Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled and raceEn == "NightElf" end,
     set = function ( _, val )
         Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled = not val
     end,
+    disabled = function () return raceEn ~= "NightElf" end,
 } )
 
 

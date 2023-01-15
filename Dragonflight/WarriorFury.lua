@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class = Hekili.Class
 local state = Hekili.State
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
@@ -1722,23 +1723,22 @@ spec:RegisterAbilities( {
 
 
 spec:RegisterSetting( "check_ww_range", false, {
-    name = "Check |T132369:0|t Whirlwind Range",
-    desc = "If checked, when your target is outside of |T132369:0|t Whirlwind's range, it will not be recommended.",
+    name = L["Check |T132369:0|t Whirlwind Range"],
+    desc = L["If checked, when your target is outside of |T132369:0|t Whirlwind's range, it will not be recommended."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
-    name = "Only |T236312:0|t Shockwave as Interrupt (when Talented)",
-    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting.",
+    name = L["Only |T236312:0|t Shockwave as Interrupt (when Talented)"],
+    desc = L["If checked, |T236312:0|t Shockwave will only be recommended when your target is casting."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "heroic_charge", false, {
-    name = "Use Heroic Charge Combo",
-    desc = "If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use Heroic Leap + Charge together.\n\n" ..
-        "This is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay.",
+    name = L["Use Heroic Charge Combo"],
+    desc = L["If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use |T236171:0|t Heroic Leap + |T132337:0|t Charge together.\n\nThis is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay."],
     type = "toggle",
     width = "full",
 } )

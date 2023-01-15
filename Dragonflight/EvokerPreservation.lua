@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "EVOKER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 1468 )
@@ -839,31 +840,30 @@ spec:RegisterAbilities( {
 } )
 
 spec:RegisterSetting( "use_deep_breath", true, {
-    name = "Use |T4622450:0|t Deep Breath",
+    name = L["Use |T4622450:0|t Deep Breath"],
     type = "toggle",
-    desc = "If checked, the addon may recommend |T4622450:0|t Deep Breath, which causes your character to fly forward while damaging enemies.  This ability requires your Cooldowns toggle to be active by default.\n\n"
-        .. "Disabling this setting will prevent the addon from ever recommending Deep Breath, which you may prefer due to the movement (or for any other reason).",
+    desc = L["If checked, the addon may recommend |T4622450:0|t Deep Breath, which causes your character to fly forward while damaging enemies.  This ability requires your Cooldowns toggle to be active by default.\n\nDisabling this setting will prevent the addon from ever recommending Deep Breath, which you may prefer due to the movement (or for any other reason)."],
     width = "full",
 } )
 
 spec:RegisterSetting( "use_unravel", false, {
-    name = "Use |T4630499:0|t Unravel",
+    name = L["Use |T4630499:0|t Unravel"],
     type = "toggle",
-    desc = "If checked, the addon may recommend |T4630499:0|t Unravel when your target has an absorb shield applied.  By default, Unravel also requires your Interrupts toggle to be active.",
+    desc = L["If checked, the addon may recommend |T4630499:0|t Unravel when your target has an absorb shield applied.  By default, Unravel also requires your Interrupts toggle to be active."],
     width = "full",
 } )
 
 spec:RegisterSetting( "use_early_chain", false, {
-    name = "Early Chain |T4622451:0|t Disintegrate",
+    name = L["Early Chain |T4622451:0|t Disintegrate"],
     type = "toggle",
-    desc = "If checked, the default priority may recommend |T4622451:0|t Disintegrate in the middle of a Disintegrate channel.",
+    desc = L["If checked, the default priority may recommend |T4622451:0|t Disintegrate in the middle of a Disintegrate channel."],
     width = "full"
 } )
 
 spec:RegisterSetting( "use_clipping", false, {
-    name = "Clip |T4622451:0t|t Disintegrate",
+    name = L["Clip |T4622451:0|t Disintegrate"],
     type = "toggle",
-    desc = "If checked, the default priority may recommend interrupting a |T4622451:0|t Disintegrate channel when another spell is ready.",
+    desc = L["If checked, the default priority may recommend interrupting a |T4622451:0|t Disintegrate channel when another spell is ready."],
     width = "full",
 } )
 

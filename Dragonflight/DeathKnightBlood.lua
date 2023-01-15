@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local PTR = ns.PTR
@@ -1909,16 +1910,15 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "save_blood_shield", true, {
-    name = "Save |T237517:0|t Blood Shield",
-    desc = "If checked, the default priority (or any priority checking |cFFFFD100save_blood_shield|r) will try to avoid letting your |T237517:0|t Blood Shield fall off during lulls in damage.",
+    name = L["Save |T237517:0|t Blood Shield"],
+    desc = L["If checked, the default priority (or any priority checking |cFFFFD100save_blood_shield|r expression) will try to avoid letting your |T237517:0|t Blood Shield fall off during lulls in damage."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "ibf_damage", 40, {
-    name = "|T237525:0|t Icebound Fortitude Damage Threshold",
-    desc = "When set above zero, the default priority can recommend |T237525:0|t Icebound Fortitude if you've taken this percentage of your maximum health in the past 5 seconds.  Icebound Fortitude also requires "
-        .. "the Defensives toggle by default.",
+    name = L["|T237525:0|t Icebound Fortitude Damage Threshold"],
+    desc = L["When set above zero, the default priority can recommend |T237525:0|t Icebound Fortitude if you've taken this percentage of your maximum health in the past 5 seconds.  Icebound Fortitude also requires the Defensives toggle by default."],
     type = "range",
     min = 0,
     max = 100,
@@ -1927,9 +1927,8 @@ spec:RegisterSetting( "ibf_damage", 40, {
 } )
 
 spec:RegisterSetting( "rt_damage", 30, {
-    name = "|T237529:0|t Rune Tap Damage Threshold",
-    desc = "When set above zero, the default priority can recommend |T237529:0|t Rune Tap if you've taken this percentage of your maximum health in the past 5 seconds.  Rune Tap also requires "
-        .. "the Defensives toggle by default.",
+    name = L["|T237529:0|t Rune Tap Damage Threshold"],
+    desc = L["When set above zero, the default priority can recommend |T237529:0|t Rune Tap if you've taken this percentage of your maximum health in the past 5 seconds.  Rune Tap also requires the Defensives toggle by default."],
     type = "range",
     min = 0,
     max = 100,
@@ -1938,9 +1937,8 @@ spec:RegisterSetting( "rt_damage", 30, {
 } )
 
 spec:RegisterSetting( "vb_damage", 50, {
-    name = "|T136168:0|t Vampiric Blood Damage Threshold",
-    desc = "When set above zero, the default priority can recommend |T136168:0|t Vampiric Blood if you've taken this percentage of your maximum health in the past 5 seconds.  Vampiric Blood also requires "
-        .. "the Defensives toggle by default.",
+    name = L["|T136168:0|t Vampiric Blood Damage Threshold"],
+    desc = L["When set above zero, the default priority can recommend |T136168:0|t Vampiric Blood if you've taken this percentage of your maximum health in the past 5 seconds.  Vampiric Blood also requires the Defensives toggle by default."],
     type = "range",
     min = 0,
     max = 100,

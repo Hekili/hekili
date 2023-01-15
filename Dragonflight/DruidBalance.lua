@@ -5,10 +5,12 @@ if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
 local spec = Hekili:NewSpecialization( 102 )
+local race, raceEn = UnitRace("player")
 
 spec:RegisterResource( Enum.PowerType.Rage )
 spec:RegisterResource( Enum.PowerType.LunarPower, {
@@ -1959,7 +1961,7 @@ spec:RegisterAbilities( {
             if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
         end,
 
-        copy = { "incarnation_chosen_of_elune", "Incarnation" },
+        copy = { "incarnation_chosen_of_elune", L["Incarnation"] },
     },
 
     -- Talent: Infuse a friendly healer with energy, allowing them to cast spells without spending mana for $d.$?s326228[    If cast on somebody else, you gain the effect at $326228s1% effectiveness.][]
@@ -2556,7 +2558,7 @@ spec:RegisterAbilities( {
                 generate = function( t )
                     local last = action.starsurge.lastCast
 
-                    t.name = "Starsurge Empowerment (Lunar)"
+                    t.name = L["Starsurge Empowerment (Lunar)"]
 
                     if eclipse.in_any then
                         t.applied = last
@@ -2582,7 +2584,7 @@ spec:RegisterAbilities( {
                 generate = function( t )
                     local last = action.starsurge.lastCast
 
-                    t.name = "Starsurge Empowerment (Solar)"
+                    t.name = L["Starsurge Empowerment (Solar)"]
 
                     if eclipse.in_any then
                         t.applied = last
@@ -2930,9 +2932,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "starlord_cancel", false, {
-    name = "Cancel |T462651:0|t Starlord",
-    desc = "If checked, the addon will recommend canceling your Starlord buff before starting to build stacks with Starsurge again.\n\n" ..
-        "You will likely want a |cFFFFD100/cancelaura Starlord|r macro to manage this during combat.",
+    name = L["Cancel |T462651:0|t Starlord"],
+    desc = L["If checked, the addon will recommend canceling your Starlord buff before starting to build stacks with Starsurge again.\n\nYou will likely want a |cFFFFD100/cancelaura Starlord|r macro to manage this during combat."],
     icon = 462651,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "toggle",
@@ -2940,10 +2941,11 @@ spec:RegisterSetting( "starlord_cancel", false, {
 } )
 
 spec:RegisterSetting( "delay_berserking", false, {
-    name = "Delay |T135727:0|t Berserking",
-    desc = "If checked, the default priority will attempt to adjust the timing of |T135727:0|t Berserking to be consistent with simmed Power Infusion usage.",
+    name = L["Delay |T135727:0|t Berserking (Troll only)"],
+    desc = L["If checked, the default priority will attempt to adjust the timing of |T135727:0|t Berserking to be consistent with simmed |T135939:0|t Power Infusion usage."],
     type = "toggle",
     width = "full",
+    disabled = function() return raceEn ~= "Troll" end,
 } )
 
 

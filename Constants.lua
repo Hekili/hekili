@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+ns.addon_name = "Hekili"
 
 
 -- Class Localization

@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEMONHUNTER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 577 )
@@ -875,7 +876,7 @@ do
 
     spec:RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
         if state.talent.demon_blades.enabled and not state.settings.demon_blades_acknowledged and not wasWarned then
-            Hekili:Notify( "|cFFFF0000WARNING!|r  Demon Blades cannot be forecasted.\nSee /hekili > Havoc for more information." )
+            Hekili:Notify( L["|cFFFF0000WARNING!|r  Demon Blades cannot be forecasted.\nSee /hekili > Havoc for more information."] )
             wasWarned = true
         end
     end )
@@ -1634,17 +1635,15 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "recommend_movement", true, {
-    name = "Recommend Movement",
-    desc = "If checked, the addon will recommend |T1247261:0|t Fel Rush / |T1348401:0|t Vengeful Retreat when it is a potential DPS gain.\n\n" ..
-        "These abilities are critical for DPS when using Momentum and similar talents.\n\n" ..
-        "If not using any talents related to movement, you may want to disable this to avoid unnecessary movement in combat.",
+    name = L["Recommend Movement"],
+    desc = L["If checked, the addon will recommend |T1247261:0|t Fel Rush / |T1348401:0|t Vengeful Retreat when it is a potential DPS gain.\n\nThese abilities are critical for DPS when using |T1029722:0|t Momentum and similar talents.\n\nIf not using any talents related to movement, you may want to disable this to avoid unnecessary movement in combat."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "unbound_movement", false, {
-    name = "Recommend Movement for Unbound Chaos",
-    desc = "When Recommend Movement is disabled, you can enable this option to override it and allow |T1247261:0|t Fel Rush to be recommended when Unbound Chaos is active.",
+    name = L["Recommend Movement for |T1392567:0|t Unbound Chaos"],
+    desc = L["When Recommend Movement is disabled, you can enable this option to override it and allow |T1247261:0|t Fel Rush to be recommended when |T1392567:0|t Unbound Chaos is active."],
     type = "toggle",
     width = "full",
     disabled = function() return state.settings.recommend_movement end,
@@ -1652,20 +1651,19 @@ spec:RegisterSetting( "unbound_movement", false, {
 
 
 spec:RegisterSetting( "demon_blades_head", nil, {
-    name = "Demon Blades",
+    name = L["Demon Blades"],
     type = "header",
 } )
 
 spec:RegisterSetting( "demon_blades_text", nil, {
-    name = "|cFFFF0000WARNING!|r  If using the |T237507:0|t Demon Blades talent, the addon will not be able to predict Fury gains from your auto-attacks.  This will result " ..
-        "in recommendations that jump forward in your display(s).",
+    name = L["|cFFFF0000WARNING!|r  If using the |T237507:0|t Demon Blades talent, the addon will not be able to predict Fury gains from your auto-attacks.  This will result in recommendations that jump forward in your display(s)."],
     type = "description",
     width = "full"
 } )
 
 spec:RegisterSetting( "demon_blades_acknowledged", false, {
-    name = "I understand that Demon Blades is unpredictable; don't warn me.",
-    desc = "If checked, the addon will not provide a warning about Demon Blades when entering combat.",
+    name = L["I understand that Demon Blades is unpredictable; don't warn me."],
+    desc = L["If checked, the addon will not provide a warning about Demon Blades when entering combat."],
     type = "toggle",
     width = "full",
     arg = function() return false end,

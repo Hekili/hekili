@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "MAGE" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 64 )
@@ -1354,15 +1355,15 @@ spec:RegisterOptions( {
 
 
 --[[ spec:RegisterSetting( "ignore_freezing_rain_st", true, {
-    name = "Ignore |T629077:0|t Freezing Rain in Single-Target",
-    desc = "If checked, the default action list will not recommend using |T135857:0|t Blizzard in single-target due to the |T629077:0|t Freezing Rain talent proc.",
+    name = L["Ignore |T629077:0|t Freezing Rain in Single-Target"],
+    desc = L["If checked, the default action list will not recommend using |T135857:0|t Blizzard in single-target due to the |T629077:0|t Freezing Rain talent proc."],
     type = "toggle",
     width = "full",
 } ) ]]
 
 spec:RegisterSetting( "manual_water_jet", false, {
-    name = "Manually Control |T1698701:0|t Water Jet (Water Elemental)",
-    desc = "If checked, |T1698701:0|t Water Jet can be recommended by the addon.  This spell is normally auto-cast by your Water Elemental.  You will want to disable its auto-cast before using this feature.",
+    name = L["Manually Control |T1698701:0|t Water Jet (Water Elemental)"],
+    desc = L["If checked, |T1698701:0|t Water Jet can be recommended by the addon.  This spell is normally auto-cast by your Water Elemental.  You will want to disable its auto-cast before using this feature."],
     type = "toggle",
     width = "full",
 } )

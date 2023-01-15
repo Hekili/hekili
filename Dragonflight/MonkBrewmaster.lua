@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "MONK" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 268 )
@@ -1643,29 +1644,24 @@ spec:RegisterOptions( {
 
 
 --[[ spec:RegisterSetting( "ox_walker", true, {
-    name = "Use |T606543:0|t Spinning Crane Kick in Single-Target with Walk with the Ox",
-    desc = "If checked, the default priority will recommend |T606543:0|t Spinning Crane Kick when Walk with the Ox is active.  This tends to " ..
-        "reduce mitigation slightly but increase damage based on using Invoke Niuzao more frequently.",
+    name = L["Use |T606543:0|t Spinning Crane Kick in Single-Target with |T611419:0|t Walk with the Ox"],
+    desc = L["If checked, the default priority will recommend |T606543:0|t Spinning Crane Kick when |T611419:0|t Walk with the Ox is active.  This tends to reduce mitigation slightly but increase damage based on using |T627607:0|t Invoke Niuzao more frequently."],
     type = "toggle",
     width = "full",
 } ) ]]
 
 
 spec:RegisterSetting( "purify_for_celestial", true, {
-    name = "Maximize |T1360979:0|t Celestial Brew Shield",
-    desc = "If checked, the addon will focus on using |T133701:0|t Purifying Brew as often as possible, to build stacks of Purified Chi for your Celestial Brew shield.\n\n" ..
-        "This is likely to work best with the Light Brewing talent, but risks leaving you without a charge of Purifying Brew following a large spike in your Stagger.\n\n" ..
-        "Custom priorities may ignore this setting.",
+    name = L["Maximize |T1360979:0|t Celestial Brew Shield"],
+    desc = L["If checked, the addon will focus on using |T133701:0|t Purifying Brew as often as possible, to build stacks of Purified Chi for your Celestial Brew shield.\n\nThis is likely to work best with the Light Brewing talent, but risks leaving you without a charge of Purifying Brew following a large spike in your Stagger.\n\nCustom priorities may ignore this setting."],
     type = "toggle",
     width = "full",
 } )
 
 
 spec:RegisterSetting( "purify_stagger_currhp", 12, {
-    name = "|T133701:0|t Purifying Brew: Stagger Tick % Current Health",
-    desc = "If set above zero, the addon will recommend |T133701:0|t Purifying Brew when your current stagger ticks for this percentage of your |cFFFF0000current|r effective health (or more).  " ..
-        "Custom priorities may ignore this setting.\n\n" ..
-        "This value is halved when playing solo.",
+    name = L["|T133701:0|t Purifying Brew: Stagger Tick % Current Health"],
+    desc = L["If set above zero, the addon will recommend |T133701:0|t Purifying Brew when your current stagger ticks for this percentage of your |cFFFF0000current|r effective health (or more).  Custom priorities may ignore this setting.\n\nThis value is halved when playing solo."],
     type = "range",
     min = 0,
     max = 100,
@@ -1675,10 +1671,8 @@ spec:RegisterSetting( "purify_stagger_currhp", 12, {
 
 
 spec:RegisterSetting( "purify_stagger_maxhp", 6, {
-    name = "|T133701:0|t Purifying Brew: Stagger Tick % Maximum Health",
-    desc = "If set above zero, the addon will recommend |T133701:0|t Purifying Brew when your current stagger ticks for this percentage of your |cFFFF0000maximum|r health (or more).  " ..
-        "Custom priorities may ignore this setting.\n\n" ..
-        "This value is halved when playing solo.",
+    name = L["|T133701:0|t Purifying Brew: Stagger Tick % Maximum Health"],
+    desc = L["If set above zero, the addon will recommend |T133701:0|t Purifying Brew when your current stagger ticks for this percentage of your |cFFFF0000maximum|r health (or more).  Custom priorities may ignore this setting.\n\nThis value is halved when playing solo."],
     type = "range",
     min = 0,
     max = 100,
@@ -1688,9 +1682,8 @@ spec:RegisterSetting( "purify_stagger_maxhp", 6, {
 
 
 spec:RegisterSetting( "bof_percent", 50, {
-    name = "|T615339:0|t Breath of Fire: Require |T594274:0|t Keg Smash %",
-    desc = "If set above zero, |T615339:0|t Breath of Fire will only be recommended if this percentage of your targets are afflicted with |T594274:0|t Keg Smash.\n\n" ..
-        "Example:  If set to |cFFFFD10050|r, with 2 targets, Breath of Fire will be saved until at least 1 target has Keg Smash applied.",
+    name = L["|T615339:0|t Breath of Fire: Require |T594274:0|t Keg Smash %"],
+    desc = L["If set above zero, |T615339:0|t Breath of Fire will only be recommended if this percentage of your targets are afflicted with |T594274:0|t Keg Smash.\n\nExample:  If set to |cFFFFD10050|r, with 2 targets, Breath of Fire will be saved until at least 1 target has Keg Smash applied."],
     type = "range",
     min = 0,
     max = 100,
@@ -1700,8 +1693,8 @@ spec:RegisterSetting( "bof_percent", 50, {
 
 
 spec:RegisterSetting( "eh_percent", 65, {
-    name = "|T627486:0|t Expel Harm: Health %",
-    desc = "If set above zero, the addon will not recommend |T627486:0|t Expel Harm until your health falls below this percentage.",
+    name = L["|T627486:0|t Expel Harm: Health %"],
+    desc = L["If set above zero, the addon will not recommend |T627486:0|t Expel Harm until your health falls below this percentage."],
     type = "range",
     min = 0,
     max = 100,

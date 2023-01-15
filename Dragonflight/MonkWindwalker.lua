@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "MONK" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local GetNamePlates = C_NamePlate.GetNamePlates
@@ -291,14 +292,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     flying_serpent_kick = {
-        name = "Flying Serpent Kick",
+        name = L["Flying Serpent Kick"],
         duration = 2,
         generate = function ()
             local cast = rawget( class.abilities.flying_serpent_kick, "lastCast" ) or 0
             local expires = cast + 2
 
             local fsk = buff.flying_serpent_kick
-            fsk.name = "Flying Serpent Kick"
+            fsk.name = L["Flying Serpent Kick"]
 
             if expires > query_time then
                 fsk.count = 1
@@ -2209,8 +2210,8 @@ spec:RegisterOptions( {
 } )
 
 spec:RegisterSetting( "allow_fsk", false, {
-    name = "Use |T606545:0|t Flying Serpent Kick",
-    desc = "If unchecked, |T606545:0|t Flying Serpent Kick will not be recommended (this is the same as disabling the ability via Windwalker > Abilities > Flying Serpent Kick > Disable).",
+    name = L["Use |T606545:0|t Flying Serpent Kick"],
+    desc = L["If unchecked, |T606545:0|t Flying Serpent Kick will not be recommended (this is the same as disabling the ability via Windwalker > Abilities > Flying Serpent Kick > Disable)."],
     type = "toggle",
     width = "full",
     get = function () return not Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled end,
@@ -2221,22 +2222,22 @@ spec:RegisterSetting( "allow_fsk", false, {
 
 --[[ Deprecated.
 spec:RegisterSetting( "optimize_reverse_harm", false, {
-    name = "Optimize |T627486:0|t Reverse Harm",
-    desc = "If checked, |T627486:0|t Reverse Harm's caption will show the recommended target's name.",
+    name = L["Optimize |T627486:0|t Reverse Harm"],
+    desc = L["If checked, |T627486:0|t Reverse Harm's caption will show the recommended target's name."],
     type = "toggle",
     width = "full",
 } ) ]]
 
 spec:RegisterSetting( "sef_one_charge", false, {
-    name = "Reserve One |T136038:0|t Storm, Earth, and Fire Charge as CD",
-    desc = "If checked, |T136038:0|t when Storm, Earth, and Fire's toggle is set to Default, only one charge will be reserved for use with the Cooldowns toggle.",
+    name = L["Reserve One |T136038:0|t Storm, Earth, and Fire Charge as CD"],
+    desc = L["If checked, |T136038:0|t when Storm, Earth, and Fire's toggle is set to Default, only one charge will be reserved for use with the Cooldowns toggle."],
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "tok_damage", 1, {
-    name = "Required Damage for |T651728:0|t Touch of Karma",
-    desc = "If set above zero, |T651728:0|t Touch of Karma will only be recommended while you have taken this percentage of your maximum health in damage in the past 3 seconds.",
+    name = L["Required Damage for |T651728:0|t Touch of Karma"],
+    desc = L["If set above zero, |T651728:0|t Touch of Karma will only be recommended while you have taken this percentage of your maximum health in damage in the past 3 seconds."],
     type = "range",
     min = 0,
     max = 99,
@@ -2245,32 +2246,31 @@ spec:RegisterSetting( "tok_damage", 1, {
 } )
 
 spec:RegisterSetting( "check_wdp_range", false, {
-    name = "Check |T988194:0|t Whirling Dragon Punch Range",
-    desc = "If checked, when your target is outside of |T988194:0|t Whirling Dragon Punch's range, it will not be recommended.",
+    name = L["Check |T988194:0|t Whirling Dragon Punch Range"],
+    desc = L["If checked, when your target is outside of |T988194:0|t Whirling Dragon Punch's range, it will not be recommended."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "check_sck_range", false, {
-    name = "Check |T606543:0|t Spinning Crane Kick Range",
-    desc = "If checked, when your target is outside of |T606543:0|t Spinning Crane Kick's range, it will not be recommended.",
+    name = L["Check |T606543:0|t Spinning Crane Kick Range"],
+    desc = L["If checked, when your target is outside of |T606543:0|t Spinning Crane Kick's range, it will not be recommended."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "use_diffuse", false, {
-    name = "Use |T775460:0|t Diffuse Magic to Self-Dispel",
+    name = L["Use |T775460:0|t Diffuse Magic to Self-Dispel"],
     desc = function()
         local t = class.abilities.diffuse_magic.toggle
 
         if t then
             local active = Hekili.DB.profile.toggles[ t ].value
 
-            return "If checked, when you have a dispellable magic debuff, |T775460:0|t Diffuse Magic can be recommended in the default Windwalker priority.\n\n" ..
-                "Requires " .. ( active and "|cFF00FF00" or "|cFFFF0000" ) .. t:gsub("^%l", string.upper) .. "|r Toggle"
+            return format( L["If checked, when you have a dispellable magic debuff, |T775460:0|t Diffuse Magic can be recommended in the default Windwalker priority.\n\nRequires %s|r Toggle."], ( active and "|cFF00FF00" or "|cFFFF0000" ) .. L[t:gsub("^%l", string.upper)] )
         end
 
-        return "If checked, when you have a dispellable magic debuff, |T775460:0|t Diffuse Magic can be recommended in the default Windwalker priority."
+        return L["If checked, when you have a dispellable magic debuff, |T775460:0|t Diffuse Magic can be recommended in the default Windwalker priority."]
     end,
     type = "toggle",
     width = "full"

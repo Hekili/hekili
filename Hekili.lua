@@ -2,9 +2,10 @@
 -- April 2014
 
 local addon, ns = ...
-Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
-Hekili.Version = GetAddOnMetadata( "Hekili", "Version" )
-Hekili.Flavor = GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
+Hekili = LibStub("AceAddon-3.0"):NewAddon( ns.addon_name, "AceConsole-3.0", "AceSerializer-3.0" )
+Hekili.Version = GetAddOnMetadata( ns.addon_name, "Version" )
+Hekili.Flavor = GetAddOnMetadata( ns.addon_name, "X-Flavor" ) or "Retail"
 
 local format = string.format
 local insert, concat = table.insert, table.concat
@@ -38,11 +39,7 @@ end
 ns.PTR = false
 
 
-ns.Patrons = "|cFFFFD100Current Status|r\n\n"
-    .. "All tank and DPS specializations are currently supported, though priorities are being regularly updated for Dragonflight.\n\n"
-    .. "DPS priorities for healer specializations may be supported at a later date.\n\n"
-    .. "If you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue troubleshooted.\n\n"
-    .. "Please do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"
+ns.Patrons = L["|cFFFFD100Current Status|r\n\nAll tank and DPS specializations are currently supported, though priorities are being regularly updated for Dragonflight.\n\nDPS priorities for healer specializations may be supported at a later date.\n\nIf you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue troubleshooted.\n\nPlease do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"]
 
 do
     local cpuProfileDB = {}
@@ -318,30 +315,42 @@ function Hekili:SaveDebugSnapshot( dispName )
             end
             insert( v.log, 1, self:GenerateProfile() )
 
-            local custom = ""
+            local custom = {
+                [1] = "",
+                [2] = "",
+            }
 
             local pack = self.DB.profile.packs[ state.system.packName ]
             if not pack.builtIn then
-                custom = format( " |cFFFFA700(Custom: %s[%d])|r", state.spec.name, state.spec.id )
+                for key in pairs( custom ) do
+                    custom[ key ] = format( " |cFFFFA700(" .. ( key == 1 and "Custom" or L["Custom"] ) .. ": %s[%d])|r", state.spec.name, state.spec.id )
+                end
             end
 
-            local overview = format( "%s%s; %s|r", state.system.packName, custom, dispName or state.display )
+            local overviews = {
+                [1] = format( "%s%s; %s|r", state.system.packName, custom[1], dispName or state.display ),
+                [2] = format( "%s%s; %s|r", pack.builtIn and L[state.system.packName] or state.system.packName, custom[2], L[dispName] or L[state.display] ),
+            }
             local recs = Hekili.DisplayPool[ dispName or state.display ].Recommendations
 
             for i, rec in ipairs( recs ) do
                 if not rec.actionName then
                     if i == 1 then
-                        overview = format( "%s - |cFF666666N/A|r", overview )
+                        for key, value in pairs( overviews ) do
+                            overviews[ key ] = format( "%s - |cFF666666" .. ( key == 1 and "N/A" or L["N/A"] ) .. "|r", value )
+                        end
                     end
                     break
                 end
-                overview = format( "%s%s%s|cFFFFD100(%0.2f)|r", overview, ( i == 1 and " - " or ", " ), class.abilities[ rec.actionName ].name, rec.time )
+                for key, value in pairs( overviews ) do
+                    overviews[ key ] = format( "%s%s%s|cFFFFD100(%0.2f)|r", value, ( i == 1 and " - " or ", " ), class.abilities[ rec.actionName ].name, rec.time )
+                end
             end
 
-            insert( v.log, 1, overview )
+            insert( v.log, 1, overviews[1] )
 
             local snap = {
-                header = "|cFFFFD100[" .. date( "%H:%M:%S" ) .. "]|r " .. overview,
+                header = "|cFFFFD100[" .. date( "%H:%M:%S" ) .. "]|r " .. overviews[2],
                 log = concat( v.log, "\n" ),
                 data = ns.tableCopy( v.log ),
                 recs = {}

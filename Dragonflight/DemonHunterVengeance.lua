@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEMONHUNTER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 581 )
@@ -1422,8 +1423,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "infernal_charges", 1, {
-    name = "Reserve |T1344650:0|t Infernal Strike Charges",
-    desc = "If set above zero, the addon will not recommend |T1344650:0|t Infernal Strike if it would leave you with fewer charges.",
+    name = L["Reserve |T1344650:0|t Infernal Strike Charges"],
+    desc = L["If set above zero, the addon will not recommend |T1344650:0|t Infernal Strike if it would leave you with fewer charges."],
     icon = 1344650,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
@@ -1435,9 +1436,8 @@ spec:RegisterSetting( "infernal_charges", 1, {
 
 
 spec:RegisterSetting( "frailty_stacks", 1, {
-    name = "Require |T1097742:0|t Frailty Stacks",
-    desc = "If set above zero, the default priority will not allow certain abilities to be used unless you have at least this many stacks of |T1097742:0|t Frailty on your target.\n\n"
-        .. "This is an experimental setting.  Requiring too many stacks may result in delays to using your major cooldowns and cause a loss of DPS.",
+    name = L["Require |T1097742:0|t Frailty Stacks"],
+    desc = L["If set above zero, the default priority will not allow certain abilities to be used unless you have at least this many stacks of |T1097742:0|t Frailty on your target.\n\nThis is an experimental setting.  Requiring too many stacks may result in delays to using your major cooldowns and cause a loss of DPS."],
     type = "range",
     min = 0,
     max = 6,

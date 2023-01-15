@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "SHAMAN" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
 local class, state = Hekili.Class, Hekili.State
 
 local PTR = ns.PTR
@@ -2405,32 +2406,29 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "pad_windstrike", true, {
-    name = "Pad |T1029585:0|t Windstrike Cooldown",
-    desc = "If checked, the addon will treat |T1029585:0|t Windstrike's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during Ascendance.",
+    name = L["Pad |T1029585:0|t Windstrike Cooldown"],
+    desc = L["If checked, the addon will treat |T1029585:0|t Windstrike's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T135791:0|t Ascendance."],
     type = "toggle",
     width = 1.5
 } )
 
 spec:RegisterSetting( "pad_lava_lash", true, {
-    name = "Pad |T236289:0|t Lava Lash Cooldown",
-    desc = "If checked, the addon will treat |T236289:0|t Lava Lash's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during Hot Hand.",
+    name = L["Pad |T236289:0|t Lava Lash Cooldown"],
+    desc = L["If checked, the addon will treat |T236289:0|t Lava Lash's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T135823:0|t Hot Hand."],
     type = "toggle",
     width = 1.5
 } )
 
 spec:RegisterSetting( "hostile_dispel", false, {
-    name = "Use |T136075:0|t Purge or |T451166:0|t Greater Purge on Enemies",
-    desc = "If checked, |T136075:0|t Purge or |T451166:0|t Greater Purge can be recommended by the addon when your target has a dispellable magic effect.\n\n"
-        .. "These abilities are also on the Interrupts toggle by default.",
+    name = L["Use |T136075:0|t Purge or |T451166:0|t Greater Purge on Enemies"],
+    desc = L["If checked, |T136075:0|t Purge or |T451166:0|t Greater Purge can be recommended by the addon when your target has a dispellable magic effect.\n\nThese abilities are also on the Interrupts toggle by default."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "purge_icd", 12, {
-    name = "|T136075:0|t Purge Internal Cooldown",
-    desc = "If set above zero, the addon will not recommend |T136075:0|t Purge more frequently than this amount of time, even if there are more "
-        .. "dispellable magic effects on your target.  This can prevent you from being encouraged to spam Purge endlessly against enemies "
-        .. "with rapidly stacking magic buffs.",
+    name = L["|T136075:0|t Purge Internal Cooldown"],
+    desc = L["If set above zero, the addon will not recommend |T136075:0|t Purge more frequently than this amount of time, even if there are more dispellable magic effects on your target.  This can prevent you from being encouraged to spam Purge endlessly against enemies with rapidly stacking magic buffs."],
     type = "range",
     min = 0,
     max = 20,
@@ -2439,9 +2437,8 @@ spec:RegisterSetting( "purge_icd", 12, {
 } )
 
 spec:RegisterSetting( "filler_shock", true, {
-    name = "Filler |T135813:0|t Shock",
-    desc = "If checked, the addon's default priority will recommend a filler |T135813:0|t Flame Shock when there's nothing else to push, even if something better will be off cooldown very soon.  " ..
-        "This matches sim behavior and is a small DPS increase, but has been confusing to some users.",
+    name = L["Filler |T135813:0|t Shock"],
+    desc = L["If checked, the addon's default priority will recommend a filler |T135813:0|t Flame Shock when there's nothing else to push, even if something better will be off cooldown very soon.  This matches sim behavior and is a small DPS increase, but has been confusing to some users."],
     type = "toggle",
     width = 1.5
 })

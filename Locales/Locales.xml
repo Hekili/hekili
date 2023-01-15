@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="enUS.lua"/>
+<Script file="deDE.lua"/>
+<Script file="esES.lua"/>
+<Script file="frFR.lua"/>
+<Script file="itIT.lua"/>
+<Script file="koKR.lua"/>
+<Script file="ptBR.lua"/>
+<Script file="ruRU.lua"/>
+<Script file="zhCN.lua"/>
+<Script file="zhTW.lua"/>
+
+<Script file="BfA\BfA.enUS.lua"/>
+<Script file="BfA\BfA.deDE.lua"/>
+<Script file="BfA\BfA.esES.lua"/>
+<Script file="BfA\BfA.frFR.lua"/>
+<Script file="BfA\BfA.itIT.lua"/>
+<Script file="BfA\BfA.koKR.lua"/>
+<Script file="BfA\BfA.ptBR.lua"/>
+<Script file="BfA\BfA.ruRU.lua"/>
+<Script file="BfA\BfA.zhCN.lua"/>
+<Script file="BfA\BfA.zhTW.lua"/>
+
+<Script file="Shadowlands\Shadowlands.enUS.lua"/>
+<Script file="Shadowlands\Shadowlands.deDE.lua"/>
+<Script file="Shadowlands\Shadowlands.esES.lua"/>
+<Script file="Shadowlands\Shadowlands.frFR.lua"/>
+<Script file="Shadowlands\Shadowlands.itIT.lua"/>
+<Script file="Shadowlands\Shadowlands.koKR.lua"/>
+<Script file="Shadowlands\Shadowlands.ptBR.lua"/>
+<Script file="Shadowlands\Shadowlands.ruRU.lua"/>
+<Script file="Shadowlands\Shadowlands.zhCN.lua"/>
+<Script file="Shadowlands\Shadowlands.zhTW.lua"/>
+
+<Script file="Dragonflight\Dragonflight.enUS.lua"/>
+<Script file="Dragonflight\Dragonflight.deDE.lua"/>
+<Script file="Dragonflight\Dragonflight.esES.lua"/>
+<Script file="Dragonflight\Dragonflight.frFR.lua"/>
+<Script file="Dragonflight\Dragonflight.itIT.lua"/>
+<Script file="Dragonflight\Dragonflight.koKR.lua"/>
+<Script file="Dragonflight\Dragonflight.ptBR.lua"/>
+<Script file="Dragonflight\Dragonflight.ruRU.lua"/>
+<Script file="Dragonflight\Dragonflight.zhCN.lua"/>
+<Script file="Dragonflight\Dragonflight.zhTW.lua"/>
+
+</Ui>
