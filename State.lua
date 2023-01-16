@@ -1948,9 +1948,6 @@ do
                 local n = t.true_active_enemies
                 if t.min_targets > 0 then n = max( t.min_targets, n ) end
                 if t.max_targets > 0 then n = min( t.max_targets, n ) end
-                if not n then
-                    print( k, n, t.true_active_enemies, t.min_targets, t.max_targets, ns.getNumberTargets(), debugstack() )
-                end
                 t[k] = max( 1, n or 1 )
 
             elseif k == "cycle_enemies" then
@@ -4353,10 +4350,7 @@ do
                         local passed = scripts:CheckScript( scriptID )
 
                         local conditions = "(none)"
-
-                        if debug then
-                            conditions = format( "%s: %s\n", passed and "PASS" or "FAIL", scripts:GetConditionsAndValues( scriptID ) )
-                        end
+                        local valueString = "(none)"
 
                         --[[    add = "Add Value",
                                 ceil
@@ -4435,7 +4429,12 @@ do
                         end
 
                         -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
-                        if debug then Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. " - value = " .. tostring( value or "nil" ) .. "." ) end
+                        if debug then
+                            conditions = format( "%s: %s", passed and "PASS" or "FAIL", scripts:GetConditionsAndValues( scriptID ) )
+                            valueString = format( "%s: %s", state.args.value ~= nil and tostring( state.args.value ) or "nil", scripts:GetModifierValues( "value", scriptID ) )
+
+                            Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. "\n - value = " .. valueString )
+                        end
                         state.variable[ var ] = value
                         cache[ var ][ pathKey ] = value
                     end
@@ -6323,6 +6322,11 @@ do
         Hekili:Yield( "Reset Pre-Casting" )
 
         if state.empowerment.active then
+            local timeDiff = state.now - state.buff.casting.applied
+            if timeDiff > 0 then
+                if Hekili.ActiveDebug then Hekili:Debug( "Empowerment is active; turning back time by " .. timeDiff .. "s..." ) end
+                state.now = state.now - timeDiff
+            end
             removeBuff( "casting" )
         else
             -- TODO: All of this cast-queuing seems like it should be simpler, but that's for another time.
@@ -6843,7 +6847,9 @@ do
             local toggle = option.toggle
             if not toggle or toggle == "default" then toggle = ability.toggle end
 
-            if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, "toggle" end
+            if ( toggle == "potion" or toggle == "essences" ) and profile.toggles[ toggle ].separate and not profile.toggles[ toggle ].value then toggle = "cooldowns" end
+
+            if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, "toggle a" end
 
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
                 if self.empowerment.active and self.empowerment.spell and spell ~= self.empowerment.spell then return true, "empowerment: " .. self.empowerment.spell end
@@ -6877,11 +6883,13 @@ do
         local toggle = option.toggle
         if not toggle or toggle == "default" then toggle = ability.toggle end
 
+        if ( toggle == "potion" or toggle == "essences" ) and profile.toggles[ toggle ].separate and not profile.toggles[ toggle ].value then toggle = "cooldowns" end
+
         if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
             if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
             elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false, "not equipped"
             elseif toggle and toggle ~= "none" then
-                if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle and not spec.noFeignedCooldown ) then return true, "toggle" end
+                if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle and not spec.noFeignedCooldown ) then return true, "toggle b" end
             end
         end
 

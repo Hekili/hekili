@@ -2,15 +2,13 @@ actions.precombat+=/fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrif
 actions.precombat+=/summon_pet
 actions.precombat+=/inquisitors_gaze
 actions.precombat+=/variable,name=tyrant_prep_start,op=set,value=12
-## Moved next_tyrant to WarlockDemonology.lua
-## actions.precombat+=/variable,name=next_tyrant,op=set,value=14+talent.grimoire_felguard.rank+talent.summon_vilefiend.rank
 actions.precombat+=/power_siphon
 actions.precombat+=/demonbolt,if=soul_shards<5&(boss|action.demonbolt.cast=0&!buff.power_siphon.up)
 actions.precombat+=/shadow_bolt,if=soul_shards<5&!(boss|action.demonbolt.cast=0&!buff.power_siphon.up)
 
 actions+=/axe_toss
 actions+=/devour_magic
-actions+=/call_action_list,name=tyrant,if=talent.summon_demonic_tyrant&(variable.next_tyrant-time)<=(variable.tyrant_prep_start+2)&cooldown.summon_demonic_tyrant.up|talent.summon_demonic_tyrant&cooldown.summon_demonic_tyrant.remains_expected<=variable.tyrant_prep_start
+actions+=/call_action_list,name=tyrant,if=talent.summon_demonic_tyrant&((variable.next_tyrant-time)<=(variable.tyrant_prep_start+2)&cooldown.summon_demonic_tyrant.up|cooldown.summon_demonic_tyrant.remains_expected<=variable.tyrant_prep_start)
 actions+=/implosion,if=boss&time_to_die<2*gcd
 actions+=/nether_portal,if=!talent.summon_demonic_tyrant&soul_shard>2|boss&time_to_die<30
 actions+=/hand_of_guldan,if=buff.nether_portal.up
@@ -43,8 +41,6 @@ actions.ogcd+=/berserking
 actions.ogcd+=/blood_fury
 actions.ogcd+=/fireblood
 
-## Moved next_tyrant to WarlockDemonology.lua
-## actions.tyrant+=/variable,name=next_tyrant,op=set,value=time+14+cooldown.grimoire_felguard.ready+cooldown.summon_vilefiend.ready,if=variable.next_tyrant<=time
 actions.tyrant+=/shadow_bolt,if=time<2&soul_shard<5
 actions.tyrant+=/nether_portal
 actions.tyrant+=/grimoire_felguard

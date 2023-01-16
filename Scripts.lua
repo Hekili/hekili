@@ -1440,7 +1440,7 @@ function scripts:GetModifiers( scriptID, out )
 
     for k, v in pairs( script.Modifiers ) do
         local success, value = pcall(v)
-        if success then out[k] = value end
+        if success then out[ k ] = value end
     end
 
     return out

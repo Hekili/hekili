@@ -10212,6 +10212,12 @@ do
 
     local expressions = {
         { "stealthed"                                   , "stealthed.rogue"                 },
+        { "rtb_buffs%.normal"                           , "rtb_buffs_normal"                },
+        { "rtb_buffs%.shorter"                          , "rtb_buffs_shorter"               },
+        { "rtb_buffs%.longer"                           , "rtb_buffs_longer"                },
+        { "rtb_buffs%.will_lose%.([%w_]+)"              , "rtb_buffs_will_lose_buff.%1"     },
+        { "rtb_buffs%.will_lose"                        , "rtb_buffs_will_lose"             },
+        { "rtb_buffs%.total"                            , "rtb_buffs"                       },
         { "cooldown"                                    , "action_cooldown"                 },
         { "covenant%.([%w_]+)%.enabled"                 , "covenant.%1"                     },
         { "talent%.([%w_]+)"                            , "talent.%1.enabled"               },

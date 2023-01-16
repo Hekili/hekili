@@ -1689,7 +1689,7 @@ spec:RegisterAbilities( {
     shield_of_vengeance = {
         id = 184662,
         cast = 0,
-        cooldown = 120,
+        cooldown = 90,
         gcd = "spell",
         school = "holy",
 

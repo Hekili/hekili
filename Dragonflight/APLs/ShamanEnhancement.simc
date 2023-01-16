@@ -2,7 +2,7 @@ actions.precombat+=/windfury_weapon
 actions.precombat+=/flametongue_weapon
 actions.precombat+=/lightning_shield,if=buff.lightning_shield.down&(buff.earth_shield.down|talent.elemental_orbit.enabled)
 actions.precombat+=/earth_shield,if=buff.lightning_shield.up&buff.earth_shield.down&talent.elemental_orbit.enabled
-actions.precombat+=/windfury_totem
+actions.precombat+=/windfury_totem,if=time=0|buff.windfury_totem.down
 actions.precombat+=/variable,name=trinket1_is_weird,value=trinket.1.is.the_first_sigil|trinket.1.is.scars_of_fraternal_strife|trinket.1.is.cache_of_acquired_treasures
 actions.precombat+=/variable,name=trinket2_is_weird,value=trinket.2.is.the_first_sigil|trinket.2.is.scars_of_fraternal_strife|trinket.2.is.cache_of_acquired_treasures
 
@@ -24,9 +24,9 @@ actions+=/feral_spirit
 actions+=/ascendance,if=(ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=90)|(ti_chain_lightning&active_enemies>1)
 actions+=/doom_winds,if=raid_event.adds.in>=90|active_enemies>1
 # if only one enemy, priority follows the 'single' action list.
-actions+=/call_action_list,name=single,if=active_enemies=1
+actions+=/call_action_list,name=single,strict=1,if=active_enemies=1
 # on multiple enemies, the priority follows the 'aoe' action list.
-actions+=/call_action_list,name=aoe,if=active_enemies>1
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1
 
 actions.single=windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>=1
 actions.single+=/lava_lash,if=buff.hot_hand.up|buff.ashen_catalyst.stack=8|(buff.ashen_catalyst.stack>=5&buff.maelstrom_of_elements.up&buff.maelstrom_weapon.stack<=6)
@@ -74,7 +74,7 @@ actions.aoe+=/windstrike,if=talent.thorims_invocation.enabled&ti_chain_lightning
 actions.aoe+=/lava_lash,cycle_targets=1,if=talent.lashing_flames.enabled&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 actions.aoe+=/lava_lash,if=talent.molten_assault.enabled&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 actions.aoe+=/flame_shock,if=!ticking
-actions.aoe+=/flame_shock,cycle_targets=1,if=talent.fire_nova.enabled&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
+actions.aoe+=/flame_shock,cycle_targets=1,if=talent.fire_nova.enabled&!ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 actions.aoe+=/ice_strike,if=talent.hailstorm.enabled
 actions.aoe+=/frost_shock,if=talent.hailstorm.enabled&buff.hailstorm.up
 actions.aoe+=/sundering
