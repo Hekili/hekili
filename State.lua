@@ -6285,6 +6285,10 @@ do
             state.applyDebuff( "player", "rooted", state.buff.stormeaters_boon.remains )
         end
 
+        if state.buff.slicing_maelstrom.up then
+            state.putTrinketsOnCD( state.buff.slicing_maelstrom.remains + 20 )
+        end
+
         -- TODO: Move this all to those aura generator functions.
         if state.set_bonus.cache_of_acquired_treasures > 0 then
             -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).
