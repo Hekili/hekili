@@ -1046,7 +1046,7 @@ spec:RegisterAbilities( {
 
             -- Burnout is not consumed.
             if talent.ruby_essence_burst.enabled and buff.dragonrage.up then
-                addStack( "essence_burst", nil, buff.leaping_flames.up and ( active_enemies > 1 or group or health.percent < 100 ) and 2 or 1 )
+                addStack( "essence_burst", nil, buff.leaping_flames.up and ( true_active_enemies > 1 or group or health.percent < 100 ) and 2 or 1 )
             end
             if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
 

@@ -1283,7 +1283,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        usable = function () return not state.spec.arcane or target.distance < 10, "target out of range" end,
+        usable = function () return not state.spec.arcane or not settings.check_explosion_range or target.distance < 10, "target out of range" end,
         handler = function ()
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
             else
@@ -2224,6 +2224,14 @@ spec:RegisterOptions( {
     potion = "spectral_intellect",
 
     package = "Arcane",
+} )
+
+
+spec:RegisterSetting( "check_explosion_range", true, {
+    name = "Check |T136116:0|t Arcane Explosion Range",
+    desc = "If checked, the addon will not recommend |T136116:0|t Arcane Explosion when you are not within 10 yards of your target.",
+    type = "toggle",
+    width = "full"
 } )
 
 

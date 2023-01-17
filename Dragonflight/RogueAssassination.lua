@@ -699,6 +699,8 @@ spec:RegisterHook( "reset_precast", function ()
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
+    if buff.cold_blood.up then setCooldown( "cold_blood", action.cold_blood.cooldown ) end
+
     if buff.vanish.up then applyBuff( "stealth" ) end
     -- Pad Improved Garrote's expiry in order to avoid ruining your snapshot.
     if buff.improved_garrote.up then buff.improved_garrote.expires = buff.improved_garrote.expires - 0.05 end
@@ -743,6 +745,10 @@ spec:RegisterHook( "runHandler", function( ability )
         if buff.improved_garrote.up then
             buff.improved_garrote.expires = query_time + 2.95
         end
+    end
+
+    if buff.cold_blood.up and ( not a or a.startsCombat ) then
+        removeBuff( "cold_blood" )
     end
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
