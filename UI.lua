@@ -602,7 +602,7 @@ do
 
                                     insert( menuData, submenu )
 
-                                elseif setting.info.type == "range" and setting.info.step % 1 == 0 then
+                                elseif setting.info.type == "range" then
 
                                     local submenu = {
                                         text = setting.info.name,
@@ -614,7 +614,12 @@ do
 
                                     local low, high, step = setting.info.min, setting.info.max, setting.info.step
 
-                                    if ceil( ( high - low ) / step ) > 20 then step = ceil( ( high - low ) / 20 ) end
+                                    if ceil( ( high - low ) / step ) > 20 then
+                                        step = ceil( ( high - low ) / 20 )
+                                        if step % ( setting.info.step or 1 ) ~= 0 then
+                                            step = step - ( step % ( setting.info.step or 1 ) )
+                                        end
+                                    end
 
                                     for j = low, high, step do
                                         insert( submenu.menuList, {
