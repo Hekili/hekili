@@ -308,7 +308,7 @@ function ns.StartConfiguration( external )
         ACD:Open( "Hekili" )
 
         local oFrame = ACD.OpenFrames["Hekili"].frame
-        if not Hekili.IsDragonflight() then oFrame:SetMinResize( 800,608 ) end
+        --if not Hekili.IsDragonflight() then oFrame:SetMinResize( 800,608 ) end
 
         ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame" )
         ns.OnHideFrame:SetParent( oFrame )
@@ -1245,7 +1245,7 @@ do
 
                                     local rStart, rDuration
                                     if a.item then
-                                        rStart, rDuration = GetItemCooldown( a.item )
+                                        rStart, rDuration = _G.C_Container.GetItemCooldown( a.item )
                                     else
                                         rStart, rDuration = GetSpellCooldown( a.id )
                                     end
@@ -1446,7 +1446,7 @@ do
 
                         local rStart, rDuration = 0, 0
                         if a.item then
-                            rStart, rDuration = GetItemCooldown( a.item )
+                            rStart, rDuration = _G.C_Container.GetItemCooldown( a.item )
                         else
                             if a.cooldown > 0 or a.spendType ~= "runes" then
                                 rStart, rDuration = GetSpellCooldown( a.id )
@@ -1583,7 +1583,7 @@ do
                     local start, duration, enabled, modRate = 0, 0, 1, 1
 
                     if ability.item then
-                        start, duration, enabled, modRate = GetItemCooldown( ability.item )
+                        start, duration, enabled, modRate = _G.C_Container.GetItemCooldown( ability.item )
                     else
                         start, duration, enabled, modRate = GetSpellCooldown( ability.id )
                     end
