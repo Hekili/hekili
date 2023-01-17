@@ -6287,6 +6287,10 @@ do
         end
 
         -- Trinkets that need special handling.
+        if state.buff.stormeaters_boon.up and state.debuff.rooted.down then
+            state.applyDebuff( "player", "rooted", state.buff.stormeaters_boon.remains )
+        end
+
         -- TODO: Move this all to those aura generator functions.
         if state.set_bonus.cache_of_acquired_treasures > 0 then
             -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).

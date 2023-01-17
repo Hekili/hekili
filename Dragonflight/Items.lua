@@ -728,6 +728,7 @@ all:RegisterAbilities( {
 
         handler = function()
             applyBuff( "stormeaters_boon" )
+            applyDebuff( "player", "rooted", 10 )
         end,
 
         proc = "damage",
