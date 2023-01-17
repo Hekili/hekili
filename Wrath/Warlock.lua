@@ -616,7 +616,7 @@ spec:RegisterPet( "felhunter", 417, "summon_felhunter", 3600 )
 spec:RegisterPet( "succubus", 1863, "summon_succubus", 3600 )
 spec:RegisterPet( "incubus", 185317, "summon_incubus", 3600 )
 spec:RegisterPet( "felguard", 17252, "summon_felguard", 3600 )
-spec:RegisterPet( "infernal", 89, "inferno", 3600 )
+spec:RegisterPet( "infernal", 89, "inferno", 60 )
 
 local cataclysm_reduction = {
     [0] = 1,
@@ -747,7 +747,9 @@ spec:RegisterAbilities( {
     -- Banishes the enemy target, preventing all action but making it invulnerable for up to 20 sec.  Only one target can be banished at a time.  Casting Banish on a banished target will cancel the spell.  Only works on Demons and Elementals.
     banish = {
         id = 710,
-        cast = 1.5,
+        cast = function()
+            return ( 1.5 * haste)
+        end,
         cooldown = 0,
         gcd = "spell",
 
@@ -789,7 +791,9 @@ spec:RegisterAbilities( {
     -- Sends a bolt of chaotic fire at the enemy, dealing 864 to 1089 Fire damage. Chaos Bolt cannot be resisted, and pierces through all absorption effects.
     chaos_bolt = {
         id = 50796,
-        cast = 2.5,
+        cast =  function()
+            return ( 2.5 * haste)
+        end,
         cooldown = function() return ( glyph.chaos_bolt.enabled and 10 or 12 ) - 0.1 * talent.bane.rank end,
         gcd = "spell",
 
@@ -860,7 +864,9 @@ spec:RegisterAbilities( {
     -- While applied to target weapon it increases damage dealt by direct spells by 1% and spell critical strike rating by 7.  Lasts for 1 hour.
     create_firestone = {
         id = 6366,
-        cast = 3,
+        cast = function()
+            return ( 3 * haste)
+        end,
         cooldown = 0,
         gcd = "spell",
 
@@ -880,7 +886,9 @@ spec:RegisterAbilities( {
     -- Creates a Minor Healthstone that can be used to instantly restore 100 health.    Conjured items disappear if logged out for more than 15 minutes.
     create_healthstone = {
         id = 6201,
-        cast = 3,
+        cast = function()
+            return ( 3 * haste)
+        end,
         cooldown = 0,
         gcd = "spell",
 
@@ -900,7 +908,9 @@ spec:RegisterAbilities( {
     -- Creates a Minor Soulstone.  The Soulstone can be used to store one target's soul.  If the target dies while their soul is stored, they will be able to resurrect with 400 health and 700 mana.    Conjured items disappear if logged out for more than 15 minutes.
     create_soulstone = {
         id = 693,
-        cast = 3,
+        cast = function()
+            return ( 3 * haste)
+        end,
         cooldown = 0,
         gcd = "spell",
 
@@ -920,7 +930,9 @@ spec:RegisterAbilities( {
     -- While applied to target weapon it increases damage dealt by periodic spells by 1% and spell haste rating by 10.  Lasts for 1 hour.
     create_spellstone = {
         id = 2362,
-        cast = 5,
+        cast = function()
+            return ( 5 * haste)
+        end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1350,7 +1362,9 @@ spec:RegisterAbilities( {
     -- Strikes fear in the enemy, causing it to run in fear for up to 10 sec.  Damage caused may interrupt the effect.  Only 1 target can be feared at a time.
     fear = {
         id = 6215,
-        cast = 1.5,
+        cast = function()
+            return ( 1.5 * haste)
+        end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1734,7 +1748,9 @@ spec:RegisterAbilities( {
     -- Imbeds a demon seed in the enemy target, causing 1044 Shadow damage over 18 sec.  When the target takes 1044 total damage or dies, the seed will inflict 1110 to 1290 Shadow damage to all enemies within 15 yards of the target.  Only one Corruption spell per Warlock can be active on any one target.
     seed_of_corruption = {
         id = 27243,
-        cast = 2,
+        cast = function()
+            return ( 2 * haste)
+        end,
         cooldown = 0,
         gcd = "spell",
 
@@ -2345,7 +2361,7 @@ spec:RegisterOptions( {
     package3 = "Destruction (wowtbc.gg)",
 } )
 
-spec:RegisterPack( "Affliction", 20230108, [[Hekili:TIvtVTkou0Flvpj20wY3T9nIeP5T71rQBYin7aCatIvnyKTPvzue)2FxJdGdyiTQDttc2(C)6CV(u8N5)V(BJrsS)lZNoFX0ztFYD2Y5lwT0FR8yo2FBok6v0E4lzOu4V)DscLejjSm1shPmuSccbRGhblFqkZf)1KjVZExUlYD)E4Bs6RtIOiH4(9fKySycQbJ7FhXPSOxN4VDxbHk)DM)oR(Z8NaBKJJ8F5NGriXXy9oXIitFQm8)0awgMZjmorESmmQqizPK)hhxgUd(9)qu74(FHZWX1HcLiKcvGGyy4JxQYl4m0oko2)x(BJaOWCcc2aCI3WbWHtjyrz4MYWfLHoLHseFpw6gdiHYIWLHELHZMQpGYeIdOy27juvAucHxhl0SnmooGLeeX48IC9Z(aw)gWbirVsY2dB)yefhO9hHkwaZTyaZz3mTOvbExRcr2s7Mz5aMPidYkWddqg8NVb7TAa7rstzufnAyJO(jIIZKUwCo3Zy(5ChPIrMGkOYX5qXmP7bubyAoofrY0fYiKqgijPyt60bmIkp4Mhj1f7PvlQaWMx3aNNbCJxfSqfh1rVTmCvz4PtANOZIExefWwN3A8QTAJkoyf67lfu5lZUAIOl71UNPI9Cmxan6a7jifk3KCkbZRCpLF12u5M3US1MolC4wREobOIGajliMOMQSUm8bDkifLHAslZng1qYsW8mMc8hUg49YUgUzbxGvZIKha2pfNcHRqb6JdtyW7kssCtpguDyxyIx2O1slwdTNLDuzMNg0mTrE1qwDnPYYusIQPm)cEWzc7E6X8dT7WSf)YZQ86whR(Xkx6Nv3ruZIa)f8OuHPxcBcM6BSRCM(Zl3YN6cgG5kKCGNQgQ0MWquAG(hbQ7V03IfOVNwDpMA7d3BFE4hjnNZEdUZrF)uWogvErQrGLsG3lCpVHuOPcZpQBc1L7lxzSXbJWfM)y37kR8LQOy4rgwWYtHvZmI(Zzx1ANyo80aq8cTYmd3))zDzOyKZXrS0DORCxqvceXtz8o0UemuDvpF8r03OggjD1Sgd3PaUbmlaa5ae)y(vh8ociVXiXVJOVQrz0HKJGcq0gFA33q75dxTXB4rxFX(HHzcax4n11fWAnIA93ckFZuW4V93P5mUuH(cTwdLo2kbPULpR4rSecfYN)4hLH2K6(SAH3w4U0D69ZCN5US85YN14iCByH3UEsdJ6osY6o8o7NOllsDWBARXJEOwwZN5uq6)dT96QUAZ2joo9jn2HsZtgWRARLkl9b4iodnVSTOa4AraIc)EdS20m)0P3iOnlM6CfvqETJFnmELfSAUBxD6uVh2cYTZ)aXWnNfk9fD4BNzARwftMM40jR6W2mSgmtmpRssxx7k0YB9dtDQLzSz(076fnElN6CgIG65dgOVNZkY1QGQs1weg5OL8uTtCSHFCrkZeubJYUcMxdcZgN64ZB20tNSkFYdieF(2lf5OwBK5d70PPQRD0WCNs9YAq8YDAbpRNP8t9GGAjrBUGz891H6mQAgZUaljzqXHHt1QRWAv1B(Jo9B1xnAyzZGMd6HCwZXQEjdwsClC68skGcFpe69(hU7I)txRvKfo1TKDHBCyAMvCjEEl7cJTznFf8QF)aJcYnx)9d0ZqGmGc5bq02w9RzQ6(F))8]] )
+spec:RegisterPack( "Affliction", 20230117, [[Hekili:9Iv3UTTnu4NLGc4BINQ8FjTBogyd7I1mGIH5oSlgQKOLOSicLOafvYmGHE235qABrjljh3gSlsSn5HFFhE(xYBI3x8whruuVpp1D6m3jtw4m5o3ztN7TwTlN6ToNe(ezl8Lmsk8))KWIQc(1)ynUZoUGeHiuikLHWUER3uY4QpL5TPjSU37mz(SpmzbiBon07ZF0BDclkIAKKwe6T(ljSIQa8psvWbARceXWVdvmrwvaNvOGTJfYQGFJ(eJZC8wRxevcIGcF8z9vIMr2WPrE)I36qjtrLmciaaZZuFAgnLrbCwvfmRkyuvGIi3svorasKSqG0LvbtCnhqKbQCcjs8smhTak4k1IHtIrPr(Iy)qHuwMBw7vW(nGcWcFILTfeFxiN6B0Nc8Ua0nRh66MMA00G3Mv4MnVBAM3dnLzGvbw0NehZzHVz8TOh(yPPcog60pj4pjCAMYPdLZ5aMxN6OWOWysjxnCmuKq5KqkbQL0uclZ4idjfkFflLAhoH)2xj8JyuTqtmUBeHUu7t4T0cVHDdDeloOMEBvWIQG97nkrRnx24AaIoTMCTODfl2Rl6n0gOvMjx0s0o(TBvdV85uzbKQdXp(PGdNLZzuPw9q9QoTYj3E7V9tcx4nLXXoruIkPWNMUrscPoL5gq17PKGgwGvpujGftsImcm6BLue5doHekHRsCYdvAd7SfFZW2zXNoYLRT9SSyQmt4BNu2vSXYhQcUZvVDkjJyuwqxM62)vboYCZrAXIvXeZgOoEx)zkuTliDNFyPSG6a16ZgkiE6cl7aEc0Tr2kY2H8C))t88HE5P2aQ7JzfLXzXyDV8gjAhkjSLVlpPwcBhwZZIQDTIDCzuL(OUn8HnYfMpRvrqcOR6v0Dgs6lWed8GwMccN7B(Hp283mcGVz(eCiau8(RGFOZblnxkEgAyBAU7VrWvnU0fuLckzu4CqGuOEevUZu)Y4jBUZqLsTDZ2XWOx((2dAO1f9TqxDNLbOJjB(Sytz9bkDUC6(9TYFT3PJiWA2JKGC(WSC8M2RUkIm9(tfYB0hz1I2E8(BzCT2dWtNlPHI0nKl0LwFljYuHS1vmMcHo46d378gS8OYXesAPoLWSjz(aijLOt5IDehaKNfSOxi8NmOmyZRbqbIIhU(7Bqw9DxmRU)sEFNjB9hjaXcpJnWG9o)rmEHiZq0o(mfa5Xmo18WfPSIc9OafL55cP6WZtSfk8aLAGSujl7jyUqNQGQGpPmhsh2LsZIq9vLqGLPpRRgKlzc46UdBcfYlJWsxug0ex(Jvpwf8dvb)ZFvqrKOPfFDCvWljSWeBPjz7QzTkitGG)Vq)2qMIxJBe(nKCAnP)e88rYJ08fdeqzZVIGgzV0ulMFHX5w3OdqQokQ2AOxkRmDdvIexWH88Qh)ukAWWfM16HYGnXKtTz2B97ExvWpFQ0uvWFtKCr4tvpIB4o59UlEp6Zaf)rdkfoNsSV9H3FkjDml(HwPYDFI2jM4bVPoTzWdvNiEnNcIOFvIFmrcfU7CXrNNh2nuMuVE0Q60dKPxrA3O(6Vv7uaCBo2H9oD0dcz(8gcN6eo6S69RM5oQN(zlRBGArQg5oP52fM(EnwSgKBN(k09Bo8ucxLI2bxtAybp1i2MI977C87vdmrVfMhMQ14PBp64YhUZD0Xraxn1D8z3MLZDBEfxbpsGf8BLIYCZecABDhdnmYeyOLKgzPinSz2Gwi4IlG5LGWox64fC5e3977C22LqeX1NXDEEg6dBnX5yCwZhGrnhBgp9HjOkzkdCCa2vnIcE7Yphn4SN2r8DypHP2SuQ659gBpJ5dxks)QhXSZ4JLnvMZSqDP72DmaZ)PJPF1CD4dMnQ1R2dcxodHZERDJB8(H605oB0Xm52WnmmNkX0eVLZBdtxLO(EW74BvBqqU5YVvTZicgrRuLaduV(3zqtE9OzE)3p]] )
 
 spec:RegisterPack( "Demonology (wowtbc.gg)", 20221002, [[Hekili:TEvxVnkou0FlJgPODv7qcjTZ0zvBFy1(Y0Du3hYinVb4ymGvnyKTPrrQIF7712aXqaAAN5LwaF)Y3ZXxFsGFWpc2gJuKGhxVA9A)vRw75VEZM1xfSvDOKeSTeHFcLcpuGYH)(pKCEbNXtpuh9h757v7WEPP)P2UdmokwhpjVsGbBZuQs5FTCzNzWtk2tlXmKu(P0kAmrUmUlGFApsW44NwgSDxfLP(wrWUrlo)Vc5OKGdEeEiJghtSwsK4GT)iJkRJkfuUGQGICpcEDp8SIuuhTdjjX1rC4rvgbwOT0QJ(PaPYGLsAw67um86)slG1m1QxWwgvQK6TiItG)9OP9rkq7yK4G)oylgYdrqrGbyf9zsiPGKtjqfCFD0g7x5fbBZjkuoxuMXLuzGc2FtgOpuhvvE0tAEoNH0phIQeiTVBENfHmdfZ3NW04keMREVHHqId5jHyUquvA(geTRheTwRDSQ)MurXpz61lQJgMWBRJa(i(aMrcvirkbabO3dP5ZtKMM2e53rsuAQvcQIP6G820yiVuCijVKVNiYjfk3YPfyBnVKB)FplMg(guW2IYtrZHcKhgtjgOiMR8A3UEXaNWMJt6eZcXXKDvjjE5hcXvcjeh((ctsnVgMk4vLGphHrZNbuhoQesye9oxogUpFkgjGOuEXHXG23tF5iBBKotFc7xMmDj00mvOGKJOfw2pmkQo6LxGXjCP0uddSrZLwnZX9BCzfvWghYvUCaX4Rtwr2gPBq9QkD7fXWCkub22iUzaFneNPTsNc)v)cZD8Ftt)8HjfkbfRD0bdqmwO9Lq9Wv7i2q7Dn6HSAZNE4OcXaIhq)lf8NHXq2rAH74mLxJdM2sd3Rz5CKe8)GNlCHHVfQPq1rxaa8WPKMqAkMPpUMYouM5XOj65hL9YVj7DR0N53(zt0VYLy0N20NC4p9bTMMsmbtZniwVsPHHKrqmvMxjwz2(BU(yDcanCxPEEoXZLcaxRZctOclOm9XZzdcTatliIMbs(FXD)62Q7TBHxlfempFhsn)1UMCJeqxBqxoHa8m93F1BBlHUJL)6uzv56doqqsRqI4xDS9mX4zonEpI9erm)e55JcW4NFA7VbY4NF1RUMEM5zCWCCILbSFMiK6v6K9fSf0gwad8HJbFdURvO07Ln2lX1I5mcZ8QFacALkdq5TDk70ChEcLbnXp(X6ixbS)0k4S(b9cRRJ(pSIVJiGNH8w)q9d2Wl96yFxC3YoM0L0K7gW3g3JbShTFF4i2oRphzlVfVG2(zzElARnECcZItjlJhkl)yIQQfF155mygoDEW7r0y5U8GedFPvXJPf0iuyXPIeUFuHtUbYO6XQwrhRXeWSON(ixNLahBEFDT(OwKZPQhrwJBW6DVHoE9uNCpCI6Lx0kxw0773E1k3G0Pk5eSOr)qh9FOqKfdeHC)nJGo0gHeMTliEXTxmqtWLA1a3bIbU0kG4oFTtwEDReJ79717pYPotk3IzviCBN6Glw7MNFTZpdrQ(SNtpYC6f6lo5Y8B3C9IrU)Tha0Dd8reCsJDAvUZdbWymE2amzZqhEfSVXkNFx65e0t)9NNJxow37N8zjxDha7hMBVAIDe5nfeZLCb))p]] )
 
