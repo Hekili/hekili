@@ -24,7 +24,7 @@ local insert, wipe = table.insert, table.wipe
 
 local mt_resource = ns.metatables.mt_resource
 
-local GetItemCooldown = _G.GetItemCooldown
+local GetItemCooldown = _G.C_Container.GetItemCooldown
 
 local GetPlayerAuraBySpellID = _G.GetPlayerAuraBySpellID or function( id ) return FindUnitBuffByID( "player", id ) end
 

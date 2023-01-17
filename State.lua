@@ -2854,7 +2854,7 @@ do
                 end
 
                 if ability.item then
-                    GetCooldown = _G.GetItemCooldown
+                    GetCooldown = _G.C_Container.GetItemCooldown
                     id = ability.itemCd or ability.item
                 elseif ability.funcs.cooldown_special then
                     GetCooldown = ability.funcs.cooldown_special
@@ -2898,7 +2898,7 @@ do
                     local potion = class.potions[ itemName ]
 
                     if state.toggle.potions and potion and GetItemCount( potion.item ) > 0 then
-                        start, duration = GetItemCooldown( potion.item )
+                        start, duration = _G.C_Container.GetItemCooldown( potion.item )
 
                     else
                         start = state.now
