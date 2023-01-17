@@ -787,6 +787,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 134294,
+        nodebuff = "rooted",
 
         handler = function ()
             spendCharges( "infernal_strike", 1 )
@@ -865,6 +866,7 @@ spec:RegisterAbilities( {
 
         talent = "felblade",
         startsCombat = true,
+        nodebuff = "rooted",
 
         handler = function ()
             setDistance( 5 )
@@ -986,6 +988,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         startsCombat = false,
+        nodebuff = "rooted",
 
         sigil_placed = function() return sigil_placed end,
 
@@ -1272,7 +1275,6 @@ spec:RegisterAbilities( {
 
         talent = "spirit_bomb",
         startsCombat = false,
-
         buff = "soul_fragments",
 
         handler = function ()
@@ -1305,8 +1307,8 @@ spec:RegisterAbilities( {
         school = "nature",
 
         startsCombat = true,
-
         toggle = "cooldowns",
+        nodebuff = "rooted",
 
         handler = function ()
             applyDebuff( "target", "the_hunt" )
@@ -1387,6 +1389,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         startsCombat = true,
+        nodebuff = "rooted",
 
         readyTime = function ()
             if settings.recommend_movement then return 0 end

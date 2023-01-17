@@ -1335,7 +1335,7 @@ spec:RegisterAbilities( {
         texture = 132110,
 
         nobuff = function()
-            if not settings.stack_shield_block or not legendary.reprisal.enabled then return "shield_block" end
+            if not settings.stack_shield_block then return "shield_block" end
         end,
 
         handler = function ()

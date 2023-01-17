@@ -599,6 +599,8 @@ spec:RegisterHook( "reset_precast", function( amt, resource )
     end
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
+
+    if buff.cold_blood.up then setCooldown( "cold_blood", action.cold_blood.cooldown ) end
 end )
 
 spec:RegisterHook( "runHandler", function( ability )
@@ -618,7 +620,7 @@ spec:RegisterHook( "runHandler", function( ability )
         removeBuff( "vanish" )
     end
 
-    if not a or a.startsCombat then
+    if buff.cold_blood.up and ( not a or a.startsCombat ) then
         removeBuff( "cold_blood" )
     end
 

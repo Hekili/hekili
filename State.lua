@@ -2833,18 +2833,12 @@ do
                     return ability.meta[ k ]( t )
                 end
 
-                if ability.item then
-                    GetCooldown = _G.GetItemCooldown
-                    id = ability.itemCd or ability.item
-
-                    --[[ if not ability.itemSpellID then
-                    else
-                        id = ability.itemSpellID
-                    end ]]
-
-                elseif ability.funcs.cooldown_special then
+                if ability.funcs.cooldown_special then
                     GetCooldown = ability.funcs.cooldown_special
                     id = 999999
+                elseif ability.item then
+                    GetCooldown = _G.GetItemCooldown
+                    id = ability.itemCd or ability.item
                 end
             end
 
@@ -6288,6 +6282,14 @@ do
         end
 
         -- Trinkets that need special handling.
+        if state.buff.stormeaters_boon.up and state.debuff.rooted.down then
+            state.applyDebuff( "player", "rooted", state.buff.stormeaters_boon.remains )
+        end
+
+        if state.buff.slicing_maelstrom.up then
+            state.putTrinketsOnCD( state.buff.slicing_maelstrom.remains + 20 )
+        end
+
         -- TODO: Move this all to those aura generator functions.
         if state.set_bonus.cache_of_acquired_treasures > 0 then
             -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).

@@ -3,7 +3,7 @@ actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/stealth
 actions.precombat+=/marked_for_death,precombat_seconds=10,if=raid_event.adds.in>25
 actions.precombat+=/adrenaline_rush,precombat_seconds=3,if=talent.improved_adrenaline_rush
-actions.precombat+=/roll_the_bones,precombat_seconds=2,if=remains<3
+actions.precombat+=/roll_the_bones,precombat_seconds=2,if=remains<3|rtb_buffs.normal=0
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 
 # Restealth if possible (no vulnerable enemies in combat)
@@ -59,7 +59,7 @@ actions.build+=/ambush,if=settings.ambush_anyway|talent.hidden_opportunity|talen
 actions.build+=/pistol_shot,if=!talent.fan_the_hammer&buff.opportunity.up&(energy.base_deficit>energy.regen*1.5|!talent.weaponmaster&combo_points.deficit<=1+buff.broadside.up|talent.quick_draw.enabled|talent.audacity.enabled&!buff.audacity.up)
 actions.build+=/sinister_strike
 
-# Cooldowns  Blade Flurry on 2+ enemies
+# Cooldowns
 actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&(!talent.improved_adrenaline_rush|combo_points<=2)
 actions.cds+=/blade_flurry,if=spell_targets>=2&buff.blade_flurry.remains<gcd
 actions.cds+=/roll_the_bones,if=buff.dreadblades.down&(rtb_buffs.total=0|variable.rtb_reroll)

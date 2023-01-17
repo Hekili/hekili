@@ -1258,6 +1258,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         startsCombat = true,
+        nodebuff = "rooted",
 
         readyTime = function ()
             if prev_gcd[1].fel_rush then
@@ -1305,6 +1306,7 @@ spec:RegisterAbilities( {
 
         talent = "felblade",
         startsCombat = true,
+        nodebuff = "rooted",
 
         -- usable = function () return target.within15 end,
         handler = function ()
@@ -1535,6 +1537,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         toggle = "cooldowns",
+        nodebuff = "rooted",
 
         handler = function ()
             applyDebuff( "target", "the_hunt" )
@@ -1598,6 +1601,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         startsCombat = true,
+        nodebuff = "rooted",
 
         readyTime = function ()
             if settings.recommend_movement then return 0 end
