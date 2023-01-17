@@ -2832,18 +2832,12 @@ do
                     return ability.meta[ k ]( t )
                 end
 
-                if ability.item then
-                    GetCooldown = _G.GetItemCooldown
-                    id = ability.itemCd or ability.item
-
-                    --[[ if not ability.itemSpellID then
-                    else
-                        id = ability.itemSpellID
-                    end ]]
-
-                elseif ability.funcs.cooldown_special then
+                if ability.funcs.cooldown_special then
                     GetCooldown = ability.funcs.cooldown_special
                     id = 999999
+                elseif ability.item then
+                    GetCooldown = _G.GetItemCooldown
+                    id = ability.itemCd or ability.item
                 end
             end
 
