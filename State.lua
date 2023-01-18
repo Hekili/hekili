@@ -6277,7 +6277,7 @@ do
 
         -- Special case spells that suck.
         if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
-            setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
+            state.setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
         end
 
         -- Trinkets that need special handling.
@@ -6285,8 +6285,10 @@ do
             state.applyDebuff( "player", "rooted", state.buff.stormeaters_boon.remains )
         end
 
-        if state.buff.slicing_maelstrom.up then
-            state.putTrinketsOnCD( state.buff.slicing_maelstrom.remains + 20 )
+        -- BUGS: Windscar Whetstone invisibly keeps trinkets on CD for 6 additional seconds.
+        local ww_cd_remains = state.action.windscar_whetstone.lastCast + 26 - state.now
+        if ww_cd_remains > 0 then
+            state.putTrinketsOnCD( ww_cd_remains )
         end
 
         -- TODO: Move this all to those aura generator functions.
