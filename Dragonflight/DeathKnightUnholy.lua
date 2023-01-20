@@ -2015,11 +2015,15 @@ me:RegisterOptions( {
 } )
 
 
-me:RegisterSetting( "disable_iqd_execute", false, {
-    name = "Disable |T2000857:0|t Inscrutable Quantum Device Execute",
-    desc = "If checked, the default Unholy priority will not try to use Inscrutable Quantum Device solely because your enemy is in execute range.",
-    type = "toggle",
-    width = "full"
+
+me:RegisterSetting( "ob_macro", nil, {
+    name = "|T348565:0|t Outbreak Macro",
+    desc = "Using a macro makes it easier to apply |T348565:0|t Outbreak to other targets without switching targets.",
+    type = "input",
+    width = "full",
+    multiline = true,
+    get = function () return "#showtooltip\n/use [@mouseover,harm,nodead][] " .. class.abilities.outbreak.name end,
+    set = function () end,
 } )
 
 
