@@ -73,18 +73,17 @@ actions.combustion_cooldowns+=/blood_fury
 actions.combustion_cooldowns+=/berserking,if=buff.combustion.up
 actions.combustion_cooldowns+=/fireblood
 actions.combustion_cooldowns+=/ancestral_call
+## The addon does not invoke external buffs, because they player cannot actually choose to trigger them personally.
+## actions.combustion_cooldowns+=/invoke_external_buff,name=power_infusion,if=buff.power_infusion.down
+## actions.combustion_cooldowns+=/invoke_external_buff,name=blessing_of_summer,if=buff.blessing_of_summer.down
 actions.combustion_cooldowns+=/time_warp,if=(talent.temporal_warp|runeforge.temporal_warp)&buff.exhaustion.up
-actions.combustion_cooldowns+=/use_item,name=scars_of_fraternal_strife,if=buff.scars_of_fraternal_strife_4.up
 actions.combustion_cooldowns+=/use_item,effect_name=gladiators_badge
-actions.combustion_cooldowns+=/use_item,name=inscrutable_quantum_device
-actions.combustion_cooldowns+=/use_item,name=flame_of_battle
-actions.combustion_cooldowns+=/use_item,name=wakeners_frond
-actions.combustion_cooldowns+=/use_item,name=instructors_divine_bell
-actions.combustion_cooldowns+=/use_item,name=sunblood_amethyst
-actions.combustion_cooldowns+=/use_item,name=the_first_sigil
-actions.combustion_cooldowns+=/use_item,name=fleshrenders_meathook
-actions.combustion_cooldowns+=/use_item,name=enforcers_stun_grenade
-actions.combustion_cooldowns+=/use_item,name=neural_synapse_enhancer
+actions.combustion_cooldowns+=/use_item,name=irideus_fragment
+actions.combustion_cooldowns+=/use_item,name=spoils_of_neltharus
+actions.combustion_cooldowns+=/use_item,name=tome_of_unstable_power
+actions.combustion_cooldowns+=/use_item,name=timebreaching_talon
+actions.combustion_cooldowns+=/use_item,name=voidmenders_shadowgem
+actions.combustion_cooldowns+=/use_item,name=horn_of_valor
 
 actions.combustion_phase=lights_judgment,if=buff.combustion.down
 actions.combustion_phase+=/bag_of_tricks,if=buff.combustion.down
@@ -128,6 +127,7 @@ actions.combustion_phase+=/rune_of_power,if=buff.sun_kings_blessing_ready.up&buf
 actions.combustion_phase+=/pyroblast,if=buff.sun_kings_blessing_ready.up&buff.sun_kings_blessing_ready.remains>cast_time&buff.sun_kings_blessing_ready.expiration_delay_remains=0
 # Pyroclasm procs should be used in Combustion at higher priority than Phoenix Flames and Scorch.
 actions.combustion_phase+=/pyroblast,if=buff.pyroclasm.react&buff.pyroclasm.remains>cast_time&buff.combustion.remains>cast_time&active_enemies<variable.combustion_flamestrike&(!talent.feel_the_burn|buff.feel_the_burn.remains>execute_time|buff.heating_up.react+hot_streak_spells_in_flight<2)
+actions.combustion_phase+=/fireball,if=buff.combustion.remains>cast_time&buff.flame_accelerant.react
 # Use Phoenix Flames and Scorch in Combustion to help generate Hot Streaks when Fire Blasts are not available or need to be conserved.
 actions.combustion_phase+=/phoenix_flames,if=!talent.alexstraszas_fury&buff.combustion.up&travel_time<buff.combustion.remains&buff.heating_up.react+hot_streak_spells_in_flight<2&(!talent.from_the_ashes|variable.extended_combustion_remains<10)
 actions.combustion_phase+=/scorch,if=buff.combustion.remains>cast_time
@@ -155,7 +155,7 @@ actions.rop_phase+=/dragons_breath,if=active_enemies>2
 actions.rop_phase+=/arcane_explosion,if=active_enemies>=variable.arcane_explosion&mana.pct>=variable.arcane_explosion_mana
 # With enough targets, it is a gain to cast Flamestrike as filler instead of Fireball.
 actions.rop_phase+=/flamestrike,if=active_enemies>=variable.hard_cast_flamestrike
-actions.rop_phase+=/pyroblast,if=talent.tempered_flames
+actions.rop_phase+=/pyroblast,if=talent.tempered_flames&!buff.flame_accelerant.react
 actions.rop_phase+=/fireball
 
 actions.standard_rotation=flamestrike,if=active_enemies>=variable.hot_streak_flamestrike&(buff.hot_streak.react|(buff.firestorm.react|buff.hyperthermia.react))
@@ -178,6 +178,5 @@ actions.standard_rotation+=/scorch,if=searing_touch.active
 actions.standard_rotation+=/arcane_explosion,if=active_enemies>=variable.arcane_explosion&mana.pct>=variable.arcane_explosion_mana
 # With enough targets, it is a gain to cast Flamestrike as filler instead of Fireball.
 actions.standard_rotation+=/flamestrike,if=active_enemies>=variable.hard_cast_flamestrike
-actions.standard_rotation+=/pyroblast,if=talent.tempered_flames
-actions.standard_rotation+=/ice_nova
+actions.standard_rotation+=/pyroblast,if=talent.tempered_flames&!buff.flame_accelerant.react
 actions.standard_rotation+=/fireball
