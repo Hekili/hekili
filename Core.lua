@@ -2032,9 +2032,17 @@ function Hekili.Update()
             UI:SetThreadLocked( false )
 
             if WeakAuras and WeakAuras.ScanEvents then
-                -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
-                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator )
-                -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
+                if UI.EventPayload then
+                    wipe( UI.EventPayload )
+                else
+                    UI.EventPayload = {}
+                end
+
+                for k, v in pairs( Queue[ 1 ] ) do
+                    UI.EventPayload[ k ] = v
+                end
+
+                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator, Queue[ 1 ].empower_to, UI.EventPayload )
             end
 
             Hekili:Yield( "Finished display updates." )
@@ -2089,7 +2097,7 @@ function Hekili_GetRecommendedAbility( display, entry )
         return nil, "No entry #" .. entry .. " for that display."
     end
 
-    return slot.actionID
+    return slot.actionID, slot.empower_to, Hekili.DisplayPool[ display ].EventPayload[ entry ]
 end
 
 
