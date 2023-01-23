@@ -25,7 +25,7 @@ actions.bear+=/incarnation
 actions.bear+=/rage_of_the_sleeper,if=buff.incarnation_guardian_of_ursoc.down&cooldown.incarnation_guardian_of_ursoc.remains>60|buff.incarnation_guardian_of_ursoc.up|talent.convoke_the_spirits.enabled
 actions.bear+=/berserking,if=(buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)
 actions.bear+=/maul,if=buff.rage_of_the_sleeper.up&buff.tooth_and_claw.stack>0&active_enemies<=6
-actions.bear+=/ironfur,cycle_targets=1,if=!debuff.tooth_and_claw_debuff.up&!buff.ironfur.up&tanking|rage>90
+actions.bear+=/ironfur,cycle_targets=1,if=tanking&(!debuff.tooth_and_claw_debuff.up&!buff.ironfur.up|rage>90)
 actions.bear+=/moonfire,if=buff.galactic_guardian.up&buff.galactic_guardian.remains<=gcd+0.5
 actions.bear+=/mangle,if=buff.gore.up&active_enemies<11|buff.vicious_cycle_mangle.stack=3
 actions.bear+=/maul,if=((buff.incarnation.up|buff.berserk_bear.up)&active_enemies<=5&(buff.tooth_and_claw.stack>=2))
@@ -54,7 +54,7 @@ actions.cconvoke+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.h
 actions.cconvoke+=/cat_form,if=!buff.cat_form.up
 actions.cconvoke+=/convoke_the_spirits
 
-actions.mitigation=ironfur,if=incoming_damage_5s>ironfur_damage_threshold&buff.ironfur.remains<3*haste
+actions.mitigation=ironfur,if=tanking&incoming_damage_5s>ironfur_damage_threshold&buff.ironfur.remains<3*haste
 actions.mitigation+=/regrowth,if=health.pct<65
 actions.mitigation+=/renewal,if=health.pct<65
 actions.mitigation+=/frenzied_regeneration,if=tanking&health.pct<65
