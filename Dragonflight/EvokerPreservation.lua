@@ -1,5 +1,5 @@
 -- EvokerPreservation.lua
--- DF Season 1 Dec 2022
+-- DF Season 1 Jan 2023
 
 if UnitClassBase( "player" ) ~= "EVOKER" then return end
 
@@ -10,7 +10,7 @@ local class, state = Hekili.Class, Hekili.State
 local spec = Hekili:NewSpecialization( 1468 )
 
 spec:RegisterResource( Enum.PowerType.Essence )
-spec:RegisterResource( Enum.PowerType.Mana, {
+spec:RegisterResource( Enum.PowerType.Mana--[[, {
     disintegrate = {
         channel = "disintegrate",
         talent = "energy_loop",
@@ -23,9 +23,10 @@ spec:RegisterResource( Enum.PowerType.Mana, {
         end,
 
         interval = function () return class.auras.disintegrate.tick_time end,
-        value = function () return 0.024 * mana.max end, -- TODO: Check if should be modmax.
+      value = function () return 0.024 * mana.max end, -- TODO: Check if should be modmax.
     }
-} )
+}]] --TODO: this breaks and causes bugs because it isn't referencing mana well from State.lua, but it wouldn't be discovered in Devastation testing because Devastation doesn't have the Energy Loop talent.
+)
 
 -- Talents
 spec:RegisterTalents( {
@@ -153,6 +154,22 @@ spec:RegisterAuras( {
         duration = 2.5,
         max_stack = 1
     },
+    dream_breath_hot = {
+        id = 355941,
+        duration = function ()
+            return 16 - (4 * (empowerment_level - 1))
+        end,
+        tick_time = 2,
+        max_stack = 1
+    },
+    dream_breath_hot_echo = { -- This is the version applied when the target has your Echo on it.
+        id = 376788,
+        duration = function ()
+            return 16 - (4 * (empowerment_level - 1))
+        end,
+        tick_time = 2,
+        max_stack = 1
+    },
     dream_projection = { -- TODO: PvP talent summon/pet?
         id = 377509,
         duration = 5,
@@ -165,6 +182,11 @@ spec:RegisterAuras( {
         id = 355913,
         duration = 2,
         max_stack = 1
+    },
+    essence_burst = { -- This is the Preservation version of the talent.
+        id = 369299,
+        duration = 15,
+        max_stack = function() return talent.essence_attunement.enabled and 2 or 1 end,
     },
     fire_breath = {
         id = 357209,
@@ -197,6 +219,12 @@ spec:RegisterAuras( {
         id = 366155,
         duration = 12,
         tick_time = 2,
+        max_stack = 1
+    },
+    reversion_echo = {  -- This is the version applied when the target has your Echo on it.
+        id = 367364,
+        duration = 12,
+        tick_timer = 2,
         max_stack = 1
     },
     rewind = {
@@ -282,10 +310,17 @@ spec:RegisterHook( "runHandler", function( action )
 end )
 
 spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
-spec:RegisterAura( "time_bender", {
-    id = 394544,
-    duration = 6,
-    max_stack = 1
+spec:RegisterAuras( {
+    time_bender = {
+        id = 394544,
+        duration = 6,
+        max_stack = 1
+    },
+    lifespark = {
+        id = 394552,
+        duration = 15,
+        max_stack = 2
+    }
 } )
 
 
@@ -388,6 +423,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
     deep_breath = {
@@ -440,6 +476,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack("essence_burst")
+            if talent.energy_loop.enabled then gain(0.0277 * mana.max, "mana") end
         end,
     },
     dream_breath = {
@@ -458,6 +495,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff("dream_breath")
+            applyBuff("dream_breath_hot")
             removeBuff("call_of_ysera")
             removeBuff("temporal_compression")
             if buff.tip_the_scales.up then
@@ -510,12 +548,13 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack("essence_burst")
+            if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
     emerald_blossom = {
         id = 355913,
         cast = 0,
-        cooldown = 30,
+        cooldown = 0,
         gcd = "spell",
 
         spend = function () return buff.essence_burst.up and 0 or 3 end,
@@ -622,6 +661,7 @@ spec:RegisterAbilities( {
             removeBuff( "leaping_flames" )
             removeBuff( "scarlet_adaptation" )
             removeBuff("call_of_ysera")
+            removeStack("lifespark")
         end,
     },
     naturalize = {
@@ -713,7 +753,7 @@ spec:RegisterAbilities( {
     reversion = {
         id = 366155,
         cast = 0,
-        charges = 1,
+        charges = function() return talent.punctuality.enabled and 2 or 1 end,
         cooldown = 9,
         recharge = 9,
         gcd = "spell",
@@ -724,6 +764,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
+            applyBuff( "reversion")
+            if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
     rewind = {
@@ -742,6 +784,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
     spiritbloom = {
@@ -782,6 +825,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
     temporal_anomaly = {
@@ -796,6 +840,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
+            if talent.temporal_compression.enabled then addStack("temporal_compression") end
+            if talent.resonating_sphere.enabled then applyBuff("echo") end
         end,
     },
     time_dilation = {
@@ -812,6 +858,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
     unravel = {
