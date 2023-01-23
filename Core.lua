@@ -1871,6 +1871,15 @@ function Hekili.Update()
                     slot.depth = chosen_depth
 
                     state.scriptID = slot.script
+
+                    local ability = class.abilities[ action ]
+                    local cast_target = i == 1 and state.cast_target ~= "nobody" and state.cast_target or state.target.unit
+
+                    if slot.indicator == "cycle" then
+                        state.SetupCycle( ability )
+                        cast_target = cast_target .. "c"
+                    end
+
                     if debug then scripts:ImplantDebugData( slot ) end
 
                     checkstr = checkstr and ( checkstr .. ':' .. action ) or action
@@ -1892,20 +1901,12 @@ function Hekili.Update()
                         if state.delay > 0 then state.advance( state.delay ) end
                         -- Hekili:Yield( "Post-Advance for " .. dispName .. " #" .. i .. ": " .. action )
 
-                        local ability = class.abilities[ action ]
                         local cast = ability.cast
-
-                        if slot.indicator == "cycle" then
-                            state.SetupCycle( ability )
-                        end
 
                         if ability.gcd ~= "off" and state.cooldown.global_cooldown.remains == 0 then
                             state.setCooldown( "global_cooldown", state.gcd.execute )
                         end
-
                         -- Hekili:Yield( "Post-GCD for " .. dispName .. " #" .. i .. ": " .. action )
-
-                        local cast_target = i == 1 and state.cast_target ~= "nobody" and state.cast_target or state.target.unit
 
                         if state.buff.casting.up and not ability.dual_cast then
                             state.stopChanneling( false, action )

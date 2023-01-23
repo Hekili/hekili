@@ -787,6 +787,12 @@ do
 
             cycle.aura = aura
 
+            if state.active_dot[ aura ] >= state.cycle_enemies then
+                if not quiet then debug( " - we do not have another valid target for " .. aura .. ": " .. state.active_dot[ aura ] .. " vs " .. state.cycle_enemies .. "." ) end
+                state.ClearCycle()
+                return
+            end
+
             if not quiet then
                 debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
             end
@@ -802,6 +808,34 @@ do
         else
             if not quiet then debug( " - cycle aura appears to be down, so we're sticking with our current target." ) end
         end
+
+        --[[ Possible future version:
+            local debuffIsUp = cDebuff.up
+
+            cycle.expires = cDebuff.duration + state.query_time
+
+            cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
+            cycle.maxTTD  = ability.max_ttd
+            cycle.aura = aura
+
+            if debuffIsUp and not ability.cycle_to and state.active_dot[ aura ] >= state.cycle_enemies then
+                debug( " - we will not use the ability on a different target, as we have enough targets with %s.", cycle.aura )
+                state.ClearCycle()
+                return
+            end
+
+            if not debuffIsUp and not ability.cycle_to then
+                debug( " - we will not use the ability on a different target, as current target does not have %s.", cycle.aura )
+                state.ClearCycle()
+                return
+            end
+
+            if not debuffIsUp and ability.cycle_to and active_dot[ aura ] == 0 then
+                debug( " - we will not use the ability on a different target, as no other target has %s applied.", cycle.aura)
+                state.ClearCycle()
+                return
+            end
+        ]]
     end
 
     function state.GetCycleInfo()
@@ -5899,7 +5933,7 @@ do
                 expires, minTTD, maxTTD, aura = self.GetCycleInfo()
             end
 
-            if e.target and self.target.unit ~= "unknown" and e.target ~= self.target.unit then
+            if e.target and e.target ~= self.target.unit then
                 if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
                 self.SetupCycle( ability )
             end
@@ -5926,9 +5960,26 @@ do
             self.stopChanneling( false, ability.key )
 
         elseif e.type == "PROJECTILE_IMPACT" then
+            local wasCycling = self.IsCycling( nil, true )
+            local expires, minTTD, maxTTD, aura
+
+            if wasCycling then
+                expires, minTTD, maxTTD, aura = self.GetCycleInfo()
+            end
+
+            if e.target and e.target ~= self.target.unit then
+                if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
+                self.SetupCycle( ability )
+            end
+
             if ability.impact then ability.impact() end
             self:StartCombat()
 
+            if wasCycling then
+                self.SetCycleInfo( expires, minTTD, maxTTD, aura )
+            else
+                self.ClearCycle()
+            end
         end
 
         if e.func then e.func( e.data ) end
