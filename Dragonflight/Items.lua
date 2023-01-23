@@ -593,6 +593,17 @@ all:RegisterAbilities( {
             }
         }
     },
+    mote_of_sanctification = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 133646,
+        toggle = "cooldowns",
+
+        handler = function()
+        end,
+    },
     primal_ritual_shell = {
         cast = 0,
         cooldown = 1,
