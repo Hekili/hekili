@@ -536,7 +536,7 @@ function ns.dumpNameplateInfo()
 end
 
 
-function ns.updateTarget(id, time, mine)
+function ns.updateTarget( id, time, mine )
     local spec = rawget( Hekili.DB.profile.specs, state.spec.id )
     if not spec or not spec.damage then return end
 
@@ -563,13 +563,18 @@ function ns.updateTarget(id, time, mine)
             end
         end
     else
+        if state.empowerment.start > 0 and state.empowerment.finish > GetTime() then
+            -- Don't expire targets mid-empowerment cast.
+            return
+        end
+
         if targets[id] then
-            targetCount = max(0, targetCount - 1)
+            targetCount = max( 0, targetCount - 1 )
             targets[id] = nil
         end
 
         if myTargets[id] then
-            myTargetCount = max(0, myTargetCount - 1)
+            myTargetCount = max( 0, myTargetCount - 1 )
             myTargets[id] = nil
         end
 
