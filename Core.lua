@@ -1322,9 +1322,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         end
                                     end
 
-                                    if rWait == 0 or
-                                        force_channel or
-                                        state.empowerment.active and state.empowerment.spell == rAction then break end
+                                    if rWait == 0 or force_channel then break end
                                 end
                             end
                         end
