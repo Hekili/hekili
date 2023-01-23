@@ -102,7 +102,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         interval = function () return state.haste end,
 
-        value = function () return state.talent.storm_of_steel.enabled and 15 or 10 end,
+        value = function () return state.talent.storm_of_steel.enabled and 20 or 10 end,
     },
 } )
 
@@ -110,12 +110,12 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 -- Talents
 spec:RegisterTalents( {
     -- Warrior
-    avatar                    = { 90365, 107574, 1 }, -- Transform into a colossus for 20 sec, causing you to deal 20% increased damage and removing all roots and snares. Generates 10 Rage.
+    avatar                    = { 92640, 107574, 1 }, -- Transform into a colossus for 20 sec, causing you to deal 20% increased damage and removing all roots and snares. Generates 10 Rage.
     berserker_rage            = { 90372, 18499 , 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec.
     berserker_shout           = { 90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also remove fear effects from group members within 12 yards.
     bitter_immunity           = { 90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you.
     blood_and_thunder         = { 90342, 384277, 1 }, -- Thunderclap costs 10 more Rage and deals 10% increased damage.
-    bounding_stride           = { 90355, 202163, 1 }, -- Reduces the cooldown of Heroic Leap by 15 sec, and Heroic Leap now also increases your run speed by 70% for 3 sec.
+    bounding_stride           = { 90355, 202163, 1 }, -- Reduces the cooldown of Heroic Leap by 15 sec, and Heroic Leap now also increases your movement speed by 70% for 3 sec.
     cacophonous_roar          = { 90383, 382954, 1 }, -- Intimidating Shout can withstand 200% more damage before breaking.
     crackling_thunder         = { 90342, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
     cruel_strikes             = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%.
@@ -153,7 +153,7 @@ spec:RegisterTalents( {
     wrecking_throw            = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 3,242 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
 
     -- Fury
-    anger_management          = { 90415, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Recklessness by 1 sec.
+    anger_management          = { 90415, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Recklessness and Ravager by 1 sec.
     annihilator               = { 90419, 383916, 1 }, -- Your auto-attacks deal an additional 373 Physical damage and generate 4 Rage.
     armored_to_the_teeth      = { 90258, 384124, 2 }, -- Gain Strength equal to 5% of your Armor.
     ashen_juggernaut          = { 90409, 392536, 1 }, -- Execute increases the critical strike chance of Execute by 10% for 15 sec, stacking up to 5 times.
@@ -167,7 +167,7 @@ spec:RegisterTalents( {
     concussive_blows          = { 90335, 383115, 1 }, -- Cooldown of Pummel reduced by 1.0 sec. Successfully interrupting an enemy increases the damage you deal to them by 5% for 10 sec.
     critical_thinking         = { 90425, 383297, 2 }, -- Critical Strike chance increased by 1.0% and Raging Blow and Annihilator's damaging critical strikes deal 5.0% increased damage.
     cruelty                   = { 90428, 392931, 1 }, -- While Enraged, Raging Blow deals 15% increased damage and Annihilator deals 10% increased damage.
-    crushing_force            = { 90349, 382764, 2 }, -- Slam deals and additional 30% damage and has a 7.50% increased critical strike chance.
+    crushing_force            = { 90349, 382764, 2 }, -- Slam deals an additional 30% damage and has a 7.50% increased critical strike chance.
     dancing_blades            = { 90417, 391683, 1 }, -- Odyn's Fury increases your auto-attack damage and speed by 30% for 10 sec.
     defensive_stance          = { 90330, 386208, 1 }, -- A defensive combat state that reduces all damage you take by 20%, and all damage you deal by 10%. Lasts until canceled.
     deft_experience           = { 90421, 383295, 2 }, -- Mastery increased by 1% and Bloodthirst cooldown reduced by 0.75 sec.
@@ -176,7 +176,7 @@ spec:RegisterTalents( {
     endurance_training        = { 90376, 391997, 1 }, -- Increases Stamina by 5% and reduces the duration of movement impairing effects on you by 10.0%.
     enraged_regeneration      = { 90395, 184364, 1 }, -- Reduces damage taken by 30%, and Bloodthirst restores an additional 20% health. Usable while stunned or incapacitated. Lasts 8 sec.
     focus_in_chaos            = { 90403, 383486, 1 }, -- While Enraged, your auto-attacks can no longer miss.
-    frenzied_flurry           = { 90422, 383605, 1 }, -- Increases auto-attack damage with one-handed weapons by 5% and your auto-attack critical strikes have a 50% chance to Enrage you.
+    frenzied_flurry           = { 90422, 383605, 1 }, -- Increases auto-attack damage with one-handed weapons by 30% and your auto-attack critical strikes have a 50% chance to Enrage you.
     frenzy                    = { 90406, 335077, 1 }, -- Rampage increases your Haste by 2% for 12 sec, stacking up to 4 times. This effect is reset if you Rampage a different primary target.
     fresh_meat                = { 90399, 215568, 1 }, -- Bloodthirst always Enrages you the first time you strike a target, and it has a 15% increased chance to trigger Enrage.
     frothing_berserker        = { 90350, 215571, 1 }, -- Rampage has a 20% chance to immediately refund 20% of the Rage spent.
@@ -202,15 +202,15 @@ spec:RegisterTalents( {
     sidearm                   = { 90335, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 810 Physical damage.
     singleminded_fury         = { 90400, 81099 , 1 }, -- While dual-wielding a pair of one-handed weapons, your damage done is increased by 5% and your movement speed is increased by 5%.
     slaughtering_strikes      = { 90411, 388004, 1 }, -- Raging Blow causes every strike of your next Rampage to deal an additional 20% damage, stacking up to 5 times. Annihilator causes every strike of your next Rampage to deal an additional 2% damage, stacking up to 5 times.
-    storm_of_steel            = { 90389, 382953, 1 }, -- Ravager's damage is reduced by 40% but it now has 2 charges and generates 15 Rage each time it deals damage.
-    storm_of_swords           = { 90420, 388903, 1 }, -- Whirlwind has a 7.0 sec cooldown, but deals 70% increased damage. Slam has a 12.0 sec cooldown and generates 10 Rage, but deals 100% increased damage.
+    storm_of_steel            = { 90389, 382953, 1 }, -- Ravager's damage is reduced by 30% but it now has 2 charges and generates 20 Rage each time it deals damage.
+    storm_of_swords           = { 90420, 388903, 1 }, -- Whirlwind has a 7.0 sec cooldown, but deals 80% increased damage. Slam has a 12.0 sec cooldown and generates 10 Rage, but deals 100% increased damage.
     sudden_death              = { 90429, 280721, 1 }, -- Your attacks have a chance to reset the cooldown of Execute and make it usable on any target, regardless of their health.
     swift_strikes             = { 90416, 383459, 2 }, -- Increases haste by 1%, Raging Blow generates an additional 1 Rage and Annihilator generates an 1 additional Rage.
-    tenderize                 = { 90423, 388933, 1 }, -- Onslaught Enrages you and grants you 3 stacks of Slaughtering Strikes. Enrage now lasts 1 sec longer.
+    tenderize                 = { 90423, 388933, 1 }, -- Onslaught Enrages you, and if you have Slaghtering Strikes grants you 3 stacks of Slaughtering Strikes. Enrage now lasts 2 sec longer.
     thunder_clap              = { 92223, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,648 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
     titanic_rage              = { 90417, 394329, 1 }, -- Odyn's Fury's Enrages you, deals 10% increased damage and grants you 4 stacks of Whirlwind.
     titans_torment            = { 90362, 390135, 1 }, -- Activating Avatar casts Odyn's Fury, activating Odyn's Fury casts Avatar at reduced effectiveness.
-    unbridled_ferocity        = { 90414, 389603, 1 }, -- Rampage has a 20% chance to grant Recklessness for 4 sec.
+    unbridled_ferocity        = { 90414, 389603, 1 }, -- Rampage and Onslaught have a 20% chance to grant Recklessness for 4 sec.
     vicious_contempt          = { 90404, 383885, 2 }, -- Bloodthirst deals 25% increased damage to enemies who are below 35% health.
     war_machine               = { 90386, 346002, 1 }, -- Your auto attacks generate 20% more Rage. Killing an enemy instantly generates 5 Rage, and increases your movement speed by 30% for 8 sec.
     warpaint                  = { 90394, 208154, 1 }, -- You take 10% reduced damage while Enrage is active.
@@ -230,7 +230,7 @@ spec:RegisterPvpTalents( {
     enduring_rage        = 177 , -- (198877) Increases the duration of your Enrage effect by 1 sec, and your Raging Blows extend the duration of your Enrage by 1.5 sec.
     master_and_commander = 3528, -- (235941) Cooldown of Rallying Cry reduced by 1 min, and grants 15% additional health.
     rebound              = 5548, -- (213915) Reflecting spells causes them to deal 50% extra damage back to the attacker.
-    slaughterhouse       = 3735, -- (352998) Rampage damage reduces healing the target receives by 5% for 6 sec, stacking up to 8 times.
+    slaughterhouse       = 3735, -- (352998) Rampage damage reduces healing the target receives by 3% for 12 sec, stacking up to 12 times.
     warbringer           = 5431, -- (356353) Charge roots enemies for 2 sec and emanates a shockwave past the target, rooting enemies and dealing 4,701 Physical damage in a 15 yd cone.
 } )
 
@@ -653,7 +653,10 @@ spec:RegisterHook( "spend", function( amt, resource )
             rage_spent = rage_spent + amt
             local reduction = floor( rage_spent / 20 )
             rage_spent = rage_spent % 20
-            if reduction > 0 then cooldown.recklessness.expires = cooldown.recklessness.expires - reduction end
+            if reduction > 0 then
+                cooldown.recklessness.expires = cooldown.recklessness.expires - reduction
+                cooldown.ravager.expires = cooldown.ravager.expires - reduction
+            end
         end
 
         if legendary.glory.enabled and buff.conquerors_banner.up then
@@ -746,7 +749,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "avatar" )
-            if talent.berserkers_torment.enabled then applyBuff ( "recklessness", 6 ) end
+            if talent.berserkers_torment.enabled then applyBuff ( "recklessness", 8 ) end
             if talent.titans_torment.enabled then
                 applyBuff( "odyns_fury" )
                 active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
@@ -1302,7 +1305,7 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        spend = -20,
+        spend = -30,
         spendType = "rage",
 
         talent = "onslaught",
@@ -1312,10 +1315,9 @@ spec:RegisterAbilities( {
         handler = function ()
             removeStack( "whirlwind" )
             if talent.tenderize.enabled then
-                applyBuff( "enrage" , 6 )
+                applyBuff( "enrage" , 7 )
                 addStack( "slaughtering_strikes", nil, 3 )
             end
-            -- Tenderize increases the enrage by 1 second only when using onslaught
         end,
     },
 
@@ -1471,7 +1473,7 @@ spec:RegisterAbilities( {
             if talent.reckless_abandon.enabled then
                 gain( 50, "rage" )
             end
-            if talent.berserkers_torment.enabled then applyBuff( "avatar", 6 ) end
+            if talent.berserkers_torment.enabled then applyBuff( "avatar", 8 ) end
             if legendary.will_of_the_berserker.enabled then
                 state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
             end
