@@ -25,7 +25,7 @@ spec:RegisterResource( Enum.PowerType.Mana--[[, {
         interval = function () return class.auras.disintegrate.tick_time end,
       value = function () return 0.024 * mana.max end, -- TODO: Check if should be modmax.
     }
-}]]----TODO: this breaks and causes bugs because it isn't referencing mana well from State.lua, but it wouldn't be discovered in Devastation testing because Devastation doesn't have the Energy Loop talent.
+}]] --TODO: this breaks and causes bugs because it isn't referencing mana well from State.lua, but it wouldn't be discovered in Devastation testing because Devastation doesn't have the Energy Loop talent.
 )
 
 -- Talents
@@ -77,7 +77,7 @@ spec:RegisterTalents( {
     verdant_embrace      = { 68688, 360995, 1 },
     walloping_blow       = { 68657, 387341, 1 },
     zephyr               = { 68655, 374227, 1 },
-    
+
     -- Preservation
     call_of_ysera        = { 68599, 373834, 1 },
     cycle_of_life        = { 68602, 371832, 1 },
@@ -129,7 +129,7 @@ spec:RegisterTalents( {
 
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     chrono_loop       = 5455,
     dream_projection  = 5454,
     nullifying_shroud = 5468,
@@ -251,7 +251,7 @@ spec:RegisterAuras( {
     },
     temporal_compression = {
         id = 362877,
-        duration = 15,        
+        duration = 15,
         max_stack = 4
     },
     time_dilation = {
@@ -367,18 +367,18 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.01,
         spendType = "mana",
-        
+
         startsCombat = true,
-        
+
         minRange = 0,
         maxRange = 25,
 
         damage = function () return stat.spell_power * 0.755 end,
         spell_targets = function() return talent.protracted_talons.enabled and 3 or 2 end,
-        
+
         handler = function ()
         end,
     },
@@ -387,12 +387,12 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "spell",
-        
+
         spend = 0.01,
         spendType = "mana",
-        
+
         startsCombat = false,
-                
+
         healing = function () return 3.50 * stat.spell_power end,
 
         toggle = "interrupts",
@@ -406,7 +406,7 @@ spec:RegisterAbilities( {
             removeBuff( "dispellable_curse" )
             removeBuff( "dispellable_disease" )
             -- removeBuff( "dispellable_bleed" )
-            health.current = min( health.max, health.current + action.cauterizing_flame.healing )            
+            health.current = min( health.max, health.current + action.cauterizing_flame.healing )
         end,
     },
     chrono_loop = {
@@ -414,12 +414,12 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 90,
         gcd = "spell",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = true,
-                
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -431,9 +431,9 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 120,
         gcd = "spell",
-        
+
         startsCombat = true,
-                
+
         toggle = "cooldowns",
 
         min_range = 20,
@@ -463,17 +463,17 @@ spec:RegisterAbilities( {
         channeled = true,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = function () return buff.essence_burst.up and 0 or 3 end,
         spendType = "essence",
-        
+
         startsCombat = true,
-        
+
         damage = function () return 2.28 * stat.spell_power * ( talent.energy_loop.enabled and 1.2 or 1 ) end,
-        
+
         min_range = 0,
         max_range = 25,
-        
+
         handler = function ()
             removeStack("essence_burst")
             if talent.energy_loop.enabled then gain(0.0277 * mana.max, "mana") end
@@ -487,12 +487,12 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
         icd = 0.5,
-        
+
         spend = 0.04,
         spendType = "mana",
-        
+
         startsCombat = false,
-                
+
         handler = function ()
             applyBuff("dream_breath")
             applyBuff("dream_breath_hot")
@@ -511,12 +511,12 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 120,
         gcd = "spell",
-        
+
         spend = 0.04,
         spendType = "mana",
-        
+
         startsCombat = false,
-                
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -527,9 +527,9 @@ spec:RegisterAbilities( {
         cast = 0.5,
         cooldown = 90,
         gcd = "spell",
-        
+
         startsCombat = false,
-                
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -540,12 +540,12 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = function () return buff.essence_burst.up and 0 or 2 end,
         spendType = "essence",
-        
+
         startsCombat = false,
-                
+
         handler = function ()
             removeStack("essence_burst")
             if talent.temporal_compression.enabled then addStack("temporal_compression") end
@@ -556,10 +556,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = function () return buff.essence_burst.up and 0 or 3 end,
         spendType = "essence",
-        
+
         startsCombat = false,
 
         healing = function () return 2.5 * stat.spell_power end,    -- TODO: Make a fake aura so we know if an Emerald Blossom is pending for a target already?
@@ -585,9 +585,9 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 180,
         gcd = "spell",
-        
+
         startsCombat = false,
-                
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -601,18 +601,18 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
         icd = 0.5,
-        
+
         spend = 0.03,
         spendType = "mana",
-        
+
         startsCombat = true,
-                
+
         spell_targets = function () return active_enemies end,
         damage = function () return 1.334 * stat.spell_power * ( 1 + 0.1 * talent.blast_furnace.rank ) end,
-        
+
         handler = function()
             removeBuff("temporal_compression")
-            
+
             applyDebuff( "target", "fire_breath" )
 
             if buff.tip_the_scales.up then
@@ -630,12 +630,12 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 90,
         gcd = "spell",
-        
+
         spend = 0.03,
         spendType = "mana",
-        
+
         startsCombat = true,
-                
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -646,12 +646,12 @@ spec:RegisterAbilities( {
         cast = 2,
         cooldown = 0,
         gcd = "spell",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = true,
-                
+
         damage = function () return 1.61 * stat.spell_power end,
         healing = function () return 2.75 * stat.spell_power * ( 1 + 0.03 * talent.enkindled.rank ) end,
         spell_targets = function () return buff.leaping_flames.up and min( active_enemies, 1 + buff.leaping_flames.stack ) end,
@@ -669,18 +669,18 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 8,
         gcd = "spell",
-        
+
         spend = 0.01,
         spendType = "mana",
-        
+
         startsCombat = false,
-        
+
         toggle = "interrupts",
-        
+
         usable = function()
             return buff.dispellable_poison.up or buff.dispellable_magic.up, "requires dispellable effect"
-        end,        
-        
+        end,
+
         handler = function ()
             removeBuff( "dispellable_poison" )
             removeBuff( "dispellable_magic" )
@@ -691,12 +691,12 @@ spec:RegisterAbilities( {
         cast = 1.5,
         cooldown = 90,
         gcd = "spell",
-        
+
         spend = 0.01,
         spendType = "mana",
-        
+
         startsCombat = false,
-                
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -709,9 +709,9 @@ spec:RegisterAbilities( {
         cooldown = 90,
         recharge = function() return talent.obsidian_bulwark.enabled and 90 or nil end,
         gcd = "off",
-        
+
         startsCombat = false,
-                
+
         toggle = "defensives",
 
         handler = function ()
@@ -723,9 +723,9 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 40,
         gcd = "off",
-        
+
         startsCombat = true,
-                
+
         toggle = "interrupts",
         debuff = "casting",
         readyTime = state.timeToInterrupt,
@@ -740,9 +740,9 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = function () return talent.fire_within.enabled and 60 or 90 end,
         gcd = "off",
-        
+
         startsCombat = false,
-        
+
         toggle = "defensives",
 
         handler = function ()
@@ -757,12 +757,12 @@ spec:RegisterAbilities( {
         cooldown = 9,
         recharge = 9,
         gcd = "spell",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
-        
+
         handler = function ()
             applyBuff( "reversion")
             if talent.temporal_compression.enabled then addStack("temporal_compression") end
@@ -775,12 +775,12 @@ spec:RegisterAbilities( {
         cooldown = 180,
         recharge = 180,
         gcd = "spell",
-        
+
         spend = 0.05,
         spendType = "mana",
-        
+
         startsCombat = false,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -795,12 +795,12 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
         icd = 0.5,
-        
+
         spend = 0.04,
         spendType = "mana",
-        
+
         startsCombat = false,
-        
+
         handler = function ()
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
@@ -816,12 +816,12 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 90,
         gcd = "off",
-        
+
         spend = 0.04,
         spendType = "mana",
-        
+
         startsCombat = false,
-                
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -833,12 +833,12 @@ spec:RegisterAbilities( {
         cast = 1.5,
         cooldown = 6,
         gcd = "spell",
-        
+
         spend = 0.08,
         spendType = "mana",
-        
+
         startsCombat = false,
-                
+
         handler = function ()
             if talent.temporal_compression.enabled then addStack("temporal_compression") end
             if talent.resonating_sphere.enabled then applyBuff("echo") end
@@ -849,12 +849,12 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "off",
-        
+
         spend = 0.02,
         spendType = "mana",
-        
+
         startsCombat = false,
-        
+
         toggle = "cooldowns",
 
         handler = function ()
@@ -866,18 +866,18 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 9,
         gcd = "spell",
-        
+
         spend = 0.01,
         spendType = "mana",
-        
+
         startsCombat = true,
-        
+
         debuff = "all_absorbs",
 
         usable = function() return settings.use_unravel, "use_unravel setting is OFF" end,
 
         handler = function ()
-            removeDebuff( "all_absorbs" )            
+            removeDebuff( "all_absorbs" )
         end,
     }
 } )

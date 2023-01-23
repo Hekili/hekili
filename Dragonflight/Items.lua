@@ -565,9 +565,6 @@ all:RegisterAbilities( {
         cast = 2,
         channeled = true,
         cooldown = 120,
-        cooldown_special = function()
-            return GetSpellCooldown( 382256 )
-        end,
         gcd = "off",
 
         item = 194308,
