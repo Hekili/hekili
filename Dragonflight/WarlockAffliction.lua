@@ -2018,7 +2018,11 @@ spec:RegisterAbilities( {
         essential = true,
         nomounted = true,
 
-        usable = function () return not pet.alive end,
+        usable = function ()
+            if pet.alive then return false, "pet is alive"
+            elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
+            return true
+        end,
         handler = function ()
             removeBuff( "fel_domination" )
             removeBuff( "grimoire_of_sacrifice" )
