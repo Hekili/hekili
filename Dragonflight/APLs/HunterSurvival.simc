@@ -56,7 +56,7 @@ actions.st+=/mongoose_bite,if=buff.spearhead.remains
 actions.st+=/mongoose_bite,if=active_enemies=1&boss&fight_remains<focus%(variable.mb_rs_cost-cast_regen)*gcd|buff.mongoose_fury.up&buff.mongoose_fury.remains<gcd
 actions.st+=/kill_shot,if=!buff.coordinated_assault.up
 actions.st+=/raptor_strike,if=active_enemies=1&boss&fight_remains<focus%(variable.mb_rs_cost-cast_regen)*gcd
-actions.st+=/serpent_sting,cycle_targets=1,if=!dot.serpent_sting.ticking&target.time_to_die>7&!talent.vipers_venom
+actions.st+=/serpent_sting,cycle_targets=1,if=refreshable&target.time_to_die>7&!talent.vipers_venom
 actions.st+=/mongoose_bite,if=talent.alpha_predator&buff.mongoose_fury.up&buff.mongoose_fury.remains<focus%(variable.mb_rs_cost-cast_regen)*gcd
 actions.st+=/flanking_strike,if=focus+cast_regen<focus.max
 actions.st+=/stampede
