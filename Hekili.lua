@@ -226,8 +226,13 @@ function Hekili:Debug( ... )
 
 	local prepend = format( indent > 0 and ( "%" .. ( indent * 4 ) .. "s" ) or "%s", "" )
 	text = text:gsub("\n", "\n" .. prepend )
+    text = format( "%" .. ( indent > 0 and ( 4 * indent ) or "" ) .. "s", "" ) .. text
 
-	active_debug.log[ active_debug.index ] = format( "%" .. ( indent > 0 and ( 4 * indent ) or "" ) .. "s" .. text, "", select( start, ... ) )
+    if select( start, ... ) ~= nil then
+	    active_debug.log[ active_debug.index ] = format( text, select( start, ... ) )
+    else
+        active_debug.log[ active_debug.index ] = text
+    end
     active_debug.index = active_debug.index + 1
 end
 
