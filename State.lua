@@ -6135,7 +6135,11 @@ do
             local res = rawget( state, k )
 
             if res then
-                res.actual = UnitPower( "player", power.type )
+                if k == "combo_points" then
+                    res.actual = UnitExists( "target" ) and GetComboPoints("player", "target") or UnitPower( "player", power.type )
+                else
+                    res.actual = UnitPower( "player", power.type )
+                end
                 res.max = UnitPowerMax( "player", power.type )
 
                 if res.max > 0 then foundResource = true end
