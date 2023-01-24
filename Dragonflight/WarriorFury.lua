@@ -324,7 +324,7 @@ spec:RegisterAuras( {
     },
     enrage = {
         id = 184362,
-        duration = 4,
+        duration = function() return talent.tenderize.enabled and 6 or 4 end,
         max_stack = 1,
     },
     enraged_regeneration = {
@@ -749,7 +749,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "avatar" )
-            if talent.berserkers_torment.enabled then applyBuff ( "recklessness", 8 ) end
+            if talent.berserkers_torment.enabled then applyBuff( "recklessness", 8 ) end
             if talent.titans_torment.enabled then
                 applyBuff( "odyns_fury" )
                 active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
@@ -1315,8 +1315,8 @@ spec:RegisterAbilities( {
         handler = function ()
             removeStack( "whirlwind" )
             if talent.tenderize.enabled then
-                applyBuff( "enrage" , 7 )
-                addStack( "slaughtering_strikes", nil, 3 )
+                applyBuff( "enrage" )
+                if talent.slaughtering_strikes.enabled then addStack( "slaughtering_strikes", nil, 3 ) end
             end
         end,
     },

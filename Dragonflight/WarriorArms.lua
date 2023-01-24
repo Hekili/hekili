@@ -182,7 +182,7 @@ spec:RegisterPvpTalents( {
 spec:RegisterAuras( {
     avatar = {
         id = 107574,
-        duration = function() return ( talent.spiteful_serenity.enabled and 40 or 20) end, -- 100% buff from spiteful_serenity
+        duration = function() return ( talent.spiteful_serenity.enabled and 40 or 20 ) end, -- 100% buff from spiteful_serenity
         max_stack = 1
     },
     battle_stance = {
@@ -1149,7 +1149,7 @@ spec:RegisterAbilities( {
         recharge = function () return 12 - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
         gcd = "spell",
 
-        spend = function() return 0 + ( talent.strength_of_arms.enabled and target.health_pct < 35 and -8 or 0 ) end,
+        spend = function() return talent.strength_of_arms.enabled and target.health_pct < 35 and -8 or 0 end,
         spendType = "rage",
 
         talent = "overpower",
@@ -1396,7 +1396,6 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
         icd = 0.75,
-
 
         startsCombat = false,
         texture = 132306,
