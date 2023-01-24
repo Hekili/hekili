@@ -196,6 +196,11 @@ end, state )
 
 -- Auras
 spec:RegisterAuras( {
+    after_the_wildfire = {
+        id = 400734,
+        duration = 3600,
+        max_stack = 1
+    },
     aquatic_form = {
         id = 276012,
         duration = 3600,
@@ -933,6 +938,17 @@ spec:RegisterHook( "runHandler", function( ability )
 
     if buff.ravenous_frenzy.up and ability ~= "ravenous_frenzy" then
         addStack( "ravenous_frenzy", nil, 1 )
+    end
+end )
+
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if talent.after_the_wildfire.enabled and resource == "rage" and amt > 0 then
+        buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 - amt
+        if buff.after_the_wildfire.v1 < 0 then
+            -- Heal ticked.
+            buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 + 200
+        end
     end
 end )
 
@@ -1758,7 +1774,6 @@ spec:RegisterAbilities( {
         debuff = "dispellable_enrage",
 
         handler = function ()
-            if buff.bear_form.up and not talent.ursine_adept.enabled then unshift() end
             removeDebuff( "target", "dispellable_enrage" )
         end,
     },
@@ -1972,24 +1987,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "travel_form" )
-        end,
-    },
-
-    -- Talent: Blasts targets within $61391a1 yards in front of you with a violent Typhoon, knocking them back and dazing them for $61391d. Usable in all shapeshift forms.
-    typhoon = {
-        id = 132469,
-        cast = 0,
-        cooldown = 30,
-        gcd = "spell",
-        school = "nature",
-
-        talent = "typhoon",
-        startsCombat = true,
-
-        handler = function ()
-            if target.distance < 15 then
-                applyDebuff( "target", "typhoon" )
-            end
         end,
     },
 

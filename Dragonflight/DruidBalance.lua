@@ -190,11 +190,11 @@ spec:RegisterPower( "lively_spirit", 279642, {
 
 
 local mod_circle_hot = setfenv( function( x )
-    return x * ( legendary.circle_of_life_and_death.enabled and 0.85 or 1 ) * ( talent.circle_of_life_and_death.enabled and 0.85 or 1 )
+    return x
 end, state )
 
 local mod_circle_dot = setfenv( function( x )
-    return x * ( legendary.circle_of_life_and_death.enabled and 0.75 or 1 ) * ( talent.circle_of_life_and_death.enabled and 0.75 or 1 )
+    return x
 end, state )
 
 
