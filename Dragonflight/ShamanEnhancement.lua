@@ -474,14 +474,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = function() return talent.raging_maelstrom.enabled and 10 or 5 end
     },
-    -- Talent:
-    -- https://wowhead.com/beta/spell=381930
-    mana_spring_totem = {
-        id = 381930,
-        duration = 120,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Increases fire damage dealt from your abilities by $s1%.
     -- https://wowhead.com/beta/spell=224125
     molten_weapon = {
@@ -692,7 +684,6 @@ local recall_totems = {
     grounding_totem = 1,
     healing_stream_totem = 1,
     liquid_magma_totem = 1,
-    mana_spring_totem = 1,
     poison_cleansing_totem = 1,
     skyfury_totem = 1,
     stoneskin_totem = 1,
@@ -968,7 +959,6 @@ spec:RegisterStateFunction( "maelstrom_mod", function( amount )
 end )
 
 spec:RegisterTotem( "counterstrike_totem", 511726 )
-spec:RegisterTotem( "mana_spring_totem", 136053 )
 spec:RegisterTotem( "poison_cleansing_totem", 136070 )
 spec:RegisterTotem( "skyfury_totem", 135829 )
 spec:RegisterTotem( "stoneskin_totem", 4667425 )
@@ -1063,7 +1053,7 @@ spec:RegisterAbilities( {
     capacitor_totem = {
         id = 192058,
         cast = 0,
-        cooldown = function () return 60 - 2 * talent.totemic_surge.rank + conduit.totemic_surge.mod * 0.001 end,
+        cooldown = function () return 60 - 3 * talent.totemic_surge.rank + conduit.totemic_surge.mod * 0.001 end,
         gcd = "totem",
         school = "nature",
 
@@ -1190,7 +1180,7 @@ spec:RegisterAbilities( {
     counterstrike_totem = {
         id = 204331,
         cast = 0,
-        cooldown = function () return 45 - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 45 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         spend = 0.03,
@@ -1317,7 +1307,7 @@ spec:RegisterAbilities( {
     earthbind_totem = {
         id = 2484,
         cast = 0,
-        cooldown = function () return 30 - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 30 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "nature",
 
@@ -1337,7 +1327,7 @@ spec:RegisterAbilities( {
     earthgrab_totem = {
         id = 51485,
         cast = 0,
-        cooldown = function () return 60 - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 60 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "nature",
 
@@ -1601,7 +1591,7 @@ spec:RegisterAbilities( {
     healing_stream_totem = {
         id = 5394,
         cast = 0,
-        cooldown = function () return 30 - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 30 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "nature",
 
@@ -1851,25 +1841,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Summons a totem at your feet for $d that restores $381931s1 mana to you and $s1 allies nearest to the totem within $?s382201[${$s2*(1+$382201s3/100)}][$s2] yards when you cast $?!s137041[Lava Burst][]$?s137039[ or Riptide][]$?s137041[Stormstrike][].    Allies can only benefit from one Mana Spring Totem at a time, prioritizing healers.
-    mana_spring_totem = {
-        id = 381930,
-        cast = 0,
-        cooldown = function () return 45 - 2 * talent.totemic_surge.rank end,
-        gcd = "totem",
-        school = "nature",
-
-        spend = 0.015,
-        spendType = "mana",
-
-        talent = "mana_spring_totem",
-        startsCombat = false,
-
-        handler = function ()
-            summonTotem( "mana_spring_totem" )
-        end,
-    },
-
     -- Talent: Your next healing or damaging Nature spell is instant cast and costs no mana.
     natures_swiftness = {
         id = 378081,
@@ -1983,7 +1954,7 @@ spec:RegisterAbilities( {
     skyfury_totem = {
         id = 204330,
         cast = 0,
-        cooldown = function () return 40 - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 40 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "fire",
 
@@ -2044,7 +2015,7 @@ spec:RegisterAbilities( {
     stoneskin_totem = {
         id = 383017,
         cast = 0,
-        cooldown = function () return 30 - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 30 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "nature",
 
@@ -2208,7 +2179,7 @@ spec:RegisterAbilities( {
     tranquil_air_totem = {
         id = 383019,
         cast = 0,
-        cooldown = function () return 60 - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 60 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "nature",
 
@@ -2230,7 +2201,7 @@ spec:RegisterAbilities( {
     tremor_totem = {
         id = 8143,
         cast = 0,
-        cooldown = function () return 60 + ( conduit.totemic_surge.mod * 0.001 ) - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 60 + ( conduit.totemic_surge.mod * 0.001 ) - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "nature",
 
@@ -2266,7 +2237,7 @@ spec:RegisterAbilities( {
     wind_rush_totem = {
         id = 192077,
         cast = 0,
-        cooldown = function () return 120 - 2 * talent.totemic_surge.rank end,
+        cooldown = function () return 120 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
 
         talent = "wind_rush_totem",

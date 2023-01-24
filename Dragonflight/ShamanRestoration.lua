@@ -190,10 +190,6 @@ spec:RegisterAuras( {
         id = 192106,
         duration = 1800,
     },
-    mana_spring_totem = {
-        id = 395197,
-        duration = 120,
-    },
     mastery_deep_healing = {
         id = 77226,
     },
@@ -833,22 +829,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff("lightning_shield")
-        end,
-    },
-    mana_spring_totem = {
-        id = 381930,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136053,
-
-        handler = function ()
-            applyBuff("mana_spring_totem")
         end,
     },
     mana_tide_totem = {
