@@ -1490,6 +1490,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "mind_flay" )
             end
             if talent.dark_evangelism.enabled then addStack( "dark_evangelism" ) end
+            if talent.manipulation.enabled then reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank ) end
         end,
 
         tick = function ()
@@ -2010,7 +2011,7 @@ spec:RegisterAbilities( {
         id = 15286,
         cast = 0,
         cooldown = function() return talent.sanlayn.enabled and 75 or 120 end,
-        gcd = "spell",
+        gcd = "off",
         school = "shadow",
 
         talent = "vampiric_embrace",
