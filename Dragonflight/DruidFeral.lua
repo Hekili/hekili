@@ -24,95 +24,98 @@ spec:RegisterTalents( {
     astral_influence               = { 82210, 197524, 2 }, -- Increases the range of all of your abilities by 1 yards.
     cyclone                        = { 82213, 33786 , 1 }, -- Tosses the enemy target into the air, disorienting them but making them invulnerable for up to 6 sec. Only one target can be affected by your Cyclone at a time.
     feline_swiftness               = { 82239, 131768, 2 }, -- Increases your movement speed by 15%.
-    heart_of_the_wild              = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for 45 sec. Balance: Magical damage increased by 30%, and Starsurge is instant. Guardian: Bear Form gives an additional 20% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has 2 charges. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
+    forestwalk                     = { 92229, 400129, 2 }, -- Casting Regrowth increases your movement speed and healing received by 5% for 3 sec.
+    gale_winds                     = { 92228, 400142, 1 }, -- Increases Typhoon's radius by 20% and its range by 5 yds.
+    heart_of_the_wild              = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for 45 sec. Balance: Magical damage increased by 30%. Guardian: Bear Form gives an additional 20% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has 2 charges. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
     hibernate                      = { 82211, 2637  , 1 }, -- Forces the enemy target to sleep for up to 40 sec. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
-    improved_barkskin              = { 82219, 327993, 1 }, -- Duration increased by 4 sec.
+    improved_barkskin              = { 82219, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_rejuvenation          = { 82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec.
     improved_stampeding_roar       = { 82230, 288826, 1 }, -- Cooldown reduced by 60 sec.
     improved_sunfire               = { 82207, 231050, 1 }, -- Sunfire now applies its damage over time effect to all enemies within 8 yards.
+    improved_swipe                 = { 82226, 400158, 1 }, -- Increases Swipe damage by 100%.
     incapacitating_roar            = { 82237, 99    , 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 13 yards for 3 sec. Damage will cancel the effect.
+    incessant_tempest              = { 92228, 400140, 1 }, -- Reduces the cooldown of Typhoon by 5 sec.
     innervate                      = { 82243, 29166 , 1 }, -- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 10 sec.
-    ironfur                        = { 82227, 192081, 1 }, -- Increases armor by 2,104 for 7 sec.
-    killer_instinct                = { 82225, 108299, 3 }, -- Physical damage and Armor increased by 2%.
+    ironfur                        = { 82227, 192081, 1 }, -- Increases armor by 5,803 for 7 sec.
+    killer_instinct                = { 82225, 108299, 2 }, -- Physical damage and Armor increased by 2%.
     lycaras_teachings              = { 82233, 378988, 3 }, -- You gain 2% of a stat while in each form: No Form: Haste Cat Form: Critical Strike Bear Form: Versatility Moonkin Form: Mastery
-    maim                           = { 82221, 22570 , 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 670 damage, 1 sec 2 points: 1,340 damage, 2 sec 3 points: 2,010 damage, 3 sec 4 points: 2,681 damage, 4 sec 5 points: 3,351 damage, 5 sec
+    maim                           = { 82221, 22570 , 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 1,616 damage, 1 sec 2 points: 3,232 damage, 2 sec 3 points: 4,848 damage, 3 sec 4 points: 6,464 damage, 4 sec 5 points: 8,080 damage, 5 sec
     mass_entanglement              = { 82242, 102359, 1 }, -- Roots the target and all enemies within 15 yards in place for 30 sec. Damage may interrupt the effect. Usable in all shapeshift forms.
-    matted_fur                     = { 82236, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 7,796 damage for 8 sec.
+    matted_fur                     = { 82236, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 22,574 damage for 8 sec.
     mighty_bash                    = { 82237, 5211  , 1 }, -- Invokes the spirit of Ursoc to stun the target for 4 sec. Usable in all shapeshift forms.
     natural_recovery               = { 82206, 377796, 2 }, -- Healing done and healing taken increased by 3%.
     natures_vigil                  = { 82244, 124974, 1 }, -- For 30 sec, all single-target damage also heals a nearby friendly target for 20% of the damage done.
-    nurturing_instinct             = { 82214, 33873 , 3 }, -- Magical damage and healing increased by 2%.
+    nurturing_instinct             = { 82214, 33873 , 2 }, -- Magical damage and healing increased by 2%.
     primal_fury                    = { 82238, 159286, 1 }, -- When you critically strike with an attack that generates a combo point, you gain an additional combo point. Damage over time cannot trigger this effect.
-    protector_of_the_pack          = { 82245, 378986, 1 }, -- Store 10% of your damage, up to 3,153. Your next Regrowth consumes all stored damage to increase its healing.
+    protector_of_the_pack          = { 82245, 378986, 1 }, -- Store 5% of your damage, up to 10,330. Your next Regrowth consumes all stored damage to increase its healing.
     renewal                        = { 82232, 108238, 1 }, -- Instantly heals you for 30% of maximum health. Usable in all shapeshift forms.
-    rip                            = { 82222, 1079  , 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 5,825 over 8 sec 2 points: 8,738 over 12 sec 3 points: 11,651 over 16 sec 4 points: 14,564 over 20 sec 5 points: 17,476 over 24 sec
     skull_bash                     = { 82224, 106839, 1 }, -- You charge and bash the target's skull, interrupting spellcasting and preventing any spell in that school from being cast for 4 sec.
     soothe                         = { 82229, 2908  , 1 }, -- Soothes the target, dispelling all enrage effects.
     stampeding_roar                = { 82234, 106898, 1 }, -- Shift into Bear Form and let loose a wild roar, increasing the movement speed of all friendly players within 18 yards by 60% for 8 sec.
-    sunfire                        = { 82208, 93402 , 1 }, -- A quick beam of solar light burns the enemy for 598 Nature damage and then an additional 5,632 Nature damage over 18 sec.
-    swipe                          = { 82226, 213764, 1 }, -- Swipe nearby enemies, inflicting Physical damage. Damage varies by shapeshift form. Awards 1 combo point.
+    sunfire                        = { 82208, 93402 , 1 }, -- A quick beam of solar light burns the enemy for 1,734 Nature damage and then an additional 15,776 Nature damage over 18 sec.
     thick_hide                     = { 82228, 16931 , 2 }, -- Reduces all damage taken by 6%.
     tiger_dash                     = { 82198, 252216, 1 }, -- Shift into Cat Form and increase your movement speed by 200%, reducing gradually over 5 sec.
     tireless_pursuit               = { 82197, 377801, 1 }, -- For 3 sec after leaving Cat Form or Travel Form, you retain up to 40% movement speed.
-    typhoon                        = { 82209, 132469, 1 }, -- Blasts targets within 18 yards in front of you with a violent Typhoon, knocking them back and dazing them for 6 sec. Usable in all shapeshift forms.
+    typhoon                        = { 82209, 132469, 1 }, -- Blasts targets within 18 yards in front of you with a violent Typhoon, knocking them back and reducing their movement speed by 50% for 6 sec. Usable in all shapeshift forms.
     ursine_vigor                   = { 82235, 377842, 2 }, -- For 4 sec after shifting into Bear Form, your health and armor are increased by 10%.
     ursols_vortex                  = { 82242, 102793, 1 }, -- Conjures a vortex of wind for 10 sec at the destination, reducing the movement speed of all enemies within 8 yards by 50%. The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center. Usable in all shapeshift forms.
     verdant_heart                  = { 82218, 301768, 1 }, -- Frenzied Regeneration and Barkskin increase all healing received by 20%.
     wellhoned_instincts            = { 82246, 377847, 2 }, -- When you fall below 40% health, you cast Frenzied Regeneration, up to once every 120 sec.
     wild_charge                    = { 82198, 102401, 1 }, -- Fly to a nearby ally's position.
-    wild_growth                    = { 82241, 48438 , 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 3,522 over 7 sec. Healing starts high and declines over the duration.
+    wild_growth                    = { 82241, 48438 , 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 9,867 over 7 sec. Healing starts high and declines over the duration.
 
     -- Feral
-    adaptive_swarm                 = { 82112, 391888, 1 }, -- Command a swarm that heals 5,664 or deals 5,395 Shadow damage over 12 sec to a target, and increases the effectiveness of your periodic effects on them by 25%. Upon expiration, finds a new target, preferring to alternate between friend and foe up to 3 times.
+    adaptive_swarm                 = { 82112, 391888, 1 }, -- Command a swarm that heals 15,867 or deals 15,111 Shadow damage over 12 sec to a target, and increases the effectiveness of your periodic effects on them by 25%. Upon expiration, finds a new target, preferring to alternate between friend and foe up to 3 times.
     apex_predators_craving         = { 82092, 391881, 1 }, -- Rip damage has a 4% chance to make your next Ferocious Bite free and deal the maximum damage.
     ashamanes_guidance             = { 82113, 391548, 1 }, -- Your melee attacks have a chance to activate Incarnation: Avatar of Ashamane for 6 sec, without the ability to enter stealth in combat. Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
-    berserk                        = { 82101, 106951, 1 }, -- Go Berserk for 20 sec. While Berserk: Finishing moves have a 20% chance per combo point spent to refund 2 combo points. Swipe generates 1 additional combo point. Rake and Shred deal damage as though you were stealthed. Combo point-generating abilities bleed the target for an additonal 125% of their damage over 8 sec.
+    berserk                        = { 82101, 106951, 1 }, -- Go Berserk for 20 sec. While Berserk: Finishing moves have a 20% chance per combo point spent to refund 2 combo points. Swipe generates 1 additional combo point. Rake and Shred deal damage as though you were stealthed.
     berserk_frenzy                 = { 82090, 384668, 1 }, -- During Berserk your combo point-generating abilities bleed the target for an additonal 125% of their damage over 8 sec.
     berserk_heart_of_the_lion      = { 82105, 391174, 1 }, -- Each combo point spent reduces the cooldown of Berserk by 0.5 sec.
     bloodtalons                    = { 82109, 319439, 1 }, -- When you use 3 different combo point-generating abilities within 4 sec, the damage of your next 2 Rips or Ferocious Bites is increased by 25%.
-    brutal_slash                   = { 82091, 202028, 1 }, -- Strikes all nearby enemies with a massive slash, inflicting 3,251 Physical damage. Deals 10% increased damage against bleeding targets. Deals reduced damage beyond 5 targets. Awards 1 combo point.
+    brutal_slash                   = { 82091, 202028, 1 }, -- Strikes all nearby enemies with a massive slash, inflicting 11,641 Physical damage. Deals 10% increased damage against bleeding targets. Deals reduced damage beyond 5 targets. Awards 1 combo point.
     carnivorous_instinct           = { 82110, 390902, 2 }, -- Tiger's Fury's damage bonus is increased by 6%.
     cats_curiosity                 = { 82094, 386318, 2 }, -- Clearcast abilities generate 25% of their Energy cost.
-    circle_of_life_and_death       = { 82095, 391969, 1 }, -- Your damage over time effects deal their damage in 25% less time, and your healing over time effects in 15% less time.
-    convoke_the_spirits            = { 82114, 391528, 1 }, -- Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of 16 Druid spells and abilities over 4 sec. You will cast Ferocious Bite, Shred, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
+    circle_of_life_and_death       = { 82095, 400320, 1 }, -- Your damage over time effects deal their damage in 20% less time, and your healing over time effects in 15% less time.
+    convoke_the_spirits            = { 82114, 391528, 1 }, -- Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of 12 Druid spells and abilities over 3 sec. Chance to use an exceptional spell or ability is increased. You will cast Wild Growth, Swiftmend, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
     doubleclawed_rake              = { 82086, 391700, 1 }, -- Rake also applies Rake to 1 additional nearby target.
-    dreadful_bleeding              = { 82117, 391045, 1 }, -- Rip damage increased by 20%.
-    feral_frenzy                   = { 82108, 274837, 1 }, -- Unleash a furious frenzy, clawing your target 5 times for 2,733 Physical damage and an additional 19,697 Bleed damage over 6 sec. Awards 5 combo points.
+    dreadful_bleeding              = { 82117, 391045, 1 }, -- Rip damage increased by 15%.
+    feral_frenzy                   = { 82108, 274837, 1 }, -- Unleash a furious frenzy, clawing your target 5 times for 6,275 Physical damage and an additional 43,758 Bleed damage over 6 sec. Awards 5 combo points.
     frantic_momentum               = { 82115, 391875, 2 }, -- Finishing moves have a 3% chance per combo point spent to grant 10% Haste for 6 sec.
     frenzied_regeneration          = { 82220, 22842 , 1 }, -- Heals you for 32% health over 3 sec.
-    incarnation_avatar_of_ashamane = { 82114, 102543, 1 }, -- An improved Cat Form that grants all of your known Berserk effects and lasts 30 sec. You may shapeshift in and out of this improved Cat Form for its duration. During Incarnation: Energy cost of all Cat Form abilities is reduced by 20%, and Prowl can be used once while in combat. Finishing moves have a 20% chance per combo point spent to refund 2 combo points. Rake and Shred deal damage as though you were stealthed. Combo point-generating abilities bleed the target for an additonal 125% of their damage over 8 sec.
-    incarnation                    = { 82114, 102543, 1 }, -- An improved Cat Form that grants all of your known Berserk effects and lasts 30 sec. You may shapeshift in and out of this improved Cat Form for its duration. During Incarnation: Energy cost of all Cat Form abilities is reduced by 20%, and Prowl can be used once while in combat. Finishing moves have a 20% chance per combo point spent to refund 2 combo points. Rake and Shred deal damage as though you were stealthed. Combo point-generating abilities bleed the target for an additonal 125% of their damage over 8 sec.
+    incarnation                    = { 82114, 102543, 1 }, -- An improved Cat Form that grants all of your known Berserk effects and lasts 30 sec. You may shapeshift in and out of this improved Cat Form for its duration. During Incarnation: Energy cost of all Cat Form abilities is reduced by 20%, and Prowl can be used once while in combat. Finishing moves have a 20% chance per combo point spent to refund 2 combo points. Rake and Shred deal damage as though you were stealthed.
+    incarnation_avatar_of_ashamane = { 82114, 102543, 1 }, -- An improved Cat Form that grants all of your known Berserk effects and lasts 30 sec. You may shapeshift in and out of this improved Cat Form for its duration. During Incarnation: Energy cost of all Cat Form abilities is reduced by 20%, and Prowl can be used once while in combat. Finishing moves have a 20% chance per combo point spent to refund 2 combo points. Rake and Shred deal damage as though you were stealthed.
     infected_wounds                = { 82103, 48484 , 1 }, -- Rake damage increased by 30%, and Rake causes an Infected Wound in the target, reducing the target's movement speed by 20% for 12 sec.
     lions_strength                 = { 82109, 391972, 1 }, -- Ferocious Bite and Rip deal 15% increased damage.
-    lunar_inspiration              = { 82087, 155580, 1 }, -- Moonfire is usable in Cat Form, costs 30 energy, and generates 1 combo point.
-    merciless_strikes              = { 82098, 231063, 1 }, -- Shred deals 20% increased damage and Brutal Slash deals 10% increased damage against bleeding targets.
-    moment_of_clarity              = { 82100, 236068, 1 }, -- Omen of Clarity now triggers 50% more often, can accumulate up to 2 charges, and increases the damage of your next Shred, Thrash, or Brutal Slash by 15%.
-    moonkin_form                   = { 91045, 197625, 1 }, -- Shapeshift into Moonkin Form, increasing your armor by 125%, and granting protection from Polymorph effects. The act of shapeshifting frees you from movement impairing effects.
-    omen_of_clarity                = { 82123, 16864 , 1 }, -- Your auto attacks have a high chance to cause a Clearcasting state, making your next Shred, Thrash, or Brutal Slash cost no Energy and deal 15% more damage. Clearcasting can accumulate up to 1 charges.
+    lunar_inspiration              = { 92641, 155580, 1 }, -- Moonfire is usable in Cat Form, costs 30 energy, and generates 1 combo point.
+    merciless_claws                = { 82098, 231063, 1 }, -- Shred deals 20% increased damage and Swipe deals 10% increased damage against bleeding targets.
+    moment_of_clarity              = { 82100, 236068, 1 }, -- Omen of Clarity now triggers 50% more often, can accumulate up to 2 charges, and increases the damage of your next Shred, Thrash, or Swipe by 15%.
+    moonkin_form                   = { 91045, 197625, 1 }, -- Shapeshift into Moonkin Form, increasing the damage of your spells by 10% and your armor by 125%, and granting protection from Polymorph effects. The act of shapeshifting frees you from movement impairing effects.
+    omen_of_clarity                = { 82123, 16864 , 1 }, -- Your auto attacks have a high chance to cause a Clearcasting state, making your next Shred, Thrash, or Swipe cost no Energy and deal 15% more damage. Clearcasting can accumulate up to 1 charges.
     pouncing_strikes               = { 82119, 390772, 1 }, -- While stealthed, Rake will also stun the target for 4 sec, and deal 60% increased damage. While stealthed, Shred deals 60% increased damage, has double the chance to critically strike, and generates 1 additional combo point.
     predator                       = { 82122, 202021, 1 }, -- The cooldown on Tiger's Fury resets when a target dies with one of your Bleed effects active, and Tiger's Fury lasts 5 additional seconds.
     predatory_swiftness            = { 82106, 16974 , 1 }, -- Your finishing moves have a 20% chance per combo point to make your next Regrowth or Entangling Roots instant, free, and castable in all forms.
     primal_claws                   = { 82085, 391037, 2 }, -- Your combo point generating abilities have a 10% chance to generate 1 extra combo point.
-    primal_wrath                   = { 82120, 285381, 1 }, -- Finishing move that deals instant damage and applies Rip to all enemies within 14 yards. Lasts longer per combo point. 1 point : 722 plus Rip for 4 sec 2 points: 1,083 plus Rip for 6 sec 3 points: 1,444 plus Rip for 8 sec 4 points: 1,805 plus Rip for 10 sec 5 points: 2,166 plus Rip for 12 sec
+    primal_wrath                   = { 82120, 285381, 1 }, -- Finishing move that deals instant damage and applies Rip to all enemies within 14 yards. Lasts longer per combo point. 1 point : 1,741 plus Rip for 4 sec 2 points: 2,611 plus Rip for 6 sec 3 points: 3,482 plus Rip for 8 sec 4 points: 4,353 plus Rip for 10 sec 5 points: 5,223 plus Rip for 12 sec
     protective_growth              = { 82097, 391947, 1 }, -- Your Regrowth protects you, reducing all damage you take by 5% while your Regrowth is on you.
     raging_fury                    = { 82107, 391078, 1 }, -- Finishing moves extend the duration of Tiger's Fury by 0.4 sec per combo point spent.
-    rake                           = { 82199, 1822  , 1 }, -- Rake the target for 1,148 Bleed damage and an additional 9,960 Bleed damage over 15 sec. Reduces the target's movement speed by 20% for 12 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
-    rampant_ferocity               = { 82099, 391709, 1 }, -- Ferocious Bite hits all nearby enemies affected by your Rip for 25% of the damage dealt. Damage reduced beyond 5 targets.
-    rejuvenation                   = { 82217, 774   , 1 }, -- Heals the target for 4,283 over 12 sec.
-    relentless_predator            = { 82088, 393771, 1 }, -- Energy cost of Ferocious Bite reduced by 20%.
+    rake                           = { 82199, 1822  , 1 }, -- Rake the target for 2,637 Bleed damage and an additional 22,127 Bleed damage over 15 sec. Reduces the target's movement speed by 20% for 12 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
+    rampant_ferocity               = { 82099, 391709, 1 }, -- Ferocious Bite hits all nearby enemies affected by your Rip for 35% of the damage dealt. Damage reduced beyond 5 targets.
+    rejuvenation                   = { 82217, 774   , 1 }, -- Heals the target for 12,068 over 12 sec.
+    relentless_predator            = { 82088, 393771, 1 }, -- Energy cost of Ferocious Bite reduced by 40%.
     remove_corruption              = { 82204, 2782  , 1 }, -- Nullifies corrupting effects on the friendly target, removing all Curse and Poison effects.
-    rip_and_tear                   = { 82093, 391347, 1 }, -- Applying Rip to a target also applies a Tear that deals 12% of the new Rip's damage over 8 sec.
+    rip                            = { 82222, 1079  , 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 15,874 over 8 sec 2 points: 23,812 over 12 sec 3 points: 31,749 over 16 sec 4 points: 39,687 over 20 sec 5 points: 47,624 over 24 sec
+    rip_and_tear                   = { 82093, 391347, 1 }, -- Applying Rip to a target also applies a Tear that deals 15% of the new Rip's damage over 8 sec.
     sabertooth                     = { 82102, 202031, 1 }, -- Ferocious Bite deals 15% increased damage and increases all damage dealt by Rip by 5% per Combo Point spent for 4 sec.
     soul_of_the_forest             = { 82096, 158476, 1 }, -- Your finishing moves grant 3 Energy per combo point spent and deal 5% increased damage.
-    starfire                       = { 91044, 197628, 1 }, -- Call down a burst of energy, causing 2,620 Arcane damage to the target, and 894 Arcane damage to all other enemies within 5 yards.
-    starsurge                      = { 82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing 4,850 Astral damage.
-    sudden_ambush                  = { 82104, 384667, 2 }, -- Finishing moves have a 5% chance per combo point spent to make your next Rake or Shred deal damage as though you were stealthed.
+    starfire                       = { 91044, 197628, 1 }, -- Call down a burst of energy, causing 7,585 Arcane damage to the target, and 2,588 Arcane damage to all other enemies within 5 yards.
+    starsurge                      = { 82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing 14,044 Astral damage.
+    sudden_ambush                  = { 82104, 384667, 1 }, -- Finishing moves have a 6% chance per combo point spent to make your next Rake or Shred deal damage as though you were stealthed.
     survival_instincts             = { 82116, 61336 , 1 }, -- Reduces all damage you take by 50% for 6 sec.
-    swiftmend                      = { 82216, 18562 , 1 }, -- Consumes a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for 10,329.
-    taste_for_blood                = { 82118, 384665, 2 }, -- Ferocious Bite deals 3% increased damage for each of your Bleeds on the target.
-    tear_open_wounds               = { 82089, 391785, 1 }, -- Primal Wrath consumes up to 4 sec of Rip damage on targets it hits and deals 60% of it instantly.
+    swiftmend                      = { 82216, 18562 , 1 }, -- Consumes a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for 29,908.
+    taste_for_blood                = { 82118, 384665, 1 }, -- Ferocious Bite deals 5% increased damage for each of your Bleeds on the target.
+    tear_open_wounds               = { 82089, 391785, 1 }, -- Primal Wrath consumes up to 4 sec of Rip damage on targets it hits and deals 70% of it instantly.
     thrash                         = { 82223, 106832, 1 }, -- Thrash all nearby enemies, dealing immediate physical damage and periodic bleed damage. Damage varies by shapeshift form.
-    tigers_fury                    = { 82124, 5217  , 1 }, -- Instantly restores 50 Energy, and increases the damage of all your attacks by 27% for their full duration. Lasts 15 sec. Finishing moves increase duration by 0.4 sec per combo point spent.
+    tigers_fury                    = { 82124, 5217  , 1 }, -- Instantly restores 50 Energy, and increases the damage of all your attacks by 15% for their full duration. Lasts 15 sec.
     tigers_tenacity                = { 82107, 391872, 1 }, -- Tiger's Fury causes your next 3 finishing moves to restore 1 combo point.
     tireless_energy                = { 82121, 383352, 2 }, -- Maximum Energy increased by 30 and Energy regeneration increased by 10%.
     unbridled_swarm                = { 82111, 391951, 1 }, -- Adaptive Swarm has a 60% chance to split into two Swarms each time it jumps.
@@ -139,11 +142,11 @@ spec:RegisterPvpTalents( {
 
 
 local mod_circle_hot = setfenv( function( x )
-    return x * ( legendary.circle_of_life_and_death.enabled and 0.85 or 1 ) * ( talent.circle_of_life_and_death.enabled and 0.85 or 1 )
+    return x * ( talent.circle_of_life_and_death.enabled and 0.85 or 1 )
 end, state )
 
 local mod_circle_dot = setfenv( function( x )
-    return x * ( legendary.circle_of_life_and_death.enabled and 0.75 or 1 ) * ( talent.circle_of_life_and_death.enabled and 0.75 or 1 )
+    return x * ( talent.circle_of_life_and_death.enabled and 0.8 or 1 )
 end, state )
 
 
@@ -2334,7 +2337,6 @@ spec:RegisterAbilities( {
             return max( 0, ( 35 * ( buff.incarnation.up and 0.8 or 1 ) ) + buff.scent_of_blood.v1 )
         end,
 
-        talent = "swipe",
         startsCombat = true,
         notalent = "brutal_slash",
         form = "cat_form",
