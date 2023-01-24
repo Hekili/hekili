@@ -1,7 +1,6 @@
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
 actions.precombat+=/marked_for_death,precombat_seconds=10,if=raid_event.adds.in>15
-actions.precombat+=/algethar_puzzle_box
 # Determine which (if any) stat buff trinket we want to attempt to sync with Deathmark.
 actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
