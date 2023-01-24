@@ -104,7 +104,7 @@ spec:RegisterTalents( {
     nether_portal                  = { 71997, 267217, 1 }, -- Tear open a portal to the Twisting Nether for 15 sec. Every time you spend Soul Shards, you will also command demons from the Nether to come out and fight for you.
     pact_of_the_imp_mother         = { 72004, 387541, 2 }, -- Hand of Gul'dan has a 5% chance to cast a second time on your target for free.
     power_siphon                   = { 72003, 264130, 1 }, -- Instantly sacrifice up to 2 Wild Imps, generating 2 charges of Demonic Core that cause Demonbolt to deal 30% additional damage.
-    reign_of_tyranny               = { 71991, 390173, 1 }, -- Active Wild Imps grant 1 stack of Demonic Servitude. Active greater demons grant 3 stacks of Demonic Servitude. Demonic Tyrant deals 5% additional damage for each stack of Demonic Servitude active at the time of his summon.
+    reign_of_tyranny               = { 71991, 390173, 1 }, -- Active Wild Imps grant 1 stack of Demonic Servitude. Active greater demons grant 3 stacks of Demonic Servitude. Demonic Tyrant deals 7% additional damage for each stack of Demonic Servitude active at the time of his summon.
     ripped_through_the_portal      = { 72009, 387485, 2 }, -- Call Dreadstalkers has a 50% chance to summon an additional Dreadstalker.
     sacrificed_souls               = { 71993, 267214, 2 }, -- Shadow Bolt and Demonbolt deal 2% additional damage per demon you have summoned.
     shadows_bite                   = { 72025, 387322, 1 }, -- When your summoned Dreadstalkers fade away, they increase the damage of your Demonbolt by 10% for 8 sec.
@@ -1526,6 +1526,7 @@ spec:RegisterAbilities( {
             applyBuff( "felstorm" )
             applyBuff( "demonic_strength" )
             buff.demonic_strength.expires = buff.felstorm.expires
+            if cooldown.guillotine.remains < 5 then setCooldown( "guillotine", 8 ) end
         end,
     },
 
@@ -1614,6 +1615,7 @@ spec:RegisterAbilities( {
         handler = function()
             removeBuff( "felstorm" )
             applyBuff( "fiendish_wrath" )
+            if cooldown.demonic_strength.remains < 8 then setCooldown( "demonic_strength", 8 ) end
         end
     },
 

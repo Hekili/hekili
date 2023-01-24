@@ -879,13 +879,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Talent:
-    -- https://wowhead.com/beta/spell=386256
-    summon_soulkeeper = {
-        id = 386256,
-        duration = 20,
-        max_stack = 1
-    },
     --
     -- https://wowhead.com/beta/spell=101508
     the_codex_of_xerrath = {
@@ -1592,6 +1585,7 @@ spec:RegisterAbilities( {
 
         talent = "shadowburn",
         startsCombat = true,
+        cycle = function () return talent.eradication.enabled and "eradication" or nil end,
 
         handler = function ()
             gain( 0.3, "soul_shards" )
@@ -1600,6 +1594,9 @@ spec:RegisterAbilities( {
 
             removeBuff( "conflagration_of_chaos_sb" )
 
+            if talent.burn_to_ashes.enabled then
+                addStack( "burn_to_ashes" )
+            end
             if talent.eradication.enabled then
                 applyDebuff( "target", "eradication" )
                 active_dot.eradication = max( active_dot.eradication, active_dot.bane_of_havoc )
@@ -1651,26 +1648,6 @@ spec:RegisterAbilities( {
             if talent.crashing_chaos.enabled then applyBuff( "crashing_chaos", nil, 3 ) end
         end,
     },
-
-    -- Talent: Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 580 Chaos damage every 1 sec for each Tormented Soul consumed. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
-    summon_soulkeeper = {
-        id = 386256,
-        cast = 1,
-        cooldown = 0,
-        gcd = "spell",
-        school = "shadowflame",
-
-        talent = "summon_soulkeeper",
-        startsCombat = true,
-        buff = "tormented_souls",
-
-        handler = function ()
-            applyBuff( "summon_soulkeeper", buff.tormented_souls.stack )
-            removeBuff( "tormented_souls" )
-        end,
-    },
-
-
 } )
 
 

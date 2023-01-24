@@ -652,7 +652,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=386256
     summon_soulkeeper = {
         id = 386256,
-        duration = 12,
+        duration = 8,
         max_stack = 1
     },
     --
@@ -2115,7 +2115,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 829 Chaos damage every 1 sec for each Tormented Soul consumed. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
+    -- Talent: Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 580 Chaos damage every 1 sec for each Tormented Soul consumed. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
     summon_soulkeeper = {
         id = 386256,
         cast = 1,
@@ -2124,10 +2124,12 @@ spec:RegisterAbilities( {
         school = "shadowflame",
 
         talent = "summon_soulkeeper",
-        startsCombat = false,
+        startsCombat = true,
+        buff = "tormented_souls",
 
         handler = function ()
-            applyBuff( "summon_soulkeeper" )
+            applyBuff( "summon_soulkeeper", buff.tormented_souls.stack )
+            removeBuff( "tormented_souls" )
         end,
     },
 
