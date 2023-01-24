@@ -1682,7 +1682,7 @@ do
         wipe( times )
 
         for k, v in pairs( workTable ) do
-            if Hekili.ActiveDebug then Hekili:Debug( "%s - %s", tostring( k ), tostring( v ) ) end
+            -- if Hekili.ActiveDebug then Hekili:Debug( "%s - %s", tostring( k ), tostring( v ) ) end
             times[ #times + 1 ] = k
         end
 
@@ -2010,7 +2010,7 @@ do
                 if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
                 if t.max_targets > 0 then targets = min( t.max_targets, targets ) end
 
-                if Hekili.ActiveDebug then Hekili:Debug( "cycle min:%.2f, max:%.2f, ae:%d, before:%d, after:%d, cycle_enemies:%d", minTTD or 0, maxTTD or 0, t.active_enemies, minTTD and Hekili:GetNumTTDsBefore( minTTD ) or 0, maxTTD and Hekili:GetNumTTDsAfter( maxTTD ) or 0, max( 1, targets ) ) end
+                -- if Hekili.ActiveDebug then Hekili:Debug( "cycle min:%.2f, max:%.2f, ae:%d, before:%d, after:%d, cycle_enemies:%d", minTTD or 0, maxTTD or 0, t.active_enemies, minTTD and Hekili:GetNumTTDsBefore( minTTD ) or 0, maxTTD and Hekili:GetNumTTDsAfter( maxTTD ) or 0, max( 1, targets ) ) end
 
                 return max( 1, targets )
 
@@ -4457,12 +4457,12 @@ do
                         end
 
                         -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
-                        if debug then
+                        --[[ if debug then
                             conditions = format( "%s: %s", passed and "PASS" or "FAIL", scripts:GetConditionsAndValues( scriptID ) )
                             valueString = format( "%s: %s", state.args.value ~= nil and tostring( state.args.value ) or "nil", scripts:GetModifierValues( "value", scriptID ) )
 
                             Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. "\n - value = " .. valueString )
-                        end
+                        end ]]
                         state.variable[ var ] = value
                         cache[ var ][ pathKey ] = value
                     end
@@ -4472,9 +4472,9 @@ do
             -- Clear cache and clear the flag that we are checking this variable already.
             state.variable[ var ] = nil
 
-            if debug then
+            --[[ if debug then
                 Hekili:Debug( "%s Result = %s.", var, tostring( value ) )
-            end
+            end ]]
 
             state.scriptID = parent
 
