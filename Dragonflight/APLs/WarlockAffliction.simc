@@ -2,7 +2,6 @@ actions.precombat=fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrific
 actions.precombat+=/summon_pet
 actions.precombat+=/variable,name=cleave_apl,default=0,op=reset
 actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
-actions.precombat+=/inquisitors_gaze
 actions.precombat+=/seed_of_corruption,if=spell_targets.seed_of_corruption_aoe>3
 actions.precombat+=/haunt
 actions.precombat+=/unstable_affliction,if=active_dot.unstable_affliction=0&!ticking&!talent.soul_swap
@@ -13,7 +12,7 @@ actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>1&active_enemi
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>3
 actions+=/call_action_list,name=ogcd
 actions+=/call_action_list,name=items
-actions+=/soul_swap,if=active_dot.unstable_affliction=0&!dot.unstable_affliction.ticking|!dot.unstable_affliction.ticking&dot.unstable_affliction.remains<5
+actions+=/soul_swap_exhale,if=buff.soul_swap.up&buff.soul_swap.unstable_affliction&(active_dot.unstable_affliction=0&!dot.unstable_affliction.ticking|!dot.unstable_affliction.ticking&dot.unstable_affliction.remains<5)
 actions+=/unstable_affliction,if=active_dot.unstable_affliction=0&!ticking|ticking&remains<5
 actions+=/agony,if=remains<5
 actions+=/corruption,if=remains<5
@@ -37,7 +36,6 @@ actions+=/drain_soul,if=buff.nightfall.react
 actions+=/shadow_bolt,if=buff.nightfall.react
 actions+=/agony,if=refreshable
 actions+=/corruption,if=refreshable
-actions+=/soul_tap
 actions+=/drain_soul,interrupt=1
 actions+=/shadow_bolt
 
@@ -60,7 +58,7 @@ actions.aoe+=/shadow_bolt
 
 actions.cleave+=/malefic_rapture,if=soul_shard=5
 actions.cleave+=/haunt
-actions.cleave+=/soul_swap,if=active_dot.unstable_affliction=0&!!dot.unstable_affliction.ticking|!dot.unstable_affliction.ticking&dot.unstable_affliction.remains<5
+actions.cleave+=/soul_swap_exhale,if=buff.soul_swap.up&buff.soul_swap.unstable_affliction&(active_dot.unstable_affliction=0&!!dot.unstable_affliction.ticking|!dot.unstable_affliction.ticking&dot.unstable_affliction.remains<5)
 # Note: For some reason, Unstable Affliction dot count is not always accurate.  This is a workaround.
 actions.cleave+=/unstable_affliction,if=active_dot.unstable_affliction=0&!ticking|ticking&remains<5
 actions.cleave+=/agony,if=remains<5

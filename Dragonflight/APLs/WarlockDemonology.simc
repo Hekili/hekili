@@ -1,6 +1,5 @@
 actions.precombat+=/fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet
-actions.precombat+=/inquisitors_gaze
 actions.precombat+=/variable,name=tyrant_prep_start,op=set,value=12
 actions.precombat+=/power_siphon
 actions.precombat+=/demonbolt,if=soul_shards<5&(boss|action.demonbolt.cast=0&!buff.power_siphon.up)
