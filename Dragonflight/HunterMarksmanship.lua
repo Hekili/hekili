@@ -274,13 +274,13 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
-    -- Talent: Your next Aimed Shot will fire a second time instantly at $s4% power and consume no Focus, or your next Rapid Fire will shoot $s3% additional shots during its channel.
+    --[[ Talent: Your next Aimed Shot will fire a second time instantly at $s4% power and consume no Focus, or your next Rapid Fire will shoot $s3% additional shots during its channel.
     -- https://wowhead.com/beta/spell=260402
     double_tap = {
         id = 260402,
         duration = 15,
         max_stack = 1
-    },
+    }, ]]
     -- Vision is enhanced.
     -- https://wowhead.com/beta/spell=6197
     eagle_eye = {
@@ -414,7 +414,7 @@ spec:RegisterAuras( {
         id = 257044,
         duration = function () return 2 * haste end,
         tick_time = function ()
-            return ( 2 * haste ) / ( buff.double_tap.up and 14 or 7 )
+            return ( 2 * haste ) / 7
         end,
         type = "Ranged",
         max_stack = 1
@@ -718,7 +718,6 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            removeBuff( "double_tap" )
             if buff.lock_and_load.up then removeBuff( "lock_and_load" )
             elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
             if talent.precise_shots.enabled then applyBuff( "precise_shots" ) end
@@ -876,7 +875,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Your next Aimed Shot will fire a second time instantly at $s4% power without consuming Focus, or your next Rapid Fire will shoot $s3% additional shots during its channel.
+    --[[ Removed in 10.0.5 -- Talent: Your next Aimed Shot will fire a second time instantly at $s4% power without consuming Focus, or your next Rapid Fire will shoot $s3% additional shots during its channel.
     double_tap = {
         id = 260402,
         cast = 0,
@@ -892,7 +891,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "double_tap" )
         end,
-    },
+    }, ]]
 
 
     explosive_shot = {
@@ -989,7 +988,6 @@ spec:RegisterAbilities( {
             end
 
             if talent.trick_shots.enabled and active_enemies > 2 then applyBuff( "trick_shots" ) end
-            if talent.calling_the_shots.enabled then cooldown.rapid_fire.expires = max( 0, cooldown.rapid_fire.expires - 2.5 ) end
             if talent.salvo.enabled and debuff.salvo.down then
                 applyDebuff( "target", "explosive_shot" )
                 applyDebuff( "player", "salvo" )
@@ -1019,7 +1017,6 @@ spec:RegisterAbilities( {
         end,
 
         finish = function ()
-            removeBuff( "double_tap" )
             if buff.volley.down then
                 removeBuff( "trick_shots" )
                 if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
