@@ -2607,9 +2607,9 @@ spec:RegisterAbilities( {
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
 
-            if legendary.invigorating_shadowdust.enabled then
+            if talent.invigorating_shadowdust.enabled then
                 for name, cd in pairs( cooldown ) do
-                    if cd.remains > 0 then reduceCooldown( name, 20 ) end
+                    if cd.remains > 0 then reduceCooldown( name, 15 * talent.invigorating_shadowdust.rank ) end
                 end
             end
         end,
