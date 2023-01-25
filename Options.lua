@@ -685,14 +685,14 @@ do
             },
         }
 
-        --[[ for id, spec in pairs( class.specs ) do
+        for id, spec in pairs( class.specs ) do
             if id > 0 then
                 defaults.profile.specs[ id ] = defaults.profile.specs[ id ] or tableCopy( specTemplate )
                 for k, v in pairs( spec.options ) do
                     defaults.profile.specs[ id ][ k ] = v
                 end
             end
-        end ]]
+        end
 
         return defaults
     end
