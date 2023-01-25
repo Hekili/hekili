@@ -1,0 +1,31 @@
+actions.precombat+=/smite
+
+# Default fallback for usable items: Use on cooldown in order by trinket slot.
+actions+=/use_items
+# Sync potion usage with Bloodlust or Power Infusion.
+actions+=/potion,if=buff.bloodlust.react|buff.power_infusion.up|boss&fight_remains<=40
+
+actions.racials+=/arcane_torrent,if=mana.pct<=95
+
+actions+=/call_action_list,name=racials
+# Use Power Infusion before Shadow Covenant to make sure we don't lock out our CD.
+actions+=/power_infusion
+actions+=/divine_star
+actions+=/halo
+actions+=/penance
+actions+=/power_word_solace
+actions+=/shadow_covenant
+actions+=/schism
+actions+=/mindgames
+actions+=/mindbender
+actions+=/spirit_shell
+actions+=/purge_the_wicked,if=!ticking
+actions+=/shadow_word_pain,if=!ticking&!talent.purge_the_wicked.enabled
+actions+=/shadow_word_death
+actions+=/mind_blast
+actions+=/purge_the_wicked,if=refreshable
+actions+=/shadow_word_pain,if=refreshable&!talent.purge_the_wicked.enabled
+# Use Smite on up to 2 targets.
+actions+=/smite,if=spell_targets.holy_nova<3
+actions+=/holy_nova,if=spell_targets.holy_nova>=3
+actions+=/shadow_word_pain

@@ -1,32 +1,35 @@
-# Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/heart_of_the_wild
-actions.precombat+=/prowl,if=(buff.cat_form.up|buff.any_form.down)&talent.rake.enabled
-actions.precombat+=/cat_form,if=buff.any_form.down&talent.rake.enabled
-actions.precombat+=/moonkin_form,if=buff.any_form.down|talent.moonkin_form.enabled&!talent.rake.enabled
+actions.precombat+=/cat_form,if=talent.rake.enabled
+actions.precombat+=/prowl,if=talent.rake.enabled
+actions.precombat+=/moonkin_form,if=talent.moonkin_form.enabled&!talent.rake.enabled
 
 # Executed every time the actor is available.
-actions+=/berserking
-actions+=/use_items,if=!buff.prowl.up&!buff.shadowmeld.up
-actions+=/potion,if=!buff.prowl.up&!buff.shadowmeld.up
 actions+=/skull_bash
 actions+=/solar_beam
-actions+=/run_action_list,name=cat,strict=1,if=buff.cat_form.up|talent.rake.enabled
+actions+=/berserking
+actions+=/natures_vigil,if=!buff.prowl.up&!buff.shadowmeld.up
+actions+=/regrowth,if=!buff.prowl.up&!buff.shadowmeld.up&druid.time_spend_healing,line_cd=7
+actions+=/use_items,if=!buff.prowl.up&!buff.shadowmeld.up
+actions+=/potion,if=!buff.prowl.up&!buff.shadowmeld.up
+actions+=/run_action_list,name=cat,if=talent.rake.enabled
 actions+=/run_action_list,name=owl,if=active_enemies>2&talent.moonkin_form.enabled&cooldown.convoke_the_spirits.remains<=gcd.max&(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled)
+actions+=/moonkin_form,if=talent.moonkin_form.enabled
+actions+=/moonkin_form,if=talent.moonkin_form.enabled
 actions+=/convoke_the_spirits,if=(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled)
 actions+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack=2&dot.adaptive_swarm_damage.remains>2
-actions+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.remains>2
 actions+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack=1&dot.adaptive_swarm_damage.remains>2
 actions+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack=3&dot.adaptive_swarm_damage.remains>2
 actions+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack=4&dot.adaptive_swarm_damage.remains>2
 actions+=/adaptive_swarm,cycle_targets=1,if=!dot.adaptive_swarm_damage.ticking
-actions+=/sunfire,cycle_targets=1,if=refreshable
-actions+=/moonfire,cycle_targets=1,if=refreshable
-actions+=/starfire,if=time_to_die<10&spell_targets.starfire>1&(!talent.swipe.enabled|spell_targets.swipe_cat>=9)
+actions+=/sunfire,cycle_targets=1,if=refreshable&target.time_to_die>5&talent.improved_sunfire.enabled
+actions+=/moonfire,cycle_targets=1,if=refreshable&time_to_die>12
 actions+=/starsurge
+actions+=/sunfire,cycle_targets=1,if=refreshable&target.time_to_die>7&active_enemies<7
+actions+=/starfire,if=spell_targets.starfire>1
 actions+=/wrath
-actions+=/moonfire
 
 actions.cat+=/rake,if=buff.shadowmeld.up|buff.prowl.up|buff.sudden_ambush.up
+actions.cat+=/natures_vigil,if=!buff.prowl.up&!buff.shadowmeld.up
 actions.cat+=/heart_of_the_wild,if=(cooldown.convoke_the_spirits.remains<30|!covenant.night_fae)&!buff.heart_of_the_wild.up
 actions.cat+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack=2&dot.adaptive_swarm_damage.remains>2
 actions.cat+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack=1&dot.adaptive_swarm_damage.remains>2
@@ -34,22 +37,23 @@ actions.cat+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack=
 actions.cat+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack=4&dot.adaptive_swarm_damage.remains>2
 actions.cat+=/adaptive_swarm,cycle_targets=1,if=!dot.adaptive_swarm_damage.ticking
 actions.cat+=/run_action_list,name=owl,if=active_enemies>2&talent.moonkin_form.enabled&cooldown.convoke_the_spirits.remains<=gcd.max&(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled)
+actions.cat+=/cat_form,if=(active_enemies<2|!talent.moonkin_form.enabled)&(!buff.cat_form.up&cooldown.convoke_the_spirits.remains<=gcd.max&(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled))
 actions.cat+=/convoke_the_spirits,if=(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled)
 actions.cat+=/rip,if=remains<=gcd&combo_points>0&dot.adaptive_swarm_damage.ticking
-## actions.cat+=/thrash_cat,cycle_targets=1,if=refreshable&target.time_to_die>5&spell_targets.thrash_cat>1
-## actions.cat+=/sunfire,cycle_targets=1,if=(refreshable&target.time_to_die>5)&!prev_gcd.1.cat_form
-## actions.cat+=/cat_form,if=!buff.cat_form.up&energy>50&(dot.thrash_cat.refreshable&spell_targets.swipe_cat>=9&talent.thrash.enabled)
-## actions.cat+=/moonfire,cycle_targets=1,if=(refreshable&time_to_die>12&!ticking|(prev_gcd.1.sunfire&remains<duration*0.8&spell_targets.sunfire=1))&!prev_gcd.1.cat_form
-## actions.cat+=/sunfire,if=prev_gcd.1.moonfire&remains<duration*0.8
-## actions.cat+=/starfire,if=time_to_die<10&spell_targets.starfire>1&(!talent.swipe.enabled|spell_targets.swipe_cat>=9)
-## actions.cat+=/starsurge,if=active_enemies=1|(active_enemies<5&!buff.cat_form.up)
-## actions.cat+=/cat_form,if=!buff.cat_form.up&energy>50
-## actions.cat+=/wrath,if=!buff.cat_form.up
+actions.cat+=/thrash_cat,cycle_targets=1,if=refreshable&target.time_to_die>5&spell_targets.thrash_cat>1
+actions.cat+=/sunfire,cycle_targets=1,if=(refreshable&target.time_to_die>5)&!prev_gcd.1.cat_form&(active_enemies=1|talent.improved_sunfire.enabled)
+actions.cat+=/cat_form,if=!buff.cat_form.up&energy>50&(dot.thrash_cat.refreshable&spell_targets.swipe_cat>=9&talent.thrash.enabled)
+actions.cat+=/moonfire,cycle_targets=1,if=(refreshable&time_to_die>12&!ticking|(prev_gcd.1.sunfire&remains<duration*0.8&spell_targets.sunfire=1))&!prev_gcd.1.cat_form
+actions.cat+=/sunfire,if=prev_gcd.1.moonfire&remains<duration*0.8
+actions.cat+=/starfire,if=time_to_die<10&spell_targets.starfire>1&(!talent.swipe.enabled|spell_targets.swipe_cat>=9)
+actions.cat+=/starsurge,if=active_enemies=1|(active_enemies<5&!buff.cat_form.up)
+actions.cat+=/cat_form,if=!buff.cat_form.up&energy>50
 actions.cat+=/ferocious_bite,if=(combo_points>3&target.1.time_to_die<3)|(combo_points=5&energy>=50&dot.rip.remains>10)&spell_targets.swipe_cat<4
 actions.cat+=/thrash_cat,cycle_targets=1,if=refreshable&target.time_to_die>5&spell_targets.thrash_cat>2
 actions.cat+=/rake,cycle_targets=1,if=dot.adaptive_swarm_damage.ticking&refreshable
 actions.cat+=/rip,cycle_targets=1,if=((refreshable|energy>90&remains<=10)&(combo_points=5&time_to_die>remains+24|(remains+combo_points*4<time_to_die&remains+4+combo_points*4>time_to_die))|!ticking&combo_points>2+spell_targets.swipe_cat*2)
 actions.cat+=/rake,cycle_targets=1,if=(refreshable&time_to_die>10&spell_targets.swipe_cat<10)&(combo_points<5|remains<1)
+actions.cat+=/sunfire,cycle_targets=1,if=refreshable&target.time_to_die>5&active_enemies<7&!talent.improved_sunfire.enabled
 actions.cat+=/thrash_cat,cycle_targets=1,if=refreshable&target.time_to_die>5
 actions.cat+=/swipe_cat,if=active_enemies>1&combo_points<5
 actions.cat+=/shred,if=energy>60&combo_points<5
