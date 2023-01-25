@@ -602,7 +602,7 @@ end )
 -- Abilities
 spec:RegisterAbilities( {
     avatar = {
-        id = 107574,
+        id = 401150,
         cast = 0,
         cooldown = 90,
         gcd = "off",
