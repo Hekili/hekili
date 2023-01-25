@@ -416,6 +416,7 @@ spec:RegisterAuras( {
         id = 252071,
         duration = 30,
         max_stack = 1,
+        copy = "incarnation_avatar_of_ashamane_prowl"
     },
     -- Talent: Movement speed slowed by $w1%.$?e1[ Healing taken reduced by $w2%.][]
     -- https://wowhead.com/beta/spell=58180
@@ -1956,11 +1957,12 @@ spec:RegisterAbilities( {
         startsCombat = false,
         nobuff = "prowl",
 
-        usable = function () return time == 0 or ( boss and buff.jungle_stalker.up ) end,
+        usable = function () return time == 0, "only used out of combat due to 10.0.5 bug" end, -- boss and buff.jungle_stalker.up
 
         handler = function ()
             shift( "cat_form" )
-            applyBuff( buff.incarnation.up and "prowl_incarnation" or "prowl_base" )
+            applyBuff( buff.jungle_stalker.up and "prowl_incarnation" or "prowl_base" )
+            removeBuff( "jungle_stalker" )
         end,
 
         copy = { 5215, 102547 }
