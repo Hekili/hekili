@@ -86,7 +86,7 @@ local death_events = {
 }
 
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if not sourceGUID == state.GUID then
+    if sourceGUID ~= state.GUID then
         return
     end
 
