@@ -2225,7 +2225,7 @@ spec:RegisterOptions( {
 
     aoe = 3,
 
-    nameplates = true,
+    nameplates = false,
     nameplateRange = 8,
 
     damage = true,
