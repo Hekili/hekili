@@ -9,7 +9,7 @@ actions+=/potion
 actions+=/conquerors_banner
 actions+=/use_items
 actions+=/use_item,name=algethar_puzzle_box
-actions+=/ravager,if=cooldown.avatar.remains<3
+actions+=/ravager,if=cooldown.recklessness.remains<3
 actions+=/blood_fury
 actions+=/berserking,if=buff.recklessness.up
 actions+=/lights_judgment,if=buff.recklessness.down
