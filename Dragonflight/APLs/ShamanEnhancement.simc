@@ -35,7 +35,7 @@ actions.single+=/stormstrike,if=buff.doom_winds.up
 actions.single+=/crash_lightning,if=buff.doom_winds.up
 actions.single+=/ice_strike,if=buff.doom_winds.up
 actions.single+=/sundering,if=buff.doom_winds.up
-actions.single+=/lightning_bolt,if=settings.burn_before_wave&talent.primordial_wave&talent.primordial_maelstrom&cooldown.primordial_wave.remains<2*gcd.max&buff.maelstrom_weapon.stack>=5
+actions.single+=/lightning_bolt,if=settings.burn_before_wave&talent.primordial_wave&talent.primal_maelstrom&cooldown.primordial_wave.remains<2*gcd.max&buff.maelstrom_weapon.stack>=5
 actions.single+=/primordial_wave,if=buff.primordial_wave.down&(raid_event.adds.in>42|raid_event.adds.in<6)
 actions.single+=/flame_shock,if=!ticking
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack>=5&buff.primordial_wave.up&raid_event.adds.in>buff.primordial_wave.remains&(!buff.splintered_elements.up|fight_remains<=12)
@@ -70,7 +70,7 @@ actions.aoe+=/crash_lightning,if=buff.doom_winds.up|!buff.crash_lightning.up
 actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock>=active_enemies|active_dot.flame_shock>5)&buff.primordial_wave.up&buff.maelstrom_weapon.stack>=(5+5*talent.overflowing_maelstrom.enabled)&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd)
 actions.aoe+=/sundering,if=buff.doom_winds.up
 actions.aoe+=/fire_nova,if=active_dot.flame_shock=6|(active_dot.flame_shock>=4&active_dot.flame_shock>=active_enemies)
-actions.aoe+=/chain_lightning,if=settings.burn_before_wave&talent.primordial_wave&talent.primordial_maelstrom&cooldown.primordial_wave.remains<2*gcd.max&buff.maelstrom_weapon.stack>=5
+actions.aoe+=/chain_lightning,if=settings.burn_before_wave&talent.primordial_wave&talent.primal_maelstrom&cooldown.primordial_wave.remains<2*gcd.max&buff.maelstrom_weapon.stack>=5
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/windstrike,if=talent.thorims_invocation.enabled&ti_chain_lightning&buff.maelstrom_weapon.stack>1
 actions.aoe+=/lava_lash,cycle_targets=1,if=talent.lashing_flames.enabled&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
