@@ -436,7 +436,7 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        min_range = 20,
+        min_range = 15,
         max_range = 50,
 
         damage = function () return 2.30 * stat.spell_power end,
@@ -527,6 +527,9 @@ spec:RegisterAbilities( {
         cast = 0.5,
         cooldown = 90,
         gcd = "spell",
+
+        spend = 0.04,
+        spendType = "mana",
 
         startsCombat = false,
 
@@ -831,7 +834,7 @@ spec:RegisterAbilities( {
     temporal_anomaly = {
         id = 373861,
         cast = 1.5,
-        cooldown = 6,
+        cooldown = 15,
         gcd = "spell",
 
         spend = 0.08,
@@ -842,6 +845,11 @@ spec:RegisterAbilities( {
         handler = function ()
             if talent.temporal_compression.enabled then addStack("temporal_compression") end
             if talent.resonating_sphere.enabled then applyBuff("echo") end
+            if talent.nozdormus_teachings.enabled then
+                reduceCooldown ("dream_breath",5)
+                reduceCooldown ("fire_breath",5)
+                reduceCooldown ("spiritbloom",5)
+            end
         end,
     },
     time_dilation = {
