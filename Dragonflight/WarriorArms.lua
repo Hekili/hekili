@@ -1045,8 +1045,6 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 1377132,
 
-        toggle = "defensives",
-
         readyTime = function ()
             if buff.ignore_pain.up and buff.ignore_pain.v1 >= 0.3 * health.max then
                 return buff.ignore_pain.remains - gcd.max
