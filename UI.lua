@@ -2016,8 +2016,13 @@ do
 
         local specEnabled = GetSpecialization()
         specEnabled = specEnabled and GetSpecializationInfo( specEnabled )
-        specEnabled = specEnabled and rawget( profile.specs, specEnabled )
-        specEnabled = specEnabled and rawget( specEnabled, "enabled" ) or false
+
+        if class.specs[ specEnabled ] then
+            specEnabled = specEnabled and rawget( profile.specs, specEnabled )
+            specEnabled = specEnabled and rawget( specEnabled, "enabled" ) or false
+        else
+            specEnabled = false
+        end
 
         if profile.enabled and specEnabled then
             for i, display in pairs( profile.displays ) do
