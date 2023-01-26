@@ -760,9 +760,10 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     primordial_arcanic_pulsar = {
-        id = 338825,
+        id = 393961,
         duration = 3600,
         max_stack = 10,
+        copy = 338825
     },
     timeworn_dreambinder = {
         id = 340049,
