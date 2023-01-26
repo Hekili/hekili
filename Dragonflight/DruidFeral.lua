@@ -1957,7 +1957,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         nobuff = "prowl",
 
-        usable = function () return time == 0, "only used out of combat due to 10.0.5 bug" end, -- boss and buff.jungle_stalker.up
+        usable = function () return time == 0 or boss and buff.jungle_stalker.up, "requires out of combat or incarnation_avatar_of_ashamane_prowl" end,
 
         handler = function ()
             shift( "cat_form" )
