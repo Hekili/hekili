@@ -14,10 +14,10 @@ actions+=/call_action_list,name=standard
 actions.cooldowns=seraphim
 actions.cooldowns+=/avenging_wrath,if=(buff.seraphim.up|!talent.seraphim.enabled)
 actions.cooldowns+=/sentinel,if=(buff.seraphim.up|!talent.seraphim.enabled)
-actions.cooldowns+=/potion,if=buff.avenging_wrath.up|buff.sentinel.up
+actions.cooldowns+=/potion,if=buff.aw_sentinel.up
 actions.cooldowns+=/moment_of_glory,if=(buff.avenging_wrath.remains<15|(time>10|cooldown.sentinel.remains>15|cooldown.avenging_wrath.remains>15)&(cooldown.avengers_shield.remains&cooldown.judgment.remains&cooldown.hammer_of_wrath.remains))
-actions.cooldowns+=/holy_avenger,if=buff.avenging_wrath.up|buff.sentinel.up|cooldown.avenging_wrath.remains>60|cooldown.sentinel.remains>60
-actions.cooldowns+=/bastion_of_light,if=buff.avenging_wrath.up|buff.sentinel.up
+actions.cooldowns+=/holy_avenger,if=buff.aw_sentinel.up|cooldown.avenging_wrath.remains>60|cooldown.sentinel.remains>60
+actions.cooldowns+=/bastion_of_light,if=buff.aw_sentinel.up
 
 actions.mitigation=shield_of_the_righteous,if=tanking&buff.shield_of_the_righteous.down&(holy_power.deficit=0|buff.divine_purpose.up)
 actions.mitigation+=/word_of_glory,if=health.pct<wog_health&(holy_power.deficit=0|buff.divine_purpose.up|buff.shining_light_free.up)
@@ -28,9 +28,9 @@ actions.mitigation+=/lay_on_hands,if=health.pct<15
 
 actions.standard+=/shield_of_the_righteous,if=(cooldown.seraphim.remains>=5|!talent.seraphim.enabled)&(((holy_power=3&!buff.blessing_of_dusk.up&!buff.holy_avenger.up)|(holy_power=5)|buff.bastion_of_light.up|buff.divine_purpose.up))
 actions.standard+=/avengers_shield,if=buff.moment_of_glory.up|!talent.moment_of_glory.enabled
-actions.standard+=/hammer_of_wrath,if=buff.avenging_wrath.up|buff.sentinel.up
+actions.standard+=/hammer_of_wrath,if=buff.aw_sentinel.up
 actions.standard+=/judgment,cycle_targets=1,if=charges=2|!talent.crusaders_judgment.enabled
-actions.standard+=/divine_toll,if=time>20|((!talent.seraphim.enabled|buff.seraphim.up)&(buff.avenging_wrath.up|buff.sentinel.up|!talent.avenging_wrath.enabled)&(buff.moment_of_glory.up|!talent.moment_of_glory.enabled))
+actions.standard+=/divine_toll,if=time>20|((!talent.seraphim.enabled|buff.seraphim.up)&(buff.aw_sentinel.up|!talent.avenging_wrath&!talent.sentinel)&(buff.moment_of_glory.up|!talent.moment_of_glory.enabled))
 actions.standard+=/avengers_shield
 actions.standard+=/hammer_of_wrath
 actions.standard+=/judgment,cycle_targets=1
@@ -48,8 +48,8 @@ actions.trinkets+=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5,
 actions.trinkets+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!trinket.1.has_use_buff&trinket.2.has_use_buff|trinket.2.has_use_buff&((trinket.2.cooldown.duration%trinket.2.proc.any_dps.duration)*(1.5+trinket.2.has_buff.strength)*(variable.trinket_2_sync))>((trinket.1.cooldown.duration%trinket.1.proc.any_dps.duration)*(1.5+trinket.1.has_buff.strength)*(variable.trinket_1_sync))
 actions.trinkets+=/variable,name=trinket_1_buffs,value=trinket.1.has_buff.strength|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit
 actions.trinkets+=/variable,name=trinket_2_buffs,value=trinket.2.has_buff.strength|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit
-actions.trinkets+=/use_item,slot=trinket1,if=(buff.moment_of_glory.up|!talent.moment_of_glory_enabled&buff.avenging_wrath.up)&(!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|boss&trinket.1.proc.any_dps.duration>=fight_remains
-actions.trinkets+=/use_item,slot=trinket2,if=(buff.moment_of_glory.up|!talent.moment_of_glory_enabled&buff.avenging_wrath.up)&(!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2)|boss&trinket.2.proc.any_dps.duration>=fight_remains
-actions.trinkets+=/use_item,slot=trinket1,if=!variable.trinket_1_buffs&(trinket.2.cooldown.remains|!variable.trinket_2_buffs|(cooldown.moment_of_glory.remains>20|(!talent.moment_of_glory.enabled&cooldown.avenging_wrath.remains>20)))
-actions.trinkets+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(trinket.1.cooldown.remains|!variable.trinket_1_buffs|(cooldown.moment_of_glory.remains>20|(!talent.moment_of_glory.enabled&cooldown.avenging_wrath.remains>20)))
+actions.trinkets+=/use_item,slot=trinket1,if=(buff.moment_of_glory.up|!talent.moment_of_glory_enabled&buff.aw_sentinel.up)&(!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|boss&trinket.1.proc.any_dps.duration>=fight_remains
+actions.trinkets+=/use_item,slot=trinket2,if=(buff.moment_of_glory.up|!talent.moment_of_glory_enabled&buff.aw_sentinel.up)&(!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2)|boss&trinket.2.proc.any_dps.duration>=fight_remains
+actions.trinkets+=/use_item,slot=trinket1,if=!variable.trinket_1_buffs&(trinket.2.cooldown.remains|!variable.trinket_2_buffs|(cooldown.moment_of_glory.remains>20|(!talent.moment_of_glory.enabled&(cooldown.sentinel.remains>20|cooldown.avenging_wrath.remains>20))))
+actions.trinkets+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(trinket.1.cooldown.remains|!variable.trinket_1_buffs|(cooldown.moment_of_glory.remains>20|(!talent.moment_of_glory.enabled&(cooldown.sentinel.remains>20|cooldown.avenging_wrath.remains>20))))
 actions.trinkets+=/use_items
