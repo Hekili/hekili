@@ -2884,7 +2884,7 @@ spec:RegisterAbilities( {
         spend = function () return ( talent.soul_of_the_forest.enabled and buff.eclipse_solar.up ) and -9 or -6 end,
         spendType = "astral_power",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 535045,
 
         ap_check = function () return check_for_ap_overcap( "solar_wrath" ) end,
