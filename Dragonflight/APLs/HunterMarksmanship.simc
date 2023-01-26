@@ -1,4 +1,5 @@
 actions.precombat+=/summon_pet,if=!talent.lone_wolf
+actions.precombat+=/salvo,precast_time=10
 actions.precombat+=/use_item,name=algethar_puzzle_box
 # Precast Aimed Shot on one or two targets unless we could cleave it with Volley on two targets.
 actions.precombat+=/aimed_shot,if=active_enemies<3&(!talent.volley|active_enemies<2)
@@ -21,16 +22,17 @@ actions.cds+=/ancestral_call,if=buff.trueshot.up|cooldown.trueshot.remains>30|bo
 actions.cds+=/fireblood,if=buff.trueshot.up|cooldown.trueshot.remains>30|boss&fight_remains<9
 actions.cds+=/lights_judgment,if=buff.trueshot.down
 actions.cds+=/potion,if=buff.trueshot.up&(buff.bloodlust.up|target.health.pct<20)|boss&fight_remains<26
+actions.cds+=/salvo,if=active_enemies>2|cooldown.volley.remains<10
 
 actions.st+=/steady_shot,if=talent.steady_focus&(steady_focus_count&buff.steady_focus.remains<5|buff.steady_focus.down&!buff.trueshot.up)
 actions.st+=/kill_shot
+actions.st+=/volley,if=buff.salvo.up
 actions.st+=/steel_trap,if=buff.trueshot.down
 actions.st+=/serpent_sting,cycle_targets=1,if=refreshable&!talent.serpentstalkers_trickery&buff.trueshot.down
 actions.st+=/explosive_shot
 actions.st+=/stampede
 actions.st+=/death_chakram
 actions.st+=/wailing_arrow,if=active_enemies>1
-actions.st+=/salvo
 actions.st+=/volley
 actions.st+=/rapid_fire,if=talent.surging_shots
 actions.st+=/trueshot,if=variable.trueshot_ready
@@ -58,7 +60,6 @@ actions.trickshots+=/stampede
 actions.trickshots+=/wailing_arrow
 actions.trickshots+=/serpent_sting,cycle_targets=1,if=refreshable&talent.hydras_bite&!talent.serpentstalkers_trickery
 actions.trickshots+=/barrage,if=active_enemies>7
-actions.trickshots+=/salvo
 actions.trickshots+=/volley
 actions.trickshots+=/trueshot
 actions.trickshots+=/rapid_fire,if=buff.trick_shots.remains>=execute_time&talent.surging_shots
