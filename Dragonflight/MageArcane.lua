@@ -502,6 +502,12 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    siphon_storm = {
+        id = 384267,
+        duration = 30,
+        max_stack = 7,
+        copy = 332934
+    },
     -- Talent: Movement speed reduced by $w1%.
     -- https://wowhead.com/beta/spell=31589
     slow = {
@@ -561,11 +567,6 @@ spec:RegisterAuras( {
         id = 356881,
         duration = 15,
         max_stack = 1,
-    },
-    siphon_storm = {
-        id = 332934,
-        duration = 30,
-        max_stack = 5
     },
     grisly_icicle = {
         id = 348007,
