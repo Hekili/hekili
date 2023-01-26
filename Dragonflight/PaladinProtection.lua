@@ -163,6 +163,13 @@ spec:RegisterAuras( {
         duration = function() return talent.sanctified_wrath.enabled and 25 or 20 end,
         max_stack = 1
     },
+    -- Alias for Avenging Wrath vs. Sentinel
+    aw_sentinel = {
+        alias = { "avenging_wrath", "sentinel" },
+        aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
+        aliasType = "buff",
+        duration = function() return talent.sanctified_wrath.enabled and 25 or 20 end,
+    },
     -- Talent: Block chance increased by $s1%.
     -- https://wowhead.com/beta/spell=385724
     barricade_of_faith = {

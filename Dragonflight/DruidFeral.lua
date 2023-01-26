@@ -2338,6 +2338,7 @@ spec:RegisterAbilities( {
             if buff.clearcasting.up then return 0 end
             return max( 0, ( 35 * ( buff.incarnation.up and 0.8 or 1 ) ) + buff.scent_of_blood.v1 )
         end,
+        spendType = "energy",
 
         startsCombat = true,
         notalent = "brutal_slash",
