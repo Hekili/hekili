@@ -971,7 +971,7 @@ me:RegisterHook( "reset_precast", function ()
     end
 
     if not any_dnd_set then
-        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. L["Any"] .. "|r " .. class.abilities.death_and_decay.name
+        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. L["[Any]"] .. "|r " .. class.abilities.death_and_decay.name
         any_dnd_set = true
     end
 
@@ -2021,8 +2021,8 @@ me:RegisterOptions( {
 
 
 me:RegisterSetting( "ob_macro", nil, {
-    name = "|T348565:0|t Outbreak Macro",
-    desc = "Using a macro makes it easier to apply |T348565:0|t Outbreak to other targets without switching targets.",
+    name = L["|T348565:0|t Outbreak Macro"],
+    desc = L["Using a macro makes it easier to apply |T348565:0|t Outbreak to other targets without switching targets."],
     type = "input",
     width = "full",
     multiline = true,

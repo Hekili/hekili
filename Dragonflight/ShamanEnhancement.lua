@@ -2411,9 +2411,8 @@ spec:RegisterSetting( "purge_icd", 12, {
 } )
 
 spec:RegisterSetting( "burn_before_wave", true, {
-    name = "Burn Maelstrom before |T3578231:0|t Primordial Wave",
-    desc = "If checked, the default priority will recommend spending your Maelstrom Weapon stacks before using |T3578231:0|t Primordial Wave if you have Primordial Maelstrom talented.\n\n"
-        .. "In 10.0.5, this appears to be damage-neutral in single-target and a slight increase in multi-target scenarios.",
+    name = L["Burn Maelstrom before |T3578231:0|t Primordial Wave"],
+    desc = L["If checked, the default priority will recommend spending your Maelstrom Weapon stacks before using |T3578231:0|t Primordial Wave if you have Primal Maelstrom talented.\n\nIn 10.0.5, this appears to be damage-neutral in single-target and a slight increase in multi-target scenarios."],
     type = "toggle",
     width = "full",
 } )

@@ -9,7 +9,7 @@ if not L then return end
 
 if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
-L["[Any]"] = "[모든 대상]"
+L["[Any]"] = "[모든 전문화]"
 
 L["Blood"] = "혈기"
 L["Save |T237517:0|t Blood Shield"] = "|T237517:0|t 피의 보호막 유지"
@@ -29,8 +29,8 @@ L["The addon will recommend |T1029007:0|t Breath of Sindragosa only if you have 
 L["Unholy"] = "부정"
 L["[Wound Spender]"] = "고름 상처 소비하기"
 L["Death and Decay"] = "죽음과 부패"
-L["Disable |T2000857:0|t Inscrutable Quantum Device Execute"] = "|T2000857:0|t 불가해한 양자 장치의 실행을 비활성화"
-L["If checked, the default Unholy priority will not try to use |T2000857:0|t Inscrutable Quantum Device solely because your enemy is in execute range."] = "선택하면 기본 부정 우선순위는 적이 실행 범위에 있기 때문에 단독으로 |T2000857:0|t 불가해한 양자 장치를 사용하는 것을 추천하지 않습니다."
+L["|T348565:0|t Outbreak Macro"] = "|T348565:0|t 돌발 열병 매크로"
+L["Using a macro makes it easier to apply |T348565:0|t Outbreak to other targets without switching targets."] = "매크로를 사용하면 대상을 전환하지 않고도 다른 대상에 |T348565:0|t 돌발 열병을 더 쉽게 적용할 수 있습니다."
 
 end
 
@@ -90,10 +90,10 @@ L["Guardian"] = "수호"
 L["(Bear)"] = "(곰)"
 L["Excess Rage for |T132136:0|t Maul"] = "|T132136:0|t 후려갈기기를 위한 과도한 분노"
 L["If set above zero, the addon will recommend |T132136:0|t Maul only if you have at least this much excess Rage."] = "설정값을 0보다 높게 설정하면, 애드온은 최소한 이 정도의 과도한 분노가 있는 경우에만 후려갈기기을 추천합니다."
-L["Use |T132135:0|t Mangle More in Multi-Target"] = "여러 대상일 때 |T132135:0|t 짓이기기를 더 많이 사용하기"
-L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."] = "선택하면 기본 우선순위는 |cFFFFD100여러 대상|r에 대한 시나리오에서 |T132135:0|t 짓이기기를 더 자주 추천합니다.\n\n이것은 약 15% 더 많은 분노를 생성하고 그렇지 않은 경우보다 더 많은 피해 완화(또는 |T132135:0|t 짓이기기)를 허용하며, 주요 대상에게 약간 더 많은 피해를 주지만, |T134296:0|t 휘둘러치기의 빈도가 줄어들어 보조 대상에 대한 피해/위협이 줄어듭니다."
+-- L["Use |T132135:0|t Mangle More in Multi-Target"] = "여러 대상일 때 |T132135:0|t 짓이기기를 더 많이 사용하기"
+-- L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."] = "선택하면 기본 우선순위는 |cFFFFD100여러 대상|r에 대한 시나리오에서 |T132135:0|t 짓이기기를 더 자주 추천합니다.\n\n이것은 약 15% 더 많은 분노를 생성하고 그렇지 않은 경우보다 더 많은 피해 완화(또는 |T132135:0|t 짓이기기)를 허용하며, 주요 대상에게 약간 더 많은 피해를 주지만, |T134296:0|t 휘둘러치기의 빈도가 줄어들어 보조 대상에 대한 피해/위협이 줄어듭니다."
 L["Required Damage % for |T1378702:0|t Ironfur"] = "|T1378702:0|t 무쇠가죽에 필요한 피해 %"
-L["If set above zero, the addon will not recommend |T1378702:0|t Ironfur unless your incoming damage for the past 5 seconds is greater than this percentage of your maximum health."] = "설정값을 0보다 높게 설정하면, 지난 5초 동안 받은 피해가 최대 체력의 이 비율보다 크지 않으면 애드온이 |T1378702:0|t 무쇠가죽을 추천하지 않습니다."
+L["If set above zero, the addon will not recommend |T1378702:0|t Ironfur unless your incoming damage for the past 5 seconds is greater than this percentage of your maximum health.\n\nThis value is halved when playing solo."] = "설정값을 0보다 높게 설정하면, 지난 5초 동안 받은 피해가 최대 체력의 이 비율보다 크지 않으면 애드온이 |T1378702:0|t 무쇠가죽을 추천하지 않습니다.\n\n혼자 플레이를 하면 이 값은 절반으로 줄어들게 됩니다."
 -- L["|T3636839:0|t Powershift for Convoke the Spirits"] = true
 -- L["If checked, the addon will recommend swapping to Cat Form before using |T3636839:0|t Convoke the Spirits.\n\nThis is a DPS gain unless you die horribly."] = true
 L["|T132115:0|t Attempt Catweaving (Experimental)"] = "|T132115:0|t 고양이 위빙을 시도 (실험)"
@@ -261,8 +261,6 @@ L["Pad |T3528286:0|t Ascended Blast Cooldown"] = "|T3528286:0|t 승천의 작렬
 L["If checked, the addon will treat |T3528286:0|t Ascended Blast's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T3565449:0|t Boon of the Ascended."] = "선택하면 |T3565449:0|t 승천자의 은혜의 지속시간 동안 가능한 한 자주 추천되도록, 애드온이 |T3528286:0|t 승천의 작렬의 재사용 대기시간을 약간 짧게 처리합니다."
 L["|T136149:0|t Shadow Word: Death Health Threshold"] = "|T136149:0|t 어둠의 권능: 죽음 체력 임계값"
 L["If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death while your health percentage is below this threshold.  This setting can help keep you from killing yourself."] = "설정값을 0보다 높게 설정하면, 애드온은 체력 비율이 이 임계값의 미만인 경우 |T136149:0|t 어둠의 권능: 죽음을 추천하지 않습니다.  이 설정은 자살을 방지하는 데 도움이 됩니다."
-L["Ignore |T1500943:0|t Volatile Solvent for |T1386548:0|t Void Eruption"] = "|T1386548:0|t 공허 방출을 위헤 |T1500943:0|t 불안정한 용해제 무시하기"
-L["If disabled, when you have the |T1500943:0|t Volatile Solvent conduit enabled, the addon will not use |T1386548:0|t Void Eruption unless you currently have a Volatile Solvent buff applied (from casting |T3586267:0|t Fleshcraft)."] = "이 설정이 비활성화된 경우, |T1500943:0|t 불안정한 용해제 도관을 활성화하면, 현재 불안정한 용해제의 강화 효과가 (|T3586267:0|t 살덩이창조 시전으로) 적용되지 않는 한 애드온이 |T1386548:0|t 공허 방출을 사용하지 않습니다."
 L["|T237565:0|t Mind Sear Ticks"] = "|T237565:0|t 정신 불태우기의 틱"
 L["|T237565:0|t Mind Sear costs 25 Insanity (and 25 additional Insanity per tick).  If set above 0, this setting will treat Mind Sear as unusable if your cast would result in fewer ticks of Mind Sear than desired."] = "|T237565:0|t 정신 불태우기는 25의 광기(그리고 틱당 25의 추가 광기)가 필요합니다.  설정값을 0보다 높게 설정하면, 이 설정은 시전으로 인해 원하는 것보다 적은 수의 정신 불태우기의 틱이 발생하는 경우 정신 불태우기를 사용할 수 없는 것으로 처리합니다."
 
@@ -317,6 +315,8 @@ L["Pad |T1029585:0|t Windstrike Cooldown"] = "|T1029585:0|t 바람의 일격의 
 L["If checked, the addon will treat |T1029585:0|t Windstrike's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T135791:0|t Ascendance."] = "선택하면 애드온이 |T1029585:0|t 바람의 일격의 재사용 대기시간을 약간 짧게 처리하여 |T135791:0|t 승천의 지속 시간 동안 가능한 한 자주 추천되도록 합니다."
 L["Pad |T236289:0|t Lava Lash Cooldown"] = "|T236289:0|t 용암 채찍의 재사용 대기시간 채우기"
 L["If checked, the addon will treat |T236289:0|t Lava Lash's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T135823:0|t Hot Hand."] = "선택하면 애드온이 |T236289:0|t 용암 채찍의 재사용 대기시간을 약간 짧게 처리하여 |T135823:0|t 뜨거운 손의 지속 시간 동안 가능한 한 자주 추천되도록 합니다."
+L["Burn Maelstrom before |T3578231:0|t Primordial Wave"] = "|T3578231:0|t 태고의 파도를 사용하기 전에 소용돌이 소모하기"
+L["If checked, the default priority will recommend spending your Maelstrom Weapon stacks before using |T3578231:0|t Primordial Wave if you have Primal Maelstrom talented.\n\nIn 10.0.5, this appears to be damage-neutral in single-target and a slight increase in multi-target scenarios."] = "선택하면 기본 우선순위는 원시 소용돌이 특성이 있는 경우 |T3578231:0|t 태고의 파도를 사용하기 전에 소용돌이치는 무기 중첩을 사용하도록 추천합니다.\n\n패치 10.0.5에서 이것은 단일 대상에서 중립 피해인 것으로 나타나고 여러 대상 시나리오에서는 피해가 약간 증가합니다."
 L["Filler |T135813:0|t Shock"] = "|T135813:0|t 충격으로 채워넣기"
 L["If checked, the addon's default priority will recommend a filler |T135813:0|t Flame Shock when there's nothing else to push, even if something better will be off cooldown very soon.  This matches sim behavior and is a small DPS increase, but has been confusing to some users."] = "선택하면 애드온의 기본 우선순위는 더 나은 능력이 곧 재사용 대기시간이 종료 되더라도, 더 이상 추천으로 밀어낼 능력이 없는 경우 채워넣기 용도로 화염 충격을 추천합니다.  이것은 시뮬레이션 동작과 일치하고 DPS가 약간 증가하지만 일부 사용자에게는 혼란스럽게 느껴지곤 합니다."
 

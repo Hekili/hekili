@@ -32,8 +32,8 @@ L["The addon will recommend |T1029007:0|t Breath of Sindragosa only if you have 
 L["Unholy"] = true
 L["[Wound Spender]"] = true
 L["Death and Decay"] = true
-L["Disable |T2000857:0|t Inscrutable Quantum Device Execute"] = true
-L["If checked, the default Unholy priority will not try to use |T2000857:0|t Inscrutable Quantum Device solely because your enemy is in execute range."] = true
+L["|T348565:0|t Outbreak Macro"] = true
+L["Using a macro makes it easier to apply |T348565:0|t Outbreak to other targets without switching targets."] = true
 
 end
 
@@ -93,10 +93,10 @@ L["Guardian"] = true
 L["(Bear)"] = true
 L["Excess Rage for |T132136:0|t Maul"] = true
 L["If set above zero, the addon will recommend |T132136:0|t Maul only if you have at least this much excess Rage."] = true
-L["Use |T132135:0|t Mangle More in Multi-Target"] = true
-L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."] = true
+-- L["Use |T132135:0|t Mangle More in Multi-Target"] = true
+-- L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."] = true
 L["Required Damage % for |T1378702:0|t Ironfur"] = true
-L["If set above zero, the addon will not recommend |T1378702:0|t Ironfur unless your incoming damage for the past 5 seconds is greater than this percentage of your maximum health."] = true
+L["If set above zero, the addon will not recommend |T1378702:0|t Ironfur unless your incoming damage for the past 5 seconds is greater than this percentage of your maximum health.\n\nThis value is halved when playing solo."] = true
 -- L["|T3636839:0|t Powershift for Convoke the Spirits"] = true
 -- L["If checked, the addon will recommend swapping to Cat Form before using |T3636839:0|t Convoke the Spirits.\n\nThis is a DPS gain unless you die horribly."] = true
 L["|T132115:0|t Attempt Catweaving (Experimental)"] = true
@@ -264,8 +264,6 @@ L["Pad |T3528286:0|t Ascended Blast Cooldown"] = true
 L["If checked, the addon will treat |T3528286:0|t Ascended Blast's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T3565449:0|t Boon of the Ascended."] = true
 L["|T136149:0|t Shadow Word: Death Health Threshold"] = true
 L["If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death while your health percentage is below this threshold.  This setting can help keep you from killing yourself."] = true
-L["Ignore |T1500943:0|t Volatile Solvent for |T1386548:0|t Void Eruption"] = true
-L["If disabled, when you have the |T1500943:0|t Volatile Solvent conduit enabled, the addon will not use |T1386548:0|t Void Eruption unless you currently have a Volatile Solvent buff applied (from casting |T3586267:0|t Fleshcraft)."] = true
 L["|T237565:0|t Mind Sear Ticks"] = true
 L["|T237565:0|t Mind Sear costs 25 Insanity (and 25 additional Insanity per tick).  If set above 0, this setting will treat Mind Sear as unusable if your cast would result in fewer ticks of Mind Sear than desired."] = true
 
@@ -320,6 +318,8 @@ L["Pad |T1029585:0|t Windstrike Cooldown"] = true
 L["If checked, the addon will treat |T1029585:0|t Windstrike's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T135791:0|t Ascendance."] = true
 L["Pad |T236289:0|t Lava Lash Cooldown"] = true
 L["If checked, the addon will treat |T236289:0|t Lava Lash's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T135823:0|t Hot Hand."] = true
+L["Burn Maelstrom before |T3578231:0|t Primordial Wave"] = true
+L["If checked, the default priority will recommend spending your Maelstrom Weapon stacks before using |T3578231:0|t Primordial Wave if you have Primal Maelstrom talented.\n\nIn 10.0.5, this appears to be damage-neutral in single-target and a slight increase in multi-target scenarios."] = true
 L["Filler |T135813:0|t Shock"] = true
 L["If checked, the addon's default priority will recommend a filler |T135813:0|t Flame Shock when there's nothing else to push, even if something better will be off cooldown very soon.  This matches sim behavior and is a small DPS increase, but has been confusing to some users."] = true
 

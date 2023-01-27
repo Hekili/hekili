@@ -2082,17 +2082,15 @@ spec:RegisterSetting( "maul_rage", 20, {
 } )
 
 --[[ spec:RegisterSetting( "mangle_more", false, {
-    name = "Use |T132135:0|t Mangle More in Multi-Target",
-    desc = "If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, " ..
-        "funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets.",
+    name = L["Use |T132135:0|t Mangle More in Multi-Target"],
+    desc = L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."],
     type = "toggle",
     width = "full",
 } ) ]]
 
 spec:RegisterSetting( "ironfur_damage_threshold", 5, {
-    name = "Required Damage % for |T1378702:0|t Ironfur",
-    desc = "If set above zero, the addon will not recommend |T1378702:0|t Ironfur unless your incoming damage for the past 5 seconds is greater than this percentage of your maximum health.\n\n"
-        .. "This value is halved when playing solo.",
+    name = L["Required Damage % for |T1378702:0|t Ironfur"],
+    desc = L["If set above zero, the addon will not recommend |T1378702:0|t Ironfur unless your incoming damage for the past 5 seconds is greater than this percentage of your maximum health.\n\nThis value is halved when playing solo."],
     type = "range",
     min = 0,
     max = 100,
