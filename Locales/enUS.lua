@@ -4,7 +4,7 @@ debug = true
 --@end-debug@]===]
 
 local addon, ns = ...
-local L = LibStub("AceLocale-3.0"):NewLocale( ns.addon_name, "enUS", true, debug )
+local L = LibStub("AceLocale-3.0"):NewLocale( "Hekili", "enUS", true, debug )
 
 L["'%s' is not a valid option for |cFFFFD100%s|r."] = true
 L["'%s' is not a valid profile name.\nValid profile |cFFFFD100name|rs are:"] = true

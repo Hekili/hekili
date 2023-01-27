@@ -3,7 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
-local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local class = Hekili.Class
 local scripts = Hekili.Scripts
@@ -1245,7 +1245,7 @@ do
                 name = fancyName,
                 desc = data.desc,
                 order = 10 + pos,
-                func = function () ACD:SelectGroup( ns.addon_name, "displays", name ) end,
+                func = function () ACD:SelectGroup( "Hekili", "displays", name ) end,
             },
 
             [name] = {
@@ -2894,7 +2894,7 @@ do
                     name = L["Notification Panel"],
                     desc = L["The Notification Panel provides brief updates when settings are changed or toggled while in combat."],
                     func = function ()
-                        ACD:SelectGroup( ns.addon_name, "displays", "nPanel" )
+                        ACD:SelectGroup( "Hekili", "displays", "nPanel" )
                     end,
                     order = 951,
                 },
@@ -3101,7 +3101,7 @@ do
                     name = L["Share Styles"],
                     desc = L["Your display styles can be shared with other addon users with these export strings.\n\nYou can also import a shared export string here."],
                     func = function ()
-                        ACD:SelectGroup( ns.addon_name, "displays", "shareDisplays" )
+                        ACD:SelectGroup( "Hekili", "displays", "shareDisplays" )
                     end,
                     order = 998,
                 },
@@ -4834,7 +4834,7 @@ do
                                         return rawget( self.DB.profile.packs, pack ) == nil
                                     end,
                                     func = function ()
-                                        ACD:SelectGroup( ns.addon_name, "packs", self.DB.profile.specs[ id ].package )
+                                        ACD:SelectGroup( "Hekili", "packs", self.DB.profile.specs[ id ].package )
                                     end,
                                     order = 1.1,
                                     width = 0.15,
@@ -5551,7 +5551,7 @@ do
                     func = function ()
                         Hekili.DB.profile.packs[ packControl.newPackName ].spec = packControl.newPackSpec
                         Hekili:EmbedPackOptions()
-                        ACD:SelectGroup( ns.addon_name, "packs", packControl.newPackName )
+                        ACD:SelectGroup( "Hekili", "packs", packControl.newPackName )
                         packControl.newPackName = ""
                         packControl.newPackSpec = ""
                     end,
@@ -5568,7 +5568,7 @@ do
                     name = L["Share Priorities"],
                     desc = L["Each Priority can be shared with other addon users with these export strings.\n\nYou can also import a shared export string here."],
                     func = function ()
-                        ACD:SelectGroup( ns.addon_name, "packs", "sharePacks" )
+                        ACD:SelectGroup( "Hekili", "packs", "sharePacks" )
                     end,
                     order = 101,
                 },
@@ -5877,7 +5877,7 @@ do
                     -- image = class.specs[ data.spec ].texture,
                     order = 11 + count,
                     func = function ()
-                        ACD:SelectGroup( ns.addon_name, "packs", pack )
+                        ACD:SelectGroup( "Hekili", "packs", pack )
                     end,
                 }
 
@@ -5989,7 +5989,7 @@ do
 
                                         Hekili:EmbedPackOptions()
                                         Hekili:LoadScripts()
-                                        ACD:SelectGroup( ns.addon_name, "packs", val )
+                                        ACD:SelectGroup( "Hekili", "packs", val )
                                     end,
                                     disabled = data.builtIn
                                 },
@@ -6027,7 +6027,7 @@ do
                                         Hekili.DB.profile.packs[ newPackName ] = newPack
                                         Hekili:EmbedPackOptions()
                                         Hekili:LoadScripts()
-                                        ACD:SelectGroup( ns.addon_name, "packs", newPackName )
+                                        ACD:SelectGroup( "Hekili", "packs", newPackName )
                                     end
                                 },
 
@@ -6050,7 +6050,7 @@ do
                                         Hekili:RestoreDefault( pack )
                                         Hekili:EmbedPackOptions()
                                         Hekili:LoadScripts()
-                                        ACD:SelectGroup( ns.addon_name, "packs", pack )
+                                        ACD:SelectGroup( "Hekili", "packs", pack )
                                     end
                                 },
 
@@ -6084,7 +6084,7 @@ do
                                         Hekili.Options.args.packs.plugins.packages[ pack ] = nil
 
                                         -- Hekili:EmbedPackOptions()
-                                        ACD:SelectGroup( ns.addon_name, "packs" )
+                                        ACD:SelectGroup( "Hekili", "packs" )
                                     end,
                                     hidden = data.builtIn
                                 },
@@ -7871,7 +7871,7 @@ do
                                     desc = desc,
                                     order = 5 + i,
                                     func = function ()
-                                        ACD:SelectGroup( ns.addon_name, sName )
+                                        ACD:SelectGroup( "Hekili", sName )
                                     end,
                                 }
                                 hide = false
@@ -8729,7 +8729,7 @@ end
 
 do
     local Options = {
-        name = ns.addon_name .. " " .. Hekili.Version,
+        name = "Hekili " .. Hekili.Version,
         type = "group",
         handler = Hekili,
         get = 'GetOption',
@@ -9105,7 +9105,7 @@ function Hekili:TotalRefresh( noOptions )
     if Hekili.OptionsReady then
         if Hekili.Config then
             self:RefreshOptions()
-            ACD:SelectGroup( ns.addon_name, "profiles" )
+            ACD:SelectGroup( "Hekili", "profiles" )
         else Hekili.OptionsReady = false end
     end
     self:UpdateDisplayVisibility()
@@ -9278,7 +9278,7 @@ function Hekili:SetOption( info, input, ... )
         if option == 'enabled' then
             if input then
                 self:Enable()
-                ACD:SelectGroup( ns.addon_name, "general" )
+                ACD:SelectGroup( "Hekili", "general" )
             else self:Disable() end
 
             self:UpdateDisplayVisibility()
@@ -9288,9 +9288,9 @@ function Hekili:SetOption( info, input, ... )
         elseif option == 'minimapIcon' then
             profile.iconStore.hide = input
             if input then
-                LDBIcon:Hide( ns.addon_name )
+                LDBIcon:Hide( "Hekili" )
             else
-                LDBIcon:Show( ns.addon_name )
+                LDBIcon:Show( "Hekili" )
             end
         end
 
@@ -9315,7 +9315,7 @@ function Hekili:SetOption( info, input, ... )
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
 
     if Select then
-        ACD:SelectGroup( ns.addon_name, category, info[2], Select )
+        ACD:SelectGroup( "Hekili", category, info[2], Select )
     end
 end
 
@@ -9872,7 +9872,7 @@ do
                 Hekili:DumpDotInfo( aura )
             end
         else
-            LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", ns.addon_name, input )
+            LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
         end
     end
 end
@@ -9978,13 +9978,13 @@ TableToString = function( inTable, forChat )
     local serialized = Serializer:Serialize( inTable )
     local compressed = LibDeflate:CompressDeflate( serialized, ldConfig )
 
-    return format( ns.addon_name .. ":%s", forChat and ( LibDeflate:EncodeForPrint( compressed ) ) or ( LibDeflate:EncodeForWoWAddonChannel( compressed ) ) )
+    return format( "Hekili:%s", forChat and ( LibDeflate:EncodeForPrint( compressed ) ) or ( LibDeflate:EncodeForWoWAddonChannel( compressed ) ) )
 end
 
 
 StringToTable = function( inString, fromChat )
     local modern = false
-    if inString:sub( 1, 7 ) == ns.addon_name .. ":" then
+    if inString:sub( 1, 7 ) == "Hekili:" then
         modern = true
         inString = inString:sub( 8 )
     end

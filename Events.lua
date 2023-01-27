@@ -3,7 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
-local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -945,7 +945,7 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
         state.combat = GetTime() - 0.01
     end
 
-    if Hekili.Config and not LibStub( "AceConfigDialog-3.0" ).OpenFrames[ ns.addon_name ] then
+    if Hekili.Config and not LibStub( "AceConfigDialog-3.0" ).OpenFrames[ "Hekili" ] then
         ns.StopConfiguration()
         Hekili:UpdateDisplayVisibility()
     end

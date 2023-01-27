@@ -1,4 +1,4 @@
 local addon, ns = ...
-local L = LibStub("AceLocale-3.0"):NewLocale( ns.addon_name, "frFR" )
+local L = LibStub("AceLocale-3.0"):NewLocale( "Hekili", "frFR" )
 
 if not L then return end

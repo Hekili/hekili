@@ -2,10 +2,10 @@
 -- April 2014
 
 local addon, ns = ...
-local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
-Hekili = LibStub("AceAddon-3.0"):NewAddon( ns.addon_name, "AceConsole-3.0", "AceSerializer-3.0" )
-Hekili.Version = GetAddOnMetadata( ns.addon_name, "Version" )
-Hekili.Flavor = GetAddOnMetadata( ns.addon_name, "X-Flavor" ) or "Retail"
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
+Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
+Hekili.Version = GetAddOnMetadata( "Hekili", "Version" )
+Hekili.Flavor = GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
 
 local format = string.format
 local insert, concat = table.insert, table.concat

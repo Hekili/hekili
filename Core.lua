@@ -3,7 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
-local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -36,7 +36,7 @@ ns.checkImports = checkImports
 
 local function EmbedBlizOptions()
     local panel = CreateFrame( "Frame", "HekiliDummyPanel", UIParent )
-    panel.name = ns.addon_name
+    panel.name = "Hekili"
 
     local open = CreateFrame( "Button", "HekiliOptionsButton", panel, "UIPanelButtonTemplate" )
     open:SetPoint( "CENTER", panel, "CENTER", 0, 0 )
@@ -64,7 +64,7 @@ function Hekili:OnInitialize()
 
     -- Reimplement LibDualSpec; some folks want different layouts w/ specs of the same class.
     local LDS = LibStub( "LibDualSpec-1.0" )
-    LDS:EnhanceDatabase( self.DB, ns.addon_name )
+    LDS:EnhanceDatabase( self.DB, "Hekili" )
     LDS:EnhanceOptions( self.Options.args.profiles, self.DB )
 
     self.DB.RegisterCallback( self, "OnProfileChanged", "TotalRefresh" )
@@ -72,7 +72,7 @@ function Hekili:OnInitialize()
     self.DB.RegisterCallback( self, "OnProfileReset", "TotalRefresh" )
 
     local AceConfig = LibStub( "AceConfig-3.0" )
-    AceConfig:RegisterOptionsTable( ns.addon_name, self.Options )
+    AceConfig:RegisterOptionsTable( "Hekili", self.Options )
 
     local AceConfigDialog = LibStub( "AceConfigDialog-3.0" )
     -- EmbedBlizOptions()
@@ -83,9 +83,9 @@ function Hekili:OnInitialize()
     local LDB = LibStub( "LibDataBroker-1.1", true )
     local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
     if LDB then
-        ns.UI.Minimap = ns.UI.Minimap or LDB:NewDataObject( ns.addon_name, {
+        ns.UI.Minimap = ns.UI.Minimap or LDB:NewDataObject( "Hekili", {
             type = "data source",
-            text = ns.addon_name,
+            text = "Hekili",
             icon = "Interface\\ICONS\\spell_nature_bloodlust",
             OnClick = function( f, button )
                 if button == "RightButton" then ns.StartConfiguration()
@@ -95,7 +95,7 @@ function Hekili:OnInitialize()
                 GameTooltip:Hide()
             end,
             OnTooltipShow = function( tt )
-                tt:AddDoubleLine( ns.addon_name, ns.UI.Minimap.text )
+                tt:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
                 tt:AddLine( "|cFFFFFFFF" .. L["Left-click to make quick adjustments."] .. "|r" )
                 tt:AddLine( "|cFFFFFFFF" .. L["Right-click to open the options interface."] .. "|r" )
             end,
@@ -126,7 +126,7 @@ function Hekili:OnInitialize()
         ns.UI.Minimap:RefreshDataText()
 
         if LDBIcon then
-            LDBIcon:Register( ns.addon_name, ns.UI.Minimap, self.DB.profile.iconStore )
+            LDBIcon:Register( "Hekili", ns.UI.Minimap, self.DB.profile.iconStore )
         end
     end
 
@@ -2056,7 +2056,7 @@ function Hekili.Update()
                         snaps = L[dispName]
                     end
 
-                    if Hekili.Config then LibStub( "AceConfigDialog-3.0" ):SelectGroup( ns.addon_name, "snapshots" ) end
+                    if Hekili.Config then LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "snapshots" ) end
                 end
             -- else
                 -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
@@ -2116,7 +2116,7 @@ function Hekili:DumpProfileInfo( deep, orderBy )
             if usage and calls > 0 then
                 local db = {}
 
-                db.func  = ns.addon_name .. "." .. k
+                db.func  = "Hekili." .. k
                 db.calls = calls
                 db.usage = usage
                 db.average = usage / ( calls == 0 and 1 or calls )
@@ -2218,7 +2218,7 @@ end
 function Hekili:DumpFrameInfo()
     local output
 
-    local cpu = GetAddOnCPUUsage( ns.addon_name )
+    local cpu = GetAddOnCPUUsage( "Hekili" )
 
     wipe( usedCPU )
 

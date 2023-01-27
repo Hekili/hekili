@@ -3,7 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[addon]
-local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -79,10 +79,10 @@ local function Mover_OnMouseUp(self, btn)
         Hekili:SaveCoordinates()
     elseif btn == "RightButton" then
         if obj:GetName() == "HekiliNotification" then
-            LibStub( "AceConfigDialog-3.0" ):SelectGroup( ns.addon_name, "displays", "nPanel" )
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", "nPanel" )
             return
         elseif obj and obj.id then
-            LibStub( "AceConfigDialog-3.0" ):SelectGroup( ns.addon_name, "displays", obj.id )
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", obj.id )
             return
         end
     end
@@ -183,7 +183,7 @@ function ns.StartConfiguration( external )
         if H.Config then
             Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
 
-            Tooltip:SetText( ns.addon_name .. ": " .. L["Notifications"] )
+            Tooltip:SetText( "Hekili: " .. L["Notifications"] )
             Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
             Tooltip:AddLine( L["Right-click to open Notification panel settings."], 1, 1, 1 )
             Tooltip:Show()
@@ -263,7 +263,7 @@ function ns.StartConfiguration( external )
                 if H.Config then
                     Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
 
-                    Tooltip:SetText( ns.addon_name .. ": " .. L[i] )
+                    Tooltip:SetText( "Hekili: " .. L[i] )
                     Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
                     Tooltip:AddLine( format( L["Right-click to open %s display settings."], L[i] ), 1, 1, 1 )
                     if not H:IsDisplayActive( i, true ) then Tooltip:AddLine( L["This display is not currently active."], 0.5, 0.5, 0.5 ) end
@@ -299,10 +299,10 @@ function ns.StartConfiguration( external )
         if not Hekili.OptionsReady then Hekili:RefreshOptions() end
 
         local ACD = LibStub( "AceConfigDialog-3.0" )
-        ACD:SetDefaultSize( ns.addon_name, 800, 608 )
-        ACD:Open( ns.addon_name )
+        ACD:SetDefaultSize( "Hekili", 800, 608 )
+        ACD:Open( "Hekili" )
 
-        local oFrame = ACD.OpenFrames[ ns.addon_name ].frame
+        local oFrame = ACD.OpenFrames[ "Hekili" ].frame
         if not Hekili.IsDragonflight() then oFrame:SetMinResize( 800, 608 ) end
 
         ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame" )
@@ -316,10 +316,10 @@ function ns.StartConfiguration( external )
         end )
 
         if not ns.OnHideFrame.firstTime then
-            ACD:SelectGroup( ns.addon_name, "packs" )
-            ACD:SelectGroup( ns.addon_name, "displays" )
-            ACD:SelectGroup( ns.addon_name, "displays", "Multi" )
-            ACD:SelectGroup( ns.addon_name, "general" )
+            ACD:SelectGroup( "Hekili", "packs" )
+            ACD:SelectGroup( "Hekili", "displays" )
+            ACD:SelectGroup( "Hekili", "displays", "Multi" )
+            ACD:SelectGroup( "Hekili", "general" )
             ns.OnHideFrame.firstTime = true
         end
 
@@ -403,7 +403,7 @@ do
     local menuData = {
         {
             isTitle = 1,
-            text = ns.addon_name,
+            text = "Hekili",
             notCheckable = 1,
         },
 
@@ -2647,7 +2647,7 @@ do
                 Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
                 Tooltip:SetBackdropColor( 0, 0, 0, 0.8 )
 
-                Tooltip:SetText( ns.addon_name .. ": " .. dispID  )
+                Tooltip:SetText( "Hekili: " .. dispID  )
                 Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
                 Tooltip:Show()
                 self:SetMovable( true )

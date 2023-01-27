@@ -5,7 +5,7 @@ if UnitClassBase( "player" ) ~= "ROGUE" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
-local L = LibStub("AceLocale-3.0"):GetLocale( ns.addon_name )
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
