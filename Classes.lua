@@ -447,6 +447,13 @@ local HekiliSpecMixin = {
                 self:RegisterHook( hook, function()
                     local d = display or "Primary"
 
+                    if state.time == 0 and not InCombatLockdown() then
+                        phase.real[ d ] = false
+                        phase.virtual[ d ] = false
+                        if Hekili.ActiveDebug then Hekili:Debug( "[ %s ] Phase '%s' set to '%s' (%s) - out of combat.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
+                        return
+                    end
+
                     if phase.real[ d ] == nil then phase.real[ d ] = false end
 
                     if phase.real[ d ] ~= true and phase.activate() then
@@ -508,6 +515,13 @@ local HekiliSpecMixin = {
             if hook == "reset_precast" then
                 self:RegisterHook( hook, function()
                     local d = display or "Primary"
+
+                    if state.time == 0 and not InCombatLockdown() then
+                        phase.real[ d ] = phase.default()
+                        phase.virtual[ d ] = phase.real[ d ]
+                        if Hekili.ActiveDebug then Hekili:Debug( "[ %s ] Phased variable '%s' set to '%s' (%s) - out of combat.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
+                        return
+                    end
 
                     phase.real[ d ] = phase.update( phase.real[ d ], phase.default() )
                     phase.virtual[ d ] = phase.real[ d ]

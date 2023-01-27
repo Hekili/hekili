@@ -788,6 +788,12 @@ do
 
             cycle.aura = aura
 
+            if state.active_dot[ aura ] >= state.cycle_enemies then
+                if not quiet then debug( " - we do not have another valid target for " .. aura .. ": " .. state.active_dot[ aura ] .. " vs " .. state.cycle_enemies .. "." ) end
+                state.ClearCycle()
+                return
+            end
+
             if not quiet then
                 debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
             end
@@ -803,6 +809,34 @@ do
         else
             if not quiet then debug( " - cycle aura appears to be down, so we're sticking with our current target." ) end
         end
+
+        --[[ Possible future version:
+            local debuffIsUp = cDebuff.up
+
+            cycle.expires = cDebuff.duration + state.query_time
+
+            cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
+            cycle.maxTTD  = ability.max_ttd
+            cycle.aura = aura
+
+            if debuffIsUp and not ability.cycle_to and state.active_dot[ aura ] >= state.cycle_enemies then
+                debug( " - we will not use the ability on a different target, as we have enough targets with %s.", cycle.aura )
+                state.ClearCycle()
+                return
+            end
+
+            if not debuffIsUp and not ability.cycle_to then
+                debug( " - we will not use the ability on a different target, as current target does not have %s.", cycle.aura )
+                state.ClearCycle()
+                return
+            end
+
+            if not debuffIsUp and ability.cycle_to and active_dot[ aura ] == 0 then
+                debug( " - we will not use the ability on a different target, as no other target has %s applied.", cycle.aura)
+                state.ClearCycle()
+                return
+            end
+        ]]
     end
 
     function state.GetCycleInfo()
@@ -1649,7 +1683,7 @@ do
         wipe( times )
 
         for k, v in pairs( workTable ) do
-            if Hekili.ActiveDebug then Hekili:Debug( "%s - %s", tostring( k ), tostring( v ) ) end
+            -- if Hekili.ActiveDebug then Hekili:Debug( "%s - %s", tostring( k ), tostring( v ) ) end
             times[ #times + 1 ] = k
         end
 
@@ -1977,7 +2011,7 @@ do
                 if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
                 if t.max_targets > 0 then targets = min( t.max_targets, targets ) end
 
-                if Hekili.ActiveDebug then Hekili:Debug( "cycle min:%.2f, max:%.2f, ae:%d, before:%d, after:%d, cycle_enemies:%d", minTTD or 0, maxTTD or 0, t.active_enemies, minTTD and Hekili:GetNumTTDsBefore( minTTD ) or 0, maxTTD and Hekili:GetNumTTDsAfter( maxTTD ) or 0, max( 1, targets ) ) end
+                -- if Hekili.ActiveDebug then Hekili:Debug( "cycle min:%.2f, max:%.2f, ae:%d, before:%d, after:%d, cycle_enemies:%d", minTTD or 0, maxTTD or 0, t.active_enemies, minTTD and Hekili:GetNumTTDsBefore( minTTD ) or 0, maxTTD and Hekili:GetNumTTDsAfter( maxTTD ) or 0, max( 1, targets ) ) end
 
                 return max( 1, targets )
 
@@ -4424,12 +4458,12 @@ do
                         end
 
                         -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
-                        if debug then
+                        --[[ if debug then
                             conditions = format( "%s: %s", passed and "PASS" or "FAIL", scripts:GetConditionsAndValues( scriptID ) )
                             valueString = format( "%s: %s", state.args.value ~= nil and tostring( state.args.value ) or "nil", scripts:GetModifierValues( "value", scriptID ) )
 
                             Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. "\n - value = " .. valueString )
-                        end
+                        end ]]
                         state.variable[ var ] = value
                         cache[ var ][ pathKey ] = value
                     end
@@ -4439,9 +4473,9 @@ do
             -- Clear cache and clear the flag that we are checking this variable already.
             state.variable[ var ] = nil
 
-            if debug then
+            --[[ if debug then
                 Hekili:Debug( "%s Result = %s.", var, tostring( value ) )
-            end
+            end ]]
 
             state.scriptID = parent
 
@@ -5900,7 +5934,7 @@ do
                 expires, minTTD, maxTTD, aura = self.GetCycleInfo()
             end
 
-            if e.target and self.target.unit ~= "unknown" and e.target ~= self.target.unit then
+            if e.target and e.target ~= self.target.unit then
                 if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
                 self.SetupCycle( ability )
             end
@@ -5927,9 +5961,26 @@ do
             self.stopChanneling( false, ability.key )
 
         elseif e.type == "PROJECTILE_IMPACT" then
+            local wasCycling = self.IsCycling( nil, true )
+            local expires, minTTD, maxTTD, aura
+
+            if wasCycling then
+                expires, minTTD, maxTTD, aura = self.GetCycleInfo()
+            end
+
+            if e.target and e.target ~= self.target.unit then
+                if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
+                self.SetupCycle( ability )
+            end
+
             if ability.impact then ability.impact() end
             self:StartCombat()
 
+            if wasCycling then
+                self.SetCycleInfo( expires, minTTD, maxTTD, aura )
+            else
+                self.ClearCycle()
+            end
         end
 
         if e.func then e.func( e.data ) end
@@ -6278,7 +6329,7 @@ do
 
         -- Special case spells that suck.
         if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
-            setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
+            state.setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
         end
 
         -- Trinkets that need special handling.
@@ -6286,8 +6337,10 @@ do
             state.applyDebuff( "player", "rooted", state.buff.stormeaters_boon.remains )
         end
 
-        if state.buff.slicing_maelstrom.up then
-            state.putTrinketsOnCD( state.buff.slicing_maelstrom.remains + 20 )
+        -- BUGS: Windscar Whetstone invisibly keeps trinkets on CD for 6 additional seconds.
+        local ww_cd_remains = state.action.windscar_whetstone.lastCast + 26 - state.now
+        if ww_cd_remains > 0 then
+            state.putTrinketsOnCD( ww_cd_remains )
         end
 
         -- TODO: Move this all to those aura generator functions.

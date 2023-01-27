@@ -565,9 +565,6 @@ all:RegisterAbilities( {
         cast = 2,
         channeled = true,
         cooldown = 120,
-        cooldown_special = function()
-            return GetSpellCooldown( 382256 )
-        end,
         gcd = "off",
 
         item = 194308,
@@ -595,6 +592,17 @@ all:RegisterAbilities( {
                 max_stack = 1
             }
         }
+    },
+    mote_of_sanctification = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 133646,
+        toggle = "cooldowns",
+
+        handler = function()
+        end,
     },
     primal_ritual_shell = {
         cast = 0,

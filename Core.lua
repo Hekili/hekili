@@ -1323,9 +1323,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         end
                                     end
 
-                                    if rWait == 0 or
-                                        force_channel or
-                                        state.empowerment.active and state.empowerment.spell == rAction then break end
+                                    if rWait == 0 or force_channel then break end
                                 end
                             end
                         end
@@ -1872,6 +1870,15 @@ function Hekili.Update()
                     slot.depth = chosen_depth
 
                     state.scriptID = slot.script
+
+                    local ability = class.abilities[ action ]
+                    local cast_target = i == 1 and state.cast_target ~= "nobody" and state.cast_target or state.target.unit
+
+                    if slot.indicator == "cycle" then
+                        state.SetupCycle( ability )
+                        cast_target = cast_target .. "c"
+                    end
+
                     if debug then scripts:ImplantDebugData( slot ) end
 
                     checkstr = checkstr and ( checkstr .. ':' .. action ) or action
@@ -1893,20 +1900,12 @@ function Hekili.Update()
                         if state.delay > 0 then state.advance( state.delay ) end
                         -- Hekili:Yield( "Post-Advance for " .. dispName .. " #" .. i .. ": " .. action )
 
-                        local ability = class.abilities[ action ]
                         local cast = ability.cast
-
-                        if slot.indicator == "cycle" then
-                            state.SetupCycle( ability )
-                        end
 
                         if ability.gcd ~= "off" and state.cooldown.global_cooldown.remains == 0 then
                             state.setCooldown( "global_cooldown", state.gcd.execute )
                         end
-
                         -- Hekili:Yield( "Post-GCD for " .. dispName .. " #" .. i .. ": " .. action )
-
-                        local cast_target = i == 1 and state.cast_target ~= "nobody" and state.cast_target or state.target.unit
 
                         if state.buff.casting.up and not ability.dual_cast then
                             state.stopChanneling( false, action )
@@ -2032,9 +2031,17 @@ function Hekili.Update()
             UI:SetThreadLocked( false )
 
             if WeakAuras and WeakAuras.ScanEvents then
-                -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
-                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator )
-                -- Hekili:Yield( "Post-ScanEvents for " .. dispName )
+                if UI.EventPayload then
+                    wipe( UI.EventPayload )
+                else
+                    UI.EventPayload = {}
+                end
+
+                for k, v in pairs( Queue[ 1 ] ) do
+                    UI.EventPayload[ k ] = v
+                end
+
+                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator, Queue[ 1 ].empower_to, UI.EventPayload )
             end
 
             Hekili:Yield( "Finished display updates." )
@@ -2089,7 +2096,7 @@ function Hekili_GetRecommendedAbility( display, entry )
         return nil, format( L["No entry #%s for that display."], entry )
     end
 
-    return slot.actionID
+    return slot.actionID, slot.empower_to, Hekili.DisplayPool[ display ].EventPayload[ entry ]
 end
 
 

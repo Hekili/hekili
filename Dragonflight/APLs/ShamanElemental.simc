@@ -10,7 +10,7 @@ actions+=/wind_shear
 actions+=/purge,if=settings.hostile_dispel
 actions+=/greater_purge,if=settings.hostile_dispel
 # Enable more movement.
-actions=spiritwalkers_grace,moving=1,if=movement.distance>6
+actions+=/spiritwalkers_grace,moving=1,if=movement.distance>6
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
 actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
@@ -20,8 +20,6 @@ actions+=/use_items
 actions+=/meteor
 actions+=/tempest,if=buff.call_lightning.up
 actions+=/vesper_totem
-actions+=/fae_transfusion,if=action.fae_transfusion.known&!runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up)&spell_targets.chain_lightning<3
-actions+=/fae_transfusion,if=action.fae_transfusion.known&runeforge.seeds_of_rampant_growth.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up|spell_targets.chain_lightning>=3)&(cooldown.fire_elemental.remains>20|cooldown.storm_elemental.remains>20)
 actions+=/natures_swiftness
 actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
 actions+=/run_action_list,name=single_target
@@ -32,22 +30,30 @@ actions.aoe=fire_elemental
 actions.aoe+=/storm_elemental
 # Keep your cooldowns rolling.
 actions.aoe+=/stormkeeper,if=!buff.stormkeeper.up
+# Reset LMT CD as early as possible.
+actions.aoe+=/totemic_recall,if=cooldown.liquid_magma_totem.remains>45
+# Keep your cooldowns rolling.
+actions.aoe+=/liquid_magma_totem
 # Spread Flame Shock using Surge of Power. Don't waste buffs by resets (resets are gone, but I'll keep that logic here).
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up&buff.surge_of_power.up&!buff.splintered_elements.up
 # Spread Flame Shock using Surge of Power. Don't waste buffs by resets (resets are gone, but I'll keep that logic here).
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up&talent.deeply_rooted_elements.enabled&!talent.surge_of_power.enabled&!buff.splintered_elements.up
 # Spread Flame Shock using Surge of Power. Don't waste buffs by resets (resets are gone, but I'll keep that logic here).
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up&talent.master_of_the_elements.enabled&!talent.lightning_rod.enabled
-# Spread Flame Shock using Surge of Power.
-actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&buff.surge_of_power.up&(!talent.lightning_rod.enabled|talent.skybreakers_fiery_demise.enabled)
-# Spread Flame Shock against low target counts if Master of the Elements was selected.
-actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&talent.master_of_the_elements.enabled&!talent.lightning_rod.enabled
-# Spread Flame Shock to gamble on Deeply Rooted Element procs.
-actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&talent.deeply_rooted_elements.enabled&!talent.surge_of_power.enabled
+# Spread Flame Shock using Surge of Power up to 6.
+actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&buff.surge_of_power.up&(!talent.lightning_rod.enabled|talent.skybreakers_fiery_demise.enabled)&dot.flame_shock.remains<target.time_to_die-5&active_dot.flame_shock<6
+# Spread Flame Shock against low target counts if Master of the Elements was selected up to 6.
+actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&talent.master_of_the_elements.enabled&!talent.lightning_rod.enabled&dot.flame_shock.remains<target.time_to_die-5&active_dot.flame_shock<6
+# Spread Flame Shock to gamble on Deeply Rooted Element procs up to 6.
+actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&talent.deeply_rooted_elements.enabled&!talent.surge_of_power.enabled&dot.flame_shock.remains<target.time_to_die-5&active_dot.flame_shock<6
+# Refresh Flame Shock using Surge of Power up to 6.
+actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&buff.surge_of_power.up&(!talent.lightning_rod.enabled|talent.skybreakers_fiery_demise.enabled)&dot.flame_shock.remains<target.time_to_die-5&dot.flame_shock.remains>0
+# Refresh Flame Shock against low target counts if Master of the Elements was selected up to 6.
+actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&talent.master_of_the_elements.enabled&!talent.lightning_rod.enabled&dot.flame_shock.remains<target.time_to_die-5&dot.flame_shock.remains>0
+# Refresh Flame Shock to gamble on Deeply Rooted Element procs up to 6.
+actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&talent.deeply_rooted_elements.enabled&!talent.surge_of_power.enabled&dot.flame_shock.remains<target.time_to_die-5&dot.flame_shock.remains>0
 # JUST DO IT! https://i.kym-cdn.com/entries/icons/mobile/000/018/147/Shia_LaBeouf__Just_Do_It__Motivational_Speech_(Original_Video_by_LaBeouf__R%C3%B6nkk%C3%B6___Turner)_0-4_screenshot.jpg
 actions.aoe+=/ascendance
-# Keep your cooldowns rolling.
-actions.aoe+=/liquid_magma_totem
 # Cast Lava Burst to buff your immediately follow-up Earthquake with Master of the Elements.
 actions.aoe+=/lava_burst,cycle_targets=1,if=cooldown_react&buff.lava_surge.up&talent.master_of_the_elements.enabled&!buff.master_of_the_elements.up&(maelstrom>=60-5*talent.eye_of_the_storm.rank-2*talent.flow_of_power.enabled)&(!talent.echoes_of_great_sundering.enabled|buff.echoes_of_great_sundering.up)&(!buff.ascendance.up&active_enemies>3&talent.unrelenting_calamity.enabled|active_enemies>3&!talent.unrelenting_calamity.enabled|active_enemies=3)
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
@@ -57,15 +63,15 @@ actions.aoe+=/earthquake,if=!talent.echoes_of_great_sundering.enabled&!talent.el
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
 actions.aoe+=/earthquake,if=buff.echoes_of_great_sundering.up
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Spread Lightning Rod to as many targets as possible.
-actions.aoe+=/elemental_blast,cycle_targets=1,if=(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)
+actions.aoe+=/elemental_blast,cycle_targets=1,if=talent.echoes_of_great_sundering
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
-actions.aoe+=/elemental_blast,if=(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)
+actions.aoe+=/elemental_blast,if=talent.echoes_of_great_sundering
 # Elemental Blast is stronger than Earthquake against 3 targets.
 actions.aoe+=/elemental_blast,if=active_enemies=3&!talent.echoes_of_great_sundering.enabled
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Spread Lightning Rod to as many targets as possible.
-actions.aoe+=/earth_shock,cycle_targets=1,if=(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)
+actions.aoe+=/earth_shock,cycle_targets=1,if=talent.echoes_of_great_sundering
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease.
-actions.aoe+=/earth_shock,if=(talent.echoes_of_great_sundering.rank>1|legendary.echoes_of_great_sundering.enabled)
+actions.aoe+=/earth_shock,if=talent.echoes_of_great_sundering
 # Stormkeeper is strong and should be used.
 actions.aoe+=/lava_beam,if=buff.stormkeeper.up
 # Stormkeeper is strong and should be used.
@@ -85,7 +91,7 @@ actions.aoe+=/lava_beam,if=buff.master_of_the_elements.up&buff.ascendance.remain
 # Proc Master of the Elements against 3 targets.
 actions.aoe+=/lava_burst,cycle_targets=1,if=dot.flame_shock.remains>0&active_enemies=3&talent.master_of_the_elements.enabled
 # Gamble away for Deeply Rooted Elements procs whenever Lava Surge makes Lava Burst more efficient.
-actions.aoe+=/lava_burst,if=buff.lava_surge.up&talent.deeply_rooted_elements.enabled
+actions.aoe+=/lava_burst,if=dot.flame_shock.remains>0&buff.lava_surge.up&talent.deeply_rooted_elements.enabled
 # Use Icefury if you can get the full benefit from Electrified Shocks. If more targets are present ignore it.
 actions.aoe+=/icefury,if=talent.electrified_shocks.enabled&active_enemies<5
 # Spread out your Frost Shock casts to empower as many Chain Lightnings as possible.
@@ -96,7 +102,7 @@ actions.aoe+=/flame_shock,moving=1,cycle_targets=1,if=refreshable
 actions.aoe+=/frost_shock,moving=1
 
 # Keep your cooldowns rolling.
-actions.single_target=fire_elemental
+actions.single_target+=/fire_elemental
 # Keep your cooldowns rolling.
 actions.single_target+=/storm_elemental
 # Reset LMT CD as early as possible.
@@ -108,10 +114,10 @@ actions.single_target+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave
 actions.single_target+=/flame_shock,cycle_targets=1,if=active_enemies=1&refreshable&!buff.surge_of_power.up
 # Spread Flame Shock to multiple targets only if talents were selected that benefit from it.
 actions.single_target+=/flame_shock,if=active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1)&refreshable&!buff.surge_of_power.up&(talent.deeply_rooted_elements.enabled|talent.ascendance.enabled|talent.primordial_wave.enabled|talent.searing_flames.enabled|talent.magma_chamber.enabled),cycle_targets=1
-actions.single_target+=/stormkeeper,if=!buff.stormkeeper.up&!buff.ascendance.up
+actions.single_target+=/stormkeeper,if=!buff.ascendance.up&!buff.stormkeeper.up
 actions.single_target+=/ascendance,if=!buff.stormkeeper.up
-actions.single_target+=/cancel_buff,name=lava_surge,if=buff.stormkeeper.up&buff.surge_of_power.up
-actions.single_target+=/lava_burst,if=buff.stormkeeper.up&buff.surge_of_power.up
+# Stormkeeper is strong and should be used.
+actions.single_target+=/lightning_bolt,if=buff.stormkeeper.up&buff.surge_of_power.up
 # Stormkeeper is strong and should be used.
 actions.single_target+=/lava_beam,if=active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1)&buff.stormkeeper.up&!talent.surge_of_power.enabled
 # Stormkeeper is strong and should be used.
@@ -137,15 +143,15 @@ actions.single_target+=/lava_burst,if=talent.master_of_the_elements.enabled&!buf
 # Buff your next Maelstrom Spender with MotE if it won't cap your maelstrom.
 actions.single_target+=/lava_burst,if=talent.master_of_the_elements.enabled&!buff.master_of_the_elements.up&maelstrom>=50&talent.swelling_maelstrom.enabled&maelstrom<=130
 # Use the talents you selected. Did you invest only 1 point in it? In this case this'll be a DPS decrease. Additionally Elemental Blast is stronger than EoGS. In this case don't use Earthquake on single target.
-actions.single_target+=/earthquake,if=(legendary.echoes_of_great_sundering.enabled|talent.echoes_of_great_sundering.rank>1)&buff.echoes_of_great_sundering.up&(!talent.elemental_blast.enabled&active_enemies<2|active_enemies>1)
+actions.single_target+=/earthquake,if=buff.echoes_of_great_sundering.up&(!talent.elemental_blast.enabled&active_enemies<2|active_enemies>1)
 # Use Earthquake against two enemies unless you have to alternate because of Echoes of Great Sundering.
 actions.single_target+=/earthquake,if=active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1)&!talent.echoes_of_great_sundering.enabled&!talent.elemental_blast.enabled
 actions.single_target+=/elemental_blast
 actions.single_target+=/earth_shock
 # Utilize present buffs.
-actions.single_target+=/lava_burst,cycle_targets=1,if=buff.flux_melting.up&active_enemies>1
+actions.single_target+=/lava_burst,cycle_targets=1,if=dot.flame_shock.remains>2&buff.flux_melting.up&active_enemies>1
 # Single target Lava Burst is stronk.
-actions.single_target+=/lava_burst,if=active_enemies=1&talent.deeply_rooted_elements.enabled
+actions.single_target+=/lava_burst,cycle_targets=1,if=dot.flame_shock.remains>2&active_enemies=1&talent.deeply_rooted_elements.enabled
 # Spread out your Icefury usage if you can get more use out of accompanied buffs.
 actions.single_target+=/frost_shock,if=buff.icefury.up&talent.flux_melting.enabled&!buff.flux_melting.up
 # Spread out your Icefury usage if you can get more use out of accompanied buffs.
@@ -160,7 +166,7 @@ actions.single_target+=/frost_shock,if=buff.icefury.up&buff.master_of_the_elemen
 actions.single_target+=/frost_shock,if=buff.icefury.up&talent.flux_melting.enabled
 # If you have MotE up and aren't at risk of capping LvB, spend MotE on FrS/LB.
 actions.single_target+=/lightning_bolt,if=buff.master_of_the_elements.up&!buff.lava_surge.up&(cooldown.lava_burst.charges_fractional<1.0&talent.echoes_of_the_elements.enabled)
-actions.single_target+=/lava_burst,cycle_targetrs=1,if=dot.flame_shock.remains>2
+actions.single_target+=/lava_burst,cycle_targets=1,if=dot.flame_shock.remains>2
 # Use your Icefury buffs if you didn't improve the talent.
 actions.single_target+=/frost_shock,if=buff.icefury.up&!talent.electrified_shocks.enabled&!talent.flux_melting.enabled
 # Casting Chain Lightning at two targets is mor efficient than Lightning Bolt.
