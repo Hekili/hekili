@@ -544,19 +544,19 @@ end )
 
 
 local queued_frag_modifier = 0
--- Need to track the tick time here because immolation aura tick damage can hit multiple enemies but it only benefits the duration of fiery brand duration once.
-local last_immo_tick_time = 0
 -- Variable to track the total bonus timed earned on fiery brand from immolation aura.
 local bonus_time_from_immo_aura = 0
+-- Variable to track the GUID of the initial target
+local initial_fiery_brand_guid = ""
 
-spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( ts, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
         if talent.charred_flesh.enabled then
             if subtype == "SPELL_DAMAGE" then
-                if spellID == 258922 then -- immolation aura
-                    if (ts ~= last_immo_tick_time) then
+                -- immolation aura
+                if spellID == 258922 then 
+                    if (destGUID == initial_fiery_brand_guid) then
                         bonus_time_from_immo_aura = bonus_time_from_immo_aura + (.25 * talent.charred_flesh.rank)
-                        last_immo_tick_time = ts
                     end
                 end
             end
@@ -568,6 +568,7 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( ts, subtype, _, sour
                 -- Fiery Brand:  reset the bonus time earned from immolation aura on every cast.
                 if spellID == 204021 then
                     bonus_time_from_immo_aura = 0
+                    initial_fiery_brand_guid = destGUID
                 end
             end
                 
