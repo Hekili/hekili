@@ -265,7 +265,7 @@ spec:RegisterAuras( {
         copy = { 16511, 17347, 17348, 26864, 48660 },
     },
     hunger_for_blood = {
-        id = 58155,
+        id = 63848,
         duration = 60,
         max_stack = 1,
     },
@@ -917,7 +917,7 @@ spec:RegisterAbilities( {
 
     -- Enrages you, increasing all damage caused by 5%.  Requires a bleed effect to be active on the target.  Lasts 1 min.
     hunger_for_blood = {
-        id = 51662,
+        id = 63848,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
