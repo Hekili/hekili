@@ -4,4 +4,4 @@ debug = true
 --@end-debug@]===]
 
 local addon, ns = ...
-local L = LibStub("AceLocale-3.0"):NewLocale( ns.addon_name, "enUS", true, debug )
+local L = LibStub("AceLocale-3.0"):NewLocale( "Hekili", "enUS", true, debug )

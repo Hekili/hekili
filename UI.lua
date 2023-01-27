@@ -79,10 +79,10 @@ local function Mover_OnMouseUp(self, btn)
         Hekili:SaveCoordinates()
     elseif btn == "RightButton" then
         if obj:GetName() == "HekiliNotification" then
-            LibStub( "AceConfigDialog-3.0" ):SelectGroup( ns.addon_name, "displays", "nPanel" )
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", "nPanel" )
             return
         elseif obj and obj.id then
-            LibStub( "AceConfigDialog-3.0" ):SelectGroup( ns.addon_name, "displays", obj.id )
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", obj.id )
             return
         end
     end
@@ -299,8 +299,8 @@ function ns.StartConfiguration( external )
         if not Hekili.OptionsReady then Hekili:RefreshOptions() end
 
         local ACD = LibStub( "AceConfigDialog-3.0" )
-        ACD:SetDefaultSize( ns.addon_name, 800, 608 )
-        ACD:Open( ns.addon_name )
+        ACD:SetDefaultSize( "Hekili", 800, 608 )
+        ACD:Open( "Hekili" )
 
         local oFrame = ACD.OpenFrames["Hekili"].frame
         oFrame:SetResizeBounds( 800, 400 )
@@ -320,10 +320,10 @@ function ns.StartConfiguration( external )
         end )
 
         if not ns.OnHideFrame.firstTime then
-            ACD:SelectGroup( ns.addon_name, "packs" )
-            ACD:SelectGroup( ns.addon_name, "displays" )
-            ACD:SelectGroup( ns.addon_name, "displays", "Multi" )
-            ACD:SelectGroup( ns.addon_name, "general" )
+            ACD:SelectGroup( "Hekili", "packs" )
+            ACD:SelectGroup( "Hekili", "displays" )
+            ACD:SelectGroup( "Hekili", "displays", "Multi" )
+            ACD:SelectGroup( "Hekili", "general" )
             ns.OnHideFrame.firstTime = true
         end
 
@@ -405,7 +405,7 @@ do
     local menuData = {
         {
             isTitle = 1,
-            text = ns.addon_name,
+            text = "Hekili",
             notCheckable = 1,
         },
 
