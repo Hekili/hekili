@@ -2309,6 +2309,9 @@ local mt_stat = {
         elseif k == "haste_rating" then
             t[k] = GetCombatRating(CR_HASTE_MELEE)
 
+        elseif k == "armor_penetration" then
+            t[k] = GetArmorPenetration()
+
         elseif k == "weapon_dps" or k == "weapon_offhand_dps" then
             local low, high, offlow, offhigh = UnitDamage( "player" )
             t.weapon_dps = 0.5 * ( low + high )
