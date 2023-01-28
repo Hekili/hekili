@@ -1,0 +1,25 @@
+# APL v3.4.1-1.1.0 #
+actions.precombat+=/fel_armor,if=buff.armor.down
+actions.precombat+=/summon_imp,if=!pet.active
+actions.precombat+=/life_tap,if=glyph.life_tap.enabled&buff.life_tap.down
+actions.precombat+=/potion
+
+actions+=/group_curse,if=debuff.my_curse.down&curse_grouped
+actions+=/immolate,if=!ticking
+actions+=/conflagrate
+actions+=/solo_curse,if=debuff.my_curse.down
+actions+=/life_tap,if=glyph.life_tap.enabled&buff.life_tap.down
+actions+=/chaos_bolt
+actions+=/corruption,if=!ticking
+actions+=/potion
+actions+=/use_items
+actions+=/inferno,if=target.time_to_die<=60&mana.pct>20&inferno_enabled|target.health.pct<40&inferno_enabled
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1
+actions+=/corruption,line_cd=6,if=moving
+actions+=/life_tap,if=moving&mana.pct<80|mana.pct<10
+actions+=/incinerate
+
+
+actions.aoe+=/shadowflame,if=active_enemies>3&target.distance<10
+actions.aoe+=/seed_of_corruption,cycle_targets=1,if=active_enemies>3&!ticking
+actions.aoe+=/immolate,cycle_targets=1,if=!ticking&!talent.unstable_affliction.enabled&active_enemies<4
