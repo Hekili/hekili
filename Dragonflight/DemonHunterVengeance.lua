@@ -538,10 +538,6 @@ spec:RegisterStateFunction( "purge_fragments", function()
     fragments.realTime = 0
 end )
 
-spec:RegisterStateExpr( "fiery_brand_dot_primary_ticking", function()
-
-end )
-
 
 -- Variable to track the total bonus timed earned on fiery brand from immolation aura.
 local bonus_time_from_immo_aura = 0
@@ -639,23 +635,17 @@ spec:RegisterHook( "advance_end", function( time )
 end )
 
 
--- Moved to Lua so it's available at reset.
-spec:RegisterVariable( "sub_apl_in_progress", function()
-    -- variable.the_hunt_ramp_in_progress|variable.elysian_decree_ramp_in_progress|variable.soul_carver_ramp_in_progress|variable.fiery_demise_in_progress
-    return variable.the_hunt_ramp_in_progress or variable.elysian_decree_ramp_in_progress or variable.soul_carver_ramp_in_progress or variable.fiery_demise_in_progress
-end )
 
 
 spec:RegisterPhase( "the_hunt_ramp_in_progress",
     -- talent.the_hunt.enabled & cooldown.the_hunt.remains <= 10 & ! variable.sub_apl_in_progress
     function()
-        Hekili:Debug( "thrip_activate " .. cooldown.the_hunt.remains .. " " .. tostring( variable.sub_apl_in_progress ) )
         return talent.the_hunt.enabled and cooldown.the_hunt.remains <= 10 and not variable.sub_apl_in_progress
     end,
     -- talent.the_hunt.enabled & cooldown.the_hunt.remains>10
     function()
-        Hekili:Debug( "thrip_deactivate " .. cooldown.the_hunt.remains )
-        return talent.the_hunt.enabled and cooldown.the_hunt.remains > 10 end,
+        return talent.the_hunt.enabled and cooldown.the_hunt.remains > 10
+    end,
 "reset_precast", "advance_end", "runHandler" )
 
 spec:RegisterPhase( "elysian_decree_ramp_in_progress",
@@ -679,6 +669,12 @@ spec:RegisterPhase( "fiery_demise_in_progress",
     function() return talent.fiery_brand.enabled and talent.fiery_demise.enabled and cooldown.fiery_brand.charges_fractional < 1.65 and ( talent.fel_devastation.enabled and cooldown.fel_devastation.remains > 10 or talent.soul_carver.enabled and cooldown.soul_carver.remains > 10 ) end,
 "reset_precast", "advance_end", "runHandler" )
 
+    -- Moved to Lua so it's available at reset.
+spec:RegisterPhasedVariable( "sub_apl_in_progress", false,
+        function()
+            return variable.the_hunt_ramp_in_progress or variable.elysian_decree_ramp_in_progress or variable.soul_carver_ramp_in_progress or variable.fiery_demise_in_progress
+        end,
+"reset_precast", "advance_end", "runHandler" )
 
 -- approach that actually calculated time remaining of fiery_brand via combat log. last modified 1/27/2023.
 spec:RegisterStateExpr( "fiery_brand_dot_primary_remains", function()

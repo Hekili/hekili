@@ -449,8 +449,7 @@ local HekiliSpecMixin = {
                     if state.time == 0 and not InCombatLockdown() then
                         phase.real[ d ] = false
                         phase.virtual[ d ] = false
-                        if Hekili.ActiveDebug then Hekili:Debug( "[ %s ] Phase '%s' set to '%s' (%s) - out of combat.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
-                        return
+                        -- if Hekili.ActiveDebug then Hekili:Debug( "[ %s ] Phase '%s' set to '%s' (%s) - out of combat.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
                     end
 
                     if phase.real[ d ] == nil then phase.real[ d ] = false end
@@ -518,8 +517,7 @@ local HekiliSpecMixin = {
                     if state.time == 0 and not InCombatLockdown() then
                         phase.real[ d ] = phase.default()
                         phase.virtual[ d ] = phase.real[ d ]
-                        if Hekili.ActiveDebug then Hekili:Debug( "[ %s ] Phased variable '%s' set to '%s' (%s) - out of combat.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
-                        return
+                        -- if Hekili.ActiveDebug then Hekili:Debug( "[ %s ] Phased variable '%s' set to '%s' (%s) - out of combat.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook ) end
                     end
 
                     phase.real[ d ] = phase.update( phase.real[ d ], phase.default() )
