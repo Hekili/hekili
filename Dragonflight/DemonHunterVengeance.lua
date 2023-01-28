@@ -221,7 +221,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=207744
     fiery_brand = {
         id = 207771,
-        duration = function () return azerite.revel_in_pain.enabled and 10 or 8 end,
+        duration = 10,
         type = "Magic",
         max_stack = 1
     },
@@ -544,10 +544,34 @@ end )
 
 
 local queued_frag_modifier = 0
+-- Variable to track the total bonus timed earned on fiery brand from immolation aura.
+local bonus_time_from_immo_aura = 0
+-- Variable to track the GUID of the initial target
+local initial_fiery_brand_guid = ""
 
-spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
+        if talent.charred_flesh.enabled then
+            if subtype == "SPELL_DAMAGE" then
+                -- immolation aura
+                if spellID == 258922 then 
+                    if (destGUID == initial_fiery_brand_guid) then
+                        bonus_time_from_immo_aura = bonus_time_from_immo_aura + (.25 * talent.charred_flesh.rank)
+                    end
+                end
+            end
+        end 
+
         if subtype == "SPELL_CAST_SUCCESS" then
+
+            if talent.charred_flesh.enabled then
+                -- Fiery Brand:  reset the bonus time earned from immolation aura on every cast.
+                if spellID == 204021 then
+                    bonus_time_from_immo_aura = 0
+                    initial_fiery_brand_guid = destGUID
+                end
+            end
+                
             -- Fracture:  Generate 2 frags.
             if spellID == 263642 then
                 queue_fragments( 2 ) end
@@ -679,9 +703,14 @@ spec:RegisterPhase( "fiery_demise_in_progress",
 "reset_precast", "advance_end", "runHandler" )
 
 
--- New Fiery Brand expressions in 2023-01 that I'm implementing in a hackish way for the moment.
+-- approach that actually calculated time remaining of fiery_brand via combat log. last modified 1/27/2023. 
 spec:RegisterStateExpr( "fiery_brand_dot_primary_remains", function()
-    return max( debuff.fiery_brand.remains, action.fiery_brand.lastCast + class.auras.fiery_brand.duration - query_time )
+    -- Hekili:Print("action.fiery_brand.lastCast:"..action.fiery_brand.lastCast)
+    -- Hekili:Print("fiery_brand.duration:"..class.auras.fiery_brand.duration)
+    -- Hekili:Print("bonus_time:"..bonus_time_from_immo_aura)
+    -- Hekili:Print("query_time:"..query_time)
+    -- Hekili:Print(action.fiery_brand.lastCast + bonus_time_from_immo_aura + class.auras.fiery_brand.duration - query_time)
+    return (action.fiery_brand.lastCast + bonus_time_from_immo_aura + class.auras.fiery_brand.duration - query_time)
 end )
 
 spec:RegisterStateExpr( "fiery_brand_dot_primary_ticking", function()
