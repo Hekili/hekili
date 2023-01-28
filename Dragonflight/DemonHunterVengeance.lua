@@ -543,60 +543,37 @@ spec:RegisterStateExpr( "fiery_brand_dot_primary_ticking", function()
 end )
 
 
-local queued_frag_modifier = 0
 -- Variable to track the total bonus timed earned on fiery brand from immolation aura.
 local bonus_time_from_immo_aura = 0
 -- Variable to track the GUID of the initial target
 local initial_fiery_brand_guid = ""
 
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if sourceGUID == GUID then
-        if talent.charred_flesh.enabled then
-            if subtype == "SPELL_DAMAGE" then
-                -- immolation aura
-                if spellID == 258922 then 
-                    if (destGUID == initial_fiery_brand_guid) then
-                        bonus_time_from_immo_aura = bonus_time_from_immo_aura + (.25 * talent.charred_flesh.rank)
-                    end
-                end
-            end
-        end 
+    if sourceGUID ~= GUID then return end
 
-        if subtype == "SPELL_CAST_SUCCESS" then
+    if talent.charred_flesh.enabled and subtype == "SPELL_DAMAGE" and spellID == 258922 and destGUID == initial_fiery_brand_guid then
+        bonus_time_from_immo_aura = bonus_time_from_immo_aura + ( 0.25 * talent.charred_flesh.rank )
 
-            if talent.charred_flesh.enabled then
-                -- Fiery Brand:  reset the bonus time earned from immolation aura on every cast.
-                if spellID == 204021 then
-                    bonus_time_from_immo_aura = 0
-                    initial_fiery_brand_guid = destGUID
-                end
-            end
-                
-            -- Fracture:  Generate 2 frags.
-            if spellID == 263642 then
-                queue_fragments( 2 ) end
+    elseif subtype == "SPELL_CAST_SUCCESS" then
+        if talent.charred_flesh.enabled and spellID == 204021 then
+            bonus_time_from_immo_aura = 0
+            initial_fiery_brand_guid = destGUID
+        end
 
-            -- Shear:  Generate 1 frag.
-            if spellID == 203782 then
-                queue_fragments( 1 ) end
+        -- Fracture:  Generate 2 frags.
+        if spellID == 263642 then
+            queue_fragments( 2 )
+        end
 
-            --[[ Spirit Bomb:  Up to 5 frags.
-            if spellID == 247454 then
-                local name, _, count = FindUnitBuffByID( "player", 203981 )
-                if name then queue_fragments( -1 * count ) end
-            end
-
-            -- Soul Cleave:  Up to 2 frags.
-            if spellID == 228477 then
-                local name, _, count = FindUnitBuffByID( "player", 203981 )
-                if name then queue_fragments( -1 * min( 2, count ) ) end
-            end ]]
+        -- Shear:  Generate 1 frag.
+        if spellID == 203782 then
+            queue_fragments( 1 )
+        end
 
         -- We consumed or generated a fragment for real, so let's purge the real queue.
-        elseif spellID == 203981 and fragments.real > 0 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
-            fragments.real = fragments.real - 1
+    elseif spellID == 203981 and fragments.real > 0 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
+        fragments.real = fragments.real - 1
 
-        end
     end
 end, false )
 
@@ -703,14 +680,9 @@ spec:RegisterPhase( "fiery_demise_in_progress",
 "reset_precast", "advance_end", "runHandler" )
 
 
--- approach that actually calculated time remaining of fiery_brand via combat log. last modified 1/27/2023. 
+-- approach that actually calculated time remaining of fiery_brand via combat log. last modified 1/27/2023.
 spec:RegisterStateExpr( "fiery_brand_dot_primary_remains", function()
-    -- Hekili:Print("action.fiery_brand.lastCast:"..action.fiery_brand.lastCast)
-    -- Hekili:Print("fiery_brand.duration:"..class.auras.fiery_brand.duration)
-    -- Hekili:Print("bonus_time:"..bonus_time_from_immo_aura)
-    -- Hekili:Print("query_time:"..query_time)
-    -- Hekili:Print(action.fiery_brand.lastCast + bonus_time_from_immo_aura + class.auras.fiery_brand.duration - query_time)
-    return (action.fiery_brand.lastCast + bonus_time_from_immo_aura + class.auras.fiery_brand.duration - query_time)
+    return action.fiery_brand.lastCast + bonus_time_from_immo_aura + class.auras.fiery_brand.duration - query_time
 end )
 
 spec:RegisterStateExpr( "fiery_brand_dot_primary_ticking", function()
