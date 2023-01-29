@@ -13,7 +13,6 @@ actions+=/soothe
 actions+=/wrath,if=time<gcd.max&(eclipse.any_next|eclipse.lunar_next),line_cd=5
 actions+=/stellar_flare,if=refreshable&time<2*gcd.max&buff.eclipse_lunar.up,line_cd=5
 actions+=/variable,name=is_aoe,value=spell_targets.starfall>1
-actions+=/variable,name=is_cleave,value=spell_targets.starfire>1
 actions+=/variable,name=passive_asp,value=6%spell_haste+talent.natures_balance+talent.orbit_breaker*dot.moonfire.ticking*(buff.orbit_breaker.stack>(27-2*buff.solstice.up))*40
 actions+=/berserking,if=buff.ca_inc.remains>=20|variable.no_cd_talent|boss&fight_remains<15
 actions+=/potion,if=buff.ca_inc.remains>=20|variable.no_cd_talent|boss&fight_remains<30
@@ -47,7 +46,8 @@ actions.aoe+=/new_moon,if=astral_power.deficit>variable.passive_asp+10
 actions.aoe+=/half_moon,if=astral_power.deficit>variable.passive_asp+20&(buff.eclipse_lunar.remains>execute_time|buff.eclipse_solar.remains>execute_time)
 actions.aoe+=/force_of_nature,if=astral_power.deficit>variable.passive_asp+20
 actions.aoe+=/starsurge,if=buff.starweavers_weft.up&spell_targets.starfire<17
-actions.aoe+=/starfire
+actions.aoe+=/starfire,if=spell_targets>1
+actions.aoe+=/wrath
 actions.aoe+=/run_action_list,name=fallthru
 
 actions.fallthru=starfall,if=variable.is_aoe
@@ -83,7 +83,7 @@ actions.st+=/new_moon,if=astral_power.deficit>variable.passive_asp+10
 actions.st+=/half_moon,if=astral_power.deficit>variable.passive_asp+20&(buff.eclipse_lunar.remains>execute_time|buff.eclipse_solar.remains>execute_time)
 actions.st+=/full_moon,if=astral_power.deficit>variable.passive_asp+40&(buff.eclipse_lunar.remains>execute_time|buff.eclipse_solar.remains>execute_time)
 actions.st+=/starsurge,if=buff.starweavers_weft.up|astral_power.deficit<variable.passive_asp+(8*(1+0.5*talent.soul_of_the_forest*buff.eclipse_solar.up))|talent.astral_communion&cooldown.astral_communion.remains<3|boss&fight_remains<5
-actions.st+=/wild_mushroom,if=astral_power.deficit>variable.passive_asp+5&(!talent.fungal_growth|talent.stellar_flare|dot.fungal_growth.remains<2)&raid_event.adds.in>30-15*charges|boss&fight_remains<10
+actions.st+=/wild_mushroom,if=target.time_to_die>(full_recharge_time-7)|boss&fight_remains<10
 actions.st+=/starfire,if=eclipse.in_lunar&buff.umbral_embrace.react|buff.eclipse_lunar.up&buff.warrior_of_elune.up
 actions.st+=/wrath
 actions.st+=/run_action_list,name=fallthru

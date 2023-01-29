@@ -1,6 +1,8 @@
 actions.precombat+=/defensive_stance,if=buff.stance.down
 actions.precombat+=/battle_shout
 actions.precombat+=/use_item,name=algethar_puzzle_box
+actions.precombat+=/avatar,if=!talent.titans_torment
+actions.precombat+=/recklessness,if=!talent.reckless_abandon
 
 # Executed every time the actor is available.
 actions+=/pummel
