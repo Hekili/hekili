@@ -91,8 +91,8 @@ L["If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when i
 
 L["Guardian"] = true
 L["(Bear)"] = true
-L["Excess Rage for |T132136:0|t Maul"] = true
-L["If set above zero, the addon will recommend |T132136:0|t Maul only if you have at least this much excess Rage."] = true
+L["Excess Rage for |T132136:0|t Maul (or |T132131:0|t Raze)"] = true
+L["If set above zero, the addon will recommend |T132136:0|t Maul or |T132131:0|t Raze only if you have at least this much excess Rage."] = true
 -- L["Use |T132135:0|t Mangle More in Multi-Target"] = true
 -- L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."] = true
 L["Required Damage % for |T1378702:0|t Ironfur"] = true

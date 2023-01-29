@@ -88,8 +88,8 @@ L["If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when i
 
 L["Guardian"] = "수호"
 L["(Bear)"] = "(곰)"
-L["Excess Rage for |T132136:0|t Maul"] = "|T132136:0|t 후려갈기기를 위한 과도한 분노"
-L["If set above zero, the addon will recommend |T132136:0|t Maul only if you have at least this much excess Rage."] = "설정값을 0보다 높게 설정하면, 애드온은 최소한 이 정도의 과도한 분노가 있는 경우에만 후려갈기기을 추천합니다."
+L["Excess Rage for |T132136:0|t Maul (or |T132131:0|t Raze)"] = "|T132136:0|t 후려갈기기 또는 |T132131:0|t 말살을 위한 과도한 분노"
+L["If set above zero, the addon will recommend |T132136:0|t Maul or |T132131:0|t Raze only if you have at least this much excess Rage."] = "설정값을 0보다 높게 설정하면, 애드온은 최소한 이 정도의 과도한 분노가 있는 경우에만 |T132136:0|t 후려갈기기 또는 |T132131:0|t 말살을 추천합니다."
 -- L["Use |T132135:0|t Mangle More in Multi-Target"] = "여러 대상일 때 |T132135:0|t 짓이기기를 더 많이 사용하기"
 -- L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."] = "선택하면 기본 우선순위는 |cFFFFD100여러 대상|r에 대한 시나리오에서 |T132135:0|t 짓이기기를 더 자주 추천합니다.\n\n이것은 약 15% 더 많은 분노를 생성하고 그렇지 않은 경우보다 더 많은 피해 완화(또는 |T132135:0|t 짓이기기)를 허용하며, 주요 대상에게 약간 더 많은 피해를 주지만, |T134296:0|t 휘둘러치기의 빈도가 줄어들어 보조 대상에 대한 피해/위협이 줄어듭니다."
 L["Required Damage % for |T1378702:0|t Ironfur"] = "|T1378702:0|t 무쇠가죽에 필요한 피해 %"
