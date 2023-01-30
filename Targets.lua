@@ -225,6 +225,8 @@ RegisterEvent( "NAME_PLATE_UNIT_REMOVED", function( event, unit )
 end )
 
 RegisterEvent( "UNIT_FLAGS", function( event, unit )
+    if unit == "player" or UnitIsUnit( unit, "player" ) then return end
+
     if UnitIsFriend( "player", unit ) then
         local id = UnitGUID( unit )
         ns.eliminateUnit( id, true )
