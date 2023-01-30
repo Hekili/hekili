@@ -38,7 +38,7 @@ actions+=/variable,name=pooling_for_elysian_decree,value=talent.elysian_decree.e
 actions+=/variable,name=pooling_for_soul_carver,value=talent.soul_carver.enabled&cooldown.soul_carver.remains<(gcd.max*2)&fury<variable.frailty_dump_fury_requirement&debuff.frailty.stack<=1
 actions+=/variable,name=pooling_for_fiery_demise_fel_devastation,value=talent.fiery_demise.enabled&cooldown.fel_devastation.remains<(gcd.max*2)&dot.fiery_brand.ticking&fury<(action.fel_devastation.cost+action.spirit_bomb.cost)
 actions+=/variable,name=pooling_fury,value=variable.pooling_for_the_hunt|variable.pooling_for_elysian_decree|variable.pooling_for_soul_carver|variable.pooling_for_fiery_demise_fel_devastation
-## actions+=/variable,name=sub_apl_in_progress,value=variable.the_hunt_ramp_in_progress|variable.elysian_decree_ramp_in_progress|variable.soul_carver_ramp_in_progress|variable.fiery_demise_in_progress
+actions+=/variable,name=sub_apl_in_progress,value=variable.the_hunt_ramp_in_progress|variable.elysian_decree_ramp_in_progress|variable.soul_carver_ramp_in_progress|variable.fiery_demise_in_progress
 ## actions+=/variable,name=the_hunt_ramp_in_progress,value=1,if=talent.the_hunt.enabled&cooldown.the_hunt.remains<=10&!variable.sub_apl_in_progress
 ## actions+=/variable,name=the_hunt_ramp_in_progress,value=0,if=talent.the_hunt.enabled&cooldown.the_hunt.remains>10
 ## actions+=/variable,name=elysian_decree_ramp_in_progress,value=1,if=talent.elysian_decree.enabled&cooldown.elysian_decree.remains<=10&!variable.sub_apl_in_progress
