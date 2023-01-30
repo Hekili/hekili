@@ -646,7 +646,7 @@ end )
 spec:RegisterPhase( "the_hunt_ramp_in_progress",
     -- talent.the_hunt.enabled & cooldown.the_hunt.remains <= 10 & ! variable.sub_apl_in_progress
     function()
-        return talent.the_hunt.enabled and cooldown.the_hunt.remains <= 10 and not variable.sub_apl_in_progress
+        return talent.the_hunt.enabled and cooldown.the_hunt.remains <= 10 and not ( variable.elysian_decree_ramp_in_progress or variable.soul_carver_ramp_in_progress or variable.fiery_demise_in_progress )
     end,
     -- talent.the_hunt.enabled & cooldown.the_hunt.remains>10
     function()
@@ -656,14 +656,14 @@ spec:RegisterPhase( "the_hunt_ramp_in_progress",
 
 spec:RegisterPhase( "elysian_decree_ramp_in_progress",
     -- talent.elysian_decree.enabled & cooldown.elysian_decree.remains <= 10 & ! variable.sub_apl_in_progress
-    function() return talent.elysian_decree.enabled and cooldown.elysian_decree.remains <= 10 and not variable.sub_apl_in_progress end,
+    function() return talent.elysian_decree.enabled and cooldown.elysian_decree.remains <= 10 and not ( variable.the_hunt_ramp_in_progress or variable.soul_carver_ramp_in_progress or variable.fiery_demise_in_progress ) end,
     -- talent.elysian_decree.enabled & cooldown.elysian_decree.remains > 10
     function() return talent.elysian_decree.enabled and cooldown.elysian_decree.remains > 10 end,
 "reset_precast", "advance_end", "runHandler" )
 
 spec:RegisterPhase( "soul_carver_ramp_in_progress",
     -- talent.soul_carver.enabled & ! talent.fiery_demise.enabled & cooldown.soul_carver.remains <= 10 & ! variable.sub_apl_in_progress
-    function() return talent.soul_carver.enabled and not talent.fiery_demise.enabled and cooldown.soul_carver.remains <= 10 and not variable.sub_apl_in_progress end,
+    function() return talent.soul_carver.enabled and not talent.fiery_demise.enabled and cooldown.soul_carver.remains <= 10 and not ( variable.the_hunt_ramp_in_progress or variable.elysian_decree_ramp_in_progress or variable.fiery_demise_in_progress ) end,
     -- talent.soul_carver.enabled & ! talent.fiery_demise.enabled & cooldown.soul_carver.remains > 10
     function() return talent.soul_carver.enabled and not talent.fiery_demise.enabled and cooldown.soul_carver.remains > 10 end,
 "reset_precast", "advance_end", "runHandler" )
@@ -671,11 +671,11 @@ spec:RegisterPhase( "soul_carver_ramp_in_progress",
 spec:RegisterPhase( "fiery_demise_in_progress",
     -- talent.fiery_brand.enabled & talent.fiery_demise.enabled & cooldown.fiery_brand.charges_fractional >= 1 & cooldown.immolation_aura.remains <= 2 & ! variable.sub_apl_in_progress & ( ( talent.fel_devastation.enabled & cooldown.fel_devastation.remains <= 10 ) | ( talent.soul_carver.enabled & cooldown.soul_carver.remains <= 10 ) )
     function()
-        return talent.fiery_brand.enabled and talent.fiery_demise.enabled and cooldown.fiery_brand.charges_fractional >= 1 and cooldown.immolation_aura.remains <= 2 and not variable.sub_apl_in_progress and ( ( talent.fel_devastation.enabled and ( cooldown.fel_devastation.remains <= 10 or action.fel_devastation.disabled ) ) or ( talent.soul_carver.enabled and cooldown.soul_carver.remains <= 10 ) )
+        return talent.fiery_brand.enabled and talent.fiery_demise.enabled and cooldown.fiery_brand.charges >= 1 and cooldown.immolation_aura.remains <= 2 and not ( variable.the_hunt_ramp_in_progress or variable.elysian_decree_ramp_in_progress or variable.soul_carver_ramp_in_progress ) and ( ( talent.fel_devastation.enabled and cooldown.fel_devastation.remains <= 10 ) or ( talent.soul_carver.enabled and cooldown.soul_carver.remains <= 10 ) )
     end,
     -- talent.fiery_brand.enabled & talent.fiery_demise.enabled & cooldown.fiery_brand.charges_fractional < 1.65 & ! dot.fiery_brand.ticking & ( ( talent.fel_devastation.enabled & cooldown.fel_devastation.remains_expected > 10 ) | ( talent.soul_carver.enabled & cooldown.soul_carver.remains > 10 ) )
     function()
-        return talent.fiery_brand.enabled and talent.fiery_demise.enabled and cooldown.fiery_brand.charges_fractional < ( 0.65 + talent.down_in_flames.rank ) and not dot.fiery_brand.ticking and ( ( talent.fel_devastation.enabled and cooldown.fel_devastation.remains_expected > 10 ) or ( talent.soul_carver.enabled and cooldown.soul_carver.remains > 10 ) )
+        return talent.fiery_brand.enabled and talent.fiery_demise.enabled and cooldown.fiery_brand.charges == 0 and not fiery_brand_dot_primary_ticking and ( ( talent.fel_devastation.enabled and cooldown.fel_devastation.remains_expected > 10 ) or ( talent.soul_carver.enabled and cooldown.soul_carver.remains > 10 ) )
     end,
 "reset_precast", "advance_end", "runHandler" )
 

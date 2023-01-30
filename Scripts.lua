@@ -512,7 +512,7 @@ do
         { "^!?action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$", "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
 
         { "^!?fiery_brand_dot_primary_remains$", "fiery_brand_dot_primary_remains" }, -- Vengeance
-        { "^!?fiery_brand_dot_primary_remains$", "fiery_brand_dot_primary_remains" }, -- Vengeance
+        { "^!?fiery_brand_dot_primary_ticking$", "fiery_brand_dot_primary_remains" }, -- Vengeance
 
         { "^!?variable%.([a-z0-9_]+)$", "safenum(variable.%1)"                        },
         { "^!?variable%.([a-z0-9_]+)<=?(.-)$", "0.01+%2-safenum(variable.%1)"         },
