@@ -1742,7 +1742,7 @@ spec:RegisterAbilities( {
         end,
 
         indicator = function()
-            return debuff.flame_shock.down and active_dot.flame_shock > 0 and "cycle" or nil
+            if debuff.flame_shock.down and active_dot.flame_shock > 0 and active_enemies > 1 then return "cycle" end
         end,
 
         handler = function ()

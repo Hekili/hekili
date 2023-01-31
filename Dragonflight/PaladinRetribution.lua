@@ -1699,7 +1699,11 @@ spec:RegisterAbilities( {
 
         toggle = "defensives",
 
-        usable = function () return incoming_damage_3s > 0.2 * health.max, "incoming damage over 3s is less than 20% of max health" end,
+        usable = function ()
+            if ( settings.sov_damage or 0 ) > 0 then return incoming_damage_5s > 0.01 * settings.sov_damage * health.max, "incoming damage over 5s must exceed " .. settings.sov_damage .. "% of max health" end
+            return true
+        end,
+
         handler = function ()
             applyBuff( "shield_of_vengeance" )
         end,
@@ -1847,7 +1851,17 @@ spec:RegisterSetting( "check_wake_range", false, {
     name = L["Check |T1112939:0|t Wake of Ashes Range"],
     desc = L["If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended."],
     type = "toggle",
-    width = 1.5
+    width = "full",
+} )
+
+spec:RegisterSetting( "sov_damage", 20, {
+    name = "|T236264:0|t Shield of Vengeance Damage Threshold",
+    desc = "If set above zero, |T236264:0|t Shield of Vengeance can only be recommended when you've taken the specified amount of damage in the last 5 seconds, in addition to any other criteria in the priority.",
+    type = "range",
+    width = "full",
+    min = 0,
+    max = 100,
+    step = 1,
 } )
 
 
