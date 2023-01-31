@@ -1007,7 +1007,7 @@ spec:RegisterAbilities( {
             removeBuff( "thirsting_blades" )
             removeBuff( "inner_demon" )
             if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
-            if legendary.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
+            if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
             if buff.chaos_theory.up then
                 gain( 20, "fury" )
                 removeBuff( "chaos_theory" )
