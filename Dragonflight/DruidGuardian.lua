@@ -1426,9 +1426,7 @@ spec:RegisterAbilities( {
         spend = function() return -10 - ( buff.gore.up and 4 or 0 ) - ( 5 * talent.soul_of_the_forest.rank ) end,
         spendType = "rage",
 
-        talent = "mangle",
         startsCombat = true,
-
         form = "bear_form",
 
         handler = function ()
