@@ -1,5 +1,4 @@
 actions.precombat+=/mark_of_the_wild,if=!buff.prowl.up
-actions.precombat+=/fleshcraft,if=!buff.prowl.up&(soulbind.pustule_eruption.enabled|soulbind.volatile_solvent.enabled),interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 actions.precombat+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&(druid.catweave_bear&buff.cat_form.up|druid.owlweave_bear&buff.moonkin_form.up)
 actions.precombat+=/prowl,if=buff.cat_form.up&druid.catweave_bear
 actions.precombat+=/bear_form,if=!buff.any_form.up|!druid.owlweave_bear&!druid.catweave_bear&!action.convoke_the_spirits.known
@@ -30,14 +29,14 @@ actions.bear+=/ironfur,cycle_targets=1,if=tanking&(!debuff.tooth_and_claw_debuff
 actions.bear+=/moonfire,if=buff.galactic_guardian.up&buff.galactic_guardian.remains<=gcd+0.5
 actions.bear+=/mangle,if=buff.gore.up&active_enemies<11|buff.vicious_cycle_mangle.stack=3
 actions.bear+=/maul,if=((buff.incarnation.up|buff.berserk_bear.up)&active_enemies<=5&(buff.tooth_and_claw.stack>=2))
-actions.bear+=/raze,if=((buff.incarnation.up|buff.berserk_bear.up)&active_enemies>1&(buff.tooth_and_claw.stack>=2))
+actions.bear+=/raze,if=((buff.incarnation.up|buff.berserk_bear.up)&(buff.tooth_and_claw.stack>=2))
 actions.bear+=/thrash_bear,cycle_targets=1,if=refreshable|dot.thrash_bear.stack<3|active_enemies>=5
 actions.bear+=/mangle,if=rage.deficit>10&settings.mangle_more
 actions.bear+=/swipe,if=buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&active_enemies>=11
 actions.bear+=/maul,if=((buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5)&active_enemies<=5)
 actions.bear+=/maul,if=active_enemies<=5&buff.vicious_cycle_maul.stack>=3|active_enemies<4&!talent.vicious_cycle_maul.enabled
-actions.bear+=/raze,if=((buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5)&active_enemies>1)
-actions.bear+=/raze,if=active_enemies>1&buff.vicious_cycle_maul.stack>=3|active_enemies>1&!talent.vicious_cycle_maul.enabled
+actions.bear+=/raze,if=((buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5))
+actions.bear+=/raze,if=buff.vicious_cycle_maul.stack>=3|!talent.vicious_cycle_maul.enabled
 actions.bear+=/mangle,if=(buff.incarnation.up&active_enemies<=4)|(buff.incarnation.up&talent.soul_of_the_forest.enabled&active_enemies<=5)|((rage<90)&active_enemies<11)|((rage<85)&active_enemies<11&talent.soul_of_the_forest.enabled)
 actions.bear+=/thrash_bear,if=active_enemies>1
 actions.bear+=/pulverize,if=dot.thrash_bear.stack>2
