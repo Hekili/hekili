@@ -535,9 +535,9 @@ local HekiliSpecMixin = {
                     phase.real[ d ] = phase.update( phase.real[ d ], phase.default() )
                     phase.virtual[ d ] = phase.real[ d ]
 
-                    if phase.real[ d ] ~= original then
+                    --[[ if phase.real[ d ] ~= original then
                         Hekili:Print( format( "Phase change for %s [ %s ] (from %s to %s).", key, d, tostring( original ), tostring( phase.real[ d ] ) ) )
-                    end
+                    end ]]
 
                     if Hekili.ActiveDebug then
                         Hekili:Debug( "[ %s ] Phased variable '%s' set to '%s' (%s).", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook )
