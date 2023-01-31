@@ -324,6 +324,49 @@ all:RegisterAbilities( {
         end,
 
         proc = "versatility",
+
+        auras = {
+            ace_of_earth = {
+                id = 382852,
+                duration = 3600,
+                max_stack = 1
+            },
+            two_of_earth = {
+                id = 382853,
+                duration = 3600,
+                max_stack = 1
+            },
+            three_of_earth = {
+                id = 382854,
+                duration = 3600,
+                max_stack = 1
+            },
+            four_of_earth = {
+                id = 382855,
+                duration = 3600,
+                max_stack = 1
+            },
+            five_of_earth = {
+                id = 382856,
+                duration = 3600,
+                max_stack = 1
+            },
+            six_of_earth = {
+                id = 382857,
+                duration = 3600,
+                max_stack = 1
+            },
+            seven_of_earth = {
+                id = 382858,
+                duration = 3600,
+                max_stack = 1
+            },
+            eight_of_earth = {
+                id = 382859,
+                duration = 3600,
+                max_stack = 1
+            },
+        }
     },
     decoration_of_flame = {
         cast = 0,
