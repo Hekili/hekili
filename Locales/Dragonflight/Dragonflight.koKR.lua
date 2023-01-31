@@ -14,11 +14,11 @@ L["[Any]"] = "[모든 전문화]"
 L["Blood"] = "혈기"
 L["Save |T237517:0|t Blood Shield"] = "|T237517:0|t 피의 보호막 유지"
 L["If checked, the default priority (or any priority checking |cFFFFD100save_blood_shield|r expression) will try to avoid letting your |T237517:0|t Blood Shield fall off during lulls in damage."] = "선택하면 기본 우선순위(또는 |cFFFFD100save_blood_shield|r 표현식을 확인하는 모든 우선순위)는 피해가 줄어드는 상태일 때에도 |T237517:0|t 피의 보호막이 사라지지 않도록 합니다."
-L["|T237525:0|t Icebound Fortitude Damage Threshold"] = "|T237525:0|t 얼음같은 인내력의 피해 임계값"
+L["|T237525:0|t Icebound Fortitude Damage Threshold"] = "|T237525:0|t 얼음같은 인내력의 피해 임계치"
 L["When set above zero, the default priority can recommend |T237525:0|t Icebound Fortitude if you've taken this percentage of your maximum health in the past 5 seconds.  Icebound Fortitude also requires the Defensives toggle by default."] = "설정값을 0보다 높게 설정하면, 지난 5초 동안 최대 체력의 이 비율을 소모한 경우 기본 우선순위는 |T237525:0|t 얼음같은 인내력을 추천합니다.  얼음같은 인내력은 기본적으로 방어 토글이 필요합니다."
-L["|T237529:0|t Rune Tap Damage Threshold"] = "|T237529:0|t 룬 전환의 피해 임계값"
+L["|T237529:0|t Rune Tap Damage Threshold"] = "|T237529:0|t 룬 전환의 피해 임계치"
 L["When set above zero, the default priority can recommend |T237529:0|t Rune Tap if you've taken this percentage of your maximum health in the past 5 seconds.  Rune Tap also requires the Defensives toggle by default."] = "설정값을 0보다 높게 설정하면, 지난 5초 동안 최대 체력의 이 비율을 소모한 경우 기본 우선순위는 |T237529:0|t 룬 전환을 추천합니다.  룬 전환은 기본적으로 방어 토글이 필요합니다."
-L["|T136168:0|t Vampiric Blood Damage Threshold"] = "|T136168:0|t 흡혈의 피해 임계값"
+L["|T136168:0|t Vampiric Blood Damage Threshold"] = "|T136168:0|t 흡혈의 피해 임계치"
 L["When set above zero, the default priority can recommend |T136168:0|t Vampiric Blood if you've taken this percentage of your maximum health in the past 5 seconds.  Vampiric Blood also requires the Defensives toggle by default."] = "설정값을 0보다 높게 설정하면, 지난 5초 동안 최대 체력의 이 비율을 소모한 경우 기본 우선순위는 |T136168:0|t 흡혈을 추천합니다.  흡혈은 기본적으로 방어 토글이 필요합니다."
 
 L["Frost DK"] = "냉기"
@@ -102,6 +102,7 @@ L["|T136036:0|t Attempt Owlweaving (Experimental)"] = "|T136036:0|t 올빼미 �
 L["If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack."] = "선택하면 애드온은 기본 우선순위 팩에 포함된 실험적인 |cFFFFD100owlweave|r 우선순위를 사용합니다."
 
 L["Restoration"] = "회복"
+L["|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk."] = "|cFFFF0000경고|r:  이 애드온의 힐러 지원은 DPS 피해량에만 집중되어 있습니다.  이 기능은 솔로 콘텐츠나 그룹/교전에서 치유량이 중요하지 않은 여유로운 시간일 때 더 유용합니다.  본인 책임하에 사용하세요."
 
 end
 
@@ -230,17 +231,19 @@ if UnitClassBase( "player" ) == "PALADIN" then
 L["Holy"] = "신성"
 
 L["Protection Paladin"] = "보호"
-L["|T133192:0|t Word of Glory Health Threshold"] = "|T133192:0|t 영광의 서약 체력 임계값"
+L["|T133192:0|t Word of Glory Health Threshold"] = "|T133192:0|t 영광의 서약 체력 임계치"
 L["When set above zero, the addon may recommend |T133192:0|t Word of Glory when your health falls below this percentage."] = "설정값을 0보다 높게 설정하면, 체력이 이 비율 아래로 떨어질 때 애드온이 |T133192:0|t 영광의 서약을 추천합니다."
-L["|T135919:0|t Guardian of Ancient Kings Damage Threshold"] = "|T135919:0|t 고대 왕의 수호자 피해 임계값"
+L["|T135919:0|t Guardian of Ancient Kings Damage Threshold"] = "|T135919:0|t 고대 왕의 수호자 피해 임계치"
 L["Guardian of Ancient Kings"] = "고대 왕의 수호자"
-L["|T524354:0|t Divine Shield Damage Threshold"] = "|T524354:0|t 천상의 보호막 피해 임계값"
+L["|T524354:0|t Divine Shield Damage Threshold"] = "|T524354:0|t 천상의 보호막 피해 임계치"
 L["Divine Shield"] = "천상의 보호막"
 L["When set above zero, the addon may recommend %s when you take this percentage of your maximum health in damage in the past 5 seconds.\n\nBy default, your Defensives toggle must also be enabled."] = "설정값을 0보다 높게 설정하면, 애드온은 지난 5초 동안 최대 체력의 이 비율의 피해를 입었을 때 %s|1을;를; 추천합니다.\n\n기본적으로 방어 토글도 활성화해야 합니다."
 
 L["Retribution"] = "징벌"
 L["Check |T1112939:0|t Wake of Ashes Range"] = "|T1112939:0|t 파멸의 재 범위 확인"
 L["If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended."] = "선택하면 대상이 |T1112939:0|t 파멸의 재의 사정거리를 벗어난 경우 추천하지 않습니다."
+L["|T236264:0|t Shield of Vengeance Damage Threshold"] = "|T236264:0|t 복수의 방패 피해 임계치"
+L["If set above zero, |T236264:0|t Shield of Vengeance can only be recommended when you've taken the specified amount of damage in the last 5 seconds, in addition to any other criteria in the priority."] = "설정값을 0보다 높게 설정하면, |T236264:0|t 복수의 방패는 우선순위의 다른 기준과 더불어 지난 5초 동안 지정된 피해를 받은 경우에만 추천합니다."
 
 end
 
@@ -259,8 +262,8 @@ L["Pad |T1035040:0|t Void Bolt Cooldown"] = "|T1035040:0|t 공허의 화살의 �
 L["If checked, the addon will treat |T1035040:0|t Void Bolt's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T1386550:0|t Voidform."] = "선택하면 |T1386550:0|t 공허의 형상의 지속시간 동안 가능한 한 자주 추천되도록, 애드온이 |T1035040:0|t 공허의 화살의 재사용 대기시간을 약간 짧게 처리합니다."
 L["Pad |T3528286:0|t Ascended Blast Cooldown"] = "|T3528286:0|t 승천의 작렬의 재사용 대기시간 채우기"
 L["If checked, the addon will treat |T3528286:0|t Ascended Blast's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T3565449:0|t Boon of the Ascended."] = "선택하면 |T3565449:0|t 승천자의 은혜의 지속시간 동안 가능한 한 자주 추천되도록, 애드온이 |T3528286:0|t 승천의 작렬의 재사용 대기시간을 약간 짧게 처리합니다."
-L["|T136149:0|t Shadow Word: Death Health Threshold"] = "|T136149:0|t 어둠의 권능: 죽음 체력 임계값"
-L["If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death while your health percentage is below this threshold.  This setting can help keep you from killing yourself."] = "설정값을 0보다 높게 설정하면, 애드온은 체력 비율이 이 임계값의 미만인 경우 |T136149:0|t 어둠의 권능: 죽음을 추천하지 않습니다.  이 설정은 자살을 방지하는 데 도움이 됩니다."
+L["|T136149:0|t Shadow Word: Death Health Threshold"] = "|T136149:0|t 어둠의 권능: 죽음 체력 임계치"
+L["If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death while your health percentage is below this threshold.  This setting can help keep you from killing yourself."] = "설정값을 0보다 높게 설정하면, 애드온은 체력 비율이 이 임계치의 미만인 경우 |T136149:0|t 어둠의 권능: 죽음을 추천하지 않습니다.  이 설정은 자살을 방지하는 데 도움이 됩니다."
 L["|T237565:0|t Mind Sear Ticks"] = "|T237565:0|t 정신 불태우기의 틱"
 L["|T237565:0|t Mind Sear costs 25 Insanity (and 25 additional Insanity per tick).  If set above 0, this setting will treat Mind Sear as unusable if your cast would result in fewer ticks of Mind Sear than desired."] = "|T237565:0|t 정신 불태우기는 25의 광기(그리고 틱당 25의 추가 광기)가 필요합니다.  설정값을 0보다 높게 설정하면, 이 설정은 시전으로 인해 원하는 것보다 적은 수의 정신 불태우기의 틱이 발생하는 경우 정신 불태우기를 사용할 수 없는 것으로 처리합니다."
 
@@ -283,7 +286,7 @@ L["Assassination"] = "암살"
 L["Funnel AOE -> Target"] = "광역 -> 대상으로 집중"
 L["If checked, the addon's default priority list will focus on funneling damage into your primary target when multiple enemies are present."] = "선택하면 애드온의 기본 우선순위 목록은 다수의 적이 존재할 때 주요 대상에 피해를 입히는 데 집중합니다."
 L["Energy % for |T132287:0|t Envenom"] = "|T132287:0|t 독살에 대한 기력 %"
-L["If set above 0, the addon will pool to this Energy threshold before recommending |T132287:0|t Envenom."] = "설정값을 0보다 높게 설정하면, 애드온이 |T132287:0|t 독살을 추천하기 전에 이 기력의 임계값까지 기력을 모읍니다."
+L["If set above 0, the addon will pool to this Energy threshold before recommending |T132287:0|t Envenom."] = "설정값을 0보다 높게 설정하면, 애드온이 |T132287:0|t 독살을 추천하기 전에 이 기력의 임계치까지 기력을 모읍니다."
 
 L["Outlaw"] = "무법"
 L["Use |T132282:0|t Ambush Regardless of Talents"] = "특성에 관계없이 |T132282:0|t 매복 사용하기"

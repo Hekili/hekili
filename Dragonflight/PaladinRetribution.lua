@@ -1855,8 +1855,8 @@ spec:RegisterSetting( "check_wake_range", false, {
 } )
 
 spec:RegisterSetting( "sov_damage", 20, {
-    name = "|T236264:0|t Shield of Vengeance Damage Threshold",
-    desc = "If set above zero, |T236264:0|t Shield of Vengeance can only be recommended when you've taken the specified amount of damage in the last 5 seconds, in addition to any other criteria in the priority.",
+    name = L["|T236264:0|t Shield of Vengeance Damage Threshold"],
+    desc = L["If set above zero, |T236264:0|t Shield of Vengeance can only be recommended when you've taken the specified amount of damage in the last 5 seconds, in addition to any other criteria in the priority."],
     type = "range",
     width = "full",
     min = 0,

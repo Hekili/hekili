@@ -105,6 +105,7 @@ L["|T136036:0|t Attempt Owlweaving (Experimental)"] = true
 L["If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack."] = true
 
 L["Restoration"] = true
+L["|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk."] = true
 
 end
 
@@ -244,6 +245,8 @@ L["When set above zero, the addon may recommend %s when you take this percentage
 L["Retribution"] = true
 L["Check |T1112939:0|t Wake of Ashes Range"] = true
 L["If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended."] = true
+L["|T236264:0|t Shield of Vengeance Damage Threshold"] = true
+L["If set above zero, |T236264:0|t Shield of Vengeance can only be recommended when you've taken the specified amount of damage in the last 5 seconds, in addition to any other criteria in the priority."] = true
 
 end
 
