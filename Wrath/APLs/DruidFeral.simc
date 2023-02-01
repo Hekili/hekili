@@ -1,11 +1,12 @@
 # APL v3.4.0-1.1.2 #
+actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 actions.init+=/variable,name=furor_cap,value=20*talent.furor.rank<?85
 actions.init+=/variable,name=end_thresh,value=10
-actions.init+=/variable,name=rip_refresh_pending,value=debuff.rip.up&debuff.rip.remains<target.time_to_die-variable.end_thresh
-actions.init+=/variable,name=bearweave_emergency_upper,value=2.5
+actions.init+=/variable,name=rip_refresh_pending,value=debuff.rip.up&debuff.rip.remains<variable.time_to_die-variable.end_thresh
+actions.init+=/variable,name=bearweave_emergency_upper,value=3.5
 actions.init+=/variable,name=bearweave_emergency_lower,value=1.5
 actions.init+=/variable,name=flowerweaving_enabled,value=flowerweaving_enabled&((!bearweaving_enabled&flowerweaving_mode_any)|active_enemies>2)
-actions.init+=/variable,name=predatorweaving_enabled,value=!variable.flowerweaving_enabled&predatorsswiftness_enabled
+actions.init+=/variable,name=predatorweaving_enabled,value=!variable.flowerweaving_enabled&!bearweaving_enabled&predatorsswiftness_enabled
 actions.init+=/variable,name=flower_end,value=flower_end
 actions.init+=/variable,name=flowershift_energy,value=(variable.furor_cap<?75)-10*action.gift_of_the_wild.gcd-20*latency
 actions.init+=/variable,name=tf_expected_before_flower_end,value=tf_expected_before_flower_end
@@ -20,8 +21,9 @@ actions.precombat+=/potion
 actions+=/call_action_list,name=init
 actions+=/use_items
 actions+=/potion
-actions+=/dire_bear_form,if=bearweaving_lacerate_enabled&!buff.dire_bear_form.up&debuff.lacerate.up&debuff.lacerate.remains<variable.bearweave_emergency_upper+latency&debuff.lacerate.remains>variable.bearweave_emergency_lower+latency&debuff.lacerate.remains<target.time_to_die&!buff.berserk.up
+actions+=/dire_bear_form,if=bearweaving_lacerate_enabled&!buff.dire_bear_form.up&debuff.lacerate.up&debuff.lacerate.remains<variable.bearweave_emergency_upper+latency&debuff.lacerate.remains>variable.bearweave_emergency_lower+latency&debuff.lacerate.remains<variable.time_to_die&!buff.berserk.up
 actions+=/gift_of_the_wild,if=!buff.form.up&variable.flowershift_now
+actions+=/run_action_list,name=bear_aoe,if=bearweaving_enabled&buff.dire_bear_form.up&active_enemies>2
 actions+=/run_action_list,name=bear_mangle,if=bearweaving_mangle_enabled&buff.dire_bear_form.up
 actions+=/run_action_list,name=bear_lacerate,if=bearweaving_lacerate_enabled&buff.dire_bear_form.up
 actions+=/predatorsswiftness_spell,if=variable.predatorshift_now
@@ -51,9 +53,15 @@ actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<40
 actions.cat_aoe+=/berserk,if=cooldown.tigers_fury.remains>=15
 actions.cat_aoe+=/swipe_cat,if=buff.clearcasting.up
 actions.cat_aoe+=/savage_roar,if=!up
-actions.cat_aoe+=/rake,if=!up&(combo_points.current=0|(set_bonus.tier8_2pc=1&combo_points.current<5))&target.time_to_die>buff.savage_roar.remains+1.5+latency&!buff.clearcasting.up
+actions.cat_aoe+=/rake,if=!up&(combo_points.current=0|(set_bonus.tier8_2pc=1&combo_points.current<5))&(variable.time_to_die>buff.savage_roar.remains+1.5+latency)&!buff.clearcasting.up
 actions.cat_aoe+=/swipe_cat
+actions.cat_aoe+=/dire_bear_form,if=bearweaving_enabled&energy.current<25&!buff.clearcasting.up&!buff.berserk.up
 actions.cat_aoe+=/gift_of_the_wild,if=variable.flowershift_now
+
+actions.bear_aoe+=/enrage,if=energy.current<50
+actions.bear_aoe+=/maul,use_off_gcd=1,if=rage.current>=30
+actions.bear_aoe+=/cat_form,if=energy.current>70|buff.berserk.up|buff.clearcasting.up
+actions.bear_aoe+=/swipe_bear
 
 actions.bear_lacerate+=/enrage,use_off_gcd=1,if=energy.current<50&debuff.rip.remains>4.5
 actions.bear_lacerate+=/maul,use_off_gcd=1,if=!buff.maul.up&!buff.clearcasting.up&bearweaving_lacerate_should_maul

@@ -2265,6 +2265,24 @@ all:RegisterAuras( {
             t.applied = 0
             t.caster = "nobody"
         end,
+    },
+
+    banner_of_the_horde = {
+        id = 61574,
+        max_stack = 1,
+        shared = "target"
+    },
+
+    banner_of_the_alliance = {
+        id = 61573,
+        max_stack = 1,
+        shared = "target"
+    },
+
+    training_dummy = {
+        alias = { "banner_of_the_horde", "banner_of_the_alliance" },
+        aliasType = "buff",
+        aliasMode = "longest"
     }
 } )
 
