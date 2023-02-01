@@ -251,6 +251,57 @@ spec:RegisterStateExpr("bearweaving_lacerate_should_maul", function()
     return willMaul and energy.current < 70 and rage.current > rageNeeded
 end)
 
+spec:RegisterStateExpr("rake_over_shred", function()
+    local armor_pen = stat.armor_pen_rating
+    local att_power = stat.attack_power
+    local crit_pct = stat.crit / 100
+    local boss_armor = 10643*(1-0.05*(debuff.armor_reduction.up and 1 or 0))*(1-0.2*(debuff.major_armor_reduction.up and 1 or 0))*(1-0.2*(debuff.shattering_throw.up and 1 or 0))
+    local tigers_fury = buff.tigers_fury.up and 80 or 0
+    local shred_idol = set_bonus.idol_of_the_ravenous_beast == 1 and 203 or 0
+    local rake_dpe = 3*(358 + 6*att_power/100)/35
+    local shred_dpe = ((54.5 + tigers_fury + att_power/14)*2.25 + 666 + shred_idol - 42/35*(att_power/100 + 176))*(1 + 1.266*crit_pct)*(1 - (boss_armor*(1 - armor_pen/1399))/((boss_armor*(1 - armor_pen/1399)) + 15232.5))/42
+    return rake_dpe >= shred_dpe
+end)
+
+spec:RegisterStateFunction("berserk_expected_at", function(current_time, future_time)
+    if buff.berserk.up then
+        return (
+            future_time - current_time < buff.berserk.remains
+            or future_time > current_time + cooldown.berserk.remains
+        )
+    end
+    if cooldown.berserk.remains > 0 then
+        return future_time > current_time + cooldown.berserk.remains
+    end
+    return future_time > current_time + cooldown.tigers_fury.remains
+end)
+
+spec:RegisterStateFunction("tf_expected_before", function(current_time, future_time)
+    if cooldown.tigers_fury.remains > 0 then
+        return current_time + cooldown.tigers_fury.remains < future_time
+    end
+    if buff.berserk.up then
+        return current_time + buff.berserk.remains < future_time
+    end
+    return true
+end)
+
+spec:RegisterStateExpr("tf_expected_before_flower_end", function()
+    return tf_expected_before(query_time, query_time+flower_end)
+end)
+
+spec:RegisterStateExpr("flower_end", function()
+    return action.gift_of_the_wild.gcd+1.5+2*latency
+end)
+
+spec:RegisterStateExpr("tf_expected_before_weave_end", function()
+    return tf_expected_before(query_time, query_time+weave_end)
+end)
+
+spec:RegisterStateExpr("weave_end", function()
+    return 4.5+2*latency
+end)
+
 spec:RegisterStateExpr("min_roar_offset", function()
     return settings.min_roar_offset
 end)
@@ -1357,6 +1408,8 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
+
+        cycle = "faerie_fire",
 
         spend = 0.08,
         spendType = "mana",
@@ -2554,6 +2607,19 @@ spec:RegisterSetting("max_bite_energy", 25, {
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.max_bite_energy = val
+    end
+})
+
+spec:RegisterSetting("min_weave_mana", 25, {
+    type = "range",
+    name = "Minimum Spellshift Mana",
+    desc = "Sets the minimum allowable mana for flowershifting and predatorshifting recommendations",
+    width = "full",
+    min = 0,
+    softMax = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_weave_mana = val
     end
 })
 
