@@ -35,7 +35,7 @@ Hekili.IsDragonflight = function()
     return buildNum >= 100000
 end
 
-ns.PTR = false
+ns.PTR = buildNum > 100005
 
 
 ns.Patrons = "|cFFFFD100Current Status|r\n\n"
