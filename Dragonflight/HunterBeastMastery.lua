@@ -2231,8 +2231,12 @@ spec:RegisterAbilities( {
         spendType = "focus",
 
         toggle = "cooldowns",
-
         startsCombat = true,
+
+        usable = function ()
+            if moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
+            return true
+        end,
 
         handler = function ()
             interrupt()
