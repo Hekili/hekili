@@ -468,12 +468,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    -- Armor reduced by $s2%.
-    shattering_throw = {
-        id = 64382,
-        duration = 10,
-        max_stack = 1,
-    },
     shield_bash_silenced = {
         id = 18498,
         duration = 3,

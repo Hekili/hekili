@@ -1,4 +1,4 @@
-# APL v3.4.0-1.1.2 #
+# APL v3.4.0-1.3.0 #
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 actions.init+=/variable,name=furor_cap,value=20*talent.furor.rank<?85
 actions.init+=/variable,name=end_thresh,value=10
@@ -50,7 +50,7 @@ actions.cat+=/savage_roar,if=debuff.rip.up&buff.savage_roar.up&buff.savage_roar.
 actions.cat+=/shred,if=buff.clearcasting.up&debuff.bleed.up
 actions.cat+=/pool_resource,for_next=1,if=debuff.rip.remains<action.rip.spend/10
 actions.cat+=/rip,if=!up&combo_points.current=5
-actions.cat+=/rake,if=!up&(combo_points.current<5|energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend)
+actions.cat+=/rake,if=!up&(combo_points.current<5|energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend)&(rake_over_shred|!debuff.bleed.up)
 actions.cat+=/pool_resource,for_next=1,if=debuff.mangle.remains<action.mangle_cat.spend/10
 actions.cat+=/mangle_cat,if=!debuff.mangle.up|(debuff.mangle.remains<5&energy.current-action.mangle_cat.spend+debuff.rip.remains*10>=action.rip.spend)
 actions.cat+=/pool_resource,for_next=1,if=debuff.rip.remains-latency-(action.ferocious_bite.spend-energy.current)/10>=min_bite_rip_remains&buff.savage_roar.remains-latency-(action.ferocious_bite.spend-energy.current)/10>=min_bite_sr_remains

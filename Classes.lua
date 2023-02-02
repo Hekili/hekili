@@ -1388,6 +1388,21 @@ all:RegisterAuras( {
         copy = { 469, 45517, 47439, 47440 },
     },
 
+    -- Armor reduced by $s2%.
+    shattering_throw = {
+        id = 64382,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    acid_spit = {
+        id = 55754,
+        duration = 30,
+        max_stack = 2,
+        shared = "target",
+        copy = { 55749, 55750, 55751, 55752, 55753, 55754 }
+    },
+
     -- Armor decreased by $s1%.
     sunder_armor = {
         id = 58567,
@@ -1395,6 +1410,12 @@ all:RegisterAuras( {
         max_stack = 5,
         shared = "target",
         copy = { 7405, 8380, 11596, 11597, 25225, 47467, 58567, 65936, 71554 },
+    },
+
+    major_armor_reduction = {
+        alias = { "sunder_armor", "acid_spit", "expose_armor" },
+        aliasType = "debuff",
+        aliasMode = "first"
     },
 
     -- Reduces melee attack power by $s1.
