@@ -84,7 +84,7 @@ actions.bear_lacerate+=/lacerate
 
 actions.bear_mangle+=/enrage,use_off_gcd=1,if=energy.current<50&debuff.rip.remains>4.5
 actions.bear_mangle+=/maul,use_off_gcd=1,if=!buff.maul.up&!buff.clearcasting.up&((cooldown.mangle_bear.up&rage.current>=25)|(energy.current>70|debuff.rip.remains<3))
-actions.bear_mangle+=/cat_form,if=energy.current>70|debuff.rip.remains<3|buff.clearcasting.up
+actions.bear_mangle+=/cat_form,if=variable.shift_now
 actions.bear_mangle+=/dire_bear_form,if=rage.current<10&cooldown.mangle_bear.up
 actions.bear_mangle+=/mangle_bear
 actions.bear_mangle+=/lacerate
