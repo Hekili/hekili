@@ -2561,6 +2561,19 @@ spec:RegisterSetting("min_roar_offset", 14, {
     end
 })
 
+spec:RegisterSetting("min_weave_mana", 25, {
+    type = "range",
+    name = "Minimum Spellshift Mana",
+    desc = "Sets the minimum allowable mana for flowershifting and predatorshifting recommendations",
+    width = "full",
+    min = 0,
+    softMax = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_weave_mana = val
+    end
+})
+
 spec:RegisterSetting("ferociousbite_enabled", true, {
     type = "toggle",
     name = "Ferocious Bite: Enabled?",
@@ -2599,7 +2612,7 @@ spec:RegisterSetting("min_bite_rip_remains", 10, {
 
 spec:RegisterSetting("max_bite_energy", 25, {
     type = "range",
-    name = "Maximum Energy Used For Bite",
+    name = "Maximum Energy Used For Bite During Berserk",
     desc = "Sets the energy allowed for Ferocious Bite recommendations during Berserk.\n\nWhen Berserk is down, any energy level is allowed as long as Minimum Rip and Minimum Roar settings are satisfied",
     width = "full",
     min = 18,
@@ -2607,19 +2620,6 @@ spec:RegisterSetting("max_bite_energy", 25, {
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.max_bite_energy = val
-    end
-})
-
-spec:RegisterSetting("min_weave_mana", 25, {
-    type = "range",
-    name = "Minimum Spellshift Mana",
-    desc = "Sets the minimum allowable mana for flowershifting and predatorshifting recommendations",
-    width = "full",
-    min = 0,
-    softMax = 100,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.min_weave_mana = val
     end
 })
 
