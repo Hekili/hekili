@@ -2,6 +2,8 @@
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 actions.init+=/variable,name=furor_cap,value=20*talent.furor.rank<?85
 actions.init+=/variable,name=end_thresh,value=10
+actions.init+=/variable,name=weave_energy,value=variable.furor_cap-30-20*latency-((talent.furor.rank>3&15)|0)-((bearweaving_lacerate_enabled&!debuff.lacerate.up&15)|0)
+actions.init+=/variable,name=weave_end,value=4.5+2*latency
 actions.init+=/variable,name=rip_refresh_pending,value=debuff.rip.up&debuff.rip.remains<variable.time_to_die-variable.end_thresh
 actions.init+=/variable,name=bearweave_emergency_upper,value=3.5
 actions.init+=/variable,name=bearweave_emergency_lower,value=1.5
@@ -13,6 +15,13 @@ actions.init+=/variable,name=tf_expected_before_flower_end,value=tf_expected_bef
 actions.init+=/variable,name=bite_at_end,value=combo_points.current=5&(variable.time_to_die<variable.end_thresh|debuff.rip.up&variable.time_to_die-debuff.rip.remains<variable.end_thresh)
 actions.init+=/variable,name=bite_before_rip,value=combo_points.current=5&debuff.rip.remains>=min_bite_rip_remains&buff.savage_roar.remains>=min_bite_sr_remains
 actions.init+=/variable,name=bite_during_berserk,value=energy.current<=max_bite_energy
+actions.init+=/variable,name=build_lacerate,value=!debuff.lacerate.up|debuff.lacerate.stack<5
+actions.init+=/variable,name=maintain_lacerate,value=!variable.build_lacerate&debuff.lacerate.remains<=10&(rage.current<38|variable.shift_next)&debuff.lacerate.remains<variable.time_to_die
+actions.init+=/variable,name=emergency_lacerate,value=bearweaving_lacerate_enabled&debuff.lacerate.up&debuff.lacerate.remains<3+2*latency&debuff.lacerate.remains<variable.time_to_die
+actions.init+=/variable,name=shift_energy_limit,value=((variable.furor_cap-energy.current)/10)
+actions.init+=/variable,name=shift_limit,value=variable.shift_energy_limit<?((variable.rip_refresh_pending&debuff.rip.remains)|variable.shift_energy_limit)
+actions.init+=/variable,name=shift_now,value=energy.current+15+10*latency>variable.furor_cap|(variable.rip_refresh_pending&debuff.rip.remains<3)|buff.berserk.up|(rage.current<10&mainhand_remains+1.5+latency<variable.shift_limit)|(buff.clearcasting.up&(!bearweaving_lacerate_enabled|(!variable.build_lacerate&!variable.maintain_lacerate)))
+actions.init+=/variable,name=shift_next,value=energy.current+30+10*latency>variable.furor_cap|(variable.rip_refresh_pending&debuff.rip.remains<4.5)|buff.berserk.up
 
 actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
 actions.precombat+=/thorns,if=!up
@@ -44,11 +53,11 @@ actions.cat+=/rip,if=!up&combo_points.current=5
 actions.cat+=/rake,if=!up&(combo_points.current<5|energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend)
 actions.cat+=/pool_resource,for_next=1,if=debuff.mangle.remains<action.mangle_cat.spend/10
 actions.cat+=/mangle_cat,if=!debuff.mangle.up|(debuff.mangle.remains<5&energy.current-action.mangle_cat.spend+debuff.rip.remains*10>=action.rip.spend)
-actions.cat+=/pool_resource,for_next=1
+actions.cat+=/pool_resource,for_next=1,if=debuff.rip.remains-latency-(action.ferocious_bite.spend-energy.current)/10>=min_bite_rip_remains&buff.savage_roar.remains-latency-(action.ferocious_bite.spend-energy.current)/10>=min_bite_sr_remains
 actions.cat+=/ferocious_bite,if=ferociousbite_enabled&!buff.clearcasting.up&(variable.bite_at_end|variable.bite_before_rip)&(!buff.berserk.up|variable.bite_during_berserk)
-actions.cat+=/faerie_fire_feral,if=!debuff.armor_reduction.up&!buff.berserk.up&energy.current<70
 actions.cat+=/shred,if=((combo_points.current<5|energy.current-action.shred.spend+debuff.rip.remains*10>=action.rip.spend)&(energy.current-action.shred.spend+debuff.rake.remains*10>=action.rake.spend))|energy.current=100
-actions.cat+=/dire_bear_form,if=((bearweaving_lacerate_enabled&((energy.current<25&debuff.lacerate.stack<3)|(energy.current<40&debuff.lacerate.stack>=3)))|(bearweaving_mangle_enabled&energy.current<40))&!buff.clearcasting.up&debuff.rip.remains>4.5&!buff.berserk.up
+actions.cat+=/faerie_fire_feral,if=!debuff.armor_reduction.up&!buff.berserk.up&energy.current<70
+actions.cat+=/dire_bear_form,if=bearweaving_enabled&energy.current<=variable.weave_energy&!buff.clearcasting.up&(!variable.rip_refresh_pending|debuff.rip.remains>=variable.weave_end)&!buff.berserk.up&(bearweaving_lacerate_enabled|!(!cooldown.tigers_fury.up&cooldown.tigers_fury.remains<variable.weave_end|cooldown.tigers_fury.up&buff.berserk.up&buff.berserk.remains<variable.weave_end|cooldown.tigers_fury.up&!buff.berserk.up))
 actions.cat+=/gift_of_the_wild,if=variable.flowerweaving_enabled&energy.current<=variable.flowershift_energy&!buff.clearcasting.up&(!variable.rip_refresh_pending|debuff.rip.remains>=variable.flower_end)&!buff.berserk.up&!variable.tf_expected_before_flower_end&mana.pct>settings.min_weave_mana
 
 actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<40
@@ -67,10 +76,11 @@ actions.bear_aoe+=/swipe_bear
 
 actions.bear_lacerate+=/enrage,use_off_gcd=1,if=energy.current<50&debuff.rip.remains>4.5
 actions.bear_lacerate+=/maul,use_off_gcd=1,if=!buff.maul.up&!buff.clearcasting.up&bearweaving_lacerate_should_maul
-actions.bear_lacerate+=/lacerate,if=up&(remains<5|buff.enrage.remains>=8.5)
-actions.bear_lacerate+=/cat_form,if=energy.current>70|debuff.rip.remains<3|buff.berserk.up|(buff.clearcasting.up&debuff.lacerate.stack=5&debuff.lacerate.remains>=9)
-actions.bear_lacerate+=/lacerate,if=debuff.lacerate.stack<5|debuff.lacerate.remains<9
+actions.bear_lacerate+=/lacerate,if=variable.emergency_lacerate
+actions.bear_lacerate+=/cat_form,if=variable.shift_now
+actions.bear_lacerate+=/lacerate,if=bearweaving_lacerate_enabled&(variable.build_lacerate|variable.maintain_lacerate)
 actions.bear_lacerate+=/mangle_bear
+actions.bear_lacerate+=/lacerate
 
 actions.bear_mangle+=/enrage,use_off_gcd=1,if=energy.current<50&debuff.rip.remains>4.5
 actions.bear_mangle+=/maul,use_off_gcd=1,if=!buff.maul.up&!buff.clearcasting.up&((cooldown.mangle_bear.up&rage.current>=25)|(energy.current>70|debuff.rip.remains<3))
