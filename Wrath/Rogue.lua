@@ -289,7 +289,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     overkill = {
-        id = 58426,
+        id = 58427,
         duration = 20,
         max_stack = 1,
     },
@@ -480,7 +480,7 @@ spec:RegisterAbilities( {
 
     -- Ambush the target, causing 275% weapon damage plus 509 to the target.  Must be stealthed and behind the target.  Requires a dagger in the main hand.  Awards 2 combo points.
     ambush = {
-        id = 48689,
+        id = 8676,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -499,12 +499,14 @@ spec:RegisterAbilities( {
             removeBuff( "remorseless" )
             if talent.waylay.rank == 2 then applyDebuff( "target", "waylay" ) end
         end,
+
+        copy = { 8676, 8724, 8725, 11267, 11268, 11269, 27441, 48689, 48690, 48691 },
     },
 
 
     -- Backstab the target, causing 150% weapon damage plus 255 to the target.  Must be behind the target.  Requires a dagger in the main hand.  Awards 1 combo point.
     backstab = {
-        id = 26863,
+        id = 53,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -523,6 +525,8 @@ spec:RegisterAbilities( {
             removeBuff( "remorseless" )
             if talent.waylay.rank == 2 then applyDebuff( "target", "waylay" ) end
         end,
+
+        copy = { 53, 2589, 2590, 2591, 8721, 11279, 11280, 11281, 25300, 26863, 48656, 48657 },
     },
 
 
@@ -633,7 +637,7 @@ spec:RegisterAbilities( {
 
     -- Finishing move that reduces the movement of the target by 50% for 6 sec and causes increased thrown weapon damage:     1 point  : 223 - 245 damage     2 points: 365 - 387 damage     3 points: 507 - 529 damage     4 points: 649 - 671 damage     5 points: 791 - 813 damage
     deadly_throw = {
-        id = 48673,
+        id = 26679,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -651,6 +655,8 @@ spec:RegisterAbilities( {
             spend( combo_points.current, "combo_points" )
             if talent.throwing_specialization.rank == 2 then interrupt() end
         end,
+
+        copy = { 26679, 48673, 48674 },
     },
 
 
@@ -695,7 +701,7 @@ spec:RegisterAbilities( {
 
     -- Finishing move that consumes your Deadly Poison doses on the target and deals instant poison damage.  Following the Envenom attack you have an additional 15% chance to apply Deadly Poison and a 75% increased frequency of applying Instant Poison for 1 sec plus an additional 1 sec per combo point.  One dose is consumed for each combo point:    1 dose:  180 damage    2 doses: 361 damage    3 doses: 541 damage    4 doses: 722 damage    5 doses: 902 damage
     envenom = {
-        id = 32684,
+        id = 32645,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -719,12 +725,14 @@ spec:RegisterAbilities( {
 
             spend( combo_points.current, "combo_points" )
         end,
+
+        copy = { 32645, 32684, 57992, 57993 },
     },
 
 
     -- Increases the rogue's dodge chance by 50% and reduces the chance ranged attacks hit the rogue by 25%.  Lasts 15 sec.
     evasion = {
-        id = 26669,
+        id = 5277,
         cast = 0,
         cooldown = 180,
         gcd = "off",
@@ -740,12 +748,14 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "evasion" )
         end,
+
+        copy = { 5277, 26669 },
     },
 
 
     -- Finishing move that causes damage per combo point:     1 point  : 256-391 damage     2 points: 452-602 damage     3 points: 648-813 damage     4 points: 845-1024 damage     5 points: 1040-1235 damage
     eviscerate = {
-        id = 26865,
+        id = 2098,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -765,6 +775,8 @@ spec:RegisterAbilities( {
 
             spend( combo_points.current, "combo_points" )
         end,
+
+        copy = { 2098, 6760, 6761, 6762, 8623, 8624, 11299, 11300, 26865, 31016, 48667, 48668 },
     },
 
 
@@ -809,7 +821,7 @@ spec:RegisterAbilities( {
 
     -- Performs a feint, causing no damage but lowering your threat by a large amount, making the enemy less likely to attack you.
     feint = {
-        id = 27448,
+        id = 1966,
         cast = 0,
         cooldown = 10,
         gcd = "totem",
@@ -823,12 +835,14 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "feint" )
         end,
+
+        copy = { 1966, 6768, 8637, 11303, 25302, 27448, 48658, 48659 },
     },
 
 
     -- Garrote the enemy, silencing them for 3 sec causing 768 damage over 18 sec, increased by attack power.  Must be stealthed and behind the target.  Awards 1 combo point.
     garrote = {
-        id = 26884,
+        id = 703,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -846,6 +860,8 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "garrote_silence" )
             gain( talent.initiative.rank == 3 and 2 or 1, "combo_points" )
         end,
+
+        copy = { 703, 8631, 8632, 8633, 11289, 11290, 26839, 26884, 48675, 48676 },
     },
 
 
@@ -893,7 +909,7 @@ spec:RegisterAbilities( {
 
     -- An instant strike that deals 110% weapon damage (160% if a dagger is equipped) and causes the target to hemorrhage, increasing any Physical damage dealt to the target by up to 13.  Lasts 10 charges or 15 sec.  Awards 1 combo point.
     hemorrhage = {
-        id = 48660,
+        id = 16511,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -969,7 +985,7 @@ spec:RegisterAbilities( {
 
     -- Finishing move that stuns the target.  Lasts longer per combo point:     1 point  : 2 seconds     2 points: 3 seconds     3 points: 4 seconds     4 points: 5 seconds     5 points: 6 seconds
     kidney_shot = {
-        id = 8643,
+        id = 408,
         cast = 0,
         cooldown = 20,
         gcd = "totem",
@@ -986,6 +1002,8 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "kidney_shot" )
             spend( combo_points.current, "combo_points" )
         end,
+
+        copy = { 408, 8643 },
     },
 
 
@@ -1031,7 +1049,7 @@ spec:RegisterAbilities( {
             removeBuff( "remorseless" )
         end,
 
-        copy = { 48666, 48663, 34413, 34412, 34411, 1329 }
+        copy = { 1329, 34411, 34412, 34413, 48663, 48666 },
     },
 
 
@@ -1109,7 +1127,7 @@ spec:RegisterAbilities( {
 
     -- Finishing move that causes damage over time, increased by your attack power.  Lasts longer per combo point:     1 point  : 346 damage over 8 secs     2 points: 505 damage over 10 secs     3 points: 685 damage over 12 secs     4 points: 887 damage over 14 secs     5 points: 1111 damage over 16 secs
     rupture = {
-        id = 26867,
+        id = 1943,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1124,12 +1142,14 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "rupture" )
             spend( combo_points.current, "combo_points" )
         end,
+
+        copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671, 48672 },
     },
 
 
     -- Incapacitates the target for up to 45 sec.  Must be stealthed.  Only works on Humanoids that are not in combat.  Any damage caused will revive the target.  Only 1 target may be sapped at a time.
     sap = {
-        id = 11297,
+        id = 2070,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1145,6 +1165,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "sap" )
         end,
+
+        copy = { 2070, 6770, 11297, 51724 },
     },
 
 
@@ -1211,7 +1233,7 @@ spec:RegisterAbilities( {
 
     -- An instant strike that causes 98 damage in addition to 100% of your normal weapon damage.  Awards 1 combo point.
     sinister_strike = {
-        id = 26862,
+        id = 1752,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1230,12 +1252,14 @@ spec:RegisterAbilities( {
             gain( 1, "combo_points" )
             removeBuff( "remorseless" )
         end,
+
+        copy = { 1752, 1757, 1758, 1759, 1760, 8621, 11293, 11294, 26861, 26862, 48637, 48638 },
     },
 
 
     -- Finishing move that increases melee attack speed by 40%.  Lasts longer per combo point:     1 point  : 9 seconds     2 points: 12 seconds     3 points: 15 seconds     4 points: 18 seconds     5 points: 21 seconds
     slice_and_dice = {
-        id = 6774,
+        id = 5171,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1252,12 +1276,14 @@ spec:RegisterAbilities( {
             applyBuff( "slice_and_dice" )
             spend( combo_points.current, "combo_points" )
         end,
+
+        copy = { 5171, 6774 },
     },
 
 
     -- Increases the rogue's movement speed by 70% for 15 sec.  Does not break stealth.
     sprint = {
-        id = 11305,
+        id = 2983,
         cast = 0,
         cooldown = 180,
         gcd = "off",
@@ -1270,6 +1296,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "sprint" )
         end,
+
+        copy = { 2983, 8696, 11305 },
     },
 
 
@@ -1312,7 +1340,7 @@ spec:RegisterAbilities( {
 
     -- Allows the rogue to vanish from sight, entering an improved stealth mode for 10 sec.  Also breaks movement impairing effects.  More effective than Vanish (Rank 2).
     vanish = {
-        id = 26889,
+        id = 1856,
         cast = 0,
         cooldown = function() return 180 - 30 * talent.elusiveness.rank end,
         gcd = "off",
@@ -1326,7 +1354,11 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "stealth" )
         end,
+
+        copy = { 1856, 1857, 26889 },
+
     },
 } )
 
