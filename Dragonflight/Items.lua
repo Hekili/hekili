@@ -18,14 +18,14 @@ all:RegisterAbilities( {
     algethar_puzzle_box = {
         cast = 2,
         cooldown = 180,
-        gcd = "on",
+        gcd = "spell",
 
         item = 193701,
         toggle = "cooldowns",
 
         handler = function()
             applyBuff( "algethar_puzzle" )
-            if buff.stealth.up then removeBuff( "stealth" ) end
+            if class.auras.stealth and buff.stealth.up then removeBuff( "stealth" ) end
         end,
 
         proc = "mastery",
@@ -36,7 +36,9 @@ all:RegisterAbilities( {
                 duration = 20,
                 max_stack = 1,
             },
-        }
+        },
+
+        copy = 383781
     },
     bag_of_biscuits = {
         cast = 0,
