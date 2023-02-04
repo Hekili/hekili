@@ -2902,7 +2902,7 @@ do
 
                 if t.key ~= "global_cooldown" then
                     local gcd = state.cooldown.global_cooldown
-                    gcdStart, gcdDuration = gcd.expires - gcd.duration, gcd.duration
+                    local gcdStart, gcdDuration = gcd.expires - gcd.duration, gcd.duration
                     if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
                 end
 
