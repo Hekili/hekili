@@ -7,8 +7,7 @@ actions.precombat+=/potion
 actions+=/run_action_list,name=st,if=active_enemies<2
 actions+=/run_action_list,name=aoe,if=active_enemies>1
 actions+=/run_action_list,name=life,if=health.pct<25	
-	
-	
+
 actions.st+=/group_curse,if=debuff.my_curse.down&curse_grouped
 actions.st+=/immolate,if=!ticking|dot.immolate.remains<1
 actions.st+=/conflagrate
