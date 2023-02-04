@@ -1642,8 +1642,10 @@ spec:RegisterOptions( {
     damage = false,
     damageExpiration = 6,
 
-    -- package = "",
-    -- package1 = "",
+    package = "Shadow",
+    package1 = "Shadow",
     -- package2 = "",
     -- package3 = "",
 } )
+
+spec:RegisterPack( "Shadow", 20230204, [[Hekili:v(u0QnmmmW)OrAY2(gwFjmW7zTOyR2iQRTrwzL8s(2NCldg7THbZzP7oFhCa(aCbujySVRFORV75No0n86qp40TcbUc6VGNnqcVA3UfmKV1gVfZyOjVMxfVTcCZRCupMG5)6PrQqEy8fWTWHa9Gcv9)y4(07ctvDFQiCwyDBFkYT3NYY(0B0foYGRnQEpY0jCnQgC8EfOeohPqZw0RCozFeHI(jvRuYsNAhxriF(6m(p1zk)IKAB7VA0nusC6CTvCCvxYIHAKHV)]] )

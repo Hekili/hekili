@@ -28,6 +28,7 @@ Wrath\Druid.lua
 Wrath\Hunter.lua
 Wrath\Mage.lua
 Wrath\Paladin.lua
+Wrath\Priest.lua
 Wrath\Rogue.lua
 Wrath\Shaman.lua
 Wrath\Warlock.lua
