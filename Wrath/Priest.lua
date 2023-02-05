@@ -1074,8 +1074,8 @@ spec:RegisterAbilities( {
     -- Blasts the target for 42 to 46 Shadow damage.
     mind_blast = {
         id = 8092,
-        cast = 1.5,
-        cooldown = 8,
+        cast = function() return 1.5 * haste end,
+        cooldown = function() return 8 - (0.5 * talent.improved_mind_blast.rank) end,
         gcd = "spell",
 
         spend = function() return 0.17 * (set_bonus.tier7_2pc == 1 and 0.90 or 1) end,
@@ -1545,7 +1545,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-        texture = 136121,
+        texture = 136199,
 
         handler = function ()
             applyBuff("shadowfiend")
@@ -1697,7 +1697,7 @@ spec:RegisterAbilities( {
     -- Causes 450 Shadow damage over 15 sec to your target and causes up to 10 party or raid members to gain 1% of their maximum mana per 5 sec when you deal damage from Mind Blast. In addition, if the Vampiric Touch is dispelled it will cause 720 damage to the afflicted target.
     vampiric_touch = {
         id = 34914,
-        cast = 1.5,
+        cast = function() return 1.5 * haste end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1740,6 +1740,19 @@ spec:RegisterOptions( {
 } )
 
 -- Settings
+spec:RegisterSetting("min_shadowfiend_mana", 25, {
+    type = "range",
+    name = "Shadowfiend: Minimum Mana",
+    desc = "Sets the minimum mana allowed before recommending Shadowfiend.",
+    width = "full",
+    min = 0,
+    max = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 5 ].settings.min_shadowfiend_mana = val
+    end
+})
+
 spec:RegisterSetting("optimize_mind_blast", false, {
     type = "toggle",
     name = "Mind Blast: Optimize Use",
@@ -1750,22 +1763,19 @@ spec:RegisterSetting("optimize_mind_blast", false, {
     end
 })
 
-spec:RegisterSetting("mind_blast_breakpoint", 820, {
-    type = "range",
-    name = "Mind Blast: Haste Breakpoint",
-    desc = "Sets the haste breakpoint where mind blast will no longer be recommended in favor of mind flay. It is recommended that you run a DPS simulation to determine your breakpoint.",
-    width = "full",
-    min = 0,
-    softMax = 1640,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 5 ].settings.mind_blast_breakpoint = val
-    end
-})
-
 -- Packs
 spec:RegisterPack( "Shadow", 20230204, [[Hekili:nFvBRnooq4FlLfcD565l1PzV7GKc7Y9HBlhLf89zzRyl3iQTLqsoLSe0V9Bg5eBhfBNUW(HJfw3knZZmAMN5LsUN8VKOmQHrEoCE4I5HZFiimC5NcxqIm7LmsKKM(k9f4hQOLW)hTLMjEdpEFHGMHQRf1Qu4ks0MAEH5RvKn(yccjzPKNxsI2YZYynIW0PNa0M8nfNPn2ePIluCZEBsbh)9CHYM83Sx5fCseEKgTjvWGpp7CFAQHlQirL8QSynJQirSk6Mcwg5led8ViTPv4sXoE1l4VCuO4JN8LoG0oxk(nHkloJrnBphWNdrG6ojkf8xMItjr3ytm80xb8SjZSjBQZZdoHgJI2jqBGaQnzTnz5Wwus5vOvwGwHxbiRQLMyEoKraS1pUoC2T3Kjmb(AfulpCyWluSs4J(XfF0lCLxq33)byOfSktaQumfdNWlaUb87JVx37AeJp(DhTVnzLnzHx08H3v08WHgO3rlLCfpn2iQt3EgWPuTj2Wrw6P345sJwB5pK1Yy7aYnCuSSG(sn7A2ZxE0IFAklQzgdiUoqibK4FhOJyAztbf5(OBC71ecI5aNcc6swrr8w4mMZ9A1Qt44nkg9vPayv2eFQGtc0H)9jiEJYOxV89XS80TpRAIQLvUQLZOn)XuH1A5aCaw5gfn1Lt(ZPu25h8QkMkoxKwRpXSF3vZ90fn29ZNQsovikaeR6LMARJhMSVQXo(32shB0DmQ7jTV4(w9hUhHxl1mwoTUWCrtyPO57LnmpjrTMfdr7sTNqlgnNGAUJfZQyLWmcBYJ2KWo8u1qRk3phJJhAgse3mTchtmqlM3JQUAb4iPILkk3q7EQ9achHP4Yg0(83(hBYUfbpem)xVpyzWCBYh6)m6XFGHALbyw3FeaEX0JyCOKXb2hlwJ5FJhqND30bwhwsXBaB11RgSUHBQZyoi7i9sfDpiJi3tI(P9lb5Qn3Vwv6YRrSCjODmLgVP3YgVrvvyRps0xlLG7GnyEWM0avZIf6a7tyYvKZlGS9hSjdL(Sp1OJoOLg8lR)TUu1D881dLwhwVZYmTQEzUCyThke3cYOjXztMah2s(5c0k3anbhXTCb1NAVT3zDN0w03)qVYV7WcV1qjlAVZR5Fm8Q6bJc78bOVCBEQ3EC31SR367NqqCFf3d(4YatnYZdM2UL31Vz)6FcBTHo0vxnB2iOp85NghSW7rC(uL(rIjNj1o9Wdo)Xmxc4OdQgdYUbLoWMA7OdhUDQRN5V40QPxA6J)Gj8jOo9YOdVs04kVYN3D16vNu92kXjWaR58ZKR))W9A63GaAZC6v08NmsRnBfW3)IL)DQ7VvWqi)3]] )
 
 -- Hooks
 spec:RegisterHook( "reset_precast", function ()
+end)
+
+-- Expressions
+spec:RegisterStateExpr("flay_over_blast", function()
+    local currentSP = GetSpellBonusDamage(6) or 0
+    local vttimer = select(4, GetSpellInfo(48160))/1000
+    local currentHaste = ((1.5 / vttimer) - 1) * 100
+    local rtn = currentSP >= 39237*(0.975^currentHaste)
+    Hekili:Debug("flay_over_blast()["..tostring(rtn).."]: currentSP["..tostring(currentSP).."] >= 39237*(0.975^currentHaste["..tostring(currentHaste).."])")
+    return rtn
 end)
