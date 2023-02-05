@@ -701,13 +701,6 @@ spec:RegisterAuras( {
     },
 
     -- Pet auras.
-    acid_spit = {
-        id = 55754,
-        duration = 30,
-        max_stack = 2,
-        shared = "target",
-        copy = { 55749, 55750, 55751, 55752, 55753, 55754 }
-    },
     call_of_the_wild = {
         id = 53434,
         duration = 20,
