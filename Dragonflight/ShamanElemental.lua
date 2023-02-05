@@ -187,7 +187,9 @@ spec:RegisterAuras( {
     bloodlust = {
         id = 2825,
         duration = 40,
-        max_stack = 1
+        max_stack = 1,
+        shared = "player",
+        copy = { 32182, "heroism" }
     },
     -- Chance to activate Windfury Weapon increased to ${$319773h}.1%.  Damage dealt by Windfury Weapon increased by $s2%.
     -- https://wowhead.com/beta/spell=384352
@@ -1190,7 +1192,7 @@ spec:RegisterAbilities( {
 
     -- Increases haste by $s1% for all party and raid members for $d.    Allies receiving this effect will become Sated and unable to benefit from Bloodlust or Time Warp again for $57724d.
     bloodlust = {
-        id = 2825,
+        id = function() return state.faction == "Alliance" and 32182 or 2825 end,
         cast = 0,
         cooldown = 300,
         gcd = "off",
@@ -1200,14 +1202,16 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
-
         toggle = "cooldowns",
+        nodebuff = "sated",
 
         handler = function ()
             applyBuff( "bloodlust" )
             applyDebuff( "player", "sated" )
             stat.haste = state.haste + 0.4
         end,
+
+        copy = { 2825, "heroism" }
     },
 
     -- Talent: Summons a totem at the target location that gathers electrical energy from the surrounding air and explodes after $s2 sec, stunning all enemies within $118905A1 yards for $118905d.
