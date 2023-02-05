@@ -12,7 +12,6 @@ local spec = Hekili:NewSpecialization( 65 )
 spec:RegisterResource( Enum.PowerType.HolyPower )
 spec:RegisterResource( Enum.PowerType.Mana )
 
-
 -- Talents
 spec:RegisterTalents( {
     -- Paladin
@@ -27,13 +26,13 @@ spec:RegisterTalents( {
     divine_purpose                  = { 81618, 223817, 1 }, -- Holy Power abilities have a 15% chance to make your next Holy Power ability free and deal 15% increased damage and healing.
     divine_steed                    = { 81632, 190784, 1 }, -- Leap atop your Charger for 4 sec, increasing movement speed by 100%. Usable while indoors or in combat.
     fist_of_justice                 = { 81602, 234299, 2 }, -- Each Holy Power spent reduces the remaining cooldown on Hammer of Justice by 1 sec.
-    golden_path                     = { 81610, 377128, 1 }, -- Consecration heals you and 5 allies within it for 65 every 0.9 sec.
+    golden_path                     = { 81610, 377128, 1 }, -- Consecration heals you and 5 allies within it for 64 every 0.9 sec.
     hallowed_ground                 = { 81509, 377043, 1 }, -- Consecration's damage is increased by 10%.
     holy_aegis                      = { 81609, 385515, 2 }, -- Armor and critical strike chance increased by 2%.
     holy_avenger                    = { 81618, 105809, 1 }, -- Your Holy Power generation is tripled for 20 sec.
     improved_blessing_of_protection = { 81617, 384909, 1 }, -- Reduces the cooldown of Blessing of Protection by 60 sec.
-    incandescence                   = { 81628, 385464, 1 }, -- Each Holy Power you spend has a 5% chance to cause your Consecration to flare up, dealing 511 Holy damage to up to 5 enemies standing within it.
-    judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next 25 successful attacks against the target to heal the attacker for 50.
+    incandescence                   = { 81628, 385464, 1 }, -- Each Holy Power you spend has a 5% chance to cause your Consecration to flare up, dealing 483 Holy damage to up to 5 enemies standing within it.
+    judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next 25 successful attacks against the target to heal the attacker for 48.
     obduracy                        = { 81627, 385427, 1 }, -- Speed and Avoidance increased by 2%.
     of_dusk_and_dawn                = { 81624, 385125, 1 }, -- When you reach 5 Holy Power, you gain Blessing of Dawn. When you reach 0 Holy Power, you gain Blessing of Dusk. Blessing of Dawn Damage and healing increased by 9%, and Holy Power-spending abilities dealing 8% additional increased damage and healing for 20 sec. Blessing of Dusk Damage taken reduced by 4%, armor increased by 10%, and Holy Power generating abilities cool down 10% faster for 20 sec.
     rebuke                          = { 81604, 96231 , 1 }, -- Interrupts spellcasting and prevents any spell in that school from being cast for 4 sec.
@@ -51,7 +50,7 @@ spec:RegisterTalents( {
     seal_of_the_templar             = { 81631, 377016, 1 }, -- While mounted on your Charger or under the effects of Crusader Aura, the ranges of Crusader Strike, Rebuke, and Hammer of Justice are increased by 3 yards.
     seasoned_warhorse               = { 81631, 376996, 1 }, -- Increases the duration of Divine Steed by 1 sec.
     seraphim                        = { 81620, 152262, 1 }, -- The Light magnifies your power for 15 sec, granting 8% Haste, Critical Strike, and Versatility, and 12% Mastery.
-    touch_of_light                  = { 81628, 385349, 1 }, -- Your spells and abilities have a chance to cause your target to erupt in a blinding light dealing 425 Holy damage or healing an ally for 553 health.
+    touch_of_light                  = { 81628, 385349, 1 }, -- Your spells and abilities have a chance to cause your target to erupt in a blinding light dealing 403 Holy damage or healing an ally for 544 health.
     turn_evil                       = { 81630, 10326 , 1 }, -- The power of the Light compels an Undead, Aberration, or Demon target to flee for up to 40 sec. Damage may break the effect. Lesser creatures have a chance to be destroyed. Only one target can be turned at a time.
     unbreakable_spirit              = { 81615, 114154, 1 }, -- Reduces the cooldown of your Divine Shield, Divine Protection, and Lay on Hands by 30%.
     zealots_paragon                 = { 81625, 391142, 1 }, -- Hammer of Wrath and Judgment deal 10% additional damage and extend the duration of Avenging Wrath by 0.5 sec.
@@ -63,10 +62,10 @@ spec:RegisterTalents( {
     avenging_crusader               = { 81584, 216331, 1 }, -- You become the ultimate crusader of light for 12 sec. Crusader Strike and Judgment cool down 30% faster and heal up to 3 injured allies for 250% of the damage they deal. If Avenging Wrath is known, also increases Judgment, Crusader Strike, and auto-attack damage by 30%.
     avenging_wrath_might            = { 81584, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, allowing Hammer of Wrath to be used on any target, increasing your damage, healing and critical strike chance by 20% for 20 sec.
     awakening                       = { 81592, 248033, 2 }, -- Word of Glory and Light of Dawn have a 15% chance to grant you Avenging Wrath for 8 sec.
-    barrier_of_faith                = { 81558, 148039, 1 }, -- Imbue a friendly target with a Barrier of Faith, absorbing 4,095 damage for 12 sec. For the next 24 sec, Barrier of Faith accumulates 50% of effective healing from your Flash of Light or Holy Light spells. Every 6 sec, the accumulated healing becomes an absorb shield.
+    barrier_of_faith                = { 81558, 148039, 1 }, -- Imbue a friendly target with a Barrier of Faith, absorbing 3,874 damage for 12 sec. For the next 24 sec, Barrier of Faith accumulates 50% of effective healing from your Flash of Light or Holy Light spells. Every 6 sec, the accumulated healing becomes an absorb shield.
     beacon_of_faith                 = { 81554, 156910, 1 }, -- Mark a second target as a Beacon, mimicking the effects of Beacon of Light. Your heals will now heal both of your Beacons, but at 30% reduced effectiveness.
     beacon_of_virtue                = { 81554, 200025, 1 }, -- Apply a Beacon of Light to your target and 3 injured allies within 30 yards for 8 sec. All affected allies will be healed for 50% of the amount of your other healing done. Your Flash of Light and Holy Light on these targets will also grant 1 Holy Power.
-    bestow_faith                    = { 81564, 223306, 1 }, -- Begin mending the wounds of a friendly target, healing them for 3,038 after 5 sec. Generates 1 Holy Power upon healing.
+    bestow_faith                    = { 81564, 223306, 1 }, -- Begin mending the wounds of a friendly target, healing them for 2,875 after 5 sec. Generates 1 Holy Power upon healing.
     blessing_of_summer              = { 81593, 388007, 1 }, -- Bless an ally for 30 sec, causing their attacks to have a 40% chance to deal 30% additional damage as Holy. Blessing of the Seasons: Turns to Autumn after use.
     boundless_salvation             = { 81587, 392951, 1 }, -- Casting Flash of Light on targets affected by Tyr's Deliverance extends the duration of your Tyr's Deliverance by 2.5 sec. Casting Holy Light on targets affected by Tyr's Deliverance extends the duration of your Tyr's Deliverance by 5.0 sec. Tyr's Deliverance can be extended up to a maximum of 50 sec.
     breaking_dawn                   = { 81582, 387879, 1 }, -- Increases the range of Light of Dawn to 40 yds.
@@ -82,34 +81,34 @@ spec:RegisterTalents( {
     echoing_blessings               = { 81556, 387801, 1 }, -- Blessing of Freedom increases the target's movement speed by 15%. Blessing of Protection and Blessing of Sacrifice reduce the target's damage taken by 15%. These effects linger for 8 sec after the Blessing ends.
     empyreal_ward                   = { 81575, 387791, 1 }, -- Lay on Hands grants the target 30% increased armor for 1 min.
     empyrean_legacy                 = { 81591, 387170, 1 }, -- Judgment empowers your next Word of Glory to automatically activate Light of Dawn with 25% increased effectiveness. This effect can only occur every 30 sec.
-    glimmer_of_light                = { 81595, 325966, 1 }, -- Holy Shock leaves a Glimmer of Light on the target for 30 sec. When you Holy Shock, all targets with Glimmer of Light are damaged for 241 or healed for 660. You may have Glimmer of Light on up to 8 targets.
+    glimmer_of_light                = { 81595, 325966, 1 }, -- Holy Shock leaves a Glimmer of Light on the target for 30 sec. When you Holy Shock, all targets with Glimmer of Light are damaged for 228 or healed for 624. You may have Glimmer of Light on up to 8 targets.
     greater_judgment                = { 92220, 231644, 1 }, -- Judgment causes the target to take 30% increased damage from your next Crusader Strike or Holy Shock.
-    hammer_of_wrath                 = { 81510, 24275 , 1 }, -- Hurls a divine hammer that strikes an enemy for 1,253 Holy damage. Only usable on enemies that have less than 20% health, or during Avenging Wrath. Generates 1 Holy Power.
-    holy_light                      = { 81569, 82326 , 1 }, -- An efficient spell, healing a friendly target for 4,138.
-    holy_prism                      = { 81577, 114165, 1 }, -- Fires a beam of light that scatters to strike a clump of targets. If the beam is aimed at an enemy target, it deals 998 Holy damage and radiates 932 healing to 5 allies within 15 yards. If the beam is aimed at a friendly target, it heals for 1,864 and radiates 599 Holy damage to 5 enemies within 15 yards.
-    holy_shock                      = { 81555, 20473 , 1 }, -- Triggers a burst of Light on the target, dealing 768 Holy damage to an enemy, or 2,018 healing to an ally. Has an additional 30% critical strike chance. Generates 1 Holy Power.
+    hammer_of_wrath                 = { 81510, 24275 , 1 }, -- Hurls a divine hammer that strikes an enemy for 1,186 Holy damage. Only usable on enemies that have less than 20% health, or during Avenging Wrath. Generates 1 Holy Power.
+    holy_light                      = { 81569, 82326 , 1 }, -- An efficient spell, healing a friendly target for 3,916.
+    holy_prism                      = { 81577, 114165, 1 }, -- Fires a beam of light that scatters to strike a clump of targets. If the beam is aimed at an enemy target, it deals 945 Holy damage and radiates 882 healing to 5 allies within 15 yards. If the beam is aimed at a friendly target, it heals for 1,764 and radiates 567 Holy damage to 5 enemies within 15 yards.
+    holy_shock                      = { 81555, 20473 , 1 }, -- Triggers a burst of Light on the target, dealing 727 Holy damage to an enemy, or 1,910 healing to an ally. Has an additional 30% critical strike chance. Generates 1 Holy Power.
     illumination                    = { 81572, 387993, 1 }, -- Holy Light and Flash of Light healing increased by 10%.
     imbued_infusions                = { 81557, 392961, 1 }, -- Consuming Infusion of Light reduces the cooldown of Holy Shock by 1.0 sec.
     improved_cleanse                = { 81508, 393024, 1 }, -- Cleanse additionally removes all Disease and Poison effects.
     inflorescence_of_the_sunwell    = { 81591, 392907, 1 }, -- Infusion of Light has 1 additional charge, reduces the cost of Flash of Light by an additional 30%, and causes every 3 casts of Holy Light to generate an additional Holy Power.
     lay_on_hands                    = { 81597, 633   , 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
-    light_of_dawn                   = { 81565, 85222 , 1 }, -- Unleashes a wave of holy energy, healing up to 5 injured allies within a 15 yd frontal cone for 1,403.
-    light_of_the_martyr             = { 81561, 183998, 1 }, -- Sacrifice a portion of your own health to instantly heal an ally for 3,038. You take damage equal to 50% of the healing done. Does not cause your Beacon of Light to be healed. Cannot be cast on yourself.
-    lights_hammer                   = { 81577, 114158, 1 }, -- Hurls a Light-infused hammer to the ground, dealing 257 Holy damage to nearby enemies and healing up to 6 nearby allies for 361, every 2 sec for 14 sec.
+    light_of_dawn                   = { 81565, 85222 , 1 }, -- Unleashes a wave of holy energy, healing up to 5 injured allies within a 15 yd frontal cone for 1,328.
+    light_of_the_martyr             = { 81561, 183998, 1 }, -- Sacrifice a portion of your own health to instantly heal an ally for 2,876. You take damage equal to 50% of the healing done. Does not cause your Beacon of Light to be healed. Cannot be cast on yourself.
+    lights_hammer                   = { 81577, 114158, 1 }, -- Hurls a Light-infused hammer to the ground, dealing 243 Holy damage to nearby enemies and healing up to 6 nearby allies for 342, every 2 sec for 14 sec.
     maraads_dying_breath            = { 81559, 388018, 1 }, -- Light of Dawn increases your next Light of the Martyr by 10% for each ally healed, and allows that Light of the Martyr to heal through Beacon of Light. Light of the Martyr damages you over 5 sec instead of instantly.
     moment_of_compassion            = { 81571, 387786, 1 }, -- Your Flash of Light heals for an additional 15% when cast on a target affected by your Beacon of Light.
-    power_of_the_silver_hand        = { 81589, 200474, 1 }, -- Holy Light and Flash of Light have a chance to grant you Power of the Silver Hand, increasing the healing of your next Holy Shock by 10% of all damage and effective healing you do within the next 10 sec, up to a maximum of 24,640.
+    power_of_the_silver_hand        = { 81589, 200474, 1 }, -- Holy Light and Flash of Light have a chance to grant you Power of the Silver Hand, increasing the healing of your next Holy Shock by 10% of all damage and effective healing you do within the next 10 sec, up to a maximum of 24,310.
     protection_of_tyr               = { 81566, 200430, 1 }, -- Aura Mastery also increases all healing received by party or raid members within 40 yards by 10%.
     radiant_onslaught               = { 81574, 231667, 1 }, -- Crusader Strike now has 2 charges.
     relentless_inquisitor           = { 81590, 383388, 2 }, -- Spending Holy Power grants you 1% haste per finisher for 12 sec, stacking up to 3 times.
     resplendent_light               = { 81571, 392902, 1 }, -- Holy Light heals up to 5 targets within 12 yds for 8% of its healing.
     rule_of_law                     = { 81562, 214202, 1 }, -- Increase the range of your heals by 50% for 10 sec.
-    saved_by_the_light              = { 81563, 157047, 1 }, -- When an ally with your Beacon of Light is damaged below 30% health, they absorb the next 5,460 damage. You cannot shield the same person this way twice within 1 min.
+    saved_by_the_light              = { 81563, 157047, 1 }, -- When an ally with your Beacon of Light is damaged below 30% health, they absorb the next 5,166 damage. You cannot shield the same person this way twice within 1 min.
     second_sunrise                  = { 81583, 200482, 2 }, -- Light of Dawn has a 10% chance to create a second cone of light immediately after the first.
     shining_savior                  = { 81576, 388005, 1 }, -- Word of Glory and Light of Dawn healing increased by 5%.
     tirions_devotion                = { 81573, 392928, 1 }, -- Lay on Hands' cooldown is reduced by 1 sec per Holy Power spent.
     tower_of_radiance               = { 81586, 231642, 1 }, -- Casting Flash of Light or Holy Light on your Beacon of Light grants 1 Holy Power. Casting Flash of Light or Holy Light on targets without Beacon of Light has a chance to grant 1 Holy Power, increasing based on their current health threshold.
-    tyrs_deliverance                = { 81588, 200652, 1 }, -- Releases the Light within yourself, healing 5 injured allies instantly and an injured ally every 0.9 sec for 10 sec within 20 yds for 805. Allies healed also receive 25% increased healing from your Holy Light and Flash of Light spells for 10 sec.
+    tyrs_deliverance                = { 81588, 200652, 1 }, -- Releases the Light within yourself, healing 5 injured allies instantly and an injured ally every 0.9 sec for 10 sec within 20 yds for 762. Allies healed also receive 25% increased healing from your Holy Light and Flash of Light spells for 10 sec.
     unending_light                  = { 81564, 387998, 1 }, -- Each Holy Power spent on Light of Dawn increases the healing of your next Word of Glory by 5%, up to a maximum of 45%.
     untempered_dedication           = { 81560, 387814, 1 }, -- Light of the Martyr's damage and healing is increased by 10% each time it is cast. This effect can stack up to 5 times and lasts for 15 sec.
     unwavering_spirit               = { 81566, 392911, 1 }, -- The cooldown of Aura Mastery is reduced by 30 sec.
@@ -394,6 +393,15 @@ spec:RegisterAuras( {
 } )
 
 
+spec:RegisterHook( "reset_precast", function()
+    if buff.divine_resonance.up then
+        state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
+        if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
+        if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
+    end
+end )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     absolution = {
@@ -439,6 +447,8 @@ spec:RegisterAbilities( {
         spend = 0.5,
         spendType = "mana",
 
+        talent = "avenging_crusader",
+        notalent = "avenging_wrath",
         startsCombat = false,
         texture = 589117,
 
@@ -447,23 +457,29 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "avenging_crusader" )
         end,
+
+        bind = { "avenging_wrath", "sanctified_wrath" }
     },
 
 
     avenging_wrath = {
-        id = 31884,
+        id = function() return talent.avenging_crusader.enabled and 216331 or 31884 end,
         cast = 0,
         cooldown = 120,
         gcd = "spell",
 
-        startsCombat = false,
-        texture = 135875,
+        spend = function() return talent.avenging_crusader.enabled and 5 or 0 end,
+        spendType = function() return talent.avenging_crusader.enabled and "holy_power" or 0 end,
 
+        startsCombat = false,
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff("avenging_wrath")
+            if talent.avenging_crusader.enabled then spend( 5, "holy_power" ) end
+            applyBuff( "avenging_wrath" )
         end,
+
+        copy = { "avenging_crusader", "sanctified_wrath", 31884, 216331 }
     },
 
 
@@ -480,7 +496,7 @@ spec:RegisterAbilities( {
         texture = 4067370,
 
         handler = function ()
-            applyBuff("barrier_of_faith")
+            applyBuff( "barrier_of_faith" )
         end,
     },
 
@@ -498,7 +514,7 @@ spec:RegisterAbilities( {
         texture = 1030095,
 
         handler = function ()
-            applyBuff("beacon_of_faith")
+            applyBuff( "beacon_of_faith" )
         end,
     },
 
@@ -516,7 +532,7 @@ spec:RegisterAbilities( {
         texture = 236247,
 
         handler = function ()
-            applyBuff("beacon_of_light")
+            applyBuff( "beacon_of_light" )
         end,
     },
 
@@ -534,7 +550,7 @@ spec:RegisterAbilities( {
         texture = 1030094,
 
         handler = function ()
-            applyBuff("beacon_of_virtue")
+            applyBuff( "beacon_of_virtue" )
         end,
     },
 
@@ -552,7 +568,7 @@ spec:RegisterAbilities( {
         texture = 236249,
 
         handler = function ()
-            applyBuff("bestow_faith")
+            applyBuff( "bestow_faith" )
         end,
     },
 
@@ -592,7 +608,7 @@ spec:RegisterAbilities( {
         texture = 135968,
 
         handler = function ()
-            applyBuff("blessing_of_freedom")
+            applyBuff( "blessing_of_freedom" )
         end,
     },
 
@@ -615,8 +631,8 @@ spec:RegisterAbilities( {
         defensives = true,
 
         handler = function ()
-            applyDebuff("forbearance")
-            applyBuff("blessing_of_protection")
+            applyDebuff( "forbearance" )
+            applyBuff( "blessing_of_protection" )
         end,
     },
 
@@ -638,7 +654,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff("blessing_of_sacrifice")
+            applyBuff( "blessing_of_sacrifice" )
         end,
     },
 
@@ -716,7 +732,7 @@ spec:RegisterAbilities( {
         texture = 571553,
 
         handler = function ()
-            applyDebuff("blinding_light")
+            applyDebuff( "blinding_light" )
         end,
     },
 
@@ -750,24 +766,10 @@ spec:RegisterAbilities( {
         texture = 135933,
 
         handler = function ()
-            applyBuff("concentration_aura")
-            removeBuff("devotion_aura")
-            removeBuff("crusader_aura")
-            removeBuff("retribution_aura")
-        end,
-    },
-
-
-    consecration = {
-        id = 26573,
-        cast = 0,
-        cooldown = 9,
-        gcd = "spell",
-
-        startsCombat = true,
-        texture = 135926,
-
-        handler = function ()
+            applyBuff( "concentration_aura" )
+            removeBuff( "devotion_aura" )
+            removeBuff( "crusader_aura" )
+            removeBuff( "retribution_aura" )
         end,
     },
 
@@ -796,10 +798,10 @@ spec:RegisterAbilities( {
         texture = 135890,
 
         handler = function ()
-            applyBuff("crusader_aura")
-            removeBuff("devotion_aura")
-            removeBuff("retribution_aura")
-            removeBuff("concentration_aura")
+            applyBuff( "crusader_aura" )
+            removeBuff( "devotion_aura" )
+            removeBuff( "retribution_aura" )
+            removeBuff( "concentration_aura" )
         end,
     },
 
@@ -838,10 +840,10 @@ spec:RegisterAbilities( {
         texture = 135893,
 
         handler = function ()
-            applyBuff("devotion_aura")
-            removeBuff("retribution_aura")
-            removeBuff("crusader_aura")
-            removeBuff("concentration_aura")
+            applyBuff( "devotion_aura" )
+            removeBuff( "retribution_aura" )
+            removeBuff( "crusader_aura" )
+            removeBuff( "concentration_aura" )
         end,
     },
 
@@ -856,7 +858,7 @@ spec:RegisterAbilities( {
         texture = 135915,
 
         handler = function ()
-            applyBuff("divine_favor")
+            applyBuff( "divine_favor" )
         end,
     },
 
@@ -877,7 +879,7 @@ spec:RegisterAbilities( {
         defensives = true,
 
         handler = function ()
-            applyBuff("divine_protection")
+            applyBuff( "divine_protection" )
         end,
     },
 
@@ -895,8 +897,8 @@ spec:RegisterAbilities( {
         defensives = true,
 
         handler = function ()
-            applyDebuff("forbearance")
-            applyBuff("divine_shield")
+            applyDebuff( "forbearance" )
+            applyBuff( "divine_shield" )
         end,
     },
 
@@ -913,7 +915,7 @@ spec:RegisterAbilities( {
         texture = 1360759,
 
         handler = function ()
-            applyBuff("divine_steed")
+            applyBuff( "divine_steed" )
         end,
     },
 
@@ -933,7 +935,13 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            gain( buff.holy_avenger.up and 5 or 2, "holy_power" )
+            if talent.divine_resonance.enabled then
+                applyBuff( "divine_resonance" )
+                state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" )
+            end
+            gain( ( buff.holy_avenger.up and 5 or 2 ) * min( 5, active_enemies ), "holy_power" )
         end,
     },
 
@@ -951,8 +959,8 @@ spec:RegisterAbilities( {
         texture = 135907,
 
         handler = function ()
-            removeBuff("infusion_of_light")
-            removeBuff("divine_favor")
+            removeBuff( "infusion_of_light" )
+            removeBuff( "divine_favor" )
         end,
     },
 
@@ -969,7 +977,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff("fleshcraft")
+            applyBuff( "fleshcraft" )
         end,
     },
 
@@ -989,7 +997,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff("hammer_of_justice")
+            applyDebuff( "hammer_of_justice" )
         end,
     },
 
@@ -1024,7 +1032,7 @@ spec:RegisterAbilities( {
         texture = 135984,
 
         handler = function ()
-            applyDeuff("hand_of_reckoning")
+            applyDeuff( "hand_of_reckoning" )
         end,
     },
 
@@ -1041,7 +1049,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff("holy_avenger")
+            applyBuff( "holy_avenger" )
         end,
     },
 
@@ -1059,8 +1067,8 @@ spec:RegisterAbilities( {
         texture = 135981,
 
         handler = function ()
-            removeBuff("infusion_of_light")
-            removeBuff("divine_favor")
+            removeBuff( "infusion_of_light" )
+            removeBuff( "divine_favor" )
         end,
     },
 
@@ -1146,7 +1154,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff("forbearance")
+            applyDebuff( "forbearance" )
         end,
     },
 
@@ -1167,7 +1175,7 @@ spec:RegisterAbilities( {
         texture = 461859,
 
         handler = function ()
-            removeBuff("divine_purpose")
+            removeBuff( "divine_purpose" )
         end,
     },
 
@@ -1257,7 +1265,7 @@ spec:RegisterAbilities( {
         texture = 135942,
 
         handler = function ()
-            applyDebuff("repentance")
+            applyDebuff( "repentance" )
         end,
     },
 
@@ -1272,10 +1280,10 @@ spec:RegisterAbilities( {
         texture = 135889,
 
         handler = function ()
-            applyBuff("retribution_aura")
-            removeBuff("devotion_aura")
-            removeBuff("crusader_aura")
-            removeBuff("concentration_aura")
+            applyBuff( "retribution_aura" )
+            removeBuff( "devotion_aura" )
+            removeBuff( "crusader_aura" )
+            removeBuff( "concentration_aura" )
         end,
     },
 
@@ -1292,7 +1300,7 @@ spec:RegisterAbilities( {
         texture = 571556,
 
         handler = function ()
-            applyBuff("rule_of_law")
+            applyBuff( "rule_of_law" )
         end,
     },
 
@@ -1310,7 +1318,7 @@ spec:RegisterAbilities( {
         texture = 1030103,
 
         handler = function ()
-            applyBuff("seraphim")
+            applyBuff( "seraphim" )
         end,
     },
 
@@ -1331,7 +1339,8 @@ spec:RegisterAbilities( {
         texture = 236265,
 
         handler = function ()
-            applyBuff("shield_of_the_righteous")
+            removeBuff( "divine_purpose" )
+            applyBuff( "shield_of_the_righteous" )
         end,
     },
 
@@ -1349,7 +1358,7 @@ spec:RegisterAbilities( {
         texture = 571559,
 
         handler = function ()
-            applyDebuff("turn_evil")
+            applyDebuff( "turn_evil" )
         end,
     },
 
@@ -1366,7 +1375,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff("tyrs_deliverance")
+            applyBuff( "tyrs_deliverance" )
         end,
     },
 
@@ -1384,7 +1393,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
-            applyBuff("vanquishers_hammer")
+            applyBuff( "vanquishers_hammer" )
         end,
     },
 
@@ -1405,7 +1414,35 @@ spec:RegisterAbilities( {
         texture = 133192,
 
         handler = function ()
-            removeBuff("divine_purpose")
+            removeBuff( "divine_purpose" )
         end,
     },
 } )
+
+
+spec:RegisterSetting( "experimental_msg", nil, {
+    type = "description",
+    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk.",
+    width = "full",
+} )
+
+
+spec:RegisterOptions( {
+    enabled = true,
+
+    aoe = 3,
+
+    nameplates = false,
+    nameplateRange = 25,
+
+    damage = true,
+    damageDots = true,
+    damageExpiration = 8,
+
+    potion = "potion_of_spectral_intellect",
+
+    package = "Holy Paladin",
+} )
+
+
+spec:RegisterPack( "Holy Paladin", 20230205, [[Hekili:fFvBVTonu4FltiTbIrPP7L7DxuNeGe6UbAcPoeFaDtSBYPnM6yhSDwxLQ8VDo2jP1jnb4knj(WMCSp(58(5Xnok(54fzude)0SPZUA6SP3mj62RJU5M4fMDLq8IsA6g6ACHGwG))Js(ol5xPCAgt4oDhxsZCOOLvQuuI4flRyCZdI4LdaD07V(ou2sin(PBrLKZYYGArbDA8INZzAlX9h1sA0TLixHFNAysHLWzAdE8kPYs(iSHXztIx430BfLGiduU1p5DoqqxYHS4FiErQIzafJgV4mlXq5GWmHULUbemX6jncAj73xRSxGeqafma129wsu8IAtavsod4zjYvjMCirXwNBazLo2GU6O6CCfEULSwjRkpQaUdsh(z0TchSx9zd7rW2kvEBDnxQ2HGzCX6v0kU5qqQvufSSAdeQPbCjxIsXkRVXp5sd0SmxMPSsvk1G(sl57FbeRrRXs(Df1KJ7SGkqLSI5C429OISqr)rvLMIjp8afM0PCoMMYXvAS0d)EjMRn7MC0CPnxnzRdWdXPdPjqrlZzf98NRdLjhRNt84aQEYDtOC42ATtvyGuxvuCI03oM00ktvHON0VBmP3YeMtW(9JAjLkCvpPV7)szFBKlTjM3T8pvk5zYTIbKtbfuMOULyDA2Kc6R13XhjlLBrzWYlwkZyjZTKPyEWOyPgxP2bNiftUj1FK46DR7GtQNXCOh2DNPH(Eg7fMasmsoVNth1Po23)OtYPdKOIMDs(hJI6(vjrJ3YDMlaj0qkw1HGmPQ03dBOQ1GzYwMjNjq7(OZgiSh6UvGEJ0N79vX9mJovH)zv26cm)1xOBpXL05Y0n9f7DJ6shs4hV8qz6aFQPEiXLCXrg(XkLkivwSKAoz67YaZdOktcwddI067H38fmD7o9avbo2IQCZZ0oobS7NvukvMM5(x0wICHLOG)QIPCvUAPFmrLrwG0o4gP5uSVwpX(4VGLn4i8pGdzKcuz(JVO)StenJCG9BBoWZ)YOx)Qd4n7ngVREZWZ(4abTMP(FEXS7gXM6pyOVTn2aMU2OJOVujxX4qnRFbZpCdnSQYaBFnYeJdrqDGd82ag0(iwYdM6l5l7kCvezogdkUnGg8oh2mjwKJRyIuEvMJlhWguq9b0aiFJL8h)MgCibf6pHusBZzP5Hstf7oQvlriDG)Aj3nGJFe3m3Qg6QwL(D4dxuTQ55AiWIWp1q8DCRzbAElZr7DWJAG00kQpA43suvSeQZHCPbJNp4t2UnUQ3RLWdDnN(WCBJO(RN)T1092h)cl5)bEC7JhTKUm5HN0sIhUxiPD4(Nssp2P1KYJDAnj8Oi7jDdpTpB2LoES5TZOUSM)BE0LSvZpBS(J97)3jDVVzm8(9Ns2oFAOffqugUDhEXtIOEAWo(vaXL347r7DEpkVoi2Lwl8OwwStmapVthdOllJZg(hyQAdpUrlnymPnj4QKg(v7DYkTtu3V3bWXFbW9rdczN3P7aQpoN7Fy)G3TZZYh6UyNALjxIVF5NXtKBWFZLG5PlJ)7d]] )

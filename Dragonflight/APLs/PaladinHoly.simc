@@ -1,21 +1,22 @@
 actions+=/rebuke
+# For addon purposes, Avenging Wrath, Sanctified Wrath, and Avenging Crusader are all the same ability.
 actions+=/avenging_wrath
-actions+=/avenging_crusader
-actions+=/sanctified_wrath
 actions+=/seraphim
 actions+=/holy_avenger
 actions+=/blessing_of_summer
 actions+=/blessing_of_autumn
 actions+=/blessing_of_winter
 actions+=/blessing_of_spring
+actions+=/call_action_list,name=spenders,strict=1,if=!talent.avenging_crusader|cooldown.avenging_crusader.remains>gcd.max|holy_power.deficit=0
 actions+=/divine_toll
 actions+=/lights_hammer
 actions+=/holy_prism
 actions+=/consecration,if=!consecration.up&target.within10
-actions+=/shield_of_the_righteous,if=!talent.awakening|active_enemies>1
-actions+=/light_of_dawn,if=talent.awakening&group
-actions+=/word_of_glory,if=talent.awakening
 actions+=/hammer_of_wrath
 actions+=/judgment
 actions+=/holy_shock
 actions+=/crusader_strike,if=cooldown.holy_shock.remains>gcd.max
+
+actions.spenders+=/shield_of_the_righteous,if=!talent.awakening|active_enemies>1
+actions.spenders+=/light_of_dawn,if=talent.awakening&group
+actions.spenders+=/word_of_glory,if=talent.awakening
