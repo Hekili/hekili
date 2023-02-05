@@ -1985,9 +1985,9 @@ do
                 t[k] = max( 1, n or 1 )
 
             elseif k == "cycle_enemies" then
-                if not t.settings.cycle then return 1 end
+                if not t.settings.cycle or t.active_enemies == 1 then return 1 end
 
-                local targets = t.active_enemies
+                local targets = t.true_active_enemies
                 local timeframe = t.delay + t.offset
 
                 local minTTD = timeframe + min( t.cycleInfo.minTTD or 10, t.settings.cycle_min )
@@ -2007,7 +2007,10 @@ do
                 -- So the reason we're stuck here is that we may need "cycle_enemies" when we *aren't* cycling targets.
                 -- I.e., we would cycle Festering Strike (festering_wound) but if we've already dotted our valid adds, we'd hit Death and Decay.
 
-                if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
+                -- testing: don't force minimum targets for cycling purposes, since they may objectively not exist.
+                -- if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
+
+                -- cap cycle_targets if forced into single-target model.
                 if t.max_targets > 0 then targets = min( t.max_targets, targets ) end
 
                 -- if Hekili.ActiveDebug then Hekili:Debug( "cycle min:%.2f, max:%.2f, ae:%d, before:%d, after:%d, cycle_enemies:%d", minTTD or 0, maxTTD or 0, t.active_enemies, minTTD and Hekili:GetNumTTDsBefore( minTTD ) or 0, maxTTD and Hekili:GetNumTTDsAfter( maxTTD ) or 0, max( 1, targets ) ) end
