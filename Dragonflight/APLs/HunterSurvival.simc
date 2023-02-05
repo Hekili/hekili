@@ -11,7 +11,7 @@ actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
 actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>2
 actions+=/arcane_torrent
 
-actions.cds+=/harpoon,if=talent.terms_of_engagement.enabled&focus<focus.max
+actions.cds+=/harpoon,if=talent.terms_of_engagement.enabled&focus<focus.max|target.outside10
 actions.cds+=/blood_fury,if=buff.coordinated_assault.up|buff.spearhead.up|!talent.spearhead&!talent.coordinated_assault
 actions.cds+=/ancestral_call,if=buff.coordinated_assault.up|buff.spearhead.up|!talent.spearhead&!talent.coordinated_assault
 actions.cds+=/fireblood,if=buff.coordinated_assault.up|buff.spearhead.up|!talent.spearhead&!talent.coordinated_assault
