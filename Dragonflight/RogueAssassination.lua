@@ -1549,6 +1549,7 @@ spec:RegisterAbilities( {
 
         talent = "amplifying_poison",
         startsCombat = false,
+        essential = true,
 
         handler = function ()
             applyBuff( "amplifying_poison" )
@@ -1729,7 +1730,6 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         essential = true,
-
         texture = 132274,
 
         readyTime = function () return buff.crippling_poison.remains - 120 end,
@@ -2061,7 +2061,6 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         essential = true,
-
         texture = 132273,
 
         readyTime = function () return buff.instant_poison.remains - 120 end,
@@ -2224,6 +2223,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         startsCombat = false,
+        essential = true,
         texture = 136066,
 
         readyTime = function () return buff.numbing_poison.remains - 120 end,
@@ -2624,7 +2624,6 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         essential = true,
-
         texture = 134197,
 
         readyTime = function () return buff.wound_poison.remains - 120 end,
