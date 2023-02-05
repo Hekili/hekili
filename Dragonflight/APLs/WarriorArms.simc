@@ -1,7 +1,7 @@
 actions.precombat+=/battle_stance
 actions.precombat+=/battle_shout
 actions.precombat+=/use_item,name=algethar_puzzle_box
-actions.precombat+=/avatar,if=!talent.titans_torment
+actions.precombat+=/avatar,if=!talent.titans_torment&!talent.blademasters_torment
 actions.precombat+=/recklessness,if=!talent.reckless_abandon
 
 actions+=/charge,if=time<=0.5|movement.distance>5
