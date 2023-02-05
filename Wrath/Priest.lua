@@ -6,6 +6,12 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 5 )
 
+-- Sets
+spec:RegisterGear( "tier7", 39521, 39530, 39529, 39528, 39523, 40456, 40454, 40459, 40457, 40458 )
+spec:RegisterGear( "tier9", 48755, 48756, 48757, 48758, 48759, 48078, 48077, 48081, 48079, 48080 )
+spec:RegisterGear( "tier10", 51259, 51257, 51256, 51255, 51258, 51181, 51180, 51182, 51183, 51184)
+
+-- Resources
 spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
@@ -94,7 +100,6 @@ spec:RegisterTalents( {
     veiled_shadows                = {   483, 2, 15274, 15311 },
 } )
 
-
 -- Auras
 spec:RegisterAuras( {
     -- Attempts to dispel $10872s1 disease every $t1 seconds.
@@ -134,9 +139,10 @@ spec:RegisterAuras( {
     -- Causes $s1 damage every $t1 seconds, healing the caster.
     devouring_plague = {
         id = 2944,
-        duration = 24,
-        tick_time = 3,
+        duration = function() return 24 * spell_haste end,
+        tick_time = function() return 3 * (buff.shadowform.up and spell_haste or 1) end,
         max_stack = 1,
+
         copy = { 2944, 19276, 19277, 19278, 19279, 19280, 25467, 48299, 48300 },
     },
     -- Reduces all damage by $s1%, and you regenerate $49766s1% mana every $60069t1 sec for $d.  Cannot attack or cast spells. Immune to snare and movement impairing effects.
@@ -307,15 +313,16 @@ spec:RegisterAuras( {
     -- Movement speed slowed.
     mind_flay = {
         id = 15407,
-        duration = 3,
+        duration = function() return (3 - (set_bonus.tier10_4pc == 1 and 0.5 or 0)) * spell_haste end,
+        tick_time = function() return (1 - (set_bonus.tier10_4pc == 1 and 0.17 or 0)) * spell_haste end,
         max_stack = 1,
         copy = { 15407, 17311, 17312, 17313, 17314, 18807, 25387, 48155, 48156, 58381 },
     },
     -- Causing shadow damage to all targets within $49821a1 yards.
     mind_sear = {
         id = 48045,
-        duration = 5,
-        tick_time = 1,
+        duration = function() return 5 * spell_haste end,
+        tick_time = function() return 1 * spell_haste end,
         max_stack = 1,
         copy = { 48045, 49821, 53022, 53023, 60441 },
     },
@@ -450,6 +457,10 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 589, 594, 970, 992, 2767, 10892, 10893, 10894, 25367, 25368, 27605, 48124, 48125 },
     },
+    shadowfiend = {
+        duration = 15,
+        max_stack = 1,
+    },
     -- Shadow damage you deal increased by $s2%.  All damage you take reduced by $s3% and threat generated is reduced by $49868s1%. You may not cast Holy spells except Cure Disease and Abolish Disease.  Grants the periodic damage from your Shadow Word: Pain, Devouring Plague, and Vampiric Touch spells the ability to critically hit for $49868s2% increased damage and grants Devouring Plague and Vampiric Touch the ability to benefit from haste.
     shadowform = {
         id = 15473,
@@ -503,12 +514,12 @@ spec:RegisterAuras( {
     -- $s2 Shadow damage every $t2 seconds. Priest's party or raid members gain 1% of their maximum mana per 5 sec when the priest deals damage from Mind Blast.
     vampiric_touch = {
         id = 34914,
-        duration = 15,
+        duration = function() return (15 + (set_bonus.tier9_2pc == 1 and 6 or 0)) * (buff.shadowform.up and spell_haste or 1) end,
         max_stack = 1,
+        tick_time = function() return 3 * (buff.shadowform.up and spell_haste or 1) end,
         copy = { 34914, 34916, 34917, 48159, 48160 },
     },
 } )
-
 
 -- Glyphs
 spec:RegisterGlyphs( {
@@ -545,7 +556,6 @@ spec:RegisterGlyphs( {
     [55692] = "smite",
     [55685] = "spirit_of_redemption",
 } )
-
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -659,6 +669,10 @@ spec:RegisterAbilities( {
         texture = 252997,
 
         handler = function ()
+            if talent.shadow_weaving.rank == 3 then
+                addStack("shadow_weaving")
+            end
+            applyDebuff("target", "devouring_plague")
         end,
 
         copy = { 19276, 19277, 19278, 19279, 19280, 25467, 48299, 48300 },
@@ -956,6 +970,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff("inner_focus")
         end,
     },
 
@@ -1063,7 +1078,7 @@ spec:RegisterAbilities( {
         cooldown = 8,
         gcd = "spell",
 
-        spend = 0.17,
+        spend = function() return 0.17 * (set_bonus.tier7_2pc == 1 and 0.90 or 1) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1097,7 +1112,9 @@ spec:RegisterAbilities( {
     -- Assault the target's mind with Shadow energy, causing 45 Shadow damage over 3 sec and slowing their movement speed by 50%.
     mind_flay = {
         id = 15407,
-        cast = 0,
+        cast = function() return 8 * spell_haste end,
+        channeled = true,
+        breakable = true,
         cooldown = 0,
         gcd = "spell",
 
@@ -1108,15 +1125,39 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136208,
 
+        aura = "mind_flay",
+        tick_time = function () return class.auras.mind_flay.tick_time end,
+
+        start = function ()
+            applyDebuff( "target", "mind_flay" )
+            if talent.pain_and_suffering.rank == 3 then
+                applyDebuff("shadow_word_pain")
+            end
+        end,
+
+        tick = function ()
+            if talent.shadow_weaving.rank == 3 then
+                addStack("shadow_weaving")
+            end
+        end,
+
+        breakchannel = function ()
+            removeDebuff( "target", "mind_flay" )
+        end,
+
         handler = function ()
         end,
+
+        copy = { 17311, 17312, 17313, 17314, 18807, 25387, 48155, 48156 }
     },
 
 
     -- Causes an explosion of shadow magic around the enemy target, causing 183 to 197 Shadow damage every 1 sec for 5 sec to all enemies within 10 yards around the target.
     mind_sear = {
         id = 48045,
-        cast = 0,
+        cast = function() return 5 * spell_haste end,
+        channeled = true,
+        breakable = true,
         cooldown = 0,
         gcd = "spell",
 
@@ -1125,6 +1166,20 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 237565,
+
+        aura = "mind_sear",
+        tick_time = function () return class.auras.mind_sear.tick_time end,
+
+        start = function ()
+            applyDebuff( "target", "mind_sear" )
+        end,
+
+        tick = function ()
+        end,
+
+        breakchannel = function ()
+            removeDebuff( "target", "mind_sear" )
+        end,
 
         handler = function ()
         end,
@@ -1246,6 +1301,7 @@ spec:RegisterAbilities( {
         texture = 135987,
 
         handler = function ()
+            applyBuff("power_word_fortitude")
         end,
 
         copy = { 1244, 1245, 2791, 10937, 10938, 25389, 48161 },
@@ -1288,6 +1344,7 @@ spec:RegisterAbilities( {
         texture = 135941,
 
         handler = function ()
+            applyBuff("prayer_of_fortitude")
         end,
 
         copy = { 21564, 25392, 48162 },
@@ -1348,6 +1405,7 @@ spec:RegisterAbilities( {
         texture = 135945,
 
         handler = function ()
+            applyBuff("prayer_of_shadow_protection")
         end,
 
         copy = { 39374, 48170 },
@@ -1368,6 +1426,7 @@ spec:RegisterAbilities( {
         texture = 135946,
 
         handler = function ()
+            applyBuff("prayer_of_spirit")
         end,
 
         copy = { 32999, 48074 },
@@ -1476,6 +1535,27 @@ spec:RegisterAbilities( {
 
 
     -- Increases the target's resistance to Shadow spells by 30 for 10 min.
+    shadowfiend = {
+        id = 34433,
+        cast = 0,
+        cooldown = 180,
+        gcd = "spell",
+
+        spend = 0,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136121,
+
+        handler = function ()
+            applyBuff("shadowfiend")
+        end,
+
+        copy = {},
+    },
+
+
+    -- Increases the target's resistance to Shadow spells by 30 for 10 min.
     shadow_protection = {
         id = 976,
         cast = 0,
@@ -1489,6 +1569,7 @@ spec:RegisterAbilities( {
         texture = 136121,
 
         handler = function ()
+            applyBuff("shadow_protection")
         end,
 
         copy = { 10957, 10958, 25433, 48169 },
@@ -1529,6 +1610,7 @@ spec:RegisterAbilities( {
         texture = 136207,
 
         handler = function ()
+            applyDebuff("target", "shadow_word_pain")
         end,
 
         copy = { 594, 970, 992, 2767, 10892, 10893, 10894, 25367, 25368, 48124, 48125 },
@@ -1550,6 +1632,7 @@ spec:RegisterAbilities( {
         texture = 136200,
 
         handler = function ()
+            applyBuff("shadowform")
         end,
     },
 
@@ -1569,6 +1652,7 @@ spec:RegisterAbilities( {
         texture = 136164,
 
         handler = function ()
+            applyDebuff("silence")
         end,
     },
 
@@ -1605,6 +1689,7 @@ spec:RegisterAbilities( {
         texture = 136230,
 
         handler = function ()
+            applyBuff("vampiric_embrace")
         end,
     },
 
@@ -1624,11 +1709,15 @@ spec:RegisterAbilities( {
         texture = 135978,
 
         handler = function ()
+            if talent.shadow_weaving.rank == 3 then
+                addStack("shadow_weaving")
+            end
+            applyDebuff("target", "vampiric_touch")
         end,
     },
 } )
 
-
+-- Options
 spec:RegisterOptions( {
     enabled = true,
 
@@ -1639,8 +1728,10 @@ spec:RegisterOptions( {
     nameplates = true,
     nameplateRange = 8,
 
-    damage = false,
-    damageExpiration = 6,
+    damage = true,
+    damageExpiration = 3,
+
+    potion = "wild_magic",
 
     package = "Shadow",
     package1 = "Shadow",
@@ -1648,4 +1739,33 @@ spec:RegisterOptions( {
     -- package3 = "",
 } )
 
-spec:RegisterPack( "Shadow", 20230204, [[Hekili:v(u0QnmmmW)OrAY2(gwFjmW7zTOyR2iQRTrwzL8s(2NCldg7THbZzP7oFhCa(aCbujySVRFORV75No0n86qp40TcbUc6VGNnqcVA3UfmKV1gVfZyOjVMxfVTcCZRCupMG5)6PrQqEy8fWTWHa9Gcv9)y4(07ctvDFQiCwyDBFkYT3NYY(0B0foYGRnQEpY0jCnQgC8EfOeohPqZw0RCozFeHI(jvRuYsNAhxriF(6m(p1zk)IKAB7VA0nusC6CTvCCvxYIHAKHV)]] )
+-- Settings
+spec:RegisterSetting("optimize_mind_blast", false, {
+    type = "toggle",
+    name = "Mind Blast: Optimize Use",
+    desc = "When enabled, mind blast will only be recommended if the player's current haste is less than the Mind Blast Breakpoint set below",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 5 ].settings.optimize_mind_blast = val
+    end
+})
+
+spec:RegisterSetting("mind_blast_breakpoint", 820, {
+    type = "range",
+    name = "Mind Blast: Haste Breakpoint",
+    desc = "Sets the haste breakpoint where mind blast will no longer be recommended in favor of mind flay. It is recommended that you run a DPS simulation to determine your breakpoint.",
+    width = "full",
+    min = 0,
+    softMax = 1640,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 5 ].settings.mind_blast_breakpoint = val
+    end
+})
+
+-- Packs
+spec:RegisterPack( "Shadow", 20230204, [[Hekili:nFvBRnooq4FlLfcD565l1PzV7GKc7Y9HBlhLf89zzRyl3iQTLqsoLSe0V9Bg5eBhfBNUW(HJfw3knZZmAMN5LsUN8VKOmQHrEoCE4I5HZFiimC5NcxqIm7LmsKKM(k9f4hQOLW)hTLMjEdpEFHGMHQRf1Qu4ks0MAEH5RvKn(yccjzPKNxsI2YZYynIW0PNa0M8nfNPn2ePIluCZEBsbh)9CHYM83Sx5fCseEKgTjvWGpp7CFAQHlQirL8QSynJQirSk6Mcwg5led8ViTPv4sXoE1l4VCuO4JN8LoG0oxk(nHkloJrnBphWNdrG6ojkf8xMItjr3ytm80xb8SjZSjBQZZdoHgJI2jqBGaQnzTnz5Wwus5vOvwGwHxbiRQLMyEoKraS1pUoC2T3Kjmb(AfulpCyWluSs4J(XfF0lCLxq33)byOfSktaQumfdNWlaUb87JVx37AeJp(DhTVnzLnzHx08H3v08WHgO3rlLCfpn2iQt3EgWPuTj2Wrw6P345sJwB5pK1Yy7aYnCuSSG(sn7A2ZxE0IFAklQzgdiUoqibK4FhOJyAztbf5(OBC71ecI5aNcc6swrr8w4mMZ9A1Qt44nkg9vPayv2eFQGtc0H)9jiEJYOxV89XS80TpRAIQLvUQLZOn)XuH1A5aCaw5gfn1Lt(ZPu25h8QkMkoxKwRpXSF3vZ90fn29ZNQsovikaeR6LMARJhMSVQXo(32shB0DmQ7jTV4(w9hUhHxl1mwoTUWCrtyPO57LnmpjrTMfdr7sTNqlgnNGAUJfZQyLWmcBYJ2KWo8u1qRk3phJJhAgse3mTchtmqlM3JQUAb4iPILkk3q7EQ9achHP4Yg0(83(hBYUfbpem)xVpyzWCBYh6)m6XFGHALbyw3FeaEX0JyCOKXb2hlwJ5FJhqND30bwhwsXBaB11RgSUHBQZyoi7i9sfDpiJi3tI(P9lb5Qn3Vwv6YRrSCjODmLgVP3YgVrvvyRps0xlLG7GnyEWM0avZIf6a7tyYvKZlGS9hSjdL(Sp1OJoOLg8lR)TUu1D881dLwhwVZYmTQEzUCyThke3cYOjXztMah2s(5c0k3anbhXTCb1NAVT3zDN0w03)qVYV7WcV1qjlAVZR5Fm8Q6bJc78bOVCBEQ3EC31SR367NqqCFf3d(4YatnYZdM2UL31Vz)6FcBTHo0vxnB2iOp85NghSW7rC(uL(rIjNj1o9Wdo)Xmxc4OdQgdYUbLoWMA7OdhUDQRN5V40QPxA6J)Gj8jOo9YOdVs04kVYN3D16vNu92kXjWaR58ZKR))W9A63GaAZC6v08NmsRnBfW3)IL)DQ7VvWqi)3]] )
+
+-- Hooks
+spec:RegisterHook( "reset_precast", function ()
+end)
