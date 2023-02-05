@@ -27,7 +27,7 @@ spec:RegisterResource( Enum.PowerType.ComboPoints, {
         stop = function () return state.time_to_sht[5] == 0 or state.time_to_sht[5] == 3600 end,
     },
 
-    shuriken_tornado = {
+    --[[ shuriken_tornado = {
         aura = "shuriken_tornado",
         last = function ()
             local app = state.buff.shuriken_tornado.applied
@@ -40,8 +40,9 @@ spec:RegisterResource( Enum.PowerType.ComboPoints, {
 
         interval = 0.95,
         value = function () return state.active_enemies + ( state.buff.shadow_blades.up and 1 or 0 ) end,
-    },
+    }, ]]
 } )
+
 
 -- Talents
 spec:RegisterTalents( {
@@ -597,6 +598,14 @@ spec:RegisterHook( "reset_precast", function( amt, resource )
         state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
     end
 
+    if buff.shuriken_tornado.up then
+        local moment = buff.shuriken_tornado.expires
+        while( moment > query_time ) do
+            state:QueueAuraEvent( "shuriken_tornado", class.abilities.shuriken_storm.handler, moment, "AURA_PERIODIC" )
+            moment = moment - 1
+        end
+    end
+
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
     if buff.cold_blood.up then setCooldown( "cold_blood", action.cold_blood.cooldown ) end
@@ -624,6 +633,12 @@ spec:RegisterHook( "runHandler", function( ability )
     end
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
+end )
+
+spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+    if powerType == "COMBO_POINTS" then
+        Hekili:ForceUpdate( powerType, true )
+    end
 end )
 
 spec:RegisterCycle( function ()
@@ -1047,6 +1062,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "shuriken_tornado" )
+
+            local moment = buff.shuriken_tornado.expires
+            while( moment > query_time ) do
+                state:QueueAuraEvent( "shuriken_tornado", class.abilities.shuriken_storm.handler, moment, "AURA_PERIODIC" )
+                moment = moment - 1
+            end
         end,
     },
 
