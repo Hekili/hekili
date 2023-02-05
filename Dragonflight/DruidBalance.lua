@@ -1647,19 +1647,18 @@ spec:RegisterAbilities( {
 
     -- Talent: Celestial bodies align, maintaining both Eclipses and granting $s1% haste for $d.
     celestial_alignment = {
-        id = function() return talent.syzygy.enabled and 383410 or 194223 end,
-        known = 194223,
+        id = 194223,
         cast = 0,
         cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
         gcd = "off",
         school = "astral",
 
         talent = "celestial_alignment",
+        notalent = "incarnation",
         startsCombat = false,
 
         toggle = "cooldowns",
 
-        notalent = "incarnation",
 
         handler = function ()
             applyBuff( "celestial_alignment" )
