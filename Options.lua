@@ -8650,7 +8650,7 @@ function Hekili:GenerateProfile()
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then
             if talents then talents = format( "%s\n    %s = %d/%d", talents, k, v.rank, v.max )
-            else talents = k end
+            else talents = format( "%s = %d/%d", k, v.rank, v.max ) end
         end
     end
 
