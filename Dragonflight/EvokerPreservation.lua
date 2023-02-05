@@ -474,9 +474,9 @@ spec:RegisterAbilities( {
         min_range = 0,
         max_range = 25,
 
-        handler = function ()
-            removeStack("essence_burst")
-            if talent.energy_loop.enabled then gain(0.0277 * mana.max, "mana") end
+        start = function ()
+            removeStack( "essence_burst" )
+            if talent.energy_loop.enabled then gain( 0.0277 * mana.max, "mana" ) end
         end,
     },
     dream_breath = {
@@ -550,7 +550,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            removeStack("essence_burst")
+            removeStack( "essence_burst" )
             if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
@@ -879,7 +879,6 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-
         debuff = "all_absorbs",
 
         usable = function() return settings.use_unravel, "use_unravel setting is OFF" end,
@@ -888,6 +887,14 @@ spec:RegisterAbilities( {
             removeDebuff( "all_absorbs" )
         end,
     }
+} )
+
+
+
+spec:RegisterSetting( "experimental_msg", nil, {
+    type = "description",
+    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk.",
+    width = "full",
 } )
 
 spec:RegisterSetting( "use_deep_breath", true, {
@@ -905,26 +912,25 @@ spec:RegisterSetting( "use_unravel", false, {
     width = "full",
 } )
 
-spec:RegisterSetting( "use_early_chain", false, {
-    name = "Early Chain |T4622451:0|t Disintegrate",
-    type = "toggle",
-    desc = "If checked, the default priority may recommend |T4622451:0|t Disintegrate in the middle of a Disintegrate channel.",
-    width = "full"
+
+spec:RegisterOptions( {
+    enabled = true,
+
+    aoe = 3,
+
+    nameplates = true,
+    nameplateRange = 30,
+
+    damage = true,
+    damageDots = true,
+    damageExpiration = 8,
+    damageOnScreen = true,
+    damageRange = 30,
+
+    potion = "potion_of_spectral_intellect",
+
+    package = "Preservation",
 } )
 
-spec:RegisterSetting( "use_clipping", false, {
-    name = "Clip |T4622451:0t|t Disintegrate",
-    type = "toggle",
-    desc = "If checked, the default priority may recommend interrupting a |T4622451:0|t Disintegrate channel when another spell is ready.",
-    width = "full",
-} )
 
-spec:RegisterPriority( "Preservation", 20221116,
--- Notes
-[[
-
-]],
--- Priority
-[[
-
-]] )
+spec:RegisterPack( "Preservation", 20230205, [[Hekili:LwvtVjomq0Fl9svRAvwYhTL9q3d7PTCaTsPNDSjzcXQH4S2ou1kK)TVJDOGjb6UOkeOW438EJh)ghsi5zsAbtdK5rtIINen5UGWhcNgFhjv)wlqsBz5VWwIp0WwH)(BjOa5AMMlASl(wTGvyjrj6K5ias6IoET(PgYIJZCmjL1PRess6VGx41CsAfVOa6tau5K0NR4kd1(LzOBladvuI)p3kSHwZvAC5sH0q7zjaRgPOKxJ1qpkvqReYfRwW03843wudkfVzzMOmtxbzlKIM3bZmZSTOrm)PdQR9dKJvki5VBZRSgBa(l21izRHdWxaqlYmW0v(HBfUQ2pxfKX1WkLFWsUe2M9TWQwXRGmtlEm8wE5JL8Lv6mjSIXBu)im5MCMsNP5hwsNGHOXmm9SiiEmbrNfbjJj4OPxjwdsl2vI1yt)GElhp(0Wsj6PSiw0vwgGNPqtoQyNuPd6AV8Ql6ZCZg36o(cgj51(exZxV781s8)fd(eWEVd30kTK)cSV2V0l9cXR40c(KYo2SBGGK(kt2GyvK0NWMLudfgA0aBEGzgoE1c5K5Hj3pLK6I6gCHswxTgFCUBqUpnsQZhtsHgg66li)KOrn9bmYxpaCSp4T(8bqs8H457ha7oFy9ZbdqC)bA9XCXaqpybTpYo8E2nCxj52DfZg2ZPzO)Wqdtm0Bm0DNFiB7CN2UhQX0VQgt)mjISs89VQerFMeXwjcN8v14eSN4ypCa77jQ31VxpNZ3Lt0jZ5OZWg6Lg6vg6fg62BbOB2yOJNgpSAn0R9mKExw4QH4twdNPm71W)EdNgj)JEJBJn6wHpOZ)weKoT99zBF91Ob8J)YSdNz(4d5Vd]] )

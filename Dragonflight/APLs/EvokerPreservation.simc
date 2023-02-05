@@ -1,0 +1,16 @@
+actions.precombat+=/blessing_of_the_bronze
+
+actions+=/quell
+actions+=/cauterizing_flame
+actions+=/unravel
+actions+=/deep_breath
+actions+=/potion
+actions+=/use_items
+actions+=/fire_breath,empower_to=1,if=fight_remains>14+cast_time
+actions+=/fire_breath,empower_to=2,if=fight_remains>8+cast_time
+actions+=/fire_breath,empower_to=3,if=fight_remains>2+cast_time
+actions+=/fire_breath,empower_to=4,if=fight_remains>cast_time
+actions+=/hover,if=moving
+actions+=/disintegrate,if=buff.essence_burst.up&(!moving|buff.hover.remains>cast_time)
+actions+=/living_flame,if=!moving|buff.hover.remains>cast_time
+actions+=/azure_strike,if=moving&buff.hover.down
