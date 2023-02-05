@@ -85,9 +85,19 @@ local death_events = {
     SPELL_INSTAKILL         = true,
 }
 
+local eclipse_lunar_last_applied = 0
+local eclipse_solar_last_applied = 0
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= state.GUID then
         return
+    end
+
+    if subtype == "SPELL_AURA_APPLIED" then
+        if spellID == 48518 then
+            eclipse_lunar_last_applied = GetTime()
+        elseif spellID == 48517 then
+            eclipse_solar_last_applied = GetTime()
+        end
     end
 
     if state.glyph.shred.enabled then
@@ -178,6 +188,8 @@ end)
 local predatorsswiftness_spell_assigned = false
 local avg_rage_amount = rage_amount()
 spec:RegisterHook( "reset_precast", function()
+    stat.spell_haste = stat.spell_haste * (1 + 0.01 * talent.celestial_focus.rank)
+
     rip_tracker:reset()
     set_last_finisher_cp(LastFinisherCp)
 
@@ -194,6 +206,8 @@ spec:RegisterHook( "reset_precast", function()
 
     avg_rage_amount = rage_amount()
 
+    buff.eclipse_lunar.last_applied = eclipse_lunar_last_applied
+    buff.eclipse_solar.last_applied = eclipse_solar_last_applied
 end )
 
 spec:RegisterStateExpr("rage_gain", function()
@@ -644,6 +658,7 @@ spec:RegisterAuras( {
         id = 48518,
         duration = 15,
         max_stack = 1,
+        last_applied = 0,
         copy = "lunar_eclipse",
     },
     -- Wrath damage bonus.
@@ -651,7 +666,13 @@ spec:RegisterAuras( {
         id = 48517,
         duration = 15,
         max_stack = 1,
+        last_applied = 0,
         copy = "eclipse_solar",
+    },
+    eclipse = {
+        alias = { "eclipse_lunar", "eclipse_solar" },
+        aliasType = "buff",
+        aliasMode = "first"
     },
     -- Gain $/10;s1 rage per second.  Base armor reduced.
     enrage = {
@@ -2247,7 +2268,7 @@ spec:RegisterAbilities( {
     -- Causes 127 to 155 Arcane damage to the target.
     starfire = {
         id = 2912,
-        cast = 3.5,
+        cast = function() return (3.5 * haste) - (talent.starlight_wrath.rank * 0.1) end,
         cooldown = 0,
         gcd = "spell",
 
@@ -2534,7 +2555,7 @@ spec:RegisterAbilities( {
     -- Causes 18 to 21 Nature damage to the target.
     wrath = {
         id = 5176,
-        cast = 1.5,
+        cast = function() return ((buff.predators_swiftness.up and 0 or 2) * haste) - (talent.starlight_wrath.rank * 0.1) end,
         cooldown = 0,
         gcd = "spell",
 

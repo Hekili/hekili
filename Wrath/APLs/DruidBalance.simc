@@ -1,0 +1,22 @@
+# APL v3.4.1-1.6.0 #
+actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
+actions.precombat+=/thorns,if=!up
+actions.precombat+=/moonkin_form,if=!up
+actions.precombat+=/potion
+
+actions+=/run_action_list,name=lunar,if=buff.eclipse_lunar.remains>action.starfire.cast_time
+actions+=/run_action_list,name=solar,if=buff.eclipse_solar.remains>action.wrath.cast_time
+actions+=/run_action_list,name=st
+
+actions.st+=/faerie_fire,if=talent.improved_faerie_fire.enabled&!ticking&group_members>=5
+actions.st+=/force_of_nature,if=!buff.eclipse.up
+actions.st+=/starfall,if=!buff.eclipse.up
+actions.st+=/typhoon,if=active_enemies>1&target.distance<30
+actions.st+=/hurricane,if=active_enemies>1
+actions.st+=/insect_swarm,if=!(buff.eclipse_lunar.down|buff.eclipse_lunar.remains>7)&!ticking
+actions.st+=/moonfire,if=!up&(moving|!buff.eclipse.up&buff.eclipse_solar.last_applied>=buff.eclipse_lunar.last_applied)
+## TODO: Engineering tinkers.
+## actions+=/hyperspeed_accelerators,if=buff.eclipse_lunar.up
+actions.st+=/use_items,if=buff.eclipse_lunar.up
+actions.st+=/wrath,if=buff.eclipse_solar.remains>cast_time|(!buff.eclipse.up&buff.eclipse_lunar.last_applied>=buff.eclipse_solar.last_applied)
+actions.st+=/starfire,if=buff.eclipse_lunar.remains>cast_time|(!buff.eclipse.up&buff.eclipse_solar.last_applied>=buff.eclipse_lunar.last_applied)
