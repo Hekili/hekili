@@ -206,8 +206,16 @@ spec:RegisterHook( "reset_precast", function()
 
     avg_rage_amount = rage_amount()
 
-    buff.eclipse_lunar.last_applied = eclipse_lunar_last_applied
-    buff.eclipse_solar.last_applied = eclipse_solar_last_applied
+    if query_time - eclipse_lunar_last_applied < 30 then
+        buff.eclipse_lunar.last_applied = eclipse_lunar_last_applied
+    else
+        buff.eclipse_lunar.last_applied = 0
+    end
+    if query_time - eclipse_solar_last_applied < 30 then
+        buff.eclipse_solar.last_applied = eclipse_solar_last_applied
+    else
+        buff.eclipse_solar.last_applied = 0
+    end
 end )
 
 spec:RegisterStateExpr("rage_gain", function()
@@ -1685,6 +1693,7 @@ spec:RegisterAbilities( {
         texture = 136045,
 
         handler = function ()
+            applyDebuff("insect_swarm")
             removeBuff( "clearcasting" )
         end,
     },
