@@ -291,6 +291,48 @@ all:RegisterAbilities( {
 
         proc = "damage_and_healing",
 
+        auras = {
+            ace_of_air = {
+                id = 382860,
+                duration = 3600,
+                max_stack = 1
+            },
+            two_of_air = {
+                id = 382861,
+                duration = 3600,
+                max_stack = 1
+            },
+            three_of_air = {
+                id = 382862,
+                duration = 3600,
+                max_stack = 1
+            },
+            four_of_air = {
+                id = 382863,
+                duration = 3600,
+                max_stack = 1
+            },
+            five_of_air = {
+                id = 382864,
+                duration = 3600,
+                max_stack = 1
+            },
+            six_of_air = {
+                id = 382865,
+                duration = 3600,
+                max_stack = 1
+            },
+            seven_of_air = {
+                id = 382866,
+                duration = 3600,
+                max_stack = 1
+            },
+            eight_of_air = {
+                id = 382867,
+                duration = 3600,
+                max_stack = 1
+            },
+        }
     },
     darkmoon_deck_inferno = {
         cast = 0,
@@ -300,6 +342,49 @@ all:RegisterAbilities( {
         item = 198086,
 
         proc = "damage",
+
+        auras = {
+            ace_of_fire = {
+                id = 382835,
+                duration = 3600,
+                max_stack = 1
+            },
+            two_of_fire = {
+                id = 382836,
+                duration = 3600,
+                max_stack = 1
+            },
+            three_of_fire = {
+                id = 382837,
+                duration = 3600,
+                max_stack = 1
+            },
+            four_of_fire = {
+                id = 382838,
+                duration = 3600,
+                max_stack = 1
+            },
+            five_of_fire = {
+                id = 382839,
+                duration = 3600,
+                max_stack = 1
+            },
+            six_of_fire = {
+                id = 382840,
+                duration = 3600,
+                max_stack = 1
+            },
+            seven_of_fire = {
+                id = 382841,
+                duration = 3600,
+                max_stack = 1
+            },
+            eight_of_fire = {
+                id = 382842,
+                duration = 3600,
+                max_stack = 1
+            }
+        }
     },
     darkmoon_deck_rime = {
         cast = 0,
@@ -312,6 +397,49 @@ all:RegisterAbilities( {
         end,
 
         proc = "damage",
+
+        auras = {
+            ace_of_frost = {
+                id = 382844,
+                duration = 3600,
+                max_stack = 1
+            },
+            two_of_frost = {
+                id = 382845,
+                duration = 3600,
+                max_stack = 1
+            },
+            three_of_frost = {
+                id = 382846,
+                duration = 3600,
+                max_stack = 1
+            },
+            four_of_frost = {
+                id = 382847,
+                duration = 3600,
+                max_stack = 1
+            },
+            five_of_frost = {
+                id = 382848,
+                duration = 3600,
+                max_stack = 1
+            },
+            six_of_frost = {
+                id = 382849,
+                duration = 3600,
+                max_stack = 1
+            },
+            seven_of_frost = {
+                id = 382850,
+                duration = 3600,
+                max_stack = 1
+            },
+            eight_of_frost = {
+                id = 382851,
+                duration = 3600,
+                max_stack = 1
+            },
+        }
     },
     darkmoon_deck_watcher = {
         cast = 0,
