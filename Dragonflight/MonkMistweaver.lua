@@ -326,7 +326,8 @@ spec:RegisterAuras( {
     secret_infusion_critical_strike = {
         id = 388498,
         duration = 10,
-        max_stack = 1
+        max_stack = 1,
+        copy = "secret_infusion_crit"
     },
     secret_infusion_haste = {
         id = 388497,
@@ -377,6 +378,11 @@ spec:RegisterAuras( {
         id = 388686,
         duration = 30,
         max_stack = 1
+    },
+    teachings_of_the_monastery = {
+        id = 202090,
+        duration = 10,
+        max_stack = 3
     },
     thunder_focus_tea = {
         id = 116680,
@@ -431,6 +437,22 @@ spec:RegisterAuras( {
 
 -- Abilities
 spec:RegisterAbilities( {
+    -- Strike with a blast of Chi energy, dealing 1,429 Physical damage and granting Shuffle for 3 sec.
+    blackout_kick = {
+        id = 100784,
+        cast = 0,
+        cooldown = 3,
+        hasteCD = true,
+        gcd = "spell",
+        school = "physical",
+
+        startsCombat = true,
+
+        handler = function ()
+            removeBuff( "teachings_of_the_monastery" )
+        end,
+    },
+
     enveloping_mist = {
         id = 124682,
         cast = 2,
@@ -445,6 +467,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "enveloping_mist" )
+            if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_versatility" ) end
         end,
     },
 
@@ -461,7 +484,8 @@ spec:RegisterAbilities( {
         texture = 1360978,
 
         handler = function ()
-            applyBuff("essence_font")
+            applyBuff( "essence_font" )
+            if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
     },
 
@@ -536,7 +560,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff("life_cocoon")
+            applyBuff( "life_cocoon" )
         end,
     },
 
@@ -552,7 +576,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff("mana_tea")
+            applyBuff( "mana_tea" )
         end,
     },
 
@@ -619,6 +643,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "renewing_mist" )
+            if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
     },
 
@@ -678,6 +703,29 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Talent: Kick upwards, dealing 3,359 Physical damage.
+    rising_sun_kick = {
+        id = 107428,
+        cast = 0,
+        cooldown = function() return ( buff.thunder_focus_tea.up and 3 or 12 ) * haste end,
+        gcd = "spell",
+        school = "physical",
+
+        talent = "rising_sun_kick",
+        startsCombat = true,
+
+        handler = function ()
+            if state.spec.mistweaver then
+                if talent.rapid_diffusion.enabled then
+                    if solo then applyBuff( "renewing_mist", 3 * talent.rapid_diffusion.rank )
+                    else active_dot.renewing_mist = max( group_members, active_dot.renewing_mist + 1 ) end
+                end
+                if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_versatility" ) end
+                removeStack( "thunder_focus_tea" )
+            end
+        end,
+    },
+
     -- Draws in all nearby clouds of mist, healing up to 3 nearby allies for 1,220 per cloud absorbed. A cloud of mist is generated every 8 sec while in combat.
     sheiluns_gift = {
         id = 399491,
@@ -724,7 +772,7 @@ spec:RegisterAbilities( {
         texture = 606550,
 
         handler = function ()
-            applyBuff("soothing_mist")
+            applyBuff( "soothing_mist" )
         end,
     },
 
@@ -756,7 +804,28 @@ spec:RegisterAbilities( {
         nobuff = "thunder_focus_tea",
 
         handler = function ()
-            applyBuff( "thunder_focus_tea", nil, 2 )
+            addStack( "thunder_focus_tea", nil, talent.focused_thunder.enabled and 2 or 1 )
+        end,
+    },
+
+    -- Strike with the palm of your hand, dealing 568 Physical damage. Reduces the remaining cooldown on your Brews by 1 sec.
+    tiger_palm = {
+        id = 100780,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+        school = "physical",
+
+        startsCombat = true,
+
+        handler = function ()
+            if talent.eye_of_the_tiger.enabled then
+                applyDebuff( "target", "eye_of_the_tiger" )
+                applyBuff( "eye_of_the_tiger" )
+            end
+            if talent.teachings_of_the_monastery.enabled then
+                addStack( "teachings_of_the_monastery" )
+            end
         end,
     },
 
@@ -773,6 +842,7 @@ spec:RegisterAbilities( {
         texture = 1360980,
 
         handler = function ()
+            if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_mastery" ) end
         end,
     },
 
@@ -786,7 +856,7 @@ spec:RegisterAbilities( {
         texture = 651940,
 
         handler = function ()
-            applyBuff("zen_focus_tea")
+            applyBuff( "zen_focus_tea" )
         end,
     },
 
@@ -830,4 +900,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Mistweaver", 20230123, [[Hekili:9A1xVnkoq8Vn9LTInaDV2kLSs7(0Tv62xOpBJbgcEbSr2MgfPk(SFJHMGXjTPTN09qcjZ8ZZF(ndZysi5rssbZaKFhTkkEvyuCquC4nr3tsm77asshlVMTf)HG1IF)pCTzhWEcuwv7BKScRj0YEvoQMKK1ZBm)sqYoVDVdX2b5O4BxrsQ4ffWewqNtsESIRhsTFydPV45Huzj()CdxkgsBq)JQlLQH0)gQ5n8amquYsEd6(ju6GofKlBZyMVS5RDYXt(W50LxXPz9kT51vVdZ1HhoQhLIXptrRyIcQ2O41GRYEnq5gOv7kmRrklOL9Q9lKcknOQ5ITUsB4BRmA6F6l22ccJRQsUcgnLRqMihWWG1qZznnlSpBlvwsXqmVEr44XiwlZGgUaW8r225QWAt60FPwQ)ABxWgMeU2M65MnHxZl3yb8eqbb0Yb933eFztGpFDlSo2HXd02sHPQxuakAPmVxtnaZtVIRrIKQ7f0AmF90M1G9sYEZOoR)Y6lldqRGvyXw9invb0wPGPnGApEk8aBcVkxkBkK7ebE2pqbTmUqVomYZvZ9mNi2RtBkV4BXSQJ10(UdR1Xp)8LaEi8ICjsSSDoM8m8Vtf8Lt5L)VRZ8Hz9(URUOrpLFNL7rWtk0DCHWg75kg2IBJfsco)sJyMNors2XuwyAsYVA7KkdumKEJ3GNGHhijJ)Yo0dTp(43JZqbblRbki)KKKRWbakoBAC0CYmKUEZqA8HPu4aw)kbXGb0N1AEviRTIFvBD5kXq6vtj)B4YffyRdVzKwEr7HkLBiGy(MpMXQMhO)Yf0zRGUWXtJw4qP41P3L(iYfSp7Te6NNihFJDif5TWrg9sduqogHg9)gh)FjPWinEi95NhsV0bCtoNCBE43urSakz9nNwjpzJ7BvjpUb(C1Wzw9Wgzpuly35n0Vf)6TX(T6KpUb3d0TUGwUr3d5DlIp3n8EaV3f40gFpeHRweAUxbWh57Fe33NMqmTB3wgNBd9UhW0Gu601kTJsTW)at)(u(rBM60oElVt61olvf9EEFk(YVyo6BwVPsIxF(h8AMGvZgLs(3d]] )
+spec:RegisterPack( "Mistweaver", 20230205, [[Hekili:9AvtVTnoq0)n9YgO12knPbW2aBp1gG2lQNjfT0ilUIIuGKQUgWq)27qj)bfTtSRxG9qIT4848X7nEgrMs(bjjNzbY3Nnzw8Kzt(y00xM(u8JKe72gGK0WYQyRXViz14))g3y3aSFcANPTcfl35cJQvNHMjjRA5c7xLKvH(fb1az4ZppHKuYZZHbqGjJK8JsUPl19hRlDFi7svf4ZzwUs2LkWaJMlu6U0VavCbpcZaTQGlW4oGYe1OHmv9kM9Vw83nQ(B(6LSLvYPRA1g7BBEdwKDVE0oEkM)mnTKjZPgRMxb(gBnaLBHAJ)HRekvoTOvVD0PG2a6kUCT)Pc(6sRH(VT5RRbP13ubxd9UY)qMmdW0GjOzmHyK)zRPQckMIzvJsNagX5zgi4saRhvDJVbNpPdpsDu)do5Fbtbp4k9m7IPpWlw4a8tGcsOMdMLlIVUlWpFBpmp2JXJmoPWw2kZbnTqL1AOwGfyxZnirsnTsAfwVbwxjWEjvRT3MlERAlkIqVGkSCTPNMkbATsYmwqVnQT5dzkLixTrgf46inuZ4sZY1z5r1SFfeQt9mNDCqN2qDXxJvvdtuFlPLXI1X84D7UgW9548z(ejkBxIjVa)7PG7VvajCt35Ey9R60Z53tNhqWdgmnCP0L7zAg2I7Yfsco4YGy8hlTHPDWmKKVw3O0wiVl9XGbprDVss6)MBAh6F8JV3p8eKSvciN8zssMghaO5SHXrNkMU05l6sJpmLcNSgQeelMq3R3cuiNVIFtFDDLOl9ddf)7eYrcSlGp2tl7TEqP8tbeZhdX0RAbGEYh0fvqF44TrpCqkEB6DCmM5doK9gd9)mrETHjDPl7s3pq5)n(9UkO(rqyNa2i0LUBxx61UWXkeVYmp154GVbbmhkyTIZvXZ22(EQ4XTVxs)oXQh2ghGAe7EA787XVbBRFVU4JBVda9SpOXBZdq(Pr5N)29aGV4dCyBFaIPtgLA(R)drE7J3womDyyVUtgp1gg8oaddrPdVlPBmQd(FWKV7kog7qN2X3W7SETlsvZULFpfF9Fy2hBwRTuHVZ8)WRyswfR)uYVp]] )
