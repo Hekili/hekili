@@ -2383,6 +2383,7 @@ spec:RegisterAbilities( {
 
             if talent.danse_macabre.enabled then applyBuff( "danse_macabre" ) end
             if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows" ) end
+            if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
 
@@ -2602,16 +2603,16 @@ spec:RegisterAbilities( {
             applyBuff( "stealth" )
 
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
-            if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
-
-            if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
-            if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
-
             if talent.invigorating_shadowdust.enabled then
                 for name, cd in pairs( cooldown ) do
                     if cd.remains > 0 then reduceCooldown( name, 15 * talent.invigorating_shadowdust.rank ) end
                 end
             end
+            if talent.premeditation.enabled then applyBuff( "premeditation" ) end
+            if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+
+            if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
+            if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
         end,
     },
 
