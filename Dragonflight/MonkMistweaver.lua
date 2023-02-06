@@ -879,7 +879,6 @@ spec:RegisterAbilities( {
 } )
 
 
-
 spec:RegisterOptions( {
     enabled = true,
 
