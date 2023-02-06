@@ -206,6 +206,7 @@ spec:RegisterHook( "reset_precast", function()
 
     avg_rage_amount = rage_amount()
 
+    print("query_time["..tostring(query_time).."], eclipse_lunar_last_applied["..tostring(eclipse_lunar_last_applied).."], eclipse_solar_last_applied["..tostring(eclipse_solar_last_applied).."]")
     if query_time - eclipse_lunar_last_applied < 30 then
         buff.eclipse_lunar.last_applied = eclipse_lunar_last_applied
     else
