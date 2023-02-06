@@ -4,23 +4,35 @@ actions.precombat+=/thorns,if=!up
 actions.precombat+=/moonkin_form,if=!up
 actions.precombat+=/potion
 
+actions+=/hyperspeed_accelerators,if=buff.eclipse_lunar.up
 actions+=/call_action_list,name=init
-actions+=/run_action_list,name=st
+actions+=/run_action_list,name=aoe,if=active_enemies>3
+actions+=/run_action_list,name=spam,if=variable.spam_now
+actions+=/run_action_list,name=fish,if=variable.fish_now
 
-actions.init+=/variable,name=lunar_fish_now,value=!buff.eclipse.up&buff.eclipse_solar.last_applied>=buff.eclipse_solar.last_applied
-actions.init+=/variable,name=lunar_spam_now,value=!variable.lunar_fish_now&buff.eclipse_lunar.remains>action.starfire.cast
-actions.init+=/variable,name=solar_fish_now,value=!buff.eclipse.up&buff.eclipse_solar.last_applied>=buff.eclipse_solar.last_applied
-actions.init+=/variable,name=solar_spam_now,value=!variable.solar_fish_now&buff.eclipse_solar.remains>action.wrath.cast
+actions.init+=/variable,name=lunar_spam_now,value=buff.eclipse_lunar.up&buff.eclipse_lunar.remains>action.starfire.cast
+actions.init+=/variable,name=solar_spam_now,value=buff.eclipse_solar.up&buff.eclipse_solar.remains>action.wrath.cast
+actions.init+=/variable,name=spam_now,value=variable.lunar_spam_now|variable.solar_spam_now
+actions.init+=/variable,name=fish_now,value=!variable.lunar_spam_now&!variable.solar_spam_now
+actions.init+=/variable,name=lunar_can_proc,value=buff.eclipse_lunar.last_applied=0|query_time-buff.eclipse_lunar.last_applied>=30
+actions.init+=/variable,name=solar_can_proc,value=buff.eclipse_solar.last_applied=0|query_time-buff.eclipse_solar.last_applied>=30
+actions.init+=/variable,name=lunar_fish_now,value=variable.fish_now&variable.lunar_can_proc
+actions.init+=/variable,name=solar_fish_now,value=variable.fish_now&variable.solar_can_proc
 
-actions.st+=/faerie_fire,if=!up&!buff.eclipse.up&(talent.improved_faerie_fire.enabled|group_members>=5)
-actions.st+=/force_of_nature,if=!buff.eclipse.up
-actions.st+=/starfall,if=!buff.eclipse.up
-actions.st+=/typhoon,if=!buff.eclipse.up&active_enemies>1&target.distance<30
-actions.st+=/hurricane,if=!buff.eclipse.up&active_enemies>1
-actions.st+=/moonfire,if=(!debuff.moonfire.up&moving)|(variable.lunar_fish_now&debuff.moonfire.remains<3)
-actions.st+=/insect_swarm,if=!debuff.insect_swarm.up&(!buff.eclipse_lunar.up|buff.eclipse_lunar.remains>7)
+actions.fish+=/moonfire,if=!debuff.moonfire.up&moving
+actions.fish+=/force_of_nature
+actions.fish+=/starfall
+actions.fish+=/faerie_fire,if=!up&(talent.improved_faerie_fire.enabled|group_members>=5|moving)
+actions.fish+=/insect_swarm,if=!debuff.insect_swarm.up
+actions.fish+=/moonfire,if=!debuff.moonfire.up&variable.lunar_fish_now&debuff.moonfire.remains<3
+actions.fish+=/wrath,if=variable.lunar_fish_now
+actions.fish+=/starfire,if=variable.solar_fish_now
+
+actions.spam+=/use_items,if=variable.lunar_spam_now
 ## TODO: Engineering tinkers.
-## actions+=/hyperspeed_accelerators,if=buff.eclipse_lunar.up
-actions.st+=/use_items,if=buff.eclipse_lunar.up
-actions.st+=/wrath,if=variable.lunar_fish_now|variable.solar_spam_now
-actions.st+=/starfire,if=variable.solar_fish_now|variable.lunar_spam_now
+actions+=/hyperspeed_accelerators,if=buff.eclipse_lunar.up
+actions.spam+=/insect_swarm,if=!debuff.insect_swarm.up&(!buff.eclipse_lunar.up|buff.eclipse_lunar.remains>7)
+actions.spam+=/wrath,if=variable.solar_spam_now
+actions.spam+=/starfire,if=variable.lunar_spam_now
+
+actions.aoe+=/hurricane
