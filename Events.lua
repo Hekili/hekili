@@ -772,19 +772,21 @@ do
         for i=0,19,1 do
             local tinker = state.tinker[i]
             if tinker ~= nil then
-                local tinkerItemID = GetInventoryItemID( "player", tinker.slotId )
-                if tinkerItemID then
-                    local isUsable = IsUsableItem( tinkerItemID )
+                tinker.name = nil
+                tinker.spell = 0
+                tinker.item = nil
+                tinker.texture = 0
+
+                local tinkerItem = GetInventoryItemID( "player", tinker.slotId )
+                if tinkerItem then
+                    local isUsable = IsUsableItem( tinkerItem )
                     if isUsable then
-                        local tinkerName, tinkerSpell = GetItemSpell( tinkerItemID )
+                        local tinkerName, tinkerSpell = GetItemSpell( tinkerItem )
+                        local tinkerTexture = select( 10, GetItemInfo( tinkerItem ) )
+                        tinker.item = tinkerItem
                         tinker.name = tinkerName
                         tinker.spell = tinkerSpell
-                        local tinkerAction = state.action[tinker.spell]
-                        if tinkerAction then
-                            local tinkerItemTextureID = select( 10, GetItemInfo( tinkerItemID ) )
-                            tinkerAction.item = tinkerItemID
-                            tinkerAction.texture = tinkerItemTextureID
-                        end
+                        tinker.texture = tinkerTexture
                     end
                 end
             end
