@@ -715,7 +715,7 @@ spec:RegisterAuras( {
     tigers_fury = {
         id = 5217,
         duration = function() return talent.predator.enabled and 15 or 10 end,
-        multiplier = function() return 1.15 + state.conduit.carnivorous_instinct.mod * 0.01 end,
+        multiplier = function() return 1.15 + state.conduit.carnivorous_instinct.mod * 0.01 + state.talent.carnivorous_instinct.rank * 0.06 end,
     },
     -- Talent: Your next finishing move restores $391874s1 combo $Lpoint:points;.
     -- https://wowhead.com/beta/spell=391873
