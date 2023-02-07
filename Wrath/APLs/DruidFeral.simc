@@ -62,7 +62,6 @@ actions.cat+=/dire_bear_form,if=bearweaving_enabled&energy.current<=variable.wea
 actions.cat+=/gift_of_the_wild,if=variable.flowerweaving_enabled&energy.current<=variable.flowershift_energy&!buff.clearcasting.up&(!variable.rip_refresh_pending|debuff.rip.remains>=variable.flower_end)&!buff.berserk.up&!variable.tf_expected_before_flower_end&mana.pct>settings.min_weave_mana
 
 actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<40
-actions.cat_aoe+=/hyperspeed_acceleration,use_off_gcd=1
 actions.cat_aoe+=/berserk,if=cooldown.tigers_fury.remains>=15
 actions.cat_aoe+=/swipe_cat,if=buff.clearcasting.up
 actions.cat_aoe+=/savage_roar,if=!up
