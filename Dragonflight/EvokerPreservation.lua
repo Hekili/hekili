@@ -362,26 +362,6 @@ end
 
 -- Abilities
 spec:RegisterAbilities( {
-    azure_strike = {
-        id = 362969,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        minRange = 0,
-        maxRange = 25,
-
-        damage = function () return stat.spell_power * 0.755 end,
-        spell_targets = function() return talent.protracted_talons.enabled and 3 or 2 end,
-
-        handler = function ()
-        end,
-    },
     cauterizing_flame = {
         id = 374251,
         cast = 0,
@@ -425,37 +405,6 @@ spec:RegisterAbilities( {
         handler = function ()
             if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
-    },
-    deep_breath = {
-        id = function () return buff.recall.up and 371807 or 357210 end,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-
-        startsCombat = true,
-
-        toggle = "cooldowns",
-
-        min_range = 15,
-        max_range = 50,
-
-        damage = function () return 2.30 * stat.spell_power end,
-
-        usable = function() return settings.use_deep_breath, "settings.use_deep_breath is disabled" end,
-
-        handler = function ()
-            if buff.recall.up then
-                removeBuff( "recall" )
-            else
-                setCooldown( "global_cooldown", 6 ) -- TODO: Check.
-                applyBuff( "recall", 9 )
-                buff.recall.applied = query_time + 6
-            end
-
-            if talent.terror_of_the_skies.enabled then applyDebuff( "target", "terror_of_the_skies" ) end
-        end,
-
-        copy = { "recall", 371807, 357210 },
     },
     disintegrate = {
         id = 356995,
@@ -628,22 +577,6 @@ spec:RegisterAbilities( {
 
         copy = { 382266, 357208 }
     },
-    landslide = {
-        id = 358385,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-
-        spend = 0.03,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
     living_flame = {
         id = 361469,
         cast = 2,
@@ -663,8 +596,8 @@ spec:RegisterAbilities( {
             removeBuff( "ancient_flame" )
             removeBuff( "leaping_flames" )
             removeBuff( "scarlet_adaptation" )
-            removeBuff("call_of_ysera")
-            removeStack("lifespark")
+            removeBuff( "call_of_ysera" )
+            removeStack( "lifespark" )
         end,
     },
     naturalize = {
@@ -703,39 +636,6 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-        end,
-    },
-    obsidian_scales = {
-        id = 363916,
-        cast = 0,
-        charges = function() return talent.obsidian_bulwark.enabled and 2 or nil end,
-        cooldown = 90,
-        recharge = function() return talent.obsidian_bulwark.enabled and 90 or nil end,
-        gcd = "off",
-
-        startsCombat = false,
-
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "obsidian_scales" )
-        end,
-    },
-    quell = {
-        id = 351338,
-        cast = 0,
-        cooldown = 40,
-        gcd = "off",
-
-        startsCombat = true,
-
-        toggle = "interrupts",
-        debuff = "casting",
-        readyTime = state.timeToInterrupt,
-
-        handler = function ()
-            interrupt()
-            if talent.roar_of_exhilaration.enabled then gain( 1, "essence" ) end
         end,
     },
     renewing_blaze = {
@@ -869,24 +769,6 @@ spec:RegisterAbilities( {
             if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
-    unravel = {
-        id = 368432,
-        cast = 0,
-        cooldown = 9,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = true,
-        debuff = "all_absorbs",
-
-        usable = function() return settings.use_unravel, "use_unravel setting is OFF" end,
-
-        handler = function ()
-            removeDebuff( "all_absorbs" )
-        end,
-    }
 } )
 
 

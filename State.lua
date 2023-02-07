@@ -586,6 +586,7 @@ end
 state.UnitIsPlayer = UnitIsPlayer
 state.UnitLevel = UnitLevel
 state.UnitPower = UnitPower
+state.UnitPartialPower = UnitPartialPower
 state.UnitPowerMax = UnitPowerMax
 state.abs = math.abs
 state.ceil = math.ceil
