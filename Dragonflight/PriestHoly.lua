@@ -1227,6 +1227,13 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterSetting( "experimental_msg", nil, {
+    type = "description",
+    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk.",
+    width = "full",
+} )
+
+
 spec:RegisterSetting( "sw_death_protection", 50, {
     name = "|T136149:0|t Shadow Word: Death Health Threshold",
     desc = "If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death while your health percentage is below this threshold.  This setting can help keep you from killing yourself.",

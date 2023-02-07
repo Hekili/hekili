@@ -879,6 +879,13 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterSetting( "experimental_msg", nil, {
+    type = "description",
+    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk.",
+    width = "full",
+} )
+
+
 spec:RegisterOptions( {
     enabled = true,
 
