@@ -4,7 +4,7 @@ actions.precombat+=/thorns,if=!up
 actions.precombat+=/moonkin_form,if=!up
 actions.precombat+=/potion
 
-actions+=/hyperspeed_accelerators,if=buff.eclipse_lunar.up
+actions+=/hyperspeed_acceleration
 actions+=/call_action_list,name=init
 actions+=/run_action_list,name=aoe,if=active_enemies>3
 actions+=/run_action_list,name=spam,if=variable.spam_now
@@ -30,7 +30,7 @@ actions.fish+=/starfire,if=variable.solar_fish_now
 
 actions.spam+=/use_items,if=variable.lunar_spam_now
 ## TODO: Engineering tinkers.
-actions+=/hyperspeed_accelerators,if=buff.eclipse_lunar.up
+actions+=/hyperspeed_acceleration,if=buff.eclipse_lunar.up
 actions.spam+=/insect_swarm,if=!debuff.insect_swarm.up&(!buff.eclipse_lunar.up|buff.eclipse_lunar.remains>7)
 actions.spam+=/wrath,if=variable.solar_spam_now
 actions.spam+=/starfire,if=variable.lunar_spam_now

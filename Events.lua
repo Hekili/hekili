@@ -762,6 +762,34 @@ do
             end
         end
 
+        -- Tinkers
+        -- We want to know:
+        -- 1. Who is writing all of these comments? I mean really, who writes comments anymore?
+        -- 2. Which slots have tinkers?
+        -- 3. Which tinker is it?
+        -- 4. ???
+        -- 5. Profit.
+        for i=0,19,1 do
+            local tinker = state.tinker[i]
+            if tinker ~= nil then
+                local tinkerItemID = GetInventoryItemID( "player", tinker.slotId )
+                if tinkerItemID then
+                    local isUsable = IsUsableItem( tinkerItemID )
+                    if isUsable then
+                        local tinkerName, tinkerSpell = GetItemSpell( tinkerItemID )
+                        tinker.name = tinkerName
+                        tinker.spell = tinkerSpell
+                        local tinkerAction = state.action[tinker.spell]
+                        if tinkerAction then
+                            local tinkerItemTextureID = select( 10, GetItemInfo( tinkerItemID ) )
+                            tinkerAction.item = tinkerItemID
+                            tinkerAction.texture = tinkerItemTextureID
+                        end
+                    end
+                end
+            end
+        end
+
         -- Trinkets
         -- We want to know:
         -- 1. Which trinket?
