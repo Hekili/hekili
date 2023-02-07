@@ -1,11 +1,11 @@
-# APL v3.4.1-1.6.0 #
+# APL v3.4.1-1.6.2 #
 actions.precombat+=/fel_armor,if=buff.armor.down|buff.armor.remains<180
 actions.precombat+=/summon_felhunter,if=!pet.active
 actions.precombat+=/summon_voidwalker,if=!pet.active
 actions.precombat+=/summon_imp,if=!pet.active
 actions.precombat+=/life_tap,if=glyph.life_tap.enabled&buff.life_tap.down
 actions.precombat+=/potion
-actions.precombat+=/shadow_bolt,if=talent.improved_shadow_bolt.enabled&settings.shadow_mastery
+actions.precombat+=/shadow_bolt,if=talent.improved_shadow_bolt.enabled&settings.shadow_mastery&debuff.shadow_mastery.down
 
 actions+=/run_action_list,name=st,if=active_enemies=1&target.health.pct>26
 actions+=/run_action_list,name=aoe,if=active_enemies<4&active_enemies>1&target.health.pct>26
@@ -13,10 +13,11 @@ actions+=/run_action_list,name=seed,if=active_enemies>3&target.health.pct>26
 actions+=/run_action_list,name=execute,if=target.health.pct<26
 actions+=/run_action_list,name=life,if=health.pct<25
 
-actions.st+=/unstable_affliction,if=dot.haunt.remains>cast_time&dot.unstable_affliction.remains<cast_time+.01
-actions.st+=/haunt,if=!ticking|dot.haunt.remains<cast_time+2
-actions.st+=/unstable_affliction,if=!ticking&target.time_to_die>15&dot.unstable_affliction.remains<cast_time+.01
-actions.st+=/corruption,if=!ticking|persistent_multiplier>dot.corruption.pmultiplier
+actions.st+=/corruption,if=!ticking&debuff.shadow_mastery.ticking|persistent_multiplier>dot.corruption.pmultiplier
+actions.st+=/hyperspeed_acceleration,if=time_to_die>90
+actions.st+=/unstable_affliction,if=dot.haunt.remains>cast_time+travel_time+latency&dot.unstable_affliction.remains<cast_time+latency
+actions.st+=/haunt,if=!ticking|dot.haunt.remains<cast_time+travel_time+latency
+actions.st+=/unstable_affliction,if=!ticking&target.time_to_die>15&dot.unstable_affliction.remains<cast_time+latency
 actions.st+=/curse_of_agony,if=dot.haunt.remains&dot.unstable_affliction.remains&!ticking
 actions.st+=/inferno,if=target.time_to_die<=60&mana.pct>20&inferno_enabled
 actions.st+=/curse_of_agony,if=debuff.my_curse.down
@@ -28,11 +29,13 @@ actions.st+=/shadow_bolt
 
 actions.execute+=/potion
 actions.execute+=/use_items
-actions.execute+=/unstable_affliction,if=dot.unstable_affliction.remains<cast_time&dot.haunt.remains>5&time_to_die>=15
-actions.execute+=/haunt,if=!ticking|dot.haunt.remains<=5
+actions.execute+=/unstable_affliction,if=dot.unstable_affliction.remains<cast_time&dot.haunt.remains>cast_time+travel_time+latency&time_to_die>=15
+actions.execute+=/haunt,if=!ticking|dot.haunt.remains<=cast_time+travel_time+latency
 actions.execute+=/corruption,if=!ticking|persistent_multiplier>dot.corruption.pmultiplier
 actions.execute+=/curse_of_agony,if=debuff.my_curse.down&time_to_die>=24
-actions.execute+=/drain_soul,interrupt_if=ticks>=1&(dot.haunt.remains<=5|dot.unstable_affliction.remains<=action.unstable_affliction.cast_time&target.time_to_die>=15|debuff.my_curse.down&target.time_to_die>=24)
+actions.execute+=/life_tap,if=mana.pct<10|buff.life_tap.remains<5|glyph.life_tap.enabled&buff.life_tap.down
+actions.execute+=/hyperspeed_acceleration,if=time_to_die<14
+actions.execute+=/drain_soul,interrupt_if=ticks>=1&(dot.haunt.remains<=cast_time+travel_time+latency|dot.unstable_affliction.remains<=action.unstable_affliction.cast_time+latency&target.time_to_die>=15|debuff.my_curse.down&target.time_to_die>=24)
 
 actions.seed+=/shadowflame,if=target.distance<10
 actions.seed+=/seed_of_corruption,cycle_targets=1,if=active_enemies>3&!ticking

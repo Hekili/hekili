@@ -658,7 +658,7 @@ spec:RegisterStateExpr( "persistent_multiplier", function( action )
         end
     end
 
-    return 1
+    return mult
 end )
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
@@ -1457,7 +1457,10 @@ spec:RegisterAbilities( {
 
         spend = 0.12,
         spendType = "mana",
-
+		
+		velocity = 6,
+		impact = function() end, 
+		
         talent = "haunt",
         startsCombat = true,
         texture = 236298,
@@ -1563,6 +1566,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135817,
 		cycle = "immolate",
+		
         handler = function()
             removeDebuff( "target", "unstable_affliction" )
             applyDebuff( "target", "immolate" )
@@ -1826,12 +1830,14 @@ spec:RegisterAbilities( {
 		
 		cycle = "shadow_bolt",
 
+		velocity = 6,
+		impact = function()   if talent.improved_shadow_bolt.rank == 5 then applyDebuff( "target", "shadow_mastery", nil, debuff.shadow_mastery.stack + 1 ) end end, 
+		
         handler = function ()
             -- TODO: Confirm order in which Backlash vs. Shadow Trace would be consumed.
             if buff.backlash.up then removeBuff( "backlash" )
             elseif buff.shadow_trance.up then removeBuff( "shadow_trance" ) end
             if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
-            if talent.improved_shadow_bolt.rank == 5 then applyDebuff( "target", "shadow_mastery", nil, debuff.shadow_mastery.stack + 1 ) end
             if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
             removeStack( "backdraft" )
         end,
@@ -2272,7 +2278,6 @@ spec:RegisterAbilities( {
         texture = 136228,
 		
 		cycle = "unstable_affliction",
-
         handler = function ()
             removeDebuff( "target", "immolate" )
             applyDebuff( "target", "unstable_affliction" )
@@ -2387,7 +2392,7 @@ spec:RegisterOptions( {
     package3 = "Destruction",
 } )
 
-spec:RegisterPack( "Affliction", 20230206, [[Hekili:vJvBVrQnq4FlNoPvT6sPW(2DvA3v66N6DTkQsKpd4aMSwH3eysUvAf)27y7fWymEjxYP2QtxsW2ZZmE8mpZy754DNNBeII9UDP9Yv2lT3ATCLJ9YLEU0tfyp3cu4JOhG)idLc)8ZXXjKqkjpJn1PKCuedIQ86YqyAp37Rjj0VK5DVEC9Cr10J5LEU)jjjp0Z9ijkclwoUc((UJKQMa2)rnbxuEtqEm8nxTnbjKkkmDCEztWFGFKKqSaBPmpMKawW7Bc(8F)xnbpTYATLZV4yT1YUj49nFviELvrjomp9Ee9d7)1yCIpQmnV8gs8(7RJJT4FzfL)C25ZsduItrKSQDoFYwpsv1PP5z(aGhRZOyoGVRatTyl(jSrHEkNe9mk5XxMuK0IzT8esm2NI4l(HKtfhTAhXcNHUpbhTGVr7gLT51dvro)eqVvDebc6FFEcLPjkkbNrTaJSm)jCKV00DQTctPKShQSUmzkQc8CNA(ANgaClRZ8fF5Zo4VHfgUVIRdXU2hNHtj4Q9olOOYhaVXrmkHE0QiKEy52RIfkhpgSDRxmCGdFNOxHXrJH)WQVp0WFdhwtXchSI87MH8SZyMWYsTrYFBvXokRZQOStiFuxYotOOCqDii6UnB4qiCG5tjP4fS50iwxEt3k)GLTJI64yYdLPKWhHaIZNhPkjawopRTfSwhntwFAUFebFWzZRYGdZllRluv05Zf4YkWvdX9(P1jusrcbxEGPPEjSk6Nsf26YkSFESp6H8StA94xZSx0AmkqtYIXLz5sXnsUJD73AVifLHerH2lUSA)l5Px3mXCcK0t(85uiqQujHAv1oh7lCSDupTE)nNp)Dqvv1ZrDZO0J9Y5hILkODItGmdjpteCeIYcXG5PD9VfuClU4Ygo6mc2L0HCA7fEbnu09ZudNAekoTs7KtNYpRSKfJjh2SqoLBVZgD6Dw5(71k6BFwOe2ZkgF4gC5ADifvcBbFO9OKBiS(cygGpl4bm3kWRS4N0TFfEbtE(9cvPDn9NkA4(GdcaDT7gnlE56FEq5bOA2lmX5IeWVy(tPdTWtHjSSyMSqXBTfj1qNjW7hkFsV2GEd(rRSHQYG)jf9nFn(SXUibs6YOVoKRmbPswXRenrQ)1bX4Uuk9sJuA6rAJkckK6k8eZTUlxSbUNbtnSi(WW8DRKJ4yrhS9fgrpczlKKXtX3YSp8CFIX1bxfR9swR9CFgvMXQ445(L0I8sku)o4JkxEYQ5RWv2kWHE3(BEU8HyxIJJ5DE3YVuOqa2TYATep3lXXE)Uhfu5GvjzuYRIYaigbKTDa3pTByjuqQKGe407sAc23e40eSOjy0rytWHMGLB7vTsJUI9JV42Qv0olDwQDxtWAUAvN4WBJ9aHCmdA1Snia7vVb6LXAYu86jvSg83nF8VuVJPIntQcvS3mpS5bv8iPURBQlwQfQUR0lEqHssHyCDpkGS1PC7)MGZNBcg)caCt35t2MJRExtq)1Y7Tn1hjWCSGzq6F0aZhSMrbAE18HM(kz8qYXvZ6HVDyg4BLjke9NQqL8rdHLxThBUTmrF2s73EbfbtTHSQ8DAnWbCDDnsRSOPpjVs1dEmvxtB89ZOIg809ncQG(g0GrzmLszsAuZvJpARTYd51O5DGoKubFwZrnQGQTNC(wA6(Y7vy)8DHt6DZ6UhQwp2Y1sOpOSDx4OC36qC4)BAxxTMmR3Or1K51dmwqwPNEbTNTA(e)ka6Oc7w2O((Nv1U(4hy5Y91XmzJPAT9NFXGLOXv7tNVInIf86z5O8Mnm6s1NtpoV)fWu8HMalBNRM9BSq1vZ(v14snubgRI1PH((ygMrYOW(bU9Np53Bjp10SJACYZzVRKxmn)10mK68(m29T2C47tEy9wkgt5Xa717Ljmx)whZLjt)t)NlXgUH0DAAp2ZDNCZXA7Aa4lFJOxDmru)Q6qse6z61inZamSVQBDg0PK8KQLGyxfYiD5)Ah4tvlBqnm1IsUJE4cpxh9un64lnXGnpLTAALPY)nr63RwpQmEdRsmp4n4ZuP101NZvVq7g9nuyGbt7dcnBg7PFyOP6ZxZRpag(QPVkJ4FE)Zp]] )
+spec:RegisterPack( "Affliction", 20230206, [[Hekili:DRvBVTTnq4FlffWydjttso2nbq2aBFAnBiyaQFwsmsuXerVbj60Aad9BFhfLLOOOOvsQxh2hAtJoYN74X7EUJhQNL3x8CJquS3d2M2lnTn)KH1A7BTT8CPhkWEUfOWNrpb)Jmuk83)wCCcjKsYZyIoKKJIyquLVVmee75(4Esc9ZzEpQexR78Cr7P7Yl9C)tssEON7osueMVECf87FzhPQoG9huDqR2RdYJHFVrV1bjKkkiooVSo4pWptsigEUnFKzkjKym8ZhAoAOwtncJO78dZjjEU4m0Jj4iVF3Jcw3GvvIiz(namyvugaXO9j0oG7f7gwsO4scIJZlyFCgoLGblCtDGvDWI6akQ8jm1yhgLq3zuesRd2whyVUx1L7Z85)BF2jHFE85(8kANLol16uhCtJALfS97J9GYXmdA5Snia7LFh0BfgueO4BMuXkW3z(4J)goCpT5STAsviJ9Q5HDtqvtKurjomp9rKYyPtqfJt8rLPS0ewwrjPG)9F7V)R6GxwACJH1VyzS2WUo4JIw3J7JJnA2Oru(xHCLJhRde(yjofcX5Xiw3AQpU6dq(h4n53M92w1(0u4icM4U9zWs1hlOhKxYjrFfL8mhLPVy1JcjTq)L2tjhk2zWUd8POcJ210es24C6KWCA9WF6ZmWxlsuuKZ)5aQKpPjSmbNrnaZSm)fCKF1oeOi)hZtOdSLkmLsYEQYODbPOkaHdnYIWnw6qjs2RaU8yTtr0Y0HkT)buH7RW(G5NwjTOPVOJYPg7ZQOmr(OUYedc5cbZ2NssX8JeSJDiigQFnBhSMRagJs0lqUq3VNa1uYc5Ue2h9P5(req2wgzRqYOct5SHyus4ZG)NN1OW6C2mtZR3mAqqFWPSIlWLvaXbeX4NcLCifjeCzJRHzsH5LL7Bydmk6f3RWE5DrTQVU4XtPh8d3xwHBPlu5vTVraD2A9ZJ9rpLNDqFuFkkd1XtAzkWf1LUjgBSIVGVdPQ3oDIO4zJzvchTDhyo(cOgdqIhItWLOtEX7yasyCDmxRpjMHu4ZvB3yT4NgfN4SPlg5kH4JRAJnoE8mzkoB4MKY10dDlClAR5jC0aZAfOffxWkxS9n)SClqq7CjJAbIv2xB7p)WUWLlHPixWn8qycBdSZFf7uaM738h(vxl15LQi(0XZmpLTCALjZsnr637wpYKsdzTMh8A8zYSpQcYoBZBRuyhA5DKyj7c5AR4OTgv7Ag6NhjwQSGIoTbdFPM6YvN5HeILeMS2)fROX0DeoS2qDWDMZI)uFtdVNwao7fQJmAJQqFrAuyMNH3CFc9VLs(kXA1f2XOPLcLPgN1sG1iqB8MA1qLVG1S2AZg47lmXETj)BKSyCzwU)j860BRa9nsOQ4Qot)U)7v00YKztJiD9CDeFVSYxkynnZvlEraxeklSTlltzQW4e2JIziPHR5I9OPPZbSNIZ(bRLIVosuOCBsntPql7(R0hnv3nmfXcYg0LtNsKRi1ndgXCnvfwNMS(hvOAJB9fwboqWP5jcXOFfvMXU59C)CArEjLH6NKgtOr99GNQahYYbDHqPysc2Z9J1bQgLs998nxz0nLMR28RDdJ5As8gPjSC844PR4yDRPAKKhDcdWp0pydTBQFujVMDbPpZA5NC3SfR(gBX4Bl1qXPmMWQ6tCyAAg54lMi)EX0deP((oLdQuAQCxZMh3MQg1pmhbEm3i2WT2RplwW7IgdMZnlg(HTVr0zz5JHF7Y3gATdeI77L2VZm2p76NTzXDTsWFBuXUL7zKAI9APBM4gRv6XJkBHD70TVkP0j6)S5Ok8C37mL2NIEty7zuZmB1(Q(fN7r9JE4US5Z0LO7IpNGHtwqRjmVZv3THIrbyT6DFmg26Jsh550XItMOe0TnMje7ky7oBwBU4ubQT2MlK6V78MPQ5HnCtICKNuLJLzBja5AGoRoE8nWKw1tHE9Ou0nI5O8Lk0SGGN5uVfG5PC9xqg4Xrk2tBcIuhTCtkQG0lPBS0kfoDM8ScPx8AZ5LM5MkBAwP16hyOkyvZW(E4qfWEw5glKMHOkK(xjHrWxpRkaowkT1(zsDT4KE38)Rb9oOun4OELeiT7y0dpUEWdj2yPSHff06C8UOHj9Ad6t7sRSHQsJ)z0Cu5(SXUiosQy2opKl1bPuw(7enon35br7PuifuXUu0V6kzeKkUPEsWNT)JPNa84kesD57SumIJfDWoxD)NpzSO()hNWELR3)a]] )
 
 spec:RegisterPack( "Demonology (wowtbc.gg)", 20221002, [[Hekili:TEvxVnkou0FlJgPODv7qcjTZ0zvBFy1(Y0Du3hYinVb4ymGvnyKTPrrQIF7712aXqaAAN5LwaF)Y3ZXxFsGFWpc2gJuKGhxVA9A)vRw75VEZM1xfSvDOKeSTeHFcLcpuGYH)(pKCEbNXtpuh9h757v7WEPP)P2UdmokwhpjVsGbBZuQs5FTCzNzWtk2tlXmKu(P0kAmrUmUlGFApsW44NwgSDxfLP(wrWUrlo)Vc5OKGdEeEiJghtSwsK4GT)iJkRJkfuUGQGICpcEDp8SIuuhTdjjX1rC4rvgbwOT0QJ(PaPYGLsAw67um86)slG1m1QxWwgvQK6TiItG)9OP9rkq7yK4G)oylgYdrqrGbyf9zsiPGKtjqfCFD0g7x5fbBZjkuoxuMXLuzGc2FtgOpuhvvE0tAEoNH0phIQeiTVBENfHmdfZ3NW04keMREVHHqId5jHyUquvA(geTRheTwRDSQ)MurXpz61lQJgMWBRJa(i(aMrcvirkbabO3dP5ZtKMM2e53rsuAQvcQIP6G820yiVuCijVKVNiYjfk3YPfyBnVKB)FplMg(guW2IYtrZHcKhgtjgOiMR8A3UEXaNWMJt6eZcXXKDvjjE5hcXvcjeh((ctsnVgMk4vLGphHrZNbuhoQesye9oxogUpFkgjGOuEXHXG23tF5iBBKotFc7xMmDj00mvOGKJOfw2pmkQo6LxGXjCP0uddSrZLwnZX9BCzfvWghYvUCaX4Rtwr2gPBq9QkD7fXWCkub22iUzaFneNPTsNc)v)cZD8Ftt)8HjfkbfRD0bdqmwO9Lq9Wv7i2q7Dn6HSAZNE4OcXaIhq)lf8NHXq2rAH74mLxJdM2sd3Rz5CKe8)GNlCHHVfQPq1rxaa8WPKMqAkMPpUMYouM5XOj65hL9YVj7DR0N53(zt0VYLy0N20NC4p9bTMMsmbtZniwVsPHHKrqmvMxjwz2(BU(yDcanCxPEEoXZLcaxRZctOclOm9XZzdcTatliIMbs(FXD)62Q7TBHxlfempFhsn)1UMCJeqxBqxoHa8m93F1BBlHUJL)6uzv56doqqsRqI4xDS9mX4zonEpI9erm)e55JcW4NFA7VbY4NF1RUMEM5zCWCCILbSFMiK6v6K9fSf0gwad8HJbFdURvO07Ln2lX1I5mcZ8QFacALkdq5TDk70ChEcLbnXp(X6ixbS)0k4S(b9cRRJ(pSIVJiGNH8w)q9d2Wl96yFxC3YoM0L0K7gW3g3JbShTFF4i2oRphzlVfVG2(zzElARnECcZItjlJhkl)yIQQfF155mygoDEW7r0y5U8GedFPvXJPf0iuyXPIeUFuHtUbYO6XQwrhRXeWSON(ixNLahBEFDT(OwKZPQhrwJBW6DVHoE9uNCpCI6Lx0kxw0773E1k3G0Pk5eSOr)qh9FOqKfdeHC)nJGo0gHeMTliEXTxmqtWLA1a3bIbU0kG4oFTtwEDReJ79717pYPotk3IzviCBN6Glw7MNFTZpdrQ(SNtpYC6f6lo5Y8B3C9IrU)Tha0Dd8reCsJDAvUZdbWymE2amzZqhEfSVXkNFx65e0t)9NNJxow37N8zjxDha7hMBVAIDe5nfeZLCb))p]] )
 
