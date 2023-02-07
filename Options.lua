@@ -4213,7 +4213,8 @@ do
         local n = #info
         local spec, option = info[1], info[n]
 
-        spec = specIDByName[ spec ]
+        if type( spec ) == 'string' then spec = specIDByName[ spec ] end
+  
         if not spec then return end
 
         if type( val ) == 'string' then val = val:trim() end
@@ -4233,7 +4234,7 @@ do
         local n = #info
         local spec, option = info[1], info[n]
 
-        spec = specIDByName[ spec ]
+        if type( spec ) == 'string' then spec = specIDByName[ spec ] end
         if not spec then return end
 
         self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
