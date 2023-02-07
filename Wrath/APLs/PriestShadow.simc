@@ -1,4 +1,4 @@
-# APL v3.4.1-1.5.1 #
+# APL v3.4.1-1.6.0 #
 actions.precombat+=/shadowform,if=buff.shadowform.down
 actions.precombat+=/divine_spirit,if=buff.divine_spirit.down&buff.prayer_of_spirit.down
 actions.precombat+=/power_word_fortitude,if=buff.power_word_fortitude.down&buff.prayer_of_fortitude.down
