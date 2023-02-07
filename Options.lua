@@ -4226,6 +4226,10 @@ do
         elseif option == "potion" and state.spec[ info[1] ] then class.potion = val
         elseif option == "enabled" then ns.StartConfiguration() end
 
+        if WeakAuras and WeakAuras.ScanEvents then
+            WeakAuras.ScanEvents( "HEKILI_SPEC_OPTION_CHANGED", option, val )
+        end
+
         Hekili:UpdateDamageDetectionForCLEU()
     end
 
@@ -10434,6 +10438,9 @@ do
                     setting.info.set( info, to )
 
                     Hekili:ForceUpdate( "CLI_TOGGLE" )
+                    if WeakAuras and WeakAuras.ScanEvents then
+                        WeakAuras.ScanEvents( "HEKILI_SPEC_SETTING_CHANGED", setting.name, to )
+                    end
                     return
 
                 elseif setting.info.type == "range" then
@@ -10458,6 +10465,9 @@ do
                     Hekili:Print( format( "%s set to |cFF00B4FF%.2f|r.", setting.info.name, to ) )
                     prefs[ setting.name ] = to
                     Hekili:ForceUpdate( "CLI_NUMBER" )
+                    if WeakAuras and WeakAuras.ScanEvents then 
+                        WeakAuras.ScanEvents( "HEKILI_SPEC_SETTING_CHANGED", setting.name, to )
+                    end
                     return
 
                 elseif setting.info.type == "select" then
@@ -10480,6 +10490,9 @@ do
                     Hekili:Print( format( "%s set to |cFF00B4FF%s|r.", setting.info.name, to ) )
                     prefs[ setting.name ] = to
                     Hekili:ForceUpdate( "CLI_SELECT" )
+                    if WeakAuras and WeakAuras.ScanEvents then 
+                        WeakAuras.ScanEvents( "HEKILI_SPEC_SETTING_CHANGED", setting.name, to )
+                    end
                     return
                 end
 
