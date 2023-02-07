@@ -1647,7 +1647,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136018,
 
-        aura = "mind_flay",
+        aura = "hurricane",
         tick_time = function () return class.auras.hurricane.tick_time end,
 
         start = function ()
