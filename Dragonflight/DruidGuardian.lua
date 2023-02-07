@@ -140,7 +140,7 @@ spec:RegisterTalents( {
     rake                          = { 82199, 1822  , 1 }, -- Rake the target for 1,688 Bleed damage and an additional 13,365 Bleed damage over 11.3 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
     raze                          = { 92588, 400254, 1 }, -- Strike with the might of Ursoc, dealing 6,966 Physical damage to all enemies in front of you. Deals reduced damage beyond 5 targets.
     reinforced_fur                = { 82139, 393618, 1 }, -- Ironfur increases armor by an additional 8% and Barkskin reduces damage taken by an additional 5%.
-    reinvigoration                = { 82157, 372945, 2 }, -- Frenzied Regeneration's cooldown is reduced by 10%.
+    reinvigoration                = { 82157, 372945, 2 }, -- Frenzied Regeneration's cooldown is reduced by 20/40%.
     rejuvenation                  = { 82217, 774   , 1 }, -- Heals the target for 12,682 over 10.2 sec.
     remove_corruption             = { 82215, 2782  , 1 }, -- Nullifies corrupting effects on the friendly target, removing all Curse and Poison effects.
     rend_and_tear                 = { 82152, 204053, 1 }, -- Each stack of Thrash reduces the target's damage to you by 2% and increases your damage to them by 2%.
@@ -1193,7 +1193,7 @@ spec:RegisterAbilities( {
         id = 22842,
         cast = 0,
         charges = function () return talent.innate_resolve.enabled and 2 or nil end,
-        cooldown = function () return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.1 * talent.reinvigoration.rank ) end,
+        cooldown = function () return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.2 * talent.reinvigoration.rank ) end,
         recharge = function () return talent.innate_resolve.enabled and ( 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) ) or nil end,
         gcd = "spell",
         school = "physical",
@@ -1383,7 +1383,7 @@ spec:RegisterAbilities( {
     lunar_beam = {
         id = 204066,
         cast = 0,
-        cooldown = 75,
+        cooldown = 60,
         gcd = "spell",
 
         talent = "lunar_beam",

@@ -738,7 +738,7 @@ spec:RegisterAuras( {
     -- Talent: Strength increased by 0%
     unleashed_frenzy = {
         id = 376907,
-        duration = 6,
+        duration = 10, -- 20230206 Hotfix
         max_stack = 3
     },
     -- The touch of the spirit realm lingers....
@@ -1453,7 +1453,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "inexorable_assault" )
-
             removeBuff( "killing_machine" )
 
             -- Koltira's Favor is not predictable.
