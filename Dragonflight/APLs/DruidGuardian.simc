@@ -25,11 +25,12 @@ actions.bear+=/convoke_the_spirits
 actions.bear+=/berserk_bear
 actions.bear+=/incarnation
 actions.bear+=/rage_of_the_sleeper,if=buff.incarnation_guardian_of_ursoc.down&cooldown.incarnation_guardian_of_ursoc.remains>60|buff.incarnation_guardian_of_ursoc.up|talent.convoke_the_spirits.enabled
+actions.bear+=/lunar_beam
 actions.bear+=/berserking,if=(buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)
 actions.bear+=/maul,if=buff.rage_of_the_sleeper.up&buff.tooth_and_claw.stack>0&active_enemies<=6&variable.maul_build=1
 actions.bear+=/raze,if=buff.rage_of_the_sleeper.up&buff.tooth_and_claw.stack>0&variable.maul_build=1
 actions.bear+=/ironfur,cycle_targets=1,if=tanking&variable.maul_build=1&(!buff.ironfur.up|rage>90)
-actions.bear+=/ironfur,if=rage>40&variable.if_build=1|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.if_build=1
+actions.bear+=/ironfur,if=rage>90&variable.if_build=1|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.if_build=1
 actions.bear+=/moonfire,if=buff.galactic_guardian.up&buff.galactic_guardian.remains<=gcd+0.5
 actions.bear+=/mangle,if=buff.gore.up&active_enemies<11|buff.vicious_cycle_mangle.stack=3
 actions.bear+=/maul,if=((buff.incarnation.up|buff.berserk_bear.up)&active_enemies<=5&(buff.tooth_and_claw.stack>=2))&variable.maul_build=1&!talent.thorns_of_iron.enabled
@@ -38,9 +39,9 @@ actions.bear+=/thrash_bear,cycle_targets=1,if=refreshable|dot.thrash_bear.stack<
 actions.bear+=/mangle,if=rage.deficit>10&settings.mangle_more
 actions.bear+=/swipe,if=buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&active_enemies>=11
 actions.bear+=/maul,if=(buff.tooth_and_claw.up&active_enemies<=5)
-actions.bear+=/maul,if=active_enemies<=5&buff.vicious_cycle_maul.stack>=3&variable.maul_build=1&!talent.thorns_of_iron.enabled|active_enemies<4&!talent.vicious_cycle_maul.enabled&variable.maul_build=1&!talent.thorns_of_iron.enabled
+actions.bear+=/maul,if=active_enemies<=5&buff.vicious_cycle_maul.stack>=3|active_enemies<4&!talent.vicious_cycle_maul.enabled&variable.maul_build=1&!talent.thorns_of_iron.enabled
 actions.bear+=/raze,if=(buff.tooth_and_claw.up)
-actions.bear+=/raze,if=buff.vicious_cycle_maul.stack>=3&variable.maul_build=1&!talent.thorns_of_iron.enabled|!talent.vicious_cycle_maul.enabled&variable.maul_build=1&!talent.thorns_of_iron.enabled
+actions.bear+=/raze,if=buff.vicious_cycle_maul.stack>=3|!talent.vicious_cycle_maul.enabled&variable.maul_build=1&!talent.thorns_of_iron.enabled
 actions.bear+=/mangle,if=(buff.incarnation.up&active_enemies<=4)|(buff.incarnation.up&talent.soul_of_the_forest.enabled&active_enemies<=5)|((rage<90)&active_enemies<11)|((rage<85)&active_enemies<11&talent.soul_of_the_forest.enabled)
 actions.bear+=/thrash_bear,if=active_enemies>1
 actions.bear+=/pulverize,if=dot.thrash_bear.stack>2

@@ -336,13 +336,12 @@ do
             Hekili:SpecializationChanged()
         end )
     else
-        local lastChange = 0
         RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function()
-            local now = GetTime()
-            if now - lastChange > 1 then
-                Hekili:SpecializationChanged()
-                lastChange = now
-            end
+            Hekili.PendingSpecializationChange = true
+        end )
+
+        RegisterEvent( "ACTIVE_PLAYER_SPECIALIZATION_CHANGED", function()
+            Hekili.PendingSpecializationChange = true
         end )
     end
 end
