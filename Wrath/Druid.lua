@@ -188,7 +188,7 @@ end)
 local predatorsswiftness_spell_assigned = false
 local avg_rage_amount = rage_amount()
 spec:RegisterHook( "reset_precast", function()
-    stat.spell_haste = stat.spell_haste * (1 + (0.01 * talent.celestial_focus.rank) + (buff.natures_grace.up and 0.2 or 0))
+    stat.spell_haste = stat.spell_haste * (1 + (0.01 * talent.celestial_focus.rank) + (buff.natures_grace.up and 0.2 or 0) + (buff.moonkin_form.up and (talent.improved_moonkin_form.rank * 0.01)))
 
     rip_tracker:reset()
     set_last_finisher_cp(LastFinisherCp)
@@ -779,7 +779,7 @@ spec:RegisterAuras( {
     -- Chance to hit with melee and ranged attacks decreased by $s2% and $s1 Nature damage every $t1 sec.
     insect_swarm = {
         id = 5570,
-        duration = 12,
+        duration = function() return 12 + (talent.natures_splendor.enabled and 2 or 0) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 5570, 24974, 24975, 24976, 24977, 27013, 48468 },
@@ -813,7 +813,7 @@ spec:RegisterAuras( {
     -- $s1 Arcane damage every $t1 seconds.
     moonfire = {
         id = 8921,
-        duration = 9,
+        duration = function() return 9 + (talent.natures_splendor.enabled and 3 or 0) end,
         tick_time = 3,
         max_stack = 1,
         copy = { 8921, 8924, 8925, 8926, 8927, 8928, 8929, 9833, 9834, 9835, 26987, 26988, 48462, 48463, 65856 },
@@ -1879,7 +1879,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
+        spend = function() return (buff.clearcasting.up and 0 or 0.21) * (1 - talent.moonglow.rank * 0.03) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -2268,7 +2268,7 @@ spec:RegisterAbilities( {
         cooldown = function() return glyph.starfall.enabled and 60 or 90 end,
         gcd = "spell",
 
-        spend = function() return (buff.clearcasting.up and 0) or 0.35 end,
+        spend = function() return (buff.clearcasting.up and 0 or 0.35) * (1 - talent.moonglow.rank * 0.03) end,
         spendType = "mana",
 
         talent = "starfall",
@@ -2290,7 +2290,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return (buff.clearcasting.up and 0) or 0.16 end,
+        spend = function() return (buff.clearcasting.up and 0 or 0.16) * (1 - talent.moonglow.rank * 0.03) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -2577,7 +2577,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return (buff.clearcasting.up and 0) or 0.08 end,
+        spend = function() return (buff.clearcasting.up and 0 or 0.08) * (1 - talent.moonglow.rank * 0.03) end,
         spendType = "mana",
 
         startsCombat = true,
