@@ -1,4 +1,4 @@
-# APL v3.4.0-1.4.0 #
+# APL v3.4.1-1.6.0 #
 actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
 actions.precombat+=/thorns,if=!up
 actions.precombat+=/dire_bear_form,if=!up
@@ -7,6 +7,7 @@ actions.precombat+=/potion
 actions+=/call_action_list,name=init
 actions+=/use_items
 actions+=/potion
+actions+=/hyperspeed_acceleration,use_off_gcd=1
 actions+=/run_action_list,name=bear_aoe,if=buff.dire_bear_form.up&active_enemies>4
 actions+=/run_action_list,name=bear,if=buff.dire_bear_form.up
 actions+=/dire_bear_form,if=!up

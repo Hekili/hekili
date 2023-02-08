@@ -3601,6 +3601,38 @@ all:RegisterAura( "chain_of_suffering", {
     max_stack = 1
 } )
 
+-- Tinkers
+if Hekili.IsWrath() then
+    all:RegisterAura( "hyperspeed_acceleration", {
+        id = 54758,
+        duration = 15,
+        max_stack = 1
+    })
+    all:RegisterAbility( "hyperspeed_acceleration", {
+        id = 54758,
+        known = function () return tinker.hand.spell == 54758 end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = function() return tinker.hand.spell == 54758 and tinker.hand.item or 0 end,
+        itemKey = "hyperspeed_acceleration",
+
+        texture = function() return tinker.hand.spell == 54758 and tinker.hand.texture or 0 end,
+        startsCombat = true,
+
+        toggle = "cooldowns",
+
+        usable = function ()
+            return tinker.hand.spell == 54758
+        end,
+
+        handler = function()
+            applyBuff("hyperspeed_acceleration")
+        end
+    } )
+end
+
 
 -- Mechagon
 do

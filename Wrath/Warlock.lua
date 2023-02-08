@@ -139,8 +139,8 @@ spec:RegisterAuras( {
     -- $s1 Shadow damage every $t1 seconds.
     corruption = {
         id = 47813,
-        duration = 18,
-        tick_time = 3,
+        duration = function() return ( 18 * haste)	end,
+        tick_time = function() return ( 3 * haste)	end,
         max_stack = 1,
         copy = { 172, 6222, 6223, 7648, 11671, 11672, 25311, 27216, 47812, 47813 },
     },
@@ -242,22 +242,23 @@ spec:RegisterAuras( {
     -- Drains $s1 health every $t1 sec to the caster.
     drain_life = {
         id = 47857,
-        duration = 5,
-        tick_time = 1,
+        duration = function () return (5 * haste ) end,
+        tick_time = function () return (1 * haste ) end,
         max_stack = 1,
         copy = { 689, 699, 709, 7651, 11699, 11700, 27219, 27220, 47857, 358742 },
     },
     -- Drains $m1% mana each second to the caster.
     drain_mana = {
         id = 5138,
-        duration = 5,
-        tick_time = 1,
+		duration = function () return (5 * haste ) end,
+        tick_time = function () return (1 * haste ) end,
         max_stack = 1,
     },
     -- $s2 Shadow damage every $t2 seconds.
     drain_soul = {
         id = 47855,
-        duration = 15,
+		tick_time = function() return (3 * haste) end,
+        duration = function () return (15 * haste) end, 
         max_stack = 1,
         copy = { 1120, 8288, 8289, 11675, 27217, 47855 },
     },
@@ -657,7 +658,7 @@ spec:RegisterStateExpr( "persistent_multiplier", function( action )
         end
     end
 
-    return 1
+    return mult
 end )
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
@@ -1275,22 +1276,28 @@ spec:RegisterAbilities( {
     -- Transfers 10 health every 1 sec from the target to the caster.  Lasts 5 sec.
     drain_life = {
         id = 689,
-        cast = 0,
+        cast = function() return ( 5 * haste) end,
         cooldown = 0,
         gcd = "spell",
-
+		channeled = true,
+        breakable = true,
         spend = function() return mod_suppression( 0.17 ) end,
         spendType = "mana",
-
         startsCombat = true,
         texture = 136169,
-
         aura = "drain_life",
-
+		tick_time = function () return class.auras.drain_life.tick_time end,
         start = function( rank )
             applyDebuff( "target", "drain_life" )
             if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
             -- TODO: Decide whether to model health gains; Soul Siphon.
+        end,
+		tick = function () end,
+		breakchannel = function ()
+            removeDebuff( "target", "drain_life" )
+        end,
+		
+		handler = function ()
         end,
 
         copy = { 699, 709, 7651, 11699, 11700, 27219, 27220, 47857 },
@@ -1300,20 +1307,26 @@ spec:RegisterAbilities( {
     -- Transfers 3% of target's maximum mana every 1 sec from the target to the caster (up to a maximum of 6% of the caster's maximum mana every 1 sec).  Lasts 5 sec.
     drain_mana = {
         id = 5138,
-        cast = 0,
+        cast = function() return ( 5 * haste) end,
         cooldown = 0,
         gcd = "spell",
-
+		channeled = true,
+        breakable = true,
         spend = function() return mod_suppression( 0.17 ) end,
         spendType = "mana",
-
         startsCombat = true,
         texture = 136208,
-
         aura = "drain_mana",
-
+		tick_time = function () return class.auras.drain_mana.tick_time end,
         start = function( rank )
             applyDebuff( "target", "drain_mana" )
+        end,
+		
+		tick = function () end,
+		breakchannel = function ()
+		   removeDebuff( "target", "drain_mana" )
+        end,
+		handler = function ()
         end,
     },
 
@@ -1321,25 +1334,30 @@ spec:RegisterAbilities( {
     -- Drains the soul of the target, causing 55 Shadow damage over 15 sec.  If the target is at or below 25% health, Drain Soul causes four times the normal damage. If the target dies while being drained, and yields experience or honor, the caster gains a Soul Shard.  Each time the Drain Soul damages the target, it also has a chance to generate a Soul Shard.  Soul Shards are required for other spells.
     drain_soul = {
         id = 1120,
-        cast = 0,
+        cast = function() return ( 15 * haste) end,
         cooldown = 0,
         gcd = "spell",
-
+		channeled = true,
+        breakable = true,
         spend = function() return mod_suppression( 0.14 ) end,
         spendType = "mana",
-
         startsCombat = true,
         texture = 136163,
-
         aura = "drain_soul",
-		
-		cycle = "drain_soul",
-
+		tick_time = function () return class.auras.drain_soul.tick_time end,
         start = function( rank )
             applyDebuff( "target", "drain_soul" )
             if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
         end,
-
+		tick = function () end, 
+		
+		 breakchannel = function ()
+            removeDebuff( "target", "drain_soul" )
+        end,
+		
+		handler = function ()
+        end,
+		
         copy = { 8288, 8289, 11675, 27217, 47855 },
     },
 
@@ -1439,7 +1457,10 @@ spec:RegisterAbilities( {
 
         spend = 0.12,
         spendType = "mana",
-
+		
+		velocity = 6,
+		impact = function() end, 
+		
         talent = "haunt",
         startsCombat = true,
         texture = 236298,
@@ -1545,6 +1566,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135817,
 		cycle = "immolate",
+		
         handler = function()
             removeDebuff( "target", "unstable_affliction" )
             applyDebuff( "target", "immolate" )
@@ -1808,12 +1830,14 @@ spec:RegisterAbilities( {
 		
 		cycle = "shadow_bolt",
 
+		velocity = 6,
+		impact = function()   if talent.improved_shadow_bolt.rank == 5 then applyDebuff( "target", "shadow_mastery", nil, debuff.shadow_mastery.stack + 1 ) end end, 
+		
         handler = function ()
             -- TODO: Confirm order in which Backlash vs. Shadow Trace would be consumed.
             if buff.backlash.up then removeBuff( "backlash" )
             elseif buff.shadow_trance.up then removeBuff( "shadow_trance" ) end
             if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
-            if talent.improved_shadow_bolt.rank == 5 then applyDebuff( "target", "shadow_mastery", nil, debuff.shadow_mastery.stack + 1 ) end
             if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
             removeStack( "backdraft" )
         end,
@@ -2068,7 +2092,7 @@ spec:RegisterAbilities( {
 
         spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
         spendType = "mana",
-
+		toggle = "cooldown",
         startsCombat = false,
         texture = 136219,
         essential = true,
@@ -2254,7 +2278,6 @@ spec:RegisterAbilities( {
         texture = 136228,
 		
 		cycle = "unstable_affliction",
-
         handler = function ()
             removeDebuff( "target", "immolate" )
             applyDebuff( "target", "unstable_affliction" )
@@ -2369,7 +2392,7 @@ spec:RegisterOptions( {
     package3 = "Destruction",
 } )
 
-spec:RegisterPack( "Affliction", 20230204, [[Hekili:nNvxVnkou0FlJgjEz6Yc5RzgPKin7t70Dv1kX(mGdyASkFjW0orkIF771ycymghM2un7dTPfBFUxF95EUxtCTD)xxNqef7(WcRflTwyTY02ATL9NDDONYXUo5OGNqpc)rkkb(93IIIjbuswkBOtXzOqgeLzvfbWWUohQiX0VN6EqbUR(6QnUoOk6XScxN)IeNf46CKegI5Zhxc)))EKuw7Z(bv73A9A)Si4)BSBTFmPKcdhLvu7)N4NiXetxNMhYCLyseg(8HMTgQ1vdXi6rVGmsSRdofDigh6(hUuW7gmRcej1RbGbZIYaicvft7aUFyNGccfxqqCCEg7HtXjem4H7Q9TR9nQ9POIhXuZJyum9OzEaT2FFT)In9MUOk1J)3ESDcF)4XJ5L0opDwMDBT)QgZkpW(BJ)GYWmhA5SDia7L3a7wIbdbgE1Kgwb(BNp(4FGdQOn7T1tAczSxppSBivnmP8cCqwYbKsU0fOIWXEOIewAclROGKZF(3(N)U2)5LMRmT(nB43lQ9)OO3DOkkYSzHMHzVa5kNpx7l8WcCcqX5Ce7VyPNx9bi)dIM8tZEFRSkjb2IGlESkfMQEUGEqEoJe(ck(joktFWQhfssU(dThJpLF0KDg4rr5MTZPHs2eC6gHf06H)YJzGVruOipJ)5aPKpRHwgJtPMGBwK9mo0R8icmK3HSy6aFPetPK0hlnBNqcQeq4KW(TFHCY0fkRwzP2Sckjb2nzEHemxkyDJrdZOMvPLu2c9qDY7dOkbGJ4XwFT)NQ9nTS7DjflvpRIzVJiG5OXcc43m1RsXOKGNGihNVNJlkHmpiK7LaA2K8ycUOzlZSDqwrrvt6KzE)W9gSF8okP2J91IZOQe7bUvsP0K2mD4a3Wato5fuvuIBtB71kLp1wSsWvzRWllYd9yw6Poo4WYzqP54rLZAKsNdPjecKO0amxXWsMkgfZu3uCE3nnWqmpuiQoNcf9hPW0pfeZsdz(tjZL1sgsqPOo1zBlbfWUKCrE3A(eE7ce0M60AdPky(7hW8)fKnkN7mNSZfV6SZPP1VRIrARR8UjDmD5ifb55S3LYlMwfyA1gvr)TqBQBSAGVp5HP0WFgjncxKM5DbVo72oG(sFQK3056F5)Dj2p8vMlnQZsxNTI9vQS0aOxEJKxT1ju)MAUGt94NsdhzEkadBj5b7bxOsCq5sqSBrOvU8x2b(u1YgudtUOe4U)WB4tDSvl1OsVuNc28m2YPnMS(3ePFVz7iR4nSkX8GxtmtwwtvFox9UGRv3qHgfSHc))Sk2nlFqCE0WJlfi3xe44lN(waqO9zwDlySU32IRZlOIuw(URZ3tYZkOSKGpl9sumRVhGlhhWu5GBMMfrIHRx9XAFvx0S(E(Iln7Ud7N297Dxv9os0oP7FE(847EUfU3PAKKVyjdWp0FTpTlQ)IK)mRcenN10VOoWMSAbgJXIlQHIxOycVQ)GLzPzOSBmLQ(9DwaWv6ftCh7vsSRSXgdzA7SngL2SFXMRIfOLpgSTRmg(G9Vs0z3Hym87x(6qR9kZ8aS063oJ1ZoJzlwCvRfI3MLSJsfYcSfnkDFFxHvJROMSTBMFc65vYCny2qLB1lpFEKPeayX882lGzmUTX92RFtoCVI6qVwzd47NU5BzyhO0QmIFn324IZibDB7Uc8gHWX2DBSmU0WY(fwgsDnFD3u1Rby4IefHUyQT2wTASY9eTD95ZVcPQYEnQ7gLEStm)GpvH(ufImxARfCpLZ)wiXzOTPvnKDbBiM22QlmD2WnnjO3ADPU6syvUYBFoup2YLPeIoxEfxkDPzrSvPNSyLk86BTBGcluq4NK71UIrVnQ7g0m4oBL1zuOiWX7DnLS3Aq513BJn0uAIpJAzNhZghI4iPkx66qUuhKsCS3iA80VRdI2DzpnvfFsrBgRLrqsxu9LoUMyJX0x2WyCDWH08TlfzCm2bBF191MoEO(VRu2nqC)Vd]] )
+spec:RegisterPack( "Affliction", 20230207, [[Hekili:DRvBVTTnq4FlffWydjttso2nbq2aBFAnBiyaQFwsmsuXerVbj60Aad9BFhfLLOOOOvsQxh2hAtJoYN74X7EUJhQNL3x8CJquS3d2M2lnTn)KH1A7BTT8CPhkWEUfOWNrpb)Jmuk83)wCCcjKsYZyIoKKJIyquLVVmee75(4Esc9ZzEpQexR78Cr7P7Yl9C)tssEON7osueMVECf87FzhPQoG9huDqR2RdYJHFVrV1bjKkkiooVSo4pWptsigEUnFKzkjKym8ZhAoAOwtncJO78dZjjEU4m0Jj4iVF3Jcw3GvvIiz(namyvugaXO9j0oG7f7gwsO4scIJZlyFCgoLGblCtDGvDWI6akQ8jm1yhgLq3zuesRd2whyVUx1L7Z85)BF2jHFE85(8kANLol16uhCtJALfS97J9GYXmdA5Snia7LFh0BfgueO4BMuXkW3z(4J)goCpT5STAsviJ9Q5HDtqvtKurjomp9rKYyPtqfJt8rLPS0ewwrjPG)9F7V)R6GxwACJH1VyzS2WUo4JIw3J7JJnA2Oru(xHCLJhRde(yjofcX5Xiw3AQpU6dq(h4n53M92w1(0u4icM4U9zWs1hlOhKxYjrFfL8mhLPVy1JcjTq)L2tjhk2zWUd8POcJ210es24C6KWCA9WF6ZmWxlsuuKZ)5aQKpPjSmbNrnaZSm)fCKF1oeOi)hZtOdSLkmLsYEQYODbPOkaHdnYIWnw6qjs2RaU8yTtr0Y0HkT)buH7RW(G5NwjTOPVOJYPg7ZQOmr(OUYedc5cbZ2NssX8JeSJDiigQFnBhSMRagJs0lqUq3VNa1uYc5Ue2h9P5(req2wgzRqYOct5SHyus4ZG)NN1OW6C2mtZR3mAqqFWPSIlWLvaXbeX4NcLCifjeCzJRHzsH5LL7Bydmk6f3RWE5DrTQVU4XtPh8d3xwHBPlu5vTVraD2A9ZJ9rpLNDqFuFkkd1XtAzkWf1LUjgBSIVGVdPQ3oDIO4zJzvchTDhyo(cOgdqIhItWLOtEX7yasyCDmxRpjMHu4ZvB3yT4NgfN4SPlg5kH4JRAJnoE8mzkoB4MKY10dDlClAR5jC0aZAfOffxWkxS9n)SClqq7CjJAbIv2xB7p)WUWLlHPixWn8qycBdSZFf7uaM738h(vxl15LQi(0XZmpLTCALjZsnr637wpYKsdzTMh8A8zYSpQcYoBZBRuyhA5DKyj7c5AR4OTgv7Ag6NhjwQSGIoTbdFPM6YvN5HeILeMS2)fROX0DeoS2qDWDMZI)uFtdVNwao7fQJmAJQqFrAuyMNH3CFc9VLs(kXA1f2XOPLcLPgN1sG1iqB8MA1qLVG1S2AZg47lmXETj)BKSyCzwU)j860BRa9nsOQ4Qot)U)7v00YKztJiD9CDeFVSYxkynnZvlEraxeklSTlltzQW4e2JIziPHR5I9OPPZbSNIZ(bRLIVosuOCBsntPql7(R0hnv3nmfXcYg0LtNsKRi1ndgXCnvfwNMS(hvOAJB9fwboqWP5jcXOFfvMXU59C)CArEjLH6NKgtOr99GNQahYYbDHqPysc2Z9J1bQgLs998nxz0nLMR28RDdJ5As8gPjSC844PR4yDRPAKKhDcdWp0pydTBQFujVMDbPpZA5NC3SfR(gBX4Bl1qXPmMWQ6tCyAAg54lMi)EX0deP((oLdQuAQCxZMh3MQg1pmhbEm3i2WT2RplwW7IgdMZnlg(HTVr0zz5JHF7Y3gATdeI77L2VZm2p76NTzXDTsWFBuXUL7zKAI9APBM4gRv6XJkBHD70TVkP0j6)S5Ok8C37mL2NIEty7zuZmB1(Q(fN7r9JE4US5Z0LO7IpNGHtwqRjmVZv3THIrbyT6DFmg26Jsh550XItMOe0TnMje7ky7oBwBU4ubQT2MlK6V78MPQ5HnCtICKNuLJLzBja5AGoRoE8nWKw1tHE9Ou0nI5O8Lk0SGGN5uVfG5PC9xqg4Xrk2tBcIuhTCtkQG0lPBS0kfoDM8ScPx8AZ5LM5MkBAwP16hyOkyvZW(E4qfWEw5glKMHOkK(xjHrWxpRkaowkT1(zsDT4KE38)Rb9oOun4OELeiT7y0dpUEWdj2yPSHff06C8UOHj9Ad6t7sRSHQsJ)z0Cu5(SXUiosQy2opKl1bPuw(7enon35br7PuifuXUu0V6kzeKkUPEsWNT)JPNa84kesD57SumIJfDWoxD)NpzSO()hNWELR3)a]] )
 
 spec:RegisterPack( "Demonology (wowtbc.gg)", 20221002, [[Hekili:TEvxVnkou0FlJgPODv7qcjTZ0zvBFy1(Y0Du3hYinVb4ymGvnyKTPrrQIF7712aXqaAAN5LwaF)Y3ZXxFsGFWpc2gJuKGhxVA9A)vRw75VEZM1xfSvDOKeSTeHFcLcpuGYH)(pKCEbNXtpuh9h757v7WEPP)P2UdmokwhpjVsGbBZuQs5FTCzNzWtk2tlXmKu(P0kAmrUmUlGFApsW44NwgSDxfLP(wrWUrlo)Vc5OKGdEeEiJghtSwsK4GT)iJkRJkfuUGQGICpcEDp8SIuuhTdjjX1rC4rvgbwOT0QJ(PaPYGLsAw67um86)slG1m1QxWwgvQK6TiItG)9OP9rkq7yK4G)oylgYdrqrGbyf9zsiPGKtjqfCFD0g7x5fbBZjkuoxuMXLuzGc2FtgOpuhvvE0tAEoNH0phIQeiTVBENfHmdfZ3NW04keMREVHHqId5jHyUquvA(geTRheTwRDSQ)MurXpz61lQJgMWBRJa(i(aMrcvirkbabO3dP5ZtKMM2e53rsuAQvcQIP6G820yiVuCijVKVNiYjfk3YPfyBnVKB)FplMg(guW2IYtrZHcKhgtjgOiMR8A3UEXaNWMJt6eZcXXKDvjjE5hcXvcjeh((ctsnVgMk4vLGphHrZNbuhoQesye9oxogUpFkgjGOuEXHXG23tF5iBBKotFc7xMmDj00mvOGKJOfw2pmkQo6LxGXjCP0uddSrZLwnZX9BCzfvWghYvUCaX4Rtwr2gPBq9QkD7fXWCkub22iUzaFneNPTsNc)v)cZD8Ftt)8HjfkbfRD0bdqmwO9Lq9Wv7i2q7Dn6HSAZNE4OcXaIhq)lf8NHXq2rAH74mLxJdM2sd3Rz5CKe8)GNlCHHVfQPq1rxaa8WPKMqAkMPpUMYouM5XOj65hL9YVj7DR0N53(zt0VYLy0N20NC4p9bTMMsmbtZniwVsPHHKrqmvMxjwz2(BU(yDcanCxPEEoXZLcaxRZctOclOm9XZzdcTatliIMbs(FXD)62Q7TBHxlfempFhsn)1UMCJeqxBqxoHa8m93F1BBlHUJL)6uzv56doqqsRqI4xDS9mX4zonEpI9erm)e55JcW4NFA7VbY4NF1RUMEM5zCWCCILbSFMiK6v6K9fSf0gwad8HJbFdURvO07Ln2lX1I5mcZ8QFacALkdq5TDk70ChEcLbnXp(X6ixbS)0k4S(b9cRRJ(pSIVJiGNH8w)q9d2Wl96yFxC3YoM0L0K7gW3g3JbShTFF4i2oRphzlVfVG2(zzElARnECcZItjlJhkl)yIQQfF155mygoDEW7r0y5U8GedFPvXJPf0iuyXPIeUFuHtUbYO6XQwrhRXeWSON(ixNLahBEFDT(OwKZPQhrwJBW6DVHoE9uNCpCI6Lx0kxw0773E1k3G0Pk5eSOr)qh9FOqKfdeHC)nJGo0gHeMTliEXTxmqtWLA1a3bIbU0kG4oFTtwEDReJ79717pYPotk3IzviCBN6Glw7MNFTZpdrQ(SNtpYC6f6lo5Y8B3C9IrU)Tha0Dd8reCsJDAvUZdbWymE2amzZqhEfSVXkNFx65e0t)9NNJxow37N8zjxDha7hMBVAIDe5nfeZLCb))p]] )
 

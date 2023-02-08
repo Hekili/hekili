@@ -277,6 +277,58 @@ state.trinket.proc = state.trinket.stat
 state.trinket[1] = state.trinket.t1
 state.trinket[2] = state.trinket.t2
 
+state.tinker = {
+    head = {
+        slot = "head",
+        slotId = INVSLOT_HEAD,
+        item = 0,
+        texture = 0,
+        name = nil,
+        spell = 0
+    },
+    waist = {
+        slot = "waist",
+        slotId = INVSLOT_WAIST,
+        item = 0,
+        texture = 0,
+        name = nil,
+        spell = 0
+    },
+    feet = {
+        slot = "feet",
+        slotId = INVSLOT_FEET,
+        item = 0,
+        texture = 0,
+        name = nil,
+        spell = 0
+    },
+    hand = {
+        slot = "hand",
+        slotId = INVSLOT_HAND,
+        item = 0,
+        texture = 0,
+        name = nil,
+        spell = 0
+    },
+    back = {
+        slot = "back",
+        slotId = INVSLOT_BACK,
+        item = 0,
+        texture = 0,
+        name = nil,
+        spell = 0
+    }
+}
+for i=0,19,1 do
+    state.tinker[i] = nil
+end
+state.tinker[INVSLOT_HEAD] = state.tinker.head
+state.tinker[INVSLOT_WAIST] = state.tinker.waist
+state.tinker[INVSLOT_FEET] = state.tinker.feet
+state.tinker[INVSLOT_HAND] = state.tinker.hand
+state.tinker[INVSLOT_BACK] = state.tinker.back
+
+
 state.using_apl = setmetatable( {}, {
     __index = function( t, k )
         return false
