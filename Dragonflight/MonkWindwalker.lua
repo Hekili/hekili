@@ -392,7 +392,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     pressure_point = {
-        id = 393050,
+        id = 393053,
         duration = 5,
         max_stack = 1,
         copy = 337482,
