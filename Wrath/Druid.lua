@@ -2605,7 +2605,7 @@ spec:RegisterSetting("min_roar_offset", 14, {
     desc = "Sets the minimum number of seconds over the current rip duration required for Savage Roar recommendations",
     width = "full",
     min = 0,
-    softMax = 14,
+    softMax = 22,
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.min_roar_offset = val

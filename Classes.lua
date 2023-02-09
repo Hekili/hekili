@@ -1347,6 +1347,33 @@ all:RegisterAuras( {
         end,
     },
 
+    -- Increases Stamina by $w1.
+    prayer_of_fortitude = {
+        id = 21562,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 21562, 21564, 25392, 39231, 43939, 48162 },
+        shared = "player"
+    },
+
+    -- Increases Stamina by $w1.
+    power_word_fortitude = {
+        id = 1243,
+        duration = 1800,
+        max_stack = 1,
+        copy = { 1243, 1244, 1245, 2791, 10937, 10938, 23947, 23948, 25389, 48161 },
+        shared = "player"
+    },
+
+    -- Increases Spirit by $s1.
+    divine_spirit = {
+        id = 14752,
+        duration = 1800,
+        max_stack = 1,
+        copy = { 14752, 14818, 14819, 16875, 25312, 27841, 39234, 48073 },
+        shared = "player"
+    },
+
     demonic_pact = {
         id = 48090,
         duration = 34,
