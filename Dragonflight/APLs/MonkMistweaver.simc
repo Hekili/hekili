@@ -17,14 +17,14 @@ actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
 
 actions.st+=/thunder_focus_tea
 actions.st+=/rising_sun_kick
-actions.st+=/blackout_kick,if=buff.teachings_of_the_monastery.up&cooldown.rising_sun_kick.remains>gcd.max
+actions.st+=/blackout_kick,if=!talent.teachings_of_the_monastery|buff.teachings_of_the_monastery.up&cooldown.rising_sun_kick.remains>gcd.max
 actions.st+=/chi_wave
 actions.st+=/chi_burst
-actions.st+=/tiger_palm,if=buff.teachings_of_the_monastery.stack<3|buff.teachings_of_the_monastery.remains<2
+actions.st+=/tiger_palm,if=!talent.teachings_of_the_monastery|buff.teachings_of_the_monastery.stack<3|buff.teachings_of_the_monastery.remains<2
 
 actions.aoe+=/thunder_focus_tea,if=active_enemies<=3
 actions.aoe+=/rising_sun_kick,if=active_enemies<=3
-actions.aoe+=/blackout_kick,if=buff.teachings_of_the_monastery.up&active_enemies<=3
+actions.aoe+=/blackout_kick,if=!talent.teachings_of_the_monastery|buff.teachings_of_the_monastery.up&active_enemies<=3
 actions.aoe+=/chi_wave
 actions.aoe+=/chi_burst
 actions.aoe+=/spinning_crane_kick
