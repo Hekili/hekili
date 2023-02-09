@@ -591,7 +591,7 @@ end, state )
 
 
 local aura_assigned
-
+local blessing_assigned
 spec:RegisterHook( "reset_precast", function()
     if not aura_assigned then
         class.abilityList.assigned_aura = "|cff00ccff[Assigned Aura]|r"
@@ -601,6 +601,12 @@ spec:RegisterHook( "reset_precast", function()
             class.abilities.seal_of_vengeance = class.abilities.seal_of_corruption
         end
         aura_assigned = true
+    end
+
+    if not blessing_assigned then
+        class.abilityList.assigned_blessing = "|cff00ccff[Assigned Blessing]|r"
+        class.abilities.assigned_blessing = class.abilities[ settings.assigned_blessing or "blessing_of_kings" ]
+        blessing_assigned = true
     end
 end )
 
@@ -1997,12 +2003,12 @@ spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
     values = function()
         table.wipe( blessings )
 
-        auras.blessing_of_sanctuary = class.abilityList.blessing_of_sanctuary
-        auras.blessing_of_might = class.abilityList.blessing_of_might
-        auras.blessing_of_kings = class.abilityList.blessing_of_kings
-        auras.blessing_of_wisdom = class.abilityList.blessing_of_wisdom
+        blessings.blessing_of_sanctuary = class.abilityList.blessing_of_sanctuary
+        blessings.blessing_of_might = class.abilityList.blessing_of_might
+        blessings.blessing_of_kings = class.abilityList.blessing_of_kings
+        blessings.blessing_of_wisdom = class.abilityList.blessing_of_wisdom
 
-        return auras
+        return blessings
     end,
     set = function( _, val )
         Hekili.DB.profile.specs[ 2 ].settings.assigned_blessing = val
@@ -2016,7 +2022,7 @@ spec:RegisterSetting("judgement_of_wisdom_threshold", 100, {
     desc = "Select the minimum mana percent at which judgement of wisdom will be recommended",
     width = "full",
     min = 0,
-    softMax = 100,
+    max = 100,
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 2 ].settings.judgement_of_wisdom_threshold = val
