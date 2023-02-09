@@ -2,6 +2,7 @@ actions.precombat+=/windfury_weapon
 actions.precombat+=/flametongue_weapon
 actions.precombat+=/lightning_shield,if=buff.lightning_shield.down&(buff.earth_shield.down|talent.elemental_orbit.enabled)
 actions.precombat+=/earth_shield,if=buff.lightning_shield.up&buff.earth_shield.down&talent.elemental_orbit.enabled
+actions.precombat+=/totemic_projection,if=project_windfury_totem
 actions.precombat+=/windfury_totem,if=time=0|buff.windfury_totem.down
 actions.precombat+=/variable,name=trinket1_is_weird,value=trinket.1.is.the_first_sigil|trinket.1.is.scars_of_fraternal_strife|trinket.1.is.cache_of_acquired_treasures
 actions.precombat+=/variable,name=trinket2_is_weird,value=trinket.2.is.the_first_sigil|trinket.2.is.scars_of_fraternal_strife|trinket.2.is.cache_of_acquired_treasures
