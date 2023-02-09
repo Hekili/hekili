@@ -9,15 +9,19 @@ actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in
 actions+=/pummel
 actions+=/potion
 actions+=/conquerors_banner
+actions+=/algethar_puzzle_box,if=cooldown.recklessness.remains<3|(talent.anger_management&cooldown.avatar.remains<3)
+actions+=/irideus_fragment,if=buff.recklessness.up
+actions+=/manic_grieftorch,if=buff.avatar.down
+actions+=/gladiators_badge,if=cooldown.recklessness.remains>10&(buff.recklessness.up|boss&fight_remains<11|boss&fight_remains>65)
 actions+=/use_items
-actions+=/use_item,name=algethar_puzzle_box
 actions+=/ravager,if=cooldown.recklessness.remains<3|buff.recklessness.up
-actions+=/blood_fury
-actions+=/berserking,if=buff.recklessness.up
+actions+=/arcane_torrent,if=rage<40&!buff.recklessness.up
 actions+=/lights_judgment,if=buff.recklessness.down
-actions+=/fireblood
+actions+=/berserking,if=buff.recklessness.up
+actions+=/blood_fury
 actions+=/ancestral_call
-actions+=/bag_of_tricks,if=buff.recklessness.down&buff.enrage.up
+actions+=/fireblood
+## actions+=/bag_of_tricks,if=buff.recklessness.down&buff.enrage.up
 actions+=/avatar,if=talent.titans_torment&buff.enrage.up&raid_event.adds.in>15|!talent.titans_torment&(buff.recklessness.up|boss&fight_remains<20)
 actions+=/recklessness,if=!raid_event.adds.exists&(talent.annihilator&cooldown.avatar.remains<1|cooldown.avatar.remains>40|!talent.avatar|boss&fight_remains<12)
 actions+=/recklessness,if=!raid_event.adds.exists&!talent.annihilator|boss&fight_remains<12
