@@ -11,13 +11,12 @@ actions+=/soothe
 actions+=/use_item,slot=trinket1
 actions+=/use_item,slot=trinket2
 actions+=/potion,if=((talent.heart_of_the_wild.enabled&buff.heart_of_the_wild.up)|((buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)&(!druid.catweave_bear&!druid.owlweave_bear)))
-actions+=/run_action_list,name=catweave,if=!tanking&druid.catweave_bear&buff.tooth_and_claw.remains<1.5&(buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down)&(cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5)|(buff.cat_form.up&energy>25&druid.catweave_bear=1&buff.tooth_and_claw.remains<1.5)|(buff.heart_of_the_wild.up&energy>90&druid.catweave_bear=1&buff.tooth_and_claw.remains<1.5)
+actions+=/run_action_list,name=catweave,if=!tanking&druid.catweave_bear&buff.tooth_and_claw.remains<1.5&(buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down)&(cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5)|(buff.cat_form.up&energy>25&druid.catweave_bear=1&buff.tooth_and_claw.remains<1.5)|((talent.heart_of_the_wild&cooldown.heart_of_the_wild.ready|buff.heart_of_the_wild.up)&energy>90&druid.catweave_bear=1&buff.tooth_and_claw.remains<1.5)
 actions+=/run_action_list,name=owlweave,if=!tanking&druid.owlweave_bear&buff.tooth_and_claw.remains<1.5&(buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&cooldown.starsurge.up)
 actions+=/bear_form,if=!buff.bear_form.up
 actions+=/call_action_list,name=mitigation
 actions+=/run_action_list,name=bear
 
-actions.bear+=/heart_of_the_wild,if=!tanking|buff.bear_form.down
 actions.bear+=/moonfire,cycle_targets=1,if=((!ticking&time_to_die>12)|(refreshable&time_to_die>12))&active_enemies<8
 actions.bear+=/barkskin,if=buff.bear_form.up
 actions.bear+=/bristling_fur
@@ -48,7 +47,7 @@ actions.bear+=/pulverize,if=dot.thrash_bear.stack>2
 actions.bear+=/thrash_bear
 actions.bear+=/swipe_bear
 
-actions.catweave=heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up&!buff.cat_form.up
+actions.catweave=heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
 actions.catweave+=/cat_form,if=!buff.cat_form.up
 actions.catweave+=/rake,if=buff.prowl.up
 actions.catweave+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
