@@ -1,0 +1,23 @@
+# APL v3.4.1-1.8.0 #
+actions.precombat+=/assigned_aura
+# TODO: Blessings
+
+actions+=/call_action_list,name=init
+actions+=/call_action_list,name=aoe,if=active_enemies>1
+
+actions.st+=/seal_of_vengeance,if=buff.seal.down&active_enemies=1
+actions.st+=/seal_of_command,if=buff.seal.down&active_enemies>1
+actions.st+=/seal_of_righteousness,if=buff.seal.down
+actions.st+=/avenging_wrath
+actions.st+=/potion
+actions.st+=/use_items
+actions.st+=/hyperspeed_acceleration
+actions.st+=/hammer_of_wrath
+actions.st+=/crusader_strike
+actions.st+=/judgement_of_wisdom,if=!debuff.judgement.up&mana.percent<settings.judgement_of_wisdom_threshold
+actions.st+=/judgement_of_light,if=!debuff.judgement.up
+actions.st+=/divine_storm
+actions.st+=/consecration,if=!moving
+actions.st+=/exorcism
+actions.st+=/holy_wrath,if=target.is_demon|target.is_undead
+actions.st+=/divine_plea

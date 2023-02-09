@@ -1925,9 +1925,46 @@ spec:RegisterAbilities( {
     },
 } )
 
+spec:RegisterOptions( {
+    enabled = true,
+
+    aoe = 3,
+
+    gcd = 21084,
+
+    nameplates = true,
+    nameplateRange = 8,
+
+    damage = false,
+    damageExpiration = 6,
+
+    potion = "speed",
+
+    package = "Retribution (wowtbc.gg)",
+
+    -- package1 = "",
+    -- package2 = "",
+    -- package3 = "",
+} )
+
+spec:RegisterSetting("paladin_description", nil, {
+    type = "description",
+    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
+        "to determine the optimal values for these settings for your specific character."
+})
+
+spec:RegisterSetting("paladin_description_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("general_header", nil, {
+    type = "header",
+    name = "General"
+})
 
 local auras = {}
-
+local blessings = {}
 spec:RegisterSetting( "assigned_aura", "retribution_aura", {
     type = "select",
     name = "Assigned Aura",
@@ -1952,31 +1989,42 @@ spec:RegisterSetting( "assigned_aura", "retribution_aura", {
     end,
 } )
 
+spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
+    type = "select",
+    name = "Assigned Blessing",
+    desc = "Select the Blessing that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Blessing]|r in your priority.",
+    width = "full",
+    values = function()
+        table.wipe( blessings )
 
-spec:RegisterOptions( {
-    enabled = true,
+        auras.blessing_of_sanctuary = class.abilityList.blessing_of_sanctuary
+        auras.blessing_of_might = class.abilityList.blessing_of_might
+        auras.blessing_of_kings = class.abilityList.blessing_of_kings
+        auras.blessing_of_wisdom = class.abilityList.blessing_of_wisdom
 
-    aoe = 3,
-
-    gcd = 21084,
-
-    nameplates = true,
-    nameplateRange = 8,
-
-    damage = false,
-    damageExpiration = 6,
-
-    potion = "speed",
-
-    package = "Retribution (wowtbc.gg)",
-
-    -- package1 = "",
-    -- package2 = "",
-    -- package3 = "",
+        return auras
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.assigned_blessing = val
+        class.abilities.assigned_blessing = class.abilities[ val ]
+    end,
 } )
 
+spec:RegisterSetting("judgement_of_wisdom_threshold", 100, {
+    type = "range",
+    name = "Judgement of Wisdom Threshold",
+    desc = "Select the minimum mana percent at which judgement of wisdom will be recommended",
+    width = "full",
+    min = 0,
+    softMax = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.judgement_of_wisdom_threshold = val
+    end
+})
 
-spec:RegisterPack( "Retribution (wowtbc.gg)", 20221002.1, [[Hekili:LA1xVTPpu0plvvQAtBLes)t(1P2(WER5HUFAuP9gGbFd4fWgzBswEXF231qc1qG2knfPGJ95EUxF4EpkH(HVegqjAi85fZxSWF(8fE(lxCZ1Hb69vqyqfjDdjdxWjL43)e0swsTMj4M4pTtStNK6LL9zlW9fcc1YNsultrW5ADL6BZM1bdxPl2mlTGOuxMvZOGAM8vgVSIuqOm(SWGKAwH(jEyYOv3v3HjPcsXTXSWOuOfjOsddEjNPmXvsMqY07nX2FLqua1eBlADoyI7Qit8VKeDUjUPA8cdkykTQruG1K6cnU85grc4KKcGg(9WGuKyqYi2YC9Apfqk8OIDi5xyIjPA2wic4qjdWu)Gj2pmWURGJvnInsSokviL1vn7PT3I)He84ejOSKWPw2V6dY(PKizz5AquR4GszP6Alvhrr2c8mgplANvcDtbI8gxKu2wghIQkaYay36cRs0(ShILUiQvqew8LQbG(VjVIOiq8QaSFKRnX3BIxo)v6(DnndkXtSx2DmfvuAz7o3u2dtHvqgKB)5UWZjLLGSHVruf)PBLE7xRhuqLwiBkr)fUjnvwRiumTkCwAdmmPxnY7IwMga86jRUZmXLcmWmNKk4kifVKhAI9V5T7ZWbViISvQjsV6QxPc(JqMYuT3SBNKgnrMbApMkIcLcN(1CrX(d6TLHETmQCguqpTBU3vhFNwjbCMjH86e)rgCCOIi1YHTWVZWlUTsHc3GrSJBBlSn4t1hys9dqvztdA7NGTGuzr0zEggGkpVjBbpvwjKARR4IwpfR5yJ7NNzLvoeRzfyR05NBI756))TM0Mv2tWy)rQwKasCnMfZkZQwYuEDk6xEygA4ZY4aTrahhYjkYxzRF40797hCJgmvWDHJbD0MZ6JbeEk0fuNN4f9hlFWFS4p41(Ur)4Or3RT8uoCdPVJR7jooSUB36O6UtNdQ7MJ4dAlexVZ7xoFYiACfDpDGj4ifAJ9JnhVLcnWwBkA6fIJPKL(ZADTCHC0SPtQpXyQ3vPZAXIFGduVxNt5ZqQ15cjo6D8)C0mCg(3p]] )
+
+spec:RegisterPack( "Retribution", 20221002.1, [[Hekili:LA1xVTPpu0plvvQAtBLes)t(1P2(WER5HUFAuP9gGbFd4fWgzBswEXF231qc1qG2knfPGJ95EUxF4EpkH(HVegqjAi85fZxSWF(8fE(lxCZ1Hb69vqyqfjDdjdxWjL43)e0swsTMj4M4pTtStNK6LL9zlW9fcc1YNsultrW5ADL6BZM1bdxPl2mlTGOuxMvZOGAM8vgVSIuqOm(SWGKAwH(jEyYOv3v3HjPcsXTXSWOuOfjOsddEjNPmXvsMqY07nX2FLqua1eBlADoyI7Qit8VKeDUjUPA8cdkykTQruG1K6cnU85grc4KKcGg(9WGuKyqYi2YC9Apfqk8OIDi5xyIjPA2wic4qjdWu)Gj2pmWURGJvnInsSokviL1vn7PT3I)He84ejOSKWPw2V6dY(PKizz5AquR4GszP6Alvhrr2c8mgplANvcDtbI8gxKu2wghIQkaYay36cRs0(ShILUiQvqew8LQbG(VjVIOiq8QaSFKRnX3BIxo)v6(DnndkXtSx2DmfvuAz7o3u2dtHvqgKB)5UWZjLLGSHVruf)PBLE7xRhuqLwiBkr)fUjnvwRiumTkCwAdmmPxnY7IwMga86jRUZmXLcmWmNKk4kifVKhAI9V5T7ZWbViISvQjsV6QxPc(JqMYuT3SBNKgnrMbApMkIcLcN(1CrX(d6TLHETmQCguqpTBU3vhFNwjbCMjH86e)rgCCOIi1YHTWVZWlUTsHc3GrSJBBlSn4t1hys9dqvztdA7NGTGuzr0zEggGkpVjBbpvwjKARR4IwpfR5yJ7NNzLvoeRzfyR05NBI756))TM0Mv2tWy)rQwKasCnMfZkZQwYuEDk6xEygA4ZY4aTrahhYjkYxzRF40797hCJgmvWDHJbD0MZ6JbeEk0fuNN4f9hlFWFS4p41(Ur)4Or3RT8uoCdPVJR7jooSUB36O6UtNdQ7MJ4dAlexVZ7xoFYiACfDpDGj4ifAJ9JnhVLcnWwBkA6fIJPKL(ZADTCHC0SPtQpXyQ3vPZAXIFGduVxNt5ZqQ15cjo6D8)C0mCg(3p]] )
 
 spec:RegisterPack( "Protection Paladin (wowtbc.gg)", 20221002.1, [[Hekili:LwvBVTTnq4FmfiibBv2YUljDOUFyFR5dDfqfOFtsuINL4cfPajLnmGH(TVJsXYK6LfdmeGiAE39CVYNlom(NXruIbI)(M1B2eUE9MGWN2882phhzovdXr1K8xjf4bbPc))pusdKBysrB6piCcLHhU)O8OjlpOO4bRbN4sc1cSw2OYrJknMA9FUA1GA4jd)1v5CIw)XIggf0RQhq(J19aVkokRHXnFteNnFu(m6JAihVgDcJsHEnbDEC0plz620AftQyMtTPzenqBtTbUPeAthcM20FPiMY20UajioIZ0gDxHb2tA4g8437kuGGKXbA8FfhLJGckgXQuwZ(9b5eTHjkcAQBtVdDbHdctGUKbCAICFc6ZeduvZjQafr8AB6U20TXrKUug)EaefGsN0BsSXMul5ZopQbcpGkpk6COfNdqciGkgGj(xBtdVIUvxBuKlRQiIo03()b9DlGUs1u3Dh6GpDJoykokwrPbKnAbO1wO(dluEvkSuNC022CDbQ5JUAszhyciPMdKrQ9KRA1Y(VEA8SRgnAibd(k9iL(8IP4BfmQeNbi5kG(wFTR0T2jLDfAHmC9KC1zQW39Hlpvo34qxN8E7SPQambmDcfQSVhoF29YgbfiyG(W1WOuYp9w5262Lhmjffk5i7CYTTU5wjPQcuxEBm0ZhNJFY1MCPqd5yGmTHf6nKC9HN)W0iBECXmbFMqcQbK)syAt)sB6toDT)PHwavOeRdoY0uzvhCEJvEkXTrHV3XFwRa8fzg5kfZfJvGrXYAS)iH0Ogp)UCh4nIhwfYNEaNSgs)K9nQtbxS5QJ8KFded41ATLPZ)T7LRTj7R4x9nqbCdqv1v36)l6a(sWQXWwG4OJeLOZBrFRQwQmwk(n98v2j7oQ8G2xqWBmLsfAWfAFB1xUNXX9tF4d4YSzwS9IvaI2FNBKzGcpJ(T9L2x6Hxhm0)(TDRWvzScbwXTTR5vXVw)7S97UTU18OnPIBbCAD99nURgVKXdMBtrF2iRjt2(D37U5B3wxmhTzAimgwpCNpv2xdNZ6UaJiYH31(DZAVhjXumMuegw)4kXzDJ719RxCVzyDIxO4UjWgclTcz36)JEIRORS2oWnugV7(r7boFE8oGhMGMt0zz69KppDURkUS3EP(8K1UQmdJRnkCzP)YtRx0c(ans8)o]] )
 
