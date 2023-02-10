@@ -8,8 +8,8 @@ local spec = Hekili:NewSpecialization( 5 )
 
 -- Sets
 spec:RegisterGear( "tier7", 39521, 39530, 39529, 39528, 39523, 40456, 40454, 40459, 40457, 40458 )
-spec:RegisterGear( "tier9", 48755, 48756, 48757, 48758, 48759, 48078, 48077, 48081, 48079, 48080 )
-spec:RegisterGear( "tier10", 51259, 51257, 51256, 51255, 51258, 51181, 51180, 51182, 51183, 51184)
+spec:RegisterGear( "tier9", 48755, 48756, 48757, 48758, 48759, 48078, 48077, 48081, 48079, 48080, 48085, 48086, 48082, 48084, 48083 )
+spec:RegisterGear( "tier10", 51259, 51257, 51256, 51255, 51258, 51181, 51180, 51182, 51183, 51184, 51741, 51740, 51739, 51738, 51737 )
 
 -- Resources
 spec:RegisterResource( Enum.PowerType.Mana )
@@ -163,13 +163,6 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
         copy = { 64844, 64843 },
-    },
-    -- Increases Spirit by $s1.
-    divine_spirit = {
-        id = 14752,
-        duration = 1800,
-        max_stack = 1,
-        copy = { 14752, 14818, 14819, 16875, 25312, 27841, 39234, 48073 },
     },
     -- Reduced threat level.
     fade = {
@@ -358,26 +351,12 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
-    -- Increases Stamina by $w1.
-    power_word_fortitude = {
-        id = 1243,
-        duration = 1800,
-        max_stack = 1,
-        copy = { 1243, 1244, 1245, 2791, 10937, 10938, 23947, 23948, 25389, 48161 },
-    },
     -- Absorbs damage.
     power_word_shield = {
         id = 17,
         duration = 30,
         max_stack = 1,
         copy = { 17, 592, 600, 3747, 6065, 6066, 10898, 10899, 10900, 10901, 25217, 25218, 27607, 48065, 48066 },
-    },
-    -- Increases Stamina by $w1.
-    prayer_of_fortitude = {
-        id = 21562,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 21562, 21564, 25392, 39231, 43939, 48162 },
     },
     -- Increases Shadow Resistance by $s1.
     prayer_of_shadow_protection = {

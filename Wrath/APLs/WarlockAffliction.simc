@@ -1,8 +1,8 @@
-# APL v3.4.1-1.6.2 #
+# APL v3.4.1-1.6.4 #
 actions.precombat+=/fel_armor,if=buff.armor.down|buff.armor.remains<180
-actions.precombat+=/summon_felhunter,if=!pet.active
-actions.precombat+=/summon_voidwalker,if=!pet.active
-actions.precombat+=/summon_imp,if=!pet.active
+actions.precombat+=/summon_felhunter,if=!pet.active&combat=0
+actions.precombat+=/summon_voidwalker,if=!pet.active&combat=0
+actions.precombat+=/summon_imp,if=!pet.active&combat=0
 actions.precombat+=/life_tap,if=glyph.life_tap.enabled&buff.life_tap.down
 actions.precombat+=/potion
 actions.precombat+=/shadow_bolt,if=talent.improved_shadow_bolt.enabled&settings.shadow_mastery&debuff.shadow_mastery.down

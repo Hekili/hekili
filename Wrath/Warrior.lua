@@ -21,8 +21,21 @@ local function rage_amount( isOffhand )
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) * ( state.buff.defensive_stance.up and 0.95 or 1 )
 end
 
--- TODO:  Anger Management (talent):  1 rage per 3s in combat.
 spec:RegisterResource( Enum.PowerType.Rage, {
+    anger_management = {
+        talent = "anger_management",
+
+        last = function ()
+            local app = state.buff.anger_management.applied
+            local t = state.query_time
+
+            return app + floor( t - app )
+        end,
+
+        interval = 3,
+        value = 1
+    },
+
     bloodrage = {
         aura = "bloodrage",
 
@@ -202,6 +215,12 @@ spec:RegisterAuras( {
             t.applied = 0
             t.caster = "nobody"
         end,
+    },
+    anger_management = {
+        id = 12296,
+        duration = 3600,
+        tick_time = 3,
+        max_stack = 1,
     },
     battle_stance = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=2457)
         id = 2457,
@@ -677,9 +696,21 @@ spec:RegisterStateFunction( "start_cleave", function()
 end )
 
 
+local shout_spell_assigned = false
+local main_gcd_spell_assigned = false
 spec:RegisterHook( "reset_precast", function()
-    local form = GetShapeshiftForm()
+    if not main_gcd_spell_assigned then
+        class.abilityList.main_gcd_spell = "|cff00ccff[Main GCD]|r"
+        class.abilities.main_gcd_spell = class.abilities[ settings.main_gcd_spell or "slam" ]
+        main_gcd_spell_assigned = true
+    end
+    if not shout_spell_assigned then
+        class.abilityList.shout_spell = "|cff00ccff[Assigned Shout]|r"
+        class.abilities.shout_spell = class.abilities[ settings.shout_spell or "commanding_shout" ]
+        shout_spell_assigned = true
+    end
 
+    local form = GetShapeshiftForm()
     if form == 1 then applyBuff( "battle_stance" )
     elseif form == 2 then applyBuff( "defensive_stance" )
     elseif form == 3 then applyBuff( "berserker_stance" )
@@ -728,7 +759,7 @@ spec:RegisterAbilities( {
             applyBuff( "shout" )
         end,
 
-        copy = 6673
+        copy = { 6673, 2048, 25289, 11551, 11550, 11549, 6192, 5242 }
     },
 
 
@@ -928,6 +959,10 @@ spec:RegisterAbilities( {
         texture = 132338,
 
         nobuff = "cleave",
+
+        usable = function()
+            return (not buff.heroic_strike.up) and (not buff.cleave.up)
+        end,
 
         handler = function( rank )
             gain( 20 - talent.focused_rage.rank, "rage" )
@@ -1195,12 +1230,17 @@ spec:RegisterAbilities( {
             if buff.glyph_of_revenge.up then return 0 end
             return 15 - talent.focused_rage.rank - talent.improved_heroic_strike.rank
         end,
+
         spendType = "rage",
 
         startsCombat = true,
         texture = 132282,
 
         nobuff = "heroic_strike",
+
+        usable = function()
+            return (not buff.heroic_strike.up) and (not buff.cleave.up)
+        end,
 
         handler = function( rank )
             gain( 15 - talent.focused_rage.rank - talent.improved_heroic_strike.rank, "rage" )
@@ -1865,6 +1905,264 @@ spec:RegisterAbilities( {
     },
 } )
 
+spec:RegisterStateExpr("main_gcd_spell_slam", function()
+    return settings.main_gcd_spell == "slam"
+end)
+
+spec:RegisterStateExpr("main_gcd_spell_bt", function()
+    return settings.main_gcd_spell == "bloodthirst"
+end)
+
+spec:RegisterStateExpr("main_gcd_spell_ww", function()
+    return settings.main_gcd_spell == "whirlwind"
+end)
+
+spec:RegisterStateExpr("shout_spell_commanding", function()
+    return settings.shout_spell == "commanding_shout"
+end)
+
+spec:RegisterStateExpr("shout_spell_battle", function()
+    return settings.shout_spell == "battle_shout"
+end)
+
+spec:RegisterSetting("warrior_description", nil, {
+    type = "description",
+    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
+        "to determine the optimal values for these settings for your specific character."
+})
+
+spec:RegisterSetting("warrior_description_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("general_header", nil, {
+    type = "header",
+    name = "General"
+})
+
+local main_gcd_spell = {}
+spec:RegisterSetting("main_gcd_spell", "slam", {
+    type = "select",
+    name = "Main GCD Spell",
+    desc = "Select which ability should be top priority",
+    width = "full",
+    values = function()
+        table.wipe(main_gcd_spell)
+        main_gcd_spell.slam = class.abilityList.slam
+        main_gcd_spell.bloodthirst = class.abilityList.bloodthirst
+        main_gcd_spell.whirlwind = class.abilityList.whirlwind
+        return main_gcd_spell
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.main_gcd_spell = val
+        class.abilities.main_gcd_spell = class.abilities[ val ]
+    end
+})
+
+local shout_spells = {}
+spec:RegisterSetting("shout_spell", "commanding_shout", {
+    type = "select",
+    name = "Preferred Shout",
+    desc = "Select which shout should be recommended",
+    width = "full",
+    values = function()
+        table.wipe(shout_spells)
+        shout_spells.commanding_shout = class.abilityList.commanding_shout
+        shout_spells.battle_shout = class.abilityList.battle_shout
+        return shout_spells
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.shout_spell = val
+        class.abilities.shout_spell = class.abilities[ val ]
+    end
+})
+
+spec:RegisterSetting("queueing_threshold", 30, {
+    type = "range",
+    name = "Queue Rage Threshold",
+    desc = "Select the rage threshold after which heroic strike / cleave will be recommended",
+    width = "full",
+    min = 0,
+    softMax = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.queueing_threshold = val
+    end
+})
+
+spec:RegisterSetting("general_footer", nil, {
+    type = "description",
+    name = "\n\n\n"
+})
+
+spec:RegisterSetting("debuffs_header", nil, {
+    type = "header",
+    name = "Debuffs"
+})
+
+spec:RegisterSetting("debuffs_description", nil, {
+    type = "description",
+    name = "Debuffs settings will change which debuffs are recommended"
+})
+
+spec:RegisterSetting("debuff_sunder_enabled", true, {
+    type = "toggle",
+    name = "Maintain Sunder Armor",
+    desc = "When enabled, recommendations will include sunder armor",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.debuff_sunder_enabled = val
+    end
+})
+
+spec:RegisterSetting("debuff_demoshout_enabled", false, {
+    type = "toggle",
+    name = "Maintain Demoralizing Shout",
+    desc = "When enabled, recommendations will include demoralizing shout",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.debuff_demoshout_enabled = val
+    end
+})
+
+spec:RegisterSetting("debuffs_footer", nil, {
+    type = "description",
+    name = "\n\n\n"
+})
+
+spec:RegisterSetting("execute_header", nil, {
+    type = "header",
+    name = "Execute"
+})
+
+spec:RegisterSetting("execute_description", nil, {
+    type = "description",
+    name = "Execute settings will change recommendations only during execute phase"
+})
+
+spec:RegisterSetting("execute_queueing_enabled", true, {
+    type = "toggle",
+    name = "Queue During Execute",
+    desc = "When enabled, recommendations will include heroic strike or cleave during the execute phase",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.execute_queueing_enabled = val
+    end
+})
+
+spec:RegisterSetting("execute_bloodthirst_enabled", true, {
+    type = "toggle",
+    name = "Bloodthirst During Execute",
+    desc = "When enabled, recommendations will include bloodthirst during the execute phase",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.execute_bloodthirst_enabled = val
+    end
+})
+
+spec:RegisterSetting("execute_whirlwind_enabled", true, {
+    type = "toggle",
+    name = "Whirlwind During Execute",
+    desc = "When enabled, recommendations will include whirlwind during the execute phase",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.execute_whirlwind_enabled = val
+    end
+})
+
+spec:RegisterSetting("execute_slam_prio", true, {
+    type = "toggle",
+    name = "Slam Over Execute",
+    desc = "When enabled, recommendations will prioritize slam over execute during the execute phase",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.execute_slam_prio = val
+    end
+})
+
+spec:RegisterSetting("execute_footer", nil, {
+    type = "description",
+    name = "\n\n\n"
+})
+
+spec:RegisterSetting("rendweaving_header", nil, {
+    type = "header",
+    name = "Rendweaving"
+})
+
+spec:RegisterSetting("rendweaving_description", nil, {
+    type = "description",
+    name = "Enabling rendweaving will cause Hekili to recommend the player swaps into battle stance and rends the target under "..
+        "certain conditions. This section applies only to the fury priority."
+})
+
+spec:RegisterSetting("rendweaving_enabled", false, {
+    type = "toggle",
+    name = "Enabled",
+    desc = "When enabled, recommendations will include battle stance swapping for rend under certain conditions",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.rendweaving_enabled = val
+    end
+})
+
+spec:RegisterSetting("rend_rage_threshold", 100, {
+    type = "range",
+    name = "Maximum Rage",
+    desc = "Select the maximum rage at which rendweaving will be recommended",
+    width = "full",
+    min = 0,
+    softMax = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.rend_rage_threshold = val
+    end
+})
+
+spec:RegisterSetting("rend_health_threshold", 20, {
+    type = "range",
+    name = "Minimum Target Health",
+    desc = "Select the minimum target health at which rendweaving will be recommended",
+    width = "full",
+    min = 0,
+    max = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.rend_health_threshold = val
+    end
+})
+
+spec:RegisterSetting("rend_cooldown_threshold", 1.5, {
+    type = "range",
+    name = "Cooldown Threshold",
+    desc = "Select the minimum time left allowed on bloodthirst and whirlwind before rendweaving can be recommended",
+    width = "full",
+    min = 0,
+    softMax = 8,
+    step = 0.1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.rend_cooldown_threshold = val
+    end
+})
+
+spec:RegisterSetting("rend_refresh_time", 0, {
+    type = "range",
+    name = "Refresh Time",
+    desc = "Select the time left on an existing rend debuff at which rendweaving can be recommended",
+    width = "full",
+    min = 0,
+    softMax = 21,
+    step = 0.1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.rend_refresh_time = val
+    end
+})
+
+spec:RegisterSetting("rendweaving_footer", nil, {
+    type = "description",
+    name = "\n\n\n"
+})
 
 
 spec:RegisterOptions( {
@@ -1880,6 +2178,8 @@ spec:RegisterOptions( {
     damage = false,
     damageExpiration = 6,
 
+    potion = "speed",
+
     package = "Arms (IV)",
 
     package1 = "Arms (IV)",
@@ -1890,7 +2190,7 @@ spec:RegisterOptions( {
 
 spec:RegisterPack( "Arms (IV)", 20221021, [[Hekili:DAvtVnUnq0FlblGrc6kfjN6SzdsmqB3ljhso4GT3KiT04iIqjkqszVgiG)27qkBjk5pArpKyBYHZ84BM5nmjo5TKf5unK8Y0OPtJJMghgFZ04P3LSqVTgswutZ(G(o(LkAj())qwQmKlF6Nxz3AlxqZTUqjAKz42fADT6(RVEZMnHSSTbRbwLkmtuE9gHM)rqgNQuSSRPOBc2qLsMqgKxRcQxdbsHMQzIQGmHGNl2uPcOlzCMMbQKflByC9tvjlpoG)gcIAil5LyefS8CO1sqLLS4Tcgc6ABWy6TgI9xlPki3qeRwzi6cWqEkd35Nw8AiV3WYHWKfCMsRS3pQaWpEXrx0mliXWTbGAw17PkTK9HfIqfDjhYt(ZencpRT9R0DmDrtvoitrQOUfGswD7wV96pE9Ed5hGgKLSkWImjOkq2WqwjKgYB)LHSwfAiVUgK1InGerj6a8amABmwdPqfuICMHm3qUXILB8XTy)rhb4F33OHOCGDZgDXoi85cDOeQYDXpYqMyi7ZOH((fnQKI8DFuxYPiHOfYsBGU9KbsIvKoVFxu)HZ4aDnGhuBP1v0gU(GCwDtzjWpwMQlRwdCEQewXHDRmW2bmzwbvABnoKgpjQdrKXYyAh6Ng5F1fICRfNNIx2SAvOZwEJsh2u7O3CWTUQGQT2H1KyHJytOLY9UAJ2(8C8fy1hl7d06EpyZQ2t9T)Tsa)kWypcJICB7psT9wTDyPTsl2Em033DsFFz)fTTicvreYqLgLOmKhmKzgYNFECJ2vQT3SRC02fD2c)QwOGD2UJu12KRouZkHuTinN1wYfpZJr9cHf7F))sFwCKVvnyyXly5y5J44tYdDnt9Tl49JMVD41FCXqtTFIm7doOuv4FUOnOhWRnCeOgu(d)cYA0JR)JpFdGJdV1RWVaKcw2oruNdoD1pMWkfRhusQ4uNyr8T(qdZhAkFVthaqSORgV(IYL0E9Ht3RHvxvzWOoj8OAoK2U3Xe7h3WUZ(crJ25kxb2UEzmfytsIvPLS3l0Niu2J2jaD6ivUn9GG51)jklPv5UHw7COJqWkvL1a3m1OVpflXXHZvODyz5tL1iBAhwEJH06jdXnzm08SLmfRyCKK)YxmK2Nh83Td2TVtOBO6vMNTgydqqCuW0yZZMNB9MkSlH8BpE9aU9RSvpoonC(JzVwDN6aQyYz48J73XuwNVpgt7DNWJ2oSXFLXdx83RDyI)kDJeSX0F4X8Prd86Oo9(RV3CIjNBgHV3SA8wpCXo1)byCK(9xTk3pIc32dmu6FE8ai6juAT9YtkK)WSp)8mc4pm7QjxCCr7jhkyppEMpk6uK9xStaEij0RpAX7jLC7b7HYTdZL7pN)Q7uq9xAGC4(e)8BhMWrnpxkQvm0FRbcF(TyysYEYrVzfBkXhv()5zNJ9S)d7os1WnJT)WCXrC0496zrVqS)5MZJMC2Nzo2zTVxSJIDpLSrxGtYx0lB50ht(Np]] )
 
-spec:RegisterPack( "Fury (IV)", 20220925, [[Hekili:fAvxVTkoq0FmxPQwTlKV2092v9Mh2hUsTp0xO6UVb4yMuSIbJShs2iv5F77yObmKqwv1KGNzoZ5yp(iIxe)ECugdH43woF5Y5pTCD4IVVA18hJJWtvqCufJVN9b9Jswb95pR1NSP3)YVEWf6KuXYCqyu1AofohXkZFnB2XJhdf8tbharPjKRkMDuHY9bCjZye8z7iycoY0AHshKvzcQoabAfYqHQmGRuYm1XstaBRqkqbyIJ2wlK4lLXBhtyQ7vap(Tfu7fzzqBkGHhh9EUWytRCDrGeVDpTLzGmBQQ0MI5Gn9fof4xoEAt)OwKbHKY0QDcjPNV9nBARK)NwY60ExbpyF1LGJibZFky5A7R2xzCNgmHvAG09wg(B)y2wqBa9EqNyqwjh(DXUFSTE3UW2hdDIDIkzikHetUQg7QYFXBul9JcwzMO8Jr1xCk5kq0bcvAvDrbi9xH2JLYenStcnR5htuIaD8xH(lUvQuzAA0X1w33HzWobxGBwoFaW5evaTJLyUwDSxLoaK1gmSU6UmOD)AuYdvpHwgWW8KJctU)Q5Gwj4jUPoh8NNVc7iEOgkyUraVIODY9sWykP)7ivp(eR(8ZPOvDLps1girGqXa4n1Lz0abtxO0o4V)mwER7Mp47FEDFJ8d(fNFE9d3Hm9hagIIcibvjzcyZI1(DJZOtV2htKctZSG7Xdqcucf0nSnlU40dZfAZGdvJKvm8aYutD2Dc1TPEKQsEuuMDMG9H8q9A74FDmzqTyF3yZMhhmUa)lWRrW)MgtbuGU2ooaM3UPrEpvxr2RgNpxcSd(Tpo6aD)LYW3ZHmVkPZBYy6LIkLgDEkRSPTqztD7XMq7RXrSAmxPP06SnIJAI68nPosF9wJnCBPeYNfsCeuY2kHS4)ogPE7sQFLio5PrZCS2k7vKnDdrLE881VdNvtIJtVnv7085YB3oOcrNR6owTeVGYT2fxJVNZyS9XOCx5NB3TYrj9h3K4NTxAeWspb0ze5Wy9KyCHNJn9oB6T8D8u3OWUo9OVK6TngPP)Cs(mTjvpSE(AoW((Tf3aVlB6NFoT8QR6BIVpORlp5lSoRTr6AX8j5Y99T9cRoB6Z201d52vS8oN2dnNrxA(1mdSyT3bKhin0BXi61nTpYN8)5A2IgWgmP75XnEpz6BEx6N2OSP9uhg(k(QEAN8SBA)TV)CXf)bUXnaS2xNFzepuJO7DN(6nq6CjMwXEV(J3g4Oxw62EFx)fI8qZl0TD)M8vJ8Mog9gvX9)f)Fp]] )
+spec:RegisterPack( "Fury (IV)", 20230209, [[Hekili:fJ1EVTTnq8plgfiqUj1ZkPjzfi2aByyyTyOyaEy7)0dlrxRfzjpkQ4Lcd9zF3rQhKuKs2zbDyRTj6iVN8E9ZZ1739wfhYiEF(65xFZ8RN)HzUxp)o3p4TI98EI3Q9Hrpg(f4hYc3b)9pxsFUkW5J)XuK0ZP5HXilkYlPrazVvRltszFmZBTz(EhC29KiVp76TABsCmrCssrudV)ZqknjNwfSh)Neg8Pn4V(lKhtstaPsZ3KKcY6nvb)WV9RvbpDZS3pZ9DUZUF28QG3u9PWiwsEwXS9usu(U1HSlx8DRj0cc9rc1VGfMfrUkzZI1LB2mt8RZIZpKz(MWpSlmloj7l(fBZlz4n5)GpyiPP(D0VGZWDp7dxKLsehNZ5wk6mBa5kZeDzkO9YLxRer7leyO4x9ttkyxHb6fjzjm5tvuMfdoVq6UCkQnpfstcxNsMHSnn2xq)I2pt2rOFHKf9CnfzETVC3osQ8xOLz9vbRHmDcZk3poZQDrACs(RNcBIjBizfjp1Jt6e4mRlWIUtGNnUhbZyj7i(SC)4eYvpfMwsw4et4CJrdHBabTyWv9mWRlUz(8PhpYcbNkBM0fhreK)HevYi(73gw0iKAMSLeMY2oBFe7HRNpcBAcYPH78ZFcC818TMJt6c7YY74XccJbMrr735CatSpnbUonppMTnHc()Zvus31NKHxj(0e6b4oPhsYIpBr2EZZtGImKAP1YuXtHAInmSlbt6nWshNBFx9lh58uS2w0JtFRJ7SBVmfkgdPJtNE5nJOvyfCnLAsn33f(x51m3NsIl5SbEEE8OJj5dVBTQwpC70r0JDqoad(JMQ06bK1t7YzXTgPrji7lE4(lIYZtXQIZKEW0qUJyBOTL0erfe8sfLqgLC5dljJA1eRTOZWZ1O1qa90EArjTpJhYox29SdVHFZz9zBPeGvPXd4joNld93EmLuuKb)P9(G10DIysiBR)HKITk0n4TB8qOqB9mA6cLSb1bFmBPMhkQaWLj11VBfl8nkmXZSOskWd2YfUZv(WdleSg(KKj2RQQUBrqP7gJeaX7CGecnuYYpOxBOHi2IOxLbPqVCli9UM4igO7eTJRkli(5q1MVefVWfBQXnyOPwsucBPC)bdSzlHMNeb)on5rBSQ1z2Ad)DjPKGgqNpeLbyWKmYUesXcxlrmNtVICRqQ9sth0qIsrh(RNfS8BUfCIJP5ySi6XJTFwR27WcTl3bf5iTkUyI56Dhpoqj8bfpgUsyKDfQbUHFYc72qHzPjXWmErKucnep7zWbCsMU5ivQlHopKd1dRJNSx2zVrPgprTEoidrvjY6cFnBqg3nRJb22suNPho8sDnFRCdVcg9GSqoHg5It)MiDpO3cBzqO1fkYpa0goF6uCf29XJKQczvHPjFvDDwTzoXtjw3SP5stsB)7pMevx8QxP1w3Vs)oL(wYmaTCn3PQxiTSGjp9KUVxDFBDE3BLZE6RJXXOWOTHbKWpRm5G78Px4y)zXXJt6zjtTRT8H7aDAI6UM6RIoQD5TcsalG72bwJ3QdHuCd0cVvFC3(CkdwMj4UQaHqQcWvIlMv9jVvHLST5uVv)ezZxdJ26TItIJReztyzkd(XpZXzQ(XK3pcxIZgVv6GpiUTVaRjCUipgOuAxoIMGoUqqVn2ERk4IQaRir0jC5onOCUbLtdrbifYYfoX7TQjI4wFGj6yOgEckwQ(frzD7iYsd6ItuqY3cLYDdlfdWACAcs)IEyKCvl(wd9MONZGdpinzVGSjm)6P31AlMpo8liZi5XFbjgJXa6AkunIWM0dCnYTVZgvBeI91ttKVSiAWZVmeiYHym0sO7Qn5s4pb7H4TYPkWgsvCv6M5quzAvWXJvb9XSIZW63jYF2qGACvP3ExvbpufC9CzHOmJTPiW4IzICffz2jms7aDjRh2g6XuPLxFvYaGyguoPtzQk0RVA1d0mdkv7zmvYACvAym1uBxiJTAWYQah()FBvW7AFZ3Fdf(J93YpjcntWLqdsbEBCkt5F5gtpfeTKaR6(Z2QM0Qq221s4XDmR41PQdytpWT7PYQT86IOw)9VeT24YNJPml4kJLZuJ(dxLVNFQHq7s9a9WZItEsDDvLrRL9eABiJoJpC2oJZmUiBMW7mLsC6t5a6J78ZwHg2TTCHu(RfS(g15E(mXeOH8CtEUM8j7dEOY5mguL92YqjcE5EAQmCIkCudGhfAkBfYPiVtGWH4o3abu(gGAKFsdT967y1HC0qbi8C83kN)qadHgPAnvzzjPckR8jgjrD(udZMOpfS0MskPnM27tAYFnYdpJOJLYjnfynU5NGKwaveONY1uh7kBZTvEV2ALthAuzPf7qN3GtBcSxzCEXtbMb2oyGqgQyE6go8vRg2aXSjvZUlVFgYaOUYDNOa7qEL3VWD0uuho5ZACfD8yvIhkiHFEbJ)7w8Y)pSybK5Mmv77kpWw7owNoavTNSapTIgPVvV99OhD6jHV0wtAuJgzGLoTQRjq7iSAUS2J2INTg4d3p0LSaOTgl0hxZu1uL(IgGY2yP9(R00fpasMMoY(7bzCCnOeRzALx62wP3ep2fshoVgeXHdDIqz3JETjh1d(c8uUNoGxY2VvNI9IowDk2mF7j1oMN2rojXuBUPY9F6kxXfgpZTHAR3s5bT7i4xPn(EppT(wxsqXmgM4ALhmImUC(VozU8TNq(KrGX7dNJT((mdyW10g3wrK(Jti7SB(pV)n]] )
 
 spec:RegisterPack( "Protection Warrior (IV)", 20221003, [[Hekili:vAvuVnQrq4FmN0Pg1dmy3KEPsjp03sEiQsC66BaRHXHvEHfT7IrUYA)T3zal8cyOQksXMz)MzN5BM5Zehg)J4OCMbI)yBW2THbb78dEo4XGVhhzoxdXr1SSJSpXVuXkX))xkPbYmCzLn9VzkfxQSP)YB)8bc5zHKLtrulBuzi6cJPw)hB20226ZZo7Dc4vA)mz5MwPrC0ltW0AE2M6HO612hupdR6Ox9jWdpI1DsMukYLTvAp2EUGB4GooAFdxyERkE)ILHUgYI)ietgEEo0Je0zXr)OGRTP10TXnNTP0t7zAi3MsvNPaSPVLHh8tkRTPF2WZb)4ibxB0uvYKa(XhDCiRl7rsROPkhujyLvhhbvS9cip(pJnyM5ItxiZo2YobtaTZfKcobvFofYVrqUzjkdtFqXziESrztF1M(uWTGKja6Am4FyHFG1imZY66MYsqSE(YbrEcYpfRLXizlejk4GaUAzEQpKyfm1SI7rxe7fszUInd0tUGA0qcsaL6jG(9fPP9nho43fBrJ243uBt)Qnnh6SRlygcx1NjMcLS1Ng5C5HXht303x8MOHye6CAuGDFY1NxpjDHJ55S4OfSskmHblghYJtqcubL4ct30rOtpGHTR(hsO56(P7K(DDA(McE4IbFm3KdLsftW)hIDWb8gtN7B)VhPd3DNzTUIBcULN91OkHp2Bq5QKAzlO6k1DpgeytVCXMUopCBDKULrdH5Wjgf8z58t))2dlaLKNLOnk(XRRJ1ka1c3ZUTqUYOaolLb(tz8dqLMQR(JhwBxzUh5ib03EMen3Jg2SxosLNtwjyyHvYQYDhf6Q5tGsta6eQdEE7JXrOKFfIdxGFRSwQmKc8U(ogje3P36BFhJDJPqQqydQYehkpWfyZ5lFXMUWVona)b77em6Q9cd8c2zF3(E)9O9h6g)6lBMsSFJF4LPTH77PlLm41mE6((oLZg8)EuTtQJU2RG7AXrXEK5jk0UN1Ri7Azqb214GI74RBSW4TA3rO9RRjYEVKNe(OiDvi9oqivIBDNX6LJQTjkDFJ04EbL4iNhlo8AORJZv1ipMMWx11wibhB(QudfMzQwVskwxUSEcDvqY14i1fkYut71NcChWXIfr6(gktpBi3MEW0Y7Q5(3TW5662XJ)3)]] )
 

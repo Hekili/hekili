@@ -8,6 +8,38 @@ local spec = Hekili:NewSpecialization( 2 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
 
+spec:RegisterGear( "tier7", 43794, 43796, 43801, 43803, 43805, 40574, 40575, 40576, 40577, 40578 )
+spec:RegisterGear( "tier10", 50324, 50325, 50326, 50327, 50328, 51160, 51161, 51162, 51163, 51164, 51275, 51276, 51277, 51278, 51279 )
+
+-- Hooks
+local LastConsecrationCast = 0
+spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if sourceGUID ~= state.GUID then
+        return
+    end
+end, false )
+
+local aura_assigned
+local blessing_assigned
+spec:RegisterHook( "reset_precast", function()
+    if not aura_assigned then
+        class.abilityList.assigned_aura = "|cff00ccff[Assigned Aura]|r"
+        class.abilities.assigned_aura = class.abilities[ settings.assigned_aura or "devotion_aura" ]
+
+        if faction == "horde" then
+            class.abilities.seal_of_vengeance = class.abilities.seal_of_corruption
+        end
+        aura_assigned = true
+    end
+
+    if not blessing_assigned then
+        class.abilityList.assigned_blessing = "|cff00ccff[Assigned Blessing]|r"
+        class.abilities.assigned_blessing = class.abilities[ settings.assigned_blessing or "blessing_of_kings" ]
+        blessing_assigned = true
+    end
+end )
+
+
 -- Talents
 spec:RegisterTalents( {
     anticipation                    = {  1629, 5, 20096, 20097, 20098, 20099, 20100 },
@@ -99,14 +131,14 @@ spec:RegisterAuras( {
         aliasType = "buff",
     },
     active_consecration = {
-        duration = 8,
+        duration = function() return 8 + (glyph.consecration.enabled and 2 or 0) end,
         max_stack = 1,
         generate = function ( t )
             local applied = action.consecration.lastCast
 
-            if applied and now - applied < 8 then
+            if applied and now - applied < 8 + (glyph.consecration.enabled and 2 or 0) then
                 t.count = 1
-                t.expires = applied + 8
+                t.expires = applied + 8 + (glyph.consecration.enabled and 2 or 0)
                 t.applied = applied
                 t.caster = "player"
                 return
@@ -551,6 +583,7 @@ spec:RegisterGlyphs( {
     [56420] = "holy_wrath",
     [54922] = "judgement",
     [57955] = "lay_on_hands",
+    [405004] = "reckoning",
     [54929] = "righteous_defense",
     [63225] = "salvation",
     [54925] = "seal_of_command",
@@ -588,21 +621,6 @@ end, state )
 local mod_art_of_war = setfenv( function( base )
     return base - 0.75 * ( buff.the_art_of_war.up and talent.the_art_of_war.rank or 0 )
 end, state )
-
-
-local aura_assigned
-
-spec:RegisterHook( "reset_precast", function()
-    if not aura_assigned then
-        class.abilityList.assigned_aura = "|cff00ccff[Assigned Aura]|r"
-        class.abilities.assigned_aura = class.abilities[ settings.assigned_aura or "devotion_aura" ]
-
-        if faction == "horde" then
-            class.abilities.seal_of_vengeance = class.abilities.seal_of_corruption
-        end
-        aura_assigned = true
-    end
-end )
 
 
 -- Abilities
@@ -1074,6 +1092,7 @@ spec:RegisterAbilities( {
         texture = 135903,
 
         handler = function ()
+            removeBuff("the_art_of_war")
         end,
 
         copy = { 5614, 5615, 10312, 10313, 10314, 27138, 48800, 48801 },
@@ -1115,6 +1134,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "divine_favor" )
             removeBuff( "infusion_of_light" )
+            removeBuff( "the_art_of_war" )
         end,
 
         copy = { 19939, 19940, 19941, 19942, 19943, 27137, 48784, 48785 },
@@ -1472,7 +1492,7 @@ spec:RegisterAbilities( {
     judgement_of_justice = {
         id = 53407,
         cast = 0,
-        cooldown = function() return 10 - talent.improved_judgements.rank end,
+        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7_2pc == 1 and 1 or 0) end,
         gcd = "spell",
 
         spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
@@ -1498,7 +1518,7 @@ spec:RegisterAbilities( {
     judgement_of_light = {
         id = 20271,
         cast = 0,
-        cooldown = function() return 10 - talent.improved_judgements.rank end,
+        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7_2pc == 1 and 1 or 0) end,
         gcd = "spell",
 
         spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
@@ -1524,7 +1544,7 @@ spec:RegisterAbilities( {
     judgement_of_wisdom = {
         id = 53408,
         cast = 0,
-        cooldown = function() return 10 - talent.improved_judgements.rank end,
+        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7_2pc == 1 and 1 or 0) end,
         gcd = "spell",
 
         spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
@@ -1926,8 +1946,29 @@ spec:RegisterAbilities( {
 } )
 
 
-local auras = {}
+spec:RegisterStateExpr("next_primary_at", function()
+    return min(cooldown.crusader_strike.remains, cooldown.divine_storm.remains, debuff.judgement.remains)
+end)
 
+
+spec:RegisterSetting("paladin_description", nil, {
+    type = "description",
+    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
+        "to determine the optimal values for these settings for your specific character."
+})
+
+spec:RegisterSetting("paladin_description_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("general_header", nil, {
+    type = "header",
+    name = "General"
+})
+
+local auras = {}
+local blessings = {}
 spec:RegisterSetting( "assigned_aura", "retribution_aura", {
     type = "select",
     name = "Assigned Aura",
@@ -1952,6 +1993,81 @@ spec:RegisterSetting( "assigned_aura", "retribution_aura", {
     end,
 } )
 
+spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
+    type = "select",
+    name = "Assigned Blessing",
+    desc = "Select the Blessing that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Blessing]|r in your priority.",
+    width = "full",
+    values = function()
+        table.wipe( blessings )
+
+        blessings.blessing_of_sanctuary = class.abilityList.blessing_of_sanctuary
+        blessings.blessing_of_might = class.abilityList.blessing_of_might
+        blessings.blessing_of_kings = class.abilityList.blessing_of_kings
+        blessings.blessing_of_wisdom = class.abilityList.blessing_of_wisdom
+
+        return blessings
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.assigned_blessing = val
+        class.abilities.assigned_blessing = class.abilities[ val ]
+    end,
+} )
+
+spec:RegisterSetting("holy_wrath_threshold", 2, {
+    type = "range",
+    name = "Holy Wrath Threshold",
+    desc = "Select the minimum number of enemies before holy wrath will be prioritized higher",
+    width = "full",
+    min = 0,
+    softMax = 10,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.holy_wrath_threshold = val
+    end
+})
+
+spec:RegisterSetting("general_footer", nil, {
+    type = "description",
+    name = "\n\n\n"
+})
+
+spec:RegisterSetting("mana_regen_header", nil, {
+    type = "header",
+    name = "Mana Upkeep"
+})
+
+spec:RegisterSetting("mana_regen_description", nil, {
+    type = "description",
+    name = "Mana Upkeep settings will change mana regeneration related recommendations\n\n"
+})
+
+spec:RegisterSetting("judgement_of_wisdom_threshold", 70, {
+    type = "range",
+    name = "Judgement of Wisdom Threshold",
+    desc = "Select the minimum mana percent at which judgement of wisdom will be recommended",
+    width = "full",
+    min = 0,
+    max = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.judgement_of_wisdom_threshold = val
+    end
+})
+
+spec:RegisterSetting("divine_plea_threshold", 75, {
+    type = "range",
+    name = "Divine Plea Threshold",
+    desc = "Select the minimum mana percent at which divine plea will be recommended",
+    width = "full",
+    min = 0,
+    max = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.divine_plea_threshold = val
+    end
+})
+
 
 spec:RegisterOptions( {
     enabled = true,
@@ -1968,15 +2084,15 @@ spec:RegisterOptions( {
 
     potion = "speed",
 
-    package = "Retribution (wowtbc.gg)",
+    package = "Retribution",
 
-    -- package1 = "",
-    -- package2 = "",
-    -- package3 = "",
+    package1 = "Retribution",
+    package2 = "Protection Paladin (wowtbc.gg)",
+    package3 = "Holy Paladin (wowtbc.gg)",
 } )
 
 
-spec:RegisterPack( "Retribution (wowtbc.gg)", 20221002.1, [[Hekili:LA1xVTPpu0plvvQAtBLes)t(1P2(WER5HUFAuP9gGbFd4fWgzBswEXF231qc1qG2knfPGJ95EUxF4EpkH(HVegqjAi85fZxSWF(8fE(lxCZ1Hb69vqyqfjDdjdxWjL43)e0swsTMj4M4pTtStNK6LL9zlW9fcc1YNsultrW5ADL6BZM1bdxPl2mlTGOuxMvZOGAM8vgVSIuqOm(SWGKAwH(jEyYOv3v3HjPcsXTXSWOuOfjOsddEjNPmXvsMqY07nX2FLqua1eBlADoyI7Qit8VKeDUjUPA8cdkykTQruG1K6cnU85grc4KKcGg(9WGuKyqYi2YC9Apfqk8OIDi5xyIjPA2wic4qjdWu)Gj2pmWURGJvnInsSokviL1vn7PT3I)He84ejOSKWPw2V6dY(PKizz5AquR4GszP6Alvhrr2c8mgplANvcDtbI8gxKu2wghIQkaYay36cRs0(ShILUiQvqew8LQbG(VjVIOiq8QaSFKRnX3BIxo)v6(DnndkXtSx2DmfvuAz7o3u2dtHvqgKB)5UWZjLLGSHVruf)PBLE7xRhuqLwiBkr)fUjnvwRiumTkCwAdmmPxnY7IwMga86jRUZmXLcmWmNKk4kifVKhAI9V5T7ZWbViISvQjsV6QxPc(JqMYuT3SBNKgnrMbApMkIcLcN(1CrX(d6TLHETmQCguqpTBU3vhFNwjbCMjH86e)rgCCOIi1YHTWVZWlUTsHc3GrSJBBlSn4t1hys9dqvztdA7NGTGuzr0zEggGkpVjBbpvwjKARR4IwpfR5yJ7NNzLvoeRzfyR05NBI756))TM0Mv2tWy)rQwKasCnMfZkZQwYuEDk6xEygA4ZY4aTrahhYjkYxzRF40797hCJgmvWDHJbD0MZ6JbeEk0fuNN4f9hlFWFS4p41(Ur)4Or3RT8uoCdPVJR7jooSUB36O6UtNdQ7MJ4dAlexVZ7xoFYiACfDpDGj4ifAJ9JnhVLcnWwBkA6fIJPKL(ZADTCHC0SPtQpXyQ3vPZAXIFGduVxNt5ZqQ15cjo6D8)C0mCg(3p]] )
+spec:RegisterPack( "Retribution", 20230210, [[Hekili:1AvBVTTnq4FlbfWibBvZYXjPdOoaDyFyTyOOyAFws0sNT4SKOajLB9GH(T3JKXYKkKEjOyFXwG3dV75EH3DPXP)DAsjrcPFEX8f3oFr88O4L3Ty5Y0e5HoinPJuSJSf)OL0G)(xGKtx3lPSwLSd1msPshcwpVaLNMSUNwl)yB6ApkE5dX3Jy7Gc840KkAzjyqcIchLpK)fsnPKIFWzsI5Onm(q(Fa7O100KAQqk00h2q6RL4NFw7oqlzDnuM(BPjfCQe4usAY26dDvrCOyhRL2Un6jqd5ZgYVEixs4BbzevKTMjed5hpoKxcR73SjsYju1vYk7BAoe13nKFtAcPWecQiTLzSnzJAovQCTq0qRrbqQJkzFTvBDLM2dzql0qb00RgYJpRFfwL(3dTBbslgIr9F7pI(F0R(lynnORO0(sL2pjNOmSY7)kNiRSTkI8oBKDmZ)oiU3grVaYqI2iMa6Hl7oUuata2r)MgGR4VHEOYENTfRWsyowUbLzKIcOg4epK8xdA)RgRc(N(YTqd0k1fayyfJwKiu7f4zd5VFixasjYsXzOAErfLSMmzfhevS6YZCZdmfzIN)kztanwt3wj1km8JcKYy9EBVissbE88SfDftlalP7PTqMqY4g(fU4g5xddrVnyDNwql8nzwhN2q4hYisTK5r3PLHQWKZnxUG1kGctsZXvTfOz1ToP9jLfUP74Lb9aNobLqJQPJQvW5d7Blbc224g)(4kR6amDFWqaFP)Zs1C6UGCkCH2tPMUAG4ZcwI1M4(GM4YTiEwfWd2X6cEVGuIrBb27Ehmnw78C0rttag(r4RnPy6AxbzeU5TfHF6rBGsVZme(gJxqfA)Cr4xI)FucVi87u)Euawh(95RiqgOovIT5XjDSM1eVZBpDj(5b5zKEoXmGNt7mI)Wx(ZH893gTmk(TXrVlA(q(BM0ibDVloi1az0GiaHqnJaJo7upo0KfP7ES)VcX4wiPjy0Rvdj5JnDmUuTfWcZBzverVxr0WNuUkBdTglPFZqUpkp8jZDerJbLFA1VqqISTvnXbD8FMUz1vyX3LrEI9JOhXJOE2ggkubwNz21UlYC8yOLyUX2epBjdLjCxLyMBpIvX(U)tlr8FE7hDUT78DBjMvkSpzCfc3iKt7(rZ)SfhCUK)vdSH4zcTod5zi8m7U0V)LTkqqtPhDhYs23YUFQcVV55Uzk7MoAlygy)S8ZSjD4Ee7Un7Ql0x7c5dhrJDtuw)6jTJoECAROBMYSvxC8QNGJA8NYw(tqEhHEPqSlDEARg7aS74WqQY(8tDVFPre)td8LXUuM)hjbBZ4atBFX5C)JGudG6LvmEAYVdB(xsHz6t63)d]] )
 
 spec:RegisterPack( "Protection Paladin (wowtbc.gg)", 20221002.1, [[Hekili:LwvBVTTnq4FmfiibBv2YUljDOUFyFR5dDfqfOFtsuINL4cfPajLnmGH(TVJsXYK6LfdmeGiAE39CVYNlom(NXruIbI)(M1B2eUE9MGWN2882phhzovdXr1K8xjf4bbPc))pusdKBysrB6piCcLHhU)O8OjlpOO4bRbN4sc1cSw2OYrJknMA9FUA1GA4jd)1v5CIw)XIggf0RQhq(J19aVkokRHXnFteNnFu(m6JAihVgDcJsHEnbDEC0plz620AftQyMtTPzenqBtTbUPeAthcM20FPiMY20UajioIZ0gDxHb2tA4g8437kuGGKXbA8FfhLJGckgXQuwZ(9b5eTHjkcAQBtVdDbHdctGUKbCAICFc6ZeduvZjQafr8AB6U20TXrKUug)EaefGsN0BsSXMul5ZopQbcpGkpk6COfNdqciGkgGj(xBtdVIUvxBuKlRQiIo03()b9DlGUs1u3Dh6GpDJoykokwrPbKnAbO1wO(dluEvkSuNC022CDbQ5JUAszhyciPMdKrQ9KRA1Y(VEA8SRgnAibd(k9iL(8IP4BfmQeNbi5kG(wFTR0T2jLDfAHmC9KC1zQW39Hlpvo34qxN8E7SPQambmDcfQSVhoF29YgbfiyG(W1WOuYp9w5262Lhmjffk5i7CYTTU5wjPQcuxEBm0ZhNJFY1MCPqd5yGmTHf6nKC9HN)W0iBECXmbFMqcQbK)syAt)sB6toDT)PHwavOeRdoY0uzvhCEJvEkXTrHV3XFwRa8fzg5kfZfJvGrXYAS)iH0Ogp)UCh4nIhwfYNEaNSgs)K9nQtbxS5QJ8KFded41ATLPZ)T7LRTj7R4x9nqbCdqv1v36)l6a(sWQXWwG4OJeLOZBrFRQwQmwk(n98v2j7oQ8G2xqWBmLsfAWfAFB1xUNXX9tF4d4YSzwS9IvaI2FNBKzGcpJ(T9L2x6Hxhm0)(TDRWvzScbwXTTR5vXVw)7S97UTU18OnPIBbCAD99nURgVKXdMBtrF2iRjt2(D37U5B3wxmhTzAimgwpCNpv2xdNZ6UaJiYH31(DZAVhjXumMuegw)4kXzDJ719RxCVzyDIxO4UjWgclTcz36)JEIRORS2oWnugV7(r7boFE8oGhMGMt0zz69KppDURkUS3EP(8K1UQmdJRnkCzP)YtRx0c(ans8)o]] )
 
