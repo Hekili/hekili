@@ -983,6 +983,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 237537,
+        nobuff = "divine_plea",
 
         toggle = "cooldowns",
 
@@ -1720,6 +1721,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 236249,
+        nobuff = "sacred_shield",
 
         handler = function ()
             applyBuff( "sacred_shield" )
