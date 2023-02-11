@@ -2033,10 +2033,7 @@ spec:RegisterOptions( {
     damageExpiration = 6,
 
     package = "Blood (IV)",
-
-    package1 = "Blood (IV)",
-    package2 = "Frost DK (IV)",
-    package3 = "Blood (IV)"
+    usePackSelector = true
 } )
 
 

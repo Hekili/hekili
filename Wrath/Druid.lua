@@ -2837,9 +2837,7 @@ spec:RegisterOptions( {
     potion = "speed",
 
     package = "Feral DPS (IV)",
-    package1 = "Feral Tank (IV)",
-    package2 = "Balance (IV)",
-    -- package3 = "",
+    usePackSelector = true
 } )
 
 

@@ -2367,10 +2367,7 @@ spec:RegisterOptions( {
     potion = "speed",
 
     package = "Beast Mastery (wowtbc.gg)",
-
-    -- package1 = "Arms (IV)",
-    -- package2 = "Fury (IV)",
-    -- package3 = "Protection Warrior (IV)"
+    usePackSelector = true
 } )
 
 
