@@ -978,7 +978,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
             LastConsumedStackTS = timestamp
         end
     end
-    
+
 end, false )
 
 local reset_gear = function()
@@ -1031,6 +1031,14 @@ spec:RegisterHook( "reset_precast", function()
 
     last_consumed_stack_ts = LastConsumedStackTS
     state.swings.mh_pseudo_speed = state.swings.mainhand_speed
+end )
+
+spec:RegisterHook( "runHandler", function( action )
+    local ability = class.abilities[ action ]
+
+    if ability and ability.totem then
+        summonTotem( ability.totem, totem[ action ].remains )
+    end
 end )
 
 Hekili:RegisterGearHook( reset_gear, update_gear )
@@ -1112,10 +1120,13 @@ spec:RegisterAbilities( {
         texture = 310731,
 
         handler = function ()
-            for i = 125, 128 do
+            for i = 138, 141 do
                 local _, totemSpell = GetActionInfo( i )
                 local spellName = totemSpell and GetSpellInfo( totemSpell )
-                if totemSpell then class.abilities[ spellName ].handler() end
+                local ability = spellName and class.abilities[ spellName ]
+                if ability then
+                    ability.handler()
+                end
             end
         end,
     },
@@ -1132,10 +1143,13 @@ spec:RegisterAbilities( {
         texture = 310730,
 
         handler = function ()
-            for i = 121, 124 do
+            for i = 134, 137 do
                 local _, totemSpell = GetActionInfo( i )
                 local spellName = totemSpell and GetSpellInfo( totemSpell )
-                if totemSpell then class.abilities[ spellName ].handler() end
+                local ability = spellName and class.abilities[ spellName ]
+                if ability then
+                    ability.handler()
+                end
             end
         end,
     },
@@ -1152,10 +1166,13 @@ spec:RegisterAbilities( {
         texture = 310732,
 
         handler = function ()
-            for i = 129, 1 do
+            for i = 142, 145 do
                 local _, totemSpell = GetActionInfo( i )
                 local spellName = totemSpell and GetSpellInfo( totemSpell )
-                if totemSpell then class.abilities[ spellName ].handler() end
+                local ability = spellName and class.abilities[ spellName ]
+                if ability then
+                    ability.handler()
+                end
             end
         end,
     },
@@ -1186,7 +1203,7 @@ spec:RegisterAbilities( {
     chain_lightning = {
         id = 421,
         cast = function ()
-            if buff.elemental_mastery.up then return 0 end 
+            if buff.elemental_mastery.up then return 0 end
             return 2 * (1 - (buff.maelstrom_weapon.stack * 2) / 10) * haste
         end,
         cooldown = 6,
@@ -1249,7 +1266,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "water_totem" )
-            summonTotem( "cleaning_totem" )
+            summonTotem( "cleansing_totem" )
             applyBuff( "cleansing_totem" )
         end,
     },
