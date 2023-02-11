@@ -2181,10 +2181,7 @@ spec:RegisterOptions( {
     potion = "speed",
 
     package = "Arms (IV)",
-
-    package1 = "Arms (IV)",
-    package2 = "Fury (IV)",
-    package3 = "Protection Warrior (IV)"
+    usePackSelector = true
 } )
 
 
@@ -2195,3 +2192,23 @@ spec:RegisterPack( "Fury (IV)", 20230209, [[Hekili:fJ1EVTTnq8plgfiqUj1ZkPjzfi2aB
 spec:RegisterPack( "Protection Warrior (IV)", 20221003, [[Hekili:vAvuVnQrq4FmN0Pg1dmy3KEPsjp03sEiQsC66BaRHXHvEHfT7IrUYA)T3zal8cyOQksXMz)MzN5BM5Zehg)J4OCMbI)yBW2THbb78dEo4XGVhhzoxdXr1SSJSpXVuXkX))xkPbYmCzLn9VzkfxQSP)YB)8bc5zHKLtrulBuzi6cJPw)hB20226ZZo7Dc4vA)mz5MwPrC0ltW0AE2M6HO612hupdR6Ox9jWdpI1DsMukYLTvAp2EUGB4GooAFdxyERkE)ILHUgYI)ietgEEo0Je0zXr)OGRTP10TXnNTP0t7zAi3MsvNPaSPVLHh8tkRTPF2WZb)4ibxB0uvYKa(XhDCiRl7rsROPkhujyLvhhbvS9cip(pJnyM5ItxiZo2YobtaTZfKcobvFofYVrqUzjkdtFqXziESrztF1M(uWTGKja6Am4FyHFG1imZY66MYsqSE(YbrEcYpfRLXizlejk4GaUAzEQpKyfm1SI7rxe7fszUInd0tUGA0qcsaL6jG(9fPP9nho43fBrJ243uBt)Qnnh6SRlygcx1NjMcLS1Ng5C5HXht303x8MOHye6CAuGDFY1NxpjDHJ55S4OfSskmHblghYJtqcubL4ct30rOtpGHTR(hsO56(P7K(DDA(McE4IbFm3KdLsftW)hIDWb8gtN7B)VhPd3DNzTUIBcULN91OkHp2Bq5QKAzlO6k1DpgeytVCXMUopCBDKULrdH5Wjgf8z58t))2dlaLKNLOnk(XRRJ1ka1c3ZUTqUYOaolLb(tz8dqLMQR(JhwBxzUh5ib03EMen3Jg2SxosLNtwjyyHvYQYDhf6Q5tGsta6eQdEE7JXrOKFfIdxGFRSwQmKc8U(ogje3P36BFhJDJPqQqydQYehkpWfyZ5lFXMUWVona)b77em6Q9cd8c2zF3(E)9O9h6g)6lBMsSFJF4LPTH77PlLm41mE6((oLZg8)EuTtQJU2RG7AXrXEK5jk0UN1Ri7Azqb214GI74RBSW4TA3rO9RRjYEVKNe(OiDvi9oqivIBDNX6LJQTjkDFJ04EbL4iNhlo8AORJZv1ipMMWx11wibhB(QudfMzQwVskwxUSEcDvqY14i1fkYut71NcChWXIfr6(gktpBi3MEW0Y7Q5(3TW5662XJ)3)]] )
 
 spec:RegisterPack( "Protection Warrior (wowtbc.gg)", 20221003, [[Hekili:DA1xpkUnq8pmNeQv9UqGaD3TAHh6B3(WEvItQVLetIHyHtCKTdOTAL)S3XoHeNehG2h2fWEMFZ4538VWfH)mCxksIdFFP)YLl89d88Fjiiyv4o5hL4WDLOKtOJWxkq5W))lotItKewHk(VrCoHXvX)Yf2f5(eVJh)vTcFqzOunWcwfpbuktklf)X85TIbFtspnpHIeIVDSIKIfZlBr(BxQbEE4U9veQ87fH7D7LbGnkXjHVVamcjnfxljwKeU7NzeHkUuder(Hkw)R9ibovfRDEzgwf36qWJHJKzQyJZ4fUJsesHj4GpGQOs4RVBcwiJlc2nJGPPraIzH7WfO9uCA4Fgkbx0wSKmexh96jrGwIUt2LaEiMtqARTV6WbprvrkMhH45mUNqcuGk(vv8Av8mWZ1ik9KKCCKKfLsGhYwv8cFv8NFQIDbbhNJifcdibDoxk(mcqhIRGtT6EoLmRgsG1k9szxkA8gkUq6rYb(7monQNuxHR1I23Qn66jnQevCIuCCCaNYsoPv93Nu1JCwvPX506EghLYKENjhjuurceS2OI97WT9cnOpnjO1b1mwL08270FpskP4iZvAiE(EXXumqjik5FGNxKlehlGg3xStRYWCgjbc2C2Lbjxl8TfKJtorXcrb83qbx0xqGjjO6F0xUEj0LmxIeylsLahbV58rgC6umo0IXKD(SfZaunlvFJr5Ptvqhbg3W31Xxc0tGs1cgHl0671KoKHruzgqahijePPQzLL9QfonIJpIlW86yH20tNQ1zAhyV2cBOtNmcQ1ksnioDE2DqS7z2H4G0NMcLlik1yRPtiBkpGhBoblQ7ImDT6Ix(FceKcNC6c6SHhx6)FcfZ7To7a(5twr0ek(kKlEyi3CtiBQQeso5unYlD0Yxqr5dB5h0Vu6mUyut)LRSLPR1BpPKqbguYYYHUkTJCUr)iPUX1O2hhWfc9ZU(6rZK2J5cm)eqTMIlhZMgxb2xOPlKF42KdlNV2xHa5CabubQPlGVE8G2px7)3Mm4Am7tpwhttu)met0Y1UGr4oylKcOdm0f775LmUuV5WY6zk6fimBi4PEdmrLmJXbfUUnHMezhiuWH(YxuX3BNj1BAPcuX)irYaYbmd4eQ3uVvBlHxBoXVTz(q69RKdBgMm4wZ(8(eYCLXN4AlwSZWT0TBLQ5SVQxGCJt61TA1CQ77SztRafCJ1Ez2hpamtCSPcu)oMCVRxxpB8(wBx4)5N3ypRxdSnKDFulBnADQzpYQuUEQ6nI0a3SYKTiTl3OV3Sx0SMwI92jAJVTspkjBcIdxvX6foXIo263Nh7o3ETL(N3ULI9XdsJGtA3bP3d7AYT2j1F(6Z9E4UwaqlQzM8SPxUyw)r1Bx1d1Ub1DynqH1(o4v9a8BOXmxBbCR8UgIVzw42f9nzZi67jy9uxxsnthm2(KVd6TEG6yL24ujRXS9PEZuvNLWME4H)7d]] )
+
+
+
+spec:RegisterPackSelector( "arms", "Arms (IV)", "|T132292:0|t Arms",
+    "If you have spent more points in |T132292:0|t Arms than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab1 > max( tab2, tab3 )
+    end )
+
+spec:RegisterPackSelector( "fury", "Fury (IV)", "|T132347:0|t Fury",
+    "If you have spent more points in |T132347:0|t Fury than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 )
+    end )
+
+spec:RegisterPackSelector( "protection", "Protection Warrior (wowtbc.gg)", "|T134952:0|t Protection",
+    "If you have spent more points in |T134952:0|t Protection than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab3 > max( tab1, tab2 )
+    end )
