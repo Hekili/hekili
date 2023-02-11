@@ -53,6 +53,8 @@ function ns.updateTalents()
     for _, selector in ipairs( class.specs[ spec ].packSelectors ) do
         local toPackage = Hekili.DB.profile.specs[ state.spec.id ].autoPacks[ selector.key ] or "none"
 
+        if not rawget( Hekili.DB.profile.packs, toPackage ) then toPackage = "none" end
+
         if type( selector.condition ) == "function" and selector.condition( tab1, tab2, tab3 ) or
             type( selector.condition ) == "number" and
                 ( selector.condition == 1 and tab1 > max( tab2, tab3 ) or
