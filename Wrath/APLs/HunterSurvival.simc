@@ -1,0 +1,25 @@
+## Survival Hunter
+## 11 February 2023
+
+actions.precombat+=/aspect_of_the_dragonhawk
+actions.precombat+=/hunters_mark,if=down
+actions.precombat+=/potion
+actions.precombat+=/steady_shot
+
+actions+=/hunters_mark,if=down
+actions+=/rapid_fire
+actions+=/call_of_the_wild
+actions+=/kill_command
+## actions+=/furious_howl
+actions+=/potion
+actions+=/use_items
+actions+=/explosive_shot,if=debuff.explosive_shot.down
+actions+=/black_arrow,if=target.outside10
+actions+=/explosive_trap,if=target.within10
+actions+=/multishot,if=active_enemies>2
+actions+=/volley,if=active_enemies>2
+actions+=/kill_shot
+actions+=/aimed_shot
+actions+=/serpent_sting,if=debuff.stings.down
+actions+=/frost_trap,if=target.within10
+actions+=/steady_shot
