@@ -611,7 +611,7 @@ ns.trackDebuff = function(spell, target, time, application)
     -- Convert spellID to key, if we have one.
     if class.auras[ spell ] then spell = class.auras[ spell ].key end
 
-    debuffs[spell] = debuffs[spell] or {}
+    debuffs[ spell ] = debuffs[ spell ] or {}
     debuffCount[spell] = debuffCount[spell] or 0
 
     if not time then
@@ -1300,8 +1300,8 @@ do
             local guid = UnitGUID(unit)
 
             if guid and not seen[guid] then
-                if db[ guid ] and ( not UnitExists(unit) or UnitIsDead(unit) or not UnitCanAttack("player", unit) or ( UnitHealth(unit) <= 1 and UnitHealthMax(unit) > 1 ) ) then
-                    EliminateEnemy(guid)
+                if db[ guid ] and ( not UnitExists(unit) or UnitIsDead(unit) or ( UnitHealth(unit) <= 1 and UnitHealthMax(unit) > 1 ) ) then
+                    EliminateEnemy( guid )
                     -- deletions = deletions + 1
                 else
                     local health, healthMax = UnitHealth(unit), UnitHealthMax(unit)
