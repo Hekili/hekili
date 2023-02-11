@@ -140,7 +140,7 @@ spec:RegisterAuras( {
     devouring_plague = {
         id = 2944,
         duration = function() return 24 * spell_haste end,
-        tick_time = function() return 3 * (buff.shadowform.up and spell_haste or 1) end,
+        tick_time = function() return 3 * ( buff.shadowform.up and spell_haste or 1 ) end,
         max_stack = 1,
 
         copy = { 2944, 19276, 19277, 19278, 19279, 19280, 25467, 48299, 48300 },
@@ -306,8 +306,8 @@ spec:RegisterAuras( {
     -- Movement speed slowed.
     mind_flay = {
         id = 15407,
-        duration = function() return (3 - (set_bonus.tier10_4pc == 1 and 0.5 or 0)) * spell_haste end,
-        tick_time = function() return (1 - (set_bonus.tier10_4pc == 1 and 0.17 or 0)) * spell_haste end,
+        duration = function() return ( 3 - ( set_bonus.tier10_4pc == 1 and 0.5 or 0 ) ) * spell_haste end,
+        tick_time = function() return ( 1 - ( set_bonus.tier10_4pc == 1 and 0.17 or 0 ) ) * spell_haste end,
         max_stack = 1,
         copy = { 15407, 17311, 17312, 17313, 17314, 18807, 25387, 48155, 48156, 58381 },
     },
@@ -493,9 +493,9 @@ spec:RegisterAuras( {
     -- $s2 Shadow damage every $t2 seconds. Priest's party or raid members gain 1% of their maximum mana per 5 sec when the priest deals damage from Mind Blast.
     vampiric_touch = {
         id = 34914,
-        duration = function() return (15 + (set_bonus.tier9_2pc == 1 and 6 or 0)) * (buff.shadowform.up and spell_haste or 1) end,
+        duration = function() return ( 15 + ( set_bonus.tier9_2pc == 1 and 6 or 0 ) ) * ( buff.shadowform.up and spell_haste or 1 ) end,
         max_stack = 1,
-        tick_time = function() return 3 * (buff.shadowform.up and spell_haste or 1) end,
+        tick_time = function() return 3 * ( buff.shadowform.up and spell_haste or 1 ) end,
         copy = { 34914, 34916, 34917, 48159, 48160 },
     },
 } )
@@ -548,7 +548,7 @@ spec:RegisterAbilities( {
         spend = 0.12,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136066,
 
         handler = function ()
@@ -566,7 +566,7 @@ spec:RegisterAbilities( {
         spend = 0.27,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135883,
 
         handler = function ()
@@ -587,7 +587,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "circle_of_healing",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135887,
 
         handler = function ()
@@ -605,7 +605,7 @@ spec:RegisterAbilities( {
         spend = 0.12,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135935,
 
         handler = function ()
@@ -624,7 +624,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "desperate_prayer",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135954,
 
         toggle = "cooldowns",
@@ -649,9 +649,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.shadow_weaving.rank == 3 then
-                addStack("shadow_weaving")
+                addStack( "shadow_weaving" )
             end
-            applyDebuff("target", "devouring_plague")
+            applyDebuff( "target", "devouring_plague" )
         end,
 
         copy = { 19276, 19277, 19278, 19279, 19280, 25467, 48299, 48300 },
@@ -670,9 +670,11 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 135894,
+        buff = "dispellable_magic",
 
         handler = function ()
             if glyph.dispel_magic.enabled then health.current = min( health.max, health.current + 0.03 * health.max ) end
+            removeBuff( "dispellable_magic" )
         end,
 
         copy = { 988 },
@@ -687,7 +689,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "dispersion",
-        startsCombat = true,
+        startsCombat = false,
         texture = 237563,
 
         toggle = "cooldowns",
@@ -707,7 +709,7 @@ spec:RegisterAbilities( {
         spend = 0.63,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 237540,
 
         toggle = "cooldowns",
@@ -727,10 +729,11 @@ spec:RegisterAbilities( {
         spend = 0.26,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135898,
 
         handler = function ()
+            applyBuff( "divine_spirit" )
         end,
 
         copy = { 14818, 14819, 27841, 25312, 48073 },
@@ -747,7 +750,7 @@ spec:RegisterAbilities( {
         spend = function() return glyph.fading.enabled and 0.105 or 0.15 end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135994,
 
         handler = function ()
@@ -765,7 +768,7 @@ spec:RegisterAbilities( {
         spend = 0.03,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135902,
 
         toggle = "cooldowns",
@@ -786,7 +789,7 @@ spec:RegisterAbilities( {
         spend = function() return glyph.flash_heal.enabled and 0.162 or 0.18 end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135907,
 
         handler = function ()
@@ -806,7 +809,7 @@ spec:RegisterAbilities( {
         spend = 0.32,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135913,
 
         handler = function ()
@@ -827,7 +830,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "guardian_spirit",
-        startsCombat = true,
+        startsCombat = false,
         texture = 237542,
 
         toggle = "cooldowns",
@@ -847,7 +850,7 @@ spec:RegisterAbilities( {
         spend = 0.32,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135915,
 
         handler = function ()
@@ -905,7 +908,7 @@ spec:RegisterAbilities( {
         cooldown = 360,
         gcd = "spell",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135982,
 
         toggle = "cooldowns",
@@ -925,10 +928,11 @@ spec:RegisterAbilities( {
         spend = 0.14,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135926,
 
         handler = function ()
+            applyBuff( "inner_fire", nil, 20 + ( talent.inner_fire.rank * 4 ) )
         end,
 
         copy = { 7128, 602, 1006, 10951, 10952, 25431, 48040, 48168 },
@@ -943,13 +947,13 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         talent = "inner_focus",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135863,
 
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff("inner_focus")
+            applyBuff( "inner_focus" )
         end,
     },
 
@@ -964,7 +968,7 @@ spec:RegisterAbilities( {
         spend = 0.16,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135929,
 
         handler = function ()
@@ -984,7 +988,7 @@ spec:RegisterAbilities( {
         spend = 0.03,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135928,
 
         handler = function ()
@@ -1004,7 +1008,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "lightwell",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135980,
 
         toggle = "cooldowns",
@@ -1042,7 +1046,7 @@ spec:RegisterAbilities( {
         spend = function() return 0.33 * ( glyph.mass_dispel.enabled and 0.65 or 1 ) end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135739,
 
         handler = function ()
@@ -1054,10 +1058,10 @@ spec:RegisterAbilities( {
     mind_blast = {
         id = 8092,
         cast = function() return 1.5 * haste end,
-        cooldown = function() return 8 - (0.5 * talent.improved_mind_blast.rank) end,
+        cooldown = function() return 8 - ( 0.5 * talent.improved_mind_blast.rank ) end,
         gcd = "spell",
 
-        spend = function() return 0.17 * (set_bonus.tier7_2pc == 1 and 0.90 or 1) end,
+        spend = function() return 0.17 * ( set_bonus.tier7_2pc == 1 and 0.90 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1110,13 +1114,13 @@ spec:RegisterAbilities( {
         start = function ()
             applyDebuff( "target", "mind_flay" )
             if talent.pain_and_suffering.rank == 3 then
-                applyDebuff("shadow_word_pain")
+                applyDebuff( "shadow_word_pain" )
             end
         end,
 
         tick = function ()
             if talent.shadow_weaving.rank == 3 then
-                addStack("shadow_weaving")
+                addStack( "shadow_weaving" )
             end
         end,
 
@@ -1154,6 +1158,9 @@ spec:RegisterAbilities( {
         end,
 
         tick = function ()
+            if talent.shadow_weaving.rank == 3 then
+                addStack( "shadow_weaving" )
+            end
         end,
 
         breakchannel = function ()
@@ -1177,7 +1184,7 @@ spec:RegisterAbilities( {
         spend = 0.06,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135933,
 
         handler = function ()
@@ -1195,7 +1202,7 @@ spec:RegisterAbilities( {
         spend = 0.03,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135934,
 
         handler = function ()
@@ -1216,12 +1223,13 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "pain_suppression",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135936,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
+            applyBuff( "pain_suppression" )
         end,
     },
 
@@ -1229,7 +1237,8 @@ spec:RegisterAbilities( {
     -- Launches a volley of holy light at the target, causing 240 Holy damage to an enemy, or 670 to 756 healing to an ally instantly and every 1 sec for 2 sec.
     penance = {
         id = 47540,
-        cast = 0,
+        cast = function() return 2 * haste end,
+        channeled = true,
         cooldown = function() return glyph.penance.enabled and 10 or 12 end,
         gcd = "spell",
 
@@ -1240,7 +1249,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 237545,
 
-        handler = function ()
+        start = function ()
+            applyDebuff( "target", "penance" )
         end,
     },
 
@@ -1256,12 +1266,13 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "power_infusion",
-        startsCombat = true,
+        startsCombat = false,
         texture = 135939,
 
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "power_infusion" )
         end,
     },
 
@@ -1276,11 +1287,11 @@ spec:RegisterAbilities( {
         spend = function() return glyph.fortitude.enabled and 0.135 or 0.27 end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135987,
 
         handler = function ()
-            applyBuff("power_word_fortitude")
+            applyBuff( "power_word_fortitude" )
         end,
 
         copy = { 1244, 1245, 2791, 10937, 10938, 25389, 48161 },
@@ -1297,11 +1308,13 @@ spec:RegisterAbilities( {
         spend = 0.23,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135940,
 
         handler = function ()
             -- if glyph.power_word_shield.enabled then health.current = min( health.max, health.current + some_amount_of_healing ) end
+            applyBuff( "power_word_shield" )
+            applyDebuff( "player", "weakened_soul" )
         end,
 
         copy = { 592, 600, 3747, 6065, 6066, 10898, 10899, 10900, 10901, 25217, 25218, 48065, 48066 },
@@ -1315,15 +1328,14 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.69,
         spend = function() return glyph.fortitude.enabled and 0.345 or 0.69 end,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135941,
 
         handler = function ()
-            applyBuff("prayer_of_fortitude")
+            applyBuff( "prayer_of_fortitude" )
         end,
 
         copy = { 21564, 25392, 48162 },
@@ -1340,7 +1352,7 @@ spec:RegisterAbilities( {
         spend = 0.48,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135943,
 
         handler = function ()
@@ -1360,7 +1372,7 @@ spec:RegisterAbilities( {
         spend = 0.15,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135944,
 
         handler = function ()
@@ -1380,11 +1392,11 @@ spec:RegisterAbilities( {
         spend = 0.62,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135945,
 
         handler = function ()
-            applyBuff("prayer_of_shadow_protection")
+            applyBuff( "prayer_of_shadow_protection" )
         end,
 
         copy = { 39374, 48170 },
@@ -1401,11 +1413,11 @@ spec:RegisterAbilities( {
         spend = 0.69,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135946,
 
         handler = function ()
-            applyBuff("prayer_of_spirit")
+            applyBuff( "prayer_of_spirit" )
         end,
 
         copy = { 32999, 48074 },
@@ -1426,7 +1438,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 237568,
 
-        toggle = "cooldowns",
+        toggle = "interrupts",
 
         handler = function ()
         end,
@@ -1445,6 +1457,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136184,
+        toggle = "interrupts",
 
         handler = function ()
         end,
@@ -1463,7 +1476,7 @@ spec:RegisterAbilities( {
         spend = 0.17,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135953,
 
         handler = function ()
@@ -1483,7 +1496,7 @@ spec:RegisterAbilities( {
         spend = 0.6,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135955,
 
         handler = function ()
@@ -1503,8 +1516,9 @@ spec:RegisterAbilities( {
         spend = 0.09,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136091,
+        toggle = "interrupts",
 
         handler = function ()
         end,
@@ -1527,7 +1541,7 @@ spec:RegisterAbilities( {
         texture = 136199,
 
         handler = function ()
-            applyBuff("shadowfiend")
+            applyBuff( "shadowfiend" )
         end,
 
         copy = {},
@@ -1544,11 +1558,11 @@ spec:RegisterAbilities( {
         spend = 0.31,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 136121,
 
         handler = function ()
-            applyBuff("shadow_protection")
+            applyBuff( "shadow_protection" )
         end,
 
         copy = { 10957, 10958, 25433, 48169 },
@@ -1589,7 +1603,7 @@ spec:RegisterAbilities( {
         texture = 136207,
 
         handler = function ()
-            applyDebuff("target", "shadow_word_pain")
+            applyDebuff( "target", "shadow_word_pain" )
         end,
 
         copy = { 594, 970, 992, 2767, 10892, 10893, 10894, 25367, 25368, 48124, 48125 },
@@ -1607,11 +1621,11 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "shadowform",
-        startsCombat = true,
+        startsCombat = false,
         texture = 136200,
 
         handler = function ()
-            applyBuff("shadowform")
+            applyBuff( "shadowform" )
         end,
     },
 
@@ -1629,9 +1643,13 @@ spec:RegisterAbilities( {
         talent = "silence",
         startsCombat = true,
         texture = 136164,
+        toggle = "interrupts",
+
+        readyTime = state.timeToInterrupt,
 
         handler = function ()
-            applyDebuff("silence")
+            interrupt()
+            applyDebuff( "target", "silence" )
         end,
     },
 
@@ -1646,7 +1664,7 @@ spec:RegisterAbilities( {
         spend = 0.09,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 135924,
 
         handler = function ()
@@ -1664,11 +1682,12 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "vampiric_embrace",
-        startsCombat = true,
+        startsCombat = false,
         texture = 136230,
+        essential = true,
 
         handler = function ()
-            applyBuff("vampiric_embrace")
+            applyBuff( "vampiric_embrace" )
         end,
     },
 
@@ -1689,12 +1708,27 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.shadow_weaving.rank == 3 then
-                addStack("shadow_weaving")
+                addStack( "shadow_weaving" )
             end
-            applyDebuff("target", "vampiric_touch")
+            applyDebuff( "target", "vampiric_touch" )
         end,
     },
 } )
+
+-- Hooks
+spec:RegisterHook( "reset_precast", function ()
+end )
+
+-- Expressions
+spec:RegisterStateExpr( "flay_over_blast", function()
+    local currentSP = GetSpellBonusDamage( 6 ) or 0
+    local vttimer = select( 4, GetSpellInfo( 48160 ) ) / 1000
+    local currentHaste = ( ( 1.5 / vttimer ) - 1 ) * 100
+    local rtn = currentSP >= 39237 * ( 0.975 ^ currentHaste )
+    Hekili:Debug( "flay_over_blast()["..tostring( rtn ).."]: currentSP["..tostring( currentSP ).."] >= 39237*( 0.975^currentHaste["..tostring( currentHaste ).."] )" )
+    return rtn
+end )
+
 
 -- Options
 spec:RegisterOptions( {
@@ -1718,43 +1752,63 @@ spec:RegisterOptions( {
     -- package3 = "",
 } )
 
+
+-- Packs
+spec:RegisterPack( "Shadow", 20230210, [[Hekili:LJvBVnQrq4FlwNKvIQl1yFojTk2sTQFOxuv0j5(zG1Ws8QaSiyXr5Kf)27mlgyzzb7lxUtvQFj2zFzE9zM5zTJTZ)4SnGiOopUy(ILZxyp3Y(UL3nFHZwXRPuNTPe)NjpbFjHed)D7Esa)fC5xJ4Ka8658ImFylNT7kyrIpL4SZKmVD1TWztP(opUYz7EwqaT6K0C)A5w695mgnxu6LMX4zmXRLErm8)d5zLE)f9zweZzlUuoQAcN6gWLF)rPRqti7IObo)r9xDJ5hyjpHl4dYJMXiW18fSdYBAfqpaMpCc30iYtf0sV1LEZl9oES0tW8Fg2P0BAPxgnMWsYl9UV0ZNKlCfmmCGsINGorxX4S9KEbZsaXb02AxPVTvlNCzyW9fEwGBaLi2R6sGGwQ5KT(KGK9evyHMLRG7gWaxztPN9CP5FvP3efhc9oJEuP31TgZbsCklJ5dYRWFpQ(p(2v)7vmVJf2lSlqW1BZgN0v57kcdTQthucMOSYfqXG0AxzoLLc2lydc0YcjfrIgGz9Pt5vF2jRUq9ef5uxWIJZV4u)PqlnHgdfpsFckFZfqQtiHB1IoRiXT67UyjuvHKBvHnukzkdFjxnxu5ZPzuFE8oIWu5yR5QezHQ6yl4Ze9WjUrtKzyPeWG8c1nhHPcPGAZDPzKxPzU8q1TvGoQxD84BL44VastMLbJtWefb0b1y3tOM97lKXRRKcMLKaxlKLPlV2ngh5dy7Iudf204DzeF5LV5COurfgz0uBoviGcLClSPSldGmCQrKOpjkAmOyvxD9sJywsGBoLK1ZYYnI5(F3iGiAIWcBc5sWifGDOOfzD64s3aDz9EwwfPdVNQFVulzegrEfHHGfKvKkCzHaytfZY9lYbPpfdK5BwVy6vtgWaoECmTVz51JxOOpEdfw3bywNjb2FC3Ofu90Moa4C6Z0WRBUin(noE6XBvlQ2d08YaEz0aOG0NgrZiggrD3ygwtzppfCr2xaynco2frqQBy85QZDOQbWiCYLFaaoNw(An8MCz0E(1ZvfOfBuRagj2bzQvYZOptfcQ2FZy)bv86vOpzp)hStTPVtv1D990PgEArmjHyL6dP57xRGpa7W9elagfmj8y94hG7if)zyiCHJoThUR6fm70E02sgIENlJ1Tew5UsTjBl91KIUYNZJq33QTiQPJR5MK3xPC9DBAJD84eJ98ks1lzRkt6oVgMydf554Ho9gX534S9fswcIaC2(P4uGEeISxvHA5jvpem3Q8bq(fI9CaM(N0WVqGw1aZtEilc6T(Hpu697F(Vl9oS06Jw2)ST1nwZlFaxU(TO)w97iHhzwayV9mOs4PSID7Kp2uiIagaHGDagiSlfqoLpuzd5wnuC)P1)slt1zSW1My1A(EDyE2C1(uzNomnwZc2e7Yg5pi)vD1OXU1OMAlEAKVwHM57Px8G3EcuomG7iZ7p0SRYATR08Cj1f1ETYmKx5AGw5SkQORTrf3TB4MfNvaWaPwJbkvXCPg(FwfFUokWuDY65hpEAC(06kU2N42vh9ie2OeTd2uUntT5W6Vx8Xqx8SuoNoG0nVEDOyPMN1TlKe1Ck6nApSHIO9YA9e4qC5UOKe6kQICSrKAIzaYyMs0YU4s1mgZQJhVASTNorJY11VhyQr8xfqJzYmdF57xnTBjR5caKbZ)bn2n6gRcrgup1KHUF9OeH0eYxtJ48lQdSQyXy1SHcGxoO(nHH(XYzrTXomNamA9FHIMziYFAIodsm9REOlUgOPMMKs77)GefnDjJtuoE)wV9)zu3yphMJ00aTNDC9L5Ydl73AaWSIn1R2SIVKo4s6So)7p]] )
+
+
+spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
+    "If you have spent more points in |T135987:0|t Discipline than in any other tree, this priority will be automatically selected for you.",
+    -- Criteria
+    -- The pack selector hook passes the points spent in tab1 (Discipline), tab2 (Holy), and tab3 (Shadow).
+    function( tab1, tab2, tab3 )
+        -- If we spent the most points in Shadow, then swap to this package.
+        -- We could also reference anything else we wanted; e.g., talent.shadowform.enabled or something else entirely.
+        return tab1 > max( tab2, tab3 )
+    end )
+
+
+spec:RegisterPackSelector( "holy", "none", "|T237542:0|t Holy",
+    "If you have spent more points in |T237542:0|t Holy than in any other tree, this priority will be automatically selected for you.",
+    -- Criteria
+    -- The pack selector hook passes the points spent in tab1 (Discipline), tab2 (Holy), and tab3 (Shadow).
+    function( tab1, tab2, tab3 )
+        -- If we spent the most points in Shadow, then swap to this package.
+        -- We could also reference anything else we wanted; e.g., talent.shadowform.enabled or something else entirely.
+        return tab1 > max( tab2, tab3 )
+    end )
+
+spec:RegisterPackSelector( "shadow", "Shadow", "|T136207:0|t Shadow",
+    "If you have spent more points in |T136207:0|t Shadow than in any other tree, this priority will be automatically selected for you.",
+    -- Criteria
+    -- The pack selector hook passes the points spent in tab1 (Discipline), tab2 (Holy), and tab3 (Shadow).
+    function( tab1, tab2, tab3 )
+        -- If we spent the most points in Shadow, then swap to this package.
+        -- We could also reference anything else we wanted; e.g., talent.shadowform.enabled or something else entirely.
+        return tab3 > max( tab1, tab2 )
+    end )
+
 -- Settings
-spec:RegisterSetting("min_shadowfiend_mana", 25, {
+spec:RegisterSetting( "dots_in_aoe", false, {
+    type = "toggle",
+    name = "|T252997:0|t|T136207:0|t|T135978:0|t Apply DoTs in AOE",
+    desc = "When enabled, the Shadow priority will recommend applying DoTs to your current target in multi-target scenarios before channeling |T237565:0|t Mind Sear.",
+    width = "full",
+} )
+
+spec:RegisterSetting( "optimize_mind_blast", false, {
+    type = "toggle",
+    name = "|T136224:0|t Mind Blast: Optimize Use",
+    desc = "When enabled, the Shadow priority will only recommend |T136224:0|t Mind Blast below an internally-calculated haste threshold (vs. using |T136208:0|t Mind Flay).",
+    width = "full",
+} )
+
+spec:RegisterSetting( "min_shadowfiend_mana", 25, {
     type = "range",
-    name = "Shadowfiend: Minimum Mana",
-    desc = "Sets the minimum mana allowed before recommending Shadowfiend.",
+    name = "|T136199:0|t Shadowfiend Mana Threshold",
+    desc = "If set above zero, |T136199:0|t Shadowfiend cannot be recommended until your mana falls below this percentage.",
     width = "full",
     min = 0,
     max = 100,
     step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 5 ].settings.min_shadowfiend_mana = val
-    end
-})
-
-spec:RegisterSetting("optimize_mind_blast", false, {
-    type = "toggle",
-    name = "Mind Blast: Optimize Use",
-    desc = "When enabled, mind blast will only be recommended if the player's current haste is less than the Mind Blast Breakpoint set below",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 5 ].settings.optimize_mind_blast = val
-    end
-})
-
--- Hooks
-spec:RegisterHook( "reset_precast", function ()
-end)
-
--- Expressions
-spec:RegisterStateExpr("flay_over_blast", function()
-    local currentSP = GetSpellBonusDamage(6) or 0
-    local vttimer = select(4, GetSpellInfo(48160))/1000
-    local currentHaste = ((1.5 / vttimer) - 1) * 100
-    local rtn = currentSP >= 39237*(0.975^currentHaste)
-    Hekili:Debug("flay_over_blast()["..tostring(rtn).."]: currentSP["..tostring(currentSP).."] >= 39237*(0.975^currentHaste["..tostring(currentHaste).."])")
-    return rtn
-end)
-
--- Packs
-spec:RegisterPack( "Shadow", 20230206, [[Hekili:vFvBRTUnu4FlHleAzzE5LMUnioWg7d7wgLl49zBRyl3iQTLrsoLCj4F77iRgBzzzN0TE724cxNkPZZrNZ5rp6i)f()PVxmsG9FC58LRMVC(9oWNvl89ehlW(EfOONrpb)ihLb)V3Eum9f5WhtPOyP1CAjlcMY3Bxjjv85C)D2GC5IvWAlWr(pU23BpjogRwjMhDg3QWVWiyUOkSGrOmI4yvykr(3juwv4VJFMKs89KdXLUgrXWNhRdcuKGqZ99Yi5XbCmI57HZr7sXX()QVa(h4PeuzQONffu1x9L)4s9vuYXbeboJBSOvYf1oIxeSLXmcsz5bCaohNbbuv42QWLT4XkZdu)oqglQikqLHLXea9DgqFnMYfQaL3gJAiO(zqg9aj)PU72jvHcs0ZYXBCum(auyHHcksrpvcW)QLaWNZpTJ0h9Z4WRRSbVqzXbXyKy)vNdfOuCUWParGqwwultsWYDKZRlVkCAvymv4O7d5YDklgEogod(a1KnvHRm4njPOJ(EKCyhWklebKei5Sd8RdjphZcsOrLCa9PY0fFR7YP3mzGnWPtJ59TRU1wv2wjPk80jvOCaLvqyKOabTmAFNajcbSabPMa9Aa1D1sVT(n5ntcWL8xpcd4X7VkpcvQ6C85KfgjjroCbO9uf6wfU2oDsMqLE5h1pRUhKTyGodogoNeHtXmKLJ3)0yBmowiGna3HwaHi5RaTwso2LIKsrY8ZnxArqibajPtb0daX51HV1GVvpSC)8Zx6uGrUr)eWi5oOsTUEnM6rqsDX)yU)Go2DTmMwm)doO22pOuxe8EguMYQTbvgkh5uebL5nUA8dyFeOWlHGHTKCzM856zQHF5GWRVRjmSdywEloTtudZWQQaTSSWIkboBhdfPSEuzjlzVlvX6EewZ2AVnSS03ew7nruAQm550EeSrV2Ue7gLlnNTre80PjwvmllQv5xmSm4vqH)Fqec9CuWWr0SDiRTEyq2PSmvFFmsHAIF5l)rv4Hvo35S47x4CVZ8QWp1J73ATI7FUlKHpTetawioGldjrTrTm1cg6iK9Oj6tRDBMUPJ3NIco6laA1xlb7qbrugJh0JDxHENO9bz82eElIcJE9)L0eU)sDmxZcGR64YzA68337felxQd6795SciOK673P0UP5Q275ovpaGxk2tbX6FdN8ve0WcqPOjKuOdJpvfAJGu9GceUtd577C)HwwYmsIRnIJD76uWBmTpdA6WSh7aBRO2G)G0gt3yqQS6P2YDd(gud72zwVLwpbu1hiCQlCp0mR2yTJ08Ij9bnE7Ym5RwCH37i9xxHWTlVODq7uT7b4Igzj0qDAM61iUlQdOZTB21MEppPXiJf2Ofptxk29B1RdKB5l(aOPdGU9Xpl1VYiY6Q5RNRg9gJM7gUuvOhGd9YIbH0mu0HCSg2mGzGNgyRqxFNzTBgRp)tNUzSPNoX4ba3(EWPgjE1in2BTEyJ3SEA3JG2pai7N()GB2TMBwT2QL(5CR5BChTTCdqEl6P8RsivhwzUA2qjWRNu)3Id9X2HyF993j11)LJcjRRnoGlY0pLu3qK)F9d]] )
+} )

@@ -530,10 +530,11 @@ do
                         } )
 
                         local submenu = {
-                            text = "Priority List",
+                            text = "Active Priority",
                             hasArrow = true,
                             menuList = {},
                             notCheckable = true,
+                            keepShownOnClick = false,
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         }
 
@@ -545,6 +546,7 @@ do
                                         Hekili.DB.profile.specs[ Hekili.State.spec.id ].package = name
                                         Hekili:ForceUpdate( "PACKAGE_CHANGED" )
                                     end,
+                                    keepShownOnClick = false,
                                     checked = function ()
                                         return Hekili.DB.profile.specs[ Hekili.State.spec.id ].package == name
                                     end,
@@ -554,6 +556,28 @@ do
                         end
 
                         insert( menuData, submenu )
+
+                        if #class.specs[ i ].packSelectors > 0 then
+                            insert( menuData, {
+                                text = "Use Priority Selector",
+                                func = function ()
+                                    local spec = rawget( Hekili.DB.profile.specs, i )
+                                    if spec then
+                                        spec.usePackSelector = not spec.usePackSelector
+                                        if Hekili.DB.profile.notifications.enabled then
+                                            Hekili:Notify( "Priority Selector: " .. ( spec.selector and "ON" or "OFF" ) )
+                                        else
+                                            self:Print( "Priority Selector: " .. ( spec.selector and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                        end
+                                    end
+                                end,
+                                checked = function ()
+                                    local spec = rawget( Hekili.DB.profile.specs, i )
+                                    return spec.usePackSelector
+                                end,
+                                hidden = function () return Hekili.State.spec.id ~= i end,
+                            } )
+                        end
 
                         insert( menuData, {
                             text = "Recommend Target Swaps",
@@ -577,7 +601,9 @@ do
 
                         -- Check for Toggles.
                         for n, setting in pairs( spec.settings ) do
-                            if not setting.info.arg or setting.info.arg() then
+                            if setting.isPackSelector then
+                                -- do nothing.
+                            elseif not setting.info.arg or setting.info.arg() then
                                 if setting.info.type == "toggle" then
                                     insert( menuData, {
                                         text = setting.info.name,

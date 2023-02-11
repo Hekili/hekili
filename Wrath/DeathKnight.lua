@@ -2033,10 +2033,7 @@ spec:RegisterOptions( {
     damageExpiration = 6,
 
     package = "Blood (IV)",
-
-    package1 = "Blood (IV)",
-    package2 = "Frost DK (IV)",
-    package3 = "Blood (IV)"
+    usePackSelector = true
 } )
 
 
@@ -2049,3 +2046,21 @@ spec:RegisterPack( "Frost DK (wowtbc.gg)", 20221003, [[Hekili:vAvxVTTnu0FlffWibP
 spec:RegisterPack( "Unholy (IV)", 20220926.3, [[Hekili:TAv0Ujoou0Vf0if1oDskqNYqxb9Hv7lTRuFHzNhtIXXawKehf7aIri)TVx7uc2b72z7oVurJTp3JV(CV3t8O4VhVidjiXVmE44XdFy8KOXJUF49XlehQiXlQq4TO1WpkrfWF)NYnS8dY0RE6hxRw8qodLPWGZAQXWg2iev8)42B3VFFefFiChHwYJWSIB3Ze5BdX5ioNIVTrduygbj2eUTKUEJimRIhwTJewZeibLvgIzS8m2(sEiAjnNkOeE8ILn0CXtLXlDs8Vof4sfbh)YeGm0Sms7ojCC8IVVHYLPv1uwnva3c1)TeXjzYuwPmvSHitFcdl8dfRLPRBOzKO4f5uUGRZuKvOMCb8Zx0zoewXZ4ff0YSKv1eYpHuaPeTmNKf)NXcGCQTD(llWqKj1uu8IbY0mMiAzoJLLuLJw3qIeu8wA5AzAaWgu9AIa(ubjrWsYOa5ECUmD0q9YRuPSKAsbst12voZOwat4IA6wIIi39EezvnJlswr2rQ)nYdqdaNQbVrXHV6LdVfbEZS0vYuvO2rs6bHmDw3sKssbODKPhpATDtuDU)RnsOeUGMtkX6S59EVj9H4riFOzkKMly7oX7(Pnz60ZXsxvKGanvgbJoOc4KFZPovMOhhMzXH2JDw)8nt9ohdL7R7Kx2s(PEPAlM1nLeOLqtDnPuitbbZW(HvGQui9GvmBkkyLjRb5i7qE)GcAoFrTcuVR3WAYJAQodN(lQA2YFQtWJSkOB4Ke48f8(HXF9mCTO4Kk2E4na6tqXu4YntvoCF)xwmJMRrZFr5YMvRI2WQltyRs2tlfkuHwHNHYErnC(RVaXNgXxfd1eUsjdjeTmPfYOEz42sEof2OwCSgd9j)SmDS(mN6nh19If9QsQ)J5POPPO)cNoajf6KOwNKSNGQaQvtqzh0X1RgQTSsxi4B12HoVTaeJaQMNOYwTVcjTt(SeMJ8xoAKMv5e1n6uJkNu)gpK(gF0fEjUZQZKJ8LMJF7xsQ2Hl0cAYqVk1PMvhNBQ3R6WQG1EeuVXIdn3PvVgRnkayQjG9HLOZtD9N37e2DP9ovvFXTwrzuW3MRn1Q(l19eRb)6H7Ykd)TceiySJiQaXHpOQ41TU4rN2ChO1ik02cE4YCnSLbn)4eX5TVdbWVu1jDhkVH8)zsIlpcZATi4EqJYIae)xRTYaEd2W4jST63CGKq85kwA4UlEXEuDjetOdZtGMVwOmUn(u7lzQ2MwK8zLMHTIQUzF6tY0tEw)lLIwM(3AZMklSDo9Uw(SAJQqfo8HWXtKplFUfvEuN(7M532tL8f6Q5xQfcEBrGBKTfeEaEWhb5ZQcfQVJyYneNukFr9Cn3416lALZCpcNaFIMJhVuWmB0WJhTekWxmEhaAy4Y28Zw9zu3Xb(IBWLH9X5Jggyfw1xmHVRzxh0UUQFeKpBPub9)1KyWvVA1S3bNz7a94rJTzItV9DTjZ6zavrp7D)4OGbTUz7DfNAcJzF9pYvSVGWcCBpOxgwy6RUm6YHUZTEf6vkzUKPhrfwMojn3xNBXlZHQbOQJ6WD4S5JU38a2g66Ab4We4LxwZghdC70lO9mVHlVzGdVppoWVZoZ4A4tQTTGvw)9nZf48HjWHxi4RUCcz)k6ioDzqB3ybx5iY34iU34kQZUZrHIRh5x3)JtC3mXBdmF1pWC7gbOfGzFDZT0JkJ)3p]] )
 
 
+
+spec:RegisterPackSelector( "blood", "Blood (IV)", "|T135770:0|t Blood",
+    "If you have spent more points in |T135770:0|t Blood than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab1 > max( tab2, tab3 )
+    end )
+
+spec:RegisterPackSelector( "frost", "Frost DK (IV)", "|T135773:0|t Frost",
+    "If you have spent more points in |T135773:0|t Frost than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 )
+    end )
+
+spec:RegisterPackSelector( "unholy", "Unholy (IV)", "|T135775:0|t Unholy",
+    "If you have spent more points in |T135775:0|t Unholy than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab3 > max( tab1, tab2 )
+    end )

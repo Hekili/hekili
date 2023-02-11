@@ -1,4 +1,5 @@
-# APL v3.4.1-1.6.0 #
+## APL v3.4.1-1.6.0
+## 20230210: Hekili put his grubby little fingers here.
 actions.precombat+=/shadowform,if=buff.shadowform.down
 actions.precombat+=/divine_spirit,if=buff.divine_spirit.down&buff.prayer_of_spirit.down
 actions.precombat+=/power_word_fortitude,if=buff.power_word_fortitude.down&buff.prayer_of_fortitude.down
@@ -6,12 +7,14 @@ actions.precombat+=/inner_fire,if=buff.inner_fire.down
 actions.precombat+=/vampiric_embrace,if=!up
 actions.precombat+=/potion
 
+actions+=/silence
+actions+=/dispel_magic
 actions+=/potion
 actions+=/use_items
-actions+=/run_action_list,name=aoe,if=active_enemies>2
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2
 actions+=/run_action_list,name=st
 
-actions.st+=/devouring_plague,moving=1,if=!ticking
+actions.st+=/devouring_plague,moving=1,if=active_dot.devouring_plague=0|ticking&remains<cast_time
 actions.st+=/shadow_word_death,moving=1
 actions.st+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2&(!dot.shadow_word_pain.up|dot.shadow_word_pain.remains>3),if=talent.pain_and_suffering.enabled&dot.shadow_word_pain.up&dot.shadow_word_pain.remains<3
 actions.st+=/vampiric_touch,if=!ticking|dot.vampiric_touch.remains<cast_time
@@ -25,7 +28,14 @@ actions.st+=/shadowfiend,if=mana.pct<=settings.min_shadowfiend_mana
 actions.st+=/inner_fire,if=buff.inner_fire.down
 actions.st+=/vampiric_embrace,if=!up
 actions.st+=/inner_focus,if=!buff.inner_focus.up&buff.shadow_weaving.stack=5
-actions.st+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2&(cooldown.mind_blast.up|dot.vampiric_touch.remains<action.vampiric_touch.cast_time|!dot.devouring_plague.up),if=active_enemies=1
-actions.st+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2&(cooldown.mind_blast.up|dot.vampiric_touch.remains<action.vampiric_touch.cast_time|!dot.devouring_plague.up),if=active_enemies>1
+actions.st+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2&(cooldown.mind_blast.up|dot.vampiric_touch.remains<action.vampiric_touch.cast_time|!dot.devouring_plague.up)
 
+actions.aoe+=/call_action_list,name=aoe_dots,strict=1,if=settings.dots_in_aoe
 actions.aoe+=/mind_sear
+
+actions.aoe_dots+=/devouring_plague,moving=1,if=active_dot.devouring_plague=0|ticking&remains<cast_time
+actions.aoe_dots+=/shadow_word_death,moving=1
+actions.aoe_dots+=/shadow_word_pain,moving=1,if=!ticking
+actions.aoe_dots+=/vampiric_touch,if=target.time_to_die>10&(!ticking|remains<cast_time)
+actions.aoe_dots+=/devouring_plague,if=target.time_to_die>10&(active_dot.devouring_plague=0|ticking&remains<cast_time)
+actions.aoe_dots+=/shadow_word_pain,if=target.time_to_die>10&!ticking&buff.shadow_weaving.stack=5

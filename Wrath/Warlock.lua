@@ -258,7 +258,7 @@ spec:RegisterAuras( {
     drain_soul = {
         id = 47855,
 		tick_time = function() return (3 * haste) end,
-        duration = function () return (15 * haste) end, 
+        duration = function () return (15 * haste) end,
         max_stack = 1,
         copy = { 1120, 8288, 8289, 11675, 27217, 47855 },
     },
@@ -852,7 +852,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136118,
-	
+
 		cycle = "corruption",
 
         handler = function( rank )
@@ -1296,7 +1296,7 @@ spec:RegisterAbilities( {
 		breakchannel = function ()
             removeDebuff( "target", "drain_life" )
         end,
-		
+
 		handler = function ()
         end,
 
@@ -1321,7 +1321,7 @@ spec:RegisterAbilities( {
         start = function( rank )
             applyDebuff( "target", "drain_mana" )
         end,
-		
+
 		tick = function () end,
 		breakchannel = function ()
 		   removeDebuff( "target", "drain_mana" )
@@ -1349,15 +1349,15 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "drain_soul" )
             if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
         end,
-		tick = function () end, 
-		
+		tick = function () end,
+
 		 breakchannel = function ()
             removeDebuff( "target", "drain_soul" )
         end,
-		
+
 		handler = function ()
         end,
-		
+
         copy = { 8288, 8289, 11675, 27217, 47855 },
     },
 
@@ -1451,16 +1451,16 @@ spec:RegisterAbilities( {
         cast = function()
             return ( 1.5 * haste)
         end,
-		
+
         cooldown = 8,
         gcd = "spell",
 
         spend = 0.12,
         spendType = "mana",
-		
+
 		velocity = 6,
-		impact = function() end, 
-		
+		impact = function() end,
+
         talent = "haunt",
         startsCombat = true,
         texture = 236298,
@@ -1566,7 +1566,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135817,
 		cycle = "immolate",
-		
+
         handler = function()
             removeDebuff( "target", "unstable_affliction" )
             applyDebuff( "target", "immolate" )
@@ -1827,12 +1827,14 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136197,
-		
+
 		cycle = "shadow_bolt",
 
 		velocity = 6,
-		impact = function()   if talent.improved_shadow_bolt.rank == 5 then applyDebuff( "target", "shadow_mastery", nil, debuff.shadow_mastery.stack + 1 ) end end, 
-		
+		impact = function()
+            if talent.improved_shadow_bolt.rank == 5 then applyDebuff( "target", "shadow_mastery", nil, debuff.shadow_mastery.stack + 1 ) end
+        end,
+
         handler = function ()
             -- TODO: Confirm order in which Backlash vs. Shadow Trace would be consumed.
             if buff.backlash.up then removeBuff( "backlash" )
@@ -2012,7 +2014,7 @@ spec:RegisterAbilities( {
 
 
     -- Reduces threat by 50% for all enemies within 50 yards.
-    soulshatter = {	
+    soulshatter = {
         id = 29858,
         cast = 0,
         cooldown = 180,
@@ -2083,7 +2085,7 @@ spec:RegisterAbilities( {
             soul_shards = max( 0, soul_shards - 1 )
         end
     },
-	
+
 	inferno = {
         id = 1122,
         cast = function() return (1.5 * haste) end,
@@ -2263,7 +2265,7 @@ spec:RegisterAbilities( {
     -- Shadow energy slowly destroys the target, causing 550 damage over 15 sec.  In addition, if the ` Affliction is dispelled it will cause 990 damage to the dispeller and silence them for 5 sec. Only one Unstable Affliction or Immolate per Warlock can be active on any one target.
     unstable_affliction = {
         id = 47843,
-        cast = function() 
+        cast = function()
 			if glyph.unstable_affliction.enabled then return 1.3 or 1.5 * haste end
 			return (1.5 * haste)
 			end,
@@ -2276,7 +2278,7 @@ spec:RegisterAbilities( {
         talent = "unstable_affliction",
         startsCombat = true,
         texture = 136228,
-		
+
 		cycle = "unstable_affliction",
         handler = function ()
             removeDebuff( "target", "immolate" )
@@ -2386,10 +2388,7 @@ spec:RegisterOptions( {
     potion = "wild_magic",
 
     package = "Affliction",
-
-    package1 = "Affliction",
-    package2 = "Demonology (wowtbc.gg)",
-    package3 = "Destruction",
+    usePackSelector = true
 } )
 
 spec:RegisterPack( "Affliction", 20230208, [[Hekili:DRvBVTTnq4FlffqydjttYo2nbq2aBFATBOyaQFwsmYuXerVbj60Aad9BF3jklrrrjRK0SoSp0MgrYN749YZD8q9S9(IN7ocN695fwlwATW6wtR7wyzT2ZLFmN65MtcFK8a8psjjWF)BrrXSqollfx6yCgzhcrz2HIqyzp37pWI5Fm17E94UYZLCGVpRWZ9pzXzHEU7z72rf7Nwc)(x2ZkRcW)qQcAKEvqwe871YTkiMvYHLJYkQc(d6JSyMPNB9hrvjMfrHF(56RgPrv3rj89(HzSypxAk5(y6oVF3JdAxVDvqyP(1a0BxCeGiYHyElWDl7gwW40cgrGZtuFAknHrbnCtvGDvGrvaNu8aLBUNsI57nZd5vbBRcwSUt0fhs9f)BF8MiUp(cBEjVvtNLyDQcUPwSQlS97J(qYOOcTC2keG9YVdYTKccce8nJkyn47mF8PFJgEGxF3wnQiuXE18WUoOQoskVGgMLCprBS0zOIOX(KIemnbZkky5IV)B)9Fvf80sZBmT)fBZ1MGF(9YA39hIImRpO5USVc5kNovfi9XcAceIlIrSV1A64Q3b5FG1u4nR9FcfVoW2QtzlpKKa3zqN3Fifo70bhptuFkJT7RK4hfWoUR)zclljFA)8dXhZ3BIUnFoj3Szp1axBpBxbTZDWF(Zi4RL5wYZe)Sh7ZhMisoMMYnb1Si7j6o)Y9eqq(3NfZ7PlLuoNL(qPzZgsiLachRxBhTwt7VII(kHRi88CsGkdQw9Vh75HsQpO(jLkBA8qHDzCZdPLCCjFsBLLErPHGA7ZzjcFkEI9eikRBpB7TNRasMcYtq6t7VhdLHsdfMe8J(8m)DmyTTi)Su(Rgv5IXCCw4JG9xKOPr7C2mt1RtnQry6GtvbNtlkbUgiIXpbQsXYJz0IAtdQsHzffhQjqmZ7wUtGDR3g1Q3DjINso6hEOOK2WWOZQU4gj0X96Nf5tEil940r9jKusl1QTLe9vB6MCSXkXg(oKQE74jIY3nuRKUA7pIg(COSeW7hsJPfKZwX7qaziBiAA9zrisHpwUDJTXpnioXztBmYvsXhx1eBC60fYuC2iujT7Pd6g4mAktkD1a1AfifnoyTBEXn)SAxtqhGXd6Ac7uyYoM(H5WvR6PjxWn8yymEa8(xI3cqD)MF)V6ARpVuhX3u8mZtylhxyQSuJK(9QLJkPuFwR5b)e2mv2hDbzxSFVvA0Jj5DuyjBd5AQ4mznQM903opyzLYcAAohu8LtuxU8cV9qUKWO1(FZkAmEtK9RnufCN1S4pNUPHxtlax0H6OI2Gk0VjnkmZ7WlUpHUNFP6sSx9gByMOLcTPgxutG9irB8IA1qNTaBwBTvn8DfMWhOk(glnIwKM5FgVw52SW0nsOR46uQ(D)3ROPTfQtdiD9CDKFIT2xkypoZvdE7aUisAytxwwQuHrX47OrKMGR5n7rtJNdSymo7pBVu(1rYlQ2Mu9GnMKD)zAJgR7guqyqwVUCAfIAfP2X2iNRPRW64K1)OcvRnRpHf4GfopcYp45(vsrk659C)ysEwbhr9dktw0S6tGLkNgI5GUqOuelM65((QaDtFP6tIdxA2oyNR28RTZV5Aw0gLHYC60WbY4yFRLEKuhUcc476M0HHyJBM(0Ddr5fDCiH65DUZEc8u6DMgdDK6HsWMmI61LtHsAgP)gJK6Bm(SsQ(uRWbrQmJVRXP7TPSw89tFG35nGOC7I1xel4jtdbZ5gJ(Fy7leDKayi8Bx(YqRzwrcBVY5DMX5r3pEy5tTsYEBwIE5oYQ6GWgMOr8ynRE6K2UB3oENTkcDKwtRVQsVe(olLZPPTf8md6Zz7Kp434sV3FWB6vvFuwYMlXie6p0HjvH5DVA9gAMsG9Qx91OFxrAnKxsggNvrfOB6ztk2vs3D2S2Y4CTRTlSmuA97YQPUrL1)qYCKNfLJTvt1b1YJoRoD6fWKw2rHE9Gu0nY5OITk1hHKL5CBhG6PD)VHmWdJuwmUkitD0WnPPcs3kTtSw7IJNjpRqAJNBoVY440PtZkTE6zjQdw9mSVgoujSNvUHHY4f1H0)kjms26zvbWXwRU2nUQRLhc8M)Fnd4ELQbd1ZKaP5edEtY19EJXgBTnSOHwxG3BAysN0G(0ERfwFrnH9zWiwf2SHMibs6y2UmKlNcsLS8xjAcAUldYK3sPuqnNst)QRurqP4M(HeFX(pgF4WdRqO0LVZs5iom6aVxT)xzz4sD))xbFaS3)m]] )
@@ -2397,3 +2396,22 @@ spec:RegisterPack( "Affliction", 20230208, [[Hekili:DRvBVTTnq4FlffqydjttYo2nbq2a
 spec:RegisterPack( "Demonology (wowtbc.gg)", 20221002, [[Hekili:TEvxVnkou0FlJgPODv7qcjTZ0zvBFy1(Y0Du3hYinVb4ymGvnyKTPrrQIF7712aXqaAAN5LwaF)Y3ZXxFsGFWpc2gJuKGhxVA9A)vRw75VEZM1xfSvDOKeSTeHFcLcpuGYH)(pKCEbNXtpuh9h757v7WEPP)P2UdmokwhpjVsGbBZuQs5FTCzNzWtk2tlXmKu(P0kAmrUmUlGFApsW44NwgSDxfLP(wrWUrlo)Vc5OKGdEeEiJghtSwsK4GT)iJkRJkfuUGQGICpcEDp8SIuuhTdjjX1rC4rvgbwOT0QJ(PaPYGLsAw67um86)slG1m1QxWwgvQK6TiItG)9OP9rkq7yK4G)oylgYdrqrGbyf9zsiPGKtjqfCFD0g7x5fbBZjkuoxuMXLuzGc2FtgOpuhvvE0tAEoNH0phIQeiTVBENfHmdfZ3NW04keMREVHHqId5jHyUquvA(geTRheTwRDSQ)MurXpz61lQJgMWBRJa(i(aMrcvirkbabO3dP5ZtKMM2e53rsuAQvcQIP6G820yiVuCijVKVNiYjfk3YPfyBnVKB)FplMg(guW2IYtrZHcKhgtjgOiMR8A3UEXaNWMJt6eZcXXKDvjjE5hcXvcjeh((ctsnVgMk4vLGphHrZNbuhoQesye9oxogUpFkgjGOuEXHXG23tF5iBBKotFc7xMmDj00mvOGKJOfw2pmkQo6LxGXjCP0uddSrZLwnZX9BCzfvWghYvUCaX4Rtwr2gPBq9QkD7fXWCkub22iUzaFneNPTsNc)v)cZD8Ftt)8HjfkbfRD0bdqmwO9Lq9Wv7i2q7Dn6HSAZNE4OcXaIhq)lf8NHXq2rAH74mLxJdM2sd3Rz5CKe8)GNlCHHVfQPq1rxaa8WPKMqAkMPpUMYouM5XOj65hL9YVj7DR0N53(zt0VYLy0N20NC4p9bTMMsmbtZniwVsPHHKrqmvMxjwz2(BU(yDcanCxPEEoXZLcaxRZctOclOm9XZzdcTatliIMbs(FXD)62Q7TBHxlfempFhsn)1UMCJeqxBqxoHa8m93F1BBlHUJL)6uzv56doqqsRqI4xDS9mX4zonEpI9erm)e55JcW4NFA7VbY4NF1RUMEM5zCWCCILbSFMiK6v6K9fSf0gwad8HJbFdURvO07Ln2lX1I5mcZ8QFacALkdq5TDk70ChEcLbnXp(X6ixbS)0k4S(b9cRRJ(pSIVJiGNH8w)q9d2Wl96yFxC3YoM0L0K7gW3g3JbShTFF4i2oRphzlVfVG2(zzElARnECcZItjlJhkl)yIQQfF155mygoDEW7r0y5U8GedFPvXJPf0iuyXPIeUFuHtUbYO6XQwrhRXeWSON(ixNLahBEFDT(OwKZPQhrwJBW6DVHoE9uNCpCI6Lx0kxw0773E1k3G0Pk5eSOr)qh9FOqKfdeHC)nJGo0gHeMTliEXTxmqtWLA1a3bIbU0kG4oFTtwEDReJ79717pYPotk3IzviCBN6Glw7MNFTZpdrQ(SNtpYC6f6lo5Y8B3C9IrU)Tha0Dd8reCsJDAvUZdbWymE2amzZqhEfSVXkNFx65e0t)9NNJxow37N8zjxDha7hMBVAIDe5nfeZLCb))p]] )
 
 spec:RegisterPack( "Destruction", 20230204, [[Hekili:1EvBloUnq4FlhhKV09CTDYMBlKeOh9d92wwkK(zBRylNiwzlJS8EeWOF7DKKF3YjPuklSjXAMNzMN5n5aVG)o4ycsGdEZ31FTRV7ghp3nF175GJIRf4GJfO43rNHVKJYG))B4sbVkwqy5QZUszOefgLSkEmCEWXtveQ475bNSd8Aq2cCCWB)sWXlKKeSrsCz8iWLr)aXPS43LrfCcJtexLrPmUm63XVtOKGJusPOuzAkjfdF(MowqnUwcgjUegZi0GJ4C0jkoj4BbcWBgjfhrYd1amskHcGuufv0bC)XhJbVbZjidoFGdX54mcUugTtg53JoVkp089qLZAC5qdpwk6CMhc5dYiVhdzedRGE9IqFbJOIlofXcJd)8JHRML0utbhhZYoHSsoTqLIPHiEgJBsUCsH55)6F9NYOpw7SXX9lEW)9LrFEO3DQkn1rROtc7hqDqDTmAWd54miNz4AVxCVnl(jO6blCmKzVVvwLLbHijR42m1z61IloQapuGkCAKrgTQXJ6or5P9W3(yf4BgwUvWmFoPutLXUbtwEbb4Ns1zHBwHSw7Ace)me0jqQdLhJnmLlO61yQYVuNwQmNfQRZMyCsilfAG48QMm3dyAGVfK43j5NTBUPuDR5iq(GQgwmo3DtS2SawdDzkjhhgNeCCRfmgyRm2hk7OZgL3PNpbRZ9zxdJR4L4MQui41)m8mNvva607p6hdCP4cqzuCgohS)9kBBcDt5Fct40srJBaSqHT0CpFKd1oN5A6D0OWPm4TJrlre6ml)QcPN))SfA7OO5cIvgEIbtMhhmF9FfB2xKmIp9TwgbO)Y9AJH1zdKOc4hW8zLtecAdxYlB6AfKmiWzHjevJ7Ez0wxnzLHYrMr2qZMV5zK8umpNf2rQQORbNjd53yvJbvpMd0(4sZHSplOP1zyRMcKLlUnkmjOax8fxtam6HQ5w2Qj8gvItYJbRBPc3B5sCB89Ho6(bBasySmTDwUbWAETZol4fRDVr3MEk1hyEP6yZTR88HjbWfMYbMfQ5(EwbJluveplJm4iJ03xYr(QA)nlLqbU6ZYiBRJLVA0P0PBt)pT)N7wO)ejD)KT011Z3qVd2oBhP(1VkO(u)gA7I3M3vcBFCYQ5JsSdLPZv(QmQ5VwPGZMC3NNu36zp8jy1X7725Fx1Gn6Z17G3D1tfckf77E35)CVZA7BTHzPk(0lFmLSkySvfVA0AQj63UerNxAgAwxBB9ZoVjQoynZKtkzu2T9Pjk8FmHBCNU9eZ8Z2PyZdY5BfgKRnQ3wbn6HDJ7NsNMPQkdnVrF3(TURAh2DW3D1KHZ11ZgLVBZmPwo6AgiVFRY8ndDxMNnc05p7EXTUU7hEUluV1p4DQFmCcP94)ae(pqXW4XFlqLauwmWAy(tpAqpPQyS)Y0pn6gH79S0XUE1KltROIPio7QYpeWTvEtHRRf0cilPJ1SUf9BRc61xvcaa0)2YZpAWRiJQexuVq3FqG3m)lFdcMeIwA9oPG)5d]] )
+
+
+spec:RegisterPackSelector( "affliction", "Affliction", "|T136145:0|t Affliction",
+    "If you have spent more points in |T136145:0|t Affliction than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab1 > max( tab2, tab3 )
+    end )
+
+spec:RegisterPackSelector( "demonology", "Demonology (wowtbc.gg)", "|T136172:0|t Demonology",
+    "If you have spent more points in |T136172:0|t Demonology than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 )
+    end )
+
+spec:RegisterPackSelector( "destruction", "Destruction", "|T136186:0|t Destruction",
+    "If you have spent more points in |T136186:0|t Destruction than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab3 > max( tab1, tab2 )
+    end )

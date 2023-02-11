@@ -103,6 +103,8 @@ local specTemplate = {
     defensives = {},
     custom1 = {},
     custom2 = {},
+
+    autoPacks = {},
 }
 ns.specTemplate = specTemplate -- for options.
 
@@ -908,16 +910,17 @@ local HekiliSpecMixin = {
     end,
 
     -- option should be an AceOption table.
-    RegisterSetting = function( self, key, value, option )
+    RegisterSetting = function( self, key, value, option, isPackSelector )
         CommitKey( key )
 
         table.insert( self.settings, {
             name = key,
             default = value,
-            info = option
+            info = option,
+            isPackSelector = isPackSelector
         } )
 
-        option.order = 100 + #self.settings
+        option.order = option.order or ( 100 + #self.settings )
 
         option.get = option.get or function( info )
             local setting = info[ #info ]
@@ -937,6 +940,42 @@ local HekiliSpecMixin = {
     RegisterVariable = function( self, key, func )
         CommitKey( key )
         self.variables[ key ] = setfenv( func, state )
+    end,
+
+    RegisterPackSelector = function( self, key, package, name, description, condition )
+        insert( self.packSelectors, {
+            key = key,
+            name = name,
+            condition = setfenv( condition, state )
+        } )
+
+        self:RegisterSetting( key, package, {
+            type = "select",
+            name = name,
+            desc = description .. "\n\nIf set to (inactive), your active priority will not change.",
+            order = #self.packSelectors,
+            width = "full",
+            values = function()
+                local values = {
+                    none = "(inactive)"
+                }
+
+                for pname, pkg in pairs( Hekili.DB.profile.packs ) do
+                    local fancyName = pkg.builtIn and "|cFF00B4FF" .. pname .. "|r" or pname
+                    if pkg.spec == self.id then
+                        values[ pname ] = fancyName
+                    end
+                end
+
+                return values
+            end,
+            set = function( info, val )
+                Hekili.DB.profile.specs[ self.id ].autoPacks[ key ] = val
+            end,
+            get = function( info )
+                return Hekili.DB.profile.specs[ self.id ].autoPacks[ key ] or "none"
+            end
+        }, true )
     end,
 }
 ns.HekiliSpecMixin = HekiliSpecMixin
@@ -1115,6 +1154,7 @@ function Hekili:NewSpecialization( specID, isRanged, icon )
 
         packs = {},
         options = {},
+        packSelectors = {},
 
         variables = {}
     }

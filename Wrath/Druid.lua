@@ -1102,7 +1102,7 @@ spec:RegisterStateFunction( "swap_form", function( form )
             gain( 10, "rage" )
         end
     end
-    
+
     if form then
         applyBuff( form )
     end
@@ -1715,7 +1715,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return (buff.clearcasting.up and 0) or (15 - talent.shredding_attacks.rank) end, 
+        spend = function() return (buff.clearcasting.up and 0) or (15 - talent.shredding_attacks.rank) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -2837,9 +2837,7 @@ spec:RegisterOptions( {
     potion = "speed",
 
     package = "Feral DPS (IV)",
-    package1 = "Feral Tank (IV)",
-    package2 = "Balance (IV)",
-    -- package3 = "",
+    usePackSelector = true
 } )
 
 
@@ -2849,3 +2847,22 @@ spec:RegisterPack( "Balance (IV)", 20230208, [[Hekili:DE12UTnoq0VfJcyyJnrRDCUcuh
 spec:RegisterPack( "Feral DPS (IV)", 20230209, [[Hekili:TZrBVTnU5FlbhGHvtTRKDCtpaBFydhgW1D42b4dBFZYk20jc1wYqso56GH(TVhsrkXxEiPCA2(YkUETXsKpV)oz86O1)X6v7sQiR)TjHtMgoj8hhh9XjrZIwVQ6RNiRxDkz7xsEe(HSKJWF)3ifjhQ38Z)(Q6nd)L)zaDbF9qEYokGkZpxSfw06vpCo9q1VKT(bDOdl6ez76FlcqWtP72rAwdPC76v)R8QF9VxVrGIIZP7Q387fP5fPvPKY6px)5)i)XhpqQ3KS75KSTe49f5vjvP5zWpr2MF8ijBh7ZL1BsHhw9eS6ThskHpNFI9IXanxKVp9aqP)q9M)YV)R1BEE647ghnkA89JNuV5hQ)CY2M1EIb1hsQUDXhoMu8L489XamJFj9WU3NUFXnNpn4MhoVF)4ht3xj)2XNpHdMQNYlYk5BgFjBtQI3NxC05IoLZ47p3(w2gpCiU5JXhslREpvRTinlTsEvNljXPvKJLYpuaUUN8eyauaQlYoaKBjha9c9vVNU9897JFC7UfrusSKuf)qE25YXGEQ4(47oTDr0GHmXsv6JaqI3FU4RGe5YLT55h2L)sMYlkihtsZkxUiAwGmfSlTGe)ajPOvAq)WlKKNtZEm(qYwkjrIjzjpCGSJRiu3eG0b7iSxiwp2J4uW8NtksPaBSara0pskEKKT9RXNpbcKBpaRh(KnqS0jioK)IFq0rfvPhjXv5X7sjdg2WEpasnsXxyctThmauevGKPCSSyknlMVefzRU9kZwJbqHyRLk2ZOAb8esBsgWuFD82ZffKSQ5l0wE5tue0SiUMz7bGS2MusPrkcgEt7Ekspfxq2xqkFk(e4ddR4YfU4bExNfIgwaeSlyGUKzqhGR2ht(tiKtfyf)abynsC3ohCmjlz8PTvlBLChbXvJsJ(ozbwX5mtxlMDwsor32uiKSyrsHd1UiJCeISTCsVWddhOWtXpUGaraZlklFbuazKYYyWh(Wb6UBLkIfHsUTqiUfeuA(76BqpqJmlu3mwKhP(vPuHnJbi1a6Azc6YfqJQdRqW5nGukGX7Fo5WzYIHCPAvbiqP66DNpEKglEW0WWGlxQsGqtvYrA8GciIDEr82KtCemj8DvjhatIXS3mUij7lZ)PpnZdya1be7HAaWHtuONDuq4sqk)qkeBZZU4rGz2L8T0ztjyLrtdhb8bpU8OHdn4OLthajNUCjmaER7SqiPB4BTNK6ooDE34z3orqu(eoMouCOi5v1L4tYhdnBZO2h2PN8qbwZyYPJPJ9zsynHPqv7fcOzQ47gpl2qiTksCB1fFmFhjoj7RGsu3j3No1sKwonDJNCSO0gseE(R6L0rYaR7b9ANYH4frxm9LM)t3plyuu47AGOzHXqDJsoB(cO5kEoNiCUgF2CqHWXjvsqJwGDE8P80SQsr2UfZgmeZnzoIBIsEm5YOKDVC5g2bkFgxmINZXaOCZayzxPz)yaPj8b7PnfbuM8m02xCrEsbYYlleRUpu4UZfu7xE(AovQxoXXK)Sb2nVWdCBmfZi)zfk4UDA4TrTMylnnsVCzORArWctcrJdmk52h7d9bVRnfHWP3mbrRnt7ZkRGgVN7lEhLYQG)3afTmNkfyTJdi77GHfGgVvHm9txU0cLoXDWv10sV0IhspMkuJdrcOmsv3g8HiVzsLbC(jQDRj87NApWqkWGA)iGS8xWnpJM9MBEo104eGIIkf0X01(uceGHVTBHCQI2rNJYOaqSumVRQGGDz1gS7fgMVbb(eSsvgOAY7SMmKsYgAZoEAxnxMEa5Vy1()JxRRrhNULnqN9jKIui1fT7U90HGXk6NdZKIJ50GU7o3Kvf4aEL75NRkt3rMOdoPbSyoYgTOVtd9QpVIOwlMA(groePb8WPtrAbGQ8nCi9TEcwpitAM747H0GSqunCOTSyZ5LLi)QsQF1hKBaPb(sRXyuCORqnZVbjG9moznI6Md5aBdihoq9j3st(s3bvrcTVop6UBhoelx)OOG3zkMlHkk211UPM3mNWbvnzN0NHEIF8azSjF38IyLoy1a5n(GHlThsaoUEJ(iB6lAnq8HYIxeKXgs(crSduz58zxUO6RmsqhWwBiKBnj23ffUCHobhmyy5t5NHqH0925rje6gQSEiG4cxnzuN2XQOsvbAORG434yy2aCXHok7Tq5vW0sWCuBl7CadboZ3MMFUKvmzdoqkG4kl99nanyLmZJ7RalkF2(eEbXnjXSmuTU0SDTYiL4sRhHaS5iRUy1Y1Thibp6JDpg2gVsRdGAv8z6pKPUNyGU1TniqhCqrWg(jxBszJrtQLP9Edm4(qo8oTD55BzXeXGM(MgeB7uQaLJNsggEdAgDw4z7z6NBIklNBKiFQeRP85xda1fwbgoayNCsxj8)F8zLOiOOJj)kRc9Uqmi8ARpKV9Yxsp5Sqf0n5UWp(Q8w9WIqipQ6PJ(P4jSthfp0zqa(CMwAlXKC)Bb4MoofkyV8vfqAYSEg8bdJF3JYRhfvfasksgTJEVEsZcXg33DYZpNdWJjNpycUB4L(D(qNk0q(5SJB0xYtLtHRS4VT3APkrm7Zhsx7Sf1b06r4Xh4vJsxoLuLNcYYftOZXBOQeB59HyA85tvMibxM1o5bzZutc2yFBLomptM3jACY4wg0cIUUvQWuY2NdZBaTCDW8glQo0zqQ7xWJIW9nW8gqxpUPVQTYu8TkRjrmKmkW2DCzja3eyM(G1REgaa8E5lp1ljf0ZWTC9QF54P8Ik6nG6(6nnaQEd9OLlhx)51Ry)e9oz1EJHGp8BSR7fxtT(V2CVRaRD6MxVc7IqTEf8(kOc4K1RUPEdq0BguVb(jgdHCLNwVQHwwVs)2sTUcyen8Rb8Un3ChPOBzAF3IqLq30D0njErZfBsgivW)rxpMirb(wlZNjg0M)whgn6zOL3LS2OOUJF7QNrMeunTQ3mVEdyqsX9WgTGdpX6nxUWwK5C7AEf6S7aCSaqc(ke9VUzz9Mz1BcuLPouvUQBdGgGXOzDcdUJtRIefK2kiIjK496zmIV6nFaqviOH4JvqrjOm5bk2N1xBpjer33hTUpL5dYuKg8HTN3YFJQ3OozWgDwJDH(BUTEJ2CdzcOO7yVAi7pyLIYqteOJR38oHY2c3EVBDKEupkvQn4l5N1obkj8r7UNIPpD9y6gxaUBMvuO)J9rRHyL1oSIR06cwPtZlg9JRBa1TK)cqam45mughEwv3ZzAzQxVEqNrDCA7StywpyIL3rLanU0MINabjinsh9WuD2eswC0fYyr7jqqNwPSAsFaLxR2YzIiJrDZ4QH6VqMSMXeg2f2M07RsKBZApYEOvmKa0L4(Aq)5HT4cBqOSLOZzbCbEdLIn9v)X9(Vdj0nz2EBmypZa6OBvQAclmfWmyJXTXmY2OCLCOeWwQnBKTQoyxfJdvziJhTNfZvAJ(ehrACTVsRAj(2iwY1JxPrfJIyPWEbS)GHgArmHHizTISNG0BjMy6vKOgGq)(qp1Fg5i7P54DWrZcjlk55o71(2cF0ObDnggLcrvmqwIrmY2g9Q44gkWYSG5zGDv76CCIGcDxaftyO8SVveGjWdu84vNYhZcXEfqUhgNFJfZHY51K5nZ2q6QaYnoSynkJo3xPq6QfdVJ1nKLb41jT1BvUPhu6nCbRj0COivaKDBxqx0F6WzclemNXnUx3mQBAyyBKkZB4ndGXn)gDj)yKw09tktczbnnUX0GjWpvV5tZKrw7fCcRFr)OIwUwhWiT3tsSwf7b0KbM2LlhR9p)qSZMtWNS0p0E2H)HlO0kIziQOBjRj8b0gJB1JnA02D5o(2aR9(Bcuz5GCyDSEz9leOtzMMDDIm3IHIDyDp6h(M9qBP)SoNzPBDfv(1(cjliztbZqnyDF6NsNowX4xOWmUG8yDF6h6r(HolIfAVM(bV9i9dXg)K8cWV88TMCuu2Df6z26t0ScrroAtU(zKBmYfGrZoyh733Ezs2Yf9hTTv)eDxYgtXIW1XOLu)GvUpdPyu0a13pteEjQjofV6xSRVps4mtYuoBpAhN(jxNzHLXO7fI1XMFKBF0lgTSPeGzoAagJIv4XUSgKYxqnzqR47i1)iAFCFZCUTkUEf90BTpCn2PRPx0oQ8ZsyvNQ9BCGbsvBxgThQRhX32uoWTTUzTLdSe33KpiPNDwiS9KGSSX8aVAf9kZWDhUgANa(5ZxXbnWgIPKmx5Wlz1IE9zTKd2RDAOscjZt0y(IgfsJJT8za2CQlFsBEkshgjVPc7Gg3jxM1noRug3F9P6gQAQOwfQ9PHfyAjWU7)mQal3f4Y2FQ4AmydqfZmIXdzE95cr8mJM9)qpZP28lBHSHzi3cLcd5FjoAiAEz3Tu9CRYXwe4P5B)tqrRjDepo5xByMlMNgIMnl)fME96lAWBFrwAkAOBF4PMn1Ghti)fVXd(4BrqdZlCYAXbBtVmbTZv4B)mNVluwfGmKG3Gt61(XRGzKknMvXnzdBga99aB9CqVcZdR1ff26nGCz)AgnmdgUgzEG0OlXu9SWq2RKclcG60USkcfNUgRqrt5QQQ3XP923PidErZCrzkVtUCfbTzo6s7Z2UlW93NC5B4Klz3qjFryAUqwEcUml0EtfSYxXI9ydJ0R0LM7ldS8BYyFuDEtFGUaPB2iMnGuQbLugixAqr6zV5FhiMeJLRohBfQLqqTUMmtUcaDfYs6jjz38STSLMK2kkg7rWDWUDQo5sFThh3uI2bb5BaM9i6EfQwQMbNsTFiPol8r2ITvN1)WRUPBhytM0ThZ8gh2uw6ccff84ekvJGIq0WcgXrUwNFtB)P6fYy3M1HJbA56UtXA9YjkFFpLPSk6CU3dme65d1bw1VU3AU3N86dzhUKqMj2r7x9ByccXIWUXKnKTnrVLVQ4KfOLMFjXjvzKOze9JY065CQvtPz4OVHiaImeMFpB5O9HEvkV1JaqTWnxGBPhWXY13FWz9CsAtIz3CxRkKs3F7Zv7(0NDgjLHozLW3lR7TVSUEM8rPwi7UjuePFkps9CO(9HMsGR2CgotsHJ6(Jbk07XfEWYX60X94FB59DlqVwGVabIyNCVJlcBJOq6RgVVnllXOrQCEBz1rAVHndU9(3XbPAcAkvkPKS7FKH9DSBYz6VqeRx9ZK9)7KTpXw)6)d]] )
 
 spec:RegisterPack( "Feral Tank (IV)", 20230206, [[Hekili:vIvBVnkoq4FlrRuv72wosAA2Usnv6ovDsT3QEvIQ7(MbhWKAvaJmMu1tr(3(n2obCatE5d7kcEMNzMNz8mtbng9gkibliOxM4p5g)j(Z8Mmz6pUbfi(QKGckXXFGxcpuGZH))pjCCMm6nCXhYOZF6FUqjXxzmCIcOkwnpgKcfSOMMjEQaTWj6t(jiBjjg9Y4XOG3PjjeJOKQyuW)Ye)6VKrBm1J8AAYwl(kNY4ubLujFw(8BSLlZiYiCYkCrmbKIZeybLvaprIz55KIe9VRKru4LI3bPJZWvWVzL6d8GaGZsPzGB)nz0V)6VKrRUXBQ34Rh7nZZxg9n5Z4yJSLAuxGfxo)3YX8pczPHaMHFsZsUIMoFuD5zJwuNM6TKMkSp1RU0nmI3z8IQnk7wKekNeUGG5HPmE(EfTKPJ(NBofExmoll08ZWmAL4kvMCoTGkSLQUIesfK8k7xUfU238ouuWHuhjbGmMKb5i1rxPuNLMgUmoz(yBf41f9nUoyWmIkw001UHiqwNP0zfjKuqYHS9dtpkmhgpB1hGpBzuf3aYTcZP4fzed(cAojuWctOKRwHZQjZppHOnMGJbnkwgMuNN)LY5VX3)I1Rfy(sIWZsXdyc1LMKWmCSIv3ALrBSY2xd4VED33vjGRP3F7jHFymd4ow58kIGMQOHTs750rmqBzZs4213p)2RD6mxy0kKKvrM7Fahlhiqb8VEX(aE0zDnjNOGO6(7g8KgKo(0rpVApm2qrGts7uOgsobQIkI)QlY9llgm2N6D7jYlToL6Ec4uPycNsctvxDsvnMvr)McCwTOIMqM0tjsbhgDSBVbTEGPUFSFp5xaTwi8p69(CCDwFuuy7fxZ5KcXdB4zLKgo(YbkD05WlhoVzoVbUcyaJUxHb1EUwtsXUyOFoZri1G8H56JZQ7gNRxpCm2dVQpPLgNPhXoZVB1GQX9PMC3OJZe8MZ0j54VIbwXuxvb4T)K(m3wXkA6Ghkyf4bG8n7Ja758jMR6ExHcEkVKXfQ9iUfwQqdSmsnHPYt(mkq)KEFjsk4Sc4Xx07prku8Cc6pqbgTqbDh6A0o0SeL6Iosa(Gs5TA0ma2gpqOBSfYmqUJetvsyXukVQrJbgy3bIB7egXWswqriwTiNZXPrNzyO2r0YOhKrtBnCNH07qaBtwktp7en9XBbf6)yq0hjJSbBx7Gu5htEYrsMb6bJaAvE7vn1tqVzuW5YOHwoqtDWccYOlKrRxdlL2BnbnGBce7xVTK5KCLrnUI1OcJLDo4wgDpu)B7c72yPPMSVxqtD7hUbs3P1oJmqNSnrIECjkWVjWCoAvg9D4VlrFb(6bdWlAU1CQm5aUOoNoWewnFE3bLW1CyBURxtCxxBpY8G7HEotf9n7PKnCD)(W8SRY1dWEWgohuMdXW9NAB6cOBL4OlqlB1zpO2qR3KCxxHTWbCmTRo2VfdZC2En47ozyZOvxJgCAl7bP6w3BsGTBqjJUCWcEDbZUc4UOsltd0D2MQ17vw1vio8CP9SSvlS23vMzZwwUshg7h2I1p)TRW3Dy3RBJcvF39D7YLR)ZJploZQYPDpO2cz9u39xmFAfHtoCry3Pf7M03zfn9QlDxLz)HRJQCheqFZOPKMVDY(2LR7x6X8DQ40sZXU(Kr9w0q3DcEAOpo0(Bm0zxfZ3mYf1E8R3yiTTh7AVstndUIK83fnF4VhFny739dxR8duWJK0)dh)UwE0)d]] )
+
+
+spec:RegisterPackSelector( "balance", "Balance (IV)", "|T136096:0|t Balance",
+    "If you have spent more points in |T136096:0|t Balance than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab1 > max( tab2, tab3 )
+    end )
+
+spec:RegisterPackSelector( "feral_dps", "Feral DPS (IV)", "|T132115:0|t Feral DPS",
+    "If you have spent more points in |T132276:0|t Feral than in any other tree and have not taken Thick Hide, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 ) and talent.thick_hide.rank == 0
+    end )
+
+spec:RegisterPackSelector( "feral_tank", "Feral Tank (IV)", "|T132276:0|t Feral Tank",
+    "If you have spent more points in |T132276:0|t Feral than in any other tree and have taken Thick Hide, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 ) and talent.thick_hide.rank > 0
+    end )

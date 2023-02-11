@@ -8,8 +8,8 @@ local class, state = Hekili.Class, Hekili.State
 local RegisterEvent = ns.RegisterEvent
 
 function ns.updateTalents()
-    for k, _ in pairs( state.talent ) do
-        state.talent[ k ].enabled = false
+    for _, tal in pairs( state.talent ) do
+        tal.enabled = false
     end
 
     for k, v in pairs( class.talents ) do
@@ -39,6 +39,35 @@ function ns.updateTalents()
 
         state.talent[ k ] = talent
     end
+
+    local spec = state.spec.id or select( 3, UnitClass( "player" ) )
+    if not Hekili.DB.profile.specs[ spec ].usePackSelector then return end
+
+    -- Swap priorities if needed.
+    local tab1 = select( 3, GetTalentTabInfo(1) )
+    local tab2 = select( 3, GetTalentTabInfo(2) )
+    local tab3 = select( 3, GetTalentTabInfo(3) )
+
+    local fromPackage = Hekili.DB.profile.specs[ spec ].package
+
+    for _, selector in ipairs( class.specs[ spec ].packSelectors ) do
+        local toPackage = Hekili.DB.profile.specs[ state.spec.id ].autoPacks[ selector.key ] or "none"
+
+        if not rawget( Hekili.DB.profile.packs, toPackage ) then toPackage = "none" end
+
+        if type( selector.condition ) == "function" and selector.condition( tab1, tab2, tab3 ) or
+            type( selector.condition ) == "number" and
+                ( selector.condition == 1 and tab1 > max( tab2, tab3 ) or
+                  selector.condition == 2 and tab2 > max( tab1, tab3 ) or
+                  selector.condition == 3 and tab3 > max( tab1, tab2 ) ) then
+
+            if toPackage ~= "none" and fromPackage ~= toPackage then
+                Hekili.DB.profile.specs[ spec ].package = toPackage
+                C_Timer.After( Hekili.PLAYER_ENTERING_WORLD and 0 or 5, function() Hekili:Notify( toPackage .. " priority activated." ) end )
+            end
+            break
+        end
+    end
 end
 
 
@@ -52,7 +81,7 @@ end
 
 
 function ns.updateGlyphs()
-    for k, glyph in pairs( state.glyph ) do
+    for _, glyph in pairs( state.glyph ) do
         glyph.rank = 0
     end
 
