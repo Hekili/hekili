@@ -530,7 +530,7 @@ do
                         } )
 
                         local submenu = {
-                            text = "Active Priority: " .. ( Hekili.DB.profile.specs[ Hekili.State.spec.id ].package or "(none)" ),
+                            text = "Active Priority",
                             hasArrow = true,
                             menuList = {},
                             notCheckable = true,
@@ -545,7 +545,6 @@ do
                                     func = function ()
                                         Hekili.DB.profile.specs[ Hekili.State.spec.id ].package = name
                                         Hekili:ForceUpdate( "PACKAGE_CHANGED" )
-                                        submenu.text = "Active Priority: " .. ( Hekili.DB.profile.specs[ Hekili.State.spec.id ].package or "(none)" )
                                     end,
                                     keepShownOnClick = false,
                                     checked = function ()
