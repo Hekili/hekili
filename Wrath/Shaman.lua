@@ -987,8 +987,8 @@ end
 
 local update_gear = function(slotId, itemId)
     if slotId == 16 then
-        local stats = GetItemStats("item:"..itemId)
-        local spellPower = stats["ITEM_MOD_STAMINA_SHORT"]
+        local mhStats = GetItemStats("item:"..itemId)
+        local spellPower = mhStats["ITEM_MOD_STAMINA_SHORT"]
         MainhandHasSpellpower = spellPower and tonumber(spellPower) > 0 or false
     end
 end
