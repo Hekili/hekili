@@ -1738,3 +1738,22 @@ spec:RegisterOptions( {
     -- package2 = "",
     -- package3 = "",
 } )
+
+
+spec:RegisterPackSelector( "arcane", nil, "|T135932:0|t Arcane",
+    "If you have spent more points in |T135932:0|t Arcane than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab1 > max( tab2, tab3 )
+    end )
+
+spec:RegisterPackSelector( "fire", nil, "|T135810:0|t Fire",
+    "If you have spent more points in |T135810:0|t Fire than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 )
+    end )
+
+spec:RegisterPackSelector( "survival", nil, "|T135846:0|t Frost",
+    "If you have spent more points in |T135846:0|t Frost than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab3 > max( tab1, tab2 )
+    end )
