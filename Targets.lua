@@ -608,6 +608,9 @@ ns.actorHasDebuff = function( target, spell )
 end
 
 ns.trackDebuff = function(spell, target, time, application)
+    -- Convert spellID to key, if we have one.
+    if class.auras[ spell ] then spell = class.auras[ spell ].key end
+
     debuffs[spell] = debuffs[spell] or {}
     debuffCount[spell] = debuffCount[spell] or 0
 
@@ -640,12 +643,16 @@ Hekili:ProfileCPU( "TrackDebuff", ns.trackDebuff )
 
 
 ns.GetDebuffApplicationTime = function( spell, target )
+    if class.auras[ spell ] then spell = class.auras[ spell ].key end
+
     if not debuffCount[ spell ] or debuffCount[ spell ] == 0 then return 0 end
     return debuffs[ spell ] and debuffs[ spell ][ target ] and ( debuffs[ spell ][ target ].applied or debuffs[ spell ][ target ].last_seen ) or 0
 end
 
 
 function ns.getModifier( id, target )
+    if class.auras[ spell ] then spell = class.auras[ spell ].key end
+
     local debuff = debuffs[ id ]
     if not debuff then
         return 1
@@ -660,6 +667,8 @@ function ns.getModifier( id, target )
 end
 
 ns.numDebuffs = function(spell)
+    if class.auras[ spell ] then spell = class.auras[ spell ].key end
+
     return debuffCount[spell] or 0
 end
 
@@ -668,11 +677,12 @@ ns.compositeDebuffCount = function( ... )
 
     for i = 1, select("#", ...) do
         local debuff = select( i, ... )
-        debuff = class.auras[ debuff ] and class.auras[ debuff ].id
+
+        if class.auras[ debuff ] then debuff = class.auras[ debuff ].key end
         debuff = debuff and debuffs[ debuff ]
 
         if debuff then
-            for unit in pairs(debuff) do
+            for unit in pairs( debuff ) do
                 n = n + 1
             end
         end
@@ -684,16 +694,16 @@ end
 ns.conditionalDebuffCount = function(req1, req2, ...)
     local n = 0
 
-    req1 = class.auras[req1] and class.auras[req1].id
-    req2 = class.auras[req2] and class.auras[req2].id
+    req1 = class.auras[ req1 ] and class.auras[ req1 ].key
+    req2 = class.auras[ req2 ] and class.auras[ req2 ].key
 
-    for i = 1, select("#", ...) do
-        local debuff = select(i, ...)
-        debuff = class.auras[debuff] and class.auras[debuff].id
+    for i = 1, select( "#", ... ) do
+        local debuff = select( i, ... )
+        debuff = class.auras[ debuff ] and class.auras[ debuff ].key
         debuff = debuff and debuffs[debuff]
 
         if debuff then
-            for unit in pairs(debuff) do
+            for unit in pairs( debuff ) do
                 local reqExp =
                     (req1 and debuffs[req1] and debuffs[req1][unit]) or (req2 and debuffs[req2] and debuffs[req2][unit])
                 if reqExp then
@@ -719,7 +729,7 @@ do
 
         for i = 1, select("#", ...) do
             local debuff = select( i, ... )
-            debuff = class.auras[ debuff ] and class.auras[ debuff ].id
+            debuff = class.auras[ debuff ] and class.auras[ debuff ].key
             debuff = debuff and debuffs[ debuff ]
 
             if debuff then
@@ -737,6 +747,7 @@ do
 end
 
 ns.isWatchedDebuff = function(spell)
+    if class.auras[ spell ] then spell = class.auras[ spell ].key end
     return debuffs[spell] ~= nil
 end
 

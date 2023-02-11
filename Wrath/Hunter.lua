@@ -581,7 +581,7 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 19579 }
     },
-    sting = {
+    stings = {
         alias = { "scorpid_sting", "serpent_sting", "viper_sting", "wyvern_sting" },
         aliasMode = "first",
         aliasType = "debuff",
@@ -1911,7 +1911,7 @@ spec:RegisterAbilities( {
         texture = 132169,
 
         handler = function ()
-            removeDebuff( "target", "sting" )
+            removeDebuff( "target", "stings" )
             applyDebuff( "target", "scorpid_sting" )
         end,
     },
@@ -1931,7 +1931,7 @@ spec:RegisterAbilities( {
         texture = 132204,
 
         handler = function ()
-            removeDebuff( "target", "sting" )
+            removeDebuff( "target", "stings" )
             applyDebuff( "target", "serpent_sting" )
         end,
 
@@ -2229,7 +2229,7 @@ spec:RegisterAbilities( {
         usable = function() return UnitPowerMax( "target", Enum.PowerType.Mana ) > 0, "requires a target that has mana" end,
 
         handler = function ()
-            removeDebuff( "target", "sting" )
+            removeDebuff( "target", "stings" )
             applyDebuff( "target", "viper_sting" )
         end,
     },
@@ -2293,7 +2293,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            removeDebuff( "target", "sting" )
+            removeDebuff( "target", "stings" )
             applyDebuff( "target", "wyvern_sting" )
         end,
     },
@@ -2374,8 +2374,8 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Beast Mastery (wowtbc.gg)", 20221002, [[Hekili:fsvxVTjmu0Fm9LnTvsG29Pu7d9TgPL9avAVzWyUawXyJSnHLx8V9DnOsmKenfjWyFUhFUFCcjM8gjTKAbY(KTjjXB3MeLGRItiP2tDajTJYoqRXfsAl(8fGASU8FHpb9jx(hgud2cwuD9h9ypju0spNgvVMH4BS2oZp3SzggUYkoSHjOgZ9198sWSPWt69TtCEFtVeFVHKw0Zf2xLKIRlXy8w6agz)d41WllHjKGHrsFRHBC5DAUsZTOm9FvqnqPlxjD52gWLpljx(F0uBJlFuorKub3ynJvgOI2lS4Y9JvkkZYvs8E5cqY4Y6mtJYssbjTqaLKxiwuLEKN3jLHsa0CQNUI(QQigMOySr9DNzKlT8woMM(VS(C6MKOgKNJBQyzYAP6d(4EmuMAAhVmRIRHvs8lHOyuHitvLHfLSbUOCf2VgITaqPtfzd(c2kGFle4boskt12sLRj87H46utVxG4hHi6nqgM7TMvGI3EX9DLMrC8)RBm1lwwvnGUdK2SXZgP52nvlvxd2ObUTHlrrntc83oHYWpczwSrmYYdHsUfNS4xtYpEZ7YhkYhiHwoGJ0p7Ytot4rLqaNgPyrdMQzujC1QZIMlA)OLNUco8ZonGDZc6LEbQ3eAFFaQutRvYg6WH1uGKCeNu9XmBKjPduTeRXyZ912oL26DOjU8jYD5JoXi3o8A6TnkngW7UwVMuvOrKKE3DU8v)X0o)Eir)MzvfGgxJxPBNB3eZMO5e6tpT5wPqaEe1stF4jHM3pZRE6cFEi4qh7iyCYl88ZM2WDxBsdpBHPm8Gqty4(tMUWDMnzxe(6CDH1iizpBJcrV0d4HVYUecE2qeU50qTpYLd)pNeIkyeFHydMO9)i)7p]] )
+spec:RegisterPack( "Beast Mastery (wowtbc.gg)", 20230211, [[Hekili:fs1YUTnmqWpMCPfTr2YjTnPajhYHced0CrbO3O0kPvseMIuGKYQ(c)27sjeBkzB0l6b5SdN9Xqwm7Dwsjyr2BBwV5U1BIJJw)W3Em(owI9qhYs6GIDqn9HeAPNVGGX6Y(n9e1hCzFAqnyZlIQR)Sh7bHck9CAu96ccFJ12z(5QvhHrFzf7wviaJ526EEjAwL7j922joVTPxsVxXsY75c7Rsw(LLiDiDyb7nsQn8YsCciAkyjV3WnUSonxP5wsL()Ybdw6YusxMTbDzhvKl7pAW24YgvtelrWnwZyHbRGEHL(8TXcfuy5kjDUCbkl4Y6utJYYsqjKlWs2lmljspYtRKuqsa1CWtxEFvvubLNuSr9DNyKlT8woLL()S(C6QKOgKNIBQwzsBb9oFC3hktn0XltR4ACHe)wiQcqisvvPurjDGlkxG97HyZrs6GiDWxWwa8hHa3XjsluTTGCjHpeIRtn9EgIhdr0BWuk3BnlafV(SZ7cnJ44)x3ySxyIMxwnOUdL20Xnh556DvlORrB0a32WLKQosc(3oHYW3JPwQtmYYDHAULgT4xsZ3F1ZYhkXhkXwosZ0p7Y2CIW9kHapmsXSomOlajEXYZSUlz)GYdxah9BNgP2zoCUza8Uq7htqLAOwjBGHDlPGizpnQ6JXBK3eVEnP9bql9nawYRTDkT1Br34YMi3LnAfJCB9cqvr2owYn34YwCl0w)AXXUSFH56EWFVK)Qc3w32jImrh1)xEA11uCaEc1CtE4oHM1VYRE6mFDi4qh6iyAqlC)tM0WvxAkd3BMjmCJqtx46tMSWvoAQol8L56mNqqYgyBcHpFM3JFH9ie8rdq4ItdX(iNpS)8MqubJ0ZuB4em0BBuAAe7Jl6hhcz)l]] )
 
-spec:RegisterPack( "Marksmanship (wowtbc.gg)", 20221002, [[Hekili:fsvtZTjmuWFm5s70gSnPTjTZKCONA8mn9azMEtGaEy0yHeJKiuFr)27tqniHTRVylKwTVV0UKnKxjjLudqEjEDC8M1RJJIDREGKyo0cKKwAXE6oCHG2G)(tQAVUHk01SwB276L9M8IOD7EVd5bUKw6yul7ufi6AJPv)TvRMGHRm89Rk4uT(2DDSsqVQXJYBR7egqTIKK3X4MNfK8ZNF3JbPfkiVChgfwzjmIe0fKKxRzABwRIjvmZbBM7RCQgkTzsHnZud2SPmYM9Bf1uBZgYMiscNPn6H2cur74gC5ldTjqqZ5qj57KKcKyqXOoq5DvvrfuTHj2f11ssOfgMuqsycdRHHjV7ldwaxMezVy(EJTaDQRV4U3DU7D8qfTLvMwXuGpxiQp5JQGY5PYQuSut7z8Yfy)Sp29meBHSbNalX9fFCTYX)dqCVpIonKILuJEbOhUw3BS3f2f0GQfeM0HZCS81GcSM1akAQUwAweTnRVy4C3(nifeqddWhfpzZIN5Sbh2SbcDSC5rUHQ2bMOEMPMjWOnra8NwUu7IGbhtdSC5z()pxEtY5WHbkcg)uSSlpBvhm)PQcQaolUGzVcOLmbOxoX2em51moikWXWzj8(tEmDkk8ZwfGpYYPZ6PPK1jKnhFUwQO7KIAA)(fbk(ApghcZBOYXDYKDbjPNQeyYJ14ZnTsLX5deBZgPYMnO3JSBrY7m1sfEHJEdUSwwHvpj5MBSzHEF)yqMA36obP7xfgzo(DMlW2T2TJ8RJMk8p84QlvQNh9yr6XfUNVPYhzvpEI)JpyFNKbWOcZ)8zZe)DxAE4FMVzXyPpFwvh642PtRL9C)7CSmM3zYOWFZabVxPnBoeKKEga(7pjIDmeQXEk2hyOy1HEHU2h8OC8Auolod2Dwlg07pk9c6bbkTtA8)ZCYqi)9p]] )
+spec:RegisterPack( "Marksmanship (wowtbc.gg)", 20230211, [[Hekili:fw1ZVTjmu4)y2LnTvcq3wxNu7HDyAnsRxOs7Mbd8iyfJnY2uwU4)23ZGsWMKSEjb87ZFVF(9GKqEHKvtna55040BJttsIIVpoojLKzo0dKSEA1E6o8bbTd)93u1EDhvOBz92I3pkhnLvr729bhYdCjT2XOwoOQq0TgtV(7B2Ccg(KHVFtfNQ13SBGvd6nDEuEt7GWaQnKSYbg38KGuE54lbDspurE(w0lS6AygjORizV0Y02IEftQyMd2c3BLunuBlKcBHPfSfNIiBXFuutRTykAIizCM2ONklqdDGBWhFEQmbcAjhQj)GKvHedkg1bQCOPjQIQnmXUOHEsgTYWKcsgtyyDmm4DVzWe46Kihfl3BUeOZD1f39U1DVJgv0EwDEdtb(CHO(SpQkkNNlBYXunFKXRxH9l(y3ZqSvYoSdSg3x9X1lN)paXD(ig0qoMsD6vG(2Bv9MQD6OWYGgu9GWKpz0rZ9bzylRdu0CDR0SYDjXx1FUB)kKdcOJb4uXJ2I0fo7WUnBIqhlxVNBOQDGjAKzAzc0BNia(BpxQDEWG9PjwUEt))hlVk5C4Wefb9FkM21xmRdgaOQkQaUiUGMVcO1mbOx3YscA9AghevyB4IeE3zttNJcFTxb4uwjDrqDkyDkzZX51AfDNu0sh3VYrPV104KBEfLoolU9fPjXXynDKQeUbms2tD9sLXTii1wmtLTysWhz36crzdMQKS39oBr4MUFnjkTBDwssSf)ekvdufUDXTxYU1UDMoD0P88JpS5Az2LrpNtECHN5Ve5tSMhoBFJpy)nhtGrbLV9LLh(NUEzHVn)LdZj)ITMbCd7GoVvoY9VZX0y5Ktlg8pmqF7LAEldcIspbV)5NeTokc1upM6dmuC6qVsh7dEw(9wuUigdoDr7fu8pk1ckcbkRZQ8Zcj6GPvQW54JFZAAsN8V]] )
 
-spec:RegisterPack( "Survival (wowtbc.gg)", 20221002, [[Hekili:DwvWsUjoq0pM5ssLDW2mEsYMQM5qoLXhM9atv7nbcOXOYceLuJj(I(2tlyniyTJts5Qmc1p9u3pP(bBd7nwuohb2RHRdd3SEDyqinA7wweEQbyrn8Sd890GAEf9FuR(O4ixAtExNQdtZc2V)9ouNKkEUJnJQvNrilrSX8LvRgHrJq5HvzsUXC)(wroywz(p6UVSTgb9kwuARqIVuZsVAEzAGm2Rpq7GiphgqcMmw0BLcJnPrluAbEYM4ElLBGCBIQ2MGLGnzmBSj)RMJL2K(mjGfjfg00lhqbVvI0Wx7LhOMNkHC2xzrzeXGwWjqQUAwepdfk65q2BIR46dmKYz36ohuZBe5Xfcn4Zf6kbpuzCPmwvetzzCNqMVa7wFShee2mvvfVEjUh9X1OgEodXh9r0AGyQKQmla9PRx4qABrra89gPYiocXMsfgmxoMh0X3NVkFixVhWavlAOZHnRNyjvsx9I5ATQZrXFFlk6eyPO2NHP8aPdbhju0RXIBresOgQeaDZ5zBs4evv0ncX5QzZ1Vx8Zz5OskHt9ue()oq7zF(XWMzxr4Iki)IW2ERJldkQ3V4uYa6gOgJ7J1tZJ)(sCHwzWj5D2Lldc88txiHPxB0aDboLp1MnwLU(B8CRqUMVxvxY7oSOMd)dBnF4MniB)fRbAIJeZoyJMuSOoUUM0tQH6LQgLgDUpH2Kb(Sj9Umb2D0o0ILknTGZosorrviKKnXD3ztMCA)wFjy35MLO6FYqvk9EIBtT7S7g42emQPF4PvxtfVmAFr6Vefp5KWlJCqXUCmpTYlTUf9u8jhs)zx6i6hZ3bCqyMIv0sFbO1exQ6K(RzrQtZm6(5p5CZR(09QwE(RZZUYTOL(AxElCnoEOp3F5dE05XHBU9YZH(ahmxUfQrRg)jNCw8NDMbHNqmzM4JEYj4gfKFlL7h7hp]] )
+spec:RegisterPack( "Survival (wowtbc.gg)", 20230211, [[Hekili:DwvqZTjpq0Fm5s70gSHy3M8ntYHEOtJp4lKz6nbcqy0ybIrAXuFr)27k4ZGGIRB7LaE3NES7B1(cXN8gjmJcmY(G1bpSoW33B9JBFAZwsiCUMrcRPPhPhWxQOL4FdBuN4NOct87ALTqsQ3HdV3I6SqsZSSPLnQuezba16)B1Qby4BG44QubvRV)qdpJPxP)F6UVOPcyQvKWKgUaETIKSCDTb)a1SuY(hWVaplJ1JKPtjHVvW1M4AfxQ4WztS9xjunlZelRmXqbZepunM4VROqHjURs8iHcUg0DYblN2ia819DYdRIMiyzKVqctrIzkofbjBRiH0uGlXN9vVoQKQosaSMTN7ssfTMNfLZvmxUaBl4GkLkerY8iSkJA5ISzy34I9ihXMkllPvZXT1fxTS)5eeFYfrJMfHTuPEgOpF9gNL0KN7X(rTqQ5Nyr6cj4nvoMM0Y3JxLpGQoWapzdOX5G)6rwse4vViQsjBTu80TOOLdf8kxggRdahcwsWSxJf7HqKSkwjNH3CEXehmsvjEJGFPB8V(9IFplNKcb7Chfb)YaTJ9PJb)jxrO8sw2IW2CRXLg4vh0ZgtAMQMvbrDj74z7FVgNRKAyuFNC7sdmA25fQy8N1kgEdoHoUNn0M2fC4YUqMIEqwvqBpoRPd(h3nF4MBiB(d7bmWjKzlmRlvG)614SULQQSInj81YAPcS2pbM4E(mXD2mEMDwfqMZfOPWD3zIh9v)wx9A2zJ67BI)klr1qvOFM1j0SZSRNkT3Ge(HNxDnrBz0UAYh55pBvSLr2lqlNZrACkRBrpMF0r0n6Chq3CUoE9sZyU8g0XVrhviBfUNzwPJrgC7Cdo1SQRCVQfN75CSNShAUp2YFc7EId6lRtUGhCAS4MAN8sGlWEZKBHAWAXn4OtIB0j(bocHJ5Hl8Xn)B0rtwHOnqHuHRjx(hXDlsKFo]] )
