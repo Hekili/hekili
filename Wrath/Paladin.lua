@@ -743,7 +743,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "blessing" )
-            applyBuff( "blessing_of_kings" )
+            applyBuff( "blessing_of_might" )
         end,
 
         copy = { 19834, 19835, 19836, 19837, 19838, 25291, 27140, 48931, 48932 },
@@ -1945,11 +1945,21 @@ spec:RegisterAbilities( {
     },
 } )
 
+spec:RegisterStateTable("assigned_aura", setmetatable( {}, {
+    __index = function( t, k )
+        return settings.assigned_aura == k
+    end
+}))
+
+spec:RegisterStateTable("assigned_blessing", setmetatable( {}, {
+    __index = function( t, k )
+        return settings.assigned_blessing == k
+    end
+}))
 
 spec:RegisterStateExpr("next_primary_at", function()
     return min(cooldown.crusader_strike.remains, cooldown.divine_storm.remains, debuff.judgement.remains)
 end)
-
 
 spec:RegisterSetting("paladin_description", nil, {
     type = "description",
@@ -1967,8 +1977,17 @@ spec:RegisterSetting("general_header", nil, {
     name = "General"
 })
 
+spec:RegisterSetting("maintain_aura", true, {
+    type = "toggle",
+    name = "Maintain Aura",
+    desc = "When enabled, selected aura will be recommended if it is down",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.maintain_aura = val
+    end
+})
+
 local auras = {}
-local blessings = {}
 spec:RegisterSetting( "assigned_aura", "retribution_aura", {
     type = "select",
     name = "Assigned Aura",
@@ -1993,6 +2012,18 @@ spec:RegisterSetting( "assigned_aura", "retribution_aura", {
     end,
 } )
 
+spec:RegisterSetting("maintain_blessing", true, {
+    type = "toggle",
+    name = "Maintain Aura",
+    desc = "When enabled, selected blessing will be recommended if it is down. Disable this setting if your raid group uses another "..
+        "blessing management tool such as PallyPower.",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.maintain_blessing = val
+    end
+})
+
+local blessings = {}
 spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
     type = "select",
     name = "Assigned Blessing",
@@ -2089,7 +2120,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Retribution", 20230210, [[Hekili:1AvBVTTnq4FlbfWibBvZYXjPdOoaDyFyTyOOyAFws0sNT4SKOajLB9GH(T3JKXYKkKEjOyFXwG3dV75EH3DPXP)DAsjrcPFEX8f3oFr88O4L3Ty5Y0e5HoinPJuSJSf)OL0G)(xGKtx3lPSwLSd1msPshcwpVaLNMSUNwl)yB6ApkE5dX3Jy7Gc840KkAzjyqcIchLpK)fsnPKIFWzsI5Onm(q(Fa7O100KAQqk00h2q6RL4NFw7oqlzDnuM(BPjfCQe4usAY26dDvrCOyhRL2Un6jqd5ZgYVEixs4BbzevKTMjed5hpoKxcR73SjsYju1vYk7BAoe13nKFtAcPWecQiTLzSnzJAovQCTq0qRrbqQJkzFTvBDLM2dzql0qb00RgYJpRFfwL(3dTBbslgIr9F7pI(F0R(lynnORO0(sL2pjNOmSY7)kNiRSTkI8oBKDmZ)oiU3grVaYqI2iMa6Hl7oUuata2r)MgGR4VHEOYENTfRWsyowUbLzKIcOg4epK8xdA)RgRc(N(YTqd0k1fayyfJwKiu7f4zd5VFixasjYsXzOAErfLSMmzfhevS6YZCZdmfzIN)kztanwt3wj1km8JcKYy9EBVissbE88SfDftlalP7PTqMqY4g(fU4g5xddrVnyDNwql8nzwhN2q4hYisTK5r3PLHQWKZnxUG1kGctsZXvTfOz1ToP9jLfUP74Lb9aNobLqJQPJQvW5d7Blbc224g)(4kR6amDFWqaFP)Zs1C6UGCkCH2tPMUAG4ZcwI1M4(GM4YTiEwfWd2X6cEVGuIrBb27Ehmnw78C0rttag(r4RnPy6AxbzeU5TfHF6rBGsVZme(gJxqfA)Cr4xI)FucVi87u)Euawh(95RiqgOovIT5XjDSM1eVZBpDj(5b5zKEoXmGNt7mI)Wx(ZH893gTmk(TXrVlA(q(BM0ibDVloi1az0GiaHqnJaJo7upo0KfP7ES)VcX4wiPjy0Rvdj5JnDmUuTfWcZBzverVxr0WNuUkBdTglPFZqUpkp8jZDerJbLFA1VqqISTvnXbD8FMUz1vyX3LrEI9JOhXJOE2ggkubwNz21UlYC8yOLyUX2epBjdLjCxLyMBpIvX(U)tlr8FE7hDUT78DBjMvkSpzCfc3iKt7(rZ)SfhCUK)vdSH4zcTod5zi8m7U0V)LTkqqtPhDhYs23YUFQcVV55Uzk7MoAlygy)S8ZSjD4Ee7Un7Ql0x7c5dhrJDtuw)6jTJoECAROBMYSvxC8QNGJA8NYw(tqEhHEPqSlDEARg7aS74WqQY(8tDVFPre)td8LXUuM)hjbBZ4atBFX5C)JGudG6LvmEAYVdB(xsHz6t63)d]] )
+spec:RegisterPack( "Retribution", 20230211, [[Hekili:1IvuVTTnq4Fl9fJeScnlN02vG6(WWEynpummTNLeT0zlUijkqsLopyOF77OOLmPmPCCs2dTXG3X77t3D8iVlom(VIJYjsi(7RwU6ULRcddcxgE)DXrY9nqCudj7rYo8h1Kk8))tqYPBALuwTs2(sgjxzcbRLNHYJJ20slLFRoEJt7U6ZOUnqgUCCubnph0AcImlJ3L(hKssof)bNjj6L2Y4DP)o8iTKghvsfsrp7HTK2sj(ZV3)1a1KnLqE8VghLXPsGtjXr7k33ueWHShz106DbhvQlDrx6nDPscFhidOIKnmHOl9WHU0Cyt72TbsoHQ2ssEBv1(G2MU0BJJizAxqbPopHTnz0YXrTcaxzBYUSCfJKQpvF0QhbbqkdYz)OUNnkl)eKa1qffqQSUln8eEkDv49euVdi1OlhT)DVg7)vN2pJvvHFAkRFVY6dYjkGvEJFWjYcturn)GPMnm9FT04JMAOCuirRetu6tZ)5ytbmGygnQQaUI)A6Hg7xmrSatP5y6hKNqYYGsGtCqYp7fF0LqcqtKb1YU0V0LkaPePIi4VBZ3bv4Y9Gtf5SQezbhefSY8teWHAkedxAYslLkP7kKtiyO)8CKqykCDRiqsbE4YKvnztZHYPprRHeHKX1O7p)8DDPvmu7DEtD6fGQPdnAfYy1cit7BTIpMc6r(oROZKO3Kp679YsRdW5qLQwH6e8PfBRZbcEA)w3FhRnIKyaBVMaUcGNK2ZPp8csvo6(BkbIleme3dXh9cX8NKplk)jtFDgVvqYrVTal5(im1xBDQXYstu0)zLRnOOl2wajeU(0bHBL7a)dJNrf9FlRwoxg7lkvCL)ZuxfZ8Fw6kCiEY3W6an4fnSQnKlCDh6fuxuTWiTRcVgtI)lH0Yj6JbcbDxTQwiUcE344LV9lCIdNjz2R0EbqJXc1XeDWyc4oKn7nEVe4holmbzRLhUi8Tc0C4jMJpx7LhUt9Tc0TuoGpvrGpDs92Hjy7u6WL2VzuGZeYz4GtXZ(OGxajefe89q(zHh5dpN4QPbQnI)WTOduzy1GHFOkU8OANNyY5IM9bkVrKOs)OdxKqlA8nl)FYcb65LTe(E3m5K45Fs0BeBo(AnNuz8LC91OFcFJPsLHoFwghHxzuRdSFRQHXLQopwPFiI6AG(Ezc6EqvFNTLwcdWicgl4)tR)5PfIFpD76312SWDE)I5RV39GlioVC7vbY5B3dmM1wVoem3PBJBvd9QmU1oDBCxfjVkmCzapq5Qw41HLll4gm3L8Uk0CBc3WDwDn)inO6INrHZldwF9Rxny9w5YGnwI6vd4OLUmO6IrVAe1MP7HraryoBAhV3yyhRdvy6zqllUXEelho4B8k3Ac4zJ7qbH9qnwC8L(hBdADOR9FCCgxC3F1A32tAWuIE4gMRmomdB)LvhTJWF2imS2K7HuyQIJXiOSTzpNF55nAcVwT0kdxvv1OlqfyUM0GTZ3SfR(0r9OeoZLV4DZ0X2mUtlrJ9jPq6MjnAD4W0MSUDklwp7aaC4iunO73P7Sj)5CN2054SvmDM2nS7ZuMRp0x6Z1J4Up3zJOpZaNjtUmkZhlD30SQL5wzbJhh9BW2)LKP7xo()o]] )
 
 spec:RegisterPack( "Protection Paladin (wowtbc.gg)", 20221002.1, [[Hekili:LwvBVTTnq4FmfiibBv2YUljDOUFyFR5dDfqfOFtsuINL4cfPajLnmGH(TVJsXYK6LfdmeGiAE39CVYNlom(NXruIbI)(M1B2eUE9MGWN2882phhzovdXr1K8xjf4bbPc))pusdKBysrB6piCcLHhU)O8OjlpOO4bRbN4sc1cSw2OYrJknMA9FUA1GA4jd)1v5CIw)XIggf0RQhq(J19aVkokRHXnFteNnFu(m6JAihVgDcJsHEnbDEC0plz620AftQyMtTPzenqBtTbUPeAthcM20FPiMY20UajioIZ0gDxHb2tA4g8437kuGGKXbA8FfhLJGckgXQuwZ(9b5eTHjkcAQBtVdDbHdctGUKbCAICFc6ZeduvZjQafr8AB6U20TXrKUug)EaefGsN0BsSXMul5ZopQbcpGkpk6COfNdqciGkgGj(xBtdVIUvxBuKlRQiIo03()b9DlGUs1u3Dh6GpDJoykokwrPbKnAbO1wO(dluEvkSuNC022CDbQ5JUAszhyciPMdKrQ9KRA1Y(VEA8SRgnAibd(k9iL(8IP4BfmQeNbi5kG(wFTR0T2jLDfAHmC9KC1zQW39Hlpvo34qxN8E7SPQambmDcfQSVhoF29YgbfiyG(W1WOuYp9w5262Lhmjffk5i7CYTTU5wjPQcuxEBm0ZhNJFY1MCPqd5yGmTHf6nKC9HN)W0iBECXmbFMqcQbK)syAt)sB6toDT)PHwavOeRdoY0uzvhCEJvEkXTrHV3XFwRa8fzg5kfZfJvGrXYAS)iH0Ogp)UCh4nIhwfYNEaNSgs)K9nQtbxS5QJ8KFded41ATLPZ)T7LRTj7R4x9nqbCdqv1v36)l6a(sWQXWwG4OJeLOZBrFRQwQmwk(n98v2j7oQ8G2xqWBmLsfAWfAFB1xUNXX9tF4d4YSzwS9IvaI2FNBKzGcpJ(T9L2x6Hxhm0)(TDRWvzScbwXTTR5vXVw)7S97UTU18OnPIBbCAD99nURgVKXdMBtrF2iRjt2(D37U5B3wxmhTzAimgwpCNpv2xdNZ6UaJiYH31(DZAVhjXumMuegw)4kXzDJ719RxCVzyDIxO4UjWgclTcz36)JEIRORS2oWnugV7(r7boFE8oGhMGMt0zz69KppDURkUS3EP(8K1UQmdJRnkCzP)YtRx0c(ans8)o]] )
 

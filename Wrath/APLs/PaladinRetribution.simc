@@ -1,6 +1,14 @@
-# APL v3.4.1-1.8.0 #
-actions.precombat+=/assigned_aura,if=!up
-actions.precombat+=/assigned_blessing,if=!up
+actions.precombat+=/retribution_aura,if=!up&settings.maintain_aura&assigned_aura.retribution_aura
+actions.precombat+=/concentration_aura,if=!up&settings.maintain_aura&assigned_aura.concentration_aura
+actions.precombat+=/crusader_aura,if=!up&settings.maintain_aura&assigned_aura.crusader_aura
+actions.precombat+=/devotion_aura,if=!up&settings.maintain_aura&assigned_aura.devotion_aura
+actions.precombat+=/fire_resistance_aura,if=!up&settings.maintain_aura&assigned_aura.fire_resistance_aura
+actions.precombat+=/frost_resistance_aura,if=!up&settings.maintain_aura&assigned_aura.frost_resistance_aura
+actions.precombat+=/shadow_resistance_aura,if=!up&settings.maintain_aura&assigned_aura.shadow_resistance_aura
+actions.precombat+=/blessing_of_kings,if=!up&settings.maintain_blessing&assigned_blessing.blessing_of_kings
+actions.precombat+=/blessing_of_might,if=!up&settings.maintain_blessing&assigned_blessing.blessing_of_might
+actions.precombat+=/blessing_of_sanctuary,if=!up&settings.maintain_blessing&assigned_blessing.blessing_of_sanctuary
+actions.precombat+=/blessing_of_wisdom,if=!up&settings.maintain_blessing&assigned_blessing.blessing_of_wisdom
 
 actions+=/hand_of_reckoning,use_off_gcd=1,if=glyph.reckoning.enabled&(target.is_boss|debuff.training_dummy.up)
 actions+=/seal_of_vengeance,if=buff.seal.down&active_enemies=1
@@ -10,17 +18,17 @@ actions+=/potion
 actions+=/use_items
 actions+=/hammer_of_wrath,if=buff.avenging_wrath.up
 actions+=/hyperspeed_acceleration
-actions+=/judgement_of_wisdom,if=!debuff.judgement.up&mana.percent<settings.judgement_of_wisdom_threshold
-actions+=/judgement_of_light,if=!debuff.judgement.up
+actions+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold
+actions+=/judgement_of_light
 actions+=/divine_storm,if=set_bonus.tier10_2pc=1
-actions+=/consecration,if=!moving&active_enemies>1&next_primary_at>0.5&!buff.active_consecration.up
+actions+=/consecration,if=!moving&active_enemies>1&!buff.active_consecration.up
 actions+=/hammer_of_wrath
 actions+=/holy_wrath,if=(target.is_demon|target.is_undead)&active_enemies>=settings.holy_wrath_threshold
 actions+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
 actions+=/divine_storm,if=active_enemies > 1
 actions+=/crusader_strike
 actions+=/divine_storm
-actions+=/exorcism,if=(target.is_demon|target.is_undead)&buff.the_art_of_war.up&next_primary_at>0.5
-actions+=/consecration,if=next_primary_at>0.5&!buff.active_consecration.up
+actions+=/exorcism,if=(target.is_demon|target.is_undead)&buff.the_art_of_war.up
+actions+=/consecration,if=!buff.active_consecration.up
 actions+=/exorcism,if=buff.the_art_of_war.up
 actions+=/holy_wrath,if=(target.is_demon | target.is_undead)
