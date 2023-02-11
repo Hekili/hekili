@@ -4214,7 +4214,7 @@ do
         local spec, option = info[1], info[n]
 
         if type( spec ) == 'string' then spec = specIDByName[ spec ] end
-  
+
         if not spec then return end
 
         if type( val ) == 'string' then val = val:trim() end
@@ -5276,7 +5276,7 @@ do
 
                                 package = {
                                     type = "select",
-                                    name = "Priority",
+                                    name = "Active Priority",
                                     desc = "The addon will use the selected package when making its priority recommendations.",
                                     order = 1,
                                     width = 2.85,
@@ -5322,12 +5322,34 @@ do
                                     width = 'full'
                                 },
 
+                                usePackSelector = {
+                                    type = "toggle",
+                                    name = "Use Priority Selector",
+                                    desc = "If checked, the addon may automatically swap your current priority pack based on specific conditions (like your current specialization, talents, or glyphs).",
+                                    order = 2,
+                                    width = "full",
+                                    hidden = function() return #class.specs[ id ].packSelectors == 0 end,
+                                },
+
+                                packageSelectors = {
+                                    type = "group",
+                                    name = "Priority Selectors",
+                                    inline = true,
+                                    order = 2.1,
+                                    width = "full",
+                                    hidden = function() return #class.specs[ id ].packSelectors == 0 or not self.DB.profile.specs[ id ].usePackSelector end,
+                                    plugins = {
+                                        packSelectors = {}
+                                    },
+                                    args = {},
+                                },
+
                                 potion = {
                                     type = "select",
                                     name = "Default Potion",
                                     desc = "When recommending a potion, the addon will suggest this potion unless the action list specifies otherwise.",
-                                    order = 2,
-                                    width = 3,
+                                    order = 3,
+                                    width = "full",
                                     values = function ()
                                         local v = {}
 
@@ -5338,14 +5360,6 @@ do
                                         return v
                                     end,
                                 },
-
-                                blankLine2 = {
-                                    type = 'description',
-                                    name = '',
-                                    order = 2.1,
-                                    width = 'full'
-                                }
-
                             },
                             plugins = {
                                 settings = {}
@@ -5741,19 +5755,16 @@ do
                     }
 
                     for i, option in ipairs( specCfg ) do
-                        if i > 1 and i % 2 == 1 then
-                            -- Insert line break.
-                            options.args.core.plugins.settings[ sName .. "LB" .. i ] = {
-                                type = "description",
-                                name = "",
-                                width = "full",
-                                order = option.info.order - 0.01
-                            }
-                        end
-
-                        options.args.core.plugins.settings[ option.name ] = option.info
-                        if self.DB.profile.specs[ id ].settings[ option.name ] == nil then
-                            self.DB.profile.specs[ id ].settings[ option.name ] = option.default
+                        if option.isPackSelector then
+                            options.args.core.args.packageSelectors.plugins.packSelectors[ option.name ] = option.info
+                            if self.DB.profile.specs[ id ].autoPacks[ option.name ] == nil then
+                                self.DB.profile.specs[ id ].autoPacks[ option.name ] = option.default
+                            end
+                        else
+                            options.args.core.plugins.settings[ option.name ] = option.info
+                            if self.DB.profile.specs[ id ].settings[ option.name ] == nil then
+                                self.DB.profile.specs[ id ].settings[ option.name ] = option.default
+                            end
                         end
                     end
                 end
@@ -9644,7 +9655,7 @@ function Hekili:GetSelectValuesString( setting )
 
     local pastFirstIndex
     for k, v in pairs(setting.info.values()) do
-        output = (output or "").. (pastFirstIndex and ", " or "") .. k 
+        output = (output or "").. (pastFirstIndex and ", " or "") .. k
         pastFirstIndex = true
     end
 
@@ -10465,7 +10476,7 @@ do
                     Hekili:Print( format( "%s set to |cFF00B4FF%.2f|r.", setting.info.name, to ) )
                     prefs[ setting.name ] = to
                     Hekili:ForceUpdate( "CLI_NUMBER" )
-                    if WeakAuras and WeakAuras.ScanEvents then 
+                    if WeakAuras and WeakAuras.ScanEvents then
                         WeakAuras.ScanEvents( "HEKILI_SPEC_SETTING_CHANGED", setting.name, to )
                     end
                     return
@@ -10490,7 +10501,7 @@ do
                     Hekili:Print( format( "%s set to |cFF00B4FF%s|r.", setting.info.name, to ) )
                     prefs[ setting.name ] = to
                     Hekili:ForceUpdate( "CLI_SELECT" )
-                    if WeakAuras and WeakAuras.ScanEvents then 
+                    if WeakAuras and WeakAuras.ScanEvents then
                         WeakAuras.ScanEvents( "HEKILI_SPEC_SETTING_CHANGED", setting.name, to )
                     end
                     return
