@@ -2379,3 +2379,22 @@ spec:RegisterPack( "Beast Mastery (wowtbc.gg)", 20230211, [[Hekili:fs1YUTnmqWpMC
 spec:RegisterPack( "Marksmanship (wowtbc.gg)", 20230211, [[Hekili:fw1ZVTjmu4)y2LnTvcq3wxNu7HDyAnsRxOs7Mbd8iyfJnY2uwU4)23ZGsWMKSEjb87ZFVF(9GKqEHKvtna55040BJttsIIVpoojLKzo0dKSEA1E6o8bbTd)93u1EDhvOBz92I3pkhnLvr729bhYdCjT2XOwoOQq0TgtV(7B2Ccg(KHVFtfNQ13SBGvd6nDEuEt7GWaQnKSYbg38KGuE54lbDspurE(w0lS6AygjORizV0Y02IEftQyMd2c3BLunuBlKcBHPfSfNIiBXFuutRTykAIizCM2ONklqdDGBWhFEQmbcAjhQj)GKvHedkg1bQCOPjQIQnmXUOHEsgTYWKcsgtyyDmm4DVzWe46Kihfl3BUeOZD1f39U1DVJgv0EwDEdtb(CHO(SpQkkNNlBYXunFKXRxH9l(y3ZqSvYoSdSg3x9X1lN)paXD(ig0qoMsD6vG(2Bv9MQD6OWYGgu9GWKpz0rZ9bzylRdu0CDR0SYDjXx1FUB)kKdcOJb4uXJ2I0fo7WUnBIqhlxVNBOQDGjAKzAzc0BNia(BpxQDEWG9PjwUEt))hlVk5C4Wefb9FkM21xmRdgaOQkQaUiUGMVcO1mbOx3YscA9AghevyB4IeE3zttNJcFTxb4uwjDrqDkyDkzZX51AfDNu0sh3VYrPV104KBEfLoolU9fPjXXynDKQeUbms2tD9sLXTii1wmtLTysWhz36crzdMQKS39oBr4MUFnjkTBDwssSf)ekvdufUDXTxYU1UDMoD0P88JpS5Az2LrpNtECHN5Ve5tSMhoBFJpy)nhtGrbLV9LLh(NUEzHVn)LdZj)ITMbCd7GoVvoY9VZX0y5Ktlg8pmqF7LAEldcIspbV)5NeTokc1upM6dmuC6qVsh7dEw(9wuUigdoDr7fu8pk1ckcbkRZQ8Zcj6GPvQW54JFZAAsN8V]] )
 
 spec:RegisterPack( "Survival (wowtbc.gg)", 20230211, [[Hekili:DwvqZTjpq0Fm5s70gSHy3M8ntYHEOtJp4lKz6nbcqy0ybIrAXuFr)27k4ZGGIRB7LaE3NES7B1(cXN8gjmJcmY(G1bpSoW33B9JBFAZwsiCUMrcRPPhPhWxQOL4FdBuN4NOct87ALTqsQ3HdV3I6SqsZSSPLnQuezba16)B1Qby4BG44QubvRV)qdpJPxP)F6UVOPcyQvKWKgUaETIKSCDTb)a1SuY(hWVaplJ1JKPtjHVvW1M4AfxQ4WztS9xjunlZelRmXqbZepunM4VROqHjURs8iHcUg0DYblN2ia819DYdRIMiyzKVqctrIzkofbjBRiH0uGlXN9vVoQKQosaSMTN7ssfTMNfLZvmxUaBl4GkLkerY8iSkJA5ISzy34I9ihXMkllPvZXT1fxTS)5eeFYfrJMfHTuPEgOpF9gNL0KN7X(rTqQ5Nyr6cj4nvoMM0Y3JxLpGQoWapzdOX5G)6rwse4vViQsjBTu80TOOLdf8kxggRdahcwsWSxJf7HqKSkwjNH3CEXehmsvjEJGFPB8V(9IFplNKcb7Chfb)YaTJ9PJb)jxrO8sw2IW2CRXLg4vh0ZgtAMQMvbrDj74z7FVgNRKAyuFNC7sdmA25fQy8N1kgEdoHoUNn0M2fC4YUqMIEqwvqBpoRPd(h3nF4MBiB(d7bmWjKzlmRlvG)614SULQQSInj81YAPcS2pbM4E(mXD2mEMDwfqMZfOPWD3zIh9v)wx9A2zJ67BI)klr1qvOFM1j0SZSRNkT3Ge(HNxDnrBz0UAYh55pBvSLr2lqlNZrACkRBrpMF0r0n6Chq3CUoE9sZyU8g0XVrhviBfUNzwPJrgC7Cdo1SQRCVQfN75CSNShAUp2YFc7EId6lRtUGhCAS4MAN8sGlWEZKBHAWAXn4OtIB0j(bocHJ5Hl8Xn)B0rtwHOnqHuHRjx(hXDlsKFo]] )
+
+
+spec:RegisterPackSelector( "beast_mastery", "Beast Mastery (wowtbc.gg)", "|T132164:0|t Beast Mastery",
+    "If you have spent more points in |T132164:0|t Beast Mastery than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab1 > max( tab2, tab3 )
+    end )
+
+spec:RegisterPackSelector( "marksmanship", "Marksmanship (wowtbc.gg)", "|T132222:0|t Marksmanship",
+    "If you have spent more points in |T132222:0|t Marksmanship than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 )
+    end )
+
+spec:RegisterPackSelector( "survival", "Survival (wowtbc.gg)", "|T132215:0|t Survival",
+    "If you have spent more points in |T132215:0|t Survival than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab3 > max( tab1, tab2 )
+    end )
