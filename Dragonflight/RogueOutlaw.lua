@@ -1189,6 +1189,9 @@ spec:RegisterAbilities( {
 
         talent = "roll_the_bones",
         startsCombat = false,
+        nobuff = function()
+            if settings.no_rtb_in_dance_cto and talent.count_the_odds.enabled then return "shadow_dance" end
+        end,
 
         handler = function ()
             local pandemic = 0
@@ -1344,30 +1347,41 @@ spec:RegisterSetting( "mfd_points", 3, {
 } )
 
 spec:RegisterSetting( "ambush_anyway", false, {
-    name = "Use |T132282:0|t Ambush Regardless of Talents",
+    name = "|T132282:0|t Ambush Regardless of Talents",
     desc = "If checked, the addon will recommend |T132282:0|t Ambush even without Hidden Opportunity or Find Weakness talented.\n\n" ..
         "Dragonflight sim profiles only use Ambush with Hidden Opportunity or Find Weakness talented; this is likely suboptimal.",
     type = "toggle",
     width = "full",
 } )
 
-spec:RegisterSetting( "solo_vanish", true, {
-    name = "Allow |T132331:0|t Vanish when Solo",
-    desc = "If unchecked, the addon will not recommend |T132331:0|t Vanish when you are alone (to avoid resetting combat).",
+spec:RegisterSetting( "no_rtb_in_dance_cto", true, {
+    name = "Never |T1373910:0|t Roll the Bones during |T236279:0|t Shadow Dance",
+    desc = function()
+        return "If checked, |T1373910:0|t Roll the Bones will never be recommended during |T236279:0|t Shadow Dance. "
+            .. "This is consistent with guides but is not yet reflected in the default SimulationCraft profiles as of 12 February 2023.\n\n"
+            .. ( state.talent.count_the_odds.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires |T237284:0|t Count the Odds|r"
+    end,
     type = "toggle",
     width = "full"
 } )
 
-spec:RegisterSetting( "allow_shadowmeld", nil, {
-    name = "Allow |T132089:0|t Shadowmeld",
+spec:RegisterSetting( "allow_shadowmeld", false, {
+    name = "|T132089:0|t Shadowmeld when Solo",
     desc = "If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  " ..
-        "Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat).",
+    "Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat).",
     type = "toggle",
     width = "full",
     get = function () return not Hekili.DB.profile.specs[ 260 ].abilities.shadowmeld.disabled end,
     set = function ( _, val )
         Hekili.DB.profile.specs[ 260 ].abilities.shadowmeld.disabled = not val
     end,
+} )
+
+spec:RegisterSetting( "solo_vanish", true, {
+    name = "|T132331:0|t Vanish when Solo",
+    desc = "If unchecked, the addon will not recommend |T132331:0|t Vanish when you are alone (to avoid resetting combat).",
+    type = "toggle",
+    width = "full"
 } )
 
 
