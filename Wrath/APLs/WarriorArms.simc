@@ -1,6 +1,6 @@
 actions.precombat+=/berserker_stance,if=buff.stance.down
-actions.precombat+=/commanding_shout,if=shout_spell_commanding&buff.my_battle_shout.down&buff.my_commanding_shout.down
-actions.precombat+=/battle_shout,if=shout_spell_battle&buff.my_battle_shout.down&buff.my_commanding_shout.down
+actions.precombat+=/commanding_shout,if=assigned_shout.commanding_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
+actions.precombat+=/battle_shout,if=assigned_shout.battle_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
 
 actions+=/call_action_list,name=init
 actions+=/sunder_armor,if=variable.should_sunder&variable.emergency_sunder
@@ -16,6 +16,7 @@ actions.init+=/variable,name=build_sunder,value=!debuff.major_armor_reduction.up
 actions.init+=/variable,name=maintain_sunder,value=!variable.build_sunder&debuff.sunder_armor.stack=5&debuff.sunder_armor.remains<7&cooldown.bloodthirst.remains&cooldown.whirlwind.remains&!buff.bloodsurge.up
 actions.init+=/variable,name=emergency_sunder,value=debuff.sunder_armor.up&debuff.sunder_armor.remains<1.5
 
+actions.battle_stance+=/charge,if=target.outside8
 actions.battle_stance+=/bloodrage,use_off_gcd=1,if=rage.deficit>20
 actions.battle_stance+=/heroic_strike,use_off_gcd=1,if=rage.current>=settings.queueing_threshold&active_enemies=1&!buff.recklessness.up&(!variable.execute_phase|settings.execute_queueing_enabled)
 actions.battle_stance+=/cleave,use_off_gcd=1,if=rage.current>=settings.queueing_threshold&active_enemies>1&!buff.recklessness.up&(!variable.execute_phase|settings.execute_queueing_enabled)

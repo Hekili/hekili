@@ -708,7 +708,20 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         end
 
         if application_events[subtype] then
-            if actionType == 47465 then
+            print("Action: "..actionType)
+            local is_rend = actionType == state.debuff.rend.id
+            print("ID is rend = "..tostring(is_rend))
+            if not is_rend then
+                for i,v in state.debuff.rend.copy do
+                    print(i)
+                    if i == actionType then
+                        is_rend = true
+                        break
+                    end
+                end
+            end
+            if is_rend then
+                print("Applied")
                 ApplyRend(destGUID, GetTime())
             end
             if actionType == 60503 then
@@ -2068,6 +2081,12 @@ spec:RegisterAbilities( {
     },
 } )
 
+spec:RegisterStateTable("assigned_shout", setmetatable( {}, {
+    __index = function( t, k )
+        return settings.shout_spell == k
+    end
+}))
+
 spec:RegisterStateExpr("main_gcd_spell_slam", function()
     return settings.main_gcd_spell == "slam"
 end)
@@ -2078,14 +2097,6 @@ end)
 
 spec:RegisterStateExpr("main_gcd_spell_ww", function()
     return settings.main_gcd_spell == "whirlwind"
-end)
-
-spec:RegisterStateExpr("shout_spell_commanding", function()
-    return settings.shout_spell == "commanding_shout"
-end)
-
-spec:RegisterStateExpr("shout_spell_battle", function()
-    return settings.shout_spell == "battle_shout"
 end)
 
 spec:RegisterStateExpr("rend_may_tick", function()
