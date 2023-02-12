@@ -1299,7 +1299,6 @@ spec:RegisterAbilities( {
     disengage = {
         id = 781,
         cast = 0,
-        cooldown = 25,
         cooldown = function() return ( glyph.disengage.enabled and 20 or 25 ) - ( 2 * talent.survival_tactics.rank ) end,
         gcd = "off",
 
@@ -1453,7 +1452,6 @@ spec:RegisterAbilities( {
         id = 5384,
         cast = 360,
         channeled = true,
-        cooldown = 30,
         cooldown = function() return glyph.feign_death.enabled and 25 or 30 end,
         gcd = "off",
 
@@ -1752,7 +1750,6 @@ spec:RegisterAbilities( {
     multishot = {
         id = 49048,
         cast = 0.5,
-        cooldown = 10,
         cooldown = function() return glyph.multishot.enabled and 9 or 10 end,
         gcd = "spell",
 

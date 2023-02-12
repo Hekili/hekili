@@ -1350,7 +1350,6 @@ spec:RegisterAbilities( {
         cooldown = 8,
         gcd = "off",
 
-        spend = 0.03,
         spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
         spendType = "mana",
 
