@@ -1537,14 +1537,11 @@ do
                         start, duration, enabled, modRate = GetSpellCooldown( ability.id )
                     end
 
-                    if i == 1 then
-                        if conf.delays.extend and rec.delay and rec.delay > 0 and rec.exact_time > max( now, start + duration ) then
-                            start = ( start > 0 and start ) or ( cStart > 0 and cStart ) or ( gStart > 0 and gStart ) or max( state.gcd.lastStart, state.combat )
-                            duration = rec.exact_time - start
-                        end
-                    end
+                    if i == 1 and conf.delays.extend and rec.exact_time > max( now, start + duration ) then
+                        start = ( start > 0 and start ) or ( cStart > 0 and cStart ) or ( gStart > 0 and gStart ) or max( state.gcd.lastStart, state.combat )
+                        duration = rec.exact_time - start
 
-                    if enabled and enabled == 0 then
+                    elseif enabled and enabled == 0 then
                         start = 0
                         duration = 0
                         modRate = 1
@@ -1556,8 +1553,8 @@ do
                         cd.lastDuration = duration
                     end
 
-                    if i == 1 then
-                        if ability.empowered and state.empowerment.spell == ability.key and duration == 0 then
+                    if i == 1 and ability.empowered then
+                        if state.empowerment.spell == ability.key and duration == 0 then
                             button.Empowerment:Show()
                         else
                             button.Empowerment:Hide()
