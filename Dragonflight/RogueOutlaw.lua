@@ -730,7 +730,10 @@ spec:RegisterHook( "runHandler", function( ability )
     if stealthed.all and ( not a or a.startsCombat ) then
         if buff.stealth.up then
             setCooldown( "stealth", 2 )
-            if buff.take_em_by_surprise.up then buff.take_em_by_surprise.expires = query_time + 10 end
+            if buff.take_em_by_surprise.up then
+                buff.take_em_by_surprise.expires = query_time + 10 * talent.take_em_by_surprise.rank
+            end
+            if talent.subterfuge.enabled then applyBuff( "subterfuge" ) end
         end
 
         if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
@@ -769,6 +772,11 @@ local restless_blades_list = {
 
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "combo_points" then
+        if buff.grand_melee.up then
+            if buff.slice_and_dice.down then applyBuff( "slice_and_dice", 2 * effective_combo_points )
+            else buff.slice_and_dice.expires = buff.slice_and_dice.expires + 2 * effective_combo_points end
+        end
+
         if amt >= 5 and talent.ruthlessness.enabled then gain( 1, "combo_points" ) end
 
         local cdr = amt * ( buff.true_bearing.up and 1.5 or 1 )

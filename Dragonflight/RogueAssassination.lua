@@ -2530,7 +2530,10 @@ spec:RegisterAbilities( {
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
-            if talent.take_em_by_surprise.enabled then applyBuff( "take_em_by_surprise" ) end
+            if talent.take_em_by_surprise.enabled and buff.take_em_by_surprise.down then
+                applyBuff( "take_em_by_surprise" )
+                stat.haste = state.haste + 0.1
+            end
 
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
@@ -2610,6 +2613,10 @@ spec:RegisterAbilities( {
             end
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+            if talent.take_em_by_surprise.enabled and buff.take_em_by_surprise.down then
+                applyBuff( "take_em_by_surprise" )
+                stat.haste = state.haste + 0.1
+            end
 
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
