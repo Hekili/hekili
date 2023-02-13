@@ -9564,8 +9564,6 @@ do
                         index = -1
                     elseif ( "mode" ):match( "^" .. args[2] ) then
                         index = -2
-                    elseif ( "priority" ):match( "^" .. args[2] ) then
-                        index = -3
                     else
                         for i, setting in ipairs( settings ) do
                             if setting.name:match( "^" .. args[2] ) then
@@ -9630,6 +9628,8 @@ do
                             " - Reset to Default:  |cFFFFD100/hek set %s default|r", output, exNumber, exNumber )
                     end
 
+                    output = format( "%s\n\nTo select another priority, see |cFFFFD100/hekili priority|r.", output )
+
                     Hekili:Print( output )
                     return
                 end
@@ -9691,6 +9691,10 @@ do
                 end
 
                 local setting = settings[ index ]
+                if not setting then
+                    Hekili:Print( "Not a valid option." )
+                    return
+                end
 
                 if setting.info.type == "toggle" then
                     local to
