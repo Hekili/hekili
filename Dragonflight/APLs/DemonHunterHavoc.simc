@@ -1,7 +1,7 @@
 actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
-actions.precombat+=/arcane_torrent
-actions.precombat+=/use_item,name=algethar_puzzle_box
+actions.precombat+=/arcane_torrent,if=fury.deficit>15
+actions.precombat+=/use_item,name=algethar_puzzle_box,if=cooldown.metamorphosis.remains<5
 actions.precombat+=/sigil_of_flame
 actions.precombat+=/immolation_aura
 
@@ -43,9 +43,10 @@ actions+=/fel_rush,if=settings.recommend_movement&(movement.distance>15|(buff.ou
 actions+=/vengeful_retreat,if=settings.recommend_movement&!talent.initiative&movement.distance>15
 actions+=/throw_glaive,if=(talent.demon_blades|buff.out_of_range.up)&!debuff.essence_break.up
 
+actions.cooldown+=/sigil_of_misery,if=talent.misery_in_defeat&!target.is_boss&target.time_to_die>10&(cooldown.metamorphosis.remains<6|talent.demonic&cooldown.eye_beam.remains<6|buff.metamorphosis.remains>10)
 # Cast Metamorphosis if we will get a full Eye Beam refresh or if the encounter is almost over
-actions.cooldown+=/metamorphosis,if=!talent.demonic&((!talent.chaotic_transformation|cooldown.eye_beam.remains>20)&active_enemies>desired_targets|raid_event.adds.in>60|fight_remains<25)
-actions.cooldown+=/metamorphosis,if=talent.demonic&(!talent.chaotic_transformation|cooldown.eye_beam.remains>20&(!variable.blade_dance|cooldown.blade_dance.remains>gcd.max)|fight_remains<25)
+actions.cooldown+=/metamorphosis,if=!talent.demonic&((!talent.chaotic_transformation|cooldown.eye_beam.remains>20)&active_enemies>desired_targets|raid_event.adds.in>60|boss&fight_remains<25)
+actions.cooldown+=/metamorphosis,if=talent.demonic&(!talent.chaotic_transformation|cooldown.eye_beam.remains>20&(!variable.blade_dance|cooldown.blade_dance.remains>gcd.max)|boss&fight_remains<25)
 actions.cooldown+=/potion,if=buff.metamorphosis.remains>25|buff.metamorphosis.up&cooldown.metamorphosis.ready|boss&fight_remains<60
 # Default use item logic
 actions.cooldown+=/use_items,slots=trinket1,if=variable.trinket_sync_slot=1&(buff.metamorphosis.up|(!talent.demonic.enabled&cooldown.metamorphosis.remains>(fight_remains>?trinket.1.cooldown.duration%2))|fight_remains<=20)|(variable.trinket_sync_slot=2&!trinket.2.cooldown.ready)|!variable.trinket_sync_slot
