@@ -1334,7 +1334,7 @@ spec:RegisterAbilities( {
         id = 53600,
         cast = 0,
         cooldown = 1,
-        gcd = "spell",
+        gcd = "off",
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
