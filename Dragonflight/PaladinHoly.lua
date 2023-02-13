@@ -468,14 +468,21 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "spell",
 
-        spend = function() return talent.avenging_crusader.enabled and 5 or 0 end,
-        spendType = function() return talent.avenging_crusader.enabled and "holy_power" or 0 end,
+        spend = function()
+            if talent.avenging_crusader.enabled then
+                return 5, "holy_power"
+            end
+        end,
 
         startsCombat = false,
         toggle = "cooldowns",
 
         handler = function ()
-            if talent.avenging_crusader.enabled then spend( 5, "holy_power" ) end
+            if talent.avenging_crusader.enabled then
+                spend( 5, "holy_power" )
+                applyBuff( "avenging_crusader" )
+                return
+            end
             applyBuff( "avenging_wrath" )
         end,
 
