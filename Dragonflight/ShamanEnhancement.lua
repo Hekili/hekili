@@ -1352,6 +1352,7 @@ spec:RegisterAbilities( {
             if buff.natures_swiftness.up then return 0 end
             return maelstrom_mod( 2 ) * haste
         end,
+        flash = { 51505, 394150 },
         charges = function() if talent.lava_burst.enabled then return 2 end end,
         cooldown = 12,
         recharge = function() if talent.lava_burst.enabled then return 12 end end,
