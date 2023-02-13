@@ -1576,11 +1576,11 @@ function scripts:LoadScripts()
                             end
                         end
 
-                        if ( ability.item or data.action == "trinket1" or data.action == "trinket2" ) and data.enabled then
+                        if list ~= "precombat" and ( ability.item or data.action == "trinket1" or data.action == "trinket2" ) and data.enabled then
                             self.PackInfo[ pack ].items[ data.action ] = true
                         end
 
-                        if ability.essence and data.enabled then
+                        if list ~= "precombat" and ability.essence and data.enabled then
                             self.PackInfo[ pack ].essences[ data.action ] = true
                         end
                     end

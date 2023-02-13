@@ -1505,7 +1505,10 @@ spec:RegisterAbilities( {
         talent = "sigil_of_misery",
         startsCombat = false,
 
-        toggle = "interrupts",
+        toggle = function()
+            if talent.misery_in_defeat.enabled then return "cooldowns" end
+            return "interrupts"
+        end,
 
         handler = function ()
             create_sigil( "misery" )
