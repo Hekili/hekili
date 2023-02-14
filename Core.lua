@@ -94,6 +94,7 @@ function Hekili:OnInitialize()
                 GameTooltip:Hide()
             end,
             OnTooltipShow = function( tt )
+                tt:ClearLines()
                 tt:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
                 tt:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
                 tt:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
