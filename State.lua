@@ -1558,8 +1558,8 @@ do
             if type( x ) == "number" then
                 if x > 0 and x >= state.delayMin and x <= state.delayMax then
                     t[ x ] = true
-                elseif x < 60 then
-                    if Hekili.ActiveDebug then Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 ) end
+                -- elseif x < 60 then
+                --     if Hekili.ActiveDebug then Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 ) end
                 end
             end
         end
