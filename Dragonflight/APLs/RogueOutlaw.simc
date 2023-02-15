@@ -3,9 +3,9 @@ actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/use_item,name=algethar_puzzle_box
 actions.precombat+=/stealth
 actions.precombat+=/marked_for_death,precombat_seconds=10,if=raid_event.adds.in>25
-actions.precombat+=/adrenaline_rush,precombat_seconds=3,if=talent.improved_adrenaline_rush
+actions.precombat+=/adrenaline_rush,precombat_seconds=3,if=talent.improved_adrenaline_rush|settings.use_ld_opener&cooldown.roll_the_bones.remains<1&(buff.roll_the_bones.remains<3|rtb_buffs.normal=0)
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=remains<3|rtb_buffs.normal=0
-actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
+actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable&buff.grand_melee.down&!settings.use_ld_opener
 
 # Restealth if possible (no vulnerable enemies in combat)
 actions+=/stealth
