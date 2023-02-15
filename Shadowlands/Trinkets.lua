@@ -1583,6 +1583,8 @@ do
                 setCooldown( "global_cooldown", 3 )
             end,
 
+            self_buff = "heart_of_the_swarm",
+
             auras = {
                 heart_of_the_swarm = {
                     -- id = ???,

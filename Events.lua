@@ -269,35 +269,35 @@ do
         end
     end
 
-function Hekili:ContinueOnSpellLoad( spellID, func )
+    function Hekili:ContinueOnSpellLoad( spellID, func )
         if C_Spell.IsSpellDataCached( spellID ) then
-        func( true )
-        return
+            func( true )
+            return
         end
 
-    local callbacks = spellCallbacks[ spellID ] or {}
-    insert( callbacks, func )
-    spellCallbacks[ spellID ] = callbacks
+        local callbacks = spellCallbacks[ spellID ] or {}
+        insert( callbacks, func )
+        spellCallbacks[ spellID ] = callbacks
 
         if isUnregistered then
             RegisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
             isUnregistered = false
         end
 
-    C_Spell.RequestLoadSpellData( spellID )
-end
+        C_Spell.RequestLoadSpellData( spellID )
+    end
 
-function Hekili:RunSpellCallbacks()
-    for spell, callbacks in pairs( spellCallbacks ) do
-        for i = #callbacks, 1, -1 do
-            if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
-        end
+    function Hekili:RunSpellCallbacks()
+        for spell, callbacks in pairs( spellCallbacks ) do
+            for i = #callbacks, 1, -1 do
+                if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
+            end
 
-        if #callbacks == 0 then
-            spellCallbacks[ spell ] = nil
+            if #callbacks == 0 then
+                spellCallbacks[ spell ] = nil
+            end
         end
     end
-end
 end
 
 
@@ -732,12 +732,15 @@ do
                 state.trinket.t1.__usable = isUsable
                 state.trinket.t1.__ability = tSpell
 
+                local ability = class.abilities[ tSpell ]
+                local aura = ability and class.auras[ ability.self_buff or spellID ]
+
                 if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t1.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
-                    state.trinket.t1.__use_buff_duration = class.auras[ spellID ] and class.auras[ spellID ].duration or 0.01
-                elseif class.abilities[ tSpell ].self_buff then
+                    state.trinket.t1.__has_use_buff = not ( aura and aura.ignore_buff ) and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
+                    state.trinket.t1.__use_buff_duration = aura and aura.duration or 0.01
+                elseif ability.self_buff then
                     state.trinket.t1.__has_use_buff = true
-                    state.trinket.t1.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration or 0.01
+                    state.trinket.t1.__use_buff_duration = aura and aura.duration or 0.01
                 end
             end
 
@@ -769,12 +772,15 @@ do
                 state.trinket.t2.__usable = isUsable
                 state.trinket.t2.__ability = tSpell
 
+                local ability = class.abilities[ tSpell ]
+                local aura = class.auras[ ability.self_buff or spellID ]
+
                 if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t2.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
-                    state.trinket.t2.__use_buff_duration = class.auras[ spellID ] and class.auras[ spellID ].duration or 0.01
-                elseif tSpell and class.abilities[ tSpell ].self_buff then
+                    state.trinket.t2.__has_use_buff = not ( aura and aura.ignore_buff ) and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
+                    state.trinket.t2.__use_buff_duration = aura and aura.duration or 0.01
+                elseif ability.self_buff then
                     state.trinket.t2.__has_use_buff = true
-                    state.trinket.t2.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration or 0.01
+                    state.trinket.t2.__use_buff_duration = aura and aura.duration or 0.01
                 end
             end
 
@@ -872,7 +878,7 @@ do
 
         Hekili:UpdateUseItems()
         state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
-            end
+    end
 
     RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", QueueUpdate )
 end

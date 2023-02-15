@@ -96,7 +96,14 @@ all:RegisterAbilities( {
             applyBuff( "algethar_puzzle" )
         end,
 
-        proc = "random",
+        proc = "damage", -- don't really know.
+
+        auras = {
+            bottomless_reliquary_satchel = {
+                duration = 0.01,
+                max_stack = 1,
+            },
+        }
     },
     broodkeepers_promise = {
         cast = 1,
@@ -220,7 +227,7 @@ all:RegisterAbilities( {
         item = 198478,
         toggle = "cooldowns",
 
-        proc = "damage_and_healing",
+        proc = "damage",
     },
     darkmoon_deck_box_inferno = {
         cast = 0,
@@ -289,7 +296,7 @@ all:RegisterAbilities( {
         item = 198088,
         toggle = "cooldowns",
 
-        proc = "damage_and_healing",
+        proc = "damage",
 
         auras = {
             ace_of_air = {
@@ -588,7 +595,7 @@ all:RegisterAbilities( {
             applyBuff( "erupting_spear_fragment", nil, min( 5, active_enemies ) )
         end,
 
-        proc = "critical_strike",
+        proc = "crit",
 
         auras = {
             erupting_spear_fragment = {

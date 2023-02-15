@@ -5461,6 +5461,8 @@ all:RegisterAbilities( {
             applyBuff( "slicing_maelstrom" )
         end,
 
+        proc = "damage",
+
         auras = {
             slicing_maelstrom = {
                 id = 214980,
