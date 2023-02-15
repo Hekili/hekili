@@ -25,7 +25,7 @@ actions.aoe+=/mind_blast,if=(cooldown.mind_blast.full_recharge_time<=gcd.max+cas
 actions.aoe+=/void_bolt,if=insanity<=85
 # Use Mind Sear on 3+ targets and either you have at least 75 insanity, 4pc buff is inactive, or 2pc buff is at 3 stacks, or mind devourer is up on 2+ targets. If Mind Devourer is up do not cancel mind sear.
 actions.aoe+=/mind_sear,cycle_targets=1,if=buff.mind_devourer.up&spell_targets.mind_sear>1|spell_targets.mind_sear>variable.mind_sear_cutoff&(insanity>=75|((!set_bonus.tier29_4pc&!set_bonus.tier29_2pc)|!buff.dark_reveries.up)|(!set_bonus.tier29_2pc|buff.gathering_shadows.stack=3))&!variable.pool_for_cds,early_chain_if=ticks>=2&!buff.mind_devourer_ms_active.up,interrupt_immediate=1,interrupt_if=ticks>=2&!buff.mind_devourer_ms_active.up
-actions.aoe+=/call_action_list,name=pl_torrent,if=talent.void_torrent&talent.psychic_link&cooldown.void_torrent.remains<=3&(!variable.holding_crash|raid_event.adds.count%(active_dot.vampiric_touch+raid_event.adds.count)<1.5)&((insanity>=50|dot.devouring_plague.ticking|buff.dark_reveries.up)|buff.voidform.up)
+actions.aoe+=/call_action_list,name=pl_torrent,if=talent.void_torrent&talent.psychic_link&cooldown.void_torrent.remains<=3&(!variable.holding_crash|raid_event.adds.count%(active_dot.vampiric_touch+raid_event.adds.count)<1.5)&((insanity>=50|dot.devouring_plague.ticking|buff.dark_reveries.up)|buff.voidform.up|buff.dark_ascension.up)
 actions.aoe+=/devouring_plague,if=(refreshable&!variable.pool_for_cds|insanity>75&(!buff.mind_flay_insanity.up&talent.mind_flay_insanity|!talent.psychic_link))&variable.dp_cutoff
 actions.aoe+=/vampiric_touch,cycle_targets=1,if=refreshable&target.time_to_die>=18&(dot.vampiric_touch.ticking|!variable.vts_applied)&variable.max_vts>0&(cooldown.shadow_crash.remains>=dot.vampiric_touch.remains|variable.holding_crash)&!action.shadow_crash.in_flight
 actions.aoe+=/shadow_word_pain,if=refreshable&target.time_to_die>=18&!talent.misery.enabled
@@ -115,6 +115,8 @@ actions.main+=/call_action_list,name=filler
 actions.main_variables+=/variable,name=dots_up,op=set,value=target.time_to_die<8|dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking
 actions.main_variables+=/variable,name=all_dots_up,op=set,value=target.time_to_die<8|dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking&dot.devouring_plague.ticking
 actions.main_variables+=/variable,name=pool_for_cds,op=set,value=(cooldown.void_eruption.remains<=gcd.max*3&talent.void_eruption|cooldown.dark_ascension.up&talent.dark_ascension)|talent.void_torrent&talent.psychic_link&cooldown.void_torrent.remains<=4&(!raid_event.adds.
+# Set vts_applied for single-target to support Mindbender entry in cds action list.
+actions.main_variables+=/variable,name=vts_applied,op=set,value=dot.vampiric_touch.ticking
 
 actions.pl_torrent+=/void_bolt
 actions.pl_torrent+=/vampiric_touch,if=remains<=6&cooldown.void_torrent.remains<gcd*2
