@@ -2787,6 +2787,17 @@ do
                 elseif state.args.target then return ( UnitGUID( "target" ) .. '+' .. state.args.target ) or "unknown" end
                 return UnitGUID( "target" ) or "unknown"
 
+            elseif k == "npcid" then
+                if UnitExists( "target" ) then
+                    local id = UnitGUID( "target" )
+                    id = id and id:match( "(%d+)-%x-$" )
+                    id = id and tonumber( id )
+
+                    return id or -1
+                end
+
+                return -1
+
             end
 
             return rawget( t, k )
