@@ -9684,6 +9684,7 @@ do
                 elseif index == -2 then
                     if args[3] then
                         Hekili:SetMode( args[3] )
+                        if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", args[3] ) end
                     else
                         Hekili:FireToggle( "mode" )
                     end
