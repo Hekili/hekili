@@ -99,11 +99,12 @@ function ns.StartEventHandler()
     end
 
     events:SetScript( "OnUpdate", function( self, elapsed )
-        Hekili.freshFrame = true
-
         if Hekili.PendingSpecializationChange then
             Hekili:SpecializationChanged()
             Hekili.PendingSpecializationChange = false
+
+            -- Spec updates are expensive; exit and do other work in the next frame.
+            return
         end
 
         if handlers.FRAME_UPDATE then
