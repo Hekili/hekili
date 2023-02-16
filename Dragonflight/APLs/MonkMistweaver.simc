@@ -11,7 +11,7 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
 actions+=/potion
-actions+=/faeline_stomp
+actions+=/faeline_stomp,if=!settings.save_faeline|!(buff.ancient_concordance.up|buff.awakened_faeline.up)
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=3
 actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
 

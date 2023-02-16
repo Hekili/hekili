@@ -1443,6 +1443,12 @@ spec:RegisterAbilities( {
                 active_dot.breath_of_fire = active_enemies
             end
 
+            if spec.mistweaver then
+                if talent.ancient_concordance.enabled then applyBuff( "ancient_concordance" ) end
+                if talent.ancient_teachings.enabled then applyBuff( "ancient_teachings" ) end
+                if talent.awakened_faeline.enabled then applyBuff( "awakened_faeline" ) end
+            end
+
             if talent.faeline_harmony.enabled or legendary.fae_exposure.enabled then applyDebuff( "target", "fae_exposure" ) end
         end,
 

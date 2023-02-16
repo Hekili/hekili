@@ -149,6 +149,21 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 6
     },
+    ancient_concordance = {
+        id = 389391,
+        duration = 3600,
+        max_stack = 1
+    },
+    ancient_teachings = {
+        id = 388026,
+        duration = 15,
+        max_stack = 1
+    },
+    awakened_faeline = {
+        id = 389387,
+        duration = 3600,
+        max_stack = 1
+    },
     bonedust_brew = {
         id = 386276,
         duration = 10,
@@ -175,7 +190,10 @@ spec:RegisterAuras( {
         max_stack = 2
     },
     close_to_heart = {
-        id = 389574,
+        id = 389684,
+        duration = 3600,
+        max_stack = 1,
+        copy = 389574
     },
     clouded_focus = {
         id = 388048,
@@ -211,10 +229,11 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     essence_font = {
-        id = 191840,
+        id = 344006,
         duration = 8,
         tick_time = 2,
-        max_stack = 1
+        max_stack = 1,
+        copy = 191840
     },
     eye_of_the_tiger = {
         id = 196608,
@@ -244,7 +263,9 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     generous_pour = {
-        id = 389575,
+        id = 389685,
+        duration = 3600,
+        max_stack = 1
     },
     grapple_weapon = {
         id = 233759,
@@ -485,6 +506,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "essence_font" )
+            if talent.ancient_teachings.enabled then applyBuff( "ancient_teachings" ) end
             if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
     },
@@ -885,6 +907,14 @@ spec:RegisterSetting( "experimental_msg", nil, {
     width = "full",
 } )
 
+spec:RegisterSetting( "save_faeline", false, {
+    type = "toggle",
+    name = "|T3636842:0|t Faeline Stomp: Don't Reuse",
+    desc = "If checked, the default priority will not recommend |T3636842:0|t Faeline Stomp when you already have |T3528274:0|t Ancient Concordance and/or |T3528275:0|t Awakened Faeline active.\n\n"
+        .. "This may be desired from a mana efficiency standpoint.",
+    width = "full",
+} )
+
 
 spec:RegisterOptions( {
     enabled = true,
@@ -906,4 +936,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Mistweaver", 20230209, [[Hekili:nF1xVTTnq8pl9LMnSan)N0KMH4aSTxwd26lQptkAQtYCMIuJKQPbiGF23rjhBkghB3ITS9GTSV7hV749FrMs(ejVK5aYhNnz28jZMCD20lN9(lUMK7EOfi5Tm(Awn(dfRb)(pew39a7ZGjW6bPMvgeHv3z4iBs(YoH09bfz5(K7vtMIyBbos(QjK8vIYsyaly5K8pTsy9fHpmFXgn7l0v4)5oHw5lKO(r2vAJV43G1cPidneJUsir1pGYM1AaUUzjZ9dl(XwD)jVBF84Re0LDgR7LzFpEx93TLpsfTFMHUIPkPwNrSgIz2zbQWbn2yIlLADjTQZ8WiQGXcM1cvDmvPOELZs)ZUY6gq5IzvjmqVOIjYuCandMKYzs5i5ZQP6kkAI81JmNepsqYmqkuaEF0nTXmcYKo8xAW1FEilybtdNhU6C3IPNlQwea8zGckOra2Bxm)4IaF(Ys4M5rE8mBiu4w1PkbdTsZ7SuhWs4Bew0rsTDk6A8(MWDPeZL0DUEEb99ghtIE3muqyqwvB79uRaAJwXSoW8WJpUSRQ6aaY6AFlxRLL67vzjQpZanmHYEBnVmRH9LeZzxE1ZiNKnoC3f14nVLjB(NY0To0FCZ8JdCZ94MzXbem8VViYEIJrzcBovIJ6KoZ)wrVJQ4NhN2rpjqnWW2kuQW9JByy5uWEj5yVslIzBNW3rYVNzcWSHoEydortR2420v7muuN5lmWF1H17L(cRUbXW6WAtSHksGJ9EQbBM)UFhlA9fZ)jFXVQvOE6zF2r9oO4D6tbygOylLqjEGVB6x((SqwWESyR7)Vg8GgV8vuJ(7(qV3jOOlsMCHSj59)km1eJ04Jp2peEJyi)cjNBWjigbByE2UmuFXnlqN3tJ5Wj0PLGehML9TkTKsZGSM)IY6nO)5uDn(IhF0xC8csFXBhCxhWih1liyIx07i3W9Pc2yJgX8Uum9fVjGUmg0ElKJHJNgLWtbVxoGmwhZIbN6Vhd9)ax)XMM5lU1xSzI2Rwe5vYf0preZ2WKTt7aB9j4rMfLbSDw9qssjuX6Kppt5zlrEOmLTlvUVCKDXHNwYmb1O4XULopuejzj0dvPSDP0eqxfdA8sQjiF)i7lEP1eGxhdCyj2eetNmY0I3Qnf5P3092HoqdRRgcJ7sCtwTDO1oD4nLcn3dW)k6h)nPhRBitB7lU8SCT96QMDkvGZpEPCVUXz9R04Be(ZI1mfBnRNk5Vd]] )
+spec:RegisterPack( "Mistweaver", 20230216, [[Hekili:nF1wVTTnu4Fl5LMeSunFjlDDioaDdyanyRVO(SKOPOS5SePgjvDmGb)TVpk5l00YXEfBD7HeBZZhpNd)ox4Hjdt(CsCoXWs(0ObJgpy0WhIgoA447Vpj2SQMLextOliZWxeKk8)FNRnlzKVWuorRkLKCNk0YgffItIN2WlnFuKmTF9ogyRzuS87gKepNNNZ6WY00Kyh23oy0Bh(WpzZSzFasZTzYAdxkSzgPnJ8fjhlPyuI2WfZSz)kHvYfmBwSrwvBZwoNbSAdrK3kNJFrWFSx4B2rX2DCtHuzZQiccexuWPCMGU62iC0uYcEjoqeQZ26OAyrz1uI57M891Yw)55(KrNZtN2O0MtlEjyp7Z7KJvbJquPZHhNQnk(cMVWgnlLByvA)fNwkL5PfnQvhSktPzQfUdP3QL8zZn60)OjFwfty8fvWvSwv5VirqzWniLPusz5b6NmlvwKcxKU4a3jGrCAUJJX5bbL74ftUsZmo6xhPX5pDJ81RV6MPnffrWOG8nPuPGkv5oFiQPE96oHljlycw(2Dbj36BmNFM29Z0seLVZLRoHiz35OtQzYqNh4aaldfvXz6NMm(8QaFEAn84yVOyK2fEnZBe5mvAHK2OtnmsGCfxdkiv3isxaomq60suRjBmTYA5mdPeKseuesCa31Y(ZzPvsbs)zQvBiOtdau1BOszzUCPikW8rkwfHl0pnJMhvrEjWD2NRE0Ybz4DND(mCYRjLv)t56OgMU4XXNh4MZXJJ8dii83xePN4OxMWMDfqux0E(3k6DwdFCCA)6bbQob6AUq4oFufbLOo)njgD01aZ2(1dEFs8sIYbtNe)55OBjVQwQmO9PRP51qvx76d)NnOhc6iRLvadPb17OTpwGI(zZy6i7Z)wBZ2XOL(VifWoTIV(SSZ1DD8ppWiMGmTKLJnCZWxUnYLf0JhRn))1H7S4dFdTO95p2YoodDp4bA3DSUEFokijU9BU72rKgF8P2rf2OMKFojMQWTskoP7oY9zO2ShNaYB7vNyoIWsWedYY(A1wqPPtxJpPUUc8ZLsn2S1RTzNVG0M9Mo66vCYd6f4CX7BjYns3wW670aZpeIPT4na0d(G6Tq2ho2n0W2G3PdihAJr(Gd57dH(Fa1FUBZSzpzZ2CJ23SiY3ikO9grKTHKTlBd74eSLrEza7URUljjNvqAkpot5ObtFTmLDdQ2xoY(4W2bxdqDq8y)GSVwejyW2xRsz3GUbGENpOdh8na5pEG)5piCaW37dSBW4aedh8APm9oNCx0gsVztmV)5L9sk6zMzB2TEmI)a6TE1L3G)PUUDDJg7sz2xKemgD31iPDVD0DrId(FJE)Fv2rB6YQ39WRJYR7nSm6sQ2hF(2gT2gZvmxI3i)b(c88YfK2vt(R]] )
