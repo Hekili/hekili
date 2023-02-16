@@ -1237,8 +1237,8 @@ spec:RegisterAbilities( {
         id = 121253,
         cast = 0,
         cooldown = 8,
-        charges = function () return legendary.stormstouts_last_keg.enabled and 2 or nil end,
-        recharge = function () return legendary.stormstouts_last_keg.enabled and 8 or nil end,
+        charges = function () return ( talent.stormstouts_last_keg.enabled or legendary.stormstouts_last_keg.enabled ) and 2 or nil end,
+        recharge = function () return ( talent.stormstouts_last_keg.enabled or legendary.stormstouts_last_keg.enabled ) and 8 or nil end,
         gcd = "totem",
         school = "physical",
 
