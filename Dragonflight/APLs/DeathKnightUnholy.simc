@@ -3,8 +3,15 @@ actions.precombat+=/army_of_the_dead,precombat_time=2
 
 actions+=/mind_freeze
 actions+=/strangulate
-actions+=/antimagic_shell,if=(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&runic_power.deficit>40&incoming_magic_3s>0&(pet.gargoyle.active|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>cooldown.antimagic_shell.duration)
-## actions+=/antimagic_zone,if=(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&death_knight.amz_absorb_percent>0&runic_power.deficit>70&talent.assimilation&(pet.gargoyle.active|!talent.summon_gargoyle)
+
+## 10.0.7 PTR
+actions+=/antimagic_shell,if=ptr&incoming_magic_3s>0&runic_power.deficit>40&(pet.gargoyle.active|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>cooldown.antimagic_shell.duration)
+## actions+=/antimagic_zone,if=ptr&runic_power.deficit>70&talent.assimilation&(pet.gargoyle.active|!talent.summon_gargoyle)
+
+## 10.0.5
+actions+=/antimagic_shell,if=!ptr&incoming_magic_3s>0&(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&runic_power.deficit>40&(pet.gargoyle.active|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>cooldown.antimagic_shell.duration)
+## actions+=/antimagic_zone,if=!ptr&(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&runic_power.deficit>70&talent.assimilation&(pet.gargoyle.active|!talent.summon_gargoyle)
+
 ## Variables
 actions+=/variable,name=garg_setup,op=setif,value=active_enemies>=3|cooldown.summon_gargoyle.remains>1&cooldown.apocalypse.remains>1|!talent.apocalypse&cooldown.summon_gargoyle.remains>1|!talent.summon_gargoyle
 actions+=/variable,name=apoc_timing,op=setif,value=10,value_else=2,condition=cooldown.apocalypse.remains<10&debuff.festering_wound.stack<=4
@@ -15,18 +22,32 @@ actions+=/variable,name=st_planning,value=active_enemies<=3&(!raid_event.adds.ex
 actions+=/variable,name=adds_remain,value=active_enemies>=4&(!raid_event.adds.exists|raid_event.adds.exists&raid_event.adds.remains>6)
 ## When using 'external_buffs.invoke', will use this lines logic to determine when to use Power Infusion.
 ## actions+=/invoke_external_buff,name=power_infusion,if=variable.st_planning&(pet.gargoyle.active&cooldown.apocalypse.remains|!talent.summon_gargoyle&talent.army_of_the_dead&pet.army_ghoul.active&pet.apoc_ghoul.active|!talent.summon_gargoyle&!talent.army_of_the_dead&buff.dark_transformation.up|!talent.summon_gargoyle&buff.dark_transformation.up|!pet.gargoyle.active&cooldown.summon_gargoyle.remains+5>cooldown.invoke_external_buff.duration)|fight_remains<=21
-# Prioritize Army, Outbreak and Maintaining Plaguebringer
+
+# 10.0.7 PTR: Prioritize Army, Outbreak and Maintaining Plaguebringer
 actions+=/army_of_the_dead,if=ptr&(talent.summon_gargoyle&cooldown.summon_gargoyle.remains<3|!talent.summon_gargoyle|boss&fight_remains<35)
-# Prioritize Army, Outbreak and Maintaining Plaguebringer
+
+# 10.0.5: Prioritize Army, Outbreak and Maintaining Plaguebringer
 actions+=/army_of_the_dead,if=!ptr&(talent.commander_of_the_dead&(cooldown.dark_transformation.remains<3|buff.commander_of_the_dead_window.up)|!talent.commander_of_the_dead&talent.unholy_assault&cooldown.unholy_assault.remains<10|!talent.unholy_assault&!talent.commander_of_the_dead|boss&fight_remains<=34)
-actions+=/wait,sec=cooldown.apocalypse.remains,if=cooldown.apocalypse.remains<gcd&buff.commander_of_the_dead_window.up
+actions+=/wait,sec=cooldown.apocalypse.remains,if=!ptr&cooldown.apocalypse.remains<gcd&buff.commander_of_the_dead_window.up
+
+## 10.0.7 PTR
+actions+=/death_coil,if=ptr&(active_enemies<=3|!talent.epidemic)&(talent.commander_of_the_dead&buff.commander_of_the_dead.up&cooldown.apocalypse.remains<5|debuff.death_rot.up&debuff.death_rot.remains<gcd)
+actions+=/epidemic,if=ptr&active_enemies>=4&(talent.commander_of_the_dead&buff.commander_of_the_dead.up&cooldown.apocalypse.remains<5|debuff.death_rot.up&debuff.death_rot.remains<gcd)
+actions+=/unholy_blight,if=ptr&(variable.st_planning&((!talent.apocalypse|cooldown.apocalypse.remains)&talent.morbidity|!talent.morbidity)|variable.adds_remain|fight_remains<21)
+actions+=/outbreak,cycle_targets=1,if=ptr&target.time_to_die>dot.virulent_plague.remains&(dot.virulent_plague.refreshable|talent.superstrain&(dot.frost_fever_superstrain.refreshable|dot.blood_plague_superstrain.refreshable))&(!talent.unholy_blight|talent.unholy_blight&cooldown.unholy_blight.remains>15%((talent.superstrain*3)+(talent.plaguebringer*2)+(talent.ebon_fever*2)))
+
+## 10.0.5
 actions+=/death_coil,if=(active_enemies<=3|!talent.epidemic)&(pet.gargoyle.active&buff.commander_of_the_dead_window.up&buff.commander_of_the_dead_window.remains>gcd*1.1&cooldown.apocalypse.remains<gcd|(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&debuff.death_rot.up&debuff.death_rot.remains<gcd)
 actions+=/epidemic,if=active_enemies>=4&(pet.gargoyle.active&buff.commander_of_the_dead_window.up&buff.commander_of_the_dead_window.remains>gcd&cooldown.apocalypse.remains<gcd|(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&debuff.death_rot.up&debuff.death_rot.remains<gcd)
-actions+=/unholy_blight,if=ptr&(variable.st_planning&((!talent.apocalypse|cooldown.apocalypse.remains)&talent.morbidity|!talent.morbidity)|variable.adds_remain|boss&fight_remains<21)
-actions+=/unholy_blight,if=!ptr&(!buff.commander_of_the_dead_window.up&(variable.st_planning&((!talent.apocalypse|cooldown.apocalypse.remains)&talent.morbidity|!talent.morbidity)|variable.adds_remain|fight_remains<boss&21))
+actions+=/unholy_blight,if=!buff.commander_of_the_dead_window.up&(variable.st_planning&((!talent.apocalypse|cooldown.apocalypse.remains)&talent.morbidity|!talent.morbidity)|variable.adds_remain|fight_remains<boss&21)
 actions+=/outbreak,cycle_targets=1,if=target.time_to_die>dot.virulent_plague.remains&(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&(dot.virulent_plague.refreshable|talent.superstrain&(dot.frost_fever_superstrain.refreshable|dot.blood_plague_superstrain.refreshable))&(!talent.unholy_blight|talent.unholy_blight&cooldown.unholy_blight.remains>15%((talent.superstrain*3)+(talent.plaguebringer*2)+(talent.ebon_fever*2)))
+
+## 10.0.7 PTR
 actions+=/wound_spender,if=ptr&(cooldown.apocalypse.remains>variable.apoc_timing&talent.plaguebringer&talent.superstrain&buff.plaguebringer.remains<gcd)
+
+## 10.0.5
 actions+=/wound_spender,if=!ptr&((!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&cooldown.apocalypse.remains>variable.apoc_timing&talent.plaguebringer&talent.superstrain&buff.plaguebringer.remains<gcd)
+
 ## Call Action Lists
 actions+=/call_action_list,name=garg_setup,strict=1,if=!variable.garg_setup
 actions+=/call_action_list,name=cooldowns
@@ -54,18 +75,34 @@ actions.cooldowns+=/vile_contagion,cycle_targets=1,if=active_enemies>=2&debuff.f
 actions.cooldowns+=/summon_gargoyle,if=active_enemies>=3
 actions.cooldowns+=/abomination_limb,if=rune<2&variable.adds_remain
 actions.cooldowns+=/raise_dead,if=!pet.ghoul.active
+
+## 10.0.7 PTR
 actions.cooldowns+=/dark_transformation,if=ptr&variable.st_planning
+
+## 10.0.5
 actions.cooldowns+=/dark_transformation,if=!ptr&variable.st_planning&(talent.commander_of_the_dead&cooldown.apocalypse.remains<gcd*2|cooldown.apocalypse.remains>30|!talent.commander_of_the_dead)
+
 actions.cooldowns+=/dark_transformation,if=variable.adds_remain&(cooldown.any_dnd.remains<10&talent.infected_claws&((cooldown.vile_contagion.remains|raid_event.adds.exists&raid_event.adds.in>10)&death_knight.fwounded_targets<cycle_enemies|!talent.vile_contagion)&(raid_event.adds.remains>5|!raid_event.adds.exists)|!talent.infected_claws)
+
+## 10.0.7 PTR
 actions.cooldowns+=/apocalypse,cycle_targets=1,if=ptr&variable.st_planning&debuff.festering_wound.stack>=4
+
+## 10.0.5
 actions.cooldowns+=/apocalypse,cycle_targets=1,if=!ptr&debuff.festering_wound.stack>3&active_enemies<=3&(buff.commander_of_the_dead_window.up|!talent.commander_of_the_dead|cooldown.dark_transformation.remains>30)
+
 actions.cooldowns+=/apocalypse,cycle_targets=1,if=debuff.festering_wound.stack>3&variable.adds_remain&(!death_and_decay.ticking&cooldown.death_and_decay.remains&rune<3|death_and_decay.ticking&rune=0)
 actions.cooldowns+=/empower_rune_weapon,if=variable.st_planning&(pet.gargoyle.active&pet.apoc_ghoul.active|!talent.summon_gargoyle&talent.army_of_the_damned&pet.army_ghoul.active&pet.apoc_ghoul.active|!talent.summon_gargoyle&!talent.army_of_the_damned&buff.dark_transformation.up|!talent.summon_gargoyle&!talent.summon_gargoyle&buff.dark_transformation.up)|debuff.festering_wound.stack>3&boss&fight_remains<=21
 actions.cooldowns+=/empower_rune_weapon,if=variable.adds_remain&buff.dark_transformation.up
 actions.cooldowns+=/abomination_limb,if=rune<3&variable.st_planning
 actions.cooldowns+=/unholy_assault,cycle_targets=1,if=variable.st_planning
 actions.cooldowns+=/unholy_assault,cycle_targets=1,if=variable.adds_remain&debuff.festering_wound.stack<2
-actions.cooldowns+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5&(!buff.commander_of_the_dead_window.up|cooldown.apocalypse.remains>3)
+
+## 10.0.7 PTR
+actions.cooldowns+=/soul_reaper,if=ptr&active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5
+
+## 10.0.5
+actions.cooldowns+=/soul_reaper,if=!ptr&active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5&(!buff.commander_of_the_dead_window.up|cooldown.apocalypse.remains>3)
+
 actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&active_enemies>=2&target.time_to_die>(dot.soul_reaper.remains+5)
 actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&cooldown.dark_transformation.remains>6|boss&fight_remains<gcd
 
@@ -80,11 +117,18 @@ actions.covenants+=/shackle_the_unworthy,if=variable.st_planning&(cooldown.apoca
 actions.covenants+=/shackle_the_unworthy,if=variable.adds_remain&(death_and_decay.ticking|raid_event.adds.remains<=14)
 actions.covenants+=/fleshcraft,if=soulbind.pustule_eruption|soulbind.volatile_solvent&!buff.volatile_solvent_humanoid.up,interrupt_immediate=1,interrupt_global=1,interrupt_if=soulbind.volatile_solvent
 
-# Garg Setup
-actions.garg_setup+=/apocalypse,if=debuff.festering_wound.stack>3&(buff.commander_of_the_dead_window.up|cooldown.dark_transformation.remains>20|!talent.commander_of_the_dead)
-actions.garg_setup+=/army_of_the_dead,if=talent.commander_of_the_dead&(cooldown.dark_transformation.remains<3|buff.commander_of_the_dead_window.up)|!talent.commander_of_the_dead&talent.unholy_assault&cooldown.unholy_assault.remains<10|!talent.unholy_assault&!talent.commander_of_the_dead
-actions.garg_setup+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5&(!buff.commander_of_the_dead_window.up|cooldown.apocalypse.remains>3)
-actions.garg_setup+=/summon_gargoyle,use_off_gcd=1,if=buff.commander_of_the_dead_window.up|!talent.commander_of_the_dead&runic_power>40
+## 10.0.7 PTR: Garg Setup
+actions.garg_setup+=/apocalypse,if=ptr&(buff.commander_of_the_dead.up|cooldown.dark_transformation.remains>20|!talent.commander_of_the_dead&debuff.festering_wound.stack>=4)
+actions.garg_setup+=/army_of_the_dead,if=ptr&(talent.commander_of_the_dead&(cooldown.dark_transformation.remains<3|buff.commander_of_the_dead.up)|!talent.commander_of_the_dead&talent.unholy_assault&cooldown.unholy_assault.remains<10|!talent.unholy_assault&!talent.commander_of_the_dead)
+actions.garg_setup+=/soul_reaper,if=ptr&(active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5)
+actions.garg_setup+=/summon_gargoyle,use_off_gcd=1,if=ptr&(buff.commander_of_the_dead.up|!talent.commander_of_the_dead&runic_power>40)
+
+## 10.0.5: Garg Setup
+actions.garg_setup+=/apocalypse,if=!ptr&debuff.festering_wound.stack>3&(buff.commander_of_the_dead_window.up|cooldown.dark_transformation.remains>20|!talent.commander_of_the_dead)
+actions.garg_setup+=/army_of_the_dead,if=!ptr&(talent.commander_of_the_dead&(cooldown.dark_transformation.remains<3|buff.commander_of_the_dead_window.up)|!talent.commander_of_the_dead&talent.unholy_assault&cooldown.unholy_assault.remains<10|!talent.unholy_assault&!talent.commander_of_the_dead)
+actions.garg_setup+=/soul_reaper,if=!ptr&active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5&(!buff.commander_of_the_dead_window.up|cooldown.apocalypse.remains>3)
+actions.garg_setup+=/summon_gargoyle,use_off_gcd=1,if=!ptr&(buff.commander_of_the_dead_window.up|!talent.commander_of_the_dead&runic_power>40)
+
 actions.garg_setup+=/potion,if=(30>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60|cooldown.summon_gargoyle.ready)&(buff.dark_transformation.up&30>=buff.dark_transformation.remains|pet.army_ghoul.active&pet.army_ghoul.remains<=30|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=30)
 actions.garg_setup+=/dark_transformation,if=talent.commander_of_the_dead&debuff.festering_wound.stack>=4|!talent.commander_of_the_dead
 actions.garg_setup+=/festering_strike,cycle_targets=1,if=!variable.pop_wounds&debuff.festering_wound.stack<4&talent.apocalypse|!variable.pop_wounds&debuff.festering_wound.stack<1&!talent.apocalypse
