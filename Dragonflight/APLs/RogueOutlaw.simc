@@ -86,7 +86,7 @@ actions.cds+=/use_items,slots=trinket1,if=debuff.between_the_eyes.up|trinket.1.h
 actions.cds+=/use_items,slots=trinket2,if=debuff.between_the_eyes.up|trinket.2.has_stat.any_dps|boss&fight_remains<=20
 
 # Stealth Cooldowns
-actions.stealth_cds+=/variable,name=vanish_condition,value=talent.hidden_opportunity|!talent.shadow_dance|!cooldown.shadow_dance.ready
+actions.stealth_cds+=/variable,name=vanish_condition,value=time>10&(talent.hidden_opportunity|!talent.shadow_dance|!cooldown.shadow_dance.ready)
 actions.stealth_cds+=/variable,name=vanish_opportunity_condition,value=!talent.shadow_dance&talent.fan_the_hammer.rank+talent.quick_draw+talent.audacity<talent.count_the_odds+talent.keep_it_rolling
 actions.stealth_cds+=/vanish,if=talent.find_weakness&!talent.audacity&debuff.find_weakness.down&variable.ambush_condition&variable.vanish_condition
 actions.stealth_cds+=/vanish,if=talent.hidden_opportunity&!buff.audacity.up&(variable.vanish_opportunity_condition|buff.opportunity.stack<buff.opportunity.max_stack)&variable.ambush_condition&variable.vanish_condition
