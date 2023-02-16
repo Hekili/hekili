@@ -2251,8 +2251,6 @@ do
 
 
     function Hekili:ForceUpdate( event, super )
-        self.freshFrame = false
-
         self.Engine.criticalUpdate = true
         if super then self.Engine.superUpdate = true end
         if self.Engine.firstForce == 0 then self.Engine.firstForce = GetTime() end
