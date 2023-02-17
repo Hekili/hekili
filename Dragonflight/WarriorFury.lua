@@ -855,6 +855,7 @@ spec:RegisterAbilities( {
     bloodbath = {
         id = 335096,
         known = 23881,
+        flash = 23881,
         cast = 0,
         cooldown = function () return ( 3 - talent.deft_experience.rank * 0.75 ) * haste end,
         gcd = "spell",
@@ -991,6 +992,7 @@ spec:RegisterAbilities( {
     crushing_blow = {
         id = 335097,
         known = 85288,
+        flash = 85288,
         cast = 0,
         charges = function () return
               ( talent.raging_blow.enabled and 1 or 0 )
@@ -1094,7 +1096,6 @@ spec:RegisterAbilities( {
     execute = {
         id = function () return IsActiveSpell( 280735 ) and 280735 or 5308 end,
 	    known = 5308,
-        copy = { 280735, 5308 },
         noOverride = 317485,
         cast = 0,
         cooldown = function () return ( talent.massacre.enabled and 4.5 or 6 ) end,
@@ -1129,7 +1130,6 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-
             if not buff.sudden_death.up and not buff.stone_heart.up and not talent.improved_execute.enabled then -- Execute costs rage
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
@@ -1140,6 +1140,9 @@ spec:RegisterAbilities( {
             removeStack( "whirlwind" )
             if talent.ashen_juggernaut.enabled then applyBuff( "ashen_juggernaut" ) end
         end,
+
+        copy = { 280735, 5308 },
+
         auras = {
             -- Target Swapping
             execute_ineligible = {
