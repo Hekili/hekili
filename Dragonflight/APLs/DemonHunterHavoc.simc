@@ -11,15 +11,15 @@ actions+=/consume_magic
 actions+=/variable,name=blade_dance,value=talent.first_blood|talent.trail_of_ruin|talent.chaos_theory&buff.chaos_theory.down|spell_targets.blade_dance1>1
 actions+=/variable,name=pooling_for_blade_dance,value=variable.blade_dance&fury<(75-talent.demon_blades*20)&cooldown.blade_dance.remains<gcd.max
 actions+=/variable,name=pooling_for_eye_beam,value=talent.demonic&!talent.blind_fury&cooldown.eye_beam.remains<(gcd.max*2)&fury.deficit>20
-actions+=/variable,name=waiting_for_momentum,value=talent.momentum&(!buff.momentum.up&settings.recommend_movement)
+actions+=/variable,name=waiting_for_momentum,value=talent.momentum&!buff.momentum.up
 actions+=/call_action_list,name=cooldown,if=gcd.remains=0
 ## actions+=/pick_up_fragment,type=demon,if=demon_soul_fragments>0
 ## actions+=/pick_up_fragment,mode=nearest,if=talent.demonic_appetite&fury.deficit>=35&(!cooldown.eye_beam.ready|fury<30)
 actions+=/annihilation,if=buff.inner_demon.up&cooldown.metamorphosis.remains<=gcd*3
 actions+=/vengeful_retreat,use_off_gcd=1,if=talent.initiative&talent.essence_break&time>1&gcd.remains<0.4&(cooldown.essence_break.remains>15|cooldown.essence_break.remains<gcd.max&(!talent.demonic|buff.metamorphosis.up|cooldown.eye_beam.remains>15+(10*talent.cycle_of_hatred)))
-actions+=/vengeful_retreat,use_off_gcd=1,if=talent.initiative&!talent.essence_break&time>1&!buff.momentum.up&settings.recommend_movement
+actions+=/vengeful_retreat,use_off_gcd=1,if=talent.initiative&!talent.essence_break&time>1&!buff.momentum.up
 actions+=/fel_rush,if=(buff.unbound_chaos.up|variable.waiting_for_momentum&(!talent.unbound_chaos|!cooldown.immolation_aura.ready))&(charges=2|(raid_event.movement.in>10&raid_event.adds.in>10))
-actions+=/essence_break,if=(active_enemies>desired_targets|raid_event.adds.in>40)&!variable.waiting_for_momentum&fury>40&(cooldown.eye_beam.remains>8|buff.metamorphosis.up)&(!talent.tactical_retreat|!settings.recommend_movement|buff.tactical_retreat.up)
+actions+=/essence_break,if=(active_enemies>desired_targets|raid_event.adds.in>40)&!variable.waiting_for_momentum&fury>40&(cooldown.eye_beam.remains>8|buff.metamorphosis.up)&(!talent.tactical_retreat|buff.tactical_retreat.up)
 actions+=/death_sweep,if=variable.blade_dance&(!talent.essence_break|cooldown.essence_break.remains>(cooldown.death_sweep.duration-4))
 actions+=/fel_barrage,if=active_enemies>desired_targets|raid_event.adds.in>30
 actions+=/glaive_tempest,if=active_enemies>desired_targets|raid_event.adds.in>10
@@ -34,13 +34,13 @@ actions+=/fel_rush,if=talent.isolated_prey&active_enemies=1&fury.deficit>=35
 actions+=/felblade,if=fury.deficit>=40
 actions+=/sigil_of_flame,if=active_enemies>desired_targets
 actions+=/chaos_strike,if=!variable.pooling_for_blade_dance&!variable.pooling_for_eye_beam
-actions+=/fel_rush,if=settings.recommend_movement&!talent.momentum&talent.demon_blades&!cooldown.eye_beam.ready&(charges=2|(raid_event.movement.in>10&raid_event.adds.in>10))
+actions+=/fel_rush,if=settings.fel_rush_filler&!talent.momentum&talent.demon_blades&!cooldown.eye_beam.ready&(charges=2|(raid_event.movement.in>10&raid_event.adds.in>10))
 actions+=/demons_bite,cycle_targets=1,if=talent.burning_wound&debuff.burning_wound.remains<4&active_dot.burning_wound<(spell_targets>?3)
-actions+=/fel_rush,if=settings.recommend_movement&!talent.momentum&!talent.demon_blades&spell_targets>1&(charges=2|(raid_event.movement.in>10&raid_event.adds.in>10))
+actions+=/fel_rush,if=settings.fel_rush_filler&!talent.momentum&!talent.demon_blades&spell_targets>1&(charges=2|(raid_event.movement.in>10&raid_event.adds.in>10))
 actions+=/sigil_of_flame,if=raid_event.adds.in>15&fury.deficit>=30
 actions+=/demons_bite
-actions+=/fel_rush,if=settings.recommend_movement&(movement.distance>15|(buff.out_of_range.up&!talent.momentum))
-actions+=/vengeful_retreat,if=settings.recommend_movement&!talent.initiative&movement.distance>15
+actions+=/fel_rush,if=settings.fel_rush_filler&(movement.distance>15|(buff.out_of_range.up&!talent.momentum))
+actions+=/vengeful_retreat,if=settings.retreat_filler&!talent.initiative&movement.distance>15
 actions+=/throw_glaive,if=(talent.demon_blades|buff.out_of_range.up)&!debuff.essence_break.up
 
 actions.cooldown+=/sigil_of_misery,if=talent.misery_in_defeat&!target.is_boss&target.time_to_die>10&(cooldown.metamorphosis.remains<6|talent.demonic&cooldown.eye_beam.remains<6|buff.metamorphosis.remains>10)
