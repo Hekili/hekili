@@ -1018,7 +1018,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 613533,
 
-        usable = function () return target.health_pct < 20 end,
+        usable = function ()
+            return target.health_pct < 20 or talent.avenging_wrath.enabled and ( buff.avenging_wrath.up or buff.avenging_crusader.up ), "requires target below 20% health or avenging_wrath active"
+        end,
 
         handler = function ()
             gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
