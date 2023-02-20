@@ -24,8 +24,8 @@ actions+=/rune_tap,if=tanking&incoming_damage_5s>=rt_damage&!(buff.dancing_rune_
 actions+=/death_strike,if=buff.blood_shield.up&buff.blood_shield.remains<=gcd.max
 # Use Death's Caress if Bone Shield is not up.
 actions+=/deaths_caress,if=!buff.bone_shield.up
-# Use Death and Decay if it's not already up and you have 4 targets, Unholy Ground, or Sanguine Ground or with Crimson Scourge.
-actions+=/death_and_decay,if=!death_and_decay.ticking&(talent.unholy_ground|talent.sanguine_ground|spell_targets.death_and_decay>3)|buff.crimson_scourge.up
+# Use Death and Decay if it's not already up and you have 4 targets, Unholy Ground, Sanguine Ground, or Crimson Scourge.
+actions+=/death_and_decay,if=!death_and_decay.ticking&(talent.unholy_ground|talent.sanguine_ground|spell_targets.death_and_decay>3|buff.crimson_scourge.up)
 # Use Death Strike if Coagulatopathy is down or about to expire, if Icy Talons is down or about to expire, if you're below the Death Strike dump amount, if you're below the Heart Strike Runic Power threshold, or if the target is about to die.
 actions+=/death_strike,if=buff.coagulopathy.remains<=gcd|buff.icy_talons.remains<=gcd|runic_power>=variable.death_strike_dump_amount|runic_power.deficit<=variable.heart_strike_rp|boss&fight_remains<10
 # Use Blooddrinker if Dancing Rune Weapon is not up.
