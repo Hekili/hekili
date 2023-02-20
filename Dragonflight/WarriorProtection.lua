@@ -353,9 +353,10 @@ spec:RegisterAuras( {
         max_stack = 5
     },
     juggernaut = {
-        id = 383290,
+        id = 393968,
         duration = 12,
-        max_stack = 15
+        max_stack = 15,
+        copy = 383290
     },
     last_stand = {
         id = 12975,
