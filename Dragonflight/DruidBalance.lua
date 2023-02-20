@@ -509,6 +509,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 197625
     },
+    natures_grace = {
+        id = 393959,
+        duration = 6,
+        max_stack = 1
+    },
     -- Talent: $?s137012[Single-target healing also damages a nearby enemy target for $w3% of the healing done][Single-target damage also heals a nearby friendly target for $w3% of the damage done].
     -- https://wowhead.com/beta/spell=124974
     natures_vigil = {
@@ -524,6 +529,11 @@ spec:RegisterAuras( {
         duration = 10,
         type = "Magic",
         max_stack = function () return pvptalent.owlkin_adept.enabled and 2 or 1 end
+    },
+    parting_skies = {
+        id = 395110,
+        duration = 60,
+        max_stack = 1,
     },
     -- Cost of Starsurge and Starfall reduced by $w1%, and their damage increased by $w2%.
     -- https://wowhead.com/beta/spell=393955
@@ -1325,6 +1335,14 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         if set_bonus.tier29_2pc > 0 then applyBuff( "celestial_infusion" ) end
         applyBuff( "eclipse_solar", ( duration or class.auras.eclipse_solar.duration ) + buff.eclipse_solar.remains )
 
+        if buff.parting_skies.up then
+            removeBuff( "parting_skies" )
+            applyDebuff( "target", "fury_of_elune", 8 )
+            applyBuff( "fury_of_elune_ap", 8 )
+        elseif talent.parting_skies.enabled then
+            applyBuff( "parting_skies" )
+        end
+
         state:QueueAuraExpiration( "ca_inc", ExpireCelestialAlignment, buff.ca_inc.expires )
         state:RemoveAuraExpiration( "eclipse_solar" )
         state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
@@ -1346,6 +1364,13 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
                 eclipse.state = "IN_SOLAR"
                 eclipse.starfire_counter = 0
                 eclipse.wrath_counter = 2
+                if buff.parting_skies.up then
+                    removeBuff( "parting_skies" )
+                    applyDebuff( "target", "fury_of_elune", 8 )
+                    applyBuff( "fury_of_elune_ap", 8 )
+                elseif talent.parting_skies.enabled then
+                    applyBuff( "parting_skies" )
+                end
                 if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
                 return
             end
@@ -1361,6 +1386,13 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
                 eclipse.wrath_counter = 0
                 eclipse.starfire_counter = 2
                 if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Post): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
+                if buff.parting_skies.up then
+                    removeBuff( "parting_skies" )
+                    applyDebuff( "target", "fury_of_elune", 8 )
+                    applyBuff( "fury_of_elune_ap", 8 )
+                elseif talent.parting_skies.enabled then
+                    applyBuff( "parting_skies" )
+                end
                 return
             end
         end
@@ -1449,7 +1481,7 @@ spec:RegisterHook( "reset_precast", function ()
     else active_moon = nil end
 
     -- UGLY
-    if talent.incarnation_chosen_of_elune.enabled then
+    if talent.incarnation.enabled then
         rawset( cooldown, "ca_inc", cooldown.incarnation )
         rawset( buff, "ca_inc", buff.incarnation )
     else
@@ -1647,9 +1679,9 @@ spec:RegisterAbilities( {
 
     -- Talent: Celestial bodies align, maintaining both Eclipses and granting $s1% haste for $d.
     celestial_alignment = {
-        id = 194223,
+        id = function() return talent.orbital_strike.enabled and 383410 or 194223 end,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 - 60 * talent.orbital_strike.rank end,
         gcd = "off",
         school = "astral",
 
@@ -1941,9 +1973,9 @@ spec:RegisterAbilities( {
 
 
     incarnation = {
-        id = 102560,
+        id = function() return talent.orbital_strike.enabled and 390414 or 102560 end,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 - 60 * talent.orbital_strike.rank end,
         gcd = "off",
 
         spend = -40,
@@ -1968,7 +2000,7 @@ spec:RegisterAbilities( {
             if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
         end,
 
-        copy = { "incarnation_chosen_of_elune", "Incarnation" },
+        copy = { "incarnation_chosen_of_elune", "Incarnation", 102560, 390414 },
     },
 
     -- Talent: Infuse a friendly healer with energy, allowing them to cast spells without spending mana for $d.$?s326228[    If cast on somebody else, you gain the effect at $326228s1% effectiveness.][]
