@@ -549,15 +549,17 @@ do
                             if setting.info and ( not setting.info.arg or setting.info.arg() ) then
                                 if setting.info.type == "toggle" then
                                     insert( menuData, {
-                                        text = setting.info.name,
+                                        text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
                                         func = function ()
                                             menu.args[1] = setting.name
                                             setting.info.set( menu.args, not setting.info.get( menu.args ) )
 
+                                            local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
+
                                             if Hekili.DB.profile.notifications.enabled then
-                                                Hekili:Notify( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
+                                                Hekili:Notify( name .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
                                             else
-                                                Hekili:Print( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                                Hekili:Print( name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
                                             end
                                         end,
                                         checked = function ()
@@ -569,7 +571,7 @@ do
 
                                 elseif setting.info.type == "select" then
                                     local submenu = {
-                                        text = setting.info.name,
+                                        text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
                                         hasArrow = true,
                                         menuList = {},
                                         notCheckable = true,
@@ -605,7 +607,7 @@ do
                                 elseif setting.info.type == "range" then
 
                                     local submenu = {
-                                        text = setting.info.name,
+                                        text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
                                         hasArrow = true,
                                         menuList = {},
                                         notCheckable = true,
@@ -635,10 +637,13 @@ do
                                             func = function ()
                                                 menu.args[1] = setting.name
                                                 setting.info.set( menu.args, actual )
+
+                                                local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
+
                                                 if Hekili.DB.profile.notifications.enabled then
-                                                    Hekili:Notify( setting.info.name .. " set to |cFF00FF00" .. actual .. "|r." )
+                                                    Hekili:Notify( name .. " set to |cFF00FF00" .. actual .. "|r." )
                                                 else
-                                                    Hekili:Print( setting.info.name .. " set to |cFF00FF00" .. actual .. "|r." )
+                                                    Hekili:Print( name .. " set to |cFF00FF00" .. actual .. "|r." )
                                                 end
                                             end,
                                             checked = function ()
