@@ -96,7 +96,7 @@ spec:RegisterTalents( {
     flash_flood                 = { 81020, 280614, 2 }, -- When you consume Tidal Waves, the cast time of your next heal is reduced by 10%.
     flow_of_the_tides           = { 81031, 382039, 1 }, -- Casting Chain Heal on a target affected by Riptide consumes Riptide, increasing the healing of your Chain Heal by 30%.
     healing_rain                = { 81040, 73920 , 1 }, -- Blanket the target area in healing rains, restoring 12,334 health to up to 6 allies over 10 sec.
-    healing_stream_totem        = { 81022, 5394  , 1 }, -- Summons a totem at your feet for 15 sec that heals an injured party or raid member within 40 yards for 3,115 every 1.7 sec. If you already know Healing Stream Totem, instead gain 1 additional charge of Healing Stream Totem.
+    healing_stream_totem_2      = { 81022, 5394  , 1 }, -- Summons a totem at your feet for 15 sec that heals an injured party or raid member within 40 yards for 3,115 every 1.7 sec. If you already know Healing Stream Totem, instead gain 1 additional charge of Healing Stream Totem.
     healing_tide_totem          = { 81032, 108280, 1 }, -- Summons a totem at your feet for 10 sec, which pulses every 1.7 sec, healing all party or raid members within 40 yards for 2827.1. Healing increased by 100% when not in a raid.
     healing_wave                = { 81026, 77472 , 1 }, -- An efficient wave of healing energy that restores 21,075 of a friendly target’s health.
     high_tide                   = { 81042, 157154, 1 }, -- Every 100,000 mana you spend brings a High Tide, making your next 2 Chain Heals heal for an additional 10% and not reduce with each jump.
