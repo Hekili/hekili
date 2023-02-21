@@ -83,7 +83,7 @@ actions.clearcasting+=/brutal_slash,if=spell_targets.brutal_slash>5&talent.momen
 actions.clearcasting+=/shred
 
 actions.cooldown+=/incarnation
-actions.cooldown+=/berserk,if=!talent.convoke_the_spirits.enabled|talent.convoke_the_spirits.enabled&!(fight_remains<cooldown.convoke_the_spirits.remains)|talent.convoke_the_spirits.enabled&cooldown.convoke_the_spirits.remains<10|talent.convoke_the_spirits.enabled&fight_remains>120&cooldown.convoke_the_spirits.remains>25|boss&fight_remains<25
+actions.cooldown+=/berserk,if=!talent.convoke_the_spirits.enabled|talent.convoke_the_spirits.enabled&(fight_remains>=cooldown.convoke_the_spirits.remains)|talent.convoke_the_spirits.enabled&cooldown.convoke_the_spirits.remains<10|talent.convoke_the_spirits.enabled&fight_remains>120&cooldown.convoke_the_spirits.remains>25|boss&fight_remains<25
 actions.cooldown+=/potion,if=buff.bs_inc.up|boss&fight_remains<32|buff.tigers_fury.up&cooldown.convoke_the_spirits.up&talent.convoke_the_spirits.enabled&fight_remains<cooldown.bs_inc.remains
 actions.cooldown+=/convoke_the_spirits,if=dot.rip.duration>5&(buff.tigers_fury.up&combo_points<4&cooldown.bs_inc.remains>20|boss&fight_remains<5)
 actions.cooldown+=/berserking,if=buff.bs_inc.up|boss&fight_remains<15

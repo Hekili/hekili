@@ -189,14 +189,14 @@ actions.opener+=/tiger_palm,cycle_targets=1,if=chi.max-chi>=(2+buff.power_strike
 
 # Serenity Priority
 actions.serenity+=/strike_of_the_windlord,if=talent.thunderfist
-actions.serenity+=/fists_of_fury,if=buff.serenity.remains<1
+actions.serenity+=/fists_of_fury,if=buff.serenity.remains<1,interrupt_if=buff.serenity.up&buff.serenity.remains>=1
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike&buff.teachings_of_the_monastery.stack=3&buff.teachings_of_the_monastery.remains<1
 actions.serenity+=/rising_sun_kick,cycle_targets=1,if=active_enemies=4&buff.pressure_point.up&!talent.bonedust_brew
 actions.serenity+=/rising_sun_kick,cycle_targets=1,if=active_enemies=1
 actions.serenity+=/rising_sun_kick,cycle_targets=1,if=active_enemies<=3&buff.pressure_point.up
-actions.serenity+=/fists_of_fury,if=buff.invokers_delight.up&active_enemies<3&talent.jade_ignition,interrupt=1,interrupt_if=buff.serenity.up
-actions.serenity+=/fists_of_fury,if=buff.invokers_delight.up&active_enemies>4,interrupt=1
-actions.serenity+=/fists_of_fury,if=buff.bloodlust.up,interrupt=1
+actions.serenity+=/fists_of_fury,if=buff.invokers_delight.up&active_enemies<3&talent.jade_ignition
+actions.serenity+=/fists_of_fury,if=buff.invokers_delight.up&active_enemies>4
+actions.serenity+=/fists_of_fury,if=buff.bloodlust.up
 actions.serenity+=/fists_of_fury,if=active_enemies=2
 ## Handled based on interrupt_if modifier to fists_of_fury above.
 ## actions.serenity+=/fists_of_fury_cancel
