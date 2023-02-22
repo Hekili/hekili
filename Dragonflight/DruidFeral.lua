@@ -475,7 +475,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=155625
     moonfire_cat = {
         id = 155625,
-        duration = function () return mod_circle_dot( 16 ) end,
+        duration = function () return mod_circle_dot( 16 ) * haste end,
         tick_time = function() return mod_circle_dot( 2 ) * haste end,
         max_stack = 1,
         copy = "lunar_inspiration",
@@ -492,7 +492,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=164812
     moonfire = {
         id = 164812,
-        duration = function () return mod_circle_dot( 16 ) end,
+        duration = function () return mod_circle_dot( 16 ) * haste end,
         tick_time = function () return mod_circle_dot( 2 ) * haste end,
         type = "Magic",
         max_stack = 1
@@ -544,7 +544,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=155722
     rake = {
         id = 155722,
-        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) end,
+        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) * haste end,
         tick_time = function() return mod_circle_dot( 3 ) * haste end,
         mechanic = "bleed",
         copy = "rake_bleed",
@@ -563,7 +563,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=8936
     regrowth = {
         id = 8936,
-        duration = function () return mod_circle_hot( 12 ) end,
+        duration = function () return mod_circle_hot( 12 ) * haste end,
         type = "Magic",
         max_stack = 1
     },
@@ -586,7 +586,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=1079
     rip = {
         id = 1079,
-        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * ( 4 + ( combo_points.current * 4 ) ) ) end,
+        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * ( 4 + ( combo_points.current * 4 ) ) ) * haste end,
         tick_time = function() return mod_circle_dot( 2 ) * haste end,
         mechanic = "bleed",
         meta = {
@@ -683,13 +683,13 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=192090
     thrash_bear = {
         id = 192090,
-        duration = function () return mod_circle_dot( 15 ) end,
-        tick_time = function () return mod_circle_dot( 3 ) end,
+        duration = function () return mod_circle_dot( 15 ) * haste end,
+        tick_time = function () return mod_circle_dot( 3 ) * haste end,
         max_stack = 3,
     },
     thrash_cat ={
         id = 106830,
-        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) end,
+        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) * haste end,
         tick_time = function() return mod_circle_dot( 3 ) * haste end,
         meta = {
             ticks_gained_on_refresh = function( t )
@@ -1906,11 +1906,11 @@ spec:RegisterAbilities( {
         aura = "rip",
 
         apply_duration = function ()
-            return mod_circle_dot( 2 + 2 * combo_points.current )
+            return mod_circle_dot( 2 + 2 * combo_points.current ) * haste
         end,
 
         max_apply_duration = function ()
-            return mod_circle_dot( 12 )
+            return mod_circle_dot( 12 ) * haste
         end,
 
         ticks_gained_on_refresh = function()
@@ -1926,7 +1926,7 @@ spec:RegisterAbilities( {
             if talent.tear_open_wounds.enabled and debuff.rip.up then
                 debuff.rip.expires = debuff.rip.expires - 4
             end
-            applyDebuff( "target", "rip", mod_circle_dot( 2 + 2 * combo_points.current ) )
+            applyDebuff( "target", "rip", mod_circle_dot( 2 + 2 * combo_points.current ) * haste )
             active_dot.rip = active_enemies
 
             spend( combo_points.current, "combo_points" )
@@ -2144,7 +2144,7 @@ spec:RegisterAbilities( {
         form = "cat_form",
 
         apply_duration = function ()
-            return mod_circle_dot( 4 + 4 * combo_points.current )
+            return mod_circle_dot( 4 + 4 * combo_points.current ) * haste
         end,
 
         usable = function ()
@@ -2159,7 +2159,7 @@ spec:RegisterAbilities( {
         handler = function ()
             spend( combo_points.current, "combo_points" )
 
-            applyDebuff( "target", "rip", mod_circle_dot( min( 1.3 * class.auras.rip.duration, debuff.rip.remains + class.auras.rip.duration ) ) )
+            applyDebuff( "target", "rip", mod_circle_dot( min( 1.3 * class.auras.rip.duration, debuff.rip.remains + class.auras.rip.duration ) ) * haste )
             debuff.rip.pmultiplier = persistent_multiplier
 
             removeStack( "bloodtalons" )
