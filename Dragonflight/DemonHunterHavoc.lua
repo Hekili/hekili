@@ -1257,18 +1257,14 @@ spec:RegisterAbilities( {
         cooldown = function () return ( legendary.erratic_fel_core.enabled and 7 or 10 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) end,
         recharge = function () return talent.blazing_path.enabled and ( ( legendary.erratic_fel_core.enabled and 7 or 10 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) ) or nil end,
         gcd = "off",
+        icd = 1,
         school = "physical",
 
         startsCombat = true,
         nodebuff = "rooted",
 
         readyTime = function ()
-            if prev_gcd[1].fel_rush then
-                return 3600
-            end
-            if settings.recommend_movement then return 0 end
-            if buff.unbound_chaos.up and settings.unbound_movement then return 0 end
-            return 3600
+            if prev[1].fel_rush then return 3600 end
         end,
         handler = function ()
             removeBuff( "unbound_chaos" )
@@ -1618,7 +1614,7 @@ spec:RegisterAbilities( {
         nodebuff = "rooted",
 
         readyTime = function ()
-            if settings.retreat_and_return == "fel_rush" then
+            if settings.retreat_and_return == "fel_rush" or settings.retreat_and_return == "either" and not talent.felblade.enabled then
                 return max( 0, cooldown.fel_rush.remains - 1 )
             end
             if settings.retreat_and_return == "felblade" and talent.felblade.enabled then
