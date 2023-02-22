@@ -360,8 +360,6 @@ function ns.StopConfiguration()
     HekiliNotification:SetMovable( false )
     HekiliNotification.Mover:Hide()
     -- HekiliNotification.Mover.Header:Hide()
-
-    Hekili:UpdateDisplayVisibility()
 end
 
 local function MasqueUpdate( Addon, Group, SkinID, Gloss, Backdrop, Colors, Disabled )
@@ -2168,11 +2166,9 @@ do
                 if Hekili:GetActiveSpecOption( "throttleTime" ) then
                     Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
                 else
-                    Hekili.maxFrameTime = 10 -- ms.
+                    Hekili.maxFrameTime = min( 16.6, 667 / GetFramerate() )
                 end
 
-                -- Being greedy, let's take a maximum of half of a frame at a time (less if configured above).
-                Hekili.maxFrameTime = min( Hekili.maxFrameTime, 500 / GetFramerate() )
                 thread = self.activeThread
             end
 
@@ -2737,8 +2733,6 @@ function Hekili:BuildUI()
     for disp in pairs( self.DB.profile.displays ) do
         self:CreateDisplay( disp )
     end
-
-    self:UpdateDisplayVisibility()
 
     --if Hekili.Config then ns.StartConfiguration() end
     if MasqueGroup then

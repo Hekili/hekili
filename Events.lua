@@ -250,18 +250,18 @@ do
     local requeued = {}
 
     local HandleSpellData = function( event, spellID, success )
-    local callbacks = spellCallbacks[ spellID ]
+        local callbacks = spellCallbacks[ spellID ]
 
-    if callbacks then
-        for i = #callbacks, 1, -1 do
+        if callbacks then
+            for i = #callbacks, 1, -1 do
                 callbacks[i]( event, spellID, success )
                 remove( callbacks, i )
-        end
+            end
 
-        if #callbacks == 0 then
-            spellCallbacks[ spellID ] = nil
+            if #callbacks == 0 then
+                spellCallbacks[ spellID ] = nil
+            end
         end
-    end
 
         if spellCallbacks == nil or next( spellCallbacks ) == nil then
             UnregisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
@@ -308,7 +308,7 @@ end )
 
 
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
-    if login or reload then
+    if not Hekili.PLAYER_ENTERING_WORLD and ( login or reload ) then
         Hekili.PLAYER_ENTERING_WORLD = true
         Hekili:SpecializationChanged()
         Hekili:RestoreDefaults()
@@ -337,13 +337,29 @@ do
             Hekili:SpecializationChanged()
         end )
     else
-        RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function()
-            Hekili.PendingSpecializationChange = true
-        end )
+        local specializationEvents = {
+            ACTIVE_PLAYER_SPECIALIZATION_CHANGED = 1,
+            ACTIVE_TALENT_GROUP_CHANGED = 1,
+            CONFIRM_TALENT_WIPE = 1,
+            PLAYER_TALENT_UPDATE = 1,
+            SPEC_INVOLUNTARILY_CHANGED = 1,
+            TALENTS_INVOLUNTARILY_RESET = 1
+        }
 
-        RegisterEvent( "ACTIVE_PLAYER_SPECIALIZATION_CHANGED", function()
-            Hekili.PendingSpecializationChange = true
-        end )
+        local function CheckForTalentUpdate( event )
+            local specialization = GetSpecialization()
+            local specID = specialization and GetSpecializationInfo( specialization )
+
+            if specID and specID ~= state.spec.id then
+                Hekili.PendingSpecializationChange = true
+            end
+        end
+
+        RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, CheckForTalentUpdate )
+
+        for event in pairs( specializationEvents ) do
+            RegisterEvent( event, CheckForTalentUpdate )
+        end
     end
 end
 
@@ -969,7 +985,7 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
 
-    -- C_Timer.After( 10, function () ns.Audit( "combatExit" ) end )
+    C_Timer.After( 10, function () ns.Audit( "combatExit" ) end )
     Hekili:ReleaseHolds( true )
     Hekili:ExpireTTDs( true )
     Hekili:UpdateDisplayVisibility()
@@ -2294,7 +2310,9 @@ local allTimer
 
 local function DelayedUpdateKeybindings( event )
     if allTimer and not allTimer:IsCancelled() then allTimer:Cancel() end
-    allTimer = C_Timer.After( 0.2, function() ReadKeybindings( event ) end )
+    allTimer = C_Timer.After( 0.2, function()
+        ReadKeybindings( event )
+    end )
 end
 
 --[[ local function DelayedUpdateOneKeybinding( event, slot )
@@ -2308,8 +2326,8 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
 end )
 RegisterEvent( "ACTIONBAR_SHOWGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_HIDEGRID", DelayedUpdateKeybindings )
-RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
-RegisterEvent( "UPDATE_SHAPESHIFT_FORM", DelayedUpdateKeybindings )
+-- RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
+-- RegisterEvent( "UPDATE_SHAPESHIFT_FORM", DelayedUpdateKeybindings )
 
 if Hekili.IsWrath() then
     RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", DelayedUpdateKeybindings )

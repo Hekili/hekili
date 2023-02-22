@@ -766,15 +766,12 @@ do
     end
 
     local multiSet = false
-    local rebuild = false
+    local timer
 
     local function QueueRebuildUI()
-        rebuild = true
-        C_Timer.After( 0.5, function ()
-            if rebuild then
-                Hekili:BuildUI()
-                rebuild = false
-            end
+        if timer and not timer:IsCancelled() then timer:Cancel() end
+        timer = C_Timer.NewTimer( 0.5, function ()
+            Hekili:BuildUI()
         end )
     end
 
@@ -9213,9 +9210,8 @@ function Hekili:TotalRefresh( noOptions )
             ACD:SelectGroup( "Hekili", "profiles" )
         else Hekili.OptionsReady = false end
     end
-    self:UpdateDisplayVisibility()
-    self:BuildUI()
 
+    self:BuildUI()
     self:OverrideBinds()
 
     if WeakAuras and WeakAuras.ScanEvents then

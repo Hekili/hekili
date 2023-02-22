@@ -130,24 +130,13 @@ function Hekili:OnInitialize()
         end
     end
 
-
-    --[[ NEED TO PUT VERSION UPDATING STUFF HERE.
-    if not self.DB.profile.Version or self.DB.profile.Version < 7 or not self.DB.profile.Release or self.DB.profile.Release < 20161000 then
-        self.DB:ResetDB()
-    end
-
-    self.DB.profile.Release = self.DB.profile.Release or 20170416.0 ]]
-
-    -- initializeClassModule()
     self:RestoreDefaults()
     self:RunOneTimeFixes()
-    checkImports()
 
-    ns.updateTalents()
+    checkImports()
     ns.primeTooltipColors()
 
-    self:UpdateDisplayVisibility()
-
+    self.PendingSpecializationChange = true
     callHook( "onInitialize" )
 end
 
@@ -159,11 +148,7 @@ function Hekili:ReInitialize()
     checkImports()
     self:RunOneTimeFixes()
 
-    self:SpecializationChanged()
-
-    ns.updateTalents()
-
-    self:UpdateDisplayVisibility()
+    self.PendingSpecializationChange = true
 
     callHook( "onInitialize" )
 
@@ -180,7 +165,8 @@ function Hekili:OnEnable()
     self:TotalRefresh( true )
 
     ns.ReadKeybindings()
-    self:UpdateDisplayVisibility()
+
+    self.PendingSpecializationChange = true
     self:ForceUpdate( "ADDON_ENABLED" )
 
     ns.Audit()
@@ -645,7 +631,9 @@ do
         prevMsg = msg
         prevTime = time or debugprofilestop()
 
-        self.Yield = DoYield
+        if Hekili.PLAYER_ENTERING_WORLD and not Hekili.LoadingScripts then
+            self.Yield = DoYield
+        end
     end
 
     Hekili.Yield = FirstYield
