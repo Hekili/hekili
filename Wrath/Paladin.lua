@@ -1959,7 +1959,7 @@ spec:RegisterStateTable("assigned_blessing", setmetatable( {}, {
 }))
 
 spec:RegisterStateExpr("next_primary_at", function()
-    return min(cooldown.crusader_strike.remains, cooldown.divine_storm.remains, debuff.judgement.remains)
+    return min(cooldown.crusader_strike.remains, cooldown.divine_storm.remains, cooldown.judgement_of_light.remains)
 end)
 
 spec:RegisterSetting("paladin_description", nil, {
@@ -1984,7 +1984,7 @@ spec:RegisterSetting("maintain_aura", true, {
     desc = "When enabled, selected aura will be recommended if it is down",
     width = "full",
     set = function( _, val )
-        Hekili.DB.profile.specs[ 1 ].settings.maintain_aura = val
+        Hekili.DB.profile.specs[ 2 ].settings.maintain_aura = val
     end
 })
 
@@ -2020,7 +2020,7 @@ spec:RegisterSetting("maintain_blessing", true, {
         "blessing management tool such as PallyPower.",
     width = "full",
     set = function( _, val )
-        Hekili.DB.profile.specs[ 1 ].settings.maintain_blessing = val
+        Hekili.DB.profile.specs[ 2 ].settings.maintain_blessing = val
     end
 })
 
@@ -2056,6 +2056,38 @@ spec:RegisterSetting("holy_wrath_threshold", 2, {
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 2 ].settings.holy_wrath_threshold = val
+    end
+})
+spec:RegisterSetting("primary_slack", 0.5, {
+    type = "range",
+    name = "Primary Slack (s)",
+    desc = "Amount of extra time in s to give main abilities to come off CD before using Exo or Cons",
+    width = "full",
+    min = 0,
+    softMax = 2,
+    step = 0.01,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.primary_slack = val
+    end
+})
+
+spec:RegisterSetting("hor_macros", false, {
+    type = "toggle",
+    name = "Using HoR Macros",
+    desc = "Enable when using Hand of Reckoning Macros (dont display HoR when using Glyph)",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.hor_macros = val
+    end
+})
+
+spec:RegisterSetting("fol_on_aow", false, {
+    type = "toggle",
+    name = "Flash of Light on AoW",
+    desc = "Enable to recommend Flash of Light on spare Art of War during Exo CDs",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.fol_on_aow = val
     end
 })
 
@@ -2121,7 +2153,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Retribution", 20230211, [[Hekili:1IvuVTTnq4Fl9fJeScnlN02vG6(WWEynpummTNLeT0zlUijkqsLopyOF77OOLmPmPCCs2dTXG3X77t3D8iVlom(VIJYjsi(7RwU6ULRcddcxgE)DXrY9nqCudj7rYo8h1Kk8))tqYPBALuwTs2(sgjxzcbRLNHYJJ20slLFRoEJt7U6ZOUnqgUCCubnph0AcImlJ3L(hKssof)bNjj6L2Y4DP)o8iTKghvsfsrp7HTK2sj(ZV3)1a1KnLqE8VghLXPsGtjXr7k33ueWHShz106DbhvQlDrx6nDPscFhidOIKnmHOl9WHU0Cyt72TbsoHQ2ssEBv1(G2MU0BJJizAxqbPopHTnz0YXrTcaxzBYUSCfJKQpvF0QhbbqkdYz)OUNnkl)eKa1qffqQSUln8eEkDv49euVdi1OlhT)DVg7)vN2pJvvHFAkRFVY6dYjkGvEJFWjYcturn)GPMnm9FT04JMAOCuirRetu6tZ)5ytbmGygnQQaUI)A6Hg7xmrSatP5y6hKNqYYGsGtCqYp7fF0LqcqtKb1YU0V0LkaPePIi4VBZ3bv4Y9Gtf5SQezbhefSY8teWHAkedxAYslLkP7kKtiyO)8CKqykCDRiqsbE4YKvnztZHYPprRHeHKX1O7p)8DDPvmu7DEtD6fGQPdnAfYy1cit7BTIpMc6r(oROZKO3Kp679YsRdW5qLQwH6e8PfBRZbcEA)w3FhRnIKyaBVMaUcGNK2ZPp8csvo6(BkbIleme3dXh9cX8NKplk)jtFDgVvqYrVTal5(im1xBDQXYstu0)zLRnOOl2wajeU(0bHBL7a)dJNrf9FlRwoxg7lkvCL)ZuxfZ8Fw6kCiEY3W6an4fnSQnKlCDh6fuxuTWiTRcVgtI)lH0Yj6JbcbDxTQwiUcE344LV9lCIdNjz2R0EbqJXc1XeDWyc4oKn7nEVe4holmbzRLhUi8Tc0C4jMJpx7LhUt9Tc0TuoGpvrGpDs92Hjy7u6WL2VzuGZeYz4GtXZ(OGxajefe89q(zHh5dpN4QPbQnI)WTOduzy1GHFOkU8OANNyY5IM9bkVrKOs)OdxKqlA8nl)FYcb65LTe(E3m5K45Fs0BeBo(AnNuz8LC91OFcFJPsLHoFwghHxzuRdSFRQHXLQopwPFiI6AG(Ezc6EqvFNTLwcdWicgl4)tR)5PfIFpD76312SWDE)I5RV39GlioVC7vbY5B3dmM1wVoem3PBJBvd9QmU1oDBCxfjVkmCzapq5Qw41HLll4gm3L8Uk0CBc3WDwDn)inO6INrHZldwF9Rxny9w5YGnwI6vd4OLUmO6IrVAe1MP7HraryoBAhV3yyhRdvy6zqllUXEelho4B8k3Ac4zJ7qbH9qnwC8L(hBdADOR9FCCgxC3F1A32tAWuIE4gMRmomdB)LvhTJWF2imS2K7HuyQIJXiOSTzpNF55nAcVwT0kdxvv1OlqfyUM0GTZ3SfR(0r9OeoZLV4DZ0X2mUtlrJ9jPq6MjnAD4W0MSUDklwp7aaC4iunO73P7Sj)5CN2054SvmDM2nS7ZuMRp0x6Z1J4Up3zJOpZaNjtUmkZhlD30SQL5wzbJhh9BW2)LKP7xo()o]] )
+spec:RegisterPack( "Retribution", 20230222.1, [[Hekili:1IvtVrokt4Fl5sRjAh5(JKjZ(UA65WE6DYHrRwVNTnTnTnBBmwaozAPi)BFl8NGBWjDNokkjwuq98qrrrvvW6G)jWpbjXb)CZQn3TAZMnERVF16vRd8LhlXb(LO4dOu4Jcef(7FJLCYUkjHvOKDmNHsu6qWQ4XG8mPSu8hlxMsKzv78Iz0LpZEwqOc4)Y8dl3LZ2TKIesmFjm8YsuokHuSKpQ4LCMeP(WlLf4VRIKl)rrWoRefqUehddcqtssWTZdlInOAD0F1ctDuVURJ2Z41r)F8bsojWpNiKIgJbEpQkxcF(ZgJdUaTlhNe8Nb(XCcWAckW)M6ibwkjfPcVmgpKII5mrD0I6O08JLzECC8bwbi3RB9nY(uDucEx1(9EsoIOehMurPh9QkRJE5L6iqVO0uoRo62aFuCRvodvKeY2hoOZa)kbggzFyACIIMs1(3fxBWtGr5EjSNlA4HsZpHdXfykbd0EBD06r8uZvH3t4IumQaovb9F37r)F3Q(bFdkS1uA)EL27LJuaRSnpZrYmDuHz(f9zwYA)VXmEqFgkdfquQyYK(68Bhtkahp6NgukMR4Fl9aL976iMb3A4GpjojefhJZXCKfs()CIpysqEGkIXfY6OVP5O9VvjPykmCd4ercJgkZ4yrglpzKawMMcX1R0zPXKYjPzYjeCTBNFGqH7yfvcpjbZxVkCtz8uFOeYtKcCOqY4TO72)e85Pmy2PoDDAeatR9OPDcXScboU12AC(OlOb57moDMC6nztFVtwcxDLiEkw6reHjyQkaI6g74GvfjyeCp)w77JTgHmYp2saBhGJsB40xUaxLoZFzogzdbnXnq8GtiM)M8jNYFv3whZReOeWAlG4WhWtT1g3Am00Kj6(UY5EO0g6ndhI4T3oq8MqVGOc8VKHLCcfXpgIKn70bZz)4IC4XWrsJ)fJhtenB9nRMZbFgp3lg9Po6BCFJ9JCF7(I9zC64Y5FJ7NDgi5Eg8AsriI98LCgBSfnc0ODjPxbXm4Ae8iNxVfaENNcpK3EX4HXDX(CKiBm0Q6h)s49BgDh61tTOdTHDOccj8BiQIJAJUieK0c1tmWiEAPo1mWiporYSzkCbqdoHQOpTEHta3ISztK4sGVpeZeKngUp)IRfOj4Nyw2UMd3NQY1c09eogYauaPPQsjBc2wL2Nl0vJcqkUYz4GvXZMR1fqcrgcUb6MfoK3NL2ztdy2a(9jN0tL(r96)qDx)GALJm5urZM33vIe02C5SrcAxSOUub)izHaS8YkiUQDMmkE(mnVsSPljyRuzib5My0pbPURMsxnMa18H3pkApy)bTKXLQs520MFN6bTM6g9QFe0ELekfmW3VcsjdYowOc5Z2tYX9iREqT7nGFB7YPXM)mz)2BQkxy)QWI5d5x)Onionc8zbYPl3bm6HBppe0xPDLBew9SuUXkTRCBXnplmSPahqzl845HLnnyhm7rbpl0SRc7WDsOo3i1p1fVHyPVoynH0E3G1OLxhSHOwVBah00RdAB8P3nITQP(XbabyoPVsFwRTsBx3G5f1Ll394svaWn9D4sNlN0Zjf6MDwArx9tD1IUDTT131tPxD1F3y1MT7rxsBhM0hzOJsMMsJ2kma)j9rYyr27uK(uS0lhLU1l8)BVT(d5uR5go)QaUALIRaZw7Emn(6vI24102pNtm5lUzU6GDBonenuFOcPpnPaZxEzAXL3oLfBNTlmwmeQcaDB0T2PL5mNM0PRbx6gtZUM4sv6J3xn6B1IyVe5fV9wbm7H)mNXxie67VRk3N3zYE3kmcBzwNF3TLpM2sCXnM4HMuBd(Vd]] )
 
 spec:RegisterPack( "Protection Paladin (wowtbc.gg)", 20221002.1, [[Hekili:LwvBVTTnq4FmfiibBv2YUljDOUFyFR5dDfqfOFtsuINL4cfPajLnmGH(TVJsXYK6LfdmeGiAE39CVYNlom(NXruIbI)(M1B2eUE9MGWN2882phhzovdXr1K8xjf4bbPc))pusdKBysrB6piCcLHhU)O8OjlpOO4bRbN4sc1cSw2OYrJknMA9FUA1GA4jd)1v5CIw)XIggf0RQhq(J19aVkokRHXnFteNnFu(m6JAihVgDcJsHEnbDEC0plz620AftQyMtTPzenqBtTbUPeAthcM20FPiMY20UajioIZ0gDxHb2tA4g8437kuGGKXbA8FfhLJGckgXQuwZ(9b5eTHjkcAQBtVdDbHdctGUKbCAICFc6ZeduvZjQafr8AB6U20TXrKUug)EaefGsN0BsSXMul5ZopQbcpGkpk6COfNdqciGkgGj(xBtdVIUvxBuKlRQiIo03()b9DlGUs1u3Dh6GpDJoykokwrPbKnAbO1wO(dluEvkSuNC022CDbQ5JUAszhyciPMdKrQ9KRA1Y(VEA8SRgnAibd(k9iL(8IP4BfmQeNbi5kG(wFTR0T2jLDfAHmC9KC1zQW39Hlpvo34qxN8E7SPQambmDcfQSVhoF29YgbfiyG(W1WOuYp9w5262Lhmjffk5i7CYTTU5wjPQcuxEBm0ZhNJFY1MCPqd5yGmTHf6nKC9HN)W0iBECXmbFMqcQbK)syAt)sB6toDT)PHwavOeRdoY0uzvhCEJvEkXTrHV3XFwRa8fzg5kfZfJvGrXYAS)iH0Ogp)UCh4nIhwfYNEaNSgs)K9nQtbxS5QJ8KFded41ATLPZ)T7LRTj7R4x9nqbCdqv1v36)l6a(sWQXWwG4OJeLOZBrFRQwQmwk(n98v2j7oQ8G2xqWBmLsfAWfAFB1xUNXX9tF4d4YSzwS9IvaI2FNBKzGcpJ(T9L2x6Hxhm0)(TDRWvzScbwXTTR5vXVw)7S97UTU18OnPIBbCAD99nURgVKXdMBtrF2iRjt2(D37U5B3wxmhTzAimgwpCNpv2xdNZ6UaJiYH31(DZAVhjXumMuegw)4kXzDJ719RxCVzyDIxO4UjWgclTcz36)JEIRORS2oWnugV7(r7boFE8oGhMGMt0zz69KppDURkUS3EP(8K1UQmdJRnkCzP)YtRx0c(ans8)o]] )
 
