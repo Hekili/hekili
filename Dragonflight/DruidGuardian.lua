@@ -490,7 +490,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=164812
     moonfire = {
         id = 164812,
-        duration = function () return mod_circle_dot( 16 ) end,
+        duration = function () return mod_circle_dot( 16 ) * haste end,
         tick_time = function () return mod_circle_dot( 2 ) * haste end,
         type = "Magic",
         max_stack = 1,
@@ -610,7 +610,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=202347
     stellar_flare = {
         id = 202347,
-        duration = function () return mod_circle_dot( 24 ) end,
+        duration = function () return mod_circle_dot( 24 ) * haste end,
         type = "Magic",
         max_stack = 1
     },
@@ -618,7 +618,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=164815
     sunfire = {
         id = 164815,
-        duration = function () return mod_circle_dot( 12 ) end,
+        duration = function () return mod_circle_dot( 12 ) * haste end,
         tick_time = function () return mod_circle_dot( 2 ) * haste end,
         type = "Magic",
         max_stack = 1
@@ -643,7 +643,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=192090
     thrash_bear = {
         id = 192090,
-        duration = function () return mod_circle_dot( 15 ) end,
+        duration = function () return mod_circle_dot( 15 ) * haste end,
         tick_time = function () return mod_circle_dot( 3 ) * haste end,
         max_stack = function () return legendary.luffainfused_embrace and 4 or 3 end,
     },
