@@ -628,7 +628,7 @@ spec:RegisterStateTable( "rtb_buffs_will_lose_buff", setmetatable( {}, {
     end
 } ) )
 
-spec:RegisterstateTable( "rtb_buffs_will_retain_buff", setmetatable( {}, {
+spec:RegisterStateTable( "rtb_buffs_will_retain_buff", setmetatable( {}, {
     __index = function( t, k )
         return not rtb_buffs_will_lose_buff[ k ]
     end
