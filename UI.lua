@@ -1492,6 +1492,8 @@ do
             end
         end
 
+        Hekili:ProfileCPU( "HekiliDisplay" .. id .. ":OnUpdate", d.OnUpdate )
+
         function d:UpdateAlpha()
             if not self.Active then
                 self:SetAlpha( 0 )
@@ -1698,6 +1700,8 @@ do
                 self.eventMaxType = event
             end
         end
+
+        Hekili:ProfileCPU( "HekiliDisplay" .. id .. ":OnEvent", d.OnEvent )
 
         function d:Activate()
             if not self.Active then

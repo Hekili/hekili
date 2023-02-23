@@ -712,6 +712,10 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 vesper_damage = 3
                 vesper_used = 0
 
+        -- For any Maelstrom Weapon changes, force an immediate update for responsiveness.
+        elseif spellID == 344179 then
+            Hekili:ForceUpdate( subtype, true )
+
         -- Vesper Totem heal
         elseif spellID == 324522 then
             local now = GetTime()
