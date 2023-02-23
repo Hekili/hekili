@@ -791,6 +791,7 @@ spec:RegisterAbilities( {
     -- Talent: Call upon the Light to become an avatar of retribution, causing Judgment to generate 1 additional Holy Power, allowing Hammer of Wrath to be used on any target, increasing your damage, healing and critical strike chance by 20% for 25 sec.
     avenging_wrath = {
         id = 31884,
+        flash = { 31884, 389539 },
         cast = 0,
         cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
         gcd = "off",
