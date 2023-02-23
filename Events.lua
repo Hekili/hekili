@@ -318,7 +318,6 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
 
         if state.combat == 0 and InCombatLockdown() then
             state.combat = GetTime() - 0.01
-            Hekili:UpdateDisplayVisibility()
         end
 
         local _, zone = GetInstanceInfo()
