@@ -612,8 +612,8 @@ spec:RegisterStateExpr( "rtb_buffs_longer", function ()
 end )
 
 spec:RegisterStateExpr( "rtb_buffs_will_lose", function ()
-    if rtb_buffs_shorter == rtb_buffs then return rtb_buffs_shorter end
-    return rtb_buffs_normal
+    if rtb_buffs_normal > 0 then return rtb_buffs_normal + rtb_buffs_shorter end
+    return 0
 end )
 
 spec:RegisterStateTable( "rtb_buffs_will_lose_buff", setmetatable( {}, {
