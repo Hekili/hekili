@@ -192,6 +192,11 @@ spec:RegisterAuras( {
         duration = function() return 6 + talent.extended_spikes.rank end,
         max_stack = 1
     },
+    calcified_spikes = {
+        id = 391171,
+        duration = 12,
+        max_stack = 1
+    },
     feast_of_souls = {
         id = 207693,
         duration = 6,
