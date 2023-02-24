@@ -1,4 +1,3 @@
-# APL v3.4.1-1.7.2 #
 actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
 actions.precombat+=/thorns,if=!up
 actions.precombat+=/cat_form,if=!up
