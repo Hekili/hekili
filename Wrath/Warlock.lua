@@ -846,7 +846,6 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.09,
         spend = function() return mod_suppression( 0.09 ) end,
         spendType = "mana",
 
@@ -2266,9 +2265,8 @@ spec:RegisterAbilities( {
     unstable_affliction = {
         id = 47843,
         cast = function()
-			if glyph.unstable_affliction.enabled then return 1.3 or 1.5 * haste end
-			return (1.5 * haste)
-			end,
+            return ( glyph.unstable_affliction.enabled and 1.3 or 1.5 ) * haste
+        end,
         cooldown = 0,
         gcd = "spell",
 

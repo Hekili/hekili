@@ -983,6 +983,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 237537,
+        nobuff = "divine_plea",
 
         toggle = "cooldowns",
 
@@ -1349,7 +1350,6 @@ spec:RegisterAbilities( {
         cooldown = 8,
         gcd = "off",
 
-        spend = 0.03,
         spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
         spendType = "mana",
 
@@ -1720,6 +1720,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 236249,
+        nobuff = "sacred_shield",
 
         handler = function ()
             applyBuff( "sacred_shield" )

@@ -785,7 +785,6 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.18,
         spend = function() return glyph.flash_heal.enabled and 0.162 or 0.18 end,
         spendType = "mana",
 
