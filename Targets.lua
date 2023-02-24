@@ -204,7 +204,8 @@ local enemyExclusions = {
     [193760] = true,      -- Surging Ruiner (Raszageth) -- gives bad range information.
 	[76518] = true,       -- Ritual of Bones (Shadowmoon Burial Grounds)
 	[76598] = true,       -- Ritual of Bones (Shadowmoon Burial Grounds)
-}
+	[187593] = true,      -- Primal Flames (Eganor fire elemental ability) UNVERIFIED NPC ID, NEEDS CHECK
+	[195584] = true,      -- Primal Flame (Eganor fire elemental ability)
 
 local FindExclusionAuraByID
 
