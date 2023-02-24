@@ -26,7 +26,8 @@ actions.battle_stance+=/potion
 actions.battle_stance+=/use_items
 actions.battle_stance+=/hyperspeed_acceleration
 actions.battle_stance+=/rend,if=debuff.rend.remains<=settings.rend_refresh_time
-actions.battle_stance+=/overpower
+actions.battle_stance+=/overpower,if=!optimize_overpower|(buff.taste_for_blood.up&buff.taste_for_blood.remains<1.5)|!buff.taste_for_blood.up
+actions.battle_stance+=/victory_rush
 actions.battle_stance+=/berserker_stance,if=debuff.rend.remains>12&cooldown.bladestorm.up&cooldown.recklessness.up
 actions.battle_stance+=/sweeping_strikes,use_off_gcd=1,if=active_enemies>1
 actions.battle_stance+=/bladestorm,if=debuff.rend.remains>=action.bladestorm.duration+action.overpower.gcd&(!variable.execute_phase|active_enemies>3)

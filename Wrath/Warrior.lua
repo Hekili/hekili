@@ -579,6 +579,10 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 46856, 46857 },
     },
+    victory_rush = {
+        duration = 25,
+        max_stack = 1,
+    },
     -- Damage taken reduced by $s1% and $s3% of all threat transferred to warrior.
     vigilance = {
         id = 50720,
@@ -694,6 +698,7 @@ local rend_tracker = {
     },
     target = {}
 }
+
 spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
     local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, actionType, _, _, _, _, _, critical = CombatLogGetCurrentEventInfo()
 
@@ -704,24 +709,13 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
     end
 
     if sourceGUID == state.GUID then
+        local is_rend = state.class.auras[actionType] and state.class.auras[actionType].id == 47465
         if attack_events[subtype] then
         end
 
         if application_events[subtype] then
-            print("Action: "..actionType)
-            local is_rend = actionType == state.debuff.rend.id
-            print("ID is rend = "..tostring(is_rend))
-            if not is_rend then
-                for i,v in state.debuff.rend.copy do
-                    print(i)
-                    if i == actionType then
-                        is_rend = true
-                        break
-                    end
-                end
-            end
+            
             if is_rend then
-                print("Applied")
                 ApplyRend(destGUID, GetTime())
             end
             if actionType == 60503 then
@@ -730,20 +724,16 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         end
 
         if tick_events[subtype] then
-            if actionType == 47465 then
-                if rend_tracker.target[destGUID] then
-                end
-            end
         end
 
         if removal_events[subtype] then
-            if actionType == 47465 then
+            if is_rend then
                 RemoveRend(destGUID)
             end
         end
 
         if death_events[subtype] then
-            if actionType == 47465 then
+            if is_rend then
                 RemoveRend(destGUID)
             end
         end
@@ -807,6 +797,10 @@ end
 
 spec:RegisterStateExpr("rend_tracker", function()
     return rend_tracker
+end)
+
+spec:RegisterStateExpr("next_tfb", function()
+    return rend_tracker.tfb.next
 end)
 
 
@@ -887,6 +881,7 @@ spec:RegisterHook( "reset_precast", function()
 
     if IsUsableSpell( class.abilities.overpower.id ) and enemy_dodged > 0 and now - enemy_dodged < 6 then applyBuff( "overpower_ready", enemy_dodged + 5 - now ) end
     if IsUsableSpell( class.abilities.revenge.id ) and enemy_revenge_trigger > 0 and now - enemy_revenge_trigger < 5 then applyBuff( "revenge_usable", enemy_revenge_trigger + 5 - now ) end
+    if IsUsableSpell( class.abilities.victory_rush.id ) then applyBuff( "victory_rush" ) end
 
     if now == query_time then
         if settings.predict_tfb and rend_tracker.tfb.next > 0 then
@@ -2034,6 +2029,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132342,
 
+        buff = "victory_rush",
         nobuff = "defensive_stance",
 
         handler = function()
@@ -2180,6 +2176,16 @@ spec:RegisterSetting("predict_tfb", true, {
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.predict_tfb = val
+    end
+})
+
+spec:RegisterSetting("optimize_overpower", false, {
+    type = "toggle",
+    name = "Optimize Overpower",
+    desc = "When enabled, Overpower will be deprioritized until the GCD before a subsequent Taste For Blood proc.",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.optimize_overpower = val
     end
 })
 

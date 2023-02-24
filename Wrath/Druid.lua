@@ -940,7 +940,7 @@ spec:RegisterAuras( {
     -- Physical damage done increased by $s2%.
     savage_roar = {
         id = 52610,
-        duration = 14,
+        duration = function() return 14 + (set_bonus.tier8_4pc == 1 and 8 or 0) + ((combo_points.current - 1) * 5) end,
         max_stack = 1,
         copy = { 52610 },
     },
@@ -2605,7 +2605,7 @@ spec:RegisterSetting("min_roar_offset", 14, {
     desc = "Sets the minimum number of seconds over the current rip duration required for Savage Roar recommendations",
     width = "full",
     min = 0,
-    softMax = 22,
+    softMax = 42,
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.min_roar_offset = val
