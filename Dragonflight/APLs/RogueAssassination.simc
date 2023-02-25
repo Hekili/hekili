@@ -66,8 +66,8 @@ actions.cds+=/ancestral_call,if=debuff.deathmark.up
 actions.cds+=/call_action_list,name=vanish,if=!stealthed.all&master_assassin_remains=0
 actions.cds+=/cold_blood,if=combo_points>=4
 
-# Direct damage abilities  Envenom at 4+ (5+ with DS) CP. Immediately on 2+ targets, with Deathmark, or with TB; otherwise wait for some energy. Also wait if Exsg combo is coming up.
-actions.direct+=/envenom,if=effective_combo_points>=4+talent.deeper_stratagem.enabled&(debuff.deathmark.up|debuff.shiv.up|debuff.amplifying_poison.stack>=10|energy.deficit<=25+energy.regen_combined|!variable.single_target|effective_combo_points>cp_max_spend)&(!talent.exsanguinate.enabled|variable.exsang_sync_remains>2|talent.resounding_clarity&(cooldown.echoing_reprimand.ready&combo_points>2|effective_combo_points>5))
+# Direct damage abilities  Envenom at 4+ (5+ with DS) CP. Immediately on 2+ targets, with Deathmark, or with TB; otherwise wait for some energy. Also wait if Exsg combo is coming up. Allow as filler on a dying target if CP capped.
+actions.direct+=/envenom,if=effective_combo_points>=4+talent.deeper_stratagem.enabled&(debuff.deathmark.up|debuff.shiv.up|debuff.amplifying_poison.stack>=10|energy.deficit<=25+energy.regen_combined|!variable.single_target|effective_combo_points>cp_max_spend|combo_points.deficit<1&target.time_to_die<=4+(talent.dashing_scoundrel*5)+(talent.doomblade*5)+(variable.regen_saturated*6))&(!talent.exsanguinate.enabled|variable.exsang_sync_remains>2|talent.resounding_clarity&(cooldown.echoing_reprimand.ready&combo_points>2|effective_combo_points>5))
 actions.direct+=/variable,name=use_filler,value=combo_points.deficit>1|energy.deficit<=25+energy.regen_combined|!variable.single_target
 # Apply SBS to all targets without a debuff as priority, preferring targets dying sooner after the primary target
 actions.direct+=/serrated_bone_spike,if=variable.use_filler&!dot.serrated_bone_spike_dot.ticking
