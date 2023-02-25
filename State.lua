@@ -57,7 +57,7 @@ state.tanking = false
 
 state.delay = 0
 state.delayMin = 0
-state.delayMax = 60
+state.delayMax = 15
 
 state.false_start = 0
 state.latency = 0
@@ -6500,7 +6500,7 @@ Hekili:ProfileCPU( "state.reset", state.reset )
 
 function state:SetConstraint( min, max )
     state.delayMin = min or 0
-    state.delayMax = max or 3600
+    state.delayMax = max or 15
 end
 
 

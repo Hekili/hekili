@@ -672,13 +672,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
     local debug = self.ActiveDebug
 
-    if debug then self:Debug( "Current recommendation was %s at +%.2fs.", action or "NO ACTION", wait or 60 ) end
+    if debug then self:Debug( "Current recommendation was %s at +%.2fs.", action or "NO ACTION", wait or state.delayMax ) end
     -- if debug then self:Debug( "ListCheck: Success(%s-%s)", packName, listName ) end
 
     local precombatFilter = listName == "precombat" and state.time > 0
 
     local rAction = action
-    local rWait = wait or 60
+    local rWait = wait or 15
     local rDepth = depth or 0
 
     local strict = false -- disabled for now.
@@ -781,7 +781,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     rDepth = rDepth + 1
                     -- if debug then self:Debug( "[%03d] %s ( %s - %d )", rDepth, action, listName, actID ) end
 
-                    local wait_time = 60
+                    local wait_time = state.delayMax or 15
                     local clash = 0
 
                     local known, reason = self:IsSpellKnown( action )
@@ -1333,7 +1333,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
         if debug then self:Debug( "ListActive: N (%s-%s)", packName, listName ) end
     end
 
-    if debug then self:Debug( "Exiting %s with recommendation of %s at +%.2fs.", listName or "UNKNOWN", action or "NO ACTION", wait or 60 ) end
+    if debug then self:Debug( "Exiting %s with recommendation of %s at +%.2fs.", listName or "UNKNOWN", action or "NO ACTION", wait or state.delayMax ) end
 
 
     local scriptID = listStack[ listName ]
@@ -1561,7 +1561,7 @@ function Hekili.Update()
 
                 state.delay = 0
                 state.delayMin = 0
-                state.delayMax = 60
+                state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
 
                 local hadProj = false
 
@@ -1712,7 +1712,7 @@ function Hekili.Update()
 
                                     state.delay = 0
                                     state.delayMin = 0
-                                    state.delayMax = 60
+                                    state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
 
                                     action, wait = nil, 10
 
@@ -1731,7 +1731,7 @@ function Hekili.Update()
 
                                     state.delay = 0
                                     state.delayMin = 0
-                                    state.delayMax = 60
+                                    state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
 
                                     action, wait = nil, 10
                                     break
@@ -1808,7 +1808,7 @@ function Hekili.Update()
 
                             state.delay = 0
                             state.delayMin = 0
-                            state.delayMax = 60
+                            state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
 
                             action, wait = nil, 10
 
@@ -1828,7 +1828,7 @@ function Hekili.Update()
 
                             state.delay = 0
                             state.delayMin = 0
-                            state.delayMax = 60
+                            state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
 
                             action, wait = nil, 10
 
@@ -1844,7 +1844,7 @@ function Hekili.Update()
                 state.delay = wait
 
                 if debug then
-                    Hekili:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay )
+                    Hekili:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or state.delayMax, state.offset + state.delay )
                 end
 
                 -- Hekili:Yield( "Pre-Action" )

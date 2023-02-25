@@ -149,11 +149,10 @@ local displayTemplate = {
     enabled = true,
 
     numIcons = 4,
+    forecastPeriod = 15,
 
     primaryWidth = 50,
     primaryHeight = 50,
-
-    elvuiCooldown = false,
 
     keepAspectRatio = true,
     zoom = 30,
@@ -161,6 +160,7 @@ local displayTemplate = {
     frameStrata = "LOW",
     frameLevel = 10,
 
+    elvuiCooldown = false,
     hideOmniCC = false,
 
     queue = {
@@ -1369,6 +1369,34 @@ do
                                     local display = info[2]
 
                                     if display == "Defensives" or display == "Interrupts" then
+                                        return true
+                                    end
+
+                                    return false
+                                end,
+                            },
+
+                            forecastPeriod = {
+                                type = "range",
+                                name = "Forecast Period",
+                                desc = "Specify the amount of time that the addon can look forward to generate a recommendation.  For example, in a Cooldowns display, if this is set to |cFFFFD10015|r (default), then "
+                                    .. "a cooldown ability could start to appear when it has 15 seconds remaining on its cooldown and its usage conditions are met.\n\n"
+                                    .. "If set to a very short period of time, recommendations may be prevented due to having no abilities off cooldown with resource requirements and usage conditions met.",
+                                softMin = 1.5,
+                                min = 0,
+                                softMax = 15,
+                                max = 30,
+                                step = 0.1,
+                                width = "full",
+                                order = 2,
+                                disabled = function()
+                                    return name == "Multi"
+                                end,
+                                hidden = function( info, val )
+                                    local n = #info
+                                    local display = info[2]
+
+                                    if display == "Primary" or display == "AOE" then
                                         return true
                                     end
 
