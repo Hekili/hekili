@@ -363,12 +363,17 @@ do
 end
 
 
-RegisterEvent( "ZONE_CHANGED", function()
-    local _, zone = GetInstanceInfo()
-    state.bg = zone == "pvp"
-    state.arena = zone == "arena"
-    state.torghast = IsInJailersTower()
-end )
+do
+    local function UpdateZoneInfo()
+        local _, zone = GetInstanceInfo()
+        state.bg = zone == "pvp"
+        state.arena = zone == "arena"
+        state.torghast = IsInJailersTower()
+    end
+
+    RegisterEvent( "ZONE_CHANGED", UpdateZoneInfo )
+    RegisterEvent( "ARENA_PREP_OPPONENT_SPECIALIZATIONS", UpdateZoneInfo )
+end
 
 
 -- Hide when going into the barbershop.
