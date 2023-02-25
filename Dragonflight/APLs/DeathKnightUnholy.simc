@@ -3,15 +3,8 @@ actions.precombat+=/army_of_the_dead,precombat_time=2
 
 actions+=/mind_freeze
 actions+=/strangulate
-
-## 10.0.7 PTR
-actions+=/antimagic_shell,if=ptr&incoming_magic_3s>0&runic_power.deficit>40&(pet.gargoyle.active|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>cooldown.antimagic_shell.duration)
-## actions+=/antimagic_zone,if=ptr&runic_power.deficit>70&talent.assimilation&(pet.gargoyle.active|!talent.summon_gargoyle)
-
-## 10.0.5
-actions+=/antimagic_shell,if=!ptr&incoming_magic_3s>0&(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&runic_power.deficit>40&(pet.gargoyle.active|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>cooldown.antimagic_shell.duration)
-## actions+=/antimagic_zone,if=!ptr&(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&runic_power.deficit>70&talent.assimilation&(pet.gargoyle.active|!talent.summon_gargoyle)
-
+actions+=/antimagic_shell,if=incoming_magic_3s>0&(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&runic_power.deficit>40&(pet.gargoyle.active|!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>cooldown.antimagic_shell.duration)
+## actions+=/antimagic_zone,if=(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&runic_power.deficit>70&talent.assimilation&(pet.gargoyle.active|!talent.summon_gargoyle)
 ## Variables
 actions+=/variable,name=garg_setup,op=setif,value=active_enemies>=3|cooldown.summon_gargoyle.remains>1&cooldown.apocalypse.remains>1|!talent.apocalypse&cooldown.summon_gargoyle.remains>1|!talent.summon_gargoyle
 actions+=/variable,name=apoc_timing,op=setif,value=10,value_else=2,condition=cooldown.apocalypse.remains<10&debuff.festering_wound.stack<=4
@@ -41,7 +34,7 @@ actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>=4
 actions+=/run_action_list,name=generic,strict=1,if=active_enemies<=3
 
 ## AoE Action List
-actions.aoe=any_dnd,if=!death_and_decay.ticking&(variable.adds_remain&(talent.festermight&buff.festermight.remains<3|!talent.festermight)&(death_knight.fwounded_targets>=cycle_enemies|death_knight.fwounded_targets>=8|!talent.bursting_sores&!talent.vile_contagion|raid_event.adds.exists&raid_event.adds.remains<=11&raid_event.adds.remains>5|(cooldown.vile_contagion.remains|!talent.vile_contagion)&buff.dark_transformation.up&talent.infected_claws&(buff.empower_rune_weapon.up|buff.unholy_assault.up))|fight_remains<10)
+actions.aoe+=/any_dnd,if=!death_and_decay.ticking&variable.adds_remain&(talent.festermight&buff.festermight.remains<3|!talent.festermight)&(death_knight.fwounded_targets>=cycle_enemies|death_knight.fwounded_targets=8|!talent.bursting_sores&!talent.vile_contagion|raid_event.adds.exists&raid_event.adds.remains<=11&raid_event.adds.remains>5|(cooldown.vile_contagion.remains|!talent.vile_contagion)&buff.dark_transformation.up&talent.infected_claws&(buff.empower_rune_weapon.up|buff.unholy_assault.up))|boss&fight_remains<10
 actions.aoe+=/scourge_strike,if=talent.superstrain&talent.ebon_fever&talent.plaguebringer&buff.plaguebringer.remains<gcd
 actions.aoe+=/epidemic,if=(!talent.bursting_sores|rune<1|talent.bursting_sores&debuff.festering_wound.stack=0)&!variable.pooling_runic_power&(active_enemies>=6|runic_power.deficit<30)
 actions.aoe+=/festering_strike,cycle_targets=1,if=!death_and_decay.ticking&(debuff.festering_wound.stack<4&cooldown.apocalypse.ready&cooldown.any_dnd.remains|debuff.festering_wound.stack<2&talent.bursting_sores)
