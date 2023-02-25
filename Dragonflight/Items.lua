@@ -16,7 +16,7 @@ local GetSpellCooldown = _G.GetSpellCooldown
 -- 10.0
 all:RegisterAbilities( {
     algethar_puzzle_box = {
-        cast = 2,
+        cast = function() return 2 * haste end,
         cooldown = 180,
         gcd = "spell",
 
@@ -742,10 +742,17 @@ all:RegisterAbilities( {
         toggle = "cooldowns",
     },
     manic_grieftorch = {
-        cast = 2,
+        cast = function() return 2 * haste end,
         channeled = true,
         cooldown = 120,
         gcd = "off",
+
+        cycle = function()
+            -- Recommend a different target if yours is expected to die before the channel would complete, with a little buffer added.
+            if active_enemies > 1 and fight_remains > 3 * haste and target.time_to_die < 3 * haste then
+                return "cycle"
+            end
+        end,
 
         item = 194308,
         toggle = "cooldowns",
