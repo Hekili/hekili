@@ -273,10 +273,10 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     invoke_chiji_the_red_crane = { -- TODO: Is a totem.
-        id = 325197,
+        id = 343820,
         duration = 25,
         max_stack = 1,
-        copy = "invoke_chiji"
+        copy = { "invoke_chiji", 325197 }
     },
     invoke_yulon_the_jade_serpent = { -- TODO: Is a totem.
         id = 322118,
