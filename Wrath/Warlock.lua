@@ -494,6 +494,12 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     },
+    shadowflame = {
+        id = 61291,
+        duration = 8,
+        max_stack = 1,
+        copy = { 47960 }
+    },
     -- Stunned.
     shadowfury = {
         id = 47847,
