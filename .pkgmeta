@@ -64,4 +64,4 @@ externals:
         url: https://github.com/Tga123/SpellFlashCore.git
 
 move-folders:
-    Libs/LibRangeCheck-2.0/LibRangeCheck-2.0: Libs/LibRangeCheck-2.0
+    Hekili/Libs/LibRangeCheck-2.0/LibRangeCheck-2.0: Hekili/Libs/LibRangeCheck-2.0
