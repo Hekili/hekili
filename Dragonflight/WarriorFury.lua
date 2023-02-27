@@ -1319,7 +1319,6 @@ spec:RegisterAbilities( {
             removeStack( "whirlwind" )
             if talent.tenderize.enabled then
                 applyBuff( "enrage" )
-                if talent.slaughtering_strikes.enabled then addStack( "slaughtering_strikes", nil, 3 ) end
             end
         end,
     },
