@@ -1,7 +1,6 @@
-# APL v3.4.1-1.7.0 #
 actions.precombat+=/berserker_stance,if=buff.stance.down
-actions.precombat+=/commanding_shout,if=shout_spell_commanding&buff.my_battle_shout.down&buff.my_commanding_shout.down
-actions.precombat+=/battle_shout,if=shout_spell_battle&buff.my_battle_shout.down&buff.my_commanding_shout.down
+actions.precombat+=/commanding_shout,if=assigned_shout.commanding_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
+actions.precombat+=/battle_shout,if=assigned_shout.battle_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
 
 actions+=/call_action_list,name=init
 actions+=/sunder_armor,if=variable.should_sunder&variable.emergency_sunder

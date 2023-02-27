@@ -1,24 +1,28 @@
-## Marksmanship Hunter
-## 11 February 2023
-
 actions.precombat+=/aspect_of_the_dragonhawk
-actions.precombat+=/potion
+actions.precombat+=/hunters_mark,if=down
+actions+=/run_action_list,name=aoe,if=active_enemies>=2
+actions+=/run_action_list,name=st
 
-actions+=/intimidation,if=debuff.casting.up
-actions+=/hunters_mark,if=down
-actions+=/rapid_fire
-actions+=/call_of_the_wild
-actions+=/kill_command
-## actions+=/furious_howl
-actions+=/potion
-actions+=/use_items
-actions+=/serpent_sting,if=debuff.stings.down
-actions+=/chimera_shot
-actions+=/multishot,if=active_enemies>2
-actions+=/explosive_trap,if=target.within10
-actions+=/volley,if=active_enemies>2
-actions+=/aimed_shot
-actions+=/arcane_shot
-actions+=/readiness
-actions+=/silencing_shot
-actions+=/kill_shot
+actions.st+=/steady_shot,if=action.aspect_of_the_viper.time_since<6&buff.aspect_of_the_viper.up&cooldown.chimera_shot.remains>0
+actions.st+=/aspect_of_the_dragonhawk,if=down&mana.percent>25
+actions.st+=/hunters_mark,if=down
+actions.st+=/rapid_fire,if=buff.rapid_fire.down
+actions.st+=/call_of_the_wild,if=buff.call_of_the_wild.down
+actions.st+=/potion
+actions.st+=/use_items
+actions.st+=/hyperspeed_acceleration
+actions.st+=/kill_shot
+actions.st+=/serpent_sting,if=debuff.stings.down
+actions.st+=/chimera_shot
+actions.st+=/aimed_shot
+actions.st+=/readiness,if=(cooldown.rapid_fire.remains>=150|cooldown.rapid_fire.remains>target.time_to_die)&cooldown.chimera_shot.remains>0&cooldown.aimed_shot.remains>0
+actions.st+=/arcane_shot
+actions.st+=/explosive_trap,if=settings.suggest_explosive_st
+actions.st+=/aspect_of_the_viper,if=settings.manage_mana_viper&mana.percent<=25
+actions.st+=/steady_shot
+
+actions.aoe+=/explosive_trap,if=target.within5
+actions.aoe+=/multishot
+actions.aoe+=/volley,if=active_enemies>=3
+actions.aoe+=/serpent_sting,if=debuff.stings.down
+actions.aoe+=/chimera_shot

@@ -1,4 +1,3 @@
-# APL v3.4.1-1.7.2 #
 actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
 actions.precombat+=/thorns,if=!up
 actions.precombat+=/cat_form,if=!up
@@ -47,7 +46,7 @@ actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<30&(!bearweaving_lacer
 actions.cat+=/berserk,if=cooldown.tigers_fury.remains>=15
 actions.cat+=/pool_resource,for_next=1,if=buff.savage_roar.remains<action.savage_roar.spend/10
 actions.cat+=/savage_roar,if=!up
-actions.cat+=/savage_roar,if=debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-rip_maxremains<=0&rip_maxremains+min_roar_offset<14+((combo_points.current-1)*5)
+actions.cat+=/savage_roar,if=debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-rip_maxremains<=0&rip_maxremains+min_roar_offset<class.auras.savage_roar.duration
 actions.cat+=/shred,if=buff.clearcasting.up&debuff.bleed.up&debuff.mangle.up
 actions.cat+=/mangle_cat,if=buff.clearcasting.up&!debuff.mangle.up
 actions.cat+=/pool_resource,for_next=1,if=debuff.rip.remains<action.rip.spend/10
