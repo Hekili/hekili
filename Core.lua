@@ -1212,10 +1212,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                             local extra_amt   = state.args.extra_amount or 0
 
-                                                            local next_known  = next_action and state:IsKnown( next_action )
-                                                            local next_usable, next_why = next_action and state:IsUsable( next_action )
-                                                            local next_cost   = next_action and state.action[ next_action ].cost or 0
-                                                            local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource
+                                                            local next_known, next_usable, next_why, next_cost, next_res
+                                                            if next_action then
+                                                                next_known = state:IsKnown( next_action )
+                                                                next_usable, next_why = state:IsUsable( next_action )
+                                                                next_cost = state.action[ next_action ].cost or 0
+                                                                next_res = state.GetResourceType( next_action ) or class.primaryResource
+                                                            end
 
                                                             if not next_entry then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for non-existent next entry in the APL.  Skipping." ) end

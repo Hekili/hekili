@@ -1,0 +1,35 @@
+## Demonology Warlock
+## 27 Feb 2023
+
+actions.precombat+=/fel_armor,if=buff.armor.down
+actions.precombat+=/summon_felguard,if=!pet.active
+actions.precombat+=/summon_voidwalker,if=!pet.active
+actions.precombat+=/summon_imp,if=!pet.active
+actions.precombat+=/life_tap,if=glyph.life_tap.enabled&buff.life_tap.down
+actions.precombat+=/potion
+actions.precombat+=/soul_fire,if=talent.improved_shadow_bolt.enabled
+
+actions+=/demonic_empowerment
+actions+=/potion
+actions+=/immolate,if=!ticking&target.time_to_die>dot.immolate.duration
+actions+=/group_curse,if=debuff.my_curse.down&curse_grouped
+actions+=/solo_curse,if=debuff.my_curse.down
+actions+=/corruption,if=!ticking&target.time_to_die>dot.corruption.duration
+actions+=/metamorphosis,if=fight_remains>210|boss&fight_remains<40
+actions+=/use_items
+actions+=/demon_charge,if=buff.metamorphosis.up&target.distance>8
+actions+=/immolation_aura,if=!up
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1
+actions+=/shadow_bolt,if=talent.improved_shadow_bolt.enabled&debuff.shadow_mastery.remains<cast_time+2
+actions+=/life_tap,if=glyph.life_tap.enabled&buff.life_tap.down
+actions+=/metamorphosis
+actions+=/soul_fire,if=talent.decimation.enabled&target.health.pct<35&target.time_to_die>cast_time
+actions+=/incinerate,if=buff.molten_core.up
+actions+=/shadow_bolt
+
+actions.aoe+=/metamorphosis,if=active_enemies>3
+actions.aoe+=/immolation_aura,if=!up
+actions.aoe+=/shadowflame,if=active_enemies>3
+actions.aoe+=/seed_of_corruption,if=active_enemies>3
+actions.aoe+=/corruption,cycle_targets=1,if=!ticking&active_enemies<4
+actions.aoe+=/immolate,cycle_targets=1,if=!ticking&active_enemies<4

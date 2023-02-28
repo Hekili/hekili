@@ -4790,7 +4790,7 @@ do
                 set = "SetItemOption",
                 get = "GetItemOption",
                 args = {
-                    multiItem = {
+                    --[[ multiItem = {
                         type = "description",
                         name = function ()
                             local output = "These settings will apply to |cFF00FF00ALL|r of the following similar PvP trinkets:\n\n"
@@ -4808,7 +4808,7 @@ do
                         width = "full",
                         order = 1,
                         hidden = function () return ability.key ~= "gladiators_badge" and ability.key ~= "gladiators_emblem" and ability.key ~= "gladiators_medallion" end,
-                    },
+                    }, ]]
 
                     disabled = {
                         type = "toggle",

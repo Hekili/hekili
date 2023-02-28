@@ -1006,8 +1006,8 @@ do
         local talentEvents = {
             "TRAIT_CONFIG_CREATED",
             "ACTIVE_COMBAT_CONFIG_CHANGED",
-            "PLAYER_REGEN_ENABLED",
-            "PLAYER_REGEN_DISABLED",
+            -- "PLAYER_REGEN_ENABLED",
+            -- "PLAYER_REGEN_DISABLED",
             "STARTER_BUILD_ACTIVATION_FAILED",
             "TRAIT_CONFIG_DELETED",
             "TRAIT_CONFIG_UPDATED",
@@ -1080,8 +1080,8 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.oh_actual = 0
 
     -- C_Timer.After( 10, function () ns.Audit( "combatExit" ) end )
-    Hekili:ReleaseHolds( true )
-    Hekili:ExpireTTDs( true )
+    -- Hekili:ReleaseHolds( true )
+    Hekili:ExpireTTDs()
     Hekili:UpdateDisplayVisibility()
 end )
 

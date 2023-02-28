@@ -1382,10 +1382,19 @@ spec:RegisterAbilities( {
         talent = "explosive_shot",
         startsCombat = true,
         texture = 236178,
+        velocity = 40,
+
+        caption = function()
+            if debuff.explosive_shot.up and debuff.explosive_shot.id == 60053 and debuff.explosive_shot.remains > gcd.max then return "Rank 3" end
+        end,
 
         handler = function ()
             removeStack( "lock_and_load" )
+        end,
+
+        impact = function ()
             applyDebuff( "target", "explosive_shot" )
+
         end,
 
         copy = { 53301, 60051, 60052, 60053 },
