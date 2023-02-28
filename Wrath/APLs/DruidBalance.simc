@@ -23,14 +23,15 @@ actions.fish+=/force_of_nature
 actions.fish+=/starfall
 actions.fish+=/faerie_fire,if=!up&(talent.improved_faerie_fire.enabled|group_members>=5|moving)
 actions.fish+=/insect_swarm,if=!debuff.insect_swarm.up
-actions.fish+=/typhoon,if=moving
+actions.fish+=/typhoon,if=moving&glyph.typhoon.enabled
 actions.fish+=/moonfire,if=!debuff.moonfire.up&variable.lunar_fish_now&debuff.moonfire.remains<3
 actions.fish+=/wrath,if=variable.lunar_fish_now
 actions.fish+=/starfire,if=variable.solar_fish_now
 
+actions.spam+=/hyperspeed_acceleration,use_off_gcd=1,if=buff.eclipse_lunar.up&buff.eclipse_lunar.remains>settings.lunar_cooldown_leeway
+actions.spam+=/potion,use_off_gcd=1,if=buff.eclipse_lunar.up&buff.eclipse_lunar.remains>settings.lunar_cooldown_leeway
+actions.spam+=/use_items,use_off_gcd=1,if=buff.eclipse_lunar.up&buff.eclipse_lunar.remains>settings.lunar_cooldown_leeway
 actions.spam+=/starfire,if=buff.elunes_wrath.up
-actions.spam+=/use_items,if=variable.lunar_spam_now
-actions.spam+=/hyperspeed_acceleration,if=buff.eclipse_lunar.up
 actions.spam+=/insect_swarm,if=!debuff.insect_swarm.up&(!buff.eclipse_lunar.up|buff.eclipse_lunar.remains>7)
 actions.spam+=/wrath,if=variable.solar_spam_now
 actions.spam+=/starfire,if=variable.lunar_spam_now

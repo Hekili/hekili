@@ -2605,6 +2605,27 @@ local bearweaving_instancetypes = {}
 local predatorsswiftness_spells = {}
 local flowerweaving_modes = {}
 
+spec:RegisterSetting("druid_description", nil, {
+    type = "description",
+    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
+        "to determine the optimal values for these settings for your specific character."
+})
+
+spec:RegisterSetting("druid_description_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("druid_feral_header", nil, {
+    type = "header",
+    name = "Feral: General"
+})
+
+spec:RegisterSetting("druid_feral_description", nil, {
+    type = "description",
+    name = "General Feral settings will change the parameters used in the core cat rotation.\n\n"
+})
+
 spec:RegisterSetting("min_roar_offset", 14, {
     type = "range",
     name = "Minimum Roar Offset",
@@ -2633,7 +2654,7 @@ spec:RegisterSetting("min_weave_mana", 25, {
 
 spec:RegisterSetting("optimize_rake", false, {
     type = "toggle",
-    name = "Rake: Optimize Use",
+    name = "Optimize Rake Enabled",
     desc = "When enabled, rake will only be suggested if it will do more damage than shred or if there is no active bleed",
     width = "full",
     set = function( _, val )
@@ -2641,9 +2662,24 @@ spec:RegisterSetting("optimize_rake", false, {
     end
 })
 
+spec:RegisterSetting("druid_feral_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("druid_bite_header", nil, {
+    type = "header",
+    name = "Feral: Ferocious Bite"
+})
+
+spec:RegisterSetting("druid_bite_description", nil, {
+    type = "description",
+    name = "Ferocious Bite Feral settings will change the parameters used when recommending ferocious bite.\n\n"
+})
+
 spec:RegisterSetting("ferociousbite_enabled", true, {
     type = "toggle",
-    name = "Ferocious Bite: Enabled?",
+    name = "Enabled",
     desc = "Select whether or not ferocious bite should be used",
     width = "full",
     set = function( _, val )
@@ -2690,49 +2726,24 @@ spec:RegisterSetting("max_bite_energy", 25, {
     end
 })
 
-spec:RegisterSetting("flowerweaving_enabled", false, {
-    type = "toggle",
-    name = "Flowerweaving: Enabled?",
-    desc = "Select whether or not flowerweaving should be used in AOE situations",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_enabled = val
-    end
+spec:RegisterSetting("druid_bite_footer", nil, {
+    type = "description",
+    name = "\n\n"
 })
 
-spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
-    type = "range",
-    name = "Flowerweaving: Minimum Group Size",
-    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
-    width = "full",
-    min = 0,
-    softMax = 40,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
-    end
+spec:RegisterSetting("druid_bearweaving_header", nil, {
+    type = "header",
+    name = "Feral: Bearweaving"
 })
 
-spec:RegisterSetting("flowerweaving_mode", "any", {
-    type = "select",
-    name = "Flowerweaving: Mode",
-    desc = "Select the flowerweaving mode that determines when flowerweaving is recommended\n\n" ..
-        "Selecting AOE will recommend flowerweaving in only AOE situations. Selecting Any will recommend flowerweaving in any situation.\n\n",
-    width = "full",
-    values = function()
-        table.wipe(flowerweaving_modes)
-        flowerweaving_modes.any = "any"
-        flowerweaving_modes.dungeon = "aoe"
-        return flowerweaving_modes
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mode = val
-    end
+spec:RegisterSetting("druid_bearweaving_description", nil, {
+    type = "description",
+    name = "Bearweaving Feral settings will change the parameters used when recommending bearshifting abilities.\n\n"
 })
 
 spec:RegisterSetting("bearweaving_enabled", false, {
     type = "toggle",
-    name = "Bearweaving: Enabled?",
+    name = "Enabled",
     desc = "Select whether or not bearweaving should be used",
     width = "full",
     set = function( _, val )
@@ -2742,7 +2753,7 @@ spec:RegisterSetting("bearweaving_enabled", false, {
 
 spec:RegisterSetting("bearweaving_spell", "lacerate", {
     type = "select",
-    name = "Bearweaving: Spell",
+    name = "Preferred Mode",
     desc = "Select the type of bearweaving that you want Hekili to recommend.\n\n" ..
         "In default priorities, selecting Lacerate will recommend your |cff00ccff[bear_lacerate]|r action list. " ..
         "Selecting Mangle will recommend your |cff00ccff[bear_mangle]|r action list. " ..
@@ -2759,20 +2770,9 @@ spec:RegisterSetting("bearweaving_spell", "lacerate", {
     end
 })
 
-spec:RegisterSetting("bearweaving_in_berserk", true, {
-    type = "toggle",
-    name = "Bearweaving: Maintain Lacerate In Berserk",
-    desc = "When enabled and the selected bearweaving spell is Lacerate, Hekili will recommend refreshing lacerate during berserk. " ..
-        "When disabled, lacerate stacks will be allowed to fall off.",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_in_berserk = val
-    end
-})
-
 spec:RegisterSetting("bearweaving_instancetype", "raid", {
     type = "select",
-    name = "Bearweaving: Instance Type",
+    name = "Instance Type",
     desc = "Select the type of instance that is required before the addon recomments your |cff00ccff[bear_lacerate]|r or |cff00ccff[bear_mangle]|r\n\n" ..
         "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend bearweaving in any situation.\n\n",
     width = "full",
@@ -2788,9 +2788,20 @@ spec:RegisterSetting("bearweaving_instancetype", "raid", {
     end
 })
 
+spec:RegisterSetting("bearweaving_in_berserk", true, {
+    type = "toggle",
+    name = "Maintain Lacerate In Berserk",
+    desc = "When enabled and the selected bearweaving spell is Lacerate, Hekili will recommend refreshing lacerate during berserk. " ..
+        "When disabled, lacerate stacks will be allowed to fall off.",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_in_berserk = val
+    end
+})
+
 spec:RegisterSetting("bearweaving_bossonly", true, {
     type = "toggle",
-    name = "Bearweaving: Boss Only?",
+    name = "Boss Only",
     desc = "Select whether or not bearweaving should be used in only boss fights, or whether it can be recommended in any engagement",
     width = "full",
     set = function( _, val )
@@ -2798,9 +2809,79 @@ spec:RegisterSetting("bearweaving_bossonly", true, {
     end
 })
 
+spec:RegisterSetting("druid_bearweaving_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("druid_flowerweaving_header", nil, {
+    type = "header",
+    name = "Feral: Flowerweaving"
+})
+
+spec:RegisterSetting("druid_flowerweaving_description", nil, {
+    type = "description",
+    name = "Flowerweaving Feral settings will change the parameters used when recommending flowershifting abilities.\n\n"
+})
+
+spec:RegisterSetting("flowerweaving_enabled", false, {
+    type = "toggle",
+    name = "Enabled",
+    desc = "Select whether or not flowerweaving should be used in AOE situations",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_enabled = val
+    end
+})
+
+spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
+    type = "range",
+    name = "Minimum Group Size",
+    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
+    width = "full",
+    min = 0,
+    softMax = 40,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
+    end
+})
+
+spec:RegisterSetting("flowerweaving_mode", "any", {
+    type = "select",
+    name = "Situation",
+    desc = "Select the flowerweaving mode that determines when flowerweaving is recommended\n\n" ..
+        "Selecting AOE will recommend flowerweaving in only AOE situations. Selecting Any will recommend flowerweaving in any situation.\n\n",
+    width = "full",
+    values = function()
+        table.wipe(flowerweaving_modes)
+        flowerweaving_modes.any = "any"
+        flowerweaving_modes.dungeon = "aoe"
+        return flowerweaving_modes
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mode = val
+    end
+})
+
+spec:RegisterSetting("druid_flowerweaving_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("druid_predators_header", nil, {
+    type = "header",
+    name = "Feral: Predator's Swiftness"
+})
+
+spec:RegisterSetting("druid_predators_description", nil, {
+    type = "description",
+    name = "Predator's Swiftness Feral settings will change the parameters used when recommending predator's swiftness proc spells.\n\n"
+})
+
 spec:RegisterSetting("predatorsswiftness_enabled", false, {
     type = "toggle",
-    name = "Predator's Swiftness: Enabled?",
+    name = "Enabled",
     desc = "Select whether or not predator's swiftness procs should be consumed by casting a nature spell",
     width = "full",
     set = function( _, val )
@@ -2810,7 +2891,7 @@ spec:RegisterSetting("predatorsswiftness_enabled", false, {
 
 spec:RegisterSetting("predatorsswiftness_spell", "regrowth", {
     type = "select",
-    name = "Predator's Swiftness: Spell",
+    name = "Preferred Spell",
     desc = "Select which spell should be recommended when predator's swiftness consumption is recommended",
     width = "full",
     values = function()
@@ -2825,6 +2906,38 @@ spec:RegisterSetting("predatorsswiftness_spell", "regrowth", {
     end
 })
 
+spec:RegisterSetting("druid_predators_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("druid_balance_header", nil, {
+    type = "header",
+    name = "Balance: General"
+})
+
+spec:RegisterSetting("druid_balance_description", nil, {
+    type = "description",
+    name = "General Balance settings will change the parameters used in the core balance rotation.\n\n"
+})
+
+spec:RegisterSetting("lunar_cooldown_leeway", 14, {
+    type = "range",
+    name = "Cooldown Leeway",
+    desc = "Select the minimum amount of time left on lunar eclipse for consumable and cooldown recommendations",
+    width = "full",
+    min = 0,
+    softMax = 15,
+    step = 0.1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.lunar_cooldown_leeway = val
+    end
+})
+
+spec:RegisterSetting("druid_balance_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
 
 -- Options
 spec:RegisterOptions( {
@@ -2848,7 +2961,7 @@ spec:RegisterOptions( {
 
 
 -- Default Packs
-spec:RegisterPack( "Balance (IV)", 20230227, [[Hekili:DIvsVTUnq4Fl(IHdAEQoX1j9be7dpKdn5qU4IEus0Yu2erBLIYbPqq)27qrTqXfjLCj2XCMVzFH09o3)29Wjed7(29RVFZ67V)rN7(52h3(G7b2Nzy3dzOG3rNHVKGIH)(luekjax5V6L)5g(PFgLIoXrjpTGgau4E4ybjI9sI7rZqVfOndh4(2D35E4c50jSGuCEGe(ptliNQ8ZOKukH9zLFykTY)VWVtIiUhIi5SCUudj5xGpFR2qWjOJr4tU)Y9qaWeMsqCTjm0bhvKGZ9(GIyxCkYQ8xcwqL)Ik)RiGkGlhGce1JJNxs6hv(LLv(68sXXissEL)tv(OagjnXjNHOHek25CWjbBXPxjjNR8bhKGgWIBiYLbUdR6kOpNW1cnonnPg0gLvazpETNZXBdhV2da3ua2ln0lbXkGZLeeq6FitAToHIIuOz7yQxVVJHIWjmhsCgn9k(Kxicic7vR0nCl8gNPPfzEX44Jyk442VRYFRv)KekCD5Hz4QGWboG5L)bIgdURESKpGd2Jwbt17cP(xahmNP)CgAGAWYAo1sDwKtO2yo((tRQGfb1dtDslhJ7wpni5Prgbrk3LXRtdrfrmtfDTmeajvEI)XJxPkQx9eDqije24vbCoVI9Wj4ycMNXmWZqlsSInkTVGycBndfp0khdxo1DLpgm4X4TUdvTNlJIdsJpIm67mvLTOPd0zsiJxsZUG9(GeDAqwEmI(U8Ht2HrMz2LuAs(4(mfw4zMVts8GgnXATuYsfFk3qHjIlJAZNJGkoNMYU22hgRhVFgDWg0q8sbLscqjynTQot0GALcwBoM1drBwd)Brf42zkbrKSCSxDTxDibORjOlQh7sYmes(IcPU2uriI6vzHOgeNwikDqAbt0FwPZqFnJKoijD1QJPLU(83Efy5WXZ2vHUgwgMDnTkyiugHGIxuwweHpcdgxTw4o(3cm9tpgjgwp5hTlhmcN8jDBwRNwajJEWqZatd4(IkSiT47OWM4uxHfEDzfwDi60kCxiCWCqL4ENi08wYHx1HXFxHVslXQv(chNEEz)53O7FKurwZWIV8kPF1vfTu30dtbeKbIJNO7ULwzDDpHlbqH11Hf8qbb4imOUerNy1Y9zSBM0E3gLR8w3doQBljyxGhhSWO6sE23E1AReTLLSV15KE9b7kbjdxbVh)GU7abIbrtGTnZDp8sCwkLXR8EO92ev(1xTXP6v((cPHeEUS4OCNUfi(TD)U6y)BjH7wuKTCHTngQE1emIfaAy2mjYd8hLqXW)Qx7of(n1vbVLx3SJp5vMkL9NeeblnWfh)373gC)Mj5Jhu4mQTR3KCYRJLuFhUAc02cKGOHr(BR7ZSZC284anmn0eqTd9NcOHqyjhTS0sbWeO32CRb9fwGF5IVh8dBVA3DkpPA36YY(zB)ycQ3VBZ6P8GdMbypumxLqN6zOedh3PgmB)9L2gmnhlCsWxzzSyzPACV9KBKly44aIUTjiVk00SULRurRvbklT(KlpjeYGNBPSuCZ9B0uH27px3Ws)A6lBE6bv2uE9eZwg0stNX(3TOTt8Qz8cjLLdEDK972A3KKN0jBwQZyv5R5YtCwSy1t5SSeSwA5TmEAJMeQJKdAkR80iJLcPKt2Ztpx8MnZiXtJHULKmOB6nWAyYYor9c16CGgaMzKektmIxBrIPnK2)4nAIt35BRdTb3OvNspxWG6HPzgVnVk96LsIFx6(6Oc(6jUhEgh(FOaXRO4())]] )
+spec:RegisterPack( "Balance (IV)", 20230228, [[Hekili:9IvZUTnoq4NfFXigBQw74MMgG6COOh20d9IxShLeTmvmr0FlfLnYcb9SVdffTO4pskfO9sRd5mFZhNz4mdL)g))2F)red7)J7wF3213D3N92S5(h)4g)9S3kW(7lqrVIEb(rgkf(3VIsqzr4MWBE(FwX39TKC0rokL5v0iqc)9hQijSNZ8pyf6TpcYwGJ8)XgWiNihpIfIIlJuW)B0kYXMWckjNsyV1egNtBc)l8RKecyxAEmjbSgkIrYZk9kO4O80di2FS7ptr0xdYJdyNWbxijhVLeVBrvXYfhQIJ9EHeZu31RQO572GHDkNMv2PSDrsZZZELKfaClDublY5R189R7cRfHssce)zqcPKDl3dVJKryQsrRYmfcLJ5MJV(zCaodNsWLpTDs9klqT88mIsqhsWE8fcYYVmPMXKYtk03JttqwjqcHsQYq0ajM3EgLuH3160XrjKIsCqRed84wbQmpzcGALyganeIRN7HmTUU3HmWYtGo3POG(chWVCXph8cuIqzbq6EKB3zcQKfGkksi4J7wxx)Vvy6Bbmsk(dti9t72UEkpylJhJeIqXCjHP0ZGecpHM7(QtvU(sn)VK0Z6eoj43OfeLOxxRh3L7Ss9cdhhW0LmenMqBV(k8lGo4YGlue7eKpV8gD0KeOU2uEkofrYk)IWiEsW9Ej6yDDA(zs2lRmOaVOLKcloIBrvUgNbc9mudQXfH5foZqSkk2(jdkPzQictj4GRMKFizOeCgZJKc(PZ4JbkY4HZ4NE4a8cnVQiifNEatlFA39UpsGpahXckVG6Qd3DSuxFqXIo9GwCNGtoxfb0lFjbwYRBDjvE3UqhHWL6IkJFBnSqB8DqP6HqnAILwMAVo9AXlbbADc6XtHUXqiaffHtWGzH9VTQKhQJdGePDB6Zv1QIV0YQDhPNkXmg4qlL3jYZtoMFbAPGXxqVzqerdYF)2LBqcdNw(730tvkWqHzMLdLqSsDzbeRC)HvgMZmf0v3llhihTcvtbHHygEfCI7Ec5nlZiw)ufLsGkVWmHNHuAyNRZD(G)EW1KXdn(7FoTiNYaCd)utOaIMq(CoLEnF3FF7V4JZYV0a))pANqUJl(F1FFemnkuRcXhZ1smlCjmACt4IMqxxCdRRBcDwkVj8lsAnOCUqTUsZHRKd(cJs3jKpdoVo5kWhZYuTKvazpEY954TLJNCdT6)Qgce9JQIkJrAYC)y0R33nJEdcVXG(dnHpTRj8EN(jfu4C5tZWvPDVQhl1n4G9GtWKebozwZU7XSBdoCFEgCtpm6mBBPPkQPABTh5F0jfCyOEyAtN5ySz90GmSbL1SAg)PHXOQeMTRJsf0FmL4MCG4rR8X(g)(bxZ(xsb5sd8mAViAa2q1NRxvM4S2vdCE4YL(6fllh4X0TT2vRN76BqhVuw)9VfD1MS8kzLmfThypzThvLfpRECFMMkQpZ2OyJyYHHLAyI4YON55FF8UzuBBqPsLErASQnQoJUk6pxMhAC39UnFD8PpuiN9r(83RmaeNGJgt)LZszu1KuUZA(LtQRdlAJx6xuhFqb7nWhTdPJ300pXHJZF)8goDapmOvPE7n39kDmzOLMbUBr6ysrx9cARLB5guo4sH4yVAsC5)cErVJ0Jw56kBQralxaENgr(rQunIMNYsc90gX1W1THANXefoOyD902PTU5ST9ey5WrFDtHRT8TK1pnfSekv)IsnHWOGRfUJ(Vdvt4hSEryOM8Pi3U2mTq(rDSDH4DsyZpb2CjSnnnj8WVpLTBFtt4Z6F)lBtzE1egEl1WR(4S)Sg)gJeRRFGVwhNzEz)(Rm9pkuumWqfFYe)9Fdh)FOiX8t())d]] )
 
 spec:RegisterPack( "Feral DPS (IV)", 20230224, [[Hekili:TZZwpQnsw)BHxq2Pded0KUhjGrA1OvAY3Qzhjg9TVHXnu0TvaBKTj9Kvi)BFp1fBxxovvMoz2x2inxASR6uN7xlyZKn)XM17tQiB(TPrtNfnD69JNm9(7N84M1vF9mzZ6Zj7(CYZWFKLCc(V)DsrYX6T)YVVUEBWV()hsxWxpMNSNcOY8lf7GfTz9txspw9RzBEch6paR9mz3MFBYKnRFjD)EcFPKYDBw)VYR(h)F1BBoPIlP7R3(7fP5fPvPKY6pv)P)i)5NpsQ3MS)ljz7iW7lYRsQsZZG)ISl)0js2E2NlR3McpS6fy17oMucFo)m7fJbuVi)q6raHt2XF0z2MFkP6ULF4usXNJZpedBn(10J7FF6HLdUCE4GNUC4W4Ntpuj)2Xxox)jmWu9sErwPyZ4lzxsv8H8Itox05Cg59P23Y24XJX8pgFmTS69uz0Y0S0k5vDPKeNwrovk)WgW19KxaXDbivi7bqUJCey)0x9E62ZpCi(5D7xoHIILKQ4NYZUuogehfpeF)5DlNmmGXwQsFgas8HlfFf4ixVUlp)4(8xZuErb5usAw5QLtMhkJb7tliXprskA5g0p8kj5lPzphFmzhfLiXKSKNos2leeQBco0H7jSx0SEShjWGfFjPiLcSXnhea9tKINjz7(A8LZad5UJW6HpzdeRCcIJ5V6heDyrv6jsCvE8(uYWao59eW1ifFMXm1EWqqqubCMYXYSP0SyXsu4T66RmDngaByBTyXbgw3aVgUnjdiQVoE3LIcsw1ILAlV8f6bWxKqYS7iGw7skP4i9acg0UNI0ZXfKdfKYxIpdMQWkUEvWEG31PHODkWbSpCOoNzyhGRoet(tWZsfOf)ebinsC3ohEkjlz85DvRA5CNa2fxOrFNmdR4sMPPftpljNORB2WKSOrsHdvViJCcCGTAAVoh2zGcpf74cc4OlVOS8vqaKrklJbB4JhP7ULR0Siu0TfcXTGGIZ)qEdYbQN5gXnJefEQFtcvyZyas1HUwKGUybuV6WkAOCoiLCy8(VKC8czzGGRwvamuQSE)LtNO(Iholkk861QeW1uLSNgphb4XoViExYzXbmn6DvjhbvIXS3mUij7Zl(5hN7bmG4a89qvaeWzsKNDuqeCqk9qkA2MNDj8aZ0lfBPtNQHugnlAeqhc)YJccmOOvZgcbNUEnkeER7OqiHBeBTNO6EbEE)453nTbP8XCmnOeqrYQQlWNKngA0MrTpSto5bdSgXuGhZg7tLWAaZgrTxiGgPsSB8Oybqyve)2Ql(u(EsCs2xbHOUrUpzQfpTcCAGNySO4gIhEXR6f3rsbR7b9ANYU4B8UyAlT4NFyE4OjrVJdrZeJH8gLm285qZL)Cbs4Cn(05GeHJtQKGgnb784Z5PzvLnr7woFyaMzYceZeL4yYPrjBE5YmSdu(uUyiVGIbq5MaWIUsJ(Xac39b7P8Kakt(cuKxCrEsbYYllAwDFWW9xkO6VI41cSupDItj)jh28x4bUCvXmYFwHcU7MfD3KwvSvMkPxVg4kxem3KG34qJuU9r(qvV7Bdr0y0BgGOvNP9zLvqz2l85VJIzvW)ACeTeNkgyTIdi67WGcqI3kqM941RTqPJDhEtfT0lP4X0tPnIXaehkJuLTHFyI3iPYao)mvV1e(9tShAWfyqTFiqw(R4QNtM)Dx9CMPYjaffrkiJPR9LeWbJyB3bXuBkhDbkHcaXsY8UYcc2LvDWUxyO(gg6JXkLzGQkVZCYqsjlWME8SUCUmTaYF1Q()hVvtJokDhRHohsifPqOlA1DhO96IL0VaMjfNYPoD3FHhvfOarM75xQkt3tMQdoPgSy2YgnVVZI8kpVbVwlNz(MMyisn4rGNnHfaSYxZH036zy9apH3LX3dHbzUO4uOTOylePLi)QsQD1hKlaHdFP1y0ko0vOg53afWEMaTgrnZHyGToKJgQ(K7ObFP7GkiHYxxWAE54KlfjLkaeI2YB8PoQcPuSVREtnZzbMdYAYEPpdff)8rYytcN)IyLsy1a5aFWWL4dXdNqWrFKnbgnjirxzXZcYydjFM0SJaSTSy(1RQglJAWdyRCe5otK9DtIwTuhHdhgu(s(fWxiDVDMunmDdtJEWGemxnEuN0XkRsvaAiRah44NW8H4Sd9JS3mL3arlbZrT1Slam45mFxA(Lsw2K8ZajdIBm33VdhdwoZch)kWIsNTprKrmpkMLUQ1fNTRwgPixAfjeI1iz1fRMVUHaQ1rsWnAXW24nQDayRInt)Hm18ed0TMTHH6GdYc2Wo5wJkB0BsTqTpyCcUNYH32Tl3GllQig403uNyBBtfiC8KZqWa0q6m3Z2d1VW8OSm4OMaQsKMYNFlauNzfAyaGn6KUC4)F4HLOWOO9j)gtd9(imi8wtquS9Yxtp7mrf0n5oZpXQ8M9WYiioQ64rFmEkB8O4UoddXB00kBbMKlGlex1Xjtb7LVjhstN3tNpyN4pSO8ArrfbaNIKrlP3RL08iS(9DVCd0fa8uYLJMGBGi1Vlh7eHg8pNLCJ(srOCkCLz)TfxlLjIzH(q4AN1OoKMpIW)GiBu6YPOQCBqwTCkTrEbQCSvpeHjXxmtPLecEwBRhKvtnryJ9TtAAEMeVZJXjHBPtliY6wUctiBVrmFhWLBdMdSi6qBcPUDHWlIW2aZAaD94Q(Q6kZW3QSKerrYibB3(LLam3Xm9bBw)faaW7BURur)0M1VMuqhIB5M1)6PZ5fv0B60d1B5aQElD2YLJR)0M1S)IDxUihaYSc(ZFJD3UeYPn)TMl50M163Ai(UJ53VlAx42ub4aDZn7O9gejdpyrZKxe)gfPTI71WHDfaCab8M1i3IO6TlR3oPE7W6Tb1Bz8q1K1Q3E9A9wxzfuVDffgZR3g2HzwUztC6sOmqzxa(o3k(6YkGHYdeOS511G(wZ2PH(4wYyr92oZCILrTwV9oqjGNnGBWTYd4ybP6p4KXo5MCkeDnScPSaysoJhcl3ZLysrqQYAPYRpAvE1GdYcb35yWwIQ1nqPln2MCUgksEDd(oUHRmp4SgZyrCvzKmqawIYXQXqLpo3JkLU6MCsyQiwYlPtaON4gve8qVmzK5XomtOhu382zi10UJx7A1O44QXPkfLE0okHE09)eOq)NSc9w(ULRbqh1JFPR(HgOxnWxbhrVqLctIClK3jDdR(20Se1TWou9yQ2p0EdBgCN6YpMmWAoHn09X2osKELDBT3vm2I2uL6oiJgH1Mva6bzO1wVfYLskEGZWNu9Vb4bjLunvN7e3Yyg(kKd8PMmGusdyjamZkf2N0o6ogHjbwoqDjmj15BdvjKI)zCv(UnNNv92payqei4eTq3BgnAAwsq0DKvLPE15stDYx4pVLqgvVvDExCPjxJr)nqwjAtdJXj8nrmRKMJiw2CIQn6g5N1odfPZJ2F6Eeic7Kg4cWDtDblqKxflmx8DQuTDH3MQKdxUmDjg(J1OlwI9sghWj5XBAh8cSbYfmlBQXVUVNrDKuB3)zAry0)7OKk3(1Kpe2GcsdLq3BvNoHKxg6crDS3xzK6y4Kft6tEZQ0YURmeDmovfO)c5ZFoA6jJCGyVjwUnT9j3SFuSZEKufoJyeSafWMWhBj6eCOGHZjaSXk6333FnOq3ihnvgShgaD4J9jRYUcktBhejxns9nDdJuYGYwjIQBvD0KkkhQmlgnApKvW3OFePbo(g1QLOBdFj3(5knSt0dwYTxi7FWogAglrrirTMypaP38jTusas6Hpe5jzZjoIEAPYsN1ojp5uV63wOJVBft1ozsjDJELJmhdSmntreyxjQUahjS2yn5u50ygkp7B9aWy4HE6(ZKEuk(pA1ZBRqBKw9ur)gZk(gP6TStnXkY3xw5a9QFvBDxQPwDl8VGTURDZEr08QZ6sLG))7astz2Soa4KMrCXDFuVR70o5(MR70o7atfwkoqZWIXkETVLp6PSt3P2ZReuKqkY80LguGRy6Hs(wXBx9kx5PbXBPFfKuAkEOlVaMP))rzLRo(QI(1BObQiQAtN71)KPtex(wTh89hUw)lX1kR9Y3QhM58oMGs3G)NXsEg4Jl92890WCe3mG(iN8oNm0fiDtbWe4DdnxTibKHW3KT7GEGknLfGokA2kKNomxvA682JiWurFfnVw76IlynSmupZgkzFBnJ0bhOdSTpXPFCtMmEGYVHrJ2vuNYfwahtDosVwirzOkx3aJ2g0mUM(5E1nE740KrD7(mh4qntrJU7wpGEevsd6629vy4mWPXVPU)SOVfDwh2kOTcWDiwR5WjFLk0YJJD5gqyB5Nz3hHoy0ioO)1Xlewdee2ZgFX6zAkZIIADly(vSNbqXeFKFmc73pQmnIvYVXxzDqg)Z1BFCU8H1(nmdtY4)OODvSdyK2VOQyou6b0KbM23UFmhm(Hyxy9g6K18e6GNG)NGrP1RTauw3kMJ5HIRocxoYLOT7YR3IbwVLhAavMpi3ucmVF(zc3lYrDQm1IDeOtR3p8nh3JLiB4PypsoCDNgKSQGz2Cyot9JPZgRO8B9AZqHUENd8d9j(HolPqk0nMuIFWBpz6aSzOkVa8F9cAv5OhP(KV10crpCgHC7UkhyKUngo7GCS)dEGmkB5kwWq6B3PAx(8MSLgthJbQ4hSYfEk5JI6O(H5nUxMW9tXbc6VFciUZmrt5cQyO7T7H2zHoYNO7fwHmVb)hU9bh6Ug(fOoymYbx47YQtkFo1KbTITJ00pyu(T7b3dLBRO23WONSoUinYPBKnms62dAG1aaTFYhmou1H9Wo4BpgG(bFhpDG7AnZAthyfUTPOWU2xH2Rb7bbzrJdrZQvMGLsZVcPp2(PtljB462YWgbVepxTwmAUO3EuRbwlUtMjHCbsxYfiCdB1knOfj)O1YIA6BJDqJBKlt6MLZrP(BpuxGQQIAwO2hABOPMa7hFbgwGf7cmz7pwClkSHOSzgY4bnV9yHiwMtM)FrlZz2SlBHSHAOqdLcd5FfnWBn8cR8X2dWt)n9p)pT2IHyX5ShjsTEYWvu(Rm56TN0G36ISuuuGBB4zMf1G7tG2uqp(d(43dNgiDARs0rMKsY()zg2poUjxOJNAZ6FHC4FNS7f2638F(]] )
 
