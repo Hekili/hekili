@@ -17,7 +17,7 @@ actions.init+=/variable,name=solar_can_proc,value=buff.eclipse_solar.last_applie
 actions.init+=/variable,name=lunar_fish_now,value=variable.fish_now&variable.lunar_can_proc
 actions.init+=/variable,name=solar_fish_now,value=variable.fish_now&(variable.solar_can_proc|!variable.lunar_can_proc)
 
-actions.fish+=/starfire,if=buff.elunes_wrath.up&(!variable.lunar_fish_now|buff.elunes_wrath.remains<action.starfire.gcd)
+actions.fish+=/starfire,if=buff.elunes_wrath.up&(!variable.lunar_fish_now|buff.elunes_wrath.remains<action.starfire.gcd|moving)
 actions.fish+=/moonfire,if=!debuff.moonfire.up&moving
 actions.fish+=/force_of_nature
 actions.fish+=/starfall
@@ -35,7 +35,6 @@ actions.spam+=/insect_swarm,if=!debuff.insect_swarm.up&(!buff.eclipse_lunar.up|b
 actions.spam+=/wrath,if=variable.solar_spam_now
 actions.spam+=/starfire,if=variable.lunar_spam_now
 
-actions.aoe+=/starfire,if=buff.elunes_wrath.up
 actions.aoe+=/typhoon,if=glyph.typhoon.enabled
 actions.aoe+=/starfall
 actions.aoe+=/hurricane
