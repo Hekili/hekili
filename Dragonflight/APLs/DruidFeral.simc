@@ -22,7 +22,7 @@ actions+=/call_action_list,name=builder,strict=1,if=combo_points<5
 
 # AoE
 ## actions.aoe+=/pool_resource,for_next=1
-actions.aoe+=/primal_wrath,if=combo_points>3&(dot.rip.remains<3|!funneling)
+actions.aoe+=/primal_wrath,if=combo_points>3&(dot.rip.remains<3|active_enemies-active_dot.rip>1|!funneling)
 actions.aoe+=/ferocious_bite,if=buff.apex_predators_craving.up&(!buff.sabertooth.up|(!buff.bloodtalons.stack=1))|funneling&(buff.apex_predators_craving.up|combo_points>3)
 actions.aoe+=/run_action_list,name=bloodtalons_aoe,if=variable.need_bt&active_bt_triggers>=1
 ## actions.aoe+=/pool_resource,for_next=1
