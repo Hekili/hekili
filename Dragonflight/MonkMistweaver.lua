@@ -370,6 +370,11 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
+    soothing_breath = { -- Applied by Yu'lon while active.
+        id = 343737,
+        duration = 25,
+        max_stack = 1,
+    },
     soothing_mist = {
         id = 115175,
         duration = 8,
