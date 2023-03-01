@@ -169,7 +169,7 @@ function Hekili:OnEnable()
     self.PendingSpecializationChange = true
     self:ForceUpdate( "ADDON_ENABLED" )
 
-    ns.Audit()
+    -- ns.Audit()
 end
 
 
