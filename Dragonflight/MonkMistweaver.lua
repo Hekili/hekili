@@ -272,18 +272,18 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1
     },
-    invoke_chiji_the_red_crane = { -- TODO: Is a totem.
+    invoke_chiji_the_red_crane = { -- This is not the presence of the totem, but the buff stacks gained while totem is up.
         id = 343820,
-        duration = 25,
-        max_stack = 1,
-        copy = { "invoke_chiji", 325197 }
+        duration = 20,
+        max_stack = 3,
+        copy = { "invoke_chiji", "chiji_the_red_crane", "chiji" }
     },
-    invoke_yulon_the_jade_serpent = { -- TODO: Is a totem.
+    invoke_yulon_the_jade_serpent = { -- Misleading; use pet.yulon.up or totem.yulon.up instead.
         id = 322118,
         duration = 25,
         tick_time = 1,
         max_stack = 1,
-        copy = "invoke_yulon"
+        copy = { "invoke_yulon", "yulon_the_jade_serpent", "yulon" }
     },
     invokers_delight = {
         id = 388663,
