@@ -495,7 +495,7 @@ spec:RegisterAbilities( {
             removeBuff( "teachings_of_the_monastery" )
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
-                gust_of_mist.count = gust_of_mist.count + 1
+                gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
             end
         end,
     },
@@ -781,7 +781,7 @@ spec:RegisterAbilities( {
                 if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_versatility" ) end
                 if pet.chiji.up then
                     addStack( "invoke_chiji" )
-                    gust_of_mist.count = gust_of_mist.count + 1
+                    gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
                 end
                 removeStack( "thunder_focus_tea" )
             end
@@ -859,7 +859,7 @@ spec:RegisterAbilities( {
             applyBuff( "spinning_crane_kick" )
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
-                gust_of_mist.count = gust_of_mist.count + 1
+                gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
             end
         end,
     },
