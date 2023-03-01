@@ -864,6 +864,8 @@ do
             end
         end
 
+        Hekili:ExpireTTDs()
+
         for whom, when in pairs( targets ) do
             if nodmg or now - when > grace then
                 ns.eliminateUnit( whom )
@@ -886,8 +888,6 @@ do
                 table.remove( incomingHealing, i )
             end
         end
-
-        Hekili:ExpireTTDs()
     end
 
     Hekili.AuditTimer = C_Timer.NewTicker( 1, ns.Audit )
@@ -922,10 +922,6 @@ do
         db[guid] = nil
         wipe(enemy)
         insert( recycle, enemy )
-
-        for k, v in pairs( debuffs ) do
-            if v[ guid ] then ns.trackDebuff( k, guid ) end
-        end
     end
 
 
