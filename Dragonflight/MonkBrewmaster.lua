@@ -748,7 +748,7 @@ spec:RegisterStateTable( "stagger", setmetatable( {}, {
 } ) )
 
 spec:RegisterTotem( "black_ox_statue", 627607 )
-spec:RegisterPet( "niuzao_the_black_ox", 73967, "invoke_niuzao", 25 )
+spec:RegisterPet( "niuzao_the_black_ox", 73967, "invoke_niuzao", 25, "niuzao" )
 
 --[[ Dragonflight:
 New priority increments BOC variable when list requirements are met and the last ability used was Blackout Kick.

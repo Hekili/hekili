@@ -1183,7 +1183,7 @@ spec:RegisterStateFunction( "weapons_of_order", function( c )
 end )
 
 
-spec:RegisterPet( "xuen_the_white_tiger", 63508, "invoke_xuen", 24 )
+spec:RegisterPet( "xuen_the_white_tiger", 63508, "invoke_xuen", 24, "xuen" )
 
 spec:RegisterTotem( "jade_serpent_statue", 620831 )
 spec:RegisterTotem( "white_tiger_statue", 125826 )
