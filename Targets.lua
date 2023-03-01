@@ -833,7 +833,12 @@ end
 -- Auditor should clean things up for us.
 do
     ns.Audit = function( special )
-        if not special and not Hekili.DB.profile.enabled or not Hekili:IsValidSpec() then
+        -- Don't audit while recommendations are being generated.
+        if HekiliEngine:IsThreadActive() then
+            return
+        end
+
+       if not special and not Hekili.DB.profile.enabled or not Hekili:IsValidSpec() then
             return
         end
 
@@ -853,7 +858,7 @@ do
                 if expires and now - entry.last_seen > window then
                     ns.trackDebuff( aura, unit )
                 elseif special == "combatExit" and not friendly then
-                    Hekili:Error( format( "Auditor removed an aura %d from %s after exiting combat.", aura, unit ) )
+                    -- Hekili:Error( format( "Auditor removed an aura %d from %s after exiting combat.", aura, unit ) )
                     ns.trackDebuff( aura, unit )
                 end
             end
@@ -916,7 +921,7 @@ do
 
         db[guid] = nil
         wipe(enemy)
-        insert(recycle, enemy)
+        insert( recycle, enemy )
 
         for k, v in pairs( debuffs ) do
             if v[ guid ] then ns.trackDebuff( k, guid ) end
@@ -1289,7 +1294,7 @@ do
 
         for k, v in pairs(db) do
             if all or now - v.lastSeen > 10 then
-                EliminateEnemy(k)
+                EliminateEnemy( k )
             end
         end
     end
@@ -1311,14 +1316,14 @@ do
 
             if guid and not seen[guid] then
                 if db[ guid ] and ( not UnitExists(unit) or UnitIsDead(unit) or not UnitCanAttack("player", unit) or ( UnitHealth(unit) <= 1 and UnitHealthMax(unit) > 1 ) ) then
-                    EliminateEnemy(guid)
+                    EliminateEnemy( guid )
                     -- deletions = deletions + 1
                 else
                     local health, healthMax = UnitHealth(unit), UnitHealthMax(unit)
                     health = health + UnitGetTotalAbsorbs(unit)
                     healthMax = max( 1, healthMax )
 
-                    UpdateEnemy(guid, health / healthMax, unit, now)
+                    UpdateEnemy( guid, health / healthMax, unit, now )
                     -- updates = updates + 1
                 end
                 seen[ guid ] = true

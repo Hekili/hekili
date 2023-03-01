@@ -2255,6 +2255,11 @@ do
     Hekili:ProfileFrame( "HekiliEngine", Hekili.Engine )
 
 
+    function HekiliEngine:IsThreadActive()
+        return self.activeThread and coroutine.status( self.activeThread ) == "suspended"
+    end
+
+
     function Hekili:ForceUpdate( event, super )
         self.Engine.criticalUpdate = true
         if super then self.Engine.superUpdate = true end
