@@ -26,8 +26,8 @@ actions.mitigation+=/divine_shield,if=talent.final_stand.enabled&tanking&incomin
 actions.mitigation+=/ardent_defender,if=tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
 actions.mitigation+=/lay_on_hands,if=health.pct<15
 
-actions.standard+=/shield_of_the_righteous,if=(cooldown.seraphim.remains>=5|!talent.seraphim.enabled)&(((holy_power=3&!buff.blessing_of_dusk.up&!buff.holy_avenger.up)|(holy_power=5)|buff.bastion_of_light.up|buff.divine_purpose.up))
-actions.standard+=/shield_of_the_righteous,if=(!talent.righteous_protector.enabled|buff.righteous_protector_icd.down)&(buff.bastion_of_light.up|buff.divine_purpose.up|holy_power>2)
+actions.standard+=/shield_of_the_righteous,if=(cooldown.seraphim.remains>=5|!talent.seraphim.enabled)&((holy_power=3&((!talent.of_dusk_and_dawn|buff.blessing_of_dusk.remains<3&buff.blessing_of_dawn.remains>3)&!buff.holy_avenger.up)|holy_power=5|buff.bastion_of_light.up|buff.divine_purpose.up))
+actions.standard+=/shield_of_the_righteous,if=(!talent.righteous_protector.enabled|buff.righteous_protector_icd.down)&(buff.bastion_of_light.up|buff.divine_purpose.up|holy_power>2&(!talent.of_dusk_and_dawn|buff.blessing_of_dusk.remains<3&buff.blessing_of_dawn.remains>3))
 actions.standard+=/avengers_shield,if=buff.moment_of_glory.up|!talent.moment_of_glory.enabled
 actions.standard+=/hammer_of_wrath,if=buff.aw_sentinel.up
 actions.standard+=/judgment,cycle_targets=1,if=charges=2|!talent.crusaders_judgment.enabled
