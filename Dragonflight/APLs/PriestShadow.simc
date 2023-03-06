@@ -90,7 +90,7 @@ actions.filler+=/shadow_word_pain,cycle_targets=1
 
 actions.main+=/call_action_list,name=main_variables
 actions.main+=/call_action_list,name=cds,if=fight_remains<30|time_to_die>15&(!variable.holding_crash|spell_targets.mind_sear>2)
-actions.main+=/mindbender,if=(variable.dots_up|action.shadow_crash.in_flight)&(boss&fight_remains<30|time_to_die>15)
+actions.main+=/mindbender,if=variable.dots_up&(fight_remains<30|time_to_die>15)
 # High priority Mind Blast action when using Inescapable Torment
 actions.main+=/mind_blast,if=(cooldown.mind_blast.full_recharge_time<=gcd.max+cast_time|pet.fiend.remains<=cast_time+gcd.max)&pet.fiend.active&talent.inescapable_torment&pet.fiend.remains>cast_time&spell_targets.mind_sear<=7
 actions.main+=/damnation,cycle_targets=1,if=dot.vampiric_touch.refreshable|dot.shadow_word_pain.refreshable
@@ -113,8 +113,8 @@ actions.main+=/devouring_plague,if=buff.voidform.up&variable.dots_up&variable.dp
 actions.main+=/void_torrent,cycle_targets=1,if=variable.all_dots_up&insanity<=35&!variable.holding_crash
 actions.main+=/call_action_list,name=filler
 
-actions.main_variables+=/variable,name=dots_up,op=set,value=target.time_to_die<8|dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking
-actions.main_variables+=/variable,name=all_dots_up,op=set,value=target.time_to_die<8|dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking&dot.devouring_plague.ticking
+actions.main_variables+=/variable,name=dots_up,op=set,value=(dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking)|action.shadow_crash.in_flight
+actions.main_variables+=/variable,name=all_dots_up,op=set,value=target.time_to_die<8|(dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking|action.shadow_crash.in_flight)&dot.devouring_plague.ticking
 actions.main_variables+=/variable,name=pool_for_cds,op=set,value=(cooldown.void_eruption.remains<=gcd.max*3&talent.void_eruption|cooldown.dark_ascension.up&talent.dark_ascension)|talent.void_torrent&talent.psychic_link&cooldown.void_torrent.remains<=4&(!raid_event.adds.exists&spell_targets.vampiric_touch>1|raid_event.adds.in<=5|raid_event.adds.remains>=6&!variable.holding_crash)&!buff.voidform.up
 # Set vts_applied for single-target to support Mindbender entry in cds action list.
 actions.main_variables+=/variable,name=vts_applied,op=set,value=dot.vampiric_touch.ticking
