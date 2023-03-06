@@ -104,7 +104,7 @@ actions.aoe+=/ice_strike,if=talent.swirling_maelstrom.enabled
 actions.aoe+=/stormstrike
 actions.aoe+=/ice_strike
 actions.aoe+=/lava_lash
-actions.aoe+=/flame_shock,cycle_targets=1,if=settings.filler_shock
+actions.aoe+=/flame_shock,cycle_targets=1,if=settings.filler_shock&refreshable
 actions.aoe+=/frost_shock
 actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/earth_elemental
