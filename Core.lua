@@ -1769,10 +1769,14 @@ function Hekili.Update()
                 Hekili:Yield( "After events for " .. dispName )
 
                 if not action then
+                    state.delay = 0
+                    state.delayMin = 0
+                    state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
+
                     if class.file == "DEATHKNIGHT" then
-                        state:SetConstraint( 0, max( 0.01 + state.rune.cooldown * 2, 10 ) )
+                        state:SetConstraint( 0, min( state.delayMax, max( 0.01 + state.rune.cooldown * 2, 10 ) ) )
                     else
-                        state:SetConstraint( 0, 10 )
+                        state:SetConstraint( 0, min( state.delayMax, 10 ) )
                     end
 
                     if hadProj and debug then Hekili:Debug( "[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end
