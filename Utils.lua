@@ -579,12 +579,12 @@ function ns.IsActiveSpell( id )
 end
 
 
-function Hekili:GetSpellLinkWithTexture( id, size )
+function Hekili:GetSpellLinkWithTexture( id, size, color )
     if not id then return "" end
 
     local name, _, icon = GetSpellInfo( id )
     if name and icon then
-        return "|W|T" .. icon .. ":" .. ( size or 0 ) .. ":" .. ( size or "" ) .. ":::64:64:8:56:8:56|t |cff71d5ff|Hspell:" .. id .. ":0|h[" .. name .. "]|h|r|w"
+        return "|W|T" .. icon .. ":" .. ( size or 0 ) .. ":" .. ( size or "" ) .. ":::64:64:8:56:8:56|t " .. ( color and ( "|c" .. color ) or "" ) .. name .. ( color and "|r" or "" ) .. "|w"
     end
 
     return tostring( id )
