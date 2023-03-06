@@ -11,6 +11,8 @@ local roundUp = ns.roundUp
 local FindUnitBuffByID = ns.FindUnitBuffByID
 local PTR = ns.PTR
 
+local strformat = string.format
+
 local me = Hekili:NewSpecialization( 252 )
 
 me:RegisterResource( Enum.PowerType.Runes, {
@@ -2034,15 +2036,16 @@ me:RegisterOptions( {
 
 
 me:RegisterSetting( "dps_shell", false, {
-    name = "Use |T136120:0|t Anti-Magic Shell Offensively",
-    desc = "If checked, |T136120:0|t Anti-Magic Shell will not be on the Defensives toggle by default.",
+    name = strformat( "Use %s Offensively", Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
+    desc = strformat( "If checked, %s will not be on the Defensives toggle by default.", Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
     type = "toggle",
     width = "full",
 } )
 
 me:RegisterSetting( "ob_macro", nil, {
-    name = "|T348565:0|t Outbreak Macro",
-    desc = "Using a macro makes it easier to apply |T348565:0|t Outbreak to other targets without switching targets.",
+    name = strformat( "%s Macro", Hekili:GetSpellLinkWithTexture( me.abilities.outbreak.id ) ),
+    desc = strformat( "Using a mouseover macro makes it easier to apply %s and %s to other enemies without retargeting.",
+        Hekili:GetSpellLinkWithTexture( me.abilities.outbreak.id ), Hekili:GetSpellLinkWithTexture( me.auras.virulent_plague.id ) ),
     type = "input",
     width = "full",
     multiline = true,

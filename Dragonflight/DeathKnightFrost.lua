@@ -11,6 +11,8 @@ local roundUp = ns.roundUp
 local FindUnitBuffByID = ns.FindUnitBuffByID
 local PTR = ns.PTR
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 251 )
 
 spec:RegisterResource( Enum.PowerType.Runes, {
@@ -1677,15 +1679,13 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "bos_rp", 50, {
-    name = "Runic Power for |T1029007:0|t Breath of Sindragosa",
-    desc = "The addon will recommend |T1029007:0|t Breath of Sindragosa only if you have this much Runic Power (or more).",
-    icon = 1029007,
-    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    name = strformat( "%s for %s", _G.RUNIC_POWER, Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ) ),
+    desc = strformat( "%s will only be recommended when you have at least this much |W%s|w.", Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ), _G.RUNIC_POWER ),
     type = "range",
     min = 16,
     max = 100,
     step = 1,
-    width = 1.5
+    width = "full"
 } )
 
 

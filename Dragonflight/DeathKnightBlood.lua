@@ -10,6 +10,8 @@ local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 250 )
 
 spec:RegisterResource( Enum.PowerType.Runes, {
@@ -1912,41 +1914,44 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "save_blood_shield", true, {
-    name = "Save |T237517:0|t Blood Shield",
-    desc = "If checked, the default priority (or any priority checking |cFFFFD100save_blood_shield|r) will try to avoid letting your |T237517:0|t Blood Shield fall off during lulls in damage.",
+    name = strformat( "Save %s", Hekili:GetSpellLinkWithTexture( spec.auras.blood_shield.id ) ),
+    desc = strformat( "If checked, the default priority (or any priority checking |cFFFFD100save_blood_shield|r) will try to avoid letting your %s fall off during "
+        .. "lulls in damage.", Hekili:GetSpellLinkWithTexture( spec.auras.blood_shield.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "ibf_damage", 40, {
-    name = "|T237525:0|t Icebound Fortitude Damage Threshold",
-    desc = "When set above zero, the default priority can recommend |T237525:0|t Icebound Fortitude if you've taken this percentage of your maximum health in the past 5 seconds.  Icebound Fortitude also requires "
-        .. "the Defensives toggle by default.",
+    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.icebound_fortitude.id ) ),
+    desc = strformat( "When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n"
+        .. "|W%s|w also requires the Defensives toggle by default.", Hekili:GetSpellLinkWithTexture( spec.abilities.icebound_fortitude.id ),
+        spec.abilities.icebound_fortitude.name ),
     type = "range",
     min = 0,
-    max = 100,
+    max = 200,
     step = 1,
     width = "full",
 } )
 
 spec:RegisterSetting( "rt_damage", 30, {
-    name = "|T237529:0|t Rune Tap Damage Threshold",
-    desc = "When set above zero, the default priority can recommend |T237529:0|t Rune Tap if you've taken this percentage of your maximum health in the past 5 seconds.  Rune Tap also requires "
-        .. "the Defensives toggle by default.",
+    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.rune_tap.id ) ),
+    desc = strformat( "When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n"
+        .. "|W%s|w also requires the Defensives toggle by default.", Hekili:GetSpellLinkWithTexture( spec.abilities.rune_tap.id ), spec.abilities.rune_tap.name ),
     type = "range",
     min = 0,
-    max = 100,
+    max = 200,
     step = 1,
     width = "full",
 } )
 
 spec:RegisterSetting( "vb_damage", 50, {
-    name = "|T136168:0|t Vampiric Blood Damage Threshold",
-    desc = "When set above zero, the default priority can recommend |T136168:0|t Vampiric Blood if you've taken this percentage of your maximum health in the past 5 seconds.  Vampiric Blood also requires "
-        .. "the Defensives toggle by default.",
+    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.vampiric_blood.id ) ),
+    desc = strformat( "When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n"
+        .. "|W%s|w also requires the Defensives toggle by default.", Hekili:GetSpellLinkWithTexture( spec.abilities.vampiric_blood.id ),
+        spec.abilities.vampiric_blood.name ),
     type = "range",
     min = 0,
-    max = 100,
+    max = 200,
     step = 1,
     width = "full",
 } )
