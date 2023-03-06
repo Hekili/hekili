@@ -1265,7 +1265,10 @@ spec:RegisterAbilities( {
 
         readyTime = function ()
             if prev[1].fel_rush then return 3600 end
+            if ( settings.fel_rush_charges or 1 ) == 0 then return end
+            return ( ( 1 + ( settings.fel_rush_charges or 1 ) ) - cooldown.fel_rush.charges_fractional ) * cooldown.fel_rush.recharge
         end,
+
         handler = function ()
             removeBuff( "unbound_chaos" )
             setDistance( 5 )
@@ -1580,6 +1583,11 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
+        readyTime = function ()
+            if ( settings.throw_glaive_charges or 1 ) == 0 then return end
+            return ( ( 1 + ( settings.throw_glaive_charges or 1 ) ) - cooldown.throw_glaive.charges_fractional ) * cooldown.throw_glaive.recharge
+        end,
+
         handler = function ()
             if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
             if talent.mastery_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
@@ -1700,6 +1708,23 @@ spec:RegisterSetting( "fel_rush_filler", true, {
     width = "full"
 } )
 
+spec:RegisterSetting( "fel_rush_charges_text", nil, {
+    name = "|T1247261:0|t Fel Rush can be talented for two charges. Reserving one charge for movement can be useful in some scenarios.",
+    type = "description",
+    width = "full",
+} )
+
+spec:RegisterSetting( "fel_rush_charges", 0, {
+    name = "Reserve |T1247261:0|t Fel Rush Charges",
+    desc = "If set above zero, the addon will not recommend |T1247261:0|t Fel Rush if it would leave you with fewer charges.",
+    icon = 1247261,
+    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    type = "range",
+    min = 0,
+    max = 2,
+    step = 1,
+    width = 1.5
+} )
 
 -- Vengeful Retreat
 spec:RegisterSetting( "retreat_head", nil, {
@@ -1755,5 +1780,27 @@ spec:RegisterSetting( "retreat_and_return", "off", {
     width = "full"
 } )
 
+-- Throw Glaive
+spec:RegisterSetting( "throw_glaive_head", nil, {
+    name = "|T1305159:0|t Throw Glaive",
+    type = "header"
+} )
+
+spec:RegisterSetting( "throw_glaive_charges_text", nil, {
+    name = "|T1305159:0|t Throw Glaive can be talented for two charges. Reserving one charge for |T3591588:0|t Fodder to the Flame or |T1385910:0|t Thundering procs can be useful in some scenarios.",
+    type = "description",
+    width = "full",
+} )
+spec:RegisterSetting( "throw_glaive_charges", 0, {
+    name = "Reserve |T1305159:0|t Throw Glaive Charges",
+    desc = "If set above zero, the addon will not recommend |T1305159:0|t Throw Glaive if it would leave you with fewer charges.",
+    icon = 1305159,
+    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    type = "range",
+    min = 0,
+    max = 2,
+    step = 1,
+    width = 1.5
+} )
 
 spec:RegisterPack( "Havoc", 20230227, [[Hekili:nZr)VTnU1)wmomx50uxl58r7HyxG1TdRfBDdlD7hTSSfDIqLL80hjNpyO)237rkkrsrkzlN27aoCnrK899x8rYSWEXxxCVVxgzXxCM4mDIJZTJTVf(b7f3NTFhzX978w)nVhGFiYBl8))BEpfVg)6(WypFC1PX5jRHrUpyBEOxwqC0ht82KT4(v5bHzFkAXkDya(hyP7iRx8LRVf(Xhd89jS5ssbeGZ9ntCEJ97(5ILfl)N7qaNwSmH8GxIFq0dfl)fsyXY)DE6Jfl9I8lw(Fjrpq2KJFKKLq8Ykw(mjHGR5PGuI)yamrH7lwM9i8XnbHHKK3Un(jYwsugoR1XBHF03RevR9IkwUcMAwEsebqq8MnflZtPiNkhEfmlKhc8cd(n6YGFNKLbZiDms2FfXea9KacmvV00yyUziSEoidO7pLghY(9)vcz)Lfl)hXiXKVf(X)t0Q4CKV(4JEXPWh(uuqgS6GNixAMJ36bmOx4ZE7tzeFfBHyjydY9XPit5fcycPkueLscjRZqz0Nl(mx27Clv2)PnhLSMch)GuVvHiQSa94UGmsnpvU0V6TolyTN4sxrOYugjr8hDzPoAxsqCsq2EuCfgI8vy8Zfl)RPPKO1W4)zy5FdMBCdwDmyIMed6yWWeXhOqhVJo(kVSxp7Tp5LeGe6LOv9mq)e9nsMB6(O1UPHXzx(KxyozM9LbB4do2E8JEPUPzEzJ9I276VlDO1a(Gong8WH6fUooo0p(5OX(5juZK5ZQxyJbhv85(tYoIKCtQsGKBYp1KSgQAElSJbk2lbCHiUzXjjGEfjSn5j7h7t2eSoiBU916xwEkXfmC2YyuVWhizp6L4Ul)3(TqI7Q4FfHufnSLK5TnozhyvhKooHS1lik9odGon4HGq34nUBcbyRFobB3gZIJ56b8h6quoTzG1Ds(USQpaZEn8p5BjUB9EiyDXN)jWOm0Zhmg)lEutuMF(VeKKMHdfh7dg3FnXlieJNG(ubrWxItaRBygoVgDdsawovelY6(vigC9reuQ1zEoJ3GOXDfIfqxY(wgIlKLtamv911ymfxWjloz)Wv5B2i9LXOK9Wbi0wyOBj5mwaR2ZTntD7and4o7UjoXTjLYNRi4gIMf3zD71VPK68jBbPpDgPx4mz0WkTTWQQ01pS2F8wVF94OiYEWeI4TvwWrryW6Hdk)9vW89DrYQg18vwHxRseFHZOHsg2otmtlp7fKXPLT8G9s0c)Rdhq1l8FDC(oj7oiwOl7xDddsZyqNtSOhcsDLK6mGG(jW0SE57cw)n38DUBs8EaH)LyY(zuXaUwMcaYShwnJ05DdKTX(Kzreitqk1Dxw666TBhjd8SLLwZMEnevsNy2ZF)HduBJPtgjY8ErrbpgWCsr8qfubrrKexkUaz1WocqGINlMkPNktP5MWslDjghcs57cZSmtaJDcQYdpS8lewcj3vy(OHzbBjZThki)VBY4RgAvZIItNphiC4HdTpfULogexsYE4aZurItZ3jcpfJxaBV2YEYf8Wb7xhImR7JEaV7pA0OZvYmOnrtRw2BiaIGknq4ArNyoRsixAikkFvffrN7uT4rAHhouBKPeJNzRnAeOJEeJ2LoZ5WbliWPVl5jMpjRkrGdNBpzOWiE((PSVIYSFQzXj0Aw4v8fNNvxp0B1ujuqpQ1ASO0tsEtfH4yprCjrKTqvOZHqQbGkMhw)WbnmZvqixRbTkKpCGHZXC11yo5mSCavRMQjWIwcir0Lq1(8DgSPhvRDZkfFCeuUc1ptny6KMeLH(Wip6M(mHSdLGAtzzP1aVlp451CSasQQJ6nxj74HY2vEjq4vcsi9qtovkv0dHEiaGAR2vgHUhG0EsVdf3ifkgfwY6LNDUFKM1vtEJ(iAxyF9OHd8juYtw1ih9rSIfJ6EZMTqm8gXMT0qPCiOjuYDoxlBfK9ys8ZUmDNqWwm7muxT)W(4Hd(aOtalCNlgw(1VF0qPc(MpZYHlnbh2G4CS8qGuspojPQLrD8edviEm8mbCgGDiwoslwwxvrJkRbnipgYxjfbLdyg3k5oa4vfma9uHIWjSaoNOobmrnLhKNFTSDbUW(v2pugfZSBuwLc0OI6g7cB2vs(ZY7qQB)qPAsPBHif2O43ihLgFO(zWvMMKgvTyH)rxwZCQk6OQsan7NyOPsnp7K)Ijqa8L6UcQ19swGOsPLu1sRYtIqw(zSgLHLMKsFuWAUul4hRSU7SKDA)WuJgrhVyBGo5MmESFbfxnT506DOAFpXGi)K5FRksgkhidnmPfJZk(ekzJU7zpOYbASdfHvhLklI3YVPk2fQAwhH0wyrlnkQYYGuO72IzxHHQo7iQu2garq3ly3Y(GBqeKHFdWpiJGgfq4j3vXPPdl)vmRIBwSRFabneS6yhz3u1Cc(UXnhD)gTvhwT3MjSsX)Oh20L)H4Cyvy)mH3rrGoHQPlwI5dHA33J1TJrEwMq2a7I9rwNzyTnL2k31Gtxgb)g260WTXikaTwIwHOe9rdjQWIwvPoWGNqDRUzGglfIcULMIPTTWHngPhPzUzci8q10MGhEmZLlsDeY(0klOYbNddiUldH8cclstdFMxUn4rNeFSlwQev9wooxByBhMBNaTjfAOJBMqTb)lKnE5Hz45ga2pyBnlwggt7vOgIK36Z0lXw6MYBKRTuPOnA9lK63Yqdau7uWyseBtAT7mo3sIzM)HwA(7FYzeOjKz(zGTjG8wizNHd00Sz2(WHAOnVYtrU50HCZ5hMCttd17NCZE4an6I(k3GGAUpMZ6nVLAMnaCQ9PrVRfjCFAGhMoyDcH03MomDYOf3dbstbWZpRq73T4(N9OL7KU4E6PPfSDxCc4pTbdm)kov8kmI9)lhrsXYuGGHGZ5zXBzhUgeAcYcMoU4Z)9Giyi7FgsoehbiJo8RmKy7vSJwY0WCBcyAw2)6OUGEPLKcqvSVuHLZ3FyPpUTcO1pjtyA6livBawFhO6RvXK5yEv4PCkz6NZ3vW3jGvJR2aQAMWrrXNoGnbY4DKe(XThebG4pej50jU7x0AHSCnekThUMlt)dRa5T)Ofiv2q30TzPrhj9ZrYQ)Lg8Dcy184T59R1p9LdWMa5P4N(JROkDI7(5NkuvvdHYz7N(7RaPF(PNHaPYg6wdvzvwoPA1v8QmBKDU4ZAk8ZNTVQtRUpd1siCTjuikHroX6tKU2fkqvASteUIxtdnv7uDdoma1RAPYSY(hPR8SYHo6kNoJ69maR6BKHc4QhWeeBeESN2HmO9E9qRUjEkWREGteIs9PtbOY9W70GBV0kgGLYPSPAqkpQX9ln5fxKAcKNTm12WM7KUPbkaw(6lycWg2DM6PzRgkrzyJG3q4KZxGyik)lJLX7EbnHTnydZphvfOX)8Pco5JkvbOYdACJ6gmYuojtvcw5ConbCdgA8JUubQ8pBeCgmSKoQsv)xXXmc4xQYhAhCNzMphdwOsNrNcCLpIpta2G5vFz)2sg0F2FQbJPEsLtnzm1)mbtFPR4rB1Ov3F4xDs1J2WpVAJBQxn7ksSUOCntroaLbG38sH3a4ANYrb8(2mRVZGVta33n3FK0DFbFT)73tLPjG)IygAMY7Ni57m47eW91e8iP7(cEAKPprdkHWBk)EAxSeVD4yiNf3t)j8jBXxo8ZFH(cWkJYT4pdJLeKrGn3V4EEqBdh7rXYHflhuSu(W)PFT5faOy5CSQC6OwqGWw7VrXY7GDTvS8WHIL6RTJcNkGOEWYIR38H9wrsJ4prOf3RCPhwKT4lokYh(uLGj7vRLeSJn2p0lEGOkBqRcml6)vpN2pEeM8RfHmi(CqXhf2Yh4hDq1BkgfEnp4p6CVzsP6IBcj1WkQc15AuvbAKPDzXAG3FPz8kOQ7kmOaenxJbkC4VDfukEu8Vb7pqSCLrXsh(aiGn4QKVt2ttZLFOt6(Mj1en7syGu71kuRK)JXlnHix1YrDVCg4zZvqgylKQLmkAneJzPNvdEE(hay2sS6ILVfe6uvEPwxvOnRYZQKk7GxDQIfRj1wPwQeydAdyqaq86taosSrSR1CvFb0D3yiKy5CCobTKZFm0sAQe4Lxlz3qlP2z9(PLCqDYTg9(LeFQ7aRcDnEroIXA4xteerVRneDMzbMkNnw(ELSar)9L99VQYf(ClFAMIKgp5nFkspvtLjQMtjEhiLjz1lMRoWFkmNuLRrZjeiv4I2E9lndDTTNAPqvjnEwMS1A(PzYkRrjG6l1BsLkhCz)LaqaP6s)0TeuFAtmhsEYEAQdWI6wi50BK9(v2AEXYleleP9uU3vLYvKvmC901LNQB2QLav1(Hnp1IJOKwlH6fUGhCQuEnU8ErxwDIjUJdxDHXpAwRzqKHAJHise6EdzTh3s49tsdFkugH6JFLT1MsmvT5MwdwP5DkDu5sWO(IkHP1uL4dEbr(77Qo1MDVQC3t0r12(D2ec2wUHk6VkjOaZKjJVQX(S0(A0yW4A16D1p17e4B16PByR3s5KDxBnsrVMIbC3zxuhOu)HgWtrlK4q9w4V4EHxSkM4a0o2t6P6zWPRH06BCseR5DPZRDs9rYYK0vXy15)1urQ9OQQQrOsTP95ZY1dLwEShhcViVYkK0)mreBoGHkdSNOQJ5pIdQ4X0M0L0qk5e)D4H6(YwT0vteK3d6uxJqIjxA(MDPqPCqJVrwX0nveGACgDo0VR1acJAAgA6unfGJMx5Rel2gxqnzm3fbJ1LyDeo)htO05YYmDVeyArpxPAZlmtkpyEl)NPP10jYoALpczksvRi6fdP2civ(LktXRA5kNqUCnvtntOqqtjWTnxCYzYQwmNN30DUTly5dhXZJy4rCjeYtOcpBZ1)0MrE7EZxxLpOTS)wg59Y624iXyuFElVK8auQo3UZASupgFopEMkWMVFAAnlVNRPK2FgSIzuK6iQY1FxaofvT4RbKUBxZL0iMEW0UDm6h405zey4Uh0PxingNe3281A3FXHAvbsIdwqJgVL7Mb6vVbe1Pzod7hB5M5QqhuQVZ2CR9AuuLjxK4QA(KYofHVp9A9Lu5yo3stGCLC6cQrffiNtUIAqk)(GPa2CYGJWsNBrPDEvXpR3TPWZANICZPfm9eJv24G2nq3AlogkxaU8lx)3LAUDuZTuxKYw(lXwJrR2l)cLkA7bWleQO0WPXdHN3He1iVFGEyOati9q8l3xLJ58hNJQCq3AtvYu4al(HQgNAoNrlHU0hkzsBUStLBxROrsn2X5zoQDRQeqe141Zxi2Gd(gLvEy8DQpBr2zoeTH38VcYm0Hbt8rl9maPgZrST6WESAxvnKn9UyKm8paNLxkQfAUMbD3SrBPOhMVWjIzSnFNxkB5ERhlhAe3(rcnsSLMnpyMSMxxGU5thT8PooOjFQtAiXNA5I5Dji6MnnB53Oz0I2TY)fbfbKQrB1mB(N9trS0zBAH9PW)twSoqLv2zFdXRKdjDJ4mvlvtAQu7EV8ShJtO)br(J0VS4))d]] )
