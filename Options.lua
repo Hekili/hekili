@@ -3926,7 +3926,7 @@ do
                 type = "toggle",
                 name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
                 desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
-                    "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
+                    "issues for some specializations, if other abilities depend on you using |W" .. ( ability.item and ability.link or k ) .. "|w." end,
                 width = 1.5,
                 order = 1,
             },
@@ -3934,7 +3934,7 @@ do
             boss = {
                 type = "toggle",
                 name = "Boss Encounter Only",
-                desc = "If checked, the addon will not recommend " .. k .. " unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
+                desc = "If checked, the addon will not recommend |W" .. k .. "|w unless you are in a boss fight (or encounter).  If left unchecked, |W" .. k .. "|w can be recommended in any type of fight.",
                 width = 1.5,
                 order = 1.1,
             },
@@ -3943,7 +3943,7 @@ do
                 type = "input",
                 name = "Override Keybind Text",
                 desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
-                    "This can be helpful if the addon incorrectly detects your keybindings.",
+                    "This can be helpful if your keybinds are detected incorrectly or is found on multiple action bars.",
                 validate = function( info, val )
                     val = val:trim()
                     if val:len() > 20 then return "Keybindings should be no longer than 20 characters in length." end
@@ -4825,14 +4825,14 @@ do
                 specNameByID[ id ] = sName
                 specIDByName[ sName ] = id
 
-                specs[ id ] = '|T' .. texture .. ':0|t ' .. name
+                specs[ id ] = Hekili:ZoomedTextureWithText( texture, name )
 
                 local options = {
                     type = "group",
                     -- name = specs[ id ],
                     name = name,
                     icon = texture,
-                    -- iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+                    iconCoords = { 0.15, 0.85, 0.15, 0.85 },
                     desc = description,
                     order = 50 + i,
                     childGroups = "tab",
@@ -4877,7 +4877,7 @@ do
                                         for key, pkg in pairs( self.DB.profile.packs ) do
                                             local pname = pkg.builtIn and "|cFF00B4FF" .. key .. "|r" or key
                                             if pkg.spec == id then
-                                                packs[ key ] = '|T' .. texture .. ':0|t ' .. pname
+                                                packs[ key ] = Hekili:ZoomedTextureWithText( texture, pname )
                                             end
                                         end
 
@@ -4968,9 +4968,9 @@ do
 
                                         if Hekili:HasPetBasedTargetSpell() then
                                             local spell = Hekili:GetPetBasedTargetSpell()
-                                            local name, _, tex = GetSpellInfo( spell )
+                                            local link = Hekili:GetSpellLinkWithTexture( spell )
 
-                                            msg = msg .. "\n\n|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r is on your action bar and will be used for all your " .. UnitClass("player") .. " pets."
+                                            msg = msg .. "\n\n" .. link .. "|w|r is on your action bar and will be used for all your " .. UnitClass( "player" ) .. " pets."
                                         else
                                             msg = msg .. "\n\n|cFFFF0000Requires pet ability on one of your action bars.|r"
                                         end
@@ -5001,7 +5001,7 @@ do
 
                                             if not spells then return " " end
 
-                                            out = out .. "For %s, |T%d:0|t |cFFFFD100%s|r is recommended due to its range.  It will work for all your pets."
+                                            out = out .. "For %s, %s is recommended due to its range.  It will work for all your pets."
 
                                             if spells.count > 1 then
                                                 out = out .. "\nAlternative(s): "
@@ -5009,20 +5009,20 @@ do
 
                                             local n = 1
 
-                                            local name, _, tex = GetSpellInfo( spells.best )
-                                            out = format( out, UnitClass( "player" ), tex, name )
+                                            local link = Hekili:GetSpellLinkWithTexture( spells.best )
+                                            out = format( out, UnitClass( "player" ), link )
                                             for spell in pairs( spells ) do
                                                 if type( spell ) == "number" and spell ~= spells.best then
                                                     n = n + 1
 
-                                                    name, _, tex = GetSpellInfo( spell )
+                                                    link = Hekili:GetSpellLinkWithTexture( spell )
 
                                                     if n == 2 and spells.count == 2 then
-                                                        out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
+                                                        out = out .. link .. "."
                                                     elseif n ~= spells.count then
-                                                        out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r, "
+                                                        out = out .. link .. ", "
                                                     else
-                                                        out = out .. "and |T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
+                                                        out = out .. "and " .. link .. "."
                                                     end
                                                 end
                                             end
@@ -5986,6 +5986,7 @@ do
                     icon = function()
                         return class.specs[ data.spec ].texture
                     end,
+                    iconCoords = { 0.15, 0.85, 0.15, 0.85 },
                     childGroups = "tab",
                     order = 100 + count,
                     args = {
