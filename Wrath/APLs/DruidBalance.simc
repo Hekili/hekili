@@ -1,4 +1,3 @@
-# APL v3.4.1-1.6.4 #
 actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
 actions.precombat+=/thorns,if=!up
 actions.precombat+=/moonkin_form,if=!up
@@ -18,17 +17,21 @@ actions.init+=/variable,name=solar_can_proc,value=buff.eclipse_solar.last_applie
 actions.init+=/variable,name=lunar_fish_now,value=variable.fish_now&variable.lunar_can_proc
 actions.init+=/variable,name=solar_fish_now,value=variable.fish_now&(variable.solar_can_proc|!variable.lunar_can_proc)
 
+actions.fish+=/starfire,if=buff.elunes_wrath.up&(!variable.lunar_fish_now|buff.elunes_wrath.remains<action.starfire.gcd|moving)
 actions.fish+=/moonfire,if=!debuff.moonfire.up&moving
 actions.fish+=/force_of_nature
 actions.fish+=/starfall
 actions.fish+=/faerie_fire,if=!up&(talent.improved_faerie_fire.enabled|group_members>=5|moving)
 actions.fish+=/insect_swarm,if=!debuff.insect_swarm.up
+actions.fish+=/typhoon,if=moving&glyph.typhoon.enabled
 actions.fish+=/moonfire,if=!debuff.moonfire.up&variable.lunar_fish_now&debuff.moonfire.remains<3
 actions.fish+=/wrath,if=variable.lunar_fish_now
 actions.fish+=/starfire,if=variable.solar_fish_now
 
-actions.spam+=/use_items,if=variable.lunar_spam_now
-actions.spam+=/hyperspeed_acceleration,if=buff.eclipse_lunar.up
+actions.spam+=/hyperspeed_acceleration,use_off_gcd=1,if=buff.eclipse_lunar.up&buff.eclipse_lunar.remains>settings.lunar_cooldown_leeway
+actions.spam+=/potion,use_off_gcd=1,if=buff.eclipse_lunar.up&buff.eclipse_lunar.remains>settings.lunar_cooldown_leeway
+actions.spam+=/use_items,use_off_gcd=1,if=buff.eclipse_lunar.up&buff.eclipse_lunar.remains>settings.lunar_cooldown_leeway
+actions.spam+=/starfire,if=buff.elunes_wrath.up
 actions.spam+=/insect_swarm,if=!debuff.insect_swarm.up&(!buff.eclipse_lunar.up|buff.eclipse_lunar.remains>7)
 actions.spam+=/wrath,if=variable.solar_spam_now
 actions.spam+=/starfire,if=variable.lunar_spam_now
