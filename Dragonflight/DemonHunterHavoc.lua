@@ -1787,7 +1787,7 @@ spec:RegisterSetting( "throw_glaive_head", nil, {
 } )
 
 spec:RegisterSetting( "throw_glaive_charges_text", nil, {
-    name = "|T1305159:0|t Throw Glaive can be talented for two charges. Reserving one charge for |T3591588:0|t Fodder to the Flame or |T1385910:0|t Thundering procs can be useful in some scenarios.",
+    name = "Reserving one charge of |T1305159:0|t Throw Glaive for |T3591588:0|t Fodder to the Flame or |T1385910:0|t Thundering procs can be useful in some scenarios.",
     type = "description",
     width = "full",
 } )
