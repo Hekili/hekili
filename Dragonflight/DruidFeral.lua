@@ -9,6 +9,8 @@ local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 103 )
 
 spec:RegisterResource( Enum.PowerType.Energy )
@@ -2510,8 +2512,9 @@ spec:RegisterAbilities( {
 } ) ]]
 
 spec:RegisterSetting( "rip_duration", 9, {
-    name = "|T132152:0|t Rip Duration",
-    desc = "If set above 0, the addon will not recommend |T132152:0|t Rip if your target will die within the timeframe specified.",
+    name = strformat( "%s Duration", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
+    desc = strformat( "If set above 0, %s will not be recommended if the target will die within the timeframe specified.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
     type = "range",
     min = 0,
     max = 18,
@@ -2520,12 +2523,20 @@ spec:RegisterSetting( "rip_duration", 9, {
 } )
 
 spec:RegisterSetting( "use_funnel", false, {
-    name = "|T132127:0|t Ferocious Bite Funnel",
+    name = strformat( "%s Funnel", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
     desc = function()
-        return "If checked, when |T132127:0|t Taste for Blood and |T132138:0|t Relentless Predator are talented and |T1392547:0|t Tear Open Wounds is |cFFFFD100not|r talented, the addon will recommend |T132127:0|t Ferocious Bite over |T1392547:0|t Primal Wrath unless |T132152:0|t Rip needs to be refreshed.\n\n"
-            .. ( state.talent.taste_for_blood.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires |T132127:0|t Taste for Blood\n"
-            .. ( state.talent.relentless_predator.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires |T132138:0|t Relentless Predator\n"
-            .. ( not state.talent.tear_open_wounds.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires no |T1392547:0|t Tear Open Wounds"
+        return strformat( "If checked, when %s and %s are talented and %s is |cFFFFD100not|r talented, %s will be recommended over %s unless |W%s|w needs to be "
+            .. "refreshed.\n\n"
+            .. "Requires %s\n"
+            .. "Requires %s\n"
+            .. "Requires |W|c%sno %s|r|w",
+            Hekili:GetSpellLinkWithTexture( spec.talents.taste_for_blood[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.relentless_predator[2] ),
+            Hekili:GetSpellLinkWithTexture( spec.talents.tear_open_wounds[2] ), Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ),
+            Hekili:GetSpellLinkWithTexture( spec.abilities.primal_wrath.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ),
+            Hekili:GetSpellLinkWithTexture( spec.talents.taste_for_blood[2], nil, state.talent.taste_for_blood.enabled ),
+            Hekili:GetSpellLinkWithTexture( spec.talents.relentless_predator[2], nil, state.talent.relentless_predator.enabled ),
+            ( not state.talent.tear_open_wounds.enabled and "FF00FF00" or "FFFF0000" ),
+            Hekili:GetSpellLinkWithTexture( spec.talents.tear_open_wounds[2], nil, not state.talent.tear_open_wounds.enabled ) )
     end,
     type = "toggle",
     width = "full"
@@ -2536,9 +2547,11 @@ spec:RegisterStateExpr( "funneling", function()
 end )
 
 spec:RegisterSetting( "allow_shadowmeld", nil, {
-    name = "Allow |T132089:0|t Shadowmeld",
-    desc = "If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  " ..
-        "Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat).",
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ) ),
+    desc = strformat( "If checked, %s can be recommended for |W%s|w players if its conditions for use are met.\n\n"
+            .. "Your stealth-based abilities can be used in |W%s|w, even if your action bar does not change. |W%s|w can only be recommended in boss fights or when you "
+            .. "are in a group (to avoid resetting combat).", Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ), C_CreatureInfo.GetRaceInfo(4).raceName,
+            spec.auras.shadowmeld.name, spec.auras.shadowmeld.name ),
     type = "toggle",
     width = "full",
     get = function () return not Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled end,
