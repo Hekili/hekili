@@ -576,7 +576,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            summonTotem( "chiji", 25 )
+            summonTotem( "chiji", nil, 25 )
         end,
 
         copy = "invoke_chiji"
@@ -597,7 +597,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            summonTotem( "yulon", 25 )
+            summonTotem( "yulon", nil, 25 )
         end,
 
         copy = "invoke_yulon"
