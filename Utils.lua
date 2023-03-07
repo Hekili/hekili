@@ -582,9 +582,9 @@ end
 function Hekili:GetSpellLinkWithTexture( id, size, color )
     if not id then return "" end
 
-    local name, _, icon = GetSpellInfo( id )
-    if name and icon then
+    local name, _, _, _, _, _, _, icon = GetSpellInfo( id )
 
+    if name and icon then
         if type( color ) == "boolean" then
             color = color and "ff00ff00" or "ffff0000"
         end
