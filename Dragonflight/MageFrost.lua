@@ -7,6 +7,8 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 64 )
 
 -- spec:RegisterResource( Enum.PowerType.ArcaneCharges )
@@ -1361,8 +1363,9 @@ spec:RegisterOptions( {
 } ) ]]
 
 spec:RegisterSetting( "manual_water_jet", false, {
-    name = "Manually Control |T1698701:0|t Water Jet (Water Elemental)",
-    desc = "If checked, |T1698701:0|t Water Jet can be recommended by the addon.  This spell is normally auto-cast by your Water Elemental.  You will want to disable its auto-cast before using this feature.",
+    name = strformat( "%s: Manual Control", Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
+    desc = strformat( "If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet.\n\n"
+        .. "You will need to disable its auto-cast before using this feature.", Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
     type = "toggle",
     width = "full",
 } )

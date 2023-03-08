@@ -7,6 +7,8 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 63 )
 
 spec:RegisterResource( Enum.PowerType.ArcaneCharges )
@@ -2053,25 +2055,18 @@ spec:RegisterOptions( {
 } )
 
 
---[[ spec:RegisterSetting( "fire_at_will", false, {
-    name = "Accept Fire Disclaimer",
-    desc = "The Fire Mage module is disabled by default, as it tends to require *much* more CPU usage than any other specialization module.  If you wish to use the Fire module, " ..
-        "can check this box and reload your UI (|cFFFFD100/reload|r) and the module will be available again.",
-    type = "toggle",
-    width = "full"
-} ) ]]
-
 spec:RegisterSetting( "pyroblast_pull", false, {
-    name = "Allow |T135808:0|t Pyroblast Hardcast Pre-Pull",
-    desc = "If checked, the addon will recommend an opener |T135808:0|t Pyroblast against bosses, if included in the current priority.",
+    name = strformat( "%s: Non-Instant Opener", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ) ),
+    desc = strformat( "If checked, a non-instant %s may be recommended as an opener against bosses.", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "prevent_hardcasts", false, {
-    name = "Prevent |T135808:0|t Pyroblast and |T135812:0|t Fireball Hardcasts While Moving",
-    desc = "If checked, the addon will not recommend |T135808:0|t Pyroblast or |T135812:0|t Fireball if they have a cast time and you are moving.\n\n" ..
-        "Instant |T135808:0|t Pyroblasts will not be affected.",
+    name = strformat( "%s and %s: Instant-Only When Moving", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ),
+    desc = strformat( "If checked, non-instant %s and %s casts will not be recommended while you are moving.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ),
     type = "toggle",
     width = "full"
 } )
