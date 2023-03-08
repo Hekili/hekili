@@ -766,7 +766,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            if talent.temporal_compression.enabled then addStack("temporal_compression") end
+            if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
         end,
     },
 } )
@@ -780,17 +780,20 @@ spec:RegisterSetting( "experimental_msg", nil, {
 } )
 
 spec:RegisterSetting( "use_deep_breath", true, {
-    name = "Use |T4622450:0|t Deep Breath",
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.abilities.deep_breath.id ) ),
     type = "toggle",
-    desc = "If checked, the addon may recommend |T4622450:0|t Deep Breath, which causes your character to fly forward while damaging enemies.  This ability requires your Cooldowns toggle to be active by default.\n\n"
-        .. "Disabling this setting will prevent the addon from ever recommending Deep Breath, which you may prefer due to the movement (or for any other reason).",
+    desc = strformat( "If checked, %s may be recommended, which will force your character to select a destination and move.  By default, %s requires your Cooldowns "
+        .. "toggle to be active.\n\n"
+        .. "If unchecked, |W%s|w will never be recommended, which may result in lost DPS if left unused for an extended period of time.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.deep_breath.id ), spec.abilities.deep_breath.name, spec.abilities.deep_breath.name ),
     width = "full",
 } )
 
 spec:RegisterSetting( "use_unravel", false, {
-    name = "Use |T4630499:0|t Unravel",
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.abilities.unravel.id ) ),
     type = "toggle",
-    desc = "If checked, the addon may recommend |T4630499:0|t Unravel when your target has an absorb shield applied.  By default, Unravel also requires your Interrupts toggle to be active.",
+    desc = strformat( "If checked, %s may be recommended if your target has an absorb shield applied.  By default, %s also requires your Interrupts toggle to be active.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.unravel.id ), spec.abilities.unravel.name ),
     width = "full",
 } )
 
