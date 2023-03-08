@@ -1377,7 +1377,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         velocity = 50,
-        cycle = "barbed_shot",
+        cycle = "barbed_shot_dot",
 
         handler = function ()
             if buff.barbed_shot.down then applyBuff( "barbed_shot" )
