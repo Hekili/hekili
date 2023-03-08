@@ -17,7 +17,7 @@ local function rage_amount( isOffhand )
 
     local c = ( state.level > 70 and 1.4139 or 1 ) * ( 0.0091107836 * ( state.level ^ 2 ) + 3.225598133 * state.level + 4.2652911 )
     local f = isOffhand and 1.75 or 3.5
-    local s = ifOffhand and ( select( 2, UnitAttackSpeed( "player" ) ) or 2.5 ) or UnitAttackSpeed( "player" )
+    local s = isOffhand and ( select( 2, UnitAttackSpeed( "player" ) ) or 2.5 ) or UnitAttackSpeed( "player" )
 
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) * ( state.buff.defensive_stance.up and 0.95 or 1 )
 end
@@ -2170,7 +2170,7 @@ spec:RegisterSetting("shout_spell", "commanding_shout", {
     end
 })
 
-spec:RegisterSetting("queueing_threshold", 30, {
+spec:RegisterSetting("queueing_threshold", 60, {
     type = "range",
     name = "Queue Rage Threshold",
     desc = "Select the rage threshold after which heroic strike / cleave will be recommended",
