@@ -1967,7 +1967,7 @@ do
             -- Calculated from real event data.
             elseif k == "aggro" then t[k] = ( UnitThreatSituation( "player" ) or 0 ) > 1
             elseif k == "boss" then
-                t[k] = ( t.encounterID > 0 or ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) ) ) == true
+                t[k] = t.encounterID > 0 or UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 )
             elseif k == "encounter" then t[k] = t.encounterID > 0
             elseif k == "group" then t[k] = t.group_members > 1
             elseif k == "group_members" then t[k] = max( 1, GetNumGroupMembers() )
