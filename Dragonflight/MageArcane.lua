@@ -9,7 +9,8 @@ local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 
-local GetItemCooldown = _G.GetItemCooldown
+local GetItemCooldown = GetItemCooldown
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 62 )
 
@@ -589,7 +590,7 @@ local clearcasting_consumed = 0
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
         if subtype == "SPELL_CAST_SUCCESS" and spellID == 321507 then
-            totm_casts = totm_casts + 1
+            totm_casts = ( totm_casts + 1 ) % 2
 
         elseif subtype == "SPELL_AURA_REMOVED" and ( spellID == 276743 or spellID == 263725 ) then
             -- Clearcasting was consumed.
@@ -605,7 +606,7 @@ end )
 -- actions.precombat+=/variable,name=conserve_mana,op=set,value=0
 -- actions.touch_phase+=/variable,name=conserve_mana,op=set,if=debuff.touch_of_the_magi.remains>9,value=1-variable.conserve_mana
 spec:RegisterVariable( "conserve_mana", function ()
-    return debuff.touch_of_the_magi.remains > 9 and totm_casts == 1
+    return totm_casts > 1
 end )
 
 
@@ -2239,8 +2240,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "check_explosion_range", true, {
-    name = "Check |T136116:0|t Arcane Explosion Range",
-    desc = "If checked, the addon will not recommend |T136116:0|t Arcane Explosion when you are not within 10 yards of your target.",
+    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
+    desc = strformat( "If checked, %s will not be recommended when you are more than 10 yards from your target.", Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
     type = "toggle",
     width = "full"
 } )
