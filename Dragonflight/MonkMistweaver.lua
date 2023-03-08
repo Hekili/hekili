@@ -7,6 +7,8 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 270 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
@@ -952,15 +954,17 @@ spec:RegisterAbilities( {
 
 spec:RegisterSetting( "experimental_msg", nil, {
     type = "description",
-    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk.",
+    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output "
+        .. "is less critical in a group/encounter.  Use at your own risk.",
     width = "full",
 } )
 
 spec:RegisterSetting( "save_faeline", false, {
     type = "toggle",
-    name = "|T3636842:0|t Faeline Stomp: Don't Reuse",
-    desc = "If checked, the default priority will not recommend |T3636842:0|t Faeline Stomp when you already have |T3528274:0|t Ancient Concordance and/or |T3528275:0|t Awakened Faeline active.\n\n"
-        .. "This may be desired from a mana efficiency standpoint.",
+    name = strformat( "%s: Prevent Overlap", Hekili:GetSpellLinkWithTexture( spec.talents.faeline_stomp[2] ) ),
+    desc = strformat( "If checked, %s will not be recommended when %s and/or %s are active.\n\n"
+        .. "Disabling this option may impact your mana efficiency.", Hekili:GetSpellLinkWithTexture( spec.talents.faeline_stomp[2] ),
+        Hekili:GetSpellLinkWithTexture( spec.auras.ancient_concordance.id ), Hekili:GetSpellLinkWithTexture( spec.auras.awakened_faeline.id ) ),
     width = "full",
 } )
 
