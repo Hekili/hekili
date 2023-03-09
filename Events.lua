@@ -989,7 +989,8 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
 
-    -- C_Timer.After( 10, function () ns.Audit( "combatExit" ) end )
+    C_Timer.After( 5, function () ns.Audit( "combatExit" ) end )
+
     Hekili:ReleaseHolds( true )
     Hekili:ExpireTTDs( true )
     Hekili:UpdateDisplayVisibility()
