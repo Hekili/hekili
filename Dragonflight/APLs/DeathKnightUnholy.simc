@@ -17,12 +17,12 @@ actions+=/variable,name=adds_remain,value=active_enemies>=4&(!raid_event.adds.ex
 ## actions+=/invoke_external_buff,name=power_infusion,if=variable.st_planning&(pet.gargoyle.active&cooldown.apocalypse.remains|!talent.summon_gargoyle&talent.army_of_the_dead&pet.army_ghoul.active&pet.apoc_ghoul.active|!talent.summon_gargoyle&!talent.army_of_the_dead&buff.dark_transformation.up|!talent.summon_gargoyle&buff.dark_transformation.up|!pet.gargoyle.active&cooldown.summon_gargoyle.remains+5>cooldown.invoke_external_buff.duration)|fight_remains<=21
 # Prioritize Army, Outbreak and Maintaining Plaguebringer
 actions+=/army_of_the_dead,if=talent.commander_of_the_dead&(cooldown.dark_transformation.remains<3|buff.commander_of_the_dead_window.up)|!talent.commander_of_the_dead&talent.unholy_assault&cooldown.unholy_assault.remains<10|!talent.unholy_assault&!talent.commander_of_the_dead|boss&fight_remains<=34
-actions+=/wait,sec=cooldown.apocalypse.remains,if=cooldown.apocalypse.remains<gcd&buff.commander_of_the_dead_window.up
-actions+=/death_coil,if=(active_enemies<=3|!talent.epidemic)&(pet.gargoyle.active&buff.commander_of_the_dead_window.up&buff.commander_of_the_dead_window.remains>gcd*1.1&cooldown.apocalypse.remains<gcd|(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&debuff.death_rot.up&debuff.death_rot.remains<gcd)
-actions+=/epidemic,if=active_enemies>=4&(pet.gargoyle.active&buff.commander_of_the_dead_window.up&buff.commander_of_the_dead_window.remains>gcd&cooldown.apocalypse.remains<gcd|(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&debuff.death_rot.up&debuff.death_rot.remains<gcd)
+actions+=/wait,sec=cooldown.apocalypse.remains,if=cooldown.apocalypse.remains<gcd.max&buff.commander_of_the_dead_window.up
+actions+=/death_coil,if=(active_enemies<=3|!talent.epidemic)&(pet.gargoyle.active&buff.commander_of_the_dead_window.up&buff.commander_of_the_dead_window.remains>gcd*1.1&cooldown.apocalypse.remains<gcd.max|(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&debuff.death_rot.up&debuff.death_rot.remains<gcd.max)
+actions+=/epidemic,if=active_enemies>=4&(pet.gargoyle.active&buff.commander_of_the_dead_window.up&buff.commander_of_the_dead_window.remains>gcd&cooldown.apocalypse.remains<gcd.max|(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&debuff.death_rot.up&debuff.death_rot.remains<gcd.max)
 actions+=/unholy_blight,if=!buff.commander_of_the_dead_window.up&(variable.st_planning&((!talent.apocalypse|cooldown.apocalypse.remains)&talent.morbidity|!talent.morbidity)|variable.adds_remain|fight_remains<boss&21)
 actions+=/outbreak,cycle_targets=1,if=target.time_to_die>dot.virulent_plague.remains&(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&(dot.virulent_plague.refreshable|talent.superstrain&(dot.frost_fever_superstrain.refreshable|dot.blood_plague_superstrain.refreshable))&(!talent.unholy_blight|talent.unholy_blight&cooldown.unholy_blight.remains>15%((talent.superstrain*3)+(talent.plaguebringer*2)+(talent.ebon_fever*2)))
-actions+=/wound_spender,if=(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&cooldown.apocalypse.remains>variable.apoc_timing&talent.plaguebringer&talent.superstrain&buff.plaguebringer.remains<gcd
+actions+=/wound_spender,if=(!buff.commander_of_the_dead_window.up|buff.commander_of_the_dead_window.up&cooldown.apocalypse.remains>5)&cooldown.apocalypse.remains>variable.apoc_timing&talent.plaguebringer&talent.superstrain&buff.plaguebringer.remains<gcd.max
 
 ## Call Action Lists
 actions+=/call_action_list,name=garg_setup,strict=1,if=!variable.garg_setup
@@ -35,7 +35,7 @@ actions+=/run_action_list,name=generic,strict=1,if=active_enemies<=3
 
 ## AoE Action List
 actions.aoe+=/any_dnd,if=!death_and_decay.ticking&variable.adds_remain&(talent.festermight&buff.festermight.remains<3|!talent.festermight)&(death_knight.fwounded_targets>=cycle_enemies|death_knight.fwounded_targets=8|!talent.bursting_sores&!talent.vile_contagion|raid_event.adds.exists&raid_event.adds.remains<=11&raid_event.adds.remains>5|(cooldown.vile_contagion.remains|!talent.vile_contagion)&buff.dark_transformation.up&talent.infected_claws&(buff.empower_rune_weapon.up|buff.unholy_assault.up))|boss&fight_remains<10
-actions.aoe+=/scourge_strike,if=talent.superstrain&talent.ebon_fever&talent.plaguebringer&buff.plaguebringer.remains<gcd
+actions.aoe+=/scourge_strike,if=talent.superstrain&talent.ebon_fever&talent.plaguebringer&buff.plaguebringer.remains<gcd.max
 actions.aoe+=/epidemic,if=(!talent.bursting_sores|rune<1|talent.bursting_sores&debuff.festering_wound.stack=0)&!variable.pooling_runic_power&(active_enemies>=6|runic_power.deficit<30)
 actions.aoe+=/festering_strike,cycle_targets=1,if=!death_and_decay.ticking&(debuff.festering_wound.stack<4&cooldown.apocalypse.ready&cooldown.any_dnd.remains|debuff.festering_wound.stack<2&talent.bursting_sores)
 actions.aoe+=/festering_strike,cycle_targets=1,if=!death_and_decay.ticking&(cooldown.vile_contagion.remains>5|!talent.vile_contagion)
@@ -52,7 +52,7 @@ actions.cooldowns+=/vile_contagion,cycle_targets=1,if=active_enemies>=2&debuff.f
 actions.cooldowns+=/summon_gargoyle,if=active_enemies>=3
 actions.cooldowns+=/abomination_limb,if=rune<2&variable.adds_remain
 actions.cooldowns+=/raise_dead,if=!pet.ghoul.active
-actions.cooldowns+=/dark_transformation,if=variable.st_planning&(talent.commander_of_the_dead&cooldown.apocalypse.remains<gcd*2|cooldown.apocalypse.remains>30|!talent.commander_of_the_dead)
+actions.cooldowns+=/dark_transformation,if=variable.st_planning&(talent.commander_of_the_dead&cooldown.apocalypse.remains<gcd.max*2|cooldown.apocalypse.remains>30|!talent.commander_of_the_dead)
 actions.cooldowns+=/dark_transformation,if=variable.adds_remain&(cooldown.any_dnd.remains<10&talent.infected_claws&((cooldown.vile_contagion.remains|raid_event.adds.exists&raid_event.adds.in>10)&death_knight.fwounded_targets<cycle_enemies|!talent.vile_contagion)&(raid_event.adds.remains>5|!raid_event.adds.exists)|!talent.infected_claws)
 actions.cooldowns+=/apocalypse,cycle_targets=1,if=debuff.festering_wound.stack>3&active_enemies<=3&(buff.commander_of_the_dead_window.up|!talent.commander_of_the_dead|cooldown.dark_transformation.remains>30)
 actions.cooldowns+=/apocalypse,cycle_targets=1,if=debuff.festering_wound.stack>3&variable.adds_remain&(!death_and_decay.ticking&cooldown.death_and_decay.remains&rune<3|death_and_decay.ticking&rune=0)
@@ -62,7 +62,7 @@ actions.cooldowns+=/abomination_limb,if=rune<3&variable.st_planning
 actions.cooldowns+=/unholy_assault,cycle_targets=1,if=variable.st_planning
 actions.cooldowns+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&target.time_to_die>5&(!buff.commander_of_the_dead_window.up|cooldown.apocalypse.remains>3)
 actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&active_enemies>=2&target.time_to_die>(dot.soul_reaper.remains+5)
-actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&cooldown.dark_transformation.remains>6|boss&fight_remains<gcd
+actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&cooldown.dark_transformation.remains>6|boss&fight_remains<gcd.max
 
 ## Covenant Abilities
 actions.covenants+=/swarming_mist,if=variable.st_planning&runic_power.deficit>16&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)|boss&fight_remains<11
@@ -92,8 +92,9 @@ actions.generic+=/any_dnd,if=!death_and_decay.ticking&(active_enemies>=2|talent.
 actions.generic+=/wound_spender,cycle_targets=1,if=variable.pop_wounds|active_enemies>=2&death_and_decay.ticking
 actions.generic+=/festering_strike,cycle_targets=1,if=!variable.pop_wounds
 actions.generic+=/death_coil
+
 ## Racials
-actions.racials=arcane_torrent,if=runic_power.deficit>20&(cooldown.summon_gargoyle.remains<gcd|!talent.summon_gargoyle.enabled|pet.gargoyle.active&rune<2&debuff.festering_wound.stack<1)
+actions.racials=arcane_torrent,if=runic_power.deficit>20&(cooldown.summon_gargoyle.remains<gcd.max|!talent.summon_gargoyle.enabled|pet.gargoyle.active&rune<2&debuff.festering_wound.stack<1)
 actions.racials+=/blood_fury,if=(buff.blood_fury.duration>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=buff.blood_fury.duration|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=buff.blood_fury.duration|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=buff.blood_fury.duration
 actions.racials+=/berserking,if=(buff.berserking.duration>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=buff.berserking.duration|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=buff.berserking.duration|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=buff.berserking.duration
 actions.racials+=/lights_judgment,if=buff.unholy_strength.up&(!talent.festermight|buff.festermight.remains<target.time_to_die|buff.unholy_strength.remains<target.time_to_die)
