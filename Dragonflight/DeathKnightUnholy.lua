@@ -875,10 +875,11 @@ local Glyphed = IsSpellKnownOrOverridesKnown
 me:RegisterPet( "ghoul", 26125, "raise_dead", 3600 )
 
 me:RegisterTotem( "gargoyle", 458967 )
+me:RegisterTotem( "dark_arbiter", 298674 )
+
 me:RegisterTotem( "abomination", 298667 )
 me:RegisterPet( "apoc_ghoul", 24207, "apocalypse", 15 )
 me:RegisterPet( "army_ghoul", 24207, "army_of_the_dead", 30 )
-
 
 -- Tier 29
 me:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
@@ -933,9 +934,12 @@ me:RegisterHook( "reset_precast", function ()
         state:QueueAuraExpiration( "runic_corruption", ExpireRunicCorruption, buff.runic_corruption.expires )
     end
 
-    local expires = action.summon_gargoyle.lastCast + 35
-    if expires > now then
-        summonPet( "gargoyle", expires - now )
+    if totem.dark_arbiter.remains > 0 then
+        summonPet( "dark_arbiter", totem.dark_arbiter.remains )
+        summonTotem( "gargoyle", nil, totem.dark_arbiter.remains )
+        summonPet( "gargoyle", totem.dark_arbiter.remains )
+    elseif totem.gargoyle.remains > 0 then
+        summonPet( "gargoyle", totem.gargoyle.remains )
     end
 
     local control_expires = action.control_undead.lastCast + 300
@@ -1915,8 +1919,11 @@ me:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            summonPet( "gargoyle", 30 )
+            summonPet( "gargoyle", 25 )
+            gain( 50, "runic_power" )
         end,
+
+        copy = { "dark_arbiter", 207349 }
     },
 
     -- Talent: Strike your target dealing $s2 Shadow damage, infecting the target with $s3 F...
