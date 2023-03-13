@@ -93,12 +93,16 @@ function Hekili:OnInitialize()
                 end
                 GameTooltip:Hide()
             end,
-            OnTooltipShow = function( tt )
-                tt:ClearLines()
-                tt:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
-                tt:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
-                tt:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
+            OnEnter = function( self )
+                GameTooltip:SetOwner( self )
+                GameTooltip:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
+                GameTooltip:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
+                GameTooltip:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
+                GameTooltip:Show()
             end,
+            OnLeave = function( self )
+                GameTooltip:Hide()
+            end
         } )
 
         function ns.UI.Minimap:RefreshDataText()
@@ -604,58 +608,32 @@ local Timer = {
 
 
 do
-    local prevMsg, prevTime
-    local resumeTime = 0
-
     local function DoYield( self, msg, time, force )
         if not coroutine.running() then return end
-
         time = time or debugprofilestop()
 
-        prevTime = time
+        if msg then
+            self.Engine.lastYieldReason = msg
+        end
 
-        if force or time - self.frameStartTime > self.maxFrameTime then
+        if force or self.maxFrameTime > 0 and time - self.activeFrameStart > self.maxFrameTime then
             coroutine.yield()
-
-            prevMsg = "Resumed thread..."
-            prevTime = debugprofilestop()
-
-            resumeTime = prevTime
-        else
-            prevMsg = msg
-            prevTime = time
         end
     end
 
     local function FirstYield( self, msg, time )
-        prevMsg = msg
-        prevTime = time or debugprofilestop()
-
         if Hekili.PLAYER_ENTERING_WORLD and not Hekili.LoadingScripts then
             self.Yield = DoYield
         end
     end
 
     Hekili.Yield = FirstYield
-
-    function Hekili:ResetThreadClock()
-        resumeTime = debugprofilestop()
-
-        prevMsg = "Started thread..."
-        prevTime = resumeTime
-    end
 end
 
-
-local waitBlock = {}
-local listDepth = 0
 
 local invalidActionWarnings = {}
 
 function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action, wait, depth, caller )
-
-    local display = self.DB.profile.displays[ dispName ]
-
     local specID = state.spec.id
     local spec = rawget( self.DB.profile.specs, specID )
     local module = class.specs[ specID ]
@@ -684,7 +662,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local strict = false -- disabled for now.
     local force_channel = false
     local stop = false
-
 
     if self:IsListActive( packName, listName ) then
         local actID = 1
@@ -1115,23 +1092,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         state.selection_time = state.delay
                                                         state.selected_action = rAction
 
-                                                    --[[ elseif action == "wait" then
-                                                        -- local args = scripts:GetModifiers()
-                                                        -- local args = ns.getModifiers( listID, actID )
-                                                        local sec = state.args.sec or 0.5
-
-                                                        if sec > 0 then
-                                                            if waitBlock[ scriptID ] then
-                                                                if debug then self:Debug( "Criteria for Wait action (" .. scriptID .. ") were met, but would be a loop.  Skipping." ) end
-                                                            else
-                                                                if debug then self:Debug( "Criteria for Wait action were met, advancing by %.2f and restarting this list.", sec ) end
-                                                                -- NOTE, WE NEED TO TELL OUR INCREMENT FUNCTION ABOUT THIS...
-                                                                -- waitBlock[ scriptID ] = true
-                                                                state.advance( sec )
-                                                                actID = 0
-                                                            end
-                                                        end ]]
-
                                                     elseif action == "wait" then
                                                         local sec = state.args.sec or 0.5
 
@@ -1349,7 +1309,6 @@ Hekili:ProfileCPU( "GetPredictionFromAPL", Hekili.GetPredictionFromAPL )
 
 
 function Hekili:GetNextPrediction( dispName, packName, slot )
-
     local debug = self.ActiveDebug
 
     -- This is the entry point for the prediction engine.
@@ -1359,7 +1318,6 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     twipe( InUse )
 
     twipe( listStack )
-    twipe( waitBlock )
 
     for k, v in pairs( listCache ) do tinsert( lcPool, v ); twipe( v ); listCache[ k ] = nil end
     for k, v in pairs( listValue ) do tinsert( lvPool, v ); twipe( v ); listValue[ k ] = nil end
@@ -1437,31 +1395,33 @@ function Hekili:GetDisplayByName( name )
 end
 
 
-local displayRules = {
-    { "Interrupts", function( p ) return p.toggles.interrupts.value and p.toggles.interrupts.separate end, true },
-    { "Defensives", function( p ) return p.toggles.defensives.value and p.toggles.defensives.separate end, false },
-    { "Cooldowns",  function( p ) return p.toggles.cooldowns.value  and p.toggles.cooldowns.separate  end, false },
-    { "Primary", function() return true end, true },
-    { "AOE", function( p )
-        local spec = rawget( p.specs, state.spec.id )
-        if not spec or not class.specs[ state.spec.id ] then return false end
+local aoeDisplayRule = function( p )
+    local spec = rawget( p.specs, state.spec.id )
+    if not spec or not class.specs[ state.spec.id ] then return false end
 
-        if Hekili:GetToggleState( "mode" ) == "reactive" and ns.getNumberTargets() < ( spec.aoe or 3 ) then
-            if HekiliDisplayAOE.RecommendationsStr then
-                HekiliDisplayAOE.RecommendationsStr = nil
-                HekiliDisplayAOE.NewRecommendations = true
-            end
-            return false
+    if Hekili:GetToggleState( "mode" ) == "reactive" and ns.getNumberTargets() < ( spec.aoe or 3 ) then
+        if HekiliDisplayAOE.RecommendationsStr then
+            HekiliDisplayAOE.RecommendationsStr = nil
+            HekiliDisplayAOE.NewRecommendations = true
         end
+        return false
+    end
 
-        return true
-    end, true },
+    return true
+end
+
+local displayRules = {
+    Interrupts = { function( p ) return p.toggles.interrupts.value and p.toggles.interrupts.separate end, true , "Defensives" },
+    Defensives = { function( p ) return p.toggles.defensives.value and p.toggles.defensives.separate end, false, "Cooldowns"  },
+    Cooldowns  = { function( p ) return p.toggles.cooldowns.value  and p.toggles.cooldowns.separate  end, false, "Primary"    },
+    Primary    = { function(   ) return true                                                         end, true , "AOE"        },
+    AOE        = { aoeDisplayRule                                                                       , true , "Interrupts" }
 }
-
+local lastDisplay = "AOE"
 
 local hasSnapped
 
-function Hekili.Update()
+function Hekili.Update( initial )
     if not Hekili:ScriptsLoaded() then
         Hekili:LoadScripts()
         return
@@ -1487,13 +1447,15 @@ function Hekili.Update()
 
     local debug = Hekili.ActiveDebug
 
-    Hekili:ResetThreadClock()
     Hekili:GetNumTargets( true )
 
-    local snaps = nil
+    local snaps
 
-    for _, info in ipairs( displayRules ) do
-        local dispName, rule, fullReset = unpack( info )
+    local dispName = initial or displayRules[ lastDisplay ][ 3 ]
+    state.display = dispName
+
+    for round = 1, 5 do
+        local rule, fullReset, nextDisplay = unpack( displayRules[ dispName ] )
         local display = rawget( profile.displays, dispName )
 
         if debug then
@@ -1521,8 +1483,6 @@ function Hekili.Update()
         if UI.Active and UI.alpha > 0 and rule( profile ) then
             for i = #Stack, 1, -1 do tinsert( StackPool, tremove( Stack, i ) ) end
             for i = #Block, 1, -1 do tinsert( StackPool, tremove( Block, i ) ) end
-
-            -- Hekili:Yield( "Pre-Reset for " .. dispName .. " (from " .. state.display .. ")" )
 
             state.reset( dispName, fullReset )
 
@@ -2036,8 +1996,6 @@ function Hekili.Update()
                 WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator, Queue[ 1 ].empower_to, UI.EventPayload )
             end
 
-            Hekili:Yield( "Finished display updates." )
-
             if debug then
                 Hekili:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
 
@@ -2056,11 +2014,21 @@ function Hekili.Update()
                 -- UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime, checkstr ~= UI.RecommendationsStr )
                 -- Hekili:Yield( "Post-Perf for " .. dispName .. ": " .. checkstr )
             end
+
+            lastDisplay = dispName
+            dispName = nextDisplay
+            state.display = dispName
+
+            if round < 5 then Hekili:Yield( "Recommendations finished for " .. lastDisplay .. ".", nil, Hekili.maxFrameTime == 0 ) end
         else
             if UI.RecommendationsStr then
                 UI.RecommendationsStr = nil
                 UI.NewRecommendations = true
             end
+
+            lastDisplay = dispName
+            dispName = nextDisplay
+            state.display = dispName
         end
     end
 

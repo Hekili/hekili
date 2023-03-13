@@ -302,7 +302,7 @@ function ns.StartConfiguration( external )
         ACD:Open( "Hekili" )
 
         local oFrame = ACD.OpenFrames["Hekili"].frame
-        if not Hekili.IsDragonflight() then oFrame:SetMinResize( 800, 608 ) end
+        oFrame:SetResizeBounds( 800, 400 )
 
         ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame" )
         ns.OnHideFrame:SetParent( oFrame )
@@ -1934,27 +1934,6 @@ do
                 d.flashReady = true
             end )
         end
-
-        -- Performance Information
-        -- Time Spent
-        d.combatTime = {
-            fastest = 0,
-            slowest = 0,
-            average = 0,
-
-            samples = 0
-        }
-
-        -- Time Between Updates
-        d.combatUpdates = {
-            last = 0,
-
-            longest = 0,
-            shortest = 0,
-            average = 0,
-
-            samples = 0,
-        }
     end
 
 
@@ -2146,6 +2125,65 @@ do
     Hekili.Engine.refreshTimer = 1
     Hekili.Engine.eventsTriggered = {}
 
+    function Hekili.Engine:UpdatePerformance( wasted )
+        -- Only track in combat.
+        if not ( self.firstThreadCompleted and InCombatLockdown() ) then
+            self.activeThreadTime = 0
+            return
+        end
+
+        if self.firstThreadCompleted then
+            local now = debugprofilestop()
+            local timeSince = now - self.activeThreadStart
+
+            self.lastUpdate = now
+
+            if self.threadUpdates then
+                local updates = self.threadUpdates.updates
+                local total = updates + 1
+
+                if wasted then
+                    -- Capture thrown away computation time due to forced resets.
+                    self.threadUpdates.meanWasted    = ( self.threadUpdates.meanWasted    * updates + self.activeThreadTime   ) / total
+                    self.threadUpdates.totalWasted   = ( self.threadUpdates.totalWasted   + self.activeThreadTime             )
+
+                    if self.activeThreadTime   > self.threadUpdates.peakWasted    then self.threadUpdates.peakWasted    = self.activeThreadTime end
+                else
+                    self.threadUpdates.meanClockTime = ( self.threadUpdates.meanClockTime * updates + timeSince               ) / total
+                    self.threadUpdates.meanWorkTime  = ( self.threadUpdates.meanWorkTime  * updates + self.activeThreadTime   ) / total
+                    self.threadUpdates.meanFrames    = ( self.threadUpdates.meanFrames    * updates + self.activeThreadFrames ) / total
+
+                    if timeSince               > self.threadUpdates.peakClockTime then self.threadUpdates.peakClockTime = timeSince               end
+                    if self.activeThreadTime   > self.threadUpdates.peakWorkTime  then self.threadUpdates.peakWorkTime  = self.activeThreadTime   end
+                    if self.activeThreadFrames > self.threadUpdates.peakFrames    then self.threadUpdates.peakFrames    = self.activeThreadFrames end
+
+                    self.threadUpdates.updates = total
+                    self.threadUpdates.updatesPerSec = 1000 * total / ( now - self.threadUpdates.firstUpdate )
+                end
+            else
+                self.threadUpdates = {
+                    meanClockTime  = timeSince,
+                    meanWorkTime   = self.activeThreadTime,
+                    meanFrames     = self.activeThreadFrames or 1,
+                    meanWasted     = 0,
+
+                    firstUpdate    = now,
+                    updates        = 1,
+                    updatesPerSec  = 1000 / ( self.activeThreadTime > 0 and self.activeThreadTime or 1 ),
+
+                    peakClockTime  = timeSince,
+                    peakWorkTime   = self.activeThreadTime,
+                    peakFrames     = self.activeThreadFrames or 1,
+                    peakWasted     = 0,
+
+                    totalWasted    = 0
+                }
+            end
+        end
+
+        self.activeThreadTime = 0
+    end
+
     Hekili.Engine:SetScript( "OnUpdate", function( self, elapsed )
         if not self.activeThread then
             self.refreshTimer = self.refreshTimer + elapsed
@@ -2157,20 +2195,30 @@ do
 
             local thread = self.activeThread
 
+            local firstDisplay = nil
+            local superUpdate = self.firstThreadCompleted and self.superUpdate
+
+            if superUpdate and thread and coroutine.status( thread ) == "suspended" then
+                -- We're going to break the thread and start over from the current display in progress.
+                firstDisplay = state.display
+                self:UpdatePerformance( true )
+            end
+
             -- If there's no thread, then see if we have a reason to update.
-            if self.superUpdate or ( not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) ) then
+            if superUpdate or ( not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) ) then
                 self.criticalUpdate = false
                 self.superUpdate = false
 
                 self.activeThread = coroutine.create( Hekili.Update )
                 self.activeThreadTime = 0
-                self.activeThreadFrames = 0
                 self.activeThreadStart = debugprofilestop()
+
+                self.activeThreadFrames = 0
 
                 if Hekili:GetActiveSpecOption( "throttleTime" ) then
                     Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
                 else
-                    Hekili.maxFrameTime = min( 16.6, 667 / GetFramerate() )
+                    Hekili.maxFrameTime = min( 50, 800 / GetFramerate() )
                 end
 
                 thread = self.activeThread
@@ -2179,21 +2227,13 @@ do
             -- If there's a thread, process for up to user preferred limits.
             if thread and coroutine.status( thread ) == "suspended" then
                 self.activeThreadFrames = self.activeThreadFrames + 1
-                local start = debugprofilestop()
+                Hekili.activeFrameStart = debugprofilestop()
 
-                Hekili.frameStartTime = start
+                local ok, err = coroutine.resume( thread, firstDisplay )
 
-                local ok, err = coroutine.resume( thread )
                 if not ok then
                     err = err .. "\n\n" .. debugstack( thread )
                     Hekili:Error( "Update: " .. err )
-                    pcall( error, err )
-                end
-                local now = debugprofilestop()
-
-                self.activeThreadTime = self.activeThreadTime + ( now - start )
-
-                if coroutine.status( thread ) == "dead" or err then
 
                     if Hekili.ActiveDebug then
                         Hekili:Debug( format( "Recommendation thread terminated due to error: %s", err and err:gsub( "%%", "%%%%" ) or "Unknown" ) )
@@ -2201,6 +2241,12 @@ do
                         Hekili.ActiveDebug = nil
                     end
 
+                    pcall( error, err )
+                end
+
+                self.activeThreadTime = self.activeThreadTime + debugprofilestop() - Hekili.activeFrameStart
+
+                if coroutine.status( thread ) == "dead" or err then
                     self.activeThread = nil
                     self.refreshTimer = 0
 
@@ -2212,37 +2258,9 @@ do
                         self.combatRate = 0.1
                     end
 
-                    if self.firstThreadCompleted then
-                        local timeSince = now - self.activeThreadStart
-                        self.lastUpdate = now
-
-                        if self.threadUpdates then
-                            local updates = self.threadUpdates.updates
-                            local total = updates + 1
-
-                            self.threadUpdates.clockTime = ( self.threadUpdates.clockTime * updates + timeSince ) / total
-                            self.threadUpdates.workTime = ( self.threadUpdates.workTime * updates + self.activeThreadTime ) / total
-                            self.threadUpdates.frames = ( self.threadUpdates.frames * updates + self.activeThreadFrames ) / total
-
-                            if timeSince > self.threadUpdates.peakClock then self.threadUpdates.peakClock = timeSince end
-                            if self.activeThreadTime > self.threadUpdates.peakWork then self.threadUpdates.peakWork = self.activeThreadTime end
-                            if self.activeThreadFrames > self.threadUpdates.peakFrames then self.threadUpdates.peakFrames = self.activeThreadFrames end
-
-                            self.threadUpdates.updates = total
-                        else
-                            self.threadUpdates = {
-                                clockTime = timeSince,
-                                workTime = self.activeThreadTime,
-                                frames = self.activeThreadFrames or 1,
-                                updates = 1,
-
-                                peakClock = timeSince,
-                                peakWork = self.activeThreadTime,
-                                peakFrames = self.activeThreadFrames
-                            }
-                        end
-                    else
+                    if ok then
                         self.firstThreadCompleted = true
+                        self:UpdatePerformance()
                     end
                 end
 

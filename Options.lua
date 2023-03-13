@@ -5196,26 +5196,21 @@ do
                             args = {
                                 throttleRefresh = {
                                     type = "toggle",
-                                    name = "Throttle Updates",
-                                    desc = "By default, the addon will update its recommendations immediately following |cffff0000critical|r combat events, within |cffffd1000.1|rs of routine combat events, or every |cffffd1000.5|rs.\n" ..
-                                        "If |cffffd100Throttle Updates|r is checked, you can specify the |cffffd100Combat Refresh Interval|r and |cff00ff00Regular Refresh Interval|r for this specialization.",
+                                    name = "Set Update Period",
+                                    desc = "If checked, you may specify how frequently new recommendations can be generated, in- and out-of-combat.\n\n"
+                                        .. "More frequent updates can utilize more CPU time, but increase responsiveness. After certain critical combat "
+                                        .. "events, recommendations will always update earlier, regardless of these settings.",
                                     order = 1,
                                     width = "full",
                                 },
 
-                                perfSpace01 = {
-                                    type = "description",
-                                    name = " ",
-                                    order = 1.05,
-                                    width = "full"
-                                },
-
                                 regularRefresh = {
                                     type = "range",
-                                    name = "Regular Refresh Interval",
-                                    desc = "In the absence of combat events, this addon will allow itself to update according to the specified interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though " ..
-                                        "combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1001.0|rs, the addon will not provide new updates until 1 second after its last update (unless forced by a combat event).\n\n" ..
-                                        "Default value:  |cffffd1000.5|rs.",
+                                    name = "Out-of-Combat Period",
+                                    desc = "When out-of-combat, each display will update its recommendations as frequently as you specify. "
+                                        .. "Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\n"
+                                        .. "Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\n"
+                                        .. "Default value:  |cffffd1000.5|rs.",
                                     order = 1.1,
                                     width = 1.5,
                                     min = 0.05,
@@ -5226,10 +5221,11 @@ do
 
                                 combatRefresh = {
                                     type = "range",
-                                    name = "Combat Refresh Interval",
-                                    desc = "When routine combat events occur, the addon will update more frequently than its Regular Refresh Interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though " ..
-                                        "critical combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1000.2|rs, the addon will not provide new updates until 0.2 seconds after its last update (unless forced by a critical combat event).\n\n" ..
-                                        "Default value:  |cffffd1000.1|rs.",
+                                    name = "In-Combat Period",
+                                    desc = "When in-combat, each display will update its recommendations as frequently as you specify.\n\n"
+                                    .. "Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\n"
+                                    .. "Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\n"
+                                    .. "Default value:  |cffffd1000.25|rs.",
                                     order = 1.2,
                                     width = 1.5,
                                     min = 0.05,
@@ -5238,44 +5234,35 @@ do
                                     hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
                                 },
 
-                                perfSpace = {
-                                    type = "description",
-                                    name = " ",
-                                    order = 1.9,
-                                    width = "full"
-                                },
-
                                 throttleTime = {
                                     type = "toggle",
-                                    name = "Throttle Time",
-                                    desc = "By default, when the addon needs to generate new recommendations, it will use up to |cffffd10010ms|r per frame or up to half a frame, whichever is lower.  If you get 60 FPS, that is 1 second / 60 frames, which equals equals 16.67ms.  " ..
-                                        "Half of 16.67 is ~|cffffd1008ms|r, so the addon could use up to ~8ms per frame until it has successfully updated its recommendations for all visible displays.  If more time is needed, the work will be split across multiple frames.\n\n" ..
-                                        "If you choose to |cffffd100Throttle Time|r, you can specify the |cffffd100Maximum Update Time|r the addon should use per frame.",
-                                    order = 2,
-                                    width = 1,
+                                    name = "Set Update Time",
+                                    desc = "By default, calculations can take 80% of your frametime or 50ms, whichever is lower.  If recommendations take more "
+                                        .. "than the alotted time, then the work will be split across multiple frames to reduce impact to your framerate.\n\n"
+                                        .. "If you choose to |cffffd100Set Update Time|r, you can specify the |cffffd100Maximum Update Time|r used per frame.",
+                                    order = 2.1,
+                                    width = "full",
                                 },
 
                                 maxTime = {
                                     type = "range",
                                     name = "Maximum Update Time (ms)",
-                                    desc = "Specify the maximum amount of time (in milliseconds) that the addon can use |cffffd100per frame|r when updating its recommendations.\n\n" ..
-                                        "If set to |cffffd10010|r, then recommendations should not impact a 100 FPS system (1 second / 100 frames = 10ms).\n" ..
-                                        "If set to |cffffd10016|r, then recommendations should not impact a 60 FPS system (1 second / 60 frames = 16.7ms).\n\n" ..
-                                        "If you set this value too low, the addon can take more frames to update its recommendations and may feel delayed.  " ..
-                                        "If set too high, the addon will do more work each frame, finishing faster but potentially impacting your FPS.  The default value is |cffffd10010ms|r.",
-                                    order = 2.1,
-                                    min = 2,
+                                    desc = "Specify the maximum amount of time (in milliseconds) that can be used |cffffd100per frame|r when updating.  " ..
+                                        "If set to |cffffd1000|r, then there is no maximum regardless of your frame rate.\n\n" ..
+                                        "|cffffd100Examples|r\n" ..
+                                        "|W- 60 FPS: 1 second / 60 frames = |cffffd10016.7|rms|w\n" ..
+                                        "|W- 100 FPS: 1 second / 100 frames = |cffffd10010|rms|w\n\n" ..
+                                        "If you set this value too low, it can take longer to update and may feel less responsive.\n\n" ..
+                                        "If set too high (or to zero), updates may resolve more quickly but with possible impact to your FPS.\n\n" ..
+                                        "The default value is |cffffd10020|rms.",
+                                    order = 2.2,
+                                    min = 0,
                                     max = 100,
-                                    width = 2,
-                                    hidden = function () return self.DB.profile.specs[ id ].throttleTime == false end,
-                                },
-
-                                throttleSpace = {
-                                    type = "description",
-                                    name = " ",
-                                    order = 3,
-                                    width = "full",
-                                    hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
+                                    step = 1,
+                                    width = 1.5,
+                                    hidden = function ()
+                                        return not self.DB.profile.specs[ id ].throttleTime
+                                    end,
                                 },
 
                                 --[[ gcdSync = {
@@ -5290,12 +5277,12 @@ do
                                 enhancedRecheck = {
                                     type = "toggle",
                                     name = "Enhanced Recheck",
-                                    desc = "When the addon cannot recommend an ability at the present time, it rechecks action's conditions at a few points in the future.  If checked, this feature will enable the addon to do additional checking on entries that use the 'variable' feature.  " ..
-                                        "This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation.",
+                                    desc = "When the addon cannot recommend an ability at the present time, it rechecks action conditions at a few points in the future.  "
+                                        .. "If checked, this feature will enable the addon to do additional checking on entries that use the 'variable' feature.  "
+                                        .. "This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation.",
                                     width = "full",
                                     order = 5,
-                                }
-
+                                },
                             }
                         }
                     },
