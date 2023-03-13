@@ -952,8 +952,8 @@ spec:RegisterStateFunction( "consume_maelstrom", function( cap )
 end )
 
 spec:RegisterStateFunction( "gain_maelstrom", function( stacks )
-    if talent.witch_doctors_ancestry.enabled then
-        reduceCooldown( "feral_spirits", stacks * talent.witch_doctors_ancestry.rank )
+    if talent.witch_doctors_ancestry.enabled and not action.feral_spirit.disabled then
+        reduceCooldown( "feral_spirit", stacks * talent.witch_doctors_ancestry.rank )
     end
 
     addStack( "maelstrom_weapon", nil, stacks )
