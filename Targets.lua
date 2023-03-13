@@ -792,16 +792,33 @@ ns.eliminateUnit = function(id, force)
     ns.callHook( "UNIT_ELIMINATED", id )
 end
 
+
+local dmgPool = {}
+
 local incomingDamage = {}
 local incomingHealing = {}
 
 ns.storeDamage = function(time, damage, physical)
     if damage and damage > 0 then
-        table.insert(incomingDamage, {t = time, damage = damage, physical = physical})
+        local entry = tremove( dmgPool, 1 ) or {}
+
+        entry.t = time
+        entry.amount = damage
+        entry.physical = physical
+
+        insert( incomingDamage, entry )
     end
 end
 ns.storeHealing = function(time, healing)
-    table.insert(incomingHealing, {t = time, healing = healing})
+    if healing and healing > 0 then
+        local entry = tremove( dmgPool, 1 ) or {}
+
+        entry.t = time
+        entry.amount = healing
+        entry.phsical = nil
+
+        insert( incomingHealing, entry )
+    end
 end
 
 ns.damageInLast = function(t, physical)
@@ -810,7 +827,7 @@ ns.damageInLast = function(t, physical)
 
     for k, v in pairs(incomingDamage) do
         if v.t > start and (physical == nil or v.physical == physical) then
-            dmg = dmg + v.damage
+            dmg = dmg + v.amount
         end
     end
 
@@ -823,7 +840,7 @@ function ns.healingInLast(t)
 
     for k, v in pairs(incomingHealing) do
         if v.t > start then
-            heal = heal + v.healing
+            heal = heal + v.amount
         end
     end
 
@@ -838,14 +855,22 @@ do
             return
         end
 
-       if not special and not Hekili.DB.profile.enabled or not Hekili:IsValidSpec() then
+        if not special and not Hekili.DB.profile.enabled or not Hekili:IsValidSpec() then
             return
         end
+
+        Hekili:ExpireTTDs()
 
         local now = GetTime()
         local spec = state.spec.id and rawget( Hekili.DB.profile.specs, state.spec.id )
         local nodmg = spec and ( spec.damage == false ) or false
         local grace = spec and spec.damageExpiration or 6
+
+        for whom, when in pairs( targets ) do
+            if nodmg or now - when > grace then
+                ns.eliminateUnit( whom )
+            end
+        end
 
         for aura, targets in pairs( debuffs ) do
             local a = class.auras[ aura ]
@@ -864,29 +889,17 @@ do
             end
         end
 
-        Hekili:ExpireTTDs()
-
-        for whom, when in pairs( targets ) do
-            if nodmg or now - when > grace then
-                ns.eliminateUnit( whom )
-            end
-        end
-
         local cutoff = now - 15
         for i = #incomingDamage, 1, -1 do
             local instance = incomingDamage[ i ]
-
-            if instance.t < cutoff then
-                table.remove( incomingDamage, i )
-            end
+            if instance.t >= cutoff then break end
+            insert( dmgPool, remove( incomingDamage, i ) )
         end
 
         for i = #incomingHealing, 1, -1 do
             local instance = incomingHealing[ i ]
-
-            if instance.t < cutoff then
-                table.remove( incomingHealing, i )
-            end
+            if instance.t >= cutoff then break end
+            insert( dmgPool, remove( incomingHealing, i ) )
         end
     end
 
@@ -922,6 +935,10 @@ do
         db[guid] = nil
         wipe(enemy)
         insert( recycle, enemy )
+
+        for k, v in pairs( debuffs ) do
+            if v[ guid ] then ns.trackDebuff( k, guid ) end
+        end
     end
 
 
