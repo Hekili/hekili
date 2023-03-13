@@ -7,6 +7,8 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 1468 )
 
 spec:RegisterResource( Enum.PowerType.Essence )
@@ -779,21 +781,25 @@ spec:RegisterSetting( "experimental_msg", nil, {
     width = "full",
 } )
 
+local deep_breath = GetSpellInfo( 357210 ) or "Deep Breath"
+
 spec:RegisterSetting( "use_deep_breath", true, {
-    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.abilities.deep_breath.id ) ),
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( 357210 ) ),
     type = "toggle",
     desc = strformat( "If checked, %s may be recommended, which will force your character to select a destination and move.  By default, %s requires your Cooldowns "
         .. "toggle to be active.\n\n"
         .. "If unchecked, |W%s|w will never be recommended, which may result in lost DPS if left unused for an extended period of time.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.deep_breath.id ), spec.abilities.deep_breath.name, spec.abilities.deep_breath.name ),
+        Hekili:GetSpellLinkWithTexture( 357210 ), deep_breath, deep_breath ),
     width = "full",
 } )
 
+local unravel = GetSpellInfo( 368432 ) or "Unravel"
+
 spec:RegisterSetting( "use_unravel", false, {
-    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.abilities.unravel.id ) ),
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( 368432 ) ),
     type = "toggle",
     desc = strformat( "If checked, %s may be recommended if your target has an absorb shield applied.  By default, %s also requires your Interrupts toggle to be active.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.unravel.id ), spec.abilities.unravel.name ),
+        Hekili:GetSpellLinkWithTexture( 368432 ), unravel ),
     width = "full",
 } )
 
