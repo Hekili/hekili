@@ -58,7 +58,7 @@ spec:RegisterTalents( {
     art_of_war                      = { 81523, 406064, 1 }, -- Your auto attacks have a 20% chance to reset the cooldown of Blade of Justice.
     auras_of_swift_vengeance        = { 81601, 385639, 1 }, -- Learn Retribution Aura and Crusader Aura:  Retribution Aura: When any party or raid member within 40 yds takes more than 30% of their health in damage in a single hit, each member gains 5% increased damage and healing, decaying over 30 sec. This cannot occur within 30 sec of the aura being applied.  Crusader Aura: Increases mounted speed by 20% for all party and raid members within 40 yds.
     auras_of_the_resolute           = { 81599, 385633, 1 }, -- Learn Concentration Aura and Devotion Aura: Concentration Aura: Interrupt and Silence effects on party and raid members within 40 yds are 30% shorter.  Devotion Aura: Party and raid members within 40 yds are bolstered by their devotion, reducing damage taken by 3%.
-    avenging_wrath_might            = { 81525, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, allowing Hammer of Wrath to be used on any target, increasing your damage and healing by 20% for 20 sec.
+    avenging_wrath_might            = { 81525, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, increasing your critical strike chance by 20% for X sec.
     blade_of_justice                = { 81526, 184575, 1 }, -- Pierce an enemy with a blade of light, dealing 5,019 Physical damage. Generates 1 Holy Power.
     blade_of_vengeance              = { 81545, 403826, 1 }, -- Blade of Justice now hits nearby enemies for 3,012 Physical damage. Deals reduced damage beyond 5 targets.
     blades_of_light                 = { 93164, 403664, 1 }, -- Crusader Strike, Judgment, Hammer of Wrath and your damaging single target Holy Power abilities deal Holystrike damage.
@@ -170,7 +170,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=31884
     avenging_wrath = {
         id = 31884,
-        duration = function() return talent.sanctified_wrath.enabled and 25 or 20 end,
+        duration = function() return talent.divine_wrath.enabled and 23 or 20 end,
         max_stack = 1
     },
     avenging_wrath_autocrit = {
@@ -312,7 +312,7 @@ spec:RegisterAuras( {
     },
     crusade = {
         id = 231895,
-        duration = 25,
+        duration = function() return talent.divine_wrath.enabled and 28 or 25 end,
         type = "Magic",
         max_stack = 10,
     },
@@ -361,7 +361,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=221883
     divine_steed = {
         id = 221883,
-        duration = function () return ( 4 + ( 2 * talent.seasoned_warhorse.rank ) + pvptalent.steed_of_glory.rank ) * ( 1 + ( conduit.lights_barding.mod * 0.01 ) ) end,
+        duration = function () return ( ( talent.seasoned_warhorse.enabled and 6 or 4 ) + pvptalent.steed_of_glory.rank ) * ( 1 + ( conduit.lights_barding.mod * 0.01 ) ) end,
         max_stack = 1,
         copy = { 221885, 221886 },
     },
@@ -385,7 +385,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=343527
     execution_sentence = {
         id = 343527,
-        duration = 8,
+        duration = function() return talent.executioners_will.enabled and 12 or 8 end,
         type = "Magic",
         max_stack = 1
     },
@@ -406,7 +406,7 @@ spec:RegisterAuras( {
     -- Talent: Deals $w1 damage over $d1.
     -- https://wowhead.com/beta/spell=273481
     expurgation = {
-        id = 273481,
+        id = 383346,
         duration = 6,
         tick_time = 2,
         type = "Magic",
@@ -434,7 +434,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=343721
     final_reckoning = {
         id = 343721,
-        duration = 8,
+        duration = function() return talent.executioners_will.enabled and 12 or 8 end,
         type = "Magic",
         max_stack = 1
     },
@@ -496,20 +496,36 @@ spec:RegisterAuras( {
         duration = 45,
         max_stack = 1,
     },
+    inquisitors_ire = {
+        id = 403976,
+        duration = 3600,
+        max_stack = 10,
+        -- TODO: Override .up and .stacks to increment every 2 seconds.
+    },
     -- Taking $w1% increased damage from $@auracaster's next Holy Power ability.
     -- https://wowhead.com/beta/spell=197277
     judgment = {
         id = 197277,
-        duration = 15,
-        max_stack = 1,
+        duration = function() return 15 + 3 * talent.highlords_judgment.rank end,
+        max_stack = function() return 1 + talent.greater_judgment.rank end,
         copy = 214222
+    },
+    judgment_buff = {
+        id = 20271,
+        duration = 5,
+        max_stack = 1
+    },
+    judgment_of_justice = {
+        id = 408383,
+        duration = 8,
+        max_stack = 1
     },
     -- Talent: Attackers are healed for $183811s1.
     -- https://wowhead.com/beta/spell=196941
     judgment_of_light = {
         id = 196941,
         duration = 30,
-        max_stack = 25
+        max_stack = 5
     },
     -- Healing for $w1 every $t1 sec.
     -- https://wowhead.com/beta/spell=378412
@@ -577,6 +593,11 @@ spec:RegisterAuras( {
     righteous_verdict = {
         id = 267611,
         duration = 6,
+        max_stack = 1,
+    },
+    rush_of_light = {
+        id = 407065,
+        duration = 10,
         max_stack = 1,
     },
     sanctified_ground = {
@@ -748,30 +769,30 @@ spec:RegisterAuras( {
 
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "holy_power" then
+        if buff.blessing_of_dawn.up then
+            applyBuff( "blessing_of_dusk" )
+            removeBuff( "blessing_of_dawn" )
+        end
         if talent.crusade.enabled and buff.crusade.up then
             addStack( "crusade", buff.crusade.remains, amt )
         end
         if talent.fist_of_justice.enabled then
-            setCooldown( "hammer_of_justice", max( 0, cooldown.hammer_of_justice.remains - talent.fist_of_justice.rank * amt ) )
+            reduceCooldown( "hammer_of_justice",talent.fist_of_justice.rank * amt )
         end
-        if legendary.uthers_devotion.enabled then
-            setCooldown( "blessing_of_freedom", max( 0, cooldown.blessing_of_freedom.remains - 1 ) )
-            setCooldown( "blessing_of_protection", max( 0, cooldown.blessing_of_protection.remains - 1 ) )
-            setCooldown( "blessing_of_sacrifice", max( 0, cooldown.blessing_of_sacrifice.remains - 1 ) )
-            setCooldown( "blessing_of_spellwarding", max( 0, cooldown.blessing_of_spellwarding.remains - 1 ) )
-        end
-        if legendary.relentless_inquisitor.enabled or talent.relentless_inquisitor.enabled then
+        if talent.relentless_inquisitor.enabled then
             if buff.relentless_inquisitor.stack < ( 3 * talent.relentless_inquisitor.rank ) then
                 stat.haste = stat.haste + 0.01
             end
             addStack( "relentless_inquisitor" )
         end
-        if buff.blessing_of_dawn.up then
-            applyBuff( "blessing_of_dusk" )
-            removeBuff( "blessing_of_dawn" )
-        end
         if talent.sealed_verdict.enabled then applyBuff( "sealed_verdict" ) end
         if talent.selfless_healer.enabled then addStack( "selfless_healer" ) end
+        if legendary.uthers_devotion.enabled then
+            reduceCooldown( "blessing_of_freedom", 1 )
+            reduceCooldown( "blessing_of_protection", 1 )
+            reduceCooldown( "blessing_of_sacrifice", 1 )
+            reduceCooldown( "blessing_of_spellwarding", 1 )
+        end
     end
 end )
 
@@ -782,28 +803,86 @@ spec:RegisterHook( "gain", function( amt, resource, overcap )
 end )
 
 spec:RegisterStateExpr( "time_to_hpg", function ()
+    if talent.crusading_strikes.enabled then
+        return max( gcd.remains, min( cooldown.judgment.true_remains, cooldown.blade_of_justice.true_remains, ( state:IsUsable( "hammer_of_wrath" ) and cooldown.hammer_of_wrath.true_remains or 999 ), action.wake_of_ashes.known and cooldown.wake_of_ashes.true_remains or 999, ( race.blood_elf and cooldown.arcane_torrent.true_remains or 999 ), ( action.divine_toll.known and cooldown.divine_toll.true_remains or 999 ) ) )
+    elseif talent.templar_strikes.enabled then
+        return max( gcd.remains, min( cooldown.judgment.true_remains, cooldown.templar_strike.true_remains, cooldown.templar_slash.true_remains, cooldown.blade_of_justice.true_remains, ( state:IsUsable( "hammer_of_wrath" ) and cooldown.hammer_of_wrath.true_remains or 999 ), action.wake_of_ashes.known and cooldown.wake_of_ashes.true_remains or 999, ( race.blood_elf and cooldown.arcane_torrent.true_remains or 999 ), ( action.divine_toll.known and cooldown.divine_toll.true_remains or 999 ) ) )
+    end
+
     return max( gcd.remains, min( cooldown.judgment.true_remains, cooldown.crusader_strike.true_remains, cooldown.blade_of_justice.true_remains, ( state:IsUsable( "hammer_of_wrath" ) and cooldown.hammer_of_wrath.true_remains or 999 ), action.wake_of_ashes.known and cooldown.wake_of_ashes.true_remains or 999, ( race.blood_elf and cooldown.arcane_torrent.true_remains or 999 ), ( action.divine_toll.known and cooldown.divine_toll.true_remains or 999 ) ) )
 end )
 
 
 local last_empyrean_legacy_icd_expires = 0
 
+local current_crusading_strikes = 0
+local last_crusading_strike = 0
+
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if destGUID == state.GUID and subtype == "SPELL_AURA_APPLIED" and spellID == class.auras.empyrean_legacy.id then
         last_empyrean_legacy_icd_expires = GetTime() + 30
+    elseif sourceGUID == state.GUID then
+        if spellID == 406834 then -- Crusader Strikes: Energize
+            current_crusading_strikes = 0
+            Hekili:ForceUpdate( "CRUSADING_STRIKES", true )
+        elseif spellID == 408385 then -- Crusader Strikes: Swing Damage
+            current_crusading_strikes = current_crusading_strikes + 1
+            last_crusading_strike = GetTime()
+        end
     end
 end )
 
+local CrusadingStrikes = setfenv( function()
+    if not action.rebuke.in_range then
+        if Hekili.ActiveDebug then Hekili:Debug( "Crusading Strikes energize fails: Out of range." ) end
+        return
+    end
+    gain( 1, "holy_power" )
+    if Hekili.ActiveDebug then Hekili:Debug( "Crusading Strike energized 1 Holy Power (new total: %d).", holy_power.current ) end
+end, state )
+
+local csStartCombat = setfenv( function()
+    if not talent.crusading_strikes.enabled then return end
+
+    if not action.rebuke.in_range then
+        if Hekili.ActiveDebug then Hekili:Debug( "Crusading Strikes energize fails: Out of range." ) end
+        return
+    end
+
+    local mh_speed = swings.mh_speed
+    local time_since = false_start - last_crusading_strike
+
+    if last_crusading_strike > 0 and mh_speed > 0 and time_since > 0 and time_since < mh_speed then
+        -- Should already be queued.
+        if Hekili.ActiveDebug then Hekili:Debug( "Crusading Strikes not forecasted for virtual combat start; energizes already queued." ) end
+        return
+    end
+
+    local strikes_to_go = max( 0, 2 - current_crusading_strikes )
+
+    local next_cs = state.false_start + ( 2 - strikes_to_go ) * mh_speed
+    if Hekili.ActiveDebug then Hekili:Debug( "Next Crusading Strikes energize in %.2f seconds (%.2f interval) due to virtual combat start.", next_cs - query_time, mh_speed * 2 ) end
+
+    if next_cs < query_time then
+        gain( 1, "holy_power" )
+    else
+        state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs, "AURA_PERIODIC" ) -- Pretend it's an aura.
+    end
+
+    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 2 * mh_speed, "AURA_PERIODIC" )
+    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 4 * mh_speed, "AURA_PERIODIC" )
+    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 6 * mh_speed, "AURA_PERIODIC" )
+    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 8 * mh_speed, "AURA_PERIODIC" )
+end, state )
+
+
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
-
-
 spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
-
 
 spec:RegisterHook( "reset_precast", function ()
     if buff.divine_resonance.up then
         state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
-        if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
+        if buff.divine_resonance.remains > 5  then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 5 , "AURA_PERIODIC" ) end
         if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
     end
 
@@ -816,7 +895,27 @@ spec:RegisterHook( "reset_precast", function ()
     if now - last_ts < 3 and action.templar_slash.lastCast < last_ts then
         applyBuff( "templar_slash" )
     end
+
+    if talent.crusading_strikes.enabled and action.rebuke.in_range then
+        local mh_speed = swings.mh_speed
+        local time_since = now - last_crusading_strike
+
+        if last_crusading_strike > 0 and mh_speed > 0 and time_since > 0 and time_since < mh_speed then
+            local next_cs = last_crusading_strike + ( 3 - current_crusading_strikes ) * mh_speed
+            if Hekili.ActiveDebug then Hekili:Debug( "Next Crusading Strikes energize in %.2f seconds (%.2f interval).", next_cs - now, mh_speed * 2 ) end
+
+            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs               , "AURA_PERIODIC" ) -- Pretend it's an aura.
+            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 2 * mh_speed, "AURA_PERIODIC" )
+            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 4 * mh_speed, "AURA_PERIODIC" )
+            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 6 * mh_speed, "AURA_PERIODIC" )
+            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 8 * mh_speed, "AURA_PERIODIC" )
+        else
+            if Hekili.ActiveDebug then Hekili:Debug( "No Crusading Strikes energize queued." ) end
+        end
+    end
 end )
+
+spec:RegisterHook( "runHandler_startCombat", csStartCombat )
 
 
 spec:RegisterStateFunction( "apply_aura", function( name )
@@ -848,7 +947,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         toggle = "cooldowns",
 
-        usable = function() return talent.avenging_wrath.enabled or talent.sanctified_wrath.enabled or talent.avenging_wrath_might.enabled, "requires avenging_wrath/avenging_wrath_might/sanctified_wrath" end,
+        usable = function() return talent.avenging_wrath.enabled or talent.avenging_wrath_might.enabled, "requires avenging_wrath/avenging_wrath_might" end,
 
         handler = function ()
             applyBuff( "avenging_wrath" )
@@ -859,11 +958,13 @@ spec:RegisterAbilities( {
     blade_of_justice = {
         id = 184575,
         cast = 0,
-        cooldown = function() return 12 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) end,
+        cooldown = function() return ( talent.light_of_justice.enabled and 10 or 12 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste end,
+        charges = function() if talent.improved_blade_of_justice.enabled then return 2 end end,
+        recharge = function() if talent.improved_blade_of_justice.enabled then return ( talent.light_of_justice.enabled and 10 or 12 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste end end,
         gcd = "spell",
         school = "physical",
 
-        spend = function() return talent.holy_blade.enabled and -3 or -2 end,
+        spend = function() return talent.holy_blade.enabled and -2 or -1 end,
         spendType = "holy_power",
 
         talent = "blade_of_justice",
@@ -873,6 +974,9 @@ spec:RegisterAbilities( {
             if buff.consecrated_blade.up then
                 class.abilities.consecration.handler()
                 removeBuff( "consecrated_blade" )
+            end
+            if talent.expurgation.enabled then
+                applyDebuff( "target", "expurgation" )
             end
             removeBuff( "blade_of_wrath" )
             removeBuff( "sacred_judgment" )
@@ -1062,8 +1166,8 @@ spec:RegisterAbilities( {
         id = 35395,
         cast = 0,
         charges = 2,
-        cooldown = function () return 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
-        recharge = function () return 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
+        cooldown = function () return ( talent.swift_justice.enabled and 4 or 6 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
+        recharge = function () return ( talent.swift_justice.enabled and 4 or 6 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
         gcd = "spell",
         school = "physical",
 
@@ -1166,7 +1270,7 @@ spec:RegisterAbilities( {
         spend = function ()
             if buff.divine_purpose.up then return 0 end
             if buff.empyrean_power.up then return 0 end
-            return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
 
@@ -1187,6 +1291,11 @@ spec:RegisterAbilities( {
             end
 
             if buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
+
+            if talent.sanctify.enabled then
+                applyDebuff( "target", "sanctify" )
+                active_dot.sanctify = active_enemies
+            end
         end,
     },
 
@@ -1194,7 +1303,7 @@ spec:RegisterAbilities( {
     divine_toll = {
         id = function() return talent.divine_toll.enabled and 375576 or 304971 end,
         cast = 0,
-        cooldown = function() return talent.quickened_invocations.enabled and 45 or 60 end,
+        cooldown = function() return talent.quickened_invocation.enabled and 45 or 60 end,
         gcd = "spell",
         school = "arcane",
 
@@ -1216,8 +1325,8 @@ spec:RegisterAbilities( {
 
             if talent.divine_resonance.enabled or legendary.divine_resonance.enabled then
                 applyBuff( "divine_resonance" )
-                state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires, "AURA_PERIODIC" )
-                state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 5, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires     , "AURA_PERIODIC" )
+                state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 5 , "AURA_PERIODIC" )
                 state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 10, "AURA_PERIODIC" )
             end
         end,
@@ -1234,7 +1343,7 @@ spec:RegisterAbilities( {
         school = "holy",
 
         spend = function ()
-            return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
 
@@ -1303,8 +1412,11 @@ spec:RegisterAbilities( {
     -- Expends a large amount of mana to quickly heal a friendly target for $?$c1&$?a134735[${$s1*1.15}][$s1].
     flash_of_light = {
         id = 19750,
-        cast = function () return ( 1.5 - ( buff.selfless_healer.stack * 0.5 ) ) * haste end,
-        cooldown = 0,
+        cast = function ()
+            if talent.lights_celerity.enabled then return 0 end
+            return ( 1.5 - ( buff.selfless_healer.stack * 0.5 ) ) * haste
+        end,
+        cooldown = function() return talent.lights_celerity.enabled and 6 or 0 end,
         gcd = "spell",
         school = "holy",
 
@@ -1370,7 +1482,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holy",
 
-        spend = -1,
+        spend = function() return talent.vanguards_momentum.enabled and -2 or -1 end,
         spendType = "holy_power",
 
         talent = "hammer_of_wrath",
@@ -1450,9 +1562,13 @@ spec:RegisterAbilities( {
     judgment = {
         id = 20271,
         cast = 0,
-        -- charges = 1,
-        cooldown = function() return ( talent.improved_judgment.enabled and 11 or 12 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) end,
-        -- recharge = function() return ( talent.improved_judgment.enabled and 11 or 12) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) end,
+        charges = function() if talent.improved_judgment.enabled then return 2 end end,
+        cooldown = function() return ( ( talent.swift_justice.enabled and 10 or 12 ) - 0.5 * talent.seal_of_alacrity.rank ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste end,
+        recharge = function()
+            if talent.improved_judgment.enabled then
+                return ( talent.swift_justice.enabled and 10 or 12 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste
+            end
+        end,
         hasteCD = true,
         gcd = "spell",
         school = "holy",
@@ -1461,7 +1577,9 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-        velocity = 35,
+        velocity = function()
+            if talent.greater_judgment.enabled then return 35 end
+        end,
 
         handler = function ()
             removeBuff( "recompense" )
@@ -1469,6 +1587,10 @@ spec:RegisterAbilities( {
             if talent.empyrean_legacy.enabled and debuff.empyrean_legacy_icd.down then
                 applyBuff( "empyrean_legacy" )
                 applyDebuff( "player", "empyrean_legacy_icd" )
+            end
+            if talent.judgment_of_justice.enabled then
+                applyBuff( "judgment_buff" )
+                if talent.greater_judgment.enabled then applyDebuff( "target", "judgment_of_justice" ) end
             end
             if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", nil, 5 ) end
             if talent.virtuous_command.enabled or conduit.virtuous_command.enabled then applyBuff( "virtuous_command" ) end
@@ -1480,7 +1602,9 @@ spec:RegisterAbilities( {
         end,
 
         impact = function()
-            applyDebuff( "target", "judgment", nil, 1 + talent.crusaders_judgment.rank )
+            if talent.greater_judgment.enabled then
+                applyDebuff( "target", "judgment", nil, 1 + talent.highlords_judgment.rank )
+            end
         end
     },
 
@@ -1494,7 +1618,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
 
@@ -1547,7 +1671,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holyfire",
 
-        spend = 3,
+        spend = function() return talent.vanguard_of_justice.enabled and 4 or 3 end,
         spendType = "holy_power",
 
         talent = "radiant_decree",
@@ -1612,7 +1736,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "holy",
 
-        spend = function () return 3  - ( buff.the_magistrates_judgment.up and 1 or 0 ) end,
+        spend = function () return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.the_magistrates_judgment.up and 1 or 0 ) end,
         spendType = "holy_power",
 
         startsCombat = true,
@@ -1663,6 +1787,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 1109508,
+        talent = "templar_strikes",
         nobuff = "templar_slash",
 
         handler = function ()
@@ -1688,6 +1813,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 1109506,
+        talent = "templar_strikes",
         buff = "templar_slash",
 
         handler = function ()
@@ -1710,9 +1836,10 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
+        notalent = "justicars_vengeance",
 
         startsCombat = true,
 
