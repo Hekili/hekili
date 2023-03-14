@@ -189,6 +189,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 5
     },
+    divine_image = {
+        id = 392990,
+        duration = 9,
+        max_stack = 1
+    },
     divine_word = {
         id = 372760,
         duration = 10,
@@ -679,6 +684,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "holy_word_chastise" )
+            if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
     holy_word_salvation = {
@@ -697,7 +703,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "renew" )
-            addStack( "prayer_of_mending", 2 )
+            addStack( "prayer_of_mending", nil, 2 )
+            if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
     holy_word_sanctify = {
@@ -718,6 +725,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             reduceCooldown( "holy_word_salvation", 30 )
+            if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
     holy_word_serenity = {
@@ -778,8 +786,8 @@ spec:RegisterAbilities( {
     },
     lightwell = {
         id = 372835,
-        cast = 0.5,
-        cooldown = 180,
+        cast = 0,
+        cooldown = 120,
         gcd = "spell",
 
         spend = 0.04,

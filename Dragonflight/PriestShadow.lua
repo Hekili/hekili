@@ -1148,7 +1148,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holy",
 
-        spend = function () return 0.016 * ( 1 + conduit.clear_mind.mod * 0.01 ) end,
+        spend = function () return 0.02 * ( 1 + conduit.clear_mind.mod * 0.01 ) end,
         spendType = "mana",
 
         talent = "dispel_magic",
