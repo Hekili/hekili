@@ -28,7 +28,7 @@ spec:RegisterTalents( {
     dominate_mind              = { 82710, 205364, 1 }, -- Controls a mind up to 1 level above yours for 30 sec while still controlling your own mind. Does not work versus Demonic, Mechanical, or Undead beings or players. This spell shares diminishing returns with other disorienting effects.
     focused_mending            = { 82719, 372354, 1 }, -- Prayer of Mending does 45% increased healing to the initial target.
     from_darkness_comes_light  = { 82707, 390615, 1 }, -- Each time Shadow Word: Pain or Purge the Wicked deals damage, the healing of your next Flash Heal is increased by 1%, up to a maximum of 50%.
-    holy_nova                  = { 82701, 132157, 1 }, -- An explosion of holy light around you deals up to 1,567 Holy damage to enemies and up to 1,864 healing to allies within 12 yds, reduced if there are more than 5 targets.
+    holy_nova                  = { 82701, 132157, 1 }, -- An explosion of holy light around you deals up to 1,635 Holy damage to enemies and up to 1,968 healing to allies within 12 yds, reduced if there are more than 5 targets.
     improved_fade              = { 82686, 390670, 2 }, -- Reduces the cooldown of Fade by 5 sec.
     improved_flash_heal        = { 82714, 393870, 1 }, -- Increases healing done by Flash Heal by 15%.
     improved_mass_dispel       = { 82698, 341167, 1 }, -- Mass Dispel's cooldown is reduced to 25 sec and its cast time is reduced by 1 sec.
@@ -69,7 +69,7 @@ spec:RegisterTalents( {
     -- Discipline
     abyssal_reverie            = { 82583, 373054, 2 }, -- Atonement heals for 10% more when activated by Shadow spells.
     aegis_of_wrath             = { 86730, 238135, 1 }, -- Power Word: Shield absorbs 30% additional damage, but the absorb amount decays by 3% every 1 sec.
-    atonement                  = { 82594, 81749 , 1 }, -- Power Word: Shield, Flash Heal, Renew, and Power Word: Radiance apply Atonement to your target for 15 sec. Your spell damage heals all targets affected by Atonement for 40% of the damage done.
+    atonement                  = { 82594, 81749 , 1 }, -- Power Word: Shield applies Atonement to your target for 30 sec. Your spell damage heals all targets affected by Atonement for 40% of the damage done.
     blaze_of_light             = { 82568, 215768, 2 }, -- The damage of your Smite, Power Word: Solace, and Penance is increased by 8%, and Penance increases or decreases your target's movement speed by 25% for 2 sec.
     borrowed_time              = { 82600, 390691, 2 }, -- Casting Power Word: Shield increases your Haste by 4% for 4 sec.
     bright_pupil               = { 82591, 390684, 1 }, -- Reduces the cooldown of Power Word: Radiance by 5 sec.
@@ -101,7 +101,7 @@ spec:RegisterTalents( {
     power_of_the_dark_side     = { 82595, 198068, 1 }, -- Shadow Word: Pain and Purge the Wicked have a chance to empower your next Penance with Shadow, increasing its effectiveness by 50%.
     power_word_barrier         = { 82564, 62618 , 1 }, -- Summons a holy barrier to protect all allies at the target location for 10 sec, reducing all damage taken by 25% and preventing damage from delaying spellcasting.
     power_word_radiance        = { 82593, 194509, 1 }, -- A burst of light heals the target and 4 injured allies within 30 yards for 6,732, and applies Atonement for 70% of its normal duration.
-    power_word_solace          = { 82589, 129250, 1 }, -- Strikes an enemy with heavenly power, dealing 1,692 Holy damage and restoring 1% of your maximum mana.
+    power_word_solace          = { 82589, 129250, 1 }, -- Strikes an enemy with heavenly power, dealing 1,589 Holy damage and restoring 1% of your maximum mana.
     prayer_of_mending          = { 82718, 33076 , 1 }, -- Places a ward on an ally that heals them for 1,002 the next time they take damage, and then jumps to another ally within 20 yds. Jumps up to 4 times and lasts 30 sec after each jump.
     protector_of_the_frail     = { 82588, 373035, 1 }, -- Pain Suppression gains an additional charge. Power Word: Shield reduces the cooldown of Pain Suppression by 3 sec.
     purge_the_wicked           = { 82590, 204197, 1 }, -- Cleanses the target with fire, causing 583 Radiant damage and an additional 3,989 Radiant damage over 20 sec. Spreads to a nearby enemy when you cast Penance on the target.
