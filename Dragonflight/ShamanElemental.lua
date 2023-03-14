@@ -262,7 +262,7 @@ spec:RegisterAuras( {
     },
     electrified_shocks = {
         id = 382089,
-        duration = 6,
+        duration = 9,
         type = "Magic",
         max_stack = 1
     },
@@ -297,6 +297,11 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
         copy = 347349,
+    },
+    enfeeblement = {
+        id = 378080,
+        duration = 6,
+        max_stack = 1
     },
     -- Cannot move while using Far Sight.
     -- https://wowhead.com/beta/spell=6196
@@ -1481,7 +1486,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
-
+        notalent = "earthgrab_totem",
         toggle = "interrupts",
 
         handler = function ()
@@ -1878,6 +1883,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "hex" )
+            if talent.enfeeblement.enabled then applyDebuff( "target", "enfeeblement" ) end
             if time > 0 and talent.inundate.enabled then gain( 8, "maelstrom" ) end
         end,
     },
@@ -2234,7 +2240,7 @@ spec:RegisterAbilities( {
     spirit_walk = {
         id = 58875,
         cast = 0,
-        cooldown = function() return 60 - 7.5 * talent.go_with_the_flow.rank end,
+        cooldown = function() return 60 - 10 * talent.go_with_the_flow.rank end,
         gcd = "off",
         school = "physical",
 

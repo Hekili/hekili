@@ -1292,26 +1292,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Summons a totem at the target location for $d that slows the movement speed of enemies within $3600A1 yards by $3600s1%.
-    earthbind_totem = {
-        id = 2484,
-        cast = 0,
-        cooldown = function () return 30 - 3 * talent.totemic_surge.rank end,
-        gcd = "totem",
-        school = "nature",
-
-        spend = 0.025,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        toggle = "interrupts",
-
-        handler = function ()
-            summonTotem( "earthbind_totem" )
-        end,
-    },
-
     -- Talent: Summons a totem at the target location for $d. The totem pulses every $116943t1 sec, rooting all enemies within $64695A1 yards for $64695d. Enemies previously rooted by the totem instead suffer $116947s1% movement speed reduction.
     earthgrab_totem = {
         id = 51485,
@@ -1622,22 +1602,6 @@ spec:RegisterAbilities( {
 
             if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
         end
-    },
-
-    -- Talent: Transforms the enemy into a frog for $d. While hexed, the victim is incapacitated, and cannot attack or cast spells. Damage may cancel the effect. Limit 1. Only works on Humanoids and Beasts.
-    hex = {
-        id = 51514,
-        cast = 1.7,
-        cooldown = function () return 30 - 15 * talent.voodoo_mastery.rank end,
-        gcd = "spell",
-        school = "nature",
-
-        talent = "hex",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "hex" )
-        end,
     },
 
     -- Talent: Strike your target with an icy blade, dealing $s1 Frost damage and snaring them by $s2% for $d.    Ice Strike increases the damage of your next Frost Shock by $384357s1%$?s384359[ and generates $384359s1 $Lstack:stacks; of Maelstrom Weapon][].
@@ -1962,24 +1926,6 @@ spec:RegisterAbilities( {
         handler = function ()
             summonPet( "skyfury_totem" )
             applyBuff( "skyfury_totem" )
-        end,
-    },
-
-    -- Talent: Removes all movement impairing effects and increases your movement speed by $58875s1% for $58875d.
-    spirit_walk = {
-        id = 58875,
-        cast = 0,
-        cooldown = function () return 60 - 7.5 * talent.go_with_the_flow.rank end,
-        gcd = "off",
-        school = "physical",
-
-        talent = "spirit_walk",
-        startsCombat = false,
-
-        toggle = "interrupts",
-
-        handler = function ()
-            applyBuff( "spirit_walk" )
         end,
     },
 
