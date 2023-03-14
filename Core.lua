@@ -1562,8 +1562,8 @@ function Hekili.Update( initial )
                         state:HandleEvent( event )
                         state.offset = state.offset + t
                         event = events[ 1 ]
-                    elseif t < 0.05 then
-                        if debug then Hekili:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.05 seconds.\n", n, event.type, event.action, t ) end
+                    elseif t < 0.2 then
+                        if debug then Hekili:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.2 seconds.\n", n, event.type, event.action, t ) end
                         state.advance( t )
                         if event == events[ 1 ] then
                             -- Event did not get handled due to rounding.
