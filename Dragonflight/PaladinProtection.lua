@@ -156,7 +156,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=31884
     avenging_wrath = {
         id = 31884,
-        duration = function() return talent.sanctified_wrath.enabled and 25 or 20 end,
+        duration = 20,
         max_stack = 1
     },
     -- Alias for Avenging Wrath vs. Sentinel
@@ -164,7 +164,7 @@ spec:RegisterAuras( {
         alias = { "avenging_wrath", "sentinel" },
         aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
         aliasType = "buff",
-        duration = function() return talent.sanctified_wrath.enabled and 25 or 20 end,
+        duration = 20,
     },
     -- Talent: Block chance increased by $s1%.
     -- https://wowhead.com/beta/spell=385724
@@ -725,6 +725,10 @@ spec:RegisterHook( "spend", function( amt, resource )
         if talent.relentless_inquisitor.enabled or legendary.relentless_inquisitor.enabled then
             addStack( "relentless_inquisitor" )
         end
+        if talent.resolute_defender.enabled and amt > 2 then
+            reduceCooldown( "ardent_defender", talent.resolute_defender.rank )
+            reduceCooldown( "divine_shield", talent.resolute_defender.rank )
+        end
         if talent.tirions_devotion.enabled then
             reduceCooldown( "lay_on_hands", amt )
         end
@@ -788,9 +792,9 @@ spec:RegisterAbilities( {
             if talent.crusaders_resolve.enabled then applyDebuff( "target", "crusaders_resolve" ) end
             if talent.first_avenger.enabled then applyBuff( "first_avenger" ) end
             if talent.gift_of_the_golden_valkyr.enabled then
-                reduceCooldown( "guardian_of_ancient_kings", 0.5 * talent.gift_of_the_golden_valkyr.rank * min( active_enemies, (talent.focused_enmity.enabled and 1 or 3 ) + ( talent.soaring_shield.enabled and 2 or 0 ) ) )
+                reduceCooldown( "guardian_of_ancient_kings", 0.5 * talent.gift_of_the_golden_valkyr.rank * min( active_enemies, 3 + ( talent.soaring_shield.enabled and 2 or 0 ) ) )
             end
-            if talent.strength_in_adversity.enabled then addStack( "strength_in_adversity", nil, min( active_enemies, (talent.focused_enmity.enabled and 1 or 3 ) + ( talent.soaring_shield.enabled and 2 or 0 ) ) ) end
+            if talent.strength_in_adversity.enabled then addStack( "strength_in_adversity", nil, min( active_enemies, 3 + ( talent.soaring_shield.enabled and 2 or 0 ) ) ) end
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "ally_of_the_light" ) end
 
@@ -893,8 +897,8 @@ spec:RegisterAbilities( {
         id = 1022,
         cast = 0,
         charges = 1,
-        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
-        recharge = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
+        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
+        recharge = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
         gcd = "spell",
         school = "holy",
 
@@ -941,8 +945,8 @@ spec:RegisterAbilities( {
         id = 204018,
         cast = 0,
         charges = 1,
-        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
-        recharge = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
+        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
+        recharge = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
         gcd = "spell",
         school = "holy",
 
@@ -1085,7 +1089,7 @@ spec:RegisterAbilities( {
     divine_shield = {
         id = 642,
         cast = 0,
-        cooldown = function () return 300 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
+        cooldown = function () return 300 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
         gcd = "spell",
         school = "holy",
 
@@ -1109,7 +1113,7 @@ spec:RegisterAbilities( {
     eye_of_tyr = {
         id = 387174,
         cast = 0,
-        cooldown = function() return talent.inmost_light.enabled and 51 or 60 end,
+        cooldown = function() return talent.inmost_light.enabled and 45 or 60 end,
         gcd = "spell",
         school = "holy",
 
@@ -1355,7 +1359,7 @@ spec:RegisterAbilities( {
     lay_on_hands = {
         id = 633,
         cast = 0,
-        cooldown = function () return 600 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( talent.uthers_counsel.enabled and 0.8 or 1 ) end,
+        cooldown = function () return 600 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
         gcd = "off",
         school = "holy",
 
@@ -1469,10 +1473,6 @@ spec:RegisterAbilities( {
 
             applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
             last_shield = query_time
-
-            if conduit.resolute_defender.enabled and buff.ardent_defender.up then
-                buff.ardent_defender.expires = buff.ardent_defender.expires + ( buff.ardent_defender.duration * ( conduit.resolute_defender.mod * 0.01 ) )
-            end
         end,
     },
 
