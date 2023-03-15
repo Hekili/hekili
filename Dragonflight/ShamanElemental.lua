@@ -1186,6 +1186,7 @@ spec:RegisterAbilities( {
 
         talent = "astral_shift",
         startsCombat = false,
+        nopvptalent = "ethereal_form",
 
         toggle = "defensives",
 

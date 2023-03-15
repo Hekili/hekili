@@ -998,25 +998,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Shift partially into the elemental planes, taking $s1% less damage for $d.
-    astral_shift = {
-        id = 108271,
-        cast = 0,
-        cooldown = function () return 120 - 30 * talent.planes_traveler.rank end,
-        gcd = "off",
-        school = "physical",
-
-        talent = "astral_shift",
-        startsCombat = false,
-
-        toggle = "defensives",
-        nopvptalent = "ethereal_form",
-
-        handler = function ()
-            applyBuff( "astral_shift" )
-        end,
-    },
-
     -- Increases haste by $s1% for all party and raid members for $d.    Allies receiving this effect will become Sated and unable to benefit from Bloodlust or Time Warp again for $57724d.
     bloodlust = {
         id = 2825,

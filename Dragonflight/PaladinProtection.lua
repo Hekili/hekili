@@ -846,7 +846,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Throws a Blessed Hammer that spirals outward, dealing 260 Holy damage to enemies and reducing the next damage they deal to you by 626. Generates 1 Holy Power.
+    --[[ Talent: Throws a Blessed Hammer that spirals outward, dealing 260 Holy damage to enemies and reducing the next damage they deal to you by 626. Generates 1 Holy Power.
     blessed_hammer = {
         id = 204019,
         cast = 0,
@@ -869,7 +869,7 @@ spec:RegisterAbilities( {
                 if buff.ally_of_the_light.up then buff.ally_of_the_light.expires = buff.ally_of_the_light.expires + 1 end
             end
         end,
-    },
+    }, ]]
 
     -- Talent: Blesses a party or raid member, granting immunity to movement impairing effects for 8 sec.
     blessing_of_freedom = {

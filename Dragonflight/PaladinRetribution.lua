@@ -434,7 +434,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=343721
     final_reckoning = {
         id = 343721,
-        duration = function() return talent.executioners_will.enabled and 12 or 8 end,
+        duration = function() return talent.executioners_will.enabled and 14 or 10 end,
         type = "Magic",
         max_stack = 1
     },
@@ -972,6 +972,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.consecrated_blade.up then
+                -- TODO: Handle 10 second CD.
                 class.abilities.consecration.handler()
                 removeBuff( "consecrated_blade" )
             end
@@ -1212,7 +1213,6 @@ spec:RegisterAbilities( {
         spend = 0.035,
         spendType = "mana",
 
-        talent = "divine_protection",
         startsCombat = false,
 
         handler = function ()
@@ -1495,7 +1495,6 @@ spec:RegisterAbilities( {
                 if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 1 end
                 if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 1 end
             end
-            if talent.vanguards_momentum.enabled or legendary.vanguards_momentum.enabled then addStack( "vanguards_momentum" ) end
             if talent.zealots_paragon.enabled then
                 if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 0.5 end
                 if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 0.5 end
@@ -1626,7 +1625,12 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "empyrean_legacy" )
             removeDebuff( "target", "reckoning" )
+            if buff.blessing_of_dawn.up then
+                removeBuff( "blessing_of_dawn" )
+                applyBuff( "blessing_of_dusk" )
+            end
             if buff.divine_purpose.up then removeBuff( "divine_purpose" )
             else
                 removeBuff( "fires_of_justice" )
@@ -1856,9 +1860,6 @@ spec:RegisterAbilities( {
             if buff.empyrean_legacy.up then
                 class.abilities.divine_storm.handler() -- TODO: Check for resource gain?
                 removeBuff( "empyrean_legacy" )
-            end
-            if talent.executioners_will.enabled and debuff.execution_sentence.up and debuff.execution_sentence.expires - debuff.execution_sentence.applied < 16 then
-                debuff.execution_sentence.expires = debuff.execution_sentence.expires + 1
             end
             if talent.righteous_verdict.enabled then applyBuff( "righteous_verdict" ) end
             if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end

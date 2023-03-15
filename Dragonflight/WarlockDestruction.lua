@@ -306,7 +306,7 @@ spec:RegisterAuras( {
     burn_to_ashes = {
         id = 387154,
         duration = 20,
-        max_stack = 4
+        max_stack = 6
     },
     -- Talent: Movement speed increased by $s1%.
     -- https://wowhead.com/beta/spell=111400

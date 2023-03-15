@@ -398,7 +398,7 @@ spec:RegisterAbilities( {
     chrono_loop = {
         id = 383005,
         cast = 0,
-        cooldown = 90,
+        cooldown = 60,
         gcd = "spell",
 
         spend = 0.02,
@@ -409,7 +409,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            if talent.temporal_compression.enabled then addStack("temporal_compression") end
+            if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
         end,
     },
     disintegrate = {

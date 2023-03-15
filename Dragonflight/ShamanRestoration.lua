@@ -164,11 +164,6 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
-    everrising_tide = {
-        id = 382029,
-        duration = 8,
-        max_stack = 1
-    },
     -- Your Healing Rain is currently active.  $?$w1!=0[Magic damage taken reduced by $w1%.][]
     -- https://wowhead.com/beta/spell=73920
     healing_rain = {
@@ -371,21 +366,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "earthliving_weapon" )
-        end,
-    },
-
-    -- Overcharge your mana for 8 sec, increasing your haste by 10% and healing done by 10%. While overcharged, your mana regeneration is halted.
-    everrising_tide = {
-        id = 382029,
-        cast = 0,
-        cooldown = 30,
-        gcd = "off",
-
-        startsCombat = false,
-        texture = 132852,
-
-        handler = function ()
-            applyBuff( "everrising_tide" )
         end,
     },
 

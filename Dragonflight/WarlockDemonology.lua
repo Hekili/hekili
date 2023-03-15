@@ -983,7 +983,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=386601
     fiendish_wrath = {
         id = 386601,
-        duration = 8,
+        duration = 6,
         max_stack = 1,
         generate = function( t )
             local name, _, _, _, duration, expires = FindUnitBuffByID( "pet", 386601 )
@@ -1154,7 +1154,7 @@ spec:RegisterAuras( {
         id = 387603,
         duration = 15,
         tick_time = 3,
-        max_stack = 100
+        max_stack = 75
     },
     -- Talent: Increases the damage of Demonbolt by $s2% and Shadow Bolt by $s1%.
     -- https://wowhead.com/beta/spell=387604
