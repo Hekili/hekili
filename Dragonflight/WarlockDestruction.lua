@@ -225,10 +225,12 @@ spec:RegisterPvpTalents( {
 -- Auras
 spec:RegisterAuras( {
     active_havoc = {
-        duration = function () return level > 53 and 12 or 10 end,
+        duration = function () return class.auras.havoc.duration end,
         max_stack = 1,
 
         generate = function( ah )
+            ah.duration = class.auras.havoc.duration
+
             if pvptalent.bane_of_havoc.enabled and debuff.bane_of_havoc.up and query_time - last_havoc < ah.duration then
                 ah.count = 1
                 ah.applied = last_havoc
@@ -529,7 +531,10 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=80240
     havoc = {
         id = 80240,
-        duration = function() return talent.pandemonium.enabled and 15 or 12 end,
+        duration = function()
+            if talent.mayhem.enabled then return 5 end
+            return talent.pandemonium.enabled and 15 or 12
+        end,
         type = "Magic",
         max_stack = 1
     },
@@ -1030,7 +1035,23 @@ spec:RegisterHook( "spend", function( amt, resource )
     end
 end )
 
+
+local lastTarget
+local lastMayhem = 0
+
+spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if sourceGUID == GUID then
+        if subtype == "SPELL_CAST_SUCCESS" and destGUID ~= nil and destGUID ~= "" then
+            lastTarget = destGUID
+        elseif state.talent.mayhem.enabled and subtype == "SPELL_AURA_APPLIED" and spellID == 80240 then
+            lastMayhem = GetTime()
+        end
+    end
+end, false )
+
+
 spec:RegisterStateExpr( "last_havoc", function ()
+    if talent.mayhem.enabled then return lastMayhem end
     return pvptalent.bane_of_havoc.enabled and action.bane_of_havoc.lastCast or action.havoc.lastCast
 end )
 
@@ -1054,14 +1075,6 @@ end )
 
 spec:RegisterStateExpr( "soul_shard", function () return soul_shards.current end )
 
-
-local lastTarget
-
-spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" and destGUID ~= nil and destGUID ~= "" then
-        lastTarget = destGUID
-    end
-end, false )
 
 
 -- Tier 29
