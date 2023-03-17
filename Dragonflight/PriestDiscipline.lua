@@ -155,6 +155,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    atonement = {
+        id = 194384,
+        duration = 15,
+        max_stack = 1
+    },
     body_and_soul = {
         id = 65081,
         duration = 3,
@@ -200,6 +205,16 @@ spec:RegisterAuras( {
         id = 45242,
         duration = 8,
         max_stack = 1
+    },
+    harsh_discipline = {
+        id = 373183,
+        duration = 30,
+        max_stack = 1
+    },
+    harsh_discipline_stack = {
+        id = 373181,
+        duration = 3600,
+        max_stack = 3
     },
     inspiration = {
         id = 390677,
@@ -495,6 +510,11 @@ spec:RegisterAbilities( {
         texture = 136224,
 
         handler = function ()
+            if buff.harsh_discipline_stack.stack == 3
+                then applyBuff("harsh_discipline")
+                    buff.harsh_discipline_stack.stack = 0
+                else addStack("harsh_discipline_stack")
+            end
         end,
     },
 
@@ -552,6 +572,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             removeBuff( "power_of_the_dark_side" )
+            removeBuff("harsh_discipline")
             if debuff.purge_the_wicked.up then active_dot.purge_the_wicked = min( active_dot.purge_the_wicked + 1, true_active_enemies ) end
         end,
     },
@@ -580,9 +601,9 @@ spec:RegisterAbilities( {
     power_word_radiance = {
         id = 194509,
         cast = 2,
-        charges = 1,
+        charges = function() return talent.lights_promise.enabled and 2 or nil end,
         cooldown = 20,
-        recharge = 20,
+        recharge = function() return talent.lights_promise.enabled and 15 or nil end,
         gcd = "spell",
 
         spend = 0.06,
@@ -615,6 +636,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( 0.01 * mana.max, "mana" )
+            if buff.harsh_discipline_stack.stack == 3
+                then applyBuff("harsh_discipline")
+                    buff.harsh_discipline_stack.stack = 0
+                else addStack("harsh_discipline_stack")
+            end
         end,
     },
 
@@ -772,6 +798,11 @@ spec:RegisterAbilities( {
         texture = 135924,
 
         handler = function ()
+            if buff.harsh_discipline_stack.stack == 3
+                then applyBuff("harsh_discipline")
+                    buff.harsh_discipline_stack.stack = 0
+                else addStack("harsh_discipline_stack")
+            end
         end,
     },
 
