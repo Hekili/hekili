@@ -511,9 +511,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.harsh_discipline_stack.stack == 3
-                then applyBuff("harsh_discipline")
-                    buff.harsh_discipline_stack.stack = 0
-                else addStack("harsh_discipline_stack")
+                then applyBuff( "harsh_discipline" )
+                    removeBuff( "harsh_discipline_stack" )
+                else addStack( "harsh_discipline_stack" )
             end
         end,
     },
@@ -572,7 +572,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             removeBuff( "power_of_the_dark_side" )
-            removeBuff("harsh_discipline")
+            removeBuff( "harsh_discipline" )
             if debuff.purge_the_wicked.up then active_dot.purge_the_wicked = min( active_dot.purge_the_wicked + 1, true_active_enemies ) end
         end,
     },
@@ -637,9 +637,9 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( 0.01 * mana.max, "mana" )
             if buff.harsh_discipline_stack.stack == 3
-                then applyBuff("harsh_discipline")
-                    buff.harsh_discipline_stack.stack = 0
-                else addStack("harsh_discipline_stack")
+                then applyBuff( "harsh_discipline" )
+                    removeBuff( "harsh_discipline_stack" )
+                else addStack( "harsh_discipline_stack" )
             end
         end,
     },
@@ -799,9 +799,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.harsh_discipline_stack.stack == 3
-                then applyBuff("harsh_discipline")
-                    buff.harsh_discipline_stack.stack = 0
-                else addStack("harsh_discipline_stack")
+                then applyBuff( "harsh_discipline" )
+                    removeBuff( "harsh_discipline_stack" )
+                else addStack( "harsh_discipline_stack" )
             end
         end,
     },
