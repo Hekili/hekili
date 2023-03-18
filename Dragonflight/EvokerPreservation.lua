@@ -417,7 +417,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            if talent.temporal_compression.enabled then addStack("temporal_compression") end
+            if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
         end,
     },
     disintegrate = {
@@ -457,13 +457,13 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            applyBuff("dream_breath")
-            applyBuff("dream_breath_hot")
-            removeBuff("call_of_ysera")
-            removeBuff("temporal_compression")
+            applyBuff( "dream_breath" )
+            applyBuff( "dream_breath_hot" )
+            removeBuff( "call_of_ysera" )
+            removeBuff( "temporal_compression" )
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
-                setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
+                setCooldown( "tip_the_scales" , action.tip_the_scales.cooldown )
             end
             if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
             removeStack( "stasis" )
@@ -516,7 +516,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "essence_burst" )
-            if talent.temporal_compression.enabled then addStack("temporal_compression") end
+            if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
             if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
             removeStack( "stasis" )
         end,
@@ -539,7 +539,7 @@ spec:RegisterAbilities( {
         --    - Count shows on action button.
 
         handler = function ()
-            removeStack("essence_burst")
+            removeStack( "essence_burst" )
             -- if talent.cycle_of_life.enabled then
             --     if cycle_of_life_count == 2 then
             --         cycle_of_life_count = 0
@@ -583,13 +583,13 @@ spec:RegisterAbilities( {
         damage = function () return 1.334 * stat.spell_power * ( 1 + 0.1 * talent.blast_furnace.rank ) end,
 
         handler = function()
-            removeBuff("temporal_compression")
+            removeBuff( "temporal_compression" )
 
             applyDebuff( "target", "fire_breath" )
 
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
-                setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
+                setCooldown( "tip_the_scales" , action.tip_the_scales.cooldown )
             end
 
             if talent.leaping_flames.enabled then applyBuff( "leaping_flames", nil, empowerment_level ) end
@@ -691,7 +691,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            applyBuff( "reversion")
+            applyBuff( "reversion" )
             if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
             if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
             removeStack( "stasis" )
@@ -759,12 +759,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.stasis_ready.down then
-                if talent.temporal_compression.enabled then addStack("temporal_compression") end
+                if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
                 addStack( "stasis", 3)
             end
             if buff.stasis_ready.up then
-                setCooldown("stasis",90)
-                removeBuff("stasis_ready")
+                setCooldown( "stasis" ,90)
+                removeBuff( "stasis_ready" )
             end
         end,
 
@@ -785,9 +785,9 @@ spec:RegisterAbilities( {
             if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
             if talent.resonating_sphere.enabled then applyBuff( "echo" ) end
             if talent.nozdormus_teachings.enabled then
-                reduceCooldown( "dream_breath", 5 )
-                reduceCooldown( "fire_breath", 5 )
-                reduceCooldown( "spiritbloom", 5 )
+                reduceCooldown( "dream_breath" , 5 )
+                reduceCooldown( "fire_breath" , 5 )
+                reduceCooldown( "spiritbloom" , 5 )
             end
             if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
             removeStack( "stasis" )
@@ -807,7 +807,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            if talent.temporal_compression.enabled then addStack("temporal_compression") end
+            if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
         end,
     },
         -- Talent: Fly to an ally and heal them for 4,557.
@@ -826,8 +826,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            if talent.lifebind.enabled then applyBuff("lifebind") end
-            if talent.call_of_ysera.enabled then applyBuff("call_of_ysera") end
+            if talent.lifebind.enabled then applyBuff( "lifebind" ) end
+            if talent.call_of_ysera.enabled then applyBuff( "call_of_ysera" ) end
         end,
     },
 } )
