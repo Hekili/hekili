@@ -207,14 +207,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     harsh_discipline = {
+        id = 373181,
+        duration = 3600,
+        max_stack = 10
+    },
+    harsh_discipline_ready = {
         id = 373183,
         duration = 30,
         max_stack = 1
-    },
-    harsh_discipline_stack = {
-        id = 373181,
-        duration = 3600,
-        max_stack = 3
     },
     inspiration = {
         id = 390677,
@@ -510,10 +510,13 @@ spec:RegisterAbilities( {
         texture = 136224,
 
         handler = function ()
-            if buff.harsh_discipline_stack.stack == 3
-                then applyBuff( "harsh_discipline" )
-                    removeBuff( "harsh_discipline_stack" )
-                else addStack( "harsh_discipline_stack" )
+            if talent.harsh_discipline.enabled then
+                if buff.harsh_discipline.up and buff.harsh_discipline.stack == 9 then
+                    removeBuff( "harsh_discipline" )
+                    applyBuff( "harsh_discipline_ready" )
+                else
+                    addStack( "harsh_discipline" )
+                end
             end
         end,
     },
@@ -564,7 +567,7 @@ spec:RegisterAbilities( {
         cooldown = 9,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return buff.harsh_discipline_ready.up and 0 or 0.02 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -572,7 +575,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             removeBuff( "power_of_the_dark_side" )
-            removeBuff( "harsh_discipline" )
+            removeBuff( "harsh_discipline_ready" )
             if debuff.purge_the_wicked.up then active_dot.purge_the_wicked = min( active_dot.purge_the_wicked + 1, true_active_enemies ) end
         end,
     },
@@ -601,9 +604,9 @@ spec:RegisterAbilities( {
     power_word_radiance = {
         id = 194509,
         cast = 2,
-        charges = function() return talent.lights_promise.enabled and 2 or nil end,
+        charges = function() if talent.lights_promise.enabled then return 2 end end,
         cooldown = 20,
-        recharge = function() return talent.lights_promise.enabled and 15 or nil end,
+        recharge = function() if talent.lights_promise.enabled then return 20 end end,
         gcd = "spell",
 
         spend = 0.06,
@@ -636,11 +639,15 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( 0.01 * mana.max, "mana" )
-            if buff.harsh_discipline_stack.stack == 3
-                then applyBuff( "harsh_discipline" )
-                    removeBuff( "harsh_discipline_stack" )
-                else addStack( "harsh_discipline_stack" )
-            end
+            
+            if talent.harsh_discipline.enabled then
+                if buff.harsh_discipline.up and buff.harsh_discipline.stack == 9 then
+                    removeBuff( "harsh_discipline" )
+                    applyBuff( "harsh_discipline_ready" )
+                else
+                    addStack( "harsh_discipline" )
+                end
+            end    
         end,
     },
 
@@ -798,10 +805,13 @@ spec:RegisterAbilities( {
         texture = 135924,
 
         handler = function ()
-            if buff.harsh_discipline_stack.stack == 3
-                then applyBuff( "harsh_discipline" )
-                    removeBuff( "harsh_discipline_stack" )
-                else addStack( "harsh_discipline_stack" )
+            if talent.harsh_discipline.enabled then
+                if buff.harsh_discipline.up and buff.harsh_discipline.stack == 9 then
+                    removeBuff( "harsh_discipline" )
+                    applyBuff( "harsh_discipline_ready" )
+                else
+                    addStack( "harsh_discipline" )
+                end
             end
         end,
     },
