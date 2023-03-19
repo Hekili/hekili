@@ -463,7 +463,7 @@ spec:RegisterAbilities( {
             removeBuff( "temporal_compression" )
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
-                setCooldown( "tip_the_scales" , action.tip_the_scales.cooldown )
+                setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
             end
             if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
             removeStack( "stasis" )
