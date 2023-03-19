@@ -589,7 +589,7 @@ spec:RegisterAbilities( {
 
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
-                setCooldown( "tip_the_scales" , action.tip_the_scales.cooldown )
+                setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
             end
 
             if talent.leaping_flames.enabled then applyBuff( "leaping_flames", nil, empowerment_level ) end
@@ -760,10 +760,10 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.stasis_ready.down then
                 if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
-                addStack( "stasis", 3)
+                addStack( "stasis", 3 )
             end
             if buff.stasis_ready.up then
-                setCooldown( "stasis" ,90)
+                setCooldown( "stasis", 90)
                 removeBuff( "stasis_ready" )
             end
         end,
@@ -785,9 +785,9 @@ spec:RegisterAbilities( {
             if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
             if talent.resonating_sphere.enabled then applyBuff( "echo" ) end
             if talent.nozdormus_teachings.enabled then
-                reduceCooldown( "dream_breath" , 5 )
-                reduceCooldown( "fire_breath" , 5 )
-                reduceCooldown( "spiritbloom" , 5 )
+                reduceCooldown( "dream_breath", 5 )
+                reduceCooldown( "fire_breath", 5 )
+                reduceCooldown( "spiritbloom", 5 )
             end
             if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
             removeStack( "stasis" )
