@@ -1190,6 +1190,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "divine_purpose" )
+            if talent.maraads_dying_breath.enabled then applyBuff( "maraads_dying_breath" ) end
         end,
     },
 
