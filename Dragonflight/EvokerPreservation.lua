@@ -702,7 +702,7 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function() return talent.erasure.enabled and 2 or nil end,
         cooldown = function() return talent.temporal_artificer.enabled and 180 or 240 end,
-        recharge = 240,
+        recharge = function() return talent.temporal_artificer.enabled and 180 or 240 end,
         gcd = "spell",
 
         spend = 0.05,
@@ -758,13 +758,12 @@ spec:RegisterAbilities( {
         usable = function () return buff.stasis_ready.up or buff.stasis.stack < 1, "Stasis not ready" end,
 
         handler = function ()
-            if buff.stasis_ready.down then
+            if buff.stasis_ready.up then
+                setCooldown( "stasis", 90 )
+                removeBuff( "stasis_ready" )
+            else
                 if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
                 addStack( "stasis", 3 )
-            end
-            if buff.stasis_ready.up then
-                setCooldown( "stasis", 90)
-                removeBuff( "stasis_ready" )
             end
         end,
 
