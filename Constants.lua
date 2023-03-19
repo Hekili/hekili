@@ -216,6 +216,15 @@ ns.getSpecializationID = function ( index )
 end
 
 
+ns.PvpDummies = {
+    [114840] = 1, -- Orgrimmar
+    [114832] = 1, -- Stormwind
+    [189082] = 1, -- Nowhere
+    [197833] = 1, -- Valdrakken
+    [197834] = 1  -- Healing
+}
+
+
 
 ns.FrameStratas = {
     "BACKGROUND",
