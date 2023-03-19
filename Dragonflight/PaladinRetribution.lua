@@ -1138,7 +1138,7 @@ spec:RegisterAbilities( {
         school = "holy",
 
         startsCombat = false,
-        notalent = "consecrated_blade",
+        notalent = function() return talent.consecrated_blade.enabled and "consecrated_blade" or "divine_hammer" end,
 
         handler = function ()
             applyBuff( "consecration" )
