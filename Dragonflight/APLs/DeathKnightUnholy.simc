@@ -43,7 +43,7 @@ actions.aoe+=/epidemic,if=!variable.pooling_runic_power
 actions.aoe+=/wound_spender,cycle_targets=1,if=cooldown.death_and_decay.remains>10|cooldown.death_and_decay.remains>5&death_knight.fwounded_targets>=cycle_enemies
 
 # Potion
-actions.cooldowns+=/potion,if=(30>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60|cooldown.summon_gargoyle.ready)&(buff.dark_transformation.up&30>=buff.dark_transformation.remains|pet.army_ghoul.active&pet.army_ghoul.remains<=30|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=30)|boss&fight_remains<=30
+actions.cooldowns+=/potion,if=(pet.gargoyle.remains<30&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60|cooldown.summon_gargoyle.ready)&(buff.dark_transformation.up&buff.dark_transformation.remains<30|pet.army_ghoul.active&pet.army_ghoul.remains<=30|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=30)|boss&fight_remains<=30
 # Cooldowns
 actions.cooldowns+=/vile_contagion,cycle_targets=1,if=active_enemies>=2&debuff.festering_wound.stack>=4&cooldown.any_dnd.remains<3
 actions.cooldowns+=/summon_gargoyle,if=active_enemies>=3|buff.commander_of_the_dead.up
@@ -68,7 +68,7 @@ actions.garg_setup+=/soul_reaper,if=active_enemies=1&target.time_to_pct_35<5&tar
 actions.garg_setup+=/summon_gargoyle,use_off_gcd=1,if=buff.commander_of_the_dead.up|!talent.commander_of_the_dead&runic_power>=40
 actions.garg_setup+=/empower_rune_weapon,if=pet.gargoyle.active&pet.gargoyle.remains<=21
 actions.garg_setup+=/unholy_assault,if=pet.gargoyle.active&pet.gargoyle.remains<=21
-actions.garg_setup+=/potion,if=(30>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60|cooldown.summon_gargoyle.ready)&(buff.dark_transformation.up&30>=buff.dark_transformation.remains|pet.army_ghoul.active&pet.army_ghoul.remains<=30|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=30)
+actions.garg_setup+=/potion,if=(pet.gargoyle.remains<30&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60|cooldown.summon_gargoyle.ready)&(buff.dark_transformation.up&buff.dark_transformation.remains<30|pet.army_ghoul.active&pet.army_ghoul.remains<=30|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=30)
 actions.garg_setup+=/dark_transformation,if=talent.commander_of_the_dead&runic_power>40|!talent.commander_of_the_dead
 actions.garg_setup+=/any_dnd,if=!death_and_decay.ticking&debuff.festering_wound.stack>0
 actions.garg_setup+=/festering_strike,if=debuff.festering_wound.stack=0
@@ -86,7 +86,7 @@ actions.racials=arcane_torrent,if=runic_power.deficit>20&(cooldown.summon_gargoy
 actions.racials+=/blood_fury,if=(buff.blood_fury.duration>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=buff.blood_fury.duration|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=buff.blood_fury.duration|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=buff.blood_fury.duration
 actions.racials+=/berserking,if=(buff.berserking.duration>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=buff.berserking.duration|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=buff.berserking.duration|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=buff.berserking.duration
 actions.racials+=/lights_judgment,if=buff.unholy_strength.up&(!talent.festermight|buff.festermight.remains<target.time_to_die|buff.unholy_strength.remains<target.time_to_die)
-actions.racials+=/ancestral_call,if=(15>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=15|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=15|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=15
+actions.racials+=/ancestral_call,if=(pet.gargoyle.remains<15&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=15|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=15|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=15
 actions.racials+=/arcane_pulse,if=active_enemies>=2|(rune.deficit>=5&runic_power.deficit>=60)
 actions.racials+=/fireblood,if=(buff.fireblood.duration>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=buff.fireblood.duration|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=buff.fireblood.duration|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=buff.fireblood.duration
 actions.racials+=/bag_of_tricks,if=active_enemies=1&(buff.unholy_strength.up|boss&fight_remains<5)
