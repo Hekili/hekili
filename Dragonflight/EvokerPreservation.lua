@@ -209,6 +209,11 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
+    lifebind = {
+        id = 373267,
+        duration = 5,
+        max_stack = 1
+    },
     mastery_lifebinder = {
         id = 363510,
     },
@@ -245,6 +250,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 3
     },
+    stasis_ready = {
+        id = 370562,
+        duration = 30,
+        max_stack = 1
+    },    
     temporal_anomaly = { -- TODO: Creates an absorb vortex effect.
         id = 373861,
         duration = 6,
@@ -389,6 +399,8 @@ spec:RegisterAbilities( {
             removeBuff( "dispellable_disease" )
             -- removeBuff( "dispellable_bleed" )
             health.current = min( health.max, health.current + action.cauterizing_flame.healing )
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
     },
     chrono_loop = {
@@ -405,7 +417,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            if talent.temporal_compression.enabled then addStack("temporal_compression") end
+            if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
         end,
     },
     disintegrate = {
@@ -445,14 +457,16 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            applyBuff("dream_breath")
-            applyBuff("dream_breath_hot")
-            removeBuff("call_of_ysera")
-            removeBuff("temporal_compression")
+            applyBuff( "dream_breath" )
+            applyBuff( "dream_breath_hot" )
+            removeBuff( "call_of_ysera" )
+            removeBuff( "temporal_compression" )
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
             end
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
 
         copy = { 382614, 355936 }
@@ -502,7 +516,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "essence_burst" )
-            if talent.temporal_compression.enabled then addStack("temporal_compression") end
+            if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
     },
     emerald_blossom = {
@@ -523,7 +539,7 @@ spec:RegisterAbilities( {
         --    - Count shows on action button.
 
         handler = function ()
-            removeStack("essence_burst")
+            removeStack( "essence_burst" )
             -- if talent.cycle_of_life.enabled then
             --     if cycle_of_life_count == 2 then
             --         cycle_of_life_count = 0
@@ -532,6 +548,8 @@ spec:RegisterAbilities( {
             --         cycle_of_life_count = cycle_of_life_count + 1
             --     end
             -- end
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
     },
     emerald_communion = {
@@ -565,7 +583,7 @@ spec:RegisterAbilities( {
         damage = function () return 1.334 * stat.spell_power * ( 1 + 0.1 * talent.blast_furnace.rank ) end,
 
         handler = function()
-            removeBuff("temporal_compression")
+            removeBuff( "temporal_compression" )
 
             applyDebuff( "target", "fire_breath" )
 
@@ -600,6 +618,8 @@ spec:RegisterAbilities( {
             removeBuff( "scarlet_adaptation" )
             removeBuff( "call_of_ysera" )
             removeStack( "lifespark" )
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
     },
     naturalize = {
@@ -622,6 +642,8 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "dispellable_poison" )
             removeBuff( "dispellable_magic" )
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
     },
     nullifying_shroud = {
@@ -669,16 +691,18 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            applyBuff( "reversion")
+            applyBuff( "reversion" )
             if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
     },
     rewind = {
         id = 363534,
         cast = 0,
-        charges = 1,
-        cooldown = 180,
-        recharge = 180,
+        charges = function() return talent.erasure.enabled and 2 or nil end,
+        cooldown = function() return talent.temporal_artificer.enabled and 180 or 240 end,
+        recharge = function() return talent.temporal_artificer.enabled and 180 or 240 end,
         gcd = "spell",
 
         spend = 0.05,
@@ -712,26 +736,38 @@ spec:RegisterAbilities( {
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
             end
             removeBuff( "temporal_compression" )
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
 
         copy = { 382731, 367226 }
     },
     stasis = {
-        id = 370537,
+        id = function () return buff.stasis_ready.up and 370564 or 370537 end,
         cast = 0,
         cooldown = 90,
         gcd = "off",
 
-        spend = 0.04,
+        spend = function () return buff.stasis_ready.up and 0 or 0.04 end,
         spendType = "mana",
 
         startsCombat = false,
 
         toggle = "cooldowns",
 
+        usable = function () return buff.stasis_ready.up or buff.stasis.stack < 1, "Stasis not ready" end,
+
         handler = function ()
-            if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
+            if buff.stasis_ready.up then
+                setCooldown( "stasis", 90 )
+                removeBuff( "stasis_ready" )
+            else
+                if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
+                addStack( "stasis", 3 )
+            end
         end,
+
+        copy = { 370564, 370537, "stasis" }
     },
     temporal_anomaly = {
         id = 373861,
@@ -752,6 +788,8 @@ spec:RegisterAbilities( {
                 reduceCooldown( "fire_breath", 5 )
                 reduceCooldown( "spiritbloom", 5 )
             end
+            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+            removeStack( "stasis" )
         end,
     },
     time_dilation = {
@@ -769,6 +807,26 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.temporal_compression.enabled then addStack( "temporal_compression" ) end
+        end,
+    },
+        -- Talent: Fly to an ally and heal them for 4,557.
+    verdant_embrace = {
+        id = 360995,
+        cast = 0,
+        cooldown = 24,
+        gcd = "spell",
+        school = "nature",
+        color = "green",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        talent = "verdant_embrace",
+        startsCombat = false,
+
+        handler = function ()
+            if talent.lifebind.enabled then applyBuff( "lifebind" ) end
+            if talent.call_of_ysera.enabled then applyBuff( "call_of_ysera" ) end
         end,
     },
 } )
