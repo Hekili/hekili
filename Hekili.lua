@@ -317,9 +317,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             auraString = auraString .. "\n\n"
 
             insert( v.log, 1, auraString )
-            if Hekili.TargetDebug and Hekili.TargetDebug:len() > 0 then
-                insert( v.log, 1, "targets:\n" .. Hekili.TargetDebug )
-            end
+            insert( v.log, 1, "targets:  " .. ( Hekili.TargetDebug or "no data" ) )
             insert( v.log, 1, self:GenerateProfile() )
 
             local custom = ""

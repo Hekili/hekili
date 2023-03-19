@@ -314,13 +314,15 @@ do
             return lastCount, lastStationary
         end
 
+        local debugging = Hekili.ActiveDebug
+        local details = nil
         local showNPs = GetCVar( "nameplateShowEnemies" ) == "1"
 
         wipe( counted )
 
         local count, stationary = 0, 0
 
-        Hekili.TargetDebug = ""
+        if debugging then details = format( "Nameplates are %s.", showNPs and "enabled" or "disabled" ) end
 
         local spec = state.spec.id
         spec = spec and rawget( Hekili.DB.profile.specs, spec )
@@ -335,7 +337,9 @@ do
                         local excluded = not UnitIsUnit( unit, "target" )
 
                         local npcid = guid:match( "(%d+)-%x-$" )
-                        npcid = tonumber(npcid)
+                        npcid = tonumber( npcid )
+
+                        if debugging then details = format( "%s\n - Checking %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
                         if excluded then
                             excluded = enemyExclusions[ npcid ]
@@ -343,10 +347,18 @@ do
                             -- If our table has a number, unit is ruled out only if the buff is present.
                             if excluded and type( excluded ) == "number" then
                                 excluded = FindExclusionAuraByID( unit, excluded )
+
+                                if debugging and excluded then
+                                    details = format( "%s\n    - Excluded by aura.", details )
+                                end
                             end
 
                             if not excluded and checkPets then
                                 excluded = not Hekili:TargetIsNearPet( unit )
+
+                                if debugging and excluded then
+                                    details = format( "%s\n    - Excluded by pet range.", details )
+                                end
                             end
 
                             local _, range
@@ -355,10 +367,15 @@ do
                                 guidRanges[ guid ] = range
 
                                 excluded = range and range > spec.nameplateRange or false
+
+                                if debugging and excluded then
+                                    details = format( "%s\n    - Excluded by nameplate range.", details )
+                                end
                             end
 
                             if not excluded and spec.damageOnScreen and showNPs and not npUnits[ guid ] then
                                 excluded = true
+                                if debugging then details = format( "%s\n    - Excluded by on-screen nameplate requirement.", details ) end
                             end
                         end
 
@@ -373,7 +390,7 @@ do
                                 stationary = stationary + 1
                             end
 
-                            Hekili.TargetDebug = format( "%s    %-12s - %2d - %s - %.2f - %d - %s %s\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0, unit and UnitName( unit ) or "Unknown", ( moving and "(moving)" or "" ) )
+                            if debugging then details = format( "%s\n    %-12s - %2d - %s - %.2f - %d - %s %s\n", details, unit, range or -1, guid, rate or -1, n or -1, unit and UnitName( unit ) or "Unknown", ( moving and "(moving)" or "" ) ) end
                         end
                     end
 
@@ -390,16 +407,26 @@ do
                             local npcid = guid:match( "(%d+)-%x-$" )
                             npcid = tonumber(npcid)
 
+                            if debugging then details = format( "%s\n - Checking %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
+
                             if excluded then
                                 excluded = enemyExclusions[ npcid ]
 
                                 -- If our table has a number, unit is ruled out only if the buff is present.
                                 if excluded and type( excluded ) == "number" then
                                     excluded = FindExclusionAuraByID( unit, excluded )
+
+                                    if debugging and excluded then
+                                        details = format( "%s\n    - Excluded by aura.", details )
+                                    end
                                 end
 
                                 if not excluded and checkPets then
                                     excluded = not Hekili:TargetIsNearPet( unit )
+
+                                    if debugging and excluded then
+                                        details = format( "%s\n    - Excluded by pet range.", details )
+                                    end
                                 end
 
                                 local _, range
@@ -408,10 +435,15 @@ do
                                     guidRanges[ guid ] = range
 
                                     excluded = range and range > spec.nameplateRange or false
+
+                                    if debugging and excluded then
+                                        details = format( "%s\n    - Excluded by nameplate range.", details )
+                                    end
                                 end
 
                                 if not excluded and spec.damageOnScreen and showNPs and not npUnits[ guid ] then
                                     excluded = true
+                                    if debugging then details = format( "%s\n    - Excluded by on-screen nameplate requirement.", details ) end
                                 end
                             end
 
@@ -426,7 +458,7 @@ do
                                     stationary = stationary + 1
                                 end
 
-                                Hekili.TargetDebug = format( "%s    %-12s - %2d - %s - %.2f - %d - %s %s\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0, unit and UnitName( unit ) or "Unknown", ( moving and "(moving)" or "" ) )
+                                if debugging then details = format( "%s\n    %-12s - %2d - %s - %.2f - %d - %s %s\n", details, unit, range or -1, guid, rate or -1, n or -1, unit and UnitName( unit ) or "Unknown", ( moving and "(moving)" or "" ) ) end
                             end
 
                             counted[ guid ] = counted[ guid ] or false
@@ -444,19 +476,29 @@ do
                     local npcid = guid:match("(%d+)-%x-$")
                     npcid = tonumber(npcid)
 
-                    local unit = Hekili:GetUnitByGUID( guid )
+                    local unit = Hekili:GetUnitByGUID( guid ) or UnitTokenFromGUID( guid )
                     local excluded = false
 
                     if unit and not UnitIsUnit( unit, "target" ) then
                         excluded = enemyExclusions[ npcid ]
 
+                        if debugging then details = format( "%s\n - Checking %s [ %s ] #%s.", details, unit, guid, UnitName( unit ) ) end
+
                         -- If our table has a number, unit is ruled out only if the buff is present.
                         if excluded and type( excluded ) == "number" then
                             excluded = FindExclusionAuraByID( unit, excluded )
+
+                            if debugging and excluded then
+                                details = format( "%s\n    - Excluded by aura.", details )
+                            end
                         end
 
                         if not excluded and checkPets then
                             excluded = not Hekili:TargetIsNearPet( unit )
+
+                            if debugging and excluded then
+                                details = format( "%s\n    - Excluded by pet range.", details )
+                            end
                         end
 
                         local _, range
@@ -465,11 +507,16 @@ do
                             guidRanges[ guid ] = range
 
                             excluded = range and range > spec.nameplateRange or false
+
+                            if debugging and excluded then
+                                details = format( "%s\n    - Excluded by nameplate range.", details )
+                            end
                         end
                     end
 
                     if not excluded and spec.damageOnScreen and showNPs and not npUnits[ guid ] then
                         excluded = true
+                        if debugging then details = format( "%s\n    - Excluded by on-screen nameplate requirement.", details ) end
                     end
 
                     if not excluded and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then
@@ -482,7 +529,7 @@ do
                             stationary = stationary + 1
                         end
 
-                        Hekili.TargetDebug = format("%s    %-12s - %2d - %s %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid, ( moving and "(moving)" or "" ) )
+                        if debugging then details = format("%s\n    %-12s - %2d - %s %s\n", details, "dmg", guidRanges[ guid ] or -1, guid, ( moving and "(moving)" or "" ) ) end
                     else
                         counted[ guid ] = false
                     end
@@ -502,7 +549,7 @@ do
                     stationary = stationary + 1
                 end
 
-                Hekili.TargetDebug = format("%s    %-12s - %2d - %s %s\n", Hekili.TargetDebug, "target", 0, targetGUID, ( moving and "(moving)" or "" ) )
+                if debugging then details = format("%s\n    %-12s - %2d - %s %s\n", details, "target", 0, targetGUID, ( moving and "(moving)" or "" ) ) end
             else
                 counted[ targetGUID ] = false
             end
@@ -516,6 +563,8 @@ do
             if Hekili:GetToggleState( "mode" ) == "reactive" then HekiliDisplayAOE:UpdateAlpha() end
             -- Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" )
         end
+
+        Hekili.TargetDebug = details
 
         return count, stationary
     end
