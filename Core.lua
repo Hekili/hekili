@@ -173,8 +173,8 @@ function Hekili:OnEnable()
     self.PendingSpecializationChange = true
     self:ForceUpdate( "ADDON_ENABLED" )
 
-    if self.BuiltFor > self.GameBuild then
-        self:Notify( "|cFFFF0000WARNING|r: This version of Hekili is for a future version of WoW; you should reinstall for " .. self.CurrentBuild .. "." )
+    if self.BuiltFor > self.CurrentBuild then
+        self:Notify( "|cFFFF0000WARNING|r: This version of Hekili is for a future version of WoW; you should reinstall for " .. self.GameBuild .. "." )
     end
 end
 
