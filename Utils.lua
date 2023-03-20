@@ -913,6 +913,78 @@ function Hekili:IsValidSpec()
 end
 
 
+function Hekili:GetLoadoutExportString()
+    -- Current as of 10.1.0.48480
+    local bitWidthHeaderVersion = 8
+    local bitWidthSpecID = 16
+    local bitWidthRanksPurchased = 6
+
+    -- Cannot force-load as needed without causing taint, so this simply replicates existing Blizzard functionality.
+    if IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then
+        bitWidthHeaderVersion = ClassTalentImportExportMixin.bitWidthHeaderVersion
+        bitWidthSpecID = ClassTalentImportExportMixin.bitWidthSpecID
+        bitWidthRanksPurchased = ClassTalentImportExportMixin.bitWidthRanksPurchased
+    end
+
+    local es = ExportUtil.MakeExportDataStream()
+    local configID = C_ClassTalents.GetActiveConfigID() or -1
+    local configInfo = C_Traits.GetConfigInfo( configID )
+    local currentSpecID = PlayerUtil.GetCurrentSpecID()
+
+    local treeID = configInfo.treeIDs[ 1 ]
+    local treeHash = C_Traits.GetTreeHash( treeID )
+
+    local serializationVersion = C_Traits.GetLoadoutSerializationVersion()
+
+    es:AddValue( bitWidthHeaderVersion, serializationVersion )
+    es:AddValue( bitWidthSpecID, currentSpecID )
+
+    -- treeHash is a 128bit hash, passed as an array of 16, 8-bit values
+    for i, hashVal in ipairs( treeHash ) do
+        es:AddValue( 8, hashVal )
+    end
+
+    local treeNodes = C_Traits.GetTreeNodes( treeID )
+    for i, treeNodeID in ipairs( treeNodes ) do
+        local treeNode = C_Traits.GetNodeInfo( configID, treeNodeID )
+
+        local isNodeSelected = treeNode.ranksPurchased > 0
+        local isPartiallyRanked = treeNode.ranksPurchased ~= treeNode.maxRanks
+        local isChoiceNode = treeNode.type == Enum.TraitNodeType.Selection
+
+        es:AddValue( 1, isNodeSelected and 1 or 0 )
+
+        if ( isNodeSelected ) then
+            es:AddValue( 1, isPartiallyRanked and 1 or 0 )
+            if ( isPartiallyRanked ) then
+                es:AddValue( bitWidthRanksPurchased, treeNode.ranksPurchased )
+            end
+
+            es:AddValue( 1, isChoiceNode and 1 or 0 )
+            if ( isChoiceNode) then
+                local entryIndex = 0
+
+                for i, entryID in ipairs( treeNode.entryIDs ) do
+                    if ( entryID == treeNode.activeEntry.entryID ) then
+                        entryIndex = i
+                        break
+                    end
+                end
+
+                if ( entryIndex <= 0 or entryIndex > 4 ) then
+                    return "error: unable to generate"
+                end
+
+                -- store entry index as zero-index
+                es:AddValue( 2, entryIndex - 1 )
+            end
+        end
+    end
+
+    return es:GetExportString()
+end
+
+
 do
     local cache = {}
 
