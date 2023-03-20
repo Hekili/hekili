@@ -2290,8 +2290,6 @@ spec:RegisterOptions( {
 
     potion = "spectral_agility",
 
-    buffPadding = 0,
-
     nameplates = false,
     nameplateRange = 8,
 

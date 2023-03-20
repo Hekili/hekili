@@ -38,9 +38,6 @@ local specTemplate = {
     gcdSync = true,
     enhancedRecheck = false,
 
-    buffPadding = 0,
-    debuffPadding = 0,
-
     nameplates = true,
     nameplateRange = 8,
 
