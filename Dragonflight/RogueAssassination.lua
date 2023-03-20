@@ -2596,7 +2596,8 @@ spec:RegisterAbilities( {
         texture = 132331,
 
         disabled = function ()
-            return not settings.solo_vanish and not ( boss and group ), "can only vanish in a boss encounter or with a group"
+            if ( settings.solo_vanish and solo ) or group or boss then return false end
+            return true
         end,
 
         toggle = "cooldowns",
