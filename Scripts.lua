@@ -16,9 +16,9 @@ local orderedPairs = ns.orderedPairs
 local roundUp = ns.roundUp
 local safeMax = ns.safeMax
 
-local trim = string.trim
+local format, trim = string.format, string.trim
 
-local twipe = table.wipe
+local twipe, insert = table.wipe, table.insert
 
 
 -- Forgive the name, but this should properly replace ! characters with not, accounting for appropriate bracketing.
@@ -294,6 +294,30 @@ local function space_killer(s)
     return s:gsub("%s", "")
 end
 
+local function HandleLanguageIncompatibilities( str )
+    -- Address equipped.number => equipped[number]
+    str = str:gsub("%.(%d+)%.", "[%1].")
+    str = str:gsub("equipped%.(%d+)", "equipped[%1]")
+    str = str:gsub("main_hand%.(%d[a-z0-9_]+)", "main_hand['%1']")
+    str = str:gsub("off_hand%.(%d[a-z0-9_]+)", "off_hand['%1']")
+    str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
+    str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
+    str = str:gsub("%.in$", "['in']" )
+    str = str:gsub("imps_spawned_during%.([^!=<>&|]+)", "imps_spawned_during['%1'] ")
+    str = str:gsub("time_to_imps%.(%b()).remains", "time_to_imps[%1].remains")
+    str = str:gsub("time_to_imps%.(%d+).remains", "time_to_imps[%1].remains")
+    -- str = str:gsub("incanters_flow_time_to%.(%d+)[.any]?", "incanters_flow_time_to[%1]")
+    str = str:gsub("prev%.(%d+)", "prev[%1]")
+    str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
+    str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
+    str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
+    str = str:gsub("time_to_sht_plus%.(%d+)", "time_to_sht_plus[%1]")
+    -- str = str:gsub("([a-z0-9_]+)%.(%d+)", "%1[%2]")
+
+    return str
+end
+
+
 -- Convert SimC syntax to Lua conditionals.
 local function SimToLua( str, modifier )
     -- If no conditions were provided, function should return true.
@@ -351,32 +375,10 @@ local function SimToLua( str, modifier )
     -- Condense parenthetical spaces.
     str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
 
-    -- Address equipped.number => equipped[number]
-    str = str:gsub("%.(%d+)%.", "[%1].")
-    str = str:gsub("equipped%.(%d+)", "equipped[%1]")
-    str = str:gsub("main_hand%.(%d[a-z0-9_]+)", "main_hand['%1']")
-    str = str:gsub("off_hand%.(%d[a-z0-9_]+)", "off_hand['%1']")
-    str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
-    str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
-    str = str:gsub("%.in$", "['in']" )
-    str = str:gsub("imps_spawned_during%.([^!=<>&|]+)", "imps_spawned_during['%1'] ")
-    str = str:gsub("time_to_imps%.(%b()).remains", "time_to_imps[%1].remains")
-    str = str:gsub("time_to_imps%.(%d+).remains", "time_to_imps[%1].remains")
-    -- str = str:gsub("incanters_flow_time_to%.(%d+)[.any]?", "incanters_flow_time_to[%1]")
-
     -- Condense bracketed expressions.
     str = str:gsub("%b[]", space_killer)
 
-    str = str:gsub("prev%.(%d+)", "prev[%1]")
-    str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
-    str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
-    str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
-    str = str:gsub("time_to_sht_plus%.(%d+)", "time_to_sht_plus[%1]")
-    -- str = str:gsub("([a-z0-9_]+)%.(%d+)", "%1[%2]")
-
-    --str = SpaceOut( str )
-
-    return str
+    return HandleLanguageIncompatibilities( str )
 end
 scripts.SimToLua = SimToLua
 
@@ -1186,6 +1188,69 @@ local isString = {
 }
 
 
+local debugArgTemplate = [[%s
+local arg%d = debugformat( %s )]]
+
+local debugPrintTemplate = [[-- %s %s
+local prev_action = this_action
+this_action = "%s"
+%s
+this_action = prev_action
+return format( "%s", %s )]]
+
+local function generateDebugPrint( node, condition, header, isRecheck )
+    local cleanPrint = SimcWithResources( condition:trim() ):gsub( "%%", "%%%%" )
+
+    local seen = {}
+    local argn = 0
+    local formatArgs, generateDebug, debugPrint = nil, "", nil
+
+    for token in cleanPrint:gmatch( "[a-zA-Z][A-Za-z0-9_%.]+" ) do
+        if not seen[ token ] then
+            argn = argn + 1
+            seen[ token ] = "arg" .. argn
+
+            generateDebug = format( debugArgTemplate, generateDebug, argn, token )
+        end
+
+        if not formatArgs then
+            formatArgs = "arg1"
+        else
+            formatArgs = format( "%s, %s", formatArgs, seen[ token ] )
+        end
+    end
+
+    if argn > 0 then
+        local replacements = {}
+
+        for k, v in pairs( seen ) do
+            insert( replacements, { k, "{" .. v .. "}" } )
+        end
+
+        sort( replacements, function( a, b ) return a[1]:len() > b[1]:len() end )
+
+        for _, replace in ipairs( replacements ) do
+            cleanPrint = cleanPrint:gsub( replace[1], replace[2] )
+        end
+
+        for _, replace in ipairs( replacements ) do
+            cleanPrint = cleanPrint:gsub( replace[2], replace[1] .. "[%%s]" )
+        end
+
+        generateDebug = format( debugPrintTemplate, header, isRecheck and "recheck debug" or "condition debug", node.action or "wait", generateDebug, cleanPrint, formatArgs )
+        generateDebug = HandleLanguageIncompatibilities( generateDebug )
+        debugPrint, formatArgs = Hekili:Loadstring( generateDebug )
+
+        if formatArgs then
+            Hekili:Error( "Unable to generate debug print for " .. header .. ": " .. formatArgs:gsub( "%%", "%%%%" ) .. "\n" .. generateDebug:gsub( "%%", "%%%%" ) )
+            return
+        end
+
+        return generateDebug, setfenv( debugPrint, state )
+    end
+end
+
+
 -- Need to convert all the appropriate scripts and store them safely...
 local function ConvertScript( node, hasModifiers, header )
     local previousScript = state.scriptID
@@ -1222,18 +1287,29 @@ local function ConvertScript( node, hasModifiers, header )
     local se = clean and GetScriptElements( clean )
 
     local varPool
+    local generateDebug, debugPrint
 
     if se then
+        local hasElements = false
+
         for k, v in pairs( se ) do
+            hasElements = true
+
             if k:sub( 1, 8 ) == "variable" then
                 varPool = varPool or {}
                 table.insert( varPool, k:sub( 10 ) )
             end
         end
+
+        if hasElements then
+            generateDebug, debugPrint = generateDebugPrint( node, node.criteria, header )
+        end
     end
 
     -- autorecheck...
     local rs, rc, erc, rEle
+    local recheckDebug, recheckPrint
+
     if t and t ~= "" then
         rs = scripts:BuildRecheck( node.criteria )
         if rs then
@@ -1242,6 +1318,11 @@ local function ConvertScript( node, hasModifiers, header )
             if rc then setfenv( rc, state ) end
 
             rEle = GetScriptElements( orig )
+
+            --[[ if next( rEle ) ~= nil then
+                recheckDebug, recheckPrint = generateDebugPrint( node, rs, header, true )
+            end ]]
+
             rEle.zzz = orig
 
             if type( rc ) ~= "function" then
@@ -1255,10 +1336,15 @@ local function ConvertScript( node, hasModifiers, header )
         Conditions = sf,
         Error = e,
         Elements = se,
+        Print = debugPrint,
+        Debug = generateDebug,
+
         Recheck = rc,
         RecheckScript = rs,
         RecheckError = erc,
         RecheckElements = rEle,
+        RecheckPrint = recheckPrint,
+        RecheckDebug = recheckDebug,
         Modifiers = {},
         ModElements = {},
         ModEmulates = {},
@@ -1838,6 +1924,8 @@ do
         if recheck then
             return embedConditionsAndValues( script.RecheckScript, script.RecheckElements )
         end
+
+        if script.Print then return script.Print() end
 
         return embedConditionsAndValues( script.SimC, script.Elements )
     end

@@ -603,6 +603,13 @@ function Hekili:ZoomedTextureWithText( texture, text )
 end
 
 
+function state.debugformat( val )
+    if val == nil then return "nil" end
+    if type( val ) == "number" then return format( "%.2f", val ) end
+    return tostring( val )
+end
+
+
 -- Tooltip Parsing Utilities (10.0.2)
 do
     local SurfaceArgs = TooltipUtil and TooltipUtil.SurfaceArgs
