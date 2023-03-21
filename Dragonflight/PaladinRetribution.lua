@@ -858,7 +858,7 @@ local CrusadingStrikes = setfenv( function()
         if Hekili.ActiveDebug then Hekili:Debug( "Crusading Strikes energize fails: Out of range." ) end
         return
     end
-    action.crusader_strike.handler()
+    spec.abilities.crusader_strike.handler()
 end, state )
 
 local csStartCombat = setfenv( function()
