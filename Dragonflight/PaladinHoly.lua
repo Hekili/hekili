@@ -310,6 +310,11 @@ spec:RegisterAuras( {
         duration = 5.113,
         max_stack = 1,
     },
+    maraads_dying_breath = {
+        id = 388019,
+        duration = 10,
+        max_stack = 5,
+    },
     mastery_lightbringer = {
         id = 183997,
     },
@@ -1117,6 +1122,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "divine_purpose" )
+            if talent.maraads_dying_breath.enabled then applyBuff( "maraads_dying_breath" ) end
         end,
     },
 

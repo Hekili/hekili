@@ -2716,6 +2716,8 @@ do
         end
     } )
 
+    local PvpDummies = ns.PvpDummies
+
     mt_target = {
         __index = function( t, k )
             if k == "distance" then t[k] = UnitCanAttack( "player", "target" ) and ( ( t.minR + t.maxR ) / 2 ) or 7.5
@@ -2767,7 +2769,11 @@ do
 
             elseif k == "is_demon" then t[k] = UnitCreatureType( "target" ) == PET_TYPE_DEMON
             elseif k == "is_friendly" then t[k] = t.exists and UnitIsFriend( "target", "player" )
-            elseif k == "is_player" then t[k] = UnitIsPlayer( "target" )
+            elseif k == "is_player" then
+                local isPlayer = UnitIsPlayer( "target" )
+                if not isPlayer then isPlayer = PvpDummies[ t.npcid ] end
+                t[k] = isPlayer -- Enables proper treatment of Absolute Corruption and similar modified-in-PvP effects.
+
             elseif k == "is_undead" then t[k] = UnitCreatureType( "target" ) == BATTLE_PET_NAME_4
 
             elseif k == "level" then t[k] = UnitLevel( "target" ) or UnitLevel( "player" ) or MAX_PLAYER_LEVEL

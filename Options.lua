@@ -8660,7 +8660,7 @@ function Hekili:GenerateProfile()
 
     local spec = s.spec.key
 
-    local talents = Hekili.CurrentTalentExport
+    local talents = self:GetLoadoutExportString()
 
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then
@@ -8807,7 +8807,7 @@ function Hekili:GenerateProfile()
         "toggles: %s\n\n" ..
         "keybinds: %s\n\n" ..
         "warnings: %s\n\n",
-        Hekili.Version or "no info",
+        self.Version or "no info",
         UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
         class.file or "NONE",
         spec or "none",
