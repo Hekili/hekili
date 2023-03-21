@@ -17,39 +17,38 @@ spec:RegisterResource( Enum.PowerType.Mana )
 -- Talents
 spec:RegisterTalents( {
     -- Shaman
-    ancestral_defense            = { 81083, 382947, 1 }, -- Increases Leech by 2% and reduces damage taken from area-of-effect attacks by 2%.
+    ancestral_defense            = { 92682, 382947, 1 }, -- Increases Leech by 2% and reduces damage taken from area-of-effect attacks by 2%.
     ancestral_guidance           = { 81102, 108281, 1 }, -- For the next 10 sec, 25% of your damage and healing is converted to healing on up to 3 nearby injured party or raid members.
-    astral_bulwark               = { 81056, 377933, 1 }, -- Astral Shift reduces damage taken by an additional 15%.
+    ancestral_wolf_affinity      = { 81058, 382197, 1 }, -- Cleanse Spirit, Wind Shear, Purge, and totem casts no longer cancel Ghost Wolf.
+    astral_bulwark               = { 81056, 377933, 1 }, -- Astral Shift reduces damage taken by an additional 20%.
     astral_shift                 = { 81057, 108271, 1 }, -- Shift partially into the elemental planes, taking 40% less damage for 12 sec.
     brimming_with_life           = { 81085, 381689, 1 }, -- While Reincarnation is off cooldown, your maximum health is increased by 8%. While you are at full health, Reincarnation cools down 75% faster.
     call_of_the_elements         = { 81090, 383011, 1 }, -- Reduces the cooldown of Totemic Recall by 60 sec.
     capacitor_totem              = { 81071, 192058, 1 }, -- Summons a totem at the target location that gathers electrical energy from the surrounding air and explodes after 2 sec, stunning all enemies within 9 yards for 3 sec.
     creation_core                = { 81090, 383012, 1 }, -- Totemic Recall affects an additional totem.
-    earth_elemental              = { 81064, 198103, 1 }, -- Calls forth a Greater Earth Elemental to protect you and your allies for 1 min. While this elemental is active, your maximum health is increased by 15%.
-    earth_shield                 = { 81106, 974   , 1 }, -- Protects the target with an earthen shield, increasing your healing on them by 20% and healing them for 4,454 when they take damage. This heal can only occur once every few seconds. Maximum 9 charges. Earth Shield can only be placed on the Shaman and one other target at a time. The Shaman can have up to two Elemental Shields active on them.
+    earth_elemental              = { 81064, 198103, 1 }, -- Calls forth a Greater Earth Elemental to protect you and your allies for 60 sec. While this elemental is active, your maximum health is increased by 15%.
+    earth_shield                 = { 81106, 974   , 1 }, -- Protects the target with an earthen shield, increasing your healing on them by 20% and healing them for 7,938 when they take damage. This heal can only occur once every few seconds. Maximum 9 charges. Earth Shield can only be placed on one target at a time. Only one Elemental Shield can be active on the Shaman.
     earthgrab_totem              = { 81082, 51485 , 1 }, -- Summons a totem at the target location for 30 sec. The totem pulses every 2 sec, rooting all enemies within 9 yards for 8 sec. Enemies previously rooted by the totem instead suffer 50% movement speed reduction.
     elemental_orbit              = { 81105, 383010, 1 }, -- Increases the number of Elemental Shields you can have active on yourself by 1. You can have Earth Shield on yourself and one ally at the same time.
     elemental_warding            = { 81084, 381650, 2 }, -- Reduces all magic damage taken by 2%.
-    enfeeblement                 = { 81078, 378079, 1 }, -- When Hex ends, the target is slowed by 70% for 4 sec.
+    enfeeblement                 = { 81078, 378079, 1 }, -- During Hex, the target is slowed by 70% and for 6 sec after Hex ends.
     fire_and_ice                 = { 81067, 382886, 1 }, -- Increases all Fire and Frost damage you deal by 3%.
     flurry                       = { 81059, 382888, 1 }, -- Increases your attack speed by 15% for your next 3 melee swings after dealing a critical strike with a spell or ability.
-    focused_insight              = { 81058, 381666, 2 }, -- Casting Flame Shock reduces the mana cost of your next heal by 10% and increases its healing effectiveness by 15%.
-    frost_shock                  = { 81074, 196840, 1 }, -- Chills the target with frost, causing 4,537 Frost damage and reducing the target's movement speed by 50% for 6 sec.
-    go_with_the_flow             = { 81089, 381678, 2 }, -- Reduces the cooldown of Spirit Walk by 7.5 sec. Reduces the cooldown of Gust of Wind by 5.0 sec.
+    frost_shock                  = { 81074, 196840, 1 }, -- Chills the target with frost, causing 5,834 Frost damage and reducing the target's movement speed by 50% for 6 sec.
+    go_with_the_flow             = { 81089, 381678, 2 }, -- Reduces the cooldown of Spirit Walk by 10 sec. Reduces the cooldown of Gust of Wind by 5 sec.
     graceful_spirit              = { 81065, 192088, 1 }, -- Reduces the cooldown of Spiritwalker's Grace by 30 sec and increases your movement speed by 20% while it is active.
     greater_purge                = { 81076, 378773, 1 }, -- Purges the enemy target, removing 2 beneficial Magic effects.
     guardians_cudgel             = { 81070, 381819, 1 }, -- When Capacitor Totem fades or is destroyed, another Capacitor Totem is automatically dropped in the same place.
     gust_of_wind                 = { 81088, 192063, 1 }, -- A gust of wind hurls you forward.
-    healing_stream_totem         = { 81100, 5394  , 1 }, -- Summons a totem at your feet for 18 sec that heals an injured party or raid member within 46 yards for 2,845 every 1.7 sec. If you already know Healing Stream Totem, instead gain 1 additional charge of Healing Stream Totem.
-    hex                          = { 81079, 51514 , 1 }, -- Transforms the enemy into a frog for 1 min. While hexed, the victim is incapacitated, and cannot attack or cast spells. Damage may cancel the effect. Limit 1. Only works on Humanoids and Beasts.
-    improved_lightning_bolt      = { 81098, 381674, 2 }, -- Increases the damage of your Lightning Bolt by 10%.
-    lightning_lasso              = { 81096, 305483, 1 }, -- Grips the target in lightning, stunning and dealing 42,375 Nature damage over 5 sec while the target is lassoed. Can move while channeling.
-    mana_spring                  = { 81103, 381930, 1 }, -- Your Lava Burst casts restore 200 mana to you and 4 allies nearest to you within 40 yards. Allies can only benefit from one Shaman's Mana Spring effect at a time, prioritizing healers.
-    natures_fury                 = { 81086, 381655, 2 }, -- Increases the critical strike chance of your Nature spells by 2%.
+    healing_stream_totem         = { 81100, 5394  , 1 }, -- Summons a totem at your feet for 18 sec that heals an injured party or raid member within 46 yards for 3,803 every 1.6 sec. If you already know Healing Stream Totem, instead gain 1 additional charge of Healing Stream Totem.
+    hex                          = { 81079, 51514 , 1 }, -- Transforms the enemy into a frog for 60 sec. While hexed, the victim is incapacitated, and cannot attack or cast spells. Damage may cancel the effect. Limit 1. Only works on Humanoids and Beasts.
+    lightning_lasso              = { 81096, 305483, 1 }, -- Grips the target in lightning, stunning and dealing 47,198 Nature damage over 5 sec while the target is lassoed. Can move while channeling.
+    mana_spring                  = { 81103, 381930, 1 }, -- Your Lava Burst casts restore 150 mana to you and 4 allies nearest to you within 40 yards. Allies can only benefit from one Shaman's Mana Spring effect at a time, prioritizing healers.
+    natures_fury                 = { 81086, 381655, 2 }, -- Increases the critical strike chance of your Nature spells and abilities by 2%.
     natures_guardian             = { 81081, 30884 , 2 }, -- When your health is brought below 35%, you instantly heal for 20% of your maximum health. Cannot occur more than once every 45 sec.
     natures_swiftness            = { 81099, 378081, 1 }, -- Your next healing or damaging Nature spell is instant cast and costs no mana.
-    planes_traveler              = { 81056, 381647, 1 }, -- Reduces the cooldown of Astral Shift by 30 sec and increases its duration by 4 sec.
-    poison_cleansing_totem       = { 81093, 383013, 1 }, -- Summons a totem at your feet that removes 1 poison effect from a nearby party or raid member within 34 yards every 1.5 sec for 9 sec.
+    planes_traveler              = { 81056, 381647, 1 }, -- Reduces the cooldown of Astral Shift by 30 sec.
+    poison_cleansing_totem       = { 81093, 383013, 1 }, -- Summons a totem at your feet that removes all Poison effects from a nearby party or raid member within 34 yards every 1.5 sec for 9 sec.
     purge                        = { 81076, 370   , 1 }, -- Purges the enemy target, removing 1 beneficial Magic effect.
     spirit_walk                  = { 81088, 58875 , 1 }, -- Removes all movement impairing effects and increases your movement speed by 60% for 8 sec.
     spirit_wolf                  = { 81072, 260878, 1 }, -- While transformed into a Ghost Wolf, you gain 5% increased movement speed and 5% damage reduction every 1 sec, stacking up to 4 times.
@@ -58,38 +57,37 @@ spec:RegisterTalents( {
     static_charge                = { 81070, 265046, 1 }, -- Reduces the cooldown of Capacitor Totem by 5 sec for each enemy it stuns, up to a maximum reduction of 20 sec.
     stoneskin_totem              = { 81095, 383017, 1 }, -- Summons a totem at your feet for 15 sec that grants 10% physical damage reduction to you and the 4 allies nearest to the totem within 35 yards.
     surging_shields              = { 81092, 382033, 2 }, -- Increases the damage dealt by Lightning Shield by 50% and causes it to generate an additional 2 Maelstrom when triggered. Increases the healing done by Earth Shield by 12%.
-    swirling_currents            = { 81101, 378094, 2 }, -- Using Healing Stream Totem increases the healing of your next 3 Healing Surges by 25%.
-    thunderous_paws              = { 81072, 378075, 1 }, -- Ghost Wolf removes snares and increases your movement speed by an additional 25% for the first 3 sec. May only occur once every 60 sec.
+    swirling_currents            = { 81101, 378094, 2 }, -- Increases the healing done by Healing Stream Totem by 26%.
+    thunderous_paws              = { 81072, 378075, 1 }, -- Ghost Wolf removes snares and increases your movement speed by an additional 25% for the first 3 sec. May only occur once every 20 sec.
     thundershock                 = { 81096, 378779, 1 }, -- Thunderstorm knocks enemies up instead of away and its cooldown is reduced by 5 sec.
-    thunderstorm                 = { 81097, 51490 , 1 }, -- Calls down a bolt of lightning, dealing 664 Nature damage to all enemies within 10 yards, reducing their movement speed by 40% for 5 sec, and knocking them upward. Usable while stunned.
+    thunderstorm                 = { 81097, 51490 , 1 }, -- Calls down a bolt of lightning, dealing 740 Nature damage to all enemies within 10 yards, reducing their movement speed by 40% for 5 sec, and knocking them upward. Usable while stunned.
     totemic_focus                = { 81094, 382201, 2 }, -- Increases the radius of your totem effects by 15%. Increases the duration of your Earthbind and Earthgrab Totems by 5 sec. Increases the duration of your Healing Stream, Tremor, Poison Cleansing, and Wind Rush Totems by 1.5 sec.
     totemic_projection           = { 81080, 108287, 1 }, -- Relocates your active totems to the specified location.
     totemic_recall               = { 81091, 108285, 1 }, -- Resets the cooldown of your most recently used totem with a base cooldown shorter than 3 minutes.
-    totemic_surge                = { 81104, 381867, 2 }, -- Reduces the cooldown of your totems by 2 sec.
+    totemic_surge                = { 81104, 381867, 2 }, -- Reduces the cooldown of your totems by 3 sec.
     tranquil_air_totem           = { 81095, 383019, 1 }, -- Summons a totem at your feet for 20 sec that prevents cast pushback and reduces the duration of all incoming interrupt effects by 50% for you and the 4 allies nearest to the totem within 35 yards.
     tremor_totem                 = { 81069, 8143  , 1 }, -- Summons a totem at your feet that shakes the ground around it for 13 sec, removing Fear, Charm and Sleep effects from party and raid members within 34 yards.
-    voodoo_mastery               = { 81078, 204268, 1 }, -- Reduces the cooldown of your Hex spell by 15 sec.
+    voodoo_mastery               = { 81078, 204268, 1 }, -- Reduces the cooldown of Hex by 15 sec.
     wind_rush_totem              = { 81082, 192077, 1 }, -- Summons a totem at the target location for 18 sec, continually granting all allies who pass within 11 yards 40% increased movement speed for 5 sec.
     wind_shear                   = { 81068, 57994 , 1 }, -- Disrupts the target's concentration with a burst of wind, interrupting spellcasting and preventing any spell in that school from being cast for 3 sec.
     winds_of_alakir              = { 81087, 382215, 2 }, -- Increases the movement speed bonus of Ghost Wolf by 5%. When you have 3 or more totems active, your movement speed is increased by 7%.
 
     -- Elemental
     aftershock                   = { 81000, 273221, 1 }, -- Earth Shock, Elemental Blast, and Earthquake have a 25% chance to refund all Maelstrom spent.
-    ancestral_wolf_affinity      = { 80982, 382197, 1 }, -- Cleanse Spirit, Wind Shear, Purge, and totem casts no longer cancel Ghost Wolf.
     ascendance                   = { 81003, 114050, 1 }, -- Transform into a Flame Ascendant for 15 sec, replacing Chain Lightning with Lava Beam, removing the cooldown on Lava Burst, and increasing the damage of Lava Burst by an amount equal to your critical strike chance. When you transform into the Flame Ascendant, instantly cast a Lava Burst at all enemies affected by your Flame Shock, and refresh your Flame Shock durations to 18 sec.
     call_of_fire                 = { 81011, 378255, 1 }, -- Increases the damage of your Flame Shock, Lava Burst, Lava Beam, and Fire Elemental by 10%.
     call_of_thunder              = { 80987, 378241, 1 }, -- Increases the damage of your Lightning Bolt, Chain Lightning, and Storm Elemental by 15%.
-    chain_heal                   = { 81063, 1064  , 1 }, -- Heals the friendly target for 12,713, then jumps to heal the 3 most injured nearby allies. Healing is reduced by 30% with each jump.
-    chain_lightning              = { 81061, 188443, 1 }, -- Hurls a lightning bolt at the enemy, dealing 6,127 Nature damage and then jumping to additional nearby enemies. Affects 5 total targets. Generates 4 Maelstrom per target hit.
+    chain_heal                   = { 81063, 1064  , 1 }, -- Heals the friendly target for 15,576, then jumps up to 15 yards to heal the 3 most injured nearby allies. Healing is reduced by 30% with each jump.
+    chain_lightning              = { 81061, 188443, 1 }, -- Hurls a lightning bolt at the enemy, dealing 7,496 Nature damage and then jumping to additional nearby enemies. Affects 5 total targets. Generates 4 Maelstrom per target hit.
     cleanse_spirit               = { 81075, 51886 , 1 }, -- Removes all Curse effects from a friendly target.
     deeply_rooted_elements       = { 81003, 378270, 1 }, -- Casting Lava Burst has a 7% chance to activate Ascendance for 6.0 sec.  Ascendance Transform into a Flame Ascendant for 15 sec, replacing Chain Lightning with Lava Beam, removing the cooldown on Lava Burst, and increasing the damage of Lava Burst by an amount equal to your critical strike chance. When you transform into the Flame Ascendant, instantly cast a Lava Burst at all enemies affected by your Flame Shock, and refresh your Flame Shock durations to 18 sec.
-    earth_shock                  = { 80984, 8042  , 1 }, -- Instantly shocks the target with concussive force, causing 16,034 Nature damage.
-    earthquake                   = { 80985, 61882 , 1 }, -- Causes the earth within 8 yards of the target location to tremble and break, dealing 8,614 Physical damage over 7 sec and has a 8.0% chance to knock the enemy down.
+    earth_shock                  = { 80984, 8042  , 1 }, -- Instantly shocks the target with concussive force, causing 18,930 Nature damage.
+    earthquake                   = { 80985, 61882 , 1 }, -- Causes the earth within 8 yards of the target location to tremble and break, dealing 10,556 Physical damage over 7 sec and has a 8.0% chance to knock the enemy down.
     echo_chamber                 = { 81013, 382032, 2 }, -- Increases the damage dealt by your Elemental Overloads by 15%.
     echo_of_the_elements         = { 80999, 333919, 1 }, -- Lava Burst has an additional charge.
     echoes_of_great_sundering    = { 80991, 384087, 2 }, -- After casting Earth Shock, your next Earthquake deals 60% additional damage. After casting Elemental Blast, your next Earthquake deals 70% additional damage.
-    electrified_shocks           = { 80996, 382086, 1 }, -- Icefury causes your Frost Shocks to damage up to 3 additional enemies and targets hit take 15% increased Nature damage from your spells for 6 sec. Chain Lightning prefers targets with this effect.
-    elemental_blast              = { 80994, 117014, 1 }, -- Harnesses the raw power of the elements, dealing 31,759 Elemental damage and increasing your Critical Strike or Haste by 6% or Mastery by 11% for 10 sec.
+    electrified_shocks           = { 80996, 382086, 1 }, -- Icefury causes your Frost Shocks to damage up to 3 additional enemies and targets hit take 15% increased Nature damage from your spells for 9 sec.
+    elemental_blast              = { 80994, 117014, 1 }, -- Harnesses the raw power of the elements, dealing 35,711 Elemental damage and increasing your Critical Strike or Haste by 6% or Mastery by 11% for 10 sec.
     elemental_equilibrium        = { 80993, 378271, 2 }, -- Dealing direct Fire, Frost, and Nature damage within 10 sec will increase all damage dealt by 7% for 10 sec. This can only occur once every 30 sec.
     elemental_fury               = { 80983, 60188 , 1 }, -- Your damaging critical strikes deal 250% damage instead of the usual 200%.
     eye_of_the_storm             = { 80995, 381708, 2 }, -- Reduces the Maelstrom cost of Earth Shock and Earthquake by 5. Reduces the Maelstrom cost of Elemental Blast by 7.
@@ -98,25 +96,26 @@ spec:RegisterTalents( {
     flash_of_lightning           = { 80990, 381936, 1 }, -- Casting Lightning Bolt or Chain Lightning reduces the cooldown of your Nature spells by 1.0 sec.
     flow_of_power                = { 80998, 385923, 1 }, -- Increases the Maelstrom generated by Lightning Bolt and Lava Burst by 2, and their Elemental Overloads by 1.
     flux_melting                 = { 80996, 381776, 1 }, -- Casting Frost Shock increases the damage of your next Lava Burst by 20%.
+    focused_insight              = { 80982, 381666, 1 }, -- Casting Flame Shock reduces the mana cost of your next heal by 20% and increases its healing effectiveness by 30%.
     further_beyond               = { 81001, 381787, 1 }, -- Casting Earth Shock or Earthquake while Ascendance is active extends the duration of Ascendance by 2.5 sec. Casting Elemental Blast while Ascendance is active extends the duration of Ascendance by 3.5 sec.
-    icefury                      = { 80997, 210714, 1 }, -- Hurls frigid ice at the target, dealing 5,941 Frost damage and causing your next 4 Frost Shocks to deal 225% increased damage and generate 8 Maelstrom. Generates 25 Maelstrom.
+    icefury                      = { 80997, 210714, 1 }, -- Hurls frigid ice at the target, dealing 11,912 Frost damage and causing your next 4 Frost Shocks to deal 225% increased damage and generate 14 Maelstrom. Generates 25 Maelstrom.
     improved_flametongue_weapon  = { 81009, 382027, 1 }, -- Imbuing your weapon with Flametongue increases your Fire spell damage by 5% for 1 hour.
     inundate                     = { 80986, 378776, 1 }, -- Your successful Purge, Cleanse Spirit, Healing Stream Totem, Hex, and Wind Shear casts generate 8 Maelstrom during combat.
-    lava_burst                   = { 81062, 51505 , 1 }, -- Hurls molten lava at the target, dealing 8,526 Fire damage. Lava Burst will always critically strike if the target is affected by Flame Shock. Generates 12 Maelstrom.
+    lava_burst                   = { 81062, 51505 , 1 }, -- Hurls molten lava at the target, dealing 9,504 Fire damage. Lava Burst will always critically strike if the target is affected by Flame Shock. Generates 12 Maelstrom.
     lava_surge                   = { 80979, 77756 , 1 }, -- Your Flame Shock damage over time has a 10% chance to reset the remaining cooldown on Lava Burst and cause your next Lava Burst to be instant.
     lightning_rod                = { 80992, 210689, 1 }, -- Earth Shock, Elemental Blast, and Earthquake make your target a Lightning Rod for 8 sec. Lightning Rods take 20% of all damage you deal with Lightning Bolt and Chain Lightning.
-    liquid_magma_totem           = { 81008, 192222, 1 }, -- Summons a totem at the target location that erupts dealing 6,481 Fire damage and applying Flame Shock to 3 enemies within 9 yards. Continues hurling liquid magma at a random nearby target every 0.8 sec for 6 sec, dealing 3,743 Fire damage to all enemies within 9 yards.
+    liquid_magma_totem           = { 81008, 192222, 1 }, -- Summons a totem at the target location that erupts dealing 7,219 Fire damage and applying Flame Shock to 3 enemies within 9 yards. Continues hurling liquid magma at a random nearby target every 0.8 sec for 6 sec, dealing 4,169 Fire damage to all enemies within 9 yards.
     maelstrom_weapon             = { 81060, 187880, 1 }, -- When you deal damage with a melee weapon, you have a chance to gain Maelstrom Weapon, stacking up to 5 times. Each stack of Maelstrom Weapon reduces the cast time of your next damage or healing spell by 20%. A maximum of 5 stacks of Maelstrom Weapon can be consumed at a time.
     magma_chamber                = { 81007, 381932, 2 }, -- Flame Shock damage increases the damage of your next Earth Shock, Elemental Blast, or Earthquake by 1.5%, stacking up to 20 times.
-    master_of_the_elements       = { 81004, 16166 , 2 }, -- Casting Lava Burst increases the damage or healing of your next Nature, Physical, or Frost spell by 10%.
+    master_of_the_elements       = { 81004, 16166 , 2 }, -- Casting Lava Burst increases the damage or healing of your next Nature, Physical, or Frost spell by 20%.
     mountains_will_fall          = { 81012, 381726, 1 }, -- Earth Shock, Elemental Blast, and Earthquake can trigger your Mastery: Elemental Overload at 50% effectiveness. Overloaded Earthquakes do not knock enemies down.
     oath_of_the_far_seer         = { 81002, 381785, 2 }, -- Reduces the cooldown of Ascendance by 45 sec, and you gain 8% additional Haste while Ascendance is active.
     power_of_the_maelstrom       = { 81015, 191861, 2 }, -- Casting Lava Burst has a 5% chance to cause your next 2 Lightning Bolt or Chain Lightning casts to trigger Elemental Overload an additional time.
     primal_elementalist          = { 81008, 117013, 1 }, -- Your Earth, Fire, and Storm Elementals are drawn from primal elementals 80% more powerful than regular elementals, with additional abilities, and you gain direct control over them.
-    primordial_bond              = { 80980, 381764, 1 }, -- While you have an elemental active, your damage taken is reduced by 5%.
+    primordial_bond              = { 80980, 381764, 1 }, --
     primordial_fury              = { 80982, 378193, 1 }, -- Your healing critical strikes heal for 250% healing instead of the usual 200%.
     primordial_surge             = { 80978, 386474, 1 }, -- Casting Primordial Wave triggers Lava Surge immediately and every 3 sec for 12 sec. Lava Surges triggered by Primordial Wave increase the damage of your next Lava Burst by 25%.
-    primordial_wave              = { 81014, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing 3,935 Shadow damage and apply Flame Shock to an enemy, or heal an ally for 3,935. Your next Lava Burst will also hit all targets affected by your Flame Shock for 80% of normal damage.
+    primordial_wave              = { 81014, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing 4,383 Shadow damage and apply Flame Shock to an enemy, or heal an ally for 4,383. Your next Lava Burst will also hit all targets affected by your Flame Shock for 80% of normal damage.
     refreshing_waters            = { 80980, 378211, 1 }, -- Your Healing Surge is 30% more effective on yourself.
     rolling_magma                = { 80977, 386443, 2 }, -- Lava Burst and Lava Burst Overload damage reduces the cooldown of Primordial Wave by 0.5 sec.
     searing_flames               = { 81005, 381782, 2 }, -- Flame Shock damage has a 100% chance to generate 1 Maelstrom.
@@ -179,7 +178,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=108271
     astral_shift = {
         id = 108271,
-        duration = 8,
+        duration = 12,
         max_stack = 1
     },
     -- Haste increased by $w1%.
@@ -263,7 +262,7 @@ spec:RegisterAuras( {
     },
     electrified_shocks = {
         id = 382089,
-        duration = 6,
+        duration = 9,
         type = "Magic",
         max_stack = 1
     },
@@ -298,6 +297,11 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
         copy = 347349,
+    },
+    enfeeblement = {
+        id = 378080,
+        duration = 6,
+        max_stack = 1
     },
     -- Cannot move while using Far Sight.
     -- https://wowhead.com/beta/spell=6196
@@ -1182,6 +1186,7 @@ spec:RegisterAbilities( {
 
         talent = "astral_shift",
         startsCombat = false,
+        nopvptalent = "ethereal_form",
 
         toggle = "defensives",
 
@@ -1482,7 +1487,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
-
+        notalent = "earthgrab_totem",
         toggle = "interrupts",
 
         handler = function ()
@@ -1879,6 +1884,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "hex" )
+            if talent.enfeeblement.enabled then applyDebuff( "target", "enfeeblement" ) end
             if time > 0 and talent.inundate.enabled then gain( 8, "maelstrom" ) end
         end,
     },
@@ -2235,7 +2241,7 @@ spec:RegisterAbilities( {
     spirit_walk = {
         id = 58875,
         cast = 0,
-        cooldown = function() return 60 - 7.5 * talent.go_with_the_flow.rank end,
+        cooldown = function() return 60 - 10 * talent.go_with_the_flow.rank end,
         gcd = "off",
         school = "physical",
 

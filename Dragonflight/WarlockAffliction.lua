@@ -47,92 +47,92 @@ spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterTalents( {
     -- Warlock
     abyss_walker                   = { 71954, 389609, 1 }, -- Using Demonic Circle: Teleport or your Demonic Gateway reduces all damage you take by 4% for 10 sec.
-    accrued_vitality               = { 71953, 386613, 2 }, -- Drain Life heals for 15% of the amount drained over 9.2 sec.
+    accrued_vitality               = { 71953, 386613, 2 }, -- Drain Life heals for 15% of the amount drained over 8.8 sec.
     amplify_curse                  = { 71934, 328774, 1 }, -- Your next Curse of Exhaustion, Curse of Tongues or Curse of Weakness cast within 15 sec is amplified. Curse of Exhaustion Reduces the target's movement speed by an additional 20%. Curse of Tongues Increases casting time by an additional 40%. Curse of Weakness Enemy is unable to critically strike.
     banish                         = { 71944, 710   , 1 }, -- Banishes an enemy Demon, Aberration, or Elemental, preventing any action for 30 sec. Limit 1. Casting Banish again on the target will cancel the effect.
     burning_rush                   = { 71949, 111400, 1 }, -- Increases your movement speed by 50%, but also damages you for 4% of your maximum health every 1 sec. Movement impairing effects may not reduce you below 100% of normal movement speed. Lasts until canceled.
-    curses_of_enfeeblement         = { 71951, 386105, 1 }, -- Grants access to the following abilities: Curse of Tongues: Forces the target to speak in Demonic, increasing the casting time of all spells by 30% for 1 min. Curses: A warlock can only have one Curse active per target. Curse of Exhaustion: Reduces the target's movement speed by 50% for 12 sec. Curses: A warlock can only have one Curse active per target.
+    curses_of_enfeeblement         = { 71951, 386105, 1 }, -- Grants access to the following abilities: Curse of Tongues: Forces the target to speak in Demonic, increasing the casting time of all spells by 30% for 60 sec. Curses: A warlock can only have one Curse active per target. Curse of Exhaustion: Reduces the target's movement speed by 50% for 12 sec. Curses: A warlock can only have one Curse active per target.
     dark_accord                    = { 71956, 386659, 1 }, -- Reduces the cooldown of Unending Resolve by 45 sec.
-    dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 200% of the sacrificed health plus an additional 12,145 for 20 sec. Usable while suffering from control impairing effects.
+    dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 200% of the sacrificed health plus an additional 16,885 for 20 sec. Usable while suffering from control impairing effects.
     darkfury                       = { 71941, 264874, 1 }, -- Reduces the cooldown of Shadowfury by 15 sec and increases its radius by 2 yards.
     demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of 0.2% of maximum health every 1 sec, and may now absorb up to 10% of maximum health.
     demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
     demonic_embrace                = { 71930, 288843, 1 }, -- Stamina increased by 10%.
     demonic_fortitude              = { 71922, 386617, 1 }, -- Increases you and your pets' maximum health by 5%.
     demonic_gateway                = { 71955, 111771, 1 }, -- Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per 1.5 min.
-    demonic_inspiration            = { 71928, 386858, 1 }, -- Filling a Soul Shard increases the attack speed of your primary pet by 5% for 8 sec. Increases Grimoire of Sacrifice damage by 15%.
+    demonic_inspiration            = { 71928, 386858, 1 }, -- Increases the attack speed of your primary pet by 5%. Increases Grimoire of Sacrifice damage by 15%.
     demonic_resilience             = { 71917, 389590, 2 }, -- Reduces the chance you will be critically struck by 2%. All damage your primary demon takes is reduced by 8%.
-    desperate_pact                 = { 71929, 386619, 2 }, -- Drain Life heals for 15% more while below 50% health.
     fel_armor                      = { 71950, 386124, 2 }, -- When Soul Leech absorbs damage, 5% of damage taken is absorbed and spread out over 5 sec. Reduces damage taken by 1.5%.
     fel_domination                 = { 71931, 333889, 1 }, -- Your next Imp, Voidwalker, Incubus, Succubus, Felhunter, or Felguard Summon spell is free and has its casting time reduced by 5.5 sec.
     fel_pact                       = { 71932, 386113, 2 }, -- Reduces the cooldown of Fel Domination by 30 sec.
     fel_synergy                    = { 71918, 389367, 1 }, -- Soul Leech also heals you for 15% and your pet for 50% of the absorption it grants.
     fiendish_stride                = { 71948, 386110, 2 }, -- Reduces the damage dealt by Burning Rush by 25%. Burning Rush increases your movement speed by an additional 5%.
     frequent_donor                 = { 71937, 386686, 1 }, -- Reduces the cooldown of Dark Pact by 15 sec.
-    gorefiends_resolve             = { 71916, 389623, 2 }, -- Targets resurrected with Soulstone resurrect with 20% additional health and 15% additional mana.
-    greater_banish                 = { 71943, 386651, 1 }, -- Increases the duration of Banish by 30 sec. Banish now affects Undead.
     grim_feast                     = { 71926, 386689, 1 }, -- Drain Life now channels 30% faster and restores health 30% faster.
     grimoire_of_synergy            = { 71924, 171975, 2 }, -- Damage done by you or your demon has a chance to grant the other one 5% increased damage for 15 sec.
+    horrify                        = { 71916, 56244 , 1 }, -- Your Fear causes the target to tremble in place instead of fleeing in fear.
     howl_of_terror                 = { 71947, 5484  , 1 }, -- Let loose a terrifying howl, causing 5 enemies within 10 yds to flee in fear, disorienting them for 20 sec. Damage may cancel the effect.
     ichor_of_devils                = { 71937, 386664, 1 }, -- Dark Pact sacrifices only 5% of your current health for the same shield value.
-    inquisitors_gaze               = { 71939, 386344, 1 }, -- Your spells and abilities have a chance to summon an Inquisitor's Eye that deals 12,698 Shadowflame damage over 13.8 sec.
+    inquisitors_gaze               = { 71939, 386344, 1 }, -- Your spells and abilities have a chance to summon an Inquisitor's Eye that deals 5,200 Shadowflame damage every 0.9 sec for 13.2 sec.
     lifeblood                      = { 71940, 386646, 2 }, -- When you use a Healthstone, gain 7% Leech for 20 sec.
     mortal_coil                    = { 71947, 6789  , 1 }, -- Horrifies an enemy target into fleeing, incapacitating for 3 sec and healing you for 20% of maximum health.
-    nightmare                      = { 71945, 386648, 2 }, -- When Fear ends, the target is slowed by 15% for 4 sec.
+    nightmare                      = { 71916, 386648, 1 }, -- When Fear ends, the target is slowed by 30% for 4 sec.
     profane_bargain                = { 71919, 389576, 2 }, -- When your health drops below 35%, the percentage of damage shared via your Soul Link is increased by an additional 5%. While Grimoire of Sacrifice is active, your Stamina is increased by 3%.
     resolute_barrier               = { 71915, 389359, 2 }, -- Attacks received that deal at least 5% of your health decrease Unending Resolve's cooldown by 10 sec. Cannot occur more than once every 30 sec.
+    sargerei_technique             = { 93179, 405955, 2 }, -- Shadow Bolt and Drain Soul damage increased by 8%.
     shadowflame                    = { 71941, 384069, 1 }, -- Slows enemies in a 12 yard cone in front of you by 70% for 6 sec.
     shadowfury                     = { 71942, 30283 , 1 }, -- Stuns all enemies within 8 yds for 3 sec.
+    socrethars_guile               = { 93178, 405936, 2 }, -- Agony damage increased by 8%.
     soul_conduit                   = { 71923, 215941, 2 }, -- Every Soul Shard you spend has a 5% chance to be refunded.
     soul_link                      = { 71925, 108415, 1 }, -- 10% of all damage you take is taken by your demon pet instead. While Grimoire of Sacrifice is active, your Stamina is increased by 5%.
     soulburn                       = { 71957, 385899, 1 }, -- Consumes a Soul Shard, unlocking the hidden power of your spells. Demonic Circle: Teleport: Increases your movement speed by 50% and makes you immune to snares and roots for 6 sec. Demonic Gateway: Can be cast instantly. Drain Life: Gain an absorb shield equal to the amount of healing done for 30 sec. This shield cannot exceed 30% of your maximum health. Health Funnel: Restores 140% more health and reduces the damage taken by your pet by 30% for 10 sec. Healthstone: Increases the healing of your Healthstone by 30% and increases your maximum health by 20% for 12 sec.
     strength_of_will               = { 71956, 317138, 1 }, -- Unending Resolve reduces damage taken by an additional 15%.
-    summon_soulkeeper              = { 71939, 386256, 1 }, -- Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 1,439 Chaos damage per soul consumed over 8 sec. Deals reduced damage beyond 8 targets. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
+    summon_soulkeeper              = { 71939, 386256, 1 }, -- Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 439 Chaos damage per soul consumed over 8 sec. Deals reduced damage beyond 8 targets and only one Soulkeeper can be active at a time. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
     sweet_souls                    = { 71927, 386620, 1 }, -- Your Healthstone heals you for an additional 10% of your maximum health. Any party or raid member using a Healthstone also heals you for that amount.
     teachings_of_the_black_harvest = { 71938, 385881, 1 }, -- Your primary pets gain a bonus effect. Imp: Successful Singe Magic casts grant the target 4% damage reduction for 5 sec. Voidwalker: Reduces the cooldown of Shadow Bulwark by 30 sec. Felhunter: Reduces the cooldown of Devour Magic by 5 sec. Sayaad: Reduces the cooldown of Seduction by 10 sec and causes the target to walk faster towards the demon.
     teachings_of_the_satyr         = { 71935, 387972, 1 }, -- Reduces the cooldown of Amplify Curse by 10 sec.
-    wrathful_minion                = { 71946, 386864, 1 }, -- Filling a Soul Shard increases the damage done by your primary pet by 5% for 8 sec. Increases Grimoire of Sacrifice damage by 15%.
+    wrathful_minion                = { 71946, 386864, 1 }, -- Increases the damage done by your primary pet by 5%. Increases Grimoire of Sacrifice damage by 15%.
 
     -- Affliction
     absolute_corruption            = { 72053, 196103, 1 }, -- Corruption is now permanent and deals 15% increased damage. Duration reduced to 24 sec against players.
     agonizing_corruption           = { 72038, 386922, 2 }, -- Seed of Corruption's explosion increases the stack count of Agony by 1 on all targets hit.
     creeping_death                 = { 72058, 264000, 1 }, -- Your Agony, Corruption, Siphon Life, and Unstable Affliction deal damage 15% faster.
     dark_harvest                   = { 72057, 387016, 1 }, -- Each target affected by Soul Rot increases your haste and critical strike chance by 2.5% for 8 sec.
-    doom_blossom                   = { 71986, 389764, 1 }, -- If Corruption damages a target affected by your Unstable Affliction, it has a 10% chance per stack of Malefic Affliction to deal 3,936 Shadow damage to nearby enemies.
-    drain_soul                     = { 72045, 198590, 1 }, -- Drains the target's soul, causing 13,314 Shadow damage over 4.6 sec. Damage is increased by 100% against enemies below 20% health. Generates 1 Soul Shard if the target dies during this effect.
-    dread_touch                    = { 71986, 389775, 1 }, -- If Malefic Affliction exceeds 3 stacks, the target instead takes 30% additional damage from your damage over time effects for 6 sec.
+    dark_virtuosity                = { 72043, 405327, 2 }, -- Shadow Bolt and Drain Soul deal an additional 15% damage.
+    doom_blossom                   = { 71986, 389764, 1 }, -- If Corruption damages a target affected by your Unstable Affliction, it has a 10% chance per stack of Malefic Affliction to deal 6,014 Shadow damage to nearby enemies.
+    drain_soul                     = { 72045, 198590, 1 }, -- Drains the target's soul, causing 26,447 Shadow damage over 4.4 sec. Damage is increased by 100% against enemies below 20% health. Generates 1 Soul Shard if the target dies during this effect.
+    dread_touch                    = { 71986, 389775, 1 }, -- If Malefic Affliction exceeds 3 stacks, the target instead takes 30% additional damage from your damage over time effects for 8 sec.
     focused_malignancy             = { 72042, 399668, 2 }, -- Malefic Rapture deals 15% increased damage to targets suffering from Unstable Affliction.
     grand_warlocks_design          = { 71988, 387084, 1 }, -- Every Soul Shard you spend reduces the cooldown of Summon Darkglare by 2.0 sec.
     grim_reach                     = { 71988, 389992, 1 }, -- When Darkglare deals damage, it deals 50% of that damage to all enemies affected by your damage over time effects.
-    grimoire_of_sacrifice          = { 72054, 108503, 1 }, -- Sacrifices your demon pet for power, gaining its command demon ability, and causing your spells to sometimes also deal 3,320 additional Shadow damage. Lasts 1 |4hour:hrs; or until you summon a demon pet.
-    harvester_of_souls             = { 72043, 201424, 2 }, -- Each time Corruption deals damage, it has a 7% chance to deal 805 Shadow damage to the target and heal you for 100% of the damage dealt.
-    haunt                          = { 72032, 48181 , 1 }, -- A ghostly soul haunts the target, dealing 3,945 Shadow damage and increasing your damage dealt to the target by 10% for 18 sec. If the target dies, Haunt's cooldown is reset.
+    grimoire_of_sacrifice          = { 72054, 108503, 1 }, -- Sacrifices your demon pet for power, gaining its command demon ability, and causing your spells to sometimes also deal 5,073 additional Shadow damage. Lasts 60 min or until you summon a demon pet.
+    haunt                          = { 72032, 48181 , 1 }, -- A ghostly soul haunts the target, dealing 6,028 Shadow damage and increasing your damage dealt to the target by 10% for 18 sec. If the target dies, Haunt's cooldown is reset.
     haunted_soul                   = { 71989, 387301, 1 }, -- Your Haunt spell also increases the damage of your damage over time effects to all targets by 20% while active.
-    inevitable_demise              = { 72046, 334319, 2 }, -- Damaging an enemy with Agony increases the damage of your next Drain Life by 7%. This effect stacks up to 50 times.
+    inevitable_demise              = { 72046, 334319, 2 }, -- Damaging an enemy with Agony increases the damage dealt by your next Drain Life by 7%. This effect stacks up to 50 times.
+    kindled_malice                 = { 72040, 405330, 2 }, -- Malefic Rapture and Seed of Corruption deal an additional 8% damage.
     malefic_affliction             = { 71921, 389761, 2 }, -- Malefic Rapture causes your active Unstable Affliction to deal 5% additional damage, up to 15%, for the rest of its duration.
-    malefic_rapture                = { 72049, 324536, 1 }, -- Your damaging periodic effects erupt on all targets, causing 1,967 Shadow damage per effect.
+    malefic_rapture                = { 72049, 324536, 1 }, -- Your damaging periodic effects erupt on all targets, causing 3,114 Shadow damage per effect.
     malevolent_visionary           = { 71987, 387273, 2 }, -- Darkglare increases its damage by an additional 3% for each damage over time effect active. Darkglare lasts an additional 5 sec.
     nightfall                      = { 72047, 108558, 1 }, -- Corruption damage has a chance to cause your next Shadow Bolt or Drain Soul to deal 25% increased damage. Shadow Bolt is instant cast and Drain Soul channels 50% faster when affected.
-    pandemic_invocation            = { 72052, 386759, 1 }, -- Refreshing Corruption, Agony, Unstable Affliction, or Siphon Life with less than 5 seconds remaining will deal 2,754 Shadow damage and has a 6.66% chance to grant you a Soul Shard.
-    phantom_singularity            = { 72036, 205179, 1 }, -- Places a phantom singularity above the target, which consumes the life of all enemies within 15 yards, dealing 12,764 damage over 14.8 sec, healing you for 25% of the damage done.
+    pandemic_invocation            = { 72052, 386759, 1 }, -- Refreshing Corruption, Agony, Unstable Affliction, or Siphon Life with less than 5 seconds remaining will deal 4,208 Shadow damage and has a 6.66% chance to grant you a Soul Shard.
+    phantom_singularity            = { 72036, 205179, 1 }, -- Places a phantom singularity above the target, which consumes the life of all enemies within 15 yards, dealing 21,218 damage over 14.1 sec, healing you for 25% of the damage done.
     sacrolashs_dark_strike         = { 72035, 386986, 2 }, -- Corruption damage is increased by 7%, and each time it deals damage any of your Curses active on the target are extended by 0.5 sec.
-    seed_of_corruption             = { 72050, 27243 , 1 }, -- Embeds a demon seed in the enemy target that will explode after 11.1 sec, dealing 3,723 Shadow damage to all enemies within 10 yards and applying Corruption to them. The seed will detonate early if the target is hit by other detonations, or takes 2,429 damage from your spells.
+    seed_of_corruption             = { 72050, 27243 , 1 }, -- Embeds a demon seed in the enemy target that will explode after 10.6 sec, dealing 7,117 Shadow damage to all enemies within 10 yards and applying Corruption to them. The seed will detonate early if the target is hit by other detonations, or takes 3,377 damage from your spells.
     seized_vitality                = { 71990, 387250, 2 }, -- Haunt deals 10% additional damage. When the Haunt spell ends or is dispelled, the soul returns to you, healing for 50% of the damage it did to the target.
     shadow_embrace                 = { 72044, 32388 , 2 }, -- Shadow Bolt and Drain Soul apply Shadow Embrace, increasing your damage dealt to the target by 1.5% for 16 sec. Stacks up to 3 times.
-    siphon_life                    = { 72053, 63106 , 1 }, -- Siphons the target's life essence, dealing 7,465 Shadow damage over 15 sec and healing you for 30% of the damage done.
-    soul_flame                     = { 72041, 199471, 2 }, -- When you kill a target, its soul bursts into flames, dealing 4,590 Shadowflame damage to nearby enemies. Deals reduced damage beyond 8 targets.
-    soul_rot                       = { 72056, 386997, 1 }, -- Wither away all life force of your current target and up to 3 additional targets nearby, causing your primary target to suffer 15,316 Nature damage and secondary targets to suffer 7,658 Nature damage over 8 sec. For the next 8 sec, casting Drain Life will cause you to also Drain Life from any enemy affected by your Soul Rot, and Drain Life will not consume any mana.
+    siphon_life                    = { 72053, 63106 , 1 }, -- Siphons the target's life essence, dealing 13,001 Shadow damage over 15 sec and healing you for 30% of the damage done.
+    soul_flame                     = { 72041, 199471, 2 }, -- When you kill a target, its soul bursts into flames, dealing 7,014 Shadowflame damage to nearby enemies. Deals reduced damage beyond 8 targets.
+    soul_rot                       = { 72056, 386997, 1 }, -- Wither away all life force of your current target and up to 3 additional targets nearby, causing your primary target to suffer 32,685 Nature damage and secondary targets to suffer 16,342 Nature damage over 8 sec. For the next 8 sec, casting Drain Life will cause you to also Drain Life from any enemy affected by your Soul Rot, and Drain Life will not consume any mana.
     soul_swap                      = { 72037, 386951, 1 }, -- Copies your damage over time effects from the target, preserving their duration. Your next use of Soul Swap within 10 sec will exhale a copy damage of the effects onto a new target.
     souleaters_gluttony            = { 71920, 389630, 2 }, -- Whenever Unstable Affliction deals damage, the cooldown of Soul Rot is reduced by 0.5 sec.
     sow_the_seeds                  = { 72039, 196226, 1 }, -- Seed of Corruption now embeds demon seeds into 2 additional nearby enemies.
-    summon_darkglare               = { 72034, 205180, 1 }, -- Summons a Darkglare from the Twisting Nether that extends the duration of your damage over time effects on all enemies by 8 sec. The Darkglare will serve you for 30 sec, blasting its target for 1,611 Shadow damage, increased by 15% for every damage over time effect you have active on any target.
+    summon_darkglare               = { 72034, 205180, 1 }, -- Summons a Darkglare from the Twisting Nether that extends the duration of your damage over time effects on all enemies by 8 sec. The Darkglare will serve you for 30 sec, blasting its target for 4,213 Shadow damage, increased by 30% for every damage over time effect you have active on their current target.
     tormented_crescendo            = { 72031, 387075, 1 }, -- While Agony, Corruption, and Unstable Affliction are active, your Shadow Bolt has a 30% chance and your Drain Soul has a 20% chance to make your next Malefic Rapture cost no Soul Shards and cast instantly.
-    unstable_affliction            = { 72048, 316099, 1 }, -- Afflicts one target with 21,858 Shadow damage over 21 sec. If dispelled, deals 39,145 damage to the dispeller and silences them for 4 sec. Generates 1 Soul Shard if the target dies while afflicted.
-    vile_taint                     = { 72036, 278350, 1 }, -- Unleashes a vile explosion at the target location, dealing 8,540 Shadow damage over 10 sec to 8 enemies within 10 yds and applies Agony and Curse of Exhaustion to them.
+    unstable_affliction            = { 72048, 316099, 1 }, -- Afflicts one target with 38,059 Shadow damage over 21 sec. If dispelled, deals 65,070 damage to the dispeller and silences them for 4 sec. Generates 1 Soul Shard if the target dies while afflicted.
+    vile_taint                     = { 72036, 278350, 1 }, -- Unleashes a vile explosion at the target location, dealing 14,768 Shadow damage over 10 sec to 8 enemies within 10 yds and applies Agony and Curse of Exhaustion to them.
     withering_bolt                 = { 72055, 386976, 2 }, -- Shadow Bolt and Drain Soul deal 7% increased damage, up to 21%, per damage over time effect you have active on the target.
     wrath_of_consumption           = { 72033, 387065, 1 }, -- Corruption and Agony each grant an application of Wrath of Consumption when a target dies, increasing all periodic damage dealt by 3% for 30 sec, stacking up to 5 times.
-    writhe_in_agony                = { 72040, 196102, 2 }, -- Agony's damage starts at 2 stacks and may now ramp up to 14 stacks.
-    xavian_teachings               = { 72051, 317031, 1 }, -- Corruption is instant cast and instantly deals 858 damage.
+    writhe_in_agony                = { 72051, 196102, 1 }, -- Agony's damage starts at 4 stacks and may now ramp up to 18 stacks.
 } )
 
 
@@ -322,7 +322,7 @@ spec:RegisterAuras( {
     },
     dread_touch = {
         id = 389868,
-        duration = 6,
+        duration = 8,
         max_stack = 1
     },
     -- Controlling Eye of Kilrogg.  Detecting Invisibility.
@@ -332,6 +332,12 @@ spec:RegisterAuras( {
         duration = 45,
         type = "Magic",
         max_stack = 1
+    },
+    fear = {
+        id = 118699,
+        duration = 20,
+        type = "Magic",
+        max_stack = 1,
     },
     -- Talent: Imp, Voidwalker, Succubus, Felhunter, or Felguard casting time reduced by $/1000;S1 sec.
     -- https://wowhead.com/beta/spell=333889
@@ -653,7 +659,7 @@ spec:RegisterAuras( {
     summon_soulkeeper = {
         id = 386256,
         duration = 8,
-        max_stack = 1
+        max_stack = 10
     },
     --
     -- https://wowhead.com/beta/spell=101508
@@ -1110,7 +1116,7 @@ spec:RegisterAbilities( {
     -- Corrupts the target, causing 6,386 Shadow damage over 14 sec.
     corruption = {
         id = 172,
-        cast = function() return talent.xavian_teachings.enabled and 0 or 2 * haste end,
+        cast = 0,
         cooldown = 0,
         gcd = "spell",
         school = "shadow",
@@ -2126,9 +2132,10 @@ spec:RegisterAbilities( {
         talent = "summon_soulkeeper",
         startsCombat = true,
         buff = "tormented_souls",
+        nobuff = "summon_soulkeeper",
 
         handler = function ()
-            applyBuff( "summon_soulkeeper", buff.tormented_souls.stack )
+            applyBuff( "summon_soulkeeper", nil, buff.tormented_souls.stack )
             removeBuff( "tormented_souls" )
         end,
     },

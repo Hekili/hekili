@@ -5918,7 +5918,7 @@ do
         local ability
         local curr_action = self.this_action
 
-        if e.type ~= "AURA_EXPIRATION" then
+        if e.type ~= "AURA_EXPIRATION" and e.type ~= "AURA_PERIODIC" then
             ability = class.abilities[ e.action ]
 
             if not ability then

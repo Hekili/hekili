@@ -51,7 +51,7 @@ actions.aoe+=/summon_soulkeeper,if=buff.tormented_soul.stack=10|buff.tormented_s
 actions.aoe+=/summon_infernal
 actions.aoe+=/rain_of_fire,if=(debuff.pyrogenics.down|buff.madness_rof.up)&active_enemies<=4
 actions.aoe+=/channel_demonfire,if=dot.immolate.remains>cast_time
-actions.aoe+=/immolate,cycle_targets=1,if=((dot.immolate.refreshable&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains))|active_enemies>active_dot.immolate)&target.time_to_die>10&!havoc_active
+actions.aoe+=/immolate,cycle_targets=1,if=((dot.immolate.refreshable&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains))|cycle_enemies>active_dot.immolate)&target.time_to_die>10&!havoc_active
 actions.aoe+=/immolate,cycle_targets=1,if=(dot.immolate.refreshable|(dot.immolate.remains<2&dot.immolate.remains<havoc_remains)|!dot.immolate.ticking)&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains)&target.time_to_die>11
 actions.aoe+=/soul_fire,if=buff.backdraft.up
 actions.aoe+=/incinerate,if=talent.fire_and_brimstone.enabled&buff.backdraft.up

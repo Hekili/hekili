@@ -1906,6 +1906,45 @@ all:RegisterAuras( {
         end,
     },
 
+    snared = {
+        duration = 10,
+        generate = function( t )
+            local max_events = GetActiveLossOfControlDataCount()
+
+            if max_events > 0 then
+                local spell, start, duration, remains = "none", 0, 0, 0
+
+                for i = 1, max_events do
+                    local event = GetActiveLossOfControlData( i )
+
+                    if event.locType == "SNARE" and event.startTime and event.startTime > 0 and event.timeRemaining and event.timeRemaining > 0 and event.timeRemaining > remains then
+                        spell = event.spellID
+                        start = event.startTime
+                        duration = event.duration
+                        remains = event.timeRemaining
+                    end
+                end
+
+                if start + duration > query_time then
+                    t.count = 1
+                    t.expires = start + duration
+                    t.applied = start
+                    t.duration = duration
+                    t.caster = "anybody"
+                    t.v1 = spell
+                    return
+                end
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.duration = 10
+            t.caster = "nobody"
+            t.v1 = 0
+        end,
+    },
+
     dispellable_curse = {
         generate = function( t )
             local i = 1
