@@ -8,6 +8,7 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 262 )
 
@@ -2517,9 +2518,11 @@ end )
 
 
 spec:RegisterSetting( "stack_buffer", 1.1, {
-    name = "|T135855:0|t Icefury and |T839977:0|t Stormkeeper Padding",
-    desc = "The default priority tries to avoid wasting |T839977:0|t Stormkeeper and |T135855:0|t Icefury stacks with a grace period of 1.1 GCD per stack.\n\n" ..
-            "Increasing this number will reduce the likelihood of wasted Icefury / Stormkeeper stacks due to other procs taking priority, and leave you with more time to react.",
+    name = strformat( "%s and %s Padding", Hekili:GetSpellLinkWithTexture( spec.abilities.icefury.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.stormkeeper.id ) ),
+    desc = strformat( "The default priority tries to avoid wasting %s and %s stacks with a grace period of 1.1 GCD per stack.\n\n" ..
+            "Increasing this number will reduce the likelihood of wasted |W%s|w / |W%s|w stacks due to other procs taking priority, leaving you with more time to react.",
+            Hekili:GetSpellLinkWithTexture( spec.abilities.icefury.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.stormkeeper.id ), spec.abilities.icefury.name,
+            spec.abilities.stormkeeper.name ),
     type = "range",
     min = 1,
     max = 2,
@@ -2528,18 +2531,18 @@ spec:RegisterSetting( "stack_buffer", 1.1, {
 } )
 
 spec:RegisterSetting( "hostile_dispel", false, {
-    name = "Use |T136075:0|t Purge or |T451166:0|t Greater Purge on Enemies",
-    desc = "If checked, |T136075:0|t Purge or |T451166:0|t Greater Purge can be recommended by the addon when your target has a dispellable magic effect.\n\n"
-        .. "These abilities are also on the Interrupts toggle by default.",
+    name = strformat( "Use %s or %s", Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
+    desc = strformat( "If checked, %s or %s can be recommended your target has a dispellable magic effect.\n\n"
+        .. "These abilities are also on the Interrupts toggle by default.", Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "purge_icd", 12, {
-    name = "|T136075:0|t Purge Internal Cooldown",
-    desc = "If set above zero, the addon will not recommend |T136075:0|t Purge more frequently than this amount of time, even if there are more "
-        .. "dispellable magic effects on your target.  This can prevent you from being encouraged to spam Purge endlessly against enemies "
-        .. "with rapidly stacking magic buffs.",
+    name = strformat( "%s Internal Cooldown", Hekili:GetSpellLinkWithTexture( 370 ) ),
+    desc = strformat( "If set above zero, %s cannot be recommended again until time has passed since it was last used, even if there are more "
+        .. "dispellable magic effects on your target.\n\nThis feature can prevent you from being encouraged to spam your dispel endlessly against enemies "
+        .. "with rapidly stacking magic buffs.", Hekili:GetSpellLinkWithTexture( 370 ) ),
     type = "range",
     min = 0,
     max = 20,

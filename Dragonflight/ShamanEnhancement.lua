@@ -12,6 +12,7 @@ local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
 -- Globals
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 263 )
 
@@ -1664,7 +1665,7 @@ spec:RegisterAbilities( {
     lava_lash = {
         id = 60103,
         cast = 0,
-        cooldown = function () return ( 18 - 3 * talent.molten_assault.rank ) * ( buff.hot_hand.up and ( 1 - 0.375 * talent.hot_hand.rank ) or 1 ) * haste end,
+        cooldown = function () return ( 18 - 3 * talent.molten_assault.rank ) * ( buff.hot_hand.up and ( 1 - 0.375 * talent.hot_hand.rank ) or 1 ) * haste - ( settings.pad_lava_lash and buff.hot_hand.up and ( latency * 2 ) or 0 ) end,
         gcd = "spell",
         school = "fire",
 
@@ -2250,7 +2251,7 @@ spec:RegisterAbilities( {
     windstrike = {
         id = 115356,
         cast = 0,
-        cooldown = function() return gcd.execute * 2 end,
+        cooldown = function() return gcd.execute * 2 - ( settings.pad_windstrike and latency * 2 or 0 ) end,
         gcd = "spell",
 
         texture = 1029585,
@@ -2306,32 +2307,34 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "pad_windstrike", true, {
-    name = "Pad |T1029585:0|t Windstrike Cooldown",
-    desc = "If checked, the addon will treat |T1029585:0|t Windstrike's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during Ascendance.",
+    name = strformat( "Pad %s Cooldown", Hekili:GetSpellLinkWithTexture( spec.abilities.windstrike.id ) ),
+    desc = strformat( "If checked, the cooldown of %s will be shortened to help ensure it is recommended as frequently as possible during %s.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.windstrike.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.ascendance.id ) ),
     type = "toggle",
     width = 1.5
 } )
 
 spec:RegisterSetting( "pad_lava_lash", true, {
-    name = "Pad |T236289:0|t Lava Lash Cooldown",
-    desc = "If checked, the addon will treat |T236289:0|t Lava Lash's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during Hot Hand.",
+    name = strformat( "Pad %s Cooldown", Hekili:GetSpellLinkWithTexture( spec.abilities.lava_lash.id ) ),
+    desc = strformat( "If checked, the cooldown of %s will be shortened to help ensure that it is recommended as frequently as possible during %s.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.lava_lash.id ), Hekili:GetSpellLinkWithTexture( spec.auras.hot_hand.id ) ),
     type = "toggle",
     width = 1.5
 } )
 
 spec:RegisterSetting( "hostile_dispel", false, {
-    name = "Use |T136075:0|t Purge or |T451166:0|t Greater Purge on Enemies",
-    desc = "If checked, |T136075:0|t Purge or |T451166:0|t Greater Purge can be recommended by the addon when your target has a dispellable magic effect.\n\n"
-        .. "These abilities are also on the Interrupts toggle by default.",
+    name = strformat( "Use %s or %s", Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
+    desc = strformat( "If checked, %s or %s can be recommended your target has a dispellable magic effect.\n\n"
+        .. "These abilities are also on the Interrupts toggle by default.", Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "purge_icd", 12, {
-    name = "|T136075:0|t Purge Internal Cooldown",
-    desc = "If set above zero, the addon will not recommend |T136075:0|t Purge more frequently than this amount of time, even if there are more "
-        .. "dispellable magic effects on your target.\n\nThis can prevent you from being encouraged to spam Purge endlessly against enemies "
-        .. "with rapidly stacking magic buffs.",
+    name = strformat( "%s Internal Cooldown", Hekili:GetSpellLinkWithTexture( 370 ) ),
+    desc = strformat( "If set above zero, %s cannot be recommended again until time has passed since it was last used, even if there are more "
+        .. "dispellable magic effects on your target.\n\nThis feature can prevent you from being encouraged to spam your dispel endlessly against enemies "
+        .. "with rapidly stacking magic buffs.", Hekili:GetSpellLinkWithTexture( 370 ) ),
     type = "range",
     min = 0,
     max = 20,
@@ -2340,9 +2343,10 @@ spec:RegisterSetting( "purge_icd", 12, {
 } )
 
 spec:RegisterSetting( "project_windfury", 0, {
-    name = "Use |T538574:0|t Totemic Projection for |T136114:0|t Windfury Totem",
-    desc = "If set above zero, the addon will recommend using |T538574:0|t Totemic Projection if your |T136114:0|t Windfury Totem is active, will remain active for the specified time, and you are currently out of range of the totem.\n\n"
-        .. "This may be disruptive if you have other totems active that you do not want to move.",
+    name = strformat( "Use %s for %s", Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ) ),
+    desc = strformat( "If set above zero, %s can be recommended to relocate your %s when it is active, will remain active for the specified time, and you are currently out of range.\n\n"
+        .. "This feature may be disruptive if you have other totems active that you do not want to move.", Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ),
+            Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ) ),
     type = "range",
     min = 0,
     max = 120,
@@ -2351,14 +2355,16 @@ spec:RegisterSetting( "project_windfury", 0, {
 } )
 
 spec:RegisterStateExpr( "project_windfury_totem", function ()
-    if settings.project_windfury == 0 then return false end
+    if not settings.project_windfury or settings.project_windfury == 0 then return false end
     return totem.windfury_totem.remains >= settings.project_windfury and buff.windfury_totem.down
 end )
 
 spec:RegisterSetting( "tp_macro", nil, {
-    name = "|T538574:0|t Totemic Projection Macro",
-    desc = "This macro will use |T538574:0|t Totemic Projection at your feet.  It can be useful for pulling your |T136114:0|t Windfury Totem to you if you get out of range.\n\n"
-        .. "You can also add this command to a macro for other abilities (like Stormstrike) to routinely bring your totems to your character.",
+    name = strformat( "%s Macro", Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ) ),
+    desc = strformat( "This macro will use %s at your feet.  It can be useful for pulling your %s to you if you get out of range.\n\n"
+        .. "You can also add this command to a macro for other abilities (like %s) to routinely bring your totems to your character.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.stormstrike.id ) ),
     type = "input",
     width = "full",
     multiline = true,
@@ -2367,17 +2373,19 @@ spec:RegisterSetting( "tp_macro", nil, {
 } )
 
 spec:RegisterSetting( "burn_before_wave", true, {
-    name = "Burn Maelstrom before |T3578231:0|t Primordial Wave",
-    desc = "If checked, the default priority will recommend spending your Maelstrom Weapon stacks before using |T3578231:0|t Primordial Wave if you have Primordial Maelstrom talented.\n\n"
-        .. "In 10.0.5, this appears to be damage-neutral in single-target and a slight increase in multi-target scenarios.",
+    name = strformat( "Burn Maelstrom before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ),
+    desc = strformat( "If checked, spending %s stacks may be recommended before using %s when %s is talented.\n\n"
+        .. "This feature is damage-neutral in single-target and a slight increase in multi-target scenarios.", Hekili:GetSpellLinkWithTexture( spec.auras.maelstrom_weapon.id ),
+            Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ), Hekili:GetSpellLinkWithTexture( spec.talents.primal_maelstrom[2] ) ),
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "filler_shock", true, {
-    name = "Filler |T135813:0|t Shock",
-    desc = "If checked, the addon's default priority will recommend a filler |T135813:0|t Flame Shock when there's nothing else to push, even if something better will be off cooldown very soon.  " ..
-        "This matches sim behavior and is a small DPS increase, but has been confusing to some users.",
+    name = strformat( "Filler %s", Hekili:GetSpellLinkWithTexture( spec.abilities.flame_shock.id ) ),
+    desc = strformat( "If checked, a filler %s may be recommended when nothing else is currently ready, even if something better will be off cooldown very soon.\n\n"
+        .. "This feature matches simulation profile behavior and is a small DPS increase, but has been confusing to some users.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.flame_shock.id ) ),
     type = "toggle",
     width = 1.5
 } )
