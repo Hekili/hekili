@@ -34,6 +34,8 @@ end
 Hekili.IsDragonflight = function()
     return buildNum >= 100000
 end
+Hekili.BuiltFor = 100007
+Hekili.GameBuild = buildStr
 
 ns.PTR = buildNum > 100007
 

@@ -173,7 +173,9 @@ function Hekili:OnEnable()
     self.PendingSpecializationChange = true
     self:ForceUpdate( "ADDON_ENABLED" )
 
-    -- ns.Audit()
+    if self.BuiltFor > self.CurrentBuild then
+        self:Notify( "|cFFFF0000WARNING|r: This version of Hekili is for a future version of WoW; you should reinstall for " .. self.GameBuild .. "." )
+    end
 end
 
 
@@ -886,7 +888,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         if debug then self:Debug( " - variable.%s references a hardcoded variable and this entry will be ignored.", name ) end
                                     elseif name ~= nil then
                                         state:RegisterVariable( name, scriptID, listName, Stack )
-                                        if debug then self:Debug( " - variable.%s will check this script entry ( %s )\n%s", name, scriptID, scripts:GetModifierValues( "value", scriptID ) ) end
+                                        if debug then self:Debug( " - variable.%s[%s] will check this script entry ( %s )", name, tostring( state.variable[ name ] ), scriptID ) end
                                     else
                                         if debug then self:Debug( " - variable name not provided, skipping." ) end
                                     end
