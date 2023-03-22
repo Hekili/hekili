@@ -419,18 +419,19 @@ spec:RegisterAbilities( {
 
 
     avenging_crusader = {
+        key = "avenging_crusader",
         id = 216331,
         cast = 0,
         cooldown = 120,
         gcd = "spell",
 
-        spend = 0.5,
-        spendType = "mana",
+        spend = 5,
+        spendType = "holy_power",
 
-        talent = "avenging_crusader",
-        notalent = "avenging_wrath",
         startsCombat = false,
         texture = 589117,
+        talent = "avenging_crusader",
+        notalent = "avenging_wrath",
 
         toggle = "cooldowns",
 
@@ -443,30 +444,20 @@ spec:RegisterAbilities( {
 
 
     avenging_wrath = {
-        id = function() return talent.avenging_crusader.enabled and 216331 or 31884 end,
+        id = 31884,
         cast = 0,
         cooldown = 120,
         gcd = "spell",
 
-        spend = function()
-            if talent.avenging_crusader.enabled then
-                return 5, "holy_power"
-            end
-        end,
-
         startsCombat = false,
         toggle = "cooldowns",
+        notalent = "avenging_crusader",
 
         handler = function ()
-            if talent.avenging_crusader.enabled then
-                spend( 5, "holy_power" )
-                applyBuff( "avenging_crusader" )
-                return
-            end
             applyBuff( "avenging_wrath" )
         end,
 
-        copy = { "avenging_crusader", "sanctified_wrath", 31884, 216331 }
+        bind = { "avenging_crusader", "sanctified_wrath" }
     },
 
 
@@ -1356,4 +1347,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Holy Paladin", 20230205, [[Hekili:fFvBVTonu4FltiTbIrPP7L7DxuNeGe6UbAcPoeFaDtSBYPnM6yhSDwxLQ8VDo2jP1jnb4knj(WMCSp(58(5Xnok(54fzude)0SPZUA6SP3mj62RJU5M4fMDLq8IsA6g6ACHGwG))Js(ol5xPCAgt4oDhxsZCOOLvQuuI4flRyCZdI4LdaD07V(ou2sin(PBrLKZYYGArbDA8INZzAlX9h1sA0TLixHFNAysHLWzAdE8kPYs(iSHXztIx430BfLGiduU1p5DoqqxYHS4FiErQIzafJgV4mlXq5GWmHULUbemX6jncAj73xRSxGeqafma129wsu8IAtavsod4zjYvjMCirXwNBazLo2GU6O6CCfEULSwjRkpQaUdsh(z0TchSx9zd7rW2kvEBDnxQ2HGzCX6v0kU5qqQvufSSAdeQPbCjxIsXkRVXp5sd0SmxMPSsvk1G(sl57FbeRrRXs(Df1KJ7SGkqLSI5C429OISqr)rvLMIjp8afM0PCoMMYXvAS0d)EjMRn7MC0CPnxnzRdWdXPdPjqrlZzf98NRdLjhRNt84aQEYDtOC42ATtvyGuxvuCI03oM00ktvHON0VBmP3YeMtW(9JAjLkCvpPV7)szFBKlTjM3T8pvk5zYTIbKtbfuMOULyDA2Kc6R13XhjlLBrzWYlwkZyjZTKPyEWOyPgxP2bNiftUj1FK46DR7GtQNXCOh2DNPH(Eg7fMasmsoVNth1Po23)OtYPdKOIMDs(hJI6(vjrJ3YDMlaj0qkw1HGmPQ03dBOQ1GzYwMjNjq7(OZgiSh6UvGEJ0N79vX9mJovH)zv26cm)1xOBpXL05Y0n9f7DJ6shs4hV8qz6aFQPEiXLCXrg(XkLkivwSKAoz67YaZdOktcwddI067H38fmD7o9avbo2IQCZZ0oobS7NvukvMM5(x0wICHLOG)QIPCvUAPFmrLrwG0o4gP5uSVwpX(4VGLn4i8pGdzKcuz(JVO)StenJCG9BBoWZ)YOx)Qd4n7ngVREZWZ(4abTMP(FEXS7gXM6pyOVTn2aMU2OJOVujxX4qnRFbZpCdnSQYaBFnYeJdrqDGd82ag0(iwYdM6l5l7kCvezogdkUnGg8oh2mjwKJRyIuEvMJlhWguq9b0aiFJL8h)MgCibf6pHusBZzP5Hstf7oQvlriDG)Aj3nGJFe3m3Qg6QwL(D4dxuTQ55AiWIWp1q8DCRzbAElZr7DWJAG00kQpA43suvSeQZHCPbJNp4t2UnUQ3RLWdDnN(WCBJO(RN)T1092h)cl5)bEC7JhTKUm5HN0sIhUxiPD4(Nssp2P1KYJDAnj8Oi7jDdpTpB2LoES5TZOUSM)BE0LSvZpBS(J97)3jDVVzm8(9Ns2oFAOffqugUDhEXtIOEAWo(vaXL347r7DEpkVoi2Lwl8OwwStmapVthdOllJZg(hyQAdpUrlnymPnj4QKg(v7DYkTtu3V3bWXFbW9rdczN3P7aQpoN7Fy)G3TZZYh6UyNALjxIVF5NXtKBWFZLG5PlJ)7d]] )
+spec:RegisterPack( "Holy Paladin", 20230322, [[Hekili:TAvxVTTnu0Fl9LKwSunj5MMUb4aS1xwZgcgG6WEJs0u0wCMIuJKkUbWG)27Luw2uF1TcKxcC49WJU8Ep3djkb9zuwj2qrpMgNUkEvAAuYT3MMKIYmp3qrznyYE8o4hcCn83FtYF2w8NyoUKjCrFMlXLow0YwfbqGY20Y4MpjqBMNAaAdLGE893IYQyLL0oKunbL5q(24vVnn9NTf2I)QXrqPTyRuzlsIJIJUZw86mQc3uXQTfkAT8jA5n2IF5jQyhtSZw83kSPYwGfLHR(rvRgxsbA0nCM5nrOmotB0(uVHkGqUF)OVIqf4nCAj6xrzefZqvmmk7v2cdMtfMi8b8EQaOn6eqBXXJWxKyyprZPcAnJQTf3dPmkZTQekv6kgLxMl3MBQO5k2Ukdv2QrgO(S43C5p4v2IDkzBZLpa3rPJ)s8bHJ2vF30EHSdsLpx3XLQNbYmUo0wCl3CUi1dvr30UNg(L6ps9iWN6c5hCTMrixnlsYP21iWVleCfOfZ97ycUBdXblR1osHZJUTUEc63VeACRPTwmc9DlH(atyMW9hwmtAuWVgH(Ncr3QP5qhRwpcus8)hn64k5qTkrk5LYdIzWbZuyMOt)UJugvJ)s3E817g5badOfyeMXwS2wedABJIrCz2LKNG588U)j3nO1nUL35ICEGZTNbIPs2tmbn3i58XN6bskVyxNxHNPDMSAIkbQ166XWE33QmsKcnLa6vGKO2g)aNbR2rnrhyMkMa6cxoSbG9upq)1LKEfYm6)KbQV)PTCxn0)gd6UjhjDLKSFmSpS4r6Cd)YMNRthCMoPhYDnxy(27b0OOez9g8uxGkkwzYb5nvqcmd243hSZNG2Tdy3LbPXG5)bSYz(aY7pxrTfS6gPYCYR)6EjY1ot()TLPCkxTSgactLY6U7fivyy6xhzF4pazd43cxB8rPa(y(Wxp2OdyZiNz9(Hdi(Rt(YBoZx6lmFREX4Z(WmfTtw0FN1S4fsQXodJtULCyctYp5ZphTR6UGukSf(lEHWo9KClJt7Lr6Fy9p2DDI9HlRm86JzJ0NcHbdVEiC9PxhSu0o7)LI2z3ViZE79WONTZdxCSn5nodY19I)B6mwxNCdB76xTuD)4X)B387pnFF84ux81XHzuGdC4YdmCNuM9(RdoxboI(KFKF6vJ8shW4q)YWq92JtsaVH2GeyO9Llh(gwG9LhNK9ehr9nbGSfE72GUs)O6XJocU8oW7tMLYbVwZr0yEUY)8Uz37GhNn3EH5PwtLeUy83HiY9WZ1fmVpm6Rp]] )
