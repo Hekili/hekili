@@ -426,7 +426,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
             local ability = class.abilities[ spellID ]
 
             if ability then
-                danse_macabre_tracker[ ability.key ] = true
+                state.danse_macabre_tracker[ ability.key ] = true
             end
         end
     end
