@@ -35,6 +35,7 @@ actions.standard+=/hammer_of_wrath
 actions.standard+=/judgment,cycle_targets=1
 actions.standard+=/consecration,if=!consecration.up
 actions.standard+=/eye_of_tyr
+actions.standard+=/blessed_hammer
 actions.standard+=/hammer_of_the_righteous
 actions.standard+=/crusader_strike
 actions.standard+=/word_of_glory,if=buff.shining_light_free.up
