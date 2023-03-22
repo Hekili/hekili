@@ -17,7 +17,7 @@ local function rage_amount( isOffhand )
 
     local c = ( state.level > 70 and 1.4139 or 1 ) * ( 0.0091107836 * ( state.level ^ 2 ) + 3.225598133 * state.level + 4.2652911 )
     local f = isOffhand and 1.75 or 3.5
-    local s = ifOffhand and ( select( 2, UnitAttackSpeed( "player" ) ) or 2.5 ) or UnitAttackSpeed( "player" )
+    local s = isOffhand and ( select( 2, UnitAttackSpeed( "player" ) ) or 2.5 ) or UnitAttackSpeed( "player" )
 
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) * ( state.buff.defensive_stance.up and 0.95 or 1 )
 end
@@ -714,7 +714,7 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         end
 
         if application_events[subtype] then
-            
+
             if is_rend then
                 ApplyRend(destGUID, GetTime())
             end
@@ -1609,7 +1609,7 @@ spec:RegisterAbilities( {
         buff = "battle_stance",
 
         usable = function()
-            return buff.taste_for_blood.up or buff.overpower_ready.up, "only usable after dodging or with taste_for_blood" 
+            return buff.taste_for_blood.up or buff.overpower_ready.up, "only usable after dodging or with taste_for_blood"
         end,
 
         handler = function( rank )
