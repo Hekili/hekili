@@ -2170,7 +2170,7 @@ spec:RegisterSetting("shout_spell", "commanding_shout", {
     end
 })
 
-spec:RegisterSetting("queueing_threshold", 30, {
+spec:RegisterSetting("queueing_threshold", 60, {
     type = "range",
     name = "Queue Rage Threshold",
     desc = "Select the rage threshold after which heroic strike / cleave will be recommended",
