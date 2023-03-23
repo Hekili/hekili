@@ -335,9 +335,10 @@ do
                 for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local excluded = not UnitIsUnit( unit, "target" )
-
                         local npcid = guid:match( "(%d+)-%x-$" )
                         npcid = tonumber( npcid )
+
+                        local _, range
 
                         if debugging then details = format( "%s\n - Checking %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
@@ -361,15 +362,14 @@ do
                                 end
                             end
 
-                            local _, range
                             if not excluded and checkPlates and spec.nameplateRange > 0 then
-                                _, range = RC:GetRange( unit )
+                                range = RC:GetRange( unit )
                                 guidRanges[ guid ] = range
 
-                                excluded = range and range > spec.nameplateRange or false
+                                excluded = range and range > spec.nameplateRange
 
                                 if debugging and excluded then
-                                    details = format( "%s\n    - Excluded by nameplate range.", details )
+                                    details = format( "%s\n    - Excluded by nameplate range (%d > %d).", details, range, spec.nameplateRange )
                                 end
                             end
 
@@ -407,6 +407,8 @@ do
                             local npcid = guid:match( "(%d+)-%x-$" )
                             npcid = tonumber(npcid)
 
+                            local range
+
                             if debugging then details = format( "%s\n - Checking %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
                             if excluded then
@@ -429,9 +431,8 @@ do
                                     end
                                 end
 
-                                local _, range
                                 if not excluded and checkPlates then
-                                    _, range = RC:GetRange( unit )
+                                    range = RC:GetRange( unit )
                                     guidRanges[ guid ] = range
 
                                     excluded = range and range > spec.nameplateRange or false
@@ -476,6 +477,8 @@ do
                     local npcid = guid:match("(%d+)-%x-$")
                     npcid = tonumber(npcid)
 
+                    local range
+
                     local unit = Hekili:GetUnitByGUID( guid ) or UnitTokenFromGUID( guid )
                     local excluded = false
 
@@ -501,9 +504,8 @@ do
                             end
                         end
 
-                        local _, range
                         if not excluded and checkPlates then
-                            _, range = RC:GetRange( unit )
+                            range = RC:GetRange( unit )
                             guidRanges[ guid ] = range
 
                             excluded = range and range > spec.nameplateRange or false
