@@ -2387,8 +2387,6 @@ spec:RegisterAbilities( {
         talent = "totemic_recall",
         startsCombat = false,
 
-        toggle = "defensives",
-
         handler = function ()
             if recall_totem_1 then setCooldown( recall_totem_1, 0 ) end
             if talent.creation_core.enabled and recall_totem_2 then setCooldown( recall_totem_2, 0 ) end
