@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 581 )
 
 spec:RegisterResource( Enum.PowerType.Fury, {
@@ -35,9 +37,9 @@ spec:RegisterTalents( {
     blazing_path              = { 91008, 320416, 1 }, -- Infernal Strike gains an additional charge.
     bouncing_glaives          = { 90931, 320386, 1 }, -- Throw Glaive ricochets to 1 additional target.
     chaos_fragments           = { 90992, 320412, 1 }, -- Each enemy stunned by Chaos Nova has a 30% chance to generate a Lesser Soul Fragment.
-    chaos_nova                = { 90993, 179057, 1 }, -- Unleash an eruption of fel energy, dealing 622 Chaos damage and stunning all nearby enemies for 2 sec. Each enemy stunned by Chaos Nova has a 30% chance to generate a Lesser Soul Fragment.
+    chaos_nova                = { 90993, 179057, 1 }, -- Unleash an eruption of fel energy, dealing 1,964 Chaos damage and stunning all nearby enemies for 2 sec. Each enemy stunned by Chaos Nova has a 30% chance to generate a Lesser Soul Fragment.
     charred_warblades         = { 90948, 213010, 1 }, -- You heal for 3% of all Fire damage you deal.
-    collective_anguish        = { 90995, 390152, 1 }, -- Fel Devastation summons an allied Havoc Demon Hunter who casts Eye Beam, dealing 5,752 Chaos damage over 1.7 sec. Deals reduced damage beyond 5 targets.
+    collective_anguish        = { 90995, 390152, 1 }, -- Fel Devastation summons an allied Havoc Demon Hunter who casts Eye Beam, dealing 18,178 Chaos damage over 1.9 sec. Deals reduced damage beyond 5 targets.
     concentrated_sigils       = { 90944, 207666, 1 }, -- All Sigils are now placed at your location, and the duration of their effects is increased by 2 sec.
     consume_magic             = { 91006, 278326, 1 }, -- Consume 1 beneficial Magic effect removing it from the target.
     darkness                  = { 91002, 196718, 1 }, -- Summons darkness around you in an 8 yd radius, granting friendly targets a 20% chance to avoid all damage from an attack. Lasts 8 sec.
@@ -46,15 +48,15 @@ spec:RegisterTalents( {
     disrupting_fury           = { 90937, 183782, 1 }, -- Disrupt generates 30 Fury on a successful interrupt.
     erratic_felheart          = { 90996, 391397, 2 }, -- The cooldown of Infernal Strike is reduced by 10%.
     extended_sigils           = { 90998, 389697, 2 }, -- Increases the duration of Sigil effects by 1.0 sec.
-    felblade                  = { 90932, 232893, 1 }, -- Charge to your target and deal 1,197 Fire damage. Shear has a chance to reset the cooldown of Felblade. Generates 40 Fury.
+    felblade                  = { 90932, 232893, 1 }, -- Charge to your target and deal 3,783 Fire damage. Shear has a chance to reset the cooldown of Felblade. Generates 40 Fury.
     felfire_haste             = { 90939, 389846, 1 }, -- Infernal Strike increases your movement speed by 10% for 8 sec.
     first_of_the_illidari     = { 91003, 235893, 1 }, -- Metamorphosis grants 10% Versatility and its cooldown is reduced by 60 sec.
     flames_of_fury            = { 90949, 389694, 1 }, -- Sigil of Flame generates 2 additional Fury per target hit.
     illidari_knowledge        = { 90935, 389696, 2 }, -- Reduces magic damage taken by 2%.
-    imprison                  = { 91007, 217832, 1 }, -- Imprisons a demon, beast, or humanoid, incapacitating them for 1 min. Damage will cancel the effect. Limit 1.
+    imprison                  = { 91007, 217832, 1 }, -- Imprisons a demon, beast, or humanoid, incapacitating them for 60 sec. Damage will cancel the effect. Limit 1.
     improved_disrupt          = { 90938, 320361, 1 }, -- Increases the range of Disrupt to 15 yards.
     improved_sigil_of_misery  = { 90945, 320418, 1 }, -- Reduces the cooldown of Sigil of Misery by 30 sec.
-    infernal_armor            = { 91004, 320331, 2 }, -- Immolation Aura increases your armor by 10% and causes melee attackers to suffer 263 Fire damage.
+    infernal_armor            = { 91004, 320331, 2 }, -- Immolation Aura increases your armor by 10% and causes melee attackers to suffer 832 Fire damage.
     internal_struggle         = { 90934, 393822, 1 }, -- Increases your Mastery by 3.0%.
     long_night                = { 91001, 389781, 1 }, -- Increases the duration of Darkness by 3 sec.
     lost_in_darkness          = { 90947, 389849, 1 }, -- Spectral Sight lasts an additional 6 sec if disrupted by attacking or taking damage.
@@ -67,11 +69,11 @@ spec:RegisterTalents( {
     relentless_pursuit        = { 90926, 389819, 1 }, -- The cooldown of The Hunt is reduced by 12 sec whenever an enemy is killed while afflicted by its damage over time effect.
     rush_of_chaos             = { 90933, 320421, 1 }, -- Reduces the cooldown of Metamorphosis by 60 sec.
     shattered_restoration     = { 90950, 389824, 2 }, -- The healing of Shattered Souls is increased by 5%.
-    sigil_of_misery           = { 90946, 207684, 1 }, -- Place a Sigil of Misery at the target location that activates after 2 sec. Causes all enemies affected by the sigil to cower in fear, disorienting them for 20 sec.
+    sigil_of_misery           = { 90946, 207684, 1 }, -- Place a Sigil of Misery at the target location that activates after 1 sec. Causes all enemies affected by the sigil to cower in fear, disorienting them for 22 sec.
     soul_rending              = { 90936, 204909, 2 }, -- Leech increased by 5%. Gain an additional 5% Leech while Metamorphosis is active.
     soul_sigils               = { 90929, 395446, 1 }, -- Afflicting an enemy with a Sigil generates 1 Lesser Soul Fragment.
     swallowed_anger           = { 91005, 320313, 1 }, -- Consume Magic generates 20 Fury when a beneficial Magic effect is successfully removed from the target.
-    the_hunt                  = { 90927, 370965, 1 }, -- Charge to your target, striking them for 9,422 Nature damage, rooting them in place for 1.5 sec and inflicting 7,222 Nature damage over 6 sec to up to 5 enemies in your path. The pursuit invigorates your soul, healing you for 20% of the damage you deal to your Hunt target for 20 sec.
+    the_hunt                  = { 90927, 370965, 1 }, -- Charge to your target, striking them for 29,776 Nature damage, rooting them in place for 1.5 sec and inflicting 21,352 Nature damage over 6 sec to up to 5 enemies in your path. The pursuit invigorates your soul, healing you for 20% of the damage you deal to your Hunt target for 20 sec.
     unleashed_power           = { 90992, 206477, 1 }, -- Reduces the Fury cost of Chaos Nova by 50% and its cooldown by 20%.
     unnatural_malice          = { 90926, 389811, 1 }, -- Increase the damage over time effect of The Hunt by 30%.
     unrestrained_fury         = { 90941, 320770, 2 }, -- Increases maximum Fury by 10.
@@ -80,7 +82,7 @@ spec:RegisterTalents( {
 
     -- Vengeance
     agonizing_flames          = { 90971, 207548, 2 }, -- Immolation Aura increases your movement speed by 10% and its duration is increased by 25%.
-    bulk_extraction           = { 90956, 320341, 1 }, -- Demolish the spirit of all those around you, dealing 790 Fire damage to nearby enemies and extracting up to 5 Lesser Soul Fragments, drawing them to you for immediate consumption.
+    bulk_extraction           = { 90956, 320341, 1 }, -- Demolish the spirit of all those around you, dealing 2,496 Fire damage to nearby enemies and extracting up to 5 Lesser Soul Fragments, drawing them to you for immediate consumption.
     burning_alive             = { 90959, 207739, 1 }, -- Every 2 sec, Fiery Brand spreads to one nearby enemy.
     burning_blood             = { 90987, 390213, 2 }, -- Fire damage increased by 5%.
     calcified_spikes          = { 90967, 389720, 1 }, -- You take 12% reduced damage after Demon Spikes ends, fading by 1% per second.
@@ -90,39 +92,39 @@ spec:RegisterTalents( {
     darkglare_boon            = { 90985, 389708, 2 }, -- When Fel Devastation finishes fully channeling, it refreshes 10-20% of its cooldown and refunds 10-20 Fury.
     deflecting_spikes         = { 90989, 321028, 1 }, -- Demon Spikes also increases your Parry chance by 15% for 8 sec.
     down_in_flames            = { 90961, 389732, 1 }, -- Fiery Brand has 15 sec reduced cooldown and 1 additional charge.
-    elysian_decree            = { 90960, 390163, 1 }, -- Place a Kyrian Sigil at the target location that activates after 2 sec. Detonates to deal 8,692 Arcane damage and shatter up to 3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond 5 targets.
+    elysian_decree            = { 90960, 390163, 1 }, -- Place a Kyrian Sigil at the target location that activates after 1 sec. Detonates to deal 27,469 Arcane damage and shatter up to 3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond 5 targets.
     extended_spikes           = { 90966, 389721, 2 }, -- Increases the duration of Demon Spikes by 1 sec.
     fallout                   = { 90972, 227174, 1 }, -- Immolation Aura's initial burst has a chance to shatter Lesser Soul Fragments from enemies.
-    feast_of_souls            = { 90969, 207697, 1 }, -- Soul Cleave heals you for an additional 1,728 over 6 sec.
+    feast_of_souls            = { 90969, 207697, 1 }, -- Soul Cleave heals you for an additional 5,262 over 6 sec.
     feed_the_demon            = { 90983, 218612, 2 }, -- Consuming a Soul Fragment reduces the remaining cooldown of Demon Spikes by 0.25 sec.
-    fel_devastation           = { 90991, 212084, 1 }, -- Unleash the fel within you, damaging enemies directly in front of you for 5,181 Fire damage over 2 sec. Causing damage also heals you for up to 11,301 health.
+    fel_devastation           = { 90991, 212084, 1 }, -- Unleash the fel within you, damaging enemies directly in front of you for 15,318 Fire damage over 2 sec. Causing damage also heals you for up to 32,183 health.
     fel_flame_fortification   = { 90955, 389705, 1 }, -- You take 10% reduced magic damage while Immolation Aura is active.
-    fiery_brand               = { 90951, 204021, 1 }, -- Brand an enemy with a demonic symbol, instantly dealing 5,113 Fire damage and 7,899 Fire damage over 10 sec. The enemy's damage done to you is reduced by 40% for 10 sec.
+    fiery_brand               = { 90951, 204021, 1 }, -- Brand an enemy with a demonic symbol, instantly dealing 16,158 Fire damage and 24,964 Fire damage over 10 sec. The enemy's damage done to you is reduced by 40% for 10 sec.
     fiery_demise              = { 90958, 389220, 2 }, -- Fiery Brand also increases Fire damage you deal to the target by 20%.
     focused_cleave            = { 90975, 343207, 1 }, -- Soul Cleave deals 30% increased damage to your primary target.
-    fodder_to_the_flame       = { 90960, 391429, 1 }, -- Your damaging abilities have a chance to call forth a condemned demon for 25 sec. Throw Glaive deals lethal damage to the demon, which explodes on death, dealing 4,921 Shadow damage to nearby enemies and healing you for 25% of your maximum health. The explosion deals reduced damage beyond 5 targets.
-    fracture                  = { 90970, 263642, 1 }, -- Rapidly slash your target for 2,768 Physical damage, and shatter 2 Lesser Soul Fragments from them. Generates 25 Fury.
+    fodder_to_the_flame       = { 90960, 391429, 1 }, -- Your damaging abilities have a chance to call forth a condemned demon for 25 sec. Throw Glaive deals lethal damage to the demon, which explodes on death, dealing 15,552 Shadow damage to nearby enemies and healing you for 25% of your maximum health. The explosion deals reduced damage beyond 5 targets.
+    fracture                  = { 90970, 263642, 1 }, -- Rapidly slash your target for 8,785 Physical damage, and shatter 2 Lesser Soul Fragments from them. Generates 25 Fury.
     frailty                   = { 90990, 389958, 1 }, -- Enemies struck by Sigil of Flame are afflicted with Frailty for 6 sec. You heal for 8% of all damage you deal to targets with Frailty.
     last_resort               = { 90979, 209258, 1 }, -- Sustaining fatal damage instead transforms you to Metamorphosis form. This may occur once every 8 min.
     meteoric_strikes          = { 90953, 389724, 1 }, -- Reduce the cooldown of Infernal Strike by 8 sec.
     painbringer               = { 90976, 207387, 2 }, -- Consuming a Soul Fragment reduces all damage you take by 1% for 6 sec. Multiple applications may overlap.
     perfectly_balanced_glaive = { 90968, 320387, 1 }, -- Reduces the cooldown of Throw Glaive by 6 sec.
-    retaliation               = { 90952, 389729, 1 }, -- While Demon Spikes is active, melee attacks against you cause the attacker to take 255 Physical damage. Generates high threat.
-    revel_in_pain             = { 90957, 343014, 1 }, -- When Fiery Brand expires on your primary target, you gain a shield that absorbs up 17,256 damage for 15 sec, based on your damage dealt to them while Fiery Brand was active.
+    retaliation               = { 90952, 389729, 1 }, -- While Demon Spikes is active, melee attacks against you cause the attacker to take 807 Physical damage. Generates high threat.
+    revel_in_pain             = { 90957, 343014, 1 }, -- When Fiery Brand expires on your primary target, you gain a shield that absorbs up 54,534 damage for 15 sec, based on your damage dealt to them while Fiery Brand was active.
     roaring_fire              = { 90988, 391178, 1 }, -- Fel Devastation heals you for up to 50% more, based on your missing health.
     ruinous_bulwark           = { 90965, 326853, 1 }, -- Fel Devastation heals for an additional 10%, and 100% of its healing is converted into an absorb shield for 10 sec.
     shear_fury                = { 90970, 389997, 1 }, -- Shear generates 10 additional Fury.
-    sigil_of_chains           = { 90954, 202138, 1 }, -- Place a Sigil of Chains at the target location that activates after 2 sec. All enemies affected by the sigil are pulled to its center and are snared, reducing movement speed by 70% for 6 sec.
-    sigil_of_flame            = { 90943, 204596, 1 }, -- Place a Sigil of Flame at the target location that activates after 2 sec. Deals 413 Fire damage, and an additional 1,164 Fire damage over 6 sec, to all enemies affected by the sigil. Generates 30 Fury.
-    sigil_of_silence          = { 90988, 202137, 1 }, -- Place a Sigil of Silence at the target location that activates after 2 sec. Silences all enemies affected by the sigil for 6 sec.
-    soul_barrier              = { 90956, 263648, 1 }, -- Shield yourself for 12 sec, absorbing 12,005 damage. Consumes all Soul Fragments within 25 yds to add 2,401 to the shield per fragment.
-    soul_carver               = { 90982, 207407, 1 }, -- Carve into the soul of your target, dealing 6,309 Fire damage and an additional 2,746 Fire damage over 3 sec. Immediately shatters 2 Lesser Soul Fragments from the target and 1 additional Lesser Soul Fragment every 1 sec.
+    sigil_of_chains           = { 90954, 202138, 1 }, -- Place a Sigil of Chains at the target location that activates after 1 sec. All enemies affected by the sigil are pulled to its center and are snared, reducing movement speed by 70% for 8 sec.
+    sigil_of_flame            = { 90943, 204596, 1 }, -- Place a Sigil of Flame at the target location that activates after 1 sec. Deals 1,306 Fire damage, and an additional 4,905 Fire damage over 8 sec, to all enemies affected by the sigil. Generates 30 Fury.
+    sigil_of_silence          = { 90988, 202137, 1 }, -- Place a Sigil of Silence at the target location that activates after 1 sec. Silences all enemies affected by the sigil for 8 sec.
+    soul_barrier              = { 90956, 263648, 1 }, -- Shield yourself for 12 sec, absorbing 36,545 damage. Consumes all Soul Fragments within 25 yds to add 7,309 to the shield per fragment.
+    soul_carver               = { 90982, 207407, 1 }, -- Carve into the soul of your target, dealing 19,993 Fire damage and an additional 8,678 Fire damage over 3 sec. Immediately shatters 2 Lesser Soul Fragments from the target and 1 additional Lesser Soul Fragment every 1 sec.
     soul_furnace              = { 90974, 391165, 1 }, -- Every 10 Soul Fragments you consume increases the damage of your next Soul Cleave or Spirit Bomb by 40%.
     soulcrush                 = { 90980, 389985, 1 }, -- Multiple applications of Frailty may overlap. Soul Cleave applies Frailty to your primary target for 5 sec.
-    soulmonger                = { 90973, 389711, 1 }, -- When consuming a Soul Fragment would heal you above full health it shields you instead, up to a maximum of 11,187.
-    spirit_bomb               = { 90978, 247454, 1 }, -- Consume up to 5 available Soul Fragments then explode, damaging nearby enemies for 829 Fire damage per fragment consumed, and afflicting them with Frailty for 6 sec, causing you to heal for 8% of damage you deal to them. Deals reduced damage beyond 8 targets.
+    soulmonger                = { 90973, 389711, 1 }, -- When consuming a Soul Fragment would heal you above full health it shields you instead, up to a maximum of 36,478.
+    spirit_bomb               = { 90978, 247454, 1 }, -- Consume up to 5 available Soul Fragments then explode, damaging nearby enemies for 2,621 Fire damage per fragment consumed, and afflicting them with Frailty for 6 sec, causing you to heal for 8% of damage you deal to them. Deals reduced damage beyond 8 targets.
     stoke_the_flames          = { 90984, 393827, 1 }, -- Fel Devastation damage increased by 40%.
-    vengeful_retreat          = { 90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 362 Physical damage.
+    vengeful_retreat          = { 90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 1,145 Physical damage.
     void_reaver               = { 90977, 268175, 1 }, -- Frailty now also reduces all damage you take from afflicted targets by 4%. Enemies struck by Soul Cleave are afflicted with Frailty for 6 sec.
     volatile_flameblood       = { 90986, 390808, 1 }, -- Immolation Aura generates 5-10 Fury when it deals critical damage. This effect may only occur once per 1.0 sec.
     vulnerability             = { 90981, 389976, 2 }, -- Frailty now also increases all damage you deal to afflicted targets by 2%.
@@ -193,6 +195,11 @@ spec:RegisterAuras( {
         duration = function() return 6 + talent.extended_spikes.rank end,
         max_stack = 1
     },
+    calcified_spikes = {
+        id = 391171,
+        duration = 12,
+        max_stack = 1
+    },
     feast_of_souls = {
         id = 207693,
         duration = 6,
@@ -224,7 +231,8 @@ spec:RegisterAuras( {
         id = 207771,
         duration = 10,
         type = "Magic",
-        max_stack = 1
+        max_stack = 1,
+        copy = "fiery_brand_dot"
     },
     -- Talent: Battling a demon from the Theater of Pain...
     -- https://wowhead.com/beta/spell=391430
@@ -638,48 +646,6 @@ spec:RegisterHook( "advance_end", function( time )
 end )
 
 
-
--- Moved to Lua so it's available at reset.
-spec:RegisterVariable( "sub_apl_in_progress", function()
-    return variable.the_hunt_ramp_in_progress or variable.elysian_decree_ramp_in_progress or variable.soul_carver_ramp_in_progress or variable.fiery_demise_in_progress
-end )
-
-spec:RegisterPhase( "the_hunt_ramp_in_progress",
-    -- talent.the_hunt.enabled & cooldown.the_hunt.remains <= 10 & ! variable.sub_apl_in_progress
-    function()
-        return talent.the_hunt.enabled and cooldown.the_hunt.remains <= 10 and not ( variable.elysian_decree_ramp_in_progress or variable.soul_carver_ramp_in_progress or variable.fiery_demise_in_progress )
-    end,
-    -- talent.the_hunt.enabled & cooldown.the_hunt.remains>10
-    function()
-        return talent.the_hunt.enabled and cooldown.the_hunt.remains > 10
-    end,
-"reset_precast", "advance_end", "runHandler" )
-
-spec:RegisterPhase( "elysian_decree_ramp_in_progress",
-    -- talent.elysian_decree.enabled & cooldown.elysian_decree.remains <= 10 & ! variable.sub_apl_in_progress
-    function() return talent.elysian_decree.enabled and cooldown.elysian_decree.remains <= 10 and not ( variable.the_hunt_ramp_in_progress or variable.soul_carver_ramp_in_progress or variable.fiery_demise_in_progress ) end,
-    -- talent.elysian_decree.enabled & cooldown.elysian_decree.remains > 10
-    function() return talent.elysian_decree.enabled and cooldown.elysian_decree.remains > 10 end,
-"reset_precast", "advance_end", "runHandler" )
-
-spec:RegisterPhase( "soul_carver_ramp_in_progress",
-    -- talent.soul_carver.enabled & ! talent.fiery_demise.enabled & cooldown.soul_carver.remains <= 10 & ! variable.sub_apl_in_progress
-    function() return talent.soul_carver.enabled and not talent.fiery_demise.enabled and cooldown.soul_carver.remains <= 10 and not ( variable.the_hunt_ramp_in_progress or variable.elysian_decree_ramp_in_progress or variable.fiery_demise_in_progress ) end,
-    -- talent.soul_carver.enabled & ! talent.fiery_demise.enabled & cooldown.soul_carver.remains > 10
-    function() return talent.soul_carver.enabled and not talent.fiery_demise.enabled and cooldown.soul_carver.remains > 10 end,
-"reset_precast", "advance_end", "runHandler" )
-
-spec:RegisterPhase( "fiery_demise_in_progress",
-    -- talent.fiery_brand.enabled & talent.fiery_demise.enabled & cooldown.fiery_brand.charges_fractional >= 1 & cooldown.immolation_aura.remains <= 2 & ! variable.sub_apl_in_progress & ( ( talent.fel_devastation.enabled & cooldown.fel_devastation.remains <= 10 ) | ( talent.soul_carver.enabled & cooldown.soul_carver.remains <= 10 ) )
-    function()
-        return talent.fiery_brand.enabled and talent.fiery_demise.enabled and cooldown.fiery_brand.charges >= 1 and cooldown.immolation_aura.remains <= 2 and not ( variable.the_hunt_ramp_in_progress or variable.elysian_decree_ramp_in_progress or variable.soul_carver_ramp_in_progress ) and ( ( talent.fel_devastation.enabled and cooldown.fel_devastation.remains <= 10 ) or ( talent.soul_carver.enabled and cooldown.soul_carver.remains <= 10 ) )
-    end,
-    -- talent.fiery_brand.enabled & talent.fiery_demise.enabled & cooldown.fiery_brand.charges_fractional < 1.65 & ! dot.fiery_brand.ticking & ( ( talent.fel_devastation.enabled & cooldown.fel_devastation.remains_expected > 10 ) | ( talent.soul_carver.enabled & cooldown.soul_carver.remains > 10 ) )
-    function()
-        return talent.fiery_brand.enabled and talent.fiery_demise.enabled and cooldown.fiery_brand.charges == 0 and not fiery_brand_dot_primary_ticking and ( ( talent.fel_devastation.enabled and cooldown.fel_devastation.remains_expected > 10 ) or ( talent.soul_carver.enabled and cooldown.soul_carver.remains > 10 ) )
-    end,
-"reset_precast", "advance_end", "runHandler" )
-
 -- approach that actually calculated time remaining of fiery_brand via combat log. last modified 1/27/2023.
 spec:RegisterStateExpr( "fiery_brand_dot_primary_expires", function()
     return action.fiery_brand.lastCast + bonus_time_from_immo_aura + class.auras.fiery_brand.duration
@@ -921,7 +887,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyDebuff( "target", "fiery_brand" )
+            applyDebuff( "target", "fiery_brand_dot" )
             fiery_brand_dot_primary_expires = query_time + class.auras.fiery_brand.duration
             removeBuff( "spirit_of_the_darkness_flame" )
 
@@ -1462,33 +1428,38 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "infernal_charges", 1, {
-    name = L["Reserve |T1344650:0|t Infernal Strike Charges"],
-    desc = L["If set above zero, the addon will not recommend |T1344650:0|t Infernal Strike if it would leave you with fewer charges."],
-    icon = 1344650,
-    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    name = strformat( L["Reserve %s Charges"], Hekili:GetSpellLinkWithTexture( 189110 ) ),
+    desc = strformat( L["If set above zero, %s will not be recommended if it would leave you with fewer charges."], Hekili:GetSpellLinkWithTexture( 189110 ) ),
     type = "range",
     min = 0,
     max = 2,
     step = 0.1,
-    width = 1.5
+    width = "full"
 } )
 
 
 spec:RegisterSetting( "frailty_stacks", 1, {
-    name = L["Require |T1097742:0|t Frailty Stacks"],
-    desc = L["If set above zero, the default priority will not allow certain abilities to be used unless you have at least this many stacks of |T1097742:0|t Frailty on your target.\n\nThis is an experimental setting.  Requiring too many stacks may result in delays to using your major cooldowns and cause a loss of DPS."],
+    name = strformat( L["Require %s Stacks"], Hekili:GetSpellLinkWithTexture( 389958 ) ),
+    desc = function()
+        return strformat( L["If set above zero, the default priority will not recommend certain abilities unless you have at least this many stacks of %s on your target.\n\n"
+            .. "If %s is not talented, then |cFFFFD100frailty_threshold_met|r will always be |cFF00FF00true|r.\n\n"
+            .. "If %s is not talented, then |cFFFFD100frailty_threshold_met|r will be |cFF00FF00true|r even with only one stack of %s.\n\n"
+            .. "This is an experimental setting.  Requiring too many stacks may result in a loss of DPS due to delaying use of your major cooldowns."],
+            Hekili:GetSpellLinkWithTexture( 389958 ), Hekili:GetSpellLinkWithTexture( 389976 ), Hekili:GetSpellLinkWithTexture( 389985 ), spec.auras.frailty.name )
+    end,
     type = "range",
     min = 0,
     max = 6,
     step = 1,
-    width = 1.5
+    width = "full"
 } )
 
 spec:RegisterStateExpr( "frailty_threshold_met", function()
+    if settings.frailty_stacks == 0 or not talent.vulnerability.enabled then return true end
     if not talent.soulcrush.enabled then return debuff.frailty.up end
     return debuff.frailty.stack >= settings.frailty_stacks
 end )
 
 
 
-spec:RegisterPack( "Vengeance", 20230130, [[Hekili:TZvBVnkss4FlrRKL9o58yWozYCk2s3DFAxDA0k5v7hbAdn2OGbF8sMjsw8B)QUbC)cDdDmjZSs7QD1m2q1v9uV0fvvTzCSC(DNTbOcSZxSxyVCH1YfZTSwUCXsNTfVCc7S9eY)j0E4djOJWF(h4K9yuIp9oVeNIciCipTmJCPdffNY)NF8J7JkouUBUF6XpMhDSmgveLM4NHcliF3)JoB3vgfx8ljo7efV9dZTb2Dc778L7EWc4yuqaUMmCUVZwqSzPHrXGW(PFQY7pqzrODX48kVW0SkpYkJcJ8HpvU7F8V(T)BE1VsO73pGZXvEOm4pOIUYlkPiTYR4aCLlkvL3X0GYym5U5fyuW86LJ8jkq(8tzyqN2Hk(W6p(CJOVLyywdIZfDk2nkXfa4(mCE(TpJIlXRxyklaO4EOmPWndD80yyeo(L8iuIBa2pdJhn7aNBSRpk7zC2O5vyeo7fayhJYXA4txNkWRtX4Vv5fGZIEghu5rPgCTdlW8dyuMByji19iqGjPfe5EexGGp7YU9TPNwNJlIcBGILD9hCXX5W3wCRFAsqerCeYC3LMuMpVauh7p7AFYFZIXIg9qXEfpuS7fkREdGIS8Bx4CdHphynAPI(bMYvGIXjfClDooHWSGRr)mYPV8EEWV89XPpSdF1d8Wy17kmm2zFLo63vNCygqtzg2S4yWFYVp6U3eZQciOr83jSnE1BJ4ZpfLfrw8XDU0e1aE2FeSO59zjeqYDD9gTk1RXx0ds05peShxlkYJ2hf7Mg6ggdWqnnrhpMwxeIlQmdDBu4AczpdYobEweoFT15ZIxzJ1KBAXbkooTSGbJlcbyDquEw5Pc(lbksE5rS7r0EOseUBeLeIZsqXU5fzrpHVTeEiyAyO7E)G1weq5FaLThqZr03CB(8KcYFvmhKtbPeLnwleep(iOuGT)jCEx(DZUYWW580mV8eWXKNIs2ZZgI75yA2PdP5r5SvkCzYsVjifSh0hIVldLeaXR(Y8I72uo1Af5E0FRP0m(HJHL9mc0FYLgIN8lDxz8tU4VvKvFj(BDkv(keRxub(4T5XPfRbpuYt4cRbPWMNct3sOpR7W7IuM11S0aSTykDV61eGDqrZV4whm6MH)FLrzyIa6KLJhF3ZNJ7eooUHb58aEJ1WYnOeQ7KMHThrxZeEwdDGKx8HPT3GwiBmg9mMEJF2Egpy1r1YXQeNstJHyAxOyw32I8BGCtCC7vVSVWhwsq6xty3buz4zl5pof2CphYpaGFcXG84LyGETvtcWuxEdrZHnt(p94AdrTyhfIyx8ED1aP7)dvp4ALruj4UrxnG)M)qHVq3tYPff0hLjBVOqslvPsPjXCTY2UJsMr0TBA2goZaD8srLSmBQ28C(SYBlgPPHioNPgk6Zkl0NB389AhcWfbPTjFoWmq)7Cu2xR5CKPRR7(1MHMhbTcJxFcmOx6j3W0GUMSXHQfxfQOvv1NynBMk8MKRmV4inpMHZfJgNdAWmyQr8wlvjG7TYXEZopsJObyFX7f2h0WoWi04nQ85VBLTr4IFHn9H4g2uenkEZAlgPsTwXCb297bMmDAluKEiIXpUc8YZoFE61(iCYYNnkB9I3FB9JwZV)UXBR2mkt1MAlfZkLvcEB63CJH(svKz(wslU(f1HJd)0VbzUI8AQfXajahuq879)AuXbOXFXkc0l6(sBmOCfKXxJsaFHAPO)H5mjWv7fzTIDeUXK2gNi0PJy3nCDi1L7W2k51E(SWfEuOJzfJMHofWaCyKFuXgsQ8PS4FvBLgru95Z3OF1C3vLCf2rOzkuKXx0mflbQjt7K)cfhYs)Q7(yu0ZyPzFSlgfG5M5K4Mi6ABAPKy6A7t)aesCa0DsF)6xQuCYnDRhgCftEldF6cbXGjnqy6RpiBwpYuZidLPRJRRlNeCKkCnkCRDfJcNSI0yaLs9HpSdxnB(b421aKVdoFnswtiGAQ7giOHRIHdQjsDqHgbRi0WONqDX4wpSJHJumMRF)JDmgAFhIMmglAIVmD9DJ4mDLsXGMUm1rLMUAvXPkQO5dDpDaUV7gKwaLZeDebxHFEtBwVCXq8vvDe9Z6H4O8(NHaQQ9xtKd2woKuvCAhdkzn3N1k2qc99Bt90o7T0myXzdIXVd7U1izH9YeHp0PwPZ32ztTgbkUfwnrQ3WQnOIU90zlemNdek(7T6ROSea(5oB)LJNsZki)eBUVTR4kpstk5ZR(vNTOsifqMZ2Trh)poBPxN(didhIkJlGp(f6pOS6fcxV(SrD22uXSZ)2PaKmpjcNvQeHljeYDMMeUV1hI0WGNh(uDZYvERR84oW0kVjvEshAAL3MkpRfmXkDsSscEv)c(gYVHSUNRAJGPNTkNnGJijXChrmSROqcDoGoIiGBQj(JjvHfsK199jR(onvtLi3njY7txP84yOyIqctFGpYr6SDLSTFMN06Z6vIciCqeITu3EYVoBjhZl33jlYQ)fzlTiB6ISLwu6jGmYbxYwFB2m6NCjteG8ZGuxAvE7PYafcBApytgZn8yIBwSzRRDne9C51PNHApCzE9u7rVwV5wuJV)IoChfzRghYuEwExn4QLyNdAUY7NR8wEb4TujDmAvEFOYBABYz1mXUYBgvTLZW0O2QvAQu1CYj00aAp9KkVhPyQ54dVGb6QiMnkbSjy1NvLUgvNskWJ1nMYw3JQZgKQ3Yz7mwVvFyiIAV6de5pd2arKrTeY5Hn2sWv9RAZapb)jYgWblQb4HR1aO9PHdnR9ETc6QCuWcX2ER6a2Pza0MDyModJqLHkE4Q1NF1wQULGZTrSY78zoNT(40EiKZz2dv9QzQSgGDMwiQCfaS85xKJ2tSaSn0PZtRnS1cjnz)6sKBKUaNOIxUwcfIFGtZ4vdcf8Jcf5kuuaf(rbmACy0CfOitUMcfityHJbvkAEIIb5Qh4EUVqXqWd7xZfJQVQj62DHAgARtOfMCRLcb99kiZzA2rDcOExK0nGmo2CsMvrbvY67CG)CAQvDRfubpT9)hkv6OEwZMA5nRwNUPFU1Hk1yAgxlIIduIAl(eFxfIJfqUjxHEvAB8xMiHUuOD9l3c8cEk4B5xMqHgVz97ZtuH6i82U2v6Jbd2qJrJ9OlsiWYfA7juFsMberVof9jimc4kNkoD3JI9vlL3MCPod9Pimcf9pbVAHB3BVX9ombLZktPw(AsGnTNumARZzM2CC9oIc9AWu1UQxFkqrSjMfu)4mgCWisPjkKgJHMuddMzWY0mdwMLzqvLb9Mzq5ohMG62lI(T)VBrOVMhXQppYp(WVvg)CN7mi26(HIT(KHHwpyuKLz16nMynPCX)DG2Fnd0e7WAmbu8dt6VJM(Rz00L3FqvrsCZpM8VlbzrNQ5MPV66cnWP4L)KA0xWp8cJFbQzQM08AAM(S1IlZVXYwvaUHZg3Sxg8Ev0v8kkdH2mecTERigF8iKhwTTn25nqwevSnVM7j6CokMzZu0pXvQYAWLPbFmTFjZNS8Ehf9Bmsaoo0TIHUvp4OOxIXHU3YOLRmsrDuIMP7pKAg27Rn)14aSVJfES4so23eKncuTIHQ7Ojs0mI7HqLPhBANOKqP3GDr4XqhfCDoq6XJURfzRyEtNoTq27dY7Cw3mjtwp79RN(Z2OPSc57SPTqeUX1j(o4Zqt3jc1(Fo))p]] )
+spec:RegisterPack( "Vengeance", 20230209, [[Hekili:fR1xVTnom8plfhqA6DfPjoP)BOPpC7PvCyVKH7rBR4OKiu)NC2YDRaf(Z(rjBhlXi54MM0bmS6krr(JusKuK1DK7pCNTGWPUF3zOZ4HodVFWOBgD)eh3z8x3qDNTHe8mzf8rmjc())LgVIsIdKZ8AyczHGdzj5PIHwZ5BY(YvxTIXxNpFqqs0vzSO8qcNLehKswYf)EWvUZMNZc5Fl2DUjXF74BbEUHg4(9RVBeWw2If0sAPzbUZazNMSKfcsKeiyD2GnPuqAZj8)A6vVqszK5H0lfqEA2gwkJ7nhM1dWzO3YuYQiAmpZloH7XI9IOCYLjBMMr5SLx(cjmNoDs5p9OHz0PxFzqs8cMqst5KqyTdaMeWZtPfp9HqGfPpwv6tAt6)XFu4VFe8sEymnLmNfY4Vkepy8F1lJd7Tyrpsv0d3v0ASQRYpijjCrYpJ3k6u6)LZsPcJaadmgU5pRx(G2qUcq7e97OlInJG08S1hf9GKqXkY1F(kIjLiJTIf6LS0BziOfMPHffLuEp1JKNsUKTCQGSxaCftJy0SPJE7TZQp)rcdtY5fpTLxahwWYsZ3WvhcaAwEe1lISIfOoblEjnnMeckuk7z6L5zuaFl9wfSaobcYoynjDfi0iYV8Q(Uhx8d(aqoCHhOhhnut80ia7WDTNPz7YVZMNVC5avAgKVb4y8ZS4vQSrCDmkjDZ6KmwM6elPHElOVqaHlgsY0AZbJM(kmzelJoGgl2)wOTu58ZtjXl23Y6D2IK6zKlyaNfGX488WN9O)INwoK6uBsWJimfmon6YSWe(uWCh)mLpAVu4OsH(Ta(AQ36C4epylRVruDGVsZQPOx90BhzaCzHWIZAolvpJD5rdFnJrIblvqkLAxQ601iB9X3fb6ZBhhsF3bK0xOP2bHcrniqzWDfVYK2Ln60ND5JiSbdOj2fhicAblkNB9uoQ6XY8QoTkXxEAQWVy51wekBwvpd3g61HlbDhtIW8haU633eYSD)8cfdPc9xCyqwbUK4x3lunb0kV3i4k(9hhEyGczh7cWmBdTdTPdF)2r7PxHdhVn4AhYiZum5oMkzt4zzqhTikquhTKnExPyyvF2BEjM0M9Lu2Uzz0O(96dPNhgwT)NPo1JqEcBLX7(mU2(CDObrqZoXYwVP3Rwp5RtPzRbLxSDPkp9abFwsvX)VTSd6PFA7HPJF3STtAIDT4aaGHeM(GGa76Tke2dJBjzRojsRE26TD5Ms6Pzw7PO04cunZG(gtniFZBV1wodpmA4fG)X(wc133ASEngBjrajZ1U(z4jbMoB2jlSrRR2XvT3OCILvJ3kHG0pB)yx83J8)De95vUThsjVinc9Xx8g1djz4aH2ithz3S2YUR2viCXnemAnLKQ7Con5NERcjqOC01(5HKfu3zWj3myWT125o3z)KKgd6FM7SFSMw4ZI2KKYl8xMKw4F(c6ssEi)8c)Qirlk8Zsau7tY5jreUya4XGXWJbhu80)WIHPg58Lc)VMedcto)5ONvaCJNS7W1V3cMU)OFDXjJDJnZoD)fiMIEVYVbwpXmRvCjH4RQZQpvMETzMI8XHym2d4VfMFJfM34WaZyLiFhetlDjzKR6fHyh2E7PaRTY0tewpC2E3PWe0ktpCSE)PaRTY0tewpy26yX54hLTwUF9H8HzJPhf3moNMRdoh7tUfpziHGT1N(83xkbwWwvwnyCvnSvv9OYnlbbRkOoMzLJAYA9nPHsWcN6Aju4hYY4cZG7m5xYE7vMtf853L96RKuy8YI17oRI3U)TlhsutLeTI3JiCSGqLISl4UcfZcG8MPq(WWxLfVVWFAHVsX8l87b6QEb9l8Fe28g2GauxcecEsNf8zf(MQ5FLGL19xXCOqKqmxRAi0kGdYqCJGqBYVLt(nChDrwW0BpqMk1nGelLOurMntkK3DQAlQ5ci99EvslB2aIcyduh91ux36b3zI(mO87IfnQ9f5GwKJCroOfLSbiJYBwD9BYeFfMd)OY4HtBxA4S2RIc)3EtAxTSAPC8k7pUPYeiX64dfRMtzxhXM7Wbg3M5Kk6TxgdPom5q1bdrb1vadf7aJEd8qf6wAoJe3xFO42sqwDSBPEky8BHxQ6qln5rQhyNnDxp2n)Uk)GT7lXQJefmRS2oxjpP2G9Y9H1M(Y)TpDYU)Xc)l2ztZixUORgGwRmS0iC3X2iSp1xWxZ9Erg(DyxvnJvYsQs3FSvPUTV2MIb5Em8KV7QBgCWHbRmdSLMneB9JzTMJBnxDO(K19IQAnYo)0TfQ0il1epm2jlPEIJC3SMovr0wVIi3yn2ObLmeQI4kbdoJGpBWOhavcjCG)3vYC6Bof(paNKh3fGOeouIcCO73PHPDJYrdL4a1hvuAP7raCb02A(4o2ZYVt4YQJcjUATft6uyp)SDDuAlNR(ws7s80iH7X2Zj7bXl0KUsR8M2FFj4SJq3T5uibBnHknHFH1NZ4y)9t77(wN2on7ZV5vR6nwrIiCy(pxeP3eijGWbPBae(Y8JtvaH9ah1BZA9IQ8f9LBVhUIOTxRGazHiWHzBuK(MDmnQ0LLjywDKgnNynyxwY(ZjLVwvvqgAunt0QUc(ucI2XQ0wxujmrt0KTObDyk0QJHAh7WeEJM822cpvI4I)SRRkiNBD9KoMj4ON7rvYot0tH5At3Dq1CtEa)OdomWgRdSjDeyJ785f7HSRs1T6pm3YtO7KBRETdBZ9KCRLKZxNaNFG5)QCe3))p]] )

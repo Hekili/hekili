@@ -2,6 +2,9 @@ actions.precombat+=/smite
 
 actions+=/use_items
 actions+=/potion,if=buff.bloodlust.react|(raid_event.adds.up&(raid_event.adds.remains>20|raid_event.adds.duration<20))|boss&fight_remains<=30
+actions+=/vampiric_embrace
+actions+=/power_infusion
+actions+=/mindgames
 actions+=/holy_word_chastise,if=spell_targets.holy_nova<5
 actions+=/berserking,if=raid_event.adds.in>30|raid_event.adds.remains>8|raid_event.adds.duration<8
 actions+=/fireblood,if=raid_event.adds.in>20|raid_event.adds.remains>6|raid_event.adds.duration<6
@@ -9,7 +12,13 @@ actions+=/ancestral_call,if=raid_event.adds.in>20|raid_event.adds.remains>10|rai
 actions+=/lights_judgment,if=raid_event.adds.in>50|raid_event.adds.remains>4|raid_event.adds.duration<4
 actions+=/arcane_pulse,if=(raid_event.adds.in>40|raid_event.adds.remains>2|raid_event.adds.duration<2)&spell_targets.arcane_pulse>2
 actions+=/holy_fire,if=!dot.holy_fire.ticking&spell_targets.holy_nova<7
+actions+=/empyreal_blaze,if=dot.holy_fire.ticking
 actions+=/holy_nova,if=spell_targets.holy_nova>3
+actions+=/shadowfiend
+actions+=/mindbender
+actions+=/shadow_word_pain,if=!ticking&talent.from_darkness_comes_light
 actions+=/smite
 actions+=/holy_fire
+actions+=/halo
+actions+=/divine_star
 actions+=/holy_nova,if=raid_event.movement.remains>gcd*0.3&spell_targets.holy_nova>0

@@ -58,7 +58,7 @@ state.tanking = false
 
 state.delay = 0
 state.delayMin = 0
-state.delayMax = 60
+state.delayMax = 15
 
 state.false_start = 0
 state.latency = 0
@@ -587,6 +587,7 @@ end
 state.UnitIsPlayer = UnitIsPlayer
 state.UnitLevel = UnitLevel
 state.UnitPower = UnitPower
+state.UnitPartialPower = UnitPartialPower
 state.UnitPowerMax = UnitPowerMax
 state.abs = math.abs
 state.ceil = math.ceil
@@ -1558,8 +1559,8 @@ do
             if type( x ) == "number" then
                 if x > 0 and x >= state.delayMin and x <= state.delayMax then
                     t[ x ] = true
-                elseif x < 60 then
-                    if Hekili.ActiveDebug then Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 ) end
+                -- elseif x < 60 then
+                --     if Hekili.ActiveDebug then Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 ) end
                 end
             end
         end
@@ -1967,7 +1968,7 @@ do
             -- Calculated from real event data.
             elseif k == "aggro" then t[k] = ( UnitThreatSituation( "player" ) or 0 ) > 1
             elseif k == "boss" then
-                t[k] = ( t.encounterID > 0 or ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) ) ) == true
+                t[k] = t.encounterID > 0 or UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 )
             elseif k == "encounter" then t[k] = t.encounterID > 0
             elseif k == "group" then t[k] = t.group_members > 1
             elseif k == "group_members" then t[k] = max( 1, GetNumGroupMembers() )
@@ -1986,9 +1987,9 @@ do
                 t[k] = max( 1, n or 1 )
 
             elseif k == "cycle_enemies" then
-                if not t.settings.cycle then return 1 end
+                if not t.settings.cycle or t.active_enemies == 1 then return 1 end
 
-                local targets = t.active_enemies
+                local targets = t.true_active_enemies
                 local timeframe = t.delay + t.offset
 
                 local minTTD = timeframe + min( t.cycleInfo.minTTD or 10, t.settings.cycle_min )
@@ -2008,7 +2009,10 @@ do
                 -- So the reason we're stuck here is that we may need "cycle_enemies" when we *aren't* cycling targets.
                 -- I.e., we would cycle Festering Strike (festering_wound) but if we've already dotted our valid adds, we'd hit Death and Decay.
 
-                if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
+                -- testing: don't force minimum targets for cycling purposes, since they may objectively not exist.
+                -- if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
+
+                -- cap cycle_targets if forced into single-target model.
                 if t.max_targets > 0 then targets = min( t.max_targets, targets ) end
 
                 -- if Hekili.ActiveDebug then Hekili:Debug( "cycle min:%.2f, max:%.2f, ae:%d, before:%d, after:%d, cycle_enemies:%d", minTTD or 0, maxTTD or 0, t.active_enemies, minTTD and Hekili:GetNumTTDsBefore( minTTD ) or 0, maxTTD and Hekili:GetNumTTDsAfter( maxTTD ) or 0, max( 1, targets ) ) end
@@ -2713,6 +2717,8 @@ do
         end
     } )
 
+    local PvpDummies = ns.PvpDummies
+
     mt_target = {
         __index = function( t, k )
             if k == "distance" then t[k] = UnitCanAttack( "player", "target" ) and ( ( t.minR + t.maxR ) / 2 ) or 7.5
@@ -2764,7 +2770,11 @@ do
 
             elseif k == "is_demon" then t[k] = UnitCreatureType( "target" ) == PET_TYPE_DEMON
             elseif k == "is_friendly" then t[k] = t.exists and UnitIsFriend( "target", "player" )
-            elseif k == "is_player" then t[k] = UnitIsPlayer( "target" )
+            elseif k == "is_player" then
+                local isPlayer = UnitIsPlayer( "target" )
+                if not isPlayer then isPlayer = PvpDummies[ t.npcid ] end
+                t[k] = isPlayer -- Enables proper treatment of Absolute Corruption and similar modified-in-PvP effects.
+
             elseif k == "is_undead" then t[k] = UnitCreatureType( "target" ) == BATTLE_PET_NAME_4
 
             elseif k == "level" then t[k] = UnitLevel( "target" ) or UnitLevel( "player" ) or MAX_PLAYER_LEVEL
@@ -2783,6 +2793,17 @@ do
                 if state.args.cycle_target == 1 then return UnitGUID( "target" ) .. "c" or "cycle"
                 elseif state.args.target then return ( UnitGUID( "target" ) .. '+' .. state.args.target ) or "unknown" end
                 return UnitGUID( "target" ) or "unknown"
+
+            elseif k == "npcid" then
+                if UnitExists( "target" ) then
+                    local id = UnitGUID( "target" )
+                    id = id and id:match( "(%d+)-%x-$" )
+                    id = id and tonumber( id )
+
+                    return id or -1
+                end
+
+                return -1
 
             end
 
@@ -2903,7 +2924,7 @@ do
 
                 if t.key ~= "global_cooldown" then
                     local gcd = state.cooldown.global_cooldown
-                    gcdStart, gcdDuration = gcd.expires - gcd.duration, gcd.duration
+                    local gcdStart, gcdDuration = gcd.expires - gcd.duration, gcd.duration
                     if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
                 end
 
@@ -5898,7 +5919,7 @@ do
         local ability
         local curr_action = self.this_action
 
-        if e.type ~= "AURA_EXPIRATION" then
+        if e.type ~= "AURA_EXPIRATION" and e.type ~= "AURA_PERIODIC" then
             ability = class.abilities[ e.action ]
 
             if not ability then
@@ -6486,7 +6507,7 @@ Hekili:ProfileCPU( "state.reset", state.reset )
 
 function state:SetConstraint( min, max )
     state.delayMin = min or 0
-    state.delayMax = max or 3600
+    state.delayMax = max or 15
 end
 
 
@@ -7366,4 +7387,4 @@ for k, v in pairs( state ) do
     ns.commitKey( k )
 end
 
-ns.attr = { "serenity", "active", "active_enemies", "my_enemies", "active_flame_shock", "adds", "agility", "air", "armor", "attack_power", "bonus_armor", "cast_delay", "cast_time", "casting", "cooldown_react", "cooldown_remains", "cooldown_up", "crit_rating", "deficit", "distance", "down", "duration", "earth", "enabled", "energy", "execute_time", "fire", "five", "focus", "four", "gcd", "hardcasts", "haste", "haste_rating", "health", "health_max", "health_pct", "intellect", "level", "mana", "mastery_rating", "mastery_value", "max_nonproc", "max_stack", "maximum_energy", "maximum_focus", "maximum_health", "maximum_mana", "maximum_rage", "maximum_runic", "melee_haste", "miss_react", "moving", "mp5", "multistrike_pct", "multistrike_rating", "one", "pct", "rage", "react", "regen", "remains", "resilience_rating", "runic", "seal", "spell_haste", "spell_power", "spirit", "stack", "stack_pct", "stacks", "stamina", "strength", "this_action", "three", "tick_damage", "tick_dmg", "tick_time", "ticking", "ticks", "ticks_remain", "time", "time_to_die", "time_to_max", "travel_time", "two", "up", "water", "weapon_dps", "weapon_offhand_dps", "weapon_offhand_speed", "weapon_speed", "single", "aoe", "cleave", "percent", "last_judgment_target", "unit", "ready", "refreshable", "pvptalent", "conduit", "legendary", "runeforge", "covenant", "soulbind", "enabled", "full_recharge_time", "time_to_max_charges", "remains_guess", "execute", "actual", "current", "cast_regen", "boss" }
+ns.attr = { "serenity", "active", "active_enemies", "my_enemies", "active_flame_shock", "adds", "agility", "air", "armor", "attack_power", "bonus_armor", "cast_delay", "cast_time", "casting", "cooldown_react", "cooldown_remains", "cooldown_up", "crit_rating", "deficit", "distance", "down", "duration", "earth", "enabled", "energy", "execute_time", "fire", "five", "focus", "four", "gcd", "hardcasts", "haste", "haste_rating", "health", "health_max", "health_pct", "intellect", "level", "mana", "mastery_rating", "mastery_value", "max_nonproc", "max_stack", "maximum_energy", "maximum_focus", "maximum_health", "maximum_mana", "maximum_rage", "maximum_runic", "melee_haste", "miss_react", "moving", "mp5", "multistrike_pct", "multistrike_rating", "one", "pct", "rage", "react", "regen", "remains", "resilience_rating", "runic", "seal", "spell_haste", "spell_power", "spirit", "stack", "stack_pct", "stacks", "stamina", "strength", "this_action", "three", "tick_damage", "tick_dmg", "tick_time", "ticking", "ticks", "ticks_remain", "time", "time_to_die", "time_to_max", "travel_time", "two", "up", "water", "weapon_dps", "weapon_offhand_dps", "weapon_offhand_speed", "weapon_speed", "single", "aoe", "cleave", "percent", "last_judgment_target", "unit", "ready", "refreshable", "pvptalent", "conduit", "legendary", "runeforge", "covenant", "soulbind", "enabled", "full_recharge_time", "time_to_max_charges", "remains_guess", "execute", "actual", "current", "cast_regen", "boss", "exists", "disabled", "fight_remains" }

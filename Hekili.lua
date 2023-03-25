@@ -35,11 +35,16 @@ end
 Hekili.IsDragonflight = function()
     return buildNum >= 100000
 end
+Hekili.BuiltFor = 100007
+Hekili.GameBuild = buildStr
 
-ns.PTR = false
+ns.PTR = buildNum > 100007
 
 
-ns.Patrons = L["|cFFFFD100Current Status|r\n\nAll tank and DPS specializations are currently supported, though priorities are being regularly updated for Dragonflight.\n\nDPS priorities for healer specializations may be supported at a later date.\n\nIf you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue troubleshooted.\n\nPlease do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"]
+ns.Patrons = L["|cFFFFD100Current Status|r\n\n"
+    .. "All specializations are currently supported, though healer priorities are experimental and focused on rotational DPS only.\n\n"
+    .. "If you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue investigated.\n\n"
+    .. "Please do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"]
 
 do
     local cpuProfileDB = {}
@@ -315,9 +320,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             auraString = auraString .. "\n\n"
 
             insert( v.log, 1, auraString )
-            if Hekili.TargetDebug and Hekili.TargetDebug:len() > 0 then
-                insert( v.log, 1, "targets:\n" .. Hekili.TargetDebug )
-            end
+            insert( v.log, 1, "targets:  " .. ( Hekili.TargetDebug or "no data" ) )
             insert( v.log, 1, self:GenerateProfile() )
 
             local custom = {

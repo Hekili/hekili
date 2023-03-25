@@ -39,6 +39,7 @@ local RedX = "Interface\\AddOns\\Hekili\\Textures\\RedX"
 local BlizzBlue = "|cFF00B4FF"
 local ClassColor = C_ClassColor.GetClassColor( class.file )
 
+local modifierKey = IsMacClient() and "Command" or "CTRL"
 
 -- One Time Fixes
 local oneTimeFixes = {
@@ -150,11 +151,10 @@ local displayTemplate = {
     enabled = true,
 
     numIcons = 4,
+    forecastPeriod = 15,
 
     primaryWidth = 50,
     primaryHeight = 50,
-
-    elvuiCooldown = false,
 
     keepAspectRatio = true,
     zoom = 30,
@@ -162,6 +162,7 @@ local displayTemplate = {
     frameStrata = "LOW",
     frameLevel = 10,
 
+    elvuiCooldown = false,
     hideOmniCC = false,
 
     queue = {
@@ -767,15 +768,12 @@ do
     end
 
     local multiSet = false
-    local rebuild = false
+    local timer
 
     local function QueueRebuildUI()
-        rebuild = true
-        C_Timer.After( 0.5, function ()
-            if rebuild then
-                Hekili:BuildUI()
-                rebuild = false
-            end
+        if timer and not timer:IsCancelled() then timer:Cancel() end
+        timer = C_Timer.NewTimer( 0.5, function ()
+            Hekili:BuildUI()
         end )
     end
 
@@ -1373,6 +1371,34 @@ do
                                     local display = info[2]
 
                                     if display == "Defensives" or display == "Interrupts" then
+                                        return true
+                                    end
+
+                                    return false
+                                end,
+                            },
+
+                            forecastPeriod = {
+                                type = "range",
+                                name = "Forecast Period",
+                                desc = "Specify the amount of time that the addon can look forward to generate a recommendation.  For example, in a Cooldowns display, if this is set to |cFFFFD10015|r (default), then "
+                                    .. "a cooldown ability could start to appear when it has 15 seconds remaining on its cooldown and its usage conditions are met.\n\n"
+                                    .. "If set to a very short period of time, recommendations may be prevented due to having no abilities off cooldown with resource requirements and usage conditions met.",
+                                softMin = 1.5,
+                                min = 0,
+                                softMax = 15,
+                                max = 30,
+                                step = 0.1,
+                                width = "full",
+                                order = 2,
+                                disabled = function()
+                                    return name == "Multi"
+                                end,
+                                hidden = function( info, val )
+                                    local n = #info
+                                    local display = info[2]
+
+                                    if display == "Primary" or display == "AOE" then
                                         return true
                                     end
 
@@ -3874,7 +3900,8 @@ do
             disabled = {
                 type = "toggle",
                 name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
-                desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause issues for some specializations, if other abilities depend on you using %s."], ability.item and ability.link or k ) end,
+                desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
+                    "issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k ) end,
                 width = 1.5,
                 order = 1,
             },
@@ -3882,7 +3909,7 @@ do
             boss = {
                 type = "toggle",
                 name = L["Boss Encounter Only"],
-                desc = format( L["If checked, the addon will not recommend %1$s unless you are in a boss fight (or encounter).  If left unchecked, %2$s can be recommended in any type of fight."], k, k ),
+                desc = format( L["If checked, the addon will not recommend |W%1$s|w unless you are in a boss fight (or encounter).  If left unchecked, |W%2$s|w can be recommended in any type of fight."], k, k ),
                 width = 1.5,
                 order = 1.1,
             },
@@ -3890,7 +3917,8 @@ do
             keybind = {
                 type = "input",
                 name = L["Override Keybind Text"],
-                desc = L["If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  This can be helpful if the addon incorrectly detects your keybindings."],
+                desc = L["If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
+                    "This can be helpful if your keybinds are detected incorrectly or is found on multiple action bars."],
                 validate = function( info, val )
                     val = val:trim()
                     if val:len() > 20 then return L["Keybindings should be no longer than 20 characters in length."] end
@@ -4757,14 +4785,14 @@ do
                 specNameByID[ id ] = sName
                 specIDByName[ sName ] = id
 
-                specs[ id ] = "|T" .. texture .. ":0|t " .. name
+                specs[ id ] = Hekili:ZoomedTextureWithText( texture, name )
 
                 local options = {
                     type = "group",
                     -- name = specs[ id ],
                     name = name,
                     icon = texture,
-                    -- iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+                    iconCoords = { 0.15, 0.85, 0.15, 0.85 },
                     desc = description,
                     order = 50 + i,
                     childGroups = "tab",
@@ -4807,11 +4835,9 @@ do
                                         wipe( packs )
 
                                         for key, pkg in pairs( self.DB.profile.packs ) do
-                                            if class.specs[ pkg.spec ] then
-                                                local pname = pkg.builtIn and "|cFF00B4FF" .. L[key] .. "|r" or key
-                                                if pkg.spec == id then
-                                                    packs[ key ] = "|T" .. texture .. ":0|t " .. pname
-                                                end
+                                            local pname = pkg.builtIn and "|cFF00B4FF" .. L[key] .. "|r" or key
+                                            if pkg.spec == id then
+                                                packs[ key ] = Hekili:ZoomedTextureWithText( texture, pname )
                                             end
                                         end
 
@@ -4901,9 +4927,9 @@ do
 
                                         if Hekili:HasPetBasedTargetSpell() then
                                             local spell = Hekili:GetPetBasedTargetSpell()
-                                            local name, _, tex = GetSpellInfo( spell )
+                                            local link = Hekili:GetSpellLinkWithTexture( spell )
 
-                                            msg = msg .. format( L["\n\n|T%1$s:0|t |cFFFFD100%2$s|r is on your action bar and will be used for all your %3$s pets."], tex, name, UnitClass("player") )
+                                            msg = msg .. format( L["\n\n%1$s|w|r is on your action bar and will be used for all your %2$s pets."], link, UnitClass( "player" ) )
                                         else
                                             msg = msg .. L["\n\n|cFFFF0000Requires pet ability on one of your action bars.|r"]
                                         end
@@ -4934,7 +4960,7 @@ do
 
                                             if not spells then return " " end
 
-                                            out = out .. L["For %1$s, |T%d:0|t |cFFFFD100%2$s|r is recommended due to its range.  It will work for all your pets."]
+                                            out = out .. L["For %s, %s is recommended due to its range.  It will work for all your pets."]
 
                                             if spells.count > 1 then
                                                 out = out .. L["\nAlternative(s): "]
@@ -4942,20 +4968,20 @@ do
 
                                             local n = 1
 
-                                            local name, _, tex = GetSpellInfo( spells.best )
-                                            out = format( out, UnitClass( "player" ), tex, name )
+                                            local link = Hekili:GetSpellLinkWithTexture( spells.best )
+                                            out = format( out, UnitClass( "player" ), link )
                                             for spell in pairs( spells ) do
                                                 if type( spell ) == "number" and spell ~= spells.best then
                                                     n = n + 1
 
-                                                    name, _, tex = GetSpellInfo( spell )
+                                                    link = Hekili:GetSpellLinkWithTexture( spell )
 
                                                     if n == 2 and spells.count == 2 then
-                                                        out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
+                                                        out = out .. link .. "."
                                                     elseif n ~= spells.count then
-                                                        out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r, "
+                                                        out = out .. link .. ", "
                                                     else
-                                                        out = out .. L["and"] .. " |T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
+                                                        out = out .. L["and"] .. " " .. link .. "."
                                                     end
                                                 end
                                             end
@@ -5119,23 +5145,21 @@ do
                             args = {
                                 throttleRefresh = {
                                     type = "toggle",
-                                    name = L["Throttle Updates"],
-                                    desc = L["By default, the addon will update its recommendations immediately following |cffff0000critical|r combat events, within |cffffd1000.1|rs of routine combat events, or every |cffffd1000.5|rs.\n\nIf |cffffd100Throttle Updates|r is checked, you can specify the |cffffd100Combat Refresh Interval|r and |cff00ff00Regular Refresh Interval|r for this specialization."],
+                                    name = L["Set Update Period"],
+                                    desc = L["If checked, you may specify how frequently new recommendations can be generated, in- and out-of-combat.\n\n"
+                                        .. "More frequent updates can utilize more CPU time, but increase responsiveness. After certain critical combat "
+                                        .. "events, recommendations will always update earlier, regardless of these settings."],
                                     order = 1,
                                     width = "full",
                                 },
 
-                                perfSpace01 = {
-                                    type = "description",
-                                    name = " ",
-                                    order = 1.05,
-                                    width = "full"
-                                },
-
                                 regularRefresh = {
                                     type = "range",
-                                    name = L["Regular Refresh Interval"],
-                                    desc = L["In the absence of combat events, this addon will allow itself to update according to the specified interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1001.0|rs, the addon will not provide new updates until 1 second after its last update (unless forced by a combat event).\n\nDefault value:  |cffffd1000.5|rs."],
+                                    name = L["Out-of-Combat Period"],
+                                    desc = L["When out-of-combat, each display will update its recommendations as frequently as you specify. "
+                                        .. "Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\n"
+                                        .. "Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\n"
+                                        .. "Default value:  |cffffd1000.5|rs."],
                                     order = 1.1,
                                     width = 1.5,
                                     min = 0.05,
@@ -5146,8 +5170,11 @@ do
 
                                 combatRefresh = {
                                     type = "range",
-                                    name = L["Combat Refresh Interval"],
-                                    desc = L["When routine combat events occur, the addon will update more frequently than its Regular Refresh Interval.  Specifying a higher value may reduce CPU usage but will result in slower updates, though critical combat events will always force the addon to update more quickly.\n\nIf set to |cffffd1000.2|rs, the addon will not provide new updates until 0.2 seconds after its last update (unless forced by a critical combat event).\n\nDefault value:  |cffffd1000.1|rs."],
+                                    name = L["In-Combat Period"],
+                                    desc = L["When in-combat, each display will update its recommendations as frequently as you specify.\n\n"
+                                    .. "Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\n"
+                                    .. "Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\n"
+                                    .. "Default value:  |cffffd1000.25|rs."],
                                     order = 1.2,
                                     width = 1.5,
                                     min = 0.05,
@@ -5156,38 +5183,35 @@ do
                                     hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
                                 },
 
-                                perfSpace = {
-                                    type = "description",
-                                    name = " ",
-                                    order = 1.9,
-                                    width = "full"
-                                },
-
                                 throttleTime = {
                                     type = "toggle",
-                                    name = L["Throttle Time"],
-                                    desc = L["By default, when the addon needs to generate new recommendations, it will use up to |cffffd10010ms|r per frame or up to half a frame, whichever is lower.  If you get 60 FPS, that is 1 second / 60 frames, which equals equals 16.67ms.  Half of 16.67 is ~|cffffd1008ms|r, so the addon could use up to ~8ms per frame until it has successfully updated its recommendations for all visible displays.  If more time is needed, the work will be split across multiple frames.\n\nIf you choose to |cffffd100Throttle Time|r, you can specify the |cffffd100Maximum Update Time|r the addon should use per frame."],
-                                    order = 2,
-                                    width = 1,
+                                    name = L["Set Update Time"],
+                                    desc = L["By default, calculations can take 80% of your frametime or 50ms, whichever is lower.  If recommendations take more "
+                                        .. "than the alotted time, then the work will be split across multiple frames to reduce impact to your framerate.\n\n"
+                                        .. "If you choose to |cffffd100Set Update Time|r, you can specify the |cffffd100Maximum Update Time|r used per frame."],
+                                    order = 2.1,
+                                    width = "full",
                                 },
 
                                 maxTime = {
                                     type = "range",
                                     name = L["Maximum Update Time (ms)"],
-                                    desc = L["Specify the maximum amount of time (in milliseconds) that the addon can use |cffffd100per frame|r when updating its recommendations.\n\nIf set to |cffffd10010|r, then recommendations should not impact a 100 FPS system (1 second / 100 frames = 10ms).\nIf set to |cffffd10016|r, then recommendations should not impact a 60 FPS system (1 second / 60 frames = 16.7ms).\n\nIf you set this value too low, the addon can take more frames to update its recommendations and may feel delayed.  If set too high, the addon will do more work each frame, finishing faster but potentially impacting your FPS.  The default value is |cffffd10010ms|r."],
-                                    order = 2.1,
-                                    min = 2,
+                                    desc = L["Specify the maximum amount of time (in milliseconds) that can be used |cffffd100per frame|r when updating.  " ..
+                                        "If set to |cffffd1000|r, then there is no maximum regardless of your frame rate.\n\n" ..
+                                        "|cffffd100Examples|r\n" ..
+                                        "|W- 60 FPS: 1 second / 60 frames = |cffffd10016.7|rms|w\n" ..
+                                        "|W- 100 FPS: 1 second / 100 frames = |cffffd10010|rms|w\n\n" ..
+                                        "If you set this value too low, it can take longer to update and may feel less responsive.\n\n" ..
+                                        "If set too high (or to zero), updates may resolve more quickly but with possible impact to your FPS.\n\n" ..
+                                        "The default value is |cffffd10020|rms."],
+                                    order = 2.2,
+                                    min = 0,
                                     max = 100,
-                                    width = 2,
-                                    hidden = function () return self.DB.profile.specs[ id ].throttleTime == false end,
-                                },
-
-                                throttleSpace = {
-                                    type = "description",
-                                    name = " ",
-                                    order = 3,
-                                    width = "full",
-                                    hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
+                                    step = 1,
+                                    width = 1.5,
+                                    hidden = function ()
+                                        return not self.DB.profile.specs[ id ].throttleTime
+                                    end,
                                 },
 
                                 --[[ gcdSync = {
@@ -5201,11 +5225,12 @@ do
                                 enhancedRecheck = {
                                     type = "toggle",
                                     name = L["Enhanced Recheck"],
-                                    desc = L["When the addon cannot recommend an ability at the present time, it rechecks action's conditions at a few points in the future.\n\nIf checked, this feature will enable the addon to do additional checking on entries that use the 'variable' feature.  This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation."],
+                                    desc = L["When the addon cannot recommend an ability at the present time, it rechecks action conditions at a few points in the future.  "
+                                        .. "If checked, this feature will enable the addon to do additional checking on entries that use the 'variable' feature.  "
+                                        .. "This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation."],
                                     width = "full",
                                     order = 5,
-                                }
-
+                                },
                             }
                         }
                     },
@@ -5830,10 +5855,8 @@ do
 
                                 exportString = {
                                     type = "input",
-                                    name = function ()
-                                        local modkey = IsMacClient() and "Command" or "CTRL"
-                                        return string.gsub( L["Priority Export String\n|cFFFFFFFFPress CTRL-A to select all, then CTRL-C to copy.|r"], "CTRL", modkey )
-                                    end,
+                                    name = L["Priority Export String"],
+                                    desc = string.gsub( L["Press CTRL-A to select, then CTRL-C to copy."], "CTRL", modifierKey ),
                                     order = 3,
                                     get = function ()
                                         if rawget( Hekili.DB.profile.packs, shareDB.actionPack ) then
@@ -5891,6 +5914,7 @@ do
                     icon = function()
                         return class.specs[ data.spec ].texture
                     end,
+                    iconCoords = { 0.15, 0.85, 0.15, 0.85 },
                     childGroups = "tab",
                     order = 100 + count,
                     args = {
@@ -7333,10 +7357,8 @@ do
                             args = {
                                 exportString = {
                                     type = "input",
-                                    name = function ()
-                                        local modkey = IsMacClient() and "Command" or "CTRL"
-                                        return string.gsub( L["Priority Export String\n|cFFFFFFFFPress CTRL-A to select all, then CTRL-C to copy.|r"], "CTRL", modkey )
-                                    end,
+                                    name = L["Priority Export String"],
+                                    desc = string.gsub( L["Press CTRL-A to select, then CTRL-C to copy."], "CTRL", modifierKey ),
                                     get = function( info )
                                         return SerializeActionPack( pack )
                                     end,
@@ -8560,12 +8582,12 @@ function Hekili:GenerateProfile()
 
     local spec = s.spec.key
 
-    local talents = Hekili.CurrentTalentExport
+    local talents = self:GetLoadoutExportString()
 
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then
             if talents then talents = format( "%s\n    %s = %d/%d", talents, k, v.rank, v.max )
-            else talents = k end
+            else talents = format( "%s = %d/%d", k, v.rank, v.max ) end
         end
     end
 
@@ -8707,7 +8729,7 @@ function Hekili:GenerateProfile()
         "toggles: %s\n\n" ..
         "keybinds: %s\n\n" ..
         "warnings: %s\n\n",
-        Hekili.Version or "no info",
+        self.Version or "no info",
         UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
         class.file or "NONE",
         spec or "none",
@@ -9027,10 +9049,7 @@ do
                     Snapshot = {
                         type = 'input',
                         name = L["Export Snapshot"],
-                        desc = function ()
-                            local modkey = IsMacClient() and "Command" or "CTRL"
-                            return string.gsub( L["Click here and press CTRL-A, CTRL-C to copy the snapshot.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket."], "CTRL", modkey )
-                        end,
+                        desc = string.gsub( L["Click here and press CTRL-A, CTRL-C to copy the snapshot.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket."], "CTRL", modifierKey ),
                         order = 20,
                         get = function( info )
                             if snapshots.selected == 0 then return "" end
@@ -9108,9 +9127,8 @@ function Hekili:TotalRefresh( noOptions )
             ACD:SelectGroup( "Hekili", "profiles" )
         else Hekili.OptionsReady = false end
     end
-    self:UpdateDisplayVisibility()
-    self:BuildUI()
 
+    self:BuildUI()
     self:OverrideBinds()
 
     if WeakAuras and WeakAuras.ScanEvents then
@@ -9459,8 +9477,6 @@ do
                         index = -1
                     elseif ( "mode" ):match( "^" .. args[2] ) then
                         index = -2
-                    elseif ( "priority" ):match( "^" .. args[2] ) then
-                        index = -3
                     else
                         for i, setting in ipairs( settings ) do
                             if setting.name:match( "^" .. args[2] ) then
@@ -9516,6 +9532,8 @@ do
                         output = format( L["%s\n\nTo set a |cFFFFD100number|r value, use the following commands:\n - Set to #:  |cFFFFD100/hek set %s #|r\n - Reset to Default:  |cFFFFD100/hek set %s default|r"], output, exNumber, exNumber )
                     end
 
+                    output = format( "%s\n\nTo select another priority, see |cFFFFD100/hekili priority|r.", output )
+
                     Hekili:Print( output )
                     return
                 end
@@ -9570,6 +9588,7 @@ do
                 elseif index == -2 then
                     if args[3] then
                         Hekili:SetMode( args[3] )
+                        if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", args[3] ) end
                     else
                         Hekili:FireToggle( "mode" )
                     end
@@ -9577,6 +9596,10 @@ do
                 end
 
                 local setting = settings[ index ]
+                if not setting then
+                    Hekili:Print( "Not a valid option." )
+                    return
+                end
 
                 if setting.info.type == "toggle" then
                     local to

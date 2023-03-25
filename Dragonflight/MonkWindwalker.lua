@@ -10,8 +10,8 @@ local class, state = Hekili.Class, Hekili.State
 
 local GetNamePlates = C_NamePlate.GetNamePlates
 local LRC = LibStub( "LibRangeCheck-2.0" )
-local pow, format = math.pow, string.format
 
+local pow, strformat = math.pow, string.format
 
 local spec = Hekili:NewSpecialization( 269 )
 
@@ -68,7 +68,7 @@ spec:RegisterTalents( {
     improved_touch_of_death     = { 80684, 322113, 1 }, -- Touch of Death can now be used on targets with less than 15% health remaining, dealing 35% of your maximum health in damage.
     improved_vivify             = { 80692, 231602, 2 }, -- Vivify healing is increased by 40%.
     ironshell_brew              = { 80681, 388814, 1 }, -- Increases Armor while Fortifying Brew is active by 25%. Increases Dodge while Fortifying Brew is active by 25%.
-    paralysis                   = { 80688, 115078, 1 }, -- Incapacitates the target for 1 min. Limit 1. Damage will cancel the effect.
+    paralysis                   = { 80688, 115078, 1 }, -- Incapacitates the target for 60 sec. Limit 1. Damage will cancel the effect.
     profound_rebuttal           = { 80708, 392910, 1 }, -- Expel Harm's critical healing is increased by 50%.
     resonant_fists              = { 80702, 389578, 2 }, -- Your attacks have a chance to resonate, dealing 525 Nature damage to enemies within 8 yds.
     ring_of_peace               = { 80698, 116844, 1 }, -- Form a Ring of Peace at the target location for 5 sec. Enemies that enter will be ejected from the Ring.
@@ -86,7 +86,7 @@ spec:RegisterTalents( {
 
     -- Windwalker
     ascension                   = { 80612, 115396, 1 }, -- Increases your maximum Chi by 1, maximum Energy by 20, and your Energy regeneration by 10%.
-    attenuation                 = { 80668, 386941, 1 }, -- Bonedust Brew's Shadow damage or healing is increased by 20.0%, and when Bonedust Brew deals Shadow damage or healing, its cooldown is reduced by 0.5 sec.
+    attenuation                 = { 80668, 386941, 1 }, -- Bonedust Brew's Shadow damage or healing is increased by 20%, and when Bonedust Brew deals Shadow damage or healing, its cooldown is reduced by 0.5 sec.
     bonedust_brew               = { 80669, 386276, 1 }, -- Hurl a brew created from the bones of your enemies at the ground, coating all targets struck for 10 sec. Your abilities have a 50% chance to affect the target a second time at 40% effectiveness as Shadow damage or healing. Spinning Crane Kick refunds 1 Chi when striking enemies with your Bonedust Brew active.
     crane_vortex                = { 80667, 388848, 2 }, -- Spinning Crane Kick damage increased by 10%.
     dance_of_chiji              = { 80626, 325201, 1 }, -- Spending Chi has a chance to make your next Spinning Crane Kick free and deal an additional 200% damage.
@@ -94,10 +94,10 @@ spec:RegisterTalents( {
     drinking_horn_cover         = { 80619, 391370, 1 }, -- The duration of Serenity is extended by 0.3 sec every time you cast a Chi spender.
     dust_in_the_wind            = { 80670, 394093, 1 }, -- Bonedust Brew's radius increased by 50%.
     empowered_tiger_lightning   = { 80659, 323999, 1 }, -- Xuen strikes your enemies with Empowered Tiger Lightning every 4 sec, dealing 10% of the damage you and your summons have dealt to those targets in the last 4 sec.
-    faeline_harmony             = { 80671, 391412, 1 }, -- Your abilities reset Faeline Stomp 100% more often. Enemies and allies hit by Faeline Stomp are affected by Fae Exposure, increasing your damage and healing against them by 8% for 10 sec.
+    faeline_harmony             = { 80671, 391412, 1 }, -- Your abilities reset Faeline Stomp 100% more often. Enemies and allies hit by Faeline Stomp are affected by Fae Exposure, increasing your damage and healing against them by 12% for 10 sec.
     faeline_stomp               = { 80672, 388193, 1 }, -- Strike the ground fiercely to expose a faeline for 30 sec, dealing 700 Nature damage to up to 5 enemies, and restores 1,471 health to up to 5 allies within 30 yds caught in the faeline. Up to 5 enemies caught in the faeline suffer an additional 1,138 damage. Your abilities have a 6% chance of resetting the cooldown of Faeline Stomp while fighting on a faeline.
     fatal_flying_guillotine     = { 80666, 394923, 1 }, -- Touch of Death strikes up to 4 additional nearby targets. This Touch of Death is always an Improved Touch of Death.
-    fists_of_fury               = { 80613, 113656, 1 }, -- Pummels all targets in front of you, dealing 12,687 Physical damage over 3.5 sec to your primary target and 7,485 damage over 3.5 sec to all other enemies. Deals reduced damage beyond 5 targets. Can be channeled while moving.
+    fists_of_fury               = { 80613, 113656, 1 }, -- Pummels all targets in front of you, dealing 10,573 Physical damage over 3.5 sec to your primary target and 6,238 damage over 3.5 sec to all other enemies. Deals reduced damage beyond 5 targets. Can be channeled while moving.
     flashing_fists              = { 80615, 388854, 2 }, -- Fists of Fury damage increased by 10%.
     flying_serpent_kick         = { 80621, 101545, 1 }, -- Soar forward through the air at high speed for 1.5 sec. If used again while active, you will land, dealing 154 damage to all enemies within 8 yards and reducing movement speed by 70% for 4 sec.
     forbidden_technique         = { 80608, 393098, 1 }, -- Touch of Death deals 20% increased damage and can be used a second time within 5 sec before its cooldown is triggered.
@@ -105,7 +105,7 @@ spec:RegisterTalents( {
     glory_of_the_dawn           = { 80677, 392958, 1 }, -- Rising Sun Kick has a 25% chance to trigger a second time, dealing 630 Physical damage and restoring 1 Chi.
     hardened_soles              = { 80611, 391383, 2 }, -- Blackout Kick critical strike chance increased by 5% and critical damage increased by 10%.
     hit_combo                   = { 80676, 196740, 1 }, -- Each successive attack that triggers Combo Strikes in a row grants 1% increased damage, stacking up to 6 times.
-    inner_peace                 = { 80627, 195243, 1 }, -- Increases maximum Energy by 10.
+    inner_peace                 = { 80627, 397768, 1 }, -- Increases maximum Energy by 30. Tiger Palm damage increased by 10%.
     invoke_xuen                 = { 80657, 123904, 1 }, -- Summons an effigy of Xuen, the White Tiger for 20 sec. Xuen attacks your primary target, and strikes 3 enemies within 10 yards every 0.9 sec with Tiger Lightning for 434 Nature damage. Every 4 sec, Xuen strikes your enemies with Empowered Tiger Lightning dealing 10% of the damage you have dealt to those targets in the last 4 sec.
     invoke_xuen_the_white_tiger = { 80657, 123904, 1 }, -- Summons an effigy of Xuen, the White Tiger for 20 sec. Xuen attacks your primary target, and strikes 3 enemies within 10 yards every 0.9 sec with Tiger Lightning for 434 Nature damage. Every 4 sec, Xuen strikes your enemies with Empowered Tiger Lightning dealing 10% of the damage you have dealt to those targets in the last 4 sec.
     invokers_delight            = { 80661, 388661, 1 }, -- You gain 33% haste for 20 sec after summoning your Celestial.
@@ -115,12 +115,13 @@ spec:RegisterTalents( {
     meridian_strikes            = { 80620, 391330, 1 }, -- When you Combo Strike, the cooldown of Touch of Death is reduced by 0.35 sec. Touch of Death deals an additional 15% damage.
     open_palm_strikes           = { 80678, 392970, 1 }, -- Fists of Fury damage increased by 15%. When Fists of Fury deals damage, it has a 5% chance to refund 1 Chi.
     power_strikes               = { 80614, 121817, 1 }, -- Every 15 sec, your next Tiger Palm will generate 1 additional Chi and deal 100% additional damage.
-    rising_star                 = { 80673, 388849, 2 }, -- Rising Sun Kick damage increased by 10%.
-    rising_sun_kick             = { 80690, 107428, 1 }, -- Kick upwards, dealing 6,396 Physical damage, and reducing the effectiveness of healing on the target for 10 sec.
-    rushing_jade_wind           = { 80625, 116847, 1 }, -- Summons a whirling tornado around you, causing 2,300 Physical damage over 5.2 sec to all enemies within 9 yards. Deals reduced damage beyond 5 targets.
+    rising_star                 = { 80673, 388849, 2 }, -- Rising Sun Kick damage increased by 10% and critical strike damage increased by 10%.
+    rising_sun_kick             = { 80690, 107428, 1 }, -- Kick upwards, dealing 5,814 Physical damage, and reducing the effectiveness of healing on the target for 10 sec.
+    rushing_jade_wind           = { 80625, 116847, 1 }, -- Summons a whirling tornado around you, causing 2,300 Physical damage over 5.2 sec to all enemies within 8 yards. Deals reduced damage beyond 5 targets.
     serenity                    = { 80618, 152173, 1 }, -- Enter an elevated state of mental and physical serenity for 12 sec. While in this state, you deal 15% increased damage and healing, and all Chi consumers are free and cool down 100% more quickly.
     shadowboxing_treads         = { 80624, 392982, 1 }, -- Blackout Kick damage increased by 10% and strikes an additional 2 targets.
-    skyreach                    = { 80663, 392991, 1 }, -- Tiger Palm now has a 10 yard range and dashes you to the target when used. Tiger Palm also applies an effect which increases your critical strike chance by 50% for 6 sec on the target. This effect cannot be applied more than once every 1 min per target.
+    skyreach                    = { 80663, 392991, 1 }, -- Tiger Palm now has a 10 yard range and dashes you to the target when used. Tiger Palm also applies an effect which increases your critical strike chance by 50% for 6 sec on the target. This effect cannot be applied more than once every 60 sec per target.
+    skytouch                    = { 80663, 405044, 1 }, -- Tiger Palm now has a 10 yard range. Tiger Palm also applies an effect which increases your critical strike chance by 50% for 6 sec on the target. This effect cannot be applied more than once every 60 sec per target.
     soothing_mist               = { 80691, 115175, 1 }, -- Heals the target for 7,903 over 6.9 sec. While channeling, Enveloping Mist and Vivify may be cast instantly on the target.
     spiritual_focus             = { 80617, 280197, 1 }, -- Every 2 Chi you spend reduces the cooldown of Serenity by 0.3 sec.
     storm_earth_and_fire        = { 80618, 137639, 1 }, -- Split into 3 elemental spirits for 15 sec, each spirit dealing 42% of normal damage and healing. You directly control the Storm spirit, while Earth and Fire spirits mimic your attacks on nearby enemies. While active, casting Storm, Earth, and Fire again will cause the spirits to fixate on your target.
@@ -393,7 +394,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     pressure_point = {
-        id = 393050,
+        id = 393053,
         duration = 5,
         max_stack = 1,
         copy = 337482,
@@ -1184,7 +1185,7 @@ spec:RegisterStateFunction( "weapons_of_order", function( c )
 end )
 
 
-spec:RegisterPet( "xuen_the_white_tiger", 63508, "invoke_xuen", 24 )
+spec:RegisterPet( "xuen_the_white_tiger", 63508, "invoke_xuen", 24, "xuen" )
 
 spec:RegisterTotem( "jade_serpent_statue", 620831 )
 spec:RegisterTotem( "white_tiger_statue", 125826 )
@@ -1444,6 +1445,12 @@ spec:RegisterAbilities( {
                 active_dot.breath_of_fire = active_enemies
             end
 
+            if spec.mistweaver then
+                if talent.ancient_concordance.enabled then applyBuff( "ancient_concordance" ) end
+                if talent.ancient_teachings.enabled then applyBuff( "ancient_teachings" ) end
+                if talent.awakened_faeline.enabled then applyBuff( "awakened_faeline" ) end
+            end
+
             if talent.faeline_harmony.enabled or legendary.fae_exposure.enabled then applyDebuff( "target", "fae_exposure" ) end
         end,
 
@@ -1520,6 +1527,11 @@ spec:RegisterAbilities( {
 
         talent = "flying_serpent_kick",
         startsCombat = false,
+
+        -- Sync to the GCD even though it's not really on it.
+        readyTime = function()
+            return gcd.remains
+        end,
 
         handler = function ()
             if buff.flying_serpent_kick.up then
@@ -1998,13 +2010,12 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "eye_of_the_tiger" )
                 applyBuff( "eye_of_the_tiger" )
             end
-            if ( legendary.keefers_skyreach.enabled or talent.skyreach.enabled ) and debuff.skyreach_exhaustion.down then
-                if target.distance > 10 then setDistance( 5 ) end
+            if ( legendary.keefers_skyreach.enabled or talent.skyreach.enabled or talent.skytouch.enabled ) and debuff.skyreach_exhaustion.down then
+                if talent.skytouch.enabled and target.distance > 10 then setDistance( 5 ) end
                 applyDebuff( "target", "skyreach" )
-                applyDebuff( "player", "skyreach_exhaustion" )
+                applyDebuff( "target", "skyreach_exhaustion" )
             end
             if talent.teachings_of_the_monastery.enabled then addStack( "teachings_of_the_monastery" ) end
-
 
             if pvptalent.alpha_tiger.enabled and debuff.recently_challenged.down then
                 if buff.alpha_tiger.down then
@@ -2213,8 +2224,10 @@ spec:RegisterOptions( {
 } )
 
 spec:RegisterSetting( "allow_fsk", false, {
-    name = L["Use |T606545:0|t Flying Serpent Kick"],
-    desc = L["If unchecked, |T606545:0|t Flying Serpent Kick will not be recommended (this is the same as disabling the ability via Windwalker > Abilities > Flying Serpent Kick > Disable)."],
+    name = strformat( L["Use %s"], Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ) ),
+    desc = strformat( L["If unchecked, %s will not be recommended despite generally being used as a filler ability.\n\n"
+        .. "Unchecking this option is the same as disabling the ability via |cFFFFD100Abilities|r > |cFFFFD100|W%s|w|r > |cFFFFD100|W%s|w|r > |cFFFFD100Disable|r."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ), spec.name, spec.abilities.flying_serpent_kick.name ),
     type = "toggle",
     width = "full",
     get = function () return not Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled end,
@@ -2232,15 +2245,18 @@ spec:RegisterSetting( "optimize_reverse_harm", false, {
 } ) ]]
 
 spec:RegisterSetting( "sef_one_charge", false, {
-    name = L["Reserve One |T136038:0|t Storm, Earth, and Fire Charge as CD"],
-    desc = L["If checked, |T136038:0|t when Storm, Earth, and Fire's toggle is set to Default, only one charge will be reserved for use with the Cooldowns toggle."],
+    name = strformat( L["%s: Reserve 1 Charge for Cooldowns Toggle"], Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ) ),
+    desc = strformat( L["If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\n"
+        .. "If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ), spec.abilities.storm_earth_and_fire.name ),
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "tok_damage", 1, {
-    name = L["Required Damage for |T651728:0|t Touch of Karma"],
-    desc = L["If set above zero, |T651728:0|t Touch of Karma will only be recommended while you have taken this percentage of your maximum health in damage in the past 3 seconds."],
+    name = strformat( L["%s: Required Incoming Damage"], Hekili:GetSpellLinkWithTexture( spec.abilities.touch_of_karma.id ) ),
+    desc = strformat( L["If set above zero, %s will only be recommended if you have taken this percentage of your maximum health in damage in the past 3 seconds."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.touch_of_karma.id ) ),
     type = "range",
     min = 0,
     max = 99,
@@ -2249,35 +2265,35 @@ spec:RegisterSetting( "tok_damage", 1, {
 } )
 
 spec:RegisterSetting( "check_wdp_range", false, {
-    name = L["Check |T988194:0|t Whirling Dragon Punch Range"],
-    desc = L["If checked, when your target is outside of |T988194:0|t Whirling Dragon Punch's range, it will not be recommended."],
+    name = strformat( L["%s: Check Range"], Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ) ),
+    desc = strformat( L["If checked, %s will not be recommended if your target is out of range."], Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "check_sck_range", false, {
-    name = L["Check |T606543:0|t Spinning Crane Kick Range"],
-    desc = L["If checked, when your target is outside of |T606543:0|t Spinning Crane Kick's range, it will not be recommended."],
+    name = strformat( L["%s: Check Range"], Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
+    desc = strformat( L["If checked, %s will not be recommended if your target is out of range."], Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "use_diffuse", false, {
-    name = L["Use |T775460:0|t Diffuse Magic to Self-Dispel"],
+    name = strformat( L["%s: Self-Dispel"], Hekili:GetSpellLinkWithTexture( spec.abilities.diffuse_magic.id ) ),
     desc = function()
-        local t = class.abilities.diffuse_magic.toggle
+        local m = strformat( L["If checked, %s may be recommended when when you have a dispellable magic debuff."], Hekili:GetSpellLinkWithTexture( spec.abilities.diffuse_magic.id ) )
 
+        local t = class.abilities.diffuse_magic.toggle
         if t then
             local active = Hekili.DB.profile.toggles[ t ].value
-
-            return format( L["If checked, when you have a dispellable magic debuff, |T775460:0|t Diffuse Magic can be recommended in the default Windwalker priority.\n\nRequires %s|r Toggle."], ( active and "|cFF00FF00" or "|cFFFF0000" ) .. L[t:gsub("^%l", string.upper)] )
+            m = m .. "\n\n" .. ( active and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires " .. t:gsub("^%l", string.upper) .. " Toggle|r"
         end
 
-        return L["If checked, when you have a dispellable magic debuff, |T775460:0|t Diffuse Magic can be recommended in the default Windwalker priority."]
+        return m
     end,
     type = "toggle",
     width = "full"
 } )
 
 
-spec:RegisterPack( "Windwalker", 20230123, [[Hekili:T3ZAVnoos(Bj4W62ENUDBjhNEYcBdCZCtJBhC7Ud20hUVfffB5ynr2YNKCNodc8V9Juup4JQiPSKtNSxawSDgBQQkwVyvLQI(ANR)Y1xT0pl46)U7i3XJCChp0XzSJZfxFv2J7cU(QD(lU3)oYFS1Fd5)))jC7Yh8JUpiH(vpgf7VKcI049jliF96SSDP)Lp(X7cZwV)2HlI38X0Wn7J8ZcJ3UiXFvg9)EXhVnk(2pUmX)U4TRIcVBD2h3LeVkmki9J)wsW)0pCj5p(NE)T4T37vJYH0N96RUDFyu2FD713ct6tiKZUGfKp(Iljuu4YLbS1gKsE4RVkkmnlLs0X7c2s2hF56)EoBiyR)TrblV(NU(k)fu6L8rFBxqK3A)KnShpjCh7l(hSh9kYNKfKe6t4w(rbBZgUyDO3T7tsZgwaUd307WnKpD4g)VD4MpK)3hUz(Sd3m(6mcnIG5SW7cs825hTHhje(5TXEPzjH3hGd4(hUX9Wn)WHBUD)Qvd3f)absSNjD4(DhUzabqpUikWlZp5UacVGS)jKYyjsHdTYyHGe3AALUNFW)RbuGCofiqSVAatw1KMTR7Unzgr3iijyBy2J6K7ma5fVYlBDG3defWO4KLs6axvaOd38BjHXjuqYr0uq91apIAYMWG0d3mfrGx)e5BKsQBysWg)WTSh0PMYwrvEPe2Q9jpcj1kx4Tred349zE3hU4ET6q54nlWNWA3ExA5MEt8w)uYJ84W0mcKYL5JTA9suoKQwUws4wYYt2VlZlCfYUFo6o3o9j7zcYIlR3T1Chx496f4MvYerFv6yEoD80tGFJB(tLUlC7wcX5r8VUniFRoCt8YWvHbjmBf3HJZniQuVvFckL(jukvb35UVmzUqa5pA)Mhy)5yKKV0EswaCpSomjIco2zqE72VDXAkaDg1uvjqEdZ5CCC0Y4h2ouq1T2(GSKItnsx7tw4TXFJsszjb(ltlp)awPYr2Zvn9CwHoBY(uQkR3V7VKjtYDlcXOffMkpxo(WoNkjmLU409BlzmquRMJwa9gT0F7IC9jIv3VhsiCJkcoN3u5gpMri7j8hMbRYi6hYr2yx)bBfsFnEx4dIWspr5h0GC23ILEwD83(neW6r2XzeyKt6eGNTpa9eWFUqvpLF7TliB432hSL5vOgydzAG6pnKOg)vFYFr(MHRja3JcjEBMBJ3gSCFAM3TjbpigTvPDN4sQpxIOWpH5u924uMH4kAqOE8hD5oPMHeU9RXehCusqFKs4u9zwq495ODjdlHtvj(9h0g6x2wXArgdP1Bfo4Q8ekQUPzXjB8c8tYw75VDP3QWKGCFsg2iJhvVrwhNSLQ5)vFYjmqN8likmUByYLwrDCC5n(Bdx4DxsyWkcWyNNGF6FFlOVJGBpOt2v8kp(reFiKG4jE8(J)G4uHCmfu0cvU6sc3EFqMJGJo2NnmZz4A)uV9PeOqiVssLWk4wry6qbXmJyfxGmRgAna0Dj7bjuBAmcJmYBO6JPrXzCBvGiD0XootGuFrWr4D9OtpJNxX2IELp3HB(te(N7O6Wvf(sQx3lgLJmixKhNQ(rjQKdAusu5cQ56Auo5Aso5AHCY9zvZ1vBiVq8JZeO1xeSK)FIQRRH4(FLXdQvZOkqKVEtkyIgQj2ig)ursn8kbvMhLh0P(ncgofXccjdGeof2AdWEkhU4veOvdPczv0anwkx6wOrch0TgxybvjsOl7RS49lwtn(xg4NTwBIFSCvgUoWpkBDo2y)PUCZAhg7xH0SWneee7TmmiNPDrbtBzGQgNxXhAruu5Qji0pAMIwr)iafVcoQ6WxA(8cEn5k66E)Kn(5ydnKN2SfWROZjyl4kF0hw1yTqy7YB2hfhVSQeTU4oTBhwcsip69K0eZXIlF1kYFPkPE)((L3THy0lvNcxCVqTIIOPxKV3ZrcEAMTcj0AdruH8J8w4hfLJj8SaBfMU1)U8YSKqsapLRckR6KINqtn79hU5xOjNroWDlXR7Nj8VxNftPhy1RNwvk0Qx6vD4fifnTCLUAoI9fFTze2YwxhMYLjwLd7vcoQt671YsfqduL9UHnwCMY9NsHs(Uu2ggrBtrBQ88aujKxtv0HTJ)xW658IifqDpdUORdIv)isM8Tsw1rc9Njr1R5sw9Iqo9AY48TQY1vs9NlzfEcE2exjAHNmg79HBoxmwZZl2bW1jRGLa2Wi0(RQN2aZnrmZkBifPq4zBsRImQXAm1v2dY8D1(OicFDXAAjg8Of5rSnyaEgd1GSFDGyGLHuFiA25RHw1cN8fJkOkuunrnnSIM6WOKswNx8tT7dJgr2RBQAUnVYlsFt6tmfj2ZmssJ1QZpoXwdLhrb5oSwL50H(Xqo)pbCYXCE5qn2gW(F1QJ0Qf5vCkcThGzDcShlPOBxERxAq2(DGLZgTiK5fmQIZA5EU2rzt5WhH7oreH0jAu7Jlv8DZ)Gpa19tIaWX1cxRDqz7B4lkODfAVuD(73lkanVCROFeGAS09SsKBv13TYzcweA6ykxGq8n5ve4m5smc4iFXan2ODSgVYgybh17u45Ka5FHGNKxhXZ6M5iEtgpN0xlFjiqhzqjDTVVdIVmIfiD4o08kpK7XwzJwzsXCtSwL1HnniT4Rv5l1ZJbXZ9ucy(cJsgO)DK0vDImUUCz7(UE)2Lbj0JIvBgc8wPh7LfO2b2viuozo6H01Bn6QzXcef)afeBIP2M73uFIfDz7scst3Ne4TloKq9uoaKx5gpcg2Rj4ATMa68xyG9k6o6t8pHUXob7u0JEpx3mlM3T5RujD9CjSq40OVSk2Arc7W(bRyMWSGbgNO26zD0mloxfibkG5VsJjdWlXCwfp9m7Kl2fZ98YI3uas6raPE36NLffChXnTHbabBGmSAEha1Dud6hv1X42dHOnN)V1tTIOAh8qRyObeaR1GLdLvHgHnZE1NoyXSxHMyKDdyJGtoyBqrxxAAviDIctC8g7r0yUkKyqiNarxMFwvmivmt8ETqmat8t9P57o9q5G0wdAUzxv7H61(ew5hq46bekiEZo1t2RMm4QdZ5)M85NvGOjBC)yTHDbPkjgm0)E8Vien04FGlAOMh7d2roggSv84EWbOPtS1ktaG4pAY8aicRJYDbaUzThJzxfJh6A0pXjmml7d4ULJ56rgynUhR2fyn(mQcjlTqpc7L1E0YO6WcnTsHGMPhqjVfMMRooOvIAwOCn60gdDaPrtlJkhAENn69VOmq9kbP0AXN5avX98044IMBXW825or0mzXtANQwdCRafOgHa(eSHa9LhBPF58q4qGHT(2DhEPvHbkK7PvzRQeZvdc5VqaHS3o3692KgKFKzEWL88aD5FRTkTqopecrlhc2wsl7dyTOYNn2A2GrRsnsRwTnji4EEdDzNrzwrrzRt2RleuIKBX9rveBEzEPIuP4q)CjOu8Pq0Rd2Slijoj1BH)o)fHzXjLEmP5zXETue1YK7ES61VK)kPjFBW3cwSpR8DD9HYYBzobwLNTQCxMPOZl92u)24GU0weD8vUIQaFnuRx6H0gYCXonCm1gw2spRxWqAQIoewCWoFJlkzXS0WRaEdqq1xK4hU0l4RuXN)sI)RWTmSx((QHaPlQBwP7lPQmbVWCMGAI8fEFHXFAWjf5swk5uy5vR)tFbgFixb9pRUt7P7TYVmVTT6zzV0pxPCu4fsZ12AEovPBMWbk)8iun4cMrXCBrXuzuCoII10kvsi3Gt5hvcCXMdyN)qE4pz8az8AbBs9ZpzbfqeLHe6B9Rk3HQR(PRVI)gEk6XCwAqYoYQlondipcixysNDTmyL)(OmOJUeoy6xyhcq8htm0tEK4Vo)0aYHa5620oJmKWM8)QFyefcd5zwe1BIPfr7UWjmG764D0bLmR(PkFTF0)kIwNQg2IIc6G2(ohLe6uyi9rFOPqDArNz2RSLIqpOtvPBU2Jo7P9BNFGF4Bn2ZnqTeZufcQ3XagkLmXEkHV7Fgzbk550sKlRTMiAsELZDtzhnO58(DXS)vq9)3IldJR0IUSgdQJmNPMTQxz)iY9(m0RhBSXrm1pU0C4gbfzHWM8N2hgrW4pt9p5NvyCtCmMq(74vS6m4ZzIQ2NyCvAQudIRVBRI1Z(rxcXyrOJ0kUDkbcRbowpTV2DGMOsOM10ieI3kA1w0(sKL4rcJio)DaV0FJ)Ds9QQSofRCZH)bbrFMb(d3CfLej(sjS7Dr(u38hU5HqA7BvTK)tgjuftKPyw1SBpdsjUN1vpJliHojAyvBdRC1RvvPYRd3sU)Xe6EtCjvoRMyVr3ajr6x(nMOBBm1KHCqjjVOD5YWCJk6PKFjo7VbfQQAmVIG()onOak)e9Bj0BmjY7aYzMYApxRwWxW34IuSxclH3JFFeXPUScoM4(lsKto2BXMwzxWIq)icBKnvbPOtNOOR6mdZtvHke2OHKRFyyOpKaH8SFXvslOjPuo0rHDn3CoJ77LAjTit1a3gxOfdRDvyNGXWIciomJtEYyJ7oXqBGN1xDEF8Wn)hSOv5VizBidr2DNaHjqvnOo5Scw3u2a9LwMbugDCen9OWtDNPLbubDRarvfUYZzOUfW11QBcZ0GuGgfFhXxg5ljUTYbg3g3UPRakpIk0BtzjLo6aU1TRuZHQuJ91AuBLJyBOjW4a9kJPffMc5k41(EROzLohgD5ktKdjtP4O6Uj)6REWpHk8jE7(cnc0Wn7IPHGUIE857kTrFh90V)39K4QjhKLgtp72Fp5Sl)8KujjrSLKeXWd)6)v(bJoJ(l0RlITeSL)9VdV87VJD0QMvuQsqwzFNVnOgjxaJe8aPKWL5730AuE4xbyoCEwBg)XfMYfmILiwWHmsMLm(eb3ZHHRMWfLWIfbwkJteP7jfNFsgNfHxigDrfEGd(WEGkpURaagyj2dC5iFGHpWQShfatAlmwGxOaI(Xtb3hhODa3xlW7gUVwuCs5(gTIAV9MeoJ3fKK)lYb5Cm6B14DNHiK7DwFnsPNEsplw(7byod61Vj1DCErKCLpZF6p54o6PNK(0PZUyup15R4PNoZEo4GNEIw2PEcLCA64rLYIxTCSNDgwLs4LiwyU6D7O81cA24a1OBhWLypWn62bBv2JcBC7OzHIrXPeQyxW(1a1oG)Rh6DJaqpooTsaJgxT3ZVms1463f1rMQKIZrfixw(7pboYE(9KP46)vgh7zNHvRf689q13XGQFRyMNmUz5gVvu3jJ4Q5Ui5aFIeP41fGEM0BLeOJyZVvsa8G3BeWngCIvjL(Svsafezuo25sCf3ZiY4x8zy1mNVqRdVxlkXPZOg522uinVwz1VI40wuOPw4O7TQVzPJU3Q(whA(1m7VUWk6TQV1qgMffAQfL)5TQVzPBhfezuY2E3oxAB8vVYkJrZmI((EQVEZPx8S6xrCABkOBl809wHUT3z3Bf6UtncBMvyxyl9wHUBidZyHUBDzaXk3AlamyjvlgCQ31f1u9KAVJGtU(eJhbYD3Rm0q4Uwq6nHMrQL7rsZtGHM0iDibuKb(qg2FpQamcopsUdg0kgsczOjn7eYqdP(OctxacNwy4eKH73XsR0QWHWbQn0TvXRCsQtgsEyhPogA732uWb6kU6ApRzoJrCL1cvvqQZpoOz0fIdBUlTjjQc46CYsxGDA7pJy63k6gtnSlPBNNdMJds9u7iKaQ5vo1gnt9djWSUXuTAwu6gAQByEADh0k13NdnRtRIL(O1Fwqcn0i(7713Pgxj01bRbnXQHyQzAIioNFaA0HKiuW1arT)1CcLcE6e8Zsp7Wn0XXIsh0R5Z4vHrv3LnPdRoa8hM9r0B6Zd)k0YRV3tEF4QzlwhoTCEHaxE10Psx9zqNkI)C07Rf627F7Wnn(2KOcQZuUnjQ(kcAktB990XwBwvURVpE3mIS(953KeZSip2NEQrPvlKM7tpj8F(HMaPPKeY71VVKVvX0ONxbq5l9HEOFZCNrKuYRRvGL3DdtfqCVM(4ZDMygRfx3dZgza8LCibsAWGC1j2TZaVIa7sCGQK2Nvz16j(8PNWR16(Dd61)mohlQkggglC4kFm7Ir5eQD3Wc8Be5XYKPzZUYdOBVCX059OgUt6DMbIR3zsAwmUx7Uhc4PwbpbVxyK)M5K7GHBAb7j5(Oit7EMVofM6Kt4woT98eiZHiDMjHOUZK1vyLL30fHW0X9e2xfEq)a5FNpRV7pKde5R7aofnnoguKye7PQpQiv8NEk3yBIzDtM1I93KackI8E(HC8xB)cEvc0RVaBXPhJMkNt0zoeFU8lWvAbKpHr(kxba8ujnDwY2EdZmroZ5C)bARCqVZGZ6VUwSGPKx)yIzvZO4QX33SHnRrnFpBeVlukvSzTciSflajiJF9JxVzCbIizZiZGHKKSaeKL9JndIQul0aOPwaNYSMkcvr3ndEDSoe6FgWqRR4YlNZOCJolRQpwaW0G6YGUFt5KPC5IyeyGXHcW0)rfQaEdMVNKVyIf9ikb5j90DxPsK2dDLXTW88d572kp1Zg3dpVel3UwipBJ47yLwt6Cogri230AyCvx2lrIZoBYGgWOb3IwknmR8jdiHlzqagPI9sRzKfQEYWv52RToeeOR9wJ21TMovXXSjnqmAJ9sFze8jzvNzxyW5G7q1NXKdf3HxoWoJYJztPW0uOVZnsFtQF)QwWQf0Hv(sHGWLi2gR0O7HBOgSYJlERIiJDlDtWsSc6gLPgavf7HUJ5DwqjyKlBME5HHEocqAcBRkiEdo64rGbEJckYj2jWWsFsp4PU42nKMS5HBHm7kAg4V)Wn)cnhCs(WBjzg)zsw4qbmpKfy8m0QBrXQPBSnjGr2kAY8kxvwTnik9hkOfvN6d4pRYtj(NKC8rtzKYIhl7QG8rSVXDGuHKM6oPB2bNbUfQltdYf27u3bf0maziM3LqBUyHKXQElrtlYLxuhO(nXiLcLHO5QO0ykbsYjsian3dLw63fCUbhbfdQSvrY0Fz)NvKYll1sW0F56)jDnzUHEmVRAXCP(eZy)oDA6ptSwJQrSBKYn86MF)mW8C51vr7vpDTQNHo1RRAuVMY7EzQR6kOR(Vs87UL5bjR4QoG0b1Ya0u0hNxejBXl(qozzYMblcyGqtmeOJBzWl9mFY1rjGS9DpnaGnRe5F)ZGlFGUtlnBDn1XboDp)VrFDyi4urQk(s)CgHbZcPRs4IoqAAWL8Sk6(683uOVJkUxxjT15eZj7EFGZ5Scn5lRZv2OUhvT6PcVUgrJh098JXgEdNdGSnWCbjfv4iRFFUU9AeNOX23CVUPqGF1qMo7Ycxr1lem976hWXfGVKfVFXAkWxg4NT2yUUSVz46a)OS1tz)t7HA)cWw(ZzYYWaIL0tpv8Msfm(8k(qK46jwlTME0bG79t24dbar)axoY4BReYeeElDHzcsHaCMCjecGo1ikoEzvXIBKs9yq)iW5Bb5T(2GK0GK7jQSNsu7aLQx(pqzPE)((L3r)TUhyfudZCEZjL2Gyl0x3crt0pYJEC2Pe9Wsf)7YRACc5a4uk2X92sPPYQDv9IwXQUf777YsCXG4XvLOJ68(j2vlH2qxhF1RAiT9sTiwve43PAxvH)x8LSQIsFPv3k2wtTh9AOcWB1h6iZ5wph87yrIoLkgVvmMJGdM24OlobepgrQupdKu35YyJVnyv)06GJLlMaq9imxWHkcTQjXS5u0gXTTSqMkKk6rfnltiBY37yb9jnPVJKOmcfKSTUe2dgUgZluYsmxqrV1yrLGdmHS7AjW0NVw1YesARLOunnSwcqKeRSaE5zy95Qg3Se8LTYjb2y)(BxHgQhdSFoRN7Czp1FrzNZ)dJ9hC6zkfeH1xuJo9y9Cix3vXL3tP1WHIEFai7WYEeI7jyzI28MibT)3bXIY4iH3X4ZDHf089PUHwoVN6VC1ZZp02qJOJIy2io1W9f4dytFNLZxxi9By88XJ(WK)SijRjRtQUL5SNN7AOCRZD5o4glf8XMacR1xgBguZnbQI(R5Cbz5uIex1mMvzaqwPJuupt)eOSs8hVzlfWa)go)(QFTNrEMABWcxE)J85aQETS5csrFRWrrLPr5qhkAPogaoNqR(kCuA4iX44nZa2xnNyTK(KQwNYOqu5VDgEBDlA(Xn1bdfolwQrKbZ(BQd4d3SgqKDwJXou2460ttsBOsLzpST28UyRj5t38EOOL1brTnEDLBHz1w4Z1y3(oEam6TuHsWwTHKVeKGfbGVPma64ifGk7gdEZTQj05iGg2xYQ95amuTTDLBOejNU0mdjnHZchgNjjl4k17nTCWvqTZSZoK6AK5W9lctzf5ZbMYQQr8AMrgHvy3YXbQcTDLaLhEOM86gniEiyr7yl5J0HrH0vZm1IIFGcInX0uh3Vzy1qsVljinF(B3ftCNJUj6iPHBZLgGCp41ImZeD6(GwSn89GIVxlc01bs93Ep0cNZ1L7uLzAQHQK9L1j1o)lM62J5NxQ6qR(h)TbYrU91fIHRXm9nqTimTwDOfMG(OhBoL4CisitH18jeLv7p50KgENW66aDIRVYFF264KRV6QWn)C(VKXx))b]] )
+spec:RegisterPack( "Windwalker", 20230308, [[Hekili:S3ZAZTTrs(Br1vHMAJnnjOOSDos(HKl(U11LSPI8v33eiejOiSij4bakBNIf)TFZGNZJUNhaG0w7QQs5ijmONE6xt)AgC7GB)4T3SWlX)2F3PVZW(d7)2EdgC11x9UBVj5R78V9MDEZFW7EYpS1Bd5F)Fd2U4ZERFWpI(OVUo0BbfeXH7JMtE8QKKDX)0RF99bjR2FxV5HBEDCWM9R9scc3opYBzc93N)67whE3Rxe5DF42LRdUFvYR3ffUmyTF8R)Ji))0lyb5h(t3FlC7dUvtzp67E7n3TpyDYFF7T3bJ6VLGo78Nt(ZxtwfRcwSWpBS(XKxMo2x135vo9)PJZoo738(uy0XzZx5T9E)4JZscpoZJGrBpo7ZK1WXzeu3po54SBkxg)cDzCC2UOGWOGKV274ho(HsOoifQhN9N(pge7Nbp)TX7Ji)87dItitr4sYpUp6RhNfq)TTRj)0DrHp4tNZv0)9g)i)TeqNncV5jbp6ZmnK)7T)e7K8BEBdMFC2)zuG)YKWO5e0EFmHP9VtEzYQFXXzr()F7dI834VLG5jR8O)Rx09(jztH)xieSe6aP47AY0r(3qcfjkD0BP)l5pn3Jsjsc2KVWI8xSFo5NJcIFiBDTZlkjWBD2q7D7nRPlzQas4o)TezMpE7VNkY5V17U1(lU9NV9g6YlCl5prWH1UR8I2KXQIc2L9G)r2REd5VK4hf4rKm9wtwi9MVkW9U9rKjkhChN1HYkd6TX7lhN9Q0F(4SPtooB4Tje5bKzojGSqD35TEd7KqKDVl0nojk4bFCa394mNJZ(rchC)YL92f(zcKYEN4E73DC2Lea915R9DZi3X01pbvgkGkmtR4SqMeNkCLUM)S3J(uGCffiqKVkatg1i7w1T3ImHOhMli7sg82h8tffqfawfgT1nCP7JERdJeKbQ0i(ybKyq6D(j9(YE)TUePu3pVI8NDtxD9YuDoo7WHJZUGkYNk3eS9rI2Ml4BWkjLUAJjkuBC9jY1RC92UWDjrnkDrtH5DHXXPdDj1gMlrbZlyl5VmMiX1hsKRcN7w82u4Kr36r1SCtcDxeqW5PhNniLOtvLCZu6UmDYiVAo9SxYGEbXeggr)39Eg1)ozR3Ir50BLxS7(yFx6AkFoREOjGyGaiUSIXj(UQfWjy)PGFDzbg3iUMZOQLL3AcpHOq5UB)F9xeH77c)sPwhK(ugLAaNHkmQxgQkXi5ubeytiCA5XaG3fKNmAtUUuVYfovuRVwAdrI(M41HjmlvvMxaihQKN(grrit48WW1lc)8wLYzS0QSLOBX7DC2pqOFo5eqPhoMya96(Pt2JEeYaHqrwvRxKop1vuVwSQRvZQCaLCfnDiZNC0XNqmWipMZMKRdLC8glihQmM(nII8VisUPSQ3I7U0tlsqLugv(H84nXzEkr8EI6vNc3JUBnjsSW9jUpem)bahUyikPklj(Eeh42EFmviKIoBc3s8KWp6RKDhjGk1ZYHPlTC8pELhzvteXiVfXJnFVfXv4nN7yKx7J5ZSsNCK8HofZw4TDUpfRi43NciBlxTiJ3fSDlD6jXkU1pBPQ0BICuNeT52f(rldQcgGbOPZFbz4ZKWjjAKlK8GM(YPeRLKGZ04eTaT(UWTKqHiUPDxK)Nt9ZGgVaZIx7keZ2mj0k6GJ3VTGVZAtcFYZ8upYpMg6P7UWacrIsOHcgbZqOOexnKVCGNX3Ys3ryp8mG3124yoDQRjs)zk6LMAe4j87gHgY3G(SlAITHO1uOKLeeI99TehN5xZdm1uGXlAgfFeKelgziXwLblxqS40Q6XzQVsqLgvlni)7lrrkPCecokAnWaDfDOdz6UQii)0FdJ(G59FTPpOctgqezW3RkKMzeOHIbIn(2QDU4nHiUDndilCaJDiyY7yrgGk9APqeY0kAjv2Gz0(yQ(H7N8wKzVHBliPNMcvRTrYB9hetf9QXqzPU8BTWjgmIB)CLcazM0qGZvCWrMRdUIys4JkhzWS3JKWN)ippRgURVI88jSbVGzt5Gli2OiUvr250pkA)Ue3GLIdD)UoGV70jGz5ZkHMkRJMzq3OXlS2GelXSWPW6kDip6tTGVjGMe9jfcqWEHyIXhyCdZKID4gYcVgUGjc8X8mIA6)LGGzwyfrXUl8tlvsbfuAYfCNp1awW9e5sYYq2RyETbLbzzfAqTEOyweDKt0t61HHlwtKg4SjlbLmNPabdad3rfKqntz5o6WH2atIW9mg1bmlKc1O(HmXn3yfGKWamj1rgzUsBGes(Jzd6L5gSk(nKBmM5pb6mosNNgyMHq5dMe)c(YhKQIBrsIQ2fKVpSkFkcpXj9Tai292eUiyzaTKJP6h9gYvKbm2dUvlD8B0Scmalyt70bDmWh2mN2G5coI240kj0iKGZJpnYsMR3oiF(15mSJOzyBuKt3sxJGIdEwQudp4i1PqepRu1YYWqnwgCm3ZmicmUDmd3ktpj2AtxgixKAksnVGzkPVbwyvWf8UiucCH5Ai4pgZ0kntVlCvfLesuq)sUgCC16zU361Uz)IlTplY62c3S(0rUY7abgvrf0urwgw)(nKvl7qiSpVK9(qX7WPqaL)8o6YabRTl(HufjZKuJxwuyxM80dfWJjyT2uN0HVanOz5zCQjA91frb(R3bfWmeZIEmb0kKRt4sUPNEpSp0dYlxN(LlX)(kRhSypuGAglglS2mTKrfvy0Qk9OFjYWrlniaenyP5RW9ZxrT4SW3lzLiBUyEKSLN3AjR89wtBNnYeN9JWMBrTDwVjV7rSwB56CA6cFzju38)yHWiK4bAAhX8DdFfaI(iogJh2PSK(70xyAwX8se8bVOnEGHMkeRSKwRk7hSku0ySRcagFxHMnl(rKx9bIzVQWllEwAceID)0(f3tBjrHDWveuxJWiA(ptx7AIRRrtc1RjIiK3Ax6(ZGr01sZ0DE3N6asezdL8QitCc4SxbzbxwguuAy1oC0S62wJkaLUIO)XSWFwh(z6i3esL)2VPI2BrktW8hVfkphs6ogXQezuDtRrsnniyrUYdq3fm29oVKK1(377fPofUC(ZRQK7Q65J2jELtvnL1713u0KqRyhgCx5KiiMKEL3OL(GMAuJc4mBFfBICtkfKMfqndEbMqnRvt16hqQLw35pPAzhhdBzNwWWSjA3MNlJtPfCRlrT5Sjel44(c0ww1EJ17rG50FTPcN9ER5DwBQX6CRQBnRV1Am3AkRzptOGDmkdVnytB0QszKnud3u0GvrMqfEAnOIsQ37Jg0vVr4nTY5zlOVLBQBEn0HOpNGu8I2Bnpv7dg8o757jhcU5Jv9wdrTACvp9Ez6AaVq9T1ovsf4QT8crQysgyQLoeX(ePAX1UUDivlkTArMln4yS0aiMn0AVhCmUjQLkbvJx225OrhSwuOf8arQ2xkLSC05TssrLVAtQLwxuqlDMc9gG6)pPKOAO)lxA0M)nZfghRJ2xBDNLlV(31(2me3CR11RMxgg0PNHAYETzo9a3EjdmHCK7rKjDrYqZ76kic7qBd)yOYAowx3mhAT9vToNvuV6L3QTu1uNSE5Xz)k1nlctB7c6fEa9ApW(sxV8FzQAnSeEzNCoV8(laPFQMinYQQjBvrK)(Oi4ClzuCfVYnMGoO1QwllJ)mImj9xlD9d2G9figPO3WcqUJuXp1HmvB(WZ5ZwKNMcHx1vaqruTCprPoYF(kQbKIlSawNjLFhk3e3XjLBhw4zo6j9x5a4kcBMF(O8PQtbJsSXYEGq1mkiJHQpRSljW7HtLldTQqMlzkRSnT8002vN0uMyu270xSPuuYsRAYKtPUqrtHazBSsI50n9dHoh4Nak5qgBCO6AxwCqWmAd(7wChXLIeI)mjkp1bQkdEjf2W1USV6MsPRHrp(jc7eqsqP3jzbN9fb9KKhadC0BG1(oIPfBOi0eTxZz)BqhfHM4(2PLIqVvQ47higOJ3QrgzRb7ImqvFkDncYJ77mWUEJEhgcGUQtuM8CR1LhQWOTgsGIgOsvNvF(qq2(juO3RUMn(un9ELQJ(XzCXG22wT4vbsdWpnD8LMd5g4ojuuNHdc0CxSXfx37rTF99pFfQ1b4EMs79F2ZxHAgY1(N8RqTU1WfYChHlEVMFNdP6DmiO363t767C)NVL4ovm9ZeR6P8Te33f8PNskNpFr41sm9ZdRkH6o3sV9Rb7ZFop9(1V4pFF6v6S)J(0lB68RTz694mzbs5ePxU0p6fSoDbXKiHDezt3vurZ8ixbCdlCh1J0KQ3QGYq)P179zBEnJiju6H18rb6gfgc)PxzluhNlj0PibEOD)JmFJlDrsNCUokFAvAlPRcTz2ckXtJLqOo1bmPXQBoMWMJT(gmLSuAb0nljIejP8mfwLGaa)Hle82fM9)5e))J8)iF0cPwFLoUn6sTzNIK)Z04bQLJ16DUo9)udoqUkZTi)59bRjZ4VqZFy6v6ov5oMejus2TXon7tEjQYklZw5fsqm14ACrnkVWGLuhU29qqzHl)V53f8kClCPN)6GT(eZpHBG6HkvDProguac6nIE4wET28SbsgIR)x2fM2Xwl824DVqHHeLPY6wUG)ImrVpd8hNDdffj2sPx(9R9(AW27l(YbuoK)RmuqPZvP1Ko)SPRy1EbKqCHFf6B9NQcld0WJ14EFxw3Wit9kfvkT6WmKh(AeDTXpKsJvJmxP7sbw6h)Jmw32qQkdzJY5E72LYdtvQO7s(XWKFtLxsZl(keia6)h6xMHuO8Z0NEm)lMqm9BUaV0ZTYvWMtbaPrV5gcRf)UiSt4lJNQU1c8LCaFPI6ndvbhaQqooRSdqOcwZtKL3nXIsEpQauSdjkRmCyMyCStCYQoV2sv4a5gC41hN9FK57g7DANL0drLFW78bWIwubdjEz6f2LTuHv(Ep(vxVqFWIyGpBtQ1Svmp45edyEgA)8KFMUux2bGPYX(PQ6eKPUgcq6R1z2QQeaKrmvV7sYdtwfTplaKDeVfZ8ROieKcGG3Lv81yqX9fDUxh5wIQanZx3eLzg9cP9)5SGcz1or4AGEEXxyfoKoHvIx1LBj0zwGZIW0RQojEQ8JjvvxUP6vs)AwBZBUYfXKXBRGiyDQLORFxE9A3g9snRxNw3W94LBtIMpH7YJdLOxJE4oh5H73aqNp01AcsTXgEpDpSWFWusUQdAbmfeR9gS9(BuhQoM7slCo4nwDFyueTjiABCCQ5N(q5ykQrhhB)5c0C9QMDqwgyDpzB)5e381cgtX6g2w3uY3eF2t146uaJo(ppFZyBWjcmHXjkfopqwvZFyDPwwANAqxUcEq8(cqjjyqyt(B25hfgf7sIK1BEazHYAGkRHZYnCvuR80y(Ms)kaMMY48Sa(QJLxEJ5gDuDYO4F3Y0QPhJkV46vKA0XISpWugOiz6JYdv1SVujm(SWLhkaxKkgix(Buy)UwzzbwjrrBrzEW)t5ohp8EzROTMmFckFqKxWcx)hPSpVfe7qbBZM9(1l3diEYFTEp5v4Yf86cJ(y7fudOld0Eq6vPcO)n5vAhvjNoR0uDm8iwmvQ7sXDHWrOymQo3gw6MxHv0HMoftnDkglofxHiynUuKeYm4y2tqJkp9qS0O)a4R4CvRr8ZlAofqeHHiAJ7v6yz5xOGBVHz0lx)1usQF0oYOZ3RKFRBUO3znHXomA9dAAmVFFhYBjftreQn9gCqRyrR7kyBfHkwOZTDSlLkW2hFfMlOT7hplJwftrVoVn9oHOgm4MfQuBfanAc2Xdj2Q4Zm9w2Qgeqt)Ay1obnB)DSG9XMAqqwywCEQgKfE2Tn5uCNWEUKuDNUXDo7eQhF(Zoo7NjpK(DCpzpx19m7e)bTHNvm8u4vLkCL51dMuwJlyteM5eudIODbCdILs19MzdxoiHHakkreME0pkMoh)o9B2FFhhINzF2lIY8j(a9rAJAeSzxiTtnwsRY8lKUW2Fr5xTFIeFCinSAV9K4q9sBQR5R82EpjaXJF4)oTqYd(jAzw3sM10h)c9LJ)fzvK2GrwiQqEJUd(YLLZPJ4CM3XEGDCB50PSVCnDk4B9qjyl9ydbQj4n2OmAkgOgVLEmhqh(nGhF1PyHGduX2ffwQrCiMdCTCxJKkvofaDQk8SapqUjA0PG6Jd0wG6Re4Td1x5uCsP(A1IAU(MWCgUZpYJUxfzdhAgZEXfim5ox0vbx6Wb1KyXNdqCUStxB6J2PzBXw2e1)WpmWP)Hdc)1XtUUFh5wQ(WHlmNcE5Hd0m)2HlxmJh2VGx8KLID2jyLcHxFk21fhOAn7aoeZbUwZogTLUYPWeZokgi3e9Mtb1hhOTa1xjWBhQVYP4Ks91Qx1CJ(VXyJ(oOMWK5smMOajXIp)eyc78BdtYO)tmk2zNGvke(2Vbc(VvJGFJiLNmAzX6Ury3jd5ie3JFaibdznB6lAJSkaKIzbzbfjHwugajQwMc6iaBGs9icZ3DgW7bsrbIN2tXzrrMrnDA4YdPa8bV8UmfWfjIseNfYcRe4qSF02KdSPXwSguhHbknxlPrsWNkUoI7nCFRWfGl43rCj(IK7XNavoN(NJjbrcdVqsICxTFkr1ifYCatStqeXuAJfAovcJiYmNixoG14tSJelLy3wqxhHmqxvS3V1caw8XgUGlpfdF3UUBvTzeLzWsIjmlklBMK9pecuRUygGKrY2Ds(NHnYZoqG2jI)uZ6jIWqJHlIlcnaUi(AT85ADAYu0O8(9CTonNh)CTo)wwRteZKNtoUu(Nq4XF3x6i7YUe04sBUnvxFlth03Q8sPlJTpvj1pHO04Eo0gg6EUTcm0q3ZTvqlQ(zN(xBOfLZlEYsXo7em849ZxQnYb3NBRadn7CEt2g4CI7F1tSQ0ANs032D9vRo9DpP(jeLgpdkTHHUN7Ghdn09Ch80IQF2P)1gArs(x9eJID2jyOjyT4cg7fTr2vB1AmCkQMew9eAt8EW5G4GnjuHJgvpWCWJyFSTRVd20yB9DYb35G9I1FbnsU05CuzqNZrLbX6mIZYK0yPFqBKLxMH2zJeP6eCxxmcii49rOgS77IQ0FoKSohcwy9eynThHrwAzROytJTynO8vXDsLDczy7b2kOu(N3a7WieX(tQh)yw1TLkO0GIbOUn4C72XNiIMcx86iMbxXFTSlc7VdswvdPoyql)QmxeAc3W5IqdXzQgSHJAdV1Bn3wMybTmuE7m0k2g(C71ayh)WFpfrPGN(DZil2VJZO3GYu842BiO3k6NIVBc28l0lq5WLbRlVrGI7v6eYpo51O3HYh)a0WRUrYEzWYjZxfmU4AraC4L3vA0rFbKGc(7rVj1Ol2)TJZS(BltjuNi9TLP8rKPPic5xsV3PNugM8ld3nHW5Fz63vMjgeY8Hdwfbpxe1hoW9RVYginMe7FNUDfKV5JyFAjaJfUNd7G(KPd6tI(VkTeg(LCzm3e3X2xF6Gr6N18p(lt6Rb8fuiou6YltfNY(wTWkiK9jDHkK2nl9TfeK97oCapHU73DzNUxOyJXdh08rIaojltUUFkIA23Bf2fI49QEMKD2haf6YlLnDvhQI7OoxOb56CHGKvg1RzFvsyXwolbVK7MnzYGudmmxkkDG3rVJ(pUkJhKI4g(T3GfbZmisVAyGWUleLvYY9VUBaQXd7WTUYTG(kY)F6KUo)ykqeVwoze0uyyqIJr0NUqyl)dhsv2gPx2mtBX8VRiCcISw(Hm8xP)c(HfPtxoYYGoz4uX1HZKbeBUSdWryaK)cl6NpxX61vY6K3xM99oiNplPgyeqYgmhKG0Nu)f7q)CborIsM6btzF6ZbhbI6v6HJAimXaiKLezvazOEGuMmAvWXXe4Ocad0dGIyEZDLH5RXqLRpL0EQdzYxzxswct5Us3BLiWlb6(EJryKjLmWqa0TuaHJ3c)6CxCHwTMtxMIxyIC2oHbh3DwgKHBJmtpzyXooaj9PzuQjJGFFHRhmiuxvOcvMuHJKOSgom2EHUvjNoSt2wBuKa7JJG5CsD7RRgzi(PKIlIxqNeFupxOW0HiSlXBBXkNcGUMgnryT(sRoTJ0QjizTXre6yJHoXQGTlEyZI1e)0BsYqHYUIogoDu5kdiaeACNcJ)Qoc(yCz(gpq770E740K9AuUnrRTbHHSsDIA2S1GvSElShrmGR3KOX7OCbmvmlkeX7KyDwkhDIi4MzDR(eCmp87zKPYwDPouIhw3TzmZsNHiVkTkdP4NgRBwjWNBmCiGXWSWfmHuyiF0ir2YzTnScxbSAziU81rSfRdxTXCCjSABluNogQJXe6tboqwWDXfOyYanYN2IPdUeaT0yyR9qFjBBkfM0zUUU7poQEcGA20lnFQtB91gcJuZIp3ozvvbaSSwMMqoDkAY3fnVcjZOvwWcwfe)OUB3vpeS(CTtZ2zP7p5aS)uzgTmzfAO6OrBrXoX1BJfwiGS3c7qmqJuB6jYlBJIThob0theIwlS1UEMWjAL1Q77WIzA26Pvxes7(yP42f4uaDrevQJl2XG1CP2Q7v0f21Qdha)WreUiyzGF04b9gHWtRTTBdux07Dzhvy90jo9EtTeaAbgL5l0Z7(mdk2NHfbnzXvdfUgS7HEEuRTNq7T4DmAXB)YSnS3OAF4wBdR2GuYMXj0nymd7BB7h65wcJw7gEnZaQjKBEBsz9yc03qOk4w2fCuWZs8OGd5ZluQnhMk9YdeBWXYav0q7yNaJuHemqYwqowyPU)pebdt3i0oOgfgCT0qop7gQz)xEC2Vsn8FCgXY)XzVNy6hQrh6L1qd)iE7duDTyb8sO9hifz10ajaGtrVRKkPlFM16afQALrbEf6YgOAuNU8epArpPCMHzNvowQA(tCUuOv8g7mQDwbGrBZCQ)qmSn25YCCgIVaSZpZgPctL4z4th97QCv48DmL9p8cmvFaIRgwLtb5VtxnYtw2ML22)HxcqMLm5H4XSIt9TYhw2HAdG38X7l0SYGmNsCv(g)CqFmyMZDLe4zRFKgZgLM1Q2Gsc)QLMRJG060R73XSEcDAFgbenha)wxyJEM(Lv9PmV2EIgEz7tpgQPlxVes3aZeeqdTspIYMH0uZb2qoSwjxxUJN8UC7rM2nntg4aqCsc3pFff4l89swbxvdkDsOkK0NtBCG1jRgN9)Aly3nh4fF9Pxe4tuToCiV9z50gDZ)Jul9IwiGKe0Jqs4JkO8Gx0gpiOWBy4D912cRq6KGDC9GR1JqsiWGrVdAcG2gzDy4Iu5mUi4mraFiOHfWfHdK5778Jir9)ar89uo1dGCvAnDiXUFA)I7PXGdmcQsAkT5KIBqKfAGRejrV1U093oLtpmxX7(0GDJOPROm6uqByuCQWV)YwfgZp)SNRWz)SbG5XF5R3IU9xcZA45CT8GyemBqucTj4v99O3sCtY)texTy2CL9ORi)xRSDHC9Ei5ejmklPuvj6u0p66LuS11hZU3KmZavj(QFZR6TtDZMGt121wGv62Zwgui7ts3O2kri(TlZmnYDISmWkBfW42aSHat9wALdJBFTgoLY7u1qaIS3JbWlDtO3xEGgkaFXrCGUTtK38hwxMMYuY1wwspvx1FZo)OWOyYcAN38aYME9Y7pJ31jVFnke7jbRo1p70FM6((RgOpFWSJppUg1Z6vqMplw3JeRDci1HTGymKd(d4wawrHyEJ6MXr0Zng4SiDmEXpPvtDGz0SNVlLaG8hI8cw46)iLk6TyrmX49uAeHZ1CaUqN4SJgSLRlWxW4kDmxSxIg2)vJ(B8OSI88qLT07FWuhDvt2rFb3n54DqPid1dQP6avEwvVIJxsIigqnM67Z)F7D91BAedd)dtLqG20KagAVa7TTx7l7zkqlVrhi4ALQeQF2xYLlx(NDStUW4OQQpuHixo7FXo2h(xoFggkh7L0X8FaUwT(4JY1ib8kCebS7G9a39wTMT94bXf1Sa)3QThp(YHkKRX4d2SL391NFwZyvNN2a7TMnkADn0hDFxp1PaZZf0RV9EODC8aoB3ma9kDHLP859anbN3XVzNszE1n2oESLXByiV2msmMgpaexCa4v5y55Ketkf6IQqOAcBrnUwvbuMyuakVnV)o2bba8rGk0nTqc)CnEfRI)ugjQh0qK2WtBRZMrQ7E3MwA05056k69W6K3spD1zEUtSMWwt9WFXwc3DN8e7lC0KV1n2S(K8FYxYi2oiVVsxCC1Hc3LsbRwVz)RYxfhYPIsiejLjsZDhS3ppAYWGDcXsXOlgAOEjfyJbpr2p7k9XJKCRdyvLt(p(G2uyqlnMlemRZYdRIqmpEYnheWRwY)mSiYti5oY0rjgAJN4NUTkzoMzUsK8Tjc5JzAtpg5NNiXLxFxmWjcSiqaRtiXU6O3rwl(zdiW7EMNzb5kefTOmJmEIN6ubrnA4zunFQo30)yLv6QHZnNzmiYVUGeiyD3ZHs(LybLKD5KjBZNpTqj8PKq5O7c5ntGDU8wn4DStPrp4XY4Oq0z9io99d26JXVjqs85ho5YlIM2vo(p03M0uSbaKJIhb84HBcQFKiw2XAVnpiabkusB1bk6dIMb344AwnzFXun2bDPCokc0vaZjDaVF9BriUGcdBtquXm70(dKZezn(yuYUO0NdPqLOsOFpyO25wofNpduuTXF5rXginCdQTvpa2SSg02JiCBreMM8aypGWCzUDURrOAaqxIOwjkbupQ5D7tkG9KzOIQuzeZ9ZF90U9vlA(cv(yGkTv70iw3kJOzLvQEvMEWnTDe9hrBFgodahgtSG1yDAJmaDetTBBu))geoX2UfTnWeRlWq0eykvpGjveSpB3oXXU9JeQ3ji0R(iqXLvFxVp4COyEtgHoun63HPdL3(wSALc2iOoB(KHn1NXe5V3sY44vmW4L3i5ZaqzJJNupk51vfwwj(B5)(d]] )

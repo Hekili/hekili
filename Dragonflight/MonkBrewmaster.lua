@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 268 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
@@ -43,7 +45,7 @@ spec:RegisterTalents( {
     improved_touch_of_death             = { 80684, 322113, 1 }, -- Touch of Death can now be used on targets with less than 15% health remaining, dealing 35% of your maximum health in damage.
     improved_vivify                     = { 80692, 231602, 2 }, -- Vivify healing is increased by 40%.
     ironshell_brew                      = { 80681, 388814, 1 }, -- Increases Armor while Fortifying Brew is active by 25%. Increases Dodge while Fortifying Brew is active by 25%.
-    paralysis                           = { 80688, 115078, 1 }, -- Incapacitates the target for 1 min. Limit 1. Damage will cancel the effect.
+    paralysis                           = { 80688, 115078, 1 }, -- Incapacitates the target for 60 sec. Limit 1. Damage will cancel the effect.
     profound_rebuttal                   = { 80708, 392910, 1 }, -- Expel Harm's critical healing is increased by 50%.
     resonant_fists                      = { 80702, 389578, 2 }, -- Your attacks have a chance to resonate, dealing 192 Nature damage to enemies within 8 yds.
     ring_of_peace                       = { 80698, 116844, 1 }, -- Form a Ring of Peace at the target location for 5 sec. Enemies that enter will be ejected from the Ring.
@@ -61,11 +63,11 @@ spec:RegisterTalents( {
 
     -- Brewmaster
     anvil_stave                         = { 80634, 386937, 2 }, -- Each time you dodge or an enemy misses you, the remaining cooldown on your Brews is reduced by 0.5 sec. This effect can only occur once every 3 sec.
-    attenuation                         = { 80728, 386941, 1 }, -- Bonedust Brew's Shadow damage or healing is increased by 20.0%, and when Bonedust Brew deals Shadow damage or healing, its cooldown is reduced by 0.5 sec.
+    attenuation                         = { 80728, 386941, 1 }, -- Bonedust Brew's Shadow damage or healing is increased by 20%, and when Bonedust Brew deals Shadow damage or healing, its cooldown is reduced by 0.5 sec.
     black_ox_brew                       = { 80636, 115399, 1 }, -- Chug some Black Ox Brew, which instantly refills your Energy, Purifying Brew charges, and resets the cooldown of Celestial Brew.
     blackout_combo                      = { 80601, 196736, 1 }, -- Blackout Kick also empowers your next ability: Tiger Palm: Damage increased by 100%. Breath of Fire: Periodic damage increased by 50%, and damage reduction increased by 5%. Keg Smash: Reduces the remaining cooldown on your Brews by 2 additional sec. Celestial Brew: Gain up to 3 additional stacks of Purified Chi. Purifying Brew: Pauses Stagger damage for 3 sec.
     bob_and_weave                       = { 80636, 280515, 1 }, -- Increases the duration of Stagger by 3.0 sec.
-    bonedust_brew                       = { 80729, 386276, 1 }, -- Hurl a brew created from the bones of your enemies at the ground, coating all targets struck for 10 sec. Your abilities have a 50% chance to affect the target a second time at 40% effectiveness as Shadow damage or healing. Tiger Palm and Keg Smash reduces the cooldown of your brews by an additional 1 sec when striking enemies with your Bonedust Brew active. Your abilities have a low chance to cast Bonedust Brew at your target's location.
+    bonedust_brew                       = { 80729, 386276, 1 }, -- Hurl a brew created from the bones of your enemies at the ground, coating all targets struck for 10 sec. Your abilities have a 50% chance to affect the target a second time at 40% effectiveness as Shadow damage or healing. Tiger Palm and Keg Smash reduce the cooldown of your brews by an additional 1 sec when striking enemies with your Bonedust Brew active. Your abilities have a low chance to cast Bonedust Brew at your target's location.
     bountiful_brew                      = { 80728, 386949, 1 }, -- Your abilities have a low chance to cast Bonedust Brew at your target's location.
     breath_of_fire                      = { 80650, 115181, 1 }, -- Breathe fire on targets in front of you, causing 1,121 Fire damage. Deals reduced damage to secondary targets. Targets affected by Keg Smash will also burn, taking 778 Fire damage and dealing 5% reduced damage to you for 12 sec.
     call_to_arms                        = { 80718, 397251, 1 }, -- Weapons of Order calls forth Niuzao, the Black Ox to assist you for 12 sec.
@@ -90,6 +92,7 @@ spec:RegisterTalents( {
     high_tolerance                      = { 80653, 196737, 2 }, -- Stagger is 5% more effective at delaying damage. You gain up to 10% Haste based on your current level of Stagger.
     hit_scheme                          = { 80647, 383695, 1 }, -- Dealing damage with Blackout Kick increases the damage of your next Keg Smash by 10%, stacking up to 4 times.
     improved_celestial_brew             = { 80648, 322510, 1 }, -- Purifying Brew increases the absorption of your next Celestial Brew by up to 200%, based on Stagger purified.
+    improved_invoke_niuzao              = { 80720, 322740, 1 }, -- Purifying Stagger damage while Niuzao is active increases the damage of Niuzao's next Stomp by 25% of damage purified, split between all enemies.
     improved_invoke_niuzao_the_black_ox = { 80720, 322740, 1 }, -- Purifying Stagger damage while Niuzao is active increases the damage of Niuzao's next Stomp by 25% of damage purified, split between all enemies.
     improved_purifying_brew             = { 80655, 343743, 1 }, -- Purifying Brew now has 2 charges.
     invoke_niuzao                       = { 80724, 132578, 1 }, -- Summons an effigy of Niuzao, the Black Ox for 25 sec. Niuzao attacks your primary target, and frequently Stomps, damaging all nearby enemies. While active, 25% of damage delayed by Stagger is instead Staggered by Niuzao.
@@ -300,7 +303,7 @@ spec:RegisterAuras( {
         id = 132578,
         duration = 25,
         max_stack = 1,
-        copy = "invoke_niuzao"
+        copy = { "invoke_niuzao", "niuzao_the_black_ox" }
     },
     invokers_delight = {
         id = 338321,
@@ -749,7 +752,7 @@ spec:RegisterStateTable( "stagger", setmetatable( {}, {
 } ) )
 
 spec:RegisterTotem( "black_ox_statue", 627607 )
-spec:RegisterPet( "niuzao_the_black_ox", 73967, "invoke_niuzao", 24 )
+spec:RegisterPet( "niuzao_the_black_ox", 73967, "invoke_niuzao", 25, "niuzao" )
 
 --[[ Dragonflight:
 New priority increments BOC variable when list requirements are met and the last ability used was Blackout Kick.
@@ -1222,7 +1225,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            summonPet( "niuzao_the_black_ox", 24 )
+            summonPet( "niuzao_the_black_ox", 25 )
 
             if legendary.invokers_delight.enabled then
                 if buff.invokers_delight.down then stat.haste = stat.haste + 0.33 end
@@ -1238,8 +1241,8 @@ spec:RegisterAbilities( {
         id = 121253,
         cast = 0,
         cooldown = 8,
-        charges = function () return legendary.stormstouts_last_keg.enabled and 2 or nil end,
-        recharge = function () return legendary.stormstouts_last_keg.enabled and 8 or nil end,
+        charges = function () return ( talent.stormstouts_last_keg.enabled or legendary.stormstouts_last_keg.enabled ) and 2 or nil end,
+        recharge = function () return ( talent.stormstouts_last_keg.enabled or legendary.stormstouts_last_keg.enabled ) and 8 or nil end,
         gcd = "totem",
         school = "physical",
 
@@ -1652,16 +1655,34 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "purify_for_celestial", true, {
-    name = L["Maximize |T1360979:0|t Celestial Brew Shield"],
-    desc = L["If checked, the addon will focus on using |T133701:0|t Purifying Brew as often as possible, to build stacks of Purified Chi for your Celestial Brew shield.\n\nThis is likely to work best with the Light Brewing talent, but risks leaving you without a charge of Purifying Brew following a large spike in your Stagger.\n\nCustom priorities may ignore this setting."],
+    name = strformat( L["%s: Maximize Shield"], Hekili:GetSpellLinkWithTexture( spec.abilities.celestial_brew.id ) ),
+    desc = strformat( L["If checked, %s may be recommended more frequently to build stacks of %s for your %s shield.\n\n" ..
+        "This feature may work best with the %s talent, but risks leaving you without a charge of %s following a large spike in your %s."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( spec.auras.purified_chi.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.celestial_brew.id ), Hekili:GetSpellLinkWithTexture( spec.talents.light_brewing[2] ),
+        spec.abilities.purifying_brew.name, Hekili:GetSpellLinkWithTexture( 115069 ) ),
     type = "toggle",
     width = "full",
 } )
 
 
+spec:RegisterSetting( "purify_for_niuzao", true, {
+    name = strformat( "%s: Maximize %s", Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.improved_invoke_niuzao[2] ) ),
+    desc = strformat( "If checked, %s may be recommended when %s is active if %s is talented.\n\n"
+        .. "This feature is used to maximize %s damage from your guardian.", Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.invoke_niuzao.id ), Hekili:GetSpellLinkWithTexture( spec.talents.improved_invoke_niuzao[2] ),
+        Hekili:GetSpellLinkWithTexture( 227291 ) ),
+    type = "toggle",
+    width = "full"
+} )
+
+
 spec:RegisterSetting( "purify_stagger_currhp", 12, {
-    name = L["|T133701:0|t Purifying Brew: Stagger Tick % Current Health"],
-    desc = L["If set above zero, the addon will recommend |T133701:0|t Purifying Brew when your current stagger ticks for this percentage of your |cFFFF0000current|r effective health (or more).  Custom priorities may ignore this setting.\n\nThis value is halved when playing solo."],
+    name = strformat( L["%s: %s Tick %% Current Health"], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
+    desc = strformat( L["If set above zero, %s may be recommended when your current %s ticks for this percentage of your |cFFFFD100current|r effective health (or more).  "
+        .. "Custom priorities may ignore this setting.\n\n"
+        .. "This value is halved when playing solo."], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
     type = "range",
     min = 0,
     max = 100,
@@ -1671,8 +1692,10 @@ spec:RegisterSetting( "purify_stagger_currhp", 12, {
 
 
 spec:RegisterSetting( "purify_stagger_maxhp", 6, {
-    name = L["|T133701:0|t Purifying Brew: Stagger Tick % Maximum Health"],
-    desc = L["If set above zero, the addon will recommend |T133701:0|t Purifying Brew when your current stagger ticks for this percentage of your |cFFFF0000maximum|r health (or more).  Custom priorities may ignore this setting.\n\nThis value is halved when playing solo."],
+    name = strformat( L["%s: %s Tick %% Maximum Health"], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
+    desc = strformat( L["If set above zero, %s may be recommended when your current %s ticks for this percentage of your |cFFFFD100maximum|r health (or more).  "
+        .. "Custom priorities may ignore this setting.\n\n"
+        .. "This value is halved when playing solo."], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
     type = "range",
     min = 0,
     max = 100,
@@ -1682,8 +1705,12 @@ spec:RegisterSetting( "purify_stagger_maxhp", 6, {
 
 
 spec:RegisterSetting( "bof_percent", 50, {
-    name = L["|T615339:0|t Breath of Fire: Require |T594274:0|t Keg Smash %"],
-    desc = L["If set above zero, |T615339:0|t Breath of Fire will only be recommended if this percentage of your targets are afflicted with |T594274:0|t Keg Smash.\n\nExample:  If set to |cFFFFD10050|r, with 2 targets, Breath of Fire will be saved until at least 1 target has Keg Smash applied."],
+    name = strformat( L["%s: Require %s %%"], Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_fire.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.keg_smash.id ) ),
+    desc = strformat( L["If set above zero, %s may be recommended only if this percentage of your identified targets are afflicted with %s.\n\n" ..
+        "Example:  If set to |cFFFFD10050|r, with 4 targets, |W%s|w will only be recommended when at least 2 targets have |W%s|w applied."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.keg_smash.id ),
+        spec.abilities.breath_of_fire.name, spec.abilities.keg_smash.name ),
     type = "range",
     min = 0,
     max = 100,
@@ -1693,8 +1720,9 @@ spec:RegisterSetting( "bof_percent", 50, {
 
 
 spec:RegisterSetting( "eh_percent", 65, {
-    name = L["|T627486:0|t Expel Harm: Health %"],
-    desc = L["If set above zero, the addon will not recommend |T627486:0|t Expel Harm until your health falls below this percentage."],
+    name = strformat( L["%s: Health %%"], Hekili:GetSpellLinkWithTexture( spec.abilities.expel_harm.id ) ),
+    desc = strformat( L["If set above zero, %s will not be recommended until your health falls below this percentage."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.expel_harm.id ) ),
     type = "range",
     min = 0,
     max = 100,
@@ -1703,4 +1731,4 @@ spec:RegisterSetting( "eh_percent", 65, {
 } )
 
 
-spec:RegisterPack( "Brewmaster", 20230106, [[Hekili:T3ZAVTnUw(BPyq9yh34i5u32zw7ampWf3P4UDhSzUy)WInYYY02AISLx9iPDrH(TVhsjrrsXxYpssXDWmOn1I6WZlEEXZX5o37(J7UDPFg6Upn2z81oUoVBKZhE7hE747Un7l7r3D7E)G79xd)Wo)TWF(ZjOh36NMHsWp6lrX(lXGinopjaE8MSS9P)4vxTomBt(IrbXBVknCBEKFwy8UGe)vz4)DWv3D7I8WOSFB3DlKV)U3DRFE2MyyBUnC7VaqoC5su5YrPb3D7FSbvmh)OI5n4uX89jHXjHzFPyEEkkTy(VNNeU6lH7wxUSI5(7wwm)xqrO0Sq)i6NUEDcknn8bue8QRIbi9R)(TJkMxmNSr(lxgVRy(gFaK79tqamY2ec)Jfa7b(54I5P573hNKH)HKhcFWFryeGhJU72OW0SumtkiooAz8J7s92fM))5h79yCm85FIieq78xeHwE3pdeEaMBD3TpI83hdRoELxCYsmhht6jH7lF8NabYpwm)teyvmFyX8)RYxOyE8QI5)h4xPy(vCR4x8JIkr3FkzBkGsaVcLe6dsB)i0USrI75OA8kdKqc4zRxoC3dX3JQPUSniVfra)Xl(Z1GPyEpGNLVAv7nkbT1peJ8tNvm39DKvAcPOSk17mgXV(eH4V6uHrzSkdHB3Ne)aAz9AdY8LPveVhoMHYA2Hh8bsaEk5N8kpEUFHx4oVhd3bGMLo3NGEOfslxF63QqhT6np4hLdB3QOy8rL(fZRjNr7RpW5TaoznkyJFYAuQ3QKs0gFKBi5nCDi)04I5xum3zKZKI5diQRQa1Y8eIzeYICg9o8litTulJ6Or7XLO9Bpo0wu0OrBrL0vIEnHYZxOHYDBTZ8ylrnhOYSWTGvVlbdFei1wFpcS36bMyxwDETTW8RFTny0CotaGYyZ6yfV10rCbPc7XAj0RWQzqUBKtTxwdJHwXZavHAzZiwsP0Q3XZ8h0OdWtkyE1KNsELebPeELDkgDIRzhivRRPM)9UJJ)PGeaeXHSKtjhBkODCYb6nemvnl6wyzGY6kV1blX(Xaw27pcwg1WQ(qgUE0eP6b6vpjV1ql2eDkeFWe1PkCHoIWyYCIM4dbu5hmHk2WO1OgCoy52SD2f241oe0W996KwUoM4rwgoyxqiYlyM9yLn)Hsm5BzGNFYvmSYdsbrynRYJI8sqLbn5vQnCbb7W8aJhTiSOADPJCpSrxQC30OIaXoMeNrIAZBv8wVfXb6YtJSdX5zE3hgCV8GQ)5QLarshVDbeg9T(rP(rqsIB)EaJUnlbTBD2g4XBkZU839HSrj5Y93IYdxsYOfNv3)ECzSKFkgG1FpCn8k)DCQVScsIEjfPcWB4imZrFoCarcRnFha3xdmiIdjx2SWsctX8O08DecTDkpclqFMxYqY89LNRKHjmS7eKF2gSw0QWeK(G)64UmUzxUhbuYw)0n6JyQJBGdVooDtKMWXn1cajRx2Xb8bbAWf4pYll2lnydAzoG3E3xAgfTdLS(leZhL)iCWynAh50uFJaa)wFgfKNvVPdknQ)bhfSo1bljL)0aLa)DbOipmdUKnxf5ppZ2QGlqFEFu8sSUjGAT1B5ESE)5eXDsE6g8Q)t)Lis4BKtxChvATI2hwexIEV3NhP27MWI11wk5m8lyMR(X25i9qmzOXd1zLjqeT4ZtG9xV9vMFRplJX3hqEWUUnexwXB4SiLUpC3omDeK4Vd1qjQn2EwPerKLAi)vvuzl7vnKsw4Aucq(rBjuGXkNfSj07r)hqTfT1pHahJPNJx9I8K0m5aI8ibpZk8kF0UFf8)(FF7gF489I4phIRI8FaEFwIlXAsX8ne)VBW(FL7N()rvqc1EIvDoGHGoaVONsFL68ik3akpURX(VABPgmtQ2G)56CLgRGQDw0b38SHJYXNFM8iCy27u7p4jfzpc7DUSQ1uly8A0UJfxuP1jUvLHneTYppkJAJQH7H8t824VBPxAws49IWNd8ldxTcxoLT(RddS2SqkkldKpPvjrbjXK4f0CNxn1XdZR36)zVk9ssbJwhSCe8zLvWLW)iqjeegaXsJUT1dAs8LOqtKTuynOeC0JeuSPmyd23Dm)BIJ)1ItnTZZxNpND3tmMxYiAUwh6vXiGEvqrhlzqdxrwQxn6lCqwwYfkOiEhB)ZueMBUBv46CIdRkjDAM)ASgDqEsYgaTwLeVL)gsJjqiDeldzDsmRyvcbqEOOAL4MDtDcovpy0(GSYtQ6Ftz(jEg4cPXrXpFmHQs5mrMdUtcZaonzpV4i1iQ2RUZliVOm3Qp9SGJtD444aSkdIHayfN42sOrsTghpkU()pgIVe37j)5xIZlMhcKWySL6ueW0Wr1(yy2gsCYBq(retK44CP7ePHi(NKIq(4gS7BfAYKMSOIq8tazYYWuc(Fk1XQ3mAzvmWrNjxuG5nsJE5G4ZUQ4ZpBC5Jtn(KXKDDKMCpnoh)T7r7GOIs2kWH)PhIdb6mWF)EcRQkyG3Gjia07HikOFiSTBItYW9WZcee0dQPjga6f)88A(MFue(w3wMVTeS4EBWxyRwcKi(VlHbhxfl5Y2usDqmlVVms0WDW2G1uaYXFnY76YqNRwmjCMYaEDgnUUHci)ioGNYtdd4cLaOHm2QGxxgxnLwqaZM4CYXS(vihJmRsrI5obfWCPvtGgrC(2Tqc9pUjKeHpwDcuFYWnSaNQWp7JTV)R)(T484RAFgj1sqj4yBMPYssqtdiopGKM8sC(YIb8RU8VqOJlrLhSI3bzSKMrOwVQpSY8wD91yxIK6RX(yY(kgtuzbq)Z4S8DRrHjjW2aHsU7lPEbG6CdKuUcmqvfBrAGFc5UzGOSbQdcYMKEYkKa9simLl27TuIMKPwzIJLiU6DaJxQC4h4d5cIFl)G)38qCX5Ysq(PG)90wvtGUe)pJi4bjE940YkFdrfSjZJlvJj14MUDbJD)aR2coHmyFXncfFMBoSRAFC5FZVeUubxefhV0BvEYxexgxsGlqjPOeCklIl7A2LfHPVuV)mF56TG(M4A5u4XLdIS7IRIRWo4sWdIiqqvQGXV03XHJ(RXSpqEgCFl(IOoh3P66JYfZ)jcSkM)piDmjJgquKx5)Wd3mLGMeEBWIfwnG(nPXP5saHu)i23eZ4Z47mO8gIOzpR4M9f3acYdzzdgjtBG00YR0ctnvxRH6(be3LOyMO6cn9TeLxElBmcq1szR4o4ULeZDuxOSZp3PsAE4efVK(AXirPD0i35M)ZQcHxm)wueQAdR6ZpM7rtwBIsRHEk9nX7RYwovgZS1vLWvKKQfTmXFnoDSeKqHugW6ymLwn(uShbsT4B8p206IhajPS5qFgjjUyc4JhxKOhFqeT0(cvBhXEnPRiOLHvcCnVRI1BZ8UsRgi3LJq7ywp0N3dWhZWkJn1LGL9LC16LXMY2ur8GK60Fi5KAdTiRGZeQrmMpfh9ooxwAy4mLXUF9)7sAbY09ia4v360LKpDaHd564u1FQK1DnRE2QQBNcBUEljWeofxS(9RSBXCMW4UmomBt9190fA1gcDA3PZUBIUvBaHPr1x)KjA8a88rHuWM9ElxTGGbIHcWPC(3aWvowk1QPNC9YRvWKQ257i3)X(ee2OMF7BarEKXk5QD7kInpThwDN1zYOlnnbM2QevDn01sM7KDjH8aq(nfIpMm6d1hu6utVDtzTPOxGHM3HKSVvIKdP)o4szP5Uo5vgm2Va8xSTKKPBDX3DRhU4V0MwxEVXwaVRTC0bFL2sUKzwNDNY7ZUwO)u3Cthlj29RRUlgkSOLAT0YL2PctXScE8tfMUrpY65dR9Kh(cAyRKyjZCSPp)ODxeu2pJyTuofqfA0s9(RH9Xkpr65F)R4W(yC(Ymp9SYgTfJ(C1ij6uOspPJ2IoDpJn2SLdQI9eHWegPFwsmgPGnceH18CnMh1zxPBmp4dPuQZXo0xPG9TFLwkPYUrqAOdQkjvpvTSCR(WYCXR0hS)zUP35siGpsBjjfykZbJgF6AK5Qn7CwBQr26d2HEY)9S8i9DvS6JVNL4XjufgZ6CFL(eN4GueDghIk01OV8sKamT9akbBpG(fRcG(p6NGzVPvF7PaPyq(clH81DY3R9kw((I5jOYlgTyEAmMF5NNfV1NuDwWe0ois4rfF8FeUdEK7pIVG(DagqEC8Euz4TPLTcZ3tITUV9XvpSVRZWXxGJKzWRnfd9RXXppaqyChDCuB1vM2QRk3kkDp(Kt3JDg(2Ni6UzR6mD)wd0T2Wb61hF(7sdHMCZmQC5s86hwTE1Zj7RLg6Dp2nt9lpTz7OS0NfQ4QtgvqLwtEkKwuTjo60MuoSqUzdyM2GcNwj4HtzwilTbmCugivl(OeR5IxCr3mGBYqg9(3E9RVEMBp9vdUM738sw8ouu5AtOI0b8OhpgsrbtlgVwRnRzeAa4g3HTES9NrncnaCo9SAaKUXv26ANh20zAdOTxzaydzJd7I(AFLHSbGn4MzFWPdmRVfPoQ49DMeVCYrzhGCuEYVASJ62bEbv9AlLkMhgb7PgMAgy19D)8GMt0MoxzBBbCrF3l7ZYQgmyO(7)Fi1sWbUhwTfnuQPJXAUNvWez)(9DFnZLGFP7GlCDCGGiE919mEF3d(6xFL5fvZpmJjxjftU60HjnSnthpmHSY4AtTJPzl)qg7yQDCdLNC1E5pD788PpdSVnYeXuGlhdY8sMUnfL0ZCKV)vm9DHYi2h(nIPbSW8hQRBFXCYxLSWJX3iy8Qq81vw(O0r0UTz4SRk7VMIpk7z06e9MWvZuvwj1VkUwvcVjBHTk(439DT)6wG8HYGynZ7n47UCg1n7BI3plfL9gYvXoZbZoQEB4DAn(0SpKBCPzFaVShtbANr6sfhHPJEA1mj)1VkBeG7PCION6oAYfvVl4lKE2w(mqpDC9A7jlC2rtyjlEqukyiZ2CV(VsF0zYjIb9uoLyF87idL2roVT6LjKjnsjk0t)qQDJtpMHo7MwcybK8PGEWZE3td5aMoMyfjzCeyplsiYUAlfvIIpbeZHjE6oTqfoVuNk3ZImVCBHe11YBMXZiboImg1lJXQ9COnDqCj3sU0lNrJLZhCZyHIzlnZJ603pPx75q9MMzq9I(oJgpe)hxq05gu5os2uWYUJcpxyxN405DTV05BDaHPlBiu5Ipr10NYe2KXjuLfG8ZMk7t4Myum4FL(HrTo5uPdIklGRhWXY4YunoPQFdLt6jbjTycsjbqFJR6DqZ8AI3dztdkeXtCAApUPaD64jY2dobQq00y(oDSn5(u6uAY(PcdLjNAB9myY(H8JCjh8zNWsIQOIjNKlarHg(VI7PRsdVPCKaM5IzK9n3Pr4XGBOyWMgw)GzJ7vdAPdsynaBneHdMoZ9yiWGm)x4e4SXDH(EILBeU)31mAjmdFilwttSRktocs3UuAnz4DOVkhXQQzP(6xRwGI2FAqTHrTtT3bJJJFYWrQbE(aqoAk46l1nrqMaRSBhPcWhyz4TQo8c6PD0ej7KTXDYYuLHp)1SVdiF1T)2jc4iQEEhWSQgU0AmBmrC2E226WwwpgxwVNxJR8eSRh)VPLOy5izwUbux0hbtWIk)LhGjyQ2wod0n3cXLXGR6lVDWHW769sbtFLreHTsKkqM2z2PVgZ1jM5VfBBklg(p)isrbCg9(EVs(DzFwWev3AqLOIAnD6e1OfRcVLJ6JmXRK4khkwVx2kMZxY3J5UtS8AAWCtdJvZFrxDvb8SFDlNHls6G5gmd(sPRed8gPO(mNEho3yQ7r8Y340bs)e5EYk(Qroj9GG5Paz6SRhnPNDALWkh2bqBp9DQ8UzdzmD2e7rSdMXl882Tt1fJNoRd8YlXdoLzxpMJPss2(NvZZDUV0PMNfp28sGAEUC2yfDLVGnLFj)UlK37JvDfnK09z2ZrjP11dAw6hTRntUfEpTIT98t5hUBpl4b2aMtIEW)AebXHPiqnaPoXZd01UYFnKznTCardzfIAPZ7JKHA2D8bZAndAtft4ANlDFV9mHtvOv2Gv9mXlmAcDi1cQ9u4blM7wmAQODCKzhkmnRn0oUVNTFt90iryR87q8L9XuDzLRsyowudnUHihlovvigfaGoedhW7YnBZQjfXH0MUtkMbCTCoVQHtgdKJFikE3e7ymuDq9ZgYi1GtYSiFQibIHKMHlM5AUfrIM5m(mT3ZCTRaLc41PVTdvIfQWGQgpv7ci906ryFH38ID)I4ubFR6IyALMdxpV6VCzRCCmz(PbWCRuL1bfhyBGIGHmcC6Y0(PhfT06NW47PfMwyquyK8oTG7BWbrtldG537MvQOC0Flfc9qJZLdt0ls)w4qVIzhDlr1tv91sI5dtNAFxCxpVNWxQhD9u5rCm8C6BJirA1KdWHglC61GHp7o((1QE(KR7hFeBGhoYwmph3dGy3a)cI(BvnC)h)Vv9OTHaf4x6HikgplcZHWDZGashz0brBNR27CKbk2mSggEFlMtewFRDiuDjF5hjbBQ6raPooOOK82PrHEiZezyQHB0IppfgJyOEdXa0SsQNfTR6ynklGzp3MjzelgZcRzTDXiOep31TzKjdnsn01GfwyO7i2CPHo1S5hMnc(33cBepl2tzWso7P8MSO9tKetHvpAOSAWy)TQCZm3rFOx)ouuKBCDQYssZAHCM0JZNKigAaNodlmltPD6fs)(A2aWoMeAAaZXATteJmAURlhynieL5M5aCLWaYZLzVNPJ5muM1Xnv7Fr(xxfsMJt5HAXSZhKDubay0qk53CWb4FVl9bY3WB39))d]] )
+spec:RegisterPack( "Brewmaster", 20230226, [[Hekili:TZXAVjosYFlJwnmqYehdesMzfG0n79LD0P7wDSRUVHXy3aEJX2NFeMCkY)2VQ62pAB3TTXqYKrB0oklXU76DxD9ISC4YFF5ct9qYY)5i1rJvhn6wLrJh(5rtwUi8rpYYfE6g3RVf(GJ(E4NFXNCyVEqiXhF1J2U6MiicCJ8nGxVlm0l4NV(6TwH7IwRy4U)6aR9r26HwUog(6BcXF346Llwhzzh(Rolxle)Q3UCHEu4oxanlS2)laKTmnjSLtcmwU433rIxHVkEvonfVYZ3Y13k8X4vrbKG4v)wKV1MhTC2Yww8kDhZ4v)cXMeeAPBN90TB9jbbwpqSHTUXfG0F)3wOeVkEffr6MMUoXR2PdG0t3NaWiCNf8lRbXd8z34vbrEEU(H4h8FW6b91w2aDOe)14VIS2vQJUA0T)mcX)gWjaa(D3iJDXRC3a4IOhUJhyHisZ5L(6EEeD)a2lxdVBVfqTixTX3Dptqmqz5cBRGWauHy46AB6EWjqZXk6)P7QDW1fE()KQWjo6RTjMl)cSoabeFlDqDRBtCcvoq09CHT5UrZ13K4RKU4f6gOsC5IYRyziO8Kc23b0B0MnkRDDiMrbHARbbUsKx8QEXRmj03vgIAjppiKkqMfV6MC0xaqiUh3nCN(YkmCY7tLGvxGpzVULdOmMhVAOAnu2nsPmHKvoKiFZZ21e0VA3t2IqAs9qsojofeEdVLYqTwbB58G79KudhWuuBTnOi0C)gsk3wN4(8GJqE7xR9E(UpqmtxRrOEdgYw7HdixbhAP4sXl1fatoBdEk0aNdMmHZK3mS)H1WESkvpp8okF1O6EE2AQawUvDjY70)3O4vxeVsvrDs7TB9DdP31PT21qZCZ6mt1mzjUC3OqT7TmUNN1R1yl5CLVf60xliYHU9QhRkTG6TIsbAuWoCt)PUjr7GLJzkyPsvQAO6sY1dG4Id)LxyBSwsLiq0cRDlyUaAq4IrunTXYNKzVK(AWgslaU5Fxj5OCxuehI)2hPAx2hbgzlXHQO7ZD0idYkBIST18jg7093s0y(wylEi14tWwyRnqBJpJqXWmgq)3CWO92j8EJtTEygRv0NfEnYA31zTzdkPpjfW42EGObYR9wKeNduw4vHWmNTc8SCCq(cIZ0HKz))5x3gdf8nsS1GLVhjBW)BBviZELQqcT2cx55PBZyOgd90inQ8chgkCNwn(kkUBkgB0FQXolTd6pqQEgj9nu40OluC1RJ8dcfdi6RkD)GXoV6dJjLLr5nKWbihHi(HlTAWb5O2EztJmvxUSrUR(MCpDUUS5Tli6Qg4TliEvAm82fe)L6cctYg9i7Wk5neGfacu(oMAbH(w3teL7q6InT2SbYMrBV(wlJw73pGegchpcssHsBJRVMrELY6rv7OjGwOla6VPLOPP(L3AyQaplE1tpLOkOqXcU5c4W0CpR(Ic(2vMqTUYG1ag4YmYkzaWV3rf3jMNRa7W5uKKlOkMSyt3G5CpTKBmbrE1oYQqHm7t5IKb5sLswUi)wNTB5eNLWrvnfZOw5PYw4KLiRc2EOV2JeQicemFqyfjbxTgG9(erx8kJQXA86B5XE5FeqqBaNnwBJOLEnHscc13IoqmI8935Lwku(Qb7sHqGcVyyRVlVXOaXUq2UmYaljv2czVqXZiK5HR(Dk6o6VdsHaxB3VFcHKcRmruCfNfHb4dO9YIt0IibxhVSGUrrrG8YlconZHttcWBmujOMwjkwWax8Q3ZANYiGmoyzd(7VN(ZhDJIxzb8Wi8cMaci1mdWLeUd4Y4v7i62up7yFFYWeT7p)bTMGh2HbjjXuM2rPeor3hukMwbu6)CAKLISzzY46fPZeRlqzJWyT6KCEOm583nP8PzhF2eYdvBi8suweUJTEi4L7yP8z5aekk7n1Hi3iAJzjtLSyACnSyVvvgrdIp9JyKpm7RbfIPaURoKVy4fdQaWIhXjpHc5rgwICNOE2j3(jumhnLOVgKtWLyhkrFdFCVEUjzkXhW7q59yijKOGO97DD0oSdEUglPeqJggjiSFPlLIPB5jMqS)UyPzmXA0uMOKNNE76DeiOhZISSHEULe(PBqavqdxxSluRqKZCXdJjna0X(akn(PI1sY11uBtK)JLzLpxyze)aIpgOC5euu5xMnsgbA)zK529a1xETfs9blTff7LxvHCE0DmGqK9HqKn0TTlV0XfOr9TOycsJY4(GYRuEca9ZJ4xEOZ(qwcuJ9JiCB2EgqDOmklrljQ1Yia5wmHm4etqoKO99fmxrEe1rCPsGRN9lA44cWgAan24DiVTR48dGIh5hM(rs8Gq6CkDWMsJsh5fw85x6CYQ8sA6YEOC9OLiOumb)7KcAhVAbKJAccFq3g8iUGRfYpOdsbas0pLG5SAHhKTteVLtiidVcQQsPsJZN3AQVDDB4F6RT2hGfoH4SfUBkZTEcHoSteA5W2LtOM(6BXi19jvRC1XqNJ6cDoUCm1pB0j)6kf7vzozCN4KYrTMXjIGffp3qRsz6Jvea3MXQ8W4QbUSQU2YZGvMAaeTYdhRj0o6yrBkkLF3xtOC8XIsdwQVJLFFstO8MJfLBGvHJy3sAHw98jOPPE1sTkmkYwvQ4wuI3M77wRQ5COi(QnZ3xx6QxH4SK1tTg5RI9QuqRSQ0lZBkg)P8Ezk3i6474rwOX4w(gXikmTVhNL(ZjpcHtS)CYtOa3w5(ZXLrJ4UIvi2FUopvuWlV3zLrArVHL68J8wzjTVo86aX1DN7Ct1o)045KwDkSLDqQfUfQDKh5ND30nxzyfBR7Q3MBrru25BUf784N26rl8TXk0S6TdfV8qW1dnD)1BZeYXFNZBZeY3B6)Tzc54V7Vr)HT8U)gDb267(bV7pq8XAyK(9GcN58d6(OPzqYx2jiQa63Vi63oPpKmNiFiELp5)gzr7ayGlQk0JcD3RhIpae7oGyxj(R)dlh4v38ZXR(fxhax0x)HYLzQOW6dSVUrnSQuEdwD)HFBqgUM0aUKFDNm828aluMggENyIOCeeLWOSsPNd(4V(RuTbc0pNEvF8k6x)k410X1XaRh4NWenD3yHLKGTQaLSmpVC21SCnJ)QO3LzJ8rRnZKzsjFRODAPDYBuh)1F6NIx9LK4gqXeeyn7HIGyA24FetQEgwNcd3iNWp66nlGe(rA5wMPIsMKDd7PYmlX)YcZOe)lkgWeYb1oys96lyKKMMmiqp9KO5UPN0XqA6qLjxKS3bp9uddE00rPRTxvhCZXPzIJTkccMIHoqr96)U6pHjMjg0tApoLlmtMgNzt4mmAX5REYhcOE1paqGbfT9UN4ORuV9bTzIsfhvi(IODUApU23oVIXwjI8LGFWUy)YWoxOIgPTGLACAsEw0quS2woIrIVamt3uphpVKPCEToFlpl6CgANPwVGCwrbjirejOEDmGkphwtDskbId(lGZh1cKoYNXJP3nPx1z7yE(CDCrFvLrxI)4cQsEqYDrIg3eEmw69LW6e1JgR9foZidkiWlgGfgvISr4G7oXgNieEawCqp4Ft24uGGUn1wB(4NEssqOquaUbb9km)gthvieJ8r0OWtZMid(NwAamkOMsN3c(hwC8kkaF(PPOqepL6kdl0XAlZ5hzDVE2quG1pnaL6B(9LTpog66hmBuV(YI0NhGvgDGbtNn8uyqJq9x5m4Srhd)9cR3OsFWlVGroGNQZYujj1ekrxThI5PS01ToSq2vIhfHEPouQRT5DMcgXrbs6D)Zlbm(8qaPRr8qd0DY7MRQRjYnAPxUT8iZwdaBJZb(I43e4AXzr(2P3e4gFeGlTLYnbZBWe()P0qUNQdbr5t2m7dP)Da6WHdkhCH4M0nz)XaYJyBpBOQ6TQWnZhi(xz5SjcpX8H5)g(7XR(1Khm9A95PHC1wap(t3n8t3CDItVRC3CfR8oZ)pSNWIk8FHpJbEFIUXoSCO3qhIx4cmLILarKZoq8L4QI8niTbhmnD4gCMiKYvAPCfk)e3uR0BWNnk3dKmSvEZCh6Ko1NnbZc96cb47e2cSETjQf0m4mHU3jRfG9AS9F8H3kJmk0hVmLtL2r2eyKFtvlu4dVT3PQ8Qh)VRrW3clCbjQKKjH(ESWFHUW)PBtZIvv5Uefx1203nCLPSl(QuHOg22dJqI50jYr8FvCmjim6ZVhQJb1flvS3Aax0og6EOy1I3a5y43xMQUAfvVS)i1lV5c8pipdEVSTzg5tVK69Qk3ozaYDE(KhQjw0ZkVfTMp2qkMlsF9WIvFfdB1fGC2ycGI)eM(4O0QhQ6ZJ7sITm8nphFxHR)YJGwFFwOc8cMtHLhCs8mM(T7MnABnmtYmribotTx355PdpHnpxDGiF9IzUYhqB)oB7LVD)U(tdVN)l9ftpT92)tWKJ)UR6YNn136yLj9A3XsyLxEeGU9sL6dMOne30zNSVjzUZRoRbxmA6XiIVAmwe9)QglGrO(3RybyO(5lwGHQxoQBXcu1r6Rdo67z0nTI3Ao6McHyuXkIZHrM27PNEjcpGXEDoKOmQTWn8Y5VweiuReoVu8x3JGPfCABaZztN(JriFNadYFxPC30DmScPtwDlcMGrTclvvlieAieTfjTnUYZx8ShhEF(JNLrpN34zB0CR5GT6SHxZGUxdbMmw9QH31Er3jvbpkU61eh2OJ(lZ8ZF2urhx0ZY4qmM5EDeMnRjtJipLDl3Lf8GwA18W5XU2vw6BMa1DdR6Ns(snup0kpK78Wt2mYZSmL(Dzy6W6z1cFXfYpexTEM1aKSbTUzPQwY3laetS59(s(X((I8iwRBGVVO)WReSWQr1oyW8z3oPq)90k9fx48RrQfIcM4FeM4oYNp(5d79IjCQLAZNV)xufwT0u(i6xvWn71IGt042Y6uVWPxxEBeQdhTzkRBy)TyaVfaJ25M885I8eom2f3JICnkDz1587hnhFNGCwk0(rWH3RnNDV6D01jNCYHtNCKDQoXm25jmaiMR4ktuLqNXjWObhHSvDoCeMaPUCaTloczORopCCcGFi8WDccqPq7hbpCmk91Jhog98k2dhJapspChryCjWVtE(Y3B388LoEDNjNsCGRoxfClRQt30JXc)J0sdaRbVVLxAx8tL4K8s()IS0j)p8I(ZKtioq2spr1dKCNe1VU6p8w)EREUsYjNEhBef8iPthUkbGgpHr)(tV8))d]] )

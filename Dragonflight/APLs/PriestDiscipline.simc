@@ -1,3 +1,4 @@
+actions.precombat+=/power_word_fortitude
 actions.precombat+=/smite
 
 # Default fallback for usable items: Use on cooldown in order by trinket slot.
@@ -18,9 +19,10 @@ actions+=/shadow_covenant
 actions+=/schism
 actions+=/mindgames
 actions+=/mindbender
-actions+=/spirit_shell
+actions+=/shadowfiend
 actions+=/purge_the_wicked,if=!ticking
 actions+=/shadow_word_pain,if=!ticking&!talent.purge_the_wicked.enabled
+actions+=/lights_wrath
 actions+=/shadow_word_death
 actions+=/mind_blast
 actions+=/purge_the_wicked,if=refreshable

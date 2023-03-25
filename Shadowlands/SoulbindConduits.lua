@@ -470,7 +470,7 @@ do
 
     local GetActiveSoulbindID, GetSoulbindData, GetConduitSpellID = C_Soulbinds.GetActiveSoulbindID, C_Soulbinds.GetSoulbindData, C_Soulbinds.GetConduitSpellID
 
-    function ns.updateConduits()
+    function ns.updateConduits( event )
         WipeCovenantCache()
 
         for k, v in pairs( state.conduit ) do
@@ -483,8 +483,6 @@ do
         end
 
         if AreCovenantsDisabled() then return end
-
-        local found = false
 
         local soulbind = GetActiveSoulbindID()
         if not soulbind then return end
@@ -527,17 +525,14 @@ do
                 end
             end
         end
-
-        if not found then
-            C_Timer.After( 2, ns.updateConduits )
-        end
     end
 
-    ns.updateConduits()
+    local timer
 
-    for i, event in pairs( soulbindEvents ) do
+    for _, event in pairs( soulbindEvents ) do
         RegisterEvent( event, function()
-            C_Timer.After( 1, ns.updateConduits )
+            if timer and not timer:IsCancelled() then timer:Cancel() end
+            timer = C_Timer.NewTimer( 1, ns.updateConduits )
         end )
     end
 end

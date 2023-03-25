@@ -11,20 +11,20 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
 actions+=/potion
-actions+=/faeline_stomp
+actions+=/faeline_stomp,if=!settings.save_faeline|!(buff.ancient_concordance.up|buff.awakened_faeline.up)
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=3
 actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
 
 actions.st+=/thunder_focus_tea
 actions.st+=/rising_sun_kick
-actions.st+=/blackout_kick,if=buff.teachings_of_the_monastery.stack=1&cooldown.rising_sun_kick.remains<12
+actions.st+=/blackout_kick,if=!talent.teachings_of_the_monastery|buff.teachings_of_the_monastery.up&cooldown.rising_sun_kick.remains>gcd.max
 actions.st+=/chi_wave
 actions.st+=/chi_burst
-actions.st+=/tiger_palm,if=buff.teachings_of_the_monastery.stack<3|buff.teachings_of_the_monastery.remains<2
+actions.st+=/tiger_palm,if=!talent.teachings_of_the_monastery|buff.teachings_of_the_monastery.stack<3|buff.teachings_of_the_monastery.remains<2
 
 actions.aoe+=/thunder_focus_tea,if=active_enemies<=3
 actions.aoe+=/rising_sun_kick,if=active_enemies<=3
-actions.aoe+=/blackout_kick,if=buff.teachings_of_the_monastery.up&active_enemies<=3
+actions.aoe+=/blackout_kick,if=!talent.teachings_of_the_monastery|buff.teachings_of_the_monastery.up&active_enemies<=3
 actions.aoe+=/chi_wave
 actions.aoe+=/chi_burst
 actions.aoe+=/spinning_crane_kick

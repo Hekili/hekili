@@ -16,16 +16,16 @@ local GetSpellCooldown = _G.GetSpellCooldown
 -- 10.0
 all:RegisterAbilities( {
     algethar_puzzle_box = {
-        cast = 2,
+        cast = function() return 2 * haste end,
         cooldown = 180,
-        gcd = "on",
+        gcd = "spell",
 
         item = 193701,
         toggle = "cooldowns",
 
         handler = function()
             applyBuff( "algethar_puzzle" )
-            if buff.stealth.up then removeBuff( "stealth" ) end
+            if class.auras.stealth and buff.stealth.up then removeBuff( "stealth" ) end
         end,
 
         proc = "mastery",
@@ -36,7 +36,9 @@ all:RegisterAbilities( {
                 duration = 20,
                 max_stack = 1,
             },
-        }
+        },
+
+        copy = 383781
     },
     bag_of_biscuits = {
         cast = 0,
@@ -94,7 +96,14 @@ all:RegisterAbilities( {
             applyBuff( "algethar_puzzle" )
         end,
 
-        proc = "random",
+        proc = "damage", -- don't really know.
+
+        auras = {
+            bottomless_reliquary_satchel = {
+                duration = 0.01,
+                max_stack = 1,
+            },
+        }
     },
     broodkeepers_promise = {
         cast = 1,
@@ -218,7 +227,7 @@ all:RegisterAbilities( {
         item = 198478,
         toggle = "cooldowns",
 
-        proc = "damage_and_healing",
+        proc = "damage",
     },
     darkmoon_deck_box_inferno = {
         cast = 0,
@@ -287,8 +296,50 @@ all:RegisterAbilities( {
         item = 198088,
         toggle = "cooldowns",
 
-        proc = "damage_and_healing",
+        proc = "damage",
 
+        auras = {
+            ace_of_air = {
+                id = 382860,
+                duration = 3600,
+                max_stack = 1
+            },
+            two_of_air = {
+                id = 382861,
+                duration = 3600,
+                max_stack = 1
+            },
+            three_of_air = {
+                id = 382862,
+                duration = 3600,
+                max_stack = 1
+            },
+            four_of_air = {
+                id = 382863,
+                duration = 3600,
+                max_stack = 1
+            },
+            five_of_air = {
+                id = 382864,
+                duration = 3600,
+                max_stack = 1
+            },
+            six_of_air = {
+                id = 382865,
+                duration = 3600,
+                max_stack = 1
+            },
+            seven_of_air = {
+                id = 382866,
+                duration = 3600,
+                max_stack = 1
+            },
+            eight_of_air = {
+                id = 382867,
+                duration = 3600,
+                max_stack = 1
+            },
+        }
     },
     darkmoon_deck_inferno = {
         cast = 0,
@@ -298,6 +349,49 @@ all:RegisterAbilities( {
         item = 198086,
 
         proc = "damage",
+
+        auras = {
+            ace_of_fire = {
+                id = 382835,
+                duration = 3600,
+                max_stack = 1
+            },
+            two_of_fire = {
+                id = 382836,
+                duration = 3600,
+                max_stack = 1
+            },
+            three_of_fire = {
+                id = 382837,
+                duration = 3600,
+                max_stack = 1
+            },
+            four_of_fire = {
+                id = 382838,
+                duration = 3600,
+                max_stack = 1
+            },
+            five_of_fire = {
+                id = 382839,
+                duration = 3600,
+                max_stack = 1
+            },
+            six_of_fire = {
+                id = 382840,
+                duration = 3600,
+                max_stack = 1
+            },
+            seven_of_fire = {
+                id = 382841,
+                duration = 3600,
+                max_stack = 1
+            },
+            eight_of_fire = {
+                id = 382842,
+                duration = 3600,
+                max_stack = 1
+            }
+        }
     },
     darkmoon_deck_rime = {
         cast = 0,
@@ -310,6 +404,49 @@ all:RegisterAbilities( {
         end,
 
         proc = "damage",
+
+        auras = {
+            ace_of_frost = {
+                id = 382844,
+                duration = 3600,
+                max_stack = 1
+            },
+            two_of_frost = {
+                id = 382845,
+                duration = 3600,
+                max_stack = 1
+            },
+            three_of_frost = {
+                id = 382846,
+                duration = 3600,
+                max_stack = 1
+            },
+            four_of_frost = {
+                id = 382847,
+                duration = 3600,
+                max_stack = 1
+            },
+            five_of_frost = {
+                id = 382848,
+                duration = 3600,
+                max_stack = 1
+            },
+            six_of_frost = {
+                id = 382849,
+                duration = 3600,
+                max_stack = 1
+            },
+            seven_of_frost = {
+                id = 382850,
+                duration = 3600,
+                max_stack = 1
+            },
+            eight_of_frost = {
+                id = 382851,
+                duration = 3600,
+                max_stack = 1
+            },
+        }
     },
     darkmoon_deck_watcher = {
         cast = 0,
@@ -458,7 +595,7 @@ all:RegisterAbilities( {
             applyBuff( "erupting_spear_fragment", nil, min( 5, active_enemies ) )
         end,
 
-        proc = "critical_strike",
+        proc = "crit",
 
         auras = {
             erupting_spear_fragment = {
@@ -605,10 +742,17 @@ all:RegisterAbilities( {
         toggle = "cooldowns",
     },
     manic_grieftorch = {
-        cast = 2,
+        cast = function() return 2 * haste end,
         channeled = true,
         cooldown = 120,
         gcd = "off",
+
+        cycle = function()
+            -- Recommend a different target if yours is expected to die before the channel would complete, with a little buffer added.
+            if active_enemies > 1 and fight_remains > 3 * haste and target.time_to_die < 3 * haste then
+                return "cycle"
+            end
+        end,
 
         item = 194308,
         toggle = "cooldowns",

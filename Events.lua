@@ -100,11 +100,12 @@ function ns.StartEventHandler()
     end
 
     events:SetScript( "OnUpdate", function( self, elapsed )
-        Hekili.freshFrame = true
-
         if Hekili.PendingSpecializationChange then
             Hekili:SpecializationChanged()
             Hekili.PendingSpecializationChange = false
+
+            -- Spec updates are expensive; exit and do other work in the next frame.
+            return
         end
 
         if handlers.FRAME_UPDATE then
@@ -250,18 +251,18 @@ do
     local requeued = {}
 
     local HandleSpellData = function( event, spellID, success )
-    local callbacks = spellCallbacks[ spellID ]
+        local callbacks = spellCallbacks[ spellID ]
 
-    if callbacks then
-        for i = #callbacks, 1, -1 do
+        if callbacks then
+            for i = #callbacks, 1, -1 do
                 callbacks[i]( event, spellID, success )
                 remove( callbacks, i )
-        end
+            end
 
-        if #callbacks == 0 then
-            spellCallbacks[ spellID ] = nil
+            if #callbacks == 0 then
+                spellCallbacks[ spellID ] = nil
+            end
         end
-    end
 
         if spellCallbacks == nil or next( spellCallbacks ) == nil then
             UnregisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
@@ -270,35 +271,35 @@ do
         end
     end
 
-function Hekili:ContinueOnSpellLoad( spellID, func )
+    function Hekili:ContinueOnSpellLoad( spellID, func )
         if C_Spell.IsSpellDataCached( spellID ) then
-        func( true )
-        return
+            func( true )
+            return
         end
 
-    local callbacks = spellCallbacks[ spellID ] or {}
-    insert( callbacks, func )
-    spellCallbacks[ spellID ] = callbacks
+        local callbacks = spellCallbacks[ spellID ] or {}
+        insert( callbacks, func )
+        spellCallbacks[ spellID ] = callbacks
 
         if isUnregistered then
             RegisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
             isUnregistered = false
         end
 
-    C_Spell.RequestLoadSpellData( spellID )
-end
+        C_Spell.RequestLoadSpellData( spellID )
+    end
 
-function Hekili:RunSpellCallbacks()
-    for spell, callbacks in pairs( spellCallbacks ) do
-        for i = #callbacks, 1, -1 do
-            if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
-        end
+    function Hekili:RunSpellCallbacks()
+        for spell, callbacks in pairs( spellCallbacks ) do
+            for i = #callbacks, 1, -1 do
+                if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
+            end
 
-        if #callbacks == 0 then
-            spellCallbacks[ spell ] = nil
+            if #callbacks == 0 then
+                spellCallbacks[ spell ] = nil
+            end
         end
     end
-end
 end
 
 
@@ -308,7 +309,7 @@ end )
 
 
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
-    if login or reload then
+    if not Hekili.PLAYER_ENTERING_WORLD and ( login or reload ) then
         Hekili.PLAYER_ENTERING_WORLD = true
         Hekili:SpecializationChanged()
         Hekili:RestoreDefaults()
@@ -318,7 +319,6 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
 
         if state.combat == 0 and InCombatLockdown() then
             state.combat = GetTime() - 0.01
-            Hekili:UpdateDisplayVisibility()
         end
 
         local _, zone = GetInstanceInfo()
@@ -337,24 +337,44 @@ do
             Hekili:SpecializationChanged()
         end )
     else
-        local lastChange = 0
-        RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function()
-            local now = GetTime()
-            if now - lastChange > 1 then
-                Hekili:SpecializationChanged()
-                lastChange = now
+        local specializationEvents = {
+            ACTIVE_PLAYER_SPECIALIZATION_CHANGED = 1,
+            ACTIVE_TALENT_GROUP_CHANGED = 1,
+            CONFIRM_TALENT_WIPE = 1,
+            PLAYER_TALENT_UPDATE = 1,
+            SPEC_INVOLUNTARILY_CHANGED = 1,
+            TALENTS_INVOLUNTARILY_RESET = 1
+        }
+
+        local function CheckForTalentUpdate( event )
+            local specialization = GetSpecialization()
+            local specID = specialization and GetSpecializationInfo( specialization )
+
+            if specID and specID ~= state.spec.id then
+                Hekili.PendingSpecializationChange = true
             end
-        end )
+        end
+
+        RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, CheckForTalentUpdate )
+
+        for event in pairs( specializationEvents ) do
+            RegisterEvent( event, CheckForTalentUpdate )
+        end
     end
 end
 
 
-RegisterEvent( "ZONE_CHANGED", function()
-    local _, zone = GetInstanceInfo()
-    state.bg = zone == "pvp"
-    state.arena = zone == "arena"
-    state.torghast = IsInJailersTower()
-end )
+do
+    local function UpdateZoneInfo()
+        local _, zone = GetInstanceInfo()
+        state.bg = zone == "pvp"
+        state.arena = zone == "arena"
+        state.torghast = IsInJailersTower()
+    end
+
+    RegisterEvent( "ZONE_CHANGED", UpdateZoneInfo )
+    RegisterEvent( "ARENA_PREP_OPPONENT_SPECIALIZATIONS", UpdateZoneInfo )
+end
 
 
 -- Hide when going into the barbershop.
@@ -734,12 +754,15 @@ do
                 state.trinket.t1.__usable = isUsable
                 state.trinket.t1.__ability = tSpell
 
+                local ability = class.abilities[ tSpell ]
+                local aura = ability and class.auras[ ability.self_buff or spellID ]
+
                 if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t1.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
-                    state.trinket.t1.__use_buff_duration = class.auras[ spellID ] and class.auras[ spellID ].duration or 0.01
-                elseif class.abilities[ tSpell ].self_buff then
+                    state.trinket.t1.__has_use_buff = not ( aura and aura.ignore_buff ) and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
+                    state.trinket.t1.__use_buff_duration = aura and aura.duration or 0.01
+                elseif ability.self_buff then
                     state.trinket.t1.__has_use_buff = true
-                    state.trinket.t1.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration or 0.01
+                    state.trinket.t1.__use_buff_duration = aura and aura.duration or 0.01
                 end
             end
 
@@ -771,12 +794,15 @@ do
                 state.trinket.t2.__usable = isUsable
                 state.trinket.t2.__ability = tSpell
 
+                local ability = class.abilities[ tSpell ]
+                local aura = class.auras[ ability.self_buff or spellID ]
+
                 if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t2.__has_use_buff = not ( class.auras[ spellID ] and class.auras[ spellID ].ignore_buff )
-                    state.trinket.t2.__use_buff_duration = class.auras[ spellID ] and class.auras[ spellID ].duration or 0.01
-                elseif tSpell and class.abilities[ tSpell ].self_buff then
+                    state.trinket.t2.__has_use_buff = not ( aura and aura.ignore_buff ) and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
+                    state.trinket.t2.__use_buff_duration = aura and aura.duration or 0.01
+                elseif ability.self_buff then
                     state.trinket.t2.__has_use_buff = true
-                    state.trinket.t2.__use_buff_duration = class.auras[ class.abilities[ tSpell ].self_buff ].duration or 0.01
+                    state.trinket.t2.__use_buff_duration = aura and aura.duration or 0.01
                 end
             end
 
@@ -874,7 +900,7 @@ do
 
         Hekili:UpdateUseItems()
         state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
-            end
+    end
 
     RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", QueueUpdate )
 end
@@ -964,7 +990,8 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
 
-    -- C_Timer.After( 10, function () ns.Audit( "combatExit" ) end )
+    C_Timer.After( 5, function () ns.Audit( "combatExit" ) end )
+
     Hekili:ReleaseHolds( true )
     Hekili:ExpireTTDs( true )
     Hekili:UpdateDisplayVisibility()
@@ -2289,7 +2316,9 @@ local allTimer
 
 local function DelayedUpdateKeybindings( event )
     if allTimer and not allTimer:IsCancelled() then allTimer:Cancel() end
-    allTimer = C_Timer.After( 0.2, function() ReadKeybindings( event ) end )
+    allTimer = C_Timer.After( 0.2, function()
+        ReadKeybindings( event )
+    end )
 end
 
 --[[ local function DelayedUpdateOneKeybinding( event, slot )
@@ -2303,8 +2332,8 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
 end )
 RegisterEvent( "ACTIONBAR_SHOWGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_HIDEGRID", DelayedUpdateKeybindings )
-RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
-RegisterEvent( "UPDATE_SHAPESHIFT_FORM", DelayedUpdateKeybindings )
+-- RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
+-- RegisterEvent( "UPDATE_SHAPESHIFT_FORM", DelayedUpdateKeybindings )
 
 if Hekili.IsWrath() then
     RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", DelayedUpdateKeybindings )
