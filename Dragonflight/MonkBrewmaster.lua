@@ -960,6 +960,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             addStack( "chi_torpedo" )
+            setDistance( 5 )
         end,
     },
 
@@ -1441,6 +1442,7 @@ spec:RegisterAbilities( {
         notalent = "chi_torpedo",
 
         handler = function ()
+            setDistance( 5 )
         end,
     },
 

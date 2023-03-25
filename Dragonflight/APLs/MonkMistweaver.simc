@@ -3,6 +3,8 @@ actions.precombat+=/chi_burst
 actions.precombat+=/chi_wave
 
 actions+=/spear_hand_strike
+actions+=/roll,if=distance_check
+actions+=/chi_torpedo,if=distance_check
 actions+=/use_items
 actions+=/blood_fury
 actions+=/berserking
