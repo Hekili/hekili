@@ -137,9 +137,9 @@ actions.cd_sef+=/storm_earth_and_fire,if=talent.bonedust_brew&(fight_remains<30&
 actions.cd_sef+=/bonedust_brew,if=(!buff.bonedust_brew.up&buff.storm_earth_and_fire.up&buff.storm_earth_and_fire.remains<11&spinning_crane_kick.max)|(!buff.bonedust_brew.up&fight_remains<30&fight_remains>10&spinning_crane_kick.max&chi>=4)|fight_remains<10
 actions.cd_sef+=/call_action_list,name=bdb_setup,if=!buff.bonedust_brew.up&talent.bonedust_brew&cooldown.bonedust_brew.remains<=2&(fight_remains>60&(cooldown.storm_earth_and_fire.charges>0|cooldown.storm_earth_and_fire.remains>10)&(pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>10|variable.hold_xuen)|((pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>13)&(cooldown.storm_earth_and_fire.charges>0|cooldown.storm_earth_and_fire.remains>13|buff.storm_earth_and_fire.up)))
 actions.cd_sef+=/storm_earth_and_fire,if=boss&fight_remains<20|(cooldown.storm_earth_and_fire.charges=2&cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time)&cooldown.fists_of_fury.remains<=9&chi>=2&cooldown.whirling_dragon_punch.remains<=12
-actions.cd_sef+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&target.health<health
-actions.cd_sef+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&(target.time_to_die>60|debuff.bonedust_brew_debuff.up|fight_remains<10)
-actions.cd_sef+=/touch_of_death,cycle_targets=1,if=boss&combo_strike
+## actions.cd_sef+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&target.health<health
+## actions.cd_sef+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&(target.time_to_die>60|debuff.bonedust_brew_debuff.up|fight_remains<10)
+actions.cd_sef+=/touch_of_death,cycle_targets=1,if=combo_strike
 actions.cd_sef+=/touch_of_karma,cycle_targets=1,if=fight_remains>90|pet.xuen_the_white_tiger.active|variable.hold_xuen|boss&fight_remains<16
 actions.cd_sef+=/touch_of_karma,if=fight_remains>159|variable.hold_xuen
 actions.cd_sef+=/blood_fury,if=cooldown.invoke_xuen_the_white_tiger.remains>30|variable.hold_xuen|boss&fight_remains<20
@@ -156,9 +156,9 @@ actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&talent.
 actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&!talent.bonedust_brew&(cooldown.rising_sun_kick.remains<2)|boss&fight_remains<25
 actions.cd_serenity+=/bonedust_brew,if=!buff.bonedust_brew.up&(cooldown.serenity.up|cooldown.serenity.remains>15|boss&fight_remains<30&fight_remains>10)|boss&fight_remains<10
 actions.cd_serenity+=/serenity,if=pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>10|!talent.invoke_xuen_the_white_tiger|boss&fight_remains<15
-actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&target.health<health
-actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&(target.time_to_die>60|debuff.bonedust_brew_debuff.up|fight_remains<10)
-actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=boss&combo_strike
+## actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&target.health<health
+## actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&(target.time_to_die>60|debuff.bonedust_brew_debuff.up|fight_remains<10)
+actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=combo_strike
 actions.cd_serenity+=/touch_of_karma,if=fight_remains>90|boss&fight_remains<10
 actions.cd_serenity+=/blood_fury,if=buff.serenity.up|boss&fight_remains<20
 actions.cd_serenity+=/berserking,if=buff.serenity.up|boss&fight_remains<20
