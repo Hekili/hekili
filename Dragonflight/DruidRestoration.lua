@@ -615,6 +615,7 @@ spec:RegisterAbilities( {
             gain( 0.3 * health.max, "health" )
         end,
     },
+
     -- Consumes a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for 10,011. Swiftmend heals the target for 3,672 over 9 sec.
     swiftmend = {
         id = 18562,

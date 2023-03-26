@@ -1856,28 +1856,6 @@ spec:RegisterAbilities( {
         copy = { 77761, 77764 }
     },
 
-    -- Talent: Launch a surge of stellar energies at the target, dealing $s1 Astral damage, and empowering the damage bonus of any active Eclipse for its duration.
-    starsurge = {
-        id = 197626,
-        cast = function () return buff.heart_of_the_wild.up and 0 or 2 end,
-        cooldown = 0,
-        gcd = "spell",
-        school = "astral",
-
-        spend = 40,
-        spendType = "eclipse",
-
-        talent = "starsurge",
-        startsCombat = true,
-
-        form = "moonkin_form",
-
-        handler = function ()
-            if buff.eclipse_solar.up then buff.eclipse_solar.empowerTime = query_time; applyBuff( "starsurge_empowerment_solar" ) end
-            if buff.eclipse_lunar.up then buff.eclipse_lunar.empowerTime = query_time; applyBuff( "starsurge_empowerment_lunar" ) end
-        end,
-    },
-
     -- Talent: A quick beam of solar light burns the enemy for $164815s1 Nature damage and then an additional $164815o2 Nature damage over $164815d$?s231050[ to the primary target and all enemies within $164815A2 yards][].$?s137013[    |cFFFFFFFFGenerates ${$m3/10} Astral Power.|r][]
     sunfire = {
         id = 93402,

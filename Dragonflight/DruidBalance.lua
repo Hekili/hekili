@@ -2541,23 +2541,32 @@ spec:RegisterAbilities( {
 
 
     starsurge = {
-        id = 78674,
+        id = function() return state.spec.balance and 78674 or 197626 end,
         cast = 0,
-        cooldown = 0,
+        cooldown = function() return state.spec.balance and 0 or 10 end,
         gcd = "spell",
 
         spend = function ()
+            if not state.spec.balance then return 0.006 end
             if buff.oneths_clear_vision.up or buff.starweavers_weft.up then return 0 end
             return ( 40 - ( buff.incarnation.up and talent.elunes_guidance.enabled and 5 or 0 ) ) * ( 1 - 0.05 * buff.rattled_stars.stack ) * ( 1 - 0.1 * buff.timeworn_dreambinder.stack * 0.1 )
         end,
-        spendType = "astral_power",
+        spendType = function ()
+            if not state.spec.balance then return "mana" end
+            return "astral_power"
+        end,
 
         startsCombat = true,
         texture = 135730,
+        talent = "starsurge",
 
         ap_check = function() return check_for_ap_overcap( "starsurge" ) end,
 
         handler = function ()
+            if buff.bear_form.up or buff.cat_form.up then unshift() end
+
+            if not state.spec.balance then return end
+
             if buff.starweavers_weft.up then removeBuff( "starweavers_weft" )
             else removeBuff( "touch_the_cosmos" ) end
 
@@ -2594,6 +2603,8 @@ spec:RegisterAbilities( {
                 addStack( "timeworn_dreambinder", nil, 1 )
             end
         end,
+
+        copy = { 78674, 197626 },
 
         auras = {
             starsurge_empowerment_lunar = {
