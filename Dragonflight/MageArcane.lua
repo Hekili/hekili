@@ -358,7 +358,7 @@ spec:RegisterAuras( {
         id = 108839,
         duration = 15,
         type = "Magic",
-        max_stack = 1
+        max_stack = 3
     },
     impetus = {
         id = 393939,
@@ -613,7 +613,6 @@ end )
 
 do
     -- Builds Disciplinary Command; written so that it can be ported to the other two Mage specs.
-
     function Hekili:EmbedDisciplinaryCommand( x )
         local file_id = x.id
 
@@ -752,8 +751,6 @@ do
             end,
         } )
     end
-
-    Hekili:EmbedDisciplinaryCommand( spec )
 end
 
 
@@ -785,6 +782,13 @@ spec:RegisterHook( "gain", function( amt, resource )
             end
             applyBuff( "arcane_charge", nil, arcane_charges.current )
         end
+    end
+end )
+
+spec:RegisterHook( "runHandler", function( action )
+    if buff.ice_floes.up then
+        local ability = class.abilities[ action ]
+        if ability and ability.cast > 0 and ability.cast < 10 then removeStack( "ice_floes" ) end
     end
 end )
 
@@ -1759,7 +1763,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            applyBuff( "ice_floes" )
+            addStack( "ice_floes" )
         end,
     },
 

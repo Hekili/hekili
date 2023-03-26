@@ -809,6 +809,13 @@ spec:RegisterHook( "reset_precast", function ()
     end
 end )
 
+spec:RegisterHook( "runHandler", function( action )
+    if buff.ice_floes.up then
+        local ability = class.abilities[ action ]
+        if ability and ability.cast > 0 and ability.cast < 10 then removeStack( "ice_floes" ) end
+    end
+end )
+
 
 Hekili:EmbedDisciplinaryCommand( spec )
 

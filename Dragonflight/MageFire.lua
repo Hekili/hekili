@@ -748,6 +748,13 @@ spec:RegisterHook( "reset_precast", function ()
     incanters_flow.reset()
 end )
 
+spec:RegisterHook( "runHandler", function( action )
+    if buff.ice_floes.up then
+        local ability = class.abilities[ action ]
+        if ability and ability.cast > 0 and ability.cast < 10 then removeStack( "ice_floes" ) end
+    end
+end )
+
 spec:RegisterHook( "advance", function ( time )
     if Hekili.ActiveDebug then Hekili:Debug( "\n*** Hot Streak (Advance) ***\n    Heating Up:  %.2f\n    Hot Streak:  %.2f\n", state.buff.heating_up.remains, state.buff.hot_streak.remains ) end
 end )
@@ -805,150 +812,6 @@ spec:RegisterStateExpr( "expected_kindling_reduction", function ()
     return 0.4
 end )
 
-
-do
-    -- Builds Disciplinary Command; written so that it can be ported to the other two Mage specs.
-    function Hekili:EmbedDisciplinaryCommand( x )
-        local file_id = x.id
-
-        x:RegisterAuras( {
-            disciplinary_command = {
-                id = 327371,
-                duration = 20,
-            },
-
-            disciplinary_command_arcane = {
-                duration = 10,
-                max_stack = 1,
-            },
-
-            disciplinary_command_frost = {
-                duration = 10,
-                max_stack = 1,
-            },
-
-            disciplinary_command_fire = {
-                duration = 10,
-                max_stack = 1,
-            }
-        } )
-
-        local __last_arcane, __last_fire, __last_frost, __last_disciplinary_command = 0, 0, 0, 0
-        local __last_arcSpell, __last_firSpell, __last_froSpell
-
-        x:RegisterHook( "reset_precast", function ()
-            if not legendary.disciplinary_command.enabled then return end
-
-            if now - __last_arcane < 10 then applyBuff( "disciplinary_command_arcane", 10 - ( now - __last_arcane ) ) end
-            if now - __last_fire   < 10 then applyBuff( "disciplinary_command_fire",   10 - ( now - __last_fire ) ) end
-            if now - __last_frost  < 10 then applyBuff( "disciplinary_command_frost",  10 - ( now - __last_frost ) ) end
-
-            if now - __last_disciplinary_command < 30 then
-                setCooldown( "buff_disciplinary_command", 30 - ( now - __last_disciplinary_command ) )
-            end
-
-            Hekili:Debug( "Disciplinary Command:\n - Arcane: %.2f, %s\n - Fire  : %.2f, %s\n - Frost : %.2f, %s\n - ICD   : %.2f", buff.disciplinary_command_arcane.remains, __last_arcSpell or "None", buff.disciplinary_command_fire.remains, __last_firSpell or "None", buff.disciplinary_command_frost.remains, __last_froSpell or "None", cooldown.buff_disciplinary_command.remains )
-        end )
-
-        x:RegisterStateFunction( "update_disciplinary_command", function( action )
-            local ability = class.abilities[ action ]
-
-            if not ability then return end
-            if ability.item or ability.from == 0 then return end
-
-            if     ability.school == "arcane" then applyBuff( "disciplinary_command_arcane" )
-            elseif ability.school == "fire"   then applyBuff( "disciplinary_command_fire"   )
-            elseif ability.school == "frost"  then applyBuff( "disciplinary_command_frost"  )
-            else
-                local sAction = x.abilities[ action ]
-                local sDiscipline = sAction and sAction.school
-
-                if sDiscipline then
-                    if     sDiscipline == "arcane" then applyBuff( "disciplinary_command_arcane" )
-                    elseif sDiscipline == "fire"   then applyBuff( "disciplinary_command_fire"   )
-                    elseif sDiscipline == "frost"  then applyBuff( "disciplinary_command_frost"  ) end
-                else applyBuff( "disciplinary_command_" .. state.spec.key ) end
-            end
-
-            if buff.disciplinary_command_arcane.up and buff.disciplinary_command_fire.up and buff.disciplinary_command_frost.up then
-                applyBuff( "disciplinary_command" )
-                setCooldown( "buff_disciplinary_command", 30 )
-                removeBuff( "disciplinary_command_arcane" )
-                removeBuff( "disciplinary_command_fire" )
-                removeBuff( "disciplinary_command_frost" )
-            end
-        end )
-
-        x:RegisterHook( "runHandler", function( action )
-            if not legendary.disciplinary_command.enabled or cooldown.buff_disciplinary_command.remains > 0 then return end
-            update_disciplinary_command( action )
-        end )
-
-        local triggerEvents = {
-            SPELL_CAST_SUCCESS = true,
-            SPELL_HEAL = true,
-            SPELL_SUMMON= true
-        }
-
-        local spellChanges = {
-            [108853] = 319836,
-            [212653] = 1953,
-            [342130] = 116011,
-            [337137] = 1,
-        }
-
-        local spellSchools = {
-            [4] = "fire",
-            [16] = "frost",
-            [64] = "arcane"
-        }
-
-        x:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, _, _, _, _, _, _, _, spellID, spellName, spellSchool )
-            if sourceGUID == GUID then
-                if triggerEvents[ subtype ] then
-                    spellID = spellChanges[ spellID ] or spellID
-                    if not IsSpellKnown( spellID, false ) then return end
-
-                    local school = spellSchools[ spellSchool ]
-                    if not school then return end
-
-                    if     school == "arcane" then __last_arcane = GetTime(); __last_arcSpell = spellName
-                    elseif school == "fire"   then __last_fire   = GetTime(); __last_firSpell = spellName
-                    elseif school == "frost"  then __last_frost  = GetTime(); __last_froSpell = spellName end
-                    return
-                elseif subtype == "SPELL_AURA_APPLIED" and spellID == class.auras.disciplinary_command.id then
-                    __last_disciplinary_command = GetTime()
-                    __last_arcane = 0
-                    __last_fire = 0
-                    __last_frost = 0
-                end
-            end
-        end, false )
-
-        x:RegisterAbility( "buff_disciplinary_command", {
-            cooldown_special = function ()
-                local remains = ( now + offset ) - __last_disciplinary_command
-
-                if remains < 30 then
-                    return __last_disciplinary_command, 30
-                end
-
-                return 0, 0
-            end,
-            unlisted = true,
-
-            cast = 0,
-            cooldown = 30,
-            gcd = "off",
-
-            handler = function()
-                applyBuff( "disciplinary_command" )
-            end,
-        } )
-    end
-
-    Hekili:EmbedDisciplinaryCommand( spec )
-end
 
 Hekili:EmbedDisciplinaryCommand( spec )
 
@@ -1610,7 +1473,7 @@ spec:RegisterAbilities( {
         velocity = 45,
 
         usable = function ()
-            if moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
+            if moving and settings.prevent_hardcasts and action.fireball.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
             return true
         end,
 
@@ -1852,7 +1715,7 @@ spec:RegisterAbilities( {
 
         usable = function ()
             if action.pyroblast.cast > 0 then
-                if moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
+                if moving and settings.prevent_hardcasts and action.fireball.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
                 if combat == 0 and not boss and not settings.pyroblast_pull then return false, "opener pyroblast disabled and/or target is not a boss" end
             end
             return true
@@ -2066,8 +1929,9 @@ spec:RegisterSetting( "pyroblast_pull", false, {
 spec:RegisterSetting( "prevent_hardcasts", false, {
     name = strformat( "%s and %s: Instant-Only When Moving", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ),
-    desc = strformat( "If checked, non-instant %s and %s casts will not be recommended while you are moving.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ),
+    desc = strformat( "If checked, non-instant %s and %s casts will not be recommended while you are moving.\n\nAn exception is made if %s is talented and active and your cast "
+        .. "would be complete before |W%s|w expires.", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ),
+        Hekili:GetSpellLinkWithTexture( 108839 ), ( GetSpellInfo( 108839 ) ) ),
     type = "toggle",
     width = "full"
 } )
