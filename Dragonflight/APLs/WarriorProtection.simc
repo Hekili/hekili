@@ -5,10 +5,10 @@ actions.precombat+=/avatar,if=!talent.titans_torment
 actions.precombat+=/recklessness,if=!talent.reckless_abandon
 
 # Executed every time the actor is available.
-actions+=/pummel
-actions+=/spell_reflection
 actions+=/shield_charge,if=time=0
 actions+=/charge,if=time=0
+actions+=/pummel
+actions+=/spell_reflection
 actions+=/use_items
 actions+=/avatar
 # Usage of Shield Wall is governed by specialization settings; see /hekili > Protection.

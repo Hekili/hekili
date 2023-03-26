@@ -4,9 +4,10 @@ actions.precombat+=/use_item,name=algethar_puzzle_box
 actions.precombat+=/avatar,if=!talent.titans_torment
 actions.precombat+=/recklessness,if=!talent.reckless_abandon
 
-actions+=/charge,if=time<=0.5|movement.distance>5
-actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
+actions+=/charge,if=time<=0.5|movement.distance>8
+## actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
 actions+=/pummel
+actions+=/spell_reflection
 actions+=/potion
 actions+=/conquerors_banner
 actions+=/algethar_puzzle_box,if=cooldown.recklessness.remains<3|(talent.anger_management&cooldown.avatar.remains<3)
