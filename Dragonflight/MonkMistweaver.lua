@@ -1024,6 +1024,21 @@ spec:RegisterSetting( "save_faeline", false, {
     width = "full",
 } )
 
+spec:RegisterSetting( "roll_movement", 5, {
+    type = "range",
+    name = strformat( "%s: Check Distance", Hekili:GetSpellLinkWithTexture( 109132 ), Hekili:GetSpellLinkWithTexture( 115008 ) ),
+    desc = strformat( "If set above zero, %s (and %s) may be recommended when your target is at least this far away.", Hekili:GetSpellLinkWithTexture( 109132 ),
+        Hekili:GetSpellLinkWithTexture( 115008 ) ),
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full"
+} )
+
+    spec:RegisterStateExpr( "distance_check", function()
+        return target.minR > ( settings.roll_movement or 0 )
+    end )
+
 
 spec:RegisterOptions( {
     enabled = true,
@@ -1045,4 +1060,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Mistweaver", 20230216, [[Hekili:nF1wVTTnu4Fl5LMeSunFjlDDioaDdyanyRVO(SKOPOS5SePgjvDmGb)TVpk5l00YXEfBD7HeBZZhpNd)ox4Hjdt(CsCoXWs(0ObJgpy0WhIgoA447Vpj2SQMLextOliZWxeKk8)FNRnlzKVWuorRkLKCNk0YgffItIN2WlnFuKmTF9ogyRzuS87gKepNNNZ6WY00Kyh23oy0Bh(WpzZSzFasZTzYAdxkSzgPnJ8fjhlPyuI2WfZSz)kHvYfmBwSrwvBZwoNbSAdrK3kNJFrWFSx4B2rX2DCtHuzZQiccexuWPCMGU62iC0uYcEjoqeQZ26OAyrz1uI57M891Yw)55(KrNZtN2O0MtlEjyp7Z7KJvbJquPZHhNQnk(cMVWgnlLByvA)fNwkL5PfnQvhSktPzQfUdP3QL8zZn60)OjFwfty8fvWvSwv5VirqzWniLPusz5b6NmlvwKcxKU4a3jGrCAUJJX5bbL74ftUsZmo6xhPX5pDJ81RV6MPnffrWOG8nPuPGkv5oFiQPE96oHljlycw(2Dbj36BmNFM29Z0seLVZLRoHiz35OtQzYqNh4aaldfvXz6NMm(8QaFEAn84yVOyK2fEnZBe5mvAHK2OtnmsGCfxdkiv3isxaomq60suRjBmTYA5mdPeKseuesCa31Y(ZzPvsbs)zQvBiOtdau1BOszzUCPikW8rkwfHl0pnJMhvrEjWD2NRE0Ybz4DND(mCYRjLv)t56OgMU4XXNh4MZXJJ8dii83xePN4OxMWMDfqux0E(3k6DwdFCCA)6bbQob6AUq4oFufbLOo)njgD01aZ2(1dEFs8sIYbtNe)55OBjVQwQmO9PRP51qvx76d)NnOhc6iRLvadPb17OTpwGI(zZy6i7Z)wBZ2XOL(VifWoTIV(SSZ1DD8ppWiMGmTKLJnCZWxUnYLf0JhRn))1H7S4dFdTO95p2YoodDp4bA3DSUEFokijU9BU72rKgF8P2rf2OMKFojMQWTskoP7oY9zO2ShNaYB7vNyoIWsWedYY(A1wqPPtxJpPUUc8ZLsn2S1RTzNVG0M9Mo66vCYd6f4CX7BjYns3wW670aZpeIPT4na0d(G6Tq2ho2n0W2G3PdihAJr(Gd57dH(Fa1FUBZSzpzZ2CJ23SiY3ikO9grKTHKTlBd74eSLrEza7URUljjNvqAkpot5ObtFTmLDdQ2xoY(4W2bxdqDq8y)GSVwejyW2xRsz3GUbGENpOdh8na5pEG)5piCaW37dSBW4aedh8APm9oNCx0gsVztmV)5L9sk6zMzB2TEmI)a6TE1L3G)PUUDDJg7sz2xKemgD31iPDVD0DrId(FJE)Fv2rB6YQ39WRJYR7nSm6sQ2hF(2gT2gZvmxI3i)b(c88YfK2vt(R]] )
+spec:RegisterPack( "Mistweaver", 20230325, [[Hekili:nFvxVnUnqWFl5LljOj(ITsYDTioaxpGcCbT3dv5zjrtrzXAjsvsQZjfg63EhkARqj)vWH20(qIt4oK7YDho76OXrpgfMsmSOVo5Qjbxfm5MrJdU(2GpgfAEUIffwrOliZXFiiL43)gxBwYiFJPSMEUqssThHwwROWCu4SAEH5lIOz76CVEmGwXOy1pCvuyopnL5GY00Oql0lVAYLJV9NAsAs(eSM2KiRmCPOjXiBsiFtYXskgLOnCX8MKFHWk4cwtsOrww1KSmNbSAdrK2ANJ)JGFypXxVJSn74SmPQjPKiiWCwgNYzc6ZNpQ5HMhCHsWLtUztO0K87YII3)5CEtYJsvflfXZsUjhEdxjoPG)xexK6I4rrHfWNAB(Hiz4JV2MUzcYScwA0phfsvCdtXjaa1W)glMjyLCMUj5UPnjbULLculYRfPmvCMKwRJnmsKb5WV3ttX1iteRRfXl40f2ZkyVN1jiZtkycZi4wAo2OowMfBYzXLsbkdm1ZJwVZMKvRAsMvNLDiW1Om9ouvoCqoRampzTPleVUnrU2ko74LGg6h0aZndXmRwPndaDRpiDfxiSzdQIiyoN1do2noHnfV9xq67Jj(GhMV7d9)GupvklsLlfJgezJuSscxGIX9njZPPJkjp9MvrEJsbqAGUaSnq2EDBOlNGTmXJbWNJ6FfPO0rsszzK6ITzkqCGOIZHEuS2O4lgMG2)R4uUvgJYIP5mlRPJobDOdtC23oT5FJt7AR6xTMfJ9xQpubCwHuMgNvRE(qVPMXuAMAbsNdq9bFuf855gD8FuNoVef4bq)Op0mUI166bG(rFq2lmYWKIykbjO(ihFvVaKmVToRarE49DCVQxL09zFi7VMb(QMzSnA0J041qCx3glvdwpBnHdrlA3yIPsbvQsTbF7RZogjzjzb0gt3CcTwp3lN4wgKk03RnQ2pFyOu79oPwlFKA3PhdbPUy3)eB7E56Hf7A(B7IzHF9R2r39D5hTX9KQc95LLZiB)OANLLjVgPMGJRz16BmHJ2IXn)YKX3gfUKOSDkaH5XCuq5LvsLbZtyNI4uKBo1oyYFwdUkKI0YsGHuJQdgdclqHeWCMgtx8RT8HamyXNLc4NwZNEuzUtDJaDCGB0dXgoB8tU5z2reRn))nGDE823qp28WxAZowhDTB4e7OCTtWbZwYOmJxW2qE0J6yN)W0374JnpSlBDmX9B2YbTHWA7y1T6A4B02a4cE20(Y8(i8e6pmWovF)fFrLV3QDQ6(Roqf33uNQT)I9vP7D((IY(ggKCTNSV2N9cEYofDxT6KZoGy7Qv7tO98E5YbsvxyfPMI37x401Mo2gb9v(UFAWXpc85(pH7c8ieyOfCkBnZ5a7dgMBG1EtV1MZo6RK1jOdop57o2SK3VEoYbHZl0(TwEWJf3DVBAR)Pc925aVl44axFpUBIFbbL)Dvr2rD0JjSExdsuVQ98Vv17OoE760lRpOq5mSZVqfARKlvrHFIVaFD7fK2ESr)n]] )

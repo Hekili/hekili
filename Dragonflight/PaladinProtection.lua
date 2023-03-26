@@ -1414,7 +1414,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             interrupt()
-            if talent.punishment.enabled then action.judgment.handler() end
+            if talent.punishment.enabled then class.abilities.judgment.handler() end
         end,
     },
 
