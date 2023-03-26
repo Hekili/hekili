@@ -356,7 +356,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     divine_purpose = {
-        id = 223819,
+        id = 408458,
         duration = 12,
         max_stack = 1,
     },
