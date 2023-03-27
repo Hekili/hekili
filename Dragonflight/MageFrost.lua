@@ -810,6 +810,13 @@ spec:RegisterHook( "reset_precast", function ()
     end
 end )
 
+spec:RegisterHook( "runHandler", function( action )
+    if buff.ice_floes.up then
+        local ability = class.abilities[ action ]
+        if ability and ability.cast > 0 and ability.cast < 10 then removeStack( "ice_floes" ) end
+    end
+end )
+
 
 Hekili:EmbedDisciplinaryCommand( spec )
 
@@ -1369,6 +1376,13 @@ spec:RegisterSetting( "manual_water_jet", false, {
         .. "You will need to disable its auto-cast before using this feature."], Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
     type = "toggle",
     width = "full",
+} )
+
+spec:RegisterSetting( "check_explosion_range", true, {
+    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( 1449 ) ),
+    desc = strformat( "If checked, %s will not be recommended when you are more than 10 yards from your target.", Hekili:GetSpellLinkWithTexture( 1449 ) ),
+    type = "toggle",
+    width = "full"
 } )
 
 

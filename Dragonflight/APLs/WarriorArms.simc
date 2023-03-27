@@ -4,8 +4,9 @@ actions.precombat+=/use_item,name=algethar_puzzle_box
 actions.precombat+=/avatar,if=!talent.titans_torment&!talent.blademasters_torment
 actions.precombat+=/recklessness,if=!talent.reckless_abandon
 
-actions+=/charge,if=time<=0.5|movement.distance>5
+actions+=/charge,if=time<=0.5|movement.distance>8
 actions+=/pummel
+actions+=/spell_reflection
 actions+=/potion,if=gcd.remains=0&debuff.colossus_smash.remains>8|boss&fight_remains<25
 actions+=/algethar_puzzle_box,if=cooldown.avatar.remains<3
 actions+=/irideus_fragment,if=buff.avatar.up

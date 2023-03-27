@@ -11,6 +11,8 @@ actions+=/call_action_list,name=mitigation
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=standard
 
+# Use Avenger's Shield as first priority before anything else, if t29 2pc is equipped.
+actions.cooldowns+=/avengers_shield,if=time=0&set_bonus.tier29_2pc
 actions.cooldowns+=/avenging_wrath
 actions.cooldowns+=/sentinel
 actions.cooldowns+=/potion,if=buff.aw_sentinel.up
@@ -25,8 +27,10 @@ actions.mitigation+=/divine_shield,if=talent.final_stand.enabled&tanking&incomin
 actions.mitigation+=/ardent_defender,if=tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
 actions.mitigation+=/lay_on_hands,if=health.pct<15
 
-actions.standard+=/shield_of_the_righteous,if=(!talent.righteous_protector.enabled|buff.righteous_protector_icd.down)&(buff.bastion_of_light.up|buff.divine_purpose.up|holy_power>2&(!talent.of_dusk_and_dawn|buff.blessing_of_dusk.remains<3&buff.blessing_of_dawn.remains>3))
-actions.standard+=/avengers_shield,if=buff.moment_of_glory.up|!talent.moment_of_glory.enabled
+# Use Shield of the Righteous according to Righteous Protector's ICD, but use it asap if it's a free proc (Bugged interaction, this ignores ICD)
+actions.standard+=/shield_of_the_righteous,if=((!talent.righteous_protector.enabled|buff.righteous_protector_icd.down)&holy_power>2)|buff.bastion_of_light.up|buff.divine_purpose.up
+# Use Avenger's Shield as First Priority when 2pc buff is missing.
+actions.standard+=/avengers_shield,if=buff.moment_of_glory.up|(set_bonus.tier29_2pc&(!buff.ally_of_the_light.up|buff.ally_of_the_light.remains<gcd))
 actions.standard+=/hammer_of_wrath,if=buff.aw_sentinel.up
 actions.standard+=/judgment,cycle_targets=1,if=charges=2|!talent.crusaders_judgment.enabled
 actions.standard+=/divine_toll,if=time>20|((buff.aw_sentinel.up|!talent.avenging_wrath&!talent.sentinel)&(buff.moment_of_glory.up|!talent.moment_of_glory.enabled))
@@ -39,6 +43,8 @@ actions.standard+=/blessed_hammer
 actions.standard+=/hammer_of_the_righteous
 actions.standard+=/crusader_strike
 actions.standard+=/word_of_glory,if=buff.shining_light_free.up
+actions.standard+=/arcane_torrent,if=holy_power<5
+actions.standard+=/lights_judgment
 actions.standard+=/consecration
 
 # Evaluates a trinkets cooldown, divided by moment of glory or avenging wraths's cooldown. If it's value has no remainder return 1, else return 0.5.
