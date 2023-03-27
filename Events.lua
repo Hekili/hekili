@@ -15,8 +15,8 @@ local abs = math.abs
 local lower = string.lower
 local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
-local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
-local FindPlayerAuraByID, FindStringInInventoryItemTooltip = ns.FindPlayerAuraByID, ns.FindStringInInventoryItemTooltip
+local UA_GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local FindStringInInventoryItemTooltip = ns.FindStringInInventoryItemTooltip
 local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
 
@@ -722,7 +722,7 @@ do
         end
 
         for bonus, aura in pairs( class.setBonuses ) do
-            if FindPlayerAuraByID( aura ) then
+            if UA_GetPlayerAuraBySpellID( aura ) then
                 state.set_bonus[ bonus ] = 1
             end
         end
@@ -989,10 +989,11 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
 
-    C_Timer.After( 5, function () ns.Audit( "combatExit" ) end )
+    C_Timer.After( 5, function ()
+        ns.Audit( "combatExit" )
+    end )
 
     Hekili:ReleaseHolds( true )
-    Hekili:ExpireTTDs( true )
     Hekili:UpdateDisplayVisibility()
 end )
 

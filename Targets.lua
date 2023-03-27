@@ -906,6 +906,10 @@ do
             return
         end
 
+        if special == "combatExit" and InCombatLockdown() then
+            special = nil
+        end
+
         if not special and not Hekili.DB.profile.enabled or not Hekili:IsValidSpec() then
             return
         end
@@ -987,9 +991,9 @@ do
         wipe(enemy)
         insert( recycle, enemy )
 
-        for k, v in pairs( debuffs ) do
+        --[[ for k, v in pairs( debuffs ) do
             if v[ guid ] then ns.trackDebuff( k, guid ) end
-        end
+        end ]]
     end
 
 
@@ -1356,7 +1360,7 @@ do
     function Hekili:ExpireTTDs( all )
         local now = GetTime()
 
-        for k, v in pairs(db) do
+        for k, v in pairs( db ) do
             if all or now - v.lastSeen > 10 then
                 EliminateEnemy( k )
             end
