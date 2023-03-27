@@ -17,7 +17,6 @@ actions.cooldowns+=/avenging_wrath
 actions.cooldowns+=/sentinel
 actions.cooldowns+=/potion,if=buff.aw_sentinel.up
 actions.cooldowns+=/moment_of_glory,if=(buff.aw_sentinel.remains<15|(time>10|cooldown.sentinel.remains>15|cooldown.avenging_wrath.remains>15)&(cooldown.avengers_shield.remains&cooldown.judgment.remains&cooldown.hammer_of_wrath.remains))
-actions.cooldowns+=/holy_avenger,if=buff.aw_sentinel.up|cooldown.avenging_wrath.remains>60|cooldown.sentinel.remains>60
 actions.cooldowns+=/bastion_of_light,if=buff.aw_sentinel.up
 
 actions.mitigation=shield_of_the_righteous,if=tanking&buff.shield_of_the_righteous.down&(holy_power.deficit=0|buff.divine_purpose.up)

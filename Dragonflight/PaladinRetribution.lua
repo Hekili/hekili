@@ -1941,7 +1941,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holyfire",
 
-        spend = function() return -3 + ( buff.holy_avenger.up and -6 or 0 ) end,
+        spend = -3,
         spendType = "holy_power",
 
         talent = "wake_of_ashes",
