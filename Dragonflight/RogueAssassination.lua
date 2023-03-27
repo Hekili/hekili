@@ -8,11 +8,10 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
-local FindPlayerAuraByID, FindUnitBuffByID, FindUnitDebuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID, ns.FindUnitDebuffByID
-local IterateTargets, ActorHasDebuff = ns.iterateTargets, ns.actorHasDebuff
-local orderedPairs = ns.orderedPairs
-
 local format, wipe = string.format, table.wipe
+local UA_GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+
+local orderedPairs = ns.orderedPairs
 
 local spec = Hekili:NewSpecialization( 259 )
 
@@ -265,20 +264,17 @@ end )
 local stealth_dropped = 0
 
 local function isStealthed()
-    return ( FindPlayerAuraByID( 1784 ) or FindPlayerAuraByID( 115191 ) or FindPlayerAuraByID( 115192 ) or FindPlayerAuraByID( 11327 ) or GetTime() - stealth_dropped < 0.2 )
+    return ( UA_GetPlayerAuraBySpellID( 1784 ) or UA_GetPlayerAuraBySpellID( 115191 ) or UA_GetPlayerAuraBySpellID( 115192 ) or UA_GetPlayerAuraBySpellID( 11327 ) or GetTime() - stealth_dropped < 0.2 )
 end
 
 local calculate_multiplier = setfenv( function( spellID )
     local mult = 1
-    local stealth = isStealthed()
 
-    if stealth then
-        if talent.nightstalker.enabled then
-            mult = mult * 1.08
-        end
+    if talent.nightstalker.enabled and isStealthed() then
+        mult = mult * 1.08
     end
 
-    if ( FindPlayerAuraByID( 392401 ) or FindPlayerAuraByID( 392403 ) ) and spellID == 703 then
+    if spellID == 703 and ( UA_GetPlayerAuraBySpellID( 392401 ) or UA_GetPlayerAuraBySpellID( 392403 ) ) then
         mult = mult * 1.5
     end
 
@@ -744,7 +740,7 @@ spec:RegisterHook( "runHandler", function( ability )
         removeBuff( "shadowmeld" )
         removeBuff( "vanish" )
 
-        if buff.improved_garrote.up then
+        if buff.improved_garrote.up and buff.improved_garrote.remains > 3 then
             buff.improved_garrote.expires = query_time + 2.95
         end
     end
