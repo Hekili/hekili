@@ -836,8 +836,13 @@ end )
 
 local last_empyrean_legacy_icd_expires = 0
 
-local current_crusading_strikes = 0
+local current_crusading_strikes = 1
+-- Strike 0 = SPELL_ENERGIZE occurred; Holy Power was gained -- the swing lands *after*.
+-- Strike 1 = The swing that caused Holy Power gain just landed.
+-- Strike 2 = The non-producing Holy Power swing has landed.
+-- Strike 3 = Should never actually reach due to SPELL_ENERGIZE reset, but this would be the next productive swing.
 local last_crusading_strike = 0
+
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if destGUID == state.GUID and subtype == "SPELL_AURA_APPLIED" and spellID == class.auras.empyrean_legacy.id then
@@ -845,10 +850,15 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
     elseif sourceGUID == state.GUID then
         if spellID == 406834 then -- Crusader Strikes: Energize
             current_crusading_strikes = 0
-            Hekili:ForceUpdate( "CRUSADING_STRIKES", true )
-        elseif spellID == 408385 then -- Crusader Strikes: Swing Damage
-            current_crusading_strikes = current_crusading_strikes + 1
-            last_crusading_strike = GetTime()
+        elseif spellID == 408385 then
+            local now = GetTime()
+            if now - last_crusading_strike > 0.5 then -- Crusader Strikes: Swing Damage
+                current_crusading_strikes = current_crusading_strikes + 1
+                last_crusading_strike = GetTime()
+                if current_crusading_strikes < 2 then
+                    Hekili:ForceUpdate( "CRUSADING_STRIKES", true )
+                end
+            end
         end
     end
 end )
@@ -865,34 +875,26 @@ local csStartCombat = setfenv( function()
     if not talent.crusading_strikes.enabled then return end
 
     if not action.rebuke.in_range then
-        if Hekili.ActiveDebug then Hekili:Debug( "Crusading Strikes energize fails: Out of range." ) end
+        if Hekili.ActiveDebug then Hekili:Debug( "Unable to forecast Crusading Strikes; out of range." ) end
         return
     end
 
     local mh_speed = swings.mh_speed
-    local time_since = false_start - last_crusading_strike
+    local first_productive_swing = state.false_start
 
-    if last_crusading_strike > 0 and mh_speed > 0 and time_since > 0 and time_since < mh_speed then
-        -- Should already be queued.
-        if Hekili.ActiveDebug then Hekili:Debug( "Crusading Strikes not forecasted for virtual combat start; energizes already queued." ) end
-        return
-    end
-
-    local strikes_to_go = max( 0, 2 - current_crusading_strikes )
-
-    local next_cs = state.false_start + ( 2 - strikes_to_go ) * mh_speed
-    if Hekili.ActiveDebug then Hekili:Debug( "Next Crusading Strikes energize in %.2f seconds (%.2f interval) due to virtual combat start.", next_cs - query_time, mh_speed * 2 ) end
-
-    if next_cs < query_time then
-        gain( 1, "holy_power" )
+    if current_crusading_strikes < 2 then
+        first_productive_swing = first_productive_swing + mh_speed
+        if Hekili.ActiveDebug then Hekili:Debug( "First Crusading Strikes resource gain forecasted for next swing." ) end
+        state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, first_productive_swing, "AURA_PERIODIC" )
     else
-        state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs, "AURA_PERIODIC" ) -- Pretend it's an aura.
+        -- Generate Holy Power on combat start.
+        if Hekili.ActiveDebug then Hekili:Debug( "Immediate Crusading Strikes resource gain on virtual combat start." ) end
+        spec.abilities.crusader_strike.handler()
     end
 
-    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 2 * mh_speed, "AURA_PERIODIC" )
-    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 4 * mh_speed, "AURA_PERIODIC" )
-    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 6 * mh_speed, "AURA_PERIODIC" )
-    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 8 * mh_speed, "AURA_PERIODIC" )
+    for i = 1, 4 do
+        state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, first_productive_swing + 2 * i * mh_speed, "AURA_PERIODIC" )
+    end
 end, state )
 
 
@@ -916,21 +918,29 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "templar_slash" )
     end
 
-    if talent.crusading_strikes.enabled and action.rebuke.in_range then
-        local mh_speed = swings.mh_speed
-        local time_since = now - last_crusading_strike
-
-        if last_crusading_strike > 0 and mh_speed > 0 and time_since > 0 and time_since < mh_speed then
-            local next_cs = last_crusading_strike + ( 3 - current_crusading_strikes ) * mh_speed
-            if Hekili.ActiveDebug then Hekili:Debug( "Next Crusading Strikes energize in %.2f seconds (%.2f interval).", next_cs - now, mh_speed * 2 ) end
-
-            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs               , "AURA_PERIODIC" ) -- Pretend it's an aura.
-            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 2 * mh_speed, "AURA_PERIODIC" )
-            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 4 * mh_speed, "AURA_PERIODIC" )
-            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 6 * mh_speed, "AURA_PERIODIC" )
-            state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_cs + 8 * mh_speed, "AURA_PERIODIC" )
+    if time > 0 and talent.crusading_strikes.enabled then
+        if not action.rebuke.in_range then
+            if Hekili.ActiveDebug then Hekili:Debug( "Unable to forecast Crusading Strikes; out of range." ) end
         else
-            if Hekili.ActiveDebug then Hekili:Debug( "No Crusading Strikes energize queued." ) end
+            local mh_speed = swings.mh_speed
+
+            if last_crusading_strike == 0 or now - last_crusading_strike > mh_speed then
+                if Hekili.ActiveDebug then Hekili:Debug( "Unable to forecast Crusading Strikes swing; no prior swings have been detected or the last swing was more than 1 swing timer ago." ) end
+            else
+                local time_since = now - last_crusading_strike
+
+                local was_productive = current_crusading_strikes < 2
+                local next_swing = now + ( mh_speed * ( was_productive and 2 or 1 ) ) - time_since
+
+                if Hekili.ActiveDebug then
+                    if last_crusading_strike == 0 then Hekili:Debug( "No prior Crusading Strikes swings have been detected; assuming first swing is non-productive." )
+                    else Hekili:Debug( "Last Crusading Strikes swing was %.2f seconds ago (vs. %.2f swing timer); it was %s.", time_since, mh_speed, was_productive and "productive" or "non-productive" ) end
+                end
+
+                for i = 1, 5 do
+                    state:QueueAuraEvent( "crusading_strikes", CrusadingStrikes, next_swing + 2 * ( i - 1 ) * mh_speed, "AURA_PERIODIC" )
+                end
+            end
         end
     end
 end )
@@ -1620,7 +1630,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "recompense" )
-            gain( 1, "holy_power" )
+            gain( talent.boundless_judgment.enabled and 2 or 1, "holy_power" )
             if talent.divine_arbiter.enabled then addStack( "divine_arbiter" ) end
             if talent.empyrean_legacy.enabled and debuff.empyrean_legacy_icd.down then
                 applyBuff( "empyrean_legacy" )
