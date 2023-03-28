@@ -1269,8 +1269,8 @@ do
                         type = "toggle",
                         name = function() return multiDisplays.Primary and "|cFF00FF00" .. L["Primary"] .. "|r" or "|cFFFF0000" .. L["Primary"] .. "|r" end,
                         desc = function()
-                            if multiDisplays.Primary then return L["Changes |cFF00FF00will|r be applied to the Primary display."] end
-                            return L["Changes |cFFFF0000will not|r be applied to the Primary display."]
+                            if multiDisplays.Primary then return format( L["Changes |cFF00FF00will|r be applied to the %s display."], L["Primary"] ) end
+                            return format( L["Changes |cFFFF0000will not|r be applied to the %s display."], L["Primary"] )
                         end,
                         order = 0.01,
                         width = 1,
@@ -1282,8 +1282,8 @@ do
                         type = "toggle",
                         name = function() return multiDisplays.AOE and "|cFF00FF00" .. L["AOE"] .. "|r" or "|cFFFF0000" .. L["AOE"] .. "|r" end,
                         desc = function()
-                            if multiDisplays.AOE then return L["Changes |cFF00FF00will|r be applied to the AOE display."] end
-                            return L["Changes |cFFFF0000will not|r be applied to the AOE display."]
+                            if multiDisplays.AOE then return format( L["Changes |cFF00FF00will|r be applied to the %s display."], L["AOE"] ) end
+                            return format( L["Changes |cFFFF0000will not|r be applied to the %s display."], L["AOE"] )
                         end,
                         order = 0.02,
                         width = 1,
@@ -1295,8 +1295,8 @@ do
                         type = "toggle",
                         name = function () return AtlasToString( "chromietime-32x32" ) .. ( multiDisplays.Cooldowns and " |cFF00FF00" .. L["Cooldowns"] .. "|r" or " |cFFFF0000" .. L["Cooldowns"] .. "|r" ) end,
                         desc = function()
-                            if multiDisplays.Cooldowns then return L["Changes |cFF00FF00will|r be applied to the Cooldowns display."] end
-                            return L["Changes |cFFFF0000will not|r be applied to the Cooldowns display."]
+                            if multiDisplays.Cooldowns then return format( L["Changes |cFF00FF00will|r be applied to the %s display."], L["Cooldowns"] ) end
+                            return format( L["Changes |cFFFF0000will not|r be applied to the %s display."], L["Cooldowns"] )
                         end,
                         order = 0.03,
                         width = 1,
@@ -1308,8 +1308,8 @@ do
                         type = "toggle",
                         name = function () return AtlasToString( "nameplates-InterruptShield" ) .. ( multiDisplays.Defensives and " |cFF00FF00" .. L["Defensives"] .. "|r" or " |cFFFF0000" .. L["Defensives"] .. "|r" ) end,
                         desc = function()
-                            if multiDisplays.Defensives then return L["Changes |cFF00FF00will|r be applied to the Defensives display."] end
-                            return L["Changes |cFFFF0000will not|r be applied to the Defensives display."]
+                            if multiDisplays.Defensives then return format( L["Changes |cFF00FF00will|r be applied to the %s display."], L["Defensives"] ) end
+                            return format( L["Changes |cFFFF0000will not|r be applied to the %s display."], L["Defensives"] )
                         end,
                         order = 0.04,
                         width = 1,
@@ -1321,8 +1321,8 @@ do
                         type = "toggle",
                         name = function () return AtlasToString( "voicechat-icon-speaker-mute" ) .. ( multiDisplays.Interrupts and " |cFF00FF00" .. L["Interrupts"] .. "|r" or " |cFFFF0000" .. L["Interrupts"] .. "|r" ) end,
                         desc = function()
-                            if multiDisplays.Interrupts then return L["Changes |cFF00FF00will|r be applied to the Interrupts display."] end
-                            return L["Changes |cFFFF0000will not|r be applied to the Interrupts display."]
+                            if multiDisplays.Interrupts then return format( L["Changes |cFF00FF00will|r be applied to the %s display."], L["Interrupts"] ) end
+                            return format( L["Changes |cFFFF0000will not|r be applied to the %s display."], L["Interrupts"] )
                         end,
                         order = 0.05,
                         width = 1,
@@ -1818,7 +1818,7 @@ do
                                     combat = {
                                         type = "range",
                                         name = L["Combat"],
-                                        desc = L["If non-zero, this display is shown with the specified level of opacity in PvE combat."],
+                                        desc = format( L["If non-zero, this display is shown with the specified level of opacity in %s combat."], L["PvE"] ),
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -1836,7 +1836,7 @@ do
                                     target = {
                                         type = "range",
                                         name = L["Target"],
-                                        desc = L["If non-zero, this display is shown with the specified level of opacity when you have an attackable PvE target."],
+                                        desc = format( L["If non-zero, this display is shown with the specified level of opacity when you have an attackable %s target."], L["PvE"] ),
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -1847,7 +1847,7 @@ do
                                     combatTarget = {
                                         type = "range",
                                         name = L["Combat w/ Target"],
-                                        desc = L["If non-zero, this display is shown with the specified level of opacity when you are in combat and have an attackable PvE target."],
+                                        desc = format( L["If non-zero, this display is shown with the specified level of opacity when you are in combat and have an attackable %s target."], L["PvE"] ),
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -1898,7 +1898,7 @@ do
                                     combat = {
                                         type = "range",
                                         name = L["Combat"],
-                                        desc = L["If non-zero, this display is shown with the specified level of opacity in PvP combat."],
+                                        desc = format( L["If non-zero, this display is shown with the specified level of opacity in %s combat."], L["PvP"] ),
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -1916,7 +1916,7 @@ do
                                     target = {
                                         type = "range",
                                         name = L["Target"],
-                                        desc = L["If non-zero, this display is shown with the specified level of opacity when you have an attackable PvP target."],
+                                        desc = format( L["If non-zero, this display is shown with the specified level of opacity when you have an attackable %s target."], L["PvP"] ),
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -1927,7 +1927,7 @@ do
                                     combatTarget = {
                                         type = "range",
                                         name = L["Combat w/ Target"],
-                                        desc = L["If non-zero, this display is shown with the specified level of opacity when you are in combat and have an attackable PvP target."],
+                                        desc = format( L["If non-zero, this display is shown with the specified level of opacity when you are in combat and have an attackable %s target."], L["PvP"] ),
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
@@ -3933,11 +3933,11 @@ do
                 values = function ()
                     table.wipe( toggles )
 
-                    local t = class.abilities[ v ].toggle or "none"
+                    local t = class.abilities[ v ].toggle
                     if t == "essences" then t = "covenants" end
 
                     toggles.none = L["None"]
-                    toggles.default = L["Default"] .. " |cffffd100(" .. L[t] .. ")|r"
+                    toggles.default = L["Default"] .. " |cffffd100(" .. ( t and L[t:gsub("^%l", string.upper)] or  L["none"] ) .. ")|r"
                     toggles.cooldowns = L["Cooldowns"]
                     toggles.essences = L["Covenants"]
                     toggles.defensives = L["Defensives"]
@@ -4025,7 +4025,7 @@ do
                     disabled = {
                         type = "toggle",
                         name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
-                        desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause issues for some specializations, if other abilities depend on you using %s."], ability.item and ability.link or k ) end,
+                        desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k ) end,
                         width = 1,
                         order = 1,
                     },
@@ -4047,11 +4047,11 @@ do
                         values = function ()
                             table.wipe( toggles )
 
-                            local t = class.abilities[ v ].toggle or "none"
+                            local t = class.abilities[ v ].toggle
                             if t == "essences" then t = "covenants" end
 
                             toggles.none = L["None"]
-                            toggles.default = L["Default"] .. " |cffffd100(" .. L[t] .. ")|r"
+                            toggles.default = L["Default"] .. " |cffffd100(" .. ( t and L[t:gsub("^%l", string.upper)] or  L["none"] ) .. ")|r"
                             toggles.cooldowns = L["Cooldowns"]
                             toggles.essences = L["Covenants"]
                             toggles.defensives = L["Defensives"]
@@ -4230,7 +4230,7 @@ do
             disabled = {
                 type = "toggle",
                 name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
-                desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause issues for some specializations, if other abilities depend on you using %s."], ability.item and ability.link or k ) end,
+                desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k ) end,
                 width = 1.5,
                 order = 1,
             },
@@ -4265,8 +4265,11 @@ do
                 values = function ()
                     table.wipe( toggles )
 
+                    local t = class.abilities[ v ].toggle
+                    if t == "essences" then t = "covenants" end
+
                     toggles.none = L["None"]
-                    toggles.default = L["Default"] .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. L[class.abilities[ v ].toggle] .. ")|r" ) or " |cffffd100" .. L["(none)"] .. "|r" )
+                    toggles.default = L["Default"] .. " |cffffd100(" .. ( t and L[t:gsub("^%l", string.upper)] or  L["none"] ) .. ")|r"
                     toggles.cooldowns = L["Cooldowns"]
                     toggles.essences = L["Covenants"]
                     toggles.defensives = L["Defensives"]
@@ -4355,7 +4358,7 @@ do
                     disabled = {
                         type = "toggle",
                         name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
-                        desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause issues for some specializations, if other abilities depend on you using %s."], ability.item and ability.link or k ) end,
+                        desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k ) end,
                         width = 1.5,
                         order = 1.05,
                     },
@@ -4390,8 +4393,11 @@ do
                         values = function ()
                             table.wipe( toggles )
 
+                            local t = class.abilities[ v ].toggle
+                            if t == "essences" then t = "covenants" end
+
                             toggles.none = L["None"]
-                            toggles.default = L["Default"] .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. L[class.abilities[ v ].toggle] .. ")|r" ) or " |cffffd100" .. L["(none)"] .. "|r" )
+                            toggles.default = L["Default"] .. " |cffffd100(" .. ( t and L[t:gsub("^%l", string.upper)] or  L["none"] ) .. ")|r"
                             toggles.cooldowns = L["Cooldowns"]
                             toggles.essences = L["Covenants"]
                             toggles.defensives = L["Defensives"]
