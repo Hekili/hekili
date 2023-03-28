@@ -836,7 +836,7 @@ spec:RegisterAbilities( {
 
 spec:RegisterSetting( "experimental_msg", nil, {
     type = "description",
-    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk.",
+    name = L["|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk."],
     width = "full",
 } )
 
@@ -845,9 +845,7 @@ local deep_breath = GetSpellInfo( 357210 ) or L["Deep Breath"]
 spec:RegisterSetting( "use_deep_breath", true, {
     name = strformat( L["Use %s"], Hekili:GetSpellLinkWithTexture( 357210 ) ),
     type = "toggle",
-    desc = strformat( L["If checked, %s may be recommended, which will force your character to select a destination and move.  By default, %s requires your Cooldowns "
-        .. "toggle to be active.\n\n"
-        .. "If unchecked, |W%s|w will never be recommended, which may result in lost DPS if left unused for an extended period of time."],
+    desc = strformat( L["If checked, %1$s may be recommended, which will force your character to select a destination and move.  By default, %2$s requires your Cooldowns toggle to be active.\n\nIf unchecked, |W%3$s|w will never be recommended, which may result in lost DPS if left unused for an extended period of time."],
         Hekili:GetSpellLinkWithTexture( 357210 ), deep_breath, deep_breath ),
     width = "full",
 } )
@@ -857,7 +855,7 @@ local unravel = GetSpellInfo( 368432 ) or L["Unravel"]
 spec:RegisterSetting( "use_unravel", false, {
     name = strformat( L["Use %s"], Hekili:GetSpellLinkWithTexture( 368432 ) ),
     type = "toggle",
-    desc = strformat( L["If checked, %s may be recommended if your target has an absorb shield applied.  By default, %s also requires your Interrupts toggle to be active."],
+    desc = strformat( L["If checked, %1$s may be recommended if your target has an absorb shield applied.  By default, %2$s also requires your Interrupts toggle to be active."],
         Hekili:GetSpellLinkWithTexture( 368432 ), unravel ),
     width = "full",
 } )

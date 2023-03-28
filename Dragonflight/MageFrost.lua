@@ -1372,15 +1372,15 @@ spec:RegisterOptions( {
 
 spec:RegisterSetting( "manual_water_jet", false, {
     name = strformat( L["%s: Manual Control"], Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
-    desc = strformat( L["If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet.\n\n"
-        .. "You will need to disable its auto-cast before using this feature."], Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
+    desc = strformat( L["If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet.\n\nYou will need to disable its auto-cast before using this feature."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "check_explosion_range", true, {
-    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( 1449 ) ),
-    desc = strformat( "If checked, %s will not be recommended when you are more than 10 yards from your target.", Hekili:GetSpellLinkWithTexture( 1449 ) ),
+    name = strformat( L["%s: Range Check"], Hekili:GetSpellLinkWithTexture( 1449 ) ),
+    desc = strformat( L["If checked, %s will not be recommended when you are more than 10 yards from your target."], Hekili:GetSpellLinkWithTexture( 1449 ) ),
     type = "toggle",
     width = "full"
 } )

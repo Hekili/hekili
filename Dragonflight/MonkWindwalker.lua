@@ -2222,8 +2222,7 @@ spec:RegisterOptions( {
 
 spec:RegisterSetting( "allow_fsk", false, {
     name = strformat( L["Use %s"], Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ) ),
-    desc = strformat( L["If unchecked, %s will not be recommended despite generally being used as a filler ability.\n\n"
-        .. "Unchecking this option is the same as disabling the ability via |cFFFFD100Abilities|r > |cFFFFD100|W%s|w|r > |cFFFFD100|W%s|w|r > |cFFFFD100Disable|r."],
+    desc = strformat( L["If unchecked, %1$s will not be recommended despite generally being used as a filler ability.\n\nUnchecking this option is the same as disabling the ability via |cFFFFD100Abilities|r > |cFFFFD100|W%2$s|w|r > |cFFFFD100|W%3$s|w|r > |cFFFFD100Disable|r."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ), spec.name, spec.abilities.flying_serpent_kick.name ),
     type = "toggle",
     width = "full",
@@ -2243,8 +2242,7 @@ spec:RegisterSetting( "optimize_reverse_harm", false, {
 
 spec:RegisterSetting( "sef_one_charge", false, {
     name = strformat( L["%s: Reserve 1 Charge for Cooldowns Toggle"], Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ) ),
-    desc = strformat( L["If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\n"
-        .. "If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled."],
+    desc = strformat( L["If checked, %1$s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\nIf |W%2$s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ), spec.abilities.storm_earth_and_fire.name ),
     type = "toggle",
     width = "full",
@@ -2283,7 +2281,7 @@ spec:RegisterSetting( "use_diffuse", false, {
         local t = class.abilities.diffuse_magic.toggle
         if t then
             local active = Hekili.DB.profile.toggles[ t ].value
-            m = m .. "\n\n" .. ( active and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires " .. t:gsub("^%l", string.upper) .. " Toggle|r"
+            m = m .. "\n\n" .. ( active and "|cFF00FF00" or "|cFFFF0000" ) .. strformat( L["Requires %s Toggle"], L[t:gsub("^%l", string.upper)] ) .. "|r"
         end
 
         return m

@@ -1658,8 +1658,7 @@ spec:RegisterOptions( {
 
 spec:RegisterSetting( "purify_for_celestial", true, {
     name = strformat( L["%s: Maximize Shield"], Hekili:GetSpellLinkWithTexture( spec.abilities.celestial_brew.id ) ),
-    desc = strformat( L["If checked, %s may be recommended more frequently to build stacks of %s for your %s shield.\n\n" ..
-        "This feature may work best with the %s talent, but risks leaving you without a charge of %s following a large spike in your %s."],
+    desc = strformat( L["If checked, %1$s may be recommended more frequently to build stacks of %2$s for your %3$s shield.\n\nThis feature may work best with the %4$s talent, but risks leaving you without a charge of %5$s following a large spike in your %6$s."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( spec.auras.purified_chi.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.celestial_brew.id ), Hekili:GetSpellLinkWithTexture( spec.talents.light_brewing[2] ),
         spec.abilities.purifying_brew.name, Hekili:GetSpellLinkWithTexture( 115069 ) ),
@@ -1669,12 +1668,11 @@ spec:RegisterSetting( "purify_for_celestial", true, {
 
 
 spec:RegisterSetting( "purify_for_niuzao", true, {
-    name = strformat( "%s: Maximize %s", Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ),
+    name = strformat( L["%s: Maximize %s"], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ),
         Hekili:GetSpellLinkWithTexture( spec.talents.improved_invoke_niuzao[2] ) ),
-    desc = strformat( "If checked, %s may be recommended when %s is active if %s is talented.\n\n"
-        .. "This feature is used to maximize %s damage from your guardian.", Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.invoke_niuzao.id ), Hekili:GetSpellLinkWithTexture( spec.talents.improved_invoke_niuzao[2] ),
-        Hekili:GetSpellLinkWithTexture( 227291 ) ),
+    desc = strformat( L["If checked, %1$s may be recommended when %2$s is active if %3$s is talented.\n\nThis feature is used to maximize %4$s damage from your guardian."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.invoke_niuzao.id ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.improved_invoke_niuzao[2] ), Hekili:GetSpellLinkWithTexture( 227291 ) ),
     type = "toggle",
     width = "full"
 } )
@@ -1682,9 +1680,8 @@ spec:RegisterSetting( "purify_for_niuzao", true, {
 
 spec:RegisterSetting( "purify_stagger_currhp", 12, {
     name = strformat( L["%s: %s Tick %% Current Health"], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
-    desc = strformat( L["If set above zero, %s may be recommended when your current %s ticks for this percentage of your |cFFFFD100current|r effective health (or more).  "
-        .. "Custom priorities may ignore this setting.\n\n"
-        .. "This value is halved when playing solo."], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
+    desc = strformat( L["If set above zero, %1$s may be recommended when your current %2$s ticks for this percentage of your |cFFFFD100current|r effective health (or more).  Custom priorities may ignore this setting.\n\nThis value is halved when playing solo."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
     type = "range",
     min = 0,
     max = 100,
@@ -1695,9 +1692,8 @@ spec:RegisterSetting( "purify_stagger_currhp", 12, {
 
 spec:RegisterSetting( "purify_stagger_maxhp", 6, {
     name = strformat( L["%s: %s Tick %% Maximum Health"], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
-    desc = strformat( L["If set above zero, %s may be recommended when your current %s ticks for this percentage of your |cFFFFD100maximum|r health (or more).  "
-        .. "Custom priorities may ignore this setting.\n\n"
-        .. "This value is halved when playing solo."], Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
+    desc = strformat( L["If set above zero, %1$s may be recommended when your current %2$s ticks for this percentage of your |cFFFFD100maximum|r health (or more).  Custom priorities may ignore this setting.\n\nThis value is halved when playing solo."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ), Hekili:GetSpellLinkWithTexture( 115069 ) ),
     type = "range",
     min = 0,
     max = 100,
@@ -1709,8 +1705,7 @@ spec:RegisterSetting( "purify_stagger_maxhp", 6, {
 spec:RegisterSetting( "bof_percent", 50, {
     name = strformat( L["%s: Require %s %%"], Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_fire.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.keg_smash.id ) ),
-    desc = strformat( L["If set above zero, %s may be recommended only if this percentage of your identified targets are afflicted with %s.\n\n" ..
-        "Example:  If set to |cFFFFD10050|r, with 4 targets, |W%s|w will only be recommended when at least 2 targets have |W%s|w applied."],
+    desc = strformat( L["If set above zero, %1$s may be recommended only if this percentage of your identified targets are afflicted with %2$s.\n\nExample:  If set to |cFFFFD10050|r, with 4 targets, |W%3$s|w will only be recommended when at least 2 targets have |W%4$s|w applied."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.keg_smash.id ),
         spec.abilities.breath_of_fire.name, spec.abilities.keg_smash.name ),
     type = "range",

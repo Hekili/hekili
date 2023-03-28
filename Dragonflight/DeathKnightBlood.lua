@@ -1916,17 +1916,16 @@ spec:RegisterOptions( {
 
 spec:RegisterSetting( "save_blood_shield", true, {
     name = strformat( L["Save %s"], Hekili:GetSpellLinkWithTexture( spec.auras.blood_shield.id ) ),
-    desc = strformat( L["If checked, the default priority (or any priority checking |cFFFFD100save_blood_shield|r) will try to avoid letting your %s fall off during "
-        .. "lulls in damage."], Hekili:GetSpellLinkWithTexture( spec.auras.blood_shield.id ) ),
+    desc = strformat( L["If checked, the default priority (or any priority checking |cFFFFD100save_blood_shield|r) will try to avoid letting your %s fall off during lulls in damage."],
+        Hekili:GetSpellLinkWithTexture( spec.auras.blood_shield.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "ibf_damage", 40, {
     name = strformat( L["%s Damage Threshold"], Hekili:GetSpellLinkWithTexture( spec.abilities.icebound_fortitude.id ) ),
-    desc = strformat( L["When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n"
-        .. "|W%s|w also requires the Defensives toggle by default."], Hekili:GetSpellLinkWithTexture( spec.abilities.icebound_fortitude.id ),
-        spec.abilities.icebound_fortitude.name ),
+    desc = strformat( L["When set above zero, the default priority can recommend %1$s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n|W%2$s|w also requires the Defensives toggle by default."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.icebound_fortitude.id ), spec.abilities.icebound_fortitude.name ),
     type = "range",
     min = 0,
     max = 200,
@@ -1936,8 +1935,8 @@ spec:RegisterSetting( "ibf_damage", 40, {
 
 spec:RegisterSetting( "rt_damage", 30, {
     name = strformat( L["%s Damage Threshold"], Hekili:GetSpellLinkWithTexture( spec.abilities.rune_tap.id ) ),
-    desc = strformat( L["When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n"
-        .. "|W%s|w also requires the Defensives toggle by default."], Hekili:GetSpellLinkWithTexture( spec.abilities.rune_tap.id ), spec.abilities.rune_tap.name ),
+    desc = strformat( L["When set above zero, the default priority can recommend %1$s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n|W%2$s|w also requires the Defensives toggle by default."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.rune_tap.id ), spec.abilities.rune_tap.name ),
     type = "range",
     min = 0,
     max = 200,
@@ -1947,9 +1946,8 @@ spec:RegisterSetting( "rt_damage", 30, {
 
 spec:RegisterSetting( "vb_damage", 50, {
     name = strformat( L["%s Damage Threshold"], Hekili:GetSpellLinkWithTexture( spec.abilities.vampiric_blood.id ) ),
-    desc = strformat( L["When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n"
-        .. "|W%s|w also requires the Defensives toggle by default."], Hekili:GetSpellLinkWithTexture( spec.abilities.vampiric_blood.id ),
-        spec.abilities.vampiric_blood.name ),
+    desc = strformat( L["When set above zero, the default priority can recommend %1$s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n|W%2$s|w also requires the Defensives toggle by default."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.vampiric_blood.id ), spec.abilities.vampiric_blood.name ),
     type = "range",
     min = 0,
     max = 200,

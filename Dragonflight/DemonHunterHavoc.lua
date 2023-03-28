@@ -1673,9 +1673,8 @@ spec:RegisterOptions( {
 
 spec:RegisterSetting( "demon_blades_text", nil, {
     name = function()
-        return strformat( L["|cFFFF0000WARNING!|r  If using the %s talent, Fury gains from your auto-attacks will be forecast conservatively and updated when you "
-            .. "actually gain resources.  This prediction can result in Fury spenders appearing abruptly since it was not guaranteed that you'd have enough Fury on "
-            .. "your next melee swing."], Hekili:GetSpellLinkWithTexture( 203555 ) )
+        return strformat( L["|cFFFF0000WARNING!|r  If using the %s talent, Fury gains from your auto-attacks will be forecast conservatively and updated when you actually gain resources.  This prediction can result in Fury spenders appearing abruptly since it was not guaranteed that you'd have enough Fury on your next melee swing."],
+            Hekili:GetSpellLinkWithTexture( 203555 ) )
     end,
     type = "description",
     width = "full"
@@ -1701,18 +1700,16 @@ spec:RegisterSetting( "fel_rush_head", nil, {
 } )
 
 spec:RegisterSetting( "fel_rush_warning", nil, {
-    name = strformat( "The %s, %s, and/or %s talents require the use of %s.  If you do not want |W%s|w to be recommended to trigger these talents, you may want to "
-        .. "consider a different talent build.\n\n"
-        .. "You can reserve |W%s|w charges to ensure recommendations will always leave you with charge(s) available to use, but failing to use |W%s|w may ultimately "
-        .. "cost you DPS.", Hekili:GetSpellLinkWithTexture( 388113 ), Hekili:GetSpellLinkWithTexture( 206476 ), Hekili:GetSpellLinkWithTexture( 347461 ),
+    name = strformat( L["The %1$s, %2$s, and/or %3$s talents require the use of %4$s.  If you do not want |W%5$s|w to be recommended to trigger these talents, you may want to consider a different talent build.\n\nYou can reserve |W%6$s|w charges to ensure recommendations will always leave you with charge(s) available to use, but failing to use |W%7$s|w may ultimately cost you DPS."],
+        Hekili:GetSpellLinkWithTexture( 388113 ), Hekili:GetSpellLinkWithTexture( 206476 ), Hekili:GetSpellLinkWithTexture( 347461 ),
         Hekili:GetSpellLinkWithTexture( 195072 ), spec.abilities.fel_rush.name, spec.abilities.fel_rush.name, spec.abilities.fel_rush.name ),
     type = "description",
     width = "full",
 } )
 
 spec:RegisterSetting( "fel_rush_charges", 0, {
-    name = strformat( "Reserve %s Charges", Hekili:GetSpellLinkWithTexture( 195072 ) ),
-    desc = strformat( "If set above zero, %s will not be recommended if it would leave you with fewer (fractional) charges.", Hekili:GetSpellLinkWithTexture( 195072 ) ),
+    name = strformat( L["Reserve %s Charges"], Hekili:GetSpellLinkWithTexture( 195072 ) ),
+    desc = strformat( L["If set above zero, %s will not be recommended if it would leave you with fewer (fractional) charges."], Hekili:GetSpellLinkWithTexture( 195072 ) ),
     type = "range",
     min = 0,
     max = 2,
@@ -1721,9 +1718,8 @@ spec:RegisterSetting( "fel_rush_charges", 0, {
 } )
 
 spec:RegisterSetting( "fel_rush_filler", true, {
-    name = strformat( "%s: Filler and Movement", Hekili:GetSpellLinkWithTexture( 195072 ) ),
-    desc = strformat( "When enabled, %s may be recommended as a filler ability or for movement.\n\n"
-        .. "These recommendations may occur with %s talented, when your other abilities are on cooldown, and/or because you are out of range of your target.",
+    name = strformat( L["%s: Filler and Movement"], Hekili:GetSpellLinkWithTexture( 195072 ) ),
+    desc = strformat( L["When enabled, %1$s may be recommended as a filler ability or for movement.\n\nThese recommendations may occur with %2$s talented, when your other abilities are on cooldown, and/or because you are out of range of your target."],
         Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 203555 ) ),
     type = "toggle",
     width = "full"
@@ -1736,8 +1732,7 @@ spec:RegisterSetting( "throw_glaive_head", nil, {
 } )
 
 spec:RegisterSetting( "throw_glaive_charges_text", nil, {
-    name = strformat( "You can reserve charges of %s to ensure that it is always available for %s or |W|T1385910:0::::64:64:4:60:4:60|t |cff71d5ff%s (affix)|r|w procs. "
-        .. "If set to your maximum charges (2 with %s, 1 otherwise), |W%s|w will never be recommended.  Failing to use |W%s|w when appropriate may impact your DPS.",
+    name = strformat( L["You can reserve charges of %1$s to ensure that it is always available for %2$s or |W|T1385910:0::::64:64:4:60:4:60|t |cff71d5ff%3$s (affix)|r|w procs. If set to your maximum charges (2 with %4$s, 1 otherwise), |W%5$s|w will never be recommended.  Failing to use |W%6$s|w when appropriate may impact your DPS."],
         Hekili:GetSpellLinkWithTexture( 185123 ), Hekili:GetSpellLinkWithTexture( 391429 ), GetSpellInfo( 396363 ), Hekili:GetSpellLinkWithTexture( 389763 ),
         spec.abilities.throw_glaive.name, spec.abilities.throw_glaive.name ),
     type = "description",
@@ -1745,8 +1740,8 @@ spec:RegisterSetting( "throw_glaive_charges_text", nil, {
 } )
 
 spec:RegisterSetting( "throw_glaive_charges", 0, {
-    name = strformat( "Reserve %s Charges", Hekili:GetSpellLinkWithTexture( 185123 ) ),
-    desc = strformat( "If set above zero, %s will not be recommended if it would leave you with fewer (fractional) charges.", Hekili:GetSpellLinkWithTexture( 185123 ) ),
+    name = strformat( L["Reserve %s Charges"], Hekili:GetSpellLinkWithTexture( 185123 ) ),
+    desc = strformat( L["If set above zero, %s will not be recommended if it would leave you with fewer (fractional) charges."], Hekili:GetSpellLinkWithTexture( 185123 ) ),
     type = "range",
     min = 0,
     max = 2,
@@ -1761,39 +1756,35 @@ spec:RegisterSetting( "retreat_head", nil, {
 } )
 
 spec:RegisterSetting( "retreat_warning", nil, {
-    name = strformat( "The %s, %s, and/or %s talents require the use of %s.  If you do not want |W%s|w to be recommended to trigger the benefit of these talents, you "
-        .. "may want to consider a different talent build.", Hekili:GetSpellLinkWithTexture( 388108 ),Hekili:GetSpellLinkWithTexture( 206476 ),
+    name = strformat( L["The %1$s, %2$s, and/or %3$s talents require the use of %4$s.  If you do not want |W%5$s|w to be recommended to trigger the benefit of these talents, you may want to consider a different talent build."],
+        Hekili:GetSpellLinkWithTexture( 388108 ),Hekili:GetSpellLinkWithTexture( 206476 ),
         Hekili:GetSpellLinkWithTexture( 389688 ), Hekili:GetSpellLinkWithTexture( 198793 ), spec.abilities.vengeful_retreat.name ),
     type = "description",
     width = "full",
 } )
 
 spec:RegisterSetting( "retreat_and_return", "off", {
-    name = strformat( "%s: %s and %s", Hekili:GetSpellLinkWithTexture( 198793 ), Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 232893 ) ),
+    name = strformat( L["%1$s: %2$s and %3$s"], Hekili:GetSpellLinkWithTexture( 198793 ), Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 232893 ) ),
     desc = function()
-        return strformat( "When enabled, %s will |cFFFF0000NOT|r be recommended unless either %s or %s are available to quickly return to your current target.  This "
-            .. "requirement applies to all |W%s|w and |W%s|w recommendations, regardless of talents.\n\n"
-            .. "If |W%s|w is not talented, its cooldown will be ignored.\n\n"
-            .. "This option does not guarantee that |W%s|w or |W%s|w will be the first recommendation after |W%s|w but will ensure that either/both are available immediately.",
+        return strformat( L["When enabled, %1$s will |cFFFF0000NOT|r be recommended unless either %2$s or %3$s are available to quickly return to your current target.  This requirement applies to all |W%4$s|w and |W%5$s|w recommendations, regardless of talents.\n\nIf |W%6$s|w is not talented, its cooldown will be ignored.\n\nThis option does not guarantee that |W%7$s|w or |W%8$s|w will be the first recommendation after |W%9$s|w but will ensure that either/both are available immediately."],
             Hekili:GetSpellLinkWithTexture( 198793 ), Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 232893 ),
             spec.abilities.fel_rush.name, spec.abilities.vengeful_retreat.name, spec.abilities.felblade.name,
             spec.abilities.fel_rush.name, spec.abilities.felblade.name, spec.abilities.vengeful_retreat.name )
     end,
     type = "select",
     values = {
-        off = "Disabled (default)",
-        fel_rush = "Require " .. Hekili:GetSpellLinkWithTexture( 195072 ),
-        felblade = "Require " .. Hekili:GetSpellLinkWithTexture( 232893 ),
-        either = "Either " .. Hekili:GetSpellLinkWithTexture( 195072 ) .. " or " .. Hekili:GetSpellLinkWithTexture( 232893 )
+        off = L["Disabled (default)"],
+        fel_rush = strformat( L["Require %s"], Hekili:GetSpellLinkWithTexture( 195072 ) ),
+        felblade = strformat( L["Require %s"], Hekili:GetSpellLinkWithTexture( 232893 ) ),
+        either = strformat( L["Either %s or %s"], Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 232893 ))
     },
     width = "full"
 } )
 
 spec:RegisterSetting( "retreat_filler", false, {
-    name = strformat( "%s: Filler and Movement", Hekili:GetSpellLinkWithTexture( 198793 ) ),
+    name = strformat( L["%s: Filler and Movement"], Hekili:GetSpellLinkWithTexture( 198793 ) ),
     desc = function()
-        return strformat( "When enabled, %s may be recommended as a filler ability or for movement.\n\n"
-            .. "These recommendations may occur with %s talented, when your other abilities being on cooldown, and/or because you are out of range of your target.",
+        return strformat( L["When enabled, %1$s may be recommended as a filler ability or for movement.\n\nThese recommendations may occur with %2$s talented, when your other abilities being on cooldown, and/or because you are out of range of your target."],
             Hekili:GetSpellLinkWithTexture( 198793 ), Hekili:GetSpellLinkWithTexture( 203555 ) )
     end,
     type = "toggle",

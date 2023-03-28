@@ -9,6 +9,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 local FindUnitBuffByID = ns.FindUnitBuffByID
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 66 )
 
 spec:RegisterResource( Enum.PowerType.HolyPower )
@@ -1551,7 +1553,8 @@ end )
 
 spec:RegisterSetting( "goak_damage", 40, {
     name = L["|T135919:0|t Guardian of Ancient Kings Damage Threshold"],
-    desc = function() return format( L["When set above zero, the addon may recommend %s when you take this percentage of your maximum health in damage in the past 5 seconds.\n\nBy default, your Defensives toggle must also be enabled."], "|T135919:0|t " .. GetSpellInfo( class.abilities.guardian_of_ancient_kings.id ) or L["Guardian of Ancient Kings"] ) end,
+    desc = function() return strformat( L["When set above zero, the addon may recommend %s when you take this percentage of your maximum health in damage in the past 5 seconds.\n\nBy default, your Defensives toggle must also be enabled."],
+        "|T135919:0|t " .. GetSpellInfo( class.abilities.guardian_of_ancient_kings.id ) or L["Guardian of Ancient Kings"] ) end,
     type = "range",
     min = 0,
     max = 100,
@@ -1566,7 +1569,8 @@ end )
 
 spec:RegisterSetting( "ds_damage", 60, {
     name = L["|T524354:0|t Divine Shield Damage Threshold"],
-    desc = function() return format( L["When set above zero, the addon may recommend %s when you take this percentage of your maximum health in damage in the past 5 seconds.\n\nBy default, your Defensives toggle must also be enabled."], "|T524354:0|t " .. GetSpellInfo( class.abilities.divine_shield.id ) or L["Divine Shield"] ) end,
+    desc = function() return strformat( L["When set above zero, the addon may recommend %s when you take this percentage of your maximum health in damage in the past 5 seconds.\n\nBy default, your Defensives toggle must also be enabled."],
+        "|T524354:0|t " .. GetSpellInfo( class.abilities.divine_shield.id ) or L["Divine Shield"] ) end,
     type = "range",
     min = 0,
     max = 100,

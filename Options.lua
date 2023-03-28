@@ -1380,10 +1380,8 @@ do
 
                             forecastPeriod = {
                                 type = "range",
-                                name = "Forecast Period",
-                                desc = "Specify the amount of time that the addon can look forward to generate a recommendation.  For example, in a Cooldowns display, if this is set to |cFFFFD10015|r (default), then "
-                                    .. "a cooldown ability could start to appear when it has 15 seconds remaining on its cooldown and its usage conditions are met.\n\n"
-                                    .. "If set to a very short period of time, recommendations may be prevented due to having no abilities off cooldown with resource requirements and usage conditions met.",
+                                name = L["Forecast Period"],
+                                desc = L["Specify the amount of time that the addon can look forward to generate a recommendation.  For example, in a Cooldowns display, if this is set to |cFFFFD10015|r (default), then a cooldown ability could start to appear when it has 15 seconds remaining on its cooldown and its usage conditions are met.\n\nIf set to a very short period of time, recommendations may be prevented due to having no abilities off cooldown with resource requirements and usage conditions met."],
                                 softMin = 1.5,
                                 min = 0,
                                 softMax = 15,
@@ -3900,8 +3898,7 @@ do
             disabled = {
                 type = "toggle",
                 name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
-                desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
-                    "issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k ) end,
+                desc = function () return format( L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k ) end,
                 width = 1.5,
                 order = 1,
             },
@@ -3917,8 +3914,7 @@ do
             keybind = {
                 type = "input",
                 name = L["Override Keybind Text"],
-                desc = L["If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
-                    "This can be helpful if your keybinds are detected incorrectly or is found on multiple action bars."],
+                desc = L["If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  This can be helpful if your keybinds are detected incorrectly or is found on multiple action bars."],
                 validate = function( info, val )
                     val = val:trim()
                     if val:len() > 20 then return L["Keybindings should be no longer than 20 characters in length."] end
@@ -4835,8 +4831,8 @@ do
                                         wipe( packs )
 
                                         for key, pkg in pairs( self.DB.profile.packs ) do
-                                            local pname = pkg.builtIn and "|cFF00B4FF" .. L[key] .. "|r" or key
                                             if pkg.spec == id then
+                                                local pname = pkg.builtIn and "|cFF00B4FF" .. L[key] .. "|r" or key
                                                 packs[ key ] = Hekili:ZoomedTextureWithText( texture, pname )
                                             end
                                         end
@@ -4929,15 +4925,15 @@ do
                                             local spell = Hekili:GetPetBasedTargetSpell()
                                             local link = Hekili:GetSpellLinkWithTexture( spell )
 
-                                            msg = msg .. format( L["\n\n%1$s|w|r is on your action bar and will be used for all your %2$s pets."], link, UnitClass( "player" ) )
+                                            msg = msg .. "\n\n" .. format( L["%1$s|w|r is on your action bar and will be used for all your %2$s pets."], link, UnitClass( "player" ) )
                                         else
-                                            msg = msg .. L["\n\n|cFFFF0000Requires pet ability on one of your action bars.|r"]
+                                            msg = msg .. "\n\n" .. L["|cFFFF0000Requires pet ability on one of your action bars.|r"]
                                         end
 
                                         if GetCVar( "nameplateShowEnemies" ) == "1" then
-                                            msg = msg .. L["\n\nEnemy nameplates are |cFF00FF00enabled|r and will be used to detect targets near your pet."]
+                                            msg = msg .. "\n\n" .. L["Enemy nameplates are |cFF00FF00enabled|r and will be used to detect targets near your pet."]
                                         else
-                                            msg = msg .. L["\n\n|cFFFF0000Requires enemy nameplates.|r"]
+                                            msg = msg .. "\n\n" .. L["|cFFFF0000Requires enemy nameplates.|r"]
                                         end
 
                                         return msg
@@ -4960,10 +4956,10 @@ do
 
                                             if not spells then return " " end
 
-                                            out = out .. L["For %s, %s is recommended due to its range.  It will work for all your pets."]
+                                            out = out .. L["For %1$s, %2$s is recommended due to its range.  It will work for all your pets."]
 
                                             if spells.count > 1 then
-                                                out = out .. L["\nAlternative(s): "]
+                                                out = out .. "\n" ..  L["Alternative(s): "]
                                             end
 
                                             local n = 1
@@ -5146,9 +5142,7 @@ do
                                 throttleRefresh = {
                                     type = "toggle",
                                     name = L["Set Update Period"],
-                                    desc = L["If checked, you may specify how frequently new recommendations can be generated, in- and out-of-combat.\n\n"
-                                        .. "More frequent updates can utilize more CPU time, but increase responsiveness. After certain critical combat "
-                                        .. "events, recommendations will always update earlier, regardless of these settings."],
+                                    desc = L["If checked, you may specify how frequently new recommendations can be generated, in- and out-of-combat.\n\nMore frequent updates can utilize more CPU time, but increase responsiveness. After certain critical combat events, recommendations will always update earlier, regardless of these settings."],
                                     order = 1,
                                     width = "full",
                                 },
@@ -5156,10 +5150,7 @@ do
                                 regularRefresh = {
                                     type = "range",
                                     name = L["Out-of-Combat Period"],
-                                    desc = L["When out-of-combat, each display will update its recommendations as frequently as you specify. "
-                                        .. "Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\n"
-                                        .. "Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\n"
-                                        .. "Default value:  |cffffd1000.5|rs."],
+                                    desc = L["When out-of-combat, each display will update its recommendations as frequently as you specify. Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\nSome critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\nDefault value:  |cffffd1000.5|rs."],
                                     order = 1.1,
                                     width = 1.5,
                                     min = 0.05,
@@ -5171,10 +5162,7 @@ do
                                 combatRefresh = {
                                     type = "range",
                                     name = L["In-Combat Period"],
-                                    desc = L["When in-combat, each display will update its recommendations as frequently as you specify.\n\n"
-                                    .. "Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\n"
-                                    .. "Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\n"
-                                    .. "Default value:  |cffffd1000.25|rs."],
+                                    desc = L["When in-combat, each display will update its recommendations as frequently as you specify.\n\nSpecifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\nSome critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\nDefault value:  |cffffd1000.25|rs."],
                                     order = 1.2,
                                     width = 1.5,
                                     min = 0.05,
@@ -5186,9 +5174,7 @@ do
                                 throttleTime = {
                                     type = "toggle",
                                     name = L["Set Update Time"],
-                                    desc = L["By default, calculations can take 80% of your frametime or 50ms, whichever is lower.  If recommendations take more "
-                                        .. "than the alotted time, then the work will be split across multiple frames to reduce impact to your framerate.\n\n"
-                                        .. "If you choose to |cffffd100Set Update Time|r, you can specify the |cffffd100Maximum Update Time|r used per frame."],
+                                    desc = L["By default, calculations can take 80% of your frametime or 50ms, whichever is lower.  If recommendations take more than the alotted time, then the work will be split across multiple frames to reduce impact to your framerate.\n\nIf you choose to |cffffd100Set Update Time|r, you can specify the |cffffd100Maximum Update Time|r used per frame."],
                                     order = 2.1,
                                     width = "full",
                                 },
@@ -5196,14 +5182,7 @@ do
                                 maxTime = {
                                     type = "range",
                                     name = L["Maximum Update Time (ms)"],
-                                    desc = L["Specify the maximum amount of time (in milliseconds) that can be used |cffffd100per frame|r when updating.  " ..
-                                        "If set to |cffffd1000|r, then there is no maximum regardless of your frame rate.\n\n" ..
-                                        "|cffffd100Examples|r\n" ..
-                                        "|W- 60 FPS: 1 second / 60 frames = |cffffd10016.7|rms|w\n" ..
-                                        "|W- 100 FPS: 1 second / 100 frames = |cffffd10010|rms|w\n\n" ..
-                                        "If you set this value too low, it can take longer to update and may feel less responsive.\n\n" ..
-                                        "If set too high (or to zero), updates may resolve more quickly but with possible impact to your FPS.\n\n" ..
-                                        "The default value is |cffffd10020|rms."],
+                                    desc = L["Specify the maximum amount of time (in milliseconds) that can be used |cffffd100per frame|r when updating.  If set to |cffffd1000|r, then there is no maximum regardless of your frame rate.\n\n|cffffd100Examples|r\n|W- 60 FPS: 1 second / 60 frames = |cffffd10016.7|rms|w\n|W- 100 FPS: 1 second / 100 frames = |cffffd10010|rms|w\n\nIf you set this value too low, it can take longer to update and may feel less responsive.\n\nIf set too high (or to zero), updates may resolve more quickly but with possible impact to your FPS.\n\nThe default value is |cffffd10020|rms."],
                                     order = 2.2,
                                     min = 0,
                                     max = 100,
@@ -5225,9 +5204,7 @@ do
                                 enhancedRecheck = {
                                     type = "toggle",
                                     name = L["Enhanced Recheck"],
-                                    desc = L["When the addon cannot recommend an ability at the present time, it rechecks action conditions at a few points in the future.  "
-                                        .. "If checked, this feature will enable the addon to do additional checking on entries that use the 'variable' feature.  "
-                                        .. "This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation."],
+                                    desc = L["When the addon cannot recommend an ability at the present time, it rechecks action conditions at a few points in the future.  If checked, this feature will enable the addon to do additional checking on entries that use the 'variable' feature.  This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation."],
                                     width = "full",
                                     order = 5,
                                 },
@@ -9532,7 +9509,7 @@ do
                         output = format( L["%s\n\nTo set a |cFFFFD100number|r value, use the following commands:\n - Set to #:  |cFFFFD100/hek set %s #|r\n - Reset to Default:  |cFFFFD100/hek set %s default|r"], output, exNumber, exNumber )
                     end
 
-                    output = format( "%s\n\nTo select another priority, see |cFFFFD100/hekili priority|r.", output )
+                    output = format( L["%s\n\nTo select another priority, see |cFFFFD100/hekili priority|r."], output )
 
                     Hekili:Print( output )
                     return
@@ -9548,7 +9525,7 @@ do
                         elseif args[3] == "off" then to = false
                         elseif args[3] == "default" then to = false
                         else
-                            Hekili:Print( format( L["'%s' is not a valid option for |cFFFFD100%s|r."], args[3], text ) )
+                            Hekili:Print( format( L["'%1$s' is not a valid option for |cFFFFD100%2$s|r."], args[3], text ) )
                             return
                         end
                     else
@@ -9572,7 +9549,7 @@ do
                         elseif args[3] == "off" then to = false
                         elseif args[3] == "default" then to = false
                         else
-                            Hekili:Print( format( L["'%s' is not a valid option for |cFFFFD100%s|r."], args[3] ) )
+                            Hekili:Print( format( L["'%1$s' is not a valid option for |cFFFFD100%2$s|r."], args[3] ) )
                             return
                         end
                     else
@@ -9597,7 +9574,7 @@ do
 
                 local setting = settings[ index ]
                 if not setting then
-                    Hekili:Print( "Not a valid option." )
+                    Hekili:Print( L["Not a valid option."] )
                     return
                 end
 
@@ -9609,7 +9586,7 @@ do
                         elseif args[3] == "off" then to = false
                         elseif args[3] == "default" then to = setting.default
                         else
-                            Hekili:Print( format( L["'%s' is not a valid option for |cFFFFD100%s|r."], args[3] ) )
+                            Hekili:Print( format( L["'%1$s' is not a valid option for |cFFFFD100%2$s|r."], args[3] ) )
                             return
                         end
                     else
@@ -9696,7 +9673,7 @@ do
                     if n < 2 then
                         output = output .. "\n\n|cFFFF0000" .. L["You must have multiple priorities for your specialization to use this feature."] .. "|r"
                     else
-                        output = output .. L["\nValid priority |cFFFFD100name|rs are:"]
+                        output = output .. "\n" .. L["Valid priority |cFFFFD100name|rs are:"]
                         for i, priority in ipairs( priorities ) do
                             local isBuiltIn = Hekili.DB.profile.packs[ priority ].builtIn
                             local priorityName = isBuiltIn and L[priority] or priority

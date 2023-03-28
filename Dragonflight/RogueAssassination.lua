@@ -9,7 +9,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
-local format, wipe = string.format, table.wipe
+local strformat, wipe = string.format, table.wipe
 local UA_GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 
 local orderedPairs = ns.orderedPairs
@@ -687,7 +687,7 @@ spec:RegisterHook( "reset_precast", function ()
         d.exsanguinated = nil
 
         if Hekili.ActiveDebug then
-            status = format( "%s%-20s  %7.2f  %7.2f  %7.2f  %7s\n", status, aura, d.remains, d.pmultiplier, d.exsanguinated_rate, d.exsanguinated and "true" or "false" )
+            status = strformat( "%s%-20s  %7.2f  %7.2f  %7.2f  %7s\n", status, aura, d.remains, d.pmultiplier, d.exsanguinated_rate, d.exsanguinated and "true" or "false" )
         end
     end
 
@@ -2750,11 +2750,11 @@ spec:RegisterSetting( "solo_vanish", true, {
 } )
 
 spec:RegisterSetting( "allow_shadowmeld", nil, {
-    name = L["Allow |T132089:0|t Shadowmeld (Night Elf only)"],
+    name = L["Allow |T132089:0|t Shadowmeld"],
     desc = L["If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
     type = "toggle",
     width = "full",
-    get = function () return not Hekili.DB.profile.specs[ 259 ].abilities.shadowmeld.disabled and raceEn == "NightElf" end,
+    get = function () return not Hekili.DB.profile.specs[ 259 ].abilities.shadowmeld.disabled end,
     set = function ( _, val )
         Hekili.DB.profile.specs[ 259 ].abilities.shadowmeld.disabled = not val
     end,

@@ -2038,15 +2038,15 @@ me:RegisterOptions( {
 
 
 me:RegisterSetting( "dps_shell", false, {
-    name = strformat( "Use %s Offensively", Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
-    desc = strformat( "If checked, %s will not be on the Defensives toggle by default.", Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
+    name = strformat( L["Use %s Offensively"], Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
+    desc = strformat( L["If checked, %s will not be on the Defensives toggle by default."], Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
     type = "toggle",
     width = "full",
 } )
 
 me:RegisterSetting( "ob_macro", nil, {
     name = strformat( L["%s Macro"], Hekili:GetSpellLinkWithTexture( me.abilities.outbreak.id ) ),
-    desc = strformat( L["Using a mouseover macro makes it easier to apply %s and %s to other enemies without retargeting."],
+    desc = strformat( L["Using a mouseover macro makes it easier to apply %1$s and %2$s to other enemies without retargeting."],
         Hekili:GetSpellLinkWithTexture( me.abilities.outbreak.id ), Hekili:GetSpellLinkWithTexture( me.auras.virulent_plague.id ) ),
     type = "input",
     width = "full",

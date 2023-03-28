@@ -1372,8 +1372,7 @@ spec:RegisterSetting( "mfd_points", 3, {
 
 spec:RegisterSetting( "ambush_anyway", false, {
     name = L["|T132282:0|t Ambush Regardless of Talents"],
-    desc = L["If checked, the addon will recommend |T132282:0|t Ambush even without Hidden Opportunity or Find Weakness talented.\n\n" ..
-        "Dragonflight sim profiles only use Ambush with Hidden Opportunity or Find Weakness talented; this is likely suboptimal."],
+    desc = L["If checked, the addon will recommend |T132282:0|t Ambush even without Hidden Opportunity or Find Weakness talented.\n\nDragonflight sim profiles only use Ambush with Hidden Opportunity or Find Weakness talented; this is likely suboptimal."],
     type = "toggle",
     width = "full",
 } )
@@ -1381,9 +1380,8 @@ spec:RegisterSetting( "ambush_anyway", false, {
 spec:RegisterSetting( "no_rtb_in_dance_cto", true, {
     name = L["Never |T1373910:0|t Roll the Bones during |T236279:0|t Shadow Dance"],
     desc = function()
-        return strformat( L["If checked, |T1373910:0|t Roll the Bones will never be recommended during |T236279:0|t Shadow Dance. "
-        .. "This is consistent with guides but is not yet reflected in the default SimulationCraft profiles as of 12 February 2023.\n\n"
-        .. "%sRequires |T237284:0|t Count the Odds|r"], state.talent.count_the_odds.enabled and "|cFF00FF00" or "|cFFFF0000" )
+        return strformat( L["If checked, |T1373910:0|t Roll the Bones will never be recommended during |T236279:0|t Shadow Dance. This is consistent with guides but is not yet reflected in the default SimulationCraft profiles as of 12 February 2023.\n\n%sRequires |T237284:0|t Count the Odds|r"],
+        state.talent.count_the_odds.enabled and "|cFF00FF00" or "|cFFFF0000" )
     end,
     type = "toggle",
     width = "full"
@@ -1392,9 +1390,8 @@ spec:RegisterSetting( "no_rtb_in_dance_cto", true, {
 spec:RegisterSetting( "use_ld_opener", false, {
     name = L["Use |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones (Opener)"],
     desc = function()
-        return strformat( L["If checked, the addon will recommend |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones during the opener to guarantee "
-        .. "at least 2 buffs from |T236279:0|t Loaded Dice.\n\n"
-        .. "%sRequires |T236279:0|t Loaded Dice|r"], state.talent.loaded_dice.enabled and "|cFF00FF00" or "|cFFFF0000" )
+        return strformat( L["If checked, the addon will recommend |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones during the opener to guarantee at least 2 buffs from |T236279:0|t Loaded Dice.\n\n%sRequires |T236279:0|t Loaded Dice|r"],
+        state.talent.loaded_dice.enabled and "|cFF00FF00" or "|cFFFF0000" )
     end,
     type = "toggle",
     width = "full"
@@ -1402,11 +1399,10 @@ spec:RegisterSetting( "use_ld_opener", false, {
 
 spec:RegisterSetting( "allow_shadowmeld", false, {
     name = L["|T132089:0|t Shadowmeld when Solo"],
-    desc = L["If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  " ..
-    "Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
+    desc = L["If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
     type = "toggle",
     width = "full",
-    get = function () return not Hekili.DB.profile.specs[ 260 ].abilities.shadowmeld.disabled and raceEn == "NightElf" end,
+    get = function () return not Hekili.DB.profile.specs[ 260 ].abilities.shadowmeld.disabled end,
     set = function ( _, val )
         Hekili.DB.profile.specs[ 260 ].abilities.shadowmeld.disabled = not val
     end,

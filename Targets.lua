@@ -136,12 +136,12 @@ do
     end
 
     function Hekili:PetBasedTargetDetectionIsReady( skipRange )
-        if petSlot == 0 then return false, "Pet action not found in player action bars." end
-        if not UnitExists( "pet" ) then return false, "No active pet." end
-        if UnitIsDead( "pet" ) then return false, "Pet is dead." end
+        if petSlot == 0 then return false, L["Pet action not found in player action bars."] end
+        if not UnitExists( "pet" ) then return false, L["No active pet."] end
+        if UnitIsDead( "pet" ) then return false, L["Pet is dead."] end
 
         -- If we have a target and the target is out of our pet's range, don't use pet detection.
-        if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot ) then return false, "Player has target and player's target not in range of pet." end
+        if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot ) then return false, L["Player has target and player's target not in range of pet."] end
         return true
     end
 

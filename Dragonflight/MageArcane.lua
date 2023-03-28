@@ -2245,8 +2245,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "check_explosion_range", true, {
-    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
-    desc = strformat( "If checked, %s will not be recommended when you are more than 10 yards from your target.", Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
+    name = strformat( L["%s: Range Check"], Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
+    desc = strformat( L["If checked, %s will not be recommended when you are more than 10 yards from your target."], Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
     type = "toggle",
     width = "full"
 } )

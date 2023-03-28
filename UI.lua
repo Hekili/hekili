@@ -640,9 +640,9 @@ do
                                                 local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
 
                                                 if Hekili.DB.profile.notifications.enabled then
-                                                    Hekili:Notify( format( L["%s set to |cFF00FF00%d|r."], name, actual ) )
+                                                    Hekili:Notify( format( L["%1$s set to |cFF00FF00%2$s|r."], name, tostring( actual ) ) )
                                                 else
-                                                    Hekili:Print( format( L["%s set to |cFF00FF00%d|r."], name, actual ) )
+                                                    Hekili:Print( format( L["%1$s set to |cFF00FF00%2$s|r."], name, tostring( actual ) ) )
                                                 end
                                             end,
                                             checked = function ()

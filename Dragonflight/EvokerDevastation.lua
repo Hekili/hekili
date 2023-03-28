@@ -1448,12 +1448,11 @@ spec:RegisterAbilities( {
 
 
 spec:RegisterSetting( "dragonrage_pad", 0.5, {
-    name = strformat( "%s: %s Padding", Hekili:GetSpellLinkWithTexture( spec.abilities.dragonrage.id ), Hekili:GetSpellLinkWithTexture( spec.talents.animosity[2] ) ),
+    name = strformat( L["%s: %s Padding"], Hekili:GetSpellLinkWithTexture( spec.abilities.dragonrage.id ), Hekili:GetSpellLinkWithTexture( spec.talents.animosity[2] ) ),
     type = "range",
-    desc = strformat( "If set above zero, extra time is allotted to help ensure that %s and %s are used before %s expires, reducing the risk that you'll fail to extend "
-        .. "it.\n\nIf %s is not talented, this setting is ignored.", Hekili:GetSpellLinkWithTexture( spec.abilities.fire_breath.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.eternity_surge.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.dragonrage.id ),
-        Hekili:GetSpellLinkWithTexture( spec.talents.animosity[2] ) ),
+    desc = strformat( L["If set above zero, extra time is allotted to help ensure that %1$s and %2$s are used before %3$s expires, reducing the risk that you'll fail to extend it.\n\nIf %4$s is not talented, this setting is ignored."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.fire_breath.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.eternity_surge.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.dragonrage.id ), Hekili:GetSpellLinkWithTexture( spec.talents.animosity[2] ) ),
     min = 0,
     max = 1.5,
     step = 0.05,
@@ -1467,9 +1466,7 @@ spec:RegisterSetting( "dragonrage_pad", 0.5, {
 spec:RegisterSetting( "use_deep_breath", true, {
     name = strformat( L["Use %s"], Hekili:GetSpellLinkWithTexture( spec.abilities.deep_breath.id ) ),
     type = "toggle",
-    desc = strformat( L["If checked, %s may be recommended, which will force your character to select a destination and move.  By default, %s requires your Cooldowns "
-        .. "toggle to be active.\n\n"
-        .. "If unchecked, |W%s|w will never be recommended, which may result in lost DPS if left unused for an extended period of time."],
+    desc = strformat( L["If checked, %1$s may be recommended, which will force your character to select a destination and move.  By default, %2$s requires your Cooldowns toggle to be active.\n\nIf unchecked, |W%3$s|w will never be recommended, which may result in lost DPS if left unused for an extended period of time."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.deep_breath.id ), spec.abilities.deep_breath.name, spec.abilities.deep_breath.name ),
     width = "full",
 } )
@@ -1477,7 +1474,7 @@ spec:RegisterSetting( "use_deep_breath", true, {
 spec:RegisterSetting( "use_unravel", false, {
     name = strformat( L["Use %s"], Hekili:GetSpellLinkWithTexture( spec.abilities.unravel.id ) ),
     type = "toggle",
-    desc = strformat( L["If checked, %s may be recommended if your target has an absorb shield applied.  By default, %s also requires your Interrupts toggle to be active."],
+    desc = strformat( L["If checked, %1$s may be recommended if your target has an absorb shield applied.  By default, %2$s also requires your Interrupts toggle to be active."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.unravel.id ), spec.abilities.unravel.name ),
     width = "full",
 } )
@@ -1485,7 +1482,7 @@ spec:RegisterSetting( "use_unravel", false, {
 spec:RegisterSetting( "use_early_chain", false, {
     name = strformat( L["%s: Chain Channel"], Hekili:GetSpellLinkWithTexture( spec.abilities.disintegrate.id ) ),
     type = "toggle",
-    desc = strformat( L["If checked, %s may be recommended while already channeling |W%s|w, extending the channel."],
+    desc = strformat( L["If checked, %1$s may be recommended while already channeling |W%2$s|w, extending the channel."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.disintegrate.id ), spec.abilities.disintegrate.name ),
     width = "full"
 } )

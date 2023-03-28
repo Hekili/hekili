@@ -2038,9 +2038,8 @@ spec:RegisterSetting( "sov_damage", 20, {
 } )
 
 spec:RegisterSetting( "desync_toll", false, {
-    name = "Desync |T3565448:0|t Divine Toll",
-    desc = "If checked, when Seraphim, Final Reckoning, and/or Execution Sentence are toggled off or disabled, the addon will recommend |T3565448:0|t Divine Toll despite being out of sync with your cooldowns.\n\n"
-        .. "This is useful for maximizing the number of Divine Toll casts in a fight, but may result in a lower overall DPS.",
+    name = L["Desync |T3565448:0|t Divine Toll"],
+    desc = L["If checked, when Seraphim, Final Reckoning, and/or Execution Sentence are toggled off or disabled, the addon will recommend |T3565448:0|t Divine Toll despite being out of sync with your cooldowns.\n\nThis is useful for maximizing the number of Divine Toll casts in a fight, but may result in a lower overall DPS."],
     type = "toggle",
     width = "full",
 } )
