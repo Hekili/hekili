@@ -431,7 +431,6 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 589117,
         talent = "avenging_crusader",
-        notalent = "avenging_wrath",
 
         toggle = "cooldowns",
 
@@ -799,7 +798,7 @@ spec:RegisterAbilities( {
         texture = 135891,
 
         handler = function ()
-            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+            gain( 1, "holy_power" )
 
             if talent.crusaders_might.enabled then
                 setCooldown( "holy_shock", max( 0, cooldown.holy_shock.remains - 2.0 ) )
@@ -968,7 +967,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+            gain( 1, "holy_power" )
         end,
     },
 
@@ -1040,7 +1039,7 @@ spec:RegisterAbilities( {
         texture = 135972,
 
         handler = function ()
-            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+            gain( 1, "holy_power" )
         end,
     },
 
@@ -1294,7 +1293,7 @@ spec:RegisterAbilities( {
         texture = 3578228,
 
         handler = function ()
-            gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+            gain( 1, "holy_power" )
             applyBuff( "vanquishers_hammer" )
         end,
     },
@@ -1347,4 +1346,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Holy Paladin", 20230322, [[Hekili:TAvxVTTnu0Fl9LKwSunj5MMUb4aS1xwZgcgG6WEJs0u0wCMIuJKkUbWG)27Luw2uF1TcKxcC49WJU8Ep3djkb9zuwj2qrpMgNUkEvAAuYT3MMKIYmp3qrznyYE8o4hcCn83FtYF2w8NyoUKjCrFMlXLow0YwfbqGY20Y4MpjqBMNAaAdLGE893IYQyLL0oKunbL5q(24vVnn9NTf2I)QXrqPTyRuzlsIJIJUZw86mQc3uXQTfkAT8jA5n2IF5jQyhtSZw83kSPYwGfLHR(rvRgxsbA0nCM5nrOmotB0(uVHkGqUF)OVIqf4nCAj6xrzefZqvmmk7v2cdMtfMi8b8EQaOn6eqBXXJWxKyyprZPcAnJQTf3dPmkZTQekv6kgLxMl3MBQO5k2Ukdv2QrgO(S43C5p4v2IDkzBZLpa3rPJ)s8bHJ2vF30EHSdsLpx3XLQNbYmUo0wCl3CUi1dvr30UNg(L6ps9iWN6c5hCTMrixnlsYP21iWVleCfOfZ97ycUBdXblR1osHZJUTUEc63VeACRPTwmc9DlH(atyMW9hwmtAuWVgH(Ncr3QP5qhRwpcus8)hn64k5qTkrk5LYdIzWbZuyMOt)UJugvJ)s3E817g5badOfyeMXwS2wedABJIrCz2LKNG588U)j3nO1nUL35ICEGZTNbIPs2tmbn3i58XN6bskVyxNxHNPDMSAIkbQ166XWE33QmsKcnLa6vGKO2g)aNbR2rnrhyMkMa6cxoSbG9upq)1LKEfYm6)KbQV)PTCxn0)gd6UjhjDLKSFmSpS4r6Cd)YMNRthCMoPhYDnxy(27b0OOez9g8uxGkkwzYb5nvqcmd243hSZNG2Tdy3LbPXG5)bSYz(aY7pxrTfS6gPYCYR)6EjY1ot()TLPCkxTSgactLY6U7fivyy6xhzF4pazd43cxB8rPa(y(Wxp2OdyZiNz9(Hdi(Rt(YBoZx6lmFREX4Z(WmfTtw0FN1S4fsQXodJtULCyctYp5ZphTR6UGukSf(lEHWo9KClJt7Lr6Fy9p2DDI9HlRm86JzJ0NcHbdVEiC9PxhSu0o7)LI2z3ViZE79WONTZdxCSn5nodY19I)B6mwxNCdB76xTuD)4X)B387pnFF84ux81XHzuGdC4YdmCNuM9(RdoxboI(KFKF6vJ8shW4q)YWq92JtsaVH2GeyO9Llh(gwG9LhNK9ehr9nbGSfE72GUs)O6XJocU8oW7tMLYbVwZr0yEUY)8Uz37GhNn3EH5PwtLeUy83HiY9WZ1fmVpm6Rp]] )
+spec:RegisterPack( "Holy Paladin", 20230327, [[Hekili:TAvWoUTnq0VL9YUjOBuTS6UUPaEbAZLMTflkGsrVjrAPXsSMIuHKYolGb)27qjlBkzP2gGCXqMZJpoKZBEKjHjFkjoNAGKxwUyz0IOLRccdF4XOhsInVwdjX10SD0c8dbTc)9xL8xTK)GYP5mHl6RCjn3XIw2OYqejXBAyCZhfjBMM6ieBnKL8YJ4IuYYZHoOGolj2b9DlIE3YL)KLyj)zTJHClzRuzjHlcweSYsEtmOO1LSklrbvY9q(9wYpVhefmrHL8xkQP0sOIC)r)GQrtZbKgDnNzEBqsmNPn62CVgeyi33V0EKac6goKN8ljXzkMbumAs8nwIHYbHjGEGUdeiTbNaAjhpIRyMHThsbbuXaTL8eMYjXUrL4zLUKb88u52utjKQyfLgq2Otm4b0SR58l4TwsHs2uFzb4okD8NtpiC0g9vt7fYoivT5AbxQEfjZ4QqBPnCZ5dPEOkytZoWFL63s9iONQcPhCLMriJMez2PY1iW)GpyCyT2bgZtDtv1vOFyo00gttLye6hNd9bMWCf3RMntQv4xJq)J(OB0qkwjQ0Ja9()psVXhqdLGzsjpxEqmboSvHYeDYYIS8Gk6x6Mtj2tNwlpGyWsmlJzSK1wYcuYAuSmJRCFo3ZOCEA3FsD9pDDrPDUdN7JCZzH)woNTNjGuJKZhTPdhOLA1W60s6evZWbAQUSwX0vJHnVS)g3bKqdzOmejjOPUTpYqvfGj4aZuYeyEFzZ6bUL6bYVUKSvGmHSoCG47VBYlQW63yqpE1wsxkZ2ng2Qz3sNl4xM8uvAV90j9qQR4ITTTT21kitwTHEDZDjqvMuuDdImVE8nTZdN5ESC7a2BYVeToOkNNcQU)ujyjSQAPYCYc)UEjYDoV7p3WuoLRwwHaXMszvNDFwjvua6a7Z)okBqBu82Gpif4I1g(UX(xiBg5eJ33CGXFt4xE7z(w(nMVOVz8zFEIdTtoVFDNzVFMCASXW4CBodg)C8JTPNJ2OUR9KclP96umStoj3Y4qVks)DR)(UljSpFzKHxkmzK(uWp41M(ZfTZKFUODM6ZYCRjUF0ZM2(do2n8ENp46En(9D(NRdVNTD9nZD(E84)TP9tNAJpE8AZ61l8ZipJw)Hh4R6h4In6G9LNXxBYpY282rwMdyCOTOFOExWRsGwFRbjWqxkxo8V401F84KMN4iOViGKnZlVguv67ipE0rWLxX9u4Kuo4TwoIgZZTTpoBY5o4PvtnxSVPXukX7)(nmICh(ABbR1Un5Fc]] )

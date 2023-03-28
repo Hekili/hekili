@@ -171,7 +171,8 @@ actions.standard_rotation+=/pyroblast,if=buff.hot_streak.react&searing_touch.act
 actions.standard_rotation+=/pyroblast,if=buff.pyroclasm.react&cast_time<buff.pyroclasm.remains&(!(runeforge.sun_kings_blessing|talent.sun_kings_blessing)|buff.pyroclasm.remains<action.fireball.cast_time+cast_time*buff.pyroclasm.react)
 # During the standard rotation, only use Fire Blasts when they are not being pooled for RoP or Combustion. Use Fire Blast either during a Fireball/Pyroblast cast when Heating Up is active or during execute with Searing Touch.
 actions.standard_rotation+=/fire_blast,use_off_gcd=1,use_while_casting=1,if=!firestarter.active&!variable.fire_blast_pooling&buff.sun_kings_blessing_ready.down&(((action.fireball.executing&(action.fireball.execute_remains<0.5|!(runeforge.firestorm|talent.hyperthermia))|action.pyroblast.executing&(action.pyroblast.execute_remains<0.5|!(runeforge.firestorm|talent.hyperthermia))|(!searing_touch.active&fireball_hardcast_prevented))&buff.heating_up.react)|(searing_touch.active&(buff.heating_up.react&!action.scorch.executing|!buff.hot_streak.react&!buff.heating_up.react&action.scorch.executing&!hot_streak_spells_in_flight)))
-actions.standard_rotation+=/pyroblast,if=prev_gcd.1.scorch&buff.heating_up.react&searing_touch.active&active_enemies<variable.hot_streak_flamestrike
+## Disabled; this works for the sim but would encourage you to hardcast Pyroblast after a Scorch in-game.
+## actions.standard_rotation+=/pyroblast,if=prev_gcd.1.scorch&buff.heating_up.react&searing_touch.active&active_enemies<variable.hot_streak_flamestrike
 actions.standard_rotation+=/phoenix_flames,if=!variable.phoenix_pooling&(!hot_streak_spells_in_flight&(buff.heating_up.react))
 actions.standard_rotation+=/call_action_list,name=active_talents
 actions.standard_rotation+=/dragons_breath,if=active_enemies>1
