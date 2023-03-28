@@ -419,14 +419,14 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
     if state.talent.danse_macabre.enabled and subtype == "SPELL_CAST_SUCCESS" then
         if spellID == 185313 then
             -- Start fresh with each Shadow Dance.
-            wipe( danse_macabre_tracker )
+            wipe( danse_macabre_actual )
             danse_ends = GetTime() + 8
 
         elseif danse_ends > GetTime() then
             local ability = class.abilities[ spellID ]
 
             if ability then
-                state.danse_macabre_tracker[ ability.key ] = true
+                danse_macabre_actual[ ability.key ] = true
             end
         end
     end
