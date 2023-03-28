@@ -20,15 +20,15 @@ actions+=/call_action_list,name=cds
 # Apply Slice and Dice at 4+ CP if it expires within the next GCD or is not up
 actions+=/slice_and_dice,if=spell_targets.shuriken_storm<cp_max_spend&buff.slice_and_dice.remains<gcd.max&fight_remains>6&combo_points>=4
 # Run fully switches to the Stealthed Rotation (by doing so, it forces pooling if nothing is available).
-actions+=/run_action_list,name=stealthed,if=stealthed.all
+actions+=/run_action_list,name=stealthed,strict=1,if=stealthed.all
 ## Only change rotation if we have priority_rotation set.
 ## actions+=/variable,name=priority_rotation,value=priority_rotation
 # Used to define when to use stealth CDs or builders
 actions+=/variable,name=stealth_threshold,value=25+talent.vigor.enabled*20+talent.master_of_shadows.enabled*20+talent.shadow_focus.enabled*25+talent.alacrity.enabled*20+25*(spell_targets.shuriken_storm>=4)
 # Consider using a Stealth CD when reaching the energy threshold
-actions+=/call_action_list,name=stealth_cds,if=energy.deficit<=variable.stealth_threshold
+actions+=/call_action_list,name=stealth_cds,strict=1,if=energy.deficit<=variable.stealth_threshold
 # Finish at maximum or close to maximum combo point value or at 4+ against 4 targets (outside stealth)
-actions+=/call_action_list,name=finish,if=variable.effective_combo_points>=cp_max_spend|combo_points.deficit<=1+buff.the_rotten.up|boss&fight_remains<=1&variable.effective_combo_points>=3|spell_targets.shuriken_storm>=(4-talent.seal_fate)&variable.effective_combo_points>=4
+actions+=/call_action_list,name=finish,strict=1,if=variable.effective_combo_points>=cp_max_spend|combo_points.deficit<=1+buff.the_rotten.up|boss&fight_remains<=1&variable.effective_combo_points>=3|spell_targets.shuriken_storm>=(4-talent.seal_fate)&variable.effective_combo_points>=4
 # Use a builder when reaching the energy threshold
 actions+=/call_action_list,name=build,if=energy.deficit<=variable.stealth_threshold
 # Lowest priority in all of the APL because it causes a GCD
@@ -127,13 +127,13 @@ actions.stealthed+=/variable,name=gloomblade_condition,value=buff.danse_macabre.
 actions.stealthed+=/shuriken_storm,if=variable.gloomblade_condition&buff.silent_storm.up&!debuff.find_weakness.remains&talent.improved_shuriken_storm.enabled|combo_points<=1&!used_for_danse&spell_targets.shuriken_storm=2&talent.danse_macabre
 actions.stealthed+=/gloomblade,if=variable.gloomblade_condition&(!used_for_danse|spell_targets.shuriken_storm!=2)
 actions.stealthed+=/backstab,if=variable.gloomblade_condition&talent.danse_macabre&buff.danse_macabre.stack<=2&spell_targets.shuriken_storm<=2
-actions.stealthed+=/call_action_list,name=finish,if=variable.effective_combo_points>=cp_max_spend
+actions.stealthed+=/call_action_list,name=finish,strict=1,if=variable.effective_combo_points>=cp_max_spend
 # Finish earlier with Shuriken tornado up.
-actions.stealthed+=/call_action_list,name=finish,if=buff.shuriken_tornado.up&combo_points.deficit<=2
+actions.stealthed+=/call_action_list,name=finish,strict=1,if=buff.shuriken_tornado.up&combo_points.deficit<=2
 # Also safe to finish at 4+ CP with exactly 4 targets. (Same as outside stealth.)
-actions.stealthed+=/call_action_list,name=finish,if=spell_targets.shuriken_storm>=4-talent.seal_fate&variable.effective_combo_points>=4
+actions.stealthed+=/call_action_list,name=finish,strict=1,if=spell_targets.shuriken_storm>=4-talent.seal_fate&variable.effective_combo_points>=4
 # Finish at lower combo points if you are talented in DS, SS or Seal Fate
-actions.stealthed+=/call_action_list,name=finish,if=combo_points.deficit<=1+(talent.seal_fate|talent.deeper_stratagem|talent.secret_stratagem)
+actions.stealthed+=/call_action_list,name=finish,strict=1,if=combo_points.deficit<=1+(talent.seal_fate|talent.deeper_stratagem|talent.secret_stratagem)
 # Use Gloomblade or Backstab when close to hitting max PV stacks
 actions.stealthed+=/gloomblade,if=buff.perforated_veins.stack>=5&spell_targets.shuriken_storm<3
 actions.stealthed+=/backstab,if=buff.perforated_veins.stack>=5&spell_targets.shuriken_storm<3
