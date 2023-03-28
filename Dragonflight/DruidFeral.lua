@@ -2562,7 +2562,7 @@ spec:RegisterSetting( "allow_shadowmeld", nil, {
             spec.auras.shadowmeld.name, spec.auras.shadowmeld.name ),
     type = "toggle",
     width = "full",
-    get = function () return not Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled and raceEn == "NightElf" end,
+    get = function () return not Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled end,
     set = function ( _, val )
         Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled = not val
     end,
