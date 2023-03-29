@@ -1297,6 +1297,8 @@ state.raid_event.adds = setmetatable( {
             return state.active_enemies > 1
         elseif k == "down" then
             return state.active_enemies <= 1
+        elseif k == "count" then
+            return max( 0, state.active_enemies - 1 )
         elseif k == "in" then
             return state.active_enemies > 1 and 0 or 3600
         elseif k == "duration" or k == "remains" then
