@@ -6890,7 +6890,7 @@ do
                                                     if not class.abilities[ action ] then warning = true
                                                     else
                                                         if state:IsDisabled( action, true ) then warning = true end
-                                                        action = class.abilityList[ action ] and class.abilityList[ action ]:match( "|t (.+)$" ) or class.abilities[ action ] and class.abilities[ action ].name or action
+                                                        action = class.abilityList[ action ] and ( class.abilityList[ action ]:match( "|t (.+)$" ) or class.abilityList[ action ] ) or class.abilities[ action ] and class.abilities[ action ].name or action
                                                     end
                                                 end
 
@@ -11498,7 +11498,7 @@ do
                     if ability and ( ability == "use_item" or class.abilities[ ability ] ) then
                         if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast" end
                         -- Stub abilities that are replaced sometimes.
-                        if ability == "any_dnd" or ability == "wound_spender" or ability == "summon_pet" then
+                        if ability == "any_dnd" or ability == "wound_spender" or ability == "summon_pet" or ability == "solo_curse" or ability == "group_curse" then
                             result.action = ability
                         else
                             result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability

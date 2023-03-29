@@ -988,8 +988,8 @@ end
 local update_gear = function(slotId, itemId)
     if slotId == 16 then
         local mhStats = GetItemStats("item:"..itemId)
-        local mhSpellPower = mhStats["ITEM_MOD_SPELL_POWER"]
-        MainhandHasSpellpower = mhSpellPower and tonumber(mhSpellPower) > 0 or false
+        local mhSpellPower = mhStats and mhStats["ITEM_MOD_SPELL_POWER"]
+        MainhandHasSpellpower = mhSpellPower and tonumber(mhSpellPower) > 0
     end
 end
 

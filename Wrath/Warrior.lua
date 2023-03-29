@@ -714,7 +714,7 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         end
 
         if application_events[subtype] then
-            
+
             if is_rend then
                 ApplyRend(destGUID, GetTime())
             end
@@ -1609,7 +1609,7 @@ spec:RegisterAbilities( {
         buff = "battle_stance",
 
         usable = function()
-            return buff.taste_for_blood.up or buff.overpower_ready.up, "only usable after dodging or with taste_for_blood" 
+            return buff.taste_for_blood.up or buff.overpower_ready.up, "only usable after dodging or with taste_for_blood"
         end,
 
         handler = function( rank )
