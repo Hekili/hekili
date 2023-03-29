@@ -8,7 +8,7 @@ actions.precombat+=/vampiric_touch,if=!talent.damnation.enabled&(!talent.shadow_
 
 actions+=/silence
 actions+=/variable,name=dp_cutoff,op=set,value=!talent.mind_sear|(spell_targets.mind_sear<=variable.mind_sear_cutoff&(!buff.mind_devourer.up|spell_targets.mind_sear=1))
-actions+=/variable,name=holding_crash,op=set,value=raid_event.adds.in<20
+actions+=/variable,name=holding_crash,op=set,value=!action.shadow_crash.known|action.shadow_crash.disabled|raid_event.adds.in<20
 actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.mind_sear>2|spell_targets.vampiric_touch>3
 actions+=/run_action_list,name=main
 
@@ -40,8 +40,8 @@ actions.aoe+=/mind_flay,if=buff.mind_flay_insanity.up&buff.surge_of_darkness.rem
 actions.aoe+=/call_action_list,name=filler
 
 actions.aoe_variables+=/variable,name=max_vts,op=set,default=12,value=spell_targets.vampiric_touch>?12
-actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=0,default=1
-actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=1,condition=dot.vampiric_touch.refreshable|active_dot.vampiric_touch<cycle_enemies&fight_remains>8
+actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=false,default=true
+actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=true,condition=dot.vampiric_touch.refreshable|active_dot.vampiric_touch<cycle_enemies&fight_remains>8
 ## actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=1,target_if=max(target.time_to_die*dot.vampiric_touch.refreshable),if=target.time_to_die>=18
 # Todo Revamp to fix undesired behaviour with unstacked fights
 actions.aoe_variables+=/variable,name=vts_applied,op=set,value=(active_dot.vampiric_touch+8*action.shadow_crash.in_flight)>=variable.max_vts|!variable.is_vt_possible
