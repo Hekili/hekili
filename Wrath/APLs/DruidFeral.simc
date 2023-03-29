@@ -6,7 +6,7 @@ actions.precombat+=/potion
 actions+=/call_action_list,name=init
 actions+=/use_items
 actions+=/potion
-actions+=/hyperspeed_acceleration,use_off_gcd=1,if=set_bonus.tier7_4pc=1&(buff.tigers_fury.up|cooldown.tigers_fury.remains>=15)
+actions+=/hyperspeed_acceleration,use_off_gcd=1,if=set_bonus.tier7feral_4pc=1&(buff.tigers_fury.up|cooldown.tigers_fury.remains>=15)
 actions+=/dire_bear_form,if=bearweaving_lacerate_enabled&!buff.dire_bear_form.up&debuff.lacerate.up&debuff.lacerate.remains<variable.bearweave_emergency_upper+latency&debuff.lacerate.remains>variable.bearweave_emergency_lower+latency&debuff.lacerate.remains<variable.time_to_die&(!buff.berserk.up|buff.berserk.up&settings.bearweaving_in_berserk)
 actions+=/gift_of_the_wild,if=!buff.form.up&variable.flowerweaving_enabled&energy.current<=variable.flowershift_energy&!buff.clearcasting.up&(!variable.rip_refresh_pending|debuff.rip.remains>=variable.flower_end)&!buff.berserk.up&!variable.tf_expected_before_flower_end&mana.pct>settings.min_weave_mana
 actions+=/run_action_list,name=bear_aoe,if=bearweaving_enabled&buff.dire_bear_form.up&active_enemies>2
@@ -65,7 +65,7 @@ actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<40
 actions.cat_aoe+=/berserk,if=cooldown.tigers_fury.remains>=15
 actions.cat_aoe+=/swipe_cat,if=buff.clearcasting.up
 actions.cat_aoe+=/savage_roar,if=!up
-actions.cat_aoe+=/rake,if=!up&(combo_points.current=0|(set_bonus.tier8_2pc=1&combo_points.current<5))&(variable.time_to_die>buff.savage_roar.remains+1.5+latency)&!buff.clearcasting.up
+actions.cat_aoe+=/rake,if=!up&(combo_points.current=0|(set_bonus.tier8feral_2pc=1&combo_points.current<5))&(variable.time_to_die>buff.savage_roar.remains+1.5+latency)&!buff.clearcasting.up
 actions.cat_aoe+=/swipe_cat
 actions.cat_aoe+=/dire_bear_form,if=bearweaving_enabled&energy.current<25&!buff.clearcasting.up&!buff.berserk.up
 actions.cat_aoe+=/gift_of_the_wild,if=variable.flowerweaving_enabled&energy.current<=variable.flowershift_energy&!buff.clearcasting.up&(!variable.rip_refresh_pending|debuff.rip.remains>=variable.flower_end)&!buff.berserk.up&!variable.tf_expected_before_flower_end&mana.pct>settings.min_weave_mana
