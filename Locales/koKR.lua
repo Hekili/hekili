@@ -921,6 +921,8 @@ L["If checked, non-instant %1$s and %2$s casts will not be recommended while you
 L["Frost Mage"] = "냉기"
 -- L["Ignore |T629077:0|t Freezing Rain in Single-Target"] = true
 -- L["If checked, the default action list will not recommend using |T135857:0|t Blizzard in single-target due to the |T629077:0|t Freezing Rain talent proc."] = true
+L["%s: Limit with %s and %s"] = "%s: %s|1과;와; %s의 제한"
+L["If checked, %1$s will recommended less often when you have %2$s and %3$s talented and there are only 1 or 2 enemy targets.\n\nPer Altered Time, the Mage Discord, this can be a 4%% DPS gain in single-target and a ~1.5%% gain in two-target scenarios."] = "이 옵션을 선택하면 %2$s|1과;와; %3$s의 특성이 있고 적 대상이 1명 또는 2명일 때 %1$s|1을;를; 덜 자주 추천합니다.\n\n마법사 직업 Discord 서버인 Altered Time에 따르면 단일 대상에서는 4%%의 DPS 증가, 두 대상 시나리오에서는 ~1.5%%의 DPS 증가가 발생한다고 합니다."
 L["%s: Manual Control"] = "%s: 수동으로 제어"
 L["If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet.\n\nYou will need to disable its auto-cast before using this feature."] = "이 옵션을 선택하면 소환수의 %s|1을;를; 자동 시전하는 대신 수동으로 직접 사용하는 것을 추천합니다.\n\n이 기능을 사용하기 전에 자동 시전을 비활성화해야 합니다."
 

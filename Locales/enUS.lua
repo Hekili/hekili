@@ -924,6 +924,8 @@ L["If checked, non-instant %1$s and %2$s casts will not be recommended while you
 L["Frost Mage"] = true
 -- L["Ignore |T629077:0|t Freezing Rain in Single-Target"] = true
 -- L["If checked, the default action list will not recommend using |T135857:0|t Blizzard in single-target due to the |T629077:0|t Freezing Rain talent proc."] = true
+L["%s: Limit with %s and %s"] = true
+L["If checked, %1$s will recommended less often when you have %2$s and %3$s talented and there are only 1 or 2 enemy targets.\n\nPer Altered Time, the Mage Discord, this can be a 4%% DPS gain in single-target and a ~1.5%% gain in two-target scenarios."] = true
 L["%s: Manual Control"] = true
 L["If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet.\n\nYou will need to disable its auto-cast before using this feature."] = true
 
