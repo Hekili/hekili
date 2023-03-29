@@ -1893,6 +1893,30 @@ do
         ticks = 1,
         ticks_remain = 1,
         time_to_refresh = 1,
+
+        --[[ Macro conditionals.
+        advflyable = 1,
+        canexitvehicle = 1,
+        -- channeling = 1, -- already exists.
+        -- combat = 1, -- already exists.
+        flyable = 1,
+        flying = 1,
+        -- group = 1, -- already exists.
+        indoors = 1,
+        outdoors = 1,
+        -- mounted = 1, -- already exists.
+        petbattle = 1,
+        pvpcombat = 1,
+        resting = 1,
+        bonusbar = 1,
+        cursor = 1,
+        extrabar = 1,
+        mod = 1,
+        modifier = 1,
+        overridebar = 1,
+        possessbar = 1,
+        shapeshift = 1,
+        vehicleui = 1, ]]
     }, {
         __index = function ( t, k )
             -- Make sure to get anything that should be dynamic, in case it was set (via newindex).
@@ -2237,33 +2261,29 @@ do
                 value = app and app[ k ]
                 if value ~= nil then return value end
 
-
                 -- This uses the default aura duration (if available) to keep pandemic windows accurate.
                 -- local duration = aura and aura.duration or 15
 
                 -- This allows for overridden tick times on a particular application of an aura (i.e., Exsanguinate).
                 -- local tick_time = app and app.tick_time or ( aura and aura.tick_time ) or ( 3 * t.haste )
 
-                if k == "down" then return app.down
+                if k == "up" or k == "ticking" then return false
+                elseif k == "down" then return true
                 elseif k == "duration" then return ( aura.duration or 15 )
-                elseif k == "refreshable" then return app.down or ( app.remains < 0.3 * ( aura.duration or app.duration or 15 ) )
+                elseif k == "refreshable" then return true
                     -- When cycling targets, we want to consider that there may be a valid other target.
                     -- if t.isCyclingTargets( action, aura_name ) then return true end
                     -- if app then return app.remains < 0.3 * ( aura.duration or 15 ) end
                     -- return true
 
-                elseif k == "remains" then return app.remains
+                elseif k == "remains" then return 0
                     -- if app then return app.remains end
                     -- return 0
-                elseif k == "tick_time" then return app.tick_time or aura.tick_time or app.remains or 0
-                elseif k == "tick_time_remains" then return app.tick_time_remains or 0
-                elseif k == "ticking" or k == "up" then return app.up
-                elseif k == "ticks" then return app.ticks or 0
-                elseif k == "ticks_remain" then return app.ticks_remain or 0
-                elseif k == "time_to_refresh" then
-                    -- if t.isCyclingTargets( action, aura_name ) then return 0 end
-                    return app.up and max( 0, 0.01 + app.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
-                end
+                elseif k == "tick_time" then return aura.tick_time or ( 3 * state.haste )
+                elseif k == "tick_time_remains" then return 0
+                elseif k == "ticks" then return ( aura.duration or 15 ) / ( aura.tick_time or 3 * haste )
+                elseif k == "ticks_remain" then return 0
+                elseif k == "time_to_refresh" then return 0 end
             end
 
             -- Check if this is a resource table pre-init.
@@ -2693,8 +2713,11 @@ do
         health_pct = 1,
         is_add = 1,
         is_boss = 1,
+        is_dead = 1,
         is_demon = 1,
         is_friendly = 1,
+        is_in_party = 1,
+        is_in_raid = 1,
         is_player = 1,
         is_undead = 1,
         level = 1,
@@ -2758,6 +2781,7 @@ do
             elseif k == "health_current" then return t.health.current
             elseif k == "health_max" then return t.health.max
             elseif k == "health_pct" or k == "health_percent" then return t.health.percent
+            elseif k == "has_vehicle_ui" then t[k] = UnitInVehicle( "target" )
             elseif k == "is_add" then t[k] = not t.is_boss
             elseif k == "is_boss" then
                 if UnitExists( "boss1" ) and UnitIsUnit( "target", "boss1" ) or
@@ -2768,9 +2792,11 @@ do
                 else
                     t[k] = ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) )
                 end
-
+            elseif k == "is_dead" then t[k] = UnitIsDeadOrGhost("target")
             elseif k == "is_demon" then t[k] = UnitCreatureType( "target" ) == PET_TYPE_DEMON
-            elseif k == "is_friendly" then t[k] = t.exists and UnitIsFriend( "target", "player" )
+            elseif k == "is_friendly" then t[k] = UnitCanAssist( "player", "target" )
+            elseif k == "is_in_party" then t[k] = UnitInParty( "target" )
+            elseif k == "is_in_raid" then t[k] = UnitInRaid( "target" ) ~= nil
             elseif k == "is_player" then
                 local isPlayer = UnitIsPlayer( "target" )
                 if not isPlayer then isPlayer = PvpDummies[ t.npcid ] end
@@ -3724,31 +3750,33 @@ do
                 return rawget( t, k )
 
             elseif k == "up" or k == "ticking" then
-                return t.applied <= state.query_time and t.expires > state.query_time
-
-            elseif k == "react" then
-                if t.applied <= state.query_time and t.expires > state.query_time then
-                    return t.count
-                end
-                return 0
+                return t.remains > 0
 
             elseif k == "down" then
                 return t.remains == 0
 
             elseif k == "remains" then
+                if state.IsCycling() and state.active_dot[ t.key ] < state.cycle_enemies then return 0 end
+                -- if state.IsCycling( t.key ) then return 0 end
                 return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
             elseif k == "refreshable" then
                 return t.remains < 0.3 * ( aura.duration or 30 )
 
             elseif k == "time_to_refresh" then
-                return t.up and max( 0, 0.01 + t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
+                local remains = t.remains
+                if remains == 0 then return 0 end
+                return max( 0, 0.01 + remains - ( 0.3 * ( aura.duration or 30 ) ) )
 
             elseif k == "cooldown_remains" then
                 return state.cooldown[ t.key ] and state.cooldown[ t.key ].remains or 0
 
+            elseif k == "react" or k == "stack" or k == "stacks" then
+                if t.remains == 0 then return 0 end
+                return t.count
+
             elseif k == "max_stack" or k == "max_stacks" then
-                return class.auras[ t.key ].max_stack or 1
+                return max( t.stacks, aura and aura.max_stack or 1 )
 
             elseif k == "mine" then
                 return t.caster == "player"
@@ -3763,30 +3791,33 @@ do
                 return 0
 
             elseif k == "value" then
-                return t.v1
+                if t.remains == 0 then return 0 end
+                return t.v1 or 0
 
             elseif k == "stack_value" then
-                return t.v1 * t.stack
-
-            elseif k == "stack" or k == "stacks" then
-                if t.applied <= state.query_time and state.query_time < t.expires then return ( t.count ) else return 0 end
+                if t.remains == 0 then return 0 end
+                return t.value * t.stack
 
             elseif k == "stack_pct" then
-                if t.applied <= state.query_time and state.query_time < t.expires then return ( 100 * t.stack / t.max_stack ) else return 0 end
+                if t.remains == 0 then return 0 end
+                return ( 100 * t.stack / t.max_stack )
 
             elseif k == "ticks" then
-                if t.applied <= state.query_time and state.query_time < t.expires then return t.duration / t.tick_time - t.ticks_remain end
+                if t.remains == 0 then return 0 end
+                -- if t.applied <= state.query_time and state.query_time < t.expires then return t.duration / t.tick_time - t.ticks_remain end
                 -- if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
-                return 0
+                return t.duration / t.tick_time - t.ticks_remains
 
             elseif k == "tick_time" then
+                if t.remains == 0 then return 0 end
                 return aura and aura.tick_time or ( 3 * state.haste ) -- Default tick time will be 3 because why not?
 
             elseif k == "ticks_remain" then
-                if t.applied <= state.query_time and state.query_time < t.expires then return t.remains / t.tick_time end
-                return 0
+                if t.remains == 0 then return 0 end
+                return t.remains / t.tick_time
 
             elseif k == "tick_time_remains" then
+                if t.remains == 0 then return 0 end
                 if t.applied <= state.query_time and state.query_time < t.expires then
                     if not aura.tick_time then return t.remains end
                     return aura.tick_time - ( ( query_time - t.applied ) % aura.tick_time )
@@ -4679,7 +4710,7 @@ do
         __index = function( t, k )
             local aura = class.auras[ t.key ]
 
-            if state.IsCycling( t.key, true ) and cycle_debuff[ k ] ~= nil then
+            if state.IsCycling() and state.active_dot[ t.key ] < state.cycle_enemies and cycle_debuff[ k ] ~= nil then
                 return cycle_debuff[ k ]
             end
 
@@ -4727,7 +4758,7 @@ do
                 return rawget( t, k )
 
             elseif k == "up" or k == "ticking" then
-                return t.applied <= state.query_time and t.expires > state.query_time
+                return t.remains > 0
 
             elseif k == "i_up" or k == "rank" then
                 return t.up and 1 or 0
@@ -4739,56 +4770,49 @@ do
                 return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
             elseif k == "refreshable" then
-                -- if state.isCyclingTargets( nil, t.key ) then return true end
                 return t.remains < 0.3 * ( aura and aura.duration or t.duration or 30 )
 
             elseif k == "time_to_refresh" then
                 return t.up and max( 0, 0.01 + t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
 
-            elseif k == "stack" then
-                -- if state.isCyclingTargets( nil, t.key ) then return 0 end
-                if t.up then return ( t.count ) else return 0 end
-
-            elseif k == "react" then
-                if t.applied <= state.query_time and t.expires > state.query_time then
-                    return t.count
-                end
-                return 0
+            elseif k == "stack" or k == "stacks" or k == "react" then
+                if t.remains == 0 then return 0 end
+                return t.count
 
             elseif k == "max_stack" or k == "max_stacks" then
-                return aura and aura.max_stack or 1
+                return max( t.count, aura and aura.max_stack or 1 )
 
             elseif k == "stack_pct" then
-                if t.up then
-                    if aura then aura.max_stack = max( aura.max_stack or 1, t.count ) end
-                    return ( 100 * t.count / aura and aura.max_stack or t.count )
-                end
-
-                return 0
+                if t.remains == 0 then return 0 end
+                if aura then aura.max_stack = max( aura.max_stack or 1, t.count ) end
+                return ( 100 * t.count / aura and aura.max_stack or t.count )
 
             elseif k == "value" then
-                return t.v1
+                if t.remains == 0 then return 0 end
+                return t.v1 or 0
 
             elseif k == "stack_value" then
-                return t.v1 * t.stack
+                return t.value * t.stack
 
             elseif k == "pmultiplier" then
+                if t.remains == 0 then return 0 end
+
                 -- Persistent modifier, used by Druids.
                 t[ k ] = ns.getModifier( aura.id, state.target.unit )
                 return t[ k ]
 
             elseif k == "ticks" then
-                if t.up then return t.duration / t.tick_time - t.ticks_remain end
-                return 0
+                if t.remains == 0 then return 0 end
+                return t.duration / t.tick_time - t.ticks_remain
 
             elseif k == "tick_time" then
-                return aura.tick_time or ( 3 * state.haste )
+                return aura and aura.tick_time or ( 3 * state.haste )
 
             elseif k == "ticks_remain" then
-                return t.remains / t.tick_time
+                return ceil( t.remains / t.tick_time )
 
             elseif k == "tick_time_remains" then
-                if not t.up then return 0 end
+                if t.remains == 0 then return 0 end
                 if not aura.tick_time then return t.remains end
                 return aura.tick_time - ( ( query_time - t.applied ) % aura.tick_time )
 
