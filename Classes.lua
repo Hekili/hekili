@@ -5980,6 +5980,12 @@ function Hekili:SpecializationChanged()
 
     local specs = {}
 
+    -- If the player does not have a specialization, use their first spec instead.
+    if currentSpec == 5 then
+        currentSpec = 1
+        currentID = GetSpecializationInfo( 1 )
+    end
+
     for i = 1, 4 do
         local id, name, _, _, role = GetSpecializationInfo( i )
 
