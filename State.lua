@@ -3756,7 +3756,6 @@ do
                 return t.remains == 0
 
             elseif k == "remains" then
-                if state.IsCycling() and state.active_dot[ t.key ] < state.cycle_enemies then return 0 end
                 -- if state.IsCycling( t.key ) then return 0 end
                 return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
