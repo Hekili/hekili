@@ -1923,6 +1923,8 @@ spec:RegisterAbilities( {
             return tick_calculator( debuff.rip, "primal_wrath", true )
         end,
 
+        form = "cat_form",
+
         usable = function () return combo_points.current > 0, "no combo points" end,
         handler = function ()
             if talent.tear_open_wounds.enabled and debuff.rip.up then
