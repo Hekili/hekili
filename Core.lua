@@ -1990,12 +1990,14 @@ function Hekili.Update( initial )
                 UI.EventPayload = {}
             end
 
-            for k, v in pairs( Queue[ 1 ] ) do
-                UI.EventPayload[ k ] = v
-            end
-
-            if WeakAuras and WeakAuras.ScanEvents then
-                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator, Queue[ 1 ].empower_to, UI.EventPayload )
+            for i = 1, numRecs do
+                UI.EventPayload[ i ] = {}
+                for k, v in pairs( Queue[ i ] ) do
+                    UI.EventPayload[ i ][ k ] = v                   
+                end
+                if WeakAuras and WeakAuras.ScanEvents then
+                    WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ i ].actionID, Queue[ i ].indicator, Queue[ i ].empower_to, UI.EventPayload[ i ] )
+                end
             end
 
             if debug then
