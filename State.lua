@@ -3712,9 +3712,15 @@ do
             end
 
             if aura and rawget( aura, "meta" ) and aura.meta[ k ] then
-                return aura.meta[ k ]( t, "buff" )
+                if not t.metastack[ k ] then
+                    t.metastack[ k ] = true
+                    local value = aura.meta[ k ]( t, "buff" )
+                    t.metastack[ k ] = nil
+                    if value ~= nil then return value end
+                end
+            end
 
-            elseif requiresLookup[ k ] then
+            if requiresLookup[ k ] then
                 if aura and aura.generate then
                     for attr, a_val in pairs( default_buff_values ) do
                         t[ attr ] = rawget( t, attr ) or rawget( aura, attr ) or a_val
@@ -3962,9 +3968,12 @@ do
         __newindex = function( t, k, v )
             local aura = class.auras[ k ]
 
-            if aura and aura.alias then
-                rawset( t, k, setmetatable( v, mt_alias_buff ) )
-                return
+            if aura then
+                if aura.meta then rawset( v, "metastack", {} ) end
+                if aura.alias then
+                    rawset( t, k, setmetatable( v, mt_alias_buff ) )
+                    return
+                end
             end
 
             rawset( t, k, setmetatable( v, mt_default_buff ) )
@@ -4726,7 +4735,12 @@ do
             end
 
             if aura and rawget( aura, "meta" ) and aura.meta[ k ] then
-                return aura.meta[ k ]( t, "debuff" )
+                if not t.metastack[ k ] then
+                    t.metastack[ k ] = true
+                    local value = aura.meta[ k ]( t, "debuff" )
+                    t.metastack[ k ] = nil
+                    if value ~= nil then return value end
+                end
 
             elseif requiresLookup[ k ] then
                 if aura and aura.generate then
@@ -4952,9 +4966,12 @@ do
         __newindex = function( t, k, v )
             local aura = class.auras[ k ]
 
-            if aura and aura.alias then
-                rawset( t, k, setmetatable( v, mt_alias_debuff ) )
-                return
+            if aura then
+                if aura.meta then rawset( v, "metastack", {} ) end
+                if aura.alias then
+                    rawset( t, k, setmetatable( v, mt_alias_debuff ) )
+                    return
+                end
             end
 
             rawset( t, k, setmetatable( v, mt_default_debuff ) )
