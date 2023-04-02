@@ -3049,7 +3049,7 @@ do
                     if not state:IsKnown( t.key ) then return 0 end
                 end
 
-                return ( ( ability.charges or 1 ) - ( raw and t.true_charges_fractional or t.charges_fractional ) ) * max( ability.cooldown, t.true_duration )
+                return ( ( ability.charges or 1 ) - t.true_charges_fractional ) * max( ability.cooldown, t.true_duration )
 
             elseif k == "remains" then
                 if t.key == "global_cooldown" then
