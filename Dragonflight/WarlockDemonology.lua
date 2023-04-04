@@ -10,7 +10,7 @@ local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
 local FindPlayerAuraByID, FindUnitBuffByID, FindUnitDebuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID, ns.FindUnitDebuffByID
-local ceil = math.ceil
+local abs, ceil = math.abs, math.ceil
 
 local RC = LibStub( "LibRangeCheck-2.0" )
 
@@ -758,12 +758,12 @@ spec:RegisterPhasedVariable( "next_tyrant",
             + ( talent.grimoire_felguard.enabled and cooldown.grimoire_felguard.remains < cooldown.summon_demonic_tyrant.remains_expected and 1 or 0 )
             + ( talent.summon_vilefiend.enabled  and cooldown.summon_vilefiend.remains  < cooldown.summon_demonic_tyrant.remains_expected and 1 or 0 )
 
-        if current - update > 16 then
+        if abs( current - update ) > 16 then
             return update
         end
 
-            -- #1: list-if: talent.summon_demonic_tyrant.enabled and time - current <= 12 + 2 and cooldown.summon_demonic_tyrant.remains <= gcd.max
-        if ( time - current <= 12 + 2 and cooldown.summon_demonic_tyrant.remains <= gcd.max or
+        -- #1: list-if: talent.summon_demonic_tyrant.enabled and time - current <= 12 + 2 and cooldown.summon_demonic_tyrant.remains <= gcd.max
+        if ( current - time <= 12 + 2 and cooldown.summon_demonic_tyrant.remains <= gcd.max or
             -- #2: list-if: talent.summon_demonic_tyrant.enabled and cooldown.summon_demonic_tyrant.remains_expected <= 12
             cooldown.summon_demonic_tyrant.remains_expected <= 12 ) then
             -- value: time + 14 + cooldown.grimoire_felguard.ready + cooldown.summon_vilefiend.ready
@@ -773,18 +773,15 @@ spec:RegisterPhasedVariable( "next_tyrant",
             end
 
             -- I'm going to manipulate this to keep the window from collapsing prematurely due to downtime.
-            local demon
+            local demon = buff.dreadstalkers.remains
 
-            if buff.dreadstalkers.up then
-                demon = buff.dreadstalkers.remains
-            end
+            if demon > 4 then
+                if buff.grimoire_felguard.up then demon = demon and min( demon, buff.grimoire_felguard.remains ) or buff.grimoire_felguard.remains end
+                if buff.vilefiend.up         then demon = demon and min( demon, buff.vilefiend.remains         ) or buff.vilefiend.remains         end
 
-            if buff.grimoire_felguard.up then demon = demon and min( demon, buff.grimoire_felguard.remains ) or buff.grimoire_felguard.remains end
-            if buff.vilefiend.up         then demon = demon and min( demon, buff.vilefiend.remains         ) or buff.vilefiend.remains         end
-
-            if demon then
-                demon = time + demon - 4
-                return demon
+                if demon > 4 then
+                    return time + demon
+                end
             end
         end
 
@@ -1900,4 +1897,4 @@ spec:RegisterSetting( "dcon_imps", 0, {
 } )
 
 
-spec:RegisterPack( "Demonology", 20230401, [[Hekili:nR1wZTkos4Fl5fFSpjXgWo5CPSZd7SVmP2DEXN9vdYGSnvaeliYLQCXV9PL4MKqcBpts2Tsvj2qR(U(6ULYg7n)AZ6aefV5pCSCMBTWYEQZChN5FFZA6BP4nRtr(pH2dFibfd)(FIJjjKiY(3yV6TickGXICsrMp86duAA(pNnBFi9qX2P(K4z5HXfriAijXpdTJY(U)STrKTZcYq7jj7Ic3FGodNSpmbpZpcLN7gtckIW5ZqPrZEbLfr8FAQFA6M1BlcJO)EYMT6167bnjf7dp(E4JhcdcWv0IZ93SMr7TwZVDU1pl9k9(pPmwu6TlJex6Tom(3UP0lmXpQiimzp7JuCwckQ07zuwiABeEAc(vQl9TmucT0Zhf5xBztlFS8Xk2V4wlBo7)3KGWDVv6b2BPhLu6HEMegu6Tfb)6xCEKx6fuGREBa5LeAymE6M1rH50CMxnKIJzF4p4HjCcthc28p2Sg5ZKkeIGfSndJ8paASlffXEOFgSoqHzERD7MgWIyH(UPKxWztlsl9oES07kqQOiCcDAErmqGBdzvw30AHv6nQ0BmO0moLGPhWzaJYGLQHtYVVLdtAYD0PTuiwXmUglQih7wz2c2lf(bIH7qfr0w3rZkqVIDPKCLfiZ1a8ZqcQBmAFOVcDZvCTDEVlX)m2usYTG3bmBWlu6TCLmHv04MMHtDZPOmG8Rl9C40cS1NqIyzfg0GmCmkmjVIT79dMgJETkICEl0f)kSvHYSbghgsRM05jHK(i3QV4YYtRYwDRdW8LY8Qlm6v3cHkU5XClqGZnie8ol529xBnKobggNgrYdRsvUZiBVK8zaSkYn)akd(6dCbZ8AgvS5wDAJukotJU3SHQBlthNoGscCj7C3xefG4g33mSjFqxE1Efy1FFyf5)hqboldIazam75hgTNlo9gIX1sRzPk6saakfa56rpHZ4otBR)(jAmVIAQK9ItkzvO()Is2y28f696039zHXKWmS7oC0(cyZdxDDEFu3luR0ft5GNdHI9X4wQP)5Wi8UqCsLxXCrLw50iGCAg06d9qJieC4qVorek0veNNlKlOjVALIA2dcuMIPtvSpgFFg3X)TG5K7d1m3JD3sI32KDAgUteuf8N3v5LRsaGmgim9mSofmfoGI0B7QQb8qWlFabEnqvI4LxSvXkfQA)cX1hbWjqHJCEEIvNOQT2Q0LrvPqpJDXj44qCf1288OXDjViG37c9XbUmtmxlIMurk7taf)syuax7McjM(pXL6p6PJmGv9AOtJgAZRyEA9uUBI(4oDoDM9)nXihaLZZ5tcymRLPMSCZG2Atp05(fI58LqZcFIVbWXmMS(WyRdLKfd2sTJPXPdT8yB1BBmJINW4uCgxKMbJLkQ6tYWnbmfdDHYE2MmyhZaN9zDTkVSXSAkfBokoVgURpvv5(c5U8ocCZdtpu3oUzWR(novPmF4q9NrlZd1zLJA7OTHecjw0aZW7YWGbc0bp(n)iOgbcWaHXXGHoyCYmWQAgU5e57frYfr2uh5bmtyc6TiQUzafG84dy0I0vJWJIG9enpGNi0wbhCoTWfsnLYGIdiXHj8PA7ngvDed4(jgIIa8mNrvZkBcGSpfva)XEbpYvN20R3IPqy(jrkulZYjGZxPzpeYmAhdrBIUS(For1CbGRXnDsWsOR4)02T3tzLF4amwsUFr5ZrlMyaB4CkYkQnx9bOqYfCPTZ2DgjIlBqggyhHC5CPKm5rS0KNzUHuzIxOj1TRnnnjan0QPZCzQVWH(6p0jekCKXh2wKLWMdkb7cZ)SEH1gnte2jh9vaAgg7CR1B10CWjo7crS(bMbuB5HtWAwnnN(lFfp3EqqDZDz9o7CAqGyrjsbOgAgo(0w5IZHU2PAmuCK3ylJ0HCmMBc7D2XCAJUvF5DQw14QDVnLYg5MHN)wxJxgWrhywAJnIBlHqA(4Bu7AYwUqPqfFLjZMFUf)5heI6HDMsQ(RepLenBunC2tHj7hc7CBeHe4URi7THan3bORCkvvoq9EgKdJOQtG3g6AC9lOSeqUaA5VoarCWZsynOTJKv69f(bv9LsVm8)TayBaB)olVavqjXiEJE(qU8EyiJYh)xaoiel(zP3VrsajXF9xgQhZVuDk6dstZowG2X2Vo5uYrk4RWFThYvhFlFuJhO(aSVmFW8pjFWDFsY57)Vvo)nIP15kwFsgG9Nw2VZNLGUxVGep)hf(R7GJ6XwdHALJUqHZgoydvM78XV)tlwrldVaOctBTu6Brvln0wJOc(7CDJX07AAqP0JFlLWRzJPs2fg12ts(025wVE1m5rkVjC3kw)apyn6Q2HuhD1GJNw(Oo(2nlQ(330CYnSXdx1B6WBiPRGjuVHpo6k7fxthAs0RPdmfQE5l2GGEkA7vH5ueMSB5DJgZgM74rTdYTYQ2FPm(2ed(PUwm6lNR(lkOwrbcO5(xfFM49Tk(C1B(rm4WtngyNZOXJ11W5TS0Pjlxn28zeDTZKrN3PoTCv99pE845TG2JPA5kZYFIOlO9atz2lZ7ps4Qiw68vqbejxQOeBjxnOpQl8(GZXJ9y)ClrElp6axF0oC3jdG8E7onzSoABLsJI3CHKhpoSLnwRU1TkP3mPNYinodtjUW47dTxZ0j58G2XXJIXd7fISRh2ZzWTEH4l0UeLVk62zi(luATEXRnVB591M6UenPGEdhuV9nzqmzAeFNM7hJ7TmE1As(ztqYaISMgFgz8wYwENrKfPRbdQ2QE9xJQuRM7m5b7Rh3ePnCrsdGIPzy6h(Xi5BZsvGoxp2(RNsKJoJZK4b7VnsFtDs(8UjY75ZvDfA2t0DVqSvRUGrgVNPv2w9sPAI76ojdba8LsydI1G1VyU8wAxduQ3vnh2CP)kHMmCHbX6kJg)odkmyLBj3hHeFJ01YSYMPDcxBZzgZnSDuOZMP8IAWRB(psRUxL()pS9zxsRNMLlQ2SIS88f2x794UthQ)RApsOEVQ9CGefuLr0hoJ5Hw6msR3UBrs2MM33RwOobRuVsdj9Hn0XN6ZF3yhqITvTY5M6tPF1clnmR)EhDBizH5ZbBZAYiJn9Y2jAidsA7QrgS02rK0v3n5ZWEO6N7Ca1CXa(Gk91ast3XpBm5rEfVdMNzZOvB(QZ12A0OtwCqZA0wwqTuSD9CCgBSxERqnK5W70HH9lOhizBwZ(hNMFKWB(Zd]] )
+spec:RegisterPack( "Demonology", 20230404, [[Hekili:nV1wVTnow4FlbdGBsDQTLStAtHDEyM9LjyrFXDF1s0s02ers0RevUayOF77Hu3iPiLTtBYoyg0XvI8CNF8CrZkNv)C1YqedV6hUtCNoz2KzJCUZ9BZMUAj7194vl3JcEeTf(rckg(Z)foMMqJOBFL)QxJOOqojYO5PbWR3Xy7Z((4XBjSD5RhfqJhNrIZJqmcnjifTHX)7bJxhrxpomfTLMSjISDhBmozljbpoicLL5ftdZJWzJr7Jg)mknIg84OG97xTCDojI93jRwBwQDajzpoaE8T3ccdjmexUwCwWQL81(Ljt)Y0jFVWVW))SNtIc)nP04c)LK4)66cFssquEijzl)NmCAckQW)jukbTocpkb)cZJ9AkkHv4hGIcQ0Srfpu8qj5Nb)RG8)jMb7VWFFkHMsyVw4NIFIKbRod4jfEZpRiuEgyGhTAzejJLXTMegoM)JFiCp4eoVdx9NRwIc4CdCnKy86umkyhiPEmue)HbaxWGGYTsB2mkK7PibE7PpJthLVVW)WHc)lk8HLJtyJYYJHf4vVSsTAufZk8hu4FzHVGsjy2oCkqOuyRgOK67BOWv1XmMKwg4J4kxTgLNH9kvBj9Lb)d472GYJynMJ6DGEb7XOzABqLQH4NGatVy0wsG26MQzAPq0vgM1U3ANo)xr546xyXUfGYGidqrl8)CHVBH)WcFhbr8QmcI15ThfYJU4sWmnjO1)DYEOaknkK(SnHkfhJijzE4xGdfm(EMl8QotfYNkBEIeH3qWjHTCODnBtjXusk2BdoABokvArFr68HQskcbQnNWPLiVY)IhpqVmCxX4Wnk3y3OagxWH7fsWc9WvyP3geokg9slFiX7JO8tzCQDRvQDoNdaWTiVSDGwx4FVGX84FD5z6KwHq5ebxq(QvbX4jSwkTdLe6r34Tnpkej0PVzbtOxdC5rly331VG8pbqJtsHOGJNRpotSQqN9HdW3wXU6TQjmHaiwygiVpItfwthDa63qaMPyjNzhLZUVpC(mnATIzhecHuQJY(gLYZuQm5kfOzDaQsX79aZAk73S1qhtvymSd43WNAgKXsHeIy7QzHKDgYakIYGCLe08g1R7u3T2vEo9chUhZgPPFC6(eUL(Rb1jlaUrDl2BnnEDDSOD0nzOtWEEJaIOYVdbkG35jyFAqic8dL3wzfkPHKvEhcSAGOejU7WrhAu6YJNPEIROHRhYeHhtAzvL2wgLmOmY5jShobhtWLR2re(CzBmlcO9gsao0JRIzgbWuUkY5iiVptIcfs3iiEm4rbxVRJmYXrnlHU1sOJ4EXJlNQjq0fLP1OZ1)Vk75aKBrmFsiNyne1IM7AhI2y4HjZVKpxSfwk5rXbax7iWL2nAAmiYv6FTTDbqYjNcZkpgZ36Jy8ECQGL2HEvUdnGMIRDyAk6mTZS1rWU2Xl7s6kDzUWLlDZRDV40suodRQm2xk2vKaGxgz)UkNODWRUPhvkmV7i89HMpuiix1xIuU65A24sO0yzfmfVjfdk4AEXabVgeb3rGamqOynOKeoLSdSQhHBpq(RYi5YiB6febQjux9AeZufIQ5llH0vHWJIGW96hiceAU4gmonWfk5GYHIdPXKerTUnfzjX1Jx8eKVIHIHACyVTkYCM9BRogzPBdjnRUm)Mc1mEWq9(v71UuBRL3SIjwbf42tnsOseneguz7iBmB9A8dv57uritrpnhYuSkLEapCugULYklruyyjvSxHyJN8mp(BlguPsWoHl9Ho2NmEQwL2BRTdb3JHWItXYjd444Xu12tcVtQPbg8wvr9RxorvS7553jvThg9wv5(B1rDpo6M8G9eGvaou7bHksLYDnDRCtDXFtbosVWg11EN8Anu5Qwbj2Zm0spe07gdKiNR6vQRZtt4Dkib7fas3SjR6Vo9wxNIdsnvME6OHXSFSsuEYAUD34crUV9MTspf8xF)hx7P5Wg1tW6isKuVlhQK(RbPWEcQ25WI6Cqal5gEZ(9KRNZ5gRzLwBJ1aBuEC3dM8xFvNiw1Buw1F94MYJ3YL1o2pgBTUohLeWS38p9KWDuZmqkbsTZvNCUKI2OP3z990Y)Rcnv6RoVYFC6JcioLvnvzvruAO3M80x1wLscvaElwSsDHJNLbWh(IAgZZQLpJsta(cqj)CheWcwwkpFFXav(KOnNFIpPL)Boq2q(PmEynkNrJrI6gcGG6TqnRfp8VbmcWx89c))IMaCs86p1xjlaLz0JSM6tDWAV05LRogFuC(A03ylsBPBXdgSavtl58SbZ(GSb9ZNMd4MzrN86prQ3bGqJ8wljqN(3(bzLU7)V85xiISks)d7iL7hfJM(rXOVAMrYndvJ(M6IAhYAXvR1hpnkBPlF6e399h9WisxtBqopSU(DL)QyqwO(VbmiJ2GgJ6zyaSEQrl9rDlGLSlLLW)wiCCIEt98xk8fFvdWR5nUIUHe1mpHSrnUWHlgR2KPRjBwWZJ8(jdUOPTvdUO3gwv8Gj6wNw618YWwuxFwtJNUMUFrgMDTOOYfqU5NarKRquB)ZgAjGzOnpTzgkN5N5v0Kek3uDHPUlzEFszdYDzvlbEr93tH8ZK)(jAE(cZM0YsEvThL7WYX8MYo(S7qhzUQp4xz(icm6b8yWz2jP5x6m9S9zFXs9(xv8WF8h1r(CnHK8e9rokkt8Le5XDtLAtPVIKSjpRkC)ct3Xo4I(u2dhKgy5C3BKnInJGP(OuZY(mKZV8kvyOSKy2a3w369UQcW0jYKvT4roDnxf9rD8IK6p(Y4LY0WLAzU(7y4WH(vQlnkBT7s5nx1ryukBLleNzu49ntP(Ou(mciCMjtUorXNj1otvsM16hSoboFMCRXaoSZrZgO(FBQt7i4vC11uqF29QaQQRr(DgMUUWqzDW8kM4wyD(MApKo)MbgYuCG1zSpVhue5HOd3mRp88bLIv9WuV3z4L1ozlJH(kR8YuVtU)UbQZcxNHUdV05ZhJLdoHzEFVZxRTAAzbRyZBBathBUUPWWXH2Pk3OWMMw9cNj9snLebm14kje75kicY5lyEZcbyUtf8Ozt10dhSmq5R6)6a5lsgC5Vz8a7WadDvKl(WEVwzOUlC4sN0qFprFULJJszznsCv2I6V11Q8A6(1X(rFnwPCbIDZxHRSqZVyDrzpbvFihZQPrGDFvt3)68QMw(jZMsvqp5sLEjxLCjztv6LNzqX1TdTCHXX98fo7SLC31b0KqcxwlRmX8aJ0uNHDkaPJcfJEPsDSFiZQmvxMKrHzqpNATqW3I8tsKL)oZe8xr27qS3p526a((vKFRe1UEivarRUCo1rygdyGHNwFJ)3gyeE4WbtW(aPSmPN5lMn4yannAKw(kCkn3DGr402nPqvdVVNIRBzSwUOgws38cmrNQznATWg5cLw4ED1ejxmBIbI19Yrl2y(nLwW4vUo1MlYXvEHlUXKRPRWWm3ciRCPPYEP6674bubR7rNNVyYGlvMB4CNBmM0b3mOHB08itZj0K2F00PmShJjsPN8Qtv7RSwaSASvvsg9F0z1suoBhnD1s()7ljMz2Q)3p]] )
