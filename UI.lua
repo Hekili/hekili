@@ -310,8 +310,12 @@ function ns.StartConfiguration( external )
             ns.StopConfiguration()
             self:SetScript( "OnHide", nil )
             self:SetParent( nil )
-            collectgarbage()
-            Hekili:UpdateDisplayVisibility()
+            if not InCombatLockdown() then
+                collectgarbage()
+                Hekili:UpdateDisplayVisibility()
+            else
+                C_Timer.After( 0, function() Hekili:UpdateDisplayVisibility() end )
+            end
         end )
 
         if not ns.OnHideFrame.firstTime then
