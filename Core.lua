@@ -1984,22 +1984,27 @@ function Hekili.Update( initial )
 
             UI:SetThreadLocked( false )
 
-            if UI.EventPayload then
-                wipe( UI.EventPayload )
-            else
-                UI.EventPayload = {}        
+            if not UI.EventPayload then
+                UI.EventPayload = {
+                    {}, -- [1]
+                }
+                setmetatable( UI.EventPayload, {
+                    __index = UI.EventPayload[ 1 ],
+                    __mode  = "kv"
+                } )
             end
 
             for i = 1, numRecs do
-                UI.EventPayload[ i ] = {}
+                if UI.EventPayload[ i ] then wipe( UI.EventPayload[ i ] )
+                else UI.EventPayload[ i ] = {} end
+
                 for k, v in pairs( Queue[ i ] ) do
                     UI.EventPayload[ i ][ k ] = v                   
                 end
             end
-            setmetatable(UI.EventPayload, {__index = UI.EventPayload[1], __mode="kv"})
 
             if WeakAuras and WeakAuras.ScanEvents then
-                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator, Queue[ 1 ].empower_to, UI.EventPayload)
+                WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, Queue[ 1 ].indicator, Queue[ 1 ].empower_to, UI.EventPayload )
             end
 
             if debug then
