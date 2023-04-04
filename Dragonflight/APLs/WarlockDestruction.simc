@@ -26,7 +26,7 @@ actions+=/chaos_bolt,if=pet.infernal.active|pet.blasphemy.active|soul_shard>=4
 actions+=/summon_infernal
 actions+=/channel_demonfire,if=talent.ruin.rank>1&!(talent.diabolic_embers&talent.avatar_of_destruction&(talent.burn_to_ashes|talent.chaos_incarnate))&dot.immolate.remains>cast_time
 actions+=/conflagrate,if=buff.backdraft.down&soul_shard>=1.5&!talent.roaring_blaze
-actions+=/incinerate,if=buff.burn_to_ashes.up&cast_time+action.chaos_bolt.cast_time<buff.madness_cb.remains
+actions+=/incinerate,if=cast_time+action.chaos_bolt.cast_time<buff.madness_cb.remains
 actions+=/chaos_bolt,if=buff.rain_of_chaos.remains>cast_time
 actions+=/chaos_bolt,if=buff.backdraft.up&!talent.eradication&!talent.madness_of_the_azjaqir
 actions+=/chaos_bolt,if=buff.madness_cb.up
@@ -72,7 +72,7 @@ actions.cleave+=/chaos_bolt,if=pet.infernal.active|pet.blasphemy.active|soul_sha
 actions.cleave+=/summon_infernal
 actions.cleave+=/channel_demonfire,if=talent.ruin.rank>1&!(talent.diabolic_embers&talent.avatar_of_destruction&(talent.burn_to_ashes|talent.chaos_incarnate))
 actions.cleave+=/conflagrate,if=buff.backdraft.down&soul_shard>=1.5&!variable.pool_soul_shards
-actions.cleave+=/incinerate,if=buff.burn_to_ashes.up&cast_time+action.chaos_bolt.cast_time<buff.madness_cb.remains
+actions.cleave+=/incinerate,if=cast_time+action.chaos_bolt.cast_time<buff.madness_cb.remains
 actions.cleave+=/chaos_bolt,if=buff.rain_of_chaos.remains>cast_time
 actions.cleave+=/chaos_bolt,if=buff.backdraft.up&!variable.pool_soul_shards
 actions.cleave+=/chaos_bolt,if=talent.eradication&!variable.pool_soul_shards&debuff.eradication.remains<cast_time&!action.chaos_bolt.in_flight
