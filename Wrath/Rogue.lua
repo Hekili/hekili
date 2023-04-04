@@ -191,6 +191,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    deadly_poison = {
+        id = 2818,
+        duration = 12,
+        max_stack = 5,
+        copy = { 2819, 11353, 11354, 25349, 26968, 27187, 57970, 57969 },
+    },
     -- Movement slowed by $s2%.
     deadly_throw = {
         id = 48674,
@@ -388,6 +394,55 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
     },
+    -- $s1 damage every $t sec
+    lacerate = {
+        id = 48568,
+        duration = 15,
+        tick_time = 3,
+        max_stack = 5,
+        copy = { 33745, 48567, 48568 },
+    },
+    -- Bleeding for $s1 damage every $t1 seconds.
+    pounce_bleed = {
+        id = 49804,
+        duration = 18,
+        tick_time = 3,
+        max_stack = 1,
+        copy = { 9007, 9824, 9826, 27007, 49804 },
+    },
+    -- Bleeding for $s2 damage every $t2 seconds.
+    rake = {
+        id = 48574,
+        duration = function() return 9 + ((set_bonus.tier9_2pc == 1 and 3) or 0) end,
+        max_stack = 1,
+        copy = { 1822, 1823, 1824, 9904, 27003, 48573, 48574, 59881, 59882, 59883, 59884, 59885, 59886 },
+    },
+    -- Bleed damage every $t1 seconds.
+    rip = {
+        id = 49800,
+        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc == 1 and 4) or 0) end,
+        tick_time = 2,
+        max_stack = 1,
+        copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
+    },
+    rend = {
+        id = 47465,
+        duration = 15,
+        max_stack = 1,
+        shared = "target",
+        copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208 }
+    },
+    deep_wound = {
+        id = 43104,
+        duration = 12,
+        max_stack = 1,
+        shared = "target"
+    },
+    bleed = {
+        alias = { "lacerate", "pounce_bleed", "rip", "rake", "deep_wound", "rend", "garrote", "rupture" },
+        aliasType = "debuff",
+        aliasMode = "longest"
+    }
 } )
 
 
@@ -400,6 +455,38 @@ local stealth = {
     rogue   = { "stealth", "vanish", "shadow_dance" },
     mantle  = { "stealth", "vanish" },
     all     = { "stealth", "vanish", "shadow_dance", "shadowmeld" }
+}
+
+local enchant_ids = {
+    [7] = "deadly",
+    [8] = "deadly",
+    [626] = "deadly",
+    [627] = "deadly",
+    [3771] = "deadly",
+    [2630] = "deadly",
+    [2642] = "deadly",
+    [2643] = "deadly",
+    [3770] = "deadly",
+    [323] = "instant",
+    [324] = "instant",
+    [325] = "instant",
+    [623] = "instant",
+    [3769] = "instant",
+    [624] = "instant",
+    [625] = "instant",
+    [2641] = "instant",
+    [3768] = "instant",
+    [2640] = "anesthetic",
+    [3774] = "anesthetic",
+    [703] = "wound",
+    [704] = "wound",
+    [705] = "wound",
+    [706] = "wound",
+    [2644] = "wound",
+    [3772] = "wound",
+    [3773] = "wound",
+    [35] = "mind",
+    [22] = "crippling",
 }
 
 
@@ -458,6 +545,9 @@ end )
 
 spec:RegisterHook( "reset_precast", function()
     if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
+
+    local mh, mh_expires, _, mh_id, oh, oh_expires, _, oh_id = GetWeaponEnchantInfo()
+
 end )
 
 
@@ -717,7 +807,17 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132287,
 
-        usable = function() return combo_points.current > 0, "requires combo_points" end,
+        usable = function()
+            if combo_points.current == 0 then
+                return false, "requires combo_points"
+            end
+
+            if not debuff.deadly_poison.up then
+                return false, "requires deadly_poison debuff"
+            end
+
+            return true
+        end,
 
         handler = function ()
             if not ( glyph.envenom.enabled or talent.master_poisoner.rank == 3 ) then
@@ -950,11 +1050,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 236276,
 
-        -- TODO: This can work with anybody's bleed, not just Rogue bleeds.
-        debuff = function()
-            if debuff.garrote.up then return "garrote"
-            elseif debuff.hemorrhage.up then return "hemorrhage" end
-            return "rupture"
+        usable = function()
+            return debuff.bleed.up
         end,
 
         handler = function ()
@@ -1142,6 +1239,8 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132302,
+
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
 
         handler = function ()
             applyDebuff( "target", "rupture" )
@@ -1366,6 +1465,42 @@ spec:RegisterAbilities( {
 
     },
 } )
+
+spec:RegisterSetting("rogue_description", nil, {
+    type = "description",
+    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
+        "to determine the optimal values for these settings for your specific character."
+})
+
+spec:RegisterSetting("rogue_description_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("rogue_general", nil, {
+    type = "header",
+    name = "General"
+})
+
+spec:RegisterSetting("rogue_general_description", nil, {
+    type = "description",
+    name = "General settings will change the parameters used in the core rotation.\n\n"
+})
+
+spec:RegisterSetting("maintain_expose", false, {
+    type = "toggle",
+    name = "Maintain Expose Armor",
+    desc = "When enabled, expose armor will be recommended when there is no major armor debuff up on the boss",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 4 ].settings.optimize_rake = val
+    end
+})
+
+spec:RegisterSetting("rogue_general_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
 
 
 spec:RegisterOptions( {
