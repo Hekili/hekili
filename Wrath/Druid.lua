@@ -240,6 +240,18 @@ spec:RegisterStateExpr("should_rake", function()
     return r >= s or (not settings.optimize_rake)
 end)
 
+spec:RegisterStateExpr("ttd", function()
+    return (debuff.training_dummy.up and 300) or target.time_to_die
+end)
+
+spec:RegisterStateExpr("end_thresh", function()
+    return 10
+end)
+
+spec:RegisterStateExpr("furor_cap", function()
+    return min(20 * talent.furor.rank, 85)
+end)
+
 spec:RegisterStateFunction("calc_ability_dpe", function()
     local armor_pen = stat.armor_pen_rating
     local att_power = stat.attack_power
@@ -250,6 +262,49 @@ spec:RegisterStateFunction("calc_ability_dpe", function()
     local rake_dpe = 3*(358 + 6*att_power/100)/35
     local shred_dpe = ((54.5 + tigers_fury + att_power/14)*2.25 + 666 + shred_idol - 42/35*(att_power/100 + 176))*(1 + 1.266*crit_pct)*(1 - (boss_armor*(1 - armor_pen/1399))/((boss_armor*(1 - armor_pen/1399)) + 15232.5))/42
     return rake_dpe, shred_dpe
+end)
+
+spec:RegisterStateFunction("tf_expected_before", function(current_time, future_time)
+    if cooldown.tigers_fury.remains > 0 then
+        return current_time + cooldown.tigers_fury.remains < future_time
+    end
+    if buff.berserk.up then
+        return current_time + buff.berserk.remains < future_time
+    end
+    return true
+end)
+
+spec:RegisterStateFunction("ff_expected_before", function(current_time, future_time)
+    if cooldown.faerie_fire_feral.remains > 0 then
+        return current_time + cooldown.faerie_fire_feral.remains < future_time
+    end
+    return true
+end)
+
+spec:RegisterStateExpr("should_bearweave", function()
+    local rip_refresh_pending = debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - end_thresh
+    local weave_end = 6 + 2 * latency
+    local weave_energy = furor_cap - 30 - (20 * latency) - (talent.furor.rank > 3 and 15 or 0)
+    local energy_to_dump = energy.current + weave_end * 10
+    return (
+        bearweaving_enabled and
+        energy.current <= weave_energy and
+        ((not rip_refresh_pending) or (debuff.rip.remains >= weave_end)) and
+        cooldown.mangle_bear.remains < 1.5 and
+        (not buff.clearcasting.up) and
+        (not buff.berserk.up) and
+        (not tf_expected_before(time, time + weave_end)) and
+        (not ff_expected_before(time, time + 3)) and
+        floor(weave_end + energy_to_dump / 42) < ttd
+    )
+end)
+
+spec:RegisterStateExpr("should_cat", function()
+    return buff.clearcasting.up and cooldown.faerie_fire_feral.remains > 3
+end)
+
+spec:RegisterStateExpr("bearweaving_enabled", function()
+    return settings.bearweaving_enabled and (settings.bearweaving_bossonly == false or state.encounterDifficulty > 0) and (settings.bearweaving_instancetype == "any" or (settings.bearweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.bearweaving_instancetype == "raid" and instanceType == "raid"))
 end)
 
 spec:RegisterStateExpr("min_roar_offset", function()
@@ -2543,6 +2598,8 @@ spec:RegisterSetting("optimize_rake", false, {
     end
 })
 
+local bearweaving_instancetypes = {}
+
 spec:RegisterSetting("druid_feral_footer", nil, {
     type = "description",
     name = "\n\n"
@@ -2608,6 +2665,54 @@ spec:RegisterSetting("max_bite_energy", 25, {
 })
 
 spec:RegisterSetting("druid_bite_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("druid_bearweaving_description", nil, {
+    type = "description",
+    name = "Bearweaving Feral settings will change the parameters used when recommending bearshifting abilities.\n\n"
+})
+
+spec:RegisterSetting("bearweaving_enabled", false, {
+    type = "toggle",
+    name = "Enabled",
+    desc = "Select whether or not bearweaving should be used",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_enabled = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_instancetype", "raid", {
+    type = "select",
+    name = "Instance Type",
+    desc = "Select the type of instance that is required before the addon recomments your |cff00ccff[bear_lacerate]|r or |cff00ccff[bear_mangle]|r\n\n" ..
+        "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend bearweaving in any situation.\n\n",
+    width = "full",
+    values = function()
+        table.wipe(bearweaving_instancetypes)
+        bearweaving_instancetypes.any = "any"
+        bearweaving_instancetypes.dungeon = "dungeon"
+        bearweaving_instancetypes.raid = "raid"
+        return bearweaving_instancetypes
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_instancetype = val
+    end
+})
+
+spec:RegisterSetting("bearweaving_bossonly", true, {
+    type = "toggle",
+    name = "Boss Only",
+    desc = "Select whether or not bearweaving should be used in only boss fights, or whether it can be recommended in any engagement",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_bossonly = val
+    end
+})
+
+spec:RegisterSetting("druid_bearweaving_footer", nil, {
     type = "description",
     name = "\n\n"
 })
