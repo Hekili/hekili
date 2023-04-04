@@ -185,7 +185,6 @@ spec:RegisterStateFunction("set_last_finisher_cp", function(val)
     lastfinishercp = val
 end)
 
-local predatorsswiftness_spell_assigned = false
 local avg_rage_amount = rage_amount()
 spec:RegisterHook( "reset_precast", function()
     stat.spell_haste = stat.spell_haste * (1 + (0.01 * talent.celestial_focus.rank) + (buff.natures_grace.up and 0.2 or 0) + (buff.moonkin_form.up and (talent.improved_moonkin_form.rank * 0.01) or 0))
@@ -196,12 +195,6 @@ spec:RegisterHook( "reset_precast", function()
     if IsCurrentSpell( class.abilities.maul.id ) then
         start_maul()
         Hekili:Debug( "Starting Maul, next swing in %.2f...", buff.maul.remains)
-    end
-
-    if not predatorsswiftness_spell_assigned then
-        class.abilityList.predatorsswiftness_spell = "|cff00ccff[Assigned Predator's Swiftness Spell]|r"
-        class.abilities.predatorsswiftness_spell = class.abilities[ settings.predatorsswiftness_spell or "regrowth" ]
-        predatorsswiftness_spell_assigned = true
     end
 
     avg_rage_amount = rage_amount()
@@ -242,40 +235,6 @@ spec:RegisterStateExpr( "mainhand_remains", function()
     return next_swing
 end)
 
-spec:RegisterStateExpr("bearweaving_lacerate_should_maul", function()
-    if buff.clearcasting.up then
-        return false
-    end
-
-    local bearRipRemains = max(debuff.rip.remains - 3, 0)
-    local ripGCDs = floor(bearRipRemains / gcd.max)
-    local energyGCDs = floor(energy.time_to_70 / gcd.max)
-    local gcdsRemaining = min(ripGCDs, energyGCDs)
-
-    local rageNeeded = action.maul.spend
-    if gcdsRemaining == 0 then
-        rageNeeded = rageNeeded + (debuff.lacerate.remains < 9 and action.lacerate.spend or 0)
-    else
-        local gcdPool = gcdsRemaining
-        local laceratesNeeded = (debuff.lacerate.max_stack - debuff.lacerate.stack) + (debuff.lacerate.stack == 5 and debuff.lacerate.remains < 9 and 1 or 0)
-        local laceratesUsed = min(gcdPool, laceratesNeeded)
-        rageNeeded = rageNeeded + laceratesUsed * action.lacerate.spend
-        gcdPool = gcdPool - laceratesUsed
-
-        if gcdPool > 0 and cooldown.mangle_bear.up then
-            rageNeeded = rageNeeded + action.mangle_bear.spend
-            gcdPool = gcdPool - 1
-        end
-    end
-
-    local nextSwing = mainhand_remains
-    --[[if nextSwing <= 0 then
-        nextSwing = mainhand_speed
-    end]]--
-    local willMaul = nextSwing <= min(bearRipRemains + 1.5, energy.time_to_85)
-    return willMaul and energy.current < 70 and rage.current > rageNeeded
-end)
-
 spec:RegisterStateExpr("should_rake", function()
     local r, s = calc_ability_dpe()
     return r >= s or (not settings.optimize_rake)
@@ -291,45 +250,6 @@ spec:RegisterStateFunction("calc_ability_dpe", function()
     local rake_dpe = 3*(358 + 6*att_power/100)/35
     local shred_dpe = ((54.5 + tigers_fury + att_power/14)*2.25 + 666 + shred_idol - 42/35*(att_power/100 + 176))*(1 + 1.266*crit_pct)*(1 - (boss_armor*(1 - armor_pen/1399))/((boss_armor*(1 - armor_pen/1399)) + 15232.5))/42
     return rake_dpe, shred_dpe
-end)
-
-spec:RegisterStateFunction("berserk_expected_at", function(current_time, future_time)
-    if buff.berserk.up then
-        return (
-            future_time - current_time < buff.berserk.remains
-            or future_time > current_time + cooldown.berserk.remains
-        )
-    end
-    if cooldown.berserk.remains > 0 then
-        return future_time > current_time + cooldown.berserk.remains
-    end
-    return future_time > current_time + cooldown.tigers_fury.remains
-end)
-
-spec:RegisterStateFunction("tf_expected_before", function(current_time, future_time)
-    if cooldown.tigers_fury.remains > 0 then
-        return current_time + cooldown.tigers_fury.remains < future_time
-    end
-    if buff.berserk.up then
-        return current_time + buff.berserk.remains < future_time
-    end
-    return true
-end)
-
-spec:RegisterStateExpr("tf_expected_before_flower_end", function()
-    return tf_expected_before(query_time, query_time+flower_end)
-end)
-
-spec:RegisterStateExpr("flower_end", function()
-    return action.gift_of_the_wild.gcd+1.5+2*latency
-end)
-
-spec:RegisterStateExpr("tf_expected_before_weave_end", function()
-    return tf_expected_before(query_time, query_time+weave_end)
-end)
-
-spec:RegisterStateExpr("weave_end", function()
-    return 4.5+2*latency
 end)
 
 spec:RegisterStateExpr("min_roar_offset", function()
@@ -350,34 +270,6 @@ end)
 
 spec:RegisterStateExpr("max_bite_energy", function()
     return settings.max_bite_energy
-end)
-
-spec:RegisterStateExpr("flowerweaving_enabled", function()
-    return settings.flowerweaving_enabled and (state.group_members >= flowerweaving_mingroupsize)
-end)
-
-spec:RegisterStateExpr("flowerweaving_mode", function()
-    return settings.flowerweaving_mode
-end)
-
-spec:RegisterStateExpr("flowerweaving_mode_any", function()
-    return settings.flowerweaving_mode == "any";
-end)
-
-spec:RegisterStateExpr("bearweaving_enabled", function()
-    return settings.bearweaving_enabled and (settings.bearweaving_bossonly == false or state.encounterDifficulty > 0) and (settings.bearweaving_instancetype == "any" or (settings.bearweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.bearweaving_instancetype == "raid" and instanceType == "raid"))
-end)
-
-spec:RegisterStateExpr("bearweaving_lacerate_enabled", function()
-    return bearweaving_enabled and settings.bearweaving_spell == "lacerate"
-end)
-
-spec:RegisterStateExpr("bearweaving_mangle_enabled", function()
-    return bearweaving_enabled and settings.bearweaving_spell == "mangle"
-end)
-
-spec:RegisterStateExpr("predatorsswiftness_enabled", function()
-    return settings.predatorsswiftness_enabled
 end)
 
 -- Resources
@@ -1484,6 +1376,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeDebuff( "armor_reduction" )
             applyDebuff( "target", "faerie_fire_feral", 300 )
+            applyBuff("clearcasting")
         end,
     },
 
@@ -1574,9 +1467,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "gift_of_the_wild" )
             swap_form( "" )
-            if (flowerweaving_enabled and (flowerweaving_mode_any or state.active_enemies > 2) and state.group_members >= flowerweaving_mingroupsize) then
-                applyBuff("clearcasting")
-            end
         end,
 
         copy = { 21850, 26991, 48470 },
@@ -2604,11 +2494,6 @@ spec:RegisterAbilities( {
 
 
 -- Settings
-local bearweaving_spells = {}
-local bearweaving_instancetypes = {}
-local predatorsswiftness_spells = {}
-local flowerweaving_modes = {}
-
 spec:RegisterSetting("druid_description", nil, {
     type = "description",
     name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
@@ -2640,19 +2525,6 @@ spec:RegisterSetting("min_roar_offset", 14, {
     step = 1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.min_roar_offset = val
-    end
-})
-
-spec:RegisterSetting("min_weave_mana", 25, {
-    type = "range",
-    name = "Minimum Spellshift Mana",
-    desc = "Sets the minimum allowable mana for flowershifting and predatorshifting recommendations",
-    width = "full",
-    min = 0,
-    softMax = 100,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.min_weave_mana = val
     end
 })
 
@@ -2731,186 +2603,6 @@ spec:RegisterSetting("max_bite_energy", 25, {
 })
 
 spec:RegisterSetting("druid_bite_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
-
-spec:RegisterSetting("druid_bearweaving_header", nil, {
-    type = "header",
-    name = "Feral: Bearweaving"
-})
-
-spec:RegisterSetting("druid_bearweaving_description", nil, {
-    type = "description",
-    name = "Bearweaving Feral settings will change the parameters used when recommending bearshifting abilities.\n\n"
-})
-
-spec:RegisterSetting("bearweaving_enabled", false, {
-    type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not bearweaving should be used",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_enabled = val
-    end
-})
-
-spec:RegisterSetting("bearweaving_spell", "lacerate", {
-    type = "select",
-    name = "Preferred Mode",
-    desc = "Select the type of bearweaving that you want Hekili to recommend.\n\n" ..
-        "In default priorities, selecting Lacerate will recommend your |cff00ccff[bear_lacerate]|r action list. " ..
-        "Selecting Mangle will recommend your |cff00ccff[bear_mangle]|r action list. " ..
-        "Custom priorities may ignore this setting.",
-    width = "full",
-    values = function()
-            table.wipe(bearweaving_spells)
-            bearweaving_spells.lacerate = class.abilityList.lacerate
-            bearweaving_spells.mangle = class.abilityList.mangle_bear
-            return bearweaving_spells
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_spell = val
-    end
-})
-
-spec:RegisterSetting("bearweaving_instancetype", "raid", {
-    type = "select",
-    name = "Instance Type",
-    desc = "Select the type of instance that is required before the addon recomments your |cff00ccff[bear_lacerate]|r or |cff00ccff[bear_mangle]|r\n\n" ..
-        "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend bearweaving in any situation.\n\n",
-    width = "full",
-    values = function()
-        table.wipe(bearweaving_instancetypes)
-        bearweaving_instancetypes.any = "any"
-        bearweaving_instancetypes.dungeon = "dungeon"
-        bearweaving_instancetypes.raid = "raid"
-        return bearweaving_instancetypes
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_instancetype = val
-    end
-})
-
-spec:RegisterSetting("bearweaving_in_berserk", true, {
-    type = "toggle",
-    name = "Maintain Lacerate In Berserk",
-    desc = "When enabled and the selected bearweaving spell is Lacerate, Hekili will recommend refreshing lacerate during berserk. " ..
-        "When disabled, lacerate stacks will be allowed to fall off.",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_in_berserk = val
-    end
-})
-
-spec:RegisterSetting("bearweaving_bossonly", true, {
-    type = "toggle",
-    name = "Boss Only",
-    desc = "Select whether or not bearweaving should be used in only boss fights, or whether it can be recommended in any engagement",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_bossonly = val
-    end
-})
-
-spec:RegisterSetting("druid_bearweaving_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
-
-spec:RegisterSetting("druid_flowerweaving_header", nil, {
-    type = "header",
-    name = "Feral: Flowerweaving"
-})
-
-spec:RegisterSetting("druid_flowerweaving_description", nil, {
-    type = "description",
-    name = "Flowerweaving Feral settings will change the parameters used when recommending flowershifting abilities.\n\n"
-})
-
-spec:RegisterSetting("flowerweaving_enabled", false, {
-    type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not flowerweaving should be used in AOE situations",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_enabled = val
-    end
-})
-
-spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
-    type = "range",
-    name = "Minimum Group Size",
-    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
-    width = "full",
-    min = 0,
-    softMax = 40,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
-    end
-})
-
-spec:RegisterSetting("flowerweaving_mode", "any", {
-    type = "select",
-    name = "Situation",
-    desc = "Select the flowerweaving mode that determines when flowerweaving is recommended\n\n" ..
-        "Selecting AOE will recommend flowerweaving in only AOE situations. Selecting Any will recommend flowerweaving in any situation.\n\n",
-    width = "full",
-    values = function()
-        table.wipe(flowerweaving_modes)
-        flowerweaving_modes.any = "any"
-        flowerweaving_modes.dungeon = "aoe"
-        return flowerweaving_modes
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mode = val
-    end
-})
-
-spec:RegisterSetting("druid_flowerweaving_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
-
-spec:RegisterSetting("druid_predators_header", nil, {
-    type = "header",
-    name = "Feral: Predator's Swiftness"
-})
-
-spec:RegisterSetting("druid_predators_description", nil, {
-    type = "description",
-    name = "Predator's Swiftness Feral settings will change the parameters used when recommending predator's swiftness proc spells.\n\n"
-})
-
-spec:RegisterSetting("predatorsswiftness_enabled", false, {
-    type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not predator's swiftness procs should be consumed by casting a nature spell",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.predatorsswiftness_enabled = val
-    end
-})
-
-spec:RegisterSetting("predatorsswiftness_spell", "regrowth", {
-    type = "select",
-    name = "Preferred Spell",
-    desc = "Select which spell should be recommended when predator's swiftness consumption is recommended",
-    width = "full",
-    values = function()
-        table.wipe(predatorsswiftness_spells)
-        predatorsswiftness_spells.regrowth = class.abilityList.regrowth
-        predatorsswiftness_spells.wrath = class.abilityList.wrath
-        return predatorsswiftness_spells
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.predatorsswiftness_spell = val
-        class.abilities.predatorsswiftness_spell = class.abilities[ val ]
-    end
-})
-
-spec:RegisterSetting("druid_predators_footer", nil, {
     type = "description",
     name = "\n\n"
 })
