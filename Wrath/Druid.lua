@@ -2069,7 +2069,12 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function () return (buff.clearcasting.up and 0) or ((30 - ((set_bonus.tier10feral_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1)) end,
+        spend = function ()
+            if buff.clearcasting.up then
+                return 0
+            end
+            return ((30 - ((set_bonus.tier10feral_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1))
+        end,
         spendType = "energy",
 
         startsCombat = true,
