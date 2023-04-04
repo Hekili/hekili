@@ -219,6 +219,13 @@ spec:RegisterStateExpr("rip_maxremains", function()
     end
 end)
 
+spec:RegisterStateExpr("sr_new_duration", function()
+    if combo_points.current == 0 then
+        return 0
+    end
+    return 14 + (set_bonus.tier8feral_4pc == 1 and 8 or 0) + ((combo_points.current - 1) * 5)
+end)
+
 spec:RegisterStateExpr( "mainhand_remains", function()
     local next_swing, real_swing, pseudo_swing = 0, 0, 0
     if now == query_time then
@@ -897,7 +904,12 @@ spec:RegisterAuras( {
     -- Physical damage done increased by $s2%.
     savage_roar = {
         id = 52610,
-        duration = function() return 14 + (set_bonus.tier8feral_4pc == 1 and 8 or 0) + ((combo_points.current - 1) * 5) end,
+        duration = function()
+            if combo_points.current == 0 then
+                return 0
+            end
+            return 14 + (set_bonus.tier8feral_4pc == 1 and 8 or 0) + ((combo_points.current - 1) * 5)
+        end,
         max_stack = 1,
         copy = { 52610 },
     },

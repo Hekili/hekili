@@ -20,11 +20,10 @@ actions.init+=/variable,name=bite_before_rip,value=combo_points.current=5&debuff
 actions.init+=/variable,name=bite_during_berserk,value=energy.current<=max_bite_energy
 
 actions.cat+=/faerie_fire_feral,if=!buff.clearcasting.up&(target.outside2|buff.berserk.up&energy.current<30|!buff.berserk.up&energy.current<85)
-actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<30
+actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcasting.up&15|0)
 actions.cat+=/berserk,if=energy.current>60&cooldown.tigers_fury.remains>=15
 actions.cat+=/pool_resource,for_next=1,if=buff.savage_roar.remains<action.savage_roar.spend/10
-actions.cat+=/savage_roar,if=!up
-actions.cat+=/savage_roar,if=debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-debuff.rip.remains<=0&debuff.rip.remains+min_roar_offset<class.auras.savage_roar.duration
+actions.cat+=/savage_roar,if=!up|debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-debuff.rip.remains<=0&debuff.rip.remains+min_roar_offset<sr_new_duration
 actions.cat+=/shred,if=buff.clearcasting.up&debuff.bleed.up&debuff.mangle.up
 actions.cat+=/mangle_cat,if=buff.clearcasting.up&!debuff.mangle.up
 actions.cat+=/pool_resource,for_next=1,if=debuff.rip.remains<action.rip.spend/10
