@@ -457,7 +457,7 @@ spec:RegisterAbilities( {
 
     -- Creates a ring of Holy energy around you that quickly expands to a 30 yd radius, healing allies for 2,647 and dealing 3,119 Holy damage to enemies. Healing reduced beyond 6 targets.
     halo = {
-        id = 120517,
+        id = function() return buff.shadow_covenant.up and 120644 or 120517 end,
         cast = 1.5,
         cooldown = 40,
         gcd = "spell",
@@ -467,10 +467,11 @@ spec:RegisterAbilities( {
 
         talent = "halo",
         startsCombat = false,
-        texture = 632352,
 
         handler = function ()
         end,
+
+        copy = 120644
     },
 
 
@@ -561,7 +562,7 @@ spec:RegisterAbilities( {
 
 
     penance = {
-        id = 47540,
+        id = function() return buff.shadow_covenant.up and 400169 or 47540 end,
         cast = 2,
         channeled = true,
         cooldown = 9,
@@ -571,13 +572,14 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-        texture = 237545,
 
         start = function ()
             removeBuff( "power_of_the_dark_side" )
             removeBuff( "harsh_discipline_ready" )
             if debuff.purge_the_wicked.up then active_dot.purge_the_wicked = min( active_dot.purge_the_wicked + 1, true_active_enemies ) end
         end,
+
+        copy = { 186720, 400169, "dark_reprimand" }
     },
 
 
@@ -639,7 +641,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( 0.01 * mana.max, "mana" )
-            
+
             if talent.harsh_discipline.enabled then
                 if buff.harsh_discipline.up and buff.harsh_discipline.stack == 9 then
                     removeBuff( "harsh_discipline" )
@@ -647,7 +649,7 @@ spec:RegisterAbilities( {
                 else
                     addStack( "harsh_discipline" )
                 end
-            end    
+            end
         end,
     },
 
