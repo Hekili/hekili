@@ -149,6 +149,11 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    answered_prayers = {
+        id = 394289,
+        duration = 3600,
+        max_stack = function() return talent.answered_prayers.rank > 1 and 50 or 100 end,
+    },
     apathy = {
         id = 390669,
         duration = 4,
@@ -178,6 +183,16 @@ spec:RegisterAuras( {
     divine_ascension = {
         id = 329543,
         duration = 10,
+        max_stack = 1
+    },
+    divine_favor_chastise = {
+        id = 372761,
+        duration = 15,
+        max_stack = 1
+    },
+    divine_favor_serenity = {
+        id = 372791,
+        duration = 15,
         max_stack = 1
     },
     divine_hymn = {
@@ -470,6 +485,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "divine_word" )
         end,
     },
 
@@ -529,7 +545,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.04,
+        spend = function() return ( 0.04 * buff.divine_favor_serenity.up and 0.8 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
@@ -604,7 +620,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return ( 0.02 * buff.divine_favor_serenity.up and 0.8 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
@@ -685,7 +701,12 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyDebuff( "holy_word_chastise" )
+            applyDebuff( "target", "holy_word_chastise" )
+            if buff.divine_word.up then
+                applyBuff( "divine_favor_chastise" )
+                removeBuff( "divine_word" )
+            end
+
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
@@ -727,6 +748,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             reduceCooldown( "holy_word_salvation", 30 )
+            removeBuff( "divine_word" )
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
@@ -747,6 +769,10 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            if buff.divine_word.up then
+                applyBuff( "divine_favor_serenity" )
+                removeBuff( "divine_word" )
+            end
             reduceCooldown( "holy_word_salvation", 30 )
         end,
     },
@@ -1042,7 +1068,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return ( 0.02 * buff.divine_favor_serenity.up and 0.8 or 1 ) end,
         spendType = "mana",
 
         talent = "renew",
@@ -1275,4 +1301,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Holy Priest", 20230205, [[Hekili:1wvxVTjmu0Fl9LOMUjgHajPsj5H9uxNu1KOpBWbmjE1GJSnTRsi)BF2M0aeWO0jnP20u7RVNZ9RZfmd8mimfkqGN8C9M765g44bcfVFebcpctEbUx9LcyU6ZhOK3LX)IHrCH(Y3juyQ(9CAjlrzaiCxjMi(rbyxpNo7(G7d8v2EeLOooyji8aonfvBlINacF(aMlJ1)cLXNWwgtZu)FIatlKXemxOUoJYKXpGEbtWoGqZHMWaLbljc1xFYew1VcewYrrybkNdcrfWDeuk47aHIeAJAojmHPSIHH6WilZzhHstjLCHddPCLmUQsgFRmMbXPrOxrfchyAk3P8OmEYG3Wq5qCHIWBLXEU1o4sBslzW6GBDTrtn)OnDhLZnUodV)Gi6S3wVrgp3Tj(osn)vfrZTgrQ0oHejGS9ib35GQsgvqFfAqnOXvMlEJYsJsoa5cmhPDRVv3Ez0Glmb7ClbB7eYQRiFSQHz7qmoI9cUyVMrbFwgzl93MrlUcgTOHrzygY0JOj0I)heA210ZmRvNaSirnBYGKOeiHO51YplVcUcE5Ff0YVHveD7lp63LP7ZvgRP1kR0AGXOtmZ)kyM3vWmpZaMASQ7mbKLalqrhljCuTVALxBDNM(3BL(3iJtPI6bmDdIJaNOBAhaWUdHlVyiu)ynuQY7NEMwpbEH70xyCxhLrEUYxxOkoZRTfnC5cRSl10k5NtFfPl5DQr7tsDYH)rgFNm21z(4zgL9Udhk6vqmucnFhSVK)abM5fVbzfQQHAtWpYpszcuQPFOZ(fh5JkhvkoqzGWFcvfDybwdgndtqFGb35m6FzZ3m4jFu(4PlvhDERt7dRLQ)koBZqRyQQUT)YLj9o7uYCRNBvLTo91EUtNwvPxHmPZ6J1BuIZTyuFfFn7Supwh0(PnsY6N0FQD78bi4hKF1iCFvBuolZAbKHYcFaYIrazrBq6kC(pG0SXQfZ6KXVqo0cybJaM)iy53jSAPBPXPxRKci)raYBSgSPtSlGU1RxpMUoQ5WndQpoXwh3YEosF8i9OBN3(fNgmhGlw97i6xBvAx3P0SSX2TUgzgWF)]] )
+spec:RegisterPack( "Holy Priest", 20230405, [[Hekili:DR1EVTnos8plflU8y3e1KM4(iOPaP9AVn52lTOU7T)NTySOTjQSOosQ46dg6Z(nKuuIuVtJstXHfBRR0Wz(ndNxCOMC8KVmzCasGNC9Zo6zNC0PhnY74to9KrVCYyXMy8KXXOzFfTa(reAf8N)onCtQ)NyemxiF5MqkkqYeonHndiyY4BsiHIlJMCtvo)Stp5Kxa0gJNbpEe8ZLKGaSMwmF2KXsAp8Otp8OrNL6N6)NXsweK6pNrxL6pMS6DEGyz05KqqyOzccnI7fZWZORUbj(TZFAmDnMnDnLfmDoLjiIKaC6vPx9lP()7l(8Lx82)49JtVYSYvis00Brmc6MqmhwU53hi13ZNTeXfeoE6Sa2b04Z5yXb3IctWNV3EZO0Wa66iVaYTKiSsKEmSKJ8)MM)E8veb2d)n8SebEQGScV)VE6(zW5Z)51P(x8UVC5hVUaraeyjrt1)RPHeUqJejBZw3)6IlV2vdGfndfgw)QkuVEUiJIXvs7IW1On8u)eoo1)3)qQpzEQ)A43lr3c)jEv8gggfM6Fti6)cpGYKVITIgrOjW6qXXigsi)zQ)hflXS1Gb9aGWiPRKITeHMTru4hcYSVsIwO5edpNH5lLWVc6xc(ItNty4diZpFpbkehj8m4zQcoB3M94cennhq7VD7EpjtAB3AjP9vk(FNgTlaNzGha459xN9Pu)GeMczOykOiuoPQjf4ay70(FXWJuyZI3B3Ae5(7CtY85Ef8YtA01Iw5rL6)xaxmgkJzFgkk1NVjAg8pjILP(VlZh1tAGV0zZ595BoVvAnoWDHILiqZqC5kcd9QOkw(1sTi3Fxz3vkOj8WljEhWuw)oq(6CFbSgTDwNszTsvnme8Rqm5Jfu4)zKflWGZqqMzzo6wk7mlQR1ZWbHsfqzUTdwtIva49rcj3ng9pi5o45rfijtnwRgfUVKVGJCCfyuBGCgauSjhEkYUTckDjYG3pNevcoWFrcdXmEvyRbN2Z6odpnxLOkBV1Y6TJjYQITENwuHCxChLGSckX0Sjx)67c8vROkUZy0VyLik1FbocZiZSeFVKKzzx5eXM58S3fQ9Z9lyvBB716X27L6gw17LvK3PRG7SAAV54J6nZTZcgGrIL69c2cm4WayvS0lEM41J6phxrIcwa2DEVxHstIO3IS8dylrXCAWgTlQ5F5XfqxoN7(SvOVnv98DG2vGYKA0Z9Yz7Bo)KEJLSxd8J171Sefs7nXQgnAWx8dQO4M8f1X4nM0CV28mG6HQiMdnTy4z3W0(VUTwK6co3xxOCg1LNJRbyWDyA2njxWD7DuGXMDkkSC14lCPBku78HoB9CueqY8n9Humdhre9H0gZPziTJCygYgKCwgM1BhSDEYEL7uljE7w9ZI4WXnWqVEm0gOaSURMgKyUNOusdftFW8Ahm12Y9EqvCiuyi5NDyZ)WuC3qBw1(o8QlOQjh6ckUF(Yf85hGBCHWggp4sgZFUCEla3q53APU3xxwRTDlV13LFGD4eGJvNW7tx295wmNOuqPFTGo1bXYfy(Sa(nZKvirZt4W7u6r1JfaNPUMZk06HA0hd8JQt5cweI8aaKshYvjB5J1cVjakYaMsEU4vBIPC(o5XALiWeNnNSyPyAEBka2a30a15qJ(k4EPpvQAWfAWbg7AXdqYuyxAfFOHuDctNhyobhfmz8TGNdqr2S3E2rJMmEnIfrIwWNm(llvNPkMYGJ)px2I4UUZjAx5Cx(pjeMCYBC6kGCuIGUspkoyNlAbM7LE1FOCyo(mPhyeis1RPXyDtHC9U4U3NjLTR2w3bpEA78WtgMuJsNB9Ux67UvD3nOU6B8WrslSKI9o(B7)aXtLUoNggsxRhxf0MUAkpmSYVnqVZiKKPnDP(Yd2kNwGWqNAwCZPjrouheijoajq3G44ZalR)HMChLISBWQBx19Uz4Fz9gjt1GswO8Iep(MNY50BWYi9LVBwKtQ3I428rj7sPPW1GdzdCUUXOwI)1rstsz0dg(BWx57mGQvEwTJTYwKQT01GeEvRO2eYudSvV6Nap9VJeb1orJ7wyWZhOed1cZSwUECq0p8nWEMQYzVtp4H7Mb60bYaLE1LkGjzYRCTbsHnzS6xYlO0Tfh4jxRU8Zmoo5TtgtJNmMJfMRve6IkJA5VctG)ApqUGU02uT8FQbf10osQ)(P()kO9Wp034jJeRLv(DtQe7u9TTApnTjc4)uArDy3HxYliSqlkFjFABsMekzveqhJL4CVytERusoCsBy7NMRteand2FanxTV2A1Lu)TBZjPTcCQnyjTahFILSLpY(QmLB)gdB(1ykTDN2MTRx3izj9YrQsyydlaS7OVIOYxdzb8kFHMsuoQvuMDqYFOxEPTw3(fvQu5STNU3ZB(YlD2dTYeiTppVn7Z9)(oTvw7twRseLexY1YXair3lAdDd1LHwaIs3EwtGVYybCsW0wZcsD6LTPtFNxyAVuHMBFu5O1zlGfrG1Bh0aPjlHwlKgGx1BdqFUS1Vdv3Pf06qSMXaup(O2WAB3mBlWYsEzltxW0r4Dv4052sQlmYC9i5fkRHKSRfXwkMIITex6s9P2u7M6PeLLtf3V0G5DR8MuFy7ixuwLrQjnM9wFP5lN6)A44ChP8MFIk)A1jCQZO20uoDYNwzO21L3QaodGeZNSDDztQ4ZxUH0IOy35vN6FE5NNpZA1ACMBnSDaKFYqzeZhUED5hguJxwqMCs51gGpOctoeDLuo2oir1STBSHm6hphLek6mW3(tXRFjzwPBfs(rqA(4dZLIz919PiwbIfTo3fih8X8xAJPTszz902r1UwRN7Sj6oN76o3HBrH7YLduPdJktDpZBJY5ky3X03vzjDMaVTEiYWFRN6PZlq4hjMZVwIkvACUdHYHs103rxESn8LOu6ik95lmrnCIA)ktuNI51TFQ8U6iUSVx3f66OuLt1(Isl1uK)rRktd1jgzJC786Uy)5oTZiZi7((x0DUztBAD5eLDx89ApSxTmvosDiBzQT90hHwMAU7WbqIoTm1wVIp8oZdLr0ju4bTFZsTm1ChNdGSmDm9QUdkB9C2DfP2Whb7)Vg52NyVUQb8if2u8vS2E1Gx0VQbVSJQbD74jN6EIyjf48)efNeIIiQNo5)9]] )
