@@ -3106,23 +3106,25 @@ do
 
             -- Hunters
             elseif k == "remains_guess" or k == "remains_expected" then
-                if t.remains == t.duration then return t.remains end
+                local remains, duration = t.remains, t.duration
+                if remains == 0 or remains == duration then return remains end
 
                 local lastCast = state.action[ t.key ].lastCast or 0
-                if lastCast == 0 then return t.remains end
+                if lastCast == 0 then return remains end
 
-                local reduction = ( state.query_time - lastCast ) / ( t.duration - t.remains )
-                return t.remains * reduction
+                local reduction = ( state.query_time - lastCast ) / ( duration - remains )
+                return remains * reduction
 
             elseif k == "duration_guess" or k == "duration_expected" then
-                if t.remains == t.duration then return t.duration end
+                local remains, duration = t.remains, t.duration
+                if remains == 0 or remains == duration then return duration end
 
                 -- not actually the same as simc here, which tracks when CDs charge.
                 local lastCast = state.action[ t.key ].lastCast or 0
-                if lastCast == 0 then return t.duration end
+                if lastCast == 0 then return duration end
 
-                local reduction = ( state.query_time - lastCast ) / ( t.duration - t.remains )
-                return t.duration * reduction
+                local reduction = ( state.query_time - lastCast ) / ( duration - remains )
+                return duration * reduction
 
             end
 
