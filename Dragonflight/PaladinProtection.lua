@@ -318,13 +318,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-    -- Damage taken reduced by $w1%.
-    -- https://wowhead.com/beta/spell=498
-    divine_protection = {
-        id = 498,
-        duration = 8,
-        max_stack = 1
-    },
     divine_purpose = {
         id = 223819,
         duration = 12,

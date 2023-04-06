@@ -250,11 +250,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1,
     },
-    divine_protection = {
-        id = 498,
-        duration = 8,
-        max_stack = 1,
-    },
     divine_purpose = {
         id = 223819,
         duration = 12,
@@ -836,27 +831,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "divine_favor" )
-        end,
-    },
-
-
-    divine_protection = {
-        id = 498,
-        cast = 0,
-        cooldown = function () return ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * 60 end,
-        gcd = "spell",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 524353,
-
-        toggle = "defensives",
-        defensives = true,
-
-        handler = function ()
-            applyBuff( "divine_protection" )
         end,
     },
 
