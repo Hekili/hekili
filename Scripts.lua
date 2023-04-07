@@ -448,6 +448,8 @@ do
         { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$", "%1.remains"      },
         { "^!ticking"                          , "remains"         },
         { "^!?remains$"                        , "remains"         },
+        { "^down$"                             , "remains"         },
+        { "^!up$"                              , "remains"         },
         { "^refreshable"                       , "time_to_refresh" },
 
         { "^gcd.remains$"            , "gcd.remains"      },
