@@ -17,7 +17,7 @@ actions.init+=/variable,name=end_thresh,value=end_thresh
 actions.init+=/variable,name=furor_cap,value=furor_cap
 actions.init+=/variable,name=bite_at_end,value=combo_points.current=5&(variable.time_to_die<variable.end_thresh|debuff.rip.up&variable.time_to_die-debuff.rip.remains<variable.end_thresh)
 actions.init+=/variable,name=bite_before_rip,value=combo_points.current=5&debuff.rip.remains>=settings.min_bite_rip_remains&buff.savage_roar.remains>=settings.min_bite_sr_remains
-actions.init+=/variable,name=bite_during_berserk,value=energy.current<=settings.max_bite_energy
+actions.init+=/variable,name=bite_during_berserk,value=buff.berserk.up&energy.current<=settings.max_bite_energy
 actions.init+=/variable,name=ff_during_berserk,value=energy.current<=settings.max_ff_energy
 actions.init+=/variable,name=wait_for_tf,value=cooldown.tigers_fury.remains<=buff.berserk.duration&cooldown.tigers_fury.remains+1<variable.time_to_die-buff.berserk.duration
 actions.init+=/variable,name=rip_now,value=!debuff.rip.up&combo_points.current=5&variable.time_to_die>=variable.end_thresh
