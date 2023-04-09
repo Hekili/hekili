@@ -450,6 +450,8 @@ do
         { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$", "%1.remains"      },
         { "^!ticking"                          , "remains"         },
         { "^!?remains$"                        , "remains"         },
+        { "^!up$"                              , "remains"         },
+        { "^down$"                             , "remains"         },
         { "^refreshable$"                      , "time_to_refresh" },
         { "^time>=?(.-)$"                      , "0.01+%1-time"    },
 
@@ -640,6 +642,14 @@ do
                 elseif lessOrEqual[ comp ] then
                     return true, "rune.timeTo( " .. lhs .. " )"
                 end
+            end
+
+            if comp:match( "<=?" ) then
+                return true, lhs .. " - " .. rhs .. " + 0.01"
+            end
+
+            if comp:match( ">=?" ) then
+                return true, rhs .. " - " .. lhs .. " + 0.01"
             end
         end
 
