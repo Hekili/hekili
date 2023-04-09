@@ -18,7 +18,6 @@ actions.init+=/variable,name=furor_cap,value=furor_cap
 actions.init+=/variable,name=bite_at_end,value=combo_points.current=5&(variable.time_to_die<variable.end_thresh|debuff.rip.up&variable.time_to_die-debuff.rip.remains<variable.end_thresh)
 actions.init+=/variable,name=bite_before_rip,value=combo_points.current=5&debuff.rip.remains>=settings.min_bite_rip_remains&buff.savage_roar.remains>=settings.min_bite_sr_remains
 actions.init+=/variable,name=bite_during_berserk,value=buff.berserk.up&energy.current<=settings.max_bite_energy
-actions.init+=/variable,name=bite_consume_cc,value=buff.clearcasting.up&(buff.berserk.up&energy.current<15|!buff.berserk.up&energy.current<27)
 actions.init+=/variable,name=ff_during_berserk,value=energy.current<=settings.max_ff_energy
 actions.init+=/variable,name=wait_for_tf,value=cooldown.tigers_fury.remains<=buff.berserk.duration&cooldown.tigers_fury.remains+1<variable.time_to_die-buff.berserk.duration
 actions.init+=/variable,name=rip_now,value=!debuff.rip.up&combo_points.current=5&variable.time_to_die>=variable.end_thresh
@@ -32,7 +31,7 @@ actions.cat+=/shred,if=buff.clearcasting.up&debuff.bleed.up&debuff.mangle.up
 actions.cat+=/mangle_cat,if=buff.clearcasting.up&!debuff.mangle.up
 actions.cat+=/rip,if=variable.rip_now
 actions.cat+=/rake,if=buff.clearcasting.up&!debuff.bleed.up&variable.time_to_die>=debuff.rake.duration
-actions.cat+=/ferocious_bite,if=settings.ferociousbite_enabled&(!buff.clearcasting.up|variable.bite_consume_cc)&(variable.bite_at_end|variable.bite_before_rip)&(!buff.berserk.up|variable.bite_during_berserk)
+actions.cat+=/ferocious_bite,if=settings.ferociousbite_enabled&energy.current<67&!buff.clearcasting.up&(variable.bite_at_end|variable.bite_before_rip)&(!buff.berserk.up|variable.bite_during_berserk)
 actions.cat+=/rake,if=!up&(combo_points.current<5|(energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend&energy.current-action.rake.spend+buff.savage_roar.remains*10>=action.savage_roar.spend))&(should_rake|!debuff.bleed.up)
 actions.cat+=/mangle_cat,if=!debuff.mangle.up|(debuff.mangle.remains<2&energy.current-action.mangle_cat.spend+debuff.rip.remains*10>=action.rip.spend&energy.current-action.mangle_cat.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)
 actions.cat+=/dire_bear_form,if=should_bearweave
