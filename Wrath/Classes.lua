@@ -10,6 +10,7 @@ local RegisterEvent = ns.RegisterEvent
 function ns.updateTalents()
     for _, tal in pairs( state.talent ) do
         tal.enabled = false
+        tal.rank = 0
     end
 
     for k, v in pairs( class.talents ) do
@@ -17,6 +18,7 @@ function ns.updateTalents()
 
         local talent = rawget( state.talent, k ) or {}
         talent.enabled = false
+        talent.rank = 0
 
         for i = #v, 3, -1 do
             local spell = v[i]
