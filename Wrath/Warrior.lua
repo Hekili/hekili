@@ -898,7 +898,7 @@ spec:RegisterHook( "reset_precast", function()
             applyBuff( "victory_rush" )
         end
 
-        if settings.predict_tfb and rend_tracker.tfb.next > 0 then
+        if settings.predict_tfb and talent.taste_for_blood.rank == 3 and rend_tracker.tfb.next > 0 then
             local time_to_tfb = max(rend_tracker.tfb.next - now, 0)
             if (time_to_tfb > 0) then
                 start_tfb_prediction(time_to_tfb)
@@ -2196,7 +2196,7 @@ spec:RegisterSetting("predict_tfb", true, {
 spec:RegisterSetting("optimize_overpower", false, {
     type = "toggle",
     name = "Optimize Overpower",
-    desc = "When enabled, Overpower will be deprioritized until the GCD before a subsequent Taste For Blood proc.",
+    desc = "When enabled, Overpower will be deprioritized until the GCD before a subsequent Taste For Blood proc.\n\nApplies to Arms only.",
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.optimize_overpower = val
@@ -2298,63 +2298,63 @@ spec:RegisterSetting("execute_footer", nil, {
     name = "\n\n\n"
 })
 
-spec:RegisterSetting("rendweaving_header", nil, {
+spec:RegisterSetting("weaving_header", nil, {
     type = "header",
-    name = "Rendweaving"
+    name = "Weaving"
 })
 
-spec:RegisterSetting("rendweaving_description", nil, {
+spec:RegisterSetting("weaving_description", nil, {
     type = "description",
-    name = "Enabling rendweaving will cause Hekili to recommend the player swaps into battle stance and rends the target under "..
-        "certain conditions. This section applies only to the fury priority."
+    name = "Enabling weaving will cause Hekili to recommend the player swaps into battle stance and rends/overpowers the target under "..
+        "certain conditions.\n\nApplies to Fury only"
 })
 
-spec:RegisterSetting("rendweaving_enabled", false, {
+spec:RegisterSetting("weaving_enabled", false, {
     type = "toggle",
     name = "Enabled",
-    desc = "When enabled, recommendations will include battle stance swapping for rend under certain conditions",
+    desc = "When enabled, recommendations will include battle stance swapping under certain conditions",
     width = "full",
     set = function( _, val )
-        Hekili.DB.profile.specs[ 1 ].settings.rendweaving_enabled = val
+        Hekili.DB.profile.specs[ 1 ].settings.weaving_enabled = val
     end
 })
 
-spec:RegisterSetting("rend_rage_threshold", 100, {
+spec:RegisterSetting("weave_rage_threshold", 100, {
     type = "range",
     name = "Maximum Rage",
-    desc = "Select the maximum rage at which rendweaving will be recommended",
+    desc = "Select the maximum rage at which weaving will be recommended",
     width = "full",
     min = 0,
     softMax = 100,
     step = 1,
     set = function( _, val )
-        Hekili.DB.profile.specs[ 1 ].settings.rend_rage_threshold = val
+        Hekili.DB.profile.specs[ 1 ].settings.weave_rage_threshold = val
     end
 })
 
-spec:RegisterSetting("rend_health_threshold", 20, {
+spec:RegisterSetting("weave_health_threshold", 20, {
     type = "range",
     name = "Minimum Target Health",
-    desc = "Select the minimum target health at which rendweaving will be recommended",
+    desc = "Select the minimum target health at which weaving will be recommended",
     width = "full",
     min = 0,
     max = 100,
     step = 1,
     set = function( _, val )
-        Hekili.DB.profile.specs[ 1 ].settings.rend_health_threshold = val
+        Hekili.DB.profile.specs[ 1 ].settings.weave_health_threshold = val
     end
 })
 
-spec:RegisterSetting("rend_cooldown_threshold", 1.5, {
+spec:RegisterSetting("weave_cooldown_threshold", 1.5, {
     type = "range",
     name = "Cooldown Threshold",
-    desc = "Select the minimum time left allowed on bloodthirst and whirlwind before rendweaving can be recommended",
+    desc = "Select the minimum time left allowed on bloodthirst and whirlwind before weaving can be recommended",
     width = "full",
     min = 0,
     softMax = 8,
     step = 0.1,
     set = function( _, val )
-        Hekili.DB.profile.specs[ 1 ].settings.rend_cooldown_threshold = val
+        Hekili.DB.profile.specs[ 1 ].settings.weave_cooldown_threshold = val
     end
 })
 
@@ -2371,7 +2371,7 @@ spec:RegisterSetting("rend_refresh_time", 0, {
     end
 })
 
-spec:RegisterSetting("rendweaving_footer", nil, {
+spec:RegisterSetting("weaving_footer", nil, {
     type = "description",
     name = "\n\n\n"
 })

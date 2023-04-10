@@ -18,8 +18,10 @@ actions.init+=/variable,name=should_sunder,value=settings.debuff_sunder_enabled&
 actions.init+=/variable,name=build_sunder,value=!debuff.major_armor_reduction.up|(debuff.sunder_armor.up&debuff.sunder_armor.stack<5)
 actions.init+=/variable,name=maintain_sunder,value=!variable.build_sunder&debuff.sunder_armor.stack=5&debuff.sunder_armor.remains<7&cooldown.bloodthirst.remains&cooldown.whirlwind.remains&!buff.bloodsurge.up
 actions.init+=/variable,name=emergency_sunder,value=debuff.sunder_armor.up&debuff.sunder_armor.remains<1.5
-actions.init+=/variable,name=should_rend,value=cooldown.bloodthirst.remains>=settings.rend_cooldown_threshold&cooldown.whirlwind.remains>=settings.rend_cooldown_threshold&cooldown.recklessness.remains>1.5&cooldown.death_wish.remains>1.5&!buff.bloodsurge.up&debuff.rend.remains<=settings.rend_refresh_time&!buff.recklessness.up&!buff.death_wish.up&rage.current>=10&rage.current<=rend_rage_threshold&target.health.pct>=settings.rend_health_threshold
-actions.init+=/variable,name=rendweave_now,value=settings.rendweaving_enabled&variable.should_rend
+actions.init+=/variable,name=should_weave,value=cooldown.bloodthirst.remains>=settings.weave_cooldown_threshold&cooldown.whirlwind.remains>=settings.weave_cooldown_threshold&cooldown.recklessness.remains>1.5&cooldown.death_wish.remains>1.5&!buff.bloodsurge.up&!buff.recklessness.up&!buff.death_wish.up&rage.current<=weave_rage_threshold&target.health.pct>=settings.weave_health_threshold
+actions.init+=/variable,name=should_rend,value=variable.should_weave&rage.current>=10&debuff.rend.remains<=settings.rend_refresh_time
+actions.init+=/variable,name=should_overpower,value=variable.should_weave&rage.current>=20&(buff.overpower_ready.up|buff.taste_for_blood.up)
+actions.init+=/variable,name=weave_now,value=settings.weaving_enabled&(variable.should_rend|variable.should_overpower)
 
 actions.berserker_stance+=/bloodrage,use_off_gcd=1,if=rage.deficit>20
 actions.berserker_stance+=/heroic_strike,use_off_gcd=1,if=rage.current>=settings.queueing_threshold&active_enemies=1&!buff.recklessness.up&(!variable.execute_phase|settings.execute_queueing_enabled)
@@ -38,10 +40,11 @@ actions.berserker_stance+=/recklessness,if=(buff.death_wish.up|debuff.shattering
 actions.berserker_stance+=/execute
 actions.berserker_stance+=/slam,if=buff.bloodsurge.up
 actions.berserker_stance+=/demoralizing_shout,if=settings.debuff_demoshout_enabled&!debuff.demoralizing_shout.up
-actions.berserker_stance+=/battle_stance,use_off_gcd=1,if=variable.rendweave_now
+actions.berserker_stance+=/battle_stance,use_off_gcd=1,if=variable.weave_now
 
 actions.battle_stance+=/shattering_throw,if=buff.bloodlust.up&debuff.shattering_throw.down
 actions.battle_stance+=/berserker_stance,use_off_gcd=1,if=(cooldown.bloodthirst.up|cooldown.whirlwind.up|rage.current<10)&(debuff.shattering_throw.up|!buff.bloodlust.up)
-actions.battle_stance+=/rend,if=!up
+actions.battle_stance+=/rend,if=!up|debuff.rend.remains<=settings.rend_refresh_time
+actions.battle_stance+=/overpower,if=talent.improved_overpower.rank>0
 
 actions.defensive_stance+=/berserker_stance,use_off_gcd=1
