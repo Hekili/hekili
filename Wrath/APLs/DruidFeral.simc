@@ -14,7 +14,6 @@ actions+=/cat_form,if=!up
 
 actions.init+=/variable,name=time_to_die,value=ttd
 actions.init+=/variable,name=end_thresh,value=end_thresh
-actions.init+=/variable,name=furor_cap,value=furor_cap
 actions.init+=/variable,name=bite_at_end,value=combo_points.current=5&(variable.time_to_die<variable.end_thresh|debuff.rip.up&variable.time_to_die-debuff.rip.remains<variable.end_thresh)
 actions.init+=/variable,name=bite_before_rip,value=combo_points.current=5&debuff.rip.remains>=settings.min_bite_rip_remains&buff.savage_roar.remains>=settings.min_bite_sr_remains
 actions.init+=/variable,name=bite_during_berserk,value=buff.berserk.up&energy.current<=settings.max_bite_energy
@@ -35,6 +34,7 @@ actions.cat+=/ferocious_bite,if=settings.ferociousbite_enabled&energy.current<67
 actions.cat+=/rake,if=!up&(combo_points.current<5|(energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend&energy.current-action.rake.spend+buff.savage_roar.remains*10>=action.savage_roar.spend))&(should_rake|!debuff.bleed.up)
 actions.cat+=/mangle_cat,if=!debuff.mangle.up|(debuff.mangle.remains<2&energy.current-action.mangle_cat.spend+debuff.rip.remains*10>=action.rip.spend&energy.current-action.mangle_cat.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)
 actions.cat+=/dire_bear_form,if=should_bearweave
+actions.cat+=/gift_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
 actions.cat+=/shred,if=((combo_points.current<5|energy.current-action.shred.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.shred.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(rip_canextend|!should_rake|energy.current-action.shred.spend+debuff.rake.remains*10>=action.rake.spend))|energy.current=100
 
 actions.cat_aoe+=/faerie_fire_feral,if=!buff.clearcasting.up&(buff.berserk.up&variable.ff_during_berserk|!buff.berserk.up&energy.current<87)
@@ -44,6 +44,7 @@ actions.cat_aoe+=/swipe_cat,if=buff.clearcasting.up
 actions.cat_aoe+=/savage_roar,if=!up
 actions.cat_aoe+=/rake,if=!up&(combo_points.current=0|(set_bonus.tier8feral_2pc=1&combo_points.current<5))&(variable.time_to_die>buff.savage_roar.remains+1.5+latency)&!buff.clearcasting.up
 actions.cat_aoe+=/swipe_cat
+actions.cat_aoe+=/gift_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<45
 
 actions.bear+=/faerie_fire_feral,if=!buff.clearcasting.up
 actions.bear+=/cat_form,if=should_cat

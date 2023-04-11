@@ -256,10 +256,6 @@ spec:RegisterStateExpr("end_thresh", function()
     return 10
 end)
 
-spec:RegisterStateExpr("furor_cap", function()
-    return min(20 * talent.furor.rank, 85)
-end)
-
 spec:RegisterStateFunction("calc_rake_dpe", function()
     local armor_pen = stat.armor_pen_rating
     local att_power = stat.attack_power
@@ -289,10 +285,31 @@ spec:RegisterStateFunction("ff_expected_before", function(current_time, future_t
     return true
 end)
 
+spec:RegisterStateExpr("should_flowerweave", function()
+    local furor_cap = min(20 * talent.furor.rank, 85)
+    local rip_refresh_pending = debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - end_thresh
+    local flower_gcd = action.gift_of_the_wild.gcd
+    local flowershift_energy = min(furor_cap, 75) - 10 * flower_gcd - 20 * latency
+    local flower_end = flower_gcd + 1.5 + 2 * latency
+    local energy_to_dump = energy.current + (flower_end + 1) * 10
+    return (
+        flowerweaving_enabled and
+        energy.current <= flowershift_energy and
+        (not buff.clearcasting.up) and
+        ((not rip_refresh_pending) or (debuff.rip.remains >= flower_end)) and
+        (not buff.berserk.up) and
+        (not tf_expected_before(time, time + flower_end)) and
+        (not ff_expected_before(time, time + flower_end)) and
+        flower_end + 1 + floor(energy_to_dump / 42) < ttd
+    )
+end)
+
 spec:RegisterStateExpr("should_bearweave", function()
+    local furor_cap = min(20 * talent.furor.rank, 85)
     local rip_refresh_pending = debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - end_thresh
     local weave_end = 6 + 2 * latency
     local weave_energy = furor_cap - 30 - (20 * latency) - (talent.furor.rank > 3 and 15 or 0)
+    local dump_action_cost = active_enemies > 2 and 45 or 42
     local energy_to_dump = energy.current + weave_end * 10
     return (
         bearweaving_enabled and
@@ -303,7 +320,7 @@ spec:RegisterStateExpr("should_bearweave", function()
         (not buff.berserk.up) and
         (not tf_expected_before(time, time + weave_end)) and
         (not ff_expected_before(time, time + 3)) and
-        floor(weave_end + energy_to_dump / 42) < ttd
+        weave_end + floor(energy_to_dump / dump_action_cost) < ttd
     )
 end)
 
@@ -313,6 +330,10 @@ end)
 
 spec:RegisterStateExpr("bearweaving_enabled", function()
     return settings.bearweaving_enabled and (settings.bearweaving_bossonly == false or state.encounterDifficulty > 0) and (settings.bearweaving_instancetype == "any" or (settings.bearweaving_instancetype == "dungeon" and (instanceType == "party" or instanceType == "raid")) or (settings.bearweaving_instancetype == "raid" and instanceType == "raid"))
+end)
+
+spec:RegisterStateExpr("flowerweaving_enabled", function()
+    return settings.flowerweaving_enabled and (state.group_members >= flowerweaving_mingroupsize) and (active_enemies > 2 or settings.flowerweaving_mode == "any")
 end)
 
 -- Resources
@@ -2547,6 +2568,8 @@ spec:RegisterAbilities( {
 
 
 -- Settings
+local flowerweaving_modes = {}
+
 spec:RegisterSetting("druid_description", nil, {
     type = "description",
     name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
@@ -2702,6 +2725,74 @@ spec:RegisterSetting("max_bite_energy", 25, {
 })
 
 spec:RegisterSetting("druid_bite_footer", nil, {
+    type = "description",
+    name = "\n\n"
+})
+
+spec:RegisterSetting("druid_flowerweaving_header", nil, {
+    type = "header",
+    name = "Feral: Flowerweaving [Experimental]"
+})
+
+spec:RegisterSetting("druid_flowerweaving_description", nil, {
+    type = "description",
+    name = "Flowerweaving Feral settings will change the parameters used when recommending flowerweaving abilities.\n\n"
+})
+
+spec:RegisterSetting("flowerweaving_enabled", false, {
+    type = "toggle",
+    name = "Enabled",
+    desc = "Select whether or not flowerweaving should be used",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_enabled = val
+    end
+})
+
+spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
+    type = "range",
+    name = "Minimum Group Size",
+    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
+    width = "full",
+    min = 0,
+    softMax = 40,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
+    end
+})
+
+spec:RegisterSetting("flowerweaving_mode", "any", {
+    type = "select",
+    name = "Situation",
+    desc = "Select the flowerweaving mode that determines when flowerweaving is recommended\n\n" ..
+        "Selecting AOE will recommend flowerweaving in only AOE situations. Selecting Any will recommend flowerweaving in any situation.\n\n",
+    width = "full",
+    values = function()
+        table.wipe(flowerweaving_modes)
+        flowerweaving_modes.any = "any"
+        flowerweaving_modes.dungeon = "aoe"
+        return flowerweaving_modes
+    end,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mode = val
+    end
+})
+
+spec:RegisterSetting("min_weave_mana", 25, {
+    type = "range",
+    name = "Minimum Flowershift Mana",
+    desc = "Sets the minimum allowable mana for flowershifting",
+    width = "full",
+    min = 0,
+    softMax = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.min_weave_mana = val
+    end
+})
+
+spec:RegisterSetting("druid_flowerweaving_footer", nil, {
     type = "description",
     name = "\n\n"
 })
