@@ -1661,6 +1661,7 @@ spec:RegisterAbilities( {
         talent = "cold_blood",
         startsCombat = false,
         nobuff = "cold_blood",
+        readyTime = function() return gcd.remains end,
 
         handler = function ()
             applyBuff( "cold_blood" )
