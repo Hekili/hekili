@@ -299,7 +299,7 @@ spec:RegisterStateExpr("should_flowerweave", function()
         ((not rip_refresh_pending) or (debuff.rip.remains >= flower_end)) and
         (not buff.berserk.up) and
         (not tf_expected_before(time, time + flower_end)) and
-        (not ff_expected_before(time, time + flower_end)) and
+        (not ff_expected_before(time, time + flower_end + 1)) and
         flower_end + 1 + floor(energy_to_dump / 42) < ttd
     )
 end)
@@ -2749,19 +2749,6 @@ spec:RegisterSetting("flowerweaving_enabled", false, {
     end
 })
 
-spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
-    type = "range",
-    name = "Minimum Group Size",
-    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
-    width = "full",
-    min = 0,
-    softMax = 40,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
-    end
-})
-
 spec:RegisterSetting("flowerweaving_mode", "any", {
     type = "select",
     name = "Situation",
@@ -2776,6 +2763,19 @@ spec:RegisterSetting("flowerweaving_mode", "any", {
     end,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mode = val
+    end
+})
+
+spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
+    type = "range",
+    name = "Minimum Group Size",
+    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
+    width = "full",
+    min = 0,
+    softMax = 40,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
     end
 })
 
