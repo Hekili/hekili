@@ -3825,7 +3825,7 @@ do
                 if t.remains == 0 then return 0 end
                 -- if t.applied <= state.query_time and state.query_time < t.expires then return t.duration / t.tick_time - t.ticks_remain end
                 -- if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
-                return t.duration / t.tick_time - t.ticks_remains
+                return t.duration / t.tick_time - t.ticks_remain
 
             elseif k == "tick_time" then
                 if t.remains == 0 then return 0 end
