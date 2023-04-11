@@ -21,11 +21,16 @@ state.talent.no_trait = { rank = 0, max = 1 }
 -- Replace ns.updateTalents() as DF talents use new Traits and ClassTalents API.
 do
     function ns.updateTalents()
-        local configID = C_ClassTalents.GetActiveConfigID() or -1
-
         for _, data in pairs( state.talent ) do
             data.rank = 0
         end
+
+        WipeCovenantCache()
+        ResetDisabledGearAndSpells()
+
+        if GetSpecialization() == 5 then return end
+
+        local configID = C_ClassTalents.GetActiveConfigID() or -1
 
         for token, data in pairs( class.talents ) do
             local node = C_Traits.GetNodeInfo( configID, data[1] )
@@ -43,9 +48,8 @@ do
                 talent.max = node.maxRanks
             end
 
-
             -- Perform a sanity check on maxRanks vs. data[3].  If they don't match, the talent model is likely wrong.
-            if data[3] and node.maxRanks > 0 and node.maxRanks ~= data[3] then
+            if data[3] and node and node.maxRanks > 0 and node.maxRanks ~= data[3] then
                 Hekili:Error( "Talent '%s' model expects %d ranks but actual max ranks was %d.", token, data[3], node.maxRanks )
             end
 
@@ -73,9 +77,6 @@ do
                 }
             end
         end
-
-        WipeCovenantCache()
-        ResetDisabledGearAndSpells()
     end
 
     --[[
