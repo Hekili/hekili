@@ -1,0 +1,33 @@
+## Blood Death Knight (Icy Veins)
+## 2023-04-11
+
+actions.precombat+=/frost_presence,if=buff.presence.down
+
+actions+=/mind_freeze
+actions+=/horn_of_winter,if=down
+actions+=/death_grip,if=time<2
+actions+=/death_strike,if=health.pct<=60
+actions+=/use_items
+actions+=/unholy_frenzy
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>1
+actions+=/pestilence,if=dot.blood_plague.ticking&dot.blood_plague.refreshable|dot.frost_fever.ticking&dot.frost_fever.refreshable
+actions+=/icy_touch,if=!dot.frost_fever.ticking|frost_runes.time_to_max<gcd
+actions+=/plague_strike,if=!dot.blood_plague.ticking
+actions+=/blood_strike,if=blood_runes.time_to_max<gcd
+actions+=/death_strike,if=health.current+action.death_strike.healing<health.max&dot.frost_fever.ticking&dot.blood_plague.ticking
+actions+=/blood_tap,if=(glyph.blood_tap.enabled|health.pct>60)&blood_runes.current=0
+actions+=/rune_strike
+actions+=/heart_strike
+actions+=/death_coil,if=runic_power.deficit<20
+actions+=/blood_strike
+## TODO: Determine Death Rune situation.
+## actions+=/icy_touch,if=???
+actions+=/empower_rune_weapon,if=(blood_runes.current+frost_runes.current+unholy_runes.current)<2
+
+actions.aoe+=/death_and_decay
+actions.aoe+=/pestilence,if=dot.frost_fever.ticking&dot.blood_plague.ticking&(active_dot.frost_fever+active_dot.blood_plague<true_active_enemies*2)
+actions.aoe+=/icy_touch,cycle_targets=1,if=!dot.frost_fever.ticking
+actions.aoe+=/plague_strike,cycle_targets=1,if=!dot.blood_plague.ticking
+actions.aoe+=/blood_boil,if=health.pct>60&(active_enemies>2|!talent.heart_strike)
+actions.aoe+=/heart_strike,if=active_enemies<3
+actions.aoe+=/death_coil,if=runic_power.deficit<20
