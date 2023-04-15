@@ -866,6 +866,16 @@ spec:RegisterAura( "vigorous_lifeblood", {
     max_stack = 1
 } )
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202464, 202462, 202461, 202460, 202459 )
+-- 2 pieces (Blood) : Heart Strike and Blood Boil deal 20% increased damage and have a 10% chance to grant Vampiric Blood for 5 sec.
+-- 4 pieces (Blood) : When you would gain Vampiric Blood you are infused with Vampiric Strength, granting you 10% Strength for 5 sec. Your Heart Strike and Blood Boil extend the duration of Vampiric Strength by 0.5 sec.
+spec:RegisterAura( "vampiric_strength", {
+    id = 408356,
+    duration = 5,
+    max_stack = 1
+} )
+
 -- Legacy Legendaries
 spec:RegisterGear( "acherus_drapes", 132376 )
 spec:RegisterGear( "cold_heart", 151796 ) -- chilled_heart stacks NYI
@@ -1066,6 +1076,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "blood_plague" )
             active_dot.blood_plague = active_enemies
+
+            if buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
 
             if talent.hemostasis.enabled then
                 applyBuff( "hemostasis", 15, min( 5, active_enemies ) )
@@ -1526,6 +1538,8 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "heart_strike" )
             active_dot.heart_strike = min( true_active_enemies, active_dot.heart_strike + action.heart_strike.max_targets )
 
+            if buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
+
             if pvptalent.blood_for_blood.enabled then
                 health.current = health.current - 0.03 * health.max
             end
@@ -1872,6 +1886,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "vampiric_blood" )
+            if set_bonus.tier30_4pc > 0 then applyBuff( "vampiric_strength" ) end
             if legendary.gorefiends_domination.enabled then gain( 45, "runic_power" ) end
             if talent.umbilicus_eternus.enabled then state:QueueAuraExpiration( "vampiric_blood", TriggerUmbilicusEternus, buff.vampiric_blood.expires ) end
         end,

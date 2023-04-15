@@ -831,6 +831,20 @@ spec:RegisterTotem( "ghoul", 1100170 )
 -- Tier 29
 spec:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202464, 202462, 202461, 202460, 202459 )
+-- 2 pieces (Frost) : Howling Blast damage increased by 20%. Consuming Rime increases the damage of your next Frostwyrm's Fury by 5%, stacking 10 times. Pillar of Frost calls a Frostwyrm's Fury at 40% effectiveness that cannot Freeze enemies.
+spec:RegisterAura( "wrath_of_the_frostwyrm", {
+    id = 408368,
+    duration = 30,
+    max_stack = 10
+} )
+-- 4 pieces (Frost) : Frostwyrm's Fury causes enemies hit to take 25% increased damage from your critical strikes for 12 sec.
+spec:RegisterAura( "lingering_chill", {
+    id = 410879,
+    duration = 12,
+    max_stack = 1
+} )
 
 local TriggerERW = setfenv( function()
     gain( 1, "runes" )
@@ -1312,6 +1326,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "frostwyrms_fury" )
+            if set_bonus.tier30_4pc > 0 then applyDebuff( "target", "lingering_chill" ) end
             if legendary.absolute_zero.enabled then applyDebuff( "target", "absolute_zero" ) end
         end,
     },
@@ -1376,7 +1391,10 @@ spec:RegisterAbilities( {
                 gain( 8, "runic_power" )
             end
 
-            removeBuff( "rime" )
+            if buff.rime.up then
+                removeBuff( "rime" )
+                if set_bonus.tier30_2pc > 0 then addStack( "wrath_of_the_frostwyrm" ) end
+            end
         end,
     },
 
@@ -1499,6 +1517,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "pillar_of_frost" )
+            if set_bonus.tier30_2pc > 0 then
+                applyDebuff( "target", "frostwyrms_fury" )
+                applyDebuff( "target", "lingering_chill" )
+            end
             if azerite.frostwhelps_indignation.enabled then applyBuff( "frostwhelps_indignation" ) end
             virtual_rp_spent_since_pof = 0
         end,
