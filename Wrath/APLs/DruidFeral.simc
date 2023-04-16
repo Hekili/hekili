@@ -25,7 +25,7 @@ actions.cat+=/faerie_fire_feral,if=!buff.clearcasting.up&(target.outside2|buff.b
 actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcasting.up&15|0)
 actions.cat+=/berserk,if=!variable.wait_for_tf&debuff.rip.up&!buff.clearcasting.up
 actions.cat+=/savage_roar,if=!up
-actions.cat+=/savage_roar,if=debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-(rip_maxremains+settings.rip_leeway)<=0&rip_maxremains+settings.min_roar_offset<=sr_new_duration&!buff.clearcasting.up
+actions.cat+=/savage_roar,if=debuff.rip.up&buff.savage_roar.up&!buff.clearcasting.up&buff.savage_roar.remains-(rip_maxremains+settings.rip_leeway)<=0&rip_maxremains+settings.min_roar_offset<=sr_new_duration&!buff.savage_roar.remains>=variable.time_to_die
 actions.cat+=/shred,if=buff.clearcasting.up&debuff.bleed.up&debuff.mangle.up
 actions.cat+=/mangle_cat,if=buff.clearcasting.up&!debuff.mangle.up
 actions.cat+=/rip,if=variable.rip_now
