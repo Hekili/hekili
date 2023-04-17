@@ -870,7 +870,12 @@ spec:RegisterAbilities( {
         cooldown = function () return ( 3 - talent.deft_experience.rank * 0.75 ) * haste end,
         gcd = "spell",
 
-        spend = -8,
+        spend = function()
+            if state.set_bonus.tier30_4pc > 0 and buff.merciless_assault.stack > 0 then
+                return -8 - ( 2 * buff.merciless_assault.stack )
+            else return -8
+            end
+        end,
         spendType = "rage",
 
         cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
@@ -901,6 +906,8 @@ spec:RegisterAbilities( {
                 if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
                 addStack( "cadence_of_fujieda" )
             end
+
+            if state.set_bonus.tier30_4pc > 0 then removeBuff( "merciless_assault" ) end
         end,
     },
 
@@ -930,7 +937,12 @@ spec:RegisterAbilities( {
         cooldown = function () return ( 4.5 - talent.deft_experience.rank * 0.75 ) * haste end,
         gcd = "spell",
 
-        spend = -8,
+        spend = function()
+            if state.set_bonus.tier30_4pc > 0 and buff.merciless_assault.stack > 0 then
+                return -8 - ( 2 * buff.merciless_assault.stack )
+            else return -8
+            end
+        end,
         spendType = "rage",
 
         cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
@@ -961,6 +973,7 @@ spec:RegisterAbilities( {
                 addStack( "cadence_of_fujieda" )
             end
 
+            if state.set_bonus.tier30_4pc > 0 then removeBuff( "merciless_assault" ) end
         end,
 
         auras = {
@@ -1444,6 +1457,7 @@ spec:RegisterAbilities( {
             removeStack( "whirlwind" )
             if talent.frenzy.enabled then addStack( "frenzy" ) end
             if talent.reckless_abandon.enabled then addStack( "reckless_abandon", nil, 2 ) end
+            if state.set_bonus.tier30_4pc > 0 then addStack ("merciless_assault") end
         end,
     },
 
