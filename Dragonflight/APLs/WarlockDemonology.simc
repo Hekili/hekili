@@ -51,15 +51,16 @@ actions.tyrant=variable,name=tyrant_window_ends,op=setif,value=cooldown.summon_d
 ## actions.tyrant+=/variable,name=lowest_demon_remains,op=min,value=buff.nether_portal.remains,if=buff.nether_portal.up&buff.nether_portal.remains<variable.lowest_demon_remains
 ## actions.tyrant+=/variable,name=tyrant_window_ends,op=set,value=variable.lowest_demon_remains-variable.tyrant_padding,if=time>variable.first_tyrant&variable.lowest_demon_remains<100&variable.lowest_demon_remains-variable.tyrant_padding>variable.tyrant_window_ends
 actions.tyrant+=/variable,name=tyrant_window_ends,op=set,value=major_demon_remains-variable.tyrant_padding,if=major_demon_remains-variable.tyrant_padding>variable.tyrant_window_ends
+actions.tyrant+=/variable,name=tyrant_window_ends,op=max,value=cooldown.call_dreadstalkers.remains+action.call_dreadstalkers.cast_time+12-variable.tyrant_padding,if=buff.dreadstalkers.down
 actions.tyrant+=/shadow_bolt,if=time<2&soul_shard<5
 actions.tyrant+=/nether_portal
 actions.tyrant+=/grimoire_felguard
 actions.tyrant+=/summon_vilefiend
 actions.tyrant+=/call_dreadstalkers
 actions.tyrant+=/soulburn,if=buff.nether_portal.up&soul_shard>=2,line_cd=40
-actions.tyrant+=/summon_demonic_tyrant,if=variable.tyrant_window_ends<action.hand_of_guldan.cast_time&(fight_remains<15|buff.dreadstalkers.up|buff.vilefiend.up|buff.grimoire_felguard.up)
-actions.tyrant+=/hand_of_guldan,if=variable.tyrant_window_ends>cast_time&(buff.nether_portal.up|soul_shard>2&variable.tyrant_window_ends<12|soul_shard=5)
-actions.tyrant+=/hand_of_guldan,if=talent.soulbound_tyrant&((buff.demonic_core.up|talent.soul_strike&cooldown.soul_strike.remains=0)&variable.tyrant_window_ends<=cast_time+gcd.max|variable.tyrant_window_ends<=cast_time+action.shadow_bolt.cast_time)&(fight_remains<15|buff.dreadstalkers.up|buff.vilefiend.up|buff.grimoire_felguard.up)
+actions.tyrant+=/summon_demonic_tyrant,if=variable.tyrant_window_ends<=0&buff.dreadstalkers.up
+actions.tyrant+=/hand_of_guldan,if=variable.tyrant_window_ends>cast_time&(buff.nether_portal.up|soul_shard>2&variable.tyrant_window_ends>0|soul_shard=5)
+actions.tyrant+=/hand_of_guldan,if=talent.soulbound_tyrant&buff.dreadstalkers.up&variable.tyrant_window_ends<cast_time
 actions.tyrant+=/demonbolt,if=buff.demonic_core.up
 actions.tyrant+=/power_siphon,if=buff.wild_imps.stack>1&!buff.nether_portal.up
 actions.tyrant+=/soul_strike
