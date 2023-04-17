@@ -1142,7 +1142,7 @@ spec:RegisterAbilities( {
                 applyBuff( "unnerving_focus" )
             end
 
-            if state.tier30_4pc > 0 then
+            if state.set_bonus.tier30_4pc > 0 then
                 state:QueueAuraExpiration( "last_stand_earthen_tenacity", TriggerEarthenTenacity, buff.last_stand.expires )
             end
         end,
