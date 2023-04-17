@@ -499,12 +499,22 @@ local TriggerCollateralDamage = setfenv( function()
     collateralDmgStacks = 0
 end, state )
 
+local TriggerCrushingAdvance = setfenv( function()
+    addStack( "crushing_advance" )
+end, state )
+
+
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical_swing, _, _, critical_spell )
     if sourceGUID == state.GUID then
         if subtype == "SPELL_CAST_SUCCESS" then
             if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
                 last_cs_target = destGUID
             end
+        -- Tier30 4pc Set Bonus check
+        elseif subtype == "SPELL_DAMAGE" and state.set_bonus.tier30_4pc > 0 then
+            local ability = class.abilities[ spellID ]
+            if not ability then return end
+            if ability.key == "deep_wounds" and critical_spell then TriggerCrushingAdvance() end
         end
     end
 end )
@@ -1146,6 +1156,7 @@ spec:RegisterAbilities( {
             removeBuff( "overpower" )
             removeBuff( "executioners_precision" )
             removeBuff( "battlelord" )
+            if state.set_bonus.tier30_4pc > 0 then removeBuff( "crushing_advance" ) end
         end,
     },
 
