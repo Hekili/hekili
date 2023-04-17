@@ -285,7 +285,8 @@ spec:RegisterAuras( {
     },
     fatal_mark = {
         id = 383704,
-        duration = 120,
+        -- TODO: Remove retail/PTR compatibility if statement post 10.1 release.
+        duration = function() return Hekili.CurrentBuild > 100007 and 180 or 120 end ,
         max_stack = 999
     },
     hamstring = {
@@ -1157,6 +1158,11 @@ spec:RegisterAbilities( {
             removeBuff( "executioners_precision" )
             removeBuff( "battlelord" )
             if state.set_bonus.tier30_4pc > 0 then removeBuff( "crushing_advance" ) end
+            -- Patch 10.1 adds auto Rend to target using MS with talent under 35% HP
+            -- TODO: Remove retail/PTR compatibility if statement post 10.1 release.
+            if Hekili.CurrentBuild > 100007 and target.health.pct < 35 and talent.bloodletting.enabled then
+                applyDebuff ( "target", "rend" )
+            end
         end,
     },
 
