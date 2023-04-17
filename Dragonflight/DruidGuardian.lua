@@ -861,6 +861,21 @@ spec:RegisterAura( "bloody_healing", {
     max_stack = 1,
 } )
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
+-- 2 pieces (Guardian) : When you take damage, Mangle and Thrash damage and Rage generation are increased by 15% for 8 sec and you heal for 6% of damage taken over 8 sec.
+spec:RegisterAura( "furious_regeneration", {
+    id = 408504,
+    duration = 8,
+    max_stack = 1
+} )
+-- 4 pieces (Guardian) : Raze Raze Maul damage increased by 20% and casting Ironfur or Raze Raze Maul increases your maximum health by 3% for 12 sec, stacking 5 times.
+spec:RegisterAura( "indomitable_guardian", {
+    id = 408522,
+    duration = 12,
+    max_stack = 5
+} )
+
 
 -- Gear.
 spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
@@ -1035,7 +1050,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = -25,
+        spend = function() return -25 * ( buff.furious_regeneration.up and 1.15 or 1 ) end,
         spendType = "rage",
 
         startsCombat = false,
@@ -1390,6 +1405,7 @@ spec:RegisterAbilities( {
             applyBuff( "ironfur" )
             removeBuff( "gory_fur" )
             removeBuff( "guardian_of_elune" )
+            if set_bonus.tier30_4pc > 0 then addStack( "indomitable_guardian" ) end
         end,
     },
 
@@ -1437,7 +1453,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return -10 - ( buff.gore.up and 4 or 0 ) - ( 5 * talent.soul_of_the_forest.rank ) end,
+        spend = function() return ( -10 - ( buff.gore.up and 4 or 0 ) - ( 5 * talent.soul_of_the_forest.rank ) ) * ( buff.furious_regeneration.up and 1.15 or 1 ) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1509,6 +1525,7 @@ spec:RegisterAbilities( {
                 removeStack( "tooth_and_claw" )
                 applyDebuff( "target", "tooth_and_claw_debuff" )
             end
+            if set_bonus.tier30_4pc > 0 then addStack( "indomitable_guardian" ) end
             if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
             if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
             if pvptalent.sharpened_claws.enabled or essence.conflict_and_strife.major then applyBuff( "sharpened_claws" ) end
@@ -1551,6 +1568,7 @@ spec:RegisterAbilities( {
                 removeStack( "tooth_and_claw" )
                 applyDebuff( "target", "tooth_and_claw_debuff" )
             end
+            if set_bonus.tier30_4pc > 0 then addStack( "indomitable_guardian" ) end
             if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
             if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
             if pvptalent.sharpened_claws.enabled or essence.conflict_and_strife.major then applyBuff( "sharpened_claws" ) end
@@ -1969,7 +1987,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = -5,
+        spend = function() return -5 * ( buff.furious_regeneration.up and 1.15 or 1 ) end,
         spendType = "rage",
 
         talent = "thrash",

@@ -310,6 +310,12 @@ spec:RegisterStateExpr( "solar_eclipse", function ()
 end )
 
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
+-- 2 pieces (Restoration) : Rejuvenation and Lifebloom healing increased by 12%. Regrowth healing over time increased by 50%.
+-- 4 pieces (Restoration) : Flourish increases the rate of your heal over time effects by 30% for an additional 16 sec after it ends. Verdant Infusion causes your Swiftmend target to gain 15% increased healing from you for 6 sec.
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Protects a friendly target for 30 sec. Any damage taken will consume the ward and heal the target for 11,054 over 8 sec.

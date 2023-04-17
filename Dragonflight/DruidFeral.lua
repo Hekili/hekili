@@ -14,7 +14,21 @@ local strformat = string.format
 local spec = Hekili:NewSpecialization( 103 )
 
 spec:RegisterResource( Enum.PowerType.Energy )
-spec:RegisterResource( Enum.PowerType.ComboPoints )
+spec:RegisterResource( Enum.PowerType.ComboPoints, {
+    predator_revealed = {
+        aura = "predator_revealed",
+
+        last = function ()
+            local app = state.buff.predator_revealed.applied
+            local t = state.query_time
+
+            return app + floor( ( t - app ) / 1.5 ) * 1.5
+        end,
+
+        interval = 1.5,
+        value = 1
+    },
+} )
 
 spec:RegisterResource( Enum.PowerType.Rage )
 spec:RegisterResource( Enum.PowerType.LunarPower )
@@ -1269,6 +1283,23 @@ spec:RegisterAura( "sharpened_claws", {
     duration = 4,
     max_stack = 1
 } )
+
+-- Tier 30
+spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
+-- 2 pieces (Feral) : Your auto-attacks have a 25% chance to grant Shadows of the Predator, increasing your Agility by 1%. Each application past 5 has an increasing chance to reset to 2 stacks.
+spec:RegisterAura( "shadows_of_the_predator", {
+    id = 408340,
+    duration = 20,
+    max_stack = 12
+} )
+-- 4 pieces (Feral) : When a Shadows of the Predator application resets stacks, you gain 5% increased Agility and you generate 1 combo point every 1.5 secs for 6 sec.
+spec:RegisterAura( "predator_revealed", {
+    id = 408468,
+    duration = 6,
+    tick_time = 1.5,
+    max_stack = 1
+} )
+
 
 -- Legion Sets (for now).
 spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
