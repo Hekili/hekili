@@ -517,6 +517,16 @@ spec:RegisterAura( "vanguards_determination", {
     max_stack = 1,
 } )
 
+spec:RegisterGear( "tier30", 202446, 202444, 202443, 202442, 202441 )
+spec:RegisterSetBonuses( "tier30_2pc", 405581, "tier30_4pc", 405582 )
+--(2) Shield Slam deals 15% increased damage and reduces the cooldown of Last Stand by 1 sec. During Last Stand these effects are doubled.
+--(4) For 10 sec after Last Stand ends, Shield Slam unleashes a wave of force dealing (45% of Attack power) Physical damage to enemies in front of you and reducing damage they deal to you by 5% for 5 sec.
+spec:RegisterAura( "earthen_tenacity", {
+    id = 410218,
+    duration = 10,
+    max_stack = 1
+} )
+
 
 local rageSpent = 0
 local gloryRage = 0

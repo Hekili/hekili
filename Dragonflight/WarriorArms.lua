@@ -611,6 +611,17 @@ spec:RegisterAura( "strike_vulnerabilities", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier30", 202446, 202444, 202443, 202442, 202441 )
+spec:RegisterSetBonuses( "tier30_2pc", 405577, "tier30_4pc", 405578 )
+--(2) Set Bonus: Deep Wounds increases your chance to critically strike and critical strike damage dealt to afflicted targets by 5%.
+--(4) Deep Wounds critical strikes have a chance to increase the damage of your next Mortal Strike by 10% and cause it to deal
+--    [(19.32% of Attack power) * 2] Physical damage to enemies in front of you, stacking up to 3 times. Damage reduced above 5 targets. (2s cooldown)
+spec:RegisterAura( "crushing_advance", {
+    id = 410138,
+    duration = 30,
+    max_stack = 3
+} )
+
 
 -- Abilities
 spec:RegisterAbilities( {
