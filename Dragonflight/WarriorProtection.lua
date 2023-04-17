@@ -523,7 +523,7 @@ spec:RegisterSetBonuses( "tier30_2pc", 405581, "tier30_4pc", 405582 )
 --(4) For 10 sec after Last Stand ends, Shield Slam unleashes a wave of force dealing (45% of Attack power) Physical damage to enemies in front of you and reducing damage they deal to you by 5% for 5 sec.
 spec:RegisterAura( "earthen_tenacity", {
     id = 410218,
-    duration = 10,
+    duration = 5,
     max_stack = 1
 } )
 
@@ -609,6 +609,16 @@ end )
 spec:RegisterStateExpr( "cycle_for_execute", function ()
     if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
     return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
+end )
+
+local TriggerEarthenTenacity = setfenv( function()
+    applyBuff( "earthen_tenacity" )
+end, state )
+
+spec:RegisterHook( "reset_precast", function ()
+    if state.set_bonus.tier30_4pc > 0 and buff.last_stand.up then
+        state:QueueAuraExpiration( "last_stand_earthen_tenacity", TriggerEarthenTenacity, buff.last_stand.expires )
+    end
 end )
 
 -- Abilities
@@ -1131,6 +1141,10 @@ spec:RegisterAbilities( {
             if talent.unnerving_focus.enabled then
                 applyBuff( "unnerving_focus" )
             end
+
+            if state.tier30_4pc > 0 then
+                state:QueueAuraExpiration( "last_stand_earthen_tenacity", TriggerEarthenTenacity, buff.last_stand.expires )
+            end
         end,
     },
 
@@ -1421,6 +1435,12 @@ spec:RegisterAbilities( {
 
             if ( legendary.the_wall.enabled or talent.impenetrable_wall.enabled ) and cooldown.shield_wall.remains > 0 then
                 reduceCooldown( "shield_wall", 5 )
+            end
+
+            if state.set_bonus.tier30_2pc > 0 then
+                if buff.last_stand.up then reduceCooldown( "last_stand", 2 )
+                else reduceCooldown ( "last_stand", 1 )
+                end
             end
         end,
     },
