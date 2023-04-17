@@ -153,7 +153,7 @@ do
         local spells = petSpells[ myClass ]
         local success = false
 
-        for i = 1, 120 do
+        for i = 1, 180 do
             local slotType, spell = GetActionInfo( i )
 
             if slotType and spell and spells[ spell ] then
