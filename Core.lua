@@ -1999,7 +1999,7 @@ function Hekili.Update( initial )
                 else UI.EventPayload[ i ] = {} end
 
                 for k, v in pairs( Queue[ i ] ) do
-                    UI.EventPayload[ i ][ k ] = v                   
+                    UI.EventPayload[ i ][ k ] = v
                 end
             end
 
