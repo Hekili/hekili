@@ -78,34 +78,4 @@ do
             end
         end
     end
-
-    --[[
-    local talentsTab
-    local UpdateTalentExport
-
-    UpdateTalentExport = function()
-        if InCombatLockdown() then
-            Hekili.CurrentTalentExport = nil
-            C_Timer.After( 10, UpdateTalentExport )
-            return
-        end
-
-        if not IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then LoadAddOn( "Blizzard_ClassTalentUI" ) end
-        talentsTab = talentsTab or ClassTalentFrame.TalentsTab
-
-        local success, msg = pcall( talentsTab.UpdateTreeInfo, talentsTab )
-
-        if not success then
-            Hekili:Error( msg .. "\n\n" .. debugstack() )
-            C_Timer.After( 10, UpdateTalentExport )
-            return
-        end
-
-        Hekili.CurrentTalentExport = talentsTab:GetLoadoutExportString()
-    end
-
-    RegisterEvent( "ACTIVE_COMBAT_CONFIG_CHANGED", UpdateTalentExport )
-    RegisterEvent( "TRAIT_CONFIG_UPDATED", UpdateTalentExport )
-    RegisterEvent( "PLAYER_ENTERING_WORLD", UpdateTalentExport )
-    ]]
 end

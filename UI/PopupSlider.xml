@@ -1,0 +1,36 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="PopupSlider.lua"/>
+
+    <Slider name="HekiliPopupDropdownSliderTemplate" minValue="0" maxValue="100" inherits="UnitPopupSliderTemplate" virtual="true">
+        <Size x="0" y="17"/>
+        <Anchors>
+            <Anchor point="LEFT" x="0" y="0"/>
+            <Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="0" y="0"/>
+        </Anchors>
+        <Scripts>
+            <OnLoad method="OnLoad" inherit="append"/>
+        </Scripts>
+    </Slider>
+
+    <Frame name="HekiliPopupDropdownTextTemplate" inherits="PropertyFontStringTemplate" virtual="true">
+        <Size x="32" y="0"/>
+        <Anchors>
+            <Anchor point="TOPRIGHT"/>
+            <Anchor point="BOTTOMRIGHT"/>
+        </Anchors>
+    </Frame>
+
+    <Frame name="HekiliPopupDropdownRangeTemplate" inherits="UIDropDownCustomMenuEntryTemplate" mixin="HekiliPopupDropdownMixin" virtual="true">
+        <Size x="200" y="16"/>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
+        </Scripts>
+        <Frames>
+            <Frame parentKey="Text" inherits="HekiliPopupDropdownTextTemplate"/>
+            <Slider parentKey="Slider" inherits="HekiliPopupDropdownSliderTemplate" mixin="HekiliPopupDropdownSliderMixin"/>
+        </Frames>
+    </Frame>
+</Ui>

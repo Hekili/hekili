@@ -527,6 +527,9 @@ do
                         } )
                         insert( menuData, {
                             text = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t Recommend Target Swaps",
+                            tooltipTitle = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t Recommend Target Swaps",
+                            tooltipText = "If checked, the |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator may be displayed which means you should use the ability on a different target.",
+                            tooltipOnButton = true,
                             func = function ()
                                 local spec = rawget( Hekili.DB.profile.specs, i )
                                 if spec then
@@ -545,13 +548,16 @@ do
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         } )
 
-
                         -- Check for Toggles.
                         for n, setting in pairs( spec.settings ) do
                             if setting.info and ( not setting.info.arg or setting.info.arg() ) then
                                 if setting.info.type == "toggle" then
+                                    local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
                                     insert( menuData, {
-                                        text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        text = name,
+                                        tooltipTitle = name,
+                                        tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
+                                        tooltipOnButton = true,
                                         func = function ()
                                             menu.args[1] = setting.name
                                             setting.info.set( menu.args, not setting.info.get( menu.args ) )
@@ -572,8 +578,12 @@ do
                                     } )
 
                                 elseif setting.info.type == "select" then
+                                    local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
                                     local submenu = {
-                                        text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        text = name,
+                                        tooltipTitle = name,
+                                        tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
+                                        tooltipOnButton = true,
                                         hasArrow = true,
                                         menuList = {},
                                         notCheckable = true,
@@ -584,23 +594,45 @@ do
                                     if type( values ) == "function" then values = values() end
 
                                     if values then
-                                        for k, v in orderedPairs( values ) do
-                                            insert( submenu.menuList, {
-                                                text = v,
-                                                func = function ()
-                                                    menu.args[1] = setting.name
-                                                    setting.info.set( menu.args, k )
+                                        if setting.info.sorting then
+                                            for _, k in orderedPairs( setting.info.sorting ) do
+                                                local v = values[ k ]
+                                                insert( submenu.menuList, {
+                                                    text = v,
+                                                    func = function ()
+                                                        menu.args[1] = setting.name
+                                                        setting.info.set( menu.args, k )
 
-                                                    for k, v in pairs( Hekili.DisplayPool ) do
-                                                        v:OnEvent( "HEKILI_MENU" )
-                                                    end
-                                                end,
-                                                checked = function ()
-                                                    menu.args[1] = setting.name
-                                                    return setting.info.get( menu.args ) == k
-                                                end,
-                                                hidden = function () return Hekili.State.spec.id ~= i end,
-                                            } )
+                                                        for k, v in pairs( Hekili.DisplayPool ) do
+                                                            v:OnEvent( "HEKILI_MENU" )
+                                                        end
+                                                    end,
+                                                    checked = function ()
+                                                        menu.args[1] = setting.name
+                                                        return setting.info.get( menu.args ) == k
+                                                    end,
+                                                    hidden = function () return Hekili.State.spec.id ~= i end,
+                                                } )
+                                            end
+                                        else
+                                            for k, v in orderedPairs( values ) do
+                                                insert( submenu.menuList, {
+                                                    text = v,
+                                                    func = function ()
+                                                        menu.args[1] = setting.name
+                                                        setting.info.set( menu.args, k )
+
+                                                        for k, v in pairs( Hekili.DisplayPool ) do
+                                                            v:OnEvent( "HEKILI_MENU" )
+                                                        end
+                                                    end,
+                                                    checked = function ()
+                                                        menu.args[1] = setting.name
+                                                        return setting.info.get( menu.args ) == k
+                                                    end,
+                                                    hidden = function () return Hekili.State.spec.id ~= i end,
+                                                } )
+                                            end
                                         end
                                     end
 
@@ -610,13 +642,42 @@ do
 
                                     local submenu = {
                                         text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
-                                        hasArrow = true,
-                                        menuList = {},
+                                        tooltipTitle = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
+                                        tooltipOnButton = true,
+                                        keepShownOnClick = true,
                                         notCheckable = true,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }
 
-                                    local low, high, step = setting.info.min, setting.info.max, setting.info.step
+                                    insert( menuData, submenu )
+
+                                    submenu = {
+                                        hidden = function () return Hekili.State.spec.id ~= i end,
+                                    }
+
+                                    local cn = "HekiliSpec" .. i .. "Option" .. n
+                                    local cf = CreateFrame( "Frame", cn, UIParent, "HekiliPopupDropdownRangeTemplate" )
+
+                                    cf.Slider:SetAccessorFunction( function()
+                                        menu.args[1] = setting.name
+                                        return setting.info.get( menu.args )
+                                    end )
+
+                                    cf.Slider:SetMutatorFunction( function( val )
+                                        menu.args[1] = setting.name
+                                        return setting.info.set( menu.args, val )
+                                    end )
+
+                                    cf.Slider:SetMinMaxValues( setting.info.min, setting.info.max )
+                                    cf.Slider:SetValueStep( setting.info.step or 1 )
+
+                                    submenu.customFrame = cf
+
+                                    cf.Slider.minValue = setting.info.min
+                                    cf.Slider.maxValue = setting.info.max
+
+                                    --[[ local low, high, step = setting.info.min, setting.info.max, setting.info.step
                                     local fractional, factor = step < 1, 1 / step
 
                                     if fractional then
@@ -654,7 +715,7 @@ do
                                             end,
                                             hidden = function () return Hekili.State.spec.id ~= i end,
                                         } )
-                                    end
+                                    end ]]
 
                                     insert( menuData, submenu )
                                 end
