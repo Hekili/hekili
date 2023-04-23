@@ -520,25 +520,17 @@ local HekiliSpecMixin = {
                 self:RegisterHook( hook, function()
                     local d = display or "Primary"
 
-                    if phase.real[ d ] == nil then
+                    if phase.real[ d ] == nil or ( state.time == 0 and not InCombatLockdown() ) then
                         phase.real[ d ] = phase.default()
                     end
 
-                    local original = phase.real[ d ]
-
-                    if state.time == 0 and not InCombatLockdown() then
-                        phase.real[ d ] = phase.default()
-                    end
+                    local original = phase.real[ d ] or "nil"
 
                     phase.real[ d ] = phase.update( phase.real[ d ], phase.default() )
                     phase.virtual[ d ] = phase.real[ d ]
 
-                    --[[ if phase.real[ d ] ~= original then
-                        Hekili:Print( format( "Phase change for %s [ %s ] (from %s to %s).", key, d, tostring( original ), tostring( phase.real[ d ] ) ) )
-                    end ]]
-
                     if Hekili.ActiveDebug then
-                        Hekili:Debug( "[ %s ] Phased variable '%s' set to '%s' (%s).", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook )
+                        Hekili:Debug( "[ %s ] Phased variable '%s' set to '%s' (%s) - was '%s'.", self.name or "Unspecified", key, tostring( phase.virtual[ display or "Primary" ] ), hook, tostring( original ) )
                     end
                 end )
             else
@@ -5978,6 +5970,12 @@ function Hekili:SpecializationChanged()
     wipe( class.pets )
 
     local specs = {}
+
+    -- If the player does not have a specialization, use their first spec instead.
+    if currentSpec == 5 then
+        currentSpec = 1
+        currentID = GetSpecializationInfo( 1 )
+    end
 
     for i = 1, 4 do
         local id, name, _, _, role = GetSpecializationInfo( i )

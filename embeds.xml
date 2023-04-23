@@ -28,4 +28,5 @@
 	<Script file="Libs\SpellFlashCore\libs\BigLibTimer\BigLibTimer.lua"/>
 	<Script file="Libs\SpellFlashCore\Localization.lua"/>
 	<Script file="Libs\SpellFlashCore\SpellFlashCore.lua"/>
+    <Include file="UI\PopupSlider.xml"/>
 </Ui>

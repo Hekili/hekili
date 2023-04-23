@@ -936,6 +936,9 @@ function Hekili:GetLoadoutExportString()
     local es = ExportUtil.MakeExportDataStream()
     local configID = C_ClassTalents.GetActiveConfigID() or -1
     local configInfo = C_Traits.GetConfigInfo( configID )
+
+    if not configInfo then return "Export Unavailable" end
+
     local currentSpecID = PlayerUtil.GetCurrentSpecID()
 
     local treeID = configInfo.treeIDs[ 1 ]

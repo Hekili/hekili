@@ -21,11 +21,16 @@ state.talent.no_trait = { rank = 0, max = 1 }
 -- Replace ns.updateTalents() as DF talents use new Traits and ClassTalents API.
 do
     function ns.updateTalents()
-        local configID = C_ClassTalents.GetActiveConfigID() or -1
-
         for _, data in pairs( state.talent ) do
             data.rank = 0
         end
+
+        WipeCovenantCache()
+        ResetDisabledGearAndSpells()
+
+        if GetSpecialization() == 5 then return end
+
+        local configID = C_ClassTalents.GetActiveConfigID() or -1
 
         for token, data in pairs( class.talents ) do
             local node = C_Traits.GetNodeInfo( configID, data[1] )
@@ -43,9 +48,8 @@ do
                 talent.max = node.maxRanks
             end
 
-
             -- Perform a sanity check on maxRanks vs. data[3].  If they don't match, the talent model is likely wrong.
-            if data[3] and node.maxRanks > 0 and node.maxRanks ~= data[3] then
+            if data[3] and node and node.maxRanks > 0 and node.maxRanks ~= data[3] then
                 Hekili:Error( "Talent '%s' model expects %d ranks but actual max ranks was %d.", token, data[3], node.maxRanks )
             end
 
@@ -73,38 +77,5 @@ do
                 }
             end
         end
-
-        WipeCovenantCache()
-        ResetDisabledGearAndSpells()
     end
-
-    --[[
-    local talentsTab
-    local UpdateTalentExport
-
-    UpdateTalentExport = function()
-        if InCombatLockdown() then
-            Hekili.CurrentTalentExport = nil
-            C_Timer.After( 10, UpdateTalentExport )
-            return
-        end
-
-        if not IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then LoadAddOn( "Blizzard_ClassTalentUI" ) end
-        talentsTab = talentsTab or ClassTalentFrame.TalentsTab
-
-        local success, msg = pcall( talentsTab.UpdateTreeInfo, talentsTab )
-
-        if not success then
-            Hekili:Error( msg .. "\n\n" .. debugstack() )
-            C_Timer.After( 10, UpdateTalentExport )
-            return
-        end
-
-        Hekili.CurrentTalentExport = talentsTab:GetLoadoutExportString()
-    end
-
-    RegisterEvent( "ACTIVE_COMBAT_CONFIG_CHANGED", UpdateTalentExport )
-    RegisterEvent( "TRAIT_CONFIG_UPDATED", UpdateTalentExport )
-    RegisterEvent( "PLAYER_ENTERING_WORLD", UpdateTalentExport )
-    ]]
 end

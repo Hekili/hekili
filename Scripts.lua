@@ -451,6 +451,8 @@ do
         { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$", "%1.remains"      },
         { "^!ticking"                          , "remains"         },
         { "^!?remains$"                        , "remains"         },
+        { "^!up$"                              , "remains"         },
+        { "^down$"                             , "remains"         },
         { "^refreshable$"                      , "time_to_refresh" },
         { "^time>=?(.-)$"                      , "0.01+%1-time"    },
 
@@ -642,6 +644,14 @@ do
                     return true, "rune.timeTo( " .. lhs .. " )"
                 end
             end
+
+            --[[ if comp:match( "<=?" ) then
+                return true, lhs .. " - " .. rhs .. " + 0.01"
+            end
+
+            if comp:match( ">=?" ) then
+                return true, rhs .. " - " .. lhs .. " + 0.01"
+            end ]]
         end
 
         -- If we didn't convert a resource.current to resource.timeTo then let's revert our string.

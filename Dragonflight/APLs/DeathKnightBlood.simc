@@ -16,8 +16,8 @@ actions+=/call_action_list,name=trinkets
 actions+=/raise_dead
 # Use Icebound Fortitude if you're taking sufficient damage and you don't have Dancing Rune Weapon or Vampiric Blood up.
 actions+=/icebound_fortitude,if=tanking&incoming_damage_5s>=ibf_damage&!(buff.dancing_rune_weapon.up|buff.vampiric_blood.up)
-# Use Vampiric Blood if you're taking sufficient damage and you don't have Dancing Rune Weapon or Icebound Fortitude up.
-actions+=/vampiric_blood,if=tanking&incoming_damage_5s>=vb_damage&!(buff.dancing_rune_weapon.up|buff.icebound_fortitude.up)
+# Use Vampiric Blood if you're taking sufficient damage and you don't have Dancing Rune Weapon, Icebound Fortitude, Vampiric Blood, or Vampiric Strength up.
+actions+=/vampiric_blood,if=tanking&incoming_damage_5s>=vb_damage&!(buff.dancing_rune_weapon.up|buff.icebound_fortitude.up|buff.vampiric_blood.up|buff.vampiric_strength.up)
 # Use Rune Tap if you're taking sufficient damage and you don't have Dancing Rune Weapon, Vampiric Blood, or Icebound Fortitude up.
 actions+=/rune_tap,if=tanking&incoming_damage_5s>=rt_damage&!(buff.dancing_rune_weapon.up|buff.vampiric_blood.up|buff.icebound_fortitude.up)
 # Use Death Strike if your Blood Shield is going to expire.

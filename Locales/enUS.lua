@@ -266,6 +266,7 @@ L["If checked, defensive/mitigation abilities will be shown separately in your D
 L["If checked, interrupt abilities will be shown separately in the Interrupts Display only (if enabled)."] = true
 L["If checked, options are provided to fine-tune display visibility and transparency."] = true
 L["If checked, some additional modifiers and conditions may be set."] = true
+L["If checked, the |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator may be displayed which means you should use the ability on a different target."] = true
 L["If checked, the addon will assume this entry is not time-sensitive and will not test actions in the linked priority list if criteria are not presently met."] = true
 L["If checked, the addon will automatically create a snapshot whenever it failed to generate a recommendation.\n\nThis automatic snapshot can only occur once per episode of combat."] = true
 L["If checked, the addon will check each available target and show whether to switch targets."] = true

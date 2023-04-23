@@ -263,6 +263,7 @@ L["If checked, defensive/mitigation abilities will be shown separately in your D
 L["If checked, interrupt abilities will be shown separately in the Interrupts Display only (if enabled)."] = "이 옵션을 선택하면 차단 능력이 차단 디스플레이(활성화된 경우)에만 별도로 표시됩니다."
 L["If checked, options are provided to fine-tune display visibility and transparency."] = "이 옵션을 선택하면 디스플레이 가시성과 투명도를 미세하게 조정할 수 있는 옵션이 제공됩니다."
 L["If checked, some additional modifiers and conditions may be set."] = "이 옵션을 선택하면 몇 가지의 추가적인 보조키와 조건 사항을 설정합니다."
+L["If checked, the |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator may be displayed which means you should use the ability on a different target."] = "이 옵션을 선택하면 |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t 표시기가 표시될 수 있으며, 이는 다른 대상에게 능력을 사용해야 함을 의미합니다."
 L["If checked, the addon will assume this entry is not time-sensitive and will not test actions in the linked priority list if criteria are not presently met."] = "이 옵션을 선택하면 애드온은 이 항목이 시간에 민감하지 않다고 가정하고, 현재 충족되지 않는 기준이면 연결된 우선순위 목록에서 행동들을 테스트하지 않습니다."
 L["If checked, the addon will automatically create a snapshot whenever it failed to generate a recommendation.\n\nThis automatic snapshot can only occur once per episode of combat."] = "이 옵션을 선택하면 애드온이 추천 생성에 실패할 때마다 자동으로 스냅샷을 생성합니다.\n\n자동 스냅샷은 전투 에피소드당 한 번만 발생합니다."
 L["If checked, the addon will check each available target and show whether to switch targets."] = "이 옵션을 선택하면 애드온이 각각의 대상이 유효한지 확인하고 대상 전환에 대한 여부를 표시합니다."
