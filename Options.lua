@@ -163,7 +163,6 @@ local displayTemplate = {
     frameLevel = 10,
 
     elvuiCooldown = false,
-    hideOmniCC = false,
 
     queue = {
         anchor = 'RIGHT',
@@ -323,6 +322,8 @@ local displayTemplate = {
         y = 0,
 
         color = { 1, 1, 1, 1 },
+
+        hideOmniCC = false,
     },
 
     keybindings = {
@@ -1582,14 +1583,6 @@ do
                                     }
                                 }
                             },
-
-                            hideOmniCC = {
-                                type = "toggle",
-                                name = L["Hide OmniCC"],
-                                desc = L["If enabled, OmniCC will be hidden from each icon oh this display."],
-                                width = "full",
-                                order = 18,
-                            },
                         },
                     },
 
@@ -2806,6 +2799,23 @@ do
                                 order = 4,
                                 args = tableCopy( fontElements ),
                                 disabled = function () return data.delays.type ~= "TEXT" end,
+                            },
+
+                            omniCC = {
+                                name = L["OmniCC"],
+                                type = "group",
+                                inline = true,
+                                order = 5,
+                                args = {
+                                    hideOmniCC = {
+                                        type = "toggle",
+                                        name = L["Hide OmniCC"],
+                                        desc = L["If enabled, OmniCC will be hidden from each icon oh this display."],
+                                        width = "full",
+                                        order = 1,
+                                    },
+                                },
+                                disabled = function() return OmniCC == nil end,
                             },
                         }
                     },
@@ -9720,7 +9730,7 @@ do
                 for i, priority in ipairs( priorities ) do
                     local isBuiltIn = Hekili.DB.profile.packs[ priority ].builtIn
                     local priorityName = isBuiltIn and L[priority] or priority
-                    
+
                     if priorityName:match( "^" .. name ) then
                         Hekili.DB.profile.specs[ state.spec.id ].package = priority
                         local output = format( L["Priority set to %s%s|r."], isBuiltIn and BlizzBlue or "|cFFFFD100", priorityName )

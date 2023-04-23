@@ -426,6 +426,7 @@ L["Notifications"] = true
 L["Null Cooldown"] = true
 L["OFF"] = true
 L["off|r (to disable)"] = true
+L["OmniCC"] = true
 L["On Screen Enemies Only"] = true
 L["ON"] = true
 L["on|r (to enable)"] = true

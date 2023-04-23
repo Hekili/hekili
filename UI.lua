@@ -2538,7 +2538,7 @@ do
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
 
-        b.Cooldown.noCooldownCount = conf.hideOmniCC
+        b.Cooldown.noCooldownCount = conf.delays.hideOmniCC
 
         if _G["ElvUI"] and not b.isRegisteredCooldown and ( ( id == 1 and conf.elvuiCooldown ) or ( id > 1 and conf.queue.elvuiCooldown ) ) then
             local E = unpack( ElvUI )
