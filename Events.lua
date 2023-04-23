@@ -1959,6 +1959,7 @@ local function StoreKeybindInfo( page, key, aType, id, console )
         updatedKeys[ action ] = true
 
         local bind = ability and ability.bind
+        -- print(string.format("StoreKeybindInfo: %d %s %s %d %s", page, key, aType, id, action))
 
         if bind then
             if type( bind ) == 'table' then
@@ -2124,21 +2125,21 @@ local function ReadKeybindings( event )
                 end
             end
 
-            for i = 144, 155 do
+            for i = 145, 156 do
                 if not slotsUsed[ i ] then
-                    StoreKeybindInfo( 13, GetBindingKey( "MULTIACTIONBAR5BUTTON" .. i - 143 ), GetActionInfo( i ) )
+                    StoreKeybindInfo( 13, GetBindingKey( "MULTIACTIONBAR5BUTTON" .. i - 144 ), GetActionInfo( i ) )
                 end
             end
 
-            for i = 156, 167 do
+            for i = 157, 168 do
                 if not slotsUsed[ i ] then
-                    StoreKeybindInfo( 14, GetBindingKey( "MULTIACTIONBAR6BUTTON" .. i - 155 ), GetActionInfo( i ) )
+                    StoreKeybindInfo( 14, GetBindingKey( "MULTIACTIONBAR6BUTTON" .. i - 156 ), GetActionInfo( i ) )
                 end
             end
 
-            for i = 168, 179 do
+            for i = 169, 180 do
                 if not slotsUsed[ i ] then
-                    StoreKeybindInfo( 15, GetBindingKey( "MULTIACTIONBAR7BUTTON" .. i - 167 ), GetActionInfo( i ) )
+                    StoreKeybindInfo( 15, GetBindingKey( "MULTIACTIONBAR7BUTTON" .. i - 168 ), GetActionInfo( i ) )
                 end
             end
 
@@ -2404,6 +2405,16 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
                 end
             end
 
+            if not output then
+                for i = 13, 15 do
+                    output = db[ i ]
+
+                    if output then
+                        source = i
+                        break
+                    end
+                end
+            end
         end
 
         output = output or ""
@@ -2476,6 +2487,17 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
                     break
                 end
             end
+
+            if not output then
+                for i = 13, 15 do
+                    output = db[ i ]
+
+                    if output then
+                        source = i
+                        break
+                    end
+                end
+            end
         end
 
         output = output or ""
@@ -2498,7 +2520,6 @@ else
     function Hekili:GetBindingForAction( key, display, i )
         local ability = class.abilities[ key ]
         key = ability and ability.key or key
-
         local override = state.spec.id
         local overrideType = ability and ability.item and "items" or "abilities"
 
@@ -2530,6 +2551,17 @@ else
             if output then
                 source = i
                 break
+            end
+        end
+
+        if not output then
+            for i = 13, 15 do
+                output = db[ i ]
+
+                if output then
+                    source = i
+                    break
+                end
             end
         end
 
