@@ -3265,7 +3265,7 @@ do
                                                 local o = ""
 
                                                 if #creates > 0 then
-                                                    o = o .. L["The imported style will create the following display(s):  "]
+                                                    o = o .. L["The imported style will create the following display(s):"] .. "  "
                                                     for i, display in orderedPairs( creates ) do
                                                         if i == 1 then o = o .. L[display]
                                                         else o = o .. ", " .. L[display] end
@@ -3274,7 +3274,7 @@ do
                                                 end
 
                                                 if #replaces > 0 then
-                                                    o = o .. L["The imported style will overwrite the following display(s):  "]
+                                                    o = o .. L["The imported style will overwrite the following display(s):"] .. "  "
                                                     for i, display in orderedPairs( replaces ) do
                                                         if i == 1 then o = o .. L[display]
                                                         else o = o .. ", " .. L[display] end
@@ -3927,7 +3927,7 @@ do
                 desc = L["If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  This can be helpful if your keybinds are detected incorrectly or is found on multiple action bars."],
                 validate = function( info, val )
                     val = val:trim()
-                    if val:len() > 20 then return L["Keybindings should be no longer than 20 characters in length."] end
+                    if val:len() > 20 then return format( L["Keybindings should be no longer than %d characters in length."], 20) end
                     return true
                 end,
                 width = 1.5,
@@ -4127,7 +4127,7 @@ do
                         desc = L["If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  This can be helpful if the addon incorrectly detects your keybindings."],
                         validate = function( info, val )
                             val = val:trim()
-                            if val:len() > 6 then return L["Keybindings should be no longer than 6 characters in length."] end
+                            if val:len() > 6 then return format( L["Keybindings should be no longer than %d characters in length."], 6) end
                             return true
                         end,
                         width = 1.5,
@@ -4259,7 +4259,7 @@ do
                 desc = L["If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  This can be helpful if the addon incorrectly detects your keybindings."],
                 validate = function( info, val )
                     val = val:trim()
-                    if val:len() > 6 then return L["Keybindings should be no longer than 6 characters in length."] end
+                    if val:len() > 6 then return format( L["Keybindings should be no longer than %d characters in length."], 6) end
                     return true
                 end,
                 width = 1.5,
@@ -4387,7 +4387,7 @@ do
                         desc = L["If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  This can be helpful if the addon incorrectly detects your keybindings."],
                         validate = function( info, val )
                             val = val:trim()
-                            if val:len() > 6 then return L["Keybindings should be no longer than 6 characters in length."] end
+                            if val:len() > 6 then return format( L["Keybindings should be no longer than %d characters in length."], 6) end
                             return true
                         end,
                         width = 1.5,
@@ -4943,13 +4943,13 @@ do
 
                                             msg = msg .. "\n\n" .. format( L["%1$s|w|r is on your action bar and will be used for all your %2$s pets."], link, UnitClass( "player" ) )
                                         else
-                                            msg = msg .. "\n\n" .. L["|cFFFF0000Requires pet ability on one of your action bars.|r"]
+                                            msg = msg .. "\n\n" .. "|cFFFF0000" .. L["Requires pet ability on one of your action bars."] .. "|r"
                                         end
 
                                         if GetCVar( "nameplateShowEnemies" ) == "1" then
                                             msg = msg .. "\n\n" .. L["Enemy nameplates are |cFF00FF00enabled|r and will be used to detect targets near your pet."]
                                         else
-                                            msg = msg .. "\n\n" .. L["|cFFFF0000Requires enemy nameplates.|r"]
+                                            msg = msg .. "\n\n" .. "|cFFFF0000" .. L["Requires enemy nameplates."] .. "|r"
                                         end
 
                                         return msg
@@ -4967,7 +4967,7 @@ do
                                         local out
 
                                         if not self:HasPetBasedTargetSpell() then
-                                            out = L["For pet-based detection to work, you must take an ability from your |cFF00FF00pet's spellbook|r and place it on one of |cFF00FF00your|r action bars.\n\n"]
+                                            out = L["For pet-based detection to work, you must take an ability from your |cFF00FF00pet's spellbook|r and place it on one of |cFF00FF00your|r action bars."] .. "\n\n"
                                             local spells = Hekili:GetPetBasedTargetSpells()
 
                                             if not spells then return " " end
@@ -4975,7 +4975,7 @@ do
                                             out = out .. L["For %1$s, %2$s is recommended due to its range.  It will work for all your pets."]
 
                                             if spells.count > 1 then
-                                                out = out .. "\n" ..  L["Alternative(s): "]
+                                                out = out .. "\n" ..  L["Alternative(s):"] .. " "
                                             end
 
                                             local n = 1
@@ -5001,9 +5001,9 @@ do
 
                                         if GetCVar( "nameplateShowEnemies" ) ~= "1" then
                                             if not out then
-                                                out = L["|cFFFF0000WARNING!|r  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."]
+                                                out = L["|cFFFF0000WARNING|r:  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."]
                                             else
-                                                out = out .. "\n\n" .. L["|cFFFF0000WARNING!|r  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."]
+                                                out = out .. "\n\n" .. L["|cFFFF0000WARNING|r:  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."]
                                             end
                                         end
 
@@ -5052,7 +5052,7 @@ do
                                     type = "toggle",
                                     name = NewFeature .. L["On Screen Enemies Only"],
                                     desc = function()
-                                        return L["If checked, the damage-based target system will only count enemies that are on screen.  If unchecked, offscreen targets can be included in target counts.\n\n"]
+                                        return L["If checked, the damage-based target system will only count enemies that are on screen.  If unchecked, offscreen targets can be included in target counts."] .. "\n\n"
                                             .. ( GetCVar( "nameplateShowEnemies" ) == "0" and "|cFFFF0000" .. L["Requires Enemy Nameplates"] .. "|r" or "|cFF00FF00" .. L["Requires Enemy Nameplates"] .. "|r" )
                                     end,
                                     width = 1.49,
@@ -5722,7 +5722,7 @@ do
                                                 elseif #listNames == 2 then
                                                     o = format( L["The imported Priority has two action lists:  %1$s and %2$s."], listNames[1], listNames[2] )
                                                 else
-                                                    o = L["The imported Priority has the following lists included:  "]
+                                                    o = L["The imported Priority has the following lists included:"] .. "  "
                                                     for i, name in ipairs( listNames ) do
                                                         if i == 1 then o = o .. name
                                                         elseif i == #listNames then o = format( L["%1$s, and %2$s."], o, name )
@@ -6402,7 +6402,7 @@ do
                                                     end
 
                                                     if cLen and cLen > 0 then
-                                                        desc = format( L["%1$s, if |cffffd100%2$s|r"], desc, entry.criteria )
+                                                        desc = format( L["%1$s, if |cFFFFD100%2$s|r"], desc, entry.criteria )
                                                     end
 
                                                 elseif entry.action == "call_action_list" or entry.action == "run_action_list" then
@@ -6414,7 +6414,7 @@ do
                                                     end
 
                                                     if cLen and cLen > 0 then
-                                                        desc = format( L["%1$s, if |cffffd100%2$s|r"], desc, entry.criteria )
+                                                        desc = format( L["%1$s, if |cFFFFD100%2$s|r"], desc, entry.criteria )
                                                     end
 
                                                 elseif entry.action == "cancel_buff" then
@@ -6433,7 +6433,7 @@ do
                                                     end
 
                                                     if cLen and cLen > 0 then
-                                                        desc = format( L["%1$s, if |cffffd100%2$s|r"], desc, entry.criteria )
+                                                        desc = format( L["%1$s, if |cFFFFD100%2$s|r"], desc, entry.criteria )
                                                     end
 
                                                 elseif entry.action == "cancel_action" then
@@ -6452,7 +6452,7 @@ do
                                                     end
 
                                                     if cLen and cLen > 0 then
-                                                        desc = format( L["%1$s, if |cffffd100%2$s|r"], desc, entry.criteria )
+                                                        desc = format( L["%1$s, if |cFFFFD100%2$s|r"], desc, entry.criteria )
                                                     end
 
                                                 elseif cLen and cLen > 0 then
@@ -8795,7 +8795,7 @@ do
                     supporters = {
                         type = "description",
                         name = function ()
-                            return format( L["|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n%s\n\nPlease see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n\n"], ns.Patrons )
+                            return format( "|cFF00CCFF%s|r\n\n%s\n\n%s\n\n", L["THANK YOU TO OUR SUPPORTERS!"], ns.Patrons, L["Please see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs."] )
                         end,
                         fontSize = "medium",
                         order = 6,
@@ -9005,7 +9005,7 @@ do
                         name = function()
                             local snapshotKey = Hekili.DB.profile.toggles.snapshot.key or L["NOT BOUND"]
                             local pauseKey = Hekili.DB.profile.toggles.pause.key or L["NOT BOUND"]
-                            return format( L["Snapshots are logs of the addon's decision-making process for a set of recommendations.  If you have questions about -- or disagree with -- the addon's recommendations, reviewing a snapshot can help identify what factors led to the specific recommendations that you saw.\n\nSnapshots only capture a specific point in time, so snapshots have to be taken at the time you saw the specific recommendations that you are concerned about.  You can generate snapshots by using the |cffffd100Snapshot|r binding ( |cffffd100%1$s|r ) from the Toggles section.\n\nYou can also freeze the addon's recommendations using the |cffffd100Pause|r binding ( |cffffd100%2$s|r ).  Doing so will freeze the addon's recommendations, allowing you to mouseover the display and see which conditions were met to display those recommendations.  Press Pause again to unfreeze the addon.\n\nFinally, using the settings at the bottom of this panel, you can ask the addon to automatically generate a snapshot for you when no recommendations were able to be made.\n\n"], snapshotKey, pauseKey )
+                            return format( L["Snapshots are logs of the addon's decision-making process for a set of recommendations.  If you have questions about -- or disagree with -- the addon's recommendations, reviewing a snapshot can help identify what factors led to the specific recommendations that you saw.\n\nSnapshots only capture a specific point in time, so snapshots have to be taken at the time you saw the specific recommendations that you are concerned about.  You can generate snapshots by using the |cffffd100Snapshot|r binding ( |cffffd100%1$s|r ) from the Toggles section.\n\nYou can also freeze the addon's recommendations using the |cffffd100Pause|r binding ( |cffffd100%2$s|r ).  Doing so will freeze the addon's recommendations, allowing you to mouseover the display and see which conditions were met to display those recommendations.  Press Pause again to unfreeze the addon.\n\nFinally, using the settings at the bottom of this panel, you can ask the addon to automatically generate a snapshot for you when no recommendations were able to be made."], snapshotKey, pauseKey ) .. "\n\n"
                         end,
                         fontSize = "medium",
                         order = 10,
@@ -9504,28 +9504,28 @@ do
                                 hasToggle = true
                                 exToggle = setting.name
                             elseif setting.info.type == "range" then
-                                output = format( L["%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)"], output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or L["N/A"] ), ( setting.info.max and format( "%.2f", setting.info.max ) or L["N/A"] ), setting.info.name )
+                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, %s: %.2f, %s: %.2f (%s)", output, setting.name, prefs[ setting.name ], L["min"], ( setting.info.min and format( "%.2f", setting.info.min ) or L["N/A"] ), L["max"], ( setting.info.max and format( "%.2f", setting.info.max ) or L["N/A"] ), setting.info.name )
                                 hasNumber = true
                                 exNumber = setting.name
                             end
                         end
                     end
 
-                    output = format( L["%s\n - |cFFFFD100cycle|r, |cFFFFD100swap|r, or |cFFFFD100target_swap|r = %s|r (%s)"], output, spec.cycle and "|cFF00FF00" .. L["ON"] or "|cFFFF0000" .. L["OFF"], L["Recommend Target Swaps"] )
+                    output = output .. "\n - " .. format( L["|cFFFFD100cycle|r, |cFFFFD100swap|r, or |cFFFFD100target_swap|r = %s|r (%s)"], spec.cycle and "|cFF00FF00" .. L["ON"] or "|cFFFF0000" .. L["OFF"], L["Recommend Target Swaps"] )
 
-                    output = format( L["%s\n\nTo control your toggles (|cFFFFD100cooldowns|r, |cFFFFD100covenants|r, |cFFFFD100defensives|r, |cFFFFD100interrupts|r, |cFFFFD100potions|r, |cFFFFD100custom1|r and |cFFFFD100custom2|r):\n - Enable Cooldowns:  |cFFFFD100/hek set cooldowns on|r\n - Disable Interrupts:  |cFFFFD100/hek set interupts off|r\n - Toggle Defensives:  |cFFFFD100/hek set defensives|r"], output )
+                    output = output .. "\n\n" .. L["To control your toggles (|cFFFFD100cooldowns|r, |cFFFFD100covenants|r, |cFFFFD100defensives|r, |cFFFFD100interrupts|r, |cFFFFD100potions|r, |cFFFFD100custom1|r and |cFFFFD100custom2|r):\n - Enable Cooldowns:  |cFFFFD100/hek set cooldowns on|r\n - Disable Interrupts:  |cFFFFD100/hek set interupts off|r\n - Toggle Defensives:  |cFFFFD100/hek set defensives|r"]
 
-                    output = format( L["%s\n\nTo control your display mode (currently |cFFFFD100%s|r):\n - Toggle Mode:  |cFFFFD100/hek set mode|r\n - Set Mode:  |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)"], output, self.DB.profile.toggles.mode.value or L["unknown"] )
+                    output = output .. "\n\n" .. format( L["To control your display mode (currently |cFFFFD100%s|r):\n - Toggle Mode:  |cFFFFD100/hek set mode|r\n - Set Mode:  |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)"], self.DB.profile.toggles.mode.value or L["unknown"] )
 
                     if hasToggle then
-                        output = format( L["%s\n\nTo set a |cFFFFD100specialization toggle|r, use the following commands:\n - Toggle On/Off:  |cFFFFD100/hek set %s|r\n - Enable:  |cFFFFD100/hek set %s on|r\n - Disable:  |cFFFFD100/hek set %s off|r\n - Reset to Default:  |cFFFFD100/hek set %s default|r"], output, exToggle, exToggle, exToggle, exToggle )
+                        output = output .. "\n\n " .. format( L["To set a |cFFFFD100specialization toggle|r, use the following commands:\n - Toggle On/Off:  |cFFFFD100/hek set %s|r\n - Enable:  |cFFFFD100/hek set %s on|r\n - Disable:  |cFFFFD100/hek set %s off|r\n - Reset to Default:  |cFFFFD100/hek set %s default|r"], exToggle, exToggle, exToggle, exToggle )
                     end
 
                     if hasNumber then
-                        output = format( L["%s\n\nTo set a |cFFFFD100number|r value, use the following commands:\n - Set to #:  |cFFFFD100/hek set %s #|r\n - Reset to Default:  |cFFFFD100/hek set %s default|r"], output, exNumber, exNumber )
+                        output = output .. "\n\n" .. format( L["To set a |cFFFFD100number|r value, use the following commands:\n - Set to #:  |cFFFFD100/hek set %s #|r\n - Reset to Default:  |cFFFFD100/hek set %s default|r"], exNumber, exNumber )
                     end
 
-                    output = format( L["%s\n\nTo select another priority, see |cFFFFD100/hekili priority|r."], output )
+                    output = output .. "\n\n" .. L["To select another priority, see |cFFFFD100/hekili priority|r."]
 
                     Hekili:Print( output )
                     return
@@ -9652,7 +9652,7 @@ do
                         output = format( "%s\n - |cFFFFD100%s|r %s", output, name, Hekili.DB.profile == prof and "|cFF00FF00" .. L["(current)"] .. "|r" or "" )
                     end
 
-                    output = format( L["%s\nTo create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r."], output )
+                    output = output .. "\n" .. L["To create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r."]
 
                     Hekili:Print( output )
                     return
@@ -9670,7 +9670,7 @@ do
                         output = format( "%s\n - |cFFFFD100%s|r %s", output, name, Hekili.DB.profile == prof and "|cFF00FF00" .. L["(current)"] .. "|r" or "" )
                     end
 
-                    output = format( L["%s\n\nTo create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r."], output )
+                    output = output .. "\n\n" .. L["To create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r."]
 
                     Hekili:Notify( output )
                     return
@@ -9697,7 +9697,7 @@ do
                         end
                     end
 
-                    output = format( L["%s\n\nTo create a new priority, see |cFFFFD100/hekili|r > |cFFFFD100Priorities|r."], output )
+                    output = output .. "\n\n" .. L["To create a new priority, see |cFFFFD100/hekili|r > |cFFFFD100Priorities|r."]
 
                     if Hekili.DB.profile.notifications.enabled then Hekili:Notify( output ) end
                     Hekili:Print( output )
@@ -9807,7 +9807,7 @@ do
 
                 for i, specID in ipairs( specs ) do
                     local spec = class.specs[ specID ]
-                    results = format( L["%sSpecialization: %s\n"], results, spec.name )
+                    results = format( "%s%s: %s\n", results, L["Specialization"], spec.name )
 
                     for key, aura in ipairs( spec.auras ) do
                         local keyNamed = false
@@ -9817,7 +9817,7 @@ do
                                 if type( v ) == "function" then
                                     local ok, val = pcall( v )
                                     if not ok then
-                                        if not keyNamed then results = format( L["%s - Aura: %s\n"], results, k ); keyNamed = true end
+                                        if not keyNamed then results = format( "%s - %s: %s\n", results, L["Aura"], k ); keyNamed = true end
                                         results = format( "%s    - %s = %s\n", results, tostring( val ) )
                                         count = count + 1
                                     end
@@ -9827,7 +9827,7 @@ do
                                 if type( v ) == "function" then
                                     local ok, val = pcall( v )
                                     if not ok then
-                                        if not keyNamed then results = format( L["%s - Aura: %s\n"], results, k ); keyNamed = true end
+                                        if not keyNamed then results = format( "%s - %s: %s\n", results, L["Aura"], k ); keyNamed = true end
                                         results = format( "%s    - %s = %s\n", results, tostring( val ) )
                                         count = count + 1
                                     end
@@ -9844,7 +9844,7 @@ do
                                 if type( v ) == "function" then
                                     local ok, val = pcall( v )
                                     if not ok then
-                                        if not keyNamed then results = format( L["%s - Ability: %s\n"], results, k ); keyNamed = true end
+                                        if not keyNamed then results = format( "%s - %s: %s\n", results, L["Ability"], k ); keyNamed = true end
                                         results = format( "%s    - %s = %s\n", results, tostring( val ) )
                                         count = count + 1
                                     end
@@ -9854,7 +9854,7 @@ do
                                 if type( v ) == "function" then
                                     local ok, val = pcall( v )
                                     if not ok then
-                                        if not keyNamed then results = format( L["%s - Ability: %s\n"], results, k ); keyNamed = true end
+                                        if not keyNamed then results = format( "%s - %s: %s\n", results, L["Ability"], k ); keyNamed = true end
                                         results = format( "%s    - %s = %s\n", results, tostring( val ) )
                                         count = count + 1
                                     end
@@ -10571,8 +10571,9 @@ function Hekili:TogglePause( ... )
         end
     end
 
-    self:Print( not self.Pause and L["UNPAUSED"] or L["PAUSED"] .. "." )
-    self:Notify( not self.Pause and L["UNPAUSED"] or L["PAUSED"] )
+    local msg = self.Pause and L["PAUSED"] or L["UNPAUSED"]
+    self:Print( msg .. "." )
+    self:Notify( msg )
 
 end
 
@@ -10642,7 +10643,7 @@ do
         self.DB.profile.toggles.mode.value = mode
 
         if self.DB.profile.notifications.enabled then
-            self:Notify( L["Mode: "] .. L[modeIndex[ mode ][2]] )
+            self:Notify( L["Mode:"] .. " " .. L[modeIndex[ mode ][2]] )
         else
             self:Print( format( L["%s mode activated."], L[modeIndex[ mode ][2]] ) )
         end
@@ -10675,7 +10676,7 @@ do
             end
 
             if self.DB.profile.notifications.enabled then
-                self:Notify( L["Mode: "] .. L[modeIndex[ toggle.value ][2]] )
+                self:Notify( L["Mode:"] .. " " .. L[modeIndex[ toggle.value ][2]] )
             else
                 self:Print( format( L["%s mode activated."], L[modeIndex[ toggle.value ][2]] ) )
             end

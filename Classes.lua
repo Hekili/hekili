@@ -2693,14 +2693,14 @@ all:RegisterAbilities( {
 
     trinket1 = {
         name = L["Trinket #1"],
-        listName = "|T136243:0|t |cff00ccff[" .. L["Trinket #1"] .. "]",
+        listName = "|T136243:0|t |cff00ccff[" .. L["Trinket #1"] .. "]|r",
         cast = 0,
         gcd = "off",
     },
 
     trinket2 = {
         name = L["Trinket #2"],
-        listName = "|T136243:0|t |cff00ccff[" .. L["Trinket #2"] .. "]",
+        listName = "|T136243:0|t |cff00ccff[" .. L["Trinket #2"] .. "]|r",
         cast = 0,
         gcd = "off",
     },

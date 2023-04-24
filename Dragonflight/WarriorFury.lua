@@ -664,7 +664,7 @@ spec:RegisterHook( "spend", function( amt, resource )
             glory_rage = glory_rage + amt
             local addition = floor( glory_rage / 10 ) * 0.5
             glory_rage = glory_rage % 10
-		  if addition > 0 then buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition end
+            if addition > 0 then buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition end
         end
     end
 end )
@@ -1082,7 +1082,7 @@ spec:RegisterAbilities( {
         cooldown = function () return 120 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
         gcd = "off",
 
-	    toggle = "defensives",
+        toggle = "defensives",
 
         talent = "enraged_regeneration",
         startsCombat = false,
@@ -1096,11 +1096,11 @@ spec:RegisterAbilities( {
 
     execute = {
         id = function () return IsActiveSpell( 280735 ) and 280735 or 5308 end,
-	    known = 5308,
+        known = 5308,
         noOverride = 317485,
         cast = 0,
         cooldown = function () return ( talent.massacre.enabled and 4.5 or 6 ) end,
-	    hasteCD = true,
+        hasteCD = true,
         gcd = "spell",
 
         spend = function () return ( talent.improved_execute.enabled and -20 or 0 ) end,

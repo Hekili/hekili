@@ -175,7 +175,7 @@ function Hekili:OnEnable()
     self:ForceUpdate( "ADDON_ENABLED" )
 
     if self.BuiltFor > self.CurrentBuild then
-        self:Notify( format( L["|cFFFF0000WARNING|r: This version of Hekili is for a future version of WoW; you should reinstall for %s."], self.GameBuild ) )
+        self:Notify( format( L["|cFFFF0000WARNING|r:  This version of Hekili is for a future version of WoW; you should reinstall for %s."], self.GameBuild ) )
     end
 end
 

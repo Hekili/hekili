@@ -296,7 +296,7 @@ local function GenerateDiagnosticTooltip( widget, event )
     end
 
     if type( usage ) == "string" then
-        Tooltip:AddLine( L["Usage: "] .. usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
+        Tooltip:AddLine( L["Usage:"] .. " " .. usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
     end
 
     Tooltip:Show()
