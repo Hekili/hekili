@@ -837,16 +837,25 @@ do
         local option = info[ n ]
 
         local conf = Hekili.DB.profile.notifications
+        local val = conf[ option ]
 
-        if option == "color" then return unpack( conf[ option ] ) end
-        return conf[ option ]
+        if option == "color" then
+            if type( val ) == "table" and #val == 4 then
+                return unpack( val )
+            else
+                local defaults = Hekili:GetDefaults()
+                return unpack( defaults.profile.notifications.color )
+            end
+        end
+        return val
     end
 
-    local function SetNotifOption( info, val )
+    local function SetNotifOption( info, ... )
         local n = #info
         local option = info[ n ]
 
         local conf = Hekili.DB.profile.notifications
+        local val = option == "color" and { ... } or select(1, ...)
 
         conf[ option ] = val
         QueueRebuildUI()
