@@ -1440,7 +1440,7 @@ spec:RegisterAbilities( {
             end
 
             if state.set_bonus.tier30_2pc > 0 then
-                reduceCooldown ( "last_stand", buff.last_stand.up and 4 or 2 )
+                reduceCooldown( "last_stand", buff.last_stand.up and 4 or 2 )
             end
         end,
     },

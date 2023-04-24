@@ -1457,7 +1457,7 @@ spec:RegisterAbilities( {
             removeStack( "whirlwind" )
             if talent.frenzy.enabled then addStack( "frenzy" ) end
             if talent.reckless_abandon.enabled then addStack( "reckless_abandon", nil, 2 ) end
-            if state.set_bonus.tier30_4pc > 0 then addStack ( "merciless_assault" ) end
+            if state.set_bonus.tier30_4pc > 0 then addStack( "merciless_assault" ) end
         end,
     },
 
