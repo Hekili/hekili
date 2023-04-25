@@ -42,8 +42,8 @@ actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcast
 actions.cat_aoe+=/berserk,if=energy.current>60&cooldown.tigers_fury.remains>=15
 actions.cat_aoe+=/savage_roar,if=!up&variable.time_to_die>1+latency
 actions.cat_aoe+=/swipe_cat,if=buff.clearcasting.up
-actions.cat_aoe+=/mangle_cat,if=aoe_combo_spell.mangle&combo_points.current=0&(variable.time_to_die>buff.savage_roar.remains+1+latency)&!buff.clearcasting.up
-actions.cat_aoe+=/rake,if=!up&(aoe_combo_spell.rake&combo_points.current=0|(settings.optimize_aoe_rake&set_bonus.tier8feral_2pc=1&combo_points.current<5))&(variable.time_to_die>buff.savage_roar.remains+1+latency)&!buff.clearcasting.up
+actions.cat_aoe+=/mangle_cat,if=set_bonus.idol_of_the_corruptor=1&combo_points.current=0&buff.savage_roar.remains<=1&(variable.time_to_die>buff.savage_roar.remains+1+latency)&!buff.clearcasting.up
+actions.cat_aoe+=/rake,if=!up&!set_bonus.idol_of_the_corruptor=1&combo_points.current=0&buff.savage_roar.remains<=1&(variable.time_to_die>buff.savage_roar.remains+1+latency)&!buff.clearcasting.up
 actions.cat_aoe+=/swipe_cat
 actions.cat_aoe+=/gift_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<45
 
