@@ -719,6 +719,7 @@ do
                     font = ElvUI and "Expressway" or "Arial Narrow",
                     fontSize = 20,
                     fontStyle = "OUTLINE",
+                    color = { 1, 1, 1, 1 },
 
                     width = 600,
                     height = 40,
@@ -1028,15 +1029,25 @@ do
         local option = info[ n ]
 
         local conf = Hekili.DB.profile.notifications
+        local val = conf[ option ]
 
-        return conf[ option ]
+        if option == "color" then
+            if type( val ) == "table" and #val == 4 then
+                return unpack( val )
+            else
+                local defaults = Hekili:GetDefaults()
+                return unpack( defaults.profile.notifications.color )
+            end
+        end
+        return val
     end
 
-    local function SetNotifOption( info, val )
+    local function SetNotifOption( info, ... )
         local n = #info
         local option = info[ n ]
 
         local conf = Hekili.DB.profile.notifications
+        local val = option == "color" and { ... } or select(1, ...)
 
         conf[ option ] = val
         QueueRebuildUI()
