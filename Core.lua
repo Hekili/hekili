@@ -113,18 +113,25 @@ function Hekili:OnInitialize()
 
             if p.toggles.essences.override then
                 -- Don't show Essences here if it's overridden by CDs anyway?
-                self.text = format( L["|c%s%s|r %sCD|r %sInt|r %sDef|r"], color,
-                    m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
-                    p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
-            else
-                self.text = format( L["|c%s%s|r %sCD|r %sCov|r %sInt|r"],
+                self.text = format( "|c%s%s|r %s%s|r %s%s|r %s%s|r",
                     color,
                     m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
                     p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["CD"],
+                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["Int"],
+                    p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["Def"] )
+            else
+                self.text = format( "|c%s%s|r %s%s|r %s%s|r %s%s|r",
+                    color,
+                    m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
+                    p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["CD"],
                     p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000" )
+                    L["Cov"],
+                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["Int"] )
             end
         end
 

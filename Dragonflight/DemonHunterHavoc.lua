@@ -1764,7 +1764,7 @@ spec:RegisterSetting( "retreat_warning", nil, {
 } )
 
 spec:RegisterSetting( "retreat_and_return", "off", {
-    name = strformat( L["%1$s: %2$s and %3$s"], Hekili:GetSpellLinkWithTexture( 198793 ), Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 232893 ) ),
+    name = strformat( L["%s: %s and %s"], Hekili:GetSpellLinkWithTexture( 198793 ), Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 232893 ) ),
     desc = function()
         return strformat( L["When enabled, %1$s will |cFFFF0000NOT|r be recommended unless either %2$s or %3$s are available to quickly return to your current target.  This requirement applies to all |W%4$s|w and |W%5$s|w recommendations, regardless of talents.\n\nIf |W%6$s|w is not talented, its cooldown will be ignored.\n\nThis option does not guarantee that |W%7$s|w or |W%8$s|w will be the first recommendation after |W%9$s|w but will ensure that either/both are available immediately."],
             Hekili:GetSpellLinkWithTexture( 198793 ), Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 232893 ),

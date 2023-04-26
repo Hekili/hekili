@@ -1364,15 +1364,15 @@ spec:RegisterOptions( {
 
 
 --[[ spec:RegisterSetting( "ignore_freezing_rain_st", true, {
-    name = L["Ignore |T629077:0|t Freezing Rain in Single-Target"],
-    desc = L["If checked, the default action list will not recommend using |T135857:0|t Blizzard in single-target due to the |T629077:0|t Freezing Rain talent proc."],
+    name = "Ignore |T629077:0|t Freezing Rain in Single-Target",
+    desc = "If checked, the default action list will not recommend using |T135857:0|t Blizzard in single-target due to the |T629077:0|t Freezing Rain talent proc.",
     type = "toggle",
     width = "full",
 } ) ]]
 
 spec:RegisterSetting( "limit_ice_lance", false, {
     name = strformat( L["%s: Limit with %s and %s"], Hekili:GetSpellLinkWithTexture( spec.abilities.ice_lance.id ), Hekili:GetSpellLinkWithTexture( spec.talents.frozen_touch[2] ),
-    Hekili:GetSpellLinkWithTexture( spec.talents.deep_shatter[2] ) ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.deep_shatter[2] ) ),
     desc = strformat( L["If checked, %1$s will recommended less often when you have %2$s and %3$s talented and there are only 1 or 2 enemy targets.\n\nPer Altered Time, the Mage Discord, this can be a 4%% DPS gain in single-target and a ~1.5%% gain in two-target scenarios."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.ice_lance.id ), Hekili:GetSpellLinkWithTexture( spec.talents.frozen_touch[2] ),
         Hekili:GetSpellLinkWithTexture( spec.talents.deep_shatter[2] ) ),

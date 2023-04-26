@@ -2235,8 +2235,8 @@ spec:RegisterSetting( "allow_fsk", false, {
 
 --[[ Deprecated.
 spec:RegisterSetting( "optimize_reverse_harm", false, {
-    name = L["Optimize |T627486:0|t Reverse Harm"],
-    desc = L["If checked, |T627486:0|t Reverse Harm's caption will show the recommended target's name."],
+    name = "Optimize |T627486:0|t Reverse Harm",
+    desc = "If checked, |T627486:0|t Reverse Harm's caption will show the recommended target's name.",
     type = "toggle",
     width = "full",
 } ) ]]

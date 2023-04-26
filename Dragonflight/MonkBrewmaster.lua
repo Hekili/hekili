@@ -1649,8 +1649,9 @@ spec:RegisterOptions( {
 
 
 --[[ spec:RegisterSetting( "ox_walker", true, {
-    name = L["Use |T606543:0|t Spinning Crane Kick in Single-Target with |T611419:0|t Walk with the Ox"],
-    desc = L["If checked, the default priority will recommend |T606543:0|t Spinning Crane Kick when |T611419:0|t Walk with the Ox is active.  This tends to reduce mitigation slightly but increase damage based on using |T627607:0|t Invoke Niuzao more frequently."],
+    name = "Use |T606543:0|t Spinning Crane Kick in Single-Target with Walk with the Ox",
+    desc = "If checked, the default priority will recommend |T606543:0|t Spinning Crane Kick when Walk with the Ox is active.  This tends to " ..
+        "reduce mitigation slightly but increase damage based on using Invoke Niuzao more frequently.",
     type = "toggle",
     width = "full",
 } ) ]]

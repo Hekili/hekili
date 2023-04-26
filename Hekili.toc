@@ -3,7 +3,7 @@
 ## Title: Hekili
 ## Author: Hekili
 ## Notes: Priority helper for many DPS and tanking specializations, based on SimulationCraft action lists.
-## Notes-koKR: SimulationCraft의 행동 목록을 기반으로 다양한 DPS와 방어 전담 전문화를 위한 우선순위 도우미입니다.
+## Notes-koKR: SimulationCraft의 행동 목록에 기반한 다양한 DPS와 방어 전담 전문화를 위한 우선순위 도우미입니다.
 ## SavedVariables: HekiliDB
 ## OptionalDeps: AddOnSkins, ButtonForge, ConsolePort, ElvUI, LibDualSpec-1.0, Masque, WeakAuras
 ## X-Curse-Project-ID: 69254
@@ -11,15 +11,13 @@
 ## X-Wago-ID: WYK9WXNL
 
 embeds.xml
-
-Constants.lua
-
 Locales\Locales.xml
 
 Hekili.lua
 Utils.lua
 Formatting.lua
 MultilineEditor.lua
+Constants.lua
 State.lua
 Events.lua
 

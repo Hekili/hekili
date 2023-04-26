@@ -2511,15 +2511,15 @@ spec:RegisterAbilities( {
 
 
 --[[ spec:RegisterSetting( "owlweave_cat", false, {
-    name = L["|T136036:0|t Attempt Owlweaving (Experimental)"],
-    desc = L["If checked, the addon will swap to Moonkin Form based on the default priority."],
+    name = "|T136036:0|t Attempt Owlweaving (Experimental)",
+    desc = "If checked, the addon will swap to Moonkin Form based on the default priority.",
     type = "toggle",
     width = "full"
 } ) ]]
 
 --[[ spec:RegisterSetting( "filler_regrowth", false, {
-    name = L["|T136085:0|t Use Regrowth as Filler"],
-    desc = L["If checked, the default priority will recommend |T136085:0|t Regrowth when you use the Bloodtalons talent and would otherwise be pooling Energy to retrigger Bloodtalons."],
+    name = "|T136085:0|t Use Regrowth as Filler",
+    desc = "If checked, the default priority will recommend |T136085:0|t Regrowth when you use the Bloodtalons talent and would otherwise be pooling Energy to retrigger Bloodtalons.",
     type = "toggle",
     width = "full",
 } ) ]]

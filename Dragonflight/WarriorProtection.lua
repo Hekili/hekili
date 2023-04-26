@@ -1770,7 +1770,9 @@ spec:RegisterSetting( "rallying_cry_condition", false, {
 spec:RegisterSetting( "last_stand_offensively", false, {
     name = L["Use |T135871:0|t Last Stand Offensively"],
     desc = function()
-        return format( L["If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage.\n\nIf unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage.\n\nRequires |T571316:0|t Unnerving Focus %1$s or %2$s."], ( state.talent.unnerving_focus.enabled and "|cFF00FF00" .. L["Talent"] .. "|r" or "|cFFFF0000" .. L["Talent"] .. "|r" ), ( state.conduit.unnerving_focus.enabled and "|cFF00FF00" .. L["Conduit"] .. "|r" or "|cFFFF0000" .. L["Conduit"] .. "|r" ) )
+        return format( L["If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage.\n\nIf unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage.\n\nRequires |T571316:0|t Unnerving Focus %1$s or %2$s."],
+            ( state.talent.unnerving_focus.enabled and "|cFF00FF00" .. L["Talent"] .. "|r" or "|cFFFF0000" .. L["Talent"] .. "|r" ),
+            ( state.conduit.unnerving_focus.enabled and "|cFF00FF00" .. L["Conduit"] .. "|r" or "|cFFFF0000" .. L["Conduit"] .. "|r" ) )
     end,
     type = "toggle",
     width = "full"

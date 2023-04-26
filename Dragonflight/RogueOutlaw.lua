@@ -1381,7 +1381,7 @@ spec:RegisterSetting( "no_rtb_in_dance_cto", true, {
     name = L["Never |T1373910:0|t Roll the Bones during |T236279:0|t Shadow Dance"],
     desc = function()
         return strformat( L["If checked, |T1373910:0|t Roll the Bones will never be recommended during |T236279:0|t Shadow Dance. This is consistent with guides but is not yet reflected in the default SimulationCraft profiles as of 12 February 2023.\n\n%sRequires |T237284:0|t Count the Odds|r"],
-        state.talent.count_the_odds.enabled and "|cFF00FF00" or "|cFFFF0000" )
+            state.talent.count_the_odds.enabled and "|cFF00FF00" or "|cFFFF0000" )
     end,
     type = "toggle",
     width = "full"
@@ -1391,7 +1391,7 @@ spec:RegisterSetting( "use_ld_opener", false, {
     name = L["Use |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones (Opener)"],
     desc = function()
         return strformat( L["If checked, the addon will recommend |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones during the opener to guarantee at least 2 buffs from |T236279:0|t Loaded Dice.\n\n%sRequires |T236279:0|t Loaded Dice|r"],
-        state.talent.loaded_dice.enabled and "|cFF00FF00" or "|cFFFF0000" )
+            state.talent.loaded_dice.enabled and "|cFF00FF00" or "|cFFFF0000" )
     end,
     type = "toggle",
     width = "full"

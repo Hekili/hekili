@@ -705,9 +705,9 @@ do
                                                 local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
 
                                                 if Hekili.DB.profile.notifications.enabled then
-                                                    Hekili:Notify( format( L["%1$s set to |cFF00FF00%2$s|r."], name, tostring( actual ) ) )
+                                                    Hekili:Notify( name .. " set to |cFF00FF00" .. actual .. "|r." )
                                                 else
-                                                    Hekili:Print( format( L["%1$s set to |cFF00FF00%2$s|r."], name, tostring( actual ) ) )
+                                                    Hekili:Print( name .. " set to |cFF00FF00" .. actual .. "|r." )
                                                 end
                                             end,
                                             checked = function ()
@@ -2768,7 +2768,7 @@ do
                 Tooltip:SetBackdropColor( 0, 0, 0, 0.8 )
 
                 Tooltip:SetText( "Hekili: " .. dispID  )
-                Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
+                Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
                 Tooltip:Show()
                 self:SetMovable( true )
 

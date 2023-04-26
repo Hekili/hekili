@@ -6,10 +6,8 @@ debug = true
 local L = LibStub("AceLocale-3.0"):NewLocale( "Hekili", "enUS", true, debug )
 
 L["%1$s set to %2$s."] = true
-L["%1$s set to |cFF00FF00%2$s|r."] = true
 L["%1$s, and %2$s."] = true
 L["%1$s, if |cFFFFD100%2$s|r"] = true
-L["%1$s|w|r is on your action bar and will be used for all your %2$s pets."] = true
 L["%s does not have any Hekili modules loaded (yet).\nWatch for updates."] = true
 L["%s hold removed."] = true
 L["%s mode activated."] = true
@@ -18,12 +16,16 @@ L["%s placed on hold."] = true
 L["%s set to |cFF00B4FF%.2f|r."] = true
 L["%s |cFF00FF00ENABLED|r."] = true
 L["%s |cFFFF0000DISABLED|r."] = true
+L["%s|w|r is on your action bar and will be used for all your %s pets."] = true
 L["'%1$s' is not a valid option for |cFFFFD100%2$s|r."] = true
 L["'%s' is not a valid profile name.\nValid profile |cFFFFD100name|rs are:"] = true
 L["(current)"] = true
 L["(none)"] = true
 L["(not found)"] = true
 L["(not set)"] = true
+L["(to disable)"] = true
+L["(to enable)"] = true
+L["(to toggle)"] = true
 L["A rough skeleton of your current spec, for development purposes only."] = true
 L["A target count indicator can be shown on the display's first recommendation."] = true
 L["AOE (Multi-Target)"] = true
@@ -36,7 +38,7 @@ L["Action List"] = true
 L["Action Lists are used to determine which abilities should be used at what time."] = true
 L["Action Lists"] = true
 L["Action Name"] = true
-L["Action list names should be at least 2 characters in length."] = true
+L["Action list names should be at least %d characters in length."] = true
 L["Action"] = true
 L["Active"] = true
 L["Add Ability"] = true
@@ -60,7 +62,7 @@ L["Auto Snapshot"] = true
 L["Auto"] = true
 L["AutoCast Shine"] = true
 L["Automatic"] = true
-L["Bloodlust Override"] = true
+L["Bloodlust / Heroism Override"] = true
 L["Border Inside"] = true
 L["Border Thickness"] = true
 L["Border"] = true
@@ -72,6 +74,7 @@ L["Buff Name"] = true
 L["Button Blink"] = true
 L["By default, calculations can take 80% of your frametime or 50ms, whichever is lower.  If recommendations take more than the alotted time, then the work will be split across multiple frames to reduce impact to your framerate.\n\nIf you choose to |cffffd100Set Update Time|r, you can specify the |cffffd100Maximum Update Time|r used per frame."] = true
 L["By storing your export string, you can save these display settings and retrieve them later if you make changes to your settings.\n\nThe stored style can be retrieved from any of your characters, even if you are using different profiles."] = true
+L["CD"] = true
 L["Call Action List"] = true
 L["Called from %s, %s, #%s."] = true
 L["Cancel Action"] = true
@@ -80,7 +83,7 @@ L["Cancel"] = true
 L["Caption"] = true
 L["Captions are brief descriptions sometimes (rarely) used in action lists to describe why the action is shown."] = true
 L["Captions are |cFFFF0000very|r short descriptions that can appear on the icon of a recommended ability.\n\nThis can be useful for understanding why an ability was recommended at a particular time.\n\nRequires Captions to be Enabled on each display."] = true
-L["Captions should be 20 characters or less."] = true
+L["Captions should be %d characters or less."] = true
 L["Captions"] = true
 L["Casting"] = true
 L["Ceiling of Value"] = true
@@ -109,6 +112,7 @@ L["Cooldowns"] = true
 L["Copy Priority"] = true
 L["Core features and specialization options for %s."] = true
 L["Core"] = true
+L["Cov"] = true
 L["Covenants"] = true
 L["Create New Entry"] = true
 L["Create New Pack"] = true
@@ -130,6 +134,7 @@ L["Custom"] = true
 L["Cycle Targets"] = true
 L["DISABLED"] = true
 L["Damage Detection Timeout"] = true
+L["Def"] = true
 L["Default Button Glow"] = true
 L["Default displays and action lists restored."] = true
 L["Default"] = true
@@ -187,6 +192,7 @@ L["Fade the primary icon when you should wait before using the ability, similar 
 L["Filter Damaged Enemies by Range"] = true
 L["Fixed Brightness"] = true
 L["Fixed Dual Display"] = true
+L["Fixed Dual"] = true
 L["Fixed Size"] = true
 L["Flash Brightness"] = true
 L["Flash Size"] = true
@@ -273,7 +279,7 @@ L["If checked, this entry can be checked even if the global cooldown (GCD) is ac
 L["If checked, this entry can be checked even if you are already casting or channeling."] = true
 L["If checked, this entry can only be recommended when your character movement matches the setting."] = true
 L["If checked, this entry can only be used if you are channeling another spell."] = true
-L["If checked, when Bloodlust (or similar effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked."] = true
+L["If checked, when Bloodlust / Heroism (or similar effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked."] = true
 L["If checked, when Cooldowns are enabled, the addon will also recommend Covenants even if Show Covenants is not checked."] = true
 L["If checked, when using the Cooldown: Show Separately feature and Cooldowns are enabled, the addon will |cFFFF0000NOT|r pretend your cooldown abilities are fully on cooldown.  This may help resolve scenarios where abilities become desynchronized due to behavior differences between the Cooldowns display and your other displays.\n\nSee |cFFFFD100Toggles|r > |cFFFFD100Cooldowns|r for the |cFFFFD100Cooldown: Show Separately|r feature."] = true
 L["If checked, you may specify how frequently new recommendations can be generated, in- and out-of-combat.\n\nMore frequent updates can utilize more CPU time, but increase responsiveness. After certain critical combat events, recommendations will always update earlier, regardless of these settings."] = true
@@ -331,6 +337,7 @@ L["Indicator"] = true
 L["Indicators are small icons that can indicate target-swapping or (rarely) cancelling auras."] = true
 L["Indicators"] = true
 L["Installed Packs"] = true
+L["Int"] = true
 L["Interrupts"] = true
 L["Invalid characters entered.  Try again."] = true
 L["Issue Reporting"] = true
@@ -409,6 +416,7 @@ L["Pack Name"] = true
 L["Pack Specialization"] = true
 L["Paste a Priority import string here to begin."] = true
 L["Paste your SimulationCraft action priority list or profile here."] = true
+L["Patrons"] = "|cFFFFD100Current Status|r\n\nAll specializations are currently supported, though healer priorities are experimental and focused on rotational DPS only.\n\nIf you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue investigated.\n\nPlease do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"
 L["Pause"] = true
 L["Per Ability"] = true
 L["Performance"] = true
@@ -632,7 +640,6 @@ L["To control your display mode (currently |cFFFFD100%s|r):\n - Toggle Mode:  |c
 L["To control your toggles (|cFFFFD100cooldowns|r, |cFFFFD100covenants|r, |cFFFFD100defensives|r, |cFFFFD100interrupts|r, |cFFFFD100potions|r, |cFFFFD100custom1|r and |cFFFFD100custom2|r):\n - Enable Cooldowns:  |cFFFFD100/hek set cooldowns on|r\n - Disable Interrupts:  |cFFFFD100/hek set interupts off|r\n - Toggle Defensives:  |cFFFFD100/hek set defensives|r"] = true
 L["To create a new priority, see |cFFFFD100/hekili|r > |cFFFFD100Priorities|r."] = true
 L["To create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r."] = true
-L["To create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r."] = true
 L["To select another priority, see |cFFFFD100/hekili priority|r."] = true
 L["To set a |cFFFFD100number|r value, use the following commands:\n - Set to #:  |cFFFFD100/hek set %s #|r\n - Reset to Default:  |cFFFFD100/hek set %s default|r"] = true
 L["To set a |cFFFFD100specialization toggle|r, use the following commands:\n - Toggle On/Off:  |cFFFFD100/hek set %s|r\n - Enable:  |cFFFFD100/hek set %s on|r\n - Disable:  |cFFFFD100/hek set %s off|r\n - Reset to Default:  |cFFFFD100/hek set %s default|r"] = true
@@ -723,8 +730,8 @@ L["mod"] = true
 L["mul"] = true
 L["none"] = true
 L["nothing"] = true
-L["off|r (to disable)"] = true
-L["on|r (to enable)"] = true
+L["off"] = true
+L["on"] = true
 L["pow"] = true
 L["precombat"] = true
 L["reset"] = true
@@ -733,14 +740,10 @@ L["setif"] = true
 L["sub"] = true
 L["unassigned"] = true
 L["unknown"] = true
-L["|c%s%s|r %sCD|r %sCov|r %sInt|r"] = true
-L["|c%s%s|r %sCD|r %sInt|r %sDef|r"] = true
 L["|cFFFF0000WARNING|r:  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."] = true
 L["|cFFFF0000WARNING|r:  This version of Hekili is for a future version of WoW; you should reinstall for %s."] = true
 L["|cFFFFD100%1$s|r toggle set to %2$s."] = true
-L["|cFFFFD100Current Status|r\n\nAll specializations are currently supported, though healer priorities are experimental and focused on rotational DPS only.\n\nIf you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue investigated.\n\nPlease do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"] = true
 L["|cFFFFD100cycle|r, |cFFFFD100swap|r, or |cFFFFD100target_swap|r = %s|r (%s)"] = true
-L["|r (to toggle)"] = true
 
 
 ------------------------------------------------------------------------
@@ -750,13 +753,14 @@ L["|r (to toggle)"] = true
 L["(Heal)"] = true
 L["Phial of Serenity"] = true
 
+
 ------------------------------------------------------------------------
 -- Dragonflight
 ------------------------------------------------------------------------
 
 L["|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk."] = true
 
---[[ Death Knigh ]]
+----[[ Death Knight ]]----
 if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
 L["[Any]"] = true
@@ -782,7 +786,7 @@ L["Using a mouseover macro makes it easier to apply %1$s and %2$s to other enemi
 
 end
 
---[[ Demon Hunder ]]
+----[[ Demon Hunder ]]----
 if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
 L["Reserve %s Charges"] = true
@@ -799,7 +803,7 @@ L["%s: Filler and Movement"] = true
 L["When enabled, %1$s may be recommended as a filler ability or for movement.\n\nThese recommendations may occur with %2$s talented, when your other abilities are on cooldown, and/or because you are out of range of your target."] = true
 L["You can reserve charges of %1$s to ensure that it is always available for %2$s or |W|T1385910:0::::64:64:4:60:4:60|t |cff71d5ff%3$s (affix)|r|w procs. If set to your maximum charges (2 with %4$s, 1 otherwise), |W%5$s|w will never be recommended.  Failing to use |W%6$s|w when appropriate may impact your DPS."] = true
 L["The %1$s, %2$s, and/or %3$s talents require the use of %4$s.  If you do not want |W%5$s|w to be recommended to trigger the benefit of these talents, you may want to consider a different talent build."] = true
-L["%1$s: %2$s and %3$s"] = true
+L["%s: %s and %s"] = true
 L["When enabled, %1$s will |cFFFF0000NOT|r be recommended unless either %2$s or %3$s are available to quickly return to your current target.  This requirement applies to all |W%4$s|w and |W%5$s|w recommendations, regardless of talents.\n\nIf |W%6$s|w is not talented, its cooldown will be ignored.\n\nThis option does not guarantee that |W%7$s|w or |W%8$s|w will be the first recommendation after |W%9$s|w but will ensure that either/both are available immediately."] = true
 L["Disabled (default)"] = true
 L["Require %s"] = true
@@ -812,7 +816,7 @@ L["If set above zero, the default priority will not recommend certain abilities 
 
 end
 
---[[ Druid ]]
+----[[ Druid ]]----
 if UnitClassBase( "player" ) == "DRUID" then
 
 L["Incarnation"] = true
@@ -820,17 +824,9 @@ L["Incarnation"] = true
 L["Balance"] = true
 L["Starsurge Empowerment (Lunar)"] = true
 L["Starsurge Empowerment (Solar)"] = true
--- L["Cancel |T462651:0|t Starlord"] = true
--- L["If checked, the addon will recommend canceling your Starlord buff before starting to build stacks with Starsurge again.\n\nYou will likely want a |cFFFFD100/cancelaura Starlord|r macro to manage this during combat."] = true
--- L["Delay %s"] = true
--- L["If checked, the default priority will attempt to adjust the timing of %1$s to be consistent with simmed %2$s usage."] = true
 
 L["Feral"] = true
 L["(Cat)"] = true
--- L["|T136036:0|t Attempt Owlweaving (Experimental)"] = true
--- L["If checked, the addon will swap to Moonkin Form based on the default priority."] = true
--- L["|T136085:0|t Use Regrowth as Filler"] = true
--- L["If checked, the default priority will recommend |T136085:0|t Regrowth when you use the Bloodtalons talent and would otherwise be pooling Energy to retrigger Bloodtalons."] = true
 L["%s Duration"] = true
 L["If set above 0, %s will not be recommended if the target will die within the timeframe specified."] = true
 L["%s Funnel"] = true
@@ -844,22 +840,16 @@ L["%s (or %s) Rage Threshold"] = true
 L["If set above zero, %1$s and %2$s can be recommended only if you'll still have this much Rage after use.\n\nThis option helps to ensure that %3$s or %4$s are available if needed."] = true
 L["Use %1$s and %2$s in %3$s Build"] = true
 L["If checked, %1$s and %2$s are recommended more frequently even if you have talented %3$s or %4$s.\n\nThis differs from the default SimulationCraft priority as of February 2023."] = true
--- L["Use |T132135:0|t Mangle More in Multi-Target"] = true
--- L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."] = true
 L["%s Damage Threshold"] = true
 L["If set above zero, %1$s will not be recommended for mitigation purposes unless you've taken this much damage in the past 5 seconds (as a percentage of your total health).\n\nThis value is halved when playing solo.\n\nTaking %2$s and %3$s will result in |W%4$s|w recommendations for offensive purposes."] = true
--- L["|T3636839:0|t Powershift for Convoke the Spirits"] = true
--- L["If checked, the addon will recommend swapping to Cat Form before using |T3636839:0|t Convoke the Spirits.\n\nThis is a DPS gain unless you die horribly."] = true
 L["Weave %s and %s"] = true
 L["If checked, shifting between %1$s and %2$s may be recommended based on whether you're actively tanking and other conditions.  These swaps may occur very frequently.\n\nIf unchecked, |W%3$s|w and |W%4$s|w abilities will be recommended based on your selected form, but swapping between forms will not be recommended."] = true
--- L["|T136036:0|t Attempt Owlweaving (Experimental)"] = true
--- L["If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack."] = true
 
 L["Restoration Druid"] = true
 
 end
 
---[[ Evoker ]]
+----[[ Evoker ]]----
 if UnitClassBase( "player" ) == "EVOKER" then
 
 L["Use %s"] = true
@@ -880,7 +870,7 @@ L["Unravel"] = true
 
 end
 
---[[ Hunter ]]
+----[[ Hunter ]]----
 if UnitClassBase( "player" ) == "HUNTER" then
 
 L["Beast Mastery"] = true
@@ -894,8 +884,6 @@ L["If checked, the addon will not recommend |T132176:0|t Kill Command if your pe
 L["Marksmanship"] = true
 L["Prevent Hardcasts While Moving"] = true
 L["If checked, the addon will not recommend |T135130:0|t Aimed Shot or |T132323:0|t Wailing Arrow when moving and hardcasting."] = true
--- L["Use |T132329:0|t Trueshot with |T537444:0|t Eagletalon's True Focus Runeforge"] = true
--- L["If checked, the default priority includes usage of |T132329:0|t Trueshot pre-pull, assuming you will successfully swap your legendary on your own.  The addon will not tell you to swap your gear."] = true
 
 L["Survival"] = true
 L["Use |T1376040:0|t Harpoon"] = true
@@ -905,7 +893,7 @@ L["The default priority tries to avoid overcapping Focus by default.  In simulat
 
 end
 
---[[ Mage ]]
+----[[ Mage ]]----
 if UnitClassBase( "player" ) == "MAGE" then
 
 L["%s: Range Check"] = true
@@ -921,8 +909,6 @@ L["%s and %s: Instant-Only When Moving"] = true
 L["If checked, non-instant %1$s and %2$s casts will not be recommended while you are moving.\n\nAn exception is made if %3$s is talented and active and your cast would be complete before |W%4$s|w expires."] = true
 
 L["Frost Mage"] = true
--- L["Ignore |T629077:0|t Freezing Rain in Single-Target"] = true
--- L["If checked, the default action list will not recommend using |T135857:0|t Blizzard in single-target due to the |T629077:0|t Freezing Rain talent proc."] = true
 L["%s: Limit with %s and %s"] = true
 L["If checked, %1$s will recommended less often when you have %2$s and %3$s talented and there are only 1 or 2 enemy targets.\n\nPer Altered Time, the Mage Discord, this can be a 4%% DPS gain in single-target and a ~1.5%% gain in two-target scenarios."] = true
 L["%s: Manual Control"] = true
@@ -930,12 +916,10 @@ L["If checked, your pet's %s may be recommended for manual use instead of auto-c
 
 end
 
---[[ Monk ]]
+----[[ Monk ]]----
 if UnitClassBase( "player" ) == "MONK" then
 
 L["Brewmaster"] = true
--- L["Use |T606543:0|t Spinning Crane Kick in Single-Target with |T611419:0|t Walk with the Ox"] = true
--- L["If checked, the default priority will recommend |T606543:0|t Spinning Crane Kick when |T611419:0|t Walk with the Ox is active.  This tends to reduce mitigation slightly but increase damage based on using |T627607:0|t Invoke Niuzao more frequently."] = true
 L["%s: Maximize Shield"] = true
 L["If checked, %1$s may be recommended more frequently to build stacks of %2$s for your %3$s shield.\n\nThis feature may work best with the %4$s talent, but risks leaving you without a charge of %5$s following a large spike in your %6$s."] = true
 L["%s: Maximize %s"] = true
@@ -959,8 +943,6 @@ L["Windwalker"] = true
 L["Flying Serpent Kick"] = true
 L["Use %s"] = true
 L["If unchecked, %1$s will not be recommended despite generally being used as a filler ability.\n\nUnchecking this option is the same as disabling the ability via |cFFFFD100Abilities|r > |cFFFFD100|W%2$s|w|r > |cFFFFD100|W%3$s|w|r > |cFFFFD100Disable|r."] = true
--- L["Optimize |T627486:0|t Reverse Harm"] = true
--- L["If checked, |T627486:0|t Reverse Harm's caption will show the recommended target's name."] = true
 L["%s: Reserve 1 Charge for Cooldowns Toggle"] = true
 L["If checked, %1$s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\nIf |W%2$s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled."] = true
 L["%s: Required Incoming Damage"] = true
@@ -973,7 +955,7 @@ L["Requires %s Toggle"] = true
 
 end
 
---[[ Paladin ]]
+----[[ Paladin ]]----
 if UnitClassBase( "player" ) == "PALADIN" then
 
 L["Holy"] = true
@@ -997,7 +979,7 @@ L["If checked, when Seraphim, Final Reckoning, and/or Execution Sentence are tog
 
 end
 
---[[ Priest ]]
+----[[ Priest ]]----
 if UnitClassBase( "player" ) == "PRIEST" then
 
 L["|T136149:0|t Shadow Word: Death Health Threshold"] = true
@@ -1006,7 +988,6 @@ L["If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death 
 L["Discipline"] = true
 
 L["Holy Priest"] = true
-L["Holy"] = true
 
 L["Shadow"] = true
 L["Pad |T1035040:0|t Void Bolt Cooldown"] = true
@@ -1018,7 +999,7 @@ L["|T237565:0|t Mind Sear costs 25 Insanity (and 25 additional Insanity per tick
 
 end
 
---[[ Rogue ]]
+----[[ Rogue ]]----
 if UnitClassBase( "player" ) == "ROGUE" then
 
 L["|T236364:0|t Marked for Death Combo Points"] = true
@@ -1050,7 +1031,7 @@ L["If checked, the default priority will recommend building combo points with |T
 
 end
 
---[[ Shaman ]]
+----[[ Shaman ]]----
 if UnitClassBase( "player" ) == "SHAMAN" then
 
 L["Use %s or %s"] = true
@@ -1075,11 +1056,10 @@ L["Filler %s"] = true
 L["If checked, a filler %s may be recommended when nothing else is currently ready, even if something better will be off cooldown very soon.\n\nThis feature matches simulation profile behavior and is a small DPS increase, but has been confusing to some users."] = true
 
 L["Restoration Shaman"] = true
-L["Restoration"] = true
 
 end
 
---[[ Warlock ]]
+----[[ Warlock ]]----
 if UnitClassBase( "player" ) == "WARLOCK" then
 
 L["Summon Demon"] = true
@@ -1101,8 +1081,6 @@ L["|T136082:0|t Preferred Demon"] = true
 L["Specify which demon should be summoned if you have no active pet."] = true
 L["Funnel Damage in AOE"] = true
 L["If checked, the addon will use its cleave priority to funnel damage into your primary target (via |T%s:0|t Chaos Bolt) instead of spending Soul Shards on |T%s:0|t Rain of Fire.\n\nYou may wish to change this option for different fights and scenarios, which can be done here, via the minimap button, or with |cFFFFD100/hekili toggle cleave_apl|r."] = true
--- L["Require 3+ Targets for AOE"] = true
--- L["If checked, the default action list will only use its AOE action list (including |T%s:0|t Rain of Fire) when there are 3+ targets.\n\nIn multi-target Patchwerk simulations, this setting creates a significant DPS loss.  However, this option may be useful in real-world scenarios, especially if you are fighting two moving targets that will not stand in your Rain of Fire for the whole duration."] = true
 L["When %1$s is shown with a |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator, the addon is recommending that you cast %2$s on a different target (without swapping).  A mouseover macro is useful for this and an example is included below."] = true
 L["Havoc"] = true
 L["Havoc Macro"] = true
@@ -1111,8 +1089,7 @@ L["Immolate Macro"] = true
 
 end
 
---[[ Warriror ]]
-
+----[[ Warriror ]]----
 if UnitClassBase( "player" ) == "WARRIOR" then
 
 L["Only |T236312:0|t Shockwave as Interrupt (when Talented)"] = true

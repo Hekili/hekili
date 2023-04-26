@@ -38,8 +38,7 @@ local GreenPlus = "Interface\\AddOns\\Hekili\\Textures\\GreenPlus"
 local RedX = "Interface\\AddOns\\Hekili\\Textures\\RedX"
 local BlizzBlue = "|cFF00B4FF"
 local ClassColor = C_ClassColor.GetClassColor( class.file )
-
-local modifierKey = IsMacClient() and "Command" or "CTRL"
+local modKey = IsMacClient() and "Command" or "CTRL"
 
 -- One Time Fixes
 local oneTimeFixes = {
@@ -1260,7 +1259,7 @@ do
                 type = 'group',
                 name = function ()
                     if name == "Multi" then return "|cFF00FF00" .. fancyName .. "|r"
-                    elseif data.builtIn then return '|cFF00B4FF' .. fancyName .. '|r' end
+                    elseif data.builtIn then return BlizzBlue .. fancyName .. "|r" end
                     return fancyName
                 end,
                 desc = function ()
@@ -1424,11 +1423,11 @@ do
                                     --[[
                                     relativeTo = {
                                         type = "select",
-                                        name = L["Anchored To"],
+                                        name = "Anchored To",
                                         values = {
-                                            SCREEN = L["Screen"],
-                                            PERSONAL = L["Personal Resource Display"],
-                                            CUSTOM = L["Custom"]
+                                            SCREEN = "Screen",
+                                            PERSONAL = "Personal Resource Display",
+                                            CUSTOM = "Custom"
                                         },
                                         order = 1,
                                         width = 1.49,
@@ -1436,8 +1435,9 @@ do
 
                                     customFrame = {
                                         type = "input",
-                                        name = L["Custom Frame"],
-                                        desc = L["Specify the name of the frame to which this display will be anchored.\nIf the frame does not exist, the display will not be shown."],
+                                        name = "Custom Frame",
+                                        desc = "Specify the name of the frame to which this display will be anchored.\n" ..
+                                                "If the frame does not exist, the display will not be shown.",
                                         order = 1.1,
                                         width = 1.49,
                                         hidden = function() return data.relativeTo ~= "CUSTOM" end,
@@ -1445,8 +1445,8 @@ do
 
                                     setParent = {
                                         type = "toggle",
-                                        name = L["Set Parent to Anchor"],
-                                        desc = L["If checked, the display will be shown/hidden when the anchor is shown/hidden."],
+                                        name = "Set Parent to Anchor",
+                                        desc = "If checked, the display will be shown/hidden when the anchor is shown/hidden.",
                                         order = 3.9,
                                         width = 1.49,
                                         hidden = function() return data.relativeTo == "SCREEN" end,
@@ -3437,7 +3437,7 @@ do
                                             plugins[ dispName ] = {
                                                 type = "toggle",
                                                 name = function ()
-                                                    if display.builtIn then return "|cFF00B4FF" .. L[dispName] .. "|r" end
+                                                    if display.builtIn then return BlizzBlue .. L[dispName] .. "|r" end
                                                     return dispName
                                                 end,
                                                 order = pos,
@@ -4303,8 +4303,9 @@ do
 
             --[[ clash = {
                 type = "range",
-                name = L["Clash"],
-                desc = format( L["If set above zero, the addon will pretend %s has come off cooldown this much sooner than it actually has.  This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner."], k ),
+                name = "Clash",
+                desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
+                    "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
                 width = "full",
                 min = -1.5,
                 max = 1.5,
@@ -4355,7 +4356,6 @@ do
 
         for k, v in orderedPairs( abilities ) do
             local ability = class.abilities[ v ]
-
             local option = {
                 type = "group",
                 name = function () return ability.name .. ( state:IsDisabled( v, true ) and "|cFFFF0000*|r" or "" ) end,
@@ -4431,8 +4431,9 @@ do
 
                     --[[ clash = {
                         type = "range",
-                        name = L["Clash"],
-                        desc = format( L["If set above zero, the addon will pretend %s has come off cooldown this much sooner than it actually has.  This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner."], k ),
+                        name = "Clash",
+                        desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
+                            "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
                         width = "full",
                         min = -1.5,
                         max = 1.5,
@@ -4631,7 +4632,7 @@ do
                     end
                     return ability
                 end
-                e.desc = format( L["Remove this from %s?"], useName or section )
+                e.desc = "Remove this from " .. ( useName or section ) .. "?"
                 e.order = nToggles + 0.1 + offset
                 e.width = 1.5
                 e.hidden = hider
@@ -4857,7 +4858,7 @@ do
 
                                         for key, pkg in pairs( self.DB.profile.packs ) do
                                             if pkg.spec == id then
-                                                local pname = pkg.builtIn and "|cFF00B4FF" .. L[key] .. "|r" or key
+                                                local pname = pkg.builtIn and BlizzBlue .. L[key] .. "|r" or key
                                                 packs[ key ] = Hekili:ZoomedTextureWithText( texture, pname )
                                             end
                                         end
@@ -4950,7 +4951,7 @@ do
                                             local spell = Hekili:GetPetBasedTargetSpell()
                                             local link = Hekili:GetSpellLinkWithTexture( spell )
 
-                                            msg = msg .. "\n\n" .. format( L["%1$s|w|r is on your action bar and will be used for all your %2$s pets."], link, UnitClass( "player" ) )
+                                            msg = msg .. "\n\n" .. format( L["%s|w|r is on your action bar and will be used for all your %s pets."], link, UnitClass( "player" ) )
                                         else
                                             msg = msg .. "\n\n" .. "|cFFFF0000" .. L["Requires pet ability on one of your action bars."] .. "|r"
                                         end
@@ -5073,7 +5074,7 @@ do
                                     type = "range",
                                     name = L["Filter Damaged Enemies by Range"],
                                     desc = L["If set above 0, the addon will attempt to avoid counting targets that were out of range when last seen.  This is based on cached data and may be inaccurate."],
-                                    width = "full",
+                                    width = 1.49,
                                     hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     min = 0,
                                     max = 100,
@@ -5220,8 +5221,9 @@ do
 
                                 --[[ gcdSync = {
                                     type = "toggle",
-                                    name = L["Start after Global Cooldown"],
-                                    desc = L["If checked, the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.  This can reduce flickering if trinkets or off-GCD abilities are appearing briefly during the global cooldown, but will cause abilities intended to be used while the GCD is active (i.e., Recklessness) to bounce backward in the queue."],
+                                    name = "Start after Global Cooldown",
+                                    desc = "If checked, the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.  This can reduce flickering if trinkets or off-GCD abilities are appearing briefly during the global cooldown, " ..
+                                        "but will cause abilities intended to be used while the GCD is active (i.e., Recklessness) to bounce backward in the queue.",
                                     width = "full",
                                     order = 4,
                                 }, ]]
@@ -5661,7 +5663,7 @@ do
                                                 shareDB.imported, shareDB.error = DeserializeActionPack( shareDB.import )
 
                                                 if shareDB.error then
-                                                    shareDB.import = L["The Import String provided could not be decompressed.\n"] .. shareDB.error
+                                                    shareDB.import = L["The Import String provided could not be decompressed."] .. "\n" .. shareDB.error
                                                     shareDB.error = nil
                                                     shareDB.imported = {}
                                                 else
@@ -5845,7 +5847,7 @@ do
                                         for k, pack in pairs( Hekili.DB.profile.packs ) do
                                             if pack.spec and class.specs[ pack.spec ] then
                                                 local texture = class.specs[ pack.spec ].texture
-                                                local pname = pack.builtIn and '|cFF00B4FF' .. L[k] .. '|r' or k
+                                                local pname = pack.builtIn and BlizzBlue .. L[k] .. "|r" or k
                                                 v[ k ] = "|T" .. texture .. ":0|t " .. pname
                                             end
                                         end
@@ -5858,7 +5860,7 @@ do
                                 exportString = {
                                     type = "input",
                                     name = L["Priority Export String"],
-                                    desc = string.gsub( L["Press CTRL-A to select, then CTRL-C to copy."], "CTRL", modifierKey ),
+                                    desc = string.gsub( L["Press CTRL-A to select, then CTRL-C to copy."], "CTRL", modKey ),
                                     order = 3,
                                     get = function ()
                                         if rawget( Hekili.DB.profile.packs, shareDB.actionPack ) then
@@ -5898,8 +5900,7 @@ do
 
                 packs.plugins.links[ "btn" .. pack ] = {
                     type = "execute",
-                    name = format( "|T%s:0|t %s|r", class.specs[ data.spec ].texture, data.builtIn and "|cFF00B4FF" .. L[pack] or "|cFFFFFFFF" .. pack ),
-                    -- image = class.specs[ data.spec ].texture,
+                    name = format( "|T%s:0|t %s|r", class.specs[ data.spec ].texture, data.builtIn and BlizzBlue .. L[pack] or "|cFFFFFFFF" .. pack ),
                     order = 11 + count,
                     func = function ()
                         ACD:SelectGroup( "Hekili", "packs", pack )
@@ -5910,7 +5911,7 @@ do
                     type = "group",
                     name = function ()
                         local p = rawget( Hekili.DB.profile.packs, pack )
-                        if p.builtIn then return "|cFF00B4FF" .. L[pack] .. "|r" end
+                        if p.builtIn then return BlizzBlue .. L[pack] .. "|r" end
                         return pack
                     end,
                     icon = function()
@@ -5996,10 +5997,7 @@ do
                                         elseif val:find( "[^a-zA-Z0-9 _'()]" ) then return L["Only alphanumeric characters, spaces, parentheses, underscores, and apostrophes are allowed in pack names."] end
                                         return true
                                     end,
-                                    get = function ()
-                                        if data.builtIn then return L[pack] end
-                                        return pack
-                                    end,
+                                    get = function () return data.builtIn and L[pack] or pack end,
                                     set = function( info, val )
                                         local profile = Hekili.DB.profile
 
@@ -6141,7 +6139,7 @@ do
 
                                 --[[ applyPack = {
                                     type = "execute",
-                                    name = L["Use Priority"],
+                                    name = "Use Priority",
                                     order = 1.5,
                                     width = 1,
                                     func = function ()
@@ -6284,7 +6282,7 @@ do
                                     width = 2.7,
                                     values = function ()
                                         local v = {
-                                            -- ["zzzzzzzzzz"] = "|cFF00FF00" .. L["Add New Action List"] .. "|r"
+                                            -- ["zzzzzzzzzz"] = "|cFF00FF00Add New Action List|r"
                                         }
 
                                         local p = rawget( Hekili.DB.profile.packs, pack )
@@ -6301,8 +6299,8 @@ do
 
                                             if err then
                                                 v[ k ] = "|cFFFF0000" .. k .. "|r"
-                                            elseif k == 'precombat' or k == 'default' then
-                                                v[ k ] = "|cFF00B4FF" .. L[k] .. "|r"
+                                            elseif k == "precombat" or k == "default" then
+                                                v[ k ] = BlizzBlue .. L[k] .. "|r"
                                             else
                                                 v[ k ] = k
                                             end
@@ -6681,8 +6679,8 @@ do
 
                                                         for k in pairs( p.lists ) do
                                                             if k ~= packControl.listName then
-                                                                if k == 'precombat' or k == 'default' then
-                                                                    v[ k ] = "|cFF00B4FF" .. L[k] .. "|r"
+                                                                if k == "precombat" or k == "default" then
+                                                                    v[ k ] = BlizzBlue .. L[k] .. "|r"
                                                                 else
                                                                     v[ k ] = k
                                                                 end
@@ -6727,7 +6725,7 @@ do
 
                                                 --[[ potion = {
                                                     type = "select",
-                                                    name = L["Potion"],
+                                                    name = "Potion",
                                                     order = 3.2,
                                                     -- width = "full",
                                                     values = class.potionList,
@@ -6797,7 +6795,7 @@ do
                                                     width = 1.5,
                                                     validate = function( info, val )
                                                         val = val:trim()
-                                                        if val:len() > 20 then return L["Captions should be 20 characters or less."] end
+                                                        if val:len() > 20 then return format( L["Captions should be %d characters or less."], 20 ) end
                                                         return true
                                                     end,
                                                     hidden = function()
@@ -7184,8 +7182,8 @@ do
                                                     args = {
                                                         --[[ enable_line_cd = {
                                                             type = "toggle",
-                                                            name = L["Line Cooldown"],
-                                                            desc = L["If enabled, this entry cannot be recommended unless the specified amount of time has passed since its last use."],
+                                                            name = "Line Cooldown",
+                                                            desc = "If enabled, this entry cannot be recommended unless the specified amount of time has passed since its last use.",
                                                             order = 1,
                                                         }, ]]
 
@@ -7233,7 +7231,7 @@ do
 
                                                 --[[ deleteHeader = {
                                                     type = "header",
-                                                    name = L["Delete Action"],
+                                                    name = "Delete Action",
                                                     order = 100,
                                                     hidden = function ()
                                                         local p = rawget( Hekili.DB.profile.packs, pack )
@@ -7242,7 +7240,7 @@ do
 
                                                 delete = {
                                                     type = "execute",
-                                                    name = L["Delete Entry"],
+                                                    name = "Delete Entry",
                                                     order = 101,
                                                     confirm = true,
                                                     func = function ()
@@ -7282,7 +7280,7 @@ do
                                             validate = function( info, val )
                                                 local p = rawget( Hekili.DB.profile.packs, pack )
 
-                                                if val:len() < 2 then return L["Action list names should be at least 2 characters in length."]
+                                                if val:len() < 2 then return format( L["Action list names should be at least %d characters in length."], 2 )
                                                 elseif rawget( p.lists, val ) then return L["There is already an action list by that name."]
                                                 elseif val:find( "[^a-zA-Z0-9_]" ) then return L["Only alphanumeric characters and underscores can be used in list names."] end
                                                 return true
@@ -7360,7 +7358,7 @@ do
                                 exportString = {
                                     type = "input",
                                     name = L["Priority Export String"],
-                                    desc = string.gsub( L["Press CTRL-A to select, then CTRL-C to copy."], "CTRL", modifierKey ),
+                                    desc = string.gsub( L["Press CTRL-A to select, then CTRL-C to copy."], "CTRL", modKey ),
                                     get = function( info )
                                         return SerializeActionPack( pack )
                                     end,
@@ -7535,8 +7533,8 @@ do
 
                         override = {
                             type = "toggle",
-                            name = L["Bloodlust Override"],
-                            desc = L["If checked, when Bloodlust (or similar effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked."],
+                            name = L["Bloodlust / Heroism Override"],
+                            desc = L["If checked, when Bloodlust / Heroism (or similar effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked."],
                             order = 4,
                         }
                     }
@@ -7742,13 +7740,17 @@ do
 
                         --[[ type = {
                             type = "select",
-                            name = L["Modes"],
-                            desc = L["Select the Display Modes that can be cycled using your Display Mode key.\n\n|cFFFFD100Auto vs. Single|r - Using only the Primary display, toggle between automatic target counting and single-target recommendations.\n\n|cFFFFD100Single vs. AOE|r - Using only the Primary display, toggle between single-target recommendations and AOE (multi-target) recommendations.\n\n|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.  This will use additional CPU.\n\n|cFFFFD100Reactive AOE|r - Use the Primary display for single-target recommendations, and when additional enemies are detected, show the AOE display.  (Disables Mode Toggle)"],
+                            name = "Modes",
+                            desc = "Select the Display Modes that can be cycled using your Display Mode key.\n\n" ..
+                                "|cFFFFD100Auto vs. Single|r - Using only the Primary display, toggle between automatic target counting and single-target recommendations.\n\n" ..
+                                "|cFFFFD100Single vs. AOE|r - Using only the Primary display, toggle between single-target recommendations and AOE (multi-target) recommendations.\n\n" ..
+                                "|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.  This will use additional CPU.\n\n" ..
+                                "|cFFFFD100Reactive AOE|r - Use the Primary display for single-target recommendations, and when additional enemies are detected, show the AOE display.  (Disables Mode Toggle)",
                             values = {
-                                AutoSingle = L["Auto vs. Single"],
-                                SingleAOE = L["Single vs. AOE"],
-                                AutoDual = L["Auto vs. Dual"],
-                                ReactiveDual = L["Reactive AOE"],
+                                AutoSingle = "Auto vs. Single",
+                                SingleAOE = "Single vs. AOE",
+                                AutoDual = "Auto vs. Dual",
+                                ReactiveDual = "Reactive AOE",
                             },
                             order = 2,
                         }, ]]
@@ -7868,13 +7870,13 @@ do
                     args = {
                         header = {
                             type = "header",
-                            name = L["Specializations"],
+                            name = "Specializations",
                             order = 1,
                         },
 
                         specsInfo = {
                             type = "description",
-                            name = L["There may be additional toggles or settings for your specialization(s).  Use the buttons below to jump to that section."],
+                            name = "There may be additional toggles or settings for your specialization(s).  Use the buttons below to jump to that section.",
                             order = 2,
                             fontSize = "medium",
                         },
@@ -8846,58 +8848,72 @@ do
 
             --[[ gettingStarted = {
                 type = "group",
-                name = L["Getting Started"],
+                name = "Getting Started",
                 order = 11,
                 childGroups = "tree",
                 args = {
                     q1 = {
                         type = "header",
-                        name = L["Moving the Displays"],
+                        name = "Moving the Displays",
                         order = 1,
                         width = "full"
                     },
                     a1 = {
                         type = "description",
-                        name = L["When these options are open, all displays are visible and can be moved by clicking and dragging.  You can move this options screen out of the way by clicking the |cFFFFD100Hekili|r title and dragging it out of the way.\n\nYou can also set precise X/Y positioning in the |cFFFFD100Displays|r section, on each display's |cFFFFD100Main|r tab.\n\nYou can also move the displays by typing |cFFFFD100/hek move|r in chat.  Type |cFFFFD100/hek move|r again to lock the displays.\n"],
+                        name = "When these options are open, all displays are visible and can be moved by clicking and dragging.  You can move this options screen out of the way by clicking the |cFFFFD100Hekili|r title and dragging it out of the way.\n\n" ..
+                            "You can also set precise X/Y positioning in the |cFFFFD100Displays|r section, on each display's |cFFFFD100Main|r tab.\n\n" ..
+                            "You can also move the displays by typing |cFFFFD100/hek move|r in chat.  Type |cFFFFD100/hek move|r again to lock the displays.\n",
                         order = 1.1,
                         width = "full",
                     },
 
                     q2 = {
                         type = "header",
-                        name = L["Using Toggles"],
+                        name = "Using Toggles",
                         order = 2,
                         width = "full",
                     },
                     a2 = {
                         type = "description",
-                        name = L["The addon has several |cFFFFD100Toggles|r available that help you control the type of recommendations you receive while in combat.  See the |cFFFFD100Toggles|r section for specifics.\n\n|cFFFFD100Mode|r:  By default, |cFFFFD100Automatic Mode|r automatically detects how many targets you are engaged with, and gives recommendations based on the number of targets detected.  In some circumstances, you may want the addon to pretend there is only 1 target, or that there are multiple targets, or show recommendations for both scenarios.  You can use the |cFFFFD100Mode|r toggle to swap between Automatic, Single-Target, AOE, and Reactive modes.\n\n|cFFFFD100Abilities|r:  Some of your abilities can be controlled by specific toggles.  For example, your major DPS cooldowns are assigned to the |cFFFFD100Cooldowns|r toggle.  This feature allows you to enable/disable these abilities in combat by using the assigned keybinding.  You can add abilities to (or remove abilities from) these toggles in the |cFFFFD100Abilities|r or |cFFFFD100Gear and Trinkets|r sections.  When removed from a toggle, an ability can be recommended at any time, regardless of whether that toggle is on or off.\n\n|cFFFFD100Displays|r:  Your Interrupts, Defensives, and Cooldowns toggles have a special relationship with the displays of the same names.  If |cFFFFD100Show Separately|r is checked for that toggle, those abilities will show in that toggle's display instead of the |cFFFFD100Primary|r or |cFFFFD100AOE|r display.\n"],
+                        name = "The addon has several |cFFFFD100Toggles|r available that help you control the type of recommendations you receive while in combat.  See the |cFFFFD100Toggles|r section for specifics.\n\n" ..
+                            "|cFFFFD100Mode|r:  By default, |cFFFFD100Automatic Mode|r automatically detects how many targets you are engaged with, and gives recommendations based on the number of targets detected.  In some circumstances, you may want the addon to pretend there is only 1 target, or that there are multiple targets, " ..
+                            "or show recommendations for both scenarios.  You can use the |cFFFFD100Mode|r toggle to swap between Automatic, Single-Target, AOE, and Reactive modes.\n\n" ..
+                            "|cFFFFD100Abilities|r:  Some of your abilities can be controlled by specific toggles.  For example, your major DPS cooldowns are assigned to the |cFFFFD100Cooldowns|r toggle.  This feature allows you to enable/disable these abilities in combat by using the assigned keybinding.  You can add abilities to (or remove abilities from) " ..
+                            "these toggles in the |cFFFFD100Abilities|r or |cFFFFD100Gear and Trinkets|r sections.  When removed from a toggle, an ability can be recommended at any time, regardless of whether that toggle is on or off.\n\n" ..
+                            "|cFFFFD100Displays|r:  Your Interrupts, Defensives, and Cooldowns toggles have a special relationship with the displays of the same names.  If |cFFFFD100Show Separately|r is checked for that toggle, those abilities will show in that toggle's display instead of the |cFFFFD100Primary|r or |cFFFFD100AOE|r display.\n",
                         order = 2.1,
                         width = "full",
                     },
 
                     q3 = {
                         type = "header",
-                        name = L["Importing a Profile"],
+                        name = "Importing a Profile",
                         order = 3,
                         width = "full",
                     },
                     a3 = {
                         type = "description",
-                        name = L["|cFFFF0000You do not need to import a SimulationCraft profile to use this addon.|r\n\nBefore trying to import a profile, please consider the following:\n\n - SimulationCraft action lists tend not to change significantly for individual characters.  The profiles are written to include conditions that work for all gear, talent, and other factors combined.\n\n - Most SimulationCraft action lists require some additional customization to work with the addon.  For example, |cFFFFD100target_if|r conditions don't translate directly to the addon and have to be rewritten.\n\n - Some SimulationCraft action profiles are revised for the addon to be more efficient and use less processing time.\n\nThe default priorities included within the addon are kept up to date, are compatible with your character, and do not require additional changes.  |cFFFF0000No support is offered for custom or imported priorities from elsewhere.|r\n"],
+                        name = "|cFFFF0000You do not need to import a SimulationCraft profile to use this addon.|r\n\n" ..
+                            "Before trying to import a profile, please consider the following:\n\n" ..
+                            " - SimulationCraft action lists tend not to change significantly for individual characters.  The profiles are written to include conditions that work for all gear, talent, and other factors combined.\n\n" ..
+                            " - Most SimulationCraft action lists require some additional customization to work with the addon.  For example, |cFFFFD100target_if|r conditions don't translate directly to the addon and have to be rewritten.\n\n" ..
+                            " - Some SimulationCraft action profiles are revised for the addon to be more efficient and use less processing time.\n\n" ..
+                            "The default priorities included within the addon are kept up to date, are compatible with your character, and do not require additional changes.  |cFFFF0000No support is offered for custom or imported priorities from elsewhere.|r\n",
                         order = 3.1,
                         width = "full",
                     },
 
                     q4 = {
                         type = "header",
-                        name = L["Something's Wrong"],
+                        name = "Something's Wrong",
                         order = 4,
                         width = "full",
                     },
                     a4 = {
                         type = "description",
-                        name = L["You can submit questions, concerns, and ideas via the link found in the |cFFFFD100Issue Reporting|r section.\n\nIf you disagree with the addon's recommendations, the |cFFFFD100Snapshot|r feature allows you to capture a log of the addon's decision-making taken at the exact moment specific recommendations are shown.  When you submit your question, be sure to take a snapshot (not a screenshot!), place the text on Pastebin, and include the link when you submit your issue ticket."],
+                        name = "You can submit questions, concerns, and ideas via the link found in the |cFFFFD100Issue Reporting|r section.\n\n" ..
+                            "If you disagree with the addon's recommendations, the |cFFFFD100Snapshot|r feature allows you to capture a log of the addon's decision-making taken at the exact moment specific recommendations are shown.  " ..
+                            "When you submit your question, be sure to take a snapshot (not a screenshot!), place the text on Pastebin, and include the link when you submit your issue ticket.",
                         order = 4.1,
                         width = "full",
                     }
@@ -9051,7 +9067,7 @@ do
                     Snapshot = {
                         type = 'input',
                         name = L["Export Snapshot"],
-                        desc = string.gsub( L["Click here and press CTRL-A, CTRL-C to copy the snapshot.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket."], "CTRL", modifierKey ),
+                        desc = string.gsub( L["Click here and press CTRL-A, CTRL-C to copy the snapshot.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket."], "CTRL", modKey ),
                         order = 20,
                         get = function( info )
                             if snapshots.selected == 0 then return "" end
@@ -9379,9 +9395,9 @@ do
     }
 
     local toggleInstructions = {
-        L["on|r (to enable)"],
-        L["off|r (to disable)"],
-        L["|r (to toggle)"],
+        format( "%s|r %s", L["on"], L["(to enable)"] ),
+        format( "%s|r %s", L["off"], L["(to disable)"] ),
+        format( "|r %s", L["(to toggle)"] ),
     }
 
     local info = {}
@@ -10555,10 +10571,10 @@ function Hekili:TogglePause( ... )
 
         --[[ if self:SaveDebugSnapshot() then
             if not warnOnce then
-                self:Print( L["Snapshot saved; snapshots are viewable via /hekili (until you reload your UI)."] )
+                self:Print( "Snapshot saved; snapshots are viewable via /hekili (until you reload your UI)." )
                 warnOnce = true
             else
-                self:Print( L["Snapshot saved."] )
+                self:Print( "Snapshot saved." )
             end
         end ]]
 

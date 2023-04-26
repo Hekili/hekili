@@ -2995,8 +2995,9 @@ spec:RegisterOptions( {
 
 
 --[[ spec:RegisterSetting( "starlord_cancel", false, {
-    name = L["Cancel |T462651:0|t Starlord"],
-    desc = L["If checked, the addon will recommend canceling your Starlord buff before starting to build stacks with Starsurge again.\n\nYou will likely want a |cFFFFD100/cancelaura Starlord|r macro to manage this during combat."],
+    name = "Cancel |T462651:0|t Starlord",
+    desc = "If checked, the addon will recommend canceling your Starlord buff before starting to build stacks with Starsurge again.\n\n" ..
+        "You will likely want a |cFFFFD100/cancelaura Starlord|r macro to manage this during combat.",
     icon = 462651,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "toggle",
@@ -3011,8 +3012,8 @@ end, state ) ]]
 
 
 --[[ spec:RegisterSetting( "delay_berserking", false, {
-    name = strformat( L["Delay %s"], Hekili:GetSpellLinkWithTexture( class.specs[ 0 ].auras.berserking.id ) ),
-    desc = strformat( L["If checked, the default priority will attempt to adjust the timing of %1$s to be consistent with simmed %2$s usage."],
+    name = strformat( "Delay %s", Hekili:GetSpellLinkWithTexture( class.specs[ 0 ].auras.berserking.id ) ),
+    desc = strformat( "If checked, the default priority will attempt to adjust the timing of %s to be consistent with simmed %s usage.",
         Hekili:GetSpellLinkWithTexture( class.specs[ 0 ].auras.berserking.id ), Hekili:GetSpellLinkWithTexture( class.specs[ 0 ].auras.power_infusion.id ) ),
     type = "toggle",
     width = "full",

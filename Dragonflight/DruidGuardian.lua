@@ -2145,8 +2145,9 @@ spec:RegisterSetting( "maul_anyway", true, {
 } )
 
 --[[ spec:RegisterSetting( "mangle_more", false, {
-    name = L["Use |T132135:0|t Mangle More in Multi-Target"],
-    desc = L["If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets."],
+    name = "Use |T132135:0|t Mangle More in Multi-Target",
+    desc = "If checked, the default priority will recommend |T132135:0|t Mangle more often in |cFFFFD100multi-target|r scenarios.\n\nThis will generate roughly 15% more Rage and allow for more mitigation (or |T132136:0|t Maul) than otherwise, " ..
+        "funnel slightly more damage into your primary target, but will |T134296:0|t Swipe less often, dealing less damage/threat to your secondary targets.",
     type = "toggle",
     width = "full",
 } ) ]]
@@ -2164,8 +2165,9 @@ spec:RegisterSetting( "ironfur_damage_threshold", 5, {
 } )
 
 --[[ spec:RegisterSetting( "shift_for_convoke", false, {
-    name = L["|T3636839:0|t Powershift for Convoke the Spirits"],
-    desc = L["If checked, the addon will recommend swapping to Cat Form before using |T3636839:0|t Convoke the Spirits.\n\nThis is a DPS gain unless you die horribly."],
+    name = "|T3636839:0|t Powershift for Convoke the Spirits",
+    desc = "If checked, the addon will recommend swapping to Cat Form before using |T3636839:0|t Convoke the Spirits.\n\n" ..
+        "This is a DPS gain unless you die horribly.",
     type = "toggle",
     width = "full"
 } ) ]]
@@ -2181,8 +2183,8 @@ spec:RegisterSetting( "catweave_bear", false, {
 
 --[[ Retired 2023-02-21
 spec:RegisterSetting( "owlweave_bear", false, {
-    name = L["|T136036:0|t Attempt Owlweaving (Experimental)"],
-    desc = L["If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack."],
+    name = "|T136036:0|t Attempt Owlweaving (Experimental)",
+    desc = "If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack.",
     type = "toggle",
     width = "full"
 } ) ]]

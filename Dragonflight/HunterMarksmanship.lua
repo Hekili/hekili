@@ -1198,8 +1198,9 @@ spec:RegisterSetting( "prevent_hardcasts", false, {
 } )
 
 --[[ spec:RegisterSetting( "eagletalon_swap", false, {
-    name = L["Use |T132329:0|t Trueshot with |T537444:0|t Eagletalon's True Focus Runeforge"],
-    desc = L["If checked, the default priority includes usage of |T132329:0|t Trueshot pre-pull, assuming you will successfully swap your legendary on your own.  The addon will not tell you to swap your gear."],
+    name = "Use |T132329:0|t Trueshot with Eagletalon's True Focus Runeforge",
+    desc = "If checked, the default priority includes usage of |T132329:0|t Trueshot pre-pull, assuming you will successfully swap " ..
+        "your legendary on your own.  The addon will not tell you to swap your gear.",
     type = "toggle",
     width = "full",
 } ) ]]
