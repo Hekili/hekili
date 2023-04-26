@@ -771,7 +771,7 @@ L["If checked, the default priority (or any priority checking |cFFFFD100save_blo
 L["%s Damage Threshold"] = true
 L["When set above zero, the default priority can recommend %1$s if you've lost this percentage of your maximum health in the past 5 seconds.\n\n|W%2$s|w also requires the Defensives toggle by default."] = true
 
-L["Frost DK"] = true
+L["Frost DK"] = "Frost"
 L["Frozen Pulse"] = true
 L["%1$s for %2$s"] = true
 L["%1$s will only be recommended when you have at least this much |W%2$s|w."] = true
@@ -793,7 +793,7 @@ L["Reserve %s Charges"] = true
 L["If set above zero, %s will not be recommended if it would leave you with fewer (fractional) charges."] = true
 L["If set above zero, %s will not be recommended if it would leave you with fewer charges."] = true
 
-L["Havoc"] = true
+L["Havoc DH"] = "Havoc"
 L["|cFFFF0000WARNING!|r  Demon Blades cannot be forecasted.\nSee /hekili > Havoc for more information."] = true
 L["|cFFFF0000WARNING!|r  If using the %s talent, Fury gains from your auto-attacks will be forecast conservatively and updated when you actually gain resources.  This prediction can result in Fury spenders appearing abruptly since it was not guaranteed that you'd have enough Fury on your next melee swing."] = true
 L["I understand that Fury generation from %s is unpredictable."] = true
@@ -845,7 +845,7 @@ L["If set above zero, %1$s will not be recommended for mitigation purposes unles
 L["Weave %s and %s"] = true
 L["If checked, shifting between %1$s and %2$s may be recommended based on whether you're actively tanking and other conditions.  These swaps may occur very frequently.\n\nIf unchecked, |W%3$s|w and |W%4$s|w abilities will be recommended based on your selected form, but swapping between forms will not be recommended."] = true
 
-L["Restoration Druid"] = true
+L["Restoration Druid"] = "Restoration"
 
 end
 
@@ -908,7 +908,7 @@ L["If checked, a non-instant %s may be recommended as an opener against bosses."
 L["%s and %s: Instant-Only When Moving"] = true
 L["If checked, non-instant %1$s and %2$s casts will not be recommended while you are moving.\n\nAn exception is made if %3$s is talented and active and your cast would be complete before |W%4$s|w expires."] = true
 
-L["Frost Mage"] = true
+L["Frost Mage"] = "Frost"
 L["%s: Limit with %s and %s"] = true
 L["If checked, %1$s will recommended less often when you have %2$s and %3$s talented and there are only 1 or 2 enemy targets.\n\nPer Altered Time, the Mage Discord, this can be a 4%% DPS gain in single-target and a ~1.5%% gain in two-target scenarios."] = true
 L["%s: Manual Control"] = true
@@ -960,7 +960,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
 L["Holy"] = true
 
-L["Protection Paladin"] = true
+L["Protection Paladin"] = "Protection"
 L["|T133192:0|t Word of Glory Health Threshold"] = true
 L["When set above zero, the addon may recommend |T133192:0|t Word of Glory when your health falls below this percentage."] = true
 L["|T135919:0|t Guardian of Ancient Kings Damage Threshold"] = true
@@ -987,7 +987,7 @@ L["If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death 
 
 L["Discipline"] = true
 
-L["Holy Priest"] = true
+L["Holy Priest"] = "Holy"
 
 L["Shadow"] = true
 L["Pad |T1035040:0|t Void Bolt Cooldown"] = true
@@ -1055,7 +1055,7 @@ L["If checked, spending %1$s stacks may be recommended before using %2$s when %3
 L["Filler %s"] = true
 L["If checked, a filler %s may be recommended when nothing else is currently ready, even if something better will be off cooldown very soon.\n\nThis feature matches simulation profile behavior and is a small DPS increase, but has been confusing to some users."] = true
 
-L["Restoration Shaman"] = true
+L["Restoration Shaman"] = "Restoration"
 
 end
 
@@ -1103,7 +1103,7 @@ L["Fury"] = true
 L["Check |T132369:0|t Whirlwind Range"] = true
 L["If checked, when your target is outside of |T132369:0|t Whirlwind's range, it will not be recommended."] = true
 
-L["Protection Warrior"] = true
+L["Protection Warrior"] = "Protection"
 L["Overlap |T1377132:0|t Ignore Pain"] = true
 L["If checked, |T1377132:0|t Ignore Pain can be recommended while it is already active.  This setting may cause you to spend more Rage on mitigation."] = true
 L["Overlap |T132110:0|t Shield Block"] = true

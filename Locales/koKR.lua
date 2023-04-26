@@ -790,7 +790,7 @@ L["Reserve %s Charges"] = "%s 충전량 예약"
 L["If set above zero, %s will not be recommended if it would leave you with fewer (fractional) charges."] = "설정값을 0보다 높게 설정하면, 충전량이 더 적게(부분적으로) 부과되는 경우 %s|1은;는; 추천되지 않습니다."
 L["If set above zero, %s will not be recommended if it would leave you with fewer charges."] = "설정값을 0보다 높게 설정하면, 충전량이 더 적게 부과되는 경우 %s|1은;는; 추천되지 않습니다."
 
-L["Havoc"] = "파멸"
+L["Havoc DH"] = "파멸"
 L["|cFFFF0000WARNING!|r  Demon Blades cannot be forecasted.\nSee /hekili > Havoc for more information."] = "|cFFFF0000경고!|r  악마 칼날은 예측할 수 없습니다.\n자세한 정보는 /hekili > 파멸 항목을 참조하세요."
 L["|cFFFF0000WARNING!|r  If using the %s talent, Fury gains from your auto-attacks will be forecast conservatively and updated when you actually gain resources.  This prediction can result in Fury spenders appearing abruptly since it was not guaranteed that you'd have enough Fury on your next melee swing."] = "|cFFFF0000경고!|r %s 특성을 사용하는 경우, 자동 공격으로 얻는 분노는 보수적으로 예측되며, 실제로 자원을 획득할 때 업데이트됩니다.  이 예측으로 인해 다음 근접 공격에 충분한 분노가 확보된다는 보장이 없으므로 분노 소비하기가 갑자기 나타날 수 있습니다."
 L["I understand that Fury generation from %s is unpredictable."] = "%s의 분노 생성은 예측할 수 없다는 것을 이해했습니다."
