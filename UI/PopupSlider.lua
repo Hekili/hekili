@@ -16,12 +16,6 @@ function HekiliPopupDropdownMixin:OnLoad()
 end
 
 function HekiliPopupDropdownMixin:OnShow()
-    local parent = self:GetOwningDropdown()
-    if parent and ( self.sizedFor == nil or self.sizedFor ~= parent ) then
-        local width = parent:GetWidth()
-        if width then self:SetWidth( width ) end
-        self.sizedFor = parent
-    end
     -- self.Toggle:RegisterEvents();
 end
 

@@ -22,7 +22,7 @@
     </Frame>
 
     <Frame name="HekiliPopupDropdownRangeTemplate" inherits="UIDropDownCustomMenuEntryTemplate" mixin="HekiliPopupDropdownMixin" virtual="true">
-        <Size x="200" y="16"/>
+        <Size x="300" y="16"/>
         <Scripts>
             <OnLoad method="OnLoad"/>
             <OnShow method="OnShow"/>
