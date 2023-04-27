@@ -666,6 +666,23 @@ spec:RegisterAura( "decrepit_souls", {
     max_stack = 1
 } )
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202527, 202525, 202524, 202523, 202522 )
+-- 2 pieces (Vengeance) : Soul Fragments heal for 10% more and generating a Soul Fragment increases your Fire damage by 2% for 6 sec. Multiple applications may overlap.
+-- TODO: Track each application to keep count for Recrimination.
+spec:RegisterAura( "fires_of_fel", {
+    id = 409645,
+    duration = 6,
+    max_stack = 1
+} )
+-- 4 pieces (Vengeance) : Shear and Fracture deal Fire damage, and after consuming 20 Soul Fragments, your next cast of Shear or Fracture will apply Fiery Brand for 6 sec to its target.
+spec:RegisterAura( "recrimination", {
+    id = 409877,
+    duration = 30,
+    max_stack = 1
+} )
+
+
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
 spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
 spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )
@@ -913,6 +930,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            if buff.recrimination.up then
+                applyDebuff( "target", "fiery_brand", 6 )
+                removeBuff( "recrimination" )
+            end
             addStack( "soul_fragments", nil, buff.metamorphosis.up and 3 or 2 )
         end,
     },
@@ -1071,6 +1092,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            if buff.recrimination.up then
+                applyDebuff( "target", "fiery_brand", 6 )
+                removeBuff( "recrimination" )
+            end
             addStack( "soul_fragments", nil, buff.metamorphosis.up and 2 or 1 )
         end,
     },

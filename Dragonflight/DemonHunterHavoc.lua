@@ -846,6 +846,23 @@ spec:RegisterAura( "seething_chaos", {
     max_stack = 1
 } )
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202527, 202525, 202524, 202523, 202522 )
+-- 2 pieces (Havoc) : Every 175 Fury you spend, gain Seething Fury, increasing your Agility by 8% for 6 sec.
+-- TODO: Track Fury spent toward Seething Fury.  New expressions: seething_fury_threshold, seething_fury_spent, seething_fury_deficit.
+spec:RegisterAura( "seething_fury", {
+    id = 408737,
+    duration = 6,
+    max_stack = 1
+} )
+-- 4 pieces (Havoc) : Each time you gain Seething Fury, gain 15 Fury and the damage of your next Eye Beam is increased by 15%, stacking 5 times.
+spec:RegisterAura( "seething_potential", {
+    id = 408754,
+    duration = 60,
+    max_stack = 5
+} )
+
+
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
 spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
 spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )
@@ -1186,6 +1203,7 @@ spec:RegisterAbilities( {
             last_eye_beam = query_time
 
             applyBuff( "eye_beam" )
+            removeBuff( "seething_potential" )
 
             if talent.demonic.enabled then
                 if buff.metamorphosis.up then
