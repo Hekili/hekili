@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local class   = Hekili.Class
 local scripts = Hekili.Scripts
@@ -953,7 +954,7 @@ do
             end
 
             if trimmed_prefix then
-                    piece.s = trimmed_prefix .. piece.s
+                piece.s = trimmed_prefix .. piece.s
             end
 
             output = output .. piece.s
@@ -1842,8 +1843,10 @@ function scripts:ImplantDebugData( data )
     if data.hook then
         local s = self.DB[ data.hook ]
         local pack, list, entry = data.hook:match( "^(.-):(.-):(.-)$" )
+        local listName = list == "precombat" or list == "default" and L[list] or list
+        local p = rawget( Hekili.DB.profile.packs, pack )
 
-        data.HookHeader = "Called from " .. pack .. ", " .. list .. ", " .. "#" .. entry .. "."
+        data.HookHeader = format( L["Called from %s, %s, #%s."], p.builtIn and L[pack] or pack, listName, entry )
         data.HookScript = s.SimC
         data.HookElements = data.HookElements or {}
 

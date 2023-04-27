@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "PRIEST" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 local FindUnitBuffByID, FindUnitDebuffByID, PTR = ns.FindUnitBuffByID, ns.FindUnitDebuffByID, ns.PTR
 
@@ -2211,22 +2212,22 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "pad_void_bolt", true, {
-    name = "Pad |T1035040:0|t Void Bolt Cooldown",
-    desc = "If checked, the addon will treat |T1035040:0|t Void Bolt's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during Voidform.",
+    name = L["Pad |T1035040:0|t Void Bolt Cooldown"],
+    desc = L["If checked, the addon will treat |T1035040:0|t Void Bolt's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T1386550:0|t Voidform."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "pad_ascended_blast", true, {
-    name = "Pad |T3528286:0|t Ascended Blast Cooldown",
-    desc = "If checked, the addon will treat |T3528286:0|t Ascended Blast's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during Boon of the Ascended.",
+    name = L["Pad |T3528286:0|t Ascended Blast Cooldown"],
+    desc = L["If checked, the addon will treat |T3528286:0|t Ascended Blast's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during |T3565449:0|t Boon of the Ascended."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "sw_death_protection", 50, {
-    name = "|T136149:0|t Shadow Word: Death Health Threshold",
-    desc = "If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death while your health percentage is below this threshold.  This setting can help keep you from killing yourself.",
+    name = L["|T136149:0|t Shadow Word: Death Health Threshold"],
+    desc = L["If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death while your health percentage is below this threshold.  This setting can help keep you from killing yourself."],
     type = "range",
     min = 0,
     max = 100,
@@ -2235,8 +2236,8 @@ spec:RegisterSetting( "sw_death_protection", 50, {
 } )
 
 spec:RegisterSetting( "min_sear_ticks", 2, {
-    name = "|T237565:0|t Mind Sear Ticks",
-    desc = "|T237565:0|t Mind Sear costs 25 Insanity (and 25 additional Insanity per tick).  If set above 0, this setting will treat Mind Sear as unusable if your cast would result in fewer ticks of Mind Sear than desired.",
+    name = L["|T237565:0|t Mind Sear Ticks"],
+    desc = L["|T237565:0|t Mind Sear costs 25 Insanity (and 25 additional Insanity per tick).  If set above 0, this setting will treat Mind Sear as unusable if your cast would result in fewer ticks of Mind Sear than desired."],
     type = "range",
     min = 0,
     max = 4,

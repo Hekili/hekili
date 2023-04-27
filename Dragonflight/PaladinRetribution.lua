@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "PALADIN" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 70 )
@@ -2028,15 +2029,15 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "check_wake_range", false, {
-    name = "Check |T1112939:0|t Wake of Ashes Range",
-    desc = "If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended.",
+    name = L["Check |T1112939:0|t Wake of Ashes Range"],
+    desc = L["If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended."],
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "sov_damage", 20, {
-    name = "|T236264:0|t Shield of Vengeance Damage Threshold",
-    desc = "If set above zero, |T236264:0|t Shield of Vengeance can only be recommended when you've taken the specified amount of damage in the last 5 seconds, in addition to any other criteria in the priority.",
+    name = L["|T236264:0|t Shield of Vengeance Damage Threshold"],
+    desc = L["If set above zero, |T236264:0|t Shield of Vengeance can only be recommended when you've taken the specified amount of damage in the last 5 seconds, in addition to any other criteria in the priority."],
     type = "range",
     width = "full",
     min = 0,
@@ -2045,9 +2046,8 @@ spec:RegisterSetting( "sov_damage", 20, {
 } )
 
 spec:RegisterSetting( "desync_toll", false, {
-    name = "Desync |T3565448:0|t Divine Toll",
-    desc = "If checked, when Seraphim, Final Reckoning, and/or Execution Sentence are toggled off or disabled, the addon will recommend |T3565448:0|t Divine Toll despite being out of sync with your cooldowns.\n\n"
-        .. "This is useful for maximizing the number of Divine Toll casts in a fight, but may result in a lower overall DPS.",
+    name = L["Desync |T3565448:0|t Divine Toll"],
+    desc = L["If checked, when Seraphim, Final Reckoning, and/or Execution Sentence are toggled off or disabled, the addon will recommend |T3565448:0|t Divine Toll despite being out of sync with your cooldowns.\n\nThis is useful for maximizing the number of Divine Toll casts in a fight, but may result in a lower overall DPS."],
     type = "toggle",
     width = "full",
 } )

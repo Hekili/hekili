@@ -2,6 +2,7 @@
 -- April 2014
 
 local addon, ns = ...
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
 Hekili.Version = GetAddOnMetadata( "Hekili", "Version" )
 Hekili.Flavor = GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
@@ -40,10 +41,7 @@ Hekili.GameBuild = buildStr
 ns.PTR = buildNum > 100007
 
 
-ns.Patrons = "|cFFFFD100Current Status|r\n\n"
-    .. "All specializations are currently supported, though healer priorities are experimental and focused on rotational DPS only.\n\n"
-    .. "If you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue investigated.\n\n"
-    .. "Please do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"
+ns.Patrons = L["Patrons"]
 
 do
     local cpuProfileDB = {}
@@ -52,16 +50,16 @@ do
         cpuProfileDB[ name ] = func
     end
 
-	ns.cpuProfile = cpuProfileDB
+    ns.cpuProfile = cpuProfileDB
 
 
-	local frameProfileDB = {}
+    local frameProfileDB = {}
 
-	function Hekili:ProfileFrame( name, f )
-		frameProfileDB[ name ] = f
-	end
+    function Hekili:ProfileFrame( name, f )
+        frameProfileDB[ name ] = f
+    end
 
-	ns.frameProfile = frameProfileDB
+    ns.frameProfile = frameProfileDB
 end
 
 
@@ -89,24 +87,24 @@ Hekili.Class = {
     file = "NONE",
     initialized = false,
 
-	resources = {},
-	resourceAuras = {},
+    resources = {},
+    resourceAuras = {},
     talents = {},
     pvptalents = {},
-	auras = {},
-	auraList = {},
+    auras = {},
+    auraList = {},
     powers = {},
-	gear = {},
+    gear = {},
     setBonuses = {},
 
-	knownAuraAttributes = {},
+    knownAuraAttributes = {},
 
     stateExprs = {},
     stateFuncs = {},
     stateTables = {},
 
-	abilities = {},
-	abilityByName = {},
+    abilities = {},
+    abilityByName = {},
     abilityList = {},
     itemList = {},
     itemMap = {},
@@ -124,12 +122,12 @@ Hekili.Class = {
     potions = {},
     potionList = {},
 
-	hooks = {},
+    hooks = {},
     range = 8,
-	settings = {},
+    settings = {},
     stances = {},
-	toggles = {},
-	variables = {},
+    toggles = {},
+    variables = {},
 }
 
 Hekili.Scripts = {
@@ -156,10 +154,10 @@ ns.snapshots = {}
 
 
 function Hekili:Query( ... )
-	local output = ns
+    local output = ns
 
-	for i = 1, select( '#', ... ) do
-		output = output[ select( i, ... ) ]
+    for i = 1, select( '#', ... ) do
+        output = output[ select( i, ... ) ]
     end
 
     return output
@@ -167,13 +165,13 @@ end
 
 
 function Hekili:Run( ... )
-	local n = select( "#", ... )
-	local fn = select( n, ... )
+    local n = select( "#", ... )
+    local fn = select( n, ... )
 
-	local func = ns
+    local func = ns
 
-	for i = 1, fn - 1 do
-		func = func[ select( i, ... ) ]
+    for i = 1, fn - 1 do
+        func = func[ select( i, ... ) ]
     end
 
     return func( select( fn, ... ) )
@@ -197,40 +195,40 @@ function Hekili:SetupDebug( display )
         index = 1
     }
     active_debug = debug[ current_display ]
-	active_debug.index = 1
+    active_debug.index = 1
 
-	lastIndent = 0
+    lastIndent = 0
 
-	local pack = self.State.system.packName
+    local pack = self.State.system.packName
 
     if not pack then return end
 
-	self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using %s( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), self.DB.profile.packs[ pack ].builtIn and "built-in " or "", pack )
+    self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using %s( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), self.DB.profile.packs[ pack ].builtIn and "built-in " or "", pack )
 end
 
 
 function Hekili:Debug( ... )
     if not self.ActiveDebug then return end
-	if not active_debug then return end
+    if not active_debug then return end
 
-	local indent, text = ...
-	local start
+    local indent, text = ...
+    local start
 
-	if type( indent ) ~= "number" then
-		indent = lastIndent
-		text = ...
-		start = 2
-	else
-		lastIndent = indent
-		start = 3
-	end
+    if type( indent ) ~= "number" then
+        indent = lastIndent
+        text = ...
+        start = 2
+    else
+        lastIndent = indent
+        start = 3
+    end
 
-	local prepend = format( indent > 0 and ( "%" .. ( indent * 4 ) .. "s" ) or "%s", "" )
-	text = text:gsub("\n", "\n" .. prepend )
+    local prepend = format( indent > 0 and ( "%" .. ( indent * 4 ) .. "s" ) or "%s", "" )
+    text = text:gsub("\n", "\n" .. prepend )
     text = format( "%" .. ( indent > 0 and ( 4 * indent ) or "" ) .. "s", "" ) .. text
 
     if select( start, ... ) ~= nil then
-	    active_debug.log[ active_debug.index ] = format( text, select( start, ... ) )
+        active_debug.log[ active_debug.index ] = format( text, select( start, ... ) )
     else
         active_debug.log[ active_debug.index ] = text
     end
@@ -245,11 +243,11 @@ function Hekili:SaveDebugSnapshot( dispName )
     local formatKey = ns.formatKey
     local state = Hekili.State
 
-	for k, v in pairs( debug ) do
-		if not dispName or dispName == k then
-			for i = #v.log, v.index, -1 do
-				v.log[ i ] = nil
-			end
+    for k, v in pairs( debug ) do
+        if not dispName or dispName == k then
+            for i = #v.log, v.index, -1 do
+                v.log[ i ] = nil
+            end
 
             -- Store aura data.
             local auraString = "\nplayer_buffs:"
@@ -322,30 +320,42 @@ function Hekili:SaveDebugSnapshot( dispName )
             insert( v.log, 1, "targets:  " .. ( Hekili.TargetDebug or "no data" ) )
             insert( v.log, 1, self:GenerateProfile() )
 
-            local custom = ""
+            local custom = {
+                ["enUS"] = "",
+                ["localized"] = "",
+            }
 
             local pack = self.DB.profile.packs[ state.system.packName ]
             if not pack.builtIn then
-                custom = format( " |cFFFFA700(Custom: %s[%d])|r", state.spec.name, state.spec.id )
+                for key in pairs( custom ) do
+                    custom[ key ] = format( " |cFFFFA700(" .. ( key == "enUS" and "Custom" or L["Custom"] ) .. ": %s[%d])|r", state.spec.name, state.spec.id )
+                end
             end
 
-            local overview = format( "%s%s; %s|r", state.system.packName, custom, dispName or state.display )
+            local overviews = {
+                ["enUS"] = format( "%s%s; %s|r", state.system.packName, custom["enUS"], dispName or state.display ),
+                ["localized"] = format( "%s%s; %s|r", pack.builtIn and L[state.system.packName] or state.system.packName, custom["localized"], L[dispName] or L[state.display] ),
+            }
             local recs = Hekili.DisplayPool[ dispName or state.display ].Recommendations
 
             for i, rec in ipairs( recs ) do
                 if not rec.actionName then
                     if i == 1 then
-                        overview = format( "%s - |cFF666666N/A|r", overview )
+                        for key, value in pairs( overviews ) do
+                            overviews[ key ] = format( "%s - |cFF666666" .. ( key == "enUS" and "N/A" or L["N/A"] ) .. "|r", value )
+                        end
                     end
                     break
                 end
-                overview = format( "%s%s%s|cFFFFD100(%0.2f)|r", overview, ( i == 1 and " - " or ", " ), class.abilities[ rec.actionName ].name, rec.time )
+                for key, value in pairs( overviews ) do
+                    overviews[ key ] = format( "%s%s%s|cFFFFD100(%0.2f)|r", value, ( i == 1 and " - " or ", " ), class.abilities[ rec.actionName ].name, rec.time )
+                end
             end
 
-            insert( v.log, 1, overview )
+            insert( v.log, 1, overviews["enUS"] )
 
             local snap = {
-                header = "|cFFFFD100[" .. date( "%H:%M:%S" ) .. "]|r " .. overview,
+                header = "|cFFFFD100[" .. date( "%H:%M:%S" ) .. "]|r " .. overviews["localized"],
                 log = concat( v.log, "\n" ),
                 data = ns.tableCopy( v.log ),
                 recs = {}
@@ -353,7 +363,7 @@ function Hekili:SaveDebugSnapshot( dispName )
 
             insert( snapshots, snap )
             snapped = true
-		end
+        end
     end
 
     if snapped then

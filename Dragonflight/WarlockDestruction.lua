@@ -5,10 +5,13 @@ if UnitClassBase( "player" ) ~= "WARLOCK" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local PTR = ns.PTR
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 267 )
 
@@ -1090,7 +1093,7 @@ spec:RegisterHook( "reset_precast", function ()
 
     if not SUMMON_DEMON_TEXT then
         SUMMON_DEMON_TEXT = GetSpellInfo( 180284 )
-        class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. ( SUMMON_DEMON_TEXT or "Summon Demon" ) .. "]|r"
+        class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. ( SUMMON_DEMON_TEXT or L["Summon Demon"] ) .. "]|r"
     end
 
     for i = 1, 5 do
@@ -1681,8 +1684,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "default_pet", "summon_sayaad", {
-    name = "|T136082:0|t Preferred Demon",
-    desc = "Specify which demon should be summoned if you have no active pet.",
+    name = L["|T136082:0|t Preferred Demon"],
+    desc = L["Specify which demon should be summoned if you have no active pet."],
     type = "select",
     values = function()
         return {
@@ -1696,10 +1699,10 @@ spec:RegisterSetting( "default_pet", "summon_sayaad", {
 } )
 
 spec:RegisterSetting( "cleave_apl", false, {
-    name = function() return "|T" .. ( GetSpellTexture( 116858 ) ) .. ":0|t Funnel Damage in AOE" end,
+    name = function() return "|T" .. ( GetSpellTexture( 116858 ) ) .. ":0|t " .. L["Funnel Damage in AOE"] end,
     desc = function()
-        return "If checked, the addon will use its cleave priority to funnel damage into your primary target (via |T" .. ( GetSpellTexture( 116858 ) ) .. ":0|t Chaos Bolt) instead of spending Soul Shards on |T" .. ( GetSpellTexture( 5740 ) ) .. ":0|t Rain of Fire.\n\n" ..
-        "You may wish to change this option for different fights and scenarios, which can be done here, via the minimap button, or with |cFFFFD100/hekili toggle cleave_apl|r."
+        return strformat( L["If checked, the addon will use its cleave priority to funnel damage into your primary target (via |T%s:0|t Chaos Bolt) instead of spending Soul Shards on |T%s:0|t Rain of Fire.\n\nYou may wish to change this option for different fights and scenarios, which can be done here, via the minimap button, or with |cFFFFD100/hekili toggle cleave_apl|r."],
+            GetSpellTexture( 116858 ), GetSpellTexture( 5740 ) )
     end,
     type = "toggle",
     width = "full",
@@ -1710,21 +1713,24 @@ spec:RegisterSetting( "fixed_aoe_3_plus", false, {
     name = "Require 3+ Targets for AOE",
     desc = function()
         return "If checked, the default action list will only use its AOE action list (including |T" .. ( GetSpellTexture( 5740 ) ) .. ":0|t Rain of Fire) when there are 3+ targets.\n\n" ..
-        "In multi-target Patchwerk simulations, this setting creates a significant DPS loss.  However, this option may be useful in real-world scenarios, especially if you are fighting two moving targets that will not stand in your Rain of Fire for the whole duration."
+            "In multi-target Patchwerk simulations, this setting creates a significant DPS loss.  However, this option may be useful in real-world scenarios, especially if you are fighting two moving targets that will not stand in your Rain of Fire for the whole duration."
     end,
     type = "toggle",
     width = "full",
 } ) ]]
 
 spec:RegisterSetting( "havoc_macro_text", nil, {
-    name = "When |T460695:0|t Havoc is shown with a |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator, the addon is recommending that you cast Havoc on a different target (without swapping).  A mouseover macro is useful for this and an example is included below.",
+    name = function ()
+        return strformat( L["When %1$s is shown with a |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator, the addon is recommending that you cast %2$s on a different target (without swapping).  A mouseover macro is useful for this and an example is included below."],
+            "|T460695:0|t " .. L["Havoc"], L["Havoc"] )
+    end,
     type = "description",
     width = "full",
     fontSize = "medium"
 } )
 
 spec:RegisterSetting( "havoc_macro", nil, {
-    name = "|T460695:0|t Havoc Macro",
+    name = "|T460695:0|t " .. L["Havoc Macro"],
     type = "input",
     width = "full",
     multiline = 2,
@@ -1733,14 +1739,17 @@ spec:RegisterSetting( "havoc_macro", nil, {
 } )
 
 spec:RegisterSetting( "immolate_macro_text", nil, {
-    name = function () return "When |T" .. GetSpellTexture( 348 ) .. ":0|t Immolate is shown with a |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator, the addon is recommending that you cast Immolate on a different target (without swapping).  A mouseover macro is useful for this and an example is included below." end,
+    name = function ()
+        return strformat( L["When %1$s is shown with a |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator, the addon is recommending that you cast %2$s on a different target (without swapping).  A mouseover macro is useful for this and an example is included below."],
+            "|T" .. GetSpellTexture( 348 ) .. ":0|t " .. L["Immolate"], L["Immolate"] )
+    end,
     type = "description",
     width = "full",
     fontSize = "medium"
 } )
 
 spec:RegisterSetting( "immolate_macro", nil, {
-    name = function () return "|T" .. GetSpellTexture( 348 ) .. ":0|t Immolate Macro" end,
+    name = function () return "|T" .. GetSpellTexture( 348 ) .. ":0|t " .. L["Immolate Macro"] end,
     type = "input",
     width = "full",
     multiline = 2,

@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
@@ -2008,7 +2009,7 @@ spec:RegisterAbilities( {
             if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
         end,
 
-        copy = { "incarnation_chosen_of_elune", "Incarnation", 102560, 390414 },
+        copy = { "incarnation_chosen_of_elune", L["Incarnation"], 102560, 390414 },
     },
 
     -- Talent: Infuse a friendly healer with energy, allowing them to cast spells without spending mana for $d.$?s326228[    If cast on somebody else, you gain the effect at $326228s1% effectiveness.][]
@@ -2619,7 +2620,7 @@ spec:RegisterAbilities( {
                 generate = function( t )
                     local last = action.starsurge.lastCast
 
-                    t.name = "Starsurge Empowerment (Lunar)"
+                    t.name = L["Starsurge Empowerment (Lunar)"]
 
                     if eclipse.in_any then
                         t.applied = last
@@ -2645,7 +2646,7 @@ spec:RegisterAbilities( {
                 generate = function( t )
                     local last = action.starsurge.lastCast
 
-                    t.name = "Starsurge Empowerment (Solar)"
+                    t.name = L["Starsurge Empowerment (Solar)"]
 
                     if eclipse.in_any then
                         t.applied = last

@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local auras = ns.auras
 
@@ -49,7 +50,7 @@ state.modified = false
 state.resetType = "heavy"
 
 state.encounterID = 0
-state.encounterName = "None"
+state.encounterName = L["None"]
 state.encounterDifficulty = 0
 
 state.aggro = false
@@ -3879,7 +3880,7 @@ do
 
     unknown_buff = setmetatable( {
         key = "unknown_buff",
-        name = "No Name",
+        name = L["No Name"],
         count = 0,
         lastCount = 0,
         lastApplied = 0,
@@ -4862,7 +4863,7 @@ do
 
     unknown_debuff = setmetatable( {
         key = "unknown_debuff",
-        name = "No Name",
+        name = L["No Name"],
         count = 0,
         lastCount = 0,
         lastApplied = 0,
@@ -4944,7 +4945,7 @@ do
                 debuff.unit = real.unit
 
             else
-                debuff.name = aura and aura.name or "No Name"
+                debuff.name = aura and aura.name or L["No Name"]
                 debuff.count = 0
                 debuff.lastCount = 0
                 debuff.lastApplied = 0
@@ -6774,7 +6775,7 @@ do
 
         if ability then
             state.holds[ ability.key ] = combat and HOLD_COMBAT or HOLD_PERMANENT
-            if verbose then Hekili:Print( class.abilities[ ability.key ].name .. " placed on hold" .. ( combat and " until end of combat." or "." ) ) end
+            if verbose then Hekili:Print( format( combat and L["%s placed on hold until end of combat."] or L["%s placed on hold."], class.abilities[ ability.key ].name ) ) end
             Hekili:ForceUpdate( "HEKILI_HOLD_APPLIED" )
         end
     end
@@ -6799,7 +6800,7 @@ do
 
         if ability and state.holds[ ability.key ] then
             state.holds[ ability.key ] = nil
-            if verbose then Hekili:Print( class.abilities[ ability.key ].name .. " hold removed." ) end
+            if verbose then Hekili:Print( format( L["%s hold removed."], class.abilities[ ability.key ].name ) ) end
             Hekili:ForceUpdate( "HEKILI_HOLD_REMOVED" )
         end
     end

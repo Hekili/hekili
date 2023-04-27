@@ -5,8 +5,11 @@ if UnitClassBase( "player" ) ~= "PALADIN" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 local FindUnitBuffByID = ns.FindUnitBuffByID
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 66 )
 
@@ -1527,8 +1530,8 @@ spec:RegisterAbilities( {
 
 
 spec:RegisterSetting( "wog_health", 40, {
-    name = "|T133192:0|t Word of Glory Health Threshold",
-    desc = "When set above zero, the addon may recommend |T133192:0|t Word of Glory when your health falls below this percentage.",
+    name = L["|T133192:0|t Word of Glory Health Threshold"],
+    desc = L["When set above zero, the addon may recommend |T133192:0|t Word of Glory when your health falls below this percentage."],
     type = "range",
     min = 0,
     max = 100,
@@ -1542,11 +1545,9 @@ end )
 
 
 spec:RegisterSetting( "goak_damage", 40, {
-    name = "|T135919:0|t Guardian of Ancient Kings Damage Threshold",
-    desc = function() return "When set above zero, the addon may recommend |T135919:0|t " .. ( GetSpellInfo( class.abilities.guardian_of_ancient_kings.id ) or "Guardian of Ancient Kings" )
-            .. " when you take this percentage of your maximum health in damage in the past 5 seconds.\n\n"
-            .. "By default, your Defensives toggle must also be enabled."
-        end,
+    name = L["|T135919:0|t Guardian of Ancient Kings Damage Threshold"],
+    desc = function() return strformat( L["When set above zero, the addon may recommend %s when you take this percentage of your maximum health in damage in the past 5 seconds.\n\nBy default, your Defensives toggle must also be enabled."],
+        "|T135919:0|t " .. GetSpellInfo( class.abilities.guardian_of_ancient_kings.id ) or L["Guardian of Ancient Kings"] ) end,
     type = "range",
     min = 0,
     max = 100,
@@ -1560,11 +1561,9 @@ end )
 
 
 spec:RegisterSetting( "ds_damage", 60, {
-    name = "|T524354:0|t Divine Shield Damage Threshold",
-    desc = function() return "When set above zero, the addon may recommend |T524354:0|t " .. ( GetSpellInfo( class.abilities.divine_shield.id ) or "Divine Shield" )
-            .. " when you take this percentage of your maximum health in damage in the past 5 seconds.\n\n"
-            .. "By default, your Defensives toggle must also be enabled."
-        end,
+    name = L["|T524354:0|t Divine Shield Damage Threshold"],
+    desc = function() return strformat( L["When set above zero, the addon may recommend %s when you take this percentage of your maximum health in damage in the past 5 seconds.\n\nBy default, your Defensives toggle must also be enabled."],
+        "|T524354:0|t " .. GetSpellInfo( class.abilities.divine_shield.id ) or L["Divine Shield"] ) end,
     type = "range",
     min = 0,
     max = 100,

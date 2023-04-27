@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[addon]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -161,7 +162,7 @@ function ns.StartConfiguration( external )
         f.Header:SetFont( path, 18, "OUTLINE" )
     end
     f.Header:SetAllPoints( HekiliNotificationMover )
-    f.Header:SetText( "Notifications" )
+    f.Header:SetText( L["Notifications"] )
     f.Header:SetJustifyH( "CENTER" )
     f.Header:Show()
 
@@ -182,9 +183,9 @@ function ns.StartConfiguration( external )
         if H.Config then
             Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
 
-            Tooltip:SetText( "Hekili: Notifications" )
-            Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-            Tooltip:AddLine( "Right-click to open Notification panel settings.", 1, 1, 1 )
+            Tooltip:SetText( "Hekili: " .. L["Notifications"] )
+            Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
+            Tooltip:AddLine( L["Right-click to open Notification panel settings."], 1, 1, 1 )
             Tooltip:Show()
         end
     end )
@@ -262,10 +263,10 @@ function ns.StartConfiguration( external )
                 if H.Config then
                     Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
 
-                    Tooltip:SetText( "Hekili: " .. i )
-                    Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-                    Tooltip:AddLine( "Right-click to open " .. i .. " display settings.", 1, 1, 1 )
-                    if not H:IsDisplayActive( i, true ) then Tooltip:AddLine( "This display is not currently active.", 0.5, 0.5, 0.5 ) end
+                    Tooltip:SetText( "Hekili: " .. L[i] )
+                    Tooltip:AddLine( L["Left-click and hold to move."], 1, 1, 1 )
+                    Tooltip:AddLine( format( L["Right-click to open %s display settings."], L[i] ), 1, 1, 1 )
+                    if not H:IsDisplayActive( i, true ) then Tooltip:AddLine( L["This display is not currently active."], 0.5, 0.5, 0.5 ) end
                     Tooltip:Show()
                 end
             end )
@@ -285,7 +286,7 @@ function ns.StartConfiguration( external )
             if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield" ) )
             elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "voicechat-icon-speaker-mute" ) )
             elseif i == "Cooldowns" then v.Header:SetText( AtlasToString( "chromietime-32x32" ) )
-            else v.Header:SetText( i ) end
+            else v.Header:SetText( L[i] ) end
 
             v.Header:SetJustifyH("CENTER")
             v.Header:Show()
@@ -409,13 +410,13 @@ do
         },
 
         {
-            text = "Enable",
+            text = L["Enable"],
             func = function () Hekili:Toggle() end,
             checked = function () return Hekili.DB.profile.enabled end,
         },
 
         {
-            text = "Pause",
+            text = L["Pause"],
             func = function () return Hekili:TogglePause() end,
             checked = function () return Hekili.Pause end,
         },
@@ -426,36 +427,36 @@ do
 
         {
             isTitle = 1,
-            text = "Display Mode",
+            text = L["Display Mode"],
             notCheckable = 1,
         },
 
         {
-            text = "Auto",
+            text = L["Auto"],
             func = function () SetDisplayMode( "automatic" ) end,
             checked = function () return IsDisplayMode( p, "automatic" ) end,
         },
 
         {
-            text = "Single",
+            text = L["Single"],
             func = function () SetDisplayMode( "single" ) end,
             checked = function () return IsDisplayMode( p, "single" ) end,
         },
 
         {
-            text = "AOE",
+            text = L["AOE"],
             func = function () SetDisplayMode( "aoe" ) end,
             checked = function () return IsDisplayMode( p, "aoe" ) end,
         },
 
         {
-            text = "Dual",
+            text = L["Dual"],
             func = function () SetDisplayMode( "dual" ) end,
             checked = function () return IsDisplayMode( p, "dual" ) end,
         },
 
         {
-            text = "Reactive",
+            text = L["Reactive"],
             func = function () SetDisplayMode( "reactive" ) end,
             checked = function () return IsDisplayMode( p, "reactive" ) end,
         },
@@ -466,36 +467,36 @@ do
 
         {
             isTitle = 1,
-            text = "Toggles",
+            text = L["Toggles"],
             notCheckable = 1,
         },
 
         {
-            text = "Cooldowns",
+            text = L["Cooldowns"],
             func = function() Hekili:FireToggle( "cooldowns" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.cooldowns.value end,
         },
 
         {
-            text = "Covenants",
+            text = L["Covenants"],
             func = function() Hekili:FireToggle( "essences" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.essences.value end,
         },
 
         {
-            text = "Interrupts",
+            text = L["Interrupts"],
             func = function() Hekili:FireToggle( "interrupts" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.interrupts.value end,
         },
 
         {
-            text = "Defensives",
+            text = L["Defensives"],
             func = function() Hekili:FireToggle( "defensives" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.defensives.value end,
         },
 
         {
-            text = "Potions",
+            text = L["Potions"],
             func = function() Hekili:FireToggle( "potions" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.potions.value end,
         },
@@ -526,18 +527,18 @@ do
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         } )
                         insert( menuData, {
-                            text = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t Recommend Target Swaps",
-                            tooltipTitle = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t Recommend Target Swaps",
-                            tooltipText = "If checked, the |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator may be displayed which means you should use the ability on a different target.",
+                            text = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t " .. L["Recommend Target Swaps"],
+                            tooltipTitle = "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t " .. L["Recommend Target Swaps"],
+                            tooltipText = L["If checked, the |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator may be displayed which means you should use the ability on a different target."],
                             tooltipOnButton = true,
                             func = function ()
                                 local spec = rawget( Hekili.DB.profile.specs, i )
                                 if spec then
                                     spec.cycle = not spec.cycle
                                     if Hekili.DB.profile.notifications.enabled then
-                                        Hekili:Notify( "Recommend Target Swaps: " .. ( spec.cycle and "ON" or "OFF" ) )
+                                        Hekili:Notify( L["Recommend Target Swaps"] .. ": " .. ( spec.cycle and L["ON"] or L["OFF"] ) )
                                     else
-                                        Hekili:Print( "Recommend Target Swaps: " .. ( spec.cycle and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                        Hekili:Print( L["Recommend Target Swaps"] .. ": " .. ( spec.cycle and " |cFF00FF00" .. L["ENABLED"] .. "|r." or " |cFFFF0000" .. L["DISABLED"] .. "|r." ) )
                                     end
                                 end
                             end,
@@ -565,9 +566,9 @@ do
                                             local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
 
                                             if Hekili.DB.profile.notifications.enabled then
-                                                Hekili:Notify( name .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
+                                                Hekili:Notify( name .. ": " .. ( setting.info.get( menu.args ) and L["ON"] or L["OFF"] ) )
                                             else
-                                                Hekili:Print( name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                                Hekili:Print( name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00" .. L["ENABLED"] .. "|r." or " |cFFFF0000" .. L["DISABLED"] .. "|r." ) )
                                             end
                                         end,
                                         checked = function ()
@@ -2511,7 +2512,7 @@ do
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
 
-        b.Cooldown.noCooldownCount = conf.hideOmniCC
+        b.Cooldown.noCooldownCount = conf.delays.hideOmniCC
 
         if _G["ElvUI"] and not b.isRegisteredCooldown and ( ( id == 1 and conf.elvuiCooldown ) or ( id > 1 and conf.queue.elvuiCooldown ) ) then
             local E = unpack( ElvUI )
@@ -2991,7 +2992,7 @@ function Hekili:ShowDiagnosticTooltip( q )
             tt:AddLine(q.HookHeader)
         else
             tt:AddLine(" ")
-            tt:AddLine("Hook Criteria")
+            tt:AddLine(L["Hook Criteria"])
         end
 
         if q.HookScript and q.HookScript ~= "" then
@@ -3004,7 +3005,7 @@ function Hekili:ShowDiagnosticTooltip( q )
             for k, v in orderedPairs(q.HookElements) do
                 if not applied then
                     tt:AddLine(" ")
-                    tt:AddLine("Values")
+                    tt:AddLine(L["Values"])
                     applied = true
                 end
                 if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
@@ -3016,12 +3017,12 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     if q.ReadyScript and q.ReadyScript ~= "" then
         tt:AddLine(" ")
-        tt:AddLine("Time Script")
+        tt:AddLine(L["Time Script"])
 
         tt:AddLine(fmt.FormatCode(q.ReadyScript, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ReadyElements then
-            tt:AddLine("Values")
+            tt:AddLine(L["Values"])
             for k, v in orderedPairs(q.ReadyElements) do
                 if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
                     tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
@@ -3032,13 +3033,13 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     if q.ActScript and q.ActScript ~= "" then
         tt:AddLine(" ")
-        tt:AddLine("Action Criteria")
+        tt:AddLine(L["Action Criteria"])
 
         tt:AddLine(fmt.FormatCode(q.ActScript, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ActElements then
             tt:AddLine(" ")
-            tt:AddLine("Values")
+            tt:AddLine(L["Values"])
             for k, v in orderedPairs(q.ActElements) do
                 if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
                     tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)

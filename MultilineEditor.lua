@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local Type, Version = "HekiliCustomEditor", 4
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
@@ -265,7 +266,7 @@ local function GenerateDiagnosticTooltip( widget, event )
         if script == 'criteria' then
             local result, warning = scripts:CheckScript( scriptID, action )
 
-            Tooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
+            Tooltip:AddDoubleLine( L["Shown"], ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
 
             if warning then Tooltip:AddLine( warning, 1, 0, 0 ) end
 
@@ -286,7 +287,7 @@ local function GenerateDiagnosticTooltip( widget, event )
     if has_args then
         if tested then Tooltip:AddLine(" ") end
 
-        Tooltip:AddLine( "Values" )
+        Tooltip:AddLine( L["Values"] )
         for k, v in orderedPairs( arg ) do
           if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find("floor") and not key_cache[k]:find( "ceil" ) and ( type(v) ~= "string" or not v:find( "function" ) ) then
             Tooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
@@ -295,7 +296,7 @@ local function GenerateDiagnosticTooltip( widget, event )
     end
 
     if type( usage ) == "string" then
-        Tooltip:AddLine( "Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
+        Tooltip:AddLine( L["Usage:"] .. " " .. usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
     end
 
     Tooltip:Show()

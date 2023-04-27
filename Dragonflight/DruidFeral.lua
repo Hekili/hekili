@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
@@ -12,6 +13,7 @@ local FindUnitBuffByID = ns.FindUnitBuffByID
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 103 )
+local race, raceEn = UnitRace("player")
 
 spec:RegisterResource( Enum.PowerType.Energy )
 spec:RegisterResource( Enum.PowerType.ComboPoints, {
@@ -1734,7 +1736,7 @@ spec:RegisterAbilities( {
             energy.max = energy.max + 50
         end,
 
-        copy = { "incarnation_avatar_of_ashamane", "Incarnation" }
+        copy = { "incarnation_avatar_of_ashamane", L["Incarnation"] }
     },
 
     -- Talent: Increases armor by ${$s1*$AGI/100} for $d.$?a231070[ Multiple uses of this ability may overlap.][]
@@ -1827,7 +1829,7 @@ spec:RegisterAbilities( {
         id = 155625,
         known = 8921,
         flash = { 8921, 155625 },
-        suffix = "(Cat)",
+        suffix = L["(Cat)"],
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -2341,7 +2343,7 @@ spec:RegisterAbilities( {
     swipe_cat = {
         id = 106785,
         known = 213764,
-        suffix = "(Cat)",
+        suffix = L["(Cat)"],
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -2405,7 +2407,7 @@ spec:RegisterAbilities( {
     thrash_cat = {
         id = 106830,
         known = 106832,
-        suffix = "(Cat)",
+        suffix = L["(Cat)"],
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -2523,8 +2525,8 @@ spec:RegisterAbilities( {
 } ) ]]
 
 spec:RegisterSetting( "rip_duration", 9, {
-    name = strformat( "%s Duration", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
-    desc = strformat( "If set above 0, %s will not be recommended if the target will die within the timeframe specified.",
+    name = strformat( L["%s Duration"], Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
+    desc = strformat( L["If set above 0, %s will not be recommended if the target will die within the timeframe specified."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
     type = "range",
     min = 0,
@@ -2534,13 +2536,9 @@ spec:RegisterSetting( "rip_duration", 9, {
 } )
 
 spec:RegisterSetting( "use_funnel", false, {
-    name = strformat( "%s Funnel", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
+    name = strformat( L["%s Funnel"], Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
     desc = function()
-        return strformat( "If checked, when %s and %s are talented and %s is |cFFFFD100not|r talented, %s will be recommended over %s unless |W%s|w needs to be "
-            .. "refreshed.\n\n"
-            .. "Requires %s\n"
-            .. "Requires %s\n"
-            .. "Requires |W|c%sno %s|r|w",
+        return strformat( L["If checked, when %1$s and %2$s are talented and %3$s is |cFFFFD100not|r talented, %4$s will be recommended over %5$s unless |W%6$s|w needs to be refreshed.\n\nRequires %7$s\nRequires %8$s\nRequires |W|c%9$sno %10$s|r|w"],
             Hekili:GetSpellLinkWithTexture( spec.talents.taste_for_blood[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.relentless_predator[2] ),
             Hekili:GetSpellLinkWithTexture( spec.talents.tear_open_wounds[2] ), Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ),
             Hekili:GetSpellLinkWithTexture( spec.abilities.primal_wrath.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ),
@@ -2558,10 +2556,9 @@ spec:RegisterStateExpr( "funneling", function()
 end )
 
 spec:RegisterSetting( "allow_shadowmeld", nil, {
-    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ) ),
-    desc = strformat( "If checked, %s can be recommended for |W%s|w players if its conditions for use are met.\n\n"
-            .. "Your stealth-based abilities can be used in |W%s|w, even if your action bar does not change. |W%s|w can only be recommended in boss fights or when you "
-            .. "are in a group (to avoid resetting combat).", Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ), C_CreatureInfo.GetRaceInfo(4).raceName,
+    name = strformat( L["Use %s"], Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ) ),
+    desc = strformat( L["If checked, %1$s can be recommended for |W%2$s|w players if its conditions for use are met.\n\nYour stealth-based abilities can be used in |W%3$s|w, even if your action bar does not change. |W%4$s|w can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
+        Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ), C_CreatureInfo.GetRaceInfo(4).raceName,
             spec.auras.shadowmeld.name, spec.auras.shadowmeld.name ),
     type = "toggle",
     width = "full",
@@ -2569,6 +2566,7 @@ spec:RegisterSetting( "allow_shadowmeld", nil, {
     set = function ( _, val )
         Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled = not val
     end,
+    disabled = function () return raceEn ~= "NightElf" end,
 } )
 
 

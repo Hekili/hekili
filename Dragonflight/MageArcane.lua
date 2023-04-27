@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "MAGE" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
@@ -1534,7 +1535,7 @@ spec:RegisterAbilities( {
     },
 
     mana_gem = {
-        name = "|cff00ccff[Mana Gem]|r",
+        name = "|cff00ccff[" .. L["Mana Gem"] .. "|r",
         known = function ()
             return state.mana_gem_charges > 0
         end,
@@ -2244,8 +2245,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "check_explosion_range", true, {
-    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
-    desc = strformat( "If checked, %s will not be recommended when you are more than 10 yards from your target.", Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
+    name = strformat( L["%s: Range Check"], Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
+    desc = strformat( L["If checked, %s will not be recommended when you are more than 10 yards from your target."], Hekili:GetSpellLinkWithTexture( spec.abilities.arcane_explosion.id ) ),
     type = "toggle",
     width = "full"
 } )

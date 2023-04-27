@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
 local strformat = string.format
@@ -1353,7 +1354,7 @@ spec:RegisterAbilities( {
             applyBuff( "incarnation" )
         end,
 
-        copy = { "incarnation_guardian_of_ursoc", "Incarnation" }
+        copy = { "incarnation_guardian_of_ursoc", L["Incarnation"] }
     },
 
     -- Talent: Infuse a friendly healer with energy, allowing them to cast spells without spending mana for $d.$?s326228[    If cast on somebody else, you gain the effect at $326228s1% effectiveness.][]
@@ -1960,7 +1961,7 @@ spec:RegisterAbilities( {
     swipe_bear = {
         id = 213771,
         known = 213764,
-        suffix = "(Bear)",
+        suffix = L["(Bear)"],
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1981,7 +1982,7 @@ spec:RegisterAbilities( {
     thrash_bear = {
         id = 77758,
         known = 106832,
-        suffix = "(Bear)",
+        suffix = L["(Bear)"],
         cast = 0,
         cooldown = function () return ( buff.berserk_bear.up and talent.berserk_ravage.enabled and 0 or 6 ) * haste end,
         gcd = "spell",
@@ -2122,9 +2123,8 @@ spec:RegisterOptions( {
 } )
 
 spec:RegisterSetting( "maul_rage", 20, {
-    name = strformat( "%s (or %s) Rage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ) ),
-    desc = strformat( "If set above zero, %s and %s can be recommended only if you'll still have this much Rage after use.\n\n"
-        .. "This option helps to ensure that %s or %s are available if needed.",
+    name = strformat( L["%s (or %s) Rage Threshold"], Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ) ),
+    desc = strformat( L["If set above zero, %1$s and %2$s can be recommended only if you'll still have this much Rage after use.\n\nThis option helps to ensure that %3$s or %4$s are available if needed."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.frenzied_regeneration.id ) ),
     type = "range",
@@ -2135,11 +2135,11 @@ spec:RegisterSetting( "maul_rage", 20, {
 } )
 
 spec:RegisterSetting( "maul_anyway", true, {
-    name = strformat( "Use %s and %s in %s Build", Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
+    name = strformat( L["Use %1$s and %2$s in %3$s Build"], Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
-    desc = strformat( "If checked, %s and %s are recommended more frequently even if you have talented %s or %s.\n\n"
-        .. "This differs from the default SimulationCraft priority as of February 2023.", Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ), Hekili:GetSpellLinkWithTexture( spec.talents.layered_mane[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ) ),
+    desc = strformat( L["If checked, %1$s and %2$s are recommended more frequently even if you have talented %3$s or %4$s.\n\nThis differs from the default SimulationCraft priority as of February 2023."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.layered_mane[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ) ),
     type = "toggle",
     width = "full",
 } )
@@ -2153,12 +2153,10 @@ spec:RegisterSetting( "maul_anyway", true, {
 } ) ]]
 
 spec:RegisterSetting( "ironfur_damage_threshold", 5, {
-    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
-    desc = strformat( "If set above zero, %s will not be recommended for mitigation purposes unless you've taken this much damage in the past 5 seconds (as a percentage "
-        .. "of your total health).\n\n"
-        .. "This value is halved when playing solo.\n\n"
-        .. "Taking %s and %s will result in |W%s|w recommendations for offensive purposes.", Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ),
-        Hekili:GetSpellLinkWithTexture( spec.talents.thorns_of_iron[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ), spec.abilities.ironfur.name ),
+    name = strformat( L["%s Damage Threshold"], Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
+    desc = strformat( L["If set above zero, %1$s will not be recommended for mitigation purposes unless you've taken this much damage in the past 5 seconds (as a percentage of your total health).\n\nThis value is halved when playing solo.\n\nTaking %2$s and %3$s will result in |W%4$s|w recommendations for offensive purposes."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ), Hekili:GetSpellLinkWithTexture( spec.talents.thorns_of_iron[2] ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ), spec.abilities.ironfur.name ),
     type = "range",
     min = 0,
     max = 200,
@@ -2175,10 +2173,8 @@ spec:RegisterSetting( "ironfur_damage_threshold", 5, {
 } ) ]]
 
 spec:RegisterSetting( "catweave_bear", false, {
-    name = strformat( "Weave %s and %s", Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ) ),
-    desc = strformat( "If checked, shifting between %s and %s may be recommended based on whether you're actively tanking and other conditions.  These swaps may occur "
-        .. "very frequently.\n\n"
-        .. "If unchecked, |W%s|w and |W%s|w abilities will be recommended based on your selected form, but swapping between forms will not be recommended.",
+    name = strformat( L["Weave %s and %s"], Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ) ),
+    desc = strformat( L["If checked, shifting between %1$s and %2$s may be recommended based on whether you're actively tanking and other conditions.  These swaps may occur very frequently.\n\nIf unchecked, |W%3$s|w and |W%4$s|w abilities will be recommended based on your selected form, but swapping between forms will not be recommended."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ),
         spec.abilities.cat_form.name, spec.abilities.bear_form.name ),
     type = "toggle",

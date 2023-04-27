@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "WARLOCK" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
@@ -969,7 +970,7 @@ spec:RegisterHook( "reset_precast", function ()
 
     if not SUMMON_DEMON_TEXT then
         SUMMON_DEMON_TEXT = GetSpellInfo( 180284 )
-        class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. ( SUMMON_DEMON_TEXT or "Summon Demon" ) .. "]|r"
+        class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. ( SUMMON_DEMON_TEXT or L["Summon Demon"] ) .. "]|r"
     end
 end )
 
@@ -2084,7 +2085,7 @@ spec:RegisterAbilities( {
 
 
     summon_pet = {
-        name = "|T136082:0|t |cff00ccff[Summon Demon]|r",
+        name = "|T136082:0|t |cff00ccff[" .. L["Summon Demon"] .. "]|r",
         bind = function () return settings.default_pet end
     },
 
@@ -2260,16 +2261,15 @@ spec:RegisterAbilities( {
 } )
 
 spec:RegisterSetting( "manage_ds_ticks", false, {
-    name = "Model |T136163:0|t Drain Soul Ticks",
-    desc = "If checked, the addon will expend |cFFFF0000more CPU|r determining when to break |T136163:0|t Drain Soul channels in favor of " ..
-        "other spells.  This is generally not worth it, but is technically more accurate.",
+    name = L["Model |T136163:0|t Drain Soul Ticks"],
+    desc = L["If checked, the addon will expend |cFFFF0000more CPU|r determining when to break |T136163:0|t Drain Soul channels in favor of other spells.  This is generally not worth it, but is technically more accurate."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "agony_macro", nil, {
-    name = "|T136139:0|t Agony Macro",
-    desc = "Using a macro makes it easier to apply your DOT effects to other targets without switching targets.",
+    name = L["|T136139:0|t Agony Macro"],
+    desc = L["Using a macro makes it easier to apply your DoT effects to other targets without switching targets."],
     type = "input",
     width = "full",
     multiline = true,
@@ -2278,8 +2278,8 @@ spec:RegisterSetting( "agony_macro", nil, {
 } )
 
 spec:RegisterSetting( "corruption_macro", nil, {
-    name = "|T136118:0|t Corruption Macro",
-    desc = "Using a macro makes it easier to apply your DOT effects to other targets without switching targets.",
+    name = L["|T136118:0|t Corruption Macro"],
+    desc = L["Using a macro makes it easier to apply your DoT effects to other targets without switching targets."],
     type = "input",
     width = "full",
     multiline = true,
@@ -2288,8 +2288,8 @@ spec:RegisterSetting( "corruption_macro", nil, {
 } )
 
 spec:RegisterSetting( "sl_macro", nil, {
-    name = "|T136188:0|t Siphon Life Macro",
-    desc = "Using a macro makes it easier to apply your DOT effects to other targets without switching targets.",
+    name = L["|T136188:0|t Siphon Life Macro"],
+    desc = L["Using a macro makes it easier to apply your DoT effects to other targets without switching targets."],
     type = "input",
     width = "full",
     multiline = true,

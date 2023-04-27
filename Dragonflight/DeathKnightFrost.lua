@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class, state = Hekili.Class, Hekili.State
 
 local roundUp = ns.roundUp
@@ -531,7 +532,7 @@ spec:RegisterAuras( {
     },
     frozen_pulse = {
         -- Pseudo aura for legacy talent.
-        name = "Frozen Pulse",
+        name = L["Frozen Pulse"],
         meta = {
             up = function () return runes.current < 3 end,
             down = function () return runes.current >= 3 end,
@@ -868,7 +869,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if not any_dnd_set then
-        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any]|r " .. class.abilities.death_and_decay.name
+        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. L["[Any]"] .. "|r " .. class.abilities.death_and_decay.name
         any_dnd_set = true
     end
 
@@ -1700,8 +1701,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "bos_rp", 50, {
-    name = strformat( "%s for %s", _G.RUNIC_POWER, Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ) ),
-    desc = strformat( "%s will only be recommended when you have at least this much |W%s|w.", Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ), _G.RUNIC_POWER ),
+    name = strformat( L["%1$s for %2$s"], _G.RUNIC_POWER, Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ) ),
+    desc = strformat( L["%1$s will only be recommended when you have at least this much |W%2$s|w."], Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ), _G.RUNIC_POWER ),
     type = "range",
     min = 18,
     max = 100,

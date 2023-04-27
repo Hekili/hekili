@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[addon]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -135,12 +136,12 @@ do
     end
 
     function Hekili:PetBasedTargetDetectionIsReady( skipRange )
-        if petSlot == 0 then return false, "Pet action not found in player action bars." end
-        if not UnitExists( "pet" ) then return false, "No active pet." end
-        if UnitIsDead( "pet" ) then return false, "Pet is dead." end
+        if petSlot == 0 then return false, L["Pet action not found in player action bars."] end
+        if not UnitExists( "pet" ) then return false, L["No active pet."] end
+        if UnitIsDead( "pet" ) then return false, L["Pet is dead."] end
 
         -- If we have a target and the target is out of our pet's range, don't use pet detection.
-        if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot ) then return false, "Player has target and player's target not in range of pet." end
+        if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot ) then return false, L["Player has target and player's target not in range of pet."] end
         return true
     end
 
@@ -630,7 +631,7 @@ end
 
 ns.reportTargets = function()
     for k, v in pairs(targets) do
-        Hekili:Print("Saw " .. k .. " exactly " .. GetTime() - v .. " seconds ago.")
+        Hekili:Print( format( L["Saw %s exactly %.2f seconds ago."], k, GetTime() - v ) )
     end
 end
 
@@ -970,7 +971,7 @@ function Hekili:DumpDotInfo( aura )
 
     aura = aura and class.auras[ aura ] and class.auras[ aura ].id or aura
 
-    Hekili:Print( "Current DoT Information at " .. GetTime() .. ( aura and ( " for " .. aura ) or "" ) .. ":" )
+    Hekili:Print( format( aura and L["Current DoT Information at %1$s for %2$s:"] or L["Current DoT Information at %s:"], GetTime(), aura ) )
     DevTools_Dump( aura and debuffs[ aura ] or debuffs )
 end
 

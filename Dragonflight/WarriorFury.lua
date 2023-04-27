@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( "Hekili" )
 local class = Hekili.Class
 local state = Hekili.State
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
@@ -663,7 +664,7 @@ spec:RegisterHook( "spend", function( amt, resource )
             glory_rage = glory_rage + amt
             local addition = floor( glory_rage / 10 ) * 0.5
             glory_rage = glory_rage % 10
-		  if addition > 0 then buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition end
+            if addition > 0 then buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition end
         end
     end
 end )
@@ -1081,7 +1082,7 @@ spec:RegisterAbilities( {
         cooldown = function () return 120 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) end,
         gcd = "off",
 
-	    toggle = "defensives",
+        toggle = "defensives",
 
         talent = "enraged_regeneration",
         startsCombat = false,
@@ -1095,11 +1096,11 @@ spec:RegisterAbilities( {
 
     execute = {
         id = function () return IsActiveSpell( 280735 ) and 280735 or 5308 end,
-	    known = 5308,
+        known = 5308,
         noOverride = 317485,
         cast = 0,
         cooldown = function () return ( talent.massacre.enabled and 4.5 or 6 ) end,
-	    hasteCD = true,
+        hasteCD = true,
         gcd = "spell",
 
         spend = function () return ( talent.improved_execute.enabled and -20 or 0 ) end,
@@ -1705,23 +1706,22 @@ spec:RegisterAbilities( {
 
 
 spec:RegisterSetting( "check_ww_range", false, {
-    name = "Check |T132369:0|t Whirlwind Range",
-    desc = "If checked, when your target is outside of |T132369:0|t Whirlwind's range, it will not be recommended.",
+    name = L["Check |T132369:0|t Whirlwind Range"],
+    desc = L["If checked, when your target is outside of |T132369:0|t Whirlwind's range, it will not be recommended."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
-    name = "Only |T236312:0|t Shockwave as Interrupt (when Talented)",
-    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting.",
+    name = L["Only |T236312:0|t Shockwave as Interrupt (when Talented)"],
+    desc = L["If checked, |T236312:0|t Shockwave will only be recommended when your target is casting."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "heroic_charge", false, {
-    name = "Use Heroic Charge Combo",
-    desc = "If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use Heroic Leap + Charge together.\n\n" ..
-        "This is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay.",
+    name = L["Use Heroic Charge Combo"],
+    desc = L["If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use |T236171:0|t Heroic Leap + |T132337:0|t Charge together.\n\nThis is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay."],
     type = "toggle",
     width = "full",
 } )
