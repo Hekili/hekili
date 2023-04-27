@@ -339,6 +339,21 @@ spec:RegisterAuras( {
     }
 } )
 
+spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486 )
+-- 2 pieces (Preservation) : Spiritbloom applies a heal over time effect for 40% of healing done over 8 sec. Dream Breath's healing is increased by 15%.
+spec:RegisterAura( "spiritbloom", {
+    id = 409895,
+    duration = 8,
+    tick_time = 2,
+    max_stack = 1
+} )
+-- 4 pieces (Preservation) : After casting 3 empower spells, gain Essence Burst immediately and another 3 sec later.
+spec:RegisterAura( "essence_rush", {
+    id = 409899,
+    duration = 3,
+    max_stack = 1
+} )
+
 
 spec:RegisterHook( "reset_precast", function()
     max_empower = talent.font_of_magic.enabled and 4 or 3
@@ -730,6 +745,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
+            if set_bonus.tier30_2pc > 0 then applyBuff( "spiritbloom" ) end
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )

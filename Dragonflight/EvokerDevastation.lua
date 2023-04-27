@@ -625,6 +625,22 @@ spec:RegisterAura( "limitless_potential", {
 } )
 
 
+spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486 )
+-- 2 pieces (Devastation) : Disintegrate and Pyre pierce enemies with Obsidian Shards, dealing 12% of damage done as Volcanic damage over 8 sec.
+spec:RegisterAura( "obsidian_shards", {
+    id = 409776,
+    duration = 8,
+    tick_time = 2,
+    max_stack = 1
+} )
+-- 4 pieces (Devastation) : Empower spells deal 8% increased damage and cause your Obsidian Shards to blaze with power, dealing 200% more damage for 5 sec. During Dragonrage, shards always blaze with power.
+spec:RegisterAura( "blazing_shards", {
+    id = 409848,
+    duration = 5,
+    max_stack = 1
+} )
+
+
 spec:RegisterHook( "reset_precast", function()
     max_empower = talent.font_of_magic.enabled and 4 or 3
 
@@ -819,6 +835,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             applyDebuff( "target", "disintegrate" )
+            if set_bonus.tier30_2pc > 0 then applyDebuff( "target", "obsidian_shards" ) end
             if buff.essence_burst.up then
                 if talent.feed_the_flames.enabled then reduceCooldown( "fire_breath", 2 ) end
                 removeStack( "essence_burst", 1 )
@@ -907,17 +924,18 @@ spec:RegisterAbilities( {
         damage = function () return spell_targets.eternity_surge * 3.4 * stat.spell_power end,
 
         handler = function ()
-            if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = buff.dragonrage.expires + 6 end
-            -- TODO: Determine if we need to model projectiles instead.
-            if talent.charged_blast.enabled then addStack( "charged_blast", nil, spell_targets.eternity_surge ) end
-            if talent.iridescence.enabled then addStack( "iridescence_blue", nil, 2 ) end
-
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
             end
 
+            if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = buff.dragonrage.expires + 6 end
+            -- TODO: Determine if we need to model projectiles instead.
+            if talent.charged_blast.enabled then addStack( "charged_blast", nil, spell_targets.eternity_surge ) end
+            if talent.iridescence.enabled then addStack( "iridescence_blue", nil, 2 ) end
+
             if set_bonus.tier29_2pc > 0 then applyBuff( "limitless_potential" ) end
+            if set_bonus.tier30_4pc > 0 then applyBuff( "blazing_shards" ) end
         end,
 
         copy = { 382411, 359073 }
@@ -980,6 +998,7 @@ spec:RegisterAbilities( {
             end
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "limitless_potential" ) end
+            if set_bonus.tier30_4pc > 0 then applyBuff( "blazing_shards" ) end
         end,
 
         copy = { 382266, 357208 }
@@ -1176,6 +1195,7 @@ spec:RegisterAbilities( {
                 if talent.feed_the_flames.enabled then reduceCooldown( "fire_breath", 2 ) end
                 removeStack( "essence_burst", 1 )
             end
+            if set_bonus.tier30_2pc > 0 then applyDebuff( "target", "obsidian_shards" ) end
             if talent.causality.enabled then reduceCooldown( "eternity_surge", 1 ) end
             if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
             removeBuff( "charged_blast" )
