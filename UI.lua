@@ -2274,37 +2274,11 @@ do
                 self.criticalUpdate = false
                 self.superUpdate = false
 
+                self.activeThread = coroutine.create( Hekili.Update )
                 self.activeThreadTime = 0
                 self.activeThreadStart = debugprofilestop()
+
                 self.activeThreadFrames = 0
-
-                if self.firstThreadCompleted and not Hekili:GetActiveSpecOption( "throttleTime" ) then
-                    local err = Hekili.Update()
-
-                    self.activeThread = nil
-                    self.activeThreadTime = debugprofilestop() - self.activeThreadStart
-                    self.activeFrameTime = self.activeThreadTime
-
-                    self.refreshTimer = 0
-
-                    if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
-                        self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
-                        self.combatRate = Hekili:GetActiveSpecOption( "combatRefresh" )
-                    else
-                        self.refreshRate = 0.5
-                        self.combatRate = 0.1
-                    end
-
-                    self.activeThreadFrames = 1
-                    self:UpdatePerformance()
-
-                    if err == "AutoSnapshot" then
-                        Hekili:MakeSnapshot( true )
-                    end
-                    return
-                end
-
-                self.activeThread = coroutine.create( Hekili.Update )
 
                 if Hekili:GetActiveSpecOption( "throttleTime" ) then
                     Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
