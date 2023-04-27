@@ -921,7 +921,13 @@ spec:RegisterAbilities( {
         talent = "antimagic_shell",
         startsCombat = false,
 
-        toggle = "defensives",
+        toggle = function()
+            if settings.ams_usage == "defensives" or settings.ams_usage == "both" then return "defensives" end
+        end,
+
+        usable = function()
+            if settings.ams_usage == "damage" or settings.ams_usage == "both" then return incoming_magic_3s > 0, "settings require magic damage taken in the past 3 seconds" end
+        end,
 
         handler = function ()
             applyBuff( "antimagic_shell" )
@@ -1707,6 +1713,27 @@ spec:RegisterSetting( "bos_rp", 50, {
     max = 100,
     step = 1,
     width = "full"
+} )
+
+spec:RegisterSetting( "ams_usage", "damage", {
+    name = strformat( "%s Requirements", Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ) ),
+    desc = strformat( "The default priority uses |W%s|w to generate |W%s|w regardless of whether there is incoming magic damage. "
+        .. "You can specify additional conditions for |W%s|w usage here.\n\n"
+        .. "|cFFFFD100Damage|r:\nRequires incoming magic damage within the past 3 seconds.\n\n"
+        .. "|cFFFFD100Defensives|r:\nRequires the Defensives toggle to be active.\n\n"
+        .. "|cFFFFD100Defensives + Damage|r:\nRequires both of the above.\n\n"
+        .. "|cFFFFD100None|r:\nUse on cooldown if priority conditions are met.",
+        spec.abilities.antimagic_shell.name, _G.RUNIC_POWER, _G.RUNIC_POWER,
+        spec.abilities.antimagic_shell.name ),
+    type = "select",
+    width = "full",
+    values = {
+        ["damage"] = "Damage",
+        ["defensives"] = "Defensives",
+        ["both"] = "Defensives + Damage",
+        ["none"] = "None"
+    },
+    sorting = { "damage", "defensives", "both", "none" }
 } )
 
 
