@@ -72,7 +72,7 @@ spec:RegisterTalents( {
     leeching_strikes                = { 90344, 382258, 1 }, -- Leech increased by 5%.
     menace                          = { 90383, 275338, 1 }, -- Intimidating Shout will knock back all nearby enemies except your primary target, and cause them all to cower in fear for 15 sec instead of fleeing.
     overwhelming_rage               = { 90378, 382767, 2 }, -- Maximum Rage increased by 15.
-    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 4.50% of your maximum health. This can only occur once every 10 sec.
+    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 3.50% of your maximum health. This can only occur once every 10 sec.
     piercing_howl                   = { 90348, 12323 , 1 }, -- Snares all enemies within 12 yards, reducing their movement speed by 70% for 8 sec.
     piercing_verdict                = { 90379, 382948, 1 }, -- Spear of Bastion's instant damage increased by 50% and its Rage generation is increased by 100%.
     rallying_cry                    = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 15% temporary and maximum health for 10 sec.
@@ -146,7 +146,7 @@ spec:RegisterTalents( {
     skullsplitter                   = { 90281, 260643, 1 }, -- Bash an enemy's skull, dealing 1,909 Physical damage. Skullsplitter causes your Deep Wounds to expire instantly. Generates 15 Rage.
     spiteful_serenity               = { 90289, 400314, 1 }, -- Colossus Smash and Avatar's durations are increased by 100% but their damage bonuses are reduced by 40%.
     storm_of_swords                 = { 90267, 385512, 1 }, -- Whirlwind costs 20 more Rage and has a 14.0 sec cooldown. It now deals 175% more damage.
-    storm_wall                      = { 90269, 388807, 1 }, -- Whenever you Parry, you heal for 10.00% of your maximum health. Can only occur once per second.
+    storm_wall                      = { 90269, 388807, 1 }, -- Whenever you Parry, you heal for 8.00% of your maximum health. Can only occur once per second.
     strength_of_arms                = { 92536, 400803, 1 }, -- Overpower has 10% increased critical strike chance, deals 10% increased critical strike damage and on enemies below 35% health Overpower generates 8 Rage.
     sudden_death                    = { 90274, 29725 , 1 }, -- Your attacks have a chance to make your next Execute cost no Rage, be usable on any target regardless of their health, and deal damage as if you spent 40 Rage.
     tactician                       = { 90282, 184783, 1 }, -- You have a 2.30% chance per Rage spent on abilities to reset the remaining cooldown on Overpower.
@@ -285,7 +285,8 @@ spec:RegisterAuras( {
     },
     fatal_mark = {
         id = 383704,
-        duration = 120,
+        -- TODO: Remove retail/PTR compatibility if statement post 10.1 release.
+        duration = function() return Hekili.CurrentBuild > 100007 and 180 or 120 end ,
         max_stack = 999
     },
     hamstring = {
@@ -609,6 +610,17 @@ spec:RegisterAura( "strike_vulnerabilities", {
     id = 394173,
     duration = 6,
     max_stack = 1
+} )
+
+spec:RegisterGear( "tier30", 202446, 202444, 202443, 202442, 202441 )
+spec:RegisterSetBonuses( "tier30_2pc", 405577, "tier30_4pc", 405578 )
+--(2) Set Bonus: Deep Wounds increases your chance to critically strike and critical strike damage dealt to afflicted targets by 5%.
+--(4) Deep Wounds critical strikes have a chance to increase the damage of your next Mortal Strike by 10% and cause it to deal
+--    [(19.32% of Attack power) * 2] Physical damage to enemies in front of you, stacking up to 3 times. Damage reduced above 5 targets. (2s cooldown)
+spec:RegisterAura( "crushing_advance", {
+    id = 410138,
+    duration = 30,
+    max_stack = 3
 } )
 
 
@@ -1135,6 +1147,12 @@ spec:RegisterAbilities( {
             removeBuff( "overpower" )
             removeBuff( "executioners_precision" )
             removeBuff( "battlelord" )
+            if state.set_bonus.tier30_4pc > 0 then removeBuff( "crushing_advance" ) end
+            -- Patch 10.1 adds auto Rend to target using MS with talent under 35% HP
+            -- TODO: Remove retail/PTR compatibility if statement post 10.1 release.
+            if Hekili.CurrentBuild > 100007 and target.health.pct < 35 and talent.bloodletting.enabled then
+                applyDebuff ( "target", "rend" )
+            end
         end,
     },
 

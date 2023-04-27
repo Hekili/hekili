@@ -93,7 +93,7 @@ spec:RegisterTalents( {
     leeching_strikes                = { 90344, 382258, 1 }, -- Leech increased by 5%.
     menace                          = { 90383, 275338, 1 }, -- Intimidating Shout will knock back all nearby enemies except your primary target, and cause them all to cower in fear for 15 sec instead of fleeing.
     overwhelming_rage               = { 90378, 382767, 2 }, -- Maximum Rage increased by 15.
-    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 4.50% of your maximum health. This can only occur once every 10 sec.
+    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 3.50% of your maximum health. This can only occur once every 10 sec.
     piercing_howl                   = { 90348, 12323 , 1 }, -- Snares all enemies within 12 yards, reducing their movement speed by 70% for 8 sec.
     piercing_verdict                = { 90379, 382948, 1 }, -- Spear of Bastion's instant damage increased by 50% and its Rage generation is increased by 100%.
     rallying_cry                    = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 15% temporary and maximum health for 10 sec.
@@ -517,6 +517,16 @@ spec:RegisterAura( "vanguards_determination", {
     max_stack = 1,
 } )
 
+spec:RegisterGear( "tier30", 202446, 202444, 202443, 202442, 202441 )
+spec:RegisterSetBonuses( "tier30_2pc", 405581, "tier30_4pc", 405582 )
+--(2) Shield Slam deals 15% increased damage and reduces the cooldown of Last Stand by 1 sec. During Last Stand these effects are doubled.
+--(4) For 10 sec after Last Stand ends, Shield Slam unleashes a wave of force dealing (45% of Attack power) Physical damage to enemies in front of you and reducing damage they deal to you by 5% for 5 sec.
+spec:RegisterAura( "earthen_tenacity", {
+    id = 410218,
+    duration = 5,
+    max_stack = 1
+} )
+
 
 local rageSpent = 0
 local gloryRage = 0
@@ -599,6 +609,16 @@ end )
 spec:RegisterStateExpr( "cycle_for_execute", function ()
     if active_enemies == 1 or target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or not settings.cycle or buff.execute_ineligible.down or buff.sudden_death.up then return false end
     return Hekili:GetNumTargetsBelowHealthPct( talent.massacre.enabled and 35 or 20, false, max( settings.cycle_min, offset + delay ) ) > 0
+end )
+
+local TriggerEarthenTenacity = setfenv( function()
+    applyBuff( "earthen_tenacity" )
+end, state )
+
+spec:RegisterHook( "reset_precast", function ()
+    if state.set_bonus.tier30_4pc > 0 and buff.last_stand.up then
+        state:QueueAuraExpiration( "last_stand_earthen_tenacity", TriggerEarthenTenacity, buff.last_stand.expires )
+    end
 end )
 
 -- Abilities
@@ -1010,10 +1030,12 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.ignore_pain.up then
                 buff.ignore_pain.expires = query_time + class.auras.ignore_pain.duration
-                buff.ignore_pain.v1 = min( 0.3 * health.max, buff.ignore_pain.v1 + stat.attack_power * 3.5 * ( 1 + stat.versatility_atk_mod / 100 ) )
+                -- TODO: Remove retail/PTR compatibility statement post 10.1 release. (3.5 [retail] vs 4.375 [10.1 patch])
+                buff.ignore_pain.v1 = min( 0.3 * health.max, buff.ignore_pain.v1 + stat.attack_power * (Hekili.CurrentBuild > 100007 and 4.375 or 3.5) * ( 1 + stat.versatility_atk_mod / 100 ) )
             else
                 applyBuff( "ignore_pain" )
-                buff.ignore_pain.v1 = min( 0.3 * health.max, stat.attack_power * 3.5 * ( 1 + stat.versatility_atk_mod / 100 ) )
+                -- TODO: Remove retail/PTR compatibility statement post 10.1 release. (3.5 [retail] vs 4.375 [10.1 patch])
+                buff.ignore_pain.v1 = min( 0.3 * health.max, stat.attack_power * (Hekili.CurrentBuild > 100007 and 4.375 or 3.5) * ( 1 + stat.versatility_atk_mod / 100 ) )
             end
         end,
     },
@@ -1120,6 +1142,10 @@ spec:RegisterAbilities( {
 
             if talent.unnerving_focus.enabled then
                 applyBuff( "unnerving_focus" )
+            end
+
+            if state.set_bonus.tier30_4pc > 0 then
+                state:QueueAuraExpiration( "last_stand_earthen_tenacity", TriggerEarthenTenacity, buff.last_stand.expires )
             end
         end,
     },
@@ -1411,6 +1437,10 @@ spec:RegisterAbilities( {
 
             if ( legendary.the_wall.enabled or talent.impenetrable_wall.enabled ) and cooldown.shield_wall.remains > 0 then
                 reduceCooldown( "shield_wall", 5 )
+            end
+
+            if state.set_bonus.tier30_2pc > 0 then
+                reduceCooldown( "last_stand", buff.last_stand.up and 4 or 2 )
             end
         end,
     },
