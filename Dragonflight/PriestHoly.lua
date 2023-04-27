@@ -545,7 +545,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return ( 0.04 * buff.divine_favor_serenity.up and 0.8 or 1 ) end,
+        spend = function() return 0.04 * ( buff.divine_favor_serenity.up and 0.8 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
@@ -620,7 +620,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return ( 0.02 * buff.divine_favor_serenity.up and 0.8 or 1 ) end,
+        spend = function() return 0.02 * ( buff.divine_favor_serenity.up and 0.8 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
@@ -1068,7 +1068,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return ( 0.02 * buff.divine_favor_serenity.up and 0.8 or 1 ) end,
+        spend = function() return 0.02 * ( buff.divine_favor_serenity.up and 0.8 or 1 ) end,
         spendType = "mana",
 
         talent = "renew",
