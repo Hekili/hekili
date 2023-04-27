@@ -616,7 +616,7 @@ local TriggerEarthenTenacity = setfenv( function()
 end, state )
 
 spec:RegisterHook( "reset_precast", function ()
-    if state.set_bonus.tier30_4pc > 0 and buff.last_stand.up then
+    if set_bonus.tier30_4pc > 0 and buff.last_stand.up then
         state:QueueAuraExpiration( "last_stand_earthen_tenacity", TriggerEarthenTenacity, buff.last_stand.expires )
     end
 end )
@@ -1144,7 +1144,7 @@ spec:RegisterAbilities( {
                 applyBuff( "unnerving_focus" )
             end
 
-            if state.set_bonus.tier30_4pc > 0 then
+            if set_bonus.tier30_4pc > 0 then
                 state:QueueAuraExpiration( "last_stand_earthen_tenacity", TriggerEarthenTenacity, buff.last_stand.expires )
             end
         end,
@@ -1302,7 +1302,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            if state.set_bonus.tier29_2pc > 0 then applyBuff( "vanguards_determination" ) end
+            if set_bonus.tier29_2pc > 0 then applyBuff( "vanguards_determination" ) end
             if buff.revenge.up then removeBuff( "revenge" ) end
             if talent.show_of_force.enabled then applyBuff( "show_of_force" ) end
             applyDebuff( "target", "deep_wounds" )
@@ -1439,7 +1439,7 @@ spec:RegisterAbilities( {
                 reduceCooldown( "shield_wall", 5 )
             end
 
-            if state.set_bonus.tier30_2pc > 0 then
+            if set_bonus.tier30_2pc > 0 then
                 reduceCooldown( "last_stand", buff.last_stand.up and 4 or 2 )
             end
         end,
