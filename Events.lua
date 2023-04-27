@@ -1993,7 +1993,6 @@ local function StoreKeybindInfo( page, key, aType, id, console )
 end
 
 
-
 local defaultBarMap = {
     WARRIOR = {
         { bonus = 1, bar = 7 },
@@ -2022,7 +2021,7 @@ local defaultBarMap = {
 }
 
 
-    local slotsUsed = {}
+local slotsUsed = {}
 
 local function ReadKeybindings( event )
         if not Hekili:IsValidSpec() then return end
@@ -2124,21 +2123,21 @@ local function ReadKeybindings( event )
                 end
             end
 
-            for i = 144, 155 do
+            for i = 145, 156 do
                 if not slotsUsed[ i ] then
-                    StoreKeybindInfo( 13, GetBindingKey( "MULTIACTIONBAR5BUTTON" .. i - 143 ), GetActionInfo( i ) )
+                    StoreKeybindInfo( 13, GetBindingKey( "MULTIACTIONBAR5BUTTON" .. i - 144 ), GetActionInfo( i ) )
                 end
             end
 
-            for i = 156, 167 do
+            for i = 157, 168 do
                 if not slotsUsed[ i ] then
-                    StoreKeybindInfo( 14, GetBindingKey( "MULTIACTIONBAR6BUTTON" .. i - 155 ), GetActionInfo( i ) )
+                    StoreKeybindInfo( 14, GetBindingKey( "MULTIACTIONBAR6BUTTON" .. i - 156 ), GetActionInfo( i ) )
                 end
             end
 
-            for i = 168, 179 do
+            for i = 169, 180 do
                 if not slotsUsed[ i ] then
-                    StoreKeybindInfo( 15, GetBindingKey( "MULTIACTIONBAR7BUTTON" .. i - 167 ), GetActionInfo( i ) )
+                    StoreKeybindInfo( 15, GetBindingKey( "MULTIACTIONBAR7BUTTON" .. i - 168 ), GetActionInfo( i ) )
                 end
             end
 
