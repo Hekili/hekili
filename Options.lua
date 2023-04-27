@@ -423,7 +423,8 @@ local displayTemplate = {
 
     border = {
         enabled = true,
-        width = 1,
+        thickness = 1,
+        fit = false,
         coloring = 'custom',
         color = { 0, 0, 0, 1 },
     },
@@ -515,6 +516,8 @@ local displayTemplate = {
         fontStyle = "OUTLINE",
 
         lowercase = false,
+
+        separateQueueStyle = false,
 
         queuedFont = ElvUI and "PT Sans Narrow" or "Arial Narrow",
         queuedFontSize = 12,
