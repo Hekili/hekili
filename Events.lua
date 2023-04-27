@@ -2345,10 +2345,11 @@ end
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
-    local prowlOrder = { 8, 7, 2, 3, 4, 5, 6, 9, 10, 1 }
-    local catOrder = { 7, 8, 2, 3, 4, 5, 6, 9, 10, 1 }
-    local bearOrder = { 9, 2, 3, 4, 5, 6, 7, 8, 10, 1 }
-    local owlOrder = { 10, 2, 3, 4, 5, 6, 7, 8, 9, 1 }
+    local prowlOrder = { 8, 7, 2, 3, 4, 5, 6, 9, 10, 13, 14, 15, 1 }
+    local catOrder = { 7, 8, 2, 3, 4, 5, 6, 9, 10, 13, 14, 15, 1 }
+    local bearOrder = { 9, 2, 3, 4, 5, 6, 7, 8, 10, 13, 14, 15, 1 }
+    local owlOrder = { 10, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 15, 1 }
+    local defaultOrder = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15 }
 
     function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
@@ -2382,28 +2383,21 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
 
         local output, source
 
-        local order = ( state.prowling and prowlOrder ) or ( state.buff.cat_form.up and catOrder ) or ( state.buff.bear_form.up and bearOrder ) or ( state.buff.moonkin_form.up and owlOrder ) or nil
+        local order = defaultOrder
+        -- TODO: These checks should use actual aura data rather than potential stale/manipulated virtual state data.
+        if class.file == "DRUID" then
+            order = ( state.prowling and prowlOrder ) or ( state.buff.cat_form.up and catOrder ) or ( state.buff.bear_form.up and bearOrder ) or ( state.buff.moonkin_form.up and owlOrder ) or order
+        end
 
         if order then
-            for _, i in ipairs( order ) do
-                output = db[ i ]
+            for _, n in ipairs( order ) do
+                output = db[ n ]
 
                 if output then
-                    source = i
+                    source = n
                     break
                 end
             end
-
-        else
-            for i = 1, 10 do
-                output = db[ i ]
-
-                if output then
-                    source = i
-                    break
-                end
-            end
-
         end
 
         output = output or ""
@@ -2421,8 +2415,10 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
 
         return output
     end
+
 elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
-    local stealthedOrder = { 7, 8, 1, 2, 3, 4, 5, 6, 9, 10 }
+    local stealthedOrder = { 7, 8, 1, 2, 3, 4, 5, 6, 9, 10, 13, 14, 15 }
+    local defaultOrder = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15 }
 
     function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
@@ -2456,25 +2452,14 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
         local db = console and keys[ key ].console or ( caps and keys[ key ].upper or keys[ key ].lower )
 
         local output, source
+        local order = state.stealthed.all and stealthedOrder or defaultOrder
 
-        if state.stealthed.all then
-            for _, i in ipairs( stealthedOrder ) do
-                output = db[ i ]
+        for _, n in ipairs( order ) do
+            output = db[ n ]
 
-                if output then
-                    source = i
-                    break
-                end
-            end
-
-        else
-            for i = 1, 10 do
-                output = db[ i ]
-
-                if output then
-                    source = i
-                    break
-                end
+            if output then
+                source = n
+                break
             end
         end
 
@@ -2524,11 +2509,11 @@ else
 
         local output, source
 
-        for i = 1, 10 do
-            output = db[ i ]
+        for _, n in ipairs( { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15 } ) do
+            output = db[ n ]
 
             if output then
-                source = i
+                source = n
                 break
             end
         end
