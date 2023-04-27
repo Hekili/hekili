@@ -12,6 +12,7 @@ local spec = Hekili:NewSpecialization( 11 )
 -- Idols
 spec:RegisterGear( "idol_of_worship", 39757)
 spec:RegisterGear( "idol_of_the_ravenous_beast", 40713)
+spec:RegisterGear( "idol_of_the_corruptor", 45509)
 
 -- Sets
 spec:RegisterGear( "tier7feral", 39557, 39553, 39555, 39554, 39556, 40472, 40473, 40493, 40471, 40494 )
@@ -298,16 +299,17 @@ spec:RegisterStateExpr("should_flowerweave", function()
     local flower_gcd = action.gift_of_the_wild.gcd
     local flowershift_energy = min(furor_cap, 75) - 10 * flower_gcd - 20 * latency
     local flower_end = flower_gcd + 1.5 + 2 * latency
+    local dump_action_cost = active_enemies > 2 and 45 or 42
     local energy_to_dump = energy.current + (flower_end + 1) * 10
     return (
         flowerweaving_enabled and
         energy.current <= flowershift_energy and
         (not buff.clearcasting.up) and
-        ((not rip_refresh_pending) or (debuff.rip.remains >= flower_end)) and
+        ((not rip_refresh_pending) or (debuff.rip.remains >= flower_end) or active_enemies > 2) and
         (not buff.berserk.up) and
         (not tf_expected_before(time, time + flower_end)) and
         (not ff_expected_before(time, time + flower_end + 1)) and
-        flower_end + 1 + floor(energy_to_dump / 42) < ttd
+        flower_end + 1 + floor(energy_to_dump / dump_action_cost) < ttd
     )
 end)
 
@@ -342,12 +344,6 @@ end)
 spec:RegisterStateExpr("flowerweaving_enabled", function()
     return settings.flowerweaving_enabled and (state.group_members >= flowerweaving_mingroupsize) and (active_enemies > 2 or settings.flowerweaving_mode == "any")
 end)
-
-spec:RegisterStateTable("aoe_combo_spell", setmetatable( {}, {
-    __index = function( t, k )
-        return settings.aoe_combo_spell == k
-    end
-}))
 
 -- Resources
 spec:RegisterResource( Enum.PowerType.Rage, {
@@ -2582,7 +2578,6 @@ spec:RegisterAbilities( {
 
 -- Settings
 local flowerweaving_modes = {}
-local aoe_combo_spells = {}
 local bearweaving_instancetypes = {}
 
 spec:RegisterSetting("druid_description", nil, {
@@ -2667,47 +2662,6 @@ spec:RegisterSetting("optimize_rake", false, {
 })
 
 spec:RegisterSetting("druid_feral_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
-
-spec:RegisterSetting("druid_feral_aoe_header", nil, {
-    type = "header",
-    name = "Feral: AOE"
-})
-
-spec:RegisterSetting("druid_feral_aoe_description", nil, {
-    type = "description",
-    name = "General Feral AOE settings will change the parameters used in the AOE cat rotation.\n\n"
-})
-
-spec:RegisterSetting("aoe_combo_spell", "rake", {
-    type = "select",
-    name = "Preferred AOE Combo Builder",
-    desc = "Select the preferred spell for building combo points in AOE situations.\n\nRecommendation:\n - Rake: If not using Mangle idol\n - Mangle: If using Mangle idol\n\nDefault: Rake",
-    width = "full",
-    values = function()
-            table.wipe(aoe_combo_spells)
-            aoe_combo_spells.rake = class.abilityList.rake
-            aoe_combo_spells.mangle = class.abilityList.mangle_cat
-            return aoe_combo_spells
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.aoe_combo_spell = val
-    end
-})
-
-spec:RegisterSetting("optimize_aoe_rake", false, {
-    type = "toggle",
-    name = "Use Rake For T8 Proc In AOE",
-    desc = "When enabled, rake will be recommended up to 5 combo points when wearing 2-piece tier 8",
-    width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.optimize_aoe_rake = val
-    end
-})
-
-spec:RegisterSetting("druid_feral_aoe_footer", nil, {
     type = "description",
     name = "\n\n"
 })
@@ -2987,7 +2941,7 @@ spec:RegisterOptions( {
 -- Default Packs
 spec:RegisterPack( "Balance (IV)", 20230228, [[Hekili:9IvZUTnoq4NfFXigBQw74MMgG6COOh20d9IxShLeTmvmr0FlfLnYcb9SVdffTO4pskfO9sRd5mFZhNz4mdL)g))2F)red7)J7wF3213D3N92S5(h)4g)9S3kW(7lqrVIEb(rgkf(3VIsqzr4MWBE(FwX39TKC0rokL5v0iqc)9hQijSNZ8pyf6TpcYwGJ8)XgWiNihpIfIIlJuW)B0kYXMWckjNsyV1egNtBc)l8RKecyxAEmjbSgkIrYZk9kO4O80di2FS7ptr0xdYJdyNWbxijhVLeVBrvXYfhQIJ9EHeZu31RQO572GHDkNMv2PSDrsZZZELKfaClDublY5R189R7cRfHssce)zqcPKDl3dVJKryQsrRYmfcLJ5MJV(zCaodNsWLpTDs9klqT88mIsqhsWE8fcYYVmPMXKYtk03JttqwjqcHsQYq0ajM3EgLuH3160XrjKIsCqRed84wbQmpzcGALyganeIRN7HmTUU3HmWYtGo3POG(chWVCXph8cuIqzbq6EKB3zcQKfGkksi4J7wxx)Vvy6Bbmsk(dti9t72UEkpylJhJeIqXCjHP0ZGecpHM7(QtvU(sn)VK0Z6eoj43OfeLOxxRh3L7Ss9cdhhW0LmenMqBV(k8lGo4YGlue7eKpV8gD0KeOU2uEkofrYk)IWiEsW9Ej6yDDA(zs2lRmOaVOLKcloIBrvUgNbc9mudQXfH5foZqSkk2(jdkPzQictj4GRMKFizOeCgZJKc(PZ4JbkY4HZ4NE4a8cnVQiifNEatlFA39UpsGpahXckVG6Qd3DSuxFqXIo9GwCNGtoxfb0lFjbwYRBDjvE3UqhHWL6IkJFBnSqB8DqP6HqnAILwMAVo9AXlbbADc6XtHUXqiaffHtWGzH9VTQKhQJdGePDB6Zv1QIV0YQDhPNkXmg4qlL3jYZtoMFbAPGXxqVzqerdYF)2LBqcdNw(730tvkWqHzMLdLqSsDzbeRC)HvgMZmf0v3llhihTcvtbHHygEfCI7Ec5nlZiw)ufLsGkVWmHNHuAyNRZD(G)EW1KXdn(7FoTiNYaCd)utOaIMq(CoLEnF3FF7V4JZYV0a))pANqUJl(F1FFemnkuRcXhZ1smlCjmACt4IMqxxCdRRBcDwkVj8lsAnOCUqTUsZHRKd(cJs3jKpdoVo5kWhZYuTKvazpEY954TLJNCdT6)Qgce9JQIkJrAYC)y0R33nJEdcVXG(dnHpTRj8EN(jfu4C5tZWvPDVQhl1n4G9GtWKebozwZU7XSBdoCFEgCtpm6mBBPPkQPABTh5F0jfCyOEyAtN5ySz90GmSbL1SAg)PHXOQeMTRJsf0FmL4MCG4rR8X(g)(bxZ(xsb5sd8mAViAa2q1NRxvM4S2vdCE4YL(6fllh4X0TT2vRN76BqhVuw)9VfD1MS8kzLmfThypzThvLfpRECFMMkQpZ2OyJyYHHLAyI4YON55FF8UzuBBqPsLErASQnQoJUk6pxMhAC39UnFD8PpuiN9r(83RmaeNGJgt)LZszu1KuUZA(LtQRdlAJx6xuhFqb7nWhTdPJ300pXHJZF)8goDapmOvPE7n39kDmzOLMbUBr6ysrx9cARLB5guo4sH4yVAsC5)cErVJ0Jw56kBQralxaENgr(rQunIMNYsc90gX1W1THANXefoOyD902PTU5ST9ey5WrFDtHRT8TK1pnfSekv)IsnHWOGRfUJ(Vdvt4hSEryOM8Pi3U2mTq(rDSDH4DsyZpb2CjSnnnj8WVpLTBFtt4Z6F)lBtzE1egEl1WR(4S)Sg)gJeRRFGVwhNzEz)(Rm9pkuumWqfFYe)9Fdh)FOiX8t())d]] )
 
-spec:RegisterPack( "Feral DPS (IV)", 20230416, [[Hekili:DV1sVnoos4Fl(IG9KoETDItYay7dlgSaD2f9oaUXU3KeTeTJqllzqjfpzGH(TVfPEXhfLCspDFyV0XMI1dwSQV6Hv7o39RUBdj5u3VSy2I7MD)8hNo)xx(0s3T5VDI6U9ej4BKdWhsihH)9FqzK4s)F733w6p(Z)Nj8n8wCkjKZNS0cwaSj3T7kIIZ)CI7oeMF3d39iS3t0a3VmFU72xIcdPvBLMf4U9)MM)V(NL(nsIvefw6)7SOuwuEenR85YN)A6HdX0sFs4RKKak8CwAojpknb(eni94rAsO47zL(rWI5Va7oiMKbFp9K4btbvNLUpkguysq1sNeeVJKFZ6)2rc7BEP79as9ohfh(PO9RhvCYz0UI97NEiAFU8tNwCQ8zm2K)skljRMy8TeqY92NYo27MoLkoEp3(ubHXXEvF1lokl)t87O1rjr5Y7QiJ6fLtpMjVyd76w5f46Mb3k0qGLb0yW8ZF0N4KNUFV3HGW1Z5Qygn3BxAsr2u46G94E(9K39Ncwp3zSW2KhDa4K3(c2BGz5YLG004W0ZjkpGrpsIsY2SE(YjYQbRiX8iTJsyCrlyFyeJ6Xxry0Kn82iNBGjP0wo0yWbAD4B(vQhnHEeCU2S4AyggJuVx0Uq7Us5xoWoELWIi7IPvSmp6i1lp1lmI(PxjXfWk5Hdqd4GdoFmA2l1K0TWauUdCg8aneiOMuUtwQ3P0OK8SPbfmgnjF9sNXn0nvsbx1UyNaVCjKkShSOtCBkgD3kTL67Emwn5Au(DuW6s9aw1)bWuKB4EV5rjhYMEmkXtWn4XE1p2rS)mYRaINhlLW6JUmwdzxJohwWaYbvNLrzFRwVfIREjUHd8czhER5eSssOK)OsOv7yabcrROIRx2deDvm)mjs4D7LVV16Bp(EL6zeulbQItF0CZ8vOEqOCAaTLF5MKEUwthP6NAXTbt4BwJ4SkhyhiqP3tOSiQ3EoeLayuabuHvedqwbKmUfNl8X5e2bA(00I8SOq6Ilx09gALOX95LlJgW15PhN4mEulhQndxUOTTkTxypaO)KWjobKepXhbhc9tN0DLzAbnoF3SBhJEUNV8YLzt0zDJJk3C1Q1sUAoQ3COMuDEkfhBKAfDhQYWalWMCTIAC7yUDhcUACSBd44RhtPNjVnz16zo22ghRHZqULgweIyzEj0ZETHrJSdyH5fBC(b34WUSzAhRAZbWdAO03pssGIVqS3vpWtjbPglhnep4y6aX6oUgBJ8n6GcPvXXdOBUTbwHGMuhptzPbrPfzc036QFQUBAFunUmxaH6HHp8OfxMUCRsPJVCrD1U8C8GzTiE9nRIqyeG1yX4LWogd4Bfexowv9VTbEGBIeGc3yMs9xMpBZADCeNbzKnhxz2j)4k4jWoK9sArCOhNvamO2vTXXw1N0W9doYQl1K2AHLtqh)(lXGyWUpMzr)uRwISWTTYQXx7mL8QbsGE)ms0Spo9mTIkhqFjtpfKVrbIs8mp(Z09)VFHviNXw9cXnvccFFg9j4E6RNDnY4JDt4iG8HKO0)ixerpsXFDyXkJkHD2AJGMmrNDRNpBMwjj82EENLL8xDviwlOOw3(rvurn7LkSqLzBEywVvHY7mfJHzNJo1BsouI6VuK6DPcwbR5v5(cMV44ASc8IwNH3S2gBoX3mF6YBIjGlAWBtUIQPQvqLKi66h)Hw0oaMTfWGp(LJr)jLZsruHJ6afEQAGcleduahIGNg4NXXT9Qg7H)OqmxkhcZXRFxXVgKkplIA1t5avVnAcdmAMbGTri1(M8TJjMJKIytQhzTKzU0AJex3MnSiUggCSfb7OM4uSQGc14)wTQDxUBFfIWHh2olYhC3EMWs43jUB)8XtPSC(KeFO0VIlL(8H(KnT8z3TIpXhXjy7G)8fXytRR5Z9VdlZGsWahs3TJk9rVx8Dk9hx6R10xP)Ll1e0HIk2RDy3kAgHtMQ3uP)Qs)NES0FsJ8hjX5MARf8dHq90PnSrgrVz2PUBn8rDZbtn3oj5wWTC42ne5F3Ss)BfATvlkarl0EyNt6ufj0CUsCxFxwynBkyTsZGIvSC12j367cUmVVpzktJeAfNULwPZuFmq76xpXPPzew1wA1orl9VP0hPPvHNWQ1c7Ut)eP1cBfzATXQO1Ok3M1s3usi(wTJpy1oA10O1kH8AT9lijpEnBCj947xsJ6JXDfbW5(tw5UEyChhGf4K(RFpkMIvaDucI7eSEOLueyzUMmFMvvP)2PTbP9WJd6OpwsTLAXUcUWwB2QaLg4RMKQJmlbcPo6aHzO3SgD6nwrpIJDny3ytBYTDO1TniiIdn7uQ0)xaCZzv3FMq8igCRm3E8QPimAvsyRBn3sDj1MFZWvCcIR1I(SPgtBQX(H20VWgVyatGEh7)aSYOI471wBdGzU9SJ6ZmOJfQZxqWg7j8mlkwC(Bkmg0CT0fDfhBl()(fD6IED4cTXEA0XxviM9lhPE1)yx9t6pmVkP67th(E9nA0iLrx0ggAeAE9kgYWmqTosWkvGcyIznNUzMzGZ5)q(1)q5dwBUwjsi)m(YbkQVbaTf0En11v97(py5NYK00QwB9JnpO6hRxMjItDDVOdEM7lh5pRwp()NEg0fkGE9qvzW9nnPk)Dax691Sq)9B0oFI(7CO)ooSxPm(aOQpQ2XU0k(sTMX(aRaaJ5txk(B9SAA8EgSZl1CA2ljxPolSbyn4PRUac7JZsWbBJ0QcfRhHuLcsUYOFUgYM6QEsg)PZptbcQNom(rKZFzV58Z5ruGh9hbm8AaK67ykSmyO43D1qzwg3vhBRgqxlAXvXuZ8Dy4HYJItjTC344eUsJLq40MgiNnQfV2nyomWwoNBXS0IHRgwNwQo(72b2vB6jrlKDmPjAH)P4c4p55HIv9QE)fLNDaYv7W8J2(2FiZwPvrsEmmxTI4SSFyGvspOthQm5MdmcNh3IxeRnwpr(Cl1znwISV7doMIX9q79T4sqPD0rC67EBUmoFDZhalp7WNXRQyjfLs9T9YqHulkdlj(Wk1Gkq77dMS4nQielD7WcV)kL4QIIntzoH9t7nI0RR6XxhLZYNrPbb7ImbUHpDJWI9gWr3(i2qccL12MP)jGjdP7bKvuKYU0tQVZWv)2g1mtaZ2al2qr77pSw2)7gQfL3rMQmlVtXs1l1usV6BxCfu31u5TscilVSZyX3TvgP(YaBuLUXRLSILvKvdjq9A5EG0BACt22UxBzr9ulueytZHiXNFazQZASaJRPV2Q60iz0W)Dc2)zcif8(MD3(B09)jj4fX(D)Fd]] )
+spec:RegisterPack( "Feral DPS (IV)", 20230425, [[Hekili:DV1wVnoUv4Fl(fd7ntCTDItMcyNhkwuGjTy2fWlAFts0s0ocJSKbfv8Mcd9BVhsDJxouYjZofO7ltSP45cp8C(oxSgVfE)M32icN691LZxE387xUA2IhwU8(LEB5VDI6T9ej8BKdWhsjhH)9VtzKKYGF(x3wgm5l)RPIn8wsgjsWO8ScwiSjVT7kIt4Fj1Bhg3xmFbS3t0qVVUa(0lXrr0QTsZd92(VZ4)Z)rzqJKyfXrLb)kloJfZJP5Lpx(8VLD4qcTmGe9kjnKcpNLXj84Su4t0WSJhPPrYVNxgedlYFb2Dycjh(E2j5dMbQolBFCcOWKWQLojjEhHFZM)Yrc7B(z79bs9phNe9P49BgvCA8ODf73p7q8EU6tNvCQ8zm2WFjJLMxtm(wcjC)9zSJ9UPtzYJ3ZTpvsysIF1x9tIZ5FsChTjonMRURICQFmNEmxDXg21TYlW1ndUvOraldPjG5x8OpjipB)E)dHrBwiuXCk3FxwAr(m46G94EX9K)9Nc3Sy8ePTHhFa4K)(c2BGz5YLWSSKOSZPApGrpsItZFAZIvtvvdwrQ9rAhLWeIwY(Oyg1xSI0OPA4DrUWatYOTCOXGd0owS5xP(0u6rW56PLxdZWyK(9IXfA3vQ4Yb2XRewmzxcTIL84JuFEMFum9tVsskGv4rdqd4GdoFmA(l1K0TWauUdCg8bneiOMuHtwM)PS4uE(SWcgJMY3SA8Kg6MPOGRBxStGxUerL2dw8jHnfJUBv2s9DpgRMEnk)okyDP(aR6)aylYNeEV840d5ZogN6l5g8y)6hpwU)CYRaINplJW6JUCwdzxJohvWaYbvNLtzFRwVLIREjHHd8czhER5eSwrOKFVsOv7yabcrROIRx2deDvm)mjw6D7Z33A9DhFVw)mcQLevzCF0CZI1OEqOCAaTvC5MMDUwthP7N6WTbt4pTbXzvnWouIsVNqzXu)9cikjWOecOcRibGScj5clUq4t4e2bkFwwbppoIU8YftVHwjADFE5YObCD(8JthpzulhQndxUySTkTxApaO)0OPJdjP(YpcoeMNoL7k70cgC(U53ob9CVy1LlZNAY6ghvH5QvRvC1gRFZHAsn5PsCSvQv0DOldlSaxY1jQXTte2Di4QXXUnGtSEcLEM8201BMp212eyncgkS0WIqelZpLE2VnmAKBalmVyRZp4gh1LnZ4yvBoaEqJu((rsku8fI9U6b(Ajiny5OH4Hathi20X1ABKVrhuiTkoEaDZTnWke0K64zkllmoRixI(wx9t1Dt7JQXLfciYmm8HhD4Y0LBvjD8Ll6R2LNtemBeXBUzDecRaSglMOe2jyaFRH4Yj6Q)TnWdctKeu4g7uQ)0I5pTXehz8GmYLJRk7uFCf8eyhYFjRijYxWkag04Q26yR7tA5(bhz9LAsBT0XjOJF)HyqSy3hZSyEQ1lrw62wz1eRDMsE1cjWSFgfA2NKDMwr1yqFjZofYFsdIs(mFXZm9)VFPtiNjo9cXnvscFFg9P4E6BMFnY4JDtmwc5djrP)oxgrpsZFDyXQIkHD2AJGMo1KDBwmFUrjjI2EENLL8hDviolOOw3(rvurn7vkSqNzp9W8ERcv0zkgdTRQap)YIBsiGlq4BOm5C8PEZuIrKowwxB4XrzjnXUHzmwXjEgd6gh333z1kRfnWJEuCrXnTNXPxrfz1Nc1erJ()1dr79h2d)rHLUsn4wGK)UISTivDkf1QN2bQEB0ugyYSdnBJDQDlfBhtmhjfj2upYzX0cP1gJUPnpzrsna5ehcESEkv5Qsk0rgA1Q2D5T9vi2hEy3uk92EMWsf3jEB)YXtzmUygJpuguXLYaX4GYNv(S3w5Ned)eSDWF(QCIQ1vd693GLzqXzG7O32rLbO3lbJldMugy0oyzWLl1e0HVk3RBa5kAgHtMU3uzW6YGp)yzW0g5psHZnvDl5hcHMjAByJkwFZuv92A5J6XbtTt7eI8UBEzWTsT0PfeaRLAlSZPDIwbx3BRItO4EcuI767YcRnuPO0AtuUIJR2o9O(UqiZ77tMQ0OGvjOBLt6S1hlSU(1tCAAgUvTLxVh1YGBkdqANv6jSEJ8EyC)ez0CBfzgn4QP1Ok3tBuUPuW7DAhFWPD0PPXOjd11A7KqrEIQ5es6X3VKg1hJ7Y)l4(NDYDZW4ooalii9V(9OyAwb0HmiVtW6UwrrGLfAYI5ovL(B02fK2dpoOJ(ef1wP57k4dxnGRduAHVAtQjYScOK(qfKMHEZA0P3yfdjp21GFtSTj32Hw326Gmo0UhQYGFcWrNxD)zdXJyWDYC3XR2IWQjkPTU1CR0)uB(nlxXPiUwUZWGeL1A)qhhG0gVCatGzV8)aSYOI471w7cGzH7SJMttOJf6tEqYg3j8SlkwE(Bkmg0CJ0fDfh7k(x8dx3OlM1Hl1g3PrNCvHyUVCu6I)JD1pT)W8QKQVpD4713OrJ0gQrByOvO51RyiJ5a16OaRubkGjMnc6MBNbMl(j(R)j0hS2CJsKq(b(vdu0F3a6VGwJ66QEJagS8tvsAAvRT(XMhu9Z4RYe5PUUx0bpZ9LJ8)vTE8NNEgmvca96HQYG7Botv(7aU0hOzH(Qbd4PmsRE4gFG(k6VLM2rG0Fr1dmHNQG3AJKBuVE7pzDllM0J1Wn93yyQA8mhSRo98LUl3xdD5pZgKMAV(SkgvNJIgmvpDH8JOUGv9wxaxe1bXdFeaZpmOv3q3Wr6DJ04yeyDSPAODyWxxdIsFzguhpNwQ6Ur0jDDMOG6zmHqbB0lOTByDyaYcoJDuwP6LPnqpJ0HI3meSR2Sts8PoM0eRi(usb8hopsUQF1B)O68fqUAhMF023Dev2QSkY1(WC1jqXQ(bbwR8GoDO6kWEOs484w8cDDX6PQNBLUVXCn)Up4ykMWJT33bSbWwXPV7DbZ681ndbSSTdFgVQcQ0uk93vmlfsVWnSS3dRudQaTVnzQI3QQrS0Mdl8(RMsOkA2mTzj2pTvj(w3JVokNvpJkdl2dzkDdF6gHf7nGJU7XWHeeQQTntiuctgr3diTOiLDPN0FJJR(9pQzMeMTbwSHI23(yJS)3nuBm9KPk3XBGSsTtnL9R)UixbTDnvJRLaYXRgTZCsURM26DxwP2j9x2ynlRmRwVLzxLVw51rUjjB372SSSPLxNaBAGS3YAnL5vZASaJRP33Q60i50OFjf7)kcKcrV1EB)z6()dj8f5(9(V]] )
 
 spec:RegisterPack( "Feral Tank (IV)", 20230206, [[Hekili:vIvBVnkoq4FlrRuv72wosAA2Usnv6ovDsT3QEvIQ7(MbhWKAvaJmMu1tr(3(n2obCatE5d7kcEMNzMNz8mtbng9gkibliOxM4p5g)j(Z8Mmz6pUbfi(QKGckXXFGxcpuGZH))pjCCMm6nCXhYOZF6FUqjXxzmCIcOkwnpgKcfSOMMjEQaTWj6t(jiBjjg9Y4XOG3PjjeJOKQyuW)Ye)6VKrBm1J8AAYwl(kNY4ubLujFw(8BSLlZiYiCYkCrmbKIZeybLvaprIz55KIe9VRKru4LI3bPJZWvWVzL6d8GaGZsPzGB)nz0V)6VKrRUXBQ34Rh7nZZxg9n5Z4yJSLAuxGfxo)3YX8pczPHaMHFsZsUIMoFuD5zJwuNM6TKMkSp1RU0nmI3z8IQnk7wKekNeUGG5HPmE(EfTKPJ(NBofExmoll08ZWmAL4kvMCoTGkSLQUIesfK8k7xUfU238ouuWHuhjbGmMKb5i1rxPuNLMgUmoz(yBf41f9nUoyWmIkw001UHiqwNP0zfjKuqYHS9dtpkmhgpB1hGpBzuf3aYTcZP4fzed(cAojuWctOKRwHZQjZppHOnMGJbnkwgMuNN)LY5VX3)I1Rfy(sIWZsXdyc1LMKWmCSIv3ALrBSY2xd4VED33vjGRP3F7jHFymd4ow58kIGMQOHTs750rmqBzZs4213p)2RD6mxy0kKKvrM7Fahlhiqb8VEX(aE0zDnjNOGO6(7g8KgKo(0rpVApm2qrGts7uOgsobQIkI)QlY9llgm2N6D7jYlToL6Ec4uPycNsctvxDsvnMvr)McCwTOIMqM0tjsbhgDSBVbTEGPUFSFp5xaTwi8p69(CCDwFuuy7fxZ5KcXdB4zLKgo(YbkD05WlhoVzoVbUcyaJUxHb1EUwtsXUyOFoZri1G8H56JZQ7gNRxpCm2dVQpPLgNPhXoZVB1GQX9PMC3OJZe8MZ0j54VIbwXuxvb4T)K(m3wXkA6Ghkyf4bG8n7Ja758jMR6ExHcEkVKXfQ9iUfwQqdSmsnHPYt(mkq)KEFjsk4Sc4Xx07prku8Cc6pqbgTqbDh6A0o0SeL6Iosa(Gs5TA0ma2gpqOBSfYmqUJetvsyXukVQrJbgy3bIB7egXWswqriwTiNZXPrNzyO2r0YOhKrtBnCNH07qaBtwktp7en9XBbf6)yq0hjJSbBx7Gu5htEYrsMb6bJaAvE7vn1tqVzuW5YOHwoqtDWccYOlKrRxdlL2BnbnGBce7xVTK5KCLrnUI1OcJLDo4wgDpu)B7c72yPPMSVxqtD7hUbs3P1oJmqNSnrIECjkWVjWCoAvg9D4VlrFb(6bdWlAU1CQm5aUOoNoWewnFE3bLW1CyBURxtCxxBpY8G7HEotf9n7PKnCD)(W8SRY1dWEWgohuMdXW9NAB6cOBL4OlqlB1zpO2qR3KCxxHTWbCmTRo2VfdZC2En47ozyZOvxJgCAl7bP6w3BsGTBqjJUCWcEDbZUc4UOsltd0D2MQ17vw1vio8CP9SSvlS23vMzZwwUshg7h2I1p)TRW3Dy3RBJcvF39D7YLR)ZJploZQYPDpO2cz9u39xmFAfHtoCry3Pf7M03zfn9QlDxLz)HRJQCheqFZOPKMVDY(2LR7x6X8DQ40sZXU(Kr9w0q3DcEAOpo0(Bm0zxfZ3mYf1E8R3yiTTh7AVstndUIK83fnF4VhFny739dxR8duWJK0)dh)UwE0)d]] )
 
