@@ -335,6 +335,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    surge_of_light = {
+        id = 114255,
+        duration = 20,
+        max_stack = 2
+    },
     tools_of_the_cloth = {
         id = 390933,
         duration = 12,
@@ -443,7 +448,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.04,
+        spend = function() return buff.surge_of_light.up and 0 or 0.04 end,
         spendType = "mana",
 
         startsCombat = false,
@@ -451,6 +456,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "from_darkness_comes_light" )
+            removeStack( "surge_of_light" )
             if talent.protective_light.enabled then applyBuff( "protective_light" ) end
         end,
     },

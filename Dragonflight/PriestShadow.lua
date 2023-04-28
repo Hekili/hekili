@@ -1241,13 +1241,14 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holy",
 
-        spend = 0.036,
+        spend = function() return buff.surge_of_light.up and 0 or 0.036 end,
         spendType = "mana",
 
         startsCombat = false,
 
         handler = function ()
             removeBuff( "from_darkness_comes_light" )
+            removeStack( "surge_of_light" )
             if talent.protective_light.enabled then applyBuff( "protective_light" ) end
         end,
     },

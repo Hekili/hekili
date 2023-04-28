@@ -545,7 +545,10 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.04 * ( buff.divine_favor_serenity.up and 0.8 or 1 ) end,
+        spend = function()
+            if buff.surge_of_light.up then return 0 end
+            return 0.04 * ( buff.divine_favor_serenity.up and 0.8 or 1 )
+        end,
         spendType = "mana",
 
         startsCombat = false,
@@ -553,6 +556,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "resonant_words" )
+            removeStack( "surge_of_light" )
             reduceCooldown( "holy_word_serenity", 6 )
             if buff.apotheosis.up then
                 reduceCooldown ( "holy_word_serenity", 12 )
