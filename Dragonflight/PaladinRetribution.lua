@@ -965,7 +965,7 @@ spec:RegisterStateFunction( "apply_aura", function( name )
 end )
 
 spec:RegisterStateFunction( "foj_cost", function( amt )
-    if buff.fires_of_justice.up then return max( 0, amt - 1 ) end
+    -- if buff.fires_of_justice.up then return max( 0, amt - 1 ) end
     return amt
 end )
 
@@ -1204,8 +1204,8 @@ spec:RegisterAbilities( {
         id = 35395,
         cast = 0,
         charges = 2,
-        cooldown = function () return ( talent.swift_justice.enabled and 4 or 6 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
-        recharge = function () return ( talent.swift_justice.enabled and 4 or 6 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
+        cooldown = function () return ( talent.swift_justice.enabled and 4 or 6 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste end,
+        recharge = function () return ( talent.swift_justice.enabled and 4 or 6 ) * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste end,
         gcd = "spell",
         school = "physical",
 
@@ -1325,7 +1325,7 @@ spec:RegisterAbilities( {
         spend = function ()
             if buff.divine_purpose.up then return 0 end
             if buff.empyrean_power.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
 
@@ -1341,7 +1341,6 @@ spec:RegisterAbilities( {
             elseif buff.divine_purpose.up then
                 removeBuff( "divine_purpose" )
             else
-                removeBuff( "fires_of_justice" )
                 removeBuff( "hidden_retribution_t21_4p" )
             end
 
@@ -1397,16 +1396,13 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holy",
 
-        spend = function ()
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
-        end,
+        spend = function () return talent.divine_auxiliary.enabled and -3 or 0 end,
         spendType = "holy_power",
 
         talent = "execution_sentence",
         startsCombat = false,
 
         handler = function ()
-            removeBuff( "fires_of_justice" )
             removeBuff( "hidden_retribution_t21_4p" )
             removeDebuff( "target", "reckoning" )
             applyDebuff( "target", "execution_sentence" )
@@ -1453,6 +1449,9 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
         school = "holy",
+
+        spend = function() return talent.divine_auxiliary.enabled and -3 or 0 end,
+        spendType = "holy_power",
 
         talent = "final_reckoning",
         startsCombat = true,
@@ -1674,7 +1673,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
 
@@ -1690,7 +1689,6 @@ spec:RegisterAbilities( {
             end
             if buff.divine_purpose.up then removeBuff( "divine_purpose" )
             else
-                removeBuff( "fires_of_justice" )
                 removeBuff( "hidden_retribution_t21_4p" )
             end
             if talent.divine_arbiter.enabled then addStack( "divine_arbiter" ) end
@@ -1839,8 +1837,8 @@ spec:RegisterAbilities( {
         id = 407480,
         cast = 0,
         charges = 2,
-        cooldown = function () return 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
-        recharge = function () return 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
+        cooldown = function () return 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste end,
+        recharge = function () return 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste end,
         gcd = "totem",
         school = "physical",
 
@@ -1900,7 +1898,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
         notalent = "justicars_vengeance",
@@ -1913,7 +1911,6 @@ spec:RegisterAbilities( {
             removeStack( "vanquishers_hammer" )
             if buff.divine_purpose.up then removeBuff( "divine_purpose" )
             else
-                removeBuff( "fires_of_justice" )
                 removeBuff( "hidden_retribution_t21_4p" )
             end
 
@@ -1988,7 +1985,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return 3 - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
 
@@ -1998,7 +1995,6 @@ spec:RegisterAbilities( {
             removeBuff( "recompense" )
             if buff.divine_purpose.up then removeBuff( "divine_purpose" )
             else
-                removeBuff( "fires_of_justice" )
                 removeBuff( "hidden_retribution_t21_4p" )
                 removeBuff( "the_magistrates_judgment" )
             end
