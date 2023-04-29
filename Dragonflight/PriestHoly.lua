@@ -257,6 +257,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    holy_word_chastise = {
+        id = 247587,
+        duration = 5,
+        max_stack = 1
+    },
     inspiration = {
         id = 390677,
         duration = 15,
