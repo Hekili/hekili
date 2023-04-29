@@ -1079,6 +1079,13 @@ spec:RegisterAura( "chaos_maelstrom", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier30", 202534, 202533, 202532, 202536, 202531 )
+spec:RegisterAura( "umbrafire_embers", {
+    id = 409652,
+    duration = 13,
+    max_stack = 8
+} )
+
 
 local SUMMON_DEMON_TEXT
 
@@ -1182,6 +1189,10 @@ spec:RegisterAbilities( {
         talent = "cataclysm",
         startsCombat = true,
 
+        toggle = function()
+            if active_enemies == 1 then return "interrupts" end
+        end,
+
         handler = function ()
             applyDebuff( "target", "immolate" )
             active_dot.immolate = max( active_dot.immolate, true_active_enemies )
@@ -1205,6 +1216,11 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         usable = function () return active_dot.immolate > 0 end,
+
+        start = function()
+            removeBuff( "umbrafire_embers" )
+        end
+
         -- With raging_demonfire, this will extend Immolates but it's not worth modeling for the addon ( 0.2s * 17-20 ticks ).
     },
 

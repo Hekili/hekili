@@ -89,7 +89,7 @@ spec:RegisterTalents( {
     fel_covenant                   = { 72000, 387432, 2 }, -- Shadow Bolt increases the damage of your Demonbolt by 7%, stacking up to 4 times. Lasts 20 sec.
     fel_might                      = { 72014, 387338, 1 }, -- Reduces the cooldown of Felstorm by 10 sec.
     fel_sunder                     = { 72010, 387399, 1 }, -- Each time Felstorm deals damage, it increases the damage the target takes from you and your pets by 1% for 8 sec, up to 5%.
-    from_the_shadows               = { 72015, 267170, 1 }, -- Dreadbite causes the target to take 20% additional Shadowflame damage from you for the next 12 sec.
+    the_houndmasters_stratagem               = { 72015, 267170, 1 }, -- Dreadbite causes the target to take 20% additional Shadowflame damage from you for the next 12 sec.
     grand_warlocks_design          = { 71991, 387084, 1 }, -- Every Soul Shard you spend reduces the cooldown of Summon Demonic Tyrant by 0.6 sec.
     grimoire_felguard              = { 72013, 111898, 1 }, -- Summons a Felguard who attacks the target for 17 sec that deals 45% increased damage. This Felguard will stun their target when summoned.
     guillotine                     = { 72005, 386833, 1 }, -- Your Felguard hurls his axe towards the target location, erupting when it lands and dealing 2,884 Shadowflame damage every 1 sec for 6 sec to nearby enemies. While unarmed, your Felguard's basic attacks deal damage to all nearby enemies and attacks 50% faster.
@@ -324,6 +324,13 @@ spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
 spec:RegisterAura( "blazing_meteor", {
     id = 394215,
     duration = 6,
+    max_stack = 1
+} )
+
+spec:RegisterGear( "tier30", 202534, 202533, 202532, 202536, 202531 )
+spec:RegisterAura( "rite_of_ruvaraad", {
+    id = 409725,
+    duration = 17,
     max_stack = 1
 } )
 
@@ -990,10 +997,11 @@ spec:RegisterAuras( {
     },
     -- Talent: Damage taken from the Warlock's Shadowflame damage spells increased by $s1%.
     -- https://wowhead.com/beta/spell=270569
-    from_the_shadows = {
+    the_houndmasters_stratagem = {
         id = 270569,
         duration = 12,
-        max_stack = 1
+        max_stack = 1,
+        copy = "from_the_shadows" -- name from pre-10.1
     },
     -- Summoned by a Grimoire of Service.  Damage done increased by $s1%.
     -- https://wowhead.com/beta/spell=216187
@@ -1447,7 +1455,7 @@ spec:RegisterAbilities( {
             summonPet( "dreadstalker", 12 )
             removeStack( "demonic_calling" )
 
-            if talent.from_the_shadows.enabled then applyDebuff( "target", "from_the_shadows" ) end
+            if talent.the_houndmasters_stratagem.enabled then applyDebuff( "target", "the_houndmasters_stratagem" ) end
         end,
     },
 
@@ -1491,9 +1499,15 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "fel_covenant" )
             removeBuff( "stolen_power" )
-            removeStack( "demonic_core" )
+
+            if buff.demonic_core.up then
+                removeStack( "demonic_core" )
+                if set_bonus.tier30_2pc > 0 then reduceCooldown( "grimoire_felguard", 1 ) end
+            end
+
             removeStack( "power_siphon" )
             removeStack( "decimating_bolt" )
+
             gain( 2, "soul_shards" )
         end,
     },
@@ -1585,6 +1599,8 @@ spec:RegisterAbilities( {
             summon_demon( "grimoire_felguard", 17 )
             applyBuff( "grimoire_felguard" )
             summonPet( "grimoire_felguard" )
+
+            if set_bonus.tier30_4pc > 0 then applyBuff( "rite_of_ruvaraad" ) end
         end,
     },
 

@@ -851,6 +851,13 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
 end, false )
 
 
+spec:RegisterGear( "tier30", 202534, 202533, 202532, 202536, 202531 )
+spec:RegisterAura( "infirmity", {
+    id = 409765,
+    duration = 16, -- spelldata says 2 sec, but applies for 16 seconds from PS and 10 seconds from VT.
+    max_stack = 1
+} )
+
 -- Tier 29
 spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
 spec:RegisterAuras( {
@@ -1646,7 +1653,7 @@ spec:RegisterAbilities( {
     phantom_singularity = {
         id = 205179,
         cast = 0,
-        cooldown = 45,
+        cooldown = 33,
         gcd = "spell",
         school = "shadow",
 
@@ -1658,6 +1665,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "phantom_singularity" )
+            if set_bonus.tier30_4pc > 0 then applyDebuff( "target", "infirmity" ) end
         end,
     },
 
@@ -2240,7 +2248,7 @@ spec:RegisterAbilities( {
     vile_taint = {
         id = 278350,
         cast = 1.5,
-        cooldown = 30,
+        cooldown = 25,
         gcd = "spell",
         school = "shadow",
 
@@ -2250,11 +2258,21 @@ spec:RegisterAbilities( {
         talent = "vile_taint",
         startsCombat = true,
 
+        handler = function()
+            applyDebuff( "target", "agony" )
+            active_dot.agony = min( active_enemies, active_dot.agony + 7 )
+            applyDebuff( "target", "curse_of_exhaustion" )
+            active_dot.curse_of_exhaustion = min( active_enemies, active_dot.curse_of_exhaustion + 7 )
+            if set_bonus.tier30_4pc > 0 then applyDebuff( "target", "infirmity", 10 ) end
+        end,
+
         -- Azerite
-        cascading_calamity = {
-            id = 275378,
-            duration = 15,
-            max_stack = 1
+        auras = {
+            cascading_calamity = {
+                id = 275378,
+                duration = 15,
+                max_stack = 1
+            }
         }
     }
 } )
