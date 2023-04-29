@@ -92,7 +92,7 @@ spec:RegisterTalents( {
     guardians_of_the_light     = { 82636, 196437, 1 }, -- Guardian Spirit also grants you 100% of its effects when used on an ally.
     halo                       = { 82682, 120517, 1 }, -- Creates a ring of Holy energy around you that quickly expands to a 30 yd radius, healing allies for 3,282 and dealing 3,082 Holy damage to enemies. Healing reduced beyond 6 targets.
     harmonious_apparatus       = { 82611, 390994, 2 }, -- Circle of Healing reduces the cooldown of Holy Word: Sanctify, Prayer of Mending reduces the cooldown of Holy Word: Serenity, and Holy Fire reduces the cooldown of Holy Word: Chastise by 4 sec.
-    healing_chorus             = { 82625, 390881, 1 }, -- Your Renew healing increases the healing done by your next Circle of Healing by 1%, stacking up to 50 times.
+    healing_chorus             = { 82625, 390881, 1 }, -- Your Renew healing increases the healing done by your next Circle of Healing by 2%, stacking up to 50 times.
     holy_mending               = { 82641, 391154, 1 }, -- When Prayer of Mending jumps to a target affected by your Renew, that target is instantly healed for 616.
     holy_word_chastise         = { 82639, 88625 , 1 }, -- Chastises the target for 2,992 Holy damage and incapacitates them for 4 sec. Cooldown reduced by 4 sec when you cast Smite.
     holy_word_salvation        = { 82610, 265202, 1 }, -- Heals all allies within 40 yards for 2,130, and applies Renew and 2 stacks of Prayer of Mending to each of them. Cooldown reduced by 30 sec when you cast Holy Word: Serenity or Holy Word: Sanctify.
@@ -385,6 +385,16 @@ spec:RegisterAuras( {
 } )
 
 
+spec:RegisterGear( "tier30", 202543, 202542, 202541, 202545, 202540 )
+spec:RegisterAuras( {
+    inspired_word = {
+        id = 409479,
+        duration = 3600,
+        max_stack = 15
+    }
+} )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Reset the cooldown of your Holy Words, and enter a pure Holy form for 20 sec, increasing the cooldown reductions to your Holy Words by 300% and reducing their cost by 100%.
@@ -421,6 +431,7 @@ spec:RegisterAbilities( {
         texture = 135887,
 
         handler = function ()
+            removeBuff( "healing_chorus" )
         end,
     },
 
@@ -710,6 +721,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "inspired_word" )
             applyDebuff( "target", "holy_word_chastise" )
             if buff.divine_word.up then
                 applyBuff( "divine_favor_chastise" )
@@ -734,6 +746,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "inspired_word" )
             applyBuff( "renew" )
             addStack( "prayer_of_mending", nil, 2 )
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
@@ -756,6 +769,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "inspired_word" )
             reduceCooldown( "holy_word_salvation", 30 )
             removeBuff( "divine_word" )
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
@@ -778,6 +792,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "inspired_word" )
             if buff.divine_word.up then
                 applyBuff( "divine_favor_serenity" )
                 removeBuff( "divine_word" )
@@ -1123,9 +1138,7 @@ spec:RegisterAbilities( {
     shadow_word_death = {
         id = 32379,
         cast = 0,
-        charges = 1,
-        cooldown = 20,
-        recharge = 20,
+        cooldown = 10,
         gcd = "spell",
 
         spend = 250,

@@ -79,7 +79,7 @@ spec:RegisterTalents( {
     divine_aegis               = { 82602, 47515 , 2 }, -- Critical heals create a protective shield on the target, absorbing 3% of the amount healed. Lasts 15 sec. Critical heals with Power Word: Shield absorb 5% additional damage.
     divine_star                = { 82682, 110744, 1 }, -- Throw a Divine Star forward 27 yds, healing allies in its path for 1,151 and dealing 1,211 Holy damage to enemies. After reaching its destination, the Divine Star returns to you, healing allies and damaging enemies in its path again. Healing reduced beyond 6 targets.
     embrace_shadow             = { 82582, 372985, 1 }, -- Shadow Covenant lasts an additional 8 sec.
-    enduring_luminescence      = { 82591, 390685, 1 }, -- Power Word: Radiance applies Atonement at an additional 10% of its normal duration.
+    enduring_luminescence      = { 82591, 390685, 1 }, -- Reduces the cast time of Power Word: Radiance by 30% and causes it to apply Atonement at an additional 10% of its normal duration.
     evangelism                 = { 82567, 246287, 1 }, -- Extends the duration of all of your active Atonements by 6 sec.
     exaltation                 = { 82576, 373042, 1 }, -- Increases the duration of Rapture by 5 sec.
     expiation                  = { 82585, 390832, 2 }, -- Increases the damage of Mind Blast and Shadow Word: Death by 10%. Mind Blast and Shadow Word: Death consume 3 sec of Shadow Word: Pain or Purge the Wicked, instantly dealing that damage.
@@ -369,6 +369,16 @@ spec:RegisterAuras( {
 } )
 
 
+spec:RegisterGear( "tier30", 202543, 202542, 202541, 202545, 202540 )
+spec:RegisterAuras( {
+    radiant_providence = {
+        id = 410638,
+        duration = 3600,
+        max_stack = 2
+    }
+} )
+
+
 -- Abilities
 spec:RegisterAbilities( {
     archangel = {
@@ -611,13 +621,14 @@ spec:RegisterAbilities( {
 
     power_word_radiance = {
         id = 194509,
-        cast = 2,
+        cast = function() return buff.radiant_providence.up and 0 or ( 2 * ( talent.enduring_luminescence.enabled and 0.7 or 1 ) ) end,
         charges = function() if talent.lights_promise.enabled then return 2 end end,
         cooldown = 20,
         recharge = function() if talent.lights_promise.enabled then return 20 end end,
+        school = "radiant",
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return buff.radiant_providence.up and 0.03 or 0.06 end,
         spendType = "mana",
 
         talent = "power_word_radiance",
@@ -626,7 +637,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.atonement.down then
-                applyBuff( "atonement" )
+                applyBuff( "atonement", ( ( talent.enduring_luminescence.enabled and 0.7 or 0.6 ) * class.auras.atonement.duration ) + ( buff.radiant_providence.up and 3 or 0 ) )
                 active_dot.atonement = min( active_dot.atonement + 3, group_members )
             else
                 active_dot.atonement = min( active_dot.atonement + 4, group_members )
