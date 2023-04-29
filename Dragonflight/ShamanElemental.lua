@@ -1024,6 +1024,7 @@ spec:RegisterStateTable( "earth_elemental", setmetatable( { onReset = function( 
 } ) )
 
 
+
 -- Tier 29
 spec:RegisterGear( "tier29", 200396, 200398, 200400, 200401, 200399 )
 spec:RegisterSetBonuses( "tier29_2pc", 393688, "tier29_4pc", 393690 )
@@ -1062,7 +1063,7 @@ local TriggerStaticAccumulation = setfenv( function()
 end, state )
 
 local TriggerStormkeeperTier30 = setfenv( function()
-    addStack( "stormkeeper", nil, 2 )
+    addStack( "stormkeeper" )
     t30_2pc_timer.last_tick = query_time
 end, state )
 
@@ -1248,7 +1249,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "nature",
 
-        spend = 0.215,
+        spend = 0.02,
         spendType = "mana",
 
         startsCombat = false,
@@ -1548,7 +1549,7 @@ spec:RegisterAbilities( {
     earthgrab_totem = {
         id = 51485,
         cast = 0,
-        cooldown = function () return 60 - 3 * talent.totemic_surge.rank end,
+        cooldown = function () return 30 - 3 * talent.totemic_surge.rank end,
         gcd = "spell",
         school = "nature",
 
@@ -1775,7 +1776,7 @@ spec:RegisterAbilities( {
             if talent.flux_melting.enabled then applyBuff( "flux_melting" ) end
 
             if buff.icefury.up then
-                gain( buff.primal_fracture.up and 14 or 8, "maelstrom" )
+                gain( buff.primal_fracture.up and 12 or 8, "maelstrom" )
                 removeStack( "icefury", 1 )
 
                 if talent.electrified_shocks.enabled then
@@ -1955,7 +1956,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "master_of_the_elements" )
             applyBuff( "icefury", nil, 4 )
-            gain( 25 * ( buff.primal_fracture.up and 1.75 or 1 ), "maelstrom" )
+            gain( 25 * ( buff.primal_fracture.up and 1.5 or 1 ), "maelstrom" )
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
@@ -2013,7 +2014,7 @@ spec:RegisterAbilities( {
             removeBuff( "lava_surge" )
             removeBuff( "flux_melting" )
 
-            gain( ( 10 + ( talent.flow_of_power.rank * 2 ) ) * ( buff.primal_fracture.up and 1.75 or 1 ), "maelstrom" )
+            gain( ( 10 + ( talent.flow_of_power.rank * 2 ) ) * ( buff.primal_fracture.up and 1.5 or 1 ), "maelstrom" )
 
             if talent.master_of_the_elements.enabled then applyBuff( "master_of_the_elements" ) end
 
@@ -2067,7 +2068,7 @@ spec:RegisterAbilities( {
             local overload = 3 + talent.flow_of_power.rank
 
             ms = ms + ( buff.stormkeeper.up and overload or 0 ) + ( buff.surge_of_power.up and ( 2 * overload ) or 0 ) + ( buff.power_of_the_maelstrom.up and overload or 0 )
-            ms = ms * ( buff.primal_fracture.up and 1.75 or 1 )
+            ms = ms * ( buff.primal_fracture.up and 1.5 or 1 )
 
             gain( ms, "maelstrom" )
 

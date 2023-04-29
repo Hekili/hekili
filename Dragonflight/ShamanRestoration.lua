@@ -204,6 +204,22 @@ spec:RegisterAuras( {
 } )
 
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202473, 202471, 202470, 202469, 202468 )
+spec:RegisterAuras( {
+    rainstorm = {
+        id = 409386,
+        duration = 6,
+        max_stack = 40 -- IDK.
+    },
+    swelling_rain = {
+        id = 409391,
+        duration = 15,
+        max_stack = 40 -- IDK.
+    }
+} )
+
+
 spec:RegisterHook( "reset_precast", function ()
     local mh, _, _, mh_enchant = GetWeaponEnchantInfo()
 
@@ -268,6 +284,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeStack( "tidal_waves" )
             removeStack( "tidebringer" )
+            removeBuff( "swelling_rain" ) -- T30
         end,
     },
 
@@ -473,6 +490,10 @@ spec:RegisterAbilities( {
         texture = 136037,
 
         handler = function ()
+            if set_bonus.tier30_4pc > 0 and active_dot.riptide > 0 then
+                applyBuff( "rainstorm", nil, active_dot.riptide )
+                applyBuff( "swelling_rain", nil, active_dot.riptide )
+            end
         end,
     },
 
@@ -516,6 +537,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "tidal_waves" )
+            removeBuff( "swelling_rain" ) -- T30
 
             if talent.earthen_harmony.enabled then
                 addStack( "earth_shield", nil, 1 )
@@ -558,6 +580,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "tidal_waves" )
+            removeBuff( "swelling_rain" ) -- T30
+
             if talent.earthen_harmony.enabled then
                 addStack( "earth_shield", nil, 1 )
             end
