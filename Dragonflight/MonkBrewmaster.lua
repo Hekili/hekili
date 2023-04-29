@@ -49,6 +49,7 @@ spec:RegisterTalents( {
     resonant_fists                      = { 80702, 389578, 2 }, -- Your attacks have a chance to resonate, dealing 192 Nature damage to enemies within 8 yds.
     ring_of_peace                       = { 80698, 116844, 1 }, -- Form a Ring of Peace at the target location for 5 sec. Enemies that enter will be ejected from the Ring.
     save_them_all                       = { 80714, 389579, 2 }, -- When your healing spells heal an ally whose health is below 35% maximum health, you gain an additional 10% healing for the next 4 sec.
+    song_of_chiji                       = { 80698, 198898, 1 }, -- Conjures a cloud of hypnotic mist that slowly travels forward. Enemies touched by the mist fall asleep, Disoriented for 20 sec.
     spear_hand_strike                   = { 80686, 116705, 1 }, -- Jabs the target in the throat, interrupting spellcasting and preventing any spell from that school of magic from being cast for 4 sec.
     strength_of_spirit                  = { 80682, 387276, 1 }, -- Expel Harm's healing is increased by up to 100%, based on your missing health.
     summon_black_ox_statue              = { 80716, 115315, 1 }, -- Summons a Black Ox Statue at the target location for 15 min, pulsing threat to all enemies within 20 yards. You may cast Provoke on the statue to taunt all enemies near the statue.
@@ -525,6 +526,15 @@ spec:RegisterHook( "reset_postcast", function( x )
     end
     return x
 end )
+
+
+-- Tier 30
+spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
+spec:RegisterAura( "leverage", {
+    id = 408503,
+    duration = 30,
+    max_stack = 5
+} )
 
 
 spec:RegisterGear( "tier29", 200363, 200365, 200360, 200362, 200364 )
@@ -1425,6 +1435,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "leverage" )
+            if set_bonus.tier30_4pc > 0 then addStack( "elusive_brawler" ) end
         end,
     },
 
@@ -1521,6 +1533,7 @@ spec:RegisterAbilities( {
             applyBuff( "shuffle" )
             applyBuff( "spinning_crane_kick" )
             removeBuff( "counterstrike" )
+            removeBuff( "leverage" )
 
             if buff.celestial_flames.up then
                 applyDebuff( "target", "breath_of_fire_dot" )

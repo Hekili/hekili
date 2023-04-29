@@ -44,9 +44,9 @@ spec:RegisterTalents( {
     bounce_back                 = { 80717, 389577, 2 }, -- When a hit deals more than 20% of your maximum health, reduce all damage you take by 10% for 4 sec. This effect cannot occur more than once every 30 seconds.
     calming_presence            = { 80693, 388664, 1 }, -- Reduces all damage taken by 3%.
     celerity                    = { 80685, 115173, 1 }, -- Reduces the cooldown of Roll by 5 sec and increases its maximum number of charges by 1.
-    chi_burst                   = { 80709, 123986, 1 }, -- Hurls a torrent of Chi energy up to 40 yds forward, dealing 805 Nature damage to all enemies, and 1,642 healing to the Monk and all allies in its path. Healing reduced beyond 6 targets. Chi Burst generates 1 Chi per enemy target damaged, up to a maximum of 2.
+    chi_burst                   = { 80709, 123986, 1 }, -- Hurls a torrent of Chi energy up to 40 yds forward, dealing 805 Nature damage to all enemies, and 2,053 healing to the Monk and all allies in its path. Healing reduced beyond 6 targets. Chi Burst generates 1 Chi per enemy target damaged, up to a maximum of 2.
     chi_torpedo                 = { 80685, 115008, 1 }, -- Torpedoes you forward a long distance and increases your movement speed by 30% for 10 sec, stacking up to 2 times.
-    chi_wave                    = { 80709, 115098, 1 }, -- A wave of Chi energy flows through friends and foes, dealing 303 Nature damage or 730 healing. Bounces up to 7 times to targets within 25 yards.
+    chi_wave                    = { 80709, 115098, 1 }, -- A wave of Chi energy flows through friends and foes, dealing 303 Nature damage or 912 healing. Bounces up to 7 times to targets within 25 yards.
     close_to_heart              = { 80707, 389574, 2 }, -- You and your allies within 10 yards have 2% increased healing taken from all sources.
     dampen_harm                 = { 80704, 122278, 1 }, -- Reduces all damage you take by 20% to 50% for 10 sec, with larger attacks being reduced by more.
     diffuse_magic               = { 80697, 122783, 1 }, -- Reduces magic damage you take by 60% for 6 sec, and transfers all currently active harmful magical effects on you back to their original caster if possible.
@@ -67,12 +67,13 @@ spec:RegisterTalents( {
     improved_touch_of_death     = { 80684, 322113, 1 }, -- Touch of Death can now be used on targets with less than 15% health remaining, dealing 35% of your maximum health in damage.
     improved_vivify             = { 80692, 231602, 2 }, -- Vivify healing is increased by 40%.
     ironshell_brew              = { 80681, 388814, 1 }, -- Increases Armor while Fortifying Brew is active by 25%. Increases Dodge while Fortifying Brew is active by 25%.
-    paralysis                   = { 80688, 115078, 1 }, -- Incapacitates the target for 60 sec. Limit 1. Damage will cancel the effect.
+    paralysis                   = { 80688, 115078, 1 }, -- Incapacitates the target for 1 min. Limit 1. Damage will cancel the effect.
     profound_rebuttal           = { 80708, 392910, 1 }, -- Expel Harm's critical healing is increased by 50%.
-    resonant_fists              = { 80702, 389578, 2 }, -- Your attacks have a chance to resonate, dealing 525 Nature damage to enemies within 8 yds.
+    resonant_fists              = { 80702, 389578, 2 }, -- Your attacks have a chance to resonate, dealing 0 Nature damage to enemies within 8 yds.
     ring_of_peace               = { 80698, 116844, 1 }, -- Form a Ring of Peace at the target location for 5 sec. Enemies that enter will be ejected from the Ring.
     save_them_all               = { 80714, 389579, 2 }, -- When your healing spells heal an ally whose health is below 35% maximum health, you gain an additional 10% healing for the next 4 sec.
-    spear_hand_strike           = { 80686, 116705, 1 }, -- Jabs the target in the throat, interrupting spellcasting and preventing any spell from that school of magic from being cast for 4 sec.
+    song_of_chiji               = { 80698, 198898, 1 }, -- Conjures a cloud of hypnotic mist that slowly travels forward. Enemies touched by the mist fall asleep, Disoriented for 20 sec.
+    spear_hand_strike           = { 80686, 116705, 1 }, -- Jabs the target in the throat, interrupting spellcasting and preventing any spell from that school of magic from being cast for 3 sec.
     strength_of_spirit          = { 80682, 387276, 1 }, -- Expel Harm's healing is increased by up to 100%, based on your missing health.
     summon_black_ox_statue      = { 80716, 115315, 1 }, -- Summons a Black Ox Statue at the target location for 15 min, pulsing threat to all enemies within 20 yards. You may cast Provoke on the statue to taunt all enemies near the statue.
     summon_jade_serpent_statue  = { 80713, 115313, 1 }, -- Summons a Jade Serpent Statue at the target location. When you channel Soothing Mist, the statue will also begin to channel Soothing Mist on your target, healing for 3,951 over 6.9 sec.
@@ -96,7 +97,7 @@ spec:RegisterTalents( {
     faeline_harmony             = { 80671, 391412, 1 }, -- Your abilities reset Faeline Stomp 100% more often. Enemies and allies hit by Faeline Stomp are affected by Fae Exposure, increasing your damage and healing against them by 12% for 10 sec.
     faeline_stomp               = { 80672, 388193, 1 }, -- Strike the ground fiercely to expose a faeline for 30 sec, dealing 700 Nature damage to up to 5 enemies, and restores 1,471 health to up to 5 allies within 30 yds caught in the faeline. Up to 5 enemies caught in the faeline suffer an additional 1,138 damage. Your abilities have a 6% chance of resetting the cooldown of Faeline Stomp while fighting on a faeline.
     fatal_flying_guillotine     = { 80666, 394923, 1 }, -- Touch of Death strikes up to 4 additional nearby targets. This Touch of Death is always an Improved Touch of Death.
-    fists_of_fury               = { 80613, 113656, 1 }, -- Pummels all targets in front of you, dealing 10,573 Physical damage over 3.5 sec to your primary target and 6,238 damage over 3.5 sec to all other enemies. Deals reduced damage beyond 5 targets. Can be channeled while moving.
+    fists_of_fury               = { 80613, 113656, 1 }, -- Pummels all targets in front of you, dealing 12,687 Physical damage over 3.5 sec to your primary target and 7,485 damage over 3.5 sec to all other enemies. Deals reduced damage beyond 5 targets. Can be channeled while moving.
     flashing_fists              = { 80615, 388854, 2 }, -- Fists of Fury damage increased by 10%.
     flying_serpent_kick         = { 80621, 101545, 1 }, -- Soar forward through the air at high speed for 1.5 sec. If used again while active, you will land, dealing 154 damage to all enemies within 8 yards and reducing movement speed by 70% for 4 sec.
     forbidden_technique         = { 80608, 393098, 1 }, -- Touch of Death deals 20% increased damage and can be used a second time within 5 sec before its cooldown is triggered.
@@ -115,16 +116,16 @@ spec:RegisterTalents( {
     open_palm_strikes           = { 80678, 392970, 1 }, -- Fists of Fury damage increased by 15%. When Fists of Fury deals damage, it has a 5% chance to refund 1 Chi.
     power_strikes               = { 80614, 121817, 1 }, -- Every 15 sec, your next Tiger Palm will generate 1 additional Chi and deal 100% additional damage.
     rising_star                 = { 80673, 388849, 2 }, -- Rising Sun Kick damage increased by 10% and critical strike damage increased by 10%.
-    rising_sun_kick             = { 80690, 107428, 1 }, -- Kick upwards, dealing 5,814 Physical damage, and reducing the effectiveness of healing on the target for 10 sec.
-    rushing_jade_wind           = { 80625, 116847, 1 }, -- Summons a whirling tornado around you, causing 2,300 Physical damage over 5.2 sec to all enemies within 8 yards. Deals reduced damage beyond 5 targets.
+    rising_sun_kick             = { 80690, 107428, 1 }, -- Kick upwards, dealing 7,060 Physical damage, and reducing the effectiveness of healing on the target for 10 sec.
+    rushing_jade_wind           = { 80625, 116847, 1 }, -- Summons a whirling tornado around you, causing 2,300 Physical damage over 5.2 sec to all enemies within 9 yards. Deals reduced damage beyond 5 targets.
     serenity                    = { 80618, 152173, 1 }, -- Enter an elevated state of mental and physical serenity for 12 sec. While in this state, you deal 15% increased damage and healing, and all Chi consumers are free and cool down 100% more quickly.
     shadowboxing_treads         = { 80624, 392982, 1 }, -- Blackout Kick damage increased by 10% and strikes an additional 2 targets.
-    skyreach                    = { 80663, 392991, 1 }, -- Tiger Palm now has a 10 yard range and dashes you to the target when used. Tiger Palm also applies an effect which increases your critical strike chance by 50% for 6 sec on the target. This effect cannot be applied more than once every 60 sec per target.
-    skytouch                    = { 80663, 405044, 1 }, -- Tiger Palm now has a 10 yard range. Tiger Palm also applies an effect which increases your critical strike chance by 50% for 6 sec on the target. This effect cannot be applied more than once every 60 sec per target.
-    soothing_mist               = { 80691, 115175, 1 }, -- Heals the target for 7,903 over 6.9 sec. While channeling, Enveloping Mist and Vivify may be cast instantly on the target.
+    skyreach                    = { 80663, 392991, 1 }, -- Tiger Palm now has a 10 yard range and dashes you to the target when used. Tiger Palm also applies an effect which increases your critical strike chance by 50% for 6 sec on the target. This effect cannot be applied more than once every 1 min per target.
+    skytouch                    = { 80663, 405044, 1 }, -- Tiger Palm now has a 10 yard range. Tiger Palm also applies an effect which increases your critical strike chance by 50% for 6 sec on the target. This effect cannot be applied more than once every 1 min per target.
+    soothing_mist               = { 80691, 115175, 1 }, -- Heals the target for 9,879 over 6.9 sec. While channeling, Enveloping Mist and Vivify may be cast instantly on the target.
     spiritual_focus             = { 80617, 280197, 1 }, -- Every 2 Chi you spend reduces the cooldown of Serenity by 0.3 sec.
     storm_earth_and_fire        = { 80618, 137639, 1 }, -- Split into 3 elemental spirits for 15 sec, each spirit dealing 42% of normal damage and healing. You directly control the Storm spirit, while Earth and Fire spirits mimic your attacks on nearby enemies. While active, casting Storm, Earth, and Fire again will cause the spirits to fixate on your target.
-    strike_of_the_windlord      = { 80675, 392983, 1 }, -- Strike with both fists at all enemies in front of you, dealing 12,309 damage and reducing movement speed by 50% for 6 sec.
+    strike_of_the_windlord      = { 80675, 392983, 1 }, -- Strike with both fists at all enemies in front of you, dealing 14,099 damage and reducing movement speed by 50% for 6 sec.
     teachings_of_the_monastery  = { 80616, 116645, 1 }, -- Tiger Palm causes your next Blackout Kick to strike an additional time, stacking up to 3. Blackout Kick has a 12% chance to reset the remaining cooldown on Rising Sun Kick.
     thunderfist                 = { 80674, 392985, 1 }, -- Strike of the Windlord grants you a stack of Thunderfist for each enemy struck. Thunderfist discharges upon melee strikes, dealing 6,810 Nature damage.
     tigers_lust                 = { 80689, 116841, 1 }, -- Increases a friendly target's movement speed by 70% for 6 sec and removes all roots and snares.
@@ -650,6 +651,15 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+} )
+
+
+-- Tier 30
+spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
+spec:RegisterAura( "shadowflame_vulnerability", {
+    id = 411376,
+    duration = 15,
+    max_stack = 1
 } )
 
 
@@ -1415,7 +1425,7 @@ spec:RegisterAbilities( {
         id = function() return talent.faeline_stomp.enabled and 388193 or 327104 end,
         cast = 0,
         -- charges = 1,
-        cooldown = 30,
+        cooldown = function() return state.spec.mistweaver and 10 or 30 end,
         -- recharge = 30,
         gcd = "spell",
         school = "nature",
@@ -1492,6 +1502,10 @@ spec:RegisterAbilities( {
             end
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "kicks_of_flowing_momentum", nil, set_bonus.tier29_4pc > 0 and 3 or 2 ) end
+            if set_bonus.tier30_4pc > 0 then
+                applyDebuff( "target", "shadowflame_vulnerability" )
+                active_dot.shadowflame_vulnerability = active_enemies
+            end
         end,
 
         tick = function ()

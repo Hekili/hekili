@@ -48,6 +48,7 @@ spec:RegisterTalents( {
     resonant_fists                = { 80702, 389578, 2 }, -- Your attacks have a chance to resonate, dealing 197 Nature damage to enemies within 8 yds.
     ring_of_peace                 = { 80698, 116844, 1 }, -- Form a Ring of Peace at the target location for 5 sec. Enemies that enter will be ejected from the Ring.
     save_them_all                 = { 80714, 389579, 2 }, -- When your healing spells heal an ally whose health is below 35% maximum health, you gain an additional 10% healing for the next 4 sec.
+    song_of_chiji                 = { 80698, 198898, 1 }, -- Conjures a cloud of hypnotic mist that slowly travels forward. Enemies touched by the mist fall asleep, Disoriented for 20 sec.
     spear_hand_strike             = { 80686, 116705, 1 }, -- Jabs the target in the throat, interrupting spellcasting and preventing any spell from that school of magic from being cast for 4 sec.
     strength_of_spirit            = { 80682, 387276, 1 }, -- Expel Harm's healing is increased by up to 100%, based on your missing health.
     summon_black_ox_statue        = { 80716, 115315, 1 }, -- Summons a Black Ox Statue at the target location for 15 min, pulsing threat to all enemies within 20 yards. You may cast Provoke on the statue to taunt all enemies near the statue.
@@ -62,12 +63,12 @@ spec:RegisterTalents( {
     -- Mistweaver
     accumulating_mist             = { 80564, 388564, 1 }, -- Zen Pulse's damage and healing is increased by 25% each time Soothing Mist heals, up to 6 times. When your Soothing Mist channel ends, this effect is canceled.
     ancient_concordance           = { 80569, 388740, 2 }, -- Your Blackout Kicks strike 3 targets and have an additional 3% chance to reset the cooldown of your Rising Sun Kick while within your Faeline Stomp.
-    ancient_teachings             = { 80598, 388023, 1 }, -- After casting Essence Font or Faeline Stomp, your Tiger Palm, Blackout Kick, and Rising Sun Kick heal an injured ally within 30 yds for 150% of the damage done. Lasts 15 sec.
+    ancient_teachings             = { 80598, 388023, 1 }, -- After casting Essence Font or Faeline Stomp, your Tiger Palm, Blackout Kick, and Rising Sun Kick heal up to 5 injured allies within 30 yards for 150% of the damage done, split evenly among them. Lasts 15 seconds.
     awakened_faeline              = { 80577, 388779, 1 }, -- Your abilities reset Faeline Stomp 100% more often. While within Faeline Stomp, your Tiger Palms strike twice and your Spinning Crane Kick heals 3 nearby allies for 70% of the damage done.
-    burst_of_life                 = { 80583, 399226, 1 }, -- Life Cocoon's cooldown is reduced by 20 sec, but its absorb amount is reduced by 40%. When Life Cocoon expires, it releases a burst of mist that restores 4,077 health to 3 nearby allies.
-    calming_coalescence           = { 80583, 388218, 1 }, -- Each time Soothing Mist heals, the absorb amount of your next Life Cocoon is increased by 3%, stacking up to 50 times.
+    burst_of_life                 = { 80583, 399226, 1 }, -- When Life Cocoon expires, it releases a burst of mist that restores 4,077 health to 3 nearby allies.
     celestial_harmony             = { 80582, 343655, 1 }, -- While active, Yu'lon and Chi'Ji heal up to 6 nearby targets with Enveloping Breath when you cast Enveloping Mist, healing for 2,870 over 7 sec, and increasing the healing they receive from you by 10%. When activated, Yu'lon and Chi'Ji apply Chi Cocoons to 5 targets within 40 yds, absorbing 4,545 damage for 10 sec.
     clouded_focus                 = { 80598, 388047, 1 }, -- Healing with Enveloping Mists or Vivify while channeling Soothing Mists increases their healing done by 20% and reduces their mana cost by 20%. Stacks up to 3 times. When your Soothing Mists channel ends, this effect is cancelled.
+    chrysalis                     = { 80583, 202424, 1 }, -- Reduces the cooldown of Life Cocoon by 45 sec.
     dancing_mists                 = { 80587, 388701, 2 }, -- Renewing Mist has a 10% chance to immediately spread to an additional target when initially cast or when traveling to a new target.
     echoing_reverberation         = { 80564, 388604, 1 }, -- Zen Pulse triggers a second time at 80% effectiveness if cast on targets with Enveloping Mist.
     enveloping_mist               = { 80568, 124682, 1 }, -- Wraps the target in healing mists, healing for 5,082 over 7 sec, and increasing healing received from your other spells by 40%. Applies Renewing Mist for 6 seconds to an ally within 40 yds.
@@ -108,7 +109,6 @@ spec:RegisterTalents( {
     secret_infusion               = { 80570, 388491, 2 }, -- After using Thunder Focus Tea, your next spell gives 5% of a stat for 10 sec: Enveloping Mist: Critical strike Renewing Mist: Haste Vivify: Mastery Rising Sun Kick: Versatility Essence Font: Haste
     shaohaos_lessons              = { 80596, 400089, 1 }, -- Each time you cast Sheilun's Gift, you learn one of Shaohao's Lessons for up to 30 sec, with the duration based on how many clouds of mist are consumed. Lesson of Doubt: Your spells and abilities deal up to 40% more healing and damage to targets, based on their current health. Lesson of Despair: Your Critical Strike is increased by 30% while above 50% health. Lesson of Fear: Decreases your damage taken by 15% and increases your Haste by 20%. Lesson of Anger: 25% of the damage or healing you deal is duplicated every 4 sec.
     sheiluns_gift                 = { 80586, 399491, 1 }, -- Draws in all nearby clouds of mist, healing the friendly target and up to 2 nearby allies for 1,499 per cloud absorbed. A cloud of mist is generated every 8 sec while in combat.
-    song_of_chiji                 = { 80561, 198898, 1 }, -- Conjures a cloud of hypnotic mist that slowly travels forward. Enemies touched by the mist fall asleep, Disoriented for 20 sec.
     soothing_mist                 = { 80691, 115175, 1 }, -- Heals the target for 5,788 over 6.9 sec. While channeling, Enveloping Mist, Zen Pulse, and Vivify may be cast instantly on the target. Each heal has a chance to cause a Gust of Mists on the target.
     spirit_of_the_crane           = { 80562, 210802, 1 }, -- Teachings of the Monastery causes each additional Blackout Kick to restore 0.45% mana.
     tea_of_plenty                 = { 80565, 388517, 1 }, -- Thunder Focus Tea also empowers 2 additional Renewing Mist, Essence Font, or Rising Sun Kick at random.
@@ -129,7 +129,6 @@ spec:RegisterTalents( {
 -- PvP Talents
 spec:RegisterPvpTalents( {
     alpha_tiger          = 5551, -- (287503) Attacking new challengers with Tiger Palm fills you with the spirit of Xuen, granting you 20% haste for 8 sec. This effect cannot occur more than once every 30 sec per target.
-    chrysalis            = 678 , -- (202424) Reduces the cooldown of Life Cocoon by 45 sec.
     counteract_magic     = 679 , -- (353502) Removing hostile magic effects from a target increases the healing they receive from you by 10% for 10 sec, stacking up to 3 times.
     dematerialize        = 5398, -- (353361) Demateralize into mist while stunned, reducing damage taken by 30%. Each second you remain stunned reduces this bonus by 10%.
     dome_of_mist         = 680 , -- (202577) Enveloping Mist transforms 100% of its remaining periodic healing into a Dome of Mist when dispelled.  Dome of Mist Absorbs damage. All healing received by the Monk increased by 30%. Lasts 8 sec.
@@ -176,11 +175,6 @@ spec:RegisterAuras( {
         id = 390239,
         duration = 4,
         max_stack = 1
-    },
-    calming_coalescence = {
-        id = 388220,
-        duration = 3600,
-        max_stack = 50
     },
     chi_burst = { -- TODO: Hidden aura that procs Chi per enemy targeted.
         id = 123986,
@@ -504,6 +498,22 @@ spec:RegisterAuras( {
 } )
 
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
+spec:RegisterAuras( {
+    soulfang_infusion = {
+        id = 410007,
+        duration = 3,
+        max_stack = 1
+    },
+    soulfang_vitality = {
+        id = 410082,
+        duration = 6,
+        max_stack = 1
+    }
+} )
+
+
 spec:RegisterTotem( "chiji", 877514 )
 spec:RegisterTotem( "yulon", 574571 )
 
@@ -679,6 +689,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "mana_tea" )
+            if set_bonus.tier30_4pc > 0 then applyBuff( "soulfang_vitality" ) end
         end,
     },
 
@@ -986,6 +997,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "zen_focus_tea" )
+            if set_bonus.tier30_4pc > 0 then applyBuff( "soulfang_vitality" ) end
         end,
     },
 
