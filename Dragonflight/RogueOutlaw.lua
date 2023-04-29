@@ -142,7 +142,7 @@ spec:RegisterTalents( {
     sepsis                    = { 90677, 385408, 1 }, -- Infect the target's blood, dealing 5,776 Nature damage over 10 sec and gaining 1 use of any Stealth ability. If the target survives its full duration, they suffer an additional 2,126 damage and you gain 1 additional use of any Stealth ability for 10 sec. Cooldown reduced by 30 sec if Sepsis does not last its full duration. Awards 1 combo point.
     shiv                      = { 90740, 5938  , 1 }, -- Attack with your off-hand, dealing 419 Physical damage, dispelling all enrage effects and applying a concentrated form of your active Non-Lethal poison. Awards 1 combo point.
     sleight_of_hand           = { 90651, 381839, 1 }, -- Roll the Bones has a 10% increased chance of granting additional matches.
-    summarily_dispatched      = { 90653, 381990, 2 }, -- When your Dispatch consumes 5 or more combo points, Dispatch deals 5% increased damage and costs 5 less Energy for 8 sec. Max 5 stacks. Adding a stack does not refresh the duration.
+    summarily_dispatched      = { 90653, 381990, 2 }, -- When your Dispatch consumes 5 or more combo points, Dispatch deals 6% increased damage and costs 5 less Energy for 8 sec. Max 5 stacks. Adding a stack does not refresh the duration.
     swift_slasher             = { 90649, 381988, 1 }, -- Slice and Dice grants an additional 2% attack speed per combo point spent.
     take_em_by_surprise       = { 90676, 382742, 2 }, -- Haste increased by 10% while Stealthed and for 10 sec after leaving Stealth.
     triple_threat             = { 90678, 381894, 2 }, -- Sinister Strike has a 10% chance to strike with both weapons after it strikes an additional time.
@@ -680,6 +680,20 @@ spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, uni
 end )
 
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )
+spec:RegisterAuras( {
+    soulrip = {
+        id = 409604,
+        duration = 8,
+        max_stack = 1
+    },
+    soulripper = {
+        id = 409606,
+        duration = 15,
+        max_stack = 1
+    }
+} )
 
 -- Tier Set
 spec:RegisterGear( "tier29", 200372, 200374, 200369, 200371, 200373 )
@@ -935,6 +949,12 @@ spec:RegisterAbilities( {
             end
 
             applyDebuff( "target", "between_the_eyes", 3 * effective_combo_points )
+
+            if set_bonus.tier30_4pc > 0 and ( debuff.soulrip.up or active_dot.soulrip > 0 ) then
+                removeDebuff( "target", "soulrip" )
+                active_dot.soulrip = 0
+                applyBuff( "soulripper" )
+            end
 
             if azerite.deadshot.enabled then
                 applyBuff( "deadshot" )

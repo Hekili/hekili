@@ -665,6 +665,21 @@ local ExpireSepsis = setfenv( function ()
 end, state )
 
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )
+spec:RegisterAuras( {
+    poisoned_edges = {
+        id = 409587,
+        duration = 30,
+        max_stack = 1
+    }
+} )
+
+local ExpireDeathmarkT30 = setfenv( function ()
+    applyBuff( "poisoned_edges" )
+end, state )
+
+
 -- Tier Set
 spec:RegisterGear( "tier29", 200372, 200374, 200369, 200371, 200373 )
 spec:RegisterAura( "septic_wounds", {
@@ -693,6 +708,10 @@ spec:RegisterHook( "reset_precast", function ()
 
     if debuff.sepsis.up then
         state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
+    end
+
+    if set_bonus.tier30_4pc > 0 and debuff.deathmark.up then
+        state:QueueAuraExpiration( "deathmark", ExpireDeathmarkT30, debuff.deathmark.expires )
     end
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
@@ -2386,6 +2405,11 @@ spec:RegisterAbilities( {
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+
+            if state.spec.subtlety and set_bonus.tier30_2pc > 0 then
+                applyBuff( "symbols_of_death", 6 )
+                if debuff.rupture.up then debuff.rupture.expires = debuff.rupture.expires + 4 end
+            end
 
             if azerite.the_first_dance.enabled then
                 gain( 2, "combo_points" )
