@@ -56,7 +56,7 @@ spec:RegisterTalents( {
     aura_mastery                    = { 81567, 31821 , 1 }, -- Empowers your chosen aura for 8 sec.
     auras_of_swift_vengeance        = { 81601, 385639, 1 }, -- Learn Retribution Aura and Crusader Aura:  Retribution Aura: When any party or raid member within 40 yds takes more than 30% of their health in damage in a single hit, each member gains 5% increased damage and healing, decaying over 30 sec. This cannot occur within 30 sec of the aura being applied.  Crusader Aura: Increases mounted speed by 20% for all party and raid members within 40 yds.
     auras_of_the_resolute           = { 81599, 385633, 1 }, -- Learn Concentration Aura and Devotion Aura: Concentration Aura: Interrupt and Silence effects on party and raid members within 40 yds are 30% shorter.  Devotion Aura: Party and raid members within 40 yds are bolstered by their devotion, reducing damage taken by 3%.
-    avenging_crusader               = { 81584, 216331, 1 }, -- You become the ultimate crusader of light for 15 sec. Crusader Strike and Judgment cool down 30% faster and heal up to 3 injured allies for 250% of the damage they deal. If Avenging Wrath is known, also increases Judgment, Crusader Strike, and auto-attack damage by 30%.
+    avenging_crusader               = { 81584, 216331, 1 }, -- You become the ultimate crusader of light for 12 seconds. Crusader Strike and Judgment cool down 30% faster and heal up to 5 injured allies for 575% of the damage done, split evenly among them. If Avenging Wrath is talented, also increases Judgment, Crusader Strike, and auto-attack damage by 30%.
     avenging_wrath_might            = { 81584, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, reducing Holy Shock's cooldown by 40%, allowing Hammer of Wrath to be used on any target, increasing your damage and healing by 20% for 25 sec.
     awakening                       = { 81592, 248033, 2 }, -- Word of Glory and Light of Dawn have a 15% chance to grant you Avenging Wrath for 8 sec.
     barrier_of_faith                = { 81558, 148039, 1 }, -- Imbue a friendly target with a Barrier of Faith, absorbing 4,151 damage for 12 sec. For the next 24 sec, Barrier of Faith accumulates 50% of effective healing from your Flash of Light or Holy Light spells. Every 6 sec, the accumulated healing becomes an absorb shield.
@@ -148,7 +148,7 @@ spec:RegisterAuras( {
     },
     avenging_crusader = {
         id = 216331,
-        duration = 25,
+        duration = 12,
         max_stack = 1,
     },
     avenging_wrath = {
@@ -366,6 +366,23 @@ spec:RegisterAuras( {
         id = 391142,
     },
 } )
+
+
+spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
+-- 2pc is based on crits which aren't guaranteed, so we can't proactively model them.
+
+local TriggerLightsHammerT30 = setfenv( function()
+    gain( 1, "holy_power" )
+end, state )
+
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" and spellID == 114158 and state.set_bonus.tier30_4pc > 0 then
+        local now = GetTime()
+        state:QueueEvent( "lights_hammer", TriggerLightsHammerT30, now + 4, "AURA_PERIODIC", "player", true )
+        state:QueueEvent( "lights_hammer", TriggerLightsHammerT30, now + 8, "AURA_PERIODIC", "player", true )
+        state:QueueEvent( "lights_hammer", TriggerLightsHammerT30, now + 12, "AURA_PERIODIC", "player", true )
+    end
+end )
 
 
 spec:RegisterHook( "reset_precast", function()
@@ -782,8 +799,8 @@ spec:RegisterAbilities( {
         id = 35395,
         cast = 0,
         charges = 2,
-        cooldown = 6,
-        recharge = 6,
+        cooldown = function() return 6 * ( buff.avenging_crusader.up and 0.7 or 1 ) end,
+        recharge = function() return 6 * ( buff.avenging_crusader.up and 0.7 or 1 ) end,
         gcd = "spell",
 
         spend = 0.11,
@@ -996,6 +1013,7 @@ spec:RegisterAbilities( {
         texture = 613408,
 
         handler = function ()
+            if set_bonus.tier30_4pc > 0 then gain( 1, "holy_power" ) end
         end,
     },
 
@@ -1038,7 +1056,7 @@ spec:RegisterAbilities( {
     judgment = {
         id = 275773,
         cast = 0,
-        cooldown = function() return 12 - ( 0.5 * talent.seal_of_alacrity.rank ) end,
+        cooldown = function() return ( 12 - ( 0.5 * talent.seal_of_alacrity.rank ) )  * ( buff.avenging_crusader.up and 0.7 or 1 ) end,
         gcd = "spell",
 
         spend = 0.03,
@@ -1122,6 +1140,11 @@ spec:RegisterAbilities( {
         texture = 613955,
 
         handler = function ()
+            if set_bonus.tier30_4pc > 0 then
+                state:QueueAuraEvent( "lights_hammer", TriggerLightsHammerT30, query_time + 4, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "lights_hammer", TriggerLightsHammerT30, query_time + 8, "AURA_PERIODIC" )
+                state:QueueAuraEvent( "lights_hammer", TriggerLightsHammerT30, query_time + 12, "AURA_PERIODIC" )
+            end
         end,
     },
 

@@ -99,7 +99,7 @@ spec:RegisterTalents( {
     redoubt                         = { 81494, 280373, 1 }, -- Shield of the Righteous increases your Strength and Stamina by 2% for 10 sec, stacking up to 3.
     relentless_inquisitor           = { 81506, 383388, 1 }, -- Spending Holy Power grants you 1% haste per finisher for 12 sec, stacking up to 3 times.
     resolute_defender               = { 81471, 385422, 2 }, -- Each 3 Holy Power you spend reduces the cooldown of Ardent Defender and Divine Shield by 1.0 sec.
-    righteous_protector             = { 81477, 204074, 1 }, -- Holy Power abilities reduce the remaining cooldown on Avenging Wrath and Guardian of Ancient Kings by 3.0 sec.
+    righteous_protector             = { 81477, 204074, 1 }, -- Holy Power abilities reduce the remaining cooldown on Avenging Wrath and Guardian of Ancient Kings by 2.0 sec.
     sanctified_wrath                = { 81620, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, and activating all the effects learned for Avenging Wrath for 20 sec.
     sanctuary                       = { 81486, 379021, 1 }, -- While in your Consecration, your damage taken is reduced by an additional 5%.
     seal_of_charity                 = { 81612, 384815, 1 }, -- When you cast Word of Glory on someone other than yourself, you are also healed for 50% of the amount healed.
@@ -636,6 +636,15 @@ spec:RegisterAuras( {
 } )
 
 
+-- Tier 30
+spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
+spec:RegisterAura( "heartfire", {
+    id = 408399,
+    duration = 5,
+    max_stack = 1
+} )
+
+
 -- Gear Sets
 spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
 spec:RegisterAuras( {
@@ -704,8 +713,8 @@ end )
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "holy_power" then
         if talent.righteous_protector.enabled then
-            reduceCooldown( "avenging_wrath", 3 )
-            reduceCooldown( "guardian_of_ancient_kings", 3 )
+            reduceCooldown( "avenging_wrath", 2 )
+            reduceCooldown( "guardian_of_ancient_kings", 2 )
             applyBuff( "righteous_protector_icd" )
         end
         if talent.fist_of_justice.enabled then
@@ -790,6 +799,10 @@ spec:RegisterAbilities( {
             if talent.strength_in_adversity.enabled then addStack( "strength_in_adversity", nil, min( active_enemies, 3 + ( talent.soaring_shield.enabled and 2 or 0 ) ) ) end
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "ally_of_the_light" ) end
+            if set_bonus.tier30_2pc > 0 then
+                applyDebuff( "target", "heartfire" )
+                if active_enemies > 1 then active_dot.heartfire = min( active_enemies, active_dot.heartfire + 2 ) end
+            end
 
             if conduit.vengeful_shock.enabled then applyDebuff( "target", "vengeful_shock" ) end
             if legendary.bulwark_of_righteous_fury.enabled then addStack( "bulwark_of_righteous_fury", nil, min( 5, active_enemies ) ) end

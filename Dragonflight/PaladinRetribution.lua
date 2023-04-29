@@ -906,6 +906,12 @@ end )
 
 
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
+
+
+-- Tier 30
+spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
+
+
 spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
 
 spec:RegisterHook( "reset_precast", function ()
@@ -1546,13 +1552,19 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "final_verdict" )
             if buff.divine_arbiter.stack > 24 then removeBuff( "divine_arbiter" ) end
-            if legendary.the_mad_paragon.enabled then
-                if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 1 end
-                if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 1 end
-            end
             if talent.zealots_paragon.enabled then
                 if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 0.5 end
                 if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 0.5 end
+            end
+            if set_bonus.tier30_2pc > 0 then
+                applyDebuff( "target", "judgment" )
+                if set_bonus.tier30_4pc > 0 then
+                    active_dot.judgment = min( active_enemies, active_dot.judgment + 4 )
+                end
+            end
+            if legendary.the_mad_paragon.enabled then
+                if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 1 end
+                if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 1 end
             end
         end,
     },
