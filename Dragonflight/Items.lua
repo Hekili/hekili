@@ -688,8 +688,9 @@ all:RegisterAbilities( {
             crystalline_web = {
                 id = 382130,
                 duration = 15,
-                max_stack = 5
-            }
+                max_stack = 5,
+                copy = 394618
+            },
         }
     },
     integrated_primal_fire = {
@@ -1118,4 +1119,631 @@ all:RegisterAbilities( {
 
         item = 133647,
     },
+
+    -- 10.0.7
+    winterpelt_totem = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 202268,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "winterpelts_blessing" )
+        end,
+
+        auras = {
+            winterpelts_blessing = {
+                id = 398293,
+                duration = 20,
+                max_stack = 1
+            }
+        }
+    }
+} )
+
+
+-- 10.1
+-- TODO: Add triggers to specs' cooldowns.
+all:RegisterGear( "neltharions_call_to_dominance", 204202 )
+all:RegisterAuras( {
+    domineering_arrogance = {
+        id = 411661,
+        duration = 10,
+        max_stack = 10
+    },
+    call_to_dominance = {
+        id = 403380,
+        duration = 10,
+        max_stack = 10
+    }
+} )
+
+all:RegisterGear( "neltharions_call_to_suffering", 204211 )
+all:RegisterAura( "call_to_suffering", {
+    id = 403386,
+    duration = 12,
+    max_stack = 1
+} )
+
+all:RegisterGear( "neltharions_call_to_chaos", 204201 )
+all:RegisterAura( "call_to_chaos", {
+    id = 403382,
+    duration = 18,
+    max_stack = 1
+} )
+
+all:RegisterGear( "igneous_flowstone", 203996 )
+all:RegisterAuras( {
+    igneous_ebb_tide = {
+        id = 402898,
+        duration = 30,
+        max_stack = 1
+    },
+    igneous_low_tide = {
+        id = 402896,
+        duration = 60,
+        max_stack = 1
+    },
+    igneous_fury = {
+        id = 402897,
+        duration = 12,
+        max_stack = 1
+    },
+
+    igneous_flood_tide = {
+        id = 402894,
+        duration = 30,
+        max_stack = 1
+    },
+    igneous_high_tide = {
+        id = 402903,
+        duration = 60,
+        max_stack = 1
+    },
+} )
+
+all:RegisterGear( "ominous_chromatic_essence", 203729 )
+all:RegisterAuras( {
+    obsidian_resonance = {
+        id = 402221,
+        duration = 3600,
+        max_stack = 1
+    },
+    ruby_resonance = {
+        id = 401516,
+        duration = 3600,
+        max_stack = 1
+    },
+    bronze_resonance = {
+        id = 401518,
+        duration = 3600,
+        max_stack = 1
+    },
+    azure_resonance = {
+        id = 401519,
+        duration = 3600,
+        max_stack = 1
+    },
+    emerald_resonance = {
+        id = 401521,
+        duration = 3600,
+        max_stack = 1
+    },
+
+    minor_obsidian_resonance = {
+        id = 405615,
+        duration = 3600,
+        max_stack = 1
+    },
+    minor_ruby_resonance = {
+        id = 405613,
+        duration = 3600,
+        max_stack = 1
+    },
+    minor_bronze_resonance = {
+        id = 405612,
+        duration = 3600,
+        max_stack = 1
+    },
+    minor_azure_resonance = {
+        id = 405611,
+        duration = 3600,
+        max_stack = 1
+    },
+    minor_emerald_resonance = {
+        id = 405608,
+        duration = 3600,
+        max_stack = 1
+    },
+} )
+
+all:RegisterGear( "rashoks_molten_heart", 202614 )
+all:RegisterAuras( {
+    molten_radiance = {
+        id = 409898,
+        duration = 10,
+        tick_time = 1,
+        max_stack = 1
+    },
+    molten_overflow = {
+        id = 401187,
+        duration = 12,
+        max_stack = 1
+    }
+} )
+
+all:RegisterGear( "vessel_of_searing_shadow", 202615 )
+all:RegisterAuras( {
+    ravenous_shadowflame = {
+        id = 401428,
+        duration = 12,
+        tick_time = 2,
+        max_stack = 1
+    },
+    unstable_flames = {
+        id = 401394,
+        duration = 30,
+        max_stack = 5
+    }
+} )
+
+all:RegisterGear( "buzzing_orb_core", 204387 )
+all:RegisterAuras( {
+    buzzing_intensifies = {
+        id = 405197,
+        duration = 3600,
+        max_stack = 120
+    },
+    orb_activated = {
+        id = 405202,
+        duration = 20,
+        max_stack = 1
+    },
+} )
+
+all:RegisterGear( "stirring_twilight_ember", 205200 )
+all:RegisterAuras( {
+    stirring_twilight_ember = {
+        id = 409067,
+        duration = 10,
+        tick_time = 2,
+        max_stack = 1
+    },
+    twilight_celerity = {
+        id = 409077,
+        duration = 10,
+        max_stack = 1
+    }
+} )
+
+all:RegisterGear( "underlight_globe", 205191 )
+
+-- Drogbar Rocks / Drogbar Stones
+all:RegisterAuras( {
+    drogbar_stones = {
+        id = 407904,
+        duration = 10,
+        max_stack = 1
+    },
+    might_of_the_drogbar = {
+        id = 407913,
+        duration = 10,
+        max_stack = 1
+    }
+} )
+
+
+all:RegisterAbilities( {
+    beacon_to_the_beyond = {
+        cast = 0,
+        cooldown = 150,
+        gcd = "off",
+
+        item = 203963,
+        toggle = "cooldowns",
+
+        handler = function()
+        end,
+
+        copy = "anshuul_the_cosmic_wanderer"
+    },
+
+    ward_of_faceless_ire = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 202268,
+
+        handler = function()
+            applyBuff( "writhing_ward" )
+        end,
+
+        auras = {
+            writhing_ward = {
+                id = 401238,
+                duration = 10,
+                max_stack = 1
+            },
+
+            writhing_ire = {
+                id = 401257,
+                duration = 6,
+                tick_time = 1,
+                max_stack = 1
+            }
+        }
+    },
+
+    screaming_black_dragonscale = {
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        item = 202612,
+        toggle = "cooldowns", -- utility.
+
+        handler = function()
+            setDistance( 5 )
+            applyBuff( "seething_descent" )
+        end,
+
+        auras = {
+            seething_descent = {
+                id = 405940,
+                duration = 5,
+                max_stack = 1
+            },
+
+            screaming_flight = {
+                id = 401469,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+
+    dragonfire_bomb_dispenser = {
+        cast = 0,
+        charges = 3,
+        cooldown = 30,
+        recharge = 30,
+        gcd = "off",
+        icd = 10,
+
+        item = 202610,
+
+        handler = function()
+            applyDebuff( "target", "dragonfire_bomb_dispenser" )
+        end,
+
+        auras = {
+            dragonfire_bomb_dispenser = {
+                id = 408675,
+                duration = 7,
+                max_stack = 1
+            },
+            flash_of_inspiration = {
+                id = 408770,
+                duration = 3600,
+                max_stack = 60
+            }
+        }
+    },
+
+    elementium_pocket_anvil = {
+        cast = 0.5,
+        cooldown = 60,
+        gcd = "off",
+
+        item = 202617,
+
+        handler = function()
+            addStack( "anvil_strike", nil, 1 )
+        end,
+
+        auras = {
+            anvil_strike = {
+                id = 408578,
+                duration = 3600,
+                max_stack = 5,
+                copy = { "anvil_strike_combat", 408533, "anvil_strike_no_combat" }
+            }
+        }
+    },
+
+    zaqali_chaos_grapnel = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 202613,
+        toggle = "cooldowns",
+
+        handler = function()
+            setDistance( 5 )
+        end,
+    },
+
+    enduring_dreadplate = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 202616,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "enduring_dreadplate", nil, 5 )
+        end,
+
+        auras = {
+            hellsteel_plating = {
+                id = 400986,
+                duration = 15,
+                max_stack = 5
+            }
+        }
+    },
+
+    smoldering_lava_puffer = {
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        item = 203987,
+        nobuff = "volcanic_heartburn",
+
+        handler = function()
+            applyBuff( "volcanic_heartburn" )
+        end,
+
+        auras = {
+            volcanic_heartburn = {
+                id = 402685,
+                duration = 3600,
+                max_stack = 1
+            }
+        }
+    },
+
+    draconic_cauterizing_magma = {
+        cast = 2.5,
+        channeled = true,
+        cooldown = 120,
+        gcd = "spell",
+
+        item = 204388,
+        toggle = "defensives",
+
+        handler = function()
+            applyBuff( "cauterizing_shield" )
+        end,
+
+        auras = {
+            cauterizing_shield = {
+                id = 405109,
+                duration = 2.5,
+                max_stack = 1
+            },
+            cauterizing_flame = {
+                id = 405068,
+                duration = 2.5,
+                max_stack = 1
+            }
+        }
+    },
+
+    pocket_darkened_elemental_core = {
+        cast = 1,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 204388,
+        toggle = "cooldowns",
+
+        handler = function()
+        end,
+    },
+
+    magma_serpent_lure = {
+        cast = 0,
+        cooldown = 150,
+        gcd = "off",
+
+        item = 205229,
+        toggle = "cooldowns",
+
+        handler = function()
+        end,
+    },
+
+    heatbound_medallion = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 204736,
+        toggle = "cooldowns",
+
+        handler = function()
+        end,
+    },
+
+    satchel_of_healing_spores = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 204714,
+        toggle = "defensives",
+
+        handler = function()
+            applyBuff( "satchel_of_healing_spores" )
+        end,
+
+        auras = {
+            satchel_of_healing_spores = {
+                id = 406448,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+
+    friendship_censer = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 204736,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "friendship_censer" )
+        end,
+
+        auras = {
+            encouraging_friend = {
+                id = 406485,
+                duration = 20,
+                max_stack = 1
+            },
+            angry_friend = {
+                id = 406488,
+                duration = 2,
+                max_stack = 1
+            }
+        }
+    },
+
+    magmaclaw_lure = {
+        cast = 0,
+        cooldown = 150,
+        gcd = "off",
+
+        item = 205262,
+        toggle = "defensives",
+
+        handler = function()
+            applyBuff( "magmaclaw_lure" )
+        end,
+
+        auras = {
+            magmaclaw_lure = {
+                id = 409296,
+                duration = 10,
+                max_stack = 1
+            }
+        }
+    },
+
+    zaqali_hand_cannon = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 205196,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyDebuff( "target", "zaqali_hand_cannon" )
+        end,
+
+        auras = {
+            magma_pour = {
+                id = 408635,
+                duration = 8,
+                tick_time = 2,
+                max_stack = 1
+            }
+        }
+    },
+
+    deepflayer_lure = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 205276,
+        toggle = "defensives",
+
+        handler = function()
+            applyBuff( "deepflayers_tenacity" )
+        end,
+
+        auras = {
+            deepflayers_tenacity = {
+                id = 409347,
+                duration = 10,
+                max_stack = 1
+            }
+        }
+    },
+
+    fractured_crystalspine_quill = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 205194,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "fractured_crystalspine_quill" )
+        end,
+
+        auras = {
+            fractured_crystalspine_quill = {
+                id = 408625,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+
+    smoldering_howler_horn = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 205201,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "smoldering_howl" )
+        end,
+
+        auras = {
+            smoldering_howl = {
+                id = 408652,
+                duration = 20,
+                max_stack = 1
+            }
+        }
+    },
+
+    sturdy_deepflayer_scute = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 205277,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "sturdy_deepflayer_scute" )
+        end,
+
+        auras = {
+            sturdy_deepflayer_scute = {
+                id = 408612,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+
 } )
