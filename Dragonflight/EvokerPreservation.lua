@@ -288,6 +288,7 @@ spec:RegisterAuras( {
 } )
 
 local lastEssenceTick = 0
+local actual_empowered_spell_count, essence_rush_gained = 0, 0
 
 do
     local previous = 0
@@ -306,38 +307,30 @@ do
             previous = value
         end
     end )
-end
 
-
-spec:RegisterStateExpr( "empowerment_level", function()
-    return buff.tip_the_scales.down and args.empower_to or max_empower
-end )
-
--- This deserves a better fix; when args.empower_to = "maximum" this will cause that value to become max_empower (i.e., 3 or 4).
-spec:RegisterStateExpr( "maximum", function()
-    return max_empower
-end )
-
-spec:RegisterHook( "runHandler", function( action )
-    local ability = class.abilities[ action ]
-    local color = ability.color
-
-    empowerment.active = false
-end )
-
-spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
-spec:RegisterAuras( {
-    time_bender = {
-        id = 394544,
-        duration = 6,
-        max_stack = 1
-    },
-    lifespark = {
-        id = 394552,
-        duration = 15,
-        max_stack = 2
+    local empowered_spells = {
+        [382266] = 1,
+        [357208] = 1,
+        [382731] = 1,
+        [367226] = 1,
+        [382614] = 1,
+        [355936] = 1
     }
-} )
+
+    spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+        if sourceGUID ~= state.GUID or state.set_bonus.tier30_4pc == 0 then return end
+
+        local now = GetTime()
+
+        if subtype == "SPELL_CAST_SUCCESS" and empowered_spells[ spellID ] and now - essence_rush_gained > 0.5 then
+            actual_empowered_spell_count = actual_empowered_spell_count + 1
+
+        elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REFRESH" ) and spellID == 409899 then
+            essence_rush_gained = now
+            actual_empowered_spell_count = 0
+        end
+    end )
+end
 
 spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486 )
 -- 2 pieces (Preservation) : Spiritbloom applies a heal over time effect for 40% of healing done over 8 sec. Dream Breath's healing is increased by 15%.
@@ -354,6 +347,59 @@ spec:RegisterAura( "essence_rush", {
     max_stack = 1
 } )
 
+spec:RegisterStateExpr( "empowered_spell_count", function()
+    return actual_empowered_spell_count
+end )
+
+local TriggerEssenceRushT30 = setfenv( function()
+    addStack( "essence_burst" )
+end, state )
+
+spec:RegisterStateExpr( "empowerment_level", function()
+    return buff.tip_the_scales.down and args.empower_to or max_empower
+end )
+
+-- This deserves a better fix; when args.empower_to = "maximum" this will cause that value to become max_empower (i.e., 3 or 4).
+spec:RegisterStateExpr( "maximum", function()
+    return max_empower
+end )
+
+spec:RegisterStateExpr( "empowered_spell_count", function()
+    return actual_empowered_spell_count
+end )
+
+spec:RegisterHook( "runHandler", function( action )
+    local ability = class.abilities[ action ]
+    local color = ability.color
+
+    empowerment.active = false
+
+    if set_bonus.tier30_4pc > 0 and ability.empowered then
+        if empowered_spell_count == 3 then
+            empowered_spell_count = 0
+            applyBuff( "essence_rush" )
+            addStack( "essence_burst" )
+            state:QueueAuraEvent( "essence_rush", TriggerEssenceRushT30, buff.essence_rush.expires, "AURA_EXPIRATION" )
+        else
+            empowered_spell_count = empowered_spell_count + 1
+        end
+    end
+end )
+
+spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
+spec:RegisterAuras( {
+    time_bender = {
+        id = 394544,
+        duration = 6,
+        max_stack = 1
+    },
+    lifespark = {
+        id = 394552,
+        duration = 15,
+        max_stack = 2
+    }
+} )
+
 
 spec:RegisterHook( "reset_precast", function()
     max_empower = talent.font_of_magic.enabled and 4 or 3
@@ -363,6 +409,8 @@ spec:RegisterHook( "reset_precast", function()
         gain( partial, "essence" )
         if Hekili.ActiveDebug then Hekili:Debug( "Essence increased to %.2f from passive regen.", partial ) end
     end
+
+    empowered_spell_count = nil
 end )
 
 
