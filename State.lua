@@ -2871,10 +2871,10 @@ do
     mt_target_health = {
         __index = function(t, k)
             if k == "current" or k == "actual" then
-                return UnitCanAttack("player", "target") and not UnitIsDead( "target" ) and UnitHealth("target") or 100000
+                return (UnitCanAttack("player", "target") or UnitCanAssist("player", "target")) and not UnitIsDead( "target" ) and UnitHealth("target") or 100000
 
             elseif k == "max" then
-                return UnitCanAttack("player", "target") and not UnitIsDead( "target" ) and UnitHealthMax("target") or 100000
+                return (UnitCanAttack("player", "target") or UnitCanAssist("player", "target")) and not UnitIsDead( "target" ) and UnitHealthMax("target") or 100000
 
             elseif k == "pct" or k == "percent" then
                 return t.max ~= 0 and ( 100 * t.current / t.max ) or 100
