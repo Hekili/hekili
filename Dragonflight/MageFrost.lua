@@ -781,6 +781,7 @@ spec:RegisterStateExpr( "bf_flurry", function () return false end )
 spec:RegisterStateExpr( "comet_storm_remains", function () return buff.active_comet_storm.remains end )
 
 
+spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549 )
 
 spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
 spec:RegisterAura( "touch_of_ice", {

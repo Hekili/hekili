@@ -236,7 +236,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=365362
     arcane_surge = {
         id = 365362,
-        duration = function() return talent.arcane_power.enabled and 15 or 12 end,
+        duration = function() return ( talent.arcane_power.enabled and 15 or 12 ) + ( set_bonus.tier30_2pc > 0 and 3 or 0 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -610,7 +610,6 @@ spec:RegisterVariable( "conserve_mana", function ()
 end )
 
 
-
 do
     -- Builds Disciplinary Command; written so that it can be ported to the other two Mage specs.
     function Hekili:EmbedDisciplinaryCommand( x )
@@ -752,6 +751,26 @@ do
         } )
     end
 end
+
+
+-- Tier 30
+spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549 )
+spec:RegisterAura( "arcane_overload", {
+    id = 409022,
+    duration = 18,
+    max_stack = 25
+} )
+
+local TriggerArcaneOverloadT30 = setfenv( function()
+    applyBuff( "arcane_overload" )
+end, state )
+
+spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
+spec:RegisterAura( "bursting_energy", {
+    id = 395006,
+    duration = 12,
+    max_stack = 4
+} )
 
 
 spec:RegisterHook( "spend", function( amt, resource )
@@ -1125,13 +1144,6 @@ spec:RegisterPhasedVariable( "opener",
 local abs = math.abs
 
 
-spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
-spec:RegisterAura( "bursting_energy", {
-    id = 395006,
-    duration = 12,
-    max_stack = 4
-} )
-
 spec:RegisterHook( "reset_precast", function ()
     if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
     else removeBuff( "rune_of_power" ) end
@@ -1146,6 +1158,10 @@ spec:RegisterHook( "reset_precast", function ()
 
     if prev[1].conjure_mana_gem and now - action.conjure_mana_gem.lastCast < 1 and mana_gem_charges == 0 then
         mana_gem_charges = 3
+    end
+
+    if buff.arcane_surge.up and set_bonus.tier30_4pc > 0 then
+        state:QueueAuraEvent( "arcane_overload", TriggerArcaneOverloadT30, buff.arcane_surge.expires, "AURA_EXPIRATION" )
     end
 
     incanters_flow.reset()

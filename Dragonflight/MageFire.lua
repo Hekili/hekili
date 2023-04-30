@@ -738,6 +738,26 @@ spec:RegisterStateTable( "searing_touch", setmetatable( {}, {
 spec:RegisterTotem( "rune_of_power", 609815 )
 
 
+spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549 )
+spec:RegisterAuras( {
+    charring_embers = {
+        id = 408665,
+        duration = 12,
+        max_stack = 1
+    },
+    calefaction = {
+        id = 408673,
+        duration = 60,
+        max_stack = 20
+    },
+    flames_fury = {
+        id = 409964,
+        duration = 30,
+        max_stack = 2
+    }
+} )
+
+
 spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
 
 
@@ -1452,6 +1472,16 @@ spec:RegisterAbilities( {
             if talent.feel_the_burn.enabled then addStack( "feel_the_burn" ) end
             if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
             if talent.master_of_flame.enabled and buff.combustion.up then active_dot.ignite = min( active_enemies, active_dot.ignite + 4 ) end
+
+            if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
+                if buff.calefaction.stack == 19 then
+                    removeBuff( "calefaction" )
+                    applyBuff( "flames_fury", nil, 2 )
+                else
+                    addStack( "calefaction" )
+                end
+            end
+
             if azerite.blaster_master.enabled then addStack( "blaster_master" ) end
             if conduit.infernal_cascade.enabled and buff.combustion.up then addStack( "infernal_cascade" ) end
             if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
@@ -1509,6 +1539,16 @@ spec:RegisterAbilities( {
                 buff.flame_accelerant.applied = query_time + 8
                 buff.flame_accelerate.expires = query_time + 8 + 8
             end
+
+            if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
+                if buff.calefaction.stack == 19 then
+                    removeBuff( "calefaction" )
+                    applyBuff( "flames_fury", nil, 2 )
+                else
+                    addStack( "calefaction" )
+                end
+            end
+
             if legendary.molten_skyfall.enabled and buff.molten_skyfall_ready.down then
                 addStack( "molten_skyfall" )
                 if buff.molten_skyfall.stack == 18 then
@@ -1571,6 +1611,14 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "chilled" )
             if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
+            if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
+                if buff.calefaction.stack == 19 then
+                    removeBuff( "calefaction" )
+                    applyBuff( "flames_fury", nil, 2 )
+                else
+                    addStack( "calefaction" )
+                end
+            end
         end,
     },
 
@@ -1670,12 +1718,30 @@ spec:RegisterAbilities( {
         velocity = 50,
 
         impact = function ()
+            if buff.flames_fury.up then
+                gainCharges( "phoenix_flames", 1 )
+                removeStack( "flames_fury" )
+            end
+
             if hot_streak( firestarter.active ) and talent.kindling.enabled then
                 setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) )
             end
 
             applyDebuff( "target", "ignite" )
             if active_dot.ignite < active_enemies then active_dot.ignite = active_enemies end
+
+            if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
+                if buff.calefaction.stack == 19 then
+                    removeBuff( "calefaction" )
+                    applyBuff( "flames_fury", nil, 2 )
+                else
+                    addStack( "calefaction" )
+                end
+            end
+
+            if set_bonus.tier30_2pc > 0 then
+                applyDebuff( "target", "charring_embers" )
+            end
         end,
     },
 
@@ -1752,6 +1818,15 @@ spec:RegisterAbilities( {
                 if buff.firefall.stack == buff.firefall.max_stack then
                     applyBuff( "firefall_ready" )
                     removeBuff( "firefall" )
+                end
+            end
+
+            if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
+                if buff.calefaction.stack == 19 then
+                    removeBuff( "calefaction" )
+                    applyBuff( "flames_fury", nil, 2 )
+                else
+                    addStack( "calefaction" )
                 end
             end
         end,
@@ -1833,6 +1908,15 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "ignite" )
             if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
             if talent.improved_scorch.enabled and target.health_pct < 30 then applyDebuff( "target", "improved_scorch", nil, debuff.scorch.stack + 1 ) end
+
+            if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
+                if buff.calefaction.stack == 19 then
+                    removeBuff( "calefaction" )
+                    applyBuff( "flames_fury", nil, 2 )
+                else
+                    addStack( "calefaction" )
+                end
+            end
         end,
     },
 
