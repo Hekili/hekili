@@ -27,7 +27,7 @@ spec:RegisterResource( Enum.PowerType.ComboPoints, {
 
         interval = 1.5,
         value = 1
-    },
+    }
 } )
 
 spec:RegisterResource( Enum.PowerType.Rage )
@@ -84,7 +84,7 @@ spec:RegisterTalents( {
     adaptive_swarm                 = { 82112, 391888, 1 }, -- Command a swarm that heals 15,706 or deals 14,958 Shadow damage over 12 sec to a target, and increases the effectiveness of your periodic effects on them by 25%. Upon expiration, finds a new target, preferring to alternate between friend and foe up to 3 times.
     apex_predators_craving         = { 82092, 391881, 1 }, -- Rip damage has a 4% chance to make your next Ferocious Bite free and deal the maximum damage.
     ashamanes_guidance             = { 82113, 391548, 1 }, -- Your melee attacks have a chance to activate Incarnation: Avatar of Ashamane for 6 sec, without the ability to enter stealth in combat. Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
-    berserk                        = { 82101, 106951, 1 }, -- Go Berserk for 20 sec. While Berserk: Finishing moves have a 20% chance per combo point spent to refund 2 combo points. Swipe generates 1 additional combo point. Rake and Shred deal damage as though you were stealthed.
+    berserk                        = { 82101, 106951, 1 }, -- Go Berserk for 20 sec. While Berserk: Generate 1 combo point every 1.5 sec. Combo point generating abilities generate 1 additional combo point. Finishing moves restore up to 3 combo points generated over the cap. Shred and Rake damage increased by 50%.
     berserk_frenzy                 = { 82090, 384668, 1 }, -- During Berserk your combo point-generating abilities bleed the target for an additional 100% of their damage over 8 sec.
     berserk_heart_of_the_lion      = { 82105, 391174, 1 }, -- Each combo point spent reduces the cooldown of Berserk by 0.5 sec.
     bloodtalons                    = { 82109, 319439, 1 }, -- When you use 3 different combo point-generating abilities within 4 sec, the damage of your next 2 Rips or Ferocious Bites is increased by 25%.
@@ -273,6 +273,11 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1,
         copy = { 279526, "berserk_cat" },
+        multiplier = 1.5,
+    },
+    berserk_overflow = {
+        duration = function () return talent.incarnation.enabled and 30 or 20 end,
+        max_stack = 3,
     },
 
     -- Alias for Berserk vs. Incarnation
@@ -284,7 +289,7 @@ spec:RegisterAuras( {
     },
     bloodtalons = {
         id = 145152,
-        max_stack = 2,
+        max_stack = 3,
         duration = 30,
         multiplier = 1.3,
     },
@@ -832,9 +837,10 @@ spec:RegisterAuras( {
 
 -- Snapshotting
 local tf_spells = { rake = true, rip = true, thrash_cat = true, lunar_inspiration = true, primal_wrath = true }
-local bt_spells = { rip = true }
+local bt_spells = { rip = true, primal_wrath = true }
 local mc_spells = { thrash_cat = true }
 local pr_spells = { rake = true }
+local bs_spells = { rake = true }
 
 local stealth_dropped = 0
 
@@ -843,10 +849,11 @@ local function calculate_pmultiplier( spellID )
     local tigers_fury = FindUnitBuffByID( "player", a.tigers_fury.id, "PLAYER" ) and a.tigers_fury.multiplier or 1
     local bloodtalons = FindUnitBuffByID( "player", a.bloodtalons.id, "PLAYER" ) and a.bloodtalons.multiplier or 1
     local clearcasting = state.talent.moment_of_clarity.enabled and FindUnitBuffByID( "player", a.clearcasting.id, "PLAYER" ) and a.clearcasting.multiplier or 1
-    local prowling = ( GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", a.incarnation.id, "PLAYER" ) or FindUnitBuffByID( "player", a.berserk.id, "PLAYER" ) ) and a.prowl_base.multiplier or 1
+    local prowling = ( FindUnitBuffByID( "player", a.prowl_base.id, "PLAYER" ) or FindUnitBuffByID( "player", a.prowl_incarnation.id, "PLAYER" ) or GetTime() - stealth_dropped < 0.2 ) and a.prowl_base.multiplier or 1
+    local berserk = state.talent.berserk.enabled and FindUnitBuffByID( "player", state.talent.incarnation.enabled and a.incarnation.id or a.berserk.id, "PLAYER" ) and a.berserk.multiplier or 1
 
     if spellID == a.rake.id then
-        return 1 * tigers_fury * prowling
+        return 1 * tigers_fury * prowling * berserk
 
     elseif spellID == a.rip.id or spellID == a.primal_wrath.id then
         return 1 * bloodtalons * tigers_fury
@@ -874,6 +881,7 @@ spec:RegisterStateExpr( "persistent_multiplier", function( act )
     if bt_spells[ act ] and buff.bloodtalons.up then mult = mult * a.bloodtalons.multiplier end
     if mc_spells[ act ] and talent.moment_of_clarity.enabled and buff.clearcasting.up then mult = mult * a.clearcasting.multiplier end
     if pr_spells[ act ] and ( effective_stealth or state.query_time - stealth_dropped < 0.2 ) then mult = mult * a.prowl_base.multiplier end
+    if bs_spells[ act ] and talent.berserk.enabled and buff.bs_inc.up then mult = mult * a.berserk.multiplier end
 
     return mult
 end )
@@ -1088,6 +1096,11 @@ local SinfulHysteriaHandler = setfenv( function ()
     applyBuff( "ravenous_frenzy_sinful_hysteria" )
 end, state )
 
+local TriggerBerserkCombo = setfenv( function ()
+    if combo_points.deficit > 0 then gain( 1, "combo_points" )
+    elseif buff.berserk_overflow.stack < 3 then addStack( "berserk_overflow" ) end
+end, state )
+
 
 spec:RegisterHook( "reset_precast", function ()
     if buff.cat_form.down then
@@ -1099,6 +1112,16 @@ spec:RegisterHook( "reset_precast", function ()
 
     eclipse.reset()
     spec.SwarmOnReset()
+
+    if talent.berserk.enabled and buff.bs_inc.up then
+        local passed = query_time - buff.bs_inc.applied
+        local next_tick = query_time + 1.5 - ( passed % 1.5 )
+
+        while( next_tick < buff.bs_inc.expires ) do
+            state:QueueAuraEvent( "berserk", TriggerBerserkCombo, next_tick, "AURA_PERIODIC" )
+            next_tick = next_tick + 1.5
+        end
+    end
 
     -- Bloodtalons
     if talent.bloodtalons.enabled then
@@ -1143,8 +1166,9 @@ local function comboSpender( a, r )
             gain( a * 3, "energy" )
         end
 
-        if buff.bs_inc.up and a > 4 then
-            gain( 2, "combo_points" )
+        if buff.bs_inc.up and buff.berserk_overflow.up then
+            gain( buff.berserk_overflow.stack, "combo_points" )
+            removeBuff( "berserk_overflow" )
         end
 
         if legendary.frenzyband.enabled then
@@ -1236,7 +1260,7 @@ end ) ]]
 spec:RegisterStateFunction( "check_bloodtalons", function ()
     if buff.bt_triggers.stack > 2 then
         removeBuff( "bt_triggers" )
-        applyBuff( "bloodtalons", nil, 2 )
+        applyBuff( "bloodtalons", nil, 3 )
     end
 end )
 
@@ -1262,7 +1286,7 @@ spec:RegisterStateExpr( "bleeding", function ()
 end )
 
 spec:RegisterStateExpr( "effective_stealth", function ()
-    return buff.prowl.up or buff.berserk.up or buff.incarnation.up or buff.shadowmeld.up or buff.sudden_ambush.up
+    return buff.prowl.up or buff.incarnation.up or buff.shadowmeld.up or buff.sudden_ambush.up
 end )
 
 
@@ -1395,6 +1419,12 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.cat_form.down then shift( "cat_form" ) end
             applyBuff( "berserk" )
+
+            local next_tick = query_time + 1.5
+            while( next_tick < buff.berserk.expires ) do
+                state:QueueAuraEvent( "berserk", TriggerBerserkCombo, next_tick, "AURA_PERIODIC" )
+                next_tick = next_tick + 1.5
+            end
         end,
 
         copy = { "berserk_cat", "bs_inc" }
@@ -1432,7 +1462,7 @@ spec:RegisterAbilities( {
         cost = function () return max( 1, class.abilities.brutal_slash.spend ) end,
 
         handler = function ()
-            gain( 1, "combo_points" )
+            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1, "combo_points" )
             if buff.bs_inc.up and talent.berserk_frenzy.enabled then applyDebuff( "target", "frenzied_assault" ) end
 
             applyBuff( "bt_brutal_slash" )
@@ -1593,7 +1623,7 @@ spec:RegisterAbilities( {
         spend = function ()
             if buff.apex_predator.up or buff.apex_predators_craving.up then return 0 end
             -- Support true/false or 1/0 through this awkward transition.
-            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.8 or 1 ) * ( talent.relentless_predator.enabled and 0.6 or 1 ) end
+            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.8 or 1 ) * ( talent.relentless_predator.enabled and 0.8 or 1 ) end
             return max( 25, min( 50 * ( buff.incarnation.up and 0.8 or 1 ), energy.current ) ) * ( talent.relentless_predator.enabled and 0.6 or 1 )
         end,
         spendType = "energy",
@@ -1732,6 +1762,12 @@ spec:RegisterAbilities( {
             applyBuff( "incarnation" )
             applyBuff( "jungle_stalker" )
             energy.max = energy.max + 50
+
+            local next_tick = query_time + 1.5
+            while( next_tick < buff.incarnation.expires ) do
+                state:QueueAuraEvent( "incarnation", TriggerBerserkCombo, next_tick, "AURA_PERIODIC" )
+                next_tick = next_tick + 1.5
+            end
         end,
 
         copy = { "incarnation_avatar_of_ashamane", "Incarnation" }
@@ -1858,7 +1894,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "lunar_inspiration" )
             debuff.lunar_inspiration.pmultiplier = persistent_multiplier
 
-            gain( 1, "combo_points" )
+            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1, "combo_points" )
             applyBuff( "bt_moonfire" )
             check_bloodtalons()
             if buff.bs_inc.up and talent.berserk_frenzy.enabled then applyDebuff( "target", "frenzied_assault" ) end
@@ -2045,7 +2081,7 @@ spec:RegisterAbilities( {
             if talent.doubleclawed_rake.enabled and active_dot.rake < true_active_enemies then active_dot.rake = active_dot.rake + 1 end
             if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
 
-            gain( 1, "combo_points" )
+            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1, "combo_points" )
 
             applyBuff( "bt_rake" )
             check_bloodtalons()
@@ -2224,7 +2260,7 @@ spec:RegisterAbilities( {
         form = "cat_form",
 
         damage = function ()
-            return calculate_damage( 0.6837, false, true, ( talent.pouncing_strikes.enabled and effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.merciless_claws.enabled and bleeding and 1.2 or 1 ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) )
+            return calculate_damage( 0.6837, false, true, ( talent.pouncing_strikes.enabled and effective_stealth and class.auras.prowl.multiplier or 1 ) * ( talent.merciless_claws.enabled and bleeding and 1.2 or 1 ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1 ) * ( talent.berserk.enabled and buff.bs_inc.up and class.auras.berserk.multiplier or 1 ) )
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -2232,7 +2268,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "sudden_ambush" )
-            gain( talent.pouncing_strikes.enabled and ( buff.prowl.up or buff.bs_inc.up ) and 2 or 1, "combo_points" )
+            gain( 1 + ( talent.berserk.enabled and buff.bs_inc.up and 1 or 0 ) + ( talent.pouncing_strikes.enabled and buff.prowl.up and 1 or 0 ), "combo_points" )
 
             applyBuff( "bt_shred" )
             check_bloodtalons()
@@ -2367,13 +2403,18 @@ spec:RegisterAbilities( {
         cost = function () return max( 1, class.abilities.swipe_cat.spend ) end,
 
         handler = function ()
-            gain( buff.bs_inc.up and 2 or 1, "combo_points" )
+            gain( talent.berserk.enabled and 2 or 1, "combo_points" )
 
             applyBuff( "bt_swipe" )
             check_bloodtalons()
 
             if talent.cats_curiosity.enabled and buff.clearcasting.up then
                 gain( 35 * 0.25, "energy" )
+            end
+
+            if talent.thrashing_claws.enabled then
+                applyDebuff( "target", "thrash_cat" )
+                active_dot.thrash_cat = max( active_enemies, active_dot.thrash_cat )
             end
             removeStack( "clearcasting" )
         end,
@@ -2451,7 +2492,7 @@ spec:RegisterAbilities( {
             end
 
             if target.within8 then
-                gain( 1, "combo_points" )
+                gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1, "combo_points" )
             end
 
             applyBuff( "bt_thrash" )
