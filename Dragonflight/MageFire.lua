@@ -412,7 +412,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=383608
     improved_scorch = {
         id = 383608,
-        duration = 8,
+        duration = 12,
         type = "Magic",
         max_stack = 3
     },

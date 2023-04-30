@@ -461,7 +461,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=376103
     radiant_spark = {
         id = 376103,
-        duration = 10,
+        duration = 12,
         type = "Magic",
         max_stack = 1,
         copy = 307443
@@ -470,7 +470,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=376104
     radiant_spark_vulnerability = {
         id = 376104,
-        duration = 8,
+        duration = 12,
         max_stack = 4,
         copy = 307454
     },
@@ -538,7 +538,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=210824
     touch_of_the_magi = {
         id = 210824,
-        duration = 10,
+        duration = 12,
         max_stack = 1
     },
     -- Suffering $w1 Fire damage every $t1 sec.
