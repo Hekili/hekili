@@ -1285,7 +1285,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "a_murder_of_crows" )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 2 ) end -- ???
+            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end -- ???
         end,
     },
 
@@ -1500,7 +1500,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "call_of_the_wild" )
             if talent.bloody_frenzy.enabled then applyBuff( "beast_cleave", 20 ) end
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 2 ) end
+            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
@@ -1624,7 +1624,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "dire_beast" )
             summonPet( "dire_beast", 8 )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 2 ) end
+            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
@@ -1646,7 +1646,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "dire_beast_basilisk" )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 2 ) end
+            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
@@ -1667,7 +1667,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "dire_beast_hawk" )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 2 ) end
+            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
@@ -2127,7 +2127,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "stampede" )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 2 ) end
+            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
