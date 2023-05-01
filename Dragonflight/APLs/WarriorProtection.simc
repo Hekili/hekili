@@ -23,7 +23,7 @@ actions+=/bag_of_tricks
 actions+=/potion,if=buff.avatar.up|buff.avatar.up&target.health.pct<=20
 actions+=/ignore_pain,if=target.health.pct>=20&(rage.deficit<=15&cooldown.shield_slam.ready|rage.deficit<=40&cooldown.shield_charge.ready&talent.champions_bulwark.enabled|rage.deficit<=20&cooldown.shield_charge.ready|rage.deficit<=30&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled|rage.deficit<=20&cooldown.avatar.ready|rage.deficit<=45&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled&buff.last_stand.up&talent.unnerving_focus.enabled|rage.deficit<=30&cooldown.avatar.ready&buff.last_stand.up&talent.unnerving_focus.enabled|rage.deficit<=20|rage.deficit<=40&cooldown.shield_slam.ready&buff.violent_outburst.up&talent.heavy_repercussions.enabled&talent.impenetrable_wall.enabled|rage.deficit<=55&cooldown.shield_slam.ready&buff.violent_outburst.up&buff.last_stand.up&talent.unnerving_focus.enabled&talent.heavy_repercussions.enabled&talent.impenetrable_wall.enabled|rage.deficit<=17&cooldown.shield_slam.ready&talent.heavy_repercussions.enabled|rage.deficit<=18&cooldown.shield_slam.ready&talent.impenetrable_wall.enabled),use_off_gcd=1
 # Usage of Last Stand is also governed by specialization settings; see /hekili > Protection.
-actions+=/last_stand,if=talent.unnerving_focus&(target.health.pct>=90|target.health.pct<=20)|talent.bolster&buff.shield_block.down|!talent.bolster&!talent.unnerving_focus
+actions+=/last_stand,if=talent.unnerving_focus&(target.health.pct>=90|target.health.pct<=20)|talent.bolster&buff.shield_block.down|!talent.bolster&!talent.unnerving_focus|set_bonus.tier30_2pc>0
 # Usage of Rallying Cry is governed by specialization settings; see /hekili > Protection.
 actions+=/rallying_cry
 actions+=/ravager
@@ -46,7 +46,6 @@ actions.aoe+=/revenge,if=rage>=30|rage>=40&talent.barbaric_training.enabled
 actions.generic=shield_slam
 actions.generic+=/thunder_clap,if=dot.rend.remains<=1&buff.violent_outburst.down
 actions.generic+=/execute,if=buff.sudden_death.up&talent.sudden_death.enabled
-actions.generic+=/revenge,if=buff.vanguards_determination.down
 actions.generic+=/thunder_clap,if=(spell_targets.thunder_clap>1|cooldown.shield_slam.remains&!buff.violent_outburst.up)
 actions.generic+=/revenge,if=(rage>=60&target.health.pct>20|buff.revenge.up&target.health.pct<=20&rage<=18&cooldown.shield_slam.remains|buff.revenge.up&target.health.pct>20)|(rage>=60&target.health.pct>35|buff.revenge.up&target.health.pct<=35&rage<=18&cooldown.shield_slam.remains|buff.revenge.up&target.health.pct>35)&talent.massacre.enabled
 actions.generic+=/execute,if=spell_targets.revenge=1
