@@ -33,7 +33,7 @@ all:RegisterAbilities( {
         auras = {
             algethar_puzzle = {
                 id = 383781,
-                duration = 20,
+                duration = 30,
                 max_stack = 1,
             },
         },
