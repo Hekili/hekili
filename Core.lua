@@ -81,50 +81,63 @@ function Hekili:OnInitialize()
 
     local LDB = LibStub( "LibDataBroker-1.1", true )
     local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
+
+    Hekili_OnAddonCompartmentClick = function( addonName, button )
+        if button == "RightButton" then ns.StartConfiguration()
+        else
+            ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 0, 0 )
+        end
+        GameTooltip:Hide()
+    end
+
+    local function GetDataText()
+        local p = Hekili.DB.profile
+        local m = p.toggles.mode.value
+        local color = "FFFFD100"
+
+        if p.toggles.essences.override then
+            -- Don't show Essences here if it's overridden by CDs anyway?
+            return format( "|c%s%s|r %sCD|r %sInt|r %sDef|r", color,
+                m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
+                p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+                p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
+        else
+            return format( "|c%s%s|r %sCD|r %sCov|r %sInt|r",
+                color,
+                m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
+                p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
+                p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000" )
+        end
+    end
+
+    Hekili_OnAddonCompartmentEnter = function( addonName, button )
+        GameTooltip:SetOwner( AddonCompartmentFrame )
+        GameTooltip:AddDoubleLine( "Hekili", GetDataText() )
+        GameTooltip:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
+        GameTooltip:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
+        GameTooltip:Show()
+    end
+
+    Hekili_OnAddonCompartmentLeave = function( addonName, button )
+        GameTooltip:Hide()
+    end
+
+
+
     if LDB then
         ns.UI.Minimap = ns.UI.Minimap or LDB:NewDataObject( "Hekili", {
             type = "data source",
             text = "Hekili",
             icon = "Interface\\ICONS\\spell_nature_bloodlust",
-            OnClick = function( f, button )
-                if button == "RightButton" then ns.StartConfiguration()
-                else
-                    ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 0, 0 )
-                end
-                GameTooltip:Hide()
-            end,
-            OnEnter = function( self )
-                GameTooltip:SetOwner( self )
-                GameTooltip:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
-                GameTooltip:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
-                GameTooltip:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
-                GameTooltip:Show()
-            end,
-            OnLeave = function( self )
-                GameTooltip:Hide()
-            end
+            OnClick = Hekili_OnAddonCompartmentClick,
+            OnEnter = Hekili_OnAddonCompartmentEnter,
+            OnLeave = Hekili_OnAddonCompartmentLeave
         } )
 
         function ns.UI.Minimap:RefreshDataText()
-            local p = Hekili.DB.profile
-            local m = p.toggles.mode.value
-            local color = "FFFFD100"
-
-            if p.toggles.essences.override then
-                -- Don't show Essences here if it's overridden by CDs anyway?
-                self.text = format( "|c%s%s|r %sCD|r %sInt|r %sDef|r", color,
-                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
-                    p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
-            else
-                self.text = format( "|c%s%s|r %sCD|r %sCov|r %sInt|r",
-                    color,
-                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
-                    p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000" )
-            end
+            self.text = GetDataText()
         end
 
         ns.UI.Minimap:RefreshDataText()
@@ -1999,7 +2012,7 @@ function Hekili.Update( initial )
                 else UI.EventPayload[ i ] = {} end
 
                 for k, v in pairs( Queue[ i ] ) do
-                    UI.EventPayload[ i ][ k ] = v                   
+                    UI.EventPayload[ i ][ k ] = v
                 end
             end
 
