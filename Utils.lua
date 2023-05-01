@@ -612,7 +612,6 @@ end
 
 -- Tooltip Parsing Utilities (10.0.2)
 do
-    local SurfaceArgs = TooltipUtil and TooltipUtil.SurfaceArgs
     local CurrentBuild = Hekili.CurrentBuild
 
     local tooltip = ns.Tooltip
@@ -639,12 +638,9 @@ do
 
         if not data then return end
 
-        SurfaceArgs( data )
-
         if reverse then
             for i = #data.lines, 1, -1 do
                 local line = data.lines[ i ]
-                SurfaceArgs( line )
                 if type( str ) == "table" then
                     for _, seek in ipairs( str ) do
                         if ( useMatch and line.leftText:match( seek ) ) or ( not useMatch and line.leftText == seek ) then return true end
@@ -657,7 +653,6 @@ do
         end
 
         for _, line in ipairs( data ) do
-            SurfaceArgs( line )
             if type( str ) == "table" then
                 for _, seek in ipairs( str ) do
                     if ( useMatch and line.leftText:match( seek ) ) or ( not useMatch and line.leftText == seek ) then return true end
