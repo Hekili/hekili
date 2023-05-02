@@ -870,7 +870,7 @@ spec:RegisterAbilities( {
         cooldown = function () return ( 3 - talent.deft_experience.rank * 0.75 ) * haste end,
         gcd = "spell",
 
-        spend = function() return -8 - ( 2 * buff.merciless_assault.stack ) end,
+        spend = function() return -8 - ( 2 * buff.merciless_assault.stack ) + ( talent.seethe.enabled and action.bloodbath.crit_pct_current >= 100 and -2 or 0 ) end,
         spendType = "rage",
 
         cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
@@ -880,13 +880,20 @@ spec:RegisterAbilities( {
         buff = "reckless_abandon",
         bind = "bloodthirst",
 
+        crit_pct_current = function()
+            return stat.crit + ( 15 * buff.bloodcraze.stack )
+        end,
+
         handler = function ()
             removeStack( "whirlwind" )
             removeStack( "reckless_abandon" )
 
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
 
-            if talent.bloodcraze.enabled then addStack( "bloodcraze" ) end
+            if talent.bloodcraze.enabled then
+                if action.bloodthirst.crit_pct_current >= 100 then removeBuff( "bloodcraze" )
+                else addStack( "bloodcraze" ) end
+            end
             if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
@@ -932,7 +939,7 @@ spec:RegisterAbilities( {
         cooldown = function () return ( 4.5 - talent.deft_experience.rank * 0.75 ) * haste end,
         gcd = "spell",
 
-        spend = function() return -8 - ( 2 * buff.merciless_assault.stack ) end,
+        spend = function() return -8 - ( 2 * buff.merciless_assault.stack ) + ( talent.seethe.enabled and action.bloodthirst.crit_pct_current >= 100 and -2 or 0 ) end,
         spendType = "rage",
 
         cycle = function () return talent.fresh_meat.enabled and "hit_by_fresh_meat" or nil end,
@@ -943,11 +950,18 @@ spec:RegisterAbilities( {
         startsCombat = true,
         bind = "bloodbath",
 
+        crit_pct_current = function()
+            return stat.crit + ( 15 * buff.bloodcraze.stack )
+        end,
+
         handler = function ()
             removeStack( "whirlwind" )
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
 
-            if talent.bloodcraze.enabled then addStack( "bloodcraze" ) end
+            if talent.bloodcraze.enabled then
+                if action.bloodthirst.crit_pct_current >= 100 then removeBuff( "bloodcraze" )
+                else addStack( "bloodcraze" ) end
+            end
             if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )

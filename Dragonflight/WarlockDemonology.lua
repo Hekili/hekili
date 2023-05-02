@@ -156,6 +156,9 @@ local demonic_tyrant_v = {}
 local grim_felguard = {}
 local grim_felguard_v = {}
 
+local pit_lord = {}
+local pit_lord_v = {}
+
 local other_demon = {}
 local other_demon_v = {}
 
@@ -239,7 +242,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
             -- 267996 - Darkhound
             -- 268001 - Ur'zul
             elseif spellID >= 267986 and spellID <= 268001 then table.insert( other_demon, now + 15 )
-            elseif spellID == 387590 then table.insert( other_demon, now + 10 ) end -- Pit Lord from Gul'dan's Ambition
+            elseif spellID == 387590 then table.insert( pit_lord, now + 10 ) end -- Pit Lord from Gul'dan's Ambition
 
         elseif spellID == 387458 and imps[ destGUID ] then
             imps[ destGUID ].boss = true
@@ -374,7 +377,6 @@ spec:RegisterHook( "reset_precast", function()
     wipe( guldan_v )
     for n, t in ipairs( guldan ) do guldan_v[ n ] = t end
 
-
     i = 1
     while( other_demon[ i ] ) do
         if other_demon[ i ] < now then
@@ -386,6 +388,21 @@ spec:RegisterHook( "reset_precast", function()
 
     wipe( other_demon_v )
     for n, t in ipairs( other_demon ) do other_demon_v[ n ] = t end
+
+    i = 1
+    local pl_expires = 0
+    while( pit_lord[ i ] ) do
+        if pit_lord[ i ] < now then
+            table.remove( pit_lord, i )
+        elseif pit_lord[ i ] > pl_expires then
+            pl_expires = pit_lord[ i ]
+            i = i + 1
+        else
+            i = i + 1
+        end
+    end
+
+    if pl_expires > 0 then summonPet( "pit_lord", pl_expires - now ) end
 
     if #dreadstalkers_v > 0  then wipe( dreadstalkers_v ) end
     if #vilefiend_v > 0      then wipe( vilefiend_v )     end

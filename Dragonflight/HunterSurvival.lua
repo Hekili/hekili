@@ -560,6 +560,16 @@ spec:RegisterHook( "reset_precast", function()
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
 end )
 
+spec:RegisterHook( "spend", function( amt, resource )
+    if set_bonus.tier30_4pc > 0 and amt >= 30 then
+        local sec = floor( amt / 30 )
+        gainChargeTime( "wildfire_bomb", sec )
+        gainChargeTime( "shrapnel_bomb", sec )
+        gainChargeTime( "volatile_bomb", sec )
+        gainChargeTime( "pheromone_bomb", sec )
+    end
+end )
+
 spec:RegisterHook( "specializationChanged", function ()
     current_wildfire_bomb = nil
 end )
