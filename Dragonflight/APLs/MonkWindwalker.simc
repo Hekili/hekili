@@ -15,7 +15,7 @@ actions+=/faeline_stomp,cycle_targets=1,if=combo_strike&talent.faeline_harmony&d
 # TP if not overcapping Chi or TotM
 actions+=/tiger_palm,cycle_targets=1,if=!buff.serenity.up&buff.teachings_of_the_monastery.stack<3&combo_strike&chi.max-chi>=(2+buff.power_strikes.up)&(!talent.invoke_xuen_the_white_tiger&!talent.serenity|(!talent.skyreach|time>5|pet.xuen_the_white_tiger.active))
 # Use Chi Burst to reset Faeline Stomp
-actions+=/chi_burst,if=talent.faeline_stomp&cooldown.faeline_stomp.remains&(chi.max-chi>=1&active_enemies=1|chi.max-chi>=2&active_enemies>=2)
+actions+=/chi_burst,if=talent.faeline_stomp&cooldown.faeline_stomp.remains&(chi.max-chi>=1&active_enemies=1|chi.max-chi>=2&active_enemies>=2)&!talent.faeline_harmony
 # Use Cooldowns
 actions+=/call_action_list,name=cd_sef,strict=1,if=!talent.serenity
 actions+=/call_action_list,name=cd_serenity,strict=1,if=talent.serenity
@@ -34,10 +34,15 @@ actions.heavy_aoe+=/strike_of_the_windlord,if=talent.thunderfist
 actions.heavy_aoe+=/whirling_dragon_punch,if=active_enemies>8
 actions.heavy_aoe+=/fists_of_fury
 actions.heavy_aoe+=/spinning_crane_kick,if=buff.bonedust_brew.up&combo_strike&spinning_crane_kick.max
+actions.heavy_aoe+=/rising_sun_kick,cycle_targets=1,if=buff.bonedust_brew.up&buff.pressure_point.up&set_bonus.tier30_2pc
 actions.heavy_aoe+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3&talent.shadowboxing_treads
 actions.heavy_aoe+=/whirling_dragon_punch,if=active_enemies>=5
+actions.heavy_aoe+=/rising_sun_kick,cycle_targets=1,if=buff.pressure_point.up&set_bonus.tier30_2pc
+actions.heavy_aoe+=/rising_sun_kick,cycle_targets=1,if=set_bonus.tier30_2pc
 actions.heavy_aoe+=/rising_sun_kick,cycle_targets=1,if=talent.whirling_dragon_punch&cooldown.whirling_dragon_punch.remains<3&cooldown.fists_of_fury.remains>3&!buff.kicks_of_flowing_momentum.up
 actions.heavy_aoe+=/spinning_crane_kick,cycle_targets=1,if=combo_strike&cooldown.fists_of_fury.remains<5&buff.chi_energy.stack>10
+actions.heavy_aoe+=/blackout_kick,cycle_targets=1,if=talent.shadowboxing_treads&combo_strike&set_bonus.tier30_2pc&!buff.bonedust_brew.up&active_enemies<15&!talent.crane_vortex
+actions.heavy_aoe+=/blackout_kick,cycle_targets=1,if=talent.shadowboxing_treads&combo_strike&set_bonus.tier30_2pc&!buff.bonedust_brew.up&active_enemies<8
 actions.heavy_aoe+=/spinning_crane_kick,cycle_targets=1,if=combo_strike&(cooldown.fists_of_fury.remains>3|chi>4)&spinning_crane_kick.max
 actions.heavy_aoe+=/rushing_jade_wind,if=!buff.rushing_jade_wind.up
 actions.heavy_aoe+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3
@@ -49,10 +54,13 @@ actions.heavy_aoe+=/chi_burst,if=chi.max-chi>=1&active_enemies=1&raid_event.adds
 actions.aoe+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.up&spinning_crane_kick.max
 actions.aoe+=/strike_of_the_windlord,if=talent.thunderfist
 actions.aoe+=/fists_of_fury
+actions.aoe+=/rising_sun_kick,cycle_targets=1,if=buff.bonedust_brew.up&buff.pressure_point.up&set_bonus.tier30_2pc
 actions.aoe+=/spinning_crane_kick,if=buff.bonedust_brew.up&combo_strike&spinning_crane_kick.max
 actions.aoe+=/rising_sun_kick,cycle_targets=1,if=!buff.bonedust_brew.up&buff.pressure_point.up&cooldown.fists_of_fury.remains>5
 actions.aoe+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3&talent.shadowboxing_treads
+actions.aoe+=/rising_sun_kick,cycle_targets=1,if=set_bonus.tier30_2pc
 actions.aoe+=/spinning_crane_kick,if=combo_strike&cooldown.fists_of_fury.remains>3&buff.chi_energy.stack>10
+actions.aoe+=/blackout_kick,cycle_targets=1,if=combo_strike&set_bonus.tier30_2pc
 actions.aoe+=/spinning_crane_kick,if=combo_strike&(cooldown.fists_of_fury.remains>3|chi>4)&spinning_crane_kick.max
 actions.aoe+=/whirling_dragon_punch
 actions.aoe+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3
@@ -66,8 +74,10 @@ actions.cleave+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monaster
 actions.cleave+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.up
 actions.cleave+=/strike_of_the_windlord,if=talent.thunderfist
 actions.cleave+=/fists_of_fury
+actions.cleave+=/rising_sun_kick,cycle_targets=1,if=buff.bonedust_brew.up&buff.pressure_point.up&set_bonus.tier30_2pc
 actions.cleave+=/spinning_crane_kick,if=buff.bonedust_brew.up&combo_strike
 actions.cleave+=/rising_sun_kick,cycle_targets=1,if=!buff.bonedust_brew.up&buff.pressure_point.up
+actions.cleave+=/rising_sun_kick,cycle_targets=1,if=set_bonus.tier30_2pc
 actions.cleave+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=2
 actions.cleave+=/strike_of_the_windlord
 actions.cleave+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.up&(talent.shadowboxing_treads|cooldown.rising_sun_kick.remains>1)
@@ -85,6 +95,7 @@ actions.cleave+=/spinning_crane_kick,cycle_targets=1,if=(combo_strike&chi>5&tale
 actions.st_cleave+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3&talent.shadowboxing_treads
 actions.st_cleave+=/strike_of_the_windlord,if=talent.thunderfist
 actions.st_cleave+=/fists_of_fury
+actions.st_cleave+=/rising_sun_kick,cycle_targets=1,if=set_bonus.tier30_2pc
 actions.st_cleave+=/rising_sun_kick,cycle_targets=1,if=buff.kicks_of_flowing_momentum.up|buff.pressure_point.up
 actions.st_cleave+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=2
 actions.st_cleave+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.up
@@ -117,6 +128,7 @@ actions.st+=/rushing_jade_wind,if=!buff.rushing_jade_wind.up
 actions.st+=/blackout_kick,cycle_targets=1,if=combo_strike
 
 # Bonedust Brew Setup
+actions.bdb_setup+=/strike_of_the_windlord,if=talent.thunderfist&active_enemies>3
 actions.bdb_setup+=/bonedust_brew,if=spinning_crane_kick.max&chi>=4
 actions.bdb_setup+=/tiger_palm,cycle_targets=1,if=combo_strike&chi.max-chi>=2&buff.storm_earth_and_fire.up
 actions.bdb_setup+=/blackout_kick,cycle_targets=1,if=combo_strike&!talent.whirling_dragon_punch&!spinning_crane_kick.max
@@ -150,7 +162,7 @@ actions.cd_serenity+=/summon_white_tiger_statue,if=!cooldown.invoke_xuen_the_whi
 actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&talent.bonedust_brew&cooldown.bonedust_brew.remains<=5|boss&fight_remains<25
 actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&!talent.bonedust_brew&(cooldown.rising_sun_kick.remains<2)|boss&fight_remains<25
 actions.cd_serenity+=/bonedust_brew,if=!buff.bonedust_brew.up&(cooldown.serenity.up|cooldown.serenity.remains>15|boss&fight_remains<30&fight_remains>10)|boss&fight_remains<10
-actions.cd_serenity+=/serenity,if=pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>10|!talent.invoke_xuen_the_white_tiger|boss&fight_remains<15|active_enemies>4
+actions.cd_serenity+=/serenity,if=pet.xuen_the_white_tiger.active&target.time_to_die>15|!talent.invoke_xuen_the_white_tiger|boss&fight_remains<15
 ## actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&target.health<health
 ## actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&(target.time_to_die>60|debuff.bonedust_brew_debuff.up|fight_remains<10)
 actions.cd_serenity+=/touch_of_death,cycle_targets=1,if=combo_strike&!buff.serenity.up&(target.health.current<health|buff.hidden_masters_forbidden_touch.up&(buff.hidden_masters_forbidden_touch.remains<2|buff.hidden_masters_forbidden_touch.remains>target.time_to_die)|target.time_to_die>60|debuff.bonedust_brew_debuff.up|boss&fight_remains<10)
@@ -187,18 +199,20 @@ actions.opener+=/chi_burst,if=chi>1&chi.max-chi>=2
 
 # Serenity Priority
 actions.serenity+=/fists_of_fury,if=buff.serenity.remains<1
+actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike&!spinning_crane_kick.max&active_enemies>4&talent.shdaowboxing_treads
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike&buff.teachings_of_the_monastery.stack=3&buff.teachings_of_the_monastery.remains<1
 actions.serenity+=/rising_sun_kick,cycle_targets=1,if=active_enemies=4&buff.pressure_point.up&!talent.bonedust_brew
 actions.serenity+=/rising_sun_kick,cycle_targets=1,if=active_enemies=1
 actions.serenity+=/rising_sun_kick,cycle_targets=1,if=active_enemies<=3&buff.pressure_point.up
+actions.serenity+=/rising_sun_kick,cycle_targets=1,if=buff.pressure_point.up&set_bonus.tier30_2pc
 actions.serenity+=/fists_of_fury,if=buff.invokers_delight.up&active_enemies<3&talent.jade_ignition
 actions.serenity+=/fists_of_fury,if=buff.invokers_delight.up&active_enemies>4
 actions.serenity+=/fists_of_fury,if=buff.bloodlust.up
-actions.serenity+=/fists_of_fury,if=active_enemies=2
-actions.serenity+=/fists_of_fury,interrupt_if=buff.serenity.up&(buff.serenity.remains>=1|buff.invokers_delight.up&(active_enemies>4|active_enemies<3&talent.jade_ignition)|buff.bloodlust.up)
+actions.serenity+=/fists_of_fury,if=active_enemies=2,interrupt_if=buff.serenity.up&(buff.invokers_delight.up&(active_enemies<3&talent.jade_ignition|active_enemies>4)|buff.bloodlust.up|active_enemies=2)
 actions.serenity+=/strike_of_the_windlord,if=talent.thunderfist
 actions.serenity+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.up&active_enemies>=2
 actions.serenity+=/rising_sun_kick,cycle_targets=1,if=active_enemies=4&buff.pressure_point.up
+actions.serenity+=/blackout_kick,cycle_targets=1,if=active_enemies=3&combo_strike&set_bonus.tier30_2pc
 actions.serenity+=/spinning_crane_kick,if=combo_strike&active_enemies>=3&spinning_crane_kick.max
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike&active_enemies>1&active_enemies<4&buff.teachings_of_the_monastery.stack=2
 actions.serenity+=/rushing_jade_wind,if=!buff.rushing_jade_wind.up&active_enemies>=5
