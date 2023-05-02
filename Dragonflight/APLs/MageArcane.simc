@@ -148,6 +148,6 @@ actions.touch_phase+=/arcane_blast,if=buff.presence_of_mind.up&buff.arcane_charg
 actions.touch_phase+=/arcane_barrage,if=(buff.arcane_harmony.up|(talent.arcane_bombardment&target.health.pct<35))&debuff.touch_of_the_magi.remains<=gcd.max
 actions.touch_phase+=/arcane_missiles,if=buff.clearcasting.stack>1&talent.conjure_mana_gem&cooldown.use_mana_gem.ready,chain=1
 actions.touch_phase+=/arcane_blast,if=buff.nether_precision.up
-actions.touch_phase+=/arcane_missiles,if=buff.clearcasting.react&(debuff.touch_of_the_magi.remains>execute_time|!talent.presence_of_mind),chain=1
+actions.touch_phase+=/arcane_missiles,if=buff.clearcasting.react&(debuff.touch_of_the_magi.remains>execute_time|!talent.presence_of_mind),chain=1,interrupt_if=debuff.touch_of_the_magi.up&active_enemies<variable.aoe_target_count&debuff.touch_of_the_magi.up&gcd.remains=0&(buff.arcane_surge.up|talent.conjure_mana_gem|set_bonus.tier30_4pc)&mana.pct>30
 actions.touch_phase+=/arcane_blast
 actions.touch_phase+=/arcane_barrage
