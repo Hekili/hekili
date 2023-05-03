@@ -2404,6 +2404,23 @@ spec:RegisterSetting( "burn_before_wave", true, {
     width = "full",
 } )
 
+spec:RegisterSetting( "pwave_targets", 0, {
+    name = strformat( "Required Targets for %s", Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ),
+    desc = strformat( "If set above 1, %s will not be recommended unless multiple targets are detected.  This option can be quickly accessed via the icon or addon compartment "
+        .. "on your minimap, to quickly change it for different boss encounters.\n\nThis setting is also found in the |cFFFFD100Abilities |cFFFFFFFF>|r "
+        .. "Enhancement |cFFFFFFFF>|r |W%s|w|r section.", Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ), spec.abilities.primordial_wave.name ),
+    type = "range",
+    min = 0,
+    max = 15,
+    step = 1,
+    set = function( info, val )
+        Hekili.DB.profile.specs[ 263 ].abilities.primordial_wave.targetMin = val
+    end,
+    get = function()
+        return Hekili.DB.profile.specs[ 263 ].abilities.primordial_wave.targetMin or 0
+    end,
+} )
+
 spec:RegisterSetting( "filler_shock", true, {
     name = strformat( "Filler %s", Hekili:GetSpellLinkWithTexture( spec.abilities.flame_shock.id ) ),
     desc = strformat( "If checked, a filler %s may be recommended when nothing else is currently ready, even if something better will be off cooldown very soon.\n\n"
