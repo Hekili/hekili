@@ -708,8 +708,8 @@ spec:RegisterAuras( {
         tick_time = function () return mod_circle_dot( 3 ) * haste end,
         max_stack = 3,
     },
-    thrash_cat ={
-        id = 106830,
+    thrash_cat = {
+        id = 405233,
         duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) * haste end,
         tick_time = function() return mod_circle_dot( 3 ) * haste end,
         meta = {
@@ -721,7 +721,7 @@ spec:RegisterAuras( {
                 return tick_calculator( t, t.key, true )
             end,
         },
-        copy = "thrash"
+        copy = { "thrash", 106830 }
     },
     -- Talent: Increased movement speed by $s1% while in Cat Form, reducing gradually over time.
     -- https://wowhead.com/beta/spell=252216
