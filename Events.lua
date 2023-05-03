@@ -923,7 +923,9 @@ do
         "STARTER_BUILD_ACTIVATION_FAILED",
         "TRAIT_CONFIG_DELETED",
         "TRAIT_CONFIG_UPDATED",
-        "CONFIG_COMMIT_FAILED"
+        "CONFIG_COMMIT_FAILED",
+        "PLAYER_ALIVE",
+        "PLAYER_UNGHOST"
     }
 
     for _, event in pairs( talentEvents ) do
