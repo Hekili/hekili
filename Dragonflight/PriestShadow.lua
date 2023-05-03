@@ -317,13 +317,9 @@ spec:RegisterHook( "reset_precast", function ()
         buff.shadowfiend.expires = action.shadowfiend.lastCast + 15
     end
 
-    if talent.mindbender.enabled then
-        cooldown.fiend = cooldown.mindbender
-        pet.fiend = pet.mindbender
-    else
-        cooldown.fiend = cooldown.shadowfiend
-        pet.fiend = pet.mindbender
-    end
+    local sf = talent.mindbender.enabled and "mindbender" or "shadowfiend"
+    cooldown.fiend = cooldown[ sf ]
+    pet.fiend = pet[ sf ]
 
     if buff.voidform.up then
         state:QueueAuraExpiration( "voidform", ExpireVoidform, buff.voidform.expires )

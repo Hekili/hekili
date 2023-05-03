@@ -628,8 +628,8 @@ spec:RegisterAbilities( {
         spend = 0.03,
         spendType = "mana",
 
+        talent = "halo",
         startsCombat = true,
-        texture = 632352,
 
         handler = function ()
         end,
@@ -1178,6 +1178,8 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            summonPet( "shadowfiend", 15 )
+            applyBuff( "shadowfiend" )
         end,
     },
     smite = {
