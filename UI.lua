@@ -671,6 +671,7 @@ do
 
                                     cf.Slider:SetMinMaxValues( setting.info.min, setting.info.max )
                                     cf.Slider:SetValueStep( setting.info.step or 1 )
+                                    cf.Slider:SetObeyStepOnDrag( true )
 
                                     submenu.customFrame = cf
 
