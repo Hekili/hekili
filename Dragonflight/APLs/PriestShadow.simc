@@ -6,7 +6,7 @@ actions.precombat+=/shadow_crash,if=raid_event.adds.in>=25&spell_targets.shadow_
 actions.precombat+=/vampiric_touch,if=refreshable&(!talent.shadow_crash.enabled|spell_targets.shadow_crash>8|spell_targets.shadow_crash=1&!talent.mental_decay|!boss)
 
 actions+=/silence
-actions+=/variable,name=holding_crash,op=set,value=!action.shadow_crash.known|action.shadow_crash.disabled|raid_event.adds.in<15
+actions+=/variable,name=holding_crash,op=set,value=talent.shadow_crash&!action.shadow_crash.disabled&raid_event.adds.in<15
 actions+=/variable,name=pool_for_cds,op=set,value=(cooldown.void_eruption.remains<=gcd.max*3&talent.void_eruption|cooldown.dark_ascension.up&talent.dark_ascension)|talent.void_torrent&talent.psychic_link&cooldown.void_torrent.remains<=4&(!raid_event.adds.exists&spell_targets.vampiric_touch>1|raid_event.adds.in<=5|raid_event.adds.remains>=6&!variable.holding_crash)&!buff.voidform.up
 actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2|spell_targets.vampiric_touch>3
 actions+=/run_action_list,name=main
