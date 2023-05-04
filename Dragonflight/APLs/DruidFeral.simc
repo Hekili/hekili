@@ -29,26 +29,19 @@ actions+=/call_action_list,name=finisher,strict=1,if=combo_points>=4
 actions+=/call_action_list,name=bloodtalons,if=variable.need_bt&!buff.bs_inc.up&combo_points<5
 actions+=/run_action_list,name=aoe_builder,strict=1,if=spell_targets.swipe_cat>1&talent.primal_wrath.enabled
 actions+=/call_action_list,name=builder,if=combo_points<5&!buff.bs_inc.up
-# AoE
-## actions.aoe+=/pool_resource,for_next=1
-actions.aoe+=/primal_wrath,if=combo_points>3&(dot.rip.remains<3|active_enemies-active_dot.rip>1|!funneling)
-actions.aoe+=/ferocious_bite,if=buff.apex_predators_craving.up&(!buff.sabertooth.up|(!buff.bloodtalons.stack=1))|funneling&(buff.apex_predators_craving.up|combo_points>3)
-actions.aoe+=/run_action_list,name=bloodtalons,if=variable.need_bt&active_bt_triggers>=1
-## actions.aoe+=/pool_resource,for_next=1
-actions.aoe+=/thrash_cat,cycle_targets=1,if=refreshable
-# At this target count BRS also crushes everything except full thrashes
-actions.aoe+=/brutal_slash
-## actions.aoe+=/pool_resource,for_next=1
-## TODO: actions.aoe+=/rake,cycle_targets=1,if=((dot.rake.ticks_gained_on_refresh.pmult*(1+talent.doubleclawed_rake.enabled))>(spell_targets.swipe_cat*0.216+3.32))
-# This means that a full rake (5.5+ ticks) is stronger up to 10ish targets
-actions.aoe+=/rake,cycle_targets=1,if=refreshable|active_dot.rake<cycle_enemies
-## TODO: actions.aoe+=/lunar_inspiration,cycle_targets=1,if=max((ticks_gained_on_refresh+1)-(spell_targets.swipe_cat*2.492))
-# Full Lis beat Swipe up til around 3-ish targets depending on haste
-actions.aoe+=/moonfire_cat,cycle_targets=1,max_cycle_targets=3,if=refreshable&cycle_enemies-active_dot.lunar_inspiration>2
-actions.aoe+=/swipe_cat
+
+# never let brutal slash cap charges
+actions.aoe_builder+=/brutal_slash,if=cooldown.brutal_slash.full_recharge_time<4
+actions.aoe_builder+=/rake,cycle_targets=1,if=(refreshable|1.4*persistent_multiplier>dot.rake.pmultiplier)&buff.bt_rake.down
+actions.aoe_builder+=/thrash_cat,cycle_targets=1,if=refreshable&!talent.thrashing_claws.enabled
+actions.aoe_builder+=/brutal_slash
+actions.aoe_builder+=/rake,cycle_targets=1,if=(refreshable|1.4*persistent_multiplier>dot.rake.pmultiplier)
+# Full Lis beat Swipe up til around 3-ish targets depending on haste  --this needs looked at
+actions.aoe_builder+=/moonfire_cat,cycle_targets=1
+actions.aoe_builder+=/swipe_cat
 # If we have BrS and nothing better to cast, check if Thrash DD beats Shred
-actions.aoe+=/shred,if=action.shred.damage>action.thrash_cat.damage
-actions.aoe+=/thrash_cat
+actions.aoe_builder+=/shred,cycle_targets=1,if=action.shred.damage>action.thrash_cat.damage
+actions.aoe_builder+=/thrash_cat
 
 actions.berserk+=/ferocious_bite,cycle_targets=1,if=combo_points=5&dot.rip.remains>8&variable.zerk_biteweave&spell_targets.swipe_cat>1
 actions.berserk+=/call_action_list,name=finisher,strict=1,if=combo_points=5
