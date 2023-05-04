@@ -481,8 +481,8 @@ spec:RegisterAbilities( {
         spend = 0.02,
         spendType = "mana",
 
+        talent = "divine_star",
         startsCombat = true,
-        texture = 537026,
 
         handler = function ()
         end,
