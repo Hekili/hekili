@@ -432,6 +432,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "healing_chorus" )
+            if talent.harmonious_apparatus.enabled then
+                reduceCooldown( "holy_word_sanctify", 2 * talent.harmonious_apparatus.rank * ( buff.apotheosis.up and 3 or 1 ) )
+            end
         end,
     },
 
@@ -575,10 +578,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "resonant_words" )
             removeStack( "surge_of_light" )
-            reduceCooldown( "holy_word_serenity", 6 )
-            if buff.apotheosis.up then
-                reduceCooldown ( "holy_word_serenity", 12 )
-            end
+            reduceCooldown( "holy_word_serenity", buff.apotheosis.up and 18 or 6 )
             if talent.lightweaver.enabled then
                 addStack( "lightweaver" )
             end
@@ -650,10 +650,7 @@ spec:RegisterAbilities( {
         texture = 135913,
 
         handler = function ()
-            reduceCooldown( "holy_word_serenity", 6 )
-            if buff.apotheosis.up then
-                reduceCooldown ( "holy_word_serenity", 12 )
-            end
+            reduceCooldown( "holy_word_serenity", buff.apotheosis.up and 18 or 6 )
             removeStack( "lightweaver" )
             removeBuff( "resonant_words" )
         end,
@@ -674,6 +671,10 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "holy_fire" )
             removeStack( "empyreal_blaze" )
+
+            if talent.harmonious_apparatus.enabled then
+                reduceCooldown( "holy_word_chastise", 2 * talent.harmonious_apparatus.rank * ( buff.apotheosis.up and 3 or 1 ) )
+            end
 
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
@@ -758,6 +759,7 @@ spec:RegisterAbilities( {
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
+
     holy_word_sanctify = {
         id = 34861,
         cast = 0,
@@ -781,6 +783,7 @@ spec:RegisterAbilities( {
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
+
     holy_word_serenity = {
         id = 2050,
         cast = 0,
@@ -1023,7 +1026,7 @@ spec:RegisterAbilities( {
         handler = function ()
             addStack( "prayer_of_mending", 5 )
             if talent.harmonious_apparatus.enabled then
-                reduceCooldown( "holy_word_serenity", 2 )
+                reduceCooldown( "holy_word_serenity", 2 * talent.harmonious_apparatus.rank * ( buff.apotheosis.up and 3 or 1 ) )
             end
         end,
     },
@@ -1097,7 +1100,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "renew" )
-            reduceCooldown( "holy_word_sanctify", 2 )
+            reduceCooldown( "holy_word_sanctify", buff.apotheosis.up and 6 or 2 )
         end,
     },
 
