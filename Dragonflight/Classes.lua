@@ -77,5 +77,7 @@ do
                 }
             end
         end
+
+        ns.callHook( "TALENTS_UPDATED" )
     end
 end

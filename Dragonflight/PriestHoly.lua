@@ -1169,22 +1169,6 @@ spec:RegisterAbilities( {
             applyDebuff( "shadow_word_pain" )
         end,
     },
-    shadowfiend = {
-        id = 34433,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-
-        startsCombat = true,
-        texture = 136199,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            summonPet( "shadowfiend", 15 )
-            applyBuff( "shadowfiend" )
-        end,
-    },
     smite = {
         id = 585,
         cast = 1.35,

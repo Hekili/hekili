@@ -582,24 +582,10 @@ spec:RegisterAbilities( {
                     addStack( "harsh_discipline" )
                 end
             end
-        end,
-    },
 
+            if talent.inescapable_torment.enabled and pet.fiend.active then pet.fiend.expires = pet.fiend.expires + 1 end
 
-    mindbender = {
-        id = 123040,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-        school = "shadow",
-
-        talent = "mindbender",
-        startsCombat = false,
-        texture = 136214,
-
-        handler = function ()
-            summonPet( "mindbender", 15 )
-            applyBuff( "mindbender" )
+            if talent.void_summoner.enabled then reduceCooldown( "mindbender", 2 ) end
         end,
     },
 
@@ -646,6 +632,8 @@ spec:RegisterAbilities( {
             removeBuff( "power_of_the_dark_side" )
             removeBuff( "harsh_discipline_ready" )
             if debuff.purge_the_wicked.up then active_dot.purge_the_wicked = min( active_dot.purge_the_wicked + 1, true_active_enemies ) end
+
+            if talent.void_summoner.enabled then reduceCooldown( "mindbender", 2 ) end
         end,
 
         copy = { 186720, 400169, "dark_reprimand" }
@@ -723,6 +711,8 @@ spec:RegisterAbilities( {
                     addStack( "harsh_discipline" )
                 end
             end
+
+            if talent.void_summoner.enabled then reduceCooldown( "mindbender", 2 ) end
         end,
     },
 
@@ -855,27 +845,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-    shadowfiend = {
-        id = 34433,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-        school = "shadow",
-
-        talent = "shadowfiend",
-        notalent = "mindbender",
-        startsCombat = true,
-        texture = 136199,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            summonPet( "shadowfiend", 15 )
-            applyBuff( "shadowfiend" )
-        end,
-    },
-
     -- Smites an enemy for 1,315 Holy damage.
     smite = {
         id = 585,
@@ -900,6 +869,8 @@ spec:RegisterAbilities( {
                     addStack( "harsh_discipline" )
                 end
             end
+
+            if talent.void_summoner.enabled then reduceCooldown( "mindbender", 2 ) end
         end,
     },
 

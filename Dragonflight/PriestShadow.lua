@@ -317,10 +317,6 @@ spec:RegisterHook( "reset_precast", function ()
         buff.shadowfiend.expires = action.shadowfiend.lastCast + 15
     end
 
-    local sf = talent.mindbender.enabled and "mindbender" or "shadowfiend"
-    cooldown.fiend = cooldown[ sf ]
-    pet.fiend = pet[ sf ]
-
     if buff.voidform.up then
         state:QueueAuraExpiration( "voidform", ExpireVoidform, buff.voidform.expires )
     end
@@ -339,6 +335,12 @@ spec:RegisterHook( "reset_precast", function ()
     if settings.pad_ascended_blast and cooldown.ascended_blast.remains > 0 then
         reduceCooldown( "ascended_blast", latency * 2 )
     end
+end )
+
+spec:RegisterHook( "TALENTS_UPDATED", function()
+    local sf = talent.mindbender.enabled and "mindbender" or "shadowfiend"
+    cooldown.fiend = cooldown[ sf ]
+    pet.fiend = pet[ sf ]
 end )
 
 
@@ -1513,21 +1515,27 @@ spec:RegisterAbilities( {
 
     -- Talent: Summons a Mindbender to attack the target for $d.     |cFFFFFFFFGenerates ${$123051m1/100}.1% mana each time the Mindbender attacks.|r
     mindbender = {
-        id = function () return talent.mindbender.enabled and 200174 or 34433 end,
+        id = function()
+            if talent.mindbender.enabled then
+                return state.spec.discipline and 123040 or 200174
+            end
+            return 34433
+        end,
+        known = 34433,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.mindbender.enabled and 60 or 180 ) end,
+        cooldown = 60,
         gcd = "spell",
         school = "shadow",
 
         startsCombat = true,
-        toggle = function () return not talent.mindbender.enabled and "cooldowns" or nil end,
+        texture = function() return talent.mindbender.enabled and 136214 or 136199 end,
 
         handler = function ()
             summonPet( talent.mindbender.enabled and "mindbender" or "shadowfiend", 15 )
             applyBuff( talent.mindbender.enabled and "mindbender" or "shadowfiend" )
         end,
 
-        copy = { "shadowfiend", 200174, 34433, 132603 }
+        copy = { "shadowfiend", 34433, 123040, 200174 }
     },
 
     -- Covenant (Venthyr): Assault an enemy's mind, dealing ${$s1*$m3/100} Shadow damage and briefly reversing their perception of reality.    $?c3[For $d, the next $<damage> damage they deal will heal their target, and the next $<healing> healing they deal will damage their target.    |cFFFFFFFFReversed damage and healing generate up to ${$323706s2*2} Insanity.|r]  ][For $d, the next $<damage> damage they deal will heal their target, and the next $<healing> healing they deal will damage their target.    |cFFFFFFFFReversed damage and healing restore up to ${$323706s3*2}% mana.|r]
@@ -1805,10 +1813,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "death_and_madness_debuff" )
             end
 
-            if talent.inescapable_torment.enabled then
-                if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 0.7
-                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + 0.7 end
-            end
+            if talent.inescapable_torment.enabled and buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 1 end
 
             if legendary.painbreaker_psalm.enabled then
                 local power = 0
