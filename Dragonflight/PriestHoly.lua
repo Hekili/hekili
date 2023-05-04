@@ -427,8 +427,8 @@ spec:RegisterAbilities( {
         spend = 0.03,
         spendType = "mana",
 
+        talent = "circle_of_healing",
         startsCombat = false,
-        texture = 135887,
 
         handler = function ()
             removeBuff( "healing_chorus" )
@@ -442,8 +442,8 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "off",
 
+        pvptalent = "divine_ascension",
         startsCombat = false,
-        texture = 642580,
 
         toggle = "cooldowns",
 
@@ -462,8 +462,8 @@ spec:RegisterAbilities( {
         spend = 0.04,
         spendType = "mana",
 
+        talent = "divine_hymn",
         startsCombat = false,
-        texture = 237540,
 
         toggle = "cooldowns",
 
@@ -495,8 +495,8 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "off",
 
+        talent = "divine_word",
         startsCombat = false,
-        texture = 521584,
 
         toggle = "cooldowns",
 
@@ -514,8 +514,8 @@ spec:RegisterAbilities( {
         spend = 0.02,
         spendType = "mana",
 
+        talent = "dominate_mind",
         startsCombat = true,
-        texture = 1386549,
 
         handler = function ()
             applyDebuff( "dominate_mind" )
@@ -532,16 +532,17 @@ spec:RegisterAbilities( {
         spend = 500,
         spendType = "mana",
 
+        talent = "empyreal_blaze",
         startsCombat = false,
-        texture = 525023,
 
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff( "empyreal_blaze" )
+            applyBuff( "empyreal_blaze", nil, 3 )
             setCooldown( "holy_fire", 0 )
         end,
     },
+
     fade = {
         id = 586,
         cast = 0,
@@ -555,6 +556,7 @@ spec:RegisterAbilities( {
             applyBuff( "fade" )
         end,
     },
+
     flash_heal = {
         id = 2061,
         cast = 1.35,
@@ -582,6 +584,7 @@ spec:RegisterAbilities( {
             end
         end,
     },
+
     greater_heal = {
         id = 289666,
         cast = 3,
@@ -591,8 +594,8 @@ spec:RegisterAbilities( {
         spend = 0.04,
         spendType = "mana",
 
+        pvptalent = "greater_heal",
         startsCombat = false,
-        texture = 135915,
 
         handler = function ()
         end,
@@ -608,8 +611,8 @@ spec:RegisterAbilities( {
         spend = 0.01,
         spendType = "mana",
 
+        talent = "guardian_spirit",
         startsCombat = false,
-        texture = 237542,
 
         toggle = "defensives",
 
@@ -657,7 +660,7 @@ spec:RegisterAbilities( {
     },
     holy_fire = {
         id = 14914,
-        cast = 1.5,
+        cast = function() return buff.empyreal_blaze.up and 0 or 1.5 end,
         cooldown = 10,
         gcd = "spell",
 
@@ -670,6 +673,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "holy_fire" )
+            removeStack( "empyreal_blaze" )
+
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
             end
@@ -684,8 +689,8 @@ spec:RegisterAbilities( {
         spend = 0.02,
         spendType = "mana",
 
+        talent = "holy_nova",
         startsCombat = true,
-        texture = 135922,
 
         handler = function ()
             removeBuff( "rhapsody" )
@@ -700,8 +705,8 @@ spec:RegisterAbilities( {
         spend = 0.01,
         spendType = "mana",
 
+        pvptalent = "holy_ward",
         startsCombat = false,
-        texture = 458722,
 
         handler = function ()
             applyBuff( "holy_ward" )
@@ -716,8 +721,8 @@ spec:RegisterAbilities( {
         spend = 0.02,
         spendType = "mana",
 
+        talent = "holy_word_chastise",
         startsCombat = true,
-        texture = 135886,
 
         toggle = "cooldowns",
 
@@ -741,8 +746,8 @@ spec:RegisterAbilities( {
         spend = 0.06,
         spendType = "mana",
 
+        talent = "holy_word_salvation",
         startsCombat = false,
-        texture = 458225,
 
         toggle = "cooldowns",
 
@@ -764,8 +769,8 @@ spec:RegisterAbilities( {
         spend = 0.04,
         spendType = "mana",
 
+        talent = "holy_word_sanctify",
         startsCombat = false,
-        texture = 237541,
 
         toggle = "cooldowns",
 
@@ -787,8 +792,8 @@ spec:RegisterAbilities( {
         spend = 0.02,
         spendType = "mana",
 
+        talent = "holy_word_serenity",
         startsCombat = false,
-        texture = 135937,
 
         toggle = "cooldowns",
 
@@ -810,8 +815,8 @@ spec:RegisterAbilities( {
         spend = 0.03,
         spendType = "mana",
 
+        talent = "leap_of_faith",
         startsCombat = false,
-        texture = 463835,
 
         toggle = "cooldowns",
 
@@ -821,6 +826,7 @@ spec:RegisterAbilities( {
             end
         end,
     },
+
     levitate = {
         id = 1706,
         cast = 0,
@@ -837,6 +843,7 @@ spec:RegisterAbilities( {
             applyBuff( "levitate" )
         end,
     },
+
     lightwell = {
         id = 372835,
         cast = 0,
@@ -846,6 +853,7 @@ spec:RegisterAbilities( {
         spend = 0.04,
         spendType = "mana",
 
+        talent = "lightwell",
         startsCombat = false,
         texture = 135980,
 
@@ -855,36 +863,7 @@ spec:RegisterAbilities( {
             addStack( "lightwell", 15 )
         end,
     },
-    mass_dispel = {
-        id = 32375,
-        cast = 0.5,
-        cooldown = 45,
-        gcd = "spell",
 
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135739,
-
-        handler = function ()
-        end,
-    },
-    mass_resurrection = {
-        id = 212036,
-        cast = 10,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 413586,
-
-        handler = function ()
-        end,
-    },
     mind_control = {
         id = 605,
         cast = 1.8,
@@ -894,6 +873,7 @@ spec:RegisterAbilities( {
         spend = 0.02,
         spendType = "mana",
 
+        talent = "mind_control",
         startsCombat = true,
         texture = 136206,
 
@@ -901,6 +881,7 @@ spec:RegisterAbilities( {
             applyDebuff( "mind_control" )
         end,
     },
+
     mind_soothe = {
         id = 453,
         cast = 0,
@@ -917,6 +898,7 @@ spec:RegisterAbilities( {
             applyDebuff( "mind_soothe" )
         end,
     },
+
     mind_vision = {
         id = 2096,
         cast = 0,
@@ -933,6 +915,7 @@ spec:RegisterAbilities( {
             applyDebuff( "mind_vision" )
         end,
     },
+
     mindgames = {
         id = 375901,
         cast = 1.5,
@@ -951,12 +934,14 @@ spec:RegisterAbilities( {
             applyDebuff( "mindgames" )
         end,
     },
+
     power_infusion = {
         id = 10060,
         cast = 0,
         cooldown = 120,
         gcd = "off",
 
+        talent = "power_infusion",
         startsCombat = false,
         texture = 135939,
 
@@ -969,6 +954,7 @@ spec:RegisterAbilities( {
             end
         end,
     },
+
     power_word_life = {
         id = 373481,
         cast = 0,
@@ -984,6 +970,7 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
     },
+
     power_word_shield = {
         id = 17,
         cast = 0,
@@ -1003,6 +990,7 @@ spec:RegisterAbilities( {
             end
         end,
     },
+
     prayer_of_healing = {
         id = 596,
         cast = 1.8,
@@ -1012,13 +1000,14 @@ spec:RegisterAbilities( {
         spend = 0.04,
         spendType = "mana",
 
+        talent = "prayer_of_healing",
         startsCombat = false,
-        texture = 135943,
 
         handler = function ()
             reduceCooldown( "holy_word_sanctify", 6 )
         end,
     },
+
     prayer_of_mending = {
         id = 33076,
         cast = 0,
@@ -1028,8 +1017,8 @@ spec:RegisterAbilities( {
         spend = 0.02,
         spendType = "mana",
 
+        talent = "prayer_of_mending",
         startsCombat = false,
-        texture = 135944,
 
         handler = function ()
             addStack( "prayer_of_mending", 5 )
@@ -1038,6 +1027,7 @@ spec:RegisterAbilities( {
             end
         end,
     },
+
     psychic_scream = {
         id = 8122,
         cast = 0,
@@ -1054,6 +1044,7 @@ spec:RegisterAbilities( {
             applyDebuff( "psychic_scream" )
         end,
     },
+
     purify = {
         id = 527,
         cast = 0,
@@ -1071,6 +1062,7 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
     },
+
     ray_of_hope = {
         id = 197268,
         cast = 0,
@@ -1080,8 +1072,8 @@ spec:RegisterAbilities( {
         spend = 0.03,
         spendType = "mana",
 
+        pvptalent = "ray_of_hope",
         startsCombat = false,
-        texture = 1445239,
 
         toggle = "cooldowns",
 
@@ -1089,6 +1081,7 @@ spec:RegisterAbilities( {
             applyBuff( "ray_of_hope" )
         end,
     },
+
     renew = {
         id = 139,
         cast = 0,
@@ -1107,21 +1100,7 @@ spec:RegisterAbilities( {
             reduceCooldown( "holy_word_sanctify", 2 )
         end,
     },
-    resurrection = {
-        id = 2006,
-        cast = 10,
-        cooldown = 0,
-        gcd = "spell",
 
-        spend = 0.01,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135955,
-
-        handler = function ()
-        end,
-    },
     shackle_undead = {
         id = 9484,
         cast = 1.5,
@@ -1131,13 +1110,14 @@ spec:RegisterAbilities( {
         spend = 0.01,
         spendType = "mana",
 
+        talent = "shackle_undead",
         startsCombat = true,
-        texture = 136091,
 
         handler = function ()
             applyDebuff( "shackle_undead" )
         end,
     },
+
     shadow_word_death = {
         id = 32379,
         cast = 0,
@@ -1153,6 +1133,7 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
     },
+
     shadow_word_pain = {
         id = 589,
         cast = 0,
@@ -1169,6 +1150,7 @@ spec:RegisterAbilities( {
             applyDebuff( "shadow_word_pain" )
         end,
     },
+
     smite = {
         id = 585,
         cast = 1.35,
@@ -1184,15 +1166,13 @@ spec:RegisterAbilities( {
         cycle_to = true,
 
         handler = function ()
-            reduceCooldown( "holy_word_chastise", 4 )
-            if buff.apotheosis.up then
-                reduceCooldown( "holy_word_chastise", 8 )
-            end
+            reduceCooldown( "holy_word_chastise", buff.apotheosis.up and 12 or 4 )
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
             end
         end,
     },
+
     symbol_of_hope = {
         id = 64901,
         channeled = true,
@@ -1200,8 +1180,8 @@ spec:RegisterAbilities( {
         cooldown = 180,
         gcd = "spell",
 
+        talent = "symbol_of_hope",
         startsCombat = false,
-        texture = 135982,
 
         toggle = "cooldowns",
 
@@ -1209,6 +1189,7 @@ spec:RegisterAbilities( {
             applyBuff( "symbol_of_hope_buff" )
         end,
     },
+
     thoughtsteal = {
         id = 316262,
         cast = 0,
@@ -1218,22 +1199,23 @@ spec:RegisterAbilities( {
         spend = 0.01,
         spendType = "mana",
 
+        pvptalent = "thoughtsteal",
         startsCombat = true,
-        texture = 3718862,
 
         toggle = "cooldowns",
 
         handler = function ()
         end,
     },
+
     vampiric_embrace = {
         id = 15286,
         cast = 0,
         cooldown = 120,
         gcd = "spell",
 
+        talent = "vampiric_embrace",
         startsCombat = false,
-        texture = 136230,
 
         toggle = "cooldowns",
 
@@ -1241,20 +1223,22 @@ spec:RegisterAbilities( {
             applyBuff( "vampiric_embrace" )
         end,
     },
+
     void_shift = {
         id = 108968,
         cast = 0,
         cooldown = 300,
         gcd = "off",
 
+        talent = "void_shift",
         startsCombat = false,
-        texture = 537079,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
         end,
     },
+
     void_tendrils = {
         id = 108920,
         cast = 0,
@@ -1264,10 +1248,10 @@ spec:RegisterAbilities( {
         spend = 0.01,
         spendType = "mana",
 
+        talent = "void_tendrils",
         startsCombat = true,
-        texture = 537022,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyDebuff( "void_tendrils" )

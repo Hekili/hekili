@@ -675,9 +675,6 @@ do
 
                                     submenu.customFrame = cf
 
-                                    cf.Slider.minValue = setting.info.min
-                                    cf.Slider.maxValue = setting.info.max
-
                                     --[[ local low, high, step = setting.info.min, setting.info.max, setting.info.step
                                     local fractional, factor = step < 1, 1 / step
 
