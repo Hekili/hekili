@@ -132,7 +132,13 @@ function Hekili:OnInitialize()
             text = "Hekili",
             icon = "Interface\\ICONS\\spell_nature_bloodlust",
             OnClick = Hekili_OnAddonCompartmentClick,
-            OnEnter = Hekili_OnAddonCompartmentEnter,
+            OnEnter = function( self )
+                GameTooltip:SetOwner( self )
+                GameTooltip:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
+                GameTooltip:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
+                GameTooltip:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
+                GameTooltip:Show()
+            end,
             OnLeave = Hekili_OnAddonCompartmentLeave
         } )
 

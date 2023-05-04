@@ -1537,6 +1537,7 @@ spec:RegisterAbilities( {
         cooldown = 45,
         gcd = "spell",
         school = "shadow",
+        damage = 1,
 
         spend = 0.02,
         spendType = "mana",

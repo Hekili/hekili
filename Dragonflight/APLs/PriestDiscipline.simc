@@ -1,33 +1,214 @@
 actions.precombat+=/power_word_fortitude
-actions.precombat+=/smite
 
-# Default fallback for usable items: Use on cooldown in order by trinket slot.
-actions+=/use_items
-# Sync potion usage with Bloodlust or Power Infusion.
-actions+=/potion,if=buff.bloodlust.react|buff.power_infusion.up|boss&fight_remains<=40
-
-actions.racials+=/arcane_torrent,if=mana.pct<=95
-
-actions+=/call_action_list,name=racials
-# Use Power Infusion before Shadow Covenant to make sure we don't lock out our CD.
-actions+=/power_infusion
-actions+=/divine_star
+actions+=/call_action_list,name=cooldowns
+actions+=/variable,name=te_none,op=set,value=!buff.twilight_equilibrium_holy_amp.up&!buff.twilight_equilibrium_shadow_amp.up
+# Twilight Equilibrium is buffing shadow damage
+actions+=/variable,name=te_shadow,op=set,value=buff.twilight_equilibrium_shadow_amp.up|variable.te_none
+# Twilight Equilibrium is buffing holy damage
+actions+=/variable,name=te_holy,op=set,value=buff.twilight_equilibrium_holy_amp.up|variable.te_none
+# Long Shadow covenant is enabled
+actions+=/variable,name=long_scov,op=set,value=talent.shadow_covenant&talent.embrace_shadow
+# Short shadow covenant is enabled
+actions+=/variable,name=short_scov,op=set,value=talent.shadow_covenant&!talent.embrace_shadow
+# Harsh discipline has been stacked and is ready for shadow covenant.  Zero stacks for no shadow covenant  Full stacks for short results in one HD penance (4 total)  Full stacks + 1 extra results in two HD penances (5 total)
+actions+=/variable,name=hd_stacks_required,op=set,value=0
+actions+=/variable,name=hd_stacks_required,op=setif,condition=variable.short_scov,value=4,value_else=5
+actions+=/variable,name=hd_stacks_current,op=set,value=buff.harsh_discipline.stack+(buff.harsh_discipline.max_stack*buff.harsh_discipline_ready.stack)
+actions+=/variable,name=harsh_discipline_ready,op=set,value=!talent.harsh_discipline|(variable.hd_stacks_current>=variable.hd_stacks_required)
+# Ready to start shadow covenant phase
+actions+=/variable,name=can_enter_scov,op=set,value=(cooldown.shadow_covenant.up&variable.harsh_discipline_ready)|buff.shadow_covenant.up
+actions+=/variable,name=shadow_spells_duration_max,op=set,value=0
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.schism.execute_time,if=talent.schism
+# penance
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=2
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.mind_blast.execute_time
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.mind_blast.execute_time,if=talent.dark_indulgence
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.shadow_word_death.execute_time,if=talent.shadow_word_death
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.shadow_word_death.execute_time,if=talent.shadow_word_death&talent.death_and_madness&target.health.pct<20
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.mindgames.execute_time,if=talent.mindgames
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.divine_star.execute_time,if=talent.divine_star
+actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.halo.execute_time,if=talent.halo
+# (scov duration - shadow spells duration) / GCD time = estimate of holy spells we should need to use during the next scov window  Long scov example: (15 - 12) / 1.5 = 2 GCDs to spend on holy spells  Short scov example: (7 - 12) / 1.5 = -3.3 GCDs to spend on holy spells (none)
+actions+=/variable,name=max_te_holy,op=floor,value=(buff.shadow_covenant.duration-variable.shadow_spells_duration_max)%gcd.max
+# Counting variable, the number of non-fractional remaining holy casts available
+actions+=/variable,name=remaining_te_holy,op=set,value=0
+actions+=/variable,name=remaining_te_holy,op=add,value=variable.max_te_holy
+# TODO: duration_expected is buggy on penance/dark reprimand, using a static reduction as a stand-in for now
+actions+=/variable,name=expected_penance_reduction,op=setif,condition=talent.train_of_thought,value=1.5,value_else=0
+# Calculate how much cast time worth of shadow spells we have currently available. We use shadow_spells_duration to determine if we have time to weave in any holy spells to proc twilight equilibrium.
+actions+=/variable,name=shadow_spells_duration,op=set,value=0
+# Schism
+actions+=/variable,name=shadow_spells_duration,op=add,value=action.schism.execute_time,if=cooldown.schism.up|(cooldown.schism.remains<buff.shadow_covenant.remains)
+# Penance
+actions+=/variable,name=shadow_spells_duration,op=add,value=2,if=cooldown.penance.up|((cooldown.penance.remains-variable.expected_penance_reduction)<buff.shadow_covenant.remains)
+# Mindgames
+actions+=/variable,name=shadow_spells_duration,op=add,value=action.mindgames.execute_time,if=cooldown.mindgames.up|(cooldown.mindgames.remains_expected<buff.shadow_covenant.remains)
+# We always get the first SW:D
+actions+=/variable,name=shadow_spells_duration,op=add,value=action.shadow_word_death.execute_time,if=cooldown.shadow_word_death.up|(cooldown.shadow_word_death.remains<buff.shadow_covenant.remains)
+# Second SW:D only when talented and target health in execute range
+actions+=/variable,name=shadow_spells_duration,op=add,value=action.shadow_word_death.execute_time,if=(cooldown.shadow_word_death.up|(cooldown.shadow_word_death.remains<buff.shadow_covenant.remains))&(target.health.pct<20|target.time_to_pct_20<cooldown.shadow_word_death.remains)&talent.death_and_madness
+# Add any whole charges of mind blast
+actions+=/variable,name=shadow_spells_duration,op=add,value=action.mind_blast.charges*action.mind_blast.execute_time,if=action.mind_blast.charges>=1
+# Add any fractional charges of mindblast that will recharge in time
+actions+=/variable,name=shadow_spells_duration,op=add,value=action.mind_blast.execute_time,if=((action.mind_blast.charges_fractional>=1&action.mind_blast.charges_fractional<2)&(((1-(action.mind_blast.charges_fractional-1))*action.mind_blast.recharge_time)<buff.shadow_covenant.remains))|((action.mind_blast.charges_fractional<1)&(((1-action.mind_blast.charges_fractional)*action.mind_blast.recharge_time)<buff.shadow_covenant.remains))
+# Divine Star
+actions+=/variable,name=shadow_spells_duration,op=add,value=action.divine_star.execute_time,if=cooldown.divine_star.up|(cooldown.divine_star.remains<buff.shadow_covenant.remains)
+# Halo
+actions+=/variable,name=shadow_spells_duration,op=add,value=action.halo.execute_time,if=cooldown.halo.up|(cooldown.halo.remains<buff.shadow_covenant.remains)
+# Determine if we have enough scov time remaining to weave in a twilight equilibrium activation. If we don't have TE talented, always false. Using smite's execution time to represent a worst-case scenario.
+actions+=/variable,name=should_te,op=setif,condition=talent.twilight_equilibrium,value=(buff.shadow_covenant.remains-variable.shadow_spells_duration)>action.smite.execute_time,value_else=0
+actions+=/variable,name=hd_prep_time,op=setif,condition=!variable.harsh_discipline_ready,value=action.smite.execute_time*(variable.hd_stacks_required-variable.hd_stacks_current),value_else=0
+# First casts should always be HD prep->covenant->schism->HD dark reprimand
+actions+=/variable,name=next_penance_time,op=set,value=cooldown.shadow_covenant.remains+variable.hd_prep_time+action.shadow_covenant.execute_time+action.schism.execute_time
+# If we have enough scov duration, add a holy cast to proc twilight equilibrium
+actions+=/variable,name=next_penance_time,op=add,value=gcd.max,if=variable.remaining_te_holy>0
+# Reduce our counting variable
+actions+=/variable,name=remaining_te_holy,op=sub,value=1
+actions+=/variable,name=can_penance,op=set,value=(cooldown.penance.duration-variable.expected_penance_reduction)<variable.next_penance_time
+# Shadow Word: Death  SW:D is better than other spells if we are in execute phase.
+actions+=/variable,name=next_swd_time,op=set,value=variable.next_penance_time+2
+# If we have enough scov duration, add a holy cast to proc twilight equilibrium
+actions+=/variable,name=next_swd_time,op=add,value=gcd.max,if=variable.remaining_te_holy>0
+# Reduce our counting variable
+actions+=/variable,name=remaining_te_holy,op=sub,value=1
+# indgame  ette ha W:   ren'  xecut has n  av hattere erception  on' av xpiatio
+actions+=/variable,name=next_swd_time,op=add,value=action.mindgames.execute_time,if=((talent.mindgames&talent.shattered_perceptions)|(talent.mindgames&!talent.expiation))&target.health.pct>=20
+# Mind blast is better than SW:D if we aren't in execute
+actions+=/variable,name=next_swd_time,op=add,value=action.mind_blast.execute_time,if=target.health.pct>=20
+# Second mindblast when talented
+actions+=/variable,name=next_swd_time,op=add,value=action.mind_blast.execute_time,if=target.health.pct>=20&talent.dark_indulgence
+# Divine Star and halo are better than SW:D if we aren't in execute and don't have expiation
+actions+=/variable,name=next_swd_time,op=add,value=action.divine_star.execute_time,if=talent.divine_star&target.health.pct>=20&!talent.expiation
+actions+=/variable,name=next_swd_time,op=add,value=action.halo.execute_time,if=talent.halo&target.health.pct>=20&!talent.expiation
+actions+=/variable,name=can_swd,op=set,value=cooldown.shadow_word_death.duration_expected<variable.next_swd_time
+# Mindblast  Mindblast is better than other spells if we aren't in execute phase
+actions+=/variable,name=next_mind_blast_time,op=set,value=variable.next_penance_time+2
+# If we have enough scov duration, add a holy cast to proc twilight equilibrium
+actions+=/variable,name=next_mind_blast_time,op=add,value=gcd.max,if=variable.remaining_te_holy>0
+# Reduce our counting variable
+actions+=/variable,name=remaining_te_holy,op=sub,value=1
+# Add SW:D if we're in execute phase
+actions+=/variable,name=next_mind_blast_time,op=add,value=action.shadow_word_death.execute_time,if=target.health.pct<20
+# Add a second SW:D if we have death and madness
+actions+=/variable,name=next_mind_blast_time,op=add,value=action.shadow_word_death.execute_time,if=talent.death_and_madness&target.health.pct<20
+# Add mindgames if we have it talented and don't have expiation
+actions+=/variable,name=next_mind_blast_time,op=add,value=action.mindgames.execute_time,if=talent.mindgames&!talent.expiation
+# TODO: This is a little bit simplistic, requiring both charges of mindblast to be available at the moment the first charge needs to be used. Slight optimization should be possible.
+actions+=/variable,name=can_mind_blast,op=setif,condition=action.mind_blast.charges_fractional>=1,value=((action.mind_blast.max_charges-(action.mind_blast.charges_fractional-1))*action.mind_blast.recharge_time)<variable.next_mind_blast_time,value_else=0
+# Mindgames  Mindgames is a better option than other spells if we aren't in execute and don't have expiation
+actions+=/variable,name=next_mindgames_time,op=set,value=variable.next_penance_time+2
+# If we have enough scov duration, add a holy cast to proc twilight equilibrium
+actions+=/variable,name=next_mindgames_time,op=add,value=gcd.max,if=variable.remaining_te_holy>0
+# Reduce our counting variable
+actions+=/variable,name=remaining_te_holy,op=sub,value=1
+# SW:D is better than mindgames in execute phase, or outside of execute phase if we don't have shattered perceptions but do have expiation
+actions+=/variable,name=next_mindgames_time,op=add,value=action.shadow_word_death.execute_time,if=target.health.pct<20|(talent.expiation&!talent.shattered_perceptions)
+# Add a second SW:D if we have death and madness
+actions+=/variable,name=next_mindgames_time,op=add,value=action.shadow_word_death.execute_time,if=target.health.pct<20&talent.death_and_madness
+# Mind blast is better than mindgames if we have expiation
+actions+=/variable,name=next_mindgames_time,op=add,value=action.mind_blast.execute_time,if=talent.expiation
+# Second mindblast when talented
+actions+=/variable,name=next_mindgames_time,op=add,value=action.mind_blast.execute_time,if=talent.expiation&talent.dark_indulgence
+actions+=/variable,name=can_mindgames,op=set,value=cooldown.mindgames.duration_expected<variable.next_mindgames_time
+# Divine Star
+actions+=/variable,name=next_divine_star_time,op=set,value=variable.next_penance_time+2
+# If we have enough scov duration, add a holy cast to proc twilight equilibrium
+actions+=/variable,name=next_divine_star_time,op=add,value=gcd.max,if=variable.remaining_te_holy>0
+# Reduce our counting variable
+actions+=/variable,name=remaining_te_holy,op=sub,value=1
+# SW:D is better unless outside of execute phase when expiation is untalented
+actions+=/variable,name=next_divine_star_time,op=add,value=action.shadow_word_death.execute_time,if=target.health.pct<20|talent.expiation
+# Add a second SW:D if we have death and madness
+actions+=/variable,name=next_divine_star_time,op=add,value=action.shadow_word_death.execute_time,if=target.health.pct<20&talent.death_and_madness
+# Mind blast is always better
+actions+=/variable,name=next_divine_star_time,op=add,value=action.mind_blast.execute_time,if=talent.expiation
+# Second mindblast when talented
+actions+=/variable,name=next_divine_star_time,op=add,value=action.mind_blast.execute_time,if=talent.dark_indulgence
+# Mindgames is always better
+actions+=/variable,name=next_divine_star_time,op=add,value=action.mindgames.execute_time,if=talent.mindgames
+actions+=/variable,name=can_divine_star,op=set,value=cooldown.divine_star.duration<variable.next_divine_star_time
+actions+=/run_action_list,name=scov_prep,if=cooldown.shadow_covenant.up&(!variable.harsh_discipline_ready|(variable.short_scov&((talent.purge_the_wicked&dot.purge_the_wicked.remains<20)|(!talent.purge_the_wicked&dot.shadow_word_pain.remains<20))))
+actions+=/run_action_list,name=short_scov,if=variable.short_scov&variable.can_enter_scov
+actions+=/run_action_list,name=long_scov,if=variable.long_scov&variable.can_enter_scov
+actions+=/purge_the_wicked,if=talent.purge_the_wicked&(target.time_to_die>(0.5*dot.purge_the_wicked.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.purge_the_wicked.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
+actions+=/shadow_word_pain,if=!talent.purge_the_wicked&(target.time_to_die>(0.5*dot.shadow_word_pain.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.shadow_word_pain.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
+actions+=/schism,if=!talent.shadow_covenant
+actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&target.health.pct<20
+actions+=/penance,if=(!talent.shadow_covenant|variable.can_penance)&buff.harsh_discipline_ready.up
+# For DPS, Lights wrath should always be used outside of scov when you take wrath unleashed to maximize the number of smites it buffs. In a real raid setting, you may want to cast it at the beginning of a scov cycle for additional healing.
+actions+=/lights_wrath,if=talent.wrath_unleashed
+actions+=/mind_blast,if=!talent.shadow_covenant|variable.can_mind_blast
+actions+=/mindgames,if=(!talent.shadow_covenant|variable.can_mindgames)&talent.shattered_perceptions
+actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&talent.expiation&(target.time_to_pct_20>(0.5*cooldown.shadow_word_death.duration))
+actions+=/mindgames,if=(!talent.shadow_covenant|variable.can_mindgames)&!talent.shattered_perceptions
 actions+=/halo
-actions+=/penance
+actions+=/divine_star,if=(!talent.shadow_covenant|variable.can_divine_star)
 actions+=/power_word_solace
-actions+=/shadow_covenant
-actions+=/schism
-actions+=/mindgames
-actions+=/mindbender
-actions+=/shadowfiend
-actions+=/purge_the_wicked,if=!ticking
-actions+=/shadow_word_pain,if=!ticking&!talent.purge_the_wicked.enabled
-actions+=/lights_wrath
-actions+=/shadow_word_death
-actions+=/mind_blast
-actions+=/purge_the_wicked,if=refreshable
-actions+=/shadow_word_pain,if=refreshable&!talent.purge_the_wicked.enabled
-# Use Smite on up to 2 targets.
-actions+=/smite,if=spell_targets.holy_nova<3
-actions+=/holy_nova,if=spell_targets.holy_nova>=3
-actions+=/shadow_word_pain
+actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&(target.time_to_pct_20>(0.5*cooldown.shadow_word_death.duration))
+actions+=/smite
+
+# Prepare to enter shadow covenant
+actions.scov_prep+=/purge_the_wicked,if=!ticking&(target.time_to_die>(0.5*dot.purge_the_wicked.duration))
+actions.scov_prep+=/mind_blast,if=!variable.harsh_discipline_ready&variable.can_mind_blast
+actions.scov_prep+=/power_word_solace,if=!variable.harsh_discipline_ready
+actions.scov_prep+=/smite,if=!variable.harsh_discipline_ready
+actions.scov_prep+=/purge_the_wicked,if=(target.time_to_die>(0.5*dot.purge_the_wicked.duration))
+
+# Short Shadow Covenant  We want to use entirely shadow spells to optimize our time with the buff
+actions.short_scov+=/shadow_covenant
+actions.short_scov+=/schism
+actions.short_scov+=/shadow_word_death,if=target.health.pct<20&talent.expiation
+actions.short_scov+=/penance
+actions.short_scov+=/shadow_word_death,if=target.health.pct<20
+actions.short_scov+=/mind_blast,if=talent.expiation
+actions.short_scov+=/mindgames,if=talent.shattered_perceptions
+actions.short_scov+=/shadow_word_death,if=talent.expiation&(target.time_to_pct_20>buff.shadow_covenant.remains)
+actions.short_scov+=/mindgames
+actions.short_scov+=/halo
+actions.short_scov+=/mind_blast
+actions.short_scov+=/divine_star
+actions.short_scov+=/shadow_word_death,if=(target.time_to_pct_20>buff.shadow_covenant.remains)
+# just in case we run out of shadow spells
+actions.short_scov+=/purge_the_wicked,if=(!ticking|refreshable)&(target.time_to_die>(0.5*dot.purge_the_wicked.duration))
+actions.short_scov+=/lights_wrath
+actions.short_scov+=/power_word_solace
+actions.short_scov+=/smite
+
+# Long Shadow Covenant
+actions.long_scov+=/shadow_covenant
+actions.long_scov+=/schism
+actions.long_scov+=/shadow_word_death,if=target.health.pct<20&talent.expiation&(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/penance,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/shadow_word_death,if=target.health.pct<20&(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/mind_blast,if=talent.expiation&(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/mindgames,if=talent.shattered_perceptions&(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/shadow_word_death,if=talent.expiation&(!variable.should_te|(variable.should_te&variable.te_shadow))&(target.time_to_pct_20>buff.shadow_covenant.remains)
+actions.long_scov+=/mindgames,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/mind_blast,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/shadow_word_death,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&(target.time_to_pct_20>buff.shadow_covenant.remains)
+actions.long_scov+=/purge_the_wicked,if=(!variable.should_te|(variable.should_te&variable.te_holy))&(!ticking|refreshable)&(target.time_to_die>(0.5*dot.purge_the_wicked.duration))
+actions.long_scov+=/lights_wrath,if=(!variable.should_te|(variable.should_te&variable.te_holy))
+actions.long_scov+=/power_word_solace,if=(!variable.should_te|(variable.should_te&variable.te_holy))
+actions.long_scov+=/smite,if=(!variable.should_te|(variable.should_te&variable.te_holy))
+# just in case we run out of shadow spells with the above conditions
+actions.long_scov+=/penance
+actions.long_scov+=/mindgames
+actions.long_scov+=/mind_blast
+actions.long_scov+=/shadow_word_death
+actions.long_scov+=/divine_star
+actions.long_scov+=/halo
+actions.long_scov+=/power_word_solace
+actions.long_scov+=/smite
+
+## Cooldowns
+# Don't use pets during shadow covenant windows, wasting GCDs
+actions.cooldowns+=/shadowfiend,if=!talent.mindbender.enabled&!buff.shadow_covenant.up
+actions.cooldowns+=/mindbender,if=talent.mindbender.enabled&!buff.shadow_covenant.up
+# hold PI to use with shadow covenant if we have it
+actions.cooldowns+=/power_infusion,if=!talent.shadow_covenant.enabled|(talent.shadow_covenant.enabled&(cooldown.shadow_covenant.up|buff.shadow_covenant.up))
+# sync potion with PI
+actions.cooldowns+=/potion,if=buff.power_infusion.up
+# sync trinkets with PI
+actions.cooldowns+=/use_items,if=buff.power_infusion.up|cooldown.power_infusion.remains>=cooldown
