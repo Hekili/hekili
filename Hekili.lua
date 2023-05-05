@@ -4,8 +4,8 @@
 local addon, ns = ...
 local GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata
 Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
-Hekili.Version = C_AddOns.GetAddOnMetadata( "Hekili", "Version" )
-Hekili.Flavor = C_AddOns.GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
+Hekili.Version = GetAddOnMetadata( "Hekili", "Version" )
+Hekili.Flavor = GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
 
 local format = string.format
 local insert, concat = table.insert, table.concat
