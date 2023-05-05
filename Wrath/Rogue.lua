@@ -724,9 +724,7 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        usable = function()
-            return not buff.cold_blood.up
-        end,
+        nobuff = "cold_blood",
 
         handler = function ()
             applyBuff( "cold_blood" )
