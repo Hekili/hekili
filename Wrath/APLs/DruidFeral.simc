@@ -27,7 +27,8 @@ actions.init+=/variable,name=num_mangles_remaining,op=floor,value=variable.num_m
 actions.init+=/variable,name=earliest_mangle,value=variable.time_to_die-variable.num_mangles_remaining*60
 actions.init+=/variable,name=clip_mangle,value=variable.earliest_mangle<=0
 
-actions.cat+=/faerie_fire_feral,if=!buff.clearcasting.up&(target.outside2|buff.berserk.up&variable.ff_during_berserk|!buff.berserk.up&energy.current<87)&(!variable.rip_now|energy.current<action.rip.spend)&can_spend_ff
+actions.cat+=/faerie_fire_feral,if=!glyph.omen_of_clarity.enabled&!debuff.armor_reduction.up&target.outside2
+actions.cat+=/faerie_fire_feral,if=glyph.omen_of_clarity.enabled&!buff.clearcasting.up&(target.outside2|buff.berserk.up&variable.ff_during_berserk|!buff.berserk.up&energy.current<87)&(!variable.rip_now|energy.current<action.rip.spend)&can_spend_ff
 actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcasting.up&15|0)
 actions.cat+=/berserk,if=!variable.wait_for_tf&debuff.rip.up&!buff.clearcasting.up
 actions.cat+=/savage_roar,if=!up
@@ -36,14 +37,15 @@ actions.cat+=/shred,if=buff.clearcasting.up&debuff.bleed.up
 actions.cat+=/rip,if=variable.rip_now
 actions.cat+=/rake,if=buff.clearcasting.up&!debuff.bleed.up&variable.time_to_die>=debuff.rake.duration
 actions.cat+=/ferocious_bite,if=settings.ferociousbite_enabled&energy.current<67&!buff.clearcasting.up&(variable.bite_at_end|variable.bite_before_rip)&(!buff.berserk.up|variable.bite_during_berserk)
+actions.cat+=/faerie_fire_feral,if=!glyph.omen_of_clarity.enabled&!debuff.armor_reduction.up&energy.current<=90
 actions.cat+=/mangle_cat,if=variable.mangle_refresh_now|variable.clip_mangle
-actions.cat+=/rake,if=!up&(combo_points.current<5|!will_clip.rip_with_rake)&(combo_points.current=0|energy.current-action.rake.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.rake.spend+debuff.mangle.remains*10>=action.mangle_cat.spend)&(should_rake|!debuff.bleed.up)
+actions.cat+=/rake,if=!up&(combo_points.current<5|energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.rake.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.rake.spend+debuff.mangle.remains*10>=action.mangle_cat.spend)&(should_rake|!debuff.bleed.up)
 actions.cat+=/dire_bear_form,if=should_bearweave
 actions.cat+=/gift_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
 actions.cat+=/shred,if=((combo_points.current<5|energy.current-action.shred.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.shred.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.shred.spend+debuff.mangle.remains*10>=action.mangle_cat.spend)&(rip_canextend|!should_rake|energy.current-action.shred.spend+debuff.rake.remains*10>=action.rake.spend))
 actions.cat+=/shred,if=energy.current=100
 
-actions.cat_aoe+=/faerie_fire_feral,if=!buff.clearcasting.up&(buff.berserk.up&variable.ff_during_berserk|!buff.berserk.up&energy.current<87)&can_spend_ff
+actions.cat_aoe+=/faerie_fire_feral,if=glyph.omen_of_clarity.enabled&!buff.clearcasting.up&(buff.berserk.up&variable.ff_during_berserk|!buff.berserk.up&energy.current<87)&can_spend_ff
 actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcasting.up&15|0)
 actions.cat_aoe+=/berserk,if=energy.current>60&cooldown.tigers_fury.remains>=15
 actions.cat_aoe+=/savage_roar,if=!up&variable.time_to_die>1+latency
@@ -52,8 +54,9 @@ actions.cat_aoe+=/mangle_cat,if=set_bonus.idol_of_the_corruptor=1&combo_points.c
 actions.cat_aoe+=/rake,if=!up&!set_bonus.idol_of_the_corruptor=1&combo_points.current=0&buff.savage_roar.remains<=1&(variable.time_to_die>buff.savage_roar.remains+1+latency)&!buff.clearcasting.up
 actions.cat_aoe+=/swipe_cat
 actions.cat_aoe+=/gift_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<45
+actions.cat_aoe+=/faerie_fire_feral,if=!glyph.omen_of_clarity.enabled&!debuff.armor_reduction.up
 
-actions.bear+=/faerie_fire_feral,if=!buff.clearcasting.up
+actions.bear+=/faerie_fire_feral,if=glyph.omen_of_clarity.enabled&!buff.clearcasting.up
 actions.bear+=/cat_form,if=should_cat
 actions.bear+=/enrage,use_off_gcd=1,if=cooldown.mangle_bear.up
 actions.bear+=/maul,use_off_gcd=1,if=!up&!buff.clearcasting.up&rage.current>=action.maul.spend+(cooldown.mangle_bear.up&action.mangle_bear.spend|0)
