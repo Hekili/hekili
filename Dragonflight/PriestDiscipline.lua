@@ -690,6 +690,22 @@ spec:RegisterAbilities( {
     },
 
 
+    power_infusion = {
+        id = 10060,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+        school = "holy",
+        talent = "power_infusion",
+        startsCombat = false,
+        indicator = function () return group and ( talent.twins_of_the_sun_priestess.enabled or legendary.twins_of_the_sun_priestess.enabled ) and "cycle" or nil end,
+        handler = function ()
+            applyBuff( "power_infusion" )
+            stat.haste = stat.haste + 0.25
+        end,
+    },
+
+
     power_word_radiance = {
         id = 194509,
         cast = function() return buff.radiant_providence.up and 0 or ( 2 * ( talent.enduring_luminescence.enabled and 0.7 or 1 ) ) end,
