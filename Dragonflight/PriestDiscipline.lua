@@ -608,6 +608,7 @@ spec:RegisterAbilities( {
                     removeBuff( "harsh_discipline" )
                     applyBuff( "harsh_discipline_ready" )
                 end
+                addStack( "harsh_discipline" )
             end
             if talent.void_summoner.enabled then
                 reduceCooldown( "mindbender", 2 )
@@ -740,6 +741,7 @@ spec:RegisterAbilities( {
                     applyBuff( "harsh_discipline_ready" )
                     removeBuff( "harsh_discipline" )
                 end
+                addStack( "harsh_discipline" )
             end
             if talent.weal_and_woe.enabled then
                 removeBuff( "weal_and_woe" )
@@ -903,6 +905,7 @@ spec:RegisterAbilities( {
                     removeBuff( "harsh_discipline" )
                     applyBuff( "harsh_discipline_ready" )
                 end
+                addStack( "harsh_discipline" )
             end
             if talent.void_summoner.enabled then
                 reduceCooldown( "mindbender", 2 )
