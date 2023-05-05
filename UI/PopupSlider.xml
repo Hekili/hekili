@@ -5,7 +5,7 @@
     <Slider name="HekiliPopupDropdownSliderTemplate" minValue="0" maxValue="100" inherits="UnitPopupSliderTemplate" virtual="true">
         <Size x="0" y="17"/>
         <Anchors>
-            <Anchor point="LEFT" x="17" y="0"/>
+            <Anchor point="LEFT" x="20" y="0"/>
             <Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="0" y="0"/>
         </Anchors>
         <Scripts>

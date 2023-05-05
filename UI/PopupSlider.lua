@@ -17,6 +17,10 @@ end
 
 function HekiliPopupDropdownMixin:OnShow()
     -- self.Toggle:RegisterEvents();
+    if ElvUI then
+        local S = ElvUI[1]:GetModule( "Skins" )
+        S:HandleSliderFrame( self.Slider )
+    end
 end
 
 function HekiliPopupDropdownMixin:OnHide()
