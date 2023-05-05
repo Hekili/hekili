@@ -37,7 +37,7 @@ actions.cat+=/rip,if=variable.rip_now
 actions.cat+=/rake,if=buff.clearcasting.up&!debuff.bleed.up&variable.time_to_die>=debuff.rake.duration
 actions.cat+=/ferocious_bite,if=settings.ferociousbite_enabled&energy.current<67&!buff.clearcasting.up&(variable.bite_at_end|variable.bite_before_rip)&(!buff.berserk.up|variable.bite_during_berserk)
 actions.cat+=/mangle_cat,if=variable.mangle_refresh_now|variable.clip_mangle
-actions.cat+=/rake,if=!up&(combo_points.current<5|!will_clip.rip_with_rake)&(combo_points.current=0|energy.current-action.rake.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.rake.spend+debuff.mangle.remains*10>=action.mangle_cat.spend)&(should_rake|!debuff.bleed.up)
+actions.cat+=/rake,if=!up&(combo_points.current<5|energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.rake.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.rake.spend+debuff.mangle.remains*10>=action.mangle_cat.spend)&(should_rake|!debuff.bleed.up)
 actions.cat+=/dire_bear_form,if=should_bearweave
 actions.cat+=/gift_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
 actions.cat+=/shred,if=((combo_points.current<5|energy.current-action.shred.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.shred.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.shred.spend+debuff.mangle.remains*10>=action.mangle_cat.spend)&(rip_canextend|!should_rake|energy.current-action.shred.spend+debuff.rake.remains*10>=action.rake.spend))
