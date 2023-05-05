@@ -1180,6 +1180,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
         school = "holy",
+        damage = 1,
 
         spend = 0.016,
         spendType = "mana",
@@ -1629,12 +1630,23 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
-        nodebuff = "weakened_soul",
 
         handler = function ()
             applyBuff( "power_word_shield" )
-            applyDebuff( "player", "weakened_soul" )
-            if talent.body_and_soul.enabled then applyBuff( "body_and_soul" ) end
+            applyBuff( "atonement" )
+            removeBuff( "shield_of_absolution" )
+            if talent.weal_and_woe.enabled then
+                removeBuff( "weal_and_woe" )
+            end
+            if talent.body_and_soul.enabled then
+                applyBuff( "body_and_soul" )
+            end
+            if set_bonus.tier29_2pc > 0 then
+                applyBuff("light_weaving")
+            end
+            if talent.borrowed_time.enabled then
+                applyBuff("borrowed_time")
+            end
             -- if time > 0 then gain( 6, "insanity" ) end
         end,
     },
@@ -1791,6 +1803,7 @@ spec:RegisterAbilities( {
         end,
         gcd = "spell",
         school = "shadow",
+        damage = 1,
 
         spend = 0.005,
         spendType = "mana",
@@ -1813,7 +1826,26 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "death_and_madness_debuff" )
             end
 
-            if talent.inescapable_torment.enabled and buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 1 end
+            if talent.inescapable_torment.enabled then
+                if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + (talent.inescapable_torment.rank * 0.5)
+                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + (talent.inescapable_torment.rank * 0.5) end
+            end
+
+            if talent.expiation.enabled then
+                if talent.purge_the_wicked.enabled then
+                    if debuff.purge_the_wicked.remains <= 6 then
+                        removeDebuff( "purge_the_wicked")
+                    else
+                        debuff.purge_the_wicked.expires = debuff.purge_the_wicked.expires - 6
+                    end
+                else
+                    if debuff.shadow_word_pain.remains <= 6 then
+                        removeDebuff( "shadow_word_pain")
+                    else
+                        debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires - 6
+                    end
+                end
+            end
 
             if legendary.painbreaker_psalm.enabled then
                 local power = 0
@@ -1904,8 +1936,9 @@ spec:RegisterAbilities( {
 
         talent = "vampiric_embrace",
         startsCombat = false,
+        texture = 136230,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "vampiric_embrace" )

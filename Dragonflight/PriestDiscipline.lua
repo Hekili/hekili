@@ -144,7 +144,7 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
-        apathy = {
+    apathy = {
         id = 390669,
         duration = 4,
         max_stack = 1
@@ -159,7 +159,7 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
-        body_and_soul = {
+    body_and_soul = {
         id = 65081,
         duration = 3,
         max_stack = 1
@@ -173,11 +173,6 @@ spec:RegisterAuras( {
         id = 197871,
         duration = 8,
         max_stack = 1
-    },
-    death_and_madness = {
-        id = 321973,
-        duration = 4,
-        max_stack = 1,
     },
     death_and_madness_debuff = {
         id = 322098,
@@ -213,7 +208,7 @@ spec:RegisterAuras( {
     harsh_discipline = {
         id = 373181,
         duration = 3600,
-        max_stack = function() return 8/talent.harsh_discipline.rank end,
+        max_stack = function() return 8 / talent.harsh_discipline.rank end,
     },
     harsh_discipline_ready = {
         id = 373183,
@@ -314,12 +309,12 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1
     },
-        schism = {
+    schism = {
         id = 214621,
         duration = function() return talent.malicious_intent.enabled and 15 or 9 end,
         max_stack = 1
     },
-        shackle_undead = {
+    shackle_undead = {
         id = 9484,
         duration = 50,
         max_stack = 1
@@ -481,7 +476,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Throw a Divine Star forward 27 yds, healing allies in its path for 1,151 and dealing 1,211 Holy damage to enemies. After reaching its destination, the Divine Star returns to you, healing allies and damaging enemies in its path again. Healing reduced beyond 6 targets.
+
     divine_star = {
         id = function() return buff.shadow_covenant.up and 122121 or 110744 end,
         known = 110744,
@@ -496,7 +491,7 @@ spec:RegisterAbilities( {
 
         talent = "divine_star",
         startsCombat = true,
-        texture = function() return buff.shadow_covenant.up and 122121 or 110744 end,
+        texture = function() return buff.shadow_covenant.up and 631519 or 537026 end,
 
         handler = function ()
         end,
@@ -543,7 +538,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Creates a ring of Holy energy around you that quickly expands to a 30 yd radius, healing allies for 2,647 and dealing 3,119 Holy damage to enemies. Healing reduced beyond 6 targets.
+
     halo = {
         id = function() return buff.shadow_covenant.up and 120644 or 120517 end,
         known = 120517,
@@ -564,25 +559,6 @@ spec:RegisterAbilities( {
         end,
 
         copy = 120644
-    },
-
-    holy_nova = {
-        id = 132157,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "holy",
-        damage = 1,
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "holy_nova",
-        startsCombat = false,
-
-        handler = function ()
-            removeBuff( "rhapsody" )
-        end,
     },
 
     lights_wrath = {
@@ -612,7 +588,7 @@ spec:RegisterAbilities( {
         end,
         cooldown = 9,
         recharge = function()
-            if talent.dark_indulgence.enabled then return 9*haste end
+            if talent.dark_indulgence.enabled then return 9 * haste end
         end,
         hasteCD = true,
         gcd = "spell",
@@ -627,8 +603,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.harsh_discipline.enabled then
-                addStack( "harsh_discipline" )
-                if buff.harsh_discipline.up and buff.harsh_discipline.stack == 8/talent.harsh_discipline.rank then
+                if buff.harsh_discipline.up and buff.harsh_discipline.stack == buff.harsh_discipline.max_stack - 1 then
                     removeBuff( "harsh_discipline" )
                     applyBuff( "harsh_discipline_ready" )
                 end
@@ -660,64 +635,6 @@ spec:RegisterAbilities( {
             end
         end,
     },
-
-    mindbender = {
-        id = 123040,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-        school = "shadow",
-        talent = "mindbender",
-        startsCombat = true,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            summonPet( "mindbender", 15 )
-            applyBuff( "mindbender" )
-        end,
-    },
-
-    mindgames = {
-        id = 375901,
-        cast = function() return 1.5 * haste end,
-        cooldown = 45,
-        gcd = "spell",
-        school = "shadow",
-        damage = 1,
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "mindgames",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "mindgames" )
-        end,
-    },
-
-    pain_suppression = {
-        id = 33206,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
-        school = "holy",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "pain_suppression",
-        startsCombat = false,
-        texture = 135936,
-
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "pain_suppression" )
-        end,
-    },
-
 
     penance = {
         id = function() return buff.shadow_covenant.up and 400169 or 47540 end,
@@ -771,45 +688,6 @@ spec:RegisterAbilities( {
     },
 
 
-    power_infusion = {
-        id = 10060,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-        school = "holy",
-
-        talent = "power_infusion",
-        startsCombat = false,
-
-        indicator = function () return group and ( talent.twins_of_the_sun_priestess.enabled or legendary.twins_of_the_sun_priestess.enabled ) and "cycle" or nil end,
-
-        handler = function ()
-            applyBuff( "power_infusion" )
-            stat.haste = stat.haste + 0.25
-        end,
-    },
-
-    power_word_barrier = {
-        id = 62618,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-        school = "holy",
-
-        spend = 0.04,
-        spendType = "mana",
-
-        talent = "power_word_barrier",
-        startsCombat = false,
-        texture = 253400,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
     power_word_radiance = {
         id = 194509,
         cast = function() return buff.radiant_providence.up and 0 or ( 2 * ( talent.enduring_luminescence.enabled and 0.7 or 1 ) ) end,
@@ -835,40 +713,6 @@ spec:RegisterAbilities( {
             end
         end,
     },
-    -- Shields an ally for 15 sec, absorbing 25,497 damage.
-    power_word_shield = {
-        id = 17,
-        cast = 0,
-        cooldown = function() return buff.rapture.up and 0 or ( 7.5 * haste ) end,
-        gcd = "spell",
-        school = "holy",
-
-        spend = 0.031,
-        spendType = "mana",
-
-        startsCombat = false,
-        nodebuff = "weakened_soul",
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "power_word_shield" )
-            applyBuff( "atonement" )
-            removeBuff( "shield_of_absolution" )
-            if talent.weal_and_woe.enabled then
-                removeBuff( "weal_and_woe" )
-            end
-            if talent.body_and_soul.enabled then
-                applyBuff( "body_and_soul" )
-            end
-            if set_bonus.tier29_2pc > 0 then
-                applyBuff("light_weaving")
-            end
-            if talent.borrowed_time.enabled then
-                applyBuff("borrowed_time")
-            end
-        end,
-    },
 
     power_word_solace = {
         id = 129250,
@@ -891,8 +735,7 @@ spec:RegisterAbilities( {
                 reduceCooldown( "penance", 0.5 )
             end
             if talent.harsh_discipline.enabled then
-                addStack( "harsh_discipline" )
-                if buff.harsh_discipline.stack == 8/talent.harsh_discipline.rank then
+                if buff.harsh_discipline.stack == buff.harsh_discipline.max_stack - 1 then
                     applyBuff( "harsh_discipline_ready" )
                     removeBuff( "harsh_discipline" )
                 end
@@ -906,7 +749,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Cleanses the target with fire, causing 583 Radiant damage and an additional 3,989 Radiant damage over 20 sec. Spreads to a nearby enemy when you cast Penance on the target.
+
     purge_the_wicked = {
         id = 204197,
         cast = 0,
@@ -928,7 +771,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Immediately Power Word: Shield your target, and for the next 8 sec, Power Word: Shield has no cooldown and absorbs an additional 40%.
+
     rapture = {
         id = 47536,
         cast = 0,
@@ -973,7 +816,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Attack the enemy's soul with a surge of Shadow energy, dealing 3,245 Shadow damage and increasing your spell damage to the target by 15% for 9 sec.
+
     schism = {
         id = 214621,
         cast = function() return 1.5 * haste end,
@@ -994,7 +837,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Make a shadowy pact, healing the target and 4 other injured allies within 30 yds for 2,712. For 7 sec, your Shadow spells deal 25% increased damage and healing, and Halo, Divine Star, and Penance are converted to Shadow spells.
+
     shadow_covenant = {
         id = 314867,
         cast = 0,
@@ -1036,78 +879,9 @@ spec:RegisterAbilities( {
         end,
     },
 
-    shadowfiend = {
-        id = 34433,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-        school = "shadow",
-        talent = "shadowfiend",
-        notalent = "mindbender",
-        startsCombat = true,
-        texture = 136199,
-        toggle = "cooldowns",
-
-        handler = function ()
-            summonPet( "shadowfiend", 15 )
-            applyBuff( "shadowfiend" )
-        end,
-    },
-
-
-    shadow_word_death = {
-        id = 32379,
-        cast = 0,
-        charges = 1,
-        cooldown = 8,
-        recharge = 8,
-        gcd = "spell",
-        school = "shadow",
-        damage = 1,
-
-        spend = 0.005,
-        spendType = "mana",
-
-        talent = "shadow_word_death",
-        startsCombat = true,
-
-        usable = function ()
-            if settings.sw_death_protection == 0 then return true end
-            return health.percent >= settings.sw_death_protection, "health percent [ " .. health.percent .. " ] is below user setting [ " .. settings.sw_death_protection .. " ]"
-        end,
-
-        handler = function ()
-            if talent.death_and_madness.enabled then
-                applyDebuff( "target", "death_and_madness_debuff" )
-            end
-
-            if talent.inescapable_torment.enabled then
-                if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + (talent.inescapable_torment.rank * 0.5)
-                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + (talent.inescapable_torment.rank * 0.5) end
-            end
-
-            if talent.expiation.enabled then
-                if talent.purge_the_wicked.enabled then
-                    if debuff.purge_the_wicked.remains <= 6 then
-                        removeDebuff( "purge_the_wicked")
-                    else
-                        debuff.purge_the_wicked.expires = debuff.purge_the_wicked.expires - 6
-                    end
-                else
-                    if debuff.shadow_word_pain.remains <= 6 then
-                        removeDebuff( "shadow_word_pain")
-                    else
-                        debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires - 6
-                    end
-                end
-            end
-        end,
-    },
-
-
     smite = {
         id = 585,
-        cast = function() return 1.5*haste end,
+        cast = 1.5,
         cooldown = 0,
         gcd = "spell",
         school = "holy",
@@ -1124,8 +898,7 @@ spec:RegisterAbilities( {
                 reduceCooldown( "penance", 0.5 )
             end
             if talent.harsh_discipline.enabled then
-                addStack( "harsh_discipline" )
-                if buff.harsh_discipline.stack == 8/talent.harsh_discipline.rank then
+                if buff.harsh_discipline.up and buff.harsh_discipline.stack == buff.harsh_discipline.max_stack - 1 then
                     removeBuff( "harsh_discipline" )
                     applyBuff( "harsh_discipline_ready" )
                 end
@@ -1139,46 +912,6 @@ spec:RegisterAbilities( {
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
             end
-        end,
-    },
-
-    -- Peer into the mind of the enemy, attempting to steal a known spell. If stolen, the victim cannot cast that spell for 20 sec. Can only be used on Humanoids with mana. If you're unable to find a spell to steal, the cooldown of Thoughtsteal is reset.
-    thoughtsteal = {
-        id = 316262,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-        school = "shadow",
-
-        spend = 0.01,
-        spendType = "mana",
-
-        pvptalent = "thoughtsteal",
-        startsCombat = false,
-        texture = 3718862,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-    -- Fills you with the embrace of Shadow energy for 15 sec, causing you to heal a nearby ally for 50% of any single-target Shadow spell damage you deal.
-    vampiric_embrace = {
-        id = 15286,
-        cast = 0,
-        cooldown = function() return talent.sanlayn.enabled and 75 or 120 end,
-        gcd = "off",
-        school = "shadow",
-
-        talent = "vampiric_embrace",
-        startsCombat = false,
-        texture = 136230,
-
-        toggle = "defensives",
-
-        handler = function ()
-            applyBuff( "vampiric_embrace" )
         end,
     },
 } )
