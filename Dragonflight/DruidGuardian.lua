@@ -506,13 +506,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Talent: $?s137012[Single-target healing also damages a nearby enemy target for $w3% of the healing done][Single-target damage also heals a nearby friendly target for $w3% of the damage done].
-    -- https://wowhead.com/beta/spell=124974
-    natures_vigil = {
-        id = 124974,
-        duration = 30,
-        max_stack = 1
-    },
     -- Talent: Dealing $w2% reduced damage to $@auracaster.
     -- https://wowhead.com/beta/spell=80313
     pulverize = {
@@ -1641,24 +1634,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: For $d, $?s137012[all single-target healing also damages a nearby enemy target for $s3% of the healing done][all single-target damage also heals a nearby friendly target for $s3% of the damage done].
-    natures_vigil = {
-        id = 124974,
-        cast = 0,
-        cooldown = 90,
-        gcd = "off",
-        school = "nature",
-
-        talent = "natures_vigil",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "natures_vigil" )
-        end,
-    },
-
 
     overrun = {
         id = 202246,
@@ -2151,6 +2126,17 @@ spec:RegisterSetting( "maul_anyway", true, {
     type = "toggle",
     width = "full",
 } ) ]]
+
+spec:RegisterSetting( "vigil_damage", 50, {
+    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( class.specs[ 102 ].abilities.natures_vigil.id ) ),
+    desc = strformat( "If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage.\n\n"
+        .. "By default, |W%s|w also requires the |cFFFFD100Defensives|r toggle to be active.", class.specs[ 102 ].abilities.natures_vigil.name, class.specs[ 102 ].abilities.natures_vigil.name ),
+    type = "range",
+    min = 1,
+    max = 100,
+    step = 1,
+    width = "full"
+} )
 
 spec:RegisterSetting( "ironfur_damage_threshold", 5, {
     name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
