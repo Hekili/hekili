@@ -190,7 +190,7 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
-        dominate_mind = {
+    dominate_mind = {
         id = 205364,
         duration = 30,
         max_stack = 1
@@ -607,8 +607,9 @@ spec:RegisterAbilities( {
                 if buff.harsh_discipline.up and buff.harsh_discipline.stack == buff.harsh_discipline.max_stack - 1 then
                     removeBuff( "harsh_discipline" )
                     applyBuff( "harsh_discipline_ready" )
+                else
+                    addStack( "harsh_discipline" )
                 end
-                addStack( "harsh_discipline" )
             end
             if talent.void_summoner.enabled then
                 reduceCooldown( "mindbender", 2 )
@@ -617,19 +618,19 @@ spec:RegisterAbilities( {
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
             end
             if talent.inescapable_torment.enabled then
-                if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + (talent.inescapable_torment.rank * 0.5)
-                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + (talent.inescapable_torment.rank * 0.5) end
+                if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + ( talent.inescapable_torment.rank * 0.5 )
+                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + ( talent.inescapable_torment.rank * 0.5 ) end
             end
             if talent.expiation.enabled then
                 if talent.purge_the_wicked.enabled then
                     if debuff.purge_the_wicked.remains <= 6 then
-                        removeDebuff( "purge_the_wicked")
+                        removeDebuff( "purge_the_wicked" )
                     else
                         debuff.purge_the_wicked.expires = debuff.purge_the_wicked.expires - 6
                     end
                 else
                     if debuff.shadow_word_pain.remains <= 6 then
-                        removeDebuff( "shadow_word_pain")
+                        removeDebuff( "shadow_word_pain" )
                     else
                         debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires - 6
                     end
@@ -659,18 +660,15 @@ spec:RegisterAbilities( {
             removeBuff( "power_of_the_dark_side" )
             removeBuff( "harsh_discipline_ready" )
             if set_bonus.tier29_4pc > 0 then
-                applyBuff("shield_of_absolution")
+                applyBuff( "shield_of_absolution" )
             end
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
             end
             if talent.painful_punishment.enabled then
-                local castigation_bonus = function() return talent.castigation.enabled and 1 or 0 end
-                local harsh_disc_bonus = function() return buff.harsh_discipline_ready.up and 3 or 0 end
-                if talent.purge_the_wicked.enabled then
-                        debuff.purge_the_wicked.expires = debuff.purge_the_wicked.expires + (1.5 * (3 + castigation_bonus() + harsh_disc_bonus()))
-                else
-                        debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires + (1.5 * (3 + castigation_bonus() + harsh_disc_bonus()))
+                local swp = talent.purge_the_wicked.enabled and "purge_the_wicked" or "shadow_word_pain"
+                if debuff[ swp ].up then
+                    debuff[ swp ].expires = debuff[ swp ].expires + ( 1.5 * ( 3 + ( talent.castigation.enabled and 1 or 0 ) + ( buff.harsh_discipline_ready.up and 3 or 0 ) )
                 end
             end
             if talent.weal_and_woe.enabled then
@@ -756,8 +754,9 @@ spec:RegisterAbilities( {
                 if buff.harsh_discipline.stack == buff.harsh_discipline.max_stack - 1 then
                     applyBuff( "harsh_discipline_ready" )
                     removeBuff( "harsh_discipline" )
+                else
+                    addStack( "harsh_discipline" )
                 end
-                addStack( "harsh_discipline" )
             end
             if talent.weal_and_woe.enabled then
                 removeBuff( "weal_and_woe" )
@@ -920,8 +919,9 @@ spec:RegisterAbilities( {
                 if buff.harsh_discipline.up and buff.harsh_discipline.stack == buff.harsh_discipline.max_stack - 1 then
                     removeBuff( "harsh_discipline" )
                     applyBuff( "harsh_discipline_ready" )
+                else
+                    addStack( "harsh_discipline" )
                 end
-                addStack( "harsh_discipline" )
             end
             if talent.void_summoner.enabled then
                 reduceCooldown( "mindbender", 2 )
