@@ -21,18 +21,15 @@ function HekiliPopupDropdownMixin:OnShow()
         local S = E:GetModule( "Skins" )
         S:HandleSliderFrame( self.Slider )
 
-        if AddOnSkins then
-            local AS = AddOnSkins[1]
+        local r, g, b = unpack( E.media.rgbvaluecolor )
 
-            local r, g, b = unpack( AS.Color )
+        local name = self:GetName()
+        local highlight = _G[ name .. "Highlight" ]
 
-            local name = self:GetName()
-            local highlight = _G[ name .. "Highlight" ]
-
-            highlight:SetTexture( [[Interface\AddOns\AddOnSkins\Media\Textures\Highlight]] )
-            highlight:SetVertexColor( r, g, b )
-            highlight:SetDrawLayer( highlight:GetDrawLayer(), 0 )
-        end
+        highlight:SetTexture( E.Media.Textures.Highlight )
+        highlight:SetBlendMode( 'BLEND' )
+        highlight:SetDrawLayer( 'BACKGROUND' )
+        highlight:SetVertexColor( r, g, b )
     end
 
     self.Slider.backdrop:SetFrameLevel( self:GetFrameLevel() + 1 )
@@ -46,7 +43,6 @@ end
 function HekiliPopupDropdownMixin:OnSetOwningButton()
     -- self.Toggle:UpdateVisibleState();
     self.Slider:UpdateVisibleState()
-    self.owningButton:SetHeight( self:GetHeight() )
 end
 
 
