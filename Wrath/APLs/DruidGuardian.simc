@@ -1,4 +1,3 @@
-# APL v3.4.1-1.6.0 #
 actions.precombat+=/mark_of_the_wild,if=!up&!buff.gift_of_the_wild.up
 actions.precombat+=/thorns,if=!up
 actions.precombat+=/dire_bear_form,if=!up
@@ -19,7 +18,7 @@ actions.init+=/variable,name=maintain_lacerate,value=!variable.build_lacerate&de
 actions.init+=/variable,name=maintain_lacerate_cost,op=setif,if=variable.maintain_lacerate,value=action.lacerate.spend,value_else=0
 actions.init+=/variable,name=emergency_lacerate,value=debuff.lacerate.up&debuff.lacerate.remains<4.5&debuff.lacerate.remains<variable.time_to_die
 
-actions.bear+=/faerie_fire_feral,if=target.outside2
+actions.bear+=/faerie_fire_feral,if=glyph.omen_of_clarity.enabled&!buff.clearcasting.up
 actions.bear+=/enrage,use_off_gcd=1,if=time<10
 actions.bear+=/berserk
 actions.bear+=/maul,use_off_gcd=1,if=rage.current>action.maul.spend+variable.build_lacerate_cost+variable.maintain_lacerate_cost+action.mangle_bear.spend
