@@ -48,7 +48,7 @@ actions.aoe_builder+=/moonfire_cat,cycle_targets=1,if=refreshable&spell_targets.
 actions.aoe_builder+=/swipe_cat
 actions.aoe_builder+=/moonfire_cat,cycle_targets=1,if=refreshable
 # if we have brs and nothing better to cast, check if thrash DD beats shred (or if SA is up)
-actions.aoe_builder+=/shred,target_if=maxtarget.time_to_die,if=action.shred.damage>action.thrash_cat.damage&!buff.sudden_ambush.up
+actions.aoe_builder+=/shred,cycle_targets=1,if=action.shred.damage>action.thrash_cat.damage&!buff.sudden_ambush.up
 actions.aoe_builder+=/thrash_cat
 
 actions.berserk+=/ferocious_bite,cycle_targets=1,if=combo_points=5&dot.rip.remains>8&variable.zerk_biteweave&spell_targets.swipe_cat>1

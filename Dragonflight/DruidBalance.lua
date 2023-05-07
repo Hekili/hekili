@@ -2216,7 +2216,7 @@ spec:RegisterAbilities( {
 
         toggle = "defensives",
         usable = function()
-            return health.pct <= settings.vigil_health, "too much health"
+            return health.pct <= settings.vigil_damage, strformat( "health %d%% must be under %d%%", health.pct, settings.vigil_damage or 100 )
         end,
 
         handler = function ()
