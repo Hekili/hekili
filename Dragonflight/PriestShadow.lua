@@ -1180,6 +1180,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
         school = "holy",
+        damage = 1,
 
         spend = 0.016,
         spendType = "mana",
@@ -1531,8 +1532,9 @@ spec:RegisterAbilities( {
         texture = function() return talent.mindbender.enabled and 136214 or 136199 end,
 
         handler = function ()
-            summonPet( talent.mindbender.enabled and "mindbender" or "shadowfiend", 15 )
-            applyBuff( talent.mindbender.enabled and "mindbender" or "shadowfiend" )
+            local fiend = talent.mindbender.enabled and "mindbender" or "shadowfiend"
+            summonPet( fiend, 15 )
+            applyBuff( fiend )
         end,
 
         copy = { "shadowfiend", 34433, 123040, 200174 }
@@ -1629,13 +1631,28 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
-        nodebuff = "weakened_soul",
 
         handler = function ()
             applyBuff( "power_word_shield" )
-            applyDebuff( "player", "weakened_soul" )
-            if talent.body_and_soul.enabled then applyBuff( "body_and_soul" ) end
-            -- if time > 0 then gain( 6, "insanity" ) end
+
+            if talent.body_and_soul.enabled then
+                applyBuff( "body_and_soul" )
+            end
+
+            if state.spec.discipline then
+                applyBuff( "atonement" )
+                removeBuff( "shield_of_absolution" )
+                removeBuff( "weal_and_woe" )
+
+                if set_bonus.tier29_2pc > 0 then
+                    applyBuff( "light_weaving" )
+                end
+                if talent.borrowed_time.enabled then
+                    applyBuff( "borrowed_time" )
+                end
+            else
+                applyDebuff( "player", "weakened_soul" )
+            end
         end,
     },
 
@@ -1791,6 +1808,7 @@ spec:RegisterAbilities( {
         end,
         gcd = "spell",
         school = "shadow",
+        damage = 1,
 
         spend = 0.005,
         spendType = "mana",
@@ -1813,7 +1831,19 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "death_and_madness_debuff" )
             end
 
-            if talent.inescapable_torment.enabled and buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 1 end
+            if talent.inescapable_torment.enabled then
+                local fiend = talent.mindbender.enabled and "mindbender" or "shadowfiend"
+                if buff[ fiend ].up then buff[ fiend ].expires = buff[ fiend ].expires + ( talent.inescapable_torment.rank * 0.5 ) end
+                if pet[ fiend ].up then pet[ fiend ].expires = pet[ fiend ].expires + ( talent.inescapable_torment.rank * 0.5 ) end
+            end
+
+            if talent.expiation.enabled then
+                local swp = talent.purge_the_wicked.enabled and "purge_the_wicked" or "shadow_word_pain"
+                if debuff[ swp ].up then
+                    if debuff[ swp ].remains <= 6 then removeDebuff( "target", swp )
+                    else debuff[ swp ].expires = debuff[ swp ].expires - 6 end
+                end
+            end
 
             if legendary.painbreaker_psalm.enabled then
                 local power = 0
@@ -1904,8 +1934,9 @@ spec:RegisterAbilities( {
 
         talent = "vampiric_embrace",
         startsCombat = false,
+        texture = 136230,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "vampiric_embrace" )
