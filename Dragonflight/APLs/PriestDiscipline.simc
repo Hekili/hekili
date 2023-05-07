@@ -34,7 +34,7 @@ actions+=/variable,name=max_te_holy,op=floor,value=(buff.shadow_covenant.duratio
 actions+=/variable,name=remaining_te_holy,op=set,value=0
 actions+=/variable,name=remaining_te_holy,op=add,value=variable.max_te_holy
 # TODO: duration_expected is buggy on penance/dark reprimand, using a static reduction as a stand-in for now
-actions+=/variable,name=expected_penance_reduction,op=setif,condition=talent.train_of_thought,value=1.5,value_else=0
+actions+=/variable,name=expected_penance_reduction,op=setif,condition=talent.train_of_thought,value=2,value_else=0
 # Calculate how much cast time worth of shadow spells we have currently available. We use shadow_spells_duration to determine if we have time to weave in any holy spells to proc twilight equilibrium.
 actions+=/variable,name=shadow_spells_duration,op=set,value=0
 # Schism
@@ -130,35 +130,40 @@ actions+=/variable,name=can_divine_star,op=set,value=cooldown.divine_star.durati
 actions+=/run_action_list,name=scov_prep,if=cooldown.shadow_covenant.up&(!variable.harsh_discipline_ready|(variable.short_scov&((talent.purge_the_wicked&dot.purge_the_wicked.remains<20)|(!talent.purge_the_wicked&dot.shadow_word_pain.remains<20))))
 actions+=/run_action_list,name=short_scov,if=variable.short_scov&variable.can_enter_scov
 actions+=/run_action_list,name=long_scov,if=variable.long_scov&variable.can_enter_scov
-actions+=/purge_the_wicked,if=talent.purge_the_wicked&(target.time_to_die>(0.5*dot.purge_the_wicked.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.purge_the_wicked.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
-actions+=/shadow_word_pain,if=!talent.purge_the_wicked&(target.time_to_die>(0.5*dot.shadow_word_pain.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.shadow_word_pain.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
+actions+=/purge_the_wicked,if=talent.purge_the_wicked&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.purge_the_wicked.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
+actions+=/shadow_word_pain,if=!talent.purge_the_wicked&(target.time_to_die>(0.3*dot.shadow_word_pain.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.shadow_word_pain.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
 actions+=/schism,if=!talent.shadow_covenant
 actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&target.health.pct<20
-actions+=/penance,if=(!talent.shadow_covenant|variable.can_penance)&buff.harsh_discipline_ready.up
+actions.main+=/penance,if=(!talent.shadow_covenant|variable.can_penance)
 # For DPS, Lights wrath should always be used outside of scov when you take wrath unleashed to maximize the number of smites it buffs. In a real raid setting, you may want to cast it at the beginning of a scov cycle for additional healing.
 actions+=/lights_wrath,if=talent.wrath_unleashed
 actions+=/mind_blast,if=!talent.shadow_covenant|variable.can_mind_blast
 actions+=/mindgames,if=(!talent.shadow_covenant|variable.can_mindgames)&talent.shattered_perceptions
 actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&talent.expiation&(target.time_to_pct_20>(0.5*cooldown.shadow_word_death.duration))
 actions+=/mindgames,if=(!talent.shadow_covenant|variable.can_mindgames)&!talent.shattered_perceptions
-actions+=/halo
+actions+=/halo,if=!talent.shadow_covenant
 actions+=/divine_star,if=(!talent.shadow_covenant|variable.can_divine_star)
 actions+=/power_word_solace
 actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&(target.time_to_pct_20>(0.5*cooldown.shadow_word_death.duration))
 actions+=/smite
 
 # Prepare to enter shadow covenant
-actions.scov_prep+=/purge_the_wicked,if=!ticking&(target.time_to_die>(0.5*dot.purge_the_wicked.duration))
+actions.scov_prep+=/purge_the_wicked,if=!ticking&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 actions.scov_prep+=/mind_blast,if=!variable.harsh_discipline_ready&variable.can_mind_blast
 actions.scov_prep+=/power_word_solace,if=!variable.harsh_discipline_ready
 actions.scov_prep+=/smite,if=!variable.harsh_discipline_ready
-actions.scov_prep+=/purge_the_wicked,if=(target.time_to_die>(0.5*dot.purge_the_wicked.duration))
+actions.scov_prep+=/purge_the_wicked,if=(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 
 # Short Shadow Covenant  We want to use entirely shadow spells to optimize our time with the buff
 actions.short_scov+=/shadow_covenant
 actions.short_scov+=/schism
+actions.short_scov+=/halo,if=spell_targets.halo>=3
+actions.short_scov+=/divine_star,if=spell_targets.halo>=3
+actions.short_scov+=/purge_the_wicked,if=(!ticking|refreshable)&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 actions.short_scov+=/shadow_word_death,if=target.health.pct<20&talent.expiation
 actions.short_scov+=/penance
+actions.short_scov+=/halo,if=spell_targets.halo>=2
+actions.short_scov+=/divine_star,if=spell_targets.halo>=2
 actions.short_scov+=/shadow_word_death,if=target.health.pct<20
 actions.short_scov+=/mind_blast,if=talent.expiation
 actions.short_scov+=/mindgames,if=talent.shattered_perceptions
@@ -168,8 +173,6 @@ actions.short_scov+=/halo
 actions.short_scov+=/mind_blast
 actions.short_scov+=/divine_star
 actions.short_scov+=/shadow_word_death,if=(target.time_to_pct_20>buff.shadow_covenant.remains)
-# just in case we run out of shadow spells
-actions.short_scov+=/purge_the_wicked,if=(!ticking|refreshable)&(target.time_to_die>(0.5*dot.purge_the_wicked.duration))
 actions.short_scov+=/lights_wrath
 actions.short_scov+=/power_word_solace
 actions.short_scov+=/smite
@@ -177,8 +180,13 @@ actions.short_scov+=/smite
 # Long Shadow Covenant
 actions.long_scov+=/shadow_covenant
 actions.long_scov+=/schism
+actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.halo>=3
+actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.divine_star>=3
+actions.long_scov+=/purge_the_wicked,if=(!variable.should_te|(variable.should_te&variable.te_holy))&(!ticking|refreshable)&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 actions.long_scov+=/shadow_word_death,if=target.health.pct<20&talent.expiation&(!variable.should_te|(variable.should_te&variable.te_shadow))
-actions.long_scov+=/penance,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
+actions.long_scov+=/penance,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&buff.harsh_discipline_ready.up
+actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.halo>=2
+actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.divine_star>=2
 actions.long_scov+=/shadow_word_death,if=target.health.pct<20&(!variable.should_te|(variable.should_te&variable.te_shadow))
 actions.long_scov+=/mind_blast,if=talent.expiation&(!variable.should_te|(variable.should_te&variable.te_shadow))
 actions.long_scov+=/mindgames,if=talent.shattered_perceptions&(!variable.should_te|(variable.should_te&variable.te_shadow))
@@ -188,7 +196,6 @@ actions.long_scov+=/mind_blast,if=(!variable.should_te|(variable.should_te&varia
 actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
 actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
 actions.long_scov+=/shadow_word_death,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&(target.time_to_pct_20>buff.shadow_covenant.remains)
-actions.long_scov+=/purge_the_wicked,if=(!variable.should_te|(variable.should_te&variable.te_holy))&(!ticking|refreshable)&(target.time_to_die>(0.5*dot.purge_the_wicked.duration))
 actions.long_scov+=/lights_wrath,if=(!variable.should_te|(variable.should_te&variable.te_holy))
 actions.long_scov+=/power_word_solace,if=(!variable.should_te|(variable.should_te&variable.te_holy))
 actions.long_scov+=/smite,if=(!variable.should_te|(variable.should_te&variable.te_holy))
