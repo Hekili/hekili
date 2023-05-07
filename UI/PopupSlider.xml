@@ -23,10 +23,17 @@
 
     <Frame name="HekiliPopupDropdownRangeTemplate" inherits="UIDropDownCustomMenuEntryTemplate" mixin="HekiliPopupDropdownMixin" virtual="true">
         <Size x="300" y="16"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentHighlight" parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+            </Layer>
+        </Layers>
         <Scripts>
             <OnLoad method="OnLoad"/>
             <OnShow method="OnShow"/>
             <OnHide method="OnHide"/>
+            <OnEnter function="UIDropDownMenuButton_OnEnter"/>
+            <OnLeave function="UIDropDownMenuButton_OnLeave"/>
         </Scripts>
         <Frames>
             <Frame parentKey="Text" inherits="HekiliPopupDropdownTextTemplate"/>

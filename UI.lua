@@ -653,9 +653,14 @@ do
                                     insert( menuData, submenu )
 
                                     submenu = {
+                                        text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipTitle = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
+                                        tooltipOnButton = true,
+                                        keepShownOnClick = true,
+                                        notCheckable = true,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }
-
                                     local cn = "HekiliSpec" .. i .. "Option" .. n
                                     local cf = CreateFrame( "Frame", cn, UIParent, "HekiliPopupDropdownRangeTemplate" )
 
