@@ -1532,8 +1532,9 @@ spec:RegisterAbilities( {
         texture = function() return talent.mindbender.enabled and 136214 or 136199 end,
 
         handler = function ()
-            summonPet( talent.mindbender.enabled and "mindbender" or "shadowfiend", 15 )
-            applyBuff( talent.mindbender.enabled and "mindbender" or "shadowfiend" )
+            local fiend = talent.mindbender.enabled and "mindbender" or "shadowfiend"
+            summonPet( fiend, 15 )
+            applyBuff( fiend )
         end,
 
         copy = { "shadowfiend", 34433, 123040, 200174 }
@@ -1633,21 +1634,25 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "power_word_shield" )
-            applyBuff( "atonement" )
-            removeBuff( "shield_of_absolution" )
-            if talent.weal_and_woe.enabled then
-                removeBuff( "weal_and_woe" )
-            end
+
             if talent.body_and_soul.enabled then
                 applyBuff( "body_and_soul" )
             end
-            if set_bonus.tier29_2pc > 0 then
-                applyBuff("light_weaving")
+
+            if state.spec.discipline then
+                applyBuff( "atonement" )
+                removeBuff( "shield_of_absolution" )
+                removeBuff( "weal_and_woe" )
+
+                if set_bonus.tier29_2pc > 0 then
+                    applyBuff( "light_weaving" )
+                end
+                if talent.borrowed_time.enabled then
+                    applyBuff( "borrowed_time" )
+                end
+            else
+                applyDebuff( "player", "weakened_soul" )
             end
-            if talent.borrowed_time.enabled then
-                applyBuff("borrowed_time")
-            end
-            -- if time > 0 then gain( 6, "insanity" ) end
         end,
     },
 
@@ -1827,23 +1832,16 @@ spec:RegisterAbilities( {
             end
 
             if talent.inescapable_torment.enabled then
-                if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + (talent.inescapable_torment.rank * 0.5)
-                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + (talent.inescapable_torment.rank * 0.5) end
+                local fiend = talent.mindbender.enabled and "mindbender" or "shadowfiend"
+                if buff[ fiend ].up then buff[ fiend ].expires = buff[ fiend ].expires + ( talent.inescapable_torment.rank * 0.5 ) end
+                if pet[ fiend ].up then pet[ fiend ].expires = pet[ fiend ].expires + ( talent.inescapable_torment.rank * 0.5 ) end
             end
 
             if talent.expiation.enabled then
-                if talent.purge_the_wicked.enabled then
-                    if debuff.purge_the_wicked.remains <= 6 then
-                        removeDebuff( "purge_the_wicked")
-                    else
-                        debuff.purge_the_wicked.expires = debuff.purge_the_wicked.expires - 6
-                    end
-                else
-                    if debuff.shadow_word_pain.remains <= 6 then
-                        removeDebuff( "shadow_word_pain")
-                    else
-                        debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires - 6
-                    end
+                local swp = talent.purge_the_wicked.enabled and "purge_the_wicked" or "shadow_word_pain"
+                if debuff[ swp ].up then
+                    if debuff[ swp ].remains <= 6 then removeDebuff( "target", swp )
+                    else debuff[ swp ].expires = debuff[ swp ].expires - 6 end
                 end
             end
 
