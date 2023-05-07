@@ -1023,7 +1023,7 @@ end )
 -- aoe_spark_phase starts:
 --     active_enemies>=variable.aoe_target_count&(action.arcane_orb.charges>0|buff.arcane_charge.stack>=3)&(!talent.rune_of_power|cooldown.rune_of_power.ready)&cooldown.radiant_spark.ready&cooldown.touch_of_the_magi.remains<=(gcd.max*2)
 -- aoe_spark_phase ends:
---     variable.aoe_spark_phase&debuff.radiant_spark_vulnerability.down&dot.radiant_spark.remains<5&cooldown.radiant_spark.remains
+--     variable.aoe_spark_phase&debuff.radiant_spark_vulnerability.down&dot.radiant_spark.remains<7&cooldown.radiant_spark.remains
 
 local realAoeSparkPhase = {}
 local virtualAoeSparkPhase = false
@@ -1035,7 +1035,7 @@ local SetAoeSparkPhase = setfenv( function()
         realAoeSparkPhase[ display ] = true
     end
 
-    if realAoeSparkPhase[ display ] and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > gcd.max then
+    if realAoeSparkPhase[ display ] and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 7 and cooldown.radiant_spark.remains > gcd.max then
         realAoeSparkPhase[ display ] = false
     end
 
@@ -1072,7 +1072,7 @@ local SetSparkPhase = setfenv( function()
         realSparkPhase[ display ] = true
     end
 
-    if realSparkPhase[ display ] and not prev[1].radiant_spark and not prev[2].radiant_spark and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 5 and cooldown.radiant_spark.remains > gcd.max and cooldown.touch_of_the_magi.remains > gcd.max * 7 then
+    if realSparkPhase[ display ] and not prev[1].radiant_spark and not prev[2].radiant_spark and not debuff.radiant_spark_vulnerability.up and debuff.radiant_spark.remains < 7 and cooldown.radiant_spark.remains > gcd.max and cooldown.touch_of_the_magi.remains > gcd.max * 7 then
         realSparkPhase[ display ] = false
     end
 
