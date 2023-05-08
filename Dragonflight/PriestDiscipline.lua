@@ -668,7 +668,7 @@ spec:RegisterAbilities( {
             if talent.painful_punishment.enabled then
                 local swp = talent.purge_the_wicked.enabled and "purge_the_wicked" or "shadow_word_pain"
                 if debuff[ swp ].up then
-                    debuff[ swp ].expires = debuff[ swp ].expires + ( 1.5 * ( 3 + ( talent.castigation.enabled and 1 or 0 ) + ( buff.harsh_discipline_ready.up and 3 or 0 ) )
+                    debuff[ swp ].expires = debuff[ swp ].expires + 1.5 * ( 3 + ( talent.castigation.enabled and 1 or 0 ) + ( buff.harsh_discipline_ready.up and 3 or 0 ) )
                 end
             end
             if talent.weal_and_woe.enabled then
