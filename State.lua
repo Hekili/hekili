@@ -955,7 +955,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         b.expires = b.applied + duration
         b.last_expiry = b.expires
 
-        b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
+        b.count = max( 0, min( class.auras[ aura ].max_stack or 1, stacks or 1 ) )
         b.v1 = value or 0
         if v2 == nil then b.v2 = 0
         else b.v2 = v2 end
@@ -1080,7 +1080,7 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         if not noPandemic then duration = min( 1.3 * duration, d.remains + duration ) end
 
         d.duration = duration
-        d.expires = state.query_time + d.duration
+        d.expires = state.query_time + duration
 
         d.lastCount = d.count or 0
         d.lastApplied = d.applied or 0
