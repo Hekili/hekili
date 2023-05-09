@@ -14,9 +14,9 @@ actions+=/call_action_list,name=tyrant,if=talent.summon_demonic_tyrant&cooldown.
 ## actions+=/invoke_external_buff,name=power_infusion,if=!talent.nether_portal&!talent.summon_demonic_tyrant|boss&time_to_die<25
 actions+=/implosion,if=boss&time_to_die<2*gcd
 actions+=/nether_portal,if=!talent.summon_demonic_tyrant&soul_shard>2|boss&time_to_die<30
-actions+=/hand_of_guldan,if=buff.nether_portal.up
 actions+=/call_action_list,name=items
 actions+=/call_action_list,name=ogcd,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)
+actions+=/hand_of_guldan,if=buff.nether_portal.up
 actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains_expected>cooldown
 actions+=/call_dreadstalkers,if=!talent.summon_demonic_tyrant|time_to_die<14
 actions+=/grimoire_felguard,if=!talent.summon_demonic_tyrant|boss&time_to_die<cooldown.summon_demonic_tyrant.remains_expected
@@ -36,9 +36,14 @@ actions+=/doom,cycle_targets=1,if=refreshable
 actions+=/soul_strike,if=soul_shard<5
 actions+=/shadow_bolt
 
-actions.items=use_item,name=timebreaching_talon,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)
-actions.items+=/use_items,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)
+actions.items+=/use_item,name=irideus_fragment,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)|boss&time_to_die<=21
+actions.items+=/use_item,name=timebreaching_talon,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)|boss&time_to_die<=21
+actions.items+=/use_item,name=spoils_of_neltharus,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)|boss&time_to_die<=21
 actions.items+=/use_item,name=voidmenders_shadowgem,if=!variable.shadow_timings|(variable.shadow_timings&(buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)))
+actions.items+=/use_item,name=erupting_spear_fragment,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)|time_to_die<=11
+actions.items+=/use_items,if=(buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal))&(!equipped.irideus_fragment&!equipped.timebreaching_talon&!equipped.spoils_of_neltharus&!equipped.erupting_spear_fragment&!equipped.voidmenders_shadowgem)
+actions.items+=/use_item,name=rotcrusted_voodoo_doll
+actions.items+=/use_item,name=beacon_to_the_beyond
 
 actions.ogcd=potion
 actions.ogcd+=/berserking
