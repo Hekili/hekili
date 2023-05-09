@@ -1746,4 +1746,17 @@ all:RegisterAbilities( {
         }
     },
 
+    -- Other slots.
+    djaruun_pillar_of_the_elder_flame = {
+        cast = 0,
+        cooldown = 150,
+        gcd = "off",
+
+        item = 202569,
+        toggle = "cooldowns",
+
+        handler = function()
+        end,
+    },
+
 } )
