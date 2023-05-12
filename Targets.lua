@@ -844,59 +844,106 @@ ns.eliminateUnit = function(id, force)
 end
 
 
-local dmgPool = {}
+do
+    local physical = {
+        [1] = 0,
+        [5] = 0,
+        [10] = 0
+    }
 
-local incomingDamage = {}
-local incomingHealing = {}
+    local magical = {
+        [1] = 0,
+        [5] = 0,
+        [10] = 0
+    }
 
-ns.storeDamage = function(time, damage, physical)
-    if damage and damage > 0 then
-        local entry = tremove( dmgPool, 1 ) or {}
+    local healing = {
+        [1] = 0,
+        [5] = 0,
+        [10] = 0
+    }
 
-        entry.t = time
-        entry.amount = damage
-        entry.physical = physical
+    ns.storeDamage = function( _, damage, isPhysical )
+        if damage and damage > 0 then
+            local db = isPhysical and physical or magical
 
-        insert( incomingDamage, entry )
-    end
-end
-ns.storeHealing = function(time, healing)
-    if healing and healing > 0 then
-        local entry = tremove( dmgPool, 1 ) or {}
+            db[ 1 ] = db[ 1 ] + damage
+            C_Timer.After( 1, function() db[ 1 ] = db[ 1 ] - damage end )
 
-        entry.t = time
-        entry.amount = healing
-        entry.phsical = nil
+            db[ 5 ] = db[ 5 ] + damage
+            C_Timer.After( 5, function() db[ 5 ] = db[ 5 ] - damage end )
 
-        insert( incomingHealing, entry )
-    end
-end
-
-ns.damageInLast = function(t, physical)
-    local dmg = 0
-    local start = GetTime() - min(t, 15)
-
-    for k, v in pairs(incomingDamage) do
-        if v.t > start and (physical == nil or v.physical == physical) then
-            dmg = dmg + v.amount
+            db[ 10 ] = db[ 10 ] + damage
+            C_Timer.After( 10, function() db[ 10 ] = db[ 10 ] - damage end )
         end
     end
 
-    return dmg
-end
+    ns.damageInLast = function( seconds, isPhysical )
+        local db = isPhysical and physical or magical
 
-function ns.healingInLast(t)
-    local heal = 0
-    local start = GetTime() - min(t, 15)
+        if db[ seconds ] then return db[ seconds ] end
 
-    for k, v in pairs(incomingHealing) do
-        if v.t > start then
-            heal = heal + v.amount
+        if seconds < 1 then
+            return db[ 1 ] * ( seconds / 1 )
+        end
+
+        if seconds < 5 then
+            return db[ 1 ] + ( db[ 5 ] - db[ 1 ] ) * ( seconds - 1 ) / 5
+        end
+
+        if seconds < 10 then
+            return db[ 5 ] + ( db[ 10 ] - db[ 5 ] ) * ( seconds - 5 ) / 10
+        end
+
+        return db[ 10 ] * seconds / 10
+    end
+
+    ns.storeHealing = function( _, amount )
+        if amount and amount > 0 then
+            healing[ 1 ] = healing[ 1 ] + amount
+            C_Timer.After( 1, function() healing[ 1 ] = healing[ 1 ] - amount end )
+
+            healing[ 5 ] = healing[ 5 ] + amount
+            C_Timer.After( 5, function() healing[ 5 ] = healing[ 5 ] - amount end )
+
+            healing[ 10 ] = healing[ 10 ] + amount
+            C_Timer.After( 10, function() healing[ 10 ] = healing[ 10 ] - amount end )
         end
     end
 
-    return heal
+    ns.healingInLast = function( seconds )
+        if healing[ seconds ] then return healing[ seconds ] end
+
+        if seconds < 1 then
+            return healing[ 1 ] * ( seconds / 1 )
+        end
+
+        if seconds < 5 then
+            return healing[ 1 ] + ( healing[ 5 ] - healing[ 1 ] ) * ( seconds - 1 ) / 5
+        end
+
+        if seconds < 10 then
+            return healing[ 5 ] + ( healing[ 10 ] - healing[ 5 ] ) * ( seconds - 5 ) / 10
+        end
+
+        return healing[ 10 ] * seconds / 10
+    end
+
+    ns.sanitizeDamageAndHealing = function()
+        physical[ 1 ] = max( 0, physical[ 1 ] )
+        physical[ 5 ] = max( 0, physical[ 5 ] )
+        physical[ 10 ] = max( 0, physical[ 10 ] )
+
+        magical[ 1 ] = max( 0, magical[ 1 ] )
+        magical[ 5 ] = max( 0, magical[ 5 ] )
+        magical[ 10 ] = max( 0, magical[ 10 ] )
+
+        healing[ 1 ] = max( 0, healing[ 1 ] )
+        healing[ 5 ] = max( 0, healing[ 5 ] )
+        healing[ 10 ] = max( 0, healing[ 10 ] )
+    end
 end
+
 
 -- Auditor should clean things up for us.
 do
@@ -944,18 +991,7 @@ do
             end
         end
 
-        local cutoff = now - 15
-        for i = #incomingDamage, 1, -1 do
-            local instance = incomingDamage[ i ]
-            if instance.t >= cutoff then break end
-            insert( dmgPool, remove( incomingDamage, i ) )
-        end
-
-        for i = #incomingHealing, 1, -1 do
-            local instance = incomingHealing[ i ]
-            if instance.t >= cutoff then break end
-            insert( dmgPool, remove( incomingHealing, i ) )
-        end
+        ns.sanitizeDamageAndHealing()
     end
 
     Hekili.AuditTimer = C_Timer.NewTicker( 1, ns.Audit )
