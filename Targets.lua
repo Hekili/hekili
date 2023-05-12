@@ -327,13 +327,18 @@ do
         local spec = state.spec.id
         spec = spec and rawget( Hekili.DB.profile.specs, spec )
 
+        local inRaid = IsInRaid()
+        local inGroup = GetNumGroupMembers() > 0
+
+        local FriendCheck = inRaid and UnitInRaid or UnitInParty
+
         if spec then
             local checkPets = showNPs and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
             local checkPlates = showNPs and spec.nameplates
 
             if checkPets or checkPlates then
                 for unit, guid in pairs( npGUIDs ) do
-                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local excluded = not UnitIsUnit( unit, "target" )
                         local npcid = guid:match( "(%d+)-%x-$" )
                         npcid = tonumber( npcid )
@@ -401,7 +406,7 @@ do
                     local guid = UnitGUID( unit )
 
                     if guid and counted[ guid ] == nil then
-                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                             local excluded = not UnitIsUnit( unit, "target" )
 
                             local npcid = guid:match( "(%d+)-%x-$" )
@@ -496,6 +501,11 @@ do
                             end
                         end
 
+                        if not excluded and inGroup and FriendCheck( unit ) then
+                            excluded = true
+                            if debugging then details = format( "%s\n    - Excluded by friend check.", details ) end
+                        end
+
                         if not excluded and checkPets then
                             excluded = not Hekili:TargetIsNearPet( unit )
 
@@ -541,7 +551,7 @@ do
 
         local targetGUID = UnitGUID( "target" )
         if targetGUID then
-            if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and UnitInPhase("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
+            if counted[ targetGUID ] == nil and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) and UnitInPhase( "target" ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( "target" ) ) then
                 count = count + 1
                 counted[ targetGUID ] = true
 
