@@ -1471,6 +1471,7 @@ spec:RegisterAbilities( {
     -- Implemented separately, unlike mind_flay_insanity, based on how it is used in the SimC APL.
     mind_spike_insanity = {
         id = 407466,
+        known = 73510,
         cast = 1.5,
         cooldown = 0,
         gcd = "spell",
@@ -1535,6 +1536,9 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "shadow",
 
+        toggle = function()
+            if not talent.mindbender.enabled then return "cooldowns" end
+        end,
         startsCombat = true,
         texture = function() return talent.mindbender.enabled and 136214 or 136199 end,
 
