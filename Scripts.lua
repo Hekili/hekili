@@ -1663,7 +1663,11 @@ function scripts:LoadScripts()
                                         local newfunc = script.Modifiers[ k ]
 
                                         cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
-                                        cInfo[ "_" .. k ] = "(" .. cInfo[ "_" .. k ] .. ") or ( " .. script.ModEmulates[k] .. " )"
+                                        if not cInfo[ "_" .. k ] then
+                                            cInfo[ "_" .. k ] = script.ModEmulates[ k ]
+                                        else
+                                            cInfo[ "_" .. k ] = "(" .. cInfo[ "_" .. k ]  .. ") or ( " .. script.ModEmulates[ k ] .. " )"
+                                        end
                                     else
                                         cInfo[ "_" .. k ] = script.ModEmulates[ k ]
                                         cInfo[ k ] = script.Modifiers[ k ]
