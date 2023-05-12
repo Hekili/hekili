@@ -1481,10 +1481,10 @@ spec:RegisterAbilities( {
 
         talent = "mind_spike",
         startsCombat = true,
-        buff = "mind_flay_insanity",
+        buff = "mind_spike_insanity",
 
         handler = function ()
-            removeStack( "mind_flay_insanity" )
+            removeStack( "mind_spike_insanity" )
 
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
