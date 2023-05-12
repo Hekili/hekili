@@ -1161,7 +1161,7 @@ spec:RegisterStateFunction( "shift", function( form )
     removeBuff( "stag_form" )
     applyBuff( form )
 
-    if affinities[ form ] and legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent[ affinities[ form ] ].enabled then
+    if affinities[ form ] and legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down then
         applyBuff( "heart_of_the_wild" )
         applyDebuff( "player", "oath_of_the_elder_druid_icd" )
     end
@@ -2527,7 +2527,7 @@ spec:RegisterAbilities( {
 
         ap_check = function() return check_for_ap_overcap( "starfire" ) end,
 
-        talent = function () return ( not state.spec.balance and "balance_affinity" or nil ) end,
+        talent = "starfire",
 
         handler = function ()
             if not buff.moonkin_form.up then unshift() end

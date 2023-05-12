@@ -1283,14 +1283,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "heart_of_the_wild" )
-
-            if talent.balance_affinity.enabled then
-                shift( "moonkin_form" )
-            elseif talent.feral_affinity.enabled then
-                shift( "cat_form" )
-            elseif talent.restoration_affinity.enabled then
-                unshift()
-            end
         end,
     },
 
