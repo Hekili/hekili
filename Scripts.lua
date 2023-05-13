@@ -1658,24 +1658,19 @@ function scripts:LoadScripts()
 
                             for k in pairs( channelModifiers ) do
                                 if script.Modifiers[ k ] then
-                                    if cInfo[ k ] then
+                                    local newfunc = script.Modifiers[ k ]
+
+                                    if newfunc and type( newfunc ) == "function" then
                                         local oldfunc = cInfo[ k ]
-                                        local newfunc = script.Modifiers[ k ]
 
                                         if oldfunc then
+                                            local oldstr = cInfo[ "_" .. k ]
                                             cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
+                                            cInfo[ "_" .. k ] = format( "( %s ) or ( %s )", oldstr or "nil", script.ModEmulates[ k ] )
                                         else
-                                            cInfo[ k ] = setfenv( function() return newfunc() end, state )
-                                        end
-
-                                        if not cInfo[ "_" .. k ] then
                                             cInfo[ "_" .. k ] = script.ModEmulates[ k ]
-                                        else
-                                            cInfo[ "_" .. k ] = "(" .. cInfo[ "_" .. k ]  .. ") or ( " .. script.ModEmulates[ k ] .. " )"
+                                            cInfo[ k ] = script.Modifiers[ k ]
                                         end
-                                    else
-                                        cInfo[ "_" .. k ] = script.ModEmulates[ k ]
-                                        cInfo[ k ] = script.Modifiers[ k ]
                                     end
                                 end
                             end
