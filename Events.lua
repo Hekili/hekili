@@ -1406,11 +1406,11 @@ do
 
         if data.isFullUpdate then
             wipe( instanceDB )
-            state[ unit ].updated = true
 
             ForEachAura( unit, "HELPFUL", nil, StoreInstanceInfo, true )
             ForEachAura( unit, "HARMFUL", nil, StoreInstanceInfo, true )
 
+            state[ unit ].updated = true
             Hekili:ForceUpdate( event )
             return
         end
@@ -1424,7 +1424,6 @@ do
                 instanceDB[ aura.auraInstanceID ] = ofConcern
 
                 if ofConcern then
-                    state[ unit ].updated = true
                     forceUpdateNeeded = true
                 end
             end
