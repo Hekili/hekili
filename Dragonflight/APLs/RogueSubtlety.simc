@@ -26,7 +26,7 @@ actions+=/run_action_list,name=stealthed,strict=1,if=stealthed.all
 # Used to define when to use stealth CDs or builders
 actions+=/variable,name=stealth_threshold,value=25+talent.vigor.enabled*20+talent.master_of_shadows.enabled*20+talent.shadow_focus.enabled*25+talent.alacrity.enabled*20+25*(spell_targets.shuriken_storm>=4)
 # Consider using a Stealth CD when reaching the energy threshold
-actions+=/call_action_list,name=stealth_cds,strict=1,if=energy.deficit<=variable.stealth_threshold
+actions+=/call_action_list,name=stealth_cds,if=energy.deficit<=variable.stealth_threshold
 # Finish at maximum or close to maximum combo point value or at 4+ against 4 targets (outside stealth)
 actions+=/call_action_list,name=finish,strict=1,if=variable.effective_combo_points>=cp_max_spend|combo_points.deficit<=1+buff.the_rotten.up|boss&fight_remains<=1&variable.effective_combo_points>=3|spell_targets.shuriken_storm>=(4-talent.seal_fate)&variable.effective_combo_points>=4
 # Use a builder when reaching the energy threshold
