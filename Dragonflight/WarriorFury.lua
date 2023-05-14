@@ -881,7 +881,7 @@ spec:RegisterAbilities( {
         bind = "bloodthirst",
 
         crit_pct_current = function()
-            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack )
+            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack )
         end,
 
         handler = function ()
@@ -950,7 +950,7 @@ spec:RegisterAbilities( {
         bind = "bloodbath",
 
         crit_pct_current = function()
-            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack )
+            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack )
         end,
 
         handler = function ()
