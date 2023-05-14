@@ -265,7 +265,6 @@ do
 
         if spellCallbacks == nil or next( spellCallbacks ) == nil then
             UnregisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
-            -- print( "Unregistered HandleSpellData" )
             isUnregistered = true
         end
     end
@@ -1396,13 +1395,14 @@ do
     local function StoreInstanceInfo( aura )
         local id = aura.spellId
         local model = class.auras[ id ]
-
         instanceDB[ aura.auraInstanceID ] = aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or ( model and model.shared )
     end
 
     RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, data )
         local isPlayer = ( unit == "player" )
         instanceDB = isPlayer and playerInstances or targetInstances
+
+        local forceUpdateNeeded = false
 
         if data.isFullUpdate then
             wipe( instanceDB )
@@ -1415,14 +1415,12 @@ do
             return
         end
 
-        local forceUpdateNeeded = false
-
         if data.addedAuras and #data.addedAuras > 0 then
             for _, aura in ipairs( data.addedAuras ) do
                 local id = aura.spellId
                 local model = class.auras[ id ]
 
-                local ofConcern = aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or ( model and model.shared )
+                local ofConcern = not aura or ( aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet ) or ( model and model.shared )
                 instanceDB[ aura.auraInstanceID ] = ofConcern
 
                 if ofConcern then
@@ -1439,8 +1437,8 @@ do
                 local id = aura and aura.spellId
                 local model = class.auras[ id ]
 
-                local ofConcern = aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or ( model and model.shared )
-                instanceDB[ aura.auraInstanceID ] = ofConcern
+                local ofConcern = not aura or ( aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet ) or ( model and model.shared )
+                instanceDB[ instance ] = ofConcern
 
                 if ofConcern then
                     forceUpdateNeeded = true
@@ -1450,9 +1448,7 @@ do
 
         if data.removedAuraInstanceIDs and #data.removedAuraInstanceIDs > 0 then
             for _, instance in ipairs( data.removedAuraInstanceIDs ) do
-                if instanceDB[ instance ] then
-                    forceUpdateNeeded = true
-                end
+                if instanceDB[ instance ] then forceUpdateNeeded = true end
                 instanceDB[ instance ] = nil
             end
         end
@@ -1464,6 +1460,14 @@ do
     end )
 
     RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
+        instanceDB = targetInstances
+        wipe( instanceDB )
+
+        if UnitExists( "target" ) then
+            ForEachAura( "target", "HELPFUL", nil, StoreInstanceInfo, true )
+            ForEachAura( "target", "HARMFUL", nil, StoreInstanceInfo, true )
+        end
+
         state.target.updated = true
         Hekili:ForceUpdate( event, true )
     end )
