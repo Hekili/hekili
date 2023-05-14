@@ -960,7 +960,7 @@ spec:RegisterAbilities( {
                 end
             end
             removeBuff( "sudden_death" )
-            if talent.executioners_precision.enabled then applyBuff ( "executioners_precision" ) end
+            if talent.executioners_precision.enabled then applyDebuff( "target", "executioners_precision", nil, min( 2, debuff.executioners_precision.stack + 1 ) ) end
             if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
         end,
