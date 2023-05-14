@@ -1385,57 +1385,81 @@ local autoAuraKey = setmetatable( {}, {
 
 
 do
-    local GetAuraInfoByInstanceID = C_UnitAuras.GetAuraInfoByInstanceID
+    local playerInstances = {}
+    local targetInstances = {}
+
+    local instanceDB
+
+    local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+    local ForEachAura = AuraUtil.ForEachAura
+
+    local function StoreInstanceInfo( aura )
+        local id = aura.spellId
+        local model = class.auras[ id ]
+
+        instanceDB[ aura.auraInstanceID ] = aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or ( model and model.shared )
+    end
 
     RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, data )
+        local isPlayer = ( unit == "player" )
+        instanceDB = isPlayer and playerInstances or targetInstances
 
         if data.isFullUpdate then
+            wipe( instanceDB )
             state[ unit ].updated = true
+
+            ForEachAura( unit, "HELPFUL", nil, StoreInstanceInfo, true )
+            ForEachAura( unit, "HARMFUL", nil, StoreInstanceInfo, true )
+
             Hekili:ForceUpdate( event )
             return
         end
 
-        if data.addedAuras then
+        local forceUpdateNeeded = false
+
+        if data.addedAuras and #data.addedAuras > 0 then
             for _, aura in ipairs( data.addedAuras ) do
                 local id = aura.spellId
                 local model = class.auras[ id ]
 
-                if model and ( model.shared or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or aura.isBossAura ) then
+                local ofConcern = aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or ( model and model.shared )
+                instanceDB[ aura.auraInstanceID ] = ofConcern
+
+                if ofConcern then
                     state[ unit ].updated = true
-                    Hekili:ForceUpdate( event )
-                    return
+                    forceUpdateNeeded = true
                 end
             end
         end
 
-        if data.updatedAuras then
-            for _, instance in ipairs( data.updatedAuras ) do
-                local aura = GetAuraInfoByInstanceID( unit, instance )
+        if data.updatedAuraInstanceIDs and #data.updatedAuraInstanceIDs > 0 then
+            for _, instance in ipairs( data.updatedAuraInstanceIDs ) do
+                local aura = GetAuraDataByAuraInstanceID( unit, instance )
 
                 local id = aura and aura.spellId
                 local model = class.auras[ id ]
 
-                if model and ( model.shared or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or aura.isBossAura ) then
-                    state[ unit ].updated = true
-                    Hekili:ForceUpdate( event )
-                    return
+                local ofConcern = aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or ( model and model.shared )
+                instanceDB[ aura.auraInstanceID ] = ofConcern
+
+                if ofConcern then
+                    forceUpdateNeeded = true
                 end
             end
         end
 
-        if data.removedAuras then
-            for _, instance in ipairs( data.removedAuras ) do
-                local aura = GetAuraInfoByInstanceID( unit, instance )
-
-                local id = aura and aura.spellId
-                local model = class.auras[ id ]
-
-                if model and ( model.shared or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or aura.isBossAura ) then
-                    state[ unit ].updated = true
-                    Hekili:ForceUpdate( event )
-                    return
+        if data.removedAuraInstanceIDs and #data.removedAuraInstanceIDs > 0 then
+            for _, instance in ipairs( data.removedAuraInstanceIDs ) do
+                if instanceDB[ instance ] then
+                    forceUpdateNeeded = true
                 end
+                instanceDB[ instance ] = nil
             end
+        end
+
+        if forceUpdateNeeded then
+            state[ unit ].updated = true
+            Hekili:ForceUpdate( event )
         end
     end )
 
