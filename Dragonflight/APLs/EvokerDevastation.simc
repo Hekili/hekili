@@ -57,7 +57,7 @@ actions.aoe+=/firestorm
 # Pyre logic with volatility.  Pyre 4T+  Pyre on 3T if playing CB and neither EB or blue buff is up  Pyre on 3T if not playing CB aslong as both EB and blue buff isn't up at the same time.  Pyre with 15 stacks of CB  Pyre with raging debuff active
 actions.aoe+=/pyre,if=talent.volatility&(active_enemies>=4|(talent.charged_blast&!buff.essence_burst.up&!buff.iridescence_blue.up)|(!talent.charged_blast&(!buff.essence_burst.up|!buff.iridescence_blue.up))|(buff.charged_blast.stack>=15)|(talent.raging_inferno&debuff.in_firestorm.up))
 # Pyre logic without volatility.  Without Vola use pyre if raging debuff is active, or if on 3T with 15 stacks of CB, or if 4T+
-actions.aoe+=/pyre,if=(talent.raging_inferno&debuff.in_firestorm.up)|(active_enemies==3&buff.charged_blast.stack>=15)|active_enemies>=4
+actions.aoe+=/pyre,if=(talent.raging_inferno&debuff.in_firestorm.up)|(active_enemies=3&buff.charged_blast.stack>=15)|active_enemies>=4
 # Cast LF with leaping flames if: not playing burnout, burnout is up, more than 4 enemies, or scarlet adaptation is up.
 actions.aoe+=/living_flame,if=(!talent.burnout|buff.burnout.up|active_enemies>=4|buff.scarlet_adaptation.up)&buff.leaping_flames.up&!buff.essence_burst.up&essence<essence.max-1
 # Use staff on 5T or below
@@ -70,7 +70,7 @@ actions.aoe+=/living_flame,if=talent.snapfire&buff.burnout.up
 actions.aoe+=/azure_strike
 
 # Eternity Surge, use rank most applicable to targets.
-actions.es+=/eternity_surge,empower_to=1,if=active_enemies<=1+talent.eternitys_span|buff.dragonrage.remains<1.75*spell_haste&buff.dragonrage.remains>=1*spell_haste|buff.dragonrage.up&(active_enemies==5|!talent.eternitys_span&active_enemies>=6|talent.eternitys_span&active_enemies>=8)
+actions.es+=/eternity_surge,empower_to=1,if=active_enemies<=1+talent.eternitys_span|buff.dragonrage.remains<1.75*spell_haste&buff.dragonrage.remains>=1*spell_haste|buff.dragonrage.up&(active_enemies=5|!talent.eternitys_span&active_enemies>=6|talent.eternitys_span&active_enemies>=8)
 actions.es+=/eternity_surge,empower_to=2,if=active_enemies<=2+2*talent.eternitys_span|buff.dragonrage.remains<2.5*spell_haste&buff.dragonrage.remains>=1.75*spell_haste
 actions.es+=/eternity_surge,empower_to=3,if=active_enemies<=3+3*talent.eternitys_span|!talent.font_of_magic|buff.dragonrage.remains<=3.25*spell_haste&buff.dragonrage.remains>=2.5*spell_haste
 actions.es+=/eternity_surge,empower_to=4
@@ -106,7 +106,7 @@ actions.st+=/azure_strike,if=buff.dragonrage.up&buff.dragonrage.remains<(buff.es
 # Spend burnout procs without overcapping resources
 actions.st+=/living_flame,if=buff.burnout.up&(buff.leaping_flames.up&!buff.essence_burst.up|!buff.leaping_flames.up&buff.essence_burst.stack<buff.essence_burst.max_stack)&essence.deficit>=2
 # Spend pyre if raging inferno debuff is active and you have 20 stacks of CB on 2T
-actions.st+=/pyre,if=debuff.in_firestorm.up&talent.raging_inferno&buff.charged_blast.stack==20&active_enemies>=2
+actions.st+=/pyre,if=debuff.in_firestorm.up&talent.raging_inferno&buff.charged_blast.stack=20&active_enemies>=2
 # Dis logic  Early Chain in DR after third tick if both lust & pi isn't up.  Clip after in DR after third tick for more important buttions, atm that is: empowers, burnout & SS. burnout and SS you only clip for if both lust & pi isn't up.
 actions.st+=/disintegrate,chain=1,early_chain_if=evoker.use_early_chaining&ticks>=2&buff.dragonrage.up&!(buff.power_infusion.up&buff.bloodlust.up)&(raid_event.movement.in>2|buff.hover.up),interrupt_if=!(time<9&cooldown.eternity_surge.up&active_enemies<=2&!set_bonus.tier30_4pc|active_enemies>2)&evoker.use_clipping&buff.dragonrage.up&ticks>=2&(!(buff.power_infusion.up&buff.bloodlust.up)|cooldown.fire_breath.up|cooldown.eternity_surge.up)&(raid_event.movement.in>2|buff.hover.up),if=set_bonus.tier30_4pc&raid_event.movement.in>2|buff.hover.up
 # Dis logic for T29, keeping for legacy support - Early Chain in DR 3rd tick. Clip after third tick in dragonrage for more important buttons. Will only cast if >2s till movement
@@ -120,7 +120,7 @@ actions.st+=/deep_breath,if=!buff.dragonrage.up&talent.imminent_destruction&!deb
 ## actions.st+=/verdant_embrace,if=talent.ancient_flame&talent.scarlet_adaptation&!buff.dragonrage.up&!buff.ancient_flame.up
 ## actions.st+=/emerald_blossom,if=talent.ancient_flame&talent.scarlet_adaptation&!buff.dragonrage.up&!buff.ancient_flame.up
 # Cast LF outside of DR, or with red buff/scarlet adaption up
-actions.st+=/living_flame,if=!buff.dragonrage.up|(buff.iridescence_red.remains>execute_time|buff.scarlet_adaptation.up|buff.iridescence_blue.up)&active_enemies==1
+actions.st+=/living_flame,if=!buff.dragonrage.up|(buff.iridescence_red.remains>execute_time|buff.scarlet_adaptation.up|buff.iridescence_blue.up)&active_enemies=1
 # Fallback for movement
 actions.st+=/azure_strike
 
