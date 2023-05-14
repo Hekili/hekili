@@ -632,7 +632,6 @@ do
     end
 
     local function buildUseItemsList()
-        print( "Building Use Items List." )
         local itemList = class.itemPack.lists.items
         wipe( itemList )
 
