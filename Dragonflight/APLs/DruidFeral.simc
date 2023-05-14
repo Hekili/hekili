@@ -1,6 +1,6 @@
 actions.precombat+=/mark_of_the_wild,if=buff.prowl.down
 actions.precombat+=/use_item,name=algethar_puzzle_box
-actions.precombat+=/heart_of_the_wild
+actions.precombat+=/heart_of_the_wild,if=buff.any_form.up&buff.cat_form.down
 actions.precombat+=/prowl
 actions.precombat+=/cat_form
 
