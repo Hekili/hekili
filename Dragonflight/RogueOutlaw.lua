@@ -1276,7 +1276,7 @@ spec:RegisterAbilities( {
         cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
 
         handler = function ()
-            gain( action.shiv.cp_gain, "combo_point" )
+            gain( action.shiv.cp_gain, "combo_points" )
             removeDebuff( "target", "dispellable_enrage" )
         end,
     },
