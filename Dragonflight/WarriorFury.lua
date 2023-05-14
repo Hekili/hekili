@@ -881,12 +881,13 @@ spec:RegisterAbilities( {
         bind = "bloodthirst",
 
         crit_pct_current = function()
-            return stat.crit + ( 15 * buff.bloodcraze.stack )
+            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack )
         end,
 
         handler = function ()
             removeStack( "whirlwind" )
             removeStack( "reckless_abandon" )
+            removeBuff( "merciless_assault" )
 
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
 
@@ -908,8 +909,6 @@ spec:RegisterAbilities( {
                 if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
                 addStack( "cadence_of_fujieda" )
             end
-
-            if set_bonus.tier30_4pc > 0 then removeBuff( "merciless_assault" ) end
         end,
     },
 
@@ -951,11 +950,13 @@ spec:RegisterAbilities( {
         bind = "bloodbath",
 
         crit_pct_current = function()
-            return stat.crit + ( 15 * buff.bloodcraze.stack )
+            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack )
         end,
 
         handler = function ()
             removeStack( "whirlwind" )
+            removeBuff( "merciless_assault" )
+
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
 
             if talent.bloodcraze.enabled then
@@ -976,8 +977,6 @@ spec:RegisterAbilities( {
                 if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
                 addStack( "cadence_of_fujieda" )
             end
-
-            if set_bonus.tier30_4pc > 0 then removeBuff( "merciless_assault" ) end
         end,
 
         auras = {
