@@ -207,22 +207,26 @@ local enemyExclusions = {
 local FindExclusionAuraByID
 
 RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( event, unit )
-    if UnitIsFriend( "player", unit ) then return end
-
     local id = UnitGUID( unit )
-    npGUIDs[unit] = id
-    npUnits[id]   = unit
+
+    if UnitIsFriend( "player", unit ) then
+        npGUIDs[ unit ] = nil
+        npUnits[ id ] = nil
+        return
+    end
+
+    npGUIDs[ unit ] = id
+    npUnits[ id ]   = unit
 end )
 
 RegisterEvent( "NAME_PLATE_UNIT_REMOVED", function( event, unit )
-    if UnitIsFriend( "player", unit ) then return end
+    local storedGUID = npGUIDs[ unit ]
+    local id = UnitGUID( unit )
 
-    local id = npGUIDs[ unit ] or UnitGUID( unit )
-    npGUIDs[unit] = nil
+    npGUIDs[ unit ] = nil
 
-    if npUnits[id] and npUnits[id] == unit then
-        npUnits[id] = nil
-    end
+    if npUnits[ id ] and npUnits[ id ] == unit then npUnits[ id ] = nil end
+    if npUnits[ storedGUID ] and npUnits[ storedGUID ] == unit then npUnits[ storedGUID ] = nil end
 end )
 
 RegisterEvent( "UNIT_FLAGS", function( event, unit )
@@ -232,13 +236,13 @@ RegisterEvent( "UNIT_FLAGS", function( event, unit )
         local id = UnitGUID( unit )
         ns.eliminateUnit( id, true )
 
-        npGUIDs[unit] = nil
-        npUnits[id]   = nil
+        npGUIDs[ unit ] = nil
+        npUnits[ id ]   = nil
     end
 end )
 
 
-local RC = LibStub("LibRangeCheck-2.0")
+local RC = LibStub( "LibRangeCheck-2.0" )
 
 local lastCount = 1
 local lastStationary = 1
@@ -250,13 +254,15 @@ local guidRanges = {}
 local chromieTime = false
 
 do
+    local IsPlayerInChromieTime = C_PlayerInfo.IsPlayerInChromieTime
+
     local function UpdateChromieTime()
-        chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
+        chromieTime = IsPlayerInChromieTime()
     end
 
     local function ChromieCheck( self, event, login, reload )
         if event ~= "PLAYER_ENTERING_WORLD" or login or reload then
-            chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
+            chromieTime = IsPlayerInChromieTime()
             C_Timer.After( 2, UpdateChromieTime )
         end
     end
@@ -265,6 +271,7 @@ do
         RegisterEvent( "CHROMIE_TIME_OPEN", ChromieCheck )
         RegisterEvent( "CHROMIE_TIME_CLOSE", ChromieCheck )
     end
+
     RegisterEvent( "PLAYER_ENTERING_WORLD", ChromieCheck )
 end
 
