@@ -1386,20 +1386,56 @@ local autoAuraKey = setmetatable( {}, {
 
 
 do
-    local ScrapeUnitAuras = Hekili.ScrapeUnitAuras
-    local StoreMatchingAuras = Hekili.StoreMatchingAuras
+    local GetAuraInfoByInstanceID = C_UnitAuras.GetAuraInfoByInstanceID
 
     RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, data )
-        -- Already planning to update at next reset.
-        if state[ unit ].updated then return end
 
-        local isPlayer = ( unit == "player" )
+        if data.isFullUpdate then
+            state[ unit ].updated = true
+            Hekili:ForceUpdate( event )
+            return
+        end
 
-        for _, info in ipairs( data ) do
-            if class.auras[ info.spellId ] and ( isPlayer or info.isFromPlayerOrPlayerPet ) then
-                state[ unit ].updated = true
-                Hekili:ForceUpdate( event )
-                return
+        if data.addedAuras then
+            for _, aura in ipairs( data.addedAuras ) do
+                local id = aura.spellId
+                local model = class.auras[ id ]
+
+                if model and ( model.shared or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or aura.isBossAura ) then
+                    state[ unit ].updated = true
+                    Hekili:ForceUpdate( event )
+                    return
+                end
+            end
+        end
+
+        if data.updatedAuras then
+            for _, instance in ipairs( data.updatedAuras ) do
+                local aura = GetAuraInfoByInstanceID( unit, instance )
+
+                local id = aura and aura.spellId
+                local model = class.auras[ id ]
+
+                if model and ( model.shared or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or aura.isBossAura ) then
+                    state[ unit ].updated = true
+                    Hekili:ForceUpdate( event )
+                    return
+                end
+            end
+        end
+
+        if data.removedAuras then
+            for _, instance in ipairs( data.removedAuras ) do
+                local aura = GetAuraInfoByInstanceID( unit, instance )
+
+                local id = aura and aura.spellId
+                local model = class.auras[ id ]
+
+                if model and ( model.shared or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or aura.isBossAura ) then
+                    state[ unit ].updated = true
+                    Hekili:ForceUpdate( event )
+                    return
+                end
             end
         end
     end )
