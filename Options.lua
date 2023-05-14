@@ -9682,7 +9682,8 @@ do
 
                     profile.toggles[ tab ].value = to
 
-                    Hekili:ForceUpdate( "HEKILI_TOGGLE", tab )
+                    if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_TOGGLE", tab, to ) end
+                    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
                     return
                 end
 
@@ -9712,6 +9713,7 @@ do
                     if args[3] then
                         Hekili:SetMode( args[3] )
                         if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", args[3] ) end
+                        if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
                     else
                         Hekili:FireToggle( "mode" )
                     end
