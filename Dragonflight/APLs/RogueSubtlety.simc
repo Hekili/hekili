@@ -8,6 +8,8 @@ actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 actions+=/stealth
 # Interrupt on cooldown to allow simming interactions with that
 actions+=/kick
+# Dispel Enrages with Shiv.
+actions+=/shiv,if=debuff.dispellable_enrage.up
 # Used to determine whether cooldowns wait for SnD based on targets.
 actions+=/variable,name=snd_condition,value=buff.slice_and_dice.up|spell_targets.shuriken_storm>=cp_max_spend
 # Check to see if the next CP (in the event of a ShT proc) is Animacharged

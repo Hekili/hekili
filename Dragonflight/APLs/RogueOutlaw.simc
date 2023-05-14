@@ -11,6 +11,8 @@ actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable&buff.grand
 actions+=/stealth
 # Interrupt on cooldown to allow simming interactions with that
 actions+=/kick
+# Shiv to dispel Enrage effects.
+actions+=/shiv,if=debuff.dispellable_enrage.up
 # Checks if we are in an appropriate Stealth state for triggering the Count the Odds bonus
 actions+=/variable,name=stealthed_cto,value=talent.count_the_odds&(stealthed.basic|buff.shadowmeld.up|buff.shadow_dance.up)
 # Roll the Bones Reroll Conditions
