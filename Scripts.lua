@@ -1549,7 +1549,7 @@ end
 local scriptsLoaded = false
 
 local function scriptLoader()
-    if not scriptsLoaded then scripts:LoadScripts() end
+    if not Hekili.LoadingScripts and not scriptsLoaded then scripts:LoadScripts() end
 end
 
 function Hekili:ScriptsLoaded()

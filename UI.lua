@@ -2283,10 +2283,12 @@ do
 
                 self.activeThreadFrames = 0
 
-                if Hekili:GetActiveSpecOption( "throttleTime" ) then
-                    Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" )
+                if not self.firstThreadCompleted then
+                    Hekili.maxFrameTime = 100
+                elseif Hekili:GetActiveSpecOption( "throttleTime" ) then
+                    Hekili.maxFrameTime = Hekili:GetActiveSpecOption( "maxTime" ) or 15
                 else
-                    Hekili.maxFrameTime = min( 50, 800 / GetFramerate() )
+                    Hekili.maxFrameTime = 15
                 end
 
                 thread = self.activeThread

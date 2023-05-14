@@ -2049,7 +2049,7 @@ function Hekili.Update( initial )
             dispName = nextDisplay
             state.display = dispName
 
-            if round < 5 then Hekili:Yield( "Recommendations finished for " .. lastDisplay .. ".", nil, Hekili.maxFrameTime == 0 ) end
+            if round < 5 then Hekili:Yield( "Recommendations finished for " .. lastDisplay .. "." ) end
         else
             if UI.RecommendationsStr then
                 UI.RecommendationsStr = nil
