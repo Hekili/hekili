@@ -307,6 +307,7 @@ RegisterEvent( "DISPLAY_SIZE_CHANGED", function()
 end )
 
 
+
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
     if not Hekili.PLAYER_ENTERING_WORLD and ( login or reload ) then
         Hekili.PLAYER_ENTERING_WORLD = true
@@ -631,6 +632,7 @@ do
     end
 
     local function buildUseItemsList()
+        print( "Building Use Items List." )
         local itemList = class.itemPack.lists.items
         wipe( itemList )
 
@@ -1387,51 +1389,19 @@ do
     local ScrapeUnitAuras = Hekili.ScrapeUnitAuras
     local StoreMatchingAuras = Hekili.StoreMatchingAuras
 
-    RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, full, data )
-        if full then
-            ScrapeUnitAuras( unit, false, event )
-            -- Hekili:ForceUpdate( event )
-            return
-        end
-
+    RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, data )
         -- Already planning to update at next reset.
         if state[ unit ].updated then return end
 
-        if unit == "player" then
-            state.player.updated = true
-            Hekili:ForceUpdate( event )
-            return
-        end
-
-        -- local harmful, helpful
+        local isPlayer = ( unit == "player" )
 
         for _, info in ipairs( data ) do
-            if info.isFromPlayerOrPlayerPet then
-                local id = info.spellId
-                local aura = class.auras[ id ]
-
-                if aura then
-                    state[ unit ].updated = true
-                    Hekili:ForceUpdate( event )
-                    return
-
-                    --[[
-                    if info.isHelpful then
-                        helpful = helpful or { count = 0 }
-                        helpful[ id ] = aura.key
-                        helpful.count = helpful.count + 1
-                    else
-                        harmful = harmful or { count = 0 }
-                        harmful[ id ] = aura.key
-                        harmful.count = harmful.count + 1
-                    end ]]
-                end
+            if class.auras[ info.spellId ] and ( isPlayer or info.isFromPlayerOrPlayerPet ) then
+                state[ unit ].updated = true
+                Hekili:ForceUpdate( event )
+                return
             end
         end
-
-        --[[
-        if helpful then StoreMatchingAuras( unit, helpful, "HELPFUL", select( 2, UnitAuraSlots( unit, "HELPFUL" ) ) ) end
-        if harmful then StoreMatchingAuras( unit, harmful, "HARMFUL", select( 2, UnitAuraSlots( unit, "HARMFUL" ) ) ) end ]]
     end )
 
     RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
