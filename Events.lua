@@ -1616,6 +1616,8 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
     local petSource = ( UnitExists( "pet" ) and sourceGUID == UnitGUID( "pet" ) )
     local amTarget  = ( destGUID   == state.GUID )
 
+    if not InCombatLockdown() and not ( amSource or petSource or amTarget ) then return end
+
     if subtype == 'SPELL_SUMMON' and amSource then
         -- Guardian of Azeroth check.
         -- ID is 152396.
