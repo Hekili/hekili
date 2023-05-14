@@ -887,18 +887,20 @@ spec:RegisterAbilities( {
         handler = function ()
             removeStack( "whirlwind" )
             removeStack( "reckless_abandon" )
-            removeBuff( "merciless_assault" )
 
-            gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
-
-            if talent.bloodcraze.enabled then
-                if action.bloodthirst.crit_pct_current >= 100 then removeBuff( "bloodcraze" )
-                else addStack( "bloodcraze" ) end
-            end
             if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
             end
+
+            removeBuff( "merciless_assault" )
+            if talent.bloodcraze.enabled then
+                if action.bloodthirst.crit_pct_current >= 100 then removeBuff( "bloodcraze" )
+                else addStack( "bloodcraze" ) end
+            end
+
+            gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
+
             if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
                 applyBuff( "enrage" )
                 applyDebuff( "target", "hit_by_fresh_meat" )
@@ -955,22 +957,25 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "whirlwind" )
+
+            if talent.cold_steel_hot_blood.enabled and action.bloodthirst.crit_pct_current >= 100 then
+                applyDebuff( "target", "gushing_wound" )
+                gain( 4, "rage" )
+            end
+
             removeBuff( "merciless_assault" )
-
-            gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
-
             if talent.bloodcraze.enabled then
                 if action.bloodthirst.crit_pct_current >= 100 then removeBuff( "bloodcraze" )
                 else addStack( "bloodcraze" ) end
             end
-            if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
-                applyDebuff( "target", "gushing_wound" )
-                gain( 4, "rage" )
-            end
+
+            gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
+
             if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
                 applyBuff( "enrage" )
                 applyDebuff( "target", "hit_by_fresh_meat" )
             end
+
             if talent.invigorating_fury.enabled then gain ( health.max * 0.2 , "health" ) end
 
             if legendary.cadence_of_fujieda.enabled then
