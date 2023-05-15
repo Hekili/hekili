@@ -30,10 +30,14 @@ function HekiliPopupDropdownMixin:OnShow()
         highlight:SetBlendMode( 'BLEND' )
         highlight:SetDrawLayer( 'BACKGROUND' )
         highlight:SetVertexColor( r, g, b )
+
+        self.Slider.backdrop:SetFrameLevel( self:GetFrameLevel() + 1 )
     end
 
-    self.Slider.backdrop:SetFrameLevel( self:GetFrameLevel() + 1 )
     self.Slider:SetFrameLevel( self:GetFrameLevel() + 2 )
+
+    self:ClearAllPoints()
+    self:SetAllPoints( self.owningButton )
 end
 
 function HekiliPopupDropdownMixin:OnHide()
