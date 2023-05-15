@@ -215,44 +215,48 @@ end )
 
 
 local stealth = {
-    rogue            = { "stealth"         , "vanish", "shadow_dance", "subterfuge"                              },
-    mantle           = { "stealth"         , "vanish"                                                            },
-    sepsis           = { "sepsis_buff"                                                                           },
-    improved_garrote = { "improved_garrote"                                                                      },
-    all              = { "stealth"         , "vanish", "shadow_dance", "subterfuge", "shadowmeld", "sepsis_buff" }
+    normal = { "stealth" },
+    vanish = { "vanish" },
+    shadowmeld = { "shadowmeld" },
+    subterfuge = { "subterfuge" },
+    shadow_dance = { "shadow_dance" },
+    sepsis = { "sepsis_buff" },
+    improved_garrote = { "improved_garrote", "sepsis_buff" },
+
+    basic = { "stealth", "vanish" },
+    mantle = { "stealth", "vanish" },
+    rogue = { "stealth", "vanish", "subterfuge", "shadow_dance" },
+    all = { "stealth", "vanish", "shadowmeld", "subterfuge", "shadow_dance", "sepsis_buff", "improved_garrote" },
 }
+
 
 spec:RegisterStateTable( "stealthed", setmetatable( {}, {
     __index = function( t, k )
-        if k == "rogue" then
-            return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
-        elseif k == "rogue_remains" then
-            return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains )
+        local kRemains = k == "remains" and "all" or k:match( "^(.+)_remains$" )
 
-        elseif k == "mantle" or k == "basic" then
-            return buff.stealth.up or buff.vanish.up
-        elseif k == "mantle_remains" or k == "basic_remains" then
-            return max( buff.stealth.remains, buff.vanish.remains )
+        if kRemains then
+            local category = stealth[ kRemains ]
+            if not category then return 0 end
 
-        elseif k == "sepsis" then
-            return buff.sepsis_buff.up
-        elseif k == "sepsis_remains" then
-            return buff.sepsis_buff.remains
+            local remains = 0
+            for _, aura in ipairs( category ) do
+                remains = max( remains, buff[ aura ].remains )
+            end
 
-        elseif k == "improved_garrote" then
-            return buff.improved_garrote_buff.up
-        elseif k == "improved_garrote_remains" then
-            return buff.improved_garrote_buff.remains
+            return remains
+        end
 
-        elseif k == "all" then
-            return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up or buff.sepsis_buff.up
-        elseif k == "remains" or k == "all_remains" then
-            return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.shadowmeld.remains, buff.sepsis_buff.remains )
+        local category = stealth[ k ]
+        if not category then return false end
+
+        for _, aura in ipairs( category ) do
+            if buff[ aura ].up then return true end
         end
 
         return false
-    end
+    end,
 } ) )
+
 
 spec:RegisterStateExpr( "master_assassin_remains", function ()
     if not ( talent.master_assassin.enabled or legendary.mark_of_the_master_assassin.enabled ) then return 0 end

@@ -640,39 +640,6 @@ spec:RegisterStateExpr( "cp_max_spend", function ()
 end )
 
 
-spec:RegisterStateTable( "stealthed", setmetatable( {}, {
-    __index = function( t, k )
-        if k == "basic" then
-            return buff.stealth.up or buff.vanish.up
-        elseif k == "basic_remains" then
-            return max( buff.stealth.remains, buff.vanish.remains )
-
-        elseif k == "rogue" then
-            return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
-        elseif k == "rogue_remains" then
-            return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains )
-
-        elseif k == "mantle" then
-            return buff.stealth.up or buff.vanish.up
-        elseif k == "mantle_remains" then
-            return max( buff.stealth.remains, buff.vanish.remains )
-
-        elseif k == "sepsis" then
-            return buff.sepsis_buff.up
-        elseif k == "sepsis_remains" then
-            return buff.sepsis_buff.remains
-
-        elseif k == "all" then
-            return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up or buff.sepsis_buff.up
-        elseif k == "remains" or k == "all_remains" then
-            return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.shadowmeld.remains, buff.sepsis_buff.remains )
-        end
-
-        return false
-    end
-} ) )
-
-
 spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, unit, resource )
     if resource == "COMBO_POINTS" then
         Hekili:ForceUpdate( event, true )
