@@ -39,7 +39,7 @@ actions+=/use_item,name=iceblood_deathsnare,if=!variable.steroid_trinket_equippe
 ## actions+=/cancel_action,if=action.evocation.channeling&mana.pct>=95&!talent.siphon_storm
 ## actions+=/cancel_action,if=action.evocation.channeling&(mana.pct>fight_remains*4)&!(fight_remains>10&cooldown.arcane_surge.remains<1)
 actions+=/arcane_barrage,if=fight_remains<2
-actions+=/evocation,if=buff.rune_of_power.down&buff.arcane_surge.down&debuff.touch_of_the_magi.down&((mana.pct<10&((cooldown.touch_of_the_magi.remains<10&set_bonus.tier30_4pc)|cooldown.touch_of_the_magi.remains<25))|((cooldown.touch_of_the_magi.remains<8&set_bonus.tier30_4pc)|cooldown.touch_of_the_magi.remains<20))&(mana.pct<fight_remains*4)
+actions+=/evocation,if=buff.rune_of_power.down&buff.arcane_surge.down&debuff.touch_of_the_magi.down&((mana.pct<10&((cooldown.touch_of_the_magi.remains<10&set_bonus.tier30_4pc)|cooldown.touch_of_the_magi.remains<25))|((cooldown.touch_of_the_magi.remains<8&set_bonus.tier30_4pc)|cooldown.touch_of_the_magi.remains<20))&(boss&mana.pct<fight_remains*4)
 actions+=/conjure_mana_gem,if=buff.rune_of_power.down&debuff.touch_of_the_magi.down&buff.arcane_surge.down&cooldown.arcane_surge.remains<fight_remains&!mana_gem_charges&buff.arcane_overload.down
 actions+=/use_mana_gem,if=talent.cascading_power&buff.clearcasting.stack<2&buff.arcane_surge.up
 actions+=/use_mana_gem,if=!talent.cascading_power&prev_gcd.1.arcane_surge
@@ -98,7 +98,7 @@ actions.rop_phase+=/arcane_blast,if=prev_gcd.1.arcane_blast&prev_gcd.2.rune_of_p
 actions.rop_phase+=/arcane_blast,if=prev_gcd.1.arcane_blast&prev_gcd.3.rune_of_power
 actions.rop_phase+=/arcane_surge
 actions.rop_phase+=/arcane_blast,if=prev_gcd.1.arcane_blast&prev_gcd.4.rune_of_power
-actions.rop_phase+=/nether_tempest,if=talent.arcane_echo,line_cd=15
+actions.rop_phase+=/nether_tempest,if=talent.arcane_echo&active_dot.nether_tempest=0
 actions.rop_phase+=/meteor
 actions.rop_phase+=/arcane_barrage
 actions.rop_phase+=/touch_of_the_magi,use_off_gcd=1,if=prev_gcd.1.arcane_barrage
@@ -126,7 +126,7 @@ actions.spark_phase+=/arcane_missiles,if=talent.arcane_harmony&buff.arcane_harmo
 actions.spark_phase+=/radiant_spark
 actions.spark_phase+=/use_item,name=timebreaching_talon,if=cooldown.arcane_surge.remains<=(gcd.max*3)
 ## actions.spark_phase+=/invoke_external_buff,name=power_infusion,if=prev_gcd.1.radiant_spark&cooldown.arcane_surge.remains<=(gcd.max*3)
-actions.spark_phase+=/nether_tempest,if=(prev_gcd.4.radiant_spark&cooldown.arcane_surge.remains<=execute_time)|prev_gcd.5.radiant_spark,line_cd=15
+actions.spark_phase+=/nether_tempest,if=active_dot.nether_tempest=0&((prev_gcd.4.radiant_spark&cooldown.arcane_surge.remains<=execute_time)|prev_gcd.5.radiant_spark)
 actions.spark_phase+=/arcane_surge,if=(!talent.nether_tempest&prev_gcd.4.radiant_spark)|prev_gcd.1.nether_tempest
 actions.spark_phase+=/meteor,if=(talent.nether_tempest&prev_gcd.6.radiant_spark)|(!talent.nether_tempest&prev_gcd.5.radiant_spark)
 actions.spark_phase+=/arcane_blast,if=cast_time>=gcd&execute_time<debuff.radiant_spark_vulnerability.remains&(!talent.arcane_bombardment|target.health.pct>=35)&(talent.nether_tempest&prev_gcd.6.radiant_spark|!talent.nether_tempest&prev_gcd.5.radiant_spark)&!talent.meteor
@@ -166,7 +166,7 @@ actions.t30_burst_phase+=/arcane_blast
 
 ## actions.t30_mini+=/variable,name=conserve_mana,op=set,if=debuff.touch_of_the_magi.remains>9,value=1-variable.conserve_mana
 actions.t30_mini+=/radiant_spark
-actions.t30_mini+=/nether_tempest,if=prev_gcd.1.radiant_spark|prev_gcd.1.shifting_power,line_cd=15
+actions.t30_mini+=/nether_tempest,if=active_dot.nether_tempest=0&(prev_gcd.1.radiant_spark|prev_gcd.1.shifting_power)
 actions.t30_mini+=/meteor,if=debuff.radiant_spark_vulnerability.stack=0
 actions.t30_mini+=/arcane_barrage,if=prev_gcd.1.meteor|(prev_gcd.1.nether_tempest&(prev_gcd.2.radiant_spark|prev_gcd.3.radiant_spark))
 actions.t30_mini+=/touch_of_the_magi,use_off_gcd=1,if=prev_gcd.1.arcane_barrage&(action.arcane_barrage.in_flight_remains<=0.2|gcd.remains<=0.2)
