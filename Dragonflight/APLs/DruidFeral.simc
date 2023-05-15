@@ -52,7 +52,7 @@ actions.aoe_builder+=/thrash_cat
 
 actions.berserk+=/ferocious_bite,cycle_targets=1,if=combo_points=5&dot.rip.remains>8&variable.zerk_biteweave&spell_targets.swipe_cat>1
 # proc bt if 0/1 stack if 5/6 combo points
-actions.berserk+=/call_action_list,name=finisher,strict=1,if=combo_points=5&!(buff.overflowing_power.stack<=1&active_bt_triggers=2&buff.bloodtalons.stack<=1)
+actions.berserk+=/call_action_list,name=finisher,if=combo_points=5&!(buff.overflowing_power.stack<=1&active_bt_triggers=2&buff.bloodtalons.stack<=1)
 # its currently a gain to just contiuously try to proc bt in aoe
 actions.berserk+=/call_action_list,name=bloodtalons,strict=1,if=spell_targets.swipe_cat>1
 # go into stealth to buff rake snapshot-- feral frenzy line is to eliminate an edge case involving ff being casted instead due to higher prio
