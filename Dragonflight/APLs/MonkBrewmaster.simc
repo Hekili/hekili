@@ -39,6 +39,7 @@ actions+=/call_action_list,name=cooldowns_niuzao_woo,strict=1,if=(talent.invoke_
 actions+=/call_action_list,name=rotation_boc_dfb,strict=1,if=talent.blackout_combo.enabled&talent.dragonfire_brew.enabled&talent.salsalabims_strength.enabled
 actions+=/call_action_list,name=rotation_dfb,strict=1,if=talent.dragonfire_brew.enabled&talent.salsalabims_strength.enabled
 actions+=/call_action_list,name=rotation_chp,strict=1,if=talent.charred_passions.enabled&talent.salsalabims_strength.enabled
+actions+=/call_action_list,name=rotation_fallback,strict=1,if=!talent.salsalabims_strength.enabled|!(talent.dragonfire_brew.enabled|talent.charred_passions.enabled)
 
 ## Use <a href='https://www.wowhead.com/spell=10060/power-infusion'>Power Infusion</a> when <a href='https://www.wowhead.com/spell=387184/weapons-of-order'>Weapons of Order</a> reaches 4 stacks.
 ## actions.cooldowns_niuzao_woo+=/invoke_external_buff,name=power_infusion,if=buff.weapons_of_order.remains<=20
