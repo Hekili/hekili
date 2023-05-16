@@ -22,7 +22,7 @@
     </Frame>
 
     <Frame name="HekiliPopupDropdownRangeTemplate" inherits="UIDropDownCustomMenuEntryTemplate" mixin="HekiliPopupDropdownMixin" virtual="true">
-        <Size x="300" y="16"/>
+        <Size x="250" y="16"/>
         <Layers>
             <Layer level="BACKGROUND">
                 <Texture name="$parentHighlight" parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
