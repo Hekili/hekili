@@ -327,6 +327,17 @@ local no_trinket = setmetatable( {
     } )
 }, mt_no_trinket )
 
+setmetatable( state.trinket, {
+    __index = function( t, k )
+        if t.t1.is[ k ] then
+            return t.t1
+        elseif t.t2.is[ k ] then
+            return t.t2
+        else
+            return no_trinket
+        end
+    end
+} )
 
 state.trinket.stat.any = state.trinket.any
 
