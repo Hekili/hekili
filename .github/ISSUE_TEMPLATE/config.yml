@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Performance Issues (CPU, Framerate, Stutter...)
+    url: https://github.com/Hekili/hekili/issues/2624
+    about: Add information to the linked ticket.  Follow the instructions noted in the initial post.

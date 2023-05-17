@@ -1,6 +1,6 @@
 name: Priority/Recommendation Issue
-description: The addon appears fully functional, but its recommendations don't match my expectations.
-title: "[REC] REPLACE THIS TEXT WITH YOUR CLASS/SPEC AND BRIEF ISSUE DETAILS"
+description: The addon appears fully functional, but its recommendations are incomplete or don't match my expectations.
+title: "[REC] Provide a short, descriptive title of you Recommendation issue"
 labels: [recommendation, triage]
 assignees:
   - Hekili

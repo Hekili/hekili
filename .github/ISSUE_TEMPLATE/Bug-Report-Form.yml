@@ -1,8 +1,8 @@
 name: In-Game Error
 description: |
-  The addon does not load or there are error messages in-game.
-  I'll use BugSack and BugGrabber to supply the messages.
-title: "[BUG] REPLACE THIS TEXT WITH A SHORT DESCRIPTION OF THE BUG YOU ARE REPORTING"
+  Use this ticket for in-game error messages or when the addon fails to load.
+  Install BugSack and BugGrabber to easily collect error messages.
+title: "[BUG] Provide a short, clear title for your Bug Report"
 labels: [bug, triage]
 assignees:
   - Hekili
