@@ -1,6 +1,6 @@
 name: In-Game Error
 description: |
-  Use this ticket for in-game error messages or when the addon fails to load. |
+  Use this ticket for in-game error messages or when the addon fails to load.
   Install BugSack and BugGrabber to easily collect error messages.
 title: "[BUG] Provide a short, clear title for your Bug Report"
 labels: [bug, triage]
