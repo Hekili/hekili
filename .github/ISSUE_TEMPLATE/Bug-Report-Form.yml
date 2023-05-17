@@ -1,8 +1,8 @@
 name: In-Game Error
 description: |
-  The addon does not load or there are error messages in-game.
-  I'll use BugSack and BugGrabber to supply the messages.
-title: "[BUG] REPLACE THIS TEXT WITH A SHORT DESCRIPTION OF THE BUG YOU ARE REPORTING"
+  Use this ticket if you see Hekili-related error messages in-game, the addon fails to load, or there are warnings in `/hekili` > Warnings.<br />
+  To supply error messages, it is most helpful to use the BugSack and BugGrabber addons found elsewhere.
+title: "[BUG] Provide a short, clear title for your Bug Report"
 labels: [bug, triage]
 assignees:
   - Hekili
