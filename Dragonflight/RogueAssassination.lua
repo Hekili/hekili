@@ -217,15 +217,19 @@ end )
 local stealth = {
     normal = { "stealth" },
     vanish = { "vanish" },
-    shadowmeld = { "shadowmeld" },
     subterfuge = { "subterfuge" },
     shadow_dance = { "shadow_dance" },
+    shadowmeld = { "shadowmeld" },
     sepsis = { "sepsis_buff" },
+
     improved_garrote = { "improved_garrote", "sepsis_buff" },
 
     basic = { "stealth", "vanish" },
     mantle = { "stealth", "vanish" },
     rogue = { "stealth", "vanish", "subterfuge", "shadow_dance" },
+    ambush = { "stealth", "vanish", "subterfuge", "shadow_dance", "ambush", "sepsis_buff" },
+
+    -- SimC includes Improved Garrote in stealthed.all, but it feels misleading.
     all = { "stealth", "vanish", "shadowmeld", "subterfuge", "shadow_dance", "sepsis_buff", "improved_garrote" },
 }
 
@@ -1542,7 +1546,7 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         startsCombat = true,
-        usable = function () return stealthed.all or buff.audacity.up or buff.blindside.up or buff.sepsis_buff.up, "requires stealth or audacity/blindside/sepsis_buff" end,
+        usable = function () return stealthed.ambush or buff.audacity.up or buff.blindside.up, "requires stealth or audacity/blindside/sepsis_buff" end,
 
         cp_gain = function ()
             return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) )
