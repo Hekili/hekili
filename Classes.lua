@@ -2870,7 +2870,7 @@ all:RegisterAuras( {
     -- Harlan's Loaded Dice
     loaded_die_mastery = { id = 267325, duration = 15, max_stack = 1 },
     loaded_die_haste = { id = 267327, duration = 15, max_stack = 1 },
-    loaded_die_critical_strike = { id = 267330, duration = 15, max_stack = 1 },
+    loaded_die_critical_strike = { id = 267331, duration = 15, max_stack = 1 },
     loaded_die = {
         alias = { "loaded_die_mastery", "loaded_die_haste", "loaded_die_critical_strike" },
         aliasMode = "longest",
