@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -457,7 +458,7 @@ end )
 
 RegisterEvent( "ENCOUNTER_END", function ()
     state.encounterID = 0
-    state.encounterName = "None"
+    state.encounterName = L["None"]
     state.encounterDifficulty = 0
     state.encounterSize = 0
 end )
@@ -835,7 +836,7 @@ do
                         state.main_hand.size = 1
                     elseif equipLoc == "INVTYPE_RANGED" or equipLoc == "INVTYPE_RANGEDRIGHT" then
                         state.set_bonus.ranged = 1
-                            end
+                    end
                 elseif i == 17 then
                     if equipLoc == "INVTYPE_2HWEAPON" then
                         state.off_hand.size = 2
@@ -847,8 +848,6 @@ do
                         state.set_bonus.shield = 1
                     end
                 end
-
-
 
                 -- Fire any/all GearHooks (may be expansion-driven).
                 for _, hook in ipairs( GearHooks ) do
@@ -1105,10 +1104,10 @@ local noClassWarned = false
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( event, unit, _, spellID )
     if not noClassWarned and not class.initialized then
-        Hekili:Notify( UnitClass( "player" ) .. " does not have any Hekili modules loaded (yet).\nWatch for updates.", 5 )
+        Hekili:Notify( format( L["%s does not have any Hekili modules loaded (yet).\nWatch for updates."], UnitClass( "player" ) ), 5 )
         noClassWarned = true
     elseif not lowLevelWarned and UnitLevel( "player" ) < 50 then
-        Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
+        Hekili:Notify( L["Hekili is designed for current content.\nUse below level 50 at your own risk."], 5 )
         lowLevelWarned = true
     end
 

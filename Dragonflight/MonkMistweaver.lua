@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "MONK" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local strformat = string.format
@@ -1022,25 +1023,28 @@ spec:RegisterAbilities( {
 
 spec:RegisterSetting( "experimental_msg", nil, {
     type = "description",
-    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output "
-        .. "is less critical in a group/encounter.  Use at your own risk.",
+    name = L["|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only."] .. "  "
+        .. L["This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk."],
     width = "full",
 } )
 
 spec:RegisterSetting( "save_faeline", false, {
     type = "toggle",
-    name = strformat( "%s: Prevent Overlap", Hekili:GetSpellLinkWithTexture( spec.talents.faeline_stomp[2] ) ),
-    desc = strformat( "If checked, %s will not be recommended when %s and/or %s are active.\n\n"
-        .. "Disabling this option may impact your mana efficiency.", Hekili:GetSpellLinkWithTexture( spec.talents.faeline_stomp[2] ),
-        Hekili:GetSpellLinkWithTexture( spec.auras.ancient_concordance.id ), Hekili:GetSpellLinkWithTexture( spec.auras.awakened_faeline.id ) ),
+    name = strformat( L["%s: Prevent Overlap"],
+        Hekili:GetSpellLinkWithTexture( spec.talents.faeline_stomp[2] ) ),
+    desc = strformat( L["If checked, %1$s will not be recommended when %2$s and/or %3$s are active."],
+        Hekili:GetSpellLinkWithTexture( spec.talents.faeline_stomp[2] ), Hekili:GetSpellLinkWithTexture( spec.auras.ancient_concordance.id ),
+        Hekili:GetSpellLinkWithTexture( spec.auras.awakened_faeline.id ) ) .. "\n\n"
+        .. L["Disabling this option may impact your mana efficiency."],
     width = "full",
 } )
 
 spec:RegisterSetting( "roll_movement", 5, {
     type = "range",
-    name = strformat( "%s: Check Distance", Hekili:GetSpellLinkWithTexture( 109132 ), Hekili:GetSpellLinkWithTexture( 115008 ) ),
-    desc = strformat( "If set above zero, %s (and %s) may be recommended when your target is at least this far away.", Hekili:GetSpellLinkWithTexture( 109132 ),
-        Hekili:GetSpellLinkWithTexture( 115008 ) ),
+    name = strformat( L["%s: Check Distance"],
+        Hekili:GetSpellLinkWithTexture( 109132 ), Hekili:GetSpellLinkWithTexture( 115008 ) ),
+    desc = strformat( L["If set above zero, %s (and %s) may be recommended when your target is at least this far away."],
+        Hekili:GetSpellLinkWithTexture( 109132 ), Hekili:GetSpellLinkWithTexture( 115008 ) ),
     min = 0,
     max = 100,
     step = 1,

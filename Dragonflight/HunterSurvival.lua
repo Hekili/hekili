@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local floor = math.floor
@@ -1310,29 +1311,33 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "use_harpoon", true, {
-    name = "|T1376040:0|t Use Harpoon",
-    desc = "If checked, the addon will recommend |T1376040:0|t Harpoon when you are out of range and Harpoon is available.",
+    name = L["Use |T1376040:0|t Harpoon"],
+    desc = L["If checked, the addon will recommend |T1376040:0|t Harpoon when you are out of range and Harpoon is available."],
     type = "toggle",
     width = 1.49
 } )
 
 spec:RegisterSetting( "allow_focus_overcap", false, {
-    name = "Allow Focus Overcap",
-    desc = "The default priority tries to avoid overcapping Focus by default.  In simulations, this helps to avoid wasting Focus.  In actual gameplay, this can " ..
-        "result in trying to use Focus spenders when other important buttons (Wildfire Bomb, Kill Command) are available to push.  On average, enabling this feature " ..
-        "appears to be DPS neutral vs. the default setting, but has higher variance.  Your mileage may vary.\n\n" ..
-        "The default setting is |cFFFFD100unchecked|r.",
+    name = L["Allow Focus Overcap"],
+    desc = L["The default priority tries to avoid overcapping Focus by default."] .. "  "
+        .. L["In simulations, this helps to avoid wasting Focus."] .. "  "
+        .. L["In actual gameplay, this can result in trying to use Focus spenders when other important buttons (Wildfire Bomb, Kill Command) are available to push."] .. "  "
+        .. L["On average, enabling this feature appears to be DPS neutral vs. the default setting, but has higher variance.  Your mileage may vary."] .. "\n\n"
+        .. strformat( L["Default value is %s."], "|cFFFFD100" .. L["Unchecked"] .. "|r" ),
     type = "toggle",
     width = 1.49
 } )
 
 -- TODO: If this approach isn't sufficient, I'll need to check for pet Basic Attack abilities being set to manual.
 spec:RegisterSetting( "manual_kill_shot", false, {
-    name = strformat( "%s: %s Macro", Hekili:GetSpellLinkWithTexture( spec.auras.coordinated_assault.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.kill_shot.id ) ),
-    desc = strformat( "During |W%s|w, some guides recommend using a macro to manually control your pet's attacks to empower |W%s|w.  These macros prevent the |W%s|w empowerment "
-        .. "from occurring naturally, which will prevent |W%s|w from being recommended.\n\n"
-        .. "Enabling this option will allow |W%s|w to be recommended during %s without the empowerment buff active.", spec.auras.coordinated_assault.name, spec.abilities.kill_shot.name,
-        spec.auras.coordinated_assault_empower.name, spec.abilities.kill_shot.name, spec.abilities.kill_shot.name, spec.auras.coordinated_assault.name ),
+    name = strformat( L["%s: %s Macro"],
+        Hekili:GetSpellLinkWithTexture( spec.auras.coordinated_assault.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.kill_shot.id ) ),
+    desc = strformat( L["During |W%1$s|w, some guides recommend using a macro to manually control your pet's attacks to empower |W%2$s|w."],
+        spec.auras.coordinated_assault.name, spec.abilities.kill_shot.name ) .. "  "
+        .. strformat( L["These macros prevent the |W%1$s|w empowerment from occurring naturally, which will prevent |W%2$s|w from being recommended."],
+        spec.auras.coordinated_assault_empower.name, spec.abilities.kill_shot.name ) .. "\n\n"
+        .. strformat( L["Enabling this option will allow |W%1$s|w to be recommended during %2$s without the empowerment buff active."],
+        spec.abilities.kill_shot.name, spec.auras.coordinated_assault.name ),
     type = "toggle",
     width = 1.49
 } )

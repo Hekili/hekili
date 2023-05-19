@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local roundUp = ns.roundUp
@@ -531,7 +532,7 @@ spec:RegisterAuras( {
     },
     frozen_pulse = {
         -- Pseudo aura for legacy talent.
-        name = "Frozen Pulse",
+        name = L["Frozen Pulse"],
         meta = {
             up = function () return runes.current < 3 end,
             down = function () return runes.current >= 3 end,
@@ -868,7 +869,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if not any_dnd_set then
-        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any]|r " .. class.abilities.death_and_decay.name
+        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. L["[Any]"] .. "|r " .. class.abilities.death_and_decay.name
         any_dnd_set = true
     end
 
@@ -1706,8 +1707,10 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "bos_rp", 50, {
-    name = strformat( "%s for %s", _G.RUNIC_POWER, Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ) ),
-    desc = strformat( "%s will only be recommended when you have at least this much |W%s|w.", Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ), _G.RUNIC_POWER ),
+    name = strformat( L["%1$s for %2$s"],
+        _G.RUNIC_POWER, Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ) ),
+    desc = strformat( L["%1$s will only be recommended when you have at least this much |W%2$s|w."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ), _G.RUNIC_POWER ),
     type = "range",
     min = 18,
     max = 100,
@@ -1716,22 +1719,23 @@ spec:RegisterSetting( "bos_rp", 50, {
 } )
 
 spec:RegisterSetting( "ams_usage", "damage", {
-    name = strformat( "%s Requirements", Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ) ),
-    desc = strformat( "The default priority uses |W%s|w to generate |W%s|w regardless of whether there is incoming magic damage. "
-        .. "You can specify additional conditions for |W%s|w usage here.\n\n"
-        .. "|cFFFFD100Damage|r:\nRequires incoming magic damage within the past 3 seconds.\n\n"
-        .. "|cFFFFD100Defensives|r:\nRequires the Defensives toggle to be active.\n\n"
-        .. "|cFFFFD100Defensives + Damage|r:\nRequires both of the above.\n\n"
-        .. "|cFFFFD100None|r:\nUse on cooldown if priority conditions are met.",
-        spec.abilities.antimagic_shell.name, _G.RUNIC_POWER, _G.RUNIC_POWER,
-        spec.abilities.antimagic_shell.name ),
+    name = strformat( L["%s Requirements"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ) ),
+    desc = strformat( L["The default priority uses |W%1$s|w to generate |W%2$s|w regardless of whether there is incoming magic damage."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ), _G.RUNIC_POWER ) .. " "
+        .. strformat( L["You can specify additional conditions for |W%s|w usage here."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ) ).. "\n\n"
+        .. "|cFFFFD100" .. L["Damage"] .. "|r:" .. "\n" .. L["Requires incoming magic damage within the past 3 seconds."] .. "\n\n"
+        .. "|cFFFFD100" .. L["Defensives"] .. "|r:" .. "\n" .. L["Requires the Defensives toggle to be active."] .. "\n\n"
+        .. "|cFFFFD100" .. L["Defensives"] .. " + " .. L["Damage"] .. "|r:" .. "\n" .. L["Requires both of the above."] .. "\n\n"
+        .. "|cFFFFD100" .. L["None"] .. "|r:" .. "\n" .. L["Use on cooldown if priority conditions are met."],
     type = "select",
     width = "full",
     values = {
-        ["damage"] = "Damage",
-        ["defensives"] = "Defensives",
-        ["both"] = "Defensives + Damage",
-        ["none"] = "None"
+        ["damage"] = L["Damage"],
+        ["defensives"] = L["Defensives"],
+        ["both"] = L["Defensives"] .. " + " .. L["Damage"],
+        ["none"] = L["None"]
     },
     sorting = { "damage", "defensives", "both", "none" }
 } )

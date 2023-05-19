@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 --[[ For all Indents and Purposes
 
@@ -772,8 +773,7 @@ local COLOR_NORMAL = '|r'
 
 
 function ns.formatValue( value )
-
-  if value == nil then value = 'nil' end
+  if value == nil or value == "nil" then value = L["nil"] end
 
   if type( value ) == 'number' then
     -- Check for decimal places.
@@ -784,11 +784,7 @@ function ns.formatValue( value )
     end
 
   elseif type( value ) == 'boolean' then
-    if value then
-      return COLOR_TRUE .. tostring( value ) .. COLOR_NORMAL
-    else
-      return COLOR_FALSE .. tostring( value ) .. COLOR_NORMAL
-    end
+    return ( value and COLOR_TRUE or COLOR_FALSE ) .. L[ tostring( value ) ] .. COLOR_NORMAL
 
   elseif type( value ) == 'string' then
     return COLOR_STRING .. value .. COLOR_NORMAL

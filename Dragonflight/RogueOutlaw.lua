@@ -6,6 +6,7 @@ if UnitClassBase( "player" ) ~= "ROGUE" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -13,7 +14,10 @@ local state = Hekili.State
 local PTR = ns.PTR
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 260 )
+local race, raceEn = UnitRace("player")
 
 spec:RegisterResource( Enum.PowerType.ComboPoints )
 spec:RegisterResource( Enum.PowerType.Energy, {
@@ -1344,8 +1348,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "mfd_points", 3, {
-    name = "|T236340:0|t Marked for Death Combo Points",
-    desc = "The addon will only recommend |T236364:0|t Marked for Death when you have the specified number of combo points or fewer.",
+    name = L["|T236340:0|t Marked for Death Combo Points"],
+    desc = L["The addon will only recommend |T236364:0|t Marked for Death when you have the specified number of combo points or fewer."],
     type = "range",
     min = 0,
     max = 5,
@@ -1354,50 +1358,51 @@ spec:RegisterSetting( "mfd_points", 3, {
 } )
 
 spec:RegisterSetting( "ambush_anyway", false, {
-    name = "|T132282:0|t Ambush Regardless of Talents",
-    desc = "If checked, the addon will recommend |T132282:0|t Ambush even without Hidden Opportunity or Find Weakness talented.\n\n" ..
-        "Dragonflight sim profiles only use Ambush with Hidden Opportunity or Find Weakness talented; this is likely suboptimal.",
+    name = L["|T132282:0|t Ambush Regardless of Talents"],
+    desc = L["If checked, the addon will recommend |T132282:0|t Ambush even without Hidden Opportunity or Find Weakness talented."] .. "\n\n"
+        .. L["Dragonflight sim profiles only use Ambush with Hidden Opportunity or Find Weakness talented; this is likely suboptimal."],
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "no_rtb_in_dance_cto", true, {
-    name = "Never |T1373910:0|t Roll the Bones during |T236279:0|t Shadow Dance",
+    name = L["Never |T1373910:0|t Roll the Bones during |T236279:0|t Shadow Dance"],
     desc = function()
-        return "If checked, |T1373910:0|t Roll the Bones will never be recommended during |T236279:0|t Shadow Dance. "
-            .. "This is consistent with guides but is not yet reflected in the default SimulationCraft profiles as of 12 February 2023.\n\n"
-            .. ( state.talent.count_the_odds.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires |T237284:0|t Count the Odds|r"
+        return L["If checked, |T1373910:0|t Roll the Bones will never be recommended during |T236279:0|t Shadow Dance."] .. " "
+            .. L["This is consistent with guides but is not yet reflected in the default SimulationCraft profiles as of 12 February 2023."] .. "\n\n"
+            .. ( state.talent.count_the_odds.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. L["Requires |T237284:0|t Count the Odds"] .. "|r"
     end,
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "use_ld_opener", false, {
-    name = "Use |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones (Opener)",
+    name = L["Use |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones (Opener)"],
     desc = function()
-        return "If checked, the addon will recommend |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones during the opener to guarantee "
-            .. "at least 2 buffs from |T236279:0|t Loaded Dice.\n\n"
-            .. ( state.talent.loaded_dice.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires |T236279:0|t Loaded Dice|r"
+        return L["If checked, the addon will recommend |T136206:0|t Adrenaline Rush before |T1373910:0|t Roll the Bones during the opener to guarantee at least 2 buffs from |T236279:0|t Loaded Dice."] .. "\n\n"
+            .. ( state.talent.loaded_dice.enabled and "|cFF00FF00" or "|cFFFF0000" ) .. L["Requires |T236279:0|t Loaded Dice"] .. "|r"
     end,
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "allow_shadowmeld", false, {
-    name = "|T132089:0|t Shadowmeld when Solo",
-    desc = "If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.  " ..
-    "Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat).",
+    name = L["|T132089:0|t Shadowmeld when Solo"],
+    desc = L["If checked, |T132089:0|t Shadowmeld can be recommended for Night Elves when its conditions are met."] .. "  "
+        .. L["Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change."] .. "  "
+        .. L["Shadowmeld can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
     type = "toggle",
     width = "full",
     get = function () return not Hekili.DB.profile.specs[ 260 ].abilities.shadowmeld.disabled end,
     set = function ( _, val )
         Hekili.DB.profile.specs[ 260 ].abilities.shadowmeld.disabled = not val
     end,
+    disabled = function () return raceEn ~= "NightElf" end,
 } )
 
 spec:RegisterSetting( "solo_vanish", true, {
-    name = "|T132331:0|t Vanish when Solo",
-    desc = "If unchecked, the addon will not recommend |T132331:0|t Vanish when you are alone (to avoid resetting combat).",
+    name = L["|T132331:0|t Vanish when Solo"],
+    desc = L["If unchecked, the addon will not recommend |T132331:0|t Vanish when you are alone (to avoid resetting combat)."],
     type = "toggle",
     width = "full"
 } )

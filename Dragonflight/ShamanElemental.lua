@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "SHAMAN" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
@@ -2572,11 +2573,12 @@ end )
 
 
 spec:RegisterSetting( "stack_buffer", 1.1, {
-    name = strformat( "%s and %s Padding", Hekili:GetSpellLinkWithTexture( spec.abilities.icefury.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.stormkeeper.id ) ),
-    desc = strformat( "The default priority tries to avoid wasting %s and %s stacks with a grace period of 1.1 GCD per stack.\n\n" ..
-            "Increasing this number will reduce the likelihood of wasted |W%s|w / |W%s|w stacks due to other procs taking priority, leaving you with more time to react.",
-            Hekili:GetSpellLinkWithTexture( spec.abilities.icefury.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.stormkeeper.id ), spec.abilities.icefury.name,
-            spec.abilities.stormkeeper.name ),
+    name = strformat( L["%s and %s Padding"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.icefury.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.stormkeeper.id ) ),
+    desc = strformat( L["The default priority tries to avoid wasting %s and %s stacks with a grace period of 1.1 GCD per stack."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.icefury.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.stormkeeper.id ) ) .. "\n\n"
+        .. strformat( L["Increasing this number will reduce the likelihood of wasted |W%s|w / |W%s|w stacks due to other procs taking priority, leaving you with more time to react."],
+        spec.abilities.icefury.name, spec.abilities.stormkeeper.name ),
     type = "range",
     min = 1,
     max = 2,
@@ -2585,18 +2587,21 @@ spec:RegisterSetting( "stack_buffer", 1.1, {
 } )
 
 spec:RegisterSetting( "hostile_dispel", false, {
-    name = strformat( "Use %s or %s", Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
-    desc = strformat( "If checked, %s or %s can be recommended your target has a dispellable magic effect.\n\n"
-        .. "These abilities are also on the Interrupts toggle by default.", Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
+    name = strformat( L["Use %s or %s"],
+        Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
+    desc = strformat( L["If checked, %s or %s can be recommended your target has a dispellable magic effect."],
+        Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ) .. "\n\n"
+        .. L["These abilities are also on the Interrupts toggle by default."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "purge_icd", 12, {
-    name = strformat( "%s Internal Cooldown", Hekili:GetSpellLinkWithTexture( 370 ) ),
-    desc = strformat( "If set above zero, %s cannot be recommended again until time has passed since it was last used, even if there are more "
-        .. "dispellable magic effects on your target.\n\nThis feature can prevent you from being encouraged to spam your dispel endlessly against enemies "
-        .. "with rapidly stacking magic buffs.", Hekili:GetSpellLinkWithTexture( 370 ) ),
+    name = strformat( L["%s Internal Cooldown"],
+        Hekili:GetSpellLinkWithTexture( 370 ) ),
+    desc = strformat( L["If set above zero, %s cannot be recommended again until time has passed since it was last used, even if there are more dispellable magic effects on your target."],
+        Hekili:GetSpellLinkWithTexture( 370 ) ) .. "\n\n"
+        .. L["This feature can prevent you from being encouraged to spam your dispel endlessly against enemies with rapidly stacking magic buffs."],
     type = "range",
     min = 0,
     max = 20,

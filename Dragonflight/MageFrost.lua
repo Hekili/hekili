@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "MAGE" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local strformat = string.format
@@ -1371,8 +1372,9 @@ spec:RegisterOptions( {
 } ) ]]
 
 spec:RegisterSetting( "limit_ice_lance", false, {
-    name = strformat( "Limit %s", Hekili:GetSpellLinkWithTexture( spec.abilities.ice_lance.id ) ),
-    desc = strformat( "If checked, %s will recommended less often when %s, %s, and %s are talented.", Hekili:GetSpellLinkWithTexture( spec.abilities.ice_lance.id ),
+    name = strformat( L["Limit %s"], Hekili:GetSpellLinkWithTexture( spec.abilities.ice_lance.id ) ),
+    desc = strformat( L["If checked, %1$s will recommended less often when %2$s, %3$s, and %4$s are talented."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.ice_lance.id ),
         Hekili:GetSpellLinkWithTexture( spec.talents.slick_ice[2] ),
         Hekili:GetSpellLinkWithTexture( spec.talents.frozen_touch[2] ),
         Hekili:GetSpellLinkWithTexture( spec.talents.deep_shatter[2] ) ),
@@ -1385,16 +1387,20 @@ spec:RegisterStateExpr( "limited_ice_lance", function()
 end )
 
 spec:RegisterSetting( "manual_water_jet", false, {
-    name = strformat( "%s: Manual Control", Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
-    desc = strformat( "If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet.\n\n"
-        .. "You will need to disable its auto-cast before using this feature.", Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
+    name = strformat( L["%s: Manual Control"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
+    desc = strformat( L["If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ) .. "\n\n"
+        .. L["You will need to disable its auto-cast before using this feature."],
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "check_explosion_range", true, {
-    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( 1449 ) ),
-    desc = strformat( "If checked, %s will not be recommended when you are more than 10 yards from your target.", Hekili:GetSpellLinkWithTexture( 1449 ) ),
+    name = strformat( L["%s: Range Check"],
+        Hekili:GetSpellLinkWithTexture( 1449 ) ),
+    desc = strformat( L["If checked, %s will not be recommended when you are more than 10 yards from your target."],
+        Hekili:GetSpellLinkWithTexture( 1449 ) ),
     type = "toggle",
     width = "full"
 } )

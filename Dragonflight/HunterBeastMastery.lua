@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
@@ -2319,8 +2320,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "barbed_shot_grace_period", 0.5, {
-    name = "|T2058007:0|t Barbed Shot Grace Period",
-    desc = "If set above zero, the addon (using the default priority or |cFFFFD100barbed_shot_grace_period|r expression) will recommend |T2058007:0|t Barbed Shot up to 1 global cooldown earlier.",
+    name = L["|T2058007:0|t Barbed Shot Grace Period"],
+    desc = L["If set above zero, the addon (using the default priority or |cFFFFD100barbed_shot_grace_period|r expression) will recommend |T2058007:0|t Barbed Shot up to 1 global cooldown earlier."],
     icon = 2058007,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
@@ -2331,17 +2332,17 @@ spec:RegisterSetting( "barbed_shot_grace_period", 0.5, {
 } )
 
 spec:RegisterSetting( "avoid_bw_overlap", false, {
-    name = "Avoid |T132127:0|t Bestial Wrath Overlap",
-    desc = "If checked, the addon will not recommend |T132127:0|t Bestial Wrath if the buff is already applied.",
+    name = L["Avoid |T132127:0|t Bestial Wrath Overlap"],
+    desc = L["If checked, the addon will not recommend |T132127:0|t Bestial Wrath if the buff is already applied."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "check_pet_range", false, {
-    name = "Check Pet Range for |T132176:0|t Kill Command",
+    name = L["Check Pet Range for |T132176:0|t Kill Command"],
     desc = function ()
-        return "If checked, the addon will not recommend |T132176:0|t Kill Command if your pet is not in range of your target.\n\n" ..
-            "Requires |c" .. ( state.settings.petbased and "FF00FF00" or "FFFF0000" ) .. "Pet-Based Target Detection|r"
+        return L["If checked, the addon will not recommend |T132176:0|t Kill Command if your pet is not in range of your target."] .. "\n\n"
+        .. ( state.settings.petbased and "|cFF00FF00" or "|cFFFF0000" ) .. L["Requires Pet-Based Target Detection"] .. "|r"
     end,
     type = "toggle",
     width = "full"

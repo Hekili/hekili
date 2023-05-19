@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "MAGE" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local strformat = string.format
@@ -2009,19 +2010,22 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "pyroblast_pull", false, {
-    name = strformat( "%s: Non-Instant Opener", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ) ),
-    desc = strformat( "If checked, a non-instant %s may be recommended as an opener against bosses.", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ) ),
+    name = strformat( L["%s: Non-Instant Opener"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ) ),
+    desc = strformat( L["If checked, a non-instant %s may be recommended as an opener against bosses."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 
 spec:RegisterSetting( "prevent_hardcasts", false, {
-    name = strformat( "%s and %s: Instant-Only When Moving", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ),
-    desc = strformat( "If checked, non-instant %s and %s casts will not be recommended while you are moving.\n\nAn exception is made if %s is talented and active and your cast "
-        .. "would be complete before |W%s|w expires.", Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ),
-        Hekili:GetSpellLinkWithTexture( 108839 ), ( GetSpellInfo( 108839 ) ) ),
+    name = strformat( L["%s and %s: Instant-Only When Moving"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ),
+    desc = strformat( L["If checked, non-instant %s and %s casts will not be recommended while you are moving."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ) .. "\n\n"
+        .. strformat( L["An exception is made if %1$s is talented and active and your cast would be complete before |W%2$s|w expires."],
+        Hekili:GetSpellLinkWithTexture( 108839 ), GetSpellInfo( 108839 ) ),
     type = "toggle",
     width = "full"
 } )
@@ -2031,8 +2035,10 @@ spec:RegisterStateExpr( "fireball_hardcast_prevented", function()
 end )
 
 spec:RegisterSetting( "check_explosion_range", true, {
-    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( 1449 ) ),
-    desc = strformat( "If checked, %s will not be recommended when you are more than 10 yards from your target.", Hekili:GetSpellLinkWithTexture( 1449 ) ),
+    name = strformat( L["%s: Range Check"],
+        Hekili:GetSpellLinkWithTexture( 1449 ) ),
+    desc = strformat( L["If checked, %s will not be recommended when you are more than 10 yards from your target."],
+        Hekili:GetSpellLinkWithTexture( 1449 ) ),
     type = "toggle",
     width = "full"
 } )

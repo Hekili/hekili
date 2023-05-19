@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
@@ -2019,7 +2020,7 @@ spec:RegisterAbilities( {
             if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
         end,
 
-        copy = { "incarnation_chosen_of_elune", "Incarnation", 102560, 390414 },
+        copy = { "incarnation_chosen_of_elune", L["Incarnation"], 102560, 390414 },
     },
 
     -- Talent: Infuse a friendly healer with energy, allowing them to cast spells without spending mana for $d.$?s326228[    If cast on somebody else, you gain the effect at $326228s1% effectiveness.][]
@@ -2635,7 +2636,7 @@ spec:RegisterAbilities( {
                 generate = function( t )
                     local last = action.starsurge.lastCast
 
-                    t.name = "Starsurge Empowerment (Lunar)"
+                    t.name = L["Starsurge Empowerment (Lunar)"]
 
                     if eclipse.in_any then
                         t.applied = last
@@ -2661,7 +2662,7 @@ spec:RegisterAbilities( {
                 generate = function( t )
                     local last = action.starsurge.lastCast
 
-                    t.name = "Starsurge Empowerment (Solar)"
+                    t.name = L["Starsurge Empowerment (Solar)"]
 
                     if eclipse.in_any then
                         t.applied = last
@@ -3015,9 +3016,12 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "vigil_damage", 50, {
-    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.natures_vigil.id ) ),
-    desc = strformat( "If set below 100%%, |W%s|w may only be recommended if your health has dropped below the specified percentage.\n\n"
-        .. "By default, |W%s|w also requires the |cFFFFD100Defensives|r toggle to be active.", spec.abilities.natures_vigil.name, spec.abilities.natures_vigil.name ),
+    name = strformat( L["%s Damage Threshold"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.natures_vigil.id ) ),
+    desc = strformat( L["If set below 100%%, |W%s|w may only be recommended if your health has dropped below the specified percentage."],
+        spec.abilities.natures_vigil.name ) .. "\n\n"
+        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
+        spec.abilities.natures_vigil.name, "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 1,
     max = 100,

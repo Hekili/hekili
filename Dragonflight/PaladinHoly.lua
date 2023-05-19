@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "PALADIN" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 65 )
@@ -1320,7 +1321,8 @@ spec:RegisterAbilities( {
 
 spec:RegisterSetting( "experimental_msg", nil, {
     type = "description",
-    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk.",
+    name = L["|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only."] .. "  "
+        .. L["This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk."],
     width = "full",
 } )
 

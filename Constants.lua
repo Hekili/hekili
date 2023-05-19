@@ -2,7 +2,46 @@
 -- June 2014
 
 local addon, ns = ...
-local Hekili = _G[ addon ]
+
+ns.Version = GetAddOnMetadata( "Hekili", "Version" )
+ns.Flavor = GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
+
+local format = string.format
+
+local buildStr, _, _, buildNum = GetBuildInfo()
+
+ns.CurrentBuild = buildNum
+
+if ns.Version == ( "@" .. "project-version" .. "@" ) then
+    ns.Version = format( "Dev-%s (%s)", buildStr, date( "%Y%m%d" ) )
+end
+
+ns.AllowSimCImports = true
+
+ns.IsRetail = function()
+    return ns.Flavor == "Retail"
+end
+
+ns.IsWrath = function()
+    return ns.Flavor == "Wrath"
+end
+
+ns.IsClassic = function()
+    return ns.IsWrath()
+end
+
+ns.IsDragonflight = function()
+    return buildNum >= 100000
+end
+
+ns.BuiltFor = ns.IsDragonflight() and 100007 or 30401
+ns.GameBuild = buildStr
+
+ns.PTR = buildNum > ns.BuiltFor
+
+ns.LOCALE = ( GetLocale() == "enGB" and "enUS" ) or GetLocale()
+ns.L = { deDE = {}, enUS = {}, esES = {}, esMX = {}, frFR = {}, itIT = {}, koKR = {}, ptBR = {}, ruRU = {}, zhCN = {}, zhTW = {} }
+ns._L = {}
 
 
 -- Class Localization
@@ -44,6 +83,7 @@ local ResourceInfo = {
     mana            = Enum.PowerType.Mana,
     rage            = Enum.PowerType.Rage,
     focus           = Enum.PowerType.Focus,
+    happiness       = Enum.PowerType.Happiness,
     energy          = Enum.PowerType.Energy,
     combo_points    = Enum.PowerType.ComboPoints,
     runes           = Enum.PowerType.Runes,
@@ -60,7 +100,10 @@ local ResourceInfo = {
     arcane_charges  = Enum.PowerType.ArcaneCharges,
     fury            = Enum.PowerType.Fury,
     pain            = Enum.PowerType.Pain,
-    essence         = Enum.PowerType.Essence
+    essence         = Enum.PowerType.Essence,
+    rune_blood      = Enum.PowerType.RuneBlood,
+    rune_frost      = Enum.PowerType.RuneFrost,
+    rune_unholy     = Enum.PowerType.RuneUnholy,
 }
 
 local ResourceByID = {}

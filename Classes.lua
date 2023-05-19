@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -1091,17 +1092,17 @@ function Hekili:RestoreDefaults()
         local msg
 
         if #changed == 1 then
-            msg = "The |cFFFFD100" .. changed[1] .. "|r priority was updated."
+            msg = format( L["The %s priority was updated."], "|cFFFFD100" .. _L[ changed[1] ] .. "|r" )
         elseif #changed == 2 then
-            msg = "The |cFFFFD100" .. changed[1] .. "|r and |cFFFFD100" .. changed[2] .. "|r priorities were updated."
+            msg = format( L["The %s and %s priorities were updated."], "|cFFFFD100" .. _L[ changed[1] ] .. "|r", "|cFFFFD100" .. _L[ changed[2] ] .. "|r" )
         else
-            msg = "|cFFFFD100" .. changed[1] .. "|r"
+            msg = "|cFFFFD100" .. _L[ changed[1] ] .. "|r"
 
             for i = 2, #changed - 1 do
-                msg = msg .. ", |cFFFFD100" .. changed[i] .. "|r"
+                msg = msg .. ", |cFFFFD100" .. _L[ changed[i] ] .. "|r"
             end
 
-            msg = "The " .. msg .. ", and |cFFFFD100" .. changed[ #changed ] .. "|r priorities were updated."
+            msg = format( L["The %s and %s priorities were updated."], msg, "|cFFFFD100" .. _L[ changed[ #changed ] ] .. "|r" )
         end
 
         if msg then C_Timer.After( 5, function()
@@ -1622,7 +1623,7 @@ all:RegisterAuras( {
     },
 
     casting = {
-        name = "Casting",
+        name = L["Casting"],
         generate = function( t, auraType )
             local unit = auraType == "debuff" and "target" or "player"
 
@@ -1666,7 +1667,7 @@ all:RegisterAuras( {
                 end
             end
 
-            t.name = "Casting"
+            t.name = L["Casting"]
             t.count = 0
             t.expires = 0
             t.applied = 0
@@ -2222,8 +2223,8 @@ do
 
 
     all:RegisterAbility( "potion", {
-        name = "Potion",
-        listName = '|T136243:0|t |cff00ccff[Potion]|r',
+        name = L["Potion"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Potion"] .. "]|r",
         cast = 0,
         cooldown = 300,
         gcd = "off",
@@ -2543,8 +2544,8 @@ all:RegisterAbilities( {
 
     -- INTERNAL HANDLERS
     call_action_list = {
-        name = "Call Action List",
-        listName = '|T136243:0|t |cff00ccff[Call Action List]|r',
+        name = L["Call Action List"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Call Action List"] .. "]|r",
         cast = 0,
         cooldown = 0,
         gcd = "off",
@@ -2552,8 +2553,8 @@ all:RegisterAbilities( {
     },
 
     run_action_list = {
-        name = "Run Action List",
-        listName = '|T136243:0|t |cff00ccff[Run Action List]|r',
+        name = L["Run Action List"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Run Action List"] .. "]|r",
         cast = 0,
         cooldown = 0,
         gcd = "off",
@@ -2561,8 +2562,8 @@ all:RegisterAbilities( {
     },
 
     wait = {
-        name = "Wait",
-        listName = '|T136243:0|t |cff00ccff[Wait]|r',
+        name = L["Wait"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Wait"] .. "]|r",
         cast = 0,
         cooldown = 0,
         gcd = "off",
@@ -2570,16 +2571,16 @@ all:RegisterAbilities( {
     },
 
     pool_resource = {
-        name = "Pool Resource",
-        listName = "|T136243:0|t |cff00ccff[Pool Resource]|r",
+        name = L["Pool Resource"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Pool Resource"] .. "]|r",
         cast = 0,
         cooldown = 0,
         gcd = "off",
     },
 
     cancel_action = {
-        name = "Cancel Action",
-        listName = "|T136243:0|t |cff00ccff[Cancel Action]|r",
+        name = L["Cancel Action"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Cancel Action"] .. "]|r",
         cast = 0,
         cooldown = 0,
         gcd = "off",
@@ -2596,8 +2597,8 @@ all:RegisterAbilities( {
     },
 
     variable = {
-        name = "Variable",
-        listName = '|T136243:0|t |cff00ccff[Variable]|r',
+        name = L["Variable"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Variable"] .. "]|r",
         cast = 0,
         cooldown = 0,
         gcd = "off",
@@ -2605,11 +2606,11 @@ all:RegisterAbilities( {
     },
 
     healthstone = {
-        name = function () return ( GetItemInfo( 5512 ) ) or "Healthstone" end,
+        name = function () return ( GetItemInfo( 5512 ) ) or L["Healthstone"] end,
         listName = function ()
             local _, link, _, _, _, _, _, _, _, tex = GetItemInfo( 5512 )
             if link and tex then return "|T" .. tex .. ":0|t " .. link end
-            return "|cff00ccff[Healthstone]|r"
+            return "|cff00ccff[" .. L["Healthstone"] .. "]|r"
         end,
         cast = 0,
         cooldown = function () return time > 0 and 3600 or 60 end,
@@ -2639,8 +2640,8 @@ all:RegisterAbilities( {
     },
 
     cancel_buff = {
-        name = "Cancel Buff",
-        listName = '|T136243:0|t |cff00ccff[Cancel Buff]|r',
+        name = L["Cancel Buff"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Cancel Buff"] .. "]|r",
         cast = 0,
         gcd = "off",
 
@@ -2680,8 +2681,8 @@ all:RegisterAbilities( {
     },
 
     null_cooldown = {
-        name = "Null Cooldown",
-        listName = "|T136243:0|t |cff00ccff[Null Cooldown]|r",
+        name = L["Null Cooldown"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Null Cooldown"] .. "]|r",
         cast = 0,
         gcd = "off",
 
@@ -2691,15 +2692,15 @@ all:RegisterAbilities( {
     },
 
     trinket1 = {
-        name = "Trinket #1",
-        listName = "|T136243:0|t |cff00ccff[Trinket #1]",
+        name = L["Trinket #1"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Trinket #1"] .. "]|r",
         cast = 0,
         gcd = "off",
     },
 
     trinket2 = {
-        name = "Trinket #2",
-        listName = "|T136243:0|t |cff00ccff[Trinket #2]",
+        name = L["Trinket #2"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Trinket #2"] .. "]|r",
         cast = 0,
         gcd = "off",
     },
@@ -2713,8 +2714,8 @@ do
     -- 2.  Respect item preferences registered in spec options.
 
     all:RegisterAbility( "use_items", {
-        name = "Use Items",
-        listName = "|T136243:0|t |cff00ccff[Use Items]|r",
+        name = L["Use Items"],
+        listName = "|T136243:0|t |cff00ccff[" .. L["Use Items"] .. "]|r",
         cast = 0,
         cooldown = 120,
         gcd = "off",
@@ -2722,11 +2723,11 @@ do
 
 
     all:RegisterAbility( "heart_essence", {
-        name = function () return ( GetItemInfo( 158075 ) ) or "Heart Essence" end,
+        name = function () return ( GetItemInfo( 158075 ) ) or L["Heart Essence"] end,
         listName = function ()
             local _, link, _, _, _, _, _, _, _, tex = GetItemInfo( 158075 )
             if link and tex then return "|T" .. tex .. ":0|t " .. link end
-            return "|cff00ccff[Heart Essence]|r"
+            return "|cff00ccff[" .. L["Heart Essence"] .. "]|r"
         end,
         cast = 0,
         cooldown = 0,
@@ -5390,7 +5391,7 @@ all:RegisterAura( "sephuzs_secret", {
     duration = 10
 } )
 all:RegisterAbility( "buff_sephuzs_secret", {
-    name = "Sephuz's Secret (ICD)",
+    name = L["Sephuz's Secret (ICD)"],
     cast = 0,
     cooldown = 30,
     gcd = "off",
@@ -5826,10 +5827,10 @@ local function addItemSettings( key, itemID, options )
 
     options.disabled = {
         type = "toggle",
-        name = function () return format( "Disable %s via |cff00ccff[Use Items]|r", select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" ) ) end,
+        name = function () return format( L["Disable %s via |cff00ccff[Use Items]|r"], select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" ) ) end,
         desc = function( info )
-            local output = "If disabled, the addon will not recommend this item via the |cff00ccff[Use Items]|r action.  " ..
-                "You can still manually include the item in your action lists with your own tailored criteria."
+            local output = L["If disabled, the addon will not recommend this item via the |cff00ccff[Use Items]|r action."] .. "  "
+                .. L["You can still manually include the item in your action lists with your own tailored criteria."]
             return output
         end,
         order = 25,
@@ -5838,8 +5839,8 @@ local function addItemSettings( key, itemID, options )
 
     options.minimum = {
         type = "range",
-        name = "Minimum Targets",
-        desc = "The addon will only recommend this trinket (via |cff00ccff[Use Items]|r) when there are at least this many targets available to hit.",
+        name = L["Minimum Targets"],
+        desc = L["The addon will only recommend this trinket (via |cff00ccff[Use Items]|r) when there are at least this many targets available to hit."],
         order = 26,
         width = "full",
         min = 1,
@@ -5849,9 +5850,9 @@ local function addItemSettings( key, itemID, options )
 
     options.maximum = {
         type = "range",
-        name = "Maximum Targets",
-        desc = "The addon will only recommend this trinket (via |cff00ccff[Use Items]|r) when there are no more than this many targets detected.\n\n" ..
-            "This setting is ignored if set to 0.",
+        name = L["Maximum Targets"],
+        desc = L["The addon will only recommend this trinket (via |cff00ccff[Use Items]|r) when there are no more than this many targets detected."] .. "\n\n"
+            .. L["This setting is ignored if set to 0."],
         order = 27,
         width = "full",
         min = 0,
@@ -6087,7 +6088,7 @@ function Hekili:SpecializationChanged()
 
                 class.variables = spec.variables
 
-                class.potionList.default = "|cFFFFD100Default|r"
+                class.potionList.default = "|cFFFFD100" .. L["Default"] .. "|r"
             end
 
             for res, model in pairs( spec.resources ) do

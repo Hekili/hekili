@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "WARLOCK" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local PTR = ns.PTR
@@ -1925,9 +1926,9 @@ spec:RegisterOptions( {
 
 spec:RegisterSetting( "dcon_imps", 0, {
     type = "range",
-    name = "Wild Imps Required",
-    desc = "If set above zero, Summon Demonic Tyrant will not be recommended unless the specified number of imps are summoned.\n\n" ..
-        "This can backfire horribly, letting your Felguard or Vilefiend expire when you could've extended them with Summon Demonic Tyrant.",
+    name = L["Wild Imps Required"],
+    desc = L["If set above zero, |T2065628:0|t Summon Demonic Tyrant will not be recommended unless the specified number of imps are summoned."] .. "\n\n"
+        .. L["This can backfire horribly, letting your Felguard or Vilefiend expire when you could've extended them with Summon Demonic Tyrant."],
     min = 0,
     max = 10,
     step = 1,

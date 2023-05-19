@@ -7,8 +7,11 @@ if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
+
+local strformat = string.format
 
 -- Conduits (Patch 10.0) : In all cases, talents override and disable conduits they share effects with.
 -- Talents override the following:
@@ -1701,45 +1704,46 @@ spec:RegisterAbilities( {
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
-    name = "Only |T236312:0|t Shockwave as Interrupt",
-    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting (and talented).",
+    name = L["Only |T236312:0|t Shockwave as Interrupt"],
+    desc = L["If checked, |T236312:0|t Shockwave will only be recommended when your target is casting."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "overlap_ignore_pain", false, {
-    name = "Overlap |T1377132:0|t Ignore Pain",
-    desc = "If checked, |T1377132:0|t Ignore Pain can be recommended while it is already active.  This setting may cause you to spend more Rage on mitigation.",
+    name = L["Overlap |T1377132:0|t Ignore Pain"],
+    desc = L["If checked, |T1377132:0|t Ignore Pain can be recommended while it is already active."] .. "  "
+        .. L["This setting may cause you to spend more Rage on mitigation."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "stack_shield_block", false, {
-    name = "Overlap |T132110:0|t Shield Block",
+    name = L["Overlap |T132110:0|t Shield Block"],
     desc = function()
-        return "If checked, the addon can recommend overlapping |T132110:0|t Shield Block usage. \n\n" ..
-        "This setting avoids leaving Shield Block at 2 charges, which wastes cooldown recovery time."
+        return L["If checked, the addon can recommend overlapping |T132110:0|t Shield Block usage."] .. "\n\n"
+            .. L["This setting avoids leaving Shield Block at 2 charges, which wastes cooldown recovery time."]
     end,
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "stance_weaving", false, {
-    name = "Allow Stance Changes",
+    name = L["Allow Stance Changes"],
     desc = function()
-        return "If checked, custom priorities can be written to recommend changing between stances.  For example, Battle Stance could be recommended when "
-            .. "using offensive cooldowns, then Defensive Stance can be recommended when tanking resumes.\n\n"
-            .. "If left unchecked, the addon will not recommend changing your stance as long as you are already in a stance.  This choice prevents the addon "
-            .. "from endlessly recommending that you change your stance when you do not want to change it."
+        return L["If checked, custom priorities can be written to recommend changing between stances."] .. "  "
+            .. L["For example, Battle Stance could be recommended when using offensive cooldowns, then Defensive Stance can be recommended when tanking resumes."] .. "\n\n"
+            .. L["If left unchecked, the addon will not recommend changing your stance as long as you are already in a stance."] .. "  "
+            .. L["This choice prevents the addon from endlessly recommending that you change your stance when you do not want to change it."]
     end,
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "reserve_rage", 35, { -- Ignore Pain cost is 35, Shield Block is 30.
-    name = "|T135726:0|t Reserve Rage for Mitigation",
-    desc = "If set above 0, the addon will not recommend |T132353:0|t Revenge or |T135358:0|t Execute unless you'll be still have this much Rage afterward.\n\n"
-        .. "When set to |cFFFFD10035|r or higher, this feature ensures that you can always use |T1377132:0|t Ignore Pain and |T132110:0|t Shield Block when following recommendations for damage and threat.",
+    name = L["|T135726:0|t Reserve Rage for Mitigation"],
+    desc = L["If set above zero, the addon will not recommend |T132353:0|t Revenge or |T135358:0|t Execute unless you'll be still have this much Rage afterward."] .. "\n\n"
+        .. L["When set to |cFFFFD10035|r or higher, this feature ensures that you can always use |T1377132:0|t Ignore Pain and |T132110:0|t Shield Block when following recommendations for damage and threat."],
     type = "range",
     min = 0,
     max = 100,
@@ -1748,10 +1752,13 @@ spec:RegisterSetting( "reserve_rage", 35, { -- Ignore Pain cost is 35, Shield Bl
 } )
 
 spec:RegisterSetting( "shield_wall_amount", 50, {
-    name = "|T132362:0|t Shield Wall Damage Required",
-    desc = "If set above 0, the addon will not recommend |T132362:0|t Shield Wall unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Shield Wall when you've taken 25,000 damage in the past 5 seconds.\n\n"
-        .. "This value is reduced by 50% when playing solo.",
+    name = strformat( L["%s Damage Required"],
+        "|T132362:0|t " .. L["Shield Wall"] ),
+    desc = strformat( L["If set above zero, the addon will not recommend %s unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health."],
+        "|T132362:0|t " .. L["Shield Wall"] ) .. "\n\n"
+        .. strformat( L["If set to |cFFFFD10050%%|r and your maximum health is 50,000, then the addon will only recommend %s when you've taken 25,000 damage in the past 5 seconds."],
+        L["Shield Wall"] ) .. "\n\n"
+        .. L["This value is halved when playing solo."],
     type = "range",
     min = 0,
     max = 200,
@@ -1760,8 +1767,10 @@ spec:RegisterSetting( "shield_wall_amount", 50, {
 } )
 
 spec:RegisterSetting( "shield_wall_health", 50, {
-    name = "|T132362:0|t Shield Wall Health Percentage",
-    desc = "If set below 100, the addon will not recommend |T132362:0|t Shield Wall unless your current health has fallen below this percentage.",
+    name = strformat( L["%s Health Percentage"],
+        "|T132362:0|t " .. L["Shield Wall"] ),
+    desc = strformat( L["If set below 100, the addon will not recommend %s unless your current health has fallen below this percentage."],
+        "|T132362:0|t " .. L["Shield Wall"] ),
     type = "range",
     min = 0,
     max = 100,
@@ -1770,18 +1779,24 @@ spec:RegisterSetting( "shield_wall_health", 50, {
 } )
 
 spec:RegisterSetting( "shield_wall_condition", false, {
-    name = "Require |T132362:0|t Shield Wall Damage and Health",
-    desc = "If checked, |T132362:0|t Shield Wall will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
-        .. "Otherwise, Shield Wall can be recommended when |cFFFFD100either|r requirement is met.",
+    name = strformat( L["Require %s Damage and Health"],
+        "|T132362:0|t " .. L["Shield Wall"] ),
+    desc = strformat( L["If checked, %s will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met."],
+        "|T132362:0|t " .. L["Shield Wall"] ) .. "\n\n"
+        .. strformat( L["Otherwise, %s can be recommended when |cFFFFD100either|r requirement is met."],
+        L["Shield Wall"] ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "rallying_cry_amount", 50, {
-    name = "|T132351:0|t Rallying Cry Damage Required",
-    desc = "If set above 0, the addon will not recommend |T132351:0|t Rallying Cry unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Rallying Cry when you've taken 25,000 damage in the past 5 seconds.\n\n"
-        .. "This value is reduced by 50% when playing solo.",
+    name = strformat( L["%s Damage Required"],
+        "|T132351:0|t " .. L["Rallying Cry"] ),
+    desc = strformat( L["If set above zero, the addon will not recommend %s unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health."],
+        "|T132351:0|t " .. L["Rallying Cry"] ) .. "\n\n"
+        .. strformat( L["If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend %s when you've taken 25,000 damage in the past 5 seconds."],
+        L["Rallying Cry"] ) .. "\n\n"
+        .. L["This value is halved when playing solo."],
     type = "range",
     min = 0,
     max = 200,
@@ -1790,8 +1805,10 @@ spec:RegisterSetting( "rallying_cry_amount", 50, {
 } )
 
 spec:RegisterSetting( "rallying_cry_health", 50, {
-    name = "|T132351:0|t Rallying Cry Health Percentage",
-    desc = "If set below 100, the addon will not recommend |T132351:0|t Rallying Cry unless your current health has fallen below this percentage.",
+    name = strformat( L["%s Health Percentage"],
+        "|T132351:0|t " .. L["Rallying Cry"] ),
+    desc = strformat( L["If set below 100, the addon will not recommend %s unless your current health has fallen below this percentage."],
+        "|T132351:0|t " .. L["Rallying Cry"] ),
     type = "range",
     min = 0,
     max = 100,
@@ -1800,32 +1817,37 @@ spec:RegisterSetting( "rallying_cry_health", 50, {
 } )
 
 spec:RegisterSetting( "rallying_cry_condition", false, {
-    name = "Require |T132351:0|t Rallying Cry Damage and Health",
-    desc = "If checked, |T132351:0|t Rallying Cry will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
-        .. "Otherwise, Rallying Cry can be recommended when |cFFFFD100either|r requirement is met.",
+    name = strformat( L["Require %s Damage and Health"],
+        "|T132351:0|t " .. L["Rallying Cry"] ),
+    desc = strformat( L["If checked, %s will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met."],
+        "|T132351:0|t " .. L["Rallying Cry"] ) .. "\n\n"
+        .. strformat( L["Otherwise, %s can be recommended when |cFFFFD100either|r requirement is met."],
+        L["Rallying Cry"] ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "last_stand_offensively", false, {
-    name = "Use |T135871:0|t Last Stand Offensively",
+    name = L["Use |T135871:0|t Last Stand Offensively"],
     desc = function()
-        return "If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage.\n\n"
-            .. "If unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage.\n\n"
-            .. "Requires |T571316:0|t Unnerving Focus "
-            .. ( state.talent.unnerving_focus.enabled and "|cFF00FF00Talent|r" or "|cFFFF0000Talent|r" )
-            .. " or "
-            .. ( state.conduit.unnerving_focus.enabled and "|cFF00FF00Conduit|r" or "|cFFFF0000Conduit|r" )
+        return L["If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage."] .. "\n\n"
+            .. L["If unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage."] .. "\n\n"
+            .. strformat( L["Requires |T571316:0|t Unnerving Focus %s or %s."],
+            ( state.talent.unnerving_focus.enabled and "|cFF00FF00" .. L["Talent"] .. "|r" or "|cFFFF0000" .. L["Talent"] .. "|r" ),
+            ( state.conduit.unnerving_focus.enabled and "|cFF00FF00" .. L["Conduit"] .. "|r" or "|cFFFF0000" .. L["Conduit"] .. "|r" ) )
     end,
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "last_stand_amount", 50, {
-    name = "|T135871:0|t Last Stand Damage Required",
-    desc = "If set above 0, the addon will not recommend |T135871:0|t Last Stand unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Last Stand when you've taken 25,000 damage in the past 5 seconds.\n\n"
-        .. "This value is reduced by 50% when playing solo.",
+    name = strformat( L["%s Damage Required"],
+        "|T135871:0|t " .. L["Last Stand"] ),
+    desc = strformat( L["If set above zero, the addon will not recommend %s unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health."],
+        "|T135871:0|t " .. L["Last Stand"] ) .. "\n\n"
+        .. strformat( L["If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend %s when you've taken 25,000 damage in the past 5 seconds."],
+        L["Last Stand"] ) .. "\n\n"
+        .. L["This value is halved when playing solo."],
     type = "range",
     min = 0,
     max = 200,
@@ -1835,8 +1857,10 @@ spec:RegisterSetting( "last_stand_amount", 50, {
 } )
 
 spec:RegisterSetting( "last_stand_health", 50, {
-    name = "|T135871:0|t Last Stand Health Percentage",
-    desc = "If set below 100, the addon will not recommend |T135871:0|t Last Stand unless your current health has fallen below this percentage.",
+    name = strformat( L["%s Health Percentage"],
+        "|T135871:0|t " .. L["Last Stand"] ),
+    desc = strformat( L["If set below 100, the addon will not recommend %s unless your current health has fallen below this percentage."],
+        "|T135871:0|t " .. L["Last Stand"] ),
     type = "range",
     min = 0,
     max = 100,
@@ -1846,9 +1870,12 @@ spec:RegisterSetting( "last_stand_health", 50, {
 } )
 
 spec:RegisterSetting( "last_stand_condition", false, {
-    name = "Require |T135871:0|t Last Stand Damage and Health",
-    desc = "If checked, |T135871:0|t Last Stand will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
-        .. "Otherwise, Last Stand can be recommended when |cFFFFD100either|r requirement is met.",
+    name = strformat( L["Require %s Damage and Health"],
+        "|T135871:0|t " .. L["Last Stand"] ),
+    desc = strformat( L["If checked, %s will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met."],
+        "|T135871:0|t " .. L["Last Stand"] ) .. "\n\n"
+        .. strformat( L["Otherwise, %s can be recommended when |cFFFFD100either|r requirement is met."],
+        L["Last Stand"] ),
     type = "toggle",
     width = "full",
     disabled = function() return state.settings.last_stand_offensively end,

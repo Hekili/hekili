@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
@@ -1604,16 +1605,16 @@ spec:RegisterAbilities( {
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
-    name = "Only |T236312:0|t Shockwave as Interrupt (when Talented)",
-    desc = "If checked, |T236312:0|t Shockwave will only be recommended when your target is casting.",
+    name = L["Only |T236312:0|t Shockwave as Interrupt"],
+    desc = L["If checked, |T236312:0|t Shockwave will only be recommended when your target is casting (and talented)."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "heroic_charge", false, {
-    name = "Use Heroic Charge Combo",
-    desc = "If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use Heroic Leap + Charge together.\n\n" ..
-        "This is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay.",
+    name = L["Use Heroic Charge Combo"],
+    desc = L["If checked, the default priority will check |cFFFFD100settings.heroic_charge|r to determine whether to use |T236171:0|t Heroic Leap + |T132337:0|t Charge together."] .. "\n\n"
+        .. L["This is generally a DPS increase but the erratic movement can be disruptive to smooth gameplay."],
     type = "toggle",
     width = "full",
 } )

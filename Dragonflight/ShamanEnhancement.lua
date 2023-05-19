@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "SHAMAN" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local PTR = ns.PTR
@@ -2382,34 +2383,39 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "pad_windstrike", true, {
-    name = strformat( "Pad %s Cooldown", Hekili:GetSpellLinkWithTexture( spec.abilities.windstrike.id ) ),
-    desc = strformat( "If checked, the cooldown of %s will be shortened to help ensure it is recommended as frequently as possible during %s.",
+    name = strformat( L["Pad %s Cooldown"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.windstrike.id ) ),
+    desc = strformat( L["If checked, the cooldown of %1$s will be shortened to help ensure that it is recommended as frequently as possible during %2$s."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.windstrike.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.ascendance.id ) ),
     type = "toggle",
     width = 1.5
 } )
 
 spec:RegisterSetting( "pad_lava_lash", true, {
-    name = strformat( "Pad %s Cooldown", Hekili:GetSpellLinkWithTexture( spec.abilities.lava_lash.id ) ),
-    desc = strformat( "If checked, the cooldown of %s will be shortened to help ensure that it is recommended as frequently as possible during %s.",
+    name = strformat( L["Pad %s Cooldown"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.lava_lash.id ) ),
+    desc = strformat( L["If checked, the cooldown of %1$s will be shortened to help ensure that it is recommended as frequently as possible during %2$s."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.lava_lash.id ), Hekili:GetSpellLinkWithTexture( spec.auras.hot_hand.id ) ),
     type = "toggle",
     width = 1.5
 } )
 
 spec:RegisterSetting( "hostile_dispel", false, {
-    name = strformat( "Use %s or %s", Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
-    desc = strformat( "If checked, %s or %s can be recommended when your target has a dispellable magic effect.\n\n"
-        .. "These abilities are also on the Interrupts toggle by default.", Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
+    name = strformat( L["Use %s or %s"],
+        Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ),
+    desc = strformat( L["If checked, %s or %s can be recommended your target has a dispellable magic effect."],
+        Hekili:GetSpellLinkWithTexture( 370 ), Hekili:GetSpellLinkWithTexture( 378773 ) ) .. "\n\n"
+        .. L["These abilities are also on the Interrupts toggle by default."],
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "purge_icd", 12, {
-    name = strformat( "%s Internal Cooldown", Hekili:GetSpellLinkWithTexture( 370 ) ),
-    desc = strformat( "If set above zero, %s cannot be recommended again until time has passed since it was last used, even if there are more "
-        .. "dispellable magic effects on your target.\n\nThis feature can prevent you from being encouraged to spam your dispel endlessly against enemies "
-        .. "with rapidly stacking magic buffs.", Hekili:GetSpellLinkWithTexture( 370 ) ),
+    name = strformat( L["%s Internal Cooldown"],
+        Hekili:GetSpellLinkWithTexture( 370 ) ),
+    desc = strformat( L["If set above zero, %s cannot be recommended again until time has passed since it was last used, even if there are more dispellable magic effects on your target."],
+        Hekili:GetSpellLinkWithTexture( 370 ) ) .. "\n\n"
+        .. L["This feature can prevent you from being encouraged to spam your dispel endlessly against enemies with rapidly stacking magic buffs."],
     type = "range",
     min = 0,
     max = 20,
@@ -2418,10 +2424,11 @@ spec:RegisterSetting( "purge_icd", 12, {
 } )
 
 spec:RegisterSetting( "project_windfury", 0, {
-    name = strformat( "Use %s for %s", Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ) ),
-    desc = strformat( "If set above zero, %s can be recommended to relocate your %s when it is active, will remain active for the specified time, and you are currently out of range.\n\n"
-        .. "This feature may be disruptive if you have other totems active that you do not want to move.", Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ),
-            Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ) ),
+    name = strformat( L["Use %1$s for %2$s"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ) ),
+    desc = strformat( L["If set above zero, %1$s can be recommended to relocate your %2$s when it is active, will remain active for the specified time, and you are currently out of range."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ) ) .. "\n\n"
+        .. L["This feature may be disruptive if you have other totems active that you do not want to move."],
     type = "range",
     min = 0,
     max = 120,
@@ -2435,10 +2442,11 @@ spec:RegisterStateExpr( "project_windfury_totem", function ()
 end )
 
 spec:RegisterSetting( "tp_macro", nil, {
-    name = strformat( "%s Macro", Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ) ),
-    desc = strformat( "This macro will use %s at your feet.  It can be useful for pulling your %s to you if you get out of range.\n\n"
-        .. "You can also add this command to a macro for other abilities (like %s) to routinely bring your totems to your character.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ),
+    name = strformat( L["%s Macro"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ) ),
+    desc = strformat( L["This macro will use %1$s at your feet.  It can be useful for pulling your %2$s to you if you get out of range."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.totemic_projection.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.windfury_totem.id ) ) .. "\n\n"
+        .. strformat( L["You can also add this command to a macro for other abilities (like %s) to routinely bring your totems to your character."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.stormstrike.id ) ),
     type = "input",
     width = "full",
@@ -2448,23 +2456,29 @@ spec:RegisterSetting( "tp_macro", nil, {
 } )
 
 spec:RegisterSetting( "burn_before_wave", true, {
-    name = strformat( "Burn Maelstrom before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ),
-    desc = strformat( "If checked, spending %s stacks may be recommended before using %s when %s is talented.\n\n"
-        .. "This feature is damage-neutral in single-target and a slight increase in multi-target scenarios.", Hekili:GetSpellLinkWithTexture( spec.auras.maelstrom_weapon.id ),
-            Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ), Hekili:GetSpellLinkWithTexture( spec.talents.primal_maelstrom[2] ) ),
+    name = strformat( L["Burn Maelstrom before %s"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ),
+    desc = strformat( L["If checked, spending %1$s stacks may be recommended before using %2$s when %3$s is talented."],
+        Hekili:GetSpellLinkWithTexture( spec.auras.maelstrom_weapon.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.primal_maelstrom[2] ) ) .. "\n\n"
+        .. L["This feature is damage-neutral in single-target and a slight increase in multi-target scenarios."],
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "pwave_targets", 0, {
-    name = strformat( "Required Targets for %s", Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ),
-    desc = strformat( "If set above 1, %s will not be recommended unless multiple targets are detected.  This option can be quickly accessed via the icon or addon compartment "
-        .. "on your minimap, to quickly change it for different boss encounters.\n\nThis setting is also found in the |cFFFFD100Abilities |cFFFFFFFF>|r "
-        .. "Enhancement |cFFFFFFFF>|r |W%s|w|r section.", Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ), spec.abilities.primordial_wave.name ),
+    name = strformat( L["Required Targets for %s"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ),
+    desc = strformat( L["If set above 1, %s will not be recommended unless multiple targets are detected."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ) .. "  "
+        .. L["This option can be quickly accessed via the icon or addon compartment on your minimap, to quickly change it for different boss encounters."] .. "\n\n"
+        .. strformat( L["This setting is also found in the |cFFFFD100Abilities |cFFFFFFFF>|r Enhancement |cFFFFFFFF>|r |W%s|w|r section."],
+        spec.abilities.primordial_wave.name ),
     type = "range",
     min = 0,
     max = 15,
     step = 1,
+    width = "full",
     set = function( info, val )
         Hekili.DB.profile.specs[ 263 ].abilities.primordial_wave.targetMin = val
     end,
@@ -2474,10 +2488,11 @@ spec:RegisterSetting( "pwave_targets", 0, {
 } )
 
 spec:RegisterSetting( "filler_shock", true, {
-    name = strformat( "Filler %s", Hekili:GetSpellLinkWithTexture( spec.abilities.flame_shock.id ) ),
-    desc = strformat( "If checked, a filler %s may be recommended when nothing else is currently ready, even if something better will be off cooldown very soon.\n\n"
-        .. "This feature matches simulation profile behavior and is a small DPS increase, but has been confusing to some users.",
+    name = strformat( L["Filler %s"],
         Hekili:GetSpellLinkWithTexture( spec.abilities.flame_shock.id ) ),
+    desc = strformat( L["If checked, a filler %s may be recommended when nothing else is currently ready, even if something better will be off cooldown very soon."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.flame_shock.id ) ) .. "\n\n"
+        .. L["This feature matches simulation profile behavior and is a small DPS increase, but has been confusing to some users."],
     type = "toggle",
     width = 1.5
 } )

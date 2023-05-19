@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 254, true )
@@ -1200,8 +1201,8 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "prevent_hardcasts", false, {
-    name = "Prevent Hardcasts While Moving",
-    desc = "If checked, the addon will not recommend |T135130:0|t Aimed Shot or |T132323:0|t Wailing Arrow when moving and hardcasting.",
+    name = L["Prevent Hardcasts While Moving"],
+    desc = L["If checked, the addon will not recommend |T135130:0|t Aimed Shot or |T132323:0|t Wailing Arrow when moving and hardcasting."],
     type = "toggle",
     width = "full"
 } )
