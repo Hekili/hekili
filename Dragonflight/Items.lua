@@ -1541,7 +1541,7 @@ all:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
-        item = 204388,
+        item = 204386,
         toggle = "cooldowns",
 
         handler = function()
