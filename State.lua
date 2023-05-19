@@ -6873,7 +6873,7 @@ function state:IsKnown( sID )
 
     if not ability then
         Error( "IsKnown() - " .. sID .. " / " .. original .. " not found in abilities table.\n\n" .. debugstack() )
-        return false
+        return false, format( "%s / %s not found in abilities table", tostring( original ), tostring( sID ) )
     end
 
     if IsAbilityDisabled( ability ) then return false, "not usable here" end
@@ -6894,8 +6894,6 @@ function state:IsKnown( sID )
     end
 
     if IsDisabledCovenantSpell( sID ) then return false, "covenant spells are disabled" end
-
-    local profile = Hekili.DB.profile
 
     if ability.spec and not state.spec[ ability.spec ] then
         return false, "wrong specialization"
