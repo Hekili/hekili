@@ -18,6 +18,7 @@ Hekili.Version = ns.Version
 local format = string.format
 local insert, concat = table.insert, table.concat
 
+ns.WARNING = "|cFFFF0000" .. L["WARNING"] .. "|r:  "
 local BlizzBlue = "|cFF00B4FF"
 
 -- This metatable can be used for optional keys and it will be return unknown keys without nil.

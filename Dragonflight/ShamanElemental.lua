@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
+local W = ns.WordWrapper
+
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 local strformat = string.format
 
@@ -2577,8 +2579,8 @@ spec:RegisterSetting( "stack_buffer", 1.1, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.icefury.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.stormkeeper.id ) ),
     desc = strformat( L["The default priority tries to avoid wasting %s and %s stacks with a grace period of 1.1 GCD per stack."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.icefury.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.stormkeeper.id ) ) .. "\n\n"
-        .. strformat( L["Increasing this number will reduce the likelihood of wasted |W%s|w / |W%s|w stacks due to other procs taking priority, leaving you with more time to react."],
-        spec.abilities.icefury.name, spec.abilities.stormkeeper.name ),
+        .. strformat( L["Increasing this number will reduce the likelihood of wasted %s / %s stacks due to other procs taking priority, leaving you with more time to react."],
+        W( spec.abilities.icefury.name ), W( spec.abilities.stormkeeper.name ) ),
     type = "range",
     min = 1,
     max = 2,

@@ -101,9 +101,9 @@ local ResourceInfo = {
     fury            = Enum.PowerType.Fury,
     pain            = Enum.PowerType.Pain,
     essence         = Enum.PowerType.Essence,
-    rune_blood      = Enum.PowerType.RuneBlood,
-    rune_frost      = Enum.PowerType.RuneFrost,
-    rune_unholy     = Enum.PowerType.RuneUnholy,
+    blood_runes     = Enum.PowerType.RuneBlood,
+    frost_runes     = Enum.PowerType.RuneFrost,
+    unholy_runes    = Enum.PowerType.RuneUnholy,
 }
 
 local ResourceByID = {}

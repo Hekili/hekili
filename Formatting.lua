@@ -773,7 +773,7 @@ local COLOR_NORMAL = '|r'
 
 
 function ns.formatValue( value )
-  if value == nil or value == "nil" then value = L["nil"] end
+  if value == nil or value == "nil" then value = L["DATATYPES_NIL"] end
 
   if type( value ) == 'number' then
     -- Check for decimal places.
@@ -784,7 +784,7 @@ function ns.formatValue( value )
     end
 
   elseif type( value ) == 'boolean' then
-    return ( value and COLOR_TRUE or COLOR_FALSE ) .. L[ tostring( value ) ] .. COLOR_NORMAL
+    return ( value and COLOR_TRUE .. L["DATATYPES_TRUE"] or COLOR_FALSE .. L["DATATYPES_FALSE"] ) .. COLOR_NORMAL
 
   elseif type( value ) == 'string' then
     return COLOR_STRING .. value .. COLOR_NORMAL

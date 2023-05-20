@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
+local W = ns.WordWrapper
+
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 268 )
@@ -1732,8 +1734,8 @@ spec:RegisterSetting( "bof_percent", 50, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.keg_smash.id ) ),
     desc = strformat( L["If set above zero, %1$s may be recommended only if this percentage of your identified targets are afflicted with %2$s."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.keg_smash.id ) ) .. "\n\n"
-        .. strformat( L["Example:  If set to |cFFFFD10050|r, with 4 targets, |W%1$s|w will only be recommended when at least 2 targets have |W%2$s|w applied."],
-        spec.abilities.breath_of_fire.name, spec.abilities.keg_smash.name ),
+        .. strformat( L["Example:  If set to |cFFFFD10050|r, with 4 targets, %1$s will only be recommended when at least 2 targets have %2$s applied."],
+        W( spec.abilities.breath_of_fire.name ), W( spec.abilities.keg_smash.name  )),
     type = "range",
     min = 0,
     max = 100,

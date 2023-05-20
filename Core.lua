@@ -200,7 +200,7 @@ function Hekili:OnEnable()
     self:ForceUpdate( "ADDON_ENABLED" )
 
     if self.BuiltFor > self.CurrentBuild then
-        self:Notify( format( L["|cFFFF0000WARNING|r:  This version of Hekili is for a future version of WoW; you should reinstall for %s."], self.GameBuild ) )
+        self:Notify( format( ns.WARNING .. L["This version of Hekili is for a future version of WoW; you should reinstall for %s."], self.GameBuild ) )
     end
 end
 
@@ -1747,7 +1747,7 @@ function Hekili.Update( initial )
                     n = n + 1
 
                     if n > 10 then
-                        if debug then Hekili:Debug( "WARNING:  Attempted to process 10+ events; breaking to avoid CPU wastage." ) end
+                        if debug then Hekili:Debug( ns.WARNING .. "Attempted to process 10+ events; breaking to avoid CPU wastage." ) end
                         break
                     end
 

@@ -10,6 +10,7 @@ local class, state = Hekili.Class, Hekili.State
 
 local PTR = ns.PTR
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
+local W = ns.WordWrapper
 
 -- Globals
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
@@ -2472,8 +2473,8 @@ spec:RegisterSetting( "pwave_targets", 0, {
     desc = strformat( L["If set above 1, %s will not be recommended unless multiple targets are detected."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ) .. "  "
         .. L["This option can be quickly accessed via the icon or addon compartment on your minimap, to quickly change it for different boss encounters."] .. "\n\n"
-        .. strformat( L["This setting is also found in the |cFFFFD100Abilities |cFFFFFFFF>|r Enhancement |cFFFFFFFF>|r |W%s|w|r section."],
-        spec.abilities.primordial_wave.name ),
+        .. strformat( L["This setting is also found in the |cFFFFD100Abilities |cFFFFFFFF>|r Enhancement |cFFFFFFFF>|r %s|r section."],
+        W( spec.abilities.primordial_wave.name ) ),
     type = "range",
     min = 0,
     max = 15,

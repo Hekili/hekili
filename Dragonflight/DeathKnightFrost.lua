@@ -11,6 +11,7 @@ local class, state = Hekili.Class, Hekili.State
 local roundUp = ns.roundUp
 local FindUnitBuffByID = ns.FindUnitBuffByID
 local PTR = ns.PTR
+local W = ns.WordWrapper
 
 local strformat = string.format
 
@@ -1709,8 +1710,8 @@ spec:RegisterOptions( {
 spec:RegisterSetting( "bos_rp", 50, {
     name = strformat( L["%1$s for %2$s"],
         _G.RUNIC_POWER, Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ) ),
-    desc = strformat( L["%1$s will only be recommended when you have at least this much |W%2$s|w."],
-        Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ), _G.RUNIC_POWER ),
+    desc = strformat( L["%1$s will only be recommended when you have at least this much %2$s."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ), W( _G.RUNIC_POWER ) ),
     type = "range",
     min = 18,
     max = 100,
@@ -1721,10 +1722,10 @@ spec:RegisterSetting( "bos_rp", 50, {
 spec:RegisterSetting( "ams_usage", "damage", {
     name = strformat( L["%s Requirements"],
         Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ) ),
-    desc = strformat( L["The default priority uses |W%1$s|w to generate |W%2$s|w regardless of whether there is incoming magic damage."],
-        Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ), _G.RUNIC_POWER ) .. " "
-        .. strformat( L["You can specify additional conditions for |W%s|w usage here."],
-        Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ) ).. "\n\n"
+    desc = strformat( L["The default priority uses %1$s to generate %2$s regardless of whether there is incoming magic damage."],
+        W( Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ) ), W( _G.RUNIC_POWER ) ) .. " "
+        .. strformat( L["You can specify additional conditions for %s usage here."],
+        W( Hekili:GetSpellLinkWithTexture( spec.abilities.antimagic_shell.id ) ) ).. "\n\n"
         .. "|cFFFFD100" .. L["Damage"] .. "|r:" .. "\n" .. L["Requires incoming magic damage within the past 3 seconds."] .. "\n\n"
         .. "|cFFFFD100" .. L["Defensives"] .. "|r:" .. "\n" .. L["Requires the Defensives toggle to be active."] .. "\n\n"
         .. "|cFFFFD100" .. L["Defensives"] .. " + " .. L["Damage"] .. "|r:" .. "\n" .. L["Requires both of the above."] .. "\n\n"

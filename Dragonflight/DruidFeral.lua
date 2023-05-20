@@ -9,6 +9,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
+local W = ns.WordWrapper
 
 local strformat = string.format
 
@@ -2571,10 +2572,10 @@ spec:RegisterSetting( "use_funnel", false, {
     name = strformat( L["%s Funnel"],
         Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
     desc = function()
-        return strformat( L["If checked, when %1$s and %2$s are talented and %3$s is |cFFFFD100not|r talented, %4$s will be recommended over %5$s unless |W%6$s|w needs to be refreshed."],
+        return strformat( L["If checked, when %1$s and %2$s are talented and %3$s is |cFFFFD100not|r talented, %4$s will be recommended over %5$s unless %6$s needs to be refreshed."],
             Hekili:GetSpellLinkWithTexture( spec.talents.taste_for_blood[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.relentless_predator[2] ),
             Hekili:GetSpellLinkWithTexture( spec.talents.tear_open_wounds[2] ), Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ),
-            Hekili:GetSpellLinkWithTexture( spec.abilities.primal_wrath.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ) .. "\n\n"
+            Hekili:GetSpellLinkWithTexture( spec.abilities.primal_wrath.id ), W( Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ) ) .. "\n\n"
             .. strformat( L["Requires %s"],
             Hekili:GetSpellLinkWithTexture( spec.talents.taste_for_blood[2], nil, state.talent.taste_for_blood.enabled ) ) .. "\n"
             .. strformat( L["Requires %s"],
@@ -2594,12 +2595,12 @@ end )
 spec:RegisterSetting( "allow_shadowmeld", nil, {
     name = strformat( L["Use %s"],
         Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ) ),
-    desc = strformat( L["If checked, %1$s can be recommended for |W%2$s|w players if its conditions for use are met."],
-        Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ), C_CreatureInfo.GetRaceInfo(4).raceName ) .. "\n\n"
-        .. strformat( L["Your stealth-based abilities can be used in |W%s|w, even if your action bar does not change."],
-        spec.auras.shadowmeld.name ) .. " "
-        .. strformat( L["|W%s|w can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
-        spec.auras.shadowmeld.name  ),
+    desc = strformat( L["If checked, %1$s can be recommended for %2$s players if its conditions for use are met."],
+        Hekili:GetSpellLinkWithTexture( spec.auras.shadowmeld.id ), W( C_CreatureInfo.GetRaceInfo(4).raceName ) ) .. "\n\n"
+        .. strformat( L["Your stealth-based abilities can be used in %s, even if your action bar does not change."],
+        W( spec.auras.shadowmeld.name ) ) .. " "
+        .. strformat( L["%s can only be recommended in boss fights or when you are in a group (to avoid resetting combat)."],
+        W( spec.auras.shadowmeld.name  )  ),
     type = "toggle",
     width = "full",
     get = function () return not Hekili.DB.profile.specs[ 103 ].abilities.shadowmeld.disabled end,
@@ -2631,10 +2632,10 @@ spec:RegisterOptions( {
 spec:RegisterSetting( "vigil_damage", 50, {
     name = strformat( L["%s Damage Threshold"],
         Hekili:GetSpellLinkWithTexture( class.specs[ 102 ].abilities.natures_vigil.id ) ),
-    desc = strformat( L["If set below 100%%, |W%s|w may only be recommended if your health has dropped below the specified percentage."],
-        class.specs[ 102 ].abilities.natures_vigil.name ) .. "\n\n"
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        class.specs[ 102 ].abilities.natures_vigil.name, "|cFFFFD100" .. L["Defensives"] .. "|r" ),
+    desc = strformat( L["If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage."],
+        W( class.specs[ 102 ].abilities.natures_vigil.name ) ) .. "\n\n"
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( class.specs[ 102 ].abilities.natures_vigil.name ), "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 1,
     max = 100,

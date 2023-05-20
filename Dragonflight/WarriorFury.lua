@@ -13,6 +13,7 @@ local strformat = string.format
 
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 local IsActiveSpell = ns.IsActiveSpell
+local W = ns.WordWrapper
 
 local spec = Hekili:NewSpecialization( 72 )
 
@@ -1757,12 +1758,12 @@ spec:RegisterSetting( "shockwave_interrupt", true, {
 spec:RegisterSetting( "t30_bloodthirst_crit", 95, {
     name = strformat( L["%s Critical Threshold (Tier 30)"],
         Hekili:GetSpellLinkWithTexture( spec.abilities.bloodthirst.id ) ),
-    desc = strformat( L["By default, if you have four pieces of Tier 30 equipped, |W%s|w and |W%s|w will be recommended when their chance to crit is |cFFFFD10095%%|r or higher."],
-        spec.abilities.bloodthirst.name, spec.abilities.bloodbath.name ) .. "\n\n"
+    desc = strformat( L["By default, if you have four pieces of Tier 30 equipped, %s and %s will be recommended when their chance to crit is |cFFFFD10095%%|r or higher."],
+        W( spec.abilities.bloodthirst.name ), W( spec.abilities.bloodbath.name ) ) .. "\n\n"
         .. strformat( L["Your tier set, %s, and %s can bring you over the 95%% threshold."],
         Hekili:GetSpellLinkWithTexture( spec.talents.recklessness[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.bloodcraze[2] ) ) .. " "
-        .. strformat( L["If |W%1$s|w is talented, these crits will proc a %2$s for additional damage."],
-        Hekili:GetSpellLinkWithTexture( spec.talents.cold_steel_hot_blood[2] ), Hekili:GetSpellLinkWithTexture( spec.auras.gushing_wound.id ) ) .. " "
+        .. strformat( L["If %1$s is talented, these crits will proc a %2$s for additional damage."],
+        W( Hekili:GetSpellLinkWithTexture( spec.talents.cold_steel_hot_blood[2] ) ), Hekili:GetSpellLinkWithTexture( spec.auras.gushing_wound.id ) ) .. " "
         .. L["Lowering this percentage slightly may be helpful if your base Critical Strike chance is very low."] .. " "
         .. L["However, if set too low, you may use these abilities but fail to crit."],
     type = "range",

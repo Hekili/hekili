@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
+local W = ns.WordWrapper
+
 local floor = math.floor
 local strformat = string.format
 
@@ -1332,12 +1334,12 @@ spec:RegisterSetting( "allow_focus_overcap", false, {
 spec:RegisterSetting( "manual_kill_shot", false, {
     name = strformat( L["%s: %s Macro"],
         Hekili:GetSpellLinkWithTexture( spec.auras.coordinated_assault.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.kill_shot.id ) ),
-    desc = strformat( L["During |W%1$s|w, some guides recommend using a macro to manually control your pet's attacks to empower |W%2$s|w."],
-        spec.auras.coordinated_assault.name, spec.abilities.kill_shot.name ) .. "  "
-        .. strformat( L["These macros prevent the |W%1$s|w empowerment from occurring naturally, which will prevent |W%2$s|w from being recommended."],
-        spec.auras.coordinated_assault_empower.name, spec.abilities.kill_shot.name ) .. "\n\n"
-        .. strformat( L["Enabling this option will allow |W%1$s|w to be recommended during %2$s without the empowerment buff active."],
-        spec.abilities.kill_shot.name, spec.auras.coordinated_assault.name ),
+    desc = strformat( L["During %1$s, some guides recommend using a macro to manually control your pet's attacks to empower %2$s."],
+        W( spec.auras.coordinated_assault.name ), W( spec.abilities.kill_shot.name ) ) .. "  "
+        .. strformat( L["These macros prevent the %1$s empowerment from occurring naturally, which will prevent %2$s from being recommended."],
+        W( spec.auras.coordinated_assault_empower.name ), W( spec.abilities.kill_shot.name ) ) .. "\n\n"
+        .. strformat( L["Enabling this option will allow %1$s to be recommended during %2$s without the empowerment buff active."],
+        W( spec.abilities.kill_shot.name ), spec.auras.coordinated_assault.name ),
     type = "toggle",
     width = 1.49
 } )

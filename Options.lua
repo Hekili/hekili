@@ -21,6 +21,7 @@ local orderedPairs = ns.orderedPairs
 local tableCopy = ns.tableCopy
 
 local GetItemInfo = ns.CachedGetItemInfo
+local W = ns.WordWrapper
 
 -- Atlas/Textures
 local AtlasToString, GetAtlasFile, GetAtlasCoords = ns.AtlasToString, ns.GetAtlasFile, ns.GetAtlasCoords
@@ -1578,16 +1579,16 @@ do
                                         type = "select",
                                         name = L["Frame Strata"],
                                         desc =  L["Frame Strata determines which graphical layer that this display is drawn on."] .. "\n\n"
-                                            .. format( L["Default value is %s."], "|cFFFFD100" .. L[ displayTemplate.frameStrata ] .. "|r" ),
+                                            .. format( L["Default value is %s."], "|cFFFFD100" .. L[ "FRAME_STRATA_" .. displayTemplate.frameStrata ] .. "|r" ),
                                         values = {
-                                            L["BACKGROUND"],
-                                            L["LOW"],
-                                            L["MEDIUM"],
-                                            L["HIGH"],
-                                            L["DIALOG"],
-                                            L["FULLSCREEN"],
-                                            L["FULLSCREEN_DIALOG"],
-                                            L["TOOLTIP"],
+                                            L["FRAME_STRATA_BACKGROUND"],
+                                            L["FRAME_STRATA_LOW"],
+                                            L["FRAME_STRATA_MEDIUM"],
+                                            L["FRAME_STRATA_HIGH"],
+                                            L["FRAME_STRATA_DIALOG"],
+                                            L["FRAME_STRATA_FULLSCREEN"],
+                                            L["FRAME_STRATA_FULLSCREEN_DIALOG"],
+                                            L["FRAME_STRATA_TOOLTIP"],
                                         },
                                         width = 1.49,
                                         order = 1,
@@ -2408,7 +2409,7 @@ do
                                 type = "range",
                                 name = L["Speed"],
                                 desc = L["Specify how frequently the flash should restart."] .. "  "
-                                    .. format( L["Default value is %s."], "|cFFFFD100" .. ( displayTemplate.flash.speed .. L["SYMBOL_SECOND"] ) .. "|r" ),
+                                    .. format( L["Default value is %s."], "|cFFFFD100" .. ( displayTemplate.flash.speed .. L["SYMBOLS_SECOND"] ) .. "|r" ),
                                 min = 0.1,
                                 max = 2,
                                 step = 0.1,
@@ -2507,7 +2508,7 @@ do
                                 type = "toggle",
                                 name = L["Button Blink"],
                                 desc = L["If enabled, the whole action button will fade in and out."] .. "\n\n"
-                                    .. format( L["Default value is %s."], "|cFFFFD100" .. ( displayTemplate.flash.blink and L["enabled"] or L["disabled"] ) .. "|r" ),
+                                    .. format( L["Default value is %s."], "|cFFFFD100" .. string.lower( displayTemplate.flash.blink and L["Enabled"] or L["Disabled"] ) .. "|r" ),
                                 order = 13,
                                 width = "full",
                                 hidden = function () return SF == nil end,
@@ -3955,7 +3956,7 @@ do
                 type = "toggle",
                 name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
                 desc = function () return L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon."] .. "  "
-                    .. format( L["This can cause issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k )
+                    .. format( L["This can cause issues for some specializations, if other abilities depend on you using %s."], W( ability.item and ability.link or k ) )
                 end,
                 width = 1.5,
                 order = 1,
@@ -3964,8 +3965,8 @@ do
             boss = {
                 type = "toggle",
                 name = L["Boss Encounter Only"],
-                desc = format( L["If checked, the addon will not recommend |W%s|w unless you are in a boss fight (or encounter)."], k ) .. "  "
-                    .. format( L["If left unchecked, |W%s|w can be recommended in any type of fight."], k ),
+                desc = format( L["If checked, the addon will not recommend %s unless you are in a boss fight (or encounter)."], W( k ) ) .. "  "
+                    .. format( L["If left unchecked, %s can be recommended in any type of fight."], W( k ) ),
                 width = 1.5,
                 order = 1.1,
             },
@@ -3996,16 +3997,17 @@ do
 
                     local t = class.abilities[ v ].toggle
                     if t == "essences" then t = "covenants" end
+                    local toggleName = t and "(" .. L[ t:gsub("^%l", string.upper) ] .. ")" or  L["(none)"]
 
                     toggles.none = L["None"]
-                    toggles.default = format( L["Default %s"], "|cFFFFD100(" .. ( t and L[ t:gsub("^%l", string.upper) ] or  L["none"] ) .. ")|r" )
+                    toggles.default = format( L["Default %s"], "|cFFFFD100" .. toggleName .. "|r" )
                     toggles.cooldowns = L["Cooldowns"]
                     toggles.essences = L["Covenants"]
                     toggles.defensives = L["Defensives"]
                     toggles.interrupts = L["Interrupts"]
                     toggles.potions = L["Potions"]
-                    toggles.custom1 = L["Custom 1"]
-                    toggles.custom2 = L["Custom 2"]
+                    toggles.custom1 = L["Custom #1"]
+                    toggles.custom2 = L["Custom #2"]
 
                     return toggles
                 end,
@@ -4093,7 +4095,7 @@ do
                         type = "toggle",
                         name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
                         desc = function () return L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon."] .. "  "
-                            .. format( L["This can cause issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k )
+                            .. format( L["This can cause issues for some specializations, if other abilities depend on you using %s."], W( ability.item and ability.link or k ) )
                         end,
                         width = 1,
                         order = 1,
@@ -4102,8 +4104,8 @@ do
                     boss = {
                         type = "toggle",
                         name = L["Boss Encounter Only"],
-                        desc = format( L["If checked, the addon will not recommend |W%s|w unless you are in a boss fight (or encounter)."], k ) .. "  "
-                            .. format( L["If left unchecked, |W%s|w can be recommended in any type of fight."], k ),
+                        desc = format( L["If checked, the addon will not recommend %s unless you are in a boss fight (or encounter)."], W( k ) ) .. "  "
+                            .. format( L["If left unchecked, %s can be recommended in any type of fight."], W( k ) ),
                         width = 1,
                         order = 1.1,
                     },
@@ -4120,16 +4122,17 @@ do
 
                             local t = class.abilities[ v ].toggle
                             if t == "essences" then t = "covenants" end
+                            local toggleName = t and "(" .. L[ t:gsub("^%l", string.upper) ] .. ")" or  L["(none)"]
 
                             toggles.none = L["None"]
-                            toggles.default = format( L["Default %s"], "|cFFFFD100(" .. ( t and L[ t:gsub("^%l", string.upper) ] or  L["none"] ) .. ")|r" )
+                            toggles.default = format( L["Default %s"], "|cFFFFD100" .. toggleName .. "|r" )
                             toggles.cooldowns = L["Cooldowns"]
                             toggles.essences = L["Covenants"]
                             toggles.defensives = L["Defensives"]
                             toggles.interrupts = L["Interrupts"]
                             toggles.potions = L["Potions"]
-                            toggles.custom1 = L["Custom 1"]
-                            toggles.custom2 = L["Custom 2"]
+                            toggles.custom1 = L["Custom #1"]
+                            toggles.custom2 = L["Custom #2"]
 
                             return toggles
                         end,
@@ -4312,7 +4315,7 @@ do
                 type = "toggle",
                 name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
                 desc = function () return L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon."] .. "  "
-                    .. format( L["This can cause issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k )
+                    .. format( L["This can cause issues for some specializations, if other abilities depend on you using %s."], W( ability.item and ability.link or k ) )
                 end,
                 width = 1.5,
                 order = 1,
@@ -4321,8 +4324,8 @@ do
             boss = {
                 type = "toggle",
                 name = L["Boss Encounter Only"],
-                desc = format( L["If checked, the addon will not recommend |W%s|w via |cff00ccff[Use Items]|r unless you are in a boss fight (or encounter)."], k ) .. "  "
-                    .. format( L["If left unchecked, |W%s|w can be recommended in any type of fight."], k ),
+                desc = format( L["If checked, the addon will not recommend %s via |cff00ccff[Use Items]|r unless you are in a boss fight (or encounter)."], W( k ) ) .. "  "
+                    .. format( L["If left unchecked, %s can be recommended in any type of fight."], W( k ) ),
                 width = 1.5,
                 order = 1.1,
             },
@@ -4353,16 +4356,17 @@ do
 
                     local t = class.abilities[ v ].toggle
                     if t == "essences" then t = "covenants" end
+                    local toggleName = t and "(" .. L[ t:gsub("^%l", string.upper) ] .. ")" or  L["(none)"]
 
                     toggles.none = L["None"]
-                    toggles.default = format( L["Default %s"], "|cFFFFD100(" .. ( t and L[ t:gsub("^%l", string.upper) ] or  L["none"] ) .. ")|r" )
+                    toggles.default = format( L["Default %s"], "|cFFFFD100" .. toggleName .. "|r" )
                     toggles.cooldowns = L["Cooldowns"]
                     toggles.essences = L["Covenants"]
                     toggles.defensives = L["Defensives"]
                     toggles.interrupts = L["Interrupts"]
                     toggles.potions = L["Potions"]
-                    toggles.custom1 = L["Custom 1"]
-                    toggles.custom2 = L["Custom 2"]
+                    toggles.custom1 = L["Custom #1"]
+                    toggles.custom2 = L["Custom #2"]
 
                     return toggles
                 end,
@@ -4445,7 +4449,7 @@ do
                         type = "toggle",
                         name = function () return format( L["Disable %s"], ability.item and ability.link or k ) end,
                         desc = function () return L["If checked, this ability will |cffff0000NEVER|r be recommended by the addon."] .. "  "
-                            .. format( L["This can cause issues for some specializations, if other abilities depend on you using |W%s|w."], ability.item and ability.link or k )
+                            .. format( L["This can cause issues for some specializations, if other abilities depend on you using %s."], W( ability.item and ability.link or k ) )
                         end,
                         width = 1.5,
                         order = 1.05,
@@ -4454,8 +4458,8 @@ do
                     boss = {
                         type = "toggle",
                         name = L["Boss Encounter Only"],
-                        desc = format( L["If checked, the addon will not recommend |W%s|w via |cff00ccff[Use Items]|r unless you are in a boss fight (or encounter)."], ability.item and ability.link or k ) .. "  "
-                            .. format( L["If left unchecked, |W%s|w can be recommended in any type of fight."], ability.item and ability.link or k ),
+                        desc = format( L["If checked, the addon will not recommend %s via |cff00ccff[Use Items]|r unless you are in a boss fight (or encounter)."], W( ability.item and ability.link or k ) ) .. "  "
+                            .. format( L["If left unchecked, %s can be recommended in any type of fight."], W( ability.item and ability.link or k ) ),
                         width = 1.5,
                         order = 1.1,
                     },
@@ -4486,16 +4490,17 @@ do
 
                             local t = class.abilities[ v ].toggle
                             if t == "essences" then t = "covenants" end
+                            local toggleName = t and "(" .. L[ t:gsub("^%l", string.upper) ] .. ")" or  L["(none)"]
 
                             toggles.none = L["None"]
-                            toggles.default = format( L["Default %s"], "|cFFFFD100(" .. ( t and L[ t:gsub("^%l", string.upper) ] or  L["none"] ) .. ")|r" )
+                            toggles.default = format( L["Default %s"], "|cFFFFD100" .. toggleName .. "|r" )
                             toggles.cooldowns = L["Cooldowns"]
                             toggles.essences = L["Covenants"]
                             toggles.defensives = L["Defensives"]
                             toggles.interrupts = L["Interrupts"]
                             toggles.potions = L["Potions"]
-                            toggles.custom1 = L["Custom 1"]
-                            toggles.custom2 = L["Custom 2"]
+                            toggles.custom1 = L["Custom #1"]
+                            toggles.custom2 = L["Custom #2"]
 
                             return toggles
                         end,
@@ -5026,7 +5031,7 @@ do
                                             local spell = Hekili:GetPetBasedTargetSpell()
                                             local link = Hekili:GetSpellLinkWithTexture( spell )
 
-                                            msg = msg .. "\n\n" .. format( L["%1$s|w|r is on your action bar and will be used for all your %2$s pets."], link, UnitClass( "player" ) )
+                                            msg = msg .. "\n\n" .. format( L["%1$s is on your action bar and will be used for all your %2$s pets."], link .. "|w|r", UnitClass( "player" ) )
                                         else
                                             msg = msg .. "\n\n" .. "|cFFFF0000" .. L["Requires pet ability on one of your action bars."] .. "|r"
                                         end
@@ -5086,9 +5091,9 @@ do
 
                                         if GetCVar( "nameplateShowEnemies" ) ~= "1" then
                                             if not out then
-                                                out = L["|cFFFF0000WARNING|r:  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."]
+                                                out = ns.WARNING .. L["Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."]
                                             else
-                                                out = out .. "\n\n" .. L["|cFFFF0000WARNING|r:  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."]
+                                                out = out .. "\n\n" .. ns.WARNING .. L["Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."]
                                             end
                                         end
 
@@ -5270,7 +5275,7 @@ do
                                     desc = L["When out-of-combat, each display will update its recommendations as frequently as you specify."] .. "\n\n"
                                         .. L["Specifying a lower number means updates are generated more frequently, potentially using more CPU time."] .. "\n\n"
                                         .. L["Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting."].. "\n\n"
-                                        .. format( L["Default value is %s."], "|cFFFFD100" .. ( 0.5 .. L["SYMBOL_SECOND"] ) .. "|r" ),
+                                        .. format( L["Default value is %s."], "|cFFFFD100" .. ( 0.5 .. L["SYMBOLS_SECOND"] ) .. "|r" ),
                                     order = 1.1,
                                     width = 1.5,
                                     min = 0.05,
@@ -5285,7 +5290,7 @@ do
                                     desc = L["When in-combat, each display will update its recommendations as frequently as you specify."] .. "\n\n"
                                         .. L["Specifying a lower number means updates are generated more frequently, potentially using more CPU time."] .. "\n\n"
                                         .. L["Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting."] .. "\n\n"
-                                        .. format( L["Default value is %s."], "|cFFFFD100" .. ( 0.25 .. L["SYMBOL_SECOND"] ) .. "|r" ),
+                                        .. format( L["Default value is %s."], "|cFFFFD100" .. ( 0.25 .. L["SYMBOLS_SECOND"] ) .. "|r" ),
                                     order = 1.2,
                                     width = 1.5,
                                     min = 0.05,
@@ -5310,11 +5315,11 @@ do
                                     desc = L["Specify the maximum amount of time (in milliseconds) that can be used |cffffd100per frame|r when updating."]  .. "  "
                                         .. L["If set to |cffffd1000|r, then there is no maximum regardless of your frame rate."] .. "\n\n"
                                         .. "|cffffd100" .. L["Examples"] .. "|r" .. "\n"
-                                        .. " - " .. L["|W60 FPS: 1 second / 60 frames = |cffffd10016.7|rms|w"] .. "\n"
-                                        .. " - " .. L["|W100 FPS: 1 second / 100 frames = |cffffd10010|rms|w"] .. "\n\n"
+                                        .. " - " .. W( L["60 FPS: 1 second / 60 frames = |cffffd10016.7|rms"] ) .. "\n"
+                                        .. " - " .. W( L["100 FPS: 1 second / 100 frames = |cffffd10010|rms"] ) .. "\n\n"
                                         .. L["If you set this value too low, it can take longer to update and may feel less responsive."] .. "\n\n"
                                         .. L["If set too high (or to zero), updates may resolve more quickly but with possible impact to your FPS."] .. "\n\n"
-                                        .. format( L["Default value is %s."], "|cFFFFD100" .. ( ns.specTemplate.maxTime .. L["SYMBOL_MILLISECOND"] ) .. "|r" ),
+                                        .. format( L["Default value is %s."], "|cFFFFD100" .. ( ns.specTemplate.maxTime .. L["SYMBOLS_MILLISECOND"] ) .. "|r" ),
                                     order = 2.2,
                                     min = 0,
                                     max = 100,
@@ -5411,10 +5416,10 @@ do
                     L["The defensive toggle is generally intended for tanking specializations, as you may want to turn on/off recommendations for damage mitigation abilities for any number of reasons during a fight."] .. "  "
                     .. L["DPS players may want to add their own defensive abilities, but would also need to add the abilities to their own custom priority packs."] )
                 BuildToggleList( options, id, "custom1", function ()
-                    return specProf.custom1Name or L["Custom 1"]
+                    return specProf.custom1Name or L["Custom #1"]
                 end )
                 BuildToggleList( options, id, "custom2", function ()
-                    return specProf.custom2Name or L["Custom 2"]
+                    return specProf.custom2Name or L["Custom #2"]
                 end )
 
                 db.plugins.specializations[ sName ] = options
@@ -6523,8 +6528,8 @@ do
 
                                                 local cLen = entry.criteria and entry.criteria:len()
 
-                                                local entryVarName = "|cFF00CCFF" .. ( entry.var_name  or L["unassigned"] ) .. "|r"
-                                                local entryValue = entry.value and ( "|cFFFFD100" .. ( entry.value or L["nothing"] ) .. "|r" )
+                                                local entryVarName = "|cFF00CCFF" .. ( entry.var_name or string.lower( L["Unassigned"] ) ) .. "|r"
+                                                local entryValue = "|cFFFFD100" .. ( entry.value or L["nothing"] ) .. "|r"
                                                 local entryCriteria = cLen and cLen > 0 and ( "|cFFFFD100" .. entry.criteria .. "|r" )
                                                 local entryNotSet = "|cFF00CCFF" .. L["(not set)"] .. "|r"
                                                 local entryNotFound = "|cFF00CCFF" .. L["(not found)"] .. "|r"
@@ -6542,7 +6547,7 @@ do
                                                     elseif entry.op == "set" or entry.op == "setif" then
                                                         desc = format( L["set %s = %s"], entryVarName, entryValue )
                                                     else
-                                                        desc = format( L["%1$s %2$s (%3$s)"], L[ entry.op ] or L["set"], entryVarName, entryValue )
+                                                        desc = format( "%s %s (%s)", entry.op and L[ "OPERATORS_" .. string.upper( entry.op ) ] or L["set"], entryVarName, entryValue )
                                                     end
 
                                                     if cLen and cLen > 0 then
@@ -7649,7 +7654,7 @@ do
                         value = {
                             type = "toggle",
                             name = L["Show Cooldowns"],
-                            desc = format( L["If checked, abilities marked as %s can be recommended."], L["cooldowns"] ),
+                            desc = format( L["If checked, abilities marked as %s can be recommended."], string.lower( L["Cooldowns"] ) ),
                             order = 2,
                         },
 
@@ -7731,7 +7736,7 @@ do
                         value = {
                             type = "toggle",
                             name = L["Show Defensives"],
-                            desc = format( L["If checked, abilities marked as %s can be recommended."], L["defensives"] ) .. "\n\n"
+                            desc = format( L["If checked, abilities marked as %s can be recommended."], string.lower( L["Defensives"] ) ) .. "\n\n"
                                 .. L["This applies only to tanking specializations."],
                             order = 2,
                         },
@@ -7762,7 +7767,7 @@ do
                         value = {
                             type = "toggle",
                             name = L["Show Interrupts"],
-                            desc = format( L["If checked, abilities marked as %s can be recommended."], L["interrupts"] ),
+                            desc = format( L["If checked, abilities marked as %s can be recommended."], string.lower( L["Interrupts"] ) ),
                             order = 2,
                         },
 
@@ -7791,7 +7796,7 @@ do
                         value = {
                             type = "toggle",
                             name = L["Show Potions"],
-                            desc = format( L["If checked, abilities marked as %s can be recommended."], L["potions"] ),
+                            desc = format( L["If checked, abilities marked as %s can be recommended."], string.lower( L["Potions"] ) ),
                             order = 2,
                         },
                     }
@@ -9570,8 +9575,8 @@ do
     }
 
     local toggleInstructions = {
-        format( "%s|r %s", L["on"], L["(to enable)"] ),
-        format( "%s|r %s", L["off"], L["(to disable)"] ),
+        format( "%s|r %s", string.lower( L["ON"] ), L["(to enable)"] ),
+        format( "%s|r %s", string.lower( L["OFF"] ), L["(to disable)"] ),
         format( "|r %s", L["(to toggle)"] ),
     }
 
@@ -9723,7 +9728,7 @@ do
                         " - " .. L["Toggle Defensives:  |cFFFFD100/hek set defensives|r"]
 
                     output = output .. "\n\n" ..
-                        format( L["To control your display mode (currently %s):"], "|cFFFFD100" .. ( self.DB.profile.toggles.mode.value or L["unknown"] ) .. "|r" ) .. "\n" ..
+                        format( L["To control your display mode (currently %s):"], "|cFFFFD100" .. ( self.DB.profile.toggles.mode.value or string.lower( L["Unknown"] ) ) .. "|r" ) .. "\n" ..
                         " - " .. L["Toggle Mode:  |cFFFFD100/hek set mode|r"] .. "\n" ..
                         " - " .. L["Set Mode:  |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)"]
 
@@ -9993,10 +9998,10 @@ do
                 self.DB.profile.enabled = enable
 
                 if enable then
-                    Hekili:Print( L["Addon |cFFFFD100ENABLED|r."] )
+                    Hekili:Print( format( L["Addon %s."], "|cFFFFD100" .. string.upper( L["Enabled"]) .. "|r" ) )
                     self:Enable()
                 else
-                    Hekili:Print( L["Addon |cFFFFD100DISABLED|r."] )
+                    Hekili:Print( format( L["Addon %s."], "|cFFFFD100" .. string.upper( L["Disabled"] ) .. "|r" ) )
                     self:Disable()
                 end
 
@@ -10709,7 +10714,7 @@ do
                 end
 
                 if result.action == "use_item" then
-                    insert( warnings, format( L["Line %s"], line ) .. ": " .. format( L["Unsupported use_item action [%s]; entry disabled."], ( result.effect_name or result.name or L["unknown"] ) ) )
+                    insert( warnings, format( L["Line %s"], line ) .. ": " .. format( L["Unsupported use_item action [%s]; entry disabled."], ( result.effect_name or result.name or string.lower( L["Unknown"] ) ) ) )
                     result.action = nil
                     result.enabled = false
                 end
@@ -10921,9 +10926,10 @@ do
 
             local toggleName = toggle.name and toggles[ name ] or L[ toggles[ name ] ]
             if self.DB.profile.notifications.enabled then
-                self:Notify( toggleName .. ": " .. ( toggle.value and L["ON"] or L["OFF"] ) )
+                self:Notify( format( L["%s: %s."], toggleName, toggle.value and L["ON"] or L["OFF"] ) )
             else
-                self:Print( format( toggle.value and L["%s |cFF00FF00ENABLED|r."] or L["%s |cFFFF0000DISABLED|r."], toggleName ) )
+                local toggleResult = ( toggle.value and "|cFF00FF00" .. string.upper( L["Enabled"] ) or "|cFFFF0000" .. string.upper( L["Disabled"] ) ) .. "|r"
+                self:Print( format( L["%s: %s."], toggleName, toggleResult  ) )
             end
         end
 

@@ -10,6 +10,7 @@ local class, state = Hekili.Class, Hekili.State
 
 local PTR = ns.PTR
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
+local W = ns.WordWrapper
 
 local strformat = string.format
 
@@ -1943,8 +1944,8 @@ spec:RegisterSetting( "ibf_damage", 40, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.icebound_fortitude.id ) ),
     desc = strformat( L["When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.icebound_fortitude.id ) ) .. "\n\n"
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        spec.abilities.icebound_fortitude.name, "|cFFFFD100" .. L["Defensives"] .. "|r" ),
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( spec.abilities.icebound_fortitude.name ), "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 0,
     max = 200,
@@ -1957,8 +1958,8 @@ spec:RegisterSetting( "rt_damage", 30, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.rune_tap.id ) ),
     desc = strformat( L["When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.rune_tap.id ) ) .. "\n\n"
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        spec.abilities.rune_tap.name, "|cFFFFD100" .. L["Defensives"] .. "|r" ),
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( spec.abilities.rune_tap.name ), "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 0,
     max = 200,
@@ -1971,8 +1972,8 @@ spec:RegisterSetting( "vb_damage", 50, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.vampiric_blood.id ) ),
     desc = strformat( L["When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.vampiric_blood.id ) ) .. "\n\n"
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        spec.abilities.vampiric_blood.name, "|cFFFFD100" .. L["Defensives"] .. "|r" ),
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( spec.abilities.vampiric_blood.name ), "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 0,
     max = 200,

@@ -8,6 +8,7 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
+local W = ns.WordWrapper
 
 local strformat = string.format
 
@@ -3018,10 +3019,10 @@ spec:RegisterOptions( {
 spec:RegisterSetting( "vigil_damage", 50, {
     name = strformat( L["%s Damage Threshold"],
         Hekili:GetSpellLinkWithTexture( spec.abilities.natures_vigil.id ) ),
-    desc = strformat( L["If set below 100%%, |W%s|w may only be recommended if your health has dropped below the specified percentage."],
-        spec.abilities.natures_vigil.name ) .. "\n\n"
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        spec.abilities.natures_vigil.name, "|cFFFFD100" .. L["Defensives"] .. "|r" ),
+    desc = strformat( L["If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage."],
+        W( spec.abilities.natures_vigil.name ) ) .. "\n\n"
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( spec.abilities.natures_vigil.name ), "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 1,
     max = 100,

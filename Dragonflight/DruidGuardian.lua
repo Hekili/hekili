@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
+local W = ns.WordWrapper
+
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 104 )
@@ -2127,10 +2129,10 @@ spec:RegisterSetting( "maul_anyway", true, {
 spec:RegisterSetting( "vigil_damage", 50, {
     name = strformat( L["%s Damage Threshold"],
         Hekili:GetSpellLinkWithTexture( class.specs[ 102 ].abilities.natures_vigil.id ) ),
-    desc = strformat( L["If set below 100%%, |W%s|w may only be recommended if your health has dropped below the specified percentage."],
-        class.specs[ 102 ].abilities.natures_vigil.name ) .. "\n\n"
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        class.specs[ 102 ].abilities.natures_vigil.name, "|cFFFFD100" .. L["Defensives"] .. "|r" ),
+    desc = strformat( L["If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage."],
+        W( class.specs[ 102 ].abilities.natures_vigil.name ) ) .. "\n\n"
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( class.specs[ 102 ].abilities.natures_vigil.name ), "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 1,
     max = 100,
@@ -2144,9 +2146,9 @@ spec:RegisterSetting( "ironfur_damage_threshold", 5, {
     desc = strformat( L["If set above zero, %s will not be recommended for mitigation purposes unless you've taken this much damage in the past 5 seconds (as a percentage of your total health)."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ).. "\n\n"
         .. L["This value is halved when playing solo."] .. "\n\n"
-        .. strformat( L["Taking %1$s and %2$s will result in |W%3$s|w recommendations for offensive purposes."],
+        .. strformat( L["Taking %1$s and %2$s will result in %3$s recommendations for offensive purposes."],
         Hekili:GetSpellLinkWithTexture( spec.talents.thorns_of_iron[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ) ,
-        spec.abilities.ironfur.name ),
+        W( spec.abilities.ironfur.name ) ),
     type = "range",
     min = 0,
     max = 200,
@@ -2168,8 +2170,8 @@ spec:RegisterSetting( "catweave_bear", false, {
     desc = strformat( L["If checked, shifting between %s and %s may be recommended based on whether you're actively tanking and other conditions."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ) ) .. "  "
         .. L["These swaps may occur very frequently."] .. "\n\n"
-        .. strformat( L["If unchecked, |W%s|w and |W%s|w abilities will be recommended based on your selected form, but swapping between forms will not be recommended."],
-        spec.abilities.cat_form.name, spec.abilities.bear_form.name ),
+        .. strformat( L["If unchecked, %s and %s abilities will be recommended based on your selected form, but swapping between forms will not be recommended."],
+        W( spec.abilities.cat_form.name ), W( spec.abilities.bear_form.name ) ),
     type = "toggle",
     width = "full",
 } )

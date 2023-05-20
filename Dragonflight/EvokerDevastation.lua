@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
+local W = ns.WordWrapper
+
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 1467 )
@@ -1572,10 +1574,10 @@ spec:RegisterSetting( "use_deep_breath", true, {
     type = "toggle",
     desc = strformat( L["If checked, %s may be recommended, which will force your character to select a destination and move."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.deep_breath.id ) ) .. "  "
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        spec.abilities.deep_breath.name, "|cFFFFD100" .. L["Cooldowns"] .. "|r" ) .. "\n\n"
-        .. strformat( L["If unchecked, |W%s|w will never be recommended, which may result in lost DPS if left unused for an extended period of time."],
-        spec.abilities.deep_breath.name ),
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( spec.abilities.deep_breath.name ), "|cFFFFD100" .. L["Cooldowns"] .. "|r" ) .. "\n\n"
+        .. strformat( L["If unchecked, %s will never be recommended, which may result in lost DPS if left unused for an extended period of time."],
+        W( spec.abilities.deep_breath.name ) ),
     width = "full",
 } )
 
@@ -1585,8 +1587,8 @@ spec:RegisterSetting( "use_unravel", false, {
     type = "toggle",
     desc = strformat( L["If checked, %s may be recommended if your target has an absorb shield applied."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.unravel.id ) ) .. "  "
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        spec.abilities.unravel.name, "|cFFFFD100" .. L["Interrupts"] .. "|r" ),
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( spec.abilities.unravel.name ), "|cFFFFD100" .. L["Interrupts"] .. "|r" ),
     width = "full",
 } )
 
@@ -1594,8 +1596,8 @@ spec:RegisterSetting( "use_early_chain", false, {
     name = strformat( L["%s: Chain Channel"],
         Hekili:GetSpellLinkWithTexture( spec.abilities.disintegrate.id ) ),
     type = "toggle",
-    desc = strformat( L["If checked, %1$s may be recommended while already channeling |W%2$s|w, extending the channel."],
-        Hekili:GetSpellLinkWithTexture( spec.abilities.disintegrate.id ), spec.abilities.disintegrate.name ),
+    desc = strformat( L["If checked, %1$s may be recommended while already channeling %2$s, extending the channel."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.disintegrate.id ), W( spec.abilities.disintegrate.name ) ),
     width = "full"
 } )
 

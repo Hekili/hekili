@@ -11,6 +11,8 @@ local class, state = Hekili.Class, Hekili.State
 local GetNamePlates = C_NamePlate.GetNamePlates
 local LRC = LibStub( "LibRangeCheck-2.0" )
 
+local W = ns.WordWrapper
+
 local pow, strformat = math.pow, string.format
 
 local spec = Hekili:NewSpecialization( 269 )
@@ -2240,8 +2242,8 @@ spec:RegisterSetting( "allow_fsk", false, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ) ),
     desc = strformat( L["If unchecked, %s will not be recommended despite generally being used as a filler ability."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ) ) .. "\n\n"
-        .. strformat( L["Unchecking this option is the same as disabling the ability via |cFFFFD100Abilities|r > |cFFFFD100|W%s|w|r > |cFFFFD100|W%s|w|r > |cFFFFD100Disable|r."],
-        spec.name, spec.abilities.flying_serpent_kick.name ),
+        .. strformat( L["Unchecking this option is the same as disabling the ability via |cFFFFD100Abilities|r > |cFFFFD100%s|r > |cFFFFD100%s|r > |cFFFFD100Disable|r."],
+        W( spec.name ), W( spec.abilities.flying_serpent_kick.name ) ),
     type = "toggle",
     width = "full",
     get = function () return not Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled end,
@@ -2263,8 +2265,8 @@ spec:RegisterSetting( "sef_one_charge", false, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ) ),
     desc = strformat( L["If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ) ) .. "\n\n"
-        .. strformat( L["If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled."],
-        spec.abilities.storm_earth_and_fire.name ),
+        .. strformat( L["If %s's |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled."],
+        W( spec.abilities.storm_earth_and_fire.name ) ),
     type = "toggle",
     width = "full",
 } )

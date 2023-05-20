@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
+local W = ns.WordWrapper
+
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 1468 )
@@ -900,7 +902,7 @@ spec:RegisterAbilities( {
 
 spec:RegisterSetting( "experimental_msg", nil, {
     type = "description",
-    name = L["|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only."] .. "  "
+    name = ns.WARNING .. L["Healer support in this addon is focused on DPS output only."] .. "  "
         .. L["This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk."],
     width = "full",
 } )
@@ -913,10 +915,10 @@ spec:RegisterSetting( "use_deep_breath", true, {
     type = "toggle",
     desc = strformat( L["If checked, %s may be recommended, which will force your character to select a destination and move."],
         Hekili:GetSpellLinkWithTexture( 357210 ) ) .. "  "
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        deep_breath, "|cFFFFD100" .. L["Cooldowns"] .. "|r" ) .. "\n\n"
-        .. strformat( L["If unchecked, |W%s|w will never be recommended, which may result in lost DPS if left unused for an extended period of time."],
-        deep_breath ),
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( deep_breath ), "|cFFFFD100" .. L["Cooldowns"] .. "|r" ) .. "\n\n"
+        .. strformat( L["If unchecked, %s will never be recommended, which may result in lost DPS if left unused for an extended period of time."],
+        W( deep_breath ) ),
     width = "full",
 } )
 
@@ -928,8 +930,8 @@ spec:RegisterSetting( "use_unravel", false, {
     type = "toggle",
     desc = strformat( L["If checked, %s may be recommended if your target has an absorb shield applied."],
         Hekili:GetSpellLinkWithTexture( 368432 ) ) .. "  "
-        .. strformat( L["By default, |W%1$s|w also requires the %2$s toggle to be active."],
-        unravel, "|cFFFFD100" .. L["Interrupts"] .. "|r" ),
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( unravel ), "|cFFFFD100" .. L["Interrupts"] .. "|r" ),
     width = "full",
 } )
 

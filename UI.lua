@@ -545,7 +545,7 @@ do
                                     if Hekili.DB.profile.notifications.enabled then
                                         Hekili:Notify( L["Recommend Target Swaps"] .. ": " .. ( spec.cycle and L["ON"] or L["OFF"] ) )
                                     else
-                                        Hekili:Print( L["Recommend Target Swaps"] .. ": " .. ( spec.cycle and " |cFF00FF00" .. L["ENABLED"] .. "|r." or " |cFFFF0000" .. L["DISABLED"] .. "|r." ) )
+                                        Hekili:Print( L["Recommend Target Swaps"] .. ": " .. ( spec.cycle and " |cFF00FF00" .. string.upper( L["Enabled"] ) .. "|r." or " |cFFFF0000" .. string.upper( L["Disabled"] ) .. "|r." ) )
                                     end
                                 end
                             end,
@@ -575,7 +575,7 @@ do
                                             if Hekili.DB.profile.notifications.enabled then
                                                 Hekili:Notify( name .. ": " .. ( setting.info.get( menu.args ) and L["ON"] or L["OFF"] ) )
                                             else
-                                                Hekili:Print( name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00" .. L["ENABLED"] .. "|r." or " |cFFFF0000" .. L["DISABLED"] .. "|r." ) )
+                                                Hekili:Print( name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00" .. string.upper( L["Enabled"] ) .. "|r." or " |cFFFF0000" .. string.upper( L["Disabled"] ) .. "|r." ) )
                                             end
                                         end,
                                         checked = function ()
@@ -2994,10 +2994,11 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     tt:SetOwner( UIParent, "ANCHOR_CURSOR" )
     tt:SetText( class.abilities[ q.actionName ].name )
-    tt:AddDoubleLine( listName .. " #" .. q.action, "+" .. ns.formatValue( round( q.time or 0, 2 ) ), 1, 1, 1, 1, 1, 1 )
+    tt:AddDoubleLine( format( L["%s #%s"], listName, q.action), "+" .. ns.formatValue( round( q.time or 0, 2 ) ), 1, 1, 1, 1, 1, 1 )
 
     if q.resources and q.resources[ q.resource_type ] then
-        tt:AddDoubleLine( L[ q.resource_type ], ns.formatValue( q.resources[ q.resource_type ] ), 1, 1, 1, 1, 1, 1 )
+        local resourceName = L[ "RESOURCE_TYPES_" .. string.upper( q.resource_type ) ]
+        tt:AddDoubleLine( resourceName, ns.formatValue( q.resources[ q.resource_type ] ), 1, 1, 1, 1, 1, 1 )
     end
 
     if q.HookHeader or ( q.HookScript and q.HookScript ~= "" ) then

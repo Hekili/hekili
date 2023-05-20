@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
+local W = ns.WordWrapper
+
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 63 )
@@ -2024,8 +2026,8 @@ spec:RegisterSetting( "prevent_hardcasts", false, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ),
     desc = strformat( L["If checked, non-instant %s and %s casts will not be recommended while you are moving."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.pyroblast.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fireball.id ) ) .. "\n\n"
-        .. strformat( L["An exception is made if %1$s is talented and active and your cast would be complete before |W%2$s|w expires."],
-        Hekili:GetSpellLinkWithTexture( 108839 ), GetSpellInfo( 108839 ) ),
+        .. strformat( L["An exception is made if %1$s is talented and active and your cast would be complete before %2$s expires."],
+        Hekili:GetSpellLinkWithTexture( 108839 ), W( GetSpellInfo( 108839 ) ) ),
     type = "toggle",
     width = "full"
 } )
