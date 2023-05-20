@@ -7,11 +7,21 @@ actions.precombat+=/vampiric_touch,if=refreshable&(!talent.shadow_crash.enabled|
 
 actions+=/silence
 actions+=/variable,name=holding_crash,op=set,value=talent.shadow_crash&!action.shadow_crash.disabled&raid_event.adds.in<15
+actions+=/variable,name=dots_up,op=set,value=(dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking)|action.shadow_crash.in_flight&talent.whispering_shadows
+actions+=/variable,name=all_dots_up,op=set,value=target.time_to_die<8|(dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking|action.shadow_crash.in_flight)&dot.devouring_plague.ticking
 actions+=/variable,name=pool_for_cds,op=set,value=(cooldown.void_eruption.remains<=gcd.max*3&talent.void_eruption|cooldown.dark_ascension.up&talent.dark_ascension)|talent.void_torrent&talent.psychic_link&cooldown.void_torrent.remains<=4&(!raid_event.adds.exists&spell_targets.vampiric_touch>1|raid_event.adds.in<=5|raid_event.adds.remains>=6&!variable.holding_crash)&!buff.voidform.up
+# Set vts_applied for single-target to support Mindbender entry in cds action list.
+actions+=/variable,name=vts_applied,op=set,value=dot.vampiric_touch.ticking
 actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2|spell_targets.vampiric_touch>3
 actions+=/run_action_list,name=main
 
-actions.aoe+=/call_action_list,name=aoe_variables
+actions.aoe+=/variable,name=max_vts,op=set,default=12,value=spell_targets.vampiric_touch>?12
+actions.aoe+=/variable,name=is_vt_possible,op=set,value=true,value_else=false,condition=dot.vampiric_touch.refreshable|active_dot.vampiric_touch<cycle_enemies&fight_remains>8
+## actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=1,target_if=max(target.time_to_die*dot.vampiric_touch.refreshable),if=target.time_to_die>=18
+# TODO: Revamp to fix undesired behaviour with unstacked fights
+actions.aoe+=/variable,name=vts_applied,op=set,value=(active_dot.vampiric_touch+8*action.shadow_crash.in_flight&talent.whispering_shadows)>=variable.max_vts|!variable.is_vt_possible
+actions.aoe+=/variable,name=holding_crash,op=set,value=(variable.max_vts-active_dot.vampiric_touch)<4|raid_event.adds.in<10&raid_event.adds.count>(variable.max_vts-active_dot.vampiric_touch),if=variable.holding_crash&talent.whispering_shadows
+actions.aoe+=/variable,name=manual_vts_applied,op=set,value=(active_dot.vampiric_touch+8*!variable.holding_crash)>=variable.max_vts|!variable.is_vt_possible
 # High Priority action to put out Vampiric Touch on enemies that will live at least 18 seconds, up to 12 targets manually while prepping AoE
 actions.aoe+=/vampiric_touch,cycle_targets=1,if=refreshable&target.time_to_die>=18&(dot.vampiric_touch.ticking|!variable.vts_applied)&(variable.max_vts>0&!variable.manual_vts_applied&!action.shadow_crash.in_flight|!talent.whispering_shadows)
 # Use Shadow Crash to apply Vampiric Touch to as many adds as possible while being efficient with Vampiric Touch refresh windows
@@ -38,15 +48,6 @@ actions.aoe+=/void_torrent,cycle_targets=1,if=!talent.psychic_link&variable.dots
 # High priority action for Mind Flay: Insanity to fish for Idol of C'Thun procs, cancel as soon as something else is more important and most of the channel has completed
 actions.aoe+=/mind_flay,if=buff.mind_flay_insanity.up&talent.idol_of_cthun,interrupt_if=ticks>=2,interrupt_immediate=1
 actions.aoe+=/call_action_list,name=filler
-
-actions.aoe_variables+=/variable,name=max_vts,op=set,default=12,value=spell_targets.vampiric_touch>?12
-actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=false,default=true
-actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=true,condition=dot.vampiric_touch.refreshable|active_dot.vampiric_touch<cycle_enemies&fight_remains>8
-## actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=1,target_if=max(target.time_to_die*dot.vampiric_touch.refreshable),if=target.time_to_die>=18
-# TODO: Revamp to fix undesired behaviour with unstacked fights
-actions.aoe_variables+=/variable,name=vts_applied,op=set,value=(active_dot.vampiric_touch+8*action.shadow_crash.in_flight&talent.whispering_shadows)>=variable.max_vts|!variable.is_vt_possible
-actions.aoe_variables+=/variable,name=holding_crash,op=set,value=(variable.max_vts-active_dot.vampiric_touch)<4|raid_event.adds.in<10&raid_event.adds.count>(variable.max_vts-active_dot.vampiric_touch),if=variable.holding_crash&talent.whispering_shadows
-actions.aoe_variables+=/variable,name=manual_vts_applied,op=set,value=(active_dot.vampiric_touch+8*!variable.holding_crash)>=variable.max_vts|!variable.is_vt_possible
 
 # TODO: Check VE/DA enter conditions based on dots
 actions.cds+=/potion,if=buff.voidform.up|buff.power_infusion.up|buff.dark_ascension.up&(fight_remains<=cooldown.power_infusion.remains+15)|boss&fight_remains<=30
@@ -89,7 +90,6 @@ actions.filler+=/shadow_word_death
 # Use Shadow Word: Pain while moving as a low-priority action
 actions.filler+=/shadow_word_pain,cycle_targets=1
 
-actions.main+=/call_action_list,name=main_variables
 actions.main+=/call_action_list,name=cds,if=fight_remains<30|time_to_die>15&(!variable.holding_crash|active_enemies>2)
 # Use Shadowfiend and Mindbender on cooldown as long as Vampiric Touch and Shadow Word: Pain are active
 actions.main+=/mindbender,if=variable.dots_up&(fight_remains<30|time_to_die>15)
@@ -113,12 +113,6 @@ actions.main+=/void_torrent,cycle_targets=1,if=!variable.holding_crash&variable.
 # Cast Mindgames if all DoTs will be active by the time the cast finishes
 actions.main+=/mindgames,cycle_targets=1,if=variable.all_dots_up&dot.devouring_plague.remains>=cast_time
 actions.main+=/call_action_list,name=filler
-
-actions.main_variables+=/variable,name=dots_up,op=set,value=(dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking)|action.shadow_crash.in_flight&talent.whispering_shadows
-actions.main_variables+=/variable,name=all_dots_up,op=set,value=target.time_to_die<8|(dot.shadow_word_pain.ticking&dot.vampiric_touch.ticking|action.shadow_crash.in_flight)&dot.devouring_plague.ticking
-actions.main_variables+=/variable,name=pool_for_cds,op=set,value=(cooldown.void_eruption.remains<=gcd.max*3&talent.void_eruption|cooldown.dark_ascension.up&talent.dark_ascension)|talent.void_torrent&talent.psychic_link&cooldown.void_torrent.remains<=4&(!raid_event.adds.exists&spell_targets.vampiric_touch>1|raid_event.adds.in<=5|raid_event.adds.remains>=6&!variable.holding_crash)&!buff.voidform.up
-# Set vts_applied for single-target to support Mindbender entry in cds action list.
-actions.main_variables+=/variable,name=vts_applied,op=set,value=dot.vampiric_touch.ticking
 
 actions.pl_torrent+=/void_bolt
 actions.pl_torrent+=/vampiric_touch,if=remains<=6&cooldown.void_torrent.remains<gcd*2
