@@ -1920,7 +1920,7 @@ _L["Destruction"] = "파괴"
 
 _L["havoc"] = "대혼란 (havoc)"
 _L["items"] = "아이템 (items)"
-_L["ogcd"] = "전역 재사용 대기시간 중에 사용 (ogcd)"
+_L["ogcd"] = "전역 재사용 대기시간이 없는 능력 (ogcd)"
 _L["tyrant"] = "폭군 (tyrant)"
 _L["variables"] = "변수 (variables)"
 

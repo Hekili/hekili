@@ -2994,7 +2994,7 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     tt:SetOwner( UIParent, "ANCHOR_CURSOR" )
     tt:SetText( class.abilities[ q.actionName ].name )
-    tt:AddDoubleLine( format( L["%s #%s"], listName, q.action), "+" .. ns.formatValue( round( q.time or 0, 2 ) ), 1, 1, 1, 1, 1, 1 )
+    tt:AddDoubleLine( format( L["%s #%s"], listName, q.action ), "+" .. ns.formatValue( round( q.time or 0, 2 ) ), 1, 1, 1, 1, 1, 1 )
 
     if q.resources and q.resources[ q.resource_type ] then
         local resourceName = L[ "RESOURCE_TYPES_" .. string.upper( q.resource_type ) ]
