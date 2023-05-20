@@ -7628,22 +7628,22 @@ do
                     args = {
                         key = {
                             type = "keybinding",
-                            name = "Covenants",
-                            desc = "Set a key to toggle Covenant recommendations on/off.",
+                            name = "Minor CDs",
+                            desc = "Set a key to toggle Minor CDs recommendations on/off.",
                             order = 1,
                         },
 
                         value = {
                             type = "toggle",
-                            name = "Show Covenants",
-                            desc = "If checked, abilities from Covenants can be recommended.",
+                            name = "Show Minor CDs",
+                            desc = "If checked, abilities from Minor CDs can be recommended.",
                             order = 2,
                         },
 
                         override = {
                             type = "toggle",
                             name = "Cooldowns Override",
-                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Covenants even if Show Covenants is not checked.",
+                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Minor CDs even if Show Minor CDs is not checked.",
                             order = 3,
                         },
                     }
@@ -7728,6 +7728,13 @@ do
                             name = "Show Potions",
                             desc = "If checked, abilities marked as potions can be recommended.",
                             order = 2,
+                        },
+
+                        override = {
+                            type = "toggle",
+                            name = "Cooldowns Override",
+                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Potions even if Show Potions is not checked.",
+                            order = 3,
                         },
                     }
                 },

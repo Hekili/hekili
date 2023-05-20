@@ -103,7 +103,7 @@ function Hekili:OnInitialize()
                 p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
                 p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
         else
-            return format( "|c%s%s|r %sCD|r %sCov|r %sInt|r",
+            return format( "|c%s%s|r %sCD|r %smCD|r %sInt|r",
                 color,
                 m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
                 p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",

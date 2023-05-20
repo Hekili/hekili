@@ -2687,6 +2687,7 @@ local mt_toggle = {
 
         if k == "cooldowns" and toggle.override and state.buff.bloodlust.up then return true end
         if k == "essences" and toggle.override and state.toggle.cooldowns then return true end
+        if k == "potions" and toggle.override and state.toggle.cooldowns then return true end
 
         if toggle then return toggle.value end
     end
