@@ -12,7 +12,7 @@ actions+=/spell_reflection
 actions+=/use_items
 actions+=/avatar
 # Usage of Shield Wall is governed by specialization settings; see /hekili > Protection.
-actions+=/shield_wall,if=buff.avatar.down|!talent.immovable_object
+actions+=/shield_wall,if=talent.immovable_object.enabled&buff.avatar.down
 actions+=/blood_fury
 actions+=/berserking
 actions+=/arcane_torrent
@@ -20,7 +20,7 @@ actions+=/lights_judgment
 actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
-actions+=/potion,if=buff.avatar.up|buff.avatar.up&target.health.pct<=20
+actions+=/potion,if=buff.avatar.up
 actions+=/ignore_pain,if=target.health.pct>=20&(rage.deficit<=15&cooldown.shield_slam.ready|rage.deficit<=40&cooldown.shield_charge.ready&talent.champions_bulwark.enabled|rage.deficit<=20&cooldown.shield_charge.ready|rage.deficit<=30&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled|rage.deficit<=20&cooldown.avatar.ready|rage.deficit<=45&cooldown.demoralizing_shout.ready&talent.booming_voice.enabled&buff.last_stand.up&talent.unnerving_focus.enabled|rage.deficit<=30&cooldown.avatar.ready&buff.last_stand.up&talent.unnerving_focus.enabled|rage.deficit<=20|rage.deficit<=40&cooldown.shield_slam.ready&buff.violent_outburst.up&talent.heavy_repercussions.enabled&talent.impenetrable_wall.enabled|rage.deficit<=55&cooldown.shield_slam.ready&buff.violent_outburst.up&buff.last_stand.up&talent.unnerving_focus.enabled&talent.heavy_repercussions.enabled&talent.impenetrable_wall.enabled|rage.deficit<=17&cooldown.shield_slam.ready&talent.heavy_repercussions.enabled|rage.deficit<=18&cooldown.shield_slam.ready&talent.impenetrable_wall.enabled),use_off_gcd=1
 # Usage of Last Stand is also governed by specialization settings; see /hekili > Protection.
 actions+=/last_stand,if=talent.unnerving_focus&(target.health.pct>=90|target.health.pct<=20)|talent.bolster&buff.shield_block.down|!talent.bolster&!talent.unnerving_focus|set_bonus.tier30_2pc>0

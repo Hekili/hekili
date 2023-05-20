@@ -1,14 +1,13 @@
 actions.precombat+=/battle_stance
 actions.precombat+=/battle_shout
 actions.precombat+=/use_item,name=algethar_puzzle_box
-actions.precombat+=/avatar,if=!talent.titans_torment&!talent.blademasters_torment
-actions.precombat+=/recklessness,if=!talent.reckless_abandon
 
 actions+=/charge,if=time<=0.5|movement.distance>8
 actions+=/pummel
 actions+=/spell_reflection
 actions+=/potion,if=gcd.remains=0&debuff.colossus_smash.remains>8|boss&fight_remains<25
 actions+=/algethar_puzzle_box,if=cooldown.avatar.remains<3
+actions+=/vial_of_animated_blood,if=buff.avatar.up
 actions+=/irideus_fragment,if=buff.avatar.up
 actions+=/manic_grieftorch,if=!buff.avatar.up&!debuff.colossus_smash.up
 actions+=/gladiators_badge,if=gcd.remains=0&debuff.colossus_smash.remains>8|boss&fight_remains<25
@@ -44,7 +43,7 @@ actions.hac+=/execute,if=buff.juggernaut.up&buff.juggernaut.remains<gcd
 actions.hac+=/thunder_clap,if=active_enemies>2&talent.thunder_clap&talent.blood_and_thunder&talent.rend&dot.rend.remains<=dot.rend.duration*0.3
 actions.hac+=/sweeping_strikes,if=active_enemies>=2&(cooldown.bladestorm.remains>15|!talent.bladestorm)
 actions.hac+=/rend,if=active_enemies=1&remains<=gcd&(target.health.pct>20|talent.massacre&target.health.pct>35)|talent.tide_of_blood&cooldown.skullsplitter.remains<=gcd&(cooldown.colossus_smash.remains<=gcd|debuff.colossus_smash.up)&dot.rend.remains<dot.rend.duration*0.85
-actions.hac+=/avatar,if=raid_event.adds.in>15|talent.blademasters_torment&active_enemies>1|boss&fight_remains<20
+actions.hac+=/avatar,if=raid_event.adds.in>15|talent.blademasters_torment&active_enemies>1|target.time_to_die<20
 actions.hac+=/warbreaker,if=raid_event.adds.in>22|active_enemies>1
 actions.hac+=/colossus_smash,cycle_targets=1,if=(target.health.pct<20|talent.massacre&target.health.pct<35)
 actions.hac+=/colossus_smash
