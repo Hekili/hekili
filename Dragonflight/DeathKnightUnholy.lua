@@ -990,7 +990,7 @@ me:RegisterHook( "reset_precast", function ()
     end
 
     if not any_dnd_set then
-        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any]|r " .. class.abilities.death_and_decay.name
+        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any " .. class.abilities.death_and_decay.name .. "]|r"
         any_dnd_set = true
     end
 
@@ -2048,7 +2048,7 @@ me:RegisterAbilities( {
 
     -- Stub.
     any_dnd = {
-        name = function () return "|T136144:0|t |cff00ccff[Any]|r " .. ( class.abilities.death_and_decay and class.abilities.death_and_decay.name or "Death and Decay" ) end,
+        name = function () return "|T136144:0|t |cff00ccff[Any " .. ( class.abilities.death_and_decay and class.abilities.death_and_decay.name or "Death and Decay" ) .. "]|r" end,
     },
 
     wound_spender = {
