@@ -3981,7 +3981,7 @@ do
                     toggles.none = "None"
                     toggles.default = "Default |cffffd100(" .. t .. ")|r"
                     toggles.cooldowns = "Cooldowns"
-                    toggles.essences = "Covenants"
+                    toggles.essences = "Minor CDs"
                     toggles.defensives = "Defensives"
                     toggles.interrupts = "Interrupts"
                     toggles.potions = "Potions"
@@ -4099,7 +4099,7 @@ do
                             toggles.none = "None"
                             toggles.default = "Default |cffffd100(" .. t .. ")|r"
                             toggles.cooldowns = "Cooldowns"
-                            toggles.essences = "Covenants"
+                            toggles.essences = "Minor CDs"
                             toggles.defensives = "Defensives"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
@@ -4321,7 +4321,7 @@ do
                     toggles.none = "None"
                     toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
                     toggles.cooldowns = "Cooldowns"
-                    toggles.essences = "Covenants"
+                    toggles.essences = "Minor CDs"
                     toggles.defensives = "Defensives"
                     toggles.interrupts = "Interrupts"
                     toggles.potions = "Potions"
@@ -4449,7 +4449,7 @@ do
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
                             toggles.cooldowns = "Cooldowns"
-                            toggles.essences = "Covenants"
+                            toggles.essences = "Minor CDs"
                             toggles.defensives = "Defensives"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
@@ -5359,7 +5359,7 @@ do
                             end,
                         }
                  } )
-                BuildToggleList( options, id, "essences",   "Covenants" )
+                BuildToggleList( options, id, "essences",   "Minor CDs" )
                 BuildToggleList( options, id, "interrupts", "Utility / Interrupts" )
                 BuildToggleList( options, id, "defensives", "Defensives",   "The defensive toggle is generally intended for tanking specializations, " ..
                                                                             "as you may want to turn on/off recommendations for damage mitigation abilities " ..
@@ -9492,7 +9492,7 @@ do
         [52] = { "interrupts", "Interrupts" },
         [53] = { "potions", "Potions" },
         [54] = { "defensives", "Defensives" },
-        [55] = { "essences", "Covenants" },
+        [55] = { "essences", "Minor CDs" },
         [56] = { "custom1", "Custom #1" },
         [57] = { "custom2", "Custom #2" },
     }

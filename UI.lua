@@ -478,7 +478,7 @@ do
         },
 
         {
-            text = "Covenants",
+            text = "Minor CDs",
             func = function() Hekili:FireToggle( "essences" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.essences.value end,
         },
