@@ -870,7 +870,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if not any_dnd_set then
-        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. L["[Any]"] .. "|r " .. class.abilities.death_and_decay.name
+        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. format( L["[Any %s]"], class.abilities.death_and_decay.name ) .. "|r "
         any_dnd_set = true
     end
 

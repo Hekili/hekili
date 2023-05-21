@@ -948,7 +948,7 @@ L["Use on cooldown if priority conditions are met."] = true
 L["Using a mouseover macro makes it easier to apply %s and %s to other enemies without retargeting."] = true
 L["When set above zero, the default priority can recommend %s if you've lost this percentage of your maximum health in the past 5 seconds."] = true
 L["You can specify additional conditions for %s usage here."] = true
-L["[Any]"] = true
+L["[Any %s]"] = true
 L["[Wound Spender]"] = true
 
 -- Demon Hunter
