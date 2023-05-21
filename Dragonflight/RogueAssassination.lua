@@ -227,7 +227,7 @@ local stealth = {
     basic = { "stealth", "vanish" },
     mantle = { "stealth", "vanish" },
     rogue = { "stealth", "vanish", "subterfuge", "shadow_dance" },
-    ambush = { "stealth", "vanish", "subterfuge", "shadow_dance", "ambush", "sepsis_buff" },
+    ambush = { "stealth", "vanish", "subterfuge", "shadow_dance", "sepsis_buff" },
 
     -- SimC includes Improved Garrote in stealthed.all, but it feels misleading.
     all = { "stealth", "vanish", "shadowmeld", "subterfuge", "shadow_dance", "sepsis_buff", "improved_garrote" },
