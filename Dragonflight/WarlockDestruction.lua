@@ -1418,7 +1418,10 @@ spec:RegisterAbilities( {
 
         bind = "bane_of_havoc",
 
-        usable = function () return not pvptalent.bane_of_havoc.enabled and active_enemies > 1, "requires multiple targets and no bane_of_havoc" end,
+        usable = function()
+            if pvptalent.bane_of_havoc.enabled then return false, "pvptalent bane_of_havoc enabled" end
+            return talent.cry_havoc.enabled or active_enemies > 1, "requires cry_havoc or multiple targets"
+        end,
 
         handler = function ()
             if class.abilities.havoc.indicator == "cycle" then
