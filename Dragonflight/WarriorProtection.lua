@@ -1704,7 +1704,7 @@ spec:RegisterAbilities( {
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
-    name = L["Only |T236312:0|t Shockwave as Interrupt"],
+    name = L["Only |T236312:0|t Shockwave as Interrupt (when Talented)"],
     desc = L["If checked, |T236312:0|t Shockwave will only be recommended when your target is casting."],
     type = "toggle",
     width = "full"
@@ -1794,7 +1794,7 @@ spec:RegisterSetting( "rallying_cry_amount", 50, {
         "|T132351:0|t " .. L["Rallying Cry"] ),
     desc = strformat( L["If set above zero, the addon will not recommend %s unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health."],
         "|T132351:0|t " .. L["Rallying Cry"] ) .. "\n\n"
-        .. strformat( L["If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend %s when you've taken 25,000 damage in the past 5 seconds."],
+        .. strformat( L["If set to |cFFFFD10050%%|r and your maximum health is 50,000, then the addon will only recommend %s when you've taken 25,000 damage in the past 5 seconds."],
         L["Rallying Cry"] ) .. "\n\n"
         .. L["This value is halved when playing solo."],
     type = "range",
@@ -1845,7 +1845,7 @@ spec:RegisterSetting( "last_stand_amount", 50, {
         "|T135871:0|t " .. L["Last Stand"] ),
     desc = strformat( L["If set above zero, the addon will not recommend %s unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health."],
         "|T135871:0|t " .. L["Last Stand"] ) .. "\n\n"
-        .. strformat( L["If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend %s when you've taken 25,000 damage in the past 5 seconds."],
+        .. strformat( L["If set to |cFFFFD10050%%|r and your maximum health is 50,000, then the addon will only recommend %s when you've taken 25,000 damage in the past 5 seconds."],
         L["Last Stand"] ) .. "\n\n"
         .. L["This value is halved when playing solo."],
     type = "range",

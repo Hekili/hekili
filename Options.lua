@@ -38,7 +38,7 @@ local NewFeature = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|
 local GreenPlus = "Interface\\AddOns\\Hekili\\Textures\\GreenPlus"
 local RedX = "Interface\\AddOns\\Hekili\\Textures\\RedX"
 local BlizzBlue = "|cFF00B4FF"
-local ClassColor = C_ClassColor.GetClassColor( class.file )
+local ClassColor = C_ClassColor and C_ClassColor.GetClassColor( class.file ) or RAID_CLASS_COLORS[ class.file ]
 local modKey = IsMacClient() and "Command" or "Ctrl"
 
 -- One Time Fixes
@@ -3635,7 +3635,7 @@ do
 
 
     function Hekili:SetImporterOption( info, value )
-        if type( value ) == 'string' then value = value:trim() end
+        if type( value ) == "string" then value = value:trim() end
         impControl[ info[ #info ] ] = value
         impControl.warnings = nil
     end
@@ -3677,7 +3677,7 @@ do
                 end
 
                 if comment then
-                    action = action .. ',description=' .. comment:gsub( ",", ";" )
+                    action = action .. ",description=" .. comment:gsub( ",", ";" )
                     comment = nil
                 end
 
@@ -3824,7 +3824,7 @@ do
         local n = #info
         local option = info[ n ]
 
-        if type(val) == 'string' then val = val:trim() end
+        if type(val) == "string" then val = val:trim() end
 
         shareDB[ option ] = val
 
@@ -3843,7 +3843,7 @@ do
         spec = specIDByName[ spec ]
         if not spec then return end
 
-        if type( val ) == 'string' then val = val:trim() end
+        if type( val ) == "string" then val = val:trim() end
 
         self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
         self.DB.profile.specs[ spec ][ option ] = val
@@ -6023,7 +6023,11 @@ do
                     type = "execute",
                     name = function ()
                         local packName = data.builtIn and BlizzBlue .. _L[ pack ] or "|cFFFFFFFF" .. _L[ pack ]
-                        return format( "|T%s:0|t %s|r", class.specs[ data.spec ].texture, packName )
+                        local specTexture = class.specs[ data.spec ].texture
+                        if specTexture then
+                            return format( "|T%s:0|t %s|r", specTexture, packName )
+                        end
+                        return packName .. "|r"
                     end,
                     order = 11 + count,
                     func = function ()
@@ -6530,7 +6534,7 @@ do
 
                                                 local entryVarName = "|cFF00CCFF" .. ( entry.var_name or string.lower( L["Unassigned"] ) ) .. "|r"
                                                 local entryValue = "|cFFFFD100" .. ( entry.value or L["nothing"] ) .. "|r"
-                                                local entryCriteria = cLen and cLen > 0 and ( "|cFFFFD100" .. entry.criteria .. "|r" )
+                                                local entryCriteria = ( cLen and cLen > 0 ) and "|cFFFFD100" .. entry.criteria .. "|r"
                                                 local entryNotSet = "|cFF00CCFF" .. L["(not set)"] .. "|r"
                                                 local entryNotFound = "|cFF00CCFF" .. L["(not found)"] .. "|r"
 
@@ -6547,7 +6551,7 @@ do
                                                     elseif entry.op == "set" or entry.op == "setif" then
                                                         desc = format( L["set %s = %s"], entryVarName, entryValue )
                                                     else
-                                                        desc = format( "%s %s (%s)", entry.op and L[ "OPERATORS_" .. string.upper( entry.op ) ] or L["set"], entryVarName, entryValue )
+                                                        desc = format( "%s %s (%s)", entry.op and L[ "OPERATORS_" .. string.upper( entry.op ) ] or L["OPERATORS_SET"], entryVarName, entryValue )
                                                     end
 
                                                     if cLen and cLen > 0 then
@@ -6821,7 +6825,11 @@ do
 
                                                         for k in pairs( p.lists ) do
                                                             if k ~= packControl.listName then
-                                                                v[ k ] = _L[ k ]
+                                                                if k == "precombat" or k == "default" then
+                                                                    v[ k ] = BlizzBlue .. _L[ k ] .. "|r"
+                                                                else
+                                                                    v[ k ] = _L[ k ]
+                                                                end
                                                             end
                                                         end
 
@@ -8962,8 +8970,8 @@ do
                         name = "",
                         fontSize = "medium",
                         image = "Interface\\Addons\\Hekili\\Textures\\Taco256",
-                        imageWidth = 96,
-                        imageHeight = 96,
+                        imageWidth = Hekili.IsDragonflight() and 96 or 192,
+                        imageHeight = Hekili.IsDragonflight() and 96 or 192,
                         order = 5,
                         width = "full"
                     },
@@ -9705,47 +9713,47 @@ do
                     for i, setting in ipairs( settings ) do
                         if not setting.info.arg or setting.info.arg() then
                             if setting.info.type == "toggle" then
-                                output = output .. "\n" ..
-                                    " - " .. format( "|cFFFFD100%s|r = %s|r (%s)", setting.name, prefs[ setting.name ] and "|cFF00FF00" .. L["ON"] or "|cFFFF0000" .. L["OFF"], setting.info.name )
+                                output = output .. "\n"
+                                    .. " - " .. format( "|cFFFFD100%s|r = %s|r (%s)", setting.name, prefs[ setting.name ] and "|cFF00FF00" .. L["ON"] or "|cFFFF0000" .. L["OFF"], setting.info.name )
                                 hasToggle = true
                                 exToggle = setting.name
                             elseif setting.info.type == "range" then
-                                output = output .. "\n" ..
-                                    " - " format( "|cFFFFD100%s|r = |cFF00FF00%.2f|r, %s: %.2f, %s: %.2f (%s)", setting.name, prefs[ setting.name ], L["min"], ( setting.info.min and format( "%.2f", setting.info.min ) or L["N/A"] ), L["max"], ( setting.info.max and format( "%.2f", setting.info.max ) or L["N/A"] ), setting.info.name )
+                                output = output .. "\n"
+                                    .. " - " format( "|cFFFFD100%s|r = |cFF00FF00%.2f|r, %s: %.2f, %s: %.2f (%s)", setting.name, prefs[ setting.name ], L["OPERATORS_MIN"], ( setting.info.min and format( "%.2f", setting.info.min ) or L["N/A"] ), L["OPERATORS_MAX"], ( setting.info.max and format( "%.2f", setting.info.max ) or L["N/A"] ), setting.info.name )
                                 hasNumber = true
                                 exNumber = setting.name
                             end
                         end
                     end
 
-                    output = output .. "\n" ..
-                        " - " .. format( L["|cFFFFD100cycle|r, |cFFFFD100swap|r, or |cFFFFD100target_swap|r = %s|r (%s)"], spec.cycle and "|cFF00FF00" .. L["ON"] or "|cFFFF0000" .. L["OFF"], L["Recommend Target Swaps"] )
+                    output = output .. "\n"
+                        .. " - " .. format( L["|cFFFFD100cycle|r, |cFFFFD100swap|r, or |cFFFFD100target_swap|r = %s|r (%s)"], spec.cycle and "|cFF00FF00" .. L["ON"] or "|cFFFF0000" .. L["OFF"], L["Recommend Target Swaps"] )
 
-                    output = output .. "\n\n" ..
-                        L["To control your toggles (|cFFFFD100cooldowns|r, |cFFFFD100covenants|r, |cFFFFD100defensives|r, |cFFFFD100interrupts|r, |cFFFFD100potions|r, |cFFFFD100custom1|r and |cFFFFD100custom2|r):"] .. "\n" ..
-                        " - " .. L["Enable Cooldowns:  |cFFFFD100/hek set cooldowns on|r"] .. "\n" ..
-                        " - " .. L["Disable Interrupts:  |cFFFFD100/hek set interupts off|r"] .. "\n" ..
-                        " - " .. L["Toggle Defensives:  |cFFFFD100/hek set defensives|r"]
+                    output = output .. "\n\n"
+                        .. L["To control your toggles (|cFFFFD100cooldowns|r, |cFFFFD100covenants|r, |cFFFFD100defensives|r, |cFFFFD100interrupts|r, |cFFFFD100potions|r, |cFFFFD100custom1|r and |cFFFFD100custom2|r):"] .. "\n"
+                        .. " - " .. L["Enable Cooldowns:  |cFFFFD100/hek set cooldowns on|r"] .. "\n"
+                        .. " - " .. L["Disable Interrupts:  |cFFFFD100/hek set interupts off|r"] .. "\n"
+                        .. " - " .. L["Toggle Defensives:  |cFFFFD100/hek set defensives|r"]
 
-                    output = output .. "\n\n" ..
-                        format( L["To control your display mode (currently %s):"], "|cFFFFD100" .. ( self.DB.profile.toggles.mode.value or string.lower( L["Unknown"] ) ) .. "|r" ) .. "\n" ..
-                        " - " .. L["Toggle Mode:  |cFFFFD100/hek set mode|r"] .. "\n" ..
-                        " - " .. L["Set Mode:  |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)"]
+                    output = output .. "\n\n"
+                        .. format( L["To control your display mode (currently %s):"], "|cFFFFD100" .. ( self.DB.profile.toggles.mode.value or string.lower( L["Unknown"] ) ) .. "|r" ) .. "\n"
+                        .. " - " .. L["Toggle Mode:  |cFFFFD100/hek set mode|r"] .. "\n"
+                        .. " - " .. L["Set Mode:  |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)"]
 
                     if hasToggle then
-                        output = output .. "\n\n " ..
-                            L["To set a |cFFFFD100specialization toggle|r, use the following commands:"] .. "\n" ..
-                            " - " .. format( L["Toggle On/Off:  |cFFFFD100/hek set %s|r"], exToggle ) .. "\n" ..
-                            " - " .. format( L["Enable:  |cFFFFD100/hek set %s on|r"], exToggle ) .. "\n" ..
-                            " - " .. format( L["Disable:  |cFFFFD100/hek set %s off|r"], exToggle ) .. "\n" ..
-                            " - " .. format( L["Reset to Default:  |cFFFFD100/hek set %s default|r"], exToggle )
+                        output = output .. "\n\n"
+                            .. L["To set a |cFFFFD100specialization toggle|r, use the following commands:"] .. "\n"
+                            .. " - " .. format( L["Toggle On/Off:  |cFFFFD100/hek set %s|r"], exToggle ) .. "\n"
+                            .. " - " .. format( L["Enable:  |cFFFFD100/hek set %s on|r"], exToggle ) .. "\n"
+                            .. " - " .. format( L["Disable:  |cFFFFD100/hek set %s off|r"], exToggle ) .. "\n"
+                            .. " - " .. format( L["Reset to Default:  |cFFFFD100/hek set %s default|r"], exToggle )
                     end
 
                     if hasNumber then
-                        output = output .. "\n\n" ..
-                            L["To set a |cFFFFD100number|r value, use the following commands:"] .. "\n" ..
-                            " - " .. format( L["Set to #:  |cFFFFD100/hek set %s #|r"], exNumber ) .. "\n" ..
-                            " - " .. format( L["Reset to Default:  |cFFFFD100/hek set %s default|r"], exNumber )
+                        output = output .. "\n\n"
+                            .. L["To set a |cFFFFD100number|r value, use the following commands:"] .. "\n"
+                            .. " - " .. format( L["Set to #:  |cFFFFD100/hek set %s #|r"], exNumber ) .. "\n"
+                            .. " - " .. format( L["Reset to Default:  |cFFFFD100/hek set %s default|r"], exNumber )
                     end
 
                     output = output .. "\n\n" .. L["To select another priority, see |cFFFFD100/hekili priority|r."]
@@ -9874,8 +9882,8 @@ do
                     local output = L["Use |cFFFFD100/hekili profile name|r to swap profiles via command-line or macro."] .. "\n" .. L["Valid profile |cFFFFD100name|rs are:"]
 
                     for name, prof in ns.orderedPairs( Hekili.DB.profiles ) do
-                        output = output .. "\n" ..
-                            " - " format( "|cFFFFD100%s|r %s", name, ( Hekili.DB.profile == prof and "|cFF00FF00" .. L["(current)"] .. "|r" or "" ) )
+                        output = output .. "\n"
+                            .. " - " format( "|cFFFFD100%s|r %s", name, ( Hekili.DB.profile == prof and "|cFF00FF00" .. L["(current)"] .. "|r" or "" ) )
                     end
 
                     output = output .. "\n" .. L["To create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r."]
@@ -9893,8 +9901,8 @@ do
 
                     for name, prof in ns.orderedPairs( Hekili.DB.profiles ) do
                         count = count + 1
-                        output = output .. "\n" ..
-                            " - " .. format( "|cFFFFD100%s|r %s", name, ( Hekili.DB.profile == prof and "|cFF00FF00" .. L["(current)"] .. "|r" or "" ) )
+                        output = output .. "\n"
+                            .." - " .. format( "|cFFFFD100%s|r %s", name, ( Hekili.DB.profile == prof and "|cFF00FF00" .. L["(current)"] .. "|r" or "" ) )
                     end
 
                     output = output .. "\n\n" .. L["To create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r."]
@@ -9914,15 +9922,14 @@ do
                     local output = L["Use |cFFFFD100/hekili priority name|r to change your current specialization's priority via command-line or macro."]
 
                     if n < 2 then
-                        output = output .."\n\n" ..
-                            "|cFFFF0000" .. L["You must have multiple priorities for your specialization to use this feature."] .. "|r"
+                        output = output .."\n\n" .. "|cFFFF0000" .. L["You must have multiple priorities for your specialization to use this feature."] .. "|r"
                     else
                         output = output .. "\n" .. L["Valid priority |cFFFFD100name|rs are:"]
                         for i, priority in ipairs( priorities ) do
                             local isBuiltIn = Hekili.DB.profile.packs[ priority ].builtIn
                             local priorityName = ( isBuiltIn and BlizzBlue or "|cFFFFD100" ) .. _L[ priority ] .. "|r"
-                            output = output .. "\n" ..
-                                " - " .. format( "%s %s", priorityName, ( Hekili.DB.profile.specs[ state.spec.id ].package == priority ) and "|cFF00FF00" .. L["(current)"] .. "|r" or "" )
+                            output = output .. "\n"
+                                .. " - " .. format( "%s %s", priorityName, ( Hekili.DB.profile.specs[ state.spec.id ].package == priority ) and "|cFF00FF00" .. L["(current)"] .. "|r" or "" )
                         end
                     end
 

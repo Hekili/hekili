@@ -1748,7 +1748,7 @@ spec:RegisterSetting( "check_ww_range", false, {
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
-    name = L["Only |T236312:0|t Shockwave as Interrupt"],
+    name = L["Only |T236312:0|t Shockwave as Interrupt (when Talented)"],
     desc = L["If checked, |T236312:0|t Shockwave will only be recommended when your target is casting (and talented)."],
     type = "toggle",
     width = "full"
