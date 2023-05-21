@@ -79,6 +79,11 @@ ns.titleCase = function( s )
 end
 
 
+function ns.WordWrapper( str )
+    return "|W" .. tostring( str ) .. "|w"
+end
+
+
 local replacements = {
     ['_'] = " ",
     aoe = "AOE",

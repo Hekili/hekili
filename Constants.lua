@@ -2,7 +2,47 @@
 -- June 2014
 
 local addon, ns = ...
-local Hekili = _G[ addon ]
+
+ns.Version = GetAddOnMetadata( "Hekili", "Version" )
+ns.Flavor = GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
+
+local format = string.format
+
+local buildStr, _, _, buildNum = GetBuildInfo()
+
+ns.CurrentBuild = buildNum
+
+if ns.Version == ( "@" .. "project-version" .. "@" ) then
+    ns.Version = format( "Dev-%s (%s)", buildStr, date( "%Y%m%d" ) )
+end
+
+ns.AllowSimCImports = true
+
+ns.IsRetail = function()
+    return ns.Flavor == "Retail"
+end
+
+ns.IsWrath = function()
+    return ns.Flavor == "Wrath"
+end
+
+ns.IsClassic = function()
+    return ns.IsWrath()
+end
+
+ns.IsDragonflight = function()
+    return buildNum >= 100000
+end
+
+ns.BuiltFor = ns.IsDragonflight() and 100007 or 30401
+ns.GameBuild = buildStr
+
+ns.PTR = buildNum > ns.BuiltFor
+
+ns.LOCALE = ( GetLocale() == "enGB" and "enUS" ) or GetLocale()
+ns.L = { deDE = {}, enUS = {}, esES = {}, esMX = {}, frFR = {}, itIT = {}, koKR = {}, ptBR = {}, ruRU = {}, zhCN = {}, zhTW = {} }
+ns._L = {}
+
 
 local GetSpecialization = _G.GetSpecialization or function() return GetActiveTalentGroup() end
 local GetSpecializationInfo = _G.GetSpecializationInfo or function()
@@ -49,6 +89,7 @@ local ResourceInfo = {
     mana            = Enum.PowerType.Mana,
     rage            = Enum.PowerType.Rage,
     focus           = Enum.PowerType.Focus,
+    happiness       = Enum.PowerType.Happiness,
     energy          = Enum.PowerType.Energy,
     combo_points    = Enum.PowerType.ComboPoints,
     runes           = Enum.PowerType.Runes,
@@ -180,16 +221,10 @@ local SpecializationKeys = {
     [251] = "frost",
     [252] = "unholy",
 
-    [577] = "havoc",
-    [581] = "vengeance",
-
     [102] = "balance",
     [103] = "feral",
     [104] = "guardian",
     [105] = "restoration",
-
-    [1467] = "devastation",
-    [1468] = "preservation",
 
     [253] = "beast_mastery",
     [254] = "marksmanship",
@@ -226,6 +261,12 @@ local SpecializationKeys = {
     [71] = "arms",
     [72] = "fury",
     [73] = "protection",
+
+    [577] = "havoc",
+    [581] = "vengeance",
+
+    [1467] = "devastation",
+    [1468] = "preservation",
 }
 
 ns.getSpecializationKey = function ( id )
@@ -258,7 +299,7 @@ ns.FrameStratas = {
 }
 
 
-if Hekili.IsWrath() then
+if ns.IsWrath() then
     ns.WrathTalentToSpellID = {
         [23] = { 11083, 12351 },
         [24] = { 11094, 13043 },

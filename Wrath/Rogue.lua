@@ -2,7 +2,10 @@ if UnitClassBase( 'player' ) ~= 'ROGUE' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 4 )
 
@@ -1470,8 +1473,8 @@ spec:RegisterAbilities( {
 
 spec:RegisterSetting("rogue_description", nil, {
     type = "description",
-    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
-        "to determine the optimal values for these settings for your specific character."
+    name = L["Adjust the settings below according to your playstyle preference."] .. " "
+        .. L["It is always recommended that you use a simulator to determine the optimal values for these settings for your specific character."]
 })
 
 spec:RegisterSetting("rogue_description_footer", nil, {
@@ -1481,18 +1484,18 @@ spec:RegisterSetting("rogue_description_footer", nil, {
 
 spec:RegisterSetting("rogue_general", nil, {
     type = "header",
-    name = "General"
+    name = L["General"]
 })
 
 spec:RegisterSetting("rogue_general_description", nil, {
     type = "description",
-    name = "General settings will change the parameters used in the core rotation.\n\n"
+    name = L["General settings will change the parameters used in the core rotation."] .. "\n\n"
 })
 
 spec:RegisterSetting("maintain_expose", false, {
     type = "toggle",
-    name = "Maintain Expose Armor",
-    desc = "When enabled, expose armor will be recommended when there is no major armor debuff up on the boss",
+    name = L["Maintain Expose Armor"],
+    desc = L["When enabled, expose armor will be recommended when there is no major armor debuff up on the boss"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 4 ].settings.maintain_expose = val
@@ -1527,19 +1530,19 @@ spec:RegisterPack( "Combat", 20230211, [[Hekili:Dw1Y2TTnq0VfTrBQRI1d300ALfnBI9cV
 
 
 spec:RegisterPackSelector( "assassination", "Assassination (wowtbc.gg)", "|T132292:0|t Assassination",
-    "If you have spent more points in |T132292:0|t Assassination than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T132292:0|t Assassination"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "combat", "Combat", "|T132090:0|t Combat",
-    "If you have spent more points in |T132090:0|t Combat than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T132090:0|t Combat"] ),
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "subtlety", nil, "|T132320:0|t Subtlety",
-    "If you have spent more points in |T132320:0|t Subtlety than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T132320:0|t Subtlety"] ),
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
     end )

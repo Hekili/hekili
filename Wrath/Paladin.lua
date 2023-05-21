@@ -2,7 +2,10 @@ if UnitClassBase( 'player' ) ~= 'PALADIN' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 2 )
 
@@ -23,7 +26,7 @@ local aura_assigned
 local blessing_assigned
 spec:RegisterHook( "reset_precast", function()
     if not aura_assigned then
-        class.abilityList.assigned_aura = "|cff00ccff[Assigned Aura]|r"
+        class.abilityList.assigned_aura = "|cFF00CCFF[" .. L["Assigned Aura"] .. "]|r"
         class.abilities.assigned_aura = class.abilities[ settings.assigned_aura or "devotion_aura" ]
 
         if faction == "horde" then
@@ -33,7 +36,7 @@ spec:RegisterHook( "reset_precast", function()
     end
 
     if not blessing_assigned then
-        class.abilityList.assigned_blessing = "|cff00ccff[Assigned Blessing]|r"
+        class.abilityList.assigned_blessing = "|cFF00CCFF[" .. L["Assigned Blessing"] .. "]|r"
         class.abilities.assigned_blessing = class.abilities[ settings.assigned_blessing or "blessing_of_kings" ]
         blessing_assigned = true
     end
@@ -1964,8 +1967,8 @@ end)
 
 spec:RegisterSetting("paladin_description", nil, {
     type = "description",
-    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
-        "to determine the optimal values for these settings for your specific character."
+    name = L["Adjust the settings below according to your playstyle preference."] .. " "
+        .. L["It is always recommended that you use a simulator to determine the optimal values for these settings for your specific character."]
 })
 
 spec:RegisterSetting("paladin_description_footer", nil, {
@@ -1975,13 +1978,13 @@ spec:RegisterSetting("paladin_description_footer", nil, {
 
 spec:RegisterSetting("general_header", nil, {
     type = "header",
-    name = "General"
+    name = L["General"]
 })
 
 spec:RegisterSetting("maintain_aura", true, {
     type = "toggle",
-    name = "Maintain Aura",
-    desc = "When enabled, selected aura will be recommended if it is down",
+    name = L["Maintain Aura"],
+    desc = L["When enabled, selected aura will be recommended if it is down"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 2 ].settings.maintain_aura = val
@@ -1991,8 +1994,8 @@ spec:RegisterSetting("maintain_aura", true, {
 local auras = {}
 spec:RegisterSetting( "assigned_aura", "retribution_aura", {
     type = "select",
-    name = "Assigned Aura",
-    desc = "Select the Aura that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Aura]|r in your priority.",
+    name = L["Assigned Aura"],
+    desc = L["Select the Aura that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Aura]|r in your priority."],
     width = "full",
     values = function()
         table.wipe( auras )
@@ -2015,9 +2018,9 @@ spec:RegisterSetting( "assigned_aura", "retribution_aura", {
 
 spec:RegisterSetting("maintain_blessing", true, {
     type = "toggle",
-    name = "Maintain Aura",
-    desc = "When enabled, selected blessing will be recommended if it is down. Disable this setting if your raid group uses another "..
-        "blessing management tool such as PallyPower.",
+    name = L["Maintain Aura"],
+    desc = L["When enabled, selected blessing will be recommended if it is down."] .. " "
+        .. L["Disable this setting if your raid group uses another blessing management tool such as PallyPower."],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 2 ].settings.maintain_blessing = val
@@ -2027,8 +2030,8 @@ spec:RegisterSetting("maintain_blessing", true, {
 local blessings = {}
 spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
     type = "select",
-    name = "Assigned Blessing",
-    desc = "Select the Blessing that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Blessing]|r in your priority.",
+    name = L["Assigned Blessing"],
+    desc = L["Select the Blessing that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Blessing]|r in your priority."],
     width = "full",
     values = function()
         table.wipe( blessings )
@@ -2048,8 +2051,8 @@ spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
 
 spec:RegisterSetting("holy_wrath_threshold", 2, {
     type = "range",
-    name = "Holy Wrath Threshold",
-    desc = "Select the minimum number of enemies before holy wrath will be prioritized higher",
+    name = L["Holy Wrath Threshold"],
+    desc = L["Select the minimum number of enemies before holy wrath will be prioritized higher"],
     width = "full",
     min = 0,
     softMax = 10,
@@ -2060,8 +2063,8 @@ spec:RegisterSetting("holy_wrath_threshold", 2, {
 })
 spec:RegisterSetting("primary_slack", 0.5, {
     type = "range",
-    name = "Primary Slack (s)",
-    desc = "Amount of extra time in s to give main abilities to come off CD before using Exo or Cons",
+    name = L["Primary Slack (s)"],
+    desc = L["Amount of extra time in s to give main abilities to come off CD before using Exo or Cons"],
     width = "full",
     min = 0,
     softMax = 2,
@@ -2073,8 +2076,8 @@ spec:RegisterSetting("primary_slack", 0.5, {
 
 spec:RegisterSetting("hor_macros", false, {
     type = "toggle",
-    name = "Using HoR Macros",
-    desc = "Enable when using Hand of Reckoning Macros (dont display HoR when using Glyph)",
+    name = L["Using HoR Macros"],
+    desc = L["Enable when using Hand of Reckoning Macros (dont display HoR when using Glyph)"],
     width = "single",
     set = function( _, val )
         Hekili.DB.profile.specs[ 2 ].settings.hor_macros = val
@@ -2083,8 +2086,8 @@ spec:RegisterSetting("hor_macros", false, {
 
 spec:RegisterSetting("fol_on_aow", false, {
     type = "toggle",
-    name = "Flash of Light on AoW",
-    desc = "Enable to recommend Flash of Light on spare Art of War during Exo CDs",
+    name = L["Flash of Light on AoW"],
+    desc = L["Enable to recommend Flash of Light on spare Art of War during Exo CDs"],
     width = "single",
     set = function( _, val )
         Hekili.DB.profile.specs[ 2 ].settings.fol_on_aow = val
@@ -2098,18 +2101,18 @@ spec:RegisterSetting("general_footer", nil, {
 
 spec:RegisterSetting("mana_regen_header", nil, {
     type = "header",
-    name = "Mana Upkeep"
+    name = L["Mana Upkeep"]
 })
 
 spec:RegisterSetting("mana_regen_description", nil, {
     type = "description",
-    name = "Mana Upkeep settings will change mana regeneration related recommendations\n\n"
+    name = L["Mana Upkeep settings will change mana regeneration related recommendations"] .. "\n\n"
 })
 
 spec:RegisterSetting("judgement_of_wisdom_threshold", 70, {
     type = "range",
-    name = "Judgement of Wisdom Threshold",
-    desc = "Select the minimum mana percent at which judgement of wisdom will be recommended",
+    name = L["Judgement of Wisdom Threshold"],
+    desc = L["Select the minimum mana percent at which judgement of wisdom will be recommended"],
     width = "full",
     min = 0,
     max = 100,
@@ -2121,8 +2124,8 @@ spec:RegisterSetting("judgement_of_wisdom_threshold", 70, {
 
 spec:RegisterSetting("divine_plea_threshold", 75, {
     type = "range",
-    name = "Divine Plea Threshold",
-    desc = "Select the minimum mana percent at which divine plea will be recommended",
+    name = L["Divine Plea Threshold"],
+    desc = L["Select the minimum mana percent at which divine plea will be recommended"],
     width = "full",
     min = 0,
     max = 100,
@@ -2161,19 +2164,19 @@ spec:RegisterPack( "Holy Paladin (wowtbc.gg)", 20221002.1, [[Hekili:vA1YUTToq0pM
 
 
 spec:RegisterPackSelector( "retribution", "Retribution", "|T135873:0|t Retribution",
-    "If you have spent more points in |T135873:0|t Retribution than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135873:0|t Retribution"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "protection", "Protection Paladin (wowtbc.gg)", "|T135893:0|t Protection",
-    "If you have spent more points in |T135893:0|t Protection than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135893:0|t Protection"] ),
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "holy", "Holy Paladin (wowtbc.gg)", "|T135920:0|t Holy",
-    "If you have spent more points in |T135920:0|t Holy than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135920:0|t Holy"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )

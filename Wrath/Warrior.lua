@@ -2,10 +2,12 @@ if UnitClassBase( 'player' ) ~= 'WARRIOR' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
 
 local IsCurrentSpell = _G.IsCurrentSpell
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 1 )
 
@@ -853,12 +855,12 @@ local shout_spell_assigned = false
 local main_gcd_spell_assigned = false
 spec:RegisterHook( "reset_precast", function()
     if not main_gcd_spell_assigned then
-        class.abilityList.main_gcd_spell = "|cff00ccff[Main GCD]|r"
+        class.abilityList.main_gcd_spell = "|cFF00CCFF[" .. L["Main GCD"] .. "]|r"
         class.abilities.main_gcd_spell = class.abilities[ settings.main_gcd_spell or "slam" ]
         main_gcd_spell_assigned = true
     end
     if not shout_spell_assigned then
-        class.abilityList.shout_spell = "|cff00ccff[Assigned Shout]|r"
+        class.abilityList.shout_spell = "|cFF00CCFF[" .. L["Assigned Shout"] .. "]|r"
         class.abilities.shout_spell = class.abilities[ settings.shout_spell or "commanding_shout" ]
         shout_spell_assigned = true
     end
@@ -2119,8 +2121,8 @@ end)
 
 spec:RegisterSetting("warrior_description", nil, {
     type = "description",
-    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
-        "to determine the optimal values for these settings for your specific character."
+    name = L["Adjust the settings below according to your playstyle preference."] .. " "
+        .. L["It is always recommended that you use a simulator to determine the optimal values for these settings for your specific character."]
 })
 
 spec:RegisterSetting("warrior_description_footer", nil, {
@@ -2130,14 +2132,14 @@ spec:RegisterSetting("warrior_description_footer", nil, {
 
 spec:RegisterSetting("general_header", nil, {
     type = "header",
-    name = "General"
+    name = L["General"]
 })
 
 local main_gcd_spell = {}
 spec:RegisterSetting("main_gcd_spell", "slam", {
     type = "select",
-    name = "Main GCD Spell",
-    desc = "Select which ability should be top priority",
+    name = L["Main GCD Spell"],
+    desc = L["Select which ability should be top priority"],
     width = "full",
     values = function()
         table.wipe(main_gcd_spell)
@@ -2155,8 +2157,8 @@ spec:RegisterSetting("main_gcd_spell", "slam", {
 local shout_spells = {}
 spec:RegisterSetting("shout_spell", "commanding_shout", {
     type = "select",
-    name = "Preferred Shout",
-    desc = "Select which shout should be recommended",
+    name = L["Preferred Shout"],
+    desc = L["Select which shout should be recommended"],
     width = "full",
     values = function()
         table.wipe(shout_spells)
@@ -2172,8 +2174,8 @@ spec:RegisterSetting("shout_spell", "commanding_shout", {
 
 spec:RegisterSetting("queueing_threshold", 60, {
     type = "range",
-    name = "Queue Rage Threshold",
-    desc = "Select the rage threshold after which heroic strike / cleave will be recommended",
+    name = L["Queue Rage Threshold"],
+    desc = L["Select the rage threshold after which heroic strike / cleave will be recommended"],
     width = "full",
     min = 0,
     softMax = 100,
@@ -2185,8 +2187,8 @@ spec:RegisterSetting("queueing_threshold", 60, {
 
 spec:RegisterSetting("predict_tfb", true, {
     type = "toggle",
-    name = "Predict Taste For Blood",
-    desc = "When enabled, Taste For Blood procs will be predicted and displayed in future recommendations",
+    name = L["Predict Taste For Blood"],
+    desc = L["When enabled, Taste For Blood procs will be predicted and displayed in future recommendations"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.predict_tfb = val
@@ -2195,8 +2197,8 @@ spec:RegisterSetting("predict_tfb", true, {
 
 spec:RegisterSetting("optimize_overpower", false, {
     type = "toggle",
-    name = "Optimize Overpower",
-    desc = "When enabled, Overpower will be deprioritized until the GCD before a subsequent Taste For Blood proc.\n\nApplies to Arms only.",
+    name = L["Optimize Overpower"],
+    desc = L["When enabled, Overpower will be deprioritized until the GCD before a subsequent Taste For Blood proc.\n\nApplies to Arms only."],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.optimize_overpower = val
@@ -2210,18 +2212,18 @@ spec:RegisterSetting("general_footer", nil, {
 
 spec:RegisterSetting("debuffs_header", nil, {
     type = "header",
-    name = "Debuffs"
+    name = L["Debuffs"]
 })
 
 spec:RegisterSetting("debuffs_description", nil, {
     type = "description",
-    name = "Debuffs settings will change which debuffs are recommended"
+    name = L["Debuffs settings will change which debuffs are recommended"]
 })
 
 spec:RegisterSetting("debuff_sunder_enabled", true, {
     type = "toggle",
-    name = "Maintain Sunder Armor",
-    desc = "When enabled, recommendations will include sunder armor",
+    name = L["Maintain Sunder Armor"],
+    desc = L["When enabled, recommendations will include sunder armor"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.debuff_sunder_enabled = val
@@ -2230,8 +2232,8 @@ spec:RegisterSetting("debuff_sunder_enabled", true, {
 
 spec:RegisterSetting("debuff_demoshout_enabled", false, {
     type = "toggle",
-    name = "Maintain Demoralizing Shout",
-    desc = "When enabled, recommendations will include demoralizing shout",
+    name = L["Maintain Demoralizing Shout"],
+    desc = L["When enabled, recommendations will include demoralizing shout"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.debuff_demoshout_enabled = val
@@ -2245,18 +2247,18 @@ spec:RegisterSetting("debuffs_footer", nil, {
 
 spec:RegisterSetting("execute_header", nil, {
     type = "header",
-    name = "Execute"
+    name = L["Execute"]
 })
 
 spec:RegisterSetting("execute_description", nil, {
     type = "description",
-    name = "Execute settings will change recommendations only during execute phase"
+    name = L["Execute settings will change recommendations only during execute phase"]
 })
 
 spec:RegisterSetting("execute_queueing_enabled", true, {
     type = "toggle",
-    name = "Queue During Execute",
-    desc = "When enabled, recommendations will include heroic strike or cleave during the execute phase",
+    name = L["Queue During Execute"],
+    desc = L["When enabled, recommendations will include heroic strike or cleave during the execute phase"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.execute_queueing_enabled = val
@@ -2265,8 +2267,8 @@ spec:RegisterSetting("execute_queueing_enabled", true, {
 
 spec:RegisterSetting("execute_bloodthirst_enabled", true, {
     type = "toggle",
-    name = "Bloodthirst During Execute",
-    desc = "When enabled, recommendations will include bloodthirst during the execute phase",
+    name = L["Bloodthirst During Execute"],
+    desc = L["When enabled, recommendations will include bloodthirst during the execute phase"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.execute_bloodthirst_enabled = val
@@ -2275,8 +2277,8 @@ spec:RegisterSetting("execute_bloodthirst_enabled", true, {
 
 spec:RegisterSetting("execute_whirlwind_enabled", true, {
     type = "toggle",
-    name = "Whirlwind During Execute",
-    desc = "When enabled, recommendations will include whirlwind during the execute phase",
+    name = L["Whirlwind During Execute"],
+    desc = L["When enabled, recommendations will include whirlwind during the execute phase"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.execute_whirlwind_enabled = val
@@ -2285,8 +2287,8 @@ spec:RegisterSetting("execute_whirlwind_enabled", true, {
 
 spec:RegisterSetting("execute_slam_prio", true, {
     type = "toggle",
-    name = "Slam Over Execute",
-    desc = "When enabled, recommendations will prioritize slam over execute during the execute phase",
+    name = L["Slam Over Execute"],
+    desc = L["When enabled, recommendations will prioritize slam over execute during the execute phase"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.execute_slam_prio = val
@@ -2300,19 +2302,18 @@ spec:RegisterSetting("execute_footer", nil, {
 
 spec:RegisterSetting("weaving_header", nil, {
     type = "header",
-    name = "Weaving"
+    name = L["Weaving"]
 })
 
 spec:RegisterSetting("weaving_description", nil, {
     type = "description",
-    name = "Enabling weaving will cause Hekili to recommend the player swaps into battle stance and rends/overpowers the target under "..
-        "certain conditions.\n\nApplies to Fury only"
+    name = L["Enabling weaving will cause Hekili to recommend the player swaps into battle stance and rends/overpowers the target under certain conditions.\n\nApplies to Fury only"]
 })
 
 spec:RegisterSetting("weaving_enabled", false, {
     type = "toggle",
-    name = "Enabled",
-    desc = "When enabled, recommendations will include battle stance swapping under certain conditions",
+    name = L["Enabled"],
+    desc = L["When enabled, recommendations will include battle stance swapping under certain conditions"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.weaving_enabled = val
@@ -2321,8 +2322,8 @@ spec:RegisterSetting("weaving_enabled", false, {
 
 spec:RegisterSetting("weave_rage_threshold", 100, {
     type = "range",
-    name = "Maximum Rage",
-    desc = "Select the maximum rage at which weaving will be recommended",
+    name = L["Maximum Rage"],
+    desc = L["Select the maximum rage at which weaving will be recommended"],
     width = "full",
     min = 0,
     softMax = 100,
@@ -2334,8 +2335,8 @@ spec:RegisterSetting("weave_rage_threshold", 100, {
 
 spec:RegisterSetting("weave_health_threshold", 20, {
     type = "range",
-    name = "Minimum Target Health",
-    desc = "Select the minimum target health at which weaving will be recommended",
+    name = L["Minimum Target Health"],
+    desc = L["Select the minimum target health at which weaving will be recommended"],
     width = "full",
     min = 0,
     max = 100,
@@ -2347,8 +2348,8 @@ spec:RegisterSetting("weave_health_threshold", 20, {
 
 spec:RegisterSetting("weave_cooldown_threshold", 1.5, {
     type = "range",
-    name = "Cooldown Threshold",
-    desc = "Select the minimum time left allowed on bloodthirst and whirlwind before weaving can be recommended",
+    name = L["Cooldown Threshold"],
+    desc = L["Select the minimum time left allowed on bloodthirst and whirlwind before weaving can be recommended"],
     width = "full",
     min = 0,
     softMax = 8,
@@ -2360,8 +2361,8 @@ spec:RegisterSetting("weave_cooldown_threshold", 1.5, {
 
 spec:RegisterSetting("rend_refresh_time", 0, {
     type = "range",
-    name = "Refresh Time",
-    desc = "Select the time left on an existing rend debuff at which rendweaving can be recommended",
+    name = L["Refresh Time"],
+    desc = L["Select the time left on an existing rend debuff at which rendweaving can be recommended"],
     width = "full",
     min = 0,
     softMax = 21,
@@ -2408,19 +2409,19 @@ spec:RegisterPack( "Protection Warrior (wowtbc.gg)", 20221003, [[Hekili:DA1xpkUn
 
 
 spec:RegisterPackSelector( "arms", "Arms", "|T132292:0|t Arms",
-    "If you have spent more points in |T132292:0|t Arms than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T132292:0|t Arms"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "fury", "Fury", "|T132347:0|t Fury",
-    "If you have spent more points in |T132347:0|t Fury than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T132347:0|t Fury"] ),
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "protection", "Protection Warrior (wowtbc.gg)", "|T134952:0|t Protection",
-    "If you have spent more points in |T134952:0|t Protection than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T134952:0|t Protection"] ),
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
     end )

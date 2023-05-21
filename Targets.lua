@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[addon]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -109,12 +110,12 @@ do
     end
 
     function Hekili:PetBasedTargetDetectionIsReady( skipRange )
-        if petSlot == 0 then return false, "Pet action not found in player action bars." end
-        if not UnitExists( "pet" ) then return false, "No active pet." end
-        if UnitIsDead( "pet" ) then return false, "Pet is dead." end
+        if petSlot == 0 then return false, L["Pet action not found in player action bars."] end
+        if not UnitExists( "pet" ) then return false, L["No active pet."] end
+        if UnitIsDead( "pet" ) then return false, L["Pet is dead."] end
 
         -- If we have a target and the target is out of our pet's range, don't use pet detection.
-        if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot ) then return false, "Player has target and player's target not in range of pet." end
+        if not skipRange and UnitExists( "target" ) and not IsActionInRange( petSlot ) then return false, L["Player has target and player's target not in range of pet."] end
         return true
     end
 
@@ -183,15 +184,17 @@ RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( event, unit )
     if UnitIsFriend( "player", unit ) then return end
 
     local id = UnitGUID( unit )
-    npGUIDs[unit] = id
-    npUnits[id]   = unit
+
+    npGUIDs[ unit ] = id
+    npUnits[ id ]   = unit
 end )
 
 RegisterEvent( "NAME_PLATE_UNIT_REMOVED", function( event, unit )
     if UnitIsFriend( "player", unit ) then return end
 
     local id = npGUIDs[ unit ] or UnitGUID( unit )
-    npGUIDs[unit] = nil
+
+    npGUIDs[ unit ] = nil
 
     if npUnits[id] and npUnits[id] == unit then
         npUnits[id] = nil
@@ -203,13 +206,13 @@ RegisterEvent( "UNIT_FLAGS", function( event, unit )
         local id = UnitGUID( unit )
         ns.eliminateUnit( id, true )
 
-        npGUIDs[unit] = nil
-        npUnits[id]   = nil
+        npGUIDs[ unit ] = nil
+        npUnits[ id ]   = nil
     end
 end )
 
 
-local RC = LibStub("LibRangeCheck-2.0")
+local RC = LibStub( "LibRangeCheck-2.0" )
 
 local lastCount = 1
 local lastStationary = 1
@@ -314,7 +317,7 @@ do
                 for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 0 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local npcid = guid:match( "(%d+)-%x-$" )
-                        npcid = tonumber(npcid)
+                        npcid = tonumber( npcid )
 
                         local excluded = enemyExclusions[ npcid ]
 
@@ -454,7 +457,7 @@ do
 
         local targetGUID = UnitGUID( "target" )
         if targetGUID then
-            if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and UnitInPhase("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
+            if counted[ targetGUID ] == nil and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) and UnitInPhase( "target" ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( "target" ) ) then
                 count = count + 1
                 counted[ targetGUID ] = true
 
@@ -495,7 +498,7 @@ function ns.dumpNameplateInfo()
 end
 
 
-function ns.updateTarget(id, time, mine)
+function ns.updateTarget( id, time, mine )
     local spec = rawget( Hekili.DB.profile.specs, state.spec.id )
     if not spec or not spec.damage then return end
 
@@ -523,12 +526,12 @@ function ns.updateTarget(id, time, mine)
         end
     else
         if targets[id] then
-            targetCount = max(0, targetCount - 1)
+            targetCount = max( 0, targetCount - 1 )
             targets[id] = nil
         end
 
         if myTargets[id] then
-            myTargetCount = max(0, myTargetCount - 1)
+            myTargetCount = max( 0, myTargetCount - 1 )
             myTargets[id] = nil
         end
 
@@ -540,7 +543,7 @@ Hekili:ProfileCPU( "UpdateTarget", ns.updateTargets )
 
 ns.reportTargets = function()
     for k, v in pairs(targets) do
-        Hekili:Print("Saw " .. k .. " exactly " .. GetTime() - v .. " seconds ago.")
+        Hekili:Print( format( L["Saw %s exactly %.2f seconds ago."], k, GetTime() - v ) )
     end
 end
 
@@ -640,7 +643,6 @@ ns.trackDebuff = function(spell, target, time, application)
 end
 
 Hekili:ProfileCPU( "TrackDebuff", ns.trackDebuff )
-
 
 ns.GetDebuffApplicationTime = function( spell, target )
     if class.auras[ spell ] then spell = class.auras[ spell ].key end
@@ -811,6 +813,7 @@ function ns.healingInLast(t)
     return heal
 end
 
+
 -- Auditor should clean things up for us.
 Hekili.lastAudit = GetTime()
 Hekili.auditInterval = 0
@@ -855,7 +858,6 @@ ns.Audit = function( special )
     local cutoff = now - 15
     for i = #incomingDamage, 1, -1 do
         local instance = incomingDamage[ i ]
-
         if instance.t < cutoff then
             table.remove( incomingDamage, i )
         end
@@ -863,7 +865,6 @@ ns.Audit = function( special )
 
     for i = #incomingHealing, 1, -1 do
         local instance = incomingHealing[ i ]
-
         if instance.t < cutoff then
             table.remove( incomingHealing, i )
         end
@@ -882,7 +883,7 @@ function Hekili:DumpDotInfo( aura )
 
     aura = aura and class.auras[ aura ] and class.auras[ aura ].id or aura
 
-    Hekili:Print( "Current DoT Information at " .. GetTime() .. ( aura and ( " for " .. aura ) or "" ) .. ":" )
+    Hekili:Print( format( aura and L["Current DoT Information at %1$s for %2$s:"] or L["Current DoT Information at %s:"], GetTime(), aura ) )
     DevTools_Dump( aura and debuffs[ aura ] or debuffs )
 end
 
@@ -901,7 +902,7 @@ do
 
         db[guid] = nil
         wipe(enemy)
-        insert(recycle, enemy)
+        insert( recycle, enemy )
 
         for k, v in pairs( debuffs ) do
             if v[ guid ] then ns.trackDebuff( k, guid ) end
@@ -1277,9 +1278,9 @@ do
     function Hekili:ExpireTTDs( all )
         local now = GetTime()
 
-        for k, v in pairs(db) do
+        for k, v in pairs( db ) do
             if all or now - v.lastSeen > 10 then
-                EliminateEnemy(k)
+                EliminateEnemy( k )
             end
         end
     end
@@ -1308,10 +1309,10 @@ do
                     health = health + UnitGetTotalAbsorbs(unit)
                     healthMax = max( 1, healthMax )
 
-                    UpdateEnemy(guid, health / healthMax, unit, now)
+                    UpdateEnemy( guid, health / healthMax, unit, now )
                     -- updates = updates + 1
                 end
-                seen[guid] = true
+                seen[ guid ] = true
             end
         end
 
@@ -1324,13 +1325,12 @@ do
                 UpdateEnemy(guid, health / healthMax, unit, now)
                 -- updates = updates + 1
             end
-            seen[guid] = true
+            seen[ guid ] = true
         end
 
         C_Timer.After( 0.25, UpdateTTDs )
     end
     Hekili:ProfileCPU( "UpdateTTDs", UpdateTTDs )
-
 
     C_Timer.After( 0.25, UpdateTTDs )
 end

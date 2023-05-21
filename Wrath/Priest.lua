@@ -2,7 +2,10 @@ if UnitClassBase( 'player' ) ~= 'PRIEST' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 5 )
 
@@ -1757,7 +1760,7 @@ spec:RegisterPack( "Shadow", 20230210, [[Hekili:LJvBVnQrq4FlwNKvIQl1yFojTk2sTQFO
 
 
 spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
-    "If you have spent more points in |T135987:0|t Discipline than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135987:0|t Discipline"] ),
     -- Criteria
     -- The pack selector hook passes the points spent in tab1 (Discipline), tab2 (Holy), and tab3 (Shadow).
     function( tab1, tab2, tab3 )
@@ -1768,7 +1771,7 @@ spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
 
 
 spec:RegisterPackSelector( "holy", "none", "|T237542:0|t Holy",
-    "If you have spent more points in |T237542:0|t Holy than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T237542:0|t Holy"] ),
     -- Criteria
     -- The pack selector hook passes the points spent in tab1 (Discipline), tab2 (Holy), and tab3 (Shadow).
     function( tab1, tab2, tab3 )
@@ -1778,7 +1781,7 @@ spec:RegisterPackSelector( "holy", "none", "|T237542:0|t Holy",
     end )
 
 spec:RegisterPackSelector( "shadow", "Shadow", "|T136207:0|t Shadow",
-    "If you have spent more points in |T136207:0|t Shadow than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T136207:0|t Shadow"] ),
     -- Criteria
     -- The pack selector hook passes the points spent in tab1 (Discipline), tab2 (Holy), and tab3 (Shadow).
     function( tab1, tab2, tab3 )
@@ -1790,22 +1793,22 @@ spec:RegisterPackSelector( "shadow", "Shadow", "|T136207:0|t Shadow",
 -- Settings
 spec:RegisterSetting( "dots_in_aoe", false, {
     type = "toggle",
-    name = "|T252997:0|t|T136207:0|t|T135978:0|t Apply DoTs in AOE",
-    desc = "When enabled, the Shadow priority will recommend applying DoTs to your current target in multi-target scenarios before channeling |T237565:0|t Mind Sear.",
+    name = L["|T252997:0|t|T136207:0|t|T135978:0|t Apply DoTs in AOE"],
+    desc = L["When enabled, the Shadow priority will recommend applying DoTs to your current target in multi-target scenarios before channeling |T237565:0|t Mind Sear."],
     width = "full",
 } )
 
 spec:RegisterSetting( "optimize_mind_blast", false, {
     type = "toggle",
-    name = "|T136224:0|t Mind Blast: Optimize Use",
-    desc = "When enabled, the Shadow priority will only recommend |T136224:0|t Mind Blast below an internally-calculated haste threshold (vs. using |T136208:0|t Mind Flay).",
+    name = L["|T136224:0|t Mind Blast: Optimize Use"],
+    desc = L["When enabled, the Shadow priority will only recommend |T136224:0|t Mind Blast below an internally-calculated haste threshold (vs. using |T136208:0|t Mind Flay)."],
     width = "full",
 } )
 
 spec:RegisterSetting( "min_shadowfiend_mana", 25, {
     type = "range",
-    name = "|T136199:0|t Shadowfiend Mana Threshold",
-    desc = "If set above zero, |T136199:0|t Shadowfiend cannot be recommended until your mana falls below this percentage.",
+    name = L["|T136199:0|t Shadowfiend Mana Threshold"],
+    desc = L["If set above zero, |T136199:0|t Shadowfiend cannot be recommended until your mana falls below this percentage."],
     width = "full",
     min = 0,
     max = 100,

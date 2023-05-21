@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -46,7 +47,7 @@ local function EmbedBlizOptions()
     open:SetPoint( "CENTER", panel, "CENTER", 0, 0 )
     open:SetWidth( 250 )
     open:SetHeight( 25 )
-    open:SetText( "Open Hekili Options Panel" )
+    open:SetText( L["Open Hekili Options Panel"] )
 
     open:SetScript( "OnClick", function ()
         InterfaceOptionsFrameOkay:Click()
@@ -104,8 +105,8 @@ function Hekili:OnInitialize()
             end,
             OnTooltipShow = function( tt )
                 tt:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
-                tt:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
-                tt:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
+                tt:AddLine( "|cFFFFFFFF" .. L["Left-click to make quick adjustments."] .. "|r" )
+                tt:AddLine( "|cFFFFFFFF" .. L["Right-click to open the options interface."] .. "|r" )
             end,
         } )
 
@@ -116,18 +117,25 @@ function Hekili:OnInitialize()
 
             if p.toggles.essences.override then
                 -- Don't show Essences here if it's overridden by CDs anyway?
-                self.text = format( "|c%s%s|r %sCD|r %sInt|r %sDef|r", color,
-                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
-                    p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
-            else
-                self.text = format( "|c%s%s|r %sCD|r %sCov|r %sInt|r",
+                self.text = format( "|c%s%s|r %s%s|r %s%s|r %s%s|r",
                     color,
-                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
+                    m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
                     p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["CD"],
+                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["Int"],
+                    p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["Def"] )
+            else
+                self.text = format( "|c%s%s|r %s%s|r %s%s|r %s%s|r",
+                    color,
+                    m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
+                    p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["CD"],
                     p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
-                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000" )
+                    L["Cov"],
+                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+                    L["Int"] )
             end
         end
 
@@ -137,7 +145,6 @@ function Hekili:OnInitialize()
             LDBIcon:Register( "Hekili", ns.UI.Minimap, self.DB.profile.iconStore )
         end
     end
-
 
     --[[ NEED TO PUT VERSION UPDATING STUFF HERE.
     if not self.DB.profile.Version or self.DB.profile.Version < 7 or not self.DB.profile.Release or self.DB.profile.Release < 20161000 then
@@ -149,6 +156,7 @@ function Hekili:OnInitialize()
     -- initializeClassModule()
     self:RestoreDefaults()
     self:RunOneTimeFixes()
+
     checkImports()
 
     ns.updateTalents()
@@ -629,7 +637,6 @@ do
 
     local function DoYield( self, msg, time, force )
         if not coroutine.running() then return end
-
         time = time or debugprofilestop()
 
         prevTime = time
@@ -637,7 +644,7 @@ do
         if force or time - self.frameStartTime > self.maxFrameTime * 0.9 then
             coroutine.yield()
 
-            prevMsg = "Resumed thread..."
+            prevMsg = L["Resumed thread..."]
             prevTime = debugprofilestop()
 
             resumeTime = prevTime
@@ -659,7 +666,7 @@ do
     function Hekili:ResetThreadClock()
         resumeTime = debugprofilestop()
 
-        prevMsg = "Started thread..."
+        prevMsg = L["Started thread..."]
         prevTime = resumeTime
     end
 end
@@ -702,7 +709,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local strict = false -- disabled for now.
     local force_channel = false
     local stop = false
-
 
     if self:IsListActive( packName, listName ) then
         local actID = 1
@@ -1335,7 +1341,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     end
 
                                     if rWait == 0 or force_channel then break end
-
                                 end
                             end
                         end
@@ -1370,7 +1375,6 @@ Hekili:ProfileCPU( "GetPredictionFromAPL", Hekili.GetPredictionFromAPL )
 
 
 function Hekili:GetNextPrediction( dispName, packName, slot )
-
     local debug = self.ActiveDebug
 
     -- This is the entry point for the prediction engine.
@@ -1919,7 +1923,6 @@ function Hekili.Update()
                         if ability.gcd ~= "off" and state.cooldown.global_cooldown.remains == 0 then
                             state.setCooldown( "global_cooldown", state.gcd.execute )
                         end
-
                         -- Hekili:Yield( "Post-GCD for " .. dispName .. " #" .. i .. ": " .. action )
 
                         local cast_target = state.cast_target ~= "nobody" and state.cast_target or state.target.unit
@@ -1959,7 +1962,6 @@ function Hekili.Update()
                                 -- Queue ticks because we may not have an ability.tick function, but may have resources tied to an aura.
                                 if ability.tick_time then
                                     local ticks = floor( cast / ability.tick_time )
-
                                     for i = 1, ticks do
                                         if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f [+%.2f].", action, i, ticks, state.query_time + ( i * ability.tick_time ), state.offset + ( i * ability.tick_time ) ) end
                                         state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK", cast_target )
@@ -2030,7 +2032,7 @@ function Hekili.Update()
                         end
                     else
                         if not hasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 50 and ( dispName == "Primary" or dispName == "AOE" ) and class.primaryResource and state[ class.primaryResource ].percent > 20 then
-                            Hekili:Print( "Unable to make recommendation for " .. dispName .. " #" .. i .. "; triggering auto-snapshot..." )
+                            Hekili:Print( format( L["Unable to make recommendation for %s #%d; triggering auto-snapshot..."], dispName, i ) )
                             hasSnapped = dispName
                             UI:SetThreadLocked( false )
                             return "AutoSnapshot"
@@ -2058,9 +2060,9 @@ function Hekili.Update()
 
                 if Hekili:SaveDebugSnapshot( dispName ) then
                     if snaps then
-                        snaps = snaps .. ", " .. dispName
+                        snaps = snaps .. ", " .. L[ dispName ]
                     else
-                        snaps = dispName
+                        snaps = L[ dispName ]
                     end
 
                     if Hekili.Config then LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "snapshots" ) end
@@ -2080,7 +2082,7 @@ function Hekili.Update()
     end
 
     if snaps then
-        Hekili:Print( "Snapshots saved:  " .. snaps .. "." )
+        Hekili:Print( format( L["Snapshots saved:  %s."], snaps ) )
     end
 end
 Hekili:ProfileCPU( "ThreadedUpdate", Hekili.Update )
@@ -2090,17 +2092,17 @@ function Hekili_GetRecommendedAbility( display, entry )
     entry = entry or 1
 
     if not rawget( Hekili.DB.profile.displays, display ) then
-        return nil, "Display not found."
+        return nil, L["Display not found."]
     end
 
     if not ns.queue[ display ] then
-        return nil, "No queue for that display."
+        return nil, L["No queue for that display."]
     end
 
     local slot = ns.queue[ display ][ entry ]
 
     if not slot or not slot.actionID then
-        return nil, "No entry #" .. entry .. " for that display."
+        return nil, format( L["No entry #%s for that display."], entry )
     end
 
     return slot.actionID

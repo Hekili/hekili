@@ -3,7 +3,17 @@
 ## Title: Hekili
 ## Author: Hekili
 ## X-Flavor: Wrath
-## Notes: Priority helper for many DPS and tanking specializations, based on SimulationCraft action lists.
+## Notes: Priority helper based on SimulationCraft action lists.
+## Notes-deDE: Priority helper based on SimulationCraft action lists.
+## Notes-esES: Priority helper based on SimulationCraft action lists.
+## Notes-esMX: Priority helper based on SimulationCraft action lists.
+## Notes-frFR: Priority helper based on SimulationCraft action lists.
+## Notes-itIT: Priority helper based on SimulationCraft action lists.
+## Notes-koKR: SimulationCraft 행동 목록에 기반한 우선순위 도우미입니다.
+## Notes-ptBR: Priority helper based on SimulationCraft action lists.
+## Notes-ruRU: Priority helper based on SimulationCraft action lists.
+## Notes-zhCN: Priority helper based on SimulationCraft action lists.
+## Notes-zhTW: Priority helper based on SimulationCraft action lists.
 ## SavedVariables: HekiliDB
 ## OptionalDeps: AddOnSkins, ButtonForge, ConsolePort, ElvUI, LibDualSpec-1.0, Masque, WeakAuras
 ## X-Curse-Project-ID: 69254
@@ -11,12 +21,13 @@
 ## X-Wago-ID: WYK9WXNL
 
 embeds.xml
+Constants.lua
+Locales\Locales.xml
 
 Hekili.lua
 Utils.lua
 Formatting.lua
 MultilineEditor.lua
-Constants.lua
 State.lua
 Events.lua
 

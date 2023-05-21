@@ -1,5 +1,6 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 
 if not Hekili.IsWrath() then return end
 
@@ -65,7 +66,7 @@ function ns.updateTalents()
 
             if toPackage ~= "none" and fromPackage ~= toPackage then
                 Hekili.DB.profile.specs[ spec ].package = toPackage
-                C_Timer.After( Hekili.PLAYER_ENTERING_WORLD and 0 or 5, function() Hekili:Notify( toPackage .. " priority activated." ) end )
+                C_Timer.After( Hekili.PLAYER_ENTERING_WORLD and 0 or 5, function() Hekili:Notify( format( L["%s priority activated."], _L[ toPackage ] ) ) end )
             end
             break
         end

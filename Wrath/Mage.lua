@@ -2,7 +2,10 @@ if UnitClassBase( 'player' ) ~= 'MAGE' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 8 )
 
@@ -1741,19 +1744,19 @@ spec:RegisterOptions( {
 
 
 spec:RegisterPackSelector( "arcane", nil, "|T135932:0|t Arcane",
-    "If you have spent more points in |T135932:0|t Arcane than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135932:0|t Arcane"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "fire", nil, "|T135810:0|t Fire",
-    "If you have spent more points in |T135810:0|t Fire than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135810:0|t Fire"] ),
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "survival", nil, "|T135846:0|t Frost",
-    "If you have spent more points in |T135846:0|t Frost than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135846:0|t Frost"] ),
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
     end )

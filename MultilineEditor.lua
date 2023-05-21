@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 local Type, Version = "HekiliCustomEditor", 4
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
@@ -243,6 +244,11 @@ local function GenerateDiagnosticTooltip( widget, event )
     GameTooltip:SetOwner( widget.frame, "ANCHOR_TOPRIGHT" )
     GameTooltip:SetText(name, 1, .82, 0, 1)
 
+    if type( desc ) == "string" then
+        Tooltip:AddLine( desc, 1, 1, 1, 1 )
+        Tooltip:AddLine( " " )
+    end
+
     if type( arg ) == "string" then
         GameTooltip:AddLine(arg, 1, 1, 1, 1)
     end
@@ -263,7 +269,7 @@ local function GenerateDiagnosticTooltip( widget, event )
         if script == 'criteria' then
             local result, warning = scripts:CheckScript( scriptID, action )
 
-            GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
+            GameTooltip:AddDoubleLine( L["Shown"], ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
 
             if warning then GameTooltip:AddLine( warning, 1, 0, 0 ) end
 
@@ -284,7 +290,7 @@ local function GenerateDiagnosticTooltip( widget, event )
     if has_args then
         if tested then GameTooltip:AddLine(" ") end
 
-        GameTooltip:AddLine( "Values" )
+        GameTooltip:AddLine( L["Values"] )
         for k, v in orderedPairs( arg ) do
           if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find("floor") and not key_cache[k]:find( "ceil" ) and ( type(v) ~= "string" or not v:find( "function" ) ) then
             GameTooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
@@ -293,7 +299,7 @@ local function GenerateDiagnosticTooltip( widget, event )
     end
 
     if type( usage ) == "string" then
-        GameTooltip:AddLine( "Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
+        GameTooltip:AddLine( format( L["Usage: %s"], usage ), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
     end
 
     GameTooltip:Show()

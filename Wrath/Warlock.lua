@@ -2,9 +2,12 @@ if UnitClassBase( 'player' ) ~= 'WARLOCK' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 9 )
 
@@ -711,12 +714,12 @@ spec:RegisterHook( "reset_precast", function()
     end
 
     if not aliasesSet.solo_curse then
-        class.abilityList.solo_curse = "|cff00ccff[Solo Curse]|r"
+        class.abilityList.solo_curse = "|cFF00CCFF[" .. L["Solo Curse"] .. "]|r"
         aliasesSet.solo_curse = true
     end
 
     if not aliasesSet.group_curse then
-        class.abilityList.group_curse = "|cff00ccff[Group Curse]|r"
+        class.abilityList.group_curse = "|cFF00CCFF[" .. L["Group Curse"] .. "]|r"
         aliasesSet.group_curse = true
     end
 
@@ -2298,9 +2301,9 @@ local curses = {}
 
 spec:RegisterSetting( "solo_curse", "curse_of_agony", {
     type = "select",
-    name = "Preferred Curse when Solo",
-    desc = "Select the Curse you'd like to use when playing solo.  It is referenced as |cff00ccff[Solo Curse]|r in your priority.\n\n"
-        .. "If Curse of Doom is selected and your target is expected to die in fewer than 65 seconds, Curse of Agony will be used instead.",
+    name = L["Preferred Curse when Solo"],
+    desc = L["Select the Curse you'd like to use when playing solo.  It is referenced as |cff00ccff[Solo Curse]|r in your priority."] .. "\n\n"
+        .. L["If Curse of Doom is selected and your target is expected to die in fewer than 65 seconds, Curse of Agony will be used instead."],
     width = "full",
     values = function()
         table.wipe( curses )
@@ -2322,9 +2325,9 @@ spec:RegisterSetting( "solo_curse", "curse_of_agony", {
 
 spec:RegisterSetting( "group_curse", "curse_of_the_elements", {
     type = "select",
-    name = "Preferred Curse when Grouped",
-    desc = "Select the Curse you'd like to use when playing in a group.  It is referenced as |cff00ccff[Group Curse]|r in your priority.\n\n"
-        .. "If Curse of Doom is selected and your target is expected to die in fewer than 65 seconds, Curse of Agony will be used instead.",
+    name = L["Preferred Curse when Grouped"],
+    desc = L["Select the Curse you'd like to use when playing in a group.  It is referenced as |cff00ccff[Group Curse]|r in your priority."] .. "\n\n"
+        .. L["If Curse of Doom is selected and your target is expected to die in fewer than 65 seconds, Curse of Agony will be used instead."],
     width = "full",
     values = function()
         table.wipe( curses )
@@ -2346,8 +2349,8 @@ spec:RegisterSetting( "group_curse", "curse_of_the_elements", {
 
 spec:RegisterSetting("inferno_enabled", false, {
     type = "toggle",
-    name = "Inferno: Enabled?",
-    desc = "Select whether or not Inferno should be used",
+    name = L["Inferno: Enabled?"],
+    desc = L["Select whether or not Inferno should be used"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 9 ].settings.inferno_enabled = val
@@ -2356,10 +2359,11 @@ spec:RegisterSetting("inferno_enabled", false, {
 
 spec:RegisterSetting( "group_type", "party", {
     type = "select",
-    name = "Group Type for Group Curse",
-    desc = "Select the type of group that is required before the addon recommends your |cff00ccff[Group Curse]|r rather than |cff00ccff[Solo Curse]|r.\n\n" ..
-        "Selecting " .. PARTY .. " will work for a 5 person group.  Selecting " .. RAID .. " will work for any larger group.\n\n" ..
-        "In default priorities, |cffffd100curse_grouped|r will be |cffffd100true|r when this condition is met.  Custom priorities may ignore this setting.",
+    name = L["Group Type for Group Curse"],
+    desc = L["Select the type of group that is required before the addon recommends your |cff00ccff[Group Curse]|r rather than |cff00ccff[Solo Curse]|r."] .. "\n\n"
+        .. strformat( L["Selecting %1$s will work for a 5 person group.  Selecting %2$s will work for any larger group."], PARTY, RAID ) .. "\n\n"
+        .. L["In default priorities, |cffffd100curse_grouped|r will be |cffffd100true|r when this condition is met."] .. "  "
+        .. L["Custom priorities may ignore this setting."],
     width = "full",
     values = {
         party = PARTY,
@@ -2369,9 +2373,9 @@ spec:RegisterSetting( "group_type", "party", {
 
 spec:RegisterSetting( "shadow_mastery", true, {
     type = "toggle",
-    name = "Handle Improved Shadow Bolt (Shadow Mastery)",
-    desc = "Ensure this setting is |cFF00FF00enabled|r if Improved Shadow Bolt is talented, you are in a group, and you are responsible for maintaining the Shadow Mastery debuff on your target.\n\n"
-        .. "If someone else is assigned, you can |cFFFF0000disable|r this setting to remove some Shadow Bolt casts from the default priority.",
+    name = L["Handle Improved Shadow Bolt (Shadow Mastery)"],
+    desc = L["Ensure this setting is |cFF00FF00enabled|r if Improved Shadow Bolt is talented, you are in a group, and you are responsible for maintaining the Shadow Mastery debuff on your target."] .. "\n\n"
+        .. L["If someone else is assigned, you can |cFFFF0000disable|r this setting to remove some Shadow Bolt casts from the default priority."],
     width = "full"
 } )
 
@@ -2403,19 +2407,19 @@ spec:RegisterPack( "Destruction", 20230204, [[Hekili:1EvBloUnq4FlhhKV09CTDYMBlKe
 
 
 spec:RegisterPackSelector( "affliction", "Affliction", "|T136145:0|t Affliction",
-    "If you have spent more points in |T136145:0|t Affliction than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T136145:0|t Affliction"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "demonology", "Demonology (wowtbc.gg)", "|T136172:0|t Demonology",
-    "If you have spent more points in |T136172:0|t Demonology than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T136172:0|t Demonology"] ),
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "destruction", "Destruction", "|T136186:0|t Destruction",
-    "If you have spent more points in |T136186:0|t Destruction than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T136186:0|t Destruction"] ),
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
     end )
