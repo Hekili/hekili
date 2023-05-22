@@ -2012,7 +2012,7 @@ do
 
         dPool[ id ] = dPool[ id ] or CreateFrame( "Frame", "HekiliDisplay" .. id, UIParent )
         local d = dPool[ id ]
-        self:ProfileFrame( "HekiliDisplay" .. id, d)
+        self:ProfileFrame( "HekiliDisplay" .. id, d )
 
         d.id = id
 

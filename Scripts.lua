@@ -1591,7 +1591,8 @@ function scripts:LoadScripts()
         if specData then
             self.PackInfo[ pack ] = {
                 items = {},
-                essences = {}
+                essences = {},
+                auras = {}
             }
 
             for list, lData in pairs( pData.lists ) do
@@ -1606,11 +1607,21 @@ function scripts:LoadScripts()
                         Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. script.Error )
                     end
 
+                    local lua = script.Lua
+
+                    if lua then
+                        for aura in lua:gmatch( "d?e?buff%.([a-z_0-9]+)" ) do
+                            self.PackInfo[ pack ].auras[ aura ] = true
+                        end
+
+                        for aura in lua:gmatch( "active_dot%.([a-z_0-9]+)" ) do
+                            self.PackInfo[ pack ].auras[ aura ] = true
+                        end
+                    end
+
                     if data.action == "call_action_list" or data.action == "run_action_list" then
                         -- Check for Time Sensitive conditions.
                         script.TimeSensitive = false
-
-                        local lua = script.Lua
 
                         if lua then
                             -- If resources are checked, it's time-sensitive.
@@ -1624,11 +1635,9 @@ function scripts:LoadScripts()
                                 end
                             end
 
-                            if lua:find( "rune" ) then script.TimeSensitive = true end
-
                             if not script.TimeSensitive then
                                 -- Check for other time-sensitive variables.
-                                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) then
+                                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) or lua:find( "rune" ) then
                                     script.TimeSensitive = true
                                 end
                             end
