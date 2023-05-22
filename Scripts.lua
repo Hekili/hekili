@@ -1592,7 +1592,8 @@ function scripts:LoadScripts()
             self.PackInfo[ pack ] = {
                 items = {},
                 essences = {},
-                auras = {}
+                auras = {},
+                hasOffGCD = false
             }
 
             for list, lData in pairs( pData.lists ) do
@@ -1617,6 +1618,10 @@ function scripts:LoadScripts()
                         for aura in lua:gmatch( "active_dot%.([a-z_0-9]+)" ) do
                             self.PackInfo[ pack ].auras[ aura ] = true
                         end
+                    end
+
+                    if data.use_off_gcd and data.use_off_gcd ~= 0 then
+                        self.PackInfo[ pack ].hasOffGCD = true
                     end
 
                     if data.action == "call_action_list" or data.action == "run_action_list" then

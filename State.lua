@@ -7238,7 +7238,7 @@ function state:TimeToReady( action, pool )
 
     if z < -99 or z > 0 then
         -- if not ability.dual_cast and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) or not ability.interrupt ) then
-        if not self.args.use_off_gcd then -- and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) ) then
+        if not self.safebool( self.args.use_off_gcd ) then
             wait = max( wait, self.cooldown.global_cooldown.remains )
         end
 
