@@ -2687,6 +2687,7 @@ local mt_toggle = {
 
         if k == "cooldowns" and toggle.override and state.buff.bloodlust.up then return true end
         if k == "essences" and toggle.override and state.toggle.cooldowns then return true end
+        if k == "potions" and toggle.override and state.toggle.cooldowns then return true end
 
         if toggle then return toggle.value end
     end
@@ -3982,6 +3983,7 @@ do
             local aura = class.auras[ k ]
 
             if aura then
+                aura.used = true
                 if aura.meta then rawset( v, "metastack", {} ) end
                 if aura.alias then
                     rawset( t, k, setmetatable( v, mt_alias_buff ) )
@@ -4980,6 +4982,7 @@ do
             local aura = class.auras[ k ]
 
             if aura then
+                aura.used = true
                 if aura.meta then rawset( v, "metastack", {} ) end
                 if aura.alias then
                     rawset( t, k, setmetatable( v, mt_alias_debuff ) )
@@ -7233,7 +7236,7 @@ function state:TimeToReady( action, pool )
 
     if z < -99 or z > 0 then
         -- if not ability.dual_cast and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) or not ability.interrupt ) then
-        if not self.args.use_off_gcd and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) ) then
+        if not self.args.use_off_gcd then -- and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) ) then
             wait = max( wait, self.cooldown.global_cooldown.remains )
         end
 

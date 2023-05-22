@@ -4002,7 +4002,7 @@ do
                     toggles.none = L["None"]
                     toggles.default = format( L["Default %s"], "|cFFFFD100" .. toggleName .. "|r" )
                     toggles.cooldowns = L["Cooldowns"]
-                    toggles.essences = L["Covenants"]
+                    toggles.essences = L["Minor CDs"]
                     toggles.defensives = L["Defensives"]
                     toggles.interrupts = L["Interrupts"]
                     toggles.potions = L["Potions"]
@@ -4127,7 +4127,7 @@ do
                             toggles.none = L["None"]
                             toggles.default = format( L["Default %s"], "|cFFFFD100" .. toggleName .. "|r" )
                             toggles.cooldowns = L["Cooldowns"]
-                            toggles.essences = L["Covenants"]
+                            toggles.essences = L["Minor CDs"]
                             toggles.defensives = L["Defensives"]
                             toggles.interrupts = L["Interrupts"]
                             toggles.potions = L["Potions"]
@@ -4361,7 +4361,7 @@ do
                     toggles.none = L["None"]
                     toggles.default = format( L["Default %s"], "|cFFFFD100" .. toggleName .. "|r" )
                     toggles.cooldowns = L["Cooldowns"]
-                    toggles.essences = L["Covenants"]
+                    toggles.essences = L["Minor CDs"]
                     toggles.defensives = L["Defensives"]
                     toggles.interrupts = L["Interrupts"]
                     toggles.potions = L["Potions"]
@@ -4495,7 +4495,7 @@ do
                             toggles.none = L["None"]
                             toggles.default = format( L["Default %s"], "|cFFFFD100" .. toggleName .. "|r" )
                             toggles.cooldowns = L["Cooldowns"]
-                            toggles.essences = L["Covenants"]
+                            toggles.essences = L["Minor CDs"]
                             toggles.defensives = L["Defensives"]
                             toggles.interrupts = L["Interrupts"]
                             toggles.potions = L["Potions"]
@@ -5410,7 +5410,7 @@ do
                             end,
                         }
                  } )
-                BuildToggleList( options, id, "essences", L["Covenants"] )
+                BuildToggleList( options, id, "essences", L["Minor CDs"] )
                 BuildToggleList( options, id, "interrupts", L["Utility / Interrupts"] )
                 BuildToggleList( options, id, "defensives", L["Defensives"],
                     L["The defensive toggle is generally intended for tanking specializations, as you may want to turn on/off recommendations for damage mitigation abilities for any number of reasons during a fight."] .. "  "
@@ -7706,22 +7706,22 @@ do
                     args = {
                         key = {
                             type = "keybinding",
-                            name = L["Covenants"],
-                            desc = L["Set a key to toggle Covenant recommendations on/off."],
+                            name = L["Minor CDs"],
+                            desc = L["Set a key to toggle Minor CDs recommendations on/off."],
                             order = 1,
                         },
 
                         value = {
                             type = "toggle",
-                            name = L["Show Covenants"],
-                            desc = L["If checked, abilities from Covenants can be recommended."],
+                            name = L["Show Minor CDs"],
+                            desc = L["If checked, abilities from Minor CDs can be recommended."],
                             order = 2,
                         },
 
                         override = {
                             type = "toggle",
                             name = L["Cooldowns Override"],
-                            desc = L["If checked, when Cooldowns are enabled, the addon will also recommend Covenants even if Show Covenants is not checked."],
+                            desc = L["If checked, when Cooldowns are enabled, the addon will also recommend Minor CDs even if Show Minor CDs is not checked."],
                             order = 3,
                         },
                     }
@@ -7806,6 +7806,13 @@ do
                             name = L["Show Potions"],
                             desc = format( L["If checked, abilities marked as %s can be recommended."], string.lower( L["Potions"] ) ),
                             order = 2,
+                        },
+
+                        override = {
+                            type = "toggle",
+                            name = "Cooldowns Override",
+                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Potions even if Show Potions is not checked.",
+                            order = 3,
                         },
                     }
                 },
@@ -9577,7 +9584,7 @@ do
         [52] = { "interrupts", L["Interrupts"] },
         [53] = { "potions", L["Potions"] },
         [54] = { "defensives", L["Defensives"] },
-        [55] = { "essences", L["Covenants"] },
+        [55] = { "essences", L["Minor CDs"] },
         [56] = { "custom1", L["Custom #1"] },
         [57] = { "custom2", L["Custom #2"] },
     }

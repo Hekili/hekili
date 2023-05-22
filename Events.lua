@@ -103,7 +103,6 @@ function ns.StartEventHandler()
         if Hekili.PendingSpecializationChange then
             Hekili:SpecializationChanged()
             Hekili.PendingSpecializationChange = false
-
             -- Spec updates are expensive; exit and do other work in the next frame.
             return
         end
@@ -1394,14 +1393,14 @@ do
     local function StoreInstanceInfo( aura )
         local id = aura.spellId
         local model = class.auras[ id ]
-        instanceDB[ aura.auraInstanceID ] = aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet or ( model and model.shared )
+
+        instanceDB[ aura.auraInstanceID ] = aura.isBossAura or aura.isStealable or model and ( model.shared or model.used and aura.isFromPlayerOrPlayerPet )
     end
 
     RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, data )
         local isPlayer = ( unit == "player" )
         instanceDB = isPlayer and playerInstances or targetInstances
 
-        local forceUpdateNeeded = false
 
         if data.isFullUpdate then
             wipe( instanceDB )
@@ -1414,12 +1413,14 @@ do
             return
         end
 
+        local forceUpdateNeeded = false
+
         if data.addedAuras and #data.addedAuras > 0 then
             for _, aura in ipairs( data.addedAuras ) do
                 local id = aura.spellId
                 local model = class.auras[ id ]
 
-                local ofConcern = not aura or ( aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet ) or ( model and model.shared )
+                local ofConcern = aura.isBossAura or aura.isStealable or model and ( model.shared or model.used and aura.isFromPlayerOrPlayerPet )
                 instanceDB[ aura.auraInstanceID ] = ofConcern
 
                 if ofConcern then
@@ -1431,12 +1432,15 @@ do
         if data.updatedAuraInstanceIDs and #data.updatedAuraInstanceIDs > 0 then
             for _, instance in ipairs( data.updatedAuraInstanceIDs ) do
                 local aura = GetAuraDataByAuraInstanceID( unit, instance )
+                local ofConcern = false
 
-                local id = aura and aura.spellId
-                local model = class.auras[ id ]
+                if aura then
+                    local id = aura.spellId
+                    local model = class.auras[ id ]
 
-                local ofConcern = not aura or ( aura.isBossAura or aura.canApplyAura or aura.isFromPlayerOrPlayerPet ) or ( model and model.shared )
-                instanceDB[ instance ] = ofConcern
+                    ofConcern = aura.isBossAura or aura.isStealable or model and ( model.shared or model.used and aura.isFromPlayerOrPlayerPet )
+                    instanceDB[ instance ] = ofConcern
+                end
 
                 if ofConcern then
                     forceUpdateNeeded = true
@@ -1451,10 +1455,9 @@ do
             end
         end
 
-        if forceUpdateNeeded then
-            state[ unit ].updated = true
-            Hekili:ForceUpdate( event )
-        end
+        state[ unit ].updated = true
+
+        if forceUpdateNeeded then Hekili:ForceUpdate( event ) end
     end )
 
     RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )

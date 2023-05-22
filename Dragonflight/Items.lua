@@ -1759,4 +1759,16 @@ all:RegisterAbilities( {
         end,
     },
 
+    shadowed_razing_annihilator = {
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        item = 205046,
+        toggle = "cooldowns",
+
+        handler = function()
+        end,
+    }
+
 } )
