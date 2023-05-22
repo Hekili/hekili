@@ -113,7 +113,7 @@ function Hekili:OnInitialize()
                 p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
                 L["CD"],
                 p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
-                L["Cov"],
+                L["mCD"],
                 p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
                 L["Int"] )
         end

@@ -7810,8 +7810,8 @@ do
 
                         override = {
                             type = "toggle",
-                            name = "Cooldowns Override",
-                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Potions even if Show Potions is not checked.",
+                            name = L["Cooldowns Override"],
+                            desc = L["If checked, when Cooldowns are enabled, the addon will also recommend Potions even if Show Potions is not checked."],
                             order = 3,
                         },
                     }
@@ -10937,7 +10937,7 @@ do
             toggle.value = not toggle.value
 
             if toggle.name then toggles[ name ] = toggle.name end
-
+print("@@", name)
             local toggleName = toggle.name and toggles[ name ] or L[ toggles[ name ] ]
             if self.DB.profile.notifications.enabled then
                 self:Notify( format( L["%s: %s."], toggleName, toggle.value and L["ON"] or L["OFF"] ) )

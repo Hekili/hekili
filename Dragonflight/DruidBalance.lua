@@ -3017,8 +3017,7 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "vigil_damage", 50, {
-    name = strformat( L["%s Damage Threshold"],
-        Hekili:GetSpellLinkWithTexture( spec.abilities.natures_vigil.id ) ),
+    name = strformat( L["%s Damage Threshold"], Hekili:GetSpellLinkWithTexture( spec.abilities.natures_vigil.id ) ),
     desc = strformat( L["If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage."],
         W( spec.abilities.natures_vigil.name ) ) .. "\n\n"
         .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
@@ -3031,10 +3030,11 @@ spec:RegisterSetting( "vigil_damage", 50, {
 } )
 
 spec:RegisterSetting( "starlord_cancel", false, {
-    name = strformat( "%s |TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t Cancel", Hekili:GetSpellLinkWithTexture( spec.auras.starlord.id ) ),
-    desc = strformat( "If checked, canceling |TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t your %s may be recommended.  Canceling it allows you to start building stacks via %s and %s at its full duration.\n\n"
-        .. "You will likely want a |cFFFFD100/cancelaura %s|r macro to manage this during combat.", spec.auras.starlord.name, Hekili:GetSpellLinkWithTexture( spec.abilities.starsurge.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.starfall.id ), spec.auras.starlord.name ),
+    name = strformat( L["%s |TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t Cancel"], Hekili:GetSpellLinkWithTexture( spec.auras.starlord.id ) ),
+    desc = strformat( L["If checked, canceling |TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t your %s may be recommended."], spec.auras.starlord.name ) .. "  "
+        .. strformat( L["Canceling it allows you to start building stacks via %s and %s at its full duration."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.starsurge.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.starfall.id ) ) .. "\n\n"
+        .. strformat( L["You will likely want a |cFFFFD100/cancelaura %s|r macro to manage this during combat."], spec.auras.starlord.name ),
     icon = 462651,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "toggle",
