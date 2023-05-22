@@ -1394,9 +1394,8 @@ do
     local function StoreInstanceInfo( aura )
         local id = aura.spellId
         local model = class.auras[ id ]
-        local packInfo = state.system.pack and Hekili.Scripts.PackInfo[ state.system.pack ]
 
-        instanceDB[ aura.auraInstanceID ] = aura.isBossAura or aura.isStealable or model and ( model.shared or aura.isFromPlayerOrPlayerPet and packInfo and packInfo.auras[ model.key ] )
+        instanceDB[ aura.auraInstanceID ] = aura.isBossAura or aura.isStealable or model and ( model.shared or model.used and aura.isFromPlayerOrPlayerPet )
     end
 
     RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, data )
@@ -1416,14 +1415,13 @@ do
         end
 
         local forceUpdateNeeded = false
-        local packInfo = state.system.pack and Hekili.Scripts.PackInfo[ state.system.pack ]
 
         if data.addedAuras and #data.addedAuras > 0 then
             for _, aura in ipairs( data.addedAuras ) do
                 local id = aura.spellId
                 local model = class.auras[ id ]
 
-                local ofConcern = aura.isBossAura or aura.isStealable or model and ( model.shared or aura.isFromPlayerOrPlayerPet and packInfo and packInfo.auras[ model.key ] )
+                local ofConcern = aura.isBossAura or aura.isStealable or model and ( model.shared or model.used and aura.isFromPlayerOrPlayerPet )
                 instanceDB[ aura.auraInstanceID ] = ofConcern
 
                 if ofConcern then
@@ -1435,12 +1433,15 @@ do
         if data.updatedAuraInstanceIDs and #data.updatedAuraInstanceIDs > 0 then
             for _, instance in ipairs( data.updatedAuraInstanceIDs ) do
                 local aura = GetAuraDataByAuraInstanceID( unit, instance )
+                local ofConcern = false
 
-                local id = aura and aura.spellId
-                local model = class.auras[ id ]
+                if aura then
+                    local id = aura.spellId
+                    local model = class.auras[ id ]
 
-                local ofConcern = aura.isBossAura or aura.isStealable or model and ( model.shared or aura.isFromPlayerOrPlayerPet and packInfo and packInfo.auras[ model.key ] )
-                instanceDB[ instance ] = ofConcern
+                    ofConcern = aura.isBossAura or aura.isStealable or model and ( model.shared or model.used and aura.isFromPlayerOrPlayerPet )
+                    instanceDB[ instance ] = ofConcern
+                end
 
                 if ofConcern then
                     forceUpdateNeeded = true

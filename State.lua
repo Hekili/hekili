@@ -3983,6 +3983,7 @@ do
             local aura = class.auras[ k ]
 
             if aura then
+                aura.used = true
                 if aura.meta then rawset( v, "metastack", {} ) end
                 if aura.alias then
                     rawset( t, k, setmetatable( v, mt_alias_buff ) )
@@ -4981,6 +4982,7 @@ do
             local aura = class.auras[ k ]
 
             if aura then
+                aura.used = true
                 if aura.meta then rawset( v, "metastack", {} ) end
                 if aura.alias then
                     rawset( t, k, setmetatable( v, mt_alias_debuff ) )
