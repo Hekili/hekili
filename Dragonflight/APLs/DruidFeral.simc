@@ -23,7 +23,7 @@ actions+=/adaptive_swarm,cycle_targets=1,if=((!dot.adaptive_swarm_damage.ticking
 actions+=/call_action_list,name=cooldown
 actions+=/feral_frenzy,cycle_targets=1,if=combo_points<2|combo_points<3&buff.bs_inc.up
 actions+=/ferocious_bite,cycle_targets=1,if=buff.apex_predators_craving.up&(spell_targets.swipe_cat=1|!talent.primal_wrath.enabled|!buff.sabertooth.up)&!(variable.need_bt&active_bt_triggers=2)
-actions+=/call_action_list,name=berserk,strict=1,if=buff.bs_inc.up
+actions+=/call_action_list,name=berserk,strict=1,if=buff.bs_inc.remains>gcd.remains
 actions+=/wait,sec=combo_points.time_to_max,if=combo_points=4&buff.predator_revealed.react&energy.deficit>40&spell_targets.swipe_cat=1&combo_points.time_to_max<gcd.max
 # its acceptable to proc bt when at 4cps in single target for a small gain (0.1-0.2% with t30 4p)
 actions+=/call_action_list,name=finisher,if=combo_points>=4&!(combo_points=4&buff.bloodtalons.stack<=1&active_bt_triggers=2&spell_targets.swipe_cat=1)
