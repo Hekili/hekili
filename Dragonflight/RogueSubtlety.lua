@@ -542,11 +542,11 @@ spec:RegisterHook( "runHandler", function( ability )
     local a = class.abilities[ ability ]
 
     if stealthed.mantle and ( not a or a.startsCombat ) then
-        if talent.subterfuge.enabled and stealthed.mantle then
+        if talent.subterfuge.enabled then
             applyBuff( "subterfuge" )
         end
 
-        if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
+        if legendary.mark_of_the_master_assassin.enabled then
             applyBuff( "master_assassins_mark" )
         end
 
