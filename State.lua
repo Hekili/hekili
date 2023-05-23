@@ -961,7 +961,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         b.applied = applied or state.query_time
         b.last_application = b.applied or 0
 
-        b.duration = duration
+        -- b.duration = duration
 
         b.expires = b.applied + duration
         b.last_expiry = b.expires
@@ -1090,7 +1090,7 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         -- state.debuff[ aura ] = state.debuff[ aura ] or {}
         if not noPandemic then duration = min( 1.3 * duration, d.remains + duration ) end
 
-        d.duration = duration
+        -- d.duration = duration
         d.expires = state.query_time + duration
 
         d.lastCount = d.count or 0
@@ -3555,7 +3555,7 @@ local default_buff_values = {
     lastApplied = 0,
     expires = 0,
     applied = 0,
-    duration = 15,
+    -- duration = 15,
     caster = "nobody",
     timeMod = 1,
     v1 = 0,
@@ -3611,7 +3611,7 @@ do
         applied = 1,
         caster = 1,
         count = 1,
-        duration = 1,
+        -- duration = 1,
         expires = 1,
         last_application = 1,
         last_expiry = 1,
@@ -3706,7 +3706,7 @@ do
                     buff.id = spellID
                     buff.name = name
                     buff.count = count > 0 and count or 1
-                    buff.duration = duration
+                    -- buff.duration = duration
                     buff.expires = expires
                     buff.caster = caster
                     buff.applied = expires - duration
@@ -3753,9 +3753,9 @@ do
                     t.count = real.count
                     t.lastCount = real.lastCount or 0
                     t.lastApplied = real.lastApplied or 0
-                    t.duration = real.duration
+                    -- t.duration = real.duration
                     t.expires = real.expires
-                    t.applied = max( 0, real.expires - real.duration )
+                    t.applied = real.applied
                     t.caster = real.caster
                     t.id = real.id or class.auras[ t.key ].id
                     t.timeMod = real.timeMod
@@ -3791,8 +3791,13 @@ do
                 -- if state.IsCycling( t.key ) then return 0 end
                 return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
+            elseif k == "duration" then
+                if t.remains == 0 then return 0 end
+                return aura.duration or 15
+
             elseif k == "refreshable" then
-                return t.remains < 0.3 * ( aura.duration or 30 )
+                local ad = aura.duration or 30
+                return ad > 0 and t.remains < 0.3 * ad
 
             elseif k == "time_to_refresh" then
                 local remains = t.remains
@@ -3895,7 +3900,7 @@ do
         count = 0,
         lastCount = 0,
         lastApplied = 0,
-        duration = 30,
+        -- duration = 30,
         expires = 0,
         applied = 0,
         caster = "nobody",
@@ -3962,9 +3967,9 @@ do
                 buff.count = real.count
                 buff.lastCount = real.lastCount or 0
                 buff.lastApplied = real.lastApplied or 0
-                buff.duration = real.duration
+                -- buff.duration = real.duration
                 buff.expires = real.expires
-                buff.applied = max( 0, real.expires - real.duration )
+                buff.applied = real.applied
                 buff.caster = real.caster
                 buff.id = real.id
                 buff.timeMod = real.timeMod
@@ -4676,7 +4681,7 @@ local default_debuff_values = {
     lastApplied = 0,
     expires = 0,
     applied = 0,
-    duration = 15,
+    -- duration = 15,
     caster = "nobody",
     timeMod = 1,
     v1 = 0,
@@ -4693,7 +4698,7 @@ local cycle_debuff = {
     lastApplied = 0,
     expires = 0,
     applied = 0,
-    duration = 0,
+    -- duration = 0,
     caster = "nobody",
     timeMod = 1,
     v1 = 0,
@@ -4727,7 +4732,7 @@ do
         applied = 1,
         caster = 1,
         count = 1,
-        duration = 1,
+        -- duration = 1,
         expires = 1,
         lastApplied = 1,
         lastCount = 1,
@@ -4776,9 +4781,9 @@ do
                     t.count = real.count
                     t.lastCount = real.lastCount or 0
                     t.lastApplied = real.lastApplied or 0
-                    t.duration = real.duration
+                    -- t.duration = real.duration
                     t.expires = real.expires or 0
-                    t.applied = max( 0, real.expires - real.duration )
+                    t.applied = real.applied or 0
                     t.caster = real.caster
                     t.id = real.id
                     t.timeMod = real.timeMod
@@ -4806,11 +4811,18 @@ do
             elseif k == "down" then
                 return t.remains == 0
 
+            elseif k == "duration" then
+                if t.remains > 0 then return aura.duration or 30 end
+                return 0
+
             elseif k == "remains" then
                 return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
             elseif k == "refreshable" then
-                return t.remains < 0.3 * ( aura and aura.duration or t.duration or 30 )
+                if t.remains == 0 then return false end
+
+                local ad = aura.duration or 30
+                return ad > 0 and t.remains < 0.3 * ad
 
             elseif k == "time_to_refresh" then
                 return t.up and max( 0, 0.01 + t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
@@ -4865,8 +4877,7 @@ do
             Error ( "UNK: debuff." .. t.key .. "." .. k )
         end,
         __newindex = function( t, k, v )
-            if v == nil then return end
-            if autoReset[ k ] then Mark( t, k ) end
+            if v ~= nil and autoReset[ k ] then Mark( t, k ) end
             rawset( t, k, v )
         end
     }
@@ -4879,7 +4890,7 @@ do
         count = 0,
         lastCount = 0,
         lastApplied = 0,
-        duration = 30,
+        -- duration = 30,
         expires = 0,
         applied = 0,
         caster = "nobody",
@@ -4944,9 +4955,9 @@ do
                 debuff.count = real.count
                 debuff.lastCount = real.lastCount or 0
                 debuff.lastApplied = real.lastApplied or 0
-                debuff.duration = real.duration
+                -- debuff.duration = real.duration
                 debuff.expires = real.expires
-                debuff.applied = max( 0, real.expires - real.duration )
+                debuff.applied = real.applied
                 debuff.caster = real.caster
                 debuff.id = real.id
                 debuff.timeMod = real.timeMod
@@ -4961,7 +4972,7 @@ do
                 debuff.count = 0
                 debuff.lastCount = 0
                 debuff.lastApplied = 0
-                debuff.duration = aura and aura.duration or 30
+                -- debuff.duration = aura and aura.duration or 30
                 debuff.expires = 0
                 debuff.applied = 0
                 debuff.caster = "nobody"
@@ -5400,7 +5411,7 @@ do
             a.count            = 0
             a.expires          = 0
             a.applied          = 0
-            a.duration         = aura.duration or a.duration
+            -- a.duration         = aura.duration or a.duration
             a.caster           = "nobody"
             a.timeMod          = 1
             a.v1               = 0
@@ -5427,7 +5438,7 @@ do
 
                 a.name     = name
                 a.count    = count > 0 and count or 1
-                a.duration = duration
+                -- a.duration = duration
                 a.expires  = expires
                 a.applied  = expires - duration
                 a.caster   = caster
@@ -5465,7 +5476,7 @@ do
             v.count = 0
             v.expires = 0
             v.applied = 0
-            v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
+            -- v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
             v.caster = "nobody"
             v.timeMod = 1
             v.v1 = 0
@@ -5481,7 +5492,7 @@ do
             v.count = 0
             v.expires = 0
             v.applied = 0
-            v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
+            -- v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
             v.caster = "nobody"
             v.timeMod = 1
             v.v1 = 0
@@ -5516,7 +5527,7 @@ do
                 buff.name = name
                 buff.count = count > 0 and count or 1
                 buff.expires = expires
-                buff.duration = duration
+                -- buff.duration = duration
                 buff.applied = expires - duration
                 buff.caster = caster
                 buff.timeMod = timeMod
@@ -5557,7 +5568,7 @@ do
                 debuff.name = name
                 debuff.count = count > 0 and count or 1
                 debuff.expires = expires
-                debuff.duration = duration
+                -- debuff.duration = duration
                 debuff.applied = expires - duration
                 debuff.caster = caster
                 debuff.timeMod = timeMod
@@ -5596,7 +5607,7 @@ do
                     buff.name = name
                     buff.count = count > 0 and count or 1
                     buff.expires = expires
-                    buff.duration = duration
+                    -- buff.duration = duration
                     buff.applied = expires - duration
                     buff.caster = caster
                     buff.timeMod = timeMod
@@ -5639,7 +5650,7 @@ do
                     debuff.name = name
                     debuff.count = count > 0 and count or 1
                     debuff.expires = expires
-                    debuff.duration = duration
+                    -- debuff.duration = duration
                     debuff.applied = expires - duration
                     debuff.caster = caster
                     debuff.timeMod = timeMod
