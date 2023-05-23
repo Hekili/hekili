@@ -558,8 +558,9 @@ spec:RegisterHook( "runHandler", function( ability )
         removeBuff( "shadowmeld" )
     end
 
-    if buff.shadow_dance.up and talent.danse_macabre.enabled then
+    if buff.shadow_dance.up and talent.danse_macabre.enabled and not danse_macabre_tracker[ a.key ] then
         danse_macabre_tracker[ a.key ] = true
+        addStack( "danse_macabre" )
     end
 end )
 
