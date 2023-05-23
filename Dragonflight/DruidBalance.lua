@@ -2216,7 +2216,9 @@ spec:RegisterAbilities( {
 
         toggle = "defensives",
         usable = function()
-            return health.pct <= ( settings.vigil_damage or 50 ), strformat( "health %d%% must be under %d%%", health.pct, settings.vigil_damage or 50 )
+            local hp = health.percent or 100
+            local vd = settings.vigil_damage or 50
+            return hp <= vd, strformat( "health %d%% must be under %d%%", hp, vd )
         end,
 
         handler = function ()
