@@ -1249,7 +1249,7 @@ spec:RegisterAbilities( {
 
         velocity = 16,
 
-        handler = function ()
+        start = function ()
             removeStack( "crashing_chaos" )
             if buff.ritual_of_ruin.up then
                 removeBuff( "ritual_of_ruin" )
@@ -1272,6 +1272,8 @@ spec:RegisterAbilities( {
                 applyBuff( "madness_of_the_azjaqir_cb" )
             end
         end,
+
+        impact = function() end,
     },
 
     --[[ Commands your demon to perform its most powerful ability. This spell will transform based on your active pet. Felhunter: Devour Magic Voidwalker: Shadow Bulwark Incubus/Succubus: Seduction Imp: Singe Magic
