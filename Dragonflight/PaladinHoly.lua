@@ -1066,6 +1066,10 @@ spec:RegisterAbilities( {
         texture = 135959,
 
         handler = function ()
+            if talent.empyrean_legacy.enabled and debuff.empyrean_legacy_icd.down then
+                applyBuff( "empyrean_legacy" )
+                applyDebuff( "player", "empyrean_legacy_icd" )
+            end
         end,
     },
 
@@ -1313,6 +1317,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "divine_purpose" )
+            removeBuff( "empyrean_legacy" )
         end,
     },
 } )

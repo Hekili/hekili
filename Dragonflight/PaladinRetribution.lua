@@ -389,7 +389,8 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     empyrean_legacy_icd = {
-        duration = 30,
+        id = 387441,
+        duration = 20,
         max_stack = 1
     },
     -- Talent: Your next Divine Storm is free and deals $w1% additional damage.
@@ -834,8 +835,6 @@ spec:RegisterStateExpr( "time_to_hpg", function ()
 end )
 
 
-local last_empyrean_legacy_icd_expires = 0
-
 local current_crusading_strikes = 1
 -- Strike 0 = SPELL_ENERGIZE occurred; Holy Power was gained -- the swing lands *after*.
 -- Strike 1 = The swing that caused Holy Power gain just landed.
@@ -844,9 +843,7 @@ local current_crusading_strikes = 1
 local last_crusading_strike = 0
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if destGUID == state.GUID and subtype == "SPELL_AURA_APPLIED" and spellID == class.auras.empyrean_legacy.id then
-        last_empyrean_legacy_icd_expires = GetTime() + 30
-    elseif sourceGUID == state.GUID then
+    if sourceGUID == state.GUID then
         if spellID == 406834 then -- Crusader Strikes: Energize
             current_crusading_strikes = 0
         elseif spellID == 408385 then
@@ -919,10 +916,6 @@ spec:RegisterHook( "reset_precast", function ()
         state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
         if buff.divine_resonance.remains > 5  then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 5 , "AURA_PERIODIC" ) end
         if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
-    end
-
-    if last_empyrean_legacy_icd_expires > query_time then
-        applyDebuff( "player", "empyrean_legacy_icd", last_empyrean_legacy_icd_expires - query_time )
     end
 
     local last_ts = action.templar_strike.lastCast
