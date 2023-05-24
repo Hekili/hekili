@@ -186,16 +186,20 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     flagellation = {
+        id = 323654,
+        duration = 12,
+        max_stack = 30
+    },
+    flagellation_buff = {
         id = 384631,
         duration = 12,
-        max_stack = 30,
-        copy = 323654
+        max_stack = 30
     },
     flagellation_persist = {
         id = 394758,
         duration = 12,
         max_stack = 30,
-        copy = { "flagellation_buff", 345569 }
+        copy = 345569,
     },
     -- Talent: $?s200758[Gloomblade][Backstab] deals an additional $s1% damage as Shadow.
     -- https://wowhead.com/beta/spell=385960
@@ -867,7 +871,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            applyBuff( "flagellation" )
+            applyBuff( talent.flagellation.enabled and "flagellation_buff" or "flagellation" )
             applyDebuff( "target", "flagellation" )
         end,
 
