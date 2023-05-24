@@ -202,6 +202,7 @@ local enemyExclusions = {
     [168113] = 329606,    -- Grashaal (when shielded)
     [168112] = 329636,    -- Kaal (when shielded)
     [193760] = true,      -- Surging Ruiner (Raszageth) -- gives bad range information.
+    [204560] = true       -- Incorporeal Being
 }
 
 local FindExclusionAuraByID
