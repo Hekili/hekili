@@ -26,7 +26,7 @@ actions+=/ferocious_bite,cycle_targets=1,if=buff.apex_predators_craving.up&(spel
 actions+=/call_action_list,name=berserk,strict=1,if=buff.bs_inc.remains>gcd.remains
 actions+=/wait,sec=combo_points.time_to_max,if=combo_points=4&buff.predator_revealed.react&energy.deficit>40&spell_targets.swipe_cat=1&combo_points.time_to_max<gcd.max
 # its acceptable to proc bt when at 4cps in single target for a small gain (0.1-0.2% with t30 4p)
-actions+=/call_action_list,name=finisher,if=combo_points>=4&!(combo_points=4&buff.bloodtalons.stack<=1&active_bt_triggers=2&spell_targets.swipe_cat=1)
+actions+=/call_action_list,name=finisher,if=combo_points=5|combo_points=4&!(buff.bloodtalons.stack<=1&active_bt_triggers=2&spell_targets.swipe_cat=1)
 actions+=/call_action_list,name=bloodtalons,if=variable.need_bt&!buff.bs_inc.up&combo_points<5
 actions+=/run_action_list,name=aoe_builder,strict=1,if=spell_targets.swipe_cat>1&talent.primal_wrath.enabled
 actions+=/call_action_list,name=builder,if=combo_points<5&!buff.bs_inc.up
@@ -122,8 +122,8 @@ actions.cooldown+=/convoke_the_spirits,if=target.time_to_die>5|boss&(fight_remai
 actions.cooldown+=/use_item,name=manic_grieftorch,cycle_targets=1,if=energy.deficit>40
 actions.cooldown+=/use_items
 
-actions.finisher+=/primal_wrath,if=((dot.primal_wrath.refreshable&!talent.circle_of_life_and_death.enabled)|dot.primal_wrath.remains<6|talent.tear_open_wounds.enabled)&spell_targets.primal_wrath>1&talent.primal_wrath.enabled
-actions.finisher+=/rip,cycle_targets=1,if=refreshable
+actions.finisher+=/primal_wrath,if=(!funneling&(dot.primal_wrath.refreshable&!talent.circle_of_life_and_death.enabled)|dot.primal_wrath.remains<6|talent.tear_open_wounds.enabled)&spell_targets.primal_wrath>1&talent.primal_wrath.enabled
+actions.finisher+=/rip,cycle_targets=1,if=refreshable&target.time_to_die>settings.rip_duration
 actions.finisher+=/pool_resource,for_next=1,if=!action.tigers_fury.ready&buff.apex_predators_craving.down
 actions.finisher+=/ferocious_bite,max_energy=1,cycle_targets=1,if=buff.apex_predators_craving.down&(!buff.bs_inc.up|(buff.bs_inc.up&!talent.soul_of_the_forest.enabled))
 actions.finisher+=/ferocious_bite,cycle_targets=1,if=(buff.bs_inc.up&talent.soul_of_the_forest.enabled)|buff.apex_predators_craving.up
