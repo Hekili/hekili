@@ -2618,9 +2618,11 @@ spec:RegisterSetting( "allow_shadowmeld", nil, {
 
 
 spec:RegisterSetting( "vigil_damage", 50, {
-    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( class.specs[ 102 ].abilities.natures_vigil.id ) ),
-    desc = strformat( "If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage.\n\n"
-    .. "By default, |W%s|w also requires the |cFFFFD100Defensives|r toggle to be active.", class.specs[ 102 ].abilities.natures_vigil.name, class.specs[ 102 ].abilities.natures_vigil.name ),
+    name = strformat( L["%s Damage Threshold"], Hekili:GetSpellLinkWithTexture( class.specs[ 102 ].abilities.natures_vigil.id ) ),
+    desc = strformat( L["If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage."],
+        class.specs[ 102 ].abilities.natures_vigil.name ) .. "\n\n"
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( class.specs[ 102 ].abilities.natures_vigil.name ), "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 1,
     max = 100,
