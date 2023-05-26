@@ -20,7 +20,7 @@ actions+=/hand_of_guldan,if=buff.nether_portal.up
 actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains_expected>cooldown
 actions+=/call_dreadstalkers,if=!talent.summon_demonic_tyrant|time_to_die<14
 actions+=/grimoire_felguard,if=!talent.summon_demonic_tyrant|boss&time_to_die<cooldown.summon_demonic_tyrant.remains_expected
-actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>cooldown+variable.tyrant_prep_start|boss&time_to_die<cooldown.summon_demonic_tyrant.remains_expected
+actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>cooldown|boss&time_to_die<cooldown.summon_demonic_tyrant.remains_expected
 actions+=/guillotine,if=cooldown.demonic_strength.remains|!talent.demonic_strength
 actions+=/demonic_strength
 actions+=/bilescourge_bombers,if=!pet.demonic_tyrant.active
