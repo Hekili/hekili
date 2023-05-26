@@ -19,6 +19,8 @@ actions+=/variable,name=single_target,value=spell_targets.fan_of_knives<2
 actions+=/variable,name=regen_saturated,value=energy.regen_combined>35
 # Next Exsanguinate cooldown time based on Deathmark syncing logic and remaining fight duration
 actions+=/variable,name=exsang_sync_remains,op=setif,condition=cooldown.deathmark.remains>cooldown.exsanguinate.remains&cooldown.deathmark.remains<fight_remains,value=cooldown.deathmark.remains,value_else=cooldown.exsanguinate.remains
+# Next Sepsis cooldown time based on Deathmark syncing logic and remaining fight duration
+actions+=/variable,name=sepsis_sync_remains,op=setif,condition=cooldown.deathmark.remains>cooldown.sepsis.remains&cooldown.deathmark.remains<fight_remains,value=cooldown.deathmark.remains,value_else=cooldown.sepsis.remains
 actions+=/call_action_list,name=stealthed,if=stealthed.rogue|stealthed.improved_garrote
 actions+=/call_action_list,name=cds
 # Put SnD up initially for Cut to the Chase, refresh with Envenom if at low duration
@@ -39,7 +41,8 @@ actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration
 actions.cds+=/variable,name=deathmark_exsanguinate_condition,value=!talent.exsanguinate|cooldown.exsanguinate.remains>15|exsanguinated.rupture|exsanguinated.garrote
 # Wait on Deathmark for Garrote with MA
 actions.cds+=/variable,name=deathmark_ma_condition,value=!talent.master_assassin.enabled|dot.garrote.ticking
-actions.cds+=/sepsis,if=!stealthed.rogue&!stealthed.improved_garrote&(!talent.improved_garrote&dot.garrote.ticking|talent.improved_garrote&cooldown.garrote.up)&(target.time_to_die>10|boss&fight_remains<10)
+# Sepsis unless we're preparing for exsanguinate
+actions.cds+=/sepsis,if=!stealthed.rogue&!stealthed.improved_garrote&dot.rupture.ticking&(!talent.exsanguinate|variable.exsang_sync_remains>7|dot.rupture.remains>20)&(!talent.improved_garrote&dot.garrote.ticking|talent.improved_garrote&cooldown.garrote.up)&(target.time_to_die>10|boss&fight_remains<10)
 # Deathmark to be used if not stealthed, Rupture is up, and all other talent conditions are satisfied
 actions.cds+=/variable,name=deathmark_condition,value=!stealthed.rogue&dot.rupture.ticking&!debuff.deathmark.up&variable.deathmark_exsanguinate_condition&variable.deathmark_ma_condition
 actions.cds+=/use_item,name=algethar_puzzle_box,use_off_gcd=1,if=(!talent.exsanguinate|cooldown.exsanguinate.remains>15|exsanguinated.rupture|exsanguinated.garrote)&dot.rupture.ticking&cooldown.deathmark.remains<2|boss&fight_remains<=22
@@ -55,8 +58,9 @@ actions.cds+=/exsanguinate,if=variable.exsanguinate_condition&(!dot.garrote.refr
 # Shiv if DoTs are up; Always Shiv with Kingsbane, otherwise attempt to sync with Sepsis or Deathmark if we won't waste more than half Shiv's cooldown
 actions.cds+=/shiv,if=talent.kingsbane&!debuff.shiv.up&dot.kingsbane.ticking&dot.garrote.ticking&dot.rupture.ticking&(!talent.crimson_tempest.enabled|variable.single_target|dot.crimson_tempest.ticking)
 actions.cds+=/shiv,if=talent.arterial_precision&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&(debuff.deathmark.up|cooldown.shiv.charges_fractional>max_charges-0.5&cooldown.deathmark.remains>10)
-actions.cds+=/shiv,if=talent.sepsis&!talent.kingsbane&!talent.arterial_precision&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&((cooldown.sepsis.ready|cooldown.sepsis.remains>12)+(cooldown.deathmark.ready|cooldown.deathmark.remains>12)=2)
 actions.cds+=/shiv,if=!talent.kingsbane&!talent.arterial_precision&!talent.sepsis&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&(!talent.crimson_tempest.enabled|variable.single_target|dot.crimson_tempest.ticking)&(!talent.exsanguinate|variable.exsang_sync_remains>2)
+# Pool Shiv charges for Sepsis/Deathmark, unless we're about to cap on charges
+actions.cds+=/shiv,if=talent.sepsis&!talent.kingsbane&!talent.arterial_precision&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&((cooldown.shiv.charges_fractional>0.9+talent.lightweight_shiv.enabled&variable.sepsis_sync_remains>5)|dot.sepsis.ticking|dot.deathmark.ticking|boss&fight_remains<20)
 actions.cds+=/thistle_tea,if=!buff.thistle_tea.up&(energy.deficit>=100|charges=3&(dot.kingsbane.ticking|debuff.deathmark.up)|boss&fight_remains<charges*6)
 actions.cds+=/indiscriminate_carnage,if=(spell_targets.fan_of_knives>desired_targets|spell_targets.fan_of_knives>1&raid_event.adds.in>60)&(!talent.improved_garrote|cooldown.vanish.remains>45)
 actions.cds+=/potion,if=buff.bloodlust.react|boss&fight_remains<30|debuff.deathmark.up
@@ -82,7 +86,8 @@ actions.direct+=/echoing_reprimand,if=(!talent.exsanguinate|!talent.resounding_c
 actions.direct+=/fan_of_knives,if=variable.use_filler&(!priority_rotation&spell_targets.fan_of_knives>=3+stealthed.rogue+talent.dragontempered_blades)
 # Fan of Knives to apply poisons if inactive on any target (or any bleeding targets with priority rotation) at 3T
 actions.direct+=/fan_of_knives,cycle_targets=1,if=variable.use_filler&spell_targets.fan_of_knives>=3&!dot.deadly_poison_dot.ticking&(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking)
-actions.direct+=/ambush,if=variable.use_filler
+# Ambush on Blindside/Shadow Dance, or a last resort usage of Sepsis
+actions.direct+=/ambush,if=variable.use_filler&(buff.blindside.up|buff.sepsis_buff.remains<=1|stealthed.rogue)
 # Tab-Mutilate to apply Deadly Poison at 2 targets
 actions.direct+=/mutilate,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&!debuff.amplifying_poison.up&variable.use_filler&spell_targets.fan_of_knives=2
 actions.direct+=/mutilate,if=variable.use_filler
@@ -94,6 +99,7 @@ actions.dot+=/variable,name=skip_cycle_rupture,value=priority_rotation&(debuff.s
 # Limit Ruptures when appropriate, not currently used
 actions.dot+=/variable,name=skip_rupture,value=0
 # Special Garrote and Rupture setup prior to Exsanguinate cast
+actions.dot+=/rupture,if=talent.exsanguinate.enabled&!will_lose_exsanguinate&dot.rupture.pmultiplier<=1&!dot.rupture.ticking&effective_combo_points<=3&variable.single_target
 actions.dot+=/garrote,if=talent.exsanguinate.enabled&!will_lose_exsanguinate&dot.garrote.pmultiplier<=1&variable.exsang_sync_remains<2&spell_targets.fan_of_knives=1&raid_event.adds.in>6&dot.garrote.remains*0.5<target.time_to_die
 actions.dot+=/rupture,if=talent.exsanguinate.enabled&!will_lose_exsanguinate&dot.rupture.pmultiplier<=1&variable.exsang_sync_remains<1&effective_combo_points>=variable.exsanguinate_rupture_cp&dot.rupture.remains*0.5<target.time_to_die
 ## actions.dot+=/pool_resource,for_next=1
@@ -113,9 +119,10 @@ actions.dot+=/crimson_tempest,if=spell_targets=1&!talent.dashing_scoundrel&effec
 
 # Stealthed Actions
 actions.stealthed+=/indiscriminate_carnage,if=spell_targets.fan_of_knives>desired_targets|spell_targets.fan_of_knives>1&raid_event.adds.in>60
+## Improved Garrote: Apply or Refresh with buffed Garrotes, accounting for Sepsis buff time
 ## actions.stealthed+=/pool_resource,for_next=1
 # Improved Garrote: Apply or Refresh with buffed Garrotes
-actions.stealthed+=/garrote,cycle_targets=1,if=stealthed.improved_garrote&!will_lose_exsanguinate&(remains<12%exsanguinated_rate|pmultiplier<=1)&target.time_to_die-remains>2
+actions.stealthed+=/garrote,cycle_targets=1,if=stealthed.improved_garrote&!will_lose_exsanguinate&(remains<(12-buff.sepsis_buff.remains)%exsanguinated_rate|pmultiplier<=1)&target.time_to_die-remains>2
 ## actions.stealthed+=/pool_resource,for_next=1
 # Improved Garrote + Exsg on 1T: Refresh Garrote at the end of stealth to get max duration before Exsanguinate
 actions.stealthed+=/garrote,if=talent.exsanguinate.enabled&stealthed.improved_garrote&active_enemies=1&!will_lose_exsanguinate&(remains<18%exsanguinated_rate|pmultiplier<=1)&variable.exsang_sync_remains<18&improved_garrote_remains<1.3
