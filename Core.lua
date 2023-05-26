@@ -674,6 +674,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     if ( packName == "UseItems" ) then pack = class.itemPack
     else pack = self.DB.profile.packs[ packName ] end
 
+    local packInfo = scripts.PackInfo[ spec.package ]
     local list = pack.lists[ listName ]
 
     local debug = self.ActiveDebug
@@ -713,7 +714,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 if debug then self:Debug( "The current minimum delay (%.2f) is greater than the current maximum delay (%.2f). Exiting list (%s).", state.delayMin, state.delayMax, listName ) end
                 break
 
-            elseif rAction and rWait <= state.cooldown.global_cooldown.remains then -- and state.settings.gcdSync then
+            elseif rAction and not packInfo.hasOffGCD and rWait <= state.cooldown.global_cooldown.remains then -- and state.settings.gcdSync then
                 if debug then self:Debug( "The recommended action (%s) is ready within the active GCD; exiting list (%s).", rAction, listName ) end
                 break
 

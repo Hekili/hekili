@@ -385,6 +385,7 @@ local actionTemplate = {
 
     use_while_casting = 0,
     use_off_gcd = 0,
+    only_cwc = 0,
 
     wait_on_ready = 0, -- NYI
 
@@ -5463,9 +5464,10 @@ do
         cycle_targets = true,
         for_next = true,
         max_energy = true,
+        only_cwc = true,
         strict = true,
         use_off_gcd = true,
-        use_while_casting = true,
+        use_while_casting = true
     }
 
 
@@ -5562,6 +5564,10 @@ do
 
         if option == "use_off_gcd" and not val then
             data.use_off_gcd = nil
+        end
+
+        if option =="only_cwc" and not val then
+            data.only_cwc = nil
         end
 
         if option == "strict" and not val then
