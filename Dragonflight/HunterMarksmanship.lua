@@ -672,6 +672,11 @@ spec:RegisterHook( "reset_precast", function ()
 
     last_steady_focus = nil
     steady_focus_count = nil
+
+    -- If the last GCD ability wasn't Stready Shot, reset the counter.
+    if talent.steady_focus.enabled and prev_gcd.last ~= "steady_shot" then
+        steady_focus_count = 0
+    end
 end )
 
 spec:RegisterHook( "runHandler", function( token )
