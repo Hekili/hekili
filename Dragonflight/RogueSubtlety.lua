@@ -170,6 +170,12 @@ spec:RegisterAuras( {
         duration = function () return talent.subterfuge.enabled and 9 or 8 end,
         max_stack = 10
     },
+    deeper_daggers = {
+        id = 383405,
+        duration = 8,
+        max_stack = 1,
+        copy = 341550 -- Conduit version.
+    },
     finality_black_powder = {
         id = 385948,
         duration = 30,
@@ -316,11 +322,6 @@ spec:RegisterAuras( {
     },
 
     -- Conduit
-    deeper_daggers = {
-        id = 341550,
-        duration = 5,
-        max_stack = 1
-    },
     perforated_veins = {
         id = 341572,
         duration = 12,
@@ -765,7 +766,7 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
             spend( combo_points.current, "combo_points" )
-            if conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
+            if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
     },
 
@@ -846,7 +847,7 @@ spec:RegisterAbilities( {
             removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( combo_points.current, "combo_points" )
 
-            if conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
+            if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
     },
 
