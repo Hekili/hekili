@@ -7246,8 +7246,11 @@ function state:TimeToReady( action, pool )
     local z = ability.id
 
     if z < -99 or z > 0 then
-        -- if not ability.dual_cast and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) or not ability.interrupt ) then
-        if not self.safebool( self.args.use_off_gcd ) then
+        -- Don't use before the GCD expires, unless:
+        -- 1. The "use_off_gcd" flag is set in the priority.
+        -- 2. The ability is flagged as an interrupt or defensive.
+        local requires = ability.toggle
+        if requires ~= "interrupts" and requires ~= "defensives" and not self.safebool( self.args.use_off_gcd ) then
             wait = max( wait, self.cooldown.global_cooldown.remains )
         end
 
