@@ -3796,8 +3796,8 @@ do
                 return aura.duration or 15
 
             elseif k == "refreshable" then
-                local ad = aura.duration or 30
-                return ad > 0 and t.remains < 0.3 * ad
+                local tr = t.remains
+                return tr == 0 or tr < ( 0.3 * ( aura.duration or 30 ) )
 
             elseif k == "time_to_refresh" then
                 local remains = t.remains
@@ -4819,10 +4819,8 @@ do
                 return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
             elseif k == "refreshable" then
-                if t.remains == 0 then return false end
-
-                local ad = aura.duration or 30
-                return ad > 0 and t.remains < 0.3 * ad
+                local tr = t.remains
+                return tr == 0 or tr < 0.3 * ( aura.duration or 30 )
 
             elseif k == "time_to_refresh" then
                 return t.up and max( 0, 0.01 + t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
