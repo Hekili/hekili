@@ -665,7 +665,6 @@ spec:RegisterHook( "reset_precast", function ()
         rawset( buff, "eagletalons_true_focus", buff.eagletalons_true_focus_stub )
     end
 
-
     if now - action.volley.lastCast < 6 then applyBuff( "volley", 6 - ( now - action.volley.lastCast ) ) end
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end

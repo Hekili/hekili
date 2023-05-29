@@ -90,13 +90,13 @@ actions.cleave+=/strike_of_the_windlord
 actions.cleave+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.up&(talent.shadowboxing_treads|cooldown.rising_sun_kick.remains>1)
 actions.cleave+=/whirling_dragon_punch
 actions.cleave+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3
-actions.cleave+=/spinning_crane_kick,cycle_targets=1,if=combo_strike&cooldown.fists_of_fury.remains<3&buff.chi_energy.stack>15
+actions.cleave+=/spinning_crane_kick,if=combo_strike&cooldown.fists_of_fury.remains<3&buff.chi_energy.stack>15
 actions.cleave+=/rising_sun_kick,cycle_targets=1,if=cooldown.fists_of_fury.remains>4&chi>3
-actions.cleave+=/spinning_crane_kick,cycle_targets=1,if=combo_strike&cooldown.rising_sun_kick.remains&cooldown.fists_of_fury.remains&chi>4&((talent.storm_earth_and_fire&!talent.bonedust_brew)|(talent.serenity))
+actions.cleave+=/spinning_crane_kick,if=combo_strike&cooldown.rising_sun_kick.remains&cooldown.fists_of_fury.remains&chi>4&(talent.storm_earth_and_fire&!talent.bonedust_brew|talent.serenity)
 actions.cleave+=/blackout_kick,cycle_targets=1,if=combo_strike&cooldown.fists_of_fury.remains
 actions.cleave+=/rushing_jade_wind,if=!buff.rushing_jade_wind.up
 actions.cleave+=/blackout_kick,cycle_targets=1,if=combo_strike&talent.shadowboxing_treads&!spinning_crane_kick.max
-actions.cleave+=/spinning_crane_kick,cycle_targets=1,if=(combo_strike&chi>5&talent.storm_earth_and_fire|combo_strike&chi>4&talent.serenity)
+actions.cleave+=/spinning_crane_kick,if=(combo_strike&chi>5&talent.storm_earth_and_fire|combo_strike&chi>4&talent.serenity)
 
 # 2 Targets
 actions.st_cleave+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3&talent.shadowboxing_treads
@@ -116,14 +116,14 @@ actions.st_cleave+=/rushing_jade_wind,if=!buff.rushing_jade_wind.up
 actions.st_cleave+=/spinning_crane_kick,if=buff.bonedust_brew.up&combo_strike&spinning_crane_kick.modifier>=2.7
 actions.st_cleave+=/rising_sun_kick,cycle_targets=1
 actions.st_cleave+=/blackout_kick,cycle_targets=1,if=combo_strike
-actions.st_cleave+=/spinning_crane_kick,cycle_targets=1,if=(combo_strike&chi>5&talent.storm_earth_and_fire|combo_strike&chi>4&talent.serenity)
+actions.st_cleave+=/spinning_crane_kick,if=(combo_strike&chi>5&talent.storm_earth_and_fire|combo_strike&chi>4&talent.serenity)
 
 # 1 Target
 actions.st+=/fists_of_fury,if=!buff.pressure_point.up&!cooldown.rising_sun_kick.remains
 actions.st+=/rising_sun_kick,cycle_targets=1,if=buff.pressure_point.up
-actions.st+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3
 actions.st+=/strike_of_the_windlord,if=talent.thunderfist
 actions.st+=/rising_sun_kick,cycle_targets=1,if=buff.kicks_of_flowing_momentum.up|buff.pressure_point.up
+actions.st+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3
 actions.st+=/fists_of_fury
 actions.st+=/rising_sun_kick
 actions.st+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=2
@@ -146,12 +146,13 @@ actions.bdb_setup+=/rising_sun_kick,cycle_targets=1,if=combo_strike&active_enemi
 # Storm, Earth and Fire Cooldowns
 actions.cd_sef+=/call_action_list,name=sef_trinkets
 actions.cd_sef+=/summon_white_tiger_statue,if=pet.xuen_the_white_tiger.active
-actions.cd_sef+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&talent.bonedust_brew&cooldown.bonedust_brew.remains<=5&(active_enemies<3&chi>=3|active_enemies>=3&chi>=2)|fight_remains<25
-actions.cd_sef+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&!talent.bonedust_brew&(cooldown.rising_sun_kick.remains<2)&chi>=3
+actions.cd_sef+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&fight_remains>25&talent.bonedust_brew&cooldown.bonedust_brew.remains<=5&(active_enemies<3&chi>=3|active_enemies>=3&chi>=2)|boss&fight_remains<25
+actions.cd_sef+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen&fight_remains>25&!talent.bonedust_brew&(cooldown.rising_sun_kick.remains<2)&chi>=3
 actions.cd_sef+=/storm_earth_and_fire,if=talent.bonedust_brew&(fight_remains<30&cooldown.bonedust_brew.remains<4&chi>=4|buff.bonedust_brew.up|!spinning_crane_kick.max&active_enemies>=3&cooldown.bonedust_brew.remains<=2&chi>=2)&(pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time)
 actions.cd_sef+=/bonedust_brew,if=(!buff.bonedust_brew.up&buff.storm_earth_and_fire.up&buff.storm_earth_and_fire.remains<11&spinning_crane_kick.max)|(!buff.bonedust_brew.up&fight_remains<30&fight_remains>10&spinning_crane_kick.max&chi>=4)|fight_remains<10|(!debuff.skyreach_exhaustion.up&active_enemies>=4&spinning_crane_kick.modifier>=2)|(pet.xuen_the_white_tiger.active&spinning_crane_kick.max&active_enemies>=4)
 actions.cd_sef+=/call_action_list,name=bdb_setup,if=!buff.bonedust_brew.up&talent.bonedust_brew&cooldown.bonedust_brew.remains<=2&(fight_remains>60&(cooldown.storm_earth_and_fire.charges>0|cooldown.storm_earth_and_fire.remains>10)&(pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>10|variable.hold_xuen)|((pet.xuen_the_white_tiger.active|cooldown.invoke_xuen_the_white_tiger.remains>13)&(cooldown.storm_earth_and_fire.charges>0|cooldown.storm_earth_and_fire.remains>13|buff.storm_earth_and_fire.up)))
 actions.cd_sef+=/storm_earth_and_fire,if=boss&fight_remains<20|(cooldown.storm_earth_and_fire.charges=2&cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time)&cooldown.fists_of_fury.remains<=9&chi>=2&cooldown.whirling_dragon_punch.remains<=12
+actions.cd_sef+=/storm_earth_and_fire,if=!talent.bonedust_brew&(pet.xuen_the_white_tiger.active|fight_remains>15&cooldown.storm_earth_and_fire.full_recharge_time<cooldown.invoke_xuen_the_white_tiger.remains)
 ## actions.cd_sef+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&target.health<health
 ## actions.cd_sef+=/touch_of_death,cycle_targets=1,if=!boss&combo_strike&(target.time_to_die>60|debuff.bonedust_brew_debuff.up|fight_remains<10)
 actions.cd_sef+=/touch_of_death,cycle_targets=1,if=combo_strike
