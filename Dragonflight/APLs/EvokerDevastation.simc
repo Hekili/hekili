@@ -33,6 +33,10 @@ actions+=/variable,name=next_dragonrage,op=max,value=cooldown.fire_breath.remain
 ## Invoke External Power Infusions if they're available during dragonrage
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.dragonrage.up&!buff.power_infusion.up&!cooldown.fire_breath.up&!cooldown.shattering_star.up
 actions+=/call_action_list,name=trinkets
+# If we're already empowering a Fire Breath cast, check its empowerment level.
+actions+=/run_action_list,name=fb,strict=1,if=empowering.fire_breath
+# If we're already empowering an Eternity Surge cast, check its empowerment level.
+actions+=/run_action_list,name=es,strict=1,if=empowering.eternity_surge
 actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2
 actions+=/run_action_list,name=st
 
@@ -45,9 +49,9 @@ actions.aoe+=/dragonrage,if=target.time_to_die>=32|boss&fight_remains<30
 # Use tip to get that sweet aggro
 actions.aoe+=/tip_the_scales,if=buff.dragonrage.up&(active_enemies<=3+3*talent.eternitys_span|!cooldown.fire_breath.up)
 # Cast Fire Breath - stagger for swell/blazing shards outside DR  DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
-actions.aoe+=/call_action_list,name=fb,if=(!talent.dragonrage|variable.next_dragonrage>variable.dr_prep_time_aoe|!talent.animosity)&(buff.power_swell.remains<variable.r1_cast_time&buff.blazing_shards.remains<variable.r1_cast_time|buff.dragonrage.up)&(target.time_to_die>=8|boss&fight_remains<30|empowering.fire_breath)
+actions.aoe+=/call_action_list,name=fb,if=(!talent.dragonrage|variable.next_dragonrage>variable.dr_prep_time_aoe|!talent.animosity)&(buff.power_swell.remains<variable.r1_cast_time&buff.blazing_shards.remains<variable.r1_cast_time|buff.dragonrage.up)&(target.time_to_die>=8|boss&fight_remains<30)
 # Cast Eternity Surge - stagger for swell/blazing shards outside DR  DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
-actions.aoe+=/call_action_list,name=es,if=buff.dragonrage.up|!talent.dragonrage|(cooldown.dragonrage.remains>variable.dr_prep_time_aoe&buff.power_swell.remains<variable.r1_cast_time&buff.blazing_shards.remains<variable.r1_cast_time)&(target.time_to_die>=8|boss&fight_remains<30|empowering.eternity_surge)
+actions.aoe+=/call_action_list,name=es,if=buff.dragonrage.up|!talent.dragonrage|(cooldown.dragonrage.remains>variable.dr_prep_time_aoe&buff.power_swell.remains<variable.r1_cast_time&buff.blazing_shards.remains<variable.r1_cast_time)&(target.time_to_die>=8|boss&fight_remains<30)
 # Cast DB if not in DR and not running imminent destruction. - I'm assuming that casting DB inside of DR with imminent before you start spending should be an increase, but might be worth to save it for outside of DR for more value?
 actions.aoe+=/deep_breath,if=!buff.dragonrage.up
 # Send SS when it doesn't overflow EB, without vigor send on CD
@@ -98,11 +102,11 @@ actions.st+=/dragonrage,if=cooldown.fire_breath.remains<4&cooldown.eternity_surg
 # Tip second FB if not playing font of magic or if playing EBF, otherwise tip ES.
 actions.st+=/tip_the_scales,if=buff.dragonrage.up&(((!talent.font_of_magic|talent.everburning_flame)&cooldown.fire_breath.up&!cooldown.eternity_surge.up)|(cooldown.eternity_surge.up&!cooldown.fire_breath.up&!talent.everburning_flame&talent.font_of_magic))
 # Fire breath logic  Play around power swell if you don't have pi or lust up. Play around blazing shards if outside of DR.  DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
-actions.st+=/call_action_list,name=fb,if=(!talent.dragonrage|variable.next_dragonrage>variable.dr_prep_time_st|!talent.animosity)&(target.time_to_die>=8|boss&fight_remains<30|empowering.fire_breath)&(set_bonus.tier30_4pc&((buff.power_swell.remains<variable.r1_cast_time|buff.bloodlust.up|buff.power_infusion.up)&(buff.blazing_shards.remains<variable.r1_cast_time|buff.dragonrage.up))|!set_bonus.tier30_4pc&((buff.limitless_potential.remains<variable.r1_cast_time|!buff.power_infusion.up)&buff.power_swell.remains<variable.r1_cast_time&buff.blazing_shards.remains<variable.r1_cast_time))
+actions.st+=/call_action_list,name=fb,if=(!talent.dragonrage|variable.next_dragonrage>variable.dr_prep_time_st|!talent.animosity)&(target.time_to_die>=8|boss&fight_remains<30)&(set_bonus.tier30_4pc&((buff.power_swell.remains<variable.r1_cast_time|buff.bloodlust.up|buff.power_infusion.up)&(buff.blazing_shards.remains<variable.r1_cast_time|buff.dragonrage.up))|!set_bonus.tier30_4pc&((buff.limitless_potential.remains<variable.r1_cast_time|!buff.power_infusion.up)&buff.power_swell.remains<variable.r1_cast_time&buff.blazing_shards.remains<variable.r1_cast_time))
 # Throw Star on CD, Don't overcap with Arcane Vigor.
 actions.st+=/shattering_star,if=buff.essence_burst.stack<buff.essence_burst.max_stack|!talent.arcane_vigor
 # Eternity Surge logic  Play around power swell if you don't have pi or lust up. Play around blazing shards if outside of DR.  DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
-actions.st+=/call_action_list,name=es,if=(!talent.dragonrage|variable.next_dragonrage>variable.dr_prep_time_st|!talent.animosity)&(target.time_to_die>=8|boss&fight_remains<30|empowering.fire_breath)&(set_bonus.tier30_4pc&((buff.power_swell.remains<variable.r1_cast_time|buff.bloodlust.up|buff.power_infusion.up)&(buff.blazing_shards.remains<variable.r1_cast_time|buff.dragonrage.up))|!set_bonus.tier30_4pc&((buff.limitless_potential.remains<variable.r1_cast_time|!buff.power_infusion.up)&buff.power_swell.remains<variable.r1_cast_time&buff.blazing_shards.remains<variable.r1_cast_time))
+actions.st+=/call_action_list,name=es,if=(!talent.dragonrage|variable.next_dragonrage>variable.dr_prep_time_st|!talent.animosity)&(target.time_to_die>=8|boss&fight_remains<30)&(set_bonus.tier30_4pc&((buff.power_swell.remains<variable.r1_cast_time|buff.bloodlust.up|buff.power_infusion.up)&(buff.blazing_shards.remains<variable.r1_cast_time|buff.dragonrage.up))|!set_bonus.tier30_4pc&((buff.limitless_potential.remains<variable.r1_cast_time|!buff.power_infusion.up)&buff.power_swell.remains<variable.r1_cast_time&buff.blazing_shards.remains<variable.r1_cast_time))
 # Wait for FB/ES to be ready if spending another GCD would result in the cast no longer fitting inside of DR
 actions.st+=/wait,sec=cooldown.fire_breath.remains,if=talent.animosity&buff.dragonrage.up&buff.dragonrage.remains<gcd.max+variable.r1_cast_time*buff.tip_the_scales.down&buff.dragonrage.remains-cooldown.fire_breath.remains>=variable.r1_cast_time*buff.tip_the_scales.down
 actions.st+=/wait,sec=cooldown.eternity_surge.remains,if=talent.animosity&buff.dragonrage.up&buff.dragonrage.remains<gcd.max+variable.r1_cast_time&buff.dragonrage.remains-cooldown.eternity_surge.remains>variable.r1_cast_time*buff.tip_the_scales.down
