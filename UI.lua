@@ -2258,7 +2258,7 @@ do
             self.refreshTimer = self.refreshTimer + elapsed
         end
 
-        if not Hekili.Pause then
+        if Hekili.DB.profile.enabled and not Hekili.Pause then
             self.refreshRate = self.refreshRate or 5
             self.combatRate = self.combatRate or 0.25
 
@@ -2736,8 +2736,8 @@ do
         b.EmpowerLevel:SetText( empText )
 
         -- Mover Stuff.
-        b:SetScript("OnMouseDown", Button_OnMouseDown)
-        b:SetScript("OnMouseUp", Button_OnMouseUp)
+        b:SetScript( "OnMouseDown", Button_OnMouseDown )
+        b:SetScript( "OnMouseUp", Button_OnMouseUp )
 
         b:SetScript( "OnEnter", function( self )
             local H = Hekili
