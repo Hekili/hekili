@@ -2263,8 +2263,8 @@ do
         end
 
         if Hekili.DB.profile.enabled and not Hekili.Pause then
-            self.refreshRate = self.refreshRate or 5
-            self.combatRate = self.combatRate or 0.25
+            self.refreshRate = self.refreshRate or 0.667
+            self.combatRate = self.combatRate or 0.333
 
             local thread = self.activeThread
 
@@ -2290,19 +2290,19 @@ do
 
                 if not self.firstThreadCompleted then
                     Hekili.maxFrameTime = 100
-                end
-
-                local averageSpan = 0
-                if #frameSpans > 0 then
-                    for _, span in ipairs( frameSpans ) do
-                        averageSpan = averageSpan + span
-                    end
-                    averageSpan = 1000 * averageSpan / #frameSpans
-                    wipe( frameSpans )
-
-                    Hekili.maxFrameTime = Clamp( 0.6 * averageSpan, 3, 10 ) -- Dynamically adjust to 60% of (seemingly) average frame rate between updates.
                 else
-                    Hekili.maxFrameTime = Hekili.maxFrameTime or 10
+                    if #frameSpans > 0 then
+                        local averageSpan = 0
+                        for _, span in ipairs( frameSpans ) do
+                            averageSpan = averageSpan + span
+                        end
+                        averageSpan = 1000 * averageSpan / #frameSpans
+                        wipe( frameSpans )
+
+                        Hekili.maxFrameTime = Clamp( 0.6 * averageSpan, 3, 10 ) -- Dynamically adjust to 60% of (seemingly) average frame rate between updates.
+                    else
+                        Hekili.maxFrameTime = Hekili.maxFrameTime or 10
+                    end
                 end
 
                 --[[
@@ -2345,8 +2345,8 @@ do
                         self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
                         self.combatRate = Hekili:GetActiveSpecOption( "combatRefresh" )
                     else
-                        self.refreshRate = 0.5
-                        self.combatRate = 0.1
+                        self.refreshRate = 0.667
+                        self.combatRate = 0.333
                     end
 
                     if ok then
