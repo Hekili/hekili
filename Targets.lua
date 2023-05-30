@@ -863,6 +863,12 @@ end
 
 
 do
+    local damage = {
+        [1] = 0,
+        [5] = 0,
+        [10] = 0,
+    }
+
     local physical = {
         [1] = 0,
         [5] = 0,
@@ -881,23 +887,41 @@ do
         [10] = 0
     }
 
-    ns.storeDamage = function( _, damage, isPhysical )
-        if damage and damage > 0 then
+    ns.storeDamage = function( _, dam, isPhysical )
+        if dam and dam > 0 then
             local db = isPhysical and physical or magical
 
-            db[ 1 ] = db[ 1 ] + damage
-            C_Timer.After( 1, function() db[ 1 ] = db[ 1 ] - damage end )
+            db[ 1 ] = db[ 1 ] + dam
+            damage[ 1 ] = damage[ 1 ] + dam
 
-            db[ 5 ] = db[ 5 ] + damage
-            C_Timer.After( 5, function() db[ 5 ] = db[ 5 ] - damage end )
+            C_Timer.After( 1, function()
+                db[ 1 ] = db[ 1 ] - dam
+                damage[ 1 ] = damage[ 1 ] - dam
+            end )
 
-            db[ 10 ] = db[ 10 ] + damage
-            C_Timer.After( 10, function() db[ 10 ] = db[ 10 ] - damage end )
+            db[ 5 ] = db[ 5 ] + dam
+            damage[ 5 ] = damage[ 5 ] + dam
+
+            C_Timer.After( 5, function()
+                db[ 5 ] = db[ 5 ] - dam
+                damage[ 5 ] = damage[ 5 ] - dam
+            end )
+
+            db[ 10 ] = db[ 10 ] + dam
+            damage[ 10 ] = damage[ 10 ] + dam
+
+            C_Timer.After( 10, function()
+                db[ 10 ] = db[ 10 ] - dam
+                damage[ 10 ] = damage[ 10 ] - dam
+            end )
         end
     end
 
     ns.damageInLast = function( seconds, isPhysical )
-        local db = isPhysical and physical or magical
+        local db
+        if isPhysical == nil then db = damage
+        elseif isPhysical == true then db = physical
+        else db = magical end
 
         if db[ seconds ] then return db[ seconds ] end
 
