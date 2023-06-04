@@ -2263,24 +2263,29 @@ do
         end
 
         if Hekili.DB.profile.enabled and not Hekili.Pause then
-            self.refreshRate = self.refreshRate or 0.667
-            self.combatRate = self.combatRate or 0.333
+            self.refreshRate = self.refreshRate or 0.5
+            self.combatRate = self.combatRate or 0.2
 
             local thread = self.activeThread
 
             local firstDisplay = nil
             local superUpdate = self.firstThreadCompleted and self.superUpdate
 
-            if superUpdate and thread and coroutine.status( thread ) == "suspended" then
-                -- We're going to break the thread and start over from the current display in progress.
-                firstDisplay = state.display
-                self:UpdatePerformance( true )
-            end
+            -- Don't initiate a thread in a frame that's already dirty.
+            if self.usedFrame then
+                self.usedFrame = nil
 
-            -- If there's no thread, then see if we have a reason to update.
-            if superUpdate or ( not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) ) then
+                -- If there's no thread, then see if we have a reason to update.
+            elseif superUpdate or ( not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) ) then
+                if superUpdate and thread and coroutine.status( thread ) == "suspended" then
+                    -- We're going to break the thread and start over from the current display in progress.
+                    firstDisplay = state.display
+                    self:UpdatePerformance( true )
+                end
+
                 self.criticalUpdate = false
                 self.superUpdate = false
+                self.refreshTimer = 0
 
                 self.activeThread = coroutine.create( Hekili.Update )
                 self.activeThreadTime = 0
@@ -2299,7 +2304,7 @@ do
                         averageSpan = 1000 * averageSpan / #frameSpans
                         wipe( frameSpans )
 
-                        Hekili.maxFrameTime = Clamp( 0.6 * averageSpan, 3, 10 ) -- Dynamically adjust to 60% of (seemingly) average frame rate between updates.
+                        Hekili.maxFrameTime = Clamp( 0.6 * averageSpan, 3, 20 ) -- Dynamically adjust to 60% of (seemingly) average frame rate between updates.
                     else
                         Hekili.maxFrameTime = Hekili.maxFrameTime or 10
                     end
@@ -2339,14 +2344,13 @@ do
 
                 if coroutine.status( thread ) == "dead" or err then
                     self.activeThread = nil
-                    self.refreshTimer = 0
 
                     if Hekili:GetActiveSpecOption( "throttleRefresh" ) then
                         self.refreshRate = Hekili:GetActiveSpecOption( "regularRefresh" )
                         self.combatRate = Hekili:GetActiveSpecOption( "combatRefresh" )
                     else
-                        self.refreshRate = 0.667
-                        self.combatRate = 0.333
+                        self.refreshRate = 0.5
+                        self.combatRate = 0.2
                     end
 
                     if ok then
@@ -2370,8 +2374,11 @@ do
 
 
     function Hekili:ForceUpdate( event, super )
+        self.Engine.usedFrame = true
         self.Engine.criticalUpdate = true
-        if super then self.Engine.superUpdate = true end
+        if super then
+            self.Engine.superUpdate = true
+        end
         if self.Engine.firstForce == 0 then self.Engine.firstForce = GetTime() end
 
         if event then
