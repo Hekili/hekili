@@ -1923,8 +1923,18 @@ function Hekili.Update( initial )
                             state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", cast_target )
                         end
 
-                        if ability.item and not ( ability.essence or ability.no_icd ) then
-                            state.putTrinketsOnCD( state.cooldown[ action ].remains / 6 )
+                        if state.trinket.t1.is[ action ] and state.trinket.t2.has_cooldown then
+                            local t2 = state.trinket.t2.cooldown.key
+                            local duration = ability.cooldown / 6
+                            if state.cooldown[ t2 ].remains < duration then
+                                state.setCooldown( t2, duration )
+                            end
+                        elseif state.trinket.t2.is[ action ] and state.trinket.t1.has_cooldown then
+                            local t1 = state.trinket.t1.cooldown.key
+                            local duration = ability.cooldown / 6
+                            if state.cooldown[ t1 ].remains < duration then
+                                state.setCooldown( t1, duration )
+                            end
                         end
                     end
 
