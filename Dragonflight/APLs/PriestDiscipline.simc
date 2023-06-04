@@ -134,7 +134,7 @@ actions+=/purge_the_wicked,if=talent.purge_the_wicked&(target.time_to_die>(0.3*d
 actions+=/shadow_word_pain,if=!talent.purge_the_wicked&(target.time_to_die>(0.3*dot.shadow_word_pain.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.shadow_word_pain.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
 actions+=/schism,if=!talent.shadow_covenant
 actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&target.health.pct<20
-actions.main+=/penance,if=(!talent.shadow_covenant|variable.can_penance)
+actions+=/penance,if=(!talent.shadow_covenant|variable.can_penance)
 # For DPS, Lights wrath should always be used outside of scov when you take wrath unleashed to maximize the number of smites it buffs. In a real raid setting, you may want to cast it at the beginning of a scov cycle for additional healing.
 actions+=/lights_wrath,if=talent.wrath_unleashed
 actions+=/mind_blast,if=!talent.shadow_covenant|variable.can_mind_blast
