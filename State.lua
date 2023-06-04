@@ -6055,7 +6055,7 @@ do
 
         elseif e.type == "CHANNEL_FINISH" then
             if ability.finish then ability.finish() end
-            self.stopChanneling( false, ability.key )
+            -- self.stopChanneling( false, ability.key )
 
         elseif e.type == "PROJECTILE_IMPACT" then
             local wasCycling = self.IsCycling( nil, true )
@@ -6429,7 +6429,7 @@ do
             state.setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
         end
 
-        -- Trinkets that need special handling.
+        --[[ Trinkets that need special handling.
         if state.buff.stormeaters_boon.up and state.debuff.rooted.down then
             state.applyDebuff( "player", "rooted", state.buff.stormeaters_boon.remains )
         end
@@ -6466,7 +6466,7 @@ do
                 state.buff.acquired_axe.expires = state.buff.acquired_sword.expires + 12
                 state.buff.acquired_axe.applied = state.buff.acquired_sword.expires
             end
-        end
+        end ]]
 
         state.empowerment.active = state.empowerment.hold > state.now
 
@@ -6475,7 +6475,7 @@ do
         Hekili:Yield( "Reset Pre-Casting" )
 
         if state.empowerment.active then
-            local timeDiff = state.now - state.buff.casting.applied
+            local timeDiff = state.now - state.empowerment.start
             if timeDiff > 0 then
                 if Hekili.ActiveDebug then Hekili:Debug( "Empowerment is active; turning back time by " .. timeDiff .. "s..." ) end
                 state.now = state.now - timeDiff
