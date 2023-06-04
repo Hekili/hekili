@@ -1355,7 +1355,7 @@ all:RegisterAbilities( {
         cooldown = 120,
         gcd = "off",
 
-        item = 202268,
+        item = 203714,
 
         handler = function()
             applyBuff( "writhing_ward" )
