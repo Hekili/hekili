@@ -1114,25 +1114,22 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( eve
     if unit == "player" then
         local ability = class.abilities[ spellID ]
 
-        if ability and state.holds[ ability.key ] then
-            Hekili:RemoveHold( ability.key, true )
+        if ability then
+            Hekili:ForceUpdate( event, true )
+            if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
         end
     end
-
-    Hekili:ForceUpdate( event, true )
 end )
 
 
 RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, unit, cast, spellID )
     if unit == "player" then
         local ability = class.abilities[ spellID ]
-
-        if ability and state.holds[ ability.key ] then
-            Hekili:RemoveHold( ability.key, true )
+        if ability then
+            Hekili:ForceUpdate( event )
+            if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
         end
     end
-
-    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1177,45 +1174,30 @@ end
 
 
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( event, unit, cast, spellID )
-    if unit == "player" then
-        local ability = class.abilities[ spellID ]
+    local ability = class.abilities[ spellID ]
 
-        if ability then
-            if ability.special then
-
-            end
-
-            if state.holds[ ability.key ] then
-                Hekili:RemoveHold( ability.key, true )
-            end
-        end
+    if ability then
+        Hekili:ForceUpdate( event )
+        if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
     end
-
-    Hekili:ForceUpdate( event )
 end )
 
 
-RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", "target", function( event, unit, cast, spellID )
-    if unit == "player" then
-        local ability = class.abilities[ spellID ]
-
-        if ability and state.holds[ ability.key ] then
-            Hekili:RemoveHold( ability.key, true )
-        end
+RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", nil, function( event, unit, cast, spellID )
+    local ability = class.abilities[ spellID ]
+    if ability then
+        Hekili:ForceUpdate( event )
+        if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
     end
-    Hekili:ForceUpdate( event )
 end )
 
 
-RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", "target", function( event, unit, cast, spellID )
-    if unit == "player" then
-        local ability = class.abilities[ spellID ]
-
-        if ability and state.holds[ ability.key ] then
-            Hekili:RemoveHold( ability.key, true )
-        end
+RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", nil, function( event, unit, cast, spellID )
+    local ability = class.abilities[ spellID ]
+    if ability then
+        Hekili:ForceUpdate( event )
+        if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
     end
-    Hekili:ForceUpdate( event )
 end )
 
 
@@ -1241,10 +1223,10 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
                     travel = ability.flightTime
 
                 elseif target then
-                    local unit = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
+                    local u = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
 
-                    if unit then
-                        local _, maxR = RC:GetRange( unit )
+                    if u then
+                        local _, maxR = RC:GetRange( u )
                         maxR = maxR or state.target.distance
                         travel = maxR / ability.velocity
                     end
@@ -1262,8 +1244,6 @@ end )
 
 -- TODO:  This should be changed to stash this information and then commit it on next UNIT_SPELLCAST_START or UNIT_SPELLCAST_SUCCEEDED.
 RegisterEvent( "UNIT_SPELLCAST_SENT", function ( event, unit, target_name, castID, spellID )
-    if not UnitIsUnit( "player", unit ) then return end
-
     if target_name and UnitGUID( target_name ) then
         state.cast_target = UnitGUID( target_name )
         return
