@@ -54,6 +54,8 @@ actions+=/demons_bite
 actions+=/fel_rush,if=settings.fel_rush_filler&(movement.distance>15|(buff.out_of_range.up&!talent.momentum))
 actions+=/vengeful_retreat,if=settings.retreat_filler&!talent.initiative&movement.distance>15
 actions+=/throw_glaive,if=(talent.demon_blades|buff.out_of_range.up)&!debuff.essence_break.up
+actions+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=fight_remains<20|charges=3|cooldown.vengeful_retreat.remains<5
+actions+=/use_item,name=elementium_pocket_anvil,use_off_gcd=1
 
 actions.meta_end+=/death_sweep
 actions.meta_end+=/annihilation
@@ -65,8 +67,6 @@ actions.cooldown+=/metamorphosis,if=talent.demonic&(!talent.chaotic_transformati
 actions.cooldown+=/potion,if=buff.metamorphosis.remains>25|buff.metamorphosis.up&cooldown.metamorphosis.ready|boss&fight_remains<60|time>0.1&time<10
 actions.cooldown+=/use_item,name=manic_grieftorch,use_off_gcd=1,if=((buff.initiative.remains>2&debuff.essence_break.down&cooldown.essence_break.remains>gcd.max&time>14|time_to_die<10|time<1&!equipped.algethar_puzzle_box|boss&(fight_remains%%120<5))&!prev_gcd.1.essence_break)
 actions.cooldown+=/use_item,name=algethar_puzzle_box,use_off_gcd=1,if=cooldown.metamorphosis.remains<=gcd.max*5|boss&((fight_remains%%180>10)&(fight_remains%%180<22)|fight_remains<25)
-actions.cooldown+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=fight_remains<20|charges=3|cooldown.vengeful_retreat.remains<5
-actions.cooldown+=/use_item,name=elementium_pocket_anvil,use_off_gcd=1
 actions.cooldown+=/elysian_decree,if=(active_enemies>desired_targets|raid_event.adds.in>30)
 actions.cooldown+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)
 actions.cooldown+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
