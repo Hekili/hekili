@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEMONHUNTER" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local strformat = string.format
@@ -1452,8 +1453,10 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "infernal_charges", 1, {
-    name = strformat( "Reserve %s Charges", Hekili:GetSpellLinkWithTexture( 189110 ) ),
-    desc = strformat( "If set above zero, %s will not be recommended if it would leave you with fewer charges.", Hekili:GetSpellLinkWithTexture( 189110 ) ),
+    name = strformat( L["Reserve %s Charges"],
+        Hekili:GetSpellLinkWithTexture( 189110 ) ),
+    desc = strformat( L["If set above zero, %s will not be recommended if it would leave you with fewer charges."],
+        Hekili:GetSpellLinkWithTexture( 189110 ) ),
     type = "range",
     min = 0,
     max = 2,
@@ -1463,13 +1466,16 @@ spec:RegisterSetting( "infernal_charges", 1, {
 
 
 spec:RegisterSetting( "frailty_stacks", 1, {
-    name = strformat( "Require %s Stacks", Hekili:GetSpellLinkWithTexture( 389958 ) ),
+    name = strformat( L["Require %s Stacks"],
+        Hekili:GetSpellLinkWithTexture( 389958 ) ),
     desc = function()
-        return strformat( "If set above zero, the default priority will not recommend certain abilities unless you have at least this many stacks of %s on your target.\n\n"
-            .. "If %s is not talented, then |cFFFFD100frailty_threshold_met|r will always be |cFF00FF00true|r.\n\n"
-            .. "If %s is not talented, then |cFFFFD100frailty_threshold_met|r will be |cFF00FF00true|r even with only one stack of %s.\n\n"
-            .. "This is an experimental setting.  Requiring too many stacks may result in a loss of DPS due to delaying use of your major cooldowns.",
-            Hekili:GetSpellLinkWithTexture( 389958 ), Hekili:GetSpellLinkWithTexture( 389976 ), Hekili:GetSpellLinkWithTexture( 389985 ), spec.auras.frailty.name )
+        return strformat( L["If set above zero, the default priority will not recommend certain abilities unless you have at least this many stacks of %s on your target."],
+            Hekili:GetSpellLinkWithTexture( 389958 ) ) .. "\n\n"
+            .. strformat( L["If %s is not talented, then |cFFFFD100frailty_threshold_met|r will always be |cFF00FF00true|r."],
+            Hekili:GetSpellLinkWithTexture( 389976 ) ) .. "\n\n"
+            .. strformat( L["If %1$s is not talented, then |cFFFFD100frailty_threshold_met|r will be |cFF00FF00true|r even with only one stack of %2$s."],
+            Hekili:GetSpellLinkWithTexture( 389985 ), spec.auras.frailty.name ) .. "\n\n"
+            .. L["This is an experimental setting.  Requiring too many stacks may result in a loss of DPS due to delaying use of your major cooldowns."]
     end,
     type = "range",
     min = 0,

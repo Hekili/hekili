@@ -5,10 +5,13 @@ if UnitClassBase( "player" ) ~= "MONK" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local GetNamePlates = C_NamePlate.GetNamePlates
 local LRC = LibStub( "LibRangeCheck-2.0" )
+
+local W = ns.WordWrapper
 
 local pow, strformat = math.pow, string.format
 
@@ -296,14 +299,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     flying_serpent_kick = {
-        name = "Flying Serpent Kick",
+        name = L["Flying Serpent Kick"],
         duration = 2,
         generate = function ()
             local cast = rawget( class.abilities.flying_serpent_kick, "lastCast" ) or 0
             local expires = cast + 2
 
             local fsk = buff.flying_serpent_kick
-            fsk.name = "Flying Serpent Kick"
+            fsk.name = L["Flying Serpent Kick"]
 
             if expires > query_time then
                 fsk.count = 1
@@ -2235,10 +2238,12 @@ spec:RegisterOptions( {
 } )
 
 spec:RegisterSetting( "allow_fsk", false, {
-    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ) ),
-    desc = strformat( "If unchecked, %s will not be recommended despite generally being used as a filler ability.\n\n"
-        .. "Unchecking this option is the same as disabling the ability via |cFFFFD100Abilities|r > |cFFFFD100|W%s|w|r > |cFFFFD100|W%s|w|r > |cFFFFD100Disable|r.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ), spec.name, spec.abilities.flying_serpent_kick.name ),
+    name = strformat( L["Use %s"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ) ),
+    desc = strformat( L["If unchecked, %s will not be recommended despite generally being used as a filler ability."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.flying_serpent_kick.id ) ) .. "\n\n"
+        .. strformat( L["Unchecking this option is the same as disabling the ability via |cFFFFD100Abilities|r > |cFFFFD100%s|r > |cFFFFD100%s|r > |cFFFFD100Disable|r."],
+        W( spec.name ), W( spec.abilities.flying_serpent_kick.name ) ),
     type = "toggle",
     width = "full",
     get = function () return not Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled end,
@@ -2256,17 +2261,20 @@ spec:RegisterSetting( "optimize_reverse_harm", false, {
 } ) ]]
 
 spec:RegisterSetting( "sef_one_charge", false, {
-    name = strformat( "%s: Reserve 1 Charge for Cooldowns Toggle", Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ) ),
-    desc = strformat( "If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\n"
-        .. "If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ), spec.abilities.storm_earth_and_fire.name ),
+    name = strformat( L["%s: Reserve 1 Charge for Cooldowns Toggle"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ) ),
+    desc = strformat( L["If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.storm_earth_and_fire.id ) ) .. "\n\n"
+        .. strformat( L["If %s's |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled."],
+        W( spec.abilities.storm_earth_and_fire.name ) ),
     type = "toggle",
     width = "full",
 } )
 
 spec:RegisterSetting( "tok_damage", 1, {
-    name = strformat( "%s: Required Incoming Damage", Hekili:GetSpellLinkWithTexture( spec.abilities.touch_of_karma.id ) ),
-    desc = strformat( "If set above zero, %s will only be recommended if you have taken this percentage of your maximum health in damage in the past 3 seconds.",
+    name = strformat( L["%s: Required Incoming Damage"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.touch_of_karma.id ) ),
+    desc = strformat( L["If set above zero, %s will only be recommended if you have taken this percentage of your maximum health in damage in the past 3 seconds."],
         Hekili:GetSpellLinkWithTexture( spec.abilities.touch_of_karma.id ) ),
     type = "range",
     min = 0,
@@ -2276,28 +2284,34 @@ spec:RegisterSetting( "tok_damage", 1, {
 } )
 
 spec:RegisterSetting( "check_wdp_range", false, {
-    name = strformat( "%s: Check Range", Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ) ),
-    desc = strformat( "If checked, %s will not be recommended if your target is out of range.", Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ) ),
+    name = strformat( L["%s: Range Check"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ) ),
+    desc = strformat( L["If checked, %s will not be recommended if your target is out of range."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "check_sck_range", false, {
-    name = strformat( "%s: Check Range", Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
-    desc = strformat( "If checked, %s will not be recommended if your target is out of range.", Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
+    name = strformat( L["%s: Range Check"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
+    desc = strformat( L["If checked, %s will not be recommended if your target is out of range."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "use_diffuse", false, {
-    name = strformat( "%s: Self-Dispel", Hekili:GetSpellLinkWithTexture( spec.abilities.diffuse_magic.id ) ),
+    name = strformat( L["%s: Self-Dispel"],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.diffuse_magic.id ) ),
     desc = function()
-        local m = strformat( "If checked, %s may be recommended when when you have a dispellable magic debuff.", Hekili:GetSpellLinkWithTexture( spec.abilities.diffuse_magic.id ) )
+        local m = strformat( L["If checked, %s may be recommended when when you have a dispellable magic debuff."],
+            Hekili:GetSpellLinkWithTexture( spec.abilities.diffuse_magic.id ) )
 
         local t = class.abilities.diffuse_magic.toggle
         if t then
             local active = Hekili.DB.profile.toggles[ t ].value
-            m = m .. "\n\n" .. ( active and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires " .. t:gsub("^%l", string.upper) .. " Toggle|r"
+            m = m .. "\n\n" .. ( active and "|cFF00FF00" or "|cFFFF0000" ) .. strformat( L["Requires %s Toggle"], L[ t:gsub("^%l", string.upper) ] ) .. "|r"
         end
 
         return m

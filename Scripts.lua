@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 
 local class   = Hekili.Class
 local scripts = Hekili.Scripts
@@ -17,9 +18,9 @@ local roundUp = ns.roundUp
 local safeMax = ns.safeMax
 
 local format, trim = string.format, string.trim
-
 local twipe, insert = table.wipe, table.insert
 
+local BlizzBlue = "|cFF00B4FF"
 
 -- Forgive the name, but this should properly replace ! characters with not, accounting for appropriate bracketing.
 -- Why so complex?  Because "! 0 > 1" converted to Lua is "not 0 > 1" which evaluates to "false > 1" -- not the goal.
@@ -949,7 +950,7 @@ do
             end
 
             if trimmed_prefix then
-                    piece.s = trimmed_prefix .. piece.s
+                piece.s = trimmed_prefix .. piece.s
             end
 
             output = output .. piece.s
@@ -1480,7 +1481,7 @@ function scripts:CheckScript( scriptID, action, elem )
     else
         if not script.Modifiers[ elem ] then
             state.this_action = prev_action
-            return nil, elem .. " not set."
+            return nil, format( L["%s not set."], elem )
 
         else
             local success, value = pcall( script.Modifiers[ elem ] )
@@ -1860,8 +1861,11 @@ function scripts:ImplantDebugData( data )
     if data.hook then
         local s = self.DB[ data.hook ]
         local pack, list, entry = data.hook:match( "^(.-):(.-):(.-)$" )
+        local p = rawget( Hekili.DB.profile.packs, pack )
+        local packName = p.builtIn and BlizzBlue .. _L[ pack ] .. "|r" or _L[ pack ]
+        local listName = ( list == "precombat" or list == "default" ) and BlizzBlue .. _L[ list ] .. "|r" or _L[ list ]
 
-        data.HookHeader = "Called from " .. pack .. ", " .. list .. ", " .. "#" .. entry .. "."
+        data.HookHeader = format( L["Called from %s, %s, #%s."], packName, listName, entry )
         data.HookScript = s.SimC
         data.HookElements = data.HookElements or {}
 

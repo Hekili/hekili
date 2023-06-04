@@ -5,6 +5,7 @@ if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 
 local roundUp = ns.roundUp
@@ -990,7 +991,7 @@ me:RegisterHook( "reset_precast", function ()
     end
 
     if not any_dnd_set then
-        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any " .. class.abilities.death_and_decay.name .. "]|r"
+        class.abilityList.any_dnd = "|T136144:0|t |cff00ccff" .. format( L["[Any %s]"], class.abilities.death_and_decay.name ) .. "|r"
         any_dnd_set = true
     end
 
@@ -1003,7 +1004,7 @@ me:RegisterHook( "reset_precast", function ()
     end
 
     if not wound_spender_set then
-        class.abilityList.wound_spender = "|T237530:0|t |cff00ccff[Wound Spender]|r"
+        class.abilityList.wound_spender = "|T237530:0|t |cff00ccff" .. L["[Wound Spender]"] .."|r"
         wound_spender_set = true
     end
 
@@ -2048,11 +2049,11 @@ me:RegisterAbilities( {
 
     -- Stub.
     any_dnd = {
-        name = function () return "|T136144:0|t |cff00ccff[Any " .. ( class.abilities.death_and_decay and class.abilities.death_and_decay.name or "Death and Decay" ) .. "]|r" end,
+        name = function () return "|T136144:0|t |cff00ccff" .. format( L["[Any %s]"], class.abilities.death_and_decay and class.abilities.death_and_decay.name or L["Death and Decay"] ) .. "|r" end,
     },
 
     wound_spender = {
-        name = "|T237530:0|t |cff00ccff[Wound Spender]|r",
+        name = "|T237530:0|t |cff00ccff" .. L["[Wound Spender]"] .. "|r",
     }
 } )
 
@@ -2080,15 +2081,18 @@ me:RegisterOptions( {
 
 
 me:RegisterSetting( "dps_shell", false, {
-    name = strformat( "Use %s Offensively", Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
-    desc = strformat( "If checked, %s will not be on the Defensives toggle by default.", Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
+    name = strformat( L["Use %s Offensively"],
+        Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
+    desc = strformat( L["If checked, %s will not be on the Defensives toggle by default."],
+        Hekili:GetSpellLinkWithTexture( me.abilities.antimagic_shell.id ) ),
     type = "toggle",
     width = "full",
 } )
 
 me:RegisterSetting( "ob_macro", nil, {
-    name = strformat( "%s Macro", Hekili:GetSpellLinkWithTexture( me.abilities.outbreak.id ) ),
-    desc = strformat( "Using a mouseover macro makes it easier to apply %s and %s to other enemies without retargeting.",
+    name = strformat( L["%s Macro"],
+        Hekili:GetSpellLinkWithTexture( me.abilities.outbreak.id ) ),
+    desc = strformat( L["Using a mouseover macro makes it easier to apply %s and %s to other enemies without retargeting."],
         Hekili:GetSpellLinkWithTexture( me.abilities.outbreak.id ), Hekili:GetSpellLinkWithTexture( me.auras.virulent_plague.id ) ),
     type = "input",
     width = "full",

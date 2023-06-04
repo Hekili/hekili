@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -20,7 +21,6 @@ local timeToReady = ns.timeToReady
 local GetItemInfo = ns.CachedGetItemInfo
 
 local trim = string.trim
-
 
 local tcopy = ns.tableCopy
 local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
@@ -41,7 +41,7 @@ local function EmbedBlizOptions()
     open:SetPoint( "CENTER", panel, "CENTER", 0, 0 )
     open:SetWidth( 250 )
     open:SetHeight( 25 )
-    open:SetText( "Open Hekili Options Panel" )
+    open:SetText( L["Open Hekili Options Panel"] )
 
     open:SetScript( "OnClick", function ()
         ns.StartConfiguration()
@@ -97,26 +97,33 @@ function Hekili:OnInitialize()
 
         if p.toggles.essences.override then
             -- Don't show Essences here if it's overridden by CDs anyway?
-            return format( "|c%s%s|r %sCD|r %sInt|r %sDef|r", color,
-                m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
-                p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
-                p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
-                p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
-        else
-            return format( "|c%s%s|r %sCD|r %smCD|r %sInt|r",
+            return format( "|c%s%s|r %s%s|r %s%s|r %s%s|r",
                 color,
-                m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "React" or "Auto" ) ) ),
+                m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
                 p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                L["CD"],
+                p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+                L["Int"],
+                p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000",
+                L["Def"] )
+        else
+            return format( "|c%s%s|r %s%s|r %s%s|r %s%s|r",
+                color,
+                m == "single" and L["ST"] or ( m == "aoe" and L["AOE"] or ( m == "dual" and L["Dual"] or ( m == "reactive" and L["React"] or L["Auto"] ) ) ),
+                p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                L["CD"],
                 p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
-                p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000" )
+                L["mCD"],
+                p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+                L["Int"] )
         end
     end
 
     Hekili_OnAddonCompartmentEnter = function( addonName, button )
         GameTooltip:SetOwner( AddonCompartmentFrame )
         GameTooltip:AddDoubleLine( "Hekili", GetDataText() )
-        GameTooltip:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
-        GameTooltip:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
+        GameTooltip:AddLine( "|cFFFFFFFF" .. L["Left-click to make quick adjustments."] .. "|r" )
+        GameTooltip:AddLine( "|cFFFFFFFF" .. L["Right-click to open the options interface."] .. "|r" )
         GameTooltip:Show()
     end
 
@@ -135,8 +142,8 @@ function Hekili:OnInitialize()
             OnEnter = function( self )
                 GameTooltip:SetOwner( self )
                 GameTooltip:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
-                GameTooltip:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
-                GameTooltip:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
+                GameTooltip:AddLine( "|cFFFFFFFF" .. L["Left-click to make quick adjustments."] .. "|r" )
+                GameTooltip:AddLine( "|cFFFFFFFF" .. L["Right-click to open the options interface."] .. "|r" )
                 GameTooltip:Show()
             end,
             OnLeave = Hekili_OnAddonCompartmentLeave
@@ -193,7 +200,7 @@ function Hekili:OnEnable()
     self:ForceUpdate( "ADDON_ENABLED" )
 
     if self.BuiltFor > self.CurrentBuild then
-        self:Notify( "|cFFFF0000WARNING|r: This version of Hekili is for a future version of WoW; you should reinstall for " .. self.GameBuild .. "." )
+        self:Notify( format( ns.WARNING .. L["This version of Hekili is for a future version of WoW; you should reinstall for %s."], self.GameBuild ) )
     end
 end
 
@@ -1737,7 +1744,7 @@ function Hekili.Update( initial )
                     n = n + 1
 
                     if n > 10 then
-                        if debug then Hekili:Debug( "WARNING:  Attempted to process 10+ events; breaking to avoid CPU wastage." ) end
+                        if debug then Hekili:Debug( ns.WARNING .. "Attempted to process 10+ events; breaking to avoid CPU wastage." ) end
                         break
                     end
 
@@ -1962,7 +1969,7 @@ function Hekili.Update( initial )
                         end
                     else
                         if not hasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 50 and ( dispName == "Primary" or dispName == "AOE" ) then
-                            Hekili:Print( "Unable to make recommendation for " .. dispName .. " #" .. i .. "; triggering auto-snapshot..." )
+                            Hekili:Print( format( L["Unable to make recommendation for %s #%d; triggering auto-snapshot..."], dispName, i ) )
                             hasSnapped = dispName
                             UI:SetThreadLocked( false )
                             return "AutoSnapshot"
@@ -2005,9 +2012,9 @@ function Hekili.Update( initial )
 
                 if Hekili:SaveDebugSnapshot( dispName ) then
                     if snaps then
-                        snaps = snaps .. ", " .. dispName
+                        snaps = snaps .. ", " .. L[ dispName ]
                     else
-                        snaps = dispName
+                        snaps = L[ dispName ]
                     end
 
                     if Hekili.Config then LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "snapshots" ) end
@@ -2032,7 +2039,7 @@ function Hekili.Update( initial )
     end
 
     if snaps then
-        Hekili:Print( "Snapshots saved:  " .. snaps .. "." )
+        Hekili:Print( format( L["Snapshots saved:  %s."], snaps ) )
     end
 end
 Hekili:ProfileCPU( "ThreadedUpdate", Hekili.Update )
@@ -2042,17 +2049,17 @@ function Hekili_GetRecommendedAbility( display, entry )
     entry = entry or 1
 
     if not rawget( Hekili.DB.profile.displays, display ) then
-        return nil, "Display not found."
+        return nil, L["Display not found."]
     end
 
     if not ns.queue[ display ] then
-        return nil, "No queue for that display."
+        return nil, L["No queue for that display."]
     end
 
     local slot = ns.queue[ display ][ entry ]
 
     if not slot or not slot.actionID then
-        return nil, "No entry #" .. entry .. " for that display."
+        return nil, format( L["No entry #%s for that display."], entry )
     end
 
     local payload = Hekili.DisplayPool[ display ].EventPayload

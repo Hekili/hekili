@@ -5,8 +5,10 @@ if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
+local W = ns.WordWrapper
 
 local strformat = string.format
 
@@ -2019,7 +2021,7 @@ spec:RegisterAbilities( {
             if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
         end,
 
-        copy = { "incarnation_chosen_of_elune", "Incarnation", 102560, 390414 },
+        copy = { "incarnation_chosen_of_elune", L["Incarnation"], 102560, 390414 },
     },
 
     -- Talent: Infuse a friendly healer with energy, allowing them to cast spells without spending mana for $d.$?s326228[    If cast on somebody else, you gain the effect at $326228s1% effectiveness.][]
@@ -2637,7 +2639,7 @@ spec:RegisterAbilities( {
                 generate = function( t )
                     local last = action.starsurge.lastCast
 
-                    t.name = "Starsurge Empowerment (Lunar)"
+                    t.name = L["Starsurge Empowerment (Lunar)"]
 
                     if eclipse.in_any then
                         t.applied = last
@@ -2663,7 +2665,7 @@ spec:RegisterAbilities( {
                 generate = function( t )
                     local last = action.starsurge.lastCast
 
-                    t.name = "Starsurge Empowerment (Solar)"
+                    t.name = L["Starsurge Empowerment (Solar)"]
 
                     if eclipse.in_any then
                         t.applied = last
@@ -3017,9 +3019,11 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "vigil_damage", 50, {
-    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.natures_vigil.id ) ),
-    desc = strformat( "If set below 100%%, |W%s|w may only be recommended if your health has dropped below the specified percentage.\n\n"
-        .. "By default, |W%s|w also requires the |cFFFFD100Defensives|r toggle to be active.", spec.abilities.natures_vigil.name, spec.abilities.natures_vigil.name ),
+    name = strformat( L["%s Damage Threshold"], Hekili:GetSpellLinkWithTexture( spec.abilities.natures_vigil.id ) ),
+    desc = strformat( L["If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage."],
+        W( spec.abilities.natures_vigil.name ) ) .. "\n\n"
+        .. strformat( L["By default, %1$s also requires the %2$s toggle to be active."],
+        W( spec.abilities.natures_vigil.name ), "|cFFFFD100" .. L["Defensives"] .. "|r" ),
     type = "range",
     min = 1,
     max = 100,
@@ -3028,10 +3032,11 @@ spec:RegisterSetting( "vigil_damage", 50, {
 } )
 
 spec:RegisterSetting( "starlord_cancel", false, {
-    name = strformat( "%s |TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t Cancel", Hekili:GetSpellLinkWithTexture( spec.auras.starlord.id ) ),
-    desc = strformat( "If checked, canceling |TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t your %s may be recommended.  Canceling it allows you to start building stacks via %s and %s at its full duration.\n\n"
-        .. "You will likely want a |cFFFFD100/cancelaura %s|r macro to manage this during combat.", spec.auras.starlord.name, Hekili:GetSpellLinkWithTexture( spec.abilities.starsurge.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.starfall.id ), spec.auras.starlord.name ),
+    name = strformat( L["%s |TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t Cancel"], Hekili:GetSpellLinkWithTexture( spec.auras.starlord.id ) ),
+    desc = strformat( L["If checked, canceling |TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t your %s may be recommended."], spec.auras.starlord.name ) .. "  "
+        .. strformat( L["Canceling it allows you to start building stacks via %s and %s at its full duration."],
+        Hekili:GetSpellLinkWithTexture( spec.abilities.starsurge.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.starfall.id ) ) .. "\n\n"
+        .. strformat( L["You will likely want a |cFFFFD100/cancelaura %s|r macro to manage this during combat."], spec.auras.starlord.name ),
     icon = 462651,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "toggle",

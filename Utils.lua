@@ -83,6 +83,11 @@ ns.titleCase = function( s )
 end
 
 
+function ns.WordWrapper( str )
+    return "|W" .. tostring( str ) .. "|w"
+end
+
+
 local replacements = {
     ['_'] = " ",
     aoe = "AOE",
@@ -596,6 +601,17 @@ function Hekili:GetSpellLinkWithTexture( id, size, color )
 
     return tostring( id )
 end
+
+
+-- Workaround for EditBox not supporting escape sequence for preposition or postposition
+-- https://wowpedia.fandom.com/wiki/UI_escape_sequences#Korean
+function Hekili:GetPlainText( str )
+    local b = CreateFrame( "Button" )
+    local plainText = b:GetText( b:SetText( str ) )
+    b:SetText( "" )
+    return plainText
+end
+
 
 function Hekili:ZoomedTextureWithText( texture, text )
     if not texture or not text then return end
