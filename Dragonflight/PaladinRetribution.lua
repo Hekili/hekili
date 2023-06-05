@@ -1840,6 +1840,7 @@ spec:RegisterAbilities( {
     -- Begin the Templar combo, striking the target for 3,207 Radiant damage. Generates 1 Holy Power.
     templar_strike = {
         id = 407480,
+        rangeSpell = 35395,
         cast = 0,
         charges = 2,
         cooldown = function () return 6 * ( talent.seal_of_order.enabled and buff.blessing_of_dusk.up and 0.9 or 1 ) * haste end,
@@ -1868,7 +1869,7 @@ spec:RegisterAbilities( {
     templar_slash = {
         id = 406647,
         known = 407480,
-        rangeSpell = 407480,
+        rangeSpell = 35395,
         flash = 407480,
         cast = 0,
         cooldown = 0,
