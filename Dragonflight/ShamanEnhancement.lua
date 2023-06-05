@@ -2352,6 +2352,10 @@ spec:RegisterAbilities( {
                 addStack( "maelstrom_weapon" )
             end
 
+            if talent.thorims_invocation.enabled and buff.maelstrom_weapon.up then
+                consume_maelstrom( min( 5, buff.maelstrom_weapon.stack ) )
+            end
+
             if azerite.natural_harmony.enabled then
                 if buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                 if buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
