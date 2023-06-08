@@ -1248,6 +1248,7 @@ spec:RegisterAbilities( {
         talent = "crash_lightning",
         startsCombat = true,
 
+        usable = function () return not settings.check_crash_lightning_range or target.distance < 8, "target out of range" end,
         handler = function ()
             if active_enemies > 1 then
                 applyBuff( "crash_lightning" )
@@ -2107,6 +2108,7 @@ spec:RegisterAbilities( {
         talent = "sundering",
         startsCombat = true,
 
+        usable = function () return not settings.check_sundering_range or target.distance < 11, "target out of range" end,
         handler = function ()
             applyDebuff( "target", "sundering" )
 
@@ -2484,6 +2486,20 @@ spec:RegisterSetting( "filler_shock", true, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.flame_shock.id ) ),
     type = "toggle",
     width = 1.5
+} )
+
+spec:RegisterSetting( "check_crash_lightning_range", true, {
+    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( spec.abilities.crash_lightning.id ) ),
+    desc = strformat( "If checked, %s will not be recommended when you are more than 8 yards from your target.", Hekili:GetSpellLinkWithTexture( spec.abilities.crash_lightning.id ) ),
+    type = "toggle",
+    width = "full"
+} )
+
+spec:RegisterSetting( "check_sundering_range", true, {
+    name = strformat( "%s: Range Check", Hekili:GetSpellLinkWithTexture( spec.abilities.sundering.id ) ),
+    desc = strformat( "If checked, %s will not be recommended when you are more than 11 yards from your target.", Hekili:GetSpellLinkWithTexture( spec.abilities.sundering.id ) ),
+    type = "toggle",
+    width = "full"
 } )
 
 
