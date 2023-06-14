@@ -1249,7 +1249,7 @@ spec:RegisterAbilities( {
 
         velocity = 16,
 
-        start = function ()
+        handler = function ()
             removeStack( "crashing_chaos" )
             if buff.ritual_of_ruin.up then
                 removeBuff( "ritual_of_ruin" )
