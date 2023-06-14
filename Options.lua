@@ -9489,6 +9489,8 @@ do
         potions = 53,
         defensives = 54,
         covenants = 55,
+        essences = 55,
+        minorCDs = 55,
         custom1 = 56,
         custom2 = 57,
     }
@@ -9634,11 +9636,11 @@ do
                     for i, setting in ipairs( settings ) do
                         if not setting.info.arg or setting.info.arg() then
                             if setting.info.type == "toggle" then
-                                output = format( "%s\n - |cFFFFD100%s|r = %s|r (%s)", output, setting.name, prefs[ setting.name ] and "|cFF00FF00ON" or "|cFFFF0000OFF", setting.info.name )
+                                output = format( "%s\n - |cFFFFD100%s|r = %s|r (%s)", output, setting.name, prefs[ setting.name ] and "|cFF00FF00ON" or "|cFFFF0000OFF", type( setting.info.name ) == "function" and setting.info.name() or setting.info.name )
                                 hasToggle = true
                                 exToggle = setting.name
                             elseif setting.info.type == "range" then
-                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
+                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), settingName )
                                 hasNumber = true
                                 exNumber = setting.name
                             end
@@ -9739,6 +9741,8 @@ do
                     return
                 end
 
+                local settingName = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
+
                 if setting.info.type == "toggle" then
                     local to
 
@@ -9754,7 +9758,7 @@ do
                         to = not setting.info.get( info )
                     end
 
-                    Hekili:Print( format( "%s set to %s.", setting.info.name, ( to and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r" ) ) )
+                    Hekili:Print( format( "%s set to %s.", settingName, ( to and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r" ) ) )
 
                     info[ 1 ] = setting.name
                     setting.info.set( info, to )
@@ -9781,7 +9785,7 @@ do
                         return
                     end
 
-                    Hekili:Print( format( "%s set to |cFF00B4FF%.2f|r.", setting.info.name, to ) )
+                    Hekili:Print( format( "%s set to |cFF00B4FF%.2f|r.", settingName, to ) )
                     prefs[ setting.name ] = to
                     Hekili:ForceUpdate( "CLI_NUMBER" )
                     return

@@ -506,6 +506,8 @@ do
     local specsParsed = false
     menu.args = {}
 
+    UIDropDownMenu_SetDisplayMode( menu, "MENU" )
+
     function menu:initialize( level, list )
         if not level and not list then
             return
@@ -2271,12 +2273,8 @@ do
             local firstDisplay = nil
             local superUpdate = self.firstThreadCompleted and self.superUpdate
 
-            -- Don't initiate a thread in a frame that's already dirty.
-            if self.usedFrame then
-                self.usedFrame = nil
-
-                -- If there's no thread, then see if we have a reason to update.
-            elseif superUpdate or ( not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) ) then
+            -- If there's no thread, then see if we have a reason to update.
+            if superUpdate or ( not thread and self.refreshTimer > ( self.criticalUpdate and self.combatRate or self.refreshRate ) ) then
                 if superUpdate and thread and coroutine.status( thread ) == "suspended" then
                     -- We're going to break the thread and start over from the current display in progress.
                     firstDisplay = state.display
@@ -2294,7 +2292,7 @@ do
                 self.activeThreadFrames = 0
 
                 if not self.firstThreadCompleted then
-                    Hekili.maxFrameTime = 100
+                    Hekili.maxFrameTime = InCombatLockdown() and 10 or 100
                 else
                     if #frameSpans > 0 then
                         local averageSpan = 0
@@ -2374,7 +2372,6 @@ do
 
 
     function Hekili:ForceUpdate( event, super )
-        self.Engine.usedFrame = true
         self.Engine.criticalUpdate = true
         if super then
             self.Engine.superUpdate = true
@@ -2849,10 +2846,6 @@ function Hekili:BuildUI()
 
     ns.UI.Notification = f
     -- End Notification Panel
-
-    -- Dropdown Menu.
-    ns.UI.Menu = ns.UI.Menu or CreateFrame("Frame", "HekiliMenu", UIParent, "UIDropDownMenuTemplate")
-    Hekili:ProfileFrame( "HekiliMenu", ns.UI.Menu )
 
     -- Displays
     for disp in pairs( self.DB.profile.displays ) do
