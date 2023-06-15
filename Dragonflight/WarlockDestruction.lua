@@ -1124,7 +1124,6 @@ spec:RegisterCycle( function ()
     if this_action == "havoc" and class.abilities.havoc.key == "havoc" then return "cycle" end
 
     if ( debuff.havoc.up or FindUnitDebuffByID( "target", 80240, "PLAYER" ) ) and not legendary.odr_shawl_of_the_ymirjar.enabled then
-        print( "Cycle for", state.this_action )
         return "cycle"
     end
 end )
