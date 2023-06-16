@@ -61,6 +61,7 @@ actions.tyrant=variable,name=tyrant_window_ends,op=setif,value=cooldown.summon_d
 ## actions.tyrant+=/variable,name=tyrant_window_ends,op=set,value=variable.lowest_demon_remains-variable.tyrant_padding,if=time>variable.first_tyrant&variable.lowest_demon_remains<100&variable.lowest_demon_remains-variable.tyrant_padding>variable.tyrant_window_ends
 actions.tyrant+=/variable,name=tyrant_window_ends,op=set,value=major_demon_remains-variable.tyrant_padding,if=major_demon_remains-variable.tyrant_padding>variable.tyrant_window_ends
 actions.tyrant+=/variable,name=tyrant_window_ends,op=max,value=cooldown.call_dreadstalkers.remains+action.call_dreadstalkers.cast_time+12-variable.tyrant_padding,if=buff.dreadstalkers.down
+actions.tyrant+=/power_siphon,if=buff.wild_imps.stack>1&!buff.nether_portal.up&buff.demonic_core.stack<3
 actions.tyrant+=/shadow_bolt,if=time<2&soul_shard<5
 actions.tyrant+=/nether_portal
 actions.tyrant+=/grimoire_felguard
