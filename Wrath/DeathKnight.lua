@@ -2,7 +2,10 @@ if UnitClassBase( 'player' ) ~= 'DEATHKNIGHT' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 6 )
 
@@ -2048,19 +2051,19 @@ spec:RegisterPack( "Unholy (IV)", 20220926.3, [[Hekili:TAv0Ujoou0Vf0if1oDskqNYqx
 
 
 spec:RegisterPackSelector( "blood", "Blood (IV)", "|T135770:0|t Blood",
-    "If you have spent more points in |T135770:0|t Blood than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135770:0|t Blood"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "frost", "Frost DK (IV)", "|T135773:0|t Frost",
-    "If you have spent more points in |T135773:0|t Frost than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135773:0|t Frost"] ),
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "unholy", "Unholy (IV)", "|T135775:0|t Unholy",
-    "If you have spent more points in |T135775:0|t Unholy than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T135775:0|t Unholy"] ),
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
     end )

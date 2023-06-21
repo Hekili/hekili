@@ -2,10 +2,11 @@ if UnitClassBase( 'player' ) ~= 'HUNTER' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
-
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 3 )
 
@@ -2385,34 +2386,34 @@ spec:RegisterPack( "Survival (wowtbc.gg)", 20230211, [[Hekili:DwvqZTjpq0Fm5s70gS
 
 
 spec:RegisterPackSelector( "beast_mastery", "Beast Mastery (wowtbc.gg)", "|T132164:0|t Beast Mastery",
-    "If you have spent more points in |T132164:0|t Beast Mastery than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T132164:0|t Beast Mastery"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "marksmanship", "Marksmanship (wowtbc.gg)", "|T132222:0|t Marksmanship",
-    "If you have spent more points in |T132222:0|t Marksmanship than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T132222:0|t Marksmanship"] ),
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "survival", "Survival (wowtbc.gg)", "|T132215:0|t Survival",
-    "If you have spent more points in |T132215:0|t Survival than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T132215:0|t Survival"] ),
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
     end )
-	
+
 -- Settings
 spec:RegisterSetting( "suggest_explosive_st", false, {
     type = "toggle",
-    name = "|T135826:0|t Suggest Explosive Trap on Single Target",
-    desc = "When enabled, |T135826:0|t Explosive Trap will be suggested in single target scenarios as well as AoE.",
+    name = L["|T135826:0|t Suggest Explosive Trap on Single Target"],
+    desc = L["When enabled, |T135826:0|t Explosive Trap will be suggested in single target scenarios as well as AOE."],
     width = "full",
 } )
 
 spec:RegisterSetting( "manage_mana_viper", false, {
     type = "toggle",
-    name = "|T132160:0|t Swap to Aspect of the Viper for Mana",
-    desc = "When enabled, the profile will suggest swapping to |T132160:0|t Aspect of the Viper at low mana.",
+    name = L["|T132160:0|t Swap to Aspect of the Viper for Mana"],
+    desc = L["When enabled, the profile will suggest swapping to |T132160:0|t Aspect of the Viper at low mana."],
     width = "full",
 } )

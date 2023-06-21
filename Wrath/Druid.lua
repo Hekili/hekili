@@ -2,11 +2,14 @@ if UnitClassBase( 'player' ) ~= 'DRUID' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
 local currentBuild = select( 4, GetBuildInfo() )
 
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
 local round = ns.round
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 11 )
 
@@ -2634,8 +2637,8 @@ local bearweaving_instancetypes = {}
 
 spec:RegisterSetting("druid_description", nil, {
     type = "description",
-    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
-        "to determine the optimal values for these settings for your specific character."
+    name = L["Adjust the settings below according to your playstyle preference."] .. " "
+        .. L["It is always recommended that you use a simulator to determine the optimal values for these settings for your specific character."]
 })
 
 spec:RegisterSetting("druid_description_footer", nil, {
@@ -2645,20 +2648,20 @@ spec:RegisterSetting("druid_description_footer", nil, {
 
 spec:RegisterSetting("druid_feral_header", nil, {
     type = "header",
-    name = "Feral: General"
+    name = L["Feral: General"]
 })
 
 spec:RegisterSetting("druid_feral_description", nil, {
     type = "description",
-    name = "General Feral settings will change the parameters used in the core cat rotation.\n\n"
+    name = L["General Feral settings will change the parameters used in the core cat rotation."] .. "\n\n"
 })
 
 spec:RegisterSetting("min_roar_offset", 24, {
     type = "range",
-    name = "Minimum Roar Offset",
-    desc = "Sets the minimum number of seconds over the current rip duration required for Savage Roar recommendations.\n\n"..
-        "Recommendation:\n - 34 with T8-4PC\n - 24 without T8-4PC\n\n"..
-        "Default: 24",
+    name = L["Minimum Roar Offset"],
+    desc = L["Sets the minimum number of seconds over the current rip duration required for Savage Roar recommendations."] .. "\n\n"
+        .. L["Recommendation:\n - 34 with T8-4PC\n - 24 without T8-4PC"] .. "\n\n"
+        .. strformat( L["Default: %s"], "24" ),
     width = "full",
     min = 0,
     softMax = 42,
@@ -2670,13 +2673,13 @@ spec:RegisterSetting("min_roar_offset", 24, {
 
 spec:RegisterSetting("rip_leeway", 3, {
     type = "range",
-    name = "Rip Leeway",
-    desc = "Sets the leeway allowed when deciding whether to recommend clipping Savage Roar.\n\nThere are cases where Rip falls "..
-        "very shortly before Roar and, due to default priorities and player reaction time, Roar falls off before the player is able "..
-        "to utilize their combo points. This leads to Roar being cast instead and having to rebuild 5CP for Rip."..
-        "This setting helps address that by widening the rip/roar clipping window.\n\n"..
-        "Recommendation: 3\n\n"..
-        "Default: 3",
+    name = L["Rip Leeway"],
+    desc = L["Sets the leeway allowed when deciding whether to recommend clipping Savage Roar."] .. "\n\n"
+        .. L["There are cases where Rip falls very shortly before Roar and, due to default priorities and player reaction time, Roar falls off before the player is able to utilize their combo points."] .. " "
+        .. L["This leads to Roar being cast instead and having to rebuild 5CP for Rip."] .. " "
+        .. L["This setting helps address that by widening the rip/roar clipping window."] .. "\n\n"
+        .. strformat( L["Recommendation: %s"], "3" ) .. "\n\n"
+        .. strformat( L["Default: %s"], "3" ),
     width = "full",
     min = 1,
     softMax = 10,
@@ -2688,10 +2691,10 @@ spec:RegisterSetting("rip_leeway", 3, {
 
 spec:RegisterSetting("max_ff_energy", 15, {
     type = "range",
-    name = "Max Energy For Faerie Fire During Berserk",
-    desc = "Sets the energy allowed for Faerie Fire recommendations during Berserk.\n\n"..
-        "Recommendation: 15\n\n"..
-        "Default: 15",
+    name = L["Max Energy For Faerie Fire During Berserk"],
+    desc = L["Sets the energy allowed for Faerie Fire recommendations during Berserk."] .. "\n\n"
+        .. strformat( L["Recommendation: %s"], "15" ) .. "\n\n"
+        .. strformat( L["Default: %s"], "15" ),
     width = "full",
     min = 0,
     softMax = 100,
@@ -2703,10 +2706,10 @@ spec:RegisterSetting("max_ff_energy", 15, {
 
 spec:RegisterSetting("optimize_rake", false, {
     type = "toggle",
-    name = "Optimize Rake Enabled",
-    desc = "When enabled, rake will only be suggested if it will do more damage than shred or if there is no active bleed."..
-        "Recommendation: true if player stacks armor penetration\n\n"..
-        "Default: false",
+    name = L["Optimize Rake Enabled"],
+    desc = L["When enabled, rake will only be suggested if it will do more damage than shred or if there is no active bleed."] .. "\n\n"
+        .. strformat( L["Recommendation: %s"], L["DATATYPES_TRUE"] .. ", " .. L["if player stacks armor penetration"] ) .. "\n\n"
+        .. strformat( L["Default: %s"], L["DATATYPES_FALSE"] ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.optimize_rake = val
@@ -2720,18 +2723,18 @@ spec:RegisterSetting("druid_feral_footer", nil, {
 
 spec:RegisterSetting("druid_bite_header", nil, {
     type = "header",
-    name = "Feral: Ferocious Bite"
+    name = L["Feral: Ferocious Bite"]
 })
 
 spec:RegisterSetting("druid_bite_description", nil, {
     type = "description",
-    name = "Ferocious Bite Feral settings will change the parameters used when recommending ferocious bite.\n\n"
+    name = L["Ferocious Bite Feral settings will change the parameters used when recommending ferocious bite."] .. "\n\n"
 })
 
 spec:RegisterSetting("ferociousbite_enabled", true, {
     type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not ferocious bite should be used",
+    name = L["Enabled"],
+    desc = L["Select whether or not ferocious bite should be used"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.ferociousbite_enabled = val
@@ -2740,10 +2743,10 @@ spec:RegisterSetting("ferociousbite_enabled", true, {
 
 spec:RegisterSetting("min_bite_sr_remains", 4, {
     type = "range",
-    name = "Minimum Roar Remains For Bite",
-    desc = "Sets the minimum number of seconds left on Savage Roar when deciding whether to recommend Ferocious Bite.\n\n"..
-        "Recommendation: 4-8, depending on character gear level\n\n"..
-        "Default: 4",
+    name = L["Minimum Roar Remains For Bite"],
+    desc = L["Sets the minimum number of seconds left on Savage Roar when deciding whether to recommend Ferocious Bite."] .. "\n\n"
+        .. strformat( L["Recommendation: %s"], "4-8" ) .. ", " .. L["depending on character gear level"] .. "\n\n"
+        .. strformat( L["Default: %s"], "4" ),
     width = "full",
     min = 0,
     softMax = 14,
@@ -2755,10 +2758,10 @@ spec:RegisterSetting("min_bite_sr_remains", 4, {
 
 spec:RegisterSetting("min_bite_rip_remains", 4, {
     type = "range",
-    name = "Minimum Rip Remains For Bite",
-    desc = "Sets the minimum number of seconds left on Rip when deciding whether to recommend Ferocious Bite.\n\n"..
-        "Recommendation: 4-8, depending on character gear level\n\n"..
-        "Default: 4",
+    name = L["Minimum Rip Remains For Bite"],
+    desc = L["Sets the minimum number of seconds left on Rip when deciding whether to recommend Ferocious Bite."] .. "\n\n"
+        .. strformat( L["Recommendation: %s"], "4-8" ) .. ", " .. L["depending on character gear level"] .. "\n\n"
+        .. strformat( L["Default: %s"], "4" ),
     width = "full",
     min = 0,
     softMax = 14,
@@ -2770,11 +2773,11 @@ spec:RegisterSetting("min_bite_rip_remains", 4, {
 
 spec:RegisterSetting("max_bite_energy", 25, {
     type = "range",
-    name = "Maximum Energy Used For Bite During Berserk",
-    desc = "Sets the energy allowed for Ferocious Bite recommendations during Berserk. "..
-        "When Berserk is down, any energy level is allowed as long as Minimum Rip and Minimum Roar settings are satisfied.\n\n"..
-        "Recommendation: 25\n\n"..
-        "Default: 25",
+    name = L["Maximum Energy Used For Bite During Berserk"],
+    desc = L["Sets the energy allowed for Ferocious Bite recommendations during Berserk."] .. " "
+        .. L["When Berserk is down, any energy level is allowed as long as Minimum Rip and Minimum Roar settings are satisfied."] .. "\n\n"
+        .. strformat( L["Recommendation: %s"], "25" ) .. "\n\n"
+        .. strformat( L["Default: %s"], "25" ),
     width = "full",
     min = 18,
     softMax = 65,
@@ -2791,18 +2794,18 @@ spec:RegisterSetting("druid_bite_footer", nil, {
 
 spec:RegisterSetting("druid_flowerweaving_header", nil, {
     type = "header",
-    name = "Feral: Flowerweaving [Experimental]"
+    name = L["Feral: Flowerweaving [Experimental]"]
 })
 
 spec:RegisterSetting("druid_flowerweaving_description", nil, {
     type = "description",
-    name = "Flowerweaving Feral settings will change the parameters used when recommending flowerweaving abilities.\n\n"
+    name = L["Flowerweaving Feral settings will change the parameters used when recommending flowerweaving abilities."] .. "\n\n"
 })
 
 spec:RegisterSetting("flowerweaving_enabled", false, {
     type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not flowerweaving should be used",
+    name = L["Enabled"],
+    desc = L["Select whether or not flowerweaving should be used"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_enabled = val
@@ -2811,14 +2814,14 @@ spec:RegisterSetting("flowerweaving_enabled", false, {
 
 spec:RegisterSetting("flowerweaving_mode", "any", {
     type = "select",
-    name = "Situation",
-    desc = "Select the flowerweaving mode that determines when flowerweaving is recommended\n\n" ..
-        "Selecting AOE will recommend flowerweaving in only AOE situations. Selecting Any will recommend flowerweaving in any situation.\n\n",
+    name = L["Situation"],
+    desc = L["Select the flowerweaving mode that determines when flowerweaving is recommended"] .. "\n\n"
+        .. L["Selecting AOE will recommend flowerweaving in only AOE situations. Selecting Any will recommend flowerweaving in any situation."] .. "\n\n",
     width = "full",
     values = function()
         table.wipe(flowerweaving_modes)
-        flowerweaving_modes.any = "any"
-        flowerweaving_modes.dungeon = "aoe"
+        flowerweaving_modes.any = L["any"]
+        flowerweaving_modes.dungeon = L["aoe"]
         return flowerweaving_modes
     end,
     set = function( _, val )
@@ -2828,8 +2831,8 @@ spec:RegisterSetting("flowerweaving_mode", "any", {
 
 spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
     type = "range",
-    name = "Minimum Group Size",
-    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
+    name = L["Minimum Group Size"],
+    desc = L["Select the minimum number of players present in a group before flowerweaving will be recommended"],
     width = "full",
     min = 0,
     softMax = 40,
@@ -2841,8 +2844,8 @@ spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
 
 spec:RegisterSetting("min_weave_mana", 25, {
     type = "range",
-    name = "Minimum Flowershift Mana",
-    desc = "Sets the minimum allowable mana for flowershifting",
+    name = L["Minimum Flowershift Mana"],
+    desc = L["Sets the minimum allowable mana for flowershifting"],
     width = "full",
     min = 0,
     softMax = 100,
@@ -2859,18 +2862,18 @@ spec:RegisterSetting("druid_flowerweaving_footer", nil, {
 
 spec:RegisterSetting("druid_bearweaving_header", nil, {
     type = "header",
-    name = "Feral: Bearweaving [Experimental]"
+    name = L["Feral: Bearweaving [Experimental]"]
 })
 
 spec:RegisterSetting("druid_bearweaving_description", nil, {
     type = "description",
-    name = "Bearweaving Feral settings will change the parameters used when recommending bearshifting abilities.\n\n"
+    name = L["Bearweaving Feral settings will change the parameters used when recommending bearshifting abilities."] .. "\n\n"
 })
 
 spec:RegisterSetting("bearweaving_enabled", false, {
     type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not bearweaving should be used",
+    name = L["Enabled"],
+    desc = L["Select whether or not bearweaving should be used"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.bearweaving_enabled = val
@@ -2879,15 +2882,17 @@ spec:RegisterSetting("bearweaving_enabled", false, {
 
 spec:RegisterSetting("bearweaving_instancetype", "raid", {
     type = "select",
-    name = "Instance Type",
-    desc = "Select the type of instance that is required before the addon recomments your |cff00ccff[bear_lacerate]|r or |cff00ccff[bear_mangle]|r\n\n" ..
-        "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend bearweaving in any situation.\n\n",
+    name = L["Instance Type"],
+    desc = L["Select the type of instance that is required before the addon recomments your |cff00ccff[bear_lacerate]|r or |cff00ccff[bear_mangle]|r"] .. "\n\n"
+        .. L["Selecting party will work for a 5 person group or greater."] .. " "
+        .. L["Selecting raid will work for only 10 or 25 man groups."] .. " "
+        .. L["Selecting any will recommend bearweaving in any situation."] .. "\n\n",
     width = "full",
     values = function()
         table.wipe(bearweaving_instancetypes)
-        bearweaving_instancetypes.any = "any"
-        bearweaving_instancetypes.dungeon = "dungeon"
-        bearweaving_instancetypes.raid = "raid"
+        bearweaving_instancetypes.any = L["any"]
+        bearweaving_instancetypes.dungeon = L["dungeon"]
+        bearweaving_instancetypes.raid = L["raid"]
         return bearweaving_instancetypes
     end,
     set = function( _, val )
@@ -2897,8 +2902,8 @@ spec:RegisterSetting("bearweaving_instancetype", "raid", {
 
 spec:RegisterSetting("bearweaving_bossonly", true, {
     type = "toggle",
-    name = "Boss Only",
-    desc = "Select whether or not bearweaving should be used in only boss fights, or whether it can be recommended in any engagement",
+    name = L["Boss Only"],
+    desc = L["Select whether or not bearweaving should be used in only boss fights, or whether it can be recommended in any engagement"],
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.bearweaving_bossonly = val
@@ -2912,18 +2917,18 @@ spec:RegisterSetting("druid_bearweaving_footer", nil, {
 
 spec:RegisterSetting("druid_balance_header", nil, {
     type = "header",
-    name = "Balance: General"
+    name = L["Balance: General"]
 })
 
 spec:RegisterSetting("druid_balance_description", nil, {
     type = "description",
-    name = "General Balance settings will change the parameters used in the core balance rotation.\n\n"
+    name = L["General Balance settings will change the parameters used in the core balance rotation."] .. "\n\n"
 })
 
 spec:RegisterSetting("lunar_cooldown_leeway", 14, {
     type = "range",
-    name = "Cooldown Leeway",
-    desc = "Select the minimum amount of time left on lunar eclipse for consumable and cooldown recommendations",
+    name = L["Cooldown Leeway"],
+    desc = L["Select the minimum amount of time left on lunar eclipse for consumable and cooldown recommendations"],
     width = "full",
     min = 0,
     softMax = 15,
@@ -2941,18 +2946,18 @@ spec:RegisterSetting("druid_balance_footer", nil, {
 if (Hekili.Version:match( "^Dev" )) then
     spec:RegisterSetting("druid_debug_header", nil, {
         type = "header",
-        name = "Debug"
+        name = L["Debug"]
     })
 
     spec:RegisterSetting("druid_debug_description", nil, {
         type = "description",
-        name = "Settings used for testing\n\n"
+        name = L["Settings used for testing"] .. "\n\n"
     })
 
     spec:RegisterSetting("dummy_ttd", 300, {
         type = "range",
-        name = "Training Dummy Time To Die",
-        desc = "Select the time to die to report when targeting a training dummy",
+        name = L["Training Dummy Time To Die"],
+        desc = L["Select the time to die to report when targeting a training dummy"],
         width = "full",
         min = 0,
         softMax = 300,
@@ -2997,19 +3002,19 @@ spec:RegisterPack( "Feral Tank (IV)", 20230613, [[Hekili:vI1wpnoou4Fl8cIoW0nfOfw
 
 
 spec:RegisterPackSelector( "balance", "Balance (IV)", "|T136096:0|t Balance",
-    "If you have spent more points in |T136096:0|t Balance than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T136096:0|t Balance"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "feral_dps", "Feral DPS (IV)", "|T132115:0|t Feral DPS",
-    "If you have spent more points in |T132276:0|t Feral than in any other tree and have not taken Thick Hide, this priority will be automatically selected for you.",
+    L["If you have spent more points in |T132276:0|t Feral than in any other tree and have not taken Thick Hide, this priority will be automatically selected for you."],
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 ) and talent.thick_hide.rank == 0
     end )
 
 spec:RegisterPackSelector( "feral_tank", "Feral Tank (IV)", "|T132276:0|t Feral Tank",
-    "If you have spent more points in |T132276:0|t Feral than in any other tree and have taken Thick Hide, this priority will be automatically selected for you.",
+    L["If you have spent more points in |T132276:0|t Feral than in any other tree and have taken Thick Hide, this priority will be automatically selected for you."],
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 ) and talent.thick_hide.rank > 0
     end )

@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -152,7 +153,7 @@ ns.RegisterEvent = function( event, handler )
     Hekili:ProfileCPU( key, handler )
 
     local file, line = debugstack(2):match([[Hekili\(.-)"%]:(%d+): in main chunk]])
-    Hekili.EventSources[ key ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
+    Hekili.EventSources[ key ] = ( file or L["Unknown"] ) .. ":" .. ( line or 0 )
 end
 local RegisterEvent = ns.RegisterEvent
 
@@ -190,7 +191,7 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
     insert( unitFrame.events[ event ], handler )
 
     local file, line = debugstack(2):match([[Hekili\(.-)"%]:(%d+): in main chunk]])
-    Hekili.EventSources[ event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ] ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
+    Hekili.EventSources[ event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ] ] = ( file or L["Unknown"] ) .. ":" .. ( line or 0 )
 
     unitFrame:RegisterUnitEvent( event, unit1 )
     Hekili:ProfileCPU( event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ], handler )
@@ -208,7 +209,7 @@ ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
         unitFrame.events[ event ] = unitFrame.events[ event ] or {}
         insert( unitFrame.events[ event ], handler )
 
-        Hekili.EventSources[ event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ] ] = ( file or "Unknown" ) .. ":" .. ( line or 0 )
+        Hekili.EventSources[ event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ] ] = ( file or L["Unknown"] ) .. ":" .. ( line or 0 )
 
         unitFrame:RegisterUnitEvent( event, unit2 )
         Hekili:ProfileCPU( event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ], handler )
@@ -270,18 +271,18 @@ do
     local requeued = {}
 
     local HandleSpellData = function( event, spellID, success )
-    local callbacks = spellCallbacks[ spellID ]
+        local callbacks = spellCallbacks[ spellID ]
 
-    if callbacks then
-        for i = #callbacks, 1, -1 do
+        if callbacks then
+            for i = #callbacks, 1, -1 do
                 callbacks[i]( event, spellID, success )
                 remove( callbacks, i )
-        end
+            end
 
-        if #callbacks == 0 then
-            spellCallbacks[ spellID ] = nil
+            if #callbacks == 0 then
+                spellCallbacks[ spellID ] = nil
+            end
         end
-    end
 
         if spellCallbacks == nil or next( spellCallbacks ) == nil then
             UnregisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
@@ -290,37 +291,36 @@ do
         end
     end
 
-function Hekili:ContinueOnSpellLoad( spellID, func )
+    function Hekili:ContinueOnSpellLoad( spellID, func )
         if C_Spell.IsSpellDataCached( spellID ) then
-        func( true )
-        return
+            func( true )
+            return
         end
 
-    local callbacks = spellCallbacks[ spellID ] or {}
-    insert( callbacks, func )
-    spellCallbacks[ spellID ] = callbacks
+        local callbacks = spellCallbacks[ spellID ] or {}
+        insert( callbacks, func )
+        spellCallbacks[ spellID ] = callbacks
 
         if isUnregistered then
             RegisterEvent( "SPELL_DATA_LOAD_RESULT", HandleSpellData )
             isUnregistered = false
         end
 
-    C_Spell.RequestLoadSpellData( spellID )
-end
+        C_Spell.RequestLoadSpellData( spellID )
+    end
 
-function Hekili:RunSpellCallbacks()
-    for spell, callbacks in pairs( spellCallbacks ) do
-        for i = #callbacks, 1, -1 do
-            if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
-        end
+    function Hekili:RunSpellCallbacks()
+        for spell, callbacks in pairs( spellCallbacks ) do
+            for i = #callbacks, 1, -1 do
+                if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
+            end
 
-        if #callbacks == 0 then
-            spellCallbacks[ spell ] = nil
+            if #callbacks == 0 then
+                spellCallbacks[ spell ] = nil
+            end
         end
     end
 end
-end
-
 
 
 RegisterEvent( "DISPLAY_SIZE_CHANGED", function () Hekili:BuildUI() end )
@@ -436,7 +436,6 @@ end )
 
 
 function ns.updateTalents()
-
     for k, _ in pairs( state.talent ) do
         state.talent[ k ].enabled = false
     end
@@ -495,7 +494,7 @@ end )
 
 RegisterEvent( "ENCOUNTER_END", function ()
     state.encounterID = 0
-    state.encounterName = "None"
+    state.encounterName = L["None"]
     state.encounterDifficulty = 0
     state.encounterSize = 0
 end )
@@ -965,7 +964,6 @@ do
         end
 
         Hekili:UpdateUseItems()
-
         state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
 
         if not gearInitialized then
@@ -1190,7 +1188,7 @@ local lowLevelWarned = false
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( event, unit, _, spellID )
     if lowLevelWarned == false and UnitLevel( "player" ) < 50 then
-        Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
+        Hekili:Notify( L["Hekili is designed for current content.\nUse below level 50 at your own risk."], 5 )
         lowLevelWarned = true
     end
 
@@ -2293,7 +2291,6 @@ local function ReadOneKeybinding( event, slot )
                 if binding then StoreKeybindInfo( actionBarNumber, binding, action, aType ) end
             end
         end
-
     end
 
     if not completed then
@@ -2367,7 +2364,6 @@ end
 local function DelayedUpdateOneKeybinding( event, slot )
     C_Timer.After( 0.05, function() ReadOneKeybinding( event, slot ) end )
 end
-
 
 RegisterEvent( "UPDATE_BINDINGS", DelayedUpdateKeybindings )
 RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )

@@ -14,6 +14,7 @@
 	<Include file="Libs\LibSharedMedia-3.0\lib.xml"/>
 	<Include file="Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
 	<Include file="Libs\AceGUI-3.0_SFX-Widgets\AceGUI-3.0_SFX-Widgets.xml"/>
+	<Include file="Libs\AceLocale-3.0\AceLocale-3.0.xml"/>
 	<Script file="Libs\LibSpellRange-1.0\LibSpellRange-1.0.lua"/>
 	<Script file="Libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>
 	<Script file="Libs\LibCompress\LibCompress.lua"/>

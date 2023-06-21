@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 
 local class   = Hekili.Class
 local scripts = Hekili.Scripts
@@ -16,10 +17,10 @@ local orderedPairs = ns.orderedPairs
 local roundUp = ns.roundUp
 local safeMax = ns.safeMax
 
-local trim = string.trim
+local format, trim = string.format, string.trim
+local twipe, insert = table.wipe, table.insert
 
-local twipe = table.wipe
-
+local BlizzBlue = "|cFF00B4FF"
 
 -- Forgive the name, but this should properly replace ! characters with not, accounting for appropriate bracketing.
 -- Why so complex?  Because "! 0 > 1" converted to Lua is "not 0 > 1" which evaluates to "false > 1" -- not the goal.
@@ -518,7 +519,7 @@ do
         { "^!?raid_events%.([a-z0-9_]+)%.up$", "raid_events.%1.up"                    },
         { "^!?(pet%.[a-z0-9_]+)%.up$", "%1.remains"                                   },
         { "^!?(pet%.[a-z0-9_]+)%.active$", "%1.remains"                               },
-                                                                                      }
+    }
 
 
     -- Things that tick down.
@@ -701,7 +702,7 @@ do
         ["@"] = true
      }
 
-     local math_ops = {
+    local math_ops = {
         ["+"] = true,
         ["-"] = true,
         ["*"] = true,
@@ -716,38 +717,38 @@ do
         [">="] = true,
         [">?"] = true,
         ["<?"] = true,
-     }
+    }
 
-     local equality = {
-         ["="] = true,
-         ["!="] = true,
-         ["~="] = true,
-     }
+    local equality = {
+        ["="] = true,
+        ["!="] = true,
+        ["~="] = true,
+    }
 
-     local comp_ops = {
+    local comp_ops = {
         ["<"] = true,
         [">"] = true,
         ["?"] = true,
-     }
+    }
 
-     local bool_ops = {
-         ["|"] = true,
-         ["&"] = true,
-         ["!"] = true,
-     }
+    local bool_ops = {
+        ["|"] = true,
+        ["&"] = true,
+        ["!"] = true,
+    }
 
-     local funcs = {
-         ["floor"] = true,
-         ["ceil"] = true
-     }
+    local funcs = {
+        ["floor"] = true,
+        ["ceil"] = true
+    }
 
 
-     -- This is hideous.
+    -- This is hideous.
 
-     local esDepth = 0
-     local esString
+    local esDepth = 0
+    local esString
 
-     function scripts:EmulateSyntax( p, numeric )
+    function scripts:EmulateSyntax( p, numeric )
         if not p or type( p ) ~= "string" then return p end
 
         if esDepth == 0 then
@@ -781,67 +782,67 @@ do
         local orig = p
 
         while ( i <= maxlen ) do
-           local c = p:sub( i, i )
+            local c = p:sub( i, i )
 
-           if c == " " or c == "," then -- do nothing
-           elseif c == "(" then depth = depth + 1
-           elseif c == ")" and depth > 0 then
-              depth = depth - 1
+            if c == " " or c == "," then -- do nothing
+            elseif c == "(" then depth = depth + 1
+            elseif c == ")" and depth > 0 then
+                depth = depth - 1
 
-              if depth == 0 then
-                 local expr = p:sub( 1, i )
+                if depth == 0 then
+                    local expr = p:sub( 1, i )
 
-                 table.insert( results, {
-                       s = expr:trim(),
-                       t = "expr"
-                 } )
+                    table.insert( results, {
+                        s = expr:trim(),
+                        t = "expr"
+                    } )
 
-                 if expr:find( "[&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
+                    if expr:find( "[&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
 
-                 p = p:sub( i + 1 )
-                 i = 0
-                 depth = 0
-                 maxlen = p:len()
-              end
-           elseif depth == 0 and ops[c] then
-              if i > 1 then
-                 local expr = p:sub( 1, i - 1 )
+                    p = p:sub( i + 1 )
+                    i = 0
+                    depth = 0
+                    maxlen = p:len()
+                end
+            elseif depth == 0 and ops[c] then
+                if i > 1 then
+                    local expr = p:sub( 1, i - 1 )
 
-                 table.insert( results, {
-                       s = expr:trim(),
-                       t = "expr"
-                 } )
+                    table.insert( results, {
+                        s = expr:trim(),
+                        t = "expr"
+                    } )
 
-                 if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
-              end
+                    if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
+                end
 
-              c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~@][&%|%-%+*/><%?=%~]?)" )
+                c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~@][&%|%-%+*/><%?=%~]?)" )
 
-              table.insert( results, {
+                table.insert( results, {
                     s = c,
                     t = "op",
                     a = c:trim() --sub(1,1)
-              } )
+                } )
 
-              p = p:sub( i + c:len() )
-              i = 0
-              depth = 0
-              maxlen = p:len()
-           end
+                p = p:sub( i + c:len() )
+                i = 0
+                depth = 0
+                maxlen = p:len()
+            end
 
-           i = i + 1
+            i = i + 1
         end
 
         p = p:trim()
 
         if p:len() > 0 then
-           table.insert( results, {
-                 s = p:trim(),
-                 t = "expr",
-                 l = true
-           } )
+            table.insert( results, {
+                    s = p:trim(),
+                    t = "expr",
+                    l = true
+            } )
 
-           if p:find( "[!&%|%-%+/%%%*@]" ) ~= nil then results[#results].r = true end
+            if p:find( "[!&%|%-%+/%%%*@]" ) ~= nil then results[#results].r = true end
         end
 
         local output = ""
@@ -938,7 +939,7 @@ do
             end
 
             if trimmed_prefix then
-                    piece.s = trimmed_prefix .. piece.s
+                piece.s = trimmed_prefix .. piece.s
             end
 
             output = output .. piece.s
@@ -960,7 +961,7 @@ do
 
         esDepth = esDepth - 1
         return output
-     end
+    end
 end
 
 
@@ -1384,7 +1385,7 @@ function scripts:CheckScript( scriptID, action, elem )
     else
         if not script.Modifiers[ elem ] then
             state.this_action = prev_action
-            return nil, elem .. " not set."
+            return nil, format( L["%s not set."], elem )
 
         else
             local success, value = pcall( script.Modifiers[ elem ] )
@@ -1439,7 +1440,7 @@ function scripts:GetModifiers( scriptID, out )
 
     for k, v in pairs( script.Modifiers ) do
         local success, value = pcall(v)
-        if success then out[k] = value end
+        if success then out[ k ] = value end
     end
 
     return out
@@ -1742,8 +1743,11 @@ function scripts:ImplantDebugData( data )
     if data.hook then
         local s = self.DB[ data.hook ]
         local pack, list, entry = data.hook:match( "^(.-):(.-):(.-)$" )
+        local p = rawget( Hekili.DB.profile.packs, pack )
+        local packName = p.builtIn and BlizzBlue .. _L[ pack ] .. "|r" or _L[ pack ]
+        local listName = ( list == "precombat" or list == "default" ) and BlizzBlue .. _L[ list ] .. "|r" or _L[ list ]
 
-        data.HookHeader = "Called from " .. pack .. ", " .. list .. ", " .. "#" .. entry .. "."
+        data.HookHeader = format( L["Called from %s, %s, #%s."], packName, listName, entry )
         data.HookScript = s.SimC
         data.HookElements = data.HookElements or {}
 

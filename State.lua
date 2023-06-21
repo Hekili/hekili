@@ -3,6 +3,7 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L = LibStub("AceLocale-3.0"):GetLocale( addon )
 
 local auras = ns.auras
 
@@ -54,7 +55,7 @@ state.modified = false
 state.resetType = "heavy"
 
 state.encounterID = 0
-state.encounterName = "None"
+state.encounterName = L["None"]
 state.encounterDifficulty = 0
 
 state.aggro = false
@@ -138,15 +139,15 @@ state.player = {
     channel_spell = nil
 }
 state.prev = {
-    meta = 'castsAll',
+    meta = "castsAll",
     history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.prev_gcd = {
-    meta = 'castsOn',
+    meta = "castsOn",
     history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.prev_off_gcd = {
-    meta = 'castsOff',
+    meta = "castsOff",
     history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.predictions = {}
@@ -1241,7 +1242,6 @@ end
 -- See mt_state for 'isChanneling'.
 
 
-
 -- Spell Targets, so I don't have to convert it in APLs any more.
 -- This will also factor in target caps and TTD restrictions.
 state.spell_targets = setmetatable( {}, {
@@ -1768,8 +1768,8 @@ do
         expected_combat_length = 1,
         false_start = 1,
         fight_remains = 1,
-            interpolated_fight_remains = 1,
-            time_to_die = 1,
+        interpolated_fight_remains = 1,
+        time_to_die = 1,
         index = 1,
         longest_ttd = 1,
         now = 1,
@@ -1795,7 +1795,7 @@ do
         group_members = 1,
         level = 1,
         mounted = 1,
-            is_mounted = 1,
+        is_mounted = 1,
         moving = 1,
         raid = 1,
         solo = 1,
@@ -1810,17 +1810,17 @@ do
         my_enemies = 1,
         stationary_enemies = 1,
         true_active_enemies = 1,
-            true_stationary_enemies = 1,
+        true_stationary_enemies = 1,
         true_my_enemies = 1,
 
         -- Stats (that really come from state.stat )
         crit = 1,
-            attack_crit = 1,
-            spell_crit = 1,
+        attack_crit = 1,
+        spell_crit = 1,
         haste = 1,
-            spell_haste = 1,
+        spell_haste = 1,
         melee_haste = 1,
-            attack_haste = 1,
+        attack_haste = 1,
         mastery_value = 1,
 
         -- ???
@@ -1856,18 +1856,18 @@ do
         charges = 1,
         charges_fractional = 1,
         charges_max = 1,
-            max_charges = 1,
+        max_charges = 1,
         cooldown_react = 1,
-            cooldown_up = 1,
+        cooldown_up = 1,
         cost = 1,
         -- These two belong with ability data because individual abilities have modeled crit modifiers.
         crit_pct_current = 1,
-            crit_percent_current = 1,
+        crit_percent_current = 1,
         execute_remains = 1,
         execute_time = 1,
         executing = 1,
         full_recharge_time = 1,
-            time_to_max_charges = 1,
+        time_to_max_charges = 1,
         hardcast = 1,
         in_flight = 1,
         in_flight_remains = 1,
@@ -1884,7 +1884,7 @@ do
         tick_time = 1,
         tick_time_remains = 1,
         ticking = 1,
-            up = 1,
+        up = 1,
         ticks = 1,
         ticks_remain = 1,
         time_to_refresh = 1,
@@ -2220,7 +2220,6 @@ do
 
                 value = app and app[ k ]
                 if value ~= nil then return value end
-
 
                 -- This uses the default aura duration (if available) to keep pandemic windows accurate.
                 -- local duration = aura and aura.duration or 15
@@ -3226,9 +3225,9 @@ local mt_prev_lookup = {
         local preds, prev
         local action
 
-        if t.meta == 'castsAll' then preds, prev = state.predictions, state.prev
-        elseif t.meta == 'castsOn' then preds, prev = state.predictionsOn, state.prev_gcd
-        elseif t.meta == 'castsOff' then preds, prev = state.predictionsOff, state.prev_off_gcd end
+        if     t.meta == "castsAll" then preds, prev = state.predictions   , state.prev
+        elseif t.meta == "castsOn"  then preds, prev = state.predictionsOn , state.prev_gcd
+        elseif t.meta == "castsOff" then preds, prev = state.predictionsOff, state.prev_off_gcd end
 
         if k == "spell" then
             -- Return the actual spell for the slot, for lookups.
@@ -3847,7 +3846,7 @@ do
 
     local unknown_buff = setmetatable( {
         key = "unknown_buff",
-        name = "No Name",
+        name = L["No Name"],
         count = 0,
         lastCount = 0,
         lastApplied = 0,
@@ -4894,7 +4893,7 @@ do
                 debuff.unit = real.unit
 
             else
-                debuff.name = aura and aura.name or "No Name"
+                debuff.name = aura and aura.name or L["No Name"]
                 debuff.count = 0
                 debuff.lastCount = 0
                 debuff.lastApplied = 0
@@ -5810,9 +5809,7 @@ do
 
     function state:RemoveSpellEvents( action, real, eType )
         local queue = real and realQueue or virtualQueue
-
         local success = false
-
         local impactSpells = class.abilities[ action ] and class.abilities[ action ].impactSpells
 
         for i = #queue, 1, -1 do
@@ -6331,9 +6328,7 @@ do
         end
 
         Hekili:Yield( "Reset Pre-Cast Hook" )
-
         ns.callHook( "reset_precast" )
-
         Hekili:Yield( "Reset Pre-Casting" )
 
         -- TODO: All of this cast-queuing seems like it should be simpler, but that's for another time.
@@ -6715,7 +6710,7 @@ do
 
         if ability then
             state.holds[ ability.key ] = combat and HOLD_COMBAT or HOLD_PERMANENT
-            if verbose then Hekili:Print( class.abilities[ ability.key ].name .. " placed on hold" .. ( combat and " until end of combat." or "." ) ) end
+            if verbose then Hekili:Print( format( combat and L["%s placed on hold until end of combat."] or L["%s placed on hold."], class.abilities[ ability.key ].name ) ) end
             Hekili:ForceUpdate( "HEKILI_HOLD_APPLIED" )
         end
     end
@@ -6740,7 +6735,7 @@ do
 
         if ability and state.holds[ ability.key ] then
             state.holds[ ability.key ] = nil
-            if verbose then Hekili:Print( class.abilities[ ability.key ].name .. " hold removed." ) end
+            if verbose then Hekili:Print( format( L["%s hold removed."], class.abilities[ ability.key ].name ) ) end
             Hekili:ForceUpdate( "HEKILI_HOLD_REMOVED" )
         end
     end

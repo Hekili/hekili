@@ -2,7 +2,10 @@ if UnitClassBase( 'player' ) ~= 'SHAMAN' then return end
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local L, _L = LibStub("AceLocale-3.0"):GetLocale( addon ), ns._L
 local class, state = Hekili.Class, Hekili.State
+
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 7 )
 
@@ -2563,9 +2566,9 @@ spec:RegisterAbilities( {
 
 spec:RegisterSetting( "st_cl_mana_threshold", 80, {
     type = "range",
-    name = "|T136015:0|t Single-Target Chain Lightning Mana %",
-    desc = "When below the specified mana percentage, the default priority will not recommend |T136015:0|t Chain Lightning in single-target.\n\n"
-        .. "If |T237589:0|t Thunderstorm is known, the default priority may recommend using it to regenerate mana below this threshold.",
+    name = L["Single-Target |T136015:0|t Chain Lightning Mana %"],
+    desc = L["When below the specified mana percentage, the default priority will not recommend |T136015:0|t Chain Lightning in single-target."] .. "\n\n"
+        .. L["If |T237589:0|t Thunderstorm is known, the default priority may recommend using it to regenerate mana below this threshold."],
     min = 0,
     max = 100,
     step = 1,
@@ -2574,8 +2577,8 @@ spec:RegisterSetting( "st_cl_mana_threshold", 80, {
 
 spec:RegisterSetting( "shaman_rage_threshold", 60, {
     type = "range",
-    name = "|T136088:0|t Shamanistic Rage Threshold",
-    desc = "When below the specified mana percentage, the addon may recommend using Shamanistic Rage to regenerate mana.",
+    name = L["|T136088:0|t Shamanistic Rage Threshold"],
+    desc = L["When below the specified mana percentage, the addon may recommend using Shamanistic Rage to regenerate mana."],
     min = 0,
     max = 100,
     step = 1,
@@ -2584,8 +2587,8 @@ spec:RegisterSetting( "shaman_rage_threshold", 60, {
 
 spec:RegisterSetting("maelstrom_weapon_stack_limit", 3, {
     type = "range",
-    name = "Minimum Maelstrom Weapon Stacks",
-    desc = "Sets the minimum number of Maelstrom Weapon stacks before recommending the player cast a spell",
+    name = L["Minimum Maelstrom Weapon Stacks"],
+    desc = L["Sets the minimum number of Maelstrom Weapon stacks before recommending the player cast a spell"],
     width = "full",
     min = 1,
     max = 5,
@@ -2620,19 +2623,19 @@ spec:RegisterPack( "Enhancement (IV)", 20230123, [[Hekili:TNvFVTTnt8plffiyRPvZYo
 
 
 spec:RegisterPackSelector( "elemental", "Elemental / Resto DPS (IV)", "|T136048:0|t Elemental",
-    "If you have spent more points in |T136048:0|t Elemental than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T136048:0|t Elemental"] ),
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
 spec:RegisterPackSelector( "enhancement", "Enhancement (IV)", "|T136051:0|t Enhancement",
-    "If you have spent more points in |T136051:0|t Enhancement than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T136051:0|t Enhancement"] ),
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "restoration", "Elemental / Resto DPS (IV)", "|T136052:0|t Restoration",
-    "If you have spent more points in |T136052:0|t Restoration than in any other tree, this priority will be automatically selected for you.",
+    strformat( L["If you have spent more points in %s than in any other tree, this priority will be automatically selected for you."], _L["|T136052:0|t Restoration"] ),
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
     end )
