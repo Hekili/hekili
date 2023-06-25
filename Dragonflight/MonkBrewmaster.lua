@@ -188,6 +188,12 @@ spec:RegisterAuras( {
     celestial_fortune = {
         id = 216519,
     },
+    charred_passions = {
+        id = 386963,
+        duration = 8,
+        max_stack = 1,
+        copy = 338140 -- legendary
+    },
     -- Increases the damage done by your next Chi Explosion by $s1%.    Chi Explosion is triggered whenever you use Spinning Crane Kick.
     -- https://wowhead.com/beta/spell=393057
     chi_energy = {
@@ -507,11 +513,6 @@ spec:RegisterAuras( {
     },
 
     -- Legendaries
-    charred_passions = {
-        id = 338140,
-        duration = 8,
-        max_stack = 1
-    },
     mighty_pour = {
         id = 337994,
         duration = 8,
