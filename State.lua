@@ -1148,6 +1148,7 @@ local function summonPet( name, duration, spec )
     state.pet[ name ] = rawget( state.pet, name ) or {}
     state.pet[ name ].name = name
     state.pet[ name ].expires = state.query_time + ( duration or 3600 )
+    state.pet[ name ].virtual = true
 
     if class.pets[ name ] then
         state.pet[ name ].id = id
@@ -2443,7 +2444,8 @@ do
         summonTime = 1,
         id = 1,
         spec = 1,
-        alive = 1
+        alive = 1,
+        virtual = 1
     }
 
     -- Table of default handlers for specific pets/totems.
@@ -2488,9 +2490,9 @@ do
                 return max( 0, t.expires - ( state.query_time ) )
 
             elseif k == "up" or k == "active" or k == "alive" or k == "exists" then
-                if t.expires == 0 then return false end
+                if t.remains == 0 then return false end
 
-                if t.name and class.pets[ t.name ] then
+                if not t.virtual and t.name and class.pets[ t.name ] then
                     -- This is a real pet.
                     local petguid = UnitGUID( "pet" )
                     if not petguid then return false end
@@ -2505,7 +2507,6 @@ do
                     return false
                 end
 
-                -- TODO:  Need to make pet.alive work here.
                 return ( t.expires >= ( state.query_time ) )
 
             elseif k == "down" then
@@ -6301,36 +6302,6 @@ do
         if class.abilities[ "ascendance" ] and state.buff.ascendance.up then
             setCooldown( "ascendance", state.buff.ascendance.remains + 165 )
         end
-
-        -- Trinkets that need special handling.
-        if state.set_bonus.cache_of_acquired_treasures > 0 then
-            -- This required changing how buffs are tracked (that applied time is greater than the query time, which was always just expected to be true before).
-            -- If this remains problematic, use QueueAuraExpiration instead.
-            if state.buff.acquired_sword.up then
-                state.applyBuff( "acquired_axe" )
-                state.buff.acquired_axe.expires = state.buff.acquired_sword.expires + 12
-                state.buff.acquired_axe.applied = state.buff.acquired_sword.expires
-                state.applyBuff( "acquired_wand" )
-                state.buff.acquired_wand.expires = state.buff.acquired_axe.expires + 12
-                state.buff.acquired_wand.applied = state.buff.acquired_axe.expires
-            elseif state.buff.acquired_axe.up then
-                state.applyBuff( "acquired_wand" )
-                state.buff.acquired_wand.expires = state.buff.acquired_axe.expires + 12
-                state.buff.acquired_wand.applied = state.buff.acquired_axe.expires
-                state.applyBuff( "acquired_sword" )
-                state.buff.acquired_sword.expires = state.buff.acquired_wand.expires + 12
-                state.buff.acquired_sword.applied = state.buff.acquired_wand.expires
-            elseif state.buff.acquired_wand.up then
-                state.applyBuff( "acquired_sword" )
-                state.buff.acquired_sword.expires = state.buff.acquired_wand.expires + 12
-                state.buff.acquired_sword.applied = state.buff.acquired_wand.expires
-                state.applyBuff( "acquired_axe" )
-                state.buff.acquired_axe.expires = state.buff.acquired_sword.expires + 12
-                state.buff.acquired_axe.applied = state.buff.acquired_sword.expires
-            end
-        end
-
-        Hekili:Yield( "Reset Pre-Cast Hook" )
 
         ns.callHook( "reset_precast" )
 
