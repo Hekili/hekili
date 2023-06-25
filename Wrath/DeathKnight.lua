@@ -720,6 +720,23 @@ spec:RegisterAuras( {
         duration = 30,
         tick_time = 3,
         max_stack = 1,
+        generate = function ( t )
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 63560 )
+
+            if name then
+                t.name = name
+                t.count = 1
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
     },
     -- Stunned.
     glyph_of_death_grip = {
@@ -812,6 +829,11 @@ spec:RegisterAuras( {
     unbreakable_armor = {
         id = 51271,
         duration = 20,
+        max_stack = 1,
+    },
+    unholy_blight = {
+        id = 49222,
+        duration = 10,
         max_stack = 1,
     },
     -- Enraged.  Physical damage increased by $s1%.  Health equal to $s2% of maximum health lost every sec.
@@ -1428,7 +1450,10 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132152,
 
-        usable = function() return pet.ghoul.active, "require a living ghoul" end,
+        usable = function()
+            if pet.ghoul.down then return false, "requires a living ghoul" end
+            return true
+        end,
 
         handler = function ()
             applyBuff( "ghoul_frenzy" )
