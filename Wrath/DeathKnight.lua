@@ -832,6 +832,12 @@ spec:RegisterAuras( {
         duration = function() return glyph.vampiric_blood.enabled and 15 or 10 end,
         max_stack = 1,
     },
+    -- Increases strength by 200 for 20 sec.
+    unholy_force = {
+        id = 67383,
+        duration = 20,
+        max_stack = 1,
+    },
 
     -- Death Runes
     death_rune_1 = {
