@@ -1,6 +1,6 @@
 actions.precombat+=/fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet,if=!pet.alive&!buff.grimoire_of_sacrifice.up
-actions.precombat+=/variable,name=tyrant_prep_start,op=set,value=12
+actions.precombat+=/variable,name=tyrant_prep_start,op=set,value=10
 actions.precombat+=/variable,name=first_tyrant,op=set,value=14+talent.summon_vilefiend+talent.grimoire_felguard
 actions.precombat+=/power_siphon,if=buff.wild_imps.stack>1&buff.demonic_core.stack<3
 actions.precombat+=/demonbolt,if=soul_shard<5&(boss|cast_time=0)
@@ -11,16 +11,16 @@ actions+=/devour_magic
 actions+=/variable,name=tyrant_padding,op=set,value=action.summon_demonic_tyrant.cast_time*2+1
 actions+=/variable,name=np_condition,op=set,value=cooldown.nether_portal.up|buff.nether_portal.up|pet.pit_lord.active|!talent.nether_portal|cooldown.nether_portal.remains>30
 actions+=/call_action_list,name=tyrant,if=talent.summon_demonic_tyrant&cooldown.summon_demonic_tyrant.remains_expected<variable.tyrant_prep_start&(boss|fight_remains>cooldown.summon_demonic_tyrant.remains_expected)
-## actions+=/invoke_external_buff,name=power_infusion,if=!talent.nether_portal&!talent.summon_demonic_tyrant|boss&time_to_die<25
-actions+=/implosion,if=boss&time_to_die<2*gcd
-actions+=/nether_portal,if=!talent.summon_demonic_tyrant&soul_shard>2|boss&time_to_die<30
+## actions+=/invoke_external_buff,name=power_infusion,if=!talent.nether_portal&!talent.summon_demonic_tyrant|boss&fight_remains<25
+actions+=/implosion,if=boss&fight_remains<2*gcd
+actions+=/nether_portal,if=!talent.summon_demonic_tyrant&soul_shard>2|boss&fight_remains<30
 actions+=/call_action_list,name=items
 actions+=/call_action_list,name=ogcd,if=buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal)
 actions+=/hand_of_guldan,if=buff.nether_portal.remains>cast_time
-actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains_expected>cooldown
-actions+=/call_dreadstalkers,if=!talent.summon_demonic_tyrant|time_to_die<14
-actions+=/grimoire_felguard,if=!talent.summon_demonic_tyrant|boss&time_to_die<cooldown.summon_demonic_tyrant.remains_expected
-actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>cooldown|boss&time_to_die<cooldown.summon_demonic_tyrant.remains_expected
+actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains_expected>cooldown+8
+actions+=/call_dreadstalkers,if=!talent.summon_demonic_tyrant|fight_remains<14
+actions+=/grimoire_felguard,if=!talent.summon_demonic_tyrant|boss&fight_remains<cooldown.summon_demonic_tyrant.remains_expected
+actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>cooldown+variable.tyrant_prep_start|boss&fight_remains<cooldown.summon_demonic_tyrant.remains_expected
 actions+=/guillotine,if=cooldown.demonic_strength.remains|!talent.demonic_strength
 actions+=/demonic_strength
 actions+=/bilescourge_bombers,if=!pet.demonic_tyrant.active
@@ -53,12 +53,6 @@ actions.ogcd+=/blood_fury
 actions.ogcd+=/fireblood
 
 actions.tyrant=variable,name=tyrant_window_ends,op=setif,value=cooldown.summon_demonic_tyrant.remains_expected,value_else=variable.first_tyrant-time-variable.tyrant_padding,condition=time>variable.first_tyrant
-## These are currently optimal for Patchwerk and HAC in SimC, but can be simplified in the addon using major_demon_remains.
-## actions.tyrant+=/variable,name=lowest_demon_remains,op=setif,value=buff.dreadstalkers.remains,value_else=100,condition=buff.dreadstalkers.up
-## actions.tyrant+=/variable,name=lowest_demon_remains,op=min,value=buff.vilefiend.remains,if=buff.vilefiend.up&buff.vilefiend.remains<variable.lowest_demon_remains
-## actions.tyrant+=/variable,name=lowest_demon_remains,op=min,value=buff.grimoire_felguard.remains,if=buff.grimoire_felguard.up&buff.grimoire_felguard.remains<variable.lowest_demon_remains
-## actions.tyrant+=/variable,name=lowest_demon_remains,op=min,value=buff.nether_portal.remains,if=buff.nether_portal.up&buff.nether_portal.remains<variable.lowest_demon_remains
-## actions.tyrant+=/variable,name=tyrant_window_ends,op=set,value=variable.lowest_demon_remains-variable.tyrant_padding,if=time>variable.first_tyrant&variable.lowest_demon_remains<100&variable.lowest_demon_remains-variable.tyrant_padding>variable.tyrant_window_ends
 actions.tyrant+=/variable,name=tyrant_window_ends,op=set,value=major_demon_remains-variable.tyrant_padding,if=major_demon_remains-variable.tyrant_padding>variable.tyrant_window_ends
 actions.tyrant+=/variable,name=tyrant_window_ends,op=max,value=cooldown.call_dreadstalkers.remains+action.call_dreadstalkers.cast_time+12-variable.tyrant_padding,if=buff.dreadstalkers.down
 actions.tyrant+=/power_siphon,if=buff.wild_imps.stack>1&!buff.nether_portal.up&buff.demonic_core.stack<3
@@ -72,6 +66,5 @@ actions.tyrant+=/summon_demonic_tyrant,if=variable.tyrant_window_ends<=action.ha
 actions.tyrant+=/hand_of_guldan,if=variable.tyrant_window_ends>cast_time&(buff.nether_portal.up|soul_shard>2&variable.tyrant_window_ends>0|soul_shard=5)&!cooldown.call_dreadstalkers.up
 actions.tyrant+=/hand_of_guldan,if=talent.soulbound_tyrant&buff.dreadstalkers.up&variable.tyrant_window_ends<action.shadow_bolt.cast_time
 actions.tyrant+=/demonbolt,if=buff.demonic_core.up
-actions.tyrant+=/power_siphon,if=buff.wild_imps.stack>1&!buff.nether_portal.up
 actions.tyrant+=/soul_strike
 actions.tyrant+=/shadow_bolt
