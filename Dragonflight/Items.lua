@@ -1757,6 +1757,14 @@ all:RegisterAbilities( {
 
         handler = function()
         end,
+
+        auras = {
+            seething_rage = {
+                id = 408835,
+                duration = 10,
+                max_stack = 1
+            }
+        }
     },
 
     shadowed_razing_annihilator = {
