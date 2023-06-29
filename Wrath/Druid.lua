@@ -345,6 +345,16 @@ spec:RegisterStateExpr("can_spend_ff", function()
     return num_shreds_with_ff > num_shreds_without_ff
 end)
 
+spec:RegisterStateExpr("wait_for_ff", function()
+    local next_ff_energy = energy.current + 10 * (cooldown.faerie_fire_feral.remains + latency)
+    local ff_energy_threshold = buff.berserk.up and settings.max_ff_energy or 87
+    return ff_procs_ooc and
+        cooldown.faerie_fire_feral.remains < 1.0 - settings.max_ff_delay
+        and (next_ff_energy < ff_energy_threshold)
+        and (not buff.clearcasting.up)
+        and ((not debuff.rip.up) or (debuff.rip.remains > 1.0))
+end)
+
 spec:RegisterStateExpr("should_flowerweave", function()
     local furor_cap = min(20 * talent.furor.rank, 85)
     local rip_refresh_pending = debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - end_thresh
@@ -2684,6 +2694,21 @@ spec:RegisterSetting("rip_leeway", 3, {
     step = 0.1,
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.rip_leeway = val
+    end
+})
+
+spec:RegisterSetting("max_ff_delay", 0.1, {
+    type = "range",
+    name = "Max FF Delay",
+    desc = "Max allowed delay to wait for FF to come off CD in seconds.\n\n"..
+        "Recommendation:\n - 0.07 in P2 BiS\n - 0.10 in P3 BiS\n\n"..
+        "Default: 0.1",
+    width = "full",
+    min = 0,
+    softMax = 1,
+    step = 0.01,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.max_ff_delay = val
     end
 })
 
