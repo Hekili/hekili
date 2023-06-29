@@ -1,5 +1,5 @@
 ## Demonology Warlock
-## 27 Feb 2023
+## 25 June 2023
 
 actions.precombat+=/fel_armor,if=buff.armor.down
 actions.precombat+=/summon_felguard,if=!pet.active
@@ -23,7 +23,7 @@ actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1
 actions+=/shadow_bolt,if=talent.improved_shadow_bolt.enabled&debuff.shadow_mastery.remains<cast_time+2
 actions+=/life_tap,if=glyph.life_tap.enabled&buff.life_tap.down
 actions+=/metamorphosis
-actions+=/soul_fire,if=talent.decimation.enabled&target.health.pct<35&target.time_to_die>cast_time
+actions+=/soul_fire,if=buff.decimation.up&target.time_to_die>cast_time
 actions+=/incinerate,if=buff.molten_core.up
 actions+=/shadow_bolt
 
