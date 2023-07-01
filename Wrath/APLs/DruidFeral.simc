@@ -22,11 +22,11 @@ actions.cat+=/savage_roar,if=debuff.rip.up&buff.savage_roar.up&!buff.clearcastin
 actions.cat+=/shred,if=buff.clearcasting.up&debuff.bleed.up
 actions.cat+=/rip,if=rip_now
 actions.cat+=/mangle_cat,if=buff.clearcasting.up&!debuff.mangle.up
-actions.cat+=/rake,if=buff.clearcasting.up&!debuff.bleed.up&ttd>=debuff.rake.duration
+actions.cat+=/rake,if=buff.clearcasting.up&!debuff.bleed.up&ttd>=10
 actions.cat+=/ferocious_bite,if=settings.ferociousbite_enabled&energy.current<67&!buff.clearcasting.up&(bite_at_end|bite_before_rip)&(!buff.berserk.up|bite_during_berserk)
 actions.cat+=/faerie_fire_feral,if=!glyph.omen_of_clarity.enabled&!debuff.armor_reduction.up&energy.current<=90
 actions.cat+=/mangle_cat,if=!debuff.mangle.up&(combo_points.current<5|energy.current-action.mangle_cat.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.mangle_cat.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&!wait_for_ff
-actions.cat+=/rake,if=!up&(combo_points.current<5|energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.rake.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.rake.spend+debuff.mangle.remains*10>=action.mangle_cat.spend)&(should_rake|!debuff.bleed.up)&ttd>=debuff.rake.duration&!wait_for_ff
+actions.cat+=/rake,if=!up&(combo_points.current<5|energy.current-action.rake.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.rake.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.rake.spend+debuff.mangle.remains*10>=action.mangle_cat.spend)&(should_rake|!debuff.bleed.up)&ttd>=10&!wait_for_ff
 actions.cat+=/dire_bear_form,if=should_bearweave
 actions.cat+=/gift_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
 actions.cat+=/shred,if=((combo_points.current<5|energy.current-action.shred.spend+debuff.rip.remains*10>=action.rip.spend)&(combo_points.current=0|energy.current-action.shred.spend+buff.savage_roar.remains*10>=action.savage_roar.spend)&(energy.current-action.shred.spend+debuff.mangle.remains*10>=action.mangle_cat.spend))&!wait_for_ff
