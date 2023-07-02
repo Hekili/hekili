@@ -5455,7 +5455,12 @@ do
     Hekili.StoreMatchingAuras = state.StoreMatchingAuras
 
 
-    function state.ScrapeUnitAuras( unit, newTarget, why )
+    function state.ScrapeUnitAuras( realunit, newTarget, why )
+        local unit = realunit
+        if unit == "softenemy" then
+            unit = "target"
+        end
+
         local db = ns.auras[ unit ]
 
         for k,v in pairs( db.buff ) do
@@ -5495,11 +5500,11 @@ do
         end
 
         state[ unit ].updated = false
-        if not UnitExists( unit ) then return end
+        if not UnitExists( realunit ) then return end
 
         local i = 1
         while ( true ) do
-            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( realunit, i )
             if not name then break end
 
             local aura = class.auras[ spellID ]
@@ -5540,7 +5545,7 @@ do
         i = 1
         while ( true ) do
 
-            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( realunit, i )
             if not name then break end
 
             local aura = class.auras[ spellID ]
@@ -5621,7 +5626,7 @@ do
 
             i = 1
             while ( true ) do
-                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "MAW" )
+                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( realunit, i, "MAW" )
                 if not name then break end
 
                 local aura = class.auras[ spellID ]
@@ -6275,7 +6280,7 @@ do
         Hekili:Yield( "Reset Pre-Auras" )
 
         if state.target.updated then
-            ScrapeUnitAuras( "target" )
+            ScrapeUnitAuras( "softenemy" )
             state.target.updated = false
         end
 
