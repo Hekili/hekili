@@ -2475,6 +2475,7 @@ spec:RegisterSetting( "pwave_targets", 0, {
     get = function()
         return Hekili.DB.profile.specs[ 263 ].abilities.primordial_wave.targetMin or 0
     end,
+    width = "full"
 } )
 
 spec:RegisterSetting( "filler_shock", true, {
