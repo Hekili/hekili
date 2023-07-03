@@ -78,8 +78,8 @@ actions.aoe+=/crash_lightning,if=talent.crashing_storms.enabled&((talent.unruly_
 actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock>=active_enemies|active_dot.flame_shock>=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd)
 actions.aoe+=/lava_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
-# In game, you might not have Primordial Wave ready on pull but you want Flame Shock out for LL, FN, and PWave when it comes available.
-actions.aoe+=/flame_shock,if=(talent.primordial_wave.enabled|talent.fire_nova.enabled)&active_dot.flame_shock=0
+# In game, you might not have Primordial Wave ready on pull but you want Flame Shock out for LL, FN, and PWave when it comes available.  Also, existing Flame Shocks may not be close enough to spread.
+actions.aoe+=/flame_shock,if=(talent.primordial_wave.enabled|talent.fire_nova.enabled)&!ticking
 actions.aoe+=/elemental_blast,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|buff.feral_spirit.up)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
 actions.aoe+=/windstrike,if=talent.thorims_invocation.enabled&ti_chain_lightning&buff.maelstrom_weapon.stack>1
 actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
