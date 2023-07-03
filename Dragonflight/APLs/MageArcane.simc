@@ -16,7 +16,7 @@ actions=counterspell
 actions+=/potion,if=cooldown.arcane_surge.ready
 # This is a backup measure in case you fail to pre-evocate with Siphon Storm.
 actions+=/evocation,if=talent.siphon_storm&time<10&cooldown.arcane_surge.remains<5
-actions+=/time_warp,if=talent.temporal_warp&buff.exhaustion.up&(cooldown.arcane_surge.ready|fight_remains<=40|buff.arcane_surge.up&fight_remains<=80)
+actions+=/time_warp,if=talent.temporal_warp&debuff.sated.up&(cooldown.arcane_surge.ready|fight_remains<=40|buff.arcane_surge.up&fight_remains<=80)
 actions+=/lights_judgment,if=buff.arcane_surge.down&buff.rune_of_power.down&debuff.touch_of_the_magi.down
 actions+=/bag_of_tricks,if=buff.arcane_surge.down&buff.rune_of_power.down&debuff.touch_of_the_magi.down
 actions+=/berserking,if=(prev_gcd.1.arcane_surge&!(buff.temporal_warp.up&buff.bloodlust.up))|(buff.arcane_surge.up&debuff.touch_of_the_magi.up)

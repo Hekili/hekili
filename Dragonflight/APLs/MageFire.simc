@@ -8,7 +8,7 @@ actions.precombat+=/pyroblast
 # Executed every time the actor is available.
 actions=counterspell,if=!runeforge.disciplinary_command
 # The second Time Warp is usually best used immediately on pull with Temporal Warp so that it comes off cooldown earlier; this can sometimes be slightly worse if doing so will not result in additional Time Warp(s) throughout the encounter. Additionally, it should always be used at the end of the fight regardless of Combustion being ready if it is available.
-actions+=/time_warp,if=talent.temporal_warp&(buff.exhaustion.up|interpolated_fight_remains<buff.bloodlust.duration)
+actions+=/time_warp,if=talent.temporal_warp&(debuff.sated.up|interpolated_fight_remains<buff.bloodlust.duration)
 actions+=/potion,if=buff.potion.duration>variable.time_to_combustion+buff.combustion.duration
 actions+=/use_item,effect_name=gladiators_badge,if=variable.time_to_combustion>cooldown-5
 actions+=/use_item,name=empyreal_ordnance,if=variable.time_to_combustion<=variable.empyreal_ordnance_delay&variable.time_to_combustion>variable.empyreal_ordnance_delay-5
