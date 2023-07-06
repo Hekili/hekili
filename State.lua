@@ -36,9 +36,6 @@ local unknown_buff, unknown_debuff
 -- This will be our environment table for local functions.
 local state = Hekili.State
 
-
-state.iteration = 0
-
 local PTR = ns.PTR
 state.PTR = PTR
 state.ptr = PTR and 1 or 0

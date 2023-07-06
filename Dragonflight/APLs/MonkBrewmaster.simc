@@ -46,7 +46,7 @@ actions+=/call_action_list,name=rotation_fallback,strict=1,if=!talent.salsalabim
 actions.cooldowns_niuzao_woo+=/weapons_of_order
 actions.cooldowns_niuzao_woo+=/bonedust_brew,if=!buff.bonedust_brew.up&debuff.weapons_of_order_debuff.stack>3
 actions.cooldowns_niuzao_woo+=/bonedust_brew,if=!buff.bonedust_brew.up&!buff.weapons_of_order.up&cooldown.weapons_of_order.remains>10
-actions.cooldowns_niuzao_woo+=/exploding_keg,if=buff.bonedust_brew.up
+actions.cooldowns_niuzao_woo+=/exploding_keg,if=buff.bonedust_brew.up|!talent.bonedust_brew
 actions.cooldowns_niuzao_woo+=/invoke_niuzao_the_black_ox,if=buff.weapons_of_order.remains<=16&talent.weapons_of_order.enabled
 actions.cooldowns_niuzao_woo+=/invoke_niuzao_the_black_ox,if=!talent.weapons_of_order.enabled
 ## actions.cooldowns_niuzao_woo+=/purifying_brew,if=stagger.amounttototalpct>=0.7&!buff.blackout_combo.up
@@ -61,7 +61,7 @@ actions.cooldowns_niuzao_woo+=/invoke_niuzao_the_black_ox,if=!talent.weapons_of_
 actions.cooldowns_improved_niuzao_woo+=/weapons_of_order
 actions.cooldowns_improved_niuzao_woo+=/bonedust_brew,if=!buff.bonedust_brew.up&debuff.weapons_of_order_debuff.stack>3
 actions.cooldowns_improved_niuzao_woo+=/bonedust_brew,if=!buff.bonedust_brew.up&!buff.weapons_of_order.up&cooldown.weapons_of_order.remains>10
-actions.cooldowns_improved_niuzao_woo+=/exploding_keg,if=buff.bonedust_brew.up
+actions.cooldowns_improved_niuzao_woo+=/exploding_keg,if=buff.bonedust_brew.up|!talent.bonedust_brew
 ## actions.cooldowns_improved_niuzao_woo+=/purifying_brew,if=cooldown.invoke_niuzao_the_black_ox.remains<=3.5&time-action.purifying_brew.last_used>=3.5+cooldown.invoke_niuzao_the_black_ox.remains
 actions.cooldowns_improved_niuzao_woo+=/invoke_niuzao_the_black_ox,if=time-action.purifying_brew.last_used<=5
 ## actions.cooldowns_improved_niuzao_woo+=/purifying_brew,if=cooldown.purifying_brew.full_recharge_time*2<=cooldown.invoke_niuzao_the_black_ox.remains-3.5
@@ -78,7 +78,7 @@ actions.cooldowns_improved_niuzao_woo+=/invoke_niuzao_the_black_ox,if=time-actio
 actions.cooldowns_improved_niuzao_cta+=/weapons_of_order
 actions.cooldowns_improved_niuzao_cta+=/bonedust_brew,if=!buff.bonedust_brew.up&debuff.weapons_of_order_debuff.stack>3
 actions.cooldowns_improved_niuzao_cta+=/bonedust_brew,if=!buff.bonedust_brew.up&!buff.weapons_of_order.up&cooldown.weapons_of_order.remains>10
-actions.cooldowns_improved_niuzao_cta+=/exploding_keg,if=buff.bonedust_brew.up
+actions.cooldowns_improved_niuzao_cta+=/exploding_keg,if=buff.bonedust_brew.up|!talent.bonedust_brew
 ## actions.cooldowns_improved_niuzao_cta+=/purifying_brew,if=cooldown.invoke_niuzao_the_black_ox.remains<=3.5&time-action.purifying_brew.last_used>=3.5+cooldown.invoke_niuzao_the_black_ox.remains&buff.weapons_of_order.remains<=30-17
 actions.cooldowns_improved_niuzao_cta+=/invoke_niuzao_the_black_ox,if=buff.weapons_of_order.remains<=30-17&action.purifying_brew.last_used>action.weapons_of_order.last_used+10+2*0.05
 ## actions.cooldowns_improved_niuzao_cta+=/purifying_brew,if=cooldown.purifying_brew.full_recharge_time*2<=cooldown.weapons_of_order.remains-3.5&cooldown.purifying_brew.full_recharge_time*2<=cooldown.invoke_niuzao_the_black_ox.remains-3.5

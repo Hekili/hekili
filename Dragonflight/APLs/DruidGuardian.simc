@@ -31,9 +31,9 @@ actions.bear+=/raze,if=buff.rage_of_the_sleeper.up&buff.tooth_and_claw.stack>0&v
 actions.bear+=/ironfur,cycle_targets=1,if=!variable.if_build&(!tanking&!buff.ironfur.up|rage>90)
 actions.bear+=/ironfur,if=variable.if_build&(rage>90|(buff.incarnation.up|buff.berserk_bear.up)&rage>20)
 actions.bear+=/moonfire,if=buff.galactic_guardian.up&buff.galactic_guardian.remains<=2
-actions.bear+=/mangle,if=buff.gore.up&active_enemies<11|buff.vicious_cycle_mangle.stack=3
 actions.bear+=/maul,if=((buff.incarnation.up|buff.berserk_bear.up)&active_enemies<=5&(buff.tooth_and_claw.stack>=2))&variable.maul_build&!talent.thorns_of_iron.enabled
-actions.bear+=/raze,if=((buff.incarnation.up|buff.berserk_bear.up)&(buff.tooth_and_claw.stack>=2))&variable.maul_build&!talent.thorns_of_iron.enabled
+actions.bear+=/raze,if=(buff.incarnation.up|buff.berserk_bear.up)&variable.if_build=0&!talent.thorns_of_iron.enabled
+actions.bear+=/mangle,if=buff.gore.up&active_enemies<11|buff.vicious_cycle_mangle.stack=3
 actions.bear+=/thrash_bear,cycle_targets=1,if=refreshable|dot.thrash_bear.stack<3|active_enemies>=5
 actions.bear+=/mangle,if=rage.deficit>10&settings.mangle_more
 actions.bear+=/swipe,if=buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&active_enemies>=11

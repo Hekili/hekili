@@ -658,8 +658,8 @@ local HekiliSpecMixin = {
 
         if not data.id then
             if data.item then
-                self.itemAbilities = self.itemAbilities + 1
-                data.id = -100 - self.itemAbilities
+                class.specs[ 0 ].itemAbilities = class.specs[ 0 ].itemAbilities + 1
+                data.id = -100 - class.specs[ 0 ].itemAbilities
             else
                 self.pseudoAbilities = self.pseudoAbilities + 1
                 data.id = -1000 * self.id - self.pseudoAbilities

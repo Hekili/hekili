@@ -1116,7 +1116,7 @@ spec:RegisterAbilities( {
         end,
 
         usable = function()
-            if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled ) then return true end
+            if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled or set_bonus.tier30_2pc > 0 ) then return true end
 
             local dmg_required = ( settings.last_stand_amount * 0.01 ) * health.max * ( solo and 0.5 or 1 )
             local hp_required = ( settings.last_stand_health * 0.01 )
@@ -1812,10 +1812,8 @@ spec:RegisterSetting( "last_stand_offensively", false, {
     desc = function()
         return "If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage.\n\n"
             .. "If unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage.\n\n"
-            .. "Requires |T571316:0|t Unnerving Focus "
-            .. ( state.talent.unnerving_focus.enabled and "|cFF00FF00Talent|r" or "|cFFFF0000Talent|r" )
-            .. " or "
-            .. ( state.conduit.unnerving_focus.enabled and "|cFF00FF00Conduit|r" or "|cFFFF0000Conduit|r" )
+            .. "Requires " .. ( state.set_bonus.tier30_2pc > 0 and "|cFF00FF00" or "|cFFFF0000" ) .. "2-piece Tier 30|r or "
+            .. "|W|T571316:0|t " .. ( ( state.talent.unnerving_focus.enabled or state.conduit.unnerving_focus.enabled ) and "|cFF00FF00" or "|cFFFF0000" ) .. " Unnerving Focus|r|w"
     end,
     type = "toggle",
     width = "full"

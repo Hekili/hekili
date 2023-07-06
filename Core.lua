@@ -85,7 +85,7 @@ function Hekili:OnInitialize()
     Hekili_OnAddonCompartmentClick = function( addonName, button )
         if button == "RightButton" then ns.StartConfiguration()
         else
-            ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 0, 0 )
+            ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 8, 5 )
         end
         GameTooltip:Hide()
     end
