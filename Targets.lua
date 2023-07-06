@@ -205,7 +205,9 @@ local enemyExclusions = {
     [204560] = true       -- Incorporeal Being
 }
 
-local FindExclusionAuraByID
+local FindExclusionAuraByID = {
+    [410972]  = true,      -- Corruption aura on Echo of Neltharion mythic fight
+}
 
 RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( event, unit )
     local id = UnitGUID( unit )
