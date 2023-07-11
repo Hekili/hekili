@@ -590,30 +590,6 @@ spec:RegisterAbilities( {
             if talent.temporal_compression.enabled then addStack("temporal_compression") end
         end,
     },
-    emerald_blossom = {
-        id = 355913,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return buff.essence_burst.up and 0 or 3 end,
-        spendType = "essence",
-
-        startsCombat = false,
-
-        healing = function () return 2.5 * stat.spell_power end,    -- TODO: Make a fake aura so we know if an Emerald Blossom is pending for a target already?
-                                                                    -- TODO: Factor in Fluttering Seedlings?  ( 0.9 * stat.spell_power * targets impacted )
-
-        -- o Cycle of Life (?); every 3 Emerald Blossoms leaves a tiny sprout which gathers 10% of healing over 15 seconds, then heals allies w/in 25 yards.
-        --    - Count shows on action button.
-
-        handler = function ()
-            removeStack( "essence_burst" )
-            removeBuff( "ouroboros" )
-            if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
-            removeStack( "stasis" )
-        end,
-    },
     emerald_communion = {
         id = 370960,
         cast = 0,

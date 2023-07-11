@@ -2638,6 +2638,40 @@ all:RegisterAbilities( {
         end,
     },
 
+    weyrnstone = {
+        name = function () return ( GetItemInfo( 205146 ) ) or "Weyrnstone" end,
+        listName = function ()
+            local _, link, _, _, _, _, _, _, _, tex = GetItemInfo( 205146 )
+            if link and tex then return "|T" .. tex .. ":0|t " .. link end
+            return "|cff00ccff[Weyrnstone]|r"
+        end,
+        cast = 1.5,
+        cooldown = 120,
+        gcd = "spell",
+
+        item = 205146,
+        bagItem = true,
+
+        startsCombat = false,
+        texture = 5199618,
+
+        usable = function ()
+            if GetItemCount( 205146 ) == 0 then return false, "requires weyrnstone in bags" end
+            if solo then return false, "must have an ally to teleport" end
+            return true
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 205146 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        handler = function ()
+        end,
+
+        copy = { "use_weyrnstone", "active_weyrnstone" }
+    },
+
     cancel_buff = {
         name = "Cancel Buff",
         listName = '|T136243:0|t |cff00ccff[Cancel Buff]|r',

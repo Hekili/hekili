@@ -890,12 +890,19 @@ spec:RegisterAbilities( {
     emerald_blossom = {
         id = 355913,
         cast = 0,
-        cooldown = 30,
+        cooldown = function()
+            if talent.dream_of_spring.enabled or state.spec.preservation and level > 57 then return 0 end
+            return 30.0 * ( talent.interwoven_threads.enabled and 0.9 or 1 )
+        end,
         gcd = "spell",
         school = "nature",
         color = "green",
 
-        spend = 3,
+        spend = function()
+            if state.spec.preservation then return 2 end
+            if talent.dream_of_spring.enabled then return 3 end
+            return level > 57 and 0 or 3
+        end,
         spendType = "essence",
 
         startsCombat = false,
@@ -907,6 +914,17 @@ spec:RegisterAbilities( {
         --    - Count shows on action button.
 
         handler = function ()
+            if state.spec.preservation then
+                removeBuff( "ouroboros" )
+                if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
+                removeStack( "stasis" )
+                return
+            end
+
+            if talent.dream_of_spring.enabled then
+                if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
+            end
+
             if talent.ancient_flame.enabled then applyBuff( "ancient_flame" ) end
             if talent.cycle_of_life.enabled then
                 if cycle_of_life_count == 2 then
@@ -985,7 +1003,7 @@ spec:RegisterAbilities( {
         cast = empowered_cast_time,
         -- channeled = true,
         empowered = true,
-        cooldown = 30,
+        cooldown = function() return 30 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
         gcd = "off",
         school = "fire",
         color = "red",
@@ -1069,9 +1087,15 @@ spec:RegisterAbilities( {
     hover = {
         id = 358267,
         cast = 0,
-        charges = function() return talent.aerial_mastery.enabled and 2 or nil end,
+        charges = function()
+            local actual = 1 + ( talent.aerial_mastery.enabled and 1 or 0 ) + ( buff.time_spiral.up and 1 or 0 )
+            if actual > 1 then return actual end
+        end,
         cooldown = 35,
-        recharge = function() return talent.aerial_mastery.enabled and 35 or nil end,
+        charges = function()
+            local actual = 1 + ( talent.aerial_mastery.enabled and 1 or 0 ) + ( buff.time_spiral.up and 1 or 0 )
+            if actual > 1 then return 35 end
+        end,
         gcd = "off",
         school = "physical",
 
@@ -1086,7 +1110,7 @@ spec:RegisterAbilities( {
     landslide = {
         id = 358385,
         cast = function() return ( talent.engulfing_blaze.enabled and 2.5 or 2 ) * ( buff.burnout.up and 0 or 1 ) end,
-        cooldown = 90,
+        cooldown = function() return 90 - ( talent.forger_of_mountains.enabled and 30 or 0 ) end,
         gcd = "spell",
         school = "firestorm",
         color = "black",
@@ -1147,7 +1171,9 @@ spec:RegisterAbilities( {
     obsidian_scales = {
         id = 363916,
         cast = 0,
-        cooldown = function () return talent.obsidian_bulwark.enabled and 90 or 150 end,
+        charges = function() return talent.obsidian_bulwark.enabled and 2 or nil end,
+        cooldown = 90,
+        recharge = function() return talent.obsidian_bulwark.enabled and 90 or nil end,
         gcd = "off",
         school = "firestorm",
         color = "black",
@@ -1341,8 +1367,8 @@ spec:RegisterAbilities( {
     -- Talent: Disorient an enemy for 20 sec, causing them to sleep walk towards you. Damage has a chance to awaken them.
     sleep_walk = {
         id = 360806,
-        cast = 1.5,
-        cooldown = 15,
+        cast = function() return 1.5 + ( talent.dream_catcher.enabled and 0.2 or 0 ) end,
+        cooldown = function() return talent.dream_catcher.enabled and 0 or 15.0 end,
         gcd = "spell",
         school = "nature",
         color = "green",

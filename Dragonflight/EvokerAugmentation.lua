@@ -7,6 +7,9 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 1473 )
 
+local strformat = string.format
+
+
 -- Resources
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.Essence )
@@ -143,34 +146,45 @@ spec:RegisterAuras( {
         duration = function() return 12.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
     },
+    -- Maximum health increased by $w1%.
+    black_attunement = {
+        id = 403264,
+        duration = 3600,
+        tick_time = 2.0,
+        max_stack = 1,
+    },
     -- $?$w1>0[Armor increased by $w1.][Armor increased by $w2%.] Melee attacks against you have a chance to cause an explosion of Volcanic damage.
     blistering_scales = {
         id = 360827,
         duration = function() return 600.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = function() return 15 + talent.regenerative_chitin.rank * 5 end,
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- regenerative_chitin[406907] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CHARGES, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        dot = "buff",
+        shared = "player"
+    },
+    -- Gaining Burnout every $t1 sec.
+    born_in_flame = {
+        id = 419240,
+        duration = 6.0,
+        tick_time = 3.0,
+        max_stack = 1,
     },
     -- Exposing Temporal Wounds on enemies in your path. Immune to crowd control.
     breath_of_eons = {
         id = 403631,
         duration = 6.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- spatial_paradox[406732] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
-        -- spatial_paradox[406789] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RANGE, }
     },
     -- Bronze Attunement's grants $w1% additional movement speed.
     bronze_aspects_favor = {
         id = 407244,
         duration = function() return 4.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
+    },
+    -- Next Living Flame's cast time is reduced by $w1%.
+    burnout = {
+        id = 375802,
+        duration = 15.0,
+        max_stack = 2,
     },
     -- Trapped in a time loop.
     chrono_loop = {
@@ -184,35 +198,39 @@ spec:RegisterAuras( {
         duration = function() return 20.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
     },
-    -- Spewing molten cinders. Immune to crowd control.
+    -- Suffering $w1 Volcanic damage every $t1 sec.
     deep_breath = {
-        id = 357210,
-        duration = 6.0,
+        id = 353759,
+        duration = 1.0,
+        tick_time = 0.5,
         max_stack = 1,
-
-        -- Affected by:
-        -- spatial_paradox[406732] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
-        -- spatial_paradox[406789] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RANGE, }
+    },
+    -- Healing $w1 every $t1 sec.
+    defy_fate = {
+        id = 404381,
+        duration = 9.0,
+        max_stack = 1,
     },
     -- Suffering $w1 Spellfrost damage every $t1 sec.
     disintegrate = {
         id = 356995,
-        duration = 3.0,
-        tick_time = 1.0,
+        duration = function() return 3.0 * ( talent.natural_convergence.enabled and 0.8 or 1 ) * haste end,
+        tick_time = function() return ( talent.natural_convergence.enabled and 0.8 or 1 ) * haste end,
         max_stack = 1,
-
-        -- Affected by:
-        -- augmentation_evoker[396186] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- augmentation_evoker[396186] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- natural_convergence[369913] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- natural_convergence[369913] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
-        -- interwoven_threads[412713] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- ebon_might[395296] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- ebon_might[395296] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+    },
+    -- Burning for $s1 every $t1 sec.
+    divide_and_conquer = {
+        id = 403516,
+        duration = 6.0,
+        tick_time = 3.0,
+        max_stack = 1,
+    },
+    -- Tethered with an ally, causing enemies who touch the tether to be damaged and slowed.
+    dreamwalkers_embrace = {
+        id = 415516,
+        duration = 10.0,
+        tick_time = 0.5,
+        max_stack = 1,
     },
     -- Your Ebon Might is active on allies.; Your damage done is increased by $w1%.
     ebon_might = {
@@ -221,44 +239,32 @@ spec:RegisterAuras( {
         tick_time = 1.0,
         pandemic = true,
         max_stack = 1,
-        dot = "buff",
-
-        -- Affected by:
-        -- close_as_clutchmates[396043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 40.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+        dot = "buff"
     },
     -- Your next Eruption $?s414969[or Emerald Blossom ][]costs no Essence.
     essence_burst = {
         id = 392268,
         duration = function() return 15.0 * ( 1 + 1.25 * stat.mastery_value ) end,
-        max_stack = 1,
-
-        -- Affected by:
-        -- essence_attunement[375722] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
-        -- ignition_rush[408775] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
-        -- ignition_rush[408775] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
-    },
-    -- Haste increased by $w1%.
-    fury_of_the_aspects = {
-        id = 390386,
-        duration = 40.0,
-        max_stack = 1,
+        max_stack = function() return 1 + ( talent.essence_attunement.enabled and 1 or 0 ) end,
     },
     -- Movement speed increased by $w2%.; Evoker spells may be cast while moving. Does not affect empowered spells.$?e9[; Immune to movement speed reduction effects.][]
     hover = {
         id = 358267,
-        duration = function() return 6.0 * ( 1 + 1.25 * stat.mastery_value ) end,
+        duration = function() return ( 6.0 + ( talent.extended_flight.enabled and 4 or 0 ) ) * ( 1 + 1.25 * stat.mastery_value ) end,
         tick_time = 1.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- aerial_mastery[365933] #0: { 'type': APPLY_AURA, 'subtype': MOD_MAX_CHARGES, 'points': 1.0, 'target': TARGET_UNIT_CASTER, }
-        -- extended_flight[375517] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 4000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- time_spiral[375234] #0: { 'type': APPLY_AURA, 'subtype': MOD_MAX_CHARGES, 'points': 1.0, 'target': TARGET_UNIT_TARGET_ALLY, }
     },
     -- Granted the inferno's blessing by $@auracaster, giving your damaging attacks and spells a high chance to deal additional Fire damage.
     infernos_blessing = {
         id = 410263,
         duration = function() return 8.0 * ( 1 + 1.25 * stat.mastery_value ) end,
+        max_stack = 1,
+        dot = "buff"
+    },
+    -- Rooted.
+    landslide = {
+        id = 355689,
+        duration = 30.0,
         max_stack = 1,
     },
     -- Absorbing $w1 damage.; Immune to interrupts and silence effects.
@@ -266,40 +272,34 @@ spec:RegisterAuras( {
         id = 405295,
         duration = function() return 15.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        dot = "buff"
     },
     -- Your next Living Flame will strike $w1 additional $?$w1=1[target][targets].
     leaping_flames = {
         id = 370901,
         duration = function() return 30.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+    },
+    -- Healing for $w2 every $t2 sec.
+    living_flame = {
+        id = 361509,
+        duration = 12.0,
+        max_stack = 1,
+        dot = "buff'"
     },
     -- Absorbing $w1 damage.
     molten_blood = {
         id = 410651,
         duration = function() return 30.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-
-        -- Affected by:
-        -- augmentation_evoker[396186] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- augmentation_evoker[396186] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- attuned_to_the_dream[376930] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- attuned_to_the_dream[376930] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        dot = "buff"
     },
     -- Intellect increased by $w1%.
     momentum_shift = {
         id = 408005,
-        duration = 6.0,
         duration = function() return 6.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
+        dot = "buff"
     },
     -- Your next Emerald Blossom will restore an additional $406054s1% of maximum health to you.
     nourishing_sands = {
@@ -312,44 +312,33 @@ spec:RegisterAuras( {
         id = 378464,
         duration = 30.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- Damage taken reduced by $w1%.$?$w2=1[; Immune to interrupt and silence effects.][]
     obsidian_scales = {
         id = 363916,
         duration = function() return 12.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-
-        -- Affected by:
-        -- obsidian_bulwark[375406] #0: { 'type': APPLY_AURA, 'subtype': MOD_MAX_CHARGES, 'points': 1.0, 'target': TARGET_UNIT_CASTER, }
     },
     -- The duration of incoming crowd control effects are increased by $s2%.
     oppressing_roar = {
         id = 372048,
         duration = 10.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- spatial_paradox[406732] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
-        -- spatial_paradox[406789] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 100.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RADIUS, }
     },
     -- Movement speed reduced by $w1%.
     permeating_chill = {
         id = 370898,
         duration = 3.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- permeating_chill[370897] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
     -- $?$W1>0[$@auracaster is increasing your critical strike chance by $w1%.][]$?e0&e1[; ][]$?e1[Your abilities have a chance to echo $412774s1% of their damage and healing.][]
     prescience = {
         id = 410089,
+        duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,
+        max_stack = 1,
+        dot = "buff"
+    },
+    prescience_applied = {
         duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
     },
@@ -359,14 +348,11 @@ spec:RegisterAuras( {
         duration = function() return 12.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
     },
-    -- $w1% of damage taken is being healed over time.
+    -- Restoring $w1 health every $t1 sec.
     renewing_blaze = {
-        id = 374348,
-        duration = function() return 8.0 * ( 1 + 1.25 * stat.mastery_value ) end,
+        id = 374349,
+        duration = function() return ( 8.0 - ( talent.foci_of_life.enabled and 4 or 0 ) ) * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-
-        -- Affected by:
-        -- fire_within[375577] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -30000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
     },
     -- About to be picked up!
     rescue = {
@@ -380,38 +366,33 @@ spec:RegisterAuras( {
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         tick_time = 1.0,
         max_stack = 1,
+        dot = "buff"
     },
     -- Asleep.
     sleep_walk = {
         id = 360806,
         duration = 20.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- lush_growth[375561] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- lush_growth[375561] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- dream_catcher[410962] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- dream_catcher[410962] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 200.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- $@auracaster is restoring mana to you when they cast an empowered spell.$?$w2>0[; Healing and damage done increased by $w2%.][]
     source_of_magic = {
         id = 369459,
         duration = function() return 1800.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-
-        -- Affected by:
-        -- potent_mana[418101] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
-        -- potent_mana[418101] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
+        dot = "buff"
     },
     -- Able to cast spells while moving and range increased by $s5%. Cast by $@auracaster.
     spatial_paradox = {
         id = 406789,
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         tick_time = 1.0,
+        max_stack = 1,
+        dot = "buff"
+    },
+    -- $w1% of damage is being delayed and dealt to you over time.
+    stretch_time = {
+        id = 410355,
+        duration = 10.0,
         max_stack = 1,
     },
     -- About to be grabbed!
@@ -425,9 +406,7 @@ spec:RegisterAuras( {
         id = 410686,
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-
-        -- Affected by:
-        -- symbiotic_bloom[410685] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+        dot = "buff"
     },
     -- Accumulating damage from $@auracaster's allies who are affected by Ebon Might.$?$w2<0[; Movement speed reduced by $w2%.; Attack speed reduced by $w3%.][]
     temporal_wound = {
@@ -435,9 +414,6 @@ spec:RegisterAuras( {
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         tick_time = 1.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- close_as_clutchmates[396043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 40.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
     -- Stunned.
     terror_of_the_skies = {
@@ -448,15 +424,8 @@ spec:RegisterAuras( {
     -- Surging forward in time, causing your cooldowns to recover $s1% faster.
     time_skip = {
         id = 404977,
-        duration = 2.0,
+        duration = function() return 2.0 + ( talent.tomorrow_today.enabled and 1 or 0 ) end,
         max_stack = 1,
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- tomorrow_today[412723] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- May use Hover once, without incurring its cooldown.
     time_spiral = {
@@ -469,19 +438,14 @@ spec:RegisterAuras( {
         id = 378441,
         duration = 5.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- Threat generation reduced by $w1%. Cast by $@auracaster.
     timelessness = {
         id = 412710,
         duration = function() return 1800.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-   },
+        dot = "buff"
+    },
     -- Your next empowered spell casts instantly at its maximum empower level.
     tip_the_scales = {
         id = 370553,
@@ -493,12 +457,14 @@ spec:RegisterAuras( {
         id = 370889,
         duration = function() return 5.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
+        dot = "buff"
     },
     -- Damage taken from area-of-effect attacks reduced by $w1%.; Movement speed increased by $w2%.
     zephyr = {
         id = 374227,
         duration = function() return 8.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
+        dot = "buff"
     },
 } )
 
@@ -554,7 +520,6 @@ end )
 spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
 spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486 )
 
-
 spec:RegisterHook( "reset_precast", function()
     max_empower = talent.font_of_magic.enabled and 4 or 3
 
@@ -562,6 +527,11 @@ spec:RegisterHook( "reset_precast", function()
         local partial = min( 0.95, ( query_time - lastEssenceTick ) * essence.regen )
         gain( partial, "essence" )
         if Hekili.ActiveDebug then Hekili:Debug( "Essence increased to %.2f from passive regen.", partial ) end
+    end
+
+    local prescience_remains = action.prescience.lastCast + class.auras.prescience.duration - query_time
+    if prescience_remains > 0 then
+        applyBuff( "prescience_applied", prescience_remains )
     end
 end )
 
@@ -594,57 +564,10 @@ end
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- Brings a dead party member back to life with $s1% health and mana. Cannot be cast when in combat.;
-    action_return = {
-        id = 361227,
-        cast = 10.0,
-        cooldown = 0.0,
-        gcd = "spell",
-
-        spend = 0.008,
-        spendType = 'mana',
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': RESURRECT, 'subtype': NONE, 'points': 35.0, }
-    },
-
-    -- Project intense energy onto $s1 enemies, dealing $s2 Spellfrost damage to them.
-    azure_strike = {
-        id = 362969,
-        cast = 0.0,
-        cooldown = 0.0,
-        gcd = "spell",
-
-        spend = 0.009,
-        spendType = 'mana',
-
-        startsCombat = true,
-
-        handler = function ()
-            if talent.azure_essence_burst.enabled and buff.dragonrage.up then addStack( "essence_burst", nil, 1 ) end -- TODO:  Does this give 2 stacks if hitting 2 targets w/ Essence Attunement?
-            if talent.charged_blast.enabled then addStack( "charged_blast", nil, min( active_enemies, spell_targets.azure_strike ) ) end
-        end,
-
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
-        -- #1: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 0.755, 'pvp_multiplier': 1.2, 'variance': 0.05, 'radius': 6.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
-        -- #2: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 355627, 'triggers': azure_strike, 'target': TARGET_UNIT_CASTER, }
-
-        -- Affected by:
-        -- augmentation_evoker[396186] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- augmentation_evoker[396186] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- augmentation_evoker[396186] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 2.0, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- augmentation_evoker[396186] #15: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 2.0, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- protracted_talons[369909] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
-        -- ebon_might[395296] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- ebon_might[395296] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-    },
-
     -- Conjure a pair of Weyrnstones, one for your target ally and one for yourself. Only one ally may bear your Weyrnstone at a time.; A Weyrnstone can be activated by the bearer to transport them to the other Weyrnstone's location, if they are within 100 yds.
     bestow_weyrnstone = {
         id = 408233,
+        color = 'bronze',
         cast = 3.0,
         cooldown = 60.0,
         gcd = "spell",
@@ -652,88 +575,50 @@ spec:RegisterAbilities( {
         talent = "bestow_weyrnstone",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'target': TARGET_UNIT_TARGET_RAID, }
+        usable = function() return not solo, "requires allies" end,
 
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        handler = function()
+        end,
     },
 
     -- Protect an ally with $n explosive dragonscales, increasing their Armor by $<perc>% of your own.; Melee attacks against the target cause 1 scale to explode, dealing $<dmg> Volcanic damage to enemies near them. This damage can only occur every few sec.; Blistering Scales can only be placed on one target at a time. Casts on your enemy's target if they have one.
     blistering_scales = {
         id = 360827,
+        color = 'black',
         cast = 0.0,
-        cooldown = 0.0,
+        charges = function() return talent.regenerative_chitin.enabled and 2 or nil end,
+        cooldown = 30.0,
+        recharge = function() return talent.regenerative_chitin.enabled and 30 or nil end,
         gcd = "spell",
 
         talent = "blistering_scales",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MOD_RESISTANCE, 'attributes': ['Suppress Points Stacking'], 'value': 1, 'schools': ['physical'], 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MOD_BASE_RESISTANCE_PCT, 'attributes': ['Suppress Points Stacking'], 'points': 30.0, 'value': 1, 'schools': ['physical'], 'target': TARGET_UNIT_TARGET_ALLY, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- regenerative_chitin[406907] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CHARGES, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        handler = function()
+            applyBuff( "blistering_scales", nil, class.auras.blistering_scales.max_stack )
+        end
     },
 
     -- Fly to the targeted location, exposing Temporal Wounds on enemies in your path for $409560d.; Temporal Wounds accumulate $409560s1% of damage dealt by your allies affected by Ebon Might, then critically strike for that amount as Arcane damage.$?s395153[; Applies Ebon Might for ${$395153s3/1000} sec.][]; Removes all root effects. You are immune to movement impairing and loss of control effects while flying.
     breath_of_eons = {
         id = 403631,
-        cast = 0.0,
+        color = 'bronze',
+        cast = 6.0,
+        channeled = true,
         cooldown = 120.0,
         gcd = "spell",
 
         talent = "breath_of_eons",
         startsCombat = false,
+        toggle = "cooldowns",
 
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'radius': 6.0, 'target': TARGET_DEST_DEST_GROUND, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': ALLOW_ONLY_ABILITY, 'target': TARGET_UNIT_CASTER, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': MOD_DECREASE_SPEED, 'points': -200.0, 'target': TARGET_UNIT_CASTER, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY_MASK, 'value': 2360, 'schools': ['nature', 'frost', 'shadow'], 'target': TARGET_UNIT_CASTER, }
-        -- #4: { 'type': APPLY_AURA, 'subtype': UNKNOWN, 'target': TARGET_UNIT_CASTER, }
+        start = function()
+            applyBuff( "breath_of_eons" )
+        end,
 
-        -- Affected by:
-        -- spatial_paradox[406732] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
-        -- spatial_paradox[406789] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RANGE, }
-    },
-
-    -- Cauterize an ally's wounds, removing all Bleed, Poison, Curse, and Disease effects. Heals for $s2 upon removing any effect.
-    cauterizing_flame = {
-        id = 374251,
-        cast = 0.0,
-        cooldown = 60.0,
-        gcd = "spell",
-
-        spend = 0.1,
-        spendType = 'mana',
-
-        -- 0. [356810] preservation_evoker
-        -- spend = 0.013,
-        -- spendType = 'mana',
-
-        -- 1. [356809] devastation_evoker
-        -- spend = 0.100,
-        -- spendType = 'mana',
-
-        talent = "cauterizing_flame",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': DISPEL_MECHANIC, 'subtype': NONE, 'points': 100.0, 'value': 15, 'schools': ['physical', 'holy', 'fire', 'nature'], 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #1: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 3.5, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #2: { 'type': DISPEL, 'subtype': NONE, 'points': 100.0, 'value': 4, 'schools': ['fire'], 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #3: { 'type': DISPEL, 'subtype': NONE, 'points': 100.0, 'value': 2, 'schools': ['holy'], 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #4: { 'type': DISPEL, 'subtype': NONE, 'points': 100.0, 'value': 3, 'schools': ['physical', 'holy'], 'target': TARGET_UNIT_TARGET_ALLY, }
+        finish = function()
+            removeBuff( "breath_of_eons" )
+        end,
     },
 
     -- Trap the enemy in a time loop for $d. Afterwards, they are returned to their previous location and health. Cannot reduce an enemy's health below $s1%.
@@ -748,84 +633,15 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 20.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
-    },
-
-    -- Take in a deep breath and fly to the targeted location, spewing molten cinders dealing $353759o1 Volcanic damage to enemies in your path.; Removes all root effects. You are immune to movement impairing and loss of control effects while flying.$?s395153[; Increases the duration of your active Ebon Might effects by ${$395153s3/1000} sec.][]
-    deep_breath = {
-        id = 357210,
-        cast = 0.0,
-        cooldown = 120.0,
-        gcd = "spell",
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'radius': 6.0, 'target': TARGET_DEST_DEST_GROUND, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': ALLOW_ONLY_ABILITY, 'target': TARGET_UNIT_CASTER, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': MOD_DECREASE_SPEED, 'points': -200.0, 'target': TARGET_UNIT_CASTER, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY_MASK, 'value': 2360, 'schools': ['nature', 'frost', 'shadow'], 'target': TARGET_UNIT_CASTER, }
-        -- #4: { 'type': APPLY_AURA, 'subtype': UNKNOWN, 'target': TARGET_UNIT_CASTER, }
-
-        -- Affected by:
-        -- spatial_paradox[406732] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
-        -- spatial_paradox[406789] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RANGE, }
-    },
-
-    -- Tear into an enemy with a blast of blue magic, inflicting $o1 Spellfrost damage over $d, and slowing their movement speed by $370898s1% for $370898d.
-    disintegrate = {
-        id = 356995,
-        cast = 0.0,
-        cooldown = 0.0,
-        gcd = "spell",
-
-        spend = 3,
-        spendType = 'essence',
-
-        startsCombat = true,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 1.0, 'sp_bonus': 0.874, 'pvp_multiplier': 1.2, 'target': TARGET_UNIT_TARGET_ENEMY, }
-
-        -- Affected by:
-        -- augmentation_evoker[396186] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- augmentation_evoker[396186] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- natural_convergence[369913] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- natural_convergence[369913] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
-        -- interwoven_threads[412713] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- ebon_might[395296] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- ebon_might[395296] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Summon a flying projection of yourself that heals allies you pass through for $377913s1. Detonating your projection dispels all nearby allies of Magical effects, and heals for $378001o1 over $378001d.
-    dream_projection = {
-        id = 377509,
-        cast = 0.5,
-        cooldown = 60.0,
-        gcd = "spell",
-
-        spend = 0.040,
-        spendType = 'mana',
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': SUMMON, 'subtype': NONE, 'points': 20.0, 'value': 192459, 'schools': ['physical', 'holy', 'nature', 'arcane'], 'value1': 5396, 'radius': 4.0, 'target': TARGET_DEST_CASTER, 'target2': TARGET_DEST_DEST_FRONT, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'target': TARGET_UNIT_CASTER, }
-
-        -- Affected by:
-        -- lush_growth[375561] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- lush_growth[375561] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        handler = function()
+            applyDebuff( "target", "time_loop" )
+        end
     },
 
     -- Increase your $i nearest allies' primary stat by $s1% of your own, and cause you to deal $395296s1% more damage, for $d.; May only affect $i allies at once, and prefers to imbue damage dealers.; Eruption, $?s403631[Breath of Eons][Deep Breath], and your empower spells extend the duration of these effects.
     ebon_might = {
         id = 395152,
+        color = 'black',
         cast = 1.5,
         cooldown = 30.0,
         gcd = "spell",
@@ -836,258 +652,49 @@ spec:RegisterAbilities( {
         talent = "ebon_might",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'tick_time': 1.0, 'points': 10.0, 'radius': 100.0, 'target': TARGET_DEST_CASTER, 'target2': TARGET_UNIT_DEST_AREA_ALLY, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': UNKNOWN, 'value': 1, 'schools': ['physical'], 'radius': 100.0, 'target': TARGET_DEST_CASTER, 'target2': TARGET_UNIT_DEST_AREA_ALLY, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- close_as_clutchmates[396043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 40.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Grow a bulb from the Emerald Dream at an ally's location. After $d, heal up to $355916s2 injured allies within $s1 yds for $355916s1.$?s361361[; Allies healed are imbued with an $@spellname359793, healing for $359793o1 over $359793d.][]
-    emerald_blossom = {
-        id = 355913,
-        cast = 0.0,
-        cooldown = 30.0,
-        gcd = "spell",
-
-        spend = 0.15,
-        spendType = 'mana',
-
-        -- spend = 3,
-        -- spendType = 'essence',
-
-        -- 1. [356810] preservation_evoker
-        -- spend = 0.048,
-        -- spendType = 'mana',
-
-        -- 3. [356809] devastation_evoker
-        -- spend = 0.150,
-        -- spendType = 'mana',
-
-        -- 4. [356816] initial_evoker
-        -- spend = 0.150,
-        -- spendType = 'mana',
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': CREATE_AREATRIGGER, 'subtype': NONE, 'points': 10.0, 'value': 23318, 'schools': ['holy', 'fire', 'frost'], 'target': TARGET_DEST_TARGET_ALLY, }
-        -- #1: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ALLY, }
-
-        -- Affected by:
-        -- emerald_blossom[365261] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -3.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
-        -- lush_growth[375561] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- lush_growth[375561] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- dream_of_spring[414969] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
-        -- dream_of_spring[414969] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- dream_of_spring[414969] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
-        -- interwoven_threads[412713] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- essence_burst[392268] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
-        -- essence_burst[392268] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': IGNORE_SHAPESHIFT, }
-        -- nourishing_sands[406043] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -3.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
+        handler = function()
+            applyBuff( "ebon_might" )
+            active_dot.ebon_might = min( group_members, 5 )
+        end,
     },
 
     -- Cause a violent eruption beneath an enemy's feet, dealing $s1 Volcanic damage split between them and nearby enemies.$?s395153[; Increases the duration of your active Ebon Might effects by ${$395153s1/1000} sec.][]
     eruption = {
         id = 395160,
-        cast = 2.5,
+        color = 'black',
+        cast = function() return 2.5 * ( talent.ignition_rush.enabled and buff.essence_burst.up and 0.6 or 1 ) * ( talent.natural_convergence.enabled and 0.8 or 1 ) end,
         cooldown = 0.0,
         gcd = "spell",
 
-        spend = 3,
+        spend = function()
+            if buff.essence_burst.up then return 0 end
+            return 3 - ( talent.volcanism.enabled and 1 or 0 )
+        end,
         spendType = 'essence',
 
         talent = "eruption",
         startsCombat = true,
 
         handler = function()
-            if buff.blistering_scales.up then
-                addStack( "blistering_scales", nil, 1 )
-            end
-        end,
-
-        -- Effects:
-        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'attributes': ['Always AOE Line of Sight'], 'sp_bonus': 2.0, 'pvp_multiplier': 1.5, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
-
-        -- Affected by:
-        -- augmentation_evoker[396186] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- augmentation_evoker[396186] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- natural_convergence[369913] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- volcanism[406904] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -1.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
-        -- essence_burst[392268] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
-        -- essence_burst[392268] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
-        -- essence_burst[392268] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
-        -- ebon_might[395296] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- ebon_might[395296] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Expunge toxins affecting an ally, removing all Poison effects.
-    expunge = {
-        id = 365585,
-        cast = 0.0,
-        cooldown = 8.0,
-        gcd = "spell",
-
-        spend = 0.100,
-        spendType = 'mana',
-
-        talent = "expunge",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': DISPEL, 'subtype': NONE, 'points': 100.0, 'value': 4, 'schools': ['fire'], 'target': TARGET_UNIT_TARGET_ALLY, }
-
-        -- Affected by:
-        -- lush_growth[375561] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- lush_growth[375561] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-    },
-
-    -- Inhale, stoking your inner flame. Release to exhale, burning enemies in a cone in front of you for ${$<dmgI>+$<dotI>} Fire damage, reduced beyond 5 targets.$?s395153[; Increases the duration of your active Ebon Might effects by ${$395153s2/1000} sec.][]; Empowering causes more of the damage to be dealt immediately instead of over time.; I:   Deals $<dmgI> damage instantly and $<dotI> over $<durI> sec.; II:  Deals $<dmgII> damage instantly and $<dotII> over $<durII> sec.; III: Deals $<dmgIII> damage instantly and $<dotIII> over $<durIII> sec.
-    fire_breath = {
-        id = 357208,
-        cast = 0.0,
-        cooldown = 30.0,
-        gcd = "spell",
-
-        spend = 0.026,
-        spendType = 'mana',
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'target': TARGET_UNIT_CASTER, }
-        -- #1: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_CASTER, }
-
-        -- Affected by:
-        -- tip_the_scales[370553] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- tip_the_scales[370553] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- font_of_magic[408083] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- interwoven_threads[412713] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-    },
-
-    -- Increases haste by $s1% for all party and raid members for $d.; Allies receiving this effect will become Exhausted and unable to benefit from Fury of the Aspects or similar effects again for $57723d.
-    fury_of_the_aspects = {
-        id = 390386,
-        cast = 0.0,
-        cooldown = 300.0,
-        gcd = "off",
-
-        spend = 0.040,
-        spendType = 'mana',
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MELEE_SLOW, 'points': 30.0, 'radius': 50000.0, 'target': TARGET_UNIT_CASTER_AREA_RAID, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MOD_SCALE, 'points': 30.0, 'radius': 50000.0, 'target': TARGET_UNIT_CASTER_AREA_RAID, }
-    },
-
-    -- Launch yourself and gain $s2% increased movement speed for $d.; Allows Evoker spells to be cast while moving. Does not affect empowered spells.
-    hover = {
-        id = 358267,
-        cast = 0.0,
-        cooldown = 1.0,
-        gcd = "off",
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MOD_DISPEL_RESIST, 'target': TARGET_UNIT_CASTER, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MOD_INCREASE_SPEED, 'points': 30.0, 'target': TARGET_UNIT_CASTER, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': WATER_WALK, 'target': TARGET_UNIT_CASTER, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': ANIM_REPLACEMENT_SET, 'value': 1013, 'schools': ['physical', 'fire', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
-        -- #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- #5: { 'type': APPLY_AURA, 'subtype': DUMMY, 'target': TARGET_UNIT_CASTER, }
-        -- #6: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'amplitude': 1.0, 'tick_time': 1.0, 'target': TARGET_UNIT_CASTER, }
-        -- #7: { 'type': APPLY_AURA, 'subtype': DUMMY, 'target': TARGET_UNIT_CASTER, }
-        -- #8: { 'type': UNKNOWN, 'subtype': NONE, 'trigger_spell': 358268, 'triggers': hover, 'target': TARGET_UNIT_CASTER, }
-        -- #9: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': snared, }
-        -- #10: { 'type': APPLY_AURA, 'subtype': UNKNOWN, 'points': 56.0, 'target': TARGET_UNIT_CASTER, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- aerial_mastery[365933] #0: { 'type': APPLY_AURA, 'subtype': MOD_MAX_CHARGES, 'points': 1.0, 'target': TARGET_UNIT_CASTER, }
-        -- extended_flight[375517] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 4000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- time_spiral[375234] #0: { 'type': APPLY_AURA, 'subtype': MOD_MAX_CHARGES, 'points': 1.0, 'target': TARGET_UNIT_TARGET_ALLY, }
-    },
-
-    -- Conjure a path of shifting stone towards the target location, rooting enemies for $355689d. Damage may cancel the effect.
-    landslide = {
-        id = 358385,
-        cast = 0.0,
-        cooldown = 90.0,
-        gcd = "spell",
-
-        spend = 0.028,
-        spendType = 'mana',
-
-        talent = "landslide",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'radius': 6.0, 'target': TARGET_DEST_DEST, }
-
-        -- Affected by:
-        -- forger_of_mountains[375528] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -30000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+            removeBuff( "essence_burst" )
+            if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
+        end
     },
 
     -- Form a protective barrier of molten rock around an ally, absorbing up to $<shield> damage. While the barrier holds, your ally cannot be interrupted or silenced.
     lava_shield = {
         id = 405295,
+        color = 'black',
         cast = 0.0,
         cooldown = 30.0,
         gcd = "spell",
 
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'sp_bonus': 12.0, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'value1': 10, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_TARGET_ALLY, 'mechanic': interrupted, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_TARGET_ALLY, 'mechanic': silenced, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Send a flickering flame towards your target, $?c2[healing an ally for $361509s1 or dealing $361500s1 Fire damage to an enemy.][dealing $361500s1 Fire damage to an enemy or healing an ally for $361509s1.]
-    living_flame = {
-        id = 361469,
-        cast = function() return 2.0 * ( buff.ancient_flame.up and 0.6 or 1 ) end,
-        cooldown = 0.0,
-        gcd = "spell",
-
-        spend = 0.12,
-        spendType = 'mana',
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ANY, }
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- enkindled[375554] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- enkindled[375554] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- inner_radiance[386405] #0: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'points': 30.0, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- ancient_flame[375583] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
-        -- ancient_flame[375583] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        handler = function()
+            applyBuff( "lava_shield" )
+            active_dot.lava_shield = 1
+        end,
     },
 
     -- Wreathe yourself in arcane energy, preventing the next $s1 full loss of control effects against you. Lasts $d.
@@ -1100,90 +707,18 @@ spec:RegisterAbilities( {
         spend = 0.009,
         spendType = 'mana',
 
+        pvptalent = "nullifying_shroud",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'mechanic': banished, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': charmed, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': disoriented, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': fleeing, }
-        -- #4: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': frozen, }
-        -- #5: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': horrified, }
-        -- #6: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': incapacitated, }
-        -- #7: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': polymorphed, }
-        -- #8: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': sapped, }
-        -- #9: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': asleep, }
-        -- #10: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': stunned, }
-        -- #11: { 'type': APPLY_AURA, 'subtype': MOD_ATTACK_POWER_OF_ARMOR, 'trigger_spell': 383610, 'triggers': nullifying_shroud, 'target': TARGET_UNIT_CASTER, }
-        -- #12: { 'type': APPLY_AURA, 'subtype': MOD_ATTACK_POWER_OF_ARMOR, 'trigger_spell': 383618, 'triggers': nullifying_shroud, 'target': TARGET_UNIT_CASTER, }
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Reinforce your scales, reducing damage taken by $s1%. Lasts $d.
-    obsidian_scales = {
-        id = 363916,
-        cast = 0.0,
-        cooldown = 1.0,
-        gcd = "off",
-
-        talent = "obsidian_scales",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_TAKEN, 'points': -30.0, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'mechanic': interrupted, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': REDUCE_PUSHBACK, 'points': 100.0, 'value': 3, 'schools': ['physical', 'holy'], 'value1': 15, 'target': TARGET_UNIT_CASTER, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_CASTER, 'mechanic': silenced, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- obsidian_bulwark[375406] #0: { 'type': APPLY_AURA, 'subtype': MOD_MAX_CHARGES, 'points': 1.0, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Let out a bone-shaking roar at enemies in a cone in front of you, increasing the duration of crowd controls that affect them by $s2% in the next $d.$?s374346[; Removes $s1 Enrage effect from each enemy. Oppressing Roar's cooldown is reduced by $374346s1 sec for each Enrage dispelled.][]
-    oppressing_roar = {
-        id = 372048,
-        cast = 0.0,
-        cooldown = 120.0,
-        gcd = "spell",
-
-        talent = "oppressing_roar",
-        startsCombat = true,
-
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 1, 'schools': ['physical'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 27, 'schools': ['physical', 'holy', 'nature', 'frost'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 2, 'schools': ['holy'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #4: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 5, 'schools': ['physical', 'fire'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #5: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 13, 'schools': ['physical', 'fire', 'nature'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #6: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 24, 'schools': ['nature', 'frost'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #7: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 17, 'schools': ['physical', 'frost'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #8: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 7, 'schools': ['physical', 'holy', 'fire'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #9: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 30, 'schools': ['holy', 'fire', 'nature', 'frost'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #10: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #11: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 12, 'schools': ['fire', 'nature'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #12: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 23, 'schools': ['physical', 'holy', 'fire', 'frost'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #13: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 18, 'schools': ['holy', 'frost'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #14: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 10, 'schools': ['holy', 'nature'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #15: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 14, 'schools': ['holy', 'fire', 'nature'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #16: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 9, 'schools': ['physical', 'nature'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #17: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 3, 'schools': ['physical', 'holy'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-        -- #18: { 'type': APPLY_AURA, 'subtype': MECHANIC_DURATION_MOD, 'pvp_multiplier': 0.6, 'points': 50.0, 'value': 26, 'schools': ['holy', 'nature', 'frost'], 'radius': 30.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
-
-        -- Affected by:
-        -- spatial_paradox[406732] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
-        -- spatial_paradox[406789] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 100.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RADIUS, }
+        handler = function()
+            applyBuff( "nullifying_shroud" )
+        end,
     },
 
     -- Grant an ally the gift of foresight, increasing their critical strike chance by $410089s1% $?s412774[and occasionally copying their damage and healing spells at $412774s1% power ][]for $410089d.; Affects the nearest ally within $A1 yds, preferring damage dealers, if you do not have an ally targeted.
     prescience = {
         id = 409311,
+        color = 'bronze',
         cast = 0.0,
         cooldown = 12.0,
         gcd = "spell",
@@ -1191,121 +726,16 @@ spec:RegisterAbilities( {
         talent = "prescience",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'attributes': ['Add Target (Dest) Combat Reach to AOE'], 'radius': 26.5, 'target': TARGET_DEST_CASTER, 'target2': TARGET_UNIT_DEST_AREA_ALLY, }
-        -- #1: { 'type': DUMMY, 'subtype': NONE, 'attributes': ["Don't Fail Spell On Targeting Failure"], 'target': TARGET_UNIT_TARGET_ALLY, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- spatial_paradox[406732] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
-        -- spatial_paradox[406789] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RADIUS, }
-    },
-
-    -- Interrupt an enemy's spellcasting and prevent any spell from that school of magic from being cast for $d.
-    quell = {
-        id = 351338,
-        cast = 0.0,
-        cooldown = 40.0,
-        gcd = "off",
-
-        talent = "quell",
-        startsCombat = true,
-        interrupt = true,
-
-        -- Effects:
-        -- #0: { 'type': INTERRUPT_CAST, 'subtype': NONE, 'mechanic': interrupted, 'target': TARGET_UNIT_TARGET_ENEMY, }
-
-        -- Affected by:
-        -- imposing_presence[371016] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -20000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- interwoven_threads[412713] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-    },
-
-    -- The flames of life surround you for $d. While this effect is active, $s1% of damage you take is healed back over $374349d.
-    renewing_blaze = {
-        id = 374348,
-        cast = 0.0,
-        cooldown = 90.0,
-        gcd = "off",
-
-        talent = "renewing_blaze",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'value1': -10, 'target': TARGET_UNIT_CASTER, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- fire_within[375577] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -30000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-    },
-
-    -- Swoop to an ally and fly with them to the target location.
-    rescue = {
-        id = 370665,
-        cast = 0.0,
-        cooldown = 60.0,
-        gcd = "spell",
-
-        talent = "rescue",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MOD_DECREASE_SPEED, 'points': -90.0, 'target': TARGET_UNIT_TARGET_RAID, }
-        -- #1: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_DEST_DEST, }
-    },
-
-    -- Disorient an enemy for $d, causing them to sleep walk towards you. Damage has a chance to awaken them.
-    sleep_walk = {
-        id = 360806,
-        cast = 1.5,
-        cooldown = 15.0,
-        gcd = "spell",
-
-        spend = 0.024,
-        spendType = 'mana',
-
-        talent = "sleep_walk",
-        startsCombat = true,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MOD_FEAR, 'chain_targets': 1, 'mechanic': asleep, 'value': 4, 'schools': ['fire'], 'target': TARGET_UNIT_TARGET_ENEMY, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': USE_NORMAL_MOVEMENT_SPEED, 'chain_targets': 1, 'points': 3.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- lush_growth[375561] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- lush_growth[375561] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- dream_catcher[410962] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- dream_catcher[410962] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 200.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Redirect your excess magic to a friendly healer for $d. When you cast an empowered spell, you restore ${$372571s1/100}.2% of their maximum mana per empower level. Limit 1.
-    source_of_magic = {
-        id = 369459,
-        cast = 0.0,
-        cooldown = 0.0,
-        gcd = "spell",
-
-        talent = "source_of_magic",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_DONE, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_DONE_PERCENT, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- potent_mana[418101] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
-        -- potent_mana[418101] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
+        handler = function()
+            applyBuff( "prescience_applied" )
+            active_dot.prescience = 1
+        end,
     },
 
     -- Evoke a paradox for you and a friendly healer, allowing casting while moving and increasing the range of most spells by $s4% for $d.; Affects the nearest healer within $407497A1 yds, if you do not have a healer targeted.
     spatial_paradox = {
         id = 406732,
+        color = 'bronze',
         cast = 0.0,
         cooldown = 120.0,
         gcd = "off",
@@ -1313,107 +743,37 @@ spec:RegisterAbilities( {
         talent = "spatial_paradox",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MOD_DISPEL_RESIST, 'target': TARGET_UNIT_CASTER, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': ANIM_REPLACEMENT_SET, 'value': 1013, 'schools': ['physical', 'fire', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
-        -- #4: { 'type': APPLY_AURA, 'subtype': MOD_ATTACKER_RANGED_CRIT_CHANCE, 'points': 40.0, 'target': TARGET_UNIT_CASTER, }
-        -- #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
-        -- #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
-        -- #7: { 'type': DUMMY, 'subtype': NONE, 'attributes': ["Don't Fail Spell On Targeting Failure"], 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #8: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'tick_time': 1.0, 'target': TARGET_UNIT_CASTER, }
-        -- #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- spatial_paradox[406732] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
-        -- spatial_paradox[406789] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -50.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RANGE, }
-    },
-
-    -- Grab an enemy and fly with them to the target location.
-    swoop_up = {
-        id = 370388,
-        cast = 0.0,
-        cooldown = 90.0,
-        gcd = "spell",
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_DEST_DEST, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MOD_ROOT, 'points': 5.0, 'target': TARGET_UNIT_TARGET_ANY, }
+        handler = function()
+            applyBuff( "spatial_paradox" )
+            if not solo then active_dot.spatial_paradox = 2 end
+        end
     },
 
     -- Surge forward in time, causing your cooldowns to recover $s1% faster for $d.
     time_skip = {
         id = 404977,
-        cast = 0.0,
+        color = 'bronze',
+        cast = function() return 2.0 + ( talent.tomorrow_today.enabled and 1 or 0 ) end,
+        channeled = true,
         cooldown = 180.0,
         gcd = "spell",
 
         talent = "time_skip",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MOD_RESISTANCE_EXCLUSIVE, 'points': 1000.0, 'value': 1216, 'schools': ['arcane'], 'target': TARGET_UNIT_CASTER, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': RETAIN_COMBO_POINTS, 'points': 1000.0, 'value': 1948, 'schools': ['fire', 'nature', 'frost'], 'target': TARGET_UNIT_CASTER, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': RETAIN_COMBO_POINTS, 'points': 1000.0, 'value': 2100, 'schools': ['fire', 'frost', 'shadow'], 'target': TARGET_UNIT_CASTER, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': MOD_RESISTANCE_EXCLUSIVE, 'points': 1000.0, 'value': 1425, 'schools': ['physical', 'frost'], 'target': TARGET_UNIT_CASTER, }
-        -- #4: { 'type': APPLY_AURA, 'subtype': MOD_RESISTANCE_EXCLUSIVE, 'points': 1000.0, 'value': 1523, 'schools': ['physical', 'holy', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
-        -- #5: { 'type': APPLY_AURA, 'subtype': MOD_RESISTANCE_EXCLUSIVE, 'points': 1000.0, 'value': 1862, 'schools': ['holy', 'fire', 'arcane'], 'target': TARGET_UNIT_CASTER, }
+        start = function()
+            applyBuff( "time_skip" )
+        end,
 
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- tomorrow_today[412723] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Bend time, allowing you and your allies within $A1 yds to cast their major movement ability once in the next $375234d, even if it is on cooldown.
-    time_spiral = {
-        id = 374968,
-        cast = 0.0,
-        cooldown = 120.0,
-        gcd = "spell",
-
-        talent = "time_spiral",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'radius': 40.0, 'target': TARGET_UNIT_CASTER_AREA_RAID, }
-
-        -- Affected by:
-        -- spatial_paradox[406732] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
-        -- spatial_paradox[406789] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 100.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': RADIUS, }
-    },
-
-    -- Freeze an ally's timestream for $d. While frozen in time they are invulnerable, cannot act, and auras do not progress.; You may reactivate Time Stop to end this effect early.
-    time_stop = {
-        id = 378441,
-        cast = 0.0,
-        cooldown = 60.0,
-        gcd = "off",
-
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': STRANGULATE, 'target': TARGET_UNIT_TARGET_RAID, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': SCHOOL_IMMUNITY, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_RAID, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_PCT, 'points': -100.0, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_RAID, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': MOD_TIME_RATE, 'points': -100.0, 'target': TARGET_UNIT_TARGET_RAID, }
-
-        -- Affected by:
-        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        finish = function()
+            removeBuff( "time_skip" )
+        end,
     },
 
     -- Enchant an ally to appear out of sync with the normal flow of time, reducing threat they generate by $s1% for $d. Less effective on tank-specialized allies. ; May only be placed on one target at a time.
     timelessness = {
         id = 412710,
+        color = 'bronze',
         cast = 0.0,
         cooldown = 0.0,
         gcd = "spell",
@@ -1421,56 +781,17 @@ spec:RegisterAbilities( {
         talent = "timelessness",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MOD_THREAT, 'points': -30.0, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_RAID, }
-
-        -- Affected by:
-        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-    },
-
-    -- Compress time to make your next empowered spell cast instantly at its maximum empower level.
-    tip_the_scales = {
-        id = 370553,
-        cast = 0.0,
-        cooldown = 120.0,
-        gcd = "off",
-
-        talent = "tip_the_scales",
-        startsCombat = false,
-
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-    },
-
-    -- Sunder an enemy's protective magic, dealing $s1 Spellfrost damage to absorb shields.
-    unravel = {
-        id = 368432,
-        cast = 0.0,
-        cooldown = 9.0,
-        gcd = "spell",
-
-        spend = 0.010,
-        spendType = 'mana',
-
-        talent = "unravel",
-        startsCombat = true,
-
-        -- Effects:
-        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 5.0, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ENEMY, }
-
-        -- Affected by:
-        -- augmentation_evoker[396186] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- augmentation_evoker[396186] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- ebon_might[395296] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- ebon_might[395296] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 1.428, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        handler = function()
+            applyBuff( "timelessness" )
+            active_dot.timelessness = 1
+        end,
     },
 
     -- Gather earthen power beneath your enemy's feet and send them hurtling upwards, dealing $396288s2 Volcanic damage to the target and nearby enemies.$?s395153[; Increases the duration of your active Ebon Might effects by ${$395153s2/1000} sec.][]; Empowering expands the area of effect.; I:   $<radiusI> yd radius.; II:  $<radiusII> yd radius.; III: $<radiusIII> yd radius.
     upheaval = {
         id = 396286,
+        color = 'black',
         cast = empowered_cast_time,
-        -- channeled = true,
         empowered = true,
         cooldown = 40.0,
         gcd = "spell",
@@ -1478,14 +799,51 @@ spec:RegisterAbilities( {
         talent = "upheaval",
         startsCombat = true,
 
-        -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'target': TARGET_UNIT_TARGET_ENEMY, }
-        -- #1: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
-
-        -- Affected by:
-        -- tip_the_scales[370553] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- tip_the_scales[370553] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
-        -- font_of_magic[408083] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- unyielding_domain[412733] #1: { 'type': APPLY_AURA, 'subtype': MOD_ATTACKER_MELEE_CRIT_DAMAGE, 'points': 5.0, 'target': TARGET_UNIT_CASTER, }
+        handler = function()
+            if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 2 end
+        end,
     },
 } )
+
+
+spec:RegisterSetting( "use_deep_breath", true, {
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( 357210 ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended, which will force your character to select a destination and move.  By default, your Cooldowns "
+        .. "toggle must also be active.\n\n"
+        .. "If unchecked, it will never be recommended, which may result in lost DPS if left unused for an extended period of time.",
+        Hekili:GetSpellLinkWithTexture( 357210 ) ),
+    width = "full",
+} )
+
+spec:RegisterSetting( "use_unravel", false, {
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( 368432 ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended if your target has an absorb shield applied.  By default, your Interrupts toggle must also be active.",
+        Hekili:GetSpellLinkWithTexture( 368432 ) ),
+    width = "full",
+} )
+
+spec:RegisterSetting( "use_early_chain", false, {
+    name = strformat( "%s: Chain Channel", Hekili:GetSpellLinkWithTexture( 356995 ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended while already channeling it, extending the channel.",
+        Hekili:GetSpellLinkWithTexture( 356995 ) ),
+    width = "full"
+} )
+
+spec:RegisterSetting( "use_clipping", false, {
+    name = strformat( "%s: Clip Channel", Hekili:GetSpellLinkWithTexture( 356995 ) ),
+    type = "toggle",
+    desc = strformat( "If checked, other abilities may be recommended during %s, breaking its channel.", Hekili:GetSpellLinkWithTexture( 356995 ) ),
+    width = "full",
+} )
+
+spec:RegisterSetting( "use_verdant_embrace", false, {
+    name = strformat( "%s: %s", Hekili:GetSpellLinkWithTexture( 360995 ), Hekili:GetSpellLinkWithTexture( spec.talents.ancient_flame[2] ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended to cause %s.", Hekili:GetSpellLinkWithTexture( 360995 ), spec.auras.ancient_flame.name ),
+    width = "full"
+} )
+
+spec:RegisterPack( "Augmentation", 20230711.1, [[Hekili:1IvuZnQnq4Fl5fN7UEMySDAsU64zA7lnz6Kx8n9rabiBRjceNKW(sgp8BV7kSbbbi(MR9LmyPvF7QvF7UFt8C9(Q3QyIM6900jtNn5gxxh37U(A3zER0VKr9wLrIEMSb(iLKa)93Z3Kqt1entKIB(cxqIrquICzeyWwTot9LRUA)(9oSOxgVJYsvorIKR2l2FfX64JP7eptLJZ2rhhNPglfhxpsi4XI9PQXKqgNPzuL3QWCgx)qQxyhX78BV2fIGmAK3tUZVbI9TS4yAPXuvK3k04XtUzSR7xkckcEifqLWlcyjzCAveveesu04Ia8ZhGG)FWG)YIGn5SyQJ3kotPvMugDnjNRHpFYKcPPKqon27p8wfjzAQKrGftYe7Hpt34ekPe9wFXAFQifUnKOYey71pEeFTW7P5EA4wEoONNTLs2r414wVInIUiIZqepz33YPCUTd0OFTmipvs2rBBY12MerYXq6vis8xZnSKgg)R9Ef0SeArWIIGiIs7x(Rpvem1XTgDoBxnWaA30lArBjYnuL)Az5zX33LfbUo3uemQiirGaz(mmF9ANTIDuPdYZQDMzn0l3AFbZKahIrtJAFZUR3yX4bAOi1pHTzR2rstiavYCzNxJCTfiCUt(zXRfDcXSF6jEODu)yH2rJSejH7VxKNgBsBtkcoCaEzowl2IbxhaGPZoA7Am08TdTztSyskQp46KYWQFET5QYPKSQNDfqWnVBvbZAMK6xgrnsfv8O(5pUZ6Na9EWVjk2jH89wzMt1ADzADCOzz(6TuFveHtlZbZ)XFUx25D0kE7OfI71)x5Nb6Q42FvUfpleBGA6zDmpueCpq1SiWTnWGD)18N1fO89IQuyjSdUce3(MhYfVXSselT1pmxQ0WdSvfRmpZ8fgx32FNni2t1oWDqYPAFsmjRCeJZrZR7dzf9iDQEdsk20rxsDB1OcAtftG9OjHq3UsID)DJUOU7x1vSS9hwyHlDmEZYZyCSgh(53vAjr9k5ue3Fj10(7BDXzbDZI7YiZ(L0IGqEnh46W5zpJ(wB6odQlcjVZWyZLgwwPWyhIdSymuksFTDUTBJgEy8pnhF2znWPXO5wDugycT1yMogn35ZAd7m5z4rrH2vj8YB1EImfoc47VULAetjKAyoGqweC5rjsG6jj9B5qhk4zwjWYmqVGib0WblaZStHz2ofp(3Suyl3Bb9z)PifCMz)l7TqcWvlgYGtKlWWp4(9pw7I762fDrqB5KH4WTDZ0j)p7MIhFWKVrWNcj1OsfSgjQW2ilsSMXRAFRCQQu(L7VQBs(NzRV)9kukESB8ArQrOgQQ4(jDdun3V79BY672MA(E37BZ0Xe5rBWRrdvoFUEm39ZXluVk6TX40us7t7260NSX(CgT4naQu7T9sVrRT9M2xl0F4qTfvJ3(eiR22AtBw0S3QBEjOzEu5eJrT0kBJqhpvns(vSP3oGEX8bY6N7XQuu2IR1un7Yjho8oQyxodSPH61fZMmuMTBnQJgsaz9dHnWnzZMxJHWauvADzAl8e32gCleEdtUNe8YoJYEz0)qO8Z0Ia5vhvEDw(9WHoK7TWA7oL5z7UwkSm1t9nQzuxc5g1JiUH4vxuw0Dm8ojr7WHbgmydNT4idCdCUrDR3AjkujxVvi9wTIq5X5WS8pu9)c5J)gmQsssv8Y53HVue8x0NzCMrKG3)o]] )

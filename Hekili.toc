@@ -47,7 +47,7 @@ Dragonflight\DruidGuardian.lua
 Dragonflight\DruidRestoration.lua
 Dragonflight\EvokerDevastation.lua
 Dragonflight\EvokerPreservation.lua
-# Dragonflight\EvokerAugmentation.lua
+Dragonflight\EvokerAugmentation.lua
 Dragonflight\HunterBeastMastery.lua
 Dragonflight\HunterMarksmanship.lua
 Dragonflight\HunterSurvival.lua
