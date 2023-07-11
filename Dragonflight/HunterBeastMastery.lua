@@ -618,6 +618,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    dire_pack = {
+        id = 378747,
+        duration = 8,
+        max_stack = 1
+    },
     -- Dodge chance increased by $s1%.
     -- https://wowhead.com/beta/spell=263887
     dragons_guile = {
@@ -1888,13 +1893,13 @@ spec:RegisterAbilities( {
         id = 34026,
         cast = 0,
         charges = function() return talent.alpha_predator.enabled and 2 or nil end,
-        cooldown = function () return 7.5 * haste end,
-        recharge = function() return talent.alpha_predator.enabled and ( 7.5 * haste ) or nil end,
+        cooldown = function () return 7.5 * ( buff.dire_pack.up and 0.5 or 1 ) * haste end,
+        recharge = function() return talent.alpha_predator.enabled and ( 7.5 * ( buff.dire_pack.up and 0.5 or 1 ) * haste ) or nil end,
         icd = 0.5,
         gcd = "spell",
         school = "physical",
 
-        spend = function () return ( buff.cobra_sting.up or buff.flamewakers_cobra_sting.up ) and 0 or 30 end,
+        spend = function () return ( buff.cobra_sting.up or buff.flamewakers_cobra_sting.up ) and 0 or ( 30 * ( buff.dire_pack.up and 0.5 or 1 ) ) end,
         spendType = "focus",
 
         talent = "kill_command",
