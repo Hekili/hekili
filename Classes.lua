@@ -3378,11 +3378,10 @@ do
 
     -- Hyperthread Wristwraps
     all:RegisterAbility( "hyperthread_wristwraps", {
+        id = 300142,
         cast = 0,
         cooldown = 120,
         gcd = "off",
-
-        item = 168989,
 
         handler = function ()
             -- Gain 5 seconds of CD for the last 3 spells.
@@ -3397,6 +3396,74 @@ do
 
         copy = "hyperthread_wristwraps_300142"
     } )
+
+    local hyperthread_blocks = {
+        berserking      = true,
+        arcane_torrent  = true,
+        blood_fury      = true,
+        shadowmeld      = true,
+        stoneform       = true,
+        darkflight      = true,
+        rocket_barrage  = true,
+        lights_judgment = true,
+        arcane_pulse    = true,
+        fireblood       = true,
+        ancestral_call  = true,
+        haymaker        = true,
+        bag_of_tricks   = true
+    }
+
+
+    local first_remains = setmetatable( {}, {
+        __index = function( t, k )
+            if hyperthread_blocks[ k ] then return 0 end
+
+            local slot = 0
+            local counted = 0
+            for i = 1, 10 do
+                if not hyperthread_blocks[ state.prev[ i ].spell ] then
+                    counted = counted + 1
+                end
+
+                if counted == 4 then break end
+
+                if state.prev[ i ].spell == k then
+                    slot = i
+                end
+            end
+
+            if slot > 0 then return 3 - slot end
+            return 0
+        end
+    } )
+
+    all:RegisterStateTable( "hyperthread_wristwraps", setmetatable( {
+    }, {
+        __index = function( t, k )
+            if type( k ) == "string" then
+                if k == "first_remains" then return first_remains end
+                if k == "count" then return state.hyperthread_wristwraps end
+
+                if hyperthread_blocks[ k ] then return 0 end
+
+                local count = 0
+                local counted = 0
+                for i = 1, 10 do
+                    if not hyperthread_blocks[ state.sprev[ i ].spell ] then
+                        counted = counted + 1
+                    end
+
+                    if counted == 4 then break end
+
+                    if state.prev[ i ].spell == k then
+                        count = count + 1
+                    end
+                end
+
+                return count
+            end
+        end,
+    } ) )
 
 
     all:RegisterAbility( "neural_synapse_enhancer", {

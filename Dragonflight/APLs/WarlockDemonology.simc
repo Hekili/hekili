@@ -24,7 +24,7 @@ actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demo
 actions+=/guillotine,if=cooldown.demonic_strength.remains|!talent.demonic_strength
 actions+=/demonic_strength
 actions+=/bilescourge_bombers,if=!pet.demonic_tyrant.active
-actions+=/shadow_bolt,if=soul_shard<5&talent.fel_covenant&buff.fel_covenant.remains<5
+# actions+=/shadow_bolt,if=soul_shard<5&talent.fel_covenant&buff.fel_covenant.remains<5
 actions+=/implosion,if=two_cast_imps>0&buff.tyrant.down&active_enemies>1+(talent.sacrificed_souls.enabled)
 actions+=/implosion,if=buff.wild_imps.stack>9&buff.tyrant.up&active_enemies>2+(1*talent.sacrificed_souls.enabled)&cooldown.call_dreadstalkers.remains>17&talent.the_expendables
 actions+=/soul_strike,if=soul_shard<5&active_enemies>1

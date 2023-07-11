@@ -12,7 +12,7 @@ actions+=/call_action_list,name=ogcd
 actions+=/call_action_list,name=items
 actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>1&active_enemies<4|variable.cleave_apl
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>3
-actions+=/malefic_rapture,if=talent.dread_touch&talent.malefic_affliction&debuff.dread_touch.remains<2&buff.malefic_affliction.stack=3
+actions+=/malefic_rapture,if=talent.dread_touch&debuff.dread_touch.remains<2
 actions+=/soul_swap_exhale,if=buff.soul_swap.up&buff.soul_swap.unstable_affliction&(active_dot.unstable_affliction=0&!dot.unstable_affliction.ticking|!dot.unstable_affliction.ticking&dot.unstable_affliction.remains<5)
 actions+=/unstable_affliction,if=active_dot.unstable_affliction=0&!ticking|ticking&remains<5
 actions+=/agony,if=remains<5
@@ -26,7 +26,6 @@ actions+=/vile_taint,if=!talent.soul_rot|cooldown.soul_rot.remains<=execute_time
 actions+=/soul_rot,if=variable.vt_up&variable.ps_up
 actions+=/summon_darkglare,if=variable.ps_up&variable.vt_up&variable.sr_up|!talent.soul_rot
 actions+=/malefic_rapture,if=soul_shard>4|(talent.tormented_crescendo&buff.tormented_crescendo.stack=1&soul_shard>3)
-actions+=/malefic_rapture,if=talent.malefic_affliction&buff.malefic_affliction.stack<3
 actions+=/malefic_rapture,if=talent.tormented_crescendo&buff.tormented_crescendo.react&!debuff.dread_touch.react
 actions+=/malefic_rapture,if=talent.tormented_crescendo&buff.tormented_crescendo.stack=2
 actions+=/malefic_rapture,if=variable.cd_dots_up|variable.vt_up&soul_shard>1
@@ -45,7 +44,6 @@ actions.aoe+=/phantom_singularity
 actions.aoe+=/soul_rot
 actions.aoe+=/unstable_affliction,if=active_dot.unstable_affliction=0&!ticking|ticking&remains<5
 actions.aoe+=/seed_of_corruption,if=dot.corruption.remains<5
-actions.aoe+=/malefic_rapture,if=talent.malefic_affliction&buff.malefic_affliction.stack<3&talent.doom_blossom
 actions.aoe+=/agony,cycle_targets=1,if=remains<5&active_dot.agony<5
 actions.aoe+=/summon_darkglare
 actions.aoe+=/seed_of_corruption,if=talent.sow_the_seeds
@@ -71,7 +69,6 @@ actions.cleave+=/phantom_singularity
 actions.cleave+=/vile_taint
 actions.cleave+=/soul_rot
 actions.cleave+=/summon_darkglare
-actions.cleave+=/malefic_rapture,if=talent.malefic_affliction&buff.malefic_affliction.stack<3
 actions.cleave+=/malefic_rapture,if=talent.dread_touch&debuff.dread_touch.remains<gcd
 actions.cleave+=/malefic_rapture,if=!talent.dread_touch&buff.tormented_crescendo.up
 actions.cleave+=/malefic_rapture,if=!talent.dread_touch&(dot.soul_rot.remains>cast_time|dot.phantom_singularity.remains>cast_time|dot.vile_taint_dot.remains>cast_time|pet.darkglare.active)

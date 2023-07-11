@@ -1118,8 +1118,9 @@ spec:RegisterAbilities( {
         usable = function()
             if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled or set_bonus.tier30_2pc > 0 ) then return true end
 
-            local dmg_required = ( settings.last_stand_amount * 0.01 ) * health.max * ( solo and 0.5 or 1 )
-            local hp_required = ( settings.last_stand_health * 0.01 )
+            local dmg_required = ( ( settings.last_stand_amount or 10 ) * 0.01 ) * health.max * ( solo and 0.5 or 1 )
+            local hp_required = ( ( settings.last_stand_health or 10 ) * 0.01 )
+            local hp = health.percent or 10
 
             if settings.last_stand_condition then
                 if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
@@ -1127,9 +1128,9 @@ spec:RegisterAbilities( {
                 return true
             end
 
-            if incoming_damage_5s >= dmg_required or health.percent <= hp_required then return true end
+            if incoming_damage_5s >= dmg_required or hp <= hp_required then return true end
             if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-            if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
+            if hp > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", hp, hp_required ) end
             return false
         end,
 
@@ -1228,7 +1229,7 @@ spec:RegisterAbilities( {
                 return true
             end
 
-            if incoming_damage_5s >= dmg_required or health.percent <= hp_required then return true end
+            if incoming_damage_5s >= dmg_required or ( health.percent or 50 ) <= hp_required then return true end
             if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
             if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
             return false
@@ -1296,7 +1297,7 @@ spec:RegisterAbilities( {
 
         readyTime = function()
             if buff.revenge.up then return 0 end
-            local threshold = action.revenge.cost + settings.reserve_rage
+            local threshold = action.revenge.cost + ( settings.reserve_rage or 40 )
             if rage.current >= threshold or ( buff.shield_block.remains > 3 and buff.ignore_pain.remains > 3 ) or not tanking then return 0 end
             return rage[ "time_to_" .. threshold ]
         end,
@@ -1461,8 +1462,8 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         usable = function()
-            local dmg_required = ( settings.shield_wall_amount * 0.01 ) * health.max * ( solo and 0.5 or 1 )
-            local hp_required = ( settings.shield_wall_health * 0.01 )
+            local dmg_required = ( ( settings.shield_wall_amount or 10 ) * 0.01 ) * health.max * ( solo and 0.5 or 1 )
+            local hp_required = ( ( settings.shield_wall_health or 10 ) * 0.01 )
 
             if settings.shield_wall_condition then
                 if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
@@ -1470,7 +1471,7 @@ spec:RegisterAbilities( {
                 return true
             end
 
-            if incoming_damage_5s >= dmg_required or health.percent <= hp_required then return true end
+            if incoming_damage_5s >= dmg_required or ( health.percent or 50 ) <= hp_required then return true end
             if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
             if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
             return false

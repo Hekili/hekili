@@ -11,6 +11,8 @@ actions+=/spell_reflection
 actions+=/potion
 actions+=/algethar_puzzle_box,if=cooldown.recklessness.remains<3|(talent.anger_management&cooldown.avatar.remains<3)
 actions+=/vial_of_animated_blood,if=buff.avatar.up
+actions+=/elementium_pocket_anvil,use_off_gcd=1
+actions+=/beacon_to_the_beyond,use_off_gcd=1
 actions+=/irideus_fragment,if=buff.avatar.up
 actions+=/manic_grieftorch,if=buff.avatar.down
 actions+=/gladiators_badge,if=cooldown.recklessness.remains>10&(buff.recklessness.up|target.time_to_die<11|target.time_to_die>65)

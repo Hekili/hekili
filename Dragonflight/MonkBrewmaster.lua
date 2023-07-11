@@ -15,110 +15,112 @@ spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.Energy )
 spec:RegisterResource( Enum.PowerType.Chi )
 
--- Talents
 spec:RegisterTalents( {
-    -- Monk
-    bounce_back                         = { 80717, 389577, 2 }, -- When a hit deals more than 20% of your maximum health, reduce all damage you take by 10% for 4 sec. This effect cannot occur more than once every 30 seconds.
-    calming_presence                    = { 80693, 388664, 1 }, -- Reduces all damage taken by 3%.
-    celerity                            = { 80685, 115173, 1 }, -- Reduces the cooldown of Roll by 5 sec and increases its maximum number of charges by 1.
-    chi_burst                           = { 80709, 123986, 1 }, -- Hurls a torrent of Chi energy up to 40 yds forward, dealing 1,182 Nature damage to all enemies, and 2,169 healing to the Monk and all allies in its path. Healing reduced beyond 6 targets. Casting Chi Burst does not prevent avoiding attacks.
-    chi_torpedo                         = { 80685, 115008, 1 }, -- Torpedoes you forward a long distance and increases your movement speed by 30% for 10 sec, stacking up to 2 times.
-    chi_wave                            = { 80709, 115098, 1 }, -- A wave of Chi energy flows through friends and foes, dealing 365 Nature damage or 876 healing. Bounces up to 7 times to targets within 25 yards.
-    close_to_heart                      = { 80707, 389574, 2 }, -- You and your allies within 10 yards have 2% increased healing taken from all sources.
-    dampen_harm                         = { 80704, 122278, 1 }, -- Reduces all damage you take by 20% to 50% for 10 sec, with larger attacks being reduced by more.
-    diffuse_magic                       = { 80697, 122783, 1 }, -- Reduces magic damage you take by 60% for 6 sec, and transfers all currently active harmful magical effects on you back to their original caster if possible.
-    disable                             = { 80679, 116095, 1 }, -- Reduces the target's movement speed by 50% for 15 sec, duration refreshed by your melee attacks.
-    elusive_mists                       = { 80603, 388681, 2 }, -- Reduces all damage taken while channelling Soothing Mists by 0%.
-    escape_from_reality                 = { 80715, 394110, 2 }, -- After you use Transcendence: Transfer, you can use Transcendence: Transfer again within 10 sec, ignoring its cooldown. During this time, if you cast Vivify on yourself, its healing is increased by 1% and 50% of its cost is refunded.
-    expeditious_fortification           = { 80681, 388813, 1 }, -- Fortifying Brew cooldown reduced by 2 min.
-    eye_of_the_tiger                    = { 80700, 196607, 1 }, -- Tiger Palm also applies Eye of the Tiger, dealing 592 Nature damage to the enemy and 529 healing to the Monk over 8 sec. Limit 1 target.
-    fast_feet                           = { 80705, 388809, 2 }, -- Rising Sun Kick deals 70% increased damage. Spinning Crane Kick deals 10% additional damage.
-    fatal_touch                         = { 80703, 394123, 2 }, -- Touch of Death cooldown reduced by 120 sec.
-    ferocity_of_xuen                    = { 80706, 388674, 2 }, -- Increases all damage dealt by 2%.
-    fortifying_brew                     = { 80680, 115203, 1 }, -- Turns your skin to stone for 15 sec, increasing your current and maximum health by 15%, reducing all damage you take by 20%, increasing your armor by 25% and dodge chance by 25%.
-    generous_pour                       = { 80683, 389575, 2 }, -- You and your allies within 10 yards have 10% increased avoidance.
-    grace_of_the_crane                  = { 80710, 388811, 2 }, -- Increases all healing taken by 2%.
-    hasty_provocation                   = { 80696, 328670, 1 }, -- Provoked targets move towards you at 50% increased speed.
-    improved_paralysis                  = { 80687, 344359, 1 }, -- Reduces the cooldown of Paralysis by 15 sec.
+    -- Monk Talents
+    bounce_back                         = { 80717, 389577, 2 }, -- When a hit deals more than $m2% of your maximum health, reduce all damage you take by $s1% for $390239d.; This effect cannot occur more than once every $m3  seconds.
+    calming_presence                    = { 80693, 388664, 1 }, -- Reduces all damage taken by $s1%.
+    celerity                            = { 80685, 115173, 1 }, -- Reduces the cooldown of Roll by ${$m1/-1000} sec and increases its maximum number of charges by $m2.
+    chi_burst                           = { 80709, 123986, 1 }, -- Hurls a torrent of Chi energy up to 40 yds forward, dealing $148135s1 Nature damage to all enemies, and $130654s1 healing to the Monk and all allies in its path. Healing reduced beyond $s1 targets.; $?c1[; Casting Chi Burst does not prevent avoiding attacks.][]$?c3[; Chi Burst generates 1 Chi per enemy target damaged, up to a maximum of $s3.][]
+    chi_torpedo                         = { 80685, 115008, 1 }, -- Torpedoes you forward a long distance and increases your movement speed by $119085m1% for $119085d, stacking up to 2 times.
+    chi_wave                            = { 80709, 115098, 1 }, -- A wave of Chi energy flows through friends and foes, dealing $132467s1 Nature damage or $132463s1 healing. Bounces up to $s1 times to targets within $132466a2 yards.
+    close_to_heart                      = { 80707, 389574, 2 }, -- You and your allies within $m2 yards have $s1% increased healing taken from all sources.
+    dampen_harm                         = { 80704, 122278, 1 }, -- Reduces all damage you take by $m2% to $m3% for $d, with larger attacks being reduced by more.
+    dance_of_the_wind                   = { 80704, 414132, 1 }, -- Your dodge chance is increased by $s1%.
+    diffuse_magic                       = { 80697, 122783, 1 }, -- Reduces magic damage you take by $m1% for $d, and transfers all currently active harmful magical effects on you back to their original caster if possible.
+    disable                             = { 80679, 116095, 1 }, -- Reduces the target's movement speed by $s1% for $d, duration refreshed by your melee attacks.$?s343731[ Targets already snared will be rooted for $116706d instead.][]
+    elusive_mists                       = { 80603, 388681, 2 }, -- Reduces all damage taken while channelling Soothing Mists by $s1%.
+    escape_from_reality                 = { 80715, 394110, 2 }, -- After you use Transcendence: Transfer, you can use Transcendence: Transfer again within $343249d, ignoring its cooldown.; During this time, if you cast Vivify on yourself, its healing is increased by $s1% and $343249m2% of its cost is refunded.
+    expeditious_fortification           = { 80681, 388813, 1 }, -- Fortifying Brew cooldown reduced by ${$s1/-60000} min.
+    eye_of_the_tiger                    = { 80700, 196607, 1 }, -- Tiger Palm also applies Eye of the Tiger, dealing $196608o2 Nature damage to the enemy and $196608o1 healing to the Monk over $196608d. Limit 1 target.
+    fast_feet                           = { 80705, 388809, 2 }, -- Rising Sun Kick deals $s1% increased damage. Spinning Crane Kick deals $s2% additional damage.;
+    fatal_touch                         = { 80703, 394123, 2 }, -- Touch of Death cooldown reduced by ${$s1/-1000} sec.
+    ferocity_of_xuen                    = { 80706, 388674, 2 }, -- Increases all damage dealt by $s1%.
+    fortifying_brew                     = { 80680, 388917, 1 }, -- Turns your skin to stone for $120954d, increasing your current and maximum health by $<health>% and reducing all damage you take by $<damage>%.; Combines with other Fortifying Brew effects.
+    generous_pour                       = { 80683, 389575, 2 }, -- You and your allies within $m2 yards take $s1% reduced damage from area-of-effect attacks.
+    grace_of_the_crane                  = { 80710, 388811, 2 }, -- Increases all healing taken by $s1%.
+    hasty_provocation                   = { 80696, 328670, 1 }, -- Provoked targets move towards you at $s1% increased speed.
+    improved_paralysis                  = { 80687, 344359, 1 }, -- Reduces the cooldown of Paralysis by ${$abs($s0/1000)} sec.
     improved_roll                       = { 80712, 328669, 1 }, -- Grants an additional charge of Roll and Chi Torpedo.
-    improved_touch_of_death             = { 80684, 322113, 1 }, -- Touch of Death can now be used on targets with less than 15% health remaining, dealing 35% of your maximum health in damage.
-    improved_vivify                     = { 80692, 231602, 2 }, -- Vivify healing is increased by 40%.
-    ironshell_brew                      = { 80681, 388814, 1 }, -- Increases Armor while Fortifying Brew is active by 25%. Increases Dodge while Fortifying Brew is active by 25%.
-    paralysis                           = { 80688, 115078, 1 }, -- Incapacitates the target for 60 sec. Limit 1. Damage will cancel the effect.
-    profound_rebuttal                   = { 80708, 392910, 1 }, -- Expel Harm's critical healing is increased by 50%.
-    resonant_fists                      = { 80702, 389578, 2 }, -- Your attacks have a chance to resonate, dealing 192 Nature damage to enemies within 8 yds.
-    ring_of_peace                       = { 80698, 116844, 1 }, -- Form a Ring of Peace at the target location for 5 sec. Enemies that enter will be ejected from the Ring.
-    save_them_all                       = { 80714, 389579, 2 }, -- When your healing spells heal an ally whose health is below 35% maximum health, you gain an additional 10% healing for the next 4 sec.
-    song_of_chiji                       = { 80698, 198898, 1 }, -- Conjures a cloud of hypnotic mist that slowly travels forward. Enemies touched by the mist fall asleep, Disoriented for 20 sec.
-    spear_hand_strike                   = { 80686, 116705, 1 }, -- Jabs the target in the throat, interrupting spellcasting and preventing any spell from that school of magic from being cast for 4 sec.
-    strength_of_spirit                  = { 80682, 387276, 1 }, -- Expel Harm's healing is increased by up to 100%, based on your missing health.
-    summon_black_ox_statue              = { 80716, 115315, 1 }, -- Summons a Black Ox Statue at the target location for 15 min, pulsing threat to all enemies within 20 yards. You may cast Provoke on the statue to taunt all enemies near the statue.
-    summon_jade_serpent_statue          = { 80713, 115313, 1 }, -- Summons a Jade Serpent Statue at the target location. When you channel Soothing Mist, the statue will also begin to channel Soothing Mist on your target, healing for 4,746 over 6.9 sec.
-    summon_white_tiger_statue           = { 80701, 388686, 1 }, -- Summons a White Tiger Statue at the target location for 30 sec, pulsing 584 damage to all enemies every 2 sec for 30 sec.
-    tiger_tail_sweep                    = { 80604, 264348, 2 }, -- Increases the range of Leg Sweep by 2 yds and reduces its cooldown by 10 sec.
-    transcendence                       = { 80694, 101643, 1 }, -- Split your body and spirit, leaving your spirit behind for 15 min. Use Transcendence: Transfer to swap locations with your spirit.
-    vigorous_expulsion                  = { 80711, 392900, 1 }, -- Expel Harm's healing increased by 5% and critical strike chance increased by 15%.
-    vivacious_vivification              = { 80695, 388812, 1 }, -- Every 10 sec, your next Vivify becomes instant.
-    windwalking                         = { 80699, 157411, 2 }, -- You and your allies within 10 yards have 10% increased movement speed.
+    improved_touch_of_death             = { 80684, 322113, 1 }, -- Touch of Death can now be used on targets with less than $s1% health remaining, dealing $s2% of your maximum health in damage.
+    improved_vivify                     = { 80692, 231602, 2 }, -- Vivify healing is increased by $s1%.
+    ironshell_brew                      = { 80681, 388814, 1 }, -- Increases Armor while Fortifying Brew is active by $s2%.; Increases Dodge while Fortifying Brew is active by $s1%.;
+    paralysis                           = { 80688, 115078, 1 }, -- Incapacitates the target for $d. Limit 1. Damage will cancel the effect.
+    profound_rebuttal                   = { 80708, 392910, 1 }, -- Expel Harm's critical healing is increased by $s1%.
+    resonant_fists                      = { 80702, 389578, 2 }, -- Your attacks have a chance to resonate, dealing ${$@traitentryrank101520*$391400s1} Nature damage to enemies within $391400a1 yds.
+    ring_of_peace                       = { 80698, 116844, 1 }, -- Form a Ring of Peace at the target location for $d. Enemies that enter will be ejected from the Ring.
+    rising_sun_kick                     = { 80690, 107428, 1 }, -- Kick upwards, dealing $?s137025[${$185099s1*$<CAP>/$AP}][$185099s1] Physical damage$?s128595[, and reducing the effectiveness of healing on the target for $115804d][].$?a388847[; Applies Renewing Mist for $388847s1 seconds to an ally within $388847r yds][]
+    save_them_all                       = { 80714, 389579, 2 }, -- When your healing spells heal an ally whose health is below $s3% maximum health, you gain an additional $s1% healing for the next $390105d.
+    song_of_chiji                       = { 80698, 198898, 1 }, -- Conjures a cloud of hypnotic mist that slowly travels forward. Enemies touched by the mist fall asleep, Disoriented for $198909d.
+    soothing_mist                       = { 80691, 115175, 1 }, -- Heals the target for $o1 over $d. While channeling, Enveloping Mist$?s227344[, Surging Mist,][]$?s124081[, Zen Pulse,][] and Vivify may be cast instantly on the target.$?s117907[; Each heal has a chance to cause a Gust of Mists on the target.][]$?s388477[; Soothing Mist heals a second injured ally within $388478A2 yds for $388477s1% of the amount healed.][]
+    spear_hand_strike                   = { 80686, 116705, 1 }, -- Jabs the target in the throat, interrupting spellcasting and preventing any spell from that school of magic from being cast for $d.
+    strength_of_spirit                  = { 80682, 387276, 1 }, -- Expel Harm's healing is increased by up to $s1%, based on your missing health.
+    summon_black_ox_statue              = { 80716, 115315, 1 }, -- Summons a Black Ox Statue at the target location for $d, pulsing threat to all enemies within $163178A1 yards.; You may cast Provoke on the statue to taunt all enemies near the statue.
+    summon_jade_serpent_statue          = { 80713, 115313, 1 }, -- Summons a Jade Serpent Statue at the target location. When you channel Soothing Mist, the statue will also begin to channel Soothing Mist on your target, healing for $198533o1 over $198533d.
+    summon_white_tiger_statue           = { 80701, 388686, 1 }, -- Summons a White Tiger Statue at the target location for $d, pulsing $389541s1 damage to all enemies every 2 sec for $d.
+    tiger_tail_sweep                    = { 80604, 264348, 2 }, -- Increases the range of Leg Sweep by $s1 yds and reduces its cooldown by ${$s2/-1000} sec.
+    tigers_lust                         = { 80689, 116841, 1 }, -- Increases a friendly target's movement speed by $s1% for $d and removes all roots and snares.
+    transcendence                       = { 80694, 101643, 1 }, -- Split your body and spirit, leaving your spirit behind for $d. Use Transcendence: Transfer to swap locations with your spirit.
+    vigorous_expulsion                  = { 80711, 392900, 1 }, -- Expel Harm's healing increased by $s1% and critical strike chance increased by $s2%.
+    vivacious_vivification              = { 80695, 388812, 1 }, -- Every $t1 sec, your next Vivify becomes instant.
+    windwalking                         = { 80699, 157411, 2 }, -- You and your allies within $m2 yards have $s1% increased movement speed.
+    yulons_grace                        = { 80697, 414131, 1 }, -- Find resilience in the flow of chi in battle, gaining a magic absorb shield for ${$s1/10}.1% of your max health every $t sec in combat, stacking up to $s2%.
 
-    -- Brewmaster
-    anvil_stave                         = { 80634, 386937, 2 }, -- Each time you dodge or an enemy misses you, the remaining cooldown on your Brews is reduced by 0.5 sec. This effect can only occur once every 3 sec.
-    attenuation                         = { 80728, 386941, 1 }, -- Bonedust Brew's Shadow damage or healing is increased by 20%, and when Bonedust Brew deals Shadow damage or healing, its cooldown is reduced by 0.5 sec.
+    -- Brewmaster Talents
+    anvil_stave                         = { 80634, 386937, 2 }, -- Each time you dodge or an enemy misses you, the remaining cooldown on your Brews is reduced by ${$s1/10}.1 sec. This effect can only occur once every $proccooldown sec.
+    attenuation                         = { 80728, 386941, 1 }, -- Bonedust Brew's Shadow damage or healing is increased by $s1%, and when Bonedust Brew deals Shadow damage or healing, its cooldown is reduced by ${$s2/-1000}.1 sec.
     black_ox_brew                       = { 80636, 115399, 1 }, -- Chug some Black Ox Brew, which instantly refills your Energy, Purifying Brew charges, and resets the cooldown of Celestial Brew.
-    blackout_combo                      = { 80601, 196736, 1 }, -- Blackout Kick also empowers your next ability: Tiger Palm: Damage increased by 100%. Breath of Fire: Periodic damage increased by 50%, and damage reduction increased by 5%. Keg Smash: Reduces the remaining cooldown on your Brews by 2 additional sec. Celestial Brew: Gain up to 3 additional stacks of Purified Chi. Purifying Brew: Pauses Stagger damage for 3 sec.
-    bob_and_weave                       = { 80636, 280515, 1 }, -- Increases the duration of Stagger by 3.0 sec.
-    bonedust_brew                       = { 80729, 386276, 1 }, -- Hurl a brew created from the bones of your enemies at the ground, coating all targets struck for 10 sec. Your abilities have a 50% chance to affect the target a second time at 40% effectiveness as Shadow damage or healing. Tiger Palm and Keg Smash reduce the cooldown of your brews by an additional 1 sec when striking enemies with your Bonedust Brew active. Your abilities have a low chance to cast Bonedust Brew at your target's location.
+    blackout_combo                      = { 80601, 196736, 1 }, -- Blackout Kick also empowers your next ability:; Tiger Palm: Damage increased by $s1%.; Breath of Fire: Damage increased by $228563s5%, and damage reduction increased by $228563s2%.; Keg Smash: Reduces the remaining cooldown on your Brews by $s3 additional sec.; Celestial Brew: Gain up to $s6 additional stacks of Purified Chi.; Purifying Brew: Pauses Stagger damage for $s4 sec.
+    bob_and_weave                       = { 80636, 280515, 1 }, -- Increases the duration of Stagger by ${$s1/10}.1 sec.
+    bonedust_brew                       = { 80729, 386276, 1 }, -- [386949] Your abilities have a low chance to cast Bonedust Brew at your target's location.
     bountiful_brew                      = { 80728, 386949, 1 }, -- Your abilities have a low chance to cast Bonedust Brew at your target's location.
-    breath_of_fire                      = { 80650, 115181, 1 }, -- Breathe fire on targets in front of you, causing 1,121 Fire damage. Deals reduced damage to secondary targets. Targets affected by Keg Smash will also burn, taking 778 Fire damage and dealing 5% reduced damage to you for 12 sec.
-    call_to_arms                        = { 80718, 397251, 1 }, -- Weapons of Order calls forth Niuzao, the Black Ox to assist you for 12 sec.
-    celestial_brew                      = { 80649, 322507, 1 }, -- A swig of strong brew that coalesces purified chi escaping your body into a celestial guard, absorbing 18,872 damage.
-    celestial_flames                    = { 80646, 325177, 1 }, -- Drinking from Brews has a 30% chance to coat the Monk with Celestial Flames for 6 sec. While Celestial Flames is active, Spinning Crane Kick applies Breath of Fire and Breath of Fire reduces the damage affected enemies deal to you by an additional 5%.
-    charred_passions                    = { 80651, 386965, 1 }, -- Your Breath of Fire ignites your right leg in flame for 8 sec, causing your Blackout Kick and Spinning Crane Kick to deal 50% additional damage as Fire damage and refresh the duration of your Breath of Fire on the target.
-    chi_surge                           = { 80718, 393400, 1 }, -- Weapons of Order releases a surge of chi at your target's location, dealing 11,361 Nature damage split evenly between all targets over 8 sec. Reduce the cooldown of Weapons of Order by 4 sec per affected enemy, to a maximum of 20 sec.
-    clash                               = { 80629, 324312, 1 }, -- You and the target charge each other, meeting halfway then rooting all targets within 6 yards for 4 sec.
-    counterstrike                       = { 80630, 383785, 1 }, -- Each time you dodge or an enemy misses you, your next Tiger Palm or Spinning Crane Kick deals 100% increased damage.
+    breath_of_fire                      = { 80650, 115181, 1 }, -- Breathe fire on targets in front of you, causing $s1 Fire damage. Deals reduced damage to secondary targets.; Targets affected by Keg Smash will also burn, taking $123725o1 Fire damage and dealing $123725s2% reduced damage to you for $123725d.
+    call_to_arms                        = { 80718, 397251, 1 }, -- Weapons of Order calls forth $?c1[Niuzao, the Black Ox]?c2&s325197[Chi-Ji, the Red Crane]?c3[Xuen, the White Tiger][Yu'lon, the Jade Serpent] to assist you for ${$s1/1000} sec.; Triggering a bonus attack with Press the Advantage has a chance to call forth Niuzao, the Black Ox.
+    celestial_brew                      = { 80649, 322507, 1 }, -- A swig of strong brew that coalesces purified chi escaping your body into a celestial guard, absorbing $<absorb> damage.$?s322510[; Purifying Stagger damage increases absorption by up to $322510s1%.][]
+    celestial_flames                    = { 80646, 325177, 1 }, -- Drinking from Brews has a $h% chance to coat the Monk with Celestial Flames for $325190d.; While Celestial Flames is active, Spinning Crane Kick applies Breath of Fire and Breath of Fire reduces the damage affected enemies deal to you by an additional $s2%.;
+    charred_passions                    = { 80651, 386965, 1 }, -- Your Breath of Fire ignites your right leg in flame for $386963d, causing your Blackout Kick and Spinning Crane Kick to deal $s1% additional damage as Fire damage and refresh the duration of your Breath of Fire on the target.
+    chi_surge                           = { 80718, 393400, 1 }, -- Triggering a bonus attack from Press the Advantage or casting Weapons of Order releases a surge of chi at your target's location, dealing Nature damage split evenly between all targets over $393786d.; $@spellicon418359 $@spellname418359:; Deals $<ptadmg> Nature damage.; $@spellicon387184 $@spellname387184:; Deals $<dmg> Nature damage and reduces the cooldown of Weapons of Order by $s1 for each affected enemy, to a maximum of ${$s1*5} sec.
+    clash                               = { 80629, 324312, 1 }, -- You and the target charge each other, meeting halfway then rooting all targets within $128846A1 yards for $128846d.
+    counterstrike                       = { 80631, 383785, 1 }, -- Each time you dodge or an enemy misses you, your next Tiger Palm or Spinning Crane Kick deals $383800s1% increased damage.
     detox                               = { 81633, 218164, 1 }, -- Removes all Poison and Disease effects from the target.
-    dragonfire_brew                     = { 80651, 383994, 1 }, -- After using Breath of Fire, you breathe fire 2 additional times, each dealing 467 Fire damage. Breath of Fire damage increased by up to 100% based on your level of Stagger.
-    elusive_footwork                    = { 80602, 387046, 2 }, -- Blackout Kick deals an additional 5% damage. Blackout Kick critical hits grant an additional 1 stack of Elusive Brawler.
-    exploding_keg                       = { 80722, 325153, 1 }, -- Hurls a flaming keg at the target location, dealing 6,028 Fire damage to nearby enemies, causing your attacks against them to deal 467 additional Fire damage, and causing their melee attacks to deal 100% reduced damage for the next 3 sec.
-    face_palm                           = { 80631, 389942, 1 }, -- Tiger Palm has a 50% chance to deal 200% of normal damage and reduce the remaining cooldown of your Brews by 1 additional sec.
-    fluidity_of_motion                  = { 80632, 387230, 1 }, -- Blackout Kick's cooldown is reduced by 1 sec and its damage by 10%.
-    fortifying_brew_determination       = { 80654, 322960, 1 }, -- Fortifying Brew increases Stagger effectiveness by 15% while active. Combines with other Fortifying Brew effects.
-    fundamental_observation             = { 80628, 387035, 1 }, -- Zen Meditation has 25% reduced cooldown and is no longer cancelled when you move or when you are hit by melee attacks.
-    gai_plins_imperial_brew             = { 80725, 383700, 1 }, -- Purifying Brew instantly heals you for 25% of the purified Stagger damage.
-    gift_of_the_ox                      = { 80638, 124502, 1 }, -- When you take damage, you have a chance to summon a Healing Sphere. Healing Sphere: Summon a Healing Sphere visible only to you. Moving through this Healing Sphere heals you for 5,009.
-    graceful_exit                       = { 80643, 387256, 1 }, -- After you successfully dodge or an enemy misses you, you gain 10% increased movement speed for 3 sec. Max 3 stacks.
-    healing_elixir                      = { 80644, 122281, 1 }, -- Drink a healing elixir, healing you for 15% of your maximum health.
-    high_tolerance                      = { 80653, 196737, 2 }, -- Stagger is 5% more effective at delaying damage. You gain up to 10% Haste based on your current level of Stagger.
-    hit_scheme                          = { 80647, 383695, 1 }, -- Dealing damage with Blackout Kick increases the damage of your next Keg Smash by 10%, stacking up to 4 times.
-    improved_celestial_brew             = { 80648, 322510, 1 }, -- Purifying Brew increases the absorption of your next Celestial Brew by up to 200%, based on Stagger purified.
-    improved_invoke_niuzao              = { 80720, 322740, 1 }, -- Purifying Stagger damage while Niuzao is active increases the damage of Niuzao's next Stomp by 25% of damage purified, split between all enemies.
-    improved_invoke_niuzao_the_black_ox = { 80720, 322740, 1 }, -- Purifying Stagger damage while Niuzao is active increases the damage of Niuzao's next Stomp by 25% of damage purified, split between all enemies.
+    dragonfire_brew                     = { 80651, 383994, 1 }, -- After using Breath of Fire, you breathe fire $s1 additional times, each dealing $387621s1 Fire damage.; Breath of Fire damage increased by up to $s2% based on your level of Stagger.
+    elusive_footwork                    = { 80602, 387046, 2 }, -- Blackout Kick deals an additional $s3% damage. Blackout Kick critical hits grant an additional $m2 $Lstack:stacks; of Elusive Brawler.
+    exploding_keg                       = { 80722, 325153, 1 }, -- Hurls a flaming keg at the target location, dealing $s1 Fire damage to nearby enemies, causing your attacks against them to deal $388867s1 additional Fire damage, and causing their melee attacks to deal $s2% reduced damage for the next $d.
+    face_palm                           = { 80630, 389942, 1 }, -- Tiger Palm has a $s1% chance to deal $s2% of normal damage and reduce the remaining cooldown of your Brews by ${$s3/1000} additional sec.
+    fluidity_of_motion                  = { 80632, 387230, 1 }, -- Blackout Kick's cooldown is reduced by ${-$s1/1000} sec and its damage is reduced by $s2%.
+    fortifying_brew_determination       = { 80654, 322960, 1 }, -- Fortifying Brew increases Stagger effectiveness by $s1% while active.; Combines with other Fortifying Brew effects.
+    fundamental_observation             = { 80628, 387035, 1 }, -- Zen Meditation has $s2% reduced cooldown and is no longer cancelled when you move or when you are hit by melee attacks.
+    gai_plins_imperial_brew             = { 80725, 383700, 1 }, -- Purifying Brew instantly heals you for $s1% of the purified Stagger damage.
+    gift_of_the_ox                      = { 80638, 124502, 1 }, -- [224863] Summon a Healing Sphere visible only to you. Moving through this Healing Sphere heals you for $124507s1.
+    graceful_exit                       = { 80643, 387256, 1 }, -- After you successfully dodge or an enemy misses you, you gain $s1% increased movement speed for $387254d. Max $387254u stacks.
+    healing_elixir                      = { 80644, 122281, 1 }, -- Drink a healing elixir, healing you for $s1% of your maximum health.
+    high_tolerance                      = { 80653, 196737, 2 }, -- Stagger is $s1% more effective at delaying damage.; You gain up to $s4% Haste based on your current level of Stagger.
+    hit_scheme                          = { 80647, 383695, 1 }, -- Dealing damage with Blackout Kick increases the damage of your next Keg Smash by $383696s1%, stacking up to $383696u times.
+    improved_celestial_brew             = { 80648, 322510, 1 }, -- Purifying Brew increases the absorption of your next Celestial Brew by up to $s1%, based on Stagger purified.
+    improved_invoke_niuzao              = { 80720, 322740, 1 }, -- Purifying Stagger damage while Niuzao is active increases the damage of Niuzao's next Stomp by $s1% of damage purified, split between all enemies.
+    improved_invoke_niuzao_the_black_ox = { 80720, 322740, 1 }, -- Purifying Stagger damage while Niuzao is active increases the damage of Niuzao's next Stomp by $s1% of damage purified, split between all enemies.
     improved_purifying_brew             = { 80655, 343743, 1 }, -- Purifying Brew now has 2 charges.
-    invoke_niuzao                       = { 80724, 132578, 1 }, -- Summons an effigy of Niuzao, the Black Ox for 25 sec. Niuzao attacks your primary target, and frequently Stomps, damaging all nearby enemies. While active, 25% of damage delayed by Stagger is instead Staggered by Niuzao.
-    invoke_niuzao_the_black_ox          = { 80724, 132578, 1 }, -- Summons an effigy of Niuzao, the Black Ox for 25 sec. Niuzao attacks your primary target, and frequently Stomps, damaging all nearby enemies. While active, 25% of damage delayed by Stagger is instead Staggered by Niuzao.
-    keg_smash                           = { 80637, 121253, 1 }, -- Smash a keg of brew on the target, dealing 2,210 Physical damage to all enemies within 8 yds and reducing their movement speed by 20% for 15 sec. Deals reduced damage beyond 5 targets. Grants Shuffle for 5 sec and reduces the remaining cooldown on your Brews by 3 sec.
-    light_brewing                       = { 80635, 325093, 1 }, -- Reduces the cooldown of Purifying Brew and Celestial Brew by 20%.
-    pretense_of_instability             = { 80633, 393516, 1 }, -- Activating Purifying Brew or Celestial Brew grants you 15% dodge for 5 sec.
-    purifying_brew                      = { 80639, 119582, 1 }, -- Clears 50% of your damage delayed with Stagger. Instantly heals you for 25% of the damage cleared.
-    quick_sip                           = { 80642, 388505, 1 }, -- Purify 5% of your Staggered damage each time you gain 3 sec of Shuffle duration.
-    rising_sun_kick                     = { 80690, 107428, 1 }, -- Kick upwards, dealing 5,712 Physical damage.
-    rushing_jade_wind                   = { 80727, 116847, 1 }, -- Summons a whirling tornado around you, causing 2,261 Physical damage over 7.8 sec to all enemies within 8 yards. Deals reduced damage beyond 5 targets.
+    invoke_niuzao                       = { 80724, 132578, 1 }, -- Summons an effigy of Niuzao, the Black Ox for $d. Niuzao attacks your primary target, and frequently Stomps, damaging all nearby enemies$?s322740[ for $227291s1 plus $322740s1% of Stagger damage you have recently purified.][.]; While active, $s2% of damage delayed by Stagger is instead Staggered by Niuzao.
+    invoke_niuzao_the_black_ox          = { 80724, 132578, 1 }, -- Summons an effigy of Niuzao, the Black Ox for $d. Niuzao attacks your primary target, and frequently Stomps, damaging all nearby enemies$?s322740[ for $227291s1 plus $322740s1% of Stagger damage you have recently purified.][.]; While active, $s2% of damage delayed by Stagger is instead Staggered by Niuzao.
+    keg_smash                           = { 80637, 121253, 1 }, -- Smash a keg of brew on the target, dealing $s2 Physical damage to all enemies within $A2 yds and reducing their movement speed by $m3% for $d. Deals reduced damage beyond $s7 targets.$?a322120[; Grants Shuffle for $s6 sec and reduces the remaining cooldown on your Brews by $s4 sec.][]
+    light_brewing                       = { 80635, 325093, 1 }, -- Reduces the cooldown of Purifying Brew and Celestial Brew by $s1%.
+    press_the_advantage                 = { 80719, 418359, 1 }, -- Your main hand auto attacks reduce the cooldown on your brews by ${$s2/1000}.1 sec and block your target's chi, dealing $418360s1 additional Nature damage and increasing your damage dealt by $418361s1% for $418361d. ; Upon reaching $418361u stacks, your next cast of Rising Sun Kick or Keg Smash consumes all stacks to strike again at $418361s2% effectiveness. This bonus attack can trigger effects on behalf of Tiger Palm at reduced effectiveness.
+    pretense_of_instability             = { 80633, 393516, 1 }, -- Activating Purifying Brew or Celestial Brew grants you $393515s1% dodge for $393515d.
+    purifying_brew                      = { 80639, 119582, 1 }, -- Clears $s1% of your damage delayed with Stagger.$?s322510[; Increases the absorption of your next Celestial Brew by up to $322510s1%, based on your current level of Stagger][]$?s383700[; Instantly heals you for $383700s1% of the damage cleared.][]
+    quick_sip                           = { 80642, 388505, 1 }, -- Purify $s1% of your Staggered damage each time you gain $s2 sec of Shuffle duration.
+    rushing_jade_wind                   = { 80727, 116847, 1 }, -- Summons a whirling tornado around you, causing ${(1+$d/$t1)*$148187s1} Physical damage over $d to all enemies within $107270A1 yards. Deals reduced damage beyond $s1 targets.
     salsalabims_strength                = { 80652, 383697, 1 }, -- When you use Keg Smash, the remaining cooldown on Breath of Fire is reset.
-    scalding_brew                       = { 80652, 383698, 1 }, -- Keg Smash deals an additional 20% damage to targets affected by Breath of Fire.
-    shadowboxing_treads                 = { 80632, 387638, 1 }, -- Blackout Kick's damage increased by 20% and it strikes an additional 2 targets.
-    shuffle                             = { 80641, 322120, 1 }, -- Niuzao's teachings allow you to shuffle during combat, increasing the effectiveness of your Stagger by 100%. Shuffle is granted by attacking enemies with your Keg Smash, Blackout Kick, and Spinning Crane Kick.
-    soothing_mist                       = { 80691, 115175, 1 }, -- Heals the target for 9,492 over 6.9 sec. While channeling, Enveloping Mist and Vivify may be cast instantly on the target.
-    special_delivery                    = { 80727, 196730, 1 }, -- Drinking from your Brews has a 100% chance to toss a keg high into the air that lands nearby after 3 sec, dealing 1,531 damage to all enemies within 8 yards and reducing their movement speed by 50% for 15 sec.
-    spirit_of_the_ox                    = { 92611, 400629, 1 }, -- Rising Sun Kick and Blackout Kick have a chance to summon a Healing Sphere. Healing Sphere: Summon a Healing Sphere visible only to you. Moving through this Healing Sphere heals you for 5,009.
-    staggering_strikes                  = { 80645, 387625, 1 }, -- When you Blackout Kick, your Stagger is reduced by 2,087.
-    stormstouts_last_keg                = { 80721, 383707, 1 }, -- Keg Smash deals 20% additional damage, and has 1 additional charge.
-    tigers_lust                         = { 80689, 116841, 1 }, -- Increases a friendly target's movement speed by 70% for 6 sec and removes all roots and snares.
-    training_of_niuzao                  = { 80635, 383714, 1 }, -- Gain up to 15% Mastery based on your current level of Stagger.
-    tranquil_spirit                     = { 80725, 393357, 1 }, -- When a Gift of the Ox Healing Sphere is consumed or you cast Expel Harm, your current Stagger amount is lowered by 5%.
-    walk_with_the_ox                    = { 80723, 387219, 2 }, -- Abilities that grant Shuffle reduce the cooldown on Invoke Niuzao, the Black Ox by 0.50 sec, and Niuzao's Stomp deals an additional 10% damage.
-    weapons_of_order                    = { 80719, 387184, 1 }, -- For the next 30 sec, your Mastery is increased by 10%. Additionally, Keg Smash cooldown is reset instantly and enemies hit by Keg Smash take 8% increased damage from you for 10 sec, stacking up to 4 times.
-    zen_meditation                      = { 80726, 115176, 1 }, -- Reduces all damage taken by 60% for 8 sec. Being hit by a melee attack, or taking another action will cancel this effect.
+    scalding_brew                       = { 80652, 383698, 1 }, -- Keg Smash deals an additional $s1% damage to targets affected by Breath of Fire.
+    shadowboxing_treads                 = { 80632, 387638, 1 }, -- Blackout Kick's damage increased by $s2% and it strikes an additional $s1 $ltarget;targets.
+    shuffle                             = { 80641, 322120, 1 }, -- Niuzao's teachings allow you to shuffle during combat, increasing the effectiveness of your Stagger by $215479s3%.; Shuffle is granted by attacking enemies with your Keg Smash, Blackout Kick, and Spinning Crane Kick.
+    special_delivery                    = { 80727, 196730, 1 }, -- Drinking from your Brews has a $h% chance to toss a keg high into the air that lands nearby after $s1 sec, dealing $196733s1 damage to all enemies within $196733A1 yards and reducing their movement speed by $196733m2% for $196733d.
+    spirit_of_the_ox                    = { 92611, 400629, 1 }, -- [224863] Summon a Healing Sphere visible only to you. Moving through this Healing Sphere heals you for $124507s1.
+    staggering_strikes                  = { 80645, 387625, 1 }, -- When you Blackout Kick, your Stagger is reduced by $<reduc>.
+    stormstouts_last_keg                = { 80721, 383707, 1 }, -- Keg Smash deals $m1% additional damage, and has $m2 additional $?m2>1[charge][charges].
+    training_of_niuzao                  = { 80635, 383714, 1 }, -- Gain up to ${$s1*$s3}% Mastery based on your current level of Stagger.
+    tranquil_spirit                     = { 80725, 393357, 1 }, -- When you consume a Healing Sphere or cast Expel Harm, your current Stagger amount is lowered by $s1%.
+    walk_with_the_ox                    = { 80723, 387219, 2 }, -- Abilities that grant Shuffle reduce the cooldown on Invoke Niuzao, the Black Ox by ${$s2/-1000}.2 sec, and Niuzao's Stomp deals an additional $s1% damage.
+    weapons_of_order                    = { 80719, 387184, 1 }, -- For the next $d, your Mastery is increased by $?c1[${$117906bc1*$s1}]?c2[${$117907bc1*$s1}][${$115636bc1*$s1}.1]%. Additionally, $?a137025[Rising Sun Kick reduces Chi costs by $311054s1 for $311054d, and Blackout Kick reduces the cooldown of affected abilities by an additional ${$s8/1000} sec.][]$?a137023 [Keg Smash cooldown is reset instantly and enemies hit by Keg Smash or Rising Sun Kick take $312106s1% increased damage from you for $312106d, stacking up to $312106u times.][]$?a137024[Essence Font cooldown is reset instantly and heals up to $311123s2 nearby allies for $311123s1 health on channel start and end.][]
+    zen_meditation                      = { 80726, 115176, 1 }, -- Reduces all damage taken by $s2% for $d. Being hit by a melee attack, or taking another action$?s328682[ other than movement][] will cancel this effect.
 } )
 
 
@@ -346,6 +348,11 @@ spec:RegisterAuras( {
         mechanic = "incapacitate",
         max_stack = 1
     },
+    press_the_advantage = {
+        id = 418361,
+        duration = 20,
+        max_stack = 10,
+    },
     pretense_of_instability = {
         id = 393515,
         duration = 3,
@@ -457,6 +464,11 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 4,
         copy = 312106
+    },
+    yulons_grace = {
+        id = 414143,
+        duration = 30,
+        max_stack = 1
     },
     -- Flying.
     -- https://wowhead.com/beta/spell=125883
@@ -1273,6 +1285,10 @@ spec:RegisterAbilities( {
             reduceCooldown( "fortifying_brew", 4 + ( buff.blackout_combo.up and 2 or 0 ) + ( buff.bonedust_brew.up and 1 or 0 ) )
             gainChargeTime( "purifying_brew", 4 + ( buff.blackout_combo.up and 2 or 0 ) +  ( buff.bonedust_brew.up and 1 or 0 ) )
 
+            if buff.press_the_advantage.stack == 10 then
+                removeBuff( "press_the_advantage" )
+            end
+
             if buff.weapons_of_order.up then
                 applyDebuff( "target", "weapons_of_order_debuff", nil, min( 5, debuff.weapons_of_order_debuff.stack + 1 ) )
             end
@@ -1437,6 +1453,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "leverage" )
+
+            if buff.press_the_advantage.stack == 10 then
+                removeBuff( "press_the_advantage" )
+            end
+
             if set_bonus.tier30_4pc > 0 then addStack( "elusive_brawler" ) end
         end,
     },
@@ -1747,4 +1768,4 @@ spec:RegisterSetting( "eh_percent", 65, {
 } )
 
 
-spec:RegisterPack( "Brewmaster", 20230702, [[Hekili:TZXAVTnoYFlblQRDsJJStDs7cBdCT79HT7HDxaVh2VzzzjABTrwuNEe3CiW)2Vzi1dsjrjzzNh92IwK4isoV4WzgoZipFW8)y(mlJqY8FDO2WR1UvBy)HdhE7OpoFw4dEK5Z8mmVZyn8bxJTWp)Kpz3wJGqIpo0doudleeb0iFty4nHHEb)4vxT2oCt0Y(M0TxfyVnYXi0M6A6BSke)BZRMpBzKTt4p7oFz54)25ZmIc3qb0mZE7NbiBBzr4tNeyoFgo9l1U9sTH)4(f7x8Vdi7x8p)QNd1Y2D9(f)cb(XoGkOrH7x8jQlXkka)eq)7xyVc(0p9j4dbUVfEAOHdXnKy1F)x2)foKhD5W3ZG8NigMu3R(t6VTFHHJ9A3TWu3VWLUFHd1DnXh(mHyLBXdgXw8Vr9cE3(f(e7TEoe(kxz44SeKQWJPHmbJ0k1(aBLZ(8Va4Z1kHaaIeWy4gc(GhO4aMBma8hiS6Hxo8g2Q)hGWcMXFqJm3SFbfy3FIyecFKJ4uq55Bt9TdFy)IUgEEed)a(GlHX2AheWKLR8PBbcc2g6XW1FGRe)tU4KRoicROacaNFpY3E1dmiWL6mU5ZehsqOTHt6txV2Nay6EIdS0vuas)0VpRpYfmezyzHC)gdaKEg(iBfUXoqKvcI88O(H4h8V3(EJL2oaD0F(mh7GWau)0KsDSO7Cd0DTJ(Vgu9Duk88FLP)ByIBcZNTJy4rHPqxPt9TqnCIRXshI18pnpeuqX5M9KzMaZs8TnMp7mGyIwTQ)Yy1m9LaN1pYB)Io7xyryJLh46XppiKXgt3V46mkrcqiUVUD4ozW8ipz8eXsXj4t2Ay7gWiSbAvqzVxjLPGSE8rgDXpYLB8e4KIosYjA97iRr0nQA0PMpgpbyKByCDmQlm3cy329E6DKevg4aJ(shy3sN(vKuUPQ9Ktdocf1Cbti(07jwjZ1m047QW)Dtf(AT9lUe4NBzmphh99sS0YjbhWGSoyd2IX6XZPayfM1fOaI9RH7xC((fA91g1Cn0eVy6lPM6wRwwqPKnDWpS(D2M31ynYyPRVn6espiYLT8IY3CtOAvTeGgfSbx0Fzyr03z7ALawMuLTnuCkz7dG4sa)5NytuPsKiqaslPGoLGWYhDuJBtRS9jP6ljdd6q6bGh3n5KJQngrCj(RFGT7Y)iWiRjUSn6UcNFsHC)vroo6(ei8c)1e9q7TKKjpGP8vYs4ZnqFLpNqr379y)FkO0EZir7UjApkoVinmYA326DZA2K(GsaJl7EIoiV2AtITGWyHxfcZm2kWZ21f5li0AxsQ()hpqgdTN1nZNLHZD6yOZSZ60VkD2iEoijcHIP7zarUbMvYMtVAPoWw8RADvjt3ehDy6Bz09GglwNizHi0gULaiQC4GPwtEMjHilDcrYByfgqKxndJ1Ap0CJT(oJ7jfp4KmcdoQTQjaNLr(bHLdi2qmiL3hy6SG7gPZ)dDm4DEi8687EM6Oj5gu58)yUXl13tLbAuq7TAdWdBQZSALZTXzwTc9NCNzF3buB3boXoGEETtR2lYRIDuLMPv7E5GmtR2mYtLz66Dm0mZ01AgQXMPZB75ymtBrwze5ew42bbyANGDpxl9GqF77i5mSiz91YE1k4ol6BnwBB2yRVbKWqq)oi(Is6RO(6Mz5HQd)ufOuQhsbq)v9yDpM1X1Mw9HNXp9X2vzqXgovbcRKRHwCajlS9hX03tHvpo4sv7ZPljU2HYRSdlVFfozmLHKmbL8vcRZpI7DS00Xfez3SnnJdQu1vls6LjvYDia53QogOk0GCCurT6uQv9fwLoKwMwbFnSH9iH9ldeCJiOgpyR0eo6mQm3FQOAm51(2E8bzjT2K6UYEDelXMXusqOXA0wKzKV)gVKeWkMRvkdcb9ffdR9PIkJLi2lLTZJmqtsJpr(a99md52CRELL5P8fqkeqDOVCcH40NmQmV7NeHbydO5YIJuJigxhUSGTWYcH45xeCCQdhNequzOqujnsumJdU9lEdViod1WIA5a27VJ9ZhOr7xyd8Wq0btabKAwbc19AdXWHzzhRQskM6hxWmq0UBdg2Mcvzw9AI5edFytXYoGr)NsLSeKnjvgxTiDs57fOSP0W2ALCEGk58lMu(40Jpzc5bA1ePkklc3WNpe8YT8lEz7cekk7TmGi3i6xZVst8KzX1WVnGw)HSRvK8rmYhU(vpPykaF1HIP8woOcalEe3SBeOoYWCK7iTto52nMIfOP49lHBGLJDYI9ov7LY)TuaVfYIsHqIcI2UfceF3g456873a7OHrLCdcLtLHPBejMqSQYycsSWmLKNOuFB5MxgjEKL1udT4WpPbbmbn4UytOUuKZcXdJxAaOJTbmA8dYz0HsT0xf5)qEw5JstJ4hq8XaLZFbfnXP5GKrG(FfzTgl3F(5kD1hmbtmSNFws35XW1ecr2hcrgV2v(PETenASgftW1OmVli)mvFbGSCkurOZ(WTeyk7hq42810Jzqzy6fTuSTMhbSlzcxidoXeKbPX8lTJxv0e3JA4LsvxgvStaqXJ6dtFljEqiDkLoyrMrPJ60790lDo6T8C701MpVCUxfV0y8mS8nwJrO6tkM8NeBVgoW)nwAVnatSbXDn47i1S7HYmfkYkYiQZF4lozMqIQtIyTzO8jNgn5xs5A1jm8SgrcPneq361pe8RvzUzBntjN0npFcQdBumTBLgrrJYaztYCyJsbzTPYmSm(QYk8KKq(wuNfjFUQQYrT8LC1JkP4cfQU07LJfrD1Lu7G6WZhFAys4s(kXmkmjR8NKkMO2BrYgulRyIAt34YEPRyIuyLcvLqEFS5vNVY6tuPvRYR(GeFwAkDfogwS(e1ESRrhQByDoAGvMk7oUV3GN44))u3XXTpDzd66nmGX20aBFV51Sk6rs2HvjUKQZN537mGd3p337mGJyhTuFWv7Y8G88wVFWd33ATMsAOV1ATE0qFRN0A)dZ5EIpQMf)A(mA47bVXg(OUvW8zS3ZdWbo7D4G9gG82YU8(BXxKM)tKnROqbuutXikKU1ieFq2BdZ)Y2fgcF7D(m1fqmB43wM)iaI47psPJLiFG50DWxfEZxurOLK6KxLuCCJyCsOnfDiqoQSM(iiJE54Aun4sT)Cv4T(ocipnm42YjI8XrLdJQYvDRvIEvO2)ZmIfb3htI(A)c27wfmmRdEmXue(bmFd0v2oKeRfb9ttaXftUINYH9FPSXsT98o7vtuzQs9sr7F5wPOXY9F5h(H9l(uCOCOacUqe)HLbX7nalMW6EhAuBcMXntAKB47OEtciHV7EdNiYenuYeVAynfAJjXbLABjXbKJHf5Gk7vPoDlPlLgh3Bqp(yzTIthLDM04b9hDE8A794J10lsJhMm3of9)ofBWjb2sge8ngwpg1P7zvBtOCMOxhLL9uTWmUbDMmsqXObwe6OUVG6uDpbbkuXViQhv3SuT(bR(IkfhfiEz0ovRJqfDNwqzlhr(CWpyHTFEyNZ1qL0gWs12Gjpj7qmS2uoItIpdmt72EoCEjDZ51AlV8KSNZr7eTQfKtKfKGePmb1RJEw5PqBQvsjqCi6aoR7lq6iRTpgF7OofB3JPzT6X5D16p8c8hNZ2K7f7lQSoqreJ5gphwhPDWyTBPTrspjbUCawyujQ6QdbFI12KiIauU3pehjTdlqq3KCIo96hFuryZqua0GGosT0X4HsHyK11gspnTjneFAUEYqABkPfmeFOChxibFXgSqkINC3kMh6yLX1)oEn(MmafyDtcqP66HFrZJJHn)Etg2PRQ7MicWcDtqVXtgCmmiC73x5m4KHhc)9mVV1iPF(McqIYsUCxP9YqN4rvuN6KHRSQ3nN8uqAppi3CJxzixv(ppXypjpysKWznahp(4zDRwoLA9ufR0dVH6pKeJ4ydWRVpz1K3M8L0ZUD76VJco6nS4Ft94rCCMmqt7gnWvYoI)L2UW1wbq(2P)o(37x8ZXpy8vgttIrOPa(6pC7Gp8(RIpLEjD1L8mOm9p5pHhgZVHpJdEFIH5gmBSVN1iQGf3(Y3zVStNWws8zlYxH4CDX7vcUC4BlmUspHRWTIYREwIlNjdZIIqf2YV4AxGu6wyQdLwiTonZh6jdDNPQqIDQTiIIbBPImKk0xQKppvaA9LLuQAHUAZPnytEWnDQj9Dhj(pRwW3aT6sIMooCxJTy2PcPW)mCyx1sR)TX7Nf7bG2HRuDa5HseI6yLwmdjwJhPgX)DXyujX6D6TkDiOwoFMElbCXQ0iDNCknxbbc73v1wDX0(Dr3HAx8(ZXVUy69gvlZkYN5k8nA9VzupK788j3xratNuElAzmVnifZY0xhmJQxYXwvrXL2EbO4pMPpmkT4HQUI4oNylfFtZW3L48V4aO13KiD6lkyogwU3rXZ4DePRwPV20ko85sjq4Q8TNNhp4iw8uTELzRVCMRjE(lFLn1NC7db44W7PpwGYPNJmOGJqtu0Lwv3flXK719h1PzNwHzEXba6MlSQogJMqCJNC0MSuzLVyBCC(WXhIi(YRXea)31qemdnEPcrGJ6NUqegODXW2fIqr7RVo4OxYGEAeVvFqpsrEuqlsWGr6U3Jp(Ce1aN9ADKsPuRKJF18xdIpQrcNNl(R9b20aoTjG5KTN(TrKGhbdk6RuTz6wgwHYU5UbbtWP22e7kFLnngYtxSRhgEF6JDLtpplXUwRQv9bw1ALS6bDNAcc5ATlhCBZLOhvs8y4QtDCyTg1Vi1M(jBl6WIuwfhIXh3PLWS(DYKOVty38vwcp)LKqpSlWRCM5EPgy3oHFgqX7dr1qlF)XlcpvTxpxZu5RbX4bvZQsVZdzNTlMsZkasA)QxVuvp(vkaXeVT5VqS75ppl60Q6B(Z7o4YsMyXiy71B6KBg1rSaH65ENho97ivcXsEpdqyIRiRR8NoOZZMW5uqTp(yAHPv8(y0P(c4vbzK9Yn8SQ3ujnL9MsuuImP6dDL1ZOCPtPnnU6YmufoAsRcxZ6pGUuUmi0SYfxQT4Mzh(0zd(ioT3g7VLz7v50QY663Awwpc5SsO9IAJ61M9PwABQv2LudNwz754S7C82Cm34vAarCRVfukk1(BmmQXUfFwNc7wXqQnNNAJDlo6QYGKGa4BcdshHauj0ErniXjHxpgK40ZbBqIVSd0G0beOum8BLHQS12gdvXR(imuLm4jYgIa4Q6KTW0kAJm5uxPFLWudWQXyz(P2gZkX20Uq87)LwzUqu0FISziaYxudhc0rM1JQN3bFQwyTfpAR4WBNdngerK0QZ35aqThYzV23Z)F)]] )
+spec:RegisterPack( "Brewmaster", 20230711, [[Hekili:nR1EVTnos8plffNtsBIIKtDs7cBdCT9(JT7HDlG3d7)zjAjABUrwuNEe3CiqF2Vzi1lklkjNhTffOWrKCEXz(XzgYLwl)ZLl8ij0L)(yZXxzEJLLH1K3nEYhwUi5(q6YfHe3BjBGFeq2b))hJO73rItOr4q37ZjEijI5PrUWWBtscJ)LlVCdlzB6kdx(UlJz7s9jjmEGBezDc(3UxUCXQuMFYVgSCv78)MLliPjB5aBwW29jGYmppQC60y3LlWPFH5nxyz9lzozoFLK4UnZXY0WYysMtAisuJSVK9LIjAowmX)tmnZ5F9TqFUhlytMZVrH)BpiU80KmNpYdOEPX4VafnZHTg(1N)i8J4GtGVMq8PbjuVAuEYfJFNGYFKsC5bx(x8)iZH4Z2eSdMAMtapZXNhSHgb)Ms9ASyRjIf)h8W4ZZCIOSDH(u5kxt89xbMF4Z8eHfuzLMVxSYfF63a(f4viaGqcCmzlf)W9CCa3TeG)X1w94lgFTy1)tWQcZ4p5PO5JdQ7NPKe4NsgxsQWigpILCFMZPKWqkjkwo4kySDS4yHTCDeFhiqW(1zcE9N4kX)uAoL(n1PvAmfOZxtJyRVxqbPvxOnFI6tJtye)YVUztef40DuFyPR5aL(8xxyGAHGreppu73sasgsIq1kzllUUQeNggYJsWFeDh7oYkMpihglx4ZItIrh5clTDycb(7FxeGqdiR8PEl)4YfUGGtJyKLlofiC661gHOqzdgjBI3DKGeiyXiorWYPzoxN58Wd9pZ5zoFiZ5mWP3f5oihm0KAhNgyFlZ92LjqackkfJVYhwh4YkhTMect8kTYmnGgT5Edp6AMldmdZNL5mXSbvT5FZEfyXrs9oTKYJk0P9usipi2MV2Mh5rJSZ)ELEDvf5Jt3TdmT73ceXoHbHe2W8ssPiRMOLvVQiU7aUzum)HXIR7AZmHTJk2YSmZCgL5mCfe24K7YLuzEjv6rWv2ZxLd(uA9VPl5TFRs3e)996zRSeJ0qf6rlGqTVLUbP3hgMWQs02K0dOSLzxUgdioCUioCuHAve6aNoTI3uVaXcW)qB5AwKWRXspgWZp7bv2ogak3k48yTCo3AgLgVfTu)nXJAVNf4DyeXbtrq5RQdMawCQV9ws0Ugijw6J)Zfa3Tm79K7OhY3Ire0rFWDn6SknkoPDcjgAj(Vke6vC3se6HalQGF2eF9hacQoVbWrbP2DuBGz7y4jKatSQ4HewlK4VRBCtbdGZ(JGZcHPdhDcOegE89bD5URhKSv8WcrEyWLtNPCGGI3UE0UHr7J4Sg9yF9JQoqw0jC4pHN10bi7ZWHnDGH(4oTPdOXN8XnkyJvUOhl04JgBEIcIMAaAdHqFWAtie0nr4LuZ2OI9CG0PIZyPp(SnEvlmjKfeGAju)xaTmDwR3pSJG0hiDuhbnwV)9rFeeG(ts9to40NySWiqjc8aGGi2Tn3UuobYJTEnu)J9oYgM7Gp)jMMKa2YyJqrrt2qzq2UvvknQeyWoHdK(B2i()gCtbqB246zaFREjjivyWXdGgwGKF4ar0DewGKgIYRFtnALJh5Y5(4rlgLsJmKR(AhRUYrIktrPZEDK0SG6WCbtQmuHfLhoGZutib3kkKuAiQ81HYQJ43H6JQ4vIiO3KCM2C3upkvLYTD0Sgn6qxXsPLfCh)wQDal9)r4ISllsWOsYbHRnVc5AedhstmAJeY4wS6xiU0f83N0wca6KASpmrSq5GI2Q4YdwZ2Kkk9oxsGJU2GOiUPrrBdlArq9UbWfui2OUzyteVUZylM9wv7Mmd8KKNmMpGrOBEkBDVY2Yg5hGviM7Z)XzeeXQMgtAlFPNfJbGbmCBXt0JiNxhVTqSW2YN77Vj4P5o80Sa1DgoitXbzkwijxMZ)q2MXXMyBx9b8(Bf))980mhgOdJXdyIPGvZlUwNz3sj(cKDSVFLCYiVLUGPD)wAG2aorhfZ1eseSP4XIfY)ZPtwbZMvAJ72KoR99c020AoZpk7SLo78pmR8tZp(zZiBz2tDeOTizRC(qYl3mrqgwaiOOT3JazUrTVsMVB(Kf518grUhMgq6oVT6NyMps)RZuYPaoRoP22zJKkaUesdKjgxwBYqe3jMp7IBrLA1KP89RALt1qDQkvQ07LNNXVsw(k18KG3gbwYJhw7ZWR55ykJgZ3R3sAfjfYJJfQpaIVnXwjF2AzPIPYdYXU4QALklHZNZ9SxNgDFtvrPeOv0OyAeM(ARLavmnFumIT)7uVn41e1SedZ6ZflzuW9MZsPSfsGlK4AeK4QlX3V5uvV2bYg0mbf34EBCZzQ33C4BmvSsFQVcMPVgG(7vXGzshTTSOdosuHbZqLoEnU7lKOpVZArDnNKG69D9bdOD0hw71y99olxGBRt4L2bSUyx0NUwDtGtNT8pSX7HtEBC2Y7Bw5(4q2RVDav77Vmsa2Vzr5)a5rJf5Wga0k2wVnXFGnEOJUcCmDcrOc3byn4a536U5yWfIeHDPbIQf3MkucQ4Msf3Z6j5D84e8gQ)VPmrUSXCmeGKMW3rsOkxZ8)gkOmZbVw8pXdaEjg(KUlf)e5v02ZSkuny2NA9TZk51KE4L(aDD8T)sVBkdwx3Uq0m4Sbh1fGxr(SV8RIDdKOVtE7a4nDlU0AyyrJNCr4K3JoN81mFAXwFSrP36BNDP0)m7lTnwPR25S1Z05zQFPO3vJvw3vm7lV(1qjo5GnOzcqBKFSnkEhb8RH1DogdodI8a4P0GKZ5HZG89o)oIFkDMjAzYxnSMd6(w9bv62w9bur4qnOZwSn60wAU208wA9WdT1bPrABO2ulJjVjFTN9Wd90cTPJlM7OdBB2CSVC1ulvsi3yeTgB0PVQ7iS2vIZgPnBD9gZ8(knBsnhJbeFnsF7Sg1DRSahQ8x4ZtQjmD7FislwR54aHxLTZnhvRqK5h4S1qi)EOpy9yFFuN3yIoPdqL6TViVi7qcUounskIFhuMh32ZXRlLBo)S2PMxK9CjBNz2THCMQHeSiTzO(5OvlVeEtpkReyoQFaCvtdq5OQBftVzYOd7sX8Qou8Mtnng)w8)EJyt(S8ZIARXj15yJXBW1jMhnxpT1UFCMIbppbRx)6cGHPeyRoIUE2jfVn2973BSNd7Uep5dKnK67pZY08Aty97PrxWcGCva6CY8VI)DMZVM)HPxsMx4ymucF17VX69V7Y8SmVGV(czsOZ)l5xK(U)b(nj5JOe3T4ng(ortZGc9nusuduZ8ZUPFdWXcW8gadJmvnHcyxOaOnV1k)lZPz2yfVe1o)uFKY(RG0Ci9ty(vp8GMmSHuC4XXJuAOZ0Xk5pv1ZgLVw2IM6FTrhzu8blAat9pQ2Vff6xV9k1hqFYsd3CmC69Q(A9qnkv2qdroEqUXtNm6iwEZ5Gu50Ew)zDdXD6RAVXgklRzj)sV36DB4CzJcMzvl51oASWrqCOCgfI)QHq9QkVQlKaZA8s2ewazg86ErItVUihFDZy(hotl)uEIDDpRI3bhktQpCU5ZMyQDTAFxvpcF9JI2d2V)aTT(Rms6cJrcwMJgM4cf)jwbCMzFbpDSXCGq0N(ONwkpkQkxQMVrRJHafctRViRo0kL3)KyxQh375x3AcoDjTkGyVa0)G35vnmfTptSUST5VvkTtzqDKPJ1oGgb1Y6bGTbaqiNvdyRUP2rdKixB1dyRmrKd20gHRT6XRnZsVKCGNOGIT(aB1sefpT2tncKPHGAmDwBOCsU8YGGoaA3hIJEJ7pweuDcrF6JEA9eqq1rGJgbTHlN(yXNj4P2ItgyWPAu4CRrLkRAaBFmVLhBABKVlRUESv5uECyRvRTxSvXv0S8)p]] )

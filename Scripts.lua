@@ -1608,6 +1608,8 @@ function scripts:LoadScripts()
                         Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. script.Error )
                     end
 
+                    script.action = data.action
+
                     local lua = script.Lua
 
                     if lua then

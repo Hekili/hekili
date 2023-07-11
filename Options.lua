@@ -6732,9 +6732,11 @@ do
                                                         local list = {}
 
                                                         for k, v in pairs( class.abilityList ) do
-                                                            insert( list, {
-                                                                k, class.abilities[ k ].name or v or k
-                                                            } )
+                                                            if class.abilities[ k ] then
+                                                                insert( list, {
+                                                                    k, class.abilities[ k ].name or v or k
+                                                                } )
+                                                            end
                                                         end
 
                                                         sort( list, function( a, b ) return a[2] < b[2] end )
@@ -10262,41 +10264,43 @@ do
     }
 
     local expressions = {
-        { "stealthed"                                   , "stealthed.rogue"                 },
-        { "rtb_buffs%.normal"                           , "rtb_buffs_normal"                },
-        { "rtb_buffs%.shorter"                          , "rtb_buffs_shorter"               },
-        { "rtb_buffs%.longer"                           , "rtb_buffs_longer"                },
-        { "rtb_buffs%.will_lose%.([%w_]+)"              , "rtb_buffs_will_lose_buff.%1"     },
-        { "rtb_buffs%.will_lose"                        , "rtb_buffs_will_lose"             },
-        { "rtb_buffs%.total"                            , "rtb_buffs"                       },
-        { "cooldown"                                    , "action_cooldown"                 },
-        { "covenant%.([%w_]+)%.enabled"                 , "covenant.%1"                     },
-        { "talent%.([%w_]+)"                            , "talent.%1.enabled"               },
-        { "legendary%.([%w_]+)"                         , "legendary.%1.enabled"            },
-        { "runeforge%.([%w_]+)"                         , "runeforge.%1.enabled"            },
-        { "rune_word%.([%w_]+)"                         , "buff.rune_word_%1.up"            },
-        { "rune_word%.([%w_]+)%.enabled"                , "buff.rune_word_%1.up"            },
-        { "conduit%.([%w_]+)"                           , "conduit.%1.enabled"              },
-        { "soulbind%.([%w_]+)"                          , "soulbind.%1.enabled"             },
-        { "pet.[%w_]+%.([%w_]+)%.([%w%._]+)"            , "%1.%2"                           },
-        { "essence%.([%w_]+).rank(%d)"                  , "essence.%1.rank>=%2"             },
-        { "target%.1%.time_to_die"                      , "time_to_die"                     },
-        { "time_to_pct_(%d+)%.remains"                  , "time_to_pct_%1"                  },
-        { "trinket%.(%d)%.([%w%._]+)"                   , "trinket.t%1.%2"                  },
-        { "trinket%.([%w_]+)%.cooldown"                 , "trinket.%1.cooldown.duration"    },
-        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration" , "trinket.%1.buff_duration"        },
-        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"   , "trinket.%1.has_use_buff"         },
-        { "trinket%.([%w_]+)%.has_buff%.([%w_]+)"       , "trinket.%1.has_use_buff"         },
-        { "trinket%.([%w_]+)%.has_use_buff%.([%w_]+)"   , "trinket.%1.has_use_buff"         },
-        { "min:([%w_]+)"                                , "%1"                              },
-        { "position_back"                               , "true"                            },
-        { "max:(%w_]+)"                                 , "%1"                              },
-        { "incanters_flow_time_to%.(%d+)"               , "incanters_flow_time_to_%.%1.any" },
-        { "exsanguinated%.([%w_]+)"                     , "debuff.%1.exsanguinated"         },
-        { "time_to_sht%.(%d+)%.plus"                    , "time_to_sht_plus.%1"             },
-        { "target"                                      , "target.unit"                     },
-        { "player"                                      , "player.unit"                     },
-        { "gcd"                                         , "gcd.max"                         },
+        { "stealthed"                                       , "stealthed.rogue"                         },
+        { "rtb_buffs%.normal"                               , "rtb_buffs_normal"                        },
+        { "rtb_buffs%.shorter"                              , "rtb_buffs_shorter"                       },
+        { "rtb_buffs%.longer"                               , "rtb_buffs_longer"                        },
+        { "rtb_buffs%.will_lose%.([%w_]+)"                  , "rtb_buffs_will_lose_buff.%1"             },
+        { "rtb_buffs%.will_lose"                            , "rtb_buffs_will_lose"                     },
+        { "rtb_buffs%.total"                                , "rtb_buffs"                               },
+        { "hyperthread_wristwraps%.([%w_]+)%.first_remains" , "hyperthread_wristwraps.first_remains.%1" },
+        { "hyperthread_wristwraps%.([%w_]+)%.count"         , "hyperthread_wristwraps.%1"               },
+        { "cooldown"                                        , "action_cooldown"                         },
+        { "covenant%.([%w_]+)%.enabled"                     , "covenant.%1"                             },
+        { "talent%.([%w_]+)"                                , "talent.%1.enabled"                       },
+        { "legendary%.([%w_]+)"                             , "legendary.%1.enabled"                    },
+        { "runeforge%.([%w_]+)"                             , "runeforge.%1.enabled"                    },
+        { "rune_word%.([%w_]+)"                             , "buff.rune_word_%1.up"                    },
+        { "rune_word%.([%w_]+)%.enabled"                    , "buff.rune_word_%1.up"                    },
+        { "conduit%.([%w_]+)"                               , "conduit.%1.enabled"                      },
+        { "soulbind%.([%w_]+)"                              , "soulbind.%1.enabled"                     },
+        { "pet.[%w_]+%.([%w_]+)%.([%w%._]+)"                , "%1.%2"                                   },
+        { "essence%.([%w_]+).rank(%d)"                      , "essence.%1.rank>=%2"                     },
+        { "target%.1%.time_to_die"                          , "time_to_die"                             },
+        { "time_to_pct_(%d+)%.remains"                      , "time_to_pct_%1"                          },
+        { "trinket%.(%d)%.([%w%._]+)"                       , "trinket.t%1.%2"                          },
+        { "trinket%.([%w_]+)%.cooldown"                     , "trinket.%1.cooldown.duration"            },
+        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration"     , "trinket.%1.buff_duration"                },
+        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"       , "trinket.%1.has_use_buff"                 },
+        { "trinket%.([%w_]+)%.has_buff%.([%w_]+)"           , "trinket.%1.has_use_buff"                 },
+        { "trinket%.([%w_]+)%.has_use_buff%.([%w_]+)"       , "trinket.%1.has_use_buff"                 },
+        { "min:([%w_]+)"                                    , "%1"                                      },
+        { "position_back"                                   , "true"                                    },
+        { "max:(%w_]+)"                                     , "%1"                                      },
+        { "incanters_flow_time_to%.(%d+)"                   , "incanters_flow_time_to_%.%1.any"         },
+        { "exsanguinated%.([%w_]+)"                         , "debuff.%1.exsanguinated"                 },
+        { "time_to_sht%.(%d+)%.plus"                        , "time_to_sht_plus.%1"                     },
+        { "target"                                          , "target.unit"                             },
+        { "player"                                          , "player.unit"                             },
+        { "gcd"                                             , "gcd.max"                                 },
 
         { "equipped%.(%d+)", nil, function( item )
             item = tonumber( item )

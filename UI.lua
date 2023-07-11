@@ -2292,7 +2292,7 @@ do
                 self.activeThreadFrames = 0
 
                 if not self.firstThreadCompleted then
-                    Hekili.maxFrameTime = InCombatLockdown() and 10 or 100
+                    Hekili.maxFrameTime = InCombatLockdown() and 10 or 50
                 else
                     if #frameSpans > 0 then
                         local averageSpan = 0

@@ -14,101 +14,101 @@ local spec = Hekili:NewSpecialization( 1467 )
 spec:RegisterResource( Enum.PowerType.Essence )
 spec:RegisterResource( Enum.PowerType.Mana )
 
--- Talents
 spec:RegisterTalents( {
-    -- Evoker
-    aerial_mastery         = { 68659, 365933, 1 }, -- Hover gains 1 additional charge.
-    ancient_flame          = { 68671, 369990, 1 }, -- Casting Emerald Blossom or Verdant Embrace reduces the cast time of your next Living Flame by 40%.
-    attuned_to_the_dream   = { 68672, 376930, 2 }, -- Your healing done and healing received are increased by 2%.
-    blast_furnace          = { 68667, 375510, 2 }, -- Fire Breath's damage over time lasts 0 sec longer.
-    bountiful_bloom        = { 68572, 370886, 1 }, -- Emerald Blossom heals 2 additional allies.
-    cauterizing_flame      = { 68673, 374251, 1 }, -- Cauterize an ally's wounds, removing all Bleed, Poison, Curse, and Disease effects. Heals for 7,854 upon removing any effect.
-    clobbering_sweep       = { 68570, 375443, 1 }, -- Tail Swipe's cooldown is reduced by 45 sec.
-    draconic_legacy        = { 68685, 376166, 2 }, -- Your Stamina is increased by 3%.
-    enkindled              = { 68677, 375554, 2 }, -- Living Flame deals 3% more damage and healing.
-    extended_flight        = { 68679, 375517, 2 }, -- Hover lasts 4 sec longer.
-    exuberance             = { 68573, 375542, 1 }, -- While above 75% health, your movement speed is increased by 10%.
-    fire_within            = { 68654, 375577, 1 }, -- Renewing Blaze's cooldown is reduced by 30 sec.
-    foci_of_life           = { 68654, 375574, 1 }, -- Renewing Blaze restores you more quickly, causing damage you take to be healed back over 4 sec.
-    forger_of_mountains    = { 68569, 375528, 1 }, -- Landslide's cooldown is reduced by 30 sec, and it can withstand 200% more damage before breaking.
-    heavy_wingbeats        = { 68570, 368838, 1 }, -- Wing Buffet's cooldown is reduced by 45 sec.
-    inherent_resistance    = { 68670, 375544, 2 }, -- Magic damage taken reduced by 2%.
-    innate_magic           = { 68683, 375520, 2 }, -- Essence regenerates 5% faster.
-    instinctive_arcana     = { 68666, 376164, 2 }, -- Your Magic damage done is increased by 2%.
-    leaping_flames         = { 68662, 369939, 1 }, -- Fire Breath causes your next Living Flame to strike 1 additional target per empower level.
-    lush_growth            = { 68652, 375561, 2 }, -- Green spells restore 5% more health.
-    natural_convergence    = { 68682, 369913, 1 }, -- Disintegrate channels 20% faster.
-    obsidian_bulwark       = { 68674, 375406, 1 }, -- Obsidian Scales has an additional charge.
-    obsidian_scales        = { 68675, 363916, 1 }, -- Reinforce your scales, reducing damage taken by 30%. Lasts 12 sec.
-    oppressing_roar        = { 68668, 372048, 1 }, -- Let out a bone-shaking roar at enemies in a cone in front of you, increasing the duration of crowd controls that affect them by 50% in the next 10 sec.
-    overawe                = { 68660, 374346, 1 }, -- Oppressing Roar removes 1 Enrage effect from each enemy, and its cooldown is reduced by 20 sec for each Enrage dispelled.
-    panacea                = { 68680, 387761, 1 }, -- Emerald Blossom instantly heals you for 8,064 when cast.
-    permeating_chill       = { 68676, 370897, 1 }, -- Your damaging Blue spells reduce the target's movement speed by 50% for 3 sec.
-    protracted_talons      = { 68661, 369909, 1 }, -- Azure Strike damages 1 additional enemy.
-    quell                  = { 68665, 351338, 1 }, -- Interrupt an enemy's spellcasting and prevent any spell from that school of magic from being cast for 4 sec.
-    recall                 = { 68684, 371806, 1 }, -- You may reactivate Deep Breath within 3 sec after landing to travel back in time to your takeoff location.
-    regenerative_magic     = { 68651, 387787, 1 }, -- Source of Magic forms a bond with your ally, causing 15% of their healing to also heal you while you are below 50% health.
-    renewing_blaze         = { 68653, 374348, 1 }, -- The flames of life surround you for 8 sec. While this effect is active, 100% of damage you take is healed back over 8 sec.
-    rescue                 = { 68658, 370665, 1 }, -- Swoop to an ally and fly with them to the target location.
-    scarlet_adaptation     = { 68687, 372469, 1 }, -- Store 20% of your effective healing, up to 3,353. Your next damaging Living Flame consumes all stored healing to increase its damage dealt.
-    sleep_walk             = { 68571, 360806, 1 }, -- Disorient an enemy for 20 sec, causing them to sleep walk towards you. Damage has a chance to awaken them.
-    source_of_magic        = { 68669, 369459, 1 }, -- Redirect your excess magic to a friendly healer for 30 min. When you cast an empowered spell, you restore 0.25% of their maximum mana per empower level. Limit 1.
-    tailwind               = { 68678, 375556, 1 }, -- Hover increases your movement speed by 70% for the first 4 sec.
-    terror_of_the_skies    = { 68649, 371032, 1 }, -- Deep Breath stuns enemies for 3 sec.
-    time_spiral            = { 68650, 374968, 1 }, -- Bend time, allowing you and your allies within 40 yds to cast their major movement ability once in the next 10 sec, even if it is on cooldown.
-    tip_the_scales         = { 68686, 370553, 1 }, -- Compress time to make your next empowered spell cast instantly at its maximum empower level.
-    twin_guardian          = { 68656, 370888, 1 }, -- Rescue protects you and your ally from harm, absorbing damage equal to 30% of your maximum health for 5 sec.
-    unravel                = { 68663, 368432, 1 }, -- Sunder an enemy's protective magic, dealing 12,255 Spellfrost damage to absorb shields.
-    verdant_embrace        = { 68688, 360995, 1 }, -- Fly to an ally and heal them for 13,502, or heal yourself for the same amount.
-    walloping_blow         = { 68657, 387341, 1 }, -- Wing Buffet and Tail Swipe knock enemies further and daze them, reducing movement speed by 70% for 4 sec.
-    zephyr                 = { 68655, 374227, 1 }, -- Conjure an updraft to lift you and your 4 nearest allies within 20 yds into the air, reducing damage taken from area-of-effect attacks by 20% and increasing movement speed by 30% for 8 sec.
+    -- Evoker Talents
+    aerial_mastery         = { 93352, 365933, 1 }, -- Hover gains $s1 additional charge.
+    ancient_flame          = { 93271, 369990, 1 }, -- Casting Emerald Blossom or Verdant Embrace reduces the cast time of your next Living Flame by $375583s1%.
+    attuned_to_the_dream   = { 93292, 376930, 2 }, -- Your healing done and healing received are increased by $s1%.
+    blast_furnace          = { 93309, 375510, 1 }, -- Fire Breath's damage over time lasts $s1 sec longer.
+    bountiful_bloom        = { 93291, 370886, 1 }, -- Emerald Blossom heals $s1 additional allies.
+    cauterizing_flame      = { 93294, 374251, 1 }, -- Cauterize an ally's wounds, removing all Bleed, Poison, Curse, and Disease effects. Heals for $s2 upon removing any effect.
+    clobbering_sweep       = { 93296, 375443, 1 }, -- Tail Swipe's cooldown is reduced by ${$s1/-1000} sec.
+    draconic_legacy        = { 93300, 376166, 1 }, -- Your Stamina is increased by $s1%.
+    enkindled              = { 93295, 375554, 2 }, -- Living Flame deals $s1% more damage and healing.
+    expunge                = { 93306, 365585, 1 }, -- Expunge toxins affecting an ally, removing all Poison effects.
+    extended_flight        = { 93349, 375517, 2 }, -- Hover lasts ${$s1/1000} sec longer.
+    exuberance             = { 93299, 375542, 1 }, -- While above 75% health, your movement speed is increased by $s1%.
+    fire_within            = { 93345, 375577, 1 }, -- Renewing Blaze's cooldown is reduced by ${$s1/-1000} sec.
+    foci_of_life           = { 93345, 375574, 1 }, -- Renewing Blaze restores you more quickly, causing damage you take to be healed back over $<newDur> sec.
+    forger_of_mountains    = { 93270, 375528, 1 }, -- Landslide's cooldown is reduced by ${$s1/-1000} sec, and it can withstand $s2% more damage before breaking.
+    heavy_wingbeats        = { 93296, 368838, 1 }, -- Wing Buffet's cooldown is reduced by ${$s1/-1000} sec.
+    inherent_resistance    = { 93355, 375544, 2 }, -- Magic damage taken reduced by $s1%.
+    innate_magic           = { 93302, 375520, 2 }, -- Essence regenerates $s1% faster.
+    instinctive_arcana     = { 93310, 376164, 2 }, -- Your Magic damage done is increased by $s1%.
+    landslide              = { 93305, 358385, 1 }, -- Conjure a path of shifting stone towards the target location, rooting enemies for $355689d. Damage may cancel the effect.
+    leaping_flames         = { 93343, 369939, 1 }, -- Fire Breath causes your next Living Flame to strike 1 additional target per empower level.
+    lush_growth            = { 93347, 375561, 2 }, -- Green spells restore $s1% more health.
+    natural_convergence    = { 93312, 369913, 1 }, -- Disintegrate channels $s1% faster$?c3[ and Eruption's cast time is reduced by $s3%][].
+    obsidian_bulwark       = { 93289, 375406, 1 }, -- Obsidian Scales has an additional charge.
+    obsidian_scales        = { 93304, 363916, 1 }, -- Reinforce your scales, reducing damage taken by $s1%. Lasts $d.
+    oppressing_roar        = { 93298, 372048, 1 }, -- Let out a bone-shaking roar at enemies in a cone in front of you, increasing the duration of crowd controls that affect them by $s2% in the next $d.$?s374346[; Removes $s1 Enrage effect from each enemy. Oppressing Roar's cooldown is reduced by $374346s1 sec for each Enrage dispelled.][]
+    overawe                = { 93297, 374346, 1 }, -- Oppressing Roar removes $372048s1 Enrage effect from each enemy, and its cooldown is reduced by $s1 sec for each Enrage dispelled.
+    panacea                = { 93348, 387761, 1 }, -- Emerald Blossom instantly heals you for $387763s1 when cast.
+    permeating_chill       = { 93303, 370897, 1 }, -- Your damaging Blue spells reduce the target's movement speed by $s1% for $370898d.
+    potent_mana            = { 93715, 418101, 1 }, -- Source of Magic increases the target's healing and damage done by $s1%.
+    protracted_talons      = { 93307, 369909, 1 }, -- Azure Strike damages $s1 additional $Lenemy:enemies;.
+    quell                  = { 93311, 351338, 1 }, -- Interrupt an enemy's spellcasting and prevent any spell from that school of magic from being cast for $d.
+    recall                 = { 93301, 371806, 1 }, -- You may reactivate $?s359816[Dream Flight and ][]$?s403631[Breath of Eons][Deep Breath] within $s1 sec after landing to travel back in time to your takeoff location.
+    regenerative_magic     = { 93353, 387787, 1 }, -- Your Leech is increased by $s1%.
+    renewing_blaze         = { 93344, 374348, 1 }, -- The flames of life surround you for $d. While this effect is active, $s1% of damage you take is healed back over $374349d.
+    rescue                 = { 93288, 370665, 1 }, -- Swoop to an ally and fly with them to the target location.
+    scarlet_adaptation     = { 93340, 372469, 1 }, -- Store $s1% of your effective healing, up to $<cap>. Your next damaging Living Flame consumes all stored healing to increase its damage dealt.
+    sleep_walk             = { 93293, 360806, 1 }, -- Disorient an enemy for $d, causing them to sleep walk towards you. Damage has a chance to awaken them.
+    source_of_magic        = { 93354, 369459, 1 }, -- Redirect your excess magic to a friendly healer for $d. When you cast an empowered spell, you restore ${$372571s1/100}.2% of their maximum mana per empower level. Limit 1.
+    tailwind               = { 93290, 375556, 1 }, -- Hover increases your movement speed by ${$378105s1+$358267s2}% for the first $378105d.
+    terror_of_the_skies    = { 93342, 371032, 1 }, -- $?s403631[Breath of Eons][Deep Breath] stuns enemies for $372245d.
+    time_spiral            = { 93351, 374968, 1 }, -- Bend time, allowing you and your allies within $A1 yds to cast their major movement ability once in the next $375234d, even if it is on cooldown.
+    tip_the_scales         = { 93350, 370553, 1 }, -- Compress time to make your next empowered spell cast instantly at its maximum empower level.
+    twin_guardian          = { 93287, 370888, 1 }, -- Rescue protects you and your ally from harm, absorbing damage equal to $s1% of your maximum health for $370889d.
+    unravel                = { 93308, 368432, 1 }, -- Sunder an enemy's protective magic, dealing $s1 Spellfrost damage to absorb shields.
+    verdant_embrace        = { 93341, 360995, 1 }, -- Fly to an ally and heal them for $361195s1, or heal yourself for the same amount.
+    walloping_blow         = { 93286, 387341, 1 }, -- Wing Buffet and Tail Swipe knock enemies further and daze them, reducing movement speed by 70% for 4 sec.
+    zephyr                 = { 93346, 374227, 1 }, -- Conjure an updraft to lift you and your $s3 nearest allies within $A1 yds into the air, reducing damage taken from area-of-effect attacks by $s1% and increasing movement speed by $s2% for $d.
 
-    -- Devastation
-    animosity              = { 68640, 375797, 1 }, -- Casting an empower spell extends the duration of Dragonrage by 4 sec.
-    arcane_intensity       = { 68622, 375618, 2 }, -- Disintegrate deals 8% more damage.
-    arcane_vigor           = { 68619, 386342, 1 }, -- Shattering Star grants Essence Burst.
-    azure_essence_burst    = { 68643, 375721, 1 }, -- Azure Strike has a 15% chance to cause an Essence Burst, making your next Disintegrate or Pyre cost no Essence.
-    burnout                = { 68633, 375801, 1 }, -- Fire Breath damage has 16% chance to cause your next Living Flame to be instant cast, stacking 2 times.
-    catalyze               = { 68636, 386283, 1 }, -- While channeling Disintegrate your Fire Breath on the target deals damage 100% more often.
-    causality              = { 93364, 375777, 1 }, -- Disintegrate reduces the remaining cooldown of your empower spells by 0.50 sec each time it deals damage. Pyre reduces the remaining cooldown of your empower spells by 0.40 sec per enemy struck, up to 2.0 sec.
-    charged_blast          = { 68627, 370455, 1 }, -- Your Blue damage increases the damage of your next Pyre by 5%, stacking 20 times.
-    dense_energy           = { 68646, 370962, 1 }, -- Pyre's Essence cost is reduced by 1.
-    dragonrage             = { 68641, 375087, 1 }, -- Erupt with draconic fury and exhale Pyres at 3 enemies within 25 yds. For 18 sec, Essence Burst's chance to occur is increased to 100%, and you gain the maximum benefit of Mastery: Giantkiller regardless of targets' health.
-    engulfing_blaze        = { 68648, 370837, 1 }, -- Living Flame deals 25% increased damage and healing, but its cast time is increased by 0.3 sec.
-    essence_attunement     = { 68625, 375722, 1 }, -- Essence Burst stacks 2 times.
-    eternity_surge         = { 68623, 359073, 1 }, -- Focus your energies to release a salvo of pure magic, dealing 9,166 Spellfrost damage to an enemy. Damages additional enemies within 12 yds of the target when empowered. I: Damages 2 enemies. II: Damages 4 enemies. III: Damages 6 enemies.
-    eternitys_span         = { 68621, 375757, 1 }, -- Eternity Surge and Shattering Star hit twice as many targets.
-    event_horizon          = { 68617, 411164, 1 }, -- Eternity Surge's cooldown is reduced by 3 sec.
-    everburning_flame      = { 93363, 370819, 1 }, -- Red spells extend the duration of your Fire Breath's damage over time by 1 sec.
-    expunge                = { 68689, 365585, 1 }, -- Expunge toxins affecting an ally, removing all Poison effects.
-    eye_of_infinity        = { 68617, 411165, 1 }, -- Eternity Surge deals 15% increased damage to your primary target.
-    feed_the_flames        = { 68615, 369846, 1 }, -- After casting 9 Pyres, your next Pyre will explode into a Firestorm.
-    firestorm              = { 68635, 368847, 1 }, -- An explosion bombards the target area with white-hot embers, dealing 5,682 Fire damage to enemies over 12 sec.
-    focusing_iris          = { 68619, 386336, 1 }, -- Shattering Star's damage taken effect lasts 2 sec longer.
-    font_of_magic          = { 68632, 411212, 1 }, -- Your empower spells' maximum level is increased by 1, and they reach maximum empower level 20% faster.
-    heat_wave              = { 68637, 375725, 2 }, -- Fire Breath deals 20% more damage.
-    hoarded_power          = { 68575, 375796, 1 }, -- Essence Burst has a 20% chance to not be consumed.
-    honed_aggression       = { 68626, 371038, 2 }, -- Azure Strike and Living Flame deal 5% more damage.
-    imminent_destruction   = { 68631, 370781, 1 }, -- Deep Breath reduces the Essence costs of Disintegrate and Pyre by 1 for 10 sec after you land.
-    imposing_presence      = { 68642, 371016, 1 }, -- Quell's cooldown is reduced by 20 sec.
-    inner_radiance         = { 68642, 386405, 1 }, -- Your Living Flame and Emerald Blossom are 30% more effective on yourself.
-    iridescence            = { 68616, 370867, 1 }, -- Casting an empower spell increases the damage of your next 2 spells of the same color by 20% within 10 sec.
-    landslide              = { 68681, 358385, 1 }, -- Conjure a path of shifting stone towards the target location, rooting enemies for 30 sec. Damage may cancel the effect.
-    lay_waste              = { 68624, 371034, 1 }, -- Deep Breath's damage is increased by 20%.
-    onyx_legacy            = { 68630, 386348, 1 }, -- Deep Breath's cooldown is reduced by 1 min.
-    power_nexus            = { 68574, 369908, 1 }, -- Increases your maximum Essence to 6.
-    power_swell            = { 68620, 370839, 1 }, -- Casting an empower spell increases your Essence regeneration rate by 100% for 4 sec.
-    pyre                   = { 68644, 357211, 1 }, -- Lob a ball of flame, dealing 2,573 Fire damage to the target and nearby enemies.
-    raging_inferno         = { 68634, 405659, 1 }, -- Firestorm's radius is increased by 25%, and Pyre deals 20% increased damage to enemies within your Firestorm.
-    ruby_embers            = { 68648, 365937, 1 }, -- Living Flame deals 541 damage over 12 sec to enemies, or restores 1,548 health to allies over 12 sec. Stacks 3 times.
-    ruby_essence_burst     = { 68645, 376872, 1 }, -- Your Living Flame has a 20% chance to cause an Essence Burst, making your next Disintegrate or Pyre cost no Essence.
-    scintillation          = { 68629, 370821, 1 }, -- Disintegrate has a 15% chance each time it deals damage to launch a level 1 Eternity Surge at 50% power.
-    shattering_star        = { 68618, 370452, 1 }, -- Exhale bolts of concentrated power from your mouth at 2 enemies for 3,921 Spellfrost damage that cracks the targets' defenses, increasing the damage they take from you by 20% for 4 sec.
-    snapfire               = { 68634, 370783, 1 }, -- Living Flame has a 15% chance to reset the cooldown of Firestorm, and make your next one instant cast and deal 100% increased damage.
-    spellweavers_dominance = { 68628, 370845, 1 }, -- Your damaging critical strikes deal 230% damage instead of the usual 200%.
-    titanic_wrath          = { 68639, 386272, 2 }, -- Essence Burst increases the damage of affected spells by 8.0%.
-    tyranny                = { 68638, 376888, 1 }, -- During Deep Breath and Dragonrage you gain the maximum benefit of Mastery: Giantkiller regardless of targets' health.
-    volatility             = { 68647, 369089, 2 }, -- Pyre has a 15% chance to flare up and explode again on a nearby target.
+    -- Devastation Talents
+    animosity              = { 93330, 375797, 1 }, -- Casting an empower spell extends the duration of Dragonrage by ${$s1/1000} sec.
+    arcane_intensity       = { 93274, 375618, 2 }, -- Disintegrate deals $s1% more damage.
+    arcane_vigor           = { 93315, 386342, 1 }, -- Shattering Star grants Essence Burst.
+    azure_essence_burst    = { 93333, 375721, 1 }, -- Azure Strike has a $s1% chance to cause an Essence Burst, making your next Disintegrate or Pyre cost no Essence.
+    burnout                = { 93314, 375801, 1 }, -- Fire Breath damage has $s1% chance to cause your next Living Flame to be instant cast, stacking $375802u times.
+    catalyze               = { 93280, 386283, 1 }, -- While channeling Disintegrate your Fire Breath on the target deals damage $s1% more often.
+    causality              = { 93366, 375777, 1 }, -- Disintegrate reduces the remaining cooldown of your empower spells by ${$s1/-1000}.2 sec each time it deals damage.; Pyre reduces the remaining cooldown of your empower spells by ${$s2/-1000}.2 sec per enemy struck, up to $<pyreCap> sec.
+    charged_blast          = { 93317, 370455, 1 }, -- Your Blue damage increases the damage of your next Pyre by $370454s1%, stacking $370454u times.
+    dense_energy           = { 93284, 370962, 1 }, -- Pyre's Essence cost is reduced by $s1.
+    dragonrage             = { 93331, 375087, 1 }, -- Erupt with draconic fury and exhale Pyres at $375088s1 enemies within $375088A1 yds.; For $d, Essence Burst's chance to occur is increased to $s2%$?s376888[, and you gain the maximum benefit of Mastery: Giantkiller regardless of targets' health][].
+    engulfing_blaze        = { 93282, 370837, 1 }, -- Living Flame deals $s2% increased damage and healing, but its cast time is increased by ${$s1/1000}.1 sec.
+    essence_attunement     = { 93319, 375722, 1 }, -- Essence Burst stacks ${$s1+1} times.
+    eternity_surge         = { 93275, 359073, 1 }, -- Focus your energies to release a salvo of pure magic, dealing $<dmg> Spellfrost damage to an enemy. Damages additional enemies within $359077A2 yds of the target when empowered.; I:   Damages $?s375757[2 enemies][1 enemy].; II:  Damages $?s375757[4 enemies][2 enemies].; III: Damages $?s375757[6 enemies][3 enemies].
+    eternitys_span         = { 93320, 375757, 1 }, -- Eternity Surge and Shattering Star hit twice as many targets.
+    event_horizon          = { 93318, 411164, 1 }, -- Eternity Surge's cooldown is reduced by ${$s1/-1000} sec.
+    everburning_flame      = { 93365, 370819, 1 }, -- Red spells extend the duration of your Fire Breath's damage over time by $s1 sec.
+    eye_of_infinity        = { 93318, 411165, 1 }, -- Eternity Surge deals $s1% increased damage to your primary target.
+    feed_the_flames        = { 93313, 369846, 1 }, -- After casting $411288s2 Pyres, your next Pyre will explode into a Firestorm.
+    firestorm              = { 93278, 368847, 1 }, -- An explosion bombards the target area with white-hot embers, dealing $<damage> Fire damage to enemies over $369372d.
+    focusing_iris          = { 93315, 386336, 1 }, -- Shattering Star's damage taken effect lasts ${$s1/1000} sec longer.
+    font_of_magic          = { 93279, 411212, 1 }, -- Your empower spells' maximum level is increased by 1, and they reach maximum empower level $s3% faster.
+    heat_wave              = { 93281, 375725, 2 }, -- Fire Breath deals $s1% more damage.
+    hoarded_power          = { 93325, 375796, 1 }, -- Essence Burst has a $s1% chance to not be consumed.
+    honed_aggression       = { 93329, 371038, 2 }, -- Azure Strike and Living Flame deal $s1% more damage.
+    imminent_destruction   = { 93326, 370781, 1 }, -- Deep Breath reduces the Essence costs of Disintegrate and Pyre by $411055s1 for $411055d after you land.
+    imposing_presence      = { 93332, 371016, 1 }, -- Quell's cooldown is reduced by ${$s1/-1000} sec.
+    inner_radiance         = { 93332, 386405, 1 }, -- Your Living Flame and Emerald Blossom are $s1% more effective on yourself.
+    iridescence            = { 93321, 370867, 1 }, -- Casting an empower spell increases the damage of your next $386353u spells of the same color by $386353s1% within $386353d.
+    lay_waste              = { 93273, 371034, 1 }, -- Deep Breath's damage is increased by $s1%.
+    onyx_legacy            = { 93327, 386348, 1 }, -- Deep Breath's cooldown is reduced by 1 min.
+    power_nexus            = { 93276, 369908, 1 }, -- Increases your maximum Essence to $<max>.
+    power_swell            = { 93322, 370839, 1 }, -- Casting an empower spell increases your Essence regeneration rate by $376850s1% for $376850d.
+    pyre                   = { 93334, 357211, 1 }, -- Lob a ball of flame, dealing $357212s1 Fire damage to the target and nearby enemies.
+    raging_inferno         = { 93277, 405659, 1 }, -- Firestorm's radius is increased by $s1%, and Pyre deals $s2% increased damage to enemies within your Firestorm.
+    ruby_embers            = { 93282, 365937, 1 }, -- Living Flame deals $361500o2 damage over $361500d to enemies, or restores $361509o2 health to allies over $361509d. Stacks $361509u times.
+    ruby_essence_burst     = { 93285, 376872, 1 }, -- Your Living Flame has a $s1% chance to cause an Essence Burst, making your next Disintegrate or Pyre cost no Essence.
+    scintillation          = { 93324, 370821, 1 }, -- Disintegrate has a $s2% chance each time it deals damage to launch a level 1 Eternity Surge at $s1% power.
+    shattering_star        = { 93316, 370452, 1 }, -- Exhale $?s375757[bolts][a bolt] of concentrated power from your mouth $?s375757[at $s1 enemies ][]for $s2 Spellfrost damage that cracks the $?s375757[targets'][target's] defenses, increasing the damage they take from you by $s3% for $d.$?s386342[; Grants Essence Burst.][]
+    snapfire               = { 93277, 370783, 1 }, -- Living Flame has a $s1% chance to reset the cooldown of Firestorm, and make your next one instant cast and deal $370818s2% increased damage.
+    spellweavers_dominance = { 93323, 370845, 1 }, -- Your damaging critical strikes deal ${$s1+200}% damage instead of the usual 200%.
+    titanic_wrath          = { 93272, 386272, 2 }, -- Essence Burst increases the damage of affected spells by ${$s1}.1%.
+    tyranny                = { 93328, 376888, 1 }, -- During Deep Breath and Dragonrage you gain the maximum benefit of Mastery: Giantkiller regardless of targets' health.
+    volatility             = { 93283, 369089, 2 }, -- Pyre has a $s1% chance to flare up and explode again on a nearby target.
 } )
 
 
@@ -296,7 +296,7 @@ spec:RegisterAuras( {
     fire_breath = {
         id = 357209,
         duration = function ()
-            return 4 * empowerment_level + talent.blast_furnace.rank * 2
+            return 4 * empowerment_level + talent.blast_furnace.rank * 4
         end,
         -- TODO: damage = function () return 0.322 * stat.spell_power * action.fire_breath.spell_targets * ( talent.heat_wave.enabled and 1.2 or 1 ) * ( debuff.shattering_star.up and 1.2 or 1 ) end,
         max_stack = 1,
@@ -758,7 +758,7 @@ spec:RegisterAbilities( {
         school = "fire",
         color = "red",
 
-        spend = 0.013,
+        spend = 0.10,
         spendType = "mana",
 
         talent = "cauterizing_flame",
@@ -965,7 +965,7 @@ spec:RegisterAbilities( {
         school = "nature",
         color = "green",
 
-        spend = 0.013,
+        spend = 0.10,
         spendType = "mana",
 
         talent = "expunge",
@@ -1112,7 +1112,7 @@ spec:RegisterAbilities( {
         school = "fire",
         color = "red",
 
-        spend = 0.02,
+        spend = 0.12,
         spendType = "mana",
 
         startsCombat = true,
@@ -1501,7 +1501,7 @@ spec:RegisterAbilities( {
         school = "nature",
         color = "green",
 
-        spend = 0.03,
+        spend = 0.10,
         spendType = "mana",
 
         talent = "verdant_embrace",
