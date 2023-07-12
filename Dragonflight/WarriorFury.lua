@@ -124,8 +124,8 @@ spec:RegisterTalents( {
     elysian_might             = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%.
     fast_footwork             = { 90371, 382260, 1 }, -- Movement speed increased by 5%.
     furious_blows             = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
-    heroic_leap               = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 481 Physical damage to all enemies within 8 yards.
-    impending_victory         = { 90326, 202168, 1 }, -- Instantly attack the target, causing 1,024 damage and healing you for 30% of your maximum health. Killing an enemy that yields experience or honor resets the cooldown of Impending Victory and makes it cost no Rage.
+    heroic_leap               = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 574 Physical damage to all enemies within 8 yards.
+    impending_victory         = { 90326, 202168, 1 }, -- Instantly attack the target, causing 1,222 damage and healing you for 30% of your maximum health. Killing an enemy that yields experience or honor resets the cooldown of Impending Victory and makes it cost no Rage.
     inspiring_presence        = { 90332, 382310, 1 }, -- Rallying Cry's duration is increased by 3 sec and it grants an additional 5% maximum health.
     intervene                 = { 90329, 3411  , 1 }, -- Run at high speed toward an ally, intercepting all melee and ranged attacks against them for 6 sec while they remain within 10 yds.
     intimidating_shout        = { 90384, 5246  , 1 }, -- Causes the targeted enemy to cower in fear, and up to 5 additional enemies within 8 yards to flee. Targets are disoriented for 8 sec.
@@ -140,22 +140,22 @@ spec:RegisterTalents( {
     rumbling_earth            = { 90374, 275339, 1 }, -- Shockwave's range increased by 6 yards and when Shockwave strikes at least 3 targets, its cooldown is reduced by 15 sec.
     second_wind               = { 90332, 29838 , 1 }, -- Restores 6% health every 1 sec when you have not taken damage for 5 sec.
     seismic_reverberation     = { 90340, 382956, 1 }, -- If Whirlwind hits 3 or more enemies, it hits them 1 additional time for 30% damage.
-    shattering_throw          = { 90351, 64382 , 1 }, -- Hurl your weapon at the enemy, causing 2,048 Physical damage, ignoring armor, and removing any magical immunities. Deals up to 500% increased damage to absorb shields.
-    shockwave                 = { 90375, 46968 , 1 }, -- Sends a wave of force in a frontal cone, causing 409 damage and stunning all enemies within 10 yards for 2 sec. Generates 10 Rage.
+    shattering_throw          = { 90351, 64382 , 1 }, -- Hurl your weapon at the enemy, causing 2,327 Physical damage, ignoring armor, and removing any magical immunities. Deals up to 500% increased damage to absorb shields.
+    shockwave                 = { 90375, 46968 , 1 }, -- Sends a wave of force in a frontal cone, causing 488 damage and stunning all enemies within 10 yards for 2 sec. Generates 10 Rage.
     sonic_boom                = { 90321, 390725, 1 }, -- Shockwave deals 350% increased damage and will always critical strike.
-    spear_of_bastion          = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 3,380 Physical damage instantly and an additional 3,789 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 20 Rage.
+    spear_of_bastion          = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 6,048 Physical damage instantly and an additional 4,519 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 40 Rage.
     spell_reflection          = { 90385, 23920 , 1 }, -- Raise your weapon, reflecting the first spell cast on you, and reduce magic damage you take by 20% for 5 sec.
-    storm_bolt                = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 584 Physical damage and stunning for 4 sec.
-    thunderous_roar           = { 90359, 384318, 1 }, -- Roar explosively, dealing 3,278 Physical damage to enemies within 12 yds and cause them to bleed for 4,039 physical damage over 8 sec. Generates 10 Rage.
+    storm_bolt                = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 696 Physical damage and stunning for 4 sec.
+    thunderous_roar           = { 90359, 384318, 1 }, -- Roar explosively, dealing 3,910 Physical damage to enemies within 12 yds and cause them to bleed for 4,818 physical damage over 8 sec. Generates 10 Rage.
     thunderous_words          = { 90358, 384969, 1 }, -- Increases the duration of Thunderous Roar's Bleed effect by 2.0 sec and increases the damage of your bleed effects by 15% at all times.
-    titanic_throw             = { 90341, 384090, 1 }, -- Throws your weapon at the enemy, causing 717 Physical damage to it and 5 nearby enemies. Generates high threat.
+    titanic_throw             = { 90341, 384090, 1 }, -- Throws your weapon at the enemy, causing 855 Physical damage to it and 5 nearby enemies. Generates high threat.
     uproar                    = { 90357, 391572, 1 }, -- Thunderous Roar's cooldown reduced by 30 sec.
     wild_strikes              = { 90360, 382946, 2 }, -- Haste increased by 1% and your auto-attack critical strikes increase your auto-attack speed by 10% for 10 sec.
-    wrecking_throw            = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 2,048 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
+    wrecking_throw            = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 2,327 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
 
     -- Fury
     anger_management          = { 90415, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Recklessness and Ravager by 1 sec.
-    annihilator               = { 90419, 383916, 1 }, -- Your auto-attacks deal an additional 271 Physical damage and generate 4 Rage.
+    annihilator               = { 90419, 383916, 1 }, -- Your auto-attacks deal an additional 323 Physical damage and generate 4 Rage.
     armored_to_the_teeth      = { 90258, 384124, 2 }, -- Gain Strength equal to 5% of your Armor.
     ashen_juggernaut          = { 90409, 392536, 1 }, -- Execute increases the critical strike chance of Execute by 10% for 15 sec, stacking up to 5 times.
     avatar                    = { 92640, 107574, 1 }, -- Transform into a colossus for 20 sec, causing you to deal 20% increased damage and removing all roots and snares. Generates 10 Rage.
@@ -164,8 +164,8 @@ spec:RegisterTalents( {
     berserkers_torment        = { 90362, 390123, 1 }, -- Activating Avatar or Recklessness casts the other at reduced effectiveness.
     bloodborne                = { 90401, 385703, 1 }, -- Bleed damage of Odyn's Fury, Thunderous Roar and Gushing Wound increased by 20%.
     bloodcraze                = { 90405, 393950, 1 }, -- Bloodthirst increases the critical strike chance of your next Bloodthirst by 15%. Stacking up to 5 times.
-    bloodthirst               = { 90392, 23881 , 1 }, -- Assault the target in a bloodthirsty craze, dealing 1,809 Physical damage and restoring 3% of your health. Generates 8 Rage.
-    cold_steel_hot_blood      = { 90402, 383959, 1 }, -- Bloodthirst critical strikes generate 4 additional Rage, and inflict a Gushing Wound that leeches 1,659 health over 6 sec.
+    bloodthirst               = { 90392, 23881 , 1 }, -- Assault the target in a bloodthirsty craze, dealing 2,158 Physical damage and restoring 3% of your health. Generates 8 Rage.
+    cold_steel_hot_blood      = { 90402, 383959, 1 }, -- Bloodthirst critical strikes generate 4 additional Rage, and inflict a Gushing Wound that leeches 1,979 health over 6 sec.
     concussive_blows          = { 90335, 383115, 1 }, -- Cooldown of Pummel reduced by 1.0 sec. Successfully interrupting an enemy increases the damage you deal to them by 5% for 10 sec.
     critical_thinking         = { 90425, 383297, 2 }, -- Critical Strike chance increased by 1.0% and Raging Blow and Annihilator's damaging critical strikes deal 5.0% increased damage.
     cruelty                   = { 90428, 392931, 1 }, -- While Enraged, Raging Blow deals 15% increased damage and Annihilator deals 10% increased damage.
@@ -193,15 +193,15 @@ spec:RegisterTalents( {
     invigorating_fury         = { 90393, 383468, 1 }, -- Enraged Regeneration lasts 3 sec longer and instantly heals for 15% of your maximum health.
     massacre                  = { 90410, 206315, 1 }, -- Execute is now usable on targets below 35% health, and its cooldown is reduced by 1.5 sec.
     meat_cleaver              = { 90391, 280392, 1 }, -- Whirlwind deals 25% more damage and now affects your next 4 single-target melee attacks, instead of the next 2 attacks.
-    odyns_fury                = { 90418, 385059, 1 }, -- Unleashes your power, dealing 4,578 Physical damage and an additional 1,720 Physical damage over 4 sec to all enemies within 12 yards. Generates 15 Rage.
-    onslaught                 = { 90424, 315720, 1 }, -- Brutally attack an enemy for 4,348 Physical damage. Generates 30 Rage.
+    odyns_fury                = { 90418, 385059, 1 }, -- Unleashes your power, dealing 5,466 Physical damage and an additional 2,052 Physical damage over 4 sec to all enemies within 12 yards. Generates 15 Rage.
+    onslaught                 = { 90424, 315720, 1 }, -- Brutally attack an enemy for 5,186 Physical damage. Generates 30 Rage.
     raging_armaments          = { 90426, 388049, 1 }, -- Raging Blow gains an extra charge.
-    raging_blow               = { 90396, 85288 , 1 }, -- A mighty blow with both weapons that deals a total of 2,526 Physical damage. Raging Blow has a 20% chance to instantly reset its own cooldown. Generates 14 Rage.
-    rampage                   = { 90408, 184367, 1 }, -- Enrages you and unleashes a series of 4 brutal strikes for a total of 3,420 Physical damage.
-    ravager                   = { 90388, 228920, 1 }, -- Throws a whirling weapon at the target location that chases nearby enemies, inflicting 10,424 Physical damage to all enemies over 9.7 sec. Deals reduced damage beyond 8 targets. Generates 10 Rage each time it deals damage.
+    raging_blow               = { 90396, 85288 , 1 }, -- A mighty blow with both weapons that deals a total of 3,016 Physical damage. Raging Blow has a 20% chance to instantly reset its own cooldown. Generates 14 Rage.
+    rampage                   = { 90408, 184367, 1 }, -- Enrages you and unleashes a series of 4 brutal strikes for a total of 4,086 Physical damage.
+    ravager                   = { 90388, 228920, 1 }, -- Throws a whirling weapon at the target location that chases nearby enemies, inflicting 12,433 Physical damage to all enemies over 9.7 sec. Deals reduced damage beyond 8 targets. Generates 10 Rage each time it deals damage.
     reckless_abandon          = { 90415, 396749, 1 }, -- Recklessness generates 50 Rage and Rampage greatly empowers your next 2 Bloodthirsts or Raging Blows.
     recklessness              = { 90412, 1719  , 1 }, -- Go berserk, increasing all Rage generation by 100% and granting your abilities 20% increased critical strike chance for 12 sec.
-    sidearm                   = { 90335, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 512 Physical damage.
+    sidearm                   = { 90335, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 611 Physical damage.
     singleminded_fury         = { 90400, 81099 , 1 }, -- While dual-wielding a pair of one-handed weapons, your damage done is increased by 5% and your movement speed is increased by 5%.
     slaughtering_strikes      = { 90411, 388004, 1 }, -- Raging Blow causes every strike of your next Rampage to deal an additional 20% damage, stacking up to 5 times. Annihilator causes every strike of your next Rampage to deal an additional 2% damage, stacking up to 5 times.
     storm_of_steel            = { 90389, 382953, 1 }, -- Ravager's damage is reduced by 30% but it now has 2 charges and generates 20 Rage each time it deals damage.
@@ -209,7 +209,7 @@ spec:RegisterTalents( {
     sudden_death              = { 90429, 280721, 1 }, -- Your attacks have a chance to reset the cooldown of Execute and make it usable on any target, regardless of their health.
     swift_strikes             = { 90416, 383459, 2 }, -- Increases haste by 1%, Raging Blow generates an additional 1 Rage and Annihilator generates an 1 additional Rage.
     tenderize                 = { 90423, 388933, 1 }, -- Onslaught Enrages you, and if you have Slaghtering Strikes grants you 3 stacks of Slaughtering Strikes. Enrage now lasts 2 sec longer.
-    thunder_clap              = { 92223, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,230 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
+    thunder_clap              = { 92223, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,467 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
     titanic_rage              = { 90417, 394329, 1 }, -- Odyn's Fury's Enrages you, deals 10% increased damage and grants you 2 stacks of Whirlwind.
     titans_torment            = { 90362, 390135, 1 }, -- Activating Avatar casts Odyn's Fury, activating Odyn's Fury casts Avatar at reduced effectiveness.
     unbridled_ferocity        = { 90414, 389603, 1 }, -- Rampage and Onslaught have a 20% chance to grant Recklessness for 4 sec.
@@ -226,14 +226,14 @@ spec:RegisterPvpTalents( {
     battle_trance        = 170 , -- (213857) You go into a trance causing you to regenerate 3% of your health and generate 3 Rage every 3 sec for 18 sec after using Raging Blow twice in a row on a target. Attacking a new target with Raging Blow will cancel this effect.
     bloodrage            = 172 , -- (329038) You gain 40 Rage over 4 sec, and all snares and roots are cleared from you, but at a cost of 5% of your health.
     death_sentence       = 25  , -- (198500) Execute charges you to targets up to 15 yards away. This effect has a 6 sec cooldown.
-    death_wish           = 179 , -- (199261) Increases your damage taken and done by 5% for 15 sec at the cost of 5% of your health. Stacks up to 10 times.
+    death_wish           = 179 , -- (199261) Increases your damage taken and done by 10% for 15 sec at the cost of 10% of your health. Stacks up to 5 times.
     demolition           = 5373, -- (329033) Reduces the cooldown of your Shattering Throw or Wrecking Throw by 50% and increases its damage to absorb shields by an additional 250%.
-    disarm               = 3533, -- (236077) Disarm the enemy's weapons and shield for 6 sec. Disarmed creatures deal significantly reduced damage.
-    enduring_rage        = 177 , -- (198877) Increases the duration of your Enrage effect by 1 sec, and your Raging Blows extend the duration of your Enrage by 1.5 sec.
+    disarm               = 3533, -- (236077) Disarm the enemy's weapons and shield for 5 sec. Disarmed creatures deal significantly reduced damage.
+    enduring_rage        = 177 , -- (411764) You have a chance to become Enraged while you are suffering movement impairing effects. While Enraged, suffering loss of control effects have a chance to grant you Recklessness for 4 sec.
     master_and_commander = 3528, -- (235941) Cooldown of Rallying Cry reduced by 1 min, and grants 15% additional health.
-    rebound              = 5548, -- (213915) Reflecting spells causes them to deal 50% extra damage back to the attacker.
-    slaughterhouse       = 3735, -- (352998) Rampage damage reduces healing the target receives by 3% for 12 sec, stacking up to 12 times.
-    warbringer           = 5431, -- (356353) Charge roots enemies for 2 sec and emanates a shockwave past the target, rooting enemies and dealing 4,701 Physical damage in a 15 yd cone.
+    rebound              = 5548, -- (213915) Spell Reflection reflects the next 2 incoming spells cast on you and reflected spells deal 50% extra damage to the attacker. Spell Reflection's cooldown is increased by 10 sec.
+    slaughterhouse       = 3735, -- (352998) Rampage damage reduces healing the target receives by 3% for 20 sec, stacking up to 12 times.
+    warbringer           = 5431, -- (356353) Charge roots enemies for 2 sec and emanates a shockwave past the target, rooting enemies and dealing 1,221 Physical damage in a 20 yd cone.
 } )
 
 

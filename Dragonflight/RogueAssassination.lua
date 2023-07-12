@@ -93,16 +93,15 @@ spec:RegisterTalents( {
     -- Rogue
     acrobatic_strikes      = { 90752, 196924, 1 }, -- Increases the range of your melee attacks by 3 yds.
     alacrity               = { 90751, 193539, 2 }, -- Your finishing moves have a 5% chance per combo point to grant 1% Haste for 15 sec, stacking up to 5 times.
-    atrophic_poison        = { 90763, 381637, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 40% chance of poisoning the enemy, reducing their damage by 3.6% for 10 sec.
+    atrophic_poison        = { 90763, 381637, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 35% chance of poisoning the enemy, reducing their damage by 3.6% for 10 sec.
     blackjack              = { 90696, 379005, 1 }, -- Enemies have 30% reduced damage and healing for 6 sec after Blind or Sap's effect on them ends.
-    -- cheat_death            = { 90747, 31230 , 1 }, -- Fatal attacks instead reduce you to 7% of your maximum health. For 3 sec afterward, you take 85% reduced damage. Cannot trigger more often than once per 6 min.
     cheat_death            = { 90742, 31230 , 1 }, -- Fatal attacks instead reduce you to 7% of your maximum health. For 3 sec afterward, you take 85% reduced damage. Cannot trigger more often than once per 6 min.
     cloak_of_shadows       = { 90697, 31224 , 1 }, -- Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for 5 sec.
     cold_blood             = { 90748, 382245, 1 }, -- Increases the critical strike chance of your next damaging ability by 100%.
     deadened_nerves        = { 90743, 231719, 1 }, -- Physical damage taken reduced by 3%.
     deadly_precision       = { 90760, 381542, 2 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
     deeper_stratagem       = { 90750, 193531, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
-    echoing_reprimand      = { 90639, 385616, 1 }, -- Deal 1,713 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for 45 sec. Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed 7 combo points. Awards 2 combo points.
+    echoing_reprimand      = { 90639, 385616, 1 }, -- Deal 2,067 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for 45 sec. Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed 7 combo points. Awards 2 combo points.
     elusiveness            = { 90742, 79008 , 1 }, -- Evasion also reduces damage taken by 10%, and Feint also reduces non-area-of-effect damage taken by 20%.
     evasion                = { 90764, 5277  , 1 }, -- Increases your dodge chance by 100% for 10 sec.
     find_weakness          = { 90690, 91023 , 2 }, -- Your Stealth abilities reveal a flaw in your target's defenses, causing all your attacks to bypass 15% of that enemy's armor for 10 sec.
@@ -128,7 +127,7 @@ spec:RegisterTalents( {
     shadow_dance           = { 90689, 185313, 1 }, -- Allows use of all Stealth abilities and grants all the combat benefits of Stealth for 6 sec. Effect not broken from taking damage or attacking.
     shadowrunner           = { 90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move 20% faster.
     shadowstep             = { 90695, 36554 , 1 }, -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
-    soothing_darkness      = { 90691, 393970, 1 }, -- You are healed for 30% of your maximum health over 6 sec after gaining Vanish or Shadow Dance.
+    soothing_darkness      = { 90691, 393970, 1 }, -- You are healed for 24% of your maximum health over 6 sec after gaining Vanish or Shadow Dance.
     subterfuge             = { 90688, 108208, 1 }, -- Your abilities requiring Stealth can still be used for 3 sec after Stealth breaks.
     thiefs_versatility     = { 90753, 381619, 2 }, -- Versatility increased by 2%.
     thistle_tea            = { 90756, 381623, 1 }, -- Restore 100 Energy. Mastery increased by 13.6% for 6 sec.
@@ -139,16 +138,16 @@ spec:RegisterTalents( {
     virulent_poisons       = { 90761, 381543, 1 }, -- Increases the damage of your weapon poisons by 10%.
 
     -- Assassination
-    amplifying_poison      = { 90621, 381664, 1 }, -- Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 40% chance to poison the enemy, dealing 113 Nature damage and applying Amplifying Poison for 12 sec. Envenom can consume 10 stacks of Amplifying Poison to deal 35% increased damage. Max 20 stacks.
-    arterial_precision     = { 90784, 400783, 1 }, -- TODO: Shiv strikes 4 additional nearby enemies and increases your Bleed damage done to affected targets by 20% for 8 sec.
+    amplifying_poison      = { 90621, 381664, 1 }, -- Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 35% chance to poison the enemy, dealing 123 Nature damage and applying Amplifying Poison for 12 sec. Envenom can consume 10 stacks of Amplifying Poison to deal 35% increased damage. Max 20 stacks.
+    arterial_precision     = { 90784, 400783, 1 }, -- Shiv strikes 4 additional nearby enemies and increases your Bleed damage done to affected targets by 20% for 8 sec.
     blind                  = { 90684, 2094  , 1 }, -- Blinds the target, causing it to wander disoriented for 1 min. Damage will interrupt the effect. Limit 1.
     blindside              = { 90786, 328085, 1 }, -- Ambush and Mutilate have a 20% chance to make your next Ambush free and usable without Stealth. Chance increased to 40% if the target is under 35% health.
     bloody_mess            = { 90625, 381626, 2 }, -- Garrote and Rupture damage increased by 15%.
-    crimson_tempest        = { 90632, 121411, 1 }, -- Finishing move that slashes all enemies within 13 yards, dealing instant damage and causing victims to bleed for additional damage. Deals reduced damage beyond 8 targets. Lasts longer per combo point. 1 point : 406 plus 376 over 4 sec 2 points: 609 plus 564 over 6 sec 3 points: 812 plus 752 over 8 sec 4 points: 1,015 plus 940 over 10 sec 5 points: 1,218 plus 1,127 over 12 sec
+    crimson_tempest        = { 90632, 121411, 1 }, -- Finishing move that slashes all enemies within 13 yards, dealing instant damage and causing victims to bleed for additional damage. Deals reduced damage beyond 8 targets. Lasts longer per combo point. 1 point : 486 plus 590 over 4 sec 2 points: 729 plus 884 over 6 sec 3 points: 972 plus 1,179 over 8 sec 4 points: 1,215 plus 1,473 over 10 sec 5 points: 1,458 plus 1,768 over 12 sec
     cut_to_the_chase       = { 90629, 51667 , 1 }, -- Envenom extends the duration of Slice and Dice by up to 3 sec per combo point spent.
     dashing_scoundrel      = { 90766, 381797, 2 }, -- Envenom also increases the critical strike chance of your poisons by 5%, and their critical strikes generate 1 Energy.
-    deadly_poison          = { 90783, 2823  , 1 }, -- Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 40% chance to poison the enemy for 794 Nature damage over 12 sec. Subsequent poison applications will instantly deal 113 Nature damage.
-    deathmark              = { 90769, 360194, 1 }, -- Carve a deathmark into an enemy, dealing 4,056 Bleed damage over 16 sec. While marked your Garrote, Rupture, and Lethal poisons applied to the target are duplicated, dealing 100% of normal damage.
+    deadly_poison          = { 90783, 2823  , 1 }, -- Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 35% chance to poison the enemy for 1,132 Nature damage over 12 sec. Subsequent poison applications will instantly deal 123 Nature damage.
+    deathmark              = { 90769, 360194, 1 }, -- Carve a deathmark into an enemy, dealing 4,494 Bleed damage over 16 sec. While marked your Garrote, Rupture, and Lethal poisons applied to the target are duplicated, dealing 100% of normal damage.
     doomblade              = { 90777, 381673, 1 }, -- Mutilate deals an additional 20% Bleed damage over 8 sec.
     dragontempered_blades  = { 90765, 381801, 1 }, -- You may apply 1 additional Lethal and Non-Lethal Poison to your weapons.
     elaborate_planning     = { 90627, 193640, 2 }, -- Your finishing moves grant 4% increased damage done for 4 sec.
@@ -160,19 +159,19 @@ spec:RegisterTalents( {
     improved_shiv          = { 90628, 319032, 1 }, -- Shiv now also increases your Nature damage done against the target by 20% for 8 sec.
     indiscriminate_carnage = { 90774, 381802, 1 }, -- Your next Garrote and your next Rupture apply to up to 8 enemies within 10 yards.
     intent_to_kill         = { 90620, 381630, 1 }, -- Shadowstep's cooldown is reduced by 33% when used on a target afflicted by your Garrote.
-    internal_bleeding      = { 90781, 381627, 1 }, -- Kidney Shot also deals up to 1,307 Bleed damage over 6 sec, based on combo points spent.
+    internal_bleeding      = { 90781, 381627, 1 }, -- Kidney Shot also deals up to 2,050 Bleed damage over 6 sec, based on combo points spent.
     iron_wire              = { 90778, 196861, 1 }, -- Garrote silences the target for 6 sec when used from Stealth. Enemies silenced by Garrote deal 15% reduced damage for 8 sec.
-    kingsbane              = { 90765, 385627, 1 }, -- Release a lethal poison from your weapons and inject it into your target, dealing 2,324 Nature damage instantly and an additional 2,098 Nature damage over 14 sec. Each time you apply a Lethal Poison to a target affected by Kingsbane, Kingsbane damage increases by 20%. Awards 1 combo point.
+    kingsbane              = { 90765, 385627, 1 }, -- Release a lethal poison from your weapons and inject it into your target, dealing 3,115 Nature damage instantly and an additional 3,634 Nature damage over 14 sec. Each time you apply a Lethal Poison to a target affected by Kingsbane, Kingsbane damage increases by 20%. Awards 1 combo point.
     lethal_dose            = { 90624, 381640, 2 }, -- Your weapon poisons, Nature damage over time, and Bleed abilities deal 1% increased damage to targets for each weapon poison, Nature damage over time, and Bleed effect on them.
     lightweight_shiv       = { 90633, 394983, 1 }, -- Shiv has 1 additional charge.
     master_assassin        = { 90623, 255989, 1 }, -- While Stealth is active and for 3 sec after breaking Stealth, your critical strike chance is increased by 30%.
-    poison_bomb            = { 90767, 255544, 2 }, -- Envenom has a 4% chance per combo point spent to smash a vial of poison at the target's location, creating a pool of acidic death that deals 1,770 Nature damage over 2 sec to all enemies within it.
+    poison_bomb            = { 90767, 255544, 2 }, -- Envenom has a 4% chance per combo point spent to smash a vial of poison at the target's location, creating a pool of acidic death that deals 2,119 Nature damage over 2 sec to all enemies within it.
     sap                    = { 90685, 6770  , 1 }, -- Incapacitates a target not in combat for 1 min. Only works on Humanoids, Beasts, Demons, and Dragonkin. Damage will revive the target. Limit 1.
     scent_of_blood         = { 90775, 381799, 3 }, -- Each enemy afflicted by your Rupture increases your Agility by 1%, up to a maximum of 24%.
-    sepsis                 = { 90622, 385408, 1 }, -- Infect the target's blood, dealing 5,251 Nature damage over 10 sec and gaining 1 use of any Stealth ability. If the target survives its full duration, they suffer an additional 1,933 damage and you gain 1 additional use of any Stealth ability for 10 sec. Cooldown reduced by 30 sec if Sepsis does not last its full duration. Awards 1 combo point.
-    serrated_bone_spike    = { 90622, 385424, 1 }, -- Embed a bone spike in the target, dealing 2,056 Physical damage and 171 Bleed damage every 2.8 sec until they die or leave combat. Refunds a charge when target dies. Awards 1 combo point plus 1 additional per active bone spike.
+    sepsis                 = { 90622, 385408, 1 }, -- Infect the target's blood, dealing 8,233 Nature damage over 10 sec and gaining 1 use of any Stealth ability. If the target survives its full duration, they suffer an additional 2,988 damage and you gain 1 additional use of any Stealth ability for 10 sec. Cooldown reduced by 30 sec if Sepsis does not last its full duration. Awards 1 combo point.
+    serrated_bone_spike    = { 90622, 385424, 1 }, -- Embed a bone spike in the target, dealing 2,480 Physical damage and 264 Bleed damage every 2.7 sec until they die or leave combat. Refunds a charge when target dies. Awards 1 combo point plus 1 additional per active bone spike.
     shadowstep_2           = { 90782, 36554 , 1 }, -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
-    shiv                   = { 90740, 5938  , 1 }, -- Attack with your poisoned blades, dealing 2,288 Physical damage, dispelling all enrage effects and applying a concentrated form of your active Non-Lethal poison. Your Nature damage done to the target is increased by 20% for 8 sec. Awards 1 combo point.
+    shiv                   = { 90740, 5938  , 1 }, -- Attack with your poisoned blades, dealing 564 Physical damage, dispelling all enrage effects and applying a concentrated form of your active Non-Lethal poison. Your Nature damage done to the target is increased by 20% for 8 sec. Awards 1 combo point.
     shrouded_suffocation   = { 90776, 385478, 1 }, -- Increases Garrote damage by 20%. Garrote generates 2 additional combo points when cast from Stealth.
     systemic_failure       = { 90771, 381652, 1 }, -- Garrote increases the damage of Ambush and Mutilate on the target by 20%.
     thrown_precision       = { 90630, 381629, 1 }, -- Fan of Knives's damage is increased by 15%, and it has a 5% increased critical strike chance.
@@ -189,15 +188,15 @@ spec:RegisterTalents( {
 spec:RegisterPvpTalents( {
     control_is_king    = 5530, -- (354406) Cheap Shot grants Slice and Dice for 15 sec and Kidney Shot restores 10 Energy per combo point spent.
     creeping_venom     = 141 , -- (354895) Your Envenom applies Creeping Venom, reducing the target's movement speed by 5% for 4 sec. Creeping Venom is reapplied when the target moves. Max 18 stacks.
-    dagger_in_the_dark = 5550, -- (198675) Each second while Stealth is active, nearby enemies within 10 yards take an additional 5% damage from your next Ambush for 10 sec. Stacks up to 8 times.
-    death_from_above   = 3479, -- (269513) Finishing move that empowers your weapons with energy to performs a deadly attack. You leap into the air and Envenom your target on the way back down, with such force that it has a 10% stronger effect.
-    dismantle          = 5405, -- (207777) Disarm the enemy, preventing the use of any weapons or shield for 6 sec.
-    hemotoxin          = 830 , -- (354124) Shiv also reduces the target's healing received by 40% for 8 sec.
-    maneuverability    = 3448, -- (197000) Sprint removes all root effects and suppresses all movement-slowing effects for 4 sec when used.
+    dagger_in_the_dark = 5550, -- (198675) Each second while Stealth is active, nearby enemies within 12 yards take an additional 2% damage from you for 10 sec. Stacks up to 6 times.
+    death_from_above   = 3479, -- (269513) Finishing move that empowers your weapons with energy to performs a deadly attack. You leap into the air and Envenom your target on the way back down, with such force that it has a 15% stronger effect.
+    dismantle          = 5405, -- (207777) Disarm the enemy, preventing the use of any weapons or shield for 5 sec.
+    hemotoxin          = 830 , -- (354124) Shiv also reduces the target's healing received by 30% for 8 sec.
+    maneuverability    = 3448, -- (197000) Sprint has 50% reduced cooldown and 50% reduced duration.
     smoke_bomb         = 3480, -- (212182) Creates a cloud of thick smoke in an 8 yard radius around the Rogue for 5 sec. Enemies are unable to target into or out of the smoke cloud.
-    system_shock       = 147 , -- (198145) Casting Envenom with at least 5 combo points on a target afflicted by your Garrote, Rupture, and lethal poison deals 289 Nature damage, and reduces their movement speed by 90% for 2 sec.
+    system_shock       = 147 , -- (198145) Casting Envenom with at least 5 combo points on a target afflicted by your Garrote, Rupture, and lethal poison deals 433 Nature damage, and reduces their movement speed by 90% for 2 sec.
     thick_as_thieves   = 5408, -- (221622) Tricks of the Trade now increases the friendly target's damage by 15% for 6 sec.
-    veil_of_midnight   = 5517, -- (198952) You remain enveloped by the shadows for 2 sec after Stealth or Vanish fades, increasing dodge chance by 100%.
+    veil_of_midnight   = 5517, -- (198952) Cloak of Shadows now also removes harmful physical effects and increases dodge chance by 100%.
 } )
 
 

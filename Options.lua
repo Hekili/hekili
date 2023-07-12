@@ -6187,7 +6187,7 @@ do
                                         -- Hekili:EmbedPackOptions()
                                         ACD:SelectGroup( "Hekili", "packs" )
                                     end,
-                                    hidden = data.builtIn
+                                    hidden = function() return data.builtIn and not Hekili.Version:sub(1, 3) == "Dev" end
                                 },
 
                                 lb02 = {

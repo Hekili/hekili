@@ -64,8 +64,8 @@ spec:RegisterTalents( {
     elysian_might                   = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%.
     fast_footwork                   = { 90371, 382260, 1 }, -- Movement speed increased by 5%.
     furious_blows                   = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
-    heroic_leap                     = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 374 Physical damage to all enemies within 8 yards.
-    impending_victory               = { 90326, 202168, 1 }, -- Instantly attack the target, causing 795 damage and healing you for 30% of your maximum health. Killing an enemy that yields experience or honor resets the cooldown of Impending Victory and makes it cost no Rage.
+    heroic_leap                     = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 423 Physical damage to all enemies within 8 yards.
+    impending_victory               = { 90326, 202168, 1 }, -- Instantly attack the target, causing 900 damage and healing you for 30% of your maximum health. Killing an enemy that yields experience or honor resets the cooldown of Impending Victory and makes it cost no Rage.
     inspiring_presence              = { 90332, 382310, 1 }, -- Rallying Cry's duration is increased by 3 sec and it grants an additional 5% maximum health.
     intervene                       = { 90329, 3411  , 1 }, -- Run at high speed toward an ally, intercepting all melee and ranged attacks against them for 6 sec while they remain within 10 yds.
     intimidating_shout              = { 90384, 5246  , 1 }, -- Causes the targeted enemy to cower in fear, and up to 5 additional enemies within 8 yards to flee. Targets are disoriented for 8 sec.
@@ -80,18 +80,18 @@ spec:RegisterTalents( {
     rumbling_earth                  = { 90374, 275339, 1 }, -- Shockwave's range increased by 6 yards and when Shockwave strikes at least 3 targets, its cooldown is reduced by 15 sec.
     second_wind                     = { 90332, 29838 , 1 }, -- Restores 6% health every 1 sec when you have not taken damage for 5 sec.
     seismic_reverberation           = { 90340, 382956, 1 }, -- If Whirlwind hits 3 or more enemies, it hits them 1 additional time for 30% damage.
-    shattering_throw                = { 90351, 64382 , 1 }, -- Hurl your weapon at the enemy, causing 1,544 Physical damage, ignoring armor, and removing any magical immunities. Deals up to 500% increased damage to absorb shields.
-    shockwave                       = { 90375, 46968 , 1 }, -- Sends a wave of force in a frontal cone, causing 318 damage and stunning all enemies within 10 yards for 2 sec. Generates 10 Rage.
+    shattering_throw                = { 90351, 64382 , 1 }, -- Hurl your weapon at the enemy, causing 1,621 Physical damage, ignoring armor, and removing any magical immunities. Deals up to 500% increased damage to absorb shields.
+    shockwave                       = { 90375, 46968 , 1 }, -- Sends a wave of force in a frontal cone, causing 360 damage and stunning all enemies within 10 yards for 2 sec. Generates 10 Rage.
     sonic_boom                      = { 90321, 390725, 1 }, -- Shockwave deals 350% increased damage and will always critical strike.
-    spear_of_bastion                = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 2,626 Physical damage instantly and an additional 2,831 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 20 Rage.
+    spear_of_bastion                = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 2,970 Physical damage instantly and an additional 3,203 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 20 Rage.
     spell_reflection                = { 90385, 23920 , 1 }, -- Raise your weapon, reflecting the first spell cast on you, and reduce magic damage you take by 20% for 5 sec.
-    storm_bolt                      = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 453 Physical damage and stunning for 4 sec.
-    thunderous_roar                 = { 90359, 384318, 1 }, -- Roar explosively, dealing 2,546 Physical damage to enemies within 12 yds and cause them to bleed for 3,259 physical damage over 8 sec. Generates 10 Rage.
+    storm_bolt                      = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 513 Physical damage and stunning for 4 sec.
+    thunderous_roar                 = { 90359, 384318, 1 }, -- Roar explosively, dealing 2,880 Physical damage to enemies within 12 yds and cause them to bleed for 3,688 physical damage over 8 sec. Generates 10 Rage.
     thunderous_words                = { 90358, 384969, 1 }, -- Increases the duration of Thunderous Roar's Bleed effect by 2.0 sec and increases the damage of your bleed effects by 15% at all times.
-    titanic_throw                   = { 90341, 384090, 1 }, -- Throws your weapon at the enemy, causing 557 Physical damage to it and 5 nearby enemies. Generates high threat.
+    titanic_throw                   = { 90341, 384090, 1 }, -- Throws your weapon at the enemy, causing 630 Physical damage to it and 5 nearby enemies. Generates high threat.
     uproar                          = { 90357, 391572, 1 }, -- Thunderous Roar's cooldown reduced by 30 sec.
     wild_strikes                    = { 90360, 382946, 2 }, -- Haste increased by 1% and your auto-attack critical strikes increase your auto-attack speed by 10% for 10 sec.
-    wrecking_throw                  = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 1,544 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
+    wrecking_throw                  = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 1,621 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
 
     -- Arms
     anger_management                = { 90289, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Warbreaker and Bladestorm by 1 sec.
@@ -101,32 +101,32 @@ spec:RegisterTalents( {
     battle_stance                   = { 90327, 386164, 1 }, -- A balanced combat state that increases the critical strike chance of your abilities by 3% and reduces the duration of movement impairing effects by 10%. Lasts until canceled.
     battlelord                      = { 92615, 386630, 1 }, -- Overpower deals 35% increased damage, has a 35% chance to reset the cooldown of Mortal Strike and Cleave and reduces their Rage costs by 10.
     blademasters_torment            = { 90363, 390138, 1 }, -- Activating Avatar or Bladestorm casts the other at reduced effectiveness.
-    bladestorm                      = { 90441, 227847, 1 }, -- Become an unstoppable storm of destructive force, striking all nearby enemies for 6,075 Physical damage over 5.1 sec. Deals reduced damage beyond 8 targets. You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. Generates 20 Rage.
+    bladestorm                      = { 90441, 227847, 1 }, -- Become an unstoppable storm of destructive force, striking all nearby enemies for 6,873 Physical damage over 5.1 sec. Deals reduced damage beyond 8 targets. You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. Generates 20 Rage.
     bloodborne                      = { 90283, 383287, 2 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects deal 7.50% increased damage.
-    bloodletting                    = { 90438, 383154, 1 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects last 6.0 sec longer and have a 5% increased critical strike chance.
+    bloodletting                    = { 90438, 383154, 1 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects last 6.0 sec longer and have a 5% increased critical strike chance. If you have Rend, Mortal Strike inflicts Rend on targets below 35% health.
     bloodsurge                      = { 90277, 384361, 1 }, -- Your Bleed effects have a chance to grant you 5 Rage.
     blunt_instruments               = { 90287, 383442, 1 }, -- Colossus Smash damage increased by 30% and its effect duration is increased by 3.0 sec.
-    cleave                          = { 90293, 845   , 1 }, -- Strikes all enemies in front of you for 1,169 Physical damage, inflicting Deep Wounds. Cleave will consume your Overpower effect to deal increased damage. Deals reduced damage beyond 5 targets.
+    cleave                          = { 90293, 845   , 1 }, -- Strikes all enemies in front of you for 1,323 Physical damage, inflicting Deep Wounds. Cleave will consume your Overpower effect to deal increased damage. Deals reduced damage beyond 5 targets.
     collateral_damage               = { 90267, 334779, 1 }, -- When Sweeping Strikes ends, your next Whirlwind deals 25% increased damage for each ability used during Sweeping Strikes that damaged a second target.
-    colossus_smash                  = { 90290, 167105, 1 }, -- Smashes the enemy's armor, dealing 2,888 Physical damage, and increasing damage you deal to them by 30% for 10 sec.
+    colossus_smash                  = { 90290, 167105, 1 }, -- Smashes the enemy's armor, dealing 3,267 Physical damage, and increasing damage you deal to them by 30% for 10 sec.
     concussive_blows                = { 90333, 383115, 1 }, -- Cooldown of Pummel reduced by 1.0 sec. Successfully interrupting an enemy increases the damage you deal to them by 5% for 10 sec.
     critical_thinking               = { 90444, 389306, 2 }, -- Critical Strike chance increased by 1% and Execute immediately refunds 5% of the Rage spent.
     crushing_force                  = { 90347, 382764, 2 }, -- Slam deals an additional 30% damage and has a 7.50% increased critical strike chance.
     dance_of_death                  = { 92535, 390713, 1 }, -- If your Bladestorm helps kill an enemy your next Bladestorm lasts 3.0 sec longer.
     defensive_stance                = { 92537, 386208, 1 }, -- A defensive combat state that reduces all damage you take by 15%, and all damage you deal by 10%. Lasts until canceled.
-    deft_experience                 = { 90437, 389308, 2 }, -- Mastery increased by 1% and Tactician's chance to trigger is increased by an additional 0.5%.
+    deft_experience                 = { 90437, 389308, 2 }, -- Mastery increased by 1% and Tactician's chance to trigger is increased by an additional 0.6%.
     die_by_the_sword                = { 90276, 118038, 1 }, -- Increases your parry chance by 100% and reduces all damage you take by 30% for 8 sec.
-    dreadnaught                     = { 90285, 262150, 1 }, -- Overpower has 2 charges and causes a seismic wave, dealing 766 damage to all enemies in a 10 yd line. Deals reduced damage beyond 5 targets.
+    dreadnaught                     = { 90285, 262150, 1 }, -- Overpower has 2 charges and causes a seismic wave, dealing 866 damage to all enemies in a 10 yd line. Deals reduced damage beyond 5 targets.
     endurance_training              = { 90338, 382940, 1 }, -- Stamina increased by 5% and the duration of Fear, Sap and Incapacitate effects on you is reduced by 10.0%.
     executioners_precision          = { 90445, 386634, 1 }, -- Execute causes the target to take 35% more damage from your next Mortal Strike, stacking up to 2 times.
     exhilarating_blows              = { 90286, 383219, 1 }, -- Mortal Strike and Cleave have a 20% chance to instantly reset their own cooldowns.
-    fatality                        = { 90439, 383703, 1 }, -- Your Mortal Strikes and Cleaves against enemies above 30% health have a high chance to apply Fatal Mark. When an enemy falls below 30% health, Your next Execute inflicts an additional 3,707 Physical damage per stack.
+    fatality                        = { 90439, 383703, 1 }, -- Your Mortal Strikes and Cleaves against enemies above 30% health have a high chance to apply Fatal Mark. When an enemy falls below 30% health, Your next Execute inflicts an additional 4,476 Physical damage per stack.
     fervor_of_battle                = { 90272, 202316, 1 }, -- If Whirlwind hits 2 or more targets it also Slams your primary target.
     frothing_berserker              = { 90352, 392792, 1 }, -- Mortal Strike and Cleave have a 20% chance to immediately refund 20% of the Rage spent.
     fueled_by_violence              = { 90275, 383103, 1 }, -- You are healed for 85% of the damage dealt by Deep Wounds.
     honed_reflexes                  = { 90354, 382461, 1 }, -- Cooldown of Overpower and Pummel reduced by 1.0 sec.
     hurricane                       = { 90440, 390563, 1 }, -- While Bladestorming, every 0.8 sec you gain 5% movement speed and 5% Strength, stacking up to 6 times. Lasts 6 sec.
-    ignore_pain                     = { 90269, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken, up to 5,407 total damage prevented.
+    ignore_pain                     = { 90269, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken, up to 7,095 total damage prevented.
     impale                          = { 90292, 383430, 1 }, -- The damaging critical strikes of your abilities deal an additional 10.00% damage.
     improved_execute                = { 90273, 316405, 1 }, -- Execute no longer has a cooldown and if your foe survives, 10% of the Rage spent is refunded.
     improved_overpower              = { 90279, 385571, 1 }, -- Damage of Overpower increased by 15%.
@@ -137,27 +137,27 @@ spec:RegisterTalents( {
     martial_prowess                 = { 90278, 316440, 1 }, -- Overpower increases the damage of your next Mortal Strike or Cleave by 30%. Stacking up to 2 times.
     massacre                        = { 90291, 281001, 1 }, -- Execute is now usable on targets below 35% health.
     merciless_bonegrinder           = { 90266, 383317, 1 }, -- When Bladestorm ends, Whirlwind and Cleave deal 50% increased damage for 9 sec.
-    mortal_strike                   = { 90270, 12294 , 1 }, -- A vicious strike that deals 3,074 Physical damage and reduces the effectiveness of healing on the target by 50% for 10 sec.
-    overpower                       = { 90271, 7384  , 1 }, -- Overpower the enemy, dealing 2,223 Physical damage. Cannot be blocked, dodged, or parried. Increases the damage of your next Mortal Strike by 30%. Stacking up to 2 times.
+    mortal_strike                   = { 90270, 12294 , 1 }, -- A vicious strike that deals 3,478 Physical damage and reduces the effectiveness of healing on the target by 50% for 10 sec.
+    overpower                       = { 90271, 7384  , 1 }, -- Overpower the enemy, dealing 2,515 Physical damage. Cannot be blocked, dodged, or parried. Increases the damage of your next Mortal Strike by 30%. Stacking up to 2 times.
     reaping_swings                  = { 90294, 383293, 1 }, -- Cooldown of Cleave reduced by 3 sec.
-    rend                            = { 90284, 772   , 1 }, -- Wounds the target, causing 1,175 Physical damage instantly and an additional 2,190 Bleed damage over 15 sec.
+    rend                            = { 90284, 772   , 1 }, -- Wounds the target, causing 1,329 Physical damage instantly and an additional 2,602 Bleed damage over 15 sec.
     sharpened_blades                = { 90447, 383341, 1 }, -- Your Mortal Strike, Cleave and Execute critical strike damage is increased by 10% and your Execute has a 5% increased critical hit chance.
-    sidearm                         = { 90333, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 397 Physical damage.
-    skullsplitter                   = { 90281, 260643, 1 }, -- Bash an enemy's skull, dealing 1,909 Physical damage. Skullsplitter causes your Deep Wounds to expire instantly. Generates 15 Rage.
+    sidearm                         = { 90333, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 450 Physical damage.
+    skullsplitter                   = { 90281, 260643, 1 }, -- Bash an enemy's skull, dealing 2,160 Physical damage. Skullsplitter causes your Deep Wounds to expire instantly. Generates 15 Rage.
     spiteful_serenity               = { 90289, 400314, 1 }, -- Colossus Smash and Avatar's durations are increased by 100% but their damage bonuses are reduced by 40%.
     storm_of_swords                 = { 90267, 385512, 1 }, -- Whirlwind costs 20 more Rage and has a 14.0 sec cooldown. It now deals 175% more damage.
     storm_wall                      = { 90269, 388807, 1 }, -- Whenever you Parry, you heal for 8.00% of your maximum health. Can only occur once per second.
     strength_of_arms                = { 92536, 400803, 1 }, -- Overpower has 10% increased critical strike chance, deals 10% increased critical strike damage and on enemies below 35% health Overpower generates 8 Rage.
     sudden_death                    = { 90274, 29725 , 1 }, -- Your attacks have a chance to make your next Execute cost no Rage, be usable on any target regardless of their health, and deal damage as if you spent 40 Rage.
-    tactician                       = { 90282, 184783, 1 }, -- You have a 2.30% chance per Rage spent on abilities to reset the remaining cooldown on Overpower.
+    tactician                       = { 90282, 184783, 1 }, -- You have a 2.50% chance per Rage spent on abilities to reset the remaining cooldown on Overpower.
     test_of_might                   = { 90288, 385008, 1 }, -- When Warbreaker expires, your Strength is increased by 1% for every 10 Rage you spent during Warbreaker. Lasts 12 sec.
-    thunder_clap                    = { 92224, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,051 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
+    thunder_clap                    = { 92224, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,189 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
     tide_of_blood                   = { 90280, 386357, 1 }, -- Skullsplitter deals 30% increased damage and also causes your Rend to expire instantly.
     twohanded_weapon_specialization = { 90322, 382896, 1 }, -- Increases your damage while using two-handed weapons by 5%.
     unhinged                        = { 90440, 386628, 1 }, -- While Bladestorm is active, you automatically cast a total of 2 Mortal Strikes at random nearby enemies.
     valor_in_victory                = { 90442, 383338, 1 }, -- Increases Versatility by 1% and reduces the cooldown of Die by the Sword by 30.0 sec.
     war_machine                     = { 90328, 262231, 1 }, -- Your auto attacks generate 10% more Rage. Killing an enemy instantly generates 5 Rage, and increases your movement speed by 30% for 8 sec.
-    warbreaker                      = { 90287, 262161, 1 }, -- Smash the ground and shatter the armor of all enemies within 8 yds, dealing 2,888 Physical damage and increasing damage you deal to them by 30% for 10 sec.
+    warbreaker                      = { 90287, 262161, 1 }, -- Smash the ground and shatter the armor of all enemies within 8 yds, dealing 3,267 Physical damage and increasing damage you deal to them by 30% for 10 sec.
     warlords_torment                = { 90363, 390140, 1 }, -- Activating Avatar or Colossus Smash casts Recklessness at reduced effectiveness.
 } )
 
@@ -166,15 +166,15 @@ spec:RegisterTalents( {
 spec:RegisterPvpTalents( {
     death_sentence         = 3522, -- (198500) Execute charges you to targets up to 15 yards away. This effect has a 6 sec cooldown.
     demolition             = 5372, -- (329033) Reduces the cooldown of your Shattering Throw or Wrecking Throw by 50% and increases its damage to absorb shields by an additional 250%.
-    disarm                 = 3534, -- (236077) Disarm the enemy's weapons and shield for 6 sec. Disarmed creatures deal significantly reduced damage.
+    disarm                 = 3534, -- (236077) Disarm the enemy's weapons and shield for 5 sec. Disarmed creatures deal significantly reduced damage.
     duel                   = 34  , -- (236273) You challenge the target to a duel. While challenged, all damage you and the target deal to all targets other than each other is reduced by 50%. Lasts 8 sec.
     master_and_commander   = 28  , -- (235941) Cooldown of Rallying Cry reduced by 1 min, and grants 15% additional health.
-    rebound                = 5547, -- (213915) Reflecting spells causes them to deal 50% extra damage back to the attacker.
+    rebound                = 5547, -- (213915) Spell Reflection reflects the next 2 incoming spells cast on you and reflected spells deal 50% extra damage to the attacker. Spell Reflection's cooldown is increased by 10 sec.
     shadow_of_the_colossus = 29  , -- (198807) Charge resets the cooldown of your Overpower and Rage gained from Charge increased by 15.
-    sharpen_blade          = 33  , -- (198817) When activated, your next Mortal Strike will deal 15% increased damage and reduce healing taken by 50% for 6 sec.
+    sharpen_blade          = 33  , -- (198817) When activated, your next Mortal Strike will deal 15% increased damage and reduce healing taken by 50% for 4 sec.
     storm_of_destruction   = 31  , -- (236308) Reduces the cooldown of Bladestorm by 33%, and Bladestorm now also applies Mortal Wound to all targets you hit.
     war_banner             = 32  , -- (236320) You throw down a war banner at your feet, rallying your allies. Increases movement speed by 30% and reduces the duration of all incoming crowd control effects by 50% to all allies within 30 yards of the war banner. Lasts 15 sec.
-    warbringer             = 5376, -- (356353) Charge roots enemies for 2 sec and emanates a shockwave past the target, rooting enemies and dealing 12,339 Physical damage in a 15 yd cone.
+    warbringer             = 5376, -- (356353) Charge roots enemies for 2 sec and emanates a shockwave past the target, rooting enemies and dealing 900 Physical damage in a 20 yd cone.
 } )
 
 
