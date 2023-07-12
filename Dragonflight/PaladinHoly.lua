@@ -1476,7 +1476,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function ()
-            if buff.divine_purpose.up or buff.shining_righteousness_ready then return 0 end
+            if buff.divine_purpose.up or buff.shining_righteousness_ready.up then return 0 end
             return 3
         end,
         spendType = "holy_power",
