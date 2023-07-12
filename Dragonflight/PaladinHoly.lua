@@ -162,6 +162,16 @@ spec:RegisterAuras( {
         duration = 25,
         max_stack = 1,
     },
+    awakening = {
+        id = 414196,
+        duration = 60,
+        max_stack = 12
+    },
+    awakening_ready = {
+        id = 414193,
+        duration = 30,
+        max_stack = 1
+    },
     barrier_of_faith = {
         id = 148039,
         duration = 18,
