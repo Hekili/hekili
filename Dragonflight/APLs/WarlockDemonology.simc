@@ -30,10 +30,10 @@ actions+=/implosion,if=buff.wild_imps.stack>9&buff.tyrant.up&active_enemies>2+(1
 actions+=/soul_strike,if=soul_shard<5&active_enemies>1
 actions+=/summon_soulkeeper,if=buff.tormented_soul.stack=10&active_enemies>1
 # Updated to allow Soul Shard overcapping when moving.
-actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<4&cooldown.summon_demonic_tyrant.remains_expected>5
+actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<4&(!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>5)
 actions+=/power_siphon,if=buff.demonic_core.stack<2&(buff.dreadstalkers.remains>gcd*3|buff.dreadstalkers.down)
 actions+=/hand_of_guldan,if=soul_shard>2&(!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>variable.tyrant_prep_start)&(buff.demonic_calling.up|soul_shard>4|cooldown.call_dreadstalkers.remains>gcd)
-actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<5&(buff.demonic_core.remains<buff.demonic_core.stack*gcd.max|moving|buff.demonic_core.stack>2&buff.dreadstalkers.up&buff.dreadstalkers.remains<2*gcd.max)&cooldown.summon_demonic_tyrant.remains_expected>5
+actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<5&(buff.demonic_core.remains<buff.demonic_core.stack*gcd.max|moving|buff.demonic_core.stack>2&buff.dreadstalkers.up&buff.dreadstalkers.remains<2*gcd.max)&(cooldown.summon_demonic_tyrant.remains_expected>5|!talent.summon_demonic_tyrant)
 actions+=/doom,cycle_targets=1,if=refreshable
 actions+=/soul_strike,if=soul_shard<5
 actions+=/shadow_bolt
