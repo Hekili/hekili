@@ -162,8 +162,7 @@ spec:RegisterAuras( {
         id = 360827,
         duration = function() return 600.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = function() return 15 + talent.regenerative_chitin.rank * 5 end,
-        dot = "buff",
-        shared = "player"
+        dot = "buff"
     },
     -- Gaining Burnout every $t1 sec.
     born_in_flame = {
@@ -571,7 +570,7 @@ spec:RegisterAbilities( {
     -- Conjure a pair of Weyrnstones, one for your target ally and one for yourself. Only one ally may bear your Weyrnstone at a time.; A Weyrnstone can be activated by the bearer to transport them to the other Weyrnstone's location, if they are within 100 yds.
     bestow_weyrnstone = {
         id = 408233,
-        color = 'bronze',
+        color = "bronze",
         cast = 3.0,
         cooldown = 60.0,
         gcd = "spell",
@@ -588,7 +587,7 @@ spec:RegisterAbilities( {
     -- Protect an ally with $n explosive dragonscales, increasing their Armor by $<perc>% of your own.; Melee attacks against the target cause 1 scale to explode, dealing $<dmg> Volcanic damage to enemies near them. This damage can only occur every few sec.; Blistering Scales can only be placed on one target at a time. Casts on your enemy's target if they have one.
     blistering_scales = {
         id = 360827,
-        color = 'black',
+        color = "black",
         cast = 0.0,
         charges = function() return talent.regenerative_chitin.enabled and 2 or nil end,
         cooldown = 30.0,
@@ -606,7 +605,7 @@ spec:RegisterAbilities( {
     -- Fly to the targeted location, exposing Temporal Wounds on enemies in your path for $409560d.; Temporal Wounds accumulate $409560s1% of damage dealt by your allies affected by Ebon Might, then critically strike for that amount as Arcane damage.$?s395153[; Applies Ebon Might for ${$395153s3/1000} sec.][]; Removes all root effects. You are immune to movement impairing and loss of control effects while flying.
     breath_of_eons = {
         id = 403631,
-        color = 'bronze',
+        color = "bronze",
         cast = 6.0,
         channeled = true,
         cooldown = 120.0,
@@ -633,7 +632,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = 0.020,
-        spendType = 'mana',
+        spendType = "mana",
 
         startsCombat = true,
 
@@ -645,13 +644,13 @@ spec:RegisterAbilities( {
     -- Increase your $i nearest allies' primary stat by $s1% of your own, and cause you to deal $395296s1% more damage, for $d.; May only affect $i allies at once, and prefers to imbue damage dealers.; Eruption, $?s403631[Breath of Eons][Deep Breath], and your empower spells extend the duration of these effects.
     ebon_might = {
         id = 395152,
-        color = 'black',
+        color = "black",
         cast = 1.5,
         cooldown = 30.0,
         gcd = "spell",
 
         spend = 0.010,
-        spendType = 'mana',
+        spendType = "mana",
 
         talent = "ebon_might",
         startsCombat = false,
@@ -665,7 +664,7 @@ spec:RegisterAbilities( {
     -- Cause a violent eruption beneath an enemy's feet, dealing $s1 Volcanic damage split between them and nearby enemies.$?s395153[; Increases the duration of your active Ebon Might effects by ${$395153s1/1000} sec.][]
     eruption = {
         id = 395160,
-        color = 'black',
+        color = "black",
         cast = function() return 2.5 * ( talent.ignition_rush.enabled and buff.essence_burst.up and 0.6 or 1 ) * ( talent.natural_convergence.enabled and 0.8 or 1 ) end,
         cooldown = 0.0,
         gcd = "spell",
@@ -674,7 +673,7 @@ spec:RegisterAbilities( {
             if buff.essence_burst.up then return 0 end
             return 3 - ( talent.volcanism.enabled and 1 or 0 )
         end,
-        spendType = 'essence',
+        spendType = "essence",
 
         talent = "eruption",
         startsCombat = true,
@@ -688,7 +687,7 @@ spec:RegisterAbilities( {
     -- Form a protective barrier of molten rock around an ally, absorbing up to $<shield> damage. While the barrier holds, your ally cannot be interrupted or silenced.
     lava_shield = {
         id = 405295,
-        color = 'black',
+        color = "black",
         cast = 0.0,
         cooldown = 30.0,
         gcd = "spell",
@@ -710,7 +709,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = 0.009,
-        spendType = 'mana',
+        spendType = "mana",
 
         pvptalent = "nullifying_shroud",
         startsCombat = false,
@@ -724,7 +723,7 @@ spec:RegisterAbilities( {
     -- Grant an ally the gift of foresight, increasing their critical strike chance by $410089s1% $?s412774[and occasionally copying their damage and healing spells at $412774s1% power ][]for $410089d.; Affects the nearest ally within $A1 yds, preferring damage dealers, if you do not have an ally targeted.
     prescience = {
         id = 409311,
-        color = 'bronze',
+        color = "bronze",
         cast = 0.0,
         cooldown = 12.0,
         gcd = "spell",
@@ -741,7 +740,7 @@ spec:RegisterAbilities( {
     -- Evoke a paradox for you and a friendly healer, allowing casting while moving and increasing the range of most spells by $s4% for $d.; Affects the nearest healer within $407497A1 yds, if you do not have a healer targeted.
     spatial_paradox = {
         id = 406732,
-        color = 'bronze',
+        color = "bronze",
         cast = 0.0,
         cooldown = 120.0,
         gcd = "off",
@@ -759,7 +758,7 @@ spec:RegisterAbilities( {
     -- Surge forward in time, causing your cooldowns to recover $s1% faster for $d.
     time_skip = {
         id = 404977,
-        color = 'bronze',
+        color = "bronze",
         cast = function() return 2.0 + ( talent.tomorrow_today.enabled and 1 or 0 ) end,
         channeled = true,
         cooldown = 180.0,
@@ -782,7 +781,7 @@ spec:RegisterAbilities( {
     -- Enchant an ally to appear out of sync with the normal flow of time, reducing threat they generate by $s1% for $d. Less effective on tank-specialized allies. ; May only be placed on one target at a time.
     timelessness = {
         id = 412710,
-        color = 'bronze',
+        color = "bronze",
         cast = 0.0,
         cooldown = 0.0,
         gcd = "spell",
@@ -799,7 +798,7 @@ spec:RegisterAbilities( {
     -- Gather earthen power beneath your enemy's feet and send them hurtling upwards, dealing $396288s2 Volcanic damage to the target and nearby enemies.$?s395153[; Increases the duration of your active Ebon Might effects by ${$395153s2/1000} sec.][]; Empowering expands the area of effect.; I:   $<radiusI> yd radius.; II:  $<radiusII> yd radius.; III: $<radiusIII> yd radius.
     upheaval = {
         id = function() return talent.font_of_magic.enabled and 408092 or 396286 end,
-        color = 'black',
+        color = "black",
         cast = empowered_cast_time,
         empowered = true,
         cooldown = 40.0,
@@ -884,4 +883,4 @@ spec:RegisterOptions( {
     package = "Augmentation",
 } )
 
-spec:RegisterPack( "Augmentation", 20230712, [[Hekili:1IvuZTjoq4Fl9f3KE1ed2j5Aphpt7n3mxYCtFXzUhbeGSTMaiQKWUjJh9B)wjWGalCsNE(Lec6JD)0Qv7(TX31)r)Ljib2)BEt8Mo5wxpNjFYDQRR)sXZfy)LfO4NqRHhYrzWp)s56mCUaji0C1IpNsrjkJWPLSyaWgHOG)5RUA3UDoK4NhVftY5oX0SR2r3DfY4ZhJ3sFcZgxSfpoPGpMrRFFmLMMq3LZhJIiPebbZ9xgvssf3N7hzNVabkWX(FZD2TtbsqssWvyX8y)LkSJNC7yxVpldLHFbwnrg(ijdldx(ePqgUJi2id)kdJu)MUsg(x0Co8uHIsoYhKp0yexTrUphygkvgsYksXn7kzyeIRSU6X7HaW)QcaVxgUUKKGD8xMs4cUoSJxHktfWJFtFmGIRcQFVeNM6VeNJIsXj(F1xaBwtaL5m0wCFitnHeJkfyg5fs(6GvP6tUoGNPa3(MLXmIcpco11bL5YWyexeu9xFqg6542A9uY2wddw76bTwgvHugocclLRw5SHUfZCuhUTwt)oLzUXChuWGtocopUp1VDqNP9aoIMhKrwVr4WWziI6qe2nZATClcL5(9FvZfPZzcORcWqgJYKFAqtQ(MT4GeQWrGZkOmuAWoAzoKUSqgorgUFpe4Rt)D6A5w)dqNwJDLIzbMmB6eJefooaCDMMvUto9onfJkAov5oLf6tTgYSIWWbvmQtKOjnz40dx3b98fYqowia4ChoCrmiIIpDuqWkXbMHc3RLHxomxTI3eCzXgmAlk1gY29KAhgOyOEd5n4g6vJxRJtCYq)O3MSHewGAsIIaXgGhXOuC1H60Em5aud3Bspvs3o4X81MeSImdMVVOZPCTjceuvzefh6xmPj9REtz5gaohNbL11Btp95bKjyqUdF6pbZGSGUKZvtU(1M(jj3SZe580K7MFnYDZzICt1KRFH2FgYbM)6Ze5QY5gUSTrn2ivVwTNRVYidVdkZAu7UpaTThU(9BKXQnhMZvnVC0foe0a9D(5hbRYIvydIkzCbeKm6vXk1cq0AagUaUa4EUWb2dSuSiaLGkQuJ4udVTdSb7vvEAxaLRA3kQkB3Rfn0GobbRHZIyOyDrDVHlQ)oz4H((nBXQg)QMkQxvZ3IYcsQQYo8N)Glyi(lOdmE42jEdx99DVjt3T(FfZmpjnsqqVucvjHVN8KY3cTUeqmBeQv32WzkWR5Cf3bEOQBhXO5V0p2AhuJOVZto(03KuRzMO618PlYRnrAiWQlQoc86CS2bNoodhkCfUd68Dvcq3Hy5kTc(lFCdwR8MYeGkiktg((A90GuBg(7Lq3n4GMtvx0aXW0myOb4fXBq5Rb5nYh(hsoSK3eqm)FsZb3Px)9dEvcSRGEkahsVaGx4(JlBDHRDxylfTNtovw8rUX7m7g5d3RJ3kJd9SRohLH65zGLv5r0vK0gHGCNM7k)2Dxzpn)JKv39AxvKpy3E9sRvM6u3lUBIDd1M9BF9U592X0MXBFDZCDvGSgdSIEypZxupCN5RoAyoZfnnTkeOATmVPjZhG52mrRl2PGvvGEuVHYmHAjU0zN2C0DC)W5Zm)KUc4FZFwZWl9oy7o40Ij73)kdmTykGPZGsZNo5uHq7Jdn6us7BJ4MgUzObLvV4ObDgM5MJISW96lT77EOgD6rAaeD5MzATIGNC)bZIyq3(JROw204gw4JTA3UBMYn2hbz)(bskwynYEGaMw31irPwi6CVrxyr(5BWzx(AEZZI3MD282ulE7MZM3MDS3wC9)lE7xPQTQ6tTC4tueP1X73Brd(CJLTQ920D9K9QlVou3)r2uxpAaL1NQ6Z7QknxtVd6M3V)e9QnnNPIvT5oX3nYUi4fk1JLInuM)YLiCAsjiV6IM)xMx(hG6bgkNNwjPk6zz4FJFIKs0k38)V]] )
+spec:RegisterPack( "Augmentation", 20230712.1, [[Hekili:nJ13ZTjoq4)w6loj9QjgC(X1EoEM2ETZLm31xCV7rabiBRlaIke2nz8WF73UcmiWc30zA6CVeBJ(y3pT7Qv7xCTD)S7IiIK6(jNjotNCTTJL9v2V251UlKpKrDxKrcVNSc(skjb(7BlwLqtLejJNIl(qmNeHgjNxicbaRLYS83C(5B3U1If(W4nuwAUvip58T8TNt0E9X0n87PIXzBOJJYYhl41ppKZJJ4BtZhtcyXmjJM7UiOGflVn1n4a(ofCEgn09t2xCn891SOiAfoAEO7ce34jxp225nL(L(VfwnQ0)ZSeAP)I7zzL(BzY1L(Vtqj4N8LL(FGNMdFldPJv5DL(Jl9)i7RMafYtJyiUs)tdi5OTXV)Ha8V)fB1AzP)7)9Z2BL3g9Vf5WJExmlxsfS0valcjXuWuf5qGU0xYl9dGpHNbpuqJksJiPYo84JmbTLnKuWR)D2AkzdjU0pHaicxteO1ugfF37Ace2QaXTPaTr4SKSyAtwb8D7U4wib(pyc8Ks)vfSiQL7cK45QYg6ssrSe(6NuLrKWQIIVuqJJDxqtjbX0i335kHKLoGIubzdTpKP6qcjfy05ri(4Tmwv51b8fi42NSiuWq8eOQvLyNbbasU0R6xVS03P12XSnTMfS1LdARe(gvcAeeukwU0AnFdvyHLMTwt9m0mxPZ)mbu7XOPH9j(1d6mbDj8sRXvATdfkJ8sWQi8L)1bFzf9AbBvaL172HvNvhL0xtqtimS0fcsx06QavXKhFPhfkSr396bDh(oBOErCPLKMKXfKyVT8cSmCEP)KE(URLB9paDAn2aowRdX5Lif90P40jAvo5upGdjk6zp5)D8lJR(ejN9XZvXuswtvyUkFnsJslHZ3Ev8Qt(QPOE4YzBNb98PL(5uPeGNBLdT(8c40JhlKIcQNEaX(Ys)ZgMRgXRdUOUlLjKT7jCh6HmuTHMo4g6BgVwfgzPAh2zt2qcdq1jrMNCnWdv7zftgUTdwLTv1pxNl1fp9oCQVRnKq1EFLthU)uDzonLMWOv7chv4gs0AeQO5MHNmBGKS2PU63Vzx6j5ypFKCx99qUl(Prohf5gUzRbYD1pnYnvrUHBM3NCG5V85KCiBgUxVYWbnJRuFCqDlOIuA9ApavP)nq7wT7y6dqnBWW9XFIBkC)ddlHx3APADi5EQt9ZoawLfRW6fuiYX7k1UVvuKTVfUZWTWLa3HjYG9GiMk9irKSQPNSQH3oZGg7BczQfiP4acYQg39gQagPah5ZJMeiiHQ26od3w)fWiF1tQ0SfRgvz)ya18nRiJfJ92HF(1CPGK)izpJh(cfNH7)(INKP7EdqfZ0ZKAfiKhlGMFW7ZUh9TunjfiEiG0oN5XQsHmlYDGhyN7abp9X(XwZGAgs975mqUeehPQYSN8J5SW0N0qKxOJQ31uDrEPosTHj7IQZORDs)DWPYhqYlhX1r)1wIifNQWDXNxtvkk4cqKZsUO0)KADcNGAz(sbC5guqKZXdKWq(8eqmxKsUs6kiKwE3FYsHLCqrkVNNcUtT(jdEK7KkftddyFzia8u7VEwRlCm7ctLY9CYXQ2pWntFMDt5D3QI3OXDQQbrTBkDAWYyDeFjRvvrUvZzQF5MZnFC4vSL38TosvENz71RSwZugp)mZEYOJDU5MjMDu7PdZR39CHzmTNimVU(zbmqxJbwrjYv)b1IA1F0bIy1xu30yicVIAwZLvV0rhRQLjcQQn)OEIr1HAiQ0zFIwrtPPoOUJ(3K26OQC3UJOOC2fDci71QHwslb3vq28jAM0SqS5tbmOaSrDeFnB6KoBCL0RFo(QFUZSIUrhtDsBQw3Wn6EqRE6bA1gM(6QPMBF5zM9DpuJoUQmarxUPFEcj4r3FGCkn62xXfUSUX1SWRAhv(gyio0rMfxbjkZJho3ySDpf0TVTw9s942ZCgDQHHSFco7SVL3Cm4TlE282udE7QNnVvNP66V5x(dXFFpxPGvBp1RtWgJ1Z7BQB3bKA3odImMPTSrXf6UR3C9Q((dn2YitYhgnG0HJ1D6fv3AutV9cd2T7idzOBo9rYvM7iV3iZt5phh7TqUMlCxSGqJJkG5cpT5FU8z)gm2JGKMhxnlyWdL()b9EwmtnYP7)9]] )
