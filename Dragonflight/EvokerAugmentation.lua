@@ -846,4 +846,22 @@ spec:RegisterSetting( "use_verdant_embrace", false, {
     width = "full"
 } )
 
+
+spec:RegisterOptions( {
+    enabled = true,
+
+    aoe = 3,
+    gcdSync = false,
+
+    nameplates = false,
+    nameplateRange = 35,
+
+    damage = true,
+    damageDots = true,
+    damageOnScreen = true,
+    damageExpiration = 8,
+
+    package = "Augmentation",
+} )
+
 spec:RegisterPack( "Augmentation", 20230711.1, [[Hekili:1IvuZnQnq4Fl5fN7UEMySDAsU64zA7lnz6Kx8n9rabiBRjceNKW(sgp8BV7kSbbbi(MR9LmyPvF7QvF7UFt8C9(Q3QyIM6900jtNn5gxxh37U(A3zER0VKr9wLrIEMSb(iLKa)93Z3Kqt1entKIB(cxqIrquICzeyWwTot9LRUA)(9oSOxgVJYsvorIKR2l2FfX64JP7eptLJZ2rhhNPglfhxpsi4XI9PQXKqgNPzuL3QWCgx)qQxyhX78BV2fIGmAK3tUZVbI9TS4yAPXuvK3k04XtUzSR7xkckcEifqLWlcyjzCAveveesu04Ia8ZhGG)FWG)YIGn5SyQJ3kotPvMugDnjNRHpFYKcPPKqon27p8wfjzAQKrGftYe7Hpt34ekPe9wFXAFQifUnKOYey71pEeFTW7P5EA4wEoONNTLs2r414wVInIUiIZqepz33YPCUTd0OFTmipvs2rBBY12MerYXq6vis8xZnSKgg)R9Ef0SeArWIIGiIs7x(Rpvem1XTgDoBxnWaA30lArBjYnuL)Az5zX33LfbUo3uemQiirGaz(mmF9ANTIDuPdYZQDMzn0l3AFbZKahIrtJAFZUR3yX4bAOi1pHTzR2rstiavYCzNxJCTfiCUt(zXRfDcXSF6jEODu)yH2rJSejH7VxKNgBsBtkcoCaEzowl2IbxhaGPZoA7Am08TdTztSyskQp46KYWQFET5QYPKSQNDfqWnVBvbZAMK6xgrnsfv8O(5pUZ6Na9EWVjk2jH89wzMt1ADzADCOzz(6TuFveHtlZbZ)XFUx25D0kE7OfI71)x5Nb6Q42FvUfpleBGA6zDmpueCpq1SiWTnWGD)18N1fO89IQuyjSdUce3(MhYfVXSselT1pmxQ0WdSvfRmpZ8fgx32FNni2t1oWDqYPAFsmjRCeJZrZR7dzf9iDQEdsk20rxsDB1OcAtftG9OjHq3UsID)DJUOU7x1vSS9hwyHlDmEZYZyCSgh(53vAjr9k5ue3Fj10(7BDXzbDZI7YiZ(L0IGqEnh46W5zpJ(wB6odQlcjVZWyZLgwwPWyhIdSymuksFTDUTBJgEy8pnhF2znWPXO5wDugycT1yMogn35ZAd7m5z4rrH2vj8YB1EImfoc47VULAetjKAyoGqweC5rjsG6jj9B5qhk4zwjWYmqVGib0WblaZStHz2ofp(3Suyl3Bb9z)PifCMz)l7TqcWvlgYGtKlWWp4(9pw7I762fDrqB5KH4WTDZ0j)p7MIhFWKVrWNcj1OsfSgjQW2ilsSMXRAFRCQQu(L7VQBs(NzRV)9kukESB8ArQrOgQQ4(jDdun3V79BY672MA(E37BZ0Xe5rBWRrdvoFUEm39ZXluVk6TX40us7t7260NSX(CgT4naQu7T9sVrRT9M2xl0F4qTfvJ3(eiR22AtBw0S3QBEjOzEu5eJrT0kBJqhpvns(vSP3oGEX8bY6N7XQuu2IR1un7Yjho8oQyxodSPH61fZMmuMTBnQJgsaz9dHnWnzZMxJHWauvADzAl8e32gCleEdtUNe8YoJYEz0)qO8Z0Ia5vhvEDw(9WHoK7TWA7oL5z7UwkSm1t9nQzuxc5g1JiUH4vxuw0Dm8ojr7WHbgmydNT4idCdCUrDR3AjkujxVvi9wTIq5X5WS8pu9)c5J)gmQsssv8Y53HVue8x0NzCMrKG3)o]] )
