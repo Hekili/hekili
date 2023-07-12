@@ -1792,6 +1792,7 @@ spec:RegisterSetting( "throw_glaive_charges", 0, {
     width = "full"
 } )
 
+--[[ Retired 20240712:
 spec:RegisterSetting( "footloose", true, {
     name = strformat( "%s before %s", Hekili:GetSpellLinkWithTexture( 185123 ) , Hekili:GetSpellLinkWithTexture( 188499 ) ),
     desc = strformat( "When enabled, %s may be recommended without having %s on cooldown.\n\n"
@@ -1799,7 +1800,7 @@ spec:RegisterSetting( "footloose", true, {
         Hekili:GetSpellLinkWithTexture( 185123 ) , Hekili:GetSpellLinkWithTexture( 188499 ) ),
     type = "toggle",
     width = "full"
-} )
+} ) ]]
 
 -- Vengeful Retreat
 spec:RegisterSetting( "retreat_head", nil, {
