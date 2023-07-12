@@ -766,6 +766,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         talent = "time_skip",
+        notalent = "interwoven_threads",
         startsCombat = false,
         toggle = "cooldowns",
 
