@@ -1506,7 +1506,6 @@ spec:RegisterAbilities( {
         spend = 0.025,
         spendType = "mana",
 
-        talent = "flamestrike",
         startsCombat = true,
 
         handler = function ()
