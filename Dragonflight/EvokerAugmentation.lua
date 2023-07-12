@@ -694,6 +694,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         startsCombat = false,
+        toggle = "defensives",
 
         handler = function()
             applyBuff( "lava_shield" )
@@ -713,6 +714,7 @@ spec:RegisterAbilities( {
 
         pvptalent = "nullifying_shroud",
         startsCombat = false,
+        toggle = "defensives",
 
         handler = function()
             applyBuff( "nullifying_shroud" )
@@ -746,6 +748,7 @@ spec:RegisterAbilities( {
 
         talent = "spatial_paradox",
         startsCombat = false,
+        toggle = "interrupts", -- Utility CD...
 
         handler = function()
             applyBuff( "spatial_paradox" )
@@ -764,6 +767,7 @@ spec:RegisterAbilities( {
 
         talent = "time_skip",
         startsCombat = false,
+        toggle = "cooldowns",
 
         start = function()
             applyBuff( "time_skip" )
@@ -793,7 +797,7 @@ spec:RegisterAbilities( {
 
     -- Gather earthen power beneath your enemy's feet and send them hurtling upwards, dealing $396288s2 Volcanic damage to the target and nearby enemies.$?s395153[; Increases the duration of your active Ebon Might effects by ${$395153s2/1000} sec.][]; Empowering expands the area of effect.; I:   $<radiusI> yd radius.; II:  $<radiusII> yd radius.; III: $<radiusIII> yd radius.
     upheaval = {
-        id = 396286,
+        id = function() return talent.font_of_magic.enabled and 408092 or 396286 end,
         color = 'black',
         cast = empowered_cast_time,
         empowered = true,
@@ -802,10 +806,13 @@ spec:RegisterAbilities( {
 
         talent = "upheaval",
         startsCombat = true,
+        toggle = "essences",
 
         handler = function()
             if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 2 end
         end,
+
+        copy = { 396286, 408092 }
     },
 } )
 
@@ -814,9 +821,17 @@ spec:RegisterSetting( "use_deep_breath", true, {
     name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( 357210 ) ),
     type = "toggle",
     desc = strformat( "If checked, %s may be recommended, which will force your character to select a destination and move.  By default, your Cooldowns "
-        .. "toggle must also be active.\n\n"
+        .. "toggle must also be active.  This setting does not apply to %s.\n\n"
         .. "If unchecked, it will never be recommended, which may result in lost DPS if left unused for an extended period of time.",
-        Hekili:GetSpellLinkWithTexture( 357210 ) ),
+        Hekili:GetSpellLinkWithTexture( 357210 ), Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_eons.id ) ),
+    width = "full",
+} )
+
+spec:RegisterSetting( "skip_boe", false, {
+    name = strformat( "%s: Skip %s", Hekili:GetSpellLinkWithTexture( spec.abilities.time_skip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_eons.id ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended without %s on cooldown.  This setting will waste cooldown recovery, but may be useful to you.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.time_skip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_eons.id ) ),
     width = "full",
 } )
 
@@ -868,4 +883,4 @@ spec:RegisterOptions( {
     package = "Augmentation",
 } )
 
-spec:RegisterPack( "Augmentation", 20230711.1, [[Hekili:1IvuZnQnq4Fl5fN7UEMySDAsU64zA7lnz6Kx8n9rabiBRjceNKW(sgp8BV7kSbbbi(MR9LmyPvF7QvF7UFt8C9(Q3QyIM6900jtNn5gxxh37U(A3zER0VKr9wLrIEMSb(iLKa)93Z3Kqt1entKIB(cxqIrquICzeyWwTot9LRUA)(9oSOxgVJYsvorIKR2l2FfX64JP7eptLJZ2rhhNPglfhxpsi4XI9PQXKqgNPzuL3QWCgx)qQxyhX78BV2fIGmAK3tUZVbI9TS4yAPXuvK3k04XtUzSR7xkckcEifqLWlcyjzCAveveesu04Ia8ZhGG)FWG)YIGn5SyQJ3kotPvMugDnjNRHpFYKcPPKqon27p8wfjzAQKrGftYe7Hpt34ekPe9wFXAFQifUnKOYey71pEeFTW7P5EA4wEoONNTLs2r414wVInIUiIZqepz33YPCUTd0OFTmipvs2rBBY12MerYXq6vis8xZnSKgg)R9Ef0SeArWIIGiIs7x(Rpvem1XTgDoBxnWaA30lArBjYnuL)Az5zX33LfbUo3uemQiirGaz(mmF9ANTIDuPdYZQDMzn0l3AFbZKahIrtJAFZUR3yX4bAOi1pHTzR2rstiavYCzNxJCTfiCUt(zXRfDcXSF6jEODu)yH2rJSejH7VxKNgBsBtkcoCaEzowl2IbxhaGPZoA7Am08TdTztSyskQp46KYWQFET5QYPKSQNDfqWnVBvbZAMK6xgrnsfv8O(5pUZ6Na9EWVjk2jH89wzMt1ADzADCOzz(6TuFveHtlZbZ)XFUx25D0kE7OfI71)x5Nb6Q42FvUfpleBGA6zDmpueCpq1SiWTnWGD)18N1fO89IQuyjSdUce3(MhYfVXSselT1pmxQ0WdSvfRmpZ8fgx32FNni2t1oWDqYPAFsmjRCeJZrZR7dzf9iDQEdsk20rxsDB1OcAtftG9OjHq3UsID)DJUOU7x1vSS9hwyHlDmEZYZyCSgh(53vAjr9k5ue3Fj10(7BDXzbDZI7YiZ(L0IGqEnh46W5zpJ(wB6odQlcjVZWyZLgwwPWyhIdSymuksFTDUTBJgEy8pnhF2znWPXO5wDugycT1yMogn35ZAd7m5z4rrH2vj8YB1EImfoc47VULAetjKAyoGqweC5rjsG6jj9B5qhk4zwjWYmqVGib0WblaZStHz2ofp(3Suyl3Bb9z)PifCMz)l7TqcWvlgYGtKlWWp4(9pw7I762fDrqB5KH4WTDZ0j)p7MIhFWKVrWNcj1OsfSgjQW2ilsSMXRAFRCQQu(L7VQBs(NzRV)9kukESB8ArQrOgQQ4(jDdun3V79BY672MA(E37BZ0Xe5rBWRrdvoFUEm39ZXluVk6TX40us7t7260NSX(CgT4naQu7T9sVrRT9M2xl0F4qTfvJ3(eiR22AtBw0S3QBEjOzEu5eJrT0kBJqhpvns(vSP3oGEX8bY6N7XQuu2IR1un7Yjho8oQyxodSPH61fZMmuMTBnQJgsaz9dHnWnzZMxJHWauvADzAl8e32gCleEdtUNe8YoJYEz0)qO8Z0Ia5vhvEDw(9WHoK7TWA7oL5z7UwkSm1t9nQzuxc5g1JiUH4vxuw0Dm8ojr7WHbgmydNT4idCdCUrDR3AjkujxVvi9wTIq5X5WS8pu9)c5J)gmQsssv8Y53HVue8x0NzCMrKG3)o]] )
+spec:RegisterPack( "Augmentation", 20230712, [[Hekili:1IvuZTjoq4Fl9f3KE1ed2j5Aphpt7n3mxYCtFXzUhbeGSTMaiQKWUjJh9B)wjWGalCsNE(Lec6JD)0Qv7(TX31)r)Ljib2)BEt8Mo5wxpNjFYDQRR)sXZfy)LfO4NqRHhYrzWp)s56mCUaji0C1IpNsrjkJWPLSyaWgHOG)5RUA3UDoK4NhVftY5oX0SR2r3DfY4ZhJ3sFcZgxSfpoPGpMrRFFmLMMq3LZhJIiPebbZ9xgvssf3N7hzNVabkWX(FZD2TtbsqssWvyX8y)LkSJNC7yxVpldLHFbwnrg(ijdldx(ePqgUJi2id)kdJu)MUsg(x0Co8uHIsoYhKp0yexTrUphygkvgsYksXn7kzyeIRSU6X7HaW)QcaVxgUUKKGD8xMs4cUoSJxHktfWJFtFmGIRcQFVeNM6VeNJIsXj(F1xaBwtaL5m0wCFitnHeJkfyg5fs(6GvP6tUoGNPa3(MLXmIcpco11bL5YWyexeu9xFqg6542A9uY2wddw76bTwgvHugocclLRw5SHUfZCuhUTwt)oLzUXChuWGtocopUp1VDqNP9aoIMhKrwVr4WWziI6qe2nZATClcL5(9FvZfPZzcORcWqgJYKFAqtQ(MT4GeQWrGZkOmuAWoAzoKUSqgorgUFpe4Rt)D6A5w)dqNwJDLIzbMmB6eJefooaCDMMvUto9onfJkAov5oLf6tTgYSIWWbvmQtKOjnz40dx3b98fYqowia4ChoCrmiIIpDuqWkXbMHc3RLHxomxTI3eCzXgmAlk1gY29KAhgOyOEd5n4g6vJxRJtCYq)O3MSHewGAsIIaXgGhXOuC1H60Em5aud3Bspvs3o4X81MeSImdMVVOZPCTjceuvzefh6xmPj9REtz5gaohNbL11Btp95bKjyqUdF6pbZGSGUKZvtU(1M(jj3SZe580K7MFnYDZzICt1KRFH2FgYbM)6Ze5QY5gUSTrn2ivVwTNRVYidVdkZAu7UpaTThU(9BKXQnhMZvnVC0foe0a9D(5hbRYIvydIkzCbeKm6vXk1cq0AagUaUa4EUWb2dSuSiaLGkQuJ4udVTdSb7vvEAxaLRA3kQkB3Rfn0GobbRHZIyOyDrDVHlQ)oz4H((nBXQg)QMkQxvZ3IYcsQQYo8N)Glyi(lOdmE42jEdx99DVjt3T(FfZmpjnsqqVucvjHVN8KY3cTUeqmBeQv32WzkWR5Cf3bEOQBhXO5V0p2AhuJOVZto(03KuRzMO618PlYRnrAiWQlQoc86CS2bNoodhkCfUd68Dvcq3Hy5kTc(lFCdwR8MYeGkiktg((A90GuBg(7Lq3n4GMtvx0aXW0myOb4fXBq5Rb5nYh(hsoSK3eqm)FsZb3Px)9dEvcSRGEkahsVaGx4(JlBDHRDxylfTNtovw8rUX7m7g5d3RJ3kJd9SRohLH65zGLv5r0vK0gHGCNM7k)2Dxzpn)JKv39AxvKpy3E9sRvM6u3lUBIDd1M9BF9U592X0MXBFDZCDvGSgdSIEypZxupCN5RoAyoZfnnTkeOATmVPjZhG52mrRl2PGvvGEuVHYmHAjU0zN2C0DC)W5Zm)KUc4FZFwZWl9oy7o40Ij73)kdmTykGPZGsZNo5uHq7Jdn6us7BJ4MgUzObLvV4ObDgM5MJISW96lT77EOgD6rAaeD5MzATIGNC)bZIyq3(JROw204gw4JTA3UBMYn2hbz)(bskwynYEGaMw31irPwi6CVrxyr(5BWzx(AEZZI3MD282ulE7MZM3MDS3wC9)lE7xPQTQ6tTC4tueP1X73Brd(CJLTQ920D9K9QlVou3)r2uxpAaL1NQ6Z7QknxtVd6M3V)e9QnnNPIvT5oX3nYUi4fk1JLInuM)YLiCAsjiV6IM)xMx(hG6bgkNNwjPk6zz4FJFIKs0k38)V]] )
