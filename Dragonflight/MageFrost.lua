@@ -270,7 +270,13 @@ spec:RegisterAuras( {
     freeze = {
         id = 33395,
         duration = 8,
-        max_stack = 1
+        max_stack = 1,
+        shared = "pet"
+    },
+    frigid_empowerment = {
+        id = 417488,
+        duration = 60,
+        max_stack = 5
     },
     -- Frozen in place.
     -- https://wowhead.com/beta/spell=122
@@ -327,6 +333,11 @@ spec:RegisterAuras( {
         id = 228600,
         duration = 4,
         type = "Magic",
+        max_stack = 1
+    },
+    glacial_spike_usable = {
+        id = 199844,
+        duration = 60,
         max_stack = 1
     },
     -- Talent: Absorbs $w1 damage.  Melee attackers slowed by $205708s1%.$?s235297[  Armor increased by $s3%.][]
@@ -600,7 +611,7 @@ spec:RegisterAuras( {
 } )
 
 
-spec:RegisterTotem( "rune_of_power", 609815 )
+spec:RegisterPet( "water_elemental", 208441, "icy_veins", 30 )
 
 
 spec:RegisterStateExpr( "fingers_of_frost_active", function ()
@@ -951,6 +962,9 @@ spec:RegisterAbilities( {
 
             applyDebuff( "target", "flurry" )
             addStack( "icicles" )
+            if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
+                applyBuff( "glacial_spike_usable" )
+            end
 
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
             removeBuff( "ice_floes" )
@@ -994,6 +1008,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             addStack( "icicles" )
+            if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
+                applyBuff( "glacial_spike_usable" )
+            end
+
             applyDebuff( "target", "chilled" )
             removeBuff( "ice_floes" )
             removeBuff( "cold_front_ready" )
@@ -1066,10 +1084,15 @@ spec:RegisterAbilities( {
         startsCombat = true,
         velocity = 40,
 
-        usable = function () return buff.icicles.stack >= 5, "requires 5 icicles" end,
+        usable = function() return buff.icicles.stack == 5 or buff.glacial_spike_usable.up, "requires 5 icicles or glacial_spike!" end,
+
         handler = function ()
             removeBuff( "icicles" )
+            removeBuff( "glacial_spike_usable" )
+
             applyDebuff( "target", "glacial_spike" )
+            removeDebuffStack( "target", "winters_chill" )
+
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
             if talent.thermal_void.enabled and buff.icy_veins.up then buff.icy_veins.expires = buff.icy_veins.expires + ( debuff.frozen.up and 4 or 1 ) end
         end,
@@ -1123,8 +1146,12 @@ spec:RegisterAbilities( {
 
             if not talent.glacial_spike.enabled then removeStack( "icicles" ) end
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
-            if talent.hailstones.enabled and debuff.frozen.up then addStack( "icicles" ) end
-
+            if talent.hailstones.enabled and debuff.frozen.up then
+                addStack( "icicles" )
+                if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
+                    applyBuff( "glacial_spike_usable" )
+                end
+            end
 
             if azerite.whiteout.enabled then
                 cooldown.frozen_orb.expires = max( 0, cooldown.frozen_orb.expires - 0.5 )
@@ -1330,7 +1357,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Summons a Water Elemental to follow and fight for you.
+    --[[ Summons a Water Elemental to follow and fight for you.
     water_elemental = {
         id = 31687,
         cast = 1.5,
@@ -1352,11 +1379,12 @@ spec:RegisterAbilities( {
         end,
 
         copy = "summon_water_elemental"
-    },
+    }, ]]
 
     -- Water Elemental Abilities
     freeze = {
         id = 33395,
+        known = true,
         cast = 0,
         cooldown = 25,
         gcd = "off",
@@ -1364,7 +1392,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        usable = function () return pet.alive, "requires water elemental" end,
+        usable = function () return pet.water_elemental.alive, "requires water elemental" end,
         handler = function ()
             applyDebuff( "target", "freeze" )
         end
@@ -1372,16 +1400,16 @@ spec:RegisterAbilities( {
 
     water_jet = {
         id = 135029,
+        known = true,
         cast = 0,
         cooldown = 45,
         gcd = "off",
         school = "frost",
 
         startsCombat = true,
-        talent = "summon_water_elemental",
         usable = function ()
             if not settings.manual_water_jet then return false, "requires manual water jet setting" end
-            return pet.alive, "requires a living water elemental"
+            return pet.water_elemental.alive, "requires a living water elemental"
         end,
         handler = function()
             addStack( "brain_freeze" )
@@ -1431,8 +1459,10 @@ end ) ]]
 
 spec:RegisterSetting( "manual_water_jet", false, {
     name = strformat( "%s: Manual Control", Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
-    desc = strformat( "If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet.\n\n"
-        .. "You will need to disable its auto-cast before using this feature.", Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ) ),
+    desc = strformat( "If checked, your pet's %s may be recommended for manual use instead of auto-cast by your pet.  "
+        .. "This ability is available when your pet is summoned by %s.\n\n"
+        .. "You will need to disable its auto-cast before using this feature.", Hekili:GetSpellLinkWithTexture( spec.abilities.water_jet.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.icy_veins.id ) ),
     type = "toggle",
     width = "full",
 } )
