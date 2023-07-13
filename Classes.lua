@@ -2638,6 +2638,40 @@ all:RegisterAbilities( {
         end,
     },
 
+    weyrnstone = {
+        name = function () return ( GetItemInfo( 205146 ) ) or "Weyrnstone" end,
+        listName = function ()
+            local _, link, _, _, _, _, _, _, _, tex = GetItemInfo( 205146 )
+            if link and tex then return "|T" .. tex .. ":0|t " .. link end
+            return "|cff00ccff[Weyrnstone]|r"
+        end,
+        cast = 1.5,
+        cooldown = 120,
+        gcd = "spell",
+
+        item = 205146,
+        bagItem = true,
+
+        startsCombat = false,
+        texture = 5199618,
+
+        usable = function ()
+            if GetItemCount( 205146 ) == 0 then return false, "requires weyrnstone in bags" end
+            if solo then return false, "must have an ally to teleport" end
+            return true
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 205146 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        handler = function ()
+        end,
+
+        copy = { "use_weyrnstone", "active_weyrnstone" }
+    },
+
     cancel_buff = {
         name = "Cancel Buff",
         listName = '|T136243:0|t |cff00ccff[Cancel Buff]|r',
@@ -3378,11 +3412,10 @@ do
 
     -- Hyperthread Wristwraps
     all:RegisterAbility( "hyperthread_wristwraps", {
+        id = 300142,
         cast = 0,
         cooldown = 120,
         gcd = "off",
-
-        item = 168989,
 
         handler = function ()
             -- Gain 5 seconds of CD for the last 3 spells.
@@ -3397,6 +3430,74 @@ do
 
         copy = "hyperthread_wristwraps_300142"
     } )
+
+    local hyperthread_blocks = {
+        berserking      = true,
+        arcane_torrent  = true,
+        blood_fury      = true,
+        shadowmeld      = true,
+        stoneform       = true,
+        darkflight      = true,
+        rocket_barrage  = true,
+        lights_judgment = true,
+        arcane_pulse    = true,
+        fireblood       = true,
+        ancestral_call  = true,
+        haymaker        = true,
+        bag_of_tricks   = true
+    }
+
+
+    local first_remains = setmetatable( {}, {
+        __index = function( t, k )
+            if hyperthread_blocks[ k ] then return 0 end
+
+            local slot = 0
+            local counted = 0
+            for i = 1, 10 do
+                if not hyperthread_blocks[ state.prev[ i ].spell ] then
+                    counted = counted + 1
+                end
+
+                if counted == 4 then break end
+
+                if state.prev[ i ].spell == k then
+                    slot = i
+                end
+            end
+
+            if slot > 0 then return 3 - slot end
+            return 0
+        end
+    } )
+
+    all:RegisterStateTable( "hyperthread_wristwraps", setmetatable( {
+    }, {
+        __index = function( t, k )
+            if type( k ) == "string" then
+                if k == "first_remains" then return first_remains end
+                if k == "count" then return state.hyperthread_wristwraps end
+
+                if hyperthread_blocks[ k ] then return 0 end
+
+                local count = 0
+                local counted = 0
+                for i = 1, 10 do
+                    if not hyperthread_blocks[ state.sprev[ i ].spell ] then
+                        counted = counted + 1
+                    end
+
+                    if counted == 4 then break end
+
+                    if state.prev[ i ].spell == k then
+                        count = count + 1
+                    end
+                end
+
+                return count
+            end
+        end,
+    } ) )
 
 
     all:RegisterAbility( "neural_synapse_enhancer", {

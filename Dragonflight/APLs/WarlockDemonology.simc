@@ -24,16 +24,16 @@ actions+=/summon_vilefiend,if=!talent.summon_demonic_tyrant|cooldown.summon_demo
 actions+=/guillotine,if=cooldown.demonic_strength.remains|!talent.demonic_strength
 actions+=/demonic_strength
 actions+=/bilescourge_bombers,if=!pet.demonic_tyrant.active
-actions+=/shadow_bolt,if=soul_shard<5&talent.fel_covenant&buff.fel_covenant.remains<5
+# actions+=/shadow_bolt,if=soul_shard<5&talent.fel_covenant&buff.fel_covenant.remains<5
 actions+=/implosion,if=two_cast_imps>0&buff.tyrant.down&active_enemies>1+(talent.sacrificed_souls.enabled)
 actions+=/implosion,if=buff.wild_imps.stack>9&buff.tyrant.up&active_enemies>2+(1*talent.sacrificed_souls.enabled)&cooldown.call_dreadstalkers.remains>17&talent.the_expendables
 actions+=/soul_strike,if=soul_shard<5&active_enemies>1
 actions+=/summon_soulkeeper,if=buff.tormented_soul.stack=10&active_enemies>1
 # Updated to allow Soul Shard overcapping when moving.
-actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<4&cooldown.summon_demonic_tyrant.remains_expected>5
+actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<4&(!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>5)
 actions+=/power_siphon,if=buff.demonic_core.stack<2&(buff.dreadstalkers.remains>gcd*3|buff.dreadstalkers.down)
 actions+=/hand_of_guldan,if=soul_shard>2&(!talent.summon_demonic_tyrant|cooldown.summon_demonic_tyrant.remains_expected>variable.tyrant_prep_start)&(buff.demonic_calling.up|soul_shard>4|cooldown.call_dreadstalkers.remains>gcd)
-actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<5&(buff.demonic_core.remains<buff.demonic_core.stack*gcd.max|moving|buff.demonic_core.stack>2&buff.dreadstalkers.up&buff.dreadstalkers.remains<2*gcd.max)&cooldown.summon_demonic_tyrant.remains_expected>5
+actions+=/demonbolt,if=buff.demonic_core.up&soul_shard<5&(buff.demonic_core.remains<buff.demonic_core.stack*gcd.max|moving|buff.demonic_core.stack>2&buff.dreadstalkers.up&buff.dreadstalkers.remains<2*gcd.max)&(cooldown.summon_demonic_tyrant.remains_expected>5|!talent.summon_demonic_tyrant)
 actions+=/doom,cycle_targets=1,if=refreshable
 actions+=/soul_strike,if=soul_shard<5
 actions+=/shadow_bolt

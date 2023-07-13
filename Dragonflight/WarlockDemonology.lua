@@ -24,23 +24,23 @@ spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterTalents( {
     -- Warlock
     abyss_walker                   = { 71954, 389609, 1 }, -- Using Demonic Circle: Teleport or your Demonic Gateway reduces all damage you take by 4% for 10 sec.
-    accrued_vitality               = { 71953, 386613, 2 }, -- Drain Life heals for 15% of the amount drained over 8.8 sec.
+    accrued_vitality               = { 71953, 386613, 2 }, -- Drain Life heals for 15% of the amount drained over 7.7 sec.
     amplify_curse                  = { 71934, 328774, 1 }, -- Your next Curse of Exhaustion, Curse of Tongues or Curse of Weakness cast within 15 sec is amplified. Curse of Exhaustion Reduces the target's movement speed by an additional 20%. Curse of Tongues Increases casting time by an additional 40%. Curse of Weakness Enemy is unable to critically strike.
     banish                         = { 71944, 710   , 1 }, -- Banishes an enemy Demon, Aberration, or Elemental, preventing any action for 30 sec. Limit 1. Casting Banish again on the target will cancel the effect.
     burning_rush                   = { 71949, 111400, 1 }, -- Increases your movement speed by 60%, but also damages you for 2% of your maximum health every 1 sec. Movement impairing effects may not reduce you below 100% of normal movement speed. Lasts until canceled.
-    curses_of_enfeeblement         = { 71951, 386105, 1 }, -- Grants access to the following abilities: Curse of Tongues: Forces the target to speak in Demonic, increasing the casting time of all spells by 30% for 60 sec. Curses: A warlock can only have one Curse active per target. Curse of Exhaustion: Reduces the target's movement speed by 50% for 12 sec. Curses: A warlock can only have one Curse active per target.
+    curses_of_enfeeblement         = { 71951, 386105, 1 }, -- Grants access to the following abilities: Curse of Tongues: Forces the target to speak in Demonic, increasing the casting time of all spells by 30% for 1 min. Curses: A warlock can only have one Curse active per target. Curse of Exhaustion: Reduces the target's movement speed by 50% for 12 sec. Curses: A warlock can only have one Curse active per target.
     dark_accord                    = { 71956, 386659, 1 }, -- Reduces the cooldown of Unending Resolve by 45 sec.
-    dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 200% of the sacrificed health plus an additional 16,885 for 20 sec. Usable while suffering from control impairing effects.
+    dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 200% of the sacrificed health plus an additional 24,582 for 20 sec. Usable while suffering from control impairing effects.
     darkfury                       = { 71941, 264874, 1 }, -- Reduces the cooldown of Shadowfury by 15 sec and increases its radius by 2 yards.
     demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of 0.2% of maximum health every 1 sec, and may now absorb up to 10% of maximum health.
     demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
     demonic_embrace                = { 71930, 288843, 1 }, -- Stamina increased by 10%.
     demonic_fortitude              = { 71922, 386617, 1 }, -- Increases you and your pets' maximum health by 5%.
-    demonic_gateway                = { 71955, 111771, 1 }, -- Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per 1.5 min.
+    demonic_gateway                = { 71955, 111771, 1 }, -- Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per 90 sec.
     demonic_inspiration            = { 71928, 386858, 1 }, -- Increases the attack speed of your primary pet by 5%.
     demonic_resilience             = { 71917, 389590, 2 }, -- Reduces the chance you will be critically struck by 2%. All damage your primary demon takes is reduced by 8%.
     fel_armor                      = { 71950, 386124, 2 }, -- When Soul Leech absorbs damage, 5% of damage taken is absorbed and spread out over 5 sec. Reduces damage taken by 1.5%.
-    fel_domination                 = { 71931, 333889, 1 }, -- Your next Imp, Voidwalker, Incubus, Succubus, Felhunter, or Felguard Summon spell is free and has its casting time reduced by 5.5 sec.
+    fel_domination                 = { 71931, 333889, 1 }, -- Your next Imp, Voidwalker, Incubus, Succubus, Felhunter, or Felguard Summon spell is free and has its casting time reduced by 90%.
     fel_pact                       = { 71932, 386113, 2 }, -- Reduces the cooldown of Fel Domination by 30 sec.
     fel_synergy                    = { 71918, 389367, 1 }, -- Soul Leech also heals you for 15% and your pet for 50% of the absorption it grants.
     fiendish_stride                = { 71948, 386110, 2 }, -- Reduces the damage dealt by Burning Rush by 25%. Burning Rush increases your movement speed by an additional 5%.
@@ -50,10 +50,10 @@ spec:RegisterTalents( {
     horrify                        = { 71916, 56244 , 1 }, -- Your Fear causes the target to tremble in place instead of fleeing in fear.
     howl_of_terror                 = { 71947, 5484  , 1 }, -- Let loose a terrifying howl, causing 5 enemies within 10 yds to flee in fear, disorienting them for 20 sec. Damage may cancel the effect.
     ichor_of_devils                = { 71937, 386664, 1 }, -- Dark Pact sacrifices only 5% of your current health for the same shield value.
-    inquisitors_gaze               = { 71939, 386344, 1 }, -- Your spells and abilities have a chance to summon an Inquisitor's Eye that deals 4,699 Shadowflame damage every 0.9 sec for 13.2 sec.
+    inquisitors_gaze               = { 71939, 386344, 1 }, -- Your spells and abilities have a chance to summon an Inquisitor's Eye that deals 6,953 Shadowflame damage every 0.8 sec for 11.5 sec.
     lifeblood                      = { 71940, 386646, 2 }, -- When you use a Healthstone, gain 7% Leech for 20 sec.
     mortal_coil                    = { 71947, 6789  , 1 }, -- Horrifies an enemy target into fleeing, incapacitating for 3 sec and healing you for 20% of maximum health.
-    nightmare                      = { 71916, 386648, 1 }, -- When Fear ends, the target is slowed by 30% for 4 sec.
+    nightmare                      = { 71916, 386648, 1 }, -- Increases the amount of damage required to break your fear effects by 60%.
     profane_bargain                = { 71919, 389576, 2 }, -- When your health drops below 35%, the percentage of damage shared via your Soul Link is increased by an additional 5%.
     resolute_barrier               = { 71915, 389359, 2 }, -- Attacks received that deal at least 5% of your health decrease Unending Resolve's cooldown by 10 sec. Cannot occur more than once every 30 sec.
     sargerei_technique             = { 93179, 405955, 2 }, -- Shadow Bolt damage increased by 8%.
@@ -64,76 +64,72 @@ spec:RegisterTalents( {
     soul_link                      = { 71925, 108415, 1 }, -- 10% of all damage you take is taken by your demon pet instead.
     soulburn                       = { 71957, 385899, 1 }, -- Consumes a Soul Shard, unlocking the hidden power of your spells. Demonic Circle: Teleport: Increases your movement speed by 50% and makes you immune to snares and roots for 6 sec. Demonic Gateway: Can be cast instantly. Drain Life: Gain an absorb shield equal to the amount of healing done for 30 sec. This shield cannot exceed 30% of your maximum health. Health Funnel: Restores 140% more health and reduces the damage taken by your pet by 30% for 10 sec. Healthstone: Increases the healing of your Healthstone by 30% and increases your maximum health by 20% for 12 sec.
     strength_of_will               = { 71956, 317138, 1 }, -- Unending Resolve reduces damage taken by an additional 15%.
-    summon_soulkeeper              = { 71939, 386256, 1 }, -- Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 439 Chaos damage per soul consumed over 8 sec. Deals reduced damage beyond 8 targets and only one Soulkeeper can be active at a time. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
+    summon_soulkeeper              = { 71939, 386256, 1 }, -- Summons a Soulkeeper that consumes all Tormented Souls you've collected, blasting nearby enemies for 651 Chaos damage per soul consumed over 8 sec. Deals reduced damage beyond 8 targets and only one Soulkeeper can be active at a time. You collect Tormented Souls from each target you kill and occasionally escaped souls you previously collected.
     sweet_souls                    = { 71927, 386620, 1 }, -- Your Healthstone heals you for an additional 10% of your maximum health. Any party or raid member using a Healthstone also heals you for that amount.
     teachings_of_the_black_harvest = { 71938, 385881, 1 }, -- Your primary pets gain a bonus effect. Imp: Successful Singe Magic casts grant the target 4% damage reduction for 5 sec. Voidwalker: Reduces the cooldown of Shadow Bulwark by 30 sec. Felhunter: Reduces the cooldown of Devour Magic by 5 sec. Sayaad: Reduces the cooldown of Seduction by 10 sec and causes the target to walk faster towards the demon. Felguard: Reduces the cooldown of Pursuit by 5 sec and increases its maximum range by 5 yards.
-    teachings_of_the_satyr         = { 71935, 387972, 1 }, -- Reduces the cooldown of Amplify Curse by 10 sec.
+    teachings_of_the_satyr         = { 71935, 387972, 1 }, -- Reduces the cooldown of Amplify Curse by 15 sec.
     wrathful_minion                = { 71946, 386864, 1 }, -- Increases the damage done by your primary pet by 5%.
 
     -- Demonology
     annihilan_training             = { 72022, 386174, 1 }, -- Your Felguard deals 20% more damage and takes 10% less damage.
     antoran_armaments              = { 72008, 387494, 1 }, -- Your Felguard deals 20% additional damage. Soul Strike now deals 25% of its damage to nearby enemies.
-    bilescourge_bombers            = { 72021, 267211, 1 }, -- Tear open a portal to the nether above the target location, from which several Bilescourge will pour out of and crash into the ground over 6 sec, dealing 2,623 Shadow damage to all enemies within 8 yards.
+    bilescourge_bombers            = { 72021, 267211, 1 }, -- Tear open a portal to the nether above the target location, from which several Bilescourge will pour out of and crash into the ground over 6 sec, dealing 4,446 Shadow damage to all enemies within 8 yards.
     bloodbound_imps                = { 72001, 387349, 1 }, -- The chance of receiving a Demonic Core from a Wild Imp is increased by 5% or 10% when imploded.
     call_dreadstalkers             = { 72023, 104316, 1 }, -- Summons 2 ferocious Dreadstalkers to attack the target for 12 sec.
     carnivorous_stalkers           = { 72018, 386194, 1 }, -- Your Dreadstalkers' attacks have a 10% chance to trigger an additional Dreadbite.
-    demonbolt                      = { 72024, 264178, 1 }, -- Send the fiery soul of a fallen demon at the enemy, causing 5,815 Shadowflame damage. Generates 2 Soul Shards.
-    demonic_calling                = { 72017, 205145, 2 }, -- Shadow Bolt and Demonbolt have a 10% chance to make your next Call Dreadstalkers cost 2 fewer Soul Shards and have no cast time.
+    cavitation                     = { 72009, 416154, 2 }, -- Your primary Felguard's damaging critical strikes deal 10% increased damage.
+    demonbolt                      = { 72024, 264178, 1 }, -- Send the fiery soul of a fallen demon at the enemy, causing 12,390 Shadowflame damage. Generates 2 Soul Shards.
+    demonic_calling                = { 72017, 205145, 1 }, -- Shadow Bolt and Demonbolt have a 10% chance to make your next Call Dreadstalkers cost 2 fewer Soul Shards and have no cast time.
     demonic_knowledge              = { 72026, 386185, 1 }, -- Hand of Gul'dan has a 15% chance to generate a charge of Demonic Core.
-    demonic_meteor                 = { 72012, 387396, 1 }, -- Hand of Gul'dan deals 5% additional damage and has a 5% chance per Soul Shard spent of refunding a Soul Shard.
-    demonic_strength               = { 72021, 267171, 1 }, -- Infuse your Felguard with demonic strength and command it to charge your target and unleash a Felstorm that will deal 400% increased damage.
-    doom                           = { 72028, 603   , 1 }, -- Inflicts impending doom upon the target, causing 13,863 Shadow damage after 17.6 sec. Doom damage generates 1 Soul Shard.
-    dread_calling                  = { 71999, 387391, 1 }, -- Each Soul Shard spent on Hand of Gul'dan increases the damage of your next Call Dreadstalkers by 4%.
+    demonic_strength               = { 72021, 267171, 1 }, -- Infuse your Felguard with demonic strength and command it to charge your target and unleash a Felstorm that will deal 300% increased damage.
+    doom                           = { 72028, 603   , 1 }, -- Inflicts impending doom upon the target, causing 20,514 Shadow damage after 15.4 sec. Doom damage generates 1 Soul Shard.
+    dread_calling                  = { 71999, 387391, 2 }, -- Each Soul Shard spent on Hand of Gul'dan increases the damage of your next Call Dreadstalkers by 2%.
     dreadlash                      = { 72020, 264078, 1 }, -- When your Dreadstalkers charge into battle, their Dreadbite attack now hits all targets within 8 yards and deals 10% more damage.
-    fel_and_steel                  = { 72016, 386200, 1 }, -- Felstorm and Dreadbite deal 10% additional damage.
-    fel_covenant                   = { 72000, 387432, 2 }, -- Shadow Bolt increases the damage of your Demonbolt by 7%, stacking up to 4 times. Lasts 20 sec.
-    fel_might                      = { 72014, 387338, 1 }, -- Reduces the cooldown of Felstorm by 10 sec.
+    fel_and_steel                  = { 72016, 386200, 1 }, -- Your primary Felguard's Legion Strike damage is increased by 10%. Your primary Felguard's Felstorm damage is increased by 5%.
     fel_sunder                     = { 72010, 387399, 1 }, -- Each time Felstorm deals damage, it increases the damage the target takes from you and your pets by 1% for 8 sec, up to 5%.
-    the_houndmasters_stratagem               = { 72015, 267170, 1 }, -- Dreadbite causes the target to take 20% additional Shadowflame damage from you for the next 12 sec.
     grand_warlocks_design          = { 71991, 387084, 1 }, -- Every Soul Shard you spend reduces the cooldown of Summon Demonic Tyrant by 0.6 sec.
-    grimoire_felguard              = { 72013, 111898, 1 }, -- Summons a Felguard who attacks the target for 17 sec that deals 45% increased damage. This Felguard will stun their target when summoned.
-    guillotine                     = { 72005, 386833, 1 }, -- Your Felguard hurls his axe towards the target location, erupting when it lands and dealing 2,884 Shadowflame damage every 1 sec for 6 sec to nearby enemies. While unarmed, your Felguard's basic attacks deal damage to all nearby enemies and attacks 50% faster.
+    grimoire_felguard              = { 72013, 111898, 1 }, -- Summons a Felguard who attacks the target for 17 sec that deals 45% increased damage. This Felguard will stun and interrupt their target when summoned.
+    guillotine                     = { 72005, 386833, 1 }, -- Your Felguard hurls his axe towards the target location, erupting when it lands and dealing 4,268 Shadowflame damage every 1 sec for 6 sec to nearby enemies. While unarmed, your Felguard's basic attacks deal damage to all nearby enemies and attacks 50% faster.
     guldans_ambition               = { 71995, 387578, 1 }, -- When Nether Portal ends, you summon a Pit Lord that gains power based on how many demons you summoned, up to 20 demons, while Nether Portal was active. The Pit Lord lasts for 10 sec.
-    immutable_hatred               = { 72005, 405670, 1 }, -- When your primary Felguard's Legion Strike damages only 1 target, its damage is increased by 120%. Your primary Felguard deals 2,523 Physical damage after auto-attacking the same enemy 3 consecutive times.
+    heavy_handed                   = { 72014, 416183, 1 }, -- Increases your primary Felguard's critical strike chance by 10%.
+    immutable_hatred               = { 72005, 405670, 1 }, -- When your primary Felguard's Legion Strike damages only 1 target, its damage is increased by 100%. Your primary Felguard deals 4,490 Physical damage after auto-attacking the same enemy 3 consecutive times.
     imp_gang_boss                  = { 71998, 387445, 2 }, -- Summoning a Wild Imp has a 5% chance to summon a Imp Gang Boss instead. An Imp Gang Boss deals 50% additional damage. When imploded, an Imp Gang Boss will summon a Wild Imp.
-    implosion                      = { 72002, 196277, 1 }, -- Demonic forces suck all of your Wild Imps toward the target, and then cause them to violently explode, dealing 3,136 Shadowflame damage to all enemies within 8 yards.
+    imperator                      = { 72025, 416230, 2 }, -- Increases the critical strike chance of your Wild Imp's Fel Firebolt by 5%.
+    implosion                      = { 72002, 196277, 1 }, -- Demonic forces suck all of your Wild Imps toward the target, and then cause them to violently explode, dealing 6,113 Shadowflame damage to all enemies within 8 yards.
     infernal_command               = { 72006, 387549, 2 }, -- While your Felguard is active, your Wild Imps and Dreadstalkers deal 5% additional damage.
-    inner_demons                   = { 72027, 267216, 2 }, -- You passively summon a Wild Imp to fight for you every 12 sec. While in combat, you also have a 5% chance to summon an additional Demon to fight for you for 15 sec.
+    inner_demons                   = { 72027, 267216, 1 }, -- You passively summon a Wild Imp to fight for you every 12 sec. While in combat, you also have a 5% chance to summon an additional Demon to fight for you for 15 sec.
     kazaaks_final_curse            = { 72029, 387483, 2 }, -- Doom deals 3% increased damage for each demon pet you have active.
+    malefic_impact                 = { 72012, 416341, 2 }, -- Increases Hand of Gul'dan damage by 8% and the critical strike chance of Hand of Gul'dan by 8%.
     nerzhuls_volition              = { 71996, 387526, 2 }, -- When Nether Portal summons a demon, it has a 15% chance to summon an additional demon.
     nether_portal                  = { 71997, 267217, 1 }, -- Tear open a portal to the Twisting Nether for 15 sec. Every time you spend Soul Shards, you will also command demons from the Nether to come out and fight for you.
     pact_of_the_imp_mother         = { 72004, 387541, 2 }, -- Hand of Gul'dan has a 8% chance to cast a second time on your target for free.
     power_siphon                   = { 72003, 264130, 1 }, -- Instantly sacrifice up to 2 Wild Imps, generating 2 charges of Demonic Core that cause Demonbolt to deal 30% additional damage.
-    reign_of_tyranny               = { 71991, 390173, 1 }, -- Demonic Tyrant deals 50% additional damage. Active Wild Imps grant 1 stack of Demonic Servitude. Active greater demons grant 3 stacks of Demonic Servitude. Demonic Tyrant deals 7% additional damage for each stack of Demonic Servitude active at the time of his summon.
-    ripped_through_the_portal      = { 72009, 387485, 2 }, -- Call Dreadstalkers has a 50% chance to summon an additional Dreadstalker.
+    reign_of_tyranny               = { 71991, 390173, 1 }, -- Demonic Tyrant deals 40% additional damage. Active Wild Imps grant 1 stack of Demonic Servitude. Active greater demons grant 3 stacks of Demonic Servitude. Demonic Tyrant deals 7% additional damage for each stack of Demonic Servitude active at the time of his summon.
     sacrificed_souls               = { 71993, 267214, 2 }, -- Shadow Bolt and Demonbolt deal 2% additional damage per demon you have summoned.
-    shadows_bite                   = { 72025, 387322, 1 }, -- When your summoned Dreadstalkers fade away, they increase the damage of your Demonbolt by 10% for 8 sec.
-    soul_strike                    = { 72019, 264057, 1 }, -- Command your Felguard to strike into the soul of its enemy, dealing 5,962 Shadow damage. Generates 1 Soul Shard.
+    shadows_bite                   = { 72000, 387322, 1 }, -- When your summoned Dreadstalkers fade away, they increase the damage of your Demonbolt by 10% for 8 sec.
+    soul_strike                    = { 72019, 264057, 1 }, -- Command your Felguard to strike into the soul of its enemy, dealing 10,612 Shadow damage. Generates 1 Soul Shard.
     soulbound_tyrant               = { 71992, 334585, 2 }, -- Summoning your Demonic Tyrant instantly generates 3 Soul Shards.
     stolen_power                   = { 72007, 387602, 1 }, -- When your Wild Imps cast Fel Firebolt, you gain an application of Stolen Power. After you reach 75 applications, your next Demonbolt deals 60% increased damage or your next Shadow Bolt deals 60% increased damage.
     summon_demonic_tyrant          = { 72030, 265187, 1 }, -- Summon a Demonic Tyrant to increase the duration of all of your current lesser demons by 15 sec, and increase the damage of all of your other demons by 15%, while damaging your target. Generates 5 Soul Shards.
     summon_vilefiend               = { 72019, 264119, 1 }, -- Summon a Vilefiend to fight for you for the next 15 sec.
     the_expendables                = { 71994, 387600, 1 }, -- When your Wild Imps expire or die, your other demons are inspired and gain 1% additional damage, stacking up to 10 times.
-    umbral_blaze                   = { 72011, 405798, 2 }, -- Hand of Gul'dan has a 8% chance to burn its target for 3,803 additional Shadowflame damage every 2 sec for 6 sec.
+    the_houndmasters_stratagem     = { 72015, 267170, 1 }, -- Dreadbite causes the target to take 20% additional Shadowflame damage from your spell and abilities for the next 12 sec.
+    umbral_blaze                   = { 72011, 405798, 2 }, -- Hand of Gul'dan has a 8% chance to burn its target for 5,628 additional Shadowflame damage every 2 sec for 6 sec.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    bane_of_fragility     = 3505, -- (199954) Reduces the target's maximum health by up to 15% for 10 sec.
-    bonds_of_fel          = 5545, -- (353753) Encircle enemy players with Bonds of Fel. If any affected player leaves the 8 yd radius they explode, dealing 11,355 Fire damage split amongst all nearby enemies.
-    call_fel_lord         = 162 , -- (212459) Summon a fel lord to guard the location for 15 sec. Any enemy that comes within 6 yards will suffer 9,788 Physical damage, and players struck will be stunned for 1 sec.
-    call_felhunter        = 156 , -- (212619) Invoke the power of Felhunter from the nether to instantly Spell Lock the enemy target. Call Felhunter cannot be used if your current pet is a Felhunter.  Spell Lock Counters the enemy's spellcast, preventing any spell from that school of magic from being cast for 6 sec.
-    call_observer         = 165 , -- (201996) Summons a demonic Observer to keep a watchful eye over the area for 20 sec. Anytime an enemy within 20 yards casts a harmful magical spell, the Observer will deal up to 5% of the target's maximum health in Shadow damage.
-    casting_circle        = 3626, -- (221703) Summons a Casting Circle for 12 sec. While within the casting circle, you are immune to silence and interrupt effects.
-    essence_drain         = 3625, -- (221711) Whenever you heal yourself with Drain Life, the enemy target deals 9% reduced damage to you for 10 sec. Stacks up to 4 times.
-    fel_obelisk           = 5400, -- (353601) Summon a Fel Obelisk with 5% of your maximum health. Empowers you and your minions within 40 yds, increasing attack speed by 20% and reducing the cast time of spells by 20% for 15 sec.
-    gateway_mastery       = 3506, -- (248855) Increases the range of your Demonic Gateway by 20 yards, and reduces the cast time by 30%. Reduces the time between how often players can take your Demonic Gateway by 30 sec.
-    master_summoner       = 1213, -- (212628) Your Call Dreadstalkers is now instant cast.
-    nether_ward           = 3624, -- (212295) Surrounds the caster with a shield that lasts 3 sec, reflecting all harmful spells cast on you.
-    pleasure_through_pain = 158 , -- (212618) While your Succubus is active, your Shadow damage is increased by 15% and the cast time of your Shadow Bolt is reduced by 0.5 sec.
-    precognition          = 5505, -- (377360) If an interrupt is used on you while you are not casting, gain 15% haste and become immune to control and interrupt effects for 4 sec.
-    shadow_rift           = 5394, -- (353294) Conjure a Shadow Rift at the target location lasting 2 sec. Enemy players within the rift when it expires are teleported to your Demonic Circle. Must be within 40 yds of your Demonic Circle to cast.
+    bonds_of_fel     = 5545, -- (353753) Encircle enemy players with Bonds of Fel. If any affected player leaves the 8 yd radius they explode, dealing 60,958 Fire damage split amongst all nearby enemies.
+    call_fel_lord    = 162 , -- (212459) Summon a fel lord to guard the location for 15 sec. Any enemy that comes within 6 yards will suffer 36,911 Physical damage, and players struck will be stunned for 1 sec.
+    call_observer    = 165 , -- (201996) Summons a demonic Observer to keep a watchful eye over the area for 20 sec. Anytime an enemy within 30 yards casts a harmful magical spell, the Observer will deal up to 10% of the target's maximum health in Shadow damage.
+    fel_obelisk      = 5400, -- (353601) Summon a Fel Obelisk with 5% of your maximum health. Empowers you and your minions within 40 yds, increasing attack speed by 20% and reducing the cast time of spells by 20% for 15 sec.
+    gateway_mastery  = 3506, -- (248855) Increases the range of your Demonic Gateway by 20 yards, and reduces the cast time by 30%. Reduces the time between how often players can take your Demonic Gateway by 30 sec.
+    impish_instincts = 5577, -- (409835) Taking direct Physical damage reduces the cooldown of Demonic Circle by 2 sec. Cannot occur more than once every 5 sec.
+    master_summoner  = 1213, -- (212628) Reduces the cast time of your Call Dreadstalkers, Summon Vilefiend, and Summon Demonic Tyrant by 20% and reduces the cooldown of Call Dreadstalkers by 5 sec.
+    nether_ward      = 3624, -- (212295) Surrounds the caster with a shield that lasts 3 sec, reflecting all harmful spells cast on you.
+    shadow_rift      = 5394, -- (353294) Conjure a Shadow Rift at the target location lasting 2 sec. Enemy players within the rift when it expires are teleported to your Demonic Circle. Must be within 40 yds of your Demonic Circle to cast.
+    soul_rip         = 5606, -- (410598) Fracture the soul of up to 3 target players within 20 yds into the shadows, reducing their damage done by 25% and healing received by 25% for 8 sec. Souls are fractured up to 20 yds from the player's location. Players can retrieve their souls to remove this effect.
 } )
 
 
@@ -309,7 +305,7 @@ end )
 
 
 local ExpireDreadstalkers = setfenv( function()
-    addStack( "demonic_core", nil, talent.ripped_through_the_portal.rank > 1 and 3 or 2 )
+    addStack( "demonic_core", nil, 2 )
     if talent.shadows_bite.enabled then applyBuff( "shadows_bite" ) end
 end, state )
 
@@ -949,13 +945,6 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1
     },
-    -- Talent: Damage of your Demonbolt increased by $w1%.
-    -- https://wowhead.com/beta/spell=387437
-    fel_covenant = {
-        id = 387437,
-        duration = 20,
-        max_stack = 4
-    },
     -- Damage taken reduced by $w1%.
     -- https://wowhead.com/beta/spell=386869
     fel_resilience = {
@@ -1449,9 +1438,6 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = 2,
-        spendType = "soul_shards",
-
         talent = "bilescourge_bombers",
         startsCombat = true,
     },
@@ -1473,8 +1459,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            summon_demon( "dreadstalkers", 12, talent.ripped_through_the_portal.rank > 1 and 3 or 2 )
-            applyBuff( "dreadstalkers", 12, talent.ripped_through_the_portal.rank > 1 and 3 or 2 )
+            summon_demon( "dreadstalkers", 12, 2 )
+            applyBuff( "dreadstalkers", 12, 2 )
             summonPet( "dreadstalker", 12 )
             removeStack( "demonic_calling" )
 
@@ -1520,7 +1506,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "fel_covenant" )
             removeBuff( "stolen_power" )
 
             if buff.demonic_core.up then
@@ -1793,10 +1778,6 @@ spec:RegisterAbilities( {
             if legendary.balespiders_burning_core.enabled then
                 addStack( "balespiders_burning_core" )
             end
-
-            if talent.fel_covenant.enabled then
-                addStack( "fel_covenant" )
-            end
         end,
     },
 
@@ -1834,7 +1815,8 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         readyTime = function ()
-            if settings.dcon_imps == 0 or buff.wild_imps.stack > settings.dcon_imps then return 0 end
+            local dcon_imps = settings.dcon_imps or 0
+            if ( dcon_imps or 0 ) == 0 or buff.wild_imps.stack > dcon_imps then return 0 end
 
             local missing = settings.dcon_imps - buff.wild_imps.stack
             if missing <= 0 then return 0 end
@@ -1941,4 +1923,4 @@ spec:RegisterSetting( "dcon_imps", 0, {
 } )
 
 
-spec:RegisterPack( "Demonology", 20230626, [[Hekili:vZXAVTnoYFlblGBCE4yz7KMUxSpCB3d71Idflo37(OLLLOT1gzrT6rsdGH)TFZqkrrsrkBN0MTfyrxhRHZ7xCiLN5m7ZZMg4LtM9Pb9hmS)ndUP3GHJgm8TZMM)ucz20ep)79wbFi2Bd8V)kzdnMgrx9e(ONIOEbikYOfP(WJxNNNK9ZxD1QW81fl65t3Cvw4MIiV8qASFQ3YC8V9VAreDXvbPEROXlJcxTo)ks8QWyYv(rEzzUBObfrKSR8sIU6rV0iQ)998tsMnDrryu(hINTWmxFdWjjeF4RVb(46WGachwsM)SPiSx2)MlhCZpVB(U5)hYdK08DZtsjB8Ylsj7M)5Ns9IHVY3ld(xqkd97T7J7(OyLxZw5)i4pkqa(D6JK0DZNgMSMgVBErgOO2npmUgrjR9Yi)TDZZtFc(hkJypqIBJQpUMai4xtjEbz5Er3tsZ2n3dHBPxuuy8QDZPlxkXwxF5W(m26dl3n)t)oWaWcksaWkYZcdiACZU5N(37EbYTWh)x0FdGhwx(AIGbcJIaIfghMTE38fKLuK4iIjFjjmLKPq7kLzy29afbnQVxscJlNU2lniJl2EpqddaudeG9mMBuO)U5VNHCqq9V3iE)VixoTyZgub))cJildjXaM2aRtb((3YG)ZPHX3tYrfa6GOIZ(d44K9iqePGXZPFphqLSOawZ9ecN138uTs7XW4a6JLEdDLW3OlD4UdVpI4fZv55WAYcrND0paLCHUpLK4L6XFeZqOGQ(VJ7zLKeb0gIrUey(CsaUWqAAy(tMejyDCw4Fg7TicePFdIpIOGoMiChFecfPO0j05tZtHOTCW4c(xGZijqfLJyO8xi55O3Dn9bx3WmG)ZkvDvIgJqsOyyLdPqrNs3GHjBE)fOAXpQiGPMbnejn2d82EWlneLGEXKVK7MlciI8lZD0B20OWS8mmztyozd(HpXYEryIEWSFz2upFeuaGuWTViZDjKGzdiGZM6dsabibMbbcEc4Qc3emaUhA42UD38tQui9YyoCUvGX5NELuA38oGddezGykMaroPaIsHLAatQpxGHUC4wqZYyOBjMd0ftjeIQ37gVB(aNQCUneNCibNfrppCdzbK7WFnOHDbAIF5p0sVjjcuadTOaYsOHrzU0LUXKOCifur2p4katseOagzrbGzAbVKaOUHB2Api31kYgzvWjsHBCaCbDmOCZ4C1PT8Cjr)7bLi(FvQjZYnOOU2IIIKwKGvJCHwg8s)XozHJWBXMubkIB0ue1Y53z2uoEaGj)zryscuFspfidgzamKLObmgcKAaJf1xd4m6TX8gRCVG(RC5vQav)B1u9CBvkn3hycOaS7duAaL6gqJIQrHLNd47wJ4Bbi)G5jN6ckx3fKNOXb1yZ4trhdO94LEfr5IsQvRW7lea8Smzsvv7PcMaYdqV)UB8GUJ0GtpfnfAGpJKlLQQmnd(POcs1dS4MHDNIzIGgkodYpUB(5GFpdjULvkyW5M4fGTxykh5(5aFkncmMXwCGBX3oHK3ljm3nIMg0dX)dKd0PhbYcDfb5t2nFyFzHnoXfSMbSEnnLLRo4(GJDf8Gzql5fxyxaeFwRP3jvPOs5dT56cTZNMlshWsBHYOwERjpdkkfFbnhg5Y)dxS1qEdIkUcTN0ZA(uMZf4ITYpO3gVVi1x5MKiAwPcxpKwPa7bRZHnohHjqsdykKb7jvp3lOIFu8vmLw4G0vIKuVZUQ67JIdhOarbdhkpo9BxGShQjs1utX1EXbyPJvfrbEmhah9TFuJ(J2VgOzP0uTuw6TB1K4a5PcW4b99b8m8cneAc(zoJ2lT1ZV)mPDlo7hPESMJxLgUHgMsCxsIwvarxmgwVCWZKHpsUYQ1TTCNFRumLW)q1Kuy6f71oe0PIazLZoOoCrn0TbCvOT20igrbJ23O2mH6Q1AOWP1CUybyn9aVmSulqGyN5d9RScAaIUzrLNSEEZA8kNFg07xZShLYk4Bbg0hG1PLNJLDr5PY2URLSg8TxTGgXQv5ypdC(JuxwwjOgephv)AsvkTChRoCNThiUKyYMqchAhMh3P1U5EaUxg6dTwIIyMXSSk17gSNSPpggfW4UESP5XO67AWJyYEZC4Gko0Hv8D)8PAplnZrPKr35TYwoSbym2ioarwwtNuvj3EIEJUhMu)s2C2sYtdVNfamWEgCUEJMUHnJoM8xPBXT81)qigpChxkoCtskJK2MDcl6H5mYMyEAyc)75ZXlOCuUq07J7Mpfqz5mE1M7lFa2BOpa)vpRDr4JdWT0Bqtlo651n6em0cfp7P5BYbL6tEpFYt3WQNuzxHmN0Hs7kqDf8yrPyjwxtUzSJkGXL2t62SNqXgI)2wKQTcsDno8hF(rsi6HtJ1hPXl7jivOA72wFxdAPL(d0d7AZcdUa5m1wDxotIxrbK7Sl7myyrctPb3Ls2Snxp9TL0id4ryOV2umpQA1lWkGIsvMHykzzkb0NlWTo7)KFeXfCtwrYZWriGy6WlPAp147K7nqUwPsBbWFcoQ(q5CV6ryyUikB4bIANL9m4fX2Qo)lywar3JGFNOaeyJQzgS4EaDtym7WjedfPTwtEoKP0Kcl)5npfN(MMpIiQ(5nIeNrSk1QPIenuwNfQgMgDJxxWTM7wgMMvD0pTpqdRTB4ifezoj)q7jKTNvXAYdXKnKgn1yM3vxlby2BGTLOcLMeZfd3WGREPXlCPzZNMJa)KnHwhcYmgLikhOyA4UbUKOmsn2vaz38lbtpdlxAOOs545AmXTdl)LPyT97ZUX7pOPCuxVpQ2yUA1XrUuJfsv00TAhSeMRmgk7dTST6RNxTjutqj5aJtvDWHQCS05Z(fY90JM9O7tSodPNFOFlZoLPseDhEObPFszxTQJPtDlTVvgWMtTqf4BvQhQVtEvyvQDAyaoA7S(OgvMHMQMGhzPAL8ffPX4C5IjU(a3nQpJq2Ro3sqd)qUkDFv7iu211wVvnuAQ5yy8L963TYxtus(3zFZ40yR97Ja9BU2XSYqDRIiAlbGS4ByiM2hIxvbE0uslGfQVnJwBLTDRPWykf307WM66XS7ozzxPomFKxM67ulU4MdTfu2qN1paTek))RGtLJpdhbfj9EwAvfOgQaveLg4USi9jnOgjdfudMWGuN5WI2aDqG4xyURXtr4rV0y8u9Nn9Z4L)cY2sXn6XUApVjepuG3G35N)SaqBa6(HE4Ef50n8Hb4dgNvSRJ0)MDFJC(z86CfJxQo8XVPT9Q(g(SeAfMkhna2tD(s39rhLaon8B8af0X7Gxj(3cDEX8)Wxj(3cDEX8)Oxj(3cDEX8)1Vs8Vf68I5)BEL4Fl05fW)7(OHmyLxQHJlh2p6(gV9vIoV7Vw68IThoVwj7DETYk78AL(0XIVC1QRo7onAO)yRO)wZOx(400qTPZHthTd6BgTANeKgMTCornq(3(WBJP4eJ98Rsso9nuAMrBmOpDLHfS3yVTAO36mc3JoqOupcfG1GsTT6ORbSStizo8dmMdr61v7Xz3C2nxhEmoOA6YWiXgCY6jmHNp(k1HkFr4YX4MHM0VZjI5h35KwNC8UpAcVLwoajioFHiRAFDxGt3zC5M7QhP8f0KXzaHytMASt)dbjYZouB9Jo3I3352CBmtq5j(GkbtdzAIthlZp6UHMXQylLikR3E(Dx35uC2WB3k2r74(DTyBQ3sPosq3PYLaawDxmL)o57EP83B2gXNENQcUAx4gtcj4(ZgCUJD8lFtevXU1lt52TgNrY2TgUeLB3EIPk7GYT1Rm5KH9Lzz9lmMSQHfP1s24oh5iQVZ(5Ow5yOCJEMCK4hCL(PFQk7ckCHXpqVhRuLZEDACrLlxa5(9HXllYktPyuz25K2KFWAbmDhfE(UbxlREf3xcwWLbOpBLFG8cuiVmFz2cuhxmzGr25qS2SzASFWWj5iYruXhvx6XAVrZm6PwCSnQ27kZmQJ6sWaMDURN5OU4OmmoelhPZLWz88B3pU3JBJQjYzKmcBK4(aWNb7(rkDYCGEjLdGbosQvRlTNr4RTuvF96um(nA)Ueh1EM6qOwOX(ZmCN6eTzOX38e6k2a7L)6K3S7EEbAt3SU7SNos5QZbDtXWrjhH6MoC2Q6kunX58tR8cSC5Z6Ap1NP(kENcjls0j4GZp15S9rYohWH8nX5TvAnTDUOOZRN2DdDUUQWq8s9DjtiWMUJAqVFgW2pv9sHg8CUmznCjR8Bmn5FPAg3n6ylHprXDYy3JgAtCqz6FZghOSYzdl78P5rMUNAbYfa7C6x50u2Zo1TsIQewX99A7wjwAKenBX9e0aDF22WR1zfPBR1DwSiNvExP2UL7bvP9BaiOunEuwM(wLEAqS39L5DH3TQluUdvJDqfI0DS6adFTKzvAJe9y9abpU6TtRSZiTxVUxP2Fmw7B8aN9XUgEz)(oNJn8Qh(DohB8fCKvy)bZVCWB3EQLNOf4(Tro72DFsKLxTZ)sTdoTyhyEiVkQoOGI1302oN027yR0tn4Il9ulkFjim6WTxJQ5xr29TktVkSYzjXTaoMF49QFj2VR4e7B(iXX034rIZMxMmCR1yJJRr6(suouLWL6Jv5WQ2Cr9f2BSX7R3LOH9sl32RleZ2HpnsZ34pnr6ClZGQPqvksgUKDwziiQ4iaVrZnYxeLNhBdL81Te2B65CojA9s3DUZG2KwlDmYNcu5VbrFOCepL)6)KHnyFZU5ze08bFdoRCyFaWNQ(b9r8Zbd)NXLlm9lfJ4rHIFxGwqQq)Tsi7tSeki3GzuWFpAqI6H)s9iW6cA(AgQemiYUVV6nItEMw12JJz0wMZ61X(yuU72owYvBQpEavcJK0ptnSON7gFtDx5AZP0svr5cwcX9aNt9jTiPg2xYqdusBN3mHyqhJDtwVifkA45Tmn(AcRn2fdG0mwXeEkVIHwMuMYMhMmEWfLxeXXJ6BNPuZKIyULSh3vn9CBxirZBPWa1BUDVwiB9S)SwMxzZITHQ(YWo(6UDoP9Bs4bX7vDMODAzw2GvBk4s9RX7iObwzVBN0Ixu5UPApiz2uVcirw6SP4VJvSlv3S)p]] )
+spec:RegisterPack( "Demonology", 20230712, [[Hekili:vZ1EVTTrs8plgfqXYpKfLLSt6z5dxtVRxdoeuCk9(trrrUsM1KCz5d5yab(z)Mzx(y3L7sjzNOMa0MQqoCMzN538yhUSZTM)P5Z8CYiZ)4OHJUE4TwJgyzn52XVD(SSNJjZNf74(OZA4hroHWF(ZKqAenGU(z8wphqD8qwKsZtCHB)qwwC6pE1vR9ZEiF5axA4vP(H5boz(0i3eNvz4F39QLb0Lx5L4SMgTkWF9dzxrIw7hrUYnWjn1oK6LhqsVYjo4QNCscOUpoWnoE(SL5(bz)A08L616BanjM4cx(g4Np475r40ssDNpdP9YH3EP1OFSyrXI)rqa9PIfSv0sAqwXch4FzxlGSHeKE1tWQGMdx8tpN4eLnO4dfFOMjwmM8FHNEdXRyX)IeuS49WVJak)BaVCZYDGlznCG1GjflYJrfUyref43ZeuABC8dCwgqe47nxo6Ms(UHKaefNqcDYYtivkrXcxNuMEU23v(jNWxwE)rosWVrFIKuSyMF8d0iq(PGxSyHFudJIFWjLaQAwYZWFqzcd0)UK6tpqag8ZjehV0mNGhjjPWcbPBLtqGF06If0vReuRjxE9qMA9RRkw8XFduGu0waKLNL67ru0MIfN(37FbQTWp)30FbOhEUShi1kGFayux5h5N(qXILKvuu4iJjFo2pHKkj7kJPF6JGeblQRtCmtlN9GtIxkFz7SH6dEWNabWUhdr47IUtK5Wc19rT893rTCwEyiAG)F(bKv(KiGtHWZjr)W3YO)tj(rpIUEoyqMNd5OYFVeNalmo4bmjlrm4Jecx1dFUXO9KFKhdWIOH(c8B8LwC4W7diorCtEg8mP(yKiIdWvETTpHe7K4WVfZriXQHVJJSIJdazdbWxckFgI6Jt8Pj(zpRBjbphxf(NrikVyXVabVbuWgtQHJ1ry128zzjqQGmW5c4lams8Kz5ygl)jswgIUBKpaD9tb9pT00vT0ycsGfxxbiRn0j0qmmj89xGMf3GCpMzgSqKKimeEJtIplonI85m7S6aIa3YeBdMplWpnlfZe6NrcXF8rwQvcBP7n)NMpdsiaKceKaW(8u7vq2VqyboFMlSciGiW0BqWJh3uyhJbWdqh32TfloPYGmiLb4SRiJRpdkLuXIEaGbImqofrGiNeGrjWJQHtY3VMd950TKMMYy3kmbTnMsWhnV3nTyXiRQccTwozq2xdl9m)qYsi3H7dGf2gKjEXVRx96wrGb4AdgG0yQFqQnDLDejidsbLN(DUbq3kcmaJnyaWmTakXdQByN(GdK7Anju0eCIq4gNaBWgdg3uUwDAh3xyP)TGre)NkZK(1nyOMyWqrsYJXQr2q)mojFFNSWQgTyAvbgIBumenRZVX8PC(aet(ZC)4yO(KAkqgnIeOjlrlA0ei1IgdMVw0PfTXqJvWlO)kBELkW0FRIPN7RsOzUGsafGT3qPEuQThniOHfgUpWV3QLFlH1p4EYO2GX1Ej5zAKxd30Exeya9UVYjpiRUKA1t48zcqEAQOOQQ9urJhzdSXe7qhO7if6utrtHDxKsYesvvMMb)vqoP6ggGzy3PyMiOHIZG8JflohW9mMyxwPGrNDSJh2EHUCK7wdCP0aWzgzaa3b2oMKni2pZoGM4na5)gYEc6rImi36G87lwC9qXfBuSn4n9y9AQllxtW9Eh7wRd6jTuxSHDbqCzTMENqLIkJp0MRn0oFswD6awAlCnQK36(xGefIVGMddS5)fBS1qEdIsqHUt6zmFkdCbqS1UEdcD(SqFLHXb00sdUAiTub292Md7QpatGK4XmiJ2rQEokOsFKWk6slSx2Q6KuVZSP6BJId75cIcooC9ynS7fK5qT6unns8bNipS0X68aphgaWsD7hnS)GX13ZMMbUAQEuw6T3QSI9eNkathu3hWlafQj0eWzwJ3PSvZV)cLDhG9d0o2OXRt8dP(je7vKG15q0ftHvlh8cv4duRm6D7k35xldtj9BQMKcZUyU2rTCQeqA5SdAcxKdDBrxfBBCn1JOGj7BKBMq(PvAOWQZCUybyf7aVmSqlqWYo1f6xzn0aenCzfs2uEZMe(S5BM4hx2ye7(PdkBC68PxvUrjCiNx4VAAtA97M0R00aqrW)ZNEzpwciXRuzqVBIuT7NO2SKrGMWtnnKHiypE5IKJN6XXyBi2KisOpHtTfdODAd62b49kFxOJsuftftUIgIDuc4j)apMQmGnXoMiExlfctORxDgvPowScS7wPK7lPDEiPS2w3YiVKRytUi(pYdzwABGOu18rMRviwIgc9My0wleLXEKSe)hzG8rMRuWTB0Kq2C4yR)kBlUTUH7JW4H04JIdWKKWePPbeXIqqyQcKMpRoVYX1YNB)mGLLZXvz2U8Huhs3a)Tbg7uWfhsBjAqXkowyxEFDZ8oPeBpYC5Q2kDPlG3kO4qpmc(kBwKHRVwyZcYpbpwvOrgwZu2PS3GatlnxJQDRIhjlyx1P6RDMqU83urDRDkQ(yfDzhX11M2(D1o2iZvX2xq5e9lg8bel(AeUCMGUIlqE8HiyqZdv7k1axkvZUGEQ7wrWL8s81toWU67RlZc6nu33vnvuQ00itiRsiGlyjUjC3NDdi2aYAnjlfhgbYjZf9vDFMta)wXUmeQvl3Gb8xbSTl0yGtZWq0kz(yiQlhx29HtaBt)8lWCA19Hcq16YCGBTrzWEa8OH(rSxZr94v6QjNxIykDJWJ)YMmJ1qDtAPorWlBylwJz9diJ0QBnTbK1qtR(6BkR3ODR8tsREjsDpAeJn1yje3PVUW1MZHBEKdgZ3upJeHHCnLHUmfG9IIkea(m0EPnsduV055VsV7tbiWFhPqdkEPAJsQRGi5A4WaBsqkPH7sKuS4sW1Z4YLAQdvoOVwZUB)Y3PlwB3y2qN)GMWzDZoY6s5Amhh4JQT2RKLUt)GHWCPbAzE8NDvs(8QTZQJkbamoF2r7RXXqZs7ErAUHPDeDFIXPr9Yd97ykSmtsDdL7Bq6hL2FS8a)K3C8TIe2E(hYelxpuDMaY0(orA1mkiL9OFqdDttFy3JV8t5k5lZtIWj8frSDbTB8qMGmxDUJGg(RlRe(k3ePi01u7yTmAY5yy6L563DQx3lL8FNtlv7Ub2Lag2(zNY3Huverxjaex(AghQ59xvvGhDL0C4bv7ISZUF72Bw7mfIBgSFZVDhzou2WGH6W8HNPRVtL4IB23wqzJVw9vXft5)xjEk9I4WHzrsEKLwvIQRLOkGs9SxLN8ScvJfPcQbtyuQQCyrBqoirvNlqR5ZEYjjcpFaZN9j8yKbzBP4EdzhsO34JVEH3GNEO)mhyRhc)qeUtEgnKpYbxW5SMDWM(pStUeEU)EpncpEE4TFtxBf5n8jw0jnvanG2tT(C)DjhPaof(R9vtOY3rhj93GCE16)1hj93GCE16)4JK(BqoVA9FYrs)niNxT(FZrs)niNxH(x8bnzWkNY)HLd77DSXThj58U)ALZR2FyDSs2BDSYkBDSsFAzalx90vVfqfzOEBJS3Glx5fdPWDdV2ivMp6y52hDS8gJ(6NzHLBDffF5sS5B4KN4a9WdBHMW(Ee84F8eziz8wrlwGNRdC3bzv0X(6owHBJqKAppKypNmNLoPKFeYKJZDq8fSAi5E9aF)IKExDR06TtTgXPQVWa3BTREf2BC6O7OaxTp9amagthPSjpvlGH9akQH)kt5qMorghGshhrpDLFq9w7shu7cpF6vYJthFv842aVFyVtQNCEVt6CM5fFqhFl9CatqE(kzw1oAVaNR1uUHqyy6xqJNMccIntUPwd3hMio1uLNF85gqFNBc2OxGIZ6cnc6gV29w9mm5S7UwpxzuQ9ytCkov8TBR3l)0H9n4BmF2lq4u5JaewDEwfVM45xv8669r85wkBGRM)G2CG1A)zJo3Ym)fpnNYC34bsD7wTthA7wnhe1TBprxpnGXTZJD69xpuuLvp0DIMgwKwhfd6DGdN)oZV05kGH0PI6(dK)au6h(HQSl4IZpAd9rS0Fg7tsYgnU8fih37hTkpTmLIwJzVt6A9dElqP7jPZ3nAIO5T(8OWcU0q9zRD9eFajXlQx69anXf3psR6SpEB20C2nz4mSQZruPhvhC0g0OEf9udaBTM9(IkJ8q(Qva9G7MPTQUCKgdjYLdeCvdgp)T7M37a2i7ISglYWwjU3d(PXVFGRornqTKYEOahO0ASLMZi8LEv1CefLC(T24rjpAqMQuixOX890CUeRBZqrV5j0HSxIjV(cE6dnMrs6OicnuX4rPsHMNECnR6uQDV15NwbemC((6Bo7NUwlENKiZJvf4OZp16SDjYE7XB48ERBRSAk7guc63mQ)w2CvtHMqMMJRx9cw3XaeA)td3(HQVTwVIxW51RfQSc3O71Eiu24UX9o9lCW9ejmG2om10k5OYse69EqPNZUUS7O2Vq5DuVqSi5x8vR5my9Rwrvl26dq32TcQ0ybz2b(fSa9FXo5jQQIWXF7odEKZkp8zB3YHyvw)wecgvTVOpDxvQVhK7Gr6qT4t2rVgYMjkn8cPJG2ul0IjCe12ZeasK1KBwy3idynsb3U6ZeSS9kLVZXJupuAlGoDK1UuxnF1LFJRXA(gq)gxJ1(LMY6oyJ(Vs7TBp1WDuIS)6So73FxRidFJT)L6hS6WpWqihfthuXX4N8CVt66JDw4UAG4c31GXxGcTaUD6u1)TkVRNs33KSywsCFKt5N9b5lInnxFGhAFR6t5qRBvF0gefd3Bnv7mFeoUjLtMXFL6Sz2VQrx0CEhNQ94oEj6yV0WHL7I6beXhPP(dmPYs6CddYQ9IQCjP5mkAuHGOIdG8wD)iEoEEzQn0tGQNWCxrNZfrNNzXZTg11Q1qlLA0(9CwPNOn9W(mc1AjPS1pCva9hRTzKMhssIAUFhteUrWkB9xdjTn164t5b8ZW0AKAo9(PJUO8yaoD8qZkLCGiY5oaF3vnbxthhq9TSQr6T3orhITz(tgRsiTzKUy1qrANoPFVt6(C8Tx6EvHnL3yJHg47YaxAF1Ec90Ok7C7kgqrLnJ3DqY8zo5zpqtMpd))hvSJ028))d]] )

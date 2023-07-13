@@ -15,81 +15,79 @@ spec:RegisterResource( Enum.PowerType.Mana )
 -- Talents
 spec:RegisterTalents( {
     -- Paladin
-    avenging_wrath                  = { 81606, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, allowing Hammer of Wrath to be used on any target, increasing your damage and healing by 20% for 20 sec.
+    avenging_wrath                  = { 81606, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, allowing Hammer of Wrath to be used on any target, increasing your damage, healing and critical strike chance by 20% for 23 sec.
     blessing_of_protection          = { 81616, 1022  , 1 }, -- Blesses a party or raid member, granting immunity to Physical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
     blessing_of_sacrifice           = { 81614, 6940  , 1 }, -- Blesses a party or raid member, reducing their damage taken by 30%, but you suffer 100% of damage prevented. Last 12 sec, or until transferred damage would cause you to fall below 20% health.
-    blinding_light                  = { 81598, 115750, 1 }, -- Emits dazzling light in all directions, blinding enemies within 10 yds, causing them to wander disoriented for 6 sec. Non-Holy damage will break the disorient effect.
+    blinding_light                  = { 81598, 115750, 1 }, -- Emits dazzling light in all directions, blinding enemies within 10 yds, causing them to wander disoriented for 6 sec.
     cavalier                        = { 81605, 230332, 1 }, -- Divine Steed now has 2 charges.
     crusaders_reprieve              = { 81543, 403042, 1 }, -- Increases the range of your Crusader Strike, Rebuke and auto-attacks by 3 yds. Using Crusader Strike heals you for 2% of your maximum health.
-    divine_steed                    = { 81632, 190784, 1 }, -- Leap atop your Charger for 6 sec, increasing movement speed by 100%. Usable while indoors or in combat.
+    divine_steed                    = { 81632, 190784, 1 }, -- Leap atop your Charger for 10.2 sec, increasing movement speed by 100%. Usable while indoors or in combat.
     divine_toll                     = { 81496, 375576, 1 }, -- Instantly cast Judgment on up to 5 targets within 30 yds. Divine Toll's Judgment deals 100% increased damage.
-    fading_light                    = { 81623, 405768, 1 }, -- Blessing of Dawn: Blessing of Dawn increases the damage and healing of your next Holy Power spending ability by an additional 10%. Blessing of Dusk: Blessing of Dusk causes your Holy Power generating abilities to also grant an absorb shield for 20% of damage or healing dealt.
+    fading_light                    = { 81623, 405768, 1 }, -- Blessing of Dawn: Blessing of Dawn increases the damage and healing of your next Holy Power spending ability by an additional 10%. Blessing of Dusk: Blessing of Dusk causes your Holy Power generating abilities to also grant an absorb shield for 3% of damage or healing dealt.
     faiths_armor                    = { 81495, 406101, 1 }, -- Word of Glory grants 20% bonus armor for 4.5 sec.
     fist_of_justice                 = { 81602, 234299, 2 }, -- Each Holy Power spent reduces the remaining cooldown on Hammer of Justice by 1 sec.
-    golden_path                     = { 81610, 377128, 1 }, -- Consecration heals you and 5 allies within it for 98 every 0.9 sec.
+    golden_path                     = { 81610, 377128, 1 }, -- Consecration heals you and 5 allies within it for 101 every 0.9 sec.
     holy_aegis                      = { 81609, 385515, 2 }, -- Armor and critical strike chance increased by 2%.
     improved_blessing_of_protection = { 81617, 384909, 1 }, -- Reduces the cooldown of Blessing of Protection by 60 sec.
-    incandescence                   = { 81628, 385464, 1 }, -- Each Holy Power you spend has a 5% chance to cause your Consecration to flare up, dealing 797 Holy damage to up to 5 enemies standing within it.
-    judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 372.
+    incandescence                   = { 81628, 385464, 1 }, -- Each Holy Power you spend has a 5% chance to cause your Consecration to flare up, dealing 822 Holy damage to up to 5 enemies standing within it.
+    judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 384.
     justification                   = { 81509, 377043, 1 }, -- Judgment's damage is increased by 10%.
-    obduracy                        = { 81630, 385427, 1 }, -- Speed and Avoidance increased by 2%.
-    of_dusk_and_dawn                = { 81624, 385125, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 10% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 5% For 10 sec.
+    obduracy                        = { 81630, 385427, 1 }, -- Speed increased by 2% and damage taken from area of effect attacks reduced by 2%.
     punishment                      = { 93165, 403530, 1 }, -- Successfully interrupting an enemy with Rebuke casts an extra Crusader Strike.
-    rebuke                          = { 81604, 96231 , 1 }, -- Interrupts spellcasting and prevents any spell in that school from being cast for 4 sec.
+    rebuke                          = { 81604, 96231 , 1 }, -- Interrupts spellcasting and prevents any spell in that school from being cast for 3 sec.
     recompense                      = { 81607, 384914, 1 }, -- After your Blessing of Sacrifice ends, 50% of the total damage it diverted is added to your next Judgment as bonus damage, or your next Word of Glory as bonus healing. This effect's bonus damage cannot exceed 30% of your maximum health and its bonus healing cannot exceed 100% of your maximum health.
-    repentance                      = { 81598, 20066 , 1 }, -- Forces an enemy target to meditate, incapacitating them for 60 sec. Usable against Humanoids, Demons, Undead, Dragonkin, and Giants.
+    repentance                      = { 81598, 20066 , 1 }, -- Forces an enemy target to meditate, incapacitating them for 1 min. Usable against Humanoids, Demons, Undead, Dragonkin, and Giants.
     sacrifice_of_the_just           = { 81607, 384820, 1 }, -- Reduces the cooldown of Blessing of Sacrifice by 60 sec.
     sanctified_plates               = { 93009, 402964, 2 }, -- Armor increased by 10%, Stamina increased by 5% and damage taken from area of effect attacks reduced by 5%.
     seal_of_alacrity                = { 81619, 385425, 2 }, -- Haste increased by 2% and Judgment cooldown reduced by 0.5 sec.
     seal_of_mercy                   = { 81611, 384897, 1 }, -- Golden Path strikes the lowest health ally within it an additional time for 100% of its effect.
     seal_of_might                   = { 81621, 385450, 2 }, -- Mastery increased by 2% and strength increased by 2%.
-    seal_of_order                   = { 81623, 385129, 1 }, -- Blessing of Dawn: Blessing of Dawn increases the damage and healing of your next Holy Power spending ability by an additional 10%. Blessing of Dusk: Blessing of Dusk increases your armor by 10% and your Holy Power generating abilities cool down 10% faster.
-    seal_of_the_crusader            = { 81626, 385728, 2 }, -- Your auto attacks deal 111 additional Holy damage.
+    seal_of_order                   = { 81623, 385129, 1 }, -- Blessing of Dawn: Blessing of Dawn increases the damage and healing of your next Holy Power spending ability by an additional 10%. Blessing of Dusk: Blessing of Dusk increases your armor by 10% and your Holy Power generating abilities cooldown 10% faster.
     seasoned_warhorse               = { 81631, 376996, 1 }, -- Increases the duration of Divine Steed by 2 sec.
     strength_of_conviction          = { 81480, 379008, 2 }, -- While in your Consecration, your Shield of the Righteous and Word of Glory have 10% increased damage and healing.
-    touch_of_light                  = { 81628, 385349, 1 }, -- Your spells and abilities have a chance to cause your target to erupt in a blinding light dealing 664 Holy damage or healing an ally for 884 health.
+    touch_of_light                  = { 81628, 385349, 1 }, -- Your spells and abilities have a chance to cause your target to erupt in a blinding light dealing 685 Holy damage or healing an ally for 911 health.
     turn_evil                       = { 93010, 10326 , 1 }, -- The power of the Light compels an Undead, Aberration, or Demon target to flee for up to 40 sec. Damage may break the effect. Lesser creatures have a chance to be destroyed. Only one target can be turned at a time.
-    unbreakable_spirit              = { 81615, 114154, 1 }, -- Reduces the cooldown of your Divine Shield, Divine Protection, and Lay on Hands by 30%.
+    unbreakable_spirit              = { 81615, 114154, 1 }, -- Reduces the cooldown of your Divine Shield, Shield of Vengeance, Divine Protection, and Lay on Hands by 30%.
 
     -- Retribution
-    adjudication                    = { 81537, 406157, 1 }, -- Critical Strike damage of your abilities increased by 5% and Hammer of Wrath critical strikes cause a Blessed Hammer to spiral outward dealing 432 Holystrike damage to enemies.
-    aegis_of_protection             = { 81550, 403654, 1 }, -- Divine Protection reduces damage you take by an additional 10% and Shield of Vengeance absorbs 20% more damage.
-    afterimage                      = { 93189, 385414, 1 }, -- After you spend 20 Holy Power, your next Word of Glory echoes onto a nearby ally at 30% effectiveness
+    adjudication                    = { 81537, 406157, 1 }, -- Critical Strike damage of your abilities increased by 5% and Hammer of Wrath critical strikes cause a Blessed Hammer to spiral outward dealing 441 Holystrike damage to enemies.
+    aegis_of_protection             = { 81550, 403654, 1 }, -- Divine Protection reduces damage you take by an additional 10% and Shield of Vengeance absorbs 10% more damage.
+    afterimage                      = { 93189, 385414, 1 }, -- After you spend 20 Holy Power, your next Word of Glory echoes onto a nearby ally at 30% effectiveness.
     art_of_war                      = { 81523, 406064, 1 }, -- Your auto attacks have a 20% chance to reset the cooldown of Blade of Justice.
     auras_of_swift_vengeance        = { 81601, 385639, 1 }, -- Learn Retribution Aura and Crusader Aura:  Retribution Aura: When any party or raid member within 40 yds takes more than 30% of their health in damage in a single hit, each member gains 5% increased damage and healing, decaying over 30 sec. This cannot occur within 30 sec of the aura being applied.  Crusader Aura: Increases mounted speed by 20% for all party and raid members within 40 yds.
     auras_of_the_resolute           = { 81599, 385633, 1 }, -- Learn Concentration Aura and Devotion Aura: Concentration Aura: Interrupt and Silence effects on party and raid members within 40 yds are 30% shorter.  Devotion Aura: Party and raid members within 40 yds are bolstered by their devotion, reducing damage taken by 3%.
-    avenging_wrath_might            = { 81525, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, increasing your critical strike chance by 20% for X sec.
-    blade_of_justice                = { 81526, 184575, 1 }, -- Pierce an enemy with a blade of light, dealing 5,019 Physical damage. Generates 1 Holy Power.
-    blade_of_vengeance              = { 81545, 403826, 1 }, -- Blade of Justice now hits nearby enemies for 3,012 Physical damage. Deals reduced damage beyond 5 targets.
+    avenging_wrath_might            = { 81525, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, allowing Hammer of Wrath to be used on any target, increasing your damage, healing and critical strike chance by 20% for 23 sec.
+    blade_of_justice                = { 81526, 184575, 1 }, -- Pierce an enemy with a blade of light, dealing 4,403 Holy damage. Generates 2 Holy Power.
+    blade_of_vengeance              = { 81545, 403826, 1 }, -- Blade of Justice now hits nearby enemies for 2,973 Holy damage. Deals reduced damage beyond 5 targets.
     blades_of_light                 = { 93164, 403664, 1 }, -- Crusader Strike, Judgment, Hammer of Wrath and your damaging single target Holy Power abilities deal Holystrike damage.
-    blessed_champion                = { 81541, 403010, 2 }, -- Crusader Strike and Judgment hit an additional 2 targets but deal 40% reduced damage to secondary targets.
+    blessed_champion                = { 81541, 403010, 2 }, -- Crusader Strike and Judgment hit an additional 2 targets but deal 50% reduced damage to secondary targets.
     blessing_of_freedom             = { 81600, 1044  , 1 }, -- Blesses a party or raid member, granting immunity to movement impairing effects for 8 sec.
     boundless_judgment              = { 81533, 405278, 1 }, -- Judgment generates 1 additional Holy Power.
-    burning_crusade                 = { 81536, 405289, 1 }, -- Divine Storm, Divine Hammer and Consecration now deal Radiant damage and your abilities that deal Radiant damage deal 10% increased damage.
+    burning_crusade                 = { 81536, 405289, 1 }, -- Divine Storm, Divine Hammer and Consecration now deal Radiant damage and your abilities that deal Radiant damage deal 5% increased damage.
     cleanse_toxins                  = { 81507, 213644, 1 }, -- Cleanses a friendly target, removing all Poison and Disease effects.
     consecrated_blade               = { 81516, 404834, 1 }, -- Blade of Justice casts Consecration at the target's location. This effect can only occur every 10 sec.
     consecrated_ground              = { 81512, 204054, 1 }, -- Your Consecration is 15% larger, and enemies within it have 50% reduced movement speed. Your Divine Hammer is 25% larger, and enemies within them have 30% reduced movement speed.
-    crusade                         = { 81525, 231895, 1 }, -- Call upon the Light and begin a crusade, increasing your haste and damage by 3% for 25 sec. Each Holy Power spent during Crusade increases haste and damage by an additional 3%. Maximum 10 stacks. Hammer of Wrath may be cast on any target. Combines with Avenging Wrath.
-    crusading_strikes               = { 93186, 404542, 1 }, -- Crusader Strike replaces your auto-attacks and deals 1,185 Physical damage, but now only generates 1 Holy Power every 2 attacks. Inherits Crusader Strike benefits but cannot benefit from Windufry.
-    divine_arbiter                  = { 81540, 404306, 1 }, -- Abilities that deal Holystrike damage deal 10% increased damage and casting abilities that deal Holystrike damage grants you a stack of Divine Arbiter. At 25 stacks your next damaging single target Holy Power ability causes 10,273 Holystrike damage to your primary target and 3,081 Holystrike damage to enemies within 6 yds.
+    crusade                         = { 81525, 231895, 1 }, -- Call upon the Light and begin a crusade, increasing your haste and damage by 3% for 30 sec. Each Holy Power spent during Crusade increases haste and damage by an additional 3%. Maximum 10 stacks. Hammer of Wrath may be cast on any target. Combines with Avenging Wrath.
+    crusading_strikes               = { 93186, 404542, 1 }, -- Crusader Strike replaces your auto-attacks and deals 1,210 Physical damage, but now only generates 1 Holy Power every 2 attacks. Inherits Crusader Strike benefits but cannot benefit from Windfury.
+    divine_arbiter                  = { 81540, 404306, 1 }, -- Abilities that deal Holystrike damage deal 5% increased damage and casting abilities that deal Holystrike damage grants you a stack of Divine Arbiter. At 25 stacks your next damaging single target Holy Power ability causes 10,825 Holystrike damage to your primary target and 2,165 Holystrike damage to enemies within 6 yds.
     divine_auxiliary                = { 81538, 406158, 1 }, -- Final Reckoning and Execution Sentence grant 3 Holy Power.
-    divine_hammer                   = { 81516, 198034, 1 }, -- Divine Hammers spin around you, damaging enemies within 8 yds for 2,587 Holy damage over 12 sec. Deals reduced damage beyond 8 targets.
+    divine_hammer                   = { 81516, 198034, 1 }, -- Divine Hammers spin around you, damaging enemies within 8 yds for 2,548 Holy damage over 12 sec. Deals reduced damage beyond 8 targets.
     divine_purpose                  = { 81618, 408459, 1 }, -- Holy Power abilities have a 10% chance to make your next Holy Power ability free and deal 10% increased damage and healing.
     divine_resonance                = { 93181, 384027, 1 }, --
-    divine_storm                    = { 81527, 53385 , 1 }, -- Unleashes a whirl of divine energy, dealing 2,362 Holy damage to all nearby enemies. Deals reduced damage beyond 5 targets.
+    divine_storm                    = { 81527, 53385 , 1 }, -- Unleashes a whirl of divine energy, dealing 2,614 Holy damage to all nearby enemies. Deals reduced damage beyond 5 targets.
     divine_wrath                    = { 93160, 406872, 1 }, -- Increases the duration of Avenging Wrath or Crusade by 3 sec.
     empyrean_legacy                 = { 81545, 387170, 1 }, -- Judgment empowers your next Single target Holy Power ability to automatically activate Divine Storm with 25% increased effectiveness. This effect can only occur every 20 sec.
     empyrean_power                  = { 92860, 326732, 1 }, -- Crusader Strike has a 15% chance to make your next Divine Storm free and deal 15% additional damage.
-    execution_sentence              = { 81539, 343527, 1 }, -- A hammer slowly falls from the sky upon the target, after 8 sec, they suffer 8,466 Holy damage, plus 20% of damage taken from your abilities in that time.
+    execution_sentence              = { 81539, 343527, 1 }, -- A hammer slowly falls from the sky upon the target, after 12 sec, they suffer 30% of the damage taken from your abilities as Holy damage during that time. Generates 3 Holy Power.
     executioners_will               = { 81548, 406940, 1 }, -- Final Reckoning and Execution Sentence's durations are increased by 4 sec.
-    expurgation                     = { 92689, 383344, 1 }, -- Your Blade of Justice causes the target to burn for 1,847 of the damage dealt as Radiant damage over 6 sec.
-    final_reckoning                 = { 81539, 343721, 1 }, -- Call down a blast of heavenly energy, dealing 7,533 Holy damage to all targets in the target area and causing them to take 30% increased damage from your Holy Power abilities for 10 sec.
-    final_verdict                   = { 81532, 383328, 1 }, -- Unleashes a powerful weapon strike that deals 3,739 Holy damage to an enemy target, Final Verdict has a 15% chance to reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.
+    expurgation                     = { 92689, 383344, 1 }, -- Your Blade of Justice causes the target to burn for 1,820 Radiant damage over 6 sec.
+    final_reckoning                 = { 81539, 343721, 1 }, -- Call down a blast of heavenly energy, dealing 8,335 Holy damage to all targets in the target area and causing them to take 30% increased damage from your Holy Power abilities for 16 sec. Generates 3 Holy Power.
+    final_verdict                   = { 81532, 383328, 1 }, -- Unleashes a powerful weapon strike that deals 5,177 Holy damage to an enemy target, Final Verdict has a 15% chance to reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.
     greater_judgment                = { 81603, 231663, 1 }, -- Judgment causes the target to take 20% increased damage from your next Holy Power ability.
-    guided_prayer                   = { 81531, 404357, 1 }, -- When your health is brought below 25%, you instantly cast a free Word of Glory at 100% effectiveness on yourself. Cannot occur more than once every 60 sec.
-    hammer_of_wrath                 = { 81510, 24275 , 1 }, -- Hurls a divine hammer that strikes an enemy for 3,835 Holy damage. Only usable on enemies that have less than 20% health, or during Avenging Wrath. Generates 1 Holy Power.
+    guided_prayer                   = { 81531, 404357, 1 }, -- When your health is brought below 25%, you instantly cast a free Word of Glory at 60% effectiveness on yourself. Cannot occur more than once every 60 sec.
+    hammer_of_wrath                 = { 81510, 24275 , 1 }, -- Hurls a divine hammer that strikes an enemy for 3,749 Holy damage. Only usable on enemies that have less than 20% health, or during Avenging Wrath. Generates 1 Holy Power.
     healing_hands                   = { 93189, 326734, 1 }, -- The cooldown of Lay on Hands is reduced up to 60%, based on the target's missing health. Word of Glory's healing is increased by up to 100%, based on the target's missing health.
-    heart_of_the_crusader           = { 93190, 406154, 1 }, -- Crusader Strike and auto-attacks deal 10% inceased damage and deal 10% increased critical strike damage.
+    heart_of_the_crusader           = { 93190, 406154, 1 }, -- Crusader Strike and auto-attacks deal 10% increased damage and deal 10% increased critical strike damage.
     highlords_judgment              = { 81534, 404512, 2 }, -- Judgment's duration is increased by 3 sec. If you have Greater Judgment, targets take 20% increased damage from your next 2 Holy Power abilities.
     holy_blade                      = { 92838, 383342, 1 }, -- Blade of Justice generates 1 additional Holy Power.
     improved_blade_of_justice       = { 92838, 403745, 1 }, -- Blade of Justice now has 2 charges.
@@ -97,47 +95,47 @@ spec:RegisterTalents( {
     inquisitors_ire                 = { 92951, 403975, 1 }, -- Every 2 sec, gain 5% increased damage to your next Divine Storm, stacking up to 10 times.
     judge_jury_and_executioner      = { 92860, 405607, 1 }, -- Increases the critical strike chance of Judgment 10%.
     judgment_of_justice             = { 93161, 403495, 1 }, -- Judgment deals 10% increased damage and increases your movement speed by 10%. If you have Greater Judgment, Judgment slows enemies by 30% for 8 sec.
-    jurisdiction                    = { 81542, 402971, 1 }, -- Templar's Verdict and Blade of Justice deal 10% increased damage. The range of Blade of Justice is increased to 20 yds.
-    justicars_vengeance             = { 81532, 215661, 1 }, -- Focuses Holy energy to deliver a powerful weapon strike that deals 3,410 Holy damage, and restores 6% of your maximum health. Damage is increased by 25% when used against a stunned target.
+    jurisdiction                    = { 81542, 402971, 1 }, -- Final Verdict and Blade of Justice deal 10% increased damage. The range of Final Verdict and Blade of Justice is increased to 20 yds.
+    justicars_vengeance             = { 81532, 215661, 1 }, -- Focuses Holy energy to deliver a powerful weapon strike that deals 4,814 Holy damage, and restores 5% of your maximum health. Damage is increased by 25% when used against a stunned target.
     lay_on_hands                    = { 81597, 633   , 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
     light_of_justice                = { 81521, 404436, 1 }, -- Reduces the cooldown of Blade of Justice by 2 sec.
-    lightforged_blessing            = { 93008, 403479, 1 }, -- Divine Storm heals you and up to 4 nearby allies for 3% of maximum health.
-    lights_celerity                 = { 81531, 403698, 1 }, -- Flash of Light casts instantly, its healing done is increased by 50%, but it now has a 6 sec cooldown.
-    penitence                       = { 92839, 403026, 1 }, -- Your damage over time effects deal 15% more damage.
+    lightforged_blessing            = { 93008, 403479, 1 }, -- Divine Storm heals you and up to 4 nearby allies for 2% of maximum health.
+    lights_celerity                 = { 81531, 403698, 1 }, -- Flash of Light casts instantly, its healing done is increased by 20%, but it now has a 6 sec cooldown.
+    of_dusk_and_dawn                = { 81624, 385125, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 20% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 5% and your Holy Power generating abilities also grant an absorb shield for 10% of damage or healing dealt. For 10 sec.
+    penitence                       = { 92839, 403026, 1 }, -- Your damage over time effects deal 10% more damage.
     quickened_invocation            = { 93181, 379391, 1 }, -- Divine Toll's cooldown is reduced by 15 sec.
     righteous_cause                 = { 81523, 402912, 1 }, -- Templar's Verdict, Final Verdict and Justicar's Vengeance have a 20% chance to reset the cooldown of Blade of Justice.
-    rush_of_light                   = { 81512, 407067, 1 }, -- The critical strikes of you damaging single target Holy Power abilities grant you 5% Haste for 10 sec.
-    sanctify                        = { 92688, 382536, 1 }, -- Enemies hit by Divine Storm take 25% more damage from Consecration and Divine Hammers for 12 sec.
-    searing_light                   = { 81552, 404540, 1 }, -- Your abilities that deal Radiant damage have a chance to call down an explosion of Holy Fire dealing 6,848 Radiant damage to all nearby enemies and leaving a Consecration in its wake. Deals reduced damage beyond 8 targets.
-    seething_flames                 = { 81549, 405355, 1 }, -- Wake of Ashes deals significantly reduced damage to secondary targets, but now causes you to lash out 2 extra times for 4,766 Radiant damage.
-    shield_of_vengeance             = { 81544, 184662, 1 }, -- Creates a barrier of holy light that absorbs 17,463 damage for 15 sec. When the shield expires, it bursts to inflict Holy damage equal to the total amount absorbed, divided among all nearby enemies.
+    rush_of_light                   = { 81512, 407067, 1 }, -- The critical strikes of your damaging single target Holy Power abilities grant you 5% Haste for 10 sec.
+    sanctify                        = { 92688, 382536, 1 }, -- Enemies hit by Divine Storm take 20% more damage from Consecration and Divine Hammers for 12 sec.
+    seal_of_the_crusader            = { 81626, 385728, 2 }, -- Your auto attacks deal 228 additional Holy damage.
+    searing_light                   = { 81552, 404540, 1 }, -- Your abilities that deal Radiant damage have a chance to call down an explosion of Holy Fire dealing 5,196 Radiant damage to all nearby enemies and leaving a Consecration in its wake. Deals reduced damage beyond 8 targets.
+    seething_flames                 = { 81549, 405355, 1 }, -- Wake of Ashes deals significantly reduced damage to secondary targets, but now causes you to lash out 2 extra times for 4,269 Radiant damage.
+    shield_of_vengeance             = { 81544, 184662, 1 }, -- Creates a barrier of holy light that absorbs 28,542 damage for 10 sec. When the shield expires, it bursts to inflict Holy damage equal to the total amount absorbed, divided among all nearby enemies.
     swift_justice                   = { 81521, 383228, 1 }, -- Reduces the cooldown of Judgment by 2 sec and Crusader Strike by 2 sec.
-    tempest_of_the_lightbringer     = { 92951, 383396, 1 }, -- Divine Storm projects an additional wave of light, striking all enemies up to 20 yards in front of you for 20% of Divine Storm's damage.
-    templar_strikes                 = { 93186, 406646, 1 }, -- Crusader Strike becomes a 2 part combo. Templar Strike slashes an enemy for 2,739 Radiant damage. You have 3 sec to continue the combo. Templar Slash strikes an enemy for 3,287 Radiant damage and has a 100% increased chance to critically strike. Inherits Crusader Strike benefits.
-    truths_wake                     = { 92686, 403696, 1 }, -- Wake of Ashes also causes targets to burn for an additional 4,618 Radiant damage over 9 sec.
+    tempest_of_the_lightbringer     = { 92951, 383396, 1 }, -- Divine Storm projects an additional wave of light, striking all enemies up to 20 yds in front of you for 20% of Divine Storm's damage.
+    templar_strikes                 = { 93186, 406646, 1 }, -- Crusader Strike becomes a 2 part combo. Templar Strike slashes an enemy for 2,087 Radiant damage. You have 4 sec to continue the combo. Templar Slash strikes an enemy for 2,566 Radiant damage and is always a critical strike. Inherits Crusader Strike benefits.
+    truths_wake                     = { 92686, 403696, 1 }, -- Wake of Ashes also causes targets to burn for an additional 4,550 Radiant damage over 9 sec.
     unbound_freedom                 = { 93174, 305394, 1 }, -- Blessing of Freedom increases movement speed by 30%, and you gain Blessing of Freedom when cast on a friendly target.
-    vanguard_of_justice             = { 93173, 406545, 1 }, -- Your damaging Holy Power abilities cost 1 additional Holy Power and deal 25% increased damage.
+    vanguard_of_justice             = { 93173, 406545, 1 }, -- Your damaging Holy Power abilities cost 1 additional Holy Power and deal 20% increased damage.
     vanguards_momentum              = { 92688, 383314, 1 }, -- Hammer of Wrath has 1 extra charge and on enemies below 20% health generates 1 additional Holy Power.
     vengeful_wrath                  = { 93177, 406835, 1 }, -- Hammer of Wrath always critically strikes.
-    wake_of_ashes                   = { 92854, 255937, 1 }, -- Lash out at your enemies, dealing 7,944 Radiant damage to all enemies within 14 yds in front of you and reducing their movement speed by 50% for 9 sec. Demon and Undead enemies are also stunned for 5 sec. Generates 3 Holy Power.
+    wake_of_ashes                   = { 92854, 255937, 1 }, -- Lash out at your enemies, dealing 7,678 Radiant damage to all enemies within 14 yds in front of you and reducing their movement speed by 50% for 9 sec. Demon and Undead enemies are also stunned for 5 sec. Generates 3 Holy Power.
     zealots_fervor                  = { 92952, 403509, 1 }, -- Auto-attack speed increased by 20%.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    aura_of_reckoning     = 756 , -- (247675) When you or allies within your Aura are critically struck, gain Reckoning. Gain 1 additional stack if you are the victim. At 50 stacks of Reckoning, your next weapon swing deals 200% increased damage, will critically strike, and activates Avenging Wrath for 6 sec.
-    blessing_of_sanctuary = 752 , -- (210256) Instantly removes all stun, silence, fear and horror effects from the friendly target and reduces the duration of future such effects by 60% for 5 sec.
-    divine_punisher       = 755 , -- (204914) Casting two consecutive Judgments on the same enemy will generate 3 Holy Power.
-    hallowed_ground       = 5535, -- (216868) Your Consecration clears and suppresses all snare effects on allies within its area of effect.
-    judgments_of_the_pure = 5422, -- (355858) Casting Judgment on an enemy cleanses 1 Poison, Disease, and Magic effect they have caused on allies within your Aura.
-    jurisdiction          = 757 , -- (204979) Increase the range of Blade of Justice and Hammer of Justice by 10 yds, and radius of Divine Storm by 4 yds.
-    law_and_order         = 858 , -- (204934) When your Hand of Hindrance is dispelled or otherwise removed early, the cooldown is reduced by 15 sec. Your Blade of Justice applies Hand of Hindrance to the target for 3 sec.
-    lawbringer            = 754 , -- (246806) Judgment now applies Lawbringer to initial targets hit for 1 min. Casting Judgment on an enemy causes all other enemies with your Lawbringer effect to suffer up to 10% of their maximum health in Holy damage.
-    luminescence          = 81  , -- (199428) When healed by an ally, allies within your Aura gain 4% increased damage and healing for 6 sec.
-    ultimate_retribution  = 753 , -- (355614) Mark an enemy player for retribution after they kill an ally within your Retribution Aura. If the marked enemy is slain within 8 sec, cast Redemption on the fallen ally.
-    unbound_freedom       = 641 , -- (305394) Blessing of Freedom increases movement speed by 30%, and you gain Blessing of Freedom when cast on a friendly target. Unbound Freedom also causes any Blessing of Freedom applied to yourself to be undispellable.
-    vengeance_aura        = 751 , -- (210323) When a full loss of control effect is applied to you or an ally within your Aura, gain 6% critical strike chance for 8 sec. Max 2 stacks.
+    aura_of_reckoning        = 756 , -- (247675) When you or allies within your Aura are critically struck, gain Reckoning. Gain 1 additional stack if you are the victim. At 100 stacks of Reckoning, your next weapon swing deals 200% increased damage, will critically strike, and activates Avenging Wrath for 6 sec.
+    blessing_of_sanctuary    = 752 , -- (210256) Instantly removes all stun, silence, fear and horror effects from the friendly target and reduces the duration of future such effects by 60% for 5 sec.
+    blessing_of_spellwarding = 5573, -- (204018) Blesses a party or raid member, granting immunity to magical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec. Shares a cooldown with Blessing of Protection.
+    hallowed_ground          = 5535, -- (216868) Your Consecration clears and suppresses all snare effects on allies within its area of effect.
+    judgments_of_the_pure    = 5422, -- (355858) Casting Judgment on an enemy cleanses 1 Poison, Disease, and Magic effect they have caused on you.
+    lawbringer               = 754 , -- (246806) Judgment now applies Lawbringer to initial targets hit for 1 min. Casting Judgment on an enemy causes all other enemies with your Lawbringer effect to suffer up to 2% of their maximum health in Holy damage.
+    luminescence             = 81  , -- (199428) When healed by an ally, allies within your Aura gain 2% increased damage and healing for 6 sec.
+    searing_glare            = 5584, -- (410126) Call upon the light to blind your enemies in a 25 yd cone, causing enemies to miss their spells and attacks for 4 sec.
+    spreading_the_word       = 5572, -- (199456) Your allies affected by your Aura gain an effect after you cast Blessing of Protection or Blessing of Freedom.  Blessing of Protection Physical damage reduced by 30% for 6 sec.  Blessing of Freedom Cleared of all movement impairing effects.
+    ultimate_retribution     = 753 , -- (355614) Mark an enemy player for retribution after they kill an ally within your Retribution Aura. If the marked enemy is slain within 12 sec, cast Redemption on the fallen ally.
 } )
 
 
@@ -1112,7 +1110,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holy",
 
-        spend = 0.065,
+        spend = 0.10,
         spendType = "mana",
 
         talent = "cleanse_toxins",
@@ -1473,7 +1471,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holy",
 
-        spend = 0.22,
+        spend = 0.10,
         spendType = "mana",
 
         startsCombat = false,
@@ -1596,24 +1594,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "hand_of_reckoning" )
-        end,
-    },
-
-    -- Petition the Light on the behalf of a fallen ally, restoring spirit to body and allowing them to reenter battle with $s2% health and at least $s1% mana.
-    intercession = {
-        id = 391054,
-        cast = 2,
-        cooldown = 600,
-        gcd = "spell",
-        school = "holy",
-
-        spend = 3,
-        spendType = "holy_power",
-
-        startsCombat = false,
-
-        handler = function ()
-            -- brez.
         end,
     },
 
@@ -1998,6 +1978,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
+            spend( 0.1 * mana.max, "mana" )
             removeBuff( "recompense" )
             if buff.divine_purpose.up then removeBuff( "divine_purpose" )
             else

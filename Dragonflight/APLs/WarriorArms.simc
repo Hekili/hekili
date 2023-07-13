@@ -8,6 +8,8 @@ actions+=/spell_reflection
 actions+=/potion,if=gcd.remains=0&debuff.colossus_smash.remains>8|boss&fight_remains<25
 actions+=/algethar_puzzle_box,if=cooldown.avatar.remains<3
 actions+=/vial_of_animated_blood,if=buff.avatar.up
+actions+=/elementium_pocket_anvil,use_off_gcd=1
+actions+=/beacon_to_the_beyond,use_off_gcd=1
 actions+=/irideus_fragment,if=buff.avatar.up
 actions+=/manic_grieftorch,if=!buff.avatar.up&!debuff.colossus_smash.up
 actions+=/gladiators_badge,if=gcd.remains=0&debuff.colossus_smash.remains>8|boss&fight_remains<25
