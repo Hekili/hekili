@@ -1377,6 +1377,13 @@ all:RegisterAuras( {
         shared = "player",
     },
 
+    mark_of_the_wild = {
+        id = 1126,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+    },
+
     fatigued = {
         id = 264689,
         duration = 600,
