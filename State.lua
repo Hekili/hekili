@@ -6997,7 +6997,7 @@ do
 
             if ( toggle == "potion" or toggle == "essences" ) and profile.toggles[ toggle ].separate and not profile.toggles[ toggle ].value then toggle = "cooldowns" end
 
-            if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, "toggle a" end
+            if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, format( "toggle %s", toggle ) end
 
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
                 if self.empowerment.active and self.empowerment.spell and spell ~= self.empowerment.spell then return true, "empowerment: " .. self.empowerment.spell end
@@ -7037,7 +7037,7 @@ do
             if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
             elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false, "not equipped"
             elseif toggle and toggle ~= "none" then
-                if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle and not spec.noFeignedCooldown ) then return true, "toggle b" end
+                if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle and not spec.noFeignedCooldown ) then return true, format( "%s filtered", toggle ) end
             end
         end
 
