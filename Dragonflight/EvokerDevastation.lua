@@ -517,7 +517,9 @@ spec:RegisterAuras( {
     source_of_magic = {
         id = 369459,
         duration = 1800,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     -- Talent:
     -- https://wowhead.com/beta/spell=370845
@@ -921,8 +923,9 @@ spec:RegisterAbilities( {
                 removeBuff( "ouroboros" )
                 if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
                 removeStack( "stasis" )
-                return
             end
+
+            removeBuff( "nourishing_sands" )
 
             if talent.dream_of_spring.enabled then
                 if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
