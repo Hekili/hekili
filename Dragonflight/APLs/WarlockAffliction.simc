@@ -12,6 +12,7 @@ actions+=/call_action_list,name=ogcd
 actions+=/call_action_list,name=items
 actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>1&active_enemies<4|variable.cleave_apl
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>3
+actions+=/malefic_rapture,if=talent.dread_touch&debuff.dread_touch.remains<2&(dot.agony.ticking&dot.corruption.ticking&(!talent.siphon_life|dot.siphon_life.ticking))&(!talent.phantom_singularity|!cooldown.phantom_singularity.ready)&(!talent.vile_taint|!cooldown.vile_taint.ready)&(!talent.soul_rot|!cooldown.soul_rot.ready)
 actions+=/soul_swap_exhale,if=buff.soul_swap.up&buff.soul_swap.unstable_affliction&(active_dot.unstable_affliction=0&!dot.unstable_affliction.ticking|!dot.unstable_affliction.ticking&dot.unstable_affliction.remains<5)
 actions+=/unstable_affliction,if=active_dot.unstable_affliction=0&!ticking|ticking&remains<5
 actions+=/agony,if=remains<5
