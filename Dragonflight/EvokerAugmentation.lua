@@ -183,6 +183,12 @@ spec:RegisterAuras( {
         duration = function() return 4.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
     },
+    bronze_attunement = {
+        id = 403265,
+        duration = 3600,
+        tick_time = 2.0,
+        max_stack = 1,
+    },
     -- Next Living Flame's cast time is reduced by $w1%.
     burnout = {
         id = 375802,
@@ -200,6 +206,8 @@ spec:RegisterAuras( {
         id = 409678,
         duration = function() return 20.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     -- Suffering $w1 Volcanic damage every $t1 sec.
     deep_breath = {
@@ -213,6 +221,8 @@ spec:RegisterAuras( {
         id = 404381,
         duration = 9.0,
         max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     -- Suffering $w1 Spellfrost damage every $t1 sec.
     disintegrate = {
@@ -234,6 +244,8 @@ spec:RegisterAuras( {
         duration = 10.0,
         tick_time = 0.5,
         max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     -- Your Ebon Might is active on allies.; Your damage done is increased by $w1%.
     ebon_might = {
@@ -242,7 +254,8 @@ spec:RegisterAuras( {
         tick_time = 1.0,
         pandemic = true,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Your next Eruption $?s414969[or Emerald Blossom ][]costs no Essence.
     essence_burst = {
@@ -262,7 +275,8 @@ spec:RegisterAuras( {
         id = 410263,
         duration = function() return 8.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Rooted.
     landslide = {
@@ -275,7 +289,8 @@ spec:RegisterAuras( {
         id = 405295,
         duration = function() return 15.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Your next Living Flame will strike $w1 additional $?$w1=1[target][targets].
     leaping_flames = {
@@ -288,21 +303,24 @@ spec:RegisterAuras( {
         id = 361509,
         duration = 12.0,
         max_stack = 1,
-        dot = "buff'"
+        dot = "buff",
+        friendly = true
     },
     -- Absorbing $w1 damage.
     molten_blood = {
         id = 410651,
         duration = function() return 30.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Intellect increased by $w1%.
     momentum_shift = {
         id = 408005,
         duration = function() return 6.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Your next Emerald Blossom will restore an additional $406054s1% of maximum health to you.
     nourishing_sands = {
@@ -314,7 +332,7 @@ spec:RegisterAuras( {
     nullifying_shroud = {
         id = 378464,
         duration = 30.0,
-        max_stack = 1,
+        max_stack = 3,
     },
     -- Damage taken reduced by $w1%.$?$w2=1[; Immune to interrupt and silence effects.][]
     obsidian_scales = {
@@ -351,6 +369,11 @@ spec:RegisterAuras( {
         duration = function() return 12.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
     },
+    recall = {
+        id = 403760,
+        duration = 3,
+        max_stack = 1
+    },
     -- Restoring $w1 health every $t1 sec.
     renewing_blaze = {
         id = 374349,
@@ -369,7 +392,8 @@ spec:RegisterAuras( {
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         tick_time = 1.0,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Asleep.
     sleep_walk = {
@@ -382,7 +406,8 @@ spec:RegisterAuras( {
         id = 369459,
         duration = function() return 1800.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Able to cast spells while moving and range increased by $s5%. Cast by $@auracaster.
     spatial_paradox = {
@@ -390,7 +415,8 @@ spec:RegisterAuras( {
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         tick_time = 1.0,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- $w1% of damage is being delayed and dealt to you over time.
     stretch_time = {
@@ -409,7 +435,8 @@ spec:RegisterAuras( {
         id = 410686,
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Accumulating damage from $@auracaster's allies who are affected by Ebon Might.$?$w2<0[; Movement speed reduced by $w2%.; Attack speed reduced by $w3%.][]
     temporal_wound = {
@@ -447,27 +474,33 @@ spec:RegisterAuras( {
         id = 412710,
         duration = function() return 1800.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Your next empowered spell casts instantly at its maximum empower level.
     tip_the_scales = {
         id = 370553,
         duration = 3600,
         max_stack = 1,
+        onRemove = function()
+            setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
+        end,
     },
     -- Absorbing $w1 damage.
     twin_guardian = {
         id = 370889,
         duration = function() return 5.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     -- Damage taken from area-of-effect attacks reduced by $w1%.; Movement speed increased by $w2%.
     zephyr = {
         id = 374227,
         duration = function() return 8.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
 } )
 
@@ -584,6 +617,23 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Attune to Black magic, granting you and your $403208s2 nearest allies $s1% increased maximum health.
+    black_attunement = {
+        id = 403264,
+        color = "black",
+        cast = 0.0,
+        cooldown = function() return 3 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
+        gcd = "off",
+
+        startsCombat = false,
+
+        function()
+            applyBuff( "black_attunement" )
+            removeBuff( "bronze_attunement" )
+            setCooldown( "bronze_attunement", action.bronze_attunement.cooldown )
+        end,
+    },
+
     -- Protect an ally with $n explosive dragonscales, increasing their Armor by $<perc>% of your own.; Melee attacks against the target cause 1 scale to explode, dealing $<dmg> Volcanic damage to enemies near them. This damage can only occur every few sec.; Blistering Scales can only be placed on one target at a time. Casts on your enemy's target if they have one.
     blistering_scales = {
         id = 360827,
@@ -599,6 +649,7 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyBuff( "blistering_scales", nil, class.auras.blistering_scales.max_stack )
+            if talent.molten_blood.enabled then applyBuff( "molten_blood" ) end
         end
     },
 
@@ -606,7 +657,7 @@ spec:RegisterAbilities( {
     breath_of_eons = {
         id = 403631,
         color = "bronze",
-        cast = 6.0,
+        cast = 4.0,
         channeled = true,
         cooldown = 120.0,
         gcd = "spell",
@@ -617,10 +668,29 @@ spec:RegisterAbilities( {
 
         start = function()
             applyBuff( "breath_of_eons" )
+            if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 5
+            else applyBuff( "ebon_might", 5 ) end
         end,
 
         finish = function()
             removeBuff( "breath_of_eons" )
+        end,
+    },
+
+    -- Attune to Bronze magic...
+    bronze_attunement = {
+        id = 403265,
+        color = "bronze",
+        cast = 0.0,
+        cooldown = function() return 3 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
+        gcd = "off",
+
+        startsCombat = false,
+
+        function()
+            applyBuff( "black_attunement" )
+            removeBuff( "bronze_attunement" )
+            setCooldown( "black_attunement", action.black_attunement.cooldown )
         end,
     },
 
@@ -681,6 +751,7 @@ spec:RegisterAbilities( {
         handler = function()
             removeBuff( "essence_burst" )
             if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
+            if talent.regenerative_chitin.enabled and buff.blistering_scales.up then addStack( "blistering_scales" ) end
         end
     },
 
@@ -824,6 +895,34 @@ spec:RegisterSetting( "use_deep_breath", true, {
         .. "If unchecked, it will never be recommended, which may result in lost DPS if left unused for an extended period of time.",
         Hekili:GetSpellLinkWithTexture( 357210 ), Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_eons.id ) ),
     width = "full",
+    -- hidden = function() return state.talent.breath_of_eons.enabled end,
+} )
+
+spec:RegisterSetting( "use_unravel", false, {
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( 368432 ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended if your target has an absorb shield applied.  By default, your Interrupts toggle must also be active.",
+    Hekili:GetSpellLinkWithTexture( 368432 ) ),
+    width = "full",
+} )
+
+spec:RegisterSetting( "use_hover", nil, {
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( 358267 ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended.  In the default priority, this occurs when you are moving and you have charges available.", Hekili:GetSpellLinkWithTexture( 358267 ) ),
+    get = function()
+        return not Hekili.DB.profile.specs[ 1473 ].abilities.hover.disabled
+    end,
+    set = function()
+        Hekili.DB.profile.specs[ 1473 ].abilities.hover.disabled = not Hekili.DB.profile.specs[ 1473 ].abilities.hover.disabled
+    end,
+} )
+
+spec:RegisterSetting( "use_verdant_embrace", false, {
+    name = strformat( "Use %s with %s", Hekili:GetSpellLinkWithTexture( 360995 ), Hekili:GetSpellLinkWithTexture( spec.talents.ancient_flame[2] ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended to cause %s.", Hekili:GetSpellLinkWithTexture( 360995 ), spec.auras.ancient_flame.name ),
+    width = "full"
 } )
 
 spec:RegisterSetting( "skip_boe", false, {
@@ -831,14 +930,6 @@ spec:RegisterSetting( "skip_boe", false, {
     type = "toggle",
     desc = strformat( "If checked, %s may be recommended without %s on cooldown.  This setting will waste cooldown recovery, but may be useful to you.",
         Hekili:GetSpellLinkWithTexture( spec.abilities.time_skip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_eons.id ) ),
-    width = "full",
-} )
-
-spec:RegisterSetting( "use_unravel", false, {
-    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( 368432 ) ),
-    type = "toggle",
-    desc = strformat( "If checked, %s may be recommended if your target has an absorb shield applied.  By default, your Interrupts toggle must also be active.",
-        Hekili:GetSpellLinkWithTexture( 368432 ) ),
     width = "full",
 } )
 
@@ -855,13 +946,6 @@ spec:RegisterSetting( "use_clipping", false, {
     type = "toggle",
     desc = strformat( "If checked, other abilities may be recommended during %s, breaking its channel.", Hekili:GetSpellLinkWithTexture( 356995 ) ),
     width = "full",
-} )
-
-spec:RegisterSetting( "use_verdant_embrace", false, {
-    name = strformat( "%s: %s", Hekili:GetSpellLinkWithTexture( 360995 ), Hekili:GetSpellLinkWithTexture( spec.talents.ancient_flame[2] ) ),
-    type = "toggle",
-    desc = strformat( "If checked, %s may be recommended to cause %s.", Hekili:GetSpellLinkWithTexture( 360995 ), spec.auras.ancient_flame.name ),
-    width = "full"
 } )
 
 
@@ -882,4 +966,4 @@ spec:RegisterOptions( {
     package = "Augmentation",
 } )
 
-spec:RegisterPack( "Augmentation", 20230712.2, [[Hekili:nF1wZTPru4Fl5fz70imGKSBtL1m56u7PnVO0(iWcSsARbwcSif7rd)275SGGf0IIZ04o9fFH9SNZ356E(CSC(SZYqIG68jBt7jMxBzByBp9Qz)IZsXdPuNLPKG7jRH)iHed)8nfRJPjcIGXtWdFiItcrLKZlYcab2ieP5V(Yl3TBNbl4HXBPSKCJaE8L747UKOC9X0T87PzJt3shhMMpoJx)9aopkKVljFmXNfXemAUZs)cwK42ehFD4DM5vacsPboFYA61tauWcdPvctZdCwIcp286Xw2VU0R07nWPHLEFMftl9wEplT0BhtSP07Tzuc(B(QsVpWtYH)kfXKr5DLEJl9(i7R6ekGNeYq5k9o3NKJ6g)7p4J)8pyR3ik9E37V4GwEt4FxKdF6TrSCbnJLSgqrajIcQQihI2LEcEPNp8B4BWhZOHfjHKerhC8rwgTfnKeWQ)z6gkzljQ0lMaseSHKHAtQ0d3998KZeOoHKcKmGB9B8T0m4kSWdQdL9UMGMLmODBc4IOQzXPr0M0iGZwp(wiJ)xyg)SsV1fSqQHZs0jZL1z0vKIib8NFsw3rcQQI(sbnkYzjnH4hrdDERJaYUQcuKKr2s7lYevrcifyK8riw6UkswQ2r4POWTFzzqgdLNaL5YIG5qWIKlCR(Vxw6z3Q7i22w1c6A2G6kMVvMmhbbLIvRm2GbwdSwU9B(YaSlFLlfQDKh2Ak5fqBCLQZLMbfXmAsqFV66brsgDfCPn4jT6Hc1JUXy5iE5FEWllXzRWgfq)X(9yzEvJP6zz0ycd7bGi40wt11lrZ9ldAo8oBPUHCHHGgNYZirU74fyL5IspZE2Ux8RX(GOtQL1NJnnqaFfcrxvioXuPSkN6cyiwcplZ)3HVuU83i4SoDUkIssBkrZL5RrkqAfmOWTcxDYxnv8dxRBzpOLpV0lNkeG45g5WmuxFo90Xcrwb1vnGynR07IHXQw5vfUOECNojB9j0dDrekDOjd6qFZ416Gqd5C1oozdi0iQkisDfBaCiNZlrYWZKWQSDYhguXsDXtVMtvVwtcv5(sJ2F4vtZqTxOPWNMqJz0k)YwMaGuVcelAE05jJpiT34LUco(GacUR(3bUPptGZwcU(dB)ob3vptGBIeCdpmVpuaLn7hiuokkGOz4z9vpb2S3tD7q7tKkZApsQsVBGXTkVX0xa5Iddph)j6uO)dBDHp3AihDi4UYU(5hjwLgRK11VilhFRu592SI0dJWThEeUaWoSAh4dzruHljKKwTALrT4TlpOG(UBvqsWfeevdU7TubSsbU7Oln2pJeihRBp8y9xalcwVgtJlwThZH1aQXBArklcNTd)7xZfzK8hjhq8WpOyp883x8KuD3xaQqMAMuPaH8ybm8dUp7E02c5MuWwV(K2LqpvvkKzrSd4aNC7NXtESFSvVqnBW(90dKlaQwYQmlZFm9ctEslrovvQEpt1vYzQsQSmzxP6S6AN0Fh5K5di5LJY1YMdiVTJKLGBv4S8ZBOs6g8mGWYkoWr5SAseNHey(sb84guqKZXgsGbapgOggk59KSgcPL397Se4iBKbZ74jG5KNF2GTCNvr9AybougccEU1xVO1e26nHUs5Eg5uv7hzMjpZMP8UBLXBu52v1GiXojjo4yiZwi2WZCwUKqJclGuY5nK(U4xblMrsYJQsd(paClP3dC4XYp(kwlzKCJMwXF6Ml13f9k2QB(wDIL3PxF96guuL22U5wMJov72nM6nuBtL(Z72oPxM2gj9NR2cH5NAzGtKeNv)qnrz1pDeXy1dvvngIWx2M38g3lTvLvoPffQ61Hr9i4oAiYTQ6qt4QtaavVcZvvH6Q5M8zhwQ73FcgQZN2jsDG7hQjLmFxcElmvuPEIDlMaYGe6g1Hm38jMDCCjvU)BSv)KQEgIJofBN2Aavf3WJc165hX9By4RYoBH1Sl0B7Esn60S8aj6In1gneGN0)a6zkWTpdo8yvLROHx1U69nWsHOH0twdsu6x3CH2y7biOQFlL6L613NBp6CnlT)em2fFlRzRXAtF2S2enw7QNnRvNP6AVfZ(HyVVN3AKdkFIVZGdgR5pOBA3rGA)EnKwMRCSwYkQMRhpb5dcdTg0iD0rgnavKtnD6fvpNudVden2V)elTOQo1v8LQ7e3BKEwdlmL7I68pd]] )
+spec:RegisterPack( "Augmentation", 20230714, [[Hekili:nJvBZTjoq4Fl5lKKE1ogCs6lNtMPVonzU2V4E3hbeGSTUaikiSBY4HF73UcmiWsUPZ1CZ9Lyc6HDFwPvpAx5A7(v35reb19lotCMo5f2NpEYRSTNy7oxCFg1DEgj8oYs4Husc833uUmHMkicgpfh8(yojcnsbVmpeaSsiYkE9zNTzZMXSW7hTMYslghYtoBdFZzeLpFeDn)oA(OS10rrzfJY5nVpKZJJ4BslgrcyXmbJw4opOKflUj1nqlFb)NrdD)I95VykWbwueTgkTi0DocD0KxmYE6RR8R8FtuuL)CjFR85lQ8)mzjlSYplNc8mGiQ8jzzXSqjDQ8zaeg8lPYpNWIgxDBL)Ok)3ZtpgGk)iiOaB(j(AAELFcdE(T5uIyfI92w37SZ9uaWxzjG7NFhlRYFdtSA3NutPpWtlGNYqgSZHFK9DDGc5PrSAMEsaPaTn(8hcW)(z2YvajF37pDNvEt0FxwaV6TXScbnNLUeyrijMcMQSawQR8f8k)a4x4DfyagvMgrsf94Xhz50o2qWW)pZwrjRjXWmabqeUIKJwtA0(te2YjIBsbAJWzjzX028cW3DrXnqk0FHPqhx5VSKfrh7ohjEHmXLUGuglGh)ImrMewNw(TsACS7CAkjiMg5(wxbKUOcOmnNSMoeYuviHKsC25by(XBrSm3Vh4ZrWDVzEyodXtG9nYf2zWeaPq4v)FpRY3PZ2XS1DMfS1fgTvcFTCbYcMukxSy8kmdBmU5O7DbY1ap(cpkKpihSZvYpa9XLQbhKPxeYOPHdJQxyKj50fWhTchPZouihZlbtXWp(Lg)yjp7apUeY53UftDR3PRowonHWW8Ayg88ox1pkr39kJUd)M1uViUySGMKXZjXEB4Lyo61v(tg47bZFT(hGoTbBah3iat4lqk6PsXPtusRkOEahsK0ZEY)74xgx(lso7dVwftjzTPOfY1llfkTa287vZRERxTz8MZ1TDm65tQ8lOcbaVyCbOl6fWPhEUqKxs9uNqSVOY)uZCvlEvWLnsy6q2ftye6Hmugqtngq)W5RLHrJLAL9cYwsObQkjY8eRaEi1ULmXSMeMLTrk2RYLMKNbBovJAnlOkFV0PdfVA3m0efAs8PP0egToUCKlaWsVcflBpi5rZpyzVnk9eC8abKCx(VJCN)erohj5gk2(tsUlFIi3uj5mlMpKkGXU4xiv2BwazJzT(6JaBRLPz7q3rKkAT7HQY)kqUv5mMHaKfoywh)rguy8dvsHh3owkDi4EYD9Z2dwTfRX6fuMxGNvQCEBEz2ojChZs4cG7q5AqmKhtfEKiswDPvJBG3v8Gc77xvbjflqqulCpOOcOKcSEqpAsqojukR7yww)iOEWMYyAdX66y2vgqdFZkZyXO2o8VFVqKtkEGSJXMpqXXS(7rpktVl3Tv)TMCQlMnhZwtHDfHXkA(CLKwYdLG6i4a2Di5eYsTQBQOTk1dLgdl9yWbefL2dY5PpmCYxpO2sC1A9L58MJWv2ou3XgAMK6(F6VzyWWTfiFi6d9k6reIYuz187r8(dF4QOBkTfJTHMuP03HESjkpY04jSuQAnLdm)Hlg3GutHaCICZS9KFnso)e1QBOAG(iFPksLA27J6vQO6TlRhozwnSbOaXTRlCOP7nK8uS0n35FDfv2thphAZCbh6i(4Mo1og7M8BLqfeW2McoQ6bTzXtGg6JKnmMUeMqRU9pGLjO0aSnX3XtbNjh)yJ6Ahx3ZQza72RdapX(7N25ch9UqNEXaNCijL9CZ0Ny3uD7nY5B04o7eQGg4XoLHHH11sXkEU785eACujSKCsBN1N(7GhZjPfX1ldb3x5)j6DSygM8XxW664RyCRC2VD1z6vIEoBXv)i1SQB1zVbkoOHKcxwMfTUAIEtnCJVcP0OrzWgdvh6mIwzjltsswhzwmYe9hOkOWFTYpZSNyDizhtZtDIl6hVVSIEmDck6hxvkbZuBWaJiVNg1x0CVmQVAV7HrDqvtJtryHuZAlP6zoQyLNAJGQlgXAW9Pyz6UuuTHMPREtaO5vUOevq9TC76zVlfz72dCHiZoV3m1URAaTKYkF)7t46jkMu)9iC9uadE)bw9U7GztN0lWL3CW)n(A4IQ(lKW6qnx3LdOA4222rREYEx1Gz6REzaxBFXP699auwh(sfae95M6gnKGhm(wggPq3HxyaoSQXvSWZ7607kOhe0r6VBayHsF3nxRDUDhfuTVTs(st3IZCSortpIpcND6pYBoA825pzEBQgVD5tM3AwP67VRV4xI)(zoRrku(ipNbfgBAxvNA3EKA7wn9iptzyT9gR6UbTLkpqWubHw66(1YqNVhsD6O6JtAO3U(A3U9aLVPAo1ggLM7aFN1j6BrfvERT4GwtpvwSU7)8d]] )
