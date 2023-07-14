@@ -1405,7 +1405,7 @@ spec:RegisterAbilities( {
             if talent.shining_righteousness.enabled then
                 if buff.shining_righteousness.stack == buff.shining_righteousness.max_stack - 1 then
                     removeBuff( "shining_righteousness" )
-                    addBuff( "shining_righteousness_ready" )
+                    applyBuff( "shining_righteousness_ready" )
                 else
                     addStack( "shining_righteousness" )
                 end
