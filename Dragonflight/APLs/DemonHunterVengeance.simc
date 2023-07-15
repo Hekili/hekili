@@ -26,7 +26,6 @@ actions+=/immolation_aura
 actions+=/sigil_of_flame,if=fury.deficit>35&soul_fragments<=4
 actions+=/spirit_bomb,if=(soul_fragments>=4&!buff.metamorphosis.up)|(soul_fragments>=3&buff.metamorphosis.up)
 actions+=/soul_cleave
-actions+=/immolation_aura
 actions+=/fracture
 actions+=/shear
 actions+=/throw_glaive
