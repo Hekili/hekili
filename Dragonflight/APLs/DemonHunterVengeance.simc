@@ -24,9 +24,11 @@ actions+=/fel_devastation,if=(!talent.fiery_demise|(talent.fiery_demise&dot.fier
 actions+=/fiery_brand,if=remains<tick_time|!ticking
 actions+=/immolation_aura
 actions+=/sigil_of_flame,if=fury.deficit>35&soul_fragments<=4
+actions+=/fracture,if=((soul_fragments<4&!buff.metamorphosis.up&fury.deficit<25)|(soul_fragments<3&buff.metamorphosis.up&fury.deficit<45))
 actions+=/spirit_bomb,if=(soul_fragments>=4&!buff.metamorphosis.up)|(soul_fragments>=3&buff.metamorphosis.up)
-actions+=/soul_cleave
+actions+=/soul_cleave,if=soul_fragments<2
 actions+=/fracture
+actions+=/soul_cleave
 actions+=/shear
 actions+=/throw_glaive
 actions+=/felblade
