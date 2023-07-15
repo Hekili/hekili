@@ -20,7 +20,7 @@ actions+=/call_action_list,name=racials
 actions+=/the_hunt
 actions+=/elysian_decree
 actions+=/soul_carver,if=(!talent.fiery_demise|(talent.fiery_demise&dot.fiery_brand.ticking))&soul_fragments<=3
-actions+=/fel_devastation,if=(!talent.fiery_demise|(talent.fiery_demise&dot.fiery_brand.ticking))
+actions+=/fel_devastation,if=!talent.fiery_demise|talent.fiery_demise&dot.fiery_brand.ticking
 actions+=/fiery_brand,if=remains<tick_time|!ticking
 actions+=/immolation_aura
 actions+=/sigil_of_flame,if=fury.deficit>35&soul_fragments<=4
