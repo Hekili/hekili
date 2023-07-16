@@ -9,8 +9,8 @@ actions.precombat+=/steady_shot,if=active_enemies>2|talent.volley&active_enemies
 
 actions=counter_shot
 actions+=/tranquilizing_shot
-# Determine if it is a good time to use Trueshot. Raid event optimization takes priority so usage is saved for multiple targets as long as it won't delay over half its duration. Otherwise allow for small delays to line up buff effect trinkets, and when using Bullseye, delay the last usage of the fight for max stacks.
-actions+=/variable,name=trueshot_ready,value=cooldown.trueshot.ready&buff.trueshot.down&(active_enemies=1&(!talent.bullseye|fight_remains>cooldown.trueshot.duration_guess+buff.trueshot.duration%2|buff.bullseye.stack=buff.bullseye.max_stack)&(!trinket.1.has_use_buff|trinket.1.cooldown.remains>30|trinket.1.cooldown.ready)&(!trinket.2.has_use_buff|trinket.2.cooldown.remains>30|trinket.2.cooldown.ready)|active_enemies>1|fight_remains<25)
+## Determine if it is a good time to use Trueshot. Raid event optimization takes priority so usage is saved for multiple targets as long as it won't delay over half its duration. Otherwise allow for small delays to line up buff effect trinkets, and when using Bullseye, delay the last usage of the fight for max stacks.
+## actions+=/variable,name=trueshot_ready,value=cooldown.trueshot.ready&buff.trueshot.down&(active_enemies=1&(!talent.bullseye|fight_remains>cooldown.trueshot.duration_guess+buff.trueshot.duration%2|buff.bullseye.stack=buff.bullseye.max_stack)&(!trinket.1.has_use_buff|trinket.1.cooldown.remains>30|trinket.1.cooldown.ready)&(!trinket.2.has_use_buff|trinket.2.cooldown.remains>30|trinket.2.cooldown.ready)|active_enemies>1|fight_remains<25)
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=st,strict=1,if=active_enemies<3|!talent.trick_shots
@@ -36,7 +36,7 @@ actions.st+=/death_chakram
 actions.st+=/wailing_arrow,if=active_enemies>1
 actions.st+=/rapid_fire,if=talent.surging_shots|action.aimed_shot.full_recharge_time>action.aimed_shot.cast_time+cast_time
 actions.st+=/kill_shot
-actions.st+=/trueshot,if=variable.trueshot_ready
+actions.st+=/trueshot,if=cooldown.trueshot.ready&buff.trueshot.down&(active_enemies=1&(!talent.bullseye|fight_remains>cooldown.trueshot.duration_guess+buff.trueshot.duration%2|buff.bullseye.stack=buff.bullseye.max_stack)&(!trinket.1.has_use_buff|trinket.1.cooldown.remains>30|trinket.1.cooldown.ready)&(!trinket.2.has_use_buff|trinket.2.cooldown.remains>30|trinket.2.cooldown.ready)|active_enemies>1|fight_remains<25)
 # Trigger Salvo if Volley isn't being used to trigger it.
 actions.st+=/multishot,if=buff.salvo.up&!talent.volley
 # With Serpentstalker's Trickery target the lowest remaining Serpent Sting. Without Chimaera Shot don't overwrite Precise Shots unless either Trueshot is active or Aimed Shot would cap before its next cast. On two targets with Chimaera Shot don't overwrite Precise Shots unless the target is within Careful Aim range in addition to either Trueshot being active or Aimed Shot capping before its next cast. Overwrite freely if it can cleave.
@@ -80,7 +80,7 @@ actions.trickshots+=/bag_of_tricks,if=buff.trueshot.down
 actions.trickshots+=/steady_shot
 
 # Signals that cooldowns are active or ready to activate that is desirable to sync a buff effect with.
-actions.trinkets+=/variable,name=sync_ready,value=variable.trueshot_ready
+actions.trinkets+=/variable,name=sync_ready,value=cooldown.trueshot.ready&buff.trueshot.down&(active_enemies=1&(!talent.bullseye|fight_remains>cooldown.trueshot.duration_guess+buff.trueshot.duration%2|buff.bullseye.stack=buff.bullseye.max_stack)&(!trinket.1.has_use_buff|trinket.1.cooldown.remains>30|trinket.1.cooldown.ready)&(!trinket.2.has_use_buff|trinket.2.cooldown.remains>30|trinket.2.cooldown.ready)|active_enemies>1|fight_remains<25)
 # Signals that the cooldowns that are desirable to sync a buff with are active.
 actions.trinkets+=/variable,name=sync_active,value=buff.trueshot.up
 # The amount of time until the cooldowns will be ready that are desirable to sync a buff effect with.
