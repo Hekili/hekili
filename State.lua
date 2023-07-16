@@ -5696,7 +5696,7 @@ function state.putTrinketsOnCD( val )
     val = val or 10
 
     for i, item in ipairs( state.items ) do
-        if ( not class.abilities[ item ].essence and not class.abilities[ item ].no_icd ) and state.cooldown[ item ].remains < val then
+        if not class.abilities[ item ].essence and not class.abilities[ item ].no_icd and state.cooldown[ item ].remains < val then
             state.setCooldown( item, val )
         end
     end
@@ -6043,7 +6043,7 @@ do
                 self.ClearCycle()
             end
 
-            if ability.item and not ability.essence then
+            if ability.item and not ( ability.essence or ability.no_icd ) then
                 self.putTrinketsOnCD( cooldown / 6 )
             end
 

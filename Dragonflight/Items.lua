@@ -1753,6 +1753,7 @@ all:RegisterAbilities( {
         cast = 0,
         cooldown = 150,
         gcd = "off",
+        no_icd = true,
 
         item = 202569,
         toggle = "cooldowns",
