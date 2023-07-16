@@ -674,6 +674,10 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
             brain_freeze_removed = GetTime()
         end
 
+        if state.talent.glacial_spike.enabled and ( spellID == 205473 or spellID == 199844 ) and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+            Hekili:ForceUpdate( "ICICLES_CHANGED", true )
+        end
+
         if ( spellID == 153595 or spellID == 153596 ) then
             local t = GetTime()
 
@@ -816,7 +820,7 @@ spec:RegisterHook( "reset_precast", function ()
     if now - action.flurry.lastCast < gcd.execute and debuff.winters_chill.stack < 2 then applyDebuff( "target", "winters_chill", nil, 2 ) end
 
     -- Icicles take a second to get used.
-    if now - action.ice_lance.lastCast < gcd.execute then removeBuff( "icicles" ) end
+    if not state.talent.glacial_spike.enabled and now - action.ice_lance.lastCast < gcd.execute then removeBuff( "icicles" ) end
 
     incanters_flow.reset()
 
