@@ -935,15 +935,6 @@ spec:RegisterSetting( "use_hover", nil, {
     end,
 } )
 
-spec:RegisterSetting( "manage_attunement", false, {
-    name = strformat( "Manage %s", Hekili:GetSpellLinkWithTexture( spec.talents.draconic_attunements[2] ) ),
-    type = "toggle",
-    desc = strformat( "If checked, %s may be recommended when out-of-combat, resuming %s if no one else is supplying the aura or otherwise switching to %s.\n\n"
-        .. "This option can be distracting as some abilities can swap your attunement in combat.", Hekili:GetSpellLinkWithTexture( spec.talents.draconic_attunements[2] ),
-        spec.abilities.black_attunement.name, spec.abilities.bronze_attunement.name ),
-    width = "full"
-} )
-
 spec:RegisterSetting( "use_verdant_embrace", false, {
     name = strformat( "Use %s with %s", Hekili:GetSpellLinkWithTexture( 360995 ), Hekili:GetSpellLinkWithTexture( spec.talents.ancient_flame[2] ) ),
     type = "toggle",
@@ -965,6 +956,14 @@ spec:RegisterSetting( "manage_attunement", false, {
     desc = strformat( "If checked, %s may be recommended when out-of-combat, resuming %s if no one else is supplying the aura or otherwise switching to %s.\n\n"
         .. "This option can be distracting as some abilities can swap your attunement in combat.", Hekili:GetSpellLinkWithTexture( spec.talents.draconic_attunements[2] ),
         spec.abilities.black_attunement.name, spec.abilities.bronze_attunement.name ),
+    width = "full"
+} )
+
+spec:RegisterSetting( "manage_source_of_magic", false, {
+    name = strformat( "Manage %s", Hekili:GetSpellLinkWithTexture( spec.talents.source_of_magic[2] ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended when out-of-combat when you are in a group and none of your allies appear to have your aura applied.\n\n"
+        .. "This option can be distracting because some groups may not have a healer.", Hekili:GetSpellLinkWithTexture( spec.talents.source_of_magic[2] ) ),
     width = "full"
 } )
 
