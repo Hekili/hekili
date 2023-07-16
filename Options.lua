@@ -6569,7 +6569,11 @@ do
                                                 end
 
                                                 if entry.empower_to then
-                                                    action = action .. " (" .. entry.empower_to .. ")"
+                                                    if entry.empower_to == "max_empower" then
+                                                        action = action .. "(Max)"
+                                                    else
+                                                        action = action .. " (" .. entry.empower_to .. ")"
+                                                    end
                                                 end
 
                                                 if desc then
@@ -6862,7 +6866,7 @@ do
                                                         [2] = "II",
                                                         [3] = "III",
                                                         [4] = "IV",
-                                                        maximum = "Max"
+                                                        max_empower = "Max"
                                                     },
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
@@ -10613,7 +10617,7 @@ do
             if result.target_if then result.target_if = result.target_if:gsub( "min:", "" ):gsub( "max:", "" ) end
 
             -- As of 11/11/2022 (11/11/2022 in Europe), empower_to is purely a number 1-4.
-            if result.empower_to then result.empower_to = tonumber( result.empower_to ) end
+            if result.empower_to and ( result.empower_to == "max" or result.empower_to == "maximum" ) then result.empower_to = "max_empower" end
             if result.for_next then result.for_next = tonumber( result.for_next ) end
             if result.cycle_targets then result.cycle_targets = tonumber( result.cycle_targets ) end
             if result.max_energy then result.max_energy = tonumber( result.max_energy ) end

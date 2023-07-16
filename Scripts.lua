@@ -1382,7 +1382,11 @@ local function ConvertScript( node, hasModifiers, header )
                     emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
 
                 elseif value == 'raw' then
-                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
+                    if m == "empower_to" and ( o == "max" or o == "maximum" ) then
+                        emulated = SimToLua( scripts:EmulateSyntax( "max_empower", true ) )
+                    else
+                        emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
+                    end
 
                 else -- string
                     o = "'" .. o .. "'"

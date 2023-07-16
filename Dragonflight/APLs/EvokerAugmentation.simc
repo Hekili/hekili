@@ -15,8 +15,8 @@ actions+=/living_flame,if=time<cast_time*2
 actions+=/hover,if=moving&buff.hover.down&buff.breath_of_eons.down
 actions+=/prescience
 actions+=/ebon_might,if=refreshable
-actions+=/fire_breath,empower_to=1,if=!talent.ancient_flame&talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
-actions+=/fire_breath,empower_to=max,if=talent.ancient_flame&talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
+actions+=/fire_breath,empower_to=1,if=!talent.leaping_flames&talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
+actions+=/fire_breath,empower_to=max,if=talent.leaping_flames&talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
 actions+=/upheaval,empower_to=1,if=talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
 actions+=/breath_of_eons,if=buff.ebon_might.up|cooldown.ebon_might.remains<4
 actions+=/use_items,if=active_dot.temporal_wound>0|cooldown.breath_of_eons.remains>30|boss&fight_remains<30
