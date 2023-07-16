@@ -895,7 +895,6 @@ local function calculate_pmultiplier( spellID )
     local berserk = state.talent.berserk.enabled and FindUnitBuffByID( "player", state.talent.incarnation.enabled and a.incarnation.id or a.berserk.id, "PLAYER" ) and a.berserk.multiplier or 1
 
     if spellID == a.rake.id then
-        print( tigers_fury, prowling, berserk )
         return 1 * tigers_fury * prowling * berserk
 
     elseif spellID == a.rip.id or spellID == a.primal_wrath.id then
@@ -959,7 +958,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
         if subtype == "SPELL_AURA_REMOVED" then
             -- Track Prowl and Shadowmeld and Sudden Ambush dropping, give a 0.2s window for the Rake snapshot.
             if spellID == 58984 or spellID == 5215 or spellID == 102547 or spellID == 391974 or spellID == 340698 then
-                print( "Stealth drop at " .. GetTime() .. "s" )
                 stealth_dropped = GetTime()
             end
         elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
@@ -967,7 +965,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 local mult = calculate_pmultiplier( spellID )
                 ns.saveDebuffModifier( spellID, mult )
                 ns.trackDebuff( spellID, destGUID, GetTime(), true )
-                print( "Snapshotting", spellName, spellID, mult )
             elseif spellID == 145152 then -- Bloodtalons
                 last_bloodtalons_proc = GetTime()
             end
