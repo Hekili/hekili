@@ -56,7 +56,7 @@ actions.berserk+=/call_action_list,name=finisher,if=combo_points=5&!(buff.overfl
 # its currently a gain to just contiuously try to proc bt in aoe
 actions.berserk+=/call_action_list,name=bloodtalons,strict=1,if=spell_targets.swipe_cat>1
 # go into stealth to buff rake snapshot-- feral frenzy line is to eliminate an edge case involving ff being casted instead due to higher prio
-actions.berserk+=/prowl,if=!(buff.bt_rake.up&active_bt_triggers=2)&(action.rake.ready&gcd.remains=0&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)&!buff.shadowmeld.up&cooldown.feral_frenzy.remains<44&!buff.apex_predators_craving.up)
+actions.berserk+=/prowl,if=!(buff.bt_rake.up&active_bt_triggers=2)&(action.rake.ready&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)&!buff.shadowmeld.up&cooldown.feral_frenzy.remains<44&!buff.apex_predators_craving.up)
 actions.berserk+=/shadowmeld,if=!(buff.bt_rake.up&active_bt_triggers=2)&action.rake.ready&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)&!buff.prowl.up&!buff.apex_predators_craving.up
 actions.berserk+=/rake,if=!(buff.bt_rake.up&active_bt_triggers=2)&(refreshable|(buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier&!dot.rake.refreshable))
 # in single target, you just proc bt when an opportunity arises
@@ -75,7 +75,7 @@ actions.berserk_builders+=/brutal_slash,if=active_bt_triggers=2&buff.bt_brutal_s
 actions.berserk_builders+=/shred
 
 actions.bloodtalons+=/brutal_slash,if=(cooldown.brutal_slash.full_recharge_time<4|target.time_to_die<5)&(buff.bt_brutal_slash.down&(buff.bs_inc.up|variable.need_bt))
-actions.bloodtalons+=/prowl,if=action.rake.ready&gcd.remains=0&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)&!buff.shadowmeld.up&buff.bt_rake.down&!buff.prowl.up&!buff.apex_predators_craving.up
+actions.bloodtalons+=/prowl,if=action.rake.ready&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)&!buff.shadowmeld.up&buff.bt_rake.down&!buff.prowl.up&!buff.apex_predators_craving.up
 actions.bloodtalons+=/shadowmeld,if=action.rake.ready&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)&!buff.prowl.up&buff.bt_rake.down&cooldown.feral_frenzy.remains<44&!buff.apex_predators_craving.up
 actions.bloodtalons+=/rake,cycle_targets=1,if=(refreshable|buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier)&buff.bt_rake.down
 actions.bloodtalons+=/rake,cycle_targets=1,if=buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier&buff.bt_rake.down
