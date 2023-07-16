@@ -1147,16 +1147,16 @@ spec:RegisterAbilities( {
             if buff.fingers_of_frost.up or debuff.frozen.up then
                 if talent.chain_reaction.enabled then addStack( "chain_reaction" ) end
                 if talent.thermal_void.enabled and buff.icy_veins.up then buff.icy_veins.expires = buff.icy_veins.expires + 0.5 end
+                if talent.hailstones.rank == 2 then
+                    addStack( "icicles" )
+                    if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
+                        applyBuff( "glacial_spike_usable" )
+                    end
+                end
             end
 
             if not talent.glacial_spike.enabled then removeStack( "icicles" ) end
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
-            if talent.hailstones.rank == 2 and debuff.frozen.up then
-                addStack( "icicles" )
-                if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
-                    applyBuff( "glacial_spike_usable" )
-                end
-            end
 
             if azerite.whiteout.enabled then
                 cooldown.frozen_orb.expires = max( 0, cooldown.frozen_orb.expires - 0.5 )
