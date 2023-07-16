@@ -2148,8 +2148,8 @@ spec:RegisterAbilities( {
         spend = function () return 0.04 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
         spendType = "mana",
 
+        nobuff = "bloodlust",
         startsCombat = false,
-
         toggle = "cooldowns",
 
         handler = function ()
