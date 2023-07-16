@@ -1873,8 +1873,6 @@ all:RegisterAbilities( {
         item = 207579,
         toggle = "essences",
 
-        usable = function() return buff.lost_soul.stack > 9, "requires lost souls" end,
-
         handler = function()
             applyBuff( "timethiefs_gambit" )
             applyDebuff( "player", "paradox" )
