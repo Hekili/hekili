@@ -1147,7 +1147,7 @@ spec:RegisterAbilities( {
 
             if not talent.glacial_spike.enabled then removeStack( "icicles" ) end
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
-            if talent.hailstones.enabled and debuff.frozen.up then
+            if talent.hailstones.rank == 2 and debuff.frozen.up then
                 addStack( "icicles" )
                 if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
                     applyBuff( "glacial_spike_usable" )
