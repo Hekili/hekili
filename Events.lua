@@ -991,7 +991,9 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.oh_actual = 0
 
     C_Timer.After( 5, function ()
-        ns.Audit( "combatExit" )
+        if not InCombatLockdown() then
+            ns.Audit( "combatExit" )
+        end
     end )
 
     Hekili:ReleaseHolds( true )
