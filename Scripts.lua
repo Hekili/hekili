@@ -521,6 +521,8 @@ do
         { "^!?raid_events%.([a-z0-9_]+)%.up$", "raid_events.%1.up"                    },
         { "^!?(pet%.[a-z0-9_]+)%.up$", "%1.remains"                                   },
         { "^!?(pet%.[a-z0-9_]+)%.active$", "%1.remains"                               },
+
+        { "^(action%.[a-z0-9_]+)%.ready$", "%1.ready_time" }
     }
 
 

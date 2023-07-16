@@ -7381,8 +7381,8 @@ function state:IsReady( action )
         if resource == "focus" or resource == "energy" or state.script.entry then
             local ttr = self:TimeToReady( action )
 
-            if ttr <= self.delayMin or ttr >= self.delayMax then return false, "not ready within our time contraint"
-            elseif ttr >= state.delay then return false, "not ready before selected action" end
+            if ttr < self.delayMin or ttr > self.delayMax then return false, format( "not ready within  time contraint ( %.2f - %.2f )", self.delayMin, self.delayMax )
+            elseif ttr >= self.selection_time then return false, format( "not ready [%.2f] before selected action %s [%.2f]", ttr, self.selected_action or "no_action", self.selection_time ) end
 
             return true
         end
