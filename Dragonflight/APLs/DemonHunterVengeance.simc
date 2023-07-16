@@ -31,11 +31,11 @@ actions.maintenance+=/immolation_aura
 actions.maintenance+=/sigil_of_flame
 actions.maintenance+=/metamorphosis,if=talent.demonic&!cooldown.fel_devastation.up&fury>=50
 
-actions.single_target+=/soul_carver,if=variable.fd&(!talent.soulcrush|frailty_threshold_met)&soul_fragments<=3
-actions.single_target+=/the_hunt,if=!talent.soulcrush|frailty_threshold_met
-actions.single_target+=/soul_carver,if=!(talent.soulcrush|frailty_threshold_met)&soul_fragments<=3
-actions.single_target+=/fel_devastation,if=(!talent.soulcrush|frailty_threshold_met)&(variable.fd&!buff.metamorphosis.up)
-actions.single_target+=/elysian_decree,if=!talent.soulcrush|frailty_threshold_met
+actions.single_target+=/soul_carver,if=variable.fd&frailty_threshold_met&soul_fragments<=3
+actions.single_target+=/the_hunt,if=frailty_threshold_met
+actions.single_target+=/soul_carver,if=!frailty_threshold_met&soul_fragments<=3
+actions.single_target+=/fel_devastation,if=frailty_threshold_met&(variable.fd&!buff.metamorphosis.up)
+actions.single_target+=/elysian_decree,if=frailty_threshold_met
 actions.single_target+=/fracture,if=set_bonus.tier30_4pc&variable.fd&soul_fragments<=3
 actions.single_target+=/spirit_bomb,if=((variable.fd&soul_fragments>=4)|soul_fragments>=5)&(!cooldown.fel_devastation.up|fury>=90)
 actions.single_target+=/fel_devastation,if=!buff.metamorphosis.up
@@ -47,14 +47,14 @@ actions.single_target+=/spirit_bomb,if=((variable.fd&soul_fragments>=2)|soul_fra
 actions.single_target+=/soul_cleave
 actions.single_target+=/call_action_list,name=filler
 
-actions.small_aoe+=/elysian_decree,if=!talent.soulcrush|frailty_threshold_met
-actions.small_aoe+=/the_hunt,if=!talent.soulcrush|frailty_threshold_met
-actions.small_aoe+=/fel_devastation,if=(!talent.soulcrush|frailty_threshold_met)&(variable.fd&!buff.metamorphosis.up)
-actions.small_aoe+=/soul_carver,if=variable.fd&(!talent.soulcrush|frailty_threshold_met)&soul_fragments<=3
+actions.small_aoe+=/elysian_decree,if=frailty_threshold_met
+actions.small_aoe+=/the_hunt,if=frailty_threshold_met
+actions.small_aoe+=/fel_devastation,if=frailty_threshold_met&(variable.fd&!buff.metamorphosis.up)
+actions.small_aoe+=/soul_carver,if=variable.fd&frailty_threshold_met&soul_fragments<=3
 actions.small_aoe+=/fracture,if=set_bonus.tier30_4pc&variable.fd&soul_fragments<=3&soul_fragments>=1
 actions.small_aoe+=/spirit_bomb,if=((variable.fd&soul_fragments>=4)|soul_fragments>=5)&(!cooldown.fel_devastation.up|fury>=90)
 actions.small_aoe+=/fel_devastation,if=!buff.metamorphosis.up
-actions.small_aoe+=/soul_carver,if=!(talent.soulcrush|frailty_threshold_met)&soul_fragments<=3
+actions.small_aoe+=/soul_carver,if=!frailty_threshold_met&soul_fragments<=3
 actions.small_aoe+=/spirit_bomb,if=((variable.fd&soul_fragments>=3)|soul_fragments>=4)&(!cooldown.fel_devastation.up|fury>=90)
 actions.small_aoe+=/fracture,if=soul_fragments>=2&soul_fragments<=3
 actions.small_aoe+=/soul_cleave,if=talent.focused_cleave&(!cooldown.fel_devastation.up|(fury>=80))&cooldown.fracture.charges_fractional<1
@@ -62,19 +62,19 @@ actions.small_aoe+=/spirit_bomb,if=((variable.fd&soul_fragments>=2)|soul_fragmen
 actions.small_aoe+=/soul_cleave
 actions.small_aoe+=/call_action_list,name=filler
 
-actions.big_aoe+=/fel_devastation,if=(!talent.soulcrush|frailty_threshold_met)&variable.fd&!buff.metamorphosis.up&talent.stoke_the_flames
-actions.big_aoe+=/elysian_decree,if=!talent.soulcrush|frailty_threshold_met
-actions.big_aoe+=/the_hunt,if=!talent.soulcrush|frailty_threshold_met
-actions.big_aoe+=/fel_devastation,if=(!talent.soulcrush|frailty_threshold_met)&variable.fd&!buff.metamorphosis.up
+actions.big_aoe+=/fel_devastation,if=frailty_threshold_met&variable.fd&!buff.metamorphosis.up&talent.stoke_the_flames
+actions.big_aoe+=/elysian_decree,if=frailty_threshold_met
+actions.big_aoe+=/the_hunt,if=frailty_threshold_met
+actions.big_aoe+=/fel_devastation,if=frailty_threshold_met&variable.fd&!buff.metamorphosis.up
 actions.big_aoe+=/spirit_bomb,if=((variable.fd&soul_fragments>=4)|soul_fragments>=5)&(!cooldown.fel_devastation.up|fury>=90)
 actions.big_aoe+=/fel_devastation,if=!buff.metamorphosis.up
 actions.big_aoe+=/fracture,if=set_bonus.tier30_4pc&variable.fd&soul_fragments<=3&soul_fragments>=1
 actions.big_aoe+=/spirit_bomb,if=((variable.fd&soul_fragments>=3)|soul_fragments>=4)&(!cooldown.fel_devastation.up|fury>=90)
-actions.big_aoe+=/soul_carver,if=variable.fd&(!talent.soulcrush|frailty_threshold_met)&soul_fragments<=3
+actions.big_aoe+=/soul_carver,if=variable.fd&frailty_threshold_met&soul_fragments<=3
 actions.big_aoe+=/spirit_bomb,if=((variable.fd&soul_fragments>=2)|soul_fragments>=3)&(!cooldown.fel_devastation.up|fury>=90)
 actions.big_aoe+=/fracture,if=soul_fragments>=1&soul_fragments<=3
 actions.big_aoe+=/soul_cleave,if=talent.focused_cleave&(!cooldown.fel_devastation.up|(fury>=80))
-actions.big_aoe+=/soul_carver,if=!(talent.soulcrush|frailty_threshold_met)&soul_fragments<=3
+actions.big_aoe+=/soul_carver,if=!frailty_threshold_met&soul_fragments<=3
 actions.big_aoe+=/soul_cleave
 actions.big_aoe+=/fracture,if=soul_fragments<=3
 actions.big_aoe+=/call_action_list,name=filler
