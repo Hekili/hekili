@@ -2521,12 +2521,11 @@ do
         b.Keybinding:SetText( nil )
         b.Keybinding:SetText( kbText )
 
-
         -- Cooldown Wheel
         if not b.Cooldown then
             b.Cooldown = CreateFrame( "Cooldown", bName .. "_Cooldown", b, "CooldownFrameTemplate" )
             if id == 1 then b.Cooldown:HookScript( "OnCooldownDone", function( self )
-                    if b.Ability and b.Ability.empowered and state.empowerment.spell == b.Ability.key then
+                    if b.Ability and b.Ability.empowered and conf.empowerment.glow and state.empowerment.spell == b.Ability.key then
                         b.Empowerment:Show()
                     else
                         b.Empowerment:Hide()
