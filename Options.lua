@@ -234,7 +234,7 @@ local displayTemplate = {
         coloring = "default",
         color = { 0.95, 0.95, 0.32, 1 },
 
-        highlight = true,
+        highlight = true
     },
 
     flash = {
@@ -271,6 +271,7 @@ local displayTemplate = {
     empowerment = {
         enabled = true,
         queued = true,
+        glow = true,
 
         align = "CENTER",
         anchor = "BOTTOM",
@@ -2318,7 +2319,7 @@ do
                                 desc = "If enabled, the addon will apply the default highlight when the first recommended item/ability is currently queued.",
                                 width = "full",
                                 order = 11
-                            }
+                            },
                         },
                     },
 
@@ -2598,7 +2599,7 @@ do
                     empowerment = {
                         type = "group",
                         name = NewFeature .. "Empowerment",
-                        desc = "Empowerment stages are shown with additional text placed on the recommendation icon.",
+                        desc = "Empowerment stages are shown with additional text placed on the recommendation icon and can glow upon reaching the desired stage.",
                         order = 9.1,
                         hidden = function()
                             return class.file ~= "EVOKER"
@@ -2621,10 +2622,18 @@ do
                                 disabled = function () return data.empowerment.enabled == false end,
                             },
 
+                            glow = {
+                                type = "toggle",
+                                name = "Glow when Empowered",
+                                desc = "If enabled, the ability will glow upon reaching the desired empowerment stage.",
+                                order = 2.5,
+                                width = "full",
+                            },
+
                             position = {
                                 type = "group",
                                 inline = true,
-                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                name = function( info ) rangeIcon( info ); return "Text Position" end,
                                 order = 3,
                                 args = {
                                     anchor = {

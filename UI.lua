@@ -1629,7 +1629,7 @@ do
                         cd.lastDuration = duration
                     end
 
-                    if i == 1 and ability.empowered then
+                    if i == 1 and ability.empowered and conf.empowerment.glow then
                         if state.empowerment.spell == ability.key and duration == 0 then
                             button.Empowerment:Show()
                         else
