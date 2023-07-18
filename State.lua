@@ -2253,7 +2253,8 @@ do
             elseif k == "recharge" then return cooldown.recharge
             elseif k == "recharge_time" then return cooldown.recharge_time
             elseif k == "travel_time" then
-                local v = ability.velocity or 0
+                local f, v = ability.flightTime or 0, ability.velocity or 0
+                if f > 0 then return f end
                 if v == 0 then return 0 end
                 return t.target.maxR / v
 
@@ -5082,8 +5083,8 @@ local mt_default_action = {
 
         elseif k == "travel_time" then
             -- NYI: maybe capture the last travel time for the spell and use that?
-            local v = ability.velocity
-
+            local f, v = ability.flightTime, ability.velocity
+            if f then return f end
             if v and v > 0 then return state.target.maxR / v end
             return 0
 

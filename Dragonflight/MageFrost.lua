@@ -624,8 +624,17 @@ spec:RegisterStateFunction( "fingers_of_frost", function( active )
 end )
 
 spec:RegisterStateExpr( "remaining_winters_chill", function ()
-    if debuff.winters_chill.down then return 0 end
-    return max( 0, debuff.winters_chill.stack - ( state:IsInFlight( "ice_lance" ) and 1 or 0 ) )
+    local wc = debuff.winters_chill.stack
+
+    if wc == 0 then return 0 end
+
+    local projectiles = 0
+
+    if prev_gcd[1].ice_lance and state:IsInFlight( "ice_lance" ) then projectiles = projectiles + 1 end
+    if prev_gcd[1].frostbolt and state:IsInFlight( "frostbolt" ) then projectiles = projectiles + 1 end
+    if prev_gcd[1].glacial_spike and state:IsInFlight( "glacial_spike" ) then projectiles = projectiles + 1 end
+
+    return max( 0, wc - projectiles )
 end )
 
 
@@ -820,7 +829,7 @@ spec:RegisterHook( "reset_precast", function ()
     if now - action.flurry.lastCast < gcd.execute and debuff.winters_chill.stack < 2 then applyDebuff( "target", "winters_chill", nil, 2 ) end
 
     -- Icicles take a second to get used.
-    if not state.talent.glacial_spike.enabled and now - action.ice_lance.lastCast < gcd.execute then removeBuff( "icicles" ) end
+    if not state.talent.glacial_spike.enabled and now - action.ice_lance.lastCast < gcd.max then removeBuff( "icicles" ) end
 
     incanters_flow.reset()
 
@@ -918,6 +927,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", talent.freezing_cold.enabled and "freezing_cold" or "cone_of_cold" )
             active_dot.cone_of_cold = max( active_enemies, active_dot.cone_of_cold )
+            removeDebuffStack( "target", "winters_chill" )
 
             if talent.coldest_snap.enabled then
                 setCooldown( "frozen_orb", 0 )
@@ -946,11 +956,13 @@ spec:RegisterAbilities( {
 
         talent = "flurry",
         startsCombat = true,
+        flightTime = 1,
 
         handler = function ()
             removeBuff( "brain_freeze" )
             removeBuff( "cold_front_ready" )
             applyDebuff( "target", "winters_chill", nil, 2 )
+            applyDebuff( "target", "flurry" )
 
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
             elseif legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 )
@@ -973,6 +985,12 @@ spec:RegisterAbilities( {
 
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
             removeBuff( "ice_floes" )
+        end,
+
+        impact = function()
+            Hekili:Debug( "Winter's Chill applied by Flurry." )
+            applyDebuff( "target", "winters_chill", nil, 2 )
+            applyDebuff( "target", "flurry" )
         end,
 
         copy = 228354 -- ID of the Flurry impact.
@@ -1010,6 +1028,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
+        velocity = 35,
 
         handler = function ()
             addStack( "icicles" )
@@ -1017,7 +1036,6 @@ spec:RegisterAbilities( {
                 applyBuff( "glacial_spike_usable" )
             end
 
-            applyDebuff( "target", "chilled" )
             removeBuff( "ice_floes" )
             removeBuff( "cold_front_ready" )
 
@@ -1041,6 +1059,15 @@ spec:RegisterAbilities( {
                 frost_info.last_target_virtual = target.unit
             end
         end,
+
+        impact = function ()
+            applyDebuff( "target", "chilled" )
+            --[[ if debuff.winters_chill.stack > 0 and action.frostbolt.lastCast > action.flurry.lastCast then
+                removeDebuffStack( "target", "winters_chill" )
+            end ]]
+        end,
+
+        copy = 228597
     },
 
     -- Launches an orb of swirling ice up to 40 yards forward which deals up to 5,687 Frost damage to all enemies it passes through. Deals reduced damage beyond 8 targets. Grants 1 charge of Fingers of Frost when it first damages an enemy. While Frozen Orb is active, you gain Fingers of Frost every 2 sec. Enemies damaged by the Frozen Orb are slowed by 40% for 3 sec.
@@ -1095,12 +1122,16 @@ spec:RegisterAbilities( {
             removeBuff( "icicles" )
             removeBuff( "glacial_spike_usable" )
 
-            applyDebuff( "target", "glacial_spike" )
-            removeDebuffStack( "target", "winters_chill" )
-
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
             if talent.thermal_void.enabled and buff.icy_veins.up then buff.icy_veins.expires = buff.icy_veins.expires + ( debuff.frozen.up and 4 or 1 ) end
         end,
+
+        impact = function()
+            applyDebuff( "target", "glacial_spike" )
+            removeDebuffStack( "target", "winters_chill" )
+        end,
+
+        copy = 228600
     },
 
     -- Shields you with ice, absorbing 5,674 damage for 1 min. Melee attacks against you reduce the attacker's movement speed by 60%.
@@ -1147,12 +1178,6 @@ spec:RegisterAbilities( {
             if buff.fingers_of_frost.up or debuff.frozen.up then
                 if talent.chain_reaction.enabled then addStack( "chain_reaction" ) end
                 if talent.thermal_void.enabled and buff.icy_veins.up then buff.icy_veins.expires = buff.icy_veins.expires + 0.5 end
-                if talent.hailstones.rank == 2 then
-                    addStack( "icicles" )
-                    if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
-                        applyBuff( "glacial_spike_usable" )
-                    end
-                end
             end
 
             if not talent.glacial_spike.enabled then removeStack( "icicles" ) end
@@ -1164,12 +1189,20 @@ spec:RegisterAbilities( {
         end,
 
         impact = function ()
+            if ( buff.fingers_of_frost.up or debuff.frozen.up ) and talent.hailstones.rank == 2 then
+                addStack( "icicles" )
+                if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
+                    applyBuff( "glacial_spike_usable" )
+                end
+            end
+
+            removeDebuffStack( "target", "winters_chill" )
+
             if buff.fingers_of_frost.up then
                 removeStack( "fingers_of_frost" )
                 if talent.cryopathy.enabled then addStack( "cryopathy" ) end
                 if set_bonus.tier29_4pc > 0 then applyBuff( "touch_of_ice" ) end
             end
-            removeDebuffStack( "target", "winters_chill" )
         end,
 
         copy = 228598
@@ -1188,6 +1221,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "ice_nova" )
+            removeDebuffStack( "target", "winters_chill" )
         end,
     },
 
