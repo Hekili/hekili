@@ -90,6 +90,7 @@ actions.ogcd+=/berserking,if=variable.cds_active
 actions.ogcd+=/blood_fury,if=variable.cds_active
 ## actions.ogcd+=/invoke_external_buff,name=power_infusion,if=variable.cds_active
 actions.ogcd+=/fireblood,if=variable.cds_active
+actions.ogcd+=/ancestral_call,if=variable.cds_active
 
 actions.variables+=/variable,name=ps_up,op=set,value=dot.phantom_singularity.ticking|!talent.phantom_singularity
 actions.variables+=/variable,name=vt_up,op=set,value=dot.vile_taint_dot.ticking|!talent.vile_taint
