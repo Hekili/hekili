@@ -1416,6 +1416,7 @@ all:RegisterAbilities( {
         icd = 10,
 
         item = 202610,
+        no_icd = true, -- Does not trigger trinket CD, but looks confusing next to the icd.
 
         handler = function()
             applyDebuff( "target", "dragonfire_bomb_dispenser" )
@@ -1441,10 +1442,12 @@ all:RegisterAbilities( {
         gcd = "off",
 
         item = 202617,
+        no_icd = true,
 
         handler = function()
             addStack( "anvil_strike", nil, 1 )
         end,
+
 
         auras = {
             anvil_strike = {
@@ -1753,9 +1756,9 @@ all:RegisterAbilities( {
         cast = 0,
         cooldown = 150,
         gcd = "off",
-        no_icd = true,
 
         item = 202569,
+        no_icd = true,
         toggle = "cooldowns",
 
         handler = function()
