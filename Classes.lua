@@ -3126,6 +3126,90 @@ do
     } )
 end
 
+all:RegisterAbility( "grim_toll", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 40256,
+    aura = 60437
+})
+all:RegisterAura( "grim_toll", {
+    id = 60437,
+    duration = 15,
+    max_stack = 1
+})
+
+all:RegisterAbility( "mjolnir_runestone", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 45931,
+    aura = 65019
+})
+all:RegisterAura( "mjolnir_runestone", {
+    id = 65019,
+    duration = 15,
+    max_stack = 1
+})
+
+all:RegisterAbility( "dark_matter", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 46038,
+    aura = 65024
+})
+all:RegisterAura( "dark_matter", {
+    id = 65024,
+    duration = 10,
+    max_stack = 1
+})
+
+all:RegisterAbility( "deaths_verdict", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 47115,
+    aura = 67702
+})
+all:RegisterAbility( "deaths_verdict_heroic", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 47131,
+    aura = 67702
+})
+all:RegisterAbility( "deaths_choice", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 47303,
+    aura = 67702
+})
+all:RegisterAbility( "deaths_choice_heroic", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 47464,
+    aura = 67702
+})
+all:RegisterAura( "deaths_verdict", {
+    id = 67702,
+    duration = 15,
+    max_stack = 1
+})
+all:RegisterAura( "deaths_verdict_heroic", {
+    id = 67771,
+    duration = 15,
+    max_stack = 1
+})
 
 -- x.x - Heirloom Trinket(s)
 all:RegisterAbility( "touch_of_the_void", {
