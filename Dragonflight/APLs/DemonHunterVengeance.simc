@@ -13,17 +13,17 @@ actions+=/variable,name=next_fire_cd_time,value=cooldown.fel_devastation.remains
 actions+=/variable,name=next_fire_cd_time,op=min,value=cooldown.soul_carver.remains,if=talent.soul_carver
 # Fiery Demise is up
 actions+=/variable,name=fd,value=talent.fiery_demise&dot.fiery_brand.ticking
+actions+=/use_item,name=elementium_pocket_anvil,use_off_gcd=1
 actions+=/infernal_strike,use_off_gcd=1,if=charges=max_charges&target.distance>10
 actions+=/demon_spikes,use_off_gcd=1,if=!buff.demon_spikes.up&tanking
-actions+=/use_item,name=elementium_pocket_anvil,use_off_gcd=1
+actions+=/metamorphosis,if=talent.first_of_the_illidari
 actions+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1
 actions+=/use_items
+actions+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1
 actions+=/potion
-actions+=/metamorphosis,if=talent.first_of_the_illidari
 actions+=/fiery_brand,if=charges>=2|(!ticking&((variable.next_fire_cd_time<7)|(variable.next_fire_cd_time>28)))
 actions+=/spirit_bomb,if=soul_fragments>=5
 actions+=/fracture,cycle_targets=1,if=dot.fiery_brand.ticking&buff.recrimination.up
-actions+=/fracture,if=buff.recrimination.up
 actions+=/fracture,if=(full_recharge_time<=cast_time+gcd.remains)
 actions+=/immolation_aura
 actions+=/sigil_of_flame,if=dot.fiery_brand.ticking
@@ -38,12 +38,16 @@ actions.single_target+=/soul_carver,if=frailty_threshold_met&soul_fragments<=3
 actions.single_target+=/fel_devastation,if=frailty_threshold_met&(variable.fd|talent.stoke_the_flames)&!(talent.demonic&buff.metamorphosis.up)
 actions.single_target+=/elysian_decree,if=frailty_threshold_met
 actions.single_target+=/fracture,if=set_bonus.tier30_4pc&variable.fd&(soul_fragments<=3|(buff.metamorphosis.up&soul_fragments<=2))
-actions.single_target+=/spirit_bomb,if=((variable.fd&soul_fragments>=3)|soul_fragments>=4)
+actions.single_target+=/fel_devastation,if=!(talent.demonic&buff.metamorphosis.up)
+actions.single_target+=/sigil_of_flame,if=fury<70
+actions.single_target+=/spirit_bomb,if=((variable.fd&soul_fragments>=3)|soul_fragments>=5)
+actions.single_target+=/fracture,if=set_bonus.tier30_4pc&variable.fd
 actions.single_target+=/soul_cleave,if=talent.focused_cleave
+actions.single_target+=/spirit_bomb,if=((variable.fd&soul_fragments>=2)|soul_fragments>=4)
+actions.single_target+=/soul_cleave
 actions.single_target+=/fracture
 actions.single_target+=/spirit_bomb,if=((variable.fd&soul_fragments>=2)|soul_fragments>=3)
 actions.single_target+=/sigil_of_flame
-actions.single_target+=/soul_cleave
 actions.single_target+=/call_action_list,name=filler
 
 actions.small_aoe+=/elysian_decree,if=frailty_threshold_met
