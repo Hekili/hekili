@@ -497,6 +497,7 @@ spec:RegisterStateExpr("excess_e", function()
     end
 
     local time_to_cap = query_time + (100 - energy.current) / 10
+    local time_to_end = query_time + ttd
     local trinket_active = false
     if debuff.rip.up then
         local awaiting_trinket = false
@@ -504,6 +505,7 @@ spec:RegisterStateExpr("excess_e", function()
             local t_active = false
             local t_earliest_proc = 0
             local t_cooldown = 0
+            local t_proc_end = 0
             if tonumber(entry) then
                 local t = trinket[entry]
                 if t.proc and t.ability and action[t.ability] and action[t.ability].aura > 0 and buff[action[t.ability].aura] then
@@ -511,13 +513,14 @@ spec:RegisterStateExpr("excess_e", function()
                     t_active = buff[action[t.ability].aura].up
                     if t_cooldown > 0 and buff[action[t.ability].aura].last_application > 0 then
                         t_earliest_proc = max(0, buff[action[t.ability].aura].last_application + t_cooldown)
+                        t_proc_end = t_earliest_proc + buff[action[t.ability].aura].duration
                     end
                 end
             end
 
             trinket_active = trinket_active or t_active
 
-            if (not trinket_active) and (not awaiting_trinket) and t_earliest_proc > 0 and t_earliest_proc < time_to_cap then
+            if (not trinket_active) and (not awaiting_trinket) and t_earliest_proc > 0 and t_earliest_proc < time_to_cap and t_proc_end <= time_to_end then
                 floating_energy = max(floating_energy, 100)
             end
         end
