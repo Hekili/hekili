@@ -443,7 +443,7 @@ spec:RegisterStateExpr("excess_e", function()
         pending_actions.mangle_cat.refresh_cost = 0
     end
 
-    if buff.savage_roar.up then
+    if buff.savage_roar.up and buff.savage_roar.remains < ttd - 1 and combo_points.current > 0 then
         pending_actions.savage_roar.refresh_time = query_time + buff.savage_roar.remains
         pending_actions.savage_roar.refresh_cost = 25 * (berserk_expected_at(query_time, query_time + buff.savage_roar.remains) and 0.5 or 1)
 
