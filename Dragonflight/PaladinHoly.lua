@@ -7,6 +7,9 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local strformat = string.format
+local SPEC_ACTIVE = _G.SPEC_ACTIVE
+
 local spec = Hekili:NewSpecialization( 65 )
 
 spec:RegisterResource( Enum.PowerType.HolyPower )
@@ -670,12 +673,40 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 3636843,
+        buff = "blessing_of_autumn_active",
 
         handler = function ()
+            removeBuff( "blessing_of_autumn_active" )
+            applyBuff( "blessing_of_winter_active" )
+
             setCooldown( "blessing_of_winter", 45 )
             setCooldown( "blessing_of_summer", 90 )
             setCooldown( "blessing_of_spring", 135 )
         end,
+
+        bind = { "blessing_of_winter", "blessing_of_spring", "blessing_of_summer" },
+
+        auras = {
+            blessing_of_autumn_active = {
+                duration = 3600,
+                max_stack = 1,
+                generate = function( t )
+                    if IsActiveSpell( 388010 ) then
+                        t.name = t.name or strformat( "%s %s", class.auras.blessing_of_autumn.name, SPEC_ACTIVE )
+                        t.count = 1
+                        t.applied = now
+                        t.expires = now + 3600
+                        t.caster = "player"
+                        return
+                    end
+
+                    t.count = 0
+                    t.applied = 0
+                    t.expires = 0
+                    t.caster = "nobody"
+                end,
+            }
+        }
     },
 
 
@@ -756,19 +787,47 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 3636844,
+        buff = "blessing_of_spring_active",
 
         handler = function ()
+            removeBuff( "blessing_of_spring_active" )
+            applyBuff( "blessing_of_summer_active" )
+
             setCooldown( "blessing_of_summer", 45 )
             setCooldown( "blessing_of_autumn", 90 )
             setCooldown( "blessing_of_winter", 135 )
         end,
+
+        bind = { "blessing_of_autumn", "blessing_of_winter", "blessing_of_summer" },
+
+        auras = {
+            blessing_of_spring_active = {
+                duration = 3600,
+                max_stack = 1,
+                generate = function( t )
+                    if IsActiveSpell( 388013 ) then
+                        t.name = t.name or strformat( "%s %s", class.auras.blessing_of_spring.name, SPEC_ACTIVE )
+                        t.count = 1
+                        t.applied = now
+                        t.expires = now + 3600
+                        t.caster = "player"
+                        return
+                    end
+
+                    t.count = 0
+                    t.applied = 0
+                    t.expires = 0
+                    t.caster = "nobody"
+                end,
+            }
+        }
     },
 
 
     blessing_of_summer = {
         id = 388007,
         cast = 0,
-        cooldown = 180,
+        cooldown = 45,
         gcd = "spell",
 
         spend = 0.05,
@@ -776,12 +835,40 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 3636845,
+        buff = "blessing_of_summer_active",
 
         handler = function ()
+            removeBuff( "blessing_of_summer_active" )
+            applyBuff( "blessing_of_autumn_active" )
+
             setCooldown( "blessing_of_autumn", 45 )
             setCooldown( "blessing_of_winter", 90 )
             setCooldown( "blessing_of_spring", 135 )
         end,
+
+        bind = { "blessing_of_autumn", "blessing_of_winter", "blessing_of_spring" },
+
+        auras = {
+            blessing_of_summer_active = {
+                duration = 3600,
+                max_stack = 1,
+                generate = function( t )
+                    if IsActiveSpell( 388007 ) then
+                        t.name = t.name or strformat( "%s %s", class.auras.blessing_of_summer.name, SPEC_ACTIVE )
+                        t.count = 1
+                        t.applied = now
+                        t.expires = now + 3600
+                        t.caster = "player"
+                        return
+                    end
+
+                    t.count = 0
+                    t.applied = 0
+                    t.expires = 0
+                    t.caster = "nobody"
+                end,
+            }
+        }
     },
 
 
@@ -796,14 +883,41 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 3636846,
+        buff = "blessing_of_winter_active",
 
         handler = function ()
+            removeBuff( "blessing_of_winter_active" )
+            applyBuff( "blessing_of_spring_active" )
+
             setCooldown( "blessing_of_spring", 45 )
             setCooldown( "blessing_of_summer", 90 )
             setCooldown( "blessing_of_autumn", 135 )
         end,
-    },
 
+        bind = { "blessing_of_autumn", "blessing_of_spring", "blessing_of_summer" },
+
+        auras = {
+            blessing_of_winter_active = {
+                duration = 3600,
+                max_stack = 1,
+                generate = function( t )
+                    if IsActiveSpell( 388011 ) then
+                        t.name = t.name or strformat( "%s %s", class.auras.blessing_of_winter.name, SPEC_ACTIVE )
+                        t.count = 1
+                        t.applied = now
+                        t.expires = now + 3600
+                        t.caster = "player"
+                        return
+                    end
+
+                    t.count = 0
+                    t.applied = 0
+                    t.expires = 0
+                    t.caster = "nobody"
+                end,
+            }
+        }
+    },
 
     blinding_light = {
         id = 115750,
