@@ -1618,7 +1618,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
 
     local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 ) and not IsActuallyFriend( destName )
 
-    if dmg_events[ subtype ] and amTarget then
+    if dmg_events[ subtype ] and not ( amSource or petSource ) and amTarget then
         local damage, damageType
 
         if subtype:sub( 1, 13 ) == "ENVIRONMENTAL" then
