@@ -2632,6 +2632,10 @@ spec:RegisterSetting( "zerk_biteweave", false, {
     width = "full"
 } )
 
+spec:RegisterVariable( "zerk_biteweave", function()
+    return settings.zerk_biteweave ~= false
+end )
+
 spec:RegisterSetting( "lazy_swipe", false, {
     name = strformat( "%s: Don't %s in AOE", Hekili:GetSpellLinkWithTexture( spec.talents.wild_slashes[2] ), Hekili:GetSpellLinkWithTexture( spec.abilities.shred.id ) ),
     desc = function()
@@ -2645,7 +2649,7 @@ spec:RegisterSetting( "lazy_swipe", false, {
 } )
 
 spec:RegisterVariable( "lazy_swipe", function()
-    return settings.lazy_swipe
+    return settings.lazy_swipe ~= false
 end )
 
 spec:RegisterSetting( "regrowth", true, {
