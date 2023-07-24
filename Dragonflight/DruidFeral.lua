@@ -1660,6 +1660,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
         form = "cat_form",
 
+        cycle = "rip",
+        cycle_to = true,
+
         -- Use maximum damage.
         damage = function () -- TODO: Taste For Blood soulbind conduit
             return calculate_damage( 1.05 * 2 , true, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1 ) * ( talent.sabertooth.enabled and 1.15 or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 ) * ( talent.lions_strength.enabled and 1.15 or 1 ) *
