@@ -1337,7 +1337,7 @@ all:RegisterAuras( {
 
 all:RegisterAbilities( {
     beacon_to_the_beyond = {
-        cast = 0,
+        cast = function() return 2 * haste end,
         cooldown = 150,
         gcd = "off",
 
