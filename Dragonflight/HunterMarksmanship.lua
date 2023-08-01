@@ -673,6 +673,7 @@ spec:RegisterHook( "reset_precast", function ()
 
     -- If the last GCD ability wasn't Stready Shot, reset the counter.
     if talent.steady_focus.enabled and prev_gcd.last ~= "steady_shot" then
+        if Hekili.ActiveDebug then Hekili:Debug( "Resetting Steady Focus counter as last GCD spell was '%s'.", ( prev_gcd.last or "Unknown" ) ) end
         steady_focus_count = 0
     end
 end )
