@@ -581,14 +581,21 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
         if ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
             if spellID == 193534 then -- Steady Aim.
                 steady_focus_applied = GetTime()
+                steady_focus_casts = 0
             elseif spellID == 378880 then
                 bombardment_arcane_shots = 0
             end
         elseif subtype == "SPELL_CAST_SUCCESS" then
             if spellID == 185358 and state.talent.bombardment.enabled then
                 bombardment_arcane_shots = ( bombardment_arcane_shots + 1 ) % 4
-            elseif spellID == 56641 and state.talent.steady_focus.enabled then
-                steady_focus_casts = ( steady_focus_casts + 1 ) % 2
+            end
+        
+            if state.talent.steady_focus.enabled then
+                if spellID == 56641 and GetTime() - steady_focus_applied > 0.5 then
+                    steady_focus_casts = ( steady_focus_casts + 1 ) % 2
+                elseif class.abilities[ spellName ] and class.abilities[ spellName ].gcd ~= "off" then
+                    steady_focus_casts = 0
+                end
             end
         end
     end
@@ -672,7 +679,7 @@ spec:RegisterHook( "reset_precast", function ()
     steady_focus_count = nil
 
     -- If the last GCD ability wasn't Stready Shot, reset the counter.
-    if talent.steady_focus.enabled and prev_gcd.last ~= "steady_shot" then
+    if talent.steady_focus.enabled and steady_focus_count > 0 and prev_gcd.last ~= "steady_shot" then
         if Hekili.ActiveDebug then Hekili:Debug( "Resetting Steady Focus counter as last GCD spell was '%s'.", ( prev_gcd.last or "Unknown" ) ) end
         steady_focus_count = 0
     end
@@ -687,7 +694,7 @@ spec:RegisterHook( "runHandler", function( token )
                 applyBuff( "steady_focus" )
                 steady_focus_count = 0
             end
-        else
+        elseif class.abilities[ token ] and class.abilities[ token ].gcd ~= "off" then
             steady_focus_count = 0
         end
     end
