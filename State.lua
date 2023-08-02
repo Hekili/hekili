@@ -2496,26 +2496,47 @@ do
     mt_default_pet = {
         __index = function( t, k )
             if k == "expires" then
-                local petGUID = UnitGUID( "pet" )
-                if petGUID and t.id == tonumber( petGUID:match( "%-(%d+)%-[0-9A-F]+$" ) ) then
-                    t[ k ] = state.query_time + 3600
-                    return t[ k ]
+                local totemIcon = rawget( t, "icon" )
+
+                if totemIcon then
+                    -- This is actually a totem; check them.
+                    local present, name, start, duration
+
+                    for i = 1, 5 do
+                        present, name, start, duration, icon = GetTotemInfo( i )
+                        if duration == 0 then duration = 3600 end
+    
+                        if present and ( icon == totemIcon or class.abilities[ name ] and t.key == class.abilities[ name ].key ) then
+                            t.expires = start + duration
+                            return t.expires
+                        end
+                    end
+
+                    t.expires = 0
+                    return t.expires
                 end
 
-                local present, name, start, duration
+                local petSpell = rawget( t, "spell" )
 
-                for i = 1, 5 do
-                    present, name, start, duration = GetTotemInfo( i )
-                    if duration == 0 then duration = 3600 end
+                if petSpell then
+                    -- We have to track by time since cast.
+                    local lastCast = state.action[ petSpell ].lastCast
+                    local expires = lastCast + t.duration
 
-                    if present and class.abilities[ t.key ] and name == class.abilities[ t.key ].name then
-                        t.expires = start + duration
-                        return t.expires
+                    if expires > state.query_time then
+                        t.expires = expires
+                        return expires
                     end
                 end
 
+                local petGUID = UnitGUID( "pet" )
+                if petGUID and t.id == tonumber( petGUID:match( "%-(%d+)%-[0-9A-F]+$" ) ) then
+                    t.expires = state.query_time + 3600
+                    return t.expires
+                end
+
                 t.expires = 0
-                return t[ k ]
+                return 0
 
             elseif k == "remains" then
                 return max( 0, t.expires - ( state.query_time ) )
@@ -2623,6 +2644,7 @@ do
             if model then
                 t[ k ] = {
                     name = k,
+                    spell = model.spell,
                     duration = model.duration,
                     expires = nil,
                     spec = model.spec,
@@ -2632,6 +2654,17 @@ do
                 if model.spec then
                     t[ model.spec ] = t[ k ]
                 end
+
+                return t[ k ]
+            end
+
+            local ttm = class.totems[ k ]
+
+            if ttm then
+                t[ k ] = {
+                    key = k,
+                    icon = ttm
+                }
 
                 return t[ k ]
             end
@@ -4233,7 +4266,7 @@ local mt_default_totem = {
 
             return t[ k ]
 
-        elseif k == "up" or k == "active" then
+        elseif k == "up" or k == "active" or k == "alive" then
             return ( t.expires > ( state.query_time ) )
 
         elseif k == "remains" then
