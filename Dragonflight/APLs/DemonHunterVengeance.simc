@@ -17,10 +17,9 @@ actions+=/use_item,name=elementium_pocket_anvil,use_off_gcd=1
 actions+=/infernal_strike,use_off_gcd=1,if=charges=max_charges&target.distance>10
 actions+=/demon_spikes,use_off_gcd=1,if=!buff.demon_spikes.up&tanking
 actions+=/metamorphosis,if=talent.first_of_the_illidari
-actions+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1
 actions+=/use_items
-actions+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1
-actions+=/potion
+actions+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=trinket.beacon_to_the_beyond.cooldown.remains>5
+actions+=/metamorphosis,if=talent.first_of_the_illidari&trinket.beacon_to_the_beyond.cooldown.remains<10|boss&fight_remains<20
 actions+=/fiery_brand,if=charges>=2|(!ticking&((variable.next_fire_cd_time<7)|(variable.next_fire_cd_time>28)))
 actions+=/spirit_bomb,if=soul_fragments>=5
 actions+=/fracture,cycle_targets=1,if=dot.fiery_brand.ticking&buff.recrimination.up
