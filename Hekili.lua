@@ -239,6 +239,7 @@ end
 
 
 local snapshots = ns.snapshots
+local hasScreenshotted = false
 
 function Hekili:SaveDebugSnapshot( dispName )
     local snapped = false
@@ -356,8 +357,12 @@ function Hekili:SaveDebugSnapshot( dispName )
 		end
     end
 
+    -- Limit screenshot to once per login.
     if snapped then
-        if Hekili.DB.profile.screenshot then Screenshot() end
+        if Hekili.DB.profile.screenshot and not hasScreenshotted then
+            Screenshot()
+            hasScreenshotted = true
+        end
         return true
     end
 
