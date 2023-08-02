@@ -561,7 +561,7 @@ spec:RegisterHook( "reset_precast", function()
 end )
 
 spec:RegisterHook( "spend", function( amt, resource )
-    if set_bonus.tier30_4pc > 0 and amt >= 30 then
+    if set_bonus.tier30_4pc > 0 and amt >= 30 and resource == "focus" then
         local sec = floor( amt / 30 )
         gainChargeTime( "wildfire_bomb", sec )
         gainChargeTime( "shrapnel_bomb", sec )
@@ -572,16 +572,6 @@ end )
 
 spec:RegisterHook( "specializationChanged", function ()
     current_wildfire_bomb = nil
-end )
-
-spec:RegisterHook( "spend", function( amt, resource )
-    if set_bonus.tier30_4pc > 0 and amt > 25 and resource == "focus" then
-        local cdr = floor( amt / 25 )
-        reduceCooldown( "wildfire_bomb", cdr )
-        reduceCooldown( "shrapnel_bomb", cdr )
-        reduceCooldown( "pheromone_bomb", cdr )
-        reduceCooldown( "volatile_bomb", cdr )
-    end
 end )
 
 spec:RegisterStateTable( "next_wi_bomb", setmetatable( {}, {
