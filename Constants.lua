@@ -204,6 +204,7 @@ local SpecializationKeys = {
 
     [1467] = "devastation",
     [1468] = "preservation",
+    [1473] = "augmentation"
 }
 
 ns.getSpecializationKey = function ( id )
