@@ -2517,10 +2517,11 @@ do
                 end
 
                 local petSpell = rawget( t, "spell" )
+                petSpell = petSpell and state.action[ petSpell ]
 
                 if petSpell then
                     -- We have to track by time since cast.
-                    local lastCast = state.action[ petSpell ].lastCast
+                    local lastCast = petSpell.lastCast
                     local expires = lastCast + t.duration
 
                     if expires > state.query_time then

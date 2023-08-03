@@ -188,10 +188,10 @@ all:RegisterAbility( "guardian_of_azeroth", {
         summonPet( "guardian_of_azeroth", 30 )
     end,
 
-    copy = "condensed_lifeforce"
+    copy = { "condensed_lifeforce", 300091 }
 } )
 
-all:RegisterPet( "guardian_of_azeroth", 152396, 300091, 31 )
+all:RegisterPet( "guardian_of_azeroth", 152396, "guardian_of_azeroth", 31 )
 
 all:RegisterAuras( {
     guardian_of_azeroth = {
