@@ -805,7 +805,7 @@ do
             if not quiet then
                 debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
             end
-        elseif cDebuff.down and ability.cycle_to and active_dot[ aura ] > 0 then
+        elseif cDebuff.down and ability.cycle_to and state.active_dot[ aura ] > 0 then
             cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
             cycle.maxTTD  = ability.max_ttd
 
