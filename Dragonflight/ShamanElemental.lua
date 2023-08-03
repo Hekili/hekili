@@ -692,13 +692,25 @@ spec:RegisterAuras( {
 
 
 -- Pets
-spec:RegisterPet( "primal_storm_elemental", 77942, "storm_elemental", function() return 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) end )
+spec:RegisterPet( "primal_storm_elemental", 77942, "storm_elemental", 
+    function()
+        if not talent.primal_elementalist.enabled then return 0 end
+        return 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) )
+    end )
 spec:RegisterTotem( "greater_storm_elemental", 1020304 ) -- Texture ID
 
-spec:RegisterPet( "primal_fire_elemental", 61029, "fire_elemental", function() return 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) end )
+spec:RegisterPet( "primal_fire_elemental", 61029, "fire_elemental",
+    function()
+        if not talent.primal_elementalist.enabled then return 0 end
+        return 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) )
+    end )
 spec:RegisterTotem( "greater_fire_elemental", 135790 ) -- Texture ID
 
-spec:RegisterPet( "primal_earth_elemental", 61056, "earth_elemental", 60 )
+spec:RegisterPet( "primal_earth_elemental", 61056, "earth_elemental", 
+    function()
+        if not talent.primal_elementalist.enabled then return 0 end
+        return 60
+    end )
 spec:RegisterTotem( "greater_earth_elemental", 136024 ) -- Texture ID
 
 local elementals = {

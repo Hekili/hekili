@@ -2522,7 +2522,10 @@ do
                 if petSpell then
                     -- We have to track by time since cast.
                     local lastCast = petSpell.lastCast
-                    local expires = lastCast + t.duration
+                    local duration = t.duration
+
+                    if type( duration ) == 'function' then duration = duration() end
+                    local expires = lastCast + duration
 
                     if expires > state.query_time then
                         t.expires = expires
