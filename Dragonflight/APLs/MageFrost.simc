@@ -26,7 +26,7 @@ actions.aoe+=/arcane_explosion,if=mana.pct>30&active_enemies>=7
 actions.aoe+=/frostbolt
 actions.aoe+=/call_action_list,name=movement
 
-actions.cds+=/time_warp,if=buff.bloodlust.down&debuff.sated.up&prev_off_gcd.icy_veins
+actions.cds+=/time_warp,if=debuff.sated.up&talent.temporal_warp&buff.bloodlust.down&action.icy_veins.time_since<2*gcd.max
 actions.cds+=/use_item,name=spoils_of_neltharus,if=buff.spoils_of_neltharus_mastery.up|buff.spoils_of_neltharus_haste.up&buff.bloodlust.down&buff.temporal_warp.down&time>0|buff.spoils_of_neltharus_vers.up&(buff.bloodlust.up|buff.temporal_warp.up)
 actions.cds+=/potion,if=prev_off_gcd.icy_veins|boss&fight_remains<60
 # The Mage Discord doesn't check remaining_winters_chill, but that's because sims start with a fresh state and the addon doesn't.
