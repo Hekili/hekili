@@ -18,7 +18,8 @@ actions+=/infernal_strike,use_off_gcd=1,if=charges=max_charges&target.distance>1
 actions+=/demon_spikes,use_off_gcd=1,if=!buff.demon_spikes.up&tanking
 actions+=/metamorphosis,if=talent.first_of_the_illidari
 actions+=/use_items
-actions+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=trinket.beacon_to_the_beyond.cooldown.remains>5
+actions+=/use_item,name=beacon_to_the_beyond,use_off_gcd=1,if=buff.metamorphosis.up|fight_remains<=10|!talent.first_of_the_illidari
+actions+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=!trinket.beacon_to_the_beyond.cooldown.remains<=5&!buff.metamorphosis.up|!equipped.beacon_to_the_beyond
 actions+=/metamorphosis,if=talent.first_of_the_illidari&trinket.beacon_to_the_beyond.cooldown.remains<10|boss&fight_remains<20
 actions+=/fiery_brand,if=charges>=2|(!ticking&((variable.next_fire_cd_time<7)|(variable.next_fire_cd_time>28)))
 actions+=/spirit_bomb,if=soul_fragments>=5
