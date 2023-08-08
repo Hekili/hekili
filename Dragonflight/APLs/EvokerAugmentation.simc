@@ -15,6 +15,7 @@ actions+=/living_flame,if=time<cast_time*2
 actions+=/hover,if=moving&buff.hover.down&buff.breath_of_eons.down
 actions+=/prescience
 actions+=/ebon_might,if=refreshable
+actions+=/tip_the_scales,if=cooldown.fire_breath.remains<gcd
 actions+=/fire_breath,empower_to=1,if=!talent.leaping_flames&talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
 actions+=/fire_breath,empower_to=max,if=talent.leaping_flames&talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
 actions+=/upheaval,empower_to=1,if=talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
@@ -23,7 +24,6 @@ actions+=/use_items,if=active_dot.temporal_wound>0|cooldown.breath_of_eons.remai
 actions+=/potion,if=active_dot.temporal_wound>0|cooldown.breath_of_eons.remains>30|boss&fight_remains<30
 actions+=/living_flame,if=buff.leaping_flames.up&active_dot.fire_breath>0
 actions+=/time_skip,if=cooldown.fire_breath.true_remains+cooldown.upheaval.true_remains+cooldown.prescience.true_remains>35
-actions+=/tip_the_scales,if=cooldown.fire_breath.remains<gcd|cooldown.upheaval.remains<gcd
 actions+=/fire_breath,empower_to=1,if=!talent.ancient_flame&(buff.ebon_might.remains>cast_time|empowering.fire_breath)
 actions+=/fire_breath,empower_to=max,if=talent.ancient_flame&(buff.ebon_might.remains>cast_time|empowering.fire_breath)
 actions+=/upheaval,empower_to=1,if=active_enemies<2&(empowering.upheaval|buff.ebon_might.remains>cast_time)
