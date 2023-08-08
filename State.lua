@@ -805,8 +805,8 @@ do
             if not quiet then
                 debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
             end
-        elseif cDebuff.down and ability.cycle_to and state.active_dot[ aura ] > 0 and state.query_time < state.now + ( 2 * gcd.max ) then
-            cycle.expires = state.query_time + ( 2 * gcd.max ) -- Assume the aura is available for 2 GCDs (don't forecast a slow target swap).
+        elseif cDebuff.down and ability.cycle_to and state.active_dot[ aura ] > 0 and state.query_time < state.now + ( 2 * state.gcd.max ) then
+            cycle.expires = state.query_time + ( 2 * state.gcd.max ) -- Assume the aura is available for 2 GCDs (don't forecast a slow target swap).
             cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
             cycle.maxTTD  = ability.max_ttd
 
