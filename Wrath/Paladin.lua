@@ -1958,8 +1958,32 @@ spec:RegisterStateTable("assigned_blessing", setmetatable( {}, {
     end
 }))
 
+spec:RegisterStateExpr("ttd", function()
+    if is_training_dummy then
+        return Hekili.Version:match( "^Dev" ) and settings.dummy_ttd or 300
+    end
+    
+    return target.time_to_die
+end)
+
 spec:RegisterStateExpr("next_primary_at", function()
     return min(cooldown.crusader_strike.remains, cooldown.divine_storm.remains, cooldown.judgement_of_light.remains)
+end)
+
+spec:RegisterStateExpr("should_hammer", function()
+    local hammercd = cooldown.hammer_of_the_righteous.remains
+    local shieldcd = cooldown.shield_of_righteousness.remains
+
+    return (hammercd <settings.max_wait_for_six) 
+    and (shieldcd < (settings.min_six_delay-settings.max_wait_for_six))
+end)
+
+spec:RegisterStateExpr("should_shield", function()
+    local hammercd = cooldown.hammer_of_the_righteous.remains
+    local shieldcd = cooldown.shield_of_righteousness.remains
+
+    return (shieldcd <settings.max_wait_for_six) 
+    and (hammercd < (settings.min_six_delay-settings.max_wait_for_six))
 end)
 
 spec:RegisterSetting("paladin_description", nil, {
@@ -2132,6 +2156,55 @@ spec:RegisterSetting("divine_plea_threshold", 75, {
     end
 })
 
+spec:RegisterSetting("mana_footer", nil, {
+    type = "description",
+    name = "\n\n\n"
+})
+
+spec:RegisterSetting("protection_header", nil, {
+    type = "header",
+    name = "Prot Settings"
+})
+
+spec:RegisterSetting("max_wait_for_six", 0.3, {
+    type = "range",
+    name = "Max Wait for Six",
+    desc = "Max allowed delay to wait for 6s-Casts (SotR, HotR) CD in seconds.\n\n"..
+        "Recommendation:\n - 0.3 seconds\n\n"..
+        "Default: 0.3",
+    width = "full",
+    min = 0,
+    softMax = 1,
+    step = 0.01,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.max_wait_for_six = val
+    end
+})
+spec:RegisterSetting("min_six_delay", 4, {
+    type = "range",
+    name = "Min Six Delay",
+    desc = "Min allowed delay to wait between 6s-Casts (SotR, HotR) CD in seconds.\n\n"..
+        "Recommendation:\n - 4 seconds\n\n"..
+        "Default: 4",
+    width = "full",
+    min = 0,
+    softMax = 6,
+    step = 0.1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.min_six_delay = val
+    end
+})
+
+spec:RegisterSetting("squeeze_hw_in_bl", true, {
+    type = "toggle",
+    name = "Use HolyWrath during BL",
+    desc = "Enable to squeeze HW in open partial global after Consecration during bloodlust against Undead/Demon",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.squeeze_hw_in_bl = val
+    end
+})
+
 
 spec:RegisterOptions( {
     enabled = true,
@@ -2153,20 +2226,22 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Retribution", 20230222.1, [[Hekili:1IvtVrokt4Fl5sRjAh5(JKjZ(UA65WE6DYHrRwVNTnTnTnBBmwaozAPi)BFl8NGBWjDNokkjwuq98qrrrvvW6G)jWpbjXb)CZQn3TAZMnERVF16vRd8LhlXb(LO4dOu4Jcef(7FJLCYUkjHvOKDmNHsu6qWQ4XG8mPSu8hlxMsKzv78Iz0LpZEwqOc4)Y8dl3LZ2TKIesmFjm8YsuokHuSKpQ4LCMeP(WlLf4VRIKl)rrWoRefqUehddcqtssWTZdlInOAD0F1ctDuVURJ2Z41r)F8bsojWpNiKIgJbEpQkxcF(ZgJdUaTlhNe8Nb(XCcWAckW)M6ibwkjfPcVmgpKII5mrD0I6O08JLzECC8bwbi3RB9nY(uDucEx1(9EsoIOehMurPh9QkRJE5L6iqVO0uoRo62aFuCRvodvKeY2hoOZa)kbggzFyACIIMs1(3fxBWtGr5EjSNlA4HsZpHdXfykbd0EBD06r8uZvH3t4IumQaovb9F37r)F3Q(bFdkS1uA)EL27LJuaRSnpZrYmDuHz(f9zwYA)VXmEqFgkdfquQyYK(68Bhtkahp6NgukMR4Fl9aL976iMb3A4GpjojefhJZXCKfs()CIpysqEGkIXfY6OVP5O9VvjPykmCd4ercJgkZ4yrglpzKawMMcX1R0zPXKYjPzYjeCTBNFGqH7yfvcpjbZxVkCtz8uFOeYtKcCOqY4TO72)e85Pmy2PoDDAeatR9OPDcXScboU12AC(OlOb57moDMC6nztFVtwcxDLiEkw6reHjyQkaI6g74GvfjyeCp)w77JTgHmYp2saBhGJsB40xUaxLoZFzogzdbnXnq8GtiM)M8jNYFv3whZReOeWAlG4WhWtT1g3Am00Kj6(UY5EO0g6ndhI4T3oq8MqVGOc8VKHLCcfXpgIKn70bZz)4IC4XWrsJ)fJhtenB9nRMZbFgp3lg9Po6BCFJ9JCF7(I9zC64Y5FJ7NDgi5Eg8AsriI98LCgBSfnc0ODjPxbXm4Ae8iNxVfaENNcpK3EX4HXDX(CKiBm0Q6h)s49BgDh61tTOdTHDOccj8BiQIJAJUieK0c1tmWiEAPo1mWiporYSzkCbqdoHQOpTEHta3ISztK4sGVpeZeKngUp)IRfOj4Nyw2UMd3NQY1c09eogYauaPPQsjBc2wL2Nl0vJcqkUYz4GvXZMR1fqcrgcUb6MfoK3NL2ztdy2a(9jN0tL(r96)qDx)GALJm5urZM33vIe02C5SrcAxSOUub)izHaS8YkiUQDMmkE(mnVsSPljyRuzib5My0pbPURMsxnMa18H3pkApy)bTKXLQs520MFN6bTM6g9QFe0ELekfmW3VcsjdYowOc5Z2tYX9iREqT7nGFB7YPXM)mz)2BQkxy)QWI5d5x)Onionc8zbYPl3bm6HBppe0xPDLBew9SuUXkTRCBXnplmSPahqzl845HLnnyhm7rbpl0SRc7WDsOo3i1p1fVHyPVoynH0E3G1OLxhSHOwVBah00RdAB8P3nITQP(XbabyoPVsFwRTsBx3G5f1Ll394svaWn9D4sNlN0Zjf6MDwArx9tD1IUDTT131tPxD1F3y1MT7rxsBhM0hzOJsMMsJ2kma)j9rYyr27uK(uS0lhLU1l8)BVT(d5uR5go)QaUALIRaZw7Emn(6vI24102pNtm5lUzU6GDBonenuFOcPpnPaZxEzAXL3oLfBNTlmwmeQcaDB0T2PL5mNM0PRbx6gtZUM4sv6J3xn6B1IyVe5fV9wbm7H)mNXxie67VRk3N3zYE3kmcBzwNF3TLpM2sCXnM4HMuBd(Vd]] )
+spec:RegisterPack( "Retribution (WoWSims)", 20230222.1, [[Hekili:1IvtVrokt4Fl5sRjAh5(JKjZ(UA65WE6DYHrRwVNTnTnTnBBmwaozAPi)BFl8NGBWjDNokkjwuq98qrrrvvW6G)jWpbjXb)CZQn3TAZMnERVF16vRd8LhlXb(LO4dOu4Jcef(7FJLCYUkjHvOKDmNHsu6qWQ4XG8mPSu8hlxMsKzv78Iz0LpZEwqOc4)Y8dl3LZ2TKIesmFjm8YsuokHuSKpQ4LCMeP(WlLf4VRIKl)rrWoRefqUehddcqtssWTZdlInOAD0F1ctDuVURJ2Z41r)F8bsojWpNiKIgJbEpQkxcF(ZgJdUaTlhNe8Nb(XCcWAckW)M6ibwkjfPcVmgpKII5mrD0I6O08JLzECC8bwbi3RB9nY(uDucEx1(9EsoIOehMurPh9QkRJE5L6iqVO0uoRo62aFuCRvodvKeY2hoOZa)kbggzFyACIIMs1(3fxBWtGr5EjSNlA4HsZpHdXfykbd0EBD06r8uZvH3t4IumQaovb9F37r)F3Q(bFdkS1uA)EL27LJuaRSnpZrYmDuHz(f9zwYA)VXmEqFgkdfquQyYK(68Bhtkahp6NgukMR4Fl9aL976iMb3A4GpjojefhJZXCKfs()CIpysqEGkIXfY6OVP5O9VvjPykmCd4ercJgkZ4yrglpzKawMMcX1R0zPXKYjPzYjeCTBNFGqH7yfvcpjbZxVkCtz8uFOeYtKcCOqY4TO72)e85Pmy2PoDDAeatR9OPDcXScboU12AC(OlOb57moDMC6nztFVtwcxDLiEkw6reHjyQkaI6g74GvfjyeCp)w77JTgHmYp2saBhGJsB40xUaxLoZFzogzdbnXnq8GtiM)M8jNYFv3whZReOeWAlG4WhWtT1g3Am00Kj6(UY5EO0g6ndhI4T3oq8MqVGOc8VKHLCcfXpgIKn70bZz)4IC4XWrsJ)fJhtenB9nRMZbFgp3lg9Po6BCFJ9JCF7(I9zC64Y5FJ7NDgi5Eg8AsriI98LCgBSfnc0ODjPxbXm4Ae8iNxVfaENNcpK3EX4HXDX(CKiBm0Q6h)s49BgDh61tTOdTHDOccj8BiQIJAJUieK0c1tmWiEAPo1mWiporYSzkCbqdoHQOpTEHta3ISztK4sGVpeZeKngUp)IRfOj4Nyw2UMd3NQY1c09eogYauaPPQsjBc2wL2Nl0vJcqkUYz4GvXZMR1fqcrgcUb6MfoK3NL2ztdy2a(9jN0tL(r96)qDx)GALJm5urZM33vIe02C5SrcAxSOUub)izHaS8YkiUQDMmkE(mnVsSPljyRuzib5My0pbPURMsxnMa18H3pkApy)bTKXLQs520MFN6bTM6g9QFe0ELekfmW3VcsjdYowOc5Z2tYX9iREqT7nGFB7YPXM)mz)2BQkxy)QWI5d5x)Onionc8zbYPl3bm6HBppe0xPDLBew9SuUXkTRCBXnplmSPahqzl845HLnnyhm7rbpl0SRc7WDsOo3i1p1fVHyPVoynH0E3G1OLxhSHOwVBah00RdAB8P3nITQP(XbabyoPVsFwRTsBx3G5f1Ll394svaWn9D4sNlN0Zjf6MDwArx9tD1IUDTT131tPxD1F3y1MT7rxsBhM0hzOJsMMsJ2kma)j9rYyr27uK(uS0lhLU1l8)BVT(d5uR5go)QaUALIRaZw7Emn(6vI24102pNtm5lUzU6GDBonenuFOcPpnPaZxEzAXL3oLfBNTlmwmeQcaDB0T2PL5mNM0PRbx6gtZUM4sv6J3xn6B1IyVe5fV9wbm7H)mNXxie67VRk3N3zYE3kmcBzwNF3TLpM2sCXnM4HMuBd(Vd]] )
 
-spec:RegisterPack( "Protection Paladin (wowtbc.gg)", 20221002.1, [[Hekili:LwvBVTTnq4FmfiibBv2YUljDOUFyFR5dDfqfOFtsuINL4cfPajLnmGH(TVJsXYK6LfdmeGiAE39CVYNlom(NXruIbI)(M1B2eUE9MGWN2882phhzovdXr1K8xjf4bbPc))pusdKBysrB6piCcLHhU)O8OjlpOO4bRbN4sc1cSw2OYrJknMA9FUA1GA4jd)1v5CIw)XIggf0RQhq(J19aVkokRHXnFteNnFu(m6JAihVgDcJsHEnbDEC0plz620AftQyMtTPzenqBtTbUPeAthcM20FPiMY20UajioIZ0gDxHb2tA4g8437kuGGKXbA8FfhLJGckgXQuwZ(9b5eTHjkcAQBtVdDbHdctGUKbCAICFc6ZeduvZjQafr8AB6U20TXrKUug)EaefGsN0BsSXMul5ZopQbcpGkpk6COfNdqciGkgGj(xBtdVIUvxBuKlRQiIo03()b9DlGUs1u3Dh6GpDJoykokwrPbKnAbO1wO(dluEvkSuNC022CDbQ5JUAszhyciPMdKrQ9KRA1Y(VEA8SRgnAibd(k9iL(8IP4BfmQeNbi5kG(wFTR0T2jLDfAHmC9KC1zQW39Hlpvo34qxN8E7SPQambmDcfQSVhoF29YgbfiyG(W1WOuYp9w5262Lhmjffk5i7CYTTU5wjPQcuxEBm0ZhNJFY1MCPqd5yGmTHf6nKC9HN)W0iBECXmbFMqcQbK)syAt)sB6toDT)PHwavOeRdoY0uzvhCEJvEkXTrHV3XFwRa8fzg5kfZfJvGrXYAS)iH0Ogp)UCh4nIhwfYNEaNSgs)K9nQtbxS5QJ8KFded41ATLPZ)T7LRTj7R4x9nqbCdqv1v36)l6a(sWQXWwG4OJeLOZBrFRQwQmwk(n98v2j7oQ8G2xqWBmLsfAWfAFB1xUNXX9tF4d4YSzwS9IvaI2FNBKzGcpJ(T9L2x6Hxhm0)(TDRWvzScbwXTTR5vXVw)7S97UTU18OnPIBbCAD99nURgVKXdMBtrF2iRjt2(D37U5B3wxmhTzAimgwpCNpv2xdNZ6UaJiYH31(DZAVhjXumMuegw)4kXzDJ719RxCVzyDIxO4UjWgclTcz36)JEIRORS2oWnugV7(r7boFE8oGhMGMt0zz69KppDURkUS3EP(8K1UQmdJRnkCzP)YtRx0c(ans8)o]] )
+spec:RegisterPack( "Retribution (LightClub)", 20230815.1, [[Hekili:vRX2UTno2VL8IH9mTk2ojUTdItbMDFyAXIUlwVpljAjABnr3ajLtdGH(2NdPUrkrDZ2jlMM2cfsEUYZDjZfM)pZnUig28hlNV8U5FEXdglE4(vp8G5g2RXyZnXiNNr7HhcrbW))FXmI32eMxuyQ90)L3(dS)HFY2z8d(QFeYLJqAucXbo8bglM(B3ERRh1jI4ASF)T(CiCaiC8ruQNJ5MTjE(SVfAUvhJ8WcaBXyhyvaDEUU4SdIPo14L)dYh56bpqIyOSL2frsT)d8ZE(EP2BruSBQnF9sU(J)Zmgdac7efeGdDfGsn347rzuHS4fU3hdp9dHUchI26JDn)DZnoepgM4H4IWUDgumY3Wn6LqZnihowayHLSI2zDehUhJcbvcJliTHMPGgn1(ic(fytdMxa2Ifz56HtT)Lu75gFj1(JP2lNNApl1(Pu7m6yG44hytRxii2bdNOiFoFio1eboVbK)cEuHHmsItTpDk12nIzCiY)vPTOm4QxqN7buvjvQKJls31QifGcrgXyWAiKLA)yQnfZyaSuJ)mXDpg04mo)8Ih1nkWIDGGPax4wrmnhJtX75uu7zegyYCdC6hAL)a2XABuycf02yYI5wlJDsTxNAVOc9UEh9cXwuwerq7vY02HKqrUycSnX7zCnc)PZqXKtUyFmsNcrABof(SmZOWPQCYx6YQJHi7XmdpQLloG7HWTiQwmj0fJClmNegsSdylej7sbrewrWwH4FYSIjEbiYRwiMW2PuUkwN6dMvv8m(NrehpQqZUyERCzHfmhSJylhWjf7qeERxc1LXJGd6Xj)nsU7mMWqVDQWTWrU07Cr7UNLm5UiiUqOfk6LZ5owrefNQ46sYATabfHNmk0ageCaYlKkq1QkPyhKH4qLln)hiW)ouIptx44YRuKVVv2VyXJINfl3kl9LxOhRmiCbejuSfOrcO18zUt(qXr53BYNqegIdE0UDw7DC5Cv1TaK)KajVWUa74G9X5Mzdn20nsgrhIiwbihsevOd37)A8bqV58CuiSVro8fH7DXzxGeqTYdu7Mee8AzOEaVO97jrQMmOqxUUUeNnKRIiFA51C3sCioWdNDtkPjijHTEJ4aMghXDhSSo25XNfYAzUs8pXojmWq7aKMFyeohKYGOAmL6c886cewLXIYh2I0AxQCHM7duEVYn8zW)SqjeKylEvr7d52mWkWvCzjoIfK4T670zPfNbPHqJ8KtzgT1iUM96SmGZH8fjwRrzLLlCbVwe1fFmsJ4QUCFoTJLO78iyWVJc2w86UQrBT72PV45WcqGfwh8G2T70L9myc6beKxODUOL914)om2aonL7fRYkfRAu8apQ4ZCiR4KMB1zfwxjMiiRYwDmrqEgYEQG6AWfuqZZsGS965KQT7UAQRe3K3rGwwPQBHoQVQQ1TYQqGIXVB1Cj7oDDX1rrvxPs7zvPOENA(89OlXQ6nG2TjIRjX(AQRAKk3lRHYhKzUEBO8Q0c4aAPr)Sa46ALCXkTWC5De2qhpTpB4u7BtTxQC)xRp1ocm1rZgt10VXJFvQhIAMrvoXZgFtyT7Insp63fwVU(9Q0czFn)9wluknUYYBxtt0VOyrVRvaw4OWFYpble627ccKK7MNnfnjfHKpMaH5f6lVSMiO9Zk5O)aevf0iXozMqlNlte1(xeYEEJrxuSF(qnHg76nYF5F7E4JZg)8h563kdqfDW6su9))5uceoi6yrnhDhzU9qVJiT10HM5seAvvWgskSUtkTAG5i(0Wtz3En4xOSVCiY(FtsMvgNS21JuXNYrtLVzgBO0lo12Lvp1ILJQGQ3(YP)XI29ohrgYwZvbs0rmHY3k7nyTC5sJfMBadaE2hO7XVfehry8P0TQi0zQT49mzK(D(qKI255xo8k(fB(uL(113wFApFWB36BsINOV56jDpeP0VRJenNPZOistWBHmYdWzCuqgs9ixzqnJc5kqQh56MeZOOHoe0cP0nWLXrlDyqpX0pxLrrn9Oqp52wF4jTtPIJozatNPFIjgsYftmbw6NyLZb5IjyjM6NOzHFVykMHMwmwQxzgNAngIYJ3TAElEOvbL5qkhC)XEsl)D(p54eWu5BTrEXS3sJ8kT8wy(G0B3y9cfaQ)MqupQq7wYPvVxMjT8ozMmTT(qoD6gX7HzMm1R9kh(aV9G1zTcWPmFRQ3eYtl6f08glAc76ftAuu(JlN3lc5gj(yLldJm(tY6iVVdvBdrpbnHrTmDoitH)WyU)c0ZXSpUC(SNYGPT(mMD600MIYAaWztMEtR9tC6uB9s809Z0WNYf7lmcYAyyYnDneNMOrt9snCeMoSIWUvpFQwAPMtixwPMTRvN)BSmSuNm0vuIPDhMqpclQgU0ISrj6tM2xX5p(1olmF2t6lj)m1Fdt91hY9vZwnifCFHHBAWuwjSW7TwP0NovVm6zQrpYdr1FYf1aivGPjcYf72xH9wDhQoYBX9zlyV2fA1PA1Tx6i1JG1rKRjqa4NUxhw0h9OX(xSVBfghIZBTXsk5R2Yij73DDyIu3s0BmJnApVjVd6pzF7SQfgRRDju6QniVYGHuyWvi9FjR8w4JRh51CXlpKSJhN0unF7IsLYwbyRHgQJ6ZWaVh(uZ2YEZxGfBnd2EDAQ0gJjk4ztLbeZ6SX9O961Gd1pUUCZPmYx9TaouDVcdNxqS6x(3Kw)Q)EAL5gX3M9)ou5l62CdkHbTxzUztcykcM5uXu2m)R)]] )
+
+spec:RegisterPack( "Protection 96", 20230815.1, [[Hekili:1MvBVTTnq4FlbfW1glv2oV4MuehG2VS0GHSI6cSVjjAjAlTij6ksfVmyOF77oszjrzkP4KUp0Ah(YDp84D3dVZ2tT)H9cFIGA)Wzto78jxn9sRPxEX5NDU9cXZBO2l2q8EKSg(scjg()VLYeuprilj396z40phXi(Oy4SSupyjbcXg(NgpEDOiiBPLhlE8w2wEymh(ue944LrSLJJjCbnDmm84nKiIFyY4nLYEm8nc(fR1m7flZcJeFnXEPjOE2LFeu9gQhmmO7qFFQALuUNoC)Msn5U7fEU7kwAU7D0hdJcTYD)cHt9ZDXjkaCUBeBDO3PWEORiEcwkUa5UUE21ZQeL9IOqUGlndH)d8XdsllnHSmI6B)f7fEPHW5nKaliGLf57eqIJPGGgK7om39KC3IX5bH0iql72L7cQm8jQdnHghsb0CBU70C3r2liEkTQeIdBLJiG6KgUoqqzzCBbAn6bakfvjl1FJYQuojuoklbC7hMq7(yrwVoLPGTpDz2QvwIusiSV1o(zXXpBLTPgUzrpVhaDIvWUiLLp9jaboBIOeqq7TARJEEtGLFy1CfcrHdyfXKeI1gk4yMiYDVbSYuHaWeV(UaJxkfSkOzFKM9T2IqCEER4ucsoXdCqkoxwP0y48d3A3mp3Dsn7C9vHs9IEp9f(bESeo1lvfzuyfm5IuPR67av1LTF91PCiprtwtt51q9SwfLGKUMkScOKirG1gpHYeC2et(TBbWfGY7JDzfk8O(7m)10y4QuZzQCuP8c5(SyuGx1QavUnnot7DD68qF9B5Q6fSeWJvi8Lw)l0CeBEroDsRibLH6giK74tJX8zy0q1Gzj(uIYxxPZH1Il4)mJs)x6Dqe6FH3n7xJhdIpyBtS0WDPtoG4zwxD5eveulPVMxtpYuaYBFTWVg5ikDpM2EMN2JXn4zuPSEDGMktlzCrrygY6WrMK0hijYIeDNNuLPaInSqR5liggxlQtGifoP9KV8fi95gLU0xNKae47ZZPfgGPXv3fAhAvUR9RmJtDaGeZBSOlRVOnm1NARqMmb3oB1kN1E(ObSYraEiskqXdjnjEE0iAryGUiAM)OmYHef5O(dhKKwrv7OEodsw3zQItubh6u2OVDd26rVqfk5rLolBsPWn6sspUlcseMVlmgED0tGfOKB2zvw6ZhM0sF(EjxlY7ugXGrZc4FoKSuIY9HZdxNG2EyeiExKgUmtE4WbQP4MZ0jF5Rq1qEhmcxD53q5gMRpI1Jw9PzCIpqA1qZAd3jf7RqPWZEygoU6d3jz8RqPRctH3ss5GxlMqOHUnoBF83hneszqit7yW409fiFSGGhqGKOTJIwMVVNj0kmGvd6pzTou2pQ1(VGzRFe3zfsoCQUFIWViueRybnHc1uDZB)lcfCW0lYiqYoJiPA6sk9)prtXZhmcLApTOVkjqg8QciYDpF2KE4SN2E2U3sXjt1iVRx3Mo970z9rYlz9EcyYXzQvdV9ITK0eLd9F95V)WxF43)uUBU7pcO5UaVhlvuuZ97r2Z3JfJ)ZSqzP4CwmSisMGfte4aEbeWMWTYVxU9vSOi2w5nhgBcN3T0uy8mzL(yZae4YuWgQ2hcKXhPl2VUeMu3WdMRVAFFCX(ebzjHt)u(95UFaRrPSwryK7)Qe5OAUqxbi4q6F2QWi4fbV7D5UMAtX94eOvYAYvwNpbfPskCRYNo8BZhRZ3FA4Q5VSxm0I0AqIJY7KSndmNZCq3VnWSkoKQ(OuYHBVf1uNx(40q9DAw4A8VhLW12PzHBIG9O0Hjb0IQmXJEC6YKemRmZ0LhL2mlcZQ7aoX210(Lo4fq62VYKuFVzLjLs)kRKD7nRWsj1Vsv8yVznQetlolnP4qTDa14naTyl7Vopw1EnXbEZ8wKrnYoZlqXYHzMlNVg0lQxxh4yv5dW1wvr(TtnT7wo4g2)CT9RxTE9zkRoV(G7pcvJ0s12NwR6CDn2SE3tXkDNdvw3)Iq(CPB0qTkS3TtR66rklmYh(zPe(WFi5PLVjywU7c4gjX)dl2qJIag(H3XeFFm8uLVpQ6AdGdE2m3UCecAayWWt0qWUDnVYoq0T098AIEVNuBNKRp8KqW3DSnGiEp(trqxjQPw02P7KI6s2f(D7ARd8hS9An4wEryOz7dg2AB23TBy9MVDt3nxF0HO)1gMwS96TISc(f3vn6VA7rD7LwJ(9knN9TNgnYw9(RgT)(M5NDi0n0Zr5jWqNUFjaTZwA)2SBDo5qHW)2lAXTS0KmSrdP3TRzZOhny4WwBb9GHD285BLnEE0OdIsN3zZMpe0TCNy2fVZEl3TOl6Emw8G)FMO)Ruo7AOkQmral1EXImqRjzf)gC2)h]] )
 
 spec:RegisterPack( "Holy Paladin (wowtbc.gg)", 20221002.1, [[Hekili:vA1YUTToq0pMceKG2kl5Mw3CrCw0vnErAbua6ozrjowIxtrkqsz3ayWV9ouQrMsrooDtc9WZCMhCMJDsuYJjXuIbsEyE485rHHZdIwm)MWRtInpvdjX1K8TKc8GGuH)97s(t20Fs4ektytVCVCVjlpOO4kh0N4sc1rPw2OYr4LgtT()MnRhgEYW3olNt06pw0WOGEwjY5hR7OCwsCwdJBUxKKnvM95imZ01qoAgPNrPqhsqNNe)yjtBtRvmPIzW809PmIgO2ujMTMsWM2Nk20FPiMsBABAeKeZzAJUTHaBinCdE8H2geiizCGM8TK4CKyqXijXKCdBhSMknbzajxkwl3SMZkkn20L20WoesbwqdVoX4Y9trBwZMnbAGWdOY9IJK4m5OypttLvoo(0j5WqufGjGI1drKJ18T20OqB6f20kIGeud4JJW0AFHxI()n0cOcVzyGU2fOjX0vpEjbI(ZVLoMMKRa6ADjd40X9Rbx6O8l(jazhikyII17DVEJc(cFKu2oMawZ48MkMG0zCa8Vob8Aoqgb7gFy1Yjikk0hsJgJQbQ0Jrfnr82q2jvJbo3hOB)a7gY8TJH9Voc41JBBUU3qL7neKnAbO1TSE95EbbbuXaC36oK02XQZfoC(xd5QU3axmo7uYlJXL9HHPxtHk3g9Hd(gBeuGGJtxnQ31nP4c7Gjj43svotxnSRIZZ1kixwLroQa8SlkWOyznUpSM0OgpOCM1A0SwJJUJwTF2S71yl(F9RVD)wPQFbUTM2bkTdsVAAs8EIs0gU47RQLkJtMCUnTJlBARCyGDLRFi3W4OC(7ENnD43aSYzcD6h5gzgOWZi92v2vDSOd67LVF5muZNviWvBxRBAiVOx8b2MLVSIpVZDv)P8U3FNxdLNDUCAT9LH(UouuUpy9Y3(yNqC15WOnNBJcVWxJ(2fHNKKUVSXpD8fohvhdUByvmur1)MjuqN4ANIPV5ofsFl9cIt4DR(NV9JYDdQTPfSMUf67OV0Jxp5V6l3fDXR7(rbKjD(Yrsshomwo6kF2ok5qAmLoD)(Fos7AAYFc]] )
 
 
-spec:RegisterPackSelector( "retribution", "Retribution", "|T135873:0|t Retribution",
+spec:RegisterPackSelector( "retribution", "Retribution (LightClub)", "|T135873:0|t Retribution",
     "If you have spent more points in |T135873:0|t Retribution than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
-        return tab1 > max( tab2, tab3 )
+        return tab3 > max( tab1, tab2 )
     end )
 
-spec:RegisterPackSelector( "protection", "Protection Paladin (wowtbc.gg)", "|T135893:0|t Protection",
+spec:RegisterPackSelector( "protection", "Protection 96", "|T135893:0|t Protection",
     "If you have spent more points in |T135893:0|t Protection than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
