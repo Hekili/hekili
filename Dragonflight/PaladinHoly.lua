@@ -464,9 +464,9 @@ end, state )
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" and spellID == 114158 and state.set_bonus.tier30_4pc > 0 then
         local now = GetTime()
-        state:QueueEvent( "lights_hammer", TriggerLightsHammerT30, now + 4, "AURA_PERIODIC", "player", true )
-        state:QueueEvent( "lights_hammer", TriggerLightsHammerT30, now + 8, "AURA_PERIODIC", "player", true )
-        state:QueueEvent( "lights_hammer", TriggerLightsHammerT30, now + 12, "AURA_PERIODIC", "player", true )
+        state:QueueAuraEvent( "lights_hammer", TriggerLightsHammerT30, now + 4, "AURA_PERIODIC", "player", true )
+        state:QueueAuraEvent( "lights_hammer", TriggerLightsHammerT30, now + 8, "AURA_PERIODIC", "player", true )
+        state:QueueAuraEvent( "lights_hammer", TriggerLightsHammerT30, now + 12, "AURA_PERIODIC", "player", true )
     end
 end )
 
