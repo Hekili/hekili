@@ -1408,6 +1408,10 @@ me:RegisterAbilities( {
         startsCombat = true,
         notalent = "defile",
 
+        usable = function ()
+            if settings.check_death_and_decay_movement and moving then return false, "check_death_and_decay_movement is checked and player is moving" end
+            return true
+        end,
         handler = function ()
             applyBuff( "death_and_decay" )
             if talent.grip_of_the_dead.enabled then applyDebuff( "target", "grip_of_the_dead" ) end
@@ -1580,6 +1584,10 @@ me:RegisterAbilities( {
         talent = "defile",
         startsCombat = true,
 
+        usable = function ()
+            if settings.check_death_and_decay_movement and moving then return false, "check_death_and_decay_movement is checked and player is moving" end
+            return true
+        end,
         handler = function ()
             applyBuff( "death_and_decay" )
             applyDebuff( "target", "defile" )
@@ -2095,6 +2103,13 @@ me:RegisterSetting( "ob_macro", nil, {
     multiline = true,
     get = function () return "#showtooltip\n/use [@mouseover,harm,nodead][] " .. class.abilities.outbreak.name end,
     set = function () end,
+} )
+
+me:RegisterSetting( "check_death_and_decay_movement", false, {
+    name = strformat( "%s and %s: Movement Check", Hekili:GetSpellLinkWithTexture( me.abilities.death_and_decay.id ), Hekili:GetSpellLinkWithTexture( me.abilities.defile.id ) ),
+    desc = strformat( "If checked, the addon will not recommend %s and %s while moving.", Hekili:GetSpellLinkWithTexture( me.abilities.death_and_decay.id ), Hekili:GetSpellLinkWithTexture( me.abilities.defile.id ) ),
+    type = "toggle",
+    width = "full"
 } )
 
 
