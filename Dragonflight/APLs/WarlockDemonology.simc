@@ -65,6 +65,7 @@ actions.items+=/use_item,name=erupting_spear_fragment,,if=pet.demonic_tyrant.act
 actions.items+=/use_items,if=(buff.demonic_power.up|!talent.summon_demonic_tyrant&(buff.nether_portal.up|!talent.nether_portal))&(!equipped.irideus_fragment&!equipped.timebreaching_talon&!equipped.spoils_of_neltharus&!equipped.erupting_spear_fragment&!equipped.voidmenders_shadowgem)
 actions.items+=/use_item,name=rotcrusted_voodoo_doll
 actions.items+=/use_item,name=beacon_to_the_beyond
+actions.items+=/use_item,name=iridal_the_earths_master,if=buff.demonic_power.down&cooldown.summon_demonic_tyrant.remains>30
 
 actions.racials+=/berserking,use_off_gcd=1
 actions.racials+=/blood_fury
