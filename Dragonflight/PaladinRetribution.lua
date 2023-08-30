@@ -347,9 +347,9 @@ spec:RegisterAuras( {
         end
     },
     -- Damage taken reduced by $w1%.
-    -- https://wowhead.com/beta/spell=403876
+    -- https://wowhead.com/beta/spell=498
     divine_protection = {
-        id = 403876,
+        id = 498,
         duration = 8,
         max_stack = 1
     },
@@ -1255,7 +1255,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Reduces all damage you take by $s1% for $d.
     divine_protection = {
-        id = 403876,
+        id = 498,
         cast = 0,
         cooldown = function () return 60 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) end,
         gcd = "off",

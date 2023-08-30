@@ -393,7 +393,7 @@ spec:RegisterAuras( {
         id = 384897,
     },
     shield_of_the_righteous = {
-        id = 132403,
+        id = 53600,
         duration = 4.5,
         max_stack = 1,
     },
@@ -951,7 +951,14 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 135949,
 
+        usable = function ()
+            return buff.dispellable_poison.up or buff.dispellable_disease.up or buff.dispellable_magic.up, "requires poison or disease"
+        end,
+
         handler = function ()
+            removeBuff( "dispellable_poison" )
+            removeBuff( "dispellable_disease" )
+            removeBuff( "dispellable_magic" )
         end,
     },
 

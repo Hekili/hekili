@@ -1,21 +1,67 @@
-actions+=/rebuke
-actions+=/avenging_wrath
-actions+=/avenging_crusader
-actions+=/blessing_of_summer
-actions+=/blessing_of_autumn
-actions+=/blessing_of_winter
-actions+=/blessing_of_spring
-actions+=/use_items
-actions+=/call_action_list,name=spenders,strict=1,if=!talent.avenging_crusader|cooldown.avenging_crusader.remains>gcd.max|holy_power.deficit=0
-actions+=/divine_toll
-actions+=/lights_hammer
-actions+=/holy_prism
-actions+=/consecration,if=!consecration.up&target.within10
-actions+=/hammer_of_wrath
-actions+=/judgment
-actions+=/holy_shock
-actions+=/crusader_strike,if=cooldown.holy_shock.remains>gcd.max
+# Ensure we've got the aura active along with both beacons.
+actions.precombat+=/devotion_aura,if=buff.paladin_aura.down
+actions.precombat+=/beacon_of_light,if=buff.beacon_of_light.down
+actions.precombat+=/beacon_of_faith,if=buff.beacon_of_faith.down
+# Blessing of Sacrifice is here as a visual reminder to be casting
+# it on pull, along with Holy Shock (preferrably on the tank).
+actions.precombat+=/blessing_of_sacrifice
+actions.precombat+=/holy_shock
+# It's unlikely we get as far as casting Consecration before combat
+# starts, but it's a good visual reminder to put it up here as this
+# is otherwise very deep down the priority list.
+actions.precombat+=/consecration
 
-actions.spenders+=/shield_of_the_righteous,if=!talent.awakening|active_enemies>1
+actions+=/rebuke
+actions+=/cleanse
+actions+=/call_action_list,name=procs
+actions+=/call_action_list,name=mitigation
+actions+=/call_action_list,name=cooldowns
+actions+=/call_action_list,name=spenders
+actions+=/call_action_list,name=standard
+
+actions.procs+=/judgment,if=buff.awakening_ready.up
+actions.procs+=/judgment,if=buff.infusion_of_light.up
+# Ensure we use Tyr's Deliverance after Hand of Divinity,
+# ...and ensure we following it up Holy Light until the buff ends on the second cast!
+actions.procs+=/tyrs_deliverance,if=buff.hand_of_divinity.up
+actions.procs+=/holy_light,if=buff.hand_of_divinity.up
+# Use Daybreak AFTER Divine Toll and BEFORE its Glimmers expire
+# ...but hold on to them for a few seconds for max value!
+actions.procs+=/daybreak,if=!talent.quickened_invocation&cooldown.divine_toll.remains>40&cooldown.divine_toll.remains<50
+actions.procs+=/daybreak,if=talent.quickened_invocation&cooldown.divine_toll.remains>25&cooldown.divine_toll.remains<30
+
+actions.mitigation+=/divine_protection
+actions.mitigation+=/divine_shield
+actions.mitigation+=/stoneform
+actions.mitigation+=/lay_on_hands
+actions.mitigation+=/aura_mastery
+
+actions.cooldowns+=/avenging_wrath
+actions.cooldowns+=/avenging_crusader
+actions.cooldowns+=/barrier_of_faith
+actions.cooldowns+=/blessing_of_sacrifice
+actions.cooldowns+=/blessing_of_summer
+actions.cooldowns+=/blessing_of_autumn
+actions.cooldowns+=/blessing_of_winter
+actions.cooldowns+=/blessing_of_spring
+actions.cooldowns+=/divine_toll
+# Space out the usage of Tyrs/Hand/Light and Toll/Daybreak combos
+# ...Divine Toll comes first shortly after pull, and this triggers a bit later into the pull.
+actions.cooldowns+=/hand_of_divinity,if=!talent.quickened_invocationcooldown.divine_toll.remains<35
+actions.cooldowns+=/hand_of_divinity,if=talent.quickened_invocationcooldown.divine_toll.remains<25
+
+# For spenders, we're assuming that player health correlates with amount
+# of healing that needs to be done. If we're healthy, spend on offensive
+# abilities. Otherwise, spend on healing abilities.
+actions.spenders+=/shield_of_the_righteous,if=target.within6&health.pct>90
 actions.spenders+=/light_of_dawn,if=talent.awakening&group
 actions.spenders+=/word_of_glory,if=talent.awakening
+
+actions.standard+=/use_items
+actions.standard+=/lights_hammer
+actions.standard+=/holy_prism
+actions.standard+=/consecration,if=!consecration.up&target.within10
+actions.standard+=/hammer_of_wrath
+actions.standard+=/judgment
+actions.standard+=/holy_shock
+actions.standard+=/crusader_strike,if=cooldown.holy_shock.remains>gcd.max
