@@ -54,7 +54,7 @@ actions.cooldowns+=/hand_of_divinity,if=talent.quickened_invocationcooldown.divi
 # of healing that needs to be done. If we're healthy, spend on offensive
 # abilities. Otherwise, spend on healing abilities.
 actions.spenders+=/shield_of_the_righteous,if=target.within6&health.pct>90
-actions.spenders+=/light_of_dawn,if=talent.awakening&group
+actions.spenders+=/light_of_dawn,if=talent.awakening&group&boss
 actions.spenders+=/word_of_glory,if=talent.awakening
 
 actions.standard+=/use_items
