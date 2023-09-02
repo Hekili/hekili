@@ -520,7 +520,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 135872,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "aura_mastery" )
@@ -1378,7 +1378,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 135928,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyDebuff( "player", "forbearance" )
@@ -1532,6 +1532,33 @@ spec:RegisterAbilities( {
                 end
             end
         end,
+    },
+
+
+    stoneform = {
+        id = 20594,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+        toggle = "defensives",
+
+        handler = function ()
+            removeBuff( "dispellable_poison" )
+            removeBuff( "dispellable_disease" )
+            removeBuff( "dispellable_curse" )
+            removeBuff( "dispellable_magic" )
+            removeBuff( "dispellable_bleed" )
+
+            applyBuff( "stoneform" )
+        end,
+
+        auras = {
+            stoneform = {
+                id = 65116,
+                duration = 8,
+                max_stack = 1
+            }
+        }
     },
 
 
