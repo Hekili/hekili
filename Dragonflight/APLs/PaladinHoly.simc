@@ -1,3 +1,4 @@
+actions.precombat+=/shield_of_the_righteous
 # Ensure we've got the aura active along with both beacons.
 actions.precombat+=/devotion_aura,if=buff.paladin_aura.down
 actions.precombat+=/beacon_of_light,if=buff.beacon_of_light.down
@@ -25,10 +26,12 @@ actions.procs+=/judgment,if=buff.infusion_of_light.up
 # ...and ensure we following it up Holy Light until the buff ends on the second cast!
 actions.procs+=/tyrs_deliverance,if=buff.hand_of_divinity.up
 actions.procs+=/holy_light,if=buff.hand_of_divinity.up
-# Use Daybreak AFTER Divine Toll and BEFORE its Glimmers expire
+[# ]Use Daybreak AFTER Divine Toll and BEFORE its Glimmers expire
 # ...but hold on to them for a few seconds for max value!
 actions.procs+=/daybreak,if=!talent.quickened_invocation&cooldown.divine_toll.remains>40&cooldown.divine_toll.remains<50
 actions.procs+=/daybreak,if=talent.quickened_invocation&cooldown.divine_toll.remains>25&cooldown.divine_toll.remains<30
+# If we're taking a beating and lack Holy Power, prioritise getting more if we're one GCD away from a spender
+actions.standard+=/crusader_strike,if=health.pct<50&holy_power<3&holy_power>0
 
 actions.mitigation+=/divine_protection
 actions.mitigation+=/divine_shield
@@ -47,15 +50,16 @@ actions.cooldowns+=/blessing_of_spring
 actions.cooldowns+=/divine_toll
 # Space out the usage of Tyrs/Hand/Light and Toll/Daybreak combos
 # ...Divine Toll comes first shortly after pull, and this triggers a bit later into the pull.
-actions.cooldowns+=/hand_of_divinity,if=!talent.quickened_invocationcooldown.divine_toll.remains<35
-actions.cooldowns+=/hand_of_divinity,if=talent.quickened_invocationcooldown.divine_toll.remains<25
+actions.cooldowns+=/hand_of_divinity,if=!talent.quickened_invocation&cooldown.divine_toll.remains<35
+actions.cooldowns+=/hand_of_divinity,if=talent.quickened_invocation&cooldown.divine_toll.remains<25
 
 # For spenders, we're assuming that player health correlates with amount
 # of healing that needs to be done. If we're healthy, spend on offensive
 # abilities. Otherwise, spend on healing abilities.
-actions.spenders+=/shield_of_the_righteous,if=target.within6&health.pct>90
-actions.spenders+=/light_of_dawn,if=raid_event.exists
-actions.spenders+=/word_of_glory,if=!raid_event.exists
+actions.spenders+=/shield_of_the_righteous,if=target.within6&health.pct>95
+actions.spenders+=/word_of_glory,if=group_members>5
+actions.spenders+=/light_of_dawn,if=group_members<6
+
 
 actions.standard+=/use_items
 actions.standard+=/lights_hammer
