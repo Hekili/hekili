@@ -31,7 +31,7 @@ actions.procs+=/holy_light,if=buff.hand_of_divinity.up
 actions.procs+=/daybreak,if=!talent.quickened_invocation&cooldown.divine_toll.remains>40&cooldown.divine_toll.remains<50
 actions.procs+=/daybreak,if=talent.quickened_invocation&cooldown.divine_toll.remains>25&cooldown.divine_toll.remains<30
 # If we're taking a beating and lack Holy Power, prioritise getting more if we're one GCD away from a spender
-actions.standard+=/crusader_strike,if=health.pct<50&holy_power<3&holy_power>0
+actions.procs+=/crusader_strike,if=health.pct<50&holy_power<3&holy_power>0
 
 actions.mitigation+=/divine_protection
 actions.mitigation+=/divine_shield
