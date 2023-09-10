@@ -1020,7 +1020,7 @@ spec:RegisterVariable( "time_to_combustion", function ()
         val = max( val, ( buff.sun_kings_blessing.max_stack - buff.sun_kings_blessing.stack ) * ( 3 * gcd.max ) )
     end
 
-    if equipped.gladiators_badge and cooldown.gladiators_badge.remains - 20 < variable.time_to_combustion then
+    if equipped.gladiators_badge and cooldown.gladiators_badge.remains - 20 < val then
         val = max( val, cooldown.gladiators_badge.remains )
     end    
 
