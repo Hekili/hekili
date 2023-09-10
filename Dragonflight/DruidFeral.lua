@@ -2589,14 +2589,6 @@ spec:RegisterAbilities( {
     width = "full"
 } ) ]]
 
---[[ spec:RegisterSetting( "filler_regrowth", false, {
-    name = "|T136085:0|t Use Regrowth as Filler",
-    desc = "If checked, the default priority will recommend |T136085:0|t Regrowth when you use the Bloodtalons talent and would otherwise be pooling Energy to retrigger Bloodtalons.",
-    type = "toggle",
-    width = "full",
-} ) ]]
-
-
 spec:RegisterSetting( "use_funnel", false, {
     name = strformat( "%s Funnel", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
     desc = function()
@@ -2661,6 +2653,10 @@ spec:RegisterSetting( "regrowth", true, {
 } )
 
 spec:RegisterVariable( "regrowth", function()
+    return settings.regrowth ~= false
+end )
+
+spec:RegisterStateExpr( "filler_regrowth", function()
     return settings.regrowth ~= false
 end )
 
