@@ -281,7 +281,7 @@ local calculate_multiplier = setfenv( function( spellID )
         mult = mult * 1.08
     end
 
-    if spellID == 703 and ( UA_GetPlayerAuraBySpellID( 392401 ) or UA_GetPlayerAuraBySpellID( 392403 ) ) then
+    if spellID == 703 and talent.improved_garrote.enabled and ( UA_GetPlayerAuraBySpellID( 375939 ) or UA_GetPlayerAuraBySpellID( 347037 ) or UA_GetPlayerAuraBySpellID( 392401 ) or UA_GetPlayerAuraBySpellID( 392403 ) ) then
         mult = mult * 1.5
     end
 
@@ -521,7 +521,7 @@ spec:RegisterStateExpr( "persistent_multiplier", function ()
         end
     end
 
-    if buff.improved_garrote.up and this_action == "garrote" then mult = mult * 1.5 end
+    if this_action == "garrote" and ( buff.improved_garrote.up or talent.improved_garrote.enabled and buff.sepsis_buff.up ) then mult = mult * 1.5 end
 
     return mult
 end )
@@ -1986,7 +1986,7 @@ spec:RegisterAbilities( {
     garrote = {
         id = 703,
         cast = 0,
-        cooldown = function () return buff.improved_garrote.up and 0 or 6 end,
+        cooldown = function () return ( buff.sepsis_buff.up or buff.improved_garrote.up ) and 0 or 6 end,
         gcd = "totem",
         school = "physical",
 
