@@ -1095,7 +1095,7 @@ spec:RegisterAbilities( {
         texture = 237515,
 
         handler = function ()
-            gain( 1, "blood_runes" )
+            gain( 1, "unholy_runes" )
             applyBuff( "blood_tap" )
         end,
     },
