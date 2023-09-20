@@ -1076,7 +1076,7 @@ local UpdateSparkPhase = setfenv( function()
         virtualSparkPhase = true
     end
 
-    if virtualSparkPhase and not prev[1].radiant_spark and not prev[2].radiant_spark and active_dot.debuff.radiant_spark_vulnerability == 0 and dot.radiant_spark.remains < 7 and cooldown.radiant_spark.remains > gcd.max then
+    if virtualSparkPhase and not prev[1].radiant_spark and not prev[2].radiant_spark and active_dot.radiant_spark_vulnerability == 0 and dot.radiant_spark.remains < 7 and cooldown.radiant_spark.remains > gcd.max then
         virtualSparkPhase = false
     end
 end, state )
