@@ -391,11 +391,6 @@ spec:RegisterAuras( {
     seal_of_mercy = {
         id = 384897,
     },
-    shield_of_the_righteous = {
-        id = 132403,
-        duration = 4.5,
-        max_stack = 1,
-    },
     shielding_words = {
         id = 338788,
         duration = 10,
@@ -883,6 +878,9 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 3636846,
         buff = "blessing_of_winter_active",
+        nobuff = function()
+            if solo then return "blessing_of_autumn" end
+        end,
 
         handler = function ()
             removeBuff( "blessing_of_winter_active" )
