@@ -17,131 +17,130 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    -- Paladin
-    avenging_wrath                  = { 81606, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, and activating all the effects learned for Avenging Wrath for 20 sec.
-    blessing_of_protection          = { 81616, 1022  , 1 }, -- Blesses a party or raid member, granting immunity to Physical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
-    blessing_of_sacrifice           = { 81614, 6940  , 1 }, -- Blesses a party or raid member, reducing their damage taken by 30%, but you suffer 100% of damage prevented. Last 12 sec, or until transferred damage would cause you to fall below 20% health.
-    blinding_light                  = { 81598, 115750, 1 }, -- Emits dazzling light in all directions, blinding enemies within 10 yds, causing them to wander disoriented for 6 sec.
-    cavalier                        = { 81605, 230332, 1 }, -- Divine Steed now has 2 charges.
-    crusaders_reprieve              = { 81543, 403042, 1 }, -- Increases the range of your Crusader Strike, Rebuke and auto-attacks by 3 yds. Using Crusader Strike heals you for 2% of your maximum health.
-    divine_steed                    = { 81632, 190784, 1 }, -- Leap atop your Charger for 5.1 sec, increasing movement speed by 100%. Usable while indoors or in combat.
-    divine_toll                     = { 81496, 375576, 1 }, -- Instantly cast Holy Shock on up to 5 targets within 30 yds.
-    fading_light                    = { 81623, 405768, 1 }, -- Blessing of Dawn: Blessing of Dawn increases the damage and healing of your next Holy Power spending ability by an additional 10%. Blessing of Dusk: Blessing of Dusk causes your Holy Power generating abilities to also grant an absorb shield for 10% of damage or healing dealt.
-    faiths_armor                    = { 81495, 406101, 1 }, -- Word of Glory grants 20% bonus armor for 4.5 sec.
-    fist_of_justice                 = { 81602, 234299, 2 }, -- Each Holy Power spent reduces the remaining cooldown on Hammer of Justice by 1 sec.
-    golden_path                     = { 81610, 377128, 1 }, -- Consecration heals you and 5 allies within it for 69 every 0.9 sec.
-    holy_aegis                      = { 81609, 385515, 2 }, -- Armor and critical strike chance increased by 2%.
-    improved_blessing_of_protection = { 81617, 384909, 1 }, -- Reduces the cooldown of Blessing of Protection by 60 sec.
-    incandescence                   = { 81628, 385464, 1 }, -- Each Holy Power you spend has a 5% chance to cause your Consecration to flare up, dealing 566 Holy damage to up to 5 enemies standing within it.
-    judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 265.
-    justification                   = { 81509, 377043, 1 }, -- Judgment's damage is increased by 10%.
-    obduracy                        = { 81630, 385427, 1 }, -- Speed increased by 2% and damage taken from area of effect attacks reduced by 2%.
-    punishment                      = { 93165, 403530, 1 }, -- Successfully interrupting an enemy with Rebuke casts an extra Crusader Strike.
-    rebuke                          = { 81604, 96231 , 1 }, -- Interrupts spellcasting and prevents any spell in that school from being cast for 3 sec.
-    recompense                      = { 81607, 384914, 1 }, -- After your Blessing of Sacrifice ends, 50% of the total damage it diverted is added to your next Judgment as bonus damage, or your next Word of Glory as bonus healing. This effect's bonus damage cannot exceed 30% of your maximum health and its bonus healing cannot exceed 100% of your maximum health.
-    repentance                      = { 81598, 20066 , 1 }, -- Forces an enemy target to meditate, incapacitating them for 1 min. Usable against Humanoids, Demons, Undead, Dragonkin, and Giants.
-    sacrifice_of_the_just           = { 81607, 384820, 1 }, -- Reduces the cooldown of Blessing of Sacrifice by 60 sec.
-    sanctified_plates               = { 93009, 402964, 2 }, -- Armor increased by 10%, Stamina increased by 5% and damage taken from area of effect attacks reduced by 5%.
-    seal_of_alacrity                = { 81619, 385425, 2 }, -- Haste increased by 2% and Judgment cooldown reduced by 0.5 sec.
-    seal_of_mercy                   = { 81611, 384897, 1 }, -- Golden Path strikes the lowest health ally within it an additional time for 100% of its effect.
-    seal_of_might                   = { 81621, 385450, 2 }, -- Mastery increased by 2% and intellect increased by 2%.
-    seal_of_order                   = { 81623, 385129, 1 }, -- Blessing of Dawn: Blessing of Dawn increases the damage and healing of your next Holy Power spending ability by an additional 10%. Blessing of Dusk: Blessing of Dusk increases your armor by 10% and your Holy Power generating abilities cooldown 10% faster.
-    seasoned_warhorse               = { 81631, 376996, 1 }, -- Increases the duration of Divine Steed by 2 sec.
-    strength_of_conviction          = { 81480, 379008, 2 }, -- While in your Consecration, your Shield of the Righteous and Word of Glory have 10% increased damage and healing.
-    touch_of_light                  = { 81628, 385349, 1 }, -- Your spells and abilities have a chance to cause your target to erupt in a blinding light dealing 472 Holy damage or healing an ally for 4,996 health.
-    turn_evil                       = { 93010, 10326 , 1 }, -- The power of the Light compels an Undead, Aberration, or Demon target to flee for up to 40 sec. Damage may break the effect. Lesser creatures have a chance to be destroyed. Only one target can be turned at a time.
-    unbreakable_spirit              = { 81615, 114154, 1 }, -- Reduces the cooldown of your Divine Shield, Divine Protection, and Lay on Hands by 30%.
+    -- Paladin Talents
+    auras_of_swift_vengeance        = { 81601, 385639, 1 }, -- [183435] When any party or raid member within $a1 yds takes more than $s3% of their health in damage in a single hit, each member gains $404996s1% increased damage and healing, decaying over $404996d. This cannot occur within $392503d of the aura being applied.
+    auras_of_the_resolute           = { 81599, 385633, 1 }, -- [317920] Interrupt and Silence effects on party and raid members within $a1 yds are $s1% shorter. $?a339124[Fear effects are also reduced.][]
+    avenging_wrath                  = { 81606, 31884 , 1 }, -- Call upon the Light and become an avatar of retribution, increasing your damage and healing done by $s1% for $31884d, and allowing Hammer of Wrath to be cast on any target.; Combines with other Avenging Wrath abilities, granting all known Avenging Wrath effects while active.
+    blessing_of_freedom             = { 81600, 1044  , 1 }, -- Blesses a party or raid member, granting immunity to movement impairing effects $?s199325[and increasing movement speed by $199325m1% ][]for $d.
+    blessing_of_protection          = { 81616, 1022  , 1 }, -- Blesses a party or raid member, granting immunity to Physical damage and harmful effects for $d.; Cannot be used on a target with Forbearance. Causes Forbearance for $25771d.$?c2[; Shares a cooldown with Blessing of Spellwarding.][]
+    blessing_of_sacrifice           = { 81614, 6940  , 1 }, -- Blesses a party or raid member, reducing their damage taken by $s1%, but you suffer ${100*$e1}% of damage prevented.; Last $d, or until transferred damage would cause you to fall below $s3% health.
+    blinding_light                  = { 81598, 115750, 1 }, -- Emits dazzling light in all directions, blinding enemies within $105421A1 yds, causing them to wander disoriented for $105421d.
+    cavalier                        = { 81605, 230332, 1 }, -- Divine Steed now has ${1+$m1} charges.
+    crusaders_reprieve              = { 81543, 403042, 1 }, -- Increases the range of your $?s53595[Hammer of the Righteous and ]?s204019[][Crusader Strike, ]Rebuke $?!c2[and auto-attacks ][]by $s2 yds. Using $?s53595[Hammer of the Righteous]?s204019[Blessed Hammer][Crusader Strike] heals you for $403044s1% of your maximum health.
+    divine_steed                    = { 81632, 190784, 1 }, -- Leap atop your Charger for $221883d, increasing movement speed by $221883s4%. Usable while indoors or in combat.
+    divine_toll                     = { 81496, 375576, 1 }, -- Instantly cast $?a137029[Holy Shock]?a137028[Avenger's Shield]?a137027[Judgment][Holy Shock, Avenger's Shield, or Judgment] on up to $s1 targets within $A2 yds.$?(a384027|a386738|a387893)[; After casting Divine Toll, you instantly cast ][]$?(a387893&c1)[Holy Shock]?(a386738&c2)[Avenger's Shield]?(a384027&c3)[Judgment][]$?a387893[ every $387895t1 sec. This effect lasts $387895d.][]$?a384027[ every $384029t1 sec. This effect lasts $384029d.][]$?a386738[ every $386730t1 sec. This effect lasts $386730d.][]$?c3[; Divine Toll's Judgment deals $326011s1% increased damage.][]$?c2[; Generates $s5 Holy Power per target hit.][]
+    fading_light                    = { 81623, 405768, 1 }, -- $@spellicon385127$@spellname385127:; Blessing of Dawn increases the damage and healing of your next Holy Power spending ability by an additional $s1%.; $@spellicon385126$@spellname385126:; Blessing of Dusk causes your Holy Power generating abilities to also grant an absorb shield for $s2% of damage or healing dealt.
+    faiths_armor                    = { 81495, 406101, 1 }, -- [379017] $?c2[Shield of the Righteous][Word of Glory] grants $s1% bonus armor for $d.
+    fist_of_justice                 = { 81602, 234299, 2 }, -- Each Holy Power spent reduces the remaining cooldown on Hammer of Justice by $s1 sec.
+    golden_path                     = { 81610, 377128, 1 }, -- Consecration heals you and $s2 allies within it for $<points> every $26573t1 sec.
+    hammer_of_wrath                 = { 81510, 24275 , 1 }, -- Hurls a divine hammer that strikes an enemy for $<damage> $?s403664[Holystrike][Holy] damage. Only usable on enemies that have less than 20% health$?s326730[, or during Avenging Wrath][].; Generates $s2 Holy Power.
+    holy_aegis                      = { 81609, 385515, 2 }, -- Armor and critical strike chance increased by $s2%.
+    improved_blessing_of_protection = { 81617, 384909, 1 }, -- Reduces the cooldown of Blessing of Protection$?c2[ and Blessing of Spellwarding][] by ${-$s1/1000} sec.
+    incandescence                   = { 81628, 385464, 1 }, -- Each Holy Power you spend has a $s1% chance to cause your Consecration to flare up, dealing $385816s1 Holy damage to up to $s1 enemies standing within it.
+    judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next $196941N successful attacks against the target to heal the attacker for $183811s1. $@switch<$s2>[][This effect can only occur once every $s1 sec on each target.]
+    justification                   = { 81509, 377043, 1 }, -- Judgment's damage is increased by $s1%.
+    lay_on_hands                    = { 81597, 633   , 1 }, -- Heals a friendly target for an amount equal to $s2% your maximum health.$?a387791[; Grants the target $387792s1% increased armor for $387792d.][]; Cannot be used on a target with Forbearance. Causes Forbearance for $25771d.
+    obduracy                        = { 81630, 385427, 1 }, -- Speed increased by $s3% and damage taken from area of effect attacks reduced by $s2%.
+    punishment                      = { 93165, 403530, 1 }, -- Successfully interrupting an enemy with Rebuke$?s31935[ or Avenger's Shield][] casts an extra $?s204019[Blessed Hammer]?s53595[Hammer of the Righteous][Crusader Strike].
+    rebuke                          = { 81604, 96231 , 1 }, -- Interrupts spellcasting and prevents any spell in that school from being cast for $d.
+    recompense                      = { 81607, 384914, 1 }, -- After your Blessing of Sacrifice ends, $s1% of the total damage it diverted is added to your next Judgment as bonus damage, or your next Word of Glory as bonus healing.; This effect's bonus damage cannot exceed $s3% of your maximum health and its bonus healing cannot exceed $s4% of your maximum health.
+    repentance                      = { 81598, 20066 , 1 }, -- Forces an enemy target to meditate, incapacitating them for $d.; Usable against Humanoids, Demons, Undead, Dragonkin, and Giants.
+    sacrifice_of_the_just           = { 81607, 384820, 1 }, -- Reduces the cooldown of Blessing of Sacrifice by ${$m1/-1000} sec.
+    sanctified_plates               = { 93009, 402964, 2 }, -- Armor increased by $s3%, Stamina increased by $s1% and damage taken from area of effect attacks reduced by $s2%.
+    seal_of_alacrity                = { 81619, 385425, 2 }, -- Haste increased by $s1% and Judgment cooldown reduced by ${$abs($s2)/1000}.1 sec.
+    seal_of_mercy                   = { 81611, 384897, 1 }, -- Golden Path strikes the lowest health ally within it an additional time for $s1% of its effect.
+    seal_of_might                   = { 81621, 385450, 2 }, -- Mastery increased by $s2% and $?c1[intellect][strength] increased by $s1%.
+    seal_of_order                   = { 81623, 385129, 1 }, -- $@spellicon385127$@spellname385127:; Blessing of Dawn increases the damage and healing of your next Holy Power spending ability by an additional $s3%.; $@spellicon385126$@spellname385126:; Blessing of Dusk increases your armor by $s2% and your Holy Power generating abilities cooldown $s1% faster.
+    seasoned_warhorse               = { 81631, 376996, 1 }, -- Increases the duration of Divine Steed by ${$s1/1000} sec.
+    strength_of_conviction          = { 81480, 379008, 2 }, -- While in your Consecration, your $?s2812[Denounce][Shield of the Righteous] and Word of Glory have $s1% increased damage and healing.
+    touch_of_light                  = { 81628, 385349, 1 }, -- Your spells and abilities have a chance to cause your target to erupt in a blinding light dealing $385354s1 Holy damage or healing an ally for $385352s1 health.
+    turn_evil                       = { 93010, 10326 , 1 }, -- The power of the Light compels an Undead, Aberration, or Demon target to flee for up to $d. Damage may break the effect. Lesser creatures have a chance to be destroyed. Only one target can be turned at a time.
+    unbreakable_spirit              = { 81615, 114154, 1 }, -- Reduces the cooldown of your Divine Shield, $?s184662[Shield of Vengeance, ][]$?s31850[Ardent Defender][Divine Protection], and Lay on Hands by $s1%.
 
-    -- Holy
-    afterimage                      = { 81613, 385414, 1 }, -- After you spend 20 Holy Power, your next Word of Glory echoes onto a nearby ally at 30% effectiveness.
-    aura_mastery                    = { 81567, 31821 , 1 }, -- Empowers your chosen aura for 8 sec.
-    auras_of_swift_vengeance        = { 81601, 385639, 1 }, -- Learn Retribution Aura and Crusader Aura:  Retribution Aura: When any party or raid member within 40 yds takes more than 30% of their health in damage in a single hit, each member gains 5% increased damage and healing, decaying over 30 sec. This cannot occur within 30 sec of the aura being applied.  Crusader Aura: Increases mounted speed by 20% for all party and raid members within 40 yds.
-    auras_of_the_resolute           = { 81599, 385633, 1 }, -- Learn Concentration Aura and Devotion Aura: Concentration Aura: Interrupt and Silence effects on party and raid members within 40 yds are 30% shorter.  Devotion Aura: Party and raid members within 40 yds are bolstered by their devotion, reducing damage taken by 3%.
-    avenging_crusader               = { 81584, 216331, 1 }, -- You become the ultimate crusader of light for 12 sec. Crusader Strike and Judgment cool down 30% faster and heal up to 5 injured allies within 40 yds for 360% of the damage done, split evenly among them. If Avenging Wrath is known, also increases Judgment, Crusader Strike, and auto-attack damage by 30%.
-    avenging_wrath_might            = { 81584, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, and activating all the effects learned for Avenging Wrath for 20 sec.
-    awakening                       = { 81592, 414195, 1 }, -- While in combat, your Holy Power spenders generate 1 stack of Awakening. At 12 stacks of Awakening, your next Judgment deals 30% increased damage, will critically strike, and activates Avenging Wrath for 12 sec.
-    awestruck                       = { 81564, 417855, 1 }, -- Holy Shock, Holy Light, and Flash of Light critical healing increased by 20%.
-    barrier_of_faith                = { 81558, 148039, 1 }, -- Imbue a friendly target with a Barrier of Faith, absorbing 7,567 damage for 12 sec. For the next 24 sec, Barrier of Faith accumulates 50% of effective healing from your Flash of Light, Holy Light, or Holy Shock spells. Every 6 sec, the accumulated healing becomes an absorb shield.
-    beacon_of_faith                 = { 81554, 156910, 1 }, -- Mark a second target as a Beacon, mimicking the effects of Beacon of Light. Your heals will now heal both of your Beacons, but at 30% reduced effectiveness.
+    -- Holy Talents
+    afterimage                      = { 81613, 385414, 1 }, -- After you spend $s3 Holy Power, your next Word of Glory echoes onto a nearby ally at $s1% effectiveness.
+    aura_mastery                    = { 81567, 31821 , 1 }, -- Empowers your chosen aura for $d.$?a344218[; $@spellname465: Damage reduction increased to ${-$s1-$465s2}%.][]$?a344219[; $@spellname32223: Mount speed bonus increased to ${$s2+$32223s4}%.][]$?a344217[; $@spellname183435: Increases healing received by $s3% while its effect is active.][]$?a344220[; $@spellname317920: Affected allies immune to interrupts and silences.][]
+    avenging_crusader               = { 81584, 216331, 1 }, -- You become the ultimate crusader of light for $216331d. Crusader Strike and Judgment cool down $216331s2% faster and heal up to $216331s6 injured allies for $216331s5% of the damage they deal.; If Avenging Wrath is known, also increases Judgment, Crusader Strike, and auto-attack damage by $216331s1%.
+    avenging_wrath_might            = { 81584, 31884 , 1 }, -- Call upon the Light and become an avatar of retribution, increasing your critical strike chance by $s1% for $31884d.; Combines with other Avenging Wrath abilities.
+    awakening                       = { 81592, 414195, 1 }, -- While in combat, your Holy Power spenders generate $s3 stack of Awakening.; At $s1 stacks of Awakening, your next Judgment deals $414193s1% increased damage, will critically strike, and activates $?a394088[Avenging Crusader][Avenging Wrath] for $?a394088[${$s2-$s4}][$s2] sec.
+    awestruck                       = { 81564, 417855, 1 }, -- Holy Shock, Holy Light, and Flash of Light critical healing increased by $s1%.
+    barrier_of_faith                = { 81558, 148039, 1 }, -- Imbue a friendly target with a Barrier of Faith, absorbing $<shield> damage for $395180d. For the next $d, Barrier of Faith accumulates $s2% of effective healing from your Flash of Light, Holy Light, or Holy Shock spells. Every $t2 sec, the accumulated healing becomes an absorb shield.
+    beacon_of_faith                 = { 81554, 156910, 1 }, -- Mark a second target as a Beacon, mimicking the effects of Beacon of Light. Your heals will now heal both of your Beacons, but at $s4% reduced effectiveness.
     beacon_of_the_lightbringer      = { 81568, 197446, 1 }, -- Mastery: Lightbringer now increases your healing based on the target's proximity to either you or your Beacon of Light, whichever is closer.
-    beacon_of_virtue                = { 81554, 200025, 1 }, -- Apply a Beacon of Light to your target and 4 injured allies within 30 yds for 8 sec. All affected allies will be healed for 25% of the amount of your other healing done.
-    blessed_focus                   = { 81563, 414708, 1 }, -- Glimmer of Light's healing and damage is increased by 25%, but it can only affect 1 target at a time.
-    blessing_of_freedom             = { 81600, 1044  , 1 }, -- Blesses a party or raid member, granting immunity to movement impairing effects for 8 sec.
-    blessing_of_summer              = { 81593, 388007, 1 }, -- Bless an ally for 30 sec, causing their attacks to have a 40% chance to deal 30% additional damage as Holy. Blessing of the Seasons: Turns to Autumn after use.
-    boundless_salvation             = { 81587, 392951, 1 }, -- Your Holy Shock, Flash of Light, and Holy Light spells extend the duration of Tyr's Deliverance on yourself when cast on targets affected by Tyr's Deliverance. Holy Shock: Extends 2.0 sec. Flash of Light: Extends 4.0 sec.  Holy Light: Extends 8.0 sec. Tyr's Deliverance can be extended up to a maximum of 40 sec.
-    breaking_dawn                   = { 81583, 387879, 2 }, -- Increases the range of Light of Dawn to 25 yds.
-    commanding_light                = { 81580, 387781, 1 }, -- Beacon of Light transfers an additional 10% of the amount healed.
-    crusaders_might                 = { 81594, 196926, 1 }, -- Crusader Strike reduces the cooldown of Holy Shock by 1.5 sec.
-    daybreak                        = { 81579, 414170, 1 }, -- Absorb your active Glimmer of Lights, triggering their effects at 200% value and granting 600 Mana per Glimmer of Light consumed.
-    divine_favor                    = { 81570, 210294, 1 }, -- The healing of your next Holy Light or Flash of Light is increased by 60%, its cast time is reduced by 30%, and its Mana cost is reduced by 50%.
-    divine_glimpse                  = { 81585, 387805, 1 }, -- Holy Shock and Judgment have a 8% increased critical strike chance.
-    divine_purpose                  = { 93191, 223817, 1 }, -- Holy Power abilities have a 15% chance to make your next Holy Power ability free and deal 15% increased damage and healing.
-    divine_resonance                = { 93180, 386738, 1 }, -- After casting Divine Toll, you instantly cast Holy Shock every 5 sec for 15 sec.
-    divine_revelations              = { 81578, 387808, 1 }, -- While empowered by Infusion of Light, Flash of Light heals for an additional 20%, and Holy Light or Judgment refund 0.5% of your maximum mana.
-    echoing_blessings               = { 93520, 387801, 1 }, -- Blessing of Freedom increases the target's movement speed by 15%. Blessing of Protection and Blessing of Sacrifice reduce the target's damage taken by 15%. These effects linger for 8 sec after the Blessing ends.
-    empyrean_legacy                 = { 81591, 387170, 1 }, -- Judgment empowers your next Word of Glory to automatically activate Light of Dawn with 25% increased effectiveness. This effect can only occur every 20 sec.
-    glimmer_of_light                = { 81569, 287269, 1 }, -- Holy Shock leaves a Glimmer of Light on the target for 30 sec. When you Holy Shock, targets with Glimmer of Light are damaged for 2,054 or healed for 2,485, split evenly among them. Glimmer of Light's total healing and damage is increased by 6% for each target affected. You may have Glimmer of Light on up to 3 targets. When Glimmer of Light is dispelled, its effect is activated at 100% value.
-    glistening_radiance             = { 81576, 414139, 1 }, -- Spending Holy Power has a 25% chance to trigger Glimmer of Light's healing and damage.
-    glorious_dawn                   = { 93521, 414065, 1 }, -- Holy Shock has a 10% chance to refund a charge when cast, increasing by 1.5% for each Glimmer of Light you have active. Glimmer of Light's healing and damage is increased by 10%.
-    greater_judgment                = { 92220, 231644, 1 }, -- Judgment deems the target unworthy, preventing the next 3,027 damage dealt by the target.
-    hammer_of_wrath                 = { 81510, 24275 , 1 }, -- Hurls a divine hammer that strikes an enemy for 2,979 Holy damage. Only usable on enemies that have less than 20% health. Generates 1 Holy Power.
-    hand_of_divinity                = { 81570, 414273, 1 }, -- Call upon the Light to empower your spells, causing your next 2 Holy Lights to heal 80% more, cost 50% less mana, and be instant cast.
-    holy_infusion                   = { 81564, 414214, 1 }, -- Crusader Strike generates 1 additional Holy Power and deals 25% more damage.
-    holy_prism                      = { 81577, 114165, 1 }, -- Fires a beam of light that scatters to strike a clump of targets. If the beam is aimed at an enemy target, it deals 2,293 Holy damage and radiates 2,675 healing to 5 allies within 30 yds. If the beam is aimed at a friendly target, it heals for 5,351 and radiates 1,376 Holy damage to 5 enemies within 30 yds.
-    holy_shock                      = { 81555, 20473 , 1 }, -- Triggers a burst of Light on the target, dealing 935 Holy damage to an enemy, or 2,324 healing to an ally. Generates 1 Holy Power.
-    illumination                    = { 81563, 414378, 1 }, -- Glimmer of Light can affect 5 additional targets.
-    imbued_infusions                = { 81557, 392961, 1 }, -- Consuming Infusion of Light reduces the cooldown of Holy Shock by 2.0 sec.
+    beacon_of_virtue                = { 81554, 200025, 1 }, -- Apply a Beacon of Light to your target and $s2 injured allies within $A2 yds for $d.; All affected allies will be healed for $53651s1% of the amount of your other healing done.$?a231642[ Your Flash of Light and Holy Light on these targets will also grant $231642s1 Holy Power.][]
+    blessed_focus                   = { 81563, 414708, 1 }, -- Glimmer of Light's healing and damage is increased by $s2%, but it can only affect ${$s1+3} target at a time.
+    blessing_of_summer              = { 81593, 388007, 1 }, -- Bless an ally for $d, causing their attacks to have a $h% chance to deal $s1% additional damage as Holy.; Blessing of the Seasons: Turns to Autumn after use.
+    boundless_salvation             = { 81587, 392951, 1 }, -- Your Holy Shock, Flash of Light, and Holy Light spells extend the duration of Tyr's Deliverance on yourself when cast on targets affected by Tyr's Deliverance.; $@spellicon20473$@spellname20473: Extends ${$s4/1000}.1 sec.; $@spellicon19750$@spellname19750: Extends ${$s1/1000}.1 sec.; $@spellicon82326 $@spellname82326: Extends ${$s2/1000}.1 sec.; Tyr's Deliverance can be extended up to a maximum of $s3 sec.
+    breaking_dawn                   = { 81583, 387879, 2 }, -- Increases the range of Light of Dawn to $s1 yds.
+    commanding_light                = { 81580, 387781, 1 }, -- Beacon of Light transfers an additional $s1% of the amount healed.
+    crusaders_might                 = { 81594, 196926, 1 }, -- Crusader Strike reduces the cooldown of Holy Shock by ${$m1/-1000}.1 sec.
+    daybreak                        = { 81579, 414170, 1 }, -- Absorb your active Glimmer of Lights, triggering their effects at $s3% value and $?a415244[restoring ${$415246s3*$415244s1} Mana over $415246d, but your healing and damage is decreased by $415246s1%][granting $414176s1 Mana per Glimmer of Light consumed].
+    divine_favor                    = { 81570, 210294, 1 }, -- The healing of your next Holy Light or Flash of Light is increased by $m1%, its cast time is reduced by $s2%, and its Mana cost is reduced by $s3%.
+    divine_glimpse                  = { 81585, 387805, 1 }, -- Holy Shock and Judgment have a $s1% increased critical strike chance.
+    divine_purpose                  = { 93191, 223817, 1 }, -- Holy Power abilities have a $s1% chance to make your next Holy Power ability free and deal $223819s2% increased damage and healing.
+    divine_resonance                = { 93180, 386738, 1 }, -- [386732] After casting Divine Toll, you instantly cast $?c2[Avenger's Shield]?c1[Holy Shock][Judgment] every $386730t1 sec for $386730s2 sec.
+    divine_revelations              = { 81578, 387808, 1 }, -- While empowered by Infusion of Light, Flash of Light heals for an additional $s2%, and Holy Light or Judgment refund ${$s1/1000}.1% of your maximum mana.
+    echoing_blessings               = { 93520, 387801, 1 }, -- Blessing of Freedom increases the target's movement speed by $s3%. $?s204018[Blessing of Spellwarding][Blessing of Protection] and Blessing of Sacrifice reduce the target's damage taken by $s4%. These effects linger for $339324d after the Blessing ends.
+    empyrean_legacy                 = { 81591, 387170, 1 }, -- Judgment empowers your next $?c3[Single target Holy Power ability to automatically activate Divine Storm][Word of Glory to automatically activate Light of Dawn] with $s2% increased effectiveness.; This effect can only occur every $387441d.
+    glimmer_of_light                = { 81569, 287269, 1 }, -- Holy Shock leaves a Glimmer of Light on the target for $287280d. When you Holy Shock, targets with Glimmer of Light are damaged for $325984s1 or healed for $325983s1, split evenly among them. Glimmer of Light's total healing and damage is increased by $s3% for each target affected.; You may have Glimmer of Light on up to $287269s1 $?a414708[target][targets].; When Glimmer of Light is dispelled, its effect is activated at $s4% value.
+    glistening_radiance             = { 81576, 414139, 1 }, -- Spending Holy Power has a $s1% chance to trigger Glimmer of Light's healing and damage.
+    glorious_dawn                   = { 93521, 414065, 1 }, -- Holy Shock has a $s1% chance to refund a charge when cast, increasing by ${$s2/1000}.1% for each Glimmer of Light you have active.; Glimmer of Light's healing and damage is increased by $s3%.
+    greater_judgment                = { 92220, 231644, 1 }, -- Judgment deems the target unworthy, preventing the next $<shield> damage dealt by the target.; 
+    hand_of_divinity                = { 81570, 414273, 1 }, -- Call upon the Light to empower your spells, causing your next $n Holy Lights to heal $s1% more, cost $s3% less mana, and be instant cast.
+    holy_infusion                   = { 81564, 414214, 1 }, -- Crusader Strike generates $s1 additional Holy Power and deals $s2% more damage.
+    holy_prism                      = { 81577, 114165, 1 }, -- Fires a beam of light that scatters to strike a clump of targets. ; If the beam is aimed at an enemy target, it deals $114852s1 Holy damage and radiates ${$114852s2*$<healmod>} healing to 5 allies within $114852A2 yds.; If the beam is aimed at a friendly target, it heals for ${$114871s1*$<healmod>} and radiates $114871s2 Holy damage to 5 enemies within $114871A2 yds.
+    holy_shock                      = { 81555, 20473 , 1 }, -- Triggers a burst of Light on the target, dealing $25912s1 Holy damage to an enemy, or $25914s1 healing to an ally.$?s272906[  Has an additional $272906s1% critical strike chance.][]; Generates $s2 Holy Power.; 
+    illumination                    = { 81563, 414378, 1 }, -- Glimmer of Light can affect $s1 additional targets.
+    imbued_infusions                = { 81557, 392961, 1 }, -- Consuming Infusion of Light reduces the cooldown of Holy Shock by ${$s1/-1000}.1 sec.
     improved_cleanse                = { 81508, 393024, 1 }, -- Cleanse additionally removes all Disease and Poison effects.
-    inflorescence_of_the_sunwell    = { 81591, 392907, 1 }, -- Infusion of Light has 1 additional charge, increases Greater Judgment's effect by an additional 50%, reduces the cost of Flash of Light by an additional 30%, and causes every 3 casts of Holy Light to generate an additional Holy Power.
-    lay_on_hands                    = { 81597, 633   , 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
-    light_of_dawn                   = { 81565, 85222 , 1 }, -- Unleashes a wave of Holy energy, healing up to 5 injured allies within a 15 yd frontal cone for 1,262.
-    light_of_the_martyr             = { 81561, 183998, 1 }, -- Sacrifice a portion of your own health to instantly heal an ally for 3,497. You take damage equal to 60% of the healing done. Does not cause your Beacon of Light to be healed. Cannot be cast on yourself.
-    lightforged_blessing            = { 93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 4 nearby allies for 1% of maximum health.
-    lights_conviction               = { 93927, 414073, 1 }, -- Holy Shock now has 2 charges.
-    lights_hammer                   = { 81577, 114158, 1 }, -- Hurls a Light-infused hammer to the ground, dealing 313 Holy damage to nearby enemies and healing up to 6 nearby allies for 605, every 2 sec for 14 sec.
-    lights_protection               = { 93522, 416799, 1 }, -- Your allies with Glimmer of Light take 16% reduced damage, split evenly among them.
-    maraads_dying_breath            = { 81559, 388018, 1 }, -- Light of Dawn increases your next Light of the Martyr by 10% for each ally healed, and allows that Light of the Martyr to heal through Beacon of Light. Light of the Martyr damages you over 5 sec instead of instantly.
-    merciful_auras                  = { 81593, 183415, 1 }, -- Your auras restore 272 health to 3 injured allies within 20 yds every 2 sec. While Aura Mastery is active, heals all allies within 40 yds and healing is increased by 50%.
-    moment_of_compassion            = { 81571, 387786, 1 }, -- Your Flash of Light heals for an additional 15% when cast on a target affected by your Beacon of Light.
-    of_dusk_and_dawn                = { 93357, 409439, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 20% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 5% For 10 sec.
-    overflowing_light               = { 81556, 414127, 1 }, -- 50% of Glimmer of Light's overhealing is converted into an absorb shield. The shield amount cannot exceed 15% of your max health.
-    power_of_the_silver_hand        = { 81589, 200474, 1 }, -- Holy Light, Flash of Light, and Judgment have a chance to grant you Power of the Silver Hand, increasing the healing of your next Holy Shock by 10% of all damage and effective healing you do within the next 10 sec, up to a maximum of 33,150.
-    protection_of_tyr               = { 81566, 200430, 1 }, -- Aura Mastery also increases all healing received by party or raid members within 40 yards by 10%.
-    quickened_invocation            = { 93180, 379391, 1 }, -- Divine Toll's cooldown is reduced by 15 sec.
-    reclamation                     = { 81558, 415364, 1 }, -- Holy Shock and Crusader Strike refund up to 15% of their Mana cost and deal up to 50% more healing or damage, based on the target's missing health.
-    relentless_inquisitor           = { 81590, 383388, 1 }, -- Spending Holy Power grants you 1% haste per finisher for 12 sec, stacking up to 5 times.
-    resplendent_light               = { 81571, 392902, 1 }, -- Holy Light heals up to 5 targets within 12 yds for 8% of its healing.
-    righteous_judgment              = { 93523, 414113, 1 }, -- Judgment has a 50% chance to cast Consecration at the target's location. The limit on Consecration does not apply to this effect.
-    rising_sunlight                 = { 81595, 414203, 1 }, -- After casting Daybreak, your next 3 Holy Shocks cast 2 additional times.
-    sanctified_wrath                = { 81592, 53376 , 1 }, -- Call upon the Light and become an avatar of retribution for 25 sec, reducing Holy Shock's cooldown by 20%. Combines with Avenging Wrath.
-    saved_by_the_light              = { 81574, 157047, 1 }, -- When an ally with your Beacon of Light is damaged below 30% health, they absorb the next 9,081 damage. You cannot shield the same person this way twice within 1 min.
-    seal_of_the_crusader            = { 93683, 416770, 2 }, -- Your auto attacks heal a nearby ally for 157.
-    shining_righteousness           = { 81562, 414443, 1 }, -- Shield of the Righteous deals 2,445 damage to its first target struck. Every 5 Shields of the Righteous make your next Word of Glory or Light of Dawn cost no Holy Power.
-    tirions_devotion                = { 81573, 414720, 1 }, -- Lay on Hands' cooldown is reduced by 1.5 sec per Holy Power spent and restores 5% of your Mana.
-    tower_of_radiance               = { 81586, 231642, 1 }, -- Casting Flash of Light or Holy Light on your Beacon of Light grants 1 Holy Power. Casting Flash of Light or Holy Light on targets without Beacon of Light has a chance to grant 1 Holy Power, increasing based on their current health threshold.
-    tyrs_deliverance                = { 81588, 200652, 1 }, -- Releases the Light within yourself, healing 5 injured allies instantly and an injured ally every 0.9 sec for 20 sec within 40 yds for 1,116. Allies healed also receive 25% increased healing from your Holy Light, Flash of Light, and Holy Shock spells for 12 sec.
-    unending_light                  = { 81575, 387998, 1 }, -- Each Holy Power spent on Light of Dawn increases the healing of your next Word of Glory by 5%, up to a maximum of 45%.
-    untempered_dedication           = { 81560, 387814, 1 }, -- Light of the Martyr's damage and healing is increased by 10% each time it is cast. This effect can stack up to 5 times and lasts for 15 sec.
-    unwavering_spirit               = { 81566, 392911, 1 }, -- The cooldown of Aura Mastery is reduced by 30 sec.
-    vanguards_momentum              = { 93176, 416869, 1 }, -- Hammer of Wrath has 1 extra charge and on enemies below 20% health generates 1 additional Holy Power.
-    veneration                      = { 81581, 392938, 1 }, -- Hammer of Wrath heals up to 5 injured allies for 200% of the damage done, split evenly among them. Flash of Light, Holy Light, and Judgment critical strikes reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.
+    inflorescence_of_the_sunwell    = { 81591, 392907, 1 }, -- Infusion of Light has $s1 additional charge, increases Greater Judgment's effect by an additional $s4%, reduces the cost of Flash of Light by an additional $s2%, and causes every $s3 casts of Holy Light to generate an additional Holy Power.
+    light_of_dawn                   = { 81565, 85222 , 1 }, -- Unleashes a wave of Holy energy, healing up to $s1 injured allies within a $?a337812[$a3]?a387879[$a3][$a1] yd frontal cone for $225311s1.
+    light_of_the_martyr             = { 81561, 183998, 1 }, -- Description not found.
+    lightforged_blessing            = { 93168, 406468, 1 }, -- $?s2812[Denounce][Shield of the Righteous] heals you and up to $s3 nearby allies for $53600s2% of maximum health.
+    lights_conviction               = { 93927, 414073, 1 }, -- Holy Shock now has ${$s1+1} charges.
+    lights_hammer                   = { 81577, 114158, 1 }, -- Hurls a Light-infused hammer to the ground, dealing $114919s1 Holy damage to nearby enemies and healing up to 6 nearby allies for $119952s1, every $114918t1 sec for ${$122773d-1.5} sec.
+    lights_protection               = { 93522, 416799, 1 }, -- Your allies with Glimmer of Light take $s1% reduced damage, split evenly among them.
+    maraads_dying_breath            = { 81559, 388018, 1 }, -- Light of Dawn increases your next Light of the Martyr by $388019s1% for each ally healed, and allows that Light of the Martyr to heal through Beacon of Light.; Light of the Martyr damages you over $196917d instead of instantly.
+    merciful_auras                  = { 81593, 183415, 1 }, -- Your auras restore $210291s1 health to $210291s2 injured allies within $210291A1 yds every $t1 sec.; While Aura Mastery is active, heals all allies within ${$210291A1+$31821s5} yds and healing is increased by $31821s6%.
+    moment_of_compassion            = { 81571, 387786, 1 }, -- Your Flash of Light heals for an additional $s1% when cast on a target affected by your Beacon of Light.
+    of_dusk_and_dawn                = { 93357, 409439, 1 }, -- [385127] Your next Holy Power spending ability deals $s1% additional increased damage and healing. This effect stacks.
+    overflowing_light               = { 81556, 414127, 1 }, -- $s1% of Glimmer of Light's overhealing is converted into an absorb shield. The shield amount cannot exceed $s2% of your max health.
+    power_of_the_silver_hand        = { 81589, 200474, 1 }, -- Holy Light, Flash of Light, and Judgment have a chance to grant you Power of the Silver Hand, increasing the healing of your next Holy Shock by $200656s1% of all damage and effective healing you do within the next $200656d, up to a maximum of ${$MHP*$s1/100}. 
+    protection_of_tyr               = { 81566, 200430, 1 }, -- Aura Mastery also increases all healing received by party or raid members within $211210A1 yards by $s1%.
+    quickened_invocation            = { 93180, 379391, 1 }, -- Divine Toll's cooldown is reduced by ${-$s1/1000} sec.
+    reclamation                     = { 81558, 415364, 1 }, -- Holy Shock and Crusader Strike refund up to $s1% of their Mana cost and deal up to $s2% more healing or damage, based on the target's missing health.
+    relentless_inquisitor           = { 81590, 383388, 1 }, -- Spending Holy Power grants you $s1% haste per finisher for $383389d, stacking up to ${$s2+$s3} times.
+    resplendent_light               = { 81571, 392902, 1 }, -- Holy Light heals up to $s2 targets within $392903a1 yds for $s1% of its healing.
+    righteous_judgment              = { 93523, 414113, 1 }, -- Judgment has a $s1% chance to cast Consecration at the target's location.; The limit on Consecration does not apply to this effect.
+    rising_sunlight                 = { 81595, 414203, 1 }, -- After casting Daybreak, your next $414204u Holy Shocks cast $414204s1 additional times.
+    sanctified_wrath                = { 81592, 53376 , 1 }, -- Call upon the Light and become an avatar of retribution for $<time> sec, $?c1[reducing Holy Shock's cooldown by $s2%.]?c2[causing Judgment to generate $s3 additional Holy Power.]?c3[each Holy Power spent causing you to explode with Holy light for $326731s1 damage to nearby enemies.][.]; Combines with Avenging Wrath.; 
+    saved_by_the_light              = { 81574, 157047, 1 }, -- When an ally with your Beacon of Light is damaged below $s1% health, they absorb the next $<shield> damage.; You cannot shield the same person this way twice within $157131d.
+    seal_of_the_crusader            = { 93683, 416770, 2 }, -- Your auto attacks heal a nearby ally for ${$385723s1*(1+$s2/100)}.
+    shining_righteousness           = { 81562, 414443, 1 }, -- $?s2812[Denounce][Shield of the Righteous] deals $414448s1 damage to its first target struck.; Every $s1 $?s2812[Denounces][Shields of the Righteous] make your next Word of Glory or Light of Dawn cost no Holy Power.
+    tirions_devotion                = { 81573, 414720, 1 }, -- Lay on Hands' cooldown is reduced by ${$s1/1000}.1 sec per Holy Power spent and restores $415299s1% of your Mana.
+    tower_of_radiance               = { 81586, 231642, 1 }, -- Casting Flash of Light or Holy Light grants $s1 Holy Power.
+    tyrs_deliverance                = { 81588, 200652, 1 }, -- Releases the Light within yourself, healing $s2 injured allies instantly and an injured ally every $t1 sec for $d within $200653A1 yds for $200654s1.; Allies healed also receive $200654s2% increased healing from your Holy Light, Flash of Light, and Holy Shock spells for $200654d.
+    unending_light                  = { 81575, 387998, 1 }, -- Each Holy Power spent on Light of Dawn increases the healing of your next Word of Glory by $s1%, up to a maximum of $s2%.
+    untempered_dedication           = { 81560, 387814, 1 }, -- Light of the Martyr's damage and healing is increased by $387815s1% each time it is cast. This effect can stack up to $387815u times and lasts for $387815d.
+    unwavering_spirit               = { 81566, 392911, 1 }, -- The cooldown of Aura Mastery is reduced by ${$s1/-1000} sec.
+    vanguards_momentum              = { 93176, 416869, 1 }, -- Hammer of Wrath has $s1 extra charge and on enemies below $s2% health generates ${$403081s1} additional Holy Power.  
+    veneration                      = { 81581, 392938, 1 }, -- Hammer of Wrath heals up to $s2 injured allies for $414411s2% of the damage done, split evenly among them.; Flash of Light, Holy Light, and Judgment critical strikes reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.
 } )
-
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    avenging_light          = 82  , -- (199441) When you heal with Holy Light, all enemies within 10 yards of the target take Holy damage equal to 30% of the amount healed.
+    avenging_light          = 82  , -- (199441) When you heal with Holy Light, all enemies within $199443A1 yards of the target take Holy damage equal to $m1% of the amount healed.
     blessed_hands           = 88  , -- (199454) Your Blessing of Protection and Blessing of Freedom spells now have 1 additional charge.
-    cleanse_the_weak        = 642 , -- (199330) When you Cleanse an ally, 1 ally within 40 yds is dispelled of the same effects, but the cooldown of Cleanse is increased by 4 sec. Healing allies with your Flash of Light or Holy Light will cleanse all Diseases and Poisons from the target.
-    darkest_before_the_dawn = 86  , -- (210378) Every 5 sec the healing done by your next Light of Dawn is increased by 20%. Stacks up to 5 times.
-    denounce                = 5618, -- (2812) Casts down the enemy with a bolt of Holy Light, causing 2,830 Holy damage and preventing the target from causing critical effects for the next 8 sec.
-    divine_plea             = 5614, -- (415244) After casting Daybreak, you restore 4,800 Mana over 15 sec, but your healing and damage is decreased by 30%. Daybreak no longer restores Mana from each Glimmer consumed.
-    divine_vision           = 640 , -- (199324) Increases the range of your Aura by 30 yards and reduces the cooldown of Aura Mastery by 60 sec.
+    cleanse_the_weak        = 642 , -- (199330) When you Cleanse an ally, $s2 ally within $s3 yds $?$s2>$s5[are][is] dispelled of the same effects, but the cooldown of Cleanse is increased by ${$s4/1000} sec.; Healing allies with your Flash of Light or Holy Light will cleanse all Diseases and Poisons from the target.
+    darkest_before_the_dawn = 86  , -- (210378) Every $t1 sec the healing done by your next Light of Dawn is increased by $m1%. Stacks up to $210391u times.
+    denounce                = 5618, -- (2812  ) Casts down the enemy with a bolt of Holy Light, causing $s1 Holy damage and preventing the target from causing critical effects for the next $d.
+    divine_plea             = 5614, -- (415244) After casting Daybreak, you restore ${$415246s3*$s1} Mana over $415246d, but your healing and damage is decreased by $415246s1%.; Daybreak no longer restores Mana from each Glimmer consumed.
+    divine_vision           = 640 , -- (199324) Increases the range of your Aura by $m1 yards and reduces the cooldown of Aura Mastery by ${$s3/-1000} sec.
     hallowed_ground         = 3618, -- (216868) Your Consecration clears and suppresses all snare effects on allies within its area of effect.
-    judgments_of_the_pure   = 5421, -- (355858) Casting Judgment on an enemy cleanses 1 Poison, Disease, and Magic effect they have caused on you.
-    searing_glare           = 5583, -- (410126) Call upon the light to blind your enemies in a 25 yd cone, causing enemies to miss their spells and attacks for 4 sec.
-    spreading_the_word      = 87  , -- (199456) Your allies affected by your Aura gain an effect after you cast Blessing of Protection or Blessing of Freedom.  Blessing of Protection Physical damage reduced by 30% for 6 sec.  Blessing of Freedom Cleared of all movement impairing effects.
-    ultimate_sacrifice      = 85  , -- (199452) Your Blessing of Sacrifice now transfers 100% of all damage to you into a damage over time effect, but lasts 6 sec and no longer cancels when you are below 20% health.
+    judgments_of_the_pure   = 5421, -- (355858) Casting Judgment on an enemy cleanses $s1 Poison, Disease, and Magic effect they have caused on you.
+    searing_glare           = 5583, -- (410126) Call upon the light to blind your enemies in a $410201a1 yd cone, causing enemies to miss their spells and attacks for $410201d.
+    spreading_the_word      = 87  , -- (199456) Your allies affected by your Aura gain an effect after you cast Blessing of Protection or Blessing of Freedom.; $@spellicon1022 $@spellname1022; Physical damage reduced by $199507m1% for $199507d.; $@spellicon1044 $@spellname1044; Cleared of all movement impairing effects.
+    ultimate_sacrifice      = 85  , -- (199452) Your Blessing of Sacrifice now transfers $m2% of all damage to you into a damage over time effect, but lasts $199448d and no longer cancels when you are below $6940s3% health.
 } )
 
 
@@ -391,11 +390,6 @@ spec:RegisterAuras( {
     },
     seal_of_mercy = {
         id = 384897,
-    },
-    shield_of_the_righteous = {
-        id = 132403,
-        duration = 4.5,
-        max_stack = 1,
     },
     shielding_words = {
         id = 338788,
@@ -884,6 +878,9 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 3636846,
         buff = "blessing_of_winter_active",
+        nobuff = function()
+            if solo then return "blessing_of_autumn" end
+        end,
 
         handler = function ()
             removeBuff( "blessing_of_winter_active" )
@@ -1134,6 +1131,7 @@ spec:RegisterAbilities( {
             if talent.boundless_salvation.enabled and buff.tyrs_deliverance.up then
                 buff.tyrs_deliverance.expires = buff.tyrs_deliverance.expires + 4
             end
+            if talent.tower_of_radiance.enabled then gain( 1, "holy_power" ) end
         end,
     },
 
@@ -1255,6 +1253,7 @@ spec:RegisterAbilities( {
             if talent.boundless_salvation.enabled and buff.tyrs_deliverance.up then
                 buff.tyrs_deliverance.expires = buff.tyrs_deliverance.expires + 8
             end
+            if talent.tower_of_radiance.enabled then gain( 1, "holy_power" ) end
         end,
     },
 

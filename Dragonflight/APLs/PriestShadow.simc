@@ -2,8 +2,8 @@ actions.precombat+=/shadowform,if=!buff.shadowform.up
 actions.precombat+=/arcane_torrent
 actions.precombat+=/variable,name=mind_sear_cutoff,op=set,value=2
 actions.precombat+=/variable,name=pool_amount,op=set,value=60
-actions.precombat+=/shadow_crash,if=raid_event.adds.in>=25&spell_targets.shadow_crash<=8&boss&(spell_targets.shadow_crash>1|talent.mental_decay)
-actions.precombat+=/vampiric_touch,if=refreshable&(!talent.shadow_crash.enabled|spell_targets.shadow_crash>8|spell_targets.shadow_crash=1&!talent.mental_decay|!boss)
+actions.precombat+=/shadow_crash,if=raid_event.adds.in>=25&spell_targets.shadow_crash<=8&!boss
+actions.precombat+=/vampiric_touch,if=refreshable&!action.shadow_crash.in_flight&(!talent.shadow_crash.enabled|raid_event.adds.in<25|spell_targets.shadow_crash>8|!boss)
 
 actions+=/silence
 actions+=/variable,name=holding_crash,op=set,value=talent.shadow_crash&!action.shadow_crash.disabled&raid_event.adds.in<15

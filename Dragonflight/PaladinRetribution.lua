@@ -349,9 +349,10 @@ spec:RegisterAuras( {
     -- Damage taken reduced by $w1%.
     -- https://wowhead.com/beta/spell=403876
     divine_protection = {
-        id = 403876,
+        id = 498,
         duration = 8,
-        max_stack = 1
+        max_stack = 1,
+        copy = 403876
     },
     divine_purpose = {
         id = 408458,
@@ -1255,7 +1256,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Reduces all damage you take by $s1% for $d.
     divine_protection = {
-        id = 403876,
+        id = function() return state.spec.retribution and 403876 or 498 end,
         cast = 0,
         cooldown = function () return 60 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) end,
         gcd = "off",
@@ -1270,6 +1271,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "divine_protection" )
         end,
+
+        copy = { 403876, 498 },
     },
 
     -- Grants immunity to all damage and harmful effects for $d. $?a204077[Taunts all targets within 15 yd.][]    Cannot be used if you have Forbearance. Causes Forbearance for $25771d.

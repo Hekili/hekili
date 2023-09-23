@@ -2515,6 +2515,22 @@ all:RegisterAbilities( {
         cooldown = 120,
         gcd = "off",
 
+        toggle = "defensives",
+
+        buff = function()
+            local aura, remains = "dispellable_poison", buff.dispellable_poison.remains
+
+            for _, effect in pairs( { "dispellable_disease", "dispellable_curse", "dispellable_magic", "dispellable_bleed" } ) do
+                local rem = buff[ effect ].remains
+                if rem > remains then
+                    aura = effect
+                    remains = rem
+                end
+            end
+
+            return aura
+        end,
+
         handler = function ()
             removeBuff( "dispellable_poison" )
             removeBuff( "dispellable_disease" )

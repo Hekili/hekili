@@ -1011,11 +1011,10 @@ do
 
         local now = GetTime()
         local spec = state.spec.id and rawget( Hekili.DB.profile.specs, state.spec.id )
-        local nodmg = spec and ( spec.damage == false ) or false
         local grace = spec and spec.damageExpiration or 6
 
         for whom, when in pairs( targets ) do
-            if nodmg or now - when > grace then
+            if now - when > grace then
                 ns.eliminateUnit( whom )
             end
         end

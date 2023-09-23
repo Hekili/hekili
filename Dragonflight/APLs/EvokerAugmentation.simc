@@ -11,7 +11,6 @@ actions.precombat+=/living_flame
 actions+=/quell
 actions+=/unravel
 actions+=/cauterizing_flame
-actions+=/living_flame,if=time<cast_time*2
 actions+=/hover,if=moving&buff.hover.down&buff.breath_of_eons.down
 actions+=/prescience
 actions+=/ebon_might,if=refreshable
