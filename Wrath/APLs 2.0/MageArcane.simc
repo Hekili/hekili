@@ -1,0 +1,34 @@
+# Mage: Arcane
+# https://www.icy-veins.com/wotlk-classic/arcane-mage-dps-pve-rotation-cooldowns-abilities
+# September 2023
+
+## Precombat
+actions.precombat+=/arcane_brilliance,if=raid&buff.arcane_brilliance.down
+actions.precombat+=/arcane_intellect,if=!raid&buff.arcane_brilliance.down&buff.arcane_intellect.down
+actions.precombat+=/molten_armor,if=buff.unique_armor.down
+
+## Default
+actions+=/counterspell
+actions+=/spellsteal
+actions+=/remove_curse
+## Cooldowns
+actions+=/fire_ward,if=talent.incanters_absorption&buff.incanters_absorption.down&action.global_thermal_sapper_charge.ready
+actions+=/global_thermal_sapper_charge,if=talent.incanters_absorption&buff.incanters_absorption.down&buff.fire_ward.up
+actions+=/potion
+actions+=/arcane_power
+actions+=/icy_veins
+actions+=/mirror_image
+# Use any trinkets that aren't otherwise specified.
+actions+=/use_items
+actions+=/call_action_list,name=aoe,if=active_enemies>2
+actions+=/arcane_missiles,if=debuff.arcane_blast.stack=4&(buff.missile_barrage.up|prev_gcd.6.arcane_blast)
+actions+=/arcane_barrage,if=debuff.arcane_blast.stack=4&buff.missile_barrage.down&moving
+actions+=/best_mana_potion
+actions+=/replenish_mana,if=mana.pct<70
+actions+=/evocation,if=mana.pct<30
+actions+=/arcane_blast
+
+actions.aoe+=/arcane_explosion,if=target.within10
+actions.aoe+=/presence_of_mind
+actions.aoe+=/blizzard
+actions.aoe+=/flamestrike

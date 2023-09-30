@@ -139,15 +139,15 @@ state.player = {
 }
 state.prev = {
     meta = 'castsAll',
-    history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
+    history = { "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.prev_gcd = {
     meta = 'castsOn',
-    history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
+    history = { "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.prev_off_gcd = {
     meta = 'castsOff',
-    history = { "no_action", "no_action", "no_action", "no_action", "no_action" }
+    history = { "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action", "no_action" }
 }
 state.predictions = {}
 state.predictionsOff = {}
@@ -588,10 +588,15 @@ state.FindLowHpPlayerWithoutBuffByID = ns.FindLowHpPlayerWithoutBuffByID
 -- state.GetActionInfo = GetActionInfo
 state.GetActiveLossOfControlData = C_LossOfControl.GetActiveLossOfControlData
 state.GetActiveLossOfControlDataCount = C_LossOfControl.GetActiveLossOfControlDataCount
---[[ state.GetNumGroupMembers = GetNumGroupMembers
--- state.GetItemCooldown = GetItemCooldown
+-- state.GetNumGroupMembers = GetNumGroupMembers
+state.GetItemCooldown = function( itemID )
+    if not itemID then return 0, 0, 0, 1 end
+    local _, spell = GetItemSpell( itemID )
+    if not spell then return 0, 0, 0, 1 end
+    return GetSpellCooldown( spell )
+end
 state.GetItemCount = GetItemCount
-state.GetItemGem = GetItemGem
+--[[ state.GetItemGem = GetItemGem
 state.GetPlayerAuraBySpellID = GetPlayerAuraBySpellID
 state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo
@@ -1982,9 +1987,6 @@ do
                 local n = t.true_active_enemies
                 if t.min_targets > 0 then n = max( t.min_targets, n ) end
                 if t.max_targets > 0 then n = min( t.max_targets, n ) end
-                if not n then
-                    print( k, n, t.true_active_enemies, t.min_targets, t.max_targets, ns.getNumberTargets(), debugstack() )
-                end
                 t[k] = max( 1, n or 1 )
 
             elseif k == "cycle_enemies" then
@@ -2700,7 +2702,8 @@ local mt_settings = {
             if t.spec[ k ] ~= nil then return t.spec[ k ] end
 
             if ability then
-                if ability.item and t.spec.items[ state.this_action ] ~= nil then return t.spec.items[ state.this_action ][ k ]
+                local item = ability.item or 0
+                if item > 0 and t.spec.items[ state.this_action ] ~= nil then return t.spec.items[ state.this_action ][ k ]
                 elseif not ability.item and t.spec.abilities[ state.this_action ] ~= nil then return t.spec.abilities[ state.this_action ][ k ] end
             end
         end
@@ -3282,7 +3285,7 @@ do
         __index = function( t, k )
             if type( k ) == "number" then
                 -- This is a SimulationCraft 7.1.5 or later indexed lookup, we support up to #5.
-                if k < 1 or k > 5 then return false end
+                if k < 1 or k > 10 then return false end
                 prev_lookup.meta = t.meta -- Which data to use? castsAll, castsOn (GCD), castsOff (offGCD)?
                 prev_lookup.index = k
                 return prev_lookup
@@ -6105,9 +6108,9 @@ function state:RunHandler( key, noStart )
 
     self.history.casts[ key ] = self.query_time
 
-    self.predictions[6] = nil
-    self.predictionsOn[6] = nil
-    self.predictionsOff[6] = nil
+    self.predictions[11] = nil
+    self.predictionsOn[11] = nil
+    self.predictionsOff[11] = nil
 
     self.prev.override = nil
     self.prev_gcd.override = nil
@@ -6204,10 +6207,6 @@ do
                 if res.max > 0 then foundResource = true end
 
                 if k == "mana" then
-                    if state.spec.arcane then
-                        res.modmax = res.max / ( 1 + state.mastery_value )
-                    end
-
                     local _, effectiveStat = UnitStat( "player", 4 )
                     local baseInt = min( 20, effectiveStat )
                     local bonusInt = effectiveStat - baseInt

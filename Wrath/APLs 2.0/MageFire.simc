@@ -1,0 +1,37 @@
+# Mage: Fire
+# https://www.icy-veins.com/wotlk-classic/fire-mage-dps-pve-rotation-cooldowns-abilities
+# September 2023
+
+## Precombat
+actions.precombat+=/arcane_brilliance,if=raid&buff.arcane_brilliance.down
+actions.precombat+=/arcane_intellect,if=!raid&buff.arcane_brilliance.down&buff.arcane_intellect.down
+actions.precombat+=/molten_armor,if=buff.unique_armor.down
+actions.precombat+=/focus_magic,if=group&active_dot.focus_magic=0
+actions.precombat+=/pyroblast,if=boss
+
+## Default
+actions+=/counterspell
+actions+=/spellsteal,line_cd=spellsteal_cooldown
+## Cooldowns
+actions+=/mirror_image
+actions+=/combustion
+actions+=/icy_veins
+actions+=/flame_cap
+actions+=/potion
+# Use any trinkets that aren't otherwise specified.
+actions+=/use_items
+# Regular Rotation
+actions+=/living_bomb,cycle_targets=1,max_cycle_targets=living_bomb_cap,if=target.time_to_die>12&debuff.living_bomb.down
+actions+=/call_action_list,name=aoe,if=active_enemies>2
+actions+=/pyroblast,if=buff.hot_streak.react
+actions+=/best_mana_potion
+actions+=/replenish_mana,if=mana.pct<70
+actions+=/evocation,if=mana.pct<30
+actions+=/fire_blast,if=moving
+actions+=/frostfire_bolt,if=glyph.frostfire.enabled
+actions+=/fireball
+
+actions.aoe+=/blast_wave,if=target.within10
+actions.aoe+=/flamestrike,line_cd=8,if=buff.firestarter.up
+actions.aoe+=/dragons_breath,if=target.within12
+actions.aoe+=/blizzard

@@ -1,0 +1,38 @@
+# Mage: Frost
+# https://www.icy-veins.com/wotlk-classic/frost-mage-dps-pve-rotation-cooldowns-abilities
+# September 2023
+
+## Precombat
+actions.precombat+=/arcane_brilliance,if=raid&buff.arcane_brilliance.down
+actions.precombat+=/arcane_intellect,if=!raid&buff.arcane_brilliance.down&buff.arcane_intellect.down
+actions.precombat+=/conjure_mana_gem,if=mana_gem_charges<2
+actions.precombat+=/molten_armor,if=buff.unique_armor.down
+actions.precombat+=/summon_water_elemental,if=!pet.active&glyph.eternal_water.enabled
+actions.precombat+=/focus_magic,if=group&active_dot.focus_magic=0
+actions.precombat+=/pyroblast,if=boss
+
+## Default
+actions+=/counterspell
+actions+=/spellsteal,line_cd=spellsteal_cooldown
+## Cooldowns
+actions+=/mirror_image
+actions+=/summon_water_elemental,if=!glyph.eternal_water.enabled
+actions+=/icy_veins
+actions+=/arcane_power
+actions+=/flame_cap
+actions+=/potion,use_off_gcd=1
+actions+=/cold_snap,if=use_cold_snap&buff.icy_veins.down&cooldown.icy_veins.remains>60
+# Use any trinkets that aren't otherwise specified.
+actions+=/use_items
+# Use Deep Freeze to consume your last Fingers of Frost charge simultaneously with a Frostbolt or Frostfire Bolt.
+actions+=/deep_freeze,if=(debuff.frozen.up|buff.fingers_of_frost.stack=1)&(action.frostfire_bolt.in_flight|action.frostbolt.in_flight)
+actions+=/frostbolt,if=buff.fingers_of_frost.up&talent.deep_freeze&cooldown.deep_freeze.remains<cast_time*buff.fingers_of_frost.stack
+actions+=/frostfire_bolt,if=buff.brain_freeze.react
+actions+=/blizzard,if=active_enemies>2&!moving
+actions+=/cone_of_cold,if=active_enemies>2&target.within10&moving
+actions+=/arcane_explosion,if=active_enemies>2&target.within10&moving
+actions+=/fire_blast,if=moving&target.within20
+actions+=/best_mana_potion,use_off_gcd=1
+actions+=/use_mana_gem,use_off_gcd=1,if=mana.pct<70
+actions+=/evocation,if=mana.pct<30
+actions+=/frostbolt
