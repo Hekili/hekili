@@ -1116,7 +1116,7 @@ function state:AddToHistory( spellID, destGUID )
     if ability and not ability.essence then
         local history = self.prev.history
         insert( history, 1, key )
-        history[6] = nil
+        history[11] = nil
 
         if ability.gcd ~= "off" then
             history = self.prev_gcd.history
@@ -1128,7 +1128,7 @@ function state:AddToHistory( spellID, destGUID )
             player.lastoffgcdtime = now
         end
         insert( history, 1, key )
-        history[6] = nil
+        history[11] = nil
 
         ability.realCast = now
         ability.realUnit = destGUID
@@ -1968,6 +1968,13 @@ local function StoreKeybindInfo( page, key, aType, id, console )
     elseif aType == "item" then
         local item, link = CGetItemInfo( id )
         ability = item and ( class.abilities[ item ] or class.abilities[ link ] )
+        
+        if item and not ability then
+            -- Try checking for item spell.
+            local n, id = GetItemSpell( item )
+            ability = class.abilities[ id ]
+        end
+        
         action = ability and ability.key
 
         if not action then
@@ -2361,7 +2368,7 @@ end
 
 
 local function DelayedUpdateKeybindings( event )
-    C_Timer.After( 0.05, function() ReadKeybindings( event ) end )
+    C_Timer.After( 1, function() ReadKeybindings( event ) end )
 end
 
 local function DelayedUpdateOneKeybinding( event, slot )
@@ -2376,6 +2383,7 @@ end )
 RegisterEvent( "ACTIONBAR_SHOWGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_HIDEGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
+RegisterEvent( "BAG_UPDATE", DelayedUpdateKeybindings )
 -- RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
 -- RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
 -- RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )

@@ -19,8 +19,8 @@ local formatKey = ns.formatKey
 local getSpecializationKey = ns.getSpecializationKey
 local tableCopy = ns.tableCopy
 
+local strformat = string.format
 local insert, wipe = table.insert, table.wipe
-
 
 local mt_resource = ns.metatables.mt_resource
 
@@ -484,11 +484,8 @@ local HekiliSpecMixin = {
 
         if not potionItem:IsItemEmpty() then
             potionItem:ContinueOnItemLoad( function()
-                local name = potionItem:GetItemName() or data.name
-                local link = potionItem:GetItemLink() or data.link
-
-                data.name = name
-                data.link = link
+                if not data.name then data.name = potionItem:GetItemName() end
+                if not data.link then data.link = potionItem:GetItemLink() end
 
                 class.potionList[ potion ] = link
                 return true
@@ -547,21 +544,21 @@ local HekiliSpecMixin = {
 
         a.key = ability
         a.from = self.id
-
+        
+        local item = data.item
+        if item and type( item ) == 'function' then
+            setfenv( item, state )
+            item = item()
+        end
+        
         if not data.id then
-            if data.item then
+            if data.item or data.isItem then
                 self.itemAbilities = self.itemAbilities + 1
                 data.id = -100 - self.itemAbilities
             else
                 self.pseudoAbilities = self.pseudoAbilities + 1
                 data.id = -1000 * self.id - self.pseudoAbilities
             end
-        end
-
-        local item = data.item
-        if item and type( item ) == 'function' then
-            setfenv( item, state )
-            item = item()
         end
 
         if data.meta then
@@ -606,155 +603,178 @@ local HekiliSpecMixin = {
 
         a.realCast = 0
 
-        if item and a.id < 0 then
+        if a.isItem or item and a.id < 0 then
             --[[ local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( item )
 
             a.name = name or ability
             a.link = link or ability ]]
 
-            class.itemMap[ item ] = ability
+            if a.key == "best_mana_potion" then
+                if ability then class.abilities[ ability ] = a end
+                if a.name  then class.abilities[ a.name ]  = a end
+                if a.link  then class.abilities[ a.link ]  = a end
+                if a.id    then class.abilities[ a.id ]    = a end
 
-            -- Register the item if it doesn't already exist.
-            class.specs[0]:RegisterGear( ability, item )
+                Hekili.OptionsReady = false
 
-            local actionItem = Item:CreateFromItemID( item )
-            if not actionItem:IsItemEmpty() then
-                actionItem:ContinueOnItemLoad( function( success )
-                    --[[ if not success then
-                        Hekili:Error( "Unable to load " .. item .. " (" .. ability .. ")." )
+                if not a.unlisted then
+                    class.abilityList[ ability ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. a.link
+                    class.itemList[ a.id ] = "|T" .. a.texture .. ":0|t " .. a.link
 
-                        -- Assume the item is not presently in-game.
-                        for key, entry in pairs( class.abilities ) do
-                            if a == entry then
-                                class.abilities[ key ] = nil
-                                class.abilityList[ key ] = nil
-                                class.abilityByName[ key ] = nil
-                                class.itemList[ key ] = nil
+                    class.abilityByName[ a.name ] = a
+                end
+            else
+                class.itemMap[ item ] = ability
 
-                                self.abilities[ key ] = nil
-                            end
-                        end
+                -- Register the item if it doesn't already exist.
+                class.specs[0]:RegisterGear( ability, item )
 
-                        return
-                    end ]]
+                local actionItem = Item:CreateFromItemID( item )
+                if not actionItem:IsItemEmpty() then
+                    local itempcall = function()
+                        actionItem:ContinueOnItemLoad( function( success )
+                            --[[if not success then
+                                Hekili:Error( "Unable to load " .. item .. " (" .. ability .. ")." )
 
-                    local name = actionItem:GetItemName()
-                    local link = actionItem:GetItemLink()
-                    local texture = actionItem:GetItemIcon()
+                                -- Assume the item is not presently in-game.
+                                for key, entry in pairs( class.abilities ) do
+                                    if a == entry then
+                                        class.abilities[ key ] = nil
+                                        class.abilityList[ key ] = nil
+                                        class.abilityByName[ key ] = nil
+                                        class.itemList[ key ] = nil
 
-                    if name then
-                        if not a.name or a.name == a.key then a.name = name end
-                        if not a.link or a.link == a.key then a.link = link end
-                        a.texture = a.texture or texture
-
-                        if a.suffix then
-                            a.actualName = name
-                            a.name = a.name .. " " .. a.suffix
-                        end
-
-                        self.abilities[ ability ] = self.abilities[ ability ] or a
-                        self.abilities[ a.name ] = self.abilities[ a.name ] or a
-                        self.abilities[ a.link ] = self.abilities[ a.link ] or a
-                        self.abilities[ data.id ] = self.abilities[ a.link ] or a
-
-                        a.itemLoaded = GetTime()
-
-                        if a.item and a.item ~= 158075 then
-                            a.itemSpellName, a.itemSpellID = GetItemSpell( a.item )
-
-                            if a.itemSpellID then
-                                a.itemSpellKey = a.key .. "_" .. a.itemSpellID
-                                self.abilities[ a.itemSpellKey ] = a
-                                class.abilities[ a.itemSpellKey ] = a
-                            end
-
-                            if a.itemSpellName then
-                                local itemAura = self.auras[ a.itemSpellName ]
-
-                                if itemAura then
-                                    a.itemSpellKey = itemAura.key .. "_" .. a.itemSpellID
-                                    self.abilities[ a.itemSpellKey ] = a
-                                    class.abilities[ a.itemSpellKey ] = a
-
-                                else
-                                    if self.pendingItemSpells[ a.itemSpellName ] then
-                                        if type( self.pendingItemSpells[ a.itemSpellName ] ) == 'table' then
-                                            table.insert( self.pendingItemSpells[ a.itemSpellName ], ability )
-                                        else
-                                            local first = self.pendingItemSpells[ a.itemSpellName ]
-                                            self.pendingItemSpells[ a.itemSpellName ] = {
-                                                first,
-                                                ability
-                                            }
-                                        end
-                                    else
-                                        self.pendingItemSpells[ a.itemSpellName ] = ability
-                                        a.itemPended = GetTime()
+                                        self.abilities[ key ] = nil
                                     end
                                 end
-                            end
-                        end
 
-                        if not a.unlisted then
-                            class.abilityList[ ability ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
-                            class.itemList[ item ] = "|T" .. a.texture .. ":0|t " .. link
+                                return
+                            end]]
 
-                            class.abilityByName[ a.name ] = a
-                        end
+                            local name = a.name or actionItem:GetItemName()
+                            local link = a.link or actionItem:GetItemLink()
+                            local texture = a.texture or actionItem:GetItemIcon()
 
-                        if data.copy then
-                            if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
-                                self.abilities[ data.copy ] = a
-                            elseif type( data.copy ) == 'table' then
-                                for _, key in ipairs( data.copy ) do
-                                    self.abilities[ key ] = a
+                            if name then
+                                if not a.name or a.name == a.key then a.name = name end
+                                if not a.link or a.link == a.key then a.link = link end
+                                a.texture = a.texture or texture
+
+                                if a.suffix then
+                                    a.actualName = name
+                                    a.name = a.name .. " " .. a.suffix
                                 end
-                            end
-                        end
 
-                        if data.items then
-                            local addedToItemList = false
+                                self.abilities[ ability ] = self.abilities[ ability ] or a
+                                self.abilities[ a.name ] = self.abilities[ a.name ] or a
+                                self.abilities[ a.link ] = self.abilities[ a.link ] or a
+                                self.abilities[ data.id ] = self.abilities[ a.link ] or a
 
-                            for _, id in ipairs( data.items ) do
-                                local copyItem = Item:CreateFromItemID( id )
+                                a.itemLoaded = GetTime()
 
-                                if not copyItem:IsItemEmpty() then
-                                    copyItem:ContinueOnItemLoad( function()
-                                        local name = copyItem:GetItemName()
-                                        local link = copyItem:GetItemLink()
-                                        local texture = copyItem:GetItemIcon()
+                                if a.item and a.item ~= 158075 then
+                                    a.itemSpellName, a.itemSpellID = GetItemSpell( a.item )
 
-                                        if name then
-                                            class.abilities[ name ] = a
-                                            self.abilities[ name ]  = a
+                                    if a.itemSpellID then
+                                        a.itemSpellKey = a.key .. "_" .. a.itemSpellID
+                                        self.abilities[ a.itemSpellKey ] = a
+                                        class.abilities[ a.itemSpellKey ] = a
+                                    end
 
-                                            if not class.itemList[ id ] then
-                                                class.itemList[ id ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
-                                                addedToItemList = true
+                                    if a.itemSpellName then
+                                        local itemAura = self.auras[ a.itemSpellName ]
+
+                                        if itemAura then
+                                            a.itemSpellKey = itemAura.key .. "_" .. a.itemSpellID
+                                            self.abilities[ a.itemSpellKey ] = a
+                                            class.abilities[ a.itemSpellKey ] = a
+
+                                        else
+                                            if self.pendingItemSpells[ a.itemSpellName ] then
+                                                if type( self.pendingItemSpells[ a.itemSpellName ] ) == 'table' then
+                                                    table.insert( self.pendingItemSpells[ a.itemSpellName ], ability )
+                                                else
+                                                    local first = self.pendingItemSpells[ a.itemSpellName ]
+                                                    self.pendingItemSpells[ a.itemSpellName ] = {
+                                                        first,
+                                                        ability
+                                                    }
+                                                end
+                                            else
+                                                self.pendingItemSpells[ a.itemSpellName ] = ability
+                                                a.itemPended = GetTime()
                                             end
                                         end
-                                    end )
+                                    end
                                 end
+
+                                if not a.unlisted then
+                                    class.abilityList[ ability ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
+                                    class.itemList[ item ] = "|T" .. a.texture .. ":0|t " .. link
+
+                                    class.abilityByName[ a.name ] = a
+                                end
+
+                                if data.copy then
+                                    if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
+                                        self.abilities[ data.copy ] = a
+                                    elseif type( data.copy ) == 'table' then
+                                        for _, key in ipairs( data.copy ) do
+                                            self.abilities[ key ] = a
+                                        end
+                                    end
+                                end
+
+                                if data.items then
+                                    local addedToItemList = false
+
+                                    for _, id in ipairs( data.items ) do
+                                        local copyItem = Item:CreateFromItemID( id )
+
+                                        if not copyItem:IsItemEmpty() then
+                                            copyItem:ContinueOnItemLoad( function()
+                                                local name = copyItem:GetItemName()
+                                                local link = copyItem:GetItemLink()
+                                                local texture = copyItem:GetItemIcon()
+
+                                                if name then
+                                                    class.abilities[ name ] = a
+                                                    self.abilities[ name ]  = a
+
+                                                    if not class.itemList[ id ] then
+                                                        class.itemList[ id ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
+                                                        addedToItemList = true
+                                                    end
+                                                end
+                                            end )
+                                        end
+                                    end
+
+                                    if addedToItemList then
+                                        if ns.ReadKeybindings then ns.ReadKeybindings() end
+                                    end
+                                end
+
+                                if ability then class.abilities[ ability ] = a end
+                                if a.name  then class.abilities[ a.name ]  = a end
+                                if a.link  then class.abilities[ a.link ]  = a end
+                                if a.id    then class.abilities[ a.id ]    = a end
+
+                                Hekili.OptionsReady = false
+
+                                return true
                             end
 
-                            if addedToItemList then
-                                if ns.ReadKeybindings then ns.ReadKeybindings() end
-                            end
-                        end
-
-                        if ability then class.abilities[ ability ] = a end
-                        if a.name  then class.abilities[ a.name ]  = a end
-                        if a.link  then class.abilities[ a.link ]  = a end
-                        if a.id    then class.abilities[ a.id ]    = a end
-
-                        Hekili.OptionsReady = false
-
-                        return true
+                            return false
+                        end )
                     end
-
-                    return false
-                end )
+                    local status, message = pcall(itempcall)
+                    --[[ if not status then
+                        Hekili:Error( "Unable to load " .. item .. " (" .. ability .. ")." )
+                    end ]]
+                end
             end
+            
         end
 
         if a.id and a.id > 0 then
@@ -3006,6 +3026,354 @@ all:RegisterAbilities( {
         end,
     },
 
+    runic_mana_injector = {
+        name = function() return GetItemInfo( 42545 ) end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 42545,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 67490 ) > 0, "requires runic_mana_injector in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 67490 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        mana_restored = 4200,
+
+        handler = function()
+            gain( 4200, "mana" )
+        end,
+    },
+
+    runic_mana_potion = {
+        name = function() return GetItemInfo( 33448 ) end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 33448,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 33448 ) > 0, "requires runic_mana_potion in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 33448 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        mana_restored = 4200,
+
+        handler = function()
+            gain( 4200, "mana" )
+        end,
+    },
+
+    potion_of_nightmares = {
+        id = 53753,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 40081,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 40081 ) > 0, "requires potion_of_nightmares in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 40081 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        handler = function()
+            applyBuff( "nightmare_slumber" )
+            setCooldown( "global_cooldown", 6 )
+        end,
+
+        auras = {
+            nightmare_slumber = {
+                id = 53753,
+                duration = 6,
+                max_stack = 1
+            }
+        }
+    },
+
+    crazy_alchemists_potion = {
+        id = 53750,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 40077,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 40077 ) > 0, "requires crazy_alchemists_potion in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 40077 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        mana_restored = 4200,
+
+        handler = function()
+            gain( 3100, "health" )
+            gain( 4200, "mana" )
+        end,
+    },
+
+    endless_mana_potion = {
+        name = function() return GetItemInfo( 43570 ) end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 43570,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 43570 ) > 0, "requires endless_mana_potion in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 43570 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        mana_restored = 1800,
+
+        handler = function()
+            gain( 1800, "mana" )
+        end,
+    },
+
+    icy_mana_potion = {
+        name = function() return GetItemInfo( 40067 ) end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 40067,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 40067 ) > 0, "requires icy_mana_potion in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 40067 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        mana_restored = 1800,
+
+        handler = function()
+            gain( 1800, "mana" )
+        end,
+    },
+
+    best_mana_potion = {
+        name = strformat( '|cff00ccff[%s %s]|r', BEST, GetSpellInfo( 3452 ) ),
+        link = strformat( '|cff00ccff[%s %s]|r', BEST, GetSpellInfo( 3452 ) ),
+        cast = 0,
+        cooldown = 60,
+        gcd = 'off',
+
+        startsCombat = false,
+        toggle = "potions",
+        texture = function()
+            local item = action.best_mana_potion.item
+            return GetItemIcon( item )
+        end,
+
+        isItem = true,
+        item = function()
+            if not Hekili.PLAYER_ENTERING_WORLD then return 45276 end
+
+            local deficit = mana.deficit
+
+            if deficit > 4200 then
+                if GetItemCount( 45276 ) > 0 then return 45276 end
+                if GetItemCount( 42545 ) > 0 then return 42545 end
+                if GetItemCount( 33448 ) > 0 then return 33448 end
+                if GetItemCount( 40077 ) > 0 then return 40077 end
+            end
+
+            if deficit > 1800 then
+                if GetItemCount( 40067 ) > 0 then return 40067 end
+                if GetItemCount( 43530 ) > 0 then return 43530 end
+                if GetItemCount( 43570 ) > 0 then return 43570 end
+            end
+
+            return 45276
+        end,
+        bagItem = true,
+
+        usable = function ()
+            local item = action.best_mana_potion.item
+            return GetItemCount( action.best_mana_potion.item ) > 0, "requires a mana deficit and mana_potion in bags"
+        end,
+
+        readyTime = function ()
+            local item = action.best_mana_potion.item
+            if item == 0 then return 3600 end
+            local start, dur = GetItemCooldown( item )
+            return max( 0, start + dur - query_time )
+        end,
+
+        handler = function ()
+            class.abilities[ class.itemMap[ action.best_mana_potion.item ] ].handler()
+        end,
+
+    },
+
+    argent_mana_potion = {
+        name = function() return GetItemInfo( 43530 ) end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 43530,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 43530 ) > 0, "requires argent_mana_potion in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 43530 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        mana_restored = 1800,
+
+        handler = function()
+            gain( 1800, "mana" )
+        end,
+    },
+
+    jillians_genius_juice = {
+        name = function() return GetItemInfo( 45276 ) end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 45276,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 45276 ) > 0, "requires jillians_genius_juice in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 45276 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        mana_restored = 4200,
+
+        handler = function()
+            gain( 4200, "mana" )
+        end,
+    },
+
+    flame_cap = {
+        id = 28714,
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        item = 22788,
+        bagItem = true,
+
+        startsCombat = false,
+        texture = 134209,
+        toggle = "cooldowns",
+
+        usable = function ()
+            if GetItemCount( 22788 ) == 0 then return false, "requires flame cap in bags"
+            elseif not IsUsableItem( 22788 ) then return false, "on cooldown or unusable" end
+            return true
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 22788 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        handler = function ()
+            applyBuff( "flame_cap" )
+        end,
+
+        auras = {
+            flame_cap = {
+                id = 28714,
+                duration = 60,
+                max_stack = 1
+            }
+        }
+    },
+
+    global_thermal_sapper_charge = {
+        id = 56488,
+        cast = 0,
+        cooldown = 300,
+        gcd = "off",
+
+        item = 56488,
+        bagItem = true,
+
+        startsCombat = true,
+        texture = 135826,
+        toggle = "cooldowns",
+
+        usable = function ()
+            if GetItemCount( 56488 ) == 0 then return false, "requires charge in bag"
+            elseif not IsUsableItem( 56488 ) then return false, "on cooldown or unusable" end
+            return true
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 56488 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        handler = function ()
+            if class.file == "MAGE" then
+                -- Assume we're proccing Incanter's Absorption.
+                if talent.incanters_absorption.enabled and buff.fire_ward.up then applyBuff( "incanters_absorption" ) end
+            end
+        end,
+    },
+
     healthstone = {
         name = "|cff00ccff[Healthstone]|r",
         cast = 0,
@@ -3110,7 +3478,6 @@ do
         gcd = 'off',
     } )
 
-
     all:RegisterAbility( "heart_essence", {
         name = "|cff00ccff[Heart Essence]|r",
         cast = 0,
@@ -3177,6 +3544,7 @@ all:RegisterAbility( "deaths_verdict", {
     aura = 67702
 })
 all:RegisterAbility( "deaths_verdict_heroic", {
+    suffix = strformat( "(%s)", ITEM_HEROIC ),
     cast = 0,
     cooldown = 45,
     gcd = "off",
@@ -3190,9 +3558,10 @@ all:RegisterAbility( "deaths_choice", {
     gcd = "off",
 
     item = 47303,
-    aura = 67702
+    aura = 67771
 })
 all:RegisterAbility( "deaths_choice_heroic", {
+    suffix = strformat( "(%s)", ITEM_HEROIC ),
     cast = 0,
     cooldown = 45,
     gcd = "off",
@@ -5054,7 +5423,7 @@ do
     end
 
     all:RegisterAbility( "gladiators_medallion", {
-        name = function () return "\"" .. ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) .. "\"" end,
+        name = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) .. "]|r" end,
         link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277179 ) ) or "Gladiator's Medallion" ) .. "]|r" end,
         cast = 0,
         cooldown = 120,
@@ -5117,7 +5486,7 @@ do
     end
 
     all:RegisterAbility( "gladiators_badge", {
-        name = function () return "\"" .. ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) .. "\"" end,
+        name = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) .. "]|r" end,
         link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277185 ) ) or "Gladiator's Badge" ) .. "]|r" end,
         cast = 0,
         cooldown = 120,
@@ -5204,7 +5573,7 @@ do
 
 
     all:RegisterAbility( "gladiators_emblem", {
-        name = function () return "\"" .. ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) .. "\"" end,
+        name = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) .. "]|r" end,
         link = function () return "|cff00ccff[" .. ( ( GetSpellInfo( 277187 ) ) or "Gladiator's Emblem" ) .. "]|r" end,
         cast = 0,
         cooldown = 90,

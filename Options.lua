@@ -4455,7 +4455,7 @@ do
 
         for k, v in pairs( class.abilityList ) do
             local a = class.abilities[ k ]
-            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not a.item then
+            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not ( a.isItem or a.item ) then
                 abilities[ v ] = k
             end
         end
@@ -4674,7 +4674,7 @@ do
         local k = class.itemList[ ability.item ] or ability.name
         local v = ability.itemKey or ability.key
 
-        if not item or not ability.item or not k then
+        if not item or not ( ability.isItem or ability.item ) or not k then
             Hekili:Error( "Unable to find %s / %s / %s in the itemlist.", item or "unknown", ability.item or "unknown", k or "unknown" )
             return
         end
@@ -4789,7 +4789,7 @@ do
         local toggles = {}
 
         for k, v in pairs( class.abilities ) do
-            if k == "potion" or v.item and not abilities[ v.itemKey or v.key ] then
+            if k == "potion" or ( v.item or v.isItem ) and not abilities[ v.itemKey or v.key ] then
                 local name = class.itemList[ v.item ] or v.name
                 if name then abilities[ name ] = v.itemKey or v.key end
             end
@@ -4960,7 +4960,7 @@ do
         wipe( tAbilities )
         for k, v in pairs( class.abilityList ) do
             local a = class.abilities[ k ]
-            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not a.item then
+            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not ( a.isItem or a.item ) then
                 if settings.abilities[ k ].toggle == section or a.toggle == section and settings.abilities[ k ].toggle == 'default' then
                     tAbilities[ k ] = class.abilityList[ k ] or v
                 end
@@ -5032,7 +5032,7 @@ do
                     local a = class.abilities[ ability ]
                     local desc
                     if a then
-                        if a.item then desc = a.link or a.name
+                        if ( a.isItem or a.item ) then desc = a.link or a.name
                         else desc = class.abilityList[ a.key ] or a.name end
                     end
                     desc = desc or ability
@@ -5059,7 +5059,7 @@ do
                 e.name = function ()
                     local a = class.abilities[ ability ]
                     if a then
-                        if a.item then return a.link or a.name end
+                        if ( a.isItem or a.item ) then return a.link or a.name end
                         return class.abilityList[ a.key ] or a.name
                     end
                     return ability
@@ -5139,7 +5139,7 @@ do
 
             for k, v in pairs( class.abilityList ) do
                 local a = class.abilities[ k ]
-                if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not a.item then
+                if a and ( a.id > 0 or a.id < -100 ) and a.id ~= state.cooldown.global_cooldown.id and not ( a.isItem or a.item ) then
                     if settings.abilities[ k ].toggle == 'default' or settings.abilities[ k ].toggle == 'none' then
                         list[ k ] = class.abilityList[ k ] or v
                     end
@@ -5154,7 +5154,7 @@ do
         e.set = function ( info, val )
             local a = class.abilities[ val ]
             if a then
-                settings[ a.item and "items" or "abilities" ][ val ].toggle = section
+                settings[ ( a.isItem or a.item ) and "items" or "abilities" ][ val ].toggle = section
                 config.adding[ section ] = false
                 Hekili:EmbedSpecOptions()
             end
@@ -5176,11 +5176,11 @@ do
         e.func = function ()
             for k, v in pairs( settings.abilities ) do
                 local a = class.abilities[ k ]
-                if a and not a.item and v.toggle == section or ( class.abilities[ k ].toggle == section ) then v.toggle = 'default' end
+                if a and not ( a.isItem or a.item ) and v.toggle == section or ( class.abilities[ k ].toggle == section ) then v.toggle = 'default' end
             end
             for k, v in pairs( settings.items ) do
                 local a = class.abilities[ k ]
-                if a and a.item and v.toggle == section or ( class.abilities[ k ].toggle == section ) then v.toggle = 'default' end
+                if a and ( a.isItem or a.item ) and v.toggle == section or ( class.abilities[ k ].toggle == section ) then v.toggle = 'default' end
             end
             Hekili:EmbedSpecOptions()
         end

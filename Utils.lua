@@ -577,6 +577,24 @@ function ns.IsActiveSpell( id )
 end
 
 
+function Hekili:GetSpellLinkWithTexture( id, size, color )
+    if not id then return "" end
+
+    local name, _, icon = GetSpellInfo( id )
+
+    if name and icon then
+        if type( color ) == "boolean" then
+            color = color and "ff00ff00" or "ffff0000"
+        end
+
+        if color == nil then color = "ff71d5ff" end
+
+        return "|W|T" .. icon .. ":" .. ( size or 0 ) .. ":" .. ( size or "" ) .. ":::64:64:4:60:4:60|t " .. ( color and ( "|c" .. color ) or "" ) .. name .. ( color and "|r" or "" ) .. "|w"
+    end
+
+    return tostring( id )
+end
+
 
 do
     local itemCache = {}
@@ -587,7 +605,7 @@ do
         end
 
         local item = { GetItemInfo( id ) }
-        if item and item[ 1 ] then
+        if item[ 1 ] then
             itemCache[ id ] = item
             return unpack( item )
         end
