@@ -409,6 +409,9 @@ local mt_trinket = {
                 return state.cooldown[ t.ability ]
             end
             return state.cooldown.null_cooldown
+        
+        elseif k == "cast_time" or k == "cast_time" then
+            return t.usable and t.ability and class.abilities[ t.ability ] and class.abilities[ t.ability ].cast or 0
         end
 
         return k
