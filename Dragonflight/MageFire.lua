@@ -903,12 +903,6 @@ spec:RegisterVariable( "overpool_fire_blasts", function ()
     return 0
 end )
 
--- # If Combustion is disabled, schedule the first Combustion far after the fight ends.
--- actions.precombat+=/variable,name=time_to_combustion,value=fight_remains+100,if=variable.disable_combustion
-spec:RegisterVariable( "time_to_combustion", function ()
-    if action.combustion.disabled then return fight_remains + 100 end
-end )
-
 -- # The duration of a Sun King's Blessing Combustion.
 -- actions.precombat+=/variable,name=skb_duration,value=dbc.effect.1016075.base_value
 spec:RegisterVariable( "skb_duration", function ()
@@ -963,7 +957,7 @@ end ) ]]
 -- actions+=/variable,name=phoenix_pooling,if=active_enemies>=variable.combustion_flamestrike,value=(variable.time_to_combustion<action.phoenix_flames.full_recharge_time-action.shifting_power.full_reduction*variable.shifting_power_before_combustion&variable.time_to_combustion<fight_remains|talent.sun_kings_blessing)&!talent.alexstraszas_fury
 
 spec:RegisterVariable( "phoenix_pooling", function ()
-    if active_enemies < variable.combustion_flamestrike then
+        if active_enemies < variable.combustion_flamestrike then
         return ( variable.time_to_combustion + buff.combustion.duration - 5 < action.phoenix_flames.full_recharge_time + cooldown.phoenix_flames.duration - action.shifting_power.full_reduction * safenum( variable.shifting_power_before_combustion ) and variable.time_to_combustion < fight_remains or talent.sun_kings_blessing.enabled ) and not talent.alexstraszas_fury.enabled
     end
 
@@ -984,6 +978,13 @@ end )
 spec:RegisterVariable( "combustion_precast_time", function ()
     return action.fireball.cast_time * safenum( active_enemies < variable.combustion_flamestrike ) + action.flamestrike.cast_time * safenum( active_enemies >= variable.combustion_flamestrike ) - variable.combustion_cast_remains
 end )
+
+
+-- # If Combustion is disabled, schedule the first Combustion far after the fight ends.
+-- actions.precombat+=/variable,name=time_to_combustion,value=fight_remains+100,if=variable.disable_combustion
+-- spec:RegisterVariable( "time_to_combustion", function ()
+--    if action.combustion.disabled then return fight_remains + 100 end
+-- end )
 
 -- actions.combustion_timing+=/variable,use_off_gcd=1,use_while_casting=1,name=time_to_combustion,value=variable.combustion_ready_time
 
@@ -1009,6 +1010,8 @@ end )
 -- actions.combustion_timing+=/variable,use_off_gcd=1,use_while_casting=1,name=time_to_combustion,value=variable.combustion_ready_time,if=variable.combustion_ready_time+cooldown.combustion.duration*(1-(0.4+0.2*talent.firestarter)*talent.kindling)<=variable.time_to_combustion|variable.time_to_combustion>fight_remains-20
 
 spec:RegisterVariable( "time_to_combustion", function ()
+    if action.combustion.disabled then return fight_remains + 100 end
+
     local crt = variable.combustion_ready_time
     local val = crt
 
