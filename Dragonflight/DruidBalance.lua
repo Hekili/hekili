@@ -503,6 +503,13 @@ spec:RegisterAuras( {
         mechanic = "stun",
         max_stack = 1
     },
+    -- PvP Talent: Entering an Eclipse summons a beam of light at your location granting you 50% reduction in silence and interrupts for 6 sec.
+    -- https://www.wowhead.com/spell=234084
+    moon_and_stars = {
+        id = 234084,
+        duration = 6,
+        max_stack = 1
+    },
     -- Suffering $w1 Arcane damage every $t1 sec.
     -- https://wowhead.com/beta/spell=164812
     moonfire = {
@@ -512,6 +519,13 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1,
         copy = 155625
+    },
+    -- PvP Talent: Starsurge grants 4% spell critical strike chance to 8 allies within 40 yards for 18 sec, stacking up to 3 times.
+    -- https://www.wowhead.com/spell=209746
+    moonkin_aura = {
+        id = 209746,
+        duration = 18,
+        max_stack = 3
     },
     -- Talent: Spell damage increased by $s9%.  Immune to Polymorph effects.$?$w3>0[  Armor increased by $w3%.][]
     -- https://wowhead.com/beta/spell=24858
@@ -1719,7 +1733,6 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         toggle = "cooldowns",
-
 
         handler = function ()
             applyBuff( "celestial_alignment" )
