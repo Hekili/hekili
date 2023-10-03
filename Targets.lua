@@ -203,9 +203,13 @@ local enemyExclusions = {
     [168112] = 329636,    -- Kaal (when shielded)
     [193760] = true,      -- Surging Ruiner (Raszageth) -- gives bad range information.
     [204560] = true,      -- Incorporeal Being
-    [202971] = 404705,    -- Null Glimmer
-    [202969] = 404705     -- Empty Recollection
 }
+
+if Hekili.IsDev then
+    -- Add these exclusions only in development copies, until a solution is built for funnelers vs. non-funnelers.
+    enemyExclusions[202971] = 404705 -- Null Glimmer
+    enemyExclusions[202969] = 404705 -- Empty Recollection
+end
 
 local FindExclusionAuraByID = {
     [410972]  = true,      -- Corruption aura on Echo of Neltharion mythic fight
