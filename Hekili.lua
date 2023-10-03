@@ -15,6 +15,7 @@ Hekili.CurrentBuild = buildNum
 
 if Hekili.Version == ( "@" .. "project-version" .. "@" ) then
     Hekili.Version = format( "Dev-%s (%s)", buildStr, date( "%Y%m%d" ) )
+    Hekili.IsDev = true
 end
 
 Hekili.AllowSimCImports = true
@@ -34,10 +35,11 @@ end
 Hekili.IsDragonflight = function()
     return buildNum >= 100000
 end
-Hekili.BuiltFor = 100105
+
+Hekili.BuiltFor = 100107
 Hekili.GameBuild = buildStr
 
-ns.PTR = buildNum > 100105
+ns.PTR = buildNum > 100107
 
 
 ns.Patrons = "|cFFFFD100Current Status|r\n\n"
