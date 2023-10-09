@@ -315,6 +315,7 @@ spec:RegisterAuras( {
         id = 325966,
         duration = 30,
         max_stack = 1,
+        dot = "both",
         max_applications = function()
             if talent.blessed_focus.enabled then return 1 end
             return 3 + 5 * talent.illumination.rank

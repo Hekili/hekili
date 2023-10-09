@@ -3234,14 +3234,17 @@ end
 
 
 local mt_dot = {
-    __index = function(t, k)
+    __index = function( t, k )
         local a = class.auras[ k ]
+        local dotType = a and a.dot
+        if not dotType then return state.debuff[ k ] end
 
-        if a and a.dot == "buff" then
-            return state.buff[ k ]
+        if dotType == "both" then
+            if state.buff[ k ].up then return state.buff[ k ] end
+            return state.debuff[ k ]
         end
 
-        return state.debuff[ k ]
+        return state[ dotType ][ k ]
     end,
 }
 ns.metatables.mt_dot = mt_dot
