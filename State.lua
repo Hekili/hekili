@@ -2987,6 +2987,11 @@ do
                 end
             end
 
+            -- We don't cache IDs in cooldown tables to avoid issues with ID and specialization changes.
+            if k == "id" then
+                return id
+            end
+
             local noFeignCD = rawget( profile.specs, state.spec.id )
             noFeignCD = noFeignCD and noFeignCD.noFeignedCooldown
 
@@ -2997,10 +3002,8 @@ do
                 raw = true
             end
 
-            if k == "duration" or k == "expires" or k == "next_charge" or k == "charge" or k == "recharge_began" then
-                -- Refresh the ID in case we changed specs and ability is spec dependent.
-                t.id = ability.id
 
+            if k == "duration" or k == "expires" or k == "next_charge" or k == "charge" or k == "recharge_began" then
                 local start, duration = 0, 0
 
                 if id > 0 then
@@ -3047,7 +3050,8 @@ do
                 t.true_expires = start and ( start + true_duration ) or 0
 
                 if ability.charges and ability.charges > 1 then
-                    local charges, maxCharges, start, duration = GetSpellCharges( t.id )
+                    local charges, maxCharges
+                    charges, maxCharges, start, duration = GetSpellCharges( id )
 
                     --[[ if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
                         charges = 1
