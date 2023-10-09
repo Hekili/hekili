@@ -2209,6 +2209,37 @@ spec:RegisterSetting("squeeze_hw_in_bl", true, {
     end
 })
 
+if (Hekili.Version:match( "^Dev" )) then
+    spec:RegisterSetting("pala_debug_header", nil, {
+        type = "header",
+        name = "Debug"
+    })
+
+    spec:RegisterSetting("pala_debug_description", nil, {
+        type = "description",
+        name = "Settings used for testing\n\n"
+    })
+
+    spec:RegisterSetting("dummy_ttd", 300, {
+        type = "range",
+        name = "Training Dummy Time To Die",
+        desc = "Select the time to die to report when targeting a training dummy",
+        width = "full",
+        min = 0,
+        softMax = 300,
+        step = 1,
+        set = function( _, val )
+            Hekili.DB.profile.specs[ 2 ].settings.dummy_ttd = val
+        end
+    })
+
+
+    spec:RegisterSetting("pala_debug_footer", nil, {
+        type = "description",
+        name = "\n\n"
+    })
+end
+
 
 spec:RegisterOptions( {
     enabled = true,
