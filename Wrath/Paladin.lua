@@ -45,7 +45,7 @@ spec:RegisterTalents( {
     anticipation                    = {  1629, 5, 20096, 20097, 20098, 20099, 20100 },
     ardent_defender                 = {  1751, 3, 31850, 31851, 31852 },
     aura_mastery                    = {  1435, 1, 31821 },
-    avengers_shield                 = {  1754, 1, 31935 },
+    avengers_shield                 = {  1754, 5, 31935, 32699, 32700, 48826, 48827 },
     beacon_of_light                 = {  2192, 1, 53563 },
     benediction                     = {  1407, 5, 20101, 20102, 20103, 20104, 20105 },
     blessed_hands                   = {  2198, 2, 53660, 53661 },
@@ -75,7 +75,7 @@ spec:RegisterTalents( {
     heart_of_the_crusader           = {  1464, 3, 20335, 20336, 20337 },
     holy_guidance                   = {  1746, 5, 31837, 31838, 31839, 31840, 31841 },
     holy_power                      = {  1627, 5,  5923,  5924,  5925,  5926, 25829 },
-    holy_shield                     = {  1430, 1, 20925 },
+    holy_shield                     = {  1430, 6, 20925, 20928, 20927, 27179, 48951, 48952 },
     holy_shock                      = {  1502, 1, 20473 },
     illumination                    = {  1461, 5, 20210, 20212, 20213, 20214, 20215 },
     improved_blessing_of_might      = {  1401, 2, 20042, 20045 },
@@ -662,6 +662,8 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "avengers_shield" )
             if talent.shield_of_the_templar.rank == 3 then applyDebuff( "target", "silenced_shield_of_the_templar" ); interrupt() end
         end,
+
+        copy = { 31935, 32699, 32700, 48826, 48827 },
     },
 
 
@@ -1444,6 +1446,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "holy_shield" )
         end,
+
+        copy = { 20925, 20928, 20927, 27179, 48951, 48952 },
     },
 
 
