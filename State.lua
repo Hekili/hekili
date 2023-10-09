@@ -4252,9 +4252,24 @@ local mt_active_dot = {
 
         if aura then
             if rawget( t, aura.key ) then return t[ aura.key ] end
-            t[ k ] = ns.numDebuffs( aura.id )
-            return t[ k ]
+            local id = aura.id
+            local count = ns.numDebuffs( id )
 
+            if aura.copy then
+                if type( aura.copy ) == "table" then
+                    for _, v in ipairs( aura.copy ) do
+                        if type(v) == "number" and v > 0 and v ~= id then
+
+                            count = count + ns.numDebuffs( v )
+                        end
+                    end
+                elseif type( aura.copy ) == "number" and aura.copy > 0 and aura.copy ~= id then
+                    count = count + ns.numDebuffs( aura.copy )
+                end
+            end
+
+            t[ k ] = count
+            return t[ k ]
         else
             return 0
 

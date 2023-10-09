@@ -1028,7 +1028,7 @@ do
         for aura, targets in pairs( debuffs ) do
             local a = class.auras[ aura ]
             local window = a and a.duration or grace
-            local friendly = a and ( a.friendly or a.dot == "buff" or a.dot == "both" ) or false
+            local friendly = a and ( a.friendly or a.dot == "buff" ) or false
             local expires = not ( a and a.no_ticks or friendly )
 
             for unit, entry in pairs( targets ) do
