@@ -430,7 +430,7 @@ spec:RegisterAbilities( {
     },
 
     -- Shapeshift into the Tree of Life, increasing healing done by 15%, increasing armor by 120%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, and Entangling Roots is enhanced. Lasts 30 sec. You may shapeshift in and out of this form for its duration.
-    incarnation_tree_of_life = {
+    incarnation = {
         id = 33891,
         cast = 0,
         cooldown = 180,
@@ -446,7 +446,7 @@ spec:RegisterAbilities( {
             applyBuff( "incarnation_tree_of_life" )
         end,
 
-        copy = "incarnation"
+        copy = "incarnation_tree_of_life"
     },
 
     -- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 10 sec.
