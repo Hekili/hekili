@@ -1033,13 +1033,6 @@ spec:RegisterHook( "reset_precast", function()
     state.swings.mh_pseudo_speed = state.swings.mainhand_speed
 end )
 
-spec:RegisterHook( "runHandler", function( action )
-    local ability = class.abilities[ action ]
-
-    if ability and ability.totem then
-        summonTotem( ability.totem, totem[ action ].remains )
-    end
-end )
 
 Hekili:RegisterGearHook( reset_gear, update_gear )
 
