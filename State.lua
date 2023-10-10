@@ -1200,6 +1200,15 @@ state.dismissPet = dismissPet
 
 
 local function summonTotem( name, elem, duration )
+    if not elem then
+        local ability = class.abilities[ name ]
+        elem = ability and ability.totem
+    end
+
+    if not duration then
+        local aura = class.auras[ name ]
+        duration = aura and aura.duration or 30
+    end
 
     if elem then
         state.totem[ elem ] = rawget( state.totem, elem ) or {}
@@ -6213,7 +6222,7 @@ do
 
             if res then
                 if k == "combo_points" then
-                    res.actual = UnitExists( "target" ) and GetComboPoints("player", "target") or UnitPower( "player", power.type )
+                    res.actual = UnitExists( "target" ) and GetComboPoints( "player", "target" ) or UnitPower( "player", power.type )
                 else
                     res.actual = UnitPower( "player", power.type )
                 end
