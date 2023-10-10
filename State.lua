@@ -1055,15 +1055,30 @@ state.removeDebuffStack = removeDebuffStack
 local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
     if not aura then aura = unit; unit = "target" end
 
-    if not class.auras[ aura ] then
-        Error( "Attempted to apply unknown aura '%s'.", aura )
+    local auraInfo = class.auras[ aura ]
+
+    if not auraInfo then
         local spec = class.specs[ state.spec.id ]
         if spec then
             spec:RegisterAura( aura, { ["duration"] = duration } )
             class.auras[ aura ] = spec.auras[ aura ]
         end
 
-        if not class.auras[ aura ] then return end
+        auraInfo = class.auras[ aura ]
+        if not auraInfo then return end
+    end
+
+    if auraInfo.alias then
+        if duration == 0 then
+            -- We want to remove all of them.
+            for _, child in ipairs( auraInfo.alias ) do
+                state.applyDebuff( unit, child, 0, stacks, value, noPandemic )
+            end
+            return
+        end
+        -- Otherwise, we'll just apply the first aura in the list.
+        aura = auraInfo.alias[1]
+        auraInfo = class.auras[ aura ]
     end
 
     if state.cycle then
@@ -1078,7 +1093,7 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
     end
 
     local d = state.debuff[ aura ]
-    duration = duration or class.auras[ aura ].duration or 15
+    duration = duration or auraInfo.duration or 15
 
     if duration == 0 then
         d.expires = 0
@@ -1107,7 +1122,7 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         d.lastCount = d.count or 0
         d.lastApplied = d.applied or 0
 
-        d.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
+        d.count = min( auraInfo.max_stack or 1, stacks or 1 )
         d.value = value or 0
         d.applied = state.query_time
         d.unit = unit or "target"
