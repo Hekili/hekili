@@ -5452,7 +5452,7 @@ do
                                     order = 3.1
                                 },
 
-                                petbasedGuidance = {
+                                --[[ petbasedGuidance = {
                                     type = "description",
                                     name = function ()
                                         local out
@@ -5510,7 +5510,7 @@ do
                                         return false
                                     end,
                                     order = 3.11,
-                                },
+                                }, ]]
 
                                 -- Damage Detection Quasi-Group
                                 damage = {
