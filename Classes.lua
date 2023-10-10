@@ -3212,7 +3212,7 @@ all:RegisterAbilities( {
 
         isItem = true,
         item = function()
-            if not Hekili.PLAYER_ENTERING_WORLD then return 45276 end
+            if not Hekili.PLAYER_ENTERING_WORLD or not rawget( state, "mana" ) then return 45276 end
 
             local deficit = mana.deficit
 
