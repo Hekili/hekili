@@ -499,7 +499,7 @@ spec:RegisterStateExpr("excess_e", function()
     local time_to_cap = query_time + (100 - energy.current) / 10
     local time_to_end = query_time + ttd
     local trinket_active = false
-    if debuff.rip.up then
+    if settings.optimize_trinkets and debuff.rip.up then
         local awaiting_trinket = false
         for entry in pairs(trinket) do
             local t_active = false
@@ -526,7 +526,7 @@ spec:RegisterStateExpr("excess_e", function()
         end
     end
 
-    if (not trinket_active) and combo_points.current == 5 and buff.savage_roar.up and debuff.rip.up and (not bite_before_rip or not settings.ferociousbite_enabled) then
+    if settings.optimize_finishers and (not trinket_active) and combo_points.current == 5 and buff.savage_roar.up and debuff.rip.up and (not bite_before_rip or not settings.ferociousbite_enabled) then
         local roar_end = query_time + buff.savage_roar.remains
         local rip_end = query_time + debuff.rip.remains
         if min(roar_end, rip_end) < time_to_cap then
@@ -2944,6 +2944,28 @@ spec:RegisterSetting("optimize_rake", false, {
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 11 ].settings.optimize_rake = val
+    end
+})
+
+spec:RegisterSetting("optimize_trinkets", false, {
+    type = "toggle",
+    name = "Optimize Trinkets Enabled",
+    desc = "When enabled, energy will be pooled for upcoming trinket procs.\n\n"..
+        "Default: false",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.optimize_trinkets = val
+    end
+})
+
+spec:RegisterSetting("optimize_finishers", false, {
+    type = "toggle",
+    name = "Optimize Finishers Enabled",
+    desc = "When enabled, energy will be pooled for upcoming finishers when CP=5.\n\n"..
+        "Default: false",
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 11 ].settings.optimize_finishers = val
     end
 })
 
