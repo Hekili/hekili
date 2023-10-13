@@ -1,0 +1,34 @@
+# DeathKnightBlood: Unholy DND AOE APL
+# https://wowsims.github.io/wotlk/deathknight/#
+# September 2023
+
+## Precombat
+actions.precombat+=/unholy_presence,precombat_seconds=10,if=change_presence
+actions.precombat+=/ghoul_frenzy,precombat_seconds=8
+actions.precombat+=/horn_of_winter,precombat_seconds=1.5
+actions.precombat+=/potion_of_speed,precombat_seconds=1
+
+## Default
+actions+=/mind_freeze
+# Cast any other cooldowns (i.e., Racials) if they are not specified in this priority.
+actions+=/use_cooldowns
+# Use any trinkets that aren't otherwise specified.
+actions+=/use_items
+actions+=/icy_touch,if=dot.frost_fever.remains<3
+actions+=/plague_strike,if=dot.blood_plague.remains<3
+actions+=/blood_strike,if=buff.desolation.down
+actions+=/berserking,if=buff.summon_gargoyle.up
+actions+=/hyperspeed_acceleration,if=buff.summon_gargoyle.up|cooldown.summon_gargoyle.remains>50
+actions+=/potion_of_speed,if=buff.summon_gargoyle.up|boss&cooldown.summon_gargoyle.remains>fight_remains
+actions+=/empower_rune_weapon,if=buff.summon_gargoyle.up
+actions+=/army_of_the_dead,if=buff.summon_gargoyle.up
+actions+=/death_and_decay
+actions+=/scourge_strike,if=cooldown.death_and_decay.remains>6
+actions+=/pestilence,if=dot.frost_fever.ticking&active_dot.frost_fever<active_enemies
+actions+=/blood_strike,if=cooldown.death_and_decay.remains>6&buff.desolation.remains<10
+actions+=/summon_gargoyle
+actions+=/death_coil,if=cooldown.summon_gargoyle.remains
+actions+=/blood_tap
+actions+=/ghoul_frenzy,if=prev_off_gcd.1.blood_tap
+actions+=/blood_presence,if=change_presence&buff.unholy_presence.up&cooldown.summon_gargoyle.remains>0&buff.summon_gargoyle.down
+actions+=/horn_of_winter

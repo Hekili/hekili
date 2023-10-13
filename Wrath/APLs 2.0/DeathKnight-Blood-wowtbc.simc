@@ -1,0 +1,78 @@
+# Blood DK
+# https://wowtbc.gg/wotlk/class-guides/blood-tank-death-knight/
+# 2023-09-12
+
+## Opener
+# Use Frost Presence
+actions.precombat+=/frost_presence,if=change_presence
+# Use Death and Decay 10 seconds before pull for Runic Power.
+actions.precombat+=/death_and_decay,precombat_seconds=10
+# Use Army of the Dead 6 seconds before pull.
+actions.precombat+=/army_of_the_dead,precombat_seconds=6
+# Horn of Winter pre-pull.
+actions.precombat+=/horn_of_winter
+# Use Pre-pot Indestructible Potion.
+actions.precombat+=/indestructible_potion
+# Use Rune Strike to avoid capping on Runic Power.
+
+## Default
+actions+=/rune_strike,if=runic_power.deficit<20
+# Use Icy Touch.
+actions+=/icy_touch,if=use_count=0
+# Use Icy Touch.
+actions+=/icy_touch,if=use_count=1
+# Use Blood Tap.
+actions+=/blood_tap,if=use_count=0
+# Use Icy Touch.
+actions+=/icy_touch,if=use_count=2
+# Use Empower Rune Weapon.
+actions+=/empower_rune_weapon,if=use_count=0
+# Use Icy Touch.
+actions+=/icy_touch,if=use_count=3
+# Use Icy Touch.
+actions+=/icy_touch,if=use_count=4
+# Use Icy Touch.
+actions+=/icy_touch,if=use_count=5
+# Use Plague Strike.
+actions+=/plague_strike,if=use_count=0
+# Use Blood Strke.
+actions+=/blood_strike,if=use_count=0
+# Proceed with normal priorities.
+actions+=/run_action_list,name=aoe,if=active_enemies>1
+## Single Target
+# Use Frost Presence.
+actions+=/frost_presence,if=change_presence
+# Maintain Horn of Winter if assigned (check for equivalent buffs).
+actions+=/horn_of_winter,if=refreshable
+# Use Blood Tap.
+actions+=/blood_tap
+# Use Empower Rune Weapon
+actions+=/empower_rune_weapon
+# Use (i) Hysteria on a physical DPS.
+actions+=/hysteria
+# Use Rune Strike to avoid capping on Runic Power.
+actions+=/rune_strike,if=runic_power.deficit<20
+# Maintain Blood Plague and Frost Fever with Pestilence.
+actions+=/pestilence,if=dot.blood_plague.ticking&dot.blood_plague.refreshable&dot.frost_fever.ticking&dot.frost_fever.refreshable
+# Use Icy Touch. This is your highest threat ability. Try to use the Death Runes generated from Death Rune Mastery after using a# Death Strike.
+actions+=/icy_touch
+# Use Death Strike to heal yourself.
+actions+=/death_strike,if=health.pct<death_strike_threshold
+# Use Blood Strike to maintain Blade Barrier.
+actions+=/blood_strike,if=talent.blade_barrier.enabled&blood_runes.time_to_1<gcd
+ 
+## AOE
+# Use Death and Decay.
+actions.aoe+=/death_and_decay
+# Use Icy Touch.
+# Use Plague Strike.
+# Use Pestilence to spread the diseases.
+# Proceed with normal priorities and use Blood Boil instead of Heart Strike whenever possible.
+ 
+## Defensive Cooldowns
+# Rune Tap.
+# Vampiric Blood.
+# Icebound Fortitude.
+# Anti-Magic Shell.
+# Death Pact on the ghouls from Army of the Dead or Raise Dead.
+# Mark of Blood if talented.

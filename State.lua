@@ -2284,10 +2284,12 @@ do
                 end
             end
 
+            -- Check for globals before variables/settings/toggles.
+            if _G[ k ] ~= nil then return _G[ k ] end
+
             if t:GetVariableIDs( k ) then return t.variable[ k ] end
             if t.settings[ k ] ~= nil then return t.settings[ k ] end
             if t.toggle[ k ]   ~= nil then return t.toggle[ k ] end
-            if _G[ k ] ~= nil then return _G[ k ] end
 
             if k ~= "scriptID" then
                 Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable [" .. t.scriptID .. "].\n\n" .. debugstack() )
@@ -2727,8 +2729,10 @@ local mt_settings = {
 
             if ability then
                 local item = ability.item or 0
-                if item > 0 and t.spec.items[ state.this_action ] ~= nil then return t.spec.items[ state.this_action ][ k ]
-                elseif not ability.item and t.spec.abilities[ state.this_action ] ~= nil then return t.spec.abilities[ state.this_action ][ k ] end
+                if item > 0 then
+                    if t.spec.items[ state.this_action ] ~= nil then return t.spec.items[ state.this_action ][ k ]
+                    elseif t.spec.abilities[ state.this_action ] ~= nil then return t.spec.abilities[ state.this_action ][ k ] end
+                end
             end
         end
 

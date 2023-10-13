@@ -1,0 +1,32 @@
+# DeathKnightBlood: Unholy 2H SS APL
+# https://wowsims.github.io/wotlk/deathknight/#
+# September 2023
+
+## Precombat
+actions.precombat+=/unholy_presence,precombat_seconds=10,if=change_presence
+actions.precombat+=/ghoul_frenzy,precombat_seconds=8
+actions.precombat+=/horn_of_winter,precombat_seconds=1.5
+actions.precombat+=/potion_of_speed,precombat_seconds=1
+
+## Default
+actions+=/mind_freeze
+# Cast any other cooldowns (i.e., Racials) if they are not specified in this priority.
+actions+=/use_cooldowns
+# Use any trinkets that aren't otherwise specified.
+actions+=/use_items
+actions+=/icy_touch,if=dot.frost_fever.remains<3
+actions+=/plague_strike,if=dot.blood_plague.remains<3
+actions+=/blood_strike,if=buff.desolation.down
+actions+=/berserking,if=buff.summon_gargoyle.up
+actions+=/hyperspeed_acceleration,if=buff.summon_gargoyle.up|cooldown.summon_gargoyle.remains>50
+actions+=/potion_of_speed,if=buff.summon_gargoyle.up|boss&cooldown.summon_gargoyle.remains>fight_remains
+actions+=/army_of_the_dead,if=buff.summon_gargoyle.up
+actions+=/blood_tap,if=buff.ghoul_frenzy.down&!blood_runes.left_ready
+actions+=/ghoul_frenzy,if=blood_runes.left_death&buff.ghoul_frenzy.down&unholy_runes.all_death
+actions+=/scourge_strike
+actions+=/blood_strike
+actions+=/empower_rune_weapon,if=buff.summon_gargoyle.up
+actions+=/summon_gargoyle
+actions+=/death_coil,if=cooldown.summon_gargoyle.remains
+actions+=/blood_presence,if=change_presence&buff.unholy_presence.up&cooldown.summon_gargoyle.remains>0&buff.summon_gargoyle.down
+actions+=/horn_of_winter

@@ -1,0 +1,48 @@
+# DeathKnightBlood: Frost BL Pesti APL
+# https://wowsims.github.io/wotlk/deathknight/#
+# September 2023
+
+## Precombat
+actions.precombat+=/unholy_presence,precombat_seconds=20,if=change_presence
+actions.precombat+=/army_of_the_dead,precombat_seconds=10
+actions.precombat+=/blood_presence,precombat_seconds=6,if=change_presence
+actions.precombat+=/potion_of_speed,precombat_seconds=1
+
+## Default
+actions+=/mind_freeze
+# Cast any other cooldowns (i.e., Racials) if they are not specified in this priority.
+actions+=/use_cooldowns
+# Use any trinkets that aren't otherwise specified.
+actions+=/use_items
+# If we haven't used Obliterate 4 times and we're in the first 10 seconds of the fight, process the opener.
+actions+=/call_action_list,strict=1,if=action.obliterate.casts<4&(action.raise_dead.casts<1|cooldown.raise_dead.remains>0)&time<10
+actions+=/icy_touch,if=!dot.frost_fever.ticking
+actions+=/plague_strike,if=!dot.blood_plague.ticking
+actions+=/pestilence,if=dot.frost_fever.ticking&dot.frost_fever.remains<1.5
+actions+=/blood_fury,if=cooldown.unbreakable_armor.ready
+actions+=/hyperspeed_acceleration,if=cooldown.unbreakable_armor.ready
+actions+=/potion_of_speed,if=cooldown.unbreakable_armor.ready
+actions+=/unbreakable_armor
+actions+=/blood_tap,if=prev_off_gcd.1.unbreakable_armor
+actions+=/pestilence,if=dot.frost_fever.ticking&dot.frost_fever.remains<4
+actions+=/howling_blast,if=buff.freezing_fog.up
+actions+=/obliterate
+actions+=/raise_dead
+actions+=/blood_strike
+actions+=/frost_strike
+
+## Opener
+actions.opener+=/icy_touch,casts=1
+actions.opener+=/plague_strike,casts=1
+actions.opener+=/unbreakable_armor,casts=1
+actions.opener+=/hyperspeed_acceleration,casts=1
+actions.opener+=/blood_fury,casts=1
+actions.opener+=/blood_tap,casts=1
+actions.opener+=/obliterate,casts=1
+actions.opener+=/frost_strike,casts=1
+actions.opener+=/pestilence,casts=1
+actions.opener+=/empower_rune_weapon,casts=1
+actions.opener+=/obliterate,casts=2
+actions.opener+=/frost_strike,casts=2
+actions.opener+=/obliterate,casts=4
+actions.opener+=/raise_dead,casts=1

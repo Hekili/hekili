@@ -1,0 +1,53 @@
+# DeathKnightBlood: Blood Pesti APL
+# https://wowsims.github.io/wotlk/deathknight/#
+# September 2023
+
+## Precombat
+actions.precombat+=/unholy_presence,precombat_seconds=20,if=change_presence
+actions.precombat+=/army_of_the_dead,precombat_seconds=10
+actions.precombat+=/blood_presence,precombat_seconds=6,if=change_presence
+# TODO: Check requirements re: overwriting other HoWs.
+actions.precombat+=/horn_of_winter,precombat_seconds=1.5,if=refreshable
+actions.precombat+=/potion_of_speed,precombat_seconds=1
+actions.precombat+=/unholy_frenzy
+actions.precombat+=/hyperspeed_acceleration
+# Or other racials?
+actions.precombat+=/berserking
+
+## Default
+actions+=/mind_freeze
+# Cast any other cooldowns (Racials) if they are not specified in this priority.
+actions+=/other_cooldowns
+# Use any trinkets that aren't otherwise specified.
+actions+=/use_items
+# If we haven't used Heart Strike 4 times and we're in the first 10 seconds of the fight, process the opener.
+actions+=/call_action_list,strict=1,if=action.heart_strike.casts<4&time<10
+actions+=/icy_touch,if=!dot.frost_fever.ticking
+actions+=/plague_strike,if=!dot.blood_plague.ticking
+actions+=/pestilence,if=dot.frost_fever.ticking&dot.frost_fever.remains<1.5
+actions+=/unholy_frenzy,if=cooldown.dancing_rune_weapon.ready
+actions+=/berserking,if=cooldown.dancing_rune_weapon.ready
+actions+=/hyperspeed_acceleration,if=cooldown.dancing_rune_weapon.ready
+actions+=/potion_of_speed,if=cooldown.dancing_rune_weapon.ready&(buff.unholy_frenzy.up|boss&cooldown.unholy_frenzy.remains>fight_remains)
+actions+=/raise_dead,if=cooldown.dancing_rune_weapon.ready
+actions+=/dancing_rune_weapon
+actions+=/pestilence,if=blood_runes.time_to_1>dot.frost_fever.remains
+actions+=/heart_strike
+actions+=/death_strike
+actions+=/death_coil,if=!cooldown.dancing_rune_weapon.ready
+actions+=/horn_of_winter
+
+## Opener
+actions.opener+=/icy_touch,casts=1
+actions.opener+=/plague_strike,casts=1
+actions.opener+=/death_strike,casts=1
+actions.opener+=/heart_strike,casts=2
+actions.opener+=/raise_dead,casts=1
+actions.opener+=/empower_rune_weapon,casts=1
+actions.opener+=/dancing_rune_weapon,casts=1
+actions.opener+=/death_strike,casts=2
+actions.opener+=/heart_strike,casts=3
+## Wait 1.5 seconds... ?
+actions.opener+=/blood_tap,casts=1
+actions.opener+=/heart_strike,casts=4
+
