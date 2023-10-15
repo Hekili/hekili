@@ -755,12 +755,12 @@ do
                 local ability = class.abilities[ tSpell ]
                 local aura = ability and class.auras[ ability.self_buff or spellID ]
 
-                if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t1.__has_use_buff = not ( aura and aura.ignore_buff ) and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
-                    state.trinket.t1.__use_buff_duration = aura and aura.duration or 0.01
+                if spellID and SpellIsSelfBuff( spellID ) and aura then
+                    state.trinket.t1.__has_use_buff = not aura.ignore_buff and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
+                    state.trinket.t1.__use_buff_duration = aura.duration > 0 and aura.duration or 0.01
                 elseif ability.self_buff then
                     state.trinket.t1.__has_use_buff = true
-                    state.trinket.t1.__use_buff_duration = aura and aura.duration or 0.01
+                    state.trinket.t1.__use_buff_duration = aura and aura.duration > 0 and aura.duration or 0.01
                 end
             end
 
@@ -795,12 +795,12 @@ do
                 local ability = class.abilities[ tSpell ]
                 local aura = class.auras[ ability.self_buff or spellID ]
 
-                if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t2.__has_use_buff = not ( aura and aura.ignore_buff ) and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
-                    state.trinket.t2.__use_buff_duration = aura and aura.duration or 0.01
+                if spellID and SpellIsSelfBuff( spellID ) and aura then
+                    state.trinket.t2.__has_use_buff = not aura.ignore_buff and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
+                    state.trinket.t2.__use_buff_duration = aura.duration > 0 and aura.duration or 0.01
                 elseif ability.self_buff then
                     state.trinket.t2.__has_use_buff = true
-                    state.trinket.t2.__use_buff_duration = aura and aura.duration or 0.01
+                    state.trinket.t2.__use_buff_duration = aura and aura.duration > 0 and aura.duration or 0.01
                 end
             end
 
