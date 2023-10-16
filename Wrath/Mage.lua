@@ -2006,7 +2006,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
 
 	if (sourceGUID == state.GUID) then
         if subtype == 'SPELL_DAMAGE' then
-            if heating_spells[spellID] == 1 then
+            if state.talent.hot_streak.enabled and heating_spells[spellID] == 1 then
                 local critical = select(7, ...)
                 if critical then
                     heatingUp = true
@@ -2015,7 +2015,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
                 end
             end
         elseif subtype == 'SPELL_AURA_APPLIED' then
-            if spellID == spec.auras.hot_streak.id then
+            if state.talent.hot_streak.enabled and spellID == spec.auras.hot_streak.id then
                 heatingUp = false
             end
         end
