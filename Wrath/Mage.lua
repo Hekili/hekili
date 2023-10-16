@@ -1297,7 +1297,7 @@ spec:RegisterAuras( {
         -- talent.combustion[28682] #0 -- APPLY_AURA, ADD_FLAT_MODIFIER, CRIT_CHANCE, points: 10, target: TARGET_UNIT_CASTER
     },
     heating_up = {
-        duration = 30,
+        duration = 3600, -- Heating up is a pseudo buff that has no duration
         max_stack = 1,
     },
     -- Your next Pyroblast spell is instant cast.
