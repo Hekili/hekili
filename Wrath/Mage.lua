@@ -1296,6 +1296,10 @@ spec:RegisterAuras( {
         -- glyph.fireball[57761] #1 -- APPLY_AURA, ADD_PCT_MODIFIER, CAST_TIME, points: -100000, target: TARGET_UNIT_CASTER
         -- talent.combustion[28682] #0 -- APPLY_AURA, ADD_FLAT_MODIFIER, CRIT_CHANCE, points: 10, target: TARGET_UNIT_CASTER
     },
+    heating_up = {
+        duration = 30,
+        max_stack = 1,
+    },
     -- Your next Pyroblast spell is instant cast.
     hot_streak = {
         id = 48108,
@@ -1986,9 +1990,35 @@ end
 local lastFingersConsumed = 0
 local lastFrostboltCast = 0
 
+local heating_spells = {
+    [42833] = 1,
+    [42873] = 1,
+    [42859] = 1,
+    [55362] = 1,
+    [47610] = 1
+}
+local heatingUp = false
+
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, ...)
     if not ( sourceGUID == state.GUID or destGUID == state.GUID ) then
         return
+    end
+
+	if (sourceGUID == state.GUID) then
+        if subtype == 'SPELL_DAMAGE' then
+            if heating_spells[spellID] == 1 then
+                local critical = select(7, ...)
+                if critical then
+                    heatingUp = true
+                else
+                    heatingUp = false
+                end
+            end
+        elseif subtype == 'SPELL_AURA_APPLIED' then
+            if spellID == spec.auras.hot_streak.id then
+                heatingUp = false
+            end
+        end
     end
 
     if AURA_REMOVED[ subtype ] and spellID == spec.auras.fingers_of_frost.id then
@@ -2047,6 +2077,10 @@ spec:RegisterHook( "reset_precast", function()
         else
             addStack( "fingers_of_frost", frostbolt_remains )
         end
+    end
+
+    if heatingUp then
+        applyBuff("heating_up")
     end
 end )
 
