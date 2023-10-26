@@ -566,7 +566,6 @@ spec:RegisterStateExpr("excess_e", function()
         and (not trinket_active) and buff.savage_roar.up and buff.savage_roar.remains < ttd
         and rip_refresh_pending
         and min(buff.savage_roar.remains, debuff.rip.remains) < time_to_cap - query_time then
-            print("Holding for rip")
             floating_energy = max(floating_energy, 100)
     end
 
