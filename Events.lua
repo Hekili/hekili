@@ -1068,7 +1068,7 @@ C_Timer.After( 60, UpdateSpellQueueWindow )
 do
     local macroInfo = {}
 
-    RegisterEvent( "EXECUTE_CHAT_LINE", function( event, macroText )
+        --[[ RegisterEvent( "EXECUTE_CHAT_LINE", function( event, macroText )
         if macroText then
             local action, target = SecureCmdOptionParse( macroText )
 
@@ -1083,7 +1083,7 @@ do
                 macroInfo[ ability.key ] = m
             end
         end
-    end )
+    end ) ]]
 
     function Hekili:GetMacroCastTarget( spell, castTime, source )
         local ability = class.abilities[ spell ]
