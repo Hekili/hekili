@@ -512,7 +512,6 @@ spec:RegisterStateExpr("excess_e", function()
     local floating_energy = 0
     local previous_time = query_time
     local tf_pending = false
-    local tf_carry = 0
     for i = 1, #sorted_actions do
         local entry = sorted_actions[i]
         if pending_actions[entry].refresh_time > 0 then
@@ -520,18 +519,12 @@ spec:RegisterStateExpr("excess_e", function()
             if not tf_pending then
                 tf_pending = tf_expected_before(query_time, pending_actions[entry].refresh_time)
                 if tf_pending then
-                    tf_carry = 60
+                    pending_actions[entry].refresh_cost = pending_actions[entry].refresh_cost - 60
                 end
             end
 
             if delta_t < pending_actions[entry].refresh_cost / 10 then
-                local refresh_cost = pending_actions[entry].refresh_cost
-                if tf_carry > 0 then
-                    local tf_spend = min(tf_carry, refresh_cost)
-                    refresh_cost = refresh_cost - tf_spend
-                    tf_carry = tf_carry - tf_spend
-                end
-                floating_energy = floating_energy + refresh_cost - 10 * delta_t
+                floating_energy = floating_energy + pending_actions[entry].refresh_cost - 10 * delta_t
                 previous_time = pending_actions[entry].refresh_time
             else
                 previous_time = previous_time + pending_actions[entry].refresh_cost / 10
@@ -569,12 +562,23 @@ spec:RegisterStateExpr("excess_e", function()
         end
     end
 
+    if combo_points.current == 5 and not (bite_before_rip or bite_at_end)
+        and (not trinket_active) and buff.savage_roar.up and buff.savage_roar.remains < ttd
+        and rip_refresh_pending
+        and min(buff.savage_roar.remains, debuff.rip.remains) < time_to_cap - query_time then
+            print("Holding for rip")
+            floating_energy = max(floating_energy, 100)
+    end
+
     return energy.current - floating_energy
+end)
+
+spec:RegisterStateExpr("rip_refresh_pending", function()
+    return debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - end_thresh
 end)
 
 spec:RegisterStateExpr("should_flowerweave", function()
     local furor_cap = min(20 * talent.furor.rank, 85)
-    local rip_refresh_pending = debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - end_thresh
     local flower_gcd = action.gift_of_the_wild.gcd
     local flowershift_energy = min(furor_cap, 75) - 10 * flower_gcd - 20 * latency
     local flower_end = flower_gcd + 1.5 + 2 * latency
@@ -594,7 +598,6 @@ end)
 
 spec:RegisterStateExpr("should_bearweave", function()
     local furor_cap = min(20 * talent.furor.rank, 85)
-    local rip_refresh_pending = debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - end_thresh
     local weave_end = 6 + 2 * latency
     local weave_energy = furor_cap - 30 - (20 * latency) - (talent.furor.rank > 3 and 15 or 0)
     local dump_action_cost = active_enemies > 2 and 45 or 42
