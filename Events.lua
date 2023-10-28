@@ -1066,22 +1066,34 @@ C_Timer.After( 60, UpdateSpellQueueWindow )
 
 
 do
-    local macroInfo = {}
+    local box, text
+    local info = {}
 
-    RegisterEvent( "EXECUTE_CHAT_LINE", function( event, macroText )
-        if macroText then
-            local action, target = SecureCmdOptionParse( macroText )
-
+    hooksecurefunc( "ChatEdit_SendText", function( b )
+        if box and box == b and text then
+            local action, target = SecureCmdOptionParse( text )
             local ability = action and class.abilities[ action ]
 
             if ability and ability.key then
-                local m = macroInfo[ ability.key ] or {}
+                local m = info[ ability.key ] or {}
 
-                m.target = target and UnitGUID( target ) or UnitGUID( "target" )
+                m.target = UnitGUID( target or "target" )
                 m.time   = GetTime()
 
-                macroInfo[ ability.key ] = m
+                info[ ability.key ] = m
             end
+
+            text = nil
+            return
+        end
+
+        if not box and b ~= DEFAULT_CHAT_FRAME.editBox then
+            box = b
+
+            box:HookScript( "OnTextSet", function( self )
+                local t = self:GetText()
+                if t and t ~= "" then text = t end
+            end )
         end
     end )
 
@@ -1090,7 +1102,7 @@ do
         local buffer = 0.1 + SpellQueueWindow
 
         if ability and ability.key then
-            local m = macroInfo[ ability.key ]
+            local m = info[ ability.key ]
 
             if m and abs( castTime - m.time ) < buffer then
                 return m.target -- This is a GUID.
