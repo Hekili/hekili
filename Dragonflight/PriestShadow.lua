@@ -1733,6 +1733,34 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- PvP Talent: [199845] Deals up to $s2% of the target's total health in Shadow damage every $t1 sec. Also slows their movement speed by $s3% and reduces healing received by $s4%.
+    psyfiend = {
+        id = 211522,
+        cast = 0,
+        cooldown = 45,
+        gcd = "spell",
+
+        startsCombat = true,
+        pvptalent = "psyfiend",
+
+        function()
+            -- Just assume the fiend is immediately flaying your target.
+            applyDebuff( "target", "psyflay" )
+        end,
+
+        auras = {
+            psyflay = {
+                id = 199845,
+                duration = 12,
+                max_stack = 1
+            }
+        }
+
+        -- Effects:
+        -- [x] #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 4.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- [x] #1: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 199824, 'target': TARGET_UNIT_CASTER, }
+    },
+
     -- Talent: Removes all Disease effects from a friendly target.
     purify_disease = {
         id = 213634,

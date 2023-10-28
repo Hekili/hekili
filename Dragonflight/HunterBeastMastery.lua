@@ -1799,6 +1799,36 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Increase the maximum health of you and your pet by 20% for 10 sec, and instantly heals you for that amount.
+    fortitude_of_the_bear = {
+        id = 272679,
+        cast = 0,
+        cooldown = function() return pvptalent.kindred_beasts.enabled and 60 or 120 end,
+        gcd = "off",
+
+        startsCombat = false,
+        texture = off,
+
+        handler = function ()
+            local hp = health.max * 0.2
+            health.max = health.max + hp
+            gain( hp, "health" )
+
+            applyBuff( "fortitude_of_the_bear" )
+        end,
+
+        copy = { 388035, 392956 }, -- Pet's version?
+
+        auras = {
+            fortitude_of_the_bear = {
+                id = 388035,
+                duration = 10,
+                max_stack = 1,
+                copy = 392956
+            }
+        }
+    },
+
     -- Hurls a frost trap to the target location that incapacitates the first enemy that approaches for $3355d. Damage will break the effect. Limit 1. Trap will exist for $3355d.
     freezing_trap = {
         id = 187650,
@@ -1950,18 +1980,29 @@ spec:RegisterAbilities( {
         copy = { 53351, 320976 }
     },
 
-
+    -- Your pet removes all root and movement impairing effects from itself and a friendly target, and grants immunity to all such effects for 4 sec.
     masters_call = {
         id = 272682,
         cast = 0,
-        cooldown = 45,
+        cooldown = function() return pvptalent.kindred_beasts.enabled and 22.5 or 45 end,
         gcd = "spell",
 
-        startsCombat = true,
-        texture = 236189,
+        startsCombat = false,
+        texture = off,
 
         handler = function ()
+            applyBuff( "masters_call" )
         end,
+
+        copy = 53271, -- Pet's version.
+
+        auras = {
+            masters_call = {
+                id = 62305,
+                duration = 4,
+                max_stack = 1
+            }
+        }
     },
 
     -- Talent: Misdirects all threat you cause to the targeted party or raid member, beginning with your next attack within $d and lasting for $35079d.
