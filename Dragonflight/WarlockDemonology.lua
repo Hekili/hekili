@@ -32,8 +32,7 @@ spec:RegisterTalents( {
     dark_accord                    = { 71956, 386659, 1 }, -- Reduces the cooldown of Unending Resolve by 45 sec.
     dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 200% of the sacrificed health plus an additional 24,582 for 20 sec. Usable while suffering from control impairing effects.
     darkfury                       = { 71941, 264874, 1 }, -- Reduces the cooldown of Shadowfury by 15 sec and increases its radius by 2 yards.
-    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of 0.2% of maximum health every 1 sec, and may now absorb up to 10% of maximum health.
-    demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
+    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of ${$s1/10}.1% of maximum health every $t1 sec, and may now absorb up to $s2% of maximum health.; Increases your armor by $m4%.    demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
     demonic_embrace                = { 71930, 288843, 1 }, -- Stamina increased by 10%.
     demonic_fortitude              = { 71922, 386617, 1 }, -- Increases you and your pets' maximum health by 5%.
     demonic_gateway                = { 71955, 111771, 1 }, -- Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per 90 sec.
@@ -74,11 +73,10 @@ spec:RegisterTalents( {
     annihilan_training             = { 72022, 386174, 1 }, -- Your Felguard deals 20% more damage and takes 10% less damage.
     antoran_armaments              = { 72008, 387494, 1 }, -- Your Felguard deals 20% additional damage. Soul Strike now deals 25% of its damage to nearby enemies.
     bilescourge_bombers            = { 72021, 267211, 1 }, -- Tear open a portal to the nether above the target location, from which several Bilescourge will pour out of and crash into the ground over 6 sec, dealing 4,446 Shadow damage to all enemies within 8 yards.
-    bloodbound_imps                = { 72001, 387349, 1 }, -- The chance of receiving a Demonic Core from a Wild Imp is increased by 5% or 10% when imploded.
     call_dreadstalkers             = { 72023, 104316, 1 }, -- Summons 2 ferocious Dreadstalkers to attack the target for 12 sec.
     carnivorous_stalkers           = { 72018, 386194, 1 }, -- Your Dreadstalkers' attacks have a 10% chance to trigger an additional Dreadbite.
     cavitation                     = { 72009, 416154, 2 }, -- Your primary Felguard's damaging critical strikes deal 10% increased damage.
-    demonbolt                      = { 72024, 264178, 1 }, -- Send the fiery soul of a fallen demon at the enemy, causing 12,390 Shadowflame damage. Generates 2 Soul Shards.
+    demoniac                       = { 72024, 426115, 1 }, -- [264178] Send the fiery soul of a fallen demon at the enemy, causing $s1 Shadowflame damage.$?c2[; Generates 2 Soul Shards.][]
     demonic_calling                = { 72017, 205145, 1 }, -- Shadow Bolt and Demonbolt have a 10% chance to make your next Call Dreadstalkers cost 2 fewer Soul Shards and have no cast time.
     demonic_knowledge              = { 72026, 386185, 1 }, -- Hand of Gul'dan has a 15% chance to generate a charge of Demonic Core.
     demonic_strength               = { 72021, 267171, 1 }, -- Infuse your Felguard with demonic strength and command it to charge your target and unleash a Felstorm that will deal 300% increased damage.
@@ -86,31 +84,34 @@ spec:RegisterTalents( {
     dread_calling                  = { 71999, 387391, 2 }, -- Each Soul Shard spent on Hand of Gul'dan increases the damage of your next Call Dreadstalkers by 2%.
     dreadlash                      = { 72020, 264078, 1 }, -- When your Dreadstalkers charge into battle, their Dreadbite attack now hits all targets within 8 yards and deals 10% more damage.
     fel_and_steel                  = { 72016, 386200, 1 }, -- Your primary Felguard's Legion Strike damage is increased by 10%. Your primary Felguard's Felstorm damage is increased by 5%.
+    fel_invocation                 = { 95146, 428351, 1 }, -- Soul Strike deals $s1% increased damage and generates a Soul Shard.; Reduces the cast time of Summon Vilefiend by ${$abs($s2)/1000}.1 sec and your Vilefiend now deals $428455s1 Nature damage to nearby enemies every $428453t sec while active.
     fel_sunder                     = { 72010, 387399, 1 }, -- Each time Felstorm deals damage, it increases the damage the target takes from you and your pets by 1% for 8 sec, up to 5%.
-    grand_warlocks_design          = { 71991, 387084, 1 }, -- Every Soul Shard you spend reduces the cooldown of Summon Demonic Tyrant by 0.6 sec.
+    grand_warlocks_design          = { 71991, 387084, 1 }, -- $?a137043[Summon Darkglare]?a137044[Summon Demonic Tyrant][Summon Infernal] cooldown is reduced by $?a137043[${$m1/-1000}]?a137044[${$m2/-1000}][${$m3/-1000}] sec.
     grimoire_felguard              = { 72013, 111898, 1 }, -- Summons a Felguard who attacks the target for 17 sec that deals 45% increased damage. This Felguard will stun and interrupt their target when summoned.
     guillotine                     = { 72005, 386833, 1 }, -- Your Felguard hurls his axe towards the target location, erupting when it lands and dealing 4,268 Shadowflame damage every 1 sec for 6 sec to nearby enemies. While unarmed, your Felguard's basic attacks deal damage to all nearby enemies and attacks 50% faster.
-    guldans_ambition               = { 71995, 387578, 1 }, -- When Nether Portal ends, you summon a Pit Lord that gains power based on how many demons you summoned, up to 20 demons, while Nether Portal was active. The Pit Lord lasts for 10 sec.
+    guldans_ambition               = { 71995, 387578, 1 }, -- When Nether Portal ends, you summon a Pit Lord that blasts your target for $<damage> Fire damage every $427688t1 sec for $427688d.
     heavy_handed                   = { 72014, 416183, 1 }, -- Increases your primary Felguard's critical strike chance by 10%.
-    immutable_hatred               = { 72005, 405670, 1 }, -- When your primary Felguard's Legion Strike damages only 1 target, its damage is increased by 100%. Your primary Felguard deals 4,490 Physical damage after auto-attacking the same enemy 3 consecutive times.
-    imp_gang_boss                  = { 71998, 387445, 2 }, -- Summoning a Wild Imp has a 5% chance to summon a Imp Gang Boss instead. An Imp Gang Boss deals 50% additional damage. When imploded, an Imp Gang Boss will summon a Wild Imp.
-    imperator                      = { 72025, 416230, 2 }, -- Increases the critical strike chance of your Wild Imp's Fel Firebolt by 5%.
+    immutable_hatred               = { 72005, 405670, 1 }, -- When you consume a Demonic Core, your primary Felguard carves your target, dealing $<damage> Physical damage.
+    imp_gang_boss                  = { 71998, 387445, 2 }, -- Summoning a Wild Imp has a $s1% chance to summon a Imp Gang Boss instead. An Imp Gang Boss deals $387458s2% additional damage. ; Implosions from Imp Gang Boss deal $s2% increased damage.
+    imperator                      = { 72025, 416230, 1 }, -- Increases the critical strike chance of your Wild Imp's Fel Firebolt by $s1%.
     implosion                      = { 72002, 196277, 1 }, -- Demonic forces suck all of your Wild Imps toward the target, and then cause them to violently explode, dealing 6,113 Shadowflame damage to all enemies within 8 yards.
     infernal_command               = { 72006, 387549, 2 }, -- While your Felguard is active, your Wild Imps and Dreadstalkers deal 5% additional damage.
-    inner_demons                   = { 72027, 267216, 1 }, -- You passively summon a Wild Imp to fight for you every 12 sec. While in combat, you also have a 5% chance to summon an additional Demon to fight for you for 15 sec.
+    inner_demons                   = { 72027, 267216, 1 }, -- You passively summon a Wild Imp to fight for you every $t1 sec.
     kazaaks_final_curse            = { 72029, 387483, 2 }, -- Doom deals 3% increased damage for each demon pet you have active.
-    malefic_impact                 = { 72012, 416341, 2 }, -- Increases Hand of Gul'dan damage by 8% and the critical strike chance of Hand of Gul'dan by 8%.
-    nerzhuls_volition              = { 71996, 387526, 2 }, -- When Nether Portal summons a demon, it has a 15% chance to summon an additional demon.
+    malefic_impact                 = { 72012, 416341, 1 }, -- Increases Hand of Gul'dan damage by $s1% and the critical strike chance of Hand of Gul'dan by $s2%.
+    nerzhuls_volition              = { 71996, 387526, 2 }, -- Demons summoned from your Nether Portal deal $s1% increased damage.
     nether_portal                  = { 71997, 267217, 1 }, -- Tear open a portal to the Twisting Nether for 15 sec. Every time you spend Soul Shards, you will also command demons from the Nether to come out and fight for you.
     pact_of_the_imp_mother         = { 72004, 387541, 2 }, -- Hand of Gul'dan has a 8% chance to cast a second time on your target for free.
     power_siphon                   = { 72003, 264130, 1 }, -- Instantly sacrifice up to 2 Wild Imps, generating 2 charges of Demonic Core that cause Demonbolt to deal 30% additional damage.
-    reign_of_tyranny               = { 71991, 390173, 1 }, -- Demonic Tyrant deals 40% additional damage. Active Wild Imps grant 1 stack of Demonic Servitude. Active greater demons grant 3 stacks of Demonic Servitude. Demonic Tyrant deals 7% additional damage for each stack of Demonic Servitude active at the time of his summon.
+    reign_of_tyranny               = { 71991, 427684, 1 }, -- Summon Demonic Tyrant empowers $s1 additional Wild Imps and deals $s2% increased damage for each demon he empowers.
     sacrificed_souls               = { 71993, 267214, 2 }, -- Shadow Bolt and Demonbolt deal 2% additional damage per demon you have summoned.
+    shadow_invocation              = { 95145, 422054, 1 }, -- Bilescourge Bombers deal $s1% increased damage, and your spells now have a chance to summon a Bilescourge Bomber.
     shadows_bite                   = { 72000, 387322, 1 }, -- When your summoned Dreadstalkers fade away, they increase the damage of your Demonbolt by 10% for 8 sec.
-    soul_strike                    = { 72019, 264057, 1 }, -- Command your Felguard to strike into the soul of its enemy, dealing 10,612 Shadow damage. Generates 1 Soul Shard.
+    soul_strike                    = { 72019, 428344, 1 }, -- [267964] Strike into the soul of the enemy, dealing $<damage> Shadow damage.$?s428351[; Generates 1 Soul Shard.][]
     soulbound_tyrant               = { 71992, 334585, 2 }, -- Summoning your Demonic Tyrant instantly generates 3 Soul Shards.
+    spiteful_reconstitution        = { 72001, 428394, 1 }, -- Implosion deals $s1% increased damage. Consuming a Demonic Core has a chance to summon a Wild Imp.
     stolen_power                   = { 72007, 387602, 1 }, -- When your Wild Imps cast Fel Firebolt, you gain an application of Stolen Power. After you reach 75 applications, your next Demonbolt deals 60% increased damage or your next Shadow Bolt deals 60% increased damage.
-    summon_demonic_tyrant          = { 72030, 265187, 1 }, -- Summon a Demonic Tyrant to increase the duration of all of your current lesser demons by 15 sec, and increase the damage of all of your other demons by 15%, while damaging your target. Generates 5 Soul Shards.
+    summon_demonic_tyrant          = { 72030, 265187, 1 }, -- Summon a Demonic Tyrant to increase the duration of your Dreadstalkers, Vilefiend, Felguard, and up to $s3 of your Wild Imps by ${$265273m3/1000} sec. Your Demonic Tyrant increases the damage of affected demons by $265273s1%, while damaging your target.$?s334585[; Generates ${$s2/10} Soul Shards.][]
     summon_vilefiend               = { 72019, 264119, 1 }, -- Summon a Vilefiend to fight for you for the next 15 sec.
     the_expendables                = { 71994, 387600, 1 }, -- When your Wild Imps expire or die, your other demons are inspired and gain 1% additional damage, stacking up to 10 times.
     the_houndmasters_stratagem     = { 72015, 267170, 1 }, -- Dreadbite causes the target to take 20% additional Shadowflame damage from your spell and abilities for the next 12 sec.
@@ -575,10 +576,17 @@ spec:RegisterStateFunction( "extend_demons", function( duration )
 
     for k, v in pairs( dreadstalkers_v ) do dreadstalkers_v [ k ] = v + duration end
     for k, v in pairs( vilefiend_v     ) do vilefiend_v     [ k ] = v + duration end
-    for k, v in pairs( wild_imps_v     ) do wild_imps_v     [ k ] = v + duration end
-    for k, v in pairs( imp_gang_boss_v ) do imp_gang_boss_v [ k ] = v + duration end
+
     for k, v in pairs( grim_felguard_v ) do grim_felguard_v [ k ] = v + duration end
     for k, v in pairs( other_demon_v   ) do other_demon_v   [ k ] = v + duration end
+
+    local n = talent.reign_of_tyranny.enabled and 15 or 10
+    for k, v in pairs( wild_imps_v     ) do
+        wild_imps_v[ k ] = v + duration
+        if imp_gang_boss_v[ k ] then imp_gang_boss_v[ k ] = v + duration end
+        n = n - 1
+        if n == 0 then break end
+    end
 end )
 
 
@@ -862,13 +870,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1,
     },
-    -- The cast time of Demonbolt is reduced by $s1%. $?a334581[Demonbolt damage is increased by $334581s1%.][]
-    -- https://wowhead.com/beta/spell=264173
-    demonic_core = {
-        id = 264173,
-        duration = 20,
-        max_stack = 4
-    },
     -- Talent: Faded into the nether and unable to use another Demonic Gateway.
     -- https://wowhead.com/beta/spell=113942
     demonic_gateway = {
@@ -945,6 +946,11 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1
     },
+    fel_cleave = {
+        id = 213688,
+        duration = 1,
+        max_stack = 1
+    },
     -- Damage taken reduced by $w1%.
     -- https://wowhead.com/beta/spell=386869
     fel_resilience = {
@@ -959,6 +965,13 @@ spec:RegisterAuras( {
         duration = 8,
         type = "Magic",
         max_stack = 5
+    },
+    -- Suffering Fire damage every $t1 sec.
+    felseeker = {
+        id = 427688,
+        duration = 10.0,
+        tick_time = 1.0,
+        max_stack = 1,
     },
     -- Striking for $<damage> Physical damage every $t1 sec. Unable to use other abilities.
     -- https://wowhead.com/beta/spell=89751
@@ -1507,32 +1520,20 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Send the fiery soul of a fallen demon at the enemy, causing 2,201 Shadowflame damage. Generates 2 Soul Shards.
-    demonbolt = {
-        id = 264178,
-        cast = function () return ( buff.demonic_core.up and 0 or 4.5 ) * haste end,
-        cooldown = 0,
+
+    call_fel_lord = {
+        id = 212459,
+        cast = 0,
+        cooldown = 120,
         gcd = "spell",
-        school = "shadowflame",
 
-        spend = 0.02,
-        spendType = "mana",
-
-        talent = "demonbolt",
         startsCombat = true,
+        pvptalent = "call_fel_lord",
+        toggle = "cooldowns",
 
-        handler = function ()
-            removeBuff( "stolen_power" )
-
-            if buff.demonic_core.up then
-                removeStack( "demonic_core" )
-                if set_bonus.tier30_2pc > 0 then reduceCooldown( "grimoire_felguard", 1 ) end
-            end
-
-            removeStack( "power_siphon" )
-            removeStack( "decimating_bolt" )
-
-            gain( 2, "soul_shards" )
+        handler = function()
+            interrupt()
+            applyDebuff( "target", "fel_cleave" )
         end,
     },
 
@@ -1799,10 +1800,10 @@ spec:RegisterAbilities( {
 
     -- Talent: Command your Felguard to strike into the soul of its enemy, dealing 2,814 Shadow damage. Generates 1 Soul Shard.
     soul_strike = {
-        id = 264057,
+        id = 267964,
         cast = 0,
         cooldown = 10,
-        gcd = "spell",
+        gcd = "off",
         school = "physical",
 
         talent = "soul_strike",
@@ -1810,15 +1811,15 @@ spec:RegisterAbilities( {
 
         usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
         handler = function ()
-            gain( 1, "soul_shards" )
+            if talent.fel_invocation.enabled then gain( 1, "soul_shards" ) end
         end,
     },
 
-    -- Talent: Summon a Demonic Tyrant to increase the duration of all of your current lesser demons by 15 sec, and increase the damage of all of your other demons by 15%, while damaging your target. Generates 5 Soul Shards.
+    -- Talent: Summon a Demonic Tyrant to increase the duration of your Dreadstalkers, Vilefiend, Felguard, and up to $s3 of your Wild Imps by ${$265273m3/1000} sec. Your Demonic Tyrant increases the damage of affected demons by $265273s1%, while damaging your target.$?s334585[; Generates ${$s2/10} Soul Shards.][]
     summon_demonic_tyrant = {
         id = 265187,
         cast = 2,
-        cooldown = 90,
+        cooldown = function () return 90 - ( talent.grand_warlocks_design.enabled and 30 or 0 ) end,
         gcd = "spell",
         school = "shadow",
 
@@ -1890,7 +1891,7 @@ spec:RegisterAbilities( {
     -- Talent: Summon a Vilefiend to fight for you for the next 15 sec.
     summon_vilefiend = {
         id = 264119,
-        cast = 2,
+        cast = function() return ( talent.fel_invocation.enabled and 1.5 or 2 ) * haste end,
         cooldown = 45,
         gcd = "spell",
         school = "fire",

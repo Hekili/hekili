@@ -117,7 +117,7 @@ spec:RegisterTalents( {
     dark_accord                    = { 71956, 386659, 1 }, -- Reduces the cooldown of Unending Resolve by 45 sec.
     dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 200% of the sacrificed health plus an additional 24,490 for 20 sec. Usable while suffering from control impairing effects.
     darkfury                       = { 71941, 264874, 1 }, -- Reduces the cooldown of Shadowfury by 15 sec and increases its radius by 2 yards.
-    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of 0.2% of maximum health every 1 sec, and may now absorb up to 10% of maximum health.
+    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of ${$s1/10}.1% of maximum health every $t1 sec, and may now absorb up to $s2% of maximum health.; Increases your armor by $m4%.
     demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
     demonic_embrace                = { 71930, 288843, 1 }, -- Stamina increased by 10%.
     demonic_fortitude              = { 71922, 386617, 1 }, -- Increases you and your pets' maximum health by 5%.
@@ -165,6 +165,7 @@ spec:RegisterTalents( {
     channel_demonfire              = { 72064, 196447, 1 }, -- Launches 20 bolts of felfire over 2.3 sec at random targets afflicted by your Immolate within 40 yds. Each bolt deals 3,214 Fire damage to the target and 1,278 Fire damage to nearby enemies.
     chaos_bolt                     = { 72068, 116858, 1 }, -- Unleashes a devastating blast of chaos, dealing a critical strike for 40,382 Chaos damage. Damage is further increased by your critical strike chance.
     chaos_incarnate                = { 71966, 387275, 1 }, -- Chaos Bolt, Rain of Fire, and Shadowburn always gains maximum benefit from your Mastery: Chaotic Energies.
+    chaosbringer                   = { 71967, 422057, 2 }, -- Chaos Bolt damage increased by $s1%. Rain of Fire damage increased by $s2%. Shadowburn damage increased by $s3%.
     conflagrate                    = { 72067, 17962 , 1 }, -- Triggers an explosion on the target, dealing 16,171 Fire damage. Reduces the cast time of your next Incinerate or Chaos Bolt by 30% for 10 sec. Generates 5 Soul Shard Fragments.
     conflagration_of_chaos         = { 72061, 387108, 2 }, -- Conflagrate and Shadowburn have a 25% chance to guarantee your next cast of the ability to critically strike, and increase its damage by your critical strike chance.
     crashing_chaos                 = { 71960, 417234, 2 }, -- Summon Infernal increases the damage of your next 8 casts of Chaos Bolt by 25% or your next 8 casts of Rain of Fire by 35%.
@@ -176,7 +177,7 @@ spec:RegisterTalents( {
     explosive_potential            = { 72059, 388827, 1 }, -- Reduces the cooldown of Conflagrate by 2 sec.
     fire_and_brimstone             = { 71982, 196408, 2 }, -- Incinerate now also hits all enemies near your target for 13% damage.
     flashpoint                     = { 71972, 387259, 2 }, -- When your Immolate deals periodic damage to a target above 80% health, gain 2% Haste for 10 sec. Stacks up to 3 times.
-    grand_warlocks_design          = { 71959, 387084, 1 }, -- Every Soul Shard you spend reduces the cooldown of Summon Infernal by 1.5 sec.
+    grand_warlocks_design          = { 71959, 387084, 1 }, -- $?a137043[Summon Darkglare]?a137044[Summon Demonic Tyrant][Summon Infernal] cooldown is reduced by $?a137043[${$m1/-1000}]?a137044[${$m2/-1000}][${$m3/-1000}] sec.
     grimoire_of_sacrifice          = { 71971, 108503, 1 }, -- Sacrifices your demon pet for power, gaining its command demon ability, and causing your spells to sometimes also deal 5,660 additional Shadow damage. Lasts until canceled or until you summon a demon pet.
     havoc                          = { 71979, 80240 , 1 }, -- Marks a target with Havoc for 15 sec, causing your single target spells to also strike the Havoc victim for 60% of the damage dealt.
     improved_conflagrate           = { 72065, 231793, 1 }, -- Conflagrate gains an additional charge.
@@ -184,7 +185,6 @@ spec:RegisterTalents( {
     infernal_brand                 = { 71958, 387475, 2 }, -- Your Infernal's melee attacks cause its target to take 3% increased damage from its Immolation, stacking up to 15 times.
     inferno                        = { 71974, 270545, 1 }, -- Rain of Fire damage is increased by 20% and has a 20% chance to generate a Soul Shard Fragment.
     internal_combustion            = { 71980, 266134, 1 }, -- Chaos Bolt consumes up to 5 sec of Immolate's damage over time effect on your target, instantly dealing that much damage.
-    madness_of_the_azjaqir         = { 71967, 387400, 2 }, -- Chaos Bolt increases the damage of Chaos Bolt by 12% and reduces the cast time of Chaos Bolt by 10% for 5 sec. Rain of Fire increases the damage of Rain of Fire by 12% for 5 sec. Shadowburn increases the damage of Shadowburn by 12% for 5 sec.
     master_ritualist               = { 71962, 387165, 2 }, -- Ritual of Ruin requires 2 less Soul Shards spent.
     mayhem                         = { 71979, 387506, 1 }, -- Your single target spells have a 35% chance to apply Havoc to a nearby enemy for 5.0 sec.  Havoc Marks a target with Havoc for 5.0 sec, causing your single target spells to also strike the Havoc victim for 60% of the damage dealt.
     pandemonium                    = { 71981, 387509, 1 }, -- Increases the base duration of Havoc by 3 sec. Mayhem has an additional 10% chance to trigger.
@@ -615,30 +615,6 @@ spec:RegisterAuras( {
         id = 386647,
         duration = 20,
         max_stack = 1
-    },
-    -- Talent: Chaos Bolt damage is increased by $w1% and its cast time is reduced by $w2%.
-    -- https://wowhead.com/beta/spell=387409
-    madness_of_the_azjaqir_cb = {
-        id = 387409,
-        duration = 5,
-        max_stack = 1,
-        copy = "madness_cb"
-    },
-    -- Talent: Rain of Fire damage is increased by $w1%.
-    -- https://wowhead.com/beta/spell=387413
-    madness_of_the_azjaqir_rof = {
-        id = 387413,
-        duration = 5,
-        max_stack = 1,
-        copy = "madness_rof"
-    },
-    -- Talent: Shadowburn damage is increased by $w1%.
-    -- https://wowhead.com/beta/spell=387414
-    madness_of_the_azjaqir_sb = {
-        id = 387414,
-        duration = 5,
-        max_stack = 1,
-        copy = "madness_sb"
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=6789
@@ -1227,7 +1203,6 @@ spec:RegisterAbilities( {
         cast = function () return 3 * haste
             * ( buff.ritual_of_ruin.up and 0.5 or 1 )
             * ( buff.backdraft.up and 0.7 or 1 )
-            * ( 1 - 0.1 * ( buff.madness_of_the_azjaqir_cb.up and talent.madness_of_the_azjaqir.rank or 0 ) )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1263,9 +1238,6 @@ spec:RegisterAbilities( {
             if talent.internal_combustion.enabled and debuff.immolate.up then
                 if debuff.immolate.remains <= 5 then removeDebuff( "target", "immolate" )
                 else debuff.immolate.expires = debuff.immolate.expires - 5 end
-            end
-            if talent.madness_of_the_azjaqir.enabled then
-                applyBuff( "madness_of_the_azjaqir_cb" )
             end
         end,
 
@@ -1553,7 +1525,6 @@ spec:RegisterAbilities( {
             if talent.burn_to_ashes.enabled then
                 addStack( "burn_to_ashes", nil, 2 )
             end
-            if talent.madness_of_the_azjaqir.enabled then applyBuff( "madness_of_the_azjaqir_rof" ) end
         end,
     },
 
@@ -1626,7 +1597,6 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "eradication" )
                 active_dot.eradication = max( active_dot.eradication, active_dot.bane_of_havoc )
             end
-            if talent.madness_of_the_azjaqir.enabled then applyBuff( "madness_of_the_azjaqir_sb" ) end
         end,
     },
 

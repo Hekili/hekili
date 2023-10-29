@@ -1,5 +1,5 @@
 -- WarlockAffliction.lua
--- November 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "WARLOCK" then return end
 
@@ -55,7 +55,7 @@ spec:RegisterTalents( {
     dark_accord                    = { 71956, 386659, 1 }, -- Reduces the cooldown of Unending Resolve by 45 sec.
     dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 200% of the sacrificed health plus an additional 24,582 for 20 sec. Usable while suffering from control impairing effects.
     darkfury                       = { 71941, 264874, 1 }, -- Reduces the cooldown of Shadowfury by 15 sec and increases its radius by 2 yards.
-    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of 0.2% of maximum health every 1 sec, and may now absorb up to 10% of maximum health.
+    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of ${$s1/10}.1% of maximum health every $t1 sec, and may now absorb up to $s2% of maximum health.; Increases your armor by $m4%.
     demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
     demonic_embrace                = { 71930, 288843, 1 }, -- Stamina increased by 10%.
     demonic_fortitude              = { 71922, 386617, 1 }, -- Increases you and your pets' maximum health by 5%.
@@ -103,14 +103,14 @@ spec:RegisterTalents( {
     drain_soul                     = { 72045, 198590, 1 }, -- Drains the target's soul, causing 30,353 Shadow damage over 3.8 sec. Damage is increased by 100% against enemies below 20% health. Generates 1 Soul Shard if the target dies during this effect.
     dread_touch                    = { 71986, 389775, 1 }, -- Malefic Rapture causes targets suffering from your Unstable Affliction to take 30% additional damage from your damage over time effects for 8 sec.
     focused_malignancy             = { 72042, 399668, 2 }, -- Malefic Rapture deals 15% increased damage to targets suffering from Unstable Affliction.
-    grand_warlocks_design          = { 71988, 387084, 1 }, -- Every Soul Shard you spend reduces the cooldown of Summon Darkglare by 2.0 sec.
+    grand_warlocks_design          = { 71988, 387084, 1 }, -- $?a137043[Summon Darkglare]?a137044[Summon Demonic Tyrant][Summon Infernal] cooldown is reduced by $?a137043[${$m1/-1000}]?a137044[${$m2/-1000}][${$m3/-1000}] sec.
     grim_reach                     = { 71988, 389992, 1 }, -- When Darkglare deals damage, it deals 50% of that damage to all enemies affected by your damage over time effects.
     grimoire_of_sacrifice          = { 72054, 108503, 1 }, -- Sacrifices your demon pet for power, gaining its command demon ability, and causing your spells to sometimes also deal 5,889 additional Shadow damage. Lasts until canceled or until you summon a demon pet.
     haunt                          = { 72032, 48181 , 1 }, -- A ghostly soul haunts the target, dealing 10,798 Shadow damage and increasing your damage dealt to the target by 10% for 18 sec. If the target dies, Haunt's cooldown is reset.
     haunted_soul                   = { 71989, 387301, 1 }, -- Your Haunt spell also increases the damage of your damage over time effects to all targets by 20% while active.
     inevitable_demise              = { 72046, 334319, 2 }, -- Damaging an enemy with Agony increases the damage dealt by your next Drain Life by 7%. This effect stacks up to 50 times.
     kindled_malice                 = { 72040, 405330, 2 }, -- Malefic Rapture and Seed of Corruption deal an additional 4% damage.
-    malefic_rapture                = { 72049, 324536, 1 }, -- Your damaging periodic effects from your spells erupt on all targets, causing 5,921 Shadow damage per effect.
+    malefic_rapture                = { 72049, 324536, 1 }, -- Your damaging periodic effects from your spells erupt on all targets, causing $324540s1 Shadow damage per effect.
     malevolent_visionary           = { 71987, 387273, 2 }, -- Darkglare increases its damage by an additional 3% for each damage over time effect active. Darkglare lasts an additional 5 sec.
     nightfall                      = { 72047, 108558, 1 }, -- Corruption damage has a chance to cause your next Shadow Bolt or Drain Soul to deal 25% increased damage. Shadow Bolt is instant cast and Drain Soul channels 50% faster when affected.
     pandemic_invocation            = { 72052, 386759, 1 }, -- Refreshing Corruption, Agony, Unstable Affliction, or Siphon Life with less than 5 seconds remaining will deal 6,282 Shadow damage and has a 6.66% chance to grant you a Soul Shard.
@@ -122,8 +122,8 @@ spec:RegisterTalents( {
     siphon_life                    = { 72053, 63106 , 1 }, -- Siphons the target's life essence, dealing 27,148 Shadow damage over 15 sec and healing you for 30% of the damage done.
     soul_flame                     = { 72041, 199471, 2 }, -- When you kill a target, its soul bursts into flames, dealing 5,235 Shadowflame damage to nearby enemies. Deals reduced damage beyond 8 targets.
     soul_rot                       = { 72056, 386997, 1 }, -- Wither away all life force of your current target and up to 3 additional targets nearby, causing your primary target to suffer 66,731 Nature damage and secondary targets to suffer 33,365 Nature damage over 8 sec. For the next 8 sec, casting Drain Life will cause you to also Drain Life from any enemy affected by your Soul Rot, and Drain Life will not consume any mana.
-    soul_swap                      = { 72037, 386951, 1 }, -- Copies your damage over time effects from the target, preserving their duration. Your next use of Soul Swap within 10 sec will exhale a copy damage of the effects onto a new target.
-    souleaters_gluttony            = { 71920, 389630, 2 }, -- Whenever Unstable Affliction deals damage, the cooldown of Soul Rot is reduced by 0.5 sec.
+    soul_swap                      = { 72037, 386951, 1 }, -- Copies your damage over time effects and Haunt from the target, preserving their duration.; Your next use of Soul Swap within $86211d will exhale a copy damage of the effects onto a new target.within 10 sec will exhale a copy damage of the effects onto a new target.
+    souleaters_gluttony            = { 71920, 389630, 2 }, -- Soul Rot cooldown is reduced by ${$s1/-1000} sec.
     sow_the_seeds                  = { 72039, 196226, 1 }, -- Seed of Corruption now embeds demon seeds into 2 additional nearby enemies.
     summon_darkglare               = { 72034, 205180, 1 }, -- Summons a Darkglare from the Twisting Nether that extends the duration of your damage over time effects on all enemies by 8 sec. The Darkglare will serve you for 20 sec, blasting its target for 4,987 Shadow damage, increased by 25% for every damage over time effect you have active on their current target.
     tormented_crescendo            = { 72031, 387075, 1 }, -- While Agony, Corruption, and Unstable Affliction are active, your Shadow Bolt has a 30% chance and your Drain Soul has a 20% chance to make your next Malefic Rapture cost no Soul Shards and cast instantly.
@@ -143,10 +143,10 @@ spec:RegisterPvpTalents( {
     essence_drain       = 19  , -- (221711) Whenever you heal yourself with Drain Life, the enemy target deals 9% reduced damage to you for 10 sec. Stacks up to 4 times.
     gateway_mastery     = 15  , -- (248855) Increases the range of your Demonic Gateway by 20 yards, and reduces the cast time by 30%. Reduces the time between how often players can take your Demonic Gateway by 30 sec.
     impish_instincts    = 5579, -- (409835) Taking direct Physical damage reduces the cooldown of Demonic Circle by 2 sec. Cannot occur more than once every 5 sec.
+    jinx                = 5386, -- (426352) Casting a curse now applies Corruption and Agony to your target, but curses now costs ${$s1/10} Soul $LShard:Shards;.
     nether_ward         = 18  , -- (212295) Surrounds the caster with a shield that lasts 3 sec, reflecting all harmful spells cast on you.
     oblivion            = 12  , -- (417537) Unleash wicked magic upon your target's soul, dealing 96,889 Shadow damage over 3 sec. Deals 10% increased damage, up to 30%, per damage over time effect you have active on the target.
     rampant_afflictions = 5379, -- (335052) Unstable Affliction can now be applied to up to 3 targets, but its damage is reduced by 25%.
-    rapid_contagion     = 5386, -- (344566) For the next 10 sec, all of your damage over time effects occur 45% more often.
     rot_and_decay       = 16  , -- (212371) Shadow Bolt damage increases the duration of your Unstable Affliction, Corruption, Agony, and Siphon Life on the target by 3.0 sec. Drain Life, Drain Soul, and Oblivion damage increases the duration of your Unstable Affliction, Corruption, Agony, and Siphon Life on the target by 1.0 sec.
     shadow_rift         = 5392, -- (353294) Conjure a Shadow Rift at the target location lasting 2 sec. Enemy players within the rift when it expires are teleported to your Demonic Circle. Must be within 40 yds of your Demonic Circle to cast.
     soul_rip            = 5608, -- (410598) Fracture the soul of up to 3 target players within 20 yds into the shadows, reducing their damage done by 25% and healing received by 25% for 8 sec. Souls are fractured up to 20 yds from the player's location. Players can retrieve their souls to remove this effect.
@@ -459,6 +459,11 @@ spec:RegisterAuras( {
     nightfall = {
         id = 264571,
         duration = 12,
+        max_stack = 1
+    },
+    oblivion = {
+        id = 417537,
+        duration = 3,
         max_stack = 1
     },
     -- Talent: Dealing damage to all nearby targets every $t1 sec and healing the casting Warlock.
@@ -1056,9 +1061,10 @@ spec:RegisterAbilities( {
     amplify_curse = {
         id = 328774,
         cast = 0,
-        cooldown = function() return talent.teachings_of_the_satyr.enabled and 20 or 30 end,
+        cooldown = 60, function() return talent.teachings_of_the_satyr.enabled and 45 or 60 end,
         gcd = "off",
         school = "shadow",
+        icd = 1.5,
 
         talent = "amplify_curse",
         startsCombat = false,
@@ -1131,6 +1137,11 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "shadow",
 
+        spend = function()
+            if pvptalent.jinx.enabled then return 1, "soul_shards" end
+            return 0.01, "mana"
+        end,
+
         talent = "curses_of_enfeeblement",
         startsCombat = true,
 
@@ -1139,6 +1150,11 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "curse_of_exhaustion" )
             removeDebuff( "target", "curse_of_tongues" )
             removeDebuff( "target", "curse_of_weakness" )
+
+            if pvptalent.jinx.enabled then
+                applyDebuff( "target", "corruption" )
+                applyDebuff( "target", "agony" )
+            end
         end,
     },
 
@@ -1149,8 +1165,10 @@ spec:RegisterAbilities( {
         cooldown = 45,
         gcd = "spell",
 
-        spend = 0.01,
-        spendType = "mana",
+        spend = function()
+            if pvptalent.jinx.enabled then return 1, "soul_shards" end
+            return 0.01, "mana"
+        end,
 
         pvptalent = "curse_of_fragility",
 
@@ -1162,6 +1180,11 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "curse_of_fragility" )
             setCooldown( "curse_of_tongues", max( 6, cooldown.curse_of_tongues.remains ) )
             setCooldown( "curse_of_weakness", max( 6, cooldown.curse_of_weakness.remains ) )
+
+            if pvptalent.jinx.enabled then
+                applyDebuff( "target", "corruption" )
+                applyDebuff( "target", "agony" )
+            end
         end,
     },
 
@@ -1173,8 +1196,10 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "shadow",
 
-        spend = 0.01,
-        spendType = "mana",
+        spend = function()
+            if pvptalent.jinx.enabled then return 1, "soul_shards" end
+            return 0.01, "mana"
+        end,
 
         talent = "curses_of_enfeeblement",
         startsCombat = true,
@@ -1186,6 +1211,11 @@ spec:RegisterAbilities( {
             removeDebuff( "target", "curse_of_weakness" )
             setCooldown( "curse_of_fragility", max( 6, cooldown.curse_of_fragility.remains ) )
             setCooldown( "curse_of_weakness", max( 6, cooldown.curse_of_weakness.remains ) )
+
+            if pvptalent.jinx.enabled then
+                applyDebuff( "target", "corruption" )
+                applyDebuff( "target", "agony" )
+            end
         end,
     },
 
@@ -1197,8 +1227,10 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "shadow",
 
-        spend = 0.01,
-        spendType = "mana",
+        spend = function()
+            if pvptalent.jinx.enabled then return 1, "soul_shards" end
+            return 0.01, "mana"
+        end,
 
         startsCombat = true,
 
@@ -1209,6 +1241,11 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "curse_of_weakness" )
             setCooldown( "curse_of_fragility", max( 6, cooldown.curse_of_fragility.remains ) )
             setCooldown( "curse_of_tongues", max( 6, cooldown.curse_of_tongues.remains ) )
+
+            if pvptalent.jinx.enabled then
+                applyDebuff( "target", "corruption" )
+                applyDebuff( "target", "agony" )
+            end
         end,
     },
 
@@ -1563,7 +1600,7 @@ spec:RegisterAbilities( {
         end,
     }, ]]
 
-    -- Talent: Your damaging periodic effects erupt on all targets, causing 1,416 Shadow damage per effect.
+    -- Talent: Your damaging periodic effects from your spells erupt on all targets, causing $324540s1 Shadow damage per effect.
     malefic_rapture = {
         id = 324536,
         cast = function () return ( buff.tormented_crescendo.up or buff.calamitous_crescendo.up ) and 0 or 1.5 end,
@@ -1639,6 +1676,32 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "nether_ward" )
         end,
+    },
+
+     -- Unleash wicked magic upon your target's soul, dealing $o Shadow damage over $d.; Deals $s2% increased damage, up to ${$s2*$s3}%, per damage over time effect you have active on the target.
+     oblivion = {
+        id = 417537,
+        cast = 3,
+        channeled = true,
+        cooldown = 45.0,
+        gcd = "global",
+
+        spend = 2,
+        spendType = "soul_shards",
+
+        startsCombat = true,
+        pvptalent = "oblivion",
+
+        usable = function() return debuff.agony.up or debuff.doom.up or debuff.corruption.up or debuff.unstable_affliction.up or debuff.vile_taint.up or debuff.phantom_singularity.up or debuff.soul_rot.up or debuff.siphon_life.up, "requires an active dot effect" end,
+
+        start = function ()
+            applyDebuff( "target", "oblivion" )
+        end,
+
+        -- Effects:
+        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 1.0, 'sp_bonus': 2.66, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 10.0, }
+        -- #2: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 3.0, }
     },
 
     -- Talent: Places a phantom singularity above the target, which consumes the life of all enemies within 15 yards, dealing 10,570 damage over 12.2 sec, healing you for 25% of the damage done.
@@ -1817,7 +1880,7 @@ spec:RegisterAbilities( {
     soul_rot = {
         id = function() return talent.soul_rot.enabled and 386997 or 325640 end,
         cast = 1.5,
-        cooldown = 60,
+        cooldown = function() return 60 - 8 * talent.souleaters_gluttony.rank end,
         gcd = "spell",
         school = "nature",
 
@@ -1838,7 +1901,7 @@ spec:RegisterAbilities( {
         copy = { 386997, 325640 }
     },
 
-    -- Talent: Applies Corruption, Agony, and Unstable Affliction to your target.
+    -- Talent: Copies your damage over time effects and Haunt from the target, preserving their duration.; Your next use of Soul Swap within $86211d will exhale a copy damage of the effects onto a new target.
     soul_swap = {
         id = 386951,
         cast = 0,
@@ -1859,6 +1922,7 @@ spec:RegisterAbilities( {
             buff.soul_swap.corruption = debuff.corruption.up
             buff.soul_swap.agony = debuff.agony.up
             buff.soul_swap.unstable_affliction = debuff.unstable_affliction.up
+            buff.soul_swap.source = target.unit
             if debuff.unstable_affliction.up then removeDebuff( "unstable_affliction" ) end
         end,
 
@@ -1996,7 +2060,7 @@ spec:RegisterAbilities( {
     summon_darkglare = {
         id = 205180,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return 120 - 30 * talent.grand_warlocks_design.rank end,
         gcd = "spell",
         school = "shadow",
 
