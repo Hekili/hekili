@@ -824,7 +824,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=2094
     blind = {
         id = 2094,
-        duration = 60,
+        duration = function() return 60 * ( talent.airborne_irritant.enabled and 0.6 or 1 ) end,
         mechanic = "disorient",
         type = "Ranged",
         max_stack = 1
@@ -997,7 +997,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=32645
     envenom = {
         id = 32645,
-        duration = function () return ( 1 + effective_combo_points ) + ( 2 * talent.twist_the_knife.rank ) end,
+        duration = function () return ( effective_combo_points ) + ( 2 * talent.twist_the_knife.rank ) end,
         type = "Poison",
         max_stack = 1
     },
@@ -1168,11 +1168,11 @@ spec:RegisterAuras( {
         duration = 4,
         max_stack = 1
     },
-    -- Talent: Marked for Death will reset upon death.
+    -- Talent: Marked for death, taking extra damage from @auracaster's finishing moves. Cooldown resets upon death.
     -- https://wowhead.com/beta/spell=137619
     marked_for_death = {
         id = 137619,
-        duration = 60,
+        duration = 15,
         max_stack = 1
     },
     -- Talent: Critical strike chance increased by $w1%.
@@ -1225,13 +1225,6 @@ spec:RegisterAuras( {
     numbing_poison_dot = {
         id = 5760,
         duration = 10,
-        max_stack = 1
-    },
-    -- Talent: Damage taken increased by $s1%.
-    -- https://wowhead.com/beta/spell=255909
-    prey_on_the_weak = {
-        id = 255909,
-        duration = 6,
         max_stack = 1
     },
     -- Bleeding for $w1 damage every $t1 sec.
@@ -1327,7 +1320,7 @@ spec:RegisterAuras( {
         },
         copy = { "serrated_bone_spike_dot", 324073 }
     },
-    -- Talent: Combo point generating abilities generate $s2 additional combo point and deal $s1% additional damage as Shadow.
+    -- Attacks deal $w1% additional damage as Shadow and combo point generating attacks generate full combo points.
     -- https://wowhead.com/beta/spell=121471
     shadow_blades = {
         id = 121471,
@@ -1341,6 +1334,18 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1,
         copy = 185313
+    },
+    -- Combo points stored.
+    -- TODO: Is the # of points stored as a stack or value?
+    shadow_techniques = {
+        id = 196911,
+        duration = 3600,
+        max_stack = 1,
+
+        -- Affected by:
+        -- deeper_stratagem[193531] #5: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
+        -- improved_shadow_techniques[394023] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+        -- secret_stratagem[394320] #5: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
     },
     -- Talent: Movement speed increased by $s2%.
     -- https://wowhead.com/beta/spell=36554
@@ -1406,7 +1411,7 @@ spec:RegisterAuras( {
     },
     sprint = {
         id = 2983,
-        duration = 8,
+        duration = function() return ( 8 + ( talent.featherfoot.rank * 4 ) ) * ( pvptalent.maneuverability.enabled and 0.5 or 1 ) end,
         max_stack = 1,
     },
     -- Stealthed.
@@ -1422,6 +1427,12 @@ spec:RegisterAuras( {
     symbols_of_death = {
         id = 212283,
         duration = 10,
+        max_stack = 1,
+    },
+    -- Movement speed increased by $w1%.
+    terrifying_pace = {
+        id = 428389,
+        duration = 3.0,
         max_stack = 1,
     },
     -- Talent: Mastery increased by ${$w2*$mas}.1%.
@@ -1548,7 +1559,8 @@ spec:RegisterAbilities( {
         usable = function () return stealthed.ambush or buff.audacity.up or buff.blindside.up, "requires stealth or audacity/blindside/sepsis_buff" end,
 
         cp_gain = function ()
-            return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) )
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 6 end
+            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
         end,
 
         handler = function ()
@@ -1600,7 +1612,7 @@ spec:RegisterAbilities( {
     blind = {
         id = 2094,
         cast = 0,
-        cooldown = function () return talent.blinding_powder.enabled and 90 or 120 end,
+        cooldown = function () return ( talent.blinding_powder.enabled and 90 or 120 ) * ( talent.airborne_irritant.enabled and 0.5 or 1 ) end,
         gcd = "spell",
 
         talent = "blind",
@@ -1967,7 +1979,9 @@ spec:RegisterAbilities( {
     feint = {
         id = 1966,
         cast = 0,
-        cooldown = 15,
+        cooldown = function() return 15 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
+        charges = function() return talent.graceful_guile.enabled and 2 or nil end,
+        recharge = function() return talent.graceful_guile.enabled and ( 15 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) ) or nil end,
         gcd = "totem",
         school = "physical",
 
@@ -2049,7 +2063,10 @@ spec:RegisterAbilities( {
         talent = "gouge",
         startsCombat = true,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+        cp_gain = function ()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 6 end
+            return 1 + ( buff.shadow_blades.up and 6 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
+        end,
 
         handler = function ()
             applyDebuff( "target", "gouge" )
@@ -2113,14 +2130,17 @@ spec:RegisterAbilities( {
         end
     },
 
-
+    -- Finishing move that stuns the target$?a426588[ and creates shadow clones to stun all other nearby enemies][]. Lasts longer per combo point, up to 5:;    1 point  : 2 seconds;    2 points: 3 seconds;    3 points: 4 seconds;    4 points: 5 seconds;    5 points: 6 seconds
     kidney_shot = {
         id = 408,
         cast = 0,
-        cooldown = 20,
+        cooldown = function() return talent.stunning_secret.enabled and 40 or 20 end,
         gcd = "spell",
 
-        spend = function () return ( talent.rushed_setup.enabled and 20 or 25 ) * ( 1 - 0.1 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spend = function ()
+            if buff.goremaws_bite.up then return 0 end
+            return ( talent.rushed_setup.enabled and 20 or 25 ) * ( talent.stunning_secret.enabled and 2 or 1 ) * ( 1 - 0.1 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 )
+        end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2174,10 +2194,11 @@ spec:RegisterAbilities( {
     },
 
     -- Talent: Marks the target, instantly generating 5 combo points. Cooldown reset if the target dies within 1 min.
+    -- TODO:  MfD cooldown for Subtlety is different?
     marked_for_death = {
         id = 137619,
         cast = 0,
-        cooldown = 60,
+        cooldown = 40,
         gcd = "off",
         school = "physical",
 
@@ -2191,7 +2212,7 @@ spec:RegisterAbilities( {
             return combo_points.current <= settings.mfd_points, "combo_point (" .. combo_points.current .. ") > user preference (" .. settings.mfd_points .. ")"
         end,
 
-        cp_gain = function () return 5 end,
+        cp_gain = function () return 7 end,
 
         handler = function ()
             gain( action.marked_for_death.cp_gain, "combo_points" )
@@ -2264,7 +2285,10 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = 25,
+        spend = function()
+            if buff.goremaws_bite.up then return 0 end
+            return 25
+        end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2273,6 +2297,7 @@ spec:RegisterAbilities( {
 
         usable = function () return combo_points.current > 0, "requires combo_points" end,
         handler = function ()
+            removeStack( "goremaws_bite" )
             removeBuff( "masterful_finish" )
 
             applyDebuff( "target", "rupture" )
@@ -2318,7 +2343,6 @@ spec:RegisterAbilities( {
         spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
         spendType = "energy",
 
-        talent = "sap",
         startsCombat = false,
 
         handler = function ()
@@ -2341,7 +2365,10 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        cp_gain = function() return debuff.dreadblades.up and combo_points.max or ( 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) ) end,
+        cp_gain = function()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
+        end,
 
         handler = function ()
             applyBuff( "sepsis_buff" )
@@ -2412,6 +2439,7 @@ spec:RegisterAbilities( {
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+            if talent.soothing_darkness.enabled then applyBuff( "soothing_darkness" ) end
 
             if state.spec.subtlety and set_bonus.tier30_2pc > 0 then
                 applyBuff( "symbols_of_death", 6 )
@@ -2462,13 +2490,13 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return ( talent.tiny_toxic_blade.enabled or legendary.tiny_toxic_blade.enabled ) and 0 or 20 end,
+        spend = function () return ( talent.tiny_toxic_blade.enabled or legendary.tiny_toxic_blade.enabled ) and 0 or 30 end,
         spendType = "energy",
 
         talent = "shiv",
         startsCombat = true,
 
-        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 6 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
 
         handler = function ()
             gain( action.shiv.cp_gain, "combo_points" )
@@ -2481,7 +2509,7 @@ spec:RegisterAbilities( {
     shroud_of_concealment = {
         id = 114018,
         cast = 0,
-        cooldown = 360,
+        cooldown = function() return talent.stillshroud.enabled and 180 or 360 end,
         gcd = "totem",
         school = "physical",
 
@@ -2503,7 +2531,10 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function() return talent.tight_spender.enabled and 22.5 or 25 end,
+        spend = function()
+            if buff.goremaws_bite.up then return 0 end
+            return talent.tight_spender.enabled and 22.5 or 25
+        end,
         spendType = "energy",
 
         startsCombat = false,
@@ -2512,6 +2543,7 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo points" end,
 
         handler = function ()
+            removeStack( "goremaws_bite" )
             if talent.alacrity.enabled and combo_points.current > 4 then
                 addStack( "alacrity" )
             end
@@ -2524,7 +2556,7 @@ spec:RegisterAbilities( {
     sprint = {
         id = 2983,
         cast = 0,
-        cooldown = function () return talent.improved_sprint.enabled and 60 or 120 end,
+        cooldown = function () return 120 * ( talent.improved_sprint.enabled and 0.5 or 1 ) * ( pvptalent.maneuverability.enabled and 0.5 or 1 ) end,
         gcd = "off",
 
         startsCombat = false,
@@ -2619,8 +2651,8 @@ spec:RegisterAbilities( {
         id = 1856,
         cast = 0,
         charges = 1,
-        cooldown = 120,
-        recharge = 120,
+        cooldown = function() return 120 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
+        recharge = function() return 120 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
         gcd = "off",
 
         startsCombat = false,
@@ -2645,6 +2677,7 @@ spec:RegisterAbilities( {
             end
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+            if talent.soothing_darkness.enabled then applyBuff( "soothing_darkness" ) end
             if talent.take_em_by_surprise.enabled and buff.take_em_by_surprise.down then
                 applyBuff( "take_em_by_surprise" )
                 stat.haste = state.haste + 0.1
@@ -2728,6 +2761,9 @@ spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+
+    canFunnel = true,
+    funnel = false,
 
     nameplates = true,
     nameplateRange = 8,

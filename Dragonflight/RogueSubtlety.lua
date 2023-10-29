@@ -49,98 +49,105 @@ spec:RegisterResource( Enum.PowerType.ComboPoints, {
 spec:RegisterTalents( {
     -- Rogue
     acrobatic_strikes          = { 90752, 196924, 1 }, -- Increases the range of your melee attacks by 3 yds.
+    airborne_irritant          = { 90741, 200733, 1 }, -- Blind has $s1% reduced cooldown, $s2% reduced duration, and applies to all nearby enemies.
     alacrity                   = { 90751, 193539, 2 }, -- Your finishing moves have a 5% chance per combo point to grant 1% Haste for 15 sec, stacking up to 5 times.
     atrophic_poison            = { 90763, 381637, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, reducing their damage by 3.6% for 10 sec.
-    blackjack                  = { 90696, 379005, 1 }, -- Enemies have 30% reduced damage and healing for 6 sec after Blind or Sap's effect on them ends.
+    blackjack                  = { 90686, 379005, 1 }, -- Enemies have $394119s1% reduced damage and healing for $394119d after Blind or Sap's effect on them ends.
+    blind                      = { 90684, 2094  , 1 }, -- Blinds $?a200733[all enemies near ][]the target, causing $?a200733[them][it] to wander disoriented for $d. Damage will interrupt the effect. Limit 1.
     cheat_death                = { 90742, 31230 , 1 }, -- Fatal attacks instead reduce you to 7% of your maximum health. For 3 sec afterward, you take 85% reduced damage. Cannot trigger more often than once per 6 min.
     cloak_of_shadows           = { 90697, 31224 , 1 }, -- Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for 5 sec.
     cold_blood                 = { 90748, 382245, 1 }, -- Increases the critical strike chance of your next damaging ability by 100%.
     deadened_nerves            = { 90743, 231719, 1 }, -- Physical damage taken reduced by 3%.
-    deadly_precision           = { 90760, 381542, 2 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
+    deadly_precision           = { 90760, 381542, 1 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
     deeper_stratagem           = { 90750, 193531, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
     echoing_reprimand          = { 90639, 385616, 1 }, -- Deal 2,107 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for 45 sec. Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed 7 combo points. Awards 2 combo points.
     elusiveness                = { 90742, 79008 , 1 }, -- Evasion also reduces damage taken by 10%, and Feint also reduces non-area-of-effect damage taken by 20%.
     evasion                    = { 90764, 5277  , 1 }, -- Increases your dodge chance by 100% for 10 sec.
-    find_weakness              = { 90690, 91023 , 2 }, -- Your Stealth abilities reveal a flaw in your target's defenses, causing all your attacks to bypass 15% of that enemy's armor for 10 sec.
+    featherfoot                = { 94563, 423683, 1 }, -- Sprint increases movement speed by an additional $s1% and has ${$s2/1000} sec increased duration.
     fleet_footed               = { 90762, 378813, 1 }, -- Movement speed increased by 15%.
     gouge                      = { 90741, 1776  , 1 }, -- Gouges the eyes of an enemy target, incapacitating for 4 sec. Damage will interrupt the effect. Must be in front of your target. Awards 1 combo point.
+    graceful_guile             = { 94562, 423647, 1 }, -- Feint has $m1 additional $Lcharge:charges;.;
     improved_ambush            = { 90692, 381620, 1 }, -- Shadowstrike generates 1 additional combo point.
     improved_sprint            = { 90746, 231691, 1 }, -- Reduces the cooldown of Sprint by 60 sec.
     improved_wound_poison      = { 90637, 319066, 1 }, -- Wound Poison can now stack 2 additional times.
     iron_stomach               = { 90744, 193546, 1 }, -- Increases the healing you receive from Crimson Vial, healing potions, and healthstones by 25%.
     leeching_poison            = { 90758, 280716, 1 }, -- Adds a Leeching effect to your Lethal poisons, granting you 6% Leech.
     lethality                  = { 90749, 382238, 2 }, -- Critical strike chance increased by 1%. Critical strike damage bonus of your attacks that generate combo points increased by 10%.
-    marked_for_death           = { 90750, 137619, 1 }, -- Marks the target, instantly generating 5 combo points. Cooldown reset if the target dies within 1 min.
+    marked_for_death           = { 90750, 137619, 1 }, -- Marks the target, instantly granting full combo points and increasing the damage of your finishing moves by $s1% for $d. Cooldown resets if the target dies during effect.
     master_poisoner            = { 90636, 378436, 1 }, -- Increases the non-damaging effects of your weapon poisons by 20%.
     nightstalker               = { 90693, 14062 , 2 }, -- While Stealth or Shadow Dance is active, your abilities deal 4% more damage.
     nimble_fingers             = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by 10.
     numbing_poison             = { 90763, 5761  , 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 18% for 10 sec.
-    prey_on_the_weak           = { 90755, 131511, 1 }, -- Enemies disabled by your Cheap Shot or Kidney Shot take 10% increased damage from all sources for 6 sec.
     recuperator                = { 90640, 378996, 1 }, -- Slice and Dice heals you for up to 1% of your maximum health per 2 sec.
     resounding_clarity         = { 90638, 381622, 1 }, -- Echoing Reprimand Animacharges 2 additional combo points.
     reverberation              = { 90638, 394332, 1 }, -- Echoing Reprimand's damage is increased by 75%.
     rushed_setup               = { 90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by 20%.
-    seal_fate                  = { 90757, 14190 , 2 }, -- When you critically strike with a melee attack that generates combo points, you have a 50% chance to gain an additional combo point per critical strike.
     shadow_dance               = { 90689, 185313, 1 }, -- Allows use of all Stealth abilities and grants all the combat benefits of Stealth for 7 sec, and increases damage by 30%. Effect not broken from taking damage or attacking. If you already know Shadow Dance, instead gain 1 additional charge of Shadow Dance.
     shadowrunner               = { 90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move 20% faster.
     shadowstep                 = { 90695, 36554 , 1 }, -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
     soothing_darkness          = { 90691, 393970, 1 }, -- You are healed for 24% of your maximum health over 6 sec after gaining Vanish or Shadow Dance.
-    subterfuge                 = { 90688, 108208, 1 }, -- Your abilities requiring Stealth can still be used for 3 sec after Stealth breaks.
-    thiefs_versatility         = { 90753, 381619, 2 }, -- Versatility increased by 2%.
+    stillshroud                = { 94561, 423662, 1 }, -- Shroud of Concealment has $s1% reduced cooldown.;
+    subterfuge                 = { 90688, 108208, 1 }, -- Your abilities requiring Stealth can still be used for ${$s2/1000} sec after Stealth breaks.
+    superior_mixture           = { 94567, 423701, 1 }, -- Crippling Poison reduces movement speed by an additional $s1%.
+    thiefs_versatility         = { 90752, 381619, 1 }, -- Versatility increased by $s1%.
     thistle_tea                = { 90756, 381623, 1 }, -- Restore 100 Energy. Mastery increased by 19.6% for 6 sec.
-    tight_spender              = { 90694, 381621, 1 }, -- Energy cost of finishing moves reduced by 10%.
+    tight_spender              = { 90692, 381621, 1 }, -- Energy cost of finishing moves reduced by $s1%.
     tricks_of_the_trade        = { 90686, 57934 , 1 }, -- Redirects all threat you cause to the targeted party or raid member, beginning with your next damaging attack within the next 30 sec and lasting 6 sec.
     unbreakable_stride         = { 90747, 400804, 1 }, -- Reduces the duration of movement slowing effects 30%.
-    vigor                      = { 90759, 14983 , 1 }, -- Increases your maximum Energy by 50 and your Energy regeneration by 10%.
-    virulent_poisons           = { 90761, 381543, 1 }, -- Increases the damage of your weapon poisons by 10%.
+    vigor                      = { 90759, 14983 , 2 }, -- Increases your maximum Energy by $s1 and Energy regeneration by $s2%.
+    virulent_poisons           = { 90760, 381543, 1 }, -- Increases the damage of your weapon poisons by $s1%.
 
     -- Subtlety
-    black_powder               = { 90712, 319175, 1 }, -- Finishing move that launches explosive Black Powder at all nearby enemies dealing Physical damage. Deals reduced damage beyond 8 targets. All nearby targets with your Find Weakness suffer an additional 20% damage as Shadow. 1 point : 192 damage 2 points: 384 damage 3 points: 576 damage 4 points: 769 damage 5 points: 961 damage 6 points: 1,152 damage
-    blind                      = { 90684, 2094  , 1 }, -- Blinds the target, causing it to wander disoriented for 1 min. Damage will interrupt the effect. Limit 1.
     cloaked_in_shadows         = { 90733, 382515, 1 }, -- Vanish grants you a shield for 6 sec, absorbing damage equal to 30% of your maximum health.
     danse_macabre              = { 90730, 382528, 1 }, -- Shadow Dance increases the damage of your attacks that generate or spend combo points by 6%, increased by an additional 6% for each different attack used.
     dark_brew                  = { 90719, 382504, 1 }, -- Your attacks that deal Nature or Bleed damage now deal Shadow instead. Shadow damage increased by 10%.
     dark_shadow                = { 90732, 245687, 2 }, -- Shadow Dance increases damage by an additional 15%.
     deepening_shadows          = { 90724, 185314, 1 }, -- Your finishing moves reduce the remaining cooldown on Shadow Dance by 0.7 sec per combo point spent.
-    deeper_daggers             = { 90721, 382517, 2 }, -- Eviscerate and Black Powder increase your Shadow damage dealt by 0% for 8 sec.
+    deeper_daggers             = { 90721, 382517, 1 }, -- Eviscerate and Black Powder increase your Shadow damage dealt by $383405s1% for $383405d.
+    ephemeral_bond             = { 90725, 426563, 1 }, -- Increases healing received by $s1%.;
+    exhilarating_execution     = { 90711, 428486, 1 }, -- Your finishing moves heal you for $s1% of damage done. At full health gain shielding instead, absorbing up to $s2% of your maximum health.
     fade_to_nothing            = { 90733, 382514, 1 }, -- Movement speed increased by 20% and damage taken reduced by 10% for 8 sec after gaining Stealth, Vanish, or Shadow Dance.
-    finality                   = { 90720, 382525, 2 }, -- Eviscerate, Rupture, and Black Powder increase the damage of the next use of the same finishing move by 15%. Lasts 30 sec.
+    finality                   = { 90720, 382525, 2 }, -- Eviscerate, Rupture, and Black Powder increase the damage of the next use of the same finishing move by $s1%.
+    find_weakness              = { 90690, 91023 , 1 }, -- Your Stealth abilities reveal a flaw in your target's defenses, causing all your attacks to bypass $s1% of that enemy's armor for $316220d.
     flagellation               = { 90718, 384631, 1 }, -- Lash the target for 798 Shadow damage, causing each combo point spent within 12 sec to lash for an additional 159. Dealing damage with Flagellation increases your Mastery by 2.5%, persisting 12 sec after their torment fades.
     gloomblade                 = { 90699, 200758, 1 }, -- Punctures your target with your shadow-infused blade for 1,043 Shadow damage, bypassing armor. Critical strikes apply Find Weakness for 10 sec. Awards 1 combo point.
+    goremaws_bite              = { 94581, 426591, 1 }, -- Lashes out at the target, inflicting $426592s1 Shadow damage and causing your next $426593u finishing moves to cost no Energy.; Awards $220901s1 combo $lpoint:points;.
     improved_backstab          = { 90739, 319949, 1 }, -- Backstab has 15% increased critical strike chance. When you are behind your target, Backstab critical strikes now also expose a flaw in their defenses, applying Find Weakness for 10 sec.
-    improved_shadow_dance      = { 90734, 393972, 2 }, -- Shadow Dance has 1 sec increased duration.
+    improved_shadow_dance      = { 90734, 393972, 1 }, -- Shadow Dance has ${$s1/1000} sec increased duration.
     improved_shadow_techniques = { 90736, 394023, 1 }, -- Shadow Techniques generates 3 additional Energy.
     improved_shuriken_storm    = { 90710, 319951, 1 }, -- Shuriken Storm has an additional 15% chance to crit, and its critical strikes apply Find Weakness for 10 sec.
-    inevitability              = { 90708, 382512, 1 }, -- Gloomblade and Shadowstrike extend the duration of your Symbols of Death by 0.5 sec.
+    inevitability              = { 90704, 382512, 1 }, -- $?S200758[Gloomblade][Backstab] and Shadowstrike extend the duration of your Symbols of Death by ${$s2/10}.1 sec.
     invigorating_shadowdust    = { 90706, 382523, 2 }, -- Vanish reduces the remaining cooldown of your other Rogue abilities by 15.0 sec.
-    lingering_shadow           = { 90731, 382524, 2 }, -- After Shadow Dance ends, Gloomblade deals an additional 50% damage as Shadow, fading by 2.8% per sec.
+    lingering_shadow           = { 90731, 382524, 1 }, -- After Shadow Dance ends, $?s200758[Gloomblade][Backstab] deals an additional $s1% damage as Shadow, fading by ${$s1/$s3}.1% per sec.
     master_of_shadows          = { 90735, 196976, 1 }, -- Gain 25 Energy over 3 sec when you enter Stealth or activate Shadow Dance.
-    night_terrors              = { 90711, 277953, 1 }, -- Shuriken Storm reduces enemies' movement speed by 50% for 8 sec.
-    perforated_veins           = { 90707, 382518, 2 }, -- Shadowstrike increases the damage of your next Gloomblade by 20%. Max 5 stacks.
-    planned_execution          = { 90703, 382508, 2 }, -- Symbols of Death increases your critical strike chance by 5%.
+    night_terrors              = { 94582, 277953, 1 }, -- Shuriken Storm reduces enemies' movement speed by $206760s1% for $206760d.
+    perforated_veins           = { 90707, 382518, 1 }, -- After striking $s1 times with $?s200758[Gloomblade][Backstab], your next attack that generates combo points deals $426602s1% increased damage.
+    planned_execution          = { 90703, 382508, 1 }, -- Symbols of Death increases your critical strike chance by $s1%.
     premeditation              = { 90737, 343160, 1 }, -- After entering Stealth, your next Shadowstrike grants up to 10 sec of Slice and Dice, and generates 2 additional combo points if Slice and Dice is active.
     quick_decisions            = { 90728, 382503, 1 }, -- Shadowstep's cooldown is reduced by 20%, and its maximum range is increased by 20%.
     relentless_strikes         = { 90709, 58423 , 1 }, -- Your finishing moves generate 5 Energy per combo point spent.
-    replicating_shadows        = { 90717, 382506, 1 }, -- Rupture deals an additional 20% damage as Shadow and applies to 1 additional enemy within 8 yds.
+    replicating_shadows        = { 90717, 382506, 1 }, -- Rupture deals an additional $s1% damage as Shadow and applies to $s4 additional nearby enemy.
     sap                        = { 90685, 6770  , 1 }, -- Incapacitates a target not in combat for 1 min. Only works on Humanoids, Beasts, Demons, and Dragonkin. Damage will revive the target. Limit 1.
     secret_stratagem           = { 90722, 394320, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
     secret_technique           = { 90715, 280719, 1 }, -- Finishing move that creates shadow clones of yourself. You and your shadow clones each perform a piercing attack on all enemies near your target, dealing Physical damage to the primary target and reduced damage to other targets. 1 point : 1,034 total damage 2 points: 2,068 total damage 3 points: 3,102 total damage 4 points: 4,136 total damage 5 points: 5,170 total damage 6 points: 6,204 total damage Cooldown is reduced by 1 sec for every combo point you spend.
     sepsis                     = { 90704, 385408, 1 }, -- Infect the target's blood, dealing 6,550 Nature damage over 10 sec and gaining 1 use of any Stealth ability. If the target survives its full duration, they suffer an additional 2,377 damage and you gain 1 additional use of any Stealth ability for 10 sec. Cooldown reduced by 30 sec if Sepsis does not last its full duration. Awards 1 combo point.
-    shadow_blades              = { 90726, 121471, 1 }, -- Draws upon surrounding shadows to empower your weapons, causing your combo point generating abilities to generate 1 additional combo point and deal 50% additional damage as Shadow for 20 sec.
+    shadow_blades              = { 90726, 121471, 1 }, -- Draws upon surrounding shadows to empower your weapons, causing your attacks to deal $s1% additional damage as Shadow and causing your combo point generating abilities to generate full combo points for $d.
     shadow_focus               = { 90727, 108209, 1 }, -- Abilities cost 15% less Energy while Stealth or Shadow Dance is active.
-    shadowed_finishers         = { 90723, 382511, 2 }, -- Eviscerate and Black Powder deal an additional 20% damage as Shadow to targets with your Find Weakness active.
+    shadowcraft                = { 94580, 426594, 1 }, -- While Symbols of Death is active, your Shadow Techniques triggers $s3% more frequently, stores $m2 additional combo $Lpoint:points;, and finishing moves can use those stored when there are enough to refresh full combo points.
+    shadowed_finishers         = { 90723, 382511, 1 }, -- Eviscerate and Black Powder deal an additional $s1% damage as Shadow to targets with your Find Weakness active.
     shadowstep_2               = { 90729, 36554 , 1 }, -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
     shiv                       = { 90740, 5938  , 1 }, -- Attack with your off-hand, dealing 548 Physical damage, dispelling all enrage effects and applying a concentrated form of your active Non-Lethal poison. Awards 1 combo point.
     shot_in_the_dark           = { 90698, 257505, 1 }, -- After entering Stealth or Shadow Dance, your next Cheap Shot is free.
-    shrouded_in_darkness       = { 90700, 382507, 1 }, -- Shroud of Concealment increases the movement speed of all party and raid members within its radius by 100%.
+    shrouded_in_darkness       = { 90700, 382507, 1 }, -- Shroud of Concealment increases the movement speed of allies by $s1% and leaving its area no longer cancels the effect.
     shuriken_tornado           = { 90716, 277925, 1 }, -- Focus intently, then release a Shuriken Storm every sec for the next 4 sec.
     silent_storm               = { 90714, 385722, 1 }, -- Gaining Stealth, Vanish, or Shadow Dance causes your next Shuriken Storm to have 100% increased chance to critically strike.
-    stiletto_staccato          = { 90725, 382509, 1 }, -- Shadow Techniques now also reduces the remaining cooldown of Shadow Blades by 1.0 sec.
     swift_death                = { 90701, 394309, 1 }, -- Symbols of Death has 5 sec reduced cooldown.
+    terrifying_pace            = { 94582, 428387, 1 }, -- Shuriken Storm increases your movement speed by $428389s1% for $428389d when striking $s1 or more enemies.
     the_first_dance            = { 90735, 382505, 1 }, -- Activating Shadow Dance generates 4 combo points.
-    the_rotten                 = { 90705, 382015, 1 }, -- After activating Symbols of Death, your next Shadowstrike or Gloomblade deals 50% increased damage, generates 4 additional combo points, and is guaranteed to critically strike.
+    the_rotten                 = { 90705, 382015, 1 }, -- After activating Symbols of Death, your next $@switch<$s1>[attack][$s1 attacks] that $@switch<$s1>[generates][generate] combo points $@switch<$s1>[deals][deal] $394203s3% increased damage and $@switch<$s1>[is][are] guaranteed to critically strike.
     veiltouched                = { 90713, 382017, 1 }, -- Your abilities deal 5% increased magic damage.
-    weaponmaster               = { 90738, 193537, 1 }, -- Shadowstrike and Backstab have a 15% chance to hit the target twice each time they deal damage.
+    warning_signs              = { 90703, 426555, 1 }, -- Symbols of Death increases your Haste by $s1%.
+    weaponmaster               = { 90738, 193537, 1 }, -- $?s200758[Gloomblade][Backstab] and Shadowstrike have a $s1% chance to hit the target twice each time they deal damage$?a134735[, striking for $s3% of normal damage][].
     without_a_trace            = { 90702, 382513, 1 }, -- Vanish has 1 additional charge.
 } )
 
@@ -164,6 +171,15 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    -- Disoriented.
+    blind = {
+        id = 2094,
+        duration = function() return 60 * ( talent.airborne_irritant.enabled and 0.6 or 1 ) end,
+        max_stack = 1,
+
+        -- Affected by:
+        -- [x] airborne_irritant[200733] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+    },
     danse_macabre = {
         id = 393969,
         duration = function () return talent.subterfuge.enabled and 9 or 8 end,
@@ -206,6 +222,16 @@ spec:RegisterAuras( {
         max_stack = 30,
         copy = 345569,
     },
+    -- Your finishing moves cost no Energy.
+    -- TODO: Does Goremaw's Bite track by value or by stacks?
+    goremaws_bite = {
+        id = 426593,
+        duration = 30,
+        max_stack = 3,
+
+        -- Affected by:
+        -- shadow_blades[121471] #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 6.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+    },
     -- Talent: $?s200758[Gloomblade][Backstab] deals an additional $s1% damage as Shadow.
     -- https://wowhead.com/beta/spell=385960
     lingering_shadow = {
@@ -214,9 +240,29 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 50
     },
+    -- Marked for death, taking extra damage from @auracaster's finishing moves. Cooldown resets upon death.
+    marked_for_death = {
+        id = 137619,
+        duration = 15.0,
+        max_stack = 1,
+
+        -- Affected by:
+        -- subtlety_rogue[137035] #5: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+    },
     master_of_shadows = {
         id = 196980,
         duration = 3,
+        max_stack = 1,
+    },
+    perforated_veins_stack = {
+        id = 394254,
+        duration = 3600,
+        max_stack = 4
+    },
+    -- At $394254u stacks, your next attack that generates combo points deals $w1% increased damage.
+    perforated_veins = {
+        id = 426602,
+        duration = 3600,
         max_stack = 1,
     },
     premeditation = {
@@ -321,10 +367,10 @@ spec:RegisterAuras( {
     },
 
     -- Conduit
-    perforated_veins = {
+    perforated_veins_conduit = {
         id = 341572,
         duration = 12,
-        max_stack = 3
+        max_stack = 6
     },
 
     -- Legendaries (Shadowlands)
@@ -716,11 +762,16 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spend = function () return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
         spendType = "energy",
 
         startsCombat = true,
         notalent = "gloomblade",
+
+        cp_gain = function ()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 1 + ( buff.broadside.up and 1 or 0 )
+        end,
 
         handler = function ()
             removeBuff( "honed_blades" )
@@ -731,7 +782,9 @@ spec:RegisterAbilities( {
                 addStack( "perforate" )
                 gainChargeTime( "shadow_blades", 0.5 )
             end
-            gain( ( buff.shadow_blades.up and 2 or 1 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
+
+            gain( action.backstab.cp_gain, "combo_points" )
+
             removeBuff( "the_rotten" )
             removeBuff( "symbols_of_death_crit" )
             removeBuff( "perforated_veins" )
@@ -746,10 +799,12 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spend = function ()
+            if buff.goremaws_bite.up then return 0 end
+            return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+        end,
         spendType = "energy",
 
-        talent = "black_powder",
         startsCombat = true,
 
         usable = function () return combo_points.current > 0, "requires combo_points" end,
@@ -786,21 +841,18 @@ spec:RegisterAbilities( {
         startsCombat = true,
         nodebuff = "cheap_shot",
 
-        cycle = function ()
-            if talent.prey_on_the_weak.enabled then return "prey_on_the_weak" end
-        end,
-
         usable = function ()
             if boss then return false, "cheap_shot assumed unusable in boss fights" end
             return stealthed.all, "not stealthed"
         end,
 
+        cp_gain = function()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 1 + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
+        end,
+
         handler = function ()
             applyDebuff( "target", "find_weakness" )
-
-            if talent.prey_on_the_weak.enabled then
-                applyDebuff( "target", "prey_on_the_weak" )
-            end
 
             if talent.subterfuge.enabled then
                 applyBuff( "subterfuge" )
@@ -811,9 +863,48 @@ spec:RegisterAbilities( {
 
             if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
 
-            gain( buff.shadow_blades.up and 2 or 1, "combo_points" )
-            removeBuff( "symbols_of_death_crit" )
+            gain( action.cheap_shot.cp_gain, "combo_points" )
+
+            if buff.cold_blood.up then removeBuff( "cold_blood" )
+            elseif buff.the_rotten.up then removeStack( "the_rotten" ) end
         end,
+    },
+
+    -- Talent: Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.    Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.    |cFFFFFFFFAwards $s3 combo $lpoint:points;.|r
+    echoing_reprimand = {
+        id = function() return talent.echoing_reprimand.enabled and 385616 or 323547 end,
+        cast = 0,
+        cooldown = 45,
+        gcd = "totem",
+        school = "arcane",
+
+        spend = 10,
+        spendType = "energy",
+
+        startsCombat = true,
+        toggle = "cooldowns",
+
+        cp_gain = function ()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
+        end,
+
+        handler = function ()
+            -- Can't predict the Animacharge, unless you have the talent/legendary.
+            if legendary.resounding_clarity.enabled or talent.resounding_clarity.enabled then
+                applyBuff( "echoing_reprimand_2", nil, 2 )
+                applyBuff( "echoing_reprimand_3", nil, 3 )
+                applyBuff( "echoing_reprimand_4", nil, 4 )
+                applyBuff( "echoing_reprimand_5", nil, 5 )
+            end
+
+            gain( action.echoing_reprimand.cp_gain, "combo_points" )
+
+            if buff.cold_blood.up then removeBuff( "cold_blood" )
+            elseif buff.the_rotten.up then removeStack( "the_rotten" ) end
+        end,
+
+        copy = { 385616, 323547 },
     },
 
     -- Finishing move that disembowels the target, causing damage per combo point. Targets with Find Weakness suffer an additional 20% damage as Shadow. 1 point : 273 damage 2 points: 546 damage 3 points: 818 damage 4 points: 1,091 damage 5 points: 1,363 damage 6 points: 1,636 damage
@@ -824,14 +915,18 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spend = function ()
+            if buff.goremaws_bite.up then return 0 end
+            return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+        end,
         spendType = "energy",
 
         startsCombat = true,
+        usable = function () return combo_points.current > 0, "requires combo points" end,
 
-        usable = function () return combo_points.current > 0 end,
         handler = function ()
             removeBuff( "masterful_finish" )
+            removeBuff( "cold_blood" )
 
             if talent.alacrity.enabled and combo_points.current > 4 then
                 addStack( "alacrity" )
@@ -850,6 +945,7 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- TODO: Does Flagellation generate combo points with Shadow Blades?
     flagellation = {
         id = function() return talent.flagellation.enabled and 384631 or 323654 end,
         cast = 0,
@@ -886,19 +982,68 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "shadow",
 
-        spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spend = function ()
+            if buff.goremaws_bite.up then return 0 end
+            return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+        end,
         spendType = "energy",
 
         talent = "gloomblade",
         startsCombat = true,
 
+        cp_gain = function()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 1 + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
+        end,
+
         handler = function ()
             applyDebuff( "target", "shadows_grasp", 8 )
             if buff.stealth.up then removeBuff( "stealth" ) end
             gain( ( buff.shadow_blades.up and 2 or 1 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
-            removeBuff( "the_rotten" )
-            removeBuff( "symbols_of_death_crit" )
+
+            if buff.cold_blood.up then removeBuff( "cold_blood" )
+            elseif buff.the_rotten.up then removeStack( "the_rotten" )
+            else removeBuff( "symbols_of_death_crit" ) end
         end,
+    },
+
+
+    -- Lashes out at the target, inflicting $426592s1 Shadow damage and causing your next $426593u finishing moves to cost no Energy.; Awards $220901s1 combo $lpoint:points;.
+    goremaws_bite = {
+        id = 426591,
+        cast = 0,
+        cooldown = 45,
+        gcd = "totem",
+
+        spend = function() return 25  * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spendType = "energy",
+
+        talent = "goremaws_bite",
+        startsCombat = true,
+
+        cp_gain = function()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 3 + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
+        end,
+
+        handler = function()
+            gain( action.goremaws_bite.cp_gain, "combo_points" )
+            applyBuff( "goremaws_bite" )
+            if buff.cold_blood.up then removeBuff( "cold_blood" )
+            elseif buff.the_rotten.up then removeStack( "the_rotten" ) end
+        end,
+
+        -- Effects:
+        -- #0: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 426592, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- #1: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 426593, 'target': TARGET_UNIT_CASTER, }
+
+        -- Affected by:
+        -- dark_brew[382504] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- deeper_daggers[383405] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- perforated_veins[394254] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- the_rotten[394203] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'pvp_multiplier': 0.6, 'points': 35.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- the_rotten[394203] #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+        -- perforated_veins[426602] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
 
     -- Talent: Finishing move that creates shadow clones of yourself. You and your shadow clones each perform a piercing attack on all enemies near your target, dealing Physical damage to the primary target and reduced damage to other targets. 1 point : 692 total damage 2 points: 1,383 total damage 3 points: 2,075 total damage 4 points: 2,767 total damage 5 points: 3,458 total damage 6 points: 4,150 total damage Cooldown is reduced by 1 sec for every combo point you spend.
@@ -909,7 +1054,10 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 30 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spend = function ()
+            if buff.goremaws_bite.up then return 0 end
+            return 30 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+        end,
         spendType = "energy",
 
         talent = "secret_technique",
@@ -918,17 +1066,18 @@ spec:RegisterAbilities( {
         usable = function () return combo_points.current > 0, "requires combo_points" end,
         handler = function ()
             applyBuff( "secret_technique" ) -- fake buff for APL logic.
+            removeStack( "goremaws_bite" )
             if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity" ) end
             removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
         end,
     },
 
-    -- Talent: Draws upon surrounding shadows to empower your weapons, causing your combo point generating abilities to generate 1 additional combo point and deal 50% additional damage as Shadow for 20 sec.
+    -- Draws upon surrounding shadows to empower your weapons, causing your attacks to deal $s1% additional damage as Shadow and causing your combo point generating abilities to generate full combo points for $d.
     shadow_blades = {
         id = 121471,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
         gcd = "off",
         school = "physical",
 
@@ -950,15 +1099,24 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return ( azerite.blade_in_the_shadows.enabled and 38 or 40 ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spend = function ()
+            if buff.goremaws_bite.up then return 0 end
+            return ( 45 - ( azerite.blade_in_the_shadows.enabled and 2 or 0 ) ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+        end,
         spendType = "energy",
 
         startsCombat = true,
         cycle = function () return talent.find_weakness.enabled and "find_weakness" or nil end,
 
+        cp_gain = function ()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( buff.premeditation.up and buff.slice_and_dice.up and 2 or 0 )
+        end,
+
         usable = function () return stealthed.all or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
         handler = function ()
-            gain( ( buff.shadow_blades.up and 3 or 2 ) + ( buff.the_rotten.up and 4 or 0 ) + ( buff.premeditation.up and buff.slice_and_dice.up and 2 or 0 ), "combo_points" )
+            gain( action.shadowstrike.cp_gain, "combo_points" )
+
             removeBuff( "honed_blades" )
             removeBuff( "symbols_of_death_crit" )
             removeBuff( "the_rotten" )
@@ -997,13 +1155,19 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return ( talent.tiny_toxic_blade.enabled or legendary.tiny_toxic_blade.enabled ) and 0 or 20 end,
+        spend = function ()
+            if buff.goremaws_bite.up or talent.tiny_toxic_blade.enabled or legendary.tiny_toxic_blade.enabled then return 0 end
+            return 30
+        end,
         spendType = "energy",
 
         talent = "shiv",
         startsCombat = true,
 
-        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
+        cp_gain = function ()
+            if buff.shadow_blades.up then return 7 end
+            return 1 + ( buff.broadside.up and 1 or 0 )
+        end,
 
         handler = function ()
             gain( action.shiv.cp_gain, "combo_points" )
@@ -1020,14 +1184,22 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spend = function ()
+            if buff.goremaws_bite.up then return 0 end
+            return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+        end,
         spendType = "energy",
 
         startsCombat = true,
+        cp_gain = function()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return active_enemies
+        end,
 
         handler = function ()
             removeBuff( "honed_blades" )
             removeBuff( "symbols_of_death_crit" )
+            removeStack( "the_rotten" )
 
             if buff.silent_storm.up then
                 applyDebuff( "target", "find_weakness" )
@@ -1035,7 +1207,7 @@ spec:RegisterAbilities( {
                 removeBuff( "silent_storm" )
             end
 
-            gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
+            gain( action.shuriken_storm.cp_gain, "combo_points" )
         end,
     },
 
@@ -1047,7 +1219,9 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 60 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+        spend = function ()
+            return 60 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+        end,
         spendType = "energy",
 
         talent = "shuriken_tornado",
@@ -1076,10 +1250,16 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         startsCombat = true,
+        cp_gain = function()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 1
+        end,
 
         handler = function ()
-            gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
+            gain( 1, "combo_points" )
+
             removeBuff( "symbols_of_death_crit" )
+            removeStack( "the_rotten" )
         end,
     },
 
@@ -1110,6 +1290,9 @@ spec:RegisterOptions( {
 
     aoe = 2,
 
+    canFunnel = true,
+    funnel = false,
+    
     nameplates = true,
     nameplateRange = 8,
 

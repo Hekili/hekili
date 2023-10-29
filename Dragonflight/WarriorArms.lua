@@ -53,9 +53,9 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 spec:RegisterTalents( {
     -- Warrior
     berserker_rage                  = { 90372, 18499 , 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec.
-    berserker_shout                 = { 90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also remove fear effects from group members within 12 yards.
+    berserker_shout                 = { 90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for $d.; Also remove fear effects from group members within $384102A1 yds.
     bitter_immunity                 = { 90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you.
-    blood_and_thunder               = { 90342, 384277, 1 }, -- Thunderclap costs 10 more Rage and deals 10% increased damage. If you have Rend, Thunder Clap affects 5 nearby targets with Rend.
+    blood_and_thunder               = { 90342, 384277, 1 }, -- Thunder Clap $?!a137048[costs ${$s2/10} more Rage and ][]deals $s1% increased damage.$?!a137050[ If you have Rend, Thunder Clap affects $s3 nearby targets with Rend.][]
     bounding_stride                 = { 90355, 202163, 1 }, -- Reduces the cooldown of Heroic Leap by 15 sec, and Heroic Leap now also increases your movement speed by 70% for 3 sec.
     cacophonous_roar                = { 90383, 382954, 1 }, -- Intimidating Shout can withstand 200% more damage before breaking.
     crackling_thunder               = { 90342, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
@@ -66,7 +66,6 @@ spec:RegisterTalents( {
     furious_blows                   = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
     heroic_leap                     = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 423 Physical damage to all enemies within 8 yards.
     impending_victory               = { 90326, 202168, 1 }, -- Instantly attack the target, causing 900 damage and healing you for 30% of your maximum health. Killing an enemy that yields experience or honor resets the cooldown of Impending Victory and makes it cost no Rage.
-    inspiring_presence              = { 90332, 382310, 1 }, -- Rallying Cry's duration is increased by 3 sec and it grants an additional 5% maximum health.
     intervene                       = { 90329, 3411  , 1 }, -- Run at high speed toward an ally, intercepting all melee and ranged attacks against them for 6 sec while they remain within 10 yds.
     intimidating_shout              = { 90384, 5246  , 1 }, -- Causes the targeted enemy to cower in fear, and up to 5 additional enemies within 8 yards to flee. Targets are disoriented for 8 sec.
     leeching_strikes                = { 90344, 382258, 1 }, -- Leech increased by 5%.
@@ -86,7 +85,7 @@ spec:RegisterTalents( {
     spear_of_bastion                = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 2,970 Physical damage instantly and an additional 3,203 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 20 Rage.
     spell_reflection                = { 90385, 23920 , 1 }, -- Raise your weapon, reflecting the first spell cast on you, and reduce magic damage you take by 20% for 5 sec.
     storm_bolt                      = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 513 Physical damage and stunning for 4 sec.
-    thunderous_roar                 = { 90359, 384318, 1 }, -- Roar explosively, dealing 2,880 Physical damage to enemies within 12 yds and cause them to bleed for 3,688 physical damage over 8 sec. Generates 10 Rage.
+    thunderous_roar                 = { 90359, 384318, 1 }, -- Roar explosively, dealing $s1 Physical damage to enemies within $A1 yds and cause them to bleed for $397364o1 physical damage over $397364d.; Generates ${$m3/10} Rage.
     thunderous_words                = { 90358, 384969, 1 }, -- Increases the duration of Thunderous Roar's Bleed effect by 2.0 sec and increases the damage of your bleed effects by 15% at all times.
     titanic_throw                   = { 90341, 384090, 1 }, -- Throws your weapon at the enemy, causing 630 Physical damage to it and 5 nearby enemies. Generates high threat.
     uproar                          = { 90357, 391572, 1 }, -- Thunderous Roar's cooldown reduced by 30 sec.
@@ -94,12 +93,12 @@ spec:RegisterTalents( {
     wrecking_throw                  = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 1,621 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
 
     -- Arms
-    anger_management                = { 90289, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Warbreaker and Bladestorm by 1 sec.
+    anger_management                = { 90289, 152278, 1 }, -- Every $?c1[$s1]?c2[$s3][$s2] Rage you spend$?c1[ on attacks][] reduces the remaining cooldown on $?c1&s262161[Warbreaker and Bladestorm]?c1[Colossus Smash and Bladestorm]?c2[Recklessness and Ravager][Avatar and Shield Wall] by 1 sec.
     armored_to_the_teeth            = { 90366, 384124, 2 }, -- Gain Strength equal to 5% of your Armor.
     avatar                          = { 90365, 107574, 1 }, -- Transform into a colossus for 20 sec, causing you to deal 20% increased damage and removing all roots and snares. Generates 10 Rage.
     barbaric_training               = { 92221, 383082, 1 }, -- Slam and Whirlwind deal 30% more damage but now cost 10 more rage.
     battle_stance                   = { 90327, 386164, 1 }, -- A balanced combat state that increases the critical strike chance of your abilities by 3% and reduces the duration of movement impairing effects by 10%. Lasts until canceled.
-    battlelord                      = { 92615, 386630, 1 }, -- Overpower deals 35% increased damage, has a 35% chance to reset the cooldown of Mortal Strike and Cleave and reduces their Rage costs by 10.
+    battlelord                      = { 92615, 386630, 1 }, -- Overpower deals $s1% increased damage and has a $h% chance to reset the cooldown of Mortal Strike and Cleave and generate ${$386631s1/-10} Rage.
     blademasters_torment            = { 90363, 390138, 1 }, -- Activating Avatar or Bladestorm casts the other at reduced effectiveness.
     bladestorm                      = { 90441, 227847, 1 }, -- Become an unstoppable storm of destructive force, striking all nearby enemies for 6,873 Physical damage over 5.1 sec. Deals reduced damage beyond 8 targets. You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. Generates 20 Rage.
     bloodborne                      = { 90283, 383287, 2 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects deal 7.50% increased damage.
@@ -125,8 +124,8 @@ spec:RegisterTalents( {
     frothing_berserker              = { 90352, 392792, 1 }, -- Mortal Strike and Cleave have a 20% chance to immediately refund 20% of the Rage spent.
     fueled_by_violence              = { 90275, 383103, 1 }, -- You are healed for 85% of the damage dealt by Deep Wounds.
     honed_reflexes                  = { 90354, 382461, 1 }, -- Cooldown of Overpower and Pummel reduced by 1.0 sec.
-    hurricane                       = { 90440, 390563, 1 }, -- While Bladestorming, every 0.8 sec you gain 5% movement speed and 5% Strength, stacking up to 6 times. Lasts 6 sec.
-    ignore_pain                     = { 90269, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken, up to 7,095 total damage prevented.
+    hurricane                       = { 90440, 390563, 1 }, -- While $?s137050[Ravager is active][Bladestorming], every $?c2[$390719t1][$390577t1] sec you gain $s2% movement speed and $s1% Strength, stacking up to $s3 times. Lasts $390581d. ; Bladestorm cannot be canceled while using Hurricane.
+    ignore_pain                     = { 90269, 190456, 1 }, -- Fight through the pain, ignoring $s2% of damage taken, up to ${$mhp*$s4/100} total damage prevented.
     impale                          = { 90292, 383430, 1 }, -- The damaging critical strikes of your abilities deal an additional 10.00% damage.
     improved_execute                = { 90273, 316405, 1 }, -- Execute no longer has a cooldown and if your foe survives, 10% of the Rage spent is refunded.
     improved_overpower              = { 90279, 385571, 1 }, -- Damage of Overpower increased by 15%.
@@ -143,16 +142,15 @@ spec:RegisterTalents( {
     rend                            = { 90284, 772   , 1 }, -- Wounds the target, causing 1,329 Physical damage instantly and an additional 2,602 Bleed damage over 15 sec.
     sharpened_blades                = { 90447, 383341, 1 }, -- Your Mortal Strike, Cleave and Execute critical strike damage is increased by 10% and your Execute has a 5% increased critical hit chance.
     sidearm                         = { 90333, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 450 Physical damage.
-    skullsplitter                   = { 90281, 260643, 1 }, -- Bash an enemy's skull, dealing 2,160 Physical damage. Skullsplitter causes your Deep Wounds to expire instantly. Generates 15 Rage.
+    skullsplitter                   = { 90281, 260643, 1 }, -- Bash an enemy's skull, dealing $s1 Physical damage.; Skullsplitter causes your Deep Wounds $?s386357[and Rend ][]on the target to bleed out $427040s1% faster for $427040d.; Generates ${$s2/10} Rage.
     spiteful_serenity               = { 90289, 400314, 1 }, -- Colossus Smash and Avatar's durations are increased by 100% but their damage bonuses are reduced by 40%.
     storm_of_swords                 = { 90267, 385512, 1 }, -- Whirlwind costs 20 more Rage and has a 14.0 sec cooldown. It now deals 175% more damage.
     storm_wall                      = { 90269, 388807, 1 }, -- Whenever you Parry, you heal for 8.00% of your maximum health. Can only occur once per second.
     strength_of_arms                = { 92536, 400803, 1 }, -- Overpower has 10% increased critical strike chance, deals 10% increased critical strike damage and on enemies below 35% health Overpower generates 8 Rage.
     sudden_death                    = { 90274, 29725 , 1 }, -- Your attacks have a chance to make your next Execute cost no Rage, be usable on any target regardless of their health, and deal damage as if you spent 40 Rage.
-    tactician                       = { 90282, 184783, 1 }, -- You have a 2.50% chance per Rage spent on abilities to reset the remaining cooldown on Overpower.
-    test_of_might                   = { 90288, 385008, 1 }, -- When Warbreaker expires, your Strength is increased by 1% for every 10 Rage you spent during Warbreaker. Lasts 12 sec.
-    thunder_clap                    = { 92224, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,189 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
-    tide_of_blood                   = { 90280, 386357, 1 }, -- Skullsplitter deals 30% increased damage and also causes your Rend to expire instantly.
+    tactician                       = { 90282, 184783, 1 }, -- You have a ${$s1/100}.2% chance per Rage spent on attacks to reset the remaining cooldown on Overpower.
+    test_of_might                   = { 90288, 385008, 1 }, -- When $?s262161[Warbreaker][Colossus Smash] expires, your Strength is increased by $s1% for every $s3 Rage you spent on attacks during $?s262161[Warbreaker][Colossus Smash]. Lasts $385013d.
+    tide_of_blood                   = { 90280, 386357, 1 }, -- Skullsplitter deals $s2% increased damage and also causes your Rend on the target to bleed out $427040s1% faster for $427040d.
     twohanded_weapon_specialization = { 90322, 382896, 1 }, -- Increases your damage while using two-handed weapons by 5%.
     unhinged                        = { 90440, 386628, 1 }, -- While Bladestorm is active, you automatically cast a total of 2 Mortal Strikes at random nearby enemies.
     valor_in_victory                = { 90442, 383338, 1 }, -- Increases Versatility by 1% and reduces the cooldown of Die by the Sword by 30.0 sec.
@@ -164,15 +162,17 @@ spec:RegisterTalents( {
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
+    battlefield_commander  = 5630, -- (424742) Your Shout abilities have additional effects.; $@spellicon6673 $@spellname6673:; Increases Stamina by $s1%.; $@spellicon12323 $@spellname12323:; Roots targets hit for $424752d.; $@spellicon384100 $@spellname384100:; Range increased by $s2 yds.; $@spellicon5246 $@spellname5246:; Cooldown reduced by ${$s3/-1000} sec.; $@spellicon97462 $@spellname97462:; Removes movement impairing effects and grants $s4% movement speed to allies.; $@spellicon384318 $@spellname384318:; Targets receive $s5% more damage from all sources while bleeding.
     death_sentence         = 3522, -- (198500) Execute charges you to targets up to 15 yards away. This effect has a 6 sec cooldown.
     demolition             = 5372, -- (329033) Reduces the cooldown of your Shattering Throw or Wrecking Throw by 50% and increases its damage to absorb shields by an additional 250%.
     disarm                 = 3534, -- (236077) Disarm the enemy's weapons and shield for 5 sec. Disarmed creatures deal significantly reduced damage.
     duel                   = 34  , -- (236273) You challenge the target to a duel. While challenged, all damage you and the target deal to all targets other than each other is reduced by 50%. Lasts 8 sec.
     master_and_commander   = 28  , -- (235941) Cooldown of Rallying Cry reduced by 1 min, and grants 15% additional health.
     rebound                = 5547, -- (213915) Spell Reflection reflects the next 2 incoming spells cast on you and reflected spells deal 50% extra damage to the attacker. Spell Reflection's cooldown is increased by 10 sec.
+    safeguard              = 5625, -- (424654) Intervene now has ${$s1+1} charges and reduces the ally's damage taken by $424655s1% for $424655d.; Intervene's cooldown is increased by ${$s2/1000} sec.
     shadow_of_the_colossus = 29  , -- (198807) Charge resets the cooldown of your Overpower and Rage gained from Charge increased by 15.
     sharpen_blade          = 33  , -- (198817) When activated, your next Mortal Strike will deal 15% increased damage and reduce healing taken by 50% for 4 sec.
-    storm_of_destruction   = 31  , -- (236308) Reduces the cooldown of Bladestorm by 33%, and Bladestorm now also applies Mortal Wound to all targets you hit.
+    storm_of_destruction   = 31  , -- (236308) Reduces the cooldown of $?c2[Ravager][Bladestorm] by $m1%, and $?c2[Ravager][Bladestorm] now also snares all targets you hit by $424597s1% for $424597d.
     war_banner             = 32  , -- (236320) You throw down a war banner at your feet, rallying your allies. Increases movement speed by 30% and reduces the duration of all incoming crowd control effects by 50% to all allies within 30 yards of the war banner. Lasts 15 sec.
     warbringer             = 5376, -- (356353) Charge roots enemies for 2 sec and emanates a shockwave past the target, rooting enemies and dealing 900 Physical damage in a 20 yd cone.
 } )
@@ -192,7 +192,7 @@ spec:RegisterAuras( {
     },
     battlelord =  {
         id = 386631,
-        duration = 10,
+        duration = 3600,
         max_stack = 1
     },
     berserker_rage = {
@@ -245,7 +245,7 @@ spec:RegisterAuras( {
     deep_wounds = {
         id = 262115,
         duration = function() return 12 + ( talent.bloodletting.enabled and 6 or 0 ) end,
-        tick_time = 3,
+        tick_time = function() return debuff.skullsplitter.up and 1.5 or 3 end,
         max_stack = 1
     },
     defensive_stance = {
@@ -353,6 +353,11 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    piercing_howl_root = {
+        id = 424752,
+        duration = 2,
+        max_stack = 1
+    },
     rallying_cry = {
         id = 97463,
         duration = function () return 10 + ( talent.inspiring_presence.enabled and 3 or 0 ) end,
@@ -366,14 +371,28 @@ spec:RegisterAuras( {
     rend = {
         id = 388539,
         duration = function() return 15 + ( talent.bloodletting.enabled and 6 or 0 ) end,
-        tick_time = 3,
+        tick_time = function() return talent.tide_of_blood.enabled and debuff.skullsplitter.up and 1.5 or 3 end,
         max_stack = 1,
         copy = 772
+    },
+    -- Damage taken reduced by $w1%.
+    safeguard = {
+        id = 424655,
+        duration = 5.0,
+        max_stack = 1,
     },
     sharpen_blade = {
         id = 198817,
         duration = 3600,
         max_stack = 1
+    },
+    -- Bleeding out from Deep Wounds $s1% faster.`
+    skullsplitter = {
+        id = 427040,
+        duration = 10.0,
+        max_stack = 1,
+         -- Affected by:
+        -- tide_of_blood[386357] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
     spear_of_bastion = {
         id = 376080,
@@ -402,6 +421,12 @@ spec:RegisterAuras( {
         id = 107570,
         duration = 4,
         max_stack = 1
+    },
+    -- Movement slowed by $s1%.
+    storm_of_destruction = {
+        id = 424597,
+        duration = 6.0,
+        max_stack = 1,
     },
     sweeping_strikes = {
         id = 260708,
@@ -777,10 +802,11 @@ spec:RegisterAbilities( {
     charge = {
         id = 100,
         cast = 0,
-        charges  = function () return talent.double_time.enabled and 2 or 1 end,
         cooldown = function () return talent.double_time.enabled and 17 or 20 end,
-        recharge = function () return talent.double_time.enabled and 17 or 20 end,
+        charges  = function () if talent.double_time.enabled then return 2 end end,
+        recharge = function () if talent.double_time.enabled then return 17 end end,
         gcd = "off",
+        icd = 1,
 
         spend = -20,
         spentType = "rage",
@@ -1019,6 +1045,7 @@ spec:RegisterAbilities( {
         charges = function () return legendary.leaper.enabled and 3 or nil end,
             recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
         gcd = "off",
+        icd = 0.8,
 
         talent = "heroic_leap",
         startsCombat = false,
@@ -1098,6 +1125,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "off",
+        icd = 1.5,
 
         talent = "intervene",
         startsCombat = false,
@@ -1311,6 +1339,7 @@ spec:RegisterAbilities( {
     },
 
 
+    -- Bash an enemy's skull, dealing $s1 Physical damage.; Skullsplitter causes your Deep Wounds $?s386357[and Rend ][]on the target to bleed out $427040s1% faster for $427040d.; Generates ${$s2/10} Rage.
     skullsplitter = {
         id = 260643,
         cast = 0,
@@ -1324,10 +1353,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeDebuff( "target", "deep_wounds" )
-            if talent.tide_of_blood.enabled then
-                removeDebuff( "target", "rend" )
-            end
+            applyDebuff( "target", "skullsplitter" )
         end,
     },
 
@@ -1526,6 +1552,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 90,
         gcd = "off",
+        icd = 1,
 
         pvptalent = "war_banner",
         startsCombat = false,

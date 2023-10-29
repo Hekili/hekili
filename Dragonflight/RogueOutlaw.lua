@@ -1,5 +1,5 @@
 -- RogueOutlaw.lua
--- October 2022
+-- October 2023
 
 -- Contributed to JoeMama.
 if UnitClassBase( "player" ) ~= "ROGUE" then return end
@@ -51,100 +51,100 @@ spec:RegisterResource( Enum.PowerType.Energy, {
 spec:RegisterTalents( {
     -- Rogue
     acrobatic_strikes         = { 90752, 196924, 1 }, -- Increases the range of your melee attacks by 3 yds.
+    airborne_irritant         = { 90741, 200733, 1 }, -- Blind has $s1% reduced cooldown, $s2% reduced duration, and applies to all nearby enemies.
     alacrity                  = { 90751, 193539, 2 }, -- Your finishing moves have a 5% chance per combo point to grant 1% Haste for 15 sec, stacking up to 5 times.
     atrophic_poison           = { 90763, 381637, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, reducing their damage by 3.0% for 10 sec.
-    blackjack                 = { 90696, 379005, 1 }, -- Enemies have 30% reduced damage and healing for 6 sec after Blind or Sap's effect on them ends.
+    blackjack                 = { 90686, 379005, 1 }, -- Enemies have $394119s1% reduced damage and healing for $394119d after Blind or Sap's effect on them ends.
+    blind                     = { 90684, 2094  , 1 }, -- Blinds $?a200733[all enemies near ][]the target, causing $?a200733[them][it] to wander disoriented for $d. Damage will interrupt the effect. Limit 1.
     cheat_death               = { 90742, 31230 , 1 }, -- Fatal attacks instead reduce you to 7% of your maximum health. For 3 sec afterward, you take 85% reduced damage. Cannot trigger more often than once per 6 min.
     cloak_of_shadows          = { 90697, 31224 , 1 }, -- Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for 5 sec.
     cold_blood                = { 90748, 382245, 1 }, -- Increases the critical strike chance of your next damaging ability by 100%.
     deadened_nerves           = { 90743, 231719, 1 }, -- Physical damage taken reduced by 3%.
-    deadly_precision          = { 90760, 381542, 2 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
+    deadly_precision          = { 90760, 381542, 1 }, -- Increases the critical strike chance of your attacks that generate combo points by $s1%.
     deeper_stratagem          = { 90750, 193531, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
     echoing_reprimand         = { 90639, 385616, 1 }, -- Deal 2,109 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for 45 sec. Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed 7 combo points. Awards 2 combo points.
     elusiveness               = { 90742, 79008 , 1 }, -- Evasion also reduces damage taken by 10%, and Feint also reduces non-area-of-effect damage taken by 20%.
     evasion                   = { 90764, 5277  , 1 }, -- Increases your dodge chance by 100% for 10 sec.
-    find_weakness             = { 90690, 91023 , 2 }, -- Your Stealth abilities reveal a flaw in your target's defenses, causing all your attacks to bypass 15% of that enemy's armor for 10 sec.
+    featherfoot               = { 94563, 423683, 1 }, -- Sprint increases movement speed by an additional $s1% and has ${$s2/1000} sec increased duration.
     fleet_footed              = { 90762, 378813, 1 }, -- Movement speed increased by 15%.
     gouge                     = { 90741, 1776  , 1 }, -- Gouges the eyes of an enemy target, incapacitating for 4 sec. Damage will interrupt the effect. Must be in front of your target. Awards 1 combo point.
+    graceful_guile            = { 94562, 423647, 1 }, -- Feint has $m1 additional $Lcharge:charges;.;
     improved_ambush           = { 90692, 381620, 1 }, -- Ambush generates 1 additional combo point.
     improved_sprint           = { 90746, 231691, 1 }, -- Reduces the cooldown of Sprint by 60 sec.
     improved_wound_poison     = { 90637, 319066, 1 }, -- Wound Poison can now stack 2 additional times.
     iron_stomach              = { 90744, 193546, 1 }, -- Increases the healing you receive from Crimson Vial, healing potions, and healthstones by 25%.
     leeching_poison           = { 90758, 280716, 1 }, -- Adds a Leeching effect to your Lethal poisons, granting you 5% Leech.
     lethality                 = { 90749, 382238, 2 }, -- Critical strike chance increased by 1%. Critical strike damage bonus of your attacks that generate combo points increased by 10%.
-    marked_for_death          = { 90750, 137619, 1 }, -- Marks the target, instantly generating 5 combo points. Cooldown reset if the target dies within 1 min.
+    marked_for_death          = { 90750, 137619, 1 }, -- Marks the target, instantly granting full combo points and increasing the damage of your finishing moves by $s1% for $d. Cooldown resets if the target dies during effect.
     master_poisoner           = { 90636, 378436, 1 }, -- Increases the non-damaging effects of your weapon poisons by 20%.
     nightstalker              = { 90693, 14062 , 2 }, -- While Stealth is active, your abilities deal 4% more damage.
     nimble_fingers            = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by 10.
     numbing_poison            = { 90763, 5761  , 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 15% for 10 sec.
-    prey_on_the_weak          = { 90755, 131511, 1 }, -- Enemies disabled by your Cheap Shot or Kidney Shot take 10% increased damage from all sources for 6 sec.
     recuperator               = { 90640, 378996, 1 }, -- Slice and Dice heals you for up to 1% of your maximum health per 2 sec.
     resounding_clarity        = { 90638, 381622, 1 }, -- Echoing Reprimand Animacharges 2 additional combo points.
     reverberation             = { 90638, 394332, 1 }, -- Echoing Reprimand's damage is increased by 75%.
     rushed_setup              = { 90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by 20%.
-    seal_fate                 = { 90757, 14190 , 2 }, -- When you critically strike with a melee attack that generates combo points, you have a 50% chance to gain an additional combo point per critical strike.
     shadow_dance              = { 90689, 185313, 1 }, -- Allows use of all Stealth abilities and grants all the combat benefits of Stealth for 6 sec. Effect not broken from taking damage or attacking.
     shadowrunner              = { 90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move 20% faster.
     shadowstep                = { 90695, 36554 , 1 }, -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec.
+    stillshroud               = { 94561, 423662, 1 }, -- Shroud of Concealment has $s1% reduced cooldown.;
+    subterfuge                = { 90688, 108208, 1 }, -- Your abilities requiring Stealth can still be used for ${$s2/1000} sec after Stealth breaks.
+    superior_mixture          = { 94567, 423701, 1 }, -- Crippling Poison reduces movement speed by an additional $s1%.
     soothing_darkness         = { 90691, 393970, 1 }, -- You are healed for 24% of your maximum health over 6 sec after gaining Vanish or Shadow Dance.
-    subterfuge                = { 90688, 108208, 1 }, -- Your abilities requiring Stealth can still be used for 3 sec after Stealth breaks.
-    thiefs_versatility        = { 90753, 381619, 2 }, -- Versatility increased by 2%.
     thistle_tea               = { 90756, 381623, 1 }, -- Restore 100 Energy. Mastery increased by 11.6% for 6 sec.
-    tight_spender             = { 90694, 381621, 1 }, -- Energy cost of finishing moves reduced by 10%.
+    tight_spender             = { 90692, 381621, 1 }, -- Energy cost of finishing moves reduced by $s1%.
     tricks_of_the_trade       = { 90686, 57934 , 1 }, -- Redirects all threat you cause to the targeted party or raid member, beginning with your next damaging attack within the next 30 sec and lasting 6 sec.
     unbreakable_stride        = { 90747, 400804, 1 }, -- Reduces the duration of movement slowing effects 30%.
-    vigor                     = { 90759, 14983 , 1 }, -- Increases your maximum Energy by 50 and your Energy regeneration by 10%.
-    virulent_poisons          = { 90761, 381543, 1 }, -- Increases the damage of your weapon poisons by 10%.
+    vigor                     = { 90759, 14983 , 2 }, -- Increases your maximum Energy by $s1 and Energy regeneration by $s2%.
+    virulent_poisons          = { 90760, 381543, 1 }, -- Increases the damage of your weapon poisons by $s1%.
 
     -- Outlaw
-    ace_up_your_sleeve        = { 90670, 381828, 1 }, -- Between the Eyes has a 4% chance per combo point spent to grant 4 combo points.
+    ace_up_your_sleeve        = { 90670, 381828, 1 }, -- Between the Eyes has a $s1% chance per combo point spent to grant $394120s2 combo points.
     adrenaline_rush           = { 90659, 13750 , 1 }, -- Increases your Energy regeneration rate by 60%, your maximum Energy by 50, and your attack speed by 20% for 20 sec.
     ambidexterity             = { 90660, 381822, 1 }, -- Main Gauche has an additional 5% chance to strike while Blade Flurry is active.
-    audacity                  = { 90641, 381845, 1 }, -- Half-cost uses of Pistol Shot have a 40% chance to cause your next Ambush to be usable without Stealth. Chance to trigger this effect matches the chance for your Sinister Strike to strike an additional time.
-    blade_flurry              = { 90674, 13877 , 1 }, -- Strikes up to 5 nearby targets for 639 Physical damage, and causes your single target attacks to also strike up to 4 additional nearby enemies for 50% of normal damage for 10 sec.
-    blade_rush                = { 90644, 271877, 1 }, -- Charge to your target with your blades out, dealing 1,917 Physical damage to the target and 958 to all other nearby enemies. While Blade Flurry is active, damage to non-primary targets is increased by 100%. Generates 25 Energy over 5 sec.
-    blind                     = { 90684, 2094  , 1 }, -- Blinds the target, causing it to wander disoriented for 1 min. Damage will interrupt the effect. Limit 1.
-    blinding_powder           = { 90643, 256165, 1 }, -- Reduces the cooldown of Blind by 30 sec and increases its range by 5 yds.
+    audacity                  = { 90641, 381845, 1 }, -- Half-cost uses of Pistol Shot have a $193315s3% chance to make your next Ambush usable without Stealth.; Chance to trigger this effect matches the chance for your Sinister Strike to strike an additional time.
+    blade_rush                = { 90664, 271877, 1 }, -- Charge to your target with your blades out, dealing ${$271881sw1*$271881s2/100} Physical damage to the target and $271881sw1 to all other nearby enemies.; While Blade Flurry is active, damage to non-primary targets is increased by $s1%.; Generates ${$271896s1*$271896d/$271896t1} Energy over $271896d.
+    blinding_powder           = { 90643, 256165, 1 }, -- Reduces the cooldown of Blind by $s1% and increases its range by $s2 yds.
     combat_potency            = { 90646, 61329 , 1 }, -- Increases your Energy regeneration rate by 25%.
     combat_stamina            = { 90648, 381877, 1 }, -- Stamina increased by 5%.
-    count_the_odds            = { 90655, 381982, 2 }, -- Ambush and Dispatch have a 10% chance to grant you a Roll the Bones combat enhancement buff you do not already have for 5 sec. Duration and chance doubled while Stealthed.
+    count_the_odds            = { 90655, 381982, 1 }, -- Ambush, Sinister Strike, and Dispatch have a $s1% chance to grant you a Roll the Bones combat enhancement buff you do not already have for $s2 sec.; Duration and chance doubled while Stealthed.
+    crackshot                 = { 94565, 423703, 1 }, -- Between the Eyes has no cooldown and also Dispatches the target for $s1% of normal damage when used from Stealth.
     dancing_steel             = { 90669, 272026, 1 }, -- Blade Flurry strikes 3 additional enemies and its duration is increased by 3 sec.
-    deft_maneuvers            = { 90672, 381878, 1 }, -- Increases the range of your melee attacks by 2 yards while Blade Flurry is active.
+    deft_maneuvers            = { 90672, 381878, 1 }, -- Blade Flurry's initial damage is increased by $s1% and generates $m2 $Lcombo point:combo points; per target struck.
     devious_stratagem         = { 90679, 394321, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
     dirty_tricks              = { 90645, 108216, 1 }, -- Cheap Shot, Gouge, and Sap no longer cost Energy.
-    dreadblades               = { 90664, 343142, 1 }, -- Strike at an enemy, dealing 1,432 Physical damage and empowering your weapons for 8 sec, causing your Sinister Strike, Ambush, and Pistol Shot to fill your combo points, but your finishing moves consume 5% of your current health.
-    fan_the_hammer            = { 90666, 381846, 2 }, -- When Sinister Strike strikes an additional time, gain 1 additional stack of Opportunity. Max 6 stacks. Half-cost uses of Pistol Shot consume 1 additional stack of Opportunity to fire 1 additional shot. Additional shots generate 1 fewer combo point.
+    fan_the_hammer            = { 90666, 381846, 2 }, -- When Sinister Strike strikes an additional time, gain $m1 additional $Lstack:stacks; of Opportunity. Max ${$s2+1} stacks.; Half-cost uses of Pistol Shot consume $m1 additional $Lstack:stacks; of Opportunity to fire $m1 additional $Lshot:shots;. Additional shots generate $m3 fewer combo $Lpoint:points; and deal $s4% reduced damage.
     fatal_flourish            = { 90662, 35551 , 1 }, -- Your off-hand attacks have a 60% chance to generate 10 Energy.
-    float_like_a_butterfly    = { 90650, 354897, 1 }, -- Restless Blades now also reduces the remaining cooldown of Evasion and Feint by 0.5 sec per combo point spent.
-    ghostly_strike            = { 90677, 196937, 1 }, -- Strikes an enemy, dealing 1,278 Physical damage and causing the target to take 10% increased damage from your abilities for 10 sec. Awards 1 combo point.
-    grappling_hook            = { 90682, 195457, 1 }, -- Launch a grappling hook and pull yourself to the target location.
+    float_like_a_butterfly    = { 90755, 354897, 1 }, -- Restless Blades now also reduces the remaining cooldown of Evasion and Feint by ${$s1/10}.1 sec per combo point spent.
+    ghostly_strike            = { 90644, 196937, 1 }, -- Strikes an enemy, dealing $s1 Physical damage and causing the target to take $s3% increased damage from your abilities for $d.; Awards $s2 combo $lpoint:points;.
     greenskins_wickers        = { 90665, 386823, 1 }, -- Between the Eyes has a 20% chance per Combo Point to increase the damage of your next Pistol Shot by 200%.
     heavy_hitter              = { 90642, 381885, 1 }, -- Attacks that generate combo points deal 10% increased damage.
-    hidden_opportunity        = { 90675, 383281, 1 }, -- Effects that grant a chance for Sinister Strike to strike an additional time also apply to Ambush.
+    hidden_opportunity        = { 90675, 383281, 1 }, -- Effects that grant a chance for Sinister Strike to strike an additional time also apply to Ambush at $s1% of their value.
     hit_and_run               = { 90673, 196922, 1 }, -- Movement speed increased by 15%.
-    improved_adrenaline_rush  = { 90654, 395422, 1 }, -- Generate full combo points when you gain Adrenaline Rush, and again when it ends.
+    improved_adrenaline_rush  = { 90654, 395422, 1 }, -- Generate full combo points when you gain Adrenaline Rush, and full Energy when it ends.
     improved_between_the_eyes = { 90671, 235484, 1 }, -- Critical strikes with Between the Eyes deal four times normal damage.
-    improved_main_gauche      = { 90668, 382746, 2 }, -- Main Gauche has an additional 5% chance to strike.
+    improved_main_gauche      = { 90668, 382746, 1 }, -- Main Gauche has an additional $s1% chance to strike.
     keep_it_rolling           = { 90652, 381989, 1 }, -- Increase the remaining duration of your active Roll the Bones combat enhancements by 30 sec.
-    killing_spree             = { 90664, 51690 , 1 }, -- Teleport to an enemy within 10 yards, attacking with both weapons for a total of 6,137 Physical damage and taking 35% reduced damage over 2 sec. While Blade Flurry is active, also hits up to 4 nearby enemies for 100% damage.
+    killing_spree             = { 94566, 51690 , 1 }, -- Finishing move that teleports to an enemy within $r yds, striking with both weapons for Physical damage. Number of strikes increased per combo point.; $s6% of damage taken during effect is delayed, instead taken over 8 sec.;    1 point  : ${$<dmg>*2} over ${$424556d}.2 sec;    2 points: ${$<dmg>*3} over ${$424556d*2}.2 sec;    3 points: ${$<dmg>*4} over ${$424556d*3}.2 sec;    4 points: ${$<dmg>*5} over ${$424556d*4}.2 sec;    5 points: ${$<dmg>*6} over ${$424556d*5}.2 sec$?s193531|((s394320|s394321)&!s193531)[;    6 points: ${$<dmg>*7} over ${$424556d*6}.2 sec][]$?s193531&(s394320|s394321)[;    7 points: ${$<dmg>*8} over ${$424556d*7}.2 sec][]
     loaded_dice               = { 90656, 256170, 1 }, -- Activating Adrenaline Rush causes your next Roll the Bones to grant at least two matches.
     opportunity               = { 90683, 279876, 1 }, -- Sinister Strike has a 40% chance to hit an additional time, making your next Pistol Shot half cost and double damage.
     precise_cuts              = { 90667, 381985, 1 }, -- Blade Flurry damage is increased by an additional 2% per missing target below its maximum.
+    precision_shot            = { 90647, 428377, 1 }, -- Between the Eyes and Pistol Shot have $s1 yd increased range, and Pistol Shot reduces the the target's damage done to you by $185763s4%.
     quick_draw                = { 90663, 196938, 1 }, -- Half-cost uses of Pistol Shot granted by Sinister Strike now generate 1 additional combo point, and deal 20% additional damage.
-    restless_blades           = { 90658, 79096 , 1 }, -- Finishing moves reduce the remaining cooldown of many Rogue skills by 1 sec per combo point spent. Affected skills: Adrenaline Rush, Between the Eyes, Blade Flurry, Blade Rush, Dreadblades, Ghostly Strike, Grappling Hook, Keep it Rolling, Killing Spree, Marked for Death, Roll the Bones, Sprint, and Vanish.
     retractable_hook          = { 90681, 256188, 1 }, -- Reduces the cooldown of Grappling Hook by 15 sec, and increases its retraction speed.
     riposte                   = { 90661, 344363, 1 }, -- Dodging an attack will trigger Mastery: Main Gauche. This effect may only occur once every 1 sec.
-    roll_the_bones            = { 90657, 315508, 1 }, -- Roll the dice of fate, providing a random combat enhancement for 30 sec.
     ruthlessness              = { 90680, 14161 , 1 }, -- Your finishing moves have a 20% chance per combo point spent to grant a combo point.
     sap                       = { 90685, 6770  , 1 }, -- Incapacitates a target not in combat for 1 min. Only works on Humanoids, Beasts, Demons, and Dragonkin. Damage will revive the target. Limit 1.
     sepsis                    = { 90677, 385408, 1 }, -- Infect the target's blood, dealing 6,579 Nature damage over 10 sec and gaining 1 use of any Stealth ability. If the target survives its full duration, they suffer an additional 2,380 damage and you gain 1 additional use of any Stealth ability for 10 sec. Cooldown reduced by 30 sec if Sepsis does not last its full duration. Awards 1 combo point.
     shiv                      = { 90740, 5938  , 1 }, -- Attack with your off-hand, dealing 575 Physical damage, dispelling all enrage effects and applying a concentrated form of your active Non-Lethal poison. Awards 1 combo point.
     sleight_of_hand           = { 90651, 381839, 1 }, -- Roll the Bones has a 10% increased chance of granting additional matches.
+    sting_like_a_bee          = { 90755, 131511, 1 }, -- Enemies disabled by your Cheap Shot or $?s199804[Between the Eyes][Kidney Shot] take $s1% increased damage from all sources for $255909d.
     summarily_dispatched      = { 90653, 381990, 2 }, -- When your Dispatch consumes 5 or more combo points, Dispatch deals 6% increased damage and costs 5 less Energy for 8 sec. Max 5 stacks. Adding a stack does not refresh the duration.
-    swift_slasher             = { 90649, 381988, 1 }, -- Slice and Dice grants an additional 2% attack speed per combo point spent.
-    take_em_by_surprise       = { 90676, 382742, 2 }, -- Haste increased by 10% while Stealthed and for 10 sec after leaving Stealth.
-    triple_threat             = { 90678, 381894, 2 }, -- Sinister Strike has a 10% chance to strike with both weapons after it strikes an additional time.
-    weaponmaster              = { 90647, 200733, 1 }, -- Sinister Strike has a 5% increased chance to strike an additional time.
+    swift_slasher             = { 90649, 381988, 1 }, -- Slice and Dice grants additional attack speed equal to $s2% of your Haste.
+    take_em_by_surprise       = { 90676, 382742, 2 }, -- Haste increased by $s2% while Stealthed and for $s1 sec after breaking Stealth.
+    thiefs_versatility        = { 90753, 381619, 1 }, -- Versatility increased by $s1%.
+    triple_threat             = { 90678, 381894, 1 }, -- Sinister Strike has a $s1% chance to strike with both weapons after it strikes an additional time.
+    underhanded_upper_hand    = { 90677, 424044, 1 }, -- Slice and Dice does not lose duration during Blade Flurry.; Blade Flurry does not lose duration during Adrenaline Rush.; Adrenaline Rush does not lose duration while Stealthed.; Stealth abilities can be used for an additional ${$s2/1000} sec after Stealth breaks.
 } )
 
 
@@ -204,6 +204,7 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
+    -- $w2% increased critical strike chance.
     between_the_eyes = {
         id = 315341,
         duration = function() return 3 * effective_combo_points end,
@@ -222,13 +223,6 @@ spec:RegisterAuras( {
         id = 271896,
         duration = 5,
         tick_time = 1,
-        max_stack = 1
-    },
-    -- Talent: Sinister Strike, $?s196937[Ghostly Strike, ][]Ambush, and Pistol Shot will refill all of your combo points when used.
-    -- https://wowhead.com/beta/spell=343142
-    dreadblades = {
-        id = 343142,
-        duration = 10,
         max_stack = 1
     },
     echoing_reprimand_2 = {
@@ -306,9 +300,8 @@ spec:RegisterAuras( {
     -- Talent: Attacking an enemy every $t1 sec.
     -- https://wowhead.com/beta/spell=51690
     killing_spree = {
-        id = 51690,
-        duration = 2,
-        tick_time = 0.4,
+        id = 424562,
+        duration = function () return 0.4 * combo_points.current end,
         max_stack = 1
     },
     -- Suffering $w4 Nature damage every $t4 sec.
@@ -356,20 +349,12 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1
     },
-    prey_on_the_weak = {
-        id = 255909,
-        duration = 6,
-        max_stack = 1,
-    },
     -- Incapacitated.
     -- https://wowhead.com/beta/spell=107079
     quaking_palm = {
         id = 107079,
         duration = 4,
         max_stack = 1
-    },
-    restless_blades = {
-        id = 79096,
     },
     riposte = {
         id = 199754,
@@ -403,6 +388,12 @@ spec:RegisterAuras( {
         id = 115192,
         duration = 3,
         max_stack = 1,
+    },
+    -- Damage taken increased by $w1%.
+    stinging_vulnerability = {
+        id = 255909,
+        duration = 6,
+        max_stack = 1
     },
     summarily_dispatched = {
         id = 386868,
@@ -565,6 +556,8 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             rtbAuraAppliedBy[ aura ] = "dispatch"
         elseif IsCurrentSpell( 8676 ) then
             rtbAuraAppliedBy[ aura ] = "ambush"
+        elseif IsCurrentSpell( 193315 ) then
+            rtbAuraAppliedBy[ aura ] = "sinister_strike"
         elseif aura == "roll_the_bones" then
             lastApplicator = aura
         elseif aura == "keep_it_rolling" then
@@ -584,46 +577,58 @@ spec:RegisterStateExpr( "rtb_buffs", function ()
     return buff.roll_the_bones.count
 end )
 
+spec:RegisterStateExpr( "rtb_primary_remains", function ()
+    for rtb, appliedBy in pairs( rtbAuraAppliedBy ) do
+        if appliedBy == "roll_the_bones" then
+            local bone = buff[ rtb ]
+            if bone.up then return bone.remains end
+        end
+    end
+
+    return 0
+end )
+
 spec:RegisterStateExpr( "rtb_buffs_shorter", function ()
     local n = 0
+    local primary = rtb_primary_remains
+
     for _, rtb in ipairs( rtb_buff_list ) do
-        if buff[ rtb ].up and buff[ rtb ].duration < 30 then n = n + 1 end
+        local bone = buff[ rtb ]
+        if bone.up and bone.remains < primary then n = n + 1 end
     end
     return n
 end )
 
 spec:RegisterStateExpr( "rtb_buffs_normal", function ()
     local n = 0
+
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
         if bone.up and rtbAuraAppliedBy[ rtb ] == "roll_the_bones" then n = n + 1 end
     end
+
     return n
 end )
 
 spec:RegisterStateExpr( "rtb_buffs_longer", function ()
     local n = 0
+    local primary = rtb_primary_remains
+
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
-        if bone.up and bone.duration > 30 and rtbAuraAppliedBy[ rtb ] == "keep_it_rolling" then n = n + 1 end
+        if bone.up and bone.remains > primary then n = n + 1 end
     end
     return n
 end )
 
 spec:RegisterStateExpr( "rtb_buffs_will_lose", function ()
-    if rtb_buffs_normal > 0 then return rtb_buffs_normal + rtb_buffs_shorter end
-    return 0
+    return rtb_buffs_normal + rtb_buffs_shorter
 end )
 
 spec:RegisterStateTable( "rtb_buffs_will_lose_buff", setmetatable( {}, {
     __index = function( t, k )
-        if not buff[ k ].up then return false end
-
-        local appliedBy = rtbAuraAppliedBy[ k ]
-        if appliedBy == "roll_the_bones" then return true end
-        if appliedBy == "keep_it_rolling" then return false end
-
-        return rtb_buffs_normal > 0
+        if not buff[ k ].up or buff[ k ].remains < rtb_primary_remains then return false end
+        return false
     end
 } ) )
 
@@ -724,7 +729,9 @@ spec:RegisterHook( "runHandler", function( ability )
             if buff.take_em_by_surprise.up then
                 buff.take_em_by_surprise.expires = query_time + 10 * talent.take_em_by_surprise.rank
             end
-            if talent.subterfuge.enabled then applyBuff( "subterfuge" ) end
+            if talent.underhanded_upper_hand.enabled then
+                applyBuff( "subterfuge" )
+            end
         end
 
         if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
@@ -749,14 +756,11 @@ local restless_blades_list = {
     "between_the_eyes",
     "blade_flurry",
     "blade_rush",
-    "dreadblades",
     "ghostly_strike",
     "grappling_hook",
     "keep_it_rolling",
-    "killing_spree",
     "marked_for_death",
     "roll_the_bones",
-    "sepsis",
     "sprint",
     "vanish"
 }
@@ -793,11 +797,9 @@ local ExpireSepsis = setfenv( function ()
 end, state )
 
 local ExpireAdrenalineRush = setfenv( function ()
-    gain( combo_points.max, "combo_points" )
+    gain( energy.max, "energy" )
 end, state )
 
-
-local dreadbladesSet = false
 
 spec:RegisterHook( "reset_precast", function()
     if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
@@ -821,11 +823,6 @@ spec:RegisterHook( "reset_precast", function()
         if Hekili.ActiveDebug then Hekili:Debug( "Generating %d combo points from pending Fan the Hammer casts; removing %d stacks of Opportunity.", n, numShots ) end
         gain( n, "combo_points" )
         removeStack( "opportunity", numShots )
-    end
-
-    if not dreadbladesSet then
-        rawset( state.buff, "dreadblades", state.debuff.dreadblades )
-        dreadbladesSet = true
     end
 
     if Hekili.ActiveDebug and buff.roll_the_bones.up then
@@ -888,11 +885,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Finishing move that deals damage with your pistol, increasing your critical strike chance against the target by $s2%.$?a235484[ Critical strikes with this ability deal four times normal damage.][]     1 point : ${$<damage>*1} damage, 3 sec     2 points: ${$<damage>*2} damage, 6 sec     3 points: ${$<damage>*3} damage, 9 sec     4 points: ${$<damage>*4} damage, 12 sec     5 points: ${$<damage>*5} damage, 15 sec$?s193531|((s394320|s394321)&!s193531)[     6 points: ${$<damage>*6} damage, 18 sec][]$?s193531&(s394320|s394321)[     7 points: ${$<damage>*7} damage, 21 sec][]
+    -- Finishing move that deals damage with your pistol, increasing your critical strike chance by $s2%.$?a235484[ Critical strikes with this ability deal four times normal damage.][];    1 point : ${$<damage>*1} damage, 3 sec;    2 points: ${$<damage>*2} damage, 6 sec;    3 points: ${$<damage>*3} damage, 9 sec;    4 points: ${$<damage>*4} damage, 12 sec;    5 points: ${$<damage>*5} damage, 15 sec$?s193531|((s394320|s394321)&!s193531)[;    6 points: ${$<damage>*6} damage, 18 sec][]$?s193531&(s394320|s394321)[;    7 points: ${$<damage>*7} damage, 21 sec][]
     between_the_eyes = {
         id = 315341,
         cast = 0,
-        cooldown = 45,
+        cooldown = function () return talent.crackshot.enabled and 0 or 45 end,
         gcd = "totem",
         school = "physical",
 
@@ -930,7 +927,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Strikes up to $?a272026[$331850i][${$331850i-3}] nearby targets for $331850s1 Physical damage, and causes your single target attacks to also strike up to $?a272026[${$s3+$272026s3}][$s3] additional nearby enemies for $s2% of normal damage for $d.
+    -- Strikes up to $?a272026[$331850i][${$331850i-3}] nearby targets for $331850s1 Physical damage$?a381878[ that generates 1 combo point per target][], and causes your single target attacks to also strike up to $?a272026[${$s3+$272026s3}][$s3] additional nearby enemies for $s2% of normal damage for $d.
     blade_flurry = {
         id = 13877,
         cast = 0,
@@ -941,11 +938,11 @@ spec:RegisterAbilities( {
         spend = 15,
         spendType = "energy",
 
-        talent = "blade_flurry",
         startsCombat = true,
 
         readyTime = function() return buff.blade_flurry.remains - gcd.execute end,
         handler = function ()
+            if talent.deft_maneuvers.enabled then gain( active_enemies, "combo_points" ) end
             applyBuff( "blade_flurry" )
         end,
     },
@@ -1038,35 +1035,12 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Strike at an enemy, dealing $s1 Physical damage and empowering your weapons for $d, causing your Sinister Strike,$?s196937[ Ghostly Strike,][]$?s328305[ Sepsis,][]$?s323547[ Echoing Reprimand,][]$?s328547[ Serrated Bone Spike,][] Ambush, and Pistol Shot to fill your combo points, but your finishing moves consume $343145s1% of your current health.
-    dreadblades = {
-        id = 343142,
-        cast = 0,
-        cooldown = 90,
-        gcd = "spell",
-
-        spend = 50,
-        spendType = "energy",
-
-        talent = "dreadblades",
-        startsCombat = true,
-
-        toggle = "cooldowns",
-
-        cp_gain = function () return combo_points.max end,
-
-        handler = function ()
-            applyDebuff( "player", "dreadblades" )
-            gain( action.dreadblades.cp_gain, "combo_points" )
-        end,
-    },
-
     -- Talent: Strikes an enemy, dealing $s1 Physical damage and causing the target to take $s3% increased damage from your abilities for $d.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
     ghostly_strike = {
         id = 196937,
         cast = 0,
-        cooldown = 35,
-        gcd = "totem",
+        cooldown = 90,
+        gcd = "off",
         school = "physical",
 
         spend = 30,
@@ -1075,7 +1049,7 @@ spec:RegisterAbilities( {
         talent = "ghostly_strike",
         startsCombat = true,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+        cp_gain = function () return buff.shadow_blades.up and combo_points.max or ( 1 + ( buff.broadside.up and 1 or 0 ) ) end,
 
         handler = function ()
             applyDebuff( "target", "ghostly_strike" )
@@ -1091,7 +1065,6 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "physical",
 
-        talent = "grappling_hook",
         startsCombat = false,
         texture = 1373906,
 
@@ -1124,7 +1097,7 @@ spec:RegisterAbilities( {
     killing_spree = {
         id = 51690,
         cast = 0,
-        cooldown = 120,
+        cooldown = 90,
         gcd = "totem",
         school = "physical",
 
@@ -1132,10 +1105,12 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         toggle = "cooldowns",
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
 
         handler = function ()
+            setCooldown( "global_cooldown", 0.4 * combo_points.current )
             applyBuff( "killing_spree" )
-            setCooldown( "global_cooldown", 2 )
+            spend( combo_points.current, "combo_points" )
         end,
     },
 
@@ -1152,7 +1127,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.quick_draw.enabled and buff.opportunity.up and 1 or 0 ) + ( buff.concealed_blunderbuss.up and 2 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+        cp_gain = function () return buff.shadow_blades.up and combo_points.max or ( 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.quick_draw.enabled and buff.opportunity.up and 1 or 0 ) + ( buff.concealed_blunderbuss.up and 2 or 0 ) ) end,
 
         handler = function ()
             gain( action.pistol_shot.cp_gain, "combo_points" )
@@ -1187,7 +1162,6 @@ spec:RegisterAbilities( {
         spend = 25,
         spendType = "energy",
 
-        talent = "roll_the_bones",
         startsCombat = false,
         nobuff = function()
             if settings.no_rtb_in_dance_cto and talent.count_the_odds.enabled then return "shadow_dance" end
@@ -1273,7 +1247,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136189,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) ) end,
+        cp_gain = function ()
+            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            return 1 + ( buff.broadside.up and 1 or 0 )
+        end,
 
         -- 20220604 Outlaw priority spreads bleeds from the trinket.
         cycle = function ()
@@ -1281,8 +1258,8 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            removeStack( "snake_eyes" )
             gain( action.sinister_strike.cp_gain, "combo_points" )
+            removeStack( "snake_eyes" )
         end,
 
         copy = 1752
