@@ -647,6 +647,13 @@ spec:RegisterAura( "crushing_advance", {
     max_stack = 3
 } )
 
+spec:RegisterGear( "tier31", 207180, 207181, 207182, 207183, 207185 )
+-- (4) Sudden Death also makes your next Execute powerfully slam the ground, causing a Thunder Clap that deals 100% increased damage. In addition, the Execute target bleeds for 50% of Execute's damage over 5 sec. If this bleed is reapplied, remaining damage is added to the new bleed.
+spec:RegisterAura( "finishing_wound", {
+    id = 426284,
+    duration = 5,
+    max_stack = 1
+} )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -985,7 +992,13 @@ spec:RegisterAbilities( {
                     gain( cost * ( talent.critical_thinking.rank * 0.05 ), "rage" ) -- Regain another 5/10% for critical thinking
                 end
             end
-            removeBuff( "sudden_death" )
+            if buff.sudden_death.up then
+                removeBuff( "sudden_death" )
+                if set_bonus.tier31_4pc > 0 then
+                    action.thunder_clap.handler()
+                    applyDebuff( "target", "finishing_wound" )
+                end
+            end
             if talent.executioners_precision.enabled then applyDebuff( "target", "executioners_precision", nil, min( 2, debuff.executioners_precision.stack + 1 ) ) end
             if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end

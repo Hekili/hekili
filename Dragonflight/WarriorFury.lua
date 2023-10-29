@@ -494,6 +494,16 @@ spec:RegisterAura( "merciless_assault", {
     max_stack = 10
 } )
 
+spec:RegisterGear( "tier31", 207180, 207181, 207182, 207183, 207185 )
+-- (2) Odyn's Fury deals 50% increased damage and causes your next 3 Bloodthirsts to deal 150% additional damage and have 100% increased critical strike chance against its primary target.
+spec:RegisterAura( "furious_bloodthirst", {
+    id = 423211,
+    duration = 20,
+    max_stack = 3
+} )
+-- (4) Bloodthirst critical strikes reduce the cooldown of Odyn's Fury by 2.5 sec.
+
+
 spec:RegisterGear( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
     spec:RegisterAura( "raging_thirst", {
         id = 242300,
@@ -883,16 +893,20 @@ spec:RegisterAbilities( {
         bind = "bloodthirst",
 
         critical = function()
-            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack )
+            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack ) + ( buff.furious_bloodthirst.up and 100 or 0 )
         end,
 
         handler = function ()
             removeStack( "whirlwind" )
             removeStack( "reckless_abandon" )
 
-            if talent.cold_steel_hot_blood.enabled and stat.crit >= 100 then
+            if talent.cold_steel_hot_blood.enabled and action.bloodthirst.crit_pct_current >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
+            end
+
+            if set_bonus.tier31_4pc > 0 and action.bloodthirst.crit_pct_current >= 100 then
+                reduceCooldown( "odyns_fury", 2.5 )
             end
 
             removeBuff( "merciless_assault" )
@@ -954,7 +968,7 @@ spec:RegisterAbilities( {
         bind = "bloodbath",
 
         critical = function()
-            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack )
+            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack ) + ( buff.furious_bloodthirst.up and 100 or 0 )
         end,
 
         handler = function ()
@@ -963,6 +977,10 @@ spec:RegisterAbilities( {
             if talent.cold_steel_hot_blood.enabled and action.bloodthirst.crit_pct_current >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
+            end
+
+            if set_bonus.tier31_4pc > 0 and action.bloodthirst.crit_pct_current >= 100 then
+                reduceCooldown( "odyns_fury", 2.5 )
             end
 
             removeBuff( "merciless_assault" )
@@ -1330,6 +1348,10 @@ spec:RegisterAbilities( {
                 applyBuff( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
             end
             if talent.titans_torment.enabled then applyBuff( "avatar", 4 ) end
+
+            if state.spec.fury and set_bonus.tier31_2pc > 0 then
+                applyBuff( "furious_bloodthirst", nil, 3 )
+            end
         end,
     },
 
