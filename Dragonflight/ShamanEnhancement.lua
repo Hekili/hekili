@@ -88,9 +88,9 @@ spec:RegisterTalents( {
     converging_storms         = { 80973, 384363, 1 }, -- Each target hit by Crash Lightning increases the damage of your next Stormstrike by 25%, up to a maximum of 6 stacks.
     crash_lightning           = { 80974, 187874, 1 }, -- Electrocutes all enemies in front of you, dealing 6,499 Nature damage. Hitting 2 or more targets enhances your weapons for 12 sec, causing Stormstrike, Ice Strike, and Lava Lash to also deal 6,499 Nature damage to all targets in front of you. Damage reduced beyond 6 targets.
     crashing_storms           = { 80953, 334308, 1 }, -- Crash Lightning damage increased by 40%. Chain Lightning now jumps to 2 extra targets.
-    deeply_rooted_elements    = { 92219, 378270, 1 }, -- Using Stormstrike has a 7% chance to activate Ascendance for 6.0 sec.  Ascendance Transform into an Air Ascendant for 15 sec, immediately dealing 36,391 Nature damage to any enemy within 8 yds, reducing the cooldown and cost of Stormstrike by 60%, and transforming your auto attack and Stormstrike into Wind attacks which bypass armor and have a 30 yd range.
+    deeply_rooted_elements    = { 92219, 378270, 1 }, -- [114052] Transform into a Water Ascendant, duplicating all healing you deal at $s4% effectiveness for $114051d and immediately healing for $294020s1. Ascendant healing is distributed evenly among allies within $114083A1 yds.
     doom_winds                = { 80959, 384352, 1 }, -- Strike your target for 7,979 Physical damage, increase your chance to activate Windfury Weapon by 200%, and increases damage dealt by Windfury Weapon by 10% for 8 sec.
-    elemental_assault         = { 80962, 210853, 2 }, -- Stormstrike damage is increased by 10%, and Stormstrike has a 50% chance to generate 1 stack of Maelstrom Weapon.
+    elemental_assault         = { 80962, 210853, 2 }, -- Stormstrike damage is increased by $s1%, and Stormstrike, Lava Lash, and Ice Strike have a $m3% chance to generate $m2 $Lstack:stacks; of Maelstrom Weapon.
     elemental_blast           = { 80966, 117014, 1 }, -- Harnesses the raw power of the elements, dealing 27,914 Elemental damage and increasing your Critical Strike or Haste by 3% or Mastery by 6% for 10 sec. If Lava Burst is known, Elemental Blast replaces Lava Burst and gains 1 additional charge.
     elemental_spirits         = { 80970, 262624, 1 }, -- Your Feral Spirits are now imbued with Fire, Frost, or Lightning, increasing your damage dealt with that element by 20%.
     elemental_weapons         = { 80961, 384355, 2 }, -- Each active weapon imbue Increases all Fire, Frost, and Nature damage dealt by 2.5%.
@@ -106,15 +106,15 @@ spec:RegisterTalents( {
     lashing_flames            = { 80948, 334046, 1 }, -- Lava Lash increases the damage of Flame Shock on its target by 100% for 20 sec.
     lava_burst                = { 81062, 51505 , 1 }, -- Hurls molten lava at the target, dealing 15,504 Fire damage. Lava Burst will always critically strike if the target is affected by Flame Shock.
     lava_lash                 = { 80942, 60103 , 1 }, -- Charges your off-hand weapon with lava and burns your target, dealing 12,946 Fire damage. Damage is increased by 100% if your offhand weapon is imbued with Flametongue Weapon. Lava Lash will spread Flame Shock from your target to 4 nearby targets. Lava Lash increases the damage of Flame Shock on its target by 100% for 20 sec.
-    legacy_of_the_frost_witch = { 80951, 384450, 2 }, -- Consuming 10 stacks of Maelstrom Weapon will reset the cooldown of Stormstrike and increases the damage of your physical abilities by 5% for 5 sec.
+    legacy_of_the_frost_witch = { 80951, 384450, 2 }, -- Consuming $s2 stacks of Maelstrom Weapon will reset the cooldown of Stormstrike and increases the damage of your Physical and Frost abilities by $s1% for $384451d.
     maelstrom_weapon          = { 81060, 187880, 1 }, -- When you deal damage with a melee weapon, you have a chance to gain Maelstrom Weapon, stacking up to 10 times. Each stack of Maelstrom Weapon reduces the cast time of your next damage or healing spell by 20% and increase its damage by 25% or its healing by 15%. A maximum of 10 stacks of Maelstrom Weapon can be consumed at a time.
     molten_assault            = { 80943, 334033, 2 }, -- Lava Lash cooldown reduced by 3.0 sec, and if Lava Lash is used against a target affected by your Flame Shock, Flame Shock will be spread to up to 2 enemies near the target.
     overflowing_maelstrom     = { 80938, 384149, 1 }, -- Your damage or healing spells will now consume up to 10 Maelstrom Weapon stacks.
     primal_maelstrom          = { 80964, 384405, 2 }, -- Primordial Wave generates 5 stacks of Maelstrom Weapon.
-    primordial_wave           = { 80965, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing 6,772 Shadow damage and apply Flame Shock to an enemy, or heal an ally for 6,772. Your next Lightning Bolt will also hit all targets affected by your Flame Shock for 150% of normal damage. Primordial Wave generates 10 stacks of Maelstrom Weapon.
+    primordial_wave           = { 80965, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing $375984s1 Shadow damage and apply Flame Shock to them.; Your next $?a137040[Lava Burst]?a137041[Lightning Bolt][Healing Wave] will also hit all targets affected by your $?a137040|a137041[Flame Shock][Riptide] for $?a137039[$s2%]?a137040[$s3%][$s4%] of normal $?a137039[healing][damage].$?s384405[; Primordial Wave generates $s5 stacks of Maelstrom Weapon.][]
     raging_maelstrom          = { 80939, 384143, 1 }, -- Maelstrom Weapon can now stack 5 additional times, and Maelstrom Weapon now increases the damage of spells it affects by an additional 5% per stack and the healing of spells it affects by an additional 5% per stack.
     refreshing_waters         = { 80937, 393905, 1 }, -- Your Healing Surge is 25% more effective on yourself.
-    splintered_elements       = { 80963, 382042, 1 }, -- Each additional Lightning Bolt generated by Primordial Wave increases your Haste by 10% for 12 sec.
+    splintered_elements       = { 80963, 382042, 1 }, -- Primordial Wave grants you $s1% Haste plus $s2% for each additional $?a137039[Healing Wave]?a137040[Lava Burst][Lightning Bolt] generated by Primordial Wave for $382043d.
     static_accumulation       = { 80950, 384411, 2 }, -- 10% chance to refund Maelstrom Weapon stacks spent on Lightning Bolt or Chain Lightning. While Ascendance is active, generate 1 Maelstrom Weapon stack every 1 sec.
     stormblast                = { 80960, 319930, 1 }, -- Stormbringer now also causes your next Stormstrike to deal 25% additional damage as Nature damage.
     stormflurry               = { 80954, 344357, 1 }, -- Stormstrike has a 25% chance to strike the target an additional time for 40% of normal damage. This effect can chain off of itself.
@@ -122,6 +122,7 @@ spec:RegisterTalents( {
     stormstrike               = { 80941, 17364 , 1 }, -- Energizes both your weapons with lightning and delivers a massive blow to your target, dealing a total of 21,474 Physical damage.
     sundering                 = { 80975, 197214, 1 }, -- Shatters a line of earth in front of you with your main hand weapon, causing 36,783 Flamestrike damage and Incapacitating any enemy hit for 2 sec.
     swirling_maelstrom        = { 80955, 384359, 1 }, -- Consuming at least 2 stacks of Hailstorm, using Ice Strike, and each explosion from Fire Nova now also grants you 1 stack of Maelstrom Weapon.
+    tempest_strikes           = { 80966, 428071, 1 }, -- Stormstrike, Ice Strike, and Lava Lash have a $h% chance to discharge electricity at your target, dealing $428078s1 Nature damage.
     thorims_invocation        = { 80949, 384444, 1 }, -- Lightning Bolt and Chain Lightning damage increased by 20%. While Ascendance is active, Windstrike automatically consumes up to 5 Maelstrom Weapon stacks to discharge a Lightning Bolt or Chain Lightning at your enemy, whichever you most recently used.
     unruly_winds              = { 80968, 390288, 1 }, -- Windfury Weapon has a 100% chance to trigger a third attack.
     windfury_totem            = { 80940, 8512  , 1 }, -- Summons a totem at your feet for 2 min. Party members within 30 yds have a 20% chance when they auto-attack to swing an extra time.
@@ -150,7 +151,7 @@ spec:RegisterPvpTalents( {
 -- Auras
 spec:RegisterAuras( {
     -- Talent: A percentage of damage or healing dealt is copied as healing to up to 3 nearby injured party or raid members.
-    -- https://wowhead.com/beta/spell=108281
+    -- https://wowhead.com/ptr-2/spell=108281
     ancestral_guidance = {
         id = 108281,
         duration = 10,
@@ -158,35 +159,35 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Health increased by $s1%.    If you die, the protection of the ancestors will allow you to return to life.
-    -- https://wowhead.com/beta/spell=207498
+    -- https://wowhead.com/ptr-2/spell=207498
     ancestral_protection = {
         id = 207498,
         duration = 30,
         max_stack = 1
     },
     -- Talent: Transformed into a powerful Air ascendant. Auto attacks have a $114089r yard range. Stormstrike is empowered and has a $114089r yard range.$?s384411[    Generating $384411s1 $lstack:stacks; of Maelstrom Weapon every $384437t1 sec.][]
-    -- https://wowhead.com/beta/spell=114051
+    -- https://wowhead.com/ptr-2/spell=114051
     ascendance = {
         id = 114051,
         duration = 15,
         max_stack = 1
     },
     -- Talent: Damage of your next Lava Lash increased by $s1%.
-    -- https://wowhead.com/beta/spell=390371
+    -- https://wowhead.com/ptr-2/spell=390371
     ashen_catalyst = {
         id = 390371,
         duration = 15,
         max_stack = 8
     },
     -- Haste increased by $w1%.
-    -- https://wowhead.com/beta/spell=2825
+    -- https://wowhead.com/ptr-2/spell=2825
     bloodlust = {
         id = 2825,
         duration = 40,
         max_stack = 1
     },
     -- Increases nature damage dealt from your abilities by $s1%.
-    -- https://wowhead.com/beta/spell=224127
+    -- https://wowhead.com/ptr-2/spell=224127
     crackling_surge = {
         id = 224127,
         duration = 15,
@@ -198,7 +199,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Damage of your next Crash Lightning increased by $s1%.
-    -- https://wowhead.com/beta/spell=333964
+    -- https://wowhead.com/ptr-2/spell=333964
     cl_crash_lightning = {
         id = 333964,
         duration = 15,
@@ -206,7 +207,7 @@ spec:RegisterAuras( {
         copy = "converging_storms"
     },
     -- Talent: Chance to activate Windfury Weapon increased to ${$319773h}.1%.  Damage dealt by Windfury Weapon increased by $s2%.
-    -- https://wowhead.com/beta/spell=384352
+    -- https://wowhead.com/ptr-2/spell=384352
     doom_winds_talent = {
         id = 384352,
         duration = 8,
@@ -231,7 +232,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Talent:
-    -- https://wowhead.com/beta/spell=198103
+    -- https://wowhead.com/ptr-2/spell=198103
     earth_elemental = {
         id = 198103,
         duration = 60,
@@ -239,7 +240,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Heals for ${$w2*(1+$w1/100)} upon taking damage.
-    -- https://wowhead.com/beta/spell=974
+    -- https://wowhead.com/ptr-2/spell=974
     earth_shield = {
         id = 974,
         duration = 600,
@@ -247,7 +248,7 @@ spec:RegisterAuras( {
         max_stack = 9
     },
     -- Movement speed reduced by $s1%.
-    -- https://wowhead.com/beta/spell=3600
+    -- https://wowhead.com/ptr-2/spell=3600
     earthbind = {
         id = 3600,
         duration = 5,
@@ -256,7 +257,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Increases physical damage dealt from your abilities by $s1%.
-    -- https://wowhead.com/beta/spell=392375
+    -- https://wowhead.com/ptr-2/spell=392375
     earthen_weapon = {
         id = 392375,
         duration = 15,
@@ -264,7 +265,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Rooted.
-    -- https://wowhead.com/beta/spell=64695
+    -- https://wowhead.com/ptr-2/spell=64695
     earthgrab = {
         id = 64695,
         duration = 8,
@@ -273,14 +274,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Heals $w1 every $t1 sec.
-    -- https://wowhead.com/beta/spell=382024
+    -- https://wowhead.com/ptr-2/spell=382024
     earthliving_weapon = {
         id = 382024,
         duration = 12,
         max_stack = 1
     },
     -- Your next damage or healing spell will be cast a second time ${$s2/1000}.1 sec later for free.
-    -- https://wowhead.com/beta/spell=320125
+    -- https://wowhead.com/ptr-2/spell=320125
     echoing_shock = {
         id = 320125,
         duration = 8,
@@ -288,7 +289,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Cannot move while using Far Sight.
-    -- https://wowhead.com/beta/spell=6196
+    -- https://wowhead.com/ptr-2/spell=6196
     far_sight = {
         id = 6196,
         duration = 60,
@@ -296,7 +297,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Generating $s1 stack of Maelstrom Weapon every $t1 sec.
-    -- https://wowhead.com/beta/spell=333957
+    -- https://wowhead.com/ptr-2/spell=333957
     feral_spirit = {
         id = 333957,
         duration = 15,
@@ -307,7 +308,7 @@ spec:RegisterAuras( {
         }
     },
     -- Suffering $w2 Fire damage every $t2 sec.
-    -- https://wowhead.com/beta/spell=188389
+    -- https://wowhead.com/ptr-2/spell=188389
     flame_shock = {
         id = 188389,
         duration = 18,
@@ -315,27 +316,27 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Each of your weapon attacks causes up to ${$max(($<coeff>*$AP),1)} additional Fire damage.
-    -- https://wowhead.com/beta/spell=319778
+    -- https://wowhead.com/ptr-2/spell=319778
     flametongue_weapon = {
         duration = 3600,
         max_stack = 1
     },
     -- Talent: Attack speed increased by $w1%.
-    -- https://wowhead.com/beta/spell=382889
+    -- https://wowhead.com/ptr-2/spell=382889
     flurry = {
         id = 382889,
         duration = 15,
         max_stack = 3
     },
     -- Talent: The mana cost of your next heal is reduced by $w1% and its effectiveness is increased by $?s137039[${$W2}.1][$w2]%.
-    -- https://wowhead.com/beta/spell=381668
+    -- https://wowhead.com/ptr-2/spell=381668
     focused_insight = {
         id = 381668,
         duration = 12,
         max_stack = 1
     },
     -- Talent: Movement speed reduced by $s2%.
-    -- https://wowhead.com/beta/spell=196840
+    -- https://wowhead.com/ptr-2/spell=196840
     frost_shock = {
         id = 196840,
         duration = 6,
@@ -348,7 +349,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Increases movement speed by $?s382215[${$382216s1+$w2}][$w2]%.$?$w3!=0[  Less hindered by effects that reduce movement speed.][]
-    -- https://wowhead.com/beta/spell=2645
+    -- https://wowhead.com/ptr-2/spell=2645
     ghost_wolf = {
         id = 2645,
         duration = 3600,
@@ -356,21 +357,21 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Your next Frost Shock will deal $s1% additional damage, and hit up to ${$334195s1/$s2} additional $Ltarget:targets;.
-    -- https://wowhead.com/beta/spell=334196
+    -- https://wowhead.com/ptr-2/spell=334196
     hailstorm = {
         id = 334196,
         duration = 20,
         max_stack = 5
     },
     -- Your Healing Rain is currently active.  $?$w1!=0[Magic damage taken reduced by $w1%.][]
-    -- https://wowhead.com/beta/spell=73920
+    -- https://wowhead.com/ptr-2/spell=73920
     healing_rain = {
         id = 73920,
         duration = 10,
         max_stack = 1
     },
     -- Healing $?s147074[two injured party or raid members][an injured party or raid member] every $t1 sec.
-    -- https://wowhead.com/beta/spell=5672
+    -- https://wowhead.com/ptr-2/spell=5672
     healing_stream = {
         id = 5672,
         duration = 15,
@@ -379,7 +380,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Incapacitated.
-    -- https://wowhead.com/beta/spell=51514
+    -- https://wowhead.com/ptr-2/spell=51514
     hex = {
         id = 51514,
         duration = 60,
@@ -388,28 +389,28 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Lava Lash damage increased by $s1% and cooldown reduced by ${$s2/4}%.
-    -- https://wowhead.com/beta/spell=215785
+    -- https://wowhead.com/ptr-2/spell=215785
     hot_hand = {
         id = 215785,
         duration = 8,
         max_stack = 1
     },
     -- Talent: Movement speed reduced by $s2%.
-    -- https://wowhead.com/beta/spell=342240
+    -- https://wowhead.com/ptr-2/spell=342240
     ice_strike_snare = {
         id = 342240,
         duration = 6,
         max_stack = 1,
     },
     -- Talent: Damage of your next Frost Shock increased by $s1%.
-    -- https://wowhead.com/beta/spell=384357
+    -- https://wowhead.com/ptr-2/spell=384357
     ice_strike = {
         id = 384357,
         duration = 12,
         max_stack = 1
     },
     -- Frost Shock damage increased by $w2%.
-    -- https://wowhead.com/beta/spell=210714
+    -- https://wowhead.com/ptr-2/spell=210714
     icefury = {
         id = 210714,
         duration = 25,
@@ -417,14 +418,14 @@ spec:RegisterAuras( {
         max_stack = 4
     },
     -- Increases frost damage dealt from your abilities by $s1%.
-    -- https://wowhead.com/beta/spell=224126
+    -- https://wowhead.com/ptr-2/spell=224126
     icy_edge = {
         id = 224126,
         duration = 15,
         max_stack = 1
     },
     -- Fire damage inflicted every $t2 sec.
-    -- https://wowhead.com/beta/spell=118297
+    -- https://wowhead.com/ptr-2/spell=118297
     immolate = {
         id = 118297,
         duration = 21,
@@ -432,21 +433,21 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Damage taken from the Shaman's Flame Shock increased by $s1%.
-    -- https://wowhead.com/beta/spell=334168
+    -- https://wowhead.com/ptr-2/spell=334168
     lashing_flames = {
         id = 334168,
         duration = 20,
         max_stack = 1
     },
     -- Talent: Damage dealt by your physical abilities increased by $w1%.
-    -- https://wowhead.com/beta/spell=384451
+    -- https://wowhead.com/ptr-2/spell=384451
     legacy_of_the_frost_witch = {
         id = 384451,
         duration = 5,
         max_stack = 1
     },
     -- Talent: Stunned. Suffering $w1 Nature damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=305485
+    -- https://wowhead.com/ptr-2/spell=305485
     lightning_lasso = {
         id = 305485,
         duration = 5,
@@ -456,14 +457,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Chance to deal $192109s1 Nature damage when you take melee damage$?a137041[ and have a $s3% chance to generate a stack of Maelstrom Weapon]?a137040[ and have a $s4% chance to generate $s5 Maelstrom][].
-    -- https://wowhead.com/beta/spell=192106
+    -- https://wowhead.com/ptr-2/spell=192106
     lightning_shield = {
         id = 192106,
         duration = 1800,
         max_stack = 1
     },
     -- Talent: Your next damage or healing spell has its cast time reduced by ${$max($187881s1, -100)*-1}%$?s383303[ and damage or healing increased by][]$?s383303&!s384149[ ${$min($187881w2, 5*$s~2)}%]?s383303&s384149[ $187881w2%][].
-    -- https://wowhead.com/beta/spell=344179
+    -- https://wowhead.com/ptr-2/spell=344179
     maelstrom_weapon = {
         id = 344179,
         duration = 30,
@@ -471,7 +472,7 @@ spec:RegisterAuras( {
         max_stack = function() return talent.raging_maelstrom.enabled and 10 or 5 end
     },
     -- Increases fire damage dealt from your abilities by $s1%.
-    -- https://wowhead.com/beta/spell=224125
+    -- https://wowhead.com/ptr-2/spell=224125
     molten_weapon = {
         id = 224125,
         duration = 15,
@@ -479,7 +480,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Your next healing or damaging Nature spell is instant cast and costs no mana.
-    -- https://wowhead.com/beta/spell=378081
+    -- https://wowhead.com/ptr-2/spell=378081
     natures_swiftness = {
         id = 378081,
         duration = 3600,
@@ -491,14 +492,14 @@ spec:RegisterAuras( {
         end
     },
     -- Heals $w1 damage every $t1 seconds.
-    -- https://wowhead.com/beta/spell=280205
+    -- https://wowhead.com/ptr-2/spell=280205
     pack_spirit = {
         id = 280205,
         duration = 3600,
         max_stack = 1
     },
     -- Cleansing $383015s1 poison effect from a nearby party or raid member every $t1 sec.
-    -- https://wowhead.com/beta/spell=383014
+    -- https://wowhead.com/ptr-2/spell=383014
     poison_cleansing = {
         id = 383014,
         duration = 6,
@@ -518,7 +519,7 @@ spec:RegisterAuras( {
         copy = 327164
     },
     -- Heals $w2 every $t2 seconds.
-    -- https://wowhead.com/beta/spell=61295
+    -- https://wowhead.com/ptr-2/spell=61295
     riptide = {
         id = 61295,
         duration = 18,
@@ -526,14 +527,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Increases movement speed by $s1%.
-    -- https://wowhead.com/beta/spell=58875
+    -- https://wowhead.com/ptr-2/spell=58875
     spirit_walk = {
         id = 58875,
         duration = 8,
         max_stack = 1
     },
     -- Talent: Able to move while casting all Shaman spells.
-    -- https://wowhead.com/beta/spell=79206
+    -- https://wowhead.com/ptr-2/spell=79206
     spiritwalkers_grace = {
         id = 79206,
         duration = 15,
@@ -541,7 +542,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Stunned.
-    -- https://wowhead.com/beta/spell=118905
+    -- https://wowhead.com/ptr-2/spell=118905
     static_charge = {
         id = 118905,
         duration = 3,
@@ -550,14 +551,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Stormstrike cooldown has been reset$?$?a319930[ and will deal $319930w1% additional damage as Nature][].
-    -- https://wowhead.com/beta/spell=201846
+    -- https://wowhead.com/ptr-2/spell=201846
     stormbringer = {
         id = 201846,
         duration = 12,
         max_stack = 1
     },
     -- Your next Lightning Bolt or Chain Lightning will deal $s2% increased damage and be instant cast.
-    -- https://wowhead.com/beta/spell=383009
+    -- https://wowhead.com/ptr-2/spell=383009
     stormkeeper = {
         id = 383009,
         duration = 15,
@@ -566,21 +567,21 @@ spec:RegisterAuras( {
         copy = 320137
     },
     -- Talent: Incapacitated.
-    -- https://wowhead.com/beta/spell=197214
+    -- https://wowhead.com/ptr-2/spell=197214
     sundering = {
         id = 197214,
         duration = 2,
         max_stack = 1
     },
     -- Talent: Movement speed increased by $378075s1%.
-    -- https://wowhead.com/beta/spell=378076
+    -- https://wowhead.com/ptr-2/spell=378076
     thunderous_paws = {
         id = 378076,
         duration = 3,
         max_stack = 1
     },
     -- Talent: Movement speed reduced by $s3%.
-    -- https://wowhead.com/beta/spell=51490
+    -- https://wowhead.com/ptr-2/spell=51490
     thunderstorm = {
         id = 51490,
         duration = 5,
@@ -588,7 +589,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Your next healing spell has increased effectiveness.
-    -- https://wowhead.com/beta/spell=73685
+    -- https://wowhead.com/ptr-2/spell=73685
     unleash_life = {
         id = 73685,
         duration = 10,
@@ -1410,7 +1411,7 @@ spec:RegisterAbilities( {
     feral_spirit = {
         id = 51533,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( 120 - ( talent.elemental_spirits.enabled and 30 or 0 ) ) end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( 90 - ( talent.elemental_spirits.enabled and 30 or 0 ) ) end,
         gcd = "spell",
         school = "nature",
 
@@ -1876,9 +1877,7 @@ spec:RegisterAbilities( {
     primal_strike = {
         id = 73899,
         cast = 0,
-        charges = 0,
-        cooldown = 12,
-        recharge = 12,
+        cooldown = 0,
         gcd = "spell",
         school = "physical",
 
@@ -1892,7 +1891,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent / Covenant (Necrolord): Blast your target with a Primordial Wave, dealing $327162s1 Shadow damage and apply Flame Shock to an enemy, or $?a137039[heal an ally for $327163s1 and apply Riptide to them][heal an ally for $327163s1].    Your next $?a137040[Lava Burst]?a137041[Lightning Bolt][Healing Wave] will also hit all targets affected by your $?a137040|a137041[Flame Shock][Riptide] for $?a137039[$s2%]?a137040[$s3%][$s4%] of normal $?a137039[healing][damage].
+    -- Talent / Covenant (Necrolord): Blast your target with a Primordial Wave, dealing $375984s1 Shadow damage and apply Flame Shock to them.; Your next $?a137040[Lava Burst]?a137041[Lightning Bolt][Healing Wave] will also hit all targets affected by your $?a137040|a137041[Flame Shock][Riptide] for $?a137039[$s2%]?a137040[$s3%][$s4%] of normal $?a137039[healing][damage].$?s384405[; Primordial Wave generates $s5 stacks of Maelstrom Weapon.][]
     primordial_wave = {
         id = function() return talent.primordial_wave.enabled and 375982 or 326059 end,
         cast = 0,
@@ -2017,7 +2016,7 @@ spec:RegisterAbilities( {
     stormstrike = {
         id = 17364,
         cast = 0,
-        cooldown = function() return gcd.execute * 6 end,
+        cooldown = function() return gcd.execute * 5 end,
         gcd = "spell",
         school = "physical",
 
