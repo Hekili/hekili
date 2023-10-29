@@ -939,7 +939,7 @@ spec:RegisterAbilities( {
     antimagic_zone = {
         id = 51052,
         cast = 0,
-        cooldown = 120,
+        cooldown = 45,
         gcd = "spell",
 
         talent = "antimagic_zone",

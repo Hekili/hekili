@@ -1,5 +1,5 @@
 -- EvokerDevastation.lua
--- November 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "EVOKER" then return end
 
@@ -551,6 +551,11 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    time_stop = {
+        id = 378441,
+        duration = 5,
+        max_stack = 1
+    },
     -- Talent: Your next empowered spell casts instantly at its maximum empower level.
     -- https://wowhead.com/beta/spell=370553
     tip_the_scales = {
@@ -1089,7 +1094,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Launch yourself and gain 30% increased movement speed for 10 sec. Allows Evoker spells to be cast while moving. Does not affect empowered spells.
+    -- Launch yourself and gain $s2% increased movement speed for $<dura> sec.; Allows Evoker spells to be cast while moving. Does not affect empowered spells.
     hover = {
         id = 358267,
         cast = 0,
@@ -1468,7 +1473,8 @@ spec:RegisterAbilities( {
         id = 378441,
         cast = 0,
         cooldown = 120,
-        gcd = "spell",
+        gcd = "off",
+        icd = 1,
 
         pvptalent = "time_stop",
         startsCombat = false,
@@ -1477,6 +1483,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "target", "time_stop" )
         end,
     },
 
@@ -1532,6 +1539,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
         color = "green",
+        icd = 0.5,
 
         spend = 0.10,
         spendType = "mana",

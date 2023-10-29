@@ -91,7 +91,7 @@ spec:RegisterTalents( {
     arcane_harmony             = { 62135, 384452, 1 }, -- Each time Arcane Missiles hits an enemy, the damage of your next Arcane Barrage is increased by 5%. This effect stacks up to 20 times.
     arcane_missiles            = { 62238, 5143  , 1 }, -- Launches five waves of Arcane Missiles at the enemy over 2.2 sec, causing a total of 5,540 Arcane damage.
     arcane_orb                 = { 62239, 153626, 1 }, -- Launches an Arcane Orb forward from your position, traveling up to 40 yds, dealing 3,060 Arcane damage to enemies it passes through. Grants 1 Arcane Charge when cast and every time it deals damage.
-    arcane_surge               = { 62230, 365350, 1 }, -- Expend all of your current mana to annihilate your enemy target and nearby enemies for up to 8,371 Arcane damage based on Mana spent. Deals reduced damage beyond 5 targets. For the next 15 sec, your Mana regeneration is increased by 425% and spell damage is increased by 35%.
+    arcane_surge               = { 62230, 365350, 1 }, -- Expend all of your current mana to annihilate your enemy target and nearby enemies for up to ${$s1*$s2} Arcane damage based on Mana spent. Deals reduced damage beyond $s3 targets.; For the next $365362d, your Mana regeneration is increased by $365362s3% and spell damage is increased by $365362s1%.
     arcane_tempo               = { 62144, 383980, 1 }, -- Consuming Arcane Charges increases your Haste by 2% for 12 sec, stacks up to 5 times.
     arcing_cleave              = { 62140, 231564, 1 }, -- For each Arcane Charge, Arcane Barrage hits 1 additional nearby target for 40% damage.
     cascading_power            = { 62133, 384276, 1 }, -- Consuming a Mana Gem grants up to 2 Clearcasting stacks.
@@ -121,7 +121,7 @@ spec:RegisterTalents( {
     resonance                  = { 62139, 205028, 1 }, -- Arcane Barrage deals 12% increased damage per target it hits.
     reverberate                = { 93427, 281482, 1 }, -- If Arcane Explosion hits at least 3 targets, it has a 50% chance to generate an extra Arcane Charge.
     rule_of_threes             = { 62145, 264354, 1 }, -- When you gain your third Arcane Charge, the cost of your next Arcane Blast or Arcane Missiles is reduced by 100%.
-    siphon_storm               = { 62148, 384187, 1 }, -- Evocation channels 50% faster and while channeling Evocation, your Intellect is increased by 2% every 0.4 sec. Lasts 30 sec.
+    siphon_storm               = { 62148, 384187, 1 }, -- Evocation grants $384265s1 Arcane Charge, channels $s1% faster and while channeling Evocation, your Intellect is increased by $384267s1% every $12051t2 sec. Lasts $384267d.
     slipstream                 = { 62227, 236457, 1 }, -- Clearcasting allows Arcane Missiles to be channeled while moving. Evocation can be channeled while moving.
     supernova                  = { 62221, 157980, 1 }, -- Pulses arcane energy around the target enemy or ally, dealing 812 Arcane damage to all enemies within 8 yds, and knocking them upward. A primary enemy target will take 100% increased damage.
     touch_of_the_magi          = { 62233, 321507, 1 }, -- Applies Touch of the Magi to your current target, accumulating 20% of the damage you deal to the target for 12 sec, and then exploding for that amount of Arcane damage to the target and reduced damage to all nearby enemies. Generates 4 Arcane Charges.
@@ -242,6 +242,10 @@ spec:RegisterAuras( {
         duration = 6,
         type = "Magic",
         max_stack = 1
+
+        -- Affected by:
+        -- frigid_winds[235224] #6: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+        -- volatile_detonation[389627] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -5000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
     },
     -- Absorbs $w1 damage.  Melee attackers take $235314s1 Fire damage.
     -- https://wowhead.com/beta/spell=235313
@@ -491,7 +495,7 @@ spec:RegisterAuras( {
     siphon_storm = {
         id = 384267,
         duration = 30,
-        max_stack = 7,
+        max_stack = 10,
         copy = 332934
     },
     -- Talent: Movement speed reduced by $w1%.
@@ -1433,7 +1437,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Expend all of your current mana to annihilate your enemy target and nearby enemies for up to 7,716 Arcane damage based on Mana spent. Deals reduced damage beyond 5 targets. For the next 15 sec, your Mana Regeneration is increased by 425% and Spell Damage is increased by 35%.
+    -- Talent: Expend all of your current mana to annihilate your enemy target and nearby enemies for up to ${$s1*$s2} Arcane damage based on Mana spent. Deals reduced damage beyond $s3 targets.; For the next $365362d, your Mana regeneration is increased by $365362s3% and spell damage is increased by $365362s1%.
     arcane_surge = {
         id = 365350,
         cast = 2.5,

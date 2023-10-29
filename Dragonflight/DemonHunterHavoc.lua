@@ -1,5 +1,5 @@
 -- DemonHunterHavoc.lua
--- October 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "DEMONHUNTER" then return end
 
@@ -63,101 +63,100 @@ spec:RegisterResource( Enum.PowerType.Fury, {
 spec:RegisterTalents( {
     -- Demon Hunter
     aldrachi_design          = { 90999, 391409, 1 }, -- Increases your chance to parry by 3%.
-    aura_of_pain             = { 90932, 207347, 1 }, -- Increases the critical strike chance of Immolation Aura by 6%.
+    aura_of_pain             = { 90933, 207347, 1 }, -- Increases the critical strike chance of Immolation Aura by $s1%.
     blazing_path             = { 91008, 320416, 1 }, -- Fel Rush gains an additional charge.
     bouncing_glaives         = { 90931, 320386, 1 }, -- Throw Glaive ricochets to 1 additional target.
-    chaos_fragments          = { 90992, 320412, 1 }, -- Each enemy stunned by Chaos Nova has a 30% chance to generate a Lesser Soul Fragment.
+    champion_of_the_glaive   = { 90994, 429211, 1 }, -- Throw Glaive has ${$s2+1} charges and $s1 yard increased range.
+    chaos_fragments          = { 95154, 320412, 1 }, -- Each enemy stunned by Chaos Nova has a $179057s3% chance to generate a Lesser Soul Fragment.
     chaos_nova               = { 90993, 179057, 1 }, -- Unleash an eruption of fel energy, dealing 2,211 Chaos damage and stunning all nearby enemies for 2 sec.
     charred_warblades        = { 90948, 213010, 1 }, -- You heal for 3% of all Fire damage you deal.
-    collective_anguish       = { 90995, 390152, 1 }, -- Eye Beam summons an allied Vengeance Demon Hunter who casts Fel Devastation, dealing 11,716 Fire damage over 2 sec. Dealing damage heals you for up to 1,268 health.
-    concentrated_sigils      = { 90944, 207666, 1 }, -- All Sigils are now placed at your location, and the duration of their effects is increased by 2 sec.
-    consume_magic            = { 91006, 278326, 1 }, -- Consume 1 beneficial Magic effect removing it from the target.
-    darkness                 = { 91002, 196718, 1 }, -- Summons darkness around you in an 8 yd radius, granting friendly targets a 20% chance to avoid all damage from an attack. Lasts 8 sec.
+    collective_anguish       = { 95152, 390152, 1 }, -- $?a212613[Fel Devastation][Eye Beam] summons an allied $?a212613[Havoc][Vengeance] Demon Hunter who casts $?a212613[Eye Beam][Fel Devastation], dealing $?a212613[${$391058s1*10*2} Chaos][${$393834s1*(2/$393831t1)} Fire] damage over $?a212613[$391057d][$393831d]. $?a212613[Deals reduced damage beyond $198013s5 targets.][Dealing damage heals you for up to ${$212106s1*(2/$t1)} health.]    consume_magic            = { 91006, 278326, 1 }, -- Consume 1 beneficial Magic effect removing it from the target.
+    darkness                 = { 91002, 196718, 1 }, -- Summons darkness around you in a$?a357419[ 12 yd][n 8 yd] radius, granting friendly targets a $209426s2% chance to avoid all damage from an attack. Lasts $d.; Chance to avoid damage increased by $s3% when not in a raid.
     demon_muzzle             = { 90928, 388111, 1 }, -- Enemies deal 8% reduced magic damage to you for 8 sec after being afflicted by one of your Sigils.
     demonic                  = { 91003, 213410, 1 }, -- Eye Beam causes you to enter demon form for 6 sec after it finishes dealing damage.
     disrupting_fury          = { 90937, 183782, 1 }, -- Disrupt generates 30 Fury on a successful interrupt.
+    elysian_decree           = { 90997, 390163, 1 }, -- [395039] $?a388114[Chaos][Arcane]
     erratic_felheart         = { 90996, 391397, 2 }, -- The cooldown of Fel Rush is reduced by 10%.
-    extended_sigils          = { 90998, 389697, 2 }, -- Increases the duration of Sigil effects by 1.0 sec.
-    felblade                 = { 90932, 232893, 1 }, -- Charge to your target and deal 6,539 Fire damage. Demon Blades has a chance to reset the cooldown of Felblade. Generates 40 Fury.
+    felblade                 = { 95150, 232893, 1 }, -- [395020] $?a388114[Chaos][Fire]
     felfire_haste            = { 90939, 389846, 1 }, -- Fel Rush increases your movement speed by 10% for 8 sec.
     first_of_the_illidari    = { 91003, 235893, 1 }, -- Metamorphosis grants 10% versatility and its cooldown is reduced by 60 sec.
-    flames_of_fury           = { 90949, 389694, 1 }, -- Sigil of Flame generates 2 additional Fury per target hit.
-    illidari_knowledge       = { 90935, 389696, 2 }, -- Reduces magic damage taken by 2%.
+    flames_of_fury           = { 90949, 389694, 2 }, -- Sigil of Flame deals $s2% increased damage and generates $s1 additional Fury per target hit.
+    illidari_knowledge       = { 90935, 389696, 1 }, -- Reduces magic damage taken by $s1%.
     imprison                 = { 91007, 217832, 1 }, -- Imprisons a demon, beast, or humanoid, incapacitating them for 1 min. Damage will cancel the effect. Limit 1.
     improved_disrupt         = { 90938, 320361, 1 }, -- Increases the range of Disrupt to 10 yds.
     improved_sigil_of_misery = { 90945, 320418, 1 }, -- Reduces the cooldown of Sigil of Misery by 30 sec.
     infernal_armor           = { 91004, 320331, 2 }, -- Immolation Aura increases your armor by 10% and causes melee attackers to suffer $320334s1/$s3${$320334s1/$s3} Fire damage.
     internal_struggle        = { 90934, 393822, 1 }, -- Increases your mastery by 3.6%.
+    live_by_the_glaive       = { 95151, 428607, 1 }, -- When you parry an attack or have one of your attacks parried, restore $428608s2% of max health and $428608s1 Fury. ; This effect may only occur once every $s1 sec.
     long_night               = { 91001, 389781, 1 }, -- Increases the duration of Darkness by 3 sec.
     lost_in_darkness         = { 90947, 389849, 1 }, -- Spectral Sight lasts an additional 6 sec if disrupted by attacking or taking damage.
-    master_of_the_glaive     = { 90994, 389763, 1 }, -- Throw Glaive has 2 charges, and snares all enemies hit by 50% for 6 sec.
+    master_of_the_glaive     = { 90994, 389763, 1 }, -- Throw Glaive has ${$s2+1} charges and snares all enemies hit by $213405s1% for $213405d.
     misery_in_defeat         = { 90945, 388110, 1 }, -- You deal 20% increased damage to enemies for 5 sec after Sigil of Misery's effect on them ends.
     pitch_black              = { 91001, 389783, 1 }, -- Reduces the cooldown of Darkness by 120 sec.
-    precise_sigils           = { 90944, 389799, 1 }, -- All Sigils are now placed at your target's location, and the duration of their effects is increased by 2 sec.
+    precise_sigils           = { 95155, 389799, 1 }, -- All Sigils are now placed at your target's location.
     pursuit                  = { 90940, 320654, 1 }, -- Mastery increases your movement speed.
-    quickened_sigils         = { 90997, 209281, 1 }, -- All Sigils activate 1 second faster, and their cooldowns are reduced by 20%.
-    relentless_pursuit       = { 90926, 389819, 1 }, -- The cooldown of The Hunt is reduced by 12 sec whenever an enemy is killed while afflicted by its damage over time effect.
-    rush_of_chaos            = { 90933, 320421, 1 }, -- Reduces the cooldown of Metamorphosis by 60 sec.
-    shattered_restoration    = { 90950, 389824, 2 }, -- The healing of Shattered Souls is increased by 5%.
+    quickened_sigils         = { 95149, 209281, 1 }, -- All Sigils activate ${$s1/-1000} second faster.
+    rush_of_chaos            = { 95148, 320421, 2 }, -- Reduces the cooldown of Metamorphosis by ${$m1/-1000} sec.
+    shattered_restoration    = { 90950, 389824, 1 }, -- The healing of Shattered Souls is increased by $s1%.
     sigil_of_misery          = { 90946, 207684, 1 }, -- Place a Sigil of Misery at the target location that activates after 2 sec. Causes all enemies affected by the sigil to cower in fear, disorienting them for 22 sec.
     soul_rending             = { 90936, 204909, 2 }, -- Leech increased by 5%. Gain an additional 5% leech while Metamorphosis is active.
     soul_sigils              = { 90929, 395446, 1 }, -- Afflicting an enemy with a Sigil generates 1 Lesser Soul Fragment.
     swallowed_anger          = { 91005, 320313, 1 }, -- Consume Magic generates 20 Fury when a beneficial Magic effect is successfully removed from the target.
     the_hunt                 = { 90927, 370965, 1 }, -- Charge to your target, striking them for 24,488 Nature damage, rooting them in place for 1.5 sec and inflicting 26,387 Nature damage over 6 sec to up to 5 enemies in your path. The pursuit invigorates your soul, healing you for 10% of the damage you deal to your Hunt target for 20 sec.
-    unleashed_power          = { 90992, 206477, 1 }, -- Reduces the Fury cost of Chaos Nova by 50% and its cooldown by 20%.
-    unnatural_malice         = { 90926, 389811, 1 }, -- Increase the damage over time effect of The Hunt by 30%.
-    unrestrained_fury        = { 90941, 320770, 2 }, -- Increases maximum Fury by 10.
+    unrestrained_fury        = { 90941, 320770, 1 }, -- Increases maximum Fury by $s1.
     vengeful_bonds           = { 90930, 320635, 1 }, -- Vengeful Retreat reduces the movement speed of all nearby enemies by 70% for 3 sec.
-    will_of_the_illidari     = { 91000, 389695, 2 }, -- Increases maximum health by 2%.
+    vengeful_retreat         = { 90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 942 Physical damage.
+    will_of_the_illidari     = { 91000, 389695, 1 }, -- Increases maximum health by $s1%.
 
     -- Havoc
+    a_fire_inside            = { 95143, 427775, 1 }, -- Immolation Aura has $m1 additional $Lcharge:charges; and $s3% chance to refund a charge when used.; You can have multiple Immolation Auras active at a time.
     accelerated_blade        = { 91011, 391275, 1 }, -- Throw Glaive deals 60% increased damage, reduced by 30% for each previous enemy hit.
     any_means_necessary      = { 90919, 388114, 1 }, -- Mastery: Demonic Presence now also causes your Arcane, Fire, Frost, Nature, and Shadow damage to be dealt as Chaos instead, and increases that damage by 29.5%.
     blind_fury               = { 91026, 203550, 2 }, -- Eye Beam generates 20 Fury every second, and its damage and duration are increased by 10%.
     burning_hatred           = { 90923, 320374, 1 }, -- Immolation Aura generates an additional 60 Fury over 12 sec.
     burning_wound            = { 90917, 391189, 1 }, -- Demon Blades and Throw Glaive leave open wounds on your enemies, dealing 5,909 Chaos damage over 15 sec and increasing damage taken from your Immolation Aura by 40%. May be applied to up to 3 targets.
     chaos_theory             = { 91035, 389687, 1 }, -- Blade Dance causes your next Chaos Strike within 8 sec to have a 14-30% increased critical strike chance and will always refund Fury.
+    chaotic_disposition      = { 95147, 428492, 2 }, -- Each time you deal Chaos damage, there is a ${$s2/100}.2% chance to duplicate $s3% of the damage, up to $m1 total $Ltime:times;.
     chaotic_transformation   = { 90922, 388112, 1 }, -- When you activate Metamorphosis, the cooldowns of Blade Dance and Eye Beam are immediately reset.
-    critical_chaos           = { 91028, 320413, 2 }, -- The chance that Chaos Strike will refund 20 Fury is increased by 25% of your critical strike chance.
-    cycle_of_hatred          = { 91032, 258887, 2 }, -- Blade Dance, Chaos Strike, and Glaive Tempest reduce the cooldown of Eye Beam by 0.5 sec.
+    critical_chaos           = { 91028, 320413, 1 }, -- The chance that Chaos Strike will refund $193840s1 Fury is increased by $s2% of your critical strike chance.
+    cycle_of_hatred          = { 91032, 258887, 2 }, -- Blade Dance, Chaos Strike, $?a393029[Throw Glaive, ][]and Glaive Tempest reduce the cooldown of Eye Beam by ${$s1/1000}.1 sec.
     dancing_with_fate        = { 91015, 389978, 2 }, -- The final slash of Blade Dance deals an additional 20% damage.
+    dash_of_chaos            = { 93014, 427794, 1 }, -- For ${$427793D-($428160s1/10)} sec after using Fel Rush, activating it again will dash back towards your initial location.
+    deflecting_dance         = { 93015, 427776, 1 }, -- You deflect incoming attacks while Blade Dancing, absorbing damage up to $s1% of your maximum health.
     demon_blades             = { 91019, 203555, 1 }, -- Your auto attacks deal an additional 992 Shadow damage and generate 7-12 Fury.
-    demonic_appetite         = { 90914, 206478, 1 }, -- Chaos Strike has a chance to spawn a Lesser Soul Fragment. Consuming any Soul Fragment grants 30 Fury.
+    demon_hide               = { 91017, 428241, 1 }, -- Magical damage increased by $s1%, and Physical damage taken reduced by $s2%.
     desperate_instincts      = { 93016, 205411, 1 }, -- Blur now reduces damage taken by an additional 10%. Additionally, you automatically trigger Blur with 50% reduced cooldown and duration when you fall below 35% health. This effect can only occur when Blur is not on cooldown.
-    elysian_decree           = { 91010, 390163, 1 }, -- Place a Kyrian Sigil at the target location that activates after 2 sec. Detonates to deal 22,591 Arcane damage and shatter up to 3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond 5 targets.
     essence_break            = { 91033, 258860, 1 }, -- Slash all enemies in front of you for 22,729 Chaos damage, and increase the damage your Chaos Strike and Blade Dance deal to them by 80% for 4 sec. Deals reduced damage beyond 8 targets.
     eye_beam                 = { 91018, 198013, 1 }, -- Blasts all enemies in front of you, dealing guaranteed critical strikes for up to 46,070 Chaos damage over 1.9 sec. Deals reduced damage beyond 5 targets. When Eye Beam finishes fully channeling, your Haste is increased by an additional 10% for 10 sec.
-    fel_barrage              = { 91023, 258925, 1 }, -- Unleash a torrent of Fel energy over 3 sec, inflicting 37,847 Chaos damage to all enemies within 8 yds. Deals reduced damage beyond 8 targets.
-    fel_eruption             = { 93015, 211881, 1 }, -- Impales the target for 2,978 Chaos damage and stuns them for 4 sec.
-    felfire_heart            = { 91017, 388109, 1 }, -- Increases duration of Immolation Aura and Sigil of Flame by 2 sec.
+    fel_barrage              = { 95144, 258925, 1 }, -- Unleash a torrent of Fel energy, rapidly consuming Fury to inflict $258926s1 Chaos damage to all enemies within $258926A1 yds, lasting $d or until Fury is depleted. Deals reduced damage beyond $258926s2 targets.
     first_blood              = { 90925, 206416, 1 }, -- Blade Dance deals 17,893 Chaos damage to the first target struck.
-    fodder_to_the_flame      = { 91010, 391429, 1 }, -- Your damaging abilities have a chance to call forth a condemned demon for 25 sec. Throw Glaive deals lethal damage to the demon, which explodes on death, dealing 12,790 Shadow damage to nearby enemies and healing you for 20% of your maximum health. The explosion deals reduced damage beyond 5 targets.
     furious_gaze             = { 91025, 343311, 1 }, -- When Eye Beam finishes fully channeling, your Haste is increased by an additional 10% for 10 sec.
     furious_throws           = { 93013, 393029, 1 }, -- Throw Glaive now costs 25 Fury and throws a second glaive at the target.
-    glaive_tempest           = { 91023, 342817, 1 }, -- Launch two demonic glaives in a whirlwind of energy, causing 21,027 Chaos damage over 3 sec to all nearby enemies. Deals reduced damage beyond 5 targets.
-    growing_inferno          = { 90916, 390158, 2 }, -- Immolation Aura's damage increases by 5% each time it deals damage.
+    glaive_tempest           = { 91035, 342817, 1 }, -- Launch two demonic glaives in a whirlwind of energy, causing ${14*$342857s1} Chaos damage over $d to all nearby enemies. Deals reduced damage beyond $s2 targets.
+    growing_inferno          = { 90916, 390158, 1 }, -- Immolation Aura's damage increases by $s1% each time it deals damage.
     improved_chaos_strike    = { 91030, 343206, 1 }, -- Chaos Strike damage increased by 10%.
     improved_fel_rush        = { 93014, 343017, 1 }, -- Fel Rush damage increased by 20%.
-    initiative               = { 91027, 388108, 1 }, -- Damaging an enemy before they damage you increases your critical strike chance by 12% for 5 sec. Using Vengeful Retreat refreshes your potential to activate this effect on any enemies you are in combat with.
-    inner_demon              = { 91009, 389693, 1 }, -- Entering demon form causes your next Chaos Strike to unleash your inner demon, causing it to crash into your target and deal 17,137 Chaos damage to all nearby enemies.
+    inertia                  = { 91021, 427640, 1 }, -- When empowered by Unbound Chaos, Fel Rush increases your damage done by $427641s1% for $427641d.
+    initiative               = { 91027, 388108, 1 }, -- Damaging an enemy before they damage you increases your critical strike chance by $391215s1% for $391215d.; Vengeful Retreat refreshes your potential to trigger this effect on any enemies you are in combat with.
+    inner_demon              = { 91024, 389693, 1 }, -- Entering demon form causes your next Chaos Strike to unleash your inner demon, causing it to crash into your target and deal $390137s1 Chaos damage to all nearby enemies. Deals reduced damage beyond $s2 targets.
     insatiable_hunger        = { 91019, 258876, 1 }, -- Demon's Bite deals 50% more damage and generates 5 to 10 additional Fury.
-    isolated_prey            = { 91036, 388113, 1 }, -- Chaos Nova, Eye Beam, and Fel Rush gain bonuses when striking 1 target.  Chaos Nova: Stun duration increased by 2 sec.  Eye Beam: Deals 30% increased damage.  Fel Rush: Generates 25-35 Fury.
+    isolated_prey            = { 91036, 388113, 1 }, -- Chaos Nova, Eye Beam, and Immolation Aura gain bonuses when striking 1 target.; $@spellicon179057 $@spellname179057:; Stun duration increased by ${$s1/1000} sec.; $@spellicon198013 $@spellname198013:; Deals $s2% increased damage.; $@spellicon258920 $@spellname258920:; Always critically strikes.
     know_your_enemy          = { 91034, 388118, 2 }, -- Gain critical strike damage equal to 40% of your critical strike chance.
     looks_can_kill           = { 90921, 320415, 1 }, -- Eye Beam deals guaranteed critical strikes.
-    momentum                 = { 91021, 206476, 1 }, -- Fel Rush, The Hunt, and Vengeful Retreat increase your damage done by 8% for 5 sec.
-    mortal_dance             = { 90924, 328725, 1 }, -- Blade Dance now reduces targets' healing received by 50% for 6 sec.
+    momentum                 = { 91021, 206476, 1 }, -- Fel Rush, The Hunt, and Vengeful Retreat increase your damage done by $208628s1% for $208628d, up to a maximum of ${$s2/1000} sec.
+    mortal_dance             = { 93015, 328725, 1 }, -- Blade Dance now reduces targets' healing received by $356608s1% for $356608d.
     netherwalk               = { 93016, 196555, 1 }, -- Slip into the nether, increasing movement speed by 100% and becoming immune to damage, but unable to attack. Lasts 6 sec.
     ragefire                 = { 90918, 388107, 1 }, -- Each time Immolation Aura deals damage, 35% of the damage dealt by up to 3 critical strikes is gathered as Ragefire. When Immolation Aura expires you explode, dealing all stored Ragefire damage to nearby enemies.
     relentless_onslaught     = { 91012, 389977, 1 }, -- Chaos Strike has a 10% chance to trigger a second Chaos Strike.
     restless_hunter          = { 91024, 390142, 1 }, -- Leaving demon form grants a charge of Fel Rush and increases the damage of your next Blade Dance by 50%.
-    serrated_glaive          = { 91013, 390154, 2 }, -- Enemies hit by Throw Glaive take 10% increased damage from Chaos Strike and Eye Beam.
+    scars_of_suffering       = { 90914, 428232, 1 }, -- Increases Versatility by $s1% and reduces threat generated by ${$s2*-1}%.
+    serrated_glaive          = { 91013, 390154, 1 }, -- Enemies hit by Chaos Strike or Throw Glaive take $s1% increased damage from Chaos Strike and Throw Glaive for $390155d.
     shattered_destiny        = { 91031, 388116, 1 }, -- The duration of your active demon form is extended by 0.1 sec per 8 Fury spent.
     sigil_of_flame           = { 90943, 204596, 1 }, -- Place a Sigil of Flame at the target location that activates after 2 sec. Deals 1,074 Fire damage, and an additional 5,043 Fire damage over 10 sec, to all enemies affected by the sigil. Generates 30 Fury.
-    soulrend                 = { 90920, 388106, 2 }, -- Throw Glaive causes targets to take an additional 60% of damage dealt as Chaos over 6 sec.
+    soulscar                 = { 91012, 388106, 1 }, -- Throw Glaive causes targets to take an additional $s1% of damage dealt as Chaos over $390181d.
     tactical_retreat         = { 91022, 389688, 1 }, -- Vengeful Retreat has a 5 sec reduced cooldown and generates 80 Fury over 10 sec.
     trail_of_ruin            = { 90915, 258881, 1 }, -- The final slash of Blade Dance inflicts an additional 5,789 Chaos damage over 4 sec.
-    unbound_chaos            = { 91020, 347461, 2 }, -- Activating Immolation Aura increases the damage of your next Fel Rush by 250%. Lasts 12 sec.
-    vengeful_retreat         = { 90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 942 Physical damage.
+    unbound_chaos            = { 91020, 347461, 1 }, -- Activating Immolation Aura increases the damage of your next Fel Rush by $s2%. Lasts $347462d.
 } )
 
 
@@ -343,9 +342,9 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=391430
     fodder_to_the_flame = {
         id = 391430,
-        duration = function () return 30 + ( conduit.brooding_pool.mod * 0.001 ) end,
+        duration = 25,
         max_stack = 1,
-        copy = 330910
+        copy = { 329554, 330910 }
     },
     -- The demon is linked to you.
     fodder_to_the_flame_chase = {
@@ -383,6 +382,12 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    -- Damage done increased by $w1%.
+    inertia = {
+        id = 427641,
+        duration = 5,
+        max_stack = 1,
+    },
     initiative = {
         id = 391215,
         duration = 5,
@@ -416,7 +421,7 @@ spec:RegisterAuras( {
     },
     momentum = {
         id = 208628,
-        duration = 5,
+        duration = 6,
         max_stack = 1,
     },
     -- Stunned.
@@ -476,6 +481,7 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
+    -- Damage taken from Chaos Strike and Throw Glaive increased by $w1%.
     serrated_glaive = {
         id = 390155,
         duration = 15,
@@ -541,7 +547,7 @@ spec:RegisterAuras( {
     },
     -- Talent: Suffering $w1 Chaos damage every $t1 sec.
     -- https://wowhead.com/beta/spell=390181
-    soulrend = {
+    soulscar = {
         id = 390181,
         duration = 6,
         tick_time = 2,
@@ -1003,11 +1009,11 @@ spec:RegisterAbilities( {
     chaos_nova = {
         id = 179057,
         cast = 0,
-        cooldown = function () return talent.unleashed_power.enabled and 48 or 60 end,
+        cooldown = 45,
         gcd = "spell",
         school = "chromatic",
 
-        spend = function () return talent.unleashed_power.enabled and 15 or 30 end,
+        spend = 25,
         spendType = "fury",
 
         talent = "chaos_nova",
@@ -1073,7 +1079,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Summons darkness around you in a$?a357419[ 12 yd][n 8 yd] radius, granting friendly targets a $209426s2% chance to avoid all damage from an attack. Lasts $d.
+    -- Summons darkness around you in a$?a357419[ 12 yd][n 8 yd] radius, granting friendly targets a $209426s2% chance to avoid all damage from an attack. Lasts $d.; Chance to avoid damage increased by $s3% when not in a raid.
     darkness = {
         id = 196718,
         cast = 0,
@@ -1257,9 +1263,12 @@ spec:RegisterAbilities( {
         id = 258925,
         cast = 3,
         channeled = true,
-        cooldown = 60,
+        cooldown = 90,
         gcd = "spell",
         school = "chromatic",
+
+        spend = 10,
+        spendType = "fury",
 
         talent = "fel_barrage",
         startsCombat = false,
@@ -1267,11 +1276,11 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         start = function ()
-            applyBuff( "fel_barrage", 2 )
+            applyBuff( "fel_barrage", 3 )
         end,
     },
 
-    -- Talent: Impales the target for $s1 Chaos damage and stuns them for $d.
+    -- Impales the target for $s1 Chaos damage and stuns them for $d.
     fel_eruption = {
         id = 211881,
         cast = 0,
@@ -1282,12 +1291,24 @@ spec:RegisterAbilities( {
         spend = 10,
         spendType = "fury",
 
-        talent = "fel_eruption",
         startsCombat = true,
 
         handler = function ()
             applyDebuff( "target", "fel_eruption" )
         end,
+    },
+
+
+    fel_lance = {
+        id = 206966,
+        cast = 1,
+        cooldown = 0,
+        gcd = "spell",
+
+        pvptalent = "rain_from_above",
+        buff = "rain_from_above",
+
+        startsCombat = true,
     },
 
     -- Rush forward, incinerating anything in your path for $192611s1 Chaos damage.
@@ -1298,7 +1319,7 @@ spec:RegisterAbilities( {
         cooldown = function () return ( legendary.erratic_fel_core.enabled and 7 or 10 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) end,
         recharge = function () return talent.blazing_path.enabled and ( ( legendary.erratic_fel_core.enabled and 7 or 10 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) ) or nil end,
         gcd = "off",
-        icd = 1,
+        icd = 0.5,
         school = "physical",
 
         startsCombat = true,
@@ -1319,19 +1340,6 @@ spec:RegisterAbilities( {
             if active_enemies == 1 and talent.isolated_prey.enabled then gain( 25, "fury" ) end
             if conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
         end,
-    },
-
-
-    fel_lance = {
-        id = 206966,
-        cast = 1,
-        cooldown = 0,
-        gcd = "spell",
-
-        pvptalent = "rain_from_above",
-        buff = "rain_from_above",
-
-        startsCombat = true,
     },
 
     -- Talent: Charge to your target and deal $213243sw2 $@spelldesc395020 damage.    $?s203513[Shear has a chance to reset the cooldown of Felblade.    |cFFFFFFFFGenerates $213243s3 Fury.|r]?a203555[Demon Blades has a chance to reset the cooldown of Felblade.    |cFFFFFFFFGenerates $213243s3 Fury.|r][Demon's Bite has a chance to reset the cooldown of Felblade.    |cFFFFFFFFGenerates $213243s3 Fury.|r]
@@ -1360,7 +1368,7 @@ spec:RegisterAbilities( {
     glaive_tempest = {
         id = 342817,
         cast = 0,
-        cooldown = 20,
+        cooldown = 25,
         gcd = "spell",
         school = "magic",
 
@@ -1380,6 +1388,10 @@ spec:RegisterAbilities( {
         id = 258920,
         cast = 0,
         cooldown = 30,
+        charges = function() return talent.a_fire_inside.enabled and 2 or 0 end,
+        recharge = function()
+            if talent.a_fire_inside.enabled then return 30 end
+        end,
         gcd = "spell",
         school = "fire",
 
@@ -1414,7 +1426,7 @@ spec:RegisterAbilities( {
     metamorphosis = {
         id = 191427,
         cast = 0,
-        cooldown = function () return ( 240 - ( talent.rush_of_chaos.enabled and 60 or 0 ) ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) - ( pvptalent.demonic_origins.up and 120 or 0 ) end,
+        cooldown = function () return ( 180 - ( talent.rush_of_chaos.enabled and 30 or 0 ) ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) - ( pvptalent.demonic_origins.up and 120 or 0 ) end,
         gcd = "spell",
         school = "physical",
 
@@ -1514,19 +1526,18 @@ spec:RegisterAbilities( {
     sigil_of_flame = {
         id = function ()
             if talent.precise_sigils.enabled then return 389810 end
-            if talent.concentrated_sigils.enabled then return 204513 end
+            if talent.concentrated_sigils.enabled then return 204513 end -- TODO: Remove?
             return 204596
         end,
         known = 204596,
         cast = 0,
-        cooldown = function() return 30 * ( talent.quickened_sigils.enabled and 0.8 or 1 ) end,
+        cooldown = 30,
         gcd = "spell",
         school = "physical",
 
         spend = -30,
         spendType = "fury",
 
-        talent = "sigil_of_flame",
         startsCombat = false,
 
         sigil_placed = function() return sigil_placed end,
@@ -1547,7 +1558,7 @@ spec:RegisterAbilities( {
         end,
         known = 207684,
         cast = 0,
-        cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * ( talent.improved_sigil_of_misery.enabled and 90 or 120 ) * ( talent.quickened_sigils.enabled and 0.8 or 1 ) end,
+        cooldown = function () return 120 * ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) end,
         gcd = "spell",
         school = "physical",
 
@@ -1570,7 +1581,7 @@ spec:RegisterAbilities( {
     spectral_sight = {
         id = 188501,
         cast = 0,
-        cooldown = 60,
+        cooldown = 30,
         gcd = "spell",
         school = "physical",
 
@@ -1613,9 +1624,9 @@ spec:RegisterAbilities( {
     throw_glaive = {
         id = 185123,
         cast = 0,
-        charges = function () return talent.master_of_the_glaive.enabled and 2 or nil end,
+        charges = function () return talent.champion_of_the_glaive.enabled and 2 or nil end,
         cooldown = 9,
-        recharge = function () return talent.master_of_the_glaive.enabled and 9 or nil end,
+        recharge = function () return talent.champion_of_the_glaive.enabled and 9 or nil end,
         gcd = "spell",
         school = "physical",
 
@@ -1631,9 +1642,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
-            if talent.mastery_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
+            if talent.champion_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
             if talent.serrated_glaive.enabled then applyDebuff( "target", "serrated_glaive" ) end
-            if talent.soulrend.enabled then applyDebuff( "target", "soulrend" ) end
+            if talent.soulscar.enabled then applyDebuff( "target", "soulscar" ) end
         end,
     },
 

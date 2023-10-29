@@ -30,8 +30,7 @@ spec:RegisterTalents( {
     diffuse_magic                       = { 80697, 122783, 1 }, -- Reduces magic damage you take by 60% for 6 sec, and transfers all currently active harmful magical effects on you back to their original caster if possible.
     disable                             = { 80679, 116095, 1 }, -- Reduces the target's movement speed by 50% for 15 sec, duration refreshed by your melee attacks.
     elusive_mists                       = { 80603, 388681, 2 }, -- Reduces all damage taken while channelling Soothing Mists by 0%.
-    escape_from_reality                 = { 80715, 394110, 2 }, -- After you use Transcendence: Transfer, you can use Transcendence: Transfer again within 10 sec, ignoring its cooldown. During this time, if you cast Vivify on yourself, its healing is increased by 1% and 50% of its cost is refunded.
-    expeditious_fortification           = { 80681, 388813, 1 }, -- Fortifying Brew cooldown reduced by 2 min.
+    escape_from_reality                 = { 80715, 394110, 1 }, -- After you use Transcendence: Transfer, you can use Transcendence: Transfer again within $343249d, ignoring its cooldown.; During this time, if you cast Vivify on yourself, its healing is increased by $s1% and $343249m2% of its cost is refunded.    expeditious_fortification           = { 80681, 388813, 1 }, -- Fortifying Brew cooldown reduced by 2 min.
     eye_of_the_tiger                    = { 80700, 196607, 1 }, -- Tiger Palm also applies Eye of the Tiger, dealing 530 Nature damage to the enemy and 482 healing to the Monk over 8 sec. Limit 1 target.
     fast_feet                           = { 80705, 388809, 2 }, -- Rising Sun Kick deals 70% increased damage. Spinning Crane Kick deals 10% additional damage.
     fatal_touch                         = { 80703, 394123, 2 }, -- Touch of Death cooldown reduced by 120 sec.
@@ -1109,8 +1108,10 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = 15,
-        spendType = "energy",
+        spend = function()
+            if state.spec.mistweaver then return 0.007, "mana" end
+            return 15, "energy"
+        end,
 
         talent = "disable",
         startsCombat = true,
@@ -1136,11 +1137,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Expel negative chi from your body, healing for 3,494 and dealing 10% of the amount healed as Nature damage to an enemy within 8 yards. Draws in the positive chi of all your Healing Spheres to increase the healing of Expel Harm.
+    -- Expel negative chi from your body, healing for $s1 and dealing $s2% of the amount healed as Nature damage to an enemy within $115129A1 yards.$?s322102[; Draws in the positive chi of all your Healing Spheres to increase the healing of Expel Harm.][]$?s322106[; Generates $s3 Chi.]?s342928[; Generates ${$s3+$342928s2} Chi.][]
     expel_harm = {
         id = 322101,
         cast = 0,
-        cooldown = 15,
+        cooldown = function() return level > 42 and 5 or 15 end,
         gcd = "totem",
         school = "nature",
 
@@ -1155,6 +1156,7 @@ spec:RegisterAbilities( {
         end,
         handler = function ()
             gain( ( healing_sphere.count * stat.attack_power ) + stat.spell_power * ( 1 + stat.versatility_atk_mod ), "health" )
+            if pvptalent.reverse_harm.enabled then gain( 1, "chi" ) end
             removeBuff( "gift_of_the_ox" )
             if talent.tranquil_spirit.enabled and healing_sphere.count > 0 then stagger.amount_remains = 0.95 * stagger.amount_remains end
             healing_sphere.count = 0

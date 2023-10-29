@@ -56,7 +56,7 @@ spec:RegisterTalents( {
     feline_swiftness               = { 82239, 131768, 2 }, -- Increases your movement speed by 15%.
     forestwalk                     = { 92229, 400129, 2 }, -- Casting Regrowth increases your movement speed and healing received by 5% for 3 sec.
     gale_winds                     = { 92228, 400142, 1 }, -- Increases Typhoon's radius by 20% and its range by 5 yds.
-    heart_of_the_wild              = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for 45 sec. Balance: Magical damage increased by 30%. Guardian: Bear Form gives an additional 20% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has 2 charges. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
+    heart_of_the_wild              = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for $d.$?!s137013[; Balance: Cast time of Balance spells reduced by $s13% and damage increased by $s1%.][]$?!s137011[; Feral: Gain $s14 Combo Point every $t14 sec while in Cat Form and Physical damage increased by $s4%.][]$?!s137010[; Guardian: Bear Form gives an additional $s7% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has ${$s9+1} charges.][]$?!s137012[; Restoration: Healing increased by $s10%, and mana costs reduced by $s12%.][]
     hibernate                      = { 82211, 2637  , 1 }, -- Forces the enemy target to sleep for up to 40 sec. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
     improved_barkskin              = { 82219, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_rejuvenation          = { 82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec.
@@ -97,15 +97,14 @@ spec:RegisterTalents( {
 
     -- Feral
     adaptive_swarm                 = { 82112, 391888, 1 }, -- Command a swarm that heals 17,531 or deals 16,697 Shadow damage over 12 sec to a target, and increases the effectiveness of your periodic effects on them by 25%. Upon expiration, finds a new target, preferring to alternate between friend and foe up to 3 times.
-    apex_predators_craving         = { 82092, 391881, 1 }, -- Rip damage has a 4% chance to make your next Ferocious Bite free and deal the maximum damage.
-    ashamanes_guidance             = { 82113, 391548, 1 }, -- Your melee attacks have a chance to activate Incarnation: Avatar of Ashamane for 6 sec, without the ability to enter stealth in combat. Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
+    apex_predators_craving         = { 82092, 391881, 1 }, -- Rip damage has a ${$s1/10}.1% chance to make your next Ferocious Bite free and deal the maximum damage.
+    ashamanes_guidance             = { 82113, 391548, 1 }, -- $@spellicon102543$@spellname102543; During Incarnation: Avatar of Ashamane and for $421440s1 sec after it ends, your Rip and Rake each cause affected enemies to take $421442s1% increased damage from your abilities.; $@spellicon391528 $@spellname391528; Convoke the Spirits' cooldown is reduced by ${($abs($391538s4)/120000)*100}% and its duration and number of spells cast is reduced by $391538s1%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
     berserk                        = { 82101, 106951, 1 }, -- Go Berserk for 20 sec. While Berserk: Generate 1 combo point every 1.5 sec. Combo point generating abilities generate 1 additional combo point. Finishing moves restore up to 3 combo points generated over the cap. Shred and Rake damage increased by 50%.
     berserk_frenzy                 = { 82090, 384668, 1 }, -- During Incarnation: Avatar of Ashamane your combo point-generating abilities bleed the target for an additional 100% of their damage over 8 sec.
     berserk_heart_of_the_lion      = { 82105, 391174, 1 }, -- Each combo point spent reduces the cooldown of Incarnation: Avatar of Ashamane by 0.5 sec.
     bloodtalons                    = { 82109, 319439, 1 }, -- When you use 3 different combo point-generating abilities within 4 sec, the damage of your next 3 Rips or Ferocious Bites is increased by 25% for their full duration.
     brutal_slash                   = { 82091, 202028, 1 }, -- Strikes all nearby enemies with a massive slash, inflicting 14,490 Physical damage. Deals 15% increased damage against bleeding targets. Deals reduced damage beyond 5 targets. Awards 1 combo point.
     carnivorous_instinct           = { 82110, 390902, 2 }, -- Tiger's Fury's damage bonus is increased by 6%.
-    cats_curiosity                 = { 82094, 386318, 2 }, -- Clearcast abilities generate 25% of their Energy cost.
     circle_of_life_and_death       = { 82095, 400320, 1 }, -- Your damage over time effects deal their damage in 20% less time, and your healing over time effects in 15% less time.
     convoke_the_spirits            = { 82114, 391528, 1 }, -- Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of 12 Druid spells and abilities over 3 sec. Chance to use an exceptional spell or ability is increased. You will cast Ferocious Bite, Shred, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
     dire_fixation                  = { 82085, 417710, 1 }, -- Attacking an enemy with Shred fixates your attention on it for 10 sec. You can fixate on a single target at once. Your attacks deal 8% increased damage to your fixated target.
@@ -136,6 +135,7 @@ spec:RegisterTalents( {
     remove_corruption              = { 82204, 2782  , 1 }, -- Nullifies corrupting effects on the friendly target, removing all Curse and Poison effects.
     rip                            = { 82222, 1079  , 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 16,393 over 8 sec 2 points: 24,590 over 12 sec 3 points: 32,787 over 16 sec 4 points: 40,984 over 20 sec 5 points: 49,181 over 24 sec
     rip_and_tear                   = { 82093, 391347, 1 }, -- Applying Rip to a target also applies a Tear that deals 15% of the new Rip's damage over 8 sec.
+    saber_jaws                     = { 82094, 421432, 2 }, -- When you spend extra Energy on Ferocious Bite, the extra damage is increased by $s1%.
     sabertooth                     = { 82102, 202031, 1 }, -- Ferocious Bite deals 15% increased damage and increases all damage dealt by Rip by 5% per Combo Point spent for 4 sec.
     soul_of_the_forest             = { 82096, 158476, 1 }, -- Your finishing moves grant 3 Energy per combo point spent and deal 5% increased damage.
     starfire                       = { 91044, 197628, 1 }, -- Call down a burst of energy, causing 8,829 Arcane damage to the target, and 3,013 Arcane damage to all other enemies within 5 yards. Deals reduced damage beyond 8 targets.
@@ -273,6 +273,12 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
         copy = 339140
+    },
+    -- Your Rip and Rake each cause affected enemies to take $s1% increased damage from your abilities.
+    ashamanes_guidance = {
+        id = 421442,
+        duration = 3600,
+        max_stack = 1,
     },
     -- Armor increased by $w4%.  Stamina increased by $1178s2%.  Immune to Polymorph effects.
     -- https://wowhead.com/beta/spell=5487
@@ -1170,6 +1176,7 @@ spec:RegisterHook( "reset_precast", function ()
     last_bloodtalons = nil
 
     if buff.jungle_stalker.up then buff.jungle_stalker.expires = buff.bs_inc.expires end
+    if talent.ashamanes_guidance.enabled and buff.incarnation.up then buff.ashamanes_frenzy.expires = buff.bs_inc.expires + 30 end
 
     if buff.lycaras_fleeting_glimpse.up then
         state:QueueAuraExpiration( "lycaras_fleeting_glimpse", LycarasHandler, buff.lycaras_fleeting_glimpse.expires )
@@ -1584,7 +1591,7 @@ spec:RegisterAbilities( {
         id = 339,
         cast = function ()
             if buff.predatory_swiftness.up then return 0 end
-            return 1.7 * haste
+            return 1.7 * ( buff.heart_of_the_wild.up and 0.7 or 1 ) * haste
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1652,8 +1659,8 @@ spec:RegisterAbilities( {
         spend = function ()
             if buff.apex_predator.up or buff.apex_predators_craving.up then return 0 end
             -- Support true/false or 1/0 through this awkward transition.
-            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.8 or 1 ) * ( talent.relentless_predator.enabled and 0.8 or 1 ) end
-            return max( 25, min( 50 * ( buff.incarnation.up and 0.8 or 1 ), energy.current ) ) * ( talent.relentless_predator.enabled and 0.6 or 1 )
+            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.8 or 1 ) * ( talent.relentless_predator.enabled and 0.9 or 1 ) end
+            return max( 25, min( 50 * ( buff.incarnation.up and 0.8 or 1 ), energy.current ) ) * ( talent.relentless_predator.enabled and 0.9 or 1 )
         end,
         spendType = "energy",
 
@@ -1793,6 +1800,7 @@ spec:RegisterAbilities( {
             if buff.cat_form.down then shift( "cat_form" ) end
             applyBuff( "incarnation" )
             applyBuff( "jungle_stalker" )
+            if talent.ashamanes_guidance.enabled then applyBuff( "ashamanes_guidance", buff.incarnation.remains + 30 ) end
             setCooldown( "prowl", 0 )
             applyBuff( "overflowing_power", nil, 0 )
             energy.max = energy.max + 50

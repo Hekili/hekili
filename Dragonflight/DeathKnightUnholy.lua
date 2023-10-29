@@ -1116,7 +1116,7 @@ me:RegisterAbilities( {
     antimagic_zone = {
         id = 51052,
         cast = 0,
-        cooldown = 120,
+        cooldown = 45,
         gcd = "spell",
 
         talent = "antimagic_zone",
@@ -1793,9 +1793,9 @@ me:RegisterAbilities( {
 
     -- Talent: Raises $?s207313[an abomination]?s58640[a geist][a ghoul] to fight by your si...
     raise_dead = {
-        id = function () return IsActiveSpell( 46584 ) and 46584 or 46585 end,
+        id = function() return IsActiveSpell( 46584 ) and 46584 or 46585 end,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return IsActiveSpell( 46584 ) and 30 or 120 end,
         gcd = "spell",
 
         talent = "raise_dead",

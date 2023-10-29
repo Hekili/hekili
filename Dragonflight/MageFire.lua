@@ -80,7 +80,7 @@ spec:RegisterTalents( {
     fevered_incantation      = { 62209, 383810, 1 }, -- Each consecutive critical strike you deal increases critical strike damage you deal by 2%, up to 8% for 6 sec.
     fiery_rush               = { 62203, 383634, 1 }, -- While Combustion is active, your Fire Blast and Phoenix Flames recharge 50% faster.
     fire_blast               = { 62214, 108853, 1 }, -- Blasts the enemy for 2,392 Fire damage. Fire: Castable while casting other spells. Always deals a critical strike.
-    firefall                 = { 62197, 384033, 1 }, -- Damaging an enemy with 15 Fireballs or Pyroblasts causes your next Fireball to call down a Meteor on your target.
+    firefall                 = { 62197, 384033, 1 }, -- Damaging an enemy with $s1 Fireballs or Pyroblasts causes your next Fireball or Pyroblast to call down a Meteor on your target$?a134735[ at $s2% effectiveness][].
     firemind                 = { 62208, 383499, 1 }, -- Consuming Hot Streak grants you 1% increased Intellect for 12 sec. This effect stacks up to 3 times.
     firestarter              = { 62083, 205026, 1 }, -- Your Fireball and Pyroblast spells always deal a critical strike when the target is above 90% health.
     flame_accelerant         = { 62200, 203275, 2 }, -- If you have not cast Fireball for 8 sec, your next Fireball will deal 70% increased damage with a 40% reduced cast time.
@@ -1797,6 +1797,11 @@ spec:RegisterAbilities( {
                 if talent.kindling.enabled then
                     setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) )
                 end
+            end
+
+            if buff.firefall_ready.up then
+                action.meteor.impact()
+                removeBuff( "firefall_ready" )
             end
 
             if legendary.molten_skyfall.enabled and buff.molten_skyfall_ready.down then

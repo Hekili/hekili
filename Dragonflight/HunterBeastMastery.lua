@@ -1,5 +1,5 @@
 -- HunterBeastMastery.lua
--- October 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
@@ -216,21 +216,20 @@ spec:RegisterTalents( {
     a_murder_of_crows           = { 79943, 131894, 1 }, -- Summons a flock of crows to attack your target, dealing 7,755 Physical damage over 15 sec. If the target dies while under attack, A Murder of Crows' cooldown is reset.
     animal_companion            = { 79947, 267116, 1 }, -- Your Call Pet additionally summons the first pet from your stable. This pet will obey your Kill Command, but cannot use pet family abilities and both of your pets deal 35% reduced damage.
     aspect_of_the_beast         = { 79944, 191384, 1 }, -- Increases the damage and healing of your pet's abilities by 30%. Increases the effectiveness of your pet's Predator's Thirst, Endurance Training, and Pathfinding passives by 50%.
-    aspect_of_the_wild          = { 79950, 193530, 1 }, -- Fire off a Cobra Shot at your current target and 2 other enemies near your current target. For the next 20 sec, your Cobra Shot will fire at 2 extra targets and Cobra Shot Focus cost is reduced by 10.
     barbed_shot                 = { 79968, 217200, 1 }, -- Fire a shot that tears through your enemy, causing them to bleed for 3,329 damage over 8 sec and increases your critical strike chance by 3% for 8 sec, stacking up to 3 times. Sends your pet into a frenzy, increasing attack speed by 30% for 8 sec, stacking up to 3 times. Generates 20 Focus over 8 sec.
     barbed_wrath                = { 79822, 231548, 1 }, -- Barbed Shot reduces the cooldown of Bestial Wrath by 12.0 sec.
     beast_cleave                = { 79956, 115939, 2 }, -- After you Multi-Shot, your pet's melee attacks also strike all nearby enemies for 35% of the damage for the next 3.0 sec. Deals reduced damage beyond 8 targets.
     bestial_wrath               = { 79955, 19574 , 1 }, -- Sends you and your pet into a rage, instantly dealing 1,104 Physical damage to its target, and increasing all damage you both deal by 25% for 15 sec. Removes all crowd control effects from your pet. Bestial Wrath's remaining cooldown is reduced by 12 sec each time you use Barbed Shot and activating Bestial Wrath grants 1 charge of Barbed Shot.
     bloodshed                   = { 79943, 321530, 1 }, -- Command your pet to tear into your target, causing your target to bleed for 2,549 over 18 sec and increase all damage taken from your pet by 15% for 18 sec.
-    bloody_frenzy               = { 79946, 407412, 1 }, -- While Call of the Wild is active, your pets have the effects of Beast Cleave, and Cobra Shot applies Serpent Sting to any target hit.
+    bloody_frenzy               = { 79946, 407412, 1 }, -- While Call of the Wild is active, your pets have the effects of Beast Cleave, and each time Call of the Wild summons a pet, all of your pets Stomp.
     brutal_companion            = { 79816, 386870, 1 }, -- When Barbed Shot causes Frenzy to stack up to 3, your pet will immediately use its special attack and deal 50% bonus damage.
-    call_of_the_wild            = { 79967, 359844, 1 }, -- You sound the call of the wild, summoning 2 of your active pets for 20 sec. During this time, a random pet from your stable will appear every 4 sec to assault your target for 6 sec.
+    call_of_the_wild            = { 79967, 359844, 1 }, -- You sound the call of the wild, summoning $s1 of your active pets for $d. During this time, a random pet from your stable will appear every $t2 sec to assault your target for $361582d. ; Each time Call of the Wild summons a pet, the cooldown of Barbed Shot and Kill Command are reduced by $s3%.
     cobra_senses                = { 79963, 378244, 1 }, -- Cobra Shot reduces the cooldown of Kill Command by an additional 1.0 sec.
     cobra_shot                  = { 79949, 193455, 1 }, -- A quick shot causing 1,995 Physical damage. Reduces the cooldown of Kill Command by 1 sec.
     cobra_sting                 = { 79941, 378750, 2 }, -- Cobra Shot has a 25% chance to make your next Kill Command consume no Focus.
     counter_shot                = { 79912, 147362, 1 }, -- Interrupts spellcasting, preventing any spell in that school from being cast for 3 sec.
     dire_beast                  = { 79959, 120679, 1 }, -- Summons a powerful wild beast that attacks the target and roars, increasing your Haste by 5% for 8 sec.
-    dire_command                = { 79953, 378743, 3 }, -- Kill Command has a 30% chance to also summon a Dire Beast to attack your target for 8 sec.
+    dire_command                = { 79953, 378743, 2 }, -- Kill Command has a $s1% chance to also summon a Dire Beast to attack your target for $120679d.
     dire_frenzy                 = { 79823, 385810, 2 }, -- Dire Beast lasts an additional 1 sec and deals 20% increased damage.
     dire_pack                   = { 79940, 378745, 1 }, -- Every 5 Dire Beasts summoned resets the cooldown of Kill Command, and reduces the Focus cost and cooldown of Kill Command by 50% for 8 sec.
     hunters_prey                = { 79951, 378210, 1 }, -- Kill Command has a 10% chance to reset the cooldown of Kill Shot, and causes your next Kill Shot to be usable on any target, regardless of the target's health.
@@ -240,21 +239,20 @@ spec:RegisterTalents( {
     killer_cobra                = { 79961, 199532, 1 }, -- While Bestial Wrath is active, Cobra Shot resets the cooldown on Kill Command.
     killer_command              = { 79939, 378740, 2 }, -- Kill Command damage increased by 5%.
     kindred_spirits             = { 79957, 56315 , 2 }, -- Increases your maximum Focus and your pet's maximum Focus by 20.
-    master_handler              = { 79962, 389654, 1 }, -- Each temporary beast summoned reduces the cooldown of Aspect of the Wild by 4.0 sec.
-    multishot                   = { 79917, 2643  , 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 197 Physical damage. Deals reduced damage beyond 5 targets.
+    master_handler              = { 79962, 424558, 1 }, -- Each time Barbed Shot deals damage, the cooldown of Kill Command is reduced by ${$m1/1000}.2 sec.    multishot                   = { 79917, 2643  , 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 197 Physical damage. Deals reduced damage beyond 5 targets.
     one_with_the_pack           = { 79960, 199528, 2 }, -- Wild Call has a 20% increased chance to reset the cooldown of Barbed Shot.
     pack_tactics                = { 79958, 321014, 1 }, -- Passive Focus generation increased by 100%.
     piercing_fangs              = { 79961, 392053, 1 }, -- While Bestial Wrath is active, your pet's critical damage dealt is increased by 35%.
+    savagery                    = { 79950, 424557, 1 }, -- Kill Command damage is increased by $s1%. Barbed Shot lasts ${$m2/1000}.1 sec longer.
     scent_of_blood              = { 79965, 193532, 2 }, -- Activating Bestial Wrath grants 1 charge of Barbed Shot.
     sharp_barbs                 = { 79945, 378205, 2 }, -- Barbed Shot damage increased by 1%.
-    snake_bite                  = { 79962, 389660, 1 }, -- While Aspect of the Wild is active, Cobra Shot deals 75% increased damage.
     stomp                       = { 79942, 199530, 2 }, -- When you cast Barbed Shot, your pet stomps the ground, dealing 378 Physical damage to all nearby enemies.
-    thrill_of_the_hunt          = { 79964, 257944, 3 }, -- Barbed Shot increases your critical strike chance by 3% for 8 sec, stacking up to 1 time.
+    thrill_of_the_hunt          = { 79964, 257944, 2 }, -- Barbed Shot increases your critical strike chance by $257946s1% for $257946d, stacking up to $s2 $Ltime:times;.
     training_expert             = { 79948, 378209, 2 }, -- All pet damage dealt increased by 5%.
     wailing_arrow               = { 79938, 392060, 1 }, -- Fire an enchanted arrow, dealing 4,352 Shadow damage to your target and an additional 1,764 Shadow damage to all enemies within 8 yds of your target. Non-Player targets struck by a Wailing Arrow have their spellcasting interrupted and are silenced for 3 sec.
     war_orders                  = { 79952, 393933, 2 }, -- Barbed Shot deals 10% increased damage, and applying Barbed Shot has a 25% chance to reset the cooldown of Kill Command.
     wild_call                   = { 79966, 185789, 1 }, -- Your auto shot critical strikes have a 20% chance to reset the cooldown of Barbed Shot.
-    wild_instincts              = { 79946, 378442, 1 }, -- While Call of the Wild is active, Barbed Shot has a 25% chance to gain a charge any time Focus is spent.
+    wild_instincts              = { 79946, 378442, 1 }, -- While Call of the Wild is active, each time you Kill Command, your Kill Command target takes $424567s1% increased damage from all of your pets, stacking up to $424567u times.
 } )
 
 
@@ -267,7 +265,7 @@ spec:RegisterPvpTalents( {
     hunting_pack        = 3730, -- (203235) Aspect of the Cheetah has 50% reduced cooldown and grants its effects to allies within 15 yds.
     interlope           = 1214, -- (248518) Misdirection now causes the next 3 hostile spells cast on your target within 10 sec to be redirected to your pet, but its cooldown is increased by 15 sec. Your pet must be within 20 yards of the target for spells to be redirected.
     kindred_beasts      = 5444, -- (356962) Command Pet's unique ability cooldown reduced by 50%, and gains additional effects.
-    survival_tactics    = 3599, -- (202746) Feign Death dispels all harmful magical effects, and reduces damage taken by 90% for 1.5 sec.
+    survival_tactics    = 3599, -- (202746) Feign Death reduces damage taken by $m1% for $202748d.
     the_beast_within    = 693 , -- (356976) Bestial Wrath now provides immunity to Fear and Horror effects for you and your pets for 8 sec. Nearby allied pets are also inspired, increasing their attack speed by 10%.
     tranquilizing_darts = 5418, -- (356015) Interrupting or removing effects with Tranquilizing Shot and Counter Shot releases 8 darts at nearby enemies, each reducing the duration of a beneficial Magic effect by 4 sec.
     wild_kingdom        = 5441, -- (356707) Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
@@ -345,19 +343,11 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    -- Talent: Cobra Shot Focus cost reduced by $s2.  Cobra Shot will fire at $s1 additional $Ltarget:targets;.$?$w3!=0[  Cobra Shot damage increased by $w3%.][]
-    -- https://wowhead.com/beta/spell=193530
-    aspect_of_the_wild = {
-        id = 193530,
-        duration = 20,
-        type = "Ranged",
-        max_stack = 1
-    },
     -- Talent: Suffering $w1 damage every $t1 sec.
     -- https://wowhead.com/beta/spell=217200
     barbed_shot = {
         id = 246152,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -365,7 +355,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_2 = {
         id = 246851,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -373,7 +363,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_3 = {
         id = 246852,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -381,7 +371,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_4 = {
         id = 246853,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -389,7 +379,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_5 = {
         id = 246854,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -397,7 +387,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_6 = {
         id = 284255,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -405,7 +395,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_7 = {
         id = 284257,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -413,7 +403,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_8 = {
         id = 284258,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -421,7 +411,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_dot = {
         id = 217200,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -749,11 +739,12 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    -- Can always be seen and tracked by the Hunter.
+    -- Can always be seen and tracked by the Hunter.; Damage taken increased by $428402s4% while above $s3% health.
     -- https://wowhead.com/beta/spell=257284
     hunters_mark = {
         id = 257284,
         duration = 3600,
+        tick_time = 0.5,
         type = "Magic",
         max_stack = 1
     },
@@ -1013,6 +1004,12 @@ spec:RegisterAuras( {
         type = "Ranged",
         max_stack = 1
     },
+    -- Reduces damage taken by $202746s1%, up to a maximum of $w1.
+    survival_tactics = {
+        id = 202748,
+        duration = 3.0,
+        max_stack = 1,
+    },
     -- Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=263852
     talon_rend = {
@@ -1102,6 +1099,12 @@ spec:RegisterAuras( {
         id = 185791,
         duration = 4,
         max_stack = 1
+    },
+    -- Damage taken from $@auracaster's Pets increased by $s1%.
+    wild_instincts = {
+        id = 424567,
+        duration = 8,
+        max_stack = 10,
     },
     -- Suffering $w1 Fire damage every $t1 sec.
     -- https://wowhead.com/beta/spell=269747
@@ -1223,6 +1226,10 @@ spec:RegisterAura( "lethal_command", {
 spec:RegisterHook( "reset_precast", function()
     if debuff.tar_trap.up then
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
+    end
+
+    if talent.blood_frenzy.enabled and buff.call_of_the_wild.up then
+        applyBuff( "beast_cleave", max( buff.beast_cleave.remains, buff.call_of_the_wild.remains ) )
     end
 
     if buff.nesingwarys_apparatus.up then
@@ -1492,7 +1499,7 @@ spec:RegisterAbilities( {
     call_of_the_wild = {
         id = 359844,
         cast = 0,
-        cooldown = 180,
+        cooldown = 120,
         gcd = "spell",
         school = "nature",
 
@@ -1508,7 +1515,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: You and your pet blend into the surroundings and gain stealth for $d. While camouflaged, you will heal for $s4% of maximum health every $T4 secs.
+    -- Talent: You and your pet blend into the surroundings and gain stealth for $d. While camouflaged, you will heal for $s4% of maximum health every $T4 sec.
     camouflage = {
         id = 199483,
         cast = 0,
@@ -1541,10 +1548,6 @@ spec:RegisterAbilities( {
         handler = function ()
             if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end
 
-            if talent.bloody_frenzy.enabled and buff.call_of_the_wild.up then
-                applyDebuff( "target", "serpent_sting" )
-                if buff.aspect_of_the_wild.up then active_dot.serpent_sting = max( active_enemies, active_dot.serpent_sting + 2 ) end
-            end
             if talent.killer_cobra.enabled and buff.bestial_wrath.up then setCooldown( "kill_command", 0 )
             else
                 gainChargeTime( "kill_command", talent.cobra_senses.enabled and 2 or 1 )
@@ -1679,11 +1682,10 @@ spec:RegisterAbilities( {
     disengage = {
         id = 781,
         cast = 0,
-        charges = 1,
-        cooldown = 1,
-        recharge = 20,
+        cooldown = 20,
         gcd = "off",
         school = "physical",
+        icd = 0.5,
 
         startsCombat = false,
 
@@ -1772,6 +1774,10 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "feign_death" )
 
+            if pvptalent.survival_tactics.enabled then
+                applyBuff( "survival_tactics" )
+            end
+
             if legendary.craven_strategem.enabled then
                 removeDebuff( "player", "dispellable_curse" )
                 removeDebuff( "player", "dispellable_disease" )
@@ -1840,11 +1846,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Apply Hunter's Mark to the target, causing the target to always be seen and tracked by the Hunter.    Only one Hunter's Mark can be applied at a time.
+    -- Apply Hunter's Mark to the target, causing the target to always be seen and tracked by the Hunter.; Hunter's Mark increases all damage dealt to targets above $s3% health by $428402s1%. Only one Hunter's Mark damage increase can be applied to a target at a time.; Hunter's Mark can only be applied to one target at a time. When applying Hunter's Mark in combat, the ability goes on cooldown for ${$s5/1000} sec.
     hunters_mark = {
         id = 257284,
         cast = 0,
-        cooldown = 0,
+        cooldown = function () return time > 0 and 20 or 0 end,
         gcd = "totem",
         school = "nature",
 
@@ -1914,6 +1920,10 @@ spec:RegisterAbilities( {
             removeBuff( "lethal_command" )
 
             if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
+
+            if talent.wild_instincts.enabled and buff.call_of_the_wild.up then
+                applyDebuff( "target", "wild_instincts", nil, buff.wild_instincts.stack + 1 )
+            end
 
             if conduit.ferocious_appetite.enabled and stat.crit >= 100 then
                 reduceCooldown( "aspect_of_the_wild", conduit.ferocious_appetite.mod / 10 )
@@ -1998,6 +2008,26 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "beast_cleave" )
             if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
+        end,
+    },
+
+    -- Talent: Interrupts spellcasting, preventing any spell in that school from being cast for $d.
+    muzzle = {
+        id = 187707,
+        cast = 0,
+        cooldown = 15,
+        gcd = "off",
+        school = "physical",
+
+        startsCombat = true,
+        toggle = "interrupts",
+
+        debuff = "casting",
+        readyTime = state.timeToInterrupt,
+
+        handler = function ()
+            if conduit.reversal_of_fortune.enabled then gain( conduit.reversal_of_fortune.mod, "focus" ) end
+            interrupt()
         end,
     },
 

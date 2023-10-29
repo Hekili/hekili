@@ -1,5 +1,5 @@
 -- MageFrost.lua
--- November 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "MAGE" then return end
 
@@ -877,7 +877,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Resets the cooldown of your Ice Barrier, Frost Nova, Cone of Cold, and Ice Block.
+    -- Resets the cooldown of your Ice Barrier, Frost Nova, $?a417493[][Cone of Cold, ]Ice Cold, and Ice Block.
     cold_snap = {
         id = 235219,
         cast = 0,
@@ -892,6 +892,7 @@ spec:RegisterAbilities( {
             setCooldown( "ice_barrier", 0 )
             setCooldown( "frost_nova", 0 )
             if not talent.coldest_snap.enabled then setCooldown( "cone_of_cold", 0 ) end
+            setCooldown( "ice_cold", 0 )
             setCooldown( "ice_block", 0 )
         end,
     },

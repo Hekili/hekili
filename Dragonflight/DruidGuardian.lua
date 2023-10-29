@@ -67,7 +67,7 @@ spec:RegisterTalents( {
     feline_swiftness              = { 82239, 131768, 2 }, -- Increases your movement speed by 15%.
     forestwalk                    = { 92229, 400129, 2 }, -- Casting Regrowth increases your movement speed and healing received by 5% for 3 sec.
     gale_winds                    = { 92228, 400142, 1 }, -- Increases Typhoon's radius by 20% and its range by 5 yds.
-    heart_of_the_wild             = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for 45 sec. Balance: Magical damage increased by 30%. Feral: Physical damage increased by 30%. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
+    heart_of_the_wild             = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for $d.$?!s137013[; Balance: Cast time of Balance spells reduced by $s13% and damage increased by $s1%.][]$?!s137011[; Feral: Gain $s14 Combo Point every $t14 sec while in Cat Form and Physical damage increased by $s4%.][]$?!s137010[; Guardian: Bear Form gives an additional $s7% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has ${$s9+1} charges.][]$?!s137012[; Restoration: Healing increased by $s10%, and mana costs reduced by $s12%.][]
     hibernate                     = { 82211, 2637  , 1 }, -- Forces the enemy target to sleep for up to 40 sec. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
     improved_barkskin             = { 82219, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_rejuvenation         = { 82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec.
@@ -111,7 +111,7 @@ spec:RegisterTalents( {
     berserk_persistence           = { 82144, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
     berserk_ravage                = { 82149, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
     berserk_unchecked_aggression  = { 82155, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
-    blood_frenzy                  = { 82142, 203962, 1 }, -- Thrash also generates 2 Rage each time it deals damage.
+    blood_frenzy                  = { 82142, 203962, 1 }, -- Thrash also generates ${$203961s1/10} Rage each time it deals damage, on up to $s1 targets.
     brambles                      = { 82161, 203953, 1 }, -- Sharp brambles protect you, absorbing and reflecting up to 792 damage from each attack. While Barkskin is active, the brambles also deal 553 Nature damage to all nearby enemies every 1 sec.
     bristling_fur                 = { 82161, 155835, 1 }, -- Bristle your fur, causing you to generate Rage based on damage taken for 8 sec.
     circle_of_life_and_death      = { 82137, 391969, 1 }, -- Your damage over time effects deal their damage in 25% less time, and your healing over time effects in 15% less time.
@@ -390,6 +390,7 @@ spec:RegisterAuras( {
     heart_of_the_wild = {
         id = 319454,
         duration = 45,
+        tick_time = 2,
         type = "Magic",
         max_stack = 1,
         copy = { 319451, 319452, 319453 }

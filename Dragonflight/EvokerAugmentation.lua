@@ -1,5 +1,5 @@
 -- EvokerAugmentation.lua
--- July 2023
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "EVOKER" then return end
 
@@ -99,8 +99,7 @@ spec:RegisterTalents( {
     perilous_fate         = { 93235, 410253, 1 }, -- Breath of Eons reduces enemies' movement speed by 70%, and reduces their attack speed by 50%, for 10.7 sec.
     plot_the_future       = { 93226, 407866, 1 }, -- Breath of Eons grants you Fury of the Aspects for 15 sec after you land, without causing Exhaustion.
     power_nexus           = { 93201, 369908, 1 }, -- Increases your maximum Essence to 6.
-    prescience            = { 93358, 409311, 1 }, -- Grant an ally the gift of foresight, increasing their critical strike chance by 3% and occasionally copying their damage and healing spells at 15% power for 19.2 sec. Affects the nearest ally within 26 yds, preferring damage dealers, if you do not have an ally targeted.
-    prolong_life          = { 93359, 410687, 1 }, -- Your effects that extend Ebon Might also extend Symbiotic Bloom.
+    prescience            = { 93358, 409311, 1 }, -- Grant an ally the gift of foresight, increasing their critical strike chance by $410089s1% $?s412774[and occasionally copying their damage and healing spells at $412774s1% power ][]for $410089d.; Affects the nearest ally within $s2 yds, preferring damage dealers, if you do not have an ally targeted.    prolong_life          = { 93359, 410687, 1 }, -- Your effects that extend Ebon Might also extend Symbiotic Bloom.
     pupil_of_alexstrasza  = { 93221, 407814, 1 }, -- When cast at an enemy, Living Flame strikes 1 additional enemy for 100% damage.
     reactive_hide         = { 93210, 409329, 1 }, -- Each time Blistering Scales explodes it deals 10% more damage for 12.8 sec, stacking 10 times.
     regenerative_chitin   = { 93211, 406907, 1 }, -- Blistering Scales has 5 more scales, and casting Eruption restores 1 scale.
@@ -122,7 +121,7 @@ spec:RegisterTalents( {
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    born_in_flame        = 5612, -- (414937) Casting Ebon Might grants Burnout immediately and every 2.7 sec for 5.3 sec, reducing the cast time of Living Flame by 100%.
+    born_in_flame        = 5612, -- (414937) Casting Ebon Might grants $s3 charges of Burnout, reducing the cast time of Living Flame by $375802s1%.
     chrono_loop          = 5564, -- (383005) Trap the enemy in a time loop for 5 sec. Afterwards, they are returned to their previous location and health. Cannot reduce an enemy's health below 20%.
     divide_and_conquer   = 5557, -- (384689) Breath of Eons forms curtains of fire, preventing line of sight to enemies outside its walls and burning enemies who walk through them for 39,401 Fire damage. Lasts 6 sec.
     dream_catcher        = 5613, -- (410962) Sleep Walk no longer has a cooldown, but its cast time is increased by 0.2 sec.
@@ -165,13 +164,6 @@ spec:RegisterAuras( {
         dot = "buff",
         friendly = true,
         no_ticks = true
-    },
-    -- Gaining Burnout every $t1 sec.
-    born_in_flame = {
-        id = 419240,
-        duration = 6.0,
-        tick_time = 3.0,
-        max_stack = 1,
     },
     -- Exposing Temporal Wounds on enemies in your path. Immune to crowd control.
     breath_of_eons = {
@@ -270,7 +262,7 @@ spec:RegisterAuras( {
     -- Movement speed increased by $w2%.; Evoker spells may be cast while moving. Does not affect empowered spells.$?e9[; Immune to movement speed reduction effects.][]
     hover = {
         id = 358267,
-        duration = function() return ( 6.0 + ( talent.extended_flight.enabled and 4 or 0 ) ) * ( 1 + 1.25 * stat.mastery_value ) end,
+        duration = function() return ( 6.0 + ( talent.extended_flight.enabled and 4 or 0 ) ) end,
         tick_time = 1.0,
         max_stack = 1,
     },
@@ -745,6 +737,7 @@ spec:RegisterAbilities( {
         handler = function()
             applyBuff( "ebon_might" )
             active_dot.ebon_might = min( group_members, 5 )
+            if pvptalent.born_in_flame.enabled then addStack( "burnout", nil, 2 ) end
         end,
     },
 
@@ -787,6 +780,19 @@ spec:RegisterAbilities( {
             applyBuff( "lava_shield" )
             active_dot.lava_shield = 1
         end,
+
+        -- Effects:
+        -- #0: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'sp_bonus': 12.0, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'value1': 10, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #1: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_TARGET_ALLY, 'mechanic': 26, }
+        -- #2: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_TARGET_ALLY, 'mechanic': 9, }
+        -- #0: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'ap_bonus': 0.075, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'value1': 10, 'target': TARGET_UNIT_TARGET_ALLY, }
+
+        -- Affected by:
+        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
 
     -- Wreathe yourself in arcane energy, preventing the next $s1 full loss of control effects against you. Lasts $d.
@@ -808,12 +814,14 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Grant an ally the gift of foresight, increasing their critical strike chance by $410089s1% $?s412774[and occasionally copying their damage and healing spells at $412774s1% power ][]for $410089d.; Affects the nearest ally within $A1 yds, preferring damage dealers, if you do not have an ally targeted.
+    -- Grant an ally the gift of foresight, increasing their critical strike chance by $410089s1% $?s412774[and occasionally copying their damage and healing spells at $412774s1% power ][]for $410089d.; Affects the nearest ally within $s2 yds, preferring damage dealers, if you do not have an ally targeted.
     prescience = {
         id = 409311,
         color = "bronze",
-        cast = 0.0,
-        cooldown = 12.0,
+        cast = 0,
+        cooldown = 12,
+        charges = 2,
+        recharge = 12,
         gcd = "spell",
 
         talent = "prescience",
@@ -832,6 +840,7 @@ spec:RegisterAbilities( {
         cast = 0.0,
         cooldown = 120.0,
         gcd = "off",
+        icd = 0.5,
 
         talent = "spatial_paradox",
         startsCombat = false,

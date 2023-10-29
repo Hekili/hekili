@@ -1,5 +1,5 @@
 -- DruidRestoration.lua
--- December 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "DRUID" then return end
 
@@ -23,7 +23,7 @@ spec:RegisterTalents( {
     forestwalk                 = { 92229, 400129, 2 }, -- Casting Regrowth increases your movement speed and healing received by $400126s1% for $s2 sec.
     frenzied_regeneration      = { 82220, 22842 , 1 }, -- Heals you for $o1% health over $d$?s301768[, and increases healing received by $301768s1%][].
     gale_winds                 = { 92228, 400142, 1 }, -- Increases Typhoon's radius by $s1% and its range by $s2 yds.
-    heart_of_the_wild          = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for $d.$?!s137013[; Balance: Magical damage increased by $s1%.][]$?!s137011[; Feral: Physical damage increased by $s4%.][]$?!s137010[; Guardian: Bear Form gives an additional $s7% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has ${$s9+1} charges.][]$?!s137012[; Restoration: Healing increased by $s10%, and mana costs reduced by $s12%.][]
+    heart_of_the_wild          = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for $d.$?!s137013[; Balance: Cast time of Balance spells reduced by $s13% and damage increased by $s1%.][]$?!s137011[; Feral: Gain $s14 Combo Point every $t14 sec while in Cat Form and Physical damage increased by $s4%.][]$?!s137010[; Guardian: Bear Form gives an additional $s7% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has ${$s9+1} charges.][]$?!s137012[; Restoration: Healing increased by $s10%, and mana costs reduced by $s12%.][]
     hibernate                  = { 82211, 2637  , 1 }, -- Forces the enemy target to sleep for up to $d. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
     improved_barkskin          = { 82219, 327993, 1 }, -- Barkskin's duration is increased by ${$s1/1000} sec.
     improved_rejuvenation      = { 82240, 231040, 1 }, -- Rejuvenation's duration is increased by ${$m1/1000} sec.
@@ -68,12 +68,11 @@ spec:RegisterTalents( {
     wild_growth                = { 82241, 48438 , 1 }, -- Heals up to $s2 injured allies within $A1 yards of the target for $o1 over $d. Healing starts high and declines over the duration.$?s33891[; Tree of Life: Affects $33891s3 additional $ltarget:targets;.][]
 
     -- Restoration Talents
-    abundance                  = { 82052, 207383, 1 }, -- For each Rejuvenation you have active, Regrowth's cost is reduced by $207640s1% and critical effect chance is increased by $207640s2%.
+    abundance                  = { 82052, 207383, 1 }, -- For each Rejuvenation you have active, Regrowth's cost is reduced by $207640s1% and critical effect chance is increased by $207640s2%, up to a maximum of ${$207640s2*$207640u}%.
     adaptive_swarm             = { 82067, 391888, 1 }, -- Command a swarm that heals $391891o1 or deals $391889o1 Shadow damage over $391889d to a target, and increases the effectiveness of your periodic effects on them by $391891s2%.; Upon expiration, finds a new target, preferring to alternate between friend and foe up to $s1 times.
     budding_leaves             = { 82072, 392167, 2 }, -- Lifebloom's healing is increased by ${$s1}.1% each time it heals, up to $s2%. Also increases Lifebloom's final bloom amount by $s3%.
     cenarion_ward              = { 82052, 102351, 1 }, -- Protects a friendly target for $d. Any damage taken will consume the ward and heal the target for $102352o1 over $102352d.
-    cenarius_guidance          = { 82063, 393371, 1 }, -- $@spellicon33891 $@spellname5420; During Incarnation: Tree of Life, you gain Clearcasting every $393418t sec. The cooldown of Incarnation: Tree of Life is reduced by ${$393381s2/-1000}.1 sec when Lifebloom blooms and ${$393381s1/-1000}.1 sec when Regrowth's initial heal critically strikes.; $@spellicon391528 $@spellname391528; Convoke the Spirits' cooldown is reduced by ${($abs($393374s4)/120000)*100}% and its duration and number of spells cast is reduced by $393374s1%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
-    circle_of_life_and_death   = { 82074, 391969, 1 }, -- Your damage over time effects deal their damage in $s1% less time, and your healing over time effects in $s2% less time.
+    cenarius_guidance          = { 82063, 393371, 1 }, -- $@spellicon33891 $@spellname5420; During Incarnation: Tree of Life, you summon a Grove Guardian every $393418t sec. The cooldown of Incarnation: Tree of Life is reduced by ${$393381s1/-1000}.1 sec when Grove Guardians fade.; $@spellicon391528 $@spellname391528; Convoke the Spirits' cooldown is reduced by ${($abs($393374s4)/120000)*100}% and its duration and number of spells cast is reduced by $393374s1%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
     convoke_the_spirits        = { 82064, 391528, 1 }, -- Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of $s2 Druid spells and abilities over $d.$?s391538[ Chance to use an exceptional spell or ability is increased.][]; You will cast $?a24858|a197625[Starsurge, Starfall,]?a768[Ferocious Bite, Shred,]?a5487[Mangle, Ironfur,][Wild Growth, Swiftmend,] Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
     cultivation                = { 82056, 200390, 1 }, -- When Rejuvenation heals a target below $s1% health, it applies Cultivation to the target, healing them for $200389o1 over $200389d.
     dreamstate                 = { 82053, 392162, 1 }, -- While channeling Tranquility, your other Druid spell cooldowns are reduced by up to ${($s1/-1000)*5} seconds.
@@ -89,12 +88,13 @@ spec:RegisterTalents( {
     improved_natures_cure      = { 82203, 392378, 1 }, -- Nature's Cure additionally removes all Curse and Poison effects.
     improved_regrowth          = { 82055, 231032, 1 }, -- Regrowth's initial heal has a $s1% increased chance for a critical effect if the target is already affected by Regrowth.
     improved_wild_growth       = { 82045, 328025, 1 }, -- Wild Growth heals $s1 additional $ltarget:targets;.
-    incarnation                = { 82064, 33891 , 1 }, -- Shapeshift into the Tree of Life, increasing healing done by 15%, increasing armor by 120%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, and Entangling Roots is enhanced. Lasts 30 sec. You may shapeshift in and out of this form for its duration.
-    incarnation_tree_of_life   = { 82064, 33891 , 1 }, -- Shapeshift into the Tree of Life, increasing healing done by $5420s1%, increasing armor by $5420s3%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, and Entangling Roots is enhanced.; Lasts $117679d. You may shapeshift in and out of this form for its duration.
+    incarnation                = { 82064, 33891 , 1 }, -- Shapeshift into the Tree of Life, increasing healing done by $5420s1%, increasing armor by $5420s3%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, Entangling Roots, and Wrath is enhanced.; Lasts $117679d. You may shapeshift in and out of this form for its duration.
+    incarnation_tree_of_life   = { 82064, 33891 , 1 }, -- Shapeshift into the Tree of Life, increasing healing done by $5420s1%, increasing armor by $5420s3%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, Entangling Roots, and Wrath is enhanced.; Lasts $117679d. You may shapeshift in and out of this form for its duration.
     inner_peace                = { 82053, 197073, 1 }, -- Reduces the cooldown of Tranquility by ${$m1/-1000} sec.; While channeling Tranquility, you take $740s5% reduced damage and are immune to knockbacks.
     invigorate                 = { 82078, 392160, 1 }, -- Refreshes the duration of your active Lifebloom and Rejuvenation effects on the target and causes them to complete $s1% faster.
     ironbark                   = { 82082, 102342, 1 }, -- The target's skin becomes as tough as Ironwood, reducing damage taken by $s1%$?a197061[ and increasing healing from your heal over time effects by $s2%][] for $d.$?a392116[; Allies protected by your Ironbark also receive $392116s1% of the healing from each of your active Rejuvenations.][]
     lifebloom                  = { 82049, 33763 , 1 }, -- Heals the target for $o1 over $d. When Lifebloom expires or is dispelled, the target is instantly healed for $33778s1.; May be active on $?s338831[two targets][one target] at a time.
+    liveliness                 = { 82074, 426702, 1 }, -- Your damage over time effects deal their damage $s1% faster, and your healing over time effects heal $s2% faster.
     luxuriant_soil             = { 82068, 392315, 2 }, -- Rejuvenation healing has a ${$s1}.1% chance to create a new Rejuvenation on a nearby target.
     master_shapeshifter        = { 82074, 289237, 1 }, -- Your abilities are amplified based on your current shapeshift form, granting an additional effect.; $@spellicon197491Bear Form; Ironfur grants $s1% additional armor and generates $411144s1 Mana.; $@spellicon197488 Moonkin Form; Wrath, Starfire, and Starsurge deal $s2% additional damage and generate $411146s1 Mana.; $@spellicon202155 Cat Form; Rip, Ferocious Bite, and Maim deal $s3% additional damage and generate $411143s1 Mana when cast with $s4 combo points.
     moonkin_form               = { 91042, 197625, 1 }, -- Shapeshift into $?s114301[Astral Form][Moonkin Form], increasing the damage of your spells by $s7% and your armor by $m3%, and granting protection from Polymorph effects.; The act of shapeshifting frees you from movement impairing effects.
@@ -112,7 +112,7 @@ spec:RegisterTalents( {
     regenerative_heartwood     = { 82075, 392116, 1 }, -- Allies protected by your Ironbark also receive $s1% of the healing from each of your active Rejuvenations and Ironbark's duration is increased by ${$s2/1000} sec.
     regenesis                  = { 82062, 383191, 2 }, -- Rejuvenation healing is increased by up to $s1%, and Tranquility healing is increased by up to $s2%, healing for more on low-health targets.
     soul_of_the_forest         = { 82059, 158478, 1 }, -- Swiftmend increases the healing of your next Regrowth or Rejuvenation by $114108s1%, or your next Wild Growth by $114108s2%.
-    spring_blossoms            = { 82061, 207385, 1 }, -- Each target healed by Efflorescence is healed for an additional $207386o1 over $207386d.
+    spring_blossoms            = { 82061, 207385, 1 }, -- Each target healed by Efflorescence is healed for an additshiftoational $207386o1 over $207386d.
     starfire                   = { 91040, 197628, 1 }, -- Call down a burst of energy, causing $s1 Arcane damage to the target, and ${$m1*$m2/100} Arcane damage to all other enemies within $A1 yards. Deals reduced damage beyond $s3 targets.
     starsurge                  = { 82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing $s1 Astral damage.
     stonebark                  = { 82081, 197061, 1 }, -- Ironbark increases healing from your heal over time effects by $s1%.
@@ -124,23 +124,35 @@ spec:RegisterTalents( {
     verdancy                   = { 82060, 392325, 1 }, -- When Lifebloom blooms, up to $s1 targets within your Efflorescence are healed for $392329s1.
     verdant_infusion           = { 82079, 392410, 1 }, -- Swiftmend no longer consumes a heal over time effect, and extends the duration of your heal over time effects on the target by $s1 sec.
     waking_dream               = { 82046, 392221, 1 }, -- Ysera's Gift now heals every ${$s2/1000} sec and its healing is increased by $s1% for each of your active Rejuvenations.
-    wild_synthesis             = { 94534, 400533, 1 }, -- $@spellicon50464 $@spellname50464; Regrowth decreases the cast time of your next Nourish by $400534s1% and causes it to receive an additional $400534s2% bonus from $@spellname77495. Stacks up to $s1 times.; $@spellicon102693$@spellname102693; Treants from Grove Guardians also cast Wild Growth immediately when summoned, healing $422382s2 allies within $422382A1 yds for $422382o1 over $422382d.
+    wild_synthesis             = { 94535, 400533, 1 }, -- $@spellicon50464 $@spellname50464; Regrowth decreases the cast time of your next Nourish by $400534s1% and causes it to receive an additional $400534s2% bonus from $@spellname77495. Stacks up to $s1 times.; $@spellicon102693$@spellname102693; Treants from Grove Guardians also cast Wild Growth immediately when summoned, healing $422382s2 allies within $422382A1 yds for $422382o1 over $422382d.
     yseras_gift                = { 82048, 145108, 1 }, -- Heals you for $s1% of your maximum health every $t1 sec. If you are at full health, an injured party or raid member will be healed instead.$?a392221[; Healing is increased by $392221s1% for each of your active Rejuvenations.][]
 } )
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    deep_roots          =  700, -- (233755) Increases the amount of damage required to cancel your Entangling Roots$?s102359[ or Mass Entanglement][] by $s1%.
-    disentanglement     =   59, -- (233673) Efflorescence removes all snare effects from friendly targets when it heals and its Mana cost is reduced by $s2%.
-    early_spring        = 1215, -- (203624) Wild Growth is now instant cast, and when you heal 6 allies with Wild Growth you gain Full Bloom. This effect has a 30 sec cooldown.; Full Bloom; Your next Wild Growth applies Lifebloom to all targets at $s2% effectiveness. Lasts for 30 sec.
-    entangling_bark     =  692, -- (247543) Ironbark now also grants the target Nature's Grasp, rooting the first $s1 melee attackers for $170855d.
-    focused_growth      =  835, -- (203553) Reduces the mana cost of your Lifebloom by $m1%, and your Lifebloom also applies Focused Growth to the target, increasing Lifebloom's healing by $?a338831[$347621s1%][$203554s1%]. Stacks up to $203554u times.
-    high_winds          =  838, -- (200931) Cyclone leaves the target reeling, reducing their damage and healing by $200947s1% for $200947d.
-    keeper_of_the_grove = 5387, -- (353114) Tranquility protects you from all harm while it is channeled, and its healing is increased by $s1%.
-    malornes_swiftness  = 5514, -- (236147) Your Travel Form movement speed while within a Battleground or Arena is increased by $m2% and you always move at $m1% movement speed while in Travel Form.
-    reactive_resin      =  691, -- (409785) Enemies have their movement speed reduced by $410063s1% for $410063d when removing your Restoration heal over time effects, stacking.  Enemies are silenced and rooted for $410065d at $s1 stacks.
-    thorns              =  697, -- (305497) Sprout thorns for $d on the friendly target. When victim to melee attacks, thorns deals $305496s1 Nature damage back to the attacker.; Attackers also have their movement speed reduced by $232559s1% for $232559d.
+    call_of_the_elder_druid = 5637, -- (426784) When you shift into a combat shapeshift form, you gain Heart of the Wild for $s2 sec, once every $338643d.
+    deep_roots              =  700, -- (233755) Increases the amount of damage required to cancel your Entangling Roots$?s102359[ or Mass Entanglement][] by $s1%.
+    disentanglement         =   59, -- (233673) Efflorescence removes all snare effects from friendly targets when it heals and its Mana cost is reduced by $s2%.
+    early_spring            = 1215, -- (203624) Wild Growth is now instant cast, and when you heal 6 allies with Wild Growth you gain Full Bloom. This effect has a 30 sec cooldown.; Full Bloom; Your next Wild Growth applies Lifebloom to all targets at $s2% effectiveness. Lasts for 30 sec.
+    entangling_bark         =  692, -- (247543) Ironbark now also grants the target Nature's Grasp, rooting the first $s1 melee attackers for $170855d.
+    focused_growth          =  835, -- (203553) Reduces the mana cost of your Lifebloom by $m1%, and your Lifebloom also applies Focused Growth to the target, increasing Lifebloom's healing by $?a338831[$347621s1%][$203554s1%]. Stacks up to $203554u times.
+    high_winds              =  838, -- (200931) Cyclone leaves the target reeling, reducing their damage and healing by $200947s1% for $200947d.
+    keeper_of_the_grove     = 5387, -- (353114) Tranquility protects you from all harm while it is channeled, and its healing is increased by $s1%.
+    malornes_swiftness      = 5514, -- (236147) Your Travel Form movement speed while within a Battleground or Arena is increased by $m2% and you always move at $m1% movement speed while in Travel Form.
+    reactive_resin          =  691, -- (409785) Enemies have their movement speed reduced by $410063s1% for $410063d when removing your Restoration heal over time effects, stacking.  Enemies are silenced and rooted for $410065d at $s1 stacks.
+    thorns                  =  697, -- (305497) Sprout thorns for $d on the friendly target. When victim to melee attacks, thorns deals $305496s1 Nature damage back to the attacker.; Attackers also have their movement speed reduced by $232559s1% for $232559d.
 } )
+
+
+local mod_liveliness_hot = setfenv( function( dur )
+    if not talent.liveliness.enabled then return dur end
+    return dur * 0.95
+end, state )
+
+local mod_liveliness_dot = setfenv( function( dur )
+    if not talent.liveliness.enabled then return dur end
+    return dur * 0.75
+end, state )
 
 
 -- Auras
@@ -153,11 +165,29 @@ spec:RegisterAuras( {
     cenarion_ward_hot = {
         id = 102352,
         duration = 8,
+        tick_time = function() return mod_liveliness_hot( 2 ) end,
         max_stack = 1
+    },
+    -- [393381] During Incarnation: Tree of Life, you summon a Grove Guardian every $393418t sec. The cooldown of Incarnation: Tree of Life is reduced by ${$s1/-1000}.1 sec when Grove Guardians fade.
+    cenarius_guidance = {
+        id = 393418,
+        duration = 30,
+        tick_time = 10,
+        max_stack = 1,
+    },
+    efflorescence = {
+        id = 81262,
+        duration = 30,
+        tick_time = function() return mod_liveliness_hot( 2 ) end,
+        pandemic = true,
+        max_stack = 1,
+
+        -- Affected by:
+        -- disentanglement[233673] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
     },
     flourish = {
         id = 197721,
-        duration = 8,
+        duration = 6,
         max_stack = 1
     },
     grove_guardians = {
@@ -202,6 +232,7 @@ spec:RegisterAuras( {
     lifebloom = {
         id = 33763,
         duration = 15,
+        tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1,
         dot = "buff",
         copy = 290754
@@ -209,6 +240,7 @@ spec:RegisterAuras( {
     lifebloom_2 = {
         id = 188550,
         duration = 15,
+        tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1,
         dot = "buff"
     },
@@ -225,24 +257,34 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
+    -- You have recently gained Heart of the Wild from Oath of the Elder Druid.
+    oath_of_the_elder_druid = {
+        id = 338643,
+        duration = 60,
+        max_stack = 1,
+    },
     regrowth = {
         id = 8936,
         duration = 12,
+        tick_time = function() return mod_liveliness_hot( 2 ) end,
         max_stack = 1
     },
     rejuvenation = {
         id = 774,
         duration = 12,
+        tick_time = function() return mod_liveliness_hot( 3 ) end,
         max_stack = 1
     },
     rejuvenation_germination = {
         id = 155777,
         duration = 12,
+        tick_time = function() return mod_liveliness_hot( 3 ) end,
         max_stack = 1
     },
     renewing_bloom = {
         id = 364686,
         duration = 8,
+        tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1
     },
     tranquility = {
@@ -253,11 +295,13 @@ spec:RegisterAuras( {
     tranquility_hot = {
         id = 157982,
         duration = 8,
+        tick_time = function() return mod_liveliness_hot( 2 ) end,
         max_stack = 1
     },
     wild_growth = {
         id = 48438,
         duration = 7,
+        tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1
     },
 } )
@@ -282,11 +326,6 @@ spec:RegisterStateFunction( "unshift", function()
     removeBuff( "travel_form" )
     removeBuff( "aquatic_form" )
     removeBuff( "stag_form" )
-
-    if legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent.restoration_affinity.enabled then
-        applyBuff( "heart_of_the_wild" )
-        applyDebuff( "player", "oath_of_the_elder_druid_icd" )
-    end
 end )
 
 -- Function to apply form that is passed into it via string.
@@ -304,6 +343,11 @@ spec:RegisterStateFunction( "shift", function( form )
 
     if form == "bear_form" and pvptalent.celestial_guardian.enabled then
         applyBuff( "celestial_guardian" )
+    end
+
+    if pvptalent.call_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid.down then
+        applyBuff( "heart_of_the_wild", 15 )
+        applyDebuff( "player", "oath_of_the_elder_druid" )
     end
 end )
 
@@ -378,7 +422,7 @@ spec:RegisterAbilities( {
     flourish = {
         id = 197721,
         cast = 0,
-        cooldown = 90,
+        cooldown = 60,
         gcd = "spell",
 
         talent = "flourish",
