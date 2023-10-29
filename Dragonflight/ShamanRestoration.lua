@@ -178,7 +178,7 @@ spec:RegisterAuras( {
     -- Receiving $422915s1% of all Riptide healing $@auracaster deals.
     tidal_reservoir = {
         id = 424461,
-        duration = 15.0,
+        duration = 15,
         max_stack = 1,
     },
     tidal_waves = {
@@ -223,6 +223,8 @@ spec:RegisterAuras( {
         max_stack = 40 -- IDK.
     }
 } )
+
+spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212 )
 
 
 spec:RegisterHook( "reset_precast", function ()
@@ -290,6 +292,8 @@ spec:RegisterAbilities( {
             removeStack( "tidal_waves" )
             removeStack( "tidebringer" )
             removeBuff( "swelling_rain" ) -- T30
+
+            if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,
     },
 
@@ -548,6 +552,8 @@ spec:RegisterAbilities( {
             if talent.earthen_harmony.enabled then
                 addStack( "earth_shield", nil, 1 )
             end
+
+            if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,
     },
 
@@ -591,6 +597,8 @@ spec:RegisterAbilities( {
             if talent.earthen_harmony.enabled then
                 addStack( "earth_shield", nil, 1 )
             end
+
+            if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,
     },
 

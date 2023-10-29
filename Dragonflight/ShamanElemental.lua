@@ -1062,6 +1062,20 @@ spec:RegisterAura( "primal_fracture", {
     copy = "t30_4pc_ele"
 } )
 
+spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212 )
+spec:RegisterAuras( {
+    molten_slag = {
+        id = 426577,
+        duration = 4,
+        max_stack = 1,
+    },
+    molten_charge = {
+        id = 426578,
+        duration = 20,
+        max_stack = 1
+    }
+} )
+
 
 local TriggerHeatWave = setfenv( function()
     applyBuff( "lava_surge" )
@@ -2024,6 +2038,7 @@ spec:RegisterAbilities( {
             removeBuff( "windspeakers_lava_resurgence" )
             removeBuff( "lava_surge" )
             removeBuff( "flux_melting" )
+            removeStack( "molten_charge" )
 
             gain( ( 10 + ( talent.flow_of_power.rank * 2 ) ) * ( buff.primal_fracture.up and 1.5 or 1 ), "maelstrom" )
 
@@ -2278,6 +2293,12 @@ spec:RegisterAbilities( {
                 state:QueueAuraEvent( "primordial_surge", TriggerHeatWave, query_time + 6, "AURA_PERIODIC" )
                 state:QueueAuraEvent( "primordial_surge", TriggerHeatWave, query_time + 9, "AURA_PERIODIC" )
                 state:QueueAuraEvent( "primordial_surge", TriggerHeatWave, query_time + 12, "AURA_PERIODIC" )
+            end
+
+            if set_bonus.tier31_2pc > 0 and state.spec.elemental then
+                applyBuff( "elemental_blast_critical_strike", 10 )
+                applyBuff( "elemental_blast_haste", 10 )
+                applyBuff( "elemental_blast_mastery", 10 )
             end
         end,
 

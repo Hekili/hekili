@@ -990,6 +990,8 @@ spec:RegisterAuras( {
     }
 } )
 
+spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212 )
+
 
 spec:RegisterGear( "waycrest_legacy", 158362, 159631 )
 spec:RegisterGear( "electric_mail", 161031, 161034, 161032, 161033, 161035 )
@@ -1428,10 +1430,15 @@ spec:RegisterAbilities( {
                 expires = query_time + 15,
                 alpha_expires = 0
             } )
+
             insert( virtual_spirits, {
                 expires = query_time + 15,
                 alpha_expires = 0
             } )
+
+            if set_bonus.tier31_4pc > 0 then
+                reduceCooldown( "primordial_wave", 14 )
+            end
 
             gain_maelstrom( 1 )
             state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, query_time + 3, "AURA_PERIODIC" )
@@ -1916,6 +1923,13 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.primal_maelstrom.enabled then gain_maelstrom( 5 * talent.primal_maelstrom.rank ) end
+            if set_bonus.tier31_2pc > 0 then
+                insert( virtual_spirits, {
+                    expires = query_time + 15,
+                    alpha_expires = 0
+                } )
+                applyBuff( "crackling_surge" )
+            end
         end,
 
         impact = function ()
