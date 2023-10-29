@@ -731,6 +731,10 @@ spec:RegisterGear( "tier21", 152163, 152165, 152161, 152160, 152162, 152164 )
 spec:RegisterGear( "tier20", 147172, 147174, 147170, 147169, 147171, 147173 )
 spec:RegisterGear( "tier19", 138332, 138338, 138371, 138326, 138329, 138335 )
 
+-- Tier 31
+-- Tier 31
+spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207238 )
+
 -- Tier 30
 spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )
 -- Shadow Dance is in RogueAssassination.lua, so the 2pc bonus is handled there.

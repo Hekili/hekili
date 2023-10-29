@@ -488,6 +488,10 @@ spec:RegisterHook( "spend", function( amt, resource )
         end
     end
 
+    if set_bonus.tier31_4pc > 0 and resource == "energy" and amt > 9 then
+        addStack( "natureblight", 6, floor( amt / 10 ) )
+    end
+
     if resource == "combo_points" then
         if buff.flagellation_buff.up then
             if legendary.obedience.enabled then
@@ -671,6 +675,17 @@ local ExpireSepsis = setfenv( function ()
     end
 end, state )
 
+
+-- Tier 31
+spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207238 )
+-- 422905: Rogue Assassination 10.2 Class Set 2pc
+-- Each 10 energy you spend grants Natureblight, granting 1.0% attack speed and 1.0% Nature Damage for 6 sec. Multiple instances of Natureblight may overlap, up to 12.
+-- TODO: Each application is actually individual, so I should track this differently.
+spec:RegisterAura( "natureblight", {
+    id = 426568,
+    duration = 6,
+    max_stack = 12
+} )
 
 -- Tier 30
 spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )
