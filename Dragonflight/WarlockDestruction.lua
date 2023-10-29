@@ -1060,6 +1060,14 @@ spec:RegisterAura( "umbrafire_embers", {
     max_stack = 8
 } )
 
+spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275 )
+spec:RegisterAura( "searing_bolt", {
+    id = 423886,
+    duration = 10,
+    max_stack = 1
+} )
+
+
 
 local SUMMON_DEMON_TEXT
 

@@ -1,5 +1,5 @@
 -- WarlockDemonology.lua
--- November 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "WARLOCK" then return end
 
@@ -334,6 +334,14 @@ spec:RegisterAura( "rite_of_ruvaraad", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275 )
+spec:RegisterAuras( {
+    doom_brand = {
+        id = 423583,
+        duration = 20,
+        max_stack = 1
+    }
+} )
 
 local wipe = table.wipe
 
@@ -869,6 +877,13 @@ spec:RegisterAuras( {
         duration = 20,
         type = "Magic",
         max_stack = 1,
+    },
+    -- The cast time of Demonbolt is reduced by $s1%. $?a334581[Demonbolt damage is increased by $334581s1%.][]
+    -- https://wowhead.com/beta/spell=264173
+    demonic_core = {
+        id = 264173,
+        duration = 20,
+        max_stack = 4
     },
     -- Talent: Faded into the nether and unable to use another Demonic Gateway.
     -- https://wowhead.com/beta/spell=113942
@@ -1537,6 +1552,31 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Talent: Send the fiery soul of a fallen demon at the enemy, causing 2,201 Shadowflame damage. Generates 2 Soul Shards.
+    demonbolt = {
+        id = 264178,
+        cast = function () return ( buff.demonic_core.up and 0 or 4.5 ) * haste end,
+        cooldown = 0,
+        gcd = "spell",
+        school = "shadowflame",
+
+        spend = 0.02,
+        spendType = "mana",
+        startsCombat = true,
+
+        handler = function ()
+            removeBuff( "fel_covenant" )
+            removeBuff( "stolen_power" )
+            if buff.demonic_core.up then
+                removeStack( "demonic_core" )
+                if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "doom_brand" ) end -- TODO: Determine behavior on reapplication.
+            end
+            removeStack( "power_siphon" )
+            removeStack( "decimating_bolt" )
+            gain( 2, "soul_shards" )
+        end,
+    },
+
     -- Talent: Infuse your Felguard with demonic strength and command it to charge your target and unleash a Felstorm that will deal 400% increased damage.
     demonic_strength = {
         id = 267171,
@@ -1671,6 +1711,11 @@ spec:RegisterAbilities( {
             insert( guldan_v, query_time + 0.6 )
             if extra_shards > 0 then insert( guldan_v, query_time + 0.8 ) end
             if extra_shards > 1 then insert( guldan_v, query_time + 1 ) end
+
+            if debuff.doom_brand.up then
+                debuff.doom_brand.expires = debuff.doom_brand.expires - ( 1 + extra_shards )
+                -- TODO: Decide if tracking Doomfiends is worth it.
+            end
 
             if talent.dread_calling.enabled then
                 addStack( "dread_calling", nil, 1 + extra_shards )

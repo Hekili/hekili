@@ -588,7 +588,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=386997
     soul_rot = {
         id = 386997,
-        duration = 8,
+        duration = function() return 8 + ( set_bonus.tier31_2pc > 0 and 4 or 0 ) end,
         type = "Magic",
         max_stack = 1,
         copy = 325640
@@ -839,6 +839,15 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
         end
     end
 end, false )
+
+
+spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275 )
+-- (4) Soul Rot grants 3 Umbrafire Kindling which increase the damage of your next Malefic Rapture to deal 50% or your next Seed of Corruption by 60%. Additionally, Umbrafire Kindling causes Malefic Rapture to extend the duration of your damage over time effects and Haunt by 2 sec.
+spec:RegisterAura( "umbrafire_kindling", {
+    id = 423765,
+    duration = 20,
+    max_stack = 3
+} )
 
 
 spec:RegisterGear( "tier30", 202534, 202533, 202532, 202536, 202531 )
@@ -1622,6 +1631,17 @@ spec:RegisterAbilities( {
             if buff.calamitous_crescendo.up then removeBuff( "calamitous_crescendo" ) end
             if buff.tormented_crescendo.up then removeBuff( "tormented_crescendo" ) end
 
+            if buff.umbrafire_kindling.up then
+                removeStack( "umbrafire_kindling" )
+                if dot.agony.up               then dot.agony.expires               = dot.agony.expires               + 2 end
+                if dot.corruption.up          then dot.corruption.expires          = dot.corruption.expires          + 2 end
+                if dot.unstable_affliction.up then dot.unstable_affliction.expires = dot.unstable_affliction.expires + 2 end
+                if dot.vile_taint.up          then dot.vile_taint.expires          = dot.vile_taint.expires          + 2 end
+                if dot.phantom_singularity.up then dot.phantom_singularity.expires = dot.phantom_singularity.expires + 2 end
+                if dot.soul_rot.up            then dot.soul_rot.expires            = dot.soul_rot.expires            + 2 end
+                if dot.siphon_life.up         then dot.siphon_life.expires         = dot.siphon_life.expires         + 2 end
+            end
+
             if talent.dread_touch.enabled then
                 if debuff.unstable_affliction.up then applyDebuff( "target", "dread_touch" ) end
                 active_dot.dread_touch = active_dot.unsable_affliction
@@ -1782,6 +1802,7 @@ spec:RegisterAbilities( {
 
         handler = function()
             removeStack( "cruel_epiphany" )
+            removeStack( "umbrafire_kindling" )
         end,
 
         impact = function ()
