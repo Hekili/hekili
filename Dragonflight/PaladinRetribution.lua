@@ -57,7 +57,7 @@ spec:RegisterTalents( {
     auras_of_swift_vengeance        = { 81601, 385639, 1 }, -- Learn Retribution Aura and Crusader Aura:  Retribution Aura: When any party or raid member within 40 yds takes more than 30% of their health in damage in a single hit, each member gains 5% increased damage and healing, decaying over 30 sec. This cannot occur within 30 sec of the aura being applied.  Crusader Aura: Increases mounted speed by 20% for all party and raid members within 40 yds.
     auras_of_the_resolute           = { 81599, 385633, 1 }, -- Learn Concentration Aura and Devotion Aura: Concentration Aura: Interrupt and Silence effects on party and raid members within 40 yds are 30% shorter.  Devotion Aura: Party and raid members within 40 yds are bolstered by their devotion, reducing damage taken by 3%.
     avenging_wrath_might            = { 81525, 31884 , 1 }, -- Call upon the Light to become an avatar of retribution, allowing Hammer of Wrath to be used on any target, increasing your damage, healing and critical strike chance by 20% for 23 sec.
-    blade_of_justice                = { 81526, 184575, 1 }, -- Pierce an enemy with a blade of light, dealing 4,403 Holy damage. Generates 2 Holy Power.
+    blade_of_justice                = { 81526, 184575, 1 }, -- $?s403826[Pierce enemies][Pierce an enemy] with a blade of light, dealing $s1 Holy damage$?s403826[ to your target and $404358s1 Holy damage to nearby enemies.][.]; Generates $s2 Holy Power.
     blade_of_vengeance              = { 81545, 403826, 1 }, -- Blade of Justice now hits nearby enemies for 2,973 Holy damage. Deals reduced damage beyond 5 targets.
     blades_of_light                 = { 93164, 403664, 1 }, -- Crusader Strike, Judgment, Hammer of Wrath and your damaging single target Holy Power abilities deal Holystrike damage.
     blessed_champion                = { 81541, 403010, 2 }, -- Crusader Strike and Judgment hit an additional 2 targets but deal 50% reduced damage to secondary targets.
@@ -94,7 +94,7 @@ spec:RegisterTalents( {
     improved_judgment               = { 81533, 405461, 1 }, -- Judgment now has 2 charges.
     inquisitors_ire                 = { 92951, 403975, 1 }, -- Every 2 sec, gain 5% increased damage to your next Divine Storm, stacking up to 10 times.
     judge_jury_and_executioner      = { 92860, 405607, 1 }, -- Increases the critical strike chance of Judgment 10%.
-    judgment_of_justice             = { 93161, 403495, 1 }, -- Judgment deals 10% increased damage and increases your movement speed by 10%. If you have Greater Judgment, Judgment slows enemies by 30% for 8 sec.
+    judgment_of_justice             = { 93161, 403495, 1 }, -- Judgment deals $s2% increased damage and increases your movement speed by $20271s2% for $20271d.; If you have Greater Judgment, Judgment slows enemies by $408383s1% for $408383d.
     jurisdiction                    = { 81542, 402971, 1 }, -- Final Verdict and Blade of Justice deal 10% increased damage. The range of Final Verdict and Blade of Justice is increased to 20 yds.
     justicars_vengeance             = { 81532, 215661, 1 }, -- Focuses Holy energy to deliver a powerful weapon strike that deals 4,814 Holy damage, and restores 5% of your maximum health. Damage is increased by 25% when used against a stunned target.
     lay_on_hands                    = { 81597, 633   , 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
@@ -1474,7 +1474,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holy",
 
-        spend = 0.10,
+        spend = 0.1,
         spendType = "mana",
 
         startsCombat = false,

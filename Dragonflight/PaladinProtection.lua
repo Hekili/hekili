@@ -1,5 +1,5 @@
 -- PaladinProtection.lua
--- September 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "PALADIN" then return end
 
@@ -972,9 +972,7 @@ spec:RegisterAbilities( {
     cleanse_toxins = {
         id = 213644,
         cast = 0,
-        charges = 1,
         cooldown = 8,
-        recharge = 8,
         gcd = "spell",
         school = "holy",
 
