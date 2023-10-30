@@ -239,7 +239,8 @@ spec:RegisterTalents( {
     killer_cobra                = { 79961, 199532, 1 }, -- While Bestial Wrath is active, Cobra Shot resets the cooldown on Kill Command.
     killer_command              = { 79939, 378740, 2 }, -- Kill Command damage increased by 5%.
     kindred_spirits             = { 79957, 56315 , 2 }, -- Increases your maximum Focus and your pet's maximum Focus by 20.
-    master_handler              = { 79962, 424558, 1 }, -- Each time Barbed Shot deals damage, the cooldown of Kill Command is reduced by ${$m1/1000}.2 sec.    multishot                   = { 79917, 2643  , 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 197 Physical damage. Deals reduced damage beyond 5 targets.
+    master_handler              = { 79962, 424558, 1 }, -- Each time Barbed Shot deals damage, the cooldown of Kill Command is reduced by ${$m1/1000}.2 sec.
+    multishot                   = { 79917, 2643  , 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 197 Physical damage. Deals reduced damage beyond 5 targets.
     one_with_the_pack           = { 79960, 199528, 2 }, -- Wild Call has a 20% increased chance to reset the cooldown of Barbed Shot.
     pack_tactics                = { 79958, 321014, 1 }, -- Passive Focus generation increased by 100%.
     piercing_fangs              = { 79961, 392053, 1 }, -- While Bestial Wrath is active, your pet's critical damage dealt is increased by 35%.
