@@ -1419,6 +1419,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             removeBuff( "arcane_blast_overcapped" )
+            removeBuff( "arcane_artillery" )
 
             if buff.clearcasting.up then
                 if buff.concentration.up then removeBuff( "concentration" )
@@ -1426,7 +1427,7 @@ spec:RegisterAbilities( {
                     removeStack( "clearcasting" )
                     if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
                     if set_bonus.tier31_4pc > 0 then
-                        if buff.arcane_battery.stack == 2 then
+                        if buff.arcane_battery.stack > 1 then
                             removeBuff( "arcane_battery" )
                             applyBuff( "arcane_artillery" )
                         else
