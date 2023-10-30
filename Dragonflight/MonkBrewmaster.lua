@@ -539,6 +539,8 @@ spec:RegisterHook( "reset_postcast", function( x )
 end )
 
 
+spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248 )
+
 -- Tier 30
 spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
 spec:RegisterAura( "leverage", {

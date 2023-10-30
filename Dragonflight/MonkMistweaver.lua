@@ -518,6 +518,15 @@ spec:RegisterAuras( {
 } )
 
 
+spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248 )
+spec:RegisterAuras( {
+    chi_harmony = {
+        id = 423439,
+        duration = 8,
+        max_stack = 1
+    }
+} )
+
 -- Tier 30
 spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
 spec:RegisterAuras( {
@@ -801,6 +810,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "renewing_mist" )
+            if set_bonus.tier31_2pc > 0 then applyBuff( "chi_harmony" ) end
             if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
     },

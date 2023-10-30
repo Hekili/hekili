@@ -1363,6 +1363,21 @@ spec:RegisterAura( "predator_revealed", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257 )
+-- (2) Feral Frenzy grants Smoldering Frenzy, increasing all damage you deal by $422751s1% for $422751d.
+-- (4) Feral Frenzy's cooldown is reduced by ${$s1/-1000} sec. During Smoldering Frenzy, enemies burn for $422751s6% of damage you deal as Fire over $422779d.
+spec:RegisterAuras( {
+    smoldering_frenzy = {
+        id = 422751,
+        duration = 8,
+        max_stack = 1
+    },
+    burning_frenzy = {
+        id = 422779,
+        duration = 10,
+        max_stack = 1
+    }
+} )
 
 -- Legion Sets (for now).
 spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
@@ -1612,7 +1627,7 @@ spec:RegisterAbilities( {
     feral_frenzy = {
         id = 274837,
         cast = 0,
-        cooldown = 45,
+        cooldown = function() return set_bonus.tier31_4pc > 0 and 30 or 45 end,
         gcd = "totem",
         school = "physical",
 
@@ -1643,6 +1658,7 @@ spec:RegisterAbilities( {
             gain( 5, "combo_points" )
             applyDebuff( "target", "feral_frenzy" )
             if buff.bs_inc.up and talent.berserk_frenzy.enabled then applyDebuff( "target", "frenzied_assault" ) end
+            if set_bonus.tier31_2pc > 0 then applyBuff( "smoldering_frenzy" ) end
         end,
 
         copy = "ashamanes_frenzy"

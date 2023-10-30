@@ -425,7 +425,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=273481
     expurgation = {
         id = 383346,
-        duration = 6,
+        duration = function () return set_bonus.tier31_2pc > 0 and 9 or 6 end,
         tick_time = 2,
         type = "Magic",
         max_stack = 1,
@@ -904,9 +904,16 @@ end )
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
 
 
+spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194 )
+spec:RegisterAura( "echoes_of_wrath", {
+    id = 423590,
+    duration = 12,
+    max_stack = 1
+} )
+
+
 -- Tier 30
 spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
-
 
 spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
 
@@ -1333,6 +1340,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "echoes_of_wrath" )
             removeDebuffStack( "target", "judgment" )
             removeDebuff( "target", "reckoning" )
 
@@ -1375,6 +1383,10 @@ spec:RegisterAbilities( {
 
             for i = 1, min( 5, true_active_enemies ) do
                 spellToCast()
+            end
+
+            if debuff.expurgation.up and set_bonus.tier31_4pc > 0 then
+                applyBuff( "echoes_of_wrath" )
             end
 
             if talent.divine_resonance.enabled or legendary.divine_resonance.enabled then
@@ -1626,6 +1638,10 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "recompense" )
             gain( talent.boundless_judgment.enabled and 2 or 1, "holy_power" )
+
+            if debuff.expurgation.up and set_bonus.tier31_2pc > 0 then
+                applyDebuff( "target", "wrathful_sanction" )
+            end
             if talent.divine_arbiter.enabled then addStack( "divine_arbiter" ) end
             if talent.empyrean_legacy.enabled and debuff.empyrean_legacy_icd.down then
                 applyBuff( "empyrean_legacy" )
@@ -1895,6 +1911,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "echoes_of_wrath" )
             removeDebuffStack( "target", "judgment" )
             removeDebuff( "target", "reckoning" )
             removeStack( "vanquishers_hammer" )

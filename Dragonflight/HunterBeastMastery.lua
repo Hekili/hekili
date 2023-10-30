@@ -1215,6 +1215,8 @@ local ExpireNesingwarysTrappingApparatus = setfenv( function()
 end, state )
 
 
+spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221 )
+
 spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
 spec:RegisterAura( "lethal_command", {
     id = 394298,
@@ -1456,8 +1458,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "bestial_wrath" )
-            if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
             if talent.scent_of_blood.enabled then gainCharges( "barbed_shot", 2 ) end
+            if set_bonus.tier31_2pc > 0 then
+                applyBuff( "dire_beast", 15 )
+                summonPet( "dire_beast", 15 )
+            end
+            if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
         end,
     },
 

@@ -657,6 +657,8 @@ spec:RegisterAuras( {
 } )
 
 spec:RegisterGear( "tier30", 202482, 202480, 202479, 202478, 202477 )
+spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221 )
+
 
 
 
@@ -1039,6 +1041,7 @@ spec:RegisterAbilities( {
         start = function ()
             removeBuff( "brutal_projectiles" )
             applyBuff( "rapid_fire" )
+            if set_bonus.tier31_2pc > 0 then applyBuff( "volley", 2 * haste ) end
             if talent.bulletstorm.enabled and buff.trick_shots.up then
                 addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end

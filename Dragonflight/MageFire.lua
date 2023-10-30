@@ -735,6 +735,13 @@ spec:RegisterStateTable( "improved_scorch", setmetatable( {}, {
 } ) )
 
 
+spec:RegisterGear( "tier31", 207288, 207289, 207290, 207291, 207293 )
+spec:RegisterAuras( "searing_rage", {
+    id = 424285,
+    duration = 12,
+    max_stack = 5
+} )
+
 spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549 )
 spec:RegisterAuras( {
     charring_embers = {
@@ -1797,6 +1804,7 @@ spec:RegisterAbilities( {
                 if talent.kindling.enabled then
                     setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) )
                 end
+                if set_bonus.tier31_2pc > 0 then addStack( "searing_rage" ) end
             end
 
             if buff.firefall_ready.up then

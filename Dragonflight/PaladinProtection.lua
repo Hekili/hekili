@@ -635,6 +635,20 @@ spec:RegisterAuras( {
 } )
 
 
+spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194 )
+spec:RegisterAuras( {
+    sanctification = { -- TODO: Explore reset of stacks when empowered Consecration expires.
+        id = 424616,
+        duration = 20,
+        max_stack = 5
+    },
+    sanctification_ready = {
+        id = 424622,
+        duration = 30,
+        max_stack = 1
+    },
+})
+
 -- Tier 30
 spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
 spec:RegisterAura( "heartfire", {

@@ -1425,6 +1425,7 @@ local ExpireCelestialAlignment = setfenv( function()
     eclipse.reset_stacks()
     if buff.eclipse_lunar.down then removeBuff( "starsurge_empowerment_lunar" ) end
     if buff.eclipse_solar.down then removeBuff( "starsurge_empowerment_solar" ) end
+    if set_bonus.tier31_2pc > 0 then applyBuff( "dreamstate", nil, 2 ) end
     if Hekili.ActiveDebug then Hekili:Debug( "Expire CA_Inc: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
 end, state )
 
@@ -1433,6 +1434,7 @@ local ExpireEclipseLunar = setfenv( function()
     eclipse.reset_stacks()
     eclipse.wrath_counter = 0
     removeBuff( "starsurge_empowerment_lunar" )
+    if set_bonus.tier31_2pc > 0 then applyBuff( "dreamstate", nil, 2 ) end
     if Hekili.ActiveDebug then Hekili:Debug( "Expire Lunar: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
 end, state )
 
@@ -1441,6 +1443,7 @@ local ExpireEclipseSolar = setfenv( function()
     eclipse.reset_stacks()
     eclipse.starfire_counter = 0
     removeBuff( "starsurge_empowerment_solar" )
+    if set_bonus.tier31_2pc > 0 then applyBuff( "dreamstate", nil, 2 ) end
     if Hekili.ActiveDebug then Hekili:Debug( "Expire Solar: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
 end, state )
 
@@ -1733,6 +1736,18 @@ spec:RegisterAuras( {
 spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
 -- 2 pieces (Balance) : Sunfire radius increased by 3 yds. Sunfire, Moonfire and Shooting Stars damage increased by 20%.
 -- 4 pieces (Balance) : Shooting Stars has a 20% chance to instead call down a Crashing Star, dealing (76.5% of Spell power) Astral damage to the target and generating 5 Astral Power.
+
+spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257 )
+-- (2) When Eclipse ends or when you enter combat, enter a Dreamstate, reducing the cast time of your next $s3 Starfires or Wraths by $s1% and increasing their damage by $s2%.
+spec:RegisterAura( "dreamstate", {
+    id = 424248,
+    duration = 3600,
+    max_stack = 2
+} )
+spec:RegisterHook( "runHandler_startCombat", function()
+    if set_bonus.tier31_2pc > 0 then applyBuff( "dreamstate", nil, 2 ) end
+end )
+-- (4) Starsurge or Starfall increase your current Eclipse's Arcane or Nature damage bonus by an additional $s1%, up to $s2%.
 
 
 -- Legion Sets (for now).
@@ -2689,7 +2704,7 @@ spec:RegisterAbilities( {
         known = function () return state.spec.balance and IsPlayerSpell( 194153 ) or IsPlayerSpell( 197628 ) end,
         cast = function ()
             if buff.warrior_of_elune.up or buff.owlkin_frenzy.up then return 0 end
-            return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25
+            return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25 * ( buff.dreamstate.up and 0.6 or 1 )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -2710,6 +2725,7 @@ spec:RegisterAbilities( {
             if not buff.moonkin_form.up then unshift() end
 
             removeBuff( "gathering_starstuff" )
+            removeStack( "dreamstate" )
 
             if eclipse.state == "ANY_NEXT" or eclipse.state == "SOLAR_NEXT" then
                 eclipse.starfire_counter = eclipse.starfire_counter - 1
@@ -3125,7 +3141,7 @@ spec:RegisterAbilities( {
     wrath = {
         id = 190984,
         known = function () return state.spec.balance and IsPlayerSpell( 190984 ) or IsPlayerSpell( 5176 ) end,
-        cast = function () return haste * ( buff.eclipse_solar.up and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 1.5 end,
+        cast = function () return haste * ( buff.eclipse_solar.up and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 1.5 * ( buff.dreamstate.up and 0.6 or 1 ) end,
         cooldown = 0,
         gcd = "spell",
 
@@ -3152,6 +3168,7 @@ spec:RegisterAbilities( {
             if not buff.moonkin_form.up then unshift() end
 
             removeBuff( "gathering_starstuff" )
+            removeStack( "dreamstate" )
 
             if state.spec.balance and ( eclipse.state == "ANY_NEXT" or eclipse.state == "LUNAR_NEXT" ) then
                 eclipse.wrath_counter = eclipse.wrath_counter - 1

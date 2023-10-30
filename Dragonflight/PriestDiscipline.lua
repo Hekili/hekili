@@ -416,6 +416,9 @@ spec:RegisterAuras( {
     }
 } )
 
+spec:RegisterGear( "tier31", 207279, 207280, 207281, 207282, 207284 )
+
+
 spec:RegisterStateTable( "priest", {
     self_power_infusion = true
 } )

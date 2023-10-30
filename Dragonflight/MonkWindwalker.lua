@@ -160,6 +160,11 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    blackout_reinforcement = {
+        id = 424454,
+        duration = 3600,
+        max_stack = 1
+    },
     bok_proc = {
         id = 116768,
         type = "Magic",
@@ -655,6 +660,10 @@ spec:RegisterAuras( {
         max_stack = 1
     },
 } )
+
+
+
+spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248 )
 
 
 -- Tier 30
@@ -1233,6 +1242,15 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            if buff.blackout_reinforcement.up then
+                removeBuff( "blackout_reinforcement" )
+                if set_bonus.tier31_4pc > 0 then
+                    reduceCooldown( "fists_of_fury", 3 )
+                    reduceCooldown( "rising_sun_kick", 3 )
+                    reduceCooldown( "strike_of_the_windlord", 3 )
+                    reduceCooldown( "whirling_dragon_punch", 3 )
+                end
+            end
             if buff.bok_proc.up and buff.serenity.down then
                 removeBuff( "bok_proc" )
                 if set_bonus.tier21_4pc > 0 then gain( 1, "chi" ) end
@@ -1901,7 +1919,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "chi_energy" )
-            removeBuff( "dance_of_chiji" )
+            if buff.dance_of_chiji.up then
+                if set_bonus.tier31_2pc > 0 then applyBuff( "blackout_reinforcement" ) end
+                removeBuff( "dance_of_chiji" )
+            end
 
             if buff.kicks_of_flowing_momentum.up then
                 removeStack( "kicks_of_flowing_momentum" )

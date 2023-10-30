@@ -847,6 +847,17 @@ spec:RegisterAura( "lingering_chill", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207198, 207199, 207200, 207201, 207203 )
+-- (2) Chill Streak's range is increased by $s1 yds and can bounce off of you. Each time Chill Streak bounces your damage is increased by $424165s2% for $424165d, stacking up to $424165u times.
+-- (4) Chill Streak can bounce $s1 additional times and each time it bounces, you have a $s4% chance to gain a Rune, reduce Chill Streak cooldown by ${$s2/1000} sec, or reduce the cooldown of Empower Rune Weapon by ${$s3/1000} sec.
+spec:RegisterAura( "chilling_rage", {
+    id = 424165,
+    duration = 12,
+    max_stack = 5
+} )
+
+
+
 local TriggerERW = setfenv( function()
     gain( 1, "runes" )
     gain( 5, "runic_power" )
@@ -1048,6 +1059,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "chilled" )
+            if set_bonus.tier31_2pc > 0 then
+                applyBuff( "chilling_rage", 5 ) -- TODO: Check if reliable.
+            end
         end,
     },
 

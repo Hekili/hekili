@@ -451,6 +451,30 @@ spec:RegisterAuras( {
 } )
 
 
+
+spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194 )
+spec:RegisterAuras( {
+    holy_reverberation = { -- TODO: Is actually multiple applications, not true stacks; check SimC.
+        id = 423377,
+        duration = 8,
+        max_stack = 6,
+        friendly = true,
+        copy = { "holy_reverberation_heal", "holy_reverberation_buff" }
+    },
+    holy_reverberation_dot = {
+        id = 423379,
+        duration = 8,
+        max_stack = 6,
+        copy = { "holy_reverberation_dmg", "holy_reverberation_debuff" }
+    },
+    first_light = {
+        id = 427946,
+        duration = 6,
+        max_stack = 1
+    }
+} )
+
+
 spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
 -- 2pc is based on crits which aren't guaranteed, so we can't proactively model them.
 
@@ -1051,7 +1075,7 @@ spec:RegisterAbilities( {
     daybreak = {
         id = 414170,
         cast = 0.0,
-        cooldown = 60.0,
+        cooldown = function () return set_bonus.tier31_4pc > 0 and 45 or 60 end,
         gcd = "spell",
 
         talent = "daybreak",
@@ -1062,6 +1086,11 @@ spec:RegisterAbilities( {
             applyBuff( "divine_plea" )
 
             if talent.rising_sunlight.enabled then applyBuff( "rising_sunlight", nil, 3 ) end
+
+            if set_bonus.tier31_4pc > 0 then
+                applyBuff( "first_light" )
+                stat.haste = stat.haste + 0.25
+            end
         end
     },
 
@@ -1333,6 +1362,8 @@ spec:RegisterAbilities( {
             if talent.glimmer_of_light.enabled then
                 if debuff.glimmer_of_light.down then
                     applyDebuff( "target", "glimmer_of_light" )
+                elseif set_bonus.tier31_2pc > 0 then
+                    applyDebuff( "target", "holy_reverberation_dot" )
                 end
                 if active_dot.glimmer_of_light > class.auras.glimmer_of_light.max_applications then
                     active_dot.glimmer_of_light = class.auras.glimmer_of_light.max_applications

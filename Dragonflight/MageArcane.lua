@@ -748,6 +748,25 @@ do
 end
 
 
+spec:RegisterGear( "tier31", 207288, 207289, 207290, 207291, 207293 )
+spec:RegisterAuras( {
+    forethought = {
+        id = 424293,
+        duration = 20,
+        max_stack = 5
+    },
+    arcane_battery = {
+        id = 424334,
+        duration = 30,
+        max_stack = 3
+    },
+    arcane_artillery = {
+        id = 424331,
+        duration = 30,
+        max_stack = 1
+    }
+} )
+
 -- Tier 30
 spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549 )
 spec:RegisterAura( "arcane_overload", {
@@ -1310,7 +1329,18 @@ spec:RegisterAbilities( {
             else
                 if buff.concentration.up then removeBuff( "concentration" )
                 else
-                    removeStack( "clearcasting" )
+                    if buff.clearcasting.up then
+                        removeStack( "clearcasting" )
+                        if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
+                        if set_bonus.tier31_4pc > 0 then
+                            if buff.arcane_battery.stack == 2 then
+                                removeBuff( "arcane_battery" )
+                                applyBuff( "arcane_artillery" )
+                            else
+                                addStack( "arcane_battery" )
+                            end
+                        end
+                    end
                     if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
                 end
                 if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
@@ -1394,6 +1424,15 @@ spec:RegisterAbilities( {
                 if buff.concentration.up then removeBuff( "concentration" )
                 else
                     removeStack( "clearcasting" )
+                    if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
+                    if set_bonus.tier31_4pc > 0 then
+                        if buff.arcane_battery.stack == 2 then
+                            removeBuff( "arcane_battery" )
+                            applyBuff( "arcane_artillery" )
+                        else
+                            addStack( "arcane_battery" )
+                        end
+                    end
                     if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
                 end
                 if talent.amplification.enabled then applyBuff( "clearcasting_channel" ) end

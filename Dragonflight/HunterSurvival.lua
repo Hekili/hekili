@@ -530,6 +530,21 @@ spec:RegisterAura( "shredded_armor", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221 )
+spec:RegisterAura( {
+    fury_strikes = {
+        id = 425830,
+        duration = 12,
+        max_stack = 1
+    },
+    contained_explosion = {
+        id = 426344,
+        duration = 12,
+        max_stack = 1
+    }
+} )
+
+
 
 spec:RegisterHook( "reset_precast", function()
     if talent.wildfire_infusion.enabled then
@@ -812,6 +827,11 @@ spec:RegisterAbilities( {
 
         talent = "fury_of_the_eagle",
         startsCombat = true,
+
+        start = function()
+            if set_bonus.tier31_2pc > 0 then applyBuff( "fury_strikes" ) end
+            if set_bonus.tier31_4pc > 0 then applyBuff( "contained_explosion" ) end
+        end,
     },
 
     -- Talent: Hurls a harpoon at an enemy, rooting them in place for $190927d and pulling you to them.
@@ -1227,6 +1247,10 @@ spec:RegisterAbilities( {
         start = function ()
             removeBuff( "flame_infusion" )
             removeBuff( "coordinated_assault_empower" )
+            if buff.contained_explosion.up then
+                removeBuff( "contained_explosion" )
+                gainCharges( 1, "wildfire_bomb" )
+            end
         end,
 
         impact = function ()

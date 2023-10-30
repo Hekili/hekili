@@ -409,6 +409,13 @@ spec:RegisterAuras( {
     }
 } )
 
+spec:RegisterGear( "tier31", 207279, 207280, 207281, 207282, 207284 )
+spec:RegisterAura( "sacred_reverence", {
+    id = 423510,
+    duration = 3600,
+    max_stack = 2
+} )
+
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -783,7 +790,7 @@ spec:RegisterAbilities( {
         recharge = 60,
         gcd = "spell",
 
-        spend = 0.04,
+        spend = function() return 0.04 * ( buff.sacred_reverence.up and 0.5 or 1 ) end,
         spendType = "mana",
 
         talent = "holy_word_sanctify",
@@ -795,6 +802,10 @@ spec:RegisterAbilities( {
             removeBuff( "inspired_word" )
             reduceCooldown( "holy_word_salvation", 30 )
             removeBuff( "divine_word" )
+            if buff.sacred_reverence.up then
+                gainCharges( 1, "holy_word_sanctify" )
+                removeStack( "sacred_reverence" )
+            end
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
@@ -807,7 +818,7 @@ spec:RegisterAbilities( {
         recharge = 60,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return 0.02 * ( buff.sacred_reverence.up and 0.5 or 1 ) end,
         spendType = "mana",
 
         talent = "holy_word_serenity",
@@ -821,7 +832,18 @@ spec:RegisterAbilities( {
                 applyBuff( "divine_favor_serenity" )
                 removeBuff( "divine_word" )
             end
+            if buff.sacred_reverence.up then
+                gainCharges( 1, "holy_word_serenity" )
+                removeStack( "sacred_reverence" )
+            end
             reduceCooldown( "holy_word_salvation", 30 )
+
+
+            if set_bonus.tier31_2pc > 0 then
+                applyBuff( "renew", 14 )
+            end
+
+
         end,
     },
     leap_of_faith = {

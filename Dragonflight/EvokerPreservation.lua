@@ -350,6 +350,9 @@ spec:RegisterAura( "essence_rush", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207225, 207226, 207227, 207228, 207230 )
+
+
 spec:RegisterStateExpr( "empowered_spell_count", function()
     return actual_empowered_spell_count
 end )

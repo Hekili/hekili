@@ -570,7 +570,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=345335
     the_hunt_dot = {
         id = 370969,
-        duration = 6,
+        duration = function() return set_bonus.tier31_4pc > 0 and 12 or 6 end,
         tick_time = 2,
         type = "Magic",
         max_stack = 1,
@@ -817,6 +817,10 @@ spec:RegisterAura( "seething_potential", {
     max_stack = 5
 } )
 
+spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266 )
+-- (2) Blade Dance automatically triggers Throw Glaive on your primary target for $s3% damage and each slash has a $s2% chance to Throw Glaive an enemy for $s1% damage.
+-- (4) Throw Glaive reduces the remaining cooldown of The Hunt by ${$s1/1000}.1 sec, and The Hunt's damage over time effect lasts ${$s2/1000} sec longer.
+
 
 local sigil_types = { "chains", "flame", "misery", "silence" }
 
@@ -981,8 +985,9 @@ spec:RegisterAbilities( {
             applyBuff( "blade_dance" )
             setCooldown( "death_sweep", action.blade_dance.cooldown )
             if talent.chaos_theory.enabled then applyBuff( "chaos_theory" ) end
-            if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then applyDebuff( "target", "mortal_dance" ) end
             if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
+            if set_bonus.tier31_2pc > 0 then action.throw_glaive.handler() end
+            if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then applyDebuff( "target", "mortal_dance" ) end
         end,
 
         copy = "blade_dance1"
@@ -1121,10 +1126,11 @@ spec:RegisterAbilities( {
             applyBuff( "death_sweep" )
             setCooldown( "blade_dance", action.death_sweep.cooldown )
 
+            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
+            if set_bonus.tier31_2pc > 0 then action.throw_glaive.handler() end
             if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then
                 applyDebuff( "target", "mortal_dance" )
             end
-            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
         end,
     },
 
@@ -1645,6 +1651,7 @@ spec:RegisterAbilities( {
             if talent.champion_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
             if talent.serrated_glaive.enabled then applyDebuff( "target", "serrated_glaive" ) end
             if talent.soulscar.enabled then applyDebuff( "target", "soulscar" ) end
+            if set_bonus.tier31_4pc > 0 then reduceCooldown( "the_hunt", 2 ) end
         end,
     },
 

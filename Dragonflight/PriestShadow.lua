@@ -295,6 +295,13 @@ spec:RegisterAuras( {
     }
 } )
 
+spec:RegisterGear( "tier31", 207279, 207280, 207281, 207282, 207284 )
+spec:RegisterAura( "deaths_torment", {
+    id = 423726,
+    duration = 60,
+    max_stack = 12
+} )
+
 
 -- Don't need to actually snapshot this, the APL only cares about the power of the cast.
 spec:RegisterStateExpr( "pmultiplier", function ()
@@ -1835,6 +1842,7 @@ spec:RegisterAbilities( {
         velocity = 2,
 
         impact = function ()
+            removeBuff( "deaths_torment" )
             if talent.whispering_shadows.enabled then
                 applyDebuff( "target", "vampiric_touch" )
                 active_dot.vampiric_touch = min( active_enemies, active_dot.vampiric_touch + 7 )
@@ -1870,6 +1878,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( 4, "insanity" )
+
+            if set_bonus.tier31_4pc > 0 then
+                addStack( "deaths_torment", nil, ( buff.deathspeaker.up or target.health.pct < 20 ) and 3 or 2 )
+            end
 
             removeBuff( "deathspeaker" )
             removeBuff( "zeks_exterminatus" )
@@ -1928,6 +1940,7 @@ spec:RegisterAbilities( {
         cycle = "shadow_word_pain",
 
         handler = function ()
+            removeBuff( "deaths_torment" )
             applyDebuff( "target", "shadow_word_pain" )
         end,
     },

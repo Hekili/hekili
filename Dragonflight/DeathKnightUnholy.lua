@@ -865,6 +865,8 @@ me:RegisterTotem( "dark_arbiter", 298674 )
 me:RegisterTotem( "abomination", 298667 )
 me:RegisterPet( "apoc_ghoul", 24207, "apocalypse", 15 )
 me:RegisterPet( "army_ghoul", 24207, "army_of_the_dead", 30 )
+me:RegisterPet( "magus_of_the_dead", 148797, "apocalypse", 15 )
+me:RegisterPet( "t31_magus", 148797, "apocalypse", 15 )
 
 -- Tier 29
 me:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
@@ -901,6 +903,10 @@ me:RegisterAura( "lingering_chill", {
     duration = 12,
     max_stack = 1
 } )
+
+spec:RegisterGear( "tier31", 207198, 207199, 207200, 207201, 207203 )
+-- (2) Apocalypse summons an additional Magus of the Dead. Your Magus of the Dead Shadow Bolt now fires a volley of Shadow Bolts at up to $s2 nearby enemies.
+-- (4) Each Rune you spend increases the duration of your active Magi by ${$s1/1000}.1 sec and your Magi will now also cast Amplify Damage, increasing the damage you deal by $424949s2% for $424949d.
 
 
 local any_dnd_set, wound_spender_set = false, false
@@ -957,6 +963,14 @@ me:RegisterHook( "reset_precast", function ()
     local apoc_expires = action.apocalypse.lastCast + 15
     if apoc_expires > now then
         summonPet( "apoc_ghoul", apoc_expires - now )
+        if talent.magus_of_the_dead.enabled then
+            summonPet( "magus_of_the_dead", apoc_expires - now )
+        end
+
+        -- TODO: Accommodate extensions from spending runes.
+        if set_bonus.tier31_2pc > 0 then
+            summonPet( "t31_magus", apoc_expires - now )
+        end
     end
 
     local army_expires = action.army_of_the_dead.lastCast + 30

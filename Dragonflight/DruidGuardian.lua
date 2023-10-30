@@ -872,6 +872,18 @@ spec:RegisterAura( "indomitable_guardian", {
     max_stack = 5
 } )
 
+spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257 )
+-- (2) Rage you spend during Rage of the Sleeper fuel the growth of Dream Thorns, which wreath you in their protection after Rage of the Sleeper expires, absorbing $425407s2% of damage dealt to you while the thorns remain, up to ${$s2/100*$AP} per $s1 Rage spent.
+-- (4) Each $s1 Rage you spend while Rage of the Sleeper is active extends its duration by ${$s4/1000}.1 sec, up to ${$s3/1000}.1. Your Dream Thorns become Blazing Thorns, causing $s2% of damage absorbed to be reflected at the attacker.
+spec:RegisterAuras( {
+    dream_thorns = {
+        id = 425407,
+        duration = 45,
+        max_stack = 1,
+        copy = "blazing_thorns" -- ???
+    },
+
+})
 
 -- Gear.
 spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
@@ -926,6 +938,10 @@ local SinfulHysteriaHandler = setfenv( function ()
     applyBuff( "ravenous_frenzy_sinful_hysteria" )
 end, state )
 
+local DreamThornsHandler = setfenv( function ()
+    applyBuff( "dream_thorns" )
+end, state )
+
 spec:RegisterHook( "reset_precast", function ()
     if azerite.masterful_instincts.enabled and buff.survival_instincts.up and buff.masterful_instincts.down then
         applyBuff( "masterful_instincts", buff.survival_instincts.remains + 30 )
@@ -937,6 +953,10 @@ spec:RegisterHook( "reset_precast", function ()
 
     if legendary.sinful_hysteria.enabled and buff.ravenous_frenzy.up then
         state:QueueAuraExpiration( "ravenous_frenzy", SinfulHysteriaHandler, buff.ravenous_frenzy.expires )
+    end
+
+    if set_bonus.tier31_2pc > 0 and buff.rage_of_the_sleeper.up then
+        state:QueueAuraExpiration( "rage_of_the_sleeper", DreamThornsHandler, buff.rage_of_the_sleeper.expires )
     end
 
     eclipse.reset() -- from Balance.
@@ -1644,6 +1664,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rage_of_the_sleeper" )
+            if set_bonus.tier31_2pc > 0 then
+                state:QueueAuraExpiration( "rage_of_the_sleeper", DreamThornsHandler, buff.rage_of_the_sleeper.expires )
+            end
         end,
     },
 

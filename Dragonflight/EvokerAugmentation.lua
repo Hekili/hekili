@@ -562,6 +562,8 @@ end )
 
 spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
 spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486 )
+spec:RegisterGear( "tier31", 207225, 207226, 207227, 207228, 207230 )
+
 
 spec:RegisterHook( "reset_precast", function()
     max_empower = talent.font_of_magic.enabled and 4 or 3
@@ -760,7 +762,8 @@ spec:RegisterAbilities( {
 
         handler = function()
             removeBuff( "essence_burst" )
-            if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
+            if buff.ebon_might.up then
+                buff.ebon_might.expires = buff.ebon_might.expires + 1 + ( set_bonus.tier31_4pc > 0 and ( active_dot.prescience * 0.2 ) or 0 ) end
             if talent.regenerative_chitin.enabled and buff.blistering_scales.up then addStack( "blistering_scales" ) end
         end
     },

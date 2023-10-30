@@ -7,6 +7,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local floor = math.floor
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 581 )
@@ -627,7 +628,20 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     fiery_brand_dot_primary_expires = nil
+    fury_spent = nil
 end )
+
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if set_bonus.tier31_4pc == 0 or amt < 0 or resource ~= "fury" then return end
+
+    fury_spent = fury_spent + amt
+    if fury_spent > 40 then
+        reduceCooldown( "sigil_of_flame", floor( fury_spent / 40 ) )
+        fury_spent = fury_spent % 40
+    end
+end )
+
 
 spec:RegisterHook( "advance_end", function( time )
     if query_time - time < sigils.flame and query_time >= sigils.flame then
@@ -721,6 +735,38 @@ spec:RegisterAura( "recrimination", {
     duration = 30,
     max_stack = 1
 } )
+
+spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266 )
+-- (2) When you attack a target afflicted by Sigil of Flame, your damage and healing are increased by 2% and your Stamina is increased by 2% for 8 sec, stacking up to 5.
+-- (4) Sigil of Flame's periodic damage has a chance to flare up, shattering an additional Soul Fragment from a target and dealing $425672s1 additional damage. Each $s1 Fury you spend reduces its cooldown by ${$s2/1000}.1 sec.
+spec:RegisterAura( "fiery_resolve", {
+    id = 425653,
+    duration = 8,
+    max_stack = 5
+} )
+
+
+local furySpent = 0
+
+local FURY = Enum.PowerType.Fury
+local lastFury = -1
+
+spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+    if powerType == "FURY" and state.set_bonus.tier31_4pc > 0 then
+        local current = UnitPower( "player", FURY )
+
+        if current < lastFury - 3 then
+            furySpent = ( furySpent + lastFury - current )
+        end
+
+        lastFury = current
+    end
+end )
+
+spec:RegisterStateExpr( "fury_spent", function ()
+    if set_bonus.tier31_4pc == 0 then return 0 end
+    return furySpent
+end )
 
 
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )

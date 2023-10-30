@@ -662,6 +662,40 @@ spec:RegisterAura( "blazing_shards", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207225, 207226, 207227, 207228, 207230 )
+-- (2) While Dragonrage is active you gain Emerald Trance every 6 sec, increasing your damage done by 5%, stacking up to 5 times.
+spec:RegisterAura( "emerald_trance", {
+    id = 424155,
+    duration = 10,
+    max_stack = 5
+} )
+
+local EmeraldTranceTick = setfenv( function()
+    addStack( "emerald_trance" )
+end, state )
+
+local EmeraldBurstTick = setfenv( function()
+    addStack( "essence_burst" )
+end, state )
+
+local ExpireDragonrage = setfenv( function()
+    buff.emerald_trance.expires = query_time + 5 * buff.emerald_trance.stack
+    for i = 1, buff.emerald_trance.stack do
+        state:QueueAuraEvent( "emerald_trance", EmeraldBurstTick, query_time + i * 5, "AURA_PERIODIC" )
+    end
+end, state )
+
+local QueueEmeraldTrance = setfenv( function()
+    local tick = buff.dragonrage.applied + 6
+    while( tick < buff.dragonrage.expires ) do
+        if tick > query_time then state:QueueAuraEvent( "dragonrage", EmeraldTranceTick, tick, "AURA_PERIODIC" ) end
+        tick = tick + 6
+    end
+    if set_bonus.tier31_4pc > 0 then
+        state:QueueAuraExpiration( "dragonrage", ExpireDragonrage, buff.dragonrage.expires )
+    end
+end, state )
+
 
 spec:RegisterHook( "reset_precast", function()
     max_empower = talent.font_of_magic.enabled and 4 or 3
@@ -670,6 +704,10 @@ spec:RegisterHook( "reset_precast", function()
         local partial = min( 0.95, ( query_time - lastEssenceTick ) * essence.regen )
         gain( partial, "essence" )
         if Hekili.ActiveDebug then Hekili:Debug( "Essence increased to %.2f from passive regen.", partial ) end
+    end
+
+    if buff.dragonrage.up and set_bonus.tier31_2pc > 0 then
+        QueueEmeraldTrance()
     end
 end )
 
@@ -893,6 +931,9 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "dragonrage" )
             if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
+            if set_bonus.tier31_2pc > 0 then
+                QueueEmeraldTrance()
+            end
         end,
     },
 
