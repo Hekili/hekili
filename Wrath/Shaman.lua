@@ -893,54 +893,6 @@ local enchant_ids = {
     [3043] = "rockbiter"  -- ???
 }
 
-spec:RegisterStateExpr( "mainhand_remains", function()
-    local next_swing, real_swing, pseudo_swing = 0, 0, 0
-    if now == query_time then
-        real_swing = nextMH - now
-        next_swing = real_swing > 0 and real_swing or 0
-    else
-        if query_time <= nextMH then
-            pseudo_swing = nextMH - query_time
-        else
-            pseudo_swing = (query_time - nextMH) % mainhand_speed
-        end
-        next_swing = pseudo_swing
-    end
-    return next_swing
-end)
-
-spec:RegisterStateExpr( "offhand_remains", function()
-    local next_swing, real_swing, pseudo_swing = 0, 0, 0
-    if now == query_time then
-        real_swing = nextOH - now
-        next_swing = real_swing > 0 and real_swing or 0
-    else
-        if query_time <= nextOH then
-            pseudo_swing = nextOH - query_time
-        else
-            pseudo_swing = (query_time - nextOH) % offhand_speed
-        end
-        next_swing = pseudo_swing
-    end
-    return next_swing
-end)
-
-spec:RegisterStateExpr( "nextswing_remains", function()
-    return max(min(mainhand_remains, offhand_remains), 0)
-end)
-
-spec:RegisterStateExpr( "nextswing_speed", function()
-    return mainhand_remains < offhand_remains and mainhand_speed or offhand_speed
-end)
-
-spec:RegisterStateExpr( "skipswing_remains", function()
-    return max(max(mainhand_remains, offhand_remains) - nextswing_remains, 0)
-end)
-
-spec:RegisterStateExpr( "skipswing_speed", function()
-    return mainhand_remains < offhand_remains and offhand_speed or mainhand_speed
-end)
-
 local MainhandHasSpellpower = false
 spec:RegisterStateExpr( "mainhand_has_spellpower", function() return MainhandHasSpellpower end )
 
@@ -2565,6 +2517,16 @@ spec:RegisterSetting( "st_cl_mana_threshold", 80, {
     width = "full",
 } )
 
+spec:RegisterSetting( "st_fn_mana_threshold", 3000, {
+    type = "range",
+    name = "Single-Target Fire Nova Mana",
+    desc = "When below the specified mana level, the default priority will not recommend Fire Nova in single-target.",
+    min = 0,
+    softMax = 10000,
+    step = 100,
+    width = "full",
+} )
+
 spec:RegisterSetting( "shaman_rage_threshold", 60, {
     type = "range",
     name = "|T136088:0|t Shamanistic Rage Threshold",
@@ -2574,19 +2536,6 @@ spec:RegisterSetting( "shaman_rage_threshold", 60, {
     step = 1,
     width = "full",
 } )
-
-spec:RegisterSetting("maelstrom_weapon_stack_limit", 3, {
-    type = "range",
-    name = "Minimum Maelstrom Weapon Stacks",
-    desc = "Sets the minimum number of Maelstrom Weapon stacks before recommending the player cast a spell",
-    width = "full",
-    min = 1,
-    max = 5,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 7 ].settings.maelstrom_weapon_stack_limit = val
-    end
-})
 
 
 spec:RegisterOptions( {
@@ -2609,7 +2558,7 @@ spec:RegisterOptions( {
 
 spec:RegisterPack( "Elemental / Resto DPS (IV)", 20220925, [[Hekili:1EvZUnUnq4NLGfWjbnw(NDZUnTj5q72djhcwuVy7njslrzXAksbskl4Ia(S3zOSLLKLtt32CXwIC4W5NVz(gfol8RHlsOww4tZNoF(0BMFDWS5F465FmCHDBblCrbnEnDf8GKMd)(BcwotAPchzIJ87mJv5iF(llCKlE4BxIIVvOOjOAnQsDmCKmRTW8ttMuvvfWJ3oEdJlnbXQ8jvkRy94yb1y4Xty7v9ytgnNkhNuygxSHnwRSulxjhhRuIevL0mMUKl4woZeUyzjxyFqgUCyh5AWqkyXHp9jWs4jjSAjzM4WfFnJBCKcnxP52TWtGVELJaBYxjzjosQs7iTC5lwwADendmEyPKgrAhhOGkRycXLocQ9LudkwzHs6ipaU)3q3)8oQDH3FDKvL8e2ov(hAQnliCHGBSgmCsvm4VN8zmMKUuWsc)LWfXGPZ0Ckgistds5AwKvzz5byKcowmg6cxKtxLtR3j0cbjVk3TN)qs1gABndc9(2c1KEIYPg4k32t4p0w44mkxgj4RYSsUCvprVUNpS)u2SsiOQHyPoVohP5f1BvlIjaIc)WDtAl4v807GOhnOi2E7ntF(zlvVIzdsGahvgZUD20rReBlYc8)gPsJAF8G92rRizpn4i3ENJmBQJmYr2FvWIoYnWAp)CVfnmRf8ztGXgfJrlje3Z0mtgGEb33IUwkTuyBYN7davCzsKjJr19IyhNUoKoQZPVqMR0WIaxl3mugBqOeEYnWDiz5qnMJCp4(TsUuHiQ(LieEwdsJQBqGW09P4xl05JN0qoZrS841EiuJ7lGlcIsQ414H)0jpCIYg0s4anlhqL1UtmyirwU3I3PxbDdnAzjalq1(JNuT5QnG94bd9VHJSvitAZoyR3CcG)rLlDW(pXWoiydMyndAXbp7BCH914ub)V8DhDeLx(Go2AdW8()zG5tZMEsN(TSKy46F0E6uC0eEIwQGANoqi41cFB5Lu7l3L8m004YmkuPXZxwYs6HSSk5QswufJcTSBQ9gkPHLb(UjnvJMEzUViOySAlWeIjqSgeyfsXeiB75AylPcIqubKxt2ISei9JsEoSyfvARZ6q9lCkB9jRyNVH5xdWeu0z(tKU4x)8Uli4ikHAm4bobFoBiYIdBubOm9G7q5TxVPvZ3bHKFnm(vHmDd1pAVKgWdW0(UgDNO2if6D6Jiv0T1RSbmJu85mQ1hYbGOKwaGo41mKN2sxZaNRatthh46AHbLfhcdjSCLKhhbtmyHn8iqadc3ObnRMzqGw6unIzbKXd5fkTfn33d2zCDnRNEpW9iIFvPCb0p6DVBWHdUagEWr8tpCP7rui8sgp9MXZV29O7X9mKn1bap5XaAKT8SEfaG2CK)9q1F()muDyJEO6k0ShempAiq2ObbXJgaapSf0nX3C39lxWW2)J4VHTLoG)gt5iO5OHGLTGfGMomCr7vhAyI273m8q7f7pbWvi3)Da1pAGDhE4(zTp4rtc0XuoWK6HP7ytBlYboAuItqWFFd5ENR(avSFKrpl(OtWG3l3(Q4D7eG6sO3Eg17FrYW2kP)uU9hS9oyY2ot(28YR(k6YP2Uns9G2T(QHtxg09inFmr)noDUFNa9cA1n5oKeQzgGVschJ3S7ZKQZi42vk96aFERRwFd(wH(g(BuIcyalTzk4BbA(Urpnt4F)d]] )
 
-spec:RegisterPack( "Enhancement (IV)", 20230123, [[Hekili:TNvFVTTnt8plffiyRPvZYooPfWoapdBapnROBaAy7)KeTeLfrKefiPJxgc0N9DK6nAA9MJtrhgkkqtc59oV73DI01293DDcrcS7NNpB(Iz2ZxyzpF27NTW1r8yo21jhfCpAl8lzOu4))5SyuwaofNjk8)Up(hFVKIhtOOqPK40DSaGkxNn7ijIpM5UPtX76G2jIPmxNFch93OGyxNysyiUKEmpW15pPIp9lf(yD9XJrPOScFgvGeek8BruwH))hFpjHagcJgrsa1)6c))3V9Pc)hwyDLL97STMBnRW)1f3HcKSXTYz4aA6gK4Y1)WEswy0o2JE7XOCA2BjrRFvkIi1BOhjDZoC4fTleJ4E8CCssoDpM1TeJsGqLGMTDhUwOmu29RlP164TTsr)LNKK3z3P6pxTlLjnkstKDZAczBSiJKT1JhtWjHsg3SlkYQ8pTcP7Z6MZausIhnYteJ9WjQJlEd3yete7jOcCQsexOwnIWWhT4EixHD0QiI(A942sXvPAusj5DtzovL7CxZUvjbGtdwQ0QdXk1gG4ciyyTl)cJvEy(6z6SVJJ9iGc56lwRN2vg0gL7JzWY8CcJigv8LfdeWGcGCNTyPHlqSTyH1EIiMKzpdsCYqw5bIvCSqA4CRsUumahwmmpMMeQlw2UmVY)Ylbe(BLL9RruL4LR)a4bz4ucMFR9O8XfAHzl(H5yBOjIMCKueoHly006scUaaEwV0GBvYnCqrdUxLvdo)9GSUOYXfKuzoLxibF76puVkDNGtcXZnKfxqzPGoj3JBt0BxZixtXskABkQ8CRHfJ8ydocIHAxVgNEe)D1Ylgy3Bx3CmAsGNIaqpPerlCbdl)v(Tvapg2IkB(YeOIll4XlQXhofEu2AmMrj8uOk5CoPpxF7qLnjxBawoNSUEJcTyQqXpGaiDCzXRsUw4m0MeaRVF8wL4kXsBmLqQWsZ6SQDXLp90Xg3ktBtlB30JLj1z0hqNwbqL6xT4fmiuwyOVISBPA13mZYeG4fev8YH3guUTPBIEa5LG4XJvMpPCDDOtaa(Kbt0bpl5)KQipM9tdWSKNtcX854LNlWXlnO4zfZpxN5lfk4rN)MB1bEr1gppOtZy3PdB0vM1iGNv22yqNtkXUgj86xsFAYqHvNxFLWcRC0xuWqxNhWmoi(MVK021zpIjJKCxNpMMtzc47A8VQWV0ok8LZHYTkUd(U0CCG7NVb(Suehh(RzD(DSkYLFfly)Wp(S6BJRogC)rxNayQCmJGKFCBVEtH)6c)LGmu2aW0HqfUcW(FjK7HLTsXUyyXAcu3kkTDKY5QHLJb4DRy0kiKIz5ZZlVfCZjLqu4FrHVjoiWF9XFNG0f(xcPfvOBsbyakEk8p4z81FT9(oG1pfNFe2hkp8gvjuh5wAXdGS3Rtwt7ddI(qVHXxv4xbxRCLJrSldMFqthTi9srBpRxzpaCSszMTz6kAuUTsr9JJ0tdOc)NEQBxA1bEKw7mLIgby54UtkbEDVLW29dPCkHOQC7vhUAtNRc)3u4dDVgjk2pSKrlTQsJY2Ak1oYLFiZRhJeLjARLxB0AvzIptiVvtSMxlav3A1vwX5eIJq7GIVb7zD0DAPIthDVwQ(mZAvv7fJ106QERMBLYOODHorLxcMbfxDuTVXLIzq)YdOx7sYmO76PyE38LkrA4SJ33RALC1ERAkuyTmnJ7vRCmfVYlJxoOshOKtHvUOm3HpsAZznss)astf(wF36RXRxi9)BmbeKNTSfd9l)KcJnNZyJkmj(v(s7nf(TzNgy2PZQGP3IJ(XFoLE5JpUt)JS1ZDvQcDlFUZ8mBAtBwoe2bTC6yCZN5eul(2euJtY)QNGQ55b7QzO(OqApuC5dvZi5L721doBuaB8SUQWS(Yh(6UD1a9GA7dEJ3jOQ(0JJ8LNRL9WVo9WDzFvlSyPAh0GhVr7KXCgjTX89NBRVmVj6MnmFh62Do8TO1AK1XlGF0mPtyw3BgB656)5(pp]] )
+spec:RegisterPack( "Enhancement (IV)", 20231022, [[Hekili:nJvZUnUnq4NLCXizBRQT86Mna25qrlqtAX2dQO9MKOLOSimLOajLDtrGE27qkBjkQFC8MfODpSW7WHFZW5VVzL)c))W3lgjX(F2DU7YfZDDDMd)XDLVN8LcSVxbkApAh8JCug83)CEkkpcNHZLvH3(0FENsJxOmuScjbRKhbA57TTKqLpL7V1c(f(EOszkJ779t4K)bfL67LsIJX1QIfr(E)ft(B)Avi20uIuugkVkKZKijHb)kHXRc)f8EcLa(aNLqOGLrrQtfofCCelBls(nB((JK84Ks(lbhXOcw(3ss2CtgIOGpoGKTTehpRvqkseikWuAb7iMx98qiMqHGHKLVReFguokF)MADD6FStg6VduQ8Dlg08VxRRWKLKya5WxLs2LkZj57cePemnwDXTLjjo1)tNy2X8HVzeIsdyjbYuCaMQZkIMBJrCzAGKjXzAiMPLMq44Ecpcvd8EsretzJ8SvWDY0iAT6dRzbtxI8CZPNkcGhn4PkVogRnBesiHGHtzXmljhC3m3(6V7AO)lQCU66f4cLcCabIUctHNdQg4ovcrDoMdIffeoroc8MIZq7Yq1O0uyzxcP0(ay0CCgblECzp3jNDaPU9KkQIhqTalAVoqijr7HC(mjIVdlDKKmLndIj4h38WzPSsPGeJ)OjqcjJNjKCYECBJuRSU1YD6(2YOYMRKHWu4gSSZPCHeg6Uz1SB7(k2S41xVjIXOkCDIsHmFqdKqn8DM2Y64lASrExFXXTRmZoCyQDifuGbvzkNfSATp4GZrBPqlWOdWaSQNmP1F0AfGyb5evY5GfEuGLQbacWubj5bQZGzECmabTttcfDafqrI0l9snKPg00tghR6HfRx(1kgOZORnLOMHOL(H5ol7yNAEvIqHih45RTJoFEKitj5lMpthFkIKRBJn6BPVqBWX37aMlaCnj7pI4QxHW37PScgxcdAcDRcRDGQqkyzHt1Z(E6FP3gbNGkPs4NFwVDYPxO)p67fbdsWCcsPK187QWzvH9MHxfUPkC(5TcaVPHeWxcE5OWFtvO1Cwn(MI7oUTRjmiku2zPLDoRA)5YVbFyuhqXrCg7P5ru(0hN6T3LzyshgGALcQZQ0mB3eDqPFWuPAQelnU3uJHOwS0)tD03GQXsVhElU3I5JgpgCALkt0D4Cv4JvHlBTKrhU2aJxlpnontQ0Omzj7P5XANR)mzayOz4bZtpZPzLHRhTOTNDPRvyXMSRfiJt0anE92eSs623vAp(2(XB4SfvHV(QUVCcAXQW7A9RUuWAxB1xUR1IRLz1a3PM3mGyv7D)7oPoEc8txvD94LVpmkotWkPDAB25HYf1hRNjp3mOzWEBf0ChVFYKox3nnjL(iDAUUM(rdxVTxCH(JUu)THJbO)Rcxp18d3XBGUMeWPA31DL2SEqv4ha(syfHlKKgVLXA3Htuw17pOT7L2HOPFXAXeFvZQxZ)lVPxp4Rl)T9q3)pWFpEH3vZFFHrZV5w3lmh1(Be0wBoe56GFRG2t6(9cmgdpWxPO36hVHLlU)sRRORg3Ie44FpFWVkgKAJu4Ou0)Fp]] )
 
 
 spec:RegisterPackSelector( "elemental", "Elemental / Resto DPS (IV)", "|T136048:0|t Elemental",
