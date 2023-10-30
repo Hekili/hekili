@@ -1,0 +1,48 @@
+## Protection Paladin
+## 2023.08.30
+
+actions.precombat+=/righteous_fury,if=talent.improved_righteous_fury.enabled
+actions.precombat+=/retribution_aura,if=!up&settings.maintain_aura&assigned_aura.retribution_aura
+actions.precombat+=/concentration_aura,if=!up&settings.maintain_aura&assigned_aura.concentration_aura
+actions.precombat+=/crusader_aura,if=!up&settings.maintain_aura&assigned_aura.crusader_aura
+actions.precombat+=/devotion_aura,if=!up&settings.maintain_aura&assigned_aura.devotion_aura
+actions.precombat+=/fire_resistance_aura,if=!up&settings.maintain_aura&assigned_aura.fire_resistance_aura
+actions.precombat+=/frost_resistance_aura,if=!up&settings.maintain_aura&assigned_aura.frost_resistance_aura
+actions.precombat+=/shadow_resistance_aura,if=!up&settings.maintain_aura&assigned_aura.shadow_resistance_aura
+actions.precombat+=/blessing_of_kings,if=!up&settings.maintain_blessing&assigned_blessing.blessing_of_kings
+actions.precombat+=/blessing_of_might,if=!up&settings.maintain_blessing&assigned_blessing.blessing_of_might
+actions.precombat+=/blessing_of_sanctuary,if=!up&settings.maintain_blessing&assigned_blessing.blessing_of_sanctuary
+actions.precombat+=/blessing_of_wisdom,if=!up&settings.maintain_blessing&assigned_blessing.blessing_of_wisdom
+actions.precombat+=/seal_of_vengeance,if=buff.seal.remains<360
+actions.precombat+=/sacred_shield,if=buff.sacred_shield.remains<=0
+actions.precombat+=/holy_shield
+actions.precombat+=/potion
+
+
+actions+=/seal_of_command,if=buff.seal.down&active_enemies>1
+actions+=/seal_of_vengeance,if=buff.seal.down&active_enemies=1
+actions+=/avenging_wrath
+actions+=/use_items
+actions+=/potion
+actions+=/hyperspeed_acceleration,use_off_gcd=1
+actions+=/call_action_list,name=six
+actions+=/call_action_list,name=nine,if=!(should_hammer|should_shield)
+
+
+## Action-List for 6 Second-Spells (HotR/ShoR)
+actions.six+=/hammer_of_the_righteous,if=should_hammer&(!should_shield|active_enemies>1)
+actions.six+=/shield_of_righteousness,if=should_shield
+
+## Action-List for 9 Second-Spells (and what's left)
+actions.nine+=/holy_shield,if=aggro|debuff.training_dummy.up
+actions.nine+=/divine_plea,if=!buff.devine_plea.up&(glyph.divine_plea.enabled|(mana.percent<settings.divine_plea_threshold))
+actions.nine+=/sacred_shield,if=buff.sacred_shield.remains<=0
+actions.nine+=/consecration,if=!buff.active_consecration.up&active_enemies>1
+actions.nine+=/avengers_shield,if=active_enemies>1
+actions.nine+=/hammer_of_wrath,if=target.health.pct<=20
+actions.nine+=/judgement_of_wisdom,if=!debuff.judgement.up
+actions.nine+=/avengers_shield,if=glyph.avengers_shield.enabled
+actions.nine+=/consecration,if=!buff.active_consecration.up&!buff.active_consecration.up&(ttd>4)
+actions.nine+=/holy_wrath,if=(target.is_demon|target.is_undead)&((settings.squeezeHolyWrath&(cooldown.consecration.remains>6.850))|active_enemies>=settings.holy_wrath_threshold)
+actions.nine+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold
+actions.nine+=/judgement_of_light
