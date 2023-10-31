@@ -1906,6 +1906,8 @@ spec:RegisterAbilities( {
                 gain( ceil( 2.5 * talent.soulbound_tyrant.rank ), "soul_shards" )
             end
         end,
+
+        copy = "tyrant"
     },
 
 
