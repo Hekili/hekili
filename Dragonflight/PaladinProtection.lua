@@ -642,7 +642,7 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 5
     },
-    sanctification_ready = {
+    sanctification_empower = {
         id = 424622,
         duration = 30,
         max_stack = 1
