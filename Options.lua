@@ -10539,6 +10539,7 @@ do
     local expressions = {
         { "stealthed"                                       , "stealthed.rogue"                         },
         { "rtb_buffs%.normal"                               , "rtb_buffs_normal"                        },
+        { "rtb_buffs%.max_remains"                          , "rtb_buffs_max_remains"                   },
         { "rtb_buffs%.shorter"                              , "rtb_buffs_shorter"                       },
         { "rtb_buffs%.longer"                               , "rtb_buffs_longer"                        },
         { "rtb_buffs%.will_lose%.([%w_]+)"                  , "rtb_buffs_will_lose_buff.%1"             },
