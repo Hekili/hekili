@@ -8,17 +8,14 @@ actions+=/variable,name=te_shadow,op=set,value=buff.twilight_equilibrium_shadow_
 actions+=/variable,name=te_holy,op=set,value=buff.twilight_equilibrium_holy_amp.up|variable.te_none
 # Long Shadow covenant is enabled
 actions+=/variable,name=long_scov,op=set,value=talent.shadow_covenant&talent.embrace_shadow
-# Short shadow covenant is enabled
-actions+=/variable,name=short_scov,op=set,value=talent.shadow_covenant&!talent.embrace_shadow
 # Harsh discipline has been stacked and is ready for shadow covenant.  Zero stacks for no shadow covenant  Full stacks for short results in one HD penance (4 total)  Full stacks + 1 extra results in two HD penances (5 total)
-actions+=/variable,name=hd_stacks_required,op=set,value=0
-actions+=/variable,name=hd_stacks_required,op=setif,condition=variable.short_scov,value=4,value_else=5
+actions+=/variable,name=hd_stacks_required,op=set,value=5
 actions+=/variable,name=hd_stacks_current,op=set,value=buff.harsh_discipline.stack+(buff.harsh_discipline.max_stack*buff.harsh_discipline_ready.stack)
 actions+=/variable,name=harsh_discipline_ready,op=set,value=!talent.harsh_discipline|(variable.hd_stacks_current>=variable.hd_stacks_required)
 # Ready to start shadow covenant phase
 actions+=/variable,name=can_enter_scov,op=set,value=(cooldown.shadow_covenant.up&variable.harsh_discipline_ready)|buff.shadow_covenant.up
 actions+=/variable,name=shadow_spells_duration_max,op=set,value=0
-actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.schism.execute_time,if=talent.schism
+## actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.schism.execute_time,if=talent.schism
 # penance
 actions+=/variable,name=shadow_spells_duration_max,op=add,value=2
 actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.mind_blast.execute_time
@@ -38,7 +35,7 @@ actions+=/variable,name=expected_penance_reduction,op=setif,condition=talent.tra
 # Calculate how much cast time worth of shadow spells we have currently available. We use shadow_spells_duration to determine if we have time to weave in any holy spells to proc twilight equilibrium.
 actions+=/variable,name=shadow_spells_duration,op=set,value=0
 # Schism
-actions+=/variable,name=shadow_spells_duration,op=add,value=action.schism.execute_time,if=cooldown.schism.up|(cooldown.schism.remains<buff.shadow_covenant.remains)
+## actions+=/variable,name=shadow_spells_duration,op=add,value=action.schism.execute_time,if=cooldown.schism.up|(cooldown.schism.remains<buff.shadow_covenant.remains)
 # Penance
 actions+=/variable,name=shadow_spells_duration,op=add,value=2,if=cooldown.penance.up|((cooldown.penance.remains-variable.expected_penance_reduction)<buff.shadow_covenant.remains)
 # Mindgames
@@ -59,7 +56,7 @@ actions+=/variable,name=shadow_spells_duration,op=add,value=action.halo.execute_
 actions+=/variable,name=should_te,op=setif,condition=talent.twilight_equilibrium,value=(buff.shadow_covenant.remains-variable.shadow_spells_duration)>action.smite.execute_time,value_else=0
 actions+=/variable,name=hd_prep_time,op=setif,condition=!variable.harsh_discipline_ready,value=action.smite.execute_time*(variable.hd_stacks_required-variable.hd_stacks_current),value_else=0
 # First casts should always be HD prep->covenant->schism->HD dark reprimand
-actions+=/variable,name=next_penance_time,op=set,value=cooldown.shadow_covenant.remains+variable.hd_prep_time+action.shadow_covenant.execute_time+action.schism.execute_time
+actions+=/variable,name=next_penance_time,op=set,value=cooldown.shadow_covenant.remains+variable.hd_prep_time+action.shadowfiend.execute_time
 # If we have enough scov duration, add a holy cast to proc twilight equilibrium
 actions+=/variable,name=next_penance_time,op=add,value=gcd.max,if=variable.remaining_te_holy>0
 # Reduce our counting variable
@@ -127,12 +124,12 @@ actions+=/variable,name=next_divine_star_time,op=add,value=action.mind_blast.exe
 # Mindgames is always better
 actions+=/variable,name=next_divine_star_time,op=add,value=action.mindgames.execute_time,if=talent.mindgames
 actions+=/variable,name=can_divine_star,op=set,value=cooldown.divine_star.duration<variable.next_divine_star_time
-actions+=/run_action_list,name=scov_prep,if=cooldown.shadow_covenant.up&(!variable.harsh_discipline_ready|(variable.short_scov&((talent.purge_the_wicked&dot.purge_the_wicked.remains<20)|(!talent.purge_the_wicked&dot.shadow_word_pain.remains<20))))
-actions+=/run_action_list,name=short_scov,if=variable.short_scov&variable.can_enter_scov
+actions+=/run_action_list,name=scov_prep,if=talent.shadow_covenant&cooldown.mindbender.up&!variable.harsh_discipline_ready
+## actions+=/run_action_list,name=short_scov,if=variable.short_scov&variable.can_enter_scov
 actions+=/run_action_list,name=long_scov,if=variable.long_scov&variable.can_enter_scov
 actions+=/purge_the_wicked,if=talent.purge_the_wicked&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.purge_the_wicked.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
 actions+=/shadow_word_pain,if=!talent.purge_the_wicked&(target.time_to_die>(0.3*dot.shadow_word_pain.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.shadow_word_pain.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
-actions+=/schism,if=!talent.shadow_covenant
+## actions+=/schism,if=!talent.shadow_covenant
 actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&target.health.pct<20
 actions+=/penance,if=(!talent.shadow_covenant|variable.can_penance)
 # For DPS, Lights wrath should always be used outside of scov when you take wrath unleashed to maximize the number of smites it buffs. In a real raid setting, you may want to cast it at the beginning of a scov cycle for additional healing.
@@ -154,32 +151,9 @@ actions.scov_prep+=/power_word_solace,if=!variable.harsh_discipline_ready
 actions.scov_prep+=/smite,if=!variable.harsh_discipline_ready
 actions.scov_prep+=/purge_the_wicked,if=(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 
-# Short Shadow Covenant  We want to use entirely shadow spells to optimize our time with the buff
-actions.short_scov+=/shadow_covenant
-actions.short_scov+=/schism
-actions.short_scov+=/halo,if=spell_targets.halo>=3
-actions.short_scov+=/divine_star,if=spell_targets.halo>=3
-actions.short_scov+=/purge_the_wicked,if=(!ticking|refreshable)&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
-actions.short_scov+=/shadow_word_death,if=target.health.pct<20&talent.expiation
-actions.short_scov+=/penance
-actions.short_scov+=/halo,if=spell_targets.halo>=2
-actions.short_scov+=/divine_star,if=spell_targets.halo>=2
-actions.short_scov+=/shadow_word_death,if=target.health.pct<20
-actions.short_scov+=/mind_blast,if=talent.expiation
-actions.short_scov+=/mindgames,if=talent.shattered_perceptions
-actions.short_scov+=/shadow_word_death,if=talent.expiation&(target.time_to_pct_20>buff.shadow_covenant.remains)
-actions.short_scov+=/mindgames
-actions.short_scov+=/halo
-actions.short_scov+=/mind_blast
-actions.short_scov+=/divine_star
-actions.short_scov+=/shadow_word_death,if=(target.time_to_pct_20>buff.shadow_covenant.remains)
-actions.short_scov+=/lights_wrath
-actions.short_scov+=/power_word_solace
-actions.short_scov+=/smite
-
 # Long Shadow Covenant
-actions.long_scov+=/shadow_covenant
-actions.long_scov+=/schism
+actions.long_scov+=/mindbender
+## actions.long_scov+=/schism
 actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.halo>=3
 actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.divine_star>=3
 actions.long_scov+=/purge_the_wicked,if=(!variable.should_te|(variable.should_te&variable.te_holy))&(!ticking|refreshable)&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
