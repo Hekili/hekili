@@ -1980,7 +1980,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterSetting( "tyrant_padding", 1, {
+--[[ spec:RegisterSetting( "tyrant_padding", 1, {
     type = "range",
     name = strformat( "%s Padding", Hekili:GetSpellLinkWithTexture( spec.abilities.summon_demonic_tyrant.id ) ),
     desc = strformat( "This value determines how many global cooldowns (GCDs) early %s will be recommended, to avoid the risk of having your demons expire before finishing the cast.\n\n"
@@ -1990,7 +1990,7 @@ spec:RegisterSetting( "tyrant_padding", 1, {
     max = 2.5,
     step = 0.05,
     width = "full",
-} )
+} ) ]]
 
 spec:RegisterStateExpr( "tyrant_padding", function ()
     return gcd.max * ( settings.tyrant_padding or 1 )

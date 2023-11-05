@@ -32,14 +32,14 @@ actions+=/channel_demonfire,if=dot.immolate.remains>cast_time&set_bonus.tier30_4
 # We want to pool some soul_shard if we play with cc before casting infernal and then chain the madness into first cc proc
 actions+=/chaos_bolt,if=cooldown.summon_infernal.remains=0&soul_shard>4&(trinket.spoils_of_neltharus.ready_cooldown|!equipped.spoils_of_neltharus)&buff.domineering_arrogance.stack<3&talent.crashing_chaos
 # With crushing_chaos we want to be sure that infrnal lines with the next comming trinket, if it's ready soon, and that we have pulled shards or have madness up
-actions+=/summon_infernal,if=variable.opti_cc&((soul_shard>4&buff.domineering_arrogance.stack>=3|buff.domineering_arrogance.stack<3&buff.madness_cb.remains>2*gcd.max)&(trinket.spoils_of_neltharus.cooldown.remains<2|!equipped.spoils_of_neltharus))|!variable.opti_cc|fight_remains<30
+actions+=/summon_infernal,if=variable.opti_cc&(soul_shard>4&buff.domineering_arrogance.stack>=3&(trinket.spoils_of_neltharus.cooldown.remains<2|!equipped.spoils_of_neltharus))|!variable.opti_cc|fight_remains<30
 actions+=/chaos_bolt,if=pet.infernal.active|pet.blasphemy.active|soul_shard>=4&(variable.opti_cc&(cooldown.summon_infernal.remains<?trinket.spoils_of_neltharus.cooldown.remains)>2|!variable.opti_cc)
 actions+=/channel_demonfire,if=talent.ruin.rank>1&!(talent.diabolic_embers&talent.avatar_of_destruction&(talent.burn_to_ashes|talent.chaos_incarnate))&dot.immolate.remains>cast_time
 actions+=/conflagrate,if=buff.backdraft.down&soul_shard>=1.5&!talent.roaring_blaze
-actions+=/incinerate,if=cast_time+action.chaos_bolt.cast_time<buff.madness_cb.remains&(buff.call_to_dominance.down|!variable.opti_cc)
+## actions+=/incinerate,if=cast_time+action.chaos_bolt.cast_time<buff.madness_cb.remains&(buff.call_to_dominance.down|!variable.opti_cc)
 actions+=/chaos_bolt,if=buff.rain_of_chaos.remains>cast_time
 actions+=/chaos_bolt,if=buff.backdraft.up&!talent.eradication&!talent.madness_of_the_azjaqir
-actions+=/chaos_bolt,if=buff.madness_cb.up&((cooldown.summon_infernal.remains<?trinket.spoils_of_neltharus.cooldown.remains)>10|!variable.opti_cc)
+## actions+=/chaos_bolt,if=buff.madness_cb.up&((cooldown.summon_infernal.remains<?trinket.spoils_of_neltharus.cooldown.remains)>10|!variable.opti_cc)
 actions+=/channel_demonfire,if=!(talent.diabolic_embers&talent.avatar_of_destruction&(talent.burn_to_ashes|talent.chaos_incarnate))&dot.immolate.remains>cast_time
 actions+=/dimensional_rift
 actions+=/chaos_bolt,if=soul_shard>3.5&(cooldown.summon_infernal.remains_expected>5|!variable.opti_cc)
@@ -51,7 +51,7 @@ actions+=/incinerate
 actions.aoe+=/call_action_list,name=havoc,strict=1,if=havoc_active&havoc_remains>gcd.max&active_enemies<5+(talent.cry_havoc&!talent.inferno)&(!cooldown.summon_infernal.up|!talent.summon_infernal)
 actions.aoe+=/rain_of_fire,if=pet.infernal.active|pet.blasphemy.active
 actions.aoe+=/rain_of_fire,if=fight_remains<12
-actions.aoe+=/rain_of_fire,if=gcd.max>buff.madness_rof.remains&buff.madness_rof.up
+## actions.aoe+=/rain_of_fire,if=gcd.max>buff.madness_rof.remains&buff.madness_rof.up
 actions.aoe+=/rain_of_fire,if=soul_shard>=(4.5-0.1*active_dot.immolate)&time>5
 actions.aoe+=/chaos_bolt,if=soul_shard>3.5-(0.1*active_enemies)&!talent.rain_of_fire
 actions.aoe+=/cataclysm,if=raid_event.adds.in>15
@@ -84,11 +84,11 @@ actions.cleave+=/chaos_bolt,if=pet.infernal.active|pet.blasphemy.active|soul_sha
 actions.cleave+=/summon_infernal
 actions.cleave+=/channel_demonfire,if=talent.ruin.rank>1&!(talent.diabolic_embers&talent.avatar_of_destruction&(talent.burn_to_ashes|talent.chaos_incarnate))
 actions.cleave+=/conflagrate,if=buff.backdraft.down&soul_shard>=1.5&!variable.pool_soul_shards
-actions.cleave+=/incinerate,if=cast_time+action.chaos_bolt.cast_time<buff.madness_cb.remains
+## actions.cleave+=/incinerate,if=cast_time+action.chaos_bolt.cast_time<buff.madness_cb.remains
 actions.cleave+=/chaos_bolt,if=buff.rain_of_chaos.remains>cast_time
 actions.cleave+=/chaos_bolt,if=buff.backdraft.up&!variable.pool_soul_shards
 actions.cleave+=/chaos_bolt,if=talent.eradication&!variable.pool_soul_shards&debuff.eradication.remains<cast_time&!action.chaos_bolt.in_flight
-actions.cleave+=/chaos_bolt,if=buff.madness_cb.up&(!variable.pool_soul_shards|talent.burn_to_ashes&buff.burn_to_ashes.stack=0|talent.soul_fire)
+## actions.cleave+=/chaos_bolt,if=buff.madness_cb.up&(!variable.pool_soul_shards|talent.burn_to_ashes&buff.burn_to_ashes.stack=0|talent.soul_fire)
 actions.cleave+=/soul_fire,if=soul_shard<=4&talent.mayhem
 actions.cleave+=/channel_demonfire,if=!(talent.diabolic_embers&talent.avatar_of_destruction&(talent.burn_to_ashes|talent.chaos_incarnate))
 actions.cleave+=/dimensional_rift
