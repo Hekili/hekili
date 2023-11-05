@@ -736,7 +736,7 @@ spec:RegisterStateTable( "improved_scorch", setmetatable( {}, {
 
 
 spec:RegisterGear( "tier31", 207288, 207289, 207290, 207291, 207293 )
-spec:RegisterAuras( "searing_rage", {
+spec:RegisterAura( "searing_rage", {
     id = 424285,
     duration = 12,
     max_stack = 5
