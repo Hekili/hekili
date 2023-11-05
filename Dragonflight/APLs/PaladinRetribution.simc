@@ -36,8 +36,10 @@ actions.finishers+=/justicars_vengeance,if=!talent.crusade|cooldown.crusade.rema
 actions.finishers+=/templars_verdict,if=!talent.crusade|cooldown.crusade.remains>gcd*3|buff.crusade.up&buff.crusade.stack<10
 
 actions.generators+=/call_action_list,name=finishers,strict=1,if=holy_power=5|(debuff.judgment.up|holy_power=4)&buff.divine_resonance.up
+actions.generators+=/blade_of_justice,if=!dot.expurgation.ticking&holy_power<=3&set_bonus.tier31_2pc
 actions.generators+=/wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains|cooldown.crusade.remains|!talent.crusade&action.avenging_wrath.disabled|talent.crusade&action.crusade.disabled)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8|action.execution_sentence.disabled)
 actions.generators+=/divine_toll,if=holy_power<=2&!debuff.judgment.up&(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15|!talent.crusade&action.avenging_wrath.disabled|talent.crusade&action.crusade.disabled|fight_remains<8)
+actions.generators+=/judgment,if=dot.expurgation.ticking&holy_power<=3&set_bonus.tier31_4pc&!buff.echoes_of_wrath.up
 actions.generators+=/call_action_list,name=finishers,strict=1,if=holy_power>=3&buff.crusade.up&buff.crusade.stack<10
 actions.generators+=/templar_slash,if=buff.templar_strikes.remains<gcd&spell_targets.divine_storm>=2
 actions.generators+=/blade_of_justice,if=(holy_power<=3|!talent.holy_blade)&(spell_targets.divine_storm>=2&!talent.crusading_strikes|spell_targets.divine_storm>=4)
