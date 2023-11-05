@@ -1564,6 +1564,10 @@ spec:RegisterAbilities( {
         spendType = "mana",
         startsCombat = true,
 
+        cycle = function()
+            if set_bonus.tier31_2pc > 0 then return "doom_brand" end
+        end,
+
         handler = function ()
             removeBuff( "fel_covenant" )
             removeBuff( "stolen_power" )
