@@ -904,7 +904,7 @@ me:RegisterAura( "lingering_chill", {
     max_stack = 1
 } )
 
-spec:RegisterGear( "tier31", 207198, 207199, 207200, 207201, 207203 )
+me:RegisterGear( "tier31", 207198, 207199, 207200, 207201, 207203 )
 -- (2) Apocalypse summons an additional Magus of the Dead. Your Magus of the Dead Shadow Bolt now fires a volley of Shadow Bolts at up to $s2 nearby enemies.
 -- (4) Each Rune you spend increases the duration of your active Magi by ${$s1/1000}.1 sec and your Magi will now also cast Amplify Damage, increasing the damage you deal by $424949s2% for $424949d.
 
