@@ -6347,7 +6347,12 @@ do
         CHALLENGE_MODE_RESET = 1,
         CHALLENGE_MODE_COMPLETED = 1,
         PLAYER_ALIVE = 1,
-        ZONE_CHANGED_NEW_AREA = 1
+        ZONE_CHANGED_NEW_AREA = 1,
+        QUEST_SESSION_CREATED = 1,
+        QUEST_SESSION_DESTROYED = 1,
+        QUEST_SESSION_ENABLED_STATE_CHANGED = 1,
+        QUEST_SESSION_JOINED = 1,
+        QUEST_SESSION_LEFT = 1
     }
 
     local WipeCovenantCache = ns.WipeCovenantCache
