@@ -531,7 +531,7 @@ spec:RegisterAura( "shredded_armor", {
 } )
 
 spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221 )
-spec:RegisterAura( {
+spec:RegisterAuras( {
     fury_strikes = {
         id = 425830,
         duration = 12,
