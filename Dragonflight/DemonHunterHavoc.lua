@@ -1006,7 +1006,7 @@ spec:RegisterAbilities( {
             setCooldown( "death_sweep", action.blade_dance.cooldown )
             if talent.chaos_theory.enabled then applyBuff( "chaos_theory" ) end
             if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
-            if set_bonus.tier31_2pc > 0 then action.throw_glaive.handler() end
+            if set_bonus.tier31_2pc > 0 then spec.abilities.throw_glaive.handler() end
             if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then applyDebuff( "target", "mortal_dance" ) end
         end,
 
@@ -1147,7 +1147,7 @@ spec:RegisterAbilities( {
             setCooldown( "blade_dance", action.death_sweep.cooldown )
 
             if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
-            if set_bonus.tier31_2pc > 0 then action.throw_glaive.handler() end
+            if set_bonus.tier31_2pc > 0 then spec.abilities.throw_glaive.handler() end
             if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then
                 applyDebuff( "target", "mortal_dance" )
             end
