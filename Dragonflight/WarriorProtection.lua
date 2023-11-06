@@ -8,23 +8,6 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 
--- Conduits (Patch 10.0) : In all cases, talents override and disable conduits they share effects with.
--- Talents override the following:
-    -- Brutal Vitality
-    -- Fueled by Violence
-    -- Piercing Verdict
-    -- Unnerving Focus
-    -- Cacophonous Roar
-    -- Inspiring Presence
-    -- Merciless Bonegrinder
-    -- Show of Force (Protection)
-    -- Ashen Juggernaut
-
--- Conduits that need modeled.
-    -- [X] Indelible Victory
-    -- [X] Stalwart Guardian
-    -- [X] Disturb the Peace
-
 local spec = Hekili:NewSpecialization( 73 )
 
 local base_rage_gen = 2
@@ -378,7 +361,7 @@ spec:RegisterAuras( {
     },
     rallying_cry = {
         id = 97463,
-        duration = function () return talent.inspiring_presence.enabled and 13 or 10 end,
+        duration = 10,
         max_stack = 1,
         shared = "player",
     },
@@ -543,6 +526,7 @@ spec:RegisterAura( "earthen_tenacity", {
 } )
 
 spec:RegisterGear( "tier31", 207180, 207181, 207182, 207183, 207185 )
+spec:RegisterSetBonuses( "tier31_2pc", 422927, "tier31_4pc", 422928 )
 -- (2) Spending Rage has a chance to cause your next Shield Slam to consume your bleeds on a target, instantly dealing 40% of the remaining damage of your Deep Wounds and Rend and 100% of Thunderous Roar's, and reducing your damage taken by 10% for 5 sec.
 -- (4) For each bleed effect consumed from a target, your damage taken is reduced by an additional 2%. When Shield Slam consumes a bleed, the cooldown of Thunder Clap is reset and the cooldown of Thunderous Roar is reduced by 3.0 sec.
 spec:RegisterAuras( {
@@ -1280,7 +1264,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rallying_cry" )
-            gain( ( talent.inspiring_presence.enabled and 0.25 or 0.15 ) * health.max, "health" )
+            gain( 0.10 * health.max, "health" )
         end,
     },
 

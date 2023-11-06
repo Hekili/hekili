@@ -126,7 +126,6 @@ spec:RegisterTalents( {
     furious_blows             = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
     heroic_leap               = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 574 Physical damage to all enemies within 8 yards.
     impending_victory         = { 90326, 202168, 1 }, -- Instantly attack the target, causing 1,222 damage and healing you for 30% of your maximum health. Killing an enemy that yields experience or honor resets the cooldown of Impending Victory and makes it cost no Rage.
-    inspiring_presence        = { 90332, 382310, 1 }, -- Rallying Cry's duration is increased by 3 sec and it grants an additional 5% maximum health.
     intervene                 = { 90329, 3411  , 1 }, -- Run at high speed toward an ally, intercepting all melee and ranged attacks against them for 6 sec while they remain within 10 yds.
     intimidating_shout        = { 90384, 5246  , 1 }, -- Causes the targeted enemy to cower in fear, and up to 5 additional enemies within 8 yards to flee. Targets are disoriented for 8 sec.
     leeching_strikes          = { 90344, 382258, 1 }, -- Leech increased by 5%.
@@ -199,13 +198,13 @@ spec:RegisterTalents( {
     raging_blow               = { 90396, 85288 , 1 }, -- A mighty blow with both weapons that deals a total of 3,016 Physical damage. Raging Blow has a 20% chance to instantly reset its own cooldown. Generates 14 Rage.
     rampage                   = { 90408, 184367, 1 }, -- Enrages you and unleashes a series of 4 brutal strikes for a total of 4,086 Physical damage.
     ravager                   = { 90388, 228920, 1 }, -- Throws a whirling weapon at the target location that chases nearby enemies, inflicting 12,433 Physical damage to all enemies over 9.7 sec. Deals reduced damage beyond 8 targets. Generates 10 Rage each time it deals damage.
-    reckless_abandon          = { 90415, 396749, 1 }, -- Recklessness generates 50 Rage and Rampage greatly empowers your next 2 Bloodthirsts or Raging Blows.
+    reckless_abandon          = { 90415, 396749, 1 }, -- Recklessness generates 50 Rage and Rampage greatly empowers your next Bloodthirst or Raging Blow.
     recklessness              = { 90412, 1719  , 1 }, -- Go berserk, increasing all Rage generation by 100% and granting your abilities 20% increased critical strike chance for 12 sec.
     sidearm                   = { 90335, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 611 Physical damage.
     singleminded_fury         = { 90400, 81099 , 1 }, -- While dual-wielding a pair of one-handed weapons, your damage done is increased by 5% and your movement speed is increased by 5%.
     slaughtering_strikes      = { 90411, 388004, 1 }, -- Raging Blow causes every strike of your next Rampage to deal an additional 20% damage, stacking up to 5 times. Annihilator causes every strike of your next Rampage to deal an additional 2% damage, stacking up to 5 times.
     storm_of_steel            = { 90389, 382953, 1 }, -- Ravager's damage is reduced by 30% but it now has 2 charges and generates 20 Rage each time it deals damage.
-    storm_of_swords           = { 90420, 388903, 1 }, -- Whirlwind has a 7.0 sec cooldown, but deals 80% increased damage. Slam has a 12.0 sec cooldown and generates 10 Rage, but deals 100% increased damage.
+    storm_of_swords           = { 90420, 388903, 1 }, -- Whirlwind has a 7.0 sec cooldown, but deals 80% increased damage. Slam has a 9.0 sec cooldown and generates 10 Rage, but deals 100% increased damage.
     sudden_death              = { 90429, 280721, 1 }, -- Your attacks have a chance to reset the cooldown of Execute and make it usable on any target, regardless of their health.
     swift_strikes             = { 90416, 383459, 2 }, -- Increases haste by 1%, Raging Blow generates an additional 1 Rage and Annihilator generates an 1 additional Rage.
     tenderize                 = { 90423, 388933, 1 }, -- Onslaught Enrages you, and if you have Slaghtering Strikes grants you 3 stacks of Slaughtering Strikes. Enrage now lasts 2 sec longer.
@@ -388,7 +387,7 @@ spec:RegisterAuras( {
     },
     rallying_cry = {
         id = 97463,
-        duration = function () return 10 + ( talent.inspiring_presence.enabled and 3 or 0 ) end,
+        duration = 10,
         max_stack = 1,
     },
     ravager = {
@@ -400,7 +399,7 @@ spec:RegisterAuras( {
     reckless_abandon = {
         id = 396752,
         duration = 12,
-        max_stack = 2,
+        max_stack = 1,
     },
     recklessness = {
         id = 1719,
@@ -495,7 +494,9 @@ spec:RegisterAura( "merciless_assault", {
 } )
 
 spec:RegisterGear( "tier31", 207180, 207181, 207182, 207183, 207185 )
+spec:RegisterSetBonuses( "tier31_2pc", 422925, "tier31_4pc", 422926 )
 -- (2) Odyn's Fury deals 50% increased damage and causes your next 3 Bloodthirsts to deal 150% additional damage and have 100% increased critical strike chance against its primary target.
+-- (4) Bloodthirst critical strikes reduce the cooldown of Odyn's Fury by 2.5 sec.
 spec:RegisterAura( "furious_bloodthirst", {
     id = 423211,
     duration = 20,
@@ -898,7 +899,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "whirlwind" )
-            removeStack( "reckless_abandon" )
+            removeBuff( "reckless_abandon" )
 
             if talent.cold_steel_hot_blood.enabled and action.bloodthirst.crit_pct_current >= 100 then
                 applyDebuff( "target", "gushing_wound" )
@@ -1067,7 +1068,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "whirlwind" )
-            removeStack( "reckless_abandon" )
+            removeBuff( "reckless_abandon" )
             spendCharges( "raging_blow", 1 )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
         end,
@@ -1466,7 +1467,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "rallying_cry" )
 
-            gain( ( talent.inspiring_presence.enabled and 0.25 or 0.15 ) * health.max, "health" )
+            gain( 0.10 * health.max, "health" )
         end,
     },
 
@@ -1488,7 +1489,7 @@ spec:RegisterAbilities( {
             applyBuff( "enrage" )
             removeStack( "whirlwind" )
             if talent.frenzy.enabled then addStack( "frenzy" ) end
-            if talent.reckless_abandon.enabled then addStack( "reckless_abandon", nil, 2 ) end
+            if talent.reckless_abandon.enabled then applyBuff( "reckless_abandon" ) end
             if set_bonus.tier30_4pc > 0 then addStack( "merciless_assault" ) end
         end,
     },
@@ -1591,7 +1592,7 @@ spec:RegisterAbilities( {
     slam = {
         id = 1464,
         cast = 0,
-        cooldown = function () return talent.storm_of_swords.enabled and 12 or 0 end,
+        cooldown = function () return talent.storm_of_swords.enabled and 9 or 0 end,
         gcd = "spell",
 
         spend = 20,
