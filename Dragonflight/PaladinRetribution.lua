@@ -1015,7 +1015,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.consecrated_blade.up then
                 -- TODO: Handle 10 second CD.
-                class.abilities.consecration.handler()
+                spec.abilities.consecration.handler()
                 removeBuff( "consecrated_blade" )
             end
             if talent.expurgation.enabled then
@@ -1922,7 +1922,7 @@ spec:RegisterAbilities( {
 
             if buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
             if buff.empyrean_legacy.up then
-                class.abilities.divine_storm.handler() -- TODO: Check for resource gain?
+                spec.abilities.divine_storm.handler() -- TODO: Check for resource gain?
                 removeBuff( "empyrean_legacy" )
             end
             if buff.divine_arbiter.stack > 24 then removeBuff( "divine_arbiter" ) end
