@@ -646,7 +646,7 @@ do
                                         tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
                                         tooltipOnButton = true,
                                         hasArrow = true,
-                                        menuList = {},
+                                                                                menuList = {},
                                         notCheckable = true,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }

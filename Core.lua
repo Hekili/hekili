@@ -98,6 +98,10 @@ function Hekili:OnInitialize()
             OnClick = function( f, button )
                 if button == "RightButton" then ns.StartConfiguration()
                 else
+                    -- Don't look at me.
+                    ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 0, 0 )
+                    DropDownList1:SetClampedToScreen( true )
+                    ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 0, 0 )
                     ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 0, 0 )
                 end
                 GameTooltip:Hide()
@@ -106,7 +110,7 @@ function Hekili:OnInitialize()
                 tt:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
                 tt:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
                 tt:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
-            end,
+            end
         } )
 
         function ns.UI.Minimap:RefreshDataText()
