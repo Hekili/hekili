@@ -750,7 +750,7 @@ do
         for set, items in pairs( class.gear ) do
             state.set_bonus[ set ] = 0
             for item, _ in pairs( items ) do
-                if item > maxItemSlot and IsEquippedItem( CGetItemInfo( item ) ) then
+                if item > maxItemSlot and IsEquippedItem( item ) then
                     state.set_bonus[ set ] = state.set_bonus[ set ] + 1
                 end
             end
@@ -1152,23 +1152,6 @@ C_Timer.After( 60, UpdateSpellQueueWindow )
 
 do
     local macroInfo = {}
-
-    RegisterEvent( "EXECUTE_CHAT_LINE", function( event, macroText )
-        if macroText then
-            local action, target = SecureCmdOptionParse( macroText )
-
-            local ability = action and class.abilities[ action ]
-
-            if ability and ability.key then
-                local m = macroInfo[ ability.key ] or {}
-
-                m.target = target and UnitGUID( target ) or UnitGUID( "target" )
-                m.time   = GetTime()
-
-                macroInfo[ ability.key ] = m
-            end
-        end
-    end )
 
     function Hekili:GetMacroCastTarget( spell, castTime, source )
         local ability = class.abilities[ spell ]

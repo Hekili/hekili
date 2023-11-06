@@ -3535,6 +3535,30 @@ all:RegisterAura( "dark_matter", {
     max_stack = 1
 })
 
+all:RegisterAbility( "whispering_fanged_skull", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 50342,
+    aura = 71401
+})
+all:RegisterAbility( "whispering_fanged_skull_heroic", {
+    suffix = strformat( "(%s)", ITEM_HEROIC ),
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+
+    item = 50343,
+    aura = 71541
+})
+all:RegisterAura( "icy_rage", {
+    id = 67702,
+    duration = 15,
+    max_stack = 1,
+    copy = { 71401, 71541 }
+})
+
 all:RegisterAbility( "deaths_verdict", {
     cast = 0,
     cooldown = 45,

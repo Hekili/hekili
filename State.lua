@@ -5197,16 +5197,18 @@ local mt_swing_timer = {
         local speed = state.swings[ t.type .. "_speed" ]
         if speed == 0 then return 999 end
 
-        local swing = state.time == 0 and state.now or state.swings.mainhand
-        if swing == 0 then return speed end
+        local swing = state.time == 0 and state.now or state.swings[ t.type ]
+        if swing == 0 then
+            return speed * ( t.type == "offhand" and 0.5 or 1 )
+        end
 
-        -- Technically, we didn't even check if this were "remains" but there are no other symbols.
+        -- Technically, swing.[mh|oh].anything will return this same value.
         local t = state.query_time
         return swing + ( ceil( ( t - swing ) / speed ) * speed ) - t
     end,
 }
 
-state.swing.mh = setmetatable( { type = "mainhand" }, mt_swing_timer )
+state.swing.mh = setmetatable( { type = "mainhand", speed }, mt_swing_timer )
 state.swing.mainhand = state.swing.mh
 state.swing.main_hand = state.swing.mh
 
@@ -6296,8 +6298,8 @@ do
         state.nextMH = ( state.combat > 0 and state.swings.mh_actual > state.combat and state.swings.mh_actual + state.mainhand_speed ) or 0
         state.nextOH = ( state.combat > 0 and state.swings.oh_actual > state.combat and state.swings.oh_actual + state.offhand_speed ) or 0
 
-        state.swings.mh_pseudo = state.now - 0.01
-        state.swings.oh_pseudo = state.now - 0.01
+        state.swings.mh_pseudo = nil
+        state.swings.oh_pseudo = nil
 
 
         local p = Hekili.DB.profile
