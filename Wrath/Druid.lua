@@ -272,7 +272,7 @@ spec:RegisterStateExpr("should_rake", function()
     if set_bonus.tier9feral_2pc == 1 or set_bonus.tier10feral_4pc == 1 then
         return true
     end
-    
+
     local r, s = calc_rake_dpe()
     return r >= s or (not settings.optimize_rake)
 end)
@@ -285,7 +285,7 @@ spec:RegisterStateExpr("ttd", function()
     if is_training_dummy then
         return Hekili.Version:match( "^Dev" ) and settings.dummy_ttd or 300
     end
-    
+
     return target.time_to_die
 end)
 
@@ -311,7 +311,7 @@ end)
 spec:RegisterStateExpr("ff_during_berserk", function()
     local end_energy = energy.current + (buff.berserk.remains * 10)
     local will_use_roar = buff.savage_roar.remains < buff.berserk.remains
-        and combo_points.current > 0 
+        and combo_points.current > 0
         and end_energy >= action.savage_roar.spend
     local will_use_rip = debuff.rip.remains < buff.berserk.remains
         and combo_points.current == 5
@@ -322,7 +322,7 @@ spec:RegisterStateExpr("ff_during_berserk", function()
         and end_energy >= action.rake.spend
     local will_use_shred = end_energy >= action.shred.spend
 
-    return energy.current <= settings.max_ff_energy or 
+    return energy.current <= settings.max_ff_energy or
         not (will_use_roar or will_use_rip or will_use_mangle or will_use_rake or will_use_shred)
 end)
 
@@ -334,9 +334,9 @@ end)
 spec:RegisterStateExpr("rip_now", function()
     --!debuff.rip.up&combo_points.current=5&ttd>=end_thresh
     local rtn = (not debuff.rip.up)
-        and combo_points.current == 5 
+        and combo_points.current == 5
         and ttd >= end_thresh
-    
+
     if rtn and buff.clearcasting.up then
         local rip_cast_time = max(1.0, (action.rip.spend - energy.current) / 10 + latency)
         rtn = buff.savage_roar.up and rip_cast_time >= buff.savage_roar.remains
@@ -2970,10 +2970,6 @@ spec:RegisterSetting( "optimize_finishers", false, {
     desc = "If enabled, Energy is pooled for upcoming finishers when you have 5 Combo Points.",
     width = "full",
 } )
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.optimize_trinkets = val
-    end
-})
 
 spec:RegisterSetting( "druid_bite_header", nil, {
     type = "header",
