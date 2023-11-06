@@ -14,7 +14,7 @@ actions+=/berserking,if=target.time_to_die>180&buff.avatar.up|target.time_to_die
 actions+=/ancestral_call,if=debuff.colossus_smash.up
 actions+=/blood_fury,if=debuff.colossus_smash.up
 actions+=/ancestral_call,if=debuff.colossus_smash.up
-actions+=/run_action_list,name=hac,strict=1,if=raid_event.adds.up&active_enemies>2|!raid_event.adds.up&active_enemies>2
+actions+=/run_action_list,name=hac,strict=1,if=raid_event.adds.up&active_enemies>1|!raid_event.adds.up&active_enemies>1
 actions+=/call_action_list,name=execute,cycle_targets=1,strict=1,if=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20
 actions+=/run_action_list,name=single_target,strict=1,if=!raid_event.adds.exists
 
@@ -66,7 +66,6 @@ actions.hac+=/mortal_strike
 actions.hac+=/rend,if=active_enemies=1&dot.rend.remains<duration*0.3
 actions.hac+=/whirlwind,if=talent.storm_of_swords|talent.fervor_of_battle&active_enemies>1
 actions.hac+=/cleave,if=!talent.crushing_force
-actions.hac+=/ignore_pain,if=talent.battlelord&talent.anger_management&rage>30&(target.health.pct>20|talent.massacre&target.health.pct>35)
 actions.hac+=/slam,if=talent.crushing_force&rage>30&(talent.fervor_of_battle&active_enemies=1|!talent.fervor_of_battle)
 actions.hac+=/shockwave,if=talent.sonic_boom
 actions.hac+=/bladestorm,if=raid_event.adds.in>30
