@@ -2964,13 +2964,6 @@ spec:RegisterSetting( "optimize_trinkets", false, {
     width = "full",
 } )
 
-spec:RegisterSetting( "optimize_finishers", false, {
-    type = "toggle",
-    name = "Optimize Finishers",
-    desc = "If enabled, Energy is pooled for upcoming finishers when you have 5 Combo Points.",
-    width = "full",
-} )
-
 spec:RegisterSetting( "druid_bite_header", nil, {
     type = "header",
     name = strformat( "Feral: %s", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) )
