@@ -30,8 +30,12 @@ spec:RegisterGear( "idol_of_mutilation", 47668 )
 -- Sets
 spec:RegisterGear( "tier7feral", 39557, 39553, 39555, 39554, 39556, 40472, 40473, 40493, 40471, 40494 )
 spec:RegisterGear( "tier8feral", 45355, 45356, 45357, 45358, 45359, 46158, 46161, 46160, 46159, 46157 )
-spec:RegisterGear( "tier9feral", 48799, 48800, 48801, 48802, 48803, 48212, 48211, 48210, 48209, 48208, 48203, 48204, 48205, 48206, 48207 )
-spec:RegisterGear( "tier10feral", 51701, 51700, 51699, 51698, 51697, 51140, 51142, 51143, 51144, 51141, 51299, 51297, 51296, 51295, 51298 )
+spec:RegisterGear( "tier9feral", 48188, 48189, 48190, 48191, 48192, 48193, 48194, 48195, 48196, 48197, 48198, 48199, 48200, 48201, 48202, 48203, 48204, 48205, 48206, 48207, 48208, 48209, 48210, 48211, 48212, 48213, 48214, 48215, 48216, 48217)
+spec:RegisterGear( "tier10feral", 50824, 50825, 50826, 50827, 50828, 51140, 51141, 51142, 51143, 51144, 51295, 51296, 51297, 51298, 51299 )
+spec:RegisterGear( "tier7balance", 39545, 39544, 39548, 39546, 39547, 40467, 40466, 40470, 40468, 40469 )
+spec:RegisterGear( "tier8balance", 46313, 45351, 45352, 45353, 45354, 46191, 46189, 46196, 46192, 46194 )
+spec:RegisterGear( "tier9balance", 48158, 48159, 48160, 48161, 48162, 48163, 48164, 48165, 48166, 48167, 48168, 48169, 48170, 48171, 48172, 48173, 48174, 48175, 48176, 48177, 48178, 48179, 48180, 48181, 48182, 48183, 48184, 48185, 48186, 48187 )
+spec:RegisterGear( "tier10balance", 50819, 50820, 50821, 50822, 50823, 51145, 51146, 51147, 51148, 51149, 51290, 51291, 51292, 51293, 51294)
 
 local function rage_amount()
     local d = UnitDamage( "player" ) * 0.7
@@ -303,8 +307,21 @@ spec:RegisterStateExpr("bite_during_berserk", function()
 end)
 
 spec:RegisterStateExpr("ff_during_berserk", function()
-    --energy.current<=settings.max_ff_energy
-    return energy.current <= settings.max_ff_energy
+    local end_energy = energy.current + (buff.berserk.remains * 10)
+    local will_use_roar = buff.savage_roar.remains < buff.berserk.remains
+        and combo_points.current > 0 
+        and end_energy >= action.savage_roar.spend
+    local will_use_rip = debuff.rip.remains < buff.berserk.remains
+        and combo_points.current == 5
+        and end_energy >= action.rip.spend
+    local will_use_mangle = buff.mangle.remains < buff.berserk.remains
+        and end_energy >= action.mangle_cat.spend
+    local will_use_rake = debuff.rake.remains < buff.berserk.remains
+        and end_energy >= action.rake.spend
+    local will_use_shred = end_energy >= action.shred.spend
+
+    return energy.current <= settings.max_ff_energy or 
+        not (will_use_roar or will_use_rip or will_use_mangle or will_use_rake or will_use_shred)
 end)
 
 spec:RegisterStateExpr("wait_for_tf", function()

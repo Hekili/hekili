@@ -3,8 +3,8 @@ actions.precombat+=/flametongue_weapon,rank=action.flametongue_weapon.max_rank-1
 actions.precombat+=/flametongue_weapon,if=!offhand_imbued
 actions.precombat+=/lightning_shield,if=buff.shield.down
 actions.precombat+=/call_of_the_elements,if=buff.earth_totem.down&buff.fire_totem.down&buff.water_totem.down&buff.air_totem.down
-actions.precombat+=/fire_elemental_totem
 actions.precombat+=/potion
+actions.precombat+=/fire_elemental_totem
 
 actions+=/wind_shear,if=debuff.casting.up&debuff.casting.v2=0
 actions+=/windfury_weapon,if=!mainhand_imbued&!mainhand_has_spellpower
@@ -16,6 +16,7 @@ actions+=/fire_elemental_totem
 actions+=/feral_spirit
 actions+=/use_items
 
+actions+=/shamanistic_rage,if=set_bonus.tier10enhancement_2pc=1
 actions+=/magma_totem,if=buff.fire_totem.down&active_enemies>3
 actions+=/fire_nova,if=active_enemies>3
 actions+=/flame_shock,if=!ticking&target.time_to_die>=9&target.outside4
