@@ -1170,7 +1170,7 @@ spec:RegisterAbilities( {
             -- If Fan the Hammer is talented, let's generate more.
             if talent.fan_the_hammer.enabled then
                 local shots = min( talent.fan_the_hammer.rank, buff.opportunity.stack )
-                gain( shots * action.pistol_shot.cp_gain, "combo_points" )
+                gain( shots * ( action.pistol_shot.cp_gain - 1 ), "combo_points" )
                 removeStack( "opportunity", shots )
             end
         end,
