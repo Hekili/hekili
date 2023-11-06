@@ -686,6 +686,7 @@ do
                                         tooltipOnButton = true,
                                         keepShownOnClick = true,
                                         notCheckable = true,
+                                        leftPadding = 26,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }
 
