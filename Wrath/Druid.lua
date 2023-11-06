@@ -8,6 +8,8 @@ local currentBuild = select( 4, GetBuildInfo() )
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
 local round = ns.round
 
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 11 )
 
 -- Trinkets
@@ -201,7 +203,7 @@ end)
 local training_dummy_cache = {}
 local avg_rage_amount = rage_amount()
 spec:RegisterHook( "reset_precast", function()
-    stat.spell_haste = stat.spell_haste * (1 + (0.01 * talent.celestial_focus.rank) + (buff.natures_grace.up and 0.2 or 0) + (buff.moonkin_form.up and (talent.improved_moonkin_form.rank * 0.01) or 0))
+    stat.spell_haste = stat.spell_haste * ( 1 + ( 0.01 * talent.celestial_focus.rank ) + ( buff.natures_grace.up and 0.2 or 0 ) + ( buff.moonkin_form.up and ( talent.improved_moonkin_form.rank * 0.01 ) or 0 ) )
 
     rip_tracker:reset()
     set_last_finisher_cp(LastFinisherCp)
@@ -1610,7 +1612,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.35 * ((talent.king_of_the_jungle.rank > 0 and 0.60) or 1) * ((talent.natural_shapeshifter.rank > 0 and 0.30) or 1) end,
+        spend = function() return 0.35 * ( talent.king_of_the_jungle.enabled and 0.6 or 1 ) * ( talent.natural_shapeshifter.enabled and 0.3 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -1619,6 +1621,8 @@ spec:RegisterAbilities( {
         handler = function ()
             swap_form( "dire_bear_form" )
         end,
+
+        copy = { 5487, "bear_form" }
     },
 
 
@@ -2807,11 +2811,11 @@ spec:RegisterAbilities( {
     -- Causes 18 to 21 Nature damage to the target.
     wrath = {
         id = 5176,
-        cast = function() return ((buff.predators_swiftness.up and 0 or 2) * haste) - (talent.starlight_wrath.rank * 0.1) end,
+        cast = function() return ( ( buff.predators_swiftness.up and 0 or 2 ) * haste ) - ( talent.starlight_wrath.rank * 0.1 ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return (buff.clearcasting.up and 0 or 0.08) * (1 - talent.moonglow.rank * 0.03) end,
+        spend = function() return ( buff.clearcasting.up and 0 or 0.08 ) * ( 1 - talent.moonglow.rank * 0.03 ) end,
         spendType = "mana",
 
         startsCombat = true,
@@ -2828,68 +2832,38 @@ spec:RegisterAbilities( {
 
 
 -- Settings
-local flowerweaving_modes = {}
-local bearweaving_instancetypes = {}
-local bear_form_modes = {}
-
-spec:RegisterSetting("druid_description", nil, {
+spec:RegisterSetting( "druid_description", nil, {
     type = "description",
-    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
-        "to determine the optimal values for these settings for your specific character."
-})
+    name = "Adjust the settings below according to your playstyle preference.  It is always recommended that you use a simulator "..
+        "to determine the optimal values for these settings for your specific character.\n\n"
+} )
 
-spec:RegisterSetting("druid_description_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
-
-spec:RegisterSetting("druid_feral_header", nil, {
+spec:RegisterSetting( "druid_feral_header", nil, {
     type = "header",
     name = "Feral: General"
-})
+} )
 
-spec:RegisterSetting("druid_feral_description", nil, {
+spec:RegisterSetting( "druid_feral_description", nil, {
     type = "description",
-    name = "General Feral settings will change the parameters used in the core cat rotation.\n\n"
-})
+    name = strformat( "These settings will change the %s behavior when using the default |cFF00B4FFFeral|r priority.\n\n", Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ) )
+} )
 
-spec:RegisterSetting("bear_form_mode", "tank", {
-    type = "select",
-    name = "Bear Form Mode",
-    desc = "Select the logic recommended when in bear form and bearweaving is disabled.\n" ..
-        " - None: Will recommend swapping back to cat form\n" ..
-        " - Tank: Will recommend a tank rotation\n\n" ..
-        "Default: Tank",
-    width = "full",
-    values = function()
-        table.wipe(bear_form_modes)
-        bear_form_modes.none = "none"
-        bear_form_modes.tank = "tank"
-        return bear_form_modes
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bear_form_mode = val
-    end
-})
-
-spec:RegisterSetting("min_roar_offset", 24, {
+-- TODO:
+spec:RegisterSetting( "min_roar_offset", 24, {
     type = "range",
-    name = "Minimum Roar Offset",
-    desc = "Sets the minimum number of seconds over the current rip duration required for Savage Roar recommendations.\n\n"..
+    name = strformat( "Minimum %s before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
+    desc = strformat( "Sets the minimum number of seconds over the current %s duration required for %s recommendations.\n\n"..
         "Recommendation:\n - 34 with T8-4PC\n - 24 without T8-4PC\n\n"..
-        "Default: 24",
+        "Default: 24", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
     width = "full",
     min = 0,
     softMax = 42,
     step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.min_roar_offset = val
-    end
-})
+} )
 
-spec:RegisterSetting("rip_leeway", 3, {
+spec:RegisterSetting( "rip_leeway", 3, {
     type = "range",
-    name = "Rip Leeway",
+    name = strformat( "%s Leeway", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
     desc = "Sets the leeway allowed when deciding whether to recommend clipping Savage Roar.\n\nThere are cases where Rip falls "..
         "very shortly before Roar and, due to default priorities and player reaction time, Roar falls off before the player is able "..
         "to utilize their combo points. This leads to Roar being cast instead and having to rebuild 5CP for Rip."..
@@ -2900,271 +2874,206 @@ spec:RegisterSetting("rip_leeway", 3, {
     min = 1,
     softMax = 10,
     step = 0.1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.rip_leeway = val
-    end
-})
+} )
 
-spec:RegisterSetting("max_ff_delay", 0.1, {
+spec:RegisterSetting( "max_ff_delay", 0.1, {
     type = "range",
-    name = "Max FF Delay",
-    desc = "Max allowed delay to wait for FF to come off CD in seconds.\n\n"..
+    name = strformat( "Maximum %s Delay", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ) ),
+    desc = strformat( "Specify the maximum wait time for %s cooldown in seconds.\n\n"..
         "Recommendation:\n - 0.07 in P2 BiS\n - 0.10 in P3 BiS\n\n"..
-        "Default: 0.1",
+        "Default: 0.1", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ) ),
     width = "full",
     min = 0,
     softMax = 1,
     step = 0.01,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.max_ff_delay = val
-    end
-})
+ })
 
-spec:RegisterSetting("max_ff_energy", 15, {
+spec:RegisterSetting( "max_ff_energy", 15, {
     type = "range",
-    name = "Max Energy For Faerie Fire During Berserk",
-    desc = "Sets the energy allowed for Faerie Fire recommendations during Berserk.\n\n"..
+    name = strformat( "Maximum Energy for %s During %s", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ) ),
+    desc = strformat( "Specify the maximum Energy threshold for %s during %s.\n\n"..
         "Recommendation: 15\n\n"..
-        "Default: 15",
+        "Default: 15", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ) ),
     width = "full",
     min = 0,
     softMax = 100,
     step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.max_ff_energy = val
-    end
-})
+} )
 
-spec:RegisterSetting("optimize_rake", false, {
+spec:RegisterSetting( "optimize_rake", false, {
     type = "toggle",
-    name = "Optimize Rake Enabled",
-    desc = "When enabled, rake will only be suggested if it will do more damage than shred or if there is no active bleed."..
-        "Recommendation: true if player stacks armor penetration\n\n"..
-        "Default: false",
+    name = strformat( "Optimize %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rake.id ) ),
+    desc = strformat( "If checked, %s will only be suggested if it will do more damage than %s or if there is no active %s bleed.  " ..
+        "Recommendation: Checked, if stacking Armor Penetration\n\n" ..
+        "Default: Unchecked", Hekili:GetSpellLinkWithTexture( spec.abilities.rake.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.shred.id ), spec.abilities.rake.name ),
     width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.optimize_rake = val
-    end
-})
+} )
 
-spec:RegisterSetting("optimize_trinkets", false, {
+spec:RegisterSetting( "optimize_trinkets", false, {
     type = "toggle",
-    name = "Optimize Trinkets Enabled",
-    desc = "When enabled, energy will be pooled for upcoming trinket procs.\n\n"..
-        "Default: false",
+    name = "Optimize Trinkets",
+    desc = "If checked, Energy will be pooled for anticipated trinket procs.\n\n"..
+        "Default: Unchecked",
     width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.optimize_trinkets = val
-    end
-})
+} )
 
-spec:RegisterSetting("optimize_finishers", false, {
+spec:RegisterSetting( "optimize_finishers", false, {
     type = "toggle",
-    name = "Optimize Finishers Enabled",
-    desc = "When enabled, energy will be pooled for upcoming finishers when CP=5.\n\n"..
-        "Default: false",
+    name = "Optimize Finishers",
+    desc = "If enabled, Energy is pooled for upcoming finishers when you have 5 Combo Points.",
     width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.optimize_finishers = val
-    end
-})
+} )
 
-spec:RegisterSetting("druid_feral_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
-
-spec:RegisterSetting("druid_bite_header", nil, {
+spec:RegisterSetting( "druid_bite_header", nil, {
     type = "header",
-    name = "Feral: Ferocious Bite"
-})
+    name = strformat( "Feral: %s", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) )
+} )
 
-spec:RegisterSetting("druid_bite_description", nil, {
-    type = "description",
-    name = "Ferocious Bite Feral settings will change the parameters used when recommending ferocious bite.\n\n"
-})
-
-spec:RegisterSetting("ferociousbite_enabled", true, {
+-- TODO: This could probably just enable/disable the Ferocious Bite ability directly instead of being a unique setting.
+spec:RegisterSetting( "ferociousbite_enabled", true, {
     type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not ferocious bite should be used",
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
+    desc = strformat( "If unchecked, %s will not be recommended.", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
     width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.ferociousbite_enabled = val
-    end
-})
+} )
 
-spec:RegisterSetting("min_bite_sr_remains", 4, {
+spec:RegisterSetting( "min_bite_sr_remains", 4, {
     type = "range",
-    name = "Minimum Roar Remains For Bite",
-    desc = "Sets the minimum number of seconds left on Savage Roar when deciding whether to recommend Ferocious Bite.\n\n"..
-        "Recommendation: 4-8, depending on character gear level\n\n"..
-        "Default: 4",
+    name = strformat( "Minimum %s before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
+    desc = strformat( "If set above zero, %s will not be recommended unless %s has this much time remaining.\n\n" ..
+        "Recommendation: 4-8, depending on character gear level\n\n" ..
+        "Default: 4", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
+    width = "full",
+    min = 0,
+    softMax = 14,
+    step = 1
+} )
+
+spec:RegisterSetting( "min_bite_rip_remains", 4, {
+    type = "range",
+    name = strformat( "Minimum %s before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
+    desc = strformat( "If set above zero, %s will not be recommended unless %s has this much time remaining.\n\n" ..
+        "Recommendation: 4-8, depending on character gear level\n\n" ..
+        "Default: 4", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
     width = "full",
     min = 0,
     softMax = 14,
     step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.min_bite_sr_remains = val
-    end
-})
+} )
 
-spec:RegisterSetting("min_bite_rip_remains", 4, {
+spec:RegisterSetting( "max_bite_energy", 25, {
     type = "range",
-    name = "Minimum Rip Remains For Bite",
-    desc = "Sets the minimum number of seconds left on Rip when deciding whether to recommend Ferocious Bite.\n\n"..
-        "Recommendation: 4-8, depending on character gear level\n\n"..
-        "Default: 4",
-    width = "full",
-    min = 0,
-    softMax = 14,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.min_bite_rip_remains = val
-    end
-})
-
-spec:RegisterSetting("max_bite_energy", 25, {
-    type = "range",
-    name = "Maximum Energy Used For Bite During Berserk",
-    desc = "Sets the energy allowed for Ferocious Bite recommendations during Berserk. "..
-        "When Berserk is down, any energy level is allowed as long as Minimum Rip and Minimum Roar settings are satisfied.\n\n"..
+    name = strformat( "Maximum Energy for %s during %s", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ) ),
+    desc = strformat( "Specify the maximum Energy consumed by %s during %s. "..
+        "When %s is not active, any amount of Energy is allowed if the above %s and %s requirements are met.\n\n"..
         "Recommendation: 25\n\n"..
-        "Default: 25",
+        "Default: 25", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ), spec.abilities.berserk.name, spec.abilities.savage_roar.name, Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
     width = "full",
     min = 18,
     softMax = 65,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.max_bite_energy = val
-    end
-})
+    step = 1
+} )
 
-spec:RegisterSetting("druid_bite_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
+spec:RegisterSetting( "bear_form_mode", "tank", {
+    type = "select",
+    name = strformat( "%s Mode", Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ) ),
+    desc = strformat( "When %s is active and Bearweaving is disabled, specify whether to use %s abilities or to return to %s.\n\n" ..
+        "Default: Tank", Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ), spec.abilities.bear_form.name, spec.abilities.bear_form.name, Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ) ),
+    width = "full",
+    values = {
+        none = strformat( "Swap (%s)", Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ) ),
+        tank = strformat( "Tank (%s)", Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ) )
+    },
+    sorting = { "tank", "none" }
+} )
 
-spec:RegisterSetting("druid_flowerweaving_header", nil, {
+spec:RegisterSetting( "druid_flowerweaving_header", nil, {
     type = "header",
     name = "Feral: Flowerweaving [Experimental]"
-})
+} )
 
-spec:RegisterSetting("druid_flowerweaving_description", nil, {
+-- TODO: Needs definition.  Included .simc file does not have this setting.
+spec:RegisterSetting( "druid_flowerweaving_description", nil, {
     type = "description",
     name = "Flowerweaving Feral settings will change the parameters used when recommending flowerweaving abilities.\n\n"
-})
+} )
 
 spec:RegisterSetting("flowerweaving_enabled", false, {
     type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not flowerweaving should be used",
+    name = "Use Flowerweaving",
+    desc = strformat( "If checked, flowerweaving abilities may be recommended to attempt to proc %s.", Hekili:GetSpellLinkWithTexture( spec.auras.omen_of_clarity.id ) ),
     width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_enabled = val
-    end
-})
+} )
 
-spec:RegisterSetting("flowerweaving_mode", "any", {
+spec:RegisterSetting( "flowerweaving_mode", "any", {
     type = "select",
-    name = "Situation",
-    desc = "Select the flowerweaving mode that determines when flowerweaving is recommended\n\n" ..
-        "Selecting AOE will recommend flowerweaving in only AOE situations. Selecting Any will recommend flowerweaving in any situation.\n\n",
+    name = "Flowerweaving: Mode",
+    desc = "Specify when flowerweaving may be recommended.",
     width = "full",
-    values = function()
-        table.wipe(flowerweaving_modes)
-        flowerweaving_modes.any = "any"
-        flowerweaving_modes.dungeon = "aoe"
-        return flowerweaving_modes
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mode = val
-    end
-})
+    values = {
+        any = "Any",
+        dungeon = "AOE",
+    },
+} )
 
-spec:RegisterSetting("flowerweaving_mingroupsize", 10, {
+spec:RegisterSetting( "flowerweaving_mingroupsize", 10, {
     type = "range",
-    name = "Minimum Group Size",
-    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended",
+    name = "Flowerweaving: Group Size",
+    desc = "Select the minimum number of players present in a group before flowerweaving will be recommended.",
     width = "full",
     min = 0,
     softMax = 40,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.flowerweaving_mingroupsize = val
-    end
-})
+    step = 1
+} )
 
-spec:RegisterSetting("min_weave_mana", 25, {
+spec:RegisterSetting( "min_weave_mana", 25, {
     type = "range",
-    name = "Minimum Flowershift Mana",
-    desc = "Sets the minimum allowable mana for flowershifting",
+    name = "Flowershift: Minimum Mana %",
+    desc = "Specify the minimum Mana threshold required before Flowershifting may be recommended.",
     width = "full",
     min = 0,
     softMax = 100,
-    step = 1,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.min_weave_mana = val
-    end
-})
+    step = 1
+} )
 
-spec:RegisterSetting("druid_flowerweaving_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
-
-spec:RegisterSetting("druid_bearweaving_header", nil, {
+spec:RegisterSetting( "druid_bearweaving_header", nil, {
     type = "header",
     name = "Feral: Bearweaving [Experimental]"
-})
+} )
 
-spec:RegisterSetting("druid_bearweaving_description", nil, {
+spec:RegisterSetting( "druid_bearweaving_description", nil, {
     type = "description",
     name = "Bearweaving Feral settings will change the parameters used when recommending bearshifting abilities.\n\n"
-})
+} )
 
-spec:RegisterSetting("bearweaving_enabled", false, {
+spec:RegisterSetting( "bearweaving_enabled", false, {
     type = "toggle",
-    name = "Enabled",
-    desc = "Select whether or not bearweaving should be used",
+    name = "Use Bearweaving",
+    desc = "If checked, Bearweaving abilities may be recommended.",
     width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_enabled = val
-    end
-})
+} )
 
-spec:RegisterSetting("bearweaving_instancetype", "raid", {
+spec:RegisterSetting( "bearweaving_instancetype", "raid", {
     type = "select",
-    name = "Instance Type",
-    desc = "Select the type of instance that is required before the addon recomments your |cff00ccff[bear_lacerate]|r or |cff00ccff[bear_mangle]|r\n\n" ..
-        "Selecting party will work for a 5 person group or greater. Selecting raid will work for only 10 or 25 man groups. Selecting any will recommend bearweaving in any situation.\n\n",
+    name = "Bearweaving: Instance Type",
+    desc = strformat( "Specify the type of instance that is required before %s and %s may be recommended.\n\n" ..
+        "- Any\n" ..
+        "- Party / Dungeon (5+ members)\n" ..
+        "- Raid (10 / 25)", Hekili:GetSpellLinkWithTexture( spec.abilities.mangle_bear.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.lacerate.id ) ),
     width = "full",
-    values = function()
-        table.wipe(bearweaving_instancetypes)
-        bearweaving_instancetypes.any = "any"
-        bearweaving_instancetypes.dungeon = "dungeon"
-        bearweaving_instancetypes.raid = "raid"
-        return bearweaving_instancetypes
-    end,
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_instancetype = val
-    end
-})
+    values = {
+        any = "Any",
+        dungeon = "Party / Dungeon",
+        raid = "Raid"
+    },
+} )
 
-spec:RegisterSetting("bearweaving_bossonly", true, {
+spec:RegisterSetting( "bearweaving_bossonly", true, {
     type = "toggle",
-    name = "Boss Only",
-    desc = "Select whether or not bearweaving should be used in only boss fights, or whether it can be recommended in any engagement",
+    name = "Bearweaving: Boss Only",
+    desc = "If checked, bearweaving abilities are reserved for boss encounters only.",
     width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 11 ].settings.bearweaving_bossonly = val
-    end
-})
-
-spec:RegisterSetting("druid_bearweaving_footer", nil, {
-    type = "description",
-    name = "\n\n"
-})
+} )
 
 spec:RegisterSetting("druid_balance_header", nil, {
     type = "header",

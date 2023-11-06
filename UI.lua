@@ -604,9 +604,24 @@ do
                             if setting.isPackSelector then
                                 -- do nothing.
                             elseif not setting.info.arg or setting.info.arg() then
-                                if setting.info.type == "toggle" then
+                                if setting.info.type == "header" then
+                                    insert( menuData, {
+                                        isSeparator = 1,
+                                        hidden = function () return Hekili.State.spec.id ~= i end,
+                                    } )
+                                    insert( menuData, {
+                                        isTitle = 1,
+                                        text = setting.info.name,
+                                        notCheckable = 1,
+                                        hidden = function () return Hekili.State.spec.id ~= i end,
+                                    } )
+
+                                elseif setting.info.type == "toggle" then
                                     insert( menuData, {
                                         text = setting.info.name,
+                                        tooltipTitle = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
+                                        tooltipOnButton = true,
                                         func = function ()
                                             menu.args[1] = setting.name
                                             setting.info.set( menu.args, not setting.info.get( menu.args ) )
@@ -627,6 +642,9 @@ do
                                 elseif setting.info.type == "select" then
                                     local submenu = {
                                         text = setting.info.name,
+                                        tooltipTitle = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
+                                        tooltipOnButton = true,
                                         hasArrow = true,
                                         menuList = {},
                                         notCheckable = true,
@@ -659,52 +677,87 @@ do
 
                                     insert( menuData, submenu )
 
-                                elseif setting.info.type == "range" and setting.info.max and setting.info.min then
+                                elseif setting.info.type == "range" then
+
                                     local submenu = {
-                                        text = setting.info.name,
-                                        hasArrow = true,
-                                        menuList = {},
+                                        text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipTitle = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
+                                        tooltipOnButton = true,
+                                        keepShownOnClick = true,
                                         notCheckable = true,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }
 
-                                    local values = {}
+                                    insert( menuData, submenu )
 
-                                    local fullRange = setting.info.max - setting.info.min
-                                    local increment = setting.info.step or 1
-                                    local steps = math.ceil( fullRange / increment )
+                                    submenu = {
+                                        text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipTitle = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
+                                        tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
+                                        tooltipOnButton = true,
+                                        keepShownOnClick = true,
+                                        notCheckable = true,
+                                        hidden = function () return Hekili.State.spec.id ~= i end,
+                                    }
+                                    local cn = "HekiliSpec" .. i .. "Option" .. n
+                                    local cf = CreateFrame( "Frame", cn, UIParent, "HekiliPopupDropdownRangeTemplate" )
 
-                                    if steps < 21 then
-                                        local step = setting.info.min
+                                    cf.Slider:SetAccessorFunction( function()
+                                        menu.args[1] = setting.name
+                                        return setting.info.get( menu.args )
+                                    end )
 
-                                        while step <= setting.info.max do
-                                            insert( values, step )
-                                            step = step + increment
-                                        end
-                                    else
-                                        local step = setting.info.min
-                                        increment = math.ceil( fullRange / 20 )
+                                    cf.Slider:SetMutatorFunction( function( val )
+                                        menu.args[1] = setting.name
+                                        return setting.info.set( menu.args, val )
+                                    end )
 
-                                        while step <= setting.info.max do
-                                            insert( values, step )
-                                            step = step + increment
+                                    cf.Slider:SetMinMaxValues( setting.info.softMin or setting.info.min or 0, setting.info.softMax or setting.info.max or 10 )
+                                    cf.Slider:SetValueStep( setting.info.step or 1 )
+                                    cf.Slider:SetObeyStepOnDrag( true )
+
+                                    submenu.customFrame = cf
+
+                                    --[[ local low, high, step = setting.info.min, setting.info.max, setting.info.step
+                                    local fractional, factor = step < 1, 1 / step
+
+                                    if fractional then
+                                        low = low * factor
+                                        high = high * factor
+                                        step = step * factor
+                                    end
+
+                                    if ceil( ( high - low ) / step ) > 20 then
+                                        step = ceil( ( high - low ) / 20 )
+                                        if step % ( setting.info.step or 1 ) ~= 0 then
+                                            step = step - ( step % ( setting.info.step or 1 ) )
                                         end
                                     end
 
-                                    for _, j in ipairs( values ) do
+                                    for j = low, high, step do
+                                        local actual = j / factor
                                         insert( submenu.menuList, {
-                                            text = tostring( j ),
+                                            text = tostring( actual ),
                                             func = function ()
                                                 menu.args[1] = setting.name
-                                                setting.info.set( menu.args, j )
+                                                setting.info.set( menu.args, actual )
+
+                                                local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
+
+                                                if Hekili.DB.profile.notifications.enabled then
+                                                    Hekili:Notify( name .. " set to |cFF00FF00" .. actual .. "|r." )
+                                                else
+                                                    Hekili:Print( name .. " set to |cFF00FF00" .. actual .. "|r." )
+                                                end
                                             end,
                                             checked = function ()
                                                 menu.args[1] = setting.name
-                                                return setting.info.get( menu.args ) == j
+                                                return setting.info.get( menu.args ) == actual
                                             end,
                                             hidden = function () return Hekili.State.spec.id ~= i end,
                                         } )
-                                    end
+                                    end ]]
 
                                     insert( menuData, submenu )
                                 end
