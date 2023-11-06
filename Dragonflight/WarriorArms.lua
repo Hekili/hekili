@@ -996,7 +996,7 @@ spec:RegisterAbilities( {
             if buff.sudden_death.up then
                 removeBuff( "sudden_death" )
                 if set_bonus.tier31_4pc > 0 then
-                    class.abilities.thunder_clap.handler()
+                    spec.abilities.thunder_clap.handler()
                     applyDebuff( "target", "finishing_wound" )
                 end
             end
