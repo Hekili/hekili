@@ -8,6 +8,7 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 
 local strformat = string.format
 
@@ -957,6 +958,7 @@ end )
 
 
 local last_bloodtalons_proc = 0
+local last_bloodtalons_stack = 0
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
 
@@ -971,11 +973,24 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 local mult = calculate_pmultiplier( spellID )
                 ns.saveDebuffModifier( spellID, mult )
                 ns.trackDebuff( spellID, destGUID, GetTime(), true )
-            elseif spellID == 145152 then -- Bloodtalons
-                last_bloodtalons_proc = GetTime()
+
             end
+
         elseif subtype == "SPELL_CAST_SUCCESS" and ( spellID == class.abilities.rip.id or spellID == class.abilities.primal_wrath.id ) then
             rip_applied = true
+        end
+
+        if spellID == 145152 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+            local bloodtalons = GetPlayerAuraBySpellID( 145152 )
+            if not bloodtalons or not bloodtalons.applications or bloodtalons.applications == 0 then
+                last_bloodtalons_proc = 0
+                last_bloodtalons_stack = 0
+            else
+                if bloodtalons.applications > last_bloodtalons_stack then last_bloodtalons_proc = GetTime() end
+                last_bloodtalons_stack = bloodtalons.applications
+
+                if bloodtalons.applications < 3 then print( "count", last_bloodtalons_stack ) end
+            end
         end
     end
 end )
