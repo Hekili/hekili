@@ -2089,5 +2089,48 @@ all:RegisterAbilities( {
                 max_stack = 1
             }
         }
+    },
+
+    witherbarks_branch = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 109999,
+        toggle = "cooldowns",
+
+        handler = function()
+            -- Do nothing; it's up to the player to collect orbs.
+        end,
+
+        auras = {
+            aqueous_enrichment = {
+                id = 429262,
+                duration = 10,
+                max_stack = 3
+            }
+        }
+    },
+
+    dreambinder_loom_of_the_great_cycle = {
+        cast = 2,
+        channeled = true,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 427113,
+        toggle = "cooldowns",
+
+        start = function()
+            applyBuff( "web_of_dreams" )
+        end,
+
+        auras = {
+            web_of_dreams = {
+                id = 427112,
+                duration = 6,
+                max_stack = 1
+            }
+        }
     }
 } )
