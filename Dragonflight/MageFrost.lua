@@ -505,14 +505,6 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 15
     },
-    -- Talent:
-    -- https://wowhead.com/beta/spell=31687
-    summon_water_elemental = {
-        id = 31687,
-        duration = 30,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Talent: Absorbs $w1 damage.
     -- https://wowhead.com/beta/spell=382290
     tempest_barrier = {
@@ -612,7 +604,7 @@ spec:RegisterAuras( {
 } )
 
 
-spec:RegisterPet( "water_elemental", 208441, "icy_veins", 30 )
+spec:RegisterPet( "water_elemental", 208441, "icy_veins", function() return talent.thermal_void.enabled and 30 or 25 end )
 
 
 spec:RegisterStateExpr( "fingers_of_frost_active", function ()
@@ -845,6 +837,8 @@ spec:RegisterHook( "reset_precast", function ()
     if Hekili.ActiveDebug then
         Hekili:Debug( "Ice Lance in-flight?  %s\nWinter's Chill Actual Stacks?  %d\nremaining_winters_chill:  %d", state:IsInFlight( "ice_lance" ) and "Yes" or "No", state.debuff.winters_chill.stack, state.remaining_winters_chill )
     end
+
+    if buff.icy_veins.up then summonPet( "water_elemental", buff.icy_veins.remains ) end
 end )
 
 spec:RegisterHook( "runHandler", function( action )
