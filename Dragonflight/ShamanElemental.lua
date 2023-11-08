@@ -2058,6 +2058,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "lava_burst",
+        notalent = "elemental_blast",
         startsCombat = true,
 
         velocity = 30,
