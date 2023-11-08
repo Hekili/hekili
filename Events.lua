@@ -749,6 +749,9 @@ do
             local tSpell = class.itemMap[ T1 ]
 
             if tSpell then
+                class.abilities.trinket1 = class.abilities[ tSpell ]
+                class.specs[ 0 ].abilities.trinket2 = class.abilities[ tSpell ]
+
                 state.trinket.t1.__usable = isUsable
                 state.trinket.t1.__ability = tSpell
 
@@ -762,6 +765,9 @@ do
                     state.trinket.t1.__has_use_buff = true
                     state.trinket.t1.__use_buff_duration = aura and aura.duration > 0 and aura.duration or 0.01
                 end
+            else
+                class.abilities.trinket1 = class.abilities.actual_trinket1
+                class.specs[ 0 ].abilities.trinket1 = class.abilities.actual_trinket1
             end
 
             if not isUsable then
@@ -789,6 +795,9 @@ do
             local tSpell = class.itemMap[ T2 ]
 
             if tSpell then
+                class.abilities.trinket2 = class.abilities[ tSpell ]
+                class.specs[ 0 ].abilities.trinket2 = class.abilities[ tSpell ]
+
                 state.trinket.t2.__usable = isUsable
                 state.trinket.t2.__ability = tSpell
 
@@ -802,6 +811,9 @@ do
                     state.trinket.t2.__has_use_buff = true
                     state.trinket.t2.__use_buff_duration = aura and aura.duration > 0 and aura.duration or 0.01
                 end
+            else
+                class.abilities.trinket2 = class.abilities.actual_trinket2
+                class.specs[ 0 ].abilities.trinket2 = class.abilities.actual_trinket2
             end
 
             if not isUsable then
@@ -1947,16 +1959,7 @@ local function StoreKeybindInfo( page, key, aType, id, console )
 
     local action, ability
 
-    if aType == "spell" then
-        ability = class.abilities[ id ]
-        action = ability and ability.key
-
-    elseif aType == "macro" then
-        local sID = GetMacroSpell( id ) or GetMacroItem( id )
-        ability = sID and class.abilities[ sID ]
-        action = ability and ability.key
-
-    elseif aType == "item" then
+    if aType == "item" then
         local item, link = CGetItemInfo( id )
         ability = item and ( class.abilities[ item ] or class.abilities[ link ] )
         action = ability and ability.key
@@ -1973,6 +1976,9 @@ local function StoreKeybindInfo( page, key, aType, id, console )
                 end
             end
         end
+    else
+        ability = class.abilities[ id ]
+        action = ability and ability.key
     end
 
     if action then
