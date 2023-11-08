@@ -988,8 +988,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             else
                 if bloodtalons.applications > last_bloodtalons_stack then last_bloodtalons_proc = GetTime() end
                 last_bloodtalons_stack = bloodtalons.applications
-
-                if bloodtalons.applications < 3 then print( "count", last_bloodtalons_stack ) end
             end
         end
     end
