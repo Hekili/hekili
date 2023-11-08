@@ -955,7 +955,8 @@ spec:RegisterAbilities( {
 
         startsCombat = function() return target.within8 or active_enemies > 1 end,
 
-        readyTime = function() return buff.blade_flurry.remains - gcd.execute end,
+        -- 20231108: Deprecated; we use Blade Flurry more now.
+        -- readyTime = function() return buff.blade_flurry.remains - gcd.execute end,
         handler = function ()
             if talent.deft_maneuvers.enabled then gain( active_enemies, "combo_points" ) end
             applyBuff( "blade_flurry" )
