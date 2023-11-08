@@ -2323,6 +2323,12 @@ spec:RegisterAbilities( {
         cycle = "rupture",
 
         usable = function () return combo_points.current > 0, "requires combo_points" end,
+
+        used_for_danse = function()
+            if not state.spec.subtlety or not talent.danse_macabre.enabled or buff.shadow_dance.down then return false end
+            return danse_macabre_tracker.rupture
+        end,
+
         handler = function ()
             removeStack( "goremaws_bite" )
             removeBuff( "masterful_finish" )

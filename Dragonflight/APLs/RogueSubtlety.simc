@@ -87,7 +87,7 @@ actions.cds+=/use_items,if=!stealthed.all&(!trinket.mirror_of_fractured_tomorrow
 actions.finish+=/variable,name=secret_condition,value=(action.shadowstrike.used_for_danse|action.shuriken_storm.used_for_danse)&(action.eviscerate.used_for_danse|action.black_powder.used_for_danse|action.rupture.used_for_danse)|!talent.danse_macabre
 # Apply Rupture if its not up.
 actions.finish+=/rupture,if=!dot.rupture.ticking&target.time_to_die-remains>6
- actions.finish+=/variable,name=premed_snd_condition,value=talent.premeditation.enabled&spell_targets.shuriken_storm<5
+actions.finish+=/variable,name=premed_snd_condition,value=talent.premeditation.enabled&spell_targets.shuriken_storm<5
 # Refresh Slice and Dice outside of Shadow Dance.
 actions.finish+=/slice_and_dice,if=!stealthed.all&!variable.premed_snd_condition&spell_targets.shuriken_storm<6&!buff.shadow_dance.up&buff.slice_and_dice.remains<fight_remains&refreshable
 # Variable to decide when not to use Rupture.
