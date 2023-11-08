@@ -2132,5 +2132,31 @@ all:RegisterAbilities( {
                 max_stack = 1
             }
         }
+    },
+
+    leaf_of_the_ancient_protectors = {
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = 110009,
+        toggle = "defensives",
+
+        handler = function()
+            applyBuff( "ancient_protection" )
+        end,
+
+        auras = {
+            ancient_protection = {
+                id = 429271,
+                duration = 15,
+                max_stack = 1
+            },
+            ancient_resurgence = {
+                id = 429272,
+                duration = 15,
+                max_stack = 1
+            }
+        }
     }
 } )
