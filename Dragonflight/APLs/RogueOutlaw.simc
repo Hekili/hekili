@@ -14,7 +14,7 @@ actions.precombat+=/variable,name=rtb_reroll,op=reset,if=!(raid_event.adds.remai
 actions.precombat+=/blade_flurry,precombat_seconds=3,if=talent.underhanded_upper_hand
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=refreshable&variable.rtb_reroll
 actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=talent.improved_adrenaline_rush
-actions.precombat+=/slice_and_dice,precombat_seconds=1
+actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 actions.precombat+=/stealth
 
 # Restealth if possible (no vulnerable enemies in combat)

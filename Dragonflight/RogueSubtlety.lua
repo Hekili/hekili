@@ -769,7 +769,7 @@ spec:RegisterAbilities( {
         notalent = "gloomblade",
 
         cp_gain = function ()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            if buff.shadow_blades.up then return 7 end
             return 1 + ( buff.broadside.up and 1 or 0 )
         end,
 
@@ -847,7 +847,7 @@ spec:RegisterAbilities( {
         end,
 
         cp_gain = function()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            if buff.shadow_blades.up then return 7 end
             return 1 + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
         end,
 
@@ -885,8 +885,8 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         cp_gain = function ()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
-            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
+            if buff.shadow_blades.up then return 7 end
+            return 2 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
         end,
 
         handler = function ()
@@ -992,7 +992,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         cp_gain = function()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            if buff.shadow_blades.up then return 7 end
             return 1 + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
         end,
 
@@ -1022,7 +1022,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         cp_gain = function()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            if buff.shadow_blades.up then return 7 end
             return 3 + ( talent.seal_fate.enabled and ( buff.cold_blood.up or buff.the_rotten.up ) and 1 or 0 )
         end,
 
@@ -1109,7 +1109,7 @@ spec:RegisterAbilities( {
         cycle = function () return talent.find_weakness.enabled and "find_weakness" or nil end,
 
         cp_gain = function ()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            if buff.shadow_blades.up then return 7 end
             return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( buff.premeditation.up and buff.slice_and_dice.up and 2 or 0 )
         end,
 
@@ -1192,7 +1192,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         cp_gain = function()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            if buff.shadow_blades.up then return 7 end
             return active_enemies
         end,
 
@@ -1251,7 +1251,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         cp_gain = function()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            if buff.shadow_blades.up then return 7 end
             return 1
         end,
 

@@ -1581,7 +1581,7 @@ spec:RegisterAbilities( {
         usable = function () return stealthed.ambush or buff.audacity.up or buff.blindside.up, "requires stealth or audacity/blindside/sepsis_buff" end,
 
         cp_gain = function ()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 6 end
+            if buff.shadow_blades.up then return 6 end
             return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
         end,
 
@@ -1866,7 +1866,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         toggle = "cooldowns",
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+        cp_gain = function () return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
 
         handler = function ()
             -- Can't predict the Animacharge, unless you have the talent/legendary.
@@ -2086,8 +2086,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         cp_gain = function ()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 6 end
-            return 1 + ( buff.shadow_blades.up and 6 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
+            if buff.shadow_blades.up then return combo_points.max end
+            return 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
         end,
 
         handler = function ()
@@ -2393,7 +2393,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         cp_gain = function()
-            if buff.shadow_blades.up or debuff.dreadblades.up then return 7 end
+            if buff.shadow_blades.up then return 7 end
             return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
         end,
 
@@ -2423,7 +2423,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         cycle = "serrated_bone_spike",
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike ) end,
+        cp_gain = function () return ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike end,
 
         handler = function ()
             applyDebuff( "target", "serrated_bone_spike" )
