@@ -51,10 +51,10 @@ local oneTimeFixes = {
         end
     end,
 
-    forceEnableEnhancedRecheckBoomkin_20210712 = function( p )
+    --[[ forceEnableEnhancedRecheckBoomkin_20210712 = function( p )
         local s = rawget( p.specs, 102 )
         if s then s.enhancedRecheck = true end
-    end,
+    end, ]]
 
     updateMaxRefreshToNewSpecOptions_20220222 = function( p )
         for id, spec in pairs( p.specs ) do
@@ -5298,7 +5298,7 @@ do
                                     order = 4,
                                 }, ]]
 
-                                enhancedRecheck = {
+                                --[[ enhancedRecheck = {
                                     type = "toggle",
                                     name = "Enhanced Recheck",
                                     desc = "When the addon cannot recommend an ability at the present time, it rechecks action conditions at a few points in the future.  "
@@ -5306,7 +5306,7 @@ do
                                         .. "This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation.",
                                     width = "full",
                                     order = 5,
-                                },
+                                }, ]]
                             }
                         }
                     },

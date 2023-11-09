@@ -824,8 +824,6 @@ spec:RegisterOptions( {
     damageDots = true,
     damageExpiration = 6,
 
-    enhancedRecheck = true,
-
     package = "Restoration Druid",
 } )
 

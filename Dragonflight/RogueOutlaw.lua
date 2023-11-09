@@ -1324,7 +1324,6 @@ spec:RegisterOptions( {
     potion = "phantom_fire",
 
     package = "Outlaw",
-    enhancedRecheck = true -- needed for variable timings.
 } )
 
 

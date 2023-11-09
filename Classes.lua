@@ -36,7 +36,6 @@ local specTemplate = {
     cycle = false,
     cycle_min = 6,
     gcdSync = true,
-    enhancedRecheck = false,
 
     nameplates = true,
     nameplateRange = 8,
