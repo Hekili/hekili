@@ -1350,11 +1350,6 @@ spec:RegisterStateExpr( "priority_rotation", function ()
     return settings.priority_rotation
 end )
 
-spec:RegisterVariable( "priority_rotation", function ()
-    return settings.priority_rotation
-end)
-
-
 spec:RegisterSetting( "solo_vanish", true, {
     name = "Allow |T132331:0|t Vanish when Solo",
     desc = "If unchecked, the addon will not recommend |T132331:0|t Vanish when you are alone (to avoid resetting combat).",

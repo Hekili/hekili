@@ -2058,7 +2058,9 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         talent = "lava_burst",
-        notalent = "elemental_blast",
+        notalent = function()
+            if state.spec.enhancement then return "elemental_blast" end
+        end,
         startsCombat = true,
 
         velocity = 30,

@@ -12,7 +12,7 @@ actions+=/quell
 actions+=/unravel
 actions+=/cauterizing_flame
 actions+=/hover,if=moving&buff.hover.down&buff.breath_of_eons.down
-actions+=/prescience
+actions+=/prescience,if=time_to_max_charges<gcd.max
 actions+=/ebon_might,if=refreshable
 actions+=/tip_the_scales,if=cooldown.fire_breath.remains<gcd
 actions+=/fire_breath,empower_to=1,if=!talent.leaping_flames&talent.time_skip&!talent.interwoven_threads&cooldown.time_skip.remains<=cast_time&buff.ebon_might.remains>cast_time
