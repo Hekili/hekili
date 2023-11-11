@@ -1358,9 +1358,12 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            removeBuff( "unbound_chaos" )
             setDistance( 5 )
             setCooldown( "global_cooldown", 0.25 )
+            if buff.unbound_chaos.up then
+                removeBuff( "unbound_chaos" )
+                if talent.inertia.enabled then applyBuff( "inertia" ) end
+            end
             if cooldown.vengeful_retreat.remains < 1 then setCooldown( "vengeful_retreat", 1 ) end
             if talent.momentum.enabled then applyBuff( "momentum" ) end
             if active_enemies == 1 and talent.isolated_prey.enabled then gain( 25, "fury" ) end
