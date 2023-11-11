@@ -3,7 +3,7 @@ actions.precombat+=/source_of_magic,if=group&active_dot.source_of_magic=0
 actions.precombat+=/black_attunement,if=buff.black_attunement.down
 actions.precombat+=/bronze_attunement,if=buff.bronze_attunement.down&buff.black_attunement.up&!buff.black_attunement.mine
 actions.precombat+=/blistering_scales,if=buff.blistering_scales.stack<10&active_dot.blistering_scales=0
-actions.precombat+=/prescience
+actions.precombat+=/prescience,if=time_to_max_charges<gcd.max
 actions.precombat+=/tip_the_scales
 actions.precombat+=/ebon_might
 actions.precombat+=/living_flame
