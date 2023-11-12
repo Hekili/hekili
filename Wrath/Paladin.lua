@@ -8,8 +8,16 @@ local spec = Hekili:NewSpecialization( 2 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
 
-spec:RegisterGear( "tier7", 43794, 43796, 43801, 43803, 43805, 40574, 40575, 40576, 40577, 40578 )
-spec:RegisterGear( "tier10", 50324, 50325, 50326, 50327, 50328, 51160, 51161, 51162, 51163, 51164, 51275, 51276, 51277, 51278, 51279 )
+
+-- Idols
+spec:RegisterGear( "libram_of_discord", 45510 )
+spec:RegisterGear( "libram_of_fortitude", 42611, 42851, 42852, 42853, 42854 )
+spec:RegisterGear( "libram_of_valiance", 47661 )
+spec:RegisterGear( "libram_of_three_truths", 50455 )
+
+-- Sets
+spec:RegisterGear( "tier7ret", 43794, 43796, 43801, 43803, 43805, 40574, 40575, 40576, 40577, 40578 )
+spec:RegisterGear( "tier10ret", 50324, 50325, 50326, 50327, 50328, 51160, 51161, 51162, 51163, 51164, 51275, 51276, 51277, 51278, 51279 )
 
 -- Hooks
 local LastConsecrationCast = 0
@@ -290,6 +298,12 @@ spec:RegisterAuras( {
         duration = 120,
         max_stack = 1,
         shared = "player"
+    },
+    -- Strength increased by 44.  Stacks up to 5 times.
+    formidable = {
+        id = 71187,
+        duration = 15,
+        max_stack = 5
     },
     -- Stunned.
     hammer_of_justice = {
@@ -893,6 +907,9 @@ spec:RegisterAbilities( {
         texture = 135891,
 
         handler = function ()
+            if set_bonus.libram_of_three_truths then
+                applyBuff("formidable")
+            end
         end,
     },
 
@@ -1496,7 +1513,7 @@ spec:RegisterAbilities( {
     judgement_of_justice = {
         id = 53407,
         cast = 0,
-        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7_2pc == 1 and 1 or 0) end,
+        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7ret_2pc == 1 and 1 or 0) end,
         gcd = "spell",
 
         spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
@@ -1522,7 +1539,7 @@ spec:RegisterAbilities( {
     judgement_of_light = {
         id = 20271,
         cast = 0,
-        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7_2pc == 1 and 1 or 0) end,
+        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7ret_2pc == 1 and 1 or 0) end,
         gcd = "spell",
 
         spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
@@ -1548,7 +1565,7 @@ spec:RegisterAbilities( {
     judgement_of_wisdom = {
         id = 53408,
         cast = 0,
-        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7_2pc == 1 and 1 or 0) end,
+        cooldown = function() return 10 - talent.improved_judgements.rank - (set_bonus.tier7ret_2pc == 1 and 1 or 0) end,
         gcd = "spell",
 
         spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
@@ -2109,6 +2126,16 @@ spec:RegisterSetting("hor_macros", false, {
     end
 })
 
+spec:RegisterSetting("highroll", false, {
+    type = "toggle",
+    name = "T10-Highroll Playstyle",
+    desc = "Enable to prioritize DS, for higher potential damage, but less damage on average",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.highroll = val
+    end
+})
+
 spec:RegisterSetting("fol_on_aow", false, {
     type = "toggle",
     name = "Flash of Light on AoW",
@@ -2261,9 +2288,9 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Retribution (WoWSims)", 20230222.1, [[Hekili:1IvtVrokt4Fl5sRjAh5(JKjZ(UA65WE6DYHrRwVNTnTnTnBBmwaozAPi)BFl8NGBWjDNokkjwuq98qrrrvvW6G)jWpbjXb)CZQn3TAZMnERVF16vRd8LhlXb(LO4dOu4Jcef(7FJLCYUkjHvOKDmNHsu6qWQ4XG8mPSu8hlxMsKzv78Iz0LpZEwqOc4)Y8dl3LZ2TKIesmFjm8YsuokHuSKpQ4LCMeP(WlLf4VRIKl)rrWoRefqUehddcqtssWTZdlInOAD0F1ctDuVURJ2Z41r)F8bsojWpNiKIgJbEpQkxcF(ZgJdUaTlhNe8Nb(XCcWAckW)M6ibwkjfPcVmgpKII5mrD0I6O08JLzECC8bwbi3RB9nY(uDucEx1(9EsoIOehMurPh9QkRJE5L6iqVO0uoRo62aFuCRvodvKeY2hoOZa)kbggzFyACIIMs1(3fxBWtGr5EjSNlA4HsZpHdXfykbd0EBD06r8uZvH3t4IumQaovb9F37r)F3Q(bFdkS1uA)EL27LJuaRSnpZrYmDuHz(f9zwYA)VXmEqFgkdfquQyYK(68Bhtkahp6NgukMR4Fl9aL976iMb3A4GpjojefhJZXCKfs()CIpysqEGkIXfY6OVP5O9VvjPykmCd4ercJgkZ4yrglpzKawMMcX1R0zPXKYjPzYjeCTBNFGqH7yfvcpjbZxVkCtz8uFOeYtKcCOqY4TO72)e85Pmy2PoDDAeatR9OPDcXScboU12AC(OlOb57moDMC6nztFVtwcxDLiEkw6reHjyQkaI6g74GvfjyeCp)w77JTgHmYp2saBhGJsB40xUaxLoZFzogzdbnXnq8GtiM)M8jNYFv3whZReOeWAlG4WhWtT1g3Am00Kj6(UY5EO0g6ndhI4T3oq8MqVGOc8VKHLCcfXpgIKn70bZz)4IC4XWrsJ)fJhtenB9nRMZbFgp3lg9Po6BCFJ9JCF7(I9zC64Y5FJ7NDgi5Eg8AsriI98LCgBSfnc0ODjPxbXm4Ae8iNxVfaENNcpK3EX4HXDX(CKiBm0Q6h)s49BgDh61tTOdTHDOccj8BiQIJAJUieK0c1tmWiEAPo1mWiporYSzkCbqdoHQOpTEHta3ISztK4sGVpeZeKngUp)IRfOj4Nyw2UMd3NQY1c09eogYauaPPQsjBc2wL2Nl0vJcqkUYz4GvXZMR1fqcrgcUb6MfoK3NL2ztdy2a(9jN0tL(r96)qDx)GALJm5urZM33vIe02C5SrcAxSOUub)izHaS8YkiUQDMmkE(mnVsSPljyRuzib5My0pbPURMsxnMa18H3pkApy)bTKXLQs520MFN6bTM6g9QFe0ELekfmW3VcsjdYowOc5Z2tYX9iREqT7nGFB7YPXM)mz)2BQkxy)QWI5d5x)Onionc8zbYPl3bm6HBppe0xPDLBew9SuUXkTRCBXnplmSPahqzl845HLnnyhm7rbpl0SRc7WDsOo3i1p1fVHyPVoynH0E3G1OLxhSHOwVBah00RdAB8P3nITQP(XbabyoPVsFwRTsBx3G5f1Ll394svaWn9D4sNlN0Zjf6MDwArx9tD1IUDTT131tPxD1F3y1MT7rxsBhM0hzOJsMMsJ2kma)j9rYyr27uK(uS0lhLU1l8)BVT(d5uR5go)QaUALIRaZw7Emn(6vI24102pNtm5lUzU6GDBonenuFOcPpnPaZxEzAXL3oLfBNTlmwmeQcaDB0T2PL5mNM0PRbx6gtZUM4sv6J3xn6B1IyVe5fV9wbm7H)mNXxie67VRk3N3zYE3kmcBzwNF3TLpM2sCXnM4HMuBd(Vd]] )
+--spec:RegisterPack( "Retribution (WoWSims)", 20230222.1, [[Hekili:1IvtVrokt4Fl5sRjAh5(JKjZ(UA65WE6DYHrRwVNTnTnTnBBmwaozAPi)BFl8NGBWjDNokkjwuq98qrrrvvW6G)jWpbjXb)CZQn3TAZMnERVF16vRd8LhlXb(LO4dOu4Jcef(7FJLCYUkjHvOKDmNHsu6qWQ4XG8mPSu8hlxMsKzv78Iz0LpZEwqOc4)Y8dl3LZ2TKIesmFjm8YsuokHuSKpQ4LCMeP(WlLf4VRIKl)rrWoRefqUehddcqtssWTZdlInOAD0F1ctDuVURJ2Z41r)F8bsojWpNiKIgJbEpQkxcF(ZgJdUaTlhNe8Nb(XCcWAckW)M6ibwkjfPcVmgpKII5mrD0I6O08JLzECC8bwbi3RB9nY(uDucEx1(9EsoIOehMurPh9QkRJE5L6iqVO0uoRo62aFuCRvodvKeY2hoOZa)kbggzFyACIIMs1(3fxBWtGr5EjSNlA4HsZpHdXfykbd0EBD06r8uZvH3t4IumQaovb9F37r)F3Q(bFdkS1uA)EL27LJuaRSnpZrYmDuHz(f9zwYA)VXmEqFgkdfquQyYK(68Bhtkahp6NgukMR4Fl9aL976iMb3A4GpjojefhJZXCKfs()CIpysqEGkIXfY6OVP5O9VvjPykmCd4ercJgkZ4yrglpzKawMMcX1R0zPXKYjPzYjeCTBNFGqH7yfvcpjbZxVkCtz8uFOeYtKcCOqY4TO72)e85Pmy2PoDDAeatR9OPDcXScboU12AC(OlOb57moDMC6nztFVtwcxDLiEkw6reHjyQkaI6g74GvfjyeCp)w77JTgHmYp2saBhGJsB40xUaxLoZFzogzdbnXnq8GtiM)M8jNYFv3whZReOeWAlG4WhWtT1g3Am00Kj6(UY5EO0g6ndhI4T3oq8MqVGOc8VKHLCcfXpgIKn70bZz)4IC4XWrsJ)fJhtenB9nRMZbFgp3lg9Po6BCFJ9JCF7(I9zC64Y5FJ7NDgi5Eg8AsriI98LCgBSfnc0ODjPxbXm4Ae8iNxVfaENNcpK3EX4HXDX(CKiBm0Q6h)s49BgDh61tTOdTHDOccj8BiQIJAJUieK0c1tmWiEAPo1mWiporYSzkCbqdoHQOpTEHta3ISztK4sGVpeZeKngUp)IRfOj4Nyw2UMd3NQY1c09eogYauaPPQsjBc2wL2Nl0vJcqkUYz4GvXZMR1fqcrgcUb6MfoK3NL2ztdy2a(9jN0tL(r96)qDx)GALJm5urZM33vIe02C5SrcAxSOUub)izHaS8YkiUQDMmkE(mnVsSPljyRuzib5My0pbPURMsxnMa18H3pkApy)bTKXLQs520MFN6bTM6g9QFe0ELekfmW3VcsjdYowOc5Z2tYX9iREqT7nGFB7YPXM)mz)2BQkxy)QWI5d5x)Onionc8zbYPl3bm6HBppe0xPDLBew9SuUXkTRCBXnplmSPahqzl845HLnnyhm7rbpl0SRc7WDsOo3i1p1fVHyPVoynH0E3G1OLxhSHOwVBah00RdAB8P3nITQP(XbabyoPVsFwRTsBx3G5f1Ll394svaWn9D4sNlN0Zjf6MDwArx9tD1IUDTT131tPxD1F3y1MT7rxsBhM0hzOJsMMsJ2kma)j9rYyr27uK(uS0lhLU1l8)BVT(d5uR5go)QaUALIRaZw7Emn(6vI24102pNtm5lUzU6GDBonenuFOcPpnPaZxEzAXL3oLfBNTlmwmeQcaDB0T2PL5mNM0PRbx6gtZUM4sv6J3xn6B1IyVe5fV9wbm7H)mNXxie67VRk3N3zYE3kmcBzwNF3TLpM2sCXnM4HMuBd(Vd]] )
 
-spec:RegisterPack( "Retribution (LightClub)", 20230815.1, [[Hekili:vRX2UTno2VL8IH9mTk2ojUTdItbMDFyAXIUlwVpljAjABnr3ajLtdGH(2NdPUrkrDZ2jlMM2cfsEUYZDjZfM)pZnUig28hlNV8U5FEXdglE4(vp8G5g2RXyZnXiNNr7HhcrbW))FXmI32eMxuyQ90)L3(dS)HFY2z8d(QFeYLJqAucXbo8bglM(B3ERRh1jI4ASF)T(CiCaiC8ruQNJ5MTjE(SVfAUvhJ8WcaBXyhyvaDEUU4SdIPo14L)dYh56bpqIyOSL2frsT)d8ZE(EP2BruSBQnF9sU(J)Zmgdac7efeGdDfGsn347rzuHS4fU3hdp9dHUchI26JDn)DZnoepgM4H4IWUDgumY3Wn6LqZnihowayHLSI2zDehUhJcbvcJliTHMPGgn1(ic(fytdMxa2Ifz56HtT)Lu75gFj1(JP2lNNApl1(Pu7m6yG44hytRxii2bdNOiFoFio1eboVbK)cEuHHmsItTpDk12nIzCiY)vPTOm4QxqN7buvjvQKJls31QifGcrgXyWAiKLA)yQnfZyaSuJ)mXDpg04mo)8Ih1nkWIDGGPax4wrmnhJtX75uu7zegyYCdC6hAL)a2XABuycf02yYI5wlJDsTxNAVOc9UEh9cXwuwerq7vY02HKqrUycSnX7zCnc)PZqXKtUyFmsNcrABof(SmZOWPQCYx6YQJHi7XmdpQLloG7HWTiQwmj0fJClmNegsSdylej7sbrewrWwH4FYSIjEbiYRwiMW2PuUkwN6dMvv8m(NrehpQqZUyERCzHfmhSJylhWjf7qeERxc1LXJGd6Xj)nsU7mMWqVDQWTWrU07Cr7UNLm5UiiUqOfk6LZ5owrefNQ46sYATabfHNmk0ageCaYlKkq1QkPyhKH4qLln)hiW)ouIptx44YRuKVVv2VyXJINfl3kl9LxOhRmiCbejuSfOrcO18zUt(qXr53BYNqegIdE0UDw7DC5Cv1TaK)KajVWUa74G9X5Mzdn20nsgrhIiwbihsevOd37)A8bqV58CuiSVro8fH7DXzxGeqTYdu7Mee8AzOEaVO97jrQMmOqxUUUeNnKRIiFA51C3sCioWdNDtkPjijHTEJ4aMghXDhSSo25XNfYAzUs8pXojmWq7aKMFyeohKYGOAmL6c886cewLXIYh2I0AxQCHM7duEVYn8zW)SqjeKylEvr7d52mWkWvCzjoIfK4T670zPfNbPHqJ8KtzgT1iUM96SmGZH8fjwRrzLLlCbVwe1fFmsJ4QUCFoTJLO78iyWVJc2w86UQrBT72PV45WcqGfwh8G2T70L9myc6beKxODUOL914)om2aonL7fRYkfRAu8apQ4ZCiR4KMB1zfwxjMiiRYwDmrqEgYEQG6AWfuqZZsGS965KQT7UAQRe3K3rGwwPQBHoQVQQ1TYQqGIXVB1Cj7oDDX1rrvxPs7zvPOENA(89OlXQ6nG2TjIRjX(AQRAKk3lRHYhKzUEBO8Q0c4aAPr)Sa46ALCXkTWC5De2qhpTpB4u7BtTxQC)xRp1ocm1rZgt10VXJFvQhIAMrvoXZgFtyT7Insp63fwVU(9Q0czFn)9wluknUYYBxtt0VOyrVRvaw4OWFYpble627ccKK7MNnfnjfHKpMaH5f6lVSMiO9Zk5O)aevf0iXozMqlNlte1(xeYEEJrxuSF(qnHg76nYF5F7E4JZg)8h563kdqfDW6su9))5uceoi6yrnhDhzU9qVJiT10HM5seAvvWgskSUtkTAG5i(0Wtz3En4xOSVCiY(FtsMvgNS21JuXNYrtLVzgBO0lo12Lvp1ILJQGQ3(YP)XI29ohrgYwZvbs0rmHY3k7nyTC5sJfMBadaE2hO7XVfehry8P0TQi0zQT49mzK(D(qKI255xo8k(fB(uL(113wFApFWB36BsINOV56jDpeP0VRJenNPZOistWBHmYdWzCuqgs9ixzqnJc5kqQh56MeZOOHoe0cP0nWLXrlDyqpX0pxLrrn9Oqp52wF4jTtPIJozatNPFIjgsYftmbw6NyLZb5IjyjM6NOzHFVykMHMwmwQxzgNAngIYJ3TAElEOvbL5qkhC)XEsl)D(p54eWu5BTrEXS3sJ8kT8wy(G0B3y9cfaQ)MqupQq7wYPvVxMjT8ozMmTT(qoD6gX7HzMm1R9kh(aV9G1zTcWPmFRQ3eYtl6f08glAc76ftAuu(JlN3lc5gj(yLldJm(tY6iVVdvBdrpbnHrTmDoitH)WyU)c0ZXSpUC(SNYGPT(mMD600MIYAaWztMEtR9tC6uB9s809Z0WNYf7lmcYAyyYnDneNMOrt9snCeMoSIWUvpFQwAPMtixwPMTRvN)BSmSuNm0vuIPDhMqpclQgU0ISrj6tM2xX5p(1olmF2t6lj)m1Fdt91hY9vZwnifCFHHBAWuwjSW7TwP0NovVm6zQrpYdr1FYf1aivGPjcYf72xH9wDhQoYBX9zlyV2fA1PA1Tx6i1JG1rKRjqa4NUxhw0h9OX(xSVBfghIZBTXsk5R2Yij73DDyIu3s0BmJnApVjVd6pzF7SQfgRRDju6QniVYGHuyWvi9FjR8w4JRh51CXlpKSJhN0unF7IsLYwbyRHgQJ6ZWaVh(uZ2YEZxGfBnd2EDAQ0gJjk4ztLbeZ6SX9O961Gd1pUUCZPmYx9TaouDVcdNxqS6x(3Kw)Q)EAL5gX3M9)ou5l62CdkHbTxzUztcykcM5uXu2m)R)]] )
+spec:RegisterPack( "Retribution (LightClub)", 20231112.1, [[Hekili:vV1EVTnos8plblGH9ETkw2jPPfXzbUD)JRfh6D4893wIwI2wx0ddkQ0gad9z)gs9IuMKsYpYT3UTfoKCEroZ8B4qNv2R(3Rw6JO4vFF20zZTTTNzzBF3C7pTAj9T94vl3J8EbTf(qmkc(3)fMscwNrdsIZDh)3d2UJ(7HzRNWw4BHjiFgdttYiEWI3rP7t)YT36hK6Lq8T2U92qgfEafEHO00aVvlxNfes)A8Q1QuKz3pdy3EShmmWVaFFCXkXPETuM)jke5haFGKqrfdTjHK7(3WVeegK7UgLI9ZDzJxR2F8pk0mGiSxsueo2NtA6QLHbP0uUXeeVnedF678nlCmADi2F1FD1spsaftcqmByZgRumk0Yp5hXRwI8yCbOfgYjzJZR44TyumSNqzgIo2mg2sZDFfb)amPfnic7qtC8dW5U)AU7uRpN7(XC3ztZDNK7(CUBHCSqm(dQPZpii6olVKKqMEWx1iopVbS)kDusHSY2N7E4qURFc1Axs4BctLsHZEUCUdyvJvjloMjnxRjfHIrw7XG7qmn39PC3umLc0MA9FY83IHDCktF(rqQFsKdDhbNcAHFJWuSmMeVJjrLRH7HjQnWQVxR(bQJZ6K4Suy3gtSNsGFE2EVC3f5U28DVAfEhWyssyyXCns3p41GyStknHWvThevnpswkYhtGPjbVGBPxFsCPs8rEDpEc7VLSBFigPAFvyAMe(SjNskISftTcsD8XrSaiMdtZGzX(yKFL3g3pJUd7GifNzic3jdMkg)tQZEsqeI8MdIYDTQ13QXtd5EDWYLTTN5oY9Z9j3922oT4FMq8cs5Nq2t1ATvbkmYEf74b5cWEeEsH)3yfZLScr9HBjDKt6pdNdZTUx)jHXKHdYV791OSTKDV4PoRZhARpHyTm2KazIJDqj)4ucBo2GQ8CfcSRyqfGGv1wVfbhHcIt5S6HgRydakVRjjk7)bO2nOSqQkaWAVsuyOtXp4WWnlqpDkQyiioGwd7vrrwk2b2rIsBLOBU4I2Nu6WiUcEIFg5jB24S1ZNPvnNcqjleOCbSpOoE4qCzKsFrdUrmDFcXjc5rss57HBdFB)oyFZ7LKyyERs6Ray9XfhGeyBLbn6Nff9wn4kWx02TKezxguSpBVUMNhzxvGj6JVHkCIc85vluEw3E46tAaByMECPkWiLIQmzioghfGlCAe20jzXAp89aVWxXMHWAZ9AK36cHW)e7LrbF6DqnC9tWLKOcARpKxw0hpaypV2W1iJHaKMsrDqzeurjQKG9ft)9KxXrRXewXBZM3YLR8KR2ZJDGrH)YzeFkwPYBJzE1WiwhjlJfvEccaqzyPflcEknhbeO2ZzSaWtr8v(MTKS0WvPcUuc1h)AIcZvE4UsEmuHUjGGH4)uWXJvXDlzRCwJ5eofvasWrnOdkN2y2Itqjs3Ha8j9AHM5nMwXKAaRoLfIlRkvJAv9bw25xyu2OjhpLXINVqkruXDAuPerLi1Duu7LqlsHDEAgu1HAnPzAZfMEH0MY7cQuvAUNOHcmBU0Uig58hMk43P6(7gkU7cDBmAd(17uBh()T(dWRbFM19nc1uFc0viU2B(pTWMvF1)PILWffbasmjwzQ6XhortTttuQFdD2ke95TVcTc5rrvZCRq0Nd1OEPx2gYhEbSufN8Mt51vxfu31pwSLuTxY3(x6ovg6F0qsznURSwfXEsr8TAMKT(OodxZDSIB6(0VjC71w75nPTNy4Y(nkPuFhoLWun7gVdQE79x9vao0UMCD0CoRVMDyHwF1YZcGK1ZF4w4Dcpw)hZ9MFYWBpp7SP5mBhOxWk27XofwuZQ)e2g)HDwk3eZlkuTbeaJxvlk51Q6m7r25YPe7aYm95LVwVaGoWN(IKoyZ(mdHVZCVR1dqFMUBZ6J7Mb46RcM4LRt3QCgVehx2wpEA902mOEnusRibHRDjc4ige8EI28j9psH(mtxRA6lQpP3f1BOGGbwoJE)x9xCyO(Vx4JQ2fgWFWbfLfKSNJK0qyfyo7tHzyUHOVp(GIpF60Aq7sJtOoaodl7FS4WkkUOBvrvbbS6befICBXlFUMxXKugl5FnkM(O99wacjeqYSM0vl)A0(ecL9UfpuvFsUl)76Gv(3a9jJUlHSA5Ym48baCbk4FVj(hXsFBlynfpztatF)L6V5fFj3v8lKX3(fLFrlGcK6Xxleo1Ynnp)BWGmPv1o(8VvO)SSbLd9xwCB7MJ)HGnlUjB)OJ71eB2rM7SUArCClWhKqoMCnIrSF3dtcIuQM5s91EqmxIs1mxvJRhKmuXanIsv)PhMSuXb1ctDBOhK0uZc1IBD7EnRxsvlDupAMD3cJ3t5ZwyCU0TWQBB8zlWAo1TqlawoBjwWgnolTVJgtAh1Z5NM)WunrOn4VmkfbnFQJIrlZu(hfVCFn7z5uA9s9FGHKSGHykUQ6xNxCWIxJxCenV2(heEf7f2se0(fVLxk)4OPZB1V)(inV9(OX6qRpC4g(7TprY2Ll)S(4q6n0hP59ZFAMiRA90Xf7IfnKGXw5c0F2UtslrYpM2f2Ju)k4DYsMlAiUYv4RStyaOMatbvTjKdGD2d8Oskfelu(Yh4fKSq7w9iOOOjhoCC5qDicjRPuihv0ZtZMwzb)oF3THPf72cXzL9YrokJ3NLJPrU1hmsgd)NQM78RtT(8KpoB6KNlyIUM5aBbJpw9xaeoz04B020Mdh01WMNVBIcfxr1XhLCyC)QL(25QeG4TVyCwtRxeIRBOv8c(8y5IMnm6gdTzyuRyLzQ4RCGBhATIPB1VKlLQlUR)CF31V6hRZmCSQemzSz0e1mS5sx8ONw3)RoFq9D)MC0b9PT9zB9Ok1P6661r)h1nIrJ7Qpep9Bg7bXKNv39Ht1o(0P6i0pj0fZdLRoRxEkDv2XfWl5m2mlWjkXvAuMYb6UImzSIgYuawC2j0B4(L7e)2zw3RscTY(zkR(0dhAQ)Q8Lpxm96Q2DY9wEQnRQ3yvJo2OSvXqTanNGmpZtI(RZTrUmHyPQcNNVRl70W8NnGsdh7tk8wpvPqgBnptPUK2d1KmBrxzfB4zrVC6ZPMq(U6eYllVisLDvCXKHMoUMkvLURRW9(u3(fO68AD7AKuunZBLtSEr9o9K50l18tBgrLsu)0NqqLcMjMIOpHbAsJ0k44I65R0Vyq5OVMA3CvAxps8Ev1jR7vPvdpP31ujlsODKsk)7ltzaxb)A(17PVUHYQzHpIqKbJeT)I888d8x)z1)9]] )
 
 spec:RegisterPack( "Protection 96", 20230815.1, [[Hekili:1MvBVTTnq4FlbfW1glv2oV4MuehG2VS0GHSI6cSVjjAjAlTij6ksfVmyOF77oszjrzkP4KUp0Ah(YDp84D3dVZ2tT)H9cFIGA)Wzto78jxn9sRPxEX5NDU9cXZBO2l2q8EKSg(scjg()VLYeuprilj396z40phXi(Oy4SSupyjbcXg(NgpEDOiiBPLhlE8w2wEymh(ue944LrSLJJjCbnDmm84nKiIFyY4nLYEm8nc(fR1m7flZcJeFnXEPjOE2LFeu9gQhmmO7qFFQALuUNoC)Msn5U7fEU7kwAU7D0hdJcTYD)cHt9ZDXjkaCUBeBDO3PWEORiEcwkUa5UUE21ZQeL9IOqUGlndH)d8XdsllnHSmI6B)f7fEPHW5nKaliGLf57eqIJPGGgK7om39KC3IX5bH0iql72L7cQm8jQdnHghsb0CBU70C3r2liEkTQeIdBLJiG6KgUoqqzzCBbAn6bakfvjl1FJYQuojuoklbC7hMq7(yrwVoLPGTpDz2QvwIusiSV1o(zXXpBLTPgUzrpVhaDIvWUiLLp9jaboBIOeqq7TARJEEtGLFy1CfcrHdyfXKeI1gk4yMiYDVbSYuHaWeV(UaJxkfSkOzFKM9T2IqCEER4ucsoXdCqkoxwP0y48d3A3mp3Dsn7C9vHs9IEp9f(bESeo1lvfzuyfm5IuPR67av1LTF91PCiprtwtt51q9SwfLGKUMkScOKirG1gpHYeC2et(TBbWfGY7JDzfk8O(7m)10y4QuZzQCuP8c5(SyuGx1QavUnnot7DD68qF9B5Q6fSeWJvi8Lw)l0CeBEroDsRibLH6giK74tJX8zy0q1Gzj(uIYxxPZH1Il4)mJs)x6Dqe6FH3n7xJhdIpyBtS0WDPtoG4zwxD5eveulPVMxtpYuaYBFTWVg5ikDpM2EMN2JXn4zuPSEDGMktlzCrrygY6WrMK0hijYIeDNNuLPaInSqR5liggxlQtGifoP9KV8fi95gLU0xNKae47ZZPfgGPXv3fAhAvUR9RmJtDaGeZBSOlRVOnm1NARqMmb3oB1kN1E(ObSYraEiskqXdjnjEE0iAryGUiAM)OmYHef5O(dhKKwrv7OEodsw3zQItubh6u2OVDd26rVqfk5rLolBsPWn6sspUlcseMVlmgED0tGfOKB2zvw6ZhM0sF(EjxlY7ugXGrZc4FoKSuIY9HZdxNG2EyeiExKgUmtE4WbQP4MZ0jF5Rq1qEhmcxD53q5gMRpI1Jw9PzCIpqA1qZAd3jf7RqPWZEygoU6d3jz8RqPRctH3ss5GxlMqOHUnoBF83hneszqit7yW409fiFSGGhqGKOTJIwMVVNj0kmGvd6pzTou2pQ1(VGzRFe3zfsoCQUFIWViueRybnHc1uDZB)lcfCW0lYiqYoJiPA6sk9)prtXZhmcLApTOVkjqg8QciYDpF2KE4SN2E2U3sXjt1iVRx3Mo970z9rYlz9EcyYXzQvdV9ITK0eLd9F95V)WxF43)uUBU7pcO5UaVhlvuuZ97r2Z3JfJ)ZSqzP4CwmSisMGfte4aEbeWMWTYVxU9vSOi2w5nhgBcN3T0uy8mzL(yZae4YuWgQ2hcKXhPl2VUeMu3WdMRVAFFCX(ebzjHt)u(95UFaRrPSwryK7)Qe5OAUqxbi4q6F2QWi4fbV7D5UMAtX94eOvYAYvwNpbfPskCRYNo8BZhRZ3FA4Q5VSxm0I0AqIJY7KSndmNZCq3VnWSkoKQ(OuYHBVf1uNx(40q9DAw4A8VhLW12PzHBIG9O0Hjb0IQmXJEC6YKemRmZ0LhL2mlcZQ7aoX210(Lo4fq62VYKuFVzLjLs)kRKD7nRWsj1Vsv8yVznQetlolnP4qTDa14naTyl7Vopw1EnXbEZ8wKrnYoZlqXYHzMlNVg0lQxxh4yv5dW1wvr(TtnT7wo4g2)CT9RxTE9zkRoV(G7pcvJ0s12NwR6CDn2SE3tXkDNdvw3)Iq(CPB0qTkS3TtR66rklmYh(zPe(WFi5PLVjywU7c4gjX)dl2qJIag(H3XeFFm8uLVpQ6AdGdE2m3UCecAayWWt0qWUDnVYoq0T098AIEVNuBNKRp8KqW3DSnGiEp(trqxjQPw02P7KI6s2f(D7ARd8hS9An4wEryOz7dg2AB23TBy9MVDt3nxF0HO)1gMwS96TISc(f3vn6VA7rD7LwJ(9knN9TNgnYw9(RgT)(M5NDi0n0Zr5jWqNUFjaTZwA)2SBDo5qHW)2lAXTS0KmSrdP3TRzZOhny4WwBb9GHD285BLnEE0OdIsN3zZMpe0TCNy2fVZEl3TOl6Emw8G)FMO)Ruo7AOkQmral1EXImqRjzf)gC2)h]] )
 
