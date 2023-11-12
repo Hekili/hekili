@@ -1,3 +1,8 @@
+# Paladin: Retribution
+# LightClub-Discord - https://discord.gg/lightclubclassic
+# November 2023
+
+## Precombat
 actions.precombat+=/retribution_aura,if=!up&settings.maintain_aura&assigned_aura.retribution_aura
 actions.precombat+=/concentration_aura,if=!up&settings.maintain_aura&assigned_aura.concentration_aura
 actions.precombat+=/crusader_aura,if=!up&settings.maintain_aura&assigned_aura.crusader_aura
@@ -12,59 +17,69 @@ actions.precombat+=/blessing_of_wisdom,if=!up&settings.maintain_blessing&assigne
 actions.precombat+=/seal_of_vengeance,if=buff.seal.remains<360
 actions.precombat+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
 
+## Default
 actions+=/call_action_list,name=init
 actions+=/use_items
 actions+=/potion
 actions+=/hyperspeed_acceleration,use_off_gcd=1
 actions+=/hand_of_reckoning,use_off_gcd=1,if=!settings.hor_macros&glyph.reckoning.enabled&(debuff.training_dummy.up|!aggro)
+actions+=/crusader_strike,if=buff.formidable.up&buff.formidable.remains<2
 actions+=/run_action_list,name=cleave,if=active_enemies>1
 actions+=/run_action_list,name=execute,if=active_enemies=1&variable.execute_phase
 actions+=/run_action_list,name=single
 
+## Init Parameters
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 actions.init+=/variable,name=execute_phase,value=target.health.pct<20
 
-
+## Cleave
 actions.cleave+=/seal_of_command,if=buff.seal.down
 actions.cleave+=/avenging_wrath,if=((((variable.time_to_die*0.9)-20)>action.avenging_wrath.cooldown)|(target.health.pct<=20))&(!buff.seal_of_vengeance.up|dot.holy_vengeance.stack>4)
-actions.cleave+=/consecration,if=!moving&!buff.active_consecration.up
-actions.cleave+=/judgement_of_wisdom,if=mana.percent<(settings.judgement_of_wisdom_threshold/4)
+actions.cleave+=/judgement_of_wisdom,if=mana.percent<(settings.judgement_of_wisdom_threshold/3)
+actions.cleave+=/divine_storm,if=set_bonus.tier10ret_2pc=1
+actions.cleave+=/consecration,if=!moving&!buff.active_consecration.up&active_enemies>2
 actions.cleave+=/crusader_strike
 actions.cleave+=/divine_storm
 actions.cleave+=/hammer_of_wrath
+actions.cleave+=/consecration,if=!moving&!buff.active_consecration.up&mana.percent>(settings.judgement_of_wisdom_threshold/4)
 actions.cleave+=/judgement_of_wisdom,if=mana.percent<(settings.judgement_of_wisdom_threshold/2)
 actions.cleave+=/divine_plea,if=mana.percent<(settings.divine_plea_threshold/2)
-actions.cleave+=/exorcism,if=buff.the_art_of_war.up&(cooldown.crusader_strike.remains<?cooldown.divine_storm.remains)>settings.primary_slack
+actions.cleave+=/holy_wrath,if=(target.is_demon|target.is_undead)&active_enemies>2&mana.percent>(settings.judgement_of_wisdom_threshold/1.8)
+actions.cleave+=/exorcism,if=buff.the_art_of_war.up&(cooldown.crusader_strike.remains<?cooldown.divine_storm.remains)>settings.primary_slack&mana.percent>(settings.judgement_of_wisdom_threshold/1.7)
 actions.cleave+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold
 actions.cleave+=/judgement_of_light
 actions.cleave+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
-actions.cleave+=/holy_wrath,if=(target.is_demon|target.is_undead)
+actions.cleave+=/holy_wrath,if=(target.is_demon|target.is_undead)&mana.percent>(settings.judgement_of_wisdom_threshold/1.7)
 
-
+## execute
 actions.execute+=/seal_of_vengeance,if=buff.seal.down
 actions.execute+=/avenging_wrath,if=(!buff.seal_of_vengeance.up|dot.holy_vengeance.stack>4)
-actions.execute+=/hammer_of_wrath
+actions.execute+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold/2.5
+actions.execute+=/hammer_of_wrath,if=set_bonus.tier10ret_2pc=0|settings.highroll=0
 actions.execute+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold
 actions.execute+=/judgement_of_light
+actions.execute+=/divine_storm,if=set_bonus.tier10ret_2pc=1&settings.highroll=1
 actions.execute+=/crusader_strike
+actions.execute+=/divine_storm,if=set_bonus.tier10ret_2pc=1
+actions.execute+=/hammer_of_wrath,if=set_bonus.tier10ret_2pc=1&settings.highroll=1
 actions.execute+=/consecration,if=!buff.active_consecration.up&variable.time_to_die>4
 actions.execute+=/divine_storm
 actions.execute+=/divine_plea,if=mana.percent<(settings.divine_plea_threshold/2)
 actions.execute+=/exorcism,if=buff.the_art_of_war.up&(next_primary_at<?cooldown.hammer_of_wrath.remains)>settings.primary_slack
 actions.execute+=/divine_plea,if=mana.percent<settings.divine_plea_threshold&(next_primary_at<?cooldown.hammer_of_wrath.remains)>settings.primary_slack
-actions.execute+=/holy_wrath,if=(target.is_demon|target.is_undead)&buff.the_art_of_war.up&(next_primary_at<?cooldown.hammer_of_wrath.remains)>settings.primary_slack
+actions.execute+=/holy_wrath,if=(target.is_demon|target.is_undead)&(next_primary_at<?cooldown.hammer_of_wrath.remains)>settings.primary_slack&mana.percent>(settings.judgement_of_wisdom_threshold/1.4)
 
-
+## Single
 actions.single+=/seal_of_vengeance,if=buff.seal.down
 actions.single+=/avenging_wrath,if=((variable.time_to_die*0.9-20)>action.avenging_wrath.cooldown)&(!buff.seal_of_vengeance.up|dot.holy_vengeance.stack>4)
 actions.single+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold
 actions.single+=/judgement_of_light
-actions.single+=/divine_storm,if=set_bonus.tier10_2pc=1
+actions.single+=/divine_storm,if=set_bonus.tier10ret_2pc=1&settings.highroll=1
 actions.single+=/crusader_strike
-actions.single+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
 actions.single+=/divine_storm
-actions.single+=/exorcism,if=(target.is_demon|target.is_undead)&buff.the_art_of_war.up&next_primary_at>settings.primary_slack
-actions.single+=/consecration,if=!buff.active_consecration.up&next_primary_at>settings.primary_slack
-actions.single+=/exorcism,if=buff.the_art_of_war.up&next_primary_at>settings.primary_slack
-actions.single+=/holy_wrath,if=(target.is_demon|target.is_undead)
+actions.single+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
+actions.single+=/exorcism,if=(target.is_demon|target.is_undead)&buff.the_art_of_war.up&next_primary_at>settings.primary_slack&mana.percent>(settings.judgement_of_wisdom_threshold/4)
+actions.single+=/consecration,if=!buff.active_consecration.up&next_primary_at>settings.primary_slack&mana.percent>(settings.judgement_of_wisdom_threshold/3)
+actions.single+=/exorcism,if=buff.the_art_of_war.up&next_primary_at>settings.primary_slack&mana.percent>(settings.judgement_of_wisdom_threshold/3.5)
+actions.single+=/holy_wrath,if=(target.is_demon|target.is_undead)&next_primary_at>settings.primary_slack&mana.percent>(settings.judgement_of_wisdom_threshold/1.4)
 actions.single+=/flash_of_light,if=settings.fol_on_aow&buff.the_art_of_war.up&next_primary_at>primary_slack&!buff.divine_plea.up&cooldown.exorcism.remains>6
