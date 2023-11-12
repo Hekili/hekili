@@ -685,9 +685,10 @@ local HekiliSpecMixin = {
         end
 
         -- default values.
-        if not data.cooldown then data.cooldown = 0 end
+        if not data.cast     then data.cast     = 0             end
+        if not data.cooldown then data.cooldown = 0             end
         if not data.recharge then data.recharge = data.cooldown end
-        if not data.charges  then data.charges = 1 end
+        if not data.charges  then data.charges  = 1             end
 
         if data.hasteCD then
             if type( data.cooldown ) == "number" and data.cooldown > 0 then data.cooldown = Hekili:Loadstring( "return " .. data.cooldown .. " * haste" ) end
@@ -2751,6 +2752,8 @@ all:RegisterAbilities( {
         listName = "|T136243:0|t |cff00ccff[Trinket #1]",
         cast = 0,
         gcd = "off",
+
+        copy = "actual_trinket1",
     },
 
     trinket2 = {
@@ -2758,6 +2761,8 @@ all:RegisterAbilities( {
         listName = "|T136243:0|t |cff00ccff[Trinket #2]",
         cast = 0,
         gcd = "off",
+
+        copy = "actual_trinket2",
     },
 } )
 
@@ -2776,6 +2781,16 @@ do
         gcd = "off",
     } )
 
+    all:RegisterAbility( "unusable_trinket", {
+        name = "Unusable Trinket",
+        listName = "|T136240:0|t |cff00ccff[Unusable Trinket]|r",
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        usable = false,
+        unlisted = true
+    } )
 
     all:RegisterAbility( "heart_essence", {
         name = function () return ( GetItemInfo( 158075 ) ) or "Heart Essence" end,
