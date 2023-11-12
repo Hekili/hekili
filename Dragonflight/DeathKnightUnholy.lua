@@ -2063,10 +2063,14 @@ me:RegisterAbilities( {
     -- Stub.
     any_dnd = {
         name = function () return "|T136144:0|t |cff00ccff[Any " .. ( class.abilities.death_and_decay and class.abilities.death_and_decay.name or "Death and Decay" ) .. "]|r" end,
+        cast = 0,
+        cooldown = 0
     },
 
     wound_spender = {
         name = "|T237530:0|t |cff00ccff[Wound Spender]|r",
+        cast = 0,
+        cooldown = 0
     }
 } )
 
