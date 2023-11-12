@@ -17,7 +17,7 @@ actions.precombat+=/soul_fire
 actions.precombat+=/cataclysm,if=raid_event.adds.in>15
 actions.precombat+=/incinerate
 
-actions+=/variable,name=havoc_immo_time,op=reset
+## actions+=/variable,name=havoc_immo_time,op=reset
 ## actions+=/cycling_variable,name=havoc_immo_time,op=add,value=dot.immolate.remains*debuff.havoc.up
 actions+=/variable,name=infernal_active,op=set,value=pet.infernal.active|(cooldown.summon_infernal.duration-cooldown.summon_infernal.remains)<20
 # If we can have more use of trinket than use of infernal, we want to it, but we want to sync if we don't lose a cast, and if we sync we don't lose it too late
@@ -104,7 +104,7 @@ actions.cleave+=/incinerate
 actions.havoc+=/conflagrate,if=talent.backdraft&buff.backdraft.down&soul_shard>=1&soul_shard<=4
 actions.havoc+=/soul_fire,if=cast_time<havoc_remains&soul_shard<2.5
 actions.havoc+=/channel_demonfire,if=soul_shard<4.5&talent.raging_demonfire.rank=2
-actions.havoc+=/immolate,cycle_targets=1,if=(((dot.immolate.refreshable&variable.havoc_immo_time<5.4)&target.time_to_die>5)|((dot.immolate.remains<2&dot.immolate.remains<havoc_remains)|!dot.immolate.ticking|variable.havoc_immo_time<2)&target.time_to_die>11)&soul_shard<4.5
+actions.havoc+=/immolate,cycle_targets=1,if=dot.immolate.remains<2&dot.immolate.remains<havoc_remains&target.time_to_die>11&soul_shard<4.5
 actions.havoc+=/chaos_bolt,if=((talent.cry_havoc&!talent.inferno)|!talent.rain_of_fire)&cast_time<havoc_remains
 actions.havoc+=/chaos_bolt,if=cast_time<havoc_remains&(active_enemies<=3-talent.inferno+(talent.chaosbringer&!talent.inferno))
 actions.havoc+=/rain_of_fire,if=active_enemies>=3&talent.inferno
