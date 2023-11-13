@@ -902,7 +902,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 recallTotem1 = key
             end
 
-            if talent.further_beyond.enabled and subtype == "SPELL_CAST_SUCCESS" and fbSpells[ key ] then
+            if state.talent.further_beyond.enabled and subtype == "SPELL_CAST_SUCCESS" and fbSpells[ key ] then
                 if key == "ascendance" then further_beyond_duration_remains = spec.auras.ascendance.duration
                 elseif further_beyond_duration_remains > 0 then
                     if key == "earth_shock" or key == "earthquake" then further_beyond_duration_remains = max( 0, further_beyond_duration_remains - 2.5 )
