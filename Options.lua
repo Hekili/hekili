@@ -3950,7 +3950,7 @@ do
                 name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
                 desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
                     "issues for some specializations, if other abilities depend on you using |W" .. ( ability.item and ability.link or k ) .. "|w." end,
-                width = 1.5,
+                width = 2,
                 order = 1,
             },
 
@@ -3958,7 +3958,7 @@ do
                 type = "toggle",
                 name = "Boss Encounter Only",
                 desc = "If checked, the addon will not recommend |W" .. k .. "|w unless you are in a boss fight (or encounter).  If left unchecked, |W" .. k .. "|w can be recommended in any type of fight.",
-                width = 1.5,
+                width = 2,
                 order = 1.1,
             },
 
@@ -3972,8 +3972,8 @@ do
                     if val:len() > 20 then return "Keybindings should be no longer than 20 characters in length." end
                     return true
                 end,
-                width = 1.5,
-                order = 2,
+                width = 2,
+                order = 3,
             },
 
             toggle = {
@@ -3982,7 +3982,7 @@ do
                 desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
                     "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
                 width = 1.5,
-                order = 3,
+                order = 2,
                 values = function ()
                     table.wipe( toggles )
 
@@ -4082,7 +4082,7 @@ do
                         name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
                         desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
                             "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
-                        width = 1,
+                        width = 1.5,
                         order = 1,
                     },
 
@@ -4090,8 +4090,15 @@ do
                         type = "toggle",
                         name = "Boss Encounter Only",
                         desc = "If checked, the addon will not recommend " .. k .. " unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
-                        width = 1,
+                        width = 1.5,
                         order = 1.1,
+                    },
+
+                    lineBreak1 = {
+                        type = "description",
+                        name = " ",
+                        width = "full",
+                        order = 1.9
                     },
 
                     toggle = {
@@ -4099,7 +4106,7 @@ do
                         name = "Require Toggle",
                         desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
                             "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
-                        width = 1,
+                        width = 1.5,
                         order = 1.2,
                         values = function ()
                             table.wipe( toggles )
@@ -4121,18 +4128,43 @@ do
                         end,
                     },
 
-                    lineBreak1 = {
+                    lineBreak5 = {
                         type = "description",
-                        name = " ",
+                        name = "",
                         width = "full",
-                        order = 1.9
+                        order = 1.29,
+                    },
+
+                    -- Test Option for Separate Cooldowns
+                    noFeignedCooldown = {
+                        type = "toggle",
+                        name = "|cFFFFD100(GLOBAL)|r When Cooldowns Shown Separately, Use Actual Cooldown",
+                        desc = "If checked |cFFFFD100and|r Cooldowns are Shown Separately |cFFFFD100and|r Cooldowns are enabled, the addon will |cFFFF0000NOT|r pretend your " ..
+                            "cooldown abilities are fully on cooldown.\n\nThis may help resolve scenarios where abilities become desynchronized due to behavior differences " ..
+                            "between the Cooldowns display and your other displays.\n\n" ..
+                            "See |cFFFFD100Toggles|r > |cFFFFD100Cooldowns|r for the |cFFFFD100Cooldown: Show Separately|r feature.",
+                        set = function()
+                            self.DB.profile.specs[ state.spec.id ].noFeignedCooldown = not self.DB.profile.specs[ state.spec.id ].noFeignedCooldown
+                        end,
+                        get = function()
+                            return self.DB.profile.specs[ state.spec.id ].noFeignedCooldown
+                        end,
+                        order = 1.3,
+                        width = 3,
+                    },
+
+                    lineBreak4 = {
+                        type = "description",
+                        name = "",
+                        width = "full",
+                        order = 1.9,
                     },
 
                     targetMin = {
                         type = "range",
                         name = "Minimum Targets",
                         desc = "If set above zero, the addon will only allow " .. k .. " to be recommended, if there are at least this many detected enemies.  All other action list conditions must also be met.\nSet to zero to ignore.",
-                        width = 1,
+                        width = 1.5,
                         min = 0,
                         max = 15,
                         step = 1,
@@ -4143,11 +4175,18 @@ do
                         type = "range",
                         name = "Maximum Targets",
                         desc = "If set above zero, the addon will only allow " .. k .. " to be recommended if there are this many detected enemies (or fewer).  All other action list conditions must also be met.\nSet to zero to ignore.",
-                        width = 1,
+                        width = 1.5,
                         min = 0,
                         max = 15,
                         step = 1,
                         order = 2.1,
+                    },
+
+                    lineBreak2 = {
+                        type = "description",
+                        name = "",
+                        width = "full",
+                        order = 2.11,
                     },
 
                     clash = {
@@ -4155,18 +4194,19 @@ do
                         name = "Clash",
                         desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
                             "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
-                        width = 1,
+                        width = 3,
                         min = -1.5,
                         max = 1.5,
                         step = 0.05,
                         order = 2.2,
                     },
 
-                    lineBreak2 = {
+
+                    lineBreak3 = {
                         type = "description",
                         name = "",
                         width = "full",
-                        order = 2.9,
+                        order = 2.3,
                     },
 
                     keybind = {
@@ -5188,7 +5228,7 @@ do
                             }
                         },
 
-                        toggles = {
+                        --[[ toggles = {
                             type = "group",
                             name = "Toggles",
                             desc = "Specify which abilities are controlled by each toggle keybind for this specialization.",
@@ -5211,7 +5251,7 @@ do
                                 custom1 = {},
                                 custom2 = {},
                             }
-                        },
+                        }, ]]
 
                         performance = {
                             type = "group",
@@ -5348,28 +5388,7 @@ do
                 end
 
                 -- Toggles
-                BuildToggleList( options, id, "cooldowns",  "Cooldowns", nil, {
-                        -- Test Option for Separate Cooldowns
-                        noFeignedCooldown = {
-                            type = "toggle",
-                            name = "Cooldown: Show Separately - Use Actual Cooldowns",
-                            desc = "If checked, when using the Cooldown: Show Separately feature and Cooldowns are enabled, the addon will |cFFFF0000NOT|r pretend your " ..
-                                "cooldown abilities are fully on cooldown.  This may help resolve scenarios where abilities become desynchronized due to behavior differences " ..
-                                "between the Cooldowns display and your other displays.\n\n" ..
-                                "See |cFFFFD100Toggles|r > |cFFFFD100Cooldowns|r for the |cFFFFD100Cooldown: Show Separately|r feature.",
-                            order = 1.051,
-                            width = "full",
-                            disabled = function ()
-                                return not self.DB.profile.toggles.cooldowns.separate
-                            end,
-                            set = function()
-                                self.DB.profile.specs[ id ].noFeignedCooldown = not self.DB.profile.specs[ id ].noFeignedCooldown
-                            end,
-                            get = function()
-                                return self.DB.profile.specs[ id ].noFeignedCooldown
-                            end,
-                        }
-                 } )
+                --[[ BuildToggleList( options, id, "cooldowns",  "Cooldowns" )
                 BuildToggleList( options, id, "essences",   "Minor CDs" )
                 BuildToggleList( options, id, "interrupts", "Utility / Interrupts" )
                 BuildToggleList( options, id, "defensives", "Defensives",   "The defensive toggle is generally intended for tanking specializations, " ..
@@ -5382,7 +5401,7 @@ do
                 end )
                 BuildToggleList( options, id, "custom2", function ()
                     return specProf.custom2Name or "Custom 2"
-                end )
+                end ) ]]
 
                 db.plugins.specializations[ sName ] = options
             end
