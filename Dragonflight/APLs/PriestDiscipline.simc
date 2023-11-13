@@ -7,7 +7,7 @@ actions+=/variable,name=te_shadow,op=set,value=buff.twilight_equilibrium_shadow_
 # Twilight Equilibrium is buffing holy damage
 actions+=/variable,name=te_holy,op=set,value=buff.twilight_equilibrium_holy_amp.up|variable.te_none
 # Long Shadow covenant is enabled
-actions+=/variable,name=long_scov,op=set,value=talent.shadow_covenant&talent.embrace_shadow
+actions+=/variable,name=long_scov,op=set,value=talent.shadow_covenant
 # Harsh discipline has been stacked and is ready for shadow covenant.  Zero stacks for no shadow covenant  Full stacks for short results in one HD penance (4 total)  Full stacks + 1 extra results in two HD penances (5 total)
 actions+=/variable,name=hd_stacks_required,op=set,value=5
 actions+=/variable,name=hd_stacks_current,op=set,value=buff.harsh_discipline.stack+(buff.harsh_discipline.max_stack*buff.harsh_discipline_ready.stack)

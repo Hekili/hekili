@@ -2,7 +2,7 @@ actions.precombat+=/apply_poison
 # Default Roll the Bones reroll rule: reroll for any buffs that aren't Buried Treasure, excluding Grand Melee in single target
 actions+=/variable,name=rtb_reroll,value=rtb_buffs.will_lose=(rtb_buffs.will_lose.buried_treasure+rtb_buffs.will_lose.grand_melee&spell_targets.blade_flurry<2&raid_event.adds.in>10)
 # Crackshot builds without T31 should reroll for True Bearing (or Broadside without Hidden Opportunity) if we won't lose over 1 buff
-actions+=/variable,name=rtb_reroll,if=talent.crackshot&talent.hidden_opportunity&!set_bonus.tier31_4pc,value=(!rtb_buffs.will_lose.true_bearing&talent.hidden_opportunity|!rtb_buffs.will_lose.broadside&!talent.hidden_opportunity)&rtb_buffs.will_lose<=1
+actions+=/variable,name=rtb_reroll,if=talent.crackshot&!set_bonus.tier31_4pc,value=(!rtb_buffs.will_lose.true_bearing&talent.hidden_opportunity|!rtb_buffs.will_lose.broadside&!talent.hidden_opportunity)&rtb_buffs.will_lose<=1
 # Crackshot builds with T31 should reroll if we won't lose over 1 buff (2 with Loaded Dice), and if Broadside is not active for builds without Hidden Opportunity
 actions+=/variable,name=rtb_reroll,if=talent.crackshot&set_bonus.tier31_4pc,value=(rtb_buffs.will_lose<=1+buff.loaded_dice.up)&(talent.hidden_opportunity|!buff.broadside.up)
 # Hidden Opportunity builds without Crackshot should reroll for Skull and Crossbones or any 2 buffs excluding Grand Melee in single target
@@ -11,9 +11,9 @@ actions+=/variable,name=rtb_reroll,if=!talent.crackshot&talent.hidden_opportunit
 actions+=/variable,name=rtb_reroll,value=variable.rtb_reroll|rtb_buffs.normal=0&rtb_buffs.longer>=1&rtb_buffs<5&rtb_buffs.max_remains<=39
 # Avoid rerolls when we will not have time remaining on the fight or add wave to recoup the opportunity cost of the global
 actions.precombat+=/variable,name=rtb_reroll,op=reset,if=!(raid_event.adds.remains>12|raid_event.adds.up&(raid_event.adds.in-raid_event.adds.remains)<6|target.time_to_die>12)|boss&fight_remains<12
-actions.precombat+=/blade_flurry,precombat_seconds=3,if=talent.underhanded_upper_hand
+actions.precombat+=/blade_flurry,precombat_seconds=3,if=refreshable&talent.underhanded_upper_hand
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=refreshable&variable.rtb_reroll
-actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=talent.improved_adrenaline_rush
+actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=refreshable&talent.improved_adrenaline_rush
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 actions.precombat+=/stealth
 
@@ -50,6 +50,9 @@ actions.build+=/pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&(buff.o
 actions.build+=/pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&combo_points.deficit>((1+talent.quick_draw)*talent.fan_the_hammer.rank)&(!cooldown.vanish.ready&!cooldown.shadow_dance.ready|stealthed.all|!talent.crackshot|talent.fan_the_hammer.rank<=1)
 # If not using Fan the Hammer, then consume Opportunity based on energy, when it will exactly cap CPs, or when using Quick Draw
 actions.build+=/pistol_shot,if=!talent.fan_the_hammer&buff.opportunity.up&(energy.base_deficit>energy.regen*1.5|combo_points.deficit<=1+buff.broadside.up|talent.quick_draw.enabled|talent.audacity.enabled&!buff.audacity.up)
+# Fallback pooling just so Sinister Strike is never casted if Ambush is available for Hidden Opportunity builds
+actions.build+=/pool_resource,for_next=1
+actions.build+=/ambush,if=talent.hidden_opportunity
 actions.build+=/sinister_strike
 
 ## Cooldowns
@@ -64,10 +67,11 @@ actions.cds+=/keep_it_rolling,if=!variable.rtb_reroll&rtb_buffs>=3+set_bonus.tie
 actions.cds+=/ghostly_strike
 # Use Sepsis to trigger Crackshot or if the target will survive its DoT
 actions.cds+=/sepsis,if=talent.crackshot&cooldown.between_the_eyes.ready&variable.finish_condition&!stealthed.all|!talent.crackshot&target.time_to_die>11&buff.between_the_eyes.up|boss&fight_remains<11
+# Crackshot builds use stealth cooldowns if Between the Eyes is ready
+actions.cds+=/call_action_list,name=stealth_cds,if=!stealthed.all&(!talent.crackshot|cooldown.between_the_eyes.ready)
+actions.cds+=/thistle_tea,if=!buff.thistle_tea.up&(energy.base_deficit>=100|fight_remains<charges*6)
 # Use Blade Rush at minimal energy outside of stealth
 actions.cds+=/blade_rush,if=energy.base_time_to_max>4&!stealthed.all
-actions.cds+=/call_action_list,name=stealth_cds,strict=1,if=!stealthed.all&(!talent.crackshot|cooldown.between_the_eyes.ready)
-actions.cds+=/thistle_tea,if=!buff.thistle_tea.up&(energy.base_deficit>=100|boss&fight_remains<charges*6)
 actions.cds+=/potion,if=buff.bloodlust.react|boss&fight_remains<30|buff.adrenaline_rush.up
 actions.cds+=/blood_fury
 actions.cds+=/berserking
