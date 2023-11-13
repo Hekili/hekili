@@ -75,7 +75,7 @@ spec:RegisterTalents( {
     commanding_light                = { 81580, 387781, 1 }, -- Beacon of Light transfers an additional $s1% of the amount healed.
     crusaders_might                 = { 81594, 196926, 1 }, -- Crusader Strike reduces the cooldown of Holy Shock by ${$m1/-1000}.1 sec.
     daybreak                        = { 81579, 414170, 1 }, -- Absorb your active Glimmer of Lights, triggering their effects at $s3% value and $?a415244[restoring ${$415246s3*$415244s1} Mana over $415246d, but your healing and damage is decreased by $415246s1%][granting $414176s1 Mana per Glimmer of Light consumed].
-    divine_favor                    = { 81570, 210294, 1 }, -- The healing of your next Holy Light or Flash of Light is increased by $m1%, its cast time is reduced by $s2%, and its Mana cost is reduced by $s3%.
+    divine_favor                    = { 81570, 210294, 1 }, -- The healing of your next Holy Light or Flash of Light is increased by $m1%, its cast time is reduced by $s2%, and its mana cost is reduced by $s3%.
     divine_glimpse                  = { 81585, 387805, 1 }, -- Holy Shock and Judgment have a $s1% increased critical strike chance.
     divine_purpose                  = { 93191, 223817, 1 }, -- Holy Power abilities have a $s1% chance to make your next Holy Power ability free and deal $223819s2% increased damage and healing.
     divine_resonance                = { 93180, 386738, 1 }, -- [386732] After casting Divine Toll, you instantly cast $?c2[Avenger's Shield]?c1[Holy Shock][Judgment] every $386730t1 sec for $386730s2 sec.
@@ -353,6 +353,19 @@ spec:RegisterAuras( {
     mastery_lightbringer = {
         id = 183997,
     },
+     -- Restores health to $210291s2 injured allies within $210291A1 yards every $t1 sec.
+     merciful_auras = {
+        id = 183415,
+        duration = 0.0,
+        tick_time = 2.0,
+        max_stack = 1,
+
+        -- Affected by:
+        -- holy_paladin[137029] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -18.0, 'modifies': DAMAGE_HEALING, }
+        -- holy_paladin[137029] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -18.0, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- aura_mastery[31821] #4: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'target2': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
+        -- beacon_of_faith[156910] #2: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
+    },
     of_dusk_and_dawn = {
         id = 385125,
     },
@@ -435,6 +448,30 @@ spec:RegisterAuras( {
         duration = 15.0,
         max_stack = 1,
     },
+} )
+
+
+
+spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194 )
+spec:RegisterAuras( {
+    holy_reverberation = { -- TODO: Is actually multiple applications, not true stacks; check SimC.
+        id = 423377,
+        duration = 8,
+        max_stack = 6,
+        friendly = true,
+        copy = { "holy_reverberation_heal", "holy_reverberation_buff" }
+    },
+    holy_reverberation_dot = {
+        id = 423379,
+        duration = 8,
+        max_stack = 6,
+        copy = { "holy_reverberation_dmg", "holy_reverberation_debuff" }
+    },
+    first_light = {
+        id = 427946,
+        duration = 6,
+        max_stack = 1
+    }
 } )
 
 
@@ -939,9 +976,7 @@ spec:RegisterAbilities( {
     cleanse = {
         id = 4987,
         cast = 0,
-        charges = 1,
         cooldown = 8,
-        recharge = 8,
         gcd = "spell",
 
         spend = 0.06,
@@ -950,7 +985,15 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 135949,
 
+        toggle = "interrupts",
+        usable = function() return buff.dispellable_magic.up or talent.improved_cleanse.enabled and ( buff.dispellable_poison.up or buff.dispellable_disease.up ), "requires a dispellable effect" end,
+
         handler = function ()
+            removeBuff( "player", "dispellable_magic" )
+            if talent.improved_cleanse.enabled then
+                removeBuff( "player", "dispellable_poison" )
+                removeBuff( "player", "dispellable_disease" )
+            end
         end,
     },
 
@@ -1032,7 +1075,7 @@ spec:RegisterAbilities( {
     daybreak = {
         id = 414170,
         cast = 0.0,
-        cooldown = 60.0,
+        cooldown = function () return set_bonus.tier31_4pc > 0 and 45 or 60 end,
         gcd = "spell",
 
         talent = "daybreak",
@@ -1043,6 +1086,11 @@ spec:RegisterAbilities( {
             applyBuff( "divine_plea" )
 
             if talent.rising_sunlight.enabled then applyBuff( "rising_sunlight", nil, 3 ) end
+
+            if set_bonus.tier31_4pc > 0 then
+                applyBuff( "first_light" )
+                stat.haste = stat.haste + 0.25
+            end
         end
     },
 
@@ -1117,7 +1165,7 @@ spec:RegisterAbilities( {
 
     flash_of_light = {
         id = 19750,
-        cast = 1.5,
+        cast = function() return 1.5 * ( buff.divine_favor.up and 0.7 or 1 ) end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1235,7 +1283,7 @@ spec:RegisterAbilities( {
     -- TODO: Verify if removed (or not).
     holy_light = {
         id = 82326,
-        cast = 2.5,
+        cast = function () return buff.hand_of_divinity.up and 0 or 2.5 end,
         cooldown = 0,
         gcd = "spell",
 
@@ -1247,6 +1295,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "divine_favor" )
+            removeStack( "hand_of_divinity" )
+
             if buff.infusion_of_light.up then
                 removeBuff( "infusion_of_light" )
                 gain( 2, "holy_power" )
@@ -1266,7 +1316,7 @@ spec:RegisterAbilities( {
         cooldown = 20,
         gcd = "spell",
 
-        spend = 0.13,
+        spend = 0.026,
         spendType = "mana",
 
         startsCombat = true,
@@ -1289,7 +1339,7 @@ spec:RegisterAbilities( {
         recharge = function() return talent.lights_conviction.enabled and ( 8.5 - ( 2 * talent.imbued_infusions.rank ) - ( 1.5 * talent.crusaders_might.rank ) ) or nil end,
         gcd = "spell",
 
-        spend = 0.024,
+        spend = 0.028,
         spendType = "mana",
 
         startsCombat = true,
@@ -1312,6 +1362,8 @@ spec:RegisterAbilities( {
             if talent.glimmer_of_light.enabled then
                 if debuff.glimmer_of_light.down then
                     applyDebuff( "target", "glimmer_of_light" )
+                elseif set_bonus.tier31_2pc > 0 then
+                    applyDebuff( "target", "holy_reverberation_dot" )
                 end
                 if active_dot.glimmer_of_light > class.auras.glimmer_of_light.max_applications then
                     active_dot.glimmer_of_light = class.auras.glimmer_of_light.max_applications

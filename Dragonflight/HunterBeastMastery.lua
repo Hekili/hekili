@@ -1,5 +1,5 @@
 -- HunterBeastMastery.lua
--- October 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
@@ -14,21 +14,6 @@ local spec = Hekili:NewSpecialization( 253, true )
 
 
 spec:RegisterResource( Enum.PowerType.Focus, {
-    aspect_of_the_wild = {
-        resource = "focus",
-        aura = "aspect_of_the_wild",
-
-        last = function ()
-            local app = state.buff.aspect_of_the_wild.applied
-            local t = state.query_time
-
-            return app + floor( t - app )
-        end,
-
-        interval = 1,
-        value = 5,
-    },
-
     barbed_shot = {
         resource = "focus",
         aura = "barbed_shot",
@@ -216,21 +201,20 @@ spec:RegisterTalents( {
     a_murder_of_crows           = { 79943, 131894, 1 }, -- Summons a flock of crows to attack your target, dealing 7,755 Physical damage over 15 sec. If the target dies while under attack, A Murder of Crows' cooldown is reset.
     animal_companion            = { 79947, 267116, 1 }, -- Your Call Pet additionally summons the first pet from your stable. This pet will obey your Kill Command, but cannot use pet family abilities and both of your pets deal 35% reduced damage.
     aspect_of_the_beast         = { 79944, 191384, 1 }, -- Increases the damage and healing of your pet's abilities by 30%. Increases the effectiveness of your pet's Predator's Thirst, Endurance Training, and Pathfinding passives by 50%.
-    aspect_of_the_wild          = { 79950, 193530, 1 }, -- Fire off a Cobra Shot at your current target and 2 other enemies near your current target. For the next 20 sec, your Cobra Shot will fire at 2 extra targets and Cobra Shot Focus cost is reduced by 10.
     barbed_shot                 = { 79968, 217200, 1 }, -- Fire a shot that tears through your enemy, causing them to bleed for 3,329 damage over 8 sec and increases your critical strike chance by 3% for 8 sec, stacking up to 3 times. Sends your pet into a frenzy, increasing attack speed by 30% for 8 sec, stacking up to 3 times. Generates 20 Focus over 8 sec.
     barbed_wrath                = { 79822, 231548, 1 }, -- Barbed Shot reduces the cooldown of Bestial Wrath by 12.0 sec.
     beast_cleave                = { 79956, 115939, 2 }, -- After you Multi-Shot, your pet's melee attacks also strike all nearby enemies for 35% of the damage for the next 3.0 sec. Deals reduced damage beyond 8 targets.
     bestial_wrath               = { 79955, 19574 , 1 }, -- Sends you and your pet into a rage, instantly dealing 1,104 Physical damage to its target, and increasing all damage you both deal by 25% for 15 sec. Removes all crowd control effects from your pet. Bestial Wrath's remaining cooldown is reduced by 12 sec each time you use Barbed Shot and activating Bestial Wrath grants 1 charge of Barbed Shot.
     bloodshed                   = { 79943, 321530, 1 }, -- Command your pet to tear into your target, causing your target to bleed for 2,549 over 18 sec and increase all damage taken from your pet by 15% for 18 sec.
-    bloody_frenzy               = { 79946, 407412, 1 }, -- While Call of the Wild is active, your pets have the effects of Beast Cleave, and Cobra Shot applies Serpent Sting to any target hit.
+    bloody_frenzy               = { 79946, 407412, 1 }, -- While Call of the Wild is active, your pets have the effects of Beast Cleave, and each time Call of the Wild summons a pet, all of your pets Stomp.
     brutal_companion            = { 79816, 386870, 1 }, -- When Barbed Shot causes Frenzy to stack up to 3, your pet will immediately use its special attack and deal 50% bonus damage.
-    call_of_the_wild            = { 79967, 359844, 1 }, -- You sound the call of the wild, summoning 2 of your active pets for 20 sec. During this time, a random pet from your stable will appear every 4 sec to assault your target for 6 sec.
+    call_of_the_wild            = { 79967, 359844, 1 }, -- You sound the call of the wild, summoning $s1 of your active pets for $d. During this time, a random pet from your stable will appear every $t2 sec to assault your target for $361582d. ; Each time Call of the Wild summons a pet, the cooldown of Barbed Shot and Kill Command are reduced by $s3%.
     cobra_senses                = { 79963, 378244, 1 }, -- Cobra Shot reduces the cooldown of Kill Command by an additional 1.0 sec.
     cobra_shot                  = { 79949, 193455, 1 }, -- A quick shot causing 1,995 Physical damage. Reduces the cooldown of Kill Command by 1 sec.
     cobra_sting                 = { 79941, 378750, 2 }, -- Cobra Shot has a 25% chance to make your next Kill Command consume no Focus.
     counter_shot                = { 79912, 147362, 1 }, -- Interrupts spellcasting, preventing any spell in that school from being cast for 3 sec.
     dire_beast                  = { 79959, 120679, 1 }, -- Summons a powerful wild beast that attacks the target and roars, increasing your Haste by 5% for 8 sec.
-    dire_command                = { 79953, 378743, 3 }, -- Kill Command has a 30% chance to also summon a Dire Beast to attack your target for 8 sec.
+    dire_command                = { 79953, 378743, 2 }, -- Kill Command has a $s1% chance to also summon a Dire Beast to attack your target for $120679d.
     dire_frenzy                 = { 79823, 385810, 2 }, -- Dire Beast lasts an additional 1 sec and deals 20% increased damage.
     dire_pack                   = { 79940, 378745, 1 }, -- Every 5 Dire Beasts summoned resets the cooldown of Kill Command, and reduces the Focus cost and cooldown of Kill Command by 50% for 8 sec.
     hunters_prey                = { 79951, 378210, 1 }, -- Kill Command has a 10% chance to reset the cooldown of Kill Shot, and causes your next Kill Shot to be usable on any target, regardless of the target's health.
@@ -240,21 +224,21 @@ spec:RegisterTalents( {
     killer_cobra                = { 79961, 199532, 1 }, -- While Bestial Wrath is active, Cobra Shot resets the cooldown on Kill Command.
     killer_command              = { 79939, 378740, 2 }, -- Kill Command damage increased by 5%.
     kindred_spirits             = { 79957, 56315 , 2 }, -- Increases your maximum Focus and your pet's maximum Focus by 20.
-    master_handler              = { 79962, 389654, 1 }, -- Each temporary beast summoned reduces the cooldown of Aspect of the Wild by 4.0 sec.
+    master_handler              = { 79962, 424558, 1 }, -- Each time Barbed Shot deals damage, the cooldown of Kill Command is reduced by ${$m1/1000}.2 sec.
     multishot                   = { 79917, 2643  , 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 197 Physical damage. Deals reduced damage beyond 5 targets.
     one_with_the_pack           = { 79960, 199528, 2 }, -- Wild Call has a 20% increased chance to reset the cooldown of Barbed Shot.
     pack_tactics                = { 79958, 321014, 1 }, -- Passive Focus generation increased by 100%.
     piercing_fangs              = { 79961, 392053, 1 }, -- While Bestial Wrath is active, your pet's critical damage dealt is increased by 35%.
+    savagery                    = { 79950, 424557, 1 }, -- Kill Command damage is increased by $s1%. Barbed Shot lasts ${$m2/1000}.1 sec longer.
     scent_of_blood              = { 79965, 193532, 2 }, -- Activating Bestial Wrath grants 1 charge of Barbed Shot.
     sharp_barbs                 = { 79945, 378205, 2 }, -- Barbed Shot damage increased by 1%.
-    snake_bite                  = { 79962, 389660, 1 }, -- While Aspect of the Wild is active, Cobra Shot deals 75% increased damage.
     stomp                       = { 79942, 199530, 2 }, -- When you cast Barbed Shot, your pet stomps the ground, dealing 378 Physical damage to all nearby enemies.
-    thrill_of_the_hunt          = { 79964, 257944, 3 }, -- Barbed Shot increases your critical strike chance by 3% for 8 sec, stacking up to 1 time.
+    thrill_of_the_hunt          = { 79964, 257944, 2 }, -- Barbed Shot increases your critical strike chance by $257946s1% for $257946d, stacking up to $s2 $Ltime:times;.
     training_expert             = { 79948, 378209, 2 }, -- All pet damage dealt increased by 5%.
     wailing_arrow               = { 79938, 392060, 1 }, -- Fire an enchanted arrow, dealing 4,352 Shadow damage to your target and an additional 1,764 Shadow damage to all enemies within 8 yds of your target. Non-Player targets struck by a Wailing Arrow have their spellcasting interrupted and are silenced for 3 sec.
     war_orders                  = { 79952, 393933, 2 }, -- Barbed Shot deals 10% increased damage, and applying Barbed Shot has a 25% chance to reset the cooldown of Kill Command.
     wild_call                   = { 79966, 185789, 1 }, -- Your auto shot critical strikes have a 20% chance to reset the cooldown of Barbed Shot.
-    wild_instincts              = { 79946, 378442, 1 }, -- While Call of the Wild is active, Barbed Shot has a 25% chance to gain a charge any time Focus is spent.
+    wild_instincts              = { 79946, 378442, 1 }, -- While Call of the Wild is active, each time you Kill Command, your Kill Command target takes $424567s1% increased damage from all of your pets, stacking up to $424567u times.
 } )
 
 
@@ -267,7 +251,7 @@ spec:RegisterPvpTalents( {
     hunting_pack        = 3730, -- (203235) Aspect of the Cheetah has 50% reduced cooldown and grants its effects to allies within 15 yds.
     interlope           = 1214, -- (248518) Misdirection now causes the next 3 hostile spells cast on your target within 10 sec to be redirected to your pet, but its cooldown is increased by 15 sec. Your pet must be within 20 yards of the target for spells to be redirected.
     kindred_beasts      = 5444, -- (356962) Command Pet's unique ability cooldown reduced by 50%, and gains additional effects.
-    survival_tactics    = 3599, -- (202746) Feign Death dispels all harmful magical effects, and reduces damage taken by 90% for 1.5 sec.
+    survival_tactics    = 3599, -- (202746) Feign Death reduces damage taken by $m1% for $202748d.
     the_beast_within    = 693 , -- (356976) Bestial Wrath now provides immunity to Fear and Horror effects for you and your pets for 8 sec. Nearby allied pets are also inspired, increasing their attack speed by 10%.
     tranquilizing_darts = 5418, -- (356015) Interrupting or removing effects with Tranquilizing Shot and Counter Shot releases 8 darts at nearby enemies, each reducing the duration of a beneficial Magic effect by 4 sec.
     wild_kingdom        = 5441, -- (356707) Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
@@ -345,19 +329,11 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    -- Talent: Cobra Shot Focus cost reduced by $s2.  Cobra Shot will fire at $s1 additional $Ltarget:targets;.$?$w3!=0[  Cobra Shot damage increased by $w3%.][]
-    -- https://wowhead.com/beta/spell=193530
-    aspect_of_the_wild = {
-        id = 193530,
-        duration = 20,
-        type = "Ranged",
-        max_stack = 1
-    },
     -- Talent: Suffering $w1 damage every $t1 sec.
     -- https://wowhead.com/beta/spell=217200
     barbed_shot = {
         id = 246152,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -365,7 +341,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_2 = {
         id = 246851,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -373,7 +349,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_3 = {
         id = 246852,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -381,7 +357,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_4 = {
         id = 246853,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -389,7 +365,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_5 = {
         id = 246854,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -397,7 +373,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_6 = {
         id = 284255,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -405,7 +381,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_7 = {
         id = 284257,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -413,7 +389,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_8 = {
         id = 284258,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -421,7 +397,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_dot = {
         id = 217200,
-        duration = 8,
+        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -749,11 +725,12 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    -- Can always be seen and tracked by the Hunter.
+    -- Can always be seen and tracked by the Hunter.; Damage taken increased by $428402s4% while above $s3% health.
     -- https://wowhead.com/beta/spell=257284
     hunters_mark = {
         id = 257284,
         duration = 3600,
+        tick_time = 0.5,
         type = "Magic",
         max_stack = 1
     },
@@ -1013,6 +990,12 @@ spec:RegisterAuras( {
         type = "Ranged",
         max_stack = 1
     },
+    -- Reduces damage taken by $202746s1%, up to a maximum of $w1.
+    survival_tactics = {
+        id = 202748,
+        duration = 3.0,
+        max_stack = 1,
+    },
     -- Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=263852
     talon_rend = {
@@ -1102,6 +1085,12 @@ spec:RegisterAuras( {
         id = 185791,
         duration = 4,
         max_stack = 1
+    },
+    -- Damage taken from $@auracaster's Pets increased by $s1%.
+    wild_instincts = {
+        id = 424567,
+        duration = 8,
+        max_stack = 10,
     },
     -- Suffering $w1 Fire damage every $t1 sec.
     -- https://wowhead.com/beta/spell=269747
@@ -1212,6 +1201,8 @@ local ExpireNesingwarysTrappingApparatus = setfenv( function()
 end, state )
 
 
+spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221 )
+
 spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
 spec:RegisterAura( "lethal_command", {
     id = 394298,
@@ -1223,6 +1214,10 @@ spec:RegisterAura( "lethal_command", {
 spec:RegisterHook( "reset_precast", function()
     if debuff.tar_trap.up then
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
+    end
+
+    if talent.blood_frenzy.enabled and buff.call_of_the_wild.up then
+        applyBuff( "beast_cleave", max( buff.beast_cleave.remains, buff.call_of_the_wild.remains ) )
     end
 
     if buff.nesingwarys_apparatus.up then
@@ -1289,7 +1284,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "a_murder_of_crows" )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end -- ???
         end,
     },
 
@@ -1346,7 +1340,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Fire off a Cobra Shot at your current target and $s1 other $Lenemy:enemies; near your current target. For the next $d, your Cobra Shot will fire at $s1 extra $Ltarget:targets; and Cobra Shot Focus cost reduced by $s2.$?s389654[    Each temporary beast summoned reduces the cooldown of Aspect of the Wild by ${$389654m1/1000}.1 sec.][]$?s389660[    While Aspect of the Wild is active, Cobra Shot deals $389660s1% increased damage.][]
+    --[[ Talent: Fire off a Cobra Shot at your current target and $s1 other $Lenemy:enemies; near your current target. For the next $d, your Cobra Shot will fire at $s1 extra $Ltarget:targets; and Cobra Shot Focus cost reduced by $s2.$?s389654[    Each temporary beast summoned reduces the cooldown of Aspect of the Wild by ${$389654m1/1000}.1 sec.][]$?s389660[    While Aspect of the Wild is active, Cobra Shot deals $389660s1% increased damage.][]
     aspect_of_the_wild = {
         id = 193530,
         cast = 0,
@@ -1370,7 +1364,7 @@ spec:RegisterAbilities( {
 
             if azerite.primal_instincts.enabled then gainCharges( "barbed_shot", 1 ) end
         end,
-    },
+    }, ]]
 
     -- Talent: Fire a shot that tears through your enemy, causing them to bleed for ${$s1*$s2} damage over $d$?s257944[ and  increases your critical strike chance by $257946s1% for $257946d, stacking up to $257946u $Ltime:times;][].    Sends your pet into a frenzy, increasing attack speed by $272790s1% for $272790d, stacking up to $272790u times.    |cFFFFFFFFGenerates ${$246152s1*$246152d/$246152t1} Focus over $246152d.|r
     barbed_shot = {
@@ -1449,8 +1443,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "bestial_wrath" )
-            if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
             if talent.scent_of_blood.enabled then gainCharges( "barbed_shot", 2 ) end
+            if set_bonus.tier31_2pc > 0 then
+                applyBuff( "dire_beast", 15 )
+                summonPet( "dire_beast", 15 )
+            end
+            if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
         end,
     },
 
@@ -1492,7 +1490,7 @@ spec:RegisterAbilities( {
     call_of_the_wild = {
         id = 359844,
         cast = 0,
-        cooldown = 180,
+        cooldown = 120,
         gcd = "spell",
         school = "nature",
 
@@ -1504,11 +1502,10 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "call_of_the_wild" )
             if talent.bloody_frenzy.enabled then applyBuff( "beast_cleave", 20 ) end
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
-    -- Talent: You and your pet blend into the surroundings and gain stealth for $d. While camouflaged, you will heal for $s4% of maximum health every $T4 secs.
+    -- Talent: You and your pet blend into the surroundings and gain stealth for $d. While camouflaged, you will heal for $s4% of maximum health every $T4 sec.
     camouflage = {
         id = 199483,
         cast = 0,
@@ -1532,7 +1529,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return buff.aspect_of_the_wild.up and 25 or 35 end,
+        spend = 35,
         spendType = "focus",
 
         talent = "cobra_shot",
@@ -1541,10 +1538,6 @@ spec:RegisterAbilities( {
         handler = function ()
             if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end
 
-            if talent.bloody_frenzy.enabled and buff.call_of_the_wild.up then
-                applyDebuff( "target", "serpent_sting" )
-                if buff.aspect_of_the_wild.up then active_dot.serpent_sting = max( active_enemies, active_dot.serpent_sting + 2 ) end
-            end
             if talent.killer_cobra.enabled and buff.bestial_wrath.up then setCooldown( "kill_command", 0 )
             else
                 gainChargeTime( "kill_command", talent.cobra_senses.enabled and 2 or 1 )
@@ -1628,7 +1621,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "dire_beast" )
             summonPet( "dire_beast", 8 )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
@@ -1650,7 +1642,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "dire_beast_basilisk" )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
@@ -1671,7 +1662,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "dire_beast_hawk" )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
@@ -1679,11 +1669,10 @@ spec:RegisterAbilities( {
     disengage = {
         id = 781,
         cast = 0,
-        charges = 1,
-        cooldown = 1,
-        recharge = 20,
+        cooldown = 20,
         gcd = "off",
         school = "physical",
+        icd = 0.5,
 
         startsCombat = false,
 
@@ -1771,6 +1760,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "feign_death" )
+
+            if pvptalent.survival_tactics.enabled then
+                applyBuff( "survival_tactics" )
+            end
 
             if legendary.craven_strategem.enabled then
                 removeDebuff( "player", "dispellable_curse" )
@@ -1870,11 +1863,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Apply Hunter's Mark to the target, causing the target to always be seen and tracked by the Hunter.    Only one Hunter's Mark can be applied at a time.
+    -- Apply Hunter's Mark to the target, causing the target to always be seen and tracked by the Hunter.; Hunter's Mark increases all damage dealt to targets above $s3% health by $428402s1%. Only one Hunter's Mark damage increase can be applied to a target at a time.; Hunter's Mark can only be applied to one target at a time. When applying Hunter's Mark in combat, the ability goes on cooldown for ${$s5/1000} sec.
     hunters_mark = {
         id = 257284,
         cast = 0,
-        cooldown = 0,
+        cooldown = function () return time > 0 and 20 or 0 end,
         gcd = "totem",
         school = "nature",
 
@@ -1945,8 +1938,8 @@ spec:RegisterAbilities( {
 
             if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
 
-            if conduit.ferocious_appetite.enabled and stat.crit >= 100 then
-                reduceCooldown( "aspect_of_the_wild", conduit.ferocious_appetite.mod / 10 )
+            if talent.wild_instincts.enabled and buff.call_of_the_wild.up then
+                applyDebuff( "target", "wild_instincts", nil, buff.wild_instincts.stack + 1 )
             end
         end,
     },
@@ -2039,6 +2032,26 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "beast_cleave" )
             if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
+        end,
+    },
+
+    -- Talent: Interrupts spellcasting, preventing any spell in that school from being cast for $d.
+    muzzle = {
+        id = 187707,
+        cast = 0,
+        cooldown = 15,
+        gcd = "off",
+        school = "physical",
+
+        startsCombat = true,
+        toggle = "interrupts",
+
+        debuff = "casting",
+        readyTime = state.timeToInterrupt,
+
+        handler = function ()
+            if conduit.reversal_of_fortune.enabled then gain( conduit.reversal_of_fortune.mod, "focus" ) end
+            interrupt()
         end,
     },
 
@@ -2172,7 +2185,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "stampede" )
-            if talent.master_handler.enabled then reduceCooldown( "aspect_of_the_wild", 4 ) end
         end,
     },
 
@@ -2393,4 +2405,4 @@ spec:RegisterSetting( "check_pet_range", false, {
 } )
 
 
-spec:RegisterPack( "Beast Mastery", 20230624, [[Hekili:T3vBZjoos4FltT1XaBsiXoq2jBb8HDR7dZC3T1wh7v73W4ymGVa2S(LKjxLIF7xl5xLCRxSbMj7S8LziiPNUv3TEuBzH0mJz)2SPlSJDN9lM3yE7n3zoOVXWbMdNnn(LDUZMUZ25r7vWh8T3c)7p5AhfVF()c(x3Wxif)YMa7feuIcscDGQ8D7NVooEx0pE91R8IxN8qFNGTxh5TnzJDSxGVtO9YyYF7C9SPpK4Tj(J(ZEavlg8HztTtIxheoB6uVT)8SPR9wSWnT6UroZMsQ(v3C3vMd(X9Z)prU7N)p82Sz)8Foy7wB)f7N75d)Xgx7NGIEguNIkK9DX2BC9J7V)t7)ukwdUY8ocw7i6Z(5ldd2UF(0cT)NjAFLQF7vMFaQ((5)BBhpBayNGGnlcEgeBsey42p3EX)nbSwGUSmieeSnr8blbrVgk9392aL8uu)9Z)j3Oyke)EOD86(ZMUXlkoI6GCxANSjg(4VqDyU(2pSXDXSFk1me6TJOAZM(3)SRtcvuUpbUhqeEBDZeKTtmr8ErWhFY2BdbbqgWxtBQtqIp4sTIwheplg8de5KxyCOT)FaEkV)NN)Q0QurhGAFlNwvGk0zTs)dlsVjTpzLgl5SiI02bTPTXHE(p6gtbyihaG9a6jE2Pq9KRLRV7wpxOJpA)CZ9ZF919ZFxHN)bseTLdnCOFgk7N3HAW4B8TquoizNyIFqpfnIAnVtBvCsHk2u9dAPrZ1VuGNr0YP7cDHHQpyxgOLdruY2TqR35Y74zctEiiogkXA5g7xCx8mjwjo4ZE(kcwiIL0hjbRZMA0Fyf5g76UXcc)2v1Mv68EgcKjIXomm4zgRtwfkbiV00UAr8dYqQaqyrKEAUw8KniwOuYN2K4syTwUSp1SgS0cgDz9mmkUFYUuhxodq9Ae6U12ZxqGyTAxT70D)CWm9K1kNf9nGycktH1ZeIcoHYuwUeTwL4gvi3E0UuEa6l(owj7kCM1neElXnfmiKjiC3KOUwMb1YDtejuuLDRW(RtNflstTNLOZPHg9Jn7V2oYQKpNoOmVqdAHjrUwKGHCFu9MxwdMMB2VOpSijKoZc17ubFKkWdr(OMAnTSaXnzSOM0rLEowLE2Rm2U92R0A8xhlgZOYSABzybe6b(RCdXMQSzXZgYINXT(Y8GCdhu4Dqnl8qG7Dmf6Dme5Dmf5Dq1ZXQ0tK45MBV4IN)M3IHgpBYepZN5wz(M0AtsNztqC1)MyodwUKmpinhNYzB6Q00Np4OF2uE1((6d6eZAxmvEzSrRWht1kWEIk)W1LzlkjWuQ(prO0VcsOCOAaGQnKg(jaMocl5I9ZhCdvdw6TADSfVnTMHZSMHtQMPrvAVYpbgdyEJgbiPIGuDXY44gciIAHZklvUxOcpuVwVcFhUjXEXlsTPPMuXvqj)yQ1GrtuZjRvIihfwcDLbQzrPqYQhRFWoCfP(aVo8Wywl8sNQWC4rRF1JIe9rIwg66))EPVOG3IhYd5jI5O(n5O(n1L6xhdReQztrDEJJd1FDgmng3ljsx1ZKiv)Be1pgaTN9SXu)1NZuQMPrvAVYJs9lwehdQFDdbe9usTL6hfpDP(novu)sMiui1poXGw5SFuyj0vgQP(fmu(iq930(LMu)Mmu)XPR8lYcVvYOlFb2uVWsL6f7keLJWdbrPJc4IJbZJXTvwqt3Wi3Wh98xHT8yVnu37QOUBccwyTmj8fSf)6nN6A77anpeAorqyRVXBcv((snEPxOl1il)1oCuu2Uc13QfsuMnjrXfONnOFTR9gO67CIthZFtvIbjD2BR8Ed2fq)F6i2i0x(urGND4dUlYEXqC2HmIHmfhLRyembjzHT3A)z6Sp30NWrbFOcUwRcTDCT2bihSiVRMUe)oW)smJuJrDhEM0IITDEmTpslRGqJFnKHjQGoXloBawtQXmI0XLo(Fzc4idDDwtQF56Xu0N6uOS2B2T22AxO7c74GWY1bp3s(OhGKt6lVSyqmZlYPs8c37vzq16UWf6nwGg9yO9wUkoK5L2qSArRD5r7oM3)tS92DUlC5QZpuTo2wBtcx4gs0qNWGNJ4Q8hybS8f7WuR7Rwl3pVBtqe5TCH8ohnUHPBu1lYxtM3LfJjMRI8Uyfb45VfkWxybrYXE(oXr1JafsfuT9KkX000OPiRLHPAb5ndtEhF9hK2ync6egJNnWtVrrDvdeHz3KoKTq8IuXQ1bA2h0srjuydOTTlTjxvbKE0VhtuQP7UhFKUbZWUfaRVf91WYhUi6vxdjnSJyojreRQgWe6cSrrRjniJvOEkAGpopPwbA3WAHZydpygaBhTZ1jwc5HbZyzNGhcTrr9dYN1djnq30nLqLvJwIdPY7(L5D7sL99YLnBSdjCQjI7b7vuZtONZJ0xEO5nNsXzh6y7dZNLqE1NePjoz4UKDoIts6tMr)eyFx56t)BYJP3l9r8OLadjQjeyMgWTeNL7D6l8V5ZMVWL2T3yhtcT3f4ff4NpRk4MVNjXKwpRVEusAWxOlFudPm7PxUbV1Zmsv38uzaXTEkEufMTatvvSWCKPaL29TjBI9Y3ltd0nrbXP0NzrtZDGzV4io3T7AqUB)G2P9OGaUXpEJXqK084tetusIS5GjlNt2CWeM(NHztsP0q0(o7aPWo086KLXXHK5NPq(hHPICIYC9K1d1oLhbzWFNEzU9dFDYC7WYEIXRgs2vUALvKaYZcs7VhsUwaZP5nnkjsjjXKMDsU5kp7FgDilYIO01Lu(0KQXzaAASeTtXc4DkZD1u5uChsYK1ZDv8kPjnBYBVPjzt(lM68Ki0SoFYnmIuP0939aZ7i2OqFWgbC6)gz)j7TDxqy8(0nj97Z2XZVF)8q3)ibggd8grbeNGDsCWwB6MCgyr8bwK(7)0)0ZhkA4ps243(GSOf)EKDqlayCaEr5euqv6A85EfOE3rg19FcP)wS1BBwp(wCDJj8Jt5q3YS89zb4woTnhO13MTk6VzVBGOM1DnWvl(zP4uorlZkFN28KIEntA2BhHDxMwao7RTQsXAbk77yQgO1kwlqnLdATI1e0AVkpeKXQZjfELaJ8kirmZTwVBl8kbUY7IdZquPmD1tHWz0C4EZRDkDkNJv1gEna(ml2bbVsGBRRtt9UTWRe4388eVT1oLoLZXQAdFbWdKYIL3qbSyvkMrBfb6bXIjxtBjFRyqBND9edVsGBBCSM6DBHxjWTKTqIE2gUS)0QDkDkNJv1gEna(ml2bbVsGBRRtt9UTWRe4388eVT1oLoLZXQAdFbW1wE5JbHJiqROjzl6VmLTSkNqWvcBBJm0uRBl8kb(GMg64AJpPGFIG9SoFwNFBQZTLXqtTUTWFYa(SE3o9Mj2YEXlYd(sRGwACZbUjq2O0yAUg3i4vc8jklPZZCF2qC4W(1rN3bnGuL(iB)OCGXlslTTLpLkhCb7CthIhLEyk((UcgZ2Pl)Vc(kFtwBQ8Z4(1xLyZ696RVRrOXl8mCMuTdZZz93mz0bM(IeDBcQKUYyOSgD1WrOnRd63EXGBMWSHVa7HKFSUD6krYslSzQ1KXM3i1TD1WjJXX7qDpiLpIXcjqcxidboBCVEI6CWeZcSiM3GxWimGk7zuz9oHdK6(orXLhYik1yY11KciuEQfR2gHDK5Wdqp71bHYBIaIlkP23mesxFMqQzQ1xwcPR)MLq66ZeshfcPICOQTNHZQ9bLMUiqnuNvkAvoHGRewKGqTEmtn162cVsGpONI94AJpPGFIG9SoFwNFBQZTLXqtTUTWFYa(SE3o9Mj2cBfDrQGwACZbUjq2O1lV5ACJGxjWNOSKopZ9zdXHd7xhD(iTuXsOlBZoqIdojlvS8NWdDTumXE(S62mnxzgt9xzgK5f4wls8vMPUUPXkZuVrnBjq0ALzmWwzM6swAHntT4wzgm4A7kZOY9GuEdxzgeeKTYm8tm36vMbzYYAlvm)aPUIx0MdyeLAmfVYmiddA4kZOREQyLzqi1(MHq66ZesntT(YsiD93Ses1wQ4ZesTIqQVGdgbNfKK2(R6zIWrf9ABe8Jk6121fhj0rJkIA45ccFqb6JpKSd7jhOFltpvlWYc2BWZIiiWL9qRJZ8HFI2PczufMESFHPU5fOZ4a2JZxoLf)S(TMYkaA2JMloOXp3UAe0KirmuREwDPlGhdF2h0XP1KOmC618ZRNZdM00XW7YpOEVwG18E)PlSKFgkwfg7SvJrTfubDMiPYrnjNMJCiuwlCqWmRhdsfzq3ksfbZtFm0vzq3kD9OZsLH79N(4mZJ(GV9F6JuYvcA3LEHetUiwOxB1qXZMsof)iNsC3sUKFdw6TP4immQFXjE2fJVU86fE)NWkx0flmETlpmYUS6vl8yJ(dV0B543L7SREqO1jNvOOTKU33TFEJVsTl0PXvVsTl(wq)QFBAxTuAgIP)j92A(sYfO4y4XcuxPSh0qJAc)p8enEoXJniMes5LxL0JmjpFxQ9OAGvhUQDRA5K2qjYAc5bLvkQjguVb4osV90PZL)RbptUNA(O)YKiAC3ZRjNIHS3I6PENWeFYrn4L7NN7VC2eqUS4jX4qCdug5kzFz1BV9U)6hHqzqLIsV(mIGam)fexn5ALNxkzv0y4LKek2tpiflArQIz7qdiOYI2b(j6rZ6(5tjraqcjlsYgarUC4X6g27NVkGCgpBVdgo9zVTP3q9EXKbJeRt(ObiAbCjE(pf8iyd)mee6BVH(aZPULDethqFMA5iELmwe2Zo4xFT4jCrpmNhb9YpXkZYBmNcurodzlJV4lSJafHCoy2HzjpgzCBnHxC)3C6f(D8cN92S5RGcuC50CYL998Io9MIPLYTlQGZ)6kxWnfRxt5LBZiYc5GQJ3sPmkutkRcjeP84q(sMtO3uYjXhq0tUVtxbP(2r2ePJgVYzXfKdQ8cIo2mp7OymMH5facV(A9JE9rW3RO19AUj4W6Kxi6GP)RrVhPZxC6gxVRILd1iAFcKeMDSQirkV6PunrA1ZEhPr8JoqQc7PdpsfYpf3LWRJrOmeRpMFUVJugZP9oQAuMkvTcRDYU38av5JvrFoHoIPNWO5kIzlEUGo1p4YNy03SfdZ(IQFkIoXCUfNC6yE2Qhs6yDUkhw6DQVg7tYFxc4wnYbBUqIOS((eMdM7dFyomc)7XSs1phYXgZwCkJtKwTdO8uWbpir6OhS5DWBZaezX8qlnYkHgcHoMV6HjUaoecNR2aYEUHtqSlTdFrLtF8lU9MEJkoZXffVMs4vwAuS6bAFHNpt8Anp6wXtxrUCuz7v8ZEiycWmLGDPM5Gs8Ck0IfWJNABRZ)hfxzkgUVwcREuSGPeOfiAoTuLaFI2AMPMfx0ucy9OAh0Yuvefo1T15hr((rFqv(vMdUO7hUcQAVlQdbEM13Zh)GmvrQ3(OpnrPlhjmrgxD64GcEAUcoDKQzbIhhc10EzL7nSJewYjMngYqmxcr(QnbaL)cZZwCP098YLpzVjXvYteweAwR0IOtzp2iW29e5YGVVbB)x1QwyTkXncWUNUDLS2DzWUXrUXElZ6y6iL0QA5coRXk7UxswUipIgnwuVwdvU(wSjtFl2xgSxPaL7Ob(TwbxdYlOSbyBSLsWQvgtdZxv2Qni)7qR4yKk2rIMmwIMuDdSOzVUCRi9N3ETor8X12Yl8HpgccF4TxcSWvJ3eBir6AmnSMH0eZqAGyinrmKiAYyjAs1Whn71LHp)5TxJh(q6HEXUBVK8HGLljuYW07rBcIZrJozFxrggn2RKy)uDnB7gVu)FJ(O7hxHb8Ivm176Y6TPz7UrT20Ly)(8RlyzL1mLIDlxIHwl3XLk8lyJWA0(TebajB3sZJ0UTeDFTZUzlf)ZYVv)Q8rhcPerHB0sKa)gUpl1uj7j9H3NGWd2wMltgMRJ0Eg)lWwghnwsyMEIvm1mxh6(YwlMlSTlUSDl(HQuSmxhX9kUc)YbVtXB2gf)yTpXr5JzzUeVlXB1Mex6EeV5Br8tZoehDdIRfZvLS1OxFIZ()]] )
+spec:RegisterPack( "Beast Mastery", 20231107, [[Hekili:T31wZTTnw4Flz6Sks12YM0woXDK0djZUZKS72PZQUtFtu0uqsCTePkVyh3XJ(TVhaEfahqcsjL4MQxATna(W5g(WHGNao1y6VoDYC7iY0F28kZRnmU6D9nUEWTgxpDs0ZBjtNS125b7LWp4zVb(VFGyhgTB2)g(VKGNPn)8AF75uyc9JdCGU8d7MTkkAB4pD5LlDJwfFFFh)nxg6UjETDKRVNtG9Ii6V7C50j3h7Uo6tEtVhxmmMoXooALFW0jtC38XPtw5oFojP7KqNPtOD)cdJlU6D)0Uz)J4GOvKGDZmUQV5UzXBPqg2F3N3958(na63Vyh5SkPxfnE1TxyEd04)nKSB2)0D96DZ(O)Mn2EZ3nZ1d(L1e7hHMEc0P8oK(3ISxt8IkH1nxyElflMeSB2Ia)n7Mnj3e8rQjOu3V(cZ3dDF3S)JTJRnaSJV)65(pbtBCiy93nZE()lgm5GSSWhuWpAtNE)fWuVcA93CxdT8iOQZ(ajmIbXVfyhTQ)0jRDdJczUzYc741rWp(Zm3oXZ((1K5t)qITmWDlv0Mo5V)fItmBQipc(yykC3qsNiBNi607gc)4J2URPiaZb8Nzd1Xp2dIlScx5hnncCM05jRXOaBVFhC3U)HR3YKUusgGEFTGuLJkOSwj)IfvBs0jRKasN5H0XEtBgBuGR3dKigadeaaShGM4ANa1JelIhzJlbu8H7MbbxV8YUzVj3ZFpDzHLdlCOFkk7M1HzWehmS0keMzNiQFqpbnKznVvBrCCUi2u5dgPrZLVeGNsLYjBdiW697Tlc0YGimEZgy0BjIoEUWK79JIGwSwS2(zY8NOXkr(FX1RMGf60s1rAW60jg9huAEJiK1wq432Y2ScN3tqGmDASdc8FIZ6K2HcaYAnrvPXEiRMkMJ7JxSOpZY5VWcwaz9eSqTF8wXWhPUuwiyGCFYYARNyRQZq4E)WqwFw4UCvKvazJTRxsugLbp3Ksccjbpa6yU1(vN4EBjXDTVp4)JH9xqC0V6exBphy4bWWPtegz0Rcr(UcjEHBaHzKRM47BOWEDjMNT(S)pBfxoJnYYoFy5DiLBjBGpAdQb0k9Nwhtoqku3DZaUMhTw6mVVbVMLGt2E3cADQ6zTmMeMVlspMuMXY)SNJv8wS1OP6M7cCTJdH0jcNRtLQLAJSiRdP85zQGu3Zbp1KQJYITkUENfvMt829Jm7VYo0QiPi2oBznAWAmoKyr9Vz(i5Hx0dUHB2pxhMhhWspJ5DkHpsheHiBRhPHw0G6Hms1q6uNCoQo5SxrSD7Txj94VowmUvLP92YWci599wscWO4Bw8SrvXZ4w)Q8GclhQX7GAweHa37yQ07yOY7yQY7GkNJQtorINBU9siE(7ElgA8Sjx8Sywafp0gR30NjyTFu5FNAo9xSGUpi7bfk2TPBTM(Sfh9t3Yt6VlVOtnRDEEdfXgTcFmrlh7X15hUS4rUQiWSs5FSYz)ciJZb1da0TbSWpfW0rzlNTB2nxXKaHCXsTPsgotjdxLsMgDP9c)yynG5vAeGKmf0UREooSHaQOweSYvoVNvhEOETE5(oCtI98NR0MMysv3HA5htSgCss9CYALiYbHLq35a1Su7KK2pE)GDWsA)bEDRiFR5UjBvyo4GPx9kEIRfbeV)45(QcEZpPeKJvsG63uG63uxQFDmSvqnBQs5nomu)YmyASUVIi96EMKkL)gr9Jbq7zpBm1V8EMvkzA0L2l8Ou)QNIdb1VUHaQEkP2s9JINUu)ghlQ)k2iuj1poXGw5SFqyj0DoQN6xXs5da1Ft1lnP(n5O(JyVzbKJsl)KyTdUNmp9D1iCWGPttkdl6mpewUrpMSn2FHflFvFQgNyqsoyDh4)spFj2PrkFUHPaggz78qY5cMzWYncIN7el4Mof59a5mSyDcEQiNNDwdEeM3jKAgeFzeIJTMxcrHjArmmWaIZkk2fpxyU1OtUnWE92v2wBdiZTJ8dkopUmr4bxajNK3ez(jpu8QnS3SLmNiixd4EHkLTqcD8wUosDcHRiIA57k3P5eaflqVEiWEJqhFF5oYj3897UY9Z2AtCWCsa1m7e4)uOqNnUIxHlExo8DJ7vnr(Y21(H03SfY7z0q80vRjCp71eb(F2r8ZfNM4HdTweKGc9vVsFjA9VjjmS6ZCwJWeLr6PlY0B5uvlzkO1nmzRtZN(E8WB)Onqi9CbWmva7nnGTWY4AU4i3aG2L(Ajf9oQEvUHKGTu9deEVLL9pbeGNiCfDaPlSKzBbxs2(tkKUbsbVyHoQFhSiVOdQ1UYnak9skxtnJHw)V45l3aAjBY4w454FFGnQm9(QLjK9dijVI)shlvfVlMscj3BkLn331o7HEt392lzRAcCDEG9wemV6yoD2bo2EeRTX03bcD2u)ID7sRddN4Ku0y)eyFxs8y)onF9Ej56XAbwkjnjavFqIBok)1N38nINtyQ9A7i6cJT(UH(Ez7wcU57Yw6)1yd7wqVKZpEC3N)Gr1wvgd670o5moaodCprn1kaxvWu2wKyApJxa6YvGput8ZwP2gUnaRsNlcCYck2eVoYnR(OUr380g0GKsvVfvQUKKzgxTaPoDZ3PDAvVxJetVtN8n5Z4RQeo5t6tDUHMnkHtv1H2HGewDMGYPrXTyVHzFAwtMBkOYuM8vvCzVo0jTtRd)zsmUvVStF33MSt3VC848Jb0Y5vRC3uWwMts(J7MzQGzRTzQ1QeLnn0j3Dt1f(wsEAztkt3uRNLseNIAn75CmZ(2SMcnB)shwo7B1LkwL5dF9vnlFyWX9ijiK2Cw5GpGQ9bEG2dS1)kTsKD3S1pikTCOFBATn)2DZci)EmS4fOsc9PMx74i)n2SYzgiw8wYQh8)LRh0eTuW)OVhmxSMFlsTYcag5J3ugVd0LUgFPxoQ3EGrD3Nr038ISTzA814YgxGLGWHwCSI6ScCl2qwau5cQTg9n9amdBM6AGlwI7xjiCQkrorL28OIUKjn9iC5lfUCW5pB9snRfO8heUeOsnRfOMvdQuZAcQ07BabzS(CuHVwGrEpjiM5wl3Tf(AbU0lmaZquQnDLtLWz0C4E1lD16uofRQn8Aa8jwS9c(AbUTUonL72cFTa)QNN41T0vRt5uSQ2WNd8nvYILnqfSyLAMtAvb6EXIvTK2s(w1G2o76rg(AbUTXXAk3Tf(AbULSfviNTHl7pTsxToLtXQAdVgaFIfBVGVwGBRRtt5UTWxlWV65jEDlD16uofRQn85alD8YhcchvGwssspo)Qe2IUCebVwyBBKHMsDBHVwG3RTHoS24Jk4hjypjZNK5xNYCBzm0uQBl8hnGpj3TtU5ITSN)C1bFjDqljU5a3eiBuAmnxIBe81c8rklPt7CFYqS)W(TrM3cdG2L(ifwugW4nPL02YNsvao)TKKL4HjxBIVTRI1SD6k(pv3s)L0Xu6FRPV8sf2SEV8YBAeAItEkoJlRWICw)ntozGtxQq2gJotxymOQbDXGHOdRd6F9SBUAmxPCb2Jk(xuyNUvmZv2yZeRXJmVQs32fdgpchV919G0(qolKIz4SQqqWg3RNkLd2ywHfX8k8ggIbuHMXMR3OCHu33OkUCFwrvpMcQwLacTNyXKkWZHMd2d5SxhekVXkiUyKAF3qiD5jcPMjwFDjKU87wcPlpriDqiKYZHsQMHt79ELMUkqnQpRu0UCebVwyrcc16Xm1uQBl81c8E9uShwB8rf8JeSNK5tY8RtzUTmgAk1Tf(JgWNK72j3CXwyNOlsh0sIBoWnbYgDE5nxIBe81c8rklPt7CFYqS)W(TrMpqhvCf0LTPcKeGRIJkU6NWd9SumXE(mzBMMNmJP(NmdY(ccNfj(jZilBACYmYdQzhbIwNmJb2jZipZv2yZelHtMbdU2EYm15EqAVHNmdccvDYmIBm36tMbzZsPJkwCHux1hAZESIQEmvFYmildA4jZORCwZjZGqQ9DdH0LNiKAMy91Lq6YVBjKKoQ4tesTIqQVIlgbN50K2(R6DIWbfDPcb)GIUuvxCGqhnQiSH3liIbfOp(q8wSNCG9x50uTalnyVbplIIax(lbpbZh(nKxDiJkWSl0lmXnRbDIu5VRFfew8lcyjHvXsS87slbuLUJT0fWdHHvf0PxDxIGkCJEjb371Xr1KilCk1S7ONtlG01pRJa3SfqIro7LbvlWAUb94TWrlbUzgurgjEiXUR34Gwrh0H0J7QZuWCGETAkIR0PqLm2sxJLcOICbxkfYQqyBpnQcaBlxNISrAV8PaW2kFhCU4uCV74hNAw9AHwi77(8NyBHqr72KpQY0VdgSp92qZtNeUL4qVa9UM(Hk2FH768RKXW(53LBNn6YIprY7(mw7Q(4iJ37IRzTZl)5rEKr)bN7Uy0BYIDkFfV1jlaiFSu17h2nRXFwWZLPrL)SGN)xb5t(lcE5wz5(M8RSV40Nt)(1ncEGN67u6JqPrpH)p8SAUorJmOMeA7fFoShAsFY1uMQsbwDe6211ppjdSI5Am9iaQDQgBW8gG7i5laplJLFX)j6NjKp5TioKf390k6nVi)xc(eVtqSh9su88DZY8xoR9PFW7PX4qCd0g9Zk)IYFb67(lFccLbrkm5lBsieG5nN6QPFA8fNL0oAm4CAAt7yx(J5JirWSDybeS5IPaFGD5YUB2eAeaK21840fq0pW9yQH9UzlHnoGFylSC6lUBs(k77grxmsTozRgGOfWL469O)dGn8lqqON9A2rbK4w2snDwUPwoQxHToh5gTTisqSXoDtzE4)gh)Yl5pVp6ny9WRVQ3lVWDSmdnUTyHCIOx8P7ULcNczJEfG2ryYVwAYZ)qCF8NCjnN)ZQ93abi)RK9rFUVtCQt(KxF0N3RzSj5tnJWH62lURNpN7YioH3s99D94760vrI6DQAp2HJw6m)m6LWEohiFEYDQzPKH5zacV8I68KhEDNUkbXE(ZLwTkzTzDGUwv6sRFimR1iB9AUb(Kju4ZvGSfm)UMw2EHLb4qQHHQFD6(gSN8OArxTFSS0I0UiwiDP8nsovxKFcgKbXFn8J0HSBFFmzo7s3hPnURAFuylYjuQrPRv)Mh4xnZIAQqb208va5puuh57u(Xg9lY4k7PDAXI1VcsvnHnyoY8RVEmVy5BQEmvQ0nwFh5x5X4SxTdUTIE7YRKel1ymM7gqF)xDdlS)rteCeUQ4ZDxY3l6OVBNbQm8kw1vCXWtNjP7uELIj3ZF1iBh6U6yIn3D5EL2bnbK)ABNIyxMcFwPl)9ZGmChMFLVxovJWO6xyDC2f8yU9MG(PM9N1SiZVITgtvd(xoGauY09jgy8TNsAtEBa2FxXwassSqtvq(hgPyNdwdQ2ktNie94tVbIPvZr3M8rufBPo8PCkw9K43L2Qq0NGWMNyvp4m5f(ze3XHJonz9roDPqdhp(W0OQddxysGFPVzChiSQMt1yGco1SZ8cakRGespIRKAk68hTxhtAZdu2fODEK(X(UVbVQv3rCyTmMego0SNUsz64o3F7OqsK7IuzwNzjPRweWpmQ2K5pNEEuUujAKkTwdrwU6KsL38sAH)RXqrXGiwvkcdiRHIbGvtqfGj1g3aZo23Ydi7VH2XriDStfsYOkKKY1(JMADrvC9NxTwNi(iPQfsm8Xqr4JO9sHfUC8MAdjIQXnqjdPjMH0aXqAIyirKKrvijLdF0uRlcF(ZRwJh(q1q3iYMZP)G)IfukzyF(W1(rzOX21VRkdJgLzk2)kNnBBnRQ)1BaAPmRmGxTGvFbRkpMMvyOAvVQyxTbYtCvT1mHIVAvXqRLfRAn(fSvynQuvraOIkv18avOQO)tcGVovvFJg0Ql0a0Lq1IOYAufjWVHLOQMczVkFC7Xi8GTL5YKJ56avU9FfQ2E0yjLz6PwWQN5AFlPDTyUWQ0(Qk0(9vO4zUoGLzFn(L9Ui7Bwn2FOkXEu(yEMl1fyFRQV(klV(MxD9hNIRhT261I5Qu2ASV8Kt))]] )

@@ -876,6 +876,26 @@ spec:RegisterAura( "vampiric_strength", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207198, 207199, 207200, 207201, 207203 )
+-- (2) Consuming Runic Power has a chance to cause your next Heart Strike to apply Ashen Decay, reducing damage dealt to you by $425719s1% and increasing your damage dealt to afflicted targets by $425719s2% for $425719d.
+-- (4) Soul Reaper's execute damage and Abomination Limb's damage applies Ashen Decay to enemy targets, and Heart Strike and Blood Boil's direct damage extends Ashen Decay by ${$s1/1000}.1 sec.
+spec:RegisterAuras( {
+    ashen_decay_proc = {
+        id = 425721,
+        duration = 20,
+        max_stack = 1
+    },
+    ashen_decay = {
+        id = 425719,
+        duration = 8,
+        max_stack = 1,
+        copy = "ashen_decay_debuff"
+    }
+} )
+
+
+
+
 -- Legacy Legendaries
 spec:RegisterGear( "acherus_drapes", 132376 )
 spec:RegisterGear( "cold_heart", 151796 ) -- chilled_heart stacks NYI
@@ -933,7 +953,7 @@ spec:RegisterHook( "reset_precast", function ()
     -- Reset CDs on any Rune abilities that do not have an actual cooldown.
     for action in pairs( class.abilityList ) do
         local data = class.abilities[ action ]
-        if data.cooldown == 0 and data.spendType == "runes" then
+        if data and data.cooldown == 0 and data.spendType == "runes" then
             setCooldown( action, 0 )
         end
     end
@@ -1011,7 +1031,7 @@ spec:RegisterAbilities( {
     antimagic_zone = {
         id = 51052,
         cast = 0,
-        cooldown = 120,
+        cooldown = 45,
         gcd = "spell",
 
         talent = "antimagic_zone",
@@ -1081,6 +1101,10 @@ spec:RegisterAbilities( {
 
             if talent.hemostasis.enabled then
                 applyBuff( "hemostasis", 15, min( 5, active_enemies ) )
+            end
+
+            if debuff.ashen_decay.up and set_bonus.tier31_4pc > 0 then
+                debuff.ashen_decay.expires = debuff.ashen_decay.expires + 1
             end
 
             if legendary.superstrain.enabled then
@@ -1540,6 +1564,19 @@ spec:RegisterAbilities( {
 
             if buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
 
+            if talent.heartbreaker.enabled then
+                gain( min( action.heart_strike.max_targets, true_active_enemies ), "runic_power" )
+            end
+
+            if buff.ashen_decay_proc.up then
+                applyDebuff( "target", "ashen_decay" )
+                removeBuff( "ashen_decay_proc" )
+            end
+
+            if debuff.ashen_decay.up and set_bonus.tier31_4pc > 0 then -- TODO: Check if refresh is before reapplication.
+                debuff.ashen_decay.expires = debuff.ashen_decay.expires + 1
+            end
+
             if pvptalent.blood_for_blood.enabled then
                 health.current = health.current - 0.03 * health.max
             end
@@ -1550,9 +1587,6 @@ spec:RegisterAbilities( {
                 gainChargeTime( "vampiric_blood", 2 )
             end
 
-            if talent.heartbreaker.enabled then
-                gain( min( action.heart_strike.max_targets, true_active_enemies ), "runic_power" )
-            end
         end,
     },
 

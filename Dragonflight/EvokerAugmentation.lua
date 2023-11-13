@@ -1,5 +1,5 @@
 -- EvokerAugmentation.lua
--- July 2023
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "EVOKER" then return end
 
@@ -99,8 +99,7 @@ spec:RegisterTalents( {
     perilous_fate         = { 93235, 410253, 1 }, -- Breath of Eons reduces enemies' movement speed by 70%, and reduces their attack speed by 50%, for 10.7 sec.
     plot_the_future       = { 93226, 407866, 1 }, -- Breath of Eons grants you Fury of the Aspects for 15 sec after you land, without causing Exhaustion.
     power_nexus           = { 93201, 369908, 1 }, -- Increases your maximum Essence to 6.
-    prescience            = { 93358, 409311, 1 }, -- Grant an ally the gift of foresight, increasing their critical strike chance by 3% and occasionally copying their damage and healing spells at 15% power for 19.2 sec. Affects the nearest ally within 26 yds, preferring damage dealers, if you do not have an ally targeted.
-    prolong_life          = { 93359, 410687, 1 }, -- Your effects that extend Ebon Might also extend Symbiotic Bloom.
+    prescience            = { 93358, 409311, 1 }, -- Grant an ally the gift of foresight, increasing their critical strike chance by $410089s1% $?s412774[and occasionally copying their damage and healing spells at $412774s1% power ][]for $410089d.; Affects the nearest ally within $s2 yds, preferring damage dealers, if you do not have an ally targeted.    prolong_life          = { 93359, 410687, 1 }, -- Your effects that extend Ebon Might also extend Symbiotic Bloom.
     pupil_of_alexstrasza  = { 93221, 407814, 1 }, -- When cast at an enemy, Living Flame strikes 1 additional enemy for 100% damage.
     reactive_hide         = { 93210, 409329, 1 }, -- Each time Blistering Scales explodes it deals 10% more damage for 12.8 sec, stacking 10 times.
     regenerative_chitin   = { 93211, 406907, 1 }, -- Blistering Scales has 5 more scales, and casting Eruption restores 1 scale.
@@ -122,7 +121,7 @@ spec:RegisterTalents( {
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    born_in_flame        = 5612, -- (414937) Casting Ebon Might grants Burnout immediately and every 2.7 sec for 5.3 sec, reducing the cast time of Living Flame by 100%.
+    born_in_flame        = 5612, -- (414937) Casting Ebon Might grants $s3 charges of Burnout, reducing the cast time of Living Flame by $375802s1%.
     chrono_loop          = 5564, -- (383005) Trap the enemy in a time loop for 5 sec. Afterwards, they are returned to their previous location and health. Cannot reduce an enemy's health below 20%.
     divide_and_conquer   = 5557, -- (384689) Breath of Eons forms curtains of fire, preventing line of sight to enemies outside its walls and burning enemies who walk through them for 39,401 Fire damage. Lasts 6 sec.
     dream_catcher        = 5613, -- (410962) Sleep Walk no longer has a cooldown, but its cast time is increased by 0.2 sec.
@@ -165,13 +164,6 @@ spec:RegisterAuras( {
         dot = "buff",
         friendly = true,
         no_ticks = true
-    },
-    -- Gaining Burnout every $t1 sec.
-    born_in_flame = {
-        id = 419240,
-        duration = 6.0,
-        tick_time = 3.0,
-        max_stack = 1,
     },
     -- Exposing Temporal Wounds on enemies in your path. Immune to crowd control.
     breath_of_eons = {
@@ -270,7 +262,7 @@ spec:RegisterAuras( {
     -- Movement speed increased by $w2%.; Evoker spells may be cast while moving. Does not affect empowered spells.$?e9[; Immune to movement speed reduction effects.][]
     hover = {
         id = 358267,
-        duration = function() return ( 6.0 + ( talent.extended_flight.enabled and 4 or 0 ) ) * ( 1 + 1.25 * stat.mastery_value ) end,
+        duration = function() return ( 6.0 + ( talent.extended_flight.enabled and 4 or 0 ) ) end,
         tick_time = 1.0,
         max_stack = 1,
     },
@@ -570,6 +562,8 @@ end )
 
 spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
 spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486 )
+spec:RegisterGear( "tier31", 207225, 207226, 207227, 207228, 207230 )
+
 
 spec:RegisterHook( "reset_precast", function()
     max_empower = talent.font_of_magic.enabled and 4 or 3
@@ -745,6 +739,7 @@ spec:RegisterAbilities( {
         handler = function()
             applyBuff( "ebon_might" )
             active_dot.ebon_might = min( group_members, 5 )
+            if pvptalent.born_in_flame.enabled then addStack( "burnout", nil, 2 ) end
         end,
     },
 
@@ -767,7 +762,8 @@ spec:RegisterAbilities( {
 
         handler = function()
             removeBuff( "essence_burst" )
-            if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
+            if buff.ebon_might.up then
+                buff.ebon_might.expires = buff.ebon_might.expires + 1 + ( set_bonus.tier31_4pc > 0 and ( active_dot.prescience * 0.2 ) or 0 ) end
             if talent.regenerative_chitin.enabled and buff.blistering_scales.up then addStack( "blistering_scales" ) end
         end
     },
@@ -787,6 +783,19 @@ spec:RegisterAbilities( {
             applyBuff( "lava_shield" )
             active_dot.lava_shield = 1
         end,
+
+        -- Effects:
+        -- #0: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'sp_bonus': 12.0, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'value1': 10, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #1: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_TARGET_ALLY, 'mechanic': 26, }
+        -- #2: { 'type': APPLY_AURA, 'subtype': MECHANIC_IMMUNITY, 'target': TARGET_UNIT_TARGET_ALLY, 'mechanic': 9, }
+        -- #0: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'ap_bonus': 0.075, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'value1': 10, 'target': TARGET_UNIT_TARGET_ALLY, }
+
+        -- Affected by:
+        -- mastery_timewalker[406380] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.5, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+        -- hover[358267] #4: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- spatial_paradox[406732] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- spatial_paradox[406789] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
 
     -- Wreathe yourself in arcane energy, preventing the next $s1 full loss of control effects against you. Lasts $d.
@@ -808,12 +817,14 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Grant an ally the gift of foresight, increasing their critical strike chance by $410089s1% $?s412774[and occasionally copying their damage and healing spells at $412774s1% power ][]for $410089d.; Affects the nearest ally within $A1 yds, preferring damage dealers, if you do not have an ally targeted.
+    -- Grant an ally the gift of foresight, increasing their critical strike chance by $410089s1% $?s412774[and occasionally copying their damage and healing spells at $412774s1% power ][]for $410089d.; Affects the nearest ally within $s2 yds, preferring damage dealers, if you do not have an ally targeted.
     prescience = {
         id = 409311,
         color = "bronze",
-        cast = 0.0,
-        cooldown = 12.0,
+        cast = 0,
+        cooldown = 12,
+        charges = 2,
+        recharge = 12,
         gcd = "spell",
 
         talent = "prescience",
@@ -832,6 +843,7 @@ spec:RegisterAbilities( {
         cast = 0.0,
         cooldown = 120.0,
         gcd = "off",
+        icd = 0.5,
 
         talent = "spatial_paradox",
         startsCombat = false,
@@ -967,6 +979,15 @@ spec:RegisterSetting( "manage_source_of_magic", false, {
     width = "full"
 } )
 
+spec:RegisterSetting( "upheaval_rank_1", true, {
+    name = strformat( "%s: Rank 1 Only", Hekili:GetSpellLinkWithTexture( spec.abilities.upheaval.id ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s will only be recommended at Rank 1, which is the default.\n\n"
+        .. "Otherwise, %s may be recommended at higher ranks when more targets are detected which can help ensure they are caught in its radius.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.upheaval.id ), spec.abilities.upheaval.name ),
+    width = "full",
+} )
+
 spec:RegisterSetting( "use_early_chain", false, {
     name = strformat( "%s: Chain Channel", Hekili:GetSpellLinkWithTexture( 356995 ) ),
     type = "toggle",
@@ -1000,4 +1021,4 @@ spec:RegisterOptions( {
     package = "Augmentation",
 } )
 
-spec:RegisterPack( "Augmentation", 20230925, [[Hekili:DNvBZTnoo4Fl5lojtQDSLJtA2ZjZ0UB700PB)W5C39njrlrBZlsIA1l2jDYOF7la1Bu0Koj7zFxNBMDBDLGEWdbbabaThzFV9mFsg1(7wdTgp8ARjdSgn(6jxApl7PyQ9SyI3dKLWpIiHWF(H8LH0OmsgJhHV8PaoXhbjLNN4bcSkllo9xo)8nB2mG59u)1uwu6apE45B4BoNi959PR5pqt6hVM23poTFcV65ECEGpFtuAFYCwalJrtTNnpNfKDxK9C98DcWGyQN93hDXvJbwW89PLctt9SNHc3F419TM8lfUfUFJVPpnmMVHMu4(zwcTW9Jjus2QcxUNxEsAH7Mv0iqqkjMfTeekaw(WJzW)hXZkCZibWcH6pO4RfFTg(HxkG)Vtd5Rbm5X0iudFJTUfKcxpsAgatgVWLeWwcQzddv9)IdkL4x4UmN5tLa(9W)ja(3fWEplg(6vWVM5bSaGkhEadWjoHXtyzpbah5RGU8Yuc7R6pQK03VHsEOW9FedCynjOWnGVK5vstwyCIq1l4juK(ua90mWVOWDD6aqtEz543u9SnRyb4cDfjzjSYb11hjpsGs7gW5fW3apXhzoQJAU3LBL7xF(JNVfVWDcGofUNDpdTQZEGf)Uc3(3b7kjBa2cR87xblxFqqEuGayxGhFkknhzcrDRVYJaPeUgH9bQGOSiw6Qo70aXUqqSp473fLT5PGJrGBTwIHU1(PDHECl0Zerva)xa2pIaVyyhGhoNa8JehhW8ebnG9yrPpaSSsim)6v7VXJogev8rqOhG5xakaukK5R3DWQw9OHO12w7h1eOa67t8i04gJmOwHFM9OoH84r(SsMEYCskIn(7pnh)ZFNTCfqYF93oTgLp4)VZXTGpgWaVTer4tJ3EQWjdDAMd)n8SuCb6Nh5tIY6WJUBWIGI2nOqYJv(O0kq7Aigjme3fb0gfhcccOnzVaD3UkUds09pXeDhxh8ApdjEQi9kDbjpid(53fPBb)ErYZ)iNgeypJgrMhq9T)ODgKutwG8OeYAQQiJLfXJKJwNFa2hNfbIm0De(cu42NmZdIWa5j2ZGmucJAp0hCXIbRqVIbyA32Nnxy3C4lCOWEO4LTQw8bOoMitiW7m1JrJ8uzYLgzscDb8rRW30Idf8lCcr3c8JVY4hxFwXGfWoTtjHhKqdjm0PBkSD45pa2OBroJf7ajpDsfEti6Vxb9AjLGuwLhvNeBqq5PdLw(0bvqiSFvsKbHpoPq0tNx2IaRjNaWjrkHoc2S6AXPDTDtzAkNmriA9EwRHRv0BLKewPLP5CY42ZgHR)RFBR))VzXdUfov)B0mmAOb7qEvgdngHF2xII93rJmg(OcjwiXZplrmDQdIQUO160njHqFwg1h(rRPo(CW0H8mHe4SHNJ5LHfXqfLRK)rE9oUs25Cm5Fp8uAGJoYCC8qPTWuQdWHWs(n(No(fZf)nsoZPSfBwkHD4gwpr9x18wkQTK0TAjquhA1bfOUM82YRMLKtBxcNjzjQdr2HiTNmOieATMiNFUkuqWq1Jn2h5Mp5vgkvUdwfoHLX2X0EQUin1dQ(pov6bHRQj(mDaOUeFvEAqJnHmAPJSvntLuFEtvwIOGx3sqRj10PtVsYDXbICwIY1ElhzOHCxEGi3yb5ut7)wiha)Kde5u8(SmFArB0SsM2APBws(uACD8fIP5m8Lf220vrvzGTf(kLjDlPkCVPt(0TeqO7xib(lzVKQbojpU(yblZPQBTs(GbiensPXIDln1Kb8mjGM5q8jXLnY0rkJmCQ2Iriryg9SYexk9haTkbNE67mpaocKhkweMBc4Vg962UYUyd0Rc2Ci44npH4jo9ZYCxfGjTU)Og)8YgKQlqQIVX5XSa0Id)ZhtZsiP)GST3P65UwQjC1TzUlORJmBoCTKCY(tv1FusH6U7yPvF(PTKJ8JC4KcqbShqYLj6HRCcdnTSURijO7BCXbef7QAEcp6hQgF9c10VRw0xMW3U2MYHmIWewomKUXJkVUPB5DrFI3doKSS8irR9Br8UVE3Tux1ZmU2uHuQNAvnwTkpY07dzru5QTvGVPd83s2U0mqjIG6rd3pz9U8vneGRKLsPr8Us(EzjLggqxPUwwQorzDKt4vdbaPOCvdoE4L2Z2qsIGpb09940uzyb)zvtS74QX2CmoAP)iNjgliKhdhCyEgpKiMbQ3ks0sko)UVbBtfU4yA)vEeOlXRpwBbEhxo7k9VSoehe6KrpE6lHCt1YkGUvJPVs82UHvfGn3rRQgU(GzlmG8FzBHb82J2Ird3Zu2eG7toF5bBdC0vhmOTS0dD3kivGwF5LBb9e9qRu2Lc2gkk71c(2vePGV5sM2sfg2q3NQWWgRUIzuuYUQ3zl1yi71EtnfF9oXHbi4w1vrv4kMPp8A4qN8Sv8e7zZi0a)C48ItAUdGt)BGgtirPbLNrm)Pc3VqFGfWWtg5lyTZ5oDqtTwNDZ56lt6DSf38sLAv8vD4PuoecKOQQEMRO6MH6HsTQejsPPakdyOw6sliARzQNP6L6DK5kLmrFLswK4V2AJMoAyVDvtKj7uBLp6FF3AE0ltB1o6FVCDoONALmWBe3OK8dQUbj5hT1ngj)srBcOTPS7NEk3mupt3kKmgAmbDwui8sx5JSqDToOG766DMU0Zx(RLe5DTZB4MriohP9mKEQN227iJNs2Z8S6NEttRX9m0a9TTnp)YmoK8iY5FkPC9aG2Yc))yE11PSj8UZvB88Z74AnMErNLz99fGijLiO7LcC7qji1Fza3ogKbVeGEDUaGPJh2jMrm())7Ol50hn2PTUvb5SFsUP3oSB8A12NXqv5j9F2UVTGZEPBk42XtEfbp7kC)Kx0L65N1pc9tFfAENHT7jvBm8RA7QA(TtT6DIMP2cEhVelErTzPrBxCW02ynA7YdM2Q2b7QVBNSx0N0eQL9q7gj3jJ2BOMfXHZsrS7QEf8W4QblRln5oZYQmtx5fIsBo9m26GP86tvY8V90CLzIY8CLc8EfASTwMDRe1uLhvwwu1wF9aHF(5D0AHmCYtAv20P776DI(z7IhduIOYmDpvmLl7)8d]] )
+spec:RegisterPack( "Augmentation", 20231111, [[Hekili:DR1EVTnos8pl5FCsqRDSStAB2njaTDBXMIUfhoN7U)tY0s028ISOw9WUPWqF23zi1dkAsLhN9DfxrBIT0Wz(XHZBwxh37CNeqYOUFB0WrJDG)mWXz8OrUtYEiM6ojM4Fpzb8HiYk4NVpFXkAugjJXJWx(qiNeG8iLNN4deSmllo9xo7SnB2mG5)q)1uwu6aF(QZ2W3Cgrz59PR53tt6hVM2pioTFcV85(CEyaFtuAFYmwilJrtDNmlNfMDBK7mtW15Ilbeet9D)MZ5VDmGcwqavsmn13DcsCFhh4V)sX0IP)Te4PmAKpTyAgVykznNfum1NehZIwaFpooeKQ8LXjua(ZizWZHhTHggoO4lfFPINdVuWZ)r8skznjSyAcj6(IPoft5X4(bwgaMGFTy6xzRfS)ZHGUSyAEkOylMUe5Q)ss0cAaY4P9lM(rXxBd0sYnHxEu4dnyA4L9hDHatFLVPpDvmFdnbKklbw(hsOKSLWs89ZtWTZskGWVsjXnqdEmd(xeh2YzKq4atISA2p8nc2)3PR4RP4(KgHsqB)5tsZk1HKq2cqmByOO)xCqOea)lYzbufg)o4Vcg)hc2Ehlgw9s4tt8buaSkhEalcpsy8ew2daJJc04U62uH3VTVJe03THsUx94kKVG5lHjBvCIq0Z5WHoaFkW90mHEFD6aqs(z54AkF2MLSqQ4WlzbSZbX1hbpcaPEdW8CynWtcqKlnNKyVn2KNxF(dNTdUWtcaoftF1DmuRo5Ew8RbJKBHtLKnaAHD(DlHTBqAJHaAd9PO0Ceje9J(slcAG8icohOcGYIyPlBDsda7CbWEFqqBUSlofymcCFncm09niTnRh3W6jIOha(Nd6pIGFQUDO7Opr6mXMlTbiOJgR2J534rhdKkweeIb45VdqaG0k0tXK5WOkXJkIgDBLDuTJciVpXJsRCNRe4NzF3er(8OaMePNmJKI8g)8NMH)8pylwcG8J)2PvC59b)7C8i4dHmWAlr4(uBT34Wpd(n8SuCdgKhfqIYAHJ2hWcNIMdOvKVxAJwffPTIqgt82ia2i5GtqiTokni7MDXTqa9)jgq)4kNx3jiWtfzrOZj5HzWh)MiRcy3lss8N5qet3j0iYSqAG7hCZGG3QeKhLqwt1jzSkj(KCu78dq)4npuKjQfXNJe38Kj(GhgqpXDceHsOu7H2GZNpyjAvmatV08Szc9MhFUhfodfVSr0IfGY4cRYidmE8Y4EGI2tQNHdQRavKFWa4zn8kUoCoYW3yLHj05aLlX30Sykyc5TcTGWf)wRlUk95G5GrHNCVniHUIWISaRmwSheN1lvy4HC)DACVIsfwQkYJQI3niuMirEiLoOKfcvDjfcLvk4O16LnCGvh(aWKi6rlcR3Dn8PzVDTmIMxMWBU64TrX1q6nkuc7uzer4m0DIdU)V85T)))MnpAbx(Dun4m0IEiVm4IbLWp7BrX5RJJv3hDwI1CSDRcWmjoWR68gTt74jc5nYQ8WfTM6fWbvhIZesO3gEogch2ed1eUwOk1974sANXX8e9We6ag9uX44HkhHPupadRK4B8pD4lMl(nco7r3fhwAUD4bMQHK5WGxBioyOO(1YemOG1d5)FCyGtEIMSsnvPzlwzPIelMEA3oT65v2hbVpiax6k(mZKLLKtBmAELYbDvqPoiPjbSgrO95fQzeld(iqOTSHMIcckQuAwgS1tRbKh2rONJu3u6pbDmTIvwNWiqZuPLvuD51vWjCBEAQFJQyBPZmTboQRnqpJ4)8de4hjkv85Kd6fa(3CGa)yb41ZZSpbpi(loqGxlKYi7PVAIEOf6VI66TCaLgxf(b5P9uoYIYR7iQSU0MI2vsjTdvftHi7kPr2HaHSFKmkpM(sPO8K84Q8uJS3HqJwkauaRqLuAS40YqrIaotcPzEKasSSjSwuzfHxzS6isegWltguxR3gOnpiDEG3SqiNmFLytyVRKxg8A3QvxOb6ZcBSfm8MLqKTinYEYbqLw1BxTDUS5UQk2kXBCEmle14Wx)EAwcj9hKDTo1Z9pspOVPdZUyDLNzDUhj4uTNg2KrGx9(awA5YpTbCKFKdjabbWUhbxMOts50rQB3UlpjAAkU5aGIT5nlHh9dDLVzIQ7v3i3xKWll2sXJuoiyKnRKdYPT)O2RR70Vl4t8V3JKLLhjglXoaV9R7ECaL97J7nDwQmpaDjwUlpY27xXIOQL)RX(UNEGLODPzGqeo1od3pr96WZ(LnadHZztjtTgIq75Z8ovkvgKrBQUuLQwoKTOt4aa(kPiDL3dWWlh44ozdjjctF6o5oCSXmSDLSYrtEC58PogNH2FMZeZ)ec6HtinpJVIig2RCo84Gk)kCMwmfNh9h5rG0eV(yJvkFSCiDMFzv8aGOtC((PpgNRR8uJP70w9tKF72UTgJT3pUUeU8GPlSW5xSUWc)2J6cNH7ziBJH7tmFXb7auC3khgwpAKzw3UCtnwBUw0DyTffIwnAA82sfCpvMVB5tA83E9v7iclA99PiERzryQYhnH0vXr7iglrV2BIP4l3ksgGmFuvjxftfxEb8AmZgFoRzC7PdQRW6vxFM5IJEnB(1pwbwfFXe)0kcczKOwQE2RJ66HMzLETikGYqztw4HEblnmXyLs9SvLuVJSxFKn4RvOIc(nwr0vod71vLq20tnvUGsWqbpxvwSJ5L3U6gZ00uxJ53RwrdArwsd8gXvKP(GYRet9r7CfyQVu07aUXKTe1t7QU6z7AUu5XZxd1ApJls5ERujQTYdjSRHZIIrD1kK86MzuCTdYNJmMkPNEs3Ehznzzp7x4Wvxx3oDplnDFttd3poIbvNqZ(ZiKRgA0oA4)hJR22S1bhAD)mB32XDZC15T2Mvx6bYjLWiTVzJBgQWsZ3OXnJbAWBYOxRBX4QXdB5sjUdJ)7il1Ol16PDUAKED65DTbp8xIX8jp6z82TMVJGtFcIUlp)9KKRnGTgSs96dEv3xbXRESRF4MXx8K8fpX24H3UT0(QC2Wxn60ENyyKWGz0JPEo9XqYiH23gs6PbKZpy4y8ZchV5GHJshHNksU5I9csugMUQ3q7aiTcK(mk0suYGseRUkYcRbOCg4MIo3zWDTXpRUr0AYQN1gxSLo5kTeo7o4zvKOn6zLiBpbj2uHv3crpc9rYI1kp6RMD92TD0yJk7uhkSQQZ066DI5XqJzFKCuB8Z4WNZZwYtCNmHqddYtGwPQ)V)1P)k0dgyENgkNA2ShkM(707zHmXW5C)Rd]] )

@@ -1919,5 +1919,244 @@ all:RegisterAbilities( {
 
         handler = function()
         end,
+    },
+
+
+    -- 10.2
+
+    ashes_of_the_embersoul = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 207167,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "soul_ignition" )
+            state:QueueAuraExpiration( )
+        end,
+
+        auras = {
+            soul_ignition = {
+                id = 423611,
+                duration = 20,
+                tick_time = 3,
+                max_stack = 6
+            },
+            blazing_soul = {
+                id = 426911,
+                duration = 20,
+                tick_time = 3,
+                max_stack = 6
+            },
+            burned_out = {
+                id = 426897,
+                duration = 60,
+                max_stack = 1
+            }
+        }
+    },
+
+    bandolier_of_twisted_blades = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 207165,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyDebuff( "target", "embed_blade" )
+        end,
+
+        auras = {
+            embed_blade = {
+                id = 422303,
+                duration = 3,
+                max_stack = 1
+            }
+        }
+    },
+
+    belorrelos_the_suncaller = {
+        cast = 2,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 207172,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "solar_maelstrom" )
+        end,
+
+        auras = {
+            solar_maelstrom = {
+                id = 425417,
+                duration = 12,
+                tick_time = 3,
+                max_stack = 1
+            }
+        }
+    },
+
+    branch_of_the_tormented_ancient = {
+        cast = 0,
+        cooldown = 150,
+        gcd = "off",
+
+        item = 207169,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "roots_of_the_tormented_ancient", nil, 4 )
+        end,
+
+        auras = {
+            roots_of_the_tormented_ancient = {
+                id = 422441,
+                duration = 4,
+                max_stack = 1
+            }
+        }
+    },
+
+    fyrakks_tainted_rageheart = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 207174,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "shadowflame_rage" )
+        end,
+
+        auras = {
+            shadowflame_rage = {
+                id = 422750,
+                duration = 10,
+                max_stack = 1
+            }
+        }
+    },
+
+    nymues_unraveling_spindle = {
+        cast = 3,
+        channeled = true,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 208615,
+        toggle = "cooldowns",
+
+        start = function()
+            applyBuff( "nymues_vengeful_spindle" )
+        end,
+
+        auras = {
+            nymues_vengeful_spindle = {
+                id = 427072,
+                duration = 18,
+                max_stack = 1
+            }
+        }
+    },
+
+    smoldering_seedling = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 207170,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "smoldering_seedling" )
+        end,
+
+        auras = {
+            smoldering_seedling = {
+                id = 426566,
+                duration = 12,
+                max_stack = 1
+            },
+            seedlings_thanks = {
+                id = 426624,
+                duration = 10,
+                max_stack = 1
+            }
+        }
+    },
+
+    witherbarks_branch = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 109999,
+        toggle = "cooldowns",
+
+        handler = function()
+            -- Do nothing; it's up to the player to collect orbs.
+        end,
+
+        auras = {
+            aqueous_enrichment = {
+                id = 429262,
+                duration = 10,
+                max_stack = 3
+            }
+        }
+    },
+
+    dreambinder_loom_of_the_great_cycle = {
+        cast = 2,
+        channeled = true,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 427113,
+        toggle = "cooldowns",
+
+        start = function()
+            applyBuff( "web_of_dreams" )
+        end,
+
+        auras = {
+            web_of_dreams = {
+                id = 427112,
+                duration = 6,
+                max_stack = 1
+            }
+        }
+    },
+
+    leaf_of_the_ancient_protectors = {
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = 110009,
+        toggle = "defensives",
+
+        handler = function()
+            applyBuff( "ancient_protection" )
+        end,
+
+        auras = {
+            ancient_protection = {
+                id = 429271,
+                duration = 15,
+                max_stack = 1
+            },
+            ancient_resurgence = {
+                id = 429272,
+                duration = 15,
+                max_stack = 1
+            }
+        }
     }
 } )

@@ -50,7 +50,7 @@ spec:RegisterTalents( {
     binding_shackles            = { 79920, 321468, 1 }, -- Targets rooted by Binding Shot, knocked back by High Explosive Trap, incapacitated by Scatter Shot, or stunned by Intimidation deal 10% less damage to you for 8 sec after the effect ends.
     binding_shot                = { 79937, 109248, 1 }, -- Fires a magical projectile, tethering the enemy and any other enemies within 5 yds for 10 sec, stunning them for 3 sec if they move more than 5 yds from the arrow.
     born_to_be_wild             = { 79933, 266921, 2 }, -- Reduces the cooldowns of Aspect of the Eagle, Aspect of the Cheetah, Survival of the Fittest, and Aspect of the Turtle by 7%.
-    camouflage                  = { 79934, 199483, 1 }, -- You and your pet blend into the surroundings and gain stealth for 1 min. While camouflaged, you will heal for 2% of maximum health every 1 secs.
+    camouflage                  = { 79934, 199483, 1 }, -- You and your pet blend into the surroundings and gain stealth for $d. While camouflaged, you will heal for $s4% of maximum health every $T4 sec.
     concussive_shot             = { 79906, 5116  , 1 }, -- Dazes the target, slowing movement speed by 50% for 6 sec. Steady Shot will increase the duration of Concussive Shot on the target by 3.0 sec.
     death_chakram               = { 79916, 375891, 1 }, -- Throw a deadly chakram at your current target that will rapidly deal 1,511 Physical damage 7 times, bouncing to other targets if they are nearby. Enemies struck by Death Chakram take 10% more damage from you and your pet for 10 sec. Each time the chakram deals damage, its damage is increased by 15% and you generate 3 Focus.
     entrapment                  = { 79977, 393344, 1 }, -- When Tar Trap is activated, all enemies in its area are rooted for 4 sec. Damage taken may break this root.
@@ -130,7 +130,7 @@ spec:RegisterTalents( {
     terms_of_engagement         = { 79862, 265895, 1 }, -- Harpoon has a 10 sec reduced cooldown, and deals 1,195 Physical damage and generates 20 Focus over 10 sec. Killing an enemy resets the cooldown of Harpoon.
     tip_of_the_spear            = { 79849, 260285, 2 }, -- Kill Command increases the damage of your next Raptor Strike by 8%, stacking up to 3 times.
     vipers_venom                = { 79826, 268501, 2 }, -- Raptor Strike and Mongoose Bite have a 15% chance to apply Serpent Sting to your target.
-    wildfire_bomb               = { 79863, 259495, 1 }, -- Hurl a bomb at the target, exploding for 2,555 Fire damage in a cone and coating enemies in wildfire, scorching them for 3,407 Fire damage over 6 sec.
+    wildfire_bomb               = { 79863, 259495, 1 }, -- Hurl a bomb at the target, exploding for $265157s1 Fire damage in a cone and coating enemies in wildfire, scorching them for $269747o1 Fire damage over $269747d. Deals reduced damage beyond $s2 targets.; Deals $s3% increased damage to your primary target.
     wildfire_infusion           = { 79870, 271014, 1 }, -- Lace your Wildfire Bomb with extra reagents, randomly giving it one of the following enhancements each time you throw it: Shrapnel Bomb: Shrapnel pierces the targets, causing Raptor Strike and Butchery to apply a bleed for 9 sec that stacks up to 3 times. Pheromone Bomb: Kill Command has a 100% chance to reset against targets coated with Pheromones. Volatile Bomb: Reacts violently with poison, causing an extra 734 Fire damage against enemies suffering from your Serpent Sting, and applies Serpent Sting to up to 3 targets.
 } )
 
@@ -143,7 +143,7 @@ spec:RegisterPvpTalents( {
     interlope           = 5532, -- (248518) Misdirection now causes the next 3 hostile spells cast on your target within 10 sec to be redirected to your pet, but its cooldown is increased by 15 sec. Your pet must be within 20 yards of the target for spells to be redirected.
     mending_bandage     = 662 , -- (212640) Instantly clears all bleeds, poisons, and diseases from the target, and heals for 30% damage over 6 sec. Being attacked will stop you from using Mending Bandage.
     sticky_tar_bomb     = 664 , -- (407028) Throw a Sticky Tar Bomb that coats your target's weapons with tar, disarming them for 4 sec. After 4 sec, Sticky Tar Bomb explodes onto nearby enemies. Other enemies that are hit by the explosion are affected by Sticky Tar Bomb but this effect cannot spread further.
-    survival_tactics    = 3607, -- (202746) Feign Death dispels all harmful magical effects, and reduces damage taken by 90% for 1.5 sec.
+    survival_tactics    = 3607, -- (202746) Feign Death reduces damage taken by $m1% for $202748d.
     trackers_net        = 665 , -- (212638) Hurl a net at your enemy, rooting them for 6 sec. While within the net, the target's chance to hit is reduced by 80%. Any damage will break the net.
     tranquilizing_darts = 5420, -- (356015) Interrupting or removing effects with Tranquilizing Shot and Counter Shot releases 8 darts at nearby enemies, each reducing the duration of a beneficial Magic effect by 4 sec.
     wild_kingdom        = 5443, -- (356707) Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
@@ -212,7 +212,7 @@ spec:RegisterAuras( {
     },
     coordinated_assault_empower = {
         id = 361738,
-        duration = 3,
+        duration = 5,
         max_stack = 1,
     },
     -- While Coordinated Assault is active, the cooldown of Wildfire Bomb is reduced by 25%, Wildfire Bomb generates 5 Focus when thrown, Kill Shot's cooldown is reduced by 25%, and Kill Shot can be used against any target, regardless of their current health.
@@ -530,6 +530,21 @@ spec:RegisterAura( "shredded_armor", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221 )
+spec:RegisterAuras( {
+    fury_strikes = {
+        id = 425830,
+        duration = 12,
+        max_stack = 1
+    },
+    contained_explosion = {
+        id = 426344,
+        duration = 12,
+        max_stack = 1
+    }
+} )
+
+
 
 spec:RegisterHook( "reset_precast", function()
     if talent.wildfire_infusion.enabled then
@@ -812,6 +827,11 @@ spec:RegisterAbilities( {
 
         talent = "fury_of_the_eagle",
         startsCombat = true,
+
+        start = function()
+            if set_bonus.tier31_2pc > 0 then applyBuff( "fury_strikes" ) end
+            if set_bonus.tier31_4pc > 0 then applyBuff( "contained_explosion" ) end
+        end,
     },
 
     -- Talent: Hurls a harpoon at an enemy, rooting them in place for $190927d and pulling you to them.
@@ -996,28 +1016,6 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 265888, "mongoose_bite_eagle" }
-    },
-
-    -- Talent: Interrupts spellcasting, preventing any spell in that school from being cast for $d.
-    muzzle = {
-        id = 187707,
-        cast = 0,
-        cooldown = 15,
-        gcd = "off",
-        school = "physical",
-
-        talent = "muzzle",
-        startsCombat = true,
-
-        toggle = "interrupts",
-
-        debuff = "casting",
-        readyTime = state.timeToInterrupt,
-
-        handler = function ()
-            if conduit.reversal_of_fortune.enabled then gain( conduit.reversal_of_fortune.mod, "focus" ) end
-            interrupt()
-        end,
     },
 
 
@@ -1223,7 +1221,7 @@ spec:RegisterAbilities( {
         unlisted = true,
     },
 
-    -- Talent: Hurl a bomb at the target, exploding for $265157s1 Fire damage in a cone and coating enemies in wildfire, scorching them for $269747o1 Fire damage over $269747d.
+    -- Talent: Hurl a bomb at the target, exploding for $265157s1 Fire damage in a cone and coating enemies in wildfire, scorching them for $269747o1 Fire damage over $269747d. Deals reduced damage beyond $s2 targets.; Deals $s3% increased damage to your primary target.
     wildfire_bomb = {
         id = function ()
             if current_wildfire_bomb == "wildfire_bomb" then return 259495
@@ -1249,6 +1247,10 @@ spec:RegisterAbilities( {
         start = function ()
             removeBuff( "flame_infusion" )
             removeBuff( "coordinated_assault_empower" )
+            if buff.contained_explosion.up then
+                removeBuff( "contained_explosion" )
+                gainCharges( 1, "wildfire_bomb" )
+            end
         end,
 
         impact = function ()

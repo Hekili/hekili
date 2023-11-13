@@ -1,5 +1,5 @@
 -- DruidRestoration.lua
--- December 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "DRUID" then return end
 
@@ -23,7 +23,7 @@ spec:RegisterTalents( {
     forestwalk                 = { 92229, 400129, 2 }, -- Casting Regrowth increases your movement speed and healing received by $400126s1% for $s2 sec.
     frenzied_regeneration      = { 82220, 22842 , 1 }, -- Heals you for $o1% health over $d$?s301768[, and increases healing received by $301768s1%][].
     gale_winds                 = { 92228, 400142, 1 }, -- Increases Typhoon's radius by $s1% and its range by $s2 yds.
-    heart_of_the_wild          = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for $d.$?!s137013[; Balance: Magical damage increased by $s1%.][]$?!s137011[; Feral: Physical damage increased by $s4%.][]$?!s137010[; Guardian: Bear Form gives an additional $s7% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has ${$s9+1} charges.][]$?!s137012[; Restoration: Healing increased by $s10%, and mana costs reduced by $s12%.][]
+    heart_of_the_wild          = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for $d.$?!s137013[; Balance: Cast time of Balance spells reduced by $s13% and damage increased by $s1%.][]$?!s137011[; Feral: Gain $s14 Combo Point every $t14 sec while in Cat Form and Physical damage increased by $s4%.][]$?!s137010[; Guardian: Bear Form gives an additional $s7% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has ${$s9+1} charges.][]$?!s137012[; Restoration: Healing increased by $s10%, and mana costs reduced by $s12%.][]
     hibernate                  = { 82211, 2637  , 1 }, -- Forces the enemy target to sleep for up to $d. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
     improved_barkskin          = { 82219, 327993, 1 }, -- Barkskin's duration is increased by ${$s1/1000} sec.
     improved_rejuvenation      = { 82240, 231040, 1 }, -- Rejuvenation's duration is increased by ${$m1/1000} sec.
@@ -68,12 +68,11 @@ spec:RegisterTalents( {
     wild_growth                = { 82241, 48438 , 1 }, -- Heals up to $s2 injured allies within $A1 yards of the target for $o1 over $d. Healing starts high and declines over the duration.$?s33891[; Tree of Life: Affects $33891s3 additional $ltarget:targets;.][]
 
     -- Restoration Talents
-    abundance                  = { 82052, 207383, 1 }, -- For each Rejuvenation you have active, Regrowth's cost is reduced by $207640s1% and critical effect chance is increased by $207640s2%.
+    abundance                  = { 82052, 207383, 1 }, -- For each Rejuvenation you have active, Regrowth's cost is reduced by $207640s1% and critical effect chance is increased by $207640s2%, up to a maximum of ${$207640s2*$207640u}%.
     adaptive_swarm             = { 82067, 391888, 1 }, -- Command a swarm that heals $391891o1 or deals $391889o1 Shadow damage over $391889d to a target, and increases the effectiveness of your periodic effects on them by $391891s2%.; Upon expiration, finds a new target, preferring to alternate between friend and foe up to $s1 times.
     budding_leaves             = { 82072, 392167, 2 }, -- Lifebloom's healing is increased by ${$s1}.1% each time it heals, up to $s2%. Also increases Lifebloom's final bloom amount by $s3%.
     cenarion_ward              = { 82052, 102351, 1 }, -- Protects a friendly target for $d. Any damage taken will consume the ward and heal the target for $102352o1 over $102352d.
-    cenarius_guidance          = { 82063, 393371, 1 }, -- $@spellicon33891 $@spellname5420; During Incarnation: Tree of Life, you gain Clearcasting every $393418t sec. The cooldown of Incarnation: Tree of Life is reduced by ${$393381s2/-1000}.1 sec when Lifebloom blooms and ${$393381s1/-1000}.1 sec when Regrowth's initial heal critically strikes.; $@spellicon391528 $@spellname391528; Convoke the Spirits' cooldown is reduced by ${($abs($393374s4)/120000)*100}% and its duration and number of spells cast is reduced by $393374s1%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
-    circle_of_life_and_death   = { 82074, 391969, 1 }, -- Your damage over time effects deal their damage in $s1% less time, and your healing over time effects in $s2% less time.
+    cenarius_guidance          = { 82063, 393371, 1 }, -- $@spellicon33891 $@spellname5420; During Incarnation: Tree of Life, you summon a Grove Guardian every $393418t sec. The cooldown of Incarnation: Tree of Life is reduced by ${$393381s1/-1000}.1 sec when Grove Guardians fade.; $@spellicon391528 $@spellname391528; Convoke the Spirits' cooldown is reduced by ${($abs($393374s4)/120000)*100}% and its duration and number of spells cast is reduced by $393374s1%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
     convoke_the_spirits        = { 82064, 391528, 1 }, -- Call upon the Night Fae for an eruption of energy, channeling a rapid flurry of $s2 Druid spells and abilities over $d.$?s391538[ Chance to use an exceptional spell or ability is increased.][]; You will cast $?a24858|a197625[Starsurge, Starfall,]?a768[Ferocious Bite, Shred,]?a5487[Mangle, Ironfur,][Wild Growth, Swiftmend,] Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
     cultivation                = { 82056, 200390, 1 }, -- When Rejuvenation heals a target below $s1% health, it applies Cultivation to the target, healing them for $200389o1 over $200389d.
     dreamstate                 = { 82053, 392162, 1 }, -- While channeling Tranquility, your other Druid spell cooldowns are reduced by up to ${($s1/-1000)*5} seconds.
@@ -89,12 +88,13 @@ spec:RegisterTalents( {
     improved_natures_cure      = { 82203, 392378, 1 }, -- Nature's Cure additionally removes all Curse and Poison effects.
     improved_regrowth          = { 82055, 231032, 1 }, -- Regrowth's initial heal has a $s1% increased chance for a critical effect if the target is already affected by Regrowth.
     improved_wild_growth       = { 82045, 328025, 1 }, -- Wild Growth heals $s1 additional $ltarget:targets;.
-    incarnation                = { 82064, 33891 , 1 }, -- Shapeshift into the Tree of Life, increasing healing done by 15%, increasing armor by 120%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, and Entangling Roots is enhanced. Lasts 30 sec. You may shapeshift in and out of this form for its duration.
-    incarnation_tree_of_life   = { 82064, 33891 , 1 }, -- Shapeshift into the Tree of Life, increasing healing done by $5420s1%, increasing armor by $5420s3%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, and Entangling Roots is enhanced.; Lasts $117679d. You may shapeshift in and out of this form for its duration.
+    incarnation                = { 82064, 33891 , 1 }, -- Shapeshift into the Tree of Life, increasing healing done by $5420s1%, increasing armor by $5420s3%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, Entangling Roots, and Wrath is enhanced.; Lasts $117679d. You may shapeshift in and out of this form for its duration.
+    incarnation_tree_of_life   = { 82064, 33891 , 1 }, -- Shapeshift into the Tree of Life, increasing healing done by $5420s1%, increasing armor by $5420s3%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, Entangling Roots, and Wrath is enhanced.; Lasts $117679d. You may shapeshift in and out of this form for its duration.
     inner_peace                = { 82053, 197073, 1 }, -- Reduces the cooldown of Tranquility by ${$m1/-1000} sec.; While channeling Tranquility, you take $740s5% reduced damage and are immune to knockbacks.
     invigorate                 = { 82078, 392160, 1 }, -- Refreshes the duration of your active Lifebloom and Rejuvenation effects on the target and causes them to complete $s1% faster.
     ironbark                   = { 82082, 102342, 1 }, -- The target's skin becomes as tough as Ironwood, reducing damage taken by $s1%$?a197061[ and increasing healing from your heal over time effects by $s2%][] for $d.$?a392116[; Allies protected by your Ironbark also receive $392116s1% of the healing from each of your active Rejuvenations.][]
     lifebloom                  = { 82049, 33763 , 1 }, -- Heals the target for $o1 over $d. When Lifebloom expires or is dispelled, the target is instantly healed for $33778s1.; May be active on $?s338831[two targets][one target] at a time.
+    liveliness                 = { 82074, 426702, 1 }, -- Your damage over time effects deal their damage $s1% faster, and your healing over time effects heal $s2% faster.
     luxuriant_soil             = { 82068, 392315, 2 }, -- Rejuvenation healing has a ${$s1}.1% chance to create a new Rejuvenation on a nearby target.
     master_shapeshifter        = { 82074, 289237, 1 }, -- Your abilities are amplified based on your current shapeshift form, granting an additional effect.; $@spellicon197491Bear Form; Ironfur grants $s1% additional armor and generates $411144s1 Mana.; $@spellicon197488 Moonkin Form; Wrath, Starfire, and Starsurge deal $s2% additional damage and generate $411146s1 Mana.; $@spellicon202155 Cat Form; Rip, Ferocious Bite, and Maim deal $s3% additional damage and generate $411143s1 Mana when cast with $s4 combo points.
     moonkin_form               = { 91042, 197625, 1 }, -- Shapeshift into $?s114301[Astral Form][Moonkin Form], increasing the damage of your spells by $s7% and your armor by $m3%, and granting protection from Polymorph effects.; The act of shapeshifting frees you from movement impairing effects.
@@ -112,7 +112,7 @@ spec:RegisterTalents( {
     regenerative_heartwood     = { 82075, 392116, 1 }, -- Allies protected by your Ironbark also receive $s1% of the healing from each of your active Rejuvenations and Ironbark's duration is increased by ${$s2/1000} sec.
     regenesis                  = { 82062, 383191, 2 }, -- Rejuvenation healing is increased by up to $s1%, and Tranquility healing is increased by up to $s2%, healing for more on low-health targets.
     soul_of_the_forest         = { 82059, 158478, 1 }, -- Swiftmend increases the healing of your next Regrowth or Rejuvenation by $114108s1%, or your next Wild Growth by $114108s2%.
-    spring_blossoms            = { 82061, 207385, 1 }, -- Each target healed by Efflorescence is healed for an additional $207386o1 over $207386d.
+    spring_blossoms            = { 82061, 207385, 1 }, -- Each target healed by Efflorescence is healed for an additshiftoational $207386o1 over $207386d.
     starfire                   = { 91040, 197628, 1 }, -- Call down a burst of energy, causing $s1 Arcane damage to the target, and ${$m1*$m2/100} Arcane damage to all other enemies within $A1 yards. Deals reduced damage beyond $s3 targets.
     starsurge                  = { 82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing $s1 Astral damage.
     stonebark                  = { 82081, 197061, 1 }, -- Ironbark increases healing from your heal over time effects by $s1%.
@@ -124,23 +124,35 @@ spec:RegisterTalents( {
     verdancy                   = { 82060, 392325, 1 }, -- When Lifebloom blooms, up to $s1 targets within your Efflorescence are healed for $392329s1.
     verdant_infusion           = { 82079, 392410, 1 }, -- Swiftmend no longer consumes a heal over time effect, and extends the duration of your heal over time effects on the target by $s1 sec.
     waking_dream               = { 82046, 392221, 1 }, -- Ysera's Gift now heals every ${$s2/1000} sec and its healing is increased by $s1% for each of your active Rejuvenations.
-    wild_synthesis             = { 94534, 400533, 1 }, -- $@spellicon50464 $@spellname50464; Regrowth decreases the cast time of your next Nourish by $400534s1% and causes it to receive an additional $400534s2% bonus from $@spellname77495. Stacks up to $s1 times.; $@spellicon102693$@spellname102693; Treants from Grove Guardians also cast Wild Growth immediately when summoned, healing $422382s2 allies within $422382A1 yds for $422382o1 over $422382d.
+    wild_synthesis             = { 94535, 400533, 1 }, -- $@spellicon50464 $@spellname50464; Regrowth decreases the cast time of your next Nourish by $400534s1% and causes it to receive an additional $400534s2% bonus from $@spellname77495. Stacks up to $s1 times.; $@spellicon102693$@spellname102693; Treants from Grove Guardians also cast Wild Growth immediately when summoned, healing $422382s2 allies within $422382A1 yds for $422382o1 over $422382d.
     yseras_gift                = { 82048, 145108, 1 }, -- Heals you for $s1% of your maximum health every $t1 sec. If you are at full health, an injured party or raid member will be healed instead.$?a392221[; Healing is increased by $392221s1% for each of your active Rejuvenations.][]
 } )
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    deep_roots          =  700, -- (233755) Increases the amount of damage required to cancel your Entangling Roots$?s102359[ or Mass Entanglement][] by $s1%.
-    disentanglement     =   59, -- (233673) Efflorescence removes all snare effects from friendly targets when it heals and its Mana cost is reduced by $s2%.
-    early_spring        = 1215, -- (203624) Wild Growth is now instant cast, and when you heal 6 allies with Wild Growth you gain Full Bloom. This effect has a 30 sec cooldown.; Full Bloom; Your next Wild Growth applies Lifebloom to all targets at $s2% effectiveness. Lasts for 30 sec.
-    entangling_bark     =  692, -- (247543) Ironbark now also grants the target Nature's Grasp, rooting the first $s1 melee attackers for $170855d.
-    focused_growth      =  835, -- (203553) Reduces the mana cost of your Lifebloom by $m1%, and your Lifebloom also applies Focused Growth to the target, increasing Lifebloom's healing by $?a338831[$347621s1%][$203554s1%]. Stacks up to $203554u times.
-    high_winds          =  838, -- (200931) Cyclone leaves the target reeling, reducing their damage and healing by $200947s1% for $200947d.
-    keeper_of_the_grove = 5387, -- (353114) Tranquility protects you from all harm while it is channeled, and its healing is increased by $s1%.
-    malornes_swiftness  = 5514, -- (236147) Your Travel Form movement speed while within a Battleground or Arena is increased by $m2% and you always move at $m1% movement speed while in Travel Form.
-    reactive_resin      =  691, -- (409785) Enemies have their movement speed reduced by $410063s1% for $410063d when removing your Restoration heal over time effects, stacking.  Enemies are silenced and rooted for $410065d at $s1 stacks.
-    thorns              =  697, -- (305497) Sprout thorns for $d on the friendly target. When victim to melee attacks, thorns deals $305496s1 Nature damage back to the attacker.; Attackers also have their movement speed reduced by $232559s1% for $232559d.
+    call_of_the_elder_druid = 5637, -- (426784) When you shift into a combat shapeshift form, you gain Heart of the Wild for $s2 sec, once every $338643d.
+    deep_roots              =  700, -- (233755) Increases the amount of damage required to cancel your Entangling Roots$?s102359[ or Mass Entanglement][] by $s1%.
+    disentanglement         =   59, -- (233673) Efflorescence removes all snare effects from friendly targets when it heals and its Mana cost is reduced by $s2%.
+    early_spring            = 1215, -- (203624) Wild Growth is now instant cast, and when you heal 6 allies with Wild Growth you gain Full Bloom. This effect has a 30 sec cooldown.; Full Bloom; Your next Wild Growth applies Lifebloom to all targets at $s2% effectiveness. Lasts for 30 sec.
+    entangling_bark         =  692, -- (247543) Ironbark now also grants the target Nature's Grasp, rooting the first $s1 melee attackers for $170855d.
+    focused_growth          =  835, -- (203553) Reduces the mana cost of your Lifebloom by $m1%, and your Lifebloom also applies Focused Growth to the target, increasing Lifebloom's healing by $?a338831[$347621s1%][$203554s1%]. Stacks up to $203554u times.
+    high_winds              =  838, -- (200931) Cyclone leaves the target reeling, reducing their damage and healing by $200947s1% for $200947d.
+    keeper_of_the_grove     = 5387, -- (353114) Tranquility protects you from all harm while it is channeled, and its healing is increased by $s1%.
+    malornes_swiftness      = 5514, -- (236147) Your Travel Form movement speed while within a Battleground or Arena is increased by $m2% and you always move at $m1% movement speed while in Travel Form.
+    reactive_resin          =  691, -- (409785) Enemies have their movement speed reduced by $410063s1% for $410063d when removing your Restoration heal over time effects, stacking.  Enemies are silenced and rooted for $410065d at $s1 stacks.
+    thorns                  =  697, -- (305497) Sprout thorns for $d on the friendly target. When victim to melee attacks, thorns deals $305496s1 Nature damage back to the attacker.; Attackers also have their movement speed reduced by $232559s1% for $232559d.
 } )
+
+
+local mod_liveliness_hot = setfenv( function( dur )
+    if not talent.liveliness.enabled then return dur end
+    return dur * 0.95
+end, state )
+
+local mod_liveliness_dot = setfenv( function( dur )
+    if not talent.liveliness.enabled then return dur end
+    return dur * 0.75
+end, state )
 
 
 -- Auras
@@ -153,11 +165,29 @@ spec:RegisterAuras( {
     cenarion_ward_hot = {
         id = 102352,
         duration = 8,
+        tick_time = function() return mod_liveliness_hot( 2 ) end,
         max_stack = 1
+    },
+    -- [393381] During Incarnation: Tree of Life, you summon a Grove Guardian every $393418t sec. The cooldown of Incarnation: Tree of Life is reduced by ${$s1/-1000}.1 sec when Grove Guardians fade.
+    cenarius_guidance = {
+        id = 393418,
+        duration = 30,
+        tick_time = 10,
+        max_stack = 1,
+    },
+    efflorescence = {
+        id = 81262,
+        duration = 30,
+        tick_time = function() return mod_liveliness_hot( 2 ) end,
+        pandemic = true,
+        max_stack = 1,
+
+        -- Affected by:
+        -- disentanglement[233673] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
     },
     flourish = {
         id = 197721,
-        duration = 8,
+        duration = 6,
         max_stack = 1
     },
     grove_guardians = {
@@ -202,6 +232,7 @@ spec:RegisterAuras( {
     lifebloom = {
         id = 33763,
         duration = 15,
+        tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1,
         dot = "buff",
         copy = 290754
@@ -209,6 +240,7 @@ spec:RegisterAuras( {
     lifebloom_2 = {
         id = 188550,
         duration = 15,
+        tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1,
         dot = "buff"
     },
@@ -225,24 +257,34 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
+    -- You have recently gained Heart of the Wild from Oath of the Elder Druid.
+    oath_of_the_elder_druid = {
+        id = 338643,
+        duration = 60,
+        max_stack = 1,
+    },
     regrowth = {
         id = 8936,
         duration = 12,
+        tick_time = function() return mod_liveliness_hot( 2 ) end,
         max_stack = 1
     },
     rejuvenation = {
         id = 774,
         duration = 12,
+        tick_time = function() return mod_liveliness_hot( 3 ) end,
         max_stack = 1
     },
     rejuvenation_germination = {
         id = 155777,
         duration = 12,
+        tick_time = function() return mod_liveliness_hot( 3 ) end,
         max_stack = 1
     },
     renewing_bloom = {
         id = 364686,
         duration = 8,
+        tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1
     },
     tranquility = {
@@ -253,11 +295,13 @@ spec:RegisterAuras( {
     tranquility_hot = {
         id = 157982,
         duration = 8,
+        tick_time = function() return mod_liveliness_hot( 2 ) end,
         max_stack = 1
     },
     wild_growth = {
         id = 48438,
         duration = 7,
+        tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1
     },
 } )
@@ -282,11 +326,6 @@ spec:RegisterStateFunction( "unshift", function()
     removeBuff( "travel_form" )
     removeBuff( "aquatic_form" )
     removeBuff( "stag_form" )
-
-    if legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent.restoration_affinity.enabled then
-        applyBuff( "heart_of_the_wild" )
-        applyDebuff( "player", "oath_of_the_elder_druid_icd" )
-    end
 end )
 
 -- Function to apply form that is passed into it via string.
@@ -304,6 +343,11 @@ spec:RegisterStateFunction( "shift", function( form )
 
     if form == "bear_form" and pvptalent.celestial_guardian.enabled then
         applyBuff( "celestial_guardian" )
+    end
+
+    if pvptalent.call_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid.down then
+        applyBuff( "heart_of_the_wild", 15 )
+        applyDebuff( "player", "oath_of_the_elder_druid" )
     end
 end )
 
@@ -333,6 +377,10 @@ end )
 spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
 -- 2 pieces (Restoration) : Rejuvenation and Lifebloom healing increased by 12%. Regrowth healing over time increased by 50%.
 -- 4 pieces (Restoration) : Flourish increases the rate of your heal over time effects by 30% for an additional 16 sec after it ends. Verdant Infusion causes your Swiftmend target to gain 15% increased healing from you for 6 sec.
+
+spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257 )
+-- (2) You and your Grove Guardian's Nourishes now heal $s1 additional allies within $423618r yds at $s2% effectiveness.
+-- (4) Consuming Clearcasting now causes your Regrowth to also cast Nourish onto a nearby injured ally at $s1% effectiveness, preferring those with your heal over time effects.
 
 
 -- Abilities
@@ -378,7 +426,7 @@ spec:RegisterAbilities( {
     flourish = {
         id = 197721,
         cast = 0,
-        cooldown = 90,
+        cooldown = 60,
         gcd = "spell",
 
         talent = "flourish",
@@ -776,8 +824,6 @@ spec:RegisterOptions( {
     damageDots = true,
     damageExpiration = 6,
 
-    enhancedRecheck = true,
-
     package = "Restoration Druid",
 } )
 
@@ -789,4 +835,4 @@ spec:RegisterSetting( "experimental_msg", nil, {
 } )
 
 
-spec:RegisterPack( "Restoration Druid", 20230724, [[Hekili:TR16poQrs8)wSIeR98WhGTNz2iJ)q27IUS6YQtX5Zg3dU9y0ydo8yMDKS4V9R6gAOFc4D9gLCA)Y8a6UQQRN)QIELZQFF1YnOm8Qp5A7oX(E3PJDCNmDYSvlZE7iE1YJOGNrpb)re6a8ZFdNMfNGYcJJkw)ptYd3qwYB7JrBiKknopjaw2QLpMhUp7xIw9Ow6BFpS2J4GvFYXgy1UWnBWLRfNgSA5)gJ2JtkwFmjmojmleNwSgLGbo(FxE724G8u8MI1Xr7FBCXhl(iH03AF)TUt)XI1fR)zCsCqyCoSPFkmdtwyX6muYt4m4rVgMTRy9VfEe(ZD463uSo4TG9HrpvSoewfoc94E8goYp5w3juY)RHrXGSL9kg9mSYS4I1Fab7)NJtoulYVvSEBsm8)ldpKVNQV(qcAB24vl3hMMLsuwbOm4xFIAdQ43QFcEmSDCsiIOd3UDC6o0M4xpG3VzCoiZNovSM(8JjXVUx8rP5e1Op6WJ5P7GxTAjkGW5vltqpJxLbgbJ8AiOaIJ3dSkACqC0lXpJ9Z2H9tpgcRjDCc(akmcoVZlwpXUKPdikV94OmT7OInfRhvS2IUyQqUdJsY8J3sx7RH0JvJGQ8wIuprsQzlgTbDml8fGLVIsoWFA2eNnw8T(Bqha)4XPzGdDXAVI1UuXY8kRpXlG1cehCpGdyPBeXQbc20VjcMZxVGn7BIGn5RxWU7BIGn9RxWU)SfSbTXXSWGNHKj651dgJcjCfifocFGM0BbZnTko7qCCeqx)TqUMMamR(fhA17qCqL(uWMXhqFMURHTe6wMjOMUQlHx3FhK442Y8hx1iZGaMeMN6)eunbffGBKyXKmQ0UjfdxQUCidi9V9jzAlZ36xw9cYys0)VVTSGYMG5utGOKO3mmIPSyP6Ge8LlHOM(UrAKGDIPCigeh72Si)v)yXDMuny0JN5s8gnNbXhEm2)yCyuwPt4mMvUsI2GXh9PyHeCEQCFjzMif9ljCtffYZa1Y2emGRa2KyOtfkbhZWe6P869fjVemzsIB4rZsB4rQWkJoGxy52PfdPhKB(ayII93eIPEgLskahD)EwI6Xz7sqP78dia7GLmTHTnVHYDtqasZJ2gMGLCL7VevdA6yc(fFIM2PoFctZkNQQu1rCCR05HhauIVG34xjncoT6Qm5idCqOCN2KAa3tE6TsX2MjzdlnFn6QXYNCr1D6RHhXvAB4u8E(0LLerinc5i2PNLw)Nw94uQ(6XmfMYBzcodParFm)s2DhxMvVc)q9rLZlOYwsxjpQ8n5S(YG8B2JFqNAMT1YJ8O2DZm4IiJuQ5eYrdMcOtPunIHWJ(JqQXNxFT7hyhqvNxoJkaLmjnhoMuUBgFGGbdOUJToTm8hLN9fmpRH81sAIkjE9IvC6kSqsMzkmxZfq7vCRE3Bx56wSfTL1HT)JaBuAJKVsWcwBd6s1nN(YMaAdfrQfvV6Cmnb3nv4jgJrTNCzonvUo3Ax5AEAY3)nP0IH(rCn10lTiDV6pQohILqMhd8ZuHmszwrdSCImIXJZB692sb9E8MgZwzzDxnbUgustR9r4FSiLUI2i4CjkzjULPg34cPnoQ2ZKpFSLghCxknn60DfDfgQ46AUIRIEI)b84(zbdcfnAY3qELo0QYrXaf9lTJmzZu5nzFW(uAtBMsHiZwCskX)sow81sCmRvn1oVgyzNvOSMkm3xxZUDqxgKu5sDxM8ogyM5kBAM8GJgV96grATwgN(MzHPZXZCvkU8h3zBGVCuDxcMmzWSYw6BDiQS6Fc9SZpYr(xupJ026OJJpurydElkFV2z5sgNne(vsR)1NXb5zKGq8l4K3kJrGFUdt9RidvMm6z0lOW9ekmM7a)Coe28i4qOiHPX7rj(pIrhefSYPMYw1J4KuCs5iPewLCAFvfxZGM5asjmv6g2KNI9H9FG22B39sCoK(ym93AMHih8SQeEKMCfGvjJaQFJlQYT1mGxnbnFFCDN3it6X46m3mqxQzrZo5eBoSV1Hc(3h9PPrqjN6LT(VUbVFb(gkkdh7YizxGpIIYyWUms2f4ROOmZRlJKDb(mkgNh23IVJIY0QUuO8(IqYDwddQt4YM0V9Vyez4hCQeHjCyc05xUI7EJWJnCqmNVTTPPiEGeh)b7nVMGY2PGs7ycMaPK7BUZwV63CweIK5PHRbVbhGLKQ6xMhqDjaqiYZUPCLqXmsrfEps9CIFMnMXZPJzc1g7c5IXANu9laPnL8YYl6XeOV2LqGCee8ciM)DcgxiCkobA1BlbP77aw)os7C)royeHAyPXeXdLNfFarbjhSdf9eoDCXh)pHrWRCN9JfR)auEdNqF)7AAVfie5Ay8o1gEH3m05ZJO3JJFHYFYwNw6PsMcj92yaVMAV2gsgps5Rshx7XCT3)qXhP4J6wg1MFt4wpDir1UdMfGUjWc5zBP3nWQ3KKFRYKvWGB1g(jqH9dfRp7EwQfjqqA6Ar4P1nSW)0Mgua((dm7d5nrOSCidK)lHpfs1Tde6DWAGMRjJejsWpbRoBx)2TvkolJ43sGCT3humWUZpMEZEWp0pyJ398cEDlp9J48BTSLMZFFsyMVHGw2dSSgC8oDszaWDrSkVyX05lCBZHXQ7EAS6t)mZ9Q6LXAOru3No1nI7f3zF7e7R6cL9Ptd6cF9iE1LsWvlAenPy5OKgDaHG)L8ulco7gHc6EoeXUd8LEUwDIRCH7LLLo)5ZYj)5ZYPxEwoOt84c5ZlXmQJqCyhTuXnUyMvxFNAPaVEXhog4iCWRHaRMAB(dxMt09ws09EzbGsyGq6b5UWHF9uGSKcXSQ8b067KC7esOwKOktpRos1)kFTqLPNskaAAOELREIDtMKws8pQQIM2jOijnD7E2veX5LQ5IX2ZlDZfJTNxkNlgBpV0o9MTNrQhw0W3XV07k5vQm(EogkLWYTHG60sJSgoqgn5)hR5uvD)Db0MuTcEvSf)NwB(mRHvuv9EuXQMr)aZaLMxLKt(weQY2WJTYvVEZ1WJ1mv8UCPWZMpy6nLPu87UE9mlt3nJftLPFlOcg2fBGcGAUGvwsbFEoNo1bIOwJLvJml)SQlMzBnCirhQ)c5zz4RYVW79SyBXlH3OtNAX8PXyPXKkLB2BMAWwBq(gAgZN1GQsfGuQEV5SyoLSBI2v2JFqwduUupNr6nCMCna5sZDGtlhviHzWPe3c500pyPySvuF8Wn50qZDSLpU1OpHS7koG8Fy)tNm7Q8L6AkVnXRLIwBpFQKft0eXnFcXfvkJtfh9GOHgx0YeWo2JmfemxjraxIMZVdHwY4OaxIM8(SWMv54BXp0EnPM1Pt5dOoDQsx9E7ANxpIoswLYFYQw41Utbvp7F4x)vtNZTEgHVEQ0IwWTOrJif9QoucwD3RnyVUYvXruYJQ5EovE0fotY3XkRHmFL6KkdAgZS(6TNv6kLGXAhpff(8zNoXmhoQH7FXDTotPRvl10ag6m)IetOCuy6anG4DKHV0AclfktU5qeQw5GFNTe54B3g6I4A1j(nqD(88DXwUjT3BiuE2U4Kvl)v0ZODHphs)WjR(F]] )
+spec:RegisterPack( "Restoration Druid", 20231111, [[Hekili:TVvBVnUns4FlglGw7Kn(K8lXjhS9h6ExX1GRlkQ7NLeTmDSqSLCLOs2ayOF73qkrjk(ITCItX1IUyrwBPHZmCMHpZlCJRJ7V5UyfIGD)2a7bdDG)03EYWjJVZDb519y3f7rbpHEe(qeAh8ZFfNsItqKW4OC))vsw4kkjVUngTIYQ04SKaGm3flZc3s(Pi3L65)eG294a3V5yp2DXMWvRWf0ItdCx8FWOT4KC)9jHXjHKqCAUpkbds8xwCZ64GSu8QC)4OTV2p)H8hOS(ghh4V)ZC)C)FomkgwC2EQGZ9xNeVl3Fr4UV2Gy7XmI)fejytUVJD)b1V2EYndgXE9pItIdcJZaf4hcPCJUVjOKhXe4rVesG1(RH7HpUbx9MC)Gxd2gg9yUFiqfocTClELa7hEZGHIQk5fm6jGssCU)xrW6)X4KDvB)xf2dzBz2(VMGwt6dM(K41HBbdokG(40(7tWbX7wIixp7FSbJsiEXR9iBWEVeUDv(d6id4XlB)s46zeWOhr6NGEc3VuN1VIaeXBnOHSffUdpZ2Az26193fhh9uye7D9xf)sKvRzP4sLzlxCnyzdzvX68h(uU))(74Gmcncb)mobSEuMb)Cd8dq2udo1TGEgfULUU(vQeOiPpLTDR3su6MgpnElkXBjgTt8PlXjP4KNOo6h(0NymV8nriswco175Whdz22oSDcZu3pBVvXxt3GGT0o82vWZKzrc(rGAYM2TARumHaksAFWRV1dmmWQZ2N(fime7fSA2erfho)4brZ7sBhZfx6(y6No)1LKf5v8nVTHPKVqHtMbEwdbEho0013cMvgftF(ZypCeEhGBmFWXcy4Vlio654NWSdkP7dHZCPvKeehVLg4PLOe8ouyu60zpgSQ)o03T6YuBLtEG(F4qfNuFDjFMFR9ndTVIRvGkKeML69iaZIIcemoDkjrLtLK0t0CPC46iwe1tCICsJnGYW)VCxJwH2ZcfsFbb7BkKmO4fq3ZCOQ9Qys)Mu5TcTdY21pLaP9MnWYmfCDFWLvKo)XlYH)XlYrxEr2XmhjHbfy0c45zrRdtW6yucEnGCVHgpzv8I(08hEKyVvH45J5ygH7aOVNXR8k5Ls(TYdETsoccWPXghSxjPzWYuH2ME3LzhnXsIVtKvagJbgbvSb5gl5DF(BM7is)lqXHBOjI5z5dy53Py7uwOMKOePNNhP8RPz0kc9q7wMLUre9VKFkqamyOwHvp0Ugj5ia)9kZOPdvtwBoD45PorCEqnxmXEEWnxmXEEqoxmXEEWoTwSNb0d)0WFx)sRZKxAYe75OReG1GAgQZk1ZQBh5Qj)lSLt109NLI2k1xYMeO9lpAZbNF2SXwnZsvZS5JKf0rYz29uIbspa9V(Sh197ufzzjfAoZ5WHtuVWrJ0vJBbgN84RZhBZWYQ3D9fvyPe1VeUhZSaZUNh3xSq1qDA3JaGvLxUBz49vdu0ZJvCtxZv3y1Peu8WHUcwWsRIf)C1QSIPmDLD)7K3pfKoZPNENGj3mOxcuZvFTsuHfMldJ6ILbKUZsXXPy(elSsWcn1XwE7wvNfGJPemr9T1h2m74FRHzYlBnFGyEldj6990H6e7TpomIKoFOMtpth2dSzIKnBmxIZkJStc3xfe6y3Zui9uLd1FuOhkfgWkP9SQcPmW3sqjuyA4ET2uXduhouARU3Uk4Dg1gjBsf3zLeE9GrGPN)fr6VA0ub65m(6rsenxGOE9OW7LBQgE9bxBWFPbhrkIcaB8k2FfB9g7jXVuK1LhRubQWpIapuruMCzMHRuomwf4PyWNo(WbU7Wr94(BU)SXk9NzPcdyOh0lYzcLTc3gOPCvhRMMe1ULfbSu48MemRtUYa8BTLyNyJLq9YxRoBRoQtIwSFTIfPPIi3fpJtsbA43ub9EjGdVr0HQ6U43Odpg2eXjKC)10ri)zqL)CUFc(3Zal)QC)0y6uMrzK4Di20Nd2GIEeN2p)H)Bye8k2m))kiACc79FUos9ZfZ(x4jCte8MUoFVh7Yd(jM8PlDeFsX5(0giOYWDb7tSl0bVgLTLaF8BSl4PKvU)qX9RaCNUu3fN9GY53ZG7I6XK7salgvkvVQAw5IsgOAOiv1ZoxIQrsAmOUeCsiYDrNC)gJki33k3N)WgZuOwmvt6MY6XxuwxmjCkFV1iF1D)h(houYyHeU1SvQ3Wc3QxXTVblGkVjgLxZtJ5(ZHOo2E5y3AIW7ps7qmYAtlr5(tNL7xw3iBvDl3VAhLcZCC6(ny7LBTZ9Vj3Fi8pxvRZM69OG1DQi0yhi5(9AN9hcoO2)7oL)2OzwD661cwCruPCVrP8Nk7PoSwc9EFL2EC6Bw6K42(eJ3j3FgpA)KJ5P4KbWCXSHu0sQMjJzEz0mNlGMn4drZgEb0SHFiA2OlGMjNp50AwNJjYY6mnim5mmv5elQptukInbuGalx5fBBnweE2u9Eg0g58sIinNuDK0dht232NmAAU)DcMeEl1mUidP((nCtyVuJomXWgXmER((Xlmln3qmDLwqKTyToS7ePzzoKIKjAQqtTOePIznNXOrzyARXvsfO1tCuvqZD6xx(sDXsvps(ABesRcLavPJMYQ1YYlkYy1mz0rRCPxJ650L2SwrvEBvPRNfisBG3UajRoF0T2OyxGCvMqcFFk2fivLjqX3NIDbYujdKEAf7TNOYCfS)DheV7kEBrhehT2En5SgiRj6Dd94gRoQDy(3ojM9rSZKsJJ22r(lw3wM6PPEYGVHsSkQn10eZzKmYqXwM6Krt9EDPdzRT6tvMED3luzqQ85RIeEuR9PgRk1s3Q2FulIt(KyXeoluB7QKh6VppnM5QzWcCa0)7fpD38U9AEGw6(9yYVRWX4RyynMoKyQAdDnuOZTP0tb3BX))jbZl0TH3R0hWOuSeq(11X0z6v2PXiXxAHhU3Xdpm4Anp0qnxM4j1s1iDDnQzoDCDSQ(ef31Os3gbD9m17L5o4A4WMs)FjVoRCJ(HeYaD8r)Z2eNkOUN(2RuAx8mpVzi8woRmNOM3qLspl1xqbJ9dncrnL9YEv(VMlDghqTsvN1aBq4grlm1284zJwXPgbGhyA8BF0jemu87atjOy9n2QIXRWqSAG8yqEMsabwzjhSmqg15jenDVT0H(zIUgZEzzBxfdUgmsJQIreFCtoDfRRJPsCYQ5sgzCHZLwyVQitr8ylnb4dy80yqxvkeT2DZzkvStYx2l3GkDLVYfkjC5znaqKpfxFrZCDZu6n5yW2KAtlszJtMhjizkliHUTeZL4y2Q(rn3rnzyMuLZ(TmtYbMA)(9H7yqyTF2KvPU05iSorUmb7n3dZeV5Suc4h3ABqUcCLET4ftSR63zQQ52XjsDUvnM23rg8MMlPSMTSH8PBeynRsGDGTyNOoZs2Vfjcwr9ssmvS5lbwNWACHAIcsxxYnRAvy8Pm7lkJSjoXDXpJEcTj8Pq2tD)Fd]] )

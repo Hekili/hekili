@@ -67,7 +67,7 @@ spec:RegisterTalents( {
     feline_swiftness              = { 82239, 131768, 2 }, -- Increases your movement speed by 15%.
     forestwalk                    = { 92229, 400129, 2 }, -- Casting Regrowth increases your movement speed and healing received by 5% for 3 sec.
     gale_winds                    = { 92228, 400142, 1 }, -- Increases Typhoon's radius by 20% and its range by 5 yds.
-    heart_of_the_wild             = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for 45 sec. Balance: Magical damage increased by 30%. Feral: Physical damage increased by 30%. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
+    heart_of_the_wild             = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for $d.$?!s137013[; Balance: Cast time of Balance spells reduced by $s13% and damage increased by $s1%.][]$?!s137011[; Feral: Gain $s14 Combo Point every $t14 sec while in Cat Form and Physical damage increased by $s4%.][]$?!s137010[; Guardian: Bear Form gives an additional $s7% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has ${$s9+1} charges.][]$?!s137012[; Restoration: Healing increased by $s10%, and mana costs reduced by $s12%.][]
     hibernate                     = { 82211, 2637  , 1 }, -- Forces the enemy target to sleep for up to 40 sec. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
     improved_barkskin             = { 82219, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_rejuvenation         = { 82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec.
@@ -111,7 +111,7 @@ spec:RegisterTalents( {
     berserk_persistence           = { 82144, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
     berserk_ravage                = { 82149, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
     berserk_unchecked_aggression  = { 82155, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
-    blood_frenzy                  = { 82142, 203962, 1 }, -- Thrash also generates 2 Rage each time it deals damage.
+    blood_frenzy                  = { 82142, 203962, 1 }, -- Thrash also generates ${$203961s1/10} Rage each time it deals damage, on up to $s1 targets.
     brambles                      = { 82161, 203953, 1 }, -- Sharp brambles protect you, absorbing and reflecting up to 792 damage from each attack. While Barkskin is active, the brambles also deal 553 Nature damage to all nearby enemies every 1 sec.
     bristling_fur                 = { 82161, 155835, 1 }, -- Bristle your fur, causing you to generate Rage based on damage taken for 8 sec.
     circle_of_life_and_death      = { 82137, 391969, 1 }, -- Your damage over time effects deal their damage in 25% less time, and your healing over time effects in 15% less time.
@@ -390,6 +390,7 @@ spec:RegisterAuras( {
     heart_of_the_wild = {
         id = 319454,
         duration = 45,
+        tick_time = 2,
         type = "Magic",
         max_stack = 1,
         copy = { 319451, 319452, 319453 }
@@ -871,6 +872,18 @@ spec:RegisterAura( "indomitable_guardian", {
     max_stack = 5
 } )
 
+spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257 )
+-- (2) Rage you spend during Rage of the Sleeper fuel the growth of Dream Thorns, which wreath you in their protection after Rage of the Sleeper expires, absorbing $425407s2% of damage dealt to you while the thorns remain, up to ${$s2/100*$AP} per $s1 Rage spent.
+-- (4) Each $s1 Rage you spend while Rage of the Sleeper is active extends its duration by ${$s4/1000}.1 sec, up to ${$s3/1000}.1. Your Dream Thorns become Blazing Thorns, causing $s2% of damage absorbed to be reflected at the attacker.
+spec:RegisterAuras( {
+    dream_thorns = {
+        id = 425407,
+        duration = 45,
+        max_stack = 1,
+        copy = "blazing_thorns" -- ???
+    },
+
+})
 
 -- Gear.
 spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
@@ -925,6 +938,10 @@ local SinfulHysteriaHandler = setfenv( function ()
     applyBuff( "ravenous_frenzy_sinful_hysteria" )
 end, state )
 
+local DreamThornsHandler = setfenv( function ()
+    applyBuff( "dream_thorns" )
+end, state )
+
 spec:RegisterHook( "reset_precast", function ()
     if azerite.masterful_instincts.enabled and buff.survival_instincts.up and buff.masterful_instincts.down then
         applyBuff( "masterful_instincts", buff.survival_instincts.remains + 30 )
@@ -936,6 +953,10 @@ spec:RegisterHook( "reset_precast", function ()
 
     if legendary.sinful_hysteria.enabled and buff.ravenous_frenzy.up then
         state:QueueAuraExpiration( "ravenous_frenzy", SinfulHysteriaHandler, buff.ravenous_frenzy.expires )
+    end
+
+    if set_bonus.tier31_2pc > 0 and buff.rage_of_the_sleeper.up then
+        state:QueueAuraExpiration( "rage_of_the_sleeper", DreamThornsHandler, buff.rage_of_the_sleeper.expires )
     end
 
     eclipse.reset() -- from Balance.
@@ -1643,6 +1664,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rage_of_the_sleeper" )
+            if set_bonus.tier31_2pc > 0 then
+                state:QueueAuraExpiration( "rage_of_the_sleeper", DreamThornsHandler, buff.rage_of_the_sleeper.expires )
+            end
         end,
     },
 
@@ -2169,4 +2193,4 @@ spec:RegisterSetting( "owlweave_bear", false, {
 } ) ]]
 
 
-spec:RegisterPack( "Guardian", 20230714, [[Hekili:fR1EVTnos8plEpavNETQworjP7fBG769aBXDloSz3)1skY02CJSKo9iPPWqF2VzOOiPKiLKt7HdOOX2C4mdNh)4WHCJZMFDZ9BdkiB(5LlwE5IBCUYEXTxER7vBUV4LuYM7tdcFmyp8H4GJW))pkdY2sdIXbEjkjylYG8KYSqyWdffP5)4h(WEAXHYhSdto(HC6XYOGcAsCywWUc87HFyZ9pusJk(P4npOx6l3CFqzXHKSn3Fp94Naot3ULutojpCZ9i5VFXnV35QFSYVY)Vt)sLFqL)VEili)qLFys8wkku7Qpx9zbXomI)3bfHanolSDSDR8ltrnqHWRF)YAU(N3(7L5fv()RG49rKp8lbFLu5tJR8tZOjz0IxuMK77xClFsBb9GsYQ8VCrL)ZKG0wQbkagH)c5jAoTGaKt35Hge4tbXW)fguat7jI3dKGS)uLFgjVijdj8inpNgVh)qbDpZSk1Mk)DjGuFGUFpk9TKDK4C6tGo)P)AUTWm9enKMuM7f(syemwrqejgwKHhiHpQONlF)sxME(Bm7Zwo3FtJU(gCkGHHKdlsWFdCcu6hHVvKu5NxMMMKbST4aiJF43YjOzSmIVcLMYFkljExjW4)cY0FOYpjTJFduKA)gmTKYcAmPXNHCimQClZIiugu8)WN4MqbdZT3CFenViNfWt2b6sb8XFMLaqIdEiISDZFbc7crQHq6hlJI8EaIMQd5YOP1d83(cjSKzpiprYaJEb9iHVoHjJ2ikOfbpfqJqUcYfMCbjJgS5(zG7PC3o70SKNJSlt3uar(OgieBscWjvncO4sd6yrgn(rsHdmTOKcLVdZ5QHNZYoZzjohxdZz7VhKvwg7LsJIcY8s25b6OhjAljZBxedwqUe3MuyFmbCQ0mIDbn8rW70aEmoJaT46oAHK1ZR8N3eWAFaYnkAyXZqSJnFov(wCRCFsktR8VOY)0jgNMZP7bswoj7rw6gJeCC2iq8vqwmlpZBph5dzyzwEsyd3SyCcCTBZkPBTBL9Ygvme40vh6I6)jn0PjS)cgHBmAey6fidpiD8itfSmlCCHmdnzXpYssSmRKZ5uYmUfyyOhKQ6fgf8S0YkmmDiiJCmGgdH9RbCveuvywMGzCBYZXsNwlNHyOWKKi8l2fme(6rvL6I2KDKbzRHIwHNYHxv5Vuz511(sIjz7FHXMLUk0PpcR9e(4Iw(4mi(V(ZEiEunQKxD(rJxbJaU1yeWmHLcYH4APK)IFfzYhnKrhgaGBM0c5ElilCwyGhdTqqLaMm8JPzeOmGhc0c2Ma6DoPqYZNcGvimk(POs4pnXJqPaX5OHMc7x0ktNtrgHgdR6qYwpy7KgkyCKRtnBCjWCplfzMk2ZRvDeGpGSGnY2NdXPLGJi(LNdErvxz)SqB7I)pW(jIfWXaihsjWu3Ecs(mjm15Mbp6N0GRsTGEnuJjHaOKCgk5i90dD7ozgsubqfTldVPsJjeCcdNmv0kZqt0SQ5uI3c8VjyYwwNNfR2LKJavEBdocfy75wdtrRliQ5xb8os(HKiLT14uirVUdk1SY)Tv(hcYHAPfApNqDb8sDfS1rfhStdlym6AxLmCYEW(vCy4yWbzqm55GOXI9KgRb41oGzFLc5tGwHORcakZXfdW5BChYhaNmO2EwpPJbFrjKasSYb2oCufZrLxM9efWp8aVeKUhwK3DVooVK)CxdWIHvtCZid6zFHxhdZGMhm69m2FPByLa9HVdB)Q34LzuxxynIju)SxrI3wkPU(HLQ1OLr2HjaOegI666nqXdanq4XrkPoX4gvuziz4fewbkfPe2(VlQ8)F0WRAGjgtjbJjEKnVIGS9eWD(ZodNy2sX4klw(JAju5fWX7zQHBldveqbgWHv3LBNbjsv(YAKmZLRMcxCgJlx21K0MrQMeX5AKmsa3iczZGktIW5JOHTpB1i7QyihOlgGOUQK4NsEKW23kpLc8kVJ8UPLIvxRBhsUvLeLsN7q2hvjlQmguuqBp2HQELV1zboXsZffwpm9Q1BJyxNXbPqs5UBnwrzbDI9wqGqEjc5reskH54DmJR9D54E9CE4XBr5AEh2g5QrJBoUGUZuXtheNCPh0bKjDDNeLSGVsAvZM(QpKGx)VqXQZWToBLsT41swrdoMb3(EO4glnR7kcrXvJ8(k7eAoMRPzER(lOew1oERxKOHnjw1appGNE(WR5ANIyFOXIl(oQ9Jgo8DrZ1e8ygA)1U0(wdy6wVy3c11uewtX(8WAmINXE3fCB6eoPXSrYZXLTGXFCKCJHzM(AuCm3ol9czEhfsfT6CDAcgTSDJyuoDKJ5MTyi40C4UbxF3oX0scgZgNm)xoY287tGsj5XqAQb1XrXo26cc84DsJNncjJxQMQHJXK)4B7QXc(QW66S510y7WGqAqpwo4(5NVwpbm3ZtNphOWLM3hTx4fUsmww9sZB5HPz2Bj7GGNI6O0AGeLwDHblEhtYiAJGgPs8jwOAFKaXq6wQok5s5pttjYL6G3dHwKidHZx1lMvZe5(48KYOguv4yhK8IwECdXDT23UgV7oEJNhkJx)0U1DKPnnT9cTozZBemmox34qZa2govjI)lzxAz0ta5CSZwNKsvsTpk1LJHXgeHmjueE2UHSnTeb5KJQevI7AjWInYleysnSr3TrifJ2MQAgLRHPA7RAZpoCdiyZVFRPZcEKioJU2joP2r)nSQnd1mRUTeOkAR2ci8oms8stOXf1jcU9xpd2JzgxPPdW01T3BfiUx)cgV9cMZl6lS6E1OCtvUlKIAhjlPUmGhaoi63WeyTOxs5PKOOMkbTRJYHaNUP2IbgPDfd5cYpKr2YszGKgiZoh)1M3uciRNb4wCtOn3)R490tpw)4eQFrd8xdWBWw59FkPShArEcEP(bLfjhRF8d8NxGD1N)NSxGWn)yL)Na3bjJn8B0EXPVP(1iOFWMGzGO5oF5c2lE4NykgYq3A4x89DWE2cWWSRZyhnsS9zUT421(JR(qtPaVdVcPvn1d8o29xTAWlUYA4lT6ZJln59vXL3S5Fds8ItN0Dbz6vKUx017O7wnRfYJ(51dyaN4yapwZ1CdywDXjpDsZnFvtvNB96c96gtZr9PlN1tUOjLY1UYTzHXv)Hk)Z(DRiK1k5BHzaJlOh1pEf1FPmN4b5VhFh(ytw18(ugLILAPGfPn6tibvrDVbfvww)olqkNpFuxUXnzGW05Z1DYZtNMqfRW8TMptx40mnrpxCXfQlGo39ETPPHl6cCS0jPtNMX7FGLo9y(mT4w8vN(xaYAhBxyDnH1pwwUL(Q1Tg61ESEHLHx5bmIUx3X6vl5QSQ9OEBV1lD5JPZb3q0hx0Y4RjDt9AcujT77SGJwkF8EJ5trgJjWnP943pdvOH(gBY7A1DMvo1PaGJUohXs5URw7SedWvUePUJEHfkfzn73DJ1GxHflF57LSUYA2WcRNnqjwcx2kcdeT2tnCNRL5BYcJQ0pRRgAwoMM1LYfK2B7Q)cQ11A1Fu(DujqdgmartLLAc6K5P9gujzV3yYlNQ3qA6IOqHNa(X5DTuRVEXeHMpDA8RIYK9bCiS0QVLDg6NadLbj5Q(EVAPdxMfCbiJDsFwDTiCtTTswZ61qjmX87Jqx5ynrrQjm5RYT1EfksFz0r3w7y2KpV32zspzh)BpyQvU6TZZnRTRCa0o9(HVbnXGX)vOhgDoNJY9ACi8g2RBpS6TaL3vIfgJS2DHvt9nAK3SbcMoDIXGpQnYzOjAuPbLSpNMZLstk20SDSjTCXyoIEngVBiHgtSGdA87Jp76YXe5P87COBkHJdFHz(EgwD5iaG9wBtmVtaMngd0NUmaU80KVH86Pi7jLk2PgNoESvUd4Yu7F)ANfw66BFVPZ6DZ5SHD)iA2p3vrDgk4sxUsp))vxOpPYA0wx3puIb9I2N7Gtc0pCwo8TUAgECjEU(X(ghr)SBo9BV6lxVCiHy(adIKznn3wF4aNHYbBov5kTTCPgnv7dPVhhWcv5NHtovTThrzgy7zflJ(9esHYxxlHoZfqJ6mRBFMTuBW5DU6Nmnvoxz3KBn11QONQwUHkXxHU2D(ffxBUFvZXIDxOD(I(52DQWXPm0sy1iAvoHD1TpxuJTKhLELYoTdSRF)Ns7AtV4ARwfvWpdXDx(w2RSwNkGoi(tMg1c5B59URDnsp7fspvY1(iOvxXtHjQNmuZ8UXvNrAHTZBLpZydCU)BowK4z4TqZ3qq9Dq3AnSqVUS09TQV5ziSkeV7GRyxaWM)7d]] )
+spec:RegisterPack( "Guardian", 20231111, [[Hekili:nVXAVTnoYFlEpav7ETUsor5XEXg42EpqlU7WHn7(vlRitBZnYs60JKMcd9B)MHKIIsIuwonz3wu0MyoCEX5fhoEPZYFz5TR9Zjl)pZSNDMd8NP2xE2L2xT828NsilVnXp4E)TWpe5Vh(3)zHF6AQFeUWtHX(RreKfxKgalUlppj7h)Wh2sZ3vC30G49FiJUVi0pNghfK6Vjh)9GpS827kOH5FkA5D6P(LlV1ViFxC6YBVLU)JaMPRxt4GtYcwElc(7DCG)(JLRkx9ja7K9KOC)WYvfjikNw(5YplbZ2eyLR2KgVVC1Ts(8JiF2y32xY29)OinFhjTCLJ90zv7pRjKUmi)V(5b74WvVS9LV35CoIOFPCLF5QFzxQFgaxqC0Aks6Ma70cxotD7kC2x8(zCS(xx)Bfz5LR(3(rBdjF4N9)kiC0OYvjP04uA(tkBY992xj20AGpOOuDMD5Qhj(jnydKama)zYd0mAobaNUXdp(GFYpc(Na)CyBpq8UJ4N(xkxLsYYJtra3tZYOrBXFiNULPCR5gqXhdu9o62Ti1xt2qIYOpa88h)BGsTsn9anGgxK5f8uqiSgCYbhFar3rcUxHpN9(zCv)VY0pRfy)nv86BWTakgsgiKG1jGjGPVh(T84YvzfjjXPaAHZ3Yv)WVMrq1yrOqcRvLFknoAtbG4Fcr6puUkoP15gWi8ZnyBXf50isTLgnkiSyntJizgK8)WhfQqjcZMU82qAwEgZ9KSb4LC4h)pm3vsK)DHK1l)jWjjaHgCaVVim07oWAI7GKst4l83)cjOGPpipqsbLEoDpriNWMrDef4c)h8PHiwb6cBoNKs9xE7i44PyZMPjPXpgoTizzo4NICGKSXXaMu5iaIZmWJ5P0O7j5oW2cJZv(DypN3)EM1ApZW94AypR)n)0IIiVeAyOFQx8gpGh9iHRjPEBczbXQfX1X5t3hdhQ0uY0CAW9WPtvOUJJiGlUOfxuJ6XLRgxzWoDh4BKxHIhbBNPI9uUYsOL7csrs5QjLRoCGHPXc4UJKMrsVN5UXabxNTcyF5NgX8Z82kItJiSinloOcBwmmbhTRtlORN2W7LTQCj4qxDPj8)wROtIz)pOeU0OsGXxan8a3X9mwWYmXrbzeQYIUN5KyzMjhlGKPCZrZqpWv1li0)XAnRuX0caihGpncm7xaXvXGQs1YauJRJFmQ(qRXHHCPG44q8xMMZIWZxvLQ2nbBplKTgiAyEwV88YvZueV26xsejD7tm0mZvbo9wyn3W12noJtb7F(p7HXJ4rL84(hvNkOfWvgTagj1uGpKGlRXV8trKCTbp6aFi4MjUOo3cIchBd4OpbbzcyZWhMKsGIwUZxBW2yGVZi5148bFqcHvXFkSa(Vk7rOWLOmurtH8fn80fqKsOrGuhqw7bPtQGGHrbpvL4sgZ9KyKrQXEEUSJm4dqlir22mWoTaoiIE6r)Nu5v2hl522X)7jFIua27d(qkgM6YjuJNbftDS5GhDDAqPuBqVkOrNqiOu9ou8r6Wh6YozoKOsavuV0FsLkviCi0VZuEdpdnwZQQZ64Ta(RmMMwxNNfR2L49auER93dxhWZLhMIYliQ6tH4DKSDXHkP1equh96gOuZYvVTC1o)mOYFj3lauNbFnVc66W8DttcYzi6cxfpCYwq)LVRFBWErqe5r)WJz7vRS6bxBaK9vk4pbCfgDvgGYSDrpy(s3(odGBgW1N8nT3)lkMeGJvgG2(TQyhuzfPpqH4hEWPe4UhKN1oxNax1FCBfGD)SjMmYaF2L4CBywO5ETEpH8lTnRKrFezy7w9MOmdEDHIiMPBjqmvOmAV8yV1ucVmIzQLQLs2G(biHgWM4vFGmde2bmw2tjC3KlvJrdUgpHbzGctkGIbAhJ(7b(98QqihJLbfnEDopoDYWJ3EDABWFcEglnsT8QSC)G7zSHBd1wiabAmIv(LnnfCYkxvx)KzSC(qWIZXWYzTvjnrKQkrENNAe1FOiz5JPOxMi)twiHKqAwT5vk(dPqzpHidic1EK8ug8QAhvrwPwC0dX3t4CscfWvwRBhEPk4IQNBbYvQGOumElWUwfSWIiGrbUDFlO6uqyBx8tPKFPgVF4v19ymXjk1GR5cdC)j8qKTdrW(g3WrJEvxeGbilnUWyNRs(YXkde6MutjxCxtA2PP58aVixpUJPj2oaKUMRiPIU6CcfxVs3DqfHiK30BC3iQ84lkvP7)vsZl32jgmSLlAfXP5U4QCnL4nNXituljVGvkKJ5WYVeYTrwrtkgmfKQjYxzx90XCeYXnACIY5)GCd0CKGky3EvW6ow6)GSzZhmOU4OyYXpaBGmtNnito4ShNP3SWCIJVb99rKlDgeV2cS0mRD5ZTV3IMAsRU7JWFqgPZ1UYgsYuj(fzerhkQ5MJ4GCmhqzTXH(FfZ5Z7eGuJi5NRpUV4ZMu6R1ZXCldhgx50mH8aotnKJCqMMsEA2lppDkY7rnY)9qa7Hj0EBEhZnhC8qBJlsUPRjBObu(Dnr(0u)DRfR(cyOgbVRS0G6hvTFkN56IT0UZN1AOtn)43Hs3mZLGZi92y4YHIWiAUvPJJcB245a9e9nxKKe0lNPMOcxJr)ElA8v1(7fRQU(l6yY3rN6vfimR3sM)9tR0Nd03zAmZvA3XthfEJTmyM5kIBAhJbm4AcLw8JUnE7JtjA9Los)cg4fP7MksUKor1rPS)ShPjKArT33FvBQqDrzMZ63J5lsxTrHPswCry157MyCGhA80dgmvB0PoEc3Bep4wFX(0VTRCpY2gg3or7HS5IZ6)kzTTdnN43qhZWcqQrxsr4da4ISin63JkLA2WNZow2g)qejbsZZgLTiBfmIjhvkQy31GG5lRFi0b1OADVcBnz0(ysMdLwHuTVNu1h2FZvz7V7tYL6FpP)(poONH7BqQnhQzeVLRilovTz34B3g7LetJY5ocUDLNEFBngwPj9G0fnRYaaUtxnpEtqn7x0Ly8(qR8c9U21KAdjnMxq0DagKDfDaOw2N8Sesyy1TZMYTYbdN2U2Yfostv77iiBxkznZLbCAap7m8tRM8p7Pa1Eec4IPHwE7VGtOeDpFSS4ZYLyoOEd(Ef)VckBeZYIXXzYVipEpFSVedw10Yp)VyZEfo6EFeoqiPSLFJ2A9auIZHL(fRmNbGg78LjSz9sd3HrgonwJnnGA4nSkMwCKAHn18XllAU6vqt1pQ1uMuhg2ynzDiY1)oqe2S996OKmH6xw(F2Rkrk)8Ny(eiQD5vMGJ8jBsgHLzt4WgAOSYYSPYbU5pp)dvvQ)oCQsMxvU(7yJ0Y8kDP2zzXQIj1phlF(4uREewe0B04Vbko5WbDZmJEgP9SV8o6M5JAKuw)(6KZe34XYjBnwZqXy1UeIdh0mmmCOAnimt0ZBmoh5N2ywp4YxzSw2vgWf0U6pvU6KhLvjTMxpES9OCb(GppRQFc2uwi12(3HZF68Qrw9OqmtlemlTJovPilQBSuvrjF0lrihp(Oh5gR)cmthpwxxbpCyaxMd2V14r6mNgPX6zYKjQcqRXXJRAQWIodhlDu6WHrIPMXshFmEK2iWcPt)qHUWzQlixdq(XBSAP)ISw9naOlSTmm4NWk6g4ZfZNjyzv9bVIWfZCfRP7aUcORTBO814UP(o)QG2E0lfrlRNN)JDMIigDGRC7XF)eyHk4R0jVRXJjm3H7cah0CFeRUtUYcNzODUYiKyaOjwinRVC7nxwfKx)CSW8EEDO85wJ6N0D0pk2zOkrHMahO9Y234kfVUd3cAXPFxN33UCmTRZQfiTdatxbQXGQGI0qAU2IR6IhXOQiJP0RzMMRUPX0T2BVZIkHm6Sw9mQ0zjnYe3YEOXHoTjtzXf2teHn6e7AIfYmlU0To8zpdXbAGpaEuMsPvIMtNydaQkCA6KdmQyk3VLmFDdqbL5vJv9Dj2sxEhMdce5FCZyaZDS0CPTdhAfPy(fsplv4My1PT3ZT7Y04wKogpdEwdrAfkBHJznvxR7EStg3wWDBi4TvmnvFvj01kgZDMOxDz13z5HddkG0zMv6NK0RL)ARQFLyyXt5Ql17O1enkwpXNIvTXfs5CqW9nDTTg17KpO1YAuFMPdt4e4OZqkC4aJVUwVj9RkHpMkSUaPxgTyFYYZs78mqOrtmS0fJKYzG6AnPKowcOzFB0RpEUxxYxkgThIyo(JPBhH4P6ncVzMT(RlHCu34pJm3TibAEPdovjndjv0Fe8h)gEYKSIzDODb)oocYBE(gMFM5mPFZNKpZIpCnu8XFi6zHU4Lvs0zw9hG0166DTmSN3Tu3AZovBGfo2w6EP)oBN9ApsJ2bC)JUHSyFCBg1rx5GvCQUGHTDuMFUUBCGakotm)y3DqLl7g8O(5MR7unf4swV8vUAw(4u8uph7QCKVaEvtb7C16fZ6JiM7JImGKMNdxV5GaH1lw1ST5A7enp1V2VYXDWaEZBrRTQ3Q2UgRSd8bDLIr3wLRa5ZRt5NOauXoJA)Y0wQpj6nU63mnPEV1V)CJTUqndGQMRVEwOaxZ3kM3sfvSFEv3cDT1UF5la3ER34Az4rKvTOvXe(oWDXIQTvDhgNRuByvZEh1jSSv3V0Hlm9Dt1Qr10IOU3C2BzFFu1Xc4bK4lxkYf1FRhV5cxJWZ(UKouW1(1fvvIhcsuB1LM9DPRoLK9uN3w)fY0aM7(TZu64z4BnQiHG63y0gYGTEEzM7Bv)2HcMvb40gCoBKbw()p]] )

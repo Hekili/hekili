@@ -88,9 +88,9 @@ spec:RegisterTalents( {
     converging_storms         = { 80973, 384363, 1 }, -- Each target hit by Crash Lightning increases the damage of your next Stormstrike by 25%, up to a maximum of 6 stacks.
     crash_lightning           = { 80974, 187874, 1 }, -- Electrocutes all enemies in front of you, dealing 6,499 Nature damage. Hitting 2 or more targets enhances your weapons for 12 sec, causing Stormstrike, Ice Strike, and Lava Lash to also deal 6,499 Nature damage to all targets in front of you. Damage reduced beyond 6 targets.
     crashing_storms           = { 80953, 334308, 1 }, -- Crash Lightning damage increased by 40%. Chain Lightning now jumps to 2 extra targets.
-    deeply_rooted_elements    = { 92219, 378270, 1 }, -- Using Stormstrike has a 7% chance to activate Ascendance for 6.0 sec.  Ascendance Transform into an Air Ascendant for 15 sec, immediately dealing 36,391 Nature damage to any enemy within 8 yds, reducing the cooldown and cost of Stormstrike by 60%, and transforming your auto attack and Stormstrike into Wind attacks which bypass armor and have a 30 yd range.
+    deeply_rooted_elements    = { 92219, 378270, 1 }, -- [114052] Transform into a Water Ascendant, duplicating all healing you deal at $s4% effectiveness for $114051d and immediately healing for $294020s1. Ascendant healing is distributed evenly among allies within $114083A1 yds.
     doom_winds                = { 80959, 384352, 1 }, -- Strike your target for 7,979 Physical damage, increase your chance to activate Windfury Weapon by 200%, and increases damage dealt by Windfury Weapon by 10% for 8 sec.
-    elemental_assault         = { 80962, 210853, 2 }, -- Stormstrike damage is increased by 10%, and Stormstrike has a 50% chance to generate 1 stack of Maelstrom Weapon.
+    elemental_assault         = { 80962, 210853, 2 }, -- Stormstrike damage is increased by $s1%, and Stormstrike, Lava Lash, and Ice Strike have a $m3% chance to generate $m2 $Lstack:stacks; of Maelstrom Weapon.
     elemental_blast           = { 80966, 117014, 1 }, -- Harnesses the raw power of the elements, dealing 27,914 Elemental damage and increasing your Critical Strike or Haste by 3% or Mastery by 6% for 10 sec. If Lava Burst is known, Elemental Blast replaces Lava Burst and gains 1 additional charge.
     elemental_spirits         = { 80970, 262624, 1 }, -- Your Feral Spirits are now imbued with Fire, Frost, or Lightning, increasing your damage dealt with that element by 20%.
     elemental_weapons         = { 80961, 384355, 2 }, -- Each active weapon imbue Increases all Fire, Frost, and Nature damage dealt by 2.5%.
@@ -106,15 +106,15 @@ spec:RegisterTalents( {
     lashing_flames            = { 80948, 334046, 1 }, -- Lava Lash increases the damage of Flame Shock on its target by 100% for 20 sec.
     lava_burst                = { 81062, 51505 , 1 }, -- Hurls molten lava at the target, dealing 15,504 Fire damage. Lava Burst will always critically strike if the target is affected by Flame Shock.
     lava_lash                 = { 80942, 60103 , 1 }, -- Charges your off-hand weapon with lava and burns your target, dealing 12,946 Fire damage. Damage is increased by 100% if your offhand weapon is imbued with Flametongue Weapon. Lava Lash will spread Flame Shock from your target to 4 nearby targets. Lava Lash increases the damage of Flame Shock on its target by 100% for 20 sec.
-    legacy_of_the_frost_witch = { 80951, 384450, 2 }, -- Consuming 10 stacks of Maelstrom Weapon will reset the cooldown of Stormstrike and increases the damage of your physical abilities by 5% for 5 sec.
+    legacy_of_the_frost_witch = { 80951, 384450, 2 }, -- Consuming $s2 stacks of Maelstrom Weapon will reset the cooldown of Stormstrike and increases the damage of your Physical and Frost abilities by $s1% for $384451d.
     maelstrom_weapon          = { 81060, 187880, 1 }, -- When you deal damage with a melee weapon, you have a chance to gain Maelstrom Weapon, stacking up to 10 times. Each stack of Maelstrom Weapon reduces the cast time of your next damage or healing spell by 20% and increase its damage by 25% or its healing by 15%. A maximum of 10 stacks of Maelstrom Weapon can be consumed at a time.
     molten_assault            = { 80943, 334033, 2 }, -- Lava Lash cooldown reduced by 3.0 sec, and if Lava Lash is used against a target affected by your Flame Shock, Flame Shock will be spread to up to 2 enemies near the target.
     overflowing_maelstrom     = { 80938, 384149, 1 }, -- Your damage or healing spells will now consume up to 10 Maelstrom Weapon stacks.
     primal_maelstrom          = { 80964, 384405, 2 }, -- Primordial Wave generates 5 stacks of Maelstrom Weapon.
-    primordial_wave           = { 80965, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing 6,772 Shadow damage and apply Flame Shock to an enemy, or heal an ally for 6,772. Your next Lightning Bolt will also hit all targets affected by your Flame Shock for 150% of normal damage. Primordial Wave generates 10 stacks of Maelstrom Weapon.
+    primordial_wave           = { 80965, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing $375984s1 Shadow damage and apply Flame Shock to them.; Your next $?a137040[Lava Burst]?a137041[Lightning Bolt][Healing Wave] will also hit all targets affected by your $?a137040|a137041[Flame Shock][Riptide] for $?a137039[$s2%]?a137040[$s3%][$s4%] of normal $?a137039[healing][damage].$?s384405[; Primordial Wave generates $s5 stacks of Maelstrom Weapon.][]
     raging_maelstrom          = { 80939, 384143, 1 }, -- Maelstrom Weapon can now stack 5 additional times, and Maelstrom Weapon now increases the damage of spells it affects by an additional 5% per stack and the healing of spells it affects by an additional 5% per stack.
     refreshing_waters         = { 80937, 393905, 1 }, -- Your Healing Surge is 25% more effective on yourself.
-    splintered_elements       = { 80963, 382042, 1 }, -- Each additional Lightning Bolt generated by Primordial Wave increases your Haste by 10% for 12 sec.
+    splintered_elements       = { 80963, 382042, 1 }, -- Primordial Wave grants you $s1% Haste plus $s2% for each additional $?a137039[Healing Wave]?a137040[Lava Burst][Lightning Bolt] generated by Primordial Wave for $382043d.
     static_accumulation       = { 80950, 384411, 2 }, -- 10% chance to refund Maelstrom Weapon stacks spent on Lightning Bolt or Chain Lightning. While Ascendance is active, generate 1 Maelstrom Weapon stack every 1 sec.
     stormblast                = { 80960, 319930, 1 }, -- Stormbringer now also causes your next Stormstrike to deal 25% additional damage as Nature damage.
     stormflurry               = { 80954, 344357, 1 }, -- Stormstrike has a 25% chance to strike the target an additional time for 40% of normal damage. This effect can chain off of itself.
@@ -122,6 +122,7 @@ spec:RegisterTalents( {
     stormstrike               = { 80941, 17364 , 1 }, -- Energizes both your weapons with lightning and delivers a massive blow to your target, dealing a total of 21,474 Physical damage.
     sundering                 = { 80975, 197214, 1 }, -- Shatters a line of earth in front of you with your main hand weapon, causing 36,783 Flamestrike damage and Incapacitating any enemy hit for 2 sec.
     swirling_maelstrom        = { 80955, 384359, 1 }, -- Consuming at least 2 stacks of Hailstorm, using Ice Strike, and each explosion from Fire Nova now also grants you 1 stack of Maelstrom Weapon.
+    tempest_strikes           = { 80966, 428071, 1 }, -- Stormstrike, Ice Strike, and Lava Lash have a $h% chance to discharge electricity at your target, dealing $428078s1 Nature damage.
     thorims_invocation        = { 80949, 384444, 1 }, -- Lightning Bolt and Chain Lightning damage increased by 20%. While Ascendance is active, Windstrike automatically consumes up to 5 Maelstrom Weapon stacks to discharge a Lightning Bolt or Chain Lightning at your enemy, whichever you most recently used.
     unruly_winds              = { 80968, 390288, 1 }, -- Windfury Weapon has a 100% chance to trigger a third attack.
     windfury_totem            = { 80940, 8512  , 1 }, -- Summons a totem at your feet for 2 min. Party members within 30 yds have a 20% chance when they auto-attack to swing an extra time.
@@ -150,7 +151,7 @@ spec:RegisterPvpTalents( {
 -- Auras
 spec:RegisterAuras( {
     -- Talent: A percentage of damage or healing dealt is copied as healing to up to 3 nearby injured party or raid members.
-    -- https://wowhead.com/beta/spell=108281
+    -- https://wowhead.com/ptr-2/spell=108281
     ancestral_guidance = {
         id = 108281,
         duration = 10,
@@ -158,35 +159,35 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Health increased by $s1%.    If you die, the protection of the ancestors will allow you to return to life.
-    -- https://wowhead.com/beta/spell=207498
+    -- https://wowhead.com/ptr-2/spell=207498
     ancestral_protection = {
         id = 207498,
         duration = 30,
         max_stack = 1
     },
     -- Talent: Transformed into a powerful Air ascendant. Auto attacks have a $114089r yard range. Stormstrike is empowered and has a $114089r yard range.$?s384411[    Generating $384411s1 $lstack:stacks; of Maelstrom Weapon every $384437t1 sec.][]
-    -- https://wowhead.com/beta/spell=114051
+    -- https://wowhead.com/ptr-2/spell=114051
     ascendance = {
         id = 114051,
         duration = 15,
         max_stack = 1
     },
     -- Talent: Damage of your next Lava Lash increased by $s1%.
-    -- https://wowhead.com/beta/spell=390371
+    -- https://wowhead.com/ptr-2/spell=390371
     ashen_catalyst = {
         id = 390371,
         duration = 15,
         max_stack = 8
     },
     -- Haste increased by $w1%.
-    -- https://wowhead.com/beta/spell=2825
+    -- https://wowhead.com/ptr-2/spell=2825
     bloodlust = {
         id = 2825,
         duration = 40,
         max_stack = 1
     },
     -- Increases nature damage dealt from your abilities by $s1%.
-    -- https://wowhead.com/beta/spell=224127
+    -- https://wowhead.com/ptr-2/spell=224127
     crackling_surge = {
         id = 224127,
         duration = 15,
@@ -198,7 +199,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Damage of your next Crash Lightning increased by $s1%.
-    -- https://wowhead.com/beta/spell=333964
+    -- https://wowhead.com/ptr-2/spell=333964
     cl_crash_lightning = {
         id = 333964,
         duration = 15,
@@ -206,7 +207,7 @@ spec:RegisterAuras( {
         copy = "converging_storms"
     },
     -- Talent: Chance to activate Windfury Weapon increased to ${$319773h}.1%.  Damage dealt by Windfury Weapon increased by $s2%.
-    -- https://wowhead.com/beta/spell=384352
+    -- https://wowhead.com/ptr-2/spell=384352
     doom_winds_talent = {
         id = 384352,
         duration = 8,
@@ -231,7 +232,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Talent:
-    -- https://wowhead.com/beta/spell=198103
+    -- https://wowhead.com/ptr-2/spell=198103
     earth_elemental = {
         id = 198103,
         duration = 60,
@@ -239,7 +240,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Heals for ${$w2*(1+$w1/100)} upon taking damage.
-    -- https://wowhead.com/beta/spell=974
+    -- https://wowhead.com/ptr-2/spell=974
     earth_shield = {
         id = 974,
         duration = 600,
@@ -247,7 +248,7 @@ spec:RegisterAuras( {
         max_stack = 9
     },
     -- Movement speed reduced by $s1%.
-    -- https://wowhead.com/beta/spell=3600
+    -- https://wowhead.com/ptr-2/spell=3600
     earthbind = {
         id = 3600,
         duration = 5,
@@ -256,7 +257,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Increases physical damage dealt from your abilities by $s1%.
-    -- https://wowhead.com/beta/spell=392375
+    -- https://wowhead.com/ptr-2/spell=392375
     earthen_weapon = {
         id = 392375,
         duration = 15,
@@ -264,7 +265,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Rooted.
-    -- https://wowhead.com/beta/spell=64695
+    -- https://wowhead.com/ptr-2/spell=64695
     earthgrab = {
         id = 64695,
         duration = 8,
@@ -273,14 +274,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Heals $w1 every $t1 sec.
-    -- https://wowhead.com/beta/spell=382024
+    -- https://wowhead.com/ptr-2/spell=382024
     earthliving_weapon = {
         id = 382024,
         duration = 12,
         max_stack = 1
     },
     -- Your next damage or healing spell will be cast a second time ${$s2/1000}.1 sec later for free.
-    -- https://wowhead.com/beta/spell=320125
+    -- https://wowhead.com/ptr-2/spell=320125
     echoing_shock = {
         id = 320125,
         duration = 8,
@@ -288,7 +289,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Cannot move while using Far Sight.
-    -- https://wowhead.com/beta/spell=6196
+    -- https://wowhead.com/ptr-2/spell=6196
     far_sight = {
         id = 6196,
         duration = 60,
@@ -296,7 +297,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Generating $s1 stack of Maelstrom Weapon every $t1 sec.
-    -- https://wowhead.com/beta/spell=333957
+    -- https://wowhead.com/ptr-2/spell=333957
     feral_spirit = {
         id = 333957,
         duration = 15,
@@ -307,7 +308,7 @@ spec:RegisterAuras( {
         }
     },
     -- Suffering $w2 Fire damage every $t2 sec.
-    -- https://wowhead.com/beta/spell=188389
+    -- https://wowhead.com/ptr-2/spell=188389
     flame_shock = {
         id = 188389,
         duration = 18,
@@ -315,27 +316,27 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Each of your weapon attacks causes up to ${$max(($<coeff>*$AP),1)} additional Fire damage.
-    -- https://wowhead.com/beta/spell=319778
+    -- https://wowhead.com/ptr-2/spell=319778
     flametongue_weapon = {
         duration = 3600,
         max_stack = 1
     },
     -- Talent: Attack speed increased by $w1%.
-    -- https://wowhead.com/beta/spell=382889
+    -- https://wowhead.com/ptr-2/spell=382889
     flurry = {
         id = 382889,
         duration = 15,
         max_stack = 3
     },
     -- Talent: The mana cost of your next heal is reduced by $w1% and its effectiveness is increased by $?s137039[${$W2}.1][$w2]%.
-    -- https://wowhead.com/beta/spell=381668
+    -- https://wowhead.com/ptr-2/spell=381668
     focused_insight = {
         id = 381668,
         duration = 12,
         max_stack = 1
     },
     -- Talent: Movement speed reduced by $s2%.
-    -- https://wowhead.com/beta/spell=196840
+    -- https://wowhead.com/ptr-2/spell=196840
     frost_shock = {
         id = 196840,
         duration = 6,
@@ -348,7 +349,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Increases movement speed by $?s382215[${$382216s1+$w2}][$w2]%.$?$w3!=0[  Less hindered by effects that reduce movement speed.][]
-    -- https://wowhead.com/beta/spell=2645
+    -- https://wowhead.com/ptr-2/spell=2645
     ghost_wolf = {
         id = 2645,
         duration = 3600,
@@ -356,21 +357,21 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Your next Frost Shock will deal $s1% additional damage, and hit up to ${$334195s1/$s2} additional $Ltarget:targets;.
-    -- https://wowhead.com/beta/spell=334196
+    -- https://wowhead.com/ptr-2/spell=334196
     hailstorm = {
         id = 334196,
         duration = 20,
         max_stack = 5
     },
     -- Your Healing Rain is currently active.  $?$w1!=0[Magic damage taken reduced by $w1%.][]
-    -- https://wowhead.com/beta/spell=73920
+    -- https://wowhead.com/ptr-2/spell=73920
     healing_rain = {
         id = 73920,
         duration = 10,
         max_stack = 1
     },
     -- Healing $?s147074[two injured party or raid members][an injured party or raid member] every $t1 sec.
-    -- https://wowhead.com/beta/spell=5672
+    -- https://wowhead.com/ptr-2/spell=5672
     healing_stream = {
         id = 5672,
         duration = 15,
@@ -379,7 +380,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Incapacitated.
-    -- https://wowhead.com/beta/spell=51514
+    -- https://wowhead.com/ptr-2/spell=51514
     hex = {
         id = 51514,
         duration = 60,
@@ -388,28 +389,28 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Lava Lash damage increased by $s1% and cooldown reduced by ${$s2/4}%.
-    -- https://wowhead.com/beta/spell=215785
+    -- https://wowhead.com/ptr-2/spell=215785
     hot_hand = {
         id = 215785,
         duration = 8,
         max_stack = 1
     },
     -- Talent: Movement speed reduced by $s2%.
-    -- https://wowhead.com/beta/spell=342240
+    -- https://wowhead.com/ptr-2/spell=342240
     ice_strike_snare = {
         id = 342240,
         duration = 6,
         max_stack = 1,
     },
     -- Talent: Damage of your next Frost Shock increased by $s1%.
-    -- https://wowhead.com/beta/spell=384357
+    -- https://wowhead.com/ptr-2/spell=384357
     ice_strike = {
         id = 384357,
         duration = 12,
         max_stack = 1
     },
     -- Frost Shock damage increased by $w2%.
-    -- https://wowhead.com/beta/spell=210714
+    -- https://wowhead.com/ptr-2/spell=210714
     icefury = {
         id = 210714,
         duration = 25,
@@ -417,14 +418,14 @@ spec:RegisterAuras( {
         max_stack = 4
     },
     -- Increases frost damage dealt from your abilities by $s1%.
-    -- https://wowhead.com/beta/spell=224126
+    -- https://wowhead.com/ptr-2/spell=224126
     icy_edge = {
         id = 224126,
         duration = 15,
         max_stack = 1
     },
     -- Fire damage inflicted every $t2 sec.
-    -- https://wowhead.com/beta/spell=118297
+    -- https://wowhead.com/ptr-2/spell=118297
     immolate = {
         id = 118297,
         duration = 21,
@@ -432,21 +433,21 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Damage taken from the Shaman's Flame Shock increased by $s1%.
-    -- https://wowhead.com/beta/spell=334168
+    -- https://wowhead.com/ptr-2/spell=334168
     lashing_flames = {
         id = 334168,
         duration = 20,
         max_stack = 1
     },
     -- Talent: Damage dealt by your physical abilities increased by $w1%.
-    -- https://wowhead.com/beta/spell=384451
+    -- https://wowhead.com/ptr-2/spell=384451
     legacy_of_the_frost_witch = {
         id = 384451,
         duration = 5,
         max_stack = 1
     },
     -- Talent: Stunned. Suffering $w1 Nature damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=305485
+    -- https://wowhead.com/ptr-2/spell=305485
     lightning_lasso = {
         id = 305485,
         duration = 5,
@@ -456,14 +457,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Chance to deal $192109s1 Nature damage when you take melee damage$?a137041[ and have a $s3% chance to generate a stack of Maelstrom Weapon]?a137040[ and have a $s4% chance to generate $s5 Maelstrom][].
-    -- https://wowhead.com/beta/spell=192106
+    -- https://wowhead.com/ptr-2/spell=192106
     lightning_shield = {
         id = 192106,
         duration = 1800,
         max_stack = 1
     },
     -- Talent: Your next damage or healing spell has its cast time reduced by ${$max($187881s1, -100)*-1}%$?s383303[ and damage or healing increased by][]$?s383303&!s384149[ ${$min($187881w2, 5*$s~2)}%]?s383303&s384149[ $187881w2%][].
-    -- https://wowhead.com/beta/spell=344179
+    -- https://wowhead.com/ptr-2/spell=344179
     maelstrom_weapon = {
         id = 344179,
         duration = 30,
@@ -471,7 +472,7 @@ spec:RegisterAuras( {
         max_stack = function() return talent.raging_maelstrom.enabled and 10 or 5 end
     },
     -- Increases fire damage dealt from your abilities by $s1%.
-    -- https://wowhead.com/beta/spell=224125
+    -- https://wowhead.com/ptr-2/spell=224125
     molten_weapon = {
         id = 224125,
         duration = 15,
@@ -479,7 +480,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Your next healing or damaging Nature spell is instant cast and costs no mana.
-    -- https://wowhead.com/beta/spell=378081
+    -- https://wowhead.com/ptr-2/spell=378081
     natures_swiftness = {
         id = 378081,
         duration = 3600,
@@ -491,14 +492,14 @@ spec:RegisterAuras( {
         end
     },
     -- Heals $w1 damage every $t1 seconds.
-    -- https://wowhead.com/beta/spell=280205
+    -- https://wowhead.com/ptr-2/spell=280205
     pack_spirit = {
         id = 280205,
         duration = 3600,
         max_stack = 1
     },
     -- Cleansing $383015s1 poison effect from a nearby party or raid member every $t1 sec.
-    -- https://wowhead.com/beta/spell=383014
+    -- https://wowhead.com/ptr-2/spell=383014
     poison_cleansing = {
         id = 383014,
         duration = 6,
@@ -518,7 +519,7 @@ spec:RegisterAuras( {
         copy = 327164
     },
     -- Heals $w2 every $t2 seconds.
-    -- https://wowhead.com/beta/spell=61295
+    -- https://wowhead.com/ptr-2/spell=61295
     riptide = {
         id = 61295,
         duration = 18,
@@ -526,14 +527,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Increases movement speed by $s1%.
-    -- https://wowhead.com/beta/spell=58875
+    -- https://wowhead.com/ptr-2/spell=58875
     spirit_walk = {
         id = 58875,
         duration = 8,
         max_stack = 1
     },
     -- Talent: Able to move while casting all Shaman spells.
-    -- https://wowhead.com/beta/spell=79206
+    -- https://wowhead.com/ptr-2/spell=79206
     spiritwalkers_grace = {
         id = 79206,
         duration = 15,
@@ -541,7 +542,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Stunned.
-    -- https://wowhead.com/beta/spell=118905
+    -- https://wowhead.com/ptr-2/spell=118905
     static_charge = {
         id = 118905,
         duration = 3,
@@ -550,14 +551,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Stormstrike cooldown has been reset$?$?a319930[ and will deal $319930w1% additional damage as Nature][].
-    -- https://wowhead.com/beta/spell=201846
+    -- https://wowhead.com/ptr-2/spell=201846
     stormbringer = {
         id = 201846,
         duration = 12,
         max_stack = 1
     },
     -- Your next Lightning Bolt or Chain Lightning will deal $s2% increased damage and be instant cast.
-    -- https://wowhead.com/beta/spell=383009
+    -- https://wowhead.com/ptr-2/spell=383009
     stormkeeper = {
         id = 383009,
         duration = 15,
@@ -566,21 +567,21 @@ spec:RegisterAuras( {
         copy = 320137
     },
     -- Talent: Incapacitated.
-    -- https://wowhead.com/beta/spell=197214
+    -- https://wowhead.com/ptr-2/spell=197214
     sundering = {
         id = 197214,
         duration = 2,
         max_stack = 1
     },
     -- Talent: Movement speed increased by $378075s1%.
-    -- https://wowhead.com/beta/spell=378076
+    -- https://wowhead.com/ptr-2/spell=378076
     thunderous_paws = {
         id = 378076,
         duration = 3,
         max_stack = 1
     },
     -- Talent: Movement speed reduced by $s3%.
-    -- https://wowhead.com/beta/spell=51490
+    -- https://wowhead.com/ptr-2/spell=51490
     thunderstorm = {
         id = 51490,
         duration = 5,
@@ -588,7 +589,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Your next healing spell has increased effectiveness.
-    -- https://wowhead.com/beta/spell=73685
+    -- https://wowhead.com/ptr-2/spell=73685
     unleash_life = {
         id = 73685,
         duration = 10,
@@ -988,6 +989,8 @@ spec:RegisterAuras( {
         copy = "t30_4pc_enh_cl"
     }
 } )
+
+spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212 )
 
 
 spec:RegisterGear( "waycrest_legacy", 158362, 159631 )
@@ -1410,7 +1413,7 @@ spec:RegisterAbilities( {
     feral_spirit = {
         id = 51533,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( 120 - ( talent.elemental_spirits.enabled and 30 or 0 ) ) end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( 90 - ( talent.elemental_spirits.enabled and 30 or 0 ) ) end,
         gcd = "spell",
         school = "nature",
 
@@ -1427,10 +1430,15 @@ spec:RegisterAbilities( {
                 expires = query_time + 15,
                 alpha_expires = 0
             } )
+
             insert( virtual_spirits, {
                 expires = query_time + 15,
                 alpha_expires = 0
             } )
+
+            if set_bonus.tier31_4pc > 0 then
+                reduceCooldown( "primordial_wave", 14 )
+            end
 
             gain_maelstrom( 1 )
             state:QueueAuraEvent( "feral_maelstrom", TriggerFeralMaelstrom, query_time + 3, "AURA_PERIODIC" )
@@ -1876,9 +1884,7 @@ spec:RegisterAbilities( {
     primal_strike = {
         id = 73899,
         cast = 0,
-        charges = 0,
-        cooldown = 12,
-        recharge = 12,
+        cooldown = 0,
         gcd = "spell",
         school = "physical",
 
@@ -1892,7 +1898,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent / Covenant (Necrolord): Blast your target with a Primordial Wave, dealing $327162s1 Shadow damage and apply Flame Shock to an enemy, or $?a137039[heal an ally for $327163s1 and apply Riptide to them][heal an ally for $327163s1].    Your next $?a137040[Lava Burst]?a137041[Lightning Bolt][Healing Wave] will also hit all targets affected by your $?a137040|a137041[Flame Shock][Riptide] for $?a137039[$s2%]?a137040[$s3%][$s4%] of normal $?a137039[healing][damage].
+    -- Talent / Covenant (Necrolord): Blast your target with a Primordial Wave, dealing $375984s1 Shadow damage and apply Flame Shock to them.; Your next $?a137040[Lava Burst]?a137041[Lightning Bolt][Healing Wave] will also hit all targets affected by your $?a137040|a137041[Flame Shock][Riptide] for $?a137039[$s2%]?a137040[$s3%][$s4%] of normal $?a137039[healing][damage].$?s384405[; Primordial Wave generates $s5 stacks of Maelstrom Weapon.][]
     primordial_wave = {
         id = function() return talent.primordial_wave.enabled and 375982 or 326059 end,
         cast = 0,
@@ -1917,6 +1923,13 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.primal_maelstrom.enabled then gain_maelstrom( 5 * talent.primal_maelstrom.rank ) end
+            if set_bonus.tier31_2pc > 0 then
+                insert( virtual_spirits, {
+                    expires = query_time + 15,
+                    alpha_expires = 0
+                } )
+                applyBuff( "crackling_surge" )
+            end
         end,
 
         impact = function ()
@@ -2017,7 +2030,7 @@ spec:RegisterAbilities( {
     stormstrike = {
         id = 17364,
         cast = 0,
-        cooldown = function() return gcd.execute * 6 end,
+        cooldown = function() return gcd.execute * 5 end,
         gcd = "spell",
         school = "physical",
 
@@ -2485,5 +2498,5 @@ spec:RegisterSetting( "check_sundering_range", true, {
 } )
 
 
-spec:RegisterPack( "Enhancement", 20230808, [[Hekili:T31EZTnos(plU2kkstsKLOSZJ5S8wZMBNQMPYn3uL3RU)tu0uusCdfPosQ44PCPp7xdasIxnaOEzNXtQkvSTay3aD34x)aautgo5Fn5MzbLrt(nVbEJg8(bVV)GbdhnA0KBkVFD0KBwhe(5GfWVKgSc())z6YG0WOvrPLK2UpjlygHgfzBYdH2xwwUU4hp)8fXLl3CB)WSvNxeVAtsqzCwAyEW8sYFhE(Tjz3E(S8GfzPZtIxSS88O0fXPrNhMeuu4VkB2MKOIZlc9lwgSkiTF461tU52nXjL)s6KBrh0dUeghRJcHp(TW4Fz8SzrS(gveo5gsFFZG3d)7h3o9NMnB70FEtAAuY2PzRjJUTtdsHpCDECwEC59BNoppB12P3eV6J93(RB)v2Z)U3mCi88)Eqz4YTthoO)W(xUD6M1KXJu3g4rytrXMvraNsci)4MLzHFUayiWSSYLr5BNwgKViQe(SGCOdRZkbjBCqscW)SnLW)nF708G0fr)hBNcYHnSMcwVM8drYcF48sof3oT4oOxXPlE92PXarsJIMfntyi(2349wyi()qh6WaOmB70FjKqUY84pd)8CGb5zfLvmq4rV8nJg08OBN(PGVeq()cqISPaSw2o9oq)tM(lJGP6hdkdsUVOuIcEduzoW20pdYcPUn8cOB)C8xjkMOvbLBiIPprSysH522P)JSKYA297)VbFbAngy5p9F)pLjJxTspiz9Ya)7YsM7Vko1Nq040IkLVSaLi2QPzLw7J)NsKDarc(FLLt5AyoDDrqcZOP2QqE(qnl2HN4cMOM9eM7K3hyZVyILSD6jO1fSXRwI(rYsu4JZYRmU5pjz4dpjyKaYbO)LXVPXulmknaw3ua2AZJtsiMHYIYILzBsMrKHe72BJigkrZyIyfHoiPZJMNhbl8VnjQ)KBsIlklOGmGgpjc(TFJIBb8e6WSj)Jj3ecRyJYJdMCZzBNolRS)CcnbSdIDBzC4NP2kDilosabEFaKzj8r(0Uv0VIs0E0LSElEMF0xiDmy2SI(edQR3o9cVTtF4b8MVA703UDAVj3eeseJa2yE8QS8zWsz)7alOjLaQKTbDRhKCwimhjKFKrYF7M5Z7VkikPOeu3(3ffSolTFrzarEF94TtVuKTrjvgL(fRJbAilEMhL30sFYiHS6GqJl4dmofUfMdLKb3fghCfrL(3MLUPa0tr5Jg47ToKYjuTaHrd4CQyt6mGmPli84Ydvaq7g4Kk8Zje5o4bJq9(ZYUlL3EaXyFgXjy)nRzYTy)WLaiIFchwIziP(anGnxtBomllHqCyKqqC5n)QTtxeodgXaSxpjZQgwaYSeQK9TgN1v6ZYLG)Svf(XPFjlKUixsH6u2mSE2urVzrrGZh)8mWxfOGy6AbJeYseEVlkZYxrnd05kRnI6dKYeHzp1NMBjbrfeayoserKfZt2KNFpV5ksb6gzrMK08U40zmzprs(o72pZYiIhYtqhRuQ)ikroscfxA8Rm1oym6x1hbjiLnCr47TlcxMv6dXpodMAcM0q0d(eSocb(GnmskniAG5BYV3VeK2RKOKCteYnCWHIjaRSbFCWAYXK4V(QF1FBfSBOz3tTKR0UP4cPgUPRHMBqpavinO0FqafXKFRRDrmgdRf(fRbKryQiAMxVy42Scw)NtwWXdS6kcgINBGSHM9pUlsnD87AyAhU34Jnf0C6G7G9UE0CUyvgA2pBlhM1wxs(5RvXN5wkkPKXwBy2lnN6hQlRlvqxUDtEf3n7TSlFUBI0JBd2OoCpmbc9dcd3uhK9oozylDmJlqmHSAuSlo24ekoecUSbzFOdODfVJ7t8Bdnd(BYbmxmZtRZD4QDmNfim(gizcdRylwkJf4z2PYEM5G90gSMStvEdgZkWZmQALKBfyMeLIglHAMuc5LzW)TNzCYAFiC7klMBEoaYaiXeAShs0yoPCfcZDkwJ(4uGUKE9wXEjmmu627e7MqKJkD79IDtm8iL(z2yFNx4mAGipVnyHF2CFGPHFUqHRJmBlvdxDxCo1bvdKKKfbBjKVIHHBGm3HvkOfJZJ8tZ(saDe70(LBkSRWQ7lG6OrIYBrJofP9fI9tfjrPVM9lIlZnjVKSMJcYlx634gwLNMDmazLxcdYI(SY5OXsLsp4W5WPsp4WHHsQcIbipAGL0gkHjiT0WtSwQPUMxoqMyvTfLgTkMKabXbGP(pMv(iNX(FWHN0(W5nefpMBmPoXlCHnvN5v1Cx67GJjXQNzrTCLUwPNvyTRQ1lkbBqQRTFyDzT1WDuAxr)O0kEI1sEvvDQAkAbeVT6gsqVUpmjYVANhiw4L6fOdBLoDJuYJxZAHug4fqJVE707Z2azhtuYBNMMb)3sArZ)9gEVDkRm65rbZUNvj91BssiJXYQh)UG0s1Abt3beATO)0Na28Z)2RRQtFvv5VJU9cXLKsPTIOnbHwCczo0NuO6FkPidEIOVgxusTou2gMvb3xnEjfKomjRa(ruA2Mflz7irXAYaUpU5PQKTXkqOYqnqZQ1GriYTsBvUSBlt6YuzZWkHBxJv1OkrE08)6PMgY(ddznbrRzODmYpKwrZEct1WS0VeLVGapXIxtDMO3bKPYovlXJdl3TIVT)6l7fxrich96My2dDtY2muE5X0RQA8lzjHbPq6ZWalkDr5sQP41AJMInG5BFEk4UmcCpNvqI5vqypRO4oXr9u4DurrKuJpJlKed78KN6Sk11TK1wQAC1WvUxn4kzDxvverYHTJugY8YszbThQxLmYw8JxynYespy(X5HYyiLalff0Aku7uc7wQRN780Av28dLYSHRgKZPXsXUChwzlQNIwDWqducZPfsSacrkymAIENKGAXdc0sf4SzhoYGHNLcLzeAQtl3vnJEbTuUSAeP8Qnw3iEuIVHHMQGwzJVXkwONOvR5YgjvsblLnsQKcMlw1Eu5l71NWZ86kBMgEMmnmhSYFcd5vzphqIQ1s5(EsdeY6ULmApJ1rLO6fUXr4m7BHBSvTWwGTpYAXRn5gZKdRss(YZj(yMGugjPuPPfHjFZ6QZ7xiy0u0xEEcKnkiFI1sN0u0ULW4igq3NfxSokHtO1eRJjifuyhOXciLyOV(n0YC0fDBk4H0UAAEbxtlirLzB7LhnqD)jfyPQd(kVXI8gVlcdcU3ybHzg9NiPVRGdeVzL)AWMacRmi9lXj1NLwJnVPiYpB(C)fHZQCmRMuCnhcsaV3aqgOn(J)auw3M9vThVIBODvf1ftDjejOMctOnfvgsnZq1iDfoguyNukyjVh9OmWMY9fCn2hMG1i0swiD1msEbK0)7hWnw6nbjh9AHA15qDOY6)Vea)g03(1T7hxaaFX5vN7g2N2VCiaru4tuce5s9a6eSqaDAkmmAKRZ2KtlscB(l0dglAALRZAMRKm8ykqigSWzCwD9yx8ItThHLL0vMfjzLcQpKsIOOI9COI9mOI9(2qf75uf7D0uXO86jwf7nbPct1Q4BJccZGzwMF5sqpfDFw6mtyJ499Kdo6aW6YkaRlRWR0k9u9uDfnYWf5XrZb0XWLMMM697PEk6Pofvdt6WWKpZiSmgyHwPIom0IZmcyGzgBPsspIqlvozVnjlBMpj06Mv9m9KE77p0InE94dS0aB0mCMyV0zpbALO8IOCsgmg0k82pCTcgVEc1kndNj2R14JVwHuwdQrdUsH38bRtW40tNkPz0mP015Q8rwJq4bKHaq1WGKeC1IsFoyDJrE(0PGKhstAQnEJcuGjkf7ZYH90XjVGKVN(vUOJELthxFXsmDA3(G8MjHFhBuPAZM7kkhAK2tSxIBBJeYWaJzC2WvitSx6BmjbPKV5XHL0G1QPirT5Z(dFYDGJDt48zXYvDx4kTwWBCXdZoQ6eoTZmoiJXvZLHYix3xww9C0sQTopkmB1Tb8IQvtIMQbYkgPIjTuz4PgWLzPl2eH3BhN2FU9DXY4OKz8tXFnAh7G3j1kXesRy1z53kUeh9mtXOI9sTHpSQcr30iQJRbKqPSeEASsEXhjRZZ(3rHL(kfNLhmn5pH0qQ6xmReAwUfBXKJSdBZLBCnOuGy5dkOEzHvR0t2AAHo5psnwp53s2e1eAojTH4I(i1oRsFk1n18RW6JHI(H1v8SsHHA1YcTCEWQ4Xomv9A3u1RftvV2pv92HPQN0uvfj39uTRC9gLCZ24v)CANgs37L67rv1YK7Ildx6plleMZf(voyVVFEqkB3w6XEObdgqFkxo0HUF1FxEij4wx82GIqsdbaOsqSAQItqSOs6jQemehedxM4wW6PLTIl2281Q4hyDCtA(MK7vNHy(8joq5blG28LBDDNoSf)Afjp4t5lP))16y(A2pALw2YHXGBkCqN0YhZJkSGOq847A6S1Eep(UM2cQVF8DFeo(Uwt(9mKGS(w(SmStWlUa1XaKP7b3whxtuNNIlhhbyd5lADMlNpN8559KD2Af8kTlNEwtfiPg34X(uFA15QRZm7bEgmDM)RjhXvceB964DimnT5ccholnJCtVbyqp7Ew3ab3UBFm9tkvzN6OpFCVsn7XHILtPVF0xnhKHq9043wyLa6((rHvfc0W5nLlYAZ7yggLSC1sKFfv99do73p4STiytsb4ivMrkqZRuE3YCGbDYViWN44kTCoCDpaTgRMRdl7(FMwpO3)doorSoD1PEMwlNCdaVuqAJ9238Dq8x3Cxqoroum5M)1sYB2WvRZYRZ97LvNc2xsYF8)BdymdkWImsMCbBkZwfus(aqIMUG(Mk8tXPqtKxsHFKcLrBoBDeBh6kyVFhFz3Z03vXoNHzgw9Psbz27Hh6wAQSxD6AP6zx59dmrJ6jrShqtY2t2PRujvEXlg((bxnE0GEVKLu6FEg5nd8gLY7KvkVSUiUYNTM6jQHJEd0C3HFTxliQ2jodHYy95Ks(wqyMwZmrvB)KoEpXK3eH1wWEM5ZQvhdwkD6QVsbmvrwPu9PsRumSC02S5QXM0sKLDUoqaxp2gTju4mZRCRBcBNcAAuVM)9AGv(gr((St82yG)EdRC8Sd(P1S0YrZe19Yr8(CsjFliSDWp92pPJ3tm5nry3GFEilo9o5loFHTzJWQtVdA1jcTpzRonb(90iFF2jEBmW)WPoCC8qNVeIa9YJxKZOr5wXJMP6WbpnZvVhH5QN6CD4PiIE6lB)JURYHJCPxo(lOFrvgtihs9RgR32UTI2mTpzRNRnUo(sQNzckUv3fpHwD6hcFUWu)W(VBctDAFYeMNERUNjckUv3LpDwD6xZGgzP(LzyNeL6u(Kjjp5MCplKsC7nNLB94liRLKeYHC1jAeNkTVxYud84Kjyp5MFphfAG1iD3dMNLKKDh9SheaJBWe8UiY3(rvFJbbMJLKUXgLBNsUOavNenw)OhjS5zBsL69SzKoplOm42GIOFC7VUD6BG)UsWq(AoczRlAUTbVCN28cZfzf)ewJeFTXo2YQ5ICgTX5csVAplmCeVX5K5o3EgIDqXX5MHE2Y6b1s9KLo2Eg5upzQxTNfTvp5OZTNHTspzRNsSYz1h477LeStnOz3HVAy)l)HkWhlNI)E9Ef5KX)d2aX6D1FNZobGSkMjtaeGoXhxFx6KFCD8vUVf7Z5ZFwnN7tWN)fk0mXa4sz0FcW7KBa84Lz5tUH8nFh9AinpM)1uqr)gO8xn(CYGt4QIT9xX6K(LedVFQ36QxhpFm1Bo6TeRQSJA3gRhEOA6B4Qy1dN5I0XmJ3SUdox7yNP48u)gCr4m(9(cNcY9H80KdzY4bvHbj3mDGItN6qzEn5cQuxHu((E9A61(zSlVVGO3MBtLMnGoQ0lmuTDyo4zAoyYHdN9OoluA25CWiYCBMdgIRSAM8xjSAcQ1FJ4JQu)17wJKSA9Gp9f8M4NsFdRrwCy4DYMyFLERS1YNH9cmJ05JrEksPPqo3ip8WjilbXXpPqXXe8dQvNbB6xl8QWz8qZpoYAk5hLkNo0IY)yD0DAo7oOtyYBFMg0sY8QnNDGt)rh4fCwzz3ZoOtoWJ4bhWPK3dvYJSXLN(9T8fCwzrYFqBB5J4UwAEroMhTtWQCB7LP5bNQp7hTbMN5b2oHuCgouHtc7CHWz4ReejmFVHow(ZEEVtGsYUMD44ul7EESnnIYUMI1FIfDph2Ubr5MCTLpXcVNHflhYR4VvxeeI8KCny)CKF0xHKasbsrerm3kRZUdYlioD(gYH2NkPnpEQAX8LRTJUwsCkA5bTntXuZTKSwZ(7HhuYkXBG0IxHNrY4Sz6rexgUyKD62v7nDvhcn43jLXd7O)oL66XFyantaTBOSYtF9q5LmCZaYOcNWp8GknePG6lzjMbc7nj1RjjvewYc0qDA4Mibz2OW1d7Cg7L4KBkX6NDIvtlE1iytcssTYxEqAOfM0GvMo43Y2oDreXx49Wd6F8vVThYirGJ0rrR4kcDuUftnv5d)QkD94l1lQhZeNp1KwSWKUxp(ceE3CvtRkPG2DYg1a)IbiKsELslMf0MX)cZgbfQdY6jnxk1G28CTRsLUUGo0uQrg80LD0UslwPtujRtTHDQrGTFPo5LlGM1pv7lZb2Nt0p0VjUekWax3RCzF7isY5jBYHGn5WLAiAycdHAq0Ogv8gF6MFh0e0ME5k82AUk5ysIM7hAJCyzwP)YGu6REnCZi56EZYttPG3Op7UdduDznhlEXnpwRl1FV0uTAtTHAxVKA6wDJrXGqV22d3PkXx83Jr41FCOh6czfiI2oDX(EVZjm7rtyFiGGhflPU4XHFMljGX1m0VIzyEfpmS0lBLqUBxleXWKNVWxeNkW03L)ogM96HVUrEVTAMc87NoocRlx16pr7DuRCD2nbX3KfH27rgSWl6G)(Jz8amteKy42HyXAFOyUq0RMH4V1m6OgvP4R7cxAugEM0xSEydB(DVM7Gr49fITXV1HG1iCS7X3LLxRnZK(AQhBYx)wpqqty(lN(6CNuukhId)wHSunW0Ua9oGd2jWabZa3lxDjjXLtyEjK)QJ39Qk0VY4BLq8ikR0JWclaR6OegnqmhsihwC4VkLSH3gfDAIjf7vwPAs9JhsY(x7dfQ)E14aXlgUU7AL8JBOUw)ERbNq1hpK9Z)OROZ0cmth2UPrs(xAcI2djxRim8geQjVeT3)q90qZBQYdUW8kzzEpd4pIEJyZgvFBsV7HyL74mdkj6zj4VoV2gvLCkWnhGUw3)pJdibg31zmUy5CRwVLUiPIHxC7E9SMKAlwlAhSsf65QXJ0wWTRf7aPYl2q0hQH4Ut5K5se0c8CSWzzl60F7vDkc0LnWCeW(dpGvVnTffU9Td4(WKWuBxya566XsVydTGkJGGv2UsCIGV3D3I5(yHslD0CWErewNST(lHWXyTGv1i2SvopatHpQPMLZeWEuN4PiOy05aD1UAWeaQirqmleYqQXvTg8CdWTbG9EhSYEVwdnstsIufuD4JwxQx2ZtpJ7AV7(g)wnZODpkvgdWEb9PfI6fM9iyrky2s34kEhZQ9sr5945vh5nJ3vn14Cp8Utl12rWb(U5qvQiAC99ULfLvWeJWfYOANzgnK)KST(7uKF0F6spIlk(lIh0Mj83tIA3tIQr4DkZJQHjNoq3hRuPqMuYjgvpw3ZTUyypho9n0OTbiAmjhpYVB(vCjGnVZAMG4A21OQTZHHWjYZxrB4lzjH0dtlW4O0fLlbAETc3kixuc2dDSnt2PcCUh0)BMmA5us3osoStCBWRCzdIH9FGPnZHbDhm5roX5gw3UCa7yDtI4ZJdp1qDzRB3g7AcIO0bXV93e5fUlgjsPgAhjwpZRwLCy7GaojP)H46Z(K1Q1UTqxDpj3x1J3FkdprkRSNE3Gggo7INoCsS)PAAczYg2tlt4K(EoFY)p]] )
+spec:RegisterPack( "Enhancement", 20231110, [[Hekili:T3ZAVTnss(BXyruKYdzjk7eV5S8IzZTdWmi3CdG3d33efffLe3qrQJKYoEHH(TFv3nj7xv3KupSt8madMK4UzvvxVRQF4jdN8pNC7CV8Gj)MZaNrdhoCq)bxn8JxE1KBZFytWKB345)vVLWFj2Bn8))hXR8I9dwheNtg7HOeV5eyKLSn1hgFvE(MSpD(5ldZxTDwF)K1NNfUEBKxEysSFQ3ICY)2)8zrjZoFEQ3YK4frHlxLFEq8YW4GZ9J8YYCxNmFBuq25z(UzR8w7f33FZMj3oBByu(Vepzgkrp0bOJnb(Wp(dJasjC(8a2CdY8NClzUVF4W3pCWN2nD30Fbih66WlA3uGM2nD7gcq7V7x39RLZDWL05()qhz30fjP7McyZHpPbxb)hmPFA(8Dt)5TXXba4s2qwU7M6fd)WnPHjPH5paFEAcGMBdx)zHV)JaEGV)39Y9xrb(W(xQtlW0g4qqtw221aL8ZrEK)42vj(FndqiGSK8vba5L7LUmih(zEPWe2KKdlXqVOia)jBZH)3IDtt9Ixg8FSBkWy3YgYBZgYFicw4hUiNdrGjDpmRW4LVB30qaiXbbZdMlqIF49oF4tLmlGaYtaUSpbC5PHFf(ZZbeKMKLxGaHp9Y3pAWN485V4DNh5)NbCKTzG63UP3dkuKL)QayP(zpqQ9qwUeeCgOICaTXFf4fstB4fW0(5WVrembR9Y3sytFHOcgdRTDt)7jr5LO73)F9Udgneq5p9F)pKbJtPq3lAZkp37tIw4Uom2La0W4ScHVmdLW2kHzHu7Z)NsGDaHd(FLKsXQGckrPPuRqE9qvlAXxCbJvZ(cZtY5VYwFHenz7WtqQlOJxyZ)zInp3YzOWxoQ086xa(am)8W3xPQ5he7b2nzGU2IWOiIAOmRmBvY2O5eEirVDwarrjyoJfRW0boDAWI0aWtYSOG(tUnkmlpJ61cK4rbWF73OocbCcty(K)(KB9bl2G0qVj3E2UPZtY7VGatWzerVnp0)RuDLoeJJiGH3h8ATc(rU0PL1Vas0z0LyVfo3n4oYe9MppRprH6g6iE(eMuFWhX6K05GDQ79G6b43mjAEY9XuBgyAd3n9TWAoi3Dws82mGccshn09In(7M2J(Fp(ioAUE30patyYTmmboTLr1KCWDPTfFJxSCuiWRiGFKrWpB7If9x7feLLdQnU3h4Tbygz5Ee52nJ3n9sr0gevOC7MTjeGHmBErqA1i9jucXkJaJl4eghcZG1qoH4UWiXPWTh46q42DminhxjlZ2gphGq8YkPiNaQgJG6lpu(cDAqqv)Vgrehqexc07ZuCkh3JylnNe0U)2nm2zOR)kWhLBe3Rhtpv9dQ8LXuwlxpaLqCOZhg0nx6phO4VXuh5l4kuaSYikd)d2x1Ztil4WyGVsixIADH4FEqaeJYnnbcPb8FMOuqhGm1UvZolpjDnvklPLqXbBmIya4weSiqW0XyRpc1(r7u7QKCxiHO5auewZq0lxIncbaxzZ2IcdYIDX20hCZHf2AjijpebC)1dvNbK8GlwqMnMe()BUf)BR2idhS)y9koBx1jxH6ObNJOFsLghtFTKfMTbmaaksuVOu7zbrdKhv(AGMg6uJo6qZHdAZcw30S0cSghACAtXqLsCMDx3qIRRfVLomU2z1tKs8qmTgZ(95qpFfKB86m3W47s8PjmOBUAvPwXSB220cSB2XExUVUA4v909Qa0OVRNV)2YeCAj9wgV2KrHC8cevtZrnkOrE(O1hFSJ50xbIDGGEyk4ptrp0SN8N58DSMSZqZU05z7ymxMHM9NRzVafY6bz1kjfk1JUpmL6yOsxr30p0hWBvGOHM983WSYKcl5y2LEPtvo(LIjjtwo14PeCFfrdPkbJfKQa5mvhQhnD6uaUKznsCwcKHY0UqCA0mjqN2LIttmQVY8APw(EKhOZhfjLzElDtw4c0cuzVkXuR2NzflMXo1U3vPGM6DDDTPXjPqqNJGWnmnWno5opkfxRAlxdPTos3xxOJgiYVf1fL52JgkopvpGkZ1CqzCEUb(1ijL8aV08vUvEuuXP1AxYbImRpR4znuQuG2PQsKJr6oJQPGHgsCTwjPMm)vYANNF5UPJgyjd(CG7t7s4eRDDORzB1sxmWybXbRdjjZtIgAA(JzDaO28WTYnhxRdGJqo5yX0LMeVitBIoZMI8e5wdZnigneTTU9yrSCTUuPNvFUxxkxKtX0J0Itx)YoCQ5uuzCf5JYOcsNEgYeqnl9YjPM6esgc6ksWSEWpkWTOj0en8C9ESG5gI2K(0WnSriDeCjm472n9HKTqLQeH8UPXjW)BfT)P)EfU3nL1r10aV5pWAQ6MTrreAmV4ZV3loxTTG0MHtBl5x(cGMF(3ExrlBlAq790onhMtA7XAI0eyAHrK1qFspl)POSe4lc(wywov7qPJ8R9EOGEj9M0pkjd(JG4KTlxXAoD2gcb3hx9uLZwPfi0pKQ4gcfKrvtesJn3wxM62WY8K1pT3fUUg7Wadou9gPsrO9FrTQO93nK1ssnhkP7XPIuALl9ewQ(jX3fKUK4EILJP6krFcilfHSyZRTNuhhuQ0hmZjEEGYl7PpynZaZPwwvEpZlVmn92IbVljY3lgQMhiSG4L5ROQI3OrnzBb13Yp(iRJQ0ZI9SpBTcJTUzxiDK9motsmN4QXfIMD8AgbsSsDnzntvJwdxxV1GuqtSoGutN4q4CyBQGHYcT0)m7P6vWJSL)4fwZmHmdwCCEQmgQxXsB2SwFxRAYq998YsrKnQdeSEzPlgKl4YsRJQpTY9P5sOjkHf0cjxaHmfmMnrVtssT4jbAPbw20dhzQXc14ReZ1uNgUxsgJcAPBxLEKsl6cNr)rrUginvgTYExI4)rUVzMB1LupfS0QlPoNzUbBsDoZy36KSOS38ehZ2v2unCmPAyozLFat5vzxoqYQ1sp2EwteY6(ZmApZ1rfO6nUPM0z23g3yRfFnW3(OMSByAHXmfWkNuV8csmMjiTrsQuAAtys3UP4OF5dknz9LxNayd8sNyT1jvDuCfqhHG395HzBcI4aAdr7ycsdfAbmwcLedZ1Tcww3epQ4u54ny2GRAeKSYMLKX2tzKgtnAG6oIkGs1a8frJfXn(ueicE0ybMzc9prkFxXpq421UBaDciTsV47cJkpNMghEBwGBYIfUl9NxeywTO4sm4fbrVbhzG04F)VbH1SKVP95fydDQQEDXexczcQjWegtrKH0ZmujI4rwb7uTCnD7UFdFhB4Hg7dlqXTASsdPRMsYRGI(VAaxzP3eKA0lzQfhjXHk2)35b)nyU9lh3nmdC8fMwSRHSFA)8HGlImxIqGWxkjOtGHa6YuGmQ4RZ3MsBscB9lmdgkQgLlZQwRKk8ycqihm)5CuDZ46WfhApbMLulZSOKCbXhslrueXo1iIDmiID((qe7uRi25OjIrX1ZSi2zcshMkfXZc88tGvwIB(kqof8qs8Ct(gXN7j35ynoSUSWH1Lf(R0A9u5sDnnZWLPHblaVJ(RmTm1N3Z9s0rDjQMM0H5t(mJULXCwO1QOdZBXzgDyGPgBPtspHUwkcYolkjzUlj1AHt9Z1JXgF)DTydxp9owQCBurotS36SNbPsqAwqkPcgdsf(4hUubdxpJsLkYzI9En(0lviT1GQ0Glu4dFWYemm98jsQOMj5wpNHp9secoGkeaO67ffHlwuMZblBmIZNpbKmjnPr9g)W3y1oI9QUQpPJlhlp0vUDqICi1V6gHVs72q0dTRQyDOxQ5gYhw1YRls3V7V)pSwZxz8jOGO2OwZnTRMtntxuXthlsZAoDLc65smlhrHUHB6cUUGIgEf8NyVX)1qNc2sC6KqEyebh98pBsvJ(rrpg)J0K)0q)CA65LqKyO6Y(hUKlah7AW5YYEV4IWLxUzbncvvMqGNJIZ0wRrSxcdRMZfYiw3xuw8D0MOUjnWpz9mpEBufT7P9)L5is1qqYGHO2NNeVCBa(SR5cWXTkYwfgenNFbUkJVXohOsJsuHYv3EIK0zIo1rpLCmOyV5Q4KvrrzMOOo1rqcnVu4RXAYjNs2KM8Vc8ZDvAhpV8jY)ek8SyEHSMMAoJH8qYH0IDCcQsgqzlbKpAO6BeGAKUKnuV)8pPm6o5VfTnOQymsHIHz9r6wAH8uAAQvuJnhdT5fBQ49Hai1cZcTQCX6XvlwQonBP60GLQtZxQoTyP6iTuv71t9lvwyTQwxjLyvvECIXVP3S)3uzMCFyU)k35j(WAoZTiLQh6N6f)1YO6KpAWGb0VQUu4GPF9FtMKec(iExnraPHu(ubiwx0XbiwEO9efcgY8L5xMewW65JUal22U9ISoytCBC62OhuxHy5cqcGYpRrOdF5UAoyqwpbYfG8Gpx3K5)hRd2T54Ofszlh)gUQWbD2AFkpC4cScXdSTPtt9r8aBBAth)ZdS9tWb22A7oodjjRt6PxX2ffUx5)DuDYuNRDm3Y09EDxnxi5Ao307pXlelq)ukxZjN(7OtxR1qA18WdCGh1vZ9vOMOFYD35eFwxnTbscNboTqsMUvUOhrY)8Ml1MBUKLT1QGISCEQuoHX75XyMs5n7eglFFJnDcJTu5ATIFHWiOrSZr6slAKDHMBXF3KuYI6hHtCSzxV28gy6ehB5amB0DTelRjpGnmiz5g8i3mx1ZNSz)O1fvTuz(OE(K16Og(bkwQBAwoFY7ZdaGXZNSK9ynNpzZwL2uKmE(KnNiYpSz4XVT1N4K4SC4URNaTMOMLJrnwxcBXbh26BTrDUSTCEM585wCWHZNCl4CjJmwXZN5aGVCVxkHpKn52)5kYlj46njPLLB9A2Ud8AsfB)FBbnzq(LLqQDYBBEYAVCYpayOXlPpmGFjmggI8Mw(zQFm6WjBcy7cAg75u81NzizLowZBQtx9TB5MUSLQXnr7vDh(wSToRxVhFuhCx)HEVMvW3tjnEERProN(d1WQ3dYPTSSso2EGQ2UYFn9fKerlT4aX3o1064DDpt)ag05mSdxqXpvQqiyj0n3u)q701sBvV25nf8nLdLmHTqoPcD6k1RTx9QHxn46XJguP8(ddLxr4vcLpkluEDz39LpMDLludNcpy4Ud)wVgauTdFkcKXMZjf8naWmPMzGQo(jLEpXG3eG1JRy(yB2XGMsNU6wkGQkILsXpvYsXG5OTvZ1JnjLiMD1D2GUzSnytGWzMTClhcBlKQguFZG6XJj(9b)9fh7Tsb)kdwoo2D(PnSK5OzGwV5i(CoPGVba2UZp9XpP07jg8MaC9o)CqmoDo5gNVY2QrW605GSorG9jZ60KZVNh(7lo2BLc(F9uNooEQZxczGE5XlZz0SClWbVSTbppRvNNG1QJ6AD4PiJE6Vcgo6HkhoQo5YX3G(vfvmHCFvUES(yTZI2mSpz2ZLkxhFo1lmgfxR7INrTo97JdNzQFVFAhZuh2NmM5PxR7fcJIR1D5ZNwN(noQIxQFVMAfRuhYNmo5jxL7fbxQ5TQ(eWil5KeWHClQQyNkJVx8ud44KXyp5QFVezACTX6kNg7kDTx7UtB3oLkj7rJcA7USiWMCQRqft7sw3UAx5RoeYKVNVJh2bzTuPyWL6vmsh6gtODTUuG7nd5ghpHu35TG66xShwlsIIsUNEkT8aRhGNEFa53mBf)2md4V5KPXq6UPK7XuXbLLnp6jwDrY2yPzpFozYZ9Y9M5Lf8PD)6UPVh(3fMNg2aTQld1RB1wOzUv)4xaeKQ8moXgUNcixHeCSGmRMJcd3afCmzEYnhHy3JfCSzyMnSRKnuozzInhr1kNmnRMJIMkNQzYnhHnsozBMsOQ2EGX39vPGFLHUbp9d7F5BkcbA5sg1R3BjxCN3yluAVR)BC0jeoTazYaajCR4NRVxXYFUEuEEgo2xZN)IAn3N4F(xOUMjkaxk79N44DYTG)4vjPtUL8BLt6TKCri5MPXMyw)kx5VD85eIt4MSU7xXMK(DyfFEQxk03fUymnNs0lXArZV1USOp(yXY3WnfThoYfHJzeVDthCS2XosXXP(fmLGz8RLkoeKNd5Rjxc1XdksgxEykHIdNYeQFh5(Zv2NE(UV(o6TsCCDrFbwVTWMkdBW7OYSW8Q1I1GJP1GPaoC0JgSqz4Axdg9m3K1GHQBkwj)rYxnXR1FHeJkx)9gTItwyp4sFXrf)P0N8tIXHHhjuX5k9mH2WVH9IAsM8XOAzPILjNEPhF8euRQi9t2UIqI)dQwNbD63j82SnEO5phXMs(tP8PdDRHEQoazvNGm0fm55qRYBjzD1KtWYP)aS8koQSShUh05x5j84RulN3bLZJS95N(Dp)vCuzHZFqBE(t4ENB2ihlI2jWk32oQBM4uJz)KryoMjSw5P4mCxf1c4Aneod3sqeW8DO8yfp7L9(rlX7Q2NTtnV7LXMfkY7Q2YOtmR7LWMEjY3K3HJtmZZW2P8J8w2a1v8xkBccHFsEbb)AGBW3GIaIbqryrSWkBsUhQlimEXwYfCIYPntpfJy(DjSJUusCjA5dTTsXeZneSwR(7XhvQkXzGAzxSCPPTGOwCrjt8Bt3nd7q3VjPTkrB3uiRj5zDdDwkBoIKLIY2xvuB3XzlWA9MWj56tGJlzAxPCqO1NW9AQf7eMi9YnVi0RfukyhwIYhFuf2Iqw9n3JzqYU6GVJO45NZsStDHxpq8sSbbqR6m2B6x9qInp7aRew8U)Wwe4QNpH3rW9xbMVceOuk13iQfbok3m3QUXAWHX4l1B(kZyIZsKCQXKk3m(ceCx94jG4EG(kJyZus)3k7iyq2uTblo6W6)cSK21zKYyqmB1YiOmMlVvjfDcPSFC0oIGXE4DnPIYvYFOmwR1hKaEdCOqKkNLJoW(5eMj9xwNyet11VVIuwLK7UYlM(CsQpF9MLZkUtPl5OFB71jlUh8JfVt8hS2WvmMJ(BTfMAj6ulKWDkkbg)bxtlC)qhmbGIEwtPESFzSwRj8rqMCfKwlMFahEdwnIEJ6F0FPJXC3DqP9m(YgPD0TR9Lyprlla7(qCk)TR3g1gkPxpC1mdE0uEGlesbu)nKcZtCh83oQXdAwuYNGODnpyhYm5pMicCgUIMYRTtPHq29HPuBKkPKflbjpHTnCRm9XCli9RovSvp)HFG78v4PkYgnALem4224GcbKQlA(Hg4EM3s3KfUK07(kMR8Q3HfbHGzPyzU0kP4zZY8A8X4VMvnXbsbHP9OEuJlHw5qqq7OE3f1XjX5tyHdO7jFLHv92Sv7S3IWOiO0EJeCldZzmLT9lmxltrODIk9CIWsjQmpGrdelDbkDYQ3FdpqpKkwzta7HZvTgZXdh0tR4WXdfAZEbDGeRex15gLYYQGU28(GH4GLNceCrGbXtLzARt9spMu1GK801yeibdWFz36ukim8KQvLmV2dYwVogBhboZ8AzEEpdU)ed1YwnQb8LEm2yvzFMbHe9id8hNhpwvoNI3UdqwRNCdddijG3T2mP5jOAUC9UifpbggOjV3RmB192A0U7kvNpxpEKMjx7Iquhj1apSuiOu49zLrDuEG9eoSehw64AlBP0RWijSgOOPMwFWEWtmVFVAJDHbFj3mw6Tx1IFseFknmjAepUDT7Y9u53u6mXG9wPw2Ri93j1XyJuPnQX3qRNr)jmvvmlxXG90qXlLqrPRg)D2fdMCPjcee1cH3S0QGNAomRCLAWvBVdwyVx2qJ04KinZt39r16SUo6X(E6Hlx75fD8h09z268gzia7nevlPXluXgwrKACbZA6gT4RzvTxckNFeJZsk84PpuQuBZ4s62vrJv3igDui7p7mZ(b5FjB3Fof1Q8dxPkCwXFqIDwTG)ZcAAFbnvmVtznnvi5j2DlvyREMnoSIAqwuYhrJsADp3SIH9QjCVHbTrGOzJC8aF7IRuhd2Ch(m5IRAFIk2ahMhorC(w6a3Le5tp)QaIdIxMVcG5nkylJC3eyF0XwnPvnBCpG)3n1YYHKUEKCcN46GxxNoiMV)dSGzUBW6tJ8ixYCfQBw1FDSUns81XHxuOoVT(WgTT0qu4Ge3(7IkcBJsIurH29eRxZvJklSzUaojf(He6Z(I1Q2UTuxRFrUVIhNFitprQQSN)WGgiN2ePdhe7FPMM8mzZ3tdl4K(RHHj))]] )
 

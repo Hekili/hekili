@@ -29,23 +29,23 @@ spec:RegisterTalents( {
     dominate_mind              = { 82710, 205364, 1 }, -- Controls a mind up to 1 level above yours for 30 sec while still controlling your own mind. Does not work versus Demonic, Mechanical, or Undead beings or players. This spell shares diminishing returns with other disorienting effects.
     essence_devourer           = { 82674, 415479, 1 }, -- Attacks from your Shadowfiend siphon life from enemies, healing a nearby injured ally for 2,242.
     focused_mending            = { 82719, 372354, 1 }, -- Prayer of Mending does 45% increased healing to the initial target.
-    from_darkness_comes_light  = { 82707, 390615, 1 }, -- Each time Shadow Word: Pain deals damage, the healing of your next Flash Heal is increased by 1%, up to a maximum of 50%.
+    from_darkness_comes_light  = { 82707, 390615, 1 }, -- Each time Shadow Word: Pain$?s137032[ or Purge the Wicked][] deals damage, the healing of your next Flash Heal is increased by $s1%, up to a maximum of $?a137033&$?a134735[$390617s2][${$s1*$390617u}]%.
     holy_nova                  = { 82701, 132157, 1 }, -- An explosion of holy light around you deals up to 2,503 Holy damage to enemies and up to 2,697 healing to allies within 12 yds, reduced if there are more than 5 targets.
     improved_fade              = { 82686, 390670, 2 }, -- Reduces the cooldown of Fade by 5 sec.
     improved_flash_heal        = { 82714, 393870, 1 }, -- Increases healing done by Flash Heal by 15%.
-    improved_mass_dispel       = { 82698, 341167, 1 }, -- Reduces the cooldown of Mass Dispel by 20 sec and reduces its cast time by 0.5 sec.
     inspiration                = { 82696, 390676, 1 }, -- Reduces your target's physical damage taken by 5% for 15 sec after a critical heal with Flash Heal, Heal, or Holy Word: Serenity.
     leap_of_faith              = { 82716, 73325 , 1 }, -- Pulls the spirit of a party or raid member, instantly moving them directly in front of you.
     lights_inspiration         = { 82679, 373450, 2 }, -- Increases the maximum health gained from Desperate Prayer by 8%.
-    manipulation               = { 82672, 390996, 2 }, -- Your Smite and Holy Fire casts reduce the cooldown of Mindgames by 0.5 sec.
+    manipulation               = { 82672, 390996, 2 }, -- Your $?a137033[Mind Blast, Mind Flay, and Mind Spike]?a137031[Smite and Holy Fire][Smite, Mind Blast, and Penance] casts reduce the cooldown of Mindgames by ${$s1/2}.1 sec.
     mass_dispel                = { 82699, 32375 , 1 }, -- Dispels magic in a 15 yard radius, removing all harmful Magic from 5 friendly targets and 1 beneficial Magic effect from 5 enemy targets. Potent enough to remove Magic that is normally undispellable.
+    mental_agility             = { 82698, 341167, 1 }, -- Reduces the mana cost of $?a137033[Purify Disease][Purify] and Mass Dispel by $s1% and Dispel Magic by $s2%.;
     mind_control               = { 82710, 605   , 1 }, -- Controls a mind up to 1 level above yours for 30 sec. Does not work versus Demonic, Undead, or Mechanical beings. Shares diminishing returns with other disorienting effects.
     mindgames                  = { 82687, 375901, 1 }, -- Assault an enemy's mind, dealing 5,170 Shadow damage and briefly reversing their perception of reality. For 5 sec, the next 4,932 damage they deal will heal their target, and the next 4,932 healing they deal will damage their target.
     move_with_grace            = { 82702, 390620, 1 }, -- Reduces the cooldown of Leap of Faith by 30 sec.
     petrifying_scream          = { 82695, 55676 , 1 }, -- Psychic Scream causes enemies to tremble in place instead of fleeing in fear.
     phantasm                   = { 82556, 108942, 1 }, -- Activating Fade removes all snare effects.
     power_infusion             = { 82694, 10060 , 1 }, -- Infuses the target with power for 20 sec, increasing haste by 25%. Can only be cast on players.
-    power_word_life            = { 82676, 373481, 1 }, -- A word of holy power that heals the target for 3,058. If the target is below 35% health, Power Word: Life heals for 400% more and the cooldown of Power Word: Life is reduced by 20 sec.
+    power_word_life            = { 82676, 373481, 1 }, -- A word of holy power that heals the target for $s1. ; Only usable if the target is below $s2% health.
     protective_light           = { 82707, 193063, 1 }, -- Casting Flash Heal on yourself reduces all damage you take by 10% for 10 sec.
     psychic_voice              = { 82695, 196704, 1 }, -- Reduces the cooldown of Psychic Scream by 15 sec.
     rhapsody                   = { 82700, 390622, 1 }, -- Every 2 sec, the damage of your next Holy Nova is increased by 10% and its healing is increased by 20%. Stacks up to 20 times.
@@ -122,7 +122,7 @@ spec:RegisterTalents( {
     revitalizing_prayers       = { 82633, 391208, 1 }, -- Prayer of Healing has a 25% chance to apply a 6 second Renew to allies it heals.
     sanctified_prayers         = { 82633, 196489, 1 }, -- Holy Word: Sanctify increases the healing done by Prayer of Healing by 15% for 15 sec.
     say_your_prayers           = { 82615, 391186, 1 }, -- Prayer of Mending has a 15% chance to not consume a charge when it jumps to a new target.
-    shadow_word_death          = { 82712, 32379 , 1 }, -- A word of dark binding that inflicts 2,018 Shadow damage to the target. If the target is not killed by Shadow Word: Death, the caster takes damage equal to the damage inflicted upon the target. Damage increased by 150% to targets below 20% health.
+    shadow_word_death          = { 82712, 32379 , 1 }, -- A word of dark binding that inflicts $s1 Shadow damage to your target. If your target is not killed by Shadow Word: Death, you take backlash damage equal to $s5% of your maximum health.$?A364675[; Damage increased by ${$s3+$364675s2}% to targets below ${$s2+$364675s1}% health.][; Damage increased by $s3% to targets below $s2% health.]$?c3[][]$?s137033[; Generates ${$s4/100} Insanity.][]
     shadowfiend                = { 82713, 34433 , 1 }, -- Summons a shadowy fiend to attack the target for 15 sec. Generates 0.5% Mana each time the Shadowfiend attacks.
     symbol_of_hope             = { 82617, 64901 , 1 }, -- Bolster the morale of raid members within 40 yds. They each recover 60 sec of cooldown of a major defensive ability, and regain 15% of their missing mana, over 3.2 sec.
     trail_of_light             = { 82634, 200128, 2 }, -- When you cast Heal or Flash Heal, 18% of the healing is replicated to the previous target you healed with Heal or Flash Heal.
@@ -136,6 +136,7 @@ spec:RegisterPvpTalents( {
     divine_ascension       = 5366, -- (328530) You ascend into the air out of harm's way. While floating, your spell range is increased by 50%, but you are only able to cast Holy spells.
     greater_heal           = 112 , -- (289666) An exceptional spell that heals an ally for 65% of their maximum health, ignoring healing reduction effects.
     holy_ward              = 101 , -- (213610) Wards the friendly target against the next full loss of control effect.
+    improved_mass_dispel   = 5634, -- (426438) Reduces the cooldown of Mass Dispel by ${$s1/-1000} sec.
     phase_shift            = 5569, -- (408557) Step into the shadows when you cast Fade, avoiding all attacks and spells for 1 sec. Interrupt effects are not affected by Phase Shift.
     purification           = 5479, -- (196439) Purify now has a maximum of 2 charges. Removing harmful effects with Purify grants your target an absorption shield equal to 5% of their maximum health. Lasts 8 sec.
     ray_of_hope            = 127 , -- (197268) For the next 6 sec, all damage and healing dealt to the target is delayed until Ray of Hope ends. All healing that is delayed by Ray of Hope is increased by 50%.
@@ -220,6 +221,12 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
+     -- Healing $w1 every $t1 sec.
+     echo_of_light = {
+        id = 77489,
+        duration = 4.0,
+        max_stack = 1,
+    },
     empyreal_blaze = {
         id = 372617,
         duration = 30,
@@ -231,7 +238,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     focused_will = {
-        id = 45242,
+        id = 426401,
         duration = 8,
         max_stack = 1
     },
@@ -308,7 +315,7 @@ spec:RegisterAuras( {
     },
     power_infusion = {
         id = 10060,
-        duration = 20,
+        duration = 15,
         max_stack = 1
     },
     power_word_fortitude = {
@@ -347,6 +354,15 @@ spec:RegisterAuras( {
         id = 196490,
         duration = 15,
         max_stack = 1
+    },
+    -- Taking $s1% increased damage from the Priest.
+    schism = {
+        id = 214621,
+        duration = 9.0,
+        max_stack = 1,
+
+         -- Affected by:
+        -- twilight_equilibrium[390707] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
     shackle_undead = {
         id = 9484,
@@ -391,6 +407,13 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 15
     }
+} )
+
+spec:RegisterGear( "tier31", 207279, 207280, 207281, 207282, 207284 )
+spec:RegisterAura( "sacred_reverence", {
+    id = 423510,
+    duration = 3600,
+    max_stack = 2
 } )
 
 
@@ -767,7 +790,7 @@ spec:RegisterAbilities( {
         recharge = 60,
         gcd = "spell",
 
-        spend = 0.04,
+        spend = function() return 0.04 * ( buff.sacred_reverence.up and 0.5 or 1 ) end,
         spendType = "mana",
 
         talent = "holy_word_sanctify",
@@ -779,6 +802,10 @@ spec:RegisterAbilities( {
             removeBuff( "inspired_word" )
             reduceCooldown( "holy_word_salvation", 30 )
             removeBuff( "divine_word" )
+            if buff.sacred_reverence.up then
+                gainCharges( 1, "holy_word_sanctify" )
+                removeStack( "sacred_reverence" )
+            end
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
         end,
     },
@@ -791,7 +818,7 @@ spec:RegisterAbilities( {
         recharge = 60,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = function() return 0.02 * ( buff.sacred_reverence.up and 0.5 or 1 ) end,
         spendType = "mana",
 
         talent = "holy_word_serenity",
@@ -805,7 +832,18 @@ spec:RegisterAbilities( {
                 applyBuff( "divine_favor_serenity" )
                 removeBuff( "divine_word" )
             end
+            if buff.sacred_reverence.up then
+                gainCharges( 1, "holy_word_serenity" )
+                removeStack( "sacred_reverence" )
+            end
             reduceCooldown( "holy_word_salvation", 30 )
+
+
+            if set_bonus.tier31_2pc > 0 then
+                applyBuff( "renew", 14 )
+            end
+
+
         end,
     },
     leap_of_faith = {
@@ -969,7 +1007,10 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 4667420,
 
+        usable = function () return health.pct < 35, "health must be under 35 percent" end,
+
         handler = function ()
+            gain( 7.5 * stat.spell_power, "health" )
         end,
     },
 
@@ -1047,21 +1088,27 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Dispels harmful effects on the target, removing all Magic$?s390632[ and Disease][] effects.
     purify = {
         id = 527,
         cast = 0,
-        charges = 1,
         cooldown = 8,
-        recharge = 8,
         gcd = "spell",
 
-        spend = 0.01,
+        spend = function() return 0.013 * ( talent.mental_agility.enabled and 0.5 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
         texture = 135894,
 
+        toggle = "interrupts",
+        usable = function() return debuff.dispellable_magic.up or talent.improved_purify.enabled and debuff.dispellable_disease.up, "requires a dispellable effect" end,
+
         handler = function ()
+            removeDebuff( "player", "dispellable_magic" )
+            if talent.improved_purify.enabled then
+                removeDebuff( "player", "dispellable_disease" )
+            end
         end,
     },
 

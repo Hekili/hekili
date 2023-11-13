@@ -1600,7 +1600,7 @@ do
             end
 
             -- This can be CPU intensive but is needed for some APLs (i.e., Unholy).
-            if script.Variables and state.settings.enhancedRecheck then
+            if script.Variables then
                 -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
                 for i, var in ipairs( script.Variables ) do
                     local varIDs = state:GetVariableIDs( var )

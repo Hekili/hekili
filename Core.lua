@@ -1859,7 +1859,7 @@ function Hekili.Update( initial )
 
                         if state.delay > 0 then state.advance( state.delay ) end
 
-                        local cast = ability.cast
+                        local cast = ability.cast or 0
 
                         if ability.gcd ~= "off" and state.cooldown.global_cooldown.remains == 0 then
                             state.setCooldown( "global_cooldown", state.gcd.execute )
@@ -1870,7 +1870,7 @@ function Hekili.Update( initial )
                             state.removeBuff( "casting" )
                         end
 
-                        if ability.cast > 0 then
+                        if cast > 0 then
                             if not ability.channeled then
                                 if debug then Hekili:Debug( "Queueing %s cast finish at %.2f [+%.2f] on %s.", action, state.query_time + cast, state.offset + cast, cast_target ) end
 

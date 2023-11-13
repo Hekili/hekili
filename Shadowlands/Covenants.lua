@@ -1848,7 +1848,7 @@ elseif baseClass == "ROGUE" then
 
             cycle = "serrated_bone_spike",
 
-            cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike ) end,
+            cp_gain = function () return ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike end,
 
             handler = function ()
                 applyDebuff( "target", "serrated_bone_spike" )

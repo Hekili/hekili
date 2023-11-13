@@ -1,5 +1,5 @@
 -- WarlockDemonology.lua
--- November 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "WARLOCK" then return end
 
@@ -32,8 +32,7 @@ spec:RegisterTalents( {
     dark_accord                    = { 71956, 386659, 1 }, -- Reduces the cooldown of Unending Resolve by 45 sec.
     dark_pact                      = { 71936, 108416, 1 }, -- Sacrifices 20% of your current health to shield you for 200% of the sacrificed health plus an additional 24,582 for 20 sec. Usable while suffering from control impairing effects.
     darkfury                       = { 71941, 264874, 1 }, -- Reduces the cooldown of Shadowfury by 15 sec and increases its radius by 2 yards.
-    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of 0.2% of maximum health every 1 sec, and may now absorb up to 10% of maximum health.
-    demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
+    demon_skin                     = { 71952, 219272, 2 }, -- Your Soul Leech absorption now passively recharges at a rate of ${$s1/10}.1% of maximum health every $t1 sec, and may now absorb up to $s2% of maximum health.; Increases your armor by $m4%.    demonic_circle                 = { 71933, 268358, 1 }, -- Summons a Demonic Circle for 15 min. Cast Demonic Circle: Teleport to teleport to its location and remove all movement slowing effects. You also learn:  Demonic Circle: Teleport Teleports you to your Demonic Circle and removes all movement slowing effects.
     demonic_embrace                = { 71930, 288843, 1 }, -- Stamina increased by 10%.
     demonic_fortitude              = { 71922, 386617, 1 }, -- Increases you and your pets' maximum health by 5%.
     demonic_gateway                = { 71955, 111771, 1 }, -- Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per 90 sec.
@@ -74,11 +73,10 @@ spec:RegisterTalents( {
     annihilan_training             = { 72022, 386174, 1 }, -- Your Felguard deals 20% more damage and takes 10% less damage.
     antoran_armaments              = { 72008, 387494, 1 }, -- Your Felguard deals 20% additional damage. Soul Strike now deals 25% of its damage to nearby enemies.
     bilescourge_bombers            = { 72021, 267211, 1 }, -- Tear open a portal to the nether above the target location, from which several Bilescourge will pour out of and crash into the ground over 6 sec, dealing 4,446 Shadow damage to all enemies within 8 yards.
-    bloodbound_imps                = { 72001, 387349, 1 }, -- The chance of receiving a Demonic Core from a Wild Imp is increased by 5% or 10% when imploded.
     call_dreadstalkers             = { 72023, 104316, 1 }, -- Summons 2 ferocious Dreadstalkers to attack the target for 12 sec.
     carnivorous_stalkers           = { 72018, 386194, 1 }, -- Your Dreadstalkers' attacks have a 10% chance to trigger an additional Dreadbite.
     cavitation                     = { 72009, 416154, 2 }, -- Your primary Felguard's damaging critical strikes deal 10% increased damage.
-    demonbolt                      = { 72024, 264178, 1 }, -- Send the fiery soul of a fallen demon at the enemy, causing 12,390 Shadowflame damage. Generates 2 Soul Shards.
+    demoniac                       = { 72024, 426115, 1 }, -- [264178] Send the fiery soul of a fallen demon at the enemy, causing $s1 Shadowflame damage.$?c2[; Generates 2 Soul Shards.][]
     demonic_calling                = { 72017, 205145, 1 }, -- Shadow Bolt and Demonbolt have a 10% chance to make your next Call Dreadstalkers cost 2 fewer Soul Shards and have no cast time.
     demonic_knowledge              = { 72026, 386185, 1 }, -- Hand of Gul'dan has a 15% chance to generate a charge of Demonic Core.
     demonic_strength               = { 72021, 267171, 1 }, -- Infuse your Felguard with demonic strength and command it to charge your target and unleash a Felstorm that will deal 300% increased damage.
@@ -86,31 +84,34 @@ spec:RegisterTalents( {
     dread_calling                  = { 71999, 387391, 2 }, -- Each Soul Shard spent on Hand of Gul'dan increases the damage of your next Call Dreadstalkers by 2%.
     dreadlash                      = { 72020, 264078, 1 }, -- When your Dreadstalkers charge into battle, their Dreadbite attack now hits all targets within 8 yards and deals 10% more damage.
     fel_and_steel                  = { 72016, 386200, 1 }, -- Your primary Felguard's Legion Strike damage is increased by 10%. Your primary Felguard's Felstorm damage is increased by 5%.
+    fel_invocation                 = { 95146, 428351, 1 }, -- Soul Strike deals $s1% increased damage and generates a Soul Shard.; Reduces the cast time of Summon Vilefiend by ${$abs($s2)/1000}.1 sec and your Vilefiend now deals $428455s1 Nature damage to nearby enemies every $428453t sec while active.
     fel_sunder                     = { 72010, 387399, 1 }, -- Each time Felstorm deals damage, it increases the damage the target takes from you and your pets by 1% for 8 sec, up to 5%.
-    grand_warlocks_design          = { 71991, 387084, 1 }, -- Every Soul Shard you spend reduces the cooldown of Summon Demonic Tyrant by 0.6 sec.
+    grand_warlocks_design          = { 71991, 387084, 1 }, -- $?a137043[Summon Darkglare]?a137044[Summon Demonic Tyrant][Summon Infernal] cooldown is reduced by $?a137043[${$m1/-1000}]?a137044[${$m2/-1000}][${$m3/-1000}] sec.
     grimoire_felguard              = { 72013, 111898, 1 }, -- Summons a Felguard who attacks the target for 17 sec that deals 45% increased damage. This Felguard will stun and interrupt their target when summoned.
     guillotine                     = { 72005, 386833, 1 }, -- Your Felguard hurls his axe towards the target location, erupting when it lands and dealing 4,268 Shadowflame damage every 1 sec for 6 sec to nearby enemies. While unarmed, your Felguard's basic attacks deal damage to all nearby enemies and attacks 50% faster.
-    guldans_ambition               = { 71995, 387578, 1 }, -- When Nether Portal ends, you summon a Pit Lord that gains power based on how many demons you summoned, up to 20 demons, while Nether Portal was active. The Pit Lord lasts for 10 sec.
+    guldans_ambition               = { 71995, 387578, 1 }, -- When Nether Portal ends, you summon a Pit Lord that blasts your target for $<damage> Fire damage every $427688t1 sec for $427688d.
     heavy_handed                   = { 72014, 416183, 1 }, -- Increases your primary Felguard's critical strike chance by 10%.
-    immutable_hatred               = { 72005, 405670, 1 }, -- When your primary Felguard's Legion Strike damages only 1 target, its damage is increased by 100%. Your primary Felguard deals 4,490 Physical damage after auto-attacking the same enemy 3 consecutive times.
-    imp_gang_boss                  = { 71998, 387445, 2 }, -- Summoning a Wild Imp has a 5% chance to summon a Imp Gang Boss instead. An Imp Gang Boss deals 50% additional damage. When imploded, an Imp Gang Boss will summon a Wild Imp.
-    imperator                      = { 72025, 416230, 2 }, -- Increases the critical strike chance of your Wild Imp's Fel Firebolt by 5%.
+    immutable_hatred               = { 72005, 405670, 1 }, -- When you consume a Demonic Core, your primary Felguard carves your target, dealing $<damage> Physical damage.
+    imp_gang_boss                  = { 71998, 387445, 2 }, -- Summoning a Wild Imp has a $s1% chance to summon a Imp Gang Boss instead. An Imp Gang Boss deals $387458s2% additional damage. ; Implosions from Imp Gang Boss deal $s2% increased damage.
+    imperator                      = { 72025, 416230, 1 }, -- Increases the critical strike chance of your Wild Imp's Fel Firebolt by $s1%.
     implosion                      = { 72002, 196277, 1 }, -- Demonic forces suck all of your Wild Imps toward the target, and then cause them to violently explode, dealing 6,113 Shadowflame damage to all enemies within 8 yards.
     infernal_command               = { 72006, 387549, 2 }, -- While your Felguard is active, your Wild Imps and Dreadstalkers deal 5% additional damage.
-    inner_demons                   = { 72027, 267216, 1 }, -- You passively summon a Wild Imp to fight for you every 12 sec. While in combat, you also have a 5% chance to summon an additional Demon to fight for you for 15 sec.
+    inner_demons                   = { 72027, 267216, 1 }, -- You passively summon a Wild Imp to fight for you every $t1 sec.
     kazaaks_final_curse            = { 72029, 387483, 2 }, -- Doom deals 3% increased damage for each demon pet you have active.
-    malefic_impact                 = { 72012, 416341, 2 }, -- Increases Hand of Gul'dan damage by 8% and the critical strike chance of Hand of Gul'dan by 8%.
-    nerzhuls_volition              = { 71996, 387526, 2 }, -- When Nether Portal summons a demon, it has a 15% chance to summon an additional demon.
+    malefic_impact                 = { 72012, 416341, 1 }, -- Increases Hand of Gul'dan damage by $s1% and the critical strike chance of Hand of Gul'dan by $s2%.
+    nerzhuls_volition              = { 71996, 387526, 2 }, -- Demons summoned from your Nether Portal deal $s1% increased damage.
     nether_portal                  = { 71997, 267217, 1 }, -- Tear open a portal to the Twisting Nether for 15 sec. Every time you spend Soul Shards, you will also command demons from the Nether to come out and fight for you.
     pact_of_the_imp_mother         = { 72004, 387541, 2 }, -- Hand of Gul'dan has a 8% chance to cast a second time on your target for free.
     power_siphon                   = { 72003, 264130, 1 }, -- Instantly sacrifice up to 2 Wild Imps, generating 2 charges of Demonic Core that cause Demonbolt to deal 30% additional damage.
-    reign_of_tyranny               = { 71991, 390173, 1 }, -- Demonic Tyrant deals 40% additional damage. Active Wild Imps grant 1 stack of Demonic Servitude. Active greater demons grant 3 stacks of Demonic Servitude. Demonic Tyrant deals 7% additional damage for each stack of Demonic Servitude active at the time of his summon.
+    reign_of_tyranny               = { 71991, 427684, 1 }, -- Summon Demonic Tyrant empowers $s1 additional Wild Imps and deals $s2% increased damage for each demon he empowers.
     sacrificed_souls               = { 71993, 267214, 2 }, -- Shadow Bolt and Demonbolt deal 2% additional damage per demon you have summoned.
+    shadow_invocation              = { 95145, 422054, 1 }, -- Bilescourge Bombers deal $s1% increased damage, and your spells now have a chance to summon a Bilescourge Bomber.
     shadows_bite                   = { 72000, 387322, 1 }, -- When your summoned Dreadstalkers fade away, they increase the damage of your Demonbolt by 10% for 8 sec.
-    soul_strike                    = { 72019, 264057, 1 }, -- Command your Felguard to strike into the soul of its enemy, dealing 10,612 Shadow damage. Generates 1 Soul Shard.
+    soul_strike                    = { 72019, 428344, 1 }, -- [267964] Strike into the soul of the enemy, dealing $<damage> Shadow damage.$?s428351[; Generates 1 Soul Shard.][]
     soulbound_tyrant               = { 71992, 334585, 2 }, -- Summoning your Demonic Tyrant instantly generates 3 Soul Shards.
+    spiteful_reconstitution        = { 72001, 428394, 1 }, -- Implosion deals $s1% increased damage. Consuming a Demonic Core has a chance to summon a Wild Imp.
     stolen_power                   = { 72007, 387602, 1 }, -- When your Wild Imps cast Fel Firebolt, you gain an application of Stolen Power. After you reach 75 applications, your next Demonbolt deals 60% increased damage or your next Shadow Bolt deals 60% increased damage.
-    summon_demonic_tyrant          = { 72030, 265187, 1 }, -- Summon a Demonic Tyrant to increase the duration of all of your current lesser demons by 15 sec, and increase the damage of all of your other demons by 15%, while damaging your target. Generates 5 Soul Shards.
+    summon_demonic_tyrant          = { 72030, 265187, 1 }, -- Summon a Demonic Tyrant to increase the duration of your Dreadstalkers, Vilefiend, Felguard, and up to $s3 of your Wild Imps by ${$265273m3/1000} sec. Your Demonic Tyrant increases the damage of affected demons by $265273s1%, while damaging your target.$?s334585[; Generates ${$s2/10} Soul Shards.][]
     summon_vilefiend               = { 72019, 264119, 1 }, -- Summon a Vilefiend to fight for you for the next 15 sec.
     the_expendables                = { 71994, 387600, 1 }, -- When your Wild Imps expire or die, your other demons are inspired and gain 1% additional damage, stacking up to 10 times.
     the_houndmasters_stratagem     = { 72015, 267170, 1 }, -- Dreadbite causes the target to take 20% additional Shadowflame damage from your spell and abilities for the next 12 sec.
@@ -333,6 +334,14 @@ spec:RegisterAura( "rite_of_ruvaraad", {
     max_stack = 1
 } )
 
+spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275 )
+spec:RegisterAuras( {
+    doom_brand = {
+        id = 423583,
+        duration = 20,
+        max_stack = 1
+    }
+} )
 
 local wipe = table.wipe
 
@@ -484,12 +493,14 @@ spec:RegisterHook( "reset_precast", function()
                         " - Grim Felguard: %d, %.2f\n" ..
                         " - Wild Imps    : %d, %.2f\n" ..
                         " - Imp Gang Boss: %d, %.2f\n" ..
+                        " - Other Demons : %d, %.2f\n" ..
                         "Next Demon Exp. : %.2f",
                         buff.dreadstalkers.stack, buff.dreadstalkers.remains,
                         buff.vilefiend.stack, buff.vilefiend.remains,
                         buff.grimoire_felguard.stack, buff.grimoire_felguard.remains,
                         buff.wild_imps.stack, buff.wild_imps.remains,
                         buff.imp_gang_boss.stack, buff.imp_gang_boss.remains,
+                        buff.other_demon.stack, buff.other_demon.remains,
                         major_demon_remains )
     end
 end )
@@ -519,6 +530,9 @@ spec:RegisterStateExpr( "spawn_remains", function ()
     return 0
 end )
 
+spec:RegisterStateExpr( "pet_count", function ()
+    return buff.dreadstalkers.stack + buff.vilefiend.stack + buff.grimoire_felguard.stack + buff.wild_imps.stack + buff.other_demon.stack
+end )
 
 -- 20230109
 spec:RegisterStateExpr( "igb_ratio", function ()
@@ -575,10 +589,17 @@ spec:RegisterStateFunction( "extend_demons", function( duration )
 
     for k, v in pairs( dreadstalkers_v ) do dreadstalkers_v [ k ] = v + duration end
     for k, v in pairs( vilefiend_v     ) do vilefiend_v     [ k ] = v + duration end
-    for k, v in pairs( wild_imps_v     ) do wild_imps_v     [ k ] = v + duration end
-    for k, v in pairs( imp_gang_boss_v ) do imp_gang_boss_v [ k ] = v + duration end
+
     for k, v in pairs( grim_felguard_v ) do grim_felguard_v [ k ] = v + duration end
     for k, v in pairs( other_demon_v   ) do other_demon_v   [ k ] = v + duration end
+
+    local n = talent.reign_of_tyranny.enabled and 15 or 10
+    for k, v in pairs( wild_imps_v     ) do
+        wild_imps_v[ k ] = v + duration
+        if imp_gang_boss_v[ k ] then imp_gang_boss_v[ k ] = v + duration end
+        n = n - 1
+        if n == 0 then break end
+    end
 end )
 
 
@@ -945,6 +966,11 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1
     },
+    fel_cleave = {
+        id = 213688,
+        duration = 1,
+        max_stack = 1
+    },
     -- Damage taken reduced by $w1%.
     -- https://wowhead.com/beta/spell=386869
     fel_resilience = {
@@ -959,6 +985,13 @@ spec:RegisterAuras( {
         duration = 8,
         type = "Magic",
         max_stack = 5
+    },
+    -- Suffering Fire damage every $t1 sec.
+    felseeker = {
+        id = 427688,
+        duration = 10.0,
+        tick_time = 1.0,
+        max_stack = 1,
     },
     -- Striking for $<damage> Physical damage every $t1 sec. Unable to use other abilities.
     -- https://wowhead.com/beta/spell=89751
@@ -1507,6 +1540,23 @@ spec:RegisterAbilities( {
         end,
     },
 
+
+    call_fel_lord = {
+        id = 212459,
+        cast = 0,
+        cooldown = 120,
+        gcd = "spell",
+
+        startsCombat = true,
+        pvptalent = "call_fel_lord",
+        toggle = "cooldowns",
+
+        handler = function()
+            interrupt()
+            applyDebuff( "target", "fel_cleave" )
+        end,
+    },
+
     -- Talent: Send the fiery soul of a fallen demon at the enemy, causing 2,201 Shadowflame damage. Generates 2 Soul Shards.
     demonbolt = {
         id = 264178,
@@ -1517,21 +1567,21 @@ spec:RegisterAbilities( {
 
         spend = 0.02,
         spendType = "mana",
-
-        talent = "demonbolt",
         startsCombat = true,
 
-        handler = function ()
-            removeBuff( "stolen_power" )
+        cycle = function()
+            if set_bonus.tier31_2pc > 0 then return "doom_brand" end
+        end,
 
+        handler = function ()
+            removeBuff( "fel_covenant" )
+            removeBuff( "stolen_power" )
             if buff.demonic_core.up then
                 removeStack( "demonic_core" )
-                if set_bonus.tier30_2pc > 0 then reduceCooldown( "grimoire_felguard", 1 ) end
+                if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "doom_brand" ) end -- TODO: Determine behavior on reapplication.
             end
-
             removeStack( "power_siphon" )
             removeStack( "decimating_bolt" )
-
             gain( 2, "soul_shards" )
         end,
     },
@@ -1671,6 +1721,11 @@ spec:RegisterAbilities( {
             if extra_shards > 0 then insert( guldan_v, query_time + 0.8 ) end
             if extra_shards > 1 then insert( guldan_v, query_time + 1 ) end
 
+            if debuff.doom_brand.up then
+                debuff.doom_brand.expires = debuff.doom_brand.expires - ( 1 + extra_shards )
+                -- TODO: Decide if tracking Doomfiends is worth it.
+            end
+
             if talent.dread_calling.enabled then
                 addStack( "dread_calling", nil, 1 + extra_shards )
             end
@@ -1799,10 +1854,10 @@ spec:RegisterAbilities( {
 
     -- Talent: Command your Felguard to strike into the soul of its enemy, dealing 2,814 Shadow damage. Generates 1 Soul Shard.
     soul_strike = {
-        id = 264057,
+        id = 267964,
         cast = 0,
         cooldown = 10,
-        gcd = "spell",
+        gcd = "off",
         school = "physical",
 
         talent = "soul_strike",
@@ -1810,15 +1865,15 @@ spec:RegisterAbilities( {
 
         usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
         handler = function ()
-            gain( 1, "soul_shards" )
+            if talent.fel_invocation.enabled then gain( 1, "soul_shards" ) end
         end,
     },
 
-    -- Talent: Summon a Demonic Tyrant to increase the duration of all of your current lesser demons by 15 sec, and increase the damage of all of your other demons by 15%, while damaging your target. Generates 5 Soul Shards.
+    -- Talent: Summon a Demonic Tyrant to increase the duration of your Dreadstalkers, Vilefiend, Felguard, and up to $s3 of your Wild Imps by ${$265273m3/1000} sec. Your Demonic Tyrant increases the damage of affected demons by $265273s1%, while damaging your target.$?s334585[; Generates ${$s2/10} Soul Shards.][]
     summon_demonic_tyrant = {
         id = 265187,
         cast = 2,
-        cooldown = 90,
+        cooldown = function () return 90 - ( talent.grand_warlocks_design.enabled and 30 or 0 ) end,
         gcd = "spell",
         school = "shadow",
 
@@ -1860,6 +1915,8 @@ spec:RegisterAbilities( {
                 gain( ceil( 2.5 * talent.soulbound_tyrant.rank ), "soul_shards" )
             end
         end,
+
+        copy = "tyrant"
     },
 
 
@@ -1890,7 +1947,7 @@ spec:RegisterAbilities( {
     -- Talent: Summon a Vilefiend to fight for you for the next 15 sec.
     summon_vilefiend = {
         id = 264119,
-        cast = 2,
+        cast = function() return ( talent.fel_invocation.enabled and 1.5 or 2 ) * haste end,
         cooldown = 45,
         gcd = "spell",
         school = "fire",
@@ -1928,7 +1985,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterSetting( "tyrant_padding", 1, {
+--[[ spec:RegisterSetting( "tyrant_padding", 1, {
     type = "range",
     name = strformat( "%s Padding", Hekili:GetSpellLinkWithTexture( spec.abilities.summon_demonic_tyrant.id ) ),
     desc = strformat( "This value determines how many global cooldowns (GCDs) early %s will be recommended, to avoid the risk of having your demons expire before finishing the cast.\n\n"
@@ -1938,7 +1995,7 @@ spec:RegisterSetting( "tyrant_padding", 1, {
     max = 2.5,
     step = 0.05,
     width = "full",
-} )
+} ) ]]
 
 spec:RegisterStateExpr( "tyrant_padding", function ()
     return gcd.max * ( settings.tyrant_padding or 1 )
@@ -1957,4 +2014,4 @@ spec:RegisterSetting( "dcon_imps", 0, {
 } ) ]]
 
 
-spec:RegisterPack( "Demonology", 20230827, [[Hekili:D3ZAVnUTw(BjOy8ynotIKSDE0BSl27C3TBhSyqX629JrwwIowBKL8vpsMae4F77HK6bjfpsYjoZnDlANjrI8WZ7xKu9wRB)JBx47MrU9B2M2JnVY(YZSMyAn(YBxK90oYTl256DV7DWpe5Uf(Z)bzBCuCy8DprF1tHXU(uqKgNN4bVEtw2U0F(8ZVliBt(QZ8I3EEAW28q3SG4iVe31z0F378vHXRo3pX9U4O1Hb3Tj7Cs0DbrKZ9cDttD2g7Nhssp3Dx45p6Meg7D)zE72D7Iv5bHz)w0TR0J1xayYoIh84lGFCtGVpHpwsQ3TlOJ9ZMx9z7l)59l3V8FZ3F)s39lZscIUNKD2(VU)R8HC5NTUInK)ChDv2VmX1lWnC)Y1jXB3VCrW2V83GPsN)F8uIBu2(L)o8Bbr3TFzkjld(bzODbdA)gWbiBjrzuqLxa6AqkpLPsiW64K9lTmpZ6SPQtz5NPKY)BEkGfzXaGtHXViFliN2V8)jiKSoGeby6JBiWdcGr9yC0hH)YNe6(ujfGcjMaFvCywjeCHFkji9(9lJxd)3dKep3D7y0ohX(hjex)uGiVNKKktu2CgFyy8JsqMct2Zcjpqctp)rq9jopte5QbIfdi)3WSFGa01)bb4MFb(5iyKuXIxwoLbxYTkz0rXa8EIqxThCdcDxfseG7fF2(Ic4cuemODGOYnlpHulJ9Ctz45DbEYZCAH(eN197XpssOYNDBOIG8uW8by8r1aA3g3uYFJQ59eNtdlgG)TTQCEVeRfie64w7ggY4(XRxlGwt)8ytUwhiL(2VdiqkLxadlplnWNOGn7xo8xmoTqM)Fg)RW4H5LTHuHabHudGGOG0n7xUIaAKeoGjFFxqcjvATlzMC9erDKfBCt8t5KT7dXbuntybyVJPre4rfNuGdeQ39AH7FIOJVfMN04n52X)b3eVuzqgMM26n1awYkQo49ech13(unt7XGiFMclvBWqaEtknD)siXnIZYZG5KgqDbs1dOuEfVpHSZnXL)kMGqcuMxZ1S2TlewBWZ5NbKpJQ1Vljioji7jDKempok8Vhr1Y3V8xbVMHXapMuPowzHvXZxKLa(GZaHlOFbkJeFzqoHbY)o4EJQDxV(GQBqkG)PfSUssJTqcGyCPc5F2WZ3Pu2Ixyo3dkWHijrut4hCtcy2PrKVN5Kvzqe6ver5SBxegKMLsdbfKr2s)HVXIPryKU)T)9BxaoeGHcdibu7ZtDwdHDOEHVDHhqbeyjGqzG)FFoNOyDoJoTha0CaOhak85G1vebmisC2fNaSOZOMQbuY(M9lVZZ)STUFF)YpTFP9(Lp)8(LNuYivMwbMTFPbFCRPH)CebMTDz02gOCgeAdH8Yc2swb(h82aCrhyLOp8DpfQdRbICmcrMUloim1jETtejmdCLKN(xaIuhwde5eeIK6veK2(GpEN0nUGFM7iBfjZtemn4dWb4JadmLJldB59c8Hso1oAaRZOoQKj4uMdwhfgAfHJYrBcjCwh9Flzt6PBGrnfHrrsY3rJC4aj95M8(3W2QsJadZbI9cfITMwENj34Wbgm5FMhSBheVq1DfBmIdqJ1EJXOXyPXyqyFngNwnkMgxPkeKVJdpYbW6VuH1ZLvjXzEasabeDEio2po2XpomSgeiVhG3vAH3kG(bXtwSdWCDwrEkoYVgAAFlaRRBjQMBiBWaRiBdu8eKofjruXrJwdWk4SEV44q6VGO1uP(oF)YXMIXL0UOun4fCfFGTRlACnwPXJPznDDxsW2yiVsN1KW7YHCg1f7RVadszi0Xxm5zDbz6l0k4upuM3PoF5TbRXcWsYctNVUdePKfFT7prJdkbawcP0I8c1zGGOI5rtdNL9oNEzkATJ(mTsNuwnt6mDALnW8ox4PwWYy7UWyAMPCTsFYA38WSkDYYH5(DcyTLMkUCLQA18IhIZtaLCizFLXPQefVdKfKmHO5frIP)uyo8x9ZIJnrNIKKyVXXtRMw3lyvCdPcZRTS)LI3xPqx)odwtbedcAE20gY96jsdHmq7YLVtKIGWYo86g1PZF8iPgEroasRra1AYumwAXyAUsId6aziQ2SVAgYXIyhkMDqlKCrAeao7SkokpfI8tsgB6yVZRm3HdKLO66PBwIPc9PxvTtQUGuoq0v1)v3O7WEK4ffxQCFGK0klqnFOi54ziI2r70LDHGbo4AeX)nnogeDiWlJ6svoyl)xCOvNZRrVy5QZnGojt0LLMPiBrmP9WJR5PGbFy)YRNYO3jMAZ4Uya04AtLs6BJBKpnbZ7Yd9DzHBSWttPFURRwgoQQojnUwvkUyQC2ynZyPJzkUOT41JfKVB7ZIQi1yYOTuduNfioHlbulySWAHILk1H0AnXvVSkyALiJzQGRMpr0AINNsq06CAMfLMthQvqD2zw4P0IW8F5Surxex3NuhTWZq(1vx9mwsBT25KEXh57ldlzEl8mWrXvX0pZ4jk(nl1KrOvigVgCwaPF1BbCvjLw4PF3ghAoVT7uvysR(T6iJ8E0ydT(wH1)IXLLtR9191T4iasxxjR77SecI1QvnJiPKmLTKKdJ11Tf)uyTerEWV48AAV4jl8AAomzvftuDvQNKmb1yCv0JakFx1MeWqw8mca42dlQvGJRupOQP7iaRA7QIAUTXd5Fa6g2tXDQl8AT5)0vxbSXtfi7XyhMzjuAjhrmRtLTanRAScNHaP6q2gq4J2IzomSwR0fG96apIVtACEyQuh242E0DgK665mRZQRNvBjUFZUJqjpge6ZW8YsZPHbAG)fPfRb7TlXElwAh9Kg6vgnuEZLIPJZ6S033bX9OalvkTIdKRGhdJIV02cMWtfykQytiujBkq0(7zwj24bD4804KTSTsJXBk57Z45G19IXTdOtLUhKS2R9nB8ge1wpySp4M9DLuKCzbhxjVYedxQQKNQbEdFSXduweKTe5z0tFPeqJDAdoQuN7SXdHkQGqnaAlsSDhE3LKlfgzkkGtuIFqpBemqJ7lUzUtOkbFsqAul50mW5LAlAl5f7nyvNakqtynFaD9udBws2JXdv0TMUMAW6qzVL4j0xB8J1CymEuO31zR1EczTMl37RS1gJhnv1TWH6ATSMtr4mtYpvt3lJX2r8Atg2PCljyh)58tzHFXbTHFIRwalyXjWr5u5WpErBJFGE01Ej(UMkBEioHxK3joQ8M7PYwELnomFhSuu8yC55mwWbPgBWKRyhca)4yP98pHSoHa87v0wg69KxiXjZfsUolLwvkfs4jgOkRqZNzmliC1l5gPCLRAaZ2nfidmpiRE369trFgZS24vLOCrPdUHLnk4e1(zak9vzukLSoyD74hdUlClRuh3a9vSmfYmy6m(Xb3fx6oO1yJBONYlGl7MWa6HVbowtyEM7SNBJ62POi2ToijntODph(2WS2nmLicsz)6uG2r)p0vuILGLR(y8JXdC2VS5K8yXA9hlExzlxy(JnXtnbpxVwm1eSMyMqLnVQ0acRrt0sNjj3dmuzRq5TOCvyCSVZ68KNug1yXrbICcBKkdAI4GCJ8iGpb3qhAnBnm9luyA1UVkqF9UIiNa0iEXpXyEyfefdeYBqeCkjAoP1SZpym1S1fUvCN8DIxoKbeh9hHewKN04NQHvT(rtiOpmSsOlQ5FHdh(PrVHBnzevNhUAgJqn2n8MWlvV03(yHUGi3TLQMHON8XmoA50u0DM)QzvvAMRFha1gXUT9(ejvdd1ke0XiAjF)oQQVgJKzPTYU1uJI2e3WlodvaH7vhpP2gh1LdQ31f5Z172jz2GyB2jNv5jDCytgQtFcT1In65vp2YWXY(zIAMlIu3kWBfWXy7661gqJq6sfm2(Et3MLsp3MRMsfJxc33cN7RV7WTSL1))oUFtVCOCEmMO2tXxlB2U2sRF1A24(S5qV5QwXd6EJ75Tfh(ZZbaTJaknBONfYQMOOLl3wUkDTLWTegvnQslBGRAVhrctx429nteGKGDl7MBR1fGN028dnPnrz8yL2xjcyALcTibMkvrTq52YjGB13kVHh8aW9OdJF5hV06QBx8OBseRIRf)b9kBbfuftVeBSlKZhdOBg9hP3uN)zoGY(ufEkr6MNfVL3Kipqn8o2Li6)IDlHO3XUVehrVkC0x)rD(L(iV3sAFxPShgZqRVBubx73i4o(ncUt0dxTQqkWV1U)0Z15vJ)tFJG7f)G4liRZRa)3)vnwifNn4dZgbH3Q6gup53WlzpLCncOQaE0g)0to7rc7rG(rd7V8nf7V6OR1v4v1ugWX7i87(zk)(b)rAWNBmpB6GHsBHZh(W1tNpX85NB80BSMAuHjitw7ClMAnQH4X)iXrTAxGD8CyGTqhnnpleLd19qsb(QVgnajsesLdeHc0roUeQaFC7c5JNuaBHoAsHXib8pIuI2afvB7XHfQO90iETgxiq)iWS1YdQyQVByax)VcOF0JgCKrBmW)6X734qfwDeKSUY152dg2OS0NF(KowXbAlg1yWqri)8Z6R))MI6c)K9i7piuVVrXeuR0VKl8(bRpVpyDT4ODpTVCP9(V(Bm3kuGErzX57xY(EoaVMUbeXRdcRosPPNv58D0SZL3o4tdwpJM(ZCZbNuTZVdorUhIk757(VQdUf4naekmFLaRSFbNs3C0zn2m4tJ3nlfwi2MPoZYSparCpBvM)Kri8(ryo87ZckVJUYljB7F1deX(Gq5KmUNYM9o3AasZCUzSEOw1JikiR17VbY5LUlUp)C12goZ0arax3AfvGq1jlMcmWY7fQ4ZeVhO7)6p9tLQTPycBp)cowW6cEwvtAdIEi(EIJ8fkXXS0ILpChcWHN1VoAFQxCKp7RmZSHW)iLV)ikpX4dFWY28MzxPwIGWBNpZEk4uGzmnZ2Y0yaYz2YyqNuIFo3Xn1QSsfK2UZIpPxPaHKgCxKihUDUOkpSv(boyRBFNmChQXfBbWM)l6DSA8zWZ6NGQUQuYf9QR3N9BbIHEBFKqqSymdW8q8dGa6hco8emueICQ7a(zCSqDtgE1u0IGPa6CGlC0ofE1j6Ygd8T1627mFSjsSCdQNQFQ67s2VvyGw8fblTi(BkH6(aEcnhFOgs4Nk)iFv9jII)PD6uDF9OQEvq13kSvKsWFLaW(gd7Oydf9OFJQOlQl7luxjuxfNTHbQkeKIUFP88FR44TW9d57zSpBuouMqHivYJevooulhAGMNwM40vd0jnmu6NYn2a3h9wXmqESwMQTJ5g7P1jakTqdgIc1gPmkpkK8ff1dvVcBLPyuCfDpLFTgNzX8TbHcvOJXMIatEJSkZi7G7Mv34xrYpIix)ciaGFWWoVzUvPkpDqpoSbcJEy3x9sq0J5U65NpKIckQGq3(Jl4Oq)R1V(gqLeNGeR)5NBEW4bMj4VPPsXKs3qnUPSsIwTckTXqla3btQL(fV2SBvQIJIhD9XnI157OKQNz30JGT46YVGPTUaDJMSnY7uHZj4mR2TaXX451hWoP8B3k1LY2HrPUVI998lgp4eLh1pd0rxCTHGmT1XYI3HQVYqAnxdHo8zw)6ENMHi7R(ku2xgxNxLZAmsDesRSMBBzv9R9tztY7w)9PoNg5QP3b2J1gRvCHRUOESOfIxUsOKb2SlwmkEmGJ4LxwU5wJgwkkrUcIgdor3ffefd0wJ61sicKRGcAypAO1N6er6rKK5wxwMQHs787MmeoxbnQmwLTPXlC9nmSInO7MloZYSvOPTMFnf3BpON6wJVAGUchOZSq7spNSkMSUqovXwevYVPFy0OPT7VvSvCn8Rw2YHMSfqRsqKnbDMYbyqyVFQG6l5qngWCB9PgQ7PQz5mCYNrGQXlttOr(yOQcADZm(kJJPkIU4F)ll4gEmm0WEVLb3AxBVVM00SgRN3mWE6Nk)Ia7Z7G8HDx1EXwztl1BehsVnT4R(r1eZUe6g91OO66NnFAhIEzL844TNkDdY4frjCdZ6zSfPHv3xvH(OEwvXK00Juv7A6tZ2u)u1NIs)MRo)(9BMs5U0CAJBFbLfb9Fv15esTbc6NzFD7oEq)WePSJuMsP2QOWMvFcmVYpQQfvTO8vH9LxLv1MyH0SK2Qbdb508fP9Df(P5RH77k8t7xyxwPhObPgI8gfhYLFDJ7Qnx6BPhgfAy0ffH8Tf(0FGSDRwy7mX)peo1GHNG(LDEWjT9nDw4TA0FfElcVwyeA1V6ugQ)tYCxZs3NE5UMd2xc5gUFR)Sl33uLOHxQx(Iwubiq99bfPvqIJT6wHQ7Tv3guDVu(wGsrfH2UxKc(OdR77yg(Aox9Zn7)tVHJuiStXd2)in58rLeFQeci3bZr6YMSkFTrvHcBWDAM0SoQQy(JALoQAyNwwqPpMjAqc08r(RdhUOIVI71QoAuEB9B7YRoGT52Jn1TRpm7t9uGMfTV5BzpqSKhWVkBG9Tt)63prddT(ZPyQr38hfeOMSrzhnkVwQykSUcObtAKuTC5GnX8IlQzfA3y376vZ1mfWxH2w1WkrQmHHI4g22R2t)53ynEGWDKtdgOViNdBBHq27yKi)DULY6vY6ytzezAg9N9y1b7rB5JVJzoQwSkmMoO2oA3YbPvO3bYHFYb7Z5D8f5MeX)kBmAoPwt04Ig8dCe4jViSVSOADHt7FGZs(8yH(7vdOzMiUglAnt7U8VDHBE2M4KBxq)F3wSBr4T)Fp]] )
+spec:RegisterPack( "Demonology", 20231107, [[Hekili:T3ZAZTTrs(Br1wIM0YIIaKu2ExrU1Uj3UxsD1EPoLC33ejejOeodcWdauYQkv83(19amaZJEgaWh2oUsQehAGz6UN(10DpZG5oN7(17UDPxM)D)l3bUdDCg8((oJg9rhN7Un7Ln(3D7gVfFY7b4hrERH)8h9xhhfhg)Wl4REjm2BjcI04TjlGx)yw2M0)8vx9qq2JBVV)I41xLgSEBOxwqC0IeVvz4FFXv3hgF)vlt8EioAvyWdpMDLF0dbr(xTi0lnD264LBd9tVYBt4vp7LegV4t9xSzZD3E)2GWSFk6U7PPAGq24VaE61xd0sWYL(5n1pDXD3In9shNlh8()8U57M)p2MK9OFYU5od67UB(2niat7V7N39ZLTCmRL)Ix2IhZBx1Rh8HlDZb0FB5YDZ92nplji6t(zcn59x68bwt(ngW3npXBrGx4U5RsIxVB(TbR)H)c0vS))6ljErziUwUmi6HDZt9ZYGFidTRzq7NaoP)A)OmeuBlaDfiL7YyjcyvC(a2P)y1Um)sCO8)UnfOISyaWPq7VD7AqEVB()DqO)Qa)iGsF(rF4bbqREoo6nW)BPFO3l8rGriXuCUpomJdbp4xjbPFA384vW)9KFYcVnByJ9Cc7ht89wMcdYp5NKkpOCZz8HHXplbzeMSNf6)KFy6vpdQHXBZejUkG4WaY)f07N8HX1)Wh4M)a87iOLOyzr2wKbZ5wCgDumaVx8rS9KxqO39H(cW96lDVUaUWicA0gqu5LTnXVsgVWlLrNpeSqUNJl0NYzD)s8ZO65TbBEefbBtbZqGXhvbOnp6L6)xqnVxY50aYa63gwZ59sSwyGGTBLxyiJ7hVALazn(YHdY16aP0)6xacif5fqZ2MLgS0xHA2nV7FT37kK5)7X)tO9q)adTsciienacIcsbBQ79bns)Ca7)5nbjIwGaU5mZC9erDKBF0lzzA(W27P4auZeqa7DmnIGfO4ebomqx8js4(Bg0Xxd9tQ9dYTJ)1CtCcVfyBCPn1awY9Oo4N89Zj91VuX0EoiAjtHf1g6jaVrCt3Fi03lkNLNb9jnaDLI6b4iVK3N4VXlXl)vmbHeOg8XCnRnBcbCdEGVei(muRFtsqCsq2ludPrChG)BrOw(U5)tW7BymWJ9lvhlTWk553MLa(YZaHlOFbkJ(lLb5igi)7G7nu7Uc)GQBqkq)PfSo(qJHibqmKRq(BAE(EhYwweUn3dkWH8tIqt4N8scy2Pr(FoBwwPbr4IIzM6F3THbPzPSzd9x5Tnmd(5)In7i4haAb8))S)SS4007U1NXowE3F)UmyQgX2S0)jyIWzR9aHPs7gITR6j3gdZMb(4dwv1BozY(1S85BZj2zlwE3Tla(Kp0I7UTlOsX)3v4SNZqZ9aK1DbW2dwdCLEil6Cqd0DWU53mz38pa(W608Umf6I7y2dF9vElyp0za7PDe4RPp6bAXZGgbC(u(RxehhcpoQFq0tXFYF2g0H2SGOvBr58Sb9xULRYoD38bS(CgxTP)dWaF5SIz)tNbZHh8quFoheyrHB9Nbo5bMujIszMYqBz6Ifs6(fJ0I(i0Ct0fVdGyBeTyJwOXGoWGVFl4cDP00xLC7P)1I3)e3Dt176XM68Hfl7V27Z7M)wGP0FSOGxPJOpHoKOB7grLOn(zZY9UIdPXNSH0djbRJbSmBLF4dBb)ZTyOvj4leIvdZcALnwlvouXKyJAjd56Jnd5yny7kBpyCiJgONXczC29XrBt7Nf4NmCWm3nl42ITKL8(wZsgOm(OvvRDuxmuAj5(HwtUsS2iFmtaWpqc8azAP0xHCBQ093nF4G8MYOz5MHJ6EIKD0gKC)yRjxgSlCNHKJiZg70tGRWi)1b(5KKdZRE3k(Th08vbl8xodYulmTAmkrDbR3eI0NZGdIalzo3SB(11qPUnNszkqQGaqX4MdcYbRZrBW(HAgSJoqk1T1uAZMzKr8UdKNtVmYdX3w64RaolWaLzXxNhKHRIfSyZygdYbgO5hqKGe9FowUFqOBHZm48vTNsEnaaWiM0zqmMfCbgRvn8Sk5i4PPVcBlx0wy1dHeYioLOQqEMBLK5EGg9t(eeE0D3c5gndsYAgqMymMi6vdZ4OJ(W44LZwTn5fg6udb4yJUvGFzgkzytD(1Jn28IwazZK4bIwqVGHs15V4nTOgnyHIGeze)7kcfbISYIiVXZCMHk3P84vjE)AViwTdkNd3YaTtvLJYC6JjjpRiyBwmXfMt2AspoISGLY2OrTUW8Oyot(64YTpKj5mUvxrIavVS0CSuWGnqdbvP4nHnZupfa50hzNZesgyIIeNjsvNJxrK6QisDBLi1TgrQ7ElsDRxKs0KdtK6ywK6ytK6SxIuxDrQBZePQXbDiwP0gIT2q1km62a1FATNcyuWN6A3EUtD6xnZNGu4R0t8JHq7VGviOP5ZX3Jvtd14)oeBnRmKMBUzfgDBGsSvHlHGHWQS1cgAl7dqWOgRQunHSocR1qVxJy21ofqVkTfuNaiV1PuH84QgmlVxrVSEleF22OeVN8XksplDtq0smO2gf4qUqsJ)MwuwY(yuJVKpqOdROitnJKbs8QHlQ75Q5EMoCVkA(jrsunKsDB4MBJE42xAEmqs0CyOwI8B4GQXclpG8)YmSaU5LXTiy)8UczvWWL5GqZToVHvKg(OvbTNVB(hhNNc3asvNIgaaXzSGPurEEj(bpeb6)5QQrVixIb6SIfSJEelek07h2gU0lInAuJVTA00Im(Cg)LpBmoNPSZwQzisIvHlzR6wkETulhTCmms51I8aAxbJelRJCjIfsLnhZjEblNXw6T(ElxM2hxKUcGFP6BfQ6npSP6kkgHq6peRNkXAd9Uuv7ax1mtoeJXUKvoLhxrduu6ASw8CazrgjGlJYLFxjAuZWW6sPuI79I3vosa)3FuyoksrpBfbvJYwH4muXzrtpYjRa8F9qECqKVUPQLxaq6J6HSwtVekjUv9d2GehY4CBjBH265zrDxbDQRyWHUkjIlIRCeJmzL0sbFpO2KUiEBYd(aOwJ12tD1EvJUDFLT2IJvo4RcgGw7eRPmFa8q5c5ZiwZf)SfYC3XMn7fEn5QKOyylnPdJcnfmlwA840cXwkq3BYFoUzv4BGaCdRW20oB38U8nU0pH9AjgRveUjzau(s)DZ)pHzKhE5OSIn3Kxqg0Gm22v5MRtX9u0k45Xrv7MiwxgNDbvp(arpKI6854zSKdHHqQqcMLSpCOvMYzI)tyUt9D6xnIr(ILiOzRrrCYA2wWGT(c8c1pjFc4oKHE6O55c7kU3v8tyO0CG0Ft7kYU3gRoQ(gZvKPABRKMGSbXVLIYx2gYYd1mJXDid(RxI3Y3uwp6H5pd5EKwS3QksvMTDC(XyKDG)ITBXW9HfosqLB(wXQRZVcVf3)u)pbH4E6lk8LE3PTVvq9PzmuWZ1PPrDovoQZrTkYyu3(9LAqIeXewaSepnhbCzp7Dq(RFY3qK5cnWuGYUcXpPA8LxD8o7A0gGPOGqdnh7jjB(SJdMTKA6q1qUKudf2RM4(c8zFUw3A2o1l7rCRUfJ7VmCv6umeW(P5ItAjglCWnLpE0v4UHlvpZUGv2ldLKDkLKvvjcRxbxKlgVm9crEBMhesbmLWkE98w6NpiJJxp7EuQu6XkNZ0xwaajEolF)uZWOEVR0lNWPmoWuwv9rOWCKAiQ2eMmNx4KTPERQt0P45Zj3ZxUeZcvpTCMlDzFXomrxy)7xUV5Q9QN8KrJH3wQNsjtq0OgRQKq(V9WdaFkLvA18TtlFJidI8F52Cj(I418Tom0QFS12TfYoX4DZZ)lLT5NLCNosWf63tcBZbHFgT6EfxwKxXGL5TtGUIttN)8c2EPqj2WYeOzO1C0Oj(RabWJ4BeuoaMfRFxlMCvrey5knIjvLjwsx(UZTHdsxHeY1IlJvPG9eygYxzpHgjxTfWsS24s5yHaYS0PreLEbmmNjGoaDgypQwZf02OJT85w7qUmodmBCyoIjc4q7(umhSSY6nzvLSYDu5gxuoeIlk9ZqBhkSqIIzjkcoLynhzDfemKeHEH1AWUOqzmnWkjADu6)z)fBHC0YhOxuvotjfa0DfBiYHvLldDiqpBZBf4v9yTRuklujXa2Qxsyq)hSlk2v(XBJCFZxznwW4(ENTOVI3M9)(Dkl4aMabhQlI3ILVRm31UKBl88HqhJvUx(9vf8p)5gtgFkBYfQa2kPNwNSSuP7mpHNqX(0go5iMVDsgkKlKCjvLh1AYC6OTSo5OTPHhX5INDew9QZifZfR4ApjnbQXCpZZ834fdsM7zLZsRlQKxs(YaBGdAuwOTl8PRTZeP4Y1I6tB7Tlvoo6YGrmSnV5TnLVag03qzhyrBShQR2gCxIwpgAwz1EGpmm2LQhK9ZcInD0gUmJ6ILE7d73Xm7NoVflBd(V74(6(xmY5nXejZK0YE5NSKShSMTzVLDmuV9sEq97jK8ZNd8NxbaAJpO08iKiIFnfbw7agiL6NwXaPQplD0gNs(fqsVSiec4HvzOu(rZWCqk2MsCO5q3M22q3eLhdvwVkrad6RwY7n)mrqnxJAvwGaqweV(EVAsPLENX6fkSlmLDZbQiLN4jP6xbMpZwILqKTVOSxoMdanfSBO7uP0v)HPcMEs4SevS824jVFgi3tYOs7PEGUYJDeMRGR8kqsL4q9avyZAIB3FmxeKhLR78v(LbP9xhKKeNGcQvqkJ4NPILZYIxhdp95ujES8(iLkNHwWmCTryFDE5(WmCRygT)y6klis2E)lZE(r)qqfg(ZqkH1Zpgao(tWDaDq0cVeWi1FwWIcORjOko5jujt0cQZTbuNBRPoxrQR9hcxz(IL9PofFj)anqgxFlWSBRXSRiMnCuxR9Jqr5Oi9LOfKvUqBhFNptDgXUgVA)VEETHZw12jLhDQg3LZRd)5WSxbBU4Jjb7O6Z94tMvsl5AU1Z1mTx7D)kZ1iXFd5A77h8Kcwc)iMPm3VvfoZ8vPyMmW1RLXF1olNWTESWZayW(yrDHLPakBjbbHAk8K9MQrvKkXxj1GgtvQZsBMQCeOkzHUtPi3TMmFyrO9Cq4s22DtBFAynsAlH0AUKQ6vGPi1b2blHzquTGkLA06PPypdavSyQwoSWQFcY0aFh7Bw3Gp4((7U9zyclwuE3(R4xilG3eJFZWyB4Q3KBz(gCBy9)TfcSDjMkhsUEBH4d8yhoSfqUxpW(On9FW(QmHFwR(H4i8tpg(63yRgLaKXpHuwBdpXjOTDD(CVs88bA8OM3LckmLwMk0zFF3(YdEPIfOaBYAwOb4HNw62a4pC6E0PLUvaFmeWgZ)uA(NZU3uzgn1TtxTS7F91ZQbJDiZPVxNUIq(1xPR5Xnf5x)w3lCpxOgh94d3VDiVRKiVkg84tK8B3pt4xQ4dKw7Cmzq19O7yAynQADH)rAD(VaNcO35N74o4MjFyChJVD6e3X9E9v8bWpDg0Rt5mLYPS3Rt5S019HpB6GoN1WrjJJyI6Ts8FTP9szZPsl1k01QrRM2LHDPTk8nm16rI6noX9rI6F)jL6neoWHpXKgzxe(QWx8Gs4keLSW7(6ap5VCkAGu71nfQLwNfM4eqMOjNsOxpCD6VjjErFVOxMTeI9N7)GGpBQDnJ(BoEKsssd(AkZv8hJ6iUw0r(sbph76CAVUPqTwTcYMCkHE9W1TH6cMBxZO)MJh76CF8OAtEAHE9WDF9MEKHN7GJQw3Pf61d390FXrhEoh1X9Pf61d39ZgOPu9(b9k4QL20bbxvQ(4c9k4QvoHdsgQs1hxOxbxdHGR(XB5nYXXA6B7IgzRaETmtrBTBg0xnjUZp)JJNoAWRVQ90BCg3Rt3AiJxFvE)lo1TSSgMqij(oa0vXcoTvnCOMJoP(lVGh04qDNy0oeD0swBOHcuYjp(bNqb(QV2i4TNk7rKrDQZQDOP0ARoWMQ0V(H9SPa94xRkd2dhFePfy1bXMiRky5Mg6nTQUGAvTP0zoMTcRIO494qyO)Imc35KnsASFeqaFrY2dqVgRuBYl2O8QMCCb(bq1W7sH5McdYSs5Yn74JKdyeWQqUnAN3GJjGpa6fxsrBKBX7pIGT9eBD7vjce1GUiHCT5lkdiTbgRgA0XgbMyCna0MmyjBYXf4havBZq1yZo(i5agb0gTen4yc4dGEjnB1F)reSTNyBGPTkIAqxKqU5c9sS5aP9(q0QMJcJ7TqACzR5si1CXeBY4YuRAokA(4Q2MlHuZLVZ2MwKMzAR5si1XC5TAfwRT5YyTbLPYYcqq1Mtl8pDq(RgLRvbft7nWoDTHGZpV8r23AKtg86RnSPNFUnmozqzny2tsUHKrBO46i4kXGwXjkn4Qxat3gzfOJn8pDq(RgLxVQVRMEebcoXQ(ey0MQFZi5gsgTHIRJGRednOG5TsaRQaDSHFtGCtxaZMTqPhoEqLaZluQz434e4SNH4XadMIM2iS335gp1WVjqUzY1MU5ooC8SF6pTOCG7P(tlWqt1F0Mg4mJXtyYB7RVA2pSDhXMmz792Uo9hFHbtc4Tgo2d96nTR9OEmjKvXOtTy0PaJC()xq(2vFX5BxDc4B9lwdGvX4DWo7B)Nha1u8t6z(3iqu)e1jzx935NkIDZXVvq4P9iJ3o23L5vXBJKA9YLyJx6L5DVxQ)FU4kLhlFbU4d)eBDhq4psgY4QkC3TEBZEmo5UBXleA8SmhVkO6JoxA)Y1P4IjxjFUJFxWQjSDi7GoNvEeJ7CgZI10HlE3ptb3I4naGGW8abgxi8o88rnr7uh)U4ntsbeXoiotCCBcqK3ZVYqGDEKBcquSuk6UnVDV(kXBlkBj57EQQOGKVNv(nY3G6kIVOUsp1MbSl5aMk8GkkqVoTKVJCaRwVrY3ipGRVwBTzaxEOE1KXevIsHRBS4rTHaCnqaKLctHlCuia(X3LIbySMrTbbU0iWErPAdcY9CxyQhSI7U4DvhNVjd6p(DaFzzacZj1xzIV41sHUYeTHl4EWCbTKu)INwnDsQTHlWpATQ8bxr(GJax4efEKTOknKVOsiluoDByKs2cW0qYgkiNAkoBbnrlIeptRy0cm4PCszN6uCcY0oHS3mKgQLhGveKvNYSBg3PlEcyb1o(270OUJWjyvfiyuyfDbAO3N9H5vstfF2s)NI3Mao1EiyH4ZjdMzXsvnXsrJPdHuX2stuHTgdjEpQ0Q)91rbZmxS6taKCKC5NurYRsHP)18WnupRH9U8HflFl6cKRjkEqhPpgJNccZ4TRKebA6yx2X02i7lWaOzey3ZmrIV(6zu3ki9owK(agDPlAnqPa50sehTrHxXhQsh4lH59i)CUnD4GIZdR6xWTEMrn(91ug5miWNjfqgo49K3GQoxW3tRMUn(3BmwmwU5Ac06wpA7i3LBgxFxouk9deu6OdbTKF89LPJM53(g3bcbBWN3aFAxttnoXTu7v(ZiNGxzT9wmhD8dD94Q2A(MPPQ1ICIQR8)3j8XagcSc4XgV)AbTEyQ0osZ8CJRReClVl)puivEn9FOas(g4)qHgYTWV82kSn8cKLhdlJjAmQuQ4vZZVc88AKY6ieAip6OPdWt3p1Z71PRribVJie0ICyfayE4RCfmXexlv6k4qeXtZJIFItpXCUjJCD6e5VT9TJz7sYSDnYSDBdZ21aZ29qy2oemBhdmB9ZeInMTBprX0jGzZ0SnNWLvv76ZzNsZIsaY6gmu7sQ73XSC1O5IWm(0E4lVYZN6oOxlzAU0mTgPIAorvBAig51Imn32Z0CpYmTu95EmRNyZOONfwLnpx0IY8qfnvylRtG05mnEI8D7UYrxY0KlTWOBpnFQfT1O2UNkG7(5)0FIVWiiQlY80)Zz(jrWu0yR4rNjMmkt3GmM7oepLZDh2Hk((EAcbW3UzrQCBDgOE8ZUXDmywz1(XYXtYWNFhrXJ694ro)P86gILoSEyldhicd5pdY8vt64DK(ioBD1pekI4giMggNTZ4tx0XD6w2CJz4dsFJ5al4bsUolIZyxMBGZyvTOr8Kk1UCPryRFjUdG4sdxE7yya0Pmx(rF6py42y4Ngv32815QOXuFf(fM3L(108RVymms(azn7kaxRhKfe00poqUSUYt4wIs65gk0dvC)n96HDot5rntcFX1FSxTRychKyfKmkmyen(zCCM8TbCnZKu96gx4oPm3d0U3WfFD1TYDt5R2IeIhNqg9Hdw3auYxsZn7MIZnRRCZEmz0eq8j7M)T5f0TipP826HntU4T19uHsrHTcISN4(5MWEfRAw(nPDPaM6g6EIZaLA)n1PoRWVAMyMTKmA8D8nXafQVAxW12dbSR034XMm79u(S3JAyeetDEpiYQqZKXs)TrL12V6mDla5yTR24Qp4KW8zY6HtCQwBfI1OQgEHeN4SwdAqi3URpAnBg2AzwEXVcjctDNVMhMTL771ogVRxVzYWEQrPFZOsBDU4RQg1tD6iQGCZOY1auqUiAoQlTMwjTef73mSNqzpildpfhv6oC(Bi(NIDp7(IUtxJaAk4bvNLdjYkYRBadIA8duJCmBgKTVLFTTGS595wu(Bi2pjVSk6dQ7QzK)2DVz3Q7kcY1XHyg2YqF1ftnZz6fslHdYJe44c3IXs4UANsiSZi6xw9am0o15Y0Pp3b0DLo2SM1365kM6PuqB6DBODeQNysZWkvKnQ1gIUNKBJgDJYBgQUYtgGNu0FkDPYYwQuBfX(2YkUvzt4ZxXEX4lRE6nf210QVIxAuxqSKOOM)B5qWWT85fugz8bBVlkh1AJx9P6Pgvf9)cRJJYQFtYckdnIGiOlIqEnW)9iFwUW9nEaxCh8(95qo)2d(7ZXMrxN)UBOsm4KCNIum7Y9T8ZPV(1OAhdLTQ6Dvv5cFMwQkthQxV86YWqxMiVhiTDZ82HTKDdhqTwjveTghNujVztLnQtx9nYLTYDsVvUWQwAGMBalHquudhqxulU1sV0WOLGs0crrmfyZgysbd1voTzckNA7crh64nodRSkJ2yYJTwOCTRM1g2oDKuEd2LD0c)AQBSitRxZzpo1WEids(ByMJQLKcJPMrBn1hPvAf0g2T)(fr66pHGMRsdv6QsnFFfivhdQjkogJPdWF5qQ5mN285m58PHcL2Scqtgy3zj7oG6U)))]] )

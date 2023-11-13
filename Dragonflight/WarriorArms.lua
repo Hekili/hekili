@@ -53,20 +53,19 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 spec:RegisterTalents( {
     -- Warrior
     berserker_rage                  = { 90372, 18499 , 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec.
-    berserker_shout                 = { 90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also remove fear effects from group members within 12 yards.
+    berserker_shout                 = { 90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also remove fear effects from group members within 12 yds.
     bitter_immunity                 = { 90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you.
-    blood_and_thunder               = { 90342, 384277, 1 }, -- Thunderclap costs 10 more Rage and deals 10% increased damage. If you have Rend, Thunder Clap affects 5 nearby targets with Rend.
+    blood_and_thunder               = { 90342, 384277, 1 }, -- Thunder Clap costs 10 more Rage and deals 10% increased damage. If you have Rend, Thunder Clap affects 5 nearby targets with Rend.
     bounding_stride                 = { 90355, 202163, 1 }, -- Reduces the cooldown of Heroic Leap by 15 sec, and Heroic Leap now also increases your movement speed by 70% for 3 sec.
     cacophonous_roar                = { 90383, 382954, 1 }, -- Intimidating Shout can withstand 200% more damage before breaking.
     crackling_thunder               = { 90342, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
     cruel_strikes                   = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%.
     double_time                     = { 90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
-    elysian_might                   = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%.
+    elysian_might                   = { 90323, 386285, 1 }, --
     fast_footwork                   = { 90371, 382260, 1 }, -- Movement speed increased by 5%.
     furious_blows                   = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
-    heroic_leap                     = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 423 Physical damage to all enemies within 8 yards.
-    impending_victory               = { 90326, 202168, 1 }, -- Instantly attack the target, causing 900 damage and healing you for 30% of your maximum health. Killing an enemy that yields experience or honor resets the cooldown of Impending Victory and makes it cost no Rage.
-    inspiring_presence              = { 90332, 382310, 1 }, -- Rallying Cry's duration is increased by 3 sec and it grants an additional 5% maximum health.
+    heroic_leap                     = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 544 Physical damage to all enemies within 8 yards.
+    impending_victory               = { 90326, 202168, 1 }, -- Instantly attack the target, causing 1,156 damage and healing you for 30% of your maximum health. Killing an enemy that yields experience or honor resets the cooldown of Impending Victory and makes it cost no Rage.
     intervene                       = { 90329, 3411  , 1 }, -- Run at high speed toward an ally, intercepting all melee and ranged attacks against them for 6 sec while they remain within 10 yds.
     intimidating_shout              = { 90384, 5246  , 1 }, -- Causes the targeted enemy to cower in fear, and up to 5 additional enemies within 8 yards to flee. Targets are disoriented for 8 sec.
     leeching_strikes                = { 90344, 382258, 1 }, -- Leech increased by 5%.
@@ -75,40 +74,40 @@ spec:RegisterTalents( {
     pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 3.50% of your maximum health. This can only occur once every 10 sec.
     piercing_howl                   = { 90348, 12323 , 1 }, -- Snares all enemies within 12 yards, reducing their movement speed by 70% for 8 sec.
     piercing_verdict                = { 90379, 382948, 1 }, -- Spear of Bastion's instant damage increased by 50% and its Rage generation is increased by 100%.
-    rallying_cry                    = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 15% temporary and maximum health for 10 sec.
+    rallying_cry                    = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 10% temporary and maximum health for 10 sec.
     reinforced_plates               = { 90368, 382939, 1 }, -- Armor increased by 20%.
     rumbling_earth                  = { 90374, 275339, 1 }, -- Shockwave's range increased by 6 yards and when Shockwave strikes at least 3 targets, its cooldown is reduced by 15 sec.
     second_wind                     = { 90332, 29838 , 1 }, -- Restores 6% health every 1 sec when you have not taken damage for 5 sec.
     seismic_reverberation           = { 90340, 382956, 1 }, -- If Whirlwind hits 3 or more enemies, it hits them 1 additional time for 30% damage.
-    shattering_throw                = { 90351, 64382 , 1 }, -- Hurl your weapon at the enemy, causing 1,621 Physical damage, ignoring armor, and removing any magical immunities. Deals up to 500% increased damage to absorb shields.
-    shockwave                       = { 90375, 46968 , 1 }, -- Sends a wave of force in a frontal cone, causing 360 damage and stunning all enemies within 10 yards for 2 sec. Generates 10 Rage.
+    shattering_throw                = { 90351, 64382 , 1 }, -- Hurl your weapon at the enemy, causing 1,960 Physical damage, ignoring armor, and removing any magical immunities. Deals up to 500% increased damage to absorb shields.
+    shockwave                       = { 90375, 46968 , 1 }, -- Sends a wave of force in a frontal cone, causing 463 damage and stunning all enemies within 10 yards for 2 sec. Generates 10 Rage.
     sonic_boom                      = { 90321, 390725, 1 }, -- Shockwave deals 350% increased damage and will always critical strike.
-    spear_of_bastion                = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 2,970 Physical damage instantly and an additional 3,203 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 20 Rage.
+    spear_of_bastion                = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 3,817 Physical damage instantly and an additional 4,062 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 20 Rage.
     spell_reflection                = { 90385, 23920 , 1 }, -- Raise your weapon, reflecting the first spell cast on you, and reduce magic damage you take by 20% for 5 sec.
-    storm_bolt                      = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 513 Physical damage and stunning for 4 sec.
-    thunderous_roar                 = { 90359, 384318, 1 }, -- Roar explosively, dealing 2,880 Physical damage to enemies within 12 yds and cause them to bleed for 3,688 physical damage over 8 sec. Generates 10 Rage.
+    storm_bolt                      = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 659 Physical damage and stunning for 4 sec.
+    thunderous_roar                 = { 90359, 384318, 1 }, -- Roar explosively, dealing 3,997 Physical damage to enemies within 12 yds and cause them to bleed for 5,051 physical damage over 8 sec. Generates 10 Rage.
     thunderous_words                = { 90358, 384969, 1 }, -- Increases the duration of Thunderous Roar's Bleed effect by 2.0 sec and increases the damage of your bleed effects by 15% at all times.
-    titanic_throw                   = { 90341, 384090, 1 }, -- Throws your weapon at the enemy, causing 630 Physical damage to it and 5 nearby enemies. Generates high threat.
+    titanic_throw                   = { 90341, 384090, 1 }, -- Throws your weapon at the enemy, causing 809 Physical damage to it and 5 nearby enemies. Generates high threat.
     uproar                          = { 90357, 391572, 1 }, -- Thunderous Roar's cooldown reduced by 30 sec.
     wild_strikes                    = { 90360, 382946, 2 }, -- Haste increased by 1% and your auto-attack critical strikes increase your auto-attack speed by 10% for 10 sec.
-    wrecking_throw                  = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 1,621 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
+    wrecking_throw                  = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 1,960 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
 
     -- Arms
-    anger_management                = { 90289, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Warbreaker and Bladestorm by 1 sec.
+    anger_management                = { 90289, 152278, 1 }, -- Every 20 Rage you spend on attacks reduces the remaining cooldown on Warbreaker and Bladestorm by 1 sec.
     armored_to_the_teeth            = { 90366, 384124, 2 }, -- Gain Strength equal to 5% of your Armor.
     avatar                          = { 90365, 107574, 1 }, -- Transform into a colossus for 20 sec, causing you to deal 20% increased damage and removing all roots and snares. Generates 10 Rage.
     barbaric_training               = { 92221, 383082, 1 }, -- Slam and Whirlwind deal 30% more damage but now cost 10 more rage.
     battle_stance                   = { 90327, 386164, 1 }, -- A balanced combat state that increases the critical strike chance of your abilities by 3% and reduces the duration of movement impairing effects by 10%. Lasts until canceled.
-    battlelord                      = { 92615, 386630, 1 }, -- Overpower deals 35% increased damage, has a 35% chance to reset the cooldown of Mortal Strike and Cleave and reduces their Rage costs by 10.
+    battlelord                      = { 92615, 386630, 1 }, -- Overpower deals 35% increased damage and has a 35% chance to reset the cooldown of Mortal Strike and Cleave and generate -10 Rage.
     blademasters_torment            = { 90363, 390138, 1 }, -- Activating Avatar or Bladestorm casts the other at reduced effectiveness.
-    bladestorm                      = { 90441, 227847, 1 }, -- Become an unstoppable storm of destructive force, striking all nearby enemies for 6,873 Physical damage over 5.1 sec. Deals reduced damage beyond 8 targets. You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. Generates 20 Rage.
+    bladestorm                      = { 90441, 227847, 1 }, -- Become an unstoppable storm of destructive force, striking all nearby enemies for 8,927 Physical damage over 5.1 sec. Deals reduced damage beyond 8 targets. You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. Generates 20 Rage.
     bloodborne                      = { 90283, 383287, 2 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects deal 7.50% increased damage.
     bloodletting                    = { 90438, 383154, 1 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects last 6.0 sec longer and have a 5% increased critical strike chance. If you have Rend, Mortal Strike inflicts Rend on targets below 35% health.
     bloodsurge                      = { 90277, 384361, 1 }, -- Your Bleed effects have a chance to grant you 5 Rage.
     blunt_instruments               = { 90287, 383442, 1 }, -- Colossus Smash damage increased by 30% and its effect duration is increased by 3.0 sec.
-    cleave                          = { 90293, 845   , 1 }, -- Strikes all enemies in front of you for 1,323 Physical damage, inflicting Deep Wounds. Cleave will consume your Overpower effect to deal increased damage. Deals reduced damage beyond 5 targets.
+    cleave                          = { 90293, 845   , 1 }, -- Strikes all enemies in front of you for 1,700 Physical damage, inflicting Deep Wounds. Cleave will consume your Overpower effect to deal increased damage. Deals reduced damage beyond 5 targets.
     collateral_damage               = { 90267, 334779, 1 }, -- When Sweeping Strikes ends, your next Whirlwind deals 25% increased damage for each ability used during Sweeping Strikes that damaged a second target.
-    colossus_smash                  = { 90290, 167105, 1 }, -- Smashes the enemy's armor, dealing 3,267 Physical damage, and increasing damage you deal to them by 30% for 10 sec.
+    colossus_smash                  = { 90290, 167105, 1 }, -- Smashes the enemy's armor, dealing 4,198 Physical damage, and increasing damage you deal to them by 30% for 10 sec.
     concussive_blows                = { 90333, 383115, 1 }, -- Cooldown of Pummel reduced by 1.0 sec. Successfully interrupting an enemy increases the damage you deal to them by 5% for 10 sec.
     critical_thinking               = { 90444, 389306, 2 }, -- Critical Strike chance increased by 1% and Execute immediately refunds 5% of the Rage spent.
     crushing_force                  = { 90347, 382764, 2 }, -- Slam deals an additional 30% damage and has a 7.50% increased critical strike chance.
@@ -116,63 +115,65 @@ spec:RegisterTalents( {
     defensive_stance                = { 92537, 386208, 1 }, -- A defensive combat state that reduces all damage you take by 15%, and all damage you deal by 10%. Lasts until canceled.
     deft_experience                 = { 90437, 389308, 2 }, -- Mastery increased by 1% and Tactician's chance to trigger is increased by an additional 0.6%.
     die_by_the_sword                = { 90276, 118038, 1 }, -- Increases your parry chance by 100% and reduces all damage you take by 30% for 8 sec.
-    dreadnaught                     = { 90285, 262150, 1 }, -- Overpower has 2 charges and causes a seismic wave, dealing 866 damage to all enemies in a 10 yd line. Deals reduced damage beyond 5 targets.
+    dreadnaught                     = { 90285, 262150, 1 }, -- Overpower has 2 charges and causes a seismic wave, dealing 1,113 damage to all enemies in a 10 yd line. Deals reduced damage beyond 5 targets.
     endurance_training              = { 90338, 382940, 1 }, -- Stamina increased by 5% and the duration of Fear, Sap and Incapacitate effects on you is reduced by 10.0%.
     executioners_precision          = { 90445, 386634, 1 }, -- Execute causes the target to take 35% more damage from your next Mortal Strike, stacking up to 2 times.
     exhilarating_blows              = { 90286, 383219, 1 }, -- Mortal Strike and Cleave have a 20% chance to instantly reset their own cooldowns.
-    fatality                        = { 90439, 383703, 1 }, -- Your Mortal Strikes and Cleaves against enemies above 30% health have a high chance to apply Fatal Mark. When an enemy falls below 30% health, Your next Execute inflicts an additional 4,476 Physical damage per stack.
+    fatality                        = { 90439, 383703, 1 }, -- Your Mortal Strikes and Cleaves against enemies above 30% health have a high chance to apply Fatal Mark. When an enemy falls below 30% health, Your next Execute inflicts an additional 5,410 Physical damage per stack.
     fervor_of_battle                = { 90272, 202316, 1 }, -- If Whirlwind hits 2 or more targets it also Slams your primary target.
     frothing_berserker              = { 90352, 392792, 1 }, -- Mortal Strike and Cleave have a 20% chance to immediately refund 20% of the Rage spent.
     fueled_by_violence              = { 90275, 383103, 1 }, -- You are healed for 85% of the damage dealt by Deep Wounds.
     honed_reflexes                  = { 90354, 382461, 1 }, -- Cooldown of Overpower and Pummel reduced by 1.0 sec.
-    hurricane                       = { 90440, 390563, 1 }, -- While Bladestorming, every 0.8 sec you gain 5% movement speed and 5% Strength, stacking up to 6 times. Lasts 6 sec.
-    ignore_pain                     = { 90269, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken, up to 7,095 total damage prevented.
+    hurricane                       = { 90440, 390563, 1 }, -- While Bladestorming, every 0.9 sec you gain 5% movement speed and 5% Strength, stacking up to 6 times. Lasts 6 sec. Bladestorm cannot be canceled while using Hurricane.
+    ignore_pain                     = { 90269, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken, up to 14,706 total damage prevented.
     impale                          = { 90292, 383430, 1 }, -- The damaging critical strikes of your abilities deal an additional 10.00% damage.
     improved_execute                = { 90273, 316405, 1 }, -- Execute no longer has a cooldown and if your foe survives, 10% of the Rage spent is refunded.
     improved_overpower              = { 90279, 385571, 1 }, -- Damage of Overpower increased by 15%.
-    improved_slam                   = { 92614, 400205, 1 }, -- Slam has 15% increased critical strike chance and deals 30% increased critical strike damage.
+    improved_slam                   = { 92614, 400205, 1 }, -- Slam has 15% increased critical strike chance and deals 10% increased critical strike damage.
     improved_sweeping_strikes       = { 92536, 383155, 1 }, -- Sweeping Strikes lasts 6 sec longer.
     in_for_the_kill                 = { 90288, 248621, 1 }, -- Warbreaker increases your Haste by 10%, or by 20% if any target is below 35% health. Lasts 10 sec.
     juggernaut                      = { 90446, 383292, 1 }, -- Execute increases Execute's damage dealt by 3% for 12 sec, stacking up to 15 times.
     martial_prowess                 = { 90278, 316440, 1 }, -- Overpower increases the damage of your next Mortal Strike or Cleave by 30%. Stacking up to 2 times.
     massacre                        = { 90291, 281001, 1 }, -- Execute is now usable on targets below 35% health.
     merciless_bonegrinder           = { 90266, 383317, 1 }, -- When Bladestorm ends, Whirlwind and Cleave deal 50% increased damage for 9 sec.
-    mortal_strike                   = { 90270, 12294 , 1 }, -- A vicious strike that deals 3,478 Physical damage and reduces the effectiveness of healing on the target by 50% for 10 sec.
-    overpower                       = { 90271, 7384  , 1 }, -- Overpower the enemy, dealing 2,515 Physical damage. Cannot be blocked, dodged, or parried. Increases the damage of your next Mortal Strike by 30%. Stacking up to 2 times.
+    mortal_strike                   = { 90270, 12294 , 1 }, -- A vicious strike that deals 4,916 Physical damage and reduces the effectiveness of healing on the target by 50% for 10 sec.
+    overpower                       = { 90271, 7384  , 1 }, -- Overpower the enemy, dealing 3,555 Physical damage. Cannot be blocked, dodged, or parried. Increases the damage of your next Mortal Strike by 30%. Stacking up to 2 times.
     reaping_swings                  = { 90294, 383293, 1 }, -- Cooldown of Cleave reduced by 3 sec.
-    rend                            = { 90284, 772   , 1 }, -- Wounds the target, causing 1,329 Physical damage instantly and an additional 2,602 Bleed damage over 15 sec.
+    rend                            = { 90284, 772   , 1 }, -- Wounds the target, causing 1,708 Physical damage instantly and an additional 3,300 Bleed damage over 15 sec.
     sharpened_blades                = { 90447, 383341, 1 }, -- Your Mortal Strike, Cleave and Execute critical strike damage is increased by 10% and your Execute has a 5% increased critical hit chance.
-    sidearm                         = { 90333, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 450 Physical damage.
-    skullsplitter                   = { 90281, 260643, 1 }, -- Bash an enemy's skull, dealing 2,160 Physical damage. Skullsplitter causes your Deep Wounds to expire instantly. Generates 15 Rage.
+    sidearm                         = { 90333, 384404, 1 }, -- Your auto-attacks have a 20% chance to hurl weapons at your target and 3 other enemies in front of you, dealing an additional 578 Physical damage.
+    skullsplitter                   = { 90281, 260643, 1 }, -- Bash an enemy's skull, dealing 2,776 Physical damage. Skullsplitter causes your Deep Wounds on the target to bleed out 100% faster for 10 sec. Generates 15 Rage.
     spiteful_serenity               = { 90289, 400314, 1 }, -- Colossus Smash and Avatar's durations are increased by 100% but their damage bonuses are reduced by 40%.
     storm_of_swords                 = { 90267, 385512, 1 }, -- Whirlwind costs 20 more Rage and has a 14.0 sec cooldown. It now deals 175% more damage.
     storm_wall                      = { 90269, 388807, 1 }, -- Whenever you Parry, you heal for 8.00% of your maximum health. Can only occur once per second.
     strength_of_arms                = { 92536, 400803, 1 }, -- Overpower has 10% increased critical strike chance, deals 10% increased critical strike damage and on enemies below 35% health Overpower generates 8 Rage.
     sudden_death                    = { 90274, 29725 , 1 }, -- Your attacks have a chance to make your next Execute cost no Rage, be usable on any target regardless of their health, and deal damage as if you spent 40 Rage.
-    tactician                       = { 90282, 184783, 1 }, -- You have a 2.50% chance per Rage spent on abilities to reset the remaining cooldown on Overpower.
-    test_of_might                   = { 90288, 385008, 1 }, -- When Warbreaker expires, your Strength is increased by 1% for every 10 Rage you spent during Warbreaker. Lasts 12 sec.
-    thunder_clap                    = { 92224, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,189 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
-    tide_of_blood                   = { 90280, 386357, 1 }, -- Skullsplitter deals 30% increased damage and also causes your Rend to expire instantly.
+    tactician                       = { 90282, 184783, 1 }, -- You have a 2.50% chance per Rage spent on attacks to reset the remaining cooldown on Overpower.
+    test_of_might                   = { 90288, 385008, 1 }, -- When Warbreaker expires, your Strength is increased by 1% for every 10 Rage you spent on attacks during Warbreaker. Lasts 12 sec.
+    thunder_clap                    = { 92224, 396719, 1 }, -- Blasts all enemies within 8 yards for 1,528 Physical damage. and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
+    tide_of_blood                   = { 90280, 386357, 1 }, -- Skullsplitter deals 30% increased damage and also causes your Rend on the target to bleed out 100% faster for 10 sec.
     twohanded_weapon_specialization = { 90322, 382896, 1 }, -- Increases your damage while using two-handed weapons by 5%.
     unhinged                        = { 90440, 386628, 1 }, -- While Bladestorm is active, you automatically cast a total of 2 Mortal Strikes at random nearby enemies.
     valor_in_victory                = { 90442, 383338, 1 }, -- Increases Versatility by 1% and reduces the cooldown of Die by the Sword by 30.0 sec.
     war_machine                     = { 90328, 262231, 1 }, -- Your auto attacks generate 10% more Rage. Killing an enemy instantly generates 5 Rage, and increases your movement speed by 30% for 8 sec.
-    warbreaker                      = { 90287, 262161, 1 }, -- Smash the ground and shatter the armor of all enemies within 8 yds, dealing 3,267 Physical damage and increasing damage you deal to them by 30% for 10 sec.
+    warbreaker                      = { 90287, 262161, 1 }, -- Smash the ground and shatter the armor of all enemies within 8 yds, dealing 4,198 Physical damage and increasing damage you deal to them by 30% for 10 sec.
     warlords_torment                = { 90363, 390140, 1 }, -- Activating Avatar or Colossus Smash casts Recklessness at reduced effectiveness.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
+    battlefield_commander  = 5630, -- (424742) Your Shout abilities have additional effects.; $@spellicon6673 $@spellname6673:; Increases Stamina by $s1%.; $@spellicon12323 $@spellname12323:; Roots targets hit for $424752d.; $@spellicon384100 $@spellname384100:; Range increased by $s2 yds.; $@spellicon5246 $@spellname5246:; Cooldown reduced by ${$s3/-1000} sec.; $@spellicon97462 $@spellname97462:; Removes movement impairing effects and grants $s4% movement speed to allies.; $@spellicon384318 $@spellname384318:; Targets receive $s5% more damage from all sources while bleeding.
     death_sentence         = 3522, -- (198500) Execute charges you to targets up to 15 yards away. This effect has a 6 sec cooldown.
     demolition             = 5372, -- (329033) Reduces the cooldown of your Shattering Throw or Wrecking Throw by 50% and increases its damage to absorb shields by an additional 250%.
     disarm                 = 3534, -- (236077) Disarm the enemy's weapons and shield for 5 sec. Disarmed creatures deal significantly reduced damage.
     duel                   = 34  , -- (236273) You challenge the target to a duel. While challenged, all damage you and the target deal to all targets other than each other is reduced by 50%. Lasts 8 sec.
     master_and_commander   = 28  , -- (235941) Cooldown of Rallying Cry reduced by 1 min, and grants 15% additional health.
     rebound                = 5547, -- (213915) Spell Reflection reflects the next 2 incoming spells cast on you and reflected spells deal 50% extra damage to the attacker. Spell Reflection's cooldown is increased by 10 sec.
+    safeguard              = 5625, -- (424654) Intervene now has ${$s1+1} charges and reduces the ally's damage taken by $424655s1% for $424655d.; Intervene's cooldown is increased by ${$s2/1000} sec.
     shadow_of_the_colossus = 29  , -- (198807) Charge resets the cooldown of your Overpower and Rage gained from Charge increased by 15.
     sharpen_blade          = 33  , -- (198817) When activated, your next Mortal Strike will deal 15% increased damage and reduce healing taken by 50% for 4 sec.
-    storm_of_destruction   = 31  , -- (236308) Reduces the cooldown of Bladestorm by 33%, and Bladestorm now also applies Mortal Wound to all targets you hit.
+    storm_of_destruction   = 31  , -- (236308) Reduces the cooldown of $?c2[Ravager][Bladestorm] by $m1%, and $?c2[Ravager][Bladestorm] now also snares all targets you hit by $424597s1% for $424597d.
     war_banner             = 32  , -- (236320) You throw down a war banner at your feet, rallying your allies. Increases movement speed by 30% and reduces the duration of all incoming crowd control effects by 50% to all allies within 30 yards of the war banner. Lasts 15 sec.
     warbringer             = 5376, -- (356353) Charge roots enemies for 2 sec and emanates a shockwave past the target, rooting enemies and dealing 900 Physical damage in a 20 yd cone.
 } )
@@ -192,7 +193,7 @@ spec:RegisterAuras( {
     },
     battlelord =  {
         id = 386631,
-        duration = 10,
+        duration = 3600,
         max_stack = 1
     },
     berserker_rage = {
@@ -245,7 +246,7 @@ spec:RegisterAuras( {
     deep_wounds = {
         id = 262115,
         duration = function() return 12 + ( talent.bloodletting.enabled and 6 or 0 ) end,
-        tick_time = 3,
+        tick_time = function() return debuff.skullsplitter.up and 1.5 or 3 end,
         max_stack = 1
     },
     defensive_stance = {
@@ -353,9 +354,14 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    piercing_howl_root = {
+        id = 424752,
+        duration = 2,
+        max_stack = 1
+    },
     rallying_cry = {
         id = 97463,
-        duration = function () return 10 + ( talent.inspiring_presence.enabled and 3 or 0 ) end,
+        duration = 10,
         max_stack = 1,
     },
     recklessness = {
@@ -366,14 +372,28 @@ spec:RegisterAuras( {
     rend = {
         id = 388539,
         duration = function() return 15 + ( talent.bloodletting.enabled and 6 or 0 ) end,
-        tick_time = 3,
+        tick_time = function() return talent.tide_of_blood.enabled and debuff.skullsplitter.up and 1.5 or 3 end,
         max_stack = 1,
         copy = 772
+    },
+    -- Damage taken reduced by $w1%.
+    safeguard = {
+        id = 424655,
+        duration = 5.0,
+        max_stack = 1,
     },
     sharpen_blade = {
         id = 198817,
         duration = 3600,
         max_stack = 1
+    },
+    -- Bleeding out from Deep Wounds $s1% faster.`
+    skullsplitter = {
+        id = 427040,
+        duration = 10.0,
+        max_stack = 1,
+         -- Affected by:
+        -- tide_of_blood[386357] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
     spear_of_bastion = {
         id = 376080,
@@ -402,6 +422,12 @@ spec:RegisterAuras( {
         id = 107570,
         duration = 4,
         max_stack = 1
+    },
+    -- Movement slowed by $s1%.
+    storm_of_destruction = {
+        id = 424597,
+        duration = 6.0,
+        max_stack = 1,
     },
     sweeping_strikes = {
         id = 260708,
@@ -469,7 +495,7 @@ end )
 
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" then
-        if talent.anger_management.enabled then
+        if talent.anger_management.enabled and this_action ~= "ignore_pain" then
             rage_spent = rage_spent + amt
             local reduction = floor( rage_spent / 20 )
             rage_spent = rage_spent % 20
@@ -622,6 +648,14 @@ spec:RegisterAura( "crushing_advance", {
     max_stack = 3
 } )
 
+spec:RegisterGear( "tier31", 207180, 207181, 207182, 207183, 207185 )
+spec:RegisterSetBonuses( "tier31_2pc", 422923, "tier31_4pc", 422924 )
+-- (4) Sudden Death also makes your next Execute powerfully slam the ground, causing a Thunder Clap that deals 100% increased damage. In addition, the Execute target bleeds for 50% of Execute's damage over 5 sec. If this bleed is reapplied, remaining damage is added to the new bleed.
+spec:RegisterAura( "finishing_wound", {
+    id = 426284,
+    duration = 5,
+    max_stack = 1
+} )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -777,10 +811,11 @@ spec:RegisterAbilities( {
     charge = {
         id = 100,
         cast = 0,
-        charges  = function () return talent.double_time.enabled and 2 or 1 end,
         cooldown = function () return talent.double_time.enabled and 17 or 20 end,
-        recharge = function () return talent.double_time.enabled and 17 or 20 end,
+        charges  = function () if talent.double_time.enabled then return 2 end end,
+        recharge = function () if talent.double_time.enabled then return 17 end end,
         gcd = "off",
+        icd = 1,
 
         spend = -20,
         spentType = "rage",
@@ -959,7 +994,13 @@ spec:RegisterAbilities( {
                     gain( cost * ( talent.critical_thinking.rank * 0.05 ), "rage" ) -- Regain another 5/10% for critical thinking
                 end
             end
-            removeBuff( "sudden_death" )
+            if buff.sudden_death.up then
+                removeBuff( "sudden_death" )
+                if set_bonus.tier31_4pc > 0 then
+                    spec.abilities.thunder_clap.handler()
+                    applyDebuff( "target", "finishing_wound" )
+                end
+            end
             if talent.executioners_precision.enabled then applyDebuff( "target", "executioners_precision", nil, min( 2, debuff.executioners_precision.stack + 1 ) ) end
             if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
@@ -1019,6 +1060,7 @@ spec:RegisterAbilities( {
         charges = function () return legendary.leaper.enabled and 3 or nil end,
             recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
         gcd = "off",
+        icd = 0.8,
 
         talent = "heroic_leap",
         startsCombat = false,
@@ -1098,6 +1140,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 30,
         gcd = "off",
+        icd = 1.5,
 
         talent = "intervene",
         startsCombat = false,
@@ -1230,7 +1273,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rallying_cry" )
-            gain( ( talent.inspiring_presence.enabled and 0.2 or 0.15 ) * health.max, "health" )
+            gain( 0.10 * health.max, "health" )
         end,
     },
 
@@ -1311,6 +1354,7 @@ spec:RegisterAbilities( {
     },
 
 
+    -- Bash an enemy's skull, dealing $s1 Physical damage.; Skullsplitter causes your Deep Wounds $?s386357[and Rend ][]on the target to bleed out $427040s1% faster for $427040d.; Generates ${$s2/10} Rage.
     skullsplitter = {
         id = 260643,
         cast = 0,
@@ -1324,10 +1368,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeDebuff( "target", "deep_wounds" )
-            if talent.tide_of_blood.enabled then
-                removeDebuff( "target", "rend" )
-            end
+            applyDebuff( "target", "skullsplitter" )
         end,
     },
 
@@ -1526,6 +1567,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 90,
         gcd = "off",
+        icd = 1,
 
         pvptalent = "war_banner",
         startsCombat = false,
@@ -1637,4 +1679,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Arms", 20230711, [[Hekili:DZ1w3nUTr4Fl(fU2P7QLKYY2jhjDoPPVK90Z(qD6RIcMeYIXuKQ8I9U5OJ(T3b8kUnGu3Ct6dTzxrGbdMRFZaGDHZIFBXJbKC6IV6A7o2(EhNro35E347x8y(33sx84wI)lKNH)qmzd8))ZPBYy)43JsibSjNLuK6dFyDE(2SF6ZF(5W81fpnYpzZNZc3uerYdtI9tjRYz)D)pV4XNkcJY)14fpPFLNS4rsr(6K0fp(ylb(fgbGfjmiGwntAM)IhzZ8t23)jhNFA)Y9l)3BzeC)Y80W4xO5z7xUkjD)sh7roJMmA)x2)LQjm5tU26MWN)L)rMWWSFOAyzWy(5uFsm8F)TK0uAC((Le4)TnLMN)99lJsEJ9xctsdz)1W49lZcJFoI(PCs6Z0CrQ6kS4D8y3Gg)j37kh0Vg7hveaJ6XT0OO9l)x0vruFMiz0IhJcZYZkvcLRLx1Ab)Wxl1R0yYtr0Gf)9fp6d8fnnKadLrN6rMn6T1HPrVfghSF5CGjarFjTHH9gLUfOQxgiBEHMTih0tmI2mGnjP5KO6pZVwWahJU6P0nKWyqXmD2(Lp7hmAd5B7xUBhOcirGuDuEya1lzL3trjjbJQPX(Lw7x6NKefK8w8OSxkIIY2gfMdeDKEkcJ)AUP4NeLKLvK5LTHKTgzomUiG(uXQvYJVy7(L3us0GKCy2XbCKG7hdkslTw3V8h2V0E0dt6exSVZen3IkAQfaVrsJssdY8Yts3W(bEzqk4joARFE5YoEC)7tsW37BJX(A53YPz5mr)MWNxN3SNzF9QwTJrM7uzKB6KwKxjGfktEnbvED4k32zaBJNaw6feZhoVGTusAP5ijR8xao6oEVGokj5cCp)Oe5qPr(a6oerRW7Ti8rELbUywNzKOw(WPA3wfc(hhqttGpMMuPc)X(m5xxKMgYcUkBozqaCkCBRHDnfkIxdr6ObVFlFN86PicKkJ5oXevo29jRWJpQgAQAxy2ZVxVO5CorquTBlj7jkzoIfTwJXSCRSAT58s5tiukgXt)vY5zfmyeEbusEzSj)8oIr)g1VaqLWiJBFAJSK4qFVNss20S)44Q1j(V8g51ksHNsSMueWcm1Bdjg2HIHwpj)9o(j854KuQ3wqcxYr9MjQ0QKTAzVXI5lSC1d5jsEEeLLsajnfOiFWEGmylwKs2ZqG)1mWlGvceX2TK2x1hdH6gWSc7SSAJj6orogHkH7y8KxPPBtER227UJwUYTCROPVMuN5HTWc7g26(k1Jgt3esZKrUjkgVVpUbrI18vwygpsCGxDGD1DF9h88JiBlxs8eAM0bYPLMypavRgfhMAbplujpTHM6hgrZYaV5y6Zq9aSnlQ5PlEG6mAoJgfzqSAAQ7p65U1xAR4NwKXs54bq)9PQIu)iADCdx8izvHcNZcf2yJF1aSFowJmWzZriZvwePmNLRqzbC5ZeH54oMFyKYIPyWiz1sjp0BfapvjmKgYebuyPu)xyYZ81PjVjpuChsbq8Iy3hRaDpNz)UIue1tbw5HBOvWjThnPsEVbmflJPhafSrI9R0BpWThldPPuJ12InBOr6kUIdGkunxABrHsJfpgpl9A72NXRgcsZNw(H6cgGVxoJvSmrE8csExWTjnOMhao(kq)cvwXPfirqbRGyYBBXF8hqTUpL8Tw044U110K3p(1qOSvWMNehUbQ)oOckvlM9Img(QvEGaIPL7WfevQcdl24TfsSdo5K4xdLvopyIepbinsIbJEWof2a0VNagwIZVNOuA2oHPaIqqvTcIhWyWEGrEvn4Twk1eAQ)8Za2eaSdeAKUc8B9x3dsR3hlSNH4nHeGFGa3KGN5WT1mcM2a4jwBRee1gGK1Ask0KdbU0H5BBXbiDInA0nZOT6jPOzEPBnJyIPmVFViOZma3P7mTOprEM5kbF1)LSEq)0VM)oExL0mAklMEpOy63SLfVf4Fyx4tIIokek8KRcr0QI0V3dSI(jLkNzawrkjmWJ(AzPcbmuJFJ18VkFfnacDHCdm1sUqeO0IyVQ)ShR3HvDq0RQZURj(ArC0MJc4rXj7)D)2MoMvUoClzhNFDlGdqcKr8tPsinlBq6AkjcQgRTRe8iW1naquXZ9CLT5Ix22vmhwDYXdwAj2X1s0bBbuijBaOuT4d6CtyWR8QY9ldpr3axNuidksoAvfBOlRypPmZ7ewx0gf3dIl1U1k0MXM(ZXBP0BBdMw2QaoeU9riTncSPFdD2MmiDS02bHvi3GemYOdn0Z7tQPO9LkKpRtBttfWpJ2Isbi0gBrzpGSo(gb1Fmsn9t8WtgyOj3l4HsR0Rx8efT59V1uJOWZoyY7YTTFEbGVL3BjGiitWavPr1DvmAa7hhp31fVnK0CgI4TqLtq5VJGGu(VuzB1rEXsPXJzuRaQIVaZeYI7XclgMb)Lgsx12MsZE0TOUMXlEItk48AcQnyuEhCp8eCR6ejslOGBfw5W5v5BngaUuu(7fp)mnnMuK3Gvx(NnAxWNweDH0bFGVjq8D45GAse)GkBnTGVV6rPnd)S0gResOTHt4AyLnwBhd5pRQoDKic)jYXX4gy7g5gZzcXH9lZBv9xHvrHHuKAGcXuw2cj9gkkR5sOS658f()JZFfVKizGHSZWNZmG3gayQCwOnDNcQgNjhbCScGjqtHBOPv65txx0AbC0cgqtMumWasy51dh)OSbBq6RPyIM0VdcHcEI2l654v3caJgo6niWtWBe7JHS7)pCJAgeLb8c1S0FIoa2dklPZLNrnj4hBFQwysB(ditAlgUEp7nJhVIyMf82TzcW7WZX2X19DuCCQvCwVTOIUlWGKX1qpstbK5dkBm2P9xYpYirAe0i4HgqfO6TVVXqPpg6eO4jKn2272T(MG5JxWNXDBTmmGvNnGuMZPdRWg5Y90Zsx26De0)A4DbG3694KvZmQ7QpdRs)lLlCqryRC1j0hdAkpu7lcKboltnwa63Uhq)v1KCtt(ydNpR(GpDkVbx3PH(zIwebd89FoUMecrjeC3ChE6M29vVBbHREY989MP54QXtxOkXUEa5V5dxFGz47eRMeFDc(sHo)MsuEINFrNTOIDDBb1UcxXrtx0xx8qZOQq9LW13PV)vx8EX1xYCob8bDLhmCVACXl44yUMhJ79E)z(A6GF5XSASCeUOixK(i0TXKUQzJ7Taa9skCU)W1LZAldFixsgnxZLXNVld4yd3pEmK(yy2hl2RFdxeMYMocXlyqtQFZfty9E4nsAmmfOQGFBniPd3SfC4RFvcFq4yU(aR5u)NIWuMiklHDnxif5jL3IIY8nGvi79t8pdzVtIX)0(L)ssmSILF(d6G0cumpb5Bncrymx78TBAP7T6PR8vtxI0y3C93xQ)aImHpVHSmrxoL3l6(J6PBB9os0u5ICpq6DP4ZM(kirs52nmqQDYCPJ9fYLaLWNmhJ4elNVrI2yPJgk5pD(gXnwcIGePraqmuI3LIwIUQ5Uvi5K)sqY7UKsveIlNKwI6y5Wvi)9NFXbgjLpomzkJDCzklasy9tGNDrIuicatIS6rNPqANlQc8Ir(9FrdUN62F8HdcXJlk2H6ZC5dkOgKUDkkB6Zofr8Yo9iUiHY7aflhwqbTCpQK1e)ZI6GVAx5DQMd6EGQKZMtpc9zLblrs(tuxMkiAJUAhuyp5J2wMIij9AksuIEY1ooqQDYiHWs6P5uB1jbqoyx5vbjW)rklE3HBEYegju8rc3gJCNoFIfb4KjmM71XNy(YIyfXT4KD3WGaXDUfsKvZjAOqueypxeIEkQmeh3JmmagaNJkdAnjXswD8B6lbjp)EtUy5xovp)3DcFkcbet(ZsifmIFYWXRjpIV1zOoLXiPfpbjngjptTjbJ8hzGMXibAohY2lvrAVpKhj22rfbE)x(1YYxyeAs15rWoERY)j7b(m75IKSkmI208(SrTVFK)2SpxXO1VyK9FX0qyVve9JO5LV9r2BfzMMxdcJlRNim8QJ)8JHRMXUIItNzpAYUDkpD15pWpNQxOk)Vi)IufgD5ZbLTcCpoWz2wgFAyZFy3o2lGWs41pm1DcpL1S5yldYBlD6y(5Q)bHYMEjx19sj5MdYRb9JCp9Zzo8tq3B)eF0YpQtZmJ8dZKn6RehU1vOxWhocj)ykVeAQ2NJPG6t4btkO50ENWM7mAIf7KbNoXMNospcsgHWp5DREU3z8Ap(3545JQTpYrCs2SHVtqCj8WbXNSO2T7Llo0zCCRJ0ZMRk6ZAI)hREIDZCyes)ZWB3oXZTDURqakPxGyfLRBv3hfUVpWIWVAxJKA0s54SNoEYn72P(ZU29UffoRuHL)kKhVzx436RqgLfav6YmXiaYRfAUJocW6luPiU2)J5cBD9v1IGUweA1Z1ZF6Tmbb6KuF7CtV9gl1l5(ChxDCzvOjbxDDVpUD7Wm50hRXw3A1XQ6(QiL1ncPl(vB0y5Be5UDxPdZpsutoVgE1V0nO2Kxhic0EXm1rw(7NzLdie98wTIRQ7LIj7oxlKRY4uWwthjBVOsClTv11Rv37pBQwtgHaQCYftx)YzUGfecVodHzR)tAfJn3JJsysYOanUZ19XU2UYhlaIv2XfTgBcVeml5FsR8VIq8D1Mrn5qSwn2SCJR53uABDZhybzSKVkxtNP8uC(b7rJLziDr4KyQzUwxB4bAn3zsNVw3NVrELAcfks9zowIXgvc3p31Un2xtod1CfZRZvuj947xML5hlv9Y2x8x2OWJ)DJQ4xN0)HjYcLUiVQ32OsblVCvQJ4ws6jN2CLCr8fIcxTMDrGrwxxxLC)oYerueOKWVkpVAI7bOjzz9nVAiov8PeU(SKt4gleTIS0bleSI3MMekxuwvMb68p5cA2COawNjwX8IQi7otRQobWy7Jxx1L5voinx4U22rvNaf59P0tHiZ1KPOnbVEoOjFNyhcRLLySrngf(NiJIYcdCcsWv54E1CGMxbGC4Qs0ahgykfMvbfc6IxTonnoJe8kREQAyjJlHxP5HWiVCciNqxQA5e3bHyMT1e78maMQvFXXhwQMTIkLPZCXG(OHlRKakpcfzxUPmaeNqYGAJbDpTO(temOOIcijL91SmaTuJzHc8MRRFkdGuqtyJRX7EXUDnpGIPUCGB6MSQVBertiwGh0SWn0E(9kaee2pDC)1Adi3fxyaHPR2wQBKQT6uvwPp8Yg9SgmcuvWBgqmleywFy42TOC3UvGSHN0Pryl2SF5XZD7(5yho1C9ViF8gLQFi94jH3gZ8tlNZVIdr2mZPlnR8qvx5bwkOo8iAHnOO0fUm)8fik0PjKcQgqlJKjdIHS8W01FP)svgK8gQRGO6nH815VnW10XJnXV91VkT4l6m5uw2JDPUXGPIMQbgMcWuJ)e7KI8AQR9BYJbRAl5Xn8wXDaPiaauCA4dTkaCMvBLpTiHpxfH0UvVC1uPyfjdyxR3VkoDCFJESbzvR8d3ADq7RbrYgya8HFL3TYDItZBGgxszmlrZ5qGpF9jBLtTEGw7gCv7hOHga9T46Ea7ecnTMiq)oZaxpP98XaUcjYvlSsuCtk9CDGIodNjzRSzITg5QGSBGYjJ18BimF3rlO5FM0T6daQI3vn6VwCEyO3gQcCMJHOE8DRhflHWjz3NGWGWwc83qbJXxfr5)C84V4R37u(4px8Fd]] )
+spec:RegisterPack( "Arms", 20231106, [[Hekili:v3ZAZnUrY9BzRRmxrBTCjaxUs2HIv54KQI3kLVRI89PurKqGqI4wqagaqjRRuXF7PNzWJ5r3dgWhAD(GLxcmONE63DpVUZ7UF)UBxfugD3V5p2FIN34PJ898(0NU6UBlFzB0D3Uni8Rbpc)J0GnWF)58nfSh(sswWk2hxKTlpeEX6YYTf)0h)4JXLR3D)OWSnFSiEZUKGY4S0W8Ghkz)o8J3D797Itk)107UxRNHUmyx56S87U92MV8xyFja94vRIeFsur4D3Y(Kp459HXF(N2VC)Y)ROnzpfTA)YF9VTF5d5zB2V8)4N)L9ldsHNvevw9ZYS9lN5b))G8hJkhT)l7)sdGMYb0FlOmC9(LEJh53(6XxbTG)6)(wggdaipo9RrLfqNLLZBU3OPsFW0p4pg7d(4V8VvO0SXxlAwb0MFopmif())EwEEukGZbW)TnpQS8L9ltYEM9J4S8y2pJtHXvC6JjrFqFWWGQVsN3IJTnAYh8fKUFnnmz3kOv3UnkjHrkFijkKr6hD3TjXfLfCUmVVwi6l4b)gxWjkn4(KOv39VE3THaEfLhhanLbNQwwm651X5jphZ4dZbKayXCydn75OOTauxua0MVgvCxjiiqc0739WdJk2XecwSkkOC9O8iasTGl6pIc3bctauMWGs9Z3KLxgKu1jYahA4Ni7U3TF5QSsOpsxb)ztqCArlib570vr5lctc2YaZusWa9mWih9CqEsw(QIfLz5BypOQX7xoy)Yl2Vmmllzv2ZPGstswrXUIffBck4dXvaV(1xbSjItb0AWUTI3YFxzur5IShwSj(X1L8xnu823Xe4p)iYWwkuWtba)NrB(mjTHUV4KBqr9M9lFmC1Onb)HORB(cyyCpGsFnkhT1sYyBJcYz0K7dk4pbWORKLoAHKMOX1YTsfd1A5pAtiQIURYAKj6mPSvGIWINZaHQI2XJGHyNT3jje04MOWyk(6UKKITjXLaoYWEVXDj82BC3wVrB1GqeUBz)JKenJtIAuIesUWNBOUNbFBEMqQ2J2qvfvRGPHXgkfpZu4uOBDsyZb)TJ2gwYzGxpwqSjgMsYY1wA5y4esmu3WMMM2azdgLXRI46pjzzRQXrAlHE0wuRa46D55Xm3C6MESW)DspI2SKaivqyx6AWNt0Q3UUVLADFsae8ctWGtR60TrrwAC4I7ZY2ys5lwNf(1NdEI7WZJ2k7PqCStDO5sIpF)(LxrjtEfTZG1SWfaqbsI(AYG3huwMeX8BPZ0WP6muvW5A1JaTC)P6YcMaUfXHOjZ3M9CLzRRjr8lAGwy(UcMS1ciARWihLoQu2bsimW)8yh4hs4F8MT5SOExuKeSPTfdRjpTKWhIYFkRYriBmJco6gbGJrxEkAruA0M4k(KNQNfah40kA)Hhs)OgZOI4KpTRRU5kQk2w4DTSNjJ)wtB9PDFAxxP(TmR4lGCIwuz4UBl6(0E6SP9nqt5B6yhuQruzjui9P9U12fe28OKMODDb5pcwHt3vaUdJY9)Xf(Bd1go4cqsrqMevzR2FQCKLsUeuJQ0)ZkbGk(CTMOgjBEu4xzyq568SN1BkTbSUgdcEPu0sR2LZtmNBQF8OjTOalOcO3kzIgpeSlPJ8elJ3ejI9y8OPcUpljEEEjRG8odsdJerajri4(jAsvS(XB3TztuI2GwjnqrsP5n526CMGmhBndFgUAXIUSdXRRcQeEp)lEGzgFHmHuw6EBwD6j6rf0mYda8x8JfSSYf5MVquuM6Yr4ygxk5eRG1EmorJvpUIRuwD86tWYDKvEIMCPoeJd2rL2UmHr1kw8p2T6Xnv9jTO8jQpVp4rMvd4THFTWEgEvLEHjjdKLfRIfcSEvXSRMrrTdbZpzw7NCrtlwhfKuUUXw4KPYwYHrwrqyUHZgSV0VXVvpWhFj((9r5fr5mJlDKXy35OW0Pb6oq9zYZDKsy3Gt4q7HD5V0rwzDdkemJ2jtEq8QfrpX4ebRaxlvHYHf8stOg94BaZvmPpgoizDDxkP()6Gq00VOnEe(syt58k49JuxIfiLPe3aBIQdTlrQG9sLUZssriKWO)GxEY(sTuRLj3H1wW7z2giOKgxwTwdybQSq4os3TkwdxNTReZtK0GsGgbjq3d(ZwSD3)8FcF59zsvUc7LCmTMy92xcwhkxaxFmjQSeaQEYAkvHSU8DYTPZ0mbjNpPevDxacToHCGmuw81W8TVrmngSqxQJPd1mTRqeK9(2ut1pPe3hvfmvIZ0AfmPJyGOQ7IqG6Q6FsQ10XjCrx57QMjrBAymk3fUvCMtsDuNwl0GGnsAu6v80LkhyFKlezpKbnM7ER1jtUhVsDGHueu6WIoGjRqjsDJA2BjMdBM68TjOYhLgZyqBIADhyIqah(mi(OfmpiXfWpG8odc)QuLS6ixb0jUqDwRShBJIqsDuEBcYlJbiSfsgmQOOgPy2uA7f1ICzPIXUpE5YyKeC3gQ0jJ5mIyd8kggRnsPAr0HcQ6CTzvYsVLIR1HkZ3evvbkfr6z11pNa9p294Jr5Pb7kRdZu)XwvcKSCtl2He4QVCkkYvsQxfJsUr85Pq(54tErZtPloHEHTOL2ngynAYYZqAlpsnb6P61wuQHndKH2JbJwbqh3eLkCGCfA0codpHY5I0cLILY147NRfFVGxJnnrQXIP4zKEQNSoj0utmCxo1qeAOLzUEQz0F0zLONscBDzijgildaivjZGf2CVJOm55C(5UmB7e4PFLjBS(hngtKG5OIXuluhQstCaYG15yIKgB5PzQ7pRZiyvGwwfCWfiCjSBSPR26mL8TAG2riFDoxh)jAQC7LxsVZpIAJWpz8XkHPn47HN0Mqe7C2DfbXgLhgNaHVYM(LOhZJ5HjufrJdvZ2w09U7JTfRlToXskSvAuVjfO2LcHMWL6KMBZ3JuG)o5n20rOekRhjczfkLI0V)j61XYrI2dM6SWnz8IpTn0wy(01CW6OTIgUIv(giszjLoQ8M0tXhhLoKSyCpDkf(pcURe4nUgNoBEMipkmpSgZXVEIdUucjmBqZKd1(SeYGKKjIea(W1YcnWbNBi(JTmp(4gFAzEoN3PLjUNmjcwW3)5yH4OyLW1P(NCC15qqzb3DLuO1nR8cA3fMumxQqNS56E6HVLSAJ81s4RkNhf9K2)cMSOHCD7kfrzflyBzx7tBAMKfINcxxlfbBl8HUCMlrG71Q3X2kwYL1kS7lLKjDU2DTVCGcGONZxSjifesmYiTADpjIxK0G8XxhH2bw8JPz5rl2cSx(ORZea6EvBPI99NxEJ8e42jaqwXwt6EHc7Qb9jUpD0nr6tfZ(e1PqYYshQuAXLGu3XST8aZAH1tbagbVL9Vs21U0ugv6nkgIDz39VS451rjBxuSMVDt4IokTbuzGecZziuCAyqEAqz0I4WkORUIxw4Ti6p47FfU(1HJD(oGD(9g78LXoD(xf2f)GypnLhVvGK)7mCdGki)fSxANgvNWZLGHV4NGy8brU7FbAKygE2V8xFy)Y4Y3dnLp62VCDa8VtZQRoiyTM9pl3LdYhEayIsyB7O6NmE00rkcOTCfaql2veTG5oQrFQ91nPI1Aq(7KsqRcbBFPyzunSHl4rYHwWqX7UfqnCMFXlP8v(GU7zjAlgKn5tCaHn49Tp49pYbV6aSIAuAwXXEikRZUyYWQ8lZ3)w)srqz1JHrgAZveitgo7ZrxMB9GaPZs1jqyV)T(Leei)oiq(Tei9GS6Pkr9wnulifewgVh5ymc6w9s2yL(TcDQovR(OsdyF7I2xoKhe4fvlHXFWcPTPLiieZmaVfd5EqVWblDFuPboJv6Ae0yLNewPA1WRr22NXX1J1ThQeChVOlijmLqiKXDb81iNEaT9Ol97rx6l1LgfZ2YQPIrEZagYJHRuwDyOnwkLonJ3kvCzchj0deQjRibgZwpDjzLY)whxA7oR6u46CcYHu2M8efLwRhdufBdGumfR365C3p1H0APj4lz0buAon2L0bTq9RMKAy2RHw3qKrTv0UZNR2Degoy008yvPuzbvPfL1Vl(sO)(91T7p79lFoUCn8t2ZwdFoeZmeNubqyGiYwvfz1LSMXcp8EOvaFDfRRYzTKVFZHmyYzptaQFwq84sn6bOQj14Rj143lPg)oKA87NuJF3sninPxsnE0snE2KA8oiPgFtPgdViMsnLiZWXXOS3Lpuh13TcdcpPk0kCjKkymelQrdE9auzi3mTWAfHzwqOyBuixBRQ8cd10Dzj6KLM8c7VrS)W1cLuIz7loibjrgume8Y6wW0RZG)Ml(Sguy)Y)k8OyaWPrXI33n0UpJPGRahU8c1YW(quZTYNCxtVRGV6u3YQmhI8cITb3KxWnQ0t5Ls9jo7EB04UuP604ZqNO0D65ByTGb73lwhuTDQGh8uuoBYHKpQuEoipno9rWVg3bw8MTz5LvN1hVxzjU)Ewo()V7eoLkYy01GDLzvE0cxZQdi7uj5)mMPnXohu(LSuOh5V(9v1Ps)OJaak70uH611fZcA2fE)XW3iO)J4qxPc7AGgT676W1B85cW(4awRQ0AGMOM1Uc8JhRNqay5jEwhWytkTbG)eoGBMQCnGACAc4kapEsabGRxukAWuFTQ4k4oE88ZNtbmcGF8y9v4aUD(m0GQ5eD8waYRXbP68sObw8jTWvqF8uwcaRCwcOby0ZzaxbS(0LObBQzt5Tg8eEoorG3NW)Xjqs5BaOpZeLtf49o5k8KGuFPSRdzQL6Urhq4X(yWzcF1Neha(eUTofcFNdJR7)csSYvhwbVVxrjtyVOE2V1Wl9jfVdmQAzu1pmIs0rAlzIjwQTBnnydKXRxTIWFVrK6ABjZZpej8SF0(kpxW9C5B)CbxYyiBw6c6wpmwtdDiWVoi8KiSlVMK0hPiBhjhfnpDM3XHpBXkPbs599KouimO3Ucpmqp9nGKoejSI3BJzwH2rNCirPdW2BnyuaITFJJk9hiT4))vqcIqCo08Aja3XJNV1124icbJk5(tsiyEeQfhT6gvcZsRUCnWISUZnakHpQZcqpgw2Pk(Ukd)eQbhKh0kqEgsv4maYtV2evohhTM)BoGpgIaHi)jXKcfWpvjMtOBDuz2vfAeHBXJGstbs9fpTgGPwB1Uc(d0qZecdnNcAlbOprsfNBWtnrlhIfy0CyQMzpMoxpsKXyuxn)GORw6guSDUiXBLQVmBDb5YzgVVS1CvLCIofDDwB0xuTY9UW9XvNnxvoIKykVC(qiEAV2rGASEdrGmwBoRGNcWzafK3IcX9tb1WFWf2a)39DuRD6BgpSdcBhq2gGBgugoRBeRSYHnETclGgODZcWBZzf8uaMMd7tXhqaF)4W9cYoXHnYy6uOdBhO8f9srzEu6JLRjGSEBoXG)iqCrPtEXgE32KtlWpcSgExbW8tIlTI5Qn703jhXiynJ0yd3RBWPeWhb(Ywrv2q3Q3FcblfYAuX6tHrC7a1UoiEBoXG)iqCkTq0MCAb(rG120(iB2PVtoIraUMisdoLa(iWxuDrZ3FcblfYAuEYgOEyX8CMbVdaEBEw4OG0xwSABHnGt1ohXFx7ggrFr)bVRgRSAl84bFFfBo0KHoZG3ba7g)KUDoI)U2nhKyJ7HXEqInUdEhfBmse6DuRE8buRh8xFL6ndUWEsou6Od)(l8gn9hiueG3sSHhhoC(f2tCMI9Q3JED2JEv9yn5)nKU9X3C62hpd0TgjsJI03iRJVVkre4jBOIOVr56Raa1g4eXGSBDK5Kf3mKA2siygnLE33g4jeyQz)eoKKETRqvFhIylqJ2MCoHE3W1Dhfo5p6e0pwDizUocAPpKYi(wKrERGNNDzoJx7ku7uQaTjNtO3nCDpMw3K5o((XUmhvb5pmDYZl07gUhQ10tn8Okc(Hj1DEHE3W9qTxCQHhD95oKX95f6Dd3dthWvS(WGUkC)7Pf72YMxzgKzregxgTrCYKX2OX)3Wdt)Ak89)p)l7xgLwM)c74GQGpd1JQMy6hYssYEoo9r2upNZoeOEokpQ(OkGLVcFFqxdt2vJeBF5ww3U0m(SAVlvP1RwXA8QGYG7dkI(P9Fz)YpSFjRYnSze)x3uJ0FwfYS56MFephE3VDLh7Qwk7Hy2bcIOrfJAU7L(HB(Oys8RUTL2)fBnHDplH3IAQ2LStgKBqc8KHVvFi0CXb44LXpCdtby2nJhn91xnUjcNFT83iUWbLFI(fmOsR53UFSEq62e8MXdSEZGm)6xFLD1anq58iyM)ufCx7I9smKRK2kKBP6L3hdxAeerpaLNdjOmGDm6nB6yz4ODJ8Xae9Xu5a79HmCvU19oDqT5QRJZFnol9N7D94b8(PzhP)6RMnBgRzxyCkgoBY0bAlmNMVwQv(Jh6sF4RqNvVp6Oji72QmEBUq8C9loS(r76vti2Toi8sXvX2nEmazEJ3nG9nThWIZ9F9135qR6wIVAhZCPYX3lGfYOZfeRHQby81H4mYoPbkB8ELU3yGkU96KSfvDIqhXSMOD2eZaaXnD0CpmaW2abCEqLzdMLNbVREvVjTXFgCr9tB3OnTky4MMM9jg1H8JmV21M9PHdWu(8XqDHwIIfkSRwTxFLsqf3U5yS(QfvXERkKXArTChGSIQlACqxpG647gJRlFCOllYQSmthuFAfp7MjJb50ggOARUGM80b7D(0HQ9bgUQDSwBhBN9jBiQUTrkexGvZUchH0VejSzkdKqypxD17kzHtwgGFC7At)ZNIfpd05WaPIxlj002bc)n(2JwGRGJ1znh2ZclYCEHWBe6ve2muvYddJbojbHHczpS(XIIjQGs9PQRiKaTv7PvAi2lB3EvYMYbFHiMhuUxUgO)iuXgbGK39AmOP7HSome52nq2AV82tR(fmFed0pyTNDJXfJ03pE0eDecZbLgsbISx0yPX86YAUheMDRhP6xpuVNQ9KPc9B8gO4AZm4S5(JB8sv7Y30v)8kx9cQN8(IP1Fg6vxvv32LNswRSzrZG8Jr9VEQorP1hP5z)mNWktx3OUZ30dVYRROrR6ZwFLe9RpOXRdBDGOscmIxt4fXmUlh4KSG2S3BekvkUWq9l0kNQ65YMJkuUIo1P7GdQ02q8TDwrvDeOv)uYOz9M)BWjcvS3Pg0UtuVIraMm(W5vTbmOBKwYCxZ2oPYvmXTfuhz6ohXtrtCj4yqT)o1DcufTKcnQcxs(clYGzze7AvSgegx1T7vHbi3jl6MR4Xv0V46mqwJ4mi7Cr)uVbzcw9elF5QapMWJkmY8AjsV7uIbJSRQOtsB4r7OnITtNcxYEyzn8lj8yGPyRktzMCqyQH(GGLezkPRYnJfaXr4mOsya7IEQBhbozvujssDDTbwcTerSWi8MlQUyzaQaIzdIS7y2kE91MK38LcUP9Jn1DtcqmXc4ashxd75xzeGGY4Pf7Xt7R1UGdMPfdlZbIyOoZev6kEzRAwohbQzWBwIywXWmUz4MHO(UAZiKnANo1eB1n1NE7LURvKqhj2C1t03gJC2p4E8OI3Ms8dfZL7rxOn3416MvVPM9SJPcIfpcAydgmDLRwf5eevkuircvouXpDW0DbPO)wcLa9MPRB9oJ7MjYpTnTLkIT(b7PTeQ6QMFOE(BfgozD1qlmrK40DldrBfpvTAj69jwjm1BdvEqg4VEqCeXsJh)WXuYXj2OQ6yvFqQoLJL96tKrb9W6GhWZMujX2EsitZH72ZXaussJV6RPMRrBDRUEUzLIKNtbLW7PbkAIKnjwCQYPRXr05lfvdHuRUsQNRPZatUlnlGj99xr3VebTDId50cDRY5)f4E)P4eIWcU5ZJrjknyGYrx6W2qr1JmW1iVUXZIiaglShrY1pktROlw8sSzT5mpA1npykWu)e96p7OWOLfaqJ020XisQksJoYUEhUkNfxQTZlKsfa8)Xf(Bdh0vy402f7QlTmG0c2KQD15ZqjaHMmtl4QxDjaKQxM6kl7K2R1Jl53wk30UOUqovhazr5xtEqm0J(3NO)rpvjA7F7hee7)YFz)YVLxnF9Gai2SaxMT9g(f(vfzW7Y27ok2IC6syuTkMbsjoK8(qODV233JPHEGR(hkUsDUa03dCGEGRvBnfdXAze51xVq9fI0WQ21rYs7nVum)mVG(UNA38POVNVnprFdBH5naB71uPC0NbUp6a3NAGJSl9KvZOh4476w03RnW97CG7Fid86lqiD5tFz5tpjPZZ0(zY22aJyvPRThJq4joUZMSTHWi2fgA9nIIGT94up4p13msyEAqx4NodzFCitTxMqHCZcrL9pQU6zaPfQLLQs1cuVJBMDZeUdO36BTS(mSyxDn10jED(jvfWuseuBiMv1SIhijfwVg1NpMf8l2Z1xNLdWeWRmdibd1nOLSrf9fRnIYATjciyzz7WO6fZVrzrPDOuxFuQRpj11VtQRpb11VNuxpeQRhb11Cb8BJ66puMV4g19Vic86pPxvyhk3xSAspmLlYVcZttdxbtII)zdvI2rsuzGMGgPcRuHYiUvVM7teJMdKkFCsLtAk0ELTjatsHhQeFKBKk)3csfde87AmETgiXFB6TdTqUSznDi)Yn7U)V]] )

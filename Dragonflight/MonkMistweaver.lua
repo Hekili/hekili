@@ -28,7 +28,7 @@ spec:RegisterTalents( {
     diffuse_magic                 = { 80697, 122783, 1 }, -- Reduces magic damage you take by $m1% for $d, and transfers all currently active harmful magical effects on you back to their original caster if possible.
     disable                       = { 80679, 116095, 1 }, -- Reduces the target's movement speed by $s1% for $d, duration refreshed by your melee attacks.$?s343731[ Targets already snared will be rooted for $116706d instead.][]
     elusive_mists                 = { 80603, 388681, 2 }, -- Reduces all damage taken while channelling Soothing Mists by $s1%.
-    escape_from_reality           = { 80715, 394110, 2 }, -- After you use Transcendence: Transfer, you can use Transcendence: Transfer again within $343249d, ignoring its cooldown.; During this time, if you cast Vivify on yourself, its healing is increased by $s1% and $343249m2% of its cost is refunded.
+    escape_from_reality           = { 80715, 394110, 1 }, -- After you use Transcendence: Transfer, you can use Transcendence: Transfer again within $343249d, ignoring its cooldown.; During this time, if you cast Vivify on yourself, its healing is increased by $s1% and $343249m2% of its cost is refunded.
     expeditious_fortification     = { 80681, 388813, 1 }, -- Fortifying Brew cooldown reduced by ${$s1/-60000} min.
     eye_of_the_tiger              = { 80700, 196607, 1 }, -- Tiger Palm also applies Eye of the Tiger, dealing $196608o2 Nature damage to the enemy and $196608o1 healing to the Monk over $196608d. Limit 1 target.
     fast_feet                     = { 80705, 388809, 2 }, -- Rising Sun Kick deals $s1% increased damage. Spinning Crane Kick deals $s2% additional damage.; 
@@ -66,7 +66,7 @@ spec:RegisterTalents( {
 
     -- Mistweaver Talents
     accumulating_mist             = { 80564, 388564, 1 }, -- Zen Pulse's damage and healing is increased by $388566s1% each time Soothing Mist heals, up to $388566u times. ; When your Soothing Mist channel ends, this effect is canceled.
-    ancient_concordance           = { 80569, 388740, 2 }, -- Your Blackout Kicks strike ${$s2+1} targets and have an additional $s1% chance to reset the cooldown of your Rising Sun Kick while within your Faeline Stomp.
+    ancient_concordance           = { 80569, 388740, 1 }, -- Your Blackout Kicks strike ${$s2+1} targets and have an additional $s1% chance to reset the cooldown of your Rising Sun Kick while within your Faeline Stomp.
     ancient_teachings             = { 80598, 388023, 1 }, -- After casting Essence Font or Faeline Stomp, your Tiger Palm, Blackout Kick, and Rising Sun Kick heal up to $s2 injured allies within $388024A1 yds for $<healing>% of the damage done, split evenly among them. Lasts $388026d.
     awakened_faeline              = { 80577, 388779, 1 }, -- Your abilities reset Faeline Stomp $s2% more often. While within Faeline Stomp, your Tiger Palms strike twice and your Spinning Crane Kick heals $s4 nearby allies for $s1% of the damage done.
     burst_of_life                 = { 80583, 399226, 1 }, -- When Life Cocoon expires, it releases a burst of mist that restores $399230s2 health to $s3 nearby allies.
@@ -83,9 +83,9 @@ spec:RegisterTalents( {
     focused_thunder               = { 80593, 197895, 1 }, -- Thunder Focus Tea now empowers your next ${$m1+1} spells.
     font_of_life                  = { 80580, 337209, 1 }, -- Your Essence Font's initial heal is increased by $s2% and has a chance to reduce the cooldown of Thunder Focus Tea by $s1 sec.
     gift_of_the_celestials        = { 80576, 388212, 1 }, -- Reduces the cooldown of $?s325197[Invoke Chi-Ji, the Red Crane][Invoke Yul'on, the Jade Serpent] by 2 min, but decreases its duration to 12 sec. 
-    healing_elixir                = { 80572, 122281, 1 }, -- Drink a healing elixir, healing you for $s1% of your maximum health.
+    healing_elixir                = { 80572, 122280, 1 }, -- You consume a healing elixir when you drop below $s1% health or generate excess healing elixirs, instantly healing you for $428439s1% of your maximum health.; You generate $s2 healing elixir every $t2 sec, stacking up to $s3 times.
     improved_detox                = { 81634, 388874, 1 }, -- Detox additionally removes all Poison and Disease effects.
-    invigorating_mists            = { 80559, 274586, 1 }, -- Vivify heals all allies with your Renewing Mist active for $116670s2.; 
+    invigorating_mists            = { 80559, 274586, 1 }, -- Vivify heals all allies with your Renewing Mist active for $116670s2, reduced beyond $s1 allies.
     invoke_chiji                  = { 80590, 325197, 1 }, -- Summon an effigy of Chi-Ji for $d that kicks up a Gust of Mist when you Blackout Kick, Rising Sun Kick, or Spinning Crane Kick, healing up to $343818s3 allies for $343819s1, and reducing the cost and cast time of your next Enveloping Mist by $343820s1%, stacking.; Chi-Ji's presence makes you immune to movement impairing effects.
     invoke_chiji_the_red_crane    = { 80590, 325197, 1 }, -- Summon an effigy of Chi-Ji for $d that kicks up a Gust of Mist when you Blackout Kick, Rising Sun Kick, or Spinning Crane Kick, healing up to $343818s3 allies for $343819s1, and reducing the cost and cast time of your next Enveloping Mist by $343820s1%, stacking.; Chi-Ji's presence makes you immune to movement impairing effects.
     invoke_yulon                  = { 80590, 322118, 1 }, -- Summons an effigy of Yu'lon, the Jade Serpent for $d. Yu'lon will heal injured allies with Soothing Breath, healing the target and up to $s2 allies for $343737o1 over $343737d. ; Enveloping Mist costs $s4% less mana while Yu'lon is active.
@@ -99,7 +99,7 @@ spec:RegisterTalents( {
     mending_proliferation         = { 80573, 388509, 1 }, -- Each time Enveloping Mist heals, its healing bonus has a $s2% chance to spread to an injured ally within $388508a1 yds.
     mist_wrap                     = { 80563, 197900, 1 }, -- Increases Enveloping Mist's duration by ${$m2/1000} sec and its healing bonus by $s1%.
     mists_of_life                 = { 80567, 388548, 1 }, -- Life Cocoon applies Renewing Mist and Enveloping Mist to the target. 
-    misty_peaks                   = { 80594, 388682, 2 }, -- Renewing Mist's heal over time effect has a $s3% chance to proc Enveloping Mist for $s2 sec.
+    misty_peaks                   = { 80594, 388682, 2 }, -- Renewing Mist's heal over time effect has a ${$s3}.1% chance to apply Enveloping Mist for $s2 sec.
     nourishing_chi                = { 80599, 387765, 1 }, -- Life Cocoon increases healing over time received by an additional $s1%, and this effect lingers on you for an additional $387766d after the cocoon is removed.
     overflowing_mists             = { 80581, 388511, 2 }, -- Your Enveloping Mists heal the target for ${$s1}.1% of their maximum health each time they take damage.
     peaceful_mending              = { 80592, 388593, 2 }, -- Allies targeted by Soothing Mist receive $s1% more healing from your Enveloping Mist and Renewing Mist effects.
@@ -138,7 +138,6 @@ spec:RegisterPvpTalents( {
     healing_sphere       = 683 , -- (205234) Coalesces a Healing Sphere out of the mists at the target location after 1.5 sec. If allies walk through it, they consume the sphere, healing themselves for $115464s1 and dispelling all harmful periodic magic effects.; Maximum of $m1 Healing Spheres can be active by the Monk at any given time.
     mighty_ox_kick       = 5539, -- (202370) You perform a Mighty Ox Kick, hurling your enemy a distance behind you.
     peaceweaver          = 5395, -- (353313) $?s388615[Restoral's][Revival's] cooldown is reduced by $s2%, and provides immunity to magical damage and harmful effects for $353319d.
-    refreshing_breeze    = 682 , -- (353508) During Soothing Mist's channel, Expel Harm's healing is increased by $353509s1%, and dispels 1 Magic, Disease, and Poison effect from the target. Stacks each time Soothing Mist heals the target.
     thunderous_focus_tea = 5402, -- (353936) Thunder Focus Tea can now additionally cause Crackling Jade Lightning's knockback immediately or cause Roll and Chi Torpedo to refund a charge on use and heal you for $407058s1.
     zen_focus_tea        = 1928, -- (209584) Provides immunity to Silence and Interrupt effects for $d.
     zen_spheres          = 5603, -- (410777) Forms a sphere of Hope or Despair above the target. Only one of each sphere can be active at a time.; $@spellicon411036 $@spellname411036: Increases your healing done to the target by $411036s1%.; $@spellicon411038 $@spellname411038: Target deals $411038s1% less damage to you, and takes $411038s2% increased damage from all sources.; 
@@ -196,7 +195,7 @@ spec:RegisterAuras( {
     clouded_focus = {
         id = 388048,
         duration = 8,
-        max_stack = 3
+        max_stack = 2
     },
     crackling_jade_lightning = {
         id = 117952,
@@ -519,6 +518,15 @@ spec:RegisterAuras( {
 } )
 
 
+spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248 )
+spec:RegisterAuras( {
+    chi_harmony = {
+        id = 423439,
+        duration = 8,
+        max_stack = 1
+    }
+} )
+
 -- Tier 30
 spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
 spec:RegisterAuras( {
@@ -584,7 +592,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            return ( pet.yulon.up and 0.12 or 0.24 ) * ( buff.mana_tea.up and 0.5 or 1 )
+            return ( pet.yulon.up and 0.12 or 0.24 ) * ( buff.mana_tea.up and 0.5 or 1 ) * ( 1 - 0.15 * buff.clouded_focus.stack )
         end,
         spendType = "mana",
 
@@ -631,7 +639,7 @@ spec:RegisterAbilities( {
         cooldown = 15,
         gcd = "totem",
 
-        spend = function() return 0.15 * ( buff.mana_tea.up and 0.5 or 1 ) end,
+        spend = function() return 0.014 * ( buff.mana_tea.up and 0.5 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
@@ -683,11 +691,13 @@ spec:RegisterAbilities( {
         copy = "invoke_yulon"
     },
 
+    -- Encases the target in a cocoon of Chi energy for $d, absorbing $<newshield> damage and increasing all healing over time received by $m2%.$?a388548[; Applies Renewing Mist and Enveloping Mist to the target.][]
     life_cocoon = {
         id = 116849,
         cast = 0,
         cooldown = 120,
         gcd = "off",
+        icd = 0.75,
 
         spend = function() return 0.12 * ( buff.mana_tea.up and 0.5 or 1 ) end,
         spendType = "mana",
@@ -699,6 +709,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "life_cocoon" )
+            if talent.mists_of_life.enabled then
+                applyBuff( "renewing_mist" )
+                applyBuff( "enveloping_mist" )
+            end
         end,
     },
 
@@ -796,6 +810,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "renewing_mist" )
+            if set_bonus.tier31_2pc > 0 then applyBuff( "chi_harmony" ) end
             if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
     },
@@ -1019,7 +1034,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.19 * ( buff.mana_tea.up and 0.5 or 1 ) end,
+        spend = function() return 0.034 * ( buff.mana_tea.up and 0.5 or 1 ) * ( 1 - 0.15 * buff.clouded_focus.stack ) end,
         spendType = "mana",
 
         startsCombat = false,

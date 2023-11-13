@@ -613,14 +613,14 @@ end
 -- Tooltip Parsing Utilities (10.0.2)
 do
     local CurrentBuild = Hekili.CurrentBuild
-
     local tooltip = ns.Tooltip
 
     local DisableText = {
         _G.SPELL_FAILED_NOT_HERE,
         _G.SPELL_FAILED_INCORRECT_AREA,
         _G.SPELL_FAILED_NOT_IN_MAGE_TOWER,
-        _G.TOOLTIP_NOT_IN_MAGE_TOWER
+        _G.TOOLTIP_NOT_IN_MAGE_TOWER,
+        _G.LEVEL_LINKED_NOT_USABLE
     }
 
     local FindStringInTooltip = function( str, id, ttType, reverse, useMatch )

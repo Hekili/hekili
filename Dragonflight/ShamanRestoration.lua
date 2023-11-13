@@ -77,13 +77,13 @@ spec:RegisterTalents( {
     ancestral_protection_totem  = { 81046, 207399, 1 }, -- Summons a totem at the target location for 33 sec. All allies within 23 yards of the totem gain 10% increased health. If an ally dies, the totem will be consumed to allow them to Reincarnate with 20% health and mana. Cannot reincarnate an ally who dies to massive damage.
     ancestral_reach             = { 81031, 382732, 1 }, -- Chain Heal bounces an additional time and its healing is increased by 8%.
     ancestral_vigor             = { 81030, 207401, 2 }, -- Targets you heal with Healing Wave, Healing Surge, Chain Heal, or Riptide's initial heal gain 5% increased health for 10 sec.
-    ascendance                  = { 81055, 114052, 1 }, -- Transform into a Water Ascendant, duplicating all healing you deal for 15 sec and immediately healing for 65,177. Ascendant healing is distributed evenly among allies within 20 yds.
+    ascendance                  = { 81055, 114052, 1 }, -- Transform into a Water Ascendant, duplicating all healing you deal at $s4% effectiveness for $114051d and immediately healing for $294020s1. Ascendant healing is distributed evenly among allies within $114083A1 yds.
     chain_heal                  = { 81063, 1064  , 1 }, -- Heals the friendly target for 18,562, then jumps up to 15 yards to heal the 4 most injured nearby allies. Healing is reduced by 30% with each jump.
     chain_lightning             = { 81061, 188443, 1 }, -- Hurls a lightning bolt at the enemy, dealing 15,729 Nature damage and then jumping to additional nearby enemies. Affects 3 total targets.
     cloudburst_totem            = { 81048, 157153, 1 }, -- Summons a totem at your feet for 18 sec that collects power from all of your healing spells. When the totem expires or dies, the stored power is released, healing all injured allies within 46 yards for 36% of all healing done while it was active, divided evenly among targets. Casting this spell a second time recalls the totem and releases the healing.
     continuous_waves            = { 81034, 382046, 1 }, -- Reduces the cooldown of Primordial Wave by 15 sec.
     current_control             = { 92675, 404015, 1 }, -- Reduces the cooldown of Healing Tide Totem by 30 sec.
-    deeply_rooted_elements      = { 81051, 378270, 1 }, -- Casting Riptide has a 7% chance to activate Ascendance for 6.0 sec.  Ascendance Transform into a Water Ascendant, duplicating all healing you deal for 15 sec and immediately healing for 65,177. Ascendant healing is distributed evenly among allies within 20 yds.
+    deeply_rooted_elements      = { 81051, 378270, 1 }, -- [114052] Transform into a Water Ascendant, duplicating all healing you deal at $s4% effectiveness for $114051d and immediately healing for $294020s1. Ascendant healing is distributed evenly among allies within $114083A1 yds.
     deluge                      = { 81028, 200076, 2 }, -- Healing Wave, Healing Surge, and Chain Heal heal for an additional 10% on targets affected by your Healing Rain or Riptide.
     downpour                    = { 80976, 207778, 1 }, -- A burst of water at the target location heals up to six injured allies within 12 yards for 16,926. Cooldown increased by 5 sec for each target effectively healed.
     earthen_harmony             = { 81054, 382020, 2 }, -- Earth Shield reduces damage taken by 3% and its healing is increased by 50% if the target is below 75% health.
@@ -108,10 +108,10 @@ spec:RegisterTalents( {
     master_of_the_elements      = { 81019, 16166 , 1 }, -- Casting Lava Burst increases the damage or healing of your next Nature or Frost spell by 20%.
     overflowing_shores          = { 92677, 383222, 1 }, -- Healing Rain instantly restores 3,117 health to 6 allies within its area, and its radius is increased by 2 yards.
     primal_tide_core            = { 81042, 382045, 1 }, -- Every 4 casts of Riptide also applies Riptide to another friendly target near your Riptide target.
-    primordial_wave             = { 81036, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing 4,605 Shadow damage and apply Flame Shock to an enemy, or heal an ally for 4,836 and apply Riptide to them. Your next Healing Wave will also hit all targets affected by your Riptide for 60% of normal healing.
+    primordial_wave             = { 81036, 428332, 1 }, -- Blast your target with a Primordial Wave, healing them for $375985s1 and apply Riptide to them.; Your next $?a137040[Lava Burst]?a137041[Lightning Bolt][Healing Wave] will also hit all targets affected by your $?a137040|a137041[Flame Shock][Riptide] for $?a137039[$s2%]?a137040[$s3%][$s4%] of normal $?a137039[healing][damage].$?s384405[; Primordial Wave generates $s5 stacks of Maelstrom Weapon.][]
     refreshing_waters           = { 81019, 378211, 1 }, -- Your Healing Surge is 25% more effective on yourself.
     resonant_waters             = { 92681, 404539, 1 }, -- Increases the duration of Mana Tide Totem by 4 sec and increases its radius by 20 yards.
-    resurgence                  = { 81024, 16196 , 1 }, -- Your direct heal criticals refund a percentage of your maximum mana: 1.00% from Healing Wave, 0.60% from Healing Surge or Riptide, and 0.25% from Chain Heal.
+    resurgence                  = { 81024, 16196 , 1 }, -- Your direct heal criticals refund a percentage of your maximum mana: $<healingwave>% from Healing Wave, $<healingsurge>% from Healing Surge$?s73685[, Unleash Life,][] or Riptide, and $<chainheal>% from Chain Heal.
     riptide                     = { 81027, 61295 , 1 }, -- Restorative waters wash over a friendly target, healing them for 12,648 and an additional 14,082 over 21 sec.
     spirit_link_totem           = { 81033, 98008 , 1 }, -- Summons a totem at the target location for 6 sec, which reduces damage taken by all party and raid members within 11 yards by 10%. Immediately and every 1 sec, the health of all affected players is redistributed evenly.
     spiritwalkers_tidal_totem   = { 92681, 404522, 1 }, -- After using Mana Tide Totem, the cast time and mana cost of Healing Wave and Chain Heal is reduced by 50% for 10 sec.
@@ -175,6 +175,12 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    -- Receiving $422915s1% of all Riptide healing $@auracaster deals.
+    tidal_reservoir = {
+        id = 424461,
+        duration = 15,
+        max_stack = 1,
+    },
     tidal_waves = {
         id = 53390,
         duration = 15,
@@ -217,6 +223,8 @@ spec:RegisterAuras( {
         max_stack = 40 -- IDK.
     }
 } )
+
+spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212 )
 
 
 spec:RegisterHook( "reset_precast", function ()
@@ -274,7 +282,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.3 * ( buff.spiritwalkers_tidal_totem.up and 0.5 or 1 ) end,
+        spend = function() return 0.056 * ( buff.spiritwalkers_tidal_totem.up and 0.5 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
@@ -284,6 +292,8 @@ spec:RegisterAbilities( {
             removeStack( "tidal_waves" )
             removeStack( "tidebringer" )
             removeBuff( "swelling_rain" ) -- T30
+
+            if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,
     },
 
@@ -319,6 +329,7 @@ spec:RegisterAbilities( {
         end,
         hasteCD = true,
         gcd = "totem",
+        icd = 1,
 
         spend = 0.09,
         spendType = "mana",
@@ -541,6 +552,8 @@ spec:RegisterAbilities( {
             if talent.earthen_harmony.enabled then
                 addStack( "earth_shield", nil, 1 )
             end
+
+            if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,
     },
 
@@ -584,6 +597,8 @@ spec:RegisterAbilities( {
             if talent.earthen_harmony.enabled then
                 addStack( "earth_shield", nil, 1 )
             end
+
+            if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,
     },
 
@@ -671,7 +686,7 @@ spec:RegisterAbilities( {
 
     -- Blast your target with a Primordial Wave, dealing 4,265 Shadow damage and apply Flame Shock to an enemy, or heal an ally for 4,308 and apply Riptide to them. Your next Healing Wave will also hit all targets affected by your Riptide for 60% of normal healing.
     primordial_wave = {
-        id = 375982,
+        id = 428332,
         cast = 0,
         cooldown = function() return talent.continuous_waves.enabled and 30 or 45 end,
         gcd = "spell",
@@ -679,13 +694,15 @@ spec:RegisterAbilities( {
         spend = 0.03,
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 3578231,
 
         handler = function ()
             applyBuff("riptide")
             applyDebuff("flame_shock")
         end,
+
+        copy = 428332,
     },
 
     -- Restorative waters wash over a friendly target, healing them for 13,520 and an additional 10,502 over 18 sec.

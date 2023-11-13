@@ -95,7 +95,7 @@ spec:RegisterTalents( {
     expunge              = { 93306, 365585, 1 }, -- Expunge toxins affecting an ally, removing all Poison effects.
     field_of_dreams      = { 93248, 370062, 1 }, -- Gain a 30% chance for one of your Fluttering Seedlings to grow into a new Emerald Blossom.
     flow_state           = { 93256, 385696, 2 }, -- Empower spells cause time to flow 10% faster for you, increasing movement speed, cooldown recharge rate, and cast speed. Lasts 10 sec.
-    fluttering_seedlings = { 93247, 359793, 2 }, -- Emerald Blossom sends out 2 flying seedlings when it bursts, healing allies up to 40 yds away for 2,860.
+    fluttering_seedlings = { 93247, 359793, 2 }, -- Emerald Blossom sends out flying seedlings when it bursts, healing $s1 $Lally:allies; up to $s2 yds away for $361361s1.
     font_of_magic        = { 93252, 375783, 1 }, -- Your empower spells' maximum level is increased by 1.
     golden_hour          = { 93255, 378196, 1 }, -- Reversion instantly heals the target for 15% of damage taken in the last 5 sec.
     grace_period         = { 93265, 376239, 2 }, -- Your healing is increased by 5% on targets with your Reversion.
@@ -349,6 +349,9 @@ spec:RegisterAura( "essence_rush", {
     duration = 3,
     max_stack = 1
 } )
+
+spec:RegisterGear( "tier31", 207225, 207226, 207227, 207228, 207230 )
+
 
 spec:RegisterStateExpr( "empowered_spell_count", function()
     return actual_empowered_spell_count
@@ -860,6 +863,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
         color = "green",
+        icd = 0.5,
 
         spend = 0.03,
         spendType = "mana",

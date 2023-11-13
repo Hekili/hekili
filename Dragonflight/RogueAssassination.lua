@@ -90,113 +90,114 @@ spec:RegisterResource( Enum.PowerType.Energy, {
 
 -- Talents
 spec:RegisterTalents( {
-    -- Rogue
-    acrobatic_strikes      = { 90752, 196924, 1 }, -- Increases the range of your melee attacks by 3 yds.
-    alacrity               = { 90751, 193539, 2 }, -- Your finishing moves have a 5% chance per combo point to grant 1% Haste for 15 sec, stacking up to 5 times.
-    atrophic_poison        = { 90763, 381637, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 35% chance of poisoning the enemy, reducing their damage by 3.6% for 10 sec.
-    blackjack              = { 90696, 379005, 1 }, -- Enemies have 30% reduced damage and healing for 6 sec after Blind or Sap's effect on them ends.
-    cheat_death            = { 90742, 31230 , 1 }, -- Fatal attacks instead reduce you to 7% of your maximum health. For 3 sec afterward, you take 85% reduced damage. Cannot trigger more often than once per 6 min.
-    cloak_of_shadows       = { 90697, 31224 , 1 }, -- Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for 5 sec.
-    cold_blood             = { 90748, 382245, 1 }, -- Increases the critical strike chance of your next damaging ability by 100%.
-    deadened_nerves        = { 90743, 231719, 1 }, -- Physical damage taken reduced by 3%.
-    deadly_precision       = { 90760, 381542, 2 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
-    deeper_stratagem       = { 90750, 193531, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
-    echoing_reprimand      = { 90639, 385616, 1 }, -- Deal 2,067 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for 45 sec. Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed 7 combo points. Awards 2 combo points.
-    elusiveness            = { 90742, 79008 , 1 }, -- Evasion also reduces damage taken by 10%, and Feint also reduces non-area-of-effect damage taken by 20%.
-    evasion                = { 90764, 5277  , 1 }, -- Increases your dodge chance by 100% for 10 sec.
-    find_weakness          = { 90690, 91023 , 2 }, -- Your Stealth abilities reveal a flaw in your target's defenses, causing all your attacks to bypass 15% of that enemy's armor for 10 sec.
-    fleet_footed           = { 90762, 378813, 1 }, -- Movement speed increased by 15%.
-    gouge                  = { 90741, 1776  , 1 }, -- Gouges the eyes of an enemy target, incapacitating for 4 sec. Damage will interrupt the effect. Must be in front of your target. Awards 1 combo point.
-    improved_ambush        = { 90692, 381620, 1 }, -- Ambush generates 1 additional combo point.
-    improved_sprint        = { 90746, 231691, 1 }, -- Reduces the cooldown of Sprint by 60 sec.
-    improved_wound_poison  = { 90637, 319066, 1 }, -- Wound Poison can now stack 2 additional times.
-    iron_stomach           = { 90744, 193546, 1 }, -- Increases the healing you receive from Crimson Vial, healing potions, and healthstones by 25%.
-    leeching_poison        = { 90758, 280716, 1 }, -- Adds a Leeching effect to your Lethal poisons, granting you 6% Leech.
-    lethality              = { 90749, 382238, 2 }, -- Critical strike chance increased by 1%. Critical strike damage bonus of your attacks that generate combo points increased by 10%.
-    marked_for_death       = { 90750, 137619, 1 }, -- Marks the target, instantly generating 5 combo points. Cooldown reset if the target dies within 1 min.
-    master_poisoner        = { 90636, 378436, 1 }, -- Increases the non-damaging effects of your weapon poisons by 20%.
-    nightstalker           = { 90693, 14062 , 2 }, -- While Stealth is active, your abilities deal 4% more damage.
-    nimble_fingers         = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by 10.
-    numbing_poison         = { 90763, 5761  , 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 18% for 10 sec.
-    prey_on_the_weak       = { 90755, 131511, 1 }, -- Enemies disabled by your Cheap Shot or Kidney Shot take 10% increased damage from all sources for 6 sec.
-    recuperator            = { 90640, 378996, 1 }, -- Slice and Dice heals you for up to 1% of your maximum health per 2 sec.
-    resounding_clarity     = { 90638, 381622, 1 }, -- Echoing Reprimand Animacharges 2 additional combo points.
-    reverberation          = { 90638, 394332, 1 }, -- Echoing Reprimand's damage is increased by 75%.
-    rushed_setup           = { 90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by 20%.
-    seal_fate              = { 90757, 14190 , 2 }, -- When you critically strike with a melee attack that generates combo points, you have a 50% chance to gain an additional combo point per critical strike.
-    shadow_dance           = { 90689, 185313, 1 }, -- Allows use of all Stealth abilities and grants all the combat benefits of Stealth for 6 sec. Effect not broken from taking damage or attacking.
-    shadowrunner           = { 90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move 20% faster.
-    shadowstep             = { 90695, 36554 , 1 }, -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
-    soothing_darkness      = { 90691, 393970, 1 }, -- You are healed for 24% of your maximum health over 6 sec after gaining Vanish or Shadow Dance.
-    subterfuge             = { 90688, 108208, 1 }, -- Your abilities requiring Stealth can still be used for 3 sec after Stealth breaks.
-    thiefs_versatility     = { 90753, 381619, 2 }, -- Versatility increased by 2%.
-    thistle_tea            = { 90756, 381623, 1 }, -- Restore 100 Energy. Mastery increased by 13.6% for 6 sec.
-    tight_spender          = { 90694, 381621, 1 }, -- Energy cost of finishing moves reduced by 10%.
-    tricks_of_the_trade    = { 90686, 57934 , 1 }, -- Redirects all threat you cause to the targeted party or raid member, beginning with your next damaging attack within the next 30 sec and lasting 6 sec.
-    unbreakable_stride     = { 90747, 400804, 1 }, -- Reduces the duration of movement slowing effects 30%.
-    vigor                  = { 90759, 14983 , 1 }, -- Increases your maximum Energy by 50 and your Energy regeneration by 10%.
-    virulent_poisons       = { 90761, 381543, 1 }, -- Increases the damage of your weapon poisons by 10%.
+    -- Rogue Talents
+    acrobatic_strikes      = { 90752, 196924, 1 }, -- Increases the range of your melee attacks by $s1 yds.
+    airborne_irritant      = { 90741, 200733, 1 }, -- Blind has $s1% reduced cooldown, $s2% reduced duration, and applies to all nearby enemies.
+    alacrity               = { 90751, 193539, 2 }, -- Your finishing moves have a $s2% chance per combo point to grant $193538s1% Haste for $193538d, stacking up to $193538u times.
+    atrophic_poison        = { 90763, 381637, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for $d. Each strike has a $h% chance of poisoning the enemy, reducing their damage by ${$392388s1*-1}.1% for $392388d.
+    blackjack              = { 90686, 379005, 1 }, -- Enemies have $394119s1% reduced damage and healing for $394119d after Blind or Sap's effect on them ends.
+    blind                  = { 90684, 2094  , 1 }, -- Blinds $?a200733[all enemies near ][]the target, causing $?a200733[them][it] to wander disoriented for $d. Damage will interrupt the effect. Limit 1.
+    cheat_death            = { 90742, 31230 , 1 }, -- Fatal attacks instead reduce you to $s2% of your maximum health. For $45182d afterward, you take $45182s1% reduced damage. Cannot trigger more often than once per $45181d.
+    cloak_of_shadows       = { 90697, 31224 , 1 }, -- Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for $d.
+    cold_blood             = { 90748, 382245, 1 }, -- Increases the critical strike chance of your next damaging ability by $s1%.
+    deadened_nerves        = { 90743, 231719, 1 }, -- Physical damage taken reduced by $s1%.;
+    deadly_precision       = { 90760, 381542, 1 }, -- Increases the critical strike chance of your attacks that generate combo points by $s1%.
+    deeper_stratagem       = { 90750, 193531, 1 }, -- Gain $s1 additional max combo point.; Your finishing moves that consume more than $s3 combo points have increased effects, and your finishing moves deal $s4% increased damage.
+    echoing_reprimand      = { 90639, 385616, 1 }, -- Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.; Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.; Awards $s3 combo $lpoint:points;.;
+    elusiveness            = { 90742, 79008 , 1 }, -- Evasion also reduces damage taken by $s2%, and Feint also reduces non-area-of-effect damage taken by $s1%.
+    evasion                = { 90764, 5277  , 1 }, -- Increases your dodge chance by ${$s1/2}% for $d.$?a344363[ Dodging an attack while Evasion is active will trigger Mastery: Main Gauche.][]
+    featherfoot            = { 94563, 423683, 1 }, -- Sprint increases movement speed by an additional $s1% and has ${$s2/1000} sec increased duration.
+    fleet_footed           = { 90762, 378813, 1 }, -- Movement speed increased by $s1%.
+    gouge                  = { 90741, 1776  , 1 }, -- Gouges the eyes of an enemy target, incapacitating for $d. Damage will interrupt the effect.; Must be in front of your target.; Awards $s2 combo $lpoint:points;.
+    graceful_guile         = { 94562, 423647, 1 }, -- Feint has $m1 additional $Lcharge:charges;.;
+    improved_ambush        = { 90692, 381620, 1 }, -- $?s185438[Shadowstrike][Ambush] generates $s1 additional combo point.
+    improved_sprint        = { 90746, 231691, 1 }, -- Reduces the cooldown of Sprint by ${$m1/-1000} sec.
+    improved_wound_poison  = { 90637, 319066, 1 }, -- Wound Poison can now stack $s1 additional times.
+    iron_stomach           = { 90744, 193546, 1 }, -- Increases the healing you receive from Crimson Vial, healing potions, and healthstones by $s1%.
+    leeching_poison        = { 90758, 280716, 1 }, -- Adds a Leeching effect to your Lethal poisons, granting you $108211s1% Leech.
+    lethality              = { 90749, 382238, 2 }, -- Critical strike chance increased by $s1%. Critical strike damage bonus of your attacks that generate combo points increased by $s2%.
+    marked_for_death       = { 90750, 137619, 1 }, -- Marks the target, instantly granting full combo points and increasing the damage of your finishing moves by $s1% for $d. Cooldown resets if the target dies during effect.
+    master_poisoner        = { 90636, 378436, 1 }, -- Increases the non-damaging effects of your weapon poisons by $s1%.
+    nightstalker           = { 90693, 14062 , 2 }, -- While Stealth$?c3[ or Shadow Dance][] is active, your abilities deal $s1% more damage.
+    nimble_fingers         = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by $s1.
+    numbing_poison         = { 90763, 5761  , 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for $d.  Each strike has a $5761h% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by $5760s1% for $5760d.
+    recuperator            = { 90640, 378996, 1 }, -- Slice and Dice heals you for up to $s1% of your maximum health per 2 sec.
+    resounding_clarity     = { 90638, 381622, 1 }, -- Echoing Reprimand Animacharges $m1 additional combo $Lpoint:points;.
+    reverberation          = { 90638, 394332, 1 }, -- Echoing Reprimand's damage is increased by $s1%.
+    rushed_setup           = { 90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by $s1%.
+    shadow_dance           = { 90689, 185313, 1 }, -- Description not found.
+    shadowrunner           = { 90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move $s1% faster.
+    shadowstep             = { 90695, 36554 , 1 }, -- Description not found.
+    shiv                   = { 90740, 5938  , 1 }, -- Attack with your $?s319032[poisoned blades][off-hand], dealing $sw1 Physical damage, dispelling all enrage effects and applying a concentrated form of your $?a3408[Crippling Poison, reducing movement speed by $115196s1% for $115196d.]?a5761[Numbing Poison, reducing casting speed by $359078s1% for $359078d.][]$?(!a3408&!a5761)[active Non-Lethal poison.][]$?(a319032&a400783)[; Your Nature and Bleed ]?a319032[; Your Nature ]?a400783[; Your Bleed ][]$?(a400783|a319032)[damage done to the target is increased by $319504s1% for $319504d.][]$?a354124[ The target's healing received is reduced by $354124S1% for $319504d.][]; Awards $s3 combo $lpoint:points;.
+    soothing_darkness      = { 90691, 393970, 1 }, -- You are healed for ${$393971s1*($393971d/$393971t)}% of your maximum health over $393971d after gaining Vanish or Shadow Dance.
+    stillshroud            = { 94561, 423662, 1 }, -- Shroud of Concealment has $s1% reduced cooldown.;
+    subterfuge             = { 90688, 108208, 1 }, -- Your abilities requiring Stealth can still be used for ${$s2/1000} sec after Stealth breaks.
+    superior_mixture       = { 94567, 423701, 1 }, -- Crippling Poison reduces movement speed by an additional $s1%.
+    thistle_tea            = { 90756, 381623, 1 }, -- Restore $s1 Energy. Mastery increased by ${$s2*$mas}.1% for $d.
+    tight_spender          = { 90692, 381621, 1 }, -- Energy cost of finishing moves reduced by $s1%.
+    tricks_of_the_trade    = { 90686, 57934 , 1 }, -- $?s221622[Increases the target's damage by $221622m1%, and redirects][Redirects] all threat you cause to the targeted party or raid member, beginning with your next damaging attack within the next $d and lasting $59628d.
+    unbreakable_stride     = { 90747, 400804, 1 }, -- Reduces the duration of movement slowing effects $s1%.
+    vigor                  = { 90759, 14983 , 2 }, -- Increases your maximum Energy by $s1 and Energy regeneration by $s2%.
+    virulent_poisons       = { 90760, 381543, 1 }, -- Increases the damage of your weapon poisons by $s1%.
 
-    -- Assassination
-    amplifying_poison      = { 90621, 381664, 1 }, -- Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 35% chance to poison the enemy, dealing 123 Nature damage and applying Amplifying Poison for 12 sec. Envenom can consume 10 stacks of Amplifying Poison to deal 35% increased damage. Max 20 stacks.
-    arterial_precision     = { 90784, 400783, 1 }, -- Shiv strikes 4 additional nearby enemies and increases your Bleed damage done to affected targets by 20% for 8 sec.
-    blind                  = { 90684, 2094  , 1 }, -- Blinds the target, causing it to wander disoriented for 1 min. Damage will interrupt the effect. Limit 1.
-    blindside              = { 90786, 328085, 1 }, -- Ambush and Mutilate have a 20% chance to make your next Ambush free and usable without Stealth. Chance increased to 40% if the target is under 35% health.
-    bloody_mess            = { 90625, 381626, 2 }, -- Garrote and Rupture damage increased by 15%.
-    crimson_tempest        = { 90632, 121411, 1 }, -- Finishing move that slashes all enemies within 13 yards, dealing instant damage and causing victims to bleed for additional damage. Deals reduced damage beyond 8 targets. Lasts longer per combo point. 1 point : 486 plus 590 over 4 sec 2 points: 729 plus 884 over 6 sec 3 points: 972 plus 1,179 over 8 sec 4 points: 1,215 plus 1,473 over 10 sec 5 points: 1,458 plus 1,768 over 12 sec
-    cut_to_the_chase       = { 90629, 51667 , 1 }, -- Envenom extends the duration of Slice and Dice by up to 3 sec per combo point spent.
-    dashing_scoundrel      = { 90766, 381797, 2 }, -- Envenom also increases the critical strike chance of your poisons by 5%, and their critical strikes generate 1 Energy.
-    deadly_poison          = { 90783, 2823  , 1 }, -- Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 35% chance to poison the enemy for 1,132 Nature damage over 12 sec. Subsequent poison applications will instantly deal 123 Nature damage.
-    deathmark              = { 90769, 360194, 1 }, -- Carve a deathmark into an enemy, dealing 4,494 Bleed damage over 16 sec. While marked your Garrote, Rupture, and Lethal poisons applied to the target are duplicated, dealing 100% of normal damage.
-    doomblade              = { 90777, 381673, 1 }, -- Mutilate deals an additional 20% Bleed damage over 8 sec.
-    dragontempered_blades  = { 90765, 381801, 1 }, -- You may apply 1 additional Lethal and Non-Lethal Poison to your weapons.
-    elaborate_planning     = { 90627, 193640, 2 }, -- Your finishing moves grant 4% increased damage done for 4 sec.
-    exsanguinate           = { 90779, 200806, 1 }, -- Twist your blades into the target's wounds, causing your Bleed effects on them to bleed out 80% faster.
-    fatal_concoction       = { 90626, 392384, 1 }, -- Increases the damage of your weapon poisons by 10%.
-    flying_daggers         = { 90631, 381631, 1 }, -- Fan of Knives' radius is increased to 12 yds and deals 15% more damage when it strikes 5 or more targets.
-    improved_garrote       = { 90780, 381632, 1 }, -- Garrote deals 50% increased damage and has no cooldown when used from Stealth and for 3 sec after breaking Stealth.
-    improved_poisons       = { 90634, 381624, 2 }, -- Increases the application chance of your poisons by 5%.
-    improved_shiv          = { 90628, 319032, 1 }, -- Shiv now also increases your Nature damage done against the target by 20% for 8 sec.
-    indiscriminate_carnage = { 90774, 381802, 1 }, -- Your next Garrote and your next Rupture apply to up to 8 enemies within 10 yards.
-    intent_to_kill         = { 90620, 381630, 1 }, -- Shadowstep's cooldown is reduced by 33% when used on a target afflicted by your Garrote.
-    internal_bleeding      = { 90781, 381627, 1 }, -- Kidney Shot also deals up to 2,050 Bleed damage over 6 sec, based on combo points spent.
-    iron_wire              = { 90778, 196861, 1 }, -- Garrote silences the target for 6 sec when used from Stealth. Enemies silenced by Garrote deal 15% reduced damage for 8 sec.
-    kingsbane              = { 90765, 385627, 1 }, -- Release a lethal poison from your weapons and inject it into your target, dealing 3,115 Nature damage instantly and an additional 3,634 Nature damage over 14 sec. Each time you apply a Lethal Poison to a target affected by Kingsbane, Kingsbane damage increases by 20%. Awards 1 combo point.
-    lethal_dose            = { 90624, 381640, 2 }, -- Your weapon poisons, Nature damage over time, and Bleed abilities deal 1% increased damage to targets for each weapon poison, Nature damage over time, and Bleed effect on them.
-    lightweight_shiv       = { 90633, 394983, 1 }, -- Shiv has 1 additional charge.
-    master_assassin        = { 90623, 255989, 1 }, -- While Stealth is active and for 3 sec after breaking Stealth, your critical strike chance is increased by 30%.
-    poison_bomb            = { 90767, 255544, 2 }, -- Envenom has a 4% chance per combo point spent to smash a vial of poison at the target's location, creating a pool of acidic death that deals 2,119 Nature damage over 2 sec to all enemies within it.
-    sap                    = { 90685, 6770  , 1 }, -- Incapacitates a target not in combat for 1 min. Only works on Humanoids, Beasts, Demons, and Dragonkin. Damage will revive the target. Limit 1.
-    scent_of_blood         = { 90775, 381799, 3 }, -- Each enemy afflicted by your Rupture increases your Agility by 1%, up to a maximum of 24%.
-    sepsis                 = { 90622, 385408, 1 }, -- Infect the target's blood, dealing 8,233 Nature damage over 10 sec and gaining 1 use of any Stealth ability. If the target survives its full duration, they suffer an additional 2,988 damage and you gain 1 additional use of any Stealth ability for 10 sec. Cooldown reduced by 30 sec if Sepsis does not last its full duration. Awards 1 combo point.
-    serrated_bone_spike    = { 90622, 385424, 1 }, -- Embed a bone spike in the target, dealing 2,480 Physical damage and 264 Bleed damage every 2.7 sec until they die or leave combat. Refunds a charge when target dies. Awards 1 combo point plus 1 additional per active bone spike.
-    shadowstep_2           = { 90782, 36554 , 1 }, -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
-    shiv                   = { 90740, 5938  , 1 }, -- Attack with your poisoned blades, dealing 564 Physical damage, dispelling all enrage effects and applying a concentrated form of your active Non-Lethal poison. Your Nature damage done to the target is increased by 20% for 8 sec. Awards 1 combo point.
-    shrouded_suffocation   = { 90776, 385478, 1 }, -- Increases Garrote damage by 20%. Garrote generates 2 additional combo points when cast from Stealth.
-    systemic_failure       = { 90771, 381652, 1 }, -- Garrote increases the damage of Ambush and Mutilate on the target by 20%.
-    thrown_precision       = { 90630, 381629, 1 }, -- Fan of Knives's damage is increased by 15%, and it has a 5% increased critical strike chance.
-    tiny_toxic_blade       = { 90770, 381800, 1 }, -- Shiv deals 500% increased damage and no longer costs Energy.
-    twist_the_knife        = { 90768, 381669, 1 }, -- Envenom duration increased by 2 sec.
-    venom_rush             = { 90773, 152152, 1 }, -- Ambush and Mutilate refunds 7 Energy when used against a poisoned target.
-    venomous_wounds        = { 90635, 79134 , 1 }, -- You regain 6 Energy each time your Garrote or Rupture deal Bleed damage to a poisoned target. If an enemy dies while afflicted by your Rupture, you regain energy based on its remaining duration.
-    vicious_venoms         = { 90772, 381634, 2 }, -- Ambush and Mutilate deal an additional 10% damage as Nature.
-    zoldyck_recipe         = { 90785, 381798, 3 }, -- Your Poisons and Bleeds deal 15% increased damage to targets below 35% health.
+    -- Assassination Talents
+    amplifying_poison      = { 90621, 381664, 1 }, -- Coats your weapons with a Lethal Poison that lasts for $d. Each strike has a $h% chance to poison the enemy, dealing $383414s1 Nature damage and applying Amplifying Poison for $383414d. Envenom can consume $s2 stacks of Amplifying Poison to deal $s1% increased damage. Max $383414u stacks.
+    arterial_precision     = { 90784, 400783, 1 }, -- Shiv strikes ${$s2-1} additional nearby enemies and increases your Bleed damage done to affected targets by $s1% for $319504d.
+    blindside              = { 90786, 328085, 1 }, -- Ambush and Mutilate have a $s1% chance to make your next Ambush free and usable without Stealth. Chance increased to $s2% if the target is under $s3% health.
+    bloody_mess            = { 90625, 381626, 1 }, -- Garrote and Rupture damage increased by $s1%.
+    caustic_spatter        = { 94556, 421975, 1 }, -- Using Mutilate on a target afflicted by your Rupture and Deadly Poison applies Caustic Spatter for $421976d. Limit 1.; Caustic Spatter causes $421976s1% of your Poison damage dealt to splash onto other nearby enemies, reduced beyond $421976s2 targets.
+    crimson_tempest        = { 90632, 121411, 1 }, -- Finishing move that slashes all enemies within $A1 yards, causing victims to bleed. Lasts longer per combo point.; Deals extra damage when multiple enemies are afflicted, increasing by $s4% per target, up to ${$s4*5}%.; Deals reduced damage beyond $s3 targets.;    1 point  : ${$o1*4} over ${$d+(2*1)} sec;    2 points: ${$o1*5} over ${$d+(2*2)} sec;    3 points: ${$o1*6} over ${$d+(2*3)} sec;    4 points: ${$o1*7} over ${$d+(2*4)} sec;    5 points: ${$o1*8} over ${$d+(2*5)} sec$?s193531[;    6 points: ${$o1*9} over ${$d+(2*6)} sec][]
+    cut_to_the_chase       = { 94557, 51667 , 1 }, -- Envenom extends the duration of Slice and Dice by up to $s1 sec per combo point spent.
+    dashing_scoundrel      = { 90766, 381797, 1 }, -- Envenom also increases the critical strike chance of your weapon poisons by $s1%, and their critical strikes generate $s2 Energy.
+    deadly_poison          = { 90783, 2823  , 1 }, -- Coats your weapons with a Lethal Poison that lasts for $d. Each strike has a $h% chance to poison the enemy for ${$2818m1*$2818d/$2818t1} Nature damage over $2818d. Subsequent poison applications will instantly deal $113780s1 Nature damage.
+    deathmark              = { 90769, 360194, 1 }, -- Carve a deathmark into an enemy, dealing $o1 Bleed damage over $d. While marked your Garrote, Rupture, and Lethal poisons applied to the target are duplicated, dealing $?a134735[${100+$394331s1+$394331s3}%][${100+$394331s1}%] of normal damage.
+    doomblade              = { 90777, 381673, 1 }, -- Mutilate deals an additional $s1% Bleed damage over ${$381672d+2} sec.
+    dragontempered_blades  = { 94553, 381801, 1 }, -- You may apply $s1 additional Lethal and Non-Lethal Poison to your weapons, but they have $s2% less application chance.
+    fatal_concoction       = { 90626, 392384, 1 }, -- Increases the damage of your weapon poisons by $s1%.
+    flying_daggers         = { 94554, 381631, 1 }, -- Fan of Knives has its radius increased to $s4 yds, deals $s5% more damage, and an additional $s1% when striking $s2 or more targets.
+    improved_garrote       = { 90780, 381632, 1 }, -- Garrote deals $s1% increased damage and has no cooldown when used from Stealth and for $392401d after breaking Stealth.
+    improved_poisons       = { 90634, 381624, 1 }, -- Increases the application chance of your weapon poisons by $s1%.
+    improved_shiv          = { 90628, 319032, 1 }, -- Shiv now also increases your Nature damage done against the target by $319504s1% for $319504d.
+    indiscriminate_carnage = { 90774, 381802, 1 }, -- Garrote and Rupture apply to ${$m1-1} additional nearby $Lenemy:enemies; when used from Stealth and for $385747d after breaking Stealth.
+    intent_to_kill         = { 94555, 381630, 1 }, -- Shadowstep's cooldown is reduced by $s1% when used on a target afflicted by your Garrote.
+    internal_bleeding      = { 94556, 381627, 1 }, -- Kidney Shot and Rupture also apply Internal Bleeding, dealing up to ${5*$154953o1} Bleed damage over $154953d, based on combo points spent.
+    iron_wire              = { 94555, 196861, 1 }, -- Garrote silences the target for $s2 sec when used from Stealth.; Enemies silenced by Garrote deal $256148s1% reduced damage for $256148d.
+    kingsbane              = { 94552, 385627, 1 }, -- Release a lethal poison from your weapons and inject it into your target, dealing $s2 Nature damage instantly and an additional $o4 Nature damage over $d. ; Each time you apply a Lethal Poison to a target affected by Kingsbane, Kingsbane damage increases by $394095s1%.; Awards $s6 combo $lpoint:points;.
+    lethal_dose            = { 90624, 381640, 2 }, -- Your weapon poisons, Nature damage over time, and Bleed abilities deal $s1% increased damage to targets for each weapon poison, Nature damage over time, and Bleed effect on them.
+    lightweight_shiv       = { 90633, 394983, 1 }, -- Shiv deals $s2% increased damage and has $m1 additional $Lcharge:charges;.
+    master_assassin        = { 90623, 255989, 1 }, -- Critical strike chance increased by $256735s1% while Stealthed and for $s1 sec after breaking Stealth.
+    path_of_blood          = { 94536, 423054, 1 }, -- Increases maximum Energy by $s1.
+    poison_bomb            = { 90767, 255544, 2 }, -- Envenom has a $<chance>% chance per combo point spent to smash a vial of poison at the target's location, creating a pool of acidic death that deals ${$255546s1*$s2} Nature damage over $255545d to all enemies within it.
+    sanguine_blades        = { 90779, 200806, 1 }, -- While above $s1% of maximum Energy your Garrote, Rupture, and Crimson Tempest consume $s2 Energy to duplicate $s3% of any damage dealt.
+    scent_of_blood         = { 90775, 381799, 2 }, -- Each enemy afflicted by your Rupture increases your Agility by $S1%, up to a maximum of $394080u%.
+    seal_fate              = { 90757, 14190 , 1 }, -- Critical strikes with attacks that generate combo points grant an additional combo point per critical strike.
+    sepsis                 = { 90622, 385408, 1 }, -- Infect the target's blood, dealing $o1 Nature damage over $d and gaining $s6 use of any Stealth ability. If the target survives its full duration, they suffer an additional $394026s1 damage and you gain $s6 additional use of any Stealth ability for $375939d.; Cooldown reduced by $s3 sec if Sepsis does not last its full duration.; Awards $s7 combo $lpoint:points;.
+    serrated_bone_spike    = { 90622, 385424, 1 }, -- Embed a bone spike in the target, dealing $s1 Physical damage and $394036s1 Bleed damage every $394036t1 sec until they die or leave combat. ; Refunds a charge when target dies.; Awards 1 combo point plus 1 additional per active bone spike.
+    shrouded_suffocation   = { 90776, 385478, 1 }, -- Garrote damage increased by $s1%. Garrote generates $s2 additional combo points when used from Stealth.
+    sudden_demise          = { 94551, 423136, 1 }, -- Bleed damage increased by $s1%.; Targets below $s3% health instantly bleed out and take fatal damage when the remaining Bleed damage you would deal to them exceeds $s2% of their remaining health.
+    systemic_failure       = { 90771, 381652, 1 }, -- Garrote increases the damage of Ambush and Mutilate on the target by $s1%.
+    thrown_precision       = { 90630, 381629, 1 }, -- Fan of Knives has $s2% increased critical strike chance and its critical strikes always apply your weapon poisons.
+    tiny_toxic_blade       = { 90770, 381800, 1 }, -- Shiv deals $s1% increased damage and no longer costs Energy.
+    twist_the_knife        = { 90768, 381669, 1 }, -- Envenom duration increased by ${$s1/1000} sec.
+    venom_rush             = { 94554, 152152, 1 }, -- Ambush and Mutilate refund $256522s1 Energy when used against a poisoned target.
+    venomous_wounds        = { 90635, 79134 , 1 }, -- You regain $s2 Energy each time your Garrote or Rupture deal Bleed damage to a poisoned target.; If an enemy dies while afflicted by your Rupture, you regain energy based on its remaining duration.
+    vicious_venoms         = { 90772, 381634, 2 }, -- Ambush and Mutilate cost $s2 more Energy and deal $s1% additional damage as Nature.
+    zoldyck_recipe         = { 90785, 381798, 2 }, -- Your Poisons and Bleeds deal $s1% increased damage to targets below $s2% health.
 } )
-
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    control_is_king    = 5530, -- (354406) Cheap Shot grants Slice and Dice for 15 sec and Kidney Shot restores 10 Energy per combo point spent.
-    creeping_venom     = 141 , -- (354895) Your Envenom applies Creeping Venom, reducing the target's movement speed by 5% for 4 sec. Creeping Venom is reapplied when the target moves. Max 18 stacks.
-    dagger_in_the_dark = 5550, -- (198675) Each second while Stealth is active, nearby enemies within 12 yards take an additional 2% damage from you for 10 sec. Stacks up to 6 times.
-    death_from_above   = 3479, -- (269513) Finishing move that empowers your weapons with energy to performs a deadly attack. You leap into the air and Envenom your target on the way back down, with such force that it has a 15% stronger effect.
-    dismantle          = 5405, -- (207777) Disarm the enemy, preventing the use of any weapons or shield for 5 sec.
-    hemotoxin          = 830 , -- (354124) Shiv also reduces the target's healing received by 30% for 8 sec.
-    maneuverability    = 3448, -- (197000) Sprint has 50% reduced cooldown and 50% reduced duration.
-    smoke_bomb         = 3480, -- (212182) Creates a cloud of thick smoke in an 8 yard radius around the Rogue for 5 sec. Enemies are unable to target into or out of the smoke cloud.
-    system_shock       = 147 , -- (198145) Casting Envenom with at least 5 combo points on a target afflicted by your Garrote, Rupture, and lethal poison deals 433 Nature damage, and reduces their movement speed by 90% for 2 sec.
-    thick_as_thieves   = 5408, -- (221622) Tricks of the Trade now increases the friendly target's damage by 15% for 6 sec.
-    veil_of_midnight   = 5517, -- (198952) Cloak of Shadows now also removes harmful physical effects and increases dodge chance by 100%.
+    control_is_king    = 5530, -- (354406) Cheap Shot grants Slice and Dice for $s1 sec and Kidney Shot restores $s2 Energy per combo point spent.
+    creeping_venom     = 141 , -- (354895) Your Envenom applies Creeping Venom, reducing the target's movement speed by $354896s1% for $354896d.  Creeping Venom is reapplied when the target moves. Max $354896u stacks.
+    dagger_in_the_dark = 5550, -- (198675) Each second while Stealth is active, nearby enemies within $198688A1 yards take an additional $198688s1% damage from you for $198688d. Stacks up to $198688u times.
+    death_from_above   = 3479, -- (269513) Finishing move that empowers your weapons with energy to performs a deadly attack.; You leap into the air and $?s32645[Envenom]?s2098[Dispatch][Eviscerate] your target on the way back down, with such force that it has a $269512s2% stronger effect.
+    dismantle          = 5405, -- (207777) Disarm the enemy, preventing the use of any weapons or shield for $d.
+    hemotoxin          = 830 , -- (354124) Shiv also reduces the target's healing received by $S1% for $319504d.
+    maneuverability    = 3448, -- (197000) Sprint has $s1% reduced cooldown and $s2% reduced duration.
+    smoke_bomb         = 3480, -- (212182) Creates a cloud of thick smoke in an $m2 yard radius around the Rogue for $d. Enemies are unable to target into or out of the smoke cloud.
+    system_shock       = 147 , -- (198145) Casting Envenom with at least 5 combo points on a target afflicted by your Garrote, Rupture, and lethal poison deals $198222s1 Nature damage, and reduces their movement speed by $198222m2% for $198222d.
+    thick_as_thieves   = 5408, -- (221622) Tricks of the Trade now increases the friendly target's damage by $m1% for $59628d.
+    veil_of_midnight   = 5517, -- (198952) Cloak of Shadows now also removes harmful physical effects and increases dodge chance by ${-$31224m1/2}%.
 } )
 
 
@@ -488,6 +489,10 @@ spec:RegisterHook( "spend", function( amt, resource )
         end
     end
 
+    if set_bonus.tier31_4pc > 0 and resource == "energy" and amt > 9 then
+        addStack( "natureblight", 6, floor( amt / 10 ) )
+    end
+
     if resource == "combo_points" then
         if buff.flagellation_buff.up then
             if legendary.obedience.enabled then
@@ -672,6 +677,17 @@ local ExpireSepsis = setfenv( function ()
 end, state )
 
 
+-- Tier 31
+spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207238 )
+-- 422905: Rogue Assassination 10.2 Class Set 2pc
+-- Each 10 energy you spend grants Natureblight, granting 1.0% attack speed and 1.0% Nature Damage for 6 sec. Multiple instances of Natureblight may overlap, up to 12.
+-- TODO: Each application is actually individual, so I should track this differently.
+spec:RegisterAura( "natureblight", {
+    id = 426568,
+    duration = 6,
+    max_stack = 12
+} )
+
 -- Tier 30
 spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )
 spec:RegisterAuras( {
@@ -824,7 +840,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=2094
     blind = {
         id = 2094,
-        duration = 60,
+        duration = function() return 60 * ( talent.airborne_irritant.enabled and 0.6 or 1 ) end,
         mechanic = "disorient",
         type = "Ranged",
         max_stack = 1
@@ -833,6 +849,11 @@ spec:RegisterAuras( {
         id = 121153,
         duration = 10,
         max_stack = 1,
+    },
+    caustic_spatter = {
+        id = 421976,
+        duration = 10,
+        max_stack = 1
     },
     -- Stunned.
     -- https://wowhead.com/beta/spell=1833
@@ -997,7 +1018,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=32645
     envenom = {
         id = 32645,
-        duration = function () return ( 1 + effective_combo_points ) + ( 2 * talent.twist_the_knife.rank ) end,
+        duration = function () return ( effective_combo_points ) + ( 2 * talent.twist_the_knife.rank ) end,
         type = "Poison",
         max_stack = 1
     },
@@ -1168,11 +1189,11 @@ spec:RegisterAuras( {
         duration = 4,
         max_stack = 1
     },
-    -- Talent: Marked for Death will reset upon death.
+    -- Talent: Marked for death, taking extra damage from @auracaster's finishing moves. Cooldown resets upon death.
     -- https://wowhead.com/beta/spell=137619
     marked_for_death = {
         id = 137619,
-        duration = 60,
+        duration = 15,
         max_stack = 1
     },
     -- Talent: Critical strike chance increased by $w1%.
@@ -1180,7 +1201,8 @@ spec:RegisterAuras( {
     master_assassin = {
         id = 256735,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        copy = "master_assassin_aura"
     },
     -- Damage dealt increased by $w1%.
     -- https://wowhead.com/beta/spell=31665
@@ -1225,13 +1247,6 @@ spec:RegisterAuras( {
     numbing_poison_dot = {
         id = 5760,
         duration = 10,
-        max_stack = 1
-    },
-    -- Talent: Damage taken increased by $s1%.
-    -- https://wowhead.com/beta/spell=255909
-    prey_on_the_weak = {
-        id = 255909,
-        duration = 6,
         max_stack = 1
     },
     -- Bleeding for $w1 damage every $t1 sec.
@@ -1327,7 +1342,7 @@ spec:RegisterAuras( {
         },
         copy = { "serrated_bone_spike_dot", 324073 }
     },
-    -- Talent: Combo point generating abilities generate $s2 additional combo point and deal $s1% additional damage as Shadow.
+    -- Attacks deal $w1% additional damage as Shadow and combo point generating attacks generate full combo points.
     -- https://wowhead.com/beta/spell=121471
     shadow_blades = {
         id = 121471,
@@ -1341,6 +1356,18 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1,
         copy = 185313
+    },
+    -- Combo points stored.
+    -- TODO: Is the # of points stored as a stack or value?
+    shadow_techniques = {
+        id = 196911,
+        duration = 3600,
+        max_stack = 1,
+
+        -- Affected by:
+        -- deeper_stratagem[193531] #5: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
+        -- improved_shadow_techniques[394023] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+        -- secret_stratagem[394320] #5: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
     },
     -- Talent: Movement speed increased by $s2%.
     -- https://wowhead.com/beta/spell=36554
@@ -1406,7 +1433,7 @@ spec:RegisterAuras( {
     },
     sprint = {
         id = 2983,
-        duration = 8,
+        duration = function() return ( 8 + ( talent.featherfoot.rank * 4 ) ) * ( pvptalent.maneuverability.enabled and 0.5 or 1 ) end,
         max_stack = 1,
     },
     -- Stealthed.
@@ -1422,6 +1449,12 @@ spec:RegisterAuras( {
     symbols_of_death = {
         id = 212283,
         duration = 10,
+        max_stack = 1,
+    },
+    -- Movement speed increased by $w1%.
+    terrifying_pace = {
+        id = 428389,
+        duration = 3.0,
         max_stack = 1,
     },
     -- Talent: Mastery increased by ${$w2*$mas}.1%.
@@ -1548,7 +1581,8 @@ spec:RegisterAbilities( {
         usable = function () return stealthed.ambush or buff.audacity.up or buff.blindside.up, "requires stealth or audacity/blindside/sepsis_buff" end,
 
         cp_gain = function ()
-            return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) )
+            if buff.shadow_blades.up then return 6 end
+            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
         end,
 
         handler = function ()
@@ -1600,7 +1634,7 @@ spec:RegisterAbilities( {
     blind = {
         id = 2094,
         cast = 0,
-        cooldown = function () return talent.blinding_powder.enabled and 90 or 120 end,
+        cooldown = function () return ( talent.blinding_powder.enabled and 90 or 120 ) * ( talent.airborne_irritant.enabled and 0.5 or 1 ) end,
         gcd = "spell",
 
         talent = "blind",
@@ -1832,7 +1866,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         toggle = "cooldowns",
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+        cp_gain = function () return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
 
         handler = function ()
             -- Can't predict the Animacharge, unless you have the talent/legendary.
@@ -1967,7 +2001,9 @@ spec:RegisterAbilities( {
     feint = {
         id = 1966,
         cast = 0,
-        cooldown = 15,
+        cooldown = function() return 15 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
+        charges = function() return talent.graceful_guile.enabled and 2 or nil end,
+        recharge = function() return talent.graceful_guile.enabled and ( 15 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) ) or nil end,
         gcd = "totem",
         school = "physical",
 
@@ -2049,7 +2085,10 @@ spec:RegisterAbilities( {
         talent = "gouge",
         startsCombat = true,
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) ) end,
+        cp_gain = function ()
+            if buff.shadow_blades.up then return combo_points.max end
+            return 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
+        end,
 
         handler = function ()
             applyDebuff( "target", "gouge" )
@@ -2113,14 +2152,17 @@ spec:RegisterAbilities( {
         end
     },
 
-
+    -- Finishing move that stuns the target$?a426588[ and creates shadow clones to stun all other nearby enemies][]. Lasts longer per combo point, up to 5:;    1 point  : 2 seconds;    2 points: 3 seconds;    3 points: 4 seconds;    4 points: 5 seconds;    5 points: 6 seconds
     kidney_shot = {
         id = 408,
         cast = 0,
-        cooldown = 20,
+        cooldown = function() return talent.stunning_secret.enabled and 40 or 20 end,
         gcd = "spell",
 
-        spend = function () return ( talent.rushed_setup.enabled and 20 or 25 ) * ( 1 - 0.1 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+        spend = function ()
+            if buff.goremaws_bite.up then return 0 end
+            return ( talent.rushed_setup.enabled and 20 or 25 ) * ( talent.stunning_secret.enabled and 2 or 1 ) * ( 1 - 0.1 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 )
+        end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2174,10 +2216,11 @@ spec:RegisterAbilities( {
     },
 
     -- Talent: Marks the target, instantly generating 5 combo points. Cooldown reset if the target dies within 1 min.
+    -- TODO:  MfD cooldown for Subtlety is different?
     marked_for_death = {
         id = 137619,
         cast = 0,
-        cooldown = 60,
+        cooldown = 40,
         gcd = "off",
         school = "physical",
 
@@ -2191,7 +2234,7 @@ spec:RegisterAbilities( {
             return combo_points.current <= settings.mfd_points, "combo_point (" .. combo_points.current .. ") > user preference (" .. settings.mfd_points .. ")"
         end,
 
-        cp_gain = function () return 5 end,
+        cp_gain = function () return 7 end,
 
         handler = function ()
             gain( action.marked_for_death.cp_gain, "combo_points" )
@@ -2213,6 +2256,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( 2, "combo_points" )
+            if talent.caustic_spatter.enabled and dot.rupture.ticking and dot.deadly_poison_dot.ticking then
+                applyDebuff( "target", "caustic_spatter" )
+                active_dot.caustic_spatter = 1
+            end
+
             if talent.venom_rush.enabled and debuff.poisoned.up then gain( 7, "energy" ) end
 
             if talent.doomblade.enabled or legendary.doomblade.enabled then
@@ -2264,7 +2312,10 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = 25,
+        spend = function()
+            if buff.goremaws_bite.up then return 0 end
+            return 25
+        end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2272,7 +2323,14 @@ spec:RegisterAbilities( {
         cycle = "rupture",
 
         usable = function () return combo_points.current > 0, "requires combo_points" end,
+
+        used_for_danse = function()
+            if not state.spec.subtlety or not talent.danse_macabre.enabled or buff.shadow_dance.down then return false end
+            return danse_macabre_tracker.rupture
+        end,
+
         handler = function ()
+            removeStack( "goremaws_bite" )
             removeBuff( "masterful_finish" )
 
             applyDebuff( "target", "rupture" )
@@ -2318,7 +2376,6 @@ spec:RegisterAbilities( {
         spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
         spendType = "energy",
 
-        talent = "sap",
         startsCombat = false,
 
         handler = function ()
@@ -2341,7 +2398,10 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        cp_gain = function() return debuff.dreadblades.up and combo_points.max or ( 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) ) end,
+        cp_gain = function()
+            if buff.shadow_blades.up then return 7 end
+            return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
+        end,
 
         handler = function ()
             applyBuff( "sepsis_buff" )
@@ -2369,7 +2429,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         cycle = "serrated_bone_spike",
 
-        cp_gain = function () return debuff.dreadblades.up and combo_points.max or ( ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike ) end,
+        cp_gain = function () return ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike end,
 
         handler = function ()
             applyDebuff( "target", "serrated_bone_spike" )
@@ -2412,6 +2472,7 @@ spec:RegisterAbilities( {
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+            if talent.soothing_darkness.enabled then applyBuff( "soothing_darkness" ) end
 
             if state.spec.subtlety and set_bonus.tier30_2pc > 0 then
                 applyBuff( "symbols_of_death", 6 )
@@ -2462,13 +2523,13 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return ( talent.tiny_toxic_blade.enabled or legendary.tiny_toxic_blade.enabled ) and 0 or 20 end,
+        spend = function () return ( talent.tiny_toxic_blade.enabled or legendary.tiny_toxic_blade.enabled ) and 0 or 30 end,
         spendType = "energy",
 
         talent = "shiv",
         startsCombat = true,
 
-        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 6 or 0 ) + ( buff.broadside.up and 1 or 0 ) end,
 
         handler = function ()
             gain( action.shiv.cp_gain, "combo_points" )
@@ -2481,7 +2542,7 @@ spec:RegisterAbilities( {
     shroud_of_concealment = {
         id = 114018,
         cast = 0,
-        cooldown = 360,
+        cooldown = function() return talent.stillshroud.enabled and 180 or 360 end,
         gcd = "totem",
         school = "physical",
 
@@ -2503,7 +2564,10 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function() return talent.tight_spender.enabled and 22.5 or 25 end,
+        spend = function()
+            if buff.goremaws_bite.up then return 0 end
+            return talent.tight_spender.enabled and 22.5 or 25
+        end,
         spendType = "energy",
 
         startsCombat = false,
@@ -2512,6 +2576,7 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo points" end,
 
         handler = function ()
+            removeStack( "goremaws_bite" )
             if talent.alacrity.enabled and combo_points.current > 4 then
                 addStack( "alacrity" )
             end
@@ -2524,7 +2589,7 @@ spec:RegisterAbilities( {
     sprint = {
         id = 2983,
         cast = 0,
-        cooldown = function () return talent.improved_sprint.enabled and 60 or 120 end,
+        cooldown = function () return 120 * ( talent.improved_sprint.enabled and 0.5 or 1 ) * ( pvptalent.maneuverability.enabled and 0.5 or 1 ) end,
         gcd = "off",
 
         startsCombat = false,
@@ -2619,8 +2684,8 @@ spec:RegisterAbilities( {
         id = 1856,
         cast = 0,
         charges = 1,
-        cooldown = 120,
-        recharge = 120,
+        cooldown = function() return 120 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
+        recharge = function() return 120 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
         gcd = "off",
 
         startsCombat = false,
@@ -2645,6 +2710,7 @@ spec:RegisterAbilities( {
             end
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+            if talent.soothing_darkness.enabled then applyBuff( "soothing_darkness" ) end
             if talent.take_em_by_surprise.enabled and buff.take_em_by_surprise.down then
                 applyBuff( "take_em_by_surprise" )
                 stat.haste = state.haste + 0.1
@@ -2729,6 +2795,9 @@ spec:RegisterOptions( {
 
     aoe = 3,
 
+    canFunnel = true,
+    funnel = false,
+
     nameplates = true,
     nameplateRange = 8,
 
@@ -2792,4 +2861,4 @@ spec:RegisterSetting( "allow_shadowmeld", nil, {
 } )
 
 
-spec:RegisterPack( "Assassination", 20230624, [[Hekili:T3ZAZTTrs(BrvQJMupOjHeLJ9sYuo25Ukz3Kk1kD79nrbrckHZKe8aaTT2If)TFDpVWmd6za4lToBLpSzTigmtp97xZG76E3T3DZKW8O7(TGobx256GRA3T3LxfC1D3K)8YO7Uzz44pf(i8pweoh(VVpllmllEryECYc8PppljCcolzjRshdJ4P88LzV71V(X48Nw9q7XjZFDw88vZyVX40WP54Fp(13DZdRINL)ZlU7bAqi4UBcxL)us6D3Ct88paZC8Kjr8HhLn(UBWHFrNRVi4Q3T5(B)su4N2C)p91SWfpUcbWOn3hUyc8tJFkjEXJBU)VhTmnEo73gNSysmcqzT38lB(f(m17IGRHz6MOLzXzBUp75fJ3C)SKhJH)VqyPNOn2Glc6bJ99ZML8fyjw85OfjZHHbV3h(D4DxgTysuk8dpggVilh(hBUFYZmWipm9Xi4x(YtrlaGA1Y8vPsy9daaMLa)8TrZxgHV3xswndEqs(trPFjodg4Ie4NFa(hRYmaPlVO7BbqQBN2DA)g4PlrKQXZ5G8ey6MhJerayaK6N3CF0I80NBF3nZIZYZyeZ8OWzWsIu2FJXKeTi8HzWF)JavzmN4hd4WSXaeZW2JghMUGXPGuN04L8bDJCMGvM9Ez3Dd808O04qyDwgnB2iogjR90WfJsMo6tlI)CeGihcOSOS40OjYrS5(1RzixVVu3n33yZ9PHXtgfb0L82aXlRD8c2dVUZD5aNMJT0JHPPjaR4nJFE8Si5AGOaDGwULAhpFzAYNb4t8ESf(eGOfda4SKSOrrg8JWtBcqw0CKPyZ99z)z3Gn3FbqrxnDA7mgV3i2)wnSwBU)1ansBMMmkLnFi2yjiBLhVCwmYU1FaB73ITuCOVDE8CyNKmAsCeBHuZlGncSOw)SydT5()l(oczywUC2Zahykkbnnnk7jCdM)ehK1gBgIzVSkmR)1BZ9NXeIbwtumO7TVtBvvJjeKaacaY4IYgtbEconb(5Kn3ZeVMh(vG)zvktVdkWmnbfZ0vqOtuZdNHSk6y52ITbdzwbrh3MFgi3lIMhJSHdKSHBf3q3VFhj1Foe2eaSkG)rOURr2ZmmoBy3CmTVeOG53DZNdxeN9KprFXiif1bTyjjZMK8fCA3C))GnuqtdtD6uKnIGQZzO(yuy(tZdt)ebLXg0nOoJfRyB5dxTuI9NeXKMuVLoUvsdMKKRgafsgr(6JjLZrIRVKc0uTstKBcgqGVQc6kEKoE)k5Ca2kFiz0sWAfOxBs004XXaJ8WbSz3VwVFGpn(0TrsZKuhoDXqHoqh5A05Y(eenumm4IlptQQj7pEKTQSLaRYLmTMYTdPnVInLIz4KA)kgCiogCAu4KNf0xxAy9sF5Yx)AiOgdWpsV4ENY)JZuevM7fOXYuPA3uaZhDotzkZNbLu6zO3dTLI28Lq690uydmBZ9pHCWXGc6LjWcIAO05r0qs(yteJzod6hfkaEJHCcNsNY3nMu6g2Cbf2)UK)ukbxdz6mCJkfNlnClHzjBh3yoy)D8Ny4Twkqr8e93dv9(BxzrAF5KMQsuAV1Wv1OyUMDaveQelaUaynhnjCbeDcGJ75q8XyCwg2ypcy8XN9N2WOOWOtSvnSdnjgiMxV3eZ)uXOhfJ7kdHbL(LwlAosWNgcsauEWAWl83JuXnOtkayEbegXNxnBrukhvPCShzaqE3WCDDm8zXN3xFcGF7GFwaunKWWJ1rIq5XWeYZSqw885STDmoy(KLjzPYFkm3IRPimfycO8wizjaUr56UnWdDa)xZwfvrm59zXmcVZiE(GWSiOcuMYew1RhGAtF8zGm(y0IriQnEbY7ImH9SWyFq90FI9sySHpIzrzru0e8Nrmxwyog1xKoyYNC5tMqzhqaOXt1XOvWKRESryJQr0Os1MtJF8PCzqywB2Fl6R52j0sJhbIQhIQnmd32i7Js5dpZvmMgzYRWOK5lc7NzRArWX6ikI4hDs6gfnllsdhrHeuuz3ick947fXWwVWHGmi1EF0jaImaTteaZnEnr9VXPpNf6sstECLiheUZdsbyog09mI)hJWukYtSOCdQsTiS4FVdTLENHXtya(BDz7Fw84OrakF0K4sw))9viXCXhX8JIkvJZJHL6zHtDFaFkQdHLCPp8eqCpxZEpxRRkzVOjdmeyMI6cAPH(yUDpdis6xNUhqCpFe(qvy8F8QCmZDa0mAmcmgw2TnLxE(UcrtD7uvqfExfpBaQhPlv1ZjyPOvrCCjdoDLRjV8cGFaSx2Lzx)VCCA0y(7BBMSajjmpz4IA3ES8usA5QyTdthhUat9AAkGMzldZ6O1ZxUIjfxS44a7PpWzO6ISr)VRM84CCMSg716J9HWhr715PG)gzMJeEXLWgM58sLUg9tFnc4lqMazMt5Vi(3pgJ1n5(3pEC0sKOUizXfpfMoF6Qz8mHY8rjzXmSMcQDlMgzKpid(lpokH6NaLkWAoIPVsNw4iN(a2QyNnklcRUdS372zRDasQfgqFl(uuoxnC2Sed3SepSDE32G4YOS8qaCw88OjlZ0Z(JCubeJcfZ1MMcn0Q8vJSzAtbXiAzrX(yeaFGZIyqnpfpg0u1KPHAXZTq12mshiXQMwyy4qdxi05fMNhnFP4pY0ICrzyRTYKs3DZvVas0ifcQmAKczBGgjrsdRcp3Ypz3TJIE2MJxoAE4xhXkciOj8hy7fHYwqLDYQfta3agnEg8I5pxOU90n3)gV0vKEIeTSN4vfeRci()gdbaYCSizfyfdefUW0TrvrgfwWiQi6h(9YUbYF9rIyhhnEPYvn7aFm1iz7sHllZAc2f2YOfLfX1Xvy7PWesdkwOq27bgPdNZYND4dXZal)yan6fVfgXvGA9M9otX6Ftle10gZ3Z8OjXa6GvlmGXjOiT3Nxss5CEoZ5)6T)45gfW9lHODeMdhzjZJu2rWYjNLiFosR5fcJzbf(bM7N8ObxTSTQ4ZHSKkmBgM)ceWkxPzCQWQspg0bdoUzyDB6uaZGLUIWonZiNGVDsu0YOuq(deCaC4CdNe8LNapX(hoF5S4PiSkSl0geVh)jHn2o8XAB)ftNvGh7VkFOu1eZigvXK6ABdijdHxEMoOsvvFzErPkZAFf6RqYFsiGdWyRgJkasJMzi43JLzdZxibw4zHtICoq1w0k(w2aVMnqIcsqxJtCN6VmIdvEOwdDz8fTi2qUkhyYeACKL0OShIQvXdrIJeil3vnuptN6rvwspWCC66vxLfnIlR6RsozrPmY4Ohsa)dZwg)j7Wye1K)MF8gv2IuAJ4QDsWqzcLIACTeaQpbPsNZSrmfwfn1ezk1gzjWYI9UYuworzXcXOAPplhSUke1UUyZPN5rInZi83fj0JYrcV4Hd2cxUhp8vDGkjj)vqbjOiofTKGkAzOsiEky2Z4wdEyv6cQExGLnGS6SZSs0Rr1770(7LsDpKKXDHYiVgCg5EwzVLyJ1g1)PG8lu7IrtfjGeZFnoxDAJIf(teFL4T)hwBq9RVNBGJLKDef9ea6frvFUPhPy61pu4lpwkAyB9YF(sQPs2tQL(ZAPo(QoLAaeDmaoho5faDAD08BYw)SVSZyKtylY5)z4cox9FvKXyKyQ1IaCrHRk8W62FSousoUvQaBuAsUW)9gvvTObSIzCMEMRePZsZ5M0WhtwGH)eHDBgZOBMwr99LUjlKHVghZ1MRoBGc9AGlwtursRRrZpIYU(FQxs(azjIkQ0svKwMLhULio0KX91ey6z2Tf(JU45cxrBIuF2Va4HOjM2F4CesyFZ9sGVLGl6wY8zPsWW8hwvQ)hEp7h5aYpolgcMiEs0RnQbOWxDWw5SqSJlrPY0CS9k59(Yuz2FRdPSPiTypixlLpVU7VpTc0wIhTL3uJnFvE8SWQ6xXAX3CIhVYf57BNyFhuUjdVn8Hl(vbKBWe9rgeU5(FNTSI(lsXFqMNpVueceflmsmbYEIHSCgOaIj4e6eio0298JRTZqvrNKurejE0tFPEPujJ2WvmkNIn1xpFrXGAxmJ4XwQ3Oz((z0tsyFb)xmDcRwIgMxeVms4ttYcvsgGytznW8T3(riw1)BwGVmt9cVmNkk5E(tOAfm8ufqjdDM7dlQSacbF7YzOzHwNIowiHCSDmHflwaPyoezW(cwHEUSdgo)keC)1PFueMoRxsryO6CrIeRlk39XfjCQrDjfBDYlzb3uhpqQOSLd5j4wlqDPPbRgprBeKTMIDNxW8GtRmzFb0rIQHfzLYiLvSuxcQfIhl3EYyOuPyWODAhPAP)Dl1Kf4nNDtHdlO2(ZYYEJvbbzCrwnk0V(E6D18qZ9I7qs4gLmXXI6uUAXSiuHYxIEvkl8TOLH8O9yGsKJUG(ectqCJdv0)ZKoqCat8WBk7NIrEj6q36L(AEgNodvNxMSzT8QKEyrkT8ORhhczav1IdMI25IYCIJC2PBOVkrnxJ2Gf2oB2kHc0YV8CSWf4zr)P2eNRL4AgpnATHLSAw6oyzuvsTqkI8i9imoLbkCZMgJQHOeZmKXCLX6WzaDeI(D0Yv)Z)jyX(HKVYtItY0PJEe8iaT(ZNzYHU1bh(sPAwVpQO4oQOHjcQGrg96lGkescdcY8ljC6NUsvLtVEr(0zgR17Gkl8UIbTu5D0oNg(sHT3TjxZdoSQxQaDvue1TsKturwcCjEwrFWiGOwLtljbq1cRktcM9jXd7wW8R(fpr)kgtW2HYdE5q5DPq5D)McLhqgwlrKnukVuuc1djJy0G6qvsMIecI)QUS(1sDfSxsuGnTaB8IBWmo2PW2DXq0ZYGClG)q2dHlIid1RAlGvDgUCyHSzLo4y75Nr)vpu7CyDIZTzdNEf433NZyfsQrvdRpRTAS6GdD)P5XEzAGvyn9Heu5Q5brT4m(WJZt434SeCVamaRE8jScKv2Yakd2yHnPQ7mA2FvM4xLPdfc2sKpuNfL2W8TN23PkEIAKk2gM6z84kKzDQ6R00vbTtnUt24Uf9B427332(Ad5iYK5219HlPoBTM7m0DLKj(uxiXIgmWJx(NIPSVhVJoieK03(6b3OAMkQiOyLrW60bGNhAKP8Jj3AKMJ3p7lHpNjpX0C28)QuHLPdjo7Kgz0zOOKMiISTo(sYIxHo7GbGU5(5SUUINEKNcNnLV0VkJ2phbFSsfAPdbGLoFbbRy86AQidnYJ3Igo3oMFg2hLZpc7oc0Jify4SB)YAMjuT6Mp58Wu2FpBe2ejXzanTMiITC7w9XIGTauvoBilFsgfyJXyxTBg8GdnzFrSI7ssvqvCYyuBeNyGIMm(OGvp6mrLxO9iNeb0udxvnJqBZVd0BPgff)aZqlxtXR1J4XkLoHpKi7w5XHlfbaXNdc5cAQ2bJ34Wq(BwtXNoTFRE17yTh7xIybkWEnDGRGxPCJ1R1kjswh7tBKhhxRitobYm501o2jdXtgEl)P4SCKrokuZXAYopUJWBAf7Ya9dRfTgDTKbyQWQvL7c1YiAOiTi)kGzwQ5Dh)sZQQWjcDh(75JTmJGgkV5NLAt3y6zS9DC5NGyc3XEjknysYKzRYqNodhxVY)4GcwaoltK(ch4UezENbgynA6Q0NzZIBpQ9plrPzrPS0IJZIBFo9oltbMbg8WMeB33Q5KG12fBxXzJglolCbUDF4eRJohJw4S9rWEFPyH8EgdeNkFC1DBM27zKymWtosInY5h5bIQxwD4X0DprtBV61e(TtYDrvSmmqwQ7dl1cZI(UfK8Wm2Yo5ug9G7FdKJWitz97lRpZK3Pmc7HLBkGc3MFkeB1Gl7j1yILWNDQaTk6csvJ(6Y4ur6cPBSTI4nZ(u8Yr8I9kpIte1GCFW7LTAwLoVGTf1xgZkc0FVXSIqLY4PhG1s03EMd8NWG)UvsZo0BPI9bp3gHlbv7WUbWdNlY0X4vSJEd2tbyrgkbCAGLREquoeRWexcocHEJuKNemzgQCOaBiePWWTCF0SohNHz5BtwkozJVBriDxQCC5nCIBhVC1MT9vEwq7VnvTjpK7OkUokQmFybvlqnOkNikbmLshrFQ0ruW(OP4OYyx3dCvfu)kXvD9YjGgKQoZnnQiXnvGP0KfDvno1bn1qwujcUA5NIIy1iKLTX80yztQXQqeQZa7c6qgtbx89ruVwyokKYugYmjWBdmSJuKh9Tq212ayhh7POc6MVtGPLB7sv(UUzomsgikDoIBLSkoyr3bQ7PRlwfFlZP1sCXEXOYdN(fmxlz()Q0xkIkfwIOB4SwHkPsgP5c0)jPPgKMUb1G2q2N8UQhOvQxiEzn6OXoAJ8iqxHIio7K7lncmUBfcNmHAQc(rArSLG)Pq5ytgyDgdbFk7pjaC(L4wPMNR095j(hcgTOnfT(Q8SNHAD4UZKUAb)YcGLMh0GuWf9Y4QW4LHb)xfEPXlkJYdnEzxaVFEfZ7VC(5duviNpAuTqxTulTZp8t6aovf1msa(SU204SO0KVBMf)zgaOxajbqYRj1IWLzpLGxQkEKZtLRxT4rS1b8VvY4vjGpKbpFJCg0iljDjMSkvWRt()tEJ)DH3G0(I7l0bBdmwhrHzZEGDesFFYprEDklU4KIW(ddrVYBOLmwg1)mg64dmfUpUirC844hwlE8V6DzMmkzPwwzzSlZpVhg6SIOPgwHiliE9qF0MRU5w5X6aesav2rZv3PnlIctXORzniTehPQRV6KvlkS5KezvnLhe7jylyGEOF7p(ASFyDIYgOfiB18RvGzBA3Z7xO1ch2Ag8h8LJAFuX5BUpVn(AyLCAI6WWYnSDF3G)OUZnfVxrxOwdDaxXYNiMYROuSOoIlG9EbxF3nFjmf9(i7UBUfz)JNVKDMyy(o8kvMsFfoH)FRWu3VrCw2dxLNmNlJp(jaxfH3W6)n2TxqW7WRgyyFKYECYYiE2eZ4SwVYDh404eAsqJMI9t)MDdUW1jSP1)HrRpYUqLxVwtDF)bDB1Omc7cX7pm4vCM0Jhe(69gcvy5lRal7jzdn8S)chRFbxpOB1B4UFFTW7(YnbmhnCDLv3VB7lL0LxW9uTOu71EIDL9ti1XRKW2jY11Kz4voQcMfE0vrYGH1S7xB5C2nqnTTMBFDJS9ehCubB7z)Od2KLk0g49Elr)VUv6YJkPWXSBLqcRj3Xb0XEUV6Oc52Z(bJjQ3rfSTN9dgyF9rfSDm77jFcPAwXDh72PN9T0WN9nRNfa66I3RKE2ohPPNebOU(L2ouqjrzrZ2x(E7sbMUVAVQupH4vlF1HvAYjhsTMCI7lmcqNAmh1PVYjM4IqJaRSZW9Uo9UvmFijMUM8dcBOBiF3qjh5PVYjExzbRjCVRtFv2cl3S(wA(C3n)vP8NDrXTDk(C4JDP0tybJotFrjT)oMFz23SNx7SYvZ57GGu5RWBOxbD)hSMBQi3Q5SEaH7V3bMM62HXgR77gKPcMUXtY2ooohEnVN4x7z101qr61FLPRHKN(0TBI3dFoDOEypXdVSoGFyN9xgjVdgNH)jEp4mkjjx2skRoWVYJzu5aostCBNXou26j9usmady9WnXf2oCK4H9KbR7XrJMRP9aAYORd5zvk5TM5sP4V0e6iu3YNbdRz29H0O0s4qlXUdZoMWxayMNmDRP18WUu3PAFz2C49WUaHoMQDNa5ycpGeOah5OyVnSr7NEY26KUdW7W5LURfyNDt)OhxXbpWchQBpCqSJfyhKl28l)mJHcNM3Sr8rlaBtPSCKPbBA)KPXytO)DyVBFq(wiS5xe)DBvk2gO)vrG45Nn41ytAfPD3MDEPRh9bD7CE80bL7H5HD7T5x(oSzVYp2FzaOHDzDWoh75(bIzV4UW4Cwd(pOlc9UZttJMN4odrRx7jzddh4jdkT2hqoqhKldvAGC59tbitavd9SDAztmpQFoaQd6r3UOwVGlqs69yr)FOPqOSSVvN(gh0crPBD8qJpMausfmHcTU54xy4VcHzqwHDWFyTzfRlFG1bnVGNPLWphgpdFT2S3A)(sXP2bduBPVd)C7MV)F)3utnGsWVXC4M(eZJYM2imjFghNdbrZtxM1pGb2B1hHn3lUvlHjwEY(6D4LC9yVyFr0Cd1ef0)8KLdyFRYox1Cydi77yERAOEKHtLIN2W9l234KHkfXCo8Zl(cHnW7sQHzpQFKZ8Wgw(KzVR4uZVaAhzSP13zoT9N9jcvSpvxSDGmQ1fr061EU)HQCMhpHtgp6FDZ0bflfWOEhE)nz)XcRHEh4nCqW61NiSfyxHYgAQRTERR0xArZWXmc7yMCaku)SKLONVLKgXdXHuJbX)6ZOnoZVmy42W8S(pCq3ENrFehkplSVFy6)U1Nlm9hz81btyq8BLl43cZ8a78GsU9kUdMh0TDVZn6yyHH(sx8YGty0hCX1RXtBFddna9VStRgnl3HD9Po4qNcWW61upzOHtpCh2oy3(WgiiQidOdc4Yox462iUr17b2wypU5ETbAtv)f3ODgUsQu6lumFcrEyqcGhZAqSpRxtMOA7FwPLf2OBXL3BD3y63fQwBhhnOY61u3Dkm6W2F7(AdMCJwwEjYmb14epTkjXrLcdYHIS4R5hh(g(MZ6qIomaL(oXroHAqGoGGOCmyfxH8nwTKuYEy3oKkc62rgNLIbaTz(sCr1wxwQs8t2uskQ1jexwgfnQAvcIuJuNZ2g0X7i348O5CqN4UX9CTBrxUgChSthwP8wK4gp(jgqYKmiiqtXy(b)gS1f6m7C2vhQm1dC8MI0ukBfd62Ojbz3XwQtR1R9nzbgzIXSerGpDu8xE8zhwoy9oX961QMiHGQqcbhsKqxJC78YJeuZbURjekDkrQsgkdDzEOv0KY0V(x7FDRgwh(Kgn9SBg0Rdx9EXJesyTePEr3pH)GEJK6xjTx3yi0V1OKU7MEmdB6zG2Poyy3wGcEkmpXPgzOpl0NDL)tVWv27)sx2OArLzStDM)VgnTwXsgF0DtfKr9dHWZpX8k7OiMskFpEB7RljLPdhgcAoaWMB1kE1zxDk9mwKdvs)KoTt7Edltq5sxoU6s)lFtE1LwYTu45AmokLvk3weAQAqEf3r5HOFxwhtF)sQ59QviJtCFVswI7XAZuUiQK7QAb)KgYmvEx(stCO29n6falKplsm3FP3oNuM44zhkEepEJDFdFuiy7uOlbCXSJ0D2zf8qs04wrc2vCEZkzO60(TNjwyx3(MfkPjYV7WET4uiZ7BthEpq6QwqzgvTRKYI0rAE3A2OzPmT1bCArSfhCjiHrPGbaSYcETiHlXuDAzJk0h8kM7yEQ6YqR7gZ1R9n4UniYa01(IUwt9H5TE5WR6vAlWVMjrqMHnSUklDKynsKN9mxC9tIZEDEb1nnznFb1LkznhV59hznFj6maZrSLlnxdh38od6uAEtKxcK4Sukp18mw8V4VY5)LnFl9voVadYZ)(zgLnG(6baWLs1AU(EN7WeSD8u(VbaqToRxBQjc8B1ro)1dq0YiNJTHEcCPtuD)Uebg0h2(nD1uoN2RvXdLTce7hvaNvjDbvGoS0sy9M0IRklFubnuKyi6VT4MvZjWjYQxRwe8kMH1v8nLuvQqIeN39aqtzsY)R(Z7nb(G4d5SrGrfyiE0xv813UMRarHE29veqS77hP7Ac2oathA773P933Ojv2O6P7BV)pu3xu2lT(dWpq3CVw31VY2hVnSd()gwxNkeAXPs4Gdh6pXP(Jku9CvhTBXHIDKdprzO4D4lFnXUZWDox41MNu6ofUHpVchC5zwPzszMJ6Cl1IE)W0e9s(5EUs0tnvp4h1OsCg9xhzkKnzf6mZyJrIppKFfQjqk8V81ozweUQx8bPg4IzIyLViA6pORENOWyv4BHD8J2mb0k)wmtr9QGuCIt3Q0RLv9O8dc8bB04sPJ2)H56mxBlMu2RMY3DQcVBkRDPPz(nfH6AxQvPHenLRw(eYzMEHVuYRnwqi86blyMrfFkwcQjsy7VgZRX2XCJWTpDiUZYTxA56qNYFvmtUUxL0vyAEhkXvkBNzkAp47d6WD5mTj4k5Y3dWLO4li46TIebE1drNYMgecCy6)7xoSTxoII3DzxhKNHoQEsrToOksIZ963bSYM73LGAOrmp8sb7Oy7qHnt1GUmU(x2BhCpmCUATrTmr2OPj(E9ALzz1fcAfoZGbCttxPMSt9YzYNUY0a5ToxRHx5lbwBdHIgRr5GqHGEjJxo7E0)iJI7g4fhVH4oo9BTRyABYRvvzOiZgOSHdcCQA5Qg0NyGGoavISmxS(0GYt9gsIxZGZU80MwGWvTAPLbHJ0LFThn5wm(IN4bVOlm8nitVBE(Hnp4zH0fETUkyKy7)KiSxebwsf(M5cAUk1sBNAiLVEK6o8OP(f72vEB3VOt4U4aCIiAQx6Hl62YqcWLhNLkuT3IN0VBVIQkOQuRiNgfDQ261f6)lQNl2mWE46LLs7MIgs79CKwb2tLEKZ8vs3JDfD5(x9ZII5Q8Z9DQIhGMG)7MNThedPnwSIEHJrsk3YTwtmOAFvm3ggEYPV79649(bA0OBpog6P31R8w994E5rFOWFSl)DETsr9gDV9DAyXIy6lv5c1bxf1eGbfZ1Nu8T8tghJr4(EX)vezPhAbptXB3vUCTOa(dn1)vUSPqV1jI6FWQDVSvVzYieKg7MmvH(4L(NLLgzpa4OrmOo5cnoXyVlFIz64S9RWmZbk1VTQQ7Xk387x1YrCuEByLFqyVtI544mdnLaoMRQKRmGaHYsJ8f6Lp5BsuQp8qZlVqcxKMj0BkhYbOrBCCPnZcNXeBloFsIdF37fbn(oLBpNPqXSypq3ouhb0uaVGoyb6gyweu8ZNH5vTTuiWSJqNgZ(Um)KSDoKNn(2EPyopSpIF3kOxZ8bA3GTw5jB4LnO6d)sn9EPbP47PAon(rhX8q)2)stT7QnQlv7Nd)30WrHZrRUdUQhbokJvwOrtyvf6WWB7jXLBVobFpL1Qz7HkdJsITpABpciXDtbXwJF7g8cIG)MwzHnn8iRYyBPu82Q8yOtH91Vzm(LV(TSpql39))]] )
+spec:RegisterPack( "Assassination", 20231110, [[Hekili:D3ZAZjYrs(BrHJadJKWasipJpbByp27DJ3ZoCyn3EFtOwqJOpbDZ1DJ0Oni43(Lzwp66D3GrJhFXg7ybD1vLzwzLVZIB7F7hV9MzrLX3(Rd6n4I(973RBV3oy4WlV9MYxwhF7nRJM(y0dWFKgTc(3VVOiQOijnQmjlfF6llZIMHZsr2M8PWiwuwUU47(MV5HKYfBUV70SvFtrYQnlP3yAE08s8Zt)MBV5(njll)q6T37geU42BI2uUil)2BUjz17Hzoz2Sy2WJlME7n4WpVF)Z73772D3hG5oEvCAz0YD3HJF3DBwJtB3D)8UFwm0EVdg6VhVm6t7U7NsFkonB1U7YJ)F3KWE5c9r)2Qr)(8KvfzP7U7JXRwhxug61(w41(7BYlxeNV7oaDgiGfJXneg3VfvoDbBuvpS3vNp4s4HF854Ohbi9tfrPpSbP6X7UlkDg8vtxKLK(acERbiJ(UPzPZsqQSYY0B45dUcMPBIxxKuS7UIxsNU7ULzpKa)NiGEotzSdoFacsF)YLzpRqFIG379)g8URJtNHOu0drjPijiA3DZEHaJYO8hIHV55fXan633SUCtUawTjDpNTzj8GmKc9CsbmW0m4RVh(JnfAGeqOWTmKNO73AVLcpNbYZGPBvcYzcadWP80U7G9L8x6E7nltkklio0Y4OLWsISR)kX5hNgD)s4Z)aWQnLXrxaVlJblpzn7R(LOhbaRGqOYSD3Ti6PyXISznqc2Ktl7)a(3I7JsHdbWlxgNNebNIIwcas3hfpRlFn3DxRD31gE5m1hwMm9rAU2Uf3pZwol75uLNJlxhXREc82X3Vz(8UiqtpRL(xbCN4o1U7UgiHI3KECmBZfEPBlHdEEigpwHrAuejMU7UKuKuend5y(XO0PWxnpd4rksJwxSiRSKqNFn5HfLfaT4X4CvQdhuXxFYm8TRa5XJ2D3aFa8fEay(OmaxjNmU7HtFzec2aRaBYR2c1WevanE(8yynEkEciq7(SjRHtFLCO8sgD39gPj8xTLaV5fiUC5HHlcq(xIa(AGGlKmZ2sWdclJfNl3pmHG3v00ojIpRtI2KhjyXoHpgTno(ZEkcwfav6YGGjCaaWZHEWZhIYZZkrQ9ltLVqbEcvbQLND7MSADE2tXZMWFpXPbvED4J9bENZfWjj8Bc93YH1HDiBnOAQmz9YeKgI7j9zFFB(7MaYurY)ks67KPr5PG6qb2gXOK4EVeCUMKuUCPat6opkDs28jpMcdLTWQhHDtWesaQ2H6olEEY0Ks2o1fIjHnCGFBf8QztMLet4D1Xi4uKbl0h4uWD39VZGzua661lFbKiNJAuMNhxa6KEg0GZOckJT4meRNMTjLDYMoSl0UWomHWcx0)h0OEGQag5dzhUYGDOX71H4(A7Fdf3JMfhvUyvu(J2NpDYVRYtjP4(3ugAZudi636HVpNPK0yZrQ60HGvu8LqUQUmvMsAqD8CGqVe3(lYY3ZJ9EODsEv3eDI0Yu5urDj1u3IN6V5PO0KIfU04QH23W2ZboeUspa0(N0RcubYMfIrZI1vWL(JI1(2BGbojn(tLKee4)MhnjAfYVE7nxQSdTgwOjiDImBnGsqvu2eQDO4lnl9Cf9JfXLBwxOUtCcEOnGrb8hAY7RngPPbIhwX)RilQBOZcIXKZoUJZTYMTZTunJsQEKMvgdQFyGiPR6v)PP21ihD8FJ4C74YEGMtTpPzeC(ymKsyotiDLFSwNU2YKMxrkU4pejxJw222GqNhpv3WUSIJGPMSs0yhjCZFIM4qphqcyqdxuG(riXHCs22684i1Z2cBCuoD7ANn0Ust2C)I900Lh3tj(SatxuOdzMQIuDO6UrBWKWrWaVONOTuH5ecb4(Su4VGB4H3pOv5cYinbO62etja3jKve1tZTDqOjoS2asSBbQ6(bP7UJJbOAiwabvAVTLzCib6ThebkA5Y7JM(OhsLBUV)uvu4uuYNDz)KPDGCOi4asT2297XfcR7sa3dwNbueczBNcc9FAZY04Cg2hNgVkbpLGCPOmVOYok6zyZs4awm9rtVDsHncKwdE3KwD0NPXjIfQRIKvRi0obhmBYKsMkxevAWiu5HcmbUS)iBnaUOF3vCHmV8W)A5g4)euiX12oT9ErW9qZ7rqF6IyKVfPOyy0qpgkquKCJlLtmFHw5jSy3A5rUPI66HAyoZF4fGz4H4uYrIKuKPg5ohAbWIN(t0lHow(agCW044z4xtA8JGJaySFvat2KlEYmxkUQhqB71HpbhVNGUvRxoAhVKkskxKuuIe34OUZ3SevNoDbsONW8gg3r7jd6qBRGArh38hOObYxLVdSEkx))B7X((5O3Gt0EP31ZClPIL5z01KfSWWYc7krbalaelH6wsAw5e0ibUOwt9)8TJK5QhtQXQv5JnLV0QwRI0qvdu8xbRuQIhHYHDAx4(OcKZdLdinPKftCc7fHfhJCbB6zH4axpsRzKKBtCKIfzjCgQaipmLtIxweRqx0rCjNRFK3LzaUIAsE2dBIzCfHcLIKB3BO(8nc9hwS5E4HZ3qrfdHJ8KPmNVfeIPGuYjSpmbJgplM8csOmQ8buIhCgMoJinVZN)7ltMgpb2uNmlXYd(FBdYUK(JSi5dB4LjWs9c3EG3JpfLtrHk(9la2NZqwdTaKjJilEUkQezJEwLBrtZbJIPbrIt)2XLH7lDLLht3uIb5dGMjtrGrZSct7iCeNhKm1VNxwOMSkbqaxps9C7qVGLvmVr40xgAcYlas2Px2NbcHF5eqQn799hqbUaynNW6dO2PszZ6AhRw7O8PG6gG0MNdKzAzinWgpF9gsor1IJdCO6axsr(BY)ZMzpGzF0CSxPo27JEaTSapu(yH(iHxeC4MzMvTgX9tFkg4lIj1fWzJyH9z4NFibt54DF)0PXRXnvmeyGYVvGIqwiYjRPqtt6QGTyeNr(Gc4tomPlOoEH8xaTsFmUKjaUyzMMHA8h2TSFxGnEsrzuz3O0xMmBDHWKz8OLyudCmk84NY0ujBMF6MT9Rmfogrh3AHFErcM4x(7cIQbOVqMCXsKY(prncvAg6FywAoWjnXf2AttCr50OjoX4X1r06eEpuyAQPH)685(IMHP8Ejp(KIymf5fiLuHKOi30u5qE85tJWewFdoNCld(r6pv9KH7oet6rGCl7oJE)i9EyqKxbU9dhJUpzjOgc9da)FvPHhgZLGuM2dpvg17B6Wsnpcnuk05wPbAPMchWeg7eTA9YK5Sm1ZoXHMga(9IzZHga9)twfXmADgoRNXshe6kwuw8ENlbzETumE0uFwfCXfeuPQHS11Z6mYiGyRWc0G5yTUz(ml2TwfkFDe(Z1Z2l86HMRUEcSktOsGqIf(sDxN9wEg3YpNb5tg2PGuup5DDFDaGsH0YLyw6RoHUPiEc)BDibsGpR2uMSK8LZO6je5B)9rBkkrdSVzDuzPEHaim9GneGotJWkWsIyMOg1iTkHWCcmCEZ8XoCYQLcTScXf8x(tVTPZ0))gCRsJ9Q73uSWLO3))hUkzMdeU7I4CkcftUpdmBRyDYJM8(8SQFZpCJmCt74zSNhEPSn8YOkML7CmnURZtYac6lNH)z8CyvsQkXk458sUQidwwmZVZPywsUOq1cw(l7Cu3hbigSW8zHmKysLiS6le0oPdhTf2USqc4Ny9Bj)J4yGvAEoQrfvrsKsMwVcMcV73KNY02sKusGF2CEyakAcMz6qTQtq96(wb3(9G5d0F7i2ndnIVKdedv7nrc5NlXIjZ5rWeJuiox96oyixPKxFKRLU9Ftf23V89SWms2AGKOfaOx5S7zIcmKzEYnuT0DCOxbu32Ym2C14MRtWGcNHVne0ebfZ4y1Ej8CEPxg0DvTq7Aqu)7ODxiV1)Gh4xKKo4uLZ6id5fv279X6rePKuHyKj5zLC7UBvxYPysppvnWr8OjDQ0OTz5rpKLwI1YzoYXSmcWjJSv51)BdQrOs(6eziCNjDuuvYqyu1mpDwX)1sfuyDg1s3UOU9wsbatHadzkywILKgrgDkSexk9gWoC7N(gaIINPRgGXsiq9D3jW9om2Ol(OZazyOm3qFf9Lma5haZlNvKml(B0QYfUxbGkRLrSQGgR0i0(rY5feHzrFTl8czCjfBWs8vm5wzFKOVY4X2THC40b(7faPrijDvWFkjW1I7wRMA9NCaRSPXcUSCD1bNovH4jO5Y)HpeCIFxDSklZ9HTEKDAO(y09N)lCixJL(hjiC3D)g39sssMKBTkgwn3XH)Um3S)sfPkeNbZnCmAWo8bVE3VAq5f4rOIPQYOKsRKmqXt2OO1qTPSk3N5xgngLKYx5bMKJd8cDISo)pm3mdwru8St5O0ZnnXULJCy1XnmlNeDqF)dL1joo6gWJcx5y7ehNInpJ4MA7BmUWoJi8uXgGNyeT5GsyBKy1zknpbAO1M1NX5riFhYy9ucB)BNshFaphFLcqdqX8emQZU2i0i)(Dy1h9uVQfQYLhg)eP4ZMuKeEvm3Kx2xX7uxL7iLX7QKPXOS0RwRaXHOwqcKAMqXImQybyqog)9fXtIxDFCEr2MLSiQKnF(KhMoJe4Z2O8n6QDM2Evp1Y8j6696ltGCiVogykU))c1QxWLmH8(zBkiLgttIwIXgfiDFKf)2IqUkJY7IZVh4bbTY5GDel8rdCnsl83rA9Bg2fWl2OLatb4b1K1B(x)lqF89zFY7(KRHw)XNAsR9GMIbMo)QxsYK)xIGbWnnSGsNalcdYeoyu40NP1pwKfBQ1lJXUGuoOv07jZg6loR5TYhdIMAvkrnl1avzposlbwsPVidtQpz)1uTcCiQJD4wDauDWCqKHHkG)qLuHl)MaoJZhZG9JKp4ZhjVVlsE)VOi5dAAmaCOCSjuRQDl5eemkaoARqwdes1VfP1JmiifnqqAc4zyZy(C0lfS4QW99IFUo5FfZpOZ8e7TyZgWtWLvazDyQxTgiP2vHTLfh7(P7HaRogbZQAGYW6gWNlVY79ziralc1mrzkRVuNuYAlvDJG9fSjbiz(Y7JIizq7EdqEcgUK9IT57ZP9CWmXFlhuqxqSYblHErA44V4K1I3ZQEvD0NP7jP)GelztP8fpdVukEOi5veMi1xS0SJ1Fk3K6kLLmIsbZw9QWz6GUXRGldAvdB3Kple926EZrtLRWepgd067uJYhvJjphtBj0RPcCvhoSR)nAYgkphWcXVEXfh4y9EXquxiw8Ytuv23kc9zoJjTUftpqbftwmahgXK5OThhKt64Wa8fPapVfVrGMTtSV8Fa(dZY9nEcLzWRJoLC)Bh)dkQhe64VzwBBVnQPl0Qp9VsOBZLY521y2eM5OE1P3SUDR(kDjPKsqOPpFNuQ(zZik)uwcM)SNIZffKcRk5otXhdEtREL0agwCKFuXmi0UhA8rcUPkvBcksH46NqT0x4SEgNFjARAnBxrFDwFF965Va)SpN5G7I2ZfNcgpsTIUpq7QUsAyCTTJZbWgOFM9kHKwtxpRiQ84FNLnB5gq6a4cW0YAxJle8Q22guXCToteXQ(MEmP4ZDOzGaRjZ3K)cfXu)EfeEwIZlIZrYhnlMw63WzzEsEmbp0KyA3xdNeuixrzoOyzkVbugeSdy16xfAVWBkxX8fxTqblxwENvHRU)yjgSCFNchCNiOgLuKtoSy33UMmz8MknTtH)fFeTSDZJsFKEm78i2TKdmBBcrH5HcX2jUDd0lspznDklBGvrFkz1MvGMPPuOArbA)aUKIkVJfF3PBOIbEPEJ6qWyv1OrvEg9shwe)zQF0rCLYFRsZV)11idhX84nZrUBenRJqcm1hj8LGURiyy7Ie(9bJkjYgZ59(d)uVpl(nmijCE004o2PC5Yyw18nQ2gJyJq2UAJLrVZFdsnyOqX(jEuItbnPL74tBCLECLXgI9vSe(bSsc(OaL198bmQydw5gX8EZIayxzfqqTfxOf6RRmHwBw)yCmLRILfzKQACjlzLp63N9tmtYqTcklQY(ShjggQHf0F)H33C7Sb0Y(dcfbFjE)kbGQb2YOZ3ONxBDhmypWtN1sLVy2xZ9tYrChVrN5AojTb0I20eFkpDqSYAjcmfp9HjfO8Qz5XlRmJ6nchApvp6Ow7xVry(EWw2wsyF1OaTRHVYmIQMIDfZ7xeuY9QaaRrmf)wYr6I)diJzuj6DbLIlLWPILvVOvxyxSoGXoXIbgpdTiGLaSfC)rv3qd1mw7HmdCJsZ3m0aEElL2eHdYlTO2(NN3iKHSxZwDSgDiUJlBGXMLmB)aJRWaKiUfi79UBV55OCSdmbRp(iUVKSAnvQr0gWxlTP9RLxfJOTvzK1zBkZwXyKa3ysFGU4f)ptWsnQ)3H3XqGx150J)AtNN(AMClRVxWddpVD)p1HUccDavmBI3pqAWrdKcoFMjv3yA9LZDZz)IJm06z(EDHwdosJj3t9)yo3x(5FUpsuLREfHCpZ9RlK7(kuXCncEpRyUsF7RinYZCFWNHE7Rkn3ZS)hKs4u8j)kfz)KF(o3WNzBmBaG(6YztSNUDHFnMENeazZkUFKalr(8SYB3)MsW0FlEAsb8n52TqQ1K7CinAYD03OoaDxJ5vD6RDID0qSoOkhmCFOtVFfIhZntFt(rHn0pKFyKKx5PV2j(qzbBiCFOtVxrZuBkVFIL8ySTvvQBi70BBbxlUZL9Q3DGMsMD3BIMZThlWokZ9WxX5UVhIUZ22Xyjc2Ap1O5A6SI9J54y72ZRRjZVUZULjw2cFO4dhsYJyaVstSFZTSf44EkDmany94nX1Ey4GzY67HR1UspmLPznaVlHhPASAeXyA1lCKMovho67zcpMOVNtAhom7zc)maZhYwMhDdho6FSD28ioHUn0iBpTYWtmbScdTbC5nm1MiSh89im)7(5pqOooTF7o(vL0U7OFXsGhtPTC6T)6GHVdVgBYMNGj19RWFqyokxgt7(z(N7kD7CK61Y0UFgwR996kYXKE6OVreP)ZW88oIplvvW9zuMQh1)SK5J870qR2N43DLTBdy574rbmNVZFeqEGkiBdvkGSn(ubYoGQXbqhpqS4Awf32A6DxKNzs7ou6mRRqj2oLAso(zAv)JDvVkHLrQyYr5cCvo1aYHxsSi4FIEzXqm7h2TSQ6SRZ2OvmLCwMa5z56bCWypU7u9V4gzvJV8olrHXxmu90EZUIq9VYk3qr8vTTZcrB7wNL(22T8kMu7AyfgSwLuUDR8Gr4RF1Rh0RZ2TTnkOYwAFMNtQRhnagA1LS64rVT32TAvU21JExpIw9z4UgnaJLDLxFw26r01W6zYQAEKZcnHg9y5J0VisB5)vUwJoW3y9p8ZQU2th5zXuXpZAnJJNYoJLDXIYK8y0fWB36)IoLZl55so19tREG2LBA9ql4emt67R91kQkOyiSgLSXGDZBPZwQzHE8ObB3Ec3wfZOv3sr0UXBDP6sZp9q6a9mtEafxFTGnByOL0nHheJ0GbXUP9ugN(vYjIg6L)74r9hEQ7A6YEwOlUt1V34E6u9rAxlNKYtsSp7qcJh6iDncuPGhyoTeJ4Uv35hTfChEYLdt4Tz3i0WLtkZ37Qkhbi6wk(WQwObb2TmeS3HiF)j009nf3TWydXzTC0nhMizRtCuHWTC0wJQ7RUEUJnct8GjZgpD4cWMzFRamEqp0Wx3XaRLdUgWsypdwUZx1T)AtGsvZC9O(DA12UWug3huHJvHElD9497X4u2NMC3K0GniEsz8k2wS7g4)mLUiNP(QTtREA5Sy)bSQFhNW)Obdcdo29sVhqXYUSdCbD0y82ROlEOa2CmWpO8vIU)543U7(WZIZihFfE8XiH(7m5r9B12X5upOezLAGjBGMdW6X8e0L7sGqa7)GLdwVt8VEDAiryqDeHbhtIqFnxQ)Cqe(QVI8c9Pm8Nb2F6tGQqW9WcMALkTmKgCD6vc9otI5VcDFuXoOSo7zqHAs68nyyffNkS7thJna5aW3iulS7J2YoZuFJN)VDynEULIdyLuSnukBZRYmUNDTAVxsiFBhfxbREm5XOB3lDl0ZLMjN6IL6280rLB36UBkzlSNoP0JmxEFy9M3wZExZ6(7A2HSd5T1wttPrn(eVle8y1021GUmdBAzzXP8BoI0J2vgX6PnSh3R77oLVW(A)6wHA96Xd7W4W0B4ApS71SB0rz7y)7xAFe(9JuBSnDOu()8oTEOTSSn5RksyofOUxoizo7Y3HzqOVGSP2QYxFvhlH4TdOND0WE(K66Mq2NfpYVu6FytsMsahRc4IEdf3QTvSe61ZDWeQyrLWmq3zR8ykIK7L(WRQcStfhYEq8fmXxzzbiRxCrmMqyJ(915KDrpzCBv1fyoZv9OlznudEbz742Wxq25TnC86nzBdFj3bEI1va25COLNoJyupR5nt0PS4SyfEmwep(lXpKevyglCC6rr0DJqb4yRkFcusUqfJUvnJTDR75AK5pDeGAgPEs2gCGFWiGtJ98nZJv)rIq1PcnTkDAyEwK)sm4GGPhyPQBavzi5TB2OX9vuZPtbDdNey6)hVbhqL4ECvnAW61SMh1ZCYU9D(VChXZ99pMTMklIQOdT8Itwan7Eq(VuG8FfOZOQ7)K)XpWbLZX1CVMN0QygZo6G)2e0WvqR)fzXa7WxrGW(h9NWGgc2EatpQSUUx332QTll5gQAcz4Fgdo32PORhH)8fWeAEO)ge86HWE4)BzCL)4qLN5VHaEwDNMuXJJZb8RhGdirR(d8rdAFI1vSFRaLXaOL8uJCAiCS1zjg3Xn(qsn(CEJ5xl5XXr5t4gw7((z3fLZzEZyFPHmB3cDds4VGj79lHlY)GABDYLXDQO6s0xKfE77ZFWdr1S(t8yDqDCEc4NPP7O4i(SRUGmoXd8wUpKU69NZ5eFwJQLOVMXxmAa)eM5vQFnMx4yzeoB854sXrb6YST71)1vJOMJcqrEJi2s23hqVzqNX)nUm2J6nDttqNQlHbosWoa44Y7zC1UJFkbZzJJYTdJj0BeymxC4A0FqPGwzLeWvpM4DX9RZ4bYkYYOO1addADIZOofn7Lw2zc(Cr4OUIOlhRBVgtkdx0UPN6kbcQvBZ8wRszca49h4BXCq(pOfVYKgJYhSgf(1b1FLsrwCKP3CTM1e)GdKI3(YtB7RIUFZWoN22h96nx1PJpi1XM1bc5T9UFP5zVHSLoVIyS6bRx17BLah78v(AbofSDR0Ycudmv4O1yQfyVH978Mb1)w(j(DgFzOGcYYY8ncZEWY8NOa8G1GjOUGoHHNF41MpLbhSmeTTxtsaLgsDAGK26og0Es9ANQ4niZxJYhf0T(wPrG5IBLjLOibJuLqCefPrRlwKXvZ(RKNTai)OAOPurlTKCWbeLYlwMOchzl5RucEksyxjJkgX)YcEHG6QdRobLgfVt3b8xd2KmFxOdJcq5xigjGjHZjXiMmpvTJsYEdHeS4PUABDInjw1Sv7Wf9bELFjLE8DYqiHB3)UE1XIZUYyXWphnLS)IWCIdrK(y2(d3evmuiFq7IabJTjDtG4Mueq)Q)IoUsWq7(do3NpmD2U1ugeZfip3ujabKBzKIdKxhqAtNoQ6hmsUPB5Ixeu1WGW0OW0e3SewIHDMOQamBYen1XJO(H6gF4qGcv0aC5jgYseQW45yK7LStQWHzgsBxufNPmRd31RBeTytv9cF3)KYWKi1Ye7V1bkRAGRcnyjO6umbFzyZtuaU1mn(myEMKg)jSO7H)npAs0k8i2OlhYloaBXYy7MPi9UiUCZ6chlKzgTTty5(urOTvJOIlgkXZummOJNQslqTi2FqOhp(QE(ybd5j64)2LDoicK3cSL)9gNwybyUQsDRSqsNaXWLl2BQdH(wvpG1KiOLx6QuvyLGLEpICnt7MGdNoRUg9WtHXoqDojjOkjH1db6lqoUlpICu71zBb5MoudA(IEIiWc9Tczj1Qk9lkYFiAw7loxaao1(2XMSyBFvatSDqicth0lDd7Q8y0fESr07ro(B4OmtvXmzmcDJJnzN9vsIKRA79vrGdDJuE7)3]] )

@@ -1,5 +1,5 @@
 -- DruidBalance.lua
--- October 2022
+-- October 2023
 
 if UnitClassBase( "player" ) ~= "DRUID" then return end
 
@@ -69,7 +69,7 @@ spec:RegisterTalents( {
     feline_swiftness            = { 82239, 131768, 2 }, -- Increases your movement speed by 15%.
     forestwalk                  = { 92229, 400129, 2 }, -- Casting Regrowth increases your movement speed and healing received by 5% for 3 sec.
     gale_winds                  = { 92228, 400142, 1 }, -- Increases Typhoon's radius by 20% and its range by 5 yds.
-    heart_of_the_wild           = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for 45 sec. Feral: Physical damage increased by 30%. Guardian: Bear Form gives an additional 20% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has 2 charges. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
+    heart_of_the_wild           = { 82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for $d.$?!s137013[; Balance: Cast time of Balance spells reduced by $s13% and damage increased by $s1%.][]$?!s137011[; Feral: Gain $s14 Combo Point every $t14 sec while in Cat Form and Physical damage increased by $s4%.][]$?!s137010[; Guardian: Bear Form gives an additional $s7% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has ${$s9+1} charges.][]$?!s137012[; Restoration: Healing increased by $s10%, and mana costs reduced by $s12%.][]
     hibernate                   = { 82211, 2637  , 1 }, -- Forces the enemy target to sleep for up to 40 sec. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
     improved_barkskin           = { 82219, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_rejuvenation       = { 82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec.
@@ -109,7 +109,7 @@ spec:RegisterTalents( {
     wild_growth                 = { 82241, 48438 , 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 9,287 over 7 sec. Healing starts high and declines over the duration.
 
     -- Balance
-    aetherial_kindling          = { 88209, 327541, 1 }, -- Casting Starfall extends the duration of active Moonfires and Sunfires by 4 sec, up to 28 sec.
+    aetherial_kindling          = { 88232, 327541, 1 }, -- Casting Starfall extends the duration of active Moonfires and Sunfires by $s1 sec, up to $s2 sec.
     astral_communion            = { 88235, 400636, 1 }, -- Increases maximum Astral Power by 20 and teaches Astral Communion: Astral Communion: Generates 60 Astral Power. 60 sec cooldown.
     astral_smolder              = { 88204, 394058, 2 }, -- Your critical strikes from Starfire and Wrath cause the target to languish for an additional 40% of your spell's damage over 6 sec.
     balance_of_all_things       = { 88214, 394048, 2 }, -- Entering Eclipse increases your critical strike chance with Arcane or Nature spells by 16%, decreasing by 2% every 1 sec.
@@ -121,20 +121,20 @@ spec:RegisterTalents( {
     elunes_guidance             = { 88228, 393991, 1 }, -- Incarnation: Chosen of Elune reduces the Astral Power cost of Starsurge by 8, and the Astral Power cost of Starfall by 10. Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
     force_of_nature             = { 88210, 205636, 1 }, -- Summons a stand of 3 Treants for 10 sec which immediately taunt and attack enemies in the targeted area. Generates 20 Astral Power.
     frenzied_regeneration       = { 82220, 22842 , 1 }, -- Heals you for 32% health over 3 sec, and increases healing received by 20%.
-    friend_of_the_fae           = { 88234, 394081, 1 }, -- When a Faerie Dragon is summoned, your Arcane and Nature damage is increased by 10% for 20 sec.
+    friend_of_the_fae           = { 88234, 394081, 1 }, -- When a Faerie Dragon is summoned, your spells deal $394083m1% increased damage for $394083d.
     fungal_growth               = { 88205, 392999, 1 }, -- Enemies struck by Wild Mushrooms are damaged for an additional 70% over 8 sec and slowed by 50%.
     fury_of_elune               = { 88224, 202770, 1 }, -- Calls down a beam of pure celestial energy that follows the enemy, dealing up to 17,924 Astral damage over 8 sec within its area. Damage reduced on secondary targets. Generates 48 Astral Power over its duration.
     incarnation                 = { 88206, 102560, 1 }, -- An improved Moonkin Form that grants both Eclipses, any learned Celestial Alignment bonuses, and 10% critical strike chance. Lasts 30 sec. You may shapeshift in and out of this improved Moonkin Form for its duration.
     incarnation_chosen_of_elune = { 88206, 102560, 1 }, -- An improved Moonkin Form that grants both Eclipses, any learned Celestial Alignment bonuses, and 10% critical strike chance. Lasts 30 sec. You may shapeshift in and out of this improved Moonkin Form for its duration.
     light_of_the_sun            = { 88211, 202918, 1 }, -- Reduces the remaining cooldown on Solar Beam by 15 sec when it interrupts the primary target.
-    lunar_shrapnel              = { 88232, 415169, 1 }, -- Starfall deals 20% increased damage.
+    lunar_shrapnel              = { 88209, 415169, 1 }, -- Starfall deals $s1% increased damage.
     moonkin_form                = { 82212, 24858 , 1 }, -- Shapeshift into Astral Form, increasing the damage of your spells by 10% and your armor by 125%, and granting protection from Polymorph effects. While in this form, single-target attacks against you have a 15% chance to make your next Starfire instant. The act of shapeshifting frees you from movement impairing effects.
     natures_balance             = { 88226, 202430, 1 }, -- While in combat you generate 2 Astral Power every 3 sec. While out of combat your Astral Power rebalances to 50 instead of depleting to empty.
     natures_grace               = { 88222, 393958, 1 }, -- After an Eclipse ends, you gain 15% Haste for 6 sec.
     new_moon                    = { 88224, 274281, 1 }, -- Deals 14661.4 Astral damage to the target and empowers New Moon to become Half Moon. Generates 12 Astral Power.
     orbit_breaker               = { 88199, 383197, 1 }, -- Every 30th Shooting Star calls down a Full Moon at 60% effectiveness upon its target.
-    orbital_strike              = { 88221, 390378, 1 }, -- Celestial Alignment blasts all enemies in a targeted area for 15,037 Astral damage and applies Stellar Flare to them. Reduces the cooldown of Celestial Alignment by 60 sec.
-    power_of_goldrinn           = { 88207, 394046, 2 }, -- Starsurge has a chance to summon the Spirit of Goldrinn, which immediately deals 10,676 Astral damage to the target.
+    orbital_strike              = { 88221, 390378, 1 }, -- Celestial Alignment blasts all enemies in a targeted area for $361237s1 Astral damage and applies Stellar Flare to them.; Reduces the cooldown of $?s102560[Incarnation: Chosen of Elune][Celestial Alignment] by ${$s3/-1000} sec.
+    power_of_goldrinn           = { 88200, 394046, 2 }, -- Starsurge has a chance to summon the Spirit of Goldrinn, which immediately deals $s3 Astral damage to the target.
     primordial_arcanic_pulsar   = { 88221, 393960, 1 }, -- Every 600 Astral Power spent grants Celestial Alignment for 12 sec.
     radiant_moonlight           = { 88213, 394121, 1 }, -- New Moon, Half Moon, and Full Moon deal 25% increased damage. Full Moon becomes Full Moon once more before resetting to New Moon. Fury of Elune deals 50% increased damage and its cooldown is reduced by 15 sec.
     rake                        = { 82199, 1822  , 1 }, -- Rake the target for 1,128 Bleed damage and an additional 8,776 Bleed damage over 15 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
@@ -239,6 +239,11 @@ spec:RegisterAuras( {
         duration = 3600,
         type = "Magic",
         max_stack = 1
+
+        -- Affected by:
+        -- druid[137009] #3: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
+        -- starfall[191034] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- starfall[344869] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- Autoattack damage increased by $w4%.  Immune to Polymorph effects.  Movement speed increased by $113636s1% and falling damage reduced.
     -- https://wowhead.com/beta/spell=768
@@ -247,6 +252,11 @@ spec:RegisterAuras( {
         duration = 3600,
         type = "Magic",
         max_stack = 1
+
+        -- Affected by:
+        -- druid[137009] #3: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
+        -- starfall[191034] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- starfall[344869] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- Talent: Both Eclipses active. Haste increased by $w2%.
     -- https://wowhead.com/beta/spell=194223
@@ -256,6 +266,10 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1,
         copy = 383410
+
+        -- Affected by:
+        -- orbital_strike[390378] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 383410, 'value': 194223, 'schools': ['physical', 'holy', 'fire', 'nature', 'shadow'], 'value1': 2, 'target': TARGET_UNIT_CASTER, }
+        -- orbital_strike[390378] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -60000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
     },
     ca_inc = {}, -- stub for celestial vs. incarnation
     -- Heals $w1 damage every $t1 seconds.
@@ -290,6 +304,10 @@ spec:RegisterAuras( {
         mechanic = "banish",
         type = "Magic",
         max_stack = 1
+
+        -- Affected by:
+        -- cat_form[3025] #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -500.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
+        -- heart_of_the_wild[319454] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
     },
     -- Increased movement speed by $s1% while in Cat Form.
     -- https://wowhead.com/beta/spell=1850
@@ -328,6 +346,14 @@ spec:RegisterAuras( {
         mechanic = "root",
         type = "Magic",
         max_stack = 1
+
+        -- Affected by:
+        -- cat_form[3025] #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -500.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
+        -- incarnation_tree_of_life[81097] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+        -- astral_influence[197524] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
+        -- heart_of_the_wild[319454] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+        -- starfall[191034] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- starfall[344869] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     force_of_nature = { -- TODO: Is a totem?  Summon?
         id = 205644,
@@ -356,19 +382,45 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
+    -- Arcane and Nature damage increased by $w1%.
     friend_of_the_fae = {
         id = 394081,
         duration = 20,
         max_stack = 1
     },
-    -- Talent: Movement speed reduced by $s2%. Suffering $w1 Nature damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=81281
+    -- Movement speed reduced by $s2%. Suffering $w1 Nature damage every $t1 sec.
     fungal_growth = {
         id = 81281,
         duration = 8,
         tick_time = 2,
         type = "Magic",
         max_stack = 1
+
+        -- Affected by:
+        -- mastery_astral_invocation[393014] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- mastery_astral_invocation[393014] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- balance_druid[137013] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -1.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- balance_druid[137013] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -1.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- sunfire[164815] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+        -- astral_influence[197524] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
+        -- heart_of_the_wild[319454] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- heart_of_the_wild[319454] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- heart_of_the_wild[319454] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+        -- nurturing_instinct[33873] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- nurturing_instinct[33873] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- convoke_the_spirits[391528] #2: { 'type': APPLY_AREA_AURA_PARTY, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, }
+        -- convoke_the_spirits[391528] #3: { 'type': APPLY_AREA_AURA_PARTY, 'subtype': ADD_PCT_MODIFIER, 'value': 22, 'schools': ['holy', 'fire', 'frost'], 'target': TARGET_UNIT_CASTER, }
+        -- incarnation_chosen_of_elune[102560] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+        -- moonkin_form[24858] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- moonkin_form[24858] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- thrash[192090] #1: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- rising_light_falling_night_day[417714] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- rising_light_falling_night_day[417714] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- balance_of_all_things[394049] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+        -- eclipse_solar[48517] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- eclipse_solar[48517] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- friend_of_the_fae[394083] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- friend_of_the_fae[394083] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
     },
     -- Talent: Generating ${$m3/10/$t3*$d} Astral Power over $d.
     -- https://wowhead.com/beta/spell=202770
@@ -396,6 +448,41 @@ spec:RegisterAuras( {
         end,
 
         copy = "fury_of_elune"
+
+        -- Affected by:
+        -- mastery_astral_invocation[393014] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- mastery_astral_invocation[393014] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- mastery_astral_invocation[393014] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- mastery_astral_invocation[393014] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- moonfire[164812] #2: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- moonfire[164812] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- sunfire[164815] #2: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+        -- sunfire[164815] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+        -- radiant_moonlight[394121] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -15000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+        -- radiant_moonlight[394121] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- balance_of_all_things[394049] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+        -- eclipse_solar[48517] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- eclipse_solar[48517] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- eclipse_solar[48517] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+    },
+    goldrinns_fang = {
+        id = 394047,
+        duration = 0.0,
+        max_stack = 1,
+
+        -- Affected by:
+        -- balance_druid[137013] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -1.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- balance_druid[137013] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -1.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- heart_of_the_wild[319454] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- heart_of_the_wild[319454] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- heart_of_the_wild[319454] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+        -- incarnation_chosen_of_elune[102560] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+        -- moonkin_form[24858] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- moonkin_form[24858] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- power_of_goldrinn[394046] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- balance_of_all_things[394049] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+        -- friend_of_the_fae[394083] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- friend_of_the_fae[394083] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
     },
     -- Heals $w1 every $t1 sec.
     -- https://wowhead.com/beta/spell=383193
@@ -418,6 +505,7 @@ spec:RegisterAuras( {
     heart_of_the_wild = {
         id = 319454,
         duration = 45,
+        tick_time = 2,
         max_stack = 1,
         copy = { 108291, 108292, 108293, 108294 }
     },
@@ -429,6 +517,14 @@ spec:RegisterAuras( {
         mechanic = "sleep",
         type = "Magic",
         max_stack = 1
+
+        -- Affected by:
+        -- cat_form[768] #1: { 'type': APPLY_AURA, 'subtype': MOD_IGNORE_SHAPESHIFT, 'target': TARGET_UNIT_CASTER, }
+        -- bear_form[5487] #1: { 'type': APPLY_AURA, 'subtype': MOD_IGNORE_SHAPESHIFT, 'target': TARGET_UNIT_CASTER, }
+        -- astral_influence[197524] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
+        -- heart_of_the_wild[319454] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+        -- starfall[191034] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- starfall[344869] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=99
@@ -437,6 +533,12 @@ spec:RegisterAuras( {
         duration = 3,
         mechanic = "incapacitate",
         max_stack = 1
+
+        -- Affected by:
+        -- druid[137009] #3: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
+        -- astral_influence[197524] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
+        -- starfall[191034] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- starfall[344869] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- Talent: Both Eclipses active. Critical strike chance increased by $w2%$?s194223[ and haste increased by $w1%][].
     -- https://wowhead.com/beta/spell=102560
@@ -445,6 +547,13 @@ spec:RegisterAuras( {
         duration = function () return 30 + ( conduit.precise_alignment.mod * 0.001 ) end,
         max_stack = 1,
         copy = "incarnation_chosen_of_elune",
+
+        -- Affected by:
+        -- druid[137009] #3: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
+        -- elunes_guidance[393991] #4: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -80.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
+        -- elunes_guidance[393991] #5: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
+        -- orbital_strike[390378] #1: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 390414, 'value': 102560, 'schools': ['shadow'], 'value1': 2, 'target': TARGET_UNIT_CASTER, }
+        -- orbital_strike[390378] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -60000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
     },
     -- Movement speed slowed by $w1%.$?e1[ Healing taken reduced by $w2%.][]
     -- https://wowhead.com/beta/spell=58180
@@ -460,6 +569,9 @@ spec:RegisterAuras( {
         duration = 10,
         type = "Magic",
         max_stack = 1
+        -- Affected by:
+        -- cat_form[768] #1: { 'type': APPLY_AURA, 'subtype': MOD_IGNORE_SHAPESHIFT, 'target': TARGET_UNIT_CASTER, }
+        -- bear_form[5487] #1: { 'type': APPLY_AURA, 'subtype': MOD_IGNORE_SHAPESHIFT, 'target': TARGET_UNIT_CASTER, }
     },
     -- Talent: Armor increased by ${$w1*$AGI/100}.
     -- https://wowhead.com/beta/spell=192081
@@ -502,6 +614,12 @@ spec:RegisterAuras( {
         duration = 4,
         mechanic = "stun",
         max_stack = 1
+
+        -- Affected by:
+        -- druid[137009] #3: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
+        -- astral_influence[197524] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
+        -- starfall[191034] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- starfall[344869] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
     -- PvP Talent: Entering an Eclipse summons a beam of light at your location granting you 50% reduction in silence and interrupts for 6 sec.
     -- https://www.wowhead.com/spell=234084
@@ -659,6 +777,7 @@ spec:RegisterAuras( {
     starfall = {
         id = 191034,
         duration = 8,
+        tick_time = 1.0,
         type = "Magic",
         max_stack = 20,
         copy = 393040
@@ -686,6 +805,29 @@ spec:RegisterAuras( {
         tick_time = function () return mod_circle_dot( 2 ) * ( 1 - 0.1 * talent.cosmic_rapidity.rank ) * haste end,
         type = "Magic",
         max_stack = 1
+
+        -- Affected by:
+        -- mastery_astral_invocation[393014] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- mastery_astral_invocation[393014] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- mastery_astral_invocation[393014] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- mastery_astral_invocation[393014] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.6, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- balance_druid[137013] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -1.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- balance_druid[137013] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -1.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- moonfire[164812] #2: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- moonfire[164812] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- sunfire[164815] #2: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+        -- sunfire[164815] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+        -- heart_of_the_wild[319454] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- heart_of_the_wild[319454] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- heart_of_the_wild[319454] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+        -- cosmic_rapidity[400059] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+        -- incarnation_chosen_of_elune[102560] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+        -- moonkin_form[24858] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- moonkin_form[24858] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- balance_of_all_things[394049] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+        -- eclipse_solar[48517] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- eclipse_solar[48517] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- eclipse_solar[48517] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
     },
     -- Talent: Suffering $w2 Nature damage every $t2 seconds.
     -- https://wowhead.com/beta/spell=164815
@@ -1204,6 +1346,14 @@ spec:RegisterStateExpr( "solar_eclipse", function ()
     return 0
 end )
 
+spec:RegisterStateExpr( "energize_amount", function ()
+    local ability = class.abilities[ this_action ]
+    local amount = ability and ability.energize_amount
+
+    if not amount then return 0 end
+    return -amount
+end )
+
 
 spec:RegisterHook( "runHandler", function( ability )
     local a = class.abilities[ ability ]
@@ -1283,6 +1433,11 @@ local ExpireCelestialAlignment = setfenv( function()
     eclipse.reset_stacks()
     if buff.eclipse_lunar.down then removeBuff( "starsurge_empowerment_lunar" ) end
     if buff.eclipse_solar.down then removeBuff( "starsurge_empowerment_solar" ) end
+    if set_bonus.tier31_2pc > 0 then applyBuff( "dreamstate", nil, 2 ) end
+    if set_bonus.tier31_4pc > 0 then
+        removeBuff( "balance_t31_4pc_buff_lunar" )
+        removeBuff( "balance_t31_4pc_buff_solar" )
+    end
     if Hekili.ActiveDebug then Hekili:Debug( "Expire CA_Inc: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
 end, state )
 
@@ -1291,6 +1446,10 @@ local ExpireEclipseLunar = setfenv( function()
     eclipse.reset_stacks()
     eclipse.wrath_counter = 0
     removeBuff( "starsurge_empowerment_lunar" )
+    if set_bonus.tier31_2pc > 0 then applyBuff( "dreamstate", nil, 2 ) end
+    if set_bonus.tier31_4pc > 0 then
+        removeBuff( "balance_t31_4pc_buff_lunar" )
+    end
     if Hekili.ActiveDebug then Hekili:Debug( "Expire Lunar: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
 end, state )
 
@@ -1299,6 +1458,10 @@ local ExpireEclipseSolar = setfenv( function()
     eclipse.reset_stacks()
     eclipse.starfire_counter = 0
     removeBuff( "starsurge_empowerment_solar" )
+    if set_bonus.tier31_2pc > 0 then applyBuff( "dreamstate", nil, 2 ) end
+    if set_bonus.tier31_4pc > 0 then
+        removeBuff( "balance_t31_4pc_buff_solar" )
+    end
     if Hekili.ActiveDebug then Hekili:Debug( "Expire Solar: %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
 end, state )
 
@@ -1592,6 +1755,28 @@ spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
 -- 2 pieces (Balance) : Sunfire radius increased by 3 yds. Sunfire, Moonfire and Shooting Stars damage increased by 20%.
 -- 4 pieces (Balance) : Shooting Stars has a 20% chance to instead call down a Crashing Star, dealing (76.5% of Spell power) Astral damage to the target and generating 5 Astral Power.
 
+spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257 )
+-- (2) When Eclipse ends or when you enter combat, enter a Dreamstate, reducing the cast time of your next $s3 Starfires or Wraths by $s1% and increasing their damage by $s2%.
+spec:RegisterAuras( {
+    dreamstate = {
+        id = 424248,
+        duration = 3600,
+        max_stack = 2
+    },
+    balance_t31_4pc_buff_lunar = {
+        duration = 3600,
+        max_stack = 5
+    },
+    balance_t31_4pc_buff_solar = {
+        duration = 3600,
+        max_stack = 5
+    }
+} )
+spec:RegisterHook( "runHandler_startCombat", function()
+    if set_bonus.tier31_2pc > 0 then applyBuff( "dreamstate", nil, 2 ) end
+end )
+-- (4) Starsurge or Starfall increase your current Eclipse's Arcane or Nature damage bonus by an additional $s1%, up to $s2%.
+
 
 -- Legion Sets (for now).
 spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
@@ -1785,7 +1970,7 @@ spec:RegisterAbilities( {
     -- Talent: Tosses the enemy target into the air, disorienting them but making them invulnerable for up to $d. Only one target can be affected by your Cyclone at a time.
     cyclone = {
         id = 33786,
-        cast = 1.7,
+        cast = function() return 1.7 * ( buff.heart_of_the_wild.up and 0.7 or 1 ) end,
         cooldown = 0,
         gcd = "spell",
         school = "nature",
@@ -1817,6 +2002,11 @@ spec:RegisterAbilities( {
             if buff.cat_form.down then shift( "cat_form" ) end
             applyBuff( "dash" )
         end,
+
+        -- Affected by:
+        -- cat_form[768] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.25, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
+        -- starfall[191034] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+        -- starfall[344869] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
 
     -- Roots the target in place for $d. Damage may cancel the effect.$?s33891[    |C0033AA11Tree of Life: Instant cast.|R][]
@@ -1981,7 +2171,7 @@ spec:RegisterAbilities( {
     -- Talent: Forces the enemy target to sleep for up to $d.  Any damage will awaken the target.  Only one target can be forced to hibernate at a time.  Only works on Beasts and Dragonkin.
     hibernate = {
         id = 2637,
-        cast = 1.5,
+        cast = function() return 1.5 * ( buff.heart_of_the_wild.up and 0.7 or 1 ) end,
         cooldown = 0,
         gcd = "spell",
         school = "nature",
@@ -2176,6 +2366,9 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "mighty_bash" )
         end,
+
+
+
     },
 
     -- A quick beam of lunar light burns the enemy for $164812s1 Arcane damage and then an additional $164812o2 Arcane damage over $164812d$?s238049[, and causes enemies to deal $238049s1% less damage to you.][.]$?a372567[    Hits a second target within $279620s1 yds of the first.][]$?s197911[    |cFFFFFFFFGenerates ${$m3/10} Astral Power.|r][]
@@ -2539,7 +2732,7 @@ spec:RegisterAbilities( {
         known = function () return state.spec.balance and IsPlayerSpell( 194153 ) or IsPlayerSpell( 197628 ) end,
         cast = function ()
             if buff.warrior_of_elune.up or buff.owlkin_frenzy.up then return 0 end
-            return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25
+            return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25 * ( buff.dreamstate.up and 0.6 or 1 )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -2560,6 +2753,7 @@ spec:RegisterAbilities( {
             if not buff.moonkin_form.up then unshift() end
 
             removeBuff( "gathering_starstuff" )
+            removeStack( "dreamstate" )
 
             if eclipse.state == "ANY_NEXT" or eclipse.state == "SOLAR_NEXT" then
                 eclipse.starfire_counter = eclipse.starfire_counter - 1
@@ -2623,15 +2817,17 @@ spec:RegisterAbilities( {
                 addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
             end
 
+            if set_bonus.tier31_4pc > 0 then
+                if buff.eclipse_lunar.up then addStack( "balance_t31_4pc_buff_lunar" ) end
+                if buff.eclipse_solar.up then addStack( "balance_t31_4pc_buff_solar" ) end
+            end
+
             if set_bonus.tier29_2pc > 0 then
                 addStack( "gathering_starstuff" )
             end
 
             removeBuff( "oneths_clear_vision" )
             removeBuff( "sunblaze" )
-
-            if buff.eclipse_solar.up then buff.eclipse_solar.empowerTime = query_time; applyBuff( "starsurge_empowerment_solar" ) end
-            if buff.eclipse_lunar.up then buff.eclipse_lunar.empowerTime = query_time; applyBuff( "starsurge_empowerment_lunar" ) end
 
             if pvptalent.moonkin_aura.enabled then
                 addStack( "moonkin_aura", nil, 1 )
@@ -2975,7 +3171,7 @@ spec:RegisterAbilities( {
     wrath = {
         id = 190984,
         known = function () return state.spec.balance and IsPlayerSpell( 190984 ) or IsPlayerSpell( 5176 ) end,
-        cast = function () return haste * ( buff.eclipse_solar.up and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 1.5 end,
+        cast = function () return haste * ( buff.eclipse_solar.up and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 1.5 * ( buff.dreamstate.up and 0.6 or 1 ) end,
         cooldown = 0,
         gcd = "spell",
 
@@ -3002,6 +3198,7 @@ spec:RegisterAbilities( {
             if not buff.moonkin_form.up then unshift() end
 
             removeBuff( "gathering_starstuff" )
+            removeStack( "dreamstate" )
 
             if state.spec.balance and ( eclipse.state == "ANY_NEXT" or eclipse.state == "LUNAR_NEXT" ) then
                 eclipse.wrath_counter = eclipse.wrath_counter - 1
@@ -3029,8 +3226,6 @@ spec:RegisterOptions( {
     damage = true,
     damageDots = true,
     damageExpiration = 6,
-
-    enhancedRecheck = true,
 
     potion = "spectral_intellect",
 
@@ -3076,4 +3271,4 @@ end, state )
 } ) ]]
 
 
-spec:RegisterPack( "Balance", 20230910, [[Hekili:TZ16UnoUv4NfJI1JDYyhjz7eplSDXUfBb6G2TfWZI2Fzzfl5e1il5Qljtkm8ZEp8IKiPiPKCCMjTna7ojrI8CJKFNlKuRmx9LvlDDs9w9RwgwJm(KPXqZBgnA8nRwM(8EVvl37S5bN7GFj0zh8V)StGt4g8ZFoiYXf1)KOSy0JUpnDFYpE1v3sAZGe)DBgENF69z3o0p6kAxhS0F3F4QDUdVpDxWVFRFG3CAhgM(10vlVnZpi9pfU6wPcM5OvlDYsVpkE1seHaU6766rAUxYMvlrnFGXNgyA8Jhx)x8dJIpUoBpIuhxNgb)FSF4dEPhx7e6EC92GONgE8Zh)mPBtH)RSBigK3zMgDZattOr)nN0n3FCnsWgorsZUEG1yOzhx)tU)ZSeGH)0F9xoU(rNyFNBd8(iq(OahGl)YMa)9jG0T8lCVg38LPoXB9J9U6Vh7KcCllbgmoU2pSOFjmSCYaRPywkO3BXAZ(i)GKcdaF3SWD7lp558WX1)XS4NpUoAlWJGSqp(wAGBjsUcIIbl4g0qxGF4DGubu3byW94)Y5oh)qU(Aoc33FdPSHEpbnztQFu4W)XqVqV478)3E2o7IYcbBvYZHPoFfK84ODKbcokzquZFdRFjSndKID7r0fjciPmjlgzXWgoEACDvtfVX0WsGlOgIgVvixJhyEd3iEuODwINDXuU8rxM(ynWAcTpUEG5mbe8aVbGGFhQhziBfAKaprWji446N8rte(sugA2x69W7)drj7IsgUAzGFsAcAjPtKh8JFfV82leXs3v)m8yS9E1YDrrHOzvRwUj2p1deQvl7CC9TrjGw2946yVTXEj3J6h(V7bmclqdt93b6tKTRp8MbOwUdgLHE1)46fhxFnU5ojPXob27JEYlEOR3w)n(P4xxO)7Dss8FegUt2FC9LhxdRQ388MaG0y2KGe9uyPVG8hThqB8slvKCcI(TGmpSw4gN57ommYEJBsU0VjkkWn6PWHBCS9d3mSqSNDC9eCJqQF22T5niBVofFbAAWX1hoWyZ26F39P2Se2Acw3qT8ceDc8cthce3jo0bj(2BUpkXl0oARThEDgvtXgZ(yLZMG6UX1EtuORpUxOXwW2msXyBswLH2xYW5aCZt27feKp4CC9vGYHBZ5CWEClMS(MBM6evJgPGHdgh3c)ZlDmzGW4WWeQZHCDAkwcv1MtsDNI7Nksodl3MMyzJobpB3TiE4hM6fM4N(8WyNWhyBaviaiRaxqmiVMmxQqmQmHxQr)AbJoZ8d0s5eQpkUv7w5wBL8QC4alUrX36NIKxaf)bM1OknNZ0BoVOYQjmmcsGtry62aKoiqyeDekuFsduYRE6zhcaYcZ1EuU4rIBWgGCCI5SnJzKL8wLGcsrSv9ZHOYNMtccWg1tIXNcCLpeGgTUr5O17dfVSHcw4gsuci7902BVzgq9c8ss9b10jW)UWDG5hrZp9sOjJRpeTmnWrQqF5toXX(rXfodzzdQXIHYuFOaAaTgX6CfunVyIXfZjXGoKOJmDjFkkDqAOt4Z2HEFnTrJF04FZLni4JKuBe(F1bvKdqK0j62NlaUxOawDAivaFcL8HcPd)oSOj6aVu0AVFhlJC5UtXY)TzH3bu5U4ONaPPy1psnkB0toHqe02Pp5hGciJVzUrIuPQRbfX7DtEuI7J9E0(UnUqwFapCT3LLCFCekBawJc7BWghXaeknokyyHJk2WslexObJi6KYqBrnHyfXuyFS)oajgVKogWR93yVplibgWXRxalWCGPtnyMxuBxwaDzY1gvqGXmFIrbIPMGKbuGcR2wiVZsaaKvt0dF9R6vynhZznrROGuDF0loXgaE2Jr3rckDsurKdSUy4JPa(LnpqatecwphdUeg0cRlQ9)1GOv((OwT2hVPANoFF0a5Ugnv7hR9qvJn4ubfGPaf8(Q3MSupkeADUhQ0H(YaeYTpBUhzEtS3gt0xNaciYWjTebycf5vhSsEUVYwnZzZ3Mbldq5VHtM3O(fafJ9EBtZZbxVFC2HxCPEWSsvHpEpDSgMoMI6XOo2O2Rltyq(P9Et0UDzH04dTuhQdVVMzeFnYnm4sMradUSqNXoysSVlZ3fx4zw0K6xh3GyZjTIf8mk8XOh8WzuKS3h0KeSoEoJzI1vAO3tLl8uh7r7zI13k0UsD5ENGTLkJ6K(pfLHbRkkEJhk6didLmsW2wnWLDlrSGOauazP2ZPqoQKq)6kDai3DqEW((HKxipzcRpXLbgoqEU0UsrTxxHKBqXgBC4msQrNcuOwhu43UQcpP2aEFLQkCsQUIclRgQV(duQQOBJ9c3(v0tFPQYu5QIAi0ge8EZI(cNmf1rM85D6drUfC5Adf0lheRLH9xtHyBMqDsQU847Rb3UzYtngjf44TTQBjm4wNPIUXssP1CRvyNnZInRzzomPo)JCvMdhJGDredPNyHaLx5RcBNixQ6BLeRsj4VUazQPQEfLRQfSV01E9bEPVMDIf9KsKMw2tPIAVkLD0l)anuxqFZYlRwJNJHRpfBD2eRAS(sKQsq7Qz8qEOtAk2PCMigNLSAcw)uzwKrjPKOlMgA5a5M6JdhYMedIybgop5)WeTcndOcCkPf4JjAEY0yjjon8HqqbfWAK0Syph3N5hCRkeYrX1uSUMqlfz7PP6yTpsNjt0N(8zTgx1LOK6s7Oiq53RUTKQuPl9sDH7OPSmni60tS0QmvLfa0sdOZ2rRIQscslCPVMnMo(3WkGO9yzh6mG1YGr1u3O34QQQsdOmpQ6Z(U9l1vDuSuDcxAsQLNpPq0FX3IukvikQDr0EEyAidp8TDX95kX450Z23Ssm(FF2C(sHEo9W)(UyP0OZTlwJAWUyvtLGKwXfKK0(dXexUEvoe1xI5Py6OYAMCg0x6HvQAsC9yCwFrXohZ53umcvo)MfJsvAflxgPA4AsRdryuBI869rOx(iKIiBgPoWv9N5h6QjCG3eDqAwgqBWlEJ9iilumOb46o0VHl)RCwEgHdWKpDEgLaVTjWCdNSaP7Dc6AQe7VN07FHaocQKhmBdYwLiH4J1pWb0foaFRkE0Xpap8ZyjXfQ4wphSqzXktjrraf4fQk7naJTgZt2qUj2x5fol)Pyxd0Nx58GTmWpesn2D1YjRKStaQJpRqwiNuswjsIJj(mI4cbKxaux)(omzaXqaU5AVeHIwZib5P9hSjv7TnzAUzowsP644bZbIr(jFWp0fDdD40PoCz(rq743RjIQx2ge)YBbBLD8tYVtcIHexVwDn(Yeq0T7bWfp2TPNuGHe787hwH0Dj)rc2(2ypNhyf)liN1V8CtaGHnpGVrqmOL8DLMWhXAADdgKGmAt8iefKaeXl)CataEhBWAhyqMxPDNayd9PmIK5KiF1uGU6k2adm7TGRlVyKoVs7oiOyNrFLKWr8iR7JW)u2(sK3e6vNYuAf4eVEvDMJxiqNCtVMBPwKcbAN7dROuPkPdHmCQPKMmkFjISizpn7tfRRe2ct5scIG0qlTnY2webdOvJnGwvmGMsnG6KrR3c2fYPUKZViQpGryxIGRrtop65Wop6FNFGylBqD)P4HlrxtHnO(WgCkGZr(dB0L1JCL9O4huqunhvy29n6u5cDB0ux49kCGZxw(jO8gU4nkcQtWAjIbw0HQvUIdVMnpTIFhaCTSW(lmvutgtUd0szLPecoBpepy0UBDkdpJTlaOP92O4Dc6c3ePDoXpGQLlQoGO4dRjuR69dw6nwYMaRWVDJo0iOLnSi8SoSyxdklkT6fBo)F8lkLf1fIGoUUAiihqpdceeBaM4imfsCjLVRi5e3SyS1apTHczW0oFiSj8DGgV5fEbPqobzjYA2o)4yYUkIRebGgaMPODrWtFkrVkllWo9QSLuv2sJkB1qv2QzQS1luLvxi0xwoePKvROSWrpL8HayQXn4T9fDlpa56lOeL83TpkoLE)S)aGz9beQX)kdw7JUr1rOG3DYaTXbNPfKly4D4R69FgIjhav(r0vOoe4d(1FO(Lxa9rFkbAqlZxic9ON5x7xWZr88mAVhzCmHC3()atArD7vn72buqX(lUEqpUmd(bR(DLvLIfYkGWLJY1KtMFx1s(vybUwUvN)o(jyOLFbafTT38QrzZXYjnxvkeOS0ky0uclCBMeiTI76ufIRWuNxrmbQkU7yviNc77PsUPNvYznso5eoY3cuvXbcVK4h)SeKMK03(anwky6PAEvqoX9fvGSQ220Mo6DQsRcYDMK2rgYjVyrsfiVQkTwH8MVUKxXq5lamt6QeAPqB3sLjQMhWuIUktgKu(orLwbuy1ALjAuvwmTgYHYISjzomF13AbfrPJjHESvQtKAkqVfQ1MarvujUgsBUkT9bjoEflGxn0Ts0sx)dmvq8s9Y8L6y8fYQA4f9uvVWf9SUzG1fIviSF)lgBKRNxF1BqzR07BfimAwbIvnRyytvz1ehZmRGEr7Py5KQqzjnqBedvMoiRuclO)8clRFWCAopRPLxbTufSwrreAhWMcpssY6xyHIM6cubz)7qCgvaSlgTzZJvYyTWRBirRKaSeklRnVQKVbewEc5sOUYg2qnOUu6LZY66IE)sfqhAhYR86gs06htK3MxvY3ac3WHCnnSHAqdg)KWY66srOD)jm8hINJZpYchxJ)IZbVgV)KBqBKJfQ(QrOVRJ51Zjzybw5LZVITeRh)S0wiuCv5TkV(cFevwQ5SLY8J4cRnVJAGZUDQhO7WbUngRbYaFLXOsHXj0ZO9ZDCDPeW8J(BNlhnTRgaRfghouhSJql0ot4LQgwSQHLC1qYcmw1q1keHwCcQbUEJibSNy5kpCOAPk7Jwn87oUU1NDJcMdSS80BW)u0b3G9jfIgI4ZON8GUnto)i9mhmFchpyZtcrz2A)H5I1f58r6PBqfzjN0bef7ilLSxaT5NMr2xk68k5hlIf9mVSxhL5U1TtLKV63VRqcuQfaMkAsLIMKaI0G7pJb1ZkVLB)pA4qYU5VyUfSYs6UXE4aANy7YTlSZm5gpiBCpEKMfKSBVZaNgz0NLvfBz7hX7UBoecgvuX2b3zUjmaxajWNmXHd9u0T5MmIPWRg1Vl)Uz3gnIt)fiSrd0vlT6QvPUkM4KA2A9nvDyFi3MRdWO)U8yjqV0NCTPaSlpWRm5qCsxYH2Bbqy3MH2liwckUz3K2Jaii7m(C(PkeWJ6ja8t2(3PcbqsocMi9(4m(4HoUENhah5sc3Y5XiF4xZcd924LK4GCuCBmaiG)kjlcGceSgXTyV25Eiz)0)i3MItK86tgMLq5Te5Il3tjiamVrgp6GNM089qQn7yKOCWdfl(1gmp2pEyjfhd8zt62HFDGm5EHPH81btU004I6dKSFFrvqZOvZTHVS99RnJUFdhC5Jn50TpdKFfZ7Vy6LYFtle6PDLtIz9mnhqNoi9RUu(lPSI9lUu)UfSQY3avbteZ5BphPISjifE6l2vKIzQD7PK8iRyzyjf7aQu7Xm52Jl4ShWAfKqi5dOA)dhKs1EYj7LMw0aHKEzuMnMYjPN69zJ7lzDNme2)pYGuzQu1mJ1AAe7pdOxR6N4T2xpeVx53Yu1X8Jw)jbnPmLKcHJHCYsJsJfKq8c(v(TvOIHTiPToNeB5hwPSv475qvEYEnfq8U5iAwgDlswIBh(oCi)Xch1Gdhu(PufqBK4d9MUDu9HtTIMWDrPXP(wLEwYZ1y0Hdk81VyKbjM3AU)yZMBn1GoEuttxmFY1gC4clMy0xE6tg6NJNJmvUUXIoxxIUpMQ7LjVwC)WpCGjjwKpGU8EeWjroBuvKGtYPYRJSPf2(1HLvNbsVXFTBD0yJUAWNxWEri1b0W1W(8t0r6u1Bj5cRHtA4S7jWIDvlrqb6koVv6Obo)dUPgc3wovHi9EaF5b8jAiep1gTBM3Kk4ls(eKisYztmKPzWkTzJYlwLWbJs78BTXFSyCfvo)cK3ovTkuAXLIUDeY61y1AfKe(pwkTvcpRl(mVrxasCDAXi5LNTSmZ5FzjLg6dB1dssBEgVA9TWKIPa11usGK0xLkcm5SvrGK0AY((myFAfiBZNEoTPYZub550I2Oj(3GqYaqnXHq1Hh0qAETHeAqwSjouYgSsdPElKyjmJhoOEUPrxehMAt6HjPc9UrjhwPxcHfl8TyJUwUjA6mDb6mPbXNirC8y)GUrLLQPYvOPIsFxjorqamQ9TOjLti1SgYOCSBDE7QpjtS5qmXDUb2ksrpHKFPVsBo230SWyHC0KUWtEY(uw1vPOkQM5PVlNo69(ej8vHJDoRW0qiGjvoIG0vvSNm9ptXGvfaHohq5xCpMLtsAcERNykJPODqeCrE8PnU)VW4LNiqUZwCAeQ9)2vWqUJU6DxDA(9Buk8fz6lE29jnpw4JYMSNMZs65tq7sLVtY0PfvDZNil6(RPXLE6C41k0ub2CQPA(2P4ly14TuMUVXmnVxYoLMMtd2TkMojjbf7zLuRlxuLcFvRUSNyWTInqgj7FHUWL7rXjVyu)(fOVIrk0T2pMviOBEJ6eTEdE3uXAQedMwCFPKTrtW0niKdKCujoPEv)cEn4M(1pRV8oKV6)a]] )
+spec:RegisterPack( "Balance", 20231113, [[Hekili:TZtAVnos29BryWOw0ULmpSS9mqwb7UycWoiztaCVi5tIIwIYMXuKk8OD3bc63EE1bjRBsQJT7jPb2D6UfF17SQ3vDSWzXNw806GIWf)nxBxphhhVj2py759llEQ4R7cx80UGvVf8c8xsc2c)3)CqCqYk8V)140G1OXNNwMH(Pxlk2L)R3CZZeygNhTD1KxIkET85jrP3qh64NI2(xUz76jVwSn(FAtuC4J0bmP4lflE65YO4I)AYINvYyUUlEkOS410SfpHqeq1O1RdjGhMVAXtiWh74m2X7xpSea5WYYDieLp5WVF43R(Q9u4R)7bfRE9Wsh7jUnF0(xg7ydF8FnkjnRAWhwwKc))SOK3cloSmiz9HLBItFNzypa)VMHH4TQbZa09aT5iSZKPka7UXU3cGDy5FA9)vzoqW)0)2VDy5NdYIcEoo8Ja6tJdaQ8BRIJ2LdC3tFI7ZyWFQiiBtuw4n)hzbfa1kZb74HLrj1JJrLypDS7dyski3BWsZU0O48Afa)WCXd7tVhg82HL)ZLzF9WY0nanIltc5H0gdjIVItZan4kKvpok5fGRaShae4v8)k4LGOeUXITMhw(3rcBs47aiRkIstM8Fojmjm7LO)Nq)GTPLjGUk)RjfbFb48S0TedbhMSjI5FNmPGfmGl2UdHxelG4Y8YmKgdR44XXDYQkELPTRavqaIS3A4RBh7CpNfpnXVmp0VEkxL1LzmUJDNshZ6qqDMdmEC4yGXFbnIsKUczjWtecIJpS89i0eHpLwIM9v8k89)sA(208jlEkokVihTAoine(J)g2ZqycIKRx8Nx80QSOIqGfw80GdlFonhKPHhwMfUjlm)veu4)9iaTyYpPiAlW9P(RJGVmgb5wWMcJY6WY5hwEhg8G8ISGy)DPVhMnzD4MOvrf4pxlT7cYZJ(myCZ3Dy51hwkyTb2fppyXtBtttqZ2bo9RRIbsJzJCKGua(qeKM0DGBRqMHxrq0FlUmelLRZkJwpjj1F168kPBvAA8603tMSkWpkz1KAXA2HLtXaHupLB2ubq5otkM5OjfyaWJzxw0wyLreOtcYGvhrR83vgNhKnbZveQyddy)EyEu0lVw4ZYaUtX6iegVcrV4WKIjateKLeGet)vVMMhM4NUXpeV6KQrWgflSsWN4MF1A)vPjRJWJcnJa0HEANrCkZcgJbpFxyCCLn7WYBazbdZ5DosEPHPi3Qv8(d3S9PNtl1ybRZKCACLkH7bmRQdMZHCJXIocmdlfooyoLoNVC7ZikgLueMKhv81jzbjVXcaLLaFFXRbMI8zY8TAMsAnqZ8OcGvG1kBG)JgtWDitaAnnDbvonONUPyOv)vWW5uXTYoPLVAmKyrln75OcKSbHoEJzjUwdXmdgIhWEsewDIC(Gz4cuGeFiocWq4WiiNDwea0sRrMjhY)LlMQJOujKKSIp4XcCeYQBULHxQGkhLzKiuwvE4QSGKmp8rJezTUx7cMFO1pnTo7Igswii99d691IW66SWGTa8qoX0WNMndky4YDcug5SeO8V0FlnZSMW4W8cC054Oxs2cgEeoDSpfKYeFgJmCIxvF89GSSO0S6i2SKbbC)ZRXGBup2maazlmJyxXusF0)AzKzivRoOgLjbjF1pj8lfDAQdn1(kEdYKkVWhfFsE(e1Q6Op49aMjphhdkVcGYGVJQRsd3H)gM10hmU)XfDTR47b1EEEhstm5f)I3JIrje246bjiRtlMSPm5fGmVKL(oWUYXw0Kx69vzZUll8Z(VSAnuRkqJ1(BlZFnlfvddR8Y(fSCFNw5wdbRJ0XM(Cn7ca4rKjTPGJaPxjt)iq0hSzm5ToK5WqMENTKFDmXNAx7hUoLr5K0bVf1ATnq1YnRTrAnXirTVGwJ28woTjAXcuG(NdZY9bFk7W(vrmkDsuDQhSbU4tkb(lREJ4NqOyHkp7nE4CXYYdN9CG(2iRMYCWrFaLVnmR6aUU6dr1FVqQYoVL0ga0f(LWvLfHuxLTfgqAawQ8ouPSw9ksxN7VjJi8bXepktM2t3btPEyn5JXrB93OVyXU6gwtGQudBb03qf5jcHBkQY8XC8AwBnUBvysjMvWpQ)RB1)1Rk8C1Nr0jlWnmcfvRs3UTmHMIOR(SD4JjnJetsTYd3qqItJRR1l4ar5(VugTg3rEwVoTVeVdvgqGI1FAAYNtFlexpt(UiqsYXY45mTjTA3KW3BwGQpHLtMIDu)DQUiBeSxdI30iz6lV9KLmgVDPzRcrjZa1Yussl3vFDE9NWS5nXz30hbU)ePjb7VnMkVZzCAxBJwhVZFeji9v1HK80hssOnhZXAFVQgdRQFa1AB6(g6x454F7Uv4KYO2kAsrZnbjXirH0QkfdLntGq0QIfJsiFqzXOfO)1cJ7GIyu4oNRRIolVOBD3U)nk4FCBasVssdIFuxYM(ISUq7esoUFpDFJqopgwZn7xFYaICt)9GOkm2jitp0ReSME2lFSBtXW14tZBs9CzZvU1dQCNTg8v5UvFHN6ZwPh0)OKs1vyQphJEWpTOp0eC5m1n5CY87o5K3qFKpgAQi3bwPTPzI9TtZ5mE4119A9XPAhNInVU)Hz62SJzDR08PTLGcTfIal5)CAszo4XkmdYjWD3kUoAHmb(1geIEs0TF7YM6MlxRvfPI(PcktkTFnoNq7b9I8nz)0EoXMBlU4(kqrYcZ9U3mRosQZ(uaApF8z42BZ2(AX9zXCN71rxbUsMTRzmrck6TN1xJHwPRMru55O)nwMnKGIQ8nLl4CsN45MTJtJ0NKkMy78opTuGjPnAtfQDATOUF0QRTImZvrViM8wciGcoEuag4VF9xfC0lXeQdFzOfYDbx6AGY5SsY(1Ek9buoJuwv7g0xKPMsp(XwozSpM9ldqP2s2UlMJCtoOUFWquvzpisOTGcFasZjQYWQrDTryjtGy6dq9ednLuGC4iU)x4vZnlpj1CF(RG5euy0HcbekIPElq8TmkiqSM(z2Ib4)cldI2E4TOdDR(cwm0F1VZLkn(Tn0w1ZEL3YD5XC7vVGmqD3im371lihW37GZDxtn16()qSTJSnh3qpEpVAMlxNY)JNbGVJ(6tk5hwGlLfGBN396FH7Yj(u1qoe57)b6KRYyjJ41yTRyX7QatnbSuEWnLl5DetC6RQpAlCXrfZNNloATPrckwQ4PZgnTLCMWhAiVBpV5m1ulUkcQlxfVou6VzeYLPGho1h(AYzWoccXCjQaoRmXN839r3qhY90HQAqjEx8Aw5c8MobtedkJvUZtOlgxw0ocg)nYIBWKgctTHAwjRYX3giGsO7Pe(Yy95GOySGYiu4(z8Cya(e(5Yku5PPageLkncfvdWKaiMfyZJK4XrDd0Q(vSNo6VBH0mjGTaMOmfrBXIruN8GHewQ5jY5IMLZu4VfvuepdiofIRKPiEApGjZEg2JB13PYpIPF3UxqDhAK5KtCtLJRgMpieMdKH8Z)wuYA0f7JtcgWv)cX1k)gVre0gyq0RccwVhr5vxkP(3wR7WxViIS9k4jlK98VqQfm3V6gPwZDxZFs)9Folm4nw2)kYHTTk74jfrREdFrczCnZp086TOg(U794nmJyBjo1sJZbKq7myLx(BTz1dmHbqkJw2iePiQpsoWdgAtxBnwyAJI(ziozygsMrSI(cd0SVYxio0JpXGDP4)SqXwPKhNwKdUIix4sNMX08lkIciEnnh8iELbD2o96Yw4s6pOFve06wyOfpe0Wj3kaXJ7qliKA2XPWKu3kiRnwbkgLHxb6kPaD7Sc0vsb6OubAIhD)MPx4IlIabK5T5cHgj7MuDjBu3oFo6LOyri7W(Jq9h(e62hTcng2mBa)C6YGG6e1WoDWUHrhlvO7FwRjbjThfgKuUOP0gqsAWVCgycurVRjoh4SfEu)3bpWUU4aioShMbJN8gBwUQ5SCWYuG(AxwiKp9ZbnjWXoeWTQ)M0STcYc3uTTbzVHATjQjyORJrljJ1EKYM41k26ynr270zSbToIngaBin2fLQYJRD2Mlcj)Quv5LHqyW61gqOJbeYMeBJZkiVcmui3pKCAA(wDvuRlZW6j8mmQ3fg4IGuUWp7c4n5ieY0piRmxfyBJYYiBLiUkCWtcOatHsUZsFpxxQFMfz3EkYUgez3okYUDtKD7KiR3vsFlRG3Jvbz1kQPaOFL(4KypfVfYOlIfmz(tOsPI2UlnRG(Wp8bWN1hqUr(VlH1(ONQHuuY8bLaphGRfB1RbjVGFdj(xGS2bVm)k6TzibOd(ZFO9Lxa(rVrjDaYQfIWig58fRAA6XtZ0DHeRvo5rd5dmvinCuH0oQnM6L0A(DJhXv7Wp7AnuvttMRQFgxl04Jk56OP(nNe1R1o3P2IWFXFfmcQVvWI697Vyy2zQAulCNbfWTMBuOeY1W3vDJraRI7UJe6E48IUF5SIo87XJc0jCHjeWQMRtrdYp87kCwKx89VVcD6JJv9QzI6zgDIBtOaA1TlIsOxJVGJLB1GUZe365Pg9IDXva96AfCltEPTHSFZG1A9zAgMKsvrJYefDnkw5(ujk7ABKvhPqtdUumxGVZx9aJOcDuGp2UKjInn(Of6ZLas10fSoIBUUC9bfHTeBEwl4vkpK7(zMU3DTzE(Ate(kvDS7Qr66v38rU3p29kXUZzzD1T2vY5D38DiV1eu0w0KrZQwSbv1MnDDWs0MHFw7uHzXo3iHzfaymqU00bvvTpN(Nx56(ZopurZwG8gasDU1QlpVFo2046vr90clumuXTK)9VbH)LCyxBTzRduHTw4ZDePsfqQaZQG5II(oGy1f0Qa7AbSJsqBLeRMKTneZXLQDDy0Kl95oI02TjQH5II(oG4oAYnayhLGoy)uqY2gsDQD)vS7penVT6SjCyj(rIe(mEVbxH2efxuNltrVIRvDkjFsTVYRF8g2MxE43vcHqBlvdvvT6Fe1sQhzBs4hXTS6Xb6DCoCq7o62VNBtP6apW3vmkxyFeJmD3JbRxtrGZhJ28OAVPdn4WAU9(9T52racJZeovXWLvmCvlgkwGXkg6wHiaXrig4o5HyWrIncC)E5MaAHwn8thw27ZnrnXbs2CYj4)v0HMG9xQzneYNr3J)HDJp)iD)(FCkhnyRtcHz2(OHPI7vv0r55iqhAjNIbeghOQKSta38tZi74dDEL6JKW8roxpAG2A3goqQ4llRHcfqPNby6oiLl6sbiktU)mMupl)2S17iZHIDsF(JUWklLB85(9On9Ci3gEoZHZEq20CSLM1j5WrNbk5zBXsQ6Tl9J4DtUYfc2ROMDEDWJoGbU2LaFXe73psZWE0HHnf(KN1q(noUpseN8lGy7oiRUgLv3gzvSWj9K19FOId7pYTX2GB0FQkxc0hJixCjW3vievMC67Ol5q9Phy2nLODzHfHIB0mbEKdcYUs)i)ufIZJ2ra8NSJFGecqCE15TJpFOdl3gcUJwts3k4ZPrWFTmjjCvyEEakqXZzGdb8dBUONEjpQafAH)R3wBUFKSb0FKB)NjIs7vhZIOkirX8QcDcmaZxurJb45nDFdAo(TJrKR49ul(iBwLAiVxlnNW4zthoGFzIkPyUJnzXulhQ5ztTHfoclLMETJ9vTNlQLLOyAW(2DT(5Ct56ZSJVzto4t9541DJvFHYTM)W1Q)YXlcdvJWzJCCgtN4O8TnR6JucZ(UMznSMWspEUckmMtbDLBrYoxuNwr9wzupNE4iTOhPtBYbQEZkvQDMPu78WvC6diafIju8aiBTFVsSosnAV2XLM1LYBnXSBPus5zPF2TwkwHQY79)psHOuFqRpapsUxed9tjvxNG0ev5I8nQ4fhpJZ3EnoXBTV5WrHnp3W6lFbT62ZK2RM5yqNQkcnyFiiVMEnVndsMT66phCuKLFsdLScVheY0K9Pdgr7U7901EyDDFcNAH971(2hdoTuey)(Hd09shlXYCxIAC56Y4ZvD9rE73RjbK5EDm1IhDFWMQ4Bb05po9oBo3lZNABPUKpBZtMRCWXCBxOtQvi73sL9McURV7473Zu4nkuYq(al4cFN5jPYpUytxgEZO3)ldjLNbsVHB9BbJy6gg85pN9waAY9chGw8Z6rcO8veCU7KPDCQ(uyjUU1loszy7yR00GRxIBEIW96txAxkCm)JukHukfvlINvKtAsP0k)uPh4er8dvBPsmHvKZ8QAeNWzXY4uFJP7m)wj5V6kxFwL76Rr8jH1lWsCjFr8pflNe7EE0SYbZosLjkbJVV1FUsI6j5XZ5Et5IYnO5J8gpso3EQEOT3M156HI5Dz1YsDbbnBas1Z0hBhRYl6EptmMSatBjeWUHgpLxCr67uhJyElo3qf9X9iA(uErlT25mOi7ve1UVSq0lyh5Uhe4UJlRZUyOGuZHGwIwE9Pj2rCENTcCqwYlAyztATJyVhCScIX7uQDQzqwujk9TBd5fdLDIWH26QH7dovefqIF7v)lYlegDN6EH0OekNt4PjK6YQlwMzMYjFQ2uP3Vx1RUPrMmK9rnKYHYDGOw(fLj1McHa6DTtj73pOJeQkgLPmhAV3iKjGc9BIZClXfJe6zd9tgBn09k9kOU1tumWqhrwGskfpULssw1sl10WC02uHhdr2jVcZhHm51f4DUNUDQ26mvCGSNpQzx7dn5W2FKjz88iQhe9YOUWPop(luvDyCFs582cQ))2nNtDS72Jal3opX3SW6(51HgsblRW)E7p)IxBao2NErR5UdvMr18BpljL1rXIcM4LRHaEMWJiOQFTIK0d(Kr3bFJ4jnvkrwN4FUY5wxDexwYWxpXLLwhxZju3GMVdAykwMoYgLC57603z6PF0a(UPNAnSJlB2B5YL6PzJSvQD5YQwqvF9iXK7fbqfkTUYu5cJOouVYZYQ2nTyAtdB9DZd5JNxpo9CeYRjnDfADtHL6Za5phBKFt4rRJWXCVwDl(Fd]] )
