@@ -11,11 +11,11 @@ actions+=/variable,name=rtb_reroll,if=!talent.crackshot&talent.hidden_opportunit
 actions+=/variable,name=rtb_reroll,value=variable.rtb_reroll|rtb_buffs.normal=0&rtb_buffs.longer>=1&rtb_buffs<5&rtb_buffs.max_remains<=39
 # Avoid rerolls when we will not have time remaining on the fight or add wave to recoup the opportunity cost of the global
 actions.precombat+=/variable,name=rtb_reroll,op=reset,if=!(raid_event.adds.remains>12|raid_event.adds.up&(raid_event.adds.in-raid_event.adds.remains)<6|target.time_to_die>12)|boss&fight_remains<12
-actions.precombat+=/blade_flurry,precombat_seconds=3,if=refreshable&talent.underhanded_upper_hand
+actions.precombat+=/blade_flurry,precombat_seconds=3,if=refreshable&talent.underhanded_upper_hand&!stealthed.mantle
+actions.precombat+=/stealth
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=refreshable&variable.rtb_reroll
 actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=refreshable&talent.improved_adrenaline_rush
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
-actions.precombat+=/stealth
 
 # Restealth if possible (no vulnerable enemies in combat)
 actions+=/stealth
@@ -79,7 +79,7 @@ actions.cds+=/fireblood
 actions.cds+=/ancestral_call
 # Default conditions for usable items.
 actions.cds+=/use_item,name=manic_grieftorch,use_off_gcd=1,if=gcd.remains>gcd.max-0.1&!stealthed.all&buff.between_the_eyes.up|boss&fight_remains<=5
-actions.cds+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=(!trinket.1.is.dragonfire_bomb_dispenser&trinket.1.cooldown.remains>10|trinket.2.cooldown.remains>10)|cooldown.dragonfire_bomb_dispenser.charges>2|boss&fight_remains<20|!trinket.2.has_cooldown|!trinket.1.has_cooldown
+actions.cds+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=!stealthed.mantle&time>0&((!trinket.1.is.dragonfire_bomb_dispenser&trinket.1.cooldown.remains>10|trinket.2.cooldown.remains>10)|cooldown.dragonfire_bomb_dispenser.charges>2|boss&fight_remains<20|!trinket.2.has_cooldown|!trinket.1.has_cooldown)
 actions.cds+=/use_item,name=beacon_to_the_beyond,use_off_gcd=1,if=gcd.remains>gcd.max-0.1&!stealthed.all&buff.between_the_eyes.up|boss&fight_remains<=5
 actions.cds+=/use_item,name=stormeaters_boon,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|boss&fight_remains<10
 actions.cds+=/use_item,name=windscar_whetstone,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|boss&fight_remains<7
